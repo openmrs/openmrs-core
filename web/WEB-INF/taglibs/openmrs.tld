@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE taglib
+	PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.2//EN"
+	"http://java.sun.com/dtd/web-jsptaglibrary_1_2.dtd">
+
+<taglib>
+	<tlib-version>1.0</tlib-version>
+	<jsp-version>1.2</jsp-version>
+	<short-name>openmrs</short-name>
+	<description>Core OpenMRS tag library</description>
+
+<tag>
+	<name>css</name>
+	<tag-class>org.openmrs.web.taglib.CssTag</tag-class>
+	<body-content>empty</body-content>
+	<description>Insert link to site's CSS</description>
+</tag>
+
+<tag>
+	<name>require</name>
+	<tag-class>org.openmrs.web.taglib.RequireTag</tag-class>
+	<body-content>empty</body-content>
+	<description>
+		Enforces user privileges and redirects if the active user
+		does not have the required privileges
+	</description>
+	<attribute>
+		<name>privilege</name>
+		<required>true</required>
+		<default></default>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>otherwise</name>
+		<required>true</required>
+		<default></default>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+</tag>
+
+</taglib>

@@ -1,0 +1,137 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="org.openmrs.Order" 
+    table="orders"
+>
+
+    <id
+        name="orderId"
+        type="int"
+        column="order_id"
+        unsaved-value="0"
+    >
+        <generator class="identity" />
+    </id>
+
+    <property
+        name="conceptId"
+        type="int"
+        column="concept_id"
+        not-null="true"
+        length="11"
+    />
+    <property
+        name="instructions"
+        type="java.lang.String"
+        column="instructions"
+        length="65535"
+    />
+    <property
+        name="startDate"
+        type="java.util.Date"
+        column="start_date"
+        length="19"
+    />
+    <property
+        name="autoExpireDate"
+        type="java.util.Date"
+        column="auto_expire_date"
+        length="19"
+    />
+    <property
+        name="discontinuedDate"
+        type="java.util.Date"
+        column="discontinued_date"
+        length="19"
+    />
+    <property
+        name="discontinuedReason"
+        type="java.lang.String"
+        column="discontinued_reason"
+        length="255"
+    />
+    <property
+        name="dateCreated"
+        type="java.util.Date"
+        column="date_created"
+        not-null="true"
+        length="19"
+    />
+
+    <!-- Associations -->
+  
+    <!-- bi-directional one-to-one association to DrugOrder -->
+    <one-to-one
+        name="drugOrder"
+        class="org.openmrs.DrugOrder"
+        outer-join="auto"
+    />
+    <!-- bi-directional one-to-many association to Ob -->
+    <set
+        name="obs"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="order_id" />
+        </key>
+        <one-to-many 
+            class="org.openmrs.Obs"
+        />
+    </set>
+    <!-- bi-directional many-to-one association to Encounter -->
+    <many-to-one
+        name="encounter"
+        class="org.openmrs.Encounter"
+        not-null="true"
+    >
+        <column name="encounter_id" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to User -->
+    <many-to-one
+        name="userByOrderer"
+        class="org.openmrs.User"
+        not-null="true"
+    >
+        <column name="orderer" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to User -->
+    <many-to-one
+        name="userByDiscontinuedBy"
+        class="org.openmrs.User"
+        not-null="true"
+    >
+        <column name="discontinued_by" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to User -->
+    <many-to-one
+        name="userByCreator"
+        class="org.openmrs.User"
+        not-null="true"
+    >
+        <column name="creator" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to OrderType -->
+    <many-to-one
+        name="orderType"
+        class="org.openmrs.OrderType"
+        not-null="true"
+    >
+        <column name="order_type_id" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

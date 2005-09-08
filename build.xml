@@ -1,0 +1,149 @@
+<?xml version="1.0"?>
+<!-- *********************************************************** -->
+<!-- ** OpenMRS                                               ** -->
+<!-- **                                                       ** -->
+<!-- ** Open-Source EMR for Developing Countries              ** -->
+<!-- **                                                       ** -->
+<!-- ** @author Burke Mamlin                                  ** -->
+<!-- ** @version 1.0                                          ** -->
+<!-- *********************************************************** -->
+<project name="OpenMRS" default="dist">
+	<description>
+    	Open-Source EMR for Developing Countries
+    </description>
+
+	<!-- import properties -->
+	<import file="properties.xml" />
+
+	<!-- *********************************************************** -->
+	<!-- **                     TARGETS                           ** -->
+	<!-- *********************************************************** -->
+
+	<target name="init" description="initialization">
+        <!-- Taskdefs -->
+        <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+			<classpath>
+				<fileset dir="${ant-contrib.dir}" includes="*.jar" />
+			</classpath>
+		</taskdef>
+
+		<!-- test for dependencies/etc here -->
+	</target>
+
+	<target name="clean" description="Delete build and dist directories">
+		<delete dir="${build.dir}" />
+		<delete dir="${dist.dir}" />
+	</target>
+
+	<target name="compile-api" description="compile api">
+		<mkdir dir="${build.dir}/api" />
+		<javac srcdir="${src.dir}/api" 
+		       destdir="${build.dir}/api" 
+		       debug="${compile.debug}" 
+		       deprecation="${compile.deprecation}" 
+		       optimize="${compile.optimize}" 
+		       classpathref="api.compile.classpath" />
+	</target>
+
+	<target name="package-api" depends="compile-api" description="create api jar">
+		<mkdir dir="${dist.dir}" />
+		<jar destfile="${dist.dir}/${app.name}-api-${app.version}.jar">
+            <manifest>
+                <attribute name="Class-Path" value="${app.name}-api-${app.version}.jar"/>
+            </manifest>
+            <fileset dir="${build.dir}/api" includes="**/*.jar" />
+        </jar>
+	</target>
+
+	<target name="compile-api-tests" description="compile api tests">
+		<mkdir dir="${build.dir}/test/api" />
+		<javac srcdir="${test.dir}/api"
+		       destdir="${build.dir}/api" 
+		       debug="${compile.debug}" 
+		       deprecation="${compile.deprecation}" 
+		       optimize="${compile.optimize}" 
+		       classpathref="api.test.classpath" />
+	</target>
+
+	<target name="package-api-tests" depends="compile-api-tests" description="create api-tests jar">
+		<mkdir dir="${dist.dir}" />
+		<jar destfile="${dist.dir}/${app.name}-api-tests-${app.version}.jar">
+            <manifest>
+                <attribute name="Class-Path" value="${app.name}-api-tests-${app.version}.jar"/>
+            </manifest>
+            <fileset dir="${build.dir}/test/api" />
+        </jar>
+	</target>
+
+	<target name="compile-web" description="compile webapp">
+		<mkdir dir="${build.dir}/web/WEB-INF/classes" />
+		<javac srcdir="${src.dir}/web" 
+		       destdir="${build.dir}/web/WEB-INF/classes" 
+		       debug="${compile.debug}"
+		       deprecation="${compile.deprecation}" 
+		       optimize="${compile.optimize}" 
+		       classpathref="web.compile.classpath" />
+	</target>
+
+	<target name="package-web" depends="compile-web" description="create webapp war file">
+		<mkdir dir="${dist.dir}" />
+		<war destfile="${dist.home}/${webapp.name}.war"
+		     webxml="${web.dir}/WEB-INF/web.xml"
+		     duplicate="fail">
+			<fileset dir="${build.home}" casesensitive="true">
+				<exclude name="**/*Test*.class" />
+				<!-- exclude web.xml, since it's already handled by attribute above -->
+				<exclude name="**/web.xml" />
+			</fileset>
+			<classes dir="${build.dir}/web" includes="**/*" />
+            <metainf dir="${webapp.dist}" includes="context.xml"/>
+			<webinf dir="${web.dir}" includes="/WEB-INF/*" />
+			<lib file="${dist.dir}/${app.name}-api-${app.version}.jar" />
+			<lib dir="${lib.dir}" includes="**/*.jar" />
+		</war>
+	</target>
+
+	<target name="compile-web-tests" description="compile webapp tests">
+		<mkdir dir="${build.dir}/test/web" />
+		<javac srcdir="${test.dir}/web" 
+		       destdir="${build.dir}/test/web"
+		       debug="${compile.debug}"
+		       deprecation="${compile.deprecation}" 
+		       optimize="${compile.optimize}" 
+		       classpathref="web.test.classpath" />
+	</target>
+
+	<target name="package-web-tests" depends="compile-web-tests" description="create webapp tests jar">
+		<mkdir dir="${dist.dir}" />
+		<jar destfile="${dist.dir}/${webapp.name}-web-tests-${webapp.version}.jar">
+            <manifest>
+                <attribute name="Class-Path" value="${webapp.name}-web-tests-${webapp.version}.jar"/>
+            </manifest>
+            <fileset dir="${build.dir}/test/web" />
+        </jar>
+	</target>
+
+	<target name="compile" description="compile source">
+
+		<!-- Compile source -->
+		<mkdir dir="${build.home}" />
+		<mkdir dir="${build.home}/WEB-INF" />
+		<mkdir dir="${build.home}/WEB-INF/classes" />
+		<javac srcdir="${src.home}" destdir="${build.home}/WEB-INF/classes" debug="${compile.debug}" deprecation="${compile.deprecation}" optimize="${compile.optimize}">
+			<classpath refid="compile.classpath" />
+		</javac>
+		<javac srcdir="${test.home}" destdir="${build.home}/WEB-INF/classes" debug="${compile.debug}" deprecation="${compile.deprecation}" optimize="${compile.optimize}">
+			<classpath refid="compile.classpath" />
+		</javac>
+
+		<!-- Copy application resources -->
+		<copy todir="${build.home}/WEB-INF/classes">
+			<fileset dir="${src.home}" excludes="**/*.java" />
+		</copy>
+		
+	</target>
+
+	<target name="dist" depends="package-api,package-web" description="create distribution packages" />
+	
+</project>
+

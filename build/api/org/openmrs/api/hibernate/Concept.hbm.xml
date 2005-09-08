@@ -1,0 +1,180 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs">
+
+	<class name="Concept" table="concept">
+
+		<id name="conceptId" type="java.lang.Integer"
+			column="concept_id">
+			<generator class="assigned" />
+		</id>
+
+		<property name="retired" type="java.lang.Boolean"
+			column="retired" length="1" />
+		<property name="name" type="java.lang.String" column="name"
+			not-null="true" length="255" />
+		<property name="nameAlt" type="java.lang.String"
+			column="name_alt" length="255" />
+		<property name="correctConcept" type="java.lang.Integer"
+			column="correct_concept" length="11" />
+		<property name="shortName" type="java.lang.String"
+			column="short_name" length="255" />
+		<property name="description" type="java.lang.String"
+			column="description" length="65535" />
+		<property name="formText" type="java.lang.String"
+			column="form_text" length="65535" />
+		<property name="icd10" type="java.lang.String" column="icd10"
+			length="255" />
+		<property name="loinc" type="java.lang.String" column="loinc"
+			length="255" />
+		<property name="dateCreated" type="java.util.Date"
+			column="date_created" not-null="true" length="19" />
+		<property name="version" type="java.lang.String"
+			column="version" length="50" />
+		<property name="dateChanged" type="java.util.Date"
+			column="date_changed" length="19" />
+		<property name="units" type="java.lang.String" column="units"
+			length="50" />
+
+		<!-- Associations -->
+
+		<!-- bi-directional many-to-one association to ConceptDatatype -->
+		<many-to-one name="conceptDatatype" class="ConceptDatatype"
+			not-null="true">
+			<column name="datatype_id" />
+		</many-to-one>
+		<!-- bi-directional one-to-many association to ConceptName -->
+		<set name="conceptNames" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="concept_id" />
+			</key>
+			<one-to-many class="ConceptName" />
+		</set>
+		<!-- bi-directional one-to-many association to Drug -->
+		<set name="drugs" lazy="true" inverse="true" cascade="none">
+			<key>
+				<column name="concept_id" />
+			</key>
+			<one-to-many class="Drug" />
+		</set>
+		<!-- bi-directional one-to-many association to FieldAnswer -->
+		<set name="fieldAnswers" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="answer_id" />
+			</key>
+			<one-to-many class="FieldAnswer" />
+		</set>
+		<!-- bi-directional one-to-many association to ConceptAnswer -->
+		<set name="conceptAnswersByConceptId" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="concept_id" />
+			</key>
+			<one-to-many class="ConceptAnswer" />
+		</set>
+		<!-- bi-directional one-to-many association to ConceptAnswer -->
+		<set name="conceptAnswersByAnswerConcept" lazy="true"
+			inverse="true" cascade="none">
+			<key>
+				<column name="answer_concept" />
+			</key>
+			<one-to-many class="ConceptAnswer" />
+		</set>
+		<!-- bi-directional one-to-many association to Field -->
+		<set name="fields" lazy="true" inverse="true" cascade="none">
+			<key>
+				<column name="concept_id" />
+			</key>
+			<one-to-many class="Field" />
+		</set>
+		<!-- bi-directional one-to-many association to ConceptWord -->
+		<set name="conceptWords" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="concept_id" />
+			</key>
+			<one-to-many class="ConceptWord" />
+		</set>
+		<!-- bi-directional one-to-many association to ConceptSynonym -->
+		<set name="conceptSynonyms" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="concept_id" />
+			</key>
+			<one-to-many class="ConceptSynonym" />
+		</set>
+		<!-- bi-directional one-to-many association to DrugIngredient -->
+		<set name="drugIngredientsByConceptId" lazy="true"
+			inverse="true" cascade="none">
+			<key>
+				<column name="concept_id" />
+			</key>
+			<one-to-many class="DrugIngredient" />
+		</set>
+		<!-- bi-directional one-to-many association to DrugIngredient -->
+		<set name="drugIngredientsByIngredientId" lazy="true"
+			inverse="true" cascade="none">
+			<key>
+				<column name="ingredient_id" />
+			</key>
+			<one-to-many class="DrugIngredient" />
+		</set>
+		<!-- bi-directional one-to-one association to ConceptNumeric -->
+		<one-to-one name="conceptNumeric" class="ConceptNumeric"
+			outer-join="auto" />
+		<!-- bi-directional one-to-many association to Ob -->
+		<set name="obsByConceptId" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="concept_id" />
+			</key>
+			<one-to-many class="Obs" />
+		</set>
+		<!-- bi-directional one-to-many association to Ob -->
+		<set name="obsByValueCoded" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="value_coded" />
+			</key>
+			<one-to-many class="Obs" />
+		</set>
+		<!-- bi-directional one-to-many association to ConceptSet -->
+		<set name="conceptSetsByConceptSet" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="concept_set" />
+			</key>
+			<one-to-many class="ConceptSet" />
+		</set>
+		<!-- bi-directional one-to-many association to ConceptSet -->
+		<set name="conceptSetsByConceptId" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="concept_id" />
+			</key>
+			<one-to-many class="ConceptSet" />
+		</set>
+		<!-- bi-directional many-to-one association to ConceptClass -->
+		<many-to-one name="conceptClass" class="ConceptClass"
+			not-null="true">
+			<column name="class_id" />
+		</many-to-one>
+		<!-- bi-directional many-to-one association to User -->
+		<many-to-one name="userByChangedBy" class="User"
+			not-null="true">
+			<column name="changed_by" />
+		</many-to-one>
+		<!-- bi-directional many-to-one association to User -->
+		<many-to-one name="userByCreator" class="User"
+			not-null="true">
+			<column name="creator" />
+		</many-to-one>
+
+	</class>
+
+</hibernate-mapping>

@@ -1,0 +1,9 @@
+org.openmrs
+org.openmrs.api
+org.openmrs.api.hibernate
+org.openmrs.api.jdbc
+org.openmrs.context
+org.openmrs.context.jdbc
+org.openmrs.formentry
+org.openmrs.formentry.web
+org.openmrs.util

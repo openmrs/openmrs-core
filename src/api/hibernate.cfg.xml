@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+	"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+
+	<session-factory>
+	
+		<property name="hibernate.connection.driver_class">
+			com.mysql.jdbc.Driver
+		</property>
+		<property name="hibernate.connection.url">
+			jdbc:mysql://localhost:3306/amrs
+		</property>
+		<property name="hibernate.connection.username">test</property>
+		<property name="hibernate.connection.password">test</property>
+		<!--
+		<property name="hibernate.connection.datasource">java:comp/env/jdbc/openmrs</property>
+		<property name="hibernate.cglib.use_reflection_optimizer">true</property>
+		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+		<property name="hibernate.show_sql">false</property>
+		-->
+		<!--  <property name="hibernate.cache.provider_class">net.sf.hibernate.cache.EhCacheProvider</property> -->
+
+		<mapping
+			resource="org/openmrs/api/hibernate/ComplexObs.hbm.xml" />
+		<mapping resource="org/openmrs/api/hibernate/Concept.hbm.xml" />
+		<mapping
+			resource="org/openmrs/api/hibernate/ConceptAnswer.hbm.xml" />
+		<mapping
+			resource="org/openmrs/api/hibernate/ConceptClass.hbm.xml" />
+		<mapping
+			resource="org/openmrs/api/hibernate/ConceptDatatype.hbm.xml" />
+		<mapping
+			resource="org/openmrs/api/hibernate/ConceptName.hbm.xml" />
+		<mapping
+			resource="org/openmrs/api/hibernate/ConceptNumeric.hbm.xml" />
+		<mapping
+			resource="org/openmrs/api/hibernate/ConceptSet.hbm.xml" />
+		<mapping
+			resource="org/openmrs/api/hibernate/ConceptSynonym.hbm.xml" />
+		<mapping
+			resource="org/openmrs/api/hibernate/ConceptWord.hbm.xml" />
+		<mapping resource="org/openmrs/api/hibernate/Drug.hbm.xml" />
+		<mapping
+			resource="org/openmrs/api/hibernate/DrugIngredient.hbm.xml" />
+		<mapping resource="org/openmrs/api/hibernate/DrugOrder.hbm.xml" />
+		<mapping resource="org/openmrs/api/hibernate/Encounter.hbm.xml" />
+		<mapping
+			resource="org/openmrs/api/hibernate/EncounterType.hbm.xml" />
+		<mapping resource="org/openmrs/api/hibernate/Field.hbm.xml" />
+		<mapping
+			resource="org/openmrs/api/hibernate/FieldAnswer.hbm.xml" />
+		<mapping resource="org/openmrs/api/hibernate/FieldType.hbm.xml" />
+		<mapping resource="org/openmrs/api/hibernate/Form.hbm.xml" />
+		<mapping resource="org/openmrs/api/hibernate/FormField.hbm.xml" />
+		<mapping resource="org/openmrs/api/hibernate/Location.hbm.xml" />
+		<mapping resource="org/openmrs/api/hibernate/MimeType.hbm.xml" />
+		<mapping resource="org/openmrs/api/hibernate/Obs.hbm.xml" />
+		<mapping resource="org/openmrs/api/hibernate/Order.hbm.xml" />
+		<mapping resource="org/openmrs/api/hibernate/OrderType.hbm.xml" />
+		<mapping resource="org/openmrs/api/hibernate/Patient.hbm.xml" />
+		<mapping
+			resource="org/openmrs/api/hibernate/PatientAddress.hbm.xml" />
+		<mapping
+			resource="org/openmrs/api/hibernate/PatientIdentifier.hbm.xml" />
+		<mapping
+			resource="org/openmrs/api/hibernate/PatientIdentifierType.hbm.xml" />
+		<mapping
+			resource="org/openmrs/api/hibernate/PatientName.hbm.xml" />
+		<mapping resource="org/openmrs/api/hibernate/Privilege.hbm.xml" />
+		<mapping resource="org/openmrs/api/hibernate/Role.hbm.xml" />
+		<mapping resource="org/openmrs/api/hibernate/Tribe.hbm.xml" />
+		<mapping resource="org/openmrs/api/hibernate/User.hbm.xml" />
+
+	</session-factory>
+
+</hibernate-configuration>

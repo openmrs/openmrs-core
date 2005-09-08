@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="org.openmrs.Form" 
+    table="form"
+>
+
+    <id
+        name="formId"
+        type="int"
+        column="form_id"
+        unsaved-value="0"
+    >
+        <generator class="identity" />
+    </id>
+
+    <property
+        name="name"
+        type="java.lang.String"
+        column="name"
+        not-null="true"
+        length="50"
+    />
+    <property
+        name="version"
+        type="java.lang.String"
+        column="version"
+        not-null="true"
+        length="50"
+    />
+    <property
+        name="description"
+        type="java.lang.String"
+        column="description"
+        length="2147483647"
+    />
+    <property
+        name="schemaNamespace"
+        type="java.lang.String"
+        column="schema_namespace"
+        length="255"
+    />
+    <property
+        name="definition"
+        type="java.lang.String"
+        column="definition"
+        length="2147483647"
+    />
+    <property
+        name="retired"
+        type="boolean"
+        column="retired"
+        length="1"
+    />
+    <property
+        name="dateChanged"
+        type="java.util.Date"
+        column="date_changed"
+        length="19"
+    />
+    <property
+        name="dateCreated"
+        type="java.util.Date"
+        column="date_created"
+        not-null="true"
+        length="19"
+    />
+
+    <!-- Associations -->
+  
+    <!-- bi-directional one-to-many association to FormField -->
+    <set
+        name="formFields"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="form_id" />
+        </key>
+        <one-to-many 
+            class="org.openmrs.FormField"
+        />
+    </set>
+    <!-- bi-directional many-to-one association to User -->
+    <many-to-one
+        name="userByCreator"
+        class="org.openmrs.User"
+        not-null="true"
+    >
+        <column name="creator" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to User -->
+    <many-to-one
+        name="userByChangedBy"
+        class="org.openmrs.User"
+        not-null="true"
+    >
+        <column name="changed_by" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="properties">
+
+    <!-- Load user overrides -->
+    <property file="${user.home}/.${ant.project.name}-build.properties"/>
+    <property file="${user.home}/.build.properties"/>
+
+	<!-- Base definitions -->
+	<property file="build.properties" />
+
+    <!-- Library versions and JARs -->
+    <property name="lib.dir" location="lib" />
+    <property file="${lib.dir}/lib.properties" />
+
+	<!-- Properties for running unit tests with tomcat -->
+    <property name="tomcat.server" value="localhost" />
+	<property name="tomcat.port" value="9080" />
+    <property name="tomcat.manager.url" value="http://${tomcat.server}:${tomcat.port}/manager" />
+    <property name="tomcat.username" value="test" />
+    <property name="tomcat.password" value="test" />
+
+    <!-- Defaults for database connection -->
+    <property name="database.dir" value="${mysql.dir}" />
+    <property name="database.type" value="mysql" />
+    <property name="database.name" value="amrs" />
+    <property name="database.host" value="localhost" />
+    <property name="database.username" value="test" />
+    <property name="database.password" value="blah" />
+    <property name="database.driver_class" value="com.mysql.jdbc.Driver" />
+    <property name="database.url" 
+        value="jdbc:${database.type}://${database.host}/${database.name}?autoReconnect=true&amp;amp;useUnicode=true&amp;amp;characterEncoding=utf-8" />
+    <property name="database.show_sql" value="true" />
+    <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
+    
+    <!-- Environment properties -->
+    <property environment="env"/>
+    <property name="env.COMPUTERNAME" value="${env.HOSTNAME}"/>
+    <property name="tomcat.home" value="${env.CATALINA_HOME}"/>    
+
+    <!-- =================================================================== -->
+    <!-- Classpaths                                                          -->
+    <!-- =================================================================== -->
+   
+    <!-- Hibernate -->
+    <path id="hibernate.classpath">
+        <fileset dir="${hibernate.dir}" includes="*.jar" />
+        <fileset dir="${hibernate.dir}/lib" includes="*.jar" />
+		<fileset dir="${database.dir}" includes="*.jar" />
+        <pathelement location="${database.jar}"/> 
+        <pathelement location="${commons-beanutils.jar}" />
+        <pathelement location="${commons-lang.jar}" />
+        <path location="${build.dir}/api/classes" />
+    </path>
+    
+    <!-- API -->
+    <path id="api.compile.classpath">
+		<fileset dir="${src.dir}/api" includes="**/*.java" />
+		<fileset dir="${commons-logging.dir}" includes="*.jar" />
+		<fileset dir="${hibernate.dir}" includes="*.jar" />
+		<fileset dir="${log4j.dir}" includes="*.jar" />
+		<fileset dir="${spring.dir}" includes="*.jar" />
+    </path>
+    <path id="api.test.classpath">
+        <path refid="api.compile.classpath"/>
+		<fileset dir="${test.dir}/api" includes="**/*.java" />
+		<fileset dir="${junit.dir}" includes="*.jar" />
+    </path>
+        
+    <!-- Web -->
+    <path id="web.compile.classpath">
+		<pathelement location="${dist.dir}/${webapp.name}-api.jar" />
+		<fileset dir="${basedir}/web" includes="**/*" />
+		<!-- @todo will need to add other dependencies here -->
+		<fileset dir="${jstl.dir}" includes="*.jar" />
+		<fileset dir="${spring.dir}" includes="*.jar" />
+    </path>
+
+</project>

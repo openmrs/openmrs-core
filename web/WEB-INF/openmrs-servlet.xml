@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+	<!-- Hibernate SessionFactory -->
+	<!-- 
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="configLocation" value="hibernate.cfg.xml" />
+	</bean>
+	-->
+
+	<!-- Transaction manager for a single Hibernate SessionFactory (alternative to JTA) -->
+	<!-- 
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	-->
+
+	<!-- ### for ***EVERY*** domain object! Ouch!
+		<bean id="myProductDao" class="product.ProductDaoImpl">
+		<property name="sessionFactory">
+		<ref bean="mySessionFactory" />
+		</property>
+		<property name="exampleParam">
+		<value>someValue</value>
+		</property>
+		</bean>
+	-->
+	
+	<!--  Default context -->
+	<!-- 
+	<bean id="defaultContextTarget" class="org.openmrs.context.HibernateContext">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	
+	<bean id="defaultContext"
+		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="target" ref="defaultContextTarget" />
+		<property name="transactionAttributes">
+			<props>
+				<prop key="*">PROPAGATION_REQUIRED,readOnly</prop>
+			</props>
+		</property>
+	</bean>
+	-->
+	
+	<bean id="defaultContext"
+		class="org.openmrs.context.IbatisContext" />
+
+	<!--  User service -->
+	<!-- 
+	<bean id="userServiceTarget"
+		class="org.openmrs.api.hibernate.HibernateUserService">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+
+	<bean id="userService"
+		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="target" ref="userServiceTarget" />
+		<property name="transactionAttributes">
+			<props>
+				<prop key="get*">PROPAGATION_REQUIRED,readOnly</prop>
+				<prop key="find*">PROPAGATION_REQUIRED,readOnly</prop>
+				<prop key="load*">PROPAGATION_REQUIRED,readOnly</prop>
+				<prop key="store*">PROPAGATION_REQUIRED</prop>
+			</props>
+		</property>
+	</bean>
+	-->
+
+	<!-- 
+	<bean id="patientServiceTarget"
+		class="org.openmrs.api.hibernate.HibernatePatientService">
+		<property name="sessionFactory"><ref bean="sessionFactory" /></property>
+	</bean>
+	
+	<bean id="patientService"
+		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="target" ref="patientServiceTarget" />
+		<property name="transactionAttributes">
+			<props>
+				<prop key="get*">PROPAGATION_REQUIRED,readOnly</prop>
+				<prop key="find*">PROPAGATION_REQUIRED,readOnly</prop>
+				<prop key="load*">PROPAGATION_REQUIRED,readOnly</prop>
+				<prop key="store*">PROPAGATION_REQUIRED</prop>
+			</props>
+		</property>
+	</bean>
+	-->
+
+	<!--
+	<bean id="loginValidator" class="org.openmrs.web.LoginValidator" />
+	<bean id="loginForm" class="org.openmrs.web.LoginController">
+		<property name="commandName" value="credentials" />
+		<property name="commandClass" value="org.openmrs.web.Credentials" />
+		<property name="validator"><ref bean="loginValidator" /></property>
+		<property name="formView" value="login/login" />
+		<property name="successView" value="/formentry/welcome" />
+	</bean>
+
+	<bean id="patientSearchValidator"
+		class="org.openmrs.formentry.web.PatientSearchValidator" />
+	<bean id="patientSearchForm"
+		class="org.openmrs.formentry.web.PatientSearchFormController">
+		<property name="commandName" value="query" />
+		<property name="commandClass"
+			value="org.openmrs.formentry.web.SimpleQueryCommand" />
+		<property name="validator"><ref bean="patientSearchValidator" /></property>
+		<property name="formView" value="formentry/patientSearch" />
+		<property name="successView" value="formentry/selectPatient" />
+	</bean>
+
+	<bean id="selectPatientValidator"
+		class="org.openmrs.formentry.web.SelectPatientValidator" />
+	<bean id="selectPatientForm"
+		class="org.openmrs.formentry.web.SelectPatientFormController">
+		<property name="commandName" value="query" />
+		<property name="commandClass"
+			value="org.openmrs.formentry.web.SimpleQueryCommand" />
+		<property name="validator"><ref bean="selectPatientValidator" /></property>
+		<property name="formView" value="/formentry/selectPatient" />
+		<property name="successView" value="selectForm.form" />
+	</bean>
+
+	<bean id="urlMapping"
+		class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="interceptors">
+			<list>
+				<ref bean="openSessionInViewInterceptor" />
+			</list>
+		</property>
+		<property name="mappings">
+			<props>
+				<prop key="/login.form">loginForm</prop>
+				<prop key="/formentry/patientSearch.form">patientSearchForm</prop>
+				<prop key="/formentry/selectPatient.form">selectPatientForm</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="messageSource"
+		class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basename"><value>message</value></property>
+	</bean>
+
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.JstlView">
+		<property name="prefix" value="/WEB-INF/view/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+	<bean name="openSessionInViewInterceptor"
+		class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor">
+		<property name="sessionFactory"><ref bean="sessionFactory" /></property>
+	</bean>
+	-->
+
+	<!--
+		- This bean resolves specific types of exception to corresponding error views.
+		- The default behaviour of DispatcherServlet is to propagate all exceptions to the
+		- servlet container: This will happen here with all other types of exception.
+	-->
+	<bean id="exceptionResolver"
+		class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+		<property name="exceptionMappings">
+			<props>
+				<prop key="org.springframework.dao.DataAccessException">
+					dataAccessFailure
+				</prop>
+				<prop key="org.springframework.transaction.TransactionException">
+					dataAccessFailure
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+</beans>

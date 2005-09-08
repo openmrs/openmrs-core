@@ -1,0 +1,369 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs">
+
+	<class name="User" table="users">
+
+		<id name="userId" type="int" column="user_id"
+			unsaved-value="0">
+			<generator class="identity" />
+		</id>
+
+		<property name="username" type="java.lang.String"
+			column="username" length="50" />
+		<property name="firstName" type="java.lang.String"
+			column="first_name" length="50" />
+		<property name="middleName" type="java.lang.String"
+			column="middle_name" length="255" />
+		<property name="lastName" type="java.lang.String"
+			column="last_name" length="50" />
+		<property name="password" type="java.lang.String"
+			column="password" length="50" insert="false" update="false" />
+		<property name="dateCreated" type="java.util.Date"
+			column="date_created" not-null="true" length="19" />
+		<property name="dateChanged" type="java.util.Date"
+			column="date_changed" length="19" />
+		<property name="voided" type="java.lang.Boolean" column="voided"
+			length="1" />
+		<property name="dateVoided" type="java.util.Date"
+			column="date_voided" length="19" />
+
+		<!-- Associations -->
+
+		<!-- bi-directional many-to-many association to Role -->
+		<set name="roles" table="user_role" lazy="true" cascade="none">
+			<key>
+				<column name="user_id" />
+			</key>
+			<many-to-many class="Role">
+				<column name="role" />
+			</many-to-many>
+		</set>
+
+		<!--
+		<# bi-directional one-to-many association to Patient -#>
+		<set name="patientsByCreator" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="creator" />
+			</key>
+			<one-to-many class="Patient" />
+		</set>
+		<# bi-directional one-to-many association to Patient -#>
+		<set name="patientsByVoidedBy" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="voided_by" />
+			</key>
+			<one-to-many class="Patient" />
+		</set>
+		<# bi-directional one-to-many association to ConceptDatatype -#>
+		<set name="conceptDatatypes" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="creator" />
+			</key>
+			<one-to-many class="ConceptDatatype" />
+		</set>
+		<# bi-directional one-to-many association to PatientAddress -#>
+		<set name="patientAddresses" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="creator" />
+			</key>
+			<one-to-many class="PatientAddress" />
+		</set>
+		<# bi-directional one-to-many association to Form -#>
+		<set name="formsByCreator" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="creator" />
+			</key>
+			<one-to-many class="Form" />
+		</set>
+		<# bi-directional one-to-many association to Form -#>
+		<set name="formsByChangedBy" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="changed_by" />
+			</key>
+			<one-to-many class="Form" />
+		</set>
+		<# bi-directional one-to-many association to Concept -#>
+		<set name="conceptsByChangedBy" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="changed_by" />
+			</key>
+			<one-to-many class="Concept" />
+		</set>
+		<# bi-directional one-to-many association to Concept -#>
+		<set name="conceptsByCreator" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="creator" />
+			</key>
+			<one-to-many class="Concept" />
+		</set>
+		<# bi-directional one-to-many association to Order -#>
+		<set name="ordersByOrderer" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="orderer" />
+			</key>
+			<one-to-many class="Order" />
+		</set>
+		<# bi-directional one-to-many association to Order -#>
+		<set name="ordersByDiscontinuedBy" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="discontinued_by" />
+			</key>
+			<one-to-many class="Order" />
+		</set>
+		<# bi-directional one-to-many association to Order -#>
+		<set name="ordersByCreator" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="creator" />
+			</key>
+			<one-to-many class="Order" />
+		</set>
+		<# bi-directional one-to-many association to ConceptClass -#>
+		<set name="conceptClasses" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="creator" />
+			</key>
+			<one-to-many class="ConceptClass" />
+		</set>
+		<# bi-directional one-to-many association to ConceptSynonym -#>
+		<set name="conceptSynonyms" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="creator" />
+			</key>
+			<one-to-many class="ConceptSynonym" />
+		</set>
+		<# bi-directional one-to-many association to DrugOrder -#>
+		<set name="drugOrders" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="creator" />
+			</key>
+			<one-to-many class="DrugOrder" />
+		</set>
+		<# bi-directional one-to-many association to PatientIdentifierType -#>
+		<set name="patientIdentifierTypes" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="creator" />
+			</key>
+			<one-to-many class="PatientIdentifierType" />
+		</set>
+		<# bi-directional one-to-many association to ConceptAnswer -#>
+		<set name="conceptAnswers" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="creator" />
+			</key>
+			<one-to-many class="ConceptAnswer" />
+		</set>
+		<# bi-directional one-to-many association to FieldType -#>
+		<set name="fieldTypes" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="creator" />
+			</key>
+			<one-to-many class="FieldType" />
+		</set>
+		<# bi-directional one-to-many association to Location -#>
+		<set name="locations" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="creator" />
+			</key>
+			<one-to-many class="Location" />
+		</set>
+		<# bi-directional one-to-many association to PatientIdentifier -#>
+		<set name="patientIdentifiers" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="creator" />
+			</key>
+			<one-to-many class="PatientIdentifier" />
+		</set>
+		<# bi-directional one-to-many association to Ob -#>
+		<set name="obsByCreator" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="creator" />
+			</key>
+			<one-to-many class="Obs" />
+		</set>
+		<# bi-directional one-to-many association to Ob -#>
+		<set name="obsByVoidedBy" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="voided_by" />
+			</key>
+			<one-to-many class="Obs" />
+		</set>
+		<# bi-directional one-to-many association to Encounter -#>
+		<set name="encountersByCreatorId" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="creator_id" />
+			</key>
+			<one-to-many class="Encounter" />
+		</set>
+		<# bi-directional one-to-many association to Encounter -#>
+		<set name="encountersByProviderId" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="provider_id" />
+			</key>
+			<one-to-many class="Encounter" />
+		</set>
+		<# bi-directional one-to-many association to Drug -#>
+		<set name="drugs" lazy="true" inverse="true" cascade="none">
+			<key>
+				<column name="creator" />
+			</key>
+			<one-to-many class="Drug" />
+		</set>
+		<# bi-directional one-to-many association to FormField -#>
+		<set name="formFieldsByChangedBy" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="changed_by" />
+			</key>
+			<one-to-many class="FormField" />
+		</set>
+		<# bi-directional one-to-many association to FormField -#>
+		<set name="formFieldsByCreator" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="creator" />
+			</key>
+			<one-to-many class="FormField" />
+		</set>
+		<# bi-directional one-to-many association to ConceptNumeric -#>
+		<set name="conceptNumericsByCreator" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="creator" />
+			</key>
+			<one-to-many class="ConceptNumeric" />
+		</set>
+		<# bi-directional one-to-many association to ConceptNumeric -#>
+		<set name="conceptNumericsByChangedBy" lazy="true"
+			inverse="true" cascade="none">
+			<key>
+				<column name="changed_by" />
+			</key>
+			<one-to-many class="ConceptNumeric" />
+		</set>
+		<# bi-directional one-to-many association to PatientName -#>
+		<set name="patientNames" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="creator" />
+			</key>
+			<one-to-many class="PatientName" />
+		</set>
+		<# bi-directional one-to-many association to ConceptSet -#>
+		<set name="conceptSets" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="creator" />
+			</key>
+			<one-to-many class="ConceptSet" />
+		</set>
+		<# bi-directional one-to-many association to EncounterType -#>
+		<set name="encounterTypes" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="creator" />
+			</key>
+			<one-to-many class="EncounterType" />
+		</set>
+		<# bi-directional one-to-many association to FieldAnswer -#>
+		<set name="fieldAnswers" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="creator" />
+			</key>
+			<one-to-many class="FieldAnswer" />
+		</set>
+		<# bi-directional one-to-many association to User -#>
+		<set name="usersByChangedBy" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="changed_by" />
+			</key>
+			<one-to-many class="User" />
+		</set>
+		<# bi-directional many-to-one association to User -#>
+		<many-to-one name="userByChangedBy" class="User"
+			not-null="true">
+			<column name="changed_by" />
+		</many-to-one>
+		<# bi-directional one-to-many association to User -#>
+		<set name="usersByVoidedBy" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="voided_by" />
+			</key>
+			<one-to-many class="User" />
+		</set>
+		<# bi-directional many-to-one association to User -#>
+		<many-to-one name="userByVoidedBy" class="User"
+			not-null="true">
+			<column name="voided_by" />
+		</many-to-one>
+		<# bi-directional one-to-many association to User -#>
+		<set name="usersByCreator" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="creator" />
+			</key>
+			<one-to-many class="User" />
+		</set>
+		<# bi-directional many-to-one association to User -#>
+		<many-to-one name="userByCreator" class="User"
+			not-null="true">
+			<column name="creator" />
+		</many-to-one>
+		<# bi-directional one-to-many association to Field -#>
+		<set name="fieldsByCreator" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="creator" />
+			</key>
+			<one-to-many class="Field" />
+		</set>
+		<# bi-directional one-to-many association to Field -#>
+		<set name="fieldsByChangedBy" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="changed_by" />
+			</key>
+			<one-to-many class="Field" />
+		</set>
+		<# bi-directional one-to-many association to OrderType -#>
+		<set name="orderTypes" lazy="true" inverse="true"
+			cascade="none">
+			<key>
+				<column name="creator" />
+			</key>
+			<one-to-many class="OrderType" />
+		</set>
+		-->
+
+	</class>
+
+</hibernate-mapping>

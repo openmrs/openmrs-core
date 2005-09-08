@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+	<class name="org.openmrs.ComplexObs" table="complex_obs">
+
+		<id name="obsId" type="int" column="obs_id">
+			<generator class="assigned" />
+		</id>
+
+		<property name="urn" type="java.lang.String" column="urn"
+			length="65535" />
+		<property name="complexValue" type="java.lang.String"
+			column="complex_value" length="2147483647" />
+
+		<!-- Associations -->
+
+		<!-- bi-directional one-to-one association to Obs -->
+		<one-to-one name="obs" class="org.openmrs.Obs" outer-join="auto"
+			constrained="true" />
+
+	</class>
+
+</hibernate-mapping>

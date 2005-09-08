@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+	version="2.4">
+
+	<servlet>
+		<servlet-name>openmrs</servlet-name>
+		<servlet-class>
+			org.springframework.web.servlet.DispatcherServlet
+		</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>openmrs</servlet-name>
+		<url-pattern>*.html</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>openmrs</servlet-name>
+		<url-pattern>*.form</url-pattern>
+	</servlet-mapping>
+
+	<welcome-file-list>
+		<welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
+
+	<taglib>
+		<taglib-uri>/core-rt</taglib-uri>
+		<taglib-location>/WEB-INF/taglibs/c-rt.tld</taglib-location>
+	</taglib>
+	
+	<taglib>
+		<taglib-uri>/openmrs</taglib-uri>
+		<taglib-location>/WEB-INF/taglibs/openmrs.tld</taglib-location>
+	</taglib>
+	
+	<taglib>
+		<taglib-uri>/page</taglib-uri>
+		<taglib-location>/WEB-INF/taglibs/page.tld</taglib-location>
+	</taglib>
+
+	<taglib>
+		<taglib-uri>/request</taglib-uri>
+		<taglib-location>/WEB-INF/taglibs/request.tld</taglib-location>
+	</taglib>
+
+	<taglib>
+		<taglib-uri>/response</taglib-uri>
+		<taglib-location>/WEB-INF/taglibs/response.tld</taglib-location>
+	</taglib>
+
+	<taglib>
+		<taglib-uri>/spring</taglib-uri>
+		<taglib-location>/WEB-INF/taglibs/spring.tld</taglib-location>
+	</taglib>
+
+	<error-page>
+		<exception-type>java.lang.Exception</exception-type>
+		<!-- Displays a stack trace -->
+		<location>/WEB-INF/view/uncaughtException.jsp</location>
+	</error-page>
+
+	<resource-ref>
+		<res-ref-name>jdbc/openmrs</res-ref-name>
+		<res-type>javax.sql.DataSource</res-type>
+		<res-auth>Container</res-auth>
+	</resource-ref>
+
+	<!--
+		<servlet>
+		<servlet-name>default</servlet-name>
+		<servlet-class>org.apache.catalina.servlets.DefaultServlet</servlet-class>
+		<init-param>
+		<param-name>debug</param-name>
+		<param-value>0</param-value>
+		</init-param>
+		<init-param>
+		<param-name>listings</param-name>
+		<param-value>true</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+		</servlet>
+
+		<servlet-mapping>
+		<servlet-name>myservlet</servlet-name>
+		<url-pattern>/path/for/servlet.html</url-pattern>
+		</servlet-mapping>
+
+		<session-config>
+		<session-timeout>30</session-timeout>
+		</session-config>
+
+		<mime-mapping>
+		<extension>zip</extension>
+		<mime-type>application/zip</mime-type>
+		</mime-mapping>
+
+		<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+		<welcome-file>index.htm</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
+		</welcome-file-list>
+	-->
+
+</web-app>
