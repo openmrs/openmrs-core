@@ -22,10 +22,6 @@ public class IbatisTest extends TestCase {
 		assertNotNull("user #1", user);
 	}
 	
-	public void testBen() {
-		assertEquals(true, false);
-	}
-	
 	public void tearDown() {
 	}
 	

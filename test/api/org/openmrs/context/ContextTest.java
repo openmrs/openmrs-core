@@ -1,4 +1,4 @@
-package org.openmrs.api.context;
+package org.openmrs.context;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

@@ -4,8 +4,8 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.openmrs.api.context.ContextTest;
 import org.openmrs.api.ibatis.IbatisTest;
+import org.openmrs.context.ContextTest;
 
 public class AllTests extends TestCase {
 
