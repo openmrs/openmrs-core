@@ -1,3 +1,11 @@
+Conventions
+-----------
+* Table names and attribute names use singular form whenever possible e.g. UserRole instead of UserRoles.  Users was chosen b/c "user" is a SQL reserved word.
 
-- composite keys (FooId and BarId) should get folded into single domain object
+* Follow Java bean specification whenever possible
 
+
+To Do
+-----
+* Fold composite key domain objects (FooId and BarId) into parent domain object -- e.g., ConceptSynonymId should be folded in ConceptSynonym.  See PatientIdentifier and/or PatientIdentifierType for example.
+ 
