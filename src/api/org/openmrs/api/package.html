@@ -14,8 +14,8 @@ For example:
   Context context = ContextFactory.getContext();
   PatientService ps = context.getPatientService();
 
-  // fetch patient with patientId 1
-  Pateint patient = ps.getPatient(new Long(1));
+  // fetch patient with identifier 3-4
+  Patient patient = ps.getPatientByIdentifier("3-4");
 </pre>
 </p>
 </body>

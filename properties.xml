@@ -20,7 +20,10 @@
     <property name="tomcat.password" value="test" />
     
     <!-- Documentation settings -->
-    <property name="doc.footer" value="" />
+    <property name="doc.title" value="${ant.project.name} API" />
+    <property name="doc.bottom" value="&lt;em&gt;&lt;small&gt;NOTE - these libraries are in active development and subject to change&lt;/small&gt;&lt;/em&gt;" />
+    <property name="doc.header" value="&lt;a href=&quot;http://www.openmrs.org&quot; target=_top&gt;&lt;img src=&quot;./openmrs-logo-small.gif&quot; border=0/&gt;&lt;/a&gt;" />
+    <property name="doc.footer" value="&lt;a href=&quot;http://www.openmrs.org&quot; target=_top&gt;${ant.project.name}&lt;/a&gt;" />
 
     <!-- Defaults for database connection -->
     <property name="database.dir" value="${mysql.dir}" />

@@ -56,19 +56,22 @@
 	</target>
 	
 	<target name="javadoc-api" description="generate api documentation">
+		<delete dir="${doc.dir}/api" />
+		<copy todir="${doc.dir}/api">
+			<fileset file="${metadata.dir}/images/openmrs-logo-small.gif" />
+		</copy>
 		<javadoc packagenames="org.openmrs.*"
 		         destdir="${doc.dir}/api"
                  author="true"
 		         version="true" 
-		         windowtitle="OpenMRS API">
+		         windowtitle="${doc.title}"
+			     header="${doc.header}"
+			     footer="${doc.footer}"
+			     bottom="${doc.bottom}">
 			<fileset dir="${src.dir}/api" defaultexcludes="yes">
 				<include name="org/openmrs/**/*.java" />
 				<exclude name="**/.svn" />
 			</fileset>
-			<doctitle><![CDATA[<h1>${doc.title}</h1>]]></doctitle>
-            <bottom><![CDATA[<small><em>${doc.bottom}</em></small>]]></bottom>
-            <tag name="todo" scope="all" description="To do:"/>
-            <link href="http://developer.java.sun.com/developer/products/xml/docs/api/"/>
 		</javadoc>
 	</target>
 
