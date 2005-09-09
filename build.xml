@@ -58,7 +58,6 @@
 	<target name="javadoc-api" description="generate api documentation">
 		<javadoc packagenames="org.openmrs.*"
 		         destdir="${doc.dir}/api"
-			     classpathref="api.compile.classpath"
                  author="true"
 		         version="true" 
 		         windowtitle="OpenMRS API">

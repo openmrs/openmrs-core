@@ -18,6 +18,9 @@
     <property name="tomcat.manager.url" value="http://${tomcat.server}:${tomcat.port}/manager" />
     <property name="tomcat.username" value="test" />
     <property name="tomcat.password" value="test" />
+    
+    <!-- Documentation settings -->
+    <property name="doc.footer" value="" />
 
     <!-- Defaults for database connection -->
     <property name="database.dir" value="${mysql.dir}" />
