@@ -54,6 +54,24 @@
             <fileset dir="${build.dir}/api" includes="**/*.jar" />
         </jar>
 	</target>
+	
+	<target name="javadoc-api" description="generate api documentation">
+		<javadoc packagenames="org.openmrs.*"
+		         destdir="${doc.dir}/api"
+			     classpathref="api.compile.classpath"
+                 author="true"
+		         version="true" 
+		         windowtitle="OpenMRS API">
+			<fileset dir="${src.dir}/api" defaultexcludes="yes">
+				<include name="org/openmrs/**/*.java" />
+				<exclude name="**/.svn" />
+			</fileset>
+			<doctitle><![CDATA[<h1>${doc.title}</h1>]]></doctitle>
+            <bottom><![CDATA[<small><em>${doc.bottom}</em></small>]]></bottom>
+            <tag name="todo" scope="all" description="To do:"/>
+            <link href="http://developer.java.sun.com/developer/products/xml/docs/api/"/>
+		</javadoc>
+	</target>
 
 	<target name="compile-api-tests" description="compile api tests">
 		<mkdir dir="${build.dir}/test/api" />
