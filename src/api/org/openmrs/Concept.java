@@ -35,8 +35,10 @@ public class Concept implements java.io.Serializable {
 	private Set conceptAnswersByConceptId;
 	private Set conceptAnswersByAnswerConcept;
 	private Set fields;
+	
 	private Set conceptWords;
 	private Set conceptSynonyms;
+
 	private Set drugIngredientsByConceptId;
 	private Set drugIngredientsByIngredientId;
 	private ConceptNumeric conceptNumeric;

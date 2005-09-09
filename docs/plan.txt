@@ -1,0 +1,3 @@
+
+- composite keys (FooId and BarId) should get folded into single domain object
+
