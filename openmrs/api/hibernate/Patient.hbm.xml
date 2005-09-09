@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs">
+
+	<class name="Patient" table="patient">
+
+		<id name="patientId" type="int" column="patient_id"
+			unsaved-value="0">
+			<generator class="identity" />
+		</id>
+
+		<property name="gender" type="java.lang.String" column="gender"
+			not-null="true" length="50" />
+		<property name="race" type="java.lang.String" column="race"
+			length="50" />
+		<property name="birthdate" type="java.util.Date"
+			column="birthdate" length="10" />
+		<property name="birthdateEstimated" type="boolean"
+			column="birthdate_estimated" length="1" />
+		<property name="birthplace" type="java.lang.String"
+			column="birthplace" length="50" />
+		<property name="citizenship" type="java.lang.String"
+			column="citizenship" length="50" />
+		<property name="mothersName" type="java.lang.String"
+			column="mothers_name" length="50" />
+		<property name="civilStatus" type="int" column="civil_status"
+			length="11" />
+		<property name="deathDate" type="java.util.Date"
+			column="death_date" length="19" />
+		<property name="causeOfDeath" type="java.lang.String"
+			column="cause_of_death" length="255" />
+		<property name="healthDistrict" type="java.lang.String"
+			column="health_district" length="255" />
+		<property name="healthCenter" type="int" column="health_center"
+			length="11" />
+		<property name="dateCreated" type="java.util.Date"
+			column="date_created" not-null="true" length="19" />
+		<property name="voided" type="java.lang.Boolean" column="voided"
+			length="1" />
+		<property name="dateVoided" type="java.util.Date"
+			column="date_voided" length="19" />
+		<property name="voidReason" type="java.lang.String"
+			column="void_reason" length="255" />
+
+		<!-- Associations -->
+
+		<!-- bi-directional one-to-many association to PatientAddress -->
+		<set name="patientAddresses" lazy="true" inverse="true"
+			cascade="none">
+			<key column="patient_id" />
+			<one-to-many class="PatientAddress" />
+		</set>
+		<!-- bi-directional one-to-many association to Encounter -->
+		<set name="encounters" lazy="true" inverse="true" cascade="all">
+			<key column="patient_id" />
+			<one-to-many class="Encounter" />
+		</set>
+		<!-- bi-directional one-to-many association to PatientName -->
+		<set name="names" lazy="false" inverse="true" 
+			cascade="all">
+			<key column="patient_id" />
+			<one-to-many class="PatientName" />
+		</set>
+		<!-- bi-directional one-to-many association to PatientIdentifier -->
+		<set name="patientIdentifiers" lazy="false" inverse="true"
+			cascade="none">
+			<key column="patient_id" />
+			<one-to-many class="PatientIdentifier" />
+		</set>
+		<!-- bi-directional one-to-many association to Obs -->
+		<set name="obs" lazy="true" inverse="true"
+			cascade="save-update">
+			<key column="patient_id" />
+			<one-to-many class="Obs" />
+		</set>
+		<!-- bi-directional many-to-one association to User -->
+		<many-to-one name="userByVoidedBy" class="User">
+			<column name="voided_by" />
+		</many-to-one>
+		<!-- bi-directional many-to-one association to User -->
+		<many-to-one name="creator" class="User" not-null="true">
+			<column name="creator" />
+		</many-to-one>
+
+	</class>
+
+</hibernate-mapping>

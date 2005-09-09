@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs">
+
+	<class name="Tribe" table="tribe">
+
+		<id name="tribeId" type="int" column="tribe_id">
+			<generator class="assigned" />
+		</id>
+
+		<property name="retired" type="boolean" column="retired"
+			length="1" />
+		<property name="name" type="java.lang.String" column="name"
+			not-null="true" length="50" />
+
+		<!-- Associations -->
+
+		<!-- bi-directional one-to-many association to Patient -->
+		<set name="patients" lazy="true" inverse="true"
+			cascade="none">
+			<key column="tribe" />
+			<one-to-many class="Patient" />
+		</set>
+
+	</class>
+	
+</hibernate-mapping>

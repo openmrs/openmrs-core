@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs">
+
+	<class name="Privilege" table="privilege">
+
+		<id name="privilege" type="java.lang.String"
+			column="privilege" length="250">
+			<generator class="assigned" />
+		</id>
+
+		<property name="description" type="java.lang.String"
+			column="description" not-null="true" length="250" />
+
+		<!-- Associations -->
+
+		<!-- bi-directional many-to-many association to Role -->
+		<set name="roles" lazy="true" inverse="true"
+			cascade="none" table="role_privilege">
+			<key>
+				<column name="privilege" />
+			</key>
+			<many-to-many class="Role">
+				<column name="role" />
+			</many-to-many>
+		</set>
+
+	</class>
+</hibernate-mapping>
