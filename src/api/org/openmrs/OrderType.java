@@ -3,7 +3,7 @@ package org.openmrs;
 import java.util.Date;
 
 /**
- * OrderType 
+ * OrderType
  */
 public class OrderType implements java.io.Serializable {
 
