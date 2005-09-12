@@ -148,7 +148,7 @@
 <delete id="deletePatient" parameterClass="org.openmrs.Patient">
 	DELETE FROM patient WHERE patient_id = #patientId#
 </delete>
-
+ 
 <update id="voidPatient" parameterClass="org.openmrs.Patient">
 	UPDATE
 		patient
