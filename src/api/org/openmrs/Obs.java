@@ -12,8 +12,10 @@ public class Obs implements java.io.Serializable {
 	// Fields
 
 	private Integer obsId;
+	private Concept conceptId;
 	private Date obsDatetime;
 	private Integer obsGroupId;
+	private Concept valueCoded;
 	private Integer valueGroupId;
 	private Boolean valueBoolean;
 	private Date valueDatetime;
@@ -21,19 +23,16 @@ public class Obs implements java.io.Serializable {
 	private String valueModifier;
 	private String valueText;
 	private String comment;
-	private Date dateCreated;
-	private Boolean voided;
-	private Date dateVoided;
-	private String voidReason;
 	private Patient patient;
-	private Concept conceptByConceptId;
-	private Concept conceptByValueCoded;
 	private Order order;
 	private Location location;
-	private ComplexObs complexObs;
 	private Encounter encounter;
-	private User userByCreator;
-	private User userByVoidedBy;
+	private User creator;
+	private Date dateCreated;
+	private Boolean voided;
+	private User voidedBy;
+	private Date dateVoided;
+	private String voidReason;
 
 	// Constructors
 
@@ -46,6 +45,13 @@ public class Obs implements java.io.Serializable {
 		this.obsId = obsId;
 	}
 
+	/** determine if the current observation is complex
+	 *  --overridden in extending ComplexObs.java class
+	 */
+	public Boolean isComplexObs() {
+		return false;
+	}
+	
 	// Property accessors
 
 	/**
@@ -216,23 +222,23 @@ public class Obs implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	public Concept getConceptByConceptId() {
-		return this.conceptByConceptId;
+	public Concept getConceptId() {
+		return this.conceptId;
 	}
 
-	public void setConceptByConceptId(Concept conceptByConceptId) {
-		this.conceptByConceptId = conceptByConceptId;
+	public void setConceptId(Concept conceptId) {
+		this.conceptId = conceptId;
 	}
 
 	/**
 	 * 
 	 */
-	public Concept getConceptByValueCoded() {
-		return this.conceptByValueCoded;
+	public Concept getvalueCoded() {
+		return this.valueCoded;
 	}
 
-	public void setConceptByValueCoded(Concept conceptByValueCoded) {
-		this.conceptByValueCoded = conceptByValueCoded;
+	public void setValueCoded(Concept valueCoded) {
+		this.valueCoded = valueCoded;
 	}
 
 	/**
@@ -260,17 +266,6 @@ public class Obs implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	public ComplexObs getComplexObs() {
-		return this.complexObs;
-	}
-
-	public void setComplexObs(ComplexObs complexObs) {
-		this.complexObs = complexObs;
-	}
-
-	/**
-	 * 
-	 */
 	public Encounter getEncounter() {
 		return this.encounter;
 	}
@@ -282,23 +277,23 @@ public class Obs implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	public User getUserByCreator() {
-		return this.userByCreator;
+	public User getCreator() {
+		return this.creator;
 	}
 
-	public void setUserByCreator(User userByCreator) {
-		this.userByCreator = userByCreator;
+	public void setUserByCreator(User creator) {
+		this.creator = creator;
 	}
 
 	/**
 	 * 
 	 */
-	public User getUserByVoidedBy() {
-		return this.userByVoidedBy;
+	public User getVoidedBy() {
+		return this.voidedBy;
 	}
 
-	public void setUserByVoidedBy(User userByVoidedBy) {
-		this.userByVoidedBy = userByVoidedBy;
+	public void setCoidedBy(User voidedBy) {
+		this.voidedBy = voidedBy;
 	}
 
 }
