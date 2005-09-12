@@ -20,7 +20,7 @@ public class OrderType implements java.io.Serializable {
 	// Constructors
 
 	/** default constructor */
-	public OrderType() { 
+	public OrderType() {
 	}
 
 	/** constructor with id */
