@@ -1,7 +1,6 @@
 package org.openmrs;
 
 import java.util.Date;
-import java.util.Set;
 
 /**
  * OrderType 
@@ -17,7 +16,6 @@ public class OrderType implements java.io.Serializable {
 	private String description;
 	private Date dateCreated;
 	private User creator;
-	private Set orders;
 
 	// Constructors
 
@@ -85,17 +83,6 @@ public class OrderType implements java.io.Serializable {
 
 	public void setCreator(User creator) {
 		this.creator = creator;
-	}
-
-	/**
-	 * 
-	 */
-	public Set getOrders() {
-		return this.orders;
-	}
-
-	public void setOrders(Set orders) {
-		this.orders = orders;
 	}
 
 }
