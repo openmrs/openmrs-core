@@ -46,7 +46,7 @@ public class Obs implements java.io.Serializable {
 	}
 
 	/** determine if the current observation is complex
-	 *  --overridden in extending ComplexObs.java class
+	 *  --overridden in extending ComplexObs class
 	 */
 	public Boolean isComplexObs() {
 		return false;
