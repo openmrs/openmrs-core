@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="org.openmrs.Tribe">
+ 
+<!-- ************************************************************ -->
+<!-- ** Creation                                               ** -->
+<!-- ************************************************************ -->
+
+<insert id="createTribe" parameterClass="org.openmrs.Tribe">
+	INSERT INTO tribe
+		(
+		name
+		)
+	VALUES
+		(
+		#name#
+		);
+</insert>
+
+<!-- ************************************************************ -->
+<!-- ** Read                                                   ** -->
+<!-- ************************************************************ -->
+
+<resultMap id="tribeResult" class="org.openmrs.Tribe">
+	<result property="tribe" column="tribe" />
+	<result property="name" column="name" />
+	<result property="retired" column="retired" />
+</resultMap>
+
+<select id="getTribe" parameterClass="int" resultMap="tribeResult">
+	SELECT * FROM tribe WHERE tribe_id = #value#
+</select>
+
+<!-- ************************************************************ -->
+<!-- ** Update                                                 ** -->
+<!-- ************************************************************ -->
+
+<update id="updateTribe" parameterClass="org.openmrs.Tribe">
+	UPDATE
+		tribe
+	SET
+		name = #name#
+	WHERE
+		tribe_id = #tribeId#
+</update>
+
+<!-- ************************************************************ -->
+<!-- ** Delete                                                 ** -->
+<!-- ************************************************************ -->
+
+<update id="retireTribe" parameterClass="org.openmrs.Tribe">
+	UPDATE
+		tribe
+	SET
+		retired = 1
+	WHERE
+		tribe_id = #tribeId#
+</update>
+
+<delete id="deleteTribe" parameterClass="int">
+	DELETE FROM tribe WHERE tribe_id = #value#
+</delete>
+
+</sqlMap>
