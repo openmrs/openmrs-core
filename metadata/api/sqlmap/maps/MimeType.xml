@@ -43,7 +43,7 @@
 	UPDATE
 		mime_type
 	SET
-		description = #description#,
+		description = #description#
 	WHERE
 		mime_type = #mimeType#
 </update>
