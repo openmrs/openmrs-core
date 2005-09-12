@@ -33,7 +33,11 @@
 </transactionManager>
 
 <sqlMap resource="sqlmap/maps/Concept.xml" />
+<sqlMap resource="sqlmap/maps/Encounter.xml" />
+<sqlMap resource="sqlmap/maps/EncounterType.xml" />
 <sqlMap resource="sqlmap/maps/Location.xml" />
+<sqlMap resource="sqlmap/maps/MimeType.xml" />
+<sqlMap resource="sqlmap/maps/Obs.xml" />
 <sqlMap resource="sqlmap/maps/Patient.xml" />
 <sqlMap resource="sqlmap/maps/PatientIdentifier.xml" />
 <sqlMap resource="sqlmap/maps/PatientIdentifierType.xml" />
