@@ -3,16 +3,15 @@ package org.openmrs;
 /**
  * ComplexObs 
  */
-public class ComplexObs implements java.io.Serializable {
+public class ComplexObs extends Obs implements java.io.Serializable{
 	
 	public static final long serialVersionUID = 1L;
 
 	// Fields
 
-	private Integer obsId;
+	private MimeType mimeType;
 	private String urn;
 	private String complexValue;
-	private Obs obs;
 
 	// Constructors
 
@@ -24,51 +23,65 @@ public class ComplexObs implements java.io.Serializable {
 	public ComplexObs(Integer obsId) {
 		this.obsId = obsId;
 	}
+	
+	/** 
+	 * overriding parent 
+	 * @return true/false whether this is a complex observation
+	 * @see org.openmrs.Obs#isComplexObs
+	 */
+	
+	public Boolean isComplexObs() {
+		return true;
+	}
 
 	// Property accessors
 
 	/**
-	 * 
-	 */
-	public Integer getObsId() {
-		return this.obsId;
-	}
-
-	public void setObsId(Integer obsId) {
-		this.obsId = obsId;
-	}
-
-	/**
-	 * 
+	 * Gets the Universal Resource Number for this complex obs
+	 * @return urn string
 	 */
 	public String getUrn() {
 		return this.urn;
 	}
 
+	/**
+	 * Sets the Universal Resource Number for this complex obs
+	 * @param urn string
+	 */
 	public void setUrn(String urn) {
 		this.urn = urn;
 	}
 
 	/**
-	 * 
+	 * gets the value of this complex observation
+	 * @return complex value string
 	 */
 	public String getComplexValue() {
 		return this.complexValue;
 	}
 
+	/**
+	 * Sets the value of this complex observation
+	 * @param complex value string
+	 */
 	public void setComplexValue(String complexValue) {
 		this.complexValue = complexValue;
 	}
 
 	/**
-	 * 
+	 * gets the mime type object of this complex observation
+	 * @return MimeType object
 	 */
-	public Obs getObs() {
-		return this.obs;
+	public MimeType getMimeType() {
+		return this.mimeType;
 	}
 
-	public void setObs(Obs obs) {
-		this.obs = obs;
+	/**
+	 * Sets mime type object of this complex observation
+	 * @param MimeType object
+	 */
+	public void setMimeType(MimeType mimeType) {
+		this.mimeType = mimeType;
 	}
 
 }
