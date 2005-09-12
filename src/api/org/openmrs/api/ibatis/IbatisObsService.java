@@ -17,7 +17,7 @@ import org.openmrs.context.Context;
  * @see org.openmrs.api.ObsService
  * 
  * @author Ben Wolfe
- * @version 1.0
+ * @version 1.0 
  */
 public class IbatisObsService implements ObsService {
 
