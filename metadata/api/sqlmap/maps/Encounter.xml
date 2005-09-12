@@ -10,7 +10,7 @@
 <!-- ************************************************************ -->
 
 <insert id="createEncounter" parameterClass="org.openmrs.Encounter">
-	INSERT INTO users
+	INSERT INTO encounter
 		(
 		encounter_type,
 		patient_id,
@@ -37,7 +37,7 @@
 <!-- ** Read                                                   ** -->
 <!-- ************************************************************ -->
 
-<resultMap id="userResult" class="org.openmrs.Encounter">
+<resultMap id="encounterResult" class="org.openmrs.Encounter">
 	<result property="encounterId" column="encounter_id" />
 	<result property="encounterType" column="encounter" />
 	<result property="patient" column="patient_id" select="getPatient" />
@@ -48,7 +48,7 @@
 </resultMap>
 
 <select id="getEncounter" parameterClass="int" resultMap="encounterResult">
-	SELECT * FROM users WHERE user_id = #value#
+	SELECT * FROM encounter WHERE encounter_id = #value#
 </select>
 
 <!-- ************************************************************ -->
@@ -72,8 +72,8 @@
 <!-- ** Delete                                                 ** -->
 <!-- ************************************************************ -->
 
-<delete id="deletePatient" parameterClass="int">
-	DELETE FROM patient WHERE patient_id = #value#
+<delete id="deleteEncounter" parameterClass="int">
+	DELETE FROM encounter WHERE encounter_id = #value#
 </delete>
 
 </sqlMap>
