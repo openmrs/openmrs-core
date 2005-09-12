@@ -17,12 +17,26 @@ public class IbatisPatientService implements PatientService {
 	}
 	
 	public Patient createPatient(Patient patient) throws APIException {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			SqlMap.instance().insert("createPatient", patient);
+		} catch (SQLException e) {
+			throw new APIException(e);
+		}
+		return patient;
 	}
 
-	public void deletePatient(Integer patientId) throws APIException {
-		// TODO Auto-generated method stub
+	public void deletePatient(Patient patient) throws APIException {
+		try {
+			try {
+				SqlMap.instance().startTransaction();
+				SqlMap.instance().delete("deletePatient", patient);
+				SqlMap.instance().commitTransaction();
+			} finally {
+				SqlMap.instance().endTransaction();
+			}
+		} catch (SQLException e) {
+			throw new APIException(e);
+		}
 		
 	}
 
@@ -47,7 +61,14 @@ public class IbatisPatientService implements PatientService {
 	}
 
 	public void voidPatient(Patient patient, String reason) throws APIException {
-		// TODO Auto-generated method stub
+		patient.setVoided(true);
+		patient.setVoidedBy(context.getAuthenticatedUser());
+		patient.setVoidReason(reason);
+		try {
+			SqlMap.instance().update("voidPatient", patient);
+		} catch (SQLException e) {
+			throw new APIException(e);
+		}
 		
 	}
 
