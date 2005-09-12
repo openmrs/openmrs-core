@@ -1,26 +1,26 @@
 package org.openmrs;
 
+import java.util.Date;
+
 /**
  * DrugOrder 
  */
-public class DrugOrder implements java.io.Serializable {
+public class DrugOrder extends Order implements java.io.Serializable {
 
 	public static final long serialVersionUID = 1L;
 
 	// Fields
 
-	private Integer orderId;
 	private Integer dose;
 	private String units;
 	private String frequency;
 	private Boolean prn;
 	private Boolean complex;
 	private Integer quantity;
-	private String dateCreated;
-	private Order order;
 	private Drug drug;
-	private User user;
-
+	private User creator;
+	private Date dateCreated;
+	
 	// Constructors
 
 	/** default constructor */
@@ -29,21 +29,10 @@ public class DrugOrder implements java.io.Serializable {
 
 	/** constructor with id */
 	public DrugOrder(Integer orderId) {
-		this.orderId = orderId;
+		this.setOrderId(orderId);
 	}
 
 	// Property accessors
-
-	/**
-	 * 
-	 */
-	public Integer getOrderId() {
-		return this.orderId;
-	}
-
-	public void setOrderId(Integer orderId) {
-		this.orderId = orderId;
-	}
 
 	/**
 	 * 
@@ -81,18 +70,18 @@ public class DrugOrder implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	public Boolean getPrn() {
+	public Boolean isPrn() {
 		return this.prn;
 	}
 
-	public void setPrn(Boolean prn) {
+	public void iPrn(Boolean prn) {
 		this.prn = prn;
 	}
 
 	/**
 	 * 
 	 */
-	public Boolean getComplex() {
+	public Boolean isComplex() {
 		return this.complex;
 	}
 
@@ -114,23 +103,12 @@ public class DrugOrder implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	public String getDateCreated() {
+	public Date getDateCreated() {
 		return this.dateCreated;
 	}
 
-	public void setDateCreated(String dateCreated) {
+	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
-	}
-
-	/**
-	 * 
-	 */
-	public Order getOrder() {
-		return this.order;
-	}
-
-	public void setOrder(Order order) {
-		this.order = order;
 	}
 
 	/**
@@ -147,12 +125,12 @@ public class DrugOrder implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	public User getUser() {
-		return this.user;
+	public User getCreator() {
+		return this.creator;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
+	public void setCreator(User creator) {
+		this.creator = creator;
 	}
 
 }
