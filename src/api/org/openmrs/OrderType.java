@@ -14,8 +14,8 @@ public class OrderType implements java.io.Serializable {
 	private Integer orderTypeId;
 	private String name;
 	private String description;
-	private Date dateCreated;
 	private User creator;
+	private Date dateCreated;
 
 	// Constructors
 

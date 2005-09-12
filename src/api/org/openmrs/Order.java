@@ -1,7 +1,6 @@
 package org.openmrs;
 
 import java.util.Date;
-import java.util.Set;
 
 /**
  * Order 
@@ -13,21 +12,20 @@ public class Order implements java.io.Serializable {
 	// Fields
 
 	private Integer orderId;
-	private Integer conceptId;
+	private OrderType orderType;
+	private Concept concept;
 	private String instructions;
 	private Date startDate;
 	private Date autoExpireDate;
+	private Encounter encounter;
+	private User orderer;
+	private User creator;
+	private Date dateCreated;
+	private User discontinuedBy;
 	private Date discontinuedDate;
 	private String discontinuedReason;
-	private Date dateCreated;
-	private DrugOrder drugOrder;
-	private Set obs;
-	private Encounter encounter;
-	private User userByOrderer;
-	private User userByDiscontinuedBy;
-	private User userByCreator;
-	private OrderType orderType;
 
+	
 	// Constructors
 
 	/** default constructor */
@@ -39,6 +37,14 @@ public class Order implements java.io.Serializable {
 		this.orderId = orderId;
 	}
 
+	/**
+	 * true/false whether or not this is a drug order
+	 * overridden in extending class drugOrders. 
+	 */
+	public Boolean isDrugOrder() {
+		return false;
+	}
+	
 	// Property accessors
 
 	/**
@@ -55,12 +61,12 @@ public class Order implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	public Integer getConceptId() {
-		return this.conceptId;
+	public Concept getConcept() {
+		return this.concept;
 	}
 
-	public void setConceptId(Integer conceptId) {
-		this.conceptId = conceptId;
+	public void setConcept(Concept concept) {
+		this.concept = concept;
 	}
 
 	/**
@@ -132,28 +138,6 @@ public class Order implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	public DrugOrder getDrugOrder() {
-		return this.drugOrder;
-	}
-
-	public void setDrugOrder(DrugOrder drugOrder) {
-		this.drugOrder = drugOrder;
-	}
-
-	/**
-	 * 
-	 */
-	public Set getObs() {
-		return this.obs;
-	}
-
-	public void setObs(Set obs) {
-		this.obs = obs;
-	}
-
-	/**
-	 * 
-	 */
 	public Encounter getEncounter() {
 		return this.encounter;
 	}
@@ -165,34 +149,34 @@ public class Order implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	public User getUserByOrderer() {
-		return this.userByOrderer;
+	public User getOrderer() {
+		return this.orderer;
 	}
 
-	public void setUserByOrderer(User userByOrderer) {
-		this.userByOrderer = userByOrderer;
-	}
-
-	/**
-	 * 
-	 */
-	public User getUserByDiscontinuedBy() {
-		return this.userByDiscontinuedBy;
-	}
-
-	public void setUserByDiscontinuedBy(User userByDiscontinuedBy) {
-		this.userByDiscontinuedBy = userByDiscontinuedBy;
+	public void setOrderer(User orderer) {
+		this.orderer = orderer;
 	}
 
 	/**
 	 * 
 	 */
-	public User getUserByCreator() {
-		return this.userByCreator;
+	public User getDiscontinuedBy() {
+		return this.discontinuedBy;
 	}
 
-	public void setUserByCreator(User userByCreator) {
-		this.userByCreator = userByCreator;
+	public void setDiscontinuedBy(User discontinuedBy) {
+		this.discontinuedBy = discontinuedBy;
+	}
+
+	/**
+	 * 
+	 */
+	public User getCreator() {
+		return this.creator;
+	}
+
+	public void setCreator(User creator) {
+		this.creator = creator;
 	}
 
 	/**
