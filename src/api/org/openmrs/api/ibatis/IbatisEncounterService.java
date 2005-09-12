@@ -16,7 +16,7 @@ import org.openmrs.context.Context;
  * @see org.openmrs.api.EncounterService
  * 
  * @author Ben Wolfe
- * @version 1.0
+ * @version 1.0 
  */
 public class IbatisEncounterService implements EncounterService {
 
