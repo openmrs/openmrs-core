@@ -1,7 +1,5 @@
 package org.openmrs;
 
-import java.util.Set;
-
 /**
  * MimeType 
  */
@@ -13,7 +11,6 @@ public class MimeType implements java.io.Serializable {
 
 	private String mimeType;
 	private String description;
-	private Set complexObs;
 
 	// Constructors
 
@@ -49,16 +46,4 @@ public class MimeType implements java.io.Serializable {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-
-	/**
-	 * 
-	 */
-	public Set getComplexObs() {
-		return this.complexObs;
-	}
-
-	public void setComplexObs(Set complexObs) {
-		this.complexObs = complexObs;
-	}
-
 }
