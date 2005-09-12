@@ -11,7 +11,7 @@ public class ComplexObs extends Obs implements java.io.Serializable{
 
 	private MimeType mimeType;
 	private String urn;
-	private String complexValue;
+	private String complexValue; 
 
 	// Constructors
 
