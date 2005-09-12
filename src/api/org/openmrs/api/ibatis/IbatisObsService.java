@@ -4,6 +4,7 @@ import java.sql.SQLException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.ComplexObs;
 import org.openmrs.Obs;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
@@ -45,6 +46,8 @@ public class IbatisObsService implements ObsService {
 			try {
 				SqlMap.instance().startTransaction();
 				SqlMap.instance().insert("createObs", obs);
+				if (obs.isComplexObs())
+					SqlMap.instance().insert("createComplexObs", obs);
 				SqlMap.instance().commitTransaction();
 			} finally {
 				SqlMap.instance().endTransaction();
@@ -60,9 +63,17 @@ public class IbatisObsService implements ObsService {
 	 */
 	public Obs getObs(Integer obsId) throws APIException {
 		Obs obs;
+		ComplexObs complexObs; 
 		try {
-			obs = (Obs) SqlMap.instance().queryForObject(
-					"getObs", obsId);
+			obs = (Obs) SqlMap.instance().queryForObject("getObs", obsId);
+			ComplexObs tmpComplexObs = (ComplexObs) SqlMap.instance().queryForObject("getComplexObs", obsId);
+			if (tmpComplexObs != null) {
+				complexObs = (ComplexObs) obs;
+				complexObs.setMimeType(tmpComplexObs.getMimeType());
+				complexObs.setUrn(tmpComplexObs.getUrn());
+				complexObs.setComplexValue(tmpComplexObs.getComplexValue());
+				obs = complexObs;
+			}
 		} catch (SQLException e) {
 			throw new APIException(e);
 		}
@@ -82,10 +93,13 @@ public class IbatisObsService implements ObsService {
 				if (obs.getCreator() == null) {
 					obs.setCreator(authenticatedUser);
 					SqlMap.instance().insert("createObs", obs);
+					if (obs.isComplexObs())
+						SqlMap.instance().insert("createComplexObs", obs);
 				} else {
 					SqlMap.instance().update("updateObs", obs);
+					if (obs.isComplexObs())
+						SqlMap.instance().insert("updateComplexObs", obs);
 				}
-
 				SqlMap.instance().commitTransaction();
 			} finally {
 				SqlMap.instance().endTransaction();
@@ -112,7 +126,7 @@ public class IbatisObsService implements ObsService {
 			throw new APIException(e);
 		}
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.ObsService#unVoidObs(Obs)
 	 */
@@ -129,7 +143,7 @@ public class IbatisObsService implements ObsService {
 			throw new APIException(e);
 		}
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.ObsService#deleteObs(Obs)
 	 */
@@ -138,6 +152,8 @@ public class IbatisObsService implements ObsService {
 			try {
 				SqlMap.instance().startTransaction();
 				SqlMap.instance().delete("deleteObs", obs);
+				if (obs.isComplexObs())
+					SqlMap.instance().insert("deleteComplexObs", obs);
 				SqlMap.instance().commitTransaction();
 			} finally {
 				SqlMap.instance().endTransaction();
