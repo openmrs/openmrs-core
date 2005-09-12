@@ -281,7 +281,7 @@ public class Obs implements java.io.Serializable {
 		return this.creator;
 	}
 
-	public void setUserByCreator(User creator) {
+	public void setCreator(User creator) {
 		this.creator = creator;
 	}
 
@@ -292,7 +292,7 @@ public class Obs implements java.io.Serializable {
 		return this.voidedBy;
 	}
 
-	public void setCoidedBy(User voidedBy) {
+	public void setVoidedBy(User voidedBy) {
 		this.voidedBy = voidedBy;
 	}
 
