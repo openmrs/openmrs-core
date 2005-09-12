@@ -155,6 +155,7 @@
 	SET
 		voided = 1,
 		voided_by = #voidedBy.userId#,
+		void_reason = #voidReason#,
 		date_voided = NOW()
 	WHERE
 		patient_id = #patientId#
@@ -168,6 +169,7 @@
 		date_changed = NOW(),
 		voided = 0,
 		voided_by = NULL,
+		void_reason = NULL,
 		date_voided = NULL
 	WHERE
 		patient_id = #patientId#
