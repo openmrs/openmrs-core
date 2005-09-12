@@ -1,0 +1,150 @@
+package org.openmrs.api.ibatis;
+
+import java.sql.SQLException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openmrs.Obs;
+import org.openmrs.User;
+import org.openmrs.api.APIException;
+import org.openmrs.api.ObsService;
+import org.openmrs.context.Context;
+
+/**
+ * Ibatis-specific implementation of org.openmrs.api.ObsService
+ * 
+ * @see org.openmrs.api.ObsService
+ * 
+ * @author Ben Wolfe
+ * @version 1.0
+ */
+public class IbatisObsService implements ObsService {
+
+	private final Log log = LogFactory.getLog(getClass());
+
+	private Context context;
+
+	/**
+	 * Service must be constructed within a <code>context</code>
+	 * 
+	 * @param context
+	 * @see org.openmrs.context.Context
+	 */
+	public IbatisObsService(Context context) {
+		this.context = context;
+	}
+
+	/**
+	 * @see org.openmrs.api.ObsService#createObs(Obs)
+	 */
+	public Obs createObs(Obs obs) throws APIException {
+
+		User authenticatedUser = context.getAuthenticatedUser();
+		obs.setCreator(authenticatedUser);
+		try {
+			try {
+				SqlMap.instance().startTransaction();
+				SqlMap.instance().insert("createObs", obs);
+				SqlMap.instance().commitTransaction();
+			} finally {
+				SqlMap.instance().endTransaction();
+			}
+		} catch (SQLException e) {
+			throw new APIException(e);
+		}
+		return obs;
+	}
+
+	/**
+	 * @see org.openmrs.api.ObsService#getObs(Integer)
+	 */
+	public Obs getObs(Integer obsId) throws APIException {
+		Obs obs;
+		try {
+			obs = (Obs) SqlMap.instance().queryForObject(
+					"getObs", obsId);
+		} catch (SQLException e) {
+			throw new APIException(e);
+		}
+		return obs;
+	}
+
+	/**
+	 * @see org.openmrs.api.ObsService#updateObs(Obs)
+	 */
+	public void updateObs(Obs obs) throws APIException {
+		try {
+			try {
+				SqlMap.instance().startTransaction();
+
+				User authenticatedUser = context.getAuthenticatedUser();
+
+				if (obs.getCreator() == null) {
+					obs.setCreator(authenticatedUser);
+					SqlMap.instance().insert("createObs", obs);
+				} else {
+					SqlMap.instance().update("updateObs", obs);
+				}
+
+				SqlMap.instance().commitTransaction();
+			} finally {
+				SqlMap.instance().endTransaction();
+			}
+		} catch (SQLException e) {
+			throw new APIException(e);
+		}
+
+	}
+
+	/**
+	 * @see org.openmrs.api.ObsService#voidObs(Obs)
+	 */
+	public void voidObs(Obs obs) throws APIException {
+		try {
+			try {
+				SqlMap.instance().startTransaction();
+				SqlMap.instance().update("voidObs", obs);
+				SqlMap.instance().commitTransaction();
+			} finally {
+				SqlMap.instance().endTransaction();
+			}
+		} catch (SQLException e) {
+			throw new APIException(e);
+		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.ObsService#unVoidObs(Obs)
+	 */
+	public void unVoidObs(Obs obs) throws APIException {
+		try {
+			try {
+				SqlMap.instance().startTransaction();
+				SqlMap.instance().update("unVoidObs", obs);
+				SqlMap.instance().commitTransaction();
+			} finally {
+				SqlMap.instance().endTransaction();
+			}
+		} catch (SQLException e) {
+			throw new APIException(e);
+		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.ObsService#deleteObs(Obs)
+	 */
+	public void deleteObs(Obs obs) throws APIException {
+		try {
+			try {
+				SqlMap.instance().startTransaction();
+				SqlMap.instance().delete("deleteObs", obs);
+				SqlMap.instance().commitTransaction();
+			} finally {
+				SqlMap.instance().endTransaction();
+			}
+		} catch (SQLException e) {
+			throw new APIException(e);
+		}
+	}
+
+}
