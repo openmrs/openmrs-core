@@ -40,10 +40,10 @@
 <resultMap id="userResult" class="org.openmrs.Encounter">
 	<result property="encounterId" column="encounter_id" />
 	<result property="encounterType" column="encounter" />
-	<result property="patient" column="patient_id" select="getEncounter" />
-	<result property="location" column="location_id" select="getEncounter" />
-	<result property="provider" column="provider_id" select="getEncounter" />
-	<result property="creator" column="creator" select="getEncounter" />
+	<result property="patient" column="patient_id" select="getPatient" />
+	<result property="location" column="location_id" select="getLocation" />
+	<result property="provider" column="provider_id" select="getProvider" />
+	<result property="creator" column="creator" select="getUser" />
 	<result property="dateCreated" column="date_created" />
 </resultMap>
 
