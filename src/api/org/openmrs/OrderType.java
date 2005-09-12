@@ -26,7 +26,7 @@ public class OrderType implements java.io.Serializable {
 	/** constructor with id */
 	public OrderType(Integer orderTypeId) {
 		this.orderTypeId = orderTypeId;
-	}
+	} 
 
 	// Property accessors
 
