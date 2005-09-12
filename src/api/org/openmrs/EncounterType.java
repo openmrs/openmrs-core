@@ -17,7 +17,7 @@ public class EncounterType implements java.io.Serializable {
 	private String description;
 	private Date dateCreated;
 	private Set encounters;
-	private User user;
+	private User creator;
 
 	// Constructors
 
@@ -90,12 +90,12 @@ public class EncounterType implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	public User getUser() {
-		return this.user;
+	public User getCreator() {
+		return this.creator;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
+	public void setCreator(User creator) {
+		this.creator = creator;
 	}
 
 }
