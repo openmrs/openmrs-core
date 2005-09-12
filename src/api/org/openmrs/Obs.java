@@ -11,28 +11,28 @@ public class Obs implements java.io.Serializable {
 
 	// Fields
 
-	private Integer obsId;
-	private Concept conceptId;
-	private Date obsDatetime;
-	private Integer obsGroupId;
-	private Concept valueCoded;
-	private Integer valueGroupId;
-	private Boolean valueBoolean;
-	private Date valueDatetime;
-	private Double valueNumeric;
-	private String valueModifier;
-	private String valueText;
-	private String comment;
-	private Patient patient;
-	private Order order;
-	private Location location;
-	private Encounter encounter;
-	private User creator;
-	private Date dateCreated;
-	private Boolean voided;
-	private User voidedBy;
-	private Date dateVoided;
-	private String voidReason;
+	protected Integer obsId;
+	protected Concept conceptId;
+	protected Date obsDatetime;
+	protected Integer obsGroupId;
+	protected Concept valueCoded;
+	protected Integer valueGroupId;
+	protected Boolean valueBoolean;
+	protected Date valueDatetime;
+	protected Double valueNumeric;
+	protected String valueModifier;
+	protected String valueText;
+	protected String comment;
+	protected Patient patient;
+	protected Order order;
+	protected Location location;
+	protected Encounter encounter;
+	protected User creator;
+	protected Date dateCreated;
+	protected Boolean voided;
+	protected User voidedBy;
+	protected Date dateVoided;
+	protected String voidReason;
 
 	// Constructors
 
