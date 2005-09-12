@@ -50,6 +50,6 @@ public interface PatientService {
 	 * 
 	 * @see #voidPatient(Patient, String) 
 	 */
-	public void deletePatient(Integer patientId) throws APIException;
+	public void deletePatient(Patient patient) throws APIException;
 	
 }
