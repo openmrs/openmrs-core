@@ -1,7 +1,6 @@
 package org.openmrs;
 
 import java.util.Date;
-import java.util.Set;
 
 /**
  * PatientIdentifierType 
