@@ -1,0 +1,75 @@
+package org.openmrs.api;
+
+import org.openmrs.Form;
+
+/**
+ * Form-related services
+ * 
+ * @author Ben Wolfe
+ * @version 1.0
+ */
+public interface FormService {
+	
+	/**
+	 * Create a new form
+	 * @param form
+	 * @return reference to newly created form
+	 * @throws APIException
+	 */
+	public Form createForm(Form form) throws APIException;
+
+	/**
+	 * Get form by internal form identifier
+	 * @param formId internal identifier
+	 * @return requested form
+	 * @throws APIException
+	 */
+	public Form getForm(Integer formId) throws APIException;
+	
+	/**
+	 * Save changes to form
+	 * @param form
+	 * @throws APIException
+	 */
+	public void updateForm(Form form) throws APIException;
+
+	/** 
+	 * Mark form as voided (effectively deleting form without removing
+	 * their data &mdash; since anything the form touched in the database
+	 * will still have their internal identifier and point to the voided
+	 * form for historical tracking purposes.
+	 * 
+	 * @param form
+	 * @param reason
+	 * @throws APIException
+	 */
+	public void retireForm(Form form, String reason) throws APIException;
+	
+	/**
+	 * Clear voided flag for form (equivalent to an "undelete" or
+	 * Lazarus Effect for form)
+	 * 
+	 * @param form
+	 * @throws APIException
+	 */
+	public void unRetireForm(Form form) throws APIException;
+	
+	/**
+	 * Delete form from database. This is included for troubleshooting and
+	 * low-level system administration. Ideally, this method should <b>never</b>
+	 * be called &mdash; <code>Forms</code> should be <em>retired</em> and
+	 * not <em>deleted</em> altogether (since many foreign key constraints
+	 * depend on forms, deleting a form would require deleting all traces, and
+	 * any historical trail would be lost).
+	 * 
+	 * This method only clears form roles and attempts to delete the form
+	 * record. If the form has been included in any other parts of the database
+	 * (through a foreign key), the attempt to delete the form will violate
+	 * foreign key constraints and fail.
+	 * 
+	 * @param form
+	 * @throws APIException
+	 */
+	public void deleteForm(Form form) throws APIException;
+	
+}
