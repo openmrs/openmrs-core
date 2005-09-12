@@ -1,7 +1,6 @@
 package org.openmrs;
 
 import java.util.Date;
-import java.util.Set;
 
 /**
  * FormField 
@@ -13,6 +12,9 @@ public class FormField implements java.io.Serializable {
 	// Fields
 
 	private Integer formFieldId;
+	private FormField formField;
+	private Form form;
+	private Field field;
 	private Integer fieldNumber;
 	private String fieldPart;
 	private Integer pageNumber;
@@ -21,12 +23,8 @@ public class FormField implements java.io.Serializable {
 	private Boolean required;
 	private Date dateChanged;
 	private Date dateCreated;
-	private Form form;
-	private Set formFields;
-	private FormField formField;
-	private User userByChangedBy;
-	private User userByCreator;
-	private Field field;
+	private User changedBy;
+	private User creator;
 
 	// Constructors
 
@@ -110,7 +108,7 @@ public class FormField implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	public Boolean getRequired() {
+	public Boolean isRequired() {
 		return this.required;
 	}
 
@@ -150,18 +148,7 @@ public class FormField implements java.io.Serializable {
 	public void setForm(Form form) {
 		this.form = form;
 	}
-
-	/**
-	 * 
-	 */
-	public Set getFormFields() {
-		return this.formFields;
-	}
-
-	public void setFormFields(Set formFields) {
-		this.formFields = formFields;
-	}
-
+	
 	/**
 	 * 
 	 */
@@ -176,23 +163,23 @@ public class FormField implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	public User getUserByChangedBy() {
-		return this.userByChangedBy;
+	public User getChangedBy() {
+		return this.changedBy;
 	}
 
-	public void setUserByChangedBy(User userByChangedBy) {
-		this.userByChangedBy = userByChangedBy;
+	public void setChangedBy(User changedBy) {
+		this.changedBy = changedBy;
 	}
 
 	/**
 	 * 
 	 */
-	public User getUserByCreator() {
-		return this.userByCreator;
+	public User getCreator() {
+		return this.creator;
 	}
 
-	public void setUserByCreator(User userByCreator) {
-		this.userByCreator = userByCreator;
+	public void setCreator(User creator) {
+		this.creator = creator;
 	}
 
 	/**

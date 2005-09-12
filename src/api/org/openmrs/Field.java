@@ -22,8 +22,8 @@ public class Field implements java.io.Serializable {
 	private Date dateChanged;
 	private Concept concept;
 	private FieldType fieldType;
-	private User userByCreator;
-	private User userByChangedBy;
+	private User creator;
+	private User changedBy;
 	private Set fieldAnswers;
 	private Set formFields;
 
@@ -153,23 +153,23 @@ public class Field implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	public User getUserByCreator() {
-		return this.userByCreator;
+	public User getCreator() {
+		return this.creator;
 	}
 
-	public void setUserByCreator(User userByCreator) {
-		this.userByCreator = userByCreator;
+	public void setCreator(User creator) {
+		this.creator = creator;
 	}
 
 	/**
 	 * 
 	 */
-	public User getUserByChangedBy() {
-		return this.userByChangedBy;
+	public User getChangedBy() {
+		return this.changedBy;
 	}
 
-	public void setUserByChangedBy(User userByChangedBy) {
-		this.userByChangedBy = userByChangedBy;
+	public void setChangedBy(User changedBy) {
+		this.changedBy = changedBy;
 	}
 
 	/**
@@ -192,6 +192,14 @@ public class Field implements java.io.Serializable {
 
 	public void setFormFields(Set formFields) {
 		this.formFields = formFields;
+	}
+	
+	public boolean equals(Object obj) {
+		if (obj == null || !(obj instanceof Field))
+			return false;
+		
+		Field field = (Field) obj;
+		return (this.fieldId == field.getFieldId());
 	}
 
 }

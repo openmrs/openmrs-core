@@ -1,7 +1,6 @@
 package org.openmrs;
 
 import java.util.Date;
-import java.util.Set;
 
 /**
  * FieldType 
@@ -17,8 +16,7 @@ public class FieldType implements java.io.Serializable {
 	private String description;
 	private Boolean isSet;
 	private Date dateCreated;
-	private Set fields;
-	private User user;
+	private User creator;
 
 	// Constructors
 
@@ -91,23 +89,12 @@ public class FieldType implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	public Set getFields() {
-		return this.fields;
+	public User getCreator() {
+		return this.creator;
 	}
 
-	public void setFields(Set fields) {
-		this.fields = fields;
-	}
-
-	/**
-	 * 
-	 */
-	public User getUser() {
-		return this.user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
+	public void setCreator(User creator) {
+		this.creator = creator;
 	}
 
 }

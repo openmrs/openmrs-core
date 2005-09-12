@@ -13,7 +13,7 @@ public class FieldAnswer implements java.io.Serializable {
 
 	private Date dateCreated;
 	private Concept concept;
-	private User user;
+	private User creator;
 	private Field field;
 
 	// Constructors
@@ -49,12 +49,12 @@ public class FieldAnswer implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	public User getUser() {
-		return this.user;
+	public User getCreator() {
+		return this.creator;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
+	public void setCreator(User creator) {
+		this.creator = creator;
 	}
 
 	/**

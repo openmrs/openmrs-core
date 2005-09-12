@@ -22,8 +22,8 @@ public class Form implements java.io.Serializable {
 	private Date dateChanged;
 	private Date dateCreated;
 	private Set formFields;
-	private User userByCreator;
-	private User userByChangedBy;
+	private User creator;
+	private User changedBy;
 
 	// Constructors
 
@@ -151,23 +151,23 @@ public class Form implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	public User getUserByCreator() {
-		return this.userByCreator;
+	public User getCreator() {
+		return this.creator;
 	}
 
-	public void setUserByCreator(User userByCreator) {
-		this.userByCreator = userByCreator;
+	public void setCreator(User creator) {
+		this.creator = creator;
 	}
 
 	/**
 	 * 
 	 */
-	public User getUserByChangedBy() {
-		return this.userByChangedBy;
+	public User getChangedBy() {
+		return this.changedBy;
 	}
 
-	public void setUserByChangedBy(User userByChangedBy) {
-		this.userByChangedBy = userByChangedBy;
+	public void setChangedBy(User changedBy) {
+		this.changedBy = changedBy;
 	}
 
 }
