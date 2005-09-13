@@ -80,7 +80,7 @@ public class IbatisPatientServiceTest extends TestCase {
 		Patient createdPatientById = ps.getPatient(pId);
 		assertNotNull(createdPatientById);
 		
-		ps.deletePatient(pId);
+		ps.deletePatient(createdPatientById);
 		Patient deletedPatientById = ps.getPatient(pId);
 		assertNull(deletedPatientById);
 	}
