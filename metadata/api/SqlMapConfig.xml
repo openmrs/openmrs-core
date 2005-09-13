@@ -32,18 +32,30 @@
 	</dataSource>
 </transactionManager>
 
+<sqlMap resource="sqlmap/maps/ComplexObs.xml" />
 <sqlMap resource="sqlmap/maps/Concept.xml" />
+<sqlMap resource="sqlmap/maps/Drug.xml" />
+<sqlMap resource="sqlmap/maps/DrugOrder.xml" />
 <sqlMap resource="sqlmap/maps/Encounter.xml" />
 <sqlMap resource="sqlmap/maps/EncounterType.xml" />
+<sqlMap resource="sqlmap/maps/Field.xml" />
+<sqlMap resource="sqlmap/maps/FieldAnswer.xml" />
+<sqlMap resource="sqlmap/maps/FieldType.xml" />
+<sqlMap resource="sqlmap/maps/Form.xml" />
+<sqlMap resource="sqlmap/maps/FormField.xml" />
 <sqlMap resource="sqlmap/maps/Location.xml" />
 <sqlMap resource="sqlmap/maps/MimeType.xml" />
 <sqlMap resource="sqlmap/maps/Obs.xml" />
+<sqlMap resource="sqlmap/maps/Order.xml" />
+<sqlMap resource="sqlmap/maps/OrderType.xml" />
 <sqlMap resource="sqlmap/maps/Patient.xml" />
+<sqlMap resource="sqlmap/maps/PatientAddress.xml" />
 <sqlMap resource="sqlmap/maps/PatientIdentifier.xml" />
 <sqlMap resource="sqlmap/maps/PatientIdentifierType.xml" />
 <sqlMap resource="sqlmap/maps/PatientName.xml" />
 <sqlMap resource="sqlmap/maps/Privilege.xml" />
 <sqlMap resource="sqlmap/maps/Role.xml" />
+<sqlMap resource="sqlmap/maps/Tribe.xml" />
 <sqlMap resource="sqlmap/maps/User.xml" />
 
 </sqlMapConfig>
