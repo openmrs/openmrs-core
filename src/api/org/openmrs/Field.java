@@ -38,6 +38,14 @@ public class Field implements java.io.Serializable {
 		this.fieldId = fieldId;
 	}
 
+	public boolean equals(Object obj) {
+		if (obj == null || !(obj instanceof Field))
+			return false;
+		
+		Field field = (Field) obj;
+		return (this.fieldId == field.getFieldId());
+	}
+	
 	// Property accessors
 
 	/**
@@ -193,13 +201,4 @@ public class Field implements java.io.Serializable {
 	public void setFormFields(Set formFields) {
 		this.formFields = formFields;
 	}
-	
-	public boolean equals(Object obj) {
-		if (obj == null || !(obj instanceof Field))
-			return false;
-		
-		Field field = (Field) obj;
-		return (this.fieldId == field.getFieldId());
-	}
-
 }

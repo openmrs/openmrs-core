@@ -33,7 +33,7 @@
 		#retired#,
 		#creator.userId#,
 		NOW(),
-		#changedBy.userId#,
+		#creator.userId#,
 		NOW()
 		);
 	<selectKey keyProperty="patientId">
@@ -46,16 +46,18 @@
 <!-- ************************************************************ -->
 
 <resultMap id="formResult" class="org.openmrs.Form">
+	<result property="formId" column="form_id" />
 	<result property="name" column="name" />
 	<result property="version" column="version" />
 	<result property="description" column="description" />
 	<result property="schema_namespace" column="schemaNamespace" />
 	<result property="definition" column="definition" />
-	<result property="retired" column="retired" />
+	<result property="retired" column="retired" nullValue="false" />
 	<result property="creator" column="creator" select="getUser" />
 	<result property="dateCreated" column="date_created" />
 	<result property="changedBy" column="changed_by" select="getUser" />
 	<result property="dateChanged" column="date_changed" />
+	<result property="formFields" column="form_id" select="getFormFieldByFormId" />
 </resultMap>
 
 <select id="getForm" parameterClass="int" resultMap="formResult">
@@ -100,7 +102,7 @@
 		form_id = #formId#
 </update>
 
-<update id="unRetireForm" parameterClass="org.openmrs.Form">
+<update id="unretireForm" parameterClass="org.openmrs.Form">
 	UPDATE
 		form
 	SET

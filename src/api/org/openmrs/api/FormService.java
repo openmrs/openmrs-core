@@ -52,7 +52,7 @@ public interface FormService {
 	 * @param form
 	 * @throws APIException
 	 */
-	public void unRetireForm(Form form) throws APIException;
+	public void unretireForm(Form form) throws APIException;
 	
 	/**
 	 * Delete form from database. This is included for troubleshooting and

@@ -46,6 +46,7 @@ public class IbatisPatientService implements PatientService {
 		return patient;
 	}
 	
+	// TODO void patient addresses and names instead of deleting them
 	public void updatePatient(Patient patient) throws APIException {
 		try {
 			try {
@@ -56,18 +57,22 @@ public class IbatisPatientService implements PatientService {
 				if (patient.getCreator() == null)
 					this.createPatient(patient);
 				else {
+					//patient.setChangedBy(context.getAuthenticatedUser());
 					SqlMap.instance().update("updatePatient", patient);
 					SqlMap.instance().update("updateTribe", patient.getTribe());
 					
-					//udpate addresses
+					//update addresses
 					List oldAddresses = SqlMap.instance().queryForList("getPatientAddressByPatientId", patient.getPatientId());
 					map = Compare.compareLists(oldAddresses, patient.getAddresses());
 					toAdd = (List)map.get("toAdd");
 					toDel = (List)map.get("toDel");
 					for (Iterator i = toAdd.iterator(); i.hasNext();)
-						SqlMap.instance().insert("createPatientAddress", i.next());
+					{
+						PatientAddress pAddress = (PatientAddress)i.next();
+						SqlMap.instance().insert("createPatientAddress", pAddress);
+					}
 					for (Iterator i = toDel.iterator(); i.hasNext();)
-						SqlMap.instance().insert("deletePatientAddress", i.next());
+						SqlMap.instance().delete("deletePatientAddress", i.next());
 					
 					//update names
 					List oldNames = SqlMap.instance().queryForList("getPatientNameByPatientId", patient.getPatientId());
@@ -75,9 +80,12 @@ public class IbatisPatientService implements PatientService {
 					toAdd = (List)map.get("toAdd");
 					toDel = (List)map.get("toDel");
 					for (Iterator i = toAdd.iterator(); i.hasNext();)
-						SqlMap.instance().insert("createPatientName", i.next());
+					{
+						PatientName pName = (PatientName)i.next();
+						SqlMap.instance().insert("createPatientName", pName);
+					}
 					for (Iterator i = toDel.iterator(); i.hasNext();)
-						SqlMap.instance().insert("deletePatientName", i.next());
+						SqlMap.instance().delete("deletePatientName", i.next());
 					
 				}
 				SqlMap.instance().commitTransaction();

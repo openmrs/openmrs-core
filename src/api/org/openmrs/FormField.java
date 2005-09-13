@@ -37,6 +37,19 @@ public class FormField implements java.io.Serializable {
 		this.formFieldId = formFieldId;
 	}
 
+	public boolean equals(Object obj) {
+		if (obj instanceof FormField)
+		{
+			FormField f = (FormField)obj;
+			if (this.getFormFieldId() != null && f.getFormFieldId() != null)
+				return (this.getFormFieldId() == f.getFormFieldId());
+			return (this.getFormField().equals(f.getFormField()) &&
+					this.getForm().equals(f.getForm()) &&
+					this.getField().equals(f.getField()));
+		}
+		return false;
+	}
+	
 	// Property accessors
 
 	/**

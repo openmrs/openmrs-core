@@ -36,6 +36,17 @@ public class Form implements java.io.Serializable {
 		this.formId = formId;
 	}
 
+	public boolean equals(Object obj) {
+		if (obj instanceof Form) {
+			Form f = (Form)obj;
+			if (this.getFormId() != null && f.getFormId() != null)
+				return (this.getFormId() == f.getFormId());
+			return (this.getName().matches(f.getName()) &&
+					this.getVersion().matches(f.getVersion()));
+		}
+		return false;
+	}
+	
 	// Property accessors
 
 	/**

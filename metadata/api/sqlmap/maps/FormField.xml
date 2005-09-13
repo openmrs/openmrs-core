@@ -72,6 +72,15 @@
 	SELECT * FROM form_field WHERE form_field_id = #value#
 </select>
 
+<select id="getFormFieldByFormId" parameterClass="int" resultMap="fieldResult">
+	SELECT * FROM form_field WHERE form_id = #value#
+</select>
+
+<select id="getFormFieldByFieldId" parameterClass="int" resultMap="fieldResult">
+	SELECT * FROM form_field WHERE field_id = #value#
+</select>
+
+
 <!-- ************************************************************ -->
 <!-- ** Update                                                 ** -->
 <!-- ************************************************************ -->

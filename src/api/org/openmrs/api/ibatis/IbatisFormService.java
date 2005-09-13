@@ -1,14 +1,18 @@
 package org.openmrs.api.ibatis;
 
 import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Form;
-import org.openmrs.User;
+import org.openmrs.FormField;
 import org.openmrs.api.APIException;
 import org.openmrs.api.FormService;
 import org.openmrs.context.Context;
+import org.openmrs.util.Compare;
 
 /**
  * Ibatis-specific implementation of org.openmrs.api.FormService
@@ -36,9 +40,19 @@ public class IbatisFormService implements FormService {
 	/**
 	 * @see org.openmrs.api.FormService#createForm(Form)
 	 */
+	// TODO add fields/field answers ?
 	public Form createForm(Form form) throws APIException {
 		try {
+			form.setCreator(context.getAuthenticatedUser());
+			
 			SqlMap.instance().insert("createForm", form);
+			
+			for(Iterator i = form.getFormFields().iterator(); i.hasNext();) {
+				FormField formField = (FormField)i.next();
+				formField.setCreator(context.getAuthenticatedUser());
+				SqlMap.instance().insert("createFormField", formField);
+			}
+			
 		} catch (SQLException e) {
 			throw new APIException(e);
 		}
@@ -66,14 +80,29 @@ public class IbatisFormService implements FormService {
 			try {
 				SqlMap.instance().startTransaction();
 
-				User authenticatedUser = context.getAuthenticatedUser();
-
-				if (form.getCreator().getUserId() == null) {
-					form.setCreator(authenticatedUser);
-					SqlMap.instance().insert("createForm", form);
+				if (form.getCreator() == null) {
+					this.createForm(form);
 				} else {
-					form.setChangedBy(authenticatedUser);
+					form.setChangedBy(context.getAuthenticatedUser());
 					SqlMap.instance().update("updateForm", form);
+					
+					Map map;
+					List toAdd;
+					List toDel;
+					
+					//update formFields
+					List oldFormFields = SqlMap.instance().queryForList("getFormFieldsByFormId", form.getFormId());
+					map = Compare.compareLists(oldFormFields, (List)form.getFormFields());
+					toAdd = (List)map.get("toAdd");
+					toDel = (List)map.get("toDel");
+					for (Iterator i = toAdd.iterator(); i.hasNext();) {
+						FormField formField = (FormField)i.next();
+						formField.setCreator(context.getAuthenticatedUser());
+						SqlMap.instance().insert("createFormField", formField);
+					}
+					for (Iterator i = toDel.iterator(); i.hasNext();)
+						SqlMap.instance().delete("deleteFormField", i.next());
+					
 				}
 				SqlMap.instance().commitTransaction();
 			} finally {
@@ -89,8 +118,7 @@ public class IbatisFormService implements FormService {
 	 * @see org.openmrs.api.FormService#retireForm(Form, String)
 	 */
 	public void retireForm(Form form, String reason) throws APIException {
-		// TODO add "void_reason" to form table
-		//form.setVoided(true);
+		// TODO add "retire_reason" to form table
 		form.setChangedBy(context.getAuthenticatedUser());
 		// form.setVoidReason(reason);
 		try {
@@ -101,12 +129,12 @@ public class IbatisFormService implements FormService {
 	}
 
 	/**
-	 * @see org.openmrs.api.FormService#unRetireForm(Form)
+	 * @see org.openmrs.api.FormService#unretireForm(Form)
 	 */
-	public void unRetireForm(Form form) {
+	public void unretireForm(Form form) {
 		form.setChangedBy(context.getAuthenticatedUser());
 		try {
-			SqlMap.instance().update("unRetireForm", form);
+			SqlMap.instance().update("unretireForm", form);
 		} catch (SQLException e) {
 			throw new APIException(e);
 		}

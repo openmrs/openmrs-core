@@ -22,6 +22,15 @@ public class FieldAnswer implements java.io.Serializable {
 	public FieldAnswer() {
 	}
 
+	public boolean equals(Object obj) {
+		if (obj instanceof FieldAnswer) {
+			FieldAnswer fa = (FieldAnswer)obj;
+			return (field.equals(fa.getField()) &&
+					concept.equals(fa.getConcept()));
+		}
+		return false;
+	}
+	
 	// Property accessors
 
 	/**
@@ -66,13 +75,6 @@ public class FieldAnswer implements java.io.Serializable {
 
 	public void setField(Field field) {
 		this.field = field;
-	}
-	
-	public boolean equals(Object obj) {
-		if (obj == null || !(obj instanceof FieldAnswer))
-			return false;
-		FieldAnswer fa = (FieldAnswer) obj;
-		return field.equals(fa.field) && concept.equals(fa.concept);
 	}
 	
 	public int hashCode() {
