@@ -12,19 +12,18 @@
 <insert id="createComplexObs" parameterClass="org.openmrs.ComplexObs">
 	INSERT INTO complex_obs
 		(
+		obs_id
 		mime_type,
 		urn,
 		complex_value
 		)
 	VALUES
 		(
+		#obsId#,
 		#mimeType.mime_type#,
 		#urn#,
 		#complexValue#
 		);
-	<selectKey keyProperty="obsId">
-		SELECT LAST_INSERT_ID() AS obsId
-	</selectKey>
 </insert>
 
 <!-- ************************************************************ -->
