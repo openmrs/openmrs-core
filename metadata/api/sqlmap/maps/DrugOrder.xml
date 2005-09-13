@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="org.openmrs.DrugOrder">
+
+<!-- ************************************************************ -->
+<!-- ** Creation                                               ** -->
+<!-- ************************************************************ -->
+
+<insert id="createDrugOrder" parameterClass="org.openmrs.DrugOrder">
+	INSERT INTO drug_orders
+		(
+		order_id,
+		drug_inventory_id,
+		dose,
+		units,
+		frequency,
+		prn,
+		complex,
+		quantity
+		)
+	VALUES
+		(
+		#orderId#,
+		#drug.drugId#,
+		#dose#,
+		#units#,
+		#frequency#,
+		#prn#,
+		#complex#,
+		#quantity#
+		);
+</insert>
+
+<!-- ************************************************************ -->
+<!-- ** Read                                                   ** -->
+<!-- ************************************************************ -->
+
+<resultMap id="drugOrderResult" class="org.openmrs.DrugOrder">
+	<result property="orderId" column="order_id" />
+	<result property="drug" column="drug_inventory_id" select="getDrug" />
+	<result property="dose" column="dose" />
+	<result property="units" column="units" />
+	<result property="frequency" column="frequency" />
+	<result property="prn" column="prn" />
+	<result property="complex" column="complex" />
+	<result property="quantity" column="quantity" />
+</resultMap>
+
+<select id="getDrugOrder" parameterClass="int"
+        resultMap="drugOrderResult">
+	SELECT * FROM drug_orders WHERE order_id = #value#
+</select>
+
+<!-- ************************************************************ -->
+<!-- ** Update                                                 ** -->
+<!-- ************************************************************ -->
+
+<update id="updateDrugOrder" parameterClass="org.openmrs.DrugOrder">
+	UPDATE
+		drug_orders
+	SET
+		drug_inventory_id = #drug.drugId#,
+		dose = #dose#,
+		units = #units#,
+		frequency = #frequency#,
+		prn = #prn#,
+		complex = #complex#,
+		quantity = #quantity#
+	WHERE
+		order_id = #orderId#
+</update>
+
+<!-- ************************************************************ -->
+<!-- ** Deletion                                               ** -->
+<!-- ************************************************************ -->
+
+<delete id="deleteDrugOrder" parameterClass="org.openmrs.DrugOrder">
+	DELETE FROM drug_orders WHERE order_id = #orderId#
+</delete>
+
+</sqlMap>

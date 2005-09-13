@@ -1,17 +1,11 @@
 package org.openmrs.api.ibatis;
 
 import java.sql.SQLException;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.DrugOrder;
 import org.openmrs.Order;
-import org.openmrs.Role;
-import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OrderService;
 import org.openmrs.context.Context;
@@ -21,7 +15,7 @@ import org.openmrs.context.Context;
  * 
  * @see org.openmrs.api.OrderService
  * 
- * @author Burke Mamlin
+ * @author Ben Wolfe
  * @version 1.0
  */
 public class IbatisOrderService implements OrderService {
@@ -44,7 +38,10 @@ public class IbatisOrderService implements OrderService {
 	 */
 	public Order createOrder(Order order) throws APIException {
 		try {
+			order.setCreator(context.getAuthenticatedUser());
 			SqlMap.instance().insert("createOrder", order);
+			if (order.isDrugOrder())
+				SqlMap.instance().insert("createDrugOrder", order);
 		} catch (SQLException e) {
 			throw new APIException(e);
 		}
@@ -56,8 +53,24 @@ public class IbatisOrderService implements OrderService {
 	 */
 	public Order getOrder(Integer orderId) throws APIException {
 		Order order;
+		DrugOrder drugOrder;
+		DrugOrder tmpDrugOrder;
 		try {
 			order = (Order) SqlMap.instance().queryForObject("getOrder", orderId);
+			tmpDrugOrder = (DrugOrder) SqlMap.instance().queryForObject("getDrugOrder", orderId);
+			if (tmpDrugOrder != null) {
+				drugOrder = (DrugOrder) order;
+				drugOrder.setDrug(tmpDrugOrder.getDrug());
+				drugOrder.setDose(tmpDrugOrder.getDose());
+				drugOrder.setUnits(tmpDrugOrder.getUnits());
+				drugOrder.setFrequency(tmpDrugOrder.getFrequency());
+				drugOrder.setPrn(tmpDrugOrder.isPrn());
+				drugOrder.setComplex(tmpDrugOrder.isComplex());
+				drugOrder.setQuantity(tmpDrugOrder.getQuantity());
+				drugOrder.setCreator(tmpDrugOrder.getCreator());
+				drugOrder.setDateCreated(tmpDrugOrder.getDateCreated());
+				order = drugOrder;
+			}
 		} catch (SQLException e) {
 			throw new APIException(e);
 		}
@@ -73,10 +86,11 @@ public class IbatisOrderService implements OrderService {
 				SqlMap.instance().startTransaction();
 
 				if (order.getCreator() == null) {
-					order.setCreator(context.getAuthenticatedUser());
-					SqlMap.instance().insert("createOrder", order);
+					this.createOrder(order);
 				} else {
 					SqlMap.instance().update("updateOrder", order);
+					if (order.isDrugOrder())
+						SqlMap.instance().update("updateDrugOrder", order);
 				}
 				SqlMap.instance().commitTransaction();
 			} finally {
@@ -91,6 +105,7 @@ public class IbatisOrderService implements OrderService {
 	/**
 	 * @see org.openmrs.api.OrderService#discontinueOrder(Order, String)
 	 */
+	// TODO discontinue drug order too?
 	public void discontinueOrder(Order order, String reason) throws APIException {
 		//order.setDiscontinued(true);
 		order.setDiscontinuedBy(context.getAuthenticatedUser());
@@ -122,6 +137,8 @@ public class IbatisOrderService implements OrderService {
 			try {
 				SqlMap.instance().startTransaction();
 				SqlMap.instance().delete("deleteOrder", order);
+				if (order.isDrugOrder())
+					SqlMap.instance().delete("deleteDrugOrder", order);
 				SqlMap.instance().commitTransaction();
 			} finally {
 				SqlMap.instance().endTransaction();

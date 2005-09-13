@@ -37,11 +37,24 @@ public class Order implements java.io.Serializable {
 		this.orderId = orderId;
 	}
 
+	public boolean equals(Object obj) {
+		if (obj instanceof Order) {
+			Order o = (Order)obj;
+			if (this.getOrderId() != null && o.getOrderId() != null)
+				return (this.getOrderId() == o.getOrderId());
+			return (this.getOrderType().equals(o.getOrderType()) &&
+					this.getConcept().equals(o.getConcept()) &&
+					this.getEncounter().equals(o.getEncounter()) &&
+					this.getInstructions().matches(o.getInstructions()));
+		}
+		return false;
+	}
+	
 	/**
 	 * true/false whether or not this is a drug order
 	 * overridden in extending class drugOrders. 
 	 */
-	public Boolean isDrugOrder() {
+	public boolean isDrugOrder() {
 		return false;
 	}
 	

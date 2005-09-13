@@ -10,7 +10,7 @@
 <!-- ************************************************************ -->
 
 <insert id="createOrder" parameterClass="org.openmrs.Order">
-	INSERT INTO order
+	INSERT INTO orders
 		(
 		order_type_id,
 		concept_id,
@@ -30,7 +30,7 @@
 		#encounter.encounterId#,
 		#instructions#,
 		#start_date#,
-		#autoExpireEate#,
+		#autoExpireDate#,
 		#creator.userId#,
 		NOW()
 		);
@@ -74,7 +74,7 @@
 
 <update id="updateOrder" parameterClass="org.openmrs.Order">
 	UPDATE
-		order
+		orders
 	SET
 		order_type_id = #orderType.orderTypeId#,
 		concept_id = #concept.conceptId#,
@@ -97,8 +97,9 @@
 
 <update id="discontinueOrder" parameterClass="org.openmrs.Order">
 	UPDATE
-		order
+		orders
 	SET
+		<!-- discontinued = 1 -->
 		discontinued_by = #discontinueBy.userId#,
 		discontinued_date = NOW(),
 		discontinued_reason = #discontinuedReason#
@@ -108,8 +109,9 @@
 
 <update id="unDiscontinueOrder" parameterClass="org.openmrs.Order">
 	UPDATE
-		order
+		orders
 	SET
+		<!-- discontinued = 0 -->
 		discontinued_by = NULL,
 		discontinued_date = NULL,
 		discontinued_reason = NULL

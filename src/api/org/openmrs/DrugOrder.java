@@ -1,7 +1,5 @@
 package org.openmrs;
 
-import java.util.Date;
-
 /**
  * DrugOrder 
  */
@@ -18,8 +16,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	private Boolean complex;
 	private Integer quantity;
 	private Drug drug;
-	private User creator;
-	private Date dateCreated;
 	
 	// Constructors
 
@@ -32,6 +28,20 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		this.setOrderId(orderId);
 	}
 
+	public boolean equals(Object obj) {
+		if (obj instanceof DrugOrder) {
+			DrugOrder d = (DrugOrder)obj;
+			return (super.equals((Order)obj) &&
+				this.getDrug().equals(d.getDrug()) &&
+				this.getDose() == d.getDose());
+		}
+		return false;
+	}
+	
+	public boolean isDrugOrder() {
+		return true;
+	}
+	
 	// Property accessors
 
 	/**
@@ -74,7 +84,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		return this.prn;
 	}
 
-	public void iPrn(Boolean prn) {
+	public void setPrn(Boolean prn) {
 		this.prn = prn;
 	}
 
@@ -103,17 +113,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	public Date getDateCreated() {
-		return this.dateCreated;
-	}
-
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
-	}
-
-	/**
-	 * 
-	 */
 	public Drug getDrug() {
 		return this.drug;
 	}
@@ -121,16 +120,4 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	public void setDrug(Drug drug) {
 		this.drug = drug;
 	}
-
-	/**
-	 * 
-	 */
-	public User getCreator() {
-		return this.creator;
-	}
-
-	public void setCreator(User creator) {
-		this.creator = creator;
-	}
-
 }
