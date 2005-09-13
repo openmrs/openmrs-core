@@ -64,6 +64,10 @@
 	SELECT * FROM order WHERE order_id = #value#
 </select>
 
+<select id="getOrderByEncounterId" parameterClass="int" resultMap="orderResult">
+	SELECT * FROM order WHERE encounter_id = #value#
+</select>
+
 <!-- ************************************************************ -->
 <!-- ** Update                                                 ** -->
 <!-- ************************************************************ -->

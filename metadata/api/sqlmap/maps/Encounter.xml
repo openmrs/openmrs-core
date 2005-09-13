@@ -13,6 +13,7 @@
 	INSERT INTO encounter
 		(
 		encounter_type,
+		encounter_datetime,
 		patient_id,
 		provider_id,
 		location_id,
@@ -22,6 +23,7 @@
 	VALUES
 		(
 		#encounterType.encounterTypeId#,
+		#encounterDatetime#,
 		#patient.patientId#,
 		#provider.providorId#,
 		#location.locationId#,
@@ -40,8 +42,11 @@
 <resultMap id="encounterResult" class="org.openmrs.Encounter">
 	<result property="encounterId" column="encounter_id" />
 	<result property="encounterType" column="encounter" />
+	<result property="encounterDatetime" column="encounter_datetime" />
 	<result property="patient" column="patient_id" select="getPatient" />
 	<result property="location" column="location_id" select="getLocation" />
+	<result property="orders" column="encounter_id" select="getOrderByEncounterId" />
+	<result property="obs" column="encounter_id" select="getObsByEncounterId" />
 	<result property="provider" column="provider_id" select="getProvider" />
 	<result property="creator" column="creator" select="getUser" />
 	<result property="dateCreated" column="date_created" />

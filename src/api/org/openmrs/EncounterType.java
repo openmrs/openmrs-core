@@ -1,7 +1,6 @@
 package org.openmrs;
 
 import java.util.Date;
-import java.util.Set;
 
 /**
  * EncounterType 
@@ -16,7 +15,6 @@ public class EncounterType implements java.io.Serializable {
 	private String name;
 	private String description;
 	private Date dateCreated;
-	private Set encounters;
 	private User creator;
 
 	// Constructors
@@ -74,17 +72,6 @@ public class EncounterType implements java.io.Serializable {
 
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
-	}
-
-	/**
-	 * 
-	 */
-	public Set getEncounters() {
-		return this.encounters;
-	}
-
-	public void setEncounters(Set encounters) {
-		this.encounters = encounters;
 	}
 
 	/**

@@ -5,6 +5,9 @@
 
 <sqlMap namespace="org.openmrs.Obs">
 
+<!-- TODO -merge obs and complex_obs gracefully on each select so return -->
+<!--       function knows if its an Obs or ComplexObs object             -->
+
 <!-- ************************************************************ -->
 <!-- ** Creation                                               ** -->
 <!-- ************************************************************ -->
@@ -85,6 +88,11 @@
 <select id="getObs" parameterClass="int" resultMap="obsResult">
 	SELECT * FROM obs WHERE obs_id = #value#
 </select>
+
+<select id="getObsByEncounterId" parameterClass="int" resultMap="obsResult">
+	SELECT * FROM obs WHERE encounter_id = #value#
+</select>
+
 
 <!-- ************************************************************ -->
 <!-- ** Update                                                 ** -->

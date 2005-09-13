@@ -34,6 +34,22 @@ public class Encounter implements java.io.Serializable {
 		this.encounterId = encounterId;
 	}
 
+	/** */
+	public boolean equals(Object obj) {
+		if (obj instanceof Encounter) {
+			Encounter enc = (Encounter) obj;
+			if (this.getEncounterId() != null && enc.getEncounterId() != null)
+				return (this.getEncounterId() == enc.getEncounterId());
+			return (this.getEncounterType().equals(enc.getEncounterType()) &&
+					this.getPatient().equals(enc.getPatient()) &&
+					this.getProvider().equals(enc.getProvider()) &&
+					this.getLocation().equals(enc.getLocation()) &&
+					this.getEncounterDatetime().equals(enc.getEncounterDatetime()));
+		}
+		return false;
+			
+	}
+	
 	// Property accessors
 
 	/**

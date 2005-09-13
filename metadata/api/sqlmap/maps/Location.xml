@@ -9,7 +9,7 @@
 <!-- ** Creation                                               ** -->
 <!-- ************************************************************ -->
 
-<insert id="creatLocation" parameterClass="org.openmrs.Location">
+<insert id="createLocation" parameterClass="org.openmrs.Location">
 	INSERT INTO location
 		(
 		name,
@@ -19,7 +19,7 @@
 		city_village,
 		state_province,
 		country,
-		zipcode,
+		postal_code,
 		latitude,
 		longitude,
 		creator,
@@ -34,7 +34,7 @@
 		#cityVillage#,
 		#stateProvince#,
 		#country#,
-		#zipcode#,
+		#postalCode#,
 		#latitude#,
 		#longitude#,
 		#creator.userId#,
@@ -55,6 +55,7 @@
 	<result property="cityVillage" column="city_village" />
 	<result property="stateProvince" column="state_province" />
 	<result property="country" column="country" />
+	<result property="postalCode" column="postal_code" />
 	<result property="latitude" column="latitude" />
 	<result property="longitude" column="longitude" />
 	<result property="creator" column="creator" select="getUser" />
@@ -84,7 +85,7 @@
 		city_village = #cityVillage#,
 		state_province = #stateProvince#,
 		country = #country#,
-		zipcode = #zipcode#,
+		postal_code = #postalCode#,
 		latitude = #latitude#,
 		longitude = #longitude#
 	WHERE

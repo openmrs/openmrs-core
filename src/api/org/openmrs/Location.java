@@ -1,7 +1,6 @@
 package org.openmrs;
 
 import java.util.Date;
-import java.util.Set;
 
 /**
  * Location 
@@ -20,7 +19,7 @@ public class Location implements java.io.Serializable {
 	private String cityVillage;
 	private String stateProvince;
 	private String country;
-	private String zipcode;
+	private String postalCode;
 	private String latitude;
 	private String longitude;
 	private User creator;
@@ -37,6 +36,25 @@ public class Location implements java.io.Serializable {
 		this.locationId = locationId;
 	}
 
+	public boolean equals(Object obj) {
+		if (obj instanceof Location) {
+			Location loc = (Location) obj;
+			if (this.getLocationId() != null && loc.getLocationId() != null)
+				return (this.getLocationId() == loc.getLocationId());
+			return (this.getName() == loc.getName() &&
+					this.getDescription() == loc.getDescription() &&
+					this.getAddress1() == loc.getAddress1() &&
+					this.getAddress2() == loc.getAddress2() &&
+					this.getCityVillage() == loc.getCityVillage() &&
+					this.getStateProvince() == loc.getStateProvince() &&
+					this.getPostalCode() == loc.getPostalCode() &&
+					this.getCountry() == loc.getCountry() &&
+					this.getLatitude() == loc.getLatitude() &&
+					this.getLongitude() == loc.getLongitude());
+		}
+		return false;
+	}
+	
 	// Property accessors
 
 	/**
@@ -130,12 +148,12 @@ public class Location implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	public String getZipcode() {
-		return this.zipcode;
+	public String getPostalCode() {
+		return this.postalCode;
 	}
 
-	public void setZipcode(String zipcode) {
-		this.zipcode = zipcode;
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
 	}
 
 	/**

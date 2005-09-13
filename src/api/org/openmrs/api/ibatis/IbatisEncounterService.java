@@ -45,6 +45,7 @@ public class IbatisEncounterService implements EncounterService {
 			try {
 				SqlMap.instance().startTransaction();
 				SqlMap.instance().insert("createEncounter", encounter);
+				SqlMap.instance().insert("createLocation", encounter.getLocation());
 				SqlMap.instance().commitTransaction();
 			} finally {
 				SqlMap.instance().endTransaction();
@@ -77,13 +78,11 @@ public class IbatisEncounterService implements EncounterService {
 			try {
 				SqlMap.instance().startTransaction();
 
-				User authenticatedUser = context.getAuthenticatedUser();
-
 				if (encounter.getCreator() == null) {
-					encounter.setCreator(authenticatedUser);
-					SqlMap.instance().insert("createEncounter", encounter);
+					this.createEncounter(encounter);
 				} else {
 					SqlMap.instance().update("updateEncounter", encounter);
+					SqlMap.instance().update("updateLocation", encounter.getLocation());
 				}
 
 				SqlMap.instance().commitTransaction();
