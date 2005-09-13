@@ -88,17 +88,12 @@ public class IbatisObsService implements ObsService {
 			try {
 				SqlMap.instance().startTransaction();
 
-				User authenticatedUser = context.getAuthenticatedUser();
-
 				if (obs.getCreator() == null) {
-					obs.setCreator(authenticatedUser);
-					SqlMap.instance().insert("createObs", obs);
-					if (obs.isComplexObs())
-						SqlMap.instance().insert("createComplexObs", obs);
+					this.createObs(obs);
 				} else {
 					SqlMap.instance().update("updateObs", obs);
 					if (obs.isComplexObs())
-						SqlMap.instance().insert("updateComplexObs", obs);
+						SqlMap.instance().update("updateComplexObs", obs);
 				}
 				SqlMap.instance().commitTransaction();
 			} finally {
@@ -116,6 +111,7 @@ public class IbatisObsService implements ObsService {
 	public void voidObs(Obs obs) throws APIException {
 		try {
 			try {
+				obs.setVoidedBy(context.getAuthenticatedUser());
 				SqlMap.instance().startTransaction();
 				SqlMap.instance().update("voidObs", obs);
 				SqlMap.instance().commitTransaction();
@@ -130,11 +126,11 @@ public class IbatisObsService implements ObsService {
 	/**
 	 * @see org.openmrs.api.ObsService#unVoidObs(Obs)
 	 */
-	public void unVoidObs(Obs obs) throws APIException {
+	public void unvoidObs(Obs obs) throws APIException {
 		try {
 			try {
 				SqlMap.instance().startTransaction();
-				SqlMap.instance().update("unVoidObs", obs);
+				SqlMap.instance().update("unvoidObs", obs);
 				SqlMap.instance().commitTransaction();
 			} finally {
 				SqlMap.instance().endTransaction();

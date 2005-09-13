@@ -12,7 +12,7 @@ public class Obs implements java.io.Serializable {
 	// Fields
 
 	protected Integer obsId;
-	protected Concept conceptId;
+	protected Concept concept;
 	protected Date obsDatetime;
 	protected Integer obsGroupId;
 	protected Concept valueCoded;
@@ -29,7 +29,7 @@ public class Obs implements java.io.Serializable {
 	protected Encounter encounter;
 	protected User creator;
 	protected Date dateCreated;
-	protected Boolean voided;
+	protected boolean voided;
 	protected User voidedBy;
 	protected Date dateVoided;
 	protected String voidReason;
@@ -45,10 +45,23 @@ public class Obs implements java.io.Serializable {
 		this.obsId = obsId;
 	}
 
+	public boolean equals(Object obj) {
+		if (obj instanceof Obs) {
+			Obs o = (Obs)obj;
+			if (this.getObsId() != null && o.getObsId() != null)
+				return (this.getObsId() == o.getObsId());
+			return (this.getConcept().equals(o.getConcept()) &&
+					this.getPatient().equals(o.getPatient()) &&
+					this.getEncounter().equals(o.getEncounter()) &&
+					this.getLocation().equals(o.getLocation()));
+		}
+		return false;
+	}
+	
 	/** determine if the current observation is complex
 	 *  --overridden in extending ComplexObs class
 	 */
-	public Boolean isComplexObs() {
+	public boolean isComplexObs() {
 		return false;
 	}
 	
@@ -178,7 +191,7 @@ public class Obs implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	public Boolean getVoided() {
+	public Boolean isVoided() {
 		return this.voided;
 	}
 
@@ -222,12 +235,12 @@ public class Obs implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	public Concept getConceptId() {
-		return this.conceptId;
+	public Concept getConcept() {
+		return this.concept;
 	}
 
-	public void setConceptId(Concept conceptId) {
-		this.conceptId = conceptId;
+	public void setConcept(Concept concept) {
+		this.concept = concept;
 	}
 
 	/**

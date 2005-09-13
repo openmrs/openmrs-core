@@ -39,7 +39,7 @@ public interface ObsService {
 	 * @param Obs
 	 * @throws APIException
 	 */
-	public void unVoidObs(Obs obs) throws APIException;
+	public void unvoidObs(Obs obs) throws APIException;
 
 	/**
 	 * Delete an observation.  SHOULD NOT BE CALLED unless caller is lower-level.

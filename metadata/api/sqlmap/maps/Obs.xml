@@ -44,7 +44,7 @@
 		#obsGroupId#,
 		#valueGroupId#,
 		#valueBoolean#,
-		#concept.conceptId#,
+		#valueCoded.conceptId#,
 		#valueNumeric#,
 		#valueModifier#,
 		#valueText#,
@@ -111,7 +111,7 @@
 		obs_group_id = #obsGroupId#,
 		value_boolean = #valueBoolean#,
 		value_datetime = #valueDatetime#,
-		value_coded = #valueCoded.concept_id#,
+		value_coded = #valueCoded.conceptId#,
 		value_numeric = #valueNumeric#,
 		value_modifier = #valueModifier#,
 		value_text = #valueText#,
@@ -143,8 +143,8 @@
 	UPDATE
 		obs
 	SET
-		changed_by = #changedBy.userId#,
-		date_changed = NOW(),
+		<!-- changed_by = #changedBy.userId#, -->
+		<!-- date_changed = NOW(), -->
 		voided = 0,
 		voided_by = NULL,
 		date_voided = NULL

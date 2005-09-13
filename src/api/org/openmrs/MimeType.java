@@ -23,6 +23,15 @@ public class MimeType implements java.io.Serializable {
 		this.mimeType = mimeType;
 	}
 
+	public boolean equals(Object obj) {
+		if (obj instanceof MimeType) {
+			MimeType m = (MimeType)obj;
+			return (this.getMimeType().matches(m.getMimeType()) &&
+					this.getDescription().matches(m.getDescription()));
+		}
+		return false;
+	}
+	
 	// Property accessors
 
 	/**

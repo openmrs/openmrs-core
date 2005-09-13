@@ -24,13 +24,26 @@ public class ComplexObs extends Obs implements java.io.Serializable{
 		this.obsId = obsId;
 	}
 	
+	public boolean equals(Object obj) {
+		if (obj instanceof ComplexObs){
+			ComplexObs c = (ComplexObs)obj;
+			return (super.equals((Obs)obj) &&
+					this.getMimeType().equals(c.getMimeType()) &&
+					this.getUrn().matches(c.getUrn()) &&
+					this.getComplexValue().matches(c.getComplexValue()));
+		}
+		return false;
+	}
+	
 	/** 
-	 * overriding parent 
+	 * overriding parent isComplexObs function to allow an easier check of 
+	 * complex vs noncomplex
+	 * 
 	 * @return true/false whether this is a complex observation
 	 * @see org.openmrs.Obs#isComplexObs
 	 */
 	
-	public Boolean isComplexObs() {
+	public boolean isComplexObs() {
 		return true;
 	}
 
