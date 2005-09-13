@@ -1,7 +1,6 @@
 package org.openmrs;
 
 import java.util.Date;
-import java.util.Set;
 
 /**
  * Drug 
@@ -27,8 +26,7 @@ public class Drug implements java.io.Serializable {
 	private String units;
 	private Date dateCreated;
 	private Concept concept;
-	private Set drugOrders;
-	private User user;
+	private User creator;
 
 	// Constructors
 
@@ -211,23 +209,12 @@ public class Drug implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	public Set getDrugOrders() {
-		return this.drugOrders;
+	public User getCreator() {
+		return this.creator;
 	}
 
-	public void setDrugOrders(Set drugOrders) {
-		this.drugOrders = drugOrders;
-	}
-
-	/**
-	 * 
-	 */
-	public User getUser() {
-		return this.user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
+	public void setCreator(User creator) {
+		this.creator = creator;
 	}
 
 }

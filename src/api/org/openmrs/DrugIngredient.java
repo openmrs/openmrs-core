@@ -9,6 +9,7 @@ public class DrugIngredient implements java.io.Serializable {
 
 	// Fields
 
+	private Concept concept;
 	private DrugIngredientId drugIngredientId;
 
 	// Constructors
@@ -58,6 +59,14 @@ public class DrugIngredient implements java.io.Serializable {
 	 */
 	public void setDrugIngredientId(DrugIngredientId drugIngredientId) {
 		this.drugIngredientId = drugIngredientId;
+	}
+
+	public Concept getConcept() {
+		return concept;
+	}
+
+	public void setConcept(Concept concept) {
+		this.concept = concept;
 	}
 
 }
