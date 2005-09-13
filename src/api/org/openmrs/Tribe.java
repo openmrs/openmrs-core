@@ -1,7 +1,5 @@
 package org.openmrs;
 
-import java.util.Set;
-
 /**
  * Tribe
  */
@@ -26,6 +24,17 @@ public class Tribe implements java.io.Serializable {
 		this.tribeId = tribeId;
 	}
 
+	public boolean equals(Object obj) {
+		if (obj instanceof Tribe) {
+			Tribe t = (Tribe)obj;
+			if (this.getTribeId() != null && t.getTribeId() != null)
+				return (this.getTribeId() == t.getTribeId());
+			return (this.getName().matches(t.getName()) &&
+					this.isRetired().equals(t.isRetired()));
+		}
+		return false;
+	}
+	
 	// Property accessors
 
 	/**
@@ -42,7 +51,7 @@ public class Tribe implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	public Boolean getRetired() {
+	public Boolean isRetired() {
 		return this.retired;
 	}
 

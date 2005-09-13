@@ -70,6 +70,10 @@
 </resultMap>
 
 <select id="getPatientName" parameterClass="int" resultMap="patientNameResult">
+	SELECT * FROM patient_name WHERE patient_name_id = #value#
+</select>
+
+<select id="getPatientNameByPatientId" parameterClass="int" resultMap="patientNameResult">
 	SELECT * FROM patient_name WHERE patient_id = #value#
 </select>
 

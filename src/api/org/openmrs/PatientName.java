@@ -40,6 +40,15 @@ public class PatientName implements java.io.Serializable {
 		this.patientNameId = patientNameId;
 	}
 
+	public boolean equals(Object obj) {
+		if (obj instanceof PatientName) {
+			PatientName pname = (PatientName) obj;
+			if (this.getPatientNameId() != null && pname.getPatientNameId() != null)
+				return (this.getPatientNameId() == pname.getPatientNameId()); 
+		}
+		return false;
+	}
+	
 	// Property accessors
 
 	/**

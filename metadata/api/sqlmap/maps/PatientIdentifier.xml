@@ -47,14 +47,14 @@
 	<result property="voidReason" column="void_reason" />
 </resultMap>
 
-<select id="getPatientIdentifier"
+<select id="getPatientIdentifier" parameterClass="org.openmrs.PatientIdentifier"
         resultMap="patientIdentifierResult">
 	SELECT * FROM patient_identifier
 	WHERE
-		patient_id = #patientId# AND
+		patient_id = #patient.patientId# AND
 		identifier = #identifier# AND
-		identifier_type = #patientIdentifierTypeId# AND
-		location = #locationId#
+		identifier_type = #identifierType.patientIdentifierTypeId# AND
+		location = #location.locationId#
 </select>
 
 <select id="getPatientIdentifierByPatientId" parameterClass="int"

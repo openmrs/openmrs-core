@@ -44,6 +44,15 @@ public class Patient implements java.io.Serializable {
 	public Patient() {
 	}
 
+	public boolean equals(Object obj) {
+		if (obj instanceof Patient) {
+			Patient p = (Patient) obj;
+			if (this.getPatientId() != null && p.getPatientId() != null)
+				return (this.getPatientId() == p.getPatientId());
+		}
+		return false;
+	}
+	
 	// Property accessors
 
 	/**

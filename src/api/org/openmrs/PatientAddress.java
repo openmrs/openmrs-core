@@ -17,11 +17,12 @@ public class PatientAddress implements java.io.Serializable {
 	private String cityVillage;
 	private String stateProvince;
 	private String country;
+	private String postalCode;
 	private String latitude;
 	private String longitude;
 	private Date dateCreated;
 	private Patient patient;
-	private User user;
+	private User creator;
 
 	// Constructors
 
@@ -34,6 +35,20 @@ public class PatientAddress implements java.io.Serializable {
 		this.patientAddressId = patientAddressId;
 	}
 
+	public boolean equals(Object obj) {
+		if (obj instanceof PatientAddress) {
+			PatientAddress p = (PatientAddress)obj;
+			if (this.getPatientAddressId() != null && p.getPatientAddressId() != null)
+				return (this.getPatientAddressId() == p.getPatientAddressId());
+			return (this.getAddress1().matches(p.getAddress1()) &&
+					this.getAddress2().matches(p.getAddress2()) &&
+					this.getCityVillage().matches(p.getCityVillage()) &&
+					this.getStateProvince().matches(p.getStateProvince()) &&
+					this.getCountry().matches(p.getCountry()));
+		}
+		return false;
+	}
+	
 	// Property accessors
 
 	/**
@@ -149,12 +164,20 @@ public class PatientAddress implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	public User getUser() {
-		return this.user;
+	public User getCreator() {
+		return this.creator;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
+	public void setCreator(User creator) {
+		this.creator = creator;
+	}
+
+	public String getPostalCode() {
+		return postalCode;
+	}
+
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
 	}
 
 }

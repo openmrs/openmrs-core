@@ -19,6 +19,7 @@
 		city_village,
 		state_province,
 		country,
+		postal_code,
 		latitude,
 		longitude,
 		creator,
@@ -32,6 +33,7 @@
 		#cityVillage#,
 		#stateProvince#,
 		#country#,
+		#postalCode#,
 		#latitude#,
 		#longitude#,
 		#creator.userId#,
@@ -44,7 +46,7 @@
 <!-- ************************************************************ -->
 
 <resultMap id="patientAddressResult" class="org.openmrs.PatientAddress">
-	<result property="patientAddressId" column="patientAddress_id" />
+	<result property="patientAddressId" column="patient_address_id" />
 	<result property="name" column="name" />
 	<result property="description" column="description" />
 	<result property="address1" column="address1" />
@@ -52,6 +54,7 @@
 	<result property="cityVillage" column="city_village" />
 	<result property="stateProvince" column="state_province" />
 	<result property="country" column="country" />
+	<result property="postalCode" column="postal_code" />
 	<result property="latitude" column="latitude" />
 	<result property="longitude" column="longitude" />
 	<result property="creator" column="creator" select="getUser" />
@@ -59,11 +62,15 @@
 </resultMap>
 
 <select id="getPatientAddress" parameterClass="int" resultMap="patientAddressResult">
-	SELECT * FROM patientAddress WHERE patientAddress_id = #value#
+	SELECT * FROM patientAddress WHERE patient_address_id = #value#
 </select>
 
-<select id="getAllPatientAddresss" resultMap="patientAddressResult">
+<select id="getAllPatientAddresses" resultMap="patientAddressResult">
 	SELECT * FROM patientAddress
+</select>
+
+<select id="getPatientAddressByPatientId" parameterClass="int" resultMap="patientAddressResult">
+	SELECT * FROM patientAddress WHERE patient_id = #value#
 </select>
 
 <!-- ************************************************************ -->
@@ -80,6 +87,7 @@
 		city_village = #cityVillage#,
 		state_province = #stateProvince#,
 		country = #country#,
+		postal_code = #postalCode#,
 		latitude = #latitude#,
 		longitude = #longitude#
 	WHERE

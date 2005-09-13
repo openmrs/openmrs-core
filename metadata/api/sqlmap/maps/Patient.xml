@@ -63,8 +63,7 @@
 	<result property="gender" column="gender" />
 	<result property="race" column="race" />
 	<result property="birthdate" column="birthdate" />
-	<result property="birthdateEstimated" column="birthdate_estimated"
-	        nullValue="false" />
+	<result property="birthdateEstimated" column="birthdate_estimated" nullValue="false" />
 	<result property="tribe" column="tribe" select="getTribe" />
 	<result property="citizenship" column="citizenship" />
 	<result property="mothersName" column="mothers_name" />
@@ -79,19 +78,14 @@
 	<result property="voidedBy" column="voided_by" select="getUser" />
 	<result property="dateVoided" column="date_voided" />
 	<result property="voidReason" column="void_reason" />
+	<result property="addresses" column="patient_id" select="getPatientAddressByPatientId" />
 </resultMap>
 
 <select id="getPatient" parameterClass="int" resultMap="patientResult">
 	SELECT * FROM patient WHERE patient_id = #value#
 </select>
 
-<select id="getTribe" parameterClass="int" resultClass="org.openmrs.Tribe">
-	SELECT * FROM tribe WHERE tribe_id = #value#
-</select>
-
-<select id="getPatientByIdentifier" 
-        parameterClass="string"
-        resultMap="patientResult">
+<select id="getPatientByIdentifier" parameterClass="string" resultMap="patientResult">
 	SELECT
 		p.*
 	FROM
