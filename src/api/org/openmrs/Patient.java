@@ -1,6 +1,7 @@
 package org.openmrs;
 
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -42,6 +43,9 @@ public class Patient implements java.io.Serializable {
 
 	/** default constructor */
 	public Patient() {
+		addresses = new LinkedList<PatientAddress>();
+		names = new LinkedList<PatientName>();
+		identifiers = new LinkedList<PatientIdentifier>();
 	}
 
 	public boolean equals(Object obj) {
