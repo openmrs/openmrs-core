@@ -4,6 +4,9 @@ import java.util.Date;
 
 /**
  * Obs 
+ * 
+ * @author Ben Wolfe
+ * @version 1.0
  */
 public class Obs implements java.io.Serializable {
 
@@ -45,6 +48,12 @@ public class Obs implements java.io.Serializable {
 		this.obsId = obsId;
 	}
 
+	/** 
+	 * Compares two objects for similarity
+	 * 
+	 * @param obj
+	 * @return boolean true/false whether or not they are the same objects
+	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof Obs) {
 			Obs o = (Obs)obj;
@@ -68,245 +77,312 @@ public class Obs implements java.io.Serializable {
 	// Property accessors
 
 	/**
-	 * 
-	 */
-	public Integer getObsId() {
-		return this.obsId;
-	}
-
-	public void setObsId(Integer obsId) {
-		this.obsId = obsId;
-	}
-
-	/**
-	 * 
-	 */
-	public Date getObsDatetime() {
-		return this.obsDatetime;
-	}
-
-	public void setObsDatetime(Date obsDatetime) {
-		this.obsDatetime = obsDatetime;
-	}
-
-	/**
-	 * 
-	 */
-	public Integer getObsGroupId() {
-		return this.obsGroupId;
-	}
-
-	public void setObsGroupId(Integer obsGroupId) {
-		this.obsGroupId = obsGroupId;
-	}
-
-	/**
-	 * 
-	 */
-	public Integer getValueGroupId() {
-		return this.valueGroupId;
-	}
-
-	public void setValueGroupId(Integer valueGroupId) {
-		this.valueGroupId = valueGroupId;
-	}
-
-	/**
-	 * 
-	 */
-	public Boolean getValueBoolean() {
-		return this.valueBoolean;
-	}
-
-	public void setValueBoolean(Boolean valueBoolean) {
-		this.valueBoolean = valueBoolean;
-	}
-
-	/**
-	 * 
-	 */
-	public Date getValueDatetime() {
-		return this.valueDatetime;
-	}
-
-	public void setValueDatetime(Date valueDatetime) {
-		this.valueDatetime = valueDatetime;
-	}
-
-	/**
-	 * 
-	 */
-	public Double getValueNumeric() {
-		return this.valueNumeric;
-	}
-
-	public void setValueNumeric(Double valueNumeric) {
-		this.valueNumeric = valueNumeric;
-	}
-
-	/**
-	 * 
-	 */
-	public String getValueModifier() {
-		return this.valueModifier;
-	}
-
-	public void setValueModifier(String valueModifier) {
-		this.valueModifier = valueModifier;
-	}
-
-	/**
-	 * 
-	 */
-	public String getValueText() {
-		return this.valueText;
-	}
-
-	public void setValueText(String valueText) {
-		this.valueText = valueText;
-	}
-
-	/**
-	 * 
+	 * @return Returns the comment.
 	 */
 	public String getComment() {
-		return this.comment;
+		return comment;
 	}
 
+	/**
+	 * @param comment The comment to set.
+	 */
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
 
 	/**
-	 * 
-	 */
-	public Date getDateCreated() {
-		return this.dateCreated;
-	}
-
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
-	}
-
-	/**
-	 * 
-	 */
-	public Boolean isVoided() {
-		return this.voided;
-	}
-
-	public void setVoided(Boolean voided) {
-		this.voided = voided;
-	}
-
-	/**
-	 * 
-	 */
-	public Date getDateVoided() {
-		return this.dateVoided;
-	}
-
-	public void setDateVoided(Date dateVoided) {
-		this.dateVoided = dateVoided;
-	}
-
-	/**
-	 * 
-	 */
-	public String getVoidReason() {
-		return this.voidReason;
-	}
-
-	public void setVoidReason(String voidReason) {
-		this.voidReason = voidReason;
-	}
-
-	/**
-	 * 
-	 */
-	public Patient getPatient() {
-		return this.patient;
-	}
-
-	public void setPatient(Patient patient) {
-		this.patient = patient;
-	}
-
-	/**
-	 * 
+	 * @return Returns the concept.
 	 */
 	public Concept getConcept() {
-		return this.concept;
+		return concept;
 	}
 
+	/**
+	 * @param concept The concept to set.
+	 */
 	public void setConcept(Concept concept) {
 		this.concept = concept;
 	}
 
 	/**
-	 * 
-	 */
-	public Concept getvalueCoded() {
-		return this.valueCoded;
-	}
-
-	public void setValueCoded(Concept valueCoded) {
-		this.valueCoded = valueCoded;
-	}
-
-	/**
-	 * 
-	 */
-	public Order getOrder() {
-		return this.order;
-	}
-
-	public void setOrder(Order order) {
-		this.order = order;
-	}
-
-	/**
-	 * 
-	 */
-	public Location getLocation() {
-		return this.location;
-	}
-
-	public void setLocation(Location location) {
-		this.location = location;
-	}
-
-	/**
-	 * 
-	 */
-	public Encounter getEncounter() {
-		return this.encounter;
-	}
-
-	public void setEncounter(Encounter encounter) {
-		this.encounter = encounter;
-	}
-
-	/**
-	 * 
+	 * @return Returns the creator.
 	 */
 	public User getCreator() {
-		return this.creator;
+		return creator;
 	}
 
+	/**
+	 * @param creator The creator to set.
+	 */
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
 
 	/**
-	 * 
+	 * @return Returns the dateCreated.
 	 */
-	public User getVoidedBy() {
-		return this.voidedBy;
+	public Date getDateCreated() {
+		return dateCreated;
 	}
 
+	/**
+	 * @param dateCreated The dateCreated to set.
+	 */
+	public void setDateCreated(Date dateCreated) {
+		this.dateCreated = dateCreated;
+	}
+
+	/**
+	 * @return Returns the dateVoided.
+	 */
+	public Date getDateVoided() {
+		return dateVoided;
+	}
+
+	/**
+	 * @param dateVoided The dateVoided to set.
+	 */
+	public void setDateVoided(Date dateVoided) {
+		this.dateVoided = dateVoided;
+	}
+
+	/**
+	 * @return Returns the encounter.
+	 */
+	public Encounter getEncounter() {
+		return encounter;
+	}
+
+	/**
+	 * @param encounter The encounter to set.
+	 */
+	public void setEncounter(Encounter encounter) {
+		this.encounter = encounter;
+	}
+
+	/**
+	 * @return Returns the location.
+	 */
+	public Location getLocation() {
+		return location;
+	}
+
+	/**
+	 * @param location The location to set.
+	 */
+	public void setLocation(Location location) {
+		this.location = location;
+	}
+
+	/**
+	 * @return Returns the obsDatetime.
+	 */
+	public Date getObsDatetime() {
+		return obsDatetime;
+	}
+
+	/**
+	 * @param obsDatetime The obsDatetime to set.
+	 */
+	public void setObsDatetime(Date obsDatetime) {
+		this.obsDatetime = obsDatetime;
+	}
+
+	/**
+	 * @return Returns the obsGroupId.
+	 */
+	public Integer getObsGroupId() {
+		return obsGroupId;
+	}
+
+	/**
+	 * @param obsGroupId The obsGroupId to set.
+	 */
+	public void setObsGroupId(Integer obsGroupId) {
+		this.obsGroupId = obsGroupId;
+	}
+
+	/**
+	 * @return Returns the obsId.
+	 */
+	public Integer getObsId() {
+		return obsId;
+	}
+
+	/**
+	 * @param obsId The obsId to set.
+	 */
+	public void setObsId(Integer obsId) {
+		this.obsId = obsId;
+	}
+
+	/**
+	 * @return Returns the order.
+	 */
+	public Order getOrder() {
+		return order;
+	}
+
+	/**
+	 * @param order The order to set.
+	 */
+	public void setOrder(Order order) {
+		this.order = order;
+	}
+
+	/**
+	 * @return Returns the patient.
+	 */
+	public Patient getPatient() {
+		return patient;
+	}
+
+	/**
+	 * @param patient The patient to set.
+	 */
+	public void setPatient(Patient patient) {
+		this.patient = patient;
+	}
+
+	/**
+	 * @return Returns the valueBoolean.
+	 */
+	public Boolean getValueBoolean() {
+		return valueBoolean;
+	}
+
+	/**
+	 * @param valueBoolean The valueBoolean to set.
+	 */
+	public void setValueBoolean(Boolean valueBoolean) {
+		this.valueBoolean = valueBoolean;
+	}
+
+	/**
+	 * @return Returns the valueCoded.
+	 */
+	public Concept getValueCoded() {
+		return valueCoded;
+	}
+
+	/**
+	 * @param valueCoded The valueCoded to set.
+	 */
+	public void setValueCoded(Concept valueCoded) {
+		this.valueCoded = valueCoded;
+	}
+
+	/**
+	 * @return Returns the valueDatetime.
+	 */
+	public Date getValueDatetime() {
+		return valueDatetime;
+	}
+
+	/**
+	 * @param valueDatetime The valueDatetime to set.
+	 */
+	public void setValueDatetime(Date valueDatetime) {
+		this.valueDatetime = valueDatetime;
+	}
+
+	/**
+	 * @return Returns the valueGroupId.
+	 */
+	public Integer getValueGroupId() {
+		return valueGroupId;
+	}
+
+	/**
+	 * @param valueGroupId The valueGroupId to set.
+	 */
+	public void setValueGroupId(Integer valueGroupId) {
+		this.valueGroupId = valueGroupId;
+	}
+
+	/**
+	 * @return Returns the valueModifier.
+	 */
+	public String getValueModifier() {
+		return valueModifier;
+	}
+
+	/**
+	 * @param valueModifier The valueModifier to set.
+	 */
+	public void setValueModifier(String valueModifier) {
+		this.valueModifier = valueModifier;
+	}
+
+	/**
+	 * @return Returns the valueNumeric.
+	 */
+	public Double getValueNumeric() {
+		return valueNumeric;
+	}
+
+	/**
+	 * @param valueNumeric The valueNumeric to set.
+	 */
+	public void setValueNumeric(Double valueNumeric) {
+		this.valueNumeric = valueNumeric;
+	}
+
+	/**
+	 * @return Returns the valueText.
+	 */
+	public String getValueText() {
+		return valueText;
+	}
+
+	/**
+	 * @param valueText The valueText to set.
+	 */
+	public void setValueText(String valueText) {
+		this.valueText = valueText;
+	}
+
+	/**
+	 * @return Returns the voided.
+	 */
+	public boolean isVoided() {
+		return voided;
+	}
+
+	/**
+	 * @param voided The voided to set.
+	 */
+	public void setVoided(boolean voided) {
+		this.voided = voided;
+	}
+
+	/**
+	 * @return Returns the voidedBy.
+	 */
+	public User getVoidedBy() {
+		return voidedBy;
+	}
+
+	/**
+	 * @param voidedBy The voidedBy to set.
+	 */
 	public void setVoidedBy(User voidedBy) {
 		this.voidedBy = voidedBy;
 	}
+
+	/**
+	 * @return Returns the voidReason.
+	 */
+	public String getVoidReason() {
+		return voidReason;
+	}
+
+	/**
+	 * @param voidReason The voidReason to set.
+	 */
+	public void setVoidReason(String voidReason) {
+		this.voidReason = voidReason;
+	}
+
 
 }

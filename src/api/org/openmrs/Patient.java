@@ -6,6 +6,9 @@ import java.util.List;
 
 /**
  * Patient
+ * 
+ * @author Burke Mamlin
+ * @version 1.0
  */
 public class Patient implements java.io.Serializable {
 
@@ -48,6 +51,12 @@ public class Patient implements java.io.Serializable {
 		identifiers = new LinkedList<PatientIdentifier>();
 	}
 
+	/** 
+	 * Compares two objects for similarity
+	 * 
+	 * @param obj
+	 * @return boolean true/false whether or not they are the same objects
+	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof Patient) {
 			Patient p = (Patient) obj;
@@ -56,7 +65,6 @@ public class Patient implements java.io.Serializable {
 		}
 		return false;
 	}
-	
 	// Property accessors
 
 	/**
@@ -108,7 +116,7 @@ public class Patient implements java.io.Serializable {
 	}
 
 	/**
-	 * @return patient's data of birth
+	 * @return patient's date of birth
 	 */
 	public Date getBirthdate() {
 		return this.birthdate;
@@ -206,7 +214,7 @@ public class Patient implements java.io.Serializable {
 
 	/**
 	 * @param civilStatus
-	 *            patient's civil status
+	 *            patient's civil(marriage) status 
 	 */
 	public void setCivilStatus(Integer civilStatus) {
 		this.civilStatus = civilStatus;

@@ -4,6 +4,9 @@ import java.util.Date;
 
 /**
  * PatientAddress 
+ * 
+ * @author Ben Wolfe
+ * @version 1.0
  */
 public class PatientAddress implements java.io.Serializable {
 
@@ -35,6 +38,12 @@ public class PatientAddress implements java.io.Serializable {
 		this.patientAddressId = patientAddressId;
 	}
 
+	/** 
+	 * Compares two objects for similarity
+	 * 
+	 * @param obj
+	 * @return boolean true/false whether or not they are the same objects
+	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof PatientAddress) {
 			PatientAddress p = (PatientAddress)obj;
@@ -52,132 +61,172 @@ public class PatientAddress implements java.io.Serializable {
 	// Property accessors
 
 	/**
-	 * 
+	 * @return Returns the address1.
 	 */
-	public Integer getPatientAddressId() {
-		return this.patientAddressId;
-	}
-
-	public void setPatientAddressId(Integer patientAddressId) {
-		this.patientAddressId = patientAddressId;
+	public String getAddress1() {
+		return address1;
 	}
 
 	/**
-	 * 
+	 * @param address1 The address1 to set.
 	 */
-	public String getAddress1() {
-		return this.address1;
-	}
-
 	public void setAddress1(String address1) {
 		this.address1 = address1;
 	}
 
 	/**
-	 * 
+	 * @return Returns the address2.
 	 */
 	public String getAddress2() {
-		return this.address2;
+		return address2;
 	}
 
+	/**
+	 * @param address2 The address2 to set.
+	 */
 	public void setAddress2(String address2) {
 		this.address2 = address2;
 	}
 
 	/**
-	 * 
+	 * @return Returns the cityVillage.
 	 */
 	public String getCityVillage() {
-		return this.cityVillage;
+		return cityVillage;
 	}
 
+	/**
+	 * @param cityVillage The cityVillage to set.
+	 */
 	public void setCityVillage(String cityVillage) {
 		this.cityVillage = cityVillage;
 	}
 
 	/**
-	 * 
+	 * @return Returns the country.
 	 */
-	public String getStateProvince() {
-		return this.stateProvince;
-	}
-
-	public void setStateProvince(String stateProvince) {
-		this.stateProvince = stateProvince;
+	public String getCountry() {
+		return country;
 	}
 
 	/**
-	 * 
+	 * @param country The country to set.
 	 */
-	public String getCountry() {
-		return this.country;
-	}
-
 	public void setCountry(String country) {
 		this.country = country;
 	}
 
 	/**
-	 * 
+	 * @return Returns the creator.
 	 */
-	public String getLatitude() {
-		return this.latitude;
-	}
-
-	public void setLatitude(String latitude) {
-		this.latitude = latitude;
+	public User getCreator() {
+		return creator;
 	}
 
 	/**
-	 * 
+	 * @param creator The creator to set.
 	 */
-	public String getLongitude() {
-		return this.longitude;
-	}
-
-	public void setLongitude(String longitude) {
-		this.longitude = longitude;
+	public void setCreator(User creator) {
+		this.creator = creator;
 	}
 
 	/**
-	 * 
+	 * @return Returns the dateCreated.
 	 */
 	public Date getDateCreated() {
-		return this.dateCreated;
+		return dateCreated;
 	}
 
+	/**
+	 * @param dateCreated The dateCreated to set.
+	 */
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
 
 	/**
-	 * 
+	 * @return Returns the latitude.
 	 */
-	public Patient getPatient() {
-		return this.patient;
+	public String getLatitude() {
+		return latitude;
 	}
 
+	/**
+	 * @param latitude The latitude to set.
+	 */
+	public void setLatitude(String latitude) {
+		this.latitude = latitude;
+	}
+
+	/**
+	 * @return Returns the longitude.
+	 */
+	public String getLongitude() {
+		return longitude;
+	}
+
+	/**
+	 * @param longitude The longitude to set.
+	 */
+	public void setLongitude(String longitude) {
+		this.longitude = longitude;
+	}
+
+	/**
+	 * @return Returns the patient.
+	 */
+	public Patient getPatient() {
+		return patient;
+	}
+
+	/**
+	 * @param patient The patient to set.
+	 */
 	public void setPatient(Patient patient) {
 		this.patient = patient;
 	}
 
 	/**
-	 * 
+	 * @return Returns the patientAddressId.
 	 */
-	public User getCreator() {
-		return this.creator;
+	public Integer getPatientAddressId() {
+		return patientAddressId;
 	}
 
-	public void setCreator(User creator) {
-		this.creator = creator;
+	/**
+	 * @param patientAddressId The patientAddressId to set.
+	 */
+	public void setPatientAddressId(Integer patientAddressId) {
+		this.patientAddressId = patientAddressId;
 	}
 
+	/**
+	 * @return Returns the postalCode.
+	 */
 	public String getPostalCode() {
 		return postalCode;
 	}
 
+	/**
+	 * @param postalCode The postalCode to set.
+	 */
 	public void setPostalCode(String postalCode) {
 		this.postalCode = postalCode;
 	}
+
+	/**
+	 * @return Returns the stateProvince.
+	 */
+	public String getStateProvince() {
+		return stateProvince;
+	}
+
+	/**
+	 * @param stateProvince The stateProvince to set.
+	 */
+	public void setStateProvince(String stateProvince) {
+		this.stateProvince = stateProvince;
+	}
+
 
 }

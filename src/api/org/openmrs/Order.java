@@ -4,6 +4,9 @@ import java.util.Date;
 
 /**
  * Order 
+ * 
+ * @author Ben Wolfe
+ * @version 1.0
  */
 public class Order implements java.io.Serializable {
 
@@ -21,6 +24,7 @@ public class Order implements java.io.Serializable {
 	private User orderer;
 	private User creator;
 	private Date dateCreated;
+	private boolean discontinued;
 	private User discontinuedBy;
 	private Date discontinuedDate;
 	private String discontinuedReason;
@@ -37,6 +41,12 @@ public class Order implements java.io.Serializable {
 		this.orderId = orderId;
 	}
 
+	/** 
+	 * Compares two objects for similarity
+	 * 
+	 * @param obj
+	 * @return boolean true/false whether or not they are the same objects
+	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof Order) {
 			Order o = (Order)obj;
@@ -61,146 +71,200 @@ public class Order implements java.io.Serializable {
 	// Property accessors
 
 	/**
-	 * 
-	 */
-	public Integer getOrderId() {
-		return this.orderId;
-	}
-
-	public void setOrderId(Integer orderId) {
-		this.orderId = orderId;
-	}
-
-	/**
-	 * 
-	 */
-	public Concept getConcept() {
-		return this.concept;
-	}
-
-	public void setConcept(Concept concept) {
-		this.concept = concept;
-	}
-
-	/**
-	 * 
-	 */
-	public String getInstructions() {
-		return this.instructions;
-	}
-
-	public void setInstructions(String instructions) {
-		this.instructions = instructions;
-	}
-
-	/**
-	 * 
-	 */
-	public Date getStartDate() {
-		return this.startDate;
-	}
-
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
-	}
-
-	/**
-	 * 
+	 * @return Returns the autoExpireDate.
 	 */
 	public Date getAutoExpireDate() {
-		return this.autoExpireDate;
+		return autoExpireDate;
 	}
 
+	/**
+	 * @param autoExpireDate The autoExpireDate to set.
+	 */
 	public void setAutoExpireDate(Date autoExpireDate) {
 		this.autoExpireDate = autoExpireDate;
 	}
 
 	/**
-	 * 
+	 * @return Returns the concept.
 	 */
-	public Date getDiscontinuedDate() {
-		return this.discontinuedDate;
-	}
-
-	public void setDiscontinuedDate(Date discontinuedDate) {
-		this.discontinuedDate = discontinuedDate;
+	public Concept getConcept() {
+		return concept;
 	}
 
 	/**
-	 * 
+	 * @param concept The concept to set.
 	 */
-	public String getDiscontinuedReason() {
-		return this.discontinuedReason;
-	}
-
-	public void setDiscontinuedReason(String discontinuedReason) {
-		this.discontinuedReason = discontinuedReason;
+	public void setConcept(Concept concept) {
+		this.concept = concept;
 	}
 
 	/**
-	 * 
-	 */
-	public Date getDateCreated() {
-		return this.dateCreated;
-	}
-
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
-	}
-
-	/**
-	 * 
-	 */
-	public Encounter getEncounter() {
-		return this.encounter;
-	}
-
-	public void setEncounter(Encounter encounter) {
-		this.encounter = encounter;
-	}
-
-	/**
-	 * 
-	 */
-	public User getOrderer() {
-		return this.orderer;
-	}
-
-	public void setOrderer(User orderer) {
-		this.orderer = orderer;
-	}
-
-	/**
-	 * 
-	 */
-	public User getDiscontinuedBy() {
-		return this.discontinuedBy;
-	}
-
-	public void setDiscontinuedBy(User discontinuedBy) {
-		this.discontinuedBy = discontinuedBy;
-	}
-
-	/**
-	 * 
+	 * @return Returns the creator.
 	 */
 	public User getCreator() {
-		return this.creator;
+		return creator;
 	}
 
+	/**
+	 * @param creator The creator to set.
+	 */
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
 
 	/**
-	 * 
+	 * @return Returns the dateCreated.
 	 */
-	public OrderType getOrderType() {
-		return this.orderType;
+	public Date getDateCreated() {
+		return dateCreated;
 	}
 
+	/**
+	 * @param dateCreated The dateCreated to set.
+	 */
+	public void setDateCreated(Date dateCreated) {
+		this.dateCreated = dateCreated;
+	}
+
+	/**
+	 * @return Returns the discontinued.
+	 */
+	public boolean isDiscontinued() {
+		return discontinued;
+	}
+
+	/**
+	 * @param discontinued The discontinued to set.
+	 */
+	public void setDiscontinued(boolean discontinued) {
+		this.discontinued = discontinued;
+	}
+
+	/**
+	 * @return Returns the discontinuedBy.
+	 */
+	public User getDiscontinuedBy() {
+		return discontinuedBy;
+	}
+
+	/**
+	 * @param discontinuedBy The discontinuedBy to set.
+	 */
+	public void setDiscontinuedBy(User discontinuedBy) {
+		this.discontinuedBy = discontinuedBy;
+	}
+
+	/**
+	 * @return Returns the discontinuedDate.
+	 */
+	public Date getDiscontinuedDate() {
+		return discontinuedDate;
+	}
+
+	/**
+	 * @param discontinuedDate The discontinuedDate to set.
+	 */
+	public void setDiscontinuedDate(Date discontinuedDate) {
+		this.discontinuedDate = discontinuedDate;
+	}
+
+	/**
+	 * @return Returns the discontinuedReason.
+	 */
+	public String getDiscontinuedReason() {
+		return discontinuedReason;
+	}
+
+	/**
+	 * @param discontinuedReason The discontinuedReason to set.
+	 */
+	public void setDiscontinuedReason(String discontinuedReason) {
+		this.discontinuedReason = discontinuedReason;
+	}
+
+	/**
+	 * @return Returns the encounter.
+	 */
+	public Encounter getEncounter() {
+		return encounter;
+	}
+
+	/**
+	 * @param encounter The encounter to set.
+	 */
+	public void setEncounter(Encounter encounter) {
+		this.encounter = encounter;
+	}
+
+	/**
+	 * @return Returns the instructions.
+	 */
+	public String getInstructions() {
+		return instructions;
+	}
+
+	/**
+	 * @param instructions The instructions to set.
+	 */
+	public void setInstructions(String instructions) {
+		this.instructions = instructions;
+	}
+
+	/**
+	 * @return Returns the orderer.
+	 */
+	public User getOrderer() {
+		return orderer;
+	}
+
+	/**
+	 * @param orderer The orderer to set.
+	 */
+	public void setOrderer(User orderer) {
+		this.orderer = orderer;
+	}
+
+	/**
+	 * @return Returns the orderId.
+	 */
+	public Integer getOrderId() {
+		return orderId;
+	}
+
+	/**
+	 * @param orderId The orderId to set.
+	 */
+	public void setOrderId(Integer orderId) {
+		this.orderId = orderId;
+	}
+
+	/**
+	 * @return Returns the orderType.
+	 */
+	public OrderType getOrderType() {
+		return orderType;
+	}
+
+	/**
+	 * @param orderType The orderType to set.
+	 */
 	public void setOrderType(OrderType orderType) {
 		this.orderType = orderType;
 	}
+
+	/**
+	 * @return Returns the startDate.
+	 */
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	/**
+	 * @param startDate The startDate to set.
+	 */
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
 
 }

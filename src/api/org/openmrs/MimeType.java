@@ -23,6 +23,12 @@ public class MimeType implements java.io.Serializable {
 		this.mimeType = mimeType;
 	}
 
+	/** 
+	 * Compares two objects for similarity
+	 * 
+	 * @param obj
+	 * @return boolean true/false whether or not they are the same objects
+	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof MimeType) {
 			MimeType m = (MimeType)obj;
@@ -35,24 +41,31 @@ public class MimeType implements java.io.Serializable {
 	// Property accessors
 
 	/**
-	 * 
+	 * @return Returns the description.
 	 */
-	public String getMimeType() {
-		return this.mimeType;
+	public String getDescription() {
+		return description;
 	}
 
+	/**
+	 * @param description The description to set.
+	 */
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	/**
+	 * @return Returns the mimeType.
+	 */
+	public String getMimeType() {
+		return mimeType;
+	}
+
+	/**
+	 * @param mimeType The mimeType to set.
+	 */
 	public void setMimeType(String mimeType) {
 		this.mimeType = mimeType;
 	}
 
-	/**
-	 * 
-	 */
-	public String getDescription() {
-		return this.description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
 }

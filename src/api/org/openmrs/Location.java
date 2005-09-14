@@ -4,6 +4,9 @@ import java.util.Date;
 
 /**
  * Location 
+ * 
+ * @author Ben Wolfe
+ * @version 1.0
  */
 public class Location implements java.io.Serializable {
 
@@ -36,6 +39,12 @@ public class Location implements java.io.Serializable {
 		this.locationId = locationId;
 	}
 
+	/** 
+	 * Compares two objects for similarity
+	 * 
+	 * @param obj
+	 * @return boolean true/false whether or not they are the same objects
+	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof Location) {
 			Location loc = (Location) obj;
@@ -58,146 +67,186 @@ public class Location implements java.io.Serializable {
 	// Property accessors
 
 	/**
-	 * 
-	 */
-	public Integer getLocationId() {
-		return this.locationId;
-	}
-
-	public void setLocationId(Integer locationId) {
-		this.locationId = locationId;
-	}
-
-	/**
-	 * 
-	 */
-	public String getName() {
-		return this.name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	/**
-	 * 
-	 */
-	public String getDescription() {
-		return this.description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	/**
-	 * 
+	 * @return Returns the address1.
 	 */
 	public String getAddress1() {
-		return this.address1;
+		return address1;
 	}
 
+	/**
+	 * @param address1 The address1 to set.
+	 */
 	public void setAddress1(String address1) {
 		this.address1 = address1;
 	}
 
 	/**
-	 * 
+	 * @return Returns the address2.
 	 */
 	public String getAddress2() {
-		return this.address2;
+		return address2;
 	}
 
+	/**
+	 * @param address2 The address2 to set.
+	 */
 	public void setAddress2(String address2) {
 		this.address2 = address2;
 	}
 
 	/**
-	 * 
+	 * @return Returns the cityVillage.
 	 */
 	public String getCityVillage() {
-		return this.cityVillage;
+		return cityVillage;
 	}
 
+	/**
+	 * @param cityVillage The cityVillage to set.
+	 */
 	public void setCityVillage(String cityVillage) {
 		this.cityVillage = cityVillage;
 	}
 
 	/**
-	 * 
+	 * @return Returns the country.
 	 */
-	public String getStateProvince() {
-		return this.stateProvince;
-	}
-
-	public void setStateProvince(String stateProvince) {
-		this.stateProvince = stateProvince;
+	public String getCountry() {
+		return country;
 	}
 
 	/**
-	 * 
+	 * @param country The country to set.
 	 */
-	public String getCountry() {
-		return this.country;
-	}
-
 	public void setCountry(String country) {
 		this.country = country;
 	}
 
 	/**
-	 * 
+	 * @return Returns the creator.
 	 */
-	public String getPostalCode() {
-		return this.postalCode;
-	}
-
-	public void setPostalCode(String postalCode) {
-		this.postalCode = postalCode;
+	public User getCreator() {
+		return creator;
 	}
 
 	/**
-	 * 
+	 * @param creator The creator to set.
 	 */
-	public String getLatitude() {
-		return this.latitude;
-	}
-
-	public void setLatitude(String latitude) {
-		this.latitude = latitude;
+	public void setCreator(User creator) {
+		this.creator = creator;
 	}
 
 	/**
-	 * 
-	 */
-	public String getLongitude() {
-		return this.longitude;
-	}
-
-	public void setLongitude(String longitude) {
-		this.longitude = longitude;
-	}
-
-	/**
-	 * 
+	 * @return Returns the dateCreated.
 	 */
 	public Date getDateCreated() {
-		return this.dateCreated;
+		return dateCreated;
 	}
 
+	/**
+	 * @param dateCreated The dateCreated to set.
+	 */
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
 
 	/**
-	 * 
+	 * @return Returns the description.
 	 */
-	public User getCreator() {
-		return this.creator;
+	public String getDescription() {
+		return description;
 	}
 
-	public void setCreator(User creator) {
-		this.creator = creator;
+	/**
+	 * @param description The description to set.
+	 */
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
+	/**
+	 * @return Returns the latitude.
+	 */
+	public String getLatitude() {
+		return latitude;
+	}
+
+	/**
+	 * @param latitude The latitude to set.
+	 */
+	public void setLatitude(String latitude) {
+		this.latitude = latitude;
+	}
+
+	/**
+	 * @return Returns the locationId.
+	 */
+	public Integer getLocationId() {
+		return locationId;
+	}
+
+	/**
+	 * @param locationId The locationId to set.
+	 */
+	public void setLocationId(Integer locationId) {
+		this.locationId = locationId;
+	}
+
+	/**
+	 * @return Returns the longitude.
+	 */
+	public String getLongitude() {
+		return longitude;
+	}
+
+	/**
+	 * @param longitude The longitude to set.
+	 */
+	public void setLongitude(String longitude) {
+		this.longitude = longitude;
+	}
+
+	/**
+	 * @return Returns the name.
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * @param name The name to set.
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * @return Returns the postalCode.
+	 */
+	public String getPostalCode() {
+		return postalCode;
+	}
+
+	/**
+	 * @param postalCode The postalCode to set.
+	 */
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
+
+	/**
+	 * @return Returns the stateProvince.
+	 */
+	public String getStateProvince() {
+		return stateProvince;
+	}
+
+	/**
+	 * @param stateProvince The stateProvince to set.
+	 */
+	public void setStateProvince(String stateProvince) {
+		this.stateProvince = stateProvince;
+	}
+
+	
 }

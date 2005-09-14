@@ -28,73 +28,107 @@ public class FieldType implements java.io.Serializable {
 	public FieldType(Integer fieldTypeId) {
 		this.fieldTypeId = fieldTypeId;
 	}
-
+	
+	/** 
+	 * Compares two objects for similarity
+	 * 
+	 * @param obj
+	 * @return boolean true/false whether or not they are the same objects
+	 */
+	public boolean equals(Object obj) {
+		if (obj instanceof FieldType) {
+			FieldType f = (FieldType)obj;
+			return (fieldTypeId == f.getFieldTypeId());
+		}
+		return false;
+	}
+	
 	// Property accessors
 
 	/**
-	 * 
+	 * @return Returns the creator.
 	 */
-	public Integer getFieldTypeId() {
-		return this.fieldTypeId;
-	}
-
-	public void setFieldTypeId(Integer fieldTypeId) {
-		this.fieldTypeId = fieldTypeId;
+	public User getCreator() {
+		return creator;
 	}
 
 	/**
-	 * 
+	 * @param creator The creator to set.
 	 */
-	public String getName() {
-		return this.name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
+	public void setCreator(User creator) {
+		this.creator = creator;
 	}
 
 	/**
-	 * 
-	 */
-	public String getDescription() {
-		return this.description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	/**
-	 * 
-	 */
-	public Boolean getIsSet() {
-		return this.isSet;
-	}
-
-	public void setIsSet(Boolean isSet) {
-		this.isSet = isSet;
-	}
-
-	/**
-	 * 
+	 * @return Returns the dateCreated.
 	 */
 	public Date getDateCreated() {
-		return this.dateCreated;
+		return dateCreated;
 	}
 
+	/**
+	 * @param dateCreated The dateCreated to set.
+	 */
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
 
 	/**
-	 * 
+	 * @return Returns the description.
 	 */
-	public User getCreator() {
-		return this.creator;
+	public String getDescription() {
+		return description;
 	}
 
-	public void setCreator(User creator) {
-		this.creator = creator;
+	/**
+	 * @param description The description to set.
+	 */
+	public void setDescription(String description) {
+		this.description = description;
 	}
+
+	/**
+	 * @return Returns the fieldTypeId.
+	 */
+	public Integer getFieldTypeId() {
+		return fieldTypeId;
+	}
+
+	/**
+	 * @param fieldTypeId The fieldTypeId to set.
+	 */
+	public void setFieldTypeId(Integer fieldTypeId) {
+		this.fieldTypeId = fieldTypeId;
+	}
+
+	/**
+	 * @return Returns the isSet.
+	 */
+	public Boolean getIsSet() {
+		return isSet;
+	}
+
+	/**
+	 * @param isSet The isSet to set.
+	 */
+	public void setIsSet(Boolean isSet) {
+		this.isSet = isSet;
+	}
+
+	/**
+	 * @return Returns the name.
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * @param name The name to set.
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	
 
 }

@@ -28,7 +28,7 @@ public interface PatientService {
 	 * Find all patients with a given identifier
 	 * 
 	 * @param identifier
-	 * @return
+	 * @return list of patients matching identifier
 	 * @throws APIException
 	 */
 	public List getPatientByIdentifier(String identifier) throws APIException;
@@ -46,7 +46,7 @@ public interface PatientService {
 	 * except for testing and administration purposes.  Use the void
 	 * method instead.
 	 * 
-	 * @param patientId internal identifier of patient to be deleted
+	 * @param patient patient to be deleted
 	 * 
 	 * @see #voidPatient(Patient, String) 
 	 */

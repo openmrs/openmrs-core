@@ -4,7 +4,10 @@ import java.util.Date;
 import java.util.Set;
 
 /**
- * Form 
+ * Form
+ * 
+ *  @author Ben Wolfe
+ *  @version 1.0
  */
 public class Form implements java.io.Serializable {
 
@@ -18,7 +21,7 @@ public class Form implements java.io.Serializable {
 	private String description;
 	private String schemaNamespace;
 	private String definition;
-	private Boolean retired;
+	private boolean retired;
 	private Date dateChanged;
 	private Date dateCreated;
 	private Set formFields;
@@ -36,6 +39,12 @@ public class Form implements java.io.Serializable {
 		this.formId = formId;
 	}
 
+	/** 
+	 * Compares two objects for similarity
+	 * 
+	 * @param obj
+	 * @return boolean true/false whether or not they are the same objects
+	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof Form) {
 			Form f = (Form)obj;
@@ -46,139 +55,175 @@ public class Form implements java.io.Serializable {
 		}
 		return false;
 	}
-	
+
 	// Property accessors
-
+	
 	/**
-	 * 
+	 * @return Returns the changedBy.
 	 */
-	public Integer getFormId() {
-		return this.formId;
-	}
-
-	public void setFormId(Integer formId) {
-		this.formId = formId;
+	public User getChangedBy() {
+		return changedBy;
 	}
 
 	/**
-	 * 
+	 * @param changedBy The changedBy to set.
 	 */
-	public String getName() {
-		return this.name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
+	public void setChangedBy(User changedBy) {
+		this.changedBy = changedBy;
 	}
 
 	/**
-	 * 
-	 */
-	public String getVersion() {
-		return this.version;
-	}
-
-	public void setVersion(String version) {
-		this.version = version;
-	}
-
-	/**
-	 * 
-	 */
-	public String getDescription() {
-		return this.description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	/**
-	 * 
-	 */
-	public String getSchemaNamespace() {
-		return this.schemaNamespace;
-	}
-
-	public void setSchemaNamespace(String schemaNamespace) {
-		this.schemaNamespace = schemaNamespace;
-	}
-
-	/**
-	 * 
-	 */
-	public String getDefinition() {
-		return this.definition;
-	}
-
-	public void setDefinition(String definition) {
-		this.definition = definition;
-	}
-
-	/**
-	 * 
-	 */
-	public Boolean getRetired() {
-		return this.retired;
-	}
-
-	public void setRetired(Boolean retired) {
-		this.retired = retired;
-	}
-
-	/**
-	 * 
-	 */
-	public Date getDateChanged() {
-		return this.dateChanged;
-	}
-
-	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
-	}
-
-	/**
-	 * 
-	 */
-	public Date getDateCreated() {
-		return this.dateCreated;
-	}
-
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
-	}
-
-	/**
-	 * 
-	 */
-	public Set getFormFields() {
-		return this.formFields;
-	}
-
-	public void setFormFields(Set formFields) {
-		this.formFields = formFields;
-	}
-
-	/**
-	 * 
+	 * @return Returns the creator.
 	 */
 	public User getCreator() {
-		return this.creator;
+		return creator;
 	}
 
+	/**
+	 * @param creator The creator to set.
+	 */
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
 
 	/**
-	 * 
+	 * @return Returns the dateChanged.
 	 */
-	public User getChangedBy() {
-		return this.changedBy;
+	public Date getDateChanged() {
+		return dateChanged;
 	}
 
-	public void setChangedBy(User changedBy) {
-		this.changedBy = changedBy;
+	/**
+	 * @param dateChanged The dateChanged to set.
+	 */
+	public void setDateChanged(Date dateChanged) {
+		this.dateChanged = dateChanged;
+	}
+
+	/**
+	 * @return Returns the dateCreated.
+	 */
+	public Date getDateCreated() {
+		return dateCreated;
+	}
+
+	/**
+	 * @param dateCreated The dateCreated to set.
+	 */
+	public void setDateCreated(Date dateCreated) {
+		this.dateCreated = dateCreated;
+	}
+
+	/**
+	 * @return Returns the definition.
+	 */
+	public String getDefinition() {
+		return definition;
+	}
+
+	/**
+	 * @param definition The definition to set.
+	 */
+	public void setDefinition(String definition) {
+		this.definition = definition;
+	}
+
+	/**
+	 * @return Returns the description.
+	 */
+	public String getDescription() {
+		return description;
+	}
+
+	/**
+	 * @param description The description to set.
+	 */
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	/**
+	 * @return Returns the formFields.
+	 */
+	public Set getFormFields() {
+		return formFields;
+	}
+
+	/**
+	 * @param formFields The formFields to set.
+	 */
+	public void setFormFields(Set formFields) {
+		this.formFields = formFields;
+	}
+
+	/**
+	 * @return Returns the formId.
+	 */
+	public Integer getFormId() {
+		return formId;
+	}
+
+	/**
+	 * @param formId The formId to set.
+	 */
+	public void setFormId(Integer formId) {
+		this.formId = formId;
+	}
+
+	/**
+	 * @return Returns the name.
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * @param name The name to set.
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * @return Returns the retired status.
+	 */
+	public boolean isRetired() {
+		return retired;
+	}
+
+	/**
+	 * @param retired The retired status to set.
+	 */
+	public void setRetired(boolean retired) {
+		this.retired = retired;
+	}
+
+	/**
+	 * @return Returns the schemaNamespace.
+	 */
+	public String getSchemaNamespace() {
+		return schemaNamespace;
+	}
+
+	/**
+	 * @param schemaNamespace The schemaNamespace to set.
+	 */
+	public void setSchemaNamespace(String schemaNamespace) {
+		this.schemaNamespace = schemaNamespace;
+	}
+
+	/**
+	 * @return Returns the version.
+	 */
+	public String getVersion() {
+		return version;
+	}
+
+	/**
+	 * @param version The version to set.
+	 */
+	public void setVersion(String version) {
+		this.version = version;
 	}
 
 }

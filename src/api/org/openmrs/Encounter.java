@@ -5,6 +5,9 @@ import java.util.Set;
 
 /**
  * Encounter 
+ * 
+ * @author Ben Wolfe
+ * @version 1.0
  */
 public class Encounter implements java.io.Serializable {
 
@@ -34,7 +37,12 @@ public class Encounter implements java.io.Serializable {
 		this.encounterId = encounterId;
 	}
 
-	/** */
+	/** 
+	 * Compares two Encounter objects for similarity
+	 * 
+	 * @param obj
+	 * @return boolean true/false whether or not they are the same objects
+	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof Encounter) {
 			Encounter enc = (Encounter) obj;
@@ -53,113 +61,143 @@ public class Encounter implements java.io.Serializable {
 	// Property accessors
 
 	/**
-	 * 
-	 */
-	public Integer getEncounterId() {
-		return this.encounterId;
-	}
-
-	public void setEncounterId(Integer encounterId) {
-		this.encounterId = encounterId;
-	}
-
-	/**
-	 * 
-	 */
-	public Date getEncounterDatetime() {
-		return this.encounterDatetime;
-	}
-
-	public void setEncounterDatetime(Date encounterDatetime) {
-		this.encounterDatetime = encounterDatetime;
-	}
-
-	/**
-	 * 
-	 */
-	public Patient getPatient() {
-		return this.patient;
-	}
-
-	public void setPatient(Patient patient) {
-		this.patient = patient;
-	}
-
-	/**
-	 * 
-	 */
-	public Location getLocation() {
-		return this.location;
-	}
-
-	public void setLocation(Location location) {
-		this.location = location;
-	}
-
-	/**
-	 * 
-	 */
-	public Set getOrders() {
-		return this.orders;
-	}
-
-	public void setOrders(Set orders) {
-		this.orders = orders;
-	}
-
-	/**
-	 * 
-	 */
-	public Set getObs() {
-		return this.obs;
-	}
-
-	public void setObs(Set obs) {
-		this.obs = obs;
-	}
-
-	/**
-	 * 
-	 */
-	public EncounterType getEncounterType() {
-		return this.encounterType;
-	}
-
-	public void setEncounterType(EncounterType encounterType) {
-		this.encounterType = encounterType;
-	}
-
-	/**
-	 * 
-	 */
-	public User getProvider() {
-		return provider;
-	}
-
-	public void setProvider(User provider) {
-		this.provider = provider;
-	}
-
-	/**
-	 * 
+	 * @return Returns the creator.
 	 */
 	public User getCreator() {
 		return creator;
 	}
 
+	/**
+	 * @param creator The creator to set.
+	 */
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
 
 	/**
-	 * 
+	 * @return Returns the dateCreated.
 	 */
 	public Date getDateCreated() {
-		return this.dateCreated;
+		return dateCreated;
 	}
 
+	/**
+	 * @param dateCreated The dateCreated to set.
+	 */
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
+	}
+
+	/**
+	 * @return Returns the encounterDatetime.
+	 */
+	public Date getEncounterDatetime() {
+		return encounterDatetime;
+	}
+
+	/**
+	 * @param encounterDatetime The encounterDatetime to set.
+	 */
+	public void setEncounterDatetime(Date encounterDatetime) {
+		this.encounterDatetime = encounterDatetime;
+	}
+
+	/**
+	 * @return Returns the encounterId.
+	 */
+	public Integer getEncounterId() {
+		return encounterId;
+	}
+
+	/**
+	 * @param encounterId The encounterId to set.
+	 */
+	public void setEncounterId(Integer encounterId) {
+		this.encounterId = encounterId;
+	}
+
+	/**
+	 * @return Returns the encounterType.
+	 */
+	public EncounterType getEncounterType() {
+		return encounterType;
+	}
+
+	/**
+	 * @param encounterType The encounterType to set.
+	 */
+	public void setEncounterType(EncounterType encounterType) {
+		this.encounterType = encounterType;
+	}
+
+	/**
+	 * @return Returns the location.
+	 */
+	public Location getLocation() {
+		return location;
+	}
+
+	/**
+	 * @param location The location to set.
+	 */
+	public void setLocation(Location location) {
+		this.location = location;
+	}
+
+	/**
+	 * @return Returns the obs.
+	 */
+	public Set getObs() {
+		return obs;
+	}
+
+	/**
+	 * @param obs The obs to set.
+	 */
+	public void setObs(Set obs) {
+		this.obs = obs;
+	}
+
+	/**
+	 * @return Returns the orders.
+	 */
+	public Set getOrders() {
+		return orders;
+	}
+
+	/**
+	 * @param orders The orders to set.
+	 */
+	public void setOrders(Set orders) {
+		this.orders = orders;
+	}
+
+	/**
+	 * @return Returns the patient.
+	 */
+	public Patient getPatient() {
+		return patient;
+	}
+
+	/**
+	 * @param patient The patient to set.
+	 */
+	public void setPatient(Patient patient) {
+		this.patient = patient;
+	}
+
+	/**
+	 * @return Returns the provider.
+	 */
+	public User getProvider() {
+		return provider;
+	}
+
+	/**
+	 * @param provider The provider to set.
+	 */
+	public void setProvider(User provider) {
+		this.provider = provider;
 	}
 
 }

@@ -2,6 +2,9 @@ package org.openmrs;
 
 /**
  * Tribe
+ * 
+ * @author Ben Wolfe
+ * @version 1.0
  */
 public class Tribe implements java.io.Serializable {
 
@@ -10,7 +13,7 @@ public class Tribe implements java.io.Serializable {
 	// Fields
 
 	private Integer tribeId;
-	private Boolean retired;
+	private boolean retired;
 	private String name;
 
 	// Constructors
@@ -30,7 +33,7 @@ public class Tribe implements java.io.Serializable {
 			if (this.getTribeId() != null && t.getTribeId() != null)
 				return (this.getTribeId() == t.getTribeId());
 			return (this.getName().matches(t.getName()) &&
-					this.isRetired().equals(t.isRetired()));
+					this.isRetired() == t.isRetired());
 		}
 		return false;
 	}
@@ -38,36 +41,46 @@ public class Tribe implements java.io.Serializable {
 	// Property accessors
 
 	/**
-	 * 
+	 * @return Returns the name.
 	 */
-	public Integer getTribeId() {
-		return this.tribeId;
-	}
-
-	public void setTribeId(Integer tribeId) {
-		this.tribeId = tribeId;
+	public String getName() {
+		return name;
 	}
 
 	/**
-	 * 
+	 * @param name The name to set.
 	 */
-	public Boolean isRetired() {
-		return this.retired;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public void setRetired(Boolean retired) {
+	/**
+	 * @return Returns the retired.
+	 */
+	public boolean isRetired() {
+		return retired;
+	}
+
+	/**
+	 * @param retired The retired to set.
+	 */
+	public void setRetired(boolean retired) {
 		this.retired = retired;
 	}
 
 	/**
-	 * 
+	 * @return Returns the tribeId.
 	 */
-	public String getName() {
-		return this.name;
+	public Integer getTribeId() {
+		return tribeId;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	/**
+	 * @param tribeId The tribeId to set.
+	 */
+	public void setTribeId(Integer tribeId) {
+		this.tribeId = tribeId;
 	}
+
 
 }

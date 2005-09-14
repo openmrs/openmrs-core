@@ -13,7 +13,7 @@ public class PatientName implements java.io.Serializable {
 
 	private Integer patientNameId;
 	private Patient patient;
-	private Boolean preferred;
+	private boolean preferred;
 	private String prefix;
 	private String givenName;
 	private String middleName;
@@ -40,6 +40,12 @@ public class PatientName implements java.io.Serializable {
 		this.patientNameId = patientNameId;
 	}
 
+	/** 
+	 * Compares two objects for similarity
+	 * 
+	 * @param obj
+	 * @return boolean true/false whether or not they are the same objects
+	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof PatientName) {
 			PatientName pname = (PatientName) obj;
@@ -52,179 +58,242 @@ public class PatientName implements java.io.Serializable {
 	// Property accessors
 
 	/**
-	 * 
+	 * @return Returns the creator.
 	 */
-	public Integer getPatientNameId() {
-		return this.patientNameId;
-	}
-
-	public void setPatientNameId(Integer patientNameId) {
-		this.patientNameId = patientNameId;
+	public User getCreator() {
+		return creator;
 	}
 
 	/**
-	 * 
+	 * @param creator The creator to set.
 	 */
-	public Boolean getPreferred() {
-		return this.preferred;
-	}
-
-	public void setPreferred(Boolean preferred) {
-		this.preferred = preferred;
+	public void setCreator(User creator) {
+		this.creator = creator;
 	}
 
 	/**
-	 * 
-	 */
-	public String getGivenName() {
-		return this.givenName;
-	}
-
-	public void setGivenName(String givenName) {
-		this.givenName = givenName;
-	}
-
-	/**
-	 * 
-	 */
-	public String getMiddleName() {
-		return this.middleName;
-	}
-
-	public void setMiddleName(String middleName) {
-		this.middleName = middleName;
-	}
-
-	/**
-	 * 
-	 */
-	public String getFamilyNamePrefix() {
-		return this.familyNamePrefix;
-	}
-
-	public void setFamilyNamePrefix(String familyNamePrefix) {
-		this.familyNamePrefix = familyNamePrefix;
-	}
-
-	/**
-	 * 
-	 */
-	public String getFamilyName() {
-		return this.familyName;
-	}
-
-	public void setFamilyName(String famiyName) {
-		this.familyName = famiyName;
-	}
-
-	/**
-	 * 
-	 */
-	public String getFamilyName2() {
-		return this.familyName2;
-	}
-
-	public void setFamilyName2(String familyName2) {
-		this.familyName2 = familyName2;
-	}
-
-	/**
-	 * 
-	 */
-	public String getFamilyNameSuffix() {
-		return this.familyNameSuffix;
-	}
-
-	public void setFamilyNameSuffix(String familyNameSuffix) {
-		this.familyNameSuffix = familyNameSuffix;
-	}
-
-	/**
-	 * 
-	 */
-	public String getDegree() {
-		return this.degree;
-	}
-
-	public void setDegree(String degree) {
-		this.degree = degree;
-	}
-
-	/**
-	 * 
+	 * @return Returns the dateCreated.
 	 */
 	public Date getDateCreated() {
-		return this.dateCreated;
+		return dateCreated;
 	}
 
+	/**
+	 * @param dateCreated The dateCreated to set.
+	 */
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
 
 	/**
-	 * 
+	 * @return Returns the dateVoided.
 	 */
-	public Patient getPatient() {
-		return this.patient;
+	public Date getDateVoided() {
+		return dateVoided;
 	}
 
+	/**
+	 * @param dateVoided The dateVoided to set.
+	 */
+	public void setDateVoided(Date dateVoided) {
+		this.dateVoided = dateVoided;
+	}
+
+	/**
+	 * @return Returns the degree.
+	 */
+	public String getDegree() {
+		return degree;
+	}
+
+	/**
+	 * @param degree The degree to set.
+	 */
+	public void setDegree(String degree) {
+		this.degree = degree;
+	}
+
+	/**
+	 * @return Returns the familyName.
+	 */
+	public String getFamilyName() {
+		return familyName;
+	}
+
+	/**
+	 * @param familyName The familyName to set.
+	 */
+	public void setFamilyName(String familyName) {
+		this.familyName = familyName;
+	}
+
+	/**
+	 * @return Returns the familyName2.
+	 */
+	public String getFamilyName2() {
+		return familyName2;
+	}
+
+	/**
+	 * @param familyName2 The familyName2 to set.
+	 */
+	public void setFamilyName2(String familyName2) {
+		this.familyName2 = familyName2;
+	}
+
+	/**
+	 * @return Returns the familyNamePrefix.
+	 */
+	public String getFamilyNamePrefix() {
+		return familyNamePrefix;
+	}
+
+	/**
+	 * @param familyNamePrefix The familyNamePrefix to set.
+	 */
+	public void setFamilyNamePrefix(String familyNamePrefix) {
+		this.familyNamePrefix = familyNamePrefix;
+	}
+
+	/**
+	 * @return Returns the familyNameSuffix.
+	 */
+	public String getFamilyNameSuffix() {
+		return familyNameSuffix;
+	}
+
+	/**
+	 * @param familyNameSuffix The familyNameSuffix to set.
+	 */
+	public void setFamilyNameSuffix(String familyNameSuffix) {
+		this.familyNameSuffix = familyNameSuffix;
+	}
+
+	/**
+	 * @return Returns the givenName.
+	 */
+	public String getGivenName() {
+		return givenName;
+	}
+
+	/**
+	 * @param givenName The givenName to set.
+	 */
+	public void setGivenName(String givenName) {
+		this.givenName = givenName;
+	}
+
+	/**
+	 * @return Returns the middleName.
+	 */
+	public String getMiddleName() {
+		return middleName;
+	}
+
+	/**
+	 * @param middleName The middleName to set.
+	 */
+	public void setMiddleName(String middleName) {
+		this.middleName = middleName;
+	}
+
+	/**
+	 * @return Returns the patient.
+	 */
+	public Patient getPatient() {
+		return patient;
+	}
+
+	/**
+	 * @param patient The patient to set.
+	 */
 	public void setPatient(Patient patient) {
 		this.patient = patient;
 	}
 
 	/**
-	 * 
+	 * @return Returns the patientNameId.
 	 */
-	public User getCreator() {
-		return this.creator;
+	public Integer getPatientNameId() {
+		return patientNameId;
 	}
 
-	public void setCreator(User creator) {
-		this.creator = creator;
+	/**
+	 * @param patientNameId The patientNameId to set.
+	 */
+	public void setPatientNameId(Integer patientNameId) {
+		this.patientNameId = patientNameId;
 	}
 
-	public String toString() {
-		return givenName + " " + familyName;
+	/**
+	 * @return Returns the preferred.
+	 */
+	public boolean isPreferred() {
+		return preferred;
 	}
 
+	/**
+	 * @param preferred The preferred to set.
+	 */
+	public void setPreferred(boolean preferred) {
+		this.preferred = preferred;
+	}
+
+	/**
+	 * @return Returns the prefix.
+	 */
 	public String getPrefix() {
 		return prefix;
 	}
 
+	/**
+	 * @param prefix The prefix to set.
+	 */
 	public void setPrefix(String prefix) {
 		this.prefix = prefix;
 	}
 
-	public void setVoided(boolean voided) {
-		this.voided = voided;
-	}
-
+	/**
+	 * @return Returns the voided.
+	 */
 	public boolean isVoided() {
 		return voided;
 	}
 
+	/**
+	 * @param voided The voided to set.
+	 */
+	public void setVoided(boolean voided) {
+		this.voided = voided;
+	}
+
+	/**
+	 * @return Returns the voidedBy.
+	 */
 	public User getVoidedBy() {
 		return voidedBy;
 	}
 
+	/**
+	 * @param voidedBy The voidedBy to set.
+	 */
 	public void setVoidedBy(User voidedBy) {
 		this.voidedBy = voidedBy;
 	}
 
-	public Date getDateVoided() {
-		return dateVoided;
-	}
-
-	public void setDateVoided(Date dateVoided) {
-		this.dateVoided = dateVoided;
-	}
-
+	/**
+	 * @return Returns the voidReason.
+	 */
 	public String getVoidReason() {
 		return voidReason;
 	}
 
+	/**
+	 * @param voidReason The voidReason to set.
+	 */
 	public void setVoidReason(String voidReason) {
 		this.voidReason = voidReason;
 	}
+
 
 }

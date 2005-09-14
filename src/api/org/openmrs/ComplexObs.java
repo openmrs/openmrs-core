@@ -2,6 +2,9 @@ package org.openmrs;
 
 /**
  * ComplexObs 
+ * 
+ * @author Ben Wolfe
+ * @version 1.0
  */
 public class ComplexObs extends Obs implements java.io.Serializable{
 	
@@ -24,6 +27,12 @@ public class ComplexObs extends Obs implements java.io.Serializable{
 		this.obsId = obsId;
 	}
 	
+	/** 
+	 * Compares two ComplexObs objects for similarity
+	 * 
+	 * @param obj
+	 * @return boolean true/false whether or not they are the same objects
+	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof ComplexObs){
 			ComplexObs c = (ComplexObs)obj;

@@ -94,6 +94,7 @@ public interface UserService {
 	 * 
 	 * @param user
 	 * @throws APIException
+	 * @see #voidUser(User, String)
 	 */
 	public void deleteUser(User user) throws APIException;
 	

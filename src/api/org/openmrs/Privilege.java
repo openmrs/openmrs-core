@@ -3,6 +3,9 @@ package org.openmrs;
 
 /**
  * Privilege 
+ * 
+ * @author Burke Mamlin
+ * @version 1.0
  */
 public class Privilege implements java.io.Serializable {
 
@@ -23,34 +26,40 @@ public class Privilege implements java.io.Serializable {
 	public Privilege(String privilege) {
 		this.privilege = privilege;
 	}
-
+	
+	public boolean equals(Object obj) {
+		if (obj == null || !(obj instanceof Privilege)) return false;
+		return privilege.matches(((Privilege)obj).privilege);
+	}
+	
 	// Property accessors
 
 	/**
-	 * 
+	 * @return Returns the description.
 	 */
-	public String getPrivilege() {
-		return this.privilege;
-	}
-
-	public void setPrivilege(String privilege) {
-		this.privilege = privilege;
+	public String getDescription() {
+		return description;
 	}
 
 	/**
-	 * 
+	 * @param description The description to set.
 	 */
-	public String getDescription() {
-		return this.description;
-	}
-
 	public void setDescription(String description) {
 		this.description = description;
 	}
 
-	public boolean equals(Object obj) {
-		if (obj == null || !(obj instanceof Privilege)) return false;
-		return privilege.equals(((Privilege)obj).privilege);
+	/**
+	 * @return Returns the privilege.
+	 */
+	public String getPrivilege() {
+		return privilege;
 	}
-	
+
+	/**
+	 * @param privilege The privilege to set.
+	 */
+	public void setPrivilege(String privilege) {
+		this.privilege = privilege;
+	}
+
 }

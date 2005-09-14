@@ -4,6 +4,9 @@ import java.util.Date;
 
 /**
  * FieldAnswer 
+ * 
+ * @author Ben Wolfe
+ * @version 1.0
  */
 public class FieldAnswer implements java.io.Serializable {
 
@@ -22,6 +25,12 @@ public class FieldAnswer implements java.io.Serializable {
 	public FieldAnswer() {
 	}
 
+	/** 
+	 * Compares two objects for similarity
+	 * 
+	 * @param obj
+	 * @return boolean true/false whether or not they are the same objects
+	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof FieldAnswer) {
 			FieldAnswer fa = (FieldAnswer)obj;
@@ -31,54 +40,63 @@ public class FieldAnswer implements java.io.Serializable {
 		return false;
 	}
 	
+	
 	// Property accessors
 
 	/**
-	 * 
+	 * @return Returns the concept.
 	 */
-	public Date getDateCreated() {
-		return this.dateCreated;
-	}
-
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
+	public Concept getConcept() {
+		return concept;
 	}
 
 	/**
-	 * 
+	 * @param concept The concept to set.
 	 */
-	public Concept getConcept() {
-		return this.concept;
-	}
-
 	public void setConcept(Concept concept) {
 		this.concept = concept;
 	}
 
 	/**
-	 * 
+	 * @return Returns the creator.
 	 */
 	public User getCreator() {
-		return this.creator;
+		return creator;
 	}
 
+	/**
+	 * @param creator The creator to set.
+	 */
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
 
 	/**
-	 * 
+	 * @return Returns the dateCreated.
 	 */
-	public Field getField() {
-		return this.field;
+	public Date getDateCreated() {
+		return dateCreated;
 	}
 
+	/**
+	 * @param dateCreated The dateCreated to set.
+	 */
+	public void setDateCreated(Date dateCreated) {
+		this.dateCreated = dateCreated;
+	}
+
+	/**
+	 * @return Returns the field.
+	 */
+	public Field getField() {
+		return field;
+	}
+
+	/**
+	 * @param field The field to set.
+	 */
 	public void setField(Field field) {
 		this.field = field;
 	}
 	
-	public int hashCode() {
-		return field.hashCode() + concept.hashCode();
-	}
-
 }

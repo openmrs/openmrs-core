@@ -4,6 +4,9 @@ import java.util.Date;
 
 /**
  * FormField 
+ * 
+ * @author Ben Wolfe
+ * @version 1.0
  */
 public class FormField implements java.io.Serializable {
 
@@ -20,7 +23,7 @@ public class FormField implements java.io.Serializable {
 	private Integer pageNumber;
 	private Integer minOccurs;
 	private Integer maxOccurs;
-	private Boolean required;
+	private boolean required;
 	private Date dateChanged;
 	private Date dateCreated;
 	private User changedBy;
@@ -37,6 +40,12 @@ public class FormField implements java.io.Serializable {
 		this.formFieldId = formFieldId;
 	}
 
+	/** 
+	 * Compares two objects for similarity
+	 * 
+	 * @param obj
+	 * @return boolean true/false whether or not they are the same objects
+	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof FormField)
 		{
@@ -53,157 +62,200 @@ public class FormField implements java.io.Serializable {
 	// Property accessors
 
 	/**
-	 * 
-	 */
-	public Integer getFormFieldId() {
-		return this.formFieldId;
-	}
-
-	public void setFormFieldId(Integer formFieldId) {
-		this.formFieldId = formFieldId;
-	}
-
-	/**
-	 * 
-	 */
-	public Integer getFieldNumber() {
-		return this.fieldNumber;
-	}
-
-	public void setFieldNumber(Integer fieldNumber) {
-		this.fieldNumber = fieldNumber;
-	}
-
-	/**
-	 * 
-	 */
-	public String getFieldPart() {
-		return this.fieldPart;
-	}
-
-	public void setFieldPart(String fieldPart) {
-		this.fieldPart = fieldPart;
-	}
-
-	/**
-	 * 
-	 */
-	public Integer getPageNumber() {
-		return this.pageNumber;
-	}
-
-	public void setPageNumber(Integer pageNumber) {
-		this.pageNumber = pageNumber;
-	}
-
-	/**
-	 * 
-	 */
-	public Integer getMinOccurs() {
-		return this.minOccurs;
-	}
-
-	public void setMinOccurs(Integer minOccurs) {
-		this.minOccurs = minOccurs;
-	}
-
-	/**
-	 * 
-	 */
-	public Integer getMaxOccurs() {
-		return this.maxOccurs;
-	}
-
-	public void setMaxOccurs(Integer maxOccurs) {
-		this.maxOccurs = maxOccurs;
-	}
-
-	/**
-	 * 
-	 */
-	public Boolean isRequired() {
-		return this.required;
-	}
-
-	public void setRequired(Boolean required) {
-		this.required = required;
-	}
-
-	/**
-	 * 
-	 */
-	public Date getDateChanged() {
-		return this.dateChanged;
-	}
-
-	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
-	}
-
-	/**
-	 * 
-	 */
-	public Date getDateCreated() {
-		return this.dateCreated;
-	}
-
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
-	}
-
-	/**
-	 * 
-	 */
-	public Form getForm() {
-		return this.form;
-	}
-
-	public void setForm(Form form) {
-		this.form = form;
-	}
-	
-	/**
-	 * 
-	 */
-	public FormField getFormField() {
-		return this.formField;
-	}
-
-	public void setFormField(FormField formField) {
-		this.formField = formField;
-	}
-
-	/**
-	 * 
+	 * @return Returns the changedBy.
 	 */
 	public User getChangedBy() {
-		return this.changedBy;
+		return changedBy;
 	}
 
+	/**
+	 * @param changedBy The changedBy to set.
+	 */
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
 
 	/**
-	 * 
+	 * @return Returns the creator.
 	 */
 	public User getCreator() {
-		return this.creator;
+		return creator;
 	}
 
+	/**
+	 * @param creator The creator to set.
+	 */
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
 
 	/**
-	 * 
+	 * @return Returns the dateChanged.
 	 */
-	public Field getField() {
-		return this.field;
+	public Date getDateChanged() {
+		return dateChanged;
 	}
 
+	/**
+	 * @param dateChanged The dateChanged to set.
+	 */
+	public void setDateChanged(Date dateChanged) {
+		this.dateChanged = dateChanged;
+	}
+
+	/**
+	 * @return Returns the dateCreated.
+	 */
+	public Date getDateCreated() {
+		return dateCreated;
+	}
+
+	/**
+	 * @param dateCreated The dateCreated to set.
+	 */
+	public void setDateCreated(Date dateCreated) {
+		this.dateCreated = dateCreated;
+	}
+
+	/**
+	 * @return Returns the field.
+	 */
+	public Field getField() {
+		return field;
+	}
+
+	/**
+	 * @param field The field to set.
+	 */
 	public void setField(Field field) {
 		this.field = field;
 	}
+
+	/**
+	 * @return Returns the fieldNumber.
+	 */
+	public Integer getFieldNumber() {
+		return fieldNumber;
+	}
+
+	/**
+	 * @param fieldNumber The fieldNumber to set.
+	 */
+	public void setFieldNumber(Integer fieldNumber) {
+		this.fieldNumber = fieldNumber;
+	}
+
+	/**
+	 * @return Returns the fieldPart.
+	 */
+	public String getFieldPart() {
+		return fieldPart;
+	}
+
+	/**
+	 * @param fieldPart The fieldPart to set.
+	 */
+	public void setFieldPart(String fieldPart) {
+		this.fieldPart = fieldPart;
+	}
+
+	/**
+	 * @return Returns the form.
+	 */
+	public Form getForm() {
+		return form;
+	}
+
+	/**
+	 * @param form The form to set.
+	 */
+	public void setForm(Form form) {
+		this.form = form;
+	}
+
+	/**
+	 * @return Returns the formField.
+	 */
+	public FormField getFormField() {
+		return formField;
+	}
+
+	/**
+	 * @param formField The formField to set.
+	 */
+	public void setFormField(FormField formField) {
+		this.formField = formField;
+	}
+
+	/**
+	 * @return Returns the formFieldId.
+	 */
+	public Integer getFormFieldId() {
+		return formFieldId;
+	}
+
+	/**
+	 * @param formFieldId The formFieldId to set.
+	 */
+	public void setFormFieldId(Integer formFieldId) {
+		this.formFieldId = formFieldId;
+	}
+
+	/**
+	 * @return Returns the maxOccurs.
+	 */
+	public Integer getMaxOccurs() {
+		return maxOccurs;
+	}
+
+	/**
+	 * @param maxOccurs The maxOccurs to set.
+	 */
+	public void setMaxOccurs(Integer maxOccurs) {
+		this.maxOccurs = maxOccurs;
+	}
+
+	/**
+	 * @return Returns the minOccurs.
+	 */
+	public Integer getMinOccurs() {
+		return minOccurs;
+	}
+
+	/**
+	 * @param minOccurs The minOccurs to set.
+	 */
+	public void setMinOccurs(Integer minOccurs) {
+		this.minOccurs = minOccurs;
+	}
+
+	/**
+	 * @return Returns the pageNumber.
+	 */
+	public Integer getPageNumber() {
+		return pageNumber;
+	}
+
+	/**
+	 * @param pageNumber The pageNumber to set.
+	 */
+	public void setPageNumber(Integer pageNumber) {
+		this.pageNumber = pageNumber;
+	}
+
+	/**
+	 * @return Returns the required status.
+	 */
+	public Boolean isRequired() {
+		return required;
+	}
+
+	/**
+	 * @param required The required status to set.
+	 */
+	public void setRequired(Boolean required) {
+		this.required = required;
+	}
+
 
 }
