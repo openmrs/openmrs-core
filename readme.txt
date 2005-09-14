@@ -1,3 +1,7 @@
+OpenMRS
+$Date$
+$Rev$
+
 This is the root folder.  We're using Eclipse 3.1.0 (www.eclipse.org).
 The project tree is set up as follows:
 
