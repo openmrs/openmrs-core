@@ -13,6 +13,8 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.UserService;
+import org.openmrs.api.ibatis.IbatisEncounterService;
+import org.openmrs.api.ibatis.IbatisObsService;
 import org.openmrs.api.ibatis.IbatisPatientService;
 import org.openmrs.api.ibatis.IbatisUserService;
 import org.openmrs.api.ibatis.SqlMap;
@@ -95,16 +97,22 @@ public class IbatisContext implements Context {
 
 	/** @see org.openmrs.context.Context#getConceptService() */
 	public ConceptService getConceptService() {
+		//if (conceptService == null)
+		//	conceptService = new IbatisConceptService(this);
 		return conceptService;
 	}
 	
 	/** @see org.openmrs.context.Context#getEncounterService() */
 	public EncounterService getEncounterService() {
+		if (encounterService == null)
+			encounterService = new IbatisEncounterService(this);
 		return encounterService;
 	}
 
 	/** @see org.openmrs.context.Context#getObsService() */
 	public ObsService getObsService() {
+		if (obsService == null)
+			obsService = new IbatisObsService(this);
 		return obsService;
 	}
 
