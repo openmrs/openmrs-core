@@ -1,7 +1,6 @@
 package org.openmrs.api;
 
 import org.openmrs.EncounterType;
-import org.openmrs.User;
 
 /**
  * Admin-related services
@@ -22,10 +21,9 @@ public interface AdministrationService {
 	/**
 	 * Update an encounter type
 	 * @param EncounterType to update
-	 * @return newly updated EncounterType
 	 * @throws APIException
 	 */
-	public EncounterType updateEncounterType(EncounterType encounterType) throws APIException;
+	public void updateEncounterType(EncounterType encounterType) throws APIException;
 
 	/**
 	 * Delete an encounter type
