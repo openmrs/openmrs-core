@@ -41,7 +41,7 @@ public class OrderType implements java.io.Serializable {
 		if (obj instanceof OrderType) {
 			OrderType o = (OrderType)obj;
 			if (o != null)
-				return (getOrderTypeId() == o.getOrderTypeId());
+				return (getOrderTypeId().equals(o.getOrderTypeId()));
 		}
 		return false;
 	}

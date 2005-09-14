@@ -38,7 +38,7 @@ public class FieldType implements java.io.Serializable {
 	public boolean equals(Object obj) {
 		if (obj instanceof FieldType) {
 			FieldType f = (FieldType)obj;
-			return (fieldTypeId == f.getFieldTypeId());
+			return (fieldTypeId.equals(f.getFieldTypeId()));
 		}
 		return false;
 	}

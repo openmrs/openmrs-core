@@ -48,7 +48,7 @@ public class PatientAddress implements java.io.Serializable {
 		if (obj instanceof PatientAddress) {
 			PatientAddress p = (PatientAddress)obj;
 			if (this.getPatientAddressId() != null && p.getPatientAddressId() != null)
-				return (this.getPatientAddressId() == p.getPatientAddressId());
+				return (this.getPatientAddressId().equals(p.getPatientAddressId()));
 			return (this.getAddress1().matches(p.getAddress1()) &&
 					this.getAddress2().matches(p.getAddress2()) &&
 					this.getCityVillage().matches(p.getCityVillage()) &&

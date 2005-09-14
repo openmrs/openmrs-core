@@ -66,9 +66,9 @@ public class User implements java.io.Serializable {
 	}
 	
 	public boolean equals(Object obj) {
-		if (obj != null && obj instanceof User) {
+		if (obj instanceof User) {
 			User u = (User)obj;;
-			return (getUserId() == u.getUserId());
+			return (getUserId().equals(u.getUserId()));
 		}
 		return false;
 	}

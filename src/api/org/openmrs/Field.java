@@ -52,7 +52,7 @@ public class Field implements java.io.Serializable {
 			return false;
 		
 		Field field = (Field) obj;
-		return (this.fieldId == field.getFieldId());
+		return (this.fieldId.equals(field.getFieldId()));
 	}
 
 	// Property accessors

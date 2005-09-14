@@ -53,7 +53,7 @@ public class Drug implements java.io.Serializable {
 			return false;
 		
 		Drug drug = (Drug) obj;
-		return (this.drugId == drug.getDrugId());
+		return (this.drugId.equals(drug.getDrugId()));
 	}
 	
 	// Property accessors

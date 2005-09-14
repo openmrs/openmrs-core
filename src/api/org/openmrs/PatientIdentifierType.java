@@ -36,7 +36,7 @@ public class PatientIdentifierType implements java.io.Serializable {
 		if (obj instanceof PatientIdentifierType) {
 			PatientIdentifierType p = (PatientIdentifierType)obj;
 			if (p != null)
-				return (patientIdentifierTypeId == p.getPatientIdentifierTypeId());
+				return (patientIdentifierTypeId.equals(p.getPatientIdentifierTypeId()));
 		}
 		return false;
 	}

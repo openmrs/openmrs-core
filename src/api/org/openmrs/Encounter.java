@@ -47,7 +47,7 @@ public class Encounter implements java.io.Serializable {
 		if (obj instanceof Encounter) {
 			Encounter enc = (Encounter) obj;
 			if (this.getEncounterId() != null && enc.getEncounterId() != null)
-				return (this.getEncounterId() == enc.getEncounterId());
+				return (this.getEncounterId().equals(enc.getEncounterId()));
 			return (this.getEncounterType().equals(enc.getEncounterType()) &&
 					this.getPatient().equals(enc.getPatient()) &&
 					this.getProvider().equals(enc.getProvider()) &&

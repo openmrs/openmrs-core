@@ -58,7 +58,7 @@ public class Obs implements java.io.Serializable {
 		if (obj instanceof Obs) {
 			Obs o = (Obs)obj;
 			if (this.getObsId() != null && o.getObsId() != null)
-				return (this.getObsId() == o.getObsId());
+				return (this.getObsId().equals(o.getObsId()));
 			return (this.getConcept().equals(o.getConcept()) &&
 					this.getPatient().equals(o.getPatient()) &&
 					this.getEncounter().equals(o.getEncounter()) &&

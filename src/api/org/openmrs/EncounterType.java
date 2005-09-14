@@ -42,7 +42,7 @@ public class EncounterType implements java.io.Serializable {
 			return false;
 		
 		EncounterType encounterType = (EncounterType) obj;
-		return (this.encounterTypeId == encounterType.getEncounterTypeId());
+		return (this.encounterTypeId.equals(encounterType.getEncounterTypeId()));
 	}
 
 	// Property accessors

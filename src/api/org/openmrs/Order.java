@@ -51,7 +51,7 @@ public class Order implements java.io.Serializable {
 		if (obj instanceof Order) {
 			Order o = (Order)obj;
 			if (this.getOrderId() != null && o.getOrderId() != null)
-				return (this.getOrderId() == o.getOrderId());
+				return (this.getOrderId().equals(o.getOrderId()));
 			return (this.getOrderType().equals(o.getOrderType()) &&
 					this.getConcept().equals(o.getConcept()) &&
 					this.getEncounter().equals(o.getEncounter()) &&

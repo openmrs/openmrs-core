@@ -49,7 +49,7 @@ public class Form implements java.io.Serializable {
 		if (obj instanceof Form) {
 			Form f = (Form)obj;
 			if (this.getFormId() != null && f.getFormId() != null)
-				return (this.getFormId() == f.getFormId());
+				return (this.getFormId().equals(f.getFormId()));
 			return (this.getName().matches(f.getName()) &&
 					this.getVersion().matches(f.getVersion()));
 		}

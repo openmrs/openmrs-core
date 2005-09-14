@@ -50,16 +50,16 @@ public class Location implements java.io.Serializable {
 			Location loc = (Location) obj;
 			if (this.getLocationId() != null && loc.getLocationId() != null)
 				return (this.getLocationId() == loc.getLocationId());
-			return (this.getName() == loc.getName() &&
-					this.getDescription() == loc.getDescription() &&
-					this.getAddress1() == loc.getAddress1() &&
-					this.getAddress2() == loc.getAddress2() &&
-					this.getCityVillage() == loc.getCityVillage() &&
-					this.getStateProvince() == loc.getStateProvince() &&
-					this.getPostalCode() == loc.getPostalCode() &&
-					this.getCountry() == loc.getCountry() &&
-					this.getLatitude() == loc.getLatitude() &&
-					this.getLongitude() == loc.getLongitude());
+			return (this.getName().matches(loc.getName()) &&
+					this.getDescription().matches(loc.getDescription()) &&
+					this.getAddress1().matches(loc.getAddress1()) &&
+					this.getAddress2().matches(loc.getAddress2()) &&
+					this.getCityVillage().matches(loc.getCityVillage()) &&
+					this.getStateProvince().matches(loc.getStateProvince()) &&
+					this.getPostalCode().matches(loc.getPostalCode()) &&
+					this.getCountry().matches(loc.getCountry()) &&
+					this.getLatitude().matches(loc.getLatitude()) &&
+					this.getLongitude().matches(loc.getLongitude()));
 		}
 		return false;
 	}

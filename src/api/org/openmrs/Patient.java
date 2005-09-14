@@ -61,7 +61,7 @@ public class Patient implements java.io.Serializable {
 		if (obj instanceof Patient) {
 			Patient p = (Patient) obj;
 			if (this.getPatientId() != null && p.getPatientId() != null)
-				return (this.getPatientId() == p.getPatientId());
+				return (this.getPatientId().equals(p.getPatientId()));
 		}
 		return false;
 	}
