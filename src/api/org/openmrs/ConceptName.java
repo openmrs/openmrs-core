@@ -4,10 +4,8 @@ import java.util.Date;
 
 /**
  * ConceptName 
- */
-/**
- * @author burke
- *
+ * 
+ * @author Burke Mamlin
  */
 public class ConceptName implements java.io.Serializable {
 

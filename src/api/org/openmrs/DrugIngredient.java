@@ -1,7 +1,9 @@
 package org.openmrs;
 
 /**
- * DrugIngredient 
+ * DrugIngredient
+ * 
+ * @author Burke Mamlin
  */
 public class DrugIngredient implements java.io.Serializable {
 
@@ -9,8 +11,8 @@ public class DrugIngredient implements java.io.Serializable {
 
 	// Fields
 
-	private Concept concept;
-	private DrugIngredientId drugIngredientId;
+	private Concept drug;
+	private Concept ingredient;
 
 	// Constructors
 
@@ -18,55 +20,36 @@ public class DrugIngredient implements java.io.Serializable {
 	public DrugIngredient() {
 	}
 
-	public DrugIngredient(DrugIngredientId drugIngredientId) {
-		this.drugIngredientId = drugIngredientId;
-	}
-
 	// Property accessors
 
 	/**
-	 * 
+	 * @return Returns the drug.
 	 */
 	public Concept getDrug() {
-		return drugIngredientId.getDrug();
-	}
-
-	public void setDrug(Concept drug) {
-		drugIngredientId.setDrug(drug);
+		return drug;
 	}
 
 	/**
-	 * 
+	 * @param drug
+	 *            The drug to set.
+	 */
+	public void setDrug(Concept drug) {
+		this.drug = drug;
+	}
+
+	/**
+	 * @return Returns the ingredient.
 	 */
 	public Concept getIngredient() {
-		return drugIngredientId.getIngredient();
+		return ingredient;
 	}
 
+	/**
+	 * @param ingredient
+	 *            The ingredient to set.
+	 */
 	public void setIngredient(Concept ingredient) {
-		drugIngredientId.setIngredient(ingredient);
-	}
-
-	/**
-	 * @return Returns the drugIngredientId.
-	 */
-	public DrugIngredientId getDrugIngredientId() {
-		return drugIngredientId;
-	}
-
-	/**
-	 * @param drugIngredientId
-	 *            The drugIngredientId to set.
-	 */
-	public void setDrugIngredientId(DrugIngredientId drugIngredientId) {
-		this.drugIngredientId = drugIngredientId;
-	}
-
-	public Concept getConcept() {
-		return concept;
-	}
-
-	public void setConcept(Concept concept) {
-		this.concept = concept;
+		this.ingredient = ingredient;
 	}
 
 }
