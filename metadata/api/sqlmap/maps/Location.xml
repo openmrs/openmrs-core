@@ -40,6 +40,9 @@
 		#creator.userId#,
 		NOW()
 		);
+	<selectKey keyProperty="locationId">
+		SELECT LAST_INSERT_ID() AS locationId
+	</selectKey>
 </insert>
 
 <!-- ************************************************************ -->

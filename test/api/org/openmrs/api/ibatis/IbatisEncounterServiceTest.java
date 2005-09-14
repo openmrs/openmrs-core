@@ -12,6 +12,7 @@ import org.openmrs.EncounterType;
 import org.openmrs.Location;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.UserService;
 import org.openmrs.context.Context;
 import org.openmrs.context.ContextFactory;
 
@@ -19,6 +20,7 @@ public class IbatisEncounterServiceTest extends TestCase {
 	
 	protected EncounterService es;
 	protected PatientService ps;
+	protected UserService us;
 	protected Encounter enc;
 	
 	public void setUp() throws Exception{
@@ -30,11 +32,15 @@ public class IbatisEncounterServiceTest extends TestCase {
 		assertNotNull(es);
 		ps = context.getPatientService();
 		assertNotNull(ps);
+		us = context.getUserService();
+		assertNotNull(us);
 		
 		enc = new Encounter();
 	}
 
-	public void testEncounterCreate() throws Exception {
+	public void testEncounterCreateUpdateDelete() throws Exception {
+		
+		//testing creation
 		
 		Location loc = new Location();
 		
@@ -58,24 +64,32 @@ public class IbatisEncounterServiceTest extends TestCase {
 		
 		enc.setPatient(ps.getPatient(1));
 		
-		
+		enc.setProvider(us.getUserByUsername("bwolfe"));
+				
 		Encounter newEnc = es.createEncounter(enc);
 		
 		assertNotNull(newEnc);
 		assertTrue(enc.equals(newEnc));
 		
-	}
-	
-	public void testEncounterDelete() throws Exception {
 		
-		es.deleteEncounter(enc);
+		//testing updation
 		
-		Encounter e = es.getEncounter(enc.getEncounterId());
+		newEnc.setEncounterType(encTypes.get(1));
+		es.updateEncounter(newEnc);
+		
+		newEnc = es.getEncounter(newEnc.getEncounterId());
+		
+		//assertTrue(newEnc.getEncounterType() != enc.getEncounterType());		
+		
+		//testing deletion
+		
+		es.deleteEncounter(newEnc);
+		
+		Encounter e = es.getEncounter(newEnc.getEncounterId());
 		
 		assertNull(e);
 		
-	}
-	
+	}	
 	
 	public static Test suite() {
 		return new TestSuite(IbatisEncounterServiceTest.class, "Basic IbatisEncounterService functionality");

@@ -119,7 +119,9 @@ public class IbatisEncounterService implements EncounterService {
 		try {
 			try {
 				SqlMap.instance().startTransaction();
-				SqlMap.instance().delete("deleteEncounter", encounter);
+				if (encounter.getEncounterId() == null)
+					throw new APIException("encounterId cannot be null");
+				SqlMap.instance().delete("deleteEncounter", encounter.getEncounterId());
 				SqlMap.instance().commitTransaction();
 			} finally {
 				SqlMap.instance().endTransaction();

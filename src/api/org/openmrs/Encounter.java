@@ -1,7 +1,7 @@
 package org.openmrs;
 
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
 /**
  * Encounter 
@@ -20,8 +20,8 @@ public class Encounter implements java.io.Serializable {
 	private Date dateCreated;
 	private Patient patient;
 	private Location location;
-	private Set orders;
-	private Set obs;
+	private List<Order> orders;
+	private List<Obs> obs;
 	private EncounterType encounterType;
 	private User creator;
 	private User provider;
@@ -147,28 +147,21 @@ public class Encounter implements java.io.Serializable {
 	/**
 	 * @return Returns the obs.
 	 */
-	public Set getObs() {
+	public List<Obs> getObs() {
 		return obs;
 	}
 
 	/**
 	 * @param obs The obs to set.
 	 */
-	public void setObs(Set obs) {
+	public void setObs(List<Obs> obs) {
 		this.obs = obs;
-	}
-
-	/**
-	 * @return Returns the orders.
-	 */
-	public Set getOrders() {
-		return orders;
 	}
 
 	/**
 	 * @param orders The orders to set.
 	 */
-	public void setOrders(Set orders) {
+	public void setOrders(List<Order> orders) {
 		this.orders = orders;
 	}
 
