@@ -10,7 +10,7 @@
 <!-- ************************************************************ -->
 
 <!-- TODO : add postal_code as attribute in patient_address table -->
-<insert id="creatPatientAddress" parameterClass="org.openmrs.PatientAddress">
+<insert id="createPatientAddress" parameterClass="org.openmrs.PatientAddress">
 	INSERT INTO patient_address
 		(
 		patient_id,

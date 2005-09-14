@@ -45,6 +45,10 @@
 	SELECT * FROM encounter_type WHERE encounter_type_id = #value#
 </select>
 
+<select id="getAllEncounterTypes" resultMap="encounterTypeResult">
+	SELECT * FROM encounter_type
+</select>
+
 <!-- ************************************************************ -->
 <!-- ** Update                                                 ** -->
 <!-- ************************************************************ -->

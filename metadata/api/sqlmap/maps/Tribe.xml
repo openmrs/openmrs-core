@@ -18,6 +18,9 @@
 		(
 		#name#
 		);
+	<selectKey keyProperty="tribeId">
+		SELECT LAST_INSERT_ID() AS tribeId
+	</selectKey>
 </insert>
 
 <!-- ************************************************************ -->
@@ -27,7 +30,7 @@
 <resultMap id="tribeResult" class="org.openmrs.Tribe">
 	<result property="tribeId" column="tribe_id" />
 	<result property="name" column="name" />
-	<result property="retired" column="retired" />
+	<result property="retired" column="retired" nullValue="false" />
 </resultMap>
 
 <select id="getTribe" parameterClass="int" resultMap="tribeResult">
