@@ -11,34 +11,16 @@ public class ConceptSet implements java.io.Serializable {
 
 	// Fields
 
-	private ConceptSetId conceptSetId;
+	private Concept concept;
+	private Concept set;
 	private Double sortWeight;
 	private User creator;
 	private Date dateCreated;
 
 	// Constructors
 
-	/**
-	 * @return Returns the conceptSetId.
-	 */
-	public ConceptSetId getConceptSetId() {
-		return conceptSetId;
-	}
-
-	/**
-	 * @param conceptSetId
-	 *            The conceptSetId to set.
-	 */
-	public void setConceptSetId(ConceptSetId conceptSetId) {
-		this.conceptSetId = conceptSetId;
-	}
-
 	/** default constructor */
 	public ConceptSet() {
-	}
-
-	public ConceptSet(ConceptSetId conceptSetId) {
-		this.conceptSetId = conceptSetId;
 	}
 
 	// Property accessors
@@ -47,22 +29,22 @@ public class ConceptSet implements java.io.Serializable {
 	 * 
 	 */
 	public Concept getConcept() {
-		return conceptSetId.getConcept();
+		return concept;
 	}
 
 	public void setConcept(Concept concept) {
-		conceptSetId.setConcept(concept);
+		this.concept = concept;
 	}
 
 	/**
 	 * 
 	 */
 	public Concept getSet() {
-		return conceptSetId.getSet();
+		return set;
 	}
 
 	public void setSet(Concept set) {
-		conceptSetId.setSet(set);
+		this.set = set;
 	}
 
 	/**

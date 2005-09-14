@@ -1,7 +1,6 @@
 package org.openmrs;
 
 import java.util.Date;
-import java.util.Set;
 
 /**
  * ConceptDatatype 
@@ -14,10 +13,10 @@ public class ConceptDatatype implements java.io.Serializable {
 
 	private Integer conceptDatatypeId;
 	private String name;
-	private String definition;
+	private String description;
+	private String datatypeAbbreviation;
 	private Date dateCreated;
-	private Set concepts;
-	private User user;
+	private User creator;
 
 	// Constructors
 
@@ -57,12 +56,37 @@ public class ConceptDatatype implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	public String getDefinition() {
-		return this.definition;
+	public String getDescription() {
+		return this.description;
 	}
 
-	public void setDefinition(String definition) {
-		this.definition = definition;
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	/**
+	 * @return Returns the datatypeAbbreviation.
+	 */
+	public String getDatatypeAbbreviation() {
+		return datatypeAbbreviation;
+	}
+
+	/**
+	 * @param datatypeAbbreviation The datatypeAbbreviation to set.
+	 */
+	public void setDatatypeAbbreviation(String datatypeAbbreviation) {
+		this.datatypeAbbreviation = datatypeAbbreviation;
+	}
+
+	/**
+	 * 
+	 */
+	public User getCreator() {
+		return this.creator;
+	}
+
+	public void setCreator(User creator) {
+		this.creator = creator;
 	}
 
 	/**
@@ -74,28 +98,6 @@ public class ConceptDatatype implements java.io.Serializable {
 
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
-	}
-
-	/**
-	 * 
-	 */
-	public Set getConcepts() {
-		return this.concepts;
-	}
-
-	public void setConcepts(Set concepts) {
-		this.concepts = concepts;
-	}
-
-	/**
-	 * 
-	 */
-	public User getUser() {
-		return this.user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
 	}
 
 }

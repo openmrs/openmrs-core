@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="org.openmrs.ConceptSet">
+
+<!-- ************************************************************ -->
+<!-- ** Creation                                               ** -->
+<!-- ************************************************************ -->
+
+<insert id="createConceptSet" parameterClass="org.openmrs.ConceptSet">
+	INSERT INTO concept_set
+		(
+		concept_id,
+		concept_set,
+		sort_weight,
+		creator,
+		date_created
+		)
+	VALUES
+		(
+		#concept.conceptId#,
+		#set.conceptId#,
+		#sortWeight#,
+		#creator.userId#,
+		NOW()
+		);
+</insert>
+
+<!-- ************************************************************ -->
+<!-- ** Read                                                   ** -->
+<!-- ************************************************************ -->
+
+<resultMap id="conceptSetResult" class="org.openmrs.ConceptSet">
+	<result property="concept" column="concept_id" select="getConcept" />
+	<result property="set" column="concept_set" select="getConcept" />
+	<result property="sort_weight" column="sort_weight" />
+	<result property="creator" column="creator" select="getUser" />
+	<result property="dateCreated" column="date_created" />
+</resultMap>
+
+<select id="getConceptSet" parameterClass="org.openmrs.ConceptSet"
+        resultMap="conceptSetResult">
+	SELECT * FROM concept_set
+	WHERE
+		concept_id = #concept.conceptId# AND
+		concept_set = #set.conceptId#
+</select>
+
+<select id="getConceptSetByConceptId" parameterClass="int"
+        resultMap="conceptSetResult">
+	SELECT * FROM concept_set WHERE concept_id = #value#
+</select>
+
+<select id="getConceptSetBySetId" parameterClass="int"
+        resultMap="conceptSetResult">
+	SELECT * FROM concept_set WHERE concept_set = #value#
+</select>
+
+<!-- ************************************************************ -->
+<!-- ** Update                                                 ** -->
+<!-- ************************************************************ -->
+
+<update id="updateConceptSet" parameterClass="org.openmrs.ConceptSet">
+	UPDATE
+		concept_set
+	SET
+		concept_id = "concept.conceptId#,
+		concept_set = "set.conceptId#,
+		sort_weight = #sortWeight#
+	WHERE
+		concept_id = #concept.conceptId# AND
+		concept_set = #set.conceptId#
+</update>
+
+<!-- ************************************************************ -->
+<!-- ** Deletion                                               ** -->
+<!-- ************************************************************ -->
+
+<delete id="deleteConceptSet" parameterClass="org.openmrs.ConceptSet">
+	DELETE FROM concept_set
+	WHERE
+		concept_id = #concept.conceptId# AND
+		concept_set = #set.conceptId#
+</delete>
+
+</sqlMap>

@@ -5,14 +5,20 @@ import java.util.Date;
 /**
  * ConceptName 
  */
+/**
+ * @author burke
+ *
+ */
 public class ConceptName implements java.io.Serializable {
 
 	public static final long serialVersionUID = 1L;
 
 	// Fields
 
-	private ConceptNameId conceptNameId;
+	private Concept concept;
+	private String name;
 	private String shortName;
+	private String locale;
 	private User creator;
 	private Date dateCreated;
 
@@ -22,54 +28,39 @@ public class ConceptName implements java.io.Serializable {
 	public ConceptName() {
 	}
 
-	public ConceptName(ConceptNameId conceptNameId) {
-		this.conceptNameId = conceptNameId;
-	}
-
 	// Property accessors
 
 	/**
 	 * 
 	 */
-	public ConceptNameId getConceptNameId() {
-		return conceptNameId;
-	}
-
-	public void setConceptNameId(ConceptNameId conceptNameId) {
-		this.conceptNameId = conceptNameId;
-	}
-
-	/**
-	 * 
-	 */
 	public Concept getConcept() {
-		return conceptNameId.getConcept();
+		return concept;
 	}
 
 	public void setConcept(Concept concept) {
-		conceptNameId.setConcept(concept);
+		this.concept = concept;
 	}
 
 	/**
 	 * 
 	 */
 	public String getName() {
-		return conceptNameId.getName();
+		return name;
 	}
 
 	public void setName(String name) {
-		conceptNameId.setName(name);
+		this.name = name;
 	}
 
 	/**
 	 * 
 	 */
 	public String getLocale() {
-		return conceptNameId.getLocale();
+		return locale;
 	}
 
 	public void setLocale(String locale) {
-		conceptNameId.setLocale(locale);
+		this.locale = locale;
 	}
 
 	/**

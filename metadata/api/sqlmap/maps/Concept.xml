@@ -17,9 +17,11 @@
 		concept_id,
 		retired,
 		name,
+		short_name,
 		description,
-/*		datatype_id, */
-/*		class_id, */
+		datatype_id,
+		class_id,
+		units,
 		icd10,
 		loinc,
 		version,
@@ -31,9 +33,11 @@
 		#conceptId#,
 		#retired#,
 		#name#,
+		#shortName#,
 		#description#,
-/*		datatypeId, */
-/*		classId, */
+		#conceptDatatype.conceptDatatypeId#,
+		#conceptClass.conceptClassId#,
+		#units#,
 		#icd10#,
 		#loinc#,
 		#version#,
@@ -50,9 +54,11 @@
 	<result property="conceptId" column="concept_id" />
 	<result property="retired" column="retired" nullValue="false" />
 	<result property="name" column="name" />
+	<result property="shortName" column="short_name" />
 	<result property="description" column="description" />
-<!-- <result property="datatypeId" column="datatype_id" /> -->
-<!-- <result property="classId" column="class_id" /> -->
+	<result property="conceptDatatype" column="datatype_id" select="getConceptDatatype" />
+	<result property="conceptClass" column="class_id" select="getConceptClass" />
+	<result property="units" column="units" />
 	<result property="icd10" column="icd10" />
 	<result property="loinc" column="loinc" />
 	<result property="version" column="version" />
@@ -60,6 +66,8 @@
 	<result property="dateCreated" column="date_created" />
 	<result property="changedBy" column="changed_by" select="getUser" />
 	<result property="dateChanged" column="date_changed" />
+	<result property="answers" column="concept_id" select="getConceptAnswerByConceptId" />
+	<result property="names" column="concept_id" select="getConceptNameByConceptId" />
 </resultMap>
 
 <select id="getConcept" parameterClass="int" resultMap="conceptResult">
@@ -80,9 +88,11 @@
 	SET
 		retired = #retired#,
 		name = #name#,
+		short_name = #shortName#,
 		description #description#,
-/*		datatype_id = datatypeId, */
-/*		class_id = classId, */
+		datatype_id = #conceptDatatype.conceptDatatypeId#,
+		class_id = #conceptClass.conceptClassId#,
+		units = #units#,
 		icd10 = #icd10#,
 		loinc = #loinc#,
 		version = #version#,

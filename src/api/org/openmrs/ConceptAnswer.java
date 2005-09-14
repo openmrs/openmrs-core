@@ -1,6 +1,6 @@
 package org.openmrs;
 
-import java.util.*;
+import java.util.Date;
 
 /**
  * ConceptAnswer 
@@ -12,11 +12,11 @@ public class ConceptAnswer implements java.io.Serializable {
 	// Fields
 
 	private Integer conceptAnswerId;
+	private Concept concept;
+	private Concept answerConcept;
 	private Integer answerDrug;
+	private User creator;
 	private Date dateCreated;
-	private Concept conceptByConceptId;
-	private Concept conceptByAnswerConcept;
-	private User user;
 
 	// Constructors
 
@@ -29,72 +29,90 @@ public class ConceptAnswer implements java.io.Serializable {
 		this.conceptAnswerId = conceptAnswerId;
 	}
 
-	// Property accessors
-
 	/**
-	 * 
+	 * @return Returns the answerConcept.
 	 */
-	public Integer getConceptAnswerId() {
-		return this.conceptAnswerId;
-	}
-
-	public void setConceptAnswerId(Integer conceptAnswerId) {
-		this.conceptAnswerId = conceptAnswerId;
+	public Concept getAnswerConcept() {
+		return answerConcept;
 	}
 
 	/**
-	 * 
+	 * @param answerConcept The answerConcept to set.
+	 */
+	public void setAnswerConcept(Concept answerConcept) {
+		this.answerConcept = answerConcept;
+	}
+
+	/**
+	 * @return Returns the answerDrug.
 	 */
 	public Integer getAnswerDrug() {
-		return this.answerDrug;
+		return answerDrug;
 	}
 
+	/**
+	 * @param answerDrug The answerDrug to set.
+	 */
 	public void setAnswerDrug(Integer answerDrug) {
 		this.answerDrug = answerDrug;
 	}
 
 	/**
-	 * 
+	 * @return Returns the concept.
 	 */
-	public Date getDateCreated() {
-		return this.dateCreated;
+	public Concept getConcept() {
+		return concept;
 	}
 
+	/**
+	 * @param concept The concept to set.
+	 */
+	public void setConcept(Concept concept) {
+		this.concept = concept;
+	}
+
+	/**
+	 * @return Returns the conceptAnswerId.
+	 */
+	public Integer getConceptAnswerId() {
+		return conceptAnswerId;
+	}
+
+	/**
+	 * @param conceptAnswerId The conceptAnswerId to set.
+	 */
+	public void setConceptAnswerId(Integer conceptAnswerId) {
+		this.conceptAnswerId = conceptAnswerId;
+	}
+
+	/**
+	 * @return Returns the creator.
+	 */
+	public User getCreator() {
+		return creator;
+	}
+
+	/**
+	 * @param creator The creator to set.
+	 */
+	public void setCreator(User creator) {
+		this.creator = creator;
+	}
+
+	/**
+	 * @return Returns the dateCreated.
+	 */
+	public Date getDateCreated() {
+		return dateCreated;
+	}
+
+	/**
+	 * @param dateCreated The dateCreated to set.
+	 */
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
 
-	/**
-	 * 
-	 */
-	public Concept getConceptByConceptId() {
-		return this.conceptByConceptId;
-	}
-
-	public void setConceptByConceptId(Concept conceptByConceptId) {
-		this.conceptByConceptId = conceptByConceptId;
-	}
-
-	/**
-	 * 
-	 */
-	public Concept getConceptByAnswerConcept() {
-		return this.conceptByAnswerConcept;
-	}
-
-	public void setConceptByAnswerConcept(Concept conceptByAnswerConcept) {
-		this.conceptByAnswerConcept = conceptByAnswerConcept;
-	}
-
-	/**
-	 * 
-	 */
-	public User getUser() {
-		return this.user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
-	}
+	// Property accessors
 
 }

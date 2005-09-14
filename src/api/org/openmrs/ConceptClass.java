@@ -14,10 +14,9 @@ public class ConceptClass implements java.io.Serializable {
 	private Integer conceptClassId;
 	private String name;
 	private String description;
+	private Boolean set;
+	private User creator;
 	private Date dateCreated;
-	private Boolean isSet;
-	private Set concepts;
-	private User user;
 
 	// Constructors
 
@@ -68,6 +67,17 @@ public class ConceptClass implements java.io.Serializable {
 	/**
 	 * 
 	 */
+	public User getCreateor() {
+		return this.creator;
+	}
+
+	public void setCreator(User user) {
+		this.creator = user;
+	}
+
+	/**
+	 * 
+	 */
 	public Date getDateCreated() {
 		return this.dateCreated;
 	}
@@ -79,34 +89,13 @@ public class ConceptClass implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	public Boolean getIsSet() {
-		return this.isSet;
+	public boolean isSet() {
+		return this.set;
 	}
 
-	public void setIsSet(Boolean isSet) {
-		this.isSet = isSet;
+	public void setSet(boolean set) {
+		this.set = set;
 	}
 
-	/**
-	 * 
-	 */
-	public Set getConcepts() {
-		return this.concepts;
-	}
-
-	public void setConcepts(Set concepts) {
-		this.concepts = concepts;
-	}
-
-	/**
-	 * 
-	 */
-	public User getUser() {
-		return this.user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
-	}
 
 }
