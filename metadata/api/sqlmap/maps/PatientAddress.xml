@@ -47,8 +47,6 @@
 
 <resultMap id="patientAddressResult" class="org.openmrs.PatientAddress">
 	<result property="patientAddressId" column="patient_address_id" />
-	<result property="name" column="name" />
-	<result property="description" column="description" />
 	<result property="address1" column="address1" />
 	<result property="address2" column="address2" />
 	<result property="cityVillage" column="city_village" />
@@ -81,7 +79,7 @@
 	UPDATE
 		patient_address
 	SET
-		patient_id = #patient_id#,
+		patient_id = #patient.patientId#,
 		address1 = #address1#,
 		address2 = #address2#,
 		city_village = #cityVillage#,

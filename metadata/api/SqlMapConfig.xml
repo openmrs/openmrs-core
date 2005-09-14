@@ -45,7 +45,7 @@
 <sqlMap resource="sqlmap/maps/FormField.xml" />
 <sqlMap resource="sqlmap/maps/Location.xml" />
 <sqlMap resource="sqlmap/maps/MimeType.xml" />
-<sqlMap resource="sqlmap/maps/Obs.xml" />
+<sqlMap resource="sqlmap/maps/Obs.xml" /> 
 <sqlMap resource="sqlmap/maps/Order.xml" />
 <sqlMap resource="sqlmap/maps/OrderType.xml" />
 <sqlMap resource="sqlmap/maps/Patient.xml" />
@@ -54,8 +54,8 @@
 <sqlMap resource="sqlmap/maps/PatientIdentifierType.xml" />
 <sqlMap resource="sqlmap/maps/PatientName.xml" />
 <sqlMap resource="sqlmap/maps/Privilege.xml" />
-<sqlMap resource="sqlmap/maps/Role.xml" />
 <sqlMap resource="sqlmap/maps/Tribe.xml" />
+<sqlMap resource="sqlmap/maps/Role.xml" />
 <sqlMap resource="sqlmap/maps/User.xml" />
 
 </sqlMapConfig>

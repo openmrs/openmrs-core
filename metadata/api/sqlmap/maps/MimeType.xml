@@ -27,8 +27,8 @@
 <!-- ************************************************************ -->
 
 <resultMap id="mimeTypeResult" class="org.openmrs.MimeType">
-	<result property="mime_type" column="mimeType" />
-	<result property="description" column="description"/>
+	<result property="mimeType" column="mime_type" />
+	<result property="description" column="description" />
 </resultMap>
 
 <select id="getMimeType" parameterClass="string" resultMap="mimeTypeResult">

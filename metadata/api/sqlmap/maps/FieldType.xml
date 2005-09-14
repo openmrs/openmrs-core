@@ -26,7 +26,7 @@
 		#creator.userId#,
 		NOW()
 		);
-	<selectKey keyProperty="patientId">
+	<selectKey keyProperty="fieldTypeId">
 		SELECT LAST_INSERT_ID() AS fieldTypeId
 	</selectKey>
 </insert>

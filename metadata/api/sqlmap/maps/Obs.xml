@@ -74,7 +74,7 @@
 	<result property="valueDatetime" column="value_datetime" />
 	<result property="valueCoded" column="value_coded" select="getConcept" />
 	<result property="valueNumeric" column="value_numeric" />
-	<result property="valueModifer" column="value_modifier" />
+	<result property="valueModifier" column="value_modifier" />
 	<result property="valueText" column="value_text" />
 	<result property="comment" column="comment" />
 	<result property="creator" column="creator" select="getUser" />

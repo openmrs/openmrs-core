@@ -42,7 +42,7 @@
 		#changedBy.userId#,
 		NOW()
 		);
-	<selectKey keyProperty="patientId">
+	<selectKey keyProperty="formFieldId">
 		SELECT LAST_INSERT_ID() AS formFieldId
 	</selectKey>
 </insert>

@@ -25,7 +25,7 @@
 <!-- ************************************************************ -->
 
 <resultMap id="tribeResult" class="org.openmrs.Tribe">
-	<result property="tribe" column="tribe" />
+	<result property="tribeId" column="tribe_id" />
 	<result property="name" column="name" />
 	<result property="retired" column="retired" />
 </resultMap>

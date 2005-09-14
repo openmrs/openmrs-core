@@ -36,7 +36,7 @@
 		#creator.userId#,
 		NOW()
 		);
-	<selectKey keyProperty="patientId">
+	<selectKey keyProperty="formId">
 		SELECT LAST_INSERT_ID() AS formId
 	</selectKey>
 </insert>
@@ -50,7 +50,7 @@
 	<result property="name" column="name" />
 	<result property="version" column="version" />
 	<result property="description" column="description" />
-	<result property="schema_namespace" column="schemaNamespace" />
+	<result property="schemaNamespace" column="schema_namespace" />
 	<result property="definition" column="definition" />
 	<result property="retired" column="retired" nullValue="false" />
 	<result property="creator" column="creator" select="getUser" />

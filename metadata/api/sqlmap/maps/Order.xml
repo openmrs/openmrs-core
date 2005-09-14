@@ -29,12 +29,12 @@
 		#orderer.userId#,
 		#encounter.encounterId#,
 		#instructions#,
-		#start_date#,
+		#startDate#,
 		#autoExpireDate#,
 		#creator.userId#,
 		NOW()
 		);
-	<selectKey keyProperty="patientId">
+	<selectKey keyProperty="orderId">
 		SELECT LAST_INSERT_ID() AS orderId
 	</selectKey>
 </insert>
@@ -100,7 +100,7 @@
 		orders
 	SET
 		<!-- discontinued = 1 -->
-		discontinued_by = #discontinueBy.userId#,
+		discontinued_by = #discontinuedBy.userId#,
 		discontinued_date = NOW(),
 		discontinued_reason = #discontinuedReason#
 	WHERE

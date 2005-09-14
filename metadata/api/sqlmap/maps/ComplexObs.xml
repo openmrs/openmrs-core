@@ -20,7 +20,7 @@
 	VALUES
 		(
 		#obsId#,
-		#mimeType.mime_type#,
+		#mimeType.mimeType#,
 		#urn#,
 		#complexValue#
 		);
@@ -37,7 +37,7 @@
 	<result property="complexValue" column="complex_value" />
 </resultMap>
 
-<select id="getComplexObs" parameterClass="int" resultMap="obsResult">
+<select id="getComplexObs" parameterClass="int" resultMap="complexObsResult">
 	SELECT * FROM complex_obs WHERE obs_id = #value#
 </select>
 

@@ -25,7 +25,7 @@
 		#encounterType.encounterTypeId#,
 		#encounterDatetime#,
 		#patient.patientId#,
-		#provider.providorId#,
+		#provider.userId#,
 		#location.locationId#,
 		#creator.userId#,
 		NOW()
@@ -47,7 +47,7 @@
 	<result property="location" column="location_id" select="getLocation" />
 	<result property="orders" column="encounter_id" select="getOrderByEncounterId" />
 	<result property="obs" column="encounter_id" select="getObsByEncounterId" />
-	<result property="provider" column="provider_id" select="getProvider" />
+	<result property="provider" column="provider_id" select="getUser" />
 	<result property="creator" column="creator" select="getUser" />
 	<result property="dateCreated" column="date_created" />
 </resultMap>
@@ -65,9 +65,9 @@
 		encounter
 	SET
 		encounter_type = #encounterType.encounterTypeId#,
-		patient_id = #patientId#,
-		provider_id = #providerId#,
-		location_id = #locationId#,
+		patient_id = #patient.patientId#,
+		provider_id = #provider.userId#,
+		location_id = #location.locationId#,
 		encounter_datetime = #encounterDatetime#
 	WHERE
 		encounter_id = #encounterId#
