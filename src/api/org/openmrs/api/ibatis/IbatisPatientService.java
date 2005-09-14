@@ -28,6 +28,7 @@ public class IbatisPatientService implements PatientService {
 			User authenticatedUser = context.getAuthenticatedUser();
 			
 			patient.setCreator(authenticatedUser);
+			
 			SqlMap.instance().insert("createPatient", patient);
 			SqlMap.instance().update("createTribe", patient.getTribe());
 			for(Iterator i = patient.getAddresses().iterator(); i.hasNext();) {

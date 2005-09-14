@@ -100,7 +100,7 @@ public class IbatisUserService implements UserService {
 				User authenticatedUser = context.getAuthenticatedUser();
 				List oldRoles;
 
-				if (user.getUserId() == null) {
+				if (user.getCreator() == null) {
 					user.setCreator(authenticatedUser);
 					SqlMap.instance().insert("createUser", user);
 					oldRoles = new LinkedList();
