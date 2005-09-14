@@ -1,5 +1,6 @@
 package org.openmrs.api.ibatis;
 
+import java.util.Date;
 import java.util.List;
 
 import junit.framework.Test;
@@ -10,20 +11,27 @@ import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Location;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.PatientService;
 import org.openmrs.context.Context;
-import org.openmrs.context.IbatisContext;
+import org.openmrs.context.ContextFactory;
 
 public class IbatisEncounterServiceTest extends TestCase {
 	
 	protected EncounterService es;
+	protected PatientService ps;
 	protected Encounter enc;
 	
 	public void setUp() throws Exception{
-		Context context = new IbatisContext();
+		Context context = ContextFactory.getContext();
 		
 		context.authenticate("3-4", "test");
 		
-		es = new IbatisEncounterService(context);
+		es = context.getEncounterService();
+		assertNotNull(es);
+		ps = context.getPatientService();
+		assertNotNull(ps);
+		
+		enc = new Encounter();
 	}
 
 	public void testEncounterCreate() throws Exception {
@@ -42,9 +50,14 @@ public class IbatisEncounterServiceTest extends TestCase {
 	
 		enc.setLocation(loc);
 		
-		List<EncounterType> encTypes = es.getEncounterType();
+		List<EncounterType> encTypes = es.getEncounterTypes();
 		
 		enc.setEncounterType(encTypes.get(0));
+		Date d = new Date();
+		enc.setEncounterDatetime(d);
+		
+		enc.setPatient(ps.getPatient(1));
+		
 		
 		Encounter newEnc = es.createEncounter(enc);
 		
