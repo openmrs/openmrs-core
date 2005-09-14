@@ -3,6 +3,7 @@ package org.openmrs.context;
 import java.util.Locale;
 
 import org.openmrs.User;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
@@ -56,6 +57,11 @@ public interface Context {
 	 * @return user-related services
 	 */
 	public UserService getUserService();
+
+	/**
+	 * @return admin-related services
+	 */
+	public AdministrationService getAdministrationService();
 
 	/**
 	 * @return "active" user who has been authenticated, 

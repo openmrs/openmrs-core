@@ -8,11 +8,13 @@ import java.util.Locale;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.UserService;
+import org.openmrs.api.ibatis.IbatisAdministrationService;
 import org.openmrs.api.ibatis.IbatisEncounterService;
 import org.openmrs.api.ibatis.IbatisObsService;
 import org.openmrs.api.ibatis.IbatisPatientService;
@@ -30,6 +32,7 @@ public class IbatisContext implements Context {
 	private ObsService obsService;
 	private PatientService patientService;
 	private UserService userService;
+	private AdministrationService administrationService;
 
 	/** @see org.openmrs.context.Context#authenticate(String, String) */
 	public void authenticate(String username, String password)
@@ -130,6 +133,13 @@ public class IbatisContext implements Context {
 		return userService;
 	}
 
+	/** @see org.openmrs.context.Context#getAdministrationService() */
+	public AdministrationService getAdministrationService() {
+		if (administrationService == null)
+			administrationService = new IbatisAdministrationService(this);
+		return administrationService;
+	}
+	
 	/** @see org.openmrs.context.Context#hasPrivilege(String) */
 	public boolean hasPrivilege(String privilege) {
 		if (isAuthenticated())
