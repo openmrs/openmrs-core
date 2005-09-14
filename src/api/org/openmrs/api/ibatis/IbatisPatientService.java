@@ -30,7 +30,7 @@ public class IbatisPatientService implements PatientService {
 			patient.setCreator(authenticatedUser);
 			
 			SqlMap.instance().insert("createPatient", patient);
-			SqlMap.instance().update("createTribe", patient.getTribe());
+			SqlMap.instance().insert("createTribe", patient.getTribe());
 			for(Iterator i = patient.getAddresses().iterator(); i.hasNext();) {
 				PatientAddress pAddress = (PatientAddress)i.next();
 				pAddress.setCreator(authenticatedUser);
@@ -59,8 +59,9 @@ public class IbatisPatientService implements PatientService {
 					this.createPatient(patient);
 				else {
 					//patient.setChangedBy(context.getAuthenticatedUser());
-					SqlMap.instance().update("updatePatient", patient);
-					SqlMap.instance().update("updateTribe", patient.getTribe());
+					
+					if (patient.getTribe().getTribeId() == null)
+						SqlMap.instance().update("updateTribe", patient.getTribe());
 					
 					//update addresses
 					List oldAddresses = SqlMap.instance().queryForList("getPatientAddressByPatientId", patient.getPatientId());
@@ -87,6 +88,8 @@ public class IbatisPatientService implements PatientService {
 					}
 					for (Iterator i = toDel.iterator(); i.hasNext();)
 						SqlMap.instance().delete("deletePatientName", i.next());
+					
+					SqlMap.instance().update("updatePatient", patient);
 					
 				}
 				SqlMap.instance().commitTransaction();

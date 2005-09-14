@@ -1,6 +1,9 @@
 package org.openmrs.api;
 
+import java.util.List;
+
 import org.openmrs.Encounter;
+import org.openmrs.EncounterType;
 
 /**
  * Provides encounter-related services within the current context.
@@ -22,11 +25,28 @@ public interface EncounterService {
 	/**
 	 * Get encounter by internal identifier
 	 * 
-	 * @param encounter encounter object
+	 * @param encounterId encounter id
 	 * @return encounter with given internal identifier
 	 * @throws APIException
 	 */
 	public Encounter getEncounter(Integer encounterId) throws APIException;
+	
+	/**
+	 * Get all encounter types
+	 * 
+	 * @return encounter types list
+	 * @throws APIException
+	 */
+	public List<EncounterType> getEncounterTypes() throws APIException;
+
+	/**
+	 * Get encounterType by internal identifier
+	 * 
+	 * @param encounterType id
+	 * @return encounterType with given internal identifier
+	 * @throws APIException
+	 */
+	public EncounterType getEncounterType(Integer encounterId) throws APIException;
 
 	/**
 	 * Save changes to encounter

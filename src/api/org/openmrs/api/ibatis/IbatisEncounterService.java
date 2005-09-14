@@ -1,10 +1,13 @@
 package org.openmrs.api.ibatis;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
+import org.openmrs.EncounterType;
+import org.openmrs.Location;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
@@ -44,8 +47,14 @@ public class IbatisEncounterService implements EncounterService {
 		try {
 			try {
 				SqlMap.instance().startTransaction();
+				
+				Location loc = encounter.getLocation();
+				if (loc != null && loc.getLocationId() == null) {
+					loc.setCreator(authenticatedUser);
+					SqlMap.instance().insert("createLocation", loc);
+				}
 				SqlMap.instance().insert("createEncounter", encounter);
-				SqlMap.instance().insert("createLocation", encounter.getLocation());
+				
 				SqlMap.instance().commitTransaction();
 			} finally {
 				SqlMap.instance().endTransaction();
@@ -81,8 +90,16 @@ public class IbatisEncounterService implements EncounterService {
 				if (encounter.getCreator() == null) {
 					this.createEncounter(encounter);
 				} else {
+					Location loc = encounter.getLocation();
+					if (loc != null) {
+						if (loc.getLocationId() == null) {
+							loc.setCreator(context.getAuthenticatedUser());
+							SqlMap.instance().insert("createLocation", encounter.getLocation());
+						}
+						SqlMap.instance().update("updateLocation", encounter.getLocation());
+					}
+					
 					SqlMap.instance().update("updateEncounter", encounter);
-					SqlMap.instance().update("updateLocation", encounter.getLocation());
 				}
 
 				SqlMap.instance().commitTransaction();
@@ -111,5 +128,43 @@ public class IbatisEncounterService implements EncounterService {
 			throw new APIException(e);
 		}
 	}
+	
+	public List<EncounterType> getEncounterTypes() throws APIException {
+		
+		List<EncounterType> encounterTypes;
+		
+		try {
+			try {
+				SqlMap.instance().startTransaction();
+				encounterTypes = SqlMap.instance().queryForList("getAllEncounterTypes", null);
+				SqlMap.instance().commitTransaction();
+			} finally {
+				SqlMap.instance().endTransaction();
+			}
+		} catch (SQLException e) {
+			throw new APIException(e);
+		}
+		
+		return encounterTypes;
+	}
 
+	public EncounterType getEncounterType(Integer encounterTypeId) throws APIException {
+
+		EncounterType encounterType;
+		
+		try {
+			try {
+				SqlMap.instance().startTransaction();
+				encounterType = (EncounterType)SqlMap.instance().queryForList("getEncounterType", encounterTypeId);
+				SqlMap.instance().commitTransaction();
+			} finally {
+				SqlMap.instance().endTransaction();
+			}
+		} catch (SQLException e) {
+			throw new APIException(e);
+		}
+		
+		return encounterType;
+	}
+	
 }
