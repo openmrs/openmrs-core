@@ -12,7 +12,7 @@
 <insert id="createUser" parameterClass="org.openmrs.User">
 	INSERT INTO users
 		(
-		username,
+		user_name,
 		first_name,
 		middle_name,
 		last_name,
@@ -39,7 +39,7 @@
 
 <resultMap id="userResult" class="org.openmrs.User">
 	<result property="userId" column="user_id" />
-	<result property="username" column="username" />
+	<result property="username" column="user_name" />
 	<result property="firstName" column="first_name" />
 	<result property="middleName" column="middle_name" />
 	<result property="lastName" column="last_name" />
@@ -62,7 +62,7 @@
 
 <select id="getUserByUsername" parameterClass="string"
 	resultMap="userResult">
-	SELECT * FROM users WHERE username = #value#
+	SELECT * FROM users WHERE user_name = #value#
 </select>
 
 <!-- ************************************************************ -->
@@ -73,7 +73,7 @@
 	UPDATE
 		users
 	SET
-		username = #username#,
+		user_name = #username#,
 		first_name = #firstName#,
 		middle_name = #middleName#,
 		last_name = #lastName#,
