@@ -10,6 +10,8 @@ readme.txt			this readme file
 release-notes.txt		notes about model changes
 openmrs_data_model_x.xx.png	data model images
 
+--------
+
 To install database:
 
 	1. If this is the first time you're installing the database OR
@@ -18,6 +20,11 @@ To install database:
 	2. Run openmrs-mysql.sql to create tables
 
 	3. Run openmrs-mysql-data.sql to populate tables with data
+
+	The createdb script is simply creates an AMRS database for you.
+	If you want to install into a different database, create the database
+	manually, make it the default database (e.g., "use mydb") and then
+	run the second two scripts for tables/data.
 
 --------
 
