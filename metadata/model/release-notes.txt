@@ -3,18 +3,37 @@ OpenMRS Data Model Release Notes
 $Date$
 $Rev$
 
-0.8
----
+9/14/05:
 
-Paulo - edit this text file with a reverse-chronological list of changes to the data model
+  concept_datatype.definition = concept_datatype.description
+- concept.name_alt
+- concept.correct_concept
+- concept.old_datatype
+- concept.table_name
+- concept.column_name
+- concept.bev_count
+  concept_set2 = concept_set_derived
+  location.zipcode = location.postal_code
+  patient_identifier.location = patient_identifier.location_id
+  patient.tribe = patient.tribe_id
++ mime_type.mime_type_id (int, PK)
+  complex_obs.mime_type (string) = complex_obs.mime_type_id (FK:
+mime_type.mime_type_id)
+  drug_orders = drug_order
+- drug_order.creator
+- drug_order.creator_id
+  encounter.creator_id = encounter.creator
++ patient.changed_by (FK: users.user_id) patient.date_changed (datetime) 
++ orders.discontinued (tinyint)
++ orders.voided (tinyint)		
++ orders.voided_by (FK: users.user_id)
++ orders.void_date (datetime)
++ orders.void_reason (varchar)
++ form.retired_reason (varchar)
++ form.retired_by (FK: users.user_id)
++ form.date_retired (datetime)
++ users.void_reason (varchar)
++ patient_name.changed_by (FK: users.user_id) patient_name.date_changed 
++ (datetime)
 
-0.7
----
-* Patient names moved to separate "patient_name" table
-* Loads of other stuff
-
-0.1
----
-* Initial data model spec'd out in MS Access
-* Neato!
 
