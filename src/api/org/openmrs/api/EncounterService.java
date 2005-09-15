@@ -46,7 +46,7 @@ public interface EncounterService {
 	 * @return encounterType with given internal identifier
 	 * @throws APIException
 	 */
-	public EncounterType getEncounterType(Integer encounterId) throws APIException;
+	public EncounterType getEncounterType(Integer encounterTypeId) throws APIException;
 
 	/**
 	 * Save changes to encounter

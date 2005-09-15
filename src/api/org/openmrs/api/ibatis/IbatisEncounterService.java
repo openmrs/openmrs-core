@@ -157,7 +157,7 @@ public class IbatisEncounterService implements EncounterService {
 		try {
 			try {
 				SqlMap.instance().startTransaction();
-				encounterType = (EncounterType)SqlMap.instance().queryForList("getEncounterType", encounterTypeId);
+				encounterType = (EncounterType)SqlMap.instance().queryForObject("getEncounterType", encounterTypeId);
 				SqlMap.instance().commitTransaction();
 			} finally {
 				SqlMap.instance().endTransaction();

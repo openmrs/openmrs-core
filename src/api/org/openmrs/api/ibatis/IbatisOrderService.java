@@ -1,11 +1,13 @@
 package org.openmrs.api.ibatis;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.DrugOrder;
 import org.openmrs.Order;
+import org.openmrs.OrderType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OrderService;
 import org.openmrs.context.Context;
@@ -173,6 +175,50 @@ public class IbatisOrderService implements OrderService {
 		} catch (SQLException e) {
 			throw new APIException(e);
 		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderType(java.lang.Integer)
+	 */
+	public OrderType getOrderType(Integer orderTypeId) throws APIException {
+
+		OrderType orderType;
+		
+		try {
+			try {
+				SqlMap.instance().startTransaction();
+				orderType = (OrderType)SqlMap.instance().queryForObject("getOrderType", orderTypeId);
+				SqlMap.instance().commitTransaction();
+			} finally {
+				SqlMap.instance().endTransaction();
+			}
+		} catch (SQLException e) {
+			throw new APIException(e);
+		}
+		
+		return orderType;
+	}
+
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderTypes()
+	 */
+	public List<OrderType> getOrderTypes() throws APIException {
+		
+		List<OrderType> orderTypes;
+		
+		try {
+			try {
+				SqlMap.instance().startTransaction();
+				orderTypes = SqlMap.instance().queryForList("getAllOrderTypes", null);
+				SqlMap.instance().commitTransaction();
+			} finally {
+				SqlMap.instance().endTransaction();
+			}
+		} catch (SQLException e) {
+			throw new APIException(e);
+		}
+		
+		return orderTypes;
 	}
 	
 }

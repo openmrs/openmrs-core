@@ -39,6 +39,11 @@
 	SELECT * FROM mime_type WHERE mime_type_id = #value#
 </select>
 
+<select id="getAllMimeTypes" resultMap="mimeTypeResult">
+	SELECT * FROM mime_type
+</select>
+
+
 <!-- ************************************************************ -->
 <!-- ** Update                                                 ** -->
 <!-- ************************************************************ -->

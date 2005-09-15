@@ -1,10 +1,13 @@
 package org.openmrs.api.ibatis;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.ComplexObs;
+import org.openmrs.EncounterType;
+import org.openmrs.MimeType;
 import org.openmrs.Obs;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
@@ -159,4 +162,49 @@ public class IbatisObsService implements ObsService {
 		}
 	}
 
+	/**
+	 * @see org.openmrs.api.ObsService#getMimeType(java.lang.Integer)
+	 */
+	public MimeType getMimeType(Integer mimeTypeId) throws APIException {
+
+		MimeType mimeType;
+		
+		try {
+			try {
+				SqlMap.instance().startTransaction();
+				mimeType = (MimeType)SqlMap.instance().queryForObject("getMimeType", mimeTypeId);
+				SqlMap.instance().commitTransaction();
+			} finally {
+				SqlMap.instance().endTransaction();
+			}
+		} catch (SQLException e) {
+			throw new APIException(e);
+		}
+		
+		return mimeType;
+	}
+
+	/**
+	 * @see org.openmrs.api.ObsService#getMimeTypes()
+	 */
+	public List<MimeType> getMimeTypes() throws APIException {
+		
+		List<MimeType> mimeTypes;
+		
+		try {
+			try {
+				SqlMap.instance().startTransaction();
+				mimeTypes = SqlMap.instance().queryForList("getAllMimeTypes", null);
+				SqlMap.instance().commitTransaction();
+			} finally {
+				SqlMap.instance().endTransaction();
+			}
+		} catch (SQLException e) {
+			throw new APIException(e);
+		}
+		
+		return mimeTypes;
+	}
+
+	
 }

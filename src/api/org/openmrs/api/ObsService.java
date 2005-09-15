@@ -1,5 +1,7 @@
 package org.openmrs.api;
 
+import java.util.List;
+
 import org.openmrs.*;
 
 public interface ObsService {
@@ -48,4 +50,21 @@ public interface ObsService {
 	 * @see voidObs(Obs)
 	 */
 	public void deleteObs(Obs obs) throws APIException;
+	
+	/**
+	 * Get all mime types
+	 * 
+	 * @return mime types list
+	 * @throws APIException
+	 */
+	public List<MimeType> getMimeTypes() throws APIException;
+
+	/**
+	 * Get mimeType by internal identifier
+	 * 
+	 * @param mimeType id
+	 * @return mimeType with given internal identifier
+	 * @throws APIException
+	 */
+	public MimeType getMimeType(Integer mimeId) throws APIException;
 }

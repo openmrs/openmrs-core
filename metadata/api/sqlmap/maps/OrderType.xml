@@ -46,6 +46,11 @@
 	SELECT * FROM order_type WHERE order_type_id = #value#
 </select>
 
+<select id="getAllOrderTypes" resultMap="orderTypeResult">
+	SELECT * FROM order_type
+</select>
+
+
 <!-- ************************************************************ -->
 <!-- ** Update                                                 ** -->
 <!-- ************************************************************ -->
@@ -64,8 +69,8 @@
 <!-- ** Deletion                                               ** -->
 <!-- ************************************************************ -->
 
-<delete id="deleteOrderType" parameterClass="org.openmrs.OrderType">
-	DELETE FROM order_type WHERE order_type_id = #orderTypeId#
+<delete id="deleteOrderType" parameterClass="int">
+	DELETE FROM order_type WHERE order_type_id = #value#
 </delete>
 
 </sqlMap>

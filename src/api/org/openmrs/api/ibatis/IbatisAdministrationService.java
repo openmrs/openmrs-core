@@ -172,7 +172,7 @@ public class IbatisAdministrationService implements AdministrationService {
 		try {
 			try {
 				SqlMap.instance().startTransaction();
-				SqlMap.instance().delete("deleteEncounterType", encounterType);
+				SqlMap.instance().delete("deleteEncounterType", encounterType.getEncounterTypeId());
 				SqlMap.instance().commitTransaction();
 			} finally {
 				SqlMap.instance().endTransaction();
@@ -189,7 +189,7 @@ public class IbatisAdministrationService implements AdministrationService {
 		try {
 			try {
 				SqlMap.instance().startTransaction();
-				SqlMap.instance().delete("deleteFieldType", fieldType);
+				SqlMap.instance().delete("deleteFieldType", fieldType.getFieldTypeId());
 				SqlMap.instance().commitTransaction();
 			} finally {
 				SqlMap.instance().endTransaction();
@@ -206,7 +206,7 @@ public class IbatisAdministrationService implements AdministrationService {
 		try {
 			try {
 				SqlMap.instance().startTransaction();
-				SqlMap.instance().delete("deleteMimeType", mimeType);
+				SqlMap.instance().delete("deleteMimeType", mimeType.getMimeTypeId());
 				SqlMap.instance().commitTransaction();
 			} finally {
 				SqlMap.instance().endTransaction();
@@ -223,7 +223,7 @@ public class IbatisAdministrationService implements AdministrationService {
 		try {
 			try {
 				SqlMap.instance().startTransaction();
-				SqlMap.instance().delete("deleteOrderType", orderType);
+				SqlMap.instance().delete("deleteOrderType", orderType.getOrderTypeId());
 				SqlMap.instance().commitTransaction();
 			} finally {
 				SqlMap.instance().endTransaction();
@@ -242,7 +242,7 @@ public class IbatisAdministrationService implements AdministrationService {
 		try {
 			try {
 				SqlMap.instance().startTransaction();
-				SqlMap.instance().delete("deletePatientIdentifierType", patientIdentifierType);
+				SqlMap.instance().delete("deletePatientIdentifierType", patientIdentifierType.getPatientIdentifierTypeId());
 				SqlMap.instance().commitTransaction();
 			} finally {
 				SqlMap.instance().endTransaction();
@@ -261,7 +261,7 @@ public class IbatisAdministrationService implements AdministrationService {
 		try {
 			try {
 				SqlMap.instance().startTransaction();
-				SqlMap.instance().delete("deleteTribe", tribe);
+				SqlMap.instance().delete("deleteTribe", tribe.getTribeId());
 				SqlMap.instance().commitTransaction();
 			} finally {
 				SqlMap.instance().endTransaction();

@@ -21,7 +21,7 @@ public class IbatisUserServiceTest extends TestCase {
 		context = ContextFactory.getContext();
 		
 		try {
-			context.authenticate("3-4", "test");
+			context.authenticate("admin", "test");
 		} catch (ContextAuthenticationException e) {
 			
 		}
@@ -32,6 +32,8 @@ public class IbatisUserServiceTest extends TestCase {
 	public void testUpdateUser() {
 		assertTrue(context.isAuthenticated());
 		User u = us.getUserByUsername("bwolfe");
+		if (u == null)
+			u = new User();
 		u.setFirstName("Ben");
 		u.setMiddleName("Alexander");
 		u.setLastName("Wolfe");

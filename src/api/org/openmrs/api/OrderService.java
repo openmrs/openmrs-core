@@ -1,6 +1,9 @@
 package org.openmrs.api;
 
+import java.util.List;
+
 import org.openmrs.Order;
+import org.openmrs.OrderType;
 
 public interface OrderService {
 
@@ -64,5 +67,21 @@ public interface OrderService {
 	 */
 	public void unvoidOrder(Order order) throws APIException;
 
+	/**
+	 * Get all order types
+	 * 
+	 * @return order types list
+	 * @throws APIException
+	 */
+	public List<OrderType> getOrderTypes() throws APIException;
+
+	/**
+	 * Get orderType by internal identifier
+	 * 
+	 * @param orderType id
+	 * @return orderType with given internal identifier
+	 * @throws APIException
+	 */
+	public OrderType getOrderType(Integer orderTypeId) throws APIException;
 	
 }
