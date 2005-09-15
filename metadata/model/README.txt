@@ -1,9 +1,11 @@
-This is a Subversion repository; use the 'svnadmin' tool to examine
-it.  Do not add, delete, or modify files here unless you know how
-to avoid corrupting the repository.
+metadata/model folder
 
-If the directory "db" contains a Berkeley DB environment,
-you may need to tweak the values in "db/DB_CONFIG" to match the
-requirements of your site.
+Contains model-specific information, including SQL scripts,
+model image, version information, etc.
 
-Visit http://subversion.tigris.org/ for more information.
+openmrs-mysql.sql		MySQL script for generating data model
+readme.txt			this readme file
+release-notes.txt		notes about model changes
+openmrs_data_model_x.xx.png	data model images
+
+NOTE: Paul Biondich is in charge of this section
