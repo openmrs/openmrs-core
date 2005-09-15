@@ -42,6 +42,9 @@ public class IbatisUserService implements UserService {
 	 * @see org.openmrs.api.UserService#createUser(User)
 	 */
 	public User createUser(User user) throws APIException {
+		
+		user.setCreator(context.getAuthenticatedUser());
+		
 		try {
 			SqlMap.instance().insert("createUser", user);
 		} catch (SQLException e) {
