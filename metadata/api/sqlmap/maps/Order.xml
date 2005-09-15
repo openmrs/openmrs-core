@@ -54,10 +54,14 @@
 	<result property="autoExpireDate" column="auto_expire_date" />
 	<result property="creator" column="creator" select="getUser" />
 	<result property="dateCreated" column="date_created" />
-	<result property="discontinued" column="discontinued" nullvalue="false" />
+	<result property="discontinued" column="discontinued" nullValue="false" />
 	<result property="discontinuedBy" column="discontinued_by" select="getUser" />
 	<result property="discontinuedDate" column="discontinued_date" />
 	<result property="discontinuedReason" column="discontinued_reason" />
+	<result property="voided" column="voided" nullValue="false" />
+	<result property="voidedBy" column="voided_by" select="getUser" />
+	<result property="voidReason" column="void_reason" />
+	<result property="dateVoided" column="date_voided" />
 </resultMap>
 
 <select id="getOrder" parameterClass="int"
@@ -127,7 +131,7 @@
 		voided = 1,
 		voided_by = #voidedBy.userId#,
 		voided_date = NOW(),
-		voided_reason = #voidedReason#
+		void_reason = #voidReason#
 	WHERE
 		order_id = #orderId#
 </update>
@@ -139,7 +143,7 @@
 		voided = 0,
 		voided_by = NULL,
 		voided_date = NULL,
-		voided_reason = NULL
+		void_reason = NULL
 	WHERE
 		order_id = #orderId#
 </update>

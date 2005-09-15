@@ -32,7 +32,7 @@
 
 <resultMap id="complexObsResult" class="org.openmrs.ComplexObs">
 	<result property="obsId" column="obs_id" />
-	<result property="mimeTypeId" column="mime_type_id" select="getMimeType" />
+	<result property="mimeType" column="mime_type_id" select="getMimeType" />
 	<result property="urn" column="urn" />
 	<result property="complexValue" column="complex_value" />
 </resultMap>
@@ -49,7 +49,7 @@
 	UPDATE
 		complex_obs
 	SET
-		mime_type = #mimeType.mimeType#,
+		mime_type_id = #mimeType.mimeTypeId#,
 		urn = #urn#,
 		complex_value = #complexValue#
 	WHERE

@@ -98,7 +98,7 @@
 		family_name2 = #familyName2#,
 		family_name_suffix = #familyNameSuffix#,
 		degree = #degree#
-		changed_by = "changedBy.userId#,
+		changed_by = #changedBy.userId#,
 		date_changed = NOW()
 	WHERE
 		patient_name_id = #patientNameId#
@@ -131,7 +131,7 @@
 		voided = 0,
 		voided_by = NULL,
 		date_voided = NULL,
-		void_reason = NULL
+		void_reason = NULL,
 		changed_by = #changedBy.userId#,
 		date_changed = NOW()
 	WHERE

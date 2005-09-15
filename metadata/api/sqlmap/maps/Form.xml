@@ -53,7 +53,7 @@
 	<result property="retired" column="retired" nullValue="false" />
 	<result property="retiredBy" column="retired_by" select="getUser" />
 	<result property="retiredReason" column="retired_reason" />
-	<result property="retiredDate" column="retired_date" />
+	<result property="dateRetired" column="retired_date" />
 	<result property="creator" column="creator" select="getUser" />
 	<result property="dateCreated" column="date_created" />
 	<result property="changedBy" column="changed_by" select="getUser" />

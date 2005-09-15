@@ -148,4 +148,31 @@ public class IbatisOrderService implements OrderService {
 		}
 	}
 
+	/**
+	 * @see org.openmrs.api.OrderService#voidOrder(Order, String)
+	 */
+	public void voidOrder(Order order, String reason) throws APIException {
+		//order.setVoided(true);
+		order.setVoidedBy(context.getAuthenticatedUser());
+		order.setVoidReason(reason);
+		try {
+			SqlMap.instance().update("voidOrder", order);
+		} catch (SQLException e) {
+			throw new APIException(e);
+		}
+	}
+
+	/**
+	 * @see org.openmrs.api.OrderService#unvoidOrder(Order)
+	 */
+	// TODO changedBy for Order ?
+	public void unvoidOrder(Order order) {
+		//order.setChangedBy(context.getAuthenticatedUser());
+		try {
+			SqlMap.instance().update("unvoidOrder", order);
+		} catch (SQLException e) {
+			throw new APIException(e);
+		}
+	}
+	
 }
