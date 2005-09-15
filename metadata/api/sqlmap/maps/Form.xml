@@ -17,7 +17,6 @@
 		description,
 		schema_namespace,
 		definition,
-		retired,
 		creator,
 		date_created,
 		changed_by,
@@ -30,7 +29,6 @@
 		#description#,
 		#schemaNamespace#,
 		#definition#,
-		#retired#,
 		#creator.userId#,
 		NOW(),
 		#creator.userId#,
@@ -53,6 +51,9 @@
 	<result property="schemaNamespace" column="schema_namespace" />
 	<result property="definition" column="definition" />
 	<result property="retired" column="retired" nullValue="false" />
+	<result property="retiredBy" column="retired_by" select="getUser" />
+	<result property="retiredReason" column="retired_reason" />
+	<result property="retiredDate" column="retired_date" />
 	<result property="creator" column="creator" select="getUser" />
 	<result property="dateCreated" column="date_created" />
 	<result property="changedBy" column="changed_by" select="getUser" />
@@ -96,8 +97,9 @@
 		form
 	SET
 		retired = 1,
-		changed_by = #changedBy.userId#,
-		date_changed = NOW()
+		retired_by = #retiredBy.userId#,
+		retired_reason = #retiredReason#,
+		date_retired = NOW()
 	WHERE
 		form_id = #formId#
 </update>
@@ -107,8 +109,9 @@
 		form
 	SET
 		retired = 0,
-		changed_by = #changedBy.userId#,
-		date_changed = NOW()
+		retired_by = NULL,
+		retired_reason = NULL,
+		retired_date = NULL
 	WHERE
 		form_id = #formId#
 </update>

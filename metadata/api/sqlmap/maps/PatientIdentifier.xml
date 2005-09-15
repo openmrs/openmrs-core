@@ -15,7 +15,7 @@
 		patient_id,
 		identifier,
 		identifier_type,
-		location,
+		location_id,
 		creator,
 		date_created
 		)
@@ -38,7 +38,7 @@
 	<result property="patient" column="patient_id" select="getPatient" />
 	<result property="identifier" column="identifier" />
 	<result property="identifierType" column="identifier_type" select="getPatientIdentifierType" />
-	<result property="location" column="location" select="getLocation" />
+	<result property="location" column="location_id" select="getLocation" />
 	<result property="creator" column="creator" select="getUser" />
 	<result property="dateCreated" column="date_created" />
 	<result property="voided" column="voided" nullValue="false" />
@@ -54,7 +54,7 @@
 		patient_id = #patient.patientId# AND
 		identifier = #identifier# AND
 		identifier_type = #identifierType.patientIdentifierTypeId# AND
-		location = #location.locationId#
+		location_id = #location.locationId#
 </select>
 
 <select id="getPatientIdentifierByPatientId" parameterClass="int"
@@ -76,7 +76,7 @@
 		patient_id = #patient.patientId# AND
 		identifier = #identifier# AND
 		identifier_type = #identifierType.patientIdentifierTypeId# AND
-		location = #location.locationId#		
+		location_id = #location.locationId#		
 </delete>
 
 <update id="voidPatientIdentifier" parameterClass="org.openmrs.PatientIdentifier">
@@ -91,7 +91,7 @@
 		patient_id = #patient.patientId# AND
 		identifier = #identifier# AND
 		identifier_type = #identifierType.patientIdentifierTypeId# AND
-		location = #location.locationId#		
+		location_id = #location.locationId#		
 </update>
 
 <update id="unvoidPatientIdentifier" parameterClass="org.openmrs.PatientIdentifier">

@@ -54,6 +54,7 @@
 	<result property="autoExpireDate" column="auto_expire_date" />
 	<result property="creator" column="creator" select="getUser" />
 	<result property="dateCreated" column="date_created" />
+	<result property="discontinued" column="discontinued" nullvalue="false" />
 	<result property="discontinuedBy" column="discontinued_by" select="getUser" />
 	<result property="discontinuedDate" column="discontinued_date" />
 	<result property="discontinuedReason" column="discontinued_reason" />
@@ -99,7 +100,7 @@
 	UPDATE
 		orders
 	SET
-		<!-- discontinued = 1 -->
+		discontinued = 1,
 		discontinued_by = #discontinuedBy.userId#,
 		discontinued_date = NOW(),
 		discontinued_reason = #discontinuedReason#
@@ -111,10 +112,34 @@
 	UPDATE
 		orders
 	SET
-		<!-- discontinued = 0 -->
+		discontinued = 0,
 		discontinued_by = NULL,
 		discontinued_date = NULL,
 		discontinued_reason = NULL
+	WHERE
+		order_id = #orderId#
+</update>
+
+<update id="voidOrder" parameterClass="org.openmrs.Order">
+	UPDATE
+		orders
+	SET
+		voided = 1,
+		voided_by = #voidedBy.userId#,
+		voided_date = NOW(),
+		voided_reason = #voidedReason#
+	WHERE
+		order_id = #orderId#
+</update>
+
+<update id="unvoidOrder" parameterClass="org.openmrs.Order">
+	UPDATE
+		orders
+	SET
+		voided = 0,
+		voided_by = NULL,
+		voided_date = NULL,
+		voided_reason = NULL
 	WHERE
 		order_id = #orderId#
 </update>

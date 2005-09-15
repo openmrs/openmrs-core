@@ -9,6 +9,7 @@ public class MimeType implements java.io.Serializable {
 
 	// Fields
 
+	private Integer mimeTypeId;
 	private String mimeType;
 	private String description;
 
@@ -39,6 +40,20 @@ public class MimeType implements java.io.Serializable {
 	}
 	
 	// Property accessors
+
+	/**
+	 * @return Returns the mimeTypeId.
+	 */
+	public Integer getMimeTypeId() {
+		return mimeTypeId;
+	}
+
+	/**
+	 * @param mimeTypeId The mimeTypeId to set.
+	 */
+	public void setMimeTypeId(Integer mimeTypeId) {
+		this.mimeTypeId = mimeTypeId;
+	}
 
 	/**
 	 * @return Returns the description.

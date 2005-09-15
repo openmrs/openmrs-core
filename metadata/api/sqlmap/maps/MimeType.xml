@@ -20,6 +20,9 @@
 		#mimeType#,
 		#description#
 		);
+	<selectKey keyProperty="mimeTypeId">
+		SELECT LAST_INSERT_ID() AS mimeTypeId
+	</selectKey>
 </insert>
 
 <!-- ************************************************************ -->
@@ -27,12 +30,13 @@
 <!-- ************************************************************ -->
 
 <resultMap id="mimeTypeResult" class="org.openmrs.MimeType">
+	<result property="mimeTypeId" column="mime_type_id" />
 	<result property="mimeType" column="mime_type" />
 	<result property="description" column="description" />
 </resultMap>
 
-<select id="getMimeType" parameterClass="string" resultMap="mimeTypeResult">
-	SELECT * FROM mime_type WHERE mime_type = #value#
+<select id="getMimeType" parameterClass="int" resultMap="mimeTypeResult">
+	SELECT * FROM mime_type WHERE mime_type_id = #value#
 </select>
 
 <!-- ************************************************************ -->
@@ -43,17 +47,18 @@
 	UPDATE
 		mime_type
 	SET
+		mime_type = #mimeType#,
 		description = #description#
 	WHERE
-		mime_type = #mimeType#
+		mime_type_id = #mimeTypeId#
 </update>
 
 <!-- ************************************************************ -->
 <!-- ** Delete                                                 ** -->
 <!-- ************************************************************ -->
 
-<delete id="deleteMimeType" parameterClass="string">
-	DELETE FROM mime_type WHERE mime_type = #value#
+<delete id="deleteMimeType" parameterClass="int">
+	DELETE FROM mime_type WHERE mime_type_id = #value#
 </delete>
 
 </sqlMap>

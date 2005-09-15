@@ -23,12 +23,20 @@ public interface OrderService {
 	public Order getOrder(Integer orderId) throws APIException;
 		
 	/**
-	 * Discontinue order record (functionally delete order from system)
+	 * Discontinue order record
 	 * 
 	 * @param order order to be discontinued
-	 * @param reason reason for voiding order
+	 * @param reason reason for discontinuing order
 	 */
 	public void discontinueOrder(Order order, String reason) throws APIException;
+
+	/**
+	 * Undiscontinue order record
+	 * 
+	 * @param order order to be undiscontinued
+	 */
+	public void undiscontinueOrder(Order order) throws APIException;
+
 	
 	/**
 	 * Delete order from database. This <b>should not be called</b>
@@ -40,5 +48,21 @@ public interface OrderService {
 	 * @see #discontinueOrder(Order, String) 
 	 */
 	public void deleteOrder(Order order) throws APIException;
+
+	/**
+	 * Void order record
+	 * 
+	 * @param order order to be voided
+	 * @param reason reason for voiding order
+	 */
+	public void voidOrder(Order order, String reason) throws APIException;
+
+	/**
+	 * Unvoid order record
+	 * 
+	 * @param order order to be unvoided
+	 */
+	public void unvoidOrder(Order order) throws APIException;
+
 	
 }

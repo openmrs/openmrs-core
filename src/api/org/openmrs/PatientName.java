@@ -28,6 +28,8 @@ public class PatientName implements java.io.Serializable {
 	private User voidedBy;
 	private Date dateVoided;
 	private String voidReason;
+	private User changedBy;
+	private Date date_changed;
 
 	// Constructors
 
@@ -293,6 +295,34 @@ public class PatientName implements java.io.Serializable {
 	 */
 	public void setVoidReason(String voidReason) {
 		this.voidReason = voidReason;
+	}
+
+	/**
+	 * @return Returns the changedBy.
+	 */
+	public User getChangedBy() {
+		return changedBy;
+	}
+
+	/**
+	 * @param changedBy The changedBy to set.
+	 */
+	public void setChangedBy(User changedBy) {
+		this.changedBy = changedBy;
+	}
+
+	/**
+	 * @return Returns the date_changed.
+	 */
+	public Date getDate_changed() {
+		return date_changed;
+	}
+
+	/**
+	 * @param date_changed The date_changed to set.
+	 */
+	public void setDate_changed(Date date_changed) {
+		this.date_changed = date_changed;
 	}
 
 

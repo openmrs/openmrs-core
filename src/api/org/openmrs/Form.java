@@ -22,6 +22,9 @@ public class Form implements java.io.Serializable {
 	private String schemaNamespace;
 	private String definition;
 	private boolean retired;
+	private User retiredBy;
+	private Date dateRetired;
+	private String retiredReason;
 	private Date dateChanged;
 	private Date dateCreated;
 	private Set formFields;
@@ -196,6 +199,48 @@ public class Form implements java.io.Serializable {
 	 */
 	public void setRetired(boolean retired) {
 		this.retired = retired;
+	}
+
+	/**
+	 * @return Returns the dateRetired.
+	 */
+	public Date getDateRetired() {
+		return dateRetired;
+	}
+
+	/**
+	 * @param dateRetired The dateRetired to set.
+	 */
+	public void setDateRetired(Date dateRetired) {
+		this.dateRetired = dateRetired;
+	}
+
+	/**
+	 * @return Returns the retiredBy.
+	 */
+	public User getRetiredBy() {
+		return retiredBy;
+	}
+
+	/**
+	 * @param retiredBy The retiredBy to set.
+	 */
+	public void setRetiredBy(User retiredBy) {
+		this.retiredBy = retiredBy;
+	}
+
+	/**
+	 * @return Returns the retiredReason.
+	 */
+	public String getRetiredReason() {
+		return retiredReason;
+	}
+
+	/**
+	 * @param retiredReason The retiredReason to set.
+	 */
+	public void setRetiredReason(String retiredReason) {
+		this.retiredReason = retiredReason;
 	}
 
 	/**

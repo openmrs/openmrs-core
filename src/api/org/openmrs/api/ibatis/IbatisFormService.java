@@ -118,9 +118,8 @@ public class IbatisFormService implements FormService {
 	 * @see org.openmrs.api.FormService#retireForm(Form, String)
 	 */
 	public void retireForm(Form form, String reason) throws APIException {
-		// TODO add "retire_reason" to form table
-		form.setChangedBy(context.getAuthenticatedUser());
-		// form.setVoidReason(reason);
+		form.setRetiredBy(context.getAuthenticatedUser());
+		form.setRetiredReason(reason);
 		try {
 			SqlMap.instance().update("retireForm", form);
 		} catch (SQLException e) {
@@ -132,7 +131,6 @@ public class IbatisFormService implements FormService {
 	 * @see org.openmrs.api.FormService#unretireForm(Form)
 	 */
 	public void unretireForm(Form form) {
-		form.setChangedBy(context.getAuthenticatedUser());
 		try {
 			SqlMap.instance().update("unretireForm", form);
 		} catch (SQLException e) {

@@ -178,8 +178,8 @@ public class IbatisUserService implements UserService {
 	 * @see org.openmrs.api.UserService#voidUser(User, String)
 	 */
 	public void voidUser(User user, String reason) throws APIException {
-		// TODO add "void_reason" to user table
 		user.setVoided(true);
+		user.setVoidReason(reason);
 		user.setVoidedBy(context.getAuthenticatedUser());
 		// user.setVoidReason(reason);
 		try {
@@ -193,6 +193,7 @@ public class IbatisUserService implements UserService {
 	 * @see org.openmrs.api.UserService#unvoidUser(User)
 	 */
 	public void unvoidUser(User user) {
+		user.setVoided(false);
 		user.setChangedBy(context.getAuthenticatedUser());
 		try {
 			SqlMap.instance().update("unvoidUser", user);

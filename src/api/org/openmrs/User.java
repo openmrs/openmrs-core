@@ -28,6 +28,7 @@ public class User implements java.io.Serializable {
 	private boolean voided;
 	private User voidedBy;
 	private Date dateVoided;
+	private String voidReason;
 	private List roles;
 
 	// Constructors
@@ -256,6 +257,20 @@ public class User implements java.io.Serializable {
 	 */
 	public void setVoidedBy(User voidedBy) {
 		this.voidedBy = voidedBy;
+	}
+
+	/**
+	 * @return Returns the voidReason.
+	 */
+	public String getVoidReason() {
+		return voidReason;
+	}
+
+	/**
+	 * @param voidReason The voidReason to set.
+	 */
+	public void setVoidReason(String voidReason) {
+		this.voidReason = voidReason;
 	}
 
 

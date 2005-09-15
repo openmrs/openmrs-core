@@ -47,7 +47,8 @@ public class IbatisPatientService implements PatientService {
 		return patient;
 	}
 	
-	// TODO void patient addresses and names instead of deleting them
+	// TODO void patient names instead of deleting them
+	// TODO update all addresses and names passed in 
 	public void updatePatient(Patient patient) throws APIException {
 		try {
 			try {
@@ -58,7 +59,9 @@ public class IbatisPatientService implements PatientService {
 				if (patient.getCreator() == null)
 					this.createPatient(patient);
 				else {
-					//patient.setChangedBy(context.getAuthenticatedUser());
+					
+					User authenticatedUser = context.getAuthenticatedUser(); 
+					patient.setChangedBy(authenticatedUser);
 					
 					if (patient.getTribe().getTribeId() == null)
 						SqlMap.instance().update("updateTribe", patient.getTribe());
@@ -74,7 +77,7 @@ public class IbatisPatientService implements PatientService {
 						SqlMap.instance().insert("createPatientAddress", pAddress);
 					}
 					for (Iterator i = toDel.iterator(); i.hasNext();)
-						SqlMap.instance().delete("deletePatientAddress", i.next());
+						SqlMap.instance().update("voidPatientAddress", i.next());
 					
 					//update names
 					List oldNames = SqlMap.instance().queryForList("getPatientNameByPatientId", patient.getPatientId());
@@ -84,6 +87,7 @@ public class IbatisPatientService implements PatientService {
 					for (Iterator i = toAdd.iterator(); i.hasNext();)
 					{
 						PatientName pName = (PatientName)i.next();
+						pName.setCreator(authenticatedUser);
 						SqlMap.instance().insert("createPatientName", pName);
 					}
 					for (Iterator i = toDel.iterator(); i.hasNext();)

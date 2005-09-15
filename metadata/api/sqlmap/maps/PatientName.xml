@@ -67,6 +67,8 @@
 	<result property="voidedBy" column="voided_by" select="getUser" />
 	<result property="dateVoided" column="date_voided" />
 	<result property="voidReason" column="void_reason" />
+	<result property="changedBy" column="changed_by" select="getUser" />
+	<result property="dateChanged" column="date_changed" />
 </resultMap>
 
 <select id="getPatientName" parameterClass="int" resultMap="patientNameResult">
@@ -96,6 +98,8 @@
 		family_name2 = #familyName2#,
 		family_name_suffix = #familyNameSuffix#,
 		degree = #degree#
+		changed_by = "changedBy.userId#,
+		date_changed = NOW()
 	WHERE
 		patient_name_id = #patientNameId#
 </update>
@@ -128,6 +132,8 @@
 		voided_by = NULL,
 		date_voided = NULL,
 		void_reason = NULL
+		changed_by = #changedBy.userId#,
+		date_changed = NOW()
 	WHERE
 		patient_name_id = #patientNameId#
 </update>

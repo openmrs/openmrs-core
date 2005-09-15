@@ -10,7 +10,7 @@
 <!-- ************************************************************ -->
 
 <insert id="createDrugOrder" parameterClass="org.openmrs.DrugOrder">
-	INSERT INTO drug_orders
+	INSERT INTO drug_order
 		(
 		order_id,
 		drug_inventory_id,
@@ -51,7 +51,7 @@
 
 <select id="getDrugOrder" parameterClass="int"
         resultMap="drugOrderResult">
-	SELECT * FROM drug_orders WHERE order_id = #value#
+	SELECT * FROM drug_order WHERE order_id = #value#
 </select>
 
 <!-- ************************************************************ -->
@@ -60,7 +60,7 @@
 
 <update id="updateDrugOrder" parameterClass="org.openmrs.DrugOrder">
 	UPDATE
-		drug_orders
+		drug_order
 	SET
 		drug_inventory_id = #drug.drugId#,
 		dose = #dose#,
@@ -78,7 +78,7 @@
 <!-- ************************************************************ -->
 
 <delete id="deleteDrugOrder" parameterClass="org.openmrs.DrugOrder">
-	DELETE FROM drug_orders WHERE order_id = #orderId#
+	DELETE FROM drug_order WHERE order_id = #orderId#
 </delete>
 
 </sqlMap>

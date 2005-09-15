@@ -159,6 +159,14 @@ public class Encounter implements java.io.Serializable {
 	}
 
 	/**
+	 * @return Returns the orders
+	 */
+	public List<Order> getOrders() {
+		return orders;
+	}
+
+	
+	/**
 	 * @param orders The orders to set.
 	 */
 	public void setOrders(List<Order> orders) {

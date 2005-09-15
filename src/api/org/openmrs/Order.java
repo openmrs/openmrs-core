@@ -28,6 +28,10 @@ public class Order implements java.io.Serializable {
 	private User discontinuedBy;
 	private Date discontinuedDate;
 	private String discontinuedReason;
+	private boolean voided;
+	private User voidedBy;
+	private Date dateVoided;
+	private String voidReason;
 
 	
 	// Constructors
@@ -180,6 +184,62 @@ public class Order implements java.io.Serializable {
 	 */
 	public void setDiscontinuedReason(String discontinuedReason) {
 		this.discontinuedReason = discontinuedReason;
+	}
+
+	/**
+	 * @return Returns the dateVoided.
+	 */
+	public Date getDateVoided() {
+		return dateVoided;
+	}
+
+	/**
+	 * @param dateVoided The dateVoided to set.
+	 */
+	public void setDateVoided(Date dateVoided) {
+		this.dateVoided = dateVoided;
+	}
+
+	/**
+	 * @return Returns the voided.
+	 */
+	public boolean isVoided() {
+		return voided;
+	}
+
+	/**
+	 * @param voided The voided to set.
+	 */
+	public void setVoided(boolean voided) {
+		this.voided = voided;
+	}
+
+	/**
+	 * @return Returns the voidedBy.
+	 */
+	public User getVoidedBy() {
+		return voidedBy;
+	}
+
+	/**
+	 * @param voidedBy The voidedBy to set.
+	 */
+	public void setVoidedBy(User voidedBy) {
+		this.voidedBy = voidedBy;
+	}
+
+	/**
+	 * @return Returns the voidReason.
+	 */
+	public String getVoidReason() {
+		return voidReason;
+	}
+
+	/**
+	 * @param voidReason The voidReason to set.
+	 */
+	public void setVoidReason(String voidReason) {
+		this.voidReason = voidReason;
 	}
 
 	/**
