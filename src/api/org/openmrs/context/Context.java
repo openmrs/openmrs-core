@@ -7,6 +7,7 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
+import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.UserService;
 
@@ -58,6 +59,11 @@ public interface Context {
 	 */
 	public UserService getUserService();
 
+	/** 
+	 * @return order service
+	 */
+	public OrderService getOrderService();
+	
 	/**
 	 * @return admin-related services
 	 */
