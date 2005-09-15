@@ -1,0 +1,10 @@
+/*
+Run once prior to other scripts to create
+the OpenMRS database.  Alternatively, if
+a database already exists, this step may
+be skipped.
+*/
+
+drop database if exists amrs;
+create database amrs;
+use amrs;

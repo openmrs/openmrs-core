@@ -3,7 +3,7 @@ MySQL Backup
 Source Host:           localhost
 Source Server Version: 4.1.11-nt
 Source Database:       amrs
-Date:                  2005/09/15 11:34:31
+Date:                  2005/09/15 15:08:27
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -135,18 +135,6 @@ CREATE TABLE `concept_name` (
   CONSTRAINT `user_who_created_name` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 #----------------------------
-# Table structure for concept_note
-#----------------------------
-drop table if exists concept_note;
-CREATE TABLE `concept_note` (
-  `concept_note_id` int(11) NOT NULL auto_increment,
-  `concept_id` int(11) NOT NULL default '0',
-  `creator` int(11) NOT NULL default '0',
-  `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
-  `note` blob NOT NULL,
-  PRIMARY KEY  (`concept_note_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 7168 kB; InnoDB free: 7168 kB; InnoDB free: 716';
-#----------------------------
 # Table structure for concept_numeric
 #----------------------------
 drop table if exists concept_numeric;
@@ -171,21 +159,6 @@ CREATE TABLE `concept_numeric` (
   CONSTRAINT `numeric_attributes` FOREIGN KEY (`concept_id`) REFERENCES `concept` (`concept_id`),
   CONSTRAINT `user_who_changed_concept_numeric` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-#----------------------------
-# Table structure for concept_search
-#----------------------------
-drop table if exists concept_search;
-CREATE TABLE `concept_search` (
-  `concept_search_id` int(11) NOT NULL auto_increment,
-  `search_user` varchar(50) default NULL,
-  `ip_address` varchar(16) default NULL,
-  `whois_orgname` varchar(255) default NULL,
-  `whois_stateprov` varchar(255) default NULL,
-  `whois_country` varchar(50) default NULL,
-  `phrase` varchar(50) default NULL,
-  `date_searched` datetime default NULL,
-  PRIMARY KEY  (`concept_search_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 7168 kB';
 #----------------------------
 # Table structure for concept_set
 #----------------------------
@@ -452,20 +425,6 @@ CREATE TABLE `form_field` (
   CONSTRAINT `user_who_last_changed_form_field` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 #----------------------------
-# Table structure for hl7_queue
-#----------------------------
-drop table if exists hl7_queue;
-CREATE TABLE `hl7_queue` (
-  `queue_id` int(11) NOT NULL auto_increment,
-  `message` longtext,
-  `status` char(1) default NULL,
-  `creator` varchar(10) NOT NULL default '',
-  `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
-  `parser` varchar(10) default NULL,
-  `date_parsed` datetime default NULL,
-  PRIMARY KEY  (`queue_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-#----------------------------
 # Table structure for icd10
 #----------------------------
 drop table if exists icd10;
@@ -506,19 +465,6 @@ CREATE TABLE `mime_type` (
   PRIMARY KEY  (`mime_type_id`),
   KEY `mime_type_id` (`mime_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 75776 kB; InnoDB free: 75776 kB; InnoDB free: 7';
-#----------------------------
-# Table structure for mrn_log
-#----------------------------
-drop table if exists mrn_log;
-CREATE TABLE `mrn_log` (
-  `mrn_log_id` int(11) NOT NULL auto_increment,
-  `date_generated` datetime default NULL,
-  `generated_by` varchar(50) default NULL,
-  `site` varchar(50) default NULL,
-  `mrn_first` int(11) default NULL,
-  `mrn_count` int(11) default NULL,
-  PRIMARY KEY  (`mrn_log_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='InnoDB free: 75776 kB';
 #----------------------------
 # Table structure for obs
 #----------------------------
