@@ -1,7 +1,20 @@
 OpenMRS Data Model Release Notes
+
 $Date$
 $Rev$
 
 0.8
+---
 
 Paulo - edit this text file with a reverse-chronological list of changes to the data model
+
+0.7
+---
+* Patient names moved to separate "patient_name" table
+* Loads of other stuff
+
+0.1
+---
+* Initial data model spec'd out in MS Access
+* Neato!
+
