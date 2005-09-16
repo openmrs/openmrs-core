@@ -1,4 +1,4 @@
-package org.openmrs.api.ibatis;
+package org.openmrs.api;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -11,7 +11,7 @@ import org.openmrs.api.UserService;
 import org.openmrs.context.Context;
 import org.openmrs.context.ContextFactory;
 
-public class IbatisObsServiceTest extends TestCase {
+public class ObsServiceTest extends TestCase {
 	
 	protected ObsService es;
 	protected PatientService ps;
@@ -46,7 +46,7 @@ public class IbatisObsServiceTest extends TestCase {
 	}	
 	
 	public static Test suite() {
-		return new TestSuite(IbatisObsServiceTest.class, "Basic IbatisObsService functionality");
+		return new TestSuite(ObsServiceTest.class, "Basic ObsService functionality");
 	}
 
 }

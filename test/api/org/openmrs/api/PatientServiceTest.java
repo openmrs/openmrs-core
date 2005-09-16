@@ -1,27 +1,28 @@
-package org.openmrs.api.ibatis;
+package org.openmrs.api;
+
+import java.util.Date;
+import java.util.List;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.openmrs.*;
+import org.openmrs.Patient;
+import org.openmrs.PatientAddress;
 import org.openmrs.PatientName;
-import org.openmrs.context.IbatisContext;
-import org.openmrs.context.*;
-import org.openmrs.api.*;
-import java.util.*;
-import java.util.Date;
+import org.openmrs.context.Context;
+import org.openmrs.context.ContextFactory;
 
-public class IbatisPatientServiceTest extends TestCase {
+public class PatientServiceTest extends TestCase {
 	
 	protected PatientService ps;
 	
 	public void setUp() throws Exception{
-		Context context = new IbatisContext();
+		Context context = ContextFactory.getContext();
 		
 		context.authenticate("3-4", "test");
 		
-		ps = new IbatisPatientService(context);
+		ps = context.getPatientService();
 	}
 	public void testGetPatient() throws APIException {
 		
@@ -93,7 +94,7 @@ public class IbatisPatientServiceTest extends TestCase {
 	}
 	
 	public static Test suite() {
-		return new TestSuite(IbatisPatientServiceTest.class, "Basic IbatisPatientService functionality");
+		return new TestSuite(PatientServiceTest.class, "Basic PatientService functionality");
 	}
 
 }

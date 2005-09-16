@@ -1,4 +1,4 @@
-package org.openmrs.api.ibatis;
+package org.openmrs.api;
 
 import java.util.Iterator;
 import java.util.List;
@@ -21,7 +21,7 @@ import org.openmrs.api.UserService;
 import org.openmrs.context.Context;
 import org.openmrs.context.ContextFactory;
 
-public class IbatisAdministrationServiceTest extends TestCase {
+public class AdministrationServiceTest extends TestCase {
 	
 	protected PatientService ps;
 	protected UserService us;
@@ -255,7 +255,7 @@ public class IbatisAdministrationServiceTest extends TestCase {
 		
 		as.createEncounterType(encounterType);
 		
-		assertNotNull(newE)
+		//assertNotNull(newE);
 		
 		EncounterType newEncounterType = encounterService.getEncounterType(encounterType.getEncounterTypeId());
 		assertNotNull(newEncounterType);
@@ -294,7 +294,7 @@ public class IbatisAdministrationServiceTest extends TestCase {
 	}
 	
 	public static Test suite() {
-		return new TestSuite(IbatisAdministrationServiceTest.class, "Basic IbatisAdministrationService functionality");
+		return new TestSuite(AdministrationServiceTest.class, "Basic IbatisAdministrationService functionality");
 	}
 
 }

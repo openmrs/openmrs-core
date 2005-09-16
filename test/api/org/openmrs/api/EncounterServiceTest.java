@@ -1,4 +1,4 @@
-package org.openmrs.api.ibatis;
+package org.openmrs.api;
 
 import java.util.Date;
 import java.util.List;
@@ -16,7 +16,7 @@ import org.openmrs.api.UserService;
 import org.openmrs.context.Context;
 import org.openmrs.context.ContextFactory;
 
-public class IbatisEncounterServiceTest extends TestCase {
+public class EncounterServiceTest extends TestCase {
 	
 	protected EncounterService es;
 	protected PatientService ps;
@@ -92,7 +92,7 @@ public class IbatisEncounterServiceTest extends TestCase {
 	}	
 	
 	public static Test suite() {
-		return new TestSuite(IbatisEncounterServiceTest.class, "Basic IbatisEncounterService functionality");
+		return new TestSuite(EncounterServiceTest.class, "Basic EncounterService functionality");
 	}
 
 }

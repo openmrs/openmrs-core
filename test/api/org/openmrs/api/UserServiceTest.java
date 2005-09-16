@@ -1,4 +1,4 @@
-package org.openmrs.api.ibatis;
+package org.openmrs.api;
 
 import java.util.LinkedList;
 
@@ -12,7 +12,7 @@ import org.openmrs.context.Context;
 import org.openmrs.context.ContextAuthenticationException;
 import org.openmrs.context.ContextFactory;
 
-public class IbatisUserServiceTest extends TestCase {
+public class UserServiceTest extends TestCase {
 	
 	protected UserService us;
 	protected Context context;
@@ -51,7 +51,7 @@ public class IbatisUserServiceTest extends TestCase {
 	}
 	
 	public static Test suite() {
-		return new TestSuite(IbatisUserServiceTest.class, "Basic IbatisUserService functionality");
+		return new TestSuite(UserServiceTest.class, "Basic UserService functionality");
 	}
 
 }
