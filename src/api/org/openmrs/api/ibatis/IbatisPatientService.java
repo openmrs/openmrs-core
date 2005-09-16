@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.openmrs.Patient;
 import org.openmrs.PatientAddress;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientName;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
@@ -22,7 +23,6 @@ public class IbatisPatientService implements PatientService {
 		this.context = context;
 	}
 	
-	/* TODO insert/update patient_identifier? */
 	public Patient createPatient(Patient patient) throws APIException {
 		try {
 			User authenticatedUser = context.getAuthenticatedUser();
@@ -151,6 +151,44 @@ public class IbatisPatientService implements PatientService {
 			throw new APIException(e);
 		}
 		
+	}
+	
+	public List<PatientIdentifierType> getPatientIdentifierTypes() throws APIException {
+		
+		List<PatientIdentifierType> patientIdentifierTypes;
+		
+		try {
+			try {
+				SqlMap.instance().startTransaction();
+				patientIdentifierTypes = SqlMap.instance().queryForList("getAllPatientIdentifierTypes", null);
+				SqlMap.instance().commitTransaction();
+			} finally {
+				SqlMap.instance().endTransaction();
+			}
+		} catch (SQLException e) {
+			throw new APIException(e);
+		}
+		
+		return patientIdentifierTypes;
+	}
+
+	public PatientIdentifierType getPatientIdentifierType(Integer patientIdentifierTypeId) throws APIException {
+
+		PatientIdentifierType patientIdentifierType;
+		
+		try {
+			try {
+				SqlMap.instance().startTransaction();
+				patientIdentifierType = (PatientIdentifierType)SqlMap.instance().queryForObject("getPatientIdentifierType", patientIdentifierTypeId);
+				SqlMap.instance().commitTransaction();
+			} finally {
+				SqlMap.instance().endTransaction();
+			}
+		} catch (SQLException e) {
+			throw new APIException(e);
+		}
+		
+		return patientIdentifierType;
 	}
 
 	

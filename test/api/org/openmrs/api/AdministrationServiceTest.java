@@ -11,13 +11,7 @@ import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
 import org.openmrs.MimeType;
 import org.openmrs.OrderType;
-import org.openmrs.api.AdministrationService;
-import org.openmrs.api.EncounterService;
-import org.openmrs.api.FormService;
-import org.openmrs.api.ObsService;
-import org.openmrs.api.OrderService;
-import org.openmrs.api.PatientService;
-import org.openmrs.api.UserService;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.context.Context;
 import org.openmrs.context.ContextFactory;
 
@@ -30,6 +24,7 @@ public class AdministrationServiceTest extends TestCase {
 	protected OrderService orderService;
 	protected FormService formService;
 	protected EncounterService encounterService;
+	protected PatientService patientService;
 	
 	public void setUp() throws Exception{
 		Context context = ContextFactory.getContext();
@@ -50,6 +45,8 @@ public class AdministrationServiceTest extends TestCase {
 		assertNotNull(orderService);
 		formService = context.getFormService();
 		assertNotNull(formService);
+		patientService = context.getPatientService();
+		assertNotNull(patientService);
 		
 	}
 
@@ -77,7 +74,7 @@ public class AdministrationServiceTest extends TestCase {
 			MimeType mimeType2 = (MimeType)i.next();
 			assertNotNull(mimeType);
 			//check .equals function
-			assertTrue(mimeType.equals(mimeType2) == (mimeType.getMimeType().equals(mimeType2.getMimeType())));
+			assertTrue(mimeType.equals(mimeType2) == (mimeType.getMimeTypeId().equals(mimeType2.getMimeTypeId())));
 			//mark found flag
 			if (mimeType.equals(mimeType2))
 				found = true;
@@ -124,7 +121,7 @@ public class AdministrationServiceTest extends TestCase {
 			OrderType orderType2 = (OrderType)i.next();
 			assertNotNull(orderType);
 			//check .equals function
-			assertTrue(orderType.equals(orderType2) == (orderType.getName().equals(orderType2.getName())));
+			assertTrue(orderType.equals(orderType2) == (orderType.getOrderTypeId().equals(orderType2.getOrderTypeId())));
 			//mark found flag
 			if (orderType.equals(orderType2))
 				found = true;
@@ -172,7 +169,7 @@ public class AdministrationServiceTest extends TestCase {
 			FieldType fieldType2 = (FieldType)i.next();
 			assertNotNull(fieldType);
 			//check .equals function
-			assertTrue(fieldType.equals(fieldType2) == (fieldType.getName().equals(fieldType2.getName())));
+			assertTrue(fieldType.equals(fieldType2) == (fieldType.getFieldTypeId().equals(fieldType2.getFieldTypeId())));
 			//mark found flag
 			if (fieldType.equals(fieldType2))
 				found = true;
@@ -195,52 +192,50 @@ public class AdministrationServiceTest extends TestCase {
 
 	}
 	
-	//TODO remove 'x' to test
-	public void xtestPatientIdentifierType() throws Exception {
+	public void testPatientIdentifierType() throws Exception {
 		
 		//testing creation
 		
-		FieldType fieldType = new FieldType();
+		PatientIdentifierType patientIdentifierType = new PatientIdentifierType();
 		
-		fieldType.setName("testing");
-		fieldType.setDescription("desc");
-		fieldType.setIsSet(true);
+		patientIdentifierType.setName("testing");
+		patientIdentifierType.setDescription("desc");
 		
-		as.createFieldType(fieldType);
+		as.createPatientIdentifierType(patientIdentifierType);
 		
-		FieldType newFieldType = formService.getFieldType(fieldType.getFieldTypeId());
-		assertNotNull(newFieldType);
+		PatientIdentifierType newPatientIdentifierType = patientService.getPatientIdentifierType(patientIdentifierType.getPatientIdentifierTypeId());
+		assertNotNull(newPatientIdentifierType);
 		
-		List<FieldType> fieldTypes = formService.getFieldTypes();
+		List<PatientIdentifierType> patientIdentifierTypes = patientService.getPatientIdentifierTypes();
 		
 		//make sure we get a list
-		assertNotNull(fieldTypes);
+		assertNotNull(patientIdentifierTypes);
 		
 		boolean found = false;
-		for(Iterator i = fieldTypes.iterator(); i.hasNext();) {
-			FieldType fieldType2 = (FieldType)i.next();
-			assertNotNull(fieldType);
+		for(Iterator i = patientIdentifierTypes.iterator(); i.hasNext();) {
+			PatientIdentifierType patientIdentifierType2 = (PatientIdentifierType)i.next();
+			assertNotNull(patientIdentifierType);
 			//check .equals function
-			assertTrue(fieldType.equals(fieldType2) == (fieldType.getName().equals(fieldType2.getName())));
+			assertTrue(patientIdentifierType.equals(patientIdentifierType2) == (patientIdentifierType.getPatientIdentifierTypeId().equals(patientIdentifierType2.getPatientIdentifierTypeId())));
 			//mark found flag
-			if (fieldType.equals(fieldType2))
+			if (patientIdentifierType.equals(patientIdentifierType2))
 				found = true;
 		}
 		
-		//assert that the new fieldType was returned in the list
+		//assert that the new patientIdentifierType was returned in the list
 		assertTrue(found);
 		
 		
 		//check updation
-		newFieldType.setName("another test");
-		as.updateFieldType(newFieldType);
+		newPatientIdentifierType.setName("another test");
+		as.updatePatientIdentifierType(newPatientIdentifierType);
 		
-		FieldType newerFieldType = formService.getFieldType(newFieldType.getFieldTypeId());
-		assertTrue(newerFieldType.getName().equals(newFieldType.getName()));
+		PatientIdentifierType newerPatientIdentifierType = patientService.getPatientIdentifierType(newPatientIdentifierType.getPatientIdentifierTypeId());
+		assertTrue(newerPatientIdentifierType.getPatientIdentifierTypeId().equals(newPatientIdentifierType.getPatientIdentifierTypeId()));
 		
 		
 		//check deletion
-		as.deleteFieldType(newFieldType);
+		as.deletePatientIdentifierType(newPatientIdentifierType);
 
 	}
 	
@@ -270,7 +265,7 @@ public class AdministrationServiceTest extends TestCase {
 			EncounterType encounterType2 = (EncounterType)i.next();
 			assertNotNull(encounterType);
 			//check .equals function
-			assertTrue(encounterType.equals(encounterType2) == (encounterType.getName().equals(encounterType2.getName())));
+			assertTrue(encounterType.equals(encounterType2) == (encounterType.getEncounterTypeId().equals(encounterType2.getEncounterTypeId())));
 			//mark found flag
 			if (encounterType.equals(encounterType2))
 				found = true;

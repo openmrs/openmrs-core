@@ -24,6 +24,9 @@
 		#creator.userId#,
 		NOW()
 		);
+	<selectKey keyProperty="patientIdentifierTypeId">
+		SELECT LAST_INSERT_ID() AS patientIdentifierTypeId
+	</selectKey>
 </insert>
 
 <!-- ************************************************************ -->
@@ -41,6 +44,10 @@
 <select id="getPatientIdentifierType" parameterClass="int"
         resultMap="patientIdentifierTypeResult">
 	SELECT * FROM patient_identifier_type WHERE patient_identifier_type_id = #value#
+</select>
+
+<select id="getAllPatientIdentifierTypes" resultMap="patientIdentifierTypeResult">
+	SELECT * FROM patient_identifier_type
 </select>
 
 <!-- ************************************************************ -->
@@ -61,8 +68,8 @@
 <!-- ** Deletion                                               ** -->
 <!-- ************************************************************ -->
 
-<delete id="deletePatientIdentifierType" parameterClass="org.openmrs.PatientIdentifierType">
-	DELETE FROM patient_identifier_type WHERE patient_identifier_type_id = #patientIdentifierTypeId#
+<delete id="deletePatientIdentifierType" parameterClass="int">
+	DELETE FROM patient_identifier_type WHERE patient_identifier_type_id = #value#
 </delete>
 
 </sqlMap>
