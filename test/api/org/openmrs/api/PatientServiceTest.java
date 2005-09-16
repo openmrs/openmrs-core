@@ -16,13 +16,16 @@ import org.openmrs.context.ContextFactory;
 public class PatientServiceTest extends TestCase {
 	
 	protected PatientService ps;
+	protected Patient createdPatient;
 	
 	public void setUp() throws Exception{
 		Context context = ContextFactory.getContext();
 		
-		context.authenticate("3-4", "test");
+		//context.authenticate("admin", "test");
 		
 		ps = context.getPatientService();
+		
+		this.createPatient();
 	}
 	public void testGetPatient() throws APIException {
 		
@@ -31,7 +34,7 @@ public class PatientServiceTest extends TestCase {
 		patient = ps.getPatient(-1);
 		assertNull(patient);
 
-		patient = (Patient)ps.getPatient(1);
+		patient = (Patient)ps.getPatient(0);
 		assertNotNull(patient);
 	}
 	
@@ -50,7 +53,7 @@ public class PatientServiceTest extends TestCase {
 		assertTrue(patientList.size() > 0);
 	}
 	
-	public void testCreateDeletePatient() throws APIException {
+	public void createPatient() throws APIException {
 		
 		Patient patient = new Patient();
 		
@@ -69,7 +72,7 @@ public class PatientServiceTest extends TestCase {
 		pAddressList.add(pAddress);
 		patient.setAddresses(pAddressList);
 		
-		//patient.setTribe(ps.get);
+		patient.setTribe(ps.getPatientTribes().get(0));
 		
 		patient.setBirthdate(new Date());
 		
@@ -79,18 +82,14 @@ public class PatientServiceTest extends TestCase {
 		
 		patient.setGender("male");
 		
-		//Patient createdPatient = ps.createPatient(patient);
-		//assertNotNull(createdPatient);
+		createdPatient = ps.createPatient(patient);
+		assertNotNull(createdPatient);
 		
-		//Integer pId = createdPatient.getPatientId();
-		//assertNotNull(pId);
+		assertNotNull(createdPatient.getPatientId());
 		
-		//Patient createdPatientById = ps.getPatient(pId);
-		//assertNotNull(createdPatientById);
+		Patient createdPatientById = ps.getPatient(createdPatient.getPatientId());
+		assertNotNull(createdPatientById);
 		
-		//ps.deletePatient(createdPatientById);
-		//Patient deletedPatientById = ps.getPatient(pId);
-		//assertNull(deletedPatientById);
 	}
 	
 	public static Test suite() {

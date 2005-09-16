@@ -44,6 +44,12 @@ public class IbatisEncounterService implements EncounterService {
 
 		User authenticatedUser = context.getAuthenticatedUser();
 		encounter.setCreator(authenticatedUser);
+		if (encounter.getPatient() == null || encounter.getPatient().getPatientId() == null)
+			throw new APIException("Patient cannot be null");
+		if (encounter.getProvider() == null || encounter.getProvider().getUserId() == null)
+			throw new APIException("Provider cannot be null");
+		if (encounter.getLocation() == null || encounter.getLocation().getLocationId() == null)
+			throw new APIException("Location cannot be null");
 		try {
 			try {
 				SqlMap.instance().startTransaction();

@@ -37,6 +37,11 @@
 	SELECT * FROM tribe WHERE tribe_id = #value#
 </select>
 
+<select id="getAllTribes" resultMap="tribeResult">
+	SELECT * FROM tribe
+</select>
+
+
 <!-- ************************************************************ -->
 <!-- ** Update                                                 ** -->
 <!-- ************************************************************ -->

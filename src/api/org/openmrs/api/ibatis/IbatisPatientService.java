@@ -9,6 +9,7 @@ import org.openmrs.Patient;
 import org.openmrs.PatientAddress;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientName;
+import org.openmrs.Tribe;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.PatientService;
@@ -189,6 +190,27 @@ public class IbatisPatientService implements PatientService {
 		}
 		
 		return patientIdentifierType;
+	}
+
+	/**
+	 * @see org.openmrs.api.PatientService#getPatientTribes()
+	 */
+	public List<Tribe> getPatientTribes() throws APIException {
+		List<Tribe> tribes;
+		
+		try {
+			try {
+				SqlMap.instance().startTransaction();
+				tribes = SqlMap.instance().queryForList("getAllTribes", null);
+				SqlMap.instance().commitTransaction();
+			} finally {
+				SqlMap.instance().endTransaction();
+			}
+		} catch (SQLException e) {
+			throw new APIException(e);
+		}
+		
+		return tribes;
 	}
 
 	

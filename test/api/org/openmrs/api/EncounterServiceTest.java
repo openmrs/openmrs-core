@@ -26,7 +26,8 @@ public class EncounterServiceTest extends TestCase {
 	public void setUp() throws Exception{
 		Context context = ContextFactory.getContext();
 		
-		context.authenticate("3-4", "test");
+		//TODO are we throwing errors for bad authentication?
+		context.authenticate("admin", "test");
 		
 		es = context.getEncounterService();
 		assertNotNull(es);
@@ -63,8 +64,10 @@ public class EncounterServiceTest extends TestCase {
 		enc.setEncounterDatetime(d);
 		
 		enc.setPatient(ps.getPatient(1));
+		assertNotNull(enc.getPatient());
 		
-		enc.setProvider(us.getUserByUsername("bwolfe"));
+		//TODO how to get a list of providers?
+		enc.setProvider(us.getUserByUsername("admin"));
 				
 		Encounter newEnc = es.createEncounter(enc);
 		
