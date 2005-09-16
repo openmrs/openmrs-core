@@ -2,6 +2,7 @@ package org.openmrs.api;
 
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
+import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.OrderType;
 import org.openmrs.PatientIdentifierType;
@@ -51,7 +52,7 @@ public interface AdministrationService {
 	 * @throws APIException
 	 */
 	public void updatePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException;
-
+	
 	/**
 	 * Delete PatientIdentifierType
 	 * @param PatientIdentifierType to delete
@@ -146,4 +147,28 @@ public interface AdministrationService {
 	 * @throws APIException
 	 */
 	public void deleteMimeType(MimeType mimeType) throws APIException;	
+
+	/**
+	 * Create a new Location
+	 * @param Location to create
+	 * @return newly created Location
+	 * @throws APIException
+	 */
+	public Location createLocation(Location location) throws APIException;
+
+	/**
+	 * Update Location
+	 * @param Location to update
+	 * @throws APIException
+	 */
+	public void updateLocation(Location location) throws APIException;
+
+	/**
+	 * Delete Location
+	 * @param Location to delete
+	 * @throws APIException
+	 */
+	public void deleteLocation(Location location) throws APIException;	
+
+
 }

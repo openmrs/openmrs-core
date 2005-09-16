@@ -99,8 +99,8 @@
 <!-- ** Deletion                                               ** -->
 <!-- ************************************************************ -->
 
-<delete id="deleteLocation" parameterClass="org.openmrs.Location">
-	DELETE FROM location WHERE location_id = #locationId#
+<delete id="deleteLocation" parameterClass="int">
+	DELETE FROM location WHERE location_id = #value#
 </delete>
 
 </sqlMap>

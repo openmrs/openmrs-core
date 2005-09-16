@@ -6,6 +6,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
+import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.OrderType;
 import org.openmrs.PatientIdentifierType;
@@ -268,8 +269,6 @@ public class IbatisAdministrationService implements AdministrationService {
 		} catch (SQLException e) {
 			throw new APIException(e);
 		}
-
-		
 	}
 
 	/**
@@ -405,6 +404,70 @@ public class IbatisAdministrationService implements AdministrationService {
 					this.createTribe(tribe);
 				} else {
 					SqlMap.instance().update("updateTribe", tribe);
+				}
+
+				SqlMap.instance().commitTransaction();
+			} finally {
+				SqlMap.instance().endTransaction();
+			}
+		} catch (SQLException e) {
+			throw new APIException(e);
+		}
+		
+	}
+
+	/**
+	 * @see org.openmrs.api.AdministrationService#createLocation(org.openmrs.Location)
+	 */
+	public Location createLocation(Location location) throws APIException {
+		
+		location.setCreator(context.getAuthenticatedUser());
+		try {
+			try {
+				SqlMap.instance().startTransaction();
+				
+				SqlMap.instance().insert("createLocation", location);
+				
+				SqlMap.instance().commitTransaction();
+			} finally {
+				SqlMap.instance().endTransaction();
+			}
+		} catch (SQLException e) {
+			throw new APIException(e);
+		}
+		return location;
+	}
+
+	/**
+	 * @see org.openmrs.api.AdministrationService#deleteLocation(org.openmrs.Location)
+	 */
+	public void deleteLocation(Location location) throws APIException {
+		try {
+			try {
+				SqlMap.instance().startTransaction();
+				SqlMap.instance().delete("deleteLocation", location.getLocationId());
+				SqlMap.instance().commitTransaction();
+			} finally {
+				SqlMap.instance().endTransaction();
+			}
+		} catch (SQLException e) {
+			throw new APIException(e);
+		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.AdministrationService#updateLocation(org.openmrs.Location)
+	 */
+	public void updateLocation(Location location) throws APIException {
+		try {
+			try {
+				SqlMap.instance().startTransaction();
+
+				//TODO check if location is alread in db
+				if (false) {
+					this.createLocation(location);
+				} else {
+					SqlMap.instance().update("updateLocation", location);
 				}
 
 				SqlMap.instance().commitTransaction();

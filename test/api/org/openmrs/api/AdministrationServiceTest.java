@@ -9,6 +9,7 @@ import junit.framework.TestSuite;
 
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
+import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.OrderType;
 import org.openmrs.PatientIdentifierType;
@@ -285,6 +286,61 @@ public class AdministrationServiceTest extends TestCase {
 		
 		//check deletion
 		as.deleteEncounterType(newEncounterType);
+
+	}
+	
+	public void testLocation() throws Exception {
+		
+		//testing creation
+		
+		Location location = new Location();
+		
+		location.setName("testing");
+		location.setDescription("desc");
+		location.setAddress1("123");
+		location.setAddress1("456");
+		location.setCityVillage("city");
+		location.setStateProvince("state");
+		location.setCountry("country");
+		location.setPostalCode("post");
+		location.setLatitude("lat");
+		location.setLongitude("lon");
+		
+		as.createLocation(location);
+		
+		Location newLocation = encounterService.getLocation(location.getLocationId());
+		assertNotNull(newLocation);
+		
+		List<Location> locations = encounterService.getLocations();
+		
+		//make sure we get a list
+		assertNotNull(locations);
+		
+		boolean found = false;
+		for(Iterator i = locations.iterator(); i.hasNext();) {
+			Location location2 = (Location)i.next();
+			assertNotNull(location);
+			//check .equals function
+			assertTrue(location.equals(location2) == (location.getLocationId().equals(location2.getLocationId())));
+			//mark found flag
+			if (location.equals(location2))
+				found = true;
+		}
+		
+		//assert that the new location was returned in the list
+		assertTrue(found);
+		
+		
+		//check updation
+		newLocation.setName("another test");
+		as.updateLocation(newLocation);
+		
+		Location newerLocation = encounterService.getLocation(newLocation.getLocationId());
+		assertTrue(newerLocation.getName().equals(newLocation.getName()));
+		
+		
+		//check deletion
+		as.deleteLocation(newLocation);
 
 	}
 	
