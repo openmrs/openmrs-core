@@ -10686,3 +10686,9 @@ insert  into tribe values
 (55, 0, 'Amu'), 
 (99, null, 'Other');
 
+#----------------------------
+# Records for table users
+#----------------------------
+
+insert  into users values 
+(1, 'admin', 'The', null, 'Admin', '98f6bcd4621d373cade4e832627b4f6', 1, '2005-09-15 12:44:43', null, null, null, null, null, null, null);
