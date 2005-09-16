@@ -1,7 +1,6 @@
 package org.openmrs.api;
 
 import java.util.Date;
-import java.util.List;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -10,9 +9,8 @@ import junit.framework.TestSuite;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Location;
-import org.openmrs.api.EncounterService;
-import org.openmrs.api.PatientService;
-import org.openmrs.api.UserService;
+import org.openmrs.Patient;
+import org.openmrs.User;
 import org.openmrs.context.Context;
 import org.openmrs.context.ContextFactory;
 
@@ -43,46 +41,57 @@ public class EncounterServiceTest extends TestCase {
 		
 		//testing creation
 		
-		Location loc = new Location();
+		Location loc1 = es.getLocations().get(0);
+		assertNotNull(loc1);
+		EncounterType encType1 = es.getEncounterTypes().get(0);
+		assertNotNull(encType1);
+		Date d1 = new Date();
+		Patient pat1 = ps.getPatient(1);
+		assertNotNull(pat1);
+		User pro1 = ContextFactory.getContext().getAuthenticatedUser();
 		
-		loc.setAddress1("123 here");
-		loc.setAddress2("123 there");
-		loc.setCityVillage("city");
-		loc.setCountry("country");
-		loc.setDescription("desc");
-		loc.setLatitude("lat.03");
-		loc.setLongitude("lon.03");
-		loc.setName("first loc");
-		loc.setPostalCode("postal");
-	
-		enc.setLocation(loc);
-		
-		List<EncounterType> encTypes = es.getEncounterTypes();
-		
-		enc.setEncounterType(encTypes.get(0));
-		Date d = new Date();
-		enc.setEncounterDatetime(d);
-		
-		enc.setPatient(ps.getPatient(1));
-		assertNotNull(enc.getPatient());
-		
+		enc.setLocation(loc1);
+		enc.setEncounterType(encType1);
+		enc.setEncounterDatetime(d1);
+		enc.setPatient(pat1);
 		//TODO how to get a list of providers?
-		enc.setProvider(us.getUserByUsername("admin"));
-				
-		Encounter newEnc = es.createEncounter(enc);
+		enc.setProvider(pro1);
+
+		es.createEncounter(enc);
 		
+		Encounter newEnc = es.getEncounter(enc.getEncounterId());
 		assertNotNull(newEnc);
 		assertTrue(enc.equals(newEnc));
 		
 		
+		
 		//testing updation
 		
-		newEnc.setEncounterType(encTypes.get(1));
+		Location loc2 = es.getLocations().get(1);
+		assertNotNull(loc2);
+		EncounterType encType2 = es.getEncounterTypes().get(1);
+		assertNotNull(encType2);
+		Date d2 = new Date();
+		Patient pat2 = ps.getPatient(2);
+		assertNotNull(pat2);
+		
+		enc.setLocation(loc2);
+		enc.setEncounterType(encType2);
+		enc.setEncounterDatetime(d2);
+		enc.setPatient(pat2);
+
 		es.updateEncounter(newEnc);
 		
-		newEnc = es.getEncounter(newEnc.getEncounterId());
-		
-		//assertTrue(newEnc.getEncounterType() != enc.getEncounterType());		
+		Encounter newestEnc = es.getEncounter(newEnc.getEncounterId());
+
+		assertFalse(loc1.equals(loc2));
+		assertFalse(newestEnc.getLocation().equals(enc.getLocation()));		
+		assertFalse(encType1.equals(encType2));
+		assertFalse(newestEnc.getEncounterType().equals(enc.getEncounterType()));		
+		assertFalse(d1.equals(d2));
+		assertFalse(newestEnc.getEncounterDatetime().equals(enc.getEncounterDatetime()));		
+		assertFalse(pat1.equals(pat2));
+		assertFalse(newestEnc.getPatient().equals(enc.getPatient()));		
 		
 		//testing deletion
 		

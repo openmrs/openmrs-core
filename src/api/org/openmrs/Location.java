@@ -49,7 +49,8 @@ public class Location implements java.io.Serializable {
 		if (obj instanceof Location) {
 			Location loc = (Location) obj;
 			if (this.getLocationId() != null && loc.getLocationId() != null)
-				return (this.getLocationId() == loc.getLocationId());
+				return (this.getLocationId().equals(loc.getLocationId()));
+			/*
 			return (this.getName().matches(loc.getName()) &&
 					this.getDescription().matches(loc.getDescription()) &&
 					this.getAddress1().matches(loc.getAddress1()) &&
@@ -60,6 +61,7 @@ public class Location implements java.io.Serializable {
 					this.getCountry().matches(loc.getCountry()) &&
 					this.getLatitude().matches(loc.getLatitude()) &&
 					this.getLongitude().matches(loc.getLongitude()));
+			*/
 		}
 		return false;
 	}

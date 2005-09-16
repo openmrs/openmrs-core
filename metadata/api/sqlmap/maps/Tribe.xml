@@ -38,7 +38,7 @@
 </select>
 
 <select id="getAllTribes" resultMap="tribeResult">
-	SELECT * FROM tribe
+	SELECT * FROM tribe where retired = 0
 </select>
 
 

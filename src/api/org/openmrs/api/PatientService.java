@@ -3,6 +3,8 @@ package org.openmrs.api;
 import java.util.List;
 
 import org.openmrs.Patient;
+import org.openmrs.PatientIdentifierType;
+import org.openmrs.Tribe;
 
 public interface PatientService {
 
@@ -51,5 +53,30 @@ public interface PatientService {
 	 * @see #voidPatient(Patient, String) 
 	 */
 	public void deletePatient(Patient patient) throws APIException;
+	
+	/**
+	 * Get all patientIdentifier types
+	 * 
+	 * @return patientIdentifier types list
+	 * @throws APIException
+	 */
+	public List<PatientIdentifierType> getPatientIdentifierTypes() throws APIException;
+
+	/**
+	 * Get patientIdentifierType by internal identifier
+	 * 
+	 * @param patientIdentifierType id
+	 * @return patientIdentifierType with given internal identifier
+	 * @throws APIException
+	 */
+	public PatientIdentifierType getPatientIdentifierType(Integer patientIdentifierTypeId) throws APIException;
+
+	/**
+	 * Get list of tribes that are not retired
+	 * 
+	 * @return non-retired Tribe list
+	 * @throws APIException
+	 */
+	public List<Tribe> getPatientTribes() throws APIException;
 	
 }

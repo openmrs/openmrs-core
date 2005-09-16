@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
+import org.openmrs.Location;
 
 /**
  * Provides encounter-related services within the current context.
@@ -49,6 +50,23 @@ public interface EncounterService {
 	public EncounterType getEncounterType(Integer encounterTypeId) throws APIException;
 
 	/**
+	 * Get all locations
+	 * 
+	 * @return location list
+	 * @throws APIException
+	 */
+	public List<Location> getLocations() throws APIException;
+
+	/**
+	 * Get location by internal identifier
+	 * 
+	 * @param location id
+	 * @return location with given internal identifier
+	 * @throws APIException
+	 */
+	public Location getLocation(Integer locationId) throws APIException;
+
+	/**
 	 * Save changes to encounter
 	 * @param encounter
 	 * @throws APIException
@@ -61,5 +79,7 @@ public interface EncounterService {
 	 * @param encounter encounter object to be deleted 
 	 */
 	public void deleteEncounter(Encounter encounter) throws APIException;
+	
+	
 	
 }

@@ -17,7 +17,7 @@
 		birthdate,
 		birthdate_estimated,
 		birthplace,
-		tribe_id,
+		tribe,
 		citizenship,
 		mothers_name,
 		civil_status,
@@ -63,7 +63,7 @@
 	<result property="race" column="race" />
 	<result property="birthdate" column="birthdate" />
 	<result property="birthdateEstimated" column="birthdate_estimated" nullValue="false" />
-	<result property="tribe" column="tribe_id" select="getTribe" />
+	<result property="tribe" column="tribe" select="getTribe" />
 	<result property="citizenship" column="citizenship" />
 	<result property="mothersName" column="mothers_name" />
 	<result property="civilStatus" column="civil_status" />
@@ -122,7 +122,7 @@
 		birthdate = #birthdate#,
 		birthdate_estimated = #birthdateEstimated#,
 		birthplace = #birthplace#,
-		tribe_id = #tribe.tribeId#,
+		tribe = #tribe.tribeId#,
 		citizenship = #citizenship#,
 		mothers_name = #mothersName#,
 		civil_status = #civilStatus#,

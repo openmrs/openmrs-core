@@ -96,15 +96,6 @@ public class IbatisEncounterService implements EncounterService {
 				if (encounter.getCreator() == null) {
 					this.createEncounter(encounter);
 				} else {
-					Location loc = encounter.getLocation();
-					if (loc != null) {
-						if (loc.getLocationId() == null) {
-							loc.setCreator(context.getAuthenticatedUser());
-							SqlMap.instance().insert("createLocation", encounter.getLocation());
-						}
-						SqlMap.instance().update("updateLocation", encounter.getLocation());
-					}
-					
 					SqlMap.instance().update("updateEncounter", encounter);
 				}
 
@@ -173,6 +164,48 @@ public class IbatisEncounterService implements EncounterService {
 		}
 		
 		return encounterType;
+	}
+
+	/**
+	 * @see org.openmrs.api.EncounterService#getLocation(java.lang.Integer)
+	 */
+	public Location getLocation(Integer locationId) throws APIException {
+		Location location;
+		
+		try {
+			try {
+				SqlMap.instance().startTransaction();
+				location = (Location)SqlMap.instance().queryForObject("getLocation", locationId);
+				SqlMap.instance().commitTransaction();
+			} finally {
+				SqlMap.instance().endTransaction();
+			}
+		} catch (SQLException e) {
+			throw new APIException(e);
+		}
+		
+		return location;
+	}
+
+	/**
+	 * @see org.openmrs.api.EncounterService#getLocations()
+	 */
+	public List<Location> getLocations() throws APIException {
+		List<Location> locations;
+		
+		try {
+			try {
+				SqlMap.instance().startTransaction();
+				locations = SqlMap.instance().queryForList("getAllLocations", null);
+				SqlMap.instance().commitTransaction();
+			} finally {
+				SqlMap.instance().endTransaction();
+			}
+		} catch (SQLException e) {
+			throw new APIException(e);
+		}
+		
+		return locations;
 	}
 	
 }

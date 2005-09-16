@@ -31,7 +31,8 @@ public class IbatisPatientService implements PatientService {
 			patient.setCreator(authenticatedUser);
 			
 			SqlMap.instance().insert("createPatient", patient);
-			SqlMap.instance().insert("createTribe", patient.getTribe());
+			//TODO create tribes in admin services ?
+			//SqlMap.instance().insert("createTribe", patient.getTribe());
 			for(Iterator i = patient.getAddresses().iterator(); i.hasNext();) {
 				PatientAddress pAddress = (PatientAddress)i.next();
 				pAddress.setCreator(authenticatedUser);
@@ -63,9 +64,6 @@ public class IbatisPatientService implements PatientService {
 					
 					User authenticatedUser = context.getAuthenticatedUser(); 
 					patient.setChangedBy(authenticatedUser);
-					
-					if (patient.getTribe().getTribeId() == null)
-						SqlMap.instance().update("updateTribe", patient.getTribe());
 					
 					//update addresses
 					List oldAddresses = SqlMap.instance().queryForList("getPatientAddressByPatientId", patient.getPatientId());

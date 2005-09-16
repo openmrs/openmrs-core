@@ -9,6 +9,7 @@ import junit.framework.TestSuite;
 
 import org.openmrs.Patient;
 import org.openmrs.PatientAddress;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientName;
 import org.openmrs.context.Context;
 import org.openmrs.context.ContextFactory;
@@ -16,14 +17,17 @@ import org.openmrs.context.ContextFactory;
 public class PatientServiceTest extends TestCase {
 	
 	protected PatientService ps;
+	protected AdministrationService adminService;
 	protected Patient createdPatient;
 	
 	public void setUp() throws Exception{
 		Context context = ContextFactory.getContext();
 		
-		//context.authenticate("admin", "test");
+		//when do we force authentication ? each Service level call?
+		context.authenticate("admin", "test");
 		
 		ps = context.getPatientService();
+		adminService = context.getAdministrationService();
 		
 		this.createPatient();
 	}
@@ -34,7 +38,7 @@ public class PatientServiceTest extends TestCase {
 		patient = ps.getPatient(-1);
 		assertNull(patient);
 
-		patient = (Patient)ps.getPatient(0);
+		patient = (Patient)ps.getPatient(createdPatient.getPatientId());
 		assertNotNull(patient);
 	}
 	
@@ -48,7 +52,7 @@ public class PatientServiceTest extends TestCase {
 		
 		// should we be sending strings like %-% ? 
 		// ...or have PatientService insert %'s ?
-		patientList = ps.getPatientByIdentifier("%-%");
+		patientList = ps.getPatientByIdentifier("%");
 		assertNotNull(patientList);
 		assertTrue(patientList.size() > 0);
 	}
@@ -73,14 +77,22 @@ public class PatientServiceTest extends TestCase {
 		patient.setAddresses(pAddressList);
 		
 		patient.setTribe(ps.getPatientTribes().get(0));
-		
+		patient.setCitizenship("citizen");
+		//TODO make an optional pointer to the actual mother obj?
+		patient.setMothersName("Mom's name");
+		patient.setCivilStatus(1);
+		patient.setDeathDate(new Date());
+		patient.setCauseOfDeath("air");
+		patient.setHealthDistrict("health dist");
+		patient.setHealthCenter(0);
 		patient.setBirthdate(new Date());
-		
 		patient.setBirthdateEstimated(true);
-		
 		patient.setBirthplace("Little town outside of nowhere");
-		
 		patient.setGender("male");
+		
+		List<PatientIdentifierType> patientIdTypes = ps.getPatientIdentifierTypes();
+		assertNotNull(patientIdTypes);
+		//PatientIdentifier = 
 		
 		createdPatient = ps.createPatient(patient);
 		assertNotNull(createdPatient);
