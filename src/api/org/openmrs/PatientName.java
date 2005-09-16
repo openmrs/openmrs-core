@@ -30,6 +30,7 @@ public class PatientName implements java.io.Serializable {
 	private String voidReason;
 	private User changedBy;
 	private Date dateChanged;
+	private boolean dirty;
 
 	// Constructors
 
@@ -57,8 +58,24 @@ public class PatientName implements java.io.Serializable {
 		return false;
 	}
 	
+	/**
+	 * Returns whether or not this name has been modified
+	 * 
+	 * @return true/false whether this has been modified
+	 */
+	public boolean isDirty() {
+		return dirty;
+	}
+	
 	// Property accessors
 
+	/**
+	 * Unset the dirty bit after modification
+	 */
+	public void setClean() {
+		dirty = false;
+	}
+	
 	/**
 	 * @return Returns the creator.
 	 */
@@ -70,6 +87,7 @@ public class PatientName implements java.io.Serializable {
 	 * @param creator The creator to set.
 	 */
 	public void setCreator(User creator) {
+		dirty = true;
 		this.creator = creator;
 	}
 
@@ -84,6 +102,7 @@ public class PatientName implements java.io.Serializable {
 	 * @param dateCreated The dateCreated to set.
 	 */
 	public void setDateCreated(Date dateCreated) {
+		dirty = true;
 		this.dateCreated = dateCreated;
 	}
 
@@ -98,6 +117,7 @@ public class PatientName implements java.io.Serializable {
 	 * @param dateVoided The dateVoided to set.
 	 */
 	public void setDateVoided(Date dateVoided) {
+		dirty = true;
 		this.dateVoided = dateVoided;
 	}
 
@@ -112,6 +132,7 @@ public class PatientName implements java.io.Serializable {
 	 * @param degree The degree to set.
 	 */
 	public void setDegree(String degree) {
+		dirty = true;
 		this.degree = degree;
 	}
 
@@ -126,6 +147,7 @@ public class PatientName implements java.io.Serializable {
 	 * @param familyName The familyName to set.
 	 */
 	public void setFamilyName(String familyName) {
+		dirty = true;
 		this.familyName = familyName;
 	}
 
@@ -140,6 +162,7 @@ public class PatientName implements java.io.Serializable {
 	 * @param familyName2 The familyName2 to set.
 	 */
 	public void setFamilyName2(String familyName2) {
+		dirty = true;
 		this.familyName2 = familyName2;
 	}
 
@@ -154,6 +177,7 @@ public class PatientName implements java.io.Serializable {
 	 * @param familyNamePrefix The familyNamePrefix to set.
 	 */
 	public void setFamilyNamePrefix(String familyNamePrefix) {
+		dirty = true;
 		this.familyNamePrefix = familyNamePrefix;
 	}
 
@@ -168,6 +192,7 @@ public class PatientName implements java.io.Serializable {
 	 * @param familyNameSuffix The familyNameSuffix to set.
 	 */
 	public void setFamilyNameSuffix(String familyNameSuffix) {
+		dirty = true;
 		this.familyNameSuffix = familyNameSuffix;
 	}
 
@@ -182,6 +207,7 @@ public class PatientName implements java.io.Serializable {
 	 * @param givenName The givenName to set.
 	 */
 	public void setGivenName(String givenName) {
+		dirty = true;
 		this.givenName = givenName;
 	}
 
@@ -196,6 +222,7 @@ public class PatientName implements java.io.Serializable {
 	 * @param middleName The middleName to set.
 	 */
 	public void setMiddleName(String middleName) {
+		dirty = true;
 		this.middleName = middleName;
 	}
 
@@ -210,6 +237,7 @@ public class PatientName implements java.io.Serializable {
 	 * @param patient The patient to set.
 	 */
 	public void setPatient(Patient patient) {
+		dirty = true;
 		this.patient = patient;
 	}
 
@@ -224,6 +252,7 @@ public class PatientName implements java.io.Serializable {
 	 * @param patientNameId The patientNameId to set.
 	 */
 	public void setPatientNameId(Integer patientNameId) {
+		dirty = true;
 		this.patientNameId = patientNameId;
 	}
 
@@ -238,6 +267,7 @@ public class PatientName implements java.io.Serializable {
 	 * @param preferred The preferred to set.
 	 */
 	public void setPreferred(boolean preferred) {
+		dirty = true;
 		this.preferred = preferred;
 	}
 
@@ -252,6 +282,7 @@ public class PatientName implements java.io.Serializable {
 	 * @param prefix The prefix to set.
 	 */
 	public void setPrefix(String prefix) {
+		dirty = true;
 		this.prefix = prefix;
 	}
 
@@ -266,6 +297,7 @@ public class PatientName implements java.io.Serializable {
 	 * @param voided The voided to set.
 	 */
 	public void setVoided(boolean voided) {
+		dirty = true;
 		this.voided = voided;
 	}
 
@@ -280,6 +312,7 @@ public class PatientName implements java.io.Serializable {
 	 * @param voidedBy The voidedBy to set.
 	 */
 	public void setVoidedBy(User voidedBy) {
+		dirty = true;
 		this.voidedBy = voidedBy;
 	}
 
@@ -294,6 +327,7 @@ public class PatientName implements java.io.Serializable {
 	 * @param voidReason The voidReason to set.
 	 */
 	public void setVoidReason(String voidReason) {
+		dirty = true;
 		this.voidReason = voidReason;
 	}
 
@@ -308,6 +342,7 @@ public class PatientName implements java.io.Serializable {
 	 * @param changedBy The changedBy to set.
 	 */
 	public void setChangedBy(User changedBy) {
+		dirty = true;
 		this.changedBy = changedBy;
 	}
 
@@ -322,8 +357,7 @@ public class PatientName implements java.io.Serializable {
 	 * @param dateChanged The dateChanged to set.
 	 */
 	public void setDateChanged(Date dateChanged) {
+		dirty = true;
 		this.dateChanged = dateChanged;
 	}
-
-
 }

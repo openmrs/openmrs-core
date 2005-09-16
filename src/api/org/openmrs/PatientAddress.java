@@ -26,6 +26,7 @@ public class PatientAddress implements java.io.Serializable {
 	private Date dateCreated;
 	private Patient patient;
 	private User creator;
+	private boolean dirty;
 
 	// Constructors
 
@@ -58,8 +59,24 @@ public class PatientAddress implements java.io.Serializable {
 		return false;
 	}
 	
+	/**
+	 * Returns whether or not this address has been modified
+	 * 
+	 * @return true/false whether this has been modified
+	 */
+	public boolean isDirty() {
+		return dirty;
+	}
+	
 	// Property accessors
 
+	/**
+	 * Unset the dirty bit after modification
+	 */
+	public void setClean() {
+		dirty = false;
+	}
+	
 	/**
 	 * @return Returns the address1.
 	 */
@@ -71,6 +88,7 @@ public class PatientAddress implements java.io.Serializable {
 	 * @param address1 The address1 to set.
 	 */
 	public void setAddress1(String address1) {
+		dirty = true;
 		this.address1 = address1;
 	}
 
@@ -85,6 +103,7 @@ public class PatientAddress implements java.io.Serializable {
 	 * @param address2 The address2 to set.
 	 */
 	public void setAddress2(String address2) {
+		dirty = true;
 		this.address2 = address2;
 	}
 
@@ -99,6 +118,7 @@ public class PatientAddress implements java.io.Serializable {
 	 * @param cityVillage The cityVillage to set.
 	 */
 	public void setCityVillage(String cityVillage) {
+		dirty = true;
 		this.cityVillage = cityVillage;
 	}
 
@@ -113,6 +133,7 @@ public class PatientAddress implements java.io.Serializable {
 	 * @param country The country to set.
 	 */
 	public void setCountry(String country) {
+		dirty = true;
 		this.country = country;
 	}
 
@@ -127,6 +148,7 @@ public class PatientAddress implements java.io.Serializable {
 	 * @param creator The creator to set.
 	 */
 	public void setCreator(User creator) {
+		dirty = true;
 		this.creator = creator;
 	}
 
@@ -141,6 +163,7 @@ public class PatientAddress implements java.io.Serializable {
 	 * @param dateCreated The dateCreated to set.
 	 */
 	public void setDateCreated(Date dateCreated) {
+		dirty = true;
 		this.dateCreated = dateCreated;
 	}
 
@@ -155,6 +178,7 @@ public class PatientAddress implements java.io.Serializable {
 	 * @param latitude The latitude to set.
 	 */
 	public void setLatitude(String latitude) {
+		dirty = true;
 		this.latitude = latitude;
 	}
 
@@ -169,6 +193,7 @@ public class PatientAddress implements java.io.Serializable {
 	 * @param longitude The longitude to set.
 	 */
 	public void setLongitude(String longitude) {
+		dirty = true;
 		this.longitude = longitude;
 	}
 
@@ -183,6 +208,7 @@ public class PatientAddress implements java.io.Serializable {
 	 * @param patient The patient to set.
 	 */
 	public void setPatient(Patient patient) {
+		dirty = true;
 		this.patient = patient;
 	}
 
@@ -197,6 +223,7 @@ public class PatientAddress implements java.io.Serializable {
 	 * @param patientAddressId The patientAddressId to set.
 	 */
 	public void setPatientAddressId(Integer patientAddressId) {
+		dirty = true;
 		this.patientAddressId = patientAddressId;
 	}
 
@@ -211,6 +238,7 @@ public class PatientAddress implements java.io.Serializable {
 	 * @param postalCode The postalCode to set.
 	 */
 	public void setPostalCode(String postalCode) {
+		dirty = true;
 		this.postalCode = postalCode;
 	}
 
@@ -225,6 +253,7 @@ public class PatientAddress implements java.io.Serializable {
 	 * @param stateProvince The stateProvince to set.
 	 */
 	public void setStateProvince(String stateProvince) {
+		dirty = true;
 		this.stateProvince = stateProvince;
 	}
 

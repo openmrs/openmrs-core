@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.openmrs.Patient;
 import org.openmrs.PatientAddress;
+import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientName;
 import org.openmrs.Tribe;
@@ -31,18 +32,32 @@ public class IbatisPatientService implements PatientService {
 			patient.setCreator(authenticatedUser);
 			
 			SqlMap.instance().insert("createPatient", patient);
-			//TODO create tribes in admin services ?
-			//SqlMap.instance().insert("createTribe", patient.getTribe());
+			
+			//add all items in all sets
 			for(Iterator i = patient.getAddresses().iterator(); i.hasNext();) {
 				PatientAddress pAddress = (PatientAddress)i.next();
 				pAddress.setCreator(authenticatedUser);
+				pAddress.setPatient(patient);
 				SqlMap.instance().insert("createPatientAddress", pAddress);
+				pAddress.setClean();
 			}
 			for(Iterator i = patient.getNames().iterator(); i.hasNext();) {
 				PatientName pName = (PatientName)i.next();
 				pName.setCreator(authenticatedUser);
+				pName.setPatient(patient);
 				SqlMap.instance().insert("createPatientName", pName);
+				pName.setClean();
 			}
+			for(Iterator i = patient.getIdentifiers().iterator(); i.hasNext();) {
+				PatientIdentifier pIdentifier = (PatientIdentifier)i.next();
+				pIdentifier.setCreator(authenticatedUser);
+				pIdentifier.setPatient(patient);
+				SqlMap.instance().insert("createPatientIdentifier", pIdentifier);
+				pIdentifier.setClean();
+			}
+			
+			patient.setClean();
+			
 		} catch (SQLException e) {
 			throw new APIException(e);
 		}
@@ -58,41 +73,94 @@ public class IbatisPatientService implements PatientService {
 				List toAdd;
 				List toDel;
 				SqlMap.instance().startTransaction();
+				//TODO do we want to check on getPatientId instead of creator?
 				if (patient.getCreator() == null)
 					this.createPatient(patient);
 				else {
 					
 					User authenticatedUser = context.getAuthenticatedUser(); 
-					patient.setChangedBy(authenticatedUser);
 					
-					//update addresses
-					List oldAddresses = SqlMap.instance().queryForList("getPatientAddressByPatientId", patient.getPatientId());
-					map = Compare.compareLists(oldAddresses, patient.getAddresses());
-					toAdd = (List)map.get("toAdd");
-					toDel = (List)map.get("toDel");
-					for (Iterator i = toAdd.iterator(); i.hasNext();)
-					{
-						PatientAddress pAddress = (PatientAddress)i.next();
-						SqlMap.instance().insert("createPatientAddress", pAddress);
+					if (patient.isDirty()) {
+						//======== update addresses ================
+						List oldAddresses = SqlMap.instance().queryForList("getPatientAddressByPatientId", patient.getPatientId());
+						map = Compare.compareLists(oldAddresses, patient.getAddresses());
+						toAdd = (List)map.get("toAdd");
+						toDel = (List)map.get("toDel");
+						//add addresses to db if patient now has them
+						for (Iterator i = toAdd.iterator(); i.hasNext();)
+						{
+							PatientAddress pAddress = (PatientAddress)i.next();
+							SqlMap.instance().insert("createPatientAddress", pAddress);
+							pAddress.setClean();
+						}
+						//delete db addresses no longer on patient
+						for (Iterator i = toDel.iterator(); i.hasNext();)
+							SqlMap.instance().update("voidPatientAddress", i.next());
+						
+						// update dirty addresses
+						for (Iterator i = patient.getAddresses().iterator(); i.hasNext();) {
+							PatientAddress pAddress = (PatientAddress)i.next();
+							if (pAddress.isDirty()) {
+								SqlMap.instance().update("updatePatientAddress", pAddress);
+								pAddress.setClean();
+							}
+						}
+						
+						//======== update names ====================
+						List oldNames = SqlMap.instance().queryForList("getPatientNameByPatientId", patient.getPatientId());
+						map = Compare.compareLists(oldNames, patient.getNames());
+						toAdd = (List)map.get("toAdd");
+						toDel = (List)map.get("toDel");
+						for (Iterator i = toAdd.iterator(); i.hasNext();)
+						{
+							PatientName pName = (PatientName)i.next();
+							pName.setCreator(authenticatedUser);
+							SqlMap.instance().insert("createPatientName", pName);
+							pName.setClean();
+						}
+						for (Iterator i = toDel.iterator(); i.hasNext();)
+							SqlMap.instance().delete("deletePatientName", i.next());
+						
+						// update dirty addresses
+						for (Iterator i = patient.getNames().iterator(); i.hasNext();) {
+							PatientName pName = (PatientName)i.next();
+							if (pName.isDirty()) {
+								SqlMap.instance().update("updatePatientName", pName);
+								pName.setClean();
+							}
+						}
+
+						//======== update identifiers ====================
+						List oldIdentifiers = SqlMap.instance().queryForList("getPatientIdentifierByPatientId", patient.getPatientId());
+						map = Compare.compareLists(oldIdentifiers, patient.getIdentifiers());
+						toAdd = (List)map.get("toAdd");
+						toDel = (List)map.get("toDel");
+						// add ids to db that patient obj now has
+						for (Iterator i = toAdd.iterator(); i.hasNext();)
+						{
+							PatientIdentifier pIdentifier = (PatientIdentifier)i.next();
+							pIdentifier.setCreator(authenticatedUser);
+							SqlMap.instance().insert("createPatientIdentifier", pIdentifier);
+							pIdentifier.setClean();
+						}
+						// remove ids from db that patient obj does not have
+						for (Iterator i = toDel.iterator(); i.hasNext();)
+							SqlMap.instance().delete("deletePatientIdentifier", i.next());
+						
+						// update dirty identifiers
+						for (Iterator i = patient.getIdentifiers().iterator(); i.hasNext();) {
+							PatientIdentifier pIdentifier = (PatientIdentifier)i.next();
+							if (pIdentifier.isDirty()) {
+								SqlMap.instance().update("updatePatientIdentifier", pIdentifier);
+								pIdentifier.setClean();
+							}
+						}
+						
+						//======== update patient object =============
+						patient.setChangedBy(authenticatedUser);
+						SqlMap.instance().update("updatePatient", patient);
+						patient.setClean();
 					}
-					for (Iterator i = toDel.iterator(); i.hasNext();)
-						SqlMap.instance().update("voidPatientAddress", i.next());
-					
-					//update names
-					List oldNames = SqlMap.instance().queryForList("getPatientNameByPatientId", patient.getPatientId());
-					map = Compare.compareLists(oldNames, patient.getNames());
-					toAdd = (List)map.get("toAdd");
-					toDel = (List)map.get("toDel");
-					for (Iterator i = toAdd.iterator(); i.hasNext();)
-					{
-						PatientName pName = (PatientName)i.next();
-						pName.setCreator(authenticatedUser);
-						SqlMap.instance().insert("createPatientName", pName);
-					}
-					for (Iterator i = toDel.iterator(); i.hasNext();)
-						SqlMap.instance().delete("deletePatientName", i.next());
-					
-					SqlMap.instance().update("updatePatient", patient);
 					
 				}
 				SqlMap.instance().commitTransaction();

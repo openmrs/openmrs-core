@@ -64,7 +64,6 @@ public class EncounterServiceTest extends TestCase {
 		assertTrue(enc.equals(newEnc));
 		
 		
-		
 		//testing updation
 		
 		Location loc2 = es.getLocations().get(1);

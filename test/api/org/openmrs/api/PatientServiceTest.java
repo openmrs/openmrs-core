@@ -1,6 +1,7 @@
 package org.openmrs.api;
 
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import junit.framework.Test;
@@ -9,6 +10,7 @@ import junit.framework.TestSuite;
 
 import org.openmrs.Patient;
 import org.openmrs.PatientAddress;
+import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientName;
 import org.openmrs.context.Context;
@@ -18,16 +20,20 @@ public class PatientServiceTest extends TestCase {
 	
 	protected PatientService ps;
 	protected AdministrationService adminService;
+	protected EncounterService encounterService;
 	protected Patient createdPatient;
 	
 	public void setUp() throws Exception{
 		Context context = ContextFactory.getContext();
 		
-		//when do we force authentication ? each Service level call?
+		//TODO when do we force authentication ? each Service level call?
 		context.authenticate("admin", "test");
 		
 		ps = context.getPatientService();
 		adminService = context.getAdministrationService();
+		encounterService = context.getEncounterService();
+		assertNotNull(adminService);
+		assertNotNull(encounterService);
 		
 		this.createPatient();
 	}
@@ -50,8 +56,8 @@ public class PatientServiceTest extends TestCase {
 		assertNotNull(patientList);
 		assertTrue(patientList.size() == 0);
 		
-		// should we be sending strings like %-% ? 
-		// ...or have PatientService insert %'s ?
+		// TODO should we be sending strings like %-% ? 
+		// ...or have PatientService insert %'s (but that makes it db specific?
 		patientList = ps.getPatientByIdentifier("%");
 		assertNotNull(patientList);
 		assertTrue(patientList.size() > 0);
@@ -92,7 +98,15 @@ public class PatientServiceTest extends TestCase {
 		
 		List<PatientIdentifierType> patientIdTypes = ps.getPatientIdentifierTypes();
 		assertNotNull(patientIdTypes);
-		//PatientIdentifier = 
+		PatientIdentifier patientIdentifier = new PatientIdentifier();
+		patientIdentifier.setIdentifier("ident");
+		patientIdentifier.setIdentifierType(patientIdTypes.get(0));
+		patientIdentifier.setLocation(encounterService.getLocations().get(0));
+		
+		List<PatientIdentifier> patientIdentifiers = new LinkedList<PatientIdentifier>();
+		patientIdentifiers.add(patientIdentifier);
+		
+		patient.setIdentifiers(patientIdentifiers);
 		
 		createdPatient = ps.createPatient(patient);
 		assertNotNull(createdPatient);

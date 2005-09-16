@@ -24,6 +24,7 @@ public class PatientIdentifier implements java.io.Serializable {
 	private User voidedBy;
 	private Date dateVoided;
 	private String voidReason;
+	private boolean dirty;
 
 	/** default constructor */
 	public PatientIdentifier() {
@@ -45,8 +46,24 @@ public class PatientIdentifier implements java.io.Serializable {
 		return false;
 	}
 	
+	/**
+	 * Returns whether or not this identifier has been modified
+	 * 
+	 * @return true/false whether this has been modified
+	 */
+	public boolean isDirty() {
+		return dirty;
+	}
+	
 	//property accessors
 
+	/**
+	 * Unset the dirty bit after modification
+	 */
+	public void setClean() {
+		dirty = false;
+	}
+	
 	/**
 	 * @return Returns the creator.
 	 */
@@ -58,6 +75,7 @@ public class PatientIdentifier implements java.io.Serializable {
 	 * @param creator The creator to set.
 	 */
 	public void setCreator(User creator) {
+		dirty = true;
 		this.creator = creator;
 	}
 
@@ -72,6 +90,7 @@ public class PatientIdentifier implements java.io.Serializable {
 	 * @param dateCreated The dateCreated to set.
 	 */
 	public void setDateCreated(Date dateCreated) {
+		dirty = true;
 		this.dateCreated = dateCreated;
 	}
 
@@ -86,6 +105,7 @@ public class PatientIdentifier implements java.io.Serializable {
 	 * @param dateVoided The dateVoided to set.
 	 */
 	public void setDateVoided(Date dateVoided) {
+		dirty = true;
 		this.dateVoided = dateVoided;
 	}
 
@@ -100,6 +120,7 @@ public class PatientIdentifier implements java.io.Serializable {
 	 * @param identifier The identifier to set.
 	 */
 	public void setIdentifier(String identifier) {
+		dirty = true;
 		this.identifier = identifier;
 	}
 
@@ -114,6 +135,7 @@ public class PatientIdentifier implements java.io.Serializable {
 	 * @param identifierType The identifierType to set.
 	 */
 	public void setIdentifierType(PatientIdentifierType identifierType) {
+		dirty = true;
 		this.identifierType = identifierType;
 	}
 
@@ -128,6 +150,7 @@ public class PatientIdentifier implements java.io.Serializable {
 	 * @param location The location to set.
 	 */
 	public void setLocation(Location location) {
+		dirty = true;
 		this.location = location;
 	}
 
@@ -142,6 +165,7 @@ public class PatientIdentifier implements java.io.Serializable {
 	 * @param patient The patient to set.
 	 */
 	public void setPatient(Patient patient) {
+		dirty = true;
 		this.patient = patient;
 	}
 
@@ -156,6 +180,7 @@ public class PatientIdentifier implements java.io.Serializable {
 	 * @param voided The voided to set.
 	 */
 	public void setVoided(boolean voided) {
+		dirty = true;
 		this.voided = voided;
 	}
 
@@ -170,6 +195,7 @@ public class PatientIdentifier implements java.io.Serializable {
 	 * @param voidedBy The voidedBy to set.
 	 */
 	public void setVoidedBy(User voidedBy) {
+		dirty = true;
 		this.voidedBy = voidedBy;
 	}
 
@@ -184,6 +210,7 @@ public class PatientIdentifier implements java.io.Serializable {
 	 * @param voidReason The voidReason to set.
 	 */
 	public void setVoidReason(String voidReason) {
+		dirty = true;
 		this.voidReason = voidReason;
 	}
 	

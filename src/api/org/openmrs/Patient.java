@@ -1,6 +1,7 @@
 package org.openmrs;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -41,14 +42,12 @@ public class Patient implements java.io.Serializable {
 	private List<PatientAddress> addresses;
 	private List<PatientName> names;
 	private List<PatientIdentifier> identifiers;
+	private boolean dirty;
 
 	// Constructors
 
 	/** default constructor */
 	public Patient() {
-		addresses = new LinkedList<PatientAddress>();
-		names = new LinkedList<PatientName>();
-		identifiers = new LinkedList<PatientIdentifier>();
 	}
 
 	/** 
@@ -65,8 +64,41 @@ public class Patient implements java.io.Serializable {
 		}
 		return false;
 	}
+	
+	/**
+	 * True if a property of an object in a List has been modified
+	 * 
+	 * @return true/false whether the patient object has been modified
+	 */
+	public boolean isDirty() {
+		if (dirty == true)
+			return true;
+		for(Iterator i = addresses.iterator(); i.hasNext();) {
+			PatientAddress p = (PatientAddress)i;
+			if (p.isDirty())
+				return true;
+		}
+		for(Iterator i = names.iterator(); i.hasNext();) {
+			PatientName p = (PatientName)i;
+			if (p.isDirty())
+				return true;
+		}
+		for(Iterator i = identifiers.iterator(); i.hasNext();) {
+			PatientIdentifier p = (PatientIdentifier)i;
+			if (p.isDirty())
+				return true;
+		}
+		return false;
+	}
 	// Property accessors
 
+	/**
+	 * For unsetting the dirty bit after modification
+	 */
+	public void setClean() {
+		dirty = false;
+	}
+	
 	/**
 	 * @return internal identifier for patient
 	 */
@@ -82,6 +114,7 @@ public class Patient implements java.io.Serializable {
 	 * @param patientId
 	 */
 	public void setPatientId(Integer patientId) {
+		dirty = true;
 		this.patientId = patientId;
 	}
 
@@ -97,6 +130,7 @@ public class Patient implements java.io.Serializable {
 	 *            patient's gender
 	 */
 	public void setGender(String gender) {
+		dirty = true;
 		this.gender = gender;
 	}
 
@@ -112,6 +146,7 @@ public class Patient implements java.io.Serializable {
 	 *            patient's race
 	 */
 	public void setRace(String race) {
+		dirty = true;
 		this.race = race;
 	}
 
@@ -127,6 +162,7 @@ public class Patient implements java.io.Serializable {
 	 *            patient's date of birth
 	 */
 	public void setBirthdate(Date birthdate) {
+		dirty = true;
 		this.birthdate = birthdate;
 	}
 
@@ -142,6 +178,7 @@ public class Patient implements java.io.Serializable {
 	 *            true if patient's birthdate is estimated
 	 */
 	public void setBirthdateEstimated(Boolean birthdateEstimated) {
+		dirty = true;
 		this.birthdateEstimated = birthdateEstimated;
 	}
 
@@ -157,6 +194,7 @@ public class Patient implements java.io.Serializable {
 	 *            patient's birthplace
 	 */
 	public void setBirthplace(String birthplace) {
+		dirty = true;
 		this.birthplace = birthplace;
 	}
 
@@ -172,6 +210,7 @@ public class Patient implements java.io.Serializable {
 	 *            patient's citizenship
 	 */
 	public void setCitizenship(String citizenship) {
+		dirty = true;
 		this.citizenship = citizenship;
 	}
 	
@@ -186,6 +225,7 @@ public class Patient implements java.io.Serializable {
 	 * @param tribe patient's tribe
 	 */
 	public void setTribe(Tribe tribe) {
+		dirty = true;
 		this.tribe = tribe;
 	}
 
@@ -201,6 +241,7 @@ public class Patient implements java.io.Serializable {
 	 *            patient's mother's name
 	 */
 	public void setMothersName(String mothersName) {
+		dirty = true;
 		this.mothersName = mothersName;
 	}
 
@@ -217,6 +258,7 @@ public class Patient implements java.io.Serializable {
 	 *            patient's civil(marriage) status 
 	 */
 	public void setCivilStatus(Integer civilStatus) {
+		dirty = true;
 		this.civilStatus = civilStatus;
 	}
 
@@ -232,6 +274,7 @@ public class Patient implements java.io.Serializable {
 	 *            date of patient's death
 	 */
 	public void setDeathDate(Date deathDate) {
+		dirty = true;
 		this.deathDate = deathDate;
 	}
 
@@ -247,6 +290,7 @@ public class Patient implements java.io.Serializable {
 	 *            cause of patient's death
 	 */
 	public void setCauseOfDeath(String causeOfDeath) {
+		dirty = true;
 		this.causeOfDeath = causeOfDeath;
 	}
 
@@ -262,6 +306,7 @@ public class Patient implements java.io.Serializable {
 	 *            patient's health district
 	 */
 	public void setHealthDistrict(String healthDistrict) {
+		dirty = true;
 		this.healthDistrict = healthDistrict;
 	}
 
@@ -277,6 +322,7 @@ public class Patient implements java.io.Serializable {
 	 *            patient's health center
 	 */
 	public void setHealthCenter(Integer healthCenter) {
+		dirty = true;
 		this.healthCenter = healthCenter;
 	}
 
@@ -292,6 +338,7 @@ public class Patient implements java.io.Serializable {
 	 *            user creating this patient record
 	 */
 	public void setCreator(User creator) {
+		dirty = true;
 		this.creator = creator;
 	}
 
@@ -350,6 +397,7 @@ public class Patient implements java.io.Serializable {
 	 *            true if patient's record should be voided from the system
 	 */
 	public void setVoided(boolean voided) {
+		dirty = true;
 		this.voided = voided;
 	}
 
@@ -392,6 +440,7 @@ public class Patient implements java.io.Serializable {
 	 * @param voidReason reason patient's record was voided
 	 */
 	public void setVoidReason(String voidReason) {
+		dirty = true;
 		this.voidReason = voidReason;
 	}
 
@@ -400,6 +449,8 @@ public class Patient implements java.io.Serializable {
 	 * @see org.openmrs.PatientAddress
 	 */
 	public List<PatientAddress> getAddresses() {
+		if (addresses == null)
+			addresses = new LinkedList<PatientAddress>();
 		return this.addresses;
 	}
 
@@ -408,6 +459,7 @@ public class Patient implements java.io.Serializable {
 	 * @see org.openmrs.PatientAddress
 	 */
 	public void setAddresses(List<PatientAddress> addresses) {
+		dirty = true;
 		this.addresses = addresses;
 	}
 
@@ -416,6 +468,8 @@ public class Patient implements java.io.Serializable {
 	 * @see org.openmrs.PatientName
 	 */
 	public List<PatientName> getNames() {
+		if (names == null)
+			names = new LinkedList<PatientName>();
 		return this.names;
 	}
 
@@ -424,6 +478,7 @@ public class Patient implements java.io.Serializable {
 	 * @see org.openmrs.PatientName
 	 */
 	public void setNames(List<PatientName> names) {
+		dirty = true;
 		this.names = names;
 	}
 
@@ -432,6 +487,8 @@ public class Patient implements java.io.Serializable {
 	 * @see org.openmrs.PatientIdentifier
 	 */
 	public List<PatientIdentifier> getIdentifiers() {
+		if (identifiers == null)
+			identifiers = new LinkedList<PatientIdentifier>();
 		return this.identifiers;
 	}
 
@@ -440,18 +497,50 @@ public class Patient implements java.io.Serializable {
 	 * @see org.openmrs.PatientIdentifier
 	 */
 	public void setIdentifiers(List<PatientIdentifier> identifiers) {
+		dirty = true;
 		this.identifiers = identifiers;
 	}
 	
 	// Convenience methods
 
 	public void addName(PatientName name) {
+		dirty = true;
 		name.setPatient(this);
+		if (names == null)
+			names = new LinkedList<PatientName>();
 		names.add(name);
 	}
 
 	public void removeName(PatientName name) {
-		names.remove(name);
+		dirty = true;
+		if (names != null)
+			names.remove(name);
+	}
+	
+	public void addAddress(PatientAddress address) {
+		dirty = true;
+		address.setPatient(this);
+		if (addresses == null)
+			addresses = new LinkedList<PatientAddress>();
+		addresses.add(address);
+	}
+	public void removeAddress(PatientAddress address) {
+		dirty = true;
+		if (addresses != null)
+			addresses.remove(address);
 	}
 
+	public void addIdentifier(PatientIdentifier patientIdentifier) {
+		dirty = true;
+		patientIdentifier.setPatient(this);
+		if (identifiers == null)
+			identifiers = new LinkedList<PatientIdentifier>();
+		identifiers.add(patientIdentifier);
+	}
+	public void removeIdentifier(PatientIdentifier patientIdentifier) {
+		dirty = true;
+		if (identifiers != null)
+			identifiers.remove(patientIdentifier);
+	}
+	
 }
