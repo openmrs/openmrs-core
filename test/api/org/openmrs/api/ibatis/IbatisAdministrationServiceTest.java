@@ -8,10 +8,12 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.openmrs.EncounterType;
+import org.openmrs.FieldType;
 import org.openmrs.MimeType;
 import org.openmrs.OrderType;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.FormService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
@@ -21,20 +23,21 @@ import org.openmrs.context.ContextFactory;
 
 public class IbatisAdministrationServiceTest extends TestCase {
 	
-	protected EncounterService es;
 	protected PatientService ps;
 	protected UserService us;
 	protected AdministrationService as;
 	protected ObsService obsService;
 	protected OrderService orderService;
+	protected FormService formService;
+	protected EncounterService encounterService;
 	
 	public void setUp() throws Exception{
 		Context context = ContextFactory.getContext();
 		
 		context.authenticate("admin", "test");
 		
-		es = context.getEncounterService();
-		assertNotNull(es);
+		encounterService = context.getEncounterService();
+		assertNotNull(encounterService);
 		ps = context.getPatientService();
 		assertNotNull(ps);
 		us = context.getUserService();
@@ -45,26 +48,9 @@ public class IbatisAdministrationServiceTest extends TestCase {
 		assertNotNull(obsService);
 		orderService = context.getOrderService();
 		assertNotNull(orderService);
+		formService = context.getFormService();
+		assertNotNull(formService);
 		
-	}
-
-	public void xtestEncounterType() throws Exception {
-		
-		//testing creation
-		
-		EncounterType et = new EncounterType();
-		
-		et.setName("testing");
-		et.setDescription("desc");
-		
-		as.createEncounterType(et);
-		
-		EncounterType newEt = es.getEncounterType(et.getEncounterTypeId());
-		
-		assertNotNull(newEt);
-		
-		as.deleteEncounterType(newEt);
-
 	}
 
 	public void testMimeType() throws Exception {
@@ -161,6 +147,151 @@ public class IbatisAdministrationServiceTest extends TestCase {
 
 	}
 	
+	public void testFieldType() throws Exception {
+		
+		//testing creation
+		
+		FieldType fieldType = new FieldType();
+		
+		fieldType.setName("testing");
+		fieldType.setDescription("desc");
+		fieldType.setIsSet(true);
+		
+		as.createFieldType(fieldType);
+		
+		FieldType newFieldType = formService.getFieldType(fieldType.getFieldTypeId());
+		assertNotNull(newFieldType);
+		
+		List<FieldType> fieldTypes = formService.getFieldTypes();
+		
+		//make sure we get a list
+		assertNotNull(fieldTypes);
+		
+		boolean found = false;
+		for(Iterator i = fieldTypes.iterator(); i.hasNext();) {
+			FieldType fieldType2 = (FieldType)i.next();
+			assertNotNull(fieldType);
+			//check .equals function
+			assertTrue(fieldType.equals(fieldType2) == (fieldType.getName().equals(fieldType2.getName())));
+			//mark found flag
+			if (fieldType.equals(fieldType2))
+				found = true;
+		}
+		
+		//assert that the new fieldType was returned in the list
+		assertTrue(found);
+		
+		
+		//check updation
+		newFieldType.setName("another test");
+		as.updateFieldType(newFieldType);
+		
+		FieldType newerFieldType = formService.getFieldType(newFieldType.getFieldTypeId());
+		assertTrue(newerFieldType.getName().equals(newFieldType.getName()));
+		
+		
+		//check deletion
+		as.deleteFieldType(newFieldType);
+
+	}
+	
+	//TODO remove 'x' to test
+	public void xtestPatientIdentifierType() throws Exception {
+		
+		//testing creation
+		
+		FieldType fieldType = new FieldType();
+		
+		fieldType.setName("testing");
+		fieldType.setDescription("desc");
+		fieldType.setIsSet(true);
+		
+		as.createFieldType(fieldType);
+		
+		FieldType newFieldType = formService.getFieldType(fieldType.getFieldTypeId());
+		assertNotNull(newFieldType);
+		
+		List<FieldType> fieldTypes = formService.getFieldTypes();
+		
+		//make sure we get a list
+		assertNotNull(fieldTypes);
+		
+		boolean found = false;
+		for(Iterator i = fieldTypes.iterator(); i.hasNext();) {
+			FieldType fieldType2 = (FieldType)i.next();
+			assertNotNull(fieldType);
+			//check .equals function
+			assertTrue(fieldType.equals(fieldType2) == (fieldType.getName().equals(fieldType2.getName())));
+			//mark found flag
+			if (fieldType.equals(fieldType2))
+				found = true;
+		}
+		
+		//assert that the new fieldType was returned in the list
+		assertTrue(found);
+		
+		
+		//check updation
+		newFieldType.setName("another test");
+		as.updateFieldType(newFieldType);
+		
+		FieldType newerFieldType = formService.getFieldType(newFieldType.getFieldTypeId());
+		assertTrue(newerFieldType.getName().equals(newFieldType.getName()));
+		
+		
+		//check deletion
+		as.deleteFieldType(newFieldType);
+
+	}
+	
+	public void testEncounterType() throws Exception {
+		
+		//testing creation
+		
+		EncounterType encounterType = new EncounterType();
+		
+		encounterType.setName("testing");
+		encounterType.setDescription("desc");
+		
+		as.createEncounterType(encounterType);
+		
+		assertNotNull(newE)
+		
+		EncounterType newEncounterType = encounterService.getEncounterType(encounterType.getEncounterTypeId());
+		assertNotNull(newEncounterType);
+		
+		List<EncounterType> encounterTypes = encounterService.getEncounterTypes();
+		
+		//make sure we get a list
+		assertNotNull(encounterTypes);
+		
+		boolean found = false;
+		for(Iterator i = encounterTypes.iterator(); i.hasNext();) {
+			EncounterType encounterType2 = (EncounterType)i.next();
+			assertNotNull(encounterType);
+			//check .equals function
+			assertTrue(encounterType.equals(encounterType2) == (encounterType.getName().equals(encounterType2.getName())));
+			//mark found flag
+			if (encounterType.equals(encounterType2))
+				found = true;
+		}
+		
+		//assert that the new encounterType was returned in the list
+		assertTrue(found);
+		
+		
+		//check updation
+		newEncounterType.setName("another test");
+		as.updateEncounterType(newEncounterType);
+		
+		EncounterType newerEncounterType = encounterService.getEncounterType(newEncounterType.getEncounterTypeId());
+		assertTrue(newerEncounterType.getName().equals(newEncounterType.getName()));
+		
+		
+		//check deletion
+		as.deleteEncounterType(newEncounterType);
+
+	}
 	
 	public static Test suite() {
 		return new TestSuite(IbatisAdministrationServiceTest.class, "Basic IbatisAdministrationService functionality");
