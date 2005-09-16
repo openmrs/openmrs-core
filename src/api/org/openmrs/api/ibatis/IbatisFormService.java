@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.FieldType;
 import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.api.APIException;
@@ -155,4 +156,42 @@ public class IbatisFormService implements FormService {
 		}
 	}
 
+	public List<FieldType> getFieldTypes() throws APIException {
+		
+		List<FieldType> fieldTypes;
+		
+		try {
+			try {
+				SqlMap.instance().startTransaction();
+				fieldTypes = SqlMap.instance().queryForList("getAllFieldTypes", null);
+				SqlMap.instance().commitTransaction();
+			} finally {
+				SqlMap.instance().endTransaction();
+			}
+		} catch (SQLException e) {
+			throw new APIException(e);
+		}
+		
+		return fieldTypes;
+	}
+
+	public FieldType getFieldType(Integer fieldTypeId) throws APIException {
+
+		FieldType fieldType;
+		
+		try {
+			try {
+				SqlMap.instance().startTransaction();
+				fieldType = (FieldType)SqlMap.instance().queryForObject("getFieldType", fieldTypeId);
+				SqlMap.instance().commitTransaction();
+			} finally {
+				SqlMap.instance().endTransaction();
+			}
+		} catch (SQLException e) {
+			throw new APIException(e);
+		}
+		
+		return fieldType;
+	}
+	
 }

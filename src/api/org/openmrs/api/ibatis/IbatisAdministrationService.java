@@ -44,8 +44,7 @@ public class IbatisAdministrationService implements AdministrationService {
 	 */
 	public EncounterType createEncounterType(EncounterType encounterType) throws APIException {
 
-		User authenticatedUser = context.getAuthenticatedUser();
-		encounterType.setCreator(authenticatedUser);
+		encounterType.setCreator(context.getAuthenticatedUser());
 		try {
 			try {
 				SqlMap.instance().startTransaction();

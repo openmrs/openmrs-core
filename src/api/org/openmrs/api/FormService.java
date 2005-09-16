@@ -1,5 +1,8 @@
 package org.openmrs.api;
 
+import java.util.List;
+
+import org.openmrs.FieldType;
 import org.openmrs.Form;
 
 /**
@@ -71,5 +74,23 @@ public interface FormService {
 	 * @throws APIException
 	 */
 	public void deleteForm(Form form) throws APIException;
+	
+	/**
+	 * Get all field types
+	 * 
+	 * @return field types list
+	 * @throws APIException
+	 */
+	public List<FieldType> getFieldTypes() throws APIException;
+
+	/**
+	 * Get fieldType by internal identifier
+	 * 
+	 * @param fieldType id
+	 * @return fieldType with given internal identifier
+	 * @throws APIException
+	 */
+	public FieldType getFieldType(Integer fieldTypeId) throws APIException;
+
 	
 }

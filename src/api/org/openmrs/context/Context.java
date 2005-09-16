@@ -6,6 +6,7 @@ import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.FormService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
@@ -63,6 +64,11 @@ public interface Context {
 	 * @return order service
 	 */
 	public OrderService getOrderService();
+	
+	/** 
+	 * @return form service
+	 */
+	public FormService getFormService();
 	
 	/**
 	 * @return admin-related services

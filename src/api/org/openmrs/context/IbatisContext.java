@@ -11,12 +11,14 @@ import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.FormService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.ibatis.IbatisAdministrationService;
 import org.openmrs.api.ibatis.IbatisEncounterService;
+import org.openmrs.api.ibatis.IbatisFormService;
 import org.openmrs.api.ibatis.IbatisObsService;
 import org.openmrs.api.ibatis.IbatisOrderService;
 import org.openmrs.api.ibatis.IbatisPatientService;
@@ -35,6 +37,7 @@ public class IbatisContext implements Context {
 	private PatientService patientService;
 	private UserService userService;
 	private OrderService orderService;
+	private FormService formService;
 	private AdministrationService administrationService;
 
 	/** @see org.openmrs.context.Context#authenticate(String, String) */
@@ -143,6 +146,15 @@ public class IbatisContext implements Context {
 		if (orderService == null)
 			orderService = new IbatisOrderService(this);
 		return orderService;
+	}
+
+	/**
+	 * @see org.openmrs.context.Context#getFormService()
+	 */
+	public FormService getFormService() {
+		if (formService == null)
+			formService = new IbatisFormService(this);
+		return formService;
 	}
 
 	/** @see org.openmrs.context.Context#getAdministrationService() */
