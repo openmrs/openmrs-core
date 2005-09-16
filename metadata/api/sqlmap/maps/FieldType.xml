@@ -39,13 +39,17 @@
 	<result property="fieldTypeId" column="field_type_id" />
 	<result property="name" column="name" />
 	<result property="description" column="description" />
-	<result property="isSet" column="is_set" />
+	<result property="isSet" column="is_set" nullValue="false" />
 	<result property="creator" column="creator" select="getUser" />
 	<result property="dateCreated" column="date_created" />
 </resultMap>
 
 <select id="getFieldType" parameterClass="int" resultMap="fieldTypeResult">
 	SELECT * FROM field_type WHERE field_type_id = #value#
+</select>
+
+<select id="getAllFieldTypes" resultMap="fieldTypeResult">
+	SELECT * FROM field_type
 </select>
 
 <!-- ************************************************************ -->
@@ -67,8 +71,8 @@
 <!-- ** Deletion                                               ** -->
 <!-- ************************************************************ -->
 
-<delete id="deleteFieldType" parameterClass="org.openmrs.FieldType">
-	DELETE FROM field_type WHERE field_type_id = #fieldTypeId#
+<delete id="deleteFieldType" parameterClass="int">
+	DELETE FROM field_type WHERE field_type_id = #value#
 </delete>
 
 </sqlMap>
