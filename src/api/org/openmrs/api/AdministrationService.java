@@ -6,6 +6,7 @@ import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.OrderType;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.RelationshipType;
 import org.openmrs.Tribe;
 
 /**
@@ -169,6 +170,28 @@ public interface AdministrationService {
 	 * @throws APIException
 	 */
 	public void deleteLocation(Location location) throws APIException;	
+	
+	/**
+	 * Create a new RelationshipType
+	 * @param RelationshipType to create
+	 * @return newly created RelationshipType
+	 * @throws APIException
+	 */
+	public RelationshipType createRelationshipType(RelationshipType location) throws APIException;
+
+	/**
+	 * Update RelationshipType
+	 * @param RelationshipType to update
+	 * @throws APIException
+	 */
+	public void updateRelationshipType(RelationshipType location) throws APIException;
+
+	/**
+	 * Delete RelationshipType
+	 * @param RelationshipType to delete
+	 * @throws APIException
+	 */
+	public void deleteRelationshipType(RelationshipType location) throws APIException;	
 
 
 }

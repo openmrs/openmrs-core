@@ -20,8 +20,8 @@ public class MimeType implements java.io.Serializable {
 	}
 
 	/** constructor with id */
-	public MimeType(String mimeType) {
-		this.mimeType = mimeType;
+	public MimeType(Integer mimeTypeId) {
+		this.mimeTypeId = mimeTypeId;
 	}
 
 	/** 
