@@ -56,21 +56,11 @@ public class IbatisOrderService implements OrderService {
 	public Order getOrder(Integer orderId) throws APIException {
 		Order order;
 		DrugOrder drugOrder;
-		DrugOrder tmpDrugOrder;
 		try {
 			order = (Order) SqlMap.instance().queryForObject("getOrder", orderId);
-			tmpDrugOrder = (DrugOrder) SqlMap.instance().queryForObject("getDrugOrder", orderId);
-			if (tmpDrugOrder != null) {
-				drugOrder = (DrugOrder) order;
-				drugOrder.setDrug(tmpDrugOrder.getDrug());
-				drugOrder.setDose(tmpDrugOrder.getDose());
-				drugOrder.setUnits(tmpDrugOrder.getUnits());
-				drugOrder.setFrequency(tmpDrugOrder.getFrequency());
-				drugOrder.setPrn(tmpDrugOrder.isPrn());
-				drugOrder.setComplex(tmpDrugOrder.isComplex());
-				drugOrder.setQuantity(tmpDrugOrder.getQuantity());
-				drugOrder.setCreator(tmpDrugOrder.getCreator());
-				drugOrder.setDateCreated(tmpDrugOrder.getDateCreated());
+			drugOrder = (DrugOrder) SqlMap.instance().queryForObject("getDrugOrder", orderId);
+			//if drugOrder is found, return subobject: drugOrder
+			if (drugOrder != null) {
 				order = drugOrder;
 			}
 		} catch (SQLException e) {
@@ -138,9 +128,9 @@ public class IbatisOrderService implements OrderService {
 		try {
 			try {
 				SqlMap.instance().startTransaction();
-				SqlMap.instance().delete("deleteOrder", order);
 				if (order.isDrugOrder())
-					SqlMap.instance().delete("deleteDrugOrder", order);
+					SqlMap.instance().delete("deleteDrugOrder", order.getOrderId());
+				SqlMap.instance().delete("deleteOrder", order.getOrderId());
 				SqlMap.instance().commitTransaction();
 			} finally {
 				SqlMap.instance().endTransaction();

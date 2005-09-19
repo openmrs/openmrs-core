@@ -25,6 +25,14 @@ public interface OrderService {
 	 * @throws APIException
 	 */
 	public Order getOrder(Integer orderId) throws APIException;
+
+	/**
+	 * Update order 
+	 * 
+	 * @param Order order to update
+	 * @throws APIException
+	 */
+	public void updateOrder(Order order) throws APIException;
 	
 	/**
 	 * Get order by orderer

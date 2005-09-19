@@ -61,16 +61,16 @@
 	<result property="voided" column="voided" nullValue="false" />
 	<result property="voidedBy" column="voided_by" select="getUser" />
 	<result property="voidReason" column="void_reason" />
-	<result property="dateVoided" column="date_voided" />
+	<result property="dateVoided" column="void_date" />
 </resultMap>
 
 <select id="getOrder" parameterClass="int"
         resultMap="orderResult">
-	SELECT * FROM order WHERE order_id = #value#
+	SELECT * FROM orders WHERE order_id = #value#
 </select>
 
 <select id="getOrderByEncounterId" parameterClass="int" resultMap="orderResult">
-	SELECT * FROM order WHERE encounter_id = #value#
+	SELECT * FROM orders WHERE encounter_id = #value#
 </select>
 
 <!-- ************************************************************ -->
@@ -96,8 +96,8 @@
 <!-- ** Deletion                                               ** -->
 <!-- ************************************************************ -->
 
-<delete id="deleteOrder" parameterClass="org.openmrs.Order">
-	DELETE FROM order WHERE order_id = #orderId#
+<delete id="deleteOrder" parameterClass="int">
+	DELETE FROM orders WHERE order_id = #value#
 </delete>
 
 <update id="discontinueOrder" parameterClass="org.openmrs.Order">
@@ -112,7 +112,7 @@
 		order_id = #orderId#
 </update>
 
-<update id="unDiscontinueOrder" parameterClass="org.openmrs.Order">
+<update id="undiscontinueOrder" parameterClass="org.openmrs.Order">
 	UPDATE
 		orders
 	SET
@@ -130,7 +130,7 @@
 	SET
 		voided = 1,
 		voided_by = #voidedBy.userId#,
-		voided_date = NOW(),
+		void_date = NOW(),
 		void_reason = #voidReason#
 	WHERE
 		order_id = #orderId#
@@ -142,7 +142,7 @@
 	SET
 		voided = 0,
 		voided_by = NULL,
-		voided_date = NULL,
+		void_date = NULL,
 		void_reason = NULL
 	WHERE
 		order_id = #orderId#

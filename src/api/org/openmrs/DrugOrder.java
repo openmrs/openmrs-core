@@ -39,10 +39,10 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof DrugOrder) {
-			DrugOrder d = (DrugOrder)obj;
-			return (super.equals((Order)obj) &&
+			//DrugOrder d = (DrugOrder)obj;
+			return (super.equals((Order)obj)); /* &&
 				this.getDrug().equals(d.getDrug()) &&
-				this.getDose().equals(d.getDose()));
+				this.getDose().equals(d.getDose())); */
 		}
 		return false;
 	}

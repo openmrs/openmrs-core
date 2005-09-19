@@ -38,8 +38,7 @@
 <!-- ** Read                                                   ** -->
 <!-- ************************************************************ -->
 
-<resultMap id="drugOrderResult" class="org.openmrs.DrugOrder">
-	<result property="orderId" column="order_id" />
+<resultMap id="drugOrderResult" class="org.openmrs.DrugOrder" extends="org.openmrs.Order.orderResult">
 	<result property="drug" column="drug_inventory_id" select="getDrug" />
 	<result property="dose" column="dose" />
 	<result property="units" column="units" />
@@ -49,9 +48,21 @@
 	<result property="quantity" column="quantity" />
 </resultMap>
 
-<select id="getDrugOrder" parameterClass="int"
-        resultMap="drugOrderResult">
-	SELECT * FROM drug_order WHERE order_id = #value#
+<select id="getDrugOrder" parameterClass="int" resultMap="drugOrderResult">
+	SELECT
+		o.*,
+		do.drug_inventory_id,
+		do.dose,
+		do.units,
+		do.frequency,
+		do.prn,
+		do.complex,
+		do.quantity
+	FROM
+		drug_order do inner join orders o on
+			do.order_id = o.order_id
+	WHERE
+		o.order_id = #value#
 </select>
 
 <!-- ************************************************************ -->
@@ -77,8 +88,8 @@
 <!-- ** Deletion                                               ** -->
 <!-- ************************************************************ -->
 
-<delete id="deleteDrugOrder" parameterClass="org.openmrs.DrugOrder">
-	DELETE FROM drug_order WHERE order_id = #orderId#
+<delete id="deleteDrugOrder" parameterClass="int">
+	DELETE FROM drug_order WHERE order_id = #value#
 </delete>
 
 </sqlMap>
