@@ -18,6 +18,7 @@ public class FieldAnswer implements java.io.Serializable {
 	private Concept concept;
 	private User creator;
 	private Field field;
+	private boolean dirty;
 
 	// Constructors
 
@@ -40,6 +41,17 @@ public class FieldAnswer implements java.io.Serializable {
 		return false;
 	}
 	
+	/**
+	 * 
+	 * @return boolean whether or not this fieldAnswer has been modified
+	 */
+	public boolean isDirty() {
+		return dirty;
+	}
+	
+	public void setClean() {
+		dirty = false;
+	}
 	
 	// Property accessors
 
@@ -54,6 +66,7 @@ public class FieldAnswer implements java.io.Serializable {
 	 * @param concept The concept to set.
 	 */
 	public void setConcept(Concept concept) {
+		this.dirty = true;
 		this.concept = concept;
 	}
 
@@ -68,6 +81,7 @@ public class FieldAnswer implements java.io.Serializable {
 	 * @param creator The creator to set.
 	 */
 	public void setCreator(User creator) {
+		this.dirty = true;
 		this.creator = creator;
 	}
 
@@ -82,6 +96,7 @@ public class FieldAnswer implements java.io.Serializable {
 	 * @param dateCreated The dateCreated to set.
 	 */
 	public void setDateCreated(Date dateCreated) {
+		this.dirty = true;
 		this.dateCreated = dateCreated;
 	}
 
@@ -96,6 +111,7 @@ public class FieldAnswer implements java.io.Serializable {
 	 * @param field The field to set.
 	 */
 	public void setField(Field field) {
+		this.dirty = true;
 		this.field = field;
 	}
 	

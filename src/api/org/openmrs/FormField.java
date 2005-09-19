@@ -28,6 +28,7 @@ public class FormField implements java.io.Serializable {
 	private Date dateCreated;
 	private User changedBy;
 	private User creator;
+	private boolean dirty;
 
 	// Constructors
 
@@ -59,6 +60,14 @@ public class FormField implements java.io.Serializable {
 		return false;
 	}
 	
+	public boolean isDirty() {
+		return dirty;
+	}
+	
+	public void setClean() {
+		dirty = false;
+	}
+	
 	// Property accessors
 
 	/**
@@ -72,6 +81,7 @@ public class FormField implements java.io.Serializable {
 	 * @param changedBy The changedBy to set.
 	 */
 	public void setChangedBy(User changedBy) {
+		this.dirty = true;
 		this.changedBy = changedBy;
 	}
 
@@ -86,6 +96,7 @@ public class FormField implements java.io.Serializable {
 	 * @param creator The creator to set.
 	 */
 	public void setCreator(User creator) {
+		this.dirty = true;
 		this.creator = creator;
 	}
 
@@ -100,6 +111,7 @@ public class FormField implements java.io.Serializable {
 	 * @param dateChanged The dateChanged to set.
 	 */
 	public void setDateChanged(Date dateChanged) {
+		this.dirty = true;
 		this.dateChanged = dateChanged;
 	}
 
@@ -114,6 +126,7 @@ public class FormField implements java.io.Serializable {
 	 * @param dateCreated The dateCreated to set.
 	 */
 	public void setDateCreated(Date dateCreated) {
+		this.dirty = true;
 		this.dateCreated = dateCreated;
 	}
 
@@ -128,6 +141,7 @@ public class FormField implements java.io.Serializable {
 	 * @param field The field to set.
 	 */
 	public void setField(Field field) {
+		this.dirty = true;
 		this.field = field;
 	}
 
@@ -142,6 +156,7 @@ public class FormField implements java.io.Serializable {
 	 * @param fieldNumber The fieldNumber to set.
 	 */
 	public void setFieldNumber(Integer fieldNumber) {
+		this.dirty = true;
 		this.fieldNumber = fieldNumber;
 	}
 
@@ -156,6 +171,7 @@ public class FormField implements java.io.Serializable {
 	 * @param fieldPart The fieldPart to set.
 	 */
 	public void setFieldPart(String fieldPart) {
+		this.dirty = true;
 		this.fieldPart = fieldPart;
 	}
 
@@ -170,6 +186,7 @@ public class FormField implements java.io.Serializable {
 	 * @param form The form to set.
 	 */
 	public void setForm(Form form) {
+		this.dirty = true;
 		this.form = form;
 	}
 
@@ -184,6 +201,7 @@ public class FormField implements java.io.Serializable {
 	 * @param formField The formField to set.
 	 */
 	public void setFormField(FormField formField) {
+		this.dirty = true;
 		this.formField = formField;
 	}
 
@@ -198,6 +216,7 @@ public class FormField implements java.io.Serializable {
 	 * @param formFieldId The formFieldId to set.
 	 */
 	public void setFormFieldId(Integer formFieldId) {
+		this.dirty = true;
 		this.formFieldId = formFieldId;
 	}
 
@@ -212,6 +231,7 @@ public class FormField implements java.io.Serializable {
 	 * @param maxOccurs The maxOccurs to set.
 	 */
 	public void setMaxOccurs(Integer maxOccurs) {
+		this.dirty = true;
 		this.maxOccurs = maxOccurs;
 	}
 
@@ -226,6 +246,7 @@ public class FormField implements java.io.Serializable {
 	 * @param minOccurs The minOccurs to set.
 	 */
 	public void setMinOccurs(Integer minOccurs) {
+		this.dirty = true;
 		this.minOccurs = minOccurs;
 	}
 
@@ -240,6 +261,7 @@ public class FormField implements java.io.Serializable {
 	 * @param pageNumber The pageNumber to set.
 	 */
 	public void setPageNumber(Integer pageNumber) {
+		this.dirty = true;
 		this.pageNumber = pageNumber;
 	}
 
@@ -254,6 +276,7 @@ public class FormField implements java.io.Serializable {
 	 * @param required The required status to set.
 	 */
 	public void setRequired(Boolean required) {
+		this.dirty = true;
 		this.required = required;
 	}
 

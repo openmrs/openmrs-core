@@ -21,7 +21,7 @@ public class Form implements java.io.Serializable {
 	private String description;
 	private String schemaNamespace;
 	private String definition;
-	private boolean retired;
+	private Boolean retired;
 	private User retiredBy;
 	private Date dateRetired;
 	private String retiredReason;
@@ -190,14 +190,14 @@ public class Form implements java.io.Serializable {
 	/**
 	 * @return Returns the retired status.
 	 */
-	public boolean isRetired() {
+	public Boolean isRetired() {
 		return retired;
 	}
 
 	/**
 	 * @param retired The retired status to set.
 	 */
-	public void setRetired(boolean retired) {
+	public void setRetired(Boolean retired) {
 		this.retired = retired;
 	}
 

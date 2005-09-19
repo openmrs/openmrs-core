@@ -1,7 +1,9 @@
 package org.openmrs;
 
 import java.util.Date;
-import java.util.Set;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Field 
@@ -27,8 +29,9 @@ public class Field implements java.io.Serializable {
 	private FieldType fieldType;
 	private User creator;
 	private User changedBy;
-	private Set fieldAnswers;
-	private Set formFields;
+	private List<FieldAnswer> fieldAnswers;
+	private List<FormField> formFields;
+	boolean dirty;
 
 	// Constructors
 
@@ -55,6 +58,34 @@ public class Field implements java.io.Serializable {
 		return (this.fieldId.equals(field.getFieldId()));
 	}
 
+	/**
+	 * 
+	 * @return boolean whether or not this field object has been modified
+	 */
+	public boolean isDirty() {
+		if (dirty == true)
+			return true;
+		else {
+			if (fieldAnswers != null)
+				for (Iterator i = fieldAnswers.iterator(); i.hasNext();) {
+					FieldAnswer fieldAnswer = (FieldAnswer)i.next();
+					if (fieldAnswer.isDirty())
+						return true;
+				}
+			if (formFields != null)
+				for (Iterator i = formFields.iterator(); i.hasNext();) {
+					FieldAnswer formField = (FieldAnswer)i.next();
+					if (formField.isDirty())
+						return true;
+				}
+		}
+		return false;
+	}
+	
+	public void setClean() {
+		dirty = false;
+	}
+	
 	// Property accessors
 		
 	/**
@@ -68,6 +99,7 @@ public class Field implements java.io.Serializable {
 	 * @param attributeName The attributeName to set.
 	 */
 	public void setAttributeName(String attributeName) {
+		this.dirty = true;
 		this.attributeName = attributeName;
 	}
 
@@ -82,6 +114,7 @@ public class Field implements java.io.Serializable {
 	 * @param changedBy The changedBy to set.
 	 */
 	public void setChangedBy(User changedBy) {
+		this.dirty = true;
 		this.changedBy = changedBy;
 	}
 
@@ -96,6 +129,7 @@ public class Field implements java.io.Serializable {
 	 * @param concept The concept to set.
 	 */
 	public void setConcept(Concept concept) {
+		this.dirty = true;
 		this.concept = concept;
 	}
 
@@ -110,6 +144,7 @@ public class Field implements java.io.Serializable {
 	 * @param creator The creator to set.
 	 */
 	public void setCreator(User creator) {
+		this.dirty = true;
 		this.creator = creator;
 	}
 
@@ -124,6 +159,7 @@ public class Field implements java.io.Serializable {
 	 * @param dateChanged The dateChanged to set.
 	 */
 	public void setDateChanged(Date dateChanged) {
+		this.dirty = true;
 		this.dateChanged = dateChanged;
 	}
 
@@ -138,6 +174,7 @@ public class Field implements java.io.Serializable {
 	 * @param dateCreated The dateCreated to set.
 	 */
 	public void setDateCreated(Date dateCreated) {
+		this.dirty = true;
 		this.dateCreated = dateCreated;
 	}
 
@@ -152,21 +189,45 @@ public class Field implements java.io.Serializable {
 	 * @param description The description to set.
 	 */
 	public void setDescription(String description) {
+		this.dirty = true;
 		this.description = description;
 	}
 
 	/**
 	 * @return Returns the fieldAnswers.
 	 */
-	public Set getFieldAnswers() {
+	public List<FieldAnswer> getFieldAnswers() {
 		return fieldAnswers;
 	}
 
 	/**
 	 * @param fieldAnswers The fieldAnswers to set.
 	 */
-	public void setFieldAnswers(Set fieldAnswers) {
+	public void setFieldAnswers(List<FieldAnswer> fieldAnswers) {
+		this.dirty = true;
 		this.fieldAnswers = fieldAnswers;
+	}
+	
+	/**
+	 * Adds a field answer to the list of field answers
+	 * @param FieldAnswer to be added
+	 */
+	public void addFieldAnswer(FieldAnswer fieldAnswer) {
+		this.dirty = true;
+		if (fieldAnswers == null)
+			fieldAnswers = new LinkedList<FieldAnswer>();
+		fieldAnswers.add(fieldAnswer);
+	}
+	
+	/**
+	 * Removes a field answer from the list of field answers
+	 * @param FieldAnswer to be removed  
+	 */
+	public void removeFieldAnswer(FieldAnswer fieldAnswer) {
+		if (fieldAnswers != null) {
+			this.dirty = true;
+			fieldAnswers.remove(fieldAnswer);
+		}
 	}
 
 	/**
@@ -180,6 +241,7 @@ public class Field implements java.io.Serializable {
 	 * @param fieldId The fieldId to set.
 	 */
 	public void setFieldId(Integer fieldId) {
+		this.dirty = true;
 		this.fieldId = fieldId;
 	}
 
@@ -194,21 +256,46 @@ public class Field implements java.io.Serializable {
 	 * @param fieldType The fieldType to set.
 	 */
 	public void setFieldType(FieldType fieldType) {
+		this.dirty = true;
 		this.fieldType = fieldType;
 	}
 
 	/**
 	 * @return Returns the formFields.
 	 */
-	public Set getFormFields() {
+	public List<FormField> getFormFields() {
 		return formFields;
 	}
 
 	/**
 	 * @param formFields The formFields to set.
 	 */
-	public void setFormFields(Set formFields) {
+	public void setFormFields(List<FormField> formFields) {
+		this.dirty = true;
 		this.formFields = formFields;
+	}
+	
+	/**
+	 * Adds a FormField to the list of form fields
+	 * @param FormField to be added
+	 */
+	public void addFormField(FormField formField) {
+		this.dirty = true;
+		if (formFields == null)
+			formFields = new LinkedList<FormField>();
+		
+		this.formFields.add(formField);
+	}
+	
+	/**
+	 * Removes a FormField from the list of form fields
+	 * @param FormField formField to be removed
+	 */
+	public void removeFormField(FormField formField) {
+		if (formFields != null) {
+			this.dirty = true;
+			this.formFields.remove(formField);
+		}
 	}
 
 	/**
@@ -222,6 +309,7 @@ public class Field implements java.io.Serializable {
 	 * @param name The name to set.
 	 */
 	public void setName(String name) {
+		this.dirty = true;
 		this.name = name;
 	}
 
@@ -236,6 +324,7 @@ public class Field implements java.io.Serializable {
 	 * @param selectMultiple The selectMultiple to set.
 	 */
 	public void setSelectMultiple(Boolean selectMultiple) {
+		this.dirty = true;
 		this.selectMultiple = selectMultiple;
 	}
 
@@ -250,6 +339,7 @@ public class Field implements java.io.Serializable {
 	 * @param tableName The tableName to set.
 	 */
 	public void setTableName(String tableName) {
+		this.dirty = true;
 		this.tableName = tableName;
 	}
 }
