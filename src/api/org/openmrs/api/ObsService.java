@@ -9,10 +9,9 @@ public interface ObsService {
 	/**
 	 * Create an observation 
 	 * @param Obs
-	 * @return newly created observation
 	 * @throws APIException
 	 */
-	public Obs createObs(Obs obs) throws APIException;
+	public void createObs(Obs obs) throws APIException;
 
 	/**
 	 * Get an observation
@@ -31,10 +30,11 @@ public interface ObsService {
 
 	/**
 	 * Equivalent to deleting an observation
-	 * @param obs
+	 * @param Obs obs to void
+	 * @param String reason
 	 * @throws APIException
 	 */
-	public void voidObs(Obs obs) throws APIException;
+	public void voidObs(Obs obs, String reason) throws APIException;
 	
 	/**
 	 * Revive an observation (pull a Lazarus)

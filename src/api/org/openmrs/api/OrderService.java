@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.openmrs.Order;
 import org.openmrs.OrderType;
+import org.openmrs.User;
 
 public interface OrderService {
 
@@ -24,6 +25,15 @@ public interface OrderService {
 	 * @throws APIException
 	 */
 	public Order getOrder(Integer orderId) throws APIException;
+	
+	/**
+	 * Get order by orderer
+	 * 
+	 * @param User orderer
+	 * @return orders that were ordered by given User
+	 * @throws APIException
+	 */
+	//public Order getOrder(User orderer) throws APIException;
 		
 	/**
 	 * Discontinue order record

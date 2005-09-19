@@ -35,21 +35,12 @@ public class PatientServiceTest extends TestCase {
 		assertNotNull(adminService);
 		assertNotNull(encounterService);
 		
-		this.createPatient();
+		
 	}
 	public void testGetPatient() throws APIException {
-		
-		Patient patient;
-		
-		patient = ps.getPatient(-1);
-		assertNull(patient);
 
-		patient = (Patient)ps.getPatient(createdPatient.getPatientId());
-		assertNotNull(patient);
-	}
-	
-	public void testGetPatientByIdentifier() throws APIException {
-
+		this.createPatient();
+		
 		List patientList;
 		
 		patientList = ps.getPatientByIdentifier("???");
@@ -61,6 +52,28 @@ public class PatientServiceTest extends TestCase {
 		patientList = ps.getPatientByIdentifier("%");
 		assertNotNull(patientList);
 		assertTrue(patientList.size() > 0);
+		
+		Patient patient;
+		
+		patient = ps.getPatient(-1);
+		assertNull(patient);
+
+		patient = (Patient)ps.getPatient(createdPatient.getPatientId());
+		assertNotNull(patient);
+
+		patient.setGender("female");
+		
+		ps.updatePatient(patient);
+		
+		Patient patient2 = ps.getPatient(patient.getPatientId());
+		
+		assertFalse(patient.equals(patient2));
+		
+		PatientAddress pAddress = patient.getAddresses().get(1);
+		patient.removeAddress(pAddress);
+		PatientName pName = patient.getNames().get(1);
+		patient.removeName(pName);
+		
 	}
 	
 	public void createPatient() throws APIException {
@@ -81,6 +94,8 @@ public class PatientServiceTest extends TestCase {
 		List<PatientAddress> pAddressList = patient.getAddresses();
 		pAddressList.add(pAddress);
 		patient.setAddresses(pAddressList);
+		patient.addAddress(pAddress);
+		//patient.removeAddress(pAddress);
 		
 		patient.setTribe(ps.getPatientTribes().get(0));
 		patient.setCitizenship("citizen");
@@ -119,7 +134,7 @@ public class PatientServiceTest extends TestCase {
 	}
 	
 	public static Test suite() {
-		return new TestSuite(PatientServiceTest.class, "Basic PatientService functionality");
+		return new TestSuite(PatientServiceTest.class, "Basic Patient Service functionality");
 	}
 
 }

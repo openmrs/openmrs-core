@@ -32,7 +32,7 @@ public class Obs implements java.io.Serializable {
 	protected Encounter encounter;
 	protected User creator;
 	protected Date dateCreated;
-	protected boolean voided;
+	protected Boolean voided;
 	protected User voidedBy;
 	protected Date dateVoided;
 	protected String voidReason;
@@ -59,10 +59,10 @@ public class Obs implements java.io.Serializable {
 			Obs o = (Obs)obj;
 			if (this.getObsId() != null && o.getObsId() != null)
 				return (this.getObsId().equals(o.getObsId()));
-			return (this.getConcept().equals(o.getConcept()) &&
+			/*return (this.getConcept().equals(o.getConcept()) &&
 					this.getPatient().equals(o.getPatient()) &&
 					this.getEncounter().equals(o.getEncounter()) &&
-					this.getLocation().equals(o.getLocation()));
+					this.getLocation().equals(o.getLocation())); */
 		}
 		return false;
 	}
@@ -345,14 +345,14 @@ public class Obs implements java.io.Serializable {
 	/**
 	 * @return Returns the voided.
 	 */
-	public boolean isVoided() {
+	public Boolean isVoided() {
 		return voided;
 	}
 
 	/**
 	 * @param voided The voided to set.
 	 */
-	public void setVoided(boolean voided) {
+	public void setVoided(Boolean voided) {
 		this.voided = voided;
 	}
 

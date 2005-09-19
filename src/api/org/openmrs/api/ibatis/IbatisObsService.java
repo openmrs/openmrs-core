@@ -41,7 +41,7 @@ public class IbatisObsService implements ObsService {
 	/**
 	 * @see org.openmrs.api.ObsService#createObs(Obs)
 	 */
-	public Obs createObs(Obs obs) throws APIException {
+	public void createObs(Obs obs) throws APIException {
 
 		User authenticatedUser = context.getAuthenticatedUser();
 		obs.setCreator(authenticatedUser);
@@ -58,7 +58,6 @@ public class IbatisObsService implements ObsService {
 		} catch (SQLException e) {
 			throw new APIException(e);
 		}
-		return obs;
 	}
 
 	/**
@@ -69,14 +68,11 @@ public class IbatisObsService implements ObsService {
 		ComplexObs complexObs; 
 		try {
 			obs = (Obs) SqlMap.instance().queryForObject("getObs", obsId);
-			ComplexObs tmpComplexObs = (ComplexObs) SqlMap.instance().queryForObject("getComplexObs", obsId);
-			if (tmpComplexObs != null) {
-				complexObs = (ComplexObs) obs;
-				complexObs.setMimeType(tmpComplexObs.getMimeType());
-				complexObs.setUrn(tmpComplexObs.getUrn());
-				complexObs.setComplexValue(tmpComplexObs.getComplexValue());
+			complexObs = (ComplexObs) SqlMap.instance().queryForObject("getComplexObs", obsId);
+			//if it is a complex observation, use it
+			if (complexObs != null)
 				obs = complexObs;
-			}
+
 		} catch (SQLException e) {
 			throw new APIException(e);
 		}
@@ -89,15 +85,16 @@ public class IbatisObsService implements ObsService {
 	public void updateObs(Obs obs) throws APIException {
 		try {
 			try {
-				SqlMap.instance().startTransaction();
-
 				if (obs.getCreator() == null) {
 					this.createObs(obs);
-				} else {
+					return;
+				}
+				SqlMap.instance().startTransaction();
+				
 					SqlMap.instance().update("updateObs", obs);
 					if (obs.isComplexObs())
 						SqlMap.instance().update("updateComplexObs", obs);
-				}
+				
 				SqlMap.instance().commitTransaction();
 			} finally {
 				SqlMap.instance().endTransaction();
@@ -111,9 +108,10 @@ public class IbatisObsService implements ObsService {
 	/**
 	 * @see org.openmrs.api.ObsService#voidObs(Obs)
 	 */
-	public void voidObs(Obs obs) throws APIException {
+	public void voidObs(Obs obs, String reason) throws APIException {
 		try {
 			try {
+				obs.setVoidReason(reason);
 				obs.setVoidedBy(context.getAuthenticatedUser());
 				SqlMap.instance().startTransaction();
 				SqlMap.instance().update("voidObs", obs);
@@ -150,9 +148,9 @@ public class IbatisObsService implements ObsService {
 		try {
 			try {
 				SqlMap.instance().startTransaction();
-				SqlMap.instance().delete("deleteObs", obs);
 				if (obs.isComplexObs())
-					SqlMap.instance().insert("deleteComplexObs", obs);
+					SqlMap.instance().insert("deleteComplexObs", obs.getObsId());
+				SqlMap.instance().delete("deleteObs", obs.getObsId());
 				SqlMap.instance().commitTransaction();
 			} finally {
 				SqlMap.instance().endTransaction();

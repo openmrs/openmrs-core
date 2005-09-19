@@ -35,11 +35,11 @@ public class ComplexObs extends Obs implements java.io.Serializable{
 	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof ComplexObs){
-			ComplexObs c = (ComplexObs)obj;
-			return (super.equals((Obs)obj) &&
+			//ComplexObs c = (ComplexObs)obj;
+			return (super.equals((Obs)obj)); /*&&
 					this.getMimeType().equals(c.getMimeType()) &&
 					this.getUrn().matches(c.getUrn()) &&
-					this.getComplexValue().matches(c.getComplexValue()));
+					this.getComplexValue().matches(c.getComplexValue())); */
 		}
 		return false;
 	}

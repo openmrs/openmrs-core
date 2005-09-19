@@ -27,6 +27,14 @@ public interface PatientService {
 	public Patient getPatient(Integer patientId) throws APIException;
 
 	/**
+	 * Update patient 
+	 * 
+	 * @param patient to be updated
+	 * @throws APIException
+	 */
+	public void updatePatient(Patient patient) throws APIException;
+
+	/**
 	 * Find all patients with a given identifier
 	 * 
 	 * @param identifier

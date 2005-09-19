@@ -87,16 +87,19 @@ public class IbatisPatientService implements PatientService {
 						toAdd = (List)map.get("toAdd");
 						toDel = (List)map.get("toDel");
 						//add addresses to db if patient now has them
-						for (Iterator i = toAdd.iterator(); i.hasNext();)
-						{
-							PatientAddress pAddress = (PatientAddress)i.next();
-							SqlMap.instance().insert("createPatientAddress", pAddress);
-							pAddress.setClean();
+						if (toAdd != null) {
+							for (Iterator i = toAdd.iterator(); i.hasNext();)
+							{
+								PatientAddress pAddress = (PatientAddress)i.next();
+								SqlMap.instance().insert("createPatientAddress", pAddress);
+								pAddress.setClean();
+							}
 						}
 						//delete db addresses no longer on patient
-						for (Iterator i = toDel.iterator(); i.hasNext();)
-							SqlMap.instance().update("voidPatientAddress", i.next());
-						
+						if (toDel != null) {
+							for (Iterator i = toDel.iterator(); i.hasNext();)
+								SqlMap.instance().update("voidPatientAddress", i.next());
+						}
 						// update dirty addresses
 						for (Iterator i = patient.getAddresses().iterator(); i.hasNext();) {
 							PatientAddress pAddress = (PatientAddress)i.next();
@@ -111,16 +114,19 @@ public class IbatisPatientService implements PatientService {
 						map = Compare.compareLists(oldNames, patient.getNames());
 						toAdd = (List)map.get("toAdd");
 						toDel = (List)map.get("toDel");
-						for (Iterator i = toAdd.iterator(); i.hasNext();)
-						{
-							PatientName pName = (PatientName)i.next();
-							pName.setCreator(authenticatedUser);
-							SqlMap.instance().insert("createPatientName", pName);
-							pName.setClean();
+						if (toAdd != null) {
+							for (Iterator i = toAdd.iterator(); i.hasNext();)
+							{
+								PatientName pName = (PatientName)i.next();
+								pName.setCreator(authenticatedUser);
+								SqlMap.instance().insert("createPatientName", pName);
+								pName.setClean();
+							}
 						}
-						for (Iterator i = toDel.iterator(); i.hasNext();)
-							SqlMap.instance().delete("deletePatientName", i.next());
-						
+						if (toDel != null) {
+							for (Iterator i = toDel.iterator(); i.hasNext();)
+								SqlMap.instance().delete("deletePatientName", i.next());
+						}
 						// update dirty addresses
 						for (Iterator i = patient.getNames().iterator(); i.hasNext();) {
 							PatientName pName = (PatientName)i.next();
@@ -136,17 +142,20 @@ public class IbatisPatientService implements PatientService {
 						toAdd = (List)map.get("toAdd");
 						toDel = (List)map.get("toDel");
 						// add ids to db that patient obj now has
-						for (Iterator i = toAdd.iterator(); i.hasNext();)
-						{
-							PatientIdentifier pIdentifier = (PatientIdentifier)i.next();
-							pIdentifier.setCreator(authenticatedUser);
-							SqlMap.instance().insert("createPatientIdentifier", pIdentifier);
-							pIdentifier.setClean();
+						if (toAdd != null) {
+							for (Iterator i = toAdd.iterator(); i.hasNext();)
+							{
+								PatientIdentifier pIdentifier = (PatientIdentifier)i.next();
+								pIdentifier.setCreator(authenticatedUser);
+								SqlMap.instance().insert("createPatientIdentifier", pIdentifier);
+								pIdentifier.setClean();
+							}
 						}
 						// remove ids from db that patient obj does not have
-						for (Iterator i = toDel.iterator(); i.hasNext();)
-							SqlMap.instance().delete("deletePatientIdentifier", i.next());
-						
+						if (toDel != null) {
+							for (Iterator i = toDel.iterator(); i.hasNext();)
+								SqlMap.instance().delete("deletePatientIdentifier", i.next());
+						}
 						// update dirty identifiers
 						for (Iterator i = patient.getIdentifiers().iterator(); i.hasNext();) {
 							PatientIdentifier pIdentifier = (PatientIdentifier)i.next();

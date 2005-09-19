@@ -60,15 +60,15 @@
 </resultMap>
 
 <select id="getPatientAddress" parameterClass="int" resultMap="patientAddressResult">
-	SELECT * FROM patientAddress WHERE patient_address_id = #value#
+	SELECT * FROM patient_address WHERE patient_address_id = #value#
 </select>
 
 <select id="getAllPatientAddresses" resultMap="patientAddressResult">
-	SELECT * FROM patientAddress
+	SELECT * FROM patient_address
 </select>
 
 <select id="getPatientAddressByPatientId" parameterClass="int" resultMap="patientAddressResult">
-	SELECT * FROM patientAddress WHERE patient_id = #value#
+	SELECT * FROM patient_address WHERE patient_id = #value#
 </select>
 
 <!-- ************************************************************ -->

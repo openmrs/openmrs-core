@@ -44,6 +44,7 @@
 		#obsGroupId#,
 		#valueGroupId#,
 		#valueBoolean#,
+		#valueDatetime#,
 		#valueCoded.conceptId#,
 		#valueNumeric#,
 		#valueModifier#,
@@ -72,17 +73,17 @@
 	<result property="valueGroupId" column="value_group_id" />
 	<result property="valueBoolean" column="value_boolean" />
 	<result property="valueDatetime" column="value_datetime" />
-	<result property="valueCoded" column="value_coded" select="getConcept" />
+	<result property="valueCoded" column="value_coded" select="getConcept" /> 
 	<result property="valueNumeric" column="value_numeric" />
 	<result property="valueModifier" column="value_modifier" />
 	<result property="valueText" column="value_text" />
 	<result property="comment" column="comment" />
 	<result property="creator" column="creator" select="getUser" />
-	<result property="dateCreated" column="date_created" />
-	<result property="voided" column="voided" />
-	<result property="voidedBy" column="voidedBy" select="getUser" />
+	<result property="dateCreated" column="date_created" /> 
+	<result property="voided" column="voided" /> 
+	<result property="voidedBy" column="voided_by" select="getUser" />
 	<result property="dateVoided" column="date_voided" />
-	<result property="voidReason" column="void_reason" />
+	<result property="voidReason" column="void_reason" /> 
 </resultMap>
 
 <select id="getObs" parameterClass="int" resultMap="obsResult">
@@ -109,6 +110,7 @@
 		obs_datetime = #obsDatetime#,
 		location_id = #location.locationId#,
 		obs_group_id = #obsGroupId#,
+		value_group_id = #valueGroupId#,
 		value_boolean = #valueBoolean#,
 		value_datetime = #valueDatetime#,
 		value_coded = #valueCoded.conceptId#,
@@ -134,6 +136,7 @@
 	SET
 		voided = 1,
 		voided_by = #voidedBy.userId#,
+		void_reason = #voidReason#,
 		date_voided = NOW()
 	WHERE
 		obs_id = #obsId#
@@ -147,6 +150,7 @@
 		<!-- date_changed = NOW(), -->
 		voided = 0,
 		voided_by = NULL,
+		void_reason = NULL,
 		date_voided = NULL
 	WHERE
 		obs_id = #obsId#
