@@ -11,7 +11,8 @@ public class ConceptSynonym implements java.io.Serializable {
 
 	// Fields
 
-	private ConceptSynonymId conceptSynonymId;
+	private Concept concept;
+	private String synonym;
 	private String locale;
 	private User creator;
 	private Date dateCreated;
@@ -27,34 +28,23 @@ public class ConceptSynonym implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	public ConceptSynonymId getConceptSynonymId() {
-		return conceptSynonymId;
-	}
-
-	public void setConceptSynonymId(ConceptSynonymId conceptSynonymId) {
-		this.conceptSynonymId = conceptSynonymId;
-	}
-
-	/**
-	 * 
-	 */
 	public Concept getConcept() {
-		return conceptSynonymId.getConcept();
+		return concept;
 	}
 
 	public void setConcept(Concept concept) {
-		conceptSynonymId.setConcept(concept);
+		this.concept = concept;
 	}
 
 	/**
 	 * 
 	 */
 	public String getSynonym() {
-		return conceptSynonymId.getSynonym();
+		return synonym;
 	}
 
 	public void setSynonym(String synonym) {
-		conceptSynonymId.setSynonym(synonym);
+		this.synonym = synonym;
 	}
 
 	/**

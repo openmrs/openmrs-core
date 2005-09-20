@@ -41,6 +41,14 @@ public class Concept implements java.io.Serializable {
 	public Concept(Integer conceptId) {
 		this.conceptId = conceptId;
 	}
+	
+	public boolean equals(Object obj) {
+		if (obj instanceof Concept) {
+			Concept c = (Concept)obj;
+			return (this.conceptId.equals(c.getConceptId()));
+		}
+		return false;
+	}
 
 	/**
 	 * @return Returns the answers.

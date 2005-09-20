@@ -28,6 +28,14 @@ public class ConceptAnswer implements java.io.Serializable {
 	public ConceptAnswer(Integer conceptAnswerId) {
 		this.conceptAnswerId = conceptAnswerId;
 	}
+	
+	public boolean equals(Object obj) {
+		if (obj instanceof ConceptAnswer) {
+			ConceptAnswer c = (ConceptAnswer)obj;
+			return (this.conceptAnswerId.equals(c.getConceptAnswerId()));
+		}
+		return false;
+	}
 
 	/**
 	 * @return Returns the answerConcept.

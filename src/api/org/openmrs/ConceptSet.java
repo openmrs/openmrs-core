@@ -22,6 +22,15 @@ public class ConceptSet implements java.io.Serializable {
 	/** default constructor */
 	public ConceptSet() {
 	}
+	
+	public boolean equals(Object obj) {
+		if (obj instanceof ConceptSet) {
+			ConceptSet c = (ConceptSet)obj;
+			return (this.concept.equals(c.getConcept()) &&
+					this.set.equals(c.getSet()));
+		}
+		return false;
+	}
 
 	// Property accessors
 

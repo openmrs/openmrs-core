@@ -32,8 +32,8 @@ public class Tribe implements java.io.Serializable {
 			Tribe t = (Tribe)obj;
 			if (this.getTribeId() != null && t.getTribeId() != null)
 				return (this.getTribeId().equals(t.getTribeId()));
-			return (this.getName().matches(t.getName()) &&
-					this.isRetired() == t.isRetired());
+			/*return (this.getName().matches(t.getName()) &&
+					this.isRetired() == t.isRetired()); */
 		}
 		return false;
 	}

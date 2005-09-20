@@ -52,8 +52,8 @@ public class PatientName implements java.io.Serializable {
 	public boolean equals(Object obj) {
 		if (obj instanceof PatientName) {
 			PatientName pname = (PatientName) obj;
-			if (this.getPatientNameId() != null && pname.getPatientNameId() != null)
-				return (this.getPatientNameId().equals(pname.getPatientNameId())); 
+			if (this.patientNameId != null && pname.getPatientNameId() != null)
+				return (this.patientNameId.equals(pname.getPatientNameId())); 
 		}
 		return false;
 	}

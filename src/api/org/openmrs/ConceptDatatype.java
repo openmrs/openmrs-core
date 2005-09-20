@@ -28,6 +28,14 @@ public class ConceptDatatype implements java.io.Serializable {
 	public ConceptDatatype(Integer conceptDatatypeId) {
 		this.conceptDatatypeId = conceptDatatypeId;
 	}
+	
+	public boolean equals(Object obj) {
+		if (obj instanceof ConceptDatatype) {
+			ConceptDatatype c = (ConceptDatatype)obj;
+			return (this.conceptDatatypeId.equals(c.getConceptDatatypeId()));
+		}
+		return false;
+	}
 
 	// Property accessors
 

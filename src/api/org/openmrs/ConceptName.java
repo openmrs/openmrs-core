@@ -25,6 +25,16 @@ public class ConceptName implements java.io.Serializable {
 	/** default constructor */
 	public ConceptName() {
 	}
+	
+	public boolean equals(Object obj) {
+		if (obj instanceof ConceptName) {
+			ConceptName c = (ConceptName)obj;
+			return (this.concept.equals(c.getConcept()) &&
+					this.name.equals(c.getName()) &&
+					this.locale.equals(c.getLocale()));
+		}
+		return false;
+	}
 
 	// Property accessors
 

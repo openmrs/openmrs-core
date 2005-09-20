@@ -28,6 +28,14 @@ public class ConceptClass implements java.io.Serializable {
 	public ConceptClass(Integer conceptClassId) {
 		this.conceptClassId = conceptClassId;
 	}
+	
+	public boolean equals(Object obj) {
+		if (obj instanceof ConceptClass) {
+			ConceptClass c = (ConceptClass)obj;
+			return (this.conceptClassId.equals(c.getConceptClassId()));
+		}
+		return false;
+	}
 
 	// Property accessors
 

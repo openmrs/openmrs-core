@@ -51,16 +51,16 @@ public class Location implements java.io.Serializable {
 			if (this.getLocationId() != null && loc.getLocationId() != null)
 				return (this.getLocationId().equals(loc.getLocationId()));
 			/*
-			return (this.getName().matches(loc.getName()) &&
-					this.getDescription().matches(loc.getDescription()) &&
-					this.getAddress1().matches(loc.getAddress1()) &&
-					this.getAddress2().matches(loc.getAddress2()) &&
-					this.getCityVillage().matches(loc.getCityVillage()) &&
-					this.getStateProvince().matches(loc.getStateProvince()) &&
-					this.getPostalCode().matches(loc.getPostalCode()) &&
-					this.getCountry().matches(loc.getCountry()) &&
-					this.getLatitude().matches(loc.getLatitude()) &&
-					this.getLongitude().matches(loc.getLongitude()));
+			return (this.getName().equals(loc.getName()) &&
+					this.getDescription().equals(loc.getDescription()) &&
+					this.getAddress1().equals(loc.getAddress1()) &&
+					this.getAddress2().equals(loc.getAddress2()) &&
+					this.getCityVillage().equals(loc.getCityVillage()) &&
+					this.getStateProvince().equals(loc.getStateProvince()) &&
+					this.getPostalCode().equals(loc.getPostalCode()) &&
+					this.getCountry().equals(loc.getCountry()) &&
+					this.getLatitude().equals(loc.getLatitude()) &&
+					this.getLongitude().equals(loc.getLongitude()));
 			*/
 		}
 		return false;

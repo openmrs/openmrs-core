@@ -29,7 +29,7 @@ public class Privilege implements java.io.Serializable {
 	
 	public boolean equals(Object obj) {
 		if (obj == null || !(obj instanceof Privilege)) return false;
-		return privilege.matches(((Privilege)obj).privilege);
+		return privilege.equals(((Privilege)obj).privilege);
 	}
 	
 	// Property accessors

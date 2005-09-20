@@ -40,7 +40,8 @@ public class PatientIdentifier implements java.io.Serializable {
 		if (obj instanceof PatientIdentifier) {
 			PatientIdentifier p = (PatientIdentifier)obj;
 			return (this.getPatient().equals(p.getPatient()) &&
-					this.getIdentifier().matches(p.getIdentifier()) &&
+					this.getIdentifier().equals(p.getIdentifier()) &&
+					this.getIdentifierType().equals(p.getIdentifierType()) &&
 					this.getLocation().equals(p.getLocation()));
 		}
 		return false;

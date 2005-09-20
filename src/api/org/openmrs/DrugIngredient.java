@@ -19,6 +19,15 @@ public class DrugIngredient implements java.io.Serializable {
 	/** default constructor */
 	public DrugIngredient() {
 	}
+	
+	public boolean equals(Object obj) {
+		if (obj instanceof DrugIngredient) {
+			DrugIngredient c = (DrugIngredient)obj;
+			return (this.drug.equals(c.getDrug()) &&
+					this.ingredient.equals(c.getIngredient()));
+		}
+		return false;
+	}
 
 	// Property accessors
 
