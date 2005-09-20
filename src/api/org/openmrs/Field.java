@@ -196,14 +196,14 @@ public class Field implements java.io.Serializable {
 	/**
 	 * @return Returns the fieldAnswers.
 	 */
-	public List<FieldAnswer> getFieldAnswers() {
+	public List<FieldAnswer> getAnswers() {
 		return fieldAnswers;
 	}
 
 	/**
 	 * @param fieldAnswers The fieldAnswers to set.
 	 */
-	public void setFieldAnswers(List<FieldAnswer> fieldAnswers) {
+	public void setAnswers(List<FieldAnswer> fieldAnswers) {
 		this.dirty = true;
 		this.fieldAnswers = fieldAnswers;
 	}
@@ -212,7 +212,7 @@ public class Field implements java.io.Serializable {
 	 * Adds a field answer to the list of field answers
 	 * @param FieldAnswer to be added
 	 */
-	public void addFieldAnswer(FieldAnswer fieldAnswer) {
+	public void addAnswer(FieldAnswer fieldAnswer) {
 		this.dirty = true;
 		if (fieldAnswers == null)
 			fieldAnswers = new LinkedList<FieldAnswer>();
@@ -224,7 +224,7 @@ public class Field implements java.io.Serializable {
 	 * Removes a field answer from the list of field answers
 	 * @param FieldAnswer to be removed  
 	 */
-	public void removeFieldAnswer(FieldAnswer fieldAnswer) {
+	public void removeAnswer(FieldAnswer fieldAnswer) {
 		if (fieldAnswers != null) {
 			this.dirty = true;
 			fieldAnswers.remove(fieldAnswer);

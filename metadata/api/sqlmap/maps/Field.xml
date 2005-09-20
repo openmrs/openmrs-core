@@ -60,7 +60,7 @@
 	<result property="dateCreated" column="date_created" />
 	<result property="changedBy" column="changed_by" select="getUser" />
 	<result property="dateChanged" column="date_changed" />
-	<result property="fieldAnswers" column="field_id" select="getFieldAnswer" />
+	<result property="answers" column="field_id" select="getFieldAnswer" />
 	<result property="formFields" column="field_id" select="getFormFieldByFieldId" />
 </resultMap>
 

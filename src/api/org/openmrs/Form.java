@@ -1,6 +1,7 @@
 package org.openmrs;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -159,6 +160,27 @@ public class Form implements java.io.Serializable {
 		this.formFields = formFields;
 	}
 
+	/**
+	 * Adds a FormField to the list of form fields
+	 * @param FormField to be added
+	 */
+	public void addFormField(FormField formField) {
+		if (formFields == null)
+			formFields = new HashSet();
+		if (!formFields.contains(formField) && formField != null)
+			this.formFields.add(formField);
+	}
+	
+	/**
+	 * Removes a FormField from the list of form fields
+	 * @param FormField formField to be removed
+	 */
+	public void removeFormField(FormField formField) {
+		if (formFields != null) {
+			this.formFields.remove(formField);
+		}
+	}
+	
 	/**
 	 * @return Returns the formId.
 	 */

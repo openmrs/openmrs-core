@@ -2,8 +2,10 @@ package org.openmrs.api;
 
 import java.util.List;
 
+import org.openmrs.Field;
 import org.openmrs.FieldType;
 import org.openmrs.Form;
+import org.openmrs.FormField;
 
 /**
  * Form-related services
@@ -91,6 +93,70 @@ public interface FormService {
 	 * @throws APIException
 	 */
 	public FieldType getFieldType(Integer fieldTypeId) throws APIException;
+	
+	/**
+	 * 
+	 * @return list of forms in the db
+	 * @throws APIException
+	 */
+	public List<Form> getForms() throws APIException;
 
+	/**
+	 * 
+	 * @return list of fields in the db
+	 * @throws APIException
+	 */
+	public List<Field> getFields() throws APIException;
+	
+	/**
+	 * 
+	 * @param formField
+	 * @throws APIException
+	 */
+	public void createFormField(FormField formField) throws APIException;
+	
+	/**
+	 * 
+	 * @param formFieldId
+	 * @return
+	 * @throws APIException
+	 */
+	public FormField getFormField(Integer formFieldId) throws APIException;
+	
+	/**
+	 * 
+	 * @param formField
+	 * @throws APIException
+	 */
+	public void updateFormField(FormField formField) throws APIException;
+	
+	/**
+	 * 
+	 * @param formField
+	 * @throws APIException
+	 */
+	public void deleteFormField(FormField formField) throws APIException;
+	
+	/**
+	 * 
+	 * @param fieldId
+	 * @return
+	 * @throws APIException
+	 */
+	public Field getField(Integer fieldId) throws APIException;
+	
+	/**
+	 * 
+	 * @param field
+	 * @throws APIException
+	 */
+	public void updateField(Field field) throws APIException;
+	
+	/**
+	 * 
+	 * @param field
+	 * @throws APIException
+	 */
+	public void deleteField(Field field) throws APIException;
 	
 }

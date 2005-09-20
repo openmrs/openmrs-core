@@ -74,6 +74,7 @@ public class PatientServiceTest extends TestCase {
 		PatientName pName = patient.getNames().get(1);
 		patient.removeName(pName);
 		
+		
 	}
 	
 	public void createPatient() throws APIException {

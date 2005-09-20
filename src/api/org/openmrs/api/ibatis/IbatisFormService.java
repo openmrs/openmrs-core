@@ -48,10 +48,12 @@ public class IbatisFormService implements FormService {
 			
 			SqlMap.instance().insert("createForm", form);
 			
-			for(Iterator i = form.getFormFields().iterator(); i.hasNext();) {
-				FormField formField = (FormField)i.next();
-				formField.setCreator(context.getAuthenticatedUser());
-				SqlMap.instance().insert("createFormField", formField);
+			if (form.getFormFields() != null) {
+				for(Iterator i = form.getFormFields().iterator(); i.hasNext();) {
+					FormField formField = (FormField)i.next();
+					formField.setCreator(context.getAuthenticatedUser());
+					SqlMap.instance().insert("createFormField", formField);
+				}
 			}
 			
 		} catch (SQLException e) {
