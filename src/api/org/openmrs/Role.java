@@ -1,5 +1,6 @@
 package org.openmrs;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -16,7 +17,7 @@ public class Role implements java.io.Serializable {
 
 	private String role;
 	private String description;
-	private List privileges;
+	private List<Privilege> privileges;
 
 	// Constructors
 
@@ -60,10 +61,30 @@ public class Role implements java.io.Serializable {
 	/**
 	 * @param privileges The privileges to set.
 	 */
-	public void setPrivileges(List privileges) {
+	public void setPrivileges(List<Privilege> privileges) {
 		this.privileges = privileges;
 	}
 
+	/**
+	 * Adds the given Privilege to the list of privileges
+	 * @param privilege
+	 */
+	public void addPrivilege(Privilege privilege) {
+		if (privileges == null)
+			privileges = new LinkedList<Privilege>();
+		if (!privileges.contains(privilege) && privilege != null)
+			privileges.add(privilege);
+	}
+	
+	/**
+	 * Removes the given Privilege from the list of privileges
+	 * @param privilege
+	 */
+	public void removePrivilege(Privilege privilege) {
+		if (privileges != null)
+			privileges.remove(privilege);
+	}
+	
 	/**
 	 * @return Returns the role.
 	 */

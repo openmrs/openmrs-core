@@ -1,6 +1,7 @@
 package org.openmrs;
 
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -157,6 +158,27 @@ public class Encounter implements java.io.Serializable {
 	public void setObs(List<Obs> obs) {
 		this.obs = obs;
 	}
+	
+	/**
+	 * Add the given Obs to the list of obs for this Encounter
+	 * @param observation
+	 */
+	public void addObs(Obs observation) {
+		observation.setEncounter(this);
+		if (obs == null)
+			obs = new LinkedList<Obs>();
+		if (!obs.contains(observation) && observation != null)
+			obs.add(observation);
+	}
+
+	/**
+	 * Remove the given obervation from the list of obs for this Encounter
+	 * @param observation
+	 */
+	public void removeObs(Obs observation) {
+		if (obs != null)
+			obs.remove(observation);
+	}
 
 	/**
 	 * @return Returns the orders
@@ -171,6 +193,27 @@ public class Encounter implements java.io.Serializable {
 	 */
 	public void setOrders(List<Order> orders) {
 		this.orders = orders;
+	}
+	
+	/**
+	 * Add the given Order to the list of orders for this Encounter
+	 * @param order
+	 */
+	public void addOrder(Order order) {
+		order.setEncounter(this);
+		if (orders == null)
+			orders = new LinkedList<Order>();
+		if (!orders.contains(order) && order != null)
+			orders.add(order);
+	}
+
+	/**
+	 * Remove the given obervation from the list of orders for this Encounter
+	 * @param order
+	 */
+	public void removeOrder(Order order) {
+		if (orders != null)
+			orders.remove(order);
 	}
 
 	/**

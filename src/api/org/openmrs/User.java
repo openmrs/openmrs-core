@@ -2,6 +2,7 @@ package org.openmrs;
 
 import java.util.Date;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -29,7 +30,7 @@ public class User implements java.io.Serializable {
 	private User voidedBy;
 	private Date dateVoided;
 	private String voidReason;
-	private List roles;
+	private List<Role> roles;
 
 	// Constructors
 
@@ -192,15 +193,35 @@ public class User implements java.io.Serializable {
 	/**
 	 * @return Returns the roles.
 	 */
-	public List getRoles() {
+	public List<Role> getRoles() {
 		return roles;
 	}
 
 	/**
 	 * @param roles The roles to set.
 	 */
-	public void setRoles(List roles) {
+	public void setRoles(List<Role> roles) {
 		this.roles = roles;
+	}
+	
+	/**
+	 * Add the given Role to the list of roles for this User
+	 * @param roleservation
+	 */
+	public void addRole(Role role) {
+		if (roles == null)
+			roles = new LinkedList<Role>();
+		if (!roles.contains(role) && role != null)
+			roles.add(role);
+	}
+
+	/**
+	 * Remove the given obervation from the list of roles for this User
+	 * @param roleservation
+	 */
+	public void removeRole(Role roleservation) {
+		if (roles != null)
+			roles.remove(roleservation);
 	}
 
 	/**

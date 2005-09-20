@@ -216,7 +216,8 @@ public class Field implements java.io.Serializable {
 		this.dirty = true;
 		if (fieldAnswers == null)
 			fieldAnswers = new LinkedList<FieldAnswer>();
-		fieldAnswers.add(fieldAnswer);
+		if (!fieldAnswers.contains(fieldAnswer) && fieldAnswer != null)
+			fieldAnswers.add(fieldAnswer);
 	}
 	
 	/**
@@ -283,8 +284,8 @@ public class Field implements java.io.Serializable {
 		this.dirty = true;
 		if (formFields == null)
 			formFields = new LinkedList<FormField>();
-		
-		this.formFields.add(formField);
+		if (!formFields.contains(formField) && formField != null)
+			this.formFields.add(formField);
 	}
 	
 	/**

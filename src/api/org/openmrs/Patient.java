@@ -508,7 +508,8 @@ public class Patient implements java.io.Serializable {
 		name.setPatient(this);
 		if (names == null)
 			names = new LinkedList<PatientName>();
-		names.add(name);
+		if (!names.contains(name) && name != null)
+			names.add(name);
 	}
 
 	public void removeName(PatientName name) {
@@ -522,7 +523,8 @@ public class Patient implements java.io.Serializable {
 		address.setPatient(this);
 		if (addresses == null)
 			addresses = new LinkedList<PatientAddress>();
-		addresses.add(address);
+		if (!addresses.contains(address) && address != null)
+			addresses.add(address);
 	}
 	public void removeAddress(PatientAddress address) {
 		dirty = true;
@@ -535,7 +537,8 @@ public class Patient implements java.io.Serializable {
 		patientIdentifier.setPatient(this);
 		if (identifiers == null)
 			identifiers = new LinkedList<PatientIdentifier>();
-		identifiers.add(patientIdentifier);
+		if (!identifiers.contains(patientIdentifier) && patientIdentifier != null)
+			identifiers.add(patientIdentifier);
 	}
 	public void removeIdentifier(PatientIdentifier patientIdentifier) {
 		dirty = true;

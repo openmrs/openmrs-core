@@ -1,6 +1,7 @@
 package org.openmrs;
 
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -27,9 +28,9 @@ public class Concept implements java.io.Serializable {
 	private Date dateCreated;
 	private User changedBy;
 	private Date dateChanged;
-	private List names;
-	private List answers;
-	private List synonyms;
+	private List<ConceptName> names;
+	private List<ConceptAnswer> answers;
+	private List<ConceptSynonym> synonyms;
 
 	// Constructors
 
@@ -53,15 +54,36 @@ public class Concept implements java.io.Serializable {
 	/**
 	 * @return Returns the answers.
 	 */
-	public List getAnswers() {
+	public List<ConceptAnswer> getAnswers() {
 		return answers;
 	}
 
 	/**
 	 * @param answers The answers to set.
 	 */
-	public void setAnswers(List answers) {
+	public void setAnswers(List<ConceptAnswer> answers) {
 		this.answers = answers;
+	}
+	
+	/**
+	 * Add the given ConceptAnswer to the list of answers for this Concept
+	 * @param conceptAnswer
+	 */
+	public void addAnswer(ConceptAnswer conceptAnswer) {
+		conceptAnswer.setConcept(this);
+		if (answers == null)
+			answers = new LinkedList<ConceptAnswer>();
+		if (!answers.contains(conceptAnswer) && conceptAnswer != null)
+			answers.add(conceptAnswer);
+	}
+
+	/**
+	 * Remove the given answer from the list of answers for this Concept
+	 * @param conceptAnswer
+	 */
+	public void removeAnswer(ConceptAnswer conceptAnswer) {
+		if (answers != null)
+			answers.remove(conceptAnswer);
 	}
 
 	/**
@@ -221,17 +243,38 @@ public class Concept implements java.io.Serializable {
 	/**
 	 * @return Returns the names.
 	 */
-	public List getNames() {
+	public List<ConceptName> getNames() {
 		return names;
 	}
 
 	/**
 	 * @param names The names to set.
 	 */
-	public void setNames(List names) {
+	public void setNames(List<ConceptName> names) {
 		this.names = names;
 	}
 
+	/**
+	 * Add the given ConceptName to the list of names for this Concept
+	 * @param conceptName
+	 */
+	public void addName(ConceptName conceptName) {
+		conceptName.setConcept(this);
+		if (names == null)
+			names = new LinkedList<ConceptName>();
+		if (!names.contains(conceptName) && conceptName != null)
+			names.add(conceptName);
+	}
+
+	/**
+	 * Remove the given name from the list of names for this Concept
+	 * @param conceptName
+	 */
+	public void removeName(ConceptName conceptName) {
+		if (names != null)
+			names.remove(conceptName);
+	}
+	
 	/**
 	 * @return Returns the retired.
 	 */
@@ -263,17 +306,38 @@ public class Concept implements java.io.Serializable {
 	/**
 	 * @return Returns the synonyms.
 	 */
-	public List getSynonyms() {
+	public List<ConceptSynonym> getSynonyms() {
 		return synonyms;
 	}
 
 	/**
 	 * @param synonyms The synonyms to set.
 	 */
-	public void setSynonyms(List synonyms) {
+	public void setSynonyms(List<ConceptSynonym> synonyms) {
 		this.synonyms = synonyms;
 	}
 
+	/**
+	 * Add the given ConceptSynonym to the list of synonyms for this Concept
+	 * @param conceptSynonym
+	 */
+	public void addSynonym(ConceptSynonym conceptSynonym) {
+		conceptSynonym.setConcept(this);
+		if (synonyms == null)
+			synonyms = new LinkedList<ConceptSynonym>();
+		if (!synonyms.contains(conceptSynonym) && conceptSynonym != null)
+			synonyms.add(conceptSynonym);
+	}
+
+	/**
+	 * Remove the given synonym from the list of synonyms for this Concept
+	 * @param conceptSynonym
+	 */
+	public void removeSynonym(ConceptSynonym conceptSynonym) {
+		if (synonyms != null)
+			synonyms.remove(conceptSynonym);
+	}
+	
 	/**
 	 * @return Returns the units.
 	 */

@@ -13,7 +13,7 @@ public class PatientName implements java.io.Serializable {
 
 	private Integer patientNameId;
 	private Patient patient;
-	private boolean preferred;
+	private Boolean preferred;
 	private String prefix;
 	private String givenName;
 	private String middleName;
@@ -259,14 +259,14 @@ public class PatientName implements java.io.Serializable {
 	/**
 	 * @return Returns the preferred.
 	 */
-	public boolean isPreferred() {
+	public Boolean isPreferred() {
 		return preferred;
 	}
 
 	/**
 	 * @param preferred The preferred to set.
 	 */
-	public void setPreferred(boolean preferred) {
+	public void setPreferred(Boolean preferred) {
 		dirty = true;
 		this.preferred = preferred;
 	}
