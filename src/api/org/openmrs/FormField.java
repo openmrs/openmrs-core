@@ -23,7 +23,7 @@ public class FormField implements java.io.Serializable {
 	private Integer pageNumber;
 	private Integer minOccurs;
 	private Integer maxOccurs;
-	private boolean required;
+	private Boolean required;
 	private Date dateChanged;
 	private Date dateCreated;
 	private User changedBy;

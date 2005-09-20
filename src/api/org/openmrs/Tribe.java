@@ -13,7 +13,7 @@ public class Tribe implements java.io.Serializable {
 	// Fields
 
 	private Integer tribeId;
-	private boolean retired;
+	private Boolean retired;
 	private String name;
 
 	// Constructors
@@ -57,14 +57,14 @@ public class Tribe implements java.io.Serializable {
 	/**
 	 * @return Returns the retired.
 	 */
-	public boolean isRetired() {
+	public Boolean isRetired() {
 		return retired;
 	}
 
 	/**
 	 * @param retired The retired to set.
 	 */
-	public void setRetired(boolean retired) {
+	public void setRetired(Boolean retired) {
 		this.retired = retired;
 	}
 

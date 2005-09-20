@@ -13,7 +13,7 @@ public class Concept implements java.io.Serializable {
 	// Fields
 
 	private Integer conceptId;
-	private boolean retired;
+	private Boolean retired;
 	private String name;
 	private String shortName;
 	private String description;
@@ -235,14 +235,14 @@ public class Concept implements java.io.Serializable {
 	/**
 	 * @return Returns the retired.
 	 */
-	public boolean isRetired() {
+	public Boolean isRetired() {
 		return retired;
 	}
 
 	/**
 	 * @param retired The retired to set.
 	 */
-	public void setRetired(boolean retired) {
+	public void setRetired(Boolean retired) {
 		this.retired = retired;
 	}
 

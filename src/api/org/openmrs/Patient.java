@@ -35,7 +35,7 @@ public class Patient implements java.io.Serializable {
 	private Date dateCreated;
 	private User changedBy;
 	private Date dateChanged;
-	private boolean voided;
+	private Boolean voided;
 	private User voidedBy;
 	private Date dateVoided;
 	private String voidReason;
@@ -388,7 +388,7 @@ public class Patient implements java.io.Serializable {
 	/**
 	 * @return true if patient's record has been voided
 	 */
-	public boolean isVoided() {
+	public Boolean isVoided() {
 		return this.voided;
 	}
 
@@ -396,7 +396,7 @@ public class Patient implements java.io.Serializable {
 	 * @param voided
 	 *            true if patient's record should be voided from the system
 	 */
-	public void setVoided(boolean voided) {
+	public void setVoided(Boolean voided) {
 		dirty = true;
 		this.voided = voided;
 	}
