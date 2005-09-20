@@ -7,11 +7,16 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.FormService;
 import org.openmrs.api.ObsService;
+import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.UserService;
+import org.openmrs.api.hibernate.HibernatePatientService;
+import org.openmrs.api.hibernate.HibernateUserService;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 public class HibernateContext extends HibernateDaoSupport implements Context {
@@ -24,15 +29,21 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 	private ObsService obsService;
 	private PatientService patientService;
 	private UserService userService;
+	private AdministrationService administrationService;
+	private FormService formService;
+	private OrderService orderService;
 
 	protected HibernateContext() {
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Authenticate the user for this context. 
 	 * 
-	 * @see org.openmrs.context.Context#authenticate(java.lang.String,
-	 *      java.lang.String)
+	 * @param username 
+	 * @param password
+	 * 
+	 * @see org.openmrs.context.Context#authenticate(String, String)
+	 * @throws ContextAuthenticationException
 	 */
 	public void authenticate(String username, String password)
 			throws ContextAuthenticationException {
@@ -79,27 +90,40 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 		return new String(s);
 	}
 
+	/**
+	 * Get the currently authenticated user
+	 * @see org.openmrs.context.Context#getAuthenticatedUser()
+	 */
 	public User getAuthenticatedUser() {
 		return user;
 	}
 
+	/**
+	 * Log the current user out of this context.  isAuthenticated will now return false.
+	 * @see org.openmrs.context.Context#logout()
+	 */
 	public void logout() {
 		user = null;
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Get the privileges for the authenticated user
 	 * 
 	 * @see org.openmrs.context.Context#getPrivileges()
 	 */
 	public Set getPrivileges() {
+		if (!isAuthenticated())
+			return null;
+		
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Return whether or not the user has the given priviledge
 	 * 
+	 * @param String privilege to authorize against
+	 * @return boolean whether the user has the given privilege
 	 * @see org.openmrs.context.Context#hasPrivilege(java.lang.String)
 	 */
 	public boolean hasPrivilege(String privilege) {
@@ -114,8 +138,8 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 		return false;
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Determine if a user is authenticated already
 	 * 
 	 * @see org.openmrs.context.Context#isAuthenticated()
 	 */
@@ -124,8 +148,8 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 		return (user != null);
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Get the Hibernate implementation of ConceptService
 	 * 
 	 * @see org.openmrs.context.Context#getConceptService()
 	 */
@@ -134,34 +158,23 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 			log.warn("unauthorized access to concept service");
 			return null;
 		}
+		if (conceptService == null)
+			conceptService = new HibernateConceptService();
 		return conceptService;
 	}
 	
 	public EncounterService getEncounterService() {
+		if (!isAuthenticated()) {
+			log.warn("unauthorized access to encounter service");
+			return null;
+		}
+		if (encounterService == null)
+			encounterService = new HibernateEncounterService();
 		return encounterService;
 	}
 
-	protected void setConceptService(ConceptService conceptService) {
-		this.conceptService = conceptService;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.openmrs.context.Context#getLocale()
-	 */
-	public Locale getLocale() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void setLocale(Locale locale) {
-		// TODO Auto-generated method stub
-
-	}
-
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Get Hibernate implementation of ObsService
 	 * 
 	 * @see org.openmrs.context.Context#getObsService()
 	 */
@@ -170,15 +183,13 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 			log.warn("unauthorized request for obs service");
 			return null;
 		}
+		if (obsService == null)
+			obsService = new HibernateObsService();
 		return obsService;
 	}
 
-	protected void setObsService(ObsService obsService) {
-		this.obsService = obsService;
-	}
-
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Get Hibernate implementation of PatientService
 	 * 
 	 * @see org.openmrs.context.Context#getPatientService()
 	 */
@@ -187,15 +198,13 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 			log.warn("unauthorized request for patient service");
 			return null;
 		}
+		if (patientService == null)
+			patientService = new HibernatePatientService();
 		return patientService;
 	}
 
-	protected void setPatientService(PatientService patientService) {
-		this.patientService = patientService;
-	}
-
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Get Hibernate implementation of UserService
 	 * 
 	 * @see org.openmrs.context.Context#getUserService()
 	 */
@@ -204,11 +213,67 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 			log.warn("unauthorized access to user service");
 			return null;
 		}
+		if (userService == null)
+			userService = new HibernateUserService();
 		return userService;
 	}
 
-	protected void setUserService(UserService userService) {
-		this.userService = userService;
+	/**
+	 * @return Returns the administrationService.
+	 */
+	public AdministrationService getAdministrationService() {
+		if (!isAuthenticated()) {
+			log.warn("unauthorized access to administration service");
+			return null;
+		}
+		if (administrationService == null)
+			administrationService = new HibernateAdministrationService();
+		return administrationService;
+	}
+
+	/**
+	 * @return Returns the formService.
+	 */
+	public FormService getFormService() {
+		if (!isAuthenticated()) {
+			log.warn("unauthorized access to form service");
+			return null;
+		}
+		if (formService == null)
+			formService = new HibernateFormService();
+		return formService;
+	}
+
+	/**
+	 * @return Returns the orderService.
+	 */
+	public OrderService getOrderService() {
+		if (!isAuthenticated()) {
+			log.warn("unauthorized access to order service");
+			return null;
+		}
+		if (orderService == null)
+			orderService = new HibernateOrderService();
+		return orderService;
+	}
+
+	/**
+	 * Get the locale
+	 * 
+	 * @see org.openmrs.context.Context#getLocale()
+	 */
+	public Locale getLocale() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/**
+	 * Set the locale
+	 * @see org.openmrs.context.Context#setLocale(java.util.Locale)
+	 */
+	public void setLocale(Locale locale) {
+		// TODO Auto-generated method stub
+
 	}
 
 }
