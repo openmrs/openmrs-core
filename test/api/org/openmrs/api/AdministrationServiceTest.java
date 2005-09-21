@@ -1,5 +1,6 @@
 package org.openmrs.api;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -52,6 +53,24 @@ public class AdministrationServiceTest extends TestCase {
 	}
 
 	public void testMimeType() throws Exception {
+		
+		//testing equals()/hashset() for mimetype /////////// 
+		
+		HashSet set = new HashSet();
+		
+		MimeType m1 = new MimeType();
+		MimeType m2 = new MimeType();
+		m1.setMimeType("test1");
+		m2.setMimeType("test2");
+		set.add(m1);
+		set.add(m2);
+		
+		as.createMimeType(m1);
+		
+		assertTrue(set.size() == 2);
+		assertNotNull(set.contains(m1));
+		////////////////////////////////////////
+		
 		
 		//testing creation
 		
