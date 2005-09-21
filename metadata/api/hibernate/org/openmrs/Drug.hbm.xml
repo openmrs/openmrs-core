@@ -115,6 +115,7 @@
         <column name="concept_id" />
     </many-to-one>
     <!-- bi-directional one-to-many association to DrugOrder -->
+    <!--
     <set
         name="drugOrders"
         lazy="true"
@@ -128,6 +129,7 @@
             class="org.openmrs.DrugOrder"
         />
     </set>
+    -->
     <!-- bi-directional many-to-one association to User -->
     <many-to-one
         name="creator"

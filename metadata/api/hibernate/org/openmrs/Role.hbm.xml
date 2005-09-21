@@ -17,7 +17,7 @@
 		<!-- Associations -->
 
 		<!-- bi-directional many-to-many association to Privilege -->
-		<set name="rolePrivileges" lazy="true" cascade="none"
+		<set name="privileges" lazy="true" cascade="none"
 			table="role_privilege">
 			<key>
 				<column name="role" />
@@ -27,6 +27,7 @@
 			</many-to-many>
 		</set>
 		<!-- bi-directional many-to-many association to User -->
+		<!--
 		<set name="users" lazy="true" cascade="none"
 			table="user_role">
 			<key>
@@ -36,6 +37,7 @@
 				<column name="user_id" />
 			</many-to-many>
 		</set>
+		-->
 
 	</class>
 </hibernate-mapping>
