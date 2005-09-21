@@ -10,6 +10,7 @@ import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.OrderType;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.RelationshipType;
 import org.openmrs.Tribe;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
@@ -479,4 +480,20 @@ public class IbatisAdministrationService implements AdministrationService {
 		}
 		
 	}
+
+	public RelationshipType createRelationshipType(RelationshipType location) throws APIException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void deleteRelationshipType(RelationshipType location) throws APIException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void updateRelationshipType(RelationshipType location) throws APIException {
+		// TODO Auto-generated method stub
+		
+	}
+	
 }

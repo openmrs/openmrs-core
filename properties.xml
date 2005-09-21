@@ -60,7 +60,6 @@
     
     <!-- API -->
     <path id="api.compile.classpath">
-		<fileset dir="${src.dir}/api" includes="**/*.java" />
 		<fileset dir="${commons-logging.dir}" includes="*.jar" />
 		<fileset dir="${hibernate.dir}" includes="*.jar" />
 		<fileset dir="${log4j.dir}" includes="*.jar" />

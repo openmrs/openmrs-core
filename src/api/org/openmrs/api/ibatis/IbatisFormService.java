@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Field;
 import org.openmrs.FieldType;
 import org.openmrs.Form;
 import org.openmrs.FormField;
@@ -194,6 +195,51 @@ public class IbatisFormService implements FormService {
 		}
 		
 		return fieldType;
+	}
+
+	public void createFormField(FormField formField) throws APIException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void deleteField(Field field) throws APIException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void deleteFormField(FormField formField) throws APIException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public Field getField(Integer fieldId) throws APIException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<Field> getFields() throws APIException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public FormField getFormField(Integer formFieldId) throws APIException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<Form> getForms() throws APIException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void updateField(Field field) throws APIException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void updateFormField(FormField formField) throws APIException {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

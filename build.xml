@@ -39,17 +39,20 @@
 		<delete dir="${build.dir}/api" />
 		<mkdir dir="${build.dir}/api" />
 		
+		<javac destdir="${build.dir}/api" 
+		       debug="${compile.debug}" 
+		       deprecation="${compile.deprecation}" 
+		       optimize="${compile.optimize}" 
+		       classpathref="api.compile.classpath">
+			<src path="${src.dir}/api" />
+			<include name="**/*.java" />
+		</javac>
+
 		<!-- Copy hibernate metadata -->
 		<copy todir="${build.dir}/api">
 			<fileset dir="${metadata.dir}/api/hibernate" includes="**/*" />
 		</copy>
 		
-		<javac srcdir="${src.dir}/api" 
-		       destdir="${build.dir}/api" 
-		       debug="${compile.debug}" 
-		       deprecation="${compile.deprecation}" 
-		       optimize="${compile.optimize}" 
-		       classpathref="api.compile.classpath" />
 	</target>
 
 	<target name="package-api" depends="compile-api" description="create api jar">

@@ -4,11 +4,9 @@ import java.util.List;
 
 import org.openmrs.Patient;
 import org.openmrs.api.APIException;
-import org.openmrs.api.PatientService;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
-public class HibernatePatientService extends HibernateDaoSupport implements
-		PatientService {
+public class HibernatePatientService extends HibernateDaoSupport { // implementsPatientService {
 
 	/*
 	 * (non-Javadoc)
