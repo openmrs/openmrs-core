@@ -18,6 +18,8 @@
 
 		<property name="shortName" type="java.lang.String"
 			column="short_name" length="255" />
+		<property name="dateCreated" type="java.util.Date"
+			column="date_created" length="19" />
 
 		<!-- Associations -->
 		<!-- derived association(s) for compound key -->
@@ -26,8 +28,16 @@
 			insert="false">
 			<column name="concept_id" />
 		</many-to-one>
-
 		<!-- end of derived association(s) -->
+
+	    <!-- bi-directional many-to-one association to User -->
+	    <many-to-one
+	        name="creator"
+	        class="org.openmrs.User"
+	        not-null="true"
+	    >
+	        <column name="creator" />
+	    </many-to-one>
 
 
 	</class>
