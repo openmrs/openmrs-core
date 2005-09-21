@@ -85,6 +85,7 @@
         <column name="form_id" />
     </many-to-one>
     <!-- bi-directional one-to-many association to FormField -->
+    <!--
     <set
         name="formFields"
         lazy="true"
@@ -98,6 +99,7 @@
             class="org.openmrs.FormField"
         />
     </set>
+    -->
     <!-- bi-directional many-to-one association to FormField -->
     <many-to-one
         name="formField"
