@@ -57,6 +57,11 @@ public class Field implements java.io.Serializable {
 		Field field = (Field) obj;
 		return (this.fieldId.equals(field.getFieldId()));
 	}
+	
+	public int hashCode() {
+		if (this.getFieldId() == null) return super.hashCode();
+		return this.getFieldId().hashCode();
+	}
 
 	/**
 	 * 

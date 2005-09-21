@@ -42,6 +42,11 @@ public class RelationshipType implements java.io.Serializable {
 		return false;
 	}
 	
+	public int hashCode() {
+		if (this.getRelationshipTypeId() == null) return super.hashCode();
+		return this.getRelationshipTypeId().hashCode();
+	}
+
 	// Property accessors
 
 	/**

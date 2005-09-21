@@ -59,6 +59,11 @@ public class Form implements java.io.Serializable {
 		}
 		return false;
 	}
+	
+	public int hashCode() {
+		if (this.getFormId() == null) return super.hashCode();
+		return this.getFormId().hashCode();
+	}
 
 	// Property accessors
 	

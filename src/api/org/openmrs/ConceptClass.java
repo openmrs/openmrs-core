@@ -36,6 +36,11 @@ public class ConceptClass implements java.io.Serializable {
 		}
 		return false;
 	}
+	
+	public int hashCode() {
+		if (this.getConceptClassId() == null) return super.hashCode();
+		return this.getConceptClassId().hashCode();
+	}
 
 	// Property accessors
 

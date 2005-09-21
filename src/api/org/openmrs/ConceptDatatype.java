@@ -36,6 +36,11 @@ public class ConceptDatatype implements java.io.Serializable {
 		}
 		return false;
 	}
+	
+	public int hashCode() {
+		if (this.getConceptDatatypeId() == null) return super.hashCode();
+		return this.getConceptDatatypeId().hashCode();
+	}
 
 	// Property accessors
 

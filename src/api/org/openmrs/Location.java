@@ -66,6 +66,11 @@ public class Location implements java.io.Serializable {
 		return false;
 	}
 	
+	public int hashCode() {
+		if (this.getLocationId() == null) return super.hashCode();
+		return this.getLocationId().hashCode();
+	}
+
 	// Property accessors
 
 	/**

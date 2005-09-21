@@ -41,6 +41,11 @@ public class FieldAnswer implements java.io.Serializable {
 		return false;
 	}
 	
+	public int hashCode() {
+		if (this.getField() == null || this.getConcept() == null) return super.hashCode();
+		return this.getConcept().hashCode() + this.getField().hashCode();
+	}
+
 	/**
 	 * 
 	 * @return boolean whether or not this fieldAnswer has been modified

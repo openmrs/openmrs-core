@@ -31,6 +31,11 @@ public class ConceptSet implements java.io.Serializable {
 		}
 		return false;
 	}
+	
+	public int hashCode() {
+		if (this.getConcept() == null || this.getSet() == null) return super.hashCode();
+		return this.getConcept().hashCode() + this.getSet().hashCode();
+	}
 
 	// Property accessors
 

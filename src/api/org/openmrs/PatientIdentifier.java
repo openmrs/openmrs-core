@@ -47,6 +47,14 @@ public class PatientIdentifier implements java.io.Serializable {
 		return false;
 	}
 	
+	public int hashCode() {
+		if (this.getPatient() == null || this.getIdentifier() == null || this.getIdentifierType() == null || this.getLocation() == null) return super.hashCode();
+		return	this.getPatient().hashCode() +
+				this.getIdentifier().hashCode() +
+				this.getIdentifierType().hashCode() +
+				this.getLocation().hashCode();
+	}
+
 	/**
 	 * Returns whether or not this identifier has been modified
 	 * 

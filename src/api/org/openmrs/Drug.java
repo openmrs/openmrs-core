@@ -56,6 +56,11 @@ public class Drug implements java.io.Serializable {
 		return (this.drugId.equals(drug.getDrugId()));
 	}
 	
+	public int hashCode() {
+		if (this.getDrugId() == null) return super.hashCode();
+		return this.getDrugId().hashCode();
+	}
+
 	// Property accessors
 
 	/**

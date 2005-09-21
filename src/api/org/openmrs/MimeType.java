@@ -38,6 +38,11 @@ public class MimeType implements java.io.Serializable {
 		return false;
 	}
 	
+	public int hashCode() {
+		if (this.getMimeTypeId() == null) return super.hashCode();
+		return this.getMimeTypeId().hashCode();
+	}
+
 	// Property accessors
 
 	/**

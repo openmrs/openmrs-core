@@ -45,7 +45,7 @@ public class ComplexObs extends Obs implements java.io.Serializable{
 	}
 	
 	/** 
-	 * overriding parent isComplexObs function to allow an easier check of 
+	 * overriding parent function isComplexObs function to allow an easier check of 
 	 * complex vs noncomplex
 	 * 
 	 * @return true/false whether this is a complex observation

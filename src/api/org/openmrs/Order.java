@@ -64,6 +64,11 @@ public class Order implements java.io.Serializable {
 		return false;
 	}
 	
+	public int hashCode() {
+		if (this.getOrderId() == null) return super.hashCode();
+		return this.getOrderId().hashCode();
+	}
+
 	/**
 	 * true/false whether or not this is a drug order
 	 * overridden in extending class drugOrders. 

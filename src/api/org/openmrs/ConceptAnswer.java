@@ -36,6 +36,11 @@ public class ConceptAnswer implements java.io.Serializable {
 		}
 		return false;
 	}
+	
+	public int hashCode() {
+		if (this.getConceptAnswerId() == null) return super.hashCode();
+		return this.getConceptAnswerId().hashCode();
+	}
 
 	/**
 	 * @return Returns the answerConcept.

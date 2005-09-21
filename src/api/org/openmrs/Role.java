@@ -35,6 +35,11 @@ public class Role implements java.io.Serializable {
 		return role.equals(((Role)obj).role);
 	}
 	
+	public int hashCode() {
+		if (this.getRole() == null) return super.hashCode();
+		return this.getRole().hashCode();
+	}
+
 	// Property accessors
 
 	/**

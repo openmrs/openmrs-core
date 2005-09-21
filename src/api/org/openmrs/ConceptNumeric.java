@@ -11,7 +11,7 @@ public class ConceptNumeric implements java.io.Serializable {
 
 	// Fields
 
-	private Integer conceptId;
+	private Concept concept;
 	private Double hiAbsolute;
 	private Double hiCritical;
 	private Double hiNormal;
@@ -22,7 +22,6 @@ public class ConceptNumeric implements java.io.Serializable {
 	private Date dateCreated;
 	private Boolean precise;
 	private Date dateChanged;
-	private Concept concept;
 	private User creator;
 	private User changedBy;
 
@@ -32,31 +31,20 @@ public class ConceptNumeric implements java.io.Serializable {
 	public ConceptNumeric() {
 	}
 
-	/** constructor with id */
-	public ConceptNumeric(Integer conceptId) {
-		this.conceptId = conceptId;
-	}
-	
 	public boolean equals(Object obj) {
 		if (obj instanceof ConceptNumeric) {
 			ConceptNumeric c = (ConceptNumeric)obj;
-			return (this.conceptId.equals(c.getConceptId()));
+			return (this.concept.equals(c.getConcept()));
 		}
 		return false;
 	}
+	
+	public int hashCode() {
+		if (this.getConcept() == null) return super.hashCode();
+		return this.getConcept().hashCode();
+	}
 
 	// Property accessors
-
-	/**
-	 * 
-	 */
-	public Integer getConceptId() {
-		return this.conceptId;
-	}
-
-	public void setConceptId(Integer conceptId) {
-		this.conceptId = conceptId;
-	}
 
 	/**
 	 * 

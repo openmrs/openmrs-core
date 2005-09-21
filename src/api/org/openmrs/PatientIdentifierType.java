@@ -26,6 +26,11 @@ public class PatientIdentifierType implements java.io.Serializable {
 		this.patientIdentifierTypeId = patientIdentifierTypeId;
 	}
 	
+	public int hashCode() {
+		if (this.getPatientIdentifierTypeId() == null) return super.hashCode();
+		return this.getPatientIdentifierTypeId().hashCode();
+	}
+
 	/** 
 	 * Compares two objects for similarity
 	 * 

@@ -38,6 +38,11 @@ public class Tribe implements java.io.Serializable {
 		return false;
 	}
 	
+	public int hashCode() {
+		if (this.getTribeId() == null) return super.hashCode();
+		return this.getTribeId().hashCode();
+	}
+
 	// Property accessors
 
 	/**

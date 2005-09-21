@@ -59,6 +59,11 @@ public class PatientAddress implements java.io.Serializable {
 		return false;
 	}
 	
+	public int hashCode() {
+		if (this.getPatientAddressId() == null) return super.hashCode();
+		return this.getPatientAddressId().hashCode();
+	}
+
 	/**
 	 * Returns whether or not this address has been modified
 	 * 

@@ -44,6 +44,11 @@ public class EncounterType implements java.io.Serializable {
 		EncounterType encounterType = (EncounterType) obj;
 		return (this.encounterTypeId.equals(encounterType.getEncounterTypeId()));
 	}
+	
+	public int hashCode() {
+		if (this.getEncounterTypeId() == null) return super.hashCode();
+		return this.getEncounterTypeId().hashCode();
+	}
 
 	// Property accessors
 	

@@ -60,6 +60,11 @@ public class FormField implements java.io.Serializable {
 		return false;
 	}
 	
+	public int hashCode() {
+		if (this.getFormFieldId() == null) return super.hashCode();
+		return this.getFormFieldId().hashCode();
+	}
+
 	public boolean isDirty() {
 		return dirty;
 	}

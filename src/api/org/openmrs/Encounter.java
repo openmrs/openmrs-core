@@ -59,6 +59,11 @@ public class Encounter implements java.io.Serializable {
 			
 	}
 	
+	public int hashCode() {
+		if (this.getEncounterId() == null) return super.hashCode();
+		return this.getEncounterId().hashCode();
+	}
+
 	// Property accessors
 
 	/**

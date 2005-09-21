@@ -47,6 +47,11 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		return false;
 	}
 	
+	public int hashCode() {
+		if (this.getOrderId() == null) return super.hashCode();
+		return this.getOrderId().hashCode();
+	}
+
 	public boolean isDrugOrder() {
 		return true;
 	}

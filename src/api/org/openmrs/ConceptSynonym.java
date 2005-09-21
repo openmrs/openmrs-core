@@ -22,6 +22,21 @@ public class ConceptSynonym implements java.io.Serializable {
 	/** default constructor */
 	public ConceptSynonym() {
 	}
+	
+	public boolean equals(Object obj) {
+		if (obj instanceof ConceptSynonym) {
+			ConceptSynonym c = (ConceptSynonym)obj;
+			return (this.concept.equals(c.getConcept()) &&
+					this.synonym.equals(c.getSynonym()) &&
+					this.locale.equals(c.getLocale()));
+		}
+		return false;
+	}
+	
+	public int hashCode() {
+		if (this.getConcept() == null || this.getSynonym() == null || this.getLocale() == null) return super.hashCode();
+		return this.getConcept().hashCode() + this.getSynonym().hashCode() + this.getLocale().hashCode();
+	}
 
 	// Property accessors
 

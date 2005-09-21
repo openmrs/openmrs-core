@@ -46,6 +46,11 @@ public class OrderType implements java.io.Serializable {
 		return false;
 	}
 	
+	public int hashCode() {
+		if (this.getOrderTypeId() == null) return super.hashCode();
+		return this.getOrderTypeId().hashCode();
+	}
+
 	// Property accessors
 
 	/**

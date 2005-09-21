@@ -43,6 +43,11 @@ public class FieldType implements java.io.Serializable {
 		return false;
 	}
 	
+	public int hashCode() {
+		if (this.getFieldTypeId() == null) return super.hashCode();
+		return this.getFieldTypeId().hashCode();
+	}
+
 	// Property accessors
 
 	/**

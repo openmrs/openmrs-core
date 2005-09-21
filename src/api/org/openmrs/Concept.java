@@ -50,7 +50,12 @@ public class Concept implements java.io.Serializable {
 		}
 		return false;
 	}
-
+	
+	public int hashCode() {
+		if (this.getConceptId() == null) return super.hashCode();
+		return this.getConceptId().hashCode();
+	}
+	
 	/**
 	 * @return Returns the answers.
 	 */

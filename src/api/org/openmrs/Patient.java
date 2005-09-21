@@ -65,6 +65,11 @@ public class Patient implements java.io.Serializable {
 		return false;
 	}
 	
+	public int hashCode() {
+		if (this.getPatientId() == null) return super.hashCode();
+		return this.getPatientId().hashCode();
+	}
+
 	/**
 	 * True if a property of an object in a List has been modified
 	 * 

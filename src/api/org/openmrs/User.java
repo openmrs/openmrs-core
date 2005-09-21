@@ -75,6 +75,10 @@ public class User implements java.io.Serializable {
 		return false;
 	}
 	
+	public int hashCode() {
+		if (this.getUserId() == null) return super.hashCode();
+		return this.getUserId().hashCode();
+	}
 	
 	// Property accessors
 

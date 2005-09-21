@@ -47,6 +47,11 @@ public class Relationship implements java.io.Serializable {
 		return false;
 	}
 	
+	public int hashCode() {
+		if (this.getRelationshipId() == null) return super.hashCode();
+		return this.getRelationshipId().hashCode();
+	}
+
 	// Property accessors
 
 	/**

@@ -28,6 +28,11 @@ public class DrugIngredient implements java.io.Serializable {
 		}
 		return false;
 	}
+	
+	public int hashCode() {
+		if (this.getDrug() == null || this.getIngredient() == null) return super.hashCode();
+		return this.getDrug().hashCode() + this.getIngredient().hashCode();
+	}
 
 	// Property accessors
 

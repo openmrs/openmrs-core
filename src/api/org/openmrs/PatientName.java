@@ -58,6 +58,11 @@ public class PatientName implements java.io.Serializable {
 		return false;
 	}
 	
+	public int hashCode() {
+		if (this.getPatientNameId() == null) return super.hashCode();
+		return this.getPatientNameId().hashCode();
+	}
+
 	/**
 	 * Returns whether or not this name has been modified
 	 * 

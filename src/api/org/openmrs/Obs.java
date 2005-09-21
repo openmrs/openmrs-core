@@ -67,6 +67,11 @@ public class Obs implements java.io.Serializable {
 		return false;
 	}
 	
+	public int hashCode() {
+		if (this.getObsId() == null) return super.hashCode();
+		return this.getObsId().hashCode();
+	}
+
 	/** determine if the current observation is complex
 	 *  --overridden in extending ComplexObs class
 	 */
