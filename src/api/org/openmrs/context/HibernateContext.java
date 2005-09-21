@@ -158,8 +158,8 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 			log.warn("unauthorized access to concept service");
 			return null;
 		}
-		if (conceptService == null)
-			conceptService = new HibernateConceptService();
+//		if (conceptService == null)
+//			conceptService = new HibernateConceptService();
 		return conceptService;
 	}
 	
@@ -168,8 +168,8 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 			log.warn("unauthorized access to encounter service");
 			return null;
 		}
-		if (encounterService == null)
-			encounterService = new HibernateEncounterService();
+//		if (encounterService == null)
+//			encounterService = new HibernateEncounterService();
 		return encounterService;
 	}
 
@@ -183,8 +183,8 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 			log.warn("unauthorized request for obs service");
 			return null;
 		}
-		if (obsService == null)
-			obsService = new HibernateObsService();
+//		if (obsService == null)
+//			obsService = new HibernateObsService();
 		return obsService;
 	}
 
@@ -198,8 +198,8 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 			log.warn("unauthorized request for patient service");
 			return null;
 		}
-		if (patientService == null)
-			patientService = new HibernatePatientService();
+//		if (patientService == null)
+//			patientService = new HibernatePatientService();
 		return patientService;
 	}
 
@@ -213,8 +213,8 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 			log.warn("unauthorized access to user service");
 			return null;
 		}
-		if (userService == null)
-			userService = new HibernateUserService();
+//		if (userService == null)
+//			userService = new HibernateUserService();
 		return userService;
 	}
 
@@ -226,8 +226,8 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 			log.warn("unauthorized access to administration service");
 			return null;
 		}
-		if (administrationService == null)
-			administrationService = new HibernateAdministrationService();
+//		if (administrationService == null)
+//			administrationService = new HibernateAdministrationService();
 		return administrationService;
 	}
 
@@ -239,8 +239,8 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 			log.warn("unauthorized access to form service");
 			return null;
 		}
-		if (formService == null)
-			formService = new HibernateFormService();
+//		if (formService == null)
+//			formService = new HibernateFormService();
 		return formService;
 	}
 
@@ -252,8 +252,8 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 			log.warn("unauthorized access to order service");
 			return null;
 		}
-		if (orderService == null)
-			orderService = new HibernateOrderService();
+//		if (orderService == null)
+//			orderService = new HibernateOrderService();
 		return orderService;
 	}
 
