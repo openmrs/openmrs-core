@@ -66,6 +66,16 @@
 <!-- ** Update                                                 ** -->
 <!-- ************************************************************ -->
 
+<update id="updatePatientIdentifier" parameterClass="org.openmrs.PatientIdentifier">
+	UPDATE patient_identifier
+	SET (
+		patient_id = #patient.patientId#,
+		identifier = #identifier#,
+		identifier_type = #identifierType.patientIdentifierTypeId#,
+		location_id = #location.locationId#
+		);
+</update>
+
 <!-- ************************************************************ -->
 <!-- ** Deletion                                               ** -->
 <!-- ************************************************************ -->
