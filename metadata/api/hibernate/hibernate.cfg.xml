@@ -77,6 +77,8 @@
 -->
 
 		<mapping resource="org/openmrs/api/hibernate/Patient.hbm.xml" />
+		<mapping
+			resource="org/openmrs/api/hibernate/PatientAddress.hbm.xml" />
 
 	</session-factory>
 

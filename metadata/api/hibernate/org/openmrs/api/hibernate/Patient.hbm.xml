@@ -67,8 +67,7 @@
 		<property name="dateChanged" type="java.util.Date"
 			column="date_changed" length="19" />
 
-		<property name="voided" type="java.lang.Boolean" column="voided"
-			length="1" />
+		<property name="voided" type="boolean" column="voided" />
 
 		<many-to-one name="voidedBy" class="User">
 			<column name="voided_by" />
