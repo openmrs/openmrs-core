@@ -41,7 +41,7 @@
 		
 		<!-- Copy hibernate metadata -->
 		<copy todir="${build.dir}/api">
-			<fileset includes="${metadata.dir}/api/hibernate/*" />
+			<fileset dir="${metadata.dir}/api/hibernate" includes="**/*" />
 		</copy>
 		
 		<javac srcdir="${src.dir}/api" 

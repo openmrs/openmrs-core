@@ -40,8 +40,8 @@
 	<classpathentry kind="lib" path="lib/ibatis/ibatis-common-2.jar"/>
 	<classpathentry kind="lib" path="lib/ibatis/ibatis-dao-2.jar"/>
 	<classpathentry kind="lib" path="lib/ibatis/ibatis-sqlmap-2.jar"/>
-	<classpathentry kind="lib" path="metadata/api"/>
 	<classpathentry kind="lib" path="lib/tomcat/jsp-api.jar"/>
 	<classpathentry kind="lib" path="lib/tomcat/servlet-api.jar"/>
+	<classpathentry kind="lib" path="metadata/api/sqlmap"/>
 	<classpathentry kind="output" path="build/"/>
 </classpath>
