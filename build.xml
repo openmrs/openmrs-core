@@ -36,7 +36,14 @@
 	</target>
 
 	<target name="compile-api" description="compile api">
+		<delete dir="${build.dir}/api" />
 		<mkdir dir="${build.dir}/api" />
+		
+		<!-- Copy hibernate metadata -->
+		<copy todir="${build.dir}/api">
+			<fileset includes="${metadata.dir}/api/hibernate/*" />
+		</copy>
+		
 		<javac srcdir="${src.dir}/api" 
 		       destdir="${build.dir}/api" 
 		       debug="${compile.debug}" 
