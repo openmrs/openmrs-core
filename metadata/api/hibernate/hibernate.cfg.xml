@@ -23,6 +23,7 @@
 		-->
 		<!--  <property name="hibernate.cache.provider_class">net.sf.hibernate.cache.EhCacheProvider</property> -->
 
+<!-- 
 		<mapping
 			resource="org/openmrs/api/hibernate/ComplexObs.hbm.xml" />
 		<mapping resource="org/openmrs/api/hibernate/Concept.hbm.xml" />
@@ -73,6 +74,9 @@
 		<mapping resource="org/openmrs/api/hibernate/Role.hbm.xml" />
 		<mapping resource="org/openmrs/api/hibernate/Tribe.hbm.xml" />
 		<mapping resource="org/openmrs/api/hibernate/User.hbm.xml" />
+-->
+
+		<mapping resource="org/openmrs/api/hibernate/Patient.hbm.xml" />
 
 	</session-factory>
 
