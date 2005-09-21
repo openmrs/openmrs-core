@@ -45,12 +45,12 @@
 			<column name="patient_id" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to Concept -->
-		<many-to-one name="conceptByConceptId" class="Concept"
+		<many-to-one name="concept" class="Concept"
 			not-null="true">
 			<column name="concept_id" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to Concept -->
-		<many-to-one name="conceptByValueCoded" class="Concept"
+		<many-to-one name="valueCoded" class="Concept"
 			not-null="true">
 			<column name="value_coded" />
 		</many-to-one>
@@ -71,12 +71,12 @@
 			<column name="encounter_id" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to User -->
-		<many-to-one name="userByCreator" class="User"
+		<many-to-one name="creator" class="User"
 			not-null="true">
 			<column name="creator" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to User -->
-		<many-to-one name="userByVoidedBy" class="User"
+		<many-to-one name="voidedBy" class="User"
 			not-null="true">
 			<column name="voided_by" />
 		</many-to-one>

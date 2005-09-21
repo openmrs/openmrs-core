@@ -68,9 +68,9 @@
         length="50"
     />
     <property
-        name="zipcode"
+        name="postalCode"
         type="java.lang.String"
-        column="zipcode"
+        column="postal_code"
         length="50"
     />
     <property
@@ -96,6 +96,7 @@
     <!-- Associations -->
   
     <!-- bi-directional one-to-many association to Encounter -->
+    <!--
     <set
         name="encounters"
         lazy="true"
@@ -109,7 +110,9 @@
             class="org.openmrs.Encounter"
         />
     </set>
+    -->
     <!-- bi-directional one-to-many association to PatientIdentifier -->
+    <!--
     <set
         name="patientIdentifiers"
         lazy="true"
@@ -123,7 +126,9 @@
             class="org.openmrs.PatientIdentifier"
         />
     </set>
+    -->
     <!-- bi-directional one-to-many association to Ob -->
+    <!--
     <set
         name="obs"
         lazy="true"
@@ -137,6 +142,7 @@
             class="org.openmrs.Obs"
         />
     </set>
+    -->
     <!-- bi-directional many-to-one association to User -->
     <many-to-one
         name="user"

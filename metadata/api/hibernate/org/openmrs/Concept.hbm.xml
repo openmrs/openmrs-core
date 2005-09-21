@@ -16,10 +16,6 @@
 			column="retired" length="1" />
 		<property name="name" type="java.lang.String" column="name"
 			not-null="true" length="255" />
-		<property name="nameAlt" type="java.lang.String"
-			column="name_alt" length="255" />
-		<property name="correctConcept" type="java.lang.Integer"
-			column="correct_concept" length="11" />
 		<property name="shortName" type="java.lang.String"
 			column="short_name" length="255" />
 		<property name="description" type="java.lang.String"
@@ -47,7 +43,7 @@
 			<column name="datatype_id" />
 		</many-to-one>
 		<!-- bi-directional one-to-many association to ConceptName -->
-		<set name="conceptNames" lazy="true" inverse="true"
+		<set name="names" lazy="true" inverse="true"
 			cascade="none">
 			<key>
 				<column name="concept_id" />
@@ -70,7 +66,7 @@
 			<one-to-many class="FieldAnswer" />
 		</set>
 		<!-- bi-directional one-to-many association to ConceptAnswer -->
-		<set name="conceptAnswersByConceptId" lazy="true" inverse="true"
+		<set name="answers" lazy="true" inverse="true"
 			cascade="none">
 			<key>
 				<column name="concept_id" />
@@ -93,6 +89,7 @@
 			<one-to-many class="Field" />
 		</set>
 		<!-- bi-directional one-to-many association to ConceptWord -->
+		<!--
 		<set name="conceptWords" lazy="true" inverse="true"
 			cascade="none">
 			<key>
@@ -100,8 +97,9 @@
 			</key>
 			<one-to-many class="ConceptWord" />
 		</set>
+		-->
 		<!-- bi-directional one-to-many association to ConceptSynonym -->
-		<set name="conceptSynonyms" lazy="true" inverse="true"
+		<set name="synonyms" lazy="true" inverse="true"
 			cascade="none">
 			<key>
 				<column name="concept_id" />
@@ -165,12 +163,12 @@
 			<column name="class_id" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to User -->
-		<many-to-one name="userByChangedBy" class="User"
+		<many-to-one name="changedBy" class="User"
 			not-null="true">
 			<column name="changed_by" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to User -->
-		<many-to-one name="userByCreator" class="User"
+		<many-to-one name="creator" class="User"
 			not-null="true">
 			<column name="creator" />
 		</many-to-one>

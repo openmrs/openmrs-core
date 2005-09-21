@@ -64,6 +64,18 @@
         length="1"
     />
     <property
+        name="retiredReason"
+        type="java.lang.String"
+        column="retired_reason"
+        length="50"
+    />
+    <property
+        name="dateRetired"
+        type="java.util.Date"
+        column="date_retired"
+        length="19"
+    />
+    <property
         name="dateChanged"
         type="java.util.Date"
         column="date_changed"
@@ -95,7 +107,7 @@
     </set>
     <!-- bi-directional many-to-one association to User -->
     <many-to-one
-        name="userByCreator"
+        name="creator"
         class="org.openmrs.User"
         not-null="true"
     >
@@ -103,12 +115,19 @@
     </many-to-one>
     <!-- bi-directional many-to-one association to User -->
     <many-to-one
-        name="userByChangedBy"
+        name="changedBy"
         class="org.openmrs.User"
         not-null="true"
     >
         <column name="changed_by" />
     </many-to-one>
-
+    <!-- bi-directional many-to-one association to User -->
+    <many-to-one
+        name="retiredBy"
+        class="org.openmrs.User"
+        not-null="true"
+    >
+        <column name="retired_by" />
+    </many-to-one>
 </class>
 </hibernate-mapping>

@@ -20,12 +20,12 @@
 		<!-- Associations -->
 
 		<!-- bi-directional many-to-one association to Concept -->
-		<many-to-one name="conceptByConceptId"
+		<many-to-one name="concept"
 			class="org.openmrs.Concept" not-null="true">
 			<column name="concept_id" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to Concept -->
-		<many-to-one name="conceptByAnswerConcept"
+		<many-to-one name="answerConcept"
 			class="org.openmrs.Concept" not-null="true">
 			<column name="answer_concept" />
 		</many-to-one>

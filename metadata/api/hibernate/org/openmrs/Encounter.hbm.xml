@@ -44,7 +44,7 @@
 		</many-to-one>
 		<!-- bi-directional many-to-one association to User -->
 		<many-to-one name="creator" class="User" not-null="true">
-			<column name="creator_id" />
+			<column name="creator" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to User -->
 		<many-to-one name="provider" class="User" not-null="true">

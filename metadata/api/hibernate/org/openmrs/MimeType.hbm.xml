@@ -7,10 +7,14 @@
 
 	<class name="MimeType" table="mime_type">
 
-		<id name="mimeType" type="java.lang.String"
-			column="mime_type">
+		<id name="mimeTypeId" type="int"
+			column="mime_type_id">
 			<generator class="assigned" />
 		</id>
+		
+		<property name="mimeType" type="java.lang.String"
+			column="mime_type"
+			length="75" />
 
 		<property name="description" type="java.lang.String"
 			column="description" length="1024" />
@@ -18,11 +22,13 @@
 		<!-- Associations -->
 
 		<!-- bi-directional one-to-many association to ComplexObs -->
+		<!--
 		<set name="complexObs" lazy="true" inverse="true"
 			cascade="none">
 			<key column="mime_type" />
 			<one-to-many class="ComplexObs" />
 		</set>
+		-->
 
 	</class>
 	

@@ -60,6 +60,7 @@
         column="quantity"
         length="11"
     />
+    <!-- 
     <property
         name="dateCreated"
         type="java.lang.String"
@@ -67,6 +68,7 @@
         not-null="true"
         length="10"
     />
+    -->
 
     <!-- Associations -->
   
@@ -86,6 +88,7 @@
         <column name="drug_inventory_id" />
     </many-to-one>
     <!-- bi-directional many-to-one association to User -->
+    <!--
     <many-to-one
         name="user"
         class="org.openmrs.User"
@@ -93,6 +96,7 @@
     >
         <column name="creator" />
     </many-to-one>
+    -->
 
 </class>
 </hibernate-mapping>

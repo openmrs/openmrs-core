@@ -30,7 +30,9 @@
 			length="50" />
 		<property name="dateCreated" type="java.util.Date"
 			column="date_created" not-null="true" length="19" />
-
+		<property name="dateChanged" type="java.util.Date"
+			column="date_changed" length="19" />
+			
 		<!-- Associations -->
 
 		<!-- uni-directional many-to-one association to Patient -->
@@ -41,7 +43,11 @@
 		<many-to-one name="creator" class="User" not-null="true">
 			<column name="creator" />
 		</many-to-one>
-
+		<!-- bi-directional many-to-one association to User -->
+		<many-to-one name="changedBy" class="User">
+			<column name="changed_by" />
+		</many-to-one>
+		
 	</class>
 
 </hibernate-mapping>

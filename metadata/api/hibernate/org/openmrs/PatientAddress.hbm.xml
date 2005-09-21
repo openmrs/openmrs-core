@@ -56,6 +56,12 @@
         length="50"
     />
     <property
+        name="postalCode"
+        type="java.lang.String"
+        column="postal_code"
+        length="50"
+    />
+        <property
         name="latitude"
         type="java.lang.String"
         column="latitude"

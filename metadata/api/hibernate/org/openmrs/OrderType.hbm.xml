@@ -26,10 +26,12 @@
 			<column name="creator" />
 		</many-to-one>
 		<!-- bi-directional one-to-many association to Order -->
+		<!--
 		<set name="orders" lazy="true" inverse="true" cascade="all">
 			<key column="order_type_id" />
 			<one-to-many class="Order" />
 		</set>
+		-->
 
 	</class>
 	

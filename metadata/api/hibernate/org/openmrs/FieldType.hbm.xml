@@ -54,6 +54,7 @@
     <!-- Associations -->
   
     <!-- bi-directional one-to-many association to Field -->
+    <!--
     <set
         name="fields"
         lazy="true"
@@ -67,6 +68,8 @@
             class="org.openmrs.Field"
         />
     </set>
+    -->
+    
     <!-- bi-directional many-to-one association to User -->
     <many-to-one
         name="user"

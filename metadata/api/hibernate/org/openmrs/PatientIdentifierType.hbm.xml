@@ -50,6 +50,7 @@
     <!-- Associations -->
   
     <!-- bi-directional one-to-many association to PatientIdentifier -->
+    <!--
     <set
         name="patientIdentifiers"
         lazy="true"
@@ -63,6 +64,7 @@
             class="org.openmrs.PatientIdentifier"
         />
     </set>
+    -->
     <!-- bi-directional many-to-one association to User -->
     <many-to-one
         name="user"

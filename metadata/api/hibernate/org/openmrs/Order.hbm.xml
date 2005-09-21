@@ -50,6 +50,12 @@
         column="auto_expire_date"
         length="19"
     />
+	<property
+		name="discontinued"
+		type="java.lang.Boolean"
+		column="discontinued"
+		length="1"
+	/>
     <property
         name="discontinuedDate"
         type="java.util.Date"
@@ -69,15 +75,35 @@
         not-null="true"
         length="19"
     />
+	<property 
+		name="voided" 
+		type="java.lang.Boolean" 
+		column="voided"
+		length="1" 
+	/>
+	<property
+        name="voidedDate"
+        type="java.util.Date"
+        column="voided_date"
+        length="19"
+    />
+    <property
+        name="voidedReason"
+        type="java.lang.String"
+        column="voided_reason"
+        length="255"
+    />
 
     <!-- Associations -->
   
     <!-- bi-directional one-to-one association to DrugOrder -->
+    <!--
     <one-to-one
         name="drugOrder"
         class="org.openmrs.DrugOrder"
         outer-join="auto"
     />
+    -->
     <!-- bi-directional one-to-many association to Ob -->
     <set
         name="obs"
@@ -102,7 +128,7 @@
     </many-to-one>
     <!-- bi-directional many-to-one association to User -->
     <many-to-one
-        name="userByOrderer"
+        name="orderer"
         class="org.openmrs.User"
         not-null="true"
     >
@@ -110,7 +136,15 @@
     </many-to-one>
     <!-- bi-directional many-to-one association to User -->
     <many-to-one
-        name="userByDiscontinuedBy"
+        name="voidedBy"
+        class="org.openmrs.User"
+        not-null="true"
+    >
+        <column name="voided_by" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to User -->
+    <many-to-one
+        name="discontinuedBy"
         class="org.openmrs.User"
         not-null="true"
     >
@@ -118,7 +152,7 @@
     </many-to-one>
     <!-- bi-directional many-to-one association to User -->
     <many-to-one
-        name="userByCreator"
+        name="creator"
         class="org.openmrs.User"
         not-null="true"
     >

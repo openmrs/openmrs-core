@@ -89,7 +89,7 @@
     </many-to-one>
     <!-- bi-directional many-to-one association to User -->
     <many-to-one
-        name="userByCreator"
+        name="creator"
         class="org.openmrs.User"
         not-null="true"
     >
@@ -97,7 +97,7 @@
     </many-to-one>
     <!-- bi-directional many-to-one association to User -->
     <many-to-one
-        name="userByChangedBy"
+        name="changedBy"
         class="org.openmrs.User"
         not-null="true"
     >

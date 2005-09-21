@@ -19,11 +19,13 @@
 		<!-- Associations -->
 
 		<!-- bi-directional one-to-many association to Patient -->
+		<!--
 		<set name="patients" lazy="true" inverse="true"
 			cascade="none">
 			<key column="tribe" />
 			<one-to-many class="Patient" />
 		</set>
+		-->
 
 	</class>
 	

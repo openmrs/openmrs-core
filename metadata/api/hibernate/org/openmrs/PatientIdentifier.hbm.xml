@@ -15,7 +15,7 @@
 				type="java.lang.String" length="50" />
 			<key-many-to-one name="patientIdentifierType"
 				column="identifier_type" class="PatientIdentifierType" />
-			<key-many-to-one name="location" column="location"
+			<key-many-to-one name="location" column="location_id"
 				class="Location" />
 		</composite-id>
 
@@ -39,7 +39,7 @@
 		<!-- bi-directional many-to-one association to Location -->
 		<many-to-one name="location" class="Location" update="false"
 			insert="false">
-			<column name="location" />
+			<column name="location_id" />
 		</many-to-one>
 
 		<!-- end of derived association(s) -->
