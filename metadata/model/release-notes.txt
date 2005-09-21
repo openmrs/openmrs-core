@@ -17,8 +17,7 @@ $Rev$
   patient_identifier.location = patient_identifier.location_id
   patient.tribe = patient.tribe_id
 + mime_type.mime_type_id (int, PK)
-  complex_obs.mime_type (string) = complex_obs.mime_type_id (FK:
-mime_type.mime_type_id)
+  complex_obs.mime_type (string) = complex_obs.mime_type_id (FK: mime_type.mime_type_id)
   drug_orders = drug_order
 - drug_order.creator
 - drug_order.creator_id
@@ -33,7 +32,11 @@ mime_type.mime_type_id)
 + form.retired_by (FK: users.user_id)
 + form.date_retired (datetime)
 + users.void_reason (varchar)
-+ patient_name.changed_by (FK: users.user_id) patient_name.date_changed 
-+ (datetime)
++ patient_name.changed_by (FK: users.user_id)
++ patient_name.date_changed (datetime)
++ patient_address.voided (tinyint)
++ patient_address.date_voided (datetime)
++ patient_address.void_reason (varchar)
++ patient_address.voided_by (FK users.user_id)
 
 
