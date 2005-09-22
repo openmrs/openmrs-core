@@ -6,6 +6,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.context.Context;
 import org.openmrs.context.ContextAuthenticationException;
@@ -45,8 +46,7 @@ public class UserServiceTest extends TestCase {
 		
 		assertTrue(u.equals(u2));
 		
-		
-		
+		us.revokeUserRole(u2, (Role)u2.getRoles().toArray()[0]);
 	}
 	
 	public static Test suite() {
