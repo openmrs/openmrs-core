@@ -47,7 +47,7 @@
 		
 		<!-- Copy hibernate metadata -->
 		<copy todir="${build.dir}/api">
-			<fileset dir="${metadata.dir}/api/hibernate" includes="**/*" />
+			<fileset dir="${metadata.dir}/api/hibernate" includes="**/*" excludes="**/ibatis/*" />
 		</copy>
 
 		<javac destdir="${build.dir}/api" 
@@ -57,7 +57,9 @@
 		       classpathref="api.compile.classpath">
 			<src path="${src.dir}/api" />
 			<include name="**/*.java" />
-		</javac>		
+			<exclude name="**/ibatis/*" />
+			<exclude name="**/Ibatis/*" />
+		</javac>
 	</target>
 
 	<target name="package-api" depends="compile-api" description="create api jar">
