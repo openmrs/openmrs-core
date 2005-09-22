@@ -149,7 +149,6 @@
 			<lib dir="${jstl.dir}" includes="*.jar" />
 			<lib dir="${mysql.dir}" includes="*.jar" />
 			<lib dir="${spring.dir}" includes="*.jar" />
-			<lib dir="${tomcat.dir}" includes="*.jar" />
 			<lib dir="${velocity.dir}" includes="*.jar" />
 		</war>
 	</target>
