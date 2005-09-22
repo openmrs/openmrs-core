@@ -51,7 +51,7 @@ public class HibernateTest extends TestCase {
 		
 		Context context = ContextFactory.getContext();
 		
-		//context.authenticate("admin", "test");
+		context.authenticate("admin", "test");
 		
 		UserService us = context.getUserService();
 		
