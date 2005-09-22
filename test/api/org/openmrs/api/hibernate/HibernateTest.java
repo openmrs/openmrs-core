@@ -27,8 +27,8 @@ public class HibernateTest extends TestCase {
 	public void testRead() {
 		Session session = HibernateUtil.currentSession();
 		Transaction tx = session.beginTransaction();
-		User user = (User) session.get(User.class, 4);
-		System.out.println("User = " + user.getFirstName());
+		User user = (User) session.get(User.class, 1);
+		System.out.println("User = " + user.getFirstName() + " " + user.getLastName());
 		Set<Role> roles = user.getRoles();
 		for (Role role : roles) {
 			System.out.println("  " + role.getRole());			
@@ -37,7 +37,8 @@ public class HibernateTest extends TestCase {
 		user.setMiddleName("William");
 //		Role newRole = (Role) session.get(Role.class, "nurse");
 //		user.removeRole(newRole);
-		System.out.println("middle name (post) = " + user.getMiddleName());
+		User user2 = (User) session.get(User.class, 1);
+		System.out.println("middle name (post) = " + user2.getMiddleName());
 		tx.commit();
 		HibernateUtil.closeSession();
 	}
