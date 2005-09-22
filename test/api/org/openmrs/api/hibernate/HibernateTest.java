@@ -14,7 +14,7 @@ import org.openmrs.User;
 
 public class HibernateTest extends TestCase {
 
-	public void atestHibernate() {
+	public void xtestHibernate() {
 		Session session = HibernateUtil.currentSession();
 		Assert.assertNotNull("obtain session object", session);
 		Transaction tx = session.beginTransaction();
