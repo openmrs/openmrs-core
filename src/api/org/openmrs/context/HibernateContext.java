@@ -1,11 +1,13 @@
 package org.openmrs.context;
 
-import java.util.List;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Hibernate;
 import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
@@ -15,8 +17,7 @@ import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.UserService;
-import org.openmrs.api.hibernate.HibernatePatientService;
-import org.openmrs.api.hibernate.HibernateUserService;
+import org.openmrs.api.hibernate.HibernateUtil;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 public class HibernateContext extends HibernateDaoSupport implements Context {
@@ -37,9 +38,9 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 	}
 
 	/**
-	 * Authenticate the user for this context. 
+	 * Authenticate the user for this context.
 	 * 
-	 * @param username 
+	 * @param username
 	 * @param password
 	 * 
 	 * @see org.openmrs.context.Context#authenticate(String, String)
@@ -51,26 +52,33 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 		user = null;
 		String errorMsg = "Invalid username and/or password";
 
-		List users = getHibernateTemplate().find(
-				"from User as u where u.username = ?", username);
+		User candidateUser = (User) getSession().createQuery(
+				"from User as u where u.username = ?").setString(0, username)
+				.uniqueResult();
 
-//		try {
-//			MessageDigest md = MessageDigest.getInstance("MD5");
-//			byte[] input = password.getBytes();
-//			String hashedPassword = hexString(md.digest(input));
-//
-//			// If we get anything other than one result, then fail
-//			if (users != null && users.size() == 1) {
-//				User candidateUser = (User) users.get(0);
-//				if (hashedPassword != null
-//						&& hashedPassword.equals(candidateUser.getPassword()))
-//					user = candidateUser;
-//			}
-//
-//		} catch (NoSuchAlgorithmException e) {
-//			// Yikes! Can't encode password...what to do?
-//			errorMsg = "system cannot find password encryption algorithm";
-//		}
+		if (candidateUser == null) {
+			throw new ContextAuthenticationException("user not found: "
+					+ username);
+		}
+
+		String passwordOnRecord = (String) getSession().createSQLQuery(
+				"select password from users where user_id = ?").addScalar(
+				"password", Hibernate.STRING).setInteger(0,
+				candidateUser.getUserId()).uniqueResult();
+
+		try {
+			MessageDigest md = MessageDigest.getInstance("MD5");
+			byte[] input = password.getBytes();
+			String hashedPassword = hexString(md.digest(input));
+
+			if (hashedPassword != null
+					&& hashedPassword.equals(passwordOnRecord))
+				user = candidateUser;
+
+		} catch (NoSuchAlgorithmException e) {
+			// Yikes! Can't encode password...what to do?
+			errorMsg = "system cannot find password encryption algorithm";
+		}
 
 		if (user == null) {
 			log
@@ -92,6 +100,7 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 
 	/**
 	 * Get the currently authenticated user
+	 * 
 	 * @see org.openmrs.context.Context#getAuthenticatedUser()
 	 */
 	public User getAuthenticatedUser() {
@@ -99,7 +108,9 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 	}
 
 	/**
-	 * Log the current user out of this context.  isAuthenticated will now return false.
+	 * Log the current user out of this context. isAuthenticated will now return
+	 * false.
+	 * 
 	 * @see org.openmrs.context.Context#logout()
 	 */
 	public void logout() {
@@ -114,7 +125,7 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 	public Set getPrivileges() {
 		if (!isAuthenticated())
 			return null;
-		
+
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -122,7 +133,8 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 	/**
 	 * Return whether or not the user has the given priviledge
 	 * 
-	 * @param String privilege to authorize against
+	 * @param String
+	 *            privilege to authorize against
 	 * @return boolean whether the user has the given privilege
 	 * @see org.openmrs.context.Context#hasPrivilege(java.lang.String)
 	 */
@@ -158,18 +170,18 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 			log.warn("unauthorized access to concept service");
 			return null;
 		}
-//		if (conceptService == null)
-//			conceptService = new HibernateConceptService();
+		// if (conceptService == null)
+		// conceptService = new HibernateConceptService();
 		return conceptService;
 	}
-	
+
 	public EncounterService getEncounterService() {
 		if (!isAuthenticated()) {
 			log.warn("unauthorized access to encounter service");
 			return null;
 		}
-//		if (encounterService == null)
-//			encounterService = new HibernateEncounterService();
+		// if (encounterService == null)
+		// encounterService = new HibernateEncounterService();
 		return encounterService;
 	}
 
@@ -183,8 +195,8 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 			log.warn("unauthorized request for obs service");
 			return null;
 		}
-//		if (obsService == null)
-//			obsService = new HibernateObsService();
+		// if (obsService == null)
+		// obsService = new HibernateObsService();
 		return obsService;
 	}
 
@@ -198,8 +210,8 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 			log.warn("unauthorized request for patient service");
 			return null;
 		}
-//		if (patientService == null)
-//			patientService = new HibernatePatientService();
+		// if (patientService == null)
+		// patientService = new HibernatePatientService();
 		return patientService;
 	}
 
@@ -213,8 +225,8 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 			log.warn("unauthorized access to user service");
 			return null;
 		}
-//		if (userService == null)
-//			userService = new HibernateUserService();
+		// if (userService == null)
+		// userService = new HibernateUserService();
 		return userService;
 	}
 
@@ -226,8 +238,8 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 			log.warn("unauthorized access to administration service");
 			return null;
 		}
-//		if (administrationService == null)
-//			administrationService = new HibernateAdministrationService();
+		// if (administrationService == null)
+		// administrationService = new HibernateAdministrationService();
 		return administrationService;
 	}
 
@@ -239,8 +251,8 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 			log.warn("unauthorized access to form service");
 			return null;
 		}
-//		if (formService == null)
-//			formService = new HibernateFormService();
+		// if (formService == null)
+		// formService = new HibernateFormService();
 		return formService;
 	}
 
@@ -252,8 +264,8 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 			log.warn("unauthorized access to order service");
 			return null;
 		}
-//		if (orderService == null)
-//			orderService = new HibernateOrderService();
+		// if (orderService == null)
+		// orderService = new HibernateOrderService();
 		return orderService;
 	}
 
@@ -269,6 +281,7 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 
 	/**
 	 * Set the locale
+	 * 
 	 * @see org.openmrs.context.Context#setLocale(java.util.Locale)
 	 */
 	public void setLocale(Locale locale) {
