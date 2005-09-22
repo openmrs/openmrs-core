@@ -47,7 +47,7 @@
         length="19"
     />
     <property
-        name="isSet"
+        name="set"
         type="java.lang.Boolean"
         column="is_set"
         length="1"
@@ -73,7 +73,7 @@
     -->
     <!-- bi-directional many-to-one association to User -->
     <many-to-one
-        name="user"
+        name="creator"
         class="org.openmrs.User"
         not-null="true"
     >

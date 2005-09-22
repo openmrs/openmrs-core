@@ -19,6 +19,8 @@ import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.UserService;
+import org.openmrs.api.hibernate.HibernateEncounterService;
+import org.openmrs.api.hibernate.HibernatePatientService;
 import org.openmrs.api.hibernate.HibernateUserService;
 import org.openmrs.api.hibernate.HibernateUtil;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
@@ -186,8 +188,8 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 			log.warn("unauthorized access to encounter service");
 			return null;
 		}
-		// if (encounterService == null)
-		// encounterService = new HibernateEncounterService();
+		if (encounterService == null)
+			encounterService = new HibernateEncounterService(this);
 		return encounterService;
 	}
 
@@ -216,8 +218,8 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 			log.warn("unauthorized request for patient service");
 			return null;
 		}
-		// if (patientService == null)
-		// patientService = new HibernatePatientService();
+		if (patientService == null)
+			patientService = new HibernatePatientService(this);
 		return patientService;
 	}
 

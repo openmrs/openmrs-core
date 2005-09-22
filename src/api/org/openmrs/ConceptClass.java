@@ -80,7 +80,7 @@ public class ConceptClass implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	public User getCreateor() {
+	public User getCreator() {
 		return this.creator;
 	}
 

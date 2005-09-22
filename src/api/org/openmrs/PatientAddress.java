@@ -26,6 +26,10 @@ public class PatientAddress implements java.io.Serializable {
 	private Date dateCreated;
 	private Patient patient;
 	private User creator;
+	private Boolean voided;
+	private User voidedBy;
+	private Date dateVoided;
+	private String voidReason;
 	private boolean dirty;
 
 	// Constructors
@@ -260,6 +264,62 @@ public class PatientAddress implements java.io.Serializable {
 	public void setStateProvince(String stateProvince) {
 		dirty = true;
 		this.stateProvince = stateProvince;
+	}
+
+	/**
+	 * @return Returns the dateVoided.
+	 */
+	public Date getDateVoided() {
+		return dateVoided;
+	}
+
+	/**
+	 * @param dateVoided The dateVoided to set.
+	 */
+	public void setDateVoided(Date dateVoided) {
+		this.dateVoided = dateVoided;
+	}
+
+	/**
+	 * @return Returns the voided.
+	 */
+	public Boolean isVoided() {
+		return voided;
+	}
+
+	/**
+	 * @param voided The voided to set.
+	 */
+	public void setVoided(Boolean voided) {
+		this.voided = voided;
+	}
+
+	/**
+	 * @return Returns the voidedBy.
+	 */
+	public User getVoidedBy() {
+		return voidedBy;
+	}
+
+	/**
+	 * @param voidedBy The voidedBy to set.
+	 */
+	public void setVoidedBy(User voidedBy) {
+		this.voidedBy = voidedBy;
+	}
+
+	/**
+	 * @return Returns the voidReason.
+	 */
+	public String getVoidReason() {
+		return voidReason;
+	}
+
+	/**
+	 * @param voidReason The voidReason to set.
+	 */
+	public void setVoidReason(String voidReason) {
+		this.voidReason = voidReason;
 	}
 
 
