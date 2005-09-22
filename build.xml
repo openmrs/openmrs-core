@@ -136,20 +136,27 @@
             <metainf dir="${metadata.dir}/web" includes="context.xml"/>
 			<lib file="${dist.dir}/${app.name}-api-${app.version}.jar" />
 			<lib dir="${ant-contrib.dir}" includes="*.jar" />
+			<lib dir="${antlr.dir}" includes="*.jar" />
+			<lib dir="${asm.dir}" includes="*.jar" />
+			<lib dir="${cglib.dir}" includes="*.jar" />
 			<lib dir="${commons-beanutils.dir}" includes="*.jar" />
 			<lib dir="${commons-collections.dir}" includes="*.jar" />
 			<lib dir="${commons-fileupload.dir}" includes="*.jar" />
 			<lib dir="${commons-lang.dir}" includes="*.jar" />
 			<lib dir="${commons-logging.dir}" includes="*.jar" />
 			<lib dir="${commons-pool.dir}" includes="*.jar" />
-			<lib dir="${taglibs.dir}" includes="*.jar" />
+			<lib dir="${dom4j.dir}" includes="*.jar" />
+			<lib dir="${ehcache.dir}" includes="*.jar" />
 			<lib dir="${hibernate.dir}" includes="*.jar" />
-			<lib dir="${junit.dir}" includes="*.jar" />
+			<lib dir="${ibatis.dir}" includes="*.jar" />
 			<lib dir="${log4j.dir}" includes="*.jar" />
 			<lib dir="${jstl.dir}" includes="*.jar" />
+			<lib dir="${jta.dir}" includes="*.jar" />
+			<lib dir="${junit.dir}" includes="*.jar" />
 			<lib dir="${mysql.dir}" includes="*.jar" />
 			<lib dir="${spring.dir}" includes="*.jar" />
-			<lib dir="${velocity.dir}" includes="*.jar" />
+			<lib dir="${taglibs.dir}" includes="*.jar" />
+			<lib dir="${velocity.dir}" includes="*.jar" />		
 		</war>
 	</target>
 
