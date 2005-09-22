@@ -4,13 +4,17 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.api.APIException;
+import org.openmrs.api.UserService;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
-public class HibernateUserService extends HibernateDaoSupport
-	//implements UserService
-{
+public class HibernateUserService extends HibernateDaoSupport implements
+		UserService {
 
 	protected final Log log = LogFactory.getLog(getClass());
 
@@ -20,12 +24,30 @@ public class HibernateUserService extends HibernateDaoSupport
 	 * @see org.openmrs.api.UserService#createUser(org.openmrs.User)
 	 */
 	public User createUser(User user) {
-		// TODO Auto-generated method stub
-		return null;
+		Session session = HibernateUtil.currentSession();
+		Transaction tx = session.beginTransaction();
+		
+		session.save(user);
+		
+		tx.commit();
+		HibernateUtil.closeSession();
+		return user;
 	}
-	
+
 	public User getUserByUsername(String username) {
-		return null;
+		Session session = HibernateUtil.currentSession();
+
+		List<User> users = session
+				.createQuery(
+						"from User u where (u.voided is null or u.voided = 0) and u.username = ?")
+				.setString(0, username).list();
+		if (users == null || users.size() == 0) {
+			log.warn("request for username '" + username + "' not found");
+			throw new ObjectRetrievalFailureException(User.class, username);
+		}
+
+		HibernateUtil.closeSession();
+		return users.get(0);
 	}
 
 	/*
@@ -45,20 +67,25 @@ public class HibernateUserService extends HibernateDaoSupport
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.openmrs.api.UserService#saveOrUpdate(org.openmrs.User)
+	 * @see org.openmrs.api.UserService#updateUser(org.openmrs.User)
 	 */
-	public void saveUser(User user) {
+	public void updateUser(User user) {
 		if (log.isDebugEnabled()) {
-			log.debug("user id: " + user.getUserId());
+			log.debug("update user id: " + user.getUserId());
 		}
-		
+		Session session = HibernateUtil.currentSession();
+		Transaction tx = session.beginTransaction();
+
 		log.debug("### pre-save middle name = " + user.getMiddleName());
-		getHibernateTemplate().saveOrUpdate(user);
+		session.saveOrUpdate(user);
 		log.debug("### post-save middle name = " + user.getMiddleName());
 
 		// flush to ensure any problems are handled immediately
-		getHibernateTemplate().flush();
+		session.flush();
 		log.debug("### post-flush middle name = " + user.getMiddleName());
+
+		tx.commit();
+		HibernateUtil.closeSession();
 
 	}
 
@@ -70,12 +97,18 @@ public class HibernateUserService extends HibernateDaoSupport
 	 */
 	public void voidUser(User user, String reason) {
 		user.setVoided(true);
-		// user.setVoidReason(reason);
-		saveUser(user);
+		user.setVoidReason(reason);
+		updateUser(user);
 	}
-	
+
 	public void deleteUser(User user) {
+		Session session = HibernateUtil.currentSession();
+		Transaction tx = session.beginTransaction();
 		
+		session.delete(user);
+		
+		tx.commit();
+		HibernateUtil.closeSession();
 	}
 
 	public List findPatient(String q) {
@@ -85,6 +118,46 @@ public class HibernateUserService extends HibernateDaoSupport
 						+ "where p.patientId = pn.patientId "
 						+ "and pn.familyName like ?", new Object[] { q });
 
+	}
+
+	/**
+	 * @see org.openmrs.api.UserService#grantUserRole(org.openmrs.User,
+	 *      org.openmrs.Role)
+	 */
+	public void grantUserRole(User user, Role role) throws APIException {
+		Session session = HibernateUtil.currentSession();
+		Transaction tx = session.beginTransaction();
+		
+		user.addRole(role);
+		session.saveOrUpdate(user);
+		
+		tx.commit();
+		HibernateUtil.closeSession();
+	}
+
+	/**
+	 * @see org.openmrs.api.UserService#revokeUserRole(org.openmrs.User,
+	 *      org.openmrs.Role)
+	 */
+	public void revokeUserRole(User user, Role role) throws APIException {
+		Session session = HibernateUtil.currentSession();
+		Transaction tx = session.beginTransaction();
+		
+		user.removeRole(role);
+		session.saveOrUpdate(user);
+		
+		tx.commit();
+		HibernateUtil.closeSession();
+
+	}
+
+	/**
+	 * @see org.openmrs.api.UserService#unvoidUser(org.openmrs.User)
+	 */
+	public void unvoidUser(User user) throws APIException {
+		user.setVoided(false);
+		user.setVoidReason("");
+		updateUser(user);
 	}
 
 }
