@@ -104,9 +104,9 @@
 	</target>
 
 	<target name="compile-web" depends="package-api" description="compile webapp">
-		<mkdir dir="${build.dir}/web/WEB-INF/classes" />
+		<mkdir dir="${build.dir}/web" />
 		<javac srcdir="${src.dir}/web" 
-		       destdir="${build.dir}/web/WEB-INF/classes" 
+		       destdir="${build.dir}/web" 
 		       debug="${compile.debug}"
 		       deprecation="${compile.deprecation}" 
 		       optimize="${compile.optimize}" 
@@ -115,19 +115,19 @@
 
 	<target name="package-web" depends="compile-web" description="create webapp war file">
 		<mkdir dir="${dist.dir}" />
-		<!-- war task isn't interpreting ${} variables on several attributes   -->
-		<!-- (e.g., fileset@dir, webinf@dir) so using hardcoded values for now -->
+		<!-- excludes web.xml to avoid warning message from duplicating @webxml reference -->
 		<war destfile="${dist.dir}/${webapp.name}.war"
+			 basedir="web"
+			 excludes="**/web.xml"
 		     webxml="web/WEB-INF/web.xml"
 		     duplicate="fail">
-			<classes dir="${build.dir}/web">
-				<exclude name="**/*/web.xml" />
-			</classes>
+			<!-- war task isn't interpreting ${} variables on several attributes   -->
+			<!-- (e.g., @basedir, webinf@dir) so using hardcoded values for now -->
+			<classes dir="${build.dir}/web" />
             <metainf dir="${metadata.dir}/web" includes="context.xml"/>
 			<lib file="${dist.dir}/${app.name}-api-${app.version}.jar" />
 			<lib dir="${lib.dir}" includes="**/*.jar" />
 		</war>
-		<!-- <delete file="${dist.dir}/${webapp.name}.war" /> -->
 	</target>
 
 	<target name="compile-web-tests" description="compile webapp tests">
