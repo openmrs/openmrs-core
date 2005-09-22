@@ -3,7 +3,7 @@ package org.openmrs;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Set;
 import java.util.Set;
 
 /**
@@ -58,7 +58,7 @@ public class User implements java.io.Serializable {
 			Role role = (Role) i.next();
 			Privilege oPrivilege = new Privilege();
 			oPrivilege.setPrivilege(privilege);
-			List privileges = role.getPrivileges();
+			Set privileges = role.getPrivileges();
 			if (privileges.contains(oPrivilege)) {
 				hasPrivilege = true;
 				break;
