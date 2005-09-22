@@ -1,5 +1,6 @@
 package org.openmrs.api.hibernate;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -10,6 +11,7 @@ import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.UserService;
+import org.openmrs.context.Context;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
@@ -17,6 +19,12 @@ public class HibernateUserService extends HibernateDaoSupport implements
 		UserService {
 
 	protected final Log log = LogFactory.getLog(getClass());
+	
+	private Context context;
+	
+	public HibernateUserService(Context c) {
+		this.context = c;
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -27,6 +35,8 @@ public class HibernateUserService extends HibernateDaoSupport implements
 		Session session = HibernateUtil.currentSession();
 		Transaction tx = session.beginTransaction();
 		
+		user.setDateCreated(new Date());
+		user.setCreator(context.getAuthenticatedUser());
 		session.save(user);
 		
 		tx.commit();
@@ -43,7 +53,8 @@ public class HibernateUserService extends HibernateDaoSupport implements
 				.setString(0, username).list();
 		if (users == null || users.size() == 0) {
 			log.warn("request for username '" + username + "' not found");
-			throw new ObjectRetrievalFailureException(User.class, username);
+			return null;
+			//throw new ObjectRetrievalFailureException(User.class, username);
 		}
 
 		HibernateUtil.closeSession();
@@ -70,23 +81,26 @@ public class HibernateUserService extends HibernateDaoSupport implements
 	 * @see org.openmrs.api.UserService#updateUser(org.openmrs.User)
 	 */
 	public void updateUser(User user) {
-		if (log.isDebugEnabled()) {
-			log.debug("update user id: " + user.getUserId());
+		if (user.getCreator() == null)
+			createUser(user);
+		else {
+			if (log.isDebugEnabled()) {
+				log.debug("update user id: " + user.getUserId());
+			}
+			Session session = HibernateUtil.currentSession();
+			Transaction tx = session.beginTransaction();
+	
+			log.debug("### pre-save middle name = " + user.getMiddleName());
+			session.saveOrUpdate(user);
+			log.debug("### post-save middle name = " + user.getMiddleName());
+	
+			// flush to ensure any problems are handled immediately
+			session.flush();
+			log.debug("### post-flush middle name = " + user.getMiddleName());
+	
+			tx.commit();
+			HibernateUtil.closeSession();
 		}
-		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
-
-		log.debug("### pre-save middle name = " + user.getMiddleName());
-		session.saveOrUpdate(user);
-		log.debug("### post-save middle name = " + user.getMiddleName());
-
-		// flush to ensure any problems are handled immediately
-		session.flush();
-		log.debug("### post-flush middle name = " + user.getMiddleName());
-
-		tx.commit();
-		HibernateUtil.closeSession();
-
 	}
 
 	/*
