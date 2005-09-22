@@ -8,7 +8,9 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Hibernate;
+import org.hibernate.Session;
 import org.openmrs.User;
+import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
@@ -17,6 +19,7 @@ import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.UserService;
+import org.openmrs.api.hibernate.HibernateUserService;
 import org.openmrs.api.hibernate.HibernateUtil;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
@@ -52,16 +55,19 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 		user = null;
 		String errorMsg = "Invalid username and/or password";
 
-		User candidateUser = (User) getSession().createQuery(
+		//Session session = getSession();
+		Session session = HibernateUtil.currentSession();
+		
+		User candidateUser = (User) session.createQuery(
 				"from User as u where u.username = ?").setString(0, username)
 				.uniqueResult();
-
+		
 		if (candidateUser == null) {
 			throw new ContextAuthenticationException("user not found: "
 					+ username);
 		}
 
-		String passwordOnRecord = (String) getSession().createSQLQuery(
+		String passwordOnRecord = (String) session.createSQLQuery(
 				"select password from users where user_id = ?").addScalar(
 				"password", Hibernate.STRING).setInteger(0,
 				candidateUser.getUserId()).uniqueResult();
@@ -223,10 +229,10 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 	public UserService getUserService() {
 		if (!isAuthenticated()) {
 			log.warn("unauthorized access to user service");
-			return null;
+			throw new APIException("Unauthorized Access to UserService");
 		}
-		// if (userService == null)
-		// userService = new HibernateUserService();
+		if (userService == null)
+			userService = new HibernateUserService();
 		return userService;
 	}
 
