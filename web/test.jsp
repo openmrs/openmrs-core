@@ -8,6 +8,8 @@ try {
 	org.hibernate.Session s = HibernateUtil.currentSession();
 	org.openmrs.User user = (org.openmrs.User)s.get(org.openmrs.User.class, new Integer(4));
 	out.println(user.getFirstName());
+	HibernateUtil.closeSession();
+	HibernateUtil.session.set(null);
 } catch (Exception e) {
 	out.println("{ERROR}");
 }

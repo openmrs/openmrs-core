@@ -62,6 +62,7 @@
     <path id="api.compile.classpath">
 		<fileset dir="${commons-logging.dir}" includes="*.jar" />
 		<fileset dir="${hibernate.dir}" includes="*.jar" />
+		<fileset dir="${ibatis.dir}" includes="*.jar" />
 		<fileset dir="${log4j.dir}" includes="*.jar" />
 		<fileset dir="${spring.dir}" includes="*.jar" />
     </path>

@@ -55,12 +55,14 @@
 		<taglib-location>/WEB-INF/taglibs/spring.tld</taglib-location>
 	</taglib>
 
+	<!-- 
 	<error-page>
 		<exception-type>java.lang.Exception</exception-type>
-		<!-- Displays a stack trace -->
+		<!- Displays a stack trace ->
 		<location>/WEB-INF/view/uncaughtException.jsp</location>
 	</error-page>
-
+	-->
+	
 	<resource-ref>
 		<res-ref-name>jdbc/openmrs</res-ref-name>
 		<res-type>javax.sql.DataSource</res-type>
