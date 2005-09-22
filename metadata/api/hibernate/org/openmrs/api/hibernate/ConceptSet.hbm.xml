@@ -7,7 +7,7 @@
 
 	<class name="ConceptSet" table="concept_set">
 
-		<composite-id name="conceptSetId" class="ConceptSetId">
+		<composite-id>
 			<key-many-to-one name="concept" column="concept_id"
 				class="Concept" />
 			<key-many-to-one name="set" column="concept_set"

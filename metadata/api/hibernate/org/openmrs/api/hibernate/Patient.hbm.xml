@@ -93,7 +93,7 @@
 		</set>
 		
 		<!-- bi-directional one-to-many association to PatientIdentifier -->
-		<set name="patientIdentifiers" lazy="false" inverse="true">
+		<set name="identifiers" lazy="false" inverse="true">
 			<key column="patient_id" />
 			<one-to-many class="PatientIdentifier" />
 		</set>

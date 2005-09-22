@@ -12,7 +12,7 @@
 				class="Patient" />
 			<key-property name="identifier" column="identifier"
 				type="java.lang.String" length="50" />
-			<key-many-to-one name="patientIdentifierType"
+			<key-many-to-one name="identifierType"
 				column="identifier_type" class="PatientIdentifierType" />
 			<key-many-to-one name="location" column="location_id"
 				class="Location" />

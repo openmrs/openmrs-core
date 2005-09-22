@@ -20,9 +20,10 @@
 		<!-- Associations -->
 
 		<!-- bi-directional one-to-one association to Obs -->
+		<!--
 		<one-to-one name="obs" class="org.openmrs.Obs" outer-join="auto"
 			constrained="true" />
-
+		-->
 	    <!-- bi-directional many-to-one association to MimeType -->
 	    <many-to-one
 	        name="mimeType"

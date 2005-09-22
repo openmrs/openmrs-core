@@ -17,7 +17,7 @@
 >
 
     <id
-        name="conceptId"
+        name="concept"
         type="java.lang.Integer"
         column="concept_id"
     >

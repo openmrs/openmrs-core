@@ -23,6 +23,7 @@
 		<!-- Associations -->
 
 		<!-- bi-directional one-to-many association to Concept -->
+		<!--
 		<set name="concepts" lazy="true" inverse="true"
 			cascade="none">
 			<key>
@@ -30,8 +31,9 @@
 			</key>
 			<one-to-many class="org.openmrs.Concept" />
 		</set>
+		-->
 		<!-- bi-directional many-to-one association to User -->
-		<many-to-one name="user" class="org.openmrs.User"
+		<many-to-one name="creator" class="org.openmrs.User"
 			not-null="true">
 			<column name="creator" />
 		</many-to-one>

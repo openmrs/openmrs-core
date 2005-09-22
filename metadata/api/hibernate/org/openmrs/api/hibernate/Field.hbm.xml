@@ -105,7 +105,7 @@
     </many-to-one>
     <!-- bi-directional one-to-many association to FieldAnswer -->
     <set
-        name="fieldAnswers"
+        name="answers"
         lazy="true"
         inverse="true"
 		cascade="none"

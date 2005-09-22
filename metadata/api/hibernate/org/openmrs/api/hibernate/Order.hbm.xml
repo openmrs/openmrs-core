@@ -26,13 +26,6 @@
     </id>
 
     <property
-        name="conceptId"
-        type="int"
-        column="concept_id"
-        not-null="true"
-        length="11"
-    />
-    <property
         name="instructions"
         type="java.lang.String"
         column="instructions"
@@ -82,15 +75,15 @@
 		length="1" 
 	/>
 	<property
-        name="voidedDate"
+        name="dateVoided"
         type="java.util.Date"
-        column="voided_date"
+        column="void_date"
         length="19"
     />
     <property
-        name="voidedReason"
+        name="voidReason"
         type="java.lang.String"
-        column="voided_reason"
+        column="void_reason"
         length="255"
     />
 
@@ -105,6 +98,7 @@
     />
     -->
     <!-- bi-directional one-to-many association to Ob -->
+    <!--
     <set
         name="obs"
         lazy="true"
@@ -118,6 +112,15 @@
             class="org.openmrs.Obs"
         />
     </set>
+    -->
+    <!-- bi-directional many-to-one association to Concept -->
+    <many-to-one
+        name="concept"
+        class="org.openmrs.Concept"
+        not-null="true"
+    >
+        <column name="concept_id" />
+    </many-to-one>
     <!-- bi-directional many-to-one association to Encounter -->
     <many-to-one
         name="encounter"

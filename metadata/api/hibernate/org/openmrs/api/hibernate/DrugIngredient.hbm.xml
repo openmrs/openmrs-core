@@ -7,7 +7,7 @@
 
 	<class name="DrugIngredient" table="drug_ingredient">
 
-		<composite-id name="drugIngredientId" class="DrugIngredientId">
+		<composite-id>
 			<key-many-to-one name="drug" column="concept_id"
 				class="Concept" />
 			<key-many-to-one name="ingredient" column="ingredient_id"

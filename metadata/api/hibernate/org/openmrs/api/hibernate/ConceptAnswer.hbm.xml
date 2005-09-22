@@ -30,7 +30,7 @@
 			<column name="answer_concept" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to User -->
-		<many-to-one name="user" class="org.openmrs.User"
+		<many-to-one name="creator" class="org.openmrs.User"
 			not-null="true">
 			<column name="creator" />
 		</many-to-one>

@@ -63,8 +63,10 @@
 			<column name="location_id" />
 		</many-to-one>
 		<!-- bi-directional one-to-one association to ComplexObs -->
+		<!--
 		<one-to-one name="complexObs" class="ComplexObs"
 			outer-join="auto" />
+		-->
 		<!-- bi-directional many-to-one association to Encounter -->
 		<many-to-one name="encounter" class="Encounter"
 			not-null="true">

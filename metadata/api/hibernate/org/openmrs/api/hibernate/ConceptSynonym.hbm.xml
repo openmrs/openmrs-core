@@ -7,8 +7,7 @@
 
 	<class name="ConceptSynonym" table="concept_synonym">
 
-		<composite-id name="conceptSynonymId"
-			class="ConceptSynonymId">
+		<composite-id>
 			<key-many-to-one name="concept" column="concept_id"
 				class="Concept" />
 			<key-property name="synonym" column="synonym"

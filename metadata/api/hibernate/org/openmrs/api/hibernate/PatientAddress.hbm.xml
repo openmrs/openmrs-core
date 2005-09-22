@@ -34,9 +34,6 @@
 		<property name="country" type="java.lang.String"
 			column="country" length="50" />
 
-		<property name="postalCode" type="java.lang.String"
-			column="postal_code" length="50" />
-
 		<property name="latitude" type="java.lang.String"
 			column="latitude" length="50" />
 
@@ -59,7 +56,7 @@
 		<property name="dateVoided" type="java.util.Date"
 			column="date_voided" length="19" />
 
-		<property name="voidReason" type="java.util.String"
+		<property name="voidReason" type="java.lang.String"
 			column="void_reason" length="255" />
 
 	</class>
