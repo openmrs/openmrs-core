@@ -47,7 +47,7 @@
 		
 		<!-- Copy hibernate metadata -->
 		<copy todir="${build.dir}/api">
-			<fileset dir="${metadata.dir}/api/hibernate" includes="**/*" excludes="**/ibatis/*" />
+			<fileset dir="${metadata.dir}/api/hibernate" includes="**/*" />
 		</copy>
 
 		<javac destdir="${build.dir}/api" 
@@ -58,7 +58,7 @@
 			<src path="${src.dir}/api" />
 			<include name="**/*.java" />
 			<exclude name="**/ibatis/*" />
-			<exclude name="**/Ibatis/*" />
+			<exclude name="**/Ibatis*" />
 		</javac>
 	</target>
 
