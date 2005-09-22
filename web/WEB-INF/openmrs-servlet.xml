@@ -170,6 +170,7 @@
 		- The default behaviour of DispatcherServlet is to propagate all exceptions to the
 		- servlet container: This will happen here with all other types of exception.
 	-->
+	<!--
 	<bean id="exceptionResolver"
 		class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
 		<property name="exceptionMappings">
@@ -183,5 +184,6 @@
 			</props>
 		</property>
 	</bean>
+	-->
 
 </beans>

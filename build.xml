@@ -140,7 +140,7 @@
 			<lib dir="${commons-lang.dir}" includes="*.jar" />
 			<lib dir="${commons-logging.dir}" includes="*.jar" />
 			<lib dir="${commons-pool.dir}" includes="*.jar" />
-			<lib dir="${taglibs.dir }" includes="*.jar" />
+			<lib dir="${taglibs.dir}" includes="*.jar" />
 			<lib dir="${hibernate.dir}" includes="*.jar" />
 			<lib dir="${junit.dir}" includes="*.jar" />
 			<lib dir="${log4j.dir}" includes="*.jar" />
