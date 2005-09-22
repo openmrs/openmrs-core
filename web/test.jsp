@@ -1,12 +1,15 @@
+<%@ page import="org.openmrs.api.hibernate.HibernateUtil" %>
 <html>
 <body>
 
 <%
 
-out.println("2 + 2 = " + (2+2));
+org.hibernate.Session s = HibernateUtil.currentSession();
+org.openmrs.User user = (org.openmrs.User)s.get(org.openmrs.User.class, 4);
+out.println(user.getFirstName());
 
 %>
 
-got here
+ got here
 
 </html>

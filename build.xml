@@ -14,6 +14,13 @@
 
 	<!-- import properties -->
 	<import file="properties.xml" />
+	
+	<taskdef name="deploy" classname="org.apache.catalina.ant.DeployTask" />
+	<taskdef name="list" classname="org.apache.catalina.ant.ListTask" />
+	<taskdef name="reload" classname="org.apache.catalina.ant.ReloadTask" />
+	<taskdef name="start" classname="org.apache.catalina.ant.StartTask" />
+	<taskdef name="stop" classname="org.apache.catalina.ant.StopTask" />
+	<taskdef name="undeploy" classname="org.apache.catalina.ant.RemoveTask" />
 
 	<!-- *********************************************************** -->
 	<!-- **                     TARGETS                           ** -->
@@ -126,7 +133,22 @@
 			<classes dir="${build.dir}/web" />
             <metainf dir="${metadata.dir}/web" includes="context.xml"/>
 			<lib file="${dist.dir}/${app.name}-api-${app.version}.jar" />
-			<lib dir="${lib.dir}" includes="**/*.jar" />
+			<lib dir="${ant-contrib.dir}" includes="*.jar" />
+			<lib dir="${commons-beanutils.dir}" includes="*.jar" />
+			<lib dir="${commons-collections.dir}" includes="*.jar" />
+			<lib dir="${commons-fileupload.dir}" includes="*.jar" />
+			<lib dir="${commons-lang.dir}" includes="*.jar" />
+			<lib dir="${commons-logging.dir}" includes="*.jar" />
+			<lib dir="${commons-pool.dir}" includes="*.jar" />
+			<lib dir="${taglibs.dir }" includes="*.jar" />
+			<lib dir="${hibernate.dir}" includes="*.jar" />
+			<lib dir="${junit.dir}" includes="*.jar" />
+			<lib dir="${log4j.dir}" includes="*.jar" />
+			<lib dir="${jstl.dir}" includes="*.jar" />
+			<lib dir="${mysql.dir}" includes="*.jar" />
+			<lib dir="${spring.dir}" includes="*.jar" />
+			<lib dir="${tomcat.dir}" includes="*.jar" />
+			<lib dir="${velocity.dir}" includes="*.jar" />
 		</war>
 	</target>
 
@@ -150,7 +172,50 @@
         </jar>
 	</target>
 
-	<target name="dist" depends="package-api,package-web" description="create distribution packages" />
-	
+	<target name="dist" depends="package-web" description="create distribution packages" />
+
+    <target name="install" description="Install application in Tomcat"
+        depends="package-web">
+        <deploy url="${tomcat.manager.url}"
+            username="${tomcat.username}"
+            password="${tomcat.password}"
+            path="/${webapp.name}"
+            war="${dist.dir}/${webapp.name}.war"/>
+    </target>
+
+    <target name="remove" description="Remove application in Tomcat">
+        <undeploy url="${tomcat.manager.url}"
+            username="${tomcat.username}"
+            password="${tomcat.password}"
+            path="/${webapp.name}"/>
+    </target>
+
+    <target name="reload" description="Reload application in Tomcat">
+        <reload url="${tomcat.manager.url}"
+            username="${tomcat.username}"
+            password="${tomcat.password}"
+            path="/${webapp.name}"/>
+    </target>
+
+    <target name="start" description="Start Tomcat application">
+        <start url="${tomcat.manager.url}"
+            username="${tomcat.username}"
+            password="${tomcat.password}"
+            path="/${webapp.name}"/>
+    </target>
+
+    <target name="stop" description="Stop Tomcat application">
+        <stop url="${tomcat.manager.url}"
+            username="${tomcat.username}"
+            password="${tomcat.password}"
+            path="/${webapp.name}"/>
+    </target>
+
+    <target name="list" description="List Tomcat applications">
+        <list url="${tomcat.manager.url}"
+            username="${tomcat.username}"
+            password="${tomcat.password}"/>
+    </target>
+		
 </project>
 

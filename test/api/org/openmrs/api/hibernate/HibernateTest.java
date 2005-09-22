@@ -1,6 +1,5 @@
 package org.openmrs.api.hibernate;
 
-import java.util.Iterator;
 import java.util.Set;
 
 import junit.framework.Assert;
