@@ -2,8 +2,8 @@ package org.openmrs;
 
 import java.util.Date;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Patient
@@ -21,7 +21,7 @@ public class Patient implements java.io.Serializable {
 	private String gender;
 	private String race;
 	private Date birthdate;
-	private boolean birthdateEstimated;
+	private Boolean birthdateEstimated;
 	private String birthplace;
 	private String citizenship;
 	private Tribe tribe;
@@ -39,9 +39,9 @@ public class Patient implements java.io.Serializable {
 	private User voidedBy;
 	private Date dateVoided;
 	private String voidReason;
-	private List<PatientAddress> addresses;
-	private List<PatientName> names;
-	private List<PatientIdentifier> identifiers;
+	private Set<PatientAddress> addresses;
+	private Set<PatientName> names;
+	private Set<PatientIdentifier> identifiers;
 	private boolean dirty;
 
 	// Constructors
@@ -71,7 +71,7 @@ public class Patient implements java.io.Serializable {
 	}
 
 	/**
-	 * True if a property of an object in a List has been modified
+	 * True if a property of an object in a Set has been modified
 	 * 
 	 * @return true/false whether the patient object has been modified
 	 */
@@ -453,9 +453,9 @@ public class Patient implements java.io.Serializable {
 	 * @return list of known addresses for patient
 	 * @see org.openmrs.PatientAddress
 	 */
-	public List<PatientAddress> getAddresses() {
+	public Set<PatientAddress> getAddresses() {
 		if (addresses == null)
-			addresses = new LinkedList<PatientAddress>();
+			addresses = new HashSet<PatientAddress>();
 		return this.addresses;
 	}
 
@@ -463,7 +463,7 @@ public class Patient implements java.io.Serializable {
 	 * @param patientAddresses list of known addresses for patient
 	 * @see org.openmrs.PatientAddress
 	 */
-	public void setAddresses(List<PatientAddress> addresses) {
+	public void setAddresses(Set<PatientAddress> addresses) {
 		dirty = true;
 		this.addresses = addresses;
 	}
@@ -472,9 +472,9 @@ public class Patient implements java.io.Serializable {
 	 * @return all known names for patient
 	 * @see org.openmrs.PatientName
 	 */
-	public List<PatientName> getNames() {
+	public Set<PatientName> getNames() {
 		if (names == null)
-			names = new LinkedList<PatientName>();
+			names = new HashSet<PatientName>();
 		return this.names;
 	}
 
@@ -482,7 +482,7 @@ public class Patient implements java.io.Serializable {
 	 * @param names update all known names for patient
 	 * @see org.openmrs.PatientName
 	 */
-	public void setNames(List<PatientName> names) {
+	public void setNames(Set<PatientName> names) {
 		dirty = true;
 		this.names = names;
 	}
@@ -491,9 +491,9 @@ public class Patient implements java.io.Serializable {
 	 * @return all known identifiers for patient
 	 * @see org.openmrs.PatientIdentifier
 	 */
-	public List<PatientIdentifier> getIdentifiers() {
+	public Set<PatientIdentifier> getIdentifiers() {
 		if (identifiers == null)
-			identifiers = new LinkedList<PatientIdentifier>();
+			identifiers = new HashSet<PatientIdentifier>();
 		return this.identifiers;
 	}
 
@@ -501,7 +501,7 @@ public class Patient implements java.io.Serializable {
 	 * @param patientIdentifiers update all known identifiers for patient
 	 * @see org.openmrs.PatientIdentifier
 	 */
-	public void setIdentifiers(List<PatientIdentifier> identifiers) {
+	public void setIdentifiers(Set<PatientIdentifier> identifiers) {
 		dirty = true;
 		this.identifiers = identifiers;
 	}
@@ -512,7 +512,7 @@ public class Patient implements java.io.Serializable {
 		dirty = true;
 		name.setPatient(this);
 		if (names == null)
-			names = new LinkedList<PatientName>();
+			names = new HashSet<PatientName>();
 		if (!names.contains(name) && name != null)
 			names.add(name);
 	}
@@ -527,7 +527,7 @@ public class Patient implements java.io.Serializable {
 		dirty = true;
 		address.setPatient(this);
 		if (addresses == null)
-			addresses = new LinkedList<PatientAddress>();
+			addresses = new HashSet<PatientAddress>();
 		if (!addresses.contains(address) && address != null)
 			addresses.add(address);
 	}
@@ -541,7 +541,7 @@ public class Patient implements java.io.Serializable {
 		dirty = true;
 		patientIdentifier.setPatient(this);
 		if (identifiers == null)
-			identifiers = new LinkedList<PatientIdentifier>();
+			identifiers = new HashSet<PatientIdentifier>();
 		if (!identifiers.contains(patientIdentifier) && patientIdentifier != null)
 			identifiers.add(patientIdentifier);
 	}

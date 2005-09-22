@@ -1,8 +1,8 @@
 package org.openmrs;
 
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Encounter 
@@ -21,12 +21,11 @@ public class Encounter implements java.io.Serializable {
 	private Date dateCreated;
 	private Patient patient;
 	private Location location;
-	private List<Order> orders;
-	private List<Obs> obs;
 	private EncounterType encounterType;
 	private User creator;
 	private User provider;
-
+	private Set<Order> orders;
+	private Set<Obs> obs;
 	// Constructors
 
 	/** default constructor */
@@ -153,14 +152,14 @@ public class Encounter implements java.io.Serializable {
 	/**
 	 * @return Returns the obs.
 	 */
-	public List<Obs> getObs() {
+	public Set<Obs> getObs() {
 		return obs;
 	}
 
 	/**
 	 * @param obs The obs to set.
 	 */
-	public void setObs(List<Obs> obs) {
+	public void setObs(Set<Obs> obs) {
 		this.obs = obs;
 	}
 	
@@ -171,7 +170,7 @@ public class Encounter implements java.io.Serializable {
 	public void addObs(Obs observation) {
 		observation.setEncounter(this);
 		if (obs == null)
-			obs = new LinkedList<Obs>();
+			obs = new HashSet<Obs>();
 		if (!obs.contains(observation) && observation != null)
 			obs.add(observation);
 	}
@@ -188,7 +187,7 @@ public class Encounter implements java.io.Serializable {
 	/**
 	 * @return Returns the orders
 	 */
-	public List<Order> getOrders() {
+	public Set<Order> getOrders() {
 		return orders;
 	}
 
@@ -196,7 +195,7 @@ public class Encounter implements java.io.Serializable {
 	/**
 	 * @param orders The orders to set.
 	 */
-	public void setOrders(List<Order> orders) {
+	public void setOrders(Set<Order> orders) {
 		this.orders = orders;
 	}
 	
@@ -207,7 +206,7 @@ public class Encounter implements java.io.Serializable {
 	public void addOrder(Order order) {
 		order.setEncounter(this);
 		if (orders == null)
-			orders = new LinkedList<Order>();
+			orders = new HashSet<Order>();
 		if (!orders.contains(order) && order != null)
 			orders.add(order);
 	}

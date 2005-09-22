@@ -1,8 +1,8 @@
 package org.openmrs;
 
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Concept 
@@ -28,9 +28,9 @@ public class Concept implements java.io.Serializable {
 	private Date dateCreated;
 	private User changedBy;
 	private Date dateChanged;
-	private List<ConceptName> names;
-	private List<ConceptAnswer> answers;
-	private List<ConceptSynonym> synonyms;
+	private Set<ConceptName> names;
+	private Set<ConceptAnswer> answers;
+	private Set<ConceptSynonym> synonyms;
 
 	// Constructors
 
@@ -59,14 +59,14 @@ public class Concept implements java.io.Serializable {
 	/**
 	 * @return Returns the answers.
 	 */
-	public List<ConceptAnswer> getAnswers() {
+	public Set<ConceptAnswer> getAnswers() {
 		return answers;
 	}
 
 	/**
 	 * @param answers The answers to set.
 	 */
-	public void setAnswers(List<ConceptAnswer> answers) {
+	public void setAnswers(Set<ConceptAnswer> answers) {
 		this.answers = answers;
 	}
 	
@@ -77,7 +77,7 @@ public class Concept implements java.io.Serializable {
 	public void addAnswer(ConceptAnswer conceptAnswer) {
 		conceptAnswer.setConcept(this);
 		if (answers == null)
-			answers = new LinkedList<ConceptAnswer>();
+			answers = new HashSet<ConceptAnswer>();
 		if (!answers.contains(conceptAnswer) && conceptAnswer != null)
 			answers.add(conceptAnswer);
 	}
@@ -248,14 +248,14 @@ public class Concept implements java.io.Serializable {
 	/**
 	 * @return Returns the names.
 	 */
-	public List<ConceptName> getNames() {
+	public Set<ConceptName> getNames() {
 		return names;
 	}
 
 	/**
 	 * @param names The names to set.
 	 */
-	public void setNames(List<ConceptName> names) {
+	public void setNames(Set<ConceptName> names) {
 		this.names = names;
 	}
 
@@ -266,7 +266,7 @@ public class Concept implements java.io.Serializable {
 	public void addName(ConceptName conceptName) {
 		conceptName.setConcept(this);
 		if (names == null)
-			names = new LinkedList<ConceptName>();
+			names = new HashSet<ConceptName>();
 		if (!names.contains(conceptName) && conceptName != null)
 			names.add(conceptName);
 	}
@@ -311,14 +311,14 @@ public class Concept implements java.io.Serializable {
 	/**
 	 * @return Returns the synonyms.
 	 */
-	public List<ConceptSynonym> getSynonyms() {
+	public Set<ConceptSynonym> getSynonyms() {
 		return synonyms;
 	}
 
 	/**
 	 * @param synonyms The synonyms to set.
 	 */
-	public void setSynonyms(List<ConceptSynonym> synonyms) {
+	public void setSynonyms(Set<ConceptSynonym> synonyms) {
 		this.synonyms = synonyms;
 	}
 
@@ -329,7 +329,7 @@ public class Concept implements java.io.Serializable {
 	public void addSynonym(ConceptSynonym conceptSynonym) {
 		conceptSynonym.setConcept(this);
 		if (synonyms == null)
-			synonyms = new LinkedList<ConceptSynonym>();
+			synonyms = new HashSet<ConceptSynonym>();
 		if (!synonyms.contains(conceptSynonym) && conceptSynonym != null)
 			synonyms.add(conceptSynonym);
 	}

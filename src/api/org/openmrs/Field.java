@@ -2,8 +2,8 @@ package org.openmrs;
 
 import java.util.Date;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Field 
@@ -29,8 +29,8 @@ public class Field implements java.io.Serializable {
 	private FieldType fieldType;
 	private User creator;
 	private User changedBy;
-	private List<FieldAnswer> fieldAnswers;
-	private List<FormField> formFields;
+	private Set<FieldAnswer> fieldAnswers;
+	private Set<FormField> formFields;
 	boolean dirty;
 
 	// Constructors
@@ -201,14 +201,14 @@ public class Field implements java.io.Serializable {
 	/**
 	 * @return Returns the fieldAnswers.
 	 */
-	public List<FieldAnswer> getAnswers() {
+	public Set<FieldAnswer> getAnswers() {
 		return fieldAnswers;
 	}
 
 	/**
 	 * @param fieldAnswers The fieldAnswers to set.
 	 */
-	public void setAnswers(List<FieldAnswer> fieldAnswers) {
+	public void setAnswers(Set<FieldAnswer> fieldAnswers) {
 		this.dirty = true;
 		this.fieldAnswers = fieldAnswers;
 	}
@@ -220,7 +220,7 @@ public class Field implements java.io.Serializable {
 	public void addAnswer(FieldAnswer fieldAnswer) {
 		this.dirty = true;
 		if (fieldAnswers == null)
-			fieldAnswers = new LinkedList<FieldAnswer>();
+			fieldAnswers = new HashSet<FieldAnswer>();
 		if (!fieldAnswers.contains(fieldAnswer) && fieldAnswer != null)
 			fieldAnswers.add(fieldAnswer);
 	}
@@ -269,14 +269,14 @@ public class Field implements java.io.Serializable {
 	/**
 	 * @return Returns the formFields.
 	 */
-	public List<FormField> getFormFields() {
+	public Set<FormField> getFormFields() {
 		return formFields;
 	}
 
 	/**
 	 * @param formFields The formFields to set.
 	 */
-	public void setFormFields(List<FormField> formFields) {
+	public void setFormFields(Set<FormField> formFields) {
 		this.dirty = true;
 		this.formFields = formFields;
 	}
@@ -288,7 +288,7 @@ public class Field implements java.io.Serializable {
 	public void addFormField(FormField formField) {
 		this.dirty = true;
 		if (formFields == null)
-			formFields = new LinkedList<FormField>();
+			formFields = new HashSet<FormField>();
 		if (!formFields.contains(formField) && formField != null)
 			this.formFields.add(formField);
 	}

@@ -28,7 +28,7 @@ public class Form implements java.io.Serializable {
 	private String retiredReason;
 	private Date dateChanged;
 	private Date dateCreated;
-	private Set formFields;
+	private Set<FormField> formFields;
 	private User creator;
 	private User changedBy;
 
@@ -154,14 +154,14 @@ public class Form implements java.io.Serializable {
 	/**
 	 * @return Returns the formFields.
 	 */
-	public Set getFormFields() {
+	public Set<FormField> getFormFields() {
 		return formFields;
 	}
 
 	/**
 	 * @param formFields The formFields to set.
 	 */
-	public void setFormFields(Set formFields) {
+	public void setFormFields(Set<FormField> formFields) {
 		this.formFields = formFields;
 	}
 
@@ -171,7 +171,7 @@ public class Form implements java.io.Serializable {
 	 */
 	public void addFormField(FormField formField) {
 		if (formFields == null)
-			formFields = new HashSet();
+			formFields = new HashSet<FormField>();
 		if (!formFields.contains(formField) && formField != null)
 			this.formFields.add(formField);
 	}
