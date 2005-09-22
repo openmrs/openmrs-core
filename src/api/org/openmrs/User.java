@@ -1,9 +1,10 @@
 package org.openmrs;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * User
@@ -30,7 +31,7 @@ public class User implements java.io.Serializable {
 	private User voidedBy;
 	private Date dateVoided;
 	private String voidReason;
-	private List<Role> roles;
+	private Set<Role> roles;
 
 	// Constructors
 
@@ -51,7 +52,7 @@ public class User implements java.io.Serializable {
 	public boolean hasPrivilege(String privilege) {
 
 		boolean hasPrivilege = false;
-		List roles = getRoles();
+		Set roles = getRoles();
 
 		check_privileges: for (Iterator i = roles.iterator(); i.hasNext();) {
 			Role role = (Role) i.next();
@@ -197,14 +198,14 @@ public class User implements java.io.Serializable {
 	/**
 	 * @return Returns the roles.
 	 */
-	public List<Role> getRoles() {
+	public Set<Role> getRoles() {
 		return roles;
 	}
 
 	/**
 	 * @param roles The roles to set.
 	 */
-	public void setRoles(List<Role> roles) {
+	public void setRoles(Set<Role> roles) {
 		this.roles = roles;
 	}
 	
@@ -214,7 +215,7 @@ public class User implements java.io.Serializable {
 	 */
 	public void addRole(Role role) {
 		if (roles == null)
-			roles = new LinkedList<Role>();
+			roles = new HashSet<Role>();
 		if (!roles.contains(role) && role != null)
 			roles.add(role);
 	}

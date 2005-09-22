@@ -73,11 +73,12 @@
         
     <!-- Web -->
     <path id="web.compile.classpath">
-		<pathelement location="${dist.dir}/${webapp.name}-api.jar" />
-		<fileset dir="${basedir}/web" includes="**/*" />
-		<!-- @todo will need to add other dependencies here -->
+		<pathelement location="${dist.dir}/${app.name}-api-${app.version}.jar" />
+		<fileset dir="${commons-logging.dir}" includes="*.jar" />
+		<fileset dir="${hibernate.dir}" includes="*.jar" />
 		<fileset dir="${jstl.dir}" includes="*.jar" />
 		<fileset dir="${spring.dir}" includes="*.jar" />
+		<fileset dir="${tomcat.dir}" includes="*.jar" />
     </path>
 
 </project>

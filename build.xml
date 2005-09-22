@@ -59,7 +59,7 @@
             <manifest>
                 <attribute name="Class-Path" value="${app.name}-api-${app.version}.jar"/>
             </manifest>
-            <fileset dir="${build.dir}/api" includes="**/*.jar" />
+            <fileset dir="${build.dir}/api" includes="**/*" />
         </jar>
 	</target>
 	
@@ -103,7 +103,7 @@
         </jar>
 	</target>
 
-	<target name="compile-web" description="compile webapp">
+	<target name="compile-web" depends="package-api" description="compile webapp">
 		<mkdir dir="${build.dir}/web/WEB-INF/classes" />
 		<javac srcdir="${src.dir}/web" 
 		       destdir="${build.dir}/web/WEB-INF/classes" 
@@ -115,20 +115,19 @@
 
 	<target name="package-web" depends="compile-web" description="create webapp war file">
 		<mkdir dir="${dist.dir}" />
-		<war destfile="${dist.home}/${webapp.name}.war"
-		     webxml="${web.dir}/WEB-INF/web.xml"
+		<!-- war task isn't interpreting ${} variables on several attributes   -->
+		<!-- (e.g., fileset@dir, webinf@dir) so using hardcoded values for now -->
+		<war destfile="${dist.dir}/${webapp.name}.war"
+		     webxml="web/WEB-INF/web.xml"
 		     duplicate="fail">
-			<fileset dir="${build.home}" casesensitive="true">
-				<exclude name="**/*Test*.class" />
-				<!-- exclude web.xml, since it's already handled by attribute above -->
-				<exclude name="**/web.xml" />
-			</fileset>
-			<classes dir="${build.dir}/web" includes="**/*" />
-            <metainf dir="${webapp.dist}" includes="context.xml"/>
-			<webinf dir="${web.dir}" includes="/WEB-INF/*" />
+			<classes dir="${build.dir}/web">
+				<exclude name="**/*/web.xml" />
+			</classes>
+            <metainf dir="${metadata.dir}/web" includes="context.xml"/>
 			<lib file="${dist.dir}/${app.name}-api-${app.version}.jar" />
 			<lib dir="${lib.dir}" includes="**/*.jar" />
 		</war>
+		<!-- <delete file="${dist.dir}/${webapp.name}.war" /> -->
 	</target>
 
 	<target name="compile-web-tests" description="compile webapp tests">
@@ -149,26 +148,6 @@
             </manifest>
             <fileset dir="${build.dir}/test/web" />
         </jar>
-	</target>
-
-	<target name="compile" description="compile source">
-
-		<!-- Compile source -->
-		<mkdir dir="${build.home}" />
-		<mkdir dir="${build.home}/WEB-INF" />
-		<mkdir dir="${build.home}/WEB-INF/classes" />
-		<javac srcdir="${src.home}" destdir="${build.home}/WEB-INF/classes" debug="${compile.debug}" deprecation="${compile.deprecation}" optimize="${compile.optimize}">
-			<classpath refid="compile.classpath" />
-		</javac>
-		<javac srcdir="${test.home}" destdir="${build.home}/WEB-INF/classes" debug="${compile.debug}" deprecation="${compile.deprecation}" optimize="${compile.optimize}">
-			<classpath refid="compile.classpath" />
-		</javac>
-
-		<!-- Copy application resources -->
-		<copy todir="${build.home}/WEB-INF/classes">
-			<fileset dir="${src.home}" excludes="**/*.java" />
-		</copy>
-		
 	</target>
 
 	<target name="dist" depends="package-api,package-web" description="create distribution packages" />

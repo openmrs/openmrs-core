@@ -26,18 +26,6 @@
 				<column name="privilege" />
 			</many-to-many>
 		</set>
-		<!-- bi-directional many-to-many association to User -->
-		<!--
-		<set name="users" lazy="true" cascade="none"
-			table="user_role">
-			<key>
-				<column name="role" />
-			</key>
-			<many-to-many class="User">
-				<column name="user_id" />
-			</many-to-many>
-		</set>
-		-->
 
 	</class>
 </hibernate-mapping>

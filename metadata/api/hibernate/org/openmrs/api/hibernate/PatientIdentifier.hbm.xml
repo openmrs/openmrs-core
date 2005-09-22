@@ -7,8 +7,7 @@
 
 	<class name="PatientIdentifier" table="patient_identifier">
 
-		<composite-id name="patientIdentifierId"
-			class="PatientIdentifierId">
+		<composite-id>
 			<key-many-to-one name="patient" column="patient_id"
 				class="Patient" />
 			<key-property name="identifier" column="identifier"
@@ -19,35 +18,12 @@
 				class="Location" />
 		</composite-id>
 
-		<property name="dateCreated" type="java.util.Date"
-			column="date_created" not-null="true" length="19" />
-
-		<!-- Associations -->
-		<!-- derived association(s) for compound key -->
-		<!-- bi-directional many-to-one association to Patient -->
-		<many-to-one name="patient" class="Patient" update="false"
-			insert="false">
-			<column name="patient_id" />
-		</many-to-one>
-
-		<!-- bi-directional many-to-one association to PatientIdentifierType -->
-		<many-to-one name="patientIdentifierType"
-			class="PatientIdentifierType" update="false" insert="false">
-			<column name="identifier_type" />
-		</many-to-one>
-
-		<!-- bi-directional many-to-one association to Location -->
-		<many-to-one name="location" class="Location" update="false"
-			insert="false">
-			<column name="location_id" />
-		</many-to-one>
-
-		<!-- end of derived association(s) -->
-
-		<!-- bi-directional many-to-one association to User -->
 		<many-to-one name="creator" class="User" not-null="true">
 			<column name="creator" />
 		</many-to-one>
+
+		<property name="dateCreated" type="java.util.Date"
+			column="date_created" not-null="true" length="19" />
 
 	</class>
 

@@ -22,7 +22,7 @@
 			column="birthdate" length="10" />
 
 		<property name="birthdateEstimated" type="boolean"
-			column="birthdate_estimated" length="1" />
+			column="birthdate_estimated" />
 
 		<property name="birthplace" type="java.lang.String"
 			column="birthplace" length="50" />
@@ -49,7 +49,6 @@
 		<property name="healthDistrict" type="java.lang.String"
 			column="health_district" length="255" />
 
-		
 		<property name="healthCenter" type="int" column="health_center"
 			length="11" />
 

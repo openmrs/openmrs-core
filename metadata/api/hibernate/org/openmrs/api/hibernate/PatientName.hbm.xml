@@ -12,42 +12,50 @@
 			<generator class="identity" />
 		</id>
 
-		<property name="preferred" type="java.lang.Boolean"
-			column="preferred" length="1" />
-		<property name="givenName" type="java.lang.String"
-			column="given_name" length="50" />
-		<property name="middleName" type="java.lang.String"
-			column="middle_name" length="50" />
-		<property name="familyNamePrefix" type="java.lang.String"
-			column="family_name_prefix" length="50" />
-		<property name="familyName" type="java.lang.String"
-			column="family_name" length="50" />
-		<property name="familyName2" type="java.lang.String"
-			column="family_name2" length="50" />
-		<property name="familyNameSuffix" type="java.lang.String"
-			column="family_name_suffix" length="50" />
-		<property name="degree" type="java.lang.String" column="degree"
-			length="50" />
-		<property name="dateCreated" type="java.util.Date"
-			column="date_created" not-null="true" length="19" />
-		<property name="dateChanged" type="java.util.Date"
-			column="date_changed" length="19" />
-			
-		<!-- Associations -->
+		<property name="preferred" type="boolean" column="preferred" />
 
-		<!-- uni-directional many-to-one association to Patient -->
-		<many-to-one name="patient" class="Patient" not-null="true">
+		<many-to-one name="patient" class="Patient">
 			<column name="patient_id" />
 		</many-to-one>
-		<!-- bi-directional many-to-one association to User -->
-		<many-to-one name="creator" class="User" not-null="true">
+
+		<property name="prefix" type="java.lang.String"
+			column="prefix" length="50" />
+			
+		<property name="givenName" type="java.lang.String"
+			column="given_name" length="50" />
+
+		<property name="middleName" type="java.lang.String"
+			column="middle_name" length="50" />
+
+		<property name="familyNamePrefix" type="java.lang.String"
+			column="family_name_prefix" length="50" />
+
+		<property name="familyName" type="java.lang.String"
+			column="family_name" length="50" />
+
+		<property name="familyName2" type="java.lang.String"
+			column="family_name2" length="50" />
+
+		<property name="familyNameSuffix" type="java.lang.String"
+			column="family_name_suffix" length="50" />
+
+		<property name="degree" type="java.lang.String" column="degree"
+			length="50" />
+
+		<many-to-one name="creator" class="User">
 			<column name="creator" />
 		</many-to-one>
-		<!-- bi-directional many-to-one association to User -->
+
+		<property name="dateCreated" type="java.util.Date"
+			column="date_created" not-null="true" length="19" />
+
 		<many-to-one name="changedBy" class="User">
 			<column name="changed_by" />
 		</many-to-one>
-		
+
+		<property name="dateChanged" type="java.util.Date"
+			column="date_changed" length="19" />
+
 	</class>
 
 </hibernate-mapping>

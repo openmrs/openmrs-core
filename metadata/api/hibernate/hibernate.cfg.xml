@@ -76,9 +76,9 @@
 		<mapping resource="org/openmrs/api/hibernate/User.hbm.xml" />
 -->
 
-		<mapping resource="org/openmrs/api/hibernate/Patient.hbm.xml" />
-		<mapping
-			resource="org/openmrs/api/hibernate/PatientAddress.hbm.xml" />
+		<mapping resource="org/openmrs/api/hibernate/Privilege.hbm.xml" />
+		<mapping resource="org/openmrs/api/hibernate/Role.hbm.xml" />
+		<mapping resource="org/openmrs/api/hibernate/User.hbm.xml" />
 
 	</session-factory>
 
