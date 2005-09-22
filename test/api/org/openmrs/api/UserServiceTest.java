@@ -1,13 +1,12 @@
 package org.openmrs.api;
 
-import java.util.LinkedList;
+import java.util.HashSet;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.openmrs.User;
-import org.openmrs.api.UserService;
 import org.openmrs.context.Context;
 import org.openmrs.context.ContextAuthenticationException;
 import org.openmrs.context.ContextFactory;
@@ -38,7 +37,7 @@ public class UserServiceTest extends TestCase {
 		u.setMiddleName("Alexander");
 		u.setLastName("Wolfe");
 		u.setUsername("bwolfe");
-		u.setRoles(new LinkedList());
+		u.setRoles(new HashSet());
 		
 		us.updateUser(u);
 		
