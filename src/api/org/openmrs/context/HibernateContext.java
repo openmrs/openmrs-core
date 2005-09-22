@@ -232,7 +232,7 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 			throw new APIException("Unauthorized Access to UserService");
 		}
 		if (userService == null)
-			userService = new HibernateUserService();
+			userService = new HibernateUserService(this);
 		return userService;
 	}
 
