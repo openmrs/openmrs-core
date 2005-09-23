@@ -14,13 +14,17 @@
 
 	<!-- import properties -->
 	<import file="properties.xml" />
+
+    <!-- Taskdefs -->
+	<taskdef file="${tomcat.dir}/tomcatTasks.properties">
+		<classpath>
+    		<fileset dir="${tomcat.dir}" includes="catalina-ant.jar" />
+    	</classpath>
+    </taskdef>
 	
-	<taskdef name="deploy" classname="org.apache.catalina.ant.DeployTask" />
+	<!--
 	<taskdef name="list" classname="org.apache.catalina.ant.ListTask" />
-	<taskdef name="reload" classname="org.apache.catalina.ant.ReloadTask" />
-	<taskdef name="start" classname="org.apache.catalina.ant.StartTask" />
-	<taskdef name="stop" classname="org.apache.catalina.ant.StopTask" />
-	<taskdef name="undeploy" classname="org.apache.catalina.ant.RemoveTask" />
+	-->
 
 	<!-- *********************************************************** -->
 	<!-- **                     TARGETS                           ** -->
@@ -135,7 +139,6 @@
 			<classes dir="${build.dir}/web" />
             <metainf dir="${metadata.dir}/web" includes="context.xml"/>
 			<lib file="${dist.dir}/${app.name}-api-${app.version}.jar" />
-			<lib dir="${ant-contrib.dir}" includes="*.jar" />
 			<lib dir="${antlr.dir}" includes="*.jar" />
 			<lib dir="${asm.dir}" includes="*.jar" />
 			<lib dir="${cglib.dir}" includes="*.jar" />
