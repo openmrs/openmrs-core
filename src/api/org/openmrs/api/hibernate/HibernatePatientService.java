@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Session;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Tribe;
@@ -28,7 +29,9 @@ public class HibernatePatientService extends HibernateDaoSupport implements Pati
 	 * @see org.openmrs.api.PatientService#getPatient(java.lang.Long)
 	 */
 	public Patient getPatient(Integer patientId) {
-		return (Patient) getHibernateTemplate().get(Patient.class, patientId);
+		Session session = HibernateUtil.currentSession();
+		return (Patient) session.get(Patient.class, patientId);
+		//HibernateUtil.closeSession();
 	}
 	
 

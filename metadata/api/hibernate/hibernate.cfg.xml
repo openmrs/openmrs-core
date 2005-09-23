@@ -59,8 +59,8 @@
 		
 		<mapping resource="org/openmrs/api/hibernate/Location.hbm.xml" />
 		
-		<mapping resource="org/openmrs/api/hibernate/Encounter.hbm.xml" />
 		<mapping resource="org/openmrs/api/hibernate/EncounterType.hbm.xml" />
+		<mapping resource="org/openmrs/api/hibernate/Encounter.hbm.xml" />
 		
 		<mapping resource="org/openmrs/api/hibernate/Privilege.hbm.xml" />
 		<mapping resource="org/openmrs/api/hibernate/Role.hbm.xml" />

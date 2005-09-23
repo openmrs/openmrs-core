@@ -2,11 +2,13 @@ package org.openmrs.api.hibernate;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
@@ -173,5 +175,31 @@ public class HibernateUserService extends HibernateDaoSupport implements
 		user.setVoidReason("");
 		updateUser(user);
 	}
+
+	/**
+	 * @see org.openmrs.api.UserService#getPrivileges()
+	 */
+	public List<Privilege> getPrivileges() throws APIException {
+		
+		Session session = HibernateUtil.currentSession();
+		
+		return session.createQuery("from Privilege p").list();
+		
+		//HibernateUtil.closeSession();
+	}
+
+	/**
+	 * @see org.openmrs.api.UserService#getRoles()
+	 */
+	public List<Role> getRoles() throws APIException {
+
+		Session session = HibernateUtil.currentSession();
+		
+		return session.createQuery("from Role r").list();
+		
+		//HibernateUtil.closeSession();
+	}
+	
+	
 
 }

@@ -1,5 +1,8 @@
 package org.openmrs.api;
 
+import java.util.List;
+
+import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
 
@@ -98,4 +101,7 @@ public interface UserService {
 	 */
 	public void deleteUser(User user) throws APIException;
 	
+	public List<Privilege> getPrivileges() throws APIException;
+	
+	public List<Role> getRoles() throws APIException;
 }

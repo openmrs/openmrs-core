@@ -38,7 +38,7 @@ public class HibernateEncounterService implements
 		session.save(encounter);
 		
 		tx.commit();
-		session.disconnect();
+		HibernateUtil.closeSession();
 		
 		return encounter;
 	}
@@ -54,7 +54,7 @@ public class HibernateEncounterService implements
 		session.delete(encounter);
 		
 		tx.commit();
-		session.disconnect();
+		HibernateUtil.closeSession();
 		
 	}
 
@@ -64,13 +64,11 @@ public class HibernateEncounterService implements
 	public Encounter getEncounter(Integer encounterId) throws APIException {
 		
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
 		
 		Encounter encounter = new Encounter();
-		session.load(encounter, encounterId);
+		encounter = (Encounter)session.get(Encounter.class, encounterId);
 		
-		tx.commit();
-		session.disconnect();
+		HibernateUtil.closeSession();
 		
 		return encounter;
 	}
@@ -81,13 +79,11 @@ public class HibernateEncounterService implements
 	public EncounterType getEncounterType(Integer encounterTypeId) throws APIException {
 
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
 		
 		EncounterType encounterType = new EncounterType();
 		session.load(encounterType, encounterTypeId);
 		
-		tx.commit();
-		session.disconnect();
+		HibernateUtil.closeSession();
 		
 		return encounterType;
 		
@@ -99,13 +95,11 @@ public class HibernateEncounterService implements
 	public List<EncounterType> getEncounterTypes() throws APIException {
 	
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
 		
 		List<EncounterType> encounterTypes;
-		encounterTypes = session.createQuery("from encounterType et").list();
+		encounterTypes = session.createQuery("from EncounterType et").list();
 		
-		tx.commit();
-		session.disconnect();
+		HibernateUtil.closeSession();
 		
 		return encounterTypes;
 
@@ -117,13 +111,11 @@ public class HibernateEncounterService implements
 	public Location getLocation(Integer locationId) throws APIException {
 
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
 		
 		Location location = new Location();
 		session.load(location, locationId);
 		
-		tx.commit();
-		session.disconnect();
+		HibernateUtil.closeSession();
 		
 		return location;
 
@@ -135,13 +127,11 @@ public class HibernateEncounterService implements
 	public List<Location> getLocations() throws APIException {
 
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
 		
 		List<Location> locations;
 		locations = session.createQuery("from Location l").list();
 		
-		tx.commit();
-		session.disconnect();
+		HibernateUtil.closeSession();
 		
 		return locations;
 
@@ -163,7 +153,7 @@ public class HibernateEncounterService implements
 			session.saveOrUpdate(encounter);
 			
 			tx.commit();
-			session.disconnect();
+			HibernateUtil.closeSession();
 		}
 		
 	}

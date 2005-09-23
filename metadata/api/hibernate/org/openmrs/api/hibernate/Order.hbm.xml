@@ -77,7 +77,7 @@
 	<property
         name="dateVoided"
         type="java.util.Date"
-        column="void_date"
+        column="date_voided"
         length="19"
     />
     <property
