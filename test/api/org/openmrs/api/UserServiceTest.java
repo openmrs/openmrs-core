@@ -24,7 +24,7 @@ public class UserServiceTest extends TestCase {
 		context = ContextFactory.getContext();
 		
 		try {
-			context.authenticate("1-8", "test");
+			context.authenticate("admin", "test");
 		} catch (ContextAuthenticationException e) {
 			
 		}
@@ -49,8 +49,8 @@ public class UserServiceTest extends TestCase {
 		
 		assertTrue(u.equals(u2));
 		
-		int len = u.getRoles().size();
-		System.out.println("length: " + len);
+		//int len = u.getRoles().size();
+		//System.out.println("length: " + len);
 		
 		Role role1 = new Role();
 		role1.setDescription("testing1");
