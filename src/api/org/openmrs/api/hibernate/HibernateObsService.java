@@ -38,7 +38,7 @@ public class HibernateObsService implements
 		session.save(obs);
 		
 		tx.commit();
-		HibernateUtil.closeSession();
+		//HibernateUtil.closeSession();
 	}
 
 	/**
@@ -52,7 +52,7 @@ public class HibernateObsService implements
 		session.delete(obs);
 		
 		tx.commit();
-		HibernateUtil.closeSession();
+		//HibernateUtil.closeSession();
 	}
 
 	/**
@@ -65,7 +65,7 @@ public class HibernateObsService implements
 		Obs obs = new Obs();
 		obs = (Obs)session.get(Obs.class, obsId);
 		
-		HibernateUtil.closeSession();
+		//HibernateUtil.closeSession();
 		
 		return obs;
 	}
@@ -80,7 +80,7 @@ public class HibernateObsService implements
 		MimeType mimeType = new MimeType();
 		mimeType = (MimeType)session.get(MimeType.class, mimeTypeId);
 		
-		HibernateUtil.closeSession();
+		//HibernateUtil.closeSession();
 		
 		return mimeType;
 	}
@@ -93,7 +93,7 @@ public class HibernateObsService implements
 		
 		List mimeTypes = session.createCriteria(MimeType.class).list();
 		
-		HibernateUtil.closeSession();
+		//HibernateUtil.closeSession();
 		
 		return mimeTypes;
 	}
@@ -118,10 +118,10 @@ public class HibernateObsService implements
 		Session session = HibernateUtil.currentSession();
 		Transaction tx = session.beginTransaction();
 		
-		session.update(obs);
+		session.saveOrUpdate(obs);
 		
 		tx.commit();
-		HibernateUtil.closeSession();
+		//HibernateUtil.closeSession();
 	}
 
 	/**

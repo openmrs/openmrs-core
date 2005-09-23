@@ -39,6 +39,8 @@ public class ObsServiceTest extends TestCase {
 		assertNotNull(us);
 		obsService = context.getObsService();
 		assertNotNull(obsService);
+		conceptService = context.getConceptService();
+		assertNotNull(conceptService);
 		//orderService = context.getOrderService();
 		//assertNotNull(orderService);
 		//conceptService = context.getConceptService();
@@ -53,7 +55,7 @@ public class ObsServiceTest extends TestCase {
 		//testing creation
 		
 		Order order1 = null;
-		Concept concept1 = null; //conceptService.getConcept(1);
+		Concept concept1 = conceptService.getConcept(1);
 		Patient patient1 = (Patient)ps.getPatientByIdentifier("%").get(1);
 		Encounter encounter1 = (Encounter)es.getEncounter(1);
 		Date datetime1 = new Date();
@@ -90,7 +92,7 @@ public class ObsServiceTest extends TestCase {
 		assertNotNull(o2);
 		
 		Order order2 = null;
-		Concept concept2 = null; //conceptService.getConcept(2);
+		Concept concept2 = conceptService.getConcept(2);
 		Patient patient2 = (Patient)ps.getPatientByIdentifier("%").get(2);
 		Encounter encounter2 = (Encounter)es.getEncounter(2);
 		Date datetime2 = new Date();
@@ -130,9 +132,10 @@ public class ObsServiceTest extends TestCase {
 		assertTrue(o3.equals(o));
 		if (o3.getOrder() != null && o.getOrder() != null)
 			assertFalse(o3.getOrder().equals(o.getOrder()));
+		assertFalse(o3.getComment().equals(o.getComment()));
+		assertFalse(o3.getPatient().equals(o.getPatient()));
 		if (o3.getConcept() != null && o.getConcept() != null)
 			assertFalse(o3.getConcept().equals(o.getConcept()));
-		assertFalse(o3.getPatient().equals(o.getPatient()));
 		assertFalse(o3.getEncounter().equals(o.getEncounter()));
 		assertFalse(o3.getObsDatetime().equals(o.getObsDatetime()));
 		assertFalse(o3.getLocation().equals(o.getLocation()));
@@ -145,7 +148,7 @@ public class ObsServiceTest extends TestCase {
 		assertFalse(o3.getValueNumeric().equals(o.getValueNumeric()));
 		assertFalse(o3.getValueModifier().equals(o.getValueModifier()));
 		assertFalse(o3.getValueText().equals(o.getValueText()));
-		assertFalse(o3.getComment().equals(o.getComment()));
+		
 		
 		obsService.voidObs(o, "testing void function");
 		

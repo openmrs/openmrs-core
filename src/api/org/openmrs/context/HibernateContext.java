@@ -20,6 +20,7 @@ import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.hibernate.HibernateAdministrationService;
+import org.openmrs.api.hibernate.HibernateConceptService;
 import org.openmrs.api.hibernate.HibernateEncounterService;
 import org.openmrs.api.hibernate.HibernateObsService;
 import org.openmrs.api.hibernate.HibernatePatientService;
@@ -40,6 +41,7 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 	private AdministrationService administrationService;
 	private FormService formService;
 	private OrderService orderService;
+	private Locale locale;
 
 	protected HibernateContext() {
 	}
@@ -180,8 +182,8 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 			log.warn("unauthorized access to concept service");
 			return null;
 		}
-		// if (conceptService == null)
-		// conceptService = new HibernateConceptService();
+		if (conceptService == null)
+			conceptService = new HibernateConceptService(this);
 		return conceptService;
 	}
 
@@ -285,8 +287,7 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 	 * @see org.openmrs.context.Context#getLocale()
 	 */
 	public Locale getLocale() {
-		// TODO Auto-generated method stub
-		return null;
+		return locale;
 	}
 
 	/**
@@ -295,8 +296,7 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 	 * @see org.openmrs.context.Context#setLocale(java.util.Locale)
 	 */
 	public void setLocale(Locale locale) {
-		// TODO Auto-generated method stub
-
+		this.locale = locale;
 	}
 
 }
