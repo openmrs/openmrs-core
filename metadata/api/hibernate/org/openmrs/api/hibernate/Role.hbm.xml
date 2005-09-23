@@ -5,7 +5,7 @@
 
 <hibernate-mapping package="org.openmrs">
 
-	<class name="Role" table="role">
+	<class name="Role" table="role" lazy="false">
 
 		<id name="role" type="java.lang.String" column="role">
 			<generator class="assigned" />
@@ -17,7 +17,7 @@
 		<!-- Associations -->
 
 		<!-- bi-directional many-to-many association to Privilege -->
-		<set name="privileges" lazy="true" cascade="none"
+		<set name="privileges" cascade="none"
 			table="role_privilege">
 			<key not-null="true">
 				<column name="role" />

@@ -28,7 +28,7 @@
     <!-- Defaults for database connection -->
     <property name="database.dir" value="${mysql.dir}" />
     <property name="database.type" value="mysql" />
-    <property name="database.name" value="amrs" />
+    <property name="database.name" value="openmrs" />
     <property name="database.host" value="localhost" />
     <property name="database.username" value="test" />
     <property name="database.password" value="blah" />

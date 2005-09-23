@@ -1,4 +1,6 @@
-<%@ page import="org.openmrs.context.HibernateContext" %>
+<%@ page import="org.openmrs.context.Context" %>
+<%@ page import="org.openmrs.context.ContextFactory" %>
+<%@ page import="org.openmrs.User" %>
 <html>
 <body>
 
@@ -6,7 +8,10 @@
 
 try {
 
-	org.openmrs.context.Context c = new HibernateContext();
+	Context c = ContextFactory.getContext();
+	c.authenticate("1-8", "test");
+	User user = c.getAuthenticatedUser();
+	out.write(user.getFirstName());
 
 } catch (Exception e) {
 	out.println("{ERROR}");

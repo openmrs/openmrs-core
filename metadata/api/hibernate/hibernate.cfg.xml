@@ -11,10 +11,12 @@
 			com.mysql.jdbc.Driver
 		</property>
 		<property name="hibernate.connection.url">
-			jdbc:mysql://localhost:3306/amrs
+			jdbc:mysql://localhost:3306/openmrs
 		</property>
 		<property name="hibernate.connection.username">test</property>
 		<property name="hibernate.connection.password">test</property>
+		<property name="hibernate.show_sql">false</property>
+		<property name="lazy">false</property>
 		<!--
 		<property name="hibernate.connection.datasource">java:comp/env/jdbc/openmrs</property>
 		<property name="hibernate.cglib.use_reflection_optimizer">true</property>

@@ -4,7 +4,7 @@
 		type="javax.sql.DataSource"
 		factory="org.apache.commons.dbcp.BasicDataSourceFactory"
 		validationQuery="SELECT * FROM users WHERE user_id = 1"
-		url="jdbc:mysql://localhost:3306/amrs"
+		url="jdbc:mysql://localhost:3306/openmrs"
 		driverClassName="com.mysql.jdbc.Driver"
 		username="test"
 		password="test"

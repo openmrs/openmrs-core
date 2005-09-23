@@ -10,6 +10,7 @@ import junit.framework.TestSuite;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.api.hibernate.HibernateUtil;
 import org.openmrs.context.Context;
 import org.openmrs.context.ContextAuthenticationException;
 import org.openmrs.context.ContextFactory;
@@ -23,7 +24,7 @@ public class UserServiceTest extends TestCase {
 		context = ContextFactory.getContext();
 		
 		try {
-			context.authenticate("admin", "test");
+			context.authenticate("1-8", "test");
 		} catch (ContextAuthenticationException e) {
 			
 		}
@@ -40,7 +41,7 @@ public class UserServiceTest extends TestCase {
 		u.setMiddleName("Alexander");
 		u.setLastName("Wolfe");
 		u.setUsername("bwolfe");
-		u.setRoles(new HashSet());
+//		u.setRoles(new HashSet());
 		
 		us.updateUser(u);
 		
