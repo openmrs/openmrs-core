@@ -2,8 +2,8 @@
 MySQL Backup
 Source Host:           localhost
 Source Server Version: 4.1.11-nt
-Source Database:       amrs
-Date:                  2005/09/15 15:27:31
+Source Database:       openmrs
+Date:                  2005/09/23 02:12:12
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -3131,7 +3131,20 @@ insert  into concept_download values
 (21, 'Anonymous User', '65.54.188.25', 'Microsoft Corp', 'WA', 'US', '2005-09-12 17:20:37'), 
 (22, 'Anonymous User', '65.54.188.25', 'Microsoft Corp', 'WA', 'US', '2005-09-12 23:33:45'), 
 (23, 'Anonymous User', '65.54.188.25', 'Microsoft Corp', 'WA', 'US', '2005-09-13 04:46:43'), 
-(24, 'Anonymous User', '70.224.196.140', '???', '???', '???', '2005-09-14 17:00:47');
+(24, 'Anonymous User', '70.224.196.140', '???', '???', '???', '2005-09-14 17:00:47'), 
+(28, 'Anonymous User', '68.142.251.111', 'Inktomi Corporation', 'CA', 'US', '2005-09-16 19:15:04'), 
+(29, 'Anonymous User', '65.54.188.25', 'Microsoft Corp', 'WA', 'US', '2005-09-17 04:37:54'), 
+(30, 'Anonymous User', '67.101.201.3', 'Covad Communications', 'CA', 'US', '2005-09-17 18:08:58'), 
+(31, 'Anonymous User', '67.101.201.3', 'Covad Communications', 'CA', 'US', '2005-09-17 18:13:06'), 
+(32, 'Anonymous User', '65.54.188.25', 'Microsoft Corp', 'WA', 'US', '2005-09-17 19:30:12'), 
+(33, 'Anonymous User', '66.249.66.229', 'Google Inc.', 'CA', 'US', '2005-09-17 22:33:24'), 
+(34, 'Anonymous User', '68.52.112.251', '???', '???', '???', '2005-09-18 17:42:58'), 
+(35, 'Anonymous User', '68.142.251.111', 'Inktomi Corporation', 'CA', 'US', '2005-09-20 19:34:09'), 
+(36, 'Anonymous User', '66.249.71.40', 'Google Inc.', 'CA', 'US', '2005-09-20 21:32:34'), 
+(37, 'Anonymous User', '66.249.66.167', 'Google Inc.', 'CA', 'US', '2005-09-21 00:12:13'), 
+(38, 'Anonymous User', '201.235.9.157', null, null, null, '2005-09-21 17:19:58'), 
+(39, 'Anonymous User', '69.60.120.167', null, null, null, '2005-09-22 20:12:30'), 
+(40, 'Anonymous User', '66.249.65.133', null, null, null, '2005-09-22 20:35:37');
 #----------------------------
 # No records for table concept_name
 #----------------------------
@@ -10588,6 +10601,22 @@ insert  into drug values
 #----------------------------
 
 #----------------------------
+# No records for table drug_order
+#----------------------------
+
+#----------------------------
+# Records for table encounter
+#----------------------------
+
+
+insert  into encounter values 
+(1, 1, 1, 2, 1, '2005-09-22 00:00:00', 1, '2005-09-22 00:00:00'), 
+(2, 1, 2, 2, 1, '2005-09-22 00:00:00', 1, '2005-09-22 00:00:00'), 
+(3, 1, 3, 2, 1, '2004-12-22 00:00:00', 1, '2005-09-22 00:00:00'), 
+(4, 1, 4, 2, 3, '2005-08-01 00:00:00', 1, '2006-09-22 00:00:00'), 
+(5, 2, 1, 2, 1, '2004-09-22 00:00:00', 1, '2005-09-02 00:00:00'), 
+(6, 3, 5, 2, 3, '2005-09-22 00:00:00', 1, '2005-09-22 00:00:00');
+#----------------------------
 # Records for table encounter_type
 #----------------------------
 
@@ -10598,13 +10627,49 @@ insert  into encounter_type values
 (3, 'PEDSINITIAL', 'Outpaitent Pediatric Initial Visit', 2, '2005-02-24 00:00:00'), 
 (4, 'PEDSRETURN', 'Outpatient Pediatric Return Visit', 2, '2005-02-24 00:00:00');
 #----------------------------
+# No records for table field
+#----------------------------
+
+#----------------------------
+# No records for table field_answer
+#----------------------------
+
+#----------------------------
+# No records for table field_type
+#----------------------------
+
+#----------------------------
+# No records for table form
+#----------------------------
+
+#----------------------------
+# No records for table form_field
+#----------------------------
+
+#----------------------------
 # No records for table icd10
 #----------------------------
 
 #----------------------------
+# Records for table location
+#----------------------------
+
+
+insert  into location values 
+(1, 'Wishard Hospital', null, '1002 Wishard Blvd.', '', 'Indianapolis', 'IN', '46202', 'USA', null, null, 1, '2005-09-22 00:00:00'), 
+(2, 'Social Security Administration', null, ' 6401 Security Blvd.', null, 'Baltimore', 'MD', '21235-0001', 'USA', null, null, 1, '2005-09-22 00:00:00'), 
+(3, 'Mosoriot Health Center', null, 'Moi University Campus', null, 'Eldoret', null, null, 'Kenya', null, null, 1, '2005-09-22 00:00:00');
+#----------------------------
 # No records for table mime_type
 #----------------------------
 
+#----------------------------
+# Records for table obs
+#----------------------------
+
+
+insert  into obs values 
+(1, 1, 21, 1, null, '2005-09-22 00:00:00', 1, null, null, null, null, null, '14', null, null, null, 1, '2004-09-22 00:00:00', null, null, null, null);
 #----------------------------
 # Records for table order_type
 #----------------------------
@@ -10615,6 +10680,92 @@ insert  into order_type values
 (2, 'Drug', 'New drug order', 2, '2005-08-08 07:07:20'), 
 (3, 'Test', 'New test order', 2, '2005-08-08 07:07:53');
 #----------------------------
+# No records for table orders
+#----------------------------
+
+#----------------------------
+# Records for table patient
+#----------------------------
+
+
+insert  into patient values 
+(1, 'M', 'W', '1975-01-01', 0, 'Indianapolis, IN', 99, 'US', null, 0, null, null, null, null, 1, '2005-09-22 00:00:00', null, null, null, null, null, null), 
+(2, 'M', 'B', '1941-05-01', 0, 'Berlin, Germany', 99, 'GE', null, 1, null, null, null, null, 1, '2005-09-22 00:00:00', null, null, null, null, null, null), 
+(3, 'F', 'H', '2004-05-30', 0, 'Florida', 99, 'US', null, 0, null, null, null, null, 1, '2005-09-22 00:00:00', null, null, null, null, null, null), 
+(4, 'M', 'B', '0000-00-00', 1, 'Eldoret, Kenya', 2, 'KE', null, 1, null, null, null, null, 1, '2005-09-22 00:00:00', null, null, null, null, null, null), 
+(5, 'F', 'W', '2005-08-22', 0, 'Indianapolis, IN', 99, 'US', null, 0, null, null, null, null, 1, '2005-09-22 00:00:00', null, null, null, null, null, null);
+#----------------------------
+# Records for table patient_address
+#----------------------------
+
+
+insert  into patient_address values 
+(1, 1, 1, '555 Johnson Rd.', 'Apt. 555', 'Indianapolis', 'IN', '46202', 'USA', '394700', '860900', 1, '2005-09-22 00:00:00', null, null, null, null), 
+(2, 1, null, '1050 Wishard Blvd.', 'RG5', 'Indianapolis', 'IN', '46202', 'USA', null, null, 1, '2005-09-22 00:00:00', null, null, null, null), 
+(3, 2, 1, '1 Stein Ln.', null, 'Rammstein', '', null, 'Germany', null, null, 1, '2005-09-22 00:00:00', null, null, null, null), 
+(4, 3, 1, '432 Sunshine Pkwy.', null, 'Atlanta', 'GA', '30322', 'USA', null, null, 1, '2005-09-22 00:00:00', null, null, null, null), 
+(5, 5, 1, '555 Johnson Rd.', 'Apt. 555', 'Indianapolis', 'IN', '46202', 'USA', '394700', '860900', 1, '2005-09-22 00:00:00', null, null, null, null), 
+(6, 4, 1, null, null, 'Nyama', 'Choma', null, 'Kenya', null, null, 1, '2005-09-22 00:00:00', null, null, null, null);
+#----------------------------
+# Records for table patient_identifier
+#----------------------------
+
+
+insert  into patient_identifier values 
+(1, '555-55-5555', 2, 2, 1, '2005-09-22 00:00:00', null, null, null, null), 
+(1, 'OLDID', 1, 1, 1, '2005-09-22 00:00:00', null, null, null, null), 
+(1, 'TEST-4', 1, 1, 1, '2005-09-22 00:00:00', null, null, null, null), 
+(2, 'TEST2-3', 1, 1, 1, '2005-09-22 00:00:00', null, null, null, null), 
+(3, 'TEST3-2', 1, 1, 1, '2005-09-22 00:00:00', null, null, null, null), 
+(4, 'TEST4-1', 1, 1, 1, '2005-09-22 00:00:00', null, null, null, null), 
+(5, 'TEST5-0', 1, 1, 1, '2005-09-22 00:00:00', null, null, null, null);
+#----------------------------
+# Records for table patient_identifier_type
+#----------------------------
+
+
+insert  into patient_identifier_type values 
+(1, 'Medical Record Number', 'Unique number used in health care setting..', 1, '2005-09-22 00:00:00'), 
+(2, 'Social Security Number', 'Number given out in the United States to track social security benefits and often used as a unique identifier..', 1, '2005-09-22 00:00:00');
+#----------------------------
+# Records for table patient_name
+#----------------------------
+
+
+insert  into patient_name values 
+(1, 1, 1, 'Mr.', 'John', 'D', '', 'Patient', null, null, null, 1, '2005-09-22 00:00:00', null, null, null, null, null, null), 
+(2, 1, 2, 'Mr.', 'Horatio', 'L', null, 'Hornblower', null, 'Esq.', null, 1, '2005-09-22 00:00:00', null, null, null, null, null, null), 
+(3, 1, 3, 'Mrs.', 'Juanita', 'M', 'Suprema', 'Estaban', 'Ricardo', null, 'MD', 1, '2005-09-22 00:00:00', null, null, null, null, null, null), 
+(4, 1, 4, 'Mr.', 'Chris', 'L', '', 'Wools', null, null, null, 1, '2005-09-22 00:00:00', null, null, null, null, null, null), 
+(5, null, 5, '', 'Baby', '', null, 'Girl', null, null, null, 1, '2005-09-22 00:00:00', null, null, null, null, null, null), 
+(6, 1, 5, 'Madame', 'Jenny', 'D', '', 'Patient', null, null, null, 1, '2006-09-22 00:00:00', null, null, null, null, null, null);
+#----------------------------
+# Records for table person
+#----------------------------
+
+
+insert  into person values 
+(1, null, 1), 
+(2, null, 2), 
+(3, 1, null), 
+(4, 2, null), 
+(5, 3, null), 
+(6, 4, null), 
+(7, 5, null);
+#----------------------------
+# No records for table privilege
+#----------------------------
+
+#----------------------------
+# Records for table relationship
+#----------------------------
+
+
+insert  into relationship values 
+(1, 3, 4, 7, 1, '2005-09-22 00:00:00', null, null, null, null), 
+(2, 2, 1, 3, 1, '2005-09-22 00:00:00', null, null, null, null), 
+(3, 2, 1, 4, 1, '2005-09-22 00:00:00', null, null, null, null);
+#----------------------------
 # Records for table relationship_type
 #----------------------------
 
@@ -10622,7 +10773,20 @@ insert  into order_type values
 insert  into relationship_type values 
 (1, 'Primary care provider', 'Health care provider who cares for a patient', 2, '2005-08-10 00:00:00'), 
 (2, 'Mother', '', 2, '2005-08-10 00:00:00'), 
-(3, 'Fellow geeks', 'Men who love tapper cabinets and the Matrix', 2, '2005-08-10 00:00:00');
+(3, 'Fellow geeks', 'Men who love tapper cabinets and the Matrix', 2, '2005-08-10 00:00:00'), 
+(4, 'Father', '', 1, '2005-09-22 00:00:00');
+#----------------------------
+# Records for table role
+#----------------------------
+
+
+insert  into role values 
+('provider', 'Health care provider.'), 
+('superuser', 'System developers..');
+#----------------------------
+# No records for table role_privilege
+#----------------------------
+
 #----------------------------
 # Records for table tribe
 #----------------------------
@@ -10685,10 +10849,20 @@ insert  into tribe values
 (54, 0, 'Shela'), 
 (55, 0, 'Amu'), 
 (99, null, 'Other');
+#----------------------------
+# Records for table user_role
+#----------------------------
 
+
+insert  into user_role values 
+(1, 'superuser'), 
+(2, 'provider');
 #----------------------------
 # Records for table users
 #----------------------------
 
+
 insert  into users values 
-(1, 'admin', 'The', null, 'Admin', '98f6bcd4621d373cade4e832627b4f6', 1, '2005-09-15 12:44:43', null, null, null, null, null, null, null);
+(1, 'USER-1', 'User', null, 'One', null, 1, '2005-01-01 00:00:00', null, null, null, null, null, null, null), 
+(2, 'USER2-0', 'User', 'Bee', 'Two', null, 1, '2005-01-01 00:00:00', null, null, null, null, null, null, null);
+

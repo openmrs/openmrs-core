@@ -2,8 +2,8 @@
 MySQL Backup
 Source Host:           localhost
 Source Server Version: 4.1.11-nt
-Source Database:       amrs
-Date:                  2005/09/15 15:08:27
+Source Database:       openmrs
+Date:                  2005/09/23 02:11:40
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -461,7 +461,7 @@ drop table if exists mime_type;
 CREATE TABLE `mime_type` (
   `mime_type_id` int(11) NOT NULL default '0',
   `mime_type` varchar(75) NOT NULL default '',
-  `description` varchar(50) default NULL,
+  `description` text,
   PRIMARY KEY  (`mime_type_id`),
   KEY `mime_type_id` (`mime_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 75776 kB; InnoDB free: 75776 kB; InnoDB free: 7';
@@ -545,7 +545,7 @@ CREATE TABLE `orders` (
   `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
   `voided` tinyint(4) default NULL,
   `voided_by` int(11) default NULL,
-  `void_date` datetime default NULL,
+  `date_voided` datetime default NULL,
   `void_reason` varchar(255) default NULL,
   PRIMARY KEY  (`order_id`),
   KEY `order_creator` (`creator`),
@@ -554,12 +554,12 @@ CREATE TABLE `orders` (
   KEY `type_of_order` (`order_type_id`),
   KEY `user_who_discontinued_order` (`discontinued_by`),
   KEY `user_who_voided_order` (`voided_by`),
-  CONSTRAINT `user_who_voided_order` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`),
   CONSTRAINT `orderer_not_drug` FOREIGN KEY (`orderer`) REFERENCES `users` (`user_id`),
   CONSTRAINT `orders_in_encounter` FOREIGN KEY (`encounter_id`) REFERENCES `encounter` (`encounter_id`),
   CONSTRAINT `order_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
   CONSTRAINT `type_of_order` FOREIGN KEY (`order_type_id`) REFERENCES `order_type` (`order_type_id`),
-  CONSTRAINT `user_who_discontinued_order` FOREIGN KEY (`discontinued_by`) REFERENCES `users` (`user_id`)
+  CONSTRAINT `user_who_discontinued_order` FOREIGN KEY (`discontinued_by`) REFERENCES `users` (`user_id`),
+  CONSTRAINT `user_who_voided_order` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 19456 kB; (`orderer`) REFER `amrs/users`(`user_';
 #----------------------------
 # Table structure for patient
@@ -605,6 +605,7 @@ drop table if exists patient_address;
 CREATE TABLE `patient_address` (
   `patient_address_id` int(11) NOT NULL auto_increment,
   `patient_id` int(11) default NULL,
+  `preferred` tinyint(4) default NULL,
   `address1` varchar(50) default NULL,
   `address2` varchar(50) default NULL,
   `city_village` varchar(50) default NULL,
@@ -812,7 +813,7 @@ CREATE TABLE `user_role` (
 drop table if exists users;
 CREATE TABLE `users` (
   `user_id` int(11) NOT NULL default '0',
-  `user_name` varchar(50) default NULL,
+  `username` varchar(50) default NULL,
   `first_name` varchar(50) default NULL,
   `middle_name` varchar(50) default NULL,
   `last_name` varchar(50) default NULL,

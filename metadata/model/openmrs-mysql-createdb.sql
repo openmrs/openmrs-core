@@ -5,6 +5,6 @@ a database already exists, this step may
 be skipped.
 */
 
-drop database if exists amrs;
-create database amrs;
-use amrs;
+drop database if exists openmrs;
+create database openmrs;
+use openmrs;
