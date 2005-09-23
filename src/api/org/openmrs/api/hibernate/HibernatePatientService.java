@@ -49,7 +49,7 @@ public class HibernatePatientService extends HibernateDaoSupport implements Pati
 		session.save(patient);
 		
 		tx.commit();
-		HibernateUtil.closeSession();
+		//HibernateUtil.closeSession();
 	}
 
 
@@ -63,7 +63,7 @@ public class HibernatePatientService extends HibernateDaoSupport implements Pati
 			session.update(patient);
 			
 			tx.commit();
-			HibernateUtil.closeSession();
+			//HibernateUtil.closeSession();
 		}
 	}
 
@@ -76,7 +76,7 @@ public class HibernatePatientService extends HibernateDaoSupport implements Pati
 						.add(Expression.like("identifier", identifier, MatchMode.ANYWHERE))
 						.list();
 		
-		HibernateUtil.closeSession();
+		//HibernateUtil.closeSession();
 		
 		return patients;
 	}
@@ -102,7 +102,7 @@ public class HibernatePatientService extends HibernateDaoSupport implements Pati
 		patient.setVoided(true);
 		patient.setDateVoided(new Date());
 		patient.setVoidReason(reason);
-		getHibernateTemplate().save(patient);
+		updatePatient(patient);
 	}
 
 	/*  See getPatientByIdentifier(String)
@@ -127,7 +127,7 @@ public class HibernatePatientService extends HibernateDaoSupport implements Pati
 		session.delete(patient);
 		
 		tx.commit();
-		HibernateUtil.closeSession();		
+		//HibernateUtil.closeSession();		
 	}
 
 	/**
@@ -147,7 +147,7 @@ public class HibernatePatientService extends HibernateDaoSupport implements Pati
 		
 		List patientIdentifierTypes = session.createQuery("from PatientIdentifierType").list();
 		
-		HibernateUtil.closeSession();
+		//HibernateUtil.closeSession();
 		
 		return patientIdentifierTypes;
 	}
@@ -160,7 +160,7 @@ public class HibernatePatientService extends HibernateDaoSupport implements Pati
 		
 		List tribes = session.createQuery("from Tribe").list();
 		
-		HibernateUtil.closeSession();
+		//HibernateUtil.closeSession();
 		
 		return tribes;
 	}

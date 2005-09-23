@@ -1,8 +1,9 @@
 package org.openmrs.api;
 
 import java.util.Date;
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -67,11 +68,11 @@ public class PatientServiceTest extends TestCase {
 		
 		Patient patient2 = ps.getPatient(patient.getPatientId());
 		
-		assertFalse(patient.equals(patient2));
+		assertTrue(patient.equals(patient2));
 		
-		PatientAddress pAddress = patient.getAddresses().get(1);
+		PatientAddress pAddress = patient.getAddresses().iterator().next();
 		patient.removeAddress(pAddress);
-		PatientName pName = patient.getNames().get(1);
+		PatientName pName = patient.getNames().iterator().next();
 		patient.removeName(pName);
 		
 		
@@ -92,7 +93,7 @@ public class PatientServiceTest extends TestCase {
 		pAddress.setAddress2("Apt 402");
 		pAddress.setCityVillage("Anywhere city");
 		pAddress.setCountry("Some Country");
-		List<PatientAddress> pAddressList = patient.getAddresses();
+		Set<PatientAddress> pAddressList = patient.getAddresses();
 		pAddressList.add(pAddress);
 		patient.setAddresses(pAddressList);
 		patient.addAddress(pAddress);
@@ -119,12 +120,13 @@ public class PatientServiceTest extends TestCase {
 		patientIdentifier.setIdentifierType(patientIdTypes.get(0));
 		patientIdentifier.setLocation(encounterService.getLocations().get(0));
 		
-		List<PatientIdentifier> patientIdentifiers = new LinkedList<PatientIdentifier>();
+		Set<PatientIdentifier> patientIdentifiers = new HashSet<PatientIdentifier>();
 		patientIdentifiers.add(patientIdentifier);
 		
 		patient.setIdentifiers(patientIdentifiers);
 		
-		createdPatient = ps.createPatient(patient);
+		ps.createPatient(patient);
+		createdPatient = ps.getPatient(patient.getPatientId());
 		assertNotNull(createdPatient);
 		
 		assertNotNull(createdPatient.getPatientId());
