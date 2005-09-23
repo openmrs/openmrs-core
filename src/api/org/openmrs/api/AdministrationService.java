@@ -177,21 +177,21 @@ public interface AdministrationService {
 	 * @return newly created RelationshipType
 	 * @throws APIException
 	 */
-	public RelationshipType createRelationshipType(RelationshipType location) throws APIException;
+	public RelationshipType createRelationshipType(RelationshipType relationshipType) throws APIException;
 
 	/**
 	 * Update RelationshipType
 	 * @param RelationshipType to update
 	 * @throws APIException
 	 */
-	public void updateRelationshipType(RelationshipType location) throws APIException;
+	public void updateRelationshipType(RelationshipType relationshipType) throws APIException;
 
 	/**
 	 * Delete RelationshipType
 	 * @param RelationshipType to delete
 	 * @throws APIException
 	 */
-	public void deleteRelationshipType(RelationshipType location) throws APIException;	
+	public void deleteRelationshipType(RelationshipType relationshipType) throws APIException;	
 
 
 }

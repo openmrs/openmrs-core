@@ -41,14 +41,14 @@ public class AdministrationServiceTest extends TestCase {
 		assertNotNull(us);
 		as = context.getAdministrationService();
 		assertNotNull(as);
-		obsService = context.getObsService();
-		assertNotNull(obsService);
-		orderService = context.getOrderService();
-		assertNotNull(orderService);
-		formService = context.getFormService();
-		assertNotNull(formService);
-		patientService = context.getPatientService();
-		assertNotNull(patientService);
+		//obsService = context.getObsService();
+		//assertNotNull(obsService);
+		//orderService = context.getOrderService();
+		//assertNotNull(orderService);
+		//formService = context.getFormService();
+		//assertNotNull(formService);
+		//patientService = context.getPatientService();
+		//assertNotNull(patientService);
 		
 	}
 
@@ -114,6 +114,8 @@ public class AdministrationServiceTest extends TestCase {
 		
 		//check deletion
 		as.deleteMimeType(newMimeType);
+		
+		assertNull(obsService.getMimeType(newMimeType.getMimeTypeId()));
 
 	}
 
@@ -161,6 +163,7 @@ public class AdministrationServiceTest extends TestCase {
 		
 		//check deletion
 		as.deleteOrderType(newOrderType);
+		assertNull(orderService.getOrderType(newOrderType.getOrderTypeId()));
 
 	}
 	
@@ -209,6 +212,7 @@ public class AdministrationServiceTest extends TestCase {
 		
 		//check deletion
 		as.deleteFieldType(newFieldType);
+		assertNull(formService.getFieldType(newFieldType.getFieldTypeId()));
 
 	}
 	
@@ -256,6 +260,7 @@ public class AdministrationServiceTest extends TestCase {
 		
 		//check deletion
 		as.deletePatientIdentifierType(newPatientIdentifierType);
+		assertNull(patientService.getPatientIdentifierType(newPatientIdentifierType.getPatientIdentifierTypeId()));
 
 	}
 	
@@ -305,6 +310,7 @@ public class AdministrationServiceTest extends TestCase {
 		
 		//check deletion
 		as.deleteEncounterType(newEncounterType);
+		assertNull(encounterService.getEncounterType(newEncounterType.getEncounterTypeId()));
 
 	}
 	
@@ -360,6 +366,7 @@ public class AdministrationServiceTest extends TestCase {
 		
 		//check deletion
 		as.deleteLocation(newLocation);
+		assertNull(encounterService.getLocation(newLocation.getLocationId()));
 
 	}
 	

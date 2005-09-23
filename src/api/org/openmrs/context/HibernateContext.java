@@ -19,6 +19,7 @@ import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.UserService;
+import org.openmrs.api.hibernate.HibernateAdministrationService;
 import org.openmrs.api.hibernate.HibernateEncounterService;
 import org.openmrs.api.hibernate.HibernatePatientService;
 import org.openmrs.api.hibernate.HibernateUserService;
@@ -246,8 +247,8 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 			log.warn("unauthorized access to administration service");
 			return null;
 		}
-		// if (administrationService == null)
-		// administrationService = new HibernateAdministrationService();
+		if (administrationService == null)
+			administrationService = new HibernateAdministrationService(this);
 		return administrationService;
 	}
 

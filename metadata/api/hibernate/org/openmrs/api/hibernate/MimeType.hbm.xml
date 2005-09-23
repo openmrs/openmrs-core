@@ -9,7 +9,7 @@
 
 		<id name="mimeTypeId" type="int"
 			column="mime_type_id">
-			<generator class="assigned" />
+			<generator class="identity" />
 		</id>
 		
 		<property name="mimeType" type="java.lang.String"
