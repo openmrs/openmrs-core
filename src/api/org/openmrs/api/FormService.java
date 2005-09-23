@@ -109,41 +109,19 @@ public interface FormService {
 	
 	/**
 	 * 
-	 * @param formField
-	 * @throws APIException
-	 */
-	public void createFormField(FormField formField) throws APIException;
-	
-	/**
-	 * 
-	 * @param formFieldId
-	 * @return
-	 * @throws APIException
-	 */
-	public FormField getFormField(Integer formFieldId) throws APIException;
-	
-	/**
-	 * 
-	 * @param formField
-	 * @throws APIException
-	 */
-	public void updateFormField(FormField formField) throws APIException;
-	
-	/**
-	 * 
-	 * @param formField
-	 * @throws APIException
-	 */
-	public void deleteFormField(FormField formField) throws APIException;
-	
-	/**
-	 * 
 	 * @param fieldId
 	 * @return
 	 * @throws APIException
 	 */
 	public Field getField(Integer fieldId) throws APIException;
 	
+	/**
+	 * 
+	 * @param field
+	 * @throws APIException
+	 */
+	public void createField(Field field) throws APIException;
+
 	/**
 	 * 
 	 * @param field
