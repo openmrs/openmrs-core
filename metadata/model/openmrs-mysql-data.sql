@@ -10692,7 +10692,7 @@ insert  into patient values
 (1, 'M', 'W', '1975-01-01', 0, 'Indianapolis, IN', 99, 'US', null, 0, null, null, null, null, 1, '2005-09-22 00:00:00', null, null, null, null, null, null), 
 (2, 'M', 'B', '1941-05-01', 0, 'Berlin, Germany', 99, 'GE', null, 1, null, null, null, null, 1, '2005-09-22 00:00:00', null, null, null, null, null, null), 
 (3, 'F', 'H', '2004-05-30', 0, 'Florida', 99, 'US', null, 0, null, null, null, null, 1, '2005-09-22 00:00:00', null, null, null, null, null, null), 
-(4, 'M', 'B', '0000-00-00', 1, 'Eldoret, Kenya', 2, 'KE', null, 1, null, null, null, null, 1, '2005-09-22 00:00:00', null, null, null, null, null, null), 
+(4, 'M', 'B', '1902-02-02', 1, 'Eldoret, Kenya', 2, 'KE', null, 1, null, null, null, null, 1, '2005-09-22 00:00:00', null, null, null, null, null, null), 
 (5, 'F', 'W', '2005-08-22', 0, 'Indianapolis, IN', 99, 'US', null, 0, null, null, null, null, 1, '2005-09-22 00:00:00', null, null, null, null, null, null);
 #----------------------------
 # Records for table patient_address
@@ -10874,5 +10874,5 @@ insert  into user_role values
 delete from users;
 insert  into users values 
 (1, 'USER-1', 'User', null, 'One', '98f6bcd4621d373cade4e832627b4f6', 1, '2005-01-01 00:00:00', null, null, null, null, null, null, null), 
-(2, 'USER2-0', 'User', 'Bee', 'Two', '98f6bcd4621d373cade4e832627b4f6', 1, '2005-01-01 00:00:00', null, null, null, null, null, null, null);
+(2, 'admin', 'User', 'Bee', 'Two', '98f6bcd4621d373cade4e832627b4f6', 1, '2005-01-01 00:00:00', null, null, null, null, null, null, null);
 
