@@ -17,10 +17,9 @@ public interface UserService {
 	/**
 	 * Create a new user
 	 * @param user
-	 * @return reference to newly created user
 	 * @throws APIException
 	 */
-	public User createUser(User user) throws APIException;
+	public void createUser(User user) throws APIException;
 
 	/**
 	 * Get user by internal user identifier

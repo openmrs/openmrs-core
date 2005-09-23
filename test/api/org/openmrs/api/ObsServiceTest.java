@@ -39,8 +39,8 @@ public class ObsServiceTest extends TestCase {
 		assertNotNull(us);
 		obsService = context.getObsService();
 		assertNotNull(obsService);
-		orderService = context.getOrderService();
-		assertNotNull(orderService);
+		//orderService = context.getOrderService();
+		//assertNotNull(orderService);
 		//conceptService = context.getConceptService();
 		//assertNotNull(conceptService);
 		

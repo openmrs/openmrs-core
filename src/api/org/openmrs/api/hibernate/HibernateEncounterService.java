@@ -28,7 +28,7 @@ public class HibernateEncounterService implements
 	/**
 	 * @see org.openmrs.api.EncounterService#createEncounter(org.openmrs.Encounter)
 	 */
-	public Encounter createEncounter(Encounter encounter) throws APIException {
+	public void createEncounter(Encounter encounter) throws APIException {
 		
 		Session session = HibernateUtil.currentSession();
 		Transaction tx = session.beginTransaction();
@@ -39,8 +39,6 @@ public class HibernateEncounterService implements
 		
 		tx.commit();
 		HibernateUtil.closeSession();
-		
-		return encounter;
 	}
 
 	/**

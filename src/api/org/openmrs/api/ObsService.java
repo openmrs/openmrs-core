@@ -66,5 +66,5 @@ public interface ObsService {
 	 * @return mimeType with given internal identifier
 	 * @throws APIException
 	 */
-	public MimeType getMimeType(Integer mimeId) throws APIException;
+	public MimeType getMimeType(Integer mimeTypeId) throws APIException;
 }

@@ -32,7 +32,7 @@ public class HibernateAdministrationService implements
 	/**
 	 * @see org.openmrs.api.AdministrationService#createEncounterType(org.openmrs.EncounterType)
 	 */
-	public EncounterType createEncounterType(EncounterType encounterType) throws APIException {
+	public void createEncounterType(EncounterType encounterType) throws APIException {
 		Session session = HibernateUtil.currentSession();
 		Transaction tx = session.beginTransaction();
 		
@@ -42,14 +42,12 @@ public class HibernateAdministrationService implements
 		
 		tx.commit();
 		HibernateUtil.closeSession();
-		
-		return encounterType;
 	}
 
 	/**
 	 * @see org.openmrs.api.AdministrationService#createFieldType(org.openmrs.FieldType)
 	 */
-	public FieldType createFieldType(FieldType fieldType) throws APIException {
+	public void createFieldType(FieldType fieldType) throws APIException {
 		Session session = HibernateUtil.currentSession();
 		Transaction tx = session.beginTransaction();
 		
@@ -59,14 +57,12 @@ public class HibernateAdministrationService implements
 		
 		tx.commit();
 		HibernateUtil.closeSession();
-		
-		return fieldType;
 	}
 
 	/**
 	 * @see org.openmrs.api.AdministrationService#createLocation(org.openmrs.Location)
 	 */
-	public Location createLocation(Location location) throws APIException {
+	public void createLocation(Location location) throws APIException {
 		Session session = HibernateUtil.currentSession();
 		Transaction tx = session.beginTransaction();
 		
@@ -76,14 +72,12 @@ public class HibernateAdministrationService implements
 		
 		tx.commit();
 		HibernateUtil.closeSession();
-		
-		return location;
 	}
 
 	/**
 	 * @see org.openmrs.api.AdministrationService#createMimeType(org.openmrs.MimeType)
 	 */
-	public MimeType createMimeType(MimeType mimeType) throws APIException {
+	public void createMimeType(MimeType mimeType) throws APIException {
 		Session session = HibernateUtil.currentSession();
 		Transaction tx = session.beginTransaction();
 		
@@ -93,14 +87,12 @@ public class HibernateAdministrationService implements
 		
 		tx.commit();
 		HibernateUtil.closeSession();
-		
-		return mimeType;
 	}
 
 	/**
 	 * @see org.openmrs.api.AdministrationService#createOrderType(org.openmrs.OrderType)
 	 */
-	public OrderType createOrderType(OrderType orderType) throws APIException {
+	public void createOrderType(OrderType orderType) throws APIException {
 		Session session = HibernateUtil.currentSession();
 		Transaction tx = session.beginTransaction();
 		
@@ -110,14 +102,12 @@ public class HibernateAdministrationService implements
 		
 		tx.commit();
 		HibernateUtil.closeSession();
-		
-		return orderType;
 	}
 
 	/**
 	 * @see org.openmrs.api.AdministrationService#createPatientIdentifierType(org.openmrs.PatientIdentifierType)
 	 */
-	public PatientIdentifierType createPatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException {
+	public void createPatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException {
 		Session session = HibernateUtil.currentSession();
 		Transaction tx = session.beginTransaction();
 		
@@ -127,14 +117,12 @@ public class HibernateAdministrationService implements
 		
 		tx.commit();
 		HibernateUtil.closeSession();
-		
-		return patientIdentifierType;
 	}
 
 	/**
 	 * @see org.openmrs.api.AdministrationService#createRelationshipType(org.openmrs.RelationshipType)
 	 */
-	public RelationshipType createRelationshipType(RelationshipType relationshipType) throws APIException {
+	public void createRelationshipType(RelationshipType relationshipType) throws APIException {
 		Session session = HibernateUtil.currentSession();
 		Transaction tx = session.beginTransaction();
 		
@@ -144,14 +132,12 @@ public class HibernateAdministrationService implements
 		
 		tx.commit();
 		HibernateUtil.closeSession();
-		
-		return relationshipType;
 	}
 
 	/**
 	 * @see org.openmrs.api.AdministrationService#createTribe(org.openmrs.Tribe)
 	 */
-	public Tribe createTribe(Tribe tribe) throws APIException {
+	public void createTribe(Tribe tribe) throws APIException {
 		Session session = HibernateUtil.currentSession();
 		Transaction tx = session.beginTransaction();
 		
@@ -161,8 +147,6 @@ public class HibernateAdministrationService implements
 		
 		tx.commit();
 		HibernateUtil.closeSession();
-		
-		return tribe;
 	}
 
 	/**

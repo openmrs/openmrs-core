@@ -20,10 +20,9 @@ public interface AdministrationService {
 	/**
 	 * Create a new EncounterType
 	 * @param EncounterType to create
-	 * @return newly created EncounterType
 	 * @throws APIException
 	 */
-	public EncounterType createEncounterType(EncounterType encounterType) throws APIException;
+	public void createEncounterType(EncounterType encounterType) throws APIException;
 
 	/**
 	 * Update an encounter type
@@ -42,10 +41,9 @@ public interface AdministrationService {
 	/**
 	 * Create a new PatientIdentifierType
 	 * @param PatientIdentifierType to create
-	 * @return newly created PatientIdentifierType
 	 * @throws APIException
 	 */
-	public PatientIdentifierType createPatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException;
+	public void createPatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException;
 
 	/**
 	 * Update PatientIdentifierType
@@ -64,10 +62,9 @@ public interface AdministrationService {
 	/**
 	 * Create a new Tribe
 	 * @param Tribe to create
-	 * @return newly created Tribe
 	 * @throws APIException
 	 */
-	public Tribe createTribe(Tribe tribe) throws APIException;
+	public void createTribe(Tribe tribe) throws APIException;
 
 	/**
 	 * Update Tribe
@@ -86,10 +83,9 @@ public interface AdministrationService {
 	/**
 	 * Create a new OrderType
 	 * @param OrderType to create
-	 * @return newly created OrderType
 	 * @throws APIException
 	 */
-	public OrderType createOrderType(OrderType orderType) throws APIException;
+	public void createOrderType(OrderType orderType) throws APIException;
 
 	/**
 	 * Update OrderType
@@ -108,10 +104,9 @@ public interface AdministrationService {
 	/**
 	 * Create a new FieldType
 	 * @param FieldType to create
-	 * @return newly created FieldType
 	 * @throws APIException
 	 */
-	public FieldType createFieldType(FieldType fieldType) throws APIException;
+	public void createFieldType(FieldType fieldType) throws APIException;
 
 	/**
 	 * Update FieldType
@@ -130,10 +125,9 @@ public interface AdministrationService {
 	/**
 	 * Create a new MimeType
 	 * @param MimeType to create
-	 * @return newly created MimeType
 	 * @throws APIException
 	 */
-	public MimeType createMimeType(MimeType mimeType) throws APIException;
+	public void createMimeType(MimeType mimeType) throws APIException;
 
 	/**
 	 * Update MimeType
@@ -152,10 +146,9 @@ public interface AdministrationService {
 	/**
 	 * Create a new Location
 	 * @param Location to create
-	 * @return newly created Location
 	 * @throws APIException
 	 */
-	public Location createLocation(Location location) throws APIException;
+	public void createLocation(Location location) throws APIException;
 
 	/**
 	 * Update Location
@@ -174,10 +167,9 @@ public interface AdministrationService {
 	/**
 	 * Create a new RelationshipType
 	 * @param RelationshipType to create
-	 * @return newly created RelationshipType
 	 * @throws APIException
 	 */
-	public RelationshipType createRelationshipType(RelationshipType relationshipType) throws APIException;
+	public void createRelationshipType(RelationshipType relationshipType) throws APIException;
 
 	/**
 	 * Update RelationshipType

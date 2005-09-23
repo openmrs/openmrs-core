@@ -12,10 +12,9 @@ public interface OrderService {
 	 * Creates a new order record
 	 * 
 	 * @param order to be created
-	 * @return newly created order
 	 * @throws APIException
 	 */
-	public Order createOrder(Order order) throws APIException;
+	public void createOrder(Order order) throws APIException;
 
 	/**
 	 * Get order by internal identifier

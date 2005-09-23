@@ -18,10 +18,9 @@ public interface EncounterService {
 	 * Creates a new encounter
 	 * 
 	 * @param encounter to be created
-	 * @return newly created encounter
 	 * @throws APIException
 	 */
-	public Encounter createEncounter(Encounter encounter) throws APIException;
+	public void createEncounter(Encounter encounter) throws APIException;
 
 	/**
 	 * Get encounter by internal identifier

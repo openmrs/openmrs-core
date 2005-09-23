@@ -21,6 +21,7 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.hibernate.HibernateAdministrationService;
 import org.openmrs.api.hibernate.HibernateEncounterService;
+import org.openmrs.api.hibernate.HibernateObsService;
 import org.openmrs.api.hibernate.HibernatePatientService;
 import org.openmrs.api.hibernate.HibernateUserService;
 import org.openmrs.api.hibernate.HibernateUtil;
@@ -204,8 +205,8 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 			log.warn("unauthorized request for obs service");
 			return null;
 		}
-		// if (obsService == null)
-		// obsService = new HibernateObsService();
+		if (obsService == null)
+			obsService = new HibernateObsService(this);
 		return obsService;
 	}
 

@@ -12,10 +12,9 @@ public interface PatientService {
 	 * Creates a new patient record
 	 * 
 	 * @param patient to be created
-	 * @return newly created patient
 	 * @throws APIException
 	 */
-	public Patient createPatient(Patient patient) throws APIException;
+	public void createPatient(Patient patient) throws APIException;
 
 	/**
 	 * Get patient by internal identifier

@@ -18,10 +18,9 @@ public interface FormService {
 	/**
 	 * Create a new form
 	 * @param form
-	 * @return reference to newly created form
 	 * @throws APIException
 	 */
-	public Form createForm(Form form) throws APIException;
+	public void createForm(Form form) throws APIException;
 
 	/**
 	 * Get form by internal form identifier

@@ -33,7 +33,7 @@ public class HibernateUserService extends HibernateDaoSupport implements
 	 * 
 	 * @see org.openmrs.api.UserService#createUser(org.openmrs.User)
 	 */
-	public User createUser(User user) {
+	public void createUser(User user) {
 		Session session = HibernateUtil.currentSession();
 		Transaction tx = session.beginTransaction();
 		
@@ -43,7 +43,6 @@ public class HibernateUserService extends HibernateDaoSupport implements
 		
 		tx.commit();
 		HibernateUtil.closeSession();
-		return user;
 	}
 
 	public User getUserByUsername(String username) {
