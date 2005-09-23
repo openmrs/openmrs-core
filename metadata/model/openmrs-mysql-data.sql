@@ -10863,6 +10863,6 @@ insert  into user_role values
 
 
 insert  into users values 
-(1, 'USER-1', 'User', null, 'One', null, 1, '2005-01-01 00:00:00', null, null, null, null, null, null, null), 
-(2, 'USER2-0', 'User', 'Bee', 'Two', null, 1, '2005-01-01 00:00:00', null, null, null, null, null, null, null);
+(1, 'USER-1', 'User', null, 'One', 98f6bcd4621d373cade4e832627b4f6, 1, '2005-01-01 00:00:00', null, null, null, null, null, null, null), 
+(2, 'USER2-0', 'User', 'Bee', 'Two', 98f6bcd4621d373cade4e832627b4f6, 1, '2005-01-01 00:00:00', null, null, null, null, null, null, null);
 
