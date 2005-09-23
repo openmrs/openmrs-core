@@ -15,7 +15,7 @@ SET FOREIGN_KEY_CHECKS=0;
 # Records for table concept
 #----------------------------
 
-
+delete from concept;
 insert  into concept values 
 (1, 0, 'ANEMIA, BLOOD LOSS', '', 'Anemia due to bleeding or a hemorrhagic process.', null, 4, 4, 'D50.0', '', 59, '2004-01-01 00:00:00', null, '', 4, '2005-02-16 00:13:08', '', null, 9), 
 (2, 0, 'ANEMIA, HEMOLYSIS', '', 'Anemia, due to the destruction or dissolution of red blood cells, with subsequent release of hemoglobin.', null, 4, 4, 'D58.9', '', 59, '2004-01-01 00:00:00', null, '', 2, '2005-03-03 17:51:12', '', null, 8), 
@@ -2369,7 +2369,7 @@ insert  into concept values
 # Records for table concept_answer
 #----------------------------
 
-
+delete from concept_answer;
 insert  into concept_answer values 
 (1, 12, 1115, null, 2, '2005-01-26 00:00:00'), 
 (2, 12, 1136, null, 2, '2005-01-26 00:00:00'), 
@@ -3069,7 +3069,7 @@ insert  into concept_answer values
 # Records for table concept_class
 #----------------------------
 
-
+delete from concept_class;
 insert  into concept_class values 
 (1, 'Test', 'Acq. during patient encounter (vitals, labs, etc.)', 2, '2004-02-02 00:00:00', null), 
 (2, 'Procedure', 'Describes a clinical procedure', 2, '2004-03-02 00:00:00', null), 
@@ -3090,7 +3090,7 @@ insert  into concept_class values
 # Records for table concept_datatype
 #----------------------------
 
-
+delete from concept_datatype;
 insert  into concept_datatype values 
 (1, 'Numeric', 'NM', 'Numeric value, including integer or float (e.g., creatinine, weight)', 2, '2004-02-02 00:00:00'), 
 (2, 'Coded', 'CWE', 'Value determined by term dictionary lookup (i.e., term identifier)', 2, '2004-02-02 00:00:00'), 
@@ -3106,7 +3106,7 @@ insert  into concept_datatype values
 # Records for table concept_download
 #----------------------------
 
-
+delete from concept_download;
 insert  into concept_download values 
 (1, 'ben', '134.68.31.227', 'Indiana University-Purdue University at Indianapolis', 'IN', 'US', '2005-09-07 12:49:59'), 
 (2, 'ben', '134.68.31.227', 'Indiana University-Purdue University at Indianapolis', 'IN', 'US', '2005-09-07 13:37:54'), 
@@ -3153,7 +3153,7 @@ insert  into concept_download values
 # Records for table concept_numeric
 #----------------------------
 
-
+delete from concept_numeric;
 insert  into concept_numeric values 
 (21, null, null, null, null, null, null, '', 2, '2005-02-16 00:44:07', 1, null, null), 
 (579, null, null, null, null, null, null, 'cm', 4, '2005-02-16 00:43:30', null, null, null), 
@@ -3268,7 +3268,7 @@ insert  into concept_numeric values
 # Records for table concept_set_derived
 #----------------------------
 
-
+delete from concept_set_derived;
 insert  into concept_set_derived values 
 (21, 1019, '2'), 
 (29, 1202, '3'), 
@@ -3505,7 +3505,7 @@ insert  into concept_set_derived values
 # Records for table concept_synonym
 #----------------------------
 
-
+delete from concept_synonym;
 insert  into concept_synonym values 
 (703, '(+)', '', 1, '2004-12-02 00:00:00'), 
 (664, '(-)', '', 1, '2004-12-02 00:00:00'), 
@@ -4355,7 +4355,7 @@ insert  into concept_synonym values
 # Records for table concept_word
 #----------------------------
 
-
+delete from concept_word;
 insert  into concept_word values 
 (1, 'ANEMIA'), 
 (1, 'BLOOD'), 
@@ -10588,7 +10588,7 @@ insert  into concept_word values
 # Records for table drug
 #----------------------------
 
-
+delete from drug;
 insert  into drug values 
 (2, 792, 'Triomune-30', 1, null, 'tablets', null, null, null, null, 'po', null, null, 'mg', 2, '2005-02-24 00:00:00'), 
 (3, 792, 'Triomune-40', 1, null, 'tablets', null, null, null, null, 'po', null, null, 'mg', 2, '2005-02-24 00:00:00'), 
@@ -10608,7 +10608,7 @@ insert  into drug values
 # Records for table encounter
 #----------------------------
 
-
+delete from encounter;
 insert  into encounter values 
 (1, 1, 1, 2, 1, '2005-09-22 00:00:00', 1, '2005-09-22 00:00:00'), 
 (2, 1, 2, 2, 1, '2005-09-22 00:00:00', 1, '2005-09-22 00:00:00'), 
@@ -10620,7 +10620,7 @@ insert  into encounter values
 # Records for table encounter_type
 #----------------------------
 
-
+delete from encounter_type;
 insert  into encounter_type values 
 (1, 'ADULTINITIAL', 'Outpatient Adult Initial Visit', 2, '2005-02-24 00:00:00'), 
 (2, 'ADULTRETURN', 'Outpatient Adult Return Visit', 2, '2005-02-24 00:00:00'), 
@@ -10654,7 +10654,7 @@ insert  into encounter_type values
 # Records for table location
 #----------------------------
 
-
+delete from location;
 insert  into location values 
 (1, 'Wishard Hospital', null, '1002 Wishard Blvd.', '', 'Indianapolis', 'IN', '46202', 'USA', null, null, 1, '2005-09-22 00:00:00'), 
 (2, 'Social Security Administration', null, ' 6401 Security Blvd.', null, 'Baltimore', 'MD', '21235-0001', 'USA', null, null, 1, '2005-09-22 00:00:00'), 
@@ -10667,14 +10667,14 @@ insert  into location values
 # Records for table obs
 #----------------------------
 
-
+delete from obs;
 insert  into obs values 
 (1, 1, 21, 1, null, '2005-09-22 00:00:00', 1, null, null, null, null, null, '14', null, null, null, 1, '2004-09-22 00:00:00', null, null, null, null);
 #----------------------------
 # Records for table order_type
 #----------------------------
 
-
+delete from order_type;
 insert  into order_type values 
 (1, 'Historical Drug', 'Drug information captured from patient historically', 2, '2005-08-08 07:06:12'), 
 (2, 'Drug', 'New drug order', 2, '2005-08-08 07:07:20'), 
@@ -10687,7 +10687,7 @@ insert  into order_type values
 # Records for table patient
 #----------------------------
 
-
+delete from patient;
 insert  into patient values 
 (1, 'M', 'W', '1975-01-01', 0, 'Indianapolis, IN', 99, 'US', null, 0, null, null, null, null, 1, '2005-09-22 00:00:00', null, null, null, null, null, null), 
 (2, 'M', 'B', '1941-05-01', 0, 'Berlin, Germany', 99, 'GE', null, 1, null, null, null, null, 1, '2005-09-22 00:00:00', null, null, null, null, null, null), 
@@ -10698,7 +10698,7 @@ insert  into patient values
 # Records for table patient_address
 #----------------------------
 
-
+delete from patient_address;
 insert  into patient_address values 
 (1, 1, 1, '555 Johnson Rd.', 'Apt. 555', 'Indianapolis', 'IN', '46202', 'USA', '394700', '860900', 1, '2005-09-22 00:00:00', null, null, null, null), 
 (2, 1, null, '1050 Wishard Blvd.', 'RG5', 'Indianapolis', 'IN', '46202', 'USA', null, null, 1, '2005-09-22 00:00:00', null, null, null, null), 
@@ -10710,7 +10710,7 @@ insert  into patient_address values
 # Records for table patient_identifier
 #----------------------------
 
-
+delete from patient_identifier;
 insert  into patient_identifier values 
 (1, '555-55-5555', 2, 2, 1, '2005-09-22 00:00:00', null, null, null, null), 
 (1, 'OLDID', 1, 1, 1, '2005-09-22 00:00:00', null, null, null, null), 
@@ -10723,7 +10723,7 @@ insert  into patient_identifier values
 # Records for table patient_identifier_type
 #----------------------------
 
-
+delete from patient_identifier_type;
 insert  into patient_identifier_type values 
 (1, 'Medical Record Number', 'Unique number used in health care setting..', 1, '2005-09-22 00:00:00'), 
 (2, 'Social Security Number', 'Number given out in the United States to track social security benefits and often used as a unique identifier..', 1, '2005-09-22 00:00:00');
@@ -10731,7 +10731,7 @@ insert  into patient_identifier_type values
 # Records for table patient_name
 #----------------------------
 
-
+delete from patient_name;
 insert  into patient_name values 
 (1, 1, 1, 'Mr.', 'John', 'D', '', 'Patient', null, null, null, 1, '2005-09-22 00:00:00', null, null, null, null, null, null), 
 (2, 1, 2, 'Mr.', 'Horatio', 'L', null, 'Hornblower', null, 'Esq.', null, 1, '2005-09-22 00:00:00', null, null, null, null, null, null), 
@@ -10743,7 +10743,7 @@ insert  into patient_name values
 # Records for table person
 #----------------------------
 
-
+delete from person;
 insert  into person values 
 (1, null, 1), 
 (2, null, 2), 
@@ -10753,14 +10753,19 @@ insert  into person values
 (6, 4, null), 
 (7, 5, null);
 #----------------------------
-# No records for table privilege
+# Records for table privilege
 #----------------------------
 
+delete from privilege;
+insert into privilege values
+('Add User', 'May add users to the system'),
+('Delete User', 'May delete users from the system'),
+('Write Order', 'May write orders for patients');
 #----------------------------
 # Records for table relationship
 #----------------------------
 
-
+delete from relationship;
 insert  into relationship values 
 (1, 3, 4, 7, 1, '2005-09-22 00:00:00', null, null, null, null), 
 (2, 2, 1, 3, 1, '2005-09-22 00:00:00', null, null, null, null), 
@@ -10769,7 +10774,7 @@ insert  into relationship values
 # Records for table relationship_type
 #----------------------------
 
-
+delete from relationship_type;
 insert  into relationship_type values 
 (1, 'Primary care provider', 'Health care provider who cares for a patient', 2, '2005-08-10 00:00:00'), 
 (2, 'Mother', '', 2, '2005-08-10 00:00:00'), 
@@ -10779,19 +10784,24 @@ insert  into relationship_type values
 # Records for table role
 #----------------------------
 
-
+delete from role;
 insert  into role values 
 ('provider', 'Health care provider.'), 
 ('superuser', 'System developers..');
 #----------------------------
-# No records for table role_privilege
+# Records for table role_privilege
 #----------------------------
 
+delete from role_privilege;
+insert into role_privilege values
+('superuser', 'Add User'),
+('superuser', 'Delete User'),
+('provider', 'Write Order');
 #----------------------------
 # Records for table tribe
 #----------------------------
 
-
+delete from tribe;
 insert  into tribe values 
 (1, 1, 'Kalenjin / Nandi'), 
 (2, 0, 'Luo'), 
@@ -10853,7 +10863,7 @@ insert  into tribe values
 # Records for table user_role
 #----------------------------
 
-
+delete from user_role;
 insert  into user_role values 
 (1, 'superuser'), 
 (2, 'provider');
@@ -10861,7 +10871,7 @@ insert  into user_role values
 # Records for table users
 #----------------------------
 
-
+delete from users;
 insert  into users values 
 (1, 'USER-1', 'User', null, 'One', '98f6bcd4621d373cade4e832627b4f6', 1, '2005-01-01 00:00:00', null, null, null, null, null, null, null), 
 (2, 'USER2-0', 'User', 'Bee', 'Two', '98f6bcd4621d373cade4e832627b4f6', 1, '2005-01-01 00:00:00', null, null, null, null, null, null, null);
