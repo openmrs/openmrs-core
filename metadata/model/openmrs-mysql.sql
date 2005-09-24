@@ -3,7 +3,7 @@ MySQL Backup
 Source Host:           localhost
 Source Server Version: 4.1.11-nt
 Source Database:       openmrs
-Date:                  2005/09/23 02:11:40
+Date:                  2005/09/24 16:47:25
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -20,7 +20,7 @@ CREATE TABLE `complex_obs` (
   KEY `mime_type_of_content` (`mime_type_id`),
   CONSTRAINT `complex_obs_ibfk_1` FOREIGN KEY (`mime_type_id`) REFERENCES `mime_type` (`mime_type_id`),
   CONSTRAINT `obs_pointing_to_complex_content` FOREIGN KEY (`obs_id`) REFERENCES `obs` (`obs_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 75776 kB; (`mime_type`) REFER `openmrs/mime_type`(';
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 #----------------------------
 # Table structure for concept
 #----------------------------
@@ -54,7 +54,7 @@ CREATE TABLE `concept` (
   CONSTRAINT `concept_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
   CONSTRAINT `concept_datatypes` FOREIGN KEY (`datatype_id`) REFERENCES `concept_datatype` (`concept_datatype_id`),
   CONSTRAINT `user_who_changed_concept` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 75776 kB; (`class_id`) REFER `openmrs/concept_clas';
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 #----------------------------
 # Table structure for concept_answer
 #----------------------------
@@ -103,7 +103,7 @@ CREATE TABLE `concept_datatype` (
   PRIMARY KEY  (`concept_datatype_id`),
   KEY `concept_datatype_creator` (`creator`),
   CONSTRAINT `concept_datatype_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 19456 kB; (`creator`) REFER `openmrs/users`(`user_';
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 #----------------------------
 # Table structure for concept_download
 #----------------------------
@@ -117,7 +117,24 @@ CREATE TABLE `concept_download` (
   `whois_country` varchar(50) default NULL,
   `date_downloaded` datetime default NULL,
   PRIMARY KEY  (`concept_download_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='InnoDB free: 75776 kB; InnoDB free: 75776 kB; InnoDB free: 7';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+#----------------------------
+# Table structure for concept_map
+#----------------------------
+drop table if exists concept_map;
+CREATE TABLE `concept_map` (
+  `concept_map_id` int(11) NOT NULL auto_increment,
+  `source` int(11) default NULL,
+  `source_id` int(11) default NULL,
+  `comment` varchar(255) default NULL,
+  `creator` int(11) NOT NULL default '0',
+  `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`concept_map_id`),
+  KEY `map_source` (`source`),
+  KEY `map_creator` (`creator`),
+  CONSTRAINT `map_source` FOREIGN KEY (`source`) REFERENCES `concept_source` (`concept_source_id`),
+  CONSTRAINT `map_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 #----------------------------
 # Table structure for concept_name
 #----------------------------
@@ -187,6 +204,27 @@ CREATE TABLE `concept_set_derived` (
   PRIMARY KEY  (`concept_id`,`concept_set`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 #----------------------------
+# Table structure for concept_source
+#----------------------------
+drop table if exists concept_source;
+CREATE TABLE `concept_source` (
+  `concept_source_id` int(11) NOT NULL auto_increment,
+  `name` varchar(50) NOT NULL default '',
+  `description` text NOT NULL,
+  `hl7_code` varchar(50) NOT NULL default '',
+  `creator` int(11) NOT NULL default '0',
+  `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
+  `voided` tinyint(4) default NULL,
+  `voided_by` int(11) default NULL,
+  `date_voided` datetime default NULL,
+  `void_reason` varchar(255) default NULL,
+  PRIMARY KEY  (`concept_source_id`),
+  KEY `concept_source_creator` (`creator`),
+  KEY `user_who_voided_concept_source` (`voided_by`),
+  CONSTRAINT `user_who_voided_concept_source` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`),
+  CONSTRAINT `concept_source_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+#----------------------------
 # Table structure for concept_synonym
 #----------------------------
 drop table if exists concept_synonym;
@@ -201,7 +239,7 @@ CREATE TABLE `concept_synonym` (
   KEY `synonym_creator` (`creator`),
   CONSTRAINT `synonym_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
   CONSTRAINT `synonym_for` FOREIGN KEY (`concept_id`) REFERENCES `concept` (`concept_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 22528 kB; (`creator`) REFER `openmrs/users`(`user_';
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 #----------------------------
 # Table structure for concept_word
 #----------------------------
@@ -268,7 +306,7 @@ CREATE TABLE `drug_order` (
   KEY `inventory_item` (`drug_inventory_id`),
   CONSTRAINT `extends_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`),
   CONSTRAINT `inventory_item` FOREIGN KEY (`drug_inventory_id`) REFERENCES `drug` (`drug_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 19456 kB; (`creator`) REFER `openmrs/users`(`user_';
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 #----------------------------
 # Table structure for encounter
 #----------------------------
@@ -293,7 +331,7 @@ CREATE TABLE `encounter` (
   CONSTRAINT `encounter_patient` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`),
   CONSTRAINT `encounter_provider` FOREIGN KEY (`provider_id`) REFERENCES `users` (`user_id`),
   CONSTRAINT `encounter_type_id` FOREIGN KEY (`encounter_type`) REFERENCES `encounter_type` (`encounter_type_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 75776 kB; (`creator_id`) REFER `openmrs/users`(`us';
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 #----------------------------
 # Table structure for encounter_type
 #----------------------------
@@ -344,6 +382,7 @@ CREATE TABLE `field_answer` (
   `answer_id` int(11) NOT NULL default '0',
   `creator` int(11) NOT NULL default '0',
   `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`field_id`,`answer_id`),
   KEY `answers_for_field` (`field_id`),
   KEY `field_answer_concept` (`answer_id`),
   KEY `user_who_created_field_answer` (`creator`),
@@ -392,7 +431,7 @@ CREATE TABLE `form` (
   CONSTRAINT `user_who_created_form` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
   CONSTRAINT `user_who_last_changed_form` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`),
   CONSTRAINT `user_who_retired_form` FOREIGN KEY (`retired_by`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 75776 kB; (`creator`) REFER `openmrs/users`(`user_';
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 #----------------------------
 # Table structure for form_field
 #----------------------------
@@ -429,8 +468,10 @@ CREATE TABLE `form_field` (
 #----------------------------
 drop table if exists icd10;
 CREATE TABLE `icd10` (
+  `icd10_id` int(11) NOT NULL default '0',
   `code` varchar(255) default NULL,
-  `name` varchar(255) default NULL
+  `name` varchar(255) default NULL,
+  PRIMARY KEY  (`icd10_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 #----------------------------
 # Table structure for location
@@ -453,7 +494,7 @@ CREATE TABLE `location` (
   PRIMARY KEY  (`location_id`),
   KEY `user_who_created_location` (`creator`),
   CONSTRAINT `user_who_created_location` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 18432 kB; (`creator`) REFER `openmrs/users`(`user_';
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 #----------------------------
 # Table structure for mime_type
 #----------------------------
@@ -464,7 +505,7 @@ CREATE TABLE `mime_type` (
   `description` text,
   PRIMARY KEY  (`mime_type_id`),
   KEY `mime_type_id` (`mime_type_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 75776 kB; InnoDB free: 75776 kB; InnoDB free: 7';
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 #----------------------------
 # Table structure for obs
 #----------------------------
@@ -560,7 +601,7 @@ CREATE TABLE `orders` (
   CONSTRAINT `type_of_order` FOREIGN KEY (`order_type_id`) REFERENCES `order_type` (`order_type_id`),
   CONSTRAINT `user_who_discontinued_order` FOREIGN KEY (`discontinued_by`) REFERENCES `users` (`user_id`),
   CONSTRAINT `user_who_voided_order` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 19456 kB; (`orderer`) REFER `openmrs/users`(`user_';
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 #----------------------------
 # Table structure for patient
 #----------------------------
@@ -597,7 +638,7 @@ CREATE TABLE `patient` (
   CONSTRAINT `belongs_to_tribe` FOREIGN KEY (`tribe`) REFERENCES `tribe` (`tribe_id`),
   CONSTRAINT `user_who_created_patient` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
   CONSTRAINT `user_who_voided_patient` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 16384 kB; (`tribe`) REFER `openmrs/tribe`(`tribe_i';
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 #----------------------------
 # Table structure for patient_address
 #----------------------------
@@ -627,7 +668,7 @@ CREATE TABLE `patient_address` (
   CONSTRAINT `patient_addresses` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`),
   CONSTRAINT `patient_address_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
   CONSTRAINT `patient_address_void` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 16384 kB; (`patient_id`) REFER `openmrs/patient`(`';
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 #----------------------------
 # Table structure for patient_identifier
 #----------------------------
@@ -653,7 +694,7 @@ CREATE TABLE `patient_identifier` (
   CONSTRAINT `identifier_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
   CONSTRAINT `identifier_voider` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`),
   CONSTRAINT `identifies_patient` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 7168 kB; (`creator`) REFER `openmrs/users`(`user_i';
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 #----------------------------
 # Table structure for patient_identifier_type
 #----------------------------
@@ -667,7 +708,7 @@ CREATE TABLE `patient_identifier_type` (
   PRIMARY KEY  (`patient_identifier_type_id`),
   KEY `type_creator` (`creator`),
   CONSTRAINT `type_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 19456 kB; (`creator`) REFER `openmrs/users`(`user_';
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 #----------------------------
 # Table structure for patient_name
 #----------------------------
@@ -699,7 +740,7 @@ CREATE TABLE `patient_name` (
   CONSTRAINT `name_for_patient` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`),
   CONSTRAINT `user_who_made_name` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
   CONSTRAINT `user_who_voided_name` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 19456 kB; (`patient_id`) REFER `openmrs/patient`(`';
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 #----------------------------
 # Table structure for person
 #----------------------------
@@ -713,7 +754,7 @@ CREATE TABLE `person` (
   KEY `users` (`user_id`),
   CONSTRAINT `patients` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`),
   CONSTRAINT `users` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 19456 kB; InnoDB free: 19456 kB; (`patient_id`)';
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 #----------------------------
 # Table structure for privilege
 #----------------------------
@@ -749,7 +790,7 @@ CREATE TABLE `relationship` (
   CONSTRAINT `relationship_type` FOREIGN KEY (`relationship`) REFERENCES `relationship_type` (`relationship_id`),
   CONSTRAINT `relation_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
   CONSTRAINT `relation_voider` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 19456 kB; InnoDB free: 18432 kB; (`person_id`) ';
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 #----------------------------
 # Table structure for relationship_type
 #----------------------------
@@ -763,7 +804,7 @@ CREATE TABLE `relationship_type` (
   PRIMARY KEY  (`relationship_id`),
   KEY `user_who_created_rel` (`creator`),
   CONSTRAINT `user_who_created_rel` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 19456 kB';
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 #----------------------------
 # Table structure for role
 #----------------------------
@@ -812,7 +853,7 @@ CREATE TABLE `user_role` (
 #----------------------------
 drop table if exists users;
 CREATE TABLE `users` (
-  `user_id` int(11) NOT NULL default '0',
+  `user_id` int(11) NOT NULL auto_increment,
   `username` varchar(50) default NULL,
   `first_name` varchar(50) default NULL,
   `middle_name` varchar(50) default NULL,
@@ -834,5 +875,5 @@ CREATE TABLE `users` (
   CONSTRAINT `user_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
   CONSTRAINT `user_who_changed_user` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`),
   CONSTRAINT `user_who_voided_user` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 8192 kB; (`voided_by`) REFER `openmrs/users`(`user';
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
