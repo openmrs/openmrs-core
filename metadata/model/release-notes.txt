@@ -3,9 +3,29 @@ OpenMRS Data Model Release Notes
 $Date$
 $Rev$
 
-9/22/05:
+9/24/05:
 
-*  Concept
+Version: 0.80b (Development)
+
+* Concept
+  o (+) concept_map (new table)
+  o (+) concept_map.concept_map_id (int, PK, AI)
+  o (+) concept_map.source (FK: concept_source.concept_source_id)
+  o (+) concept_map.source_id (int)
+  o (+) concept_map.comment (varchar 255)
+  o (+) concept_map.creator (FK: users.user_id)
+  o (+) concept_map.date_created (datetime)
+  o {+) concept_source (new table)
+  o (+) concept_source.concept_source_id (int, PK, AI)
+  o (+) concept_source.name (varchar 50)
+  o (+) concept_source.description (varchar 1024)
+  o (+) concept_source.hl7_code (varchar 50)
+  o (+) concept_source.creator (FK: users.user_id)
+  o (+) concept_source.date_created (datetime)
+  o (+) concept_source.voided (tinyint)
+  o (+) concept_source.voided_by (FK: users.user_id)
+  o (+) concept_source.date_voided (datetime)
+  o (+) concept_source.void_reason (varchar 255)
   o (u) concept_datatype.definition = concept_datatype.description
   o (u) concept_set2 = concept_set_derived
   o (-) concept.name_alt
@@ -24,7 +44,7 @@ $Rev$
   o (+) form.retired_by (FK: users.user_id)
   o (+) form.date_retired (datetime) 
 
-* Obs
+* Observation
   o (+) mime_type.mime_type_id (int, PK)
   o (u) mime_type.description = mime_type.description (text)
   o (u) complex_obs.mime_type (string) = complex_obs.mime_type_id (FK: mime_type.mime_type_id) 
