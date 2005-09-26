@@ -66,7 +66,7 @@ public class ObsServiceTest extends TestCase {
 		Integer valueGroupId1 = new Integer(5);
 		boolean valueBoolean1 = true;
 		Date valueDatetime1 = new Date();
-		Concept valueCoded1 = null;
+		Concept valueCoded1 = conceptService.getConcept(11);
 		Double valueNumeric1 = 1.0;
 		String valueModifier1 = "a1";
 		String valueText1 = "value text1";
@@ -104,7 +104,7 @@ public class ObsServiceTest extends TestCase {
 		Integer valueGroupId2 = new Integer(3);
 		boolean valueBoolean2 = false;
 		Date valueDatetime2 = new Date();
-		Concept valueCoded2 = null;
+		Concept valueCoded2 = conceptService.getConcept(22);
 		Double valueNumeric2 = 2.0;
 		String valueModifier2 = "cc";
 		String valueText2 = "value text2";
@@ -133,38 +133,34 @@ public class ObsServiceTest extends TestCase {
 		//o2 should equal o3 and neither should equal o1
 		
 		assertTrue(o3.equals(o));
-		if (o3.getOrder() != null && o.getOrder() != null)
-			assertFalse(o3.getOrder().equals(o.getOrder()));
-		assertFalse(o3.getComment().equals(o.getComment()));
-		System.out.println("o3.getPatient: " + o3.getPatient().getPatientId() +
-						   " o.getPatient: " + o.getPatient().getPatientId());
-		assertFalse(o3.getPatient().equals(o.getPatient()));
-		if (o3.getConcept() != null && o.getConcept() != null)
-			assertFalse(o3.getConcept().equals(o.getConcept()));
-		assertFalse(o3.getEncounter().equals(o.getEncounter()));
-		assertFalse(o3.getObsDatetime().equals(o.getObsDatetime()));
-		assertFalse(o3.getLocation().equals(o.getLocation()));
-		assertFalse(o3.getObsGroupId().equals(o.getObsGroupId()));
-		assertFalse(o3.getValueGroupId().equals(o.getValueGroupId()));
-		assertFalse(o3.getValueBoolean().equals(o.getValueBoolean()));
-		assertFalse(o3.getValueDatetime().equals(o.getValueDatetime()));
-		if (o3.getValueCoded() != null && o.getValueCoded() != null)
-			assertFalse(o3.getValueCoded().equals(o.getValueCoded()));
-		assertFalse(o3.getValueNumeric().equals(o.getValueNumeric()));
-		assertFalse(o3.getValueModifier().equals(o.getValueModifier()));
-		assertFalse(o3.getValueText().equals(o.getValueText()));
-		
+		if (order2 != null)
+			assertTrue(o3.getOrder().equals(order2));
+		assertTrue(o3.getPatient().equals(patient2));
+		assertTrue(o3.getComment().equals(comment2));
+		assertTrue(o3.getConcept().equals(concept2));
+		assertTrue(o3.getEncounter().equals(encounter2));
+		assertTrue(o3.getObsDatetime().equals(datetime2));
+		assertTrue(o3.getLocation().equals(location2));
+		assertTrue(o3.getObsGroupId().equals(groupId2));
+		assertTrue(o3.getValueGroupId().equals(valueGroupId2));
+		assertTrue(o3.getValueBoolean().equals(valueBoolean2));
+		assertTrue(o3.getValueDatetime().equals(valueDatetime2));
+		assertTrue(o3.getValueCoded().equals(valueCoded2));
+		assertTrue(o3.getValueNumeric().equals(valueNumeric2));
+		assertTrue(o3.getValueModifier().equals(valueModifier2));
+		assertTrue(o3.getValueText().equals(valueText2));
 		
 		obsService.voidObs(o, "testing void function");
 		
 		Obs o4 = obsService.getObs(o.getObsId());
 		
-		assertFalse(o4.getVoidReason().equals(o3.getVoidReason()));
-		assertFalse(o4.getVoidedBy().equals(o3.getVoidedBy()));
+		assertTrue(o4.getVoidReason().equals("testing void function"));
+		assertTrue(o4.getVoidedBy().equals(o3.getVoidedBy()));
 		assertTrue(o4.isVoided());
 		
 		obsService.deleteObs(o);
-		obsService.deleteObs(o3); //gratuitous
+		//TODO what to do on multiple delete?
+		//obsService.deleteObs(o3); //gratuitous
 		
 		assertNull(obsService.getObs(o.getObsId()));
 		

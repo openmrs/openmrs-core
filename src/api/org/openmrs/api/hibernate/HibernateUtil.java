@@ -30,9 +30,18 @@ public class HibernateUtil {
 			s = sessionFactory.openSession();
 			session.set(s);
 		}
+		else if (!s.isOpen() || !s.isConnected()) {
+			s.reconnect();
+		}
 		return s;
 	}
 
+	public static void disconnectSession() throws HibernateException {
+		Session s = (Session) session.get();
+		if (s != null)
+			s.disconnect();
+	}
+	
 	public static void closeSession() throws HibernateException {
 		Session s = (Session) session.get();
 		session.set(null);

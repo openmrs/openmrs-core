@@ -41,40 +41,40 @@
 		<!-- Associations -->
 
 		<!-- bi-directional many-to-one association to Patient -->
-		<many-to-one name="patient" class="Patient" not-null="true" lazy="false">
+		<many-to-one name="patient" class="Patient" not-null="true" lazy="true">
 			<column name="patient_id" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to Concept -->
 		<many-to-one name="concept" class="Concept"
-			not-null="true" lazy="false">
+			not-null="true" lazy="true">
 			<column name="concept_id" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to Concept -->
 		<many-to-one name="valueCoded" class="Concept"
-			not-null="true" lazy="false">
+			not-null="true" lazy="true">
 			<column name="value_coded" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to Order -->
-		<many-to-one name="order" class="Order" not-null="true" lazy="false">
+		<many-to-one name="order" class="Order" not-null="true" lazy="true">
 			<column name="order_id" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to Location -->
-		<many-to-one name="location" class="Location" not-null="true" lazy="false">
+		<many-to-one name="location" class="Location" not-null="true" lazy="true">
 			<column name="location_id" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to Encounter -->
 		<many-to-one name="encounter" class="Encounter"
-			not-null="true" lazy="false">
+			not-null="true" lazy="true">
 			<column name="encounter_id" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to User -->
 		<many-to-one name="creator" class="User"
-			not-null="true" lazy="false">
+			not-null="true" lazy="true">
 			<column name="creator" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to User -->
 		<many-to-one name="voidedBy" class="User"
-			not-null="true" lazy="false">
+			not-null="true" lazy="true">
 			<column name="voided_by" />
 		</many-to-one>
 		
@@ -95,7 +95,7 @@
 		        name="mimeType"
 		        class="org.openmrs.MimeType"
 		        not-null="true"
-		   		lazy="false"
+		   		lazy="true"
 		   	>
 		        <column name="mime_type_id" />
 		    </many-to-one>
