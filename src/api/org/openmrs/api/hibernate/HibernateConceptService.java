@@ -9,6 +9,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Expression;
 import org.openmrs.Concept;
+import org.openmrs.Drug;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.context.Context;
@@ -100,12 +101,31 @@ public class HibernateConceptService implements
 		
 		Session session = HibernateUtil.currentSession();
 		
-		return session.createCriteria(Concept.class)
-					.createCriteria("names")
-					.add(Expression.eq("locale", context.getLocale().toString()))
-					.add(Expression.like("name", name))
-					.list();
+		List<Concept> concepts = session.createCriteria(Concept.class)
+								.createCriteria("names")
+								.add(Expression.eq("locale", context.getLocale().toString()))
+								.add(Expression.like("name", name))
+								.list();
+		
+		HibernateUtil.disconnectSession();
+		
+		return concepts;
 	}
+
+	/**
+	 * @see org.openmrs.api.ConceptService#getDrugs()
+	 */
+	public List<Drug> getDrugs() {
+
+		Session session = HibernateUtil.currentSession();
+		
+		List<Drug> drugs = session.createQuery("from Drug").list();
+		
+		HibernateUtil.disconnectSession();
+		
+		return drugs;
+	}
+	
 	
 	
 }

@@ -67,7 +67,7 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 		Session session = HibernateUtil.currentSession();
 		
 		User candidateUser = (User) session.createQuery(
-				"from User as u where u.username = ?").setString(0, username)
+				"from User u where u.username = ?").setString(0, username)
 				.uniqueResult();
 		
 		if (candidateUser == null) {
@@ -93,7 +93,9 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 			// Yikes! Can't encode password...what to do?
 			errorMsg = "system cannot find password encryption algorithm";
 		}
-
+		
+		HibernateUtil.disconnectSession();
+		
 		if (user == null) {
 			log
 					.info("Failed login (username=\"" + username + ") - "
@@ -154,12 +156,12 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 	 */
 	public boolean hasPrivilege(String privilege) {
 		if (isAuthenticated()) {
+			Session session = HibernateUtil.currentSession();
 			User user = getAuthenticatedUser();
-			System.out.println(user.getClass().getName());
-			getSession().merge(user);
-			getHibernateTemplate().initialize(user.getRoles());
-			boolean blah = user.hasPrivilege(privilege);
-			return blah;
+			session.merge(user);
+			//getHibernateTemplate().initialize(user.getRoles());
+			HibernateUtil.disconnectSession();
+			return user.hasPrivilege(privilege);
 		}
 		return false;
 	}

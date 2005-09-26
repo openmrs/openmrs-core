@@ -89,7 +89,7 @@ public class HibernateFormService implements
 	 * @see org.openmrs.api.FormService#voidForm(org.openmrs.Form, java.lang.String)
 	 */
 	public void retireForm(Form form, String reason) {
-		form.setRetired(false);
+		form.setRetired(true);
 		form.setRetiredBy(context.getAuthenticatedUser());
 		form.setDateRetired(new Date());
 		form.setRetiredReason(reason);
@@ -100,7 +100,7 @@ public class HibernateFormService implements
 	 * @see org.openmrs.api.FormService#unvoidForm(org.openmrs.Form)
 	 */
 	public void unretireForm(Form form) throws APIException {
-		form.setRetired(true);
+		form.setRetired(false);
 		form.setRetiredBy(null);
 		form.setDateRetired(null);
 		form.setRetiredReason("");

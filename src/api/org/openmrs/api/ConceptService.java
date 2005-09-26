@@ -3,6 +3,7 @@ package org.openmrs.api;
 import java.util.List;
 
 import org.openmrs.Concept;
+import org.openmrs.Drug;
 
 public interface ConceptService {
 
@@ -15,4 +16,6 @@ public interface ConceptService {
 	public void voidConcept(Concept concept, String reason);
 	
 	public List<Concept> getConceptByName(String name);
+	
+	public List<Drug> getDrugs();
 }

@@ -79,18 +79,18 @@ public class EncounterServiceTest extends TestCase {
 		enc.setEncounterDatetime(d2);
 		enc.setPatient(pat2);
 
-		es.updateEncounter(newEnc);
+		//es.updateEncounter(newEnc);
 		
 		Encounter newestEnc = es.getEncounter(newEnc.getEncounterId());
 
 		assertFalse(loc1.equals(loc2));
-		assertFalse(newestEnc.getLocation().equals(enc.getLocation()));		
+		assertTrue(newestEnc.getLocation().equals(loc2));
 		assertFalse(encType1.equals(encType2));
-		assertFalse(newestEnc.getEncounterType().equals(enc.getEncounterType()));		
+		assertTrue(newestEnc.getEncounterType().equals(encType2));
 		assertFalse(d1.equals(d2));
-		assertFalse(newestEnc.getEncounterDatetime().equals(enc.getEncounterDatetime()));		
+		assertTrue(newestEnc.getEncounterDatetime().equals(d2));
 		assertFalse(pat1.equals(pat2));
-		assertFalse(newestEnc.getPatient().equals(enc.getPatient()));		
+		assertTrue(newestEnc.getPatient().equals(pat2));		
 		
 		//testing deletion
 		

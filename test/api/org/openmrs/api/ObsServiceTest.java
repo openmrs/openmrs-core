@@ -129,6 +129,7 @@ public class ObsServiceTest extends TestCase {
 		obsService.updateObs(o2);
 		
 		Obs o3 = obsService.getObs(o2.getObsId());
+		System.out.println("o3.isComplex(): " + o3.isComplexObs());
 		
 		//o2 should equal o3 and neither should equal o1
 		
@@ -257,7 +258,8 @@ public class ObsServiceTest extends TestCase {
 		obsService.updateObs(o2);
 		
 		ComplexObs o3 = (ComplexObs)obsService.getObs(o2.getObsId());
-		
+		Obs o7 = obsService.getObs(o2.getObsId());
+		System.out.println("o7.isComplex(): " + o7.isComplexObs());
 		//o2=03=o but 
 		//(values of o2 = values of o3) != values of o
 		

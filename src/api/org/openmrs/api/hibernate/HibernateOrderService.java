@@ -37,7 +37,7 @@ public class HibernateOrderService implements
 		session.save(order);
 		
 		tx.commit();
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 	}
 
 	/**
@@ -51,7 +51,7 @@ public class HibernateOrderService implements
 		session.delete(order);
 		
 		tx.commit();
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 		
 	}
 
@@ -65,7 +65,7 @@ public class HibernateOrderService implements
 		Order order = new Order();
 		order = (Order)session.get(Order.class, orderId);
 		
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 		
 		return order;
 	}
@@ -89,7 +89,7 @@ public class HibernateOrderService implements
 	 * @see org.openmrs.api.OrderService#voidOrder(org.openmrs.Order, java.lang.String)
 	 */
 	public void voidOrder(Order order, String reason) {
-		order.setVoided(false);
+		order.setVoided(true);
 		order.setVoidedBy(context.getAuthenticatedUser());
 		order.setDateVoided(new Date());
 		order.setVoidReason(reason);
@@ -100,7 +100,7 @@ public class HibernateOrderService implements
 	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, java.lang.String)
 	 */
 	public void discontinueOrder(Order order, String reason) throws APIException {
-		order.setDiscontinued(false);
+		order.setDiscontinued(true);
 		order.setDiscontinuedBy(context.getAuthenticatedUser());
 		order.setDiscontinuedDate(new Date());
 		order.setDiscontinuedReason(reason);

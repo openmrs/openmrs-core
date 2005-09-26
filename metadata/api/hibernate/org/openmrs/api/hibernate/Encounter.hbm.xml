@@ -20,34 +20,34 @@
 		<!-- Associations -->
 
 		<!-- bi-directional many-to-one association to Patient -->
-		<many-to-one name="patient" class="Patient" not-null="true" lazy="false">
+		<many-to-one name="patient" class="Patient" not-null="true">
 			<column name="patient_id" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to Location -->
-		<many-to-one name="location" class="Location" not-null="true" lazy="false">
+		<many-to-one name="location" class="Location" not-null="true">
 			<column name="location_id" />
 		</many-to-one>
 		<!-- bi-directional one-to-many association to Order -->
-		<set name="orders" inverse="true" cascade="all" lazy="false">
+		<set name="orders" inverse="true" cascade="all">
 			<key column="encounter_id" />
 			<one-to-many class="Order" />
 		</set>
 		<!-- bi-directional one-to-many association to Ob -->
-		<set name="obs" inverse="true" cascade="all" lazy="false">
+		<set name="obs" inverse="true" cascade="all">
 			<key column="encounter_id" />
 			<one-to-many class="Obs" />
 		</set>
 		<!-- bi-directional many-to-one association to EncounterType -->
 		<many-to-one name="encounterType" class="EncounterType"
-			not-null="true" lazy="false">
+			not-null="true">
 			<column name="encounter_type" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to User -->
-		<many-to-one name="creator" class="User" not-null="true" lazy="false">
+		<many-to-one name="creator" class="User" not-null="true">
 			<column name="creator" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to User -->
-		<many-to-one name="provider" class="User" not-null="true" lazy="false">
+		<many-to-one name="provider" class="User" not-null="true">
 			<column name="provider_id" />
 		</many-to-one>
 
