@@ -2,7 +2,6 @@ package org.openmrs.api.hibernate;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -113,6 +112,8 @@ public class HibernateUserService extends HibernateDaoSupport implements
 	public void voidUser(User user, String reason) {
 		user.setVoided(true);
 		user.setVoidReason(reason);
+		user.setVoidedBy(context.getAuthenticatedUser());
+		user.setDateVoided(new Date());
 		updateUser(user);
 	}
 
@@ -172,6 +173,8 @@ public class HibernateUserService extends HibernateDaoSupport implements
 	public void unvoidUser(User user) throws APIException {
 		user.setVoided(false);
 		user.setVoidReason("");
+		user.setVoidedBy(null);
+		user.setDateVoided(null);
 		updateUser(user);
 	}
 

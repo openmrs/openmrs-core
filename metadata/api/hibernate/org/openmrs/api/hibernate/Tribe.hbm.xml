@@ -8,24 +8,13 @@
 	<class name="Tribe" table="tribe">
 
 		<id name="tribeId" type="int" column="tribe_id">
-			<generator class="assigned" />
+			<generator class="identity" />
 		</id>
 
 		<property name="retired" type="boolean" column="retired"
 			length="1" />
 		<property name="name" type="java.lang.String" column="name"
 			not-null="true" length="50" />
-
-		<!-- Associations -->
-
-		<!-- bi-directional one-to-many association to Patient -->
-		<!--
-		<set name="patients" lazy="true" inverse="true"
-			cascade="none">
-			<key column="tribe" />
-			<one-to-many class="Patient" />
-		</set>
-		-->
 
 	</class>
 	

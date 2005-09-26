@@ -10,7 +10,6 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.openmrs.Patient;
-import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Tribe;
 import org.openmrs.api.APIException;
@@ -71,6 +70,7 @@ public class HibernatePatientService extends HibernateDaoSupport implements Pati
 	public List getPatientByIdentifier(String identifier) throws APIException {
 		Session session = HibernateUtil.currentSession();
 		
+		//TODO this will return 3 patient #1's if 3 identifiers are matched. fix?
 		List patients = session.createCriteria(Patient.class)
 						.createCriteria("identifiers")
 						.add(Expression.like("identifier", identifier, MatchMode.ANYWHERE))
@@ -100,8 +100,22 @@ public class HibernatePatientService extends HibernateDaoSupport implements Pati
 	 */
 	public void voidPatient(Patient patient, String reason) {
 		patient.setVoided(true);
+		patient.setVoidedBy(context.getAuthenticatedUser());
 		patient.setDateVoided(new Date());
 		patient.setVoidReason(reason);
+		updatePatient(patient);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openmrs.api.PatientService#unvoidPatient(org.openmrs.Patient)
+	 */
+	public void unvoidPatient(Patient patient, String reason) {
+		patient.setVoided(false);
+		patient.setVoidedBy(null);
+		patient.setDateVoided(null);
+		patient.setVoidReason("");
 		updatePatient(patient);
 	}
 
@@ -145,7 +159,7 @@ public class HibernatePatientService extends HibernateDaoSupport implements Pati
 	public List<PatientIdentifierType> getPatientIdentifierTypes() throws APIException {
 		Session session = HibernateUtil.currentSession();
 		
-		List patientIdentifierTypes = session.createQuery("from PatientIdentifierType").list();
+		List<PatientIdentifierType> patientIdentifierTypes = session.createQuery("from PatientIdentifierType").list();
 		
 		//HibernateUtil.closeSession();
 		
@@ -158,7 +172,7 @@ public class HibernatePatientService extends HibernateDaoSupport implements Pati
 	public List<Tribe> getPatientTribes() throws APIException {
 		Session session = HibernateUtil.currentSession();
 		
-		List tribes = session.createQuery("from Tribe").list();
+		List<Tribe> tribes = session.createQuery("from Tribe").list();
 		
 		//HibernateUtil.closeSession();
 		

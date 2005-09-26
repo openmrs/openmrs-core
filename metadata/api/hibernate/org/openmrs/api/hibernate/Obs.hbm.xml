@@ -41,47 +41,66 @@
 		<!-- Associations -->
 
 		<!-- bi-directional many-to-one association to Patient -->
-		<many-to-one name="patient" class="Patient" not-null="true">
+		<many-to-one name="patient" class="Patient" not-null="true" lazy="false">
 			<column name="patient_id" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to Concept -->
 		<many-to-one name="concept" class="Concept"
-			not-null="true">
+			not-null="true" lazy="false">
 			<column name="concept_id" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to Concept -->
 		<many-to-one name="valueCoded" class="Concept"
-			not-null="true">
+			not-null="true" lazy="false">
 			<column name="value_coded" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to Order -->
-		<many-to-one name="order" class="Order" not-null="true">
+		<many-to-one name="order" class="Order" not-null="true" lazy="false">
 			<column name="order_id" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to Location -->
-		<many-to-one name="location" class="Location" not-null="true">
+		<many-to-one name="location" class="Location" not-null="true" lazy="false">
 			<column name="location_id" />
 		</many-to-one>
-		<!-- bi-directional one-to-one association to ComplexObs -->
-		<!--
-		<one-to-one name="complexObs" class="ComplexObs"
-			outer-join="auto" />
-		-->
 		<!-- bi-directional many-to-one association to Encounter -->
 		<many-to-one name="encounter" class="Encounter"
-			not-null="true">
+			not-null="true" lazy="false">
 			<column name="encounter_id" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to User -->
 		<many-to-one name="creator" class="User"
-			not-null="true">
+			not-null="true" lazy="false">
 			<column name="creator" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to User -->
 		<many-to-one name="voidedBy" class="User"
-			not-null="true">
+			not-null="true" lazy="false">
 			<column name="voided_by" />
 		</many-to-one>
+		
+		
+		<!-- Complex Obs Joined Subclass -->
+		<joined-subclass name="ComplexObs" table="complex_obs">
+		
+			<key column="obs_id" />
+
+			<property name="urn" type="java.lang.String" column="urn" length="65535" />
+			
+			<property name="complexValue" type="java.lang.String"
+				column="complex_value" length="2147483647" />
+	
+			<!-- Association -->
+		    <!-- bi-directional many-to-one association to MimeType -->
+		    <many-to-one
+		        name="mimeType"
+		        class="org.openmrs.MimeType"
+		        not-null="true"
+		   		lazy="false"
+		   	>
+		        <column name="mime_type_id" />
+		    </many-to-one>
+		
+		</joined-subclass>
 
 	</class>
 	

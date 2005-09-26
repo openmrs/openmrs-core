@@ -7,12 +7,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.openmrs.Encounter;
 import org.openmrs.MimeType;
 import org.openmrs.Obs;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ObsService;
 import org.openmrs.context.Context;
+
+//import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 public class HibernateObsService implements
 		ObsService {
@@ -38,7 +39,7 @@ public class HibernateObsService implements
 		session.save(obs);
 		
 		tx.commit();
-		//HibernateUtil.closeSession();
+		HibernateUtil.closeSession();
 	}
 
 	/**
@@ -52,7 +53,7 @@ public class HibernateObsService implements
 		session.delete(obs);
 		
 		tx.commit();
-		//HibernateUtil.closeSession();
+		HibernateUtil.closeSession();
 	}
 
 	/**
@@ -65,7 +66,7 @@ public class HibernateObsService implements
 		Obs obs = new Obs();
 		obs = (Obs)session.get(Obs.class, obsId);
 		
-		//HibernateUtil.closeSession();
+		HibernateUtil.closeSession();
 		
 		return obs;
 	}
@@ -80,7 +81,7 @@ public class HibernateObsService implements
 		MimeType mimeType = new MimeType();
 		mimeType = (MimeType)session.get(MimeType.class, mimeTypeId);
 		
-		//HibernateUtil.closeSession();
+		HibernateUtil.closeSession();
 		
 		return mimeType;
 	}
@@ -91,9 +92,9 @@ public class HibernateObsService implements
 	public List<MimeType> getMimeTypes() throws APIException {
 		Session session = HibernateUtil.currentSession();
 		
-		List mimeTypes = session.createCriteria(MimeType.class).list();
+		List<MimeType> mimeTypes = session.createCriteria(MimeType.class).list();
 		
-		//HibernateUtil.closeSession();
+		HibernateUtil.closeSession();
 		
 		return mimeTypes;
 	}
@@ -121,7 +122,7 @@ public class HibernateObsService implements
 		session.saveOrUpdate(obs);
 		
 		tx.commit();
-		//HibernateUtil.closeSession();
+		HibernateUtil.closeSession();
 	}
 
 	/**
@@ -131,6 +132,7 @@ public class HibernateObsService implements
 		obs.setVoided(true);
 		obs.setVoidedBy(context.getAuthenticatedUser());
 		obs.setDateVoided(new Date());
+		obs.setVoidReason(reason);
 		
 		updateObs(obs);
 

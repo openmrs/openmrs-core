@@ -53,7 +53,7 @@ public class HibernateEncounterService implements
 		session.delete(encounter);
 		
 		tx.commit();
-		//HibernateUtil.closeSession();
+		HibernateUtil.closeSession();
 		
 	}
 
@@ -67,7 +67,7 @@ public class HibernateEncounterService implements
 		Encounter encounter = new Encounter();
 		encounter = (Encounter)session.get(Encounter.class, encounterId);
 		
-		//HibernateUtil.closeSession();
+		HibernateUtil.closeSession();
 		
 		return encounter;
 	}
@@ -82,7 +82,7 @@ public class HibernateEncounterService implements
 		EncounterType encounterType = new EncounterType();
 		session.load(encounterType, encounterTypeId);
 		
-		//HibernateUtil.closeSession();
+		HibernateUtil.closeSession();
 		
 		return encounterType;
 		
@@ -98,7 +98,7 @@ public class HibernateEncounterService implements
 		List<EncounterType> encounterTypes;
 		encounterTypes = session.createQuery("from EncounterType et").list();
 		
-		//HibernateUtil.closeSession();
+		HibernateUtil.closeSession();
 		
 		return encounterTypes;
 
@@ -112,9 +112,9 @@ public class HibernateEncounterService implements
 		Session session = HibernateUtil.currentSession();
 		
 		Location location = new Location();
-		session.load(location, locationId);
+		location = (Location)session.get(Location.class, locationId);
 		
-		//HibernateUtil.closeSession();
+		HibernateUtil.closeSession();
 		
 		return location;
 
@@ -130,7 +130,7 @@ public class HibernateEncounterService implements
 		List<Location> locations;
 		locations = session.createQuery("from Location l").list();
 		
-		//HibernateUtil.closeSession();
+		HibernateUtil.closeSession();
 		
 		return locations;
 
@@ -153,7 +153,7 @@ public class HibernateEncounterService implements
 			
 			tx.commit();
 			session.flush();
-			//HibernateUtil.closeSession();
+			HibernateUtil.closeSession();
 		}
 		
 	}

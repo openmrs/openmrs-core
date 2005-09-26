@@ -19,17 +19,6 @@
 		<property name="description" type="java.lang.String"
 			column="description" length="1024" />
 
-		<!-- Associations -->
-
-		<!-- bi-directional one-to-many association to ComplexObs -->
-		<!--
-		<set name="complexObs" lazy="true" inverse="true"
-			cascade="none">
-			<key column="mime_type" />
-			<one-to-many class="ComplexObs" />
-		</set>
-		-->
-
 	</class>
 	
 </hibernate-mapping>

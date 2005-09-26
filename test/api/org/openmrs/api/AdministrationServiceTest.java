@@ -41,14 +41,14 @@ public class AdministrationServiceTest extends TestCase {
 		assertNotNull(us);
 		as = context.getAdministrationService();
 		assertNotNull(as);
-		//obsService = context.getObsService();
-		//assertNotNull(obsService);
-		//orderService = context.getOrderService();
-		//assertNotNull(orderService);
-		//formService = context.getFormService();
-		//assertNotNull(formService);
-		//patientService = context.getPatientService();
-		//assertNotNull(patientService);
+		obsService = context.getObsService();
+		assertNotNull(obsService);
+		orderService = context.getOrderService();
+		assertNotNull(orderService);
+		formService = context.getFormService();
+		assertNotNull(formService);
+		patientService = context.getPatientService();
+		assertNotNull(patientService);
 		
 	}
 
@@ -113,7 +113,7 @@ public class AdministrationServiceTest extends TestCase {
 		
 		
 		//check deletion
-		as.deleteMimeType(newMimeType);
+		as.deleteMimeType(newerMimeType);
 		
 		assertNull(obsService.getMimeType(newMimeType.getMimeTypeId()));
 

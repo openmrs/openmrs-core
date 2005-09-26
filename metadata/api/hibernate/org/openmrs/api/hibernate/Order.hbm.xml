@@ -89,30 +89,6 @@
 
     <!-- Associations -->
   
-    <!-- bi-directional one-to-one association to DrugOrder -->
-    <!--
-    <one-to-one
-        name="drugOrder"
-        class="org.openmrs.DrugOrder"
-        outer-join="auto"
-    />
-    -->
-    <!-- bi-directional one-to-many association to Ob -->
-    <!--
-    <set
-        name="obs"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
-        <key>
-            <column name="order_id" />
-        </key>
-        <one-to-many 
-            class="org.openmrs.Obs"
-        />
-    </set>
-    -->
     <!-- bi-directional many-to-one association to Concept -->
     <many-to-one
         name="concept"
@@ -169,6 +145,57 @@
     >
         <column name="order_type_id" />
     </many-to-one>
+
+	<joined-subclass name="org.openmrs.DrugOrder" table="drug_order">
+		
+		<key column="order_id" />
+		
+	    <property
+	        name="dose"
+	        type="int"
+	        column="dose"
+	        length="11"
+	    />
+	    <property
+	        name="units"
+	        type="java.lang.String"
+	        column="units"
+	        length="255"
+	    />
+	    <property
+	        name="frequency"
+	        type="java.lang.String"
+	        column="frequency"
+	        length="255"
+	    />
+	    <property
+	        name="prn"
+	        type="boolean"
+	        column="prn"
+	        length="1"
+	    />
+	    <property
+	        name="complex"
+	        type="boolean"
+	        column="complex"
+	        length="1"
+	    />
+	    <property
+	        name="quantity"
+	        type="int"
+	        column="quantity"
+	        length="11"
+	    />
+	    <!-- bi-directional many-to-one association to Drug -->
+	    <many-to-one
+	        name="drug"
+	        class="org.openmrs.Drug"
+	        not-null="true"
+	    >
+	        <column name="drug_inventory_id" />
+	    </many-to-one>
+	
+	</joined-subclass>
 
 </class>
 </hibernate-mapping>

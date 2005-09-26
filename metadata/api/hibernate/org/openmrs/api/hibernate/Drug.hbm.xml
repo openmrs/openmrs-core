@@ -21,7 +21,7 @@
         type="java.lang.Integer"
         column="drug_id"
     >
-        <generator class="assigned" />
+        <generator class="identity" />
     </id>
 
     <property

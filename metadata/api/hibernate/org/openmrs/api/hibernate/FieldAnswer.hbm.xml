@@ -17,20 +17,21 @@
 >
 
     <composite-id>
-        <key-property 
-            name="dateCreated" 
-            column="date_created" 
-            type="java.util.Date"
-            length="19"
-        />
+        <key-many-to-one name="concept" class="org.openmrs.Concept" column="concept_id" />
+        <key-many-to-one name="field" class="org.openmrs.Field" column="field_id" />
     </composite-id>    
 
+    <property 
+        name="dateCreated" 
+        column="date_created" 
+        type="java.util.Date"
+        length="19"
+    />
 
     <!-- Associations -->
-    <!-- derived association(s) for compound key -->
-    <!-- end of derived association(s) -->
   
     <!-- bi-directional many-to-one association to Concept -->
+    <!--
     <many-to-one
         name="concept"
         class="org.openmrs.Concept"
@@ -38,6 +39,17 @@
     >
         <column name="answer_id" />
     </many-to-one>
+    -->
+    <!-- bi-directional many-to-one association to Field -->
+    <!--
+    <many-to-one
+        name="field"
+        class="org.openmrs.Field"
+        not-null="true"
+    >
+        <column name="field_id" />
+    </many-to-one>
+    -->
     <!-- bi-directional many-to-one association to User -->
     <many-to-one
         name="creator"
@@ -46,14 +58,5 @@
     >
         <column name="creator" />
     </many-to-one>
-    <!-- bi-directional many-to-one association to Field -->
-    <many-to-one
-        name="field"
-        class="org.openmrs.Field"
-        not-null="true"
-    >
-        <column name="field_id" />
-    </many-to-one>
-
 </class>
 </hibernate-mapping>

@@ -103,7 +103,7 @@ public class HibernateOrderService implements
 		order.setDiscontinued(false);
 		order.setDiscontinuedBy(context.getAuthenticatedUser());
 		order.setDiscontinuedDate(new Date());
-		order.setVoidReason(reason);
+		order.setDiscontinuedReason(reason);
 		updateOrder(order);
 	}
 
@@ -135,7 +135,7 @@ public class HibernateOrderService implements
 	 * @see org.openmrs.api.OrderService#undiscontinueOrder(org.openmrs.Order)
 	 */
 	public void undiscontinueOrder(Order order) throws APIException {
-		order.setDiscontinued(true);
+		order.setDiscontinued(false);
 		order.setDiscontinuedBy(null);
 		order.setDiscontinuedDate(null);
 		order.setDiscontinuedReason("");
@@ -146,7 +146,7 @@ public class HibernateOrderService implements
 	 * @see org.openmrs.api.OrderService#unvoidOrder(org.openmrs.Order)
 	 */
 	public void unvoidOrder(Order order) throws APIException {
-		order.setVoided(true);
+		order.setVoided(false);
 		order.setVoidedBy(null);
 		order.setDateVoided(null);
 		order.setVoidReason("");
