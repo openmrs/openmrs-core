@@ -2,6 +2,8 @@ package org.openmrs.context;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Set;
 
@@ -9,8 +11,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
+import org.openmrs.Privilege;
+import org.openmrs.Role;
 import org.openmrs.User;
-import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
@@ -97,9 +100,7 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 		HibernateUtil.disconnectSession();
 		
 		if (user == null) {
-			log
-					.info("Failed login (username=\"" + username + ") - "
-							+ errorMsg);
+			log.info("Failed login (username=\"" + username + ") - " + errorMsg);
 			throw new ContextAuthenticationException(errorMsg);
 		}
 	}
@@ -138,12 +139,19 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 	 * 
 	 * @see org.openmrs.context.Context#getPrivileges()
 	 */
-	public Set getPrivileges() {
+	public Set<Privilege> getPrivileges() {
 		if (!isAuthenticated())
 			return null;
 
-		// TODO Auto-generated method stub
-		return null;
+		Session session = HibernateUtil.currentSession();
+		session.merge(user);
+		Set<Privilege> privileges = new HashSet<Privilege>();
+		for (Iterator<Role> i = user.getRoles().iterator(); i.hasNext();) {
+			Role role = i.next();
+			privileges.addAll(role.getPrivileges());
+		}
+		HibernateUtil.disconnectSession();
+		return privileges;
 	}
 
 	/**
@@ -238,7 +246,9 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 	public UserService getUserService() {
 		if (!isAuthenticated()) {
 			log.warn("unauthorized access to user service");
-			throw new APIException("Unauthorized Access to UserService");
+			return null;
+			// TODO return null or throw exception?
+			//throw new APIException("Unauthorized Access to UserService");
 		}
 		if (userService == null)
 			userService = new HibernateUserService(this);

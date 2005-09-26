@@ -103,7 +103,7 @@ public class HibernateConceptService implements
 		
 		List<Concept> concepts = session.createCriteria(Concept.class)
 								.createCriteria("names")
-								.add(Expression.eq("locale", context.getLocale().toString()))
+								//.add(Expression.eq("locale", context.getLocale().toString()))
 								.add(Expression.like("name", name))
 								.list();
 		

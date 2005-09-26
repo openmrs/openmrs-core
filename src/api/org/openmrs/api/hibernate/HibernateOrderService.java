@@ -28,6 +28,7 @@ public class HibernateOrderService implements
 	 * @see org.openmrs.api.OrderService#createOrder(org.openmrs.Order)
 	 */
 	public void createOrder(Order order) throws APIException {
+		log.debug("creating order");
 		
 		Session session = HibernateUtil.currentSession();
 		Transaction tx = session.beginTransaction();
@@ -44,6 +45,7 @@ public class HibernateOrderService implements
 	 * @see org.openmrs.api.OrderService#deleteOrder(org.openmrs.Order)
 	 */
 	public void deleteOrder(Order order) throws APIException {
+		log.debug("deleting order #" + order.getOrderId());
 		
 		Session session = HibernateUtil.currentSession();
 		Transaction tx = session.beginTransaction();
@@ -59,6 +61,7 @@ public class HibernateOrderService implements
 	 * @see org.openmrs.api.OrderService#getOrder(java.lang.Integer)
 	 */
 	public Order getOrder(Integer orderId) throws APIException {
+		log.debug("getting order #" + orderId);
 		
 		Session session = HibernateUtil.currentSession();
 		
@@ -74,13 +77,15 @@ public class HibernateOrderService implements
 	 * @see org.openmrs.api.OrderService#updateOrder(org.openmrs.Order)
 	 */
 	public void updateOrder(Order order) {
+		log.debug("updating order #" + order.getOrderId());
 		
 		if (order.getOrderId() == null)
 			createOrder(order);
 		else {
 			Session session = HibernateUtil.currentSession();
 			
-			session.saveOrUpdate(order);
+			session.merge(order);
+			session.update(order);
 			HibernateUtil.disconnectSession();
 		}
 	}
@@ -89,6 +94,8 @@ public class HibernateOrderService implements
 	 * @see org.openmrs.api.OrderService#voidOrder(org.openmrs.Order, java.lang.String)
 	 */
 	public void voidOrder(Order order, String reason) {
+		log.debug("voiding order #" + order.getOrderId());
+		
 		order.setVoided(true);
 		order.setVoidedBy(context.getAuthenticatedUser());
 		order.setDateVoided(new Date());
@@ -100,6 +107,8 @@ public class HibernateOrderService implements
 	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, java.lang.String)
 	 */
 	public void discontinueOrder(Order order, String reason) throws APIException {
+		log.debug("discontinuing order #" + order.getOrderId());
+		
 		order.setDiscontinued(true);
 		order.setDiscontinuedBy(context.getAuthenticatedUser());
 		order.setDiscontinuedDate(new Date());
@@ -111,6 +120,8 @@ public class HibernateOrderService implements
 	 * @see org.openmrs.api.OrderService#getOrderType(java.lang.Integer)
 	 */
 	public OrderType getOrderType(Integer orderTypeId) throws APIException {
+		log.debug("getting orderType #" + orderTypeId);
+
 		Session session = HibernateUtil.currentSession();
 		
 		OrderType orderType = (OrderType)session.get(OrderType.class, orderTypeId);
@@ -124,6 +135,8 @@ public class HibernateOrderService implements
 	 * @see org.openmrs.api.OrderService#getOrderTypes()
 	 */
 	public List<OrderType> getOrderTypes() throws APIException {
+		log.debug("getting all order types");
+
 		Session session = HibernateUtil.currentSession();
 		
 		List<OrderType> orderTypes = session.createCriteria(OrderType.class).list();
@@ -137,6 +150,8 @@ public class HibernateOrderService implements
 	 * @see org.openmrs.api.OrderService#undiscontinueOrder(org.openmrs.Order)
 	 */
 	public void undiscontinueOrder(Order order) throws APIException {
+		log.debug("undiscontinuing order #" + order.getOrderId());
+
 		order.setDiscontinued(false);
 		order.setDiscontinuedBy(null);
 		order.setDiscontinuedDate(null);
@@ -148,6 +163,8 @@ public class HibernateOrderService implements
 	 * @see org.openmrs.api.OrderService#unvoidOrder(org.openmrs.Order)
 	 */
 	public void unvoidOrder(Order order) throws APIException {
+		log.debug("unvoiding order #" + order.getOrderId());
+		
 		order.setVoided(false);
 		order.setVoidedBy(null);
 		order.setDateVoided(null);
