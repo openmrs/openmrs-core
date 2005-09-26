@@ -99,14 +99,13 @@ public class OrderServiceTest extends TestCase {
 		//order2 should equal order3 and neither should equal order1
 		
 		assertTrue(order3.equals(order1));
-		if (order3.getConcept() != null && order1.getConcept() != null)
-			assertTrue(order3.getConcept().equals(order1.getConcept()));
-		assertTrue(order3.getOrderer().equals(order1.getOrderer()));
-		assertTrue(order3.getOrderType().equals(order1.getOrderType()));
-		assertTrue(order3.getEncounter().equals(order1.getEncounter()));
-		assertTrue(order3.getInstructions().equals(order1.getInstructions()));
-		assertTrue(order3.getStartDate().equals(order1.getStartDate()));
-		assertTrue(order3.getAutoExpireDate().equals(order1.getAutoExpireDate()));
+		assertTrue(order3.getConcept().equals(concept2));
+		assertTrue(order3.getOrderer().equals(orderer2));
+		assertTrue(order3.getOrderType().equals(ordertypes2));
+		assertTrue(order3.getEncounter().equals(encounter2));
+		assertTrue(order3.getInstructions().equals(instructions2));
+		assertTrue(order3.getStartDate().equals(start2));
+		assertTrue(order3.getAutoExpireDate().equals(autoexpire2));
 		
 		orderService.voidOrder(order1, "testing void function");
 		
@@ -119,9 +118,9 @@ public class OrderServiceTest extends TestCase {
 		orderService.discontinueOrder(order4, "discontinue instruct");
 		
 		Order order5 = orderService.getOrder(order4.getOrderId());
-		assertTrue(order5.getDiscontinuedReason().equals(order1.getDiscontinuedReason()));
+		assertTrue(order5.getDiscontinuedReason().equals("discontinue instruct"));
 		//System.out.println("order5.getDiscontinuedBy: " + order5.getDiscontinuedBy().getUsername());
-		assertTrue(order5.getDiscontinuedBy().equals(order1.getDiscontinuedBy()));
+		assertTrue(order5.getDiscontinuedBy().equals(ContextFactory.getContext().getAuthenticatedUser()));
 		assertTrue(order5.isDiscontinued());
 		
 		orderService.undiscontinueOrder(order5);
@@ -199,6 +198,7 @@ public class OrderServiceTest extends TestCase {
 		drugorder2.setInstructions(instructions2);
 		drugorder2.setStartDate(start2);
 		drugorder2.setAutoExpireDate(autoexpire2);
+		drugorder2.setDrug(drugInventoryId2);
 		drugorder2.setDose(dose2);
 		drugorder2.setUnits(units2);
 		drugorder2.setFrequency(freq2);
@@ -213,36 +213,34 @@ public class OrderServiceTest extends TestCase {
 		//drugorder2 should equal drugorder3 and neither should equal drugorder1
 		
 		assertTrue(drugorder3.equals(drugorder1));
-		if (drugorder3.getConcept() != null && drugorder1.getConcept() != null)
-			assertTrue(drugorder3.getConcept().equals(drugorder1.getConcept()));
-		assertTrue(drugorder3.getOrderType().equals(drugorder1.getOrderType()));
-		assertTrue(drugorder3.getOrderer().equals(drugorder1.getOrderer()));
-		assertTrue(drugorder3.getEncounter().equals(drugorder1.getEncounter()));
-		assertTrue(drugorder3.getInstructions().equals(drugorder1.getInstructions()));
-		assertTrue(drugorder3.getStartDate().equals(drugorder1.getStartDate()));
-		assertTrue(drugorder3.getAutoExpireDate().equals(drugorder1.getAutoExpireDate()));
-		if (drugorder3.getDrug() != null && drugorder1.getDrug() != null)
-			assertTrue(drugorder3.getDrug().equals(drugorder1.getDrug()));
-		assertTrue(drugorder3.getDose().equals(drugorder1.getDose()));
-		assertTrue(drugorder3.getUnits().equals(drugorder1.getUnits()));
-		assertTrue(drugorder3.getFrequency().equals(drugorder1.getFrequency()));
-		assertTrue(drugorder3.isPrn().equals(drugorder1.isPrn()));
-		assertTrue(drugorder3.isComplex().equals(drugorder1.isComplex()));
-		assertTrue(drugorder3.getQuantity().equals(drugorder1.getQuantity()));
+		assertTrue(drugorder3.getConcept().equals(concept2));
+		assertTrue(drugorder3.getOrderType().equals(ordertypes2));
+		assertTrue(drugorder3.getOrderer().equals(orderer2));
+		assertTrue(drugorder3.getEncounter().equals(encounter2));
+		assertTrue(drugorder3.getInstructions().equals(instructions2));
+		assertTrue(drugorder3.getStartDate().equals(start2));
+		assertTrue(drugorder3.getAutoExpireDate().equals(autoexpire2));
+		assertTrue(drugorder3.getDrug().equals(drugInventoryId2));
+		assertTrue(drugorder3.getDose().equals(dose2));
+		assertTrue(drugorder3.getUnits().equals(units2));
+		assertTrue(drugorder3.getFrequency().equals(freq2));
+		assertTrue(drugorder3.isPrn().equals(prn2));
+		assertTrue(drugorder3.isComplex());
+		assertTrue(drugorder3.getQuantity().equals(quantity2));
 		
 		
 		orderService.voidOrder(drugorder1, "testing void function");
 		
 		DrugOrder drugorder4 = (DrugOrder)orderService.getOrder(drugorder1.getOrderId());
 		
-		assertTrue(drugorder4.getVoidReason().equals(drugorder3.getVoidReason()));
+		assertTrue(drugorder4.getVoidReason().equals("testing void function"));
 		assertTrue(drugorder4.getVoidedBy().equals(drugorder3.getVoidedBy()));
 		assertTrue(drugorder4.isVoided());
 		
 		orderService.discontinueOrder(drugorder4, "discontinue instruct");
 		
 		DrugOrder drugorder5 = (DrugOrder)orderService.getOrder(drugorder4.getOrderId());
-		assertTrue(drugorder5.getDiscontinuedReason().equals(drugorder1.getDiscontinuedReason()));
+		assertTrue(drugorder5.getDiscontinuedReason().equals("discontinue instruct"));
 		//System.out.println("drugorder5.getDiscontinuedBy: " + drugorder5.getDiscontinuedBy().getUsername());
 		assertTrue(drugorder5.getDiscontinuedBy().equals(drugorder1.getDiscontinuedBy()));
 		assertTrue(drugorder5.isDiscontinued());
@@ -253,6 +251,8 @@ public class OrderServiceTest extends TestCase {
 		orderService.deleteOrder(drugorder1);
 		//orderService.deleteOrder(drugorder3); //gratuitous
 		
+		//orderService.voidOrder(drugorder3, "reason");
+		 
 		assertNull(orderService.getOrder(drugorder1.getOrderId()));
 		
 		

@@ -90,11 +90,11 @@ public class FormServiceTest extends TestCase {
 		
 		assertTrue(form1.equals(form3));
 		
-		assertTrue(form3.getName().equals(form1.getName()));
-		assertTrue(form3.getVersion().equals(form1.getVersion()));
-		assertTrue(form3.getDescription().equals(form1.getDescription()));
-		assertTrue(form3.getSchemaNamespace().equals(form1.getSchemaNamespace()));
-		assertTrue(form3.getDefinition().equals(form1.getDefinition()));
+		assertTrue(form3.getName().equals(name2));
+		assertTrue(form3.getVersion().equals(version2));
+		assertTrue(form3.getDescription().equals(descript2));
+		assertTrue(form3.getSchemaNamespace().equals(schema_namespace2));
+		assertTrue(form3.getDefinition().equals(def2));
 		
 		//testing (un)retiration
 		
@@ -266,13 +266,13 @@ public class FormServiceTest extends TestCase {
 		
 		assertTrue(field3.equals(field1));
 		
-		assertTrue(field1.getConcept().equals(field3.getConcept()));
-		assertTrue(field1.getName().equals(field3.getName()));
-		assertTrue(field1.getDescription().equals(field3.getDescription()));
-		assertTrue(field1.getFieldType().equals(field3.getFieldType()));
-		assertTrue(field1.getTableName().equals(field3.getTableName()));
-		assertTrue(field1.getAttributeName().equals(field3.getAttributeName()));
-		assertTrue(field1.getSelectMultiple().equals(field3.getSelectMultiple()));
+		assertTrue(field1.getConcept().equals(concept2));
+		assertTrue(field1.getName().equals(name2));
+		assertTrue(field1.getDescription().equals(descript2));
+		assertTrue(field1.getFieldType().equals(fieldtype2));
+		assertTrue(field1.getTableName().equals(table2));
+		assertTrue(field1.getAttributeName().equals(attr2));
+		assertTrue(field1.getSelectMultiple().equals(multi2));
 		assertTrue(field1.getAnswers().equals(field3.getAnswers()));
 		
 		//testing deletion
