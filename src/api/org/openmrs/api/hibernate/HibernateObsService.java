@@ -7,6 +7,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.Obs;
 import org.openmrs.api.APIException;
@@ -134,9 +135,39 @@ public class HibernateObsService implements
 		obs.setDateVoided(new Date());
 		obs.setVoidReason(reason);
 		
-		updateObs(obs);
+		updateObs(obs);	
+	}
+	
+	/**
+	 * @see org.openmrs.api.ObsService#getLocation(java.lang.Integer)
+	 */
+	public Location getLocation(Integer locationId) throws APIException {
 
+		Session session = HibernateUtil.currentSession();
 		
+		Location location = new Location();
+		location = (Location)session.get(Location.class, locationId);
+		
+		HibernateUtil.disconnectSession();
+		
+		return location;
+
+	}
+
+	/**
+	 * @see org.openmrs.api.ObsService#getLocations()
+	 */
+	public List<Location> getLocations() throws APIException {
+
+		Session session = HibernateUtil.currentSession();
+		
+		List<Location> locations;
+		locations = session.createQuery("from Location l").list();
+		
+		HibernateUtil.disconnectSession();
+		
+		return locations;
+
 	}
 
 	

@@ -38,6 +38,14 @@ public interface UserService {
 	public User getUserByUsername(String username) throws APIException;
 
 	/**
+	 * Get user by role granted
+	 * @param Role role that the Users must have to be returned 
+	 * @return requested user
+	 * @throws APIException
+	 */
+	public User getUserByRole(Role role) throws APIException;
+	
+	/**
 	 * Save changes to user
 	 * @param user
 	 * @throws APIException
@@ -100,7 +108,17 @@ public interface UserService {
 	 */
 	public void deleteUser(User user) throws APIException;
 	
+	/**
+	 * Returns all privileges currently possible for any User
+	 * @return Global list of privileges
+	 * @throws APIException
+	 */
 	public List<Privilege> getPrivileges() throws APIException;
 	
+	/**
+	 * Returns all roles currently possible for any User
+	 * @return Global list of roles
+	 * @throws APIException
+	 */
 	public List<Role> getRoles() throws APIException;
 }

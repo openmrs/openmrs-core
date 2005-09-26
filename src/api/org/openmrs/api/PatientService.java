@@ -2,6 +2,7 @@ package org.openmrs.api;
 
 import java.util.List;
 
+import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Tribe;
@@ -85,5 +86,22 @@ public interface PatientService {
 	 * @throws APIException
 	 */
 	public List<Tribe> getPatientTribes() throws APIException;
+	
+	/**
+	 * Get all locations
+	 * 
+	 * @return location list
+	 * @throws APIException
+	 */
+	public List<Location> getLocations() throws APIException;
+
+	/**
+	 * Get location by internal identifier
+	 * 
+	 * @param location id
+	 * @return location with given internal identifier
+	 * @throws APIException
+	 */
+	public Location getLocation(Integer locationId) throws APIException;
 	
 }

@@ -9,6 +9,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
+import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Tribe;
@@ -183,4 +184,36 @@ public class HibernatePatientService extends HibernateDaoSupport implements Pati
 		return tribes;
 	}
 
+	/**
+	 * @see org.openmrs.api.PatientService#getLocation(java.lang.Integer)
+	 */
+	public Location getLocation(Integer locationId) throws APIException {
+
+		Session session = HibernateUtil.currentSession();
+		
+		Location location = new Location();
+		location = (Location)session.get(Location.class, locationId);
+		
+		HibernateUtil.disconnectSession();
+		
+		return location;
+
+	}
+
+	/**
+	 * @see org.openmrs.api.PatientService#getLocations()
+	 */
+	public List<Location> getLocations() throws APIException {
+
+		Session session = HibernateUtil.currentSession();
+		
+		List<Location> locations;
+		locations = session.createQuery("from Location l").list();
+		
+		HibernateUtil.disconnectSession();
+		
+		return locations;
+
+	}
+	
 }

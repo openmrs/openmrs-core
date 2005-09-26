@@ -176,7 +176,7 @@ public class FormServiceTest extends TestCase {
 		
 		//testing correct updation
 		
-		FormField formField3 = formService.getFormField(formField2.getFormFieldId());
+		FormField formField3 = null; //formService.getFormField(formField2.getFormFieldId());
 		
 		assertTrue(formField3.equals(formField2));
 		

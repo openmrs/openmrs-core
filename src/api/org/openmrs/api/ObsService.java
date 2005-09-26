@@ -67,4 +67,21 @@ public interface ObsService {
 	 * @throws APIException
 	 */
 	public MimeType getMimeType(Integer mimeTypeId) throws APIException;
+	
+	/**
+	 * Get all locations
+	 * 
+	 * @return location list
+	 * @throws APIException
+	 */
+	public List<Location> getLocations() throws APIException;
+
+	/**
+	 * Get location by internal identifier
+	 * 
+	 * @param location id
+	 * @return location with given internal identifier
+	 * @throws APIException
+	 */
+	public Location getLocation(Integer locationId) throws APIException;
 }
