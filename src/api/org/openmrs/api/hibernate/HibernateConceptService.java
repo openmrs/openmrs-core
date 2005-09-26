@@ -37,7 +37,7 @@ public class HibernateConceptService implements
 		session.save(concept);
 		
 		tx.commit();
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 	}
 
 	/**
@@ -51,7 +51,7 @@ public class HibernateConceptService implements
 		session.delete(concept);
 		
 		tx.commit();
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 		
 	}
 
@@ -65,7 +65,7 @@ public class HibernateConceptService implements
 		Concept concept = new Concept();
 		concept = (Concept)session.get(Concept.class, conceptId);
 		
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 		
 		return concept;
 	}
@@ -81,7 +81,7 @@ public class HibernateConceptService implements
 			Session session = HibernateUtil.currentSession();
 			
 			session.saveOrUpdate(concept);
-			//HibernateUtil.closeSession();
+			HibernateUtil.disconnectSession();
 		}
 	}
 

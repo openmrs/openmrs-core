@@ -41,7 +41,7 @@ public class HibernateAdministrationService implements
 		session.save(encounterType);
 		
 		tx.commit();
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 	}
 
 	/**
@@ -56,7 +56,7 @@ public class HibernateAdministrationService implements
 		session.save(fieldType);
 		
 		tx.commit();
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 	}
 
 	/**
@@ -71,7 +71,7 @@ public class HibernateAdministrationService implements
 		session.save(location);
 		
 		tx.commit();
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 	}
 
 	/**
@@ -86,7 +86,7 @@ public class HibernateAdministrationService implements
 		session.save(mimeType);
 		
 		tx.commit();
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 	}
 
 	/**
@@ -101,7 +101,7 @@ public class HibernateAdministrationService implements
 		session.save(orderType);
 		
 		tx.commit();
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 	}
 
 	/**
@@ -116,7 +116,7 @@ public class HibernateAdministrationService implements
 		session.save(patientIdentifierType);
 		
 		tx.commit();
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 	}
 
 	/**
@@ -131,7 +131,7 @@ public class HibernateAdministrationService implements
 		session.save(relationshipType);
 		
 		tx.commit();
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 	}
 
 	/**
@@ -146,7 +146,7 @@ public class HibernateAdministrationService implements
 		session.save(tribe);
 		
 		tx.commit();
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 	}
 
 	/**
@@ -159,7 +159,7 @@ public class HibernateAdministrationService implements
 		session.delete(encounterType);
 		
 		tx.commit();
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 	}
 
 	/**
@@ -172,7 +172,7 @@ public class HibernateAdministrationService implements
 		session.delete(fieldType);
 		
 		tx.commit();
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 	}
 
 	/**
@@ -185,7 +185,7 @@ public class HibernateAdministrationService implements
 		session.delete(location);
 		
 		tx.commit();
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 		
 	}
 
@@ -199,7 +199,7 @@ public class HibernateAdministrationService implements
 		session.delete(mimeType);
 		
 		tx.commit();
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 		
 	}
 
@@ -213,7 +213,7 @@ public class HibernateAdministrationService implements
 		session.delete(orderType);
 		
 		tx.commit();
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 
 	}
 
@@ -227,7 +227,7 @@ public class HibernateAdministrationService implements
 		session.delete(patientIdentifierType);
 		
 		tx.commit();
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 	
 	}
 
@@ -241,7 +241,7 @@ public class HibernateAdministrationService implements
 		session.delete(relationshipType);
 		
 		tx.commit();
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 
 	}
 
@@ -255,7 +255,7 @@ public class HibernateAdministrationService implements
 		session.delete(tribe);
 		
 		tx.commit();
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 
 		
 	}
@@ -273,7 +273,7 @@ public class HibernateAdministrationService implements
 			session.saveOrUpdate(encounterType);
 			
 			tx.commit();
-			HibernateUtil.closeSession();
+			HibernateUtil.disconnectSession();
 		}
 	}
 
@@ -290,7 +290,7 @@ public class HibernateAdministrationService implements
 			session.saveOrUpdate(fieldType);
 			
 			tx.commit();
-			HibernateUtil.closeSession();
+			HibernateUtil.disconnectSession();
 		}
 	}
 
@@ -307,7 +307,7 @@ public class HibernateAdministrationService implements
 			session.saveOrUpdate(location);
 			
 			tx.commit();
-			HibernateUtil.closeSession();
+			HibernateUtil.disconnectSession();
 		}
 	}
 
@@ -324,7 +324,7 @@ public class HibernateAdministrationService implements
 			session.saveOrUpdate(mimeType);
 			
 			tx.commit();
-			HibernateUtil.closeSession();
+			HibernateUtil.disconnectSession();
 		}
 	}
 
@@ -341,7 +341,7 @@ public class HibernateAdministrationService implements
 			session.saveOrUpdate(orderType);
 			
 			tx.commit();
-			HibernateUtil.closeSession();
+			HibernateUtil.disconnectSession();
 		}
 	}
 
@@ -358,7 +358,7 @@ public class HibernateAdministrationService implements
 			session.saveOrUpdate(patientIdentifierType);
 			
 			tx.commit();
-			HibernateUtil.closeSession();
+			HibernateUtil.disconnectSession();
 		}
 	}
 
@@ -375,7 +375,7 @@ public class HibernateAdministrationService implements
 			session.saveOrUpdate(relationshipType);
 			
 			tx.commit();
-			HibernateUtil.closeSession();
+			HibernateUtil.disconnectSession();
 		}
 	}
 
@@ -392,7 +392,7 @@ public class HibernateAdministrationService implements
 			session.saveOrUpdate(tribe);
 			
 			tx.commit();
-			HibernateUtil.closeSession();
+			HibernateUtil.disconnectSession();
 		}
 	}
 

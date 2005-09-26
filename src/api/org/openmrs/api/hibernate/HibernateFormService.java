@@ -39,7 +39,7 @@ public class HibernateFormService implements
 		session.save(form);
 		
 		tx.commit();
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 	}
 
 	/**
@@ -52,7 +52,7 @@ public class HibernateFormService implements
 		session.delete(form);
 		
 		tx.commit();
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 	}
 
 	/**
@@ -65,7 +65,7 @@ public class HibernateFormService implements
 		Form form = new Form();
 		form = (Form)session.get(Form.class, formId);
 		
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 		
 		return form;
 	}
@@ -81,7 +81,7 @@ public class HibernateFormService implements
 			Session session = HibernateUtil.currentSession();
 			
 			session.saveOrUpdate(form);
-			//HibernateUtil.closeSession();
+			//HibernateUtil.disconnectSession();
 		}
 	}
 
@@ -116,7 +116,7 @@ public class HibernateFormService implements
 		Field field = new Field();
 		field = (Field)session.get(Field.class, fieldId);
 		
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 		
 		return field;
 	}
@@ -129,7 +129,7 @@ public class HibernateFormService implements
 		
 		List fields = session.createCriteria(Field.class).list();
 		
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 		
 		return fields;
 	}
@@ -143,7 +143,7 @@ public class HibernateFormService implements
 		FieldType fieldType = new FieldType();
 		fieldType = (FieldType)session.get(FieldType.class, fieldTypeId);
 		
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 		
 		return fieldType;
 	}
@@ -156,7 +156,7 @@ public class HibernateFormService implements
 		
 		List fieldTypes = session.createCriteria(FieldType.class).list();
 		
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 		
 		return fieldTypes;
 	}
@@ -170,7 +170,7 @@ public class HibernateFormService implements
 		FormField formField = new FormField();
 		formField = (FormField)session.get(FormField.class, formFieldId);
 		
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 		
 		return formField;
 	}
@@ -183,7 +183,7 @@ public class HibernateFormService implements
 		
 		List forms = session.createCriteria(Form.class).list();
 		
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 		
 		return forms;
 	}
@@ -201,7 +201,7 @@ public class HibernateFormService implements
 		session.save(field);
 		
 		tx.commit();
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 	}
 	
 	/**
@@ -214,7 +214,7 @@ public class HibernateFormService implements
 			Session session = HibernateUtil.currentSession();
 			
 			session.saveOrUpdate(field);
-			//HibernateUtil.closeSession();
+			//HibernateUtil.disconnectSession();
 		}
 	}
 
@@ -228,7 +228,7 @@ public class HibernateFormService implements
 		session.delete(field);
 		
 		tx.commit();
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 	}
 	
 }

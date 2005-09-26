@@ -39,7 +39,7 @@ public class HibernateEncounterService implements
 		
 		tx.commit();
 		session.flush();
-		//HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 	}
 
 	/**
@@ -53,7 +53,7 @@ public class HibernateEncounterService implements
 		session.delete(encounter);
 		
 		tx.commit();
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 		
 	}
 
@@ -67,7 +67,7 @@ public class HibernateEncounterService implements
 		Encounter encounter = new Encounter();
 		encounter = (Encounter)session.get(Encounter.class, encounterId);
 		
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 		
 		return encounter;
 	}
@@ -79,10 +79,9 @@ public class HibernateEncounterService implements
 
 		Session session = HibernateUtil.currentSession();
 		
-		EncounterType encounterType = new EncounterType();
-		session.load(encounterType, encounterTypeId);
+		EncounterType encounterType = (EncounterType)session.get(EncounterType.class, encounterTypeId);
 		
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 		
 		return encounterType;
 		
@@ -98,7 +97,7 @@ public class HibernateEncounterService implements
 		List<EncounterType> encounterTypes;
 		encounterTypes = session.createQuery("from EncounterType et").list();
 		
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 		
 		return encounterTypes;
 
@@ -114,7 +113,7 @@ public class HibernateEncounterService implements
 		Location location = new Location();
 		location = (Location)session.get(Location.class, locationId);
 		
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 		
 		return location;
 
@@ -130,7 +129,7 @@ public class HibernateEncounterService implements
 		List<Location> locations;
 		locations = session.createQuery("from Location l").list();
 		
-		HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 		
 		return locations;
 
@@ -153,7 +152,7 @@ public class HibernateEncounterService implements
 			
 			tx.commit();
 			session.flush();
-			HibernateUtil.closeSession();
+			HibernateUtil.disconnectSession();
 		}
 		
 	}

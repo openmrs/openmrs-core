@@ -81,7 +81,7 @@ public class HibernateOrderService implements
 			Session session = HibernateUtil.currentSession();
 			
 			session.saveOrUpdate(order);
-			//HibernateUtil.closeSession();
+			HibernateUtil.disconnectSession();
 		}
 	}
 
@@ -115,7 +115,7 @@ public class HibernateOrderService implements
 		
 		OrderType orderType = (OrderType)session.get(OrderType.class, orderTypeId);
 		
-		//HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
 		
 		return orderType;
 	}
@@ -126,9 +126,11 @@ public class HibernateOrderService implements
 	public List<OrderType> getOrderTypes() throws APIException {
 		Session session = HibernateUtil.currentSession();
 		
-		return session.createCriteria(OrderType.class).list();
+		List<OrderType> orderTypes = session.createCriteria(OrderType.class).list();
 		
-		//HibernateUtil.closeSession();
+		HibernateUtil.disconnectSession();
+		
+		return orderTypes;
 	}
 
 	/**
