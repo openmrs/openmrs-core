@@ -31,9 +31,10 @@
 		<mapping resource="org/openmrs/api/hibernate/ConceptDatatype.hbm.xml" />
 		<mapping resource="org/openmrs/api/hibernate/ConceptNumeric.hbm.xml" />
 		<mapping resource="org/openmrs/api/hibernate/ConceptSynonym.hbm.xml" />
-		<!--<mapping resource="org/openmrs/api/hibernate/ConceptWord.hbm.xml" />-->
 		<mapping resource="org/openmrs/api/hibernate/ConceptName.hbm.xml" />
 		<mapping resource="org/openmrs/api/hibernate/ConceptSet.hbm.xml" />
+		<mapping resource="org/openmrs/api/hibernate/ConceptMap.hbm.xml" />
+		<mapping resource="org/openmrs/api/hibernate/ConceptSource.hbm.xml" />
 		
 		<mapping resource="org/openmrs/api/hibernate/Drug.hbm.xml" />
 		<mapping resource="org/openmrs/api/hibernate/DrugIngredient.hbm.xml" />
@@ -45,7 +46,6 @@
 		<mapping resource="org/openmrs/api/hibernate/FormField.hbm.xml" />
 		
 		<mapping resource="org/openmrs/api/hibernate/MimeType.hbm.xml" />
-		<!--<mapping resource="org/openmrs/api/hibernate/ComplexObs.hbm.xml" />-->
 		<mapping resource="org/openmrs/api/hibernate/Obs.hbm.xml" />
 		
 		<mapping resource="org/openmrs/api/hibernate/Patient.hbm.xml" />

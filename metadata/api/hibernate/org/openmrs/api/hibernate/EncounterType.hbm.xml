@@ -18,7 +18,7 @@
 
     <id
         name="encounterTypeId"
-        type="int"
+        type="java.lang.Integer"
         column="encounter_type_id"
         unsaved-value="0"
     >
