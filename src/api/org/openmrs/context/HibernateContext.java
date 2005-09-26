@@ -22,7 +22,9 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.hibernate.HibernateAdministrationService;
 import org.openmrs.api.hibernate.HibernateConceptService;
 import org.openmrs.api.hibernate.HibernateEncounterService;
+import org.openmrs.api.hibernate.HibernateFormService;
 import org.openmrs.api.hibernate.HibernateObsService;
+import org.openmrs.api.hibernate.HibernateOrderService;
 import org.openmrs.api.hibernate.HibernatePatientService;
 import org.openmrs.api.hibernate.HibernateUserService;
 import org.openmrs.api.hibernate.HibernateUtil;
@@ -168,7 +170,6 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 	 * @see org.openmrs.context.Context#isAuthenticated()
 	 */
 	public boolean isAuthenticated() {
-		// TODO Auto-generated method stub
 		return (user != null);
 	}
 
@@ -263,8 +264,8 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 			log.warn("unauthorized access to form service");
 			return null;
 		}
-		// if (formService == null)
-		// formService = new HibernateFormService();
+		if (formService == null)
+			formService = new HibernateFormService(this);
 		return formService;
 	}
 
@@ -276,8 +277,8 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 			log.warn("unauthorized access to order service");
 			return null;
 		}
-		// if (orderService == null)
-		// orderService = new HibernateOrderService();
+		if (orderService == null)
+			orderService = new HibernateOrderService(this);
 		return orderService;
 	}
 
