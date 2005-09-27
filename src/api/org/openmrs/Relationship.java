@@ -12,9 +12,9 @@ public class Relationship implements java.io.Serializable {
 	// Fields
 
 	private Integer relationshipId;
-	private Integer personId;
-	private Integer relationship;
-	private Integer relativeId;
+	private Person person;
+	private RelationshipType relationship;
+	private Person relative;
 	private User creator;
 	private Date dateCreated;
 	private Boolean voided;
@@ -97,30 +97,30 @@ public class Relationship implements java.io.Serializable {
 	}
 
 	/**
-	 * @return Returns the personId.
+	 * @return Returns the person.
 	 */
-	public Integer getPersonId() {
-		return personId;
+	public Person getPerson() {
+		return person;
 	}
 
 	/**
-	 * @param personId The personId to set.
+	 * @param person The person to set.
 	 */
-	public void setPersonId(Integer personId) {
-		this.personId = personId;
+	public void setPerson(Person person) {
+		this.person = person;
 	}
 
 	/**
 	 * @return Returns the relationship.
 	 */
-	public Integer getRelationship() {
+	public RelationshipType getRelationship() {
 		return relationship;
 	}
 
 	/**
 	 * @param relationship The relationship to set.
 	 */
-	public void setRelationship(Integer relationship) {
+	public void setRelationship(RelationshipType relationship) {
 		this.relationship = relationship;
 	}
 
@@ -139,17 +139,17 @@ public class Relationship implements java.io.Serializable {
 	}
 
 	/**
-	 * @return Returns the relativeId.
+	 * @return Returns the relative.
 	 */
-	public Integer getRelativeId() {
-		return relativeId;
+	public Person getRelative() {
+		return relative;
 	}
 
 	/**
-	 * @param relativeId The relativeId to set.
+	 * @param relative The relative to set.
 	 */
-	public void setRelativeId(Integer relativeId) {
-		this.relativeId = relativeId;
+	public void setRelative(Person relative) {
+		this.relative = relative;
 	}
 
 	/**

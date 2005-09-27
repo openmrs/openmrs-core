@@ -11,7 +11,7 @@ import java.util.Set;
  * @author Burke Mamlin
  * @version 1.0
  */
-public class Patient implements java.io.Serializable {
+public class Patient extends Person implements java.io.Serializable {
 
 	public static final long serialVersionUID = 1L;
 
@@ -31,19 +31,20 @@ public class Patient implements java.io.Serializable {
 	private String causeOfDeath;
 	private String healthDistrict;
 	private Integer healthCenter;
-	private User creator;
+	private Set<PatientAddress> addresses;
+	private Set<PatientName> names;
+	private Set<PatientIdentifier> identifiers;
+	private boolean dirty;
+	
+	/*private User creator;
 	private Date dateCreated;
 	private User changedBy;
 	private Date dateChanged;
 	private Boolean voided;
 	private User voidedBy;
 	private Date dateVoided;
-	private String voidReason;
-	private Set<PatientAddress> addresses;
-	private Set<PatientName> names;
-	private Set<PatientIdentifier> identifiers;
-	private boolean dirty;
-
+	private String voidReason;*/
+	
 	// Constructors
 
 	/** default constructor */
@@ -332,124 +333,6 @@ public class Patient implements java.io.Serializable {
 	}
 
 	/**
-	 * @return user who created this patient record
-	 */
-	public User getCreator() {
-		return creator;
-	}
-
-	/**
-	 * @param creator
-	 *            user creating this patient record
-	 */
-	public void setCreator(User creator) {
-		dirty = true;
-		this.creator = creator;
-	}
-
-	/**
-	 * @return date on which patient record was created
-	 */
-	public Date getDateCreated() {
-		return this.dateCreated;
-	}
-
-	/**
-	 * @param dateCreated
-	 *            date on which patient record was created
-	 */
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
-	}
-	
-	/**
-	 * @return user who last changed the patient's record
-	 */
-	public User getChangedBy() {
-		return changedBy;
-	}
-	
-	/**
-	 * @param changedBy user who last changed the patient's record
-	 */
-	public void setChangedBy(User changedBy) {
-		this.changedBy = changedBy;
-	}
-	
-	/**
-	 * @return date patient's record was last changed
-	 */
-	public Date getDateChanged() {
-		return dateChanged;
-	}
-	
-	/**
-	 * @param dateChanged date the patient's record was last changed
-	 */
-	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
-	}
-
-	/**
-	 * @return true if patient's record has been voided
-	 */
-	public Boolean isVoided() {
-		return this.voided;
-	}
-
-	/**
-	 * @param voided
-	 *            true if patient's record should be voided from the system
-	 */
-	public void setVoided(Boolean voided) {
-		dirty = true;
-		this.voided = voided;
-	}
-
-	/**
-	 * @return user who voided patient record
-	 */
-	public User getVoidedBy() {
-		return voidedBy;
-	}
-
-	/**
-	 * @param voidedBy user who voided patient record
-	 */
-	public void setVoidedBy(User voidedBy) {
-		this.voidedBy = voidedBy;
-	}
-
-	/**
-	 * @return date patient's record was voided
-	 */
-	public Date getDateVoided() {
-		return this.dateVoided;
-	}
-
-	/**
-	 * @param dateVoided date patient's record was voided
-	 */
-	public void setDateVoided(Date dateVoided) {
-		this.dateVoided = dateVoided;
-	}
-
-	/**
-	 * @return reason patient's record was voided
-	 */
-	public String getVoidReason() {
-		return this.voidReason;
-	}
-
-	/**
-	 * @param voidReason reason patient's record was voided
-	 */
-	public void setVoidReason(String voidReason) {
-		dirty = true;
-		this.voidReason = voidReason;
-	}
-
-	/**
 	 * @return list of known addresses for patient
 	 * @see org.openmrs.PatientAddress
 	 */
@@ -550,5 +433,76 @@ public class Patient implements java.io.Serializable {
 		if (identifiers != null)
 			identifiers.remove(patientIdentifier);
 	}
+	
+	/*
+	public User getCreator() {
+		return creator;
+	}
+
+	public void setCreator(User creator) {
+		dirty = true;
+		this.creator = creator;
+	}
+
+	public Date getDateCreated() {
+		return this.dateCreated;
+	}
+
+	public void setDateCreated(Date dateCreated) {
+		this.dateCreated = dateCreated;
+	}
+
+	public Boolean isVoided() {
+		return this.voided;
+	}
+
+	public void setVoided(Boolean voided) {
+		dirty = true;
+		this.voided = voided;
+	}
+
+	public User getVoidedBy() {
+		return voidedBy;
+	}
+
+	public void setVoidedBy(User voidedBy) {
+		this.voidedBy = voidedBy;
+	}
+
+	public Date getDateVoided() {
+		return this.dateVoided;
+	}
+
+	public void setDateVoided(Date dateVoided) {
+		this.dateVoided = dateVoided;
+	}
+
+	public String getVoidReason() {
+		return this.voidReason;
+	}
+
+	public void setVoidReason(String voidReason) {
+		dirty = true;
+		this.voidReason = voidReason;
+	}
+
+	public User getChangedBy() {
+		return changedBy;
+	}
+	
+	public void setChangedBy(User changedBy) {
+		this.changedBy = changedBy;
+	}
+	
+	public Date getDateChanged() {
+		return dateChanged;
+	}
+	
+	public void setDateChanged(Date dateChanged) {
+		this.dateChanged = dateChanged;
+	}
+	*/
+	
+
 	
 }

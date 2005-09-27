@@ -1,6 +1,7 @@
 package org.openmrs.api.hibernate;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -11,7 +12,10 @@ import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.openmrs.Location;
 import org.openmrs.Patient;
+import org.openmrs.PatientAddress;
+import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.PatientName;
 import org.openmrs.Tribe;
 import org.openmrs.api.APIException;
 import org.openmrs.api.PatientService;
@@ -48,6 +52,28 @@ public class HibernatePatientService extends HibernateDaoSupport implements Pati
 		
 		patient.setCreator(context.getAuthenticatedUser());
 		patient.setDateCreated(new Date());
+		if (patient.getAddresses() != null)
+			for (Iterator<PatientAddress> i = patient.getAddresses().iterator(); i.hasNext();) {
+				PatientAddress pAddress = i.next();
+				pAddress.setDateCreated(new Date());
+				pAddress.setCreator(context.getAuthenticatedUser());
+				pAddress.setPatient(patient);
+			}
+		if (patient.getNames() != null)
+			for (Iterator<PatientName> i = patient.getNames().iterator(); i.hasNext();) {
+				PatientName pName = i.next();
+				pName.setDateCreated(new Date());
+				pName.setCreator(context.getAuthenticatedUser());
+				pName.setPatient(patient);
+			}
+		if (patient.getIdentifiers() != null)
+			for (Iterator<PatientIdentifier> i = patient.getIdentifiers().iterator(); i.hasNext();) {
+				PatientIdentifier pIdentifier = i.next();
+				pIdentifier.setDateCreated(new Date());
+				pIdentifier.setCreator(context.getAuthenticatedUser());
+				pIdentifier.setPatient(patient);
+			}
+		
 		session.save(patient);
 		
 		tx.commit();

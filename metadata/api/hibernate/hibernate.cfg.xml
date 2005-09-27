@@ -16,7 +16,7 @@
 		<property name="hibernate.connection.username">test</property>
 		<property name="hibernate.connection.password">test</property>
 		<property name="hibernate.show_sql">false</property>
-		<property name="lazy">false</property>
+		<property name="lazy">true</property>
 		<!--
 		<property name="hibernate.connection.datasource">java:comp/env/jdbc/openmrs</property>
 		<property name="hibernate.cglib.use_reflection_optimizer">true</property>
@@ -48,14 +48,21 @@
 		<mapping resource="org/openmrs/api/hibernate/MimeType.hbm.xml" />
 		<mapping resource="org/openmrs/api/hibernate/Obs.hbm.xml" />
 		
+		<mapping resource="org/openmrs/api/hibernate/Person.hbm.xml" />
+		
+		<mapping resource="org/openmrs/api/hibernate/User.hbm.xml" />
+		<mapping resource="org/openmrs/api/hibernate/Privilege.hbm.xml" />
+		<mapping resource="org/openmrs/api/hibernate/Role.hbm.xml" />
+		
 		<mapping resource="org/openmrs/api/hibernate/Patient.hbm.xml" />
 		<mapping resource="org/openmrs/api/hibernate/PatientAddress.hbm.xml" />
 		<mapping resource="org/openmrs/api/hibernate/PatientIdentifier.hbm.xml" />
 		<mapping resource="org/openmrs/api/hibernate/PatientIdentifierType.hbm.xml" />
 		<mapping resource="org/openmrs/api/hibernate/PatientName.hbm.xml" />
 		<mapping resource="org/openmrs/api/hibernate/Tribe.hbm.xml" />
+		<mapping resource="org/openmrs/api/hibernate/Relationship.hbm.xml" />
+		<mapping resource="org/openmrs/api/hibernate/RelationshipType.hbm.xml" />
 
-		<!--<mapping resource="org/openmrs/api/hibernate/DrugOrder.hbm.xml" />-->
 		<mapping resource="org/openmrs/api/hibernate/OrderType.hbm.xml" />
 		<mapping resource="org/openmrs/api/hibernate/Order.hbm.xml" />
 		
@@ -64,9 +71,6 @@
 		<mapping resource="org/openmrs/api/hibernate/EncounterType.hbm.xml" />
 		<mapping resource="org/openmrs/api/hibernate/Encounter.hbm.xml" />
 		
-		<mapping resource="org/openmrs/api/hibernate/Privilege.hbm.xml" />
-		<mapping resource="org/openmrs/api/hibernate/Role.hbm.xml" />
-		<mapping resource="org/openmrs/api/hibernate/User.hbm.xml" />
 
 	</session-factory>
 

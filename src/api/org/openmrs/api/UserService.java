@@ -38,12 +38,12 @@ public interface UserService {
 	public User getUserByUsername(String username) throws APIException;
 
 	/**
-	 * Get user by role granted
+	 * Get users by role granted
 	 * @param Role role that the Users must have to be returned 
-	 * @return requested user
+	 * @return users with requested role
 	 * @throws APIException
 	 */
-	public User getUserByRole(Role role) throws APIException;
+	public List<User> getUsersByRole(Role role) throws APIException;
 	
 	/**
 	 * Save changes to user

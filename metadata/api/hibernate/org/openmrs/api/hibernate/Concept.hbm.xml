@@ -56,16 +56,6 @@
 			</key>
 			<one-to-many class="ConceptAnswer" />
 		</set>
-		<!-- bi-directional one-to-many association to ConceptWord -->
-		<!--
-		<set name="conceptWords" lazy="true" inverse="true"
-			cascade="none">
-			<key>
-				<column name="concept_id" />
-			</key>
-			<one-to-many class="ConceptWord" />
-		</set>
-		-->
 		<!-- bi-directional one-to-many association to ConceptSynonym -->
 		<set name="synonyms" lazy="true" inverse="true"
 			cascade="none">
@@ -74,7 +64,6 @@
 			</key>
 			<one-to-many class="ConceptSynonym" />
 		</set>
-
 		<!-- bi-directional many-to-one association to ConceptClass -->
 		<many-to-one name="conceptClass" class="ConceptClass"
 			not-null="true">

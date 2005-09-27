@@ -7,6 +7,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Expression;
+import org.openmrs.Concept;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
@@ -171,6 +173,23 @@ public class HibernateUserService extends HibernateDaoSupport implements
 		tx.commit();
 		HibernateUtil.disconnectSession();
 
+	}
+
+	/**
+	 * @see org.openmrs.api.UserService#getUserByRole(org.openmrs.Role)
+	 */
+	public List<User> getUsersByRole(Role role) throws APIException {
+		Session session = HibernateUtil.currentSession();
+		
+		List<User> users = session.createCriteria(User.class)
+						.createCriteria("roles")
+						.add(Expression.like("role", role.getRole()))
+						.list();
+		
+		HibernateUtil.disconnectSession();
+		
+		return users;
+		
 	}
 
 	/**
