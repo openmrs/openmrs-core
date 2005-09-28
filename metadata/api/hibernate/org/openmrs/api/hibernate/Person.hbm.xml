@@ -37,7 +37,7 @@
         
         property-ref="personId"
     >
-        <!--<column name="patient_id" />--
+        <xcolumn name="patient_id" />
     </one-to-one>-->
     
 </class>
