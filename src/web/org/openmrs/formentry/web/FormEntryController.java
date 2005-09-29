@@ -2,6 +2,7 @@ package org.openmrs.formentry.web;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -48,7 +49,7 @@ public class FormEntryController implements Controller {
 			int count = 0;
 			for (Iterator i = patients.iterator(); i.hasNext();) {
 				Patient patient = (Patient) i.next();
-				List<PatientName> names = patient.getNames();
+				Set<PatientName> names = patient.getNames();
 				if (names != null) {
 					for (Iterator n = names.iterator(); n.hasNext();) {
 						PatientName name = (PatientName) n.next();
