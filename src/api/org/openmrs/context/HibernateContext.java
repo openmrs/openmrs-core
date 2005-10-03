@@ -31,9 +31,8 @@ import org.openmrs.api.hibernate.HibernateOrderService;
 import org.openmrs.api.hibernate.HibernatePatientService;
 import org.openmrs.api.hibernate.HibernateUserService;
 import org.openmrs.api.hibernate.HibernateUtil;
-import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
-public class HibernateContext extends HibernateDaoSupport implements Context {
+public class HibernateContext implements Context {
 
 	private final Log log = LogFactory.getLog(getClass());
 
@@ -98,8 +97,6 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 			errorMsg = "system cannot find password encryption algorithm";
 		}
 		
-		HibernateUtil.disconnectSession();
-		
 		if (user == null) {
 			log.info("Failed login (username=\"" + username + ") - " + errorMsg);
 			throw new ContextAuthenticationException(errorMsg);
@@ -151,7 +148,6 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 			Role role = i.next();
 			privileges.addAll(role.getPrivileges());
 		}
-		HibernateUtil.disconnectSession();
 		return privileges;
 	}
 
@@ -168,8 +164,6 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 			Session session = HibernateUtil.currentSession();
 			User user = getAuthenticatedUser();
 			session.merge(user);
-			//getHibernateTemplate().initialize(user.getRoles());
-			HibernateUtil.disconnectSession();
 			return user.hasPrivilege(privilege);
 		}
 		return false;
@@ -317,7 +311,8 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 	 * @see org.openmrs.context.Context#beginTransaction()
 	 */
 	public void startTransaction() {
-		
+
+		log.debug("HibernateContext: Starting Transaction");
 		if (session == null)
 			session = HibernateUtil.currentSession();
 		
@@ -328,6 +323,7 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 	 */
 	public void endTransaction() {
 		
+		log.debug("HibernateContext: Ending Transaction");
 		HibernateUtil.closeSession();
 		session = null;
 		

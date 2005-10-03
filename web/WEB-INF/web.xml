@@ -7,18 +7,14 @@
 	<servlet>
 		<servlet-name>openmrs</servlet-name>
 		<servlet-class>
-			org.springframework.web.servlet.DispatcherServlet
+			org.openmrs.api.web.Dispatcher
 		</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 
 	<servlet-mapping>
 		<servlet-name>openmrs</servlet-name>
-		<url-pattern>*.html</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>openmrs</servlet-name>
-		<url-pattern>*.form</url-pattern>
+		<url-pattern>*.jsp</url-pattern>
 	</servlet-mapping>
 
 	<welcome-file-list>
@@ -61,7 +57,7 @@
 		<!- Displays a stack trace ->
 		<location>/WEB-INF/view/uncaughtException.jsp</location>
 	</error-page>
-	-->
+	
 	
 	<resource-ref>
 		<res-ref-name>jdbc/openmrs</res-ref-name>
@@ -69,7 +65,7 @@
 		<res-auth>Container</res-auth>
 	</resource-ref>
 
-	<!--
+	
 		<servlet>
 		<servlet-name>default</servlet-name>
 		<servlet-class>org.apache.catalina.servlets.DefaultServlet</servlet-class>
