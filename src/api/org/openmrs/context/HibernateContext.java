@@ -47,6 +47,7 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 	private FormService formService;
 	private OrderService orderService;
 	private Locale locale;
+	private Session session;
 
 	protected HibernateContext() {
 	}
@@ -312,4 +313,26 @@ public class HibernateContext extends HibernateDaoSupport implements Context {
 		this.locale = locale;
 	}
 
+	/**
+	 * @see org.openmrs.context.Context#beginTransaction()
+	 */
+	public void startTransaction() {
+		
+		if (session == null)
+			session = HibernateUtil.currentSession();
+		
+	}
+
+	/**
+	 * @see org.openmrs.context.Context#endTransaction()
+	 */
+	public void endTransaction() {
+		
+		HibernateUtil.closeSession();
+		session = null;
+		
+	}
+
+	
+	
 }

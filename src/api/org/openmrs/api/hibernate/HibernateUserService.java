@@ -43,7 +43,7 @@ public class HibernateUserService extends HibernateDaoSupport implements
 		session.save(user);
 		
 		tx.commit();
-		HibernateUtil.disconnectSession();
+		
 	}
 
 	public User getUserByUsername(String username) {
@@ -53,8 +53,6 @@ public class HibernateUserService extends HibernateDaoSupport implements
 				.createQuery(
 						"from User u where (u.voided is null or u.voided = 0) and u.username = ?")
 				.setString(0, username).list();
-
-		HibernateUtil.disconnectSession();
 		
 		if (users == null || users.size() == 0) {
 			log.warn("request for username '" + username + "' not found");
@@ -73,8 +71,6 @@ public class HibernateUserService extends HibernateDaoSupport implements
 	public User getUser(Integer userId) {
 		Session session = HibernateUtil.currentSession();
 		User user = (User) session.get(User.class, userId);
-		
-		HibernateUtil.disconnectSession();
 		
 		if (user == null) {
 			log.warn("request for user '" + userId + "' not found");
@@ -107,7 +103,6 @@ public class HibernateUserService extends HibernateDaoSupport implements
 			log.debug("### post-flush middle name = " + user.getMiddleName());
 	
 			tx.commit();
-			HibernateUtil.disconnectSession();
 		}
 	}
 
@@ -132,7 +127,6 @@ public class HibernateUserService extends HibernateDaoSupport implements
 		session.delete(user);
 		
 		tx.commit();
-		HibernateUtil.disconnectSession();
 	}
 
 	public List findPatient(String q) {
@@ -156,7 +150,6 @@ public class HibernateUserService extends HibernateDaoSupport implements
 		session.saveOrUpdate(user);
 		
 		tx.commit();
-		HibernateUtil.disconnectSession();
 	}
 
 	/**
@@ -171,7 +164,6 @@ public class HibernateUserService extends HibernateDaoSupport implements
 		session.saveOrUpdate(user);
 		
 		tx.commit();
-		HibernateUtil.disconnectSession();
 
 	}
 
@@ -185,8 +177,6 @@ public class HibernateUserService extends HibernateDaoSupport implements
 						.createCriteria("roles")
 						.add(Expression.like("role", role.getRole()))
 						.list();
-		
-		HibernateUtil.disconnectSession();
 		
 		return users;
 		
@@ -212,8 +202,6 @@ public class HibernateUserService extends HibernateDaoSupport implements
 		
 		List<Privilege> privileges = session.createQuery("from Privilege p").list();
 		
-		HibernateUtil.disconnectSession();
-		
 		return privileges;
 	}
 
@@ -225,8 +213,6 @@ public class HibernateUserService extends HibernateDaoSupport implements
 		Session session = HibernateUtil.currentSession();
 		
 		List<Role> roles = session.createQuery("from Role r").list();
-		
-		HibernateUtil.disconnectSession();
 		
 		return roles;
 	}

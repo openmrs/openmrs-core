@@ -1,6 +1,7 @@
 package org.openmrs.api;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import junit.framework.Test;
@@ -20,7 +21,10 @@ public class UserServiceTest extends TestCase {
 	protected Context context;
 	
 	public void setUp(){
+		System.out.println("##start setup");
+		
 		context = ContextFactory.getContext();
+		context.startTransaction();
 		
 		try {
 			context.authenticate("USER-1", "test");
@@ -32,8 +36,11 @@ public class UserServiceTest extends TestCase {
 	}
 
 	public void testUpdateUser() {
+		System.out.println("##start method");
+		
 		assertTrue(context.isAuthenticated());
 		User u = us.getUserByUsername("bwolfe");
+		
 		if (u == null)
 			u = new User();
 		u.setFirstName("Benjamin");
@@ -42,7 +49,11 @@ public class UserServiceTest extends TestCase {
 		u.setUsername("bwolfe");
 //		u.setRoles(new HashSet());
 		
+		System.out.println("##before update");
+		
 		us.updateUser(u);
+		
+		System.out.println("##after update, before getbyusername");
 		
 		User u2 = us.getUserByUsername("bwolfe");
 		
@@ -55,7 +66,7 @@ public class UserServiceTest extends TestCase {
 		role1.setDescription("testing1");
 		role1.setRole("test1");
 		Privilege p1 = us.getPrivileges().get(0);
-		Set privileges1 = new HashSet();
+		Set<Privilege> privileges1 = new HashSet<Privilege>();
 		privileges1.add(p1);
 		role1.setPrivileges(privileges1);
 		
@@ -68,11 +79,35 @@ public class UserServiceTest extends TestCase {
 		role2.setPrivileges(privileges2);
 		
 		us.grantUserRole(u, role1);
+		
+		System.out.println("##between grants");
+		
 		us.grantUserRole(u, role2);
 		
+		System.out.println("##before getting roles");
+		
 		System.out.println("Roles: " + u.getRoles().toString());
+		
+		System.out.println("##before getting privileges");
+		
+		for (Iterator<Role> i = u.getRoles().iterator(); i.hasNext();) {
+			Role role = i.next();
+			System.out.println("Role: " + role.getRole());
+			for (Iterator<Privilege> i2 = role.getPrivileges().iterator(); i2.hasNext();) {
+				System.out.println("Priv: " + i2.next().getPrivilege());
+			}
+		}
+		
 	}
+
 	
+	protected void tearDown() throws Exception {
+		super.tearDown();
+		
+		context.endTransaction();
+		
+	}
+
 	public static Test suite() {
 		return new TestSuite(UserServiceTest.class, "Basic UserService functionality");
 	}

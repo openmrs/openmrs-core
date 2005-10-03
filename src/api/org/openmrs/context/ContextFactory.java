@@ -23,8 +23,8 @@ public class ContextFactory {
 	}
 
 	private static void createContext() {
-		Resource res = new ClassPathResource("openmrs-servlet.xml");
-		XmlBeanFactory factory = new XmlBeanFactory(res);
+		//Resource res = new ClassPathResource("openmrs-servlet.xml");
+		//XmlBeanFactory factory = new XmlBeanFactory(res);
 
 		//context = (Context) factory.getBean("defaultContext");
 		context = (Context) new HibernateContext();

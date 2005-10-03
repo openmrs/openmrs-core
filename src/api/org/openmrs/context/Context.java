@@ -110,5 +110,9 @@ public interface Context {
 	 * @return current locale for this context
 	 */
 	public Locale getLocale();
+	
+	public void startTransaction();
+	
+	public void endTransaction();
 
 }
