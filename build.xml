@@ -144,6 +144,7 @@
 			<lib dir="${cglib.dir}" includes="*.jar" />
 			<lib dir="${commons-beanutils.dir}" includes="*.jar" />
 			<lib dir="${commons-collections.dir}" includes="*.jar" />
+			<lib dir="${commons-dbcp.dir}" includes="*.jar" />
 			<lib dir="${commons-fileupload.dir}" includes="*.jar" />
 			<lib dir="${commons-lang.dir}" includes="*.jar" />
 			<lib dir="${commons-logging.dir}" includes="*.jar" />
