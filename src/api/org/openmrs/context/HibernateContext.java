@@ -328,7 +328,5 @@ public class HibernateContext implements Context {
 		session = null;
 		
 	}
-
-	
 	
 }

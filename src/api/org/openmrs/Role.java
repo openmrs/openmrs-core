@@ -103,6 +103,13 @@ public class Role implements java.io.Serializable {
 	public void setRole(String role) {
 		this.role = role;
 	}
+	
+	/**
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		return this.role;
+	}
 
 
 }

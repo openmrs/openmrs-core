@@ -36,13 +36,10 @@ public class HibernateUserService extends HibernateDaoSupport implements
 	 */
 	public void createUser(User user) {
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
 		
 		user.setDateCreated(new Date());
 		user.setCreator(context.getAuthenticatedUser());
 		session.save(user);
-		
-		tx.commit();
 		
 	}
 
@@ -122,11 +119,11 @@ public class HibernateUserService extends HibernateDaoSupport implements
 
 	public void deleteUser(User user) {
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
+		//Transaction tx = session.beginTransaction();
 		
 		session.delete(user);
 		
-		tx.commit();
+		//tx.commit();
 	}
 
 	public List findPatient(String q) {
@@ -144,12 +141,12 @@ public class HibernateUserService extends HibernateDaoSupport implements
 	 */
 	public void grantUserRole(User user, Role role) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
+		//Transaction tx = session.beginTransaction();
 		
 		user.addRole(role);
 		session.saveOrUpdate(user);
 		
-		tx.commit();
+		//tx.commit();
 	}
 
 	/**
@@ -158,12 +155,12 @@ public class HibernateUserService extends HibernateDaoSupport implements
 	 */
 	public void revokeUserRole(User user, Role role) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
+		//Transaction tx = session.beginTransaction();
 		
 		user.removeRole(role);
 		session.saveOrUpdate(user);
 		
-		tx.commit();
+		//tx.commit();
 
 	}
 
@@ -216,7 +213,5 @@ public class HibernateUserService extends HibernateDaoSupport implements
 		
 		return roles;
 	}
-	
-	
 
 }

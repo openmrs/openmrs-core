@@ -7,29 +7,43 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.context.Context;
 import org.openmrs.context.ContextFactory;
 
 public class Dispatcher extends HttpServlet {
 
-	Context context;
+	static final long serialVersionUID = 9472334345356L;
+	protected final Log log = LogFactory.getLog(getClass());
 	
-	protected void doGet(HttpServletRequest arg0, HttpServletResponse arg1) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		context = ContextFactory.getContext();
-		context.startTransaction();
+		log.debug("Dispatcher: doing GET request");
 		
-		super.doGet(arg0, arg1);
+		String selectedScreen = request.getServletPath();
+		
+		request.getRequestDispatcher(selectedScreen.replace(".html", ".jsp"))
+			   .forward(request, response);
 	}
 
-	
-	protected void doPost(HttpServletRequest arg0, HttpServletResponse arg1) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		context.endTransaction();
+		log.debug("Dispatcher: doing POST request");
 		
-		super.doPost(arg0, arg1);
+		String selectedScreen = request.getServletPath();
+		
+		request.getRequestDispatcher(selectedScreen.replace(".html", ".jsp"))
+		   .forward(request, response);
 	}
 	
+	public void init() throws ServletException {
+		
+		log.debug("Dispatcher: Starting init");
+	}
 	
-
+	public void destroy() {
+		log.debug("Dispatcher: Destroying");
+	}
+	
 }
