@@ -6,9 +6,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.hibernate.criterion.Expression;
-import org.openmrs.Concept;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
@@ -60,8 +58,7 @@ public class HibernateUserService extends HibernateDaoSupport implements
 		return users.get(0);
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
 	 * 
 	 * @see org.openmrs.api.UserService#getUser(java.lang.Long)
 	 */
@@ -74,6 +71,16 @@ public class HibernateUserService extends HibernateDaoSupport implements
 			throw new ObjectRetrievalFailureException(User.class, userId);
 		}
 		return user;
+	}
+	
+	/**
+	 * @see org.openmrs.api.UserService#getUsers()
+	 */
+	public List<User> getUsers() throws APIException {
+		Session session = HibernateUtil.currentSession();
+		List<User> users = session.createQuery("from User").list();
+		
+		return users;
 	}
 
 	/*

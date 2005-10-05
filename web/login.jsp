@@ -5,15 +5,19 @@
 
 <br><br>
 
+<script>
+ window.onload=getElementById('username').setFocus();
+</script>
+
 <form method="post" action="loginServlet" style="border: 1px solid black; padding:15px; width: 300px;">
 	<table>
 		<tr>
 			<td>Username:</td>
-			<td><input type="text" name="username" value=""></td>
+			<td><input type="text" name="username" value="" id="username"></td>
 		</tr>
 		<tr>
 			<td>Password:</td>
-			<td><input type="password" name="password" value=""></td>
+			<td><input type="password" name="password" value="" id="password"></td>
 		</tr>
 	</table>
 	<br>

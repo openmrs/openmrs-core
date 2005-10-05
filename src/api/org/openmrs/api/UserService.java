@@ -121,4 +121,12 @@ public interface UserService {
 	 * @throws APIException
 	 */
 	public List<Role> getRoles() throws APIException;
+
+	/**
+	 * Returns all users in the system
+	 * @return Global list of users
+	 * @throws APIException
+	 */
+	public List<User> getUsers() throws APIException;
+
 }

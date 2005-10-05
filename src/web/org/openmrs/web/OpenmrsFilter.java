@@ -32,13 +32,17 @@ public class OpenmrsFilter implements Filter {
         HttpSession httpSession = hr.getSession();
         //TODO how to only open a context for pages that need it ?
 		httpSession.setAttribute("__openmrs_context", context);
-		
+
 		log.debug("before doFilter");
-		chain.doFilter(request, response);
+		try {
+			chain.doFilter(request, response);
+		}
+		finally {
+			httpSession.removeAttribute("__openmrs_context");
+			context.endTransaction();
+		}
 		log.debug("after doFilter");
 		
-		httpSession.removeAttribute("__openmrs_context");
-		context.endTransaction();
 	}
 
 	public void init(FilterConfig filterConfig) throws ServletException {
