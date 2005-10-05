@@ -2,26 +2,38 @@ package org.openmrs.web.taglib;
 
 import java.io.IOException;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.tagext.TagSupport;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openmrs.User;
+import org.openmrs.context.Context;
+
 public class RequireTag extends TagSupport {
 
 	public static final long serialVersionUID = 1L;
+	
+	private final Log log = LogFactory.getLog(getClass());
 
 	private String privilege;
 	private String otherwise;
 
 	public int doStartTag() {
 
-		// @to.do implement true authorization
+		// TODO implement true authorization
 //		HttpServletResponse httpResponse = (HttpServletResponse)pageContext.getResponse();
 		HttpSession httpSession = pageContext.getSession();
+		HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
 		
-		httpSession.getAttribute("__openmrs_context");
-		if (privilege == null || !privilege.equals("FormEntry User")) {
+		Context context = (Context)httpSession.getAttribute("__openmrs_context");
+		if (privilege == null || !context.isAuthenticated() || !context.hasPrivilege(privilege)) {
 			try {
+				String redirect = request.getContextPath() + request.getServletPath();
+				redirect = redirect.replace(".jsp", ".html");
+				httpSession.setAttribute("login_redirect", redirect);
 				((HttpServletResponse) pageContext.getResponse())
 						.sendRedirect(otherwise);
 			} catch (IOException e) {

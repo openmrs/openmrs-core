@@ -12,7 +12,8 @@
 <%
 
 try {
-	Context context = (Context)request.getAttribute("context");
+	
+	Context context = (Context)session.getValue("__openmrs_context");
 	context.authenticate("admin", "test");			
 	out.write("<br>Authenticated<br>");
 	User user = context.getAuthenticatedUser();

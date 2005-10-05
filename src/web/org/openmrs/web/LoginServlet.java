@@ -6,9 +6,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import org.openmrs.context.Context;
 import org.openmrs.context.ContextAuthenticationException;
-import org.openmrs.context.ContextFactory;
 
 public class LoginServlet extends HttpServlet {
 
@@ -26,16 +27,23 @@ public class LoginServlet extends HttpServlet {
 
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
-
+		String redirect = request.getParameter("redirect");
+		if (redirect == "" || redirect == null)
+			redirect = "formentry/index.html";
+		
+		HttpSession httpSession = request.getSession();
+		
+		Context context = (Context)httpSession.getAttribute("__openmrs_context");
+		
 		try {
-			ContextFactory.getContext().authenticate(username, password);
-			if (ContextFactory.getContext().isAuthenticated()) {
-				response.sendRedirect("../formentry/index.jsp");
+			context.authenticate(username, password);
+			if (context.isAuthenticated()) {
+				response.sendRedirect(redirect);
 				return;
 			}
 		} catch (ContextAuthenticationException e) {
 			response
-					.sendRedirect("login.jsp?msg=Invalid+credentials.+Try again.");
+					.sendRedirect("/login.html?msg=Invalid+credentials.+Try again.");
 		}
 	}
 

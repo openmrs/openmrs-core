@@ -10,6 +10,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Hibernate;
+import org.hibernate.LockMode;
 import org.hibernate.Session;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
@@ -119,6 +120,7 @@ public class HibernateContext implements Context {
 	 * @see org.openmrs.context.Context#getAuthenticatedUser()
 	 */
 	public User getAuthenticatedUser() {
+		session.lock(user, LockMode.READ);
 		return user;
 	}
 
@@ -163,7 +165,7 @@ public class HibernateContext implements Context {
 		if (isAuthenticated()) {
 			Session session = HibernateUtil.currentSession();
 			User user = getAuthenticatedUser();
-			session.merge(user);
+			session.lock(user, LockMode.READ);
 			return user.hasPrivilege(privilege);
 		}
 		return false;

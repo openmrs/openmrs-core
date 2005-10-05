@@ -16,6 +16,14 @@
 		<servlet-name>openmrs</servlet-name>
 		<url-pattern>*.html</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>loginServlet</servlet-name>
+		<servlet-class>org.openmrs.web.LoginServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>loginServlet</servlet-name>
+		<url-pattern>/loginServlet</url-pattern>
+	</servlet-mapping>
 
 	<filter>
 		<filter-name>OpenmrsFilter</filter-name> 
@@ -25,11 +33,17 @@
 		<filter-name>OpenmrsFilter</filter-name> 
 		<servlet-name>openmrs</servlet-name> 
 	</filter-mapping>
+	<filter-mapping>
+		<filter-name>OpenmrsFilter</filter-name> 
+		<servlet-name>loginServlet</servlet-name> 
+	</filter-mapping>
+	
 	
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 		<welcome-file>index.form</welcome-file>
 		<welcome-file>index.htm</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
 	</welcome-file-list>
 
 	<taglib>
@@ -75,26 +89,6 @@
 		<res-type>javax.sql.DataSource</res-type>
 		<res-auth>Container</res-auth>
 	</resource-ref>
-
-	
-		<servlet>
-		<servlet-name>default</servlet-name>
-		<servlet-class>org.apache.catalina.servlets.DefaultServlet</servlet-class>
-		<init-param>
-		<param-name>debug</param-name>
-		<param-value>0</param-value>
-		</init-param>
-		<init-param>
-		<param-name>listings</param-name>
-		<param-value>true</param-value>
-		</init-param>
-		<load-on-startup>1</load-on-startup>
-		</servlet>
-
-		<servlet-mapping>
-		<servlet-name>myservlet</servlet-name>
-		<url-pattern>/path/for/servlet.html</url-pattern>
-		</servlet-mapping>
 
 		<session-config>
 		<session-timeout>30</session-timeout>

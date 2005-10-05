@@ -5,7 +5,7 @@
 
 <br><br>
 
-<form method="post" style="border: 1px solid black; padding:15px; width: 300px;">
+<form method="post" action="loginServlet" style="border: 1px solid black; padding:15px; width: 300px;">
 	<table>
 		<tr>
 			<td>Username:</td>
@@ -17,23 +17,10 @@
 		</tr>
 	</table>
 	<br>
-	<input type="submit" value="Log in">
-</form>
-
-<request:existsAttribute name="username">
-	Submitted...<br>
-	<%
-		Context context = (Context)request.getAttribute("context");
-		try {
-			context.authenticate(request.getParameter("username"), request.getParameter("password"));
-			out.write("Authenticated!<br><br>");
-			out.write("Welcome " + context.getAuthenticatedUser().getUsername());
-		}
-		catch (Exception e) {
-			out.write("ERROR: " + e);
-		}
-	%>
-</request:existsAttribute>
-		
+	
+		<input type="hidden" name="redirect" value="${login_redirect}" />
+	
+	<input type="submit" value="Log in" />
+</form>	
 	
 <%@ include file="/WEB-INF/template/footer.jsp" %>
