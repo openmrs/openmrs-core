@@ -31,14 +31,11 @@ public class HibernateOrderService implements
 		log.debug("creating order");
 		
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
 		
 		order.setCreator(context.getAuthenticatedUser());
 		order.setDateCreated(new Date());
 		session.save(order);
 		
-		tx.commit();
-		HibernateUtil.disconnectSession();
 	}
 
 	/**
@@ -47,14 +44,9 @@ public class HibernateOrderService implements
 	public void deleteOrder(Order order) throws APIException {
 		log.debug("deleting order #" + order.getOrderId());
 		
-		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
-		
+		Session session = HibernateUtil.currentSession();	
 		session.delete(order);
-		
-		tx.commit();
-		HibernateUtil.disconnectSession();
-		
+				
 	}
 
 	/**
@@ -67,8 +59,6 @@ public class HibernateOrderService implements
 		
 		Order order = new Order();
 		order = (Order)session.get(Order.class, orderId);
-		
-		HibernateUtil.disconnectSession();
 		
 		return order;
 	}
@@ -85,8 +75,7 @@ public class HibernateOrderService implements
 			Session session = HibernateUtil.currentSession();
 			
 			session.merge(order);
-			session.update(order);
-			HibernateUtil.disconnectSession();
+			session.saveOrUpdate(order);
 		}
 	}
 
@@ -126,8 +115,6 @@ public class HibernateOrderService implements
 		
 		OrderType orderType = (OrderType)session.get(OrderType.class, orderTypeId);
 		
-		HibernateUtil.disconnectSession();
-		
 		return orderType;
 	}
 
@@ -140,8 +127,6 @@ public class HibernateOrderService implements
 		Session session = HibernateUtil.currentSession();
 		
 		List<OrderType> orderTypes = session.createCriteria(OrderType.class).list();
-		
-		HibernateUtil.disconnectSession();
 		
 		return orderTypes;
 	}

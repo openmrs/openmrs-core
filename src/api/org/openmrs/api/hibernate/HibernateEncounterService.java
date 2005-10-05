@@ -31,15 +31,10 @@ public class HibernateEncounterService implements
 	public void createEncounter(Encounter encounter) throws APIException {
 		
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
 		
 		encounter.setCreator(context.getAuthenticatedUser());
 		encounter.setDateCreated(new Date());
 		session.save(encounter);
-		
-		tx.commit();
-		session.flush();
-		HibernateUtil.disconnectSession();
 	}
 
 	/**
@@ -48,12 +43,8 @@ public class HibernateEncounterService implements
 	public void deleteEncounter(Encounter encounter) throws APIException {
 		
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
 		
 		session.delete(encounter);
-		
-		tx.commit();
-		HibernateUtil.disconnectSession();
 		
 	}
 
@@ -67,8 +58,6 @@ public class HibernateEncounterService implements
 		Encounter encounter = new Encounter();
 		encounter = (Encounter)session.get(Encounter.class, encounterId);
 		
-		HibernateUtil.disconnectSession();
-		
 		return encounter;
 	}
 
@@ -80,8 +69,6 @@ public class HibernateEncounterService implements
 		Session session = HibernateUtil.currentSession();
 		
 		EncounterType encounterType = (EncounterType)session.get(EncounterType.class, encounterTypeId);
-		
-		HibernateUtil.disconnectSession();
 		
 		return encounterType;
 		
@@ -97,8 +84,6 @@ public class HibernateEncounterService implements
 		List<EncounterType> encounterTypes;
 		encounterTypes = session.createQuery("from EncounterType et").list();
 		
-		HibernateUtil.disconnectSession();
-		
 		return encounterTypes;
 
 	}
@@ -112,8 +97,6 @@ public class HibernateEncounterService implements
 		
 		Location location = new Location();
 		location = (Location)session.get(Location.class, locationId);
-		
-		HibernateUtil.disconnectSession();
 		
 		return location;
 
@@ -129,8 +112,6 @@ public class HibernateEncounterService implements
 		List<Location> locations;
 		locations = session.createQuery("from Location l").list();
 		
-		HibernateUtil.disconnectSession();
-		
 		return locations;
 
 	}
@@ -144,18 +125,10 @@ public class HibernateEncounterService implements
 			createEncounter(encounter);
 		else {
 			Session session = HibernateUtil.currentSession();
-			Transaction tx = session.beginTransaction();
 			
 			//encounter.setChangedBy(context.getAuthenticatedUser());
 			//encounter.setDateChanged(new Date());
 			session.saveOrUpdate(encounter);
-			
-			tx.commit();
-			session.flush();
-			HibernateUtil.disconnectSession();
 		}
-		
 	}
-
-	
 }

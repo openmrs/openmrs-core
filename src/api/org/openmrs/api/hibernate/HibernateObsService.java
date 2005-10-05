@@ -33,14 +33,10 @@ public class HibernateObsService implements
 	public void createObs(Obs obs) throws APIException {
 		
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
 		
 		obs.setCreator(context.getAuthenticatedUser());
 		obs.setDateCreated(new Date());
 		session.save(obs);
-		
-		tx.commit();
-		HibernateUtil.disconnectSession();
 	}
 
 	/**
@@ -49,12 +45,9 @@ public class HibernateObsService implements
 	public void deleteObs(Obs obs) throws APIException {
 		
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
 		
 		session.delete(obs);
 		
-		tx.commit();
-		HibernateUtil.disconnectSession();
 	}
 
 	/**
@@ -66,8 +59,6 @@ public class HibernateObsService implements
 		
 		Obs obs = new Obs();
 		obs = (Obs)session.get(Obs.class, obsId);
-		
-		HibernateUtil.disconnectSession();
 		
 		return obs;
 	}
@@ -82,8 +73,6 @@ public class HibernateObsService implements
 		MimeType mimeType = new MimeType();
 		mimeType = (MimeType)session.get(MimeType.class, mimeTypeId);
 		
-		HibernateUtil.disconnectSession();
-		
 		return mimeType;
 	}
 
@@ -94,8 +83,6 @@ public class HibernateObsService implements
 		Session session = HibernateUtil.currentSession();
 		
 		List<MimeType> mimeTypes = session.createCriteria(MimeType.class).list();
-		
-		HibernateUtil.disconnectSession();
 		
 		return mimeTypes;
 	}
@@ -118,12 +105,8 @@ public class HibernateObsService implements
 	 */
 	public void updateObs(Obs obs) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
 		
 		session.saveOrUpdate(obs);
-		
-		tx.commit();
-		HibernateUtil.disconnectSession();
 	}
 
 	/**
@@ -148,8 +131,6 @@ public class HibernateObsService implements
 		Location location = new Location();
 		location = (Location)session.get(Location.class, locationId);
 		
-		HibernateUtil.disconnectSession();
-		
 		return location;
 
 	}
@@ -164,11 +145,7 @@ public class HibernateObsService implements
 		List<Location> locations;
 		locations = session.createQuery("from Location l").list();
 		
-		HibernateUtil.disconnectSession();
-		
 		return locations;
 
 	}
-
-	
 }

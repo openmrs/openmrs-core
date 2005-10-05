@@ -34,14 +34,10 @@ public class HibernateAdministrationService implements
 	 */
 	public void createEncounterType(EncounterType encounterType) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
 		
 		encounterType.setCreator(context.getAuthenticatedUser());
 		encounterType.setDateCreated(new Date());
 		session.save(encounterType);
-		
-		tx.commit();
-		HibernateUtil.disconnectSession();
 	}
 
 	/**
@@ -49,14 +45,10 @@ public class HibernateAdministrationService implements
 	 */
 	public void createFieldType(FieldType fieldType) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
 		
 		fieldType.setCreator(context.getAuthenticatedUser());
 		fieldType.setDateCreated(new Date());
 		session.save(fieldType);
-		
-		tx.commit();
-		HibernateUtil.disconnectSession();
 	}
 
 	/**
@@ -64,14 +56,10 @@ public class HibernateAdministrationService implements
 	 */
 	public void createLocation(Location location) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
 		
 		location.setCreator(context.getAuthenticatedUser());
 		location.setDateCreated(new Date());
 		session.save(location);
-		
-		tx.commit();
-		HibernateUtil.disconnectSession();
 	}
 
 	/**
@@ -79,14 +67,10 @@ public class HibernateAdministrationService implements
 	 */
 	public void createMimeType(MimeType mimeType) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
 		
 		//mimeType.setCreator(context.getAuthenticatedUser());
 		//mimeType.setDateCreated(new Date());
 		session.save(mimeType);
-		
-		tx.commit();
-		HibernateUtil.disconnectSession();
 	}
 
 	/**
@@ -94,14 +78,10 @@ public class HibernateAdministrationService implements
 	 */
 	public void createOrderType(OrderType orderType) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
 		
 		orderType.setCreator(context.getAuthenticatedUser());
 		orderType.setDateCreated(new Date());
 		session.save(orderType);
-		
-		tx.commit();
-		HibernateUtil.disconnectSession();
 	}
 
 	/**
@@ -109,14 +89,11 @@ public class HibernateAdministrationService implements
 	 */
 	public void createPatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
 		
 		patientIdentifierType.setCreator(context.getAuthenticatedUser());
 		patientIdentifierType.setDateCreated(new Date());
 		session.save(patientIdentifierType);
 		
-		tx.commit();
-		HibernateUtil.disconnectSession();
 	}
 
 	/**
@@ -124,14 +101,10 @@ public class HibernateAdministrationService implements
 	 */
 	public void createRelationshipType(RelationshipType relationshipType) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
 		
 		relationshipType.setCreator(context.getAuthenticatedUser());
 		relationshipType.setDateCreated(new Date());
 		session.save(relationshipType);
-		
-		tx.commit();
-		HibernateUtil.disconnectSession();
 	}
 
 	/**
@@ -139,14 +112,10 @@ public class HibernateAdministrationService implements
 	 */
 	public void createTribe(Tribe tribe) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
 		
 		//tribe.setCreator(context.getAuthenticatedUser());
 		//tribe.setDateCreated(new Date());
 		session.save(tribe);
-		
-		tx.commit();
-		HibernateUtil.disconnectSession();
 	}
 
 	/**
@@ -154,12 +123,8 @@ public class HibernateAdministrationService implements
 	 */
 	public void deleteEncounterType(EncounterType encounterType) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
 		
 		session.delete(encounterType);
-		
-		tx.commit();
-		HibernateUtil.disconnectSession();
 	}
 
 	/**
@@ -167,12 +132,8 @@ public class HibernateAdministrationService implements
 	 */
 	public void deleteFieldType(FieldType fieldType) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
 		
 		session.delete(fieldType);
-		
-		tx.commit();
-		HibernateUtil.disconnectSession();
 	}
 
 	/**
@@ -180,13 +141,8 @@ public class HibernateAdministrationService implements
 	 */
 	public void deleteLocation(Location location) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
 		
 		session.delete(location);
-		
-		tx.commit();
-		HibernateUtil.disconnectSession();
-		
 	}
 
 	/**
@@ -194,13 +150,7 @@ public class HibernateAdministrationService implements
 	 */
 	public void deleteMimeType(MimeType mimeType) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
-		
 		session.delete(mimeType);
-		
-		tx.commit();
-		HibernateUtil.disconnectSession();
-		
 	}
 
 	/**
@@ -208,13 +158,7 @@ public class HibernateAdministrationService implements
 	 */
 	public void deleteOrderType(OrderType orderType) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
-		
 		session.delete(orderType);
-		
-		tx.commit();
-		HibernateUtil.disconnectSession();
-
 	}
 
 	/**
@@ -222,13 +166,7 @@ public class HibernateAdministrationService implements
 	 */
 	public void deletePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
-		
 		session.delete(patientIdentifierType);
-		
-		tx.commit();
-		HibernateUtil.disconnectSession();
-	
 	}
 
 	/**
@@ -236,13 +174,7 @@ public class HibernateAdministrationService implements
 	 */
 	public void deleteRelationshipType(RelationshipType relationshipType) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
-		
 		session.delete(relationshipType);
-		
-		tx.commit();
-		HibernateUtil.disconnectSession();
-
 	}
 
 	/**
@@ -250,14 +182,7 @@ public class HibernateAdministrationService implements
 	 */
 	public void deleteTribe(Tribe tribe) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
-		
 		session.delete(tribe);
-		
-		tx.commit();
-		HibernateUtil.disconnectSession();
-
-		
 	}
 
 	/**
@@ -268,12 +193,7 @@ public class HibernateAdministrationService implements
 			createEncounterType(encounterType);
 		else {
 			Session session = HibernateUtil.currentSession();
-			Transaction tx = session.beginTransaction();
-			
 			session.saveOrUpdate(encounterType);
-			
-			tx.commit();
-			HibernateUtil.disconnectSession();
 		}
 	}
 
@@ -285,12 +205,7 @@ public class HibernateAdministrationService implements
 			createFieldType(fieldType);
 		else {
 			Session session = HibernateUtil.currentSession();
-			Transaction tx = session.beginTransaction();
-			
 			session.saveOrUpdate(fieldType);
-			
-			tx.commit();
-			HibernateUtil.disconnectSession();
 		}
 	}
 
@@ -302,12 +217,7 @@ public class HibernateAdministrationService implements
 			createLocation(location);
 		else {
 			Session session = HibernateUtil.currentSession();
-			Transaction tx = session.beginTransaction();
-			
 			session.saveOrUpdate(location);
-			
-			tx.commit();
-			HibernateUtil.disconnectSession();
 		}
 	}
 
@@ -319,12 +229,7 @@ public class HibernateAdministrationService implements
 			createMimeType(mimeType);
 		else {
 			Session session = HibernateUtil.currentSession();
-			Transaction tx = session.beginTransaction();
-			
 			session.saveOrUpdate(mimeType);
-			
-			tx.commit();
-			HibernateUtil.disconnectSession();
 		}
 	}
 
@@ -336,12 +241,7 @@ public class HibernateAdministrationService implements
 			createOrderType(orderType);
 		else {
 			Session session = HibernateUtil.currentSession();
-			Transaction tx = session.beginTransaction();
-			
 			session.saveOrUpdate(orderType);
-			
-			tx.commit();
-			HibernateUtil.disconnectSession();
 		}
 	}
 
@@ -353,12 +253,7 @@ public class HibernateAdministrationService implements
 			createPatientIdentifierType(patientIdentifierType);
 		else {
 			Session session = HibernateUtil.currentSession();
-			Transaction tx = session.beginTransaction();
-			
 			session.saveOrUpdate(patientIdentifierType);
-			
-			tx.commit();
-			HibernateUtil.disconnectSession();
 		}
 	}
 
@@ -370,12 +265,7 @@ public class HibernateAdministrationService implements
 			createRelationshipType(relationshipType);
 		else {
 			Session session = HibernateUtil.currentSession();
-			Transaction tx = session.beginTransaction();
-			
 			session.saveOrUpdate(relationshipType);
-			
-			tx.commit();
-			HibernateUtil.disconnectSession();
 		}
 	}
 
@@ -387,14 +277,7 @@ public class HibernateAdministrationService implements
 			createTribe(tribe);
 		else {
 			Session session = HibernateUtil.currentSession();
-			Transaction tx = session.beginTransaction();
-			
 			session.saveOrUpdate(tribe);
-			
-			tx.commit();
-			HibernateUtil.disconnectSession();
 		}
-	}
-
-	
+	}	
 }

@@ -40,7 +40,6 @@ public class HibernatePatientService extends HibernateDaoSupport implements Pati
 	public Patient getPatient(Integer patientId) {
 		Session session = HibernateUtil.currentSession();
 		Patient patient = (Patient) session.get(Patient.class, patientId);
-		HibernateUtil.disconnectSession();
 		
 		return patient;
 	}
@@ -48,7 +47,6 @@ public class HibernatePatientService extends HibernateDaoSupport implements Pati
 
 	public void createPatient(Patient patient) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
 		
 		patient.setCreator(context.getAuthenticatedUser());
 		patient.setDateCreated(new Date());
@@ -74,10 +72,7 @@ public class HibernatePatientService extends HibernateDaoSupport implements Pati
 				pIdentifier.setPatient(patient);
 			}
 		
-		session.save(patient);
-		
-		tx.commit();
-		HibernateUtil.disconnectSession();
+		session.saveOrUpdate(patient);
 	}
 
 
@@ -86,12 +81,8 @@ public class HibernatePatientService extends HibernateDaoSupport implements Pati
 			createPatient(patient);
 		else {
 			Session session = HibernateUtil.currentSession();
-			Transaction tx = session.beginTransaction();
 			
-			session.update(patient);
-			
-			tx.commit();
-			HibernateUtil.disconnectSession();
+			session.saveOrUpdate(patient);
 		}
 	}
 
@@ -104,8 +95,6 @@ public class HibernatePatientService extends HibernateDaoSupport implements Pati
 						.createCriteria("identifiers")
 						.add(Expression.like("identifier", identifier, MatchMode.ANYWHERE))
 						.list();
-		
-		HibernateUtil.disconnectSession();
 		
 		return patients;
 	}
@@ -165,12 +154,7 @@ public class HibernatePatientService extends HibernateDaoSupport implements Pati
 	 */
 	public void deletePatient(Patient patient) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
-		
 		session.delete(patient);
-		
-		tx.commit();
-		HibernateUtil.disconnectSession();		
 	}
 
 	/**
@@ -179,7 +163,6 @@ public class HibernatePatientService extends HibernateDaoSupport implements Pati
 	public PatientIdentifierType getPatientIdentifierType(Integer patientIdentifierTypeId) throws APIException {
 		Session session = HibernateUtil.currentSession();
 		PatientIdentifierType patientIdentifierType = (PatientIdentifierType) session.get(PatientIdentifierType.class, patientIdentifierTypeId);
-		HibernateUtil.disconnectSession();
 		
 		return patientIdentifierType;
 	}
@@ -192,8 +175,6 @@ public class HibernatePatientService extends HibernateDaoSupport implements Pati
 		
 		List<PatientIdentifierType> patientIdentifierTypes = session.createQuery("from PatientIdentifierType").list();
 		
-		HibernateUtil.disconnectSession();
-		
 		return patientIdentifierTypes;
 	}
 
@@ -204,8 +185,6 @@ public class HibernatePatientService extends HibernateDaoSupport implements Pati
 		Session session = HibernateUtil.currentSession();
 		
 		List<Tribe> tribes = session.createQuery("from Tribe").list();
-		
-		HibernateUtil.disconnectSession();
 		
 		return tribes;
 	}
@@ -220,8 +199,6 @@ public class HibernatePatientService extends HibernateDaoSupport implements Pati
 		Location location = new Location();
 		location = (Location)session.get(Location.class, locationId);
 		
-		HibernateUtil.disconnectSession();
-		
 		return location;
 
 	}
@@ -235,8 +212,6 @@ public class HibernatePatientService extends HibernateDaoSupport implements Pati
 		
 		List<Location> locations;
 		locations = session.createQuery("from Location l").list();
-		
-		HibernateUtil.disconnectSession();
 		
 		return locations;
 

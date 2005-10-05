@@ -31,14 +31,11 @@ public class HibernateConceptService implements
 	public void createConcept(Concept concept) throws APIException {
 		
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
 		
 		concept.setCreator(context.getAuthenticatedUser());
 		concept.setDateCreated(new Date());
 		session.save(concept);
 		
-		tx.commit();
-		HibernateUtil.disconnectSession();
 	}
 
 	/**
@@ -47,12 +44,8 @@ public class HibernateConceptService implements
 	public void deleteConcept(Concept concept) throws APIException {
 		
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
 		
 		session.delete(concept);
-		
-		tx.commit();
-		HibernateUtil.disconnectSession();
 		
 	}
 
@@ -65,8 +58,6 @@ public class HibernateConceptService implements
 		
 		Concept concept = new Concept();
 		concept = (Concept)session.get(Concept.class, conceptId);
-		
-		HibernateUtil.disconnectSession();
 		
 		return concept;
 	}
@@ -82,7 +73,6 @@ public class HibernateConceptService implements
 			Session session = HibernateUtil.currentSession();
 			
 			session.saveOrUpdate(concept);
-			HibernateUtil.disconnectSession();
 		}
 	}
 
@@ -106,9 +96,6 @@ public class HibernateConceptService implements
 								//.add(Expression.eq("locale", context.getLocale().toString()))
 								.add(Expression.like("name", name))
 								.list();
-		
-		HibernateUtil.disconnectSession();
-		
 		return concepts;
 	}
 
@@ -120,8 +107,6 @@ public class HibernateConceptService implements
 		Session session = HibernateUtil.currentSession();
 		
 		List<Drug> drugs = session.createQuery("from Drug").list();
-		
-		HibernateUtil.disconnectSession();
 		
 		return drugs;
 	}

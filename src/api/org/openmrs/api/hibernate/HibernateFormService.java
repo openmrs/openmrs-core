@@ -32,14 +32,11 @@ public class HibernateFormService implements
 	public void createForm(Form form) throws APIException {
 		
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
 		
 		form.setCreator(context.getAuthenticatedUser());
 		form.setDateCreated(new Date());
 		session.save(form);
 		
-		tx.commit();
-		HibernateUtil.disconnectSession();
 	}
 
 	/**
@@ -47,12 +44,8 @@ public class HibernateFormService implements
 	 */
 	public void deleteForm(Form form) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
 		
-		session.delete(form);
-		
-		tx.commit();
-		HibernateUtil.disconnectSession();
+		session.delete(form);		
 	}
 
 	/**
@@ -64,8 +57,6 @@ public class HibernateFormService implements
 		
 		Form form = new Form();
 		form = (Form)session.get(Form.class, formId);
-		
-		HibernateUtil.disconnectSession();
 		
 		return form;
 	}
@@ -81,7 +72,6 @@ public class HibernateFormService implements
 			Session session = HibernateUtil.currentSession();
 			
 			session.saveOrUpdate(form);
-			//HibernateUtil.disconnectSession();
 		}
 	}
 
@@ -116,8 +106,6 @@ public class HibernateFormService implements
 		Field field = new Field();
 		field = (Field)session.get(Field.class, fieldId);
 		
-		HibernateUtil.disconnectSession();
-		
 		return field;
 	}
 
@@ -128,8 +116,6 @@ public class HibernateFormService implements
 		Session session = HibernateUtil.currentSession();
 		
 		List fields = session.createCriteria(Field.class).list();
-		
-		HibernateUtil.disconnectSession();
 		
 		return fields;
 	}
@@ -143,8 +129,6 @@ public class HibernateFormService implements
 		FieldType fieldType = new FieldType();
 		fieldType = (FieldType)session.get(FieldType.class, fieldTypeId);
 		
-		HibernateUtil.disconnectSession();
-		
 		return fieldType;
 	}
 
@@ -155,8 +139,6 @@ public class HibernateFormService implements
 		Session session = HibernateUtil.currentSession();
 		
 		List fieldTypes = session.createCriteria(FieldType.class).list();
-		
-		HibernateUtil.disconnectSession();
 		
 		return fieldTypes;
 	}
@@ -170,8 +152,6 @@ public class HibernateFormService implements
 		FormField formField = new FormField();
 		formField = (FormField)session.get(FormField.class, formFieldId);
 		
-		HibernateUtil.disconnectSession();
-		
 		return formField;
 	}
 
@@ -183,8 +163,6 @@ public class HibernateFormService implements
 		
 		List forms = session.createCriteria(Form.class).list();
 		
-		HibernateUtil.disconnectSession();
-		
 		return forms;
 	}
 	
@@ -194,14 +172,10 @@ public class HibernateFormService implements
 	public void createField(Field field) throws APIException {
 		
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
 		
 		field.setCreator(context.getAuthenticatedUser());
 		field.setDateCreated(new Date());
 		session.save(field);
-		
-		tx.commit();
-		HibernateUtil.disconnectSession();
 	}
 	
 	/**
@@ -214,7 +188,6 @@ public class HibernateFormService implements
 			Session session = HibernateUtil.currentSession();
 			
 			session.saveOrUpdate(field);
-			//HibernateUtil.disconnectSession();
 		}
 	}
 
@@ -223,12 +196,9 @@ public class HibernateFormService implements
 	 */
 	public void deleteField(Field field) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		Transaction tx = session.beginTransaction();
 		
 		session.delete(field);
 		
-		tx.commit();
-		HibernateUtil.disconnectSession();
 	}
 	
 }
