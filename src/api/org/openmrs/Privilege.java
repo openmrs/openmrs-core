@@ -67,4 +67,10 @@ public class Privilege implements java.io.Serializable {
 		this.privilege = privilege;
 	}
 
+	/**
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		return this.privilege;
+	}
 }

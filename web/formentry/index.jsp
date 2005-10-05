@@ -1,3 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<core:redirect url="welcome.form"/>
+<openmrs:require privilege="Form Entry" otherwise="/openmrs/login.jsp" />
+
+<h2>Please select a patient</h2>
+

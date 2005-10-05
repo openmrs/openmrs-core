@@ -29,7 +29,7 @@ public class LoginServlet extends HttpServlet {
 		String password = request.getParameter("password");
 		String redirect = request.getParameter("redirect");
 		if (redirect == "" || redirect == null)
-			redirect = "formentry/index.html";
+			redirect = "formentry";
 		
 		HttpSession httpSession = request.getSession();
 		
@@ -43,7 +43,7 @@ public class LoginServlet extends HttpServlet {
 			}
 		} catch (ContextAuthenticationException e) {
 			response
-					.sendRedirect("/login.html?msg=Invalid+credentials.+Try again.");
+					.sendRedirect(request.getContextPath() + "/login.jsp?msg=Invalid+credentials.+Try again.");
 		}
 	}
 

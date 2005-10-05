@@ -30,6 +30,7 @@ public class OpenmrsFilter implements Filter {
 		context.startTransaction();
         HttpServletRequest hr = (HttpServletRequest) request;
         HttpSession httpSession = hr.getSession();
+        //TODO how to only open a context for pages that need it ?
 		httpSession.setAttribute("__openmrs_context", context);
 		
 		log.debug("before doFilter");

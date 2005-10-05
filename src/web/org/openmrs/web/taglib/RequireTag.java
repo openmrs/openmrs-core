@@ -9,7 +9,6 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.User;
 import org.openmrs.context.Context;
 
 public class RequireTag extends TagSupport {
@@ -32,7 +31,6 @@ public class RequireTag extends TagSupport {
 		if (privilege == null || !context.isAuthenticated() || !context.hasPrivilege(privilege)) {
 			try {
 				String redirect = request.getContextPath() + request.getServletPath();
-				redirect = redirect.replace(".jsp", ".html");
 				httpSession.setAttribute("login_redirect", redirect);
 				((HttpServletResponse) pageContext.getResponse())
 						.sendRedirect(otherwise);

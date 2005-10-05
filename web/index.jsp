@@ -4,7 +4,7 @@
 
 <br><br>
 
-You must <a href="login.html">log in</a> to continue <br>
+You must <a href="login.jsp">log in</a> to continue <br>
 
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

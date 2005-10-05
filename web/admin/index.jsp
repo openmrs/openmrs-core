@@ -6,7 +6,7 @@
 <h2>Administration</h2>
 
 <ul>
-	<li><a href="users.html">Manage the users</a></li>
+	<li><a href="users.jsp">Manage the users</a></li>
 </ul>
 
 
