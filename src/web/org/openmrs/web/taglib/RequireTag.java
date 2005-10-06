@@ -9,6 +9,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.APIException;
 import org.openmrs.context.Context;
 
 public class RequireTag extends TagSupport {
@@ -28,6 +29,11 @@ public class RequireTag extends TagSupport {
 		HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
 		
 		Context context = (Context)httpSession.getAttribute("__openmrs_context");
+		if (context == null && privilege != null) {
+			log.error("context is unavailable");
+			//TODO find correct error to throw 
+			throw new APIException("The Context is currently unavailable");
+		}
 		if (privilege == null || !context.isAuthenticated() || !context.hasPrivilege(privilege)) {
 			try {
 				String redirect = request.getContextPath() + request.getServletPath();

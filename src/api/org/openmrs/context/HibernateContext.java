@@ -120,7 +120,13 @@ public class HibernateContext implements Context {
 	 * @see org.openmrs.context.Context#getAuthenticatedUser()
 	 */
 	public User getAuthenticatedUser() {
-		session.lock(user, LockMode.READ);
+		try {
+			session.lock(user, LockMode.READ);
+		}
+		catch (Exception e) {
+			log.error("Attempted locking of user to double open session");
+		}
+		//session.merge(user);
 		return user;
 	}
 

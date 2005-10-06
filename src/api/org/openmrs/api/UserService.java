@@ -17,9 +17,10 @@ public interface UserService {
 	/**
 	 * Create a new user
 	 * @param user
+	 * @param password
 	 * @throws APIException
 	 */
-	public void createUser(User user) throws APIException;
+	public void createUser(User user, String password) throws APIException;
 
 	/**
 	 * Get user by internal user identifier
@@ -129,4 +130,17 @@ public interface UserService {
 	 */
 	public List<User> getUsers() throws APIException;
 
+	/**
+	 * Returns role object with given string role
+	 * @return Role
+	 * @throws APIException
+	 */
+	public Role getRole(String r) throws APIException;
+
+	/**
+	 * Returns Privilege in the system with given String privilege
+	 * @return Privilege
+	 * @throws APIException
+	 */
+	public Privilege getPrivilege(String p) throws APIException;	
 }

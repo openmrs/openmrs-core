@@ -12,6 +12,14 @@
 		<servlet-name>loginServlet</servlet-name>
 		<url-pattern>/loginServlet</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>editUserServlet</servlet-name>
+		<servlet-class>org.openmrs.web.EditUserServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>editUserServlet</servlet-name>
+		<url-pattern>/admin/editUserServlet</url-pattern>
+	</servlet-mapping>
 
 	<filter>
 		<filter-name>OpenmrsFilter</filter-name> 

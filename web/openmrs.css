@@ -1,1 +1,9 @@
-body { font-family: arial }
+body {
+	font-family: arial;
+}
+
+#msg { 
+	border: 1px dashed lightgrey;
+	background-color: tooltip;
+	padding: 2px;
+}

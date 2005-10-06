@@ -4,15 +4,17 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.LockMode;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.OrderType;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.Privilege;
 import org.openmrs.RelationshipType;
+import org.openmrs.Role;
 import org.openmrs.Tribe;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
@@ -117,6 +119,38 @@ public class HibernateAdministrationService implements
 		//tribe.setDateCreated(new Date());
 		session.save(tribe);
 	}
+	
+	/**
+	 * @see org.openmrs.api.AdministrationService#createRole(org.openmrs.Role)
+	 */
+	public void createRole(Role role) throws APIException {
+		Session session = HibernateUtil.currentSession();
+		
+		//Role.setCreator(context.getAuthenticatedUser());
+		//Role.setDateCreated(new Date());
+		
+		try {
+			HibernateUtil.beginTransaction();
+			session.save(role);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e);
+		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.AdministrationService#createPrivilege(org.openmrs.Privilege)
+	 */
+	public void createPrivilege(Privilege privilege) throws APIException {
+		Session session = HibernateUtil.currentSession();
+		
+		//Privilege.setCreator(context.getAuthenticatedUser());
+		//Privilege.setDateCreated(new Date());
+		session.save(privilege);
+		session.flush();
+	}
 
 	/**
 	 * @see org.openmrs.api.AdministrationService#deleteEncounterType(org.openmrs.EncounterType)
@@ -182,7 +216,36 @@ public class HibernateAdministrationService implements
 	 */
 	public void deleteTribe(Tribe tribe) throws APIException {
 		Session session = HibernateUtil.currentSession();
+		session.lock(tribe, LockMode.READ);
 		session.delete(tribe);
+		session.flush();
+	}
+	
+	/**
+	 * @see org.openmrs.api.AdministrationService#deleteRole(org.openmrs.Role)
+	 */
+	public void deleteRole(Role role) throws APIException {
+		Session session = HibernateUtil.currentSession();
+		//session.lock(role, LockMode.READ);
+		try {
+			HibernateUtil.beginTransaction();
+			session.delete(role);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e.getMessage());
+		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.AdministrationService#deletePrivilege(org.openmrs.Privilege)
+	 */
+	public void deletePrivilege(Privilege privilege) throws APIException {
+		Session session = HibernateUtil.currentSession();
+		session.lock(privilege, LockMode.READ);
+		session.delete(privilege);
+		session.flush();
 	}
 
 	/**
@@ -280,4 +343,38 @@ public class HibernateAdministrationService implements
 			session.saveOrUpdate(tribe);
 		}
 	}	
+	
+	/**
+	 * @see org.openmrs.api.AdministrationService#updateRole(org.openmrs.Role)
+	 */
+	public void updateRole(Role role) throws APIException {
+		if (role.getRole() == null)
+			createRole(role);
+		else {
+			try {
+				Session session = HibernateUtil.currentSession();
+				HibernateUtil.beginTransaction();
+				session.saveOrUpdate(role);
+				HibernateUtil.commitTransaction();
+			}
+			catch (Exception e) {
+				HibernateUtil.rollbackTransaction();
+				throw new APIException(e.getMessage());
+			}
+		}
+	}	
+	
+	/**
+	 * @see org.openmrs.api.AdministrationService#updatePrivilege(org.openmrs.Privilege)
+	 */
+	public void updatePrivilege(Privilege privilege) throws APIException {
+		if (privilege.getPrivilege() == null)
+			createPrivilege(privilege);
+		else {
+			Session session = HibernateUtil.currentSession();
+			session.saveOrUpdate(privilege);
+			session.flush();
+		}
+	}	
+	
 }

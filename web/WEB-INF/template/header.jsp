@@ -1,5 +1,6 @@
 <html>
 	<head>
+	<link type="text/css" rel="stylesheet" href="/openmrs/openmrs.css" />
 	</head>
 
 <body>
@@ -17,3 +18,19 @@
 			</td>
 			<td></td>
 			<td valign="top">
+
+			<%
+				if (session.getAttribute("openmrs_msg") != null) {
+					out.print("<div id='openmrs_msg'>");
+					out.print(session.getAttribute("openmrs_msg"));
+					out.print("</div>");
+					session.removeAttribute("openmrs_msg");
+				}
+				if (session.getAttribute("openmrs_error") != null) {
+					out.print("<div id='openmrs_error'>");
+					out.print(session.getAttribute("openmrs_error"));
+					out.print("</div>");
+					session.removeAttribute("openmrs_error");
+				}
+			%>
+			

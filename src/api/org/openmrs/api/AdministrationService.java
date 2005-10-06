@@ -6,7 +6,9 @@ import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.OrderType;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.Privilege;
 import org.openmrs.RelationshipType;
+import org.openmrs.Role;
 import org.openmrs.Tribe;
 
 /**
@@ -184,6 +186,48 @@ public interface AdministrationService {
 	 * @throws APIException
 	 */
 	public void deleteRelationshipType(RelationshipType relationshipType) throws APIException;	
+
+	/**
+	 * Create a new Role
+	 * @param Role to create
+	 * @throws APIException
+	 */
+	public void createRole(Role role) throws APIException;
+
+	/**
+	 * Update Role
+	 * @param Role to update
+	 * @throws APIException
+	 */
+	public void updateRole(Role role) throws APIException;
+
+	/**
+	 * Delete Role
+	 * @param Role to delete
+	 * @throws APIException
+	 */
+	public void deleteRole(Role role) throws APIException;	
+
+	/**
+	 * Create a new Privilege
+	 * @param Privilege to create
+	 * @throws APIException
+	 */
+	public void createPrivilege(Privilege privilege) throws APIException;
+
+	/**
+	 * Update Privilege
+	 * @param Privilege to update
+	 * @throws APIException
+	 */
+	public void updatePrivilege(Privilege privilege) throws APIException;
+
+	/**
+	 * Delete Privilege
+	 * @param Privilege to delete
+	 * @throws APIException
+	 */
+	public void deletePrivilege(Privilege privilege) throws APIException;	
 
 
 }

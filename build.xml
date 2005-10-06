@@ -120,6 +120,9 @@
 		       deprecation="${compile.deprecation}" 
 		       optimize="${compile.optimize}" 
 		       classpathref="web.compile.classpath" />
+		<copy todir="${build.dir}/web">
+			<fileset file="web/WEB-INF/log4j.xml" />
+		</copy>
 	</target>
 
 	<target name="package-web" depends="compile-web" description="create webapp war file">

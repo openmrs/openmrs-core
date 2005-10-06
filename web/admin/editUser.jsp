@@ -6,8 +6,9 @@
 <openmrs:require privilege="Manage Users" otherwise="/openmrs/login.jsp" />
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
-<br>
+<%@ include file="localHeader" %>
 
+<br>
 <h2>User Management</h2>	
 <br>
 
@@ -16,8 +17,9 @@
 	UserService userService = context.getUserService();
 	String id = request.getParameter("id");
 	Integer i = Integer.valueOf(id);
-	User u = userService.getUser(i);
-	pageContext.setAttribute("user", u);
+	User user = userService.getUser(i);
+	pageContext.setAttribute("user", user);
+	pageContext.setAttribute("userService", userService);
 %>
 
 <form method="post" action="editUserServlet">
@@ -28,23 +30,24 @@
 	</tr>
 	<tr>
 		<td>First Name</td>
-		<td><input type="text" name="username" value="<c:out value="${user.username}"/>"></td>
+		<td><input type="text" name="firstName" value="<c:out value="${user.firstName}"/>"></td>
 	</tr>
 	<tr>
 		<td>Middle Name</td>
-		<td><input type="text" name="username" value="<c:out value="${user.username}"/>"></td>
+		<td><input type="text" name="middleName" value="<c:out value="${user.middleName}"/>"></td>
 	</tr>
 	<tr>
 		<td>Last Name</td>
-		<td><input type="text" name="username" value="<c:out value="${user.username}"/>"></td>
+		<td><input type="text" name="lastName" value="<c:out value="${user.lastName}"/>"></td>
 	</tr>
 	<tr>
-		<td>Roles</td>
+		<td valign="top">Roles</td>
 		<td>
-			<select name="roles" multiple size="<c:out value="${user.roles}"/>">
-				<c:forEach var="role" items="${user.roles}">
+			<select name="roles" multiple size="5">
+				<c:forEach var="role" items="${userService.roles}">
 					<jsp:useBean id="role" type="org.openmrs.Role" scope="page"/>
-					<option value="<c:out value="${role.role}"/>">
+					<option value="<c:out value="${role.role}"/>"
+							<% if (user.getRoles().contains(role)) {%>selected <%}%>>
 						<c:out value="${role}"/>
 					</option>
 				</c:forEach>
@@ -52,6 +55,7 @@
 		</td>
 	</tr>
 </table>
+<input type="hidden" name="userId" value="<c:out value="${user.userId}"/>">
 <input type="submit" value="Save User">
 </form>
 

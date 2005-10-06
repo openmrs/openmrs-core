@@ -5,10 +5,6 @@
 
 <br><br>
 
-<script>
- window.onload=getElementById('username').setFocus();
-</script>
-
 <form method="post" action="loginServlet" style="border: 1px solid black; padding:15px; width: 300px;">
 	<table>
 		<tr>
@@ -26,5 +22,9 @@
 	
 	<input type="submit" value="Log in" />
 </form>	
+
+<script>
+ document.getElementById('username').focus();
+</script>
 	
 <%@ include file="/WEB-INF/template/footer.jsp" %>

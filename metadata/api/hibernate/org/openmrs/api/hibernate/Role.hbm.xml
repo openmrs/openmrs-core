@@ -17,12 +17,12 @@
 		<!-- Associations -->
 
 		<!-- bi-directional many-to-many association to Privilege -->
-		<set name="privileges" cascade="none"
+		<set name="privileges" cascade="delete"
 			table="role_privilege">
 			<key not-null="true">
 				<column name="role" />
 			</key>
-			<many-to-many class="Privilege">
+			<many-to-many class="Privilege" >
 				<column name="privilege" />
 			</many-to-many>
 		</set>

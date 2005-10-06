@@ -40,11 +40,6 @@ public class HibernateUtil {
 		else if (!s.isOpen() || !s.isConnected()) {
 			s.reconnect();
 		}
-		Transaction tx = (Transaction) threadLocalTransaction.get();
-		if (tx == null) {
-			tx = s.beginTransaction();
-			threadLocalTransaction.set(tx);
-		}
 
 		return s;
 	}
@@ -59,18 +54,48 @@ public class HibernateUtil {
 	
 	public static void closeSession() throws HibernateException {
 		
-		//commit transaction
-		Transaction tx = (Transaction) threadLocalTransaction.get();
-		if (tx != null && !tx.wasCommitted() && !tx.wasRolledBack())
-			tx.commit();
-		threadLocalTransaction.set(null);
+		//if committing errors out, too bad: the session gets closed anyway.
+		try {
+			commitTransaction();
+		}
+		finally {
+			//close session
+			Session s = (Session) threadLocalSession.get();
+			threadLocalSession.set(null);
+			if (s != null) {
+				log.debug("closing threadLocalSession");
+				s.close();
+			}
+		}
+	}
+	
+	public static void beginTransaction() throws HibernateException {
 		
-		//clost session
-		Session s = (Session) threadLocalSession.get();
-		threadLocalSession.set(null);
-		if (s != null) {
-			log.debug("closing threadLocalSession");
-			s.close();
+		Transaction tx = (Transaction) threadLocalTransaction.get();
+		if (tx == null) {
+			tx = currentSession().beginTransaction();
+			threadLocalTransaction.set(tx);
+		}
+	}
+	
+	public static void commitTransaction() throws HibernateException {
+		Transaction tx = (Transaction) threadLocalTransaction.get();
+		try {
+			if (tx != null && !tx.wasCommitted() && !tx.wasRolledBack())
+				tx.commit();
+			threadLocalTransaction.set(null);
+		}
+		catch (HibernateException e) {
+			rollbackTransaction();
+			throw e;
+		}
+	}
+	
+	public static void rollbackTransaction() throws HibernateException {
+		Transaction tx = (Transaction) threadLocalTransaction.get();
+		threadLocalTransaction.set(null);
+		if (tx != null && !tx.wasCommitted() && !tx.wasRolledBack()) {
+			tx.rollback();
 		}
 	}
 	

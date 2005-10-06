@@ -11,7 +11,7 @@ import java.util.Set;
  */
 public class Role implements java.io.Serializable {
 
-	public static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 1234233L;
 
 	// Fields
 
@@ -32,7 +32,7 @@ public class Role implements java.io.Serializable {
 
 	public boolean equals(Object obj) {
 		if (obj == null || !(obj instanceof Role)) return false;
-		return role.equals(((Role)obj).role);
+		return role.equals(((Role)obj).getRole());
 	}
 	
 	public int hashCode() {

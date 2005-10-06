@@ -42,8 +42,8 @@ public class LoginServlet extends HttpServlet {
 				return;
 			}
 		} catch (ContextAuthenticationException e) {
-			response
-					.sendRedirect(request.getContextPath() + "/login.jsp?msg=Invalid+credentials.+Try again.");
+			httpSession.setAttribute("openmrs_msg", "Invalid credentials. Please try again.");
+			response.sendRedirect(request.getContextPath() + "/login.jsp");
 		}
 	}
 
