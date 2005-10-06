@@ -15,7 +15,7 @@
 	Context context = (Context)session.getAttribute("__openmrs_context");
 	UserService userService = context.getUserService();
 	String id = request.getParameter("id");
-	Integer i = Integer.getInteger(id);
+	Integer i = Integer.valueOf(id);
 	User u = userService.getUser(i);
 	pageContext.setAttribute("user", u);
 %>
