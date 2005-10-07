@@ -1,9 +1,5 @@
 package org.openmrs.context;
 
-import org.springframework.beans.factory.xml.XmlBeanFactory;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-
 /**
  * Factory for obtaining an OpenMRS <code>context</code>.
  * 
@@ -14,19 +10,15 @@ import org.springframework.core.io.Resource;
  */
 public class ContextFactory {
 
-	private static Context context = null;
-
 	public static Context getContext() {
-		if (context == null)
-			createContext();
-		return context;
+		return createContext();
 	}
 
-	private static void createContext() {
-		//Resource res = new ClassPathResource("openmrs-servlet.xml");
-		//XmlBeanFactory factory = new XmlBeanFactory(res);
+	private static Context createContext() {
+		// Resource res = new ClassPathResource("openmrs-servlet.xml");
+		// XmlBeanFactory factory = new XmlBeanFactory(res);
 
-		//context = (Context) factory.getBean("defaultContext");
-		context = (Context) new HibernateContext();
+		// context = (Context) factory.getBean("defaultContext");
+		return new HibernateContext();
 	}
 }
