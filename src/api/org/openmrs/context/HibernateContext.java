@@ -47,7 +47,6 @@ public class HibernateContext implements Context {
 	private FormService formService;
 	private OrderService orderService;
 	private Locale locale;
-	private Session session;
 
 	protected HibernateContext() {
 	}
@@ -120,6 +119,7 @@ public class HibernateContext implements Context {
 	 * @see org.openmrs.context.Context#getAuthenticatedUser()
 	 */
 	public User getAuthenticatedUser() {
+		Session session = HibernateUtil.currentSession();
 		try {
 			session.lock(user, LockMode.READ);
 		}
@@ -169,9 +169,7 @@ public class HibernateContext implements Context {
 	 */
 	public boolean hasPrivilege(String privilege) {
 		if (isAuthenticated()) {
-			Session session = HibernateUtil.currentSession();
 			User user = getAuthenticatedUser();
-			session.lock(user, LockMode.READ);
 			return user.hasPrivilege(privilege);
 		}
 		return false;
@@ -321,8 +319,8 @@ public class HibernateContext implements Context {
 	public void startTransaction() {
 
 		log.debug("HibernateContext: Starting Transaction");
-		if (session == null)
-			session = HibernateUtil.currentSession();
+		//if (session == null)
+		HibernateUtil.currentSession();
 		
 	}
 
@@ -333,7 +331,7 @@ public class HibernateContext implements Context {
 		
 		log.debug("HibernateContext: Ending Transaction");
 		HibernateUtil.closeSession();
-		session = null;
+		//session = null;
 		
 	}
 	

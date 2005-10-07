@@ -24,22 +24,45 @@ public class OpenmrsFilter implements Filter {
 		log.debug("Destroying filter");
 	}
 
+	private static String INIT_REQ_ATTR_NAME = "__INIT_REQ__";
+	
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 	
-		Context context = ContextFactory.getContext(); 
-		context.startTransaction();
-        HttpServletRequest hr = (HttpServletRequest) request;
-        HttpSession httpSession = hr.getSession();
+		HttpServletRequest httpRequest = (HttpServletRequest)request;
+		HttpSession httpSession = httpRequest.getSession();
+		Context context = null;		
+		boolean initialRequest = false;
+		
+		Object val = httpRequest.getAttribute( INIT_REQ_ATTR_NAME );
+		
+		//the request will not have the value if this is the initial request
+        initialRequest = ( val == null );
+        
+        //set/forward the request init attribute
+        httpRequest.setAttribute( INIT_REQ_ATTR_NAME, INIT_REQ_ATTR_NAME );
+        
         //TODO how to only open a context for pages that need it ?
-		httpSession.setAttribute("__openmrs_context", context);
+        
+        context = (Context)httpSession.getAttribute("__openmrs_context");
+        
+        if (initialRequest == true && context == null) {
+        	log.debug("setting context in httpSession");
+        	//set the context it needs one
+       		context = ContextFactory.getContext();
+       		httpSession.setAttribute("__openmrs_context", context);
+        }
 
 		log.debug("before doFilter");
 		try {
 			chain.doFilter(request, response);
 		}
 		finally {
-			httpSession.removeAttribute("__openmrs_context");
-			context.endTransaction();
+			//only close the transaction if this was the initial request
+			if (initialRequest == true) {
+				log.debug("ending transaction - file: " + httpRequest.getRequestURI());
+				//httpSession.removeAttribute("__openmrs_context");
+				context.endTransaction();
+			}
 		}
 		log.debug("after doFilter");
 		

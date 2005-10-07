@@ -20,6 +20,14 @@
 		<servlet-name>editUserServlet</servlet-name>
 		<url-pattern>/admin/editUserServlet</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>logoutServlet</servlet-name>
+		<servlet-class>org.openmrs.web.LogoutServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>logoutServlet</servlet-name>
+		<url-pattern>/logout</url-pattern>
+	</servlet-mapping>
 
 	<filter>
 		<filter-name>OpenmrsFilter</filter-name> 

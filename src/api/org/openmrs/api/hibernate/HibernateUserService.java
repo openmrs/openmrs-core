@@ -35,27 +35,31 @@ public class HibernateUserService extends HibernateDaoSupport implements
 	 */
 	public void createUser(User user, String password) {
 		Session session = HibernateUtil.currentSession();
-		
+
 		try {
+			HibernateUtil.beginTransaction();
+			
+			//add all data minus the password as a new user
+			user.setDateCreated(new Date());
+			user.setCreator(context.getAuthenticatedUser());
+			session.saveOrUpdate(user);
+			session.flush();
+			
+			//update the new user with the password
 			MessageDigest md = MessageDigest.getInstance("MD5");
 			byte[] input = password.getBytes();
 			String hashedPassword = hexString(md.digest(input));
+			session.createSQLQuery("update users set password = ? where user_id = ?")
+				.setString(0, hashedPassword)
+				.setInteger(1, user.getUserId());
 			
-			session.createSQLQuery("insert into users u (username, password, creator) VALUES (?, ?, ?)")
-			.setString(0, user.getUsername())
-			.setString(1, hashedPassword)
-			.setInteger(2, context.getAuthenticatedUser().getUserId());
+			HibernateUtil.commitTransaction();
+			session.flush();
 		}
-		catch (NoSuchAlgorithmException e) {
-			throw new APIException("Cannot find encryption algorithm");
-		}
-		
-		
-		//TODO finish method
-		user.setDateCreated(new Date());
-		user.setCreator(context.getAuthenticatedUser());
-		session.saveOrUpdate(user);
-		session.flush();
+		catch (Exception e)
+		{
+			throw new APIException(e.getMessage());
+		}	
 	}
 	
 	private String hexString(byte[] b) {

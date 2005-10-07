@@ -1,9 +1,15 @@
 <html>
 	<head>
-	<link type="text/css" rel="stylesheet" href="/openmrs/openmrs.css" />
+	<link href="/openmrs/openmrs.css" type="text/css" rel="stylesheet" />
 	</head>
 
 <body>
+
+	<div id="userBar">
+		<openmrs:isAuthenticated>
+			Currently logged in | <a href='/openmrs/logout'>Log out</a>
+		</openmrs:isAuthenticated>
+	</div>
 
 	<table border="0" width="100%" cellspacing="0" cellpadding="0">
 		<col width="175" /><col width="5" /><col width="*" />

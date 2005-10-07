@@ -7,7 +7,7 @@
 <%@ page import="java.util.Set" %>
 <%@ page import="java.util.HashSet" %>
 
-<openmrs:require privilege="Manage Roles" otherwise="/openmrs/login.jsp" />
+<openmrs:require privilege="Manage Users" otherwise="/openmrs/login.jsp" />
 
 <%
 	Context context = (Context)session.getAttribute("__openmrs_context");

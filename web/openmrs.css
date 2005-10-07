@@ -7,3 +7,8 @@ body {
 	background-color: tooltip;
 	padding: 2px;
 }
+
+#userBar {
+	float: right;
+	font-size: 10px;
+}

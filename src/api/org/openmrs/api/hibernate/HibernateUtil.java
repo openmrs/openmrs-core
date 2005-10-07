@@ -31,6 +31,9 @@ public class HibernateUtil {
 	public static final ThreadLocal<Transaction> threadLocalTransaction = new ThreadLocal<Transaction>();
 
 	public static Session currentSession() throws HibernateException {
+		
+		log.debug("getting session");
+		
 		Session s = (Session) threadLocalSession.get();
 		// Open a new threadLocalSession, if this Thread has none yet
 		if (s == null) {
@@ -54,6 +57,8 @@ public class HibernateUtil {
 	
 	public static void closeSession() throws HibernateException {
 		
+		log.debug("attempting to close session");
+		
 		//if committing errors out, too bad: the session gets closed anyway.
 		try {
 			commitTransaction();
@@ -71,6 +76,8 @@ public class HibernateUtil {
 	
 	public static void beginTransaction() throws HibernateException {
 		
+		log.debug("beginning transaction");
+		
 		Transaction tx = (Transaction) threadLocalTransaction.get();
 		if (tx == null) {
 			tx = currentSession().beginTransaction();
@@ -79,6 +86,9 @@ public class HibernateUtil {
 	}
 	
 	public static void commitTransaction() throws HibernateException {
+		
+		log.debug("committing transaction");
+		
 		Transaction tx = (Transaction) threadLocalTransaction.get();
 		try {
 			if (tx != null && !tx.wasCommitted() && !tx.wasRolledBack())
@@ -92,6 +102,9 @@ public class HibernateUtil {
 	}
 	
 	public static void rollbackTransaction() throws HibernateException {
+		
+		log.debug("rolling back transaction");
+		
 		Transaction tx = (Transaction) threadLocalTransaction.get();
 		threadLocalTransaction.set(null);
 		if (tx != null && !tx.wasCommitted() && !tx.wasRolledBack()) {

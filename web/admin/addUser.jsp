@@ -1,13 +1,13 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 <%@ page import="org.openmrs.context.Context" %>
-<%@ page import="org.openmrs.api.AdministrationService" %>
+<%@ page import="org.openmrs.api.UserService" %>
+<%@ page import="org.openmrs.User" %>
 <%@ page import="org.openmrs.Role" %>
-<%@ page import="org.openmrs.Privilege" %>
 <%@ page import="java.util.Set" %>
 <%@ page import="java.util.HashSet" %>
 <%@ page import="org.openmrs.api.APIException" %>
 
-<openmrs:require privilege="Manage Roles" otherwise="/openmrs/login.jsp" />
+<openmrs:require privilege="Manage Users" otherwise="/openmrs/login.jsp" />
 
 <%
 	Context context = (Context)session.getAttribute("__openmrs_context");
@@ -15,26 +15,37 @@
 	pageContext.setAttribute("userService", userService);
 
 
+	//adding roles 
 
-	//adding roles
-	String roleString = request.getParameter("username");
-	if (roleString != "" && roleString != null) {
-		Role role = new Role(roleString);
-		role.setDescription(request.getParameter("description"));
-		String[] privs = request.getParameterValues("privileges");
-		Set privObjs = new HashSet();
-		if (privs != null) {
-			for(int x = 0; x < privs.length; x++) {
-				privObjs.add(new Privilege(privs[x]));
+	String username = request.getParameter("uname");
+	String password = request.getParameter("pword");
+	String confirm  = request.getParameter("confirm");
+	if (username != null && !password.equals(confirm)) {
+		session.setAttribute("openmrs_error", "Passwords do not match");
+	}
+	else if (username != "" && username != null) {
+		User user = new User();
+		user.setUsername(username);
+		user.setFirstName(request.getParameter("firstName"));
+		user.setMiddleName(request.getParameter("middleName"));
+		user.setLastName(request.getParameter("lastName"));
+
+		//make the role set to add to the user
+		String[] roles = request.getParameterValues("roles");
+		Set roleObjs = new HashSet();
+		if (roles != null) {
+			for(int x = 0; x < roles.length; x++) {
+				roleObjs.add(new Role(roles[x]));
 			}
 		}
-		role.setPrivileges(privObjs);
+		user.setRoles(roleObjs);
+		
 		try {
-			adminService.createRole(role);
-			session.setAttribute("openmrs_msg", "Role added");
+			userService.createUser(user, password);
+			session.setAttribute("openmrs_msg", "User created");
 		}
 		catch (APIException e) {
-			session.setAttribute("openmrs_error", "Unable to add role " + e.getMessage());
+			session.setAttribute("openmrs_error", "Unable to add user : " + e.getMessage());
 		}
 	}
 %>
@@ -50,11 +61,15 @@
 	<table>
 		<tr>
 			<td>Username</td>
-			<td><input type="text" name="username"></td>
+			<td><input type="text" name="uname"></td>
 		</tr>
 		<tr>
 			<td>Password</td>
-			<td><input type="password" name="password"></td>
+			<td><input type="password" name="pword"></td>
+		</tr>
+		<tr>
+			<td>Password (again)</td>
+			<td><input type="password" name="confirm"></td>
 		</tr>
 		<tr>
 			<td>First Name</td>

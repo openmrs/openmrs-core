@@ -17,7 +17,7 @@
 		<!-- Associations -->
 
 		<!-- bi-directional many-to-many association to Privilege -->
-		<set name="privileges" cascade="delete"
+		<set name="privileges" cascade="none"
 			table="role_privilege">
 			<key not-null="true">
 				<column name="role" />

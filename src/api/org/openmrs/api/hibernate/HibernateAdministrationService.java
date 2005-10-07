@@ -133,6 +133,7 @@ public class HibernateAdministrationService implements
 			HibernateUtil.beginTransaction();
 			session.save(role);
 			HibernateUtil.commitTransaction();
+			session.flush();
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
@@ -148,8 +149,16 @@ public class HibernateAdministrationService implements
 		
 		//Privilege.setCreator(context.getAuthenticatedUser());
 		//Privilege.setDateCreated(new Date());
-		session.save(privilege);
-		session.flush();
+		try {
+			HibernateUtil.beginTransaction();
+			session.save(privilege);
+			HibernateUtil.commitTransaction();
+			session.flush();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e);
+		}
 	}
 
 	/**
@@ -236,6 +245,7 @@ public class HibernateAdministrationService implements
 			HibernateUtil.rollbackTransaction();
 			throw new APIException(e.getMessage());
 		}
+		session.flush();
 	}
 	
 	/**
@@ -243,8 +253,16 @@ public class HibernateAdministrationService implements
 	 */
 	public void deletePrivilege(Privilege privilege) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		session.lock(privilege, LockMode.READ);
-		session.delete(privilege);
+		//session.lock(privilege, LockMode.READ);
+		try {
+			HibernateUtil.beginTransaction();
+			session.delete(privilege);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e.getMessage());
+		}
 		session.flush();
 	}
 
@@ -371,9 +389,16 @@ public class HibernateAdministrationService implements
 		if (privilege.getPrivilege() == null)
 			createPrivilege(privilege);
 		else {
-			Session session = HibernateUtil.currentSession();
-			session.saveOrUpdate(privilege);
-			session.flush();
+			try {
+				Session session = HibernateUtil.currentSession();
+				HibernateUtil.beginTransaction();
+				session.saveOrUpdate(privilege);
+				HibernateUtil.commitTransaction();
+			}
+			catch (Exception e) {
+				HibernateUtil.rollbackTransaction();
+				throw new APIException(e.getMessage());
+			}
 		}
 	}	
 	

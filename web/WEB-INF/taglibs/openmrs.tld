@@ -39,4 +39,13 @@
 	</attribute>
 </tag>
 
+<tag>
+	<name>isAuthenticated</name>
+	<tag-class>org.openmrs.web.taglib.AuthTag</tag-class>
+	<body-content>JSP</body-content>
+	<description>
+		Determines if a user is currently logged in
+	</description>
+</tag>
+
 </taglib>
