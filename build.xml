@@ -204,6 +204,7 @@
 
     <target name="update" description="Update application in Tomcat">
     	<antcall target="remove" />
+    	<sleep seconds="5" />
     	<antcall target="install" />
     </target>
 

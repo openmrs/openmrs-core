@@ -28,6 +28,21 @@
 		<servlet-name>logoutServlet</servlet-name>
 		<url-pattern>/logout</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<servlet-name>dwr-invoker</servlet-name>
+		<servlet-class>uk.ltd.getahead.dwr.DWRServlet</servlet-class>
+		<!--  debug parameter exposes DWR methods via [webapp]/dwr url  -->
+		<!--  good for testing, bad for security...so make sure to turn -->
+		<!--  this off (set value to "false") in production mode        -->
+		<init-param>
+			<param-name>debug</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>dwr-invoker</servlet-name>
+		<url-pattern>/dwr/*</url-pattern>
+	</servlet-mapping>
 
 	<filter>
 		<filter-name>OpenmrsFilter</filter-name> 
