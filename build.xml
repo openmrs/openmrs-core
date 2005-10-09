@@ -149,6 +149,7 @@
 			<lib dir="${commons-logging.dir}" includes="*.jar" />
 			<lib dir="${commons-pool.dir}" includes="*.jar" />
 			<lib dir="${dom4j.dir}" includes="*.jar" />
+			<lib dir="${dwr.dir}" includes="*.jar" />
 			<lib dir="${ehcache.dir}" includes="*.jar" />
 			<lib dir="${hibernate.dir}" includes="*.jar" />
 			<lib dir="${ibatis.dir}" includes="*.jar" />

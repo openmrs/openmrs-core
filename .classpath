@@ -44,5 +44,6 @@
 	<classpathentry kind="lib" path="lib/tomcat/servlet-api.jar"/>
 	<classpathentry kind="lib" path="metadata/api/sqlmap"/>
 	<classpathentry kind="lib" path="lib/tomcat/catalina-ant.jar"/>
+	<classpathentry kind="lib" path="lib/dwr/dwr.jar"/>
 	<classpathentry kind="output" path="build/"/>
 </classpath>
