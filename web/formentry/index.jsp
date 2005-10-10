@@ -116,23 +116,23 @@
 
 <br /><br />
 
-<form id="selectForm" action="formDownload">
+<form id="selectForm" action="<%= request.getContextPath() %>/formDownload">
 	
 	<table>
 		<tr>
-			<td><input type="radio" value="adultInitial" id="adultInitial"></td>
+			<td><input type="radio" name="formType" value="adultInitial" id="adultInitial"></td>
 			<td><label for="adultInitial">Adult Initial</label></td>
 		</tr>
 		<tr>
-			<td><input type="radio" value="adultReturn" id="adultReturn"></td>
+			<td><input type="radio" name="formType" value="adultReturn" id="adultReturn"></td>
 			<td><label for="adultReturn">Adult Return</label></td>
 		</tr>
 		<tr>
-			<td><input type="radio" value="pedInitial" id="pedInitial"></td>
+			<td><input type="radio" name="formType" value="pedInitial" id="pedInitial"></td>
 			<td><label for="pedInitial">Ped Initial</label></td>
 		</tr>
 		<tr>
-			<td><input type="radio" value="pedReturn" id="pedReturn"></td>
+			<td><input type="radio" name="formType" value="pedReturn" id="pedReturn"></td>
 			<td><label for="pedReturn">Ped Return</label></td>
 		</tr>
 	</table>

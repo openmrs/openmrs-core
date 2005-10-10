@@ -2,6 +2,7 @@
 <%@ page import="org.openmrs.context.Context" %>
 <%@ page import="org.openmrs.api.UserService" %>
 <%@ page import="org.openmrs.User" %>
+<%@ page import="org.openmrs.web.Constants" %>
 
 <openmrs:require privilege="Manage Users" otherwise="/openmrs/login.jsp" />
 
@@ -13,7 +14,7 @@
 <br>
 
 <%
-	Context context = (Context)session.getAttribute("__openmrs_context");
+	Context context = (Context)session.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 	pageContext.setAttribute("userService", context.getUserService());
 %>
 

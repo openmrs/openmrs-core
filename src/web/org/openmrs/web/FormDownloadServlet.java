@@ -28,8 +28,7 @@ public class FormDownloadServlet extends HttpServlet {
 		
 		Context context = (Context)httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-		//context.logout();
-		//httpSession.setAttribute("openmrs_msg", "You are now logged out");
+		//httpSession.setAttribute("openmrs_msg", "");
 		//response.sendRedirect("/openmrs/login.jsp");
 	}
 

@@ -8,7 +8,7 @@
 <openmrs:require privilege="Manage Users" otherwise="/openmrs/login.jsp" />
 
 <%
-	Context context = (Context)session.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESION_ATTR);
+	Context context = (Context)session.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 	AdministrationService adminService = context.getAdministrationService();
 	pageContext.setAttribute("userService", context.getUserService());
 
