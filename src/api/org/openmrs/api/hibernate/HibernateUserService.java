@@ -1,7 +1,6 @@
 package org.openmrs.api.hibernate;
 
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.List;
 
@@ -17,9 +16,8 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.UserService;
 import org.openmrs.context.Context;
 import org.springframework.orm.ObjectRetrievalFailureException;
-import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
-public class HibernateUserService extends HibernateDaoSupport implements
+public class HibernateUserService implements
 		UserService {
 
 	protected final Log log = LogFactory.getLog(getClass());
@@ -36,6 +34,15 @@ public class HibernateUserService extends HibernateDaoSupport implements
 	public void createUser(User user, String password) {
 		Session session = HibernateUtil.currentSession();
 
+		User u = (User)session.createQuery("from User u where u.username = ?")
+						.setString(0, user.getUsername())
+						.uniqueResult();
+		
+		//TODO check for illegal characters in username
+		
+		if (u != null)
+			throw new APIException("Username currently in system by '" + user.getFirstName() + " " + user.getLastName() + "'");
+		
 		try {
 			HibernateUtil.beginTransaction();
 			
@@ -128,11 +135,16 @@ public class HibernateUserService extends HibernateDaoSupport implements
 				log.debug("update user id: " + user.getUserId());
 			}
 			Session session = HibernateUtil.currentSession();
-	
-			log.debug("### pre-save middle name = " + user.getMiddleName());
-			session.saveOrUpdate(user);
-			log.debug("### post-save middle name = " + user.getMiddleName());
-			session.flush();
+			try {
+				HibernateUtil.beginTransaction();
+				session.saveOrUpdate(user);
+				HibernateUtil.commitTransaction();
+				session.flush();
+			}
+			catch (Exception e) {
+				HibernateUtil.rollbackTransaction();
+				throw new APIException(e.getMessage());
+			}
 			
 			//must update the persistent user object that we have sitting around if the user
 			//updating themselves (also assists when user changes their username)
@@ -158,7 +170,9 @@ public class HibernateUserService extends HibernateDaoSupport implements
 	 */
 	public void deleteUser(User user) {
 		Session session = HibernateUtil.currentSession();
+		HibernateUtil.beginTransaction();
 		session.delete(user);
+		HibernateUtil.commitTransaction();
 		session.flush();
 	}
 
@@ -182,10 +196,8 @@ public class HibernateUserService extends HibernateDaoSupport implements
 	 *      org.openmrs.Role)
 	 */
 	public void grantUserRole(User user, Role role) throws APIException {
-		Session session = HibernateUtil.currentSession();
 		user.addRole(role);
-		session.saveOrUpdate(user);
-		session.flush();
+		updateUser(user);
 	}
 
 	/**
@@ -193,10 +205,8 @@ public class HibernateUserService extends HibernateDaoSupport implements
 	 *      org.openmrs.Role)
 	 */
 	public void revokeUserRole(User user, Role role) throws APIException {
-		Session session = HibernateUtil.currentSession();
 		user.removeRole(role);
-		session.saveOrUpdate(user);
-		session.flush();
+		updateUser(user);
 	}
 
 	/**

@@ -19,9 +19,8 @@ import org.openmrs.Tribe;
 import org.openmrs.api.APIException;
 import org.openmrs.api.PatientService;
 import org.openmrs.context.Context;
-import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
-public class HibernatePatientService extends HibernateDaoSupport implements PatientService {
+public class HibernatePatientService implements PatientService {
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
@@ -46,32 +45,41 @@ public class HibernatePatientService extends HibernateDaoSupport implements Pati
 
 	public void createPatient(Patient patient) throws APIException {
 		Session session = HibernateUtil.currentSession();
+		try {
+			HibernateUtil.beginTransaction();
 		
-		patient.setCreator(context.getAuthenticatedUser());
-		patient.setDateCreated(new Date());
-		if (patient.getAddresses() != null)
-			for (Iterator<PatientAddress> i = patient.getAddresses().iterator(); i.hasNext();) {
-				PatientAddress pAddress = i.next();
-				pAddress.setDateCreated(new Date());
-				pAddress.setCreator(context.getAuthenticatedUser());
-				pAddress.setPatient(patient);
-			}
-		if (patient.getNames() != null)
-			for (Iterator<PatientName> i = patient.getNames().iterator(); i.hasNext();) {
-				PatientName pName = i.next();
-				pName.setDateCreated(new Date());
-				pName.setCreator(context.getAuthenticatedUser());
-				pName.setPatient(patient);
-			}
-		if (patient.getIdentifiers() != null)
-			for (Iterator<PatientIdentifier> i = patient.getIdentifiers().iterator(); i.hasNext();) {
-				PatientIdentifier pIdentifier = i.next();
-				pIdentifier.setDateCreated(new Date());
-				pIdentifier.setCreator(context.getAuthenticatedUser());
-				pIdentifier.setPatient(patient);
-			}
-		
-		session.saveOrUpdate(patient);
+			patient.setCreator(context.getAuthenticatedUser());
+			patient.setDateCreated(new Date());
+			if (patient.getAddresses() != null)
+				for (Iterator<PatientAddress> i = patient.getAddresses().iterator(); i.hasNext();) {
+					PatientAddress pAddress = i.next();
+					pAddress.setDateCreated(new Date());
+					pAddress.setCreator(context.getAuthenticatedUser());
+					pAddress.setPatient(patient);
+				}
+			if (patient.getNames() != null)
+				for (Iterator<PatientName> i = patient.getNames().iterator(); i.hasNext();) {
+					PatientName pName = i.next();
+					pName.setDateCreated(new Date());
+					pName.setCreator(context.getAuthenticatedUser());
+					pName.setPatient(patient);
+				}
+			if (patient.getIdentifiers() != null)
+				for (Iterator<PatientIdentifier> i = patient.getIdentifiers().iterator(); i.hasNext();) {
+					PatientIdentifier pIdentifier = i.next();
+					pIdentifier.setDateCreated(new Date());
+					pIdentifier.setCreator(context.getAuthenticatedUser());
+					pIdentifier.setPatient(patient);
+				}
+			
+			session.saveOrUpdate(patient);
+			HibernateUtil.commitTransaction();
+			session.flush();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e.getMessage());
+		}
 	}
 
 
@@ -80,17 +88,25 @@ public class HibernatePatientService extends HibernateDaoSupport implements Pati
 			createPatient(patient);
 		else {
 			Session session = HibernateUtil.currentSession();
-			
-			session.saveOrUpdate(patient);
+			try {
+				HibernateUtil.beginTransaction();
+				session.saveOrUpdate(patient);
+				HibernateUtil.commitTransaction();
+				session.flush();
+			}
+			catch (Exception e) {
+				HibernateUtil.rollbackTransaction();
+				throw new APIException(e.getMessage());
+			}
 		}
 	}
 
 
-	public List getPatientByIdentifier(String identifier) throws APIException {
+	public List<Patient> getPatientsByIdentifier(String identifier) throws APIException {
 		Session session = HibernateUtil.currentSession();
 		
 		//TODO this will return 3 patient #1's if 3 identifiers are matched. fix?
-		List patients = session.createCriteria(Patient.class)
+		List<Patient> patients = session.createCriteria(Patient.class)
 						.createCriteria("identifiers")
 						.add(Expression.like("identifier", identifier, MatchMode.ANYWHERE))
 						.list();
@@ -116,8 +132,18 @@ public class HibernatePatientService extends HibernateDaoSupport implements Pati
 	 * @see org.openmrs.api.PatientService#saveOrUpdate(org.openmrs.Patient)
 	 */
 	public void savePatient(Patient patient) {
-		getHibernateTemplate().save(patient);
-		getHibernateTemplate().flush();
+		Session session = HibernateUtil.currentSession();
+		try {
+			HibernateUtil.beginTransaction();
+			session.save(patient);
+			session.flush();
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e.getMessage());
+		}
+			
 	}
 
 	/*
@@ -164,7 +190,17 @@ public class HibernatePatientService extends HibernateDaoSupport implements Pati
 	 */
 	public void deletePatient(Patient patient) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		session.delete(patient);
+		try {
+			HibernateUtil.beginTransaction();
+			session.delete(patient);
+			HibernateUtil.commitTransaction();
+			session.flush();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e.getMessage());
+		}
+			
 	}
 
 	/**

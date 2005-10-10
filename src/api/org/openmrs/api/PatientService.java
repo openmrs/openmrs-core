@@ -41,7 +41,7 @@ public interface PatientService {
 	 * @return list of patients matching identifier
 	 * @throws APIException
 	 */
-	public List getPatientByIdentifier(String identifier) throws APIException;
+	public List<Patient> getPatientsByIdentifier(String identifier) throws APIException;
 	
 	/**
 	 * Find patients by name

@@ -4,7 +4,9 @@
 
 <br><br>
 
-You must <a href="login.jsp">log in</a> to continue <br>
+<li><a href="formentry">Form Entry</a></li>
+<li><a href="admin">Administration</a></li>
+<li><a href="login.jsp">Log in</a></li>
 
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

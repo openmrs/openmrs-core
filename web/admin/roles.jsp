@@ -24,7 +24,7 @@
 				}
 				catch (APIException e)
 				{
-					session.setAttribute("openmrs_error", "Role cannot be deleted");
+					session.setAttribute("openmrs_error", "Role cannot be deleted - " + e.getMessage());
 				}
 		}
 		if (roles.length == 1)
