@@ -42,7 +42,16 @@ public interface PatientService {
 	 * @throws APIException
 	 */
 	public List getPatientByIdentifier(String identifier) throws APIException;
-		
+	
+	/**
+	 * Find patients by name
+	 * 
+	 * @param name
+	 * @return list of patients matching name
+	 * @throws APIException
+	 */
+	public List getPatientByName(String name) throws APIException;
+	
 	/**
 	 * Void patient record (functionally delete patient from system)
 	 * 

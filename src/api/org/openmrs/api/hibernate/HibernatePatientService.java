@@ -7,7 +7,6 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.openmrs.Location;
@@ -99,6 +98,17 @@ public class HibernatePatientService extends HibernateDaoSupport implements Pati
 		return patients;
 	}
 
+	public List getPatientByName(String name) throws APIException {
+		Session session = HibernateUtil.currentSession();
+		
+		//TODO simple name search to start testing, will need to make "real" name search
+		List patients = session.createCriteria(Patient.class)
+						.createCriteria("names")
+						.add(Expression.like("familyName", name, MatchMode.ANYWHERE))
+						.list();
+	
+		return patients;
+	}
 
 	/*
 	 * (non-Javadoc)

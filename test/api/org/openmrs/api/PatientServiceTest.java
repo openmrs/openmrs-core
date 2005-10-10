@@ -28,7 +28,7 @@ public class PatientServiceTest extends TestCase {
 		Context context = ContextFactory.getContext();
 		
 		//TODO when do we force authentication ? each Service level call?
-		context.authenticate("admin", "test");
+		context.authenticate("USER-1", "test");
 		
 		ps = context.getPatientService();
 		adminService = context.getAdministrationService();

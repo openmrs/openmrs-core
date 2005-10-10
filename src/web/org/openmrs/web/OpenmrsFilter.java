@@ -43,13 +43,13 @@ public class OpenmrsFilter implements Filter {
         
         //TODO how to only open a context for pages that need it ?
         
-        context = (Context)httpSession.getAttribute("__openmrs_context");
+        context = (Context)httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
         
         if (initialRequest == true && context == null) {
         	log.debug("setting context in httpSession");
         	//set the context it needs one
        		context = ContextFactory.getContext();
-       		httpSession.setAttribute("__openmrs_context", context);
+       		httpSession.setAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR, context);
         }
 
 		log.debug("before doFilter");
@@ -60,7 +60,7 @@ public class OpenmrsFilter implements Filter {
 			//only close the transaction if this was the initial request
 			if (initialRequest == true) {
 				log.debug("ending transaction - file: " + httpRequest.getRequestURI());
-				//httpSession.removeAttribute("__openmrs_context");
+//				httpSession.removeAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 				context.endTransaction();
 			}
 		}

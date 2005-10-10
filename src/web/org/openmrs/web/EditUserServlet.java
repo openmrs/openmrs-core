@@ -30,7 +30,7 @@ public class EditUserServlet extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 
 		HttpSession httpSession = request.getSession();
-		Context context = (Context)httpSession.getAttribute("__openmrs_context");
+		Context context = (Context)httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		String userId   = request.getParameter("userId");
 		UserService userService = context.getUserService();

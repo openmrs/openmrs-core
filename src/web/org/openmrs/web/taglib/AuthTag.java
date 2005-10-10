@@ -1,12 +1,12 @@
 package org.openmrs.web.taglib;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.context.Context;
+import org.openmrs.web.Constants;
 
 public class AuthTag extends TagSupport {
 
@@ -18,7 +18,7 @@ public class AuthTag extends TagSupport {
 
 		HttpSession httpSession = pageContext.getSession();
 		
-		Context context = (Context)httpSession.getAttribute("__openmrs_context");
+		Context context = (Context)httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		if (context.isAuthenticated()) {
 			return EVAL_BODY_INCLUDE;
 		}

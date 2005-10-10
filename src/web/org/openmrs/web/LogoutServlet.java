@@ -27,7 +27,7 @@ public class LogoutServlet extends HttpServlet {
 
 		HttpSession httpSession = request.getSession();
 		
-		Context context = (Context)httpSession.getAttribute("__openmrs_context");
+		Context context = (Context)httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		context.logout();
 		httpSession.setAttribute("openmrs_msg", "You are now logged out");

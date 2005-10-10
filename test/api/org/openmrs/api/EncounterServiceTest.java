@@ -25,7 +25,7 @@ public class EncounterServiceTest extends TestCase {
 		Context context = ContextFactory.getContext();
 		
 		//TODO are we throwing errors for bad authentication?
-		context.authenticate("admin", "test");
+		context.authenticate("USER-1", "test");
 		
 		es = context.getEncounterService();
 		assertNotNull(es);

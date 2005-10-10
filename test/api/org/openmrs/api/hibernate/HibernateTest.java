@@ -17,16 +17,6 @@ import org.openmrs.context.ContextFactory;
 
 public class HibernateTest extends TestCase {
 
-	public void xtestHibernate() {
-		Session session = HibernateUtil.currentSession();
-		Assert.assertNotNull("obtain session object", session);
-		Transaction tx = session.beginTransaction();
-		Assert.assertNotNull("begin transaction", tx);
-		tx.commit();
-		session.close();
-		HibernateUtil.session.set(null);
-	}
-	
 	public void xtestRead() {
 		Session session = HibernateUtil.currentSession();
 		Transaction tx = session.beginTransaction();
@@ -50,11 +40,11 @@ public class HibernateTest extends TestCase {
 		
 		Context context = ContextFactory.getContext();
 		
-		context.authenticate("admin", "test");
+		context.authenticate("USER-1", "test");
 		
 		UserService us = context.getUserService();
 		
-		User u = us.getUserByUsername("admin");
+		User u = us.getUserByUsername("USER-1");
 		
 		System.out.println("last name: " + u.getLastName());
 		
@@ -62,7 +52,7 @@ public class HibernateTest extends TestCase {
 		
 		us.updateUser(u);
 		
-		User u2 = us.getUserByUsername("admin");
+		User u2 = us.getUserByUsername("USER-1");
 		
 		System.out.println("last name (post): " + u.getLastName());
 	}

@@ -8,7 +8,13 @@
     <create creator="new" javascript="JDate">
       <param name="class" value="java.util.Date"/>
     </create>
+    
+    <create creator="new" javascript="DWRPatientService">
+      <param name="class" value="org.openmrs.web.dwr.DWRPatientService" />
+    </create>
+
+	<convert converter="bean" match="org.openmrs.web.dwr.PatientListItem"/>
 
   </allow>
-
+  
 </dwr>

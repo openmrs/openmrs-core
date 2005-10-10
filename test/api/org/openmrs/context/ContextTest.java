@@ -11,12 +11,12 @@ import org.openmrs.context.ContextFactory;
 public class ContextTest extends TestCase {
 
 	public void testAuthentication() throws Exception {
-		ContextFactory.getContext().authenticate("3-4", "test");
+		ContextFactory.getContext().authenticate("USER-1", "test");
 	}
 
 	public void testUserService() {
 		UserService us = ContextFactory.getContext().getUserService();
-		String username = "3-4";
+		String username = "USER-1";
 		User user = us.getUserByUsername(username);
 		assertNotNull("user " + username, user);
 		System.out.println("Successfully found user: " + user.getFirstName()

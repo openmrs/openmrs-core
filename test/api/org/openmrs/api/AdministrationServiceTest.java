@@ -31,7 +31,7 @@ public class AdministrationServiceTest extends TestCase {
 	public void setUp() throws Exception{
 		Context context = ContextFactory.getContext();
 		
-		context.authenticate("admin", "test");
+		context.authenticate("USER-1", "test");
 		
 		encounterService = context.getEncounterService();
 		assertNotNull(encounterService);

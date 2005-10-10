@@ -1,6 +1,7 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 <%@ page import="org.openmrs.context.Context" %>
 <%@ page import="org.openmrs.api.UserService" %>
+<%@ page import="org.openmrs.web.Constants" %>
 <%@ page import="org.openmrs.User" %>
 
 <openmrs:require privilege="Manage Users" otherwise="/openmrs/login.jsp" />
@@ -13,7 +14,7 @@
 <br>
 
 <%
-	Context context = (Context)session.getAttribute("__openmrs_context");
+	Context context = (Context)session.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 	UserService userService = context.getUserService();
 	String id = request.getParameter("id");
 	Integer i = Integer.valueOf(id);

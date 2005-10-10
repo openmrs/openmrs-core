@@ -11,6 +11,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
 import org.openmrs.context.Context;
+import org.openmrs.web.Constants;
 
 public class RequireTag extends TagSupport {
 
@@ -28,7 +29,7 @@ public class RequireTag extends TagSupport {
 		HttpSession httpSession = pageContext.getSession();
 		HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
 		
-		Context context = (Context)httpSession.getAttribute("__openmrs_context");
+		Context context = (Context)httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		if (context == null && privilege != null) {
 			log.error("context is unavailable");
 			//TODO find correct error to throw 

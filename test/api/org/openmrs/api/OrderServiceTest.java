@@ -28,7 +28,7 @@ public class OrderServiceTest extends TestCase {
 	public void setUp() throws Exception{
 		Context context = ContextFactory.getContext();
 		
-		context.authenticate("admin", "test");
+		context.authenticate("USER-1", "test");
 		
 		es = context.getEncounterService();
 		assertNotNull(es);
