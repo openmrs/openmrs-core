@@ -46,11 +46,12 @@ public interface PatientService {
 	/**
 	 * Find patients by name
 	 * 
-	 * @param name
+	 * @param givenName
+	 * @param familyName
 	 * @return list of patients matching name
 	 * @throws APIException
 	 */
-	public List getPatientByName(String name) throws APIException;
+	public List getPatientsByName(String givenName, String familyName) throws APIException;
 	
 	/**
 	 * Void patient record (functionally delete patient from system)

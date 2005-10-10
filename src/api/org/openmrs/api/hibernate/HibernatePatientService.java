@@ -114,13 +114,14 @@ public class HibernatePatientService implements PatientService {
 		return patients;
 	}
 
-	public List getPatientByName(String name) throws APIException {
+	public List getPatientsByName(String givenName, String familyName) throws APIException {
 		Session session = HibernateUtil.currentSession();
 		
 		//TODO simple name search to start testing, will need to make "real" name search
 		List patients = session.createCriteria(Patient.class)
-						.createCriteria("names")
-						.add(Expression.like("familyName", name, MatchMode.ANYWHERE))
+						.createAlias("names", "name")
+						.add(Expression.like("name.familyName", familyName, MatchMode.ANYWHERE))
+						.add(Expression.like("name.givenName", givenName, MatchMode.ANYWHERE))
 						.list();
 	
 		return patients;

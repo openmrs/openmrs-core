@@ -1,14 +1,23 @@
 body {
 	font-family: arial;
+	font-size: 11px;
 }
 
 #msg { 
 	border: 1px dashed lightgrey;
-	background-color: tooltip;
+	background-color: InfoBackground;
 	padding: 2px;
 }
 
 #userBar {
 	float: right;
 	font-size: 10px;
+}
+
+#patientTable {
+  display: none;
+}
+
+#selectForm {
+  display: none;
 }

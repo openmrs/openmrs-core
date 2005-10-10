@@ -29,6 +29,14 @@
 		<url-pattern>/logout</url-pattern>
 	</servlet-mapping>
 	<servlet>
+		<servlet-name>formDownloadServlet</servlet-name>
+		<servlet-class>org.openmrs.web.FormDownloadServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>formDownloadServlet</servlet-name>
+		<url-pattern>/formDownload</url-pattern>
+	</servlet-mapping>
+	<servlet>
 		<servlet-name>dwr-invoker</servlet-name>
 		<servlet-class>uk.ltd.getahead.dwr.DWRServlet</servlet-class>
 		<!--  debug parameter exposes DWR methods via [webapp]/dwr url  -->

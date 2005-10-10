@@ -2,10 +2,14 @@ package org.openmrs.web.dwr;
 
 import java.util.Date;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.PatientName;
 
 public class PatientListItem {
+	
+	protected final Log log = LogFactory.getLog(getClass());
 
 	private Integer patientId;
 	private String identifier;
@@ -40,7 +44,7 @@ public class PatientListItem {
 		this.birthdate = birthdate;
 	}
 
-	public Boolean isBirthdateEstimated() {
+	public Boolean getBirthdateEstimated() {
 		return birthdateEstimated;
 	}
 
