@@ -28,13 +28,11 @@
 	<attribute>
 		<name>privilege</name>
 		<required>true</required>
-		<default></default>
 		<rtexprvalue>false</rtexprvalue>
 	</attribute>
 	<attribute>
 		<name>otherwise</name>
 		<required>true</required>
-		<default></default>
 		<rtexprvalue>false</rtexprvalue>
 	</attribute>
 </tag>
@@ -57,6 +55,20 @@
 	</description>
 	<attribute>
 		<name>title</name>
+		<required>true</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+</tag>
+
+<tag>
+	<name>forEachType</name>
+	<tag-class>org.openmrs.web.taglib.ForEachTypeTag</tag-class>
+	<body-content>JSP</body-content>
+	<description>
+		Loops over all the \name\ types stored in the system
+	</description>
+	<attribute>
+		<name>name</name>
 		<required>true</required>
 		<rtexprvalue>false</rtexprvalue>
 	</attribute>

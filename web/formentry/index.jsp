@@ -1,5 +1,4 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
-<%@ page import="org.openmrs.User" %>
 
 <openmrs:require privilege="Form Entry" otherwise="/openmrs/login.jsp" />
 
