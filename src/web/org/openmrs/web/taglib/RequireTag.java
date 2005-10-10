@@ -32,20 +32,27 @@ public class RequireTag extends TagSupport {
 		Context context = (Context)httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		if (context == null && privilege != null) {
 			log.error("context is unavailable");
+			httpSession.removeAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 			//TODO find correct error to throw 
-			throw new APIException("The Context is currently unavailable");
+			throw new APIException("The Context is currently unavailable (null)");
 		}
-		if (privilege == null || !context.isAuthenticated() || !context.hasPrivilege(privilege)) {
+		String msg = "";
+		if (!context.isAuthenticated())
+			msg = "You must log in to continue";
+		if (!context.hasPrivilege(privilege))
+			msg = "You are not authorized to view this page";
+		
+		if (msg != "") {
+			httpSession.setAttribute("openmrs_msg", msg);
+			httpSession.setAttribute("login_redirect", request.getContextPath() + request.getServletPath());
 			try {
-				String redirect = request.getContextPath() + request.getServletPath();
-				httpSession.setAttribute("login_redirect", redirect);
-				((HttpServletResponse) pageContext.getResponse())
-						.sendRedirect(otherwise);
-			} catch (IOException e) {
-				// Failed to redirect, not much we can do about it here
+				((HttpServletResponse) pageContext.getResponse()).sendRedirect(otherwise);
+			}
+			catch (Exception e) {
+				throw new APIException(e.getMessage());
 			}
 		}
-
+		
 		return SKIP_BODY;
 	}
 

@@ -12,5 +12,4 @@
 	<li><a href="privileges.jsp">Manage the privileges</a></li>
 </ul>
 
-
 <%@ include file="/WEB-INF/template/footer.jsp" %>

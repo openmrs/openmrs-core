@@ -11,7 +11,7 @@
     
     <create creator="new" javascript="DWRPatientService">
       <param name="class" value="org.openmrs.web.dwr.DWRPatientService" />
-      <include method="getPatientsByName"/>
+      <include method="findPatients"/>
     </create>
 
 	<convert converter="bean" match="org.openmrs.web.dwr.PatientListItem"/>

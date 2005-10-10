@@ -14,7 +14,7 @@ public class TemplateTag extends BodyTagSupport {
 	private String title;
 
 	public int doStartTag() throws JspTagException {
-		include("/WEB-INF/template/header.html", pageContext.getOut());
+		include("/WEB-INF/template/header.jsp", pageContext.getOut());
 		pageContext.setAttribute("templateTitle", title);
 		return EVAL_BODY_BUFFERED;
 	}
@@ -26,7 +26,7 @@ public class TemplateTag extends BodyTagSupport {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		include("/WEB-INF/template/footer.html", getPreviousOut());
+		include("/WEB-INF/template/footer.jsp", getPreviousOut());
 		return EVAL_PAGE;
 	}
 

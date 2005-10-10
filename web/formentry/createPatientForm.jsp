@@ -1,7 +1,7 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 <%@ page import="org.openmrs.User" %>
 
-<openmrs:require privilege="Form Entry" otherwise="/openmrs/login.jsp" />
+<openmrs:require privilege="Create Patient" otherwise="/openmrs/login.jsp" />
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
@@ -60,17 +60,20 @@
 
 </script>
 
-<h2>Form Entry</h2>
+<h2>Create Patient</h2>
 
-<b>Please Find a Patient</b>
+<b></b>
 <br>
-<form id="findPatient">
+<form method="post">
 	<table>
 		<tr>
 			<td>Identifier</td>
-			<td><input type="text" id="identifier"></td>
+			<td><input type="text" name="identifier" id="identifier"></td>
+			<td>
+				<select name="identifierType">
+				</select>
+			</td>
 		</tr>
-		<tr><td></td><td><i>or</i></tr>
 		<tr>
 			<td>First Name</td>
 			<td><input type="text" id="givenName"></td>
@@ -80,55 +83,7 @@
 			<td><input type="text" id="familyName"></td>
 		</tr>
 	</table>
-	<input type="submit" value="Search" onClick="updatePatients(); return false;">
-</form>
-
-<div id="patientListing">
-	<table id="patientTable">
-	 <thead>
-		 <tr>
-		 	<th>Id</th>
-		 	<th>Identifier</th>
-		 	<th>Given Name</th>
-		 	<th>Family Name</th>
-		 	<th>Gender</th>
-		 	<th>Race</th>
-		 	<th>BirthDate</th>
-		 	<th>Mother's Name</th>
-		 </tr>
-	 </thead>
-	 <tbody id="patientBody">
-	 </tbody>
-	 <tfoot>
-	 	<tr><td colspan="8"><i>Don't see the patient?</i> Use the <a href="createPatientForm.jsp">Create New Patient Form</a></td></tr>
-	 </tfoot>
-	</table>
-</div>
-
-<br /><br />
-
-<form id="selectForm" method="post" action="<%= request.getContextPath() %>/formDownload">
-	
-	<table>
-		<tr>
-			<td><input type="radio" name="formType" value="adultInitial" id="adultInitial"></td>
-			<td><label for="adultInitial">Adult Initial</label></td>
-		</tr>
-		<tr>
-			<td><input type="radio" name="formType" value="adultReturn" id="adultReturn"></td>
-			<td><label for="adultReturn">Adult Return</label></td>
-		</tr>
-		<tr>
-			<td><input type="radio" name="formType" value="pedInitial" id="pedInitial"></td>
-			<td><label for="pedInitial">Ped Initial</label></td>
-		</tr>
-		<tr>
-			<td><input type="radio" name="formType" value="pedReturn" id="pedReturn"></td>
-			<td><label for="pedReturn">Ped Return</label></td>
-		</tr>
-	</table>
-	<input type="hidden" name="patientId" id="patientId" value="">
-	<input type="submit" value="Download Form">
+	<input type="submit" value="Search" >
 </form>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

@@ -14,14 +14,12 @@ public class FormDownloadServlet extends HttpServlet {
 
 	public static final long serialVersionUID = 123423L;
 
-	/*
-	 * (non-Javadoc)
+	/**
 	 * 
 	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse)
 	 */
-	@Override
-	protected void doGet(HttpServletRequest request,
+	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 
 		HttpSession httpSession = request.getSession();
