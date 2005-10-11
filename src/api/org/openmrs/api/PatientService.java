@@ -95,7 +95,7 @@ public interface PatientService {
 	 * @return non-retired Tribe list
 	 * @throws APIException
 	 */
-	public List<Tribe> getPatientTribes() throws APIException;
+	public List<Tribe> getTribes() throws APIException;
 	
 	/**
 	 * Get all locations

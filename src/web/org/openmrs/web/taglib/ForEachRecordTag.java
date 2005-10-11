@@ -8,31 +8,44 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
 import org.openmrs.context.Context;
 import org.openmrs.web.Constants;
 
-public class ForEachTypeTag extends BodyTagSupport {
+public class ForEachRecordTag extends BodyTagSupport {
 
 	public static final long serialVersionUID = 1L;
 	
 	private final Log log = LogFactory.getLog(getClass());
 
 	private String name;
-	private Iterator types;
+	private Iterator records;
 
 	public int doStartTag() {
 		
-		types = null;
+		records = null;
 		
 		Context context = (Context)pageContext.getSession().getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		if (name.equals("PatientIdentifierType")) {
 			PatientService ps = context.getPatientService();
-			types = ps.getPatientIdentifierTypes().iterator();
+			records = ps.getPatientIdentifierTypes().iterator();
+		}
+		else if (name.equals("Location")) {
+			EncounterService es = context.getEncounterService();
+			records = es.getLocations().iterator();
+		}
+		else if (name.equals("Tribe")) {
+			PatientService ps = context.getPatientService();
+			records = ps.getTribes().iterator();
+		}
+		else {
+			log.error(name + " not found in ForEachRecord list");
 		}
 		
-		if (types == null)
+		
+		if (records == null)
 			return SKIP_BODY;
 		else
 			return EVAL_BODY_BUFFERED;
@@ -43,16 +56,17 @@ public class ForEachTypeTag extends BodyTagSupport {
 	 * @see javax.servlet.jsp.tagext.BodyTag#doInitBody()
 	 */
 	public void doInitBody() throws JspException {
-		//pageContext.setAttribute("type", types.next());
+		if (records.hasNext())
+			pageContext.setAttribute("record", records.next());
 	}
 
 	/**
 	 * @see javax.servlet.jsp.tagext.IterationTag#doAfterBody()
 	 */
 	public int doAfterBody() throws JspException {
-        if(types.hasNext()) {
-        	pageContext.setAttribute("type", types.next());
-            return EVAL_BODY_AGAIN;
+        if(records.hasNext()) {
+        	pageContext.setAttribute("record", records.next());
+            return EVAL_BODY_BUFFERED;
         }
         else
             return SKIP_BODY;

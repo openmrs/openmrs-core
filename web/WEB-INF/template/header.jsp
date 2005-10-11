@@ -9,8 +9,12 @@
 
 	<div id="userBar">
 		<openmrs:isAuthenticated>
-			Currently logged in | <a href='/openmrs/logout'>Log out</a>
+			Currently logged in as ${authenticatedUser.username} | <a href='/openmrs/logout'>Log out</a>
 		</openmrs:isAuthenticated>
+		<openmrs:isAuthenticated converse="true">
+			Not logged in | <a href='/openmrs/login.jsp'>Log in</a>
+		</openmrs:isAuthenticated>
+		| <a href='/openmrs/help.jsp'>Help</a>
 	</div>
 
 	<table border="0" width="100%" cellspacing="0" cellpadding="0">

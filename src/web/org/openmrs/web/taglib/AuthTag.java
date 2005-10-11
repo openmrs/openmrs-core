@@ -14,16 +14,34 @@ public class AuthTag extends TagSupport {
 	
 	private final Log log = LogFactory.getLog(getClass());
 
+	private boolean converse = false;
+
 	public int doStartTag() {
 
 		HttpSession httpSession = pageContext.getSession();
 		
 		Context context = (Context)httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context.isAuthenticated()) {
+		
+		if (context.isAuthenticated() == !converse ) {
+			pageContext.setAttribute("authenticatedUser", context.getAuthenticatedUser());
 			return EVAL_BODY_INCLUDE;
 		}
 		else {
 			return SKIP_BODY;
 		}
+	}
+	
+	/**
+	 * @return Returns the converse.
+	 */
+	public boolean isConverse() {
+		return converse;
+	}
+
+	/**
+	 * @param converse The converse to set.
+	 */
+	public void setConverse(boolean converse) {
+		this.converse = converse;
 	}
 }

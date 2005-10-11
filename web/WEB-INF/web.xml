@@ -68,7 +68,7 @@
 	</filter>
 	<filter-mapping>
 		<filter-name>OpenmrsFilter</filter-name> 
-		<url-pattern>/*</url-pattern> 
+		<url-pattern>*.jsp</url-pattern> 
 	</filter-mapping>	
 	
 	<welcome-file-list>

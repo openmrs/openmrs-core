@@ -226,9 +226,9 @@ public class HibernatePatientService implements PatientService {
 	}
 
 	/**
-	 * @see org.openmrs.api.PatientService#getPatientTribes()
+	 * @see org.openmrs.api.PatientService#getTribes()
 	 */
-	public List<Tribe> getPatientTribes() throws APIException {
+	public List<Tribe> getTribes() throws APIException {
 		Session session = HibernateUtil.currentSession();
 		
 		List<Tribe> tribes = session.createQuery("from Tribe").list();

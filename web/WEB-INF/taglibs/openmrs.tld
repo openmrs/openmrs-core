@@ -44,6 +44,11 @@
 	<description>
 		Determines if a user is currently logged in
 	</description>
+	<attribute>
+		<name>converse</name>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
 </tag>
 
 <tag>
@@ -61,11 +66,12 @@
 </tag>
 
 <tag>
-	<name>forEachType</name>
-	<tag-class>org.openmrs.web.taglib.ForEachTypeTag</tag-class>
+	<name>forEachRecord</name>
+	<tag-class>org.openmrs.web.taglib.ForEachRecordTag</tag-class>
 	<body-content>JSP</body-content>
 	<description>
-		Loops over all the \name\ types stored in the system
+		Loops over all the records specified of the type 
+		specified by the name attribute
 	</description>
 	<attribute>
 		<name>name</name>

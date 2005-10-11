@@ -49,6 +49,7 @@ public class RequireTag extends TagSupport {
 				((HttpServletResponse) pageContext.getResponse()).sendRedirect(otherwise);
 			}
 			catch (Exception e) {
+				// cannot redirect
 				throw new APIException(e.getMessage());
 			}
 		}
