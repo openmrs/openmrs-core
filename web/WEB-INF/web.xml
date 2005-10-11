@@ -18,7 +18,15 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>editUserServlet</servlet-name>
-		<url-pattern>/admin/editUserServlet</url-pattern>
+		<url-pattern>/admin/users/editUserServlet</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>createPatientServlet</servlet-name>
+		<servlet-class>org.openmrs.web.CreatePatientServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>createPatientServlet</servlet-name>
+		<url-pattern>/formentry/createPatient</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>logoutServlet</servlet-name>
@@ -107,15 +115,14 @@
 		<taglib-uri>/spring</taglib-uri>
 		<taglib-location>/WEB-INF/taglibs/spring.tld</taglib-location>
 	</taglib>
-
-	<!-- 
+	
 	<error-page>
 		<exception-type>java.lang.Exception</exception-type>
-		<!- Displays a stack trace ->
+		<!-- Displays a stack trace -->
 		<location>/WEB-INF/view/uncaughtException.jsp</location>
 	</error-page>
 	
-	
+	<!-- 
 	<resource-ref>
 		<res-ref-name>jdbc/openmrs</res-ref-name>
 		<res-type>javax.sql.DataSource</res-type>

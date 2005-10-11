@@ -1,29 +1,47 @@
 <%@ include file="/WEB-INF/template/includes.jsp" %>
-<html>
-<head>
-<title>Internal Error</title>
-<openmrs:css />
-</head>
-<body>
-<%@ include file="/WEB-INF/template/banner.jsp" %>
+
+<%@ include file="/WEB-INF/template/header.jsp" %>
 
 &nbsp;<br />
 
 <h2>Internal error</h2>
 
-<p>
+<script>
+	function showOrHide() {
+		var link = document.getElementById("toggleLink");
+		var trace = document.getElementById("staceTrace");
+		if (link.innerHTML == "Show") {
+			link.innerHTML = "Hide";
+			trace.style.display = "block";
+		}
+		else {
+			link.innerHTML = "Show";
+			trace.style.display = "none";
+		}
+</script>	
+
 <% 
 try {
 	// The Servlet spec guarantees this attribute will be available
 	Throwable exception = (Throwable) request.getAttribute("javax.servlet.error.exception"); 
 
+	out.println(exception.getMessage()); %>
+	
+	<br />
+	<div class="box">
+		<div class="boxHeader">
+			<a href="javascript:showOrHide()" id="toggleLink" >Show</a>
+			Stack Trace
+		</div>
+		<div id="stackTrace">
+	<%		
 	if (exception != null) {
 		if (exception instanceof ServletException) {
 			// It's a ServletException: we should extract the root cause
-			ServletException sex = (ServletException) exception;
-			Throwable rootCause = sex.getRootCause();
+			ServletException sEx = (ServletException) exception;
+			Throwable rootCause = sEx.getRootCause();
 			if (rootCause == null)
-				rootCause = sex;
+				rootCause = sEx;
 			out.println("** Root cause is: "+ rootCause.getMessage());
 			rootCause.printStackTrace(new java.io.PrintWriter(out)); 
 		}
@@ -49,4 +67,7 @@ try {
 	ex.printStackTrace(new java.io.PrintWriter(out));
 }
 %>
-</p>
+		</div> <!-- close stack trace box -->
+	</div> <!-- close box -->
+
+<%@ include file="/WEB-INF/template/footer.jsp" %>

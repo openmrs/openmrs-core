@@ -4,7 +4,7 @@
 <%@ page import="org.openmrs.web.Constants" %>
 <%@ page import="org.openmrs.User" %>
 
-<openmrs:require privilege="Manage Users" otherwise="/openmrs/login.jsp" />
+<openmrs:require privilege="Manage Users" otherwise="/login.jsp" />
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader" %>

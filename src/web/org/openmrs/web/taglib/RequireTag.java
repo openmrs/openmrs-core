@@ -23,14 +23,10 @@ public class RequireTag extends TagSupport {
 	private String otherwise;
 	private String msg = "";
 	public int doStartTag() {
-
-		log.debug("start require doStartTag");
 		
 		HttpServletResponse httpResponse = (HttpServletResponse)pageContext.getResponse();
 		HttpSession httpSession = pageContext.getSession();
 		HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
-		
-		log.debug("require start tag 1");
 		
 		Context context = (Context)httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		if (context == null && privilege != null) {
@@ -40,28 +36,22 @@ public class RequireTag extends TagSupport {
 			throw new APIException("The Context is currently unavailable (null)");
 		}
 		
-		log.debug("require start tag 2");
-		
 		if (!context.isAuthenticated())
 			msg = "You must log in to continue";
 		else if (!context.hasPrivilege(privilege))
 			msg = "You are not authorized to view this page";
 		
 		if (msg != "") {
-			log.debug("require start tag 3 " + msg);
 			httpSession.setAttribute("openmrs_msg", msg);
 			httpSession.setAttribute("login_redirect", request.getContextPath() + request.getServletPath());
 			try {
-				httpResponse.sendRedirect(otherwise);
+				httpResponse.sendRedirect(request.getContextPath() + otherwise);
 			}
 			catch (IOException e) {
 				// cannot redirect
-				log.debug("require start tag 3.5");
 				throw new APIException(e.getMessage());
 			}
 		}
-		
-		log.debug("require start tag 4");
 		
 		return SKIP_BODY;
 	}

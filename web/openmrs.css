@@ -3,10 +3,20 @@ body {
 	font-size: 11px;
 }
 
-#msg { 
+#openmrs_msg { 
 	border: 1px dashed lightgrey;
+	padding: 2px 2px 2px 18px;
+	margin: 2px;
+	background: url(/openmrs/images/info.gif) no-repeat center left;
 	background-color: InfoBackground;
-	padding: 2px;
+}
+
+#openmrs_error {
+	border: 1px dashed maroon;
+	padding: 2px 2px 2px 18px;
+	margin: 2px;
+	background: url(/openmrs/images/error.gif) center left no-repeat;
+	background-color: InfoBackground;
 }
 
 #userBar {

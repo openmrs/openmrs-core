@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="Form Entry" otherwise="/openmrs/login.jsp" />
+<openmrs:require privilege="Form Entry" otherwise="/login.jsp" />
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 

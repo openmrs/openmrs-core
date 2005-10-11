@@ -8,7 +8,7 @@
 <%@ page import="org.openmrs.api.APIException" %>
 <%@ page import="org.openmrs.web.Constants" %>
 
-<openmrs:require privilege="Manage Users" otherwise="/openmrs/login.jsp" />
+<openmrs:require privilege="Manage Users" otherwise="/login.jsp" />
 
 <%
 	Context context = (Context)session.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);

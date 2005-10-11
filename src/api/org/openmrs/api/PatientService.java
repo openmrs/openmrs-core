@@ -90,6 +90,15 @@ public interface PatientService {
 	public PatientIdentifierType getPatientIdentifierType(Integer patientIdentifierTypeId) throws APIException;
 
 	/**
+	 * Get tribe by internal tribe identifier
+	 * 
+	 * @return Tribe
+	 * @param tribeId 
+	 * @throws APIException
+	 */
+	public Tribe getTribe(Integer tribeId) throws APIException;
+	
+	/**
 	 * Get list of tribes that are not retired
 	 * 
 	 * @return non-retired Tribe list

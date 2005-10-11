@@ -1,13 +1,13 @@
 <%@ include file="/WEB-INF/template/include.jsp"%>
 
-<openmrs:require privilege="Manage Users" otherwise="/openmrs/login.jsp" />
+<openmrs:require privilege="Form Entry" otherwise="/login.jsp" />
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
 
 <h2>Create Patient</h2>
 
 <br>
-<form method="post" action="">
+<form method="post" action="createPatient">
 	<div class="patientIdentifier">
 		Identifier
 			<input type="text" name="identifier" id="identifier" />
@@ -73,7 +73,7 @@
 		Birthdate
 			<input type="text" name="birthdate" id="birthdate" />
 		Estimated
-			<input type="checkbox" name="birthdateEstimated" id="birthdateEstimated" />
+			<input type="checkbox" name="birthdateEstimated" id="birthdateEstimated" value="true" />
 		Birthplace
 			<input type="text" name="birthplace" id="birthplace" />
 		Tribe
