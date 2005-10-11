@@ -21,13 +21,16 @@ public class RequireTag extends TagSupport {
 
 	private String privilege;
 	private String otherwise;
-
+	private String msg = "";
 	public int doStartTag() {
 
-		// TODO implement true authorization
-//		HttpServletResponse httpResponse = (HttpServletResponse)pageContext.getResponse();
+		log.debug("start require doStartTag");
+		
+		HttpServletResponse httpResponse = (HttpServletResponse)pageContext.getResponse();
 		HttpSession httpSession = pageContext.getSession();
 		HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
+		
+		log.debug("require start tag 1");
 		
 		Context context = (Context)httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		if (context == null && privilege != null) {
@@ -36,27 +39,40 @@ public class RequireTag extends TagSupport {
 			//TODO find correct error to throw 
 			throw new APIException("The Context is currently unavailable (null)");
 		}
-		String msg = "";
+		
+		log.debug("require start tag 2");
+		
 		if (!context.isAuthenticated())
 			msg = "You must log in to continue";
-		if (!context.hasPrivilege(privilege))
+		else if (!context.hasPrivilege(privilege))
 			msg = "You are not authorized to view this page";
 		
 		if (msg != "") {
+			log.debug("require start tag 3 " + msg);
 			httpSession.setAttribute("openmrs_msg", msg);
 			httpSession.setAttribute("login_redirect", request.getContextPath() + request.getServletPath());
 			try {
-				((HttpServletResponse) pageContext.getResponse()).sendRedirect(otherwise);
+				httpResponse.sendRedirect(otherwise);
 			}
-			catch (Exception e) {
+			catch (IOException e) {
 				// cannot redirect
+				log.debug("require start tag 3.5");
 				throw new APIException(e.getMessage());
 			}
 		}
 		
+		log.debug("require start tag 4");
+		
 		return SKIP_BODY;
 	}
 
+	public int doEndTag() {
+		if ( msg == "")
+			return EVAL_PAGE;
+		else
+			return SKIP_PAGE;
+	}
+	
 	public String getPrivilege() {
 		return privilege;
 	}
