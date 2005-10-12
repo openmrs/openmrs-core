@@ -11,17 +11,18 @@
 <script>
 	
 	function updatePatients() {
-	    
-	    document.getElementById("patientTable").style.display = "table";
+	    //alert(document.getElementById("patientTable").style.display);
+	    document.getElementById("patientTable").style.display = "";
 	    document.getElementById("selectForm").style.display = "none";
 	    DWRUtil.removeAllRows("patientBody");
 	    var identifier = document.getElementById("identifier").value;
 	    var givenName = document.getElementById("givenName").value;
 	    var familyName = document.getElementById("familyName").value;
 	    DWRPatientService.findPatients(fillTable, identifier, givenName, familyName);
+	    return false;
 	}
 	
-	var getId			= function(obj) { return obj.patientId };
+	var getId			= function(obj) { return obj.patientId; };
 	var getIdentifier	= function(obj) { 
 			var str = "";
 			str += "<a href=javascript:selectPatient(" + obj.patientId + ")>";
@@ -29,22 +30,22 @@
 			str += "</a>";
 			return str;
 		};
-	var getGivenName	= function(obj) { return obj.givenName  };
-	var getFamilyName	= function(obj) { return obj.familyName };
-	var getGender		= function(obj) { return obj.gender };
-	var getRace			= function(obj) { return obj.race };
+	var getGivenName	= function(obj) { return obj.givenName;  };
+	var getFamilyName	= function(obj) { return obj.familyName; };
+	var getGender		= function(obj) { return obj.gender; };
+	var getRace			= function(obj) { return obj.race; };
 	var getBirthdate	= function(obj) { 
 			var str = '';
 					str += obj.birthdate.getMonth() + '-';
-			str += obj.birthdate.getDate() + '-'
+			str += obj.birthdate.getDate() + '-';
 			str += (obj.birthdate.getYear() + 1900);
 			
 			if (obj.birthdateEstimated)
-				str += " (?)"
+				str += " (?)";
 			
 			return str;
 		};
-	var getMothersName  = function(obj) { return obj.mothersName  };
+	var getMothersName  = function(obj) { return obj.mothersName;  };
 	
 	function fillTable(patientListItem) {
 	    DWRUtil.addRows("patientBody", patientListItem, [ getId, getIdentifier, getGivenName, getFamilyName, getGender, getRace, getBirthdate, getMothersName]);
@@ -63,7 +64,7 @@
 
 <b>Please Find a Patient</b>
 <br>
-<form id="findPatient">
+<form id="findPatient" onSubmit="return false;">
 	<table>
 		<tr>
 			<td>Identifier</td>
@@ -79,7 +80,7 @@
 			<td><input type="text" id="familyName"></td>
 		</tr>
 	</table>
-	<input type="submit" value="Search" onClick="updatePatients(); return false;">
+	<input type="submit" value="Search" onClick="return updatePatients();">
 </form>
 
 <div id="patientListing">
@@ -129,5 +130,16 @@
 	<input type="hidden" name="patientId" id="patientId" value="">
 	<input type="submit" value="Download Form">
 </form>
+
+<script>
+
+	document.getElementById("patientTable").style.display = "none";
+	document.getElementById("selectForm").style.display = "none";
+
+	<request:existsAttribute name="patientId">
+		document.getElementById("identifier").value = "<%= request.getAttribute("patientId") %>";
+		updatePatients();
+	</request:existsAttribute>
+</script>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

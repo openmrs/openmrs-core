@@ -39,7 +39,7 @@ public class UserServiceTest extends TestCase {
 		System.out.println("##start method");
 		
 		assertTrue(context.isAuthenticated());
-		User u = us.getUserByUsername("bwolfe");
+		User u = us.getUserByUsername("USER-1");
 		
 		if (u == null)
 			u = new User();

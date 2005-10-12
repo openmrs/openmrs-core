@@ -2,11 +2,10 @@
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
-<br><br>
+<br />
 
-<li><a href="formentry">Form Entry</a></li>
-<li><a href="admin">Administration</a></li>
-<li><a href="login.jsp">Log in</a></li>
+<h2>Welcome to OpenMRS</h2>
 
+<br /><br />
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

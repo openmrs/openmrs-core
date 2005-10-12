@@ -41,7 +41,7 @@ public class HibernateUserService implements
 		//TODO check for illegal characters in username
 		
 		if (u != null)
-			throw new APIException("Username currently in system by '" + user.getFirstName() + " " + user.getLastName() + "'");
+			throw new APIException("Username currently in use by '" + user.getFirstName() + " " + user.getLastName() + "'");
 		
 		try {
 			HibernateUtil.beginTransaction();

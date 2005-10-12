@@ -18,7 +18,7 @@
 	</div>
 
 	<table border="0" width="100%" cellspacing="0" cellpadding="0">
-		<col width="175" /><col width="5" /><col width="*" />
+		<col width="200" /><col width="5" /><col width="*" />
 		<tr>
 			<td colspan="3" valign="top">
 				<%@ include file="/WEB-INF/template/banner.jsp" %>

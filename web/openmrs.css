@@ -25,9 +25,18 @@ body {
 }
 
 #patientTable {
-  display: none;
+	xdisplay: none;
 }
 
 #selectForm {
-  display: none;
+	xdisplay: none;
+}
+
+#gutter {
+	margin: 25px;
+	border-right: 1px dashed black;
+	padding: 10px;
+	line-height: 22px;
+	text-align: right;
+	font-size: 12px;
 }

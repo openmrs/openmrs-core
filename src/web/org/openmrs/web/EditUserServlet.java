@@ -31,6 +31,8 @@ public class EditUserServlet extends HttpServlet {
 
 		HttpSession httpSession = request.getSession();
 		Context context = (Context)httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		if (context == null)
+			response.sendRedirect("/logout");
 		
 		String userId   = request.getParameter("userId");
 		UserService userService = context.getUserService();

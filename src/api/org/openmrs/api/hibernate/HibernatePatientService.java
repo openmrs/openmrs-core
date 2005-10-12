@@ -220,7 +220,7 @@ public class HibernatePatientService implements PatientService {
 	public List<PatientIdentifierType> getPatientIdentifierTypes() throws APIException {
 		Session session = HibernateUtil.currentSession();
 		
-		List<PatientIdentifierType> patientIdentifierTypes = session.createQuery("from PatientIdentifierType").list();
+		List<PatientIdentifierType> patientIdentifierTypes = session.createQuery("from PatientIdentifierType p order by p.name").list();
 		
 		return patientIdentifierTypes;
 	}
@@ -242,7 +242,7 @@ public class HibernatePatientService implements PatientService {
 	public List<Tribe> getTribes() throws APIException {
 		Session session = HibernateUtil.currentSession();
 		
-		List<Tribe> tribes = session.createQuery("from Tribe").list();
+		List<Tribe> tribes = session.createQuery("from Tribe t order by t.name").list();
 		
 		return tribes;
 	}
@@ -269,7 +269,7 @@ public class HibernatePatientService implements PatientService {
 		Session session = HibernateUtil.currentSession();
 		
 		List<Location> locations;
-		locations = session.createQuery("from Location l").list();
+		locations = session.createQuery("from Location l order by l.name").list();
 		
 		return locations;
 

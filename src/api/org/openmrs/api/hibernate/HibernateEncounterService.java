@@ -82,7 +82,7 @@ public class HibernateEncounterService implements
 		Session session = HibernateUtil.currentSession();
 		
 		List<EncounterType> encounterTypes;
-		encounterTypes = session.createQuery("from EncounterType et").list();
+		encounterTypes = session.createQuery("from EncounterType et order by et.name").list();
 		
 		return encounterTypes;
 
@@ -110,7 +110,7 @@ public class HibernateEncounterService implements
 		Session session = HibernateUtil.currentSession();
 		
 		List<Location> locations;
-		locations = session.createQuery("from Location l").list();
+		locations = session.createQuery("from Location l order by l.name").list();
 		
 		return locations;
 

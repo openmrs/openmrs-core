@@ -1,4 +1,5 @@
-<%@ include file="/WEB-INF/template/includes.jsp" %>
+<%@page isErrorPage="true" %>
+<%@ include file="/WEB-INF/template/include.jsp" %>
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
@@ -6,34 +7,44 @@
 
 <h2>Internal error</h2>
 
+<style>
+	#stackTrace {
+		display: none;
+		font-size: 11px;
+		padding: 2px;
+		width: 585px;
+	}
+</style>
+
 <script>
 	function showOrHide() {
 		var link = document.getElementById("toggleLink");
-		var trace = document.getElementById("staceTrace");
-		if (link.innerHTML == "Show") {
-			link.innerHTML = "Hide";
+		var trace = document.getElementById("stackTrace");
+		if (link.innerHTML == "Show stack trace") {
+			link.innerHTML = "Hide stack trace";
 			trace.style.display = "block";
 		}
 		else {
-			link.innerHTML = "Show";
+			link.innerHTML = "Show stack trace";
 			trace.style.display = "none";
 		}
+	}
 </script>	
 
 <% 
 try {
 	// The Servlet spec guarantees this attribute will be available
-	Throwable exception = (Throwable) request.getAttribute("javax.servlet.error.exception"); 
+	//Throwable exception = (Throwable) request.getAttribute("javax.servlet.error.exception"); 
 
-	out.println(exception.getMessage()); %>
+	out.println("<b>" + exception.getClass().getName() + "</b>");
+	out.println(exception.getMessage()); 
+	%>
 	
+	<br /><br />
+	
+	<a href="javascript:showOrHide()" id="toggleLink" style="font-size: 12px;">Show stack trace</a>
 	<br />
-	<div class="box">
-		<div class="boxHeader">
-			<a href="javascript:showOrHide()" id="toggleLink" >Show</a>
-			Stack Trace
-		</div>
-		<div id="stackTrace">
+	<div id="stackTrace">
 	<%		
 	if (exception != null) {
 		if (exception instanceof ServletException) {
@@ -42,7 +53,7 @@ try {
 			Throwable rootCause = sEx.getRootCause();
 			if (rootCause == null)
 				rootCause = sEx;
-			out.println("** Root cause is: "+ rootCause.getMessage());
+			out.println("<br><br>** Root cause is: "+ rootCause.getMessage());
 			rootCause.printStackTrace(new java.io.PrintWriter(out)); 
 		}
 		else {
@@ -51,11 +62,11 @@ try {
 		}
 	} 
 	else  {
-    	out.println("No error information available");
+    	out.println("<br>No error information available");
 	} 
 
 	// Display cookies
-	out.println("\nCookies:\n");
+	out.println("<br><br>Cookies:<br>");
 	Cookie[] cookies = request.getCookies();
 	if (cookies != null) {
     	for (int i = 0; i < cookies.length; i++) {

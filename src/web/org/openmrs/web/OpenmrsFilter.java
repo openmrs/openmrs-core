@@ -56,6 +56,9 @@ public class OpenmrsFilter implements Filter {
 		try {
 			chain.doFilter(request, response);
 		}
+		catch (Exception e) {
+			throw new ServletException(e.getMessage());
+		}
 		finally {
 			//only close the transaction if this was the initial request
 			if (initialRequest == true) {

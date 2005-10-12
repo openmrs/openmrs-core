@@ -39,6 +39,7 @@ public class LoginServlet extends HttpServlet {
 			context.authenticate(username, password);
 			if (context.isAuthenticated()) {
 				response.sendRedirect(redirect);
+				httpSession.removeAttribute("login_redirect");
 				return;
 			}
 		} catch (ContextAuthenticationException e) {

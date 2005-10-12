@@ -1,5 +1,4 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
-<%@ page import="org.openmrs.context.Context" %>
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
@@ -19,7 +18,6 @@
 	<br>
 	
 		<input type="hidden" name="redirect" value="${login_redirect}" />
-		<% session.removeAttribute("login_redirect"); %>
 	
 	<input type="submit" value="Log in" />
 </form>	
