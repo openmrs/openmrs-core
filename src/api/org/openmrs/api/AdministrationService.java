@@ -83,6 +83,20 @@ public interface AdministrationService {
 	public void deleteTribe(Tribe tribe) throws APIException;	
 	
 	/**
+	 * Retire Tribe
+	 * @param Tribe to retire
+	 * @throws APIException
+	 */
+	public void retireTribe(Tribe tribe) throws APIException;	
+
+	/**
+	 * Unretire Tribe
+	 * @param Tribe to unretire
+	 * @throws APIException
+	 */
+	public void unretireTribe(Tribe tribe) throws APIException;	
+	
+	/**
 	 * Create a new OrderType
 	 * @param OrderType to create
 	 * @throws APIException

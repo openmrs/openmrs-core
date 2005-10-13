@@ -121,7 +121,8 @@ public class HibernateContext implements Context {
 	public User getAuthenticatedUser() {
 		Session session = HibernateUtil.currentSession();
 		try {
-			session.lock(user, LockMode.READ);
+			if (user != null)
+				session.lock(user, LockMode.READ);
 		}
 		catch (Exception e) {
 			log.error("Attempted locking of user to double open session");
@@ -330,6 +331,10 @@ public class HibernateContext implements Context {
 	public void endTransaction() {
 		
 		log.debug("HibernateContext: Ending Transaction");
+		/*TODO	tomcat loops adinfinitum at this point after several 
+		 		restarts (during development mainly).  I assume there is 
+		 		a race/blocking condition that is causing this, but where?
+		*/  
 		HibernateUtil.closeSession();
 		//session = null;
 		

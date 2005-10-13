@@ -5,7 +5,6 @@ import java.util.List;
 import org.openmrs.Field;
 import org.openmrs.FieldType;
 import org.openmrs.Form;
-import org.openmrs.FormField;
 
 /**
  * Form-related services

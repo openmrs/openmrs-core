@@ -14,7 +14,7 @@ public class AuthTag extends TagSupport {
 	
 	private final Log log = LogFactory.getLog(getClass());
 
-	private boolean converse = false;
+	private boolean converse;
 
 	public int doStartTag() {
 
@@ -22,7 +22,11 @@ public class AuthTag extends TagSupport {
 		
 		Context context = (Context)httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-		if (context.isAuthenticated() == !converse ) {
+		if (context == null) {
+			return SKIP_BODY;
+		}
+		
+		if (converse ^= context.isAuthenticated()) {
 			pageContext.setAttribute("authenticatedUser", context.getAuthenticatedUser());
 			return EVAL_BODY_INCLUDE;
 		}

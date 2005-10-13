@@ -60,14 +60,14 @@ public class Tribe implements java.io.Serializable {
 	}
 
 	/**
-	 * @return Returns the retired.
+	 * @return Returns the retired status.
 	 */
 	public Boolean isRetired() {
 		return retired;
 	}
 
 	/**
-	 * @param retired The retired to set.
+	 * @param retired The retired status to set.
 	 */
 	public void setRetired(Boolean retired) {
 		this.retired = retired;

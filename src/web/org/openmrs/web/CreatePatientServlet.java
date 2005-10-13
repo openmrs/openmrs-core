@@ -39,30 +39,56 @@ public class CreatePatientServlet extends HttpServlet {
 		PatientService ps = context.getPatientService();
 
 		// =Identifier===
+		String identifier  = request.getParameter("identifier");
+		String identifierType = request.getParameter("identifierType");
+		String identifierLoc  = request.getParameter("identifierLocation");
+		if (identifier == null || identifierType == null || identifierLoc == null)
+			throw new ServletException("Illegal patient identifier");
 		PatientIdentifier pIdent = new PatientIdentifier();
-		pIdent.setIdentifier(request.getParameter("identifier"));
-		pIdent.setIdentifierType(ps.getPatientIdentifierType(Integer.valueOf(request.getParameter("identifierType"))));
-		pIdent.setLocation(ps.getLocation(Integer.valueOf(request.getParameter("identifierLocation"))));
+		pIdent.setIdentifier(identifier);
+		pIdent.setIdentifierType(ps.getPatientIdentifierType(Integer.valueOf(identifierType)));
+		pIdent.setLocation(ps.getLocation(Integer.valueOf(identifierLoc)));
 		
 		// =Address======
-		PatientAddress pAdd = new PatientAddress();
-		pAdd.setAddress1(request.getParameter("address1"));
-		pAdd.setAddress2(request.getParameter("address2"));
-		pAdd.setCityVillage(request.getParameter("cityVillage"));
-		pAdd.setStateProvince(request.getParameter("stateProvince"));
-		pAdd.setCountry(request.getParameter("country"));
-		pAdd.setLatitude(request.getParameter("latitude"));
-		pAdd.setLongitude(request.getParameter("longitude"));
+		PatientAddress pAdd = null;
+		String address1 = request.getParameter("address1");
+		String address2 = request.getParameter("address2");
+		String cityVillage = request.getParameter("cityVillage");
+		String stateProvince = request.getParameter("stateProvince");
+		String country   = request.getParameter("country");
+		String latitude  = request.getParameter("latitude");
+		String longitude = request.getParameter("longitude");
+		if (address1 != null || address2 != null || cityVillage != null || 
+				stateProvince != null || country != null ||
+				latitude != null || longitude != null) {
+			pAdd = new PatientAddress();
+			pAdd.setAddress1(address1);
+			pAdd.setAddress2(address2);
+			pAdd.setCityVillage(cityVillage);
+			pAdd.setStateProvince(stateProvince);
+			pAdd.setCountry(country);
+			pAdd.setLatitude(latitude);
+			pAdd.setLongitude(longitude);
+		}
 		
 		// =Name=========
 		PatientName pName = new PatientName();
+		String givenName = request.getParameter("givenName");
+		String familyNamePrefix = request.getParameter("familyNamePrefix");
+		String familyName = request.getParameter("familyName");
+		String familyName2= request.getParameter("familyName2");
+		String familyNameSuffix = request.getParameter("familyNameSuffix");
+		if (givenName == "")
+			throw new ServletException("Patient contains illegal given name");
+		if (familyNamePrefix == "" && familyName == "" && familyName2 == "" && familyNameSuffix == "")
+			throw new ServletException("Patient contains illegal family name");
 		pName.setPreferred(Boolean.valueOf(request.getParameter("preferred")));
-		pName.setGivenName(request.getParameter("givenName"));
+		pName.setGivenName(givenName);
 		pName.setMiddleName(request.getParameter("middleName"));
-		pName.setFamilyNamePrefix(request.getParameter("familyNamePrefix"));
-		pName.setFamilyName(request.getParameter("familyName"));
-		pName.setFamilyName2(request.getParameter("familyName2"));
-		pName.setFamilyNameSuffix(request.getParameter("familyNameSuffix"));
+		pName.setFamilyNamePrefix(familyNamePrefix);
+		pName.setFamilyName(familyName);
+		pName.setFamilyName2(familyName2);
+		pName.setFamilyNameSuffix(familyNameSuffix);
 		pName.setDegree(request.getParameter("degree"));
 		
 		// =Patient======
@@ -97,8 +123,7 @@ public class CreatePatientServlet extends HttpServlet {
 				throw new ServletException("Unable to parse the death date");
 			}
 		}
-				
-		
+
 		if (context.isAuthenticated()) {
 			ps.createPatient(patient);
 			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Patient '" + patient.getPatientId() + "' created");
@@ -106,6 +131,5 @@ public class CreatePatientServlet extends HttpServlet {
 			//request.getRequestDispatcher("createPatientForm.jsp").forward(request, response);
 			return;
 		}
-
 	}
 }

@@ -1,0 +1,5 @@
+<div id="menu">
+	<a href="../index.jsp">Admin</a> |
+	<a href="tribes.jsp">Tribes</a> |
+	<a href="identifierTypes.jsp">Manage Identifier Types</a>
+</div>

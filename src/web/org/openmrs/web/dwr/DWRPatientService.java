@@ -37,7 +37,6 @@ public class DWRPatientService {
 				patients = ps.getPatientsByName(givenName, familyName);
 			
 			patientList = new Vector<PatientListItem>(patients.size());
-			int i = 0;
 			for (Patient p : patients) {
 				patientList.add(new PatientListItem(p));
 			}
@@ -45,6 +44,14 @@ public class DWRPatientService {
 			e.printStackTrace();
 		}
 		return patientList;
+	}
+	
+	public PatientListItem getPatient(Integer patientId) {
+		Context context = (Context) ExecutionContext.get().getSession().getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		PatientService ps = context.getPatientService();
+		Patient p = ps.getPatient(patientId);
+		
+		return new PatientListItem(p);
 	}
 
 }

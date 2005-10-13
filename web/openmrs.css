@@ -24,12 +24,16 @@ body {
 	font-size: 10px;
 }
 
-#patientTable {
-	xdisplay: none;
-}
+#patientTableBody {
+	height: 150px;
+	overflow: auto;		/*scrolls the table in non-IE* browsers*/
+	}
+	#patientTableBody tr {
+		height: 1em;	/*fixes scrolling bug in IE6.  */
+	}
 
-#selectForm {
-	xdisplay: none;
+#patientSummary, #patientSummary * {
+	font-size: 11px;
 }
 
 #gutter {
@@ -40,3 +44,17 @@ body {
 	text-align: right;
 	font-size: 12px;
 }
+
+.boxHeader {
+	background-color: navy;
+	color: white;
+	display: block;
+}
+.box, .boxHeader {
+	border: 1px solid navy;
+	width: 700px;
+	padding: 2px;
+	}
+	.box * {
+		font-size: 12px;
+	}

@@ -252,5 +252,9 @@ public class User extends Person implements java.io.Serializable {
 	}
 
 	 */
+	
+	public String toString() {
+		return username;
+	}
 
 }

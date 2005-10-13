@@ -8,8 +8,8 @@
 <body>
 
 	<div id="userBar">
-		<openmrs:isAuthenticated>
-			Currently logged in as ${authenticatedUser.username} | <a href='/openmrs/logout'>Log out</a>
+		<openmrs:isAuthenticated converse="false">
+			Currently logged in as ${authenticatedUser} | <a href='/openmrs/logout'>Log out</a>
 		</openmrs:isAuthenticated>
 		<openmrs:isAuthenticated converse="true">
 			Not logged in | <a href='/openmrs/login.jsp'>Log in</a>
@@ -45,4 +45,4 @@
 					session.removeAttribute("openmrs_error");
 				}
 			%>
-			
+						

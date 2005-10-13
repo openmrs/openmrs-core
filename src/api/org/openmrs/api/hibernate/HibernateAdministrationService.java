@@ -231,6 +231,22 @@ public class HibernateAdministrationService implements
 	}
 	
 	/**
+	 * @see org.openmrs.api.AdministrationService#retireTribe(org.openmrs.Tribe)
+	 */
+	public void retireTribe(Tribe tribe) throws APIException {
+		tribe.setRetired(true);
+		updateTribe(tribe);
+	}
+
+	/**
+	 * @see org.openmrs.api.AdministrationService#unretireTribe(org.openmrs.Tribe)
+	 */
+	public void unretireTribe(Tribe tribe) throws APIException {
+		tribe.setRetired(false);
+		updateTribe(tribe);
+	}
+	
+	/**
 	 * @see org.openmrs.api.AdministrationService#deleteRole(org.openmrs.Role)
 	 */
 	public void deleteRole(Role role) throws APIException {

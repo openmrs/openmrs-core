@@ -99,5 +99,5 @@
 		</tr>
 	</table>
 	<input type="submit" value="Add User">
-<form>
+</form>
 <%@ include file="/WEB-INF/template/footer.jsp" %>

@@ -66,9 +66,9 @@
 		</tr>
 	</table>
 	<input type="submit" value="Add Privilege">
-<form>
+</form>
 
-<br><br>
+<br >
 
 <h3>Update a privilege</h3>
 <form method="post" class="box">

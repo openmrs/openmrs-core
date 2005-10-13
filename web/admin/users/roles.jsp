@@ -89,9 +89,9 @@
 		</tr>
 	</table>
 	<input type="submit" value="Add Role">
-<form>
+</form>
 
-<br><br>
+<br />
 
 <form method="post" class="box">
 	<table>

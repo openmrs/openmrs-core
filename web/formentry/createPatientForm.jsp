@@ -8,7 +8,8 @@
 
 <br>
 <form method="post" action="createPatient">
-	<div class="patientIdentifier">
+	<div id="patientIdentifier" class="box">
+		<b class="boxHeader">Patient Identifiers</b>
 		Identifier
 			<input type="text" name="identifier" id="identifier" value="${identifier.identifier}" />
 		Type
@@ -29,7 +30,8 @@
 			</select>
 	</div>
 	<br />
-	<div class="patientName">
+	<div id="patientName" class="box">
+		<b class="boxHeader">Patient Names</b>
 		<table>
 			<tr>
 				<td>Preferred</td>
@@ -59,7 +61,8 @@
 		</table>
 	</div>
 	<br />
-	<div class="patientAddress">
+	<div id="patientAddress" class="box">
+		<b class="boxHeader">Patient Addresses</b>
 		<table>
 			<tr>
 				<td>Address</td>
@@ -86,7 +89,8 @@
 		</table>
 	</div>
 	<br />
-	<div class="patientInformation">
+	<div id="patientInformation" class="box">
+		<b class="boxHeader">Patient Information</b>
 		<table>
 			<tr>
 				<td>Gender</td>
