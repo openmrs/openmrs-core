@@ -5,7 +5,7 @@
 
 &nbsp;<br />
 
-<h2>Internal error</h2>
+<h2>An Internal Error has Occured</h2>
 
 <style>
 	#stackTrace {
@@ -39,6 +39,10 @@ try {
 	out.println("<b>" + exception.getClass().getName() + "</b>");
 	out.println(exception.getMessage()); 
 	%>
+	
+	<br /><br />
+	Consult the <a href="<%= request.getContextPath() %>/help.jsp">help document</a>. <br />
+	Contact your friendly neighborhood administrator if it cannot be resolved.
 	
 	<br /><br />
 	

@@ -5,7 +5,7 @@
 <h2>OpenMRS Help</h2>
 
 <br />
-If in doubt: log out.
+If in doubt, log out...and try again.
 <br />
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

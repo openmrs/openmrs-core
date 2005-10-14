@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
@@ -44,27 +45,30 @@ public class HibernateUserService implements
 			throw new APIException("Username currently in use by '" + user.getFirstName() + " " + user.getLastName() + "'");
 		
 		try {
-			HibernateUtil.beginTransaction();
-			
 			//add all data minus the password as a new user
+			HibernateUtil.beginTransaction();
 			user.setDateCreated(new Date());
 			user.setCreator(context.getAuthenticatedUser());
 			session.saveOrUpdate(user);
+			HibernateUtil.commitTransaction();
 			session.flush();
+
 			
 			//update the new user with the password
+			HibernateUtil.beginTransaction();
 			MessageDigest md = MessageDigest.getInstance("MD5");
 			byte[] input = password.getBytes();
 			String hashedPassword = hexString(md.digest(input));
-			session.createSQLQuery("update users set password = ? where user_id = ?")
-				.setString(0, hashedPassword)
-				.setInteger(1, user.getUserId());
-			
+			session.createQuery("update User set password = :pw where user_id = :username")
+				.setParameter("pw", hashedPassword)
+				.setParameter("username", user.getUserId())
+				.executeUpdate();
 			HibernateUtil.commitTransaction();
 			session.flush();
+			
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
 			throw new APIException(e.getMessage());
 		}	
 	}
@@ -147,7 +151,7 @@ public class HibernateUserService implements
 			}
 			
 			//must update the persistent user object that we have sitting around if the user
-			//updating themselves (also assists when user changes their username)
+			//updated themselves (also assists us when user changes their username)
 			if (context.getAuthenticatedUser().getUsername().equals(user.getUsername()))
 				session.update(context.getAuthenticatedUser());
 		}
@@ -170,10 +174,16 @@ public class HibernateUserService implements
 	 */
 	public void deleteUser(User user) {
 		Session session = HibernateUtil.currentSession();
-		HibernateUtil.beginTransaction();
-		session.delete(user);
-		HibernateUtil.commitTransaction();
-		session.flush();
+		try {
+			HibernateUtil.beginTransaction();
+			session.delete(user);
+			HibernateUtil.commitTransaction();
+			session.flush();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e.getMessage());
+		}
 	}
 
 	/**

@@ -70,7 +70,7 @@ public class HibernateContext implements Context {
 		Session session = HibernateUtil.currentSession();
 		
 		User candidateUser = (User) session.createQuery(
-				"from User u where u.username = ?").setString(0, username)
+				"from User u where u.username = ? and u.voided is null or u.voided = 0").setString(0, username)
 				.uniqueResult();
 		
 		if (candidateUser == null) {

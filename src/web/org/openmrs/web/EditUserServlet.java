@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.UserService;
@@ -17,6 +19,7 @@ import org.openmrs.context.Context;
 
 public class EditUserServlet extends HttpServlet {
 
+	protected final Log log = LogFactory.getLog(getClass());
 	public static final long serialVersionUID = 1123432456L;
 
 	/*
@@ -64,8 +67,9 @@ public class EditUserServlet extends HttpServlet {
 				return;
 			}
 		} catch (Exception e) {
-			httpSession.setAttribute(Constants.OPENMRS_ERROR_ATTR, "Unable to update user");
-			response.sendRedirect("editUsers?id=" + user.getUserId());
+			log.error(e);
+			httpSession.setAttribute(Constants.OPENMRS_ERROR_ATTR, "Unable to update user "  + e.getMessage());
+			response.sendRedirect("editUser.jsp?id=" + user.getUserId());
 		}
 	}
 
