@@ -12,7 +12,7 @@ SET FOREIGN_KEY_CHECKS=0;
 #----------------------------
 drop table if exists complex_obs;
 CREATE TABLE `complex_obs` (
-  `obs_id` int(11) NOT NULL default '0',
+  `obs_id` int(11) NOT NULL auto_increment,
   `mime_type_id` int(11) NOT NULL default '0',
   `urn` text,
   `complex_value` longtext,
@@ -26,7 +26,7 @@ CREATE TABLE `complex_obs` (
 #----------------------------
 drop table if exists concept;
 CREATE TABLE `concept` (
-  `concept_id` int(11) NOT NULL default '0',
+  `concept_id` int(11) NOT NULL auto_increment,
   `retired` tinyint(1) default NULL,
   `name` varchar(255) NOT NULL default '',
   `short_name` varchar(255) default NULL,
@@ -79,7 +79,7 @@ CREATE TABLE `concept_answer` (
 #----------------------------
 drop table if exists concept_class;
 CREATE TABLE `concept_class` (
-  `concept_class_id` int(11) NOT NULL default '0',
+  `concept_class_id` int(11) NOT NULL auto_increment,
   `name` varchar(255) NOT NULL default '',
   `description` varchar(255) NOT NULL default '',
   `creator` int(11) NOT NULL default '0',
@@ -94,7 +94,7 @@ CREATE TABLE `concept_class` (
 #----------------------------
 drop table if exists concept_datatype;
 CREATE TABLE `concept_datatype` (
-  `concept_datatype_id` int(11) NOT NULL default '0',
+  `concept_datatype_id` int(11) NOT NULL auto_increment,
   `name` varchar(255) NOT NULL default '',
   `datatype_abbreviation` char(3) default NULL,
   `definition` varchar(255) NOT NULL default '',
@@ -255,7 +255,7 @@ CREATE TABLE `concept_word` (
 #----------------------------
 drop table if exists drug;
 CREATE TABLE `drug` (
-  `drug_id` int(11) NOT NULL default '0',
+  `drug_id` int(11) NOT NULL auto_increment,
   `concept_id` int(11) NOT NULL default '0',
   `name` varchar(50) default NULL,
   `combination` tinyint(1) default NULL,
@@ -468,7 +468,7 @@ CREATE TABLE `form_field` (
 #----------------------------
 drop table if exists icd10;
 CREATE TABLE `icd10` (
-  `icd10_id` int(11) NOT NULL default '0',
+  `icd10_id` int(11) NOT NULL auto_increment,
   `code` varchar(255) default NULL,
   `name` varchar(255) default NULL,
   PRIMARY KEY  (`icd10_id`)
@@ -500,7 +500,7 @@ CREATE TABLE `location` (
 #----------------------------
 drop table if exists mime_type;
 CREATE TABLE `mime_type` (
-  `mime_type_id` int(11) NOT NULL default '0',
+  `mime_type_id` int(11) NOT NULL auto_increment,
   `mime_type` varchar(75) NOT NULL default '',
   `description` text,
   PRIMARY KEY  (`mime_type_id`),
@@ -556,7 +556,7 @@ CREATE TABLE `obs` (
 #----------------------------
 drop table if exists order_type;
 CREATE TABLE `order_type` (
-  `order_type_id` int(11) NOT NULL default '0',
+  `order_type_id` int(11) NOT NULL auto_increment,
   `name` varchar(255) NOT NULL default '',
   `description` varchar(255) NOT NULL default '',
   `creator` int(11) NOT NULL default '0',
@@ -570,7 +570,7 @@ CREATE TABLE `order_type` (
 #----------------------------
 drop table if exists orders;
 CREATE TABLE `orders` (
-  `order_id` int(11) NOT NULL default '0',
+  `order_id` int(11) NOT NULL auto_increment,
   `order_type_id` int(11) NOT NULL default '0',
   `concept_id` int(11) NOT NULL default '0',
   `orderer` int(11) default '0',
@@ -714,7 +714,7 @@ CREATE TABLE `patient_identifier_type` (
 #----------------------------
 drop table if exists patient_name;
 CREATE TABLE `patient_name` (
-  `patient_name_id` int(11) NOT NULL default '0',
+  `patient_name_id` int(11) NOT NULL auto_increment,
   `preferred` tinyint(1) default NULL,
   `patient_id` int(11) NOT NULL default '0',
   `prefix` varchar(50) default NULL,

@@ -7,24 +7,31 @@
 
 <h4>Users</h4>
 <ul>
-	<li><a href="users/addUser.jsp">Add a new user</a></li>
-	<li><a href="users/users.jsp">Manage the current users</a></li>
-	<li><a href="users/roles.jsp">Manage the roles</a></li>
-	<li><a href="users/privileges.jsp">Manage the privileges</a></li>
+	<li><a href="users/addUser.jsp">Add new user</a></li>
+	<li><a href="users/users.jsp">Manage current users</a></li>
+	<li><a href="users/roles.jsp">Manage roles</a></li>
+	<li><a href="users/privileges.jsp">Manage privileges</a></li>
 </ul>
 
 <h4>Patients</h4>
 <ul>
 	<li><a href="patients/patients.jsp">Void/Unvoid a patient</a></li>
 	<li><a href="patients/tribes.jsp">Manage the tribes</a></li>
-	<li><a href="patients/identifierTypes.jsp">Manage the patient identifier types</a></li>
+	<li><a href="patients/identifierTypes.jsp">Manage patient identifier types</a></li>
 </ul>
 
 <h4>Encounters</h4>
 <ul>
 	<li><a href="encounters/encounters.jsp">Void/Unvoid an encounter</a></li>
 	<li><a href="encounters/locations.jsp">Manage the locations</a></li>
-	<li><a href="encounters/encounterTypes.jsp">Manage the encounter types</a></li>
+	<li><a href="encounters/encounterTypes.jsp">Manage encounter types</a></li>
 </ul>
+
+<h4>Observations</h4>
+<ul>
+	<li><a href="observations/observations.jsp">Void/Unvoid an observation</a></li>
+	<li><a href="observations/mimeTypes.jsp">Manage mime types</a></li>
+</ul>
+
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>
