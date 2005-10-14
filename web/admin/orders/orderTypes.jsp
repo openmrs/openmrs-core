@@ -81,7 +81,7 @@
 	<table>
 		<tr>
 			<th> </th>
-			<th> Order Type </th>
+			<th> Name </th>
 			<th> Description </th>
 		</tr>
 		<c:forEach var="orderType" items="${orderService.orderTypes}">
