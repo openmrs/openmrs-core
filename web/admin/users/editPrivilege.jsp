@@ -2,6 +2,7 @@
 <%@ page import="org.openmrs.context.Context" %>
 <%@ page import="org.openmrs.api.AdministrationService" %>
 <%@ page import="org.openmrs.api.UserService" %>
+<%@ page import="org.openmrs.api.APIException" %>
 <%@ page import="org.openmrs.Privilege" %>
 <%@ page import="org.openmrs.web.Constants" %>
 
@@ -13,8 +14,15 @@
 
 	if (request.getParameter("description") != null) {
 		privilege.setDescription(request.getParameter("description"));
-		context.getAdministrationService().updatePrivilege(privilege);
-		session.setAttribute("openmrs_msg", "Privilege updated");
+		try {
+			context.getAdministrationService().updatePrivilege(privilege);
+			session.setAttribute(Constants.OPENMRS_MSG_ATTR, "Privilege updated");
+			response.sendRedirect("privileges.jsp");
+			return;
+		}
+		catch (APIException e) {
+			session.setAttribute(Constants.OPENMRS_ERROR_ATTR, "Unable to update privilege " + e.getMessage());
+		}
 	}
 	pageContext.setAttribute("privilege", privilege);
 %>	

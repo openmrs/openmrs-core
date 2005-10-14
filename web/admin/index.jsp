@@ -20,4 +20,11 @@
 	<li><a href="patients/identifierTypes.jsp">Manage the patient identifier types</a></li>
 </ul>
 
+<h4>Encounters</h4>
+<ul>
+	<li><a href="encounters/encounters.jsp">Void/Unvoid an encounter</a></li>
+	<li><a href="encounters/locations.jsp">Manage the locations</a></li>
+	<li><a href="encounters/encounterTypes.jsp">Manage the encounter types</a></li>
+</ul>
+
 <%@ include file="/WEB-INF/template/footer.jsp" %>

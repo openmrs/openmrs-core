@@ -33,7 +33,7 @@
 	}
 	
 	//adding a identifierType
-	String identifierTypeName = request.getParameter("identifierType");
+	String identifierTypeName = request.getParameter("name");
 	String description = request.getParameter("description");
 	if (identifierTypeName != "" && identifierTypeName != null) {
 		PatientIdentifierType t = new PatientIdentifierType();
@@ -41,10 +41,10 @@
 		t.setDescription(description);
 		try {
 			adminService.createPatientIdentifierType(t);
-			session.setAttribute(Constants.OPENMRS_MSG_ATTR, "IdentifierType added");
+			session.setAttribute(Constants.OPENMRS_MSG_ATTR, "Identifier type added");
 		}
 		catch (APIException e) {
-			session.setAttribute(Constants.OPENMRS_ERROR_ATTR, "Unable to add identifierType " + e.getMessage());
+			session.setAttribute(Constants.OPENMRS_ERROR_ATTR, "Unable to add identifier type " + e.getMessage());
 		}
 	}
 %>
@@ -61,11 +61,11 @@
 	<table>
 		<tr>
 			<td>Name</td>
-			<td><input type="text" name="identifierType"></td>
+			<td><input type="text" name="name"></td>
 		</tr>
 		<tr>
 			<td>Description</td>
-			<td><input type="text" name="description" size="50"></td>
+			<td><textarea name="description" rows="2" cols="50"></textarea></td>
 			
 		</tr>
 	</table>
@@ -96,7 +96,7 @@
 			</tr>
 		</c:forEach>
 	</table>
-	<input type="submit" value="Delete Selected IdentifierTypes" name="action">
+	<input type="submit" value="Delete Selected Identifier Types" name="action">
 </form>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

@@ -2,6 +2,7 @@
 <%@ page import="org.openmrs.context.Context" %>
 <%@ page import="org.openmrs.api.AdministrationService" %>
 <%@ page import="org.openmrs.api.UserService" %>
+<%@ page import="org.openmrs.api.APIException" %>
 <%@ page import="org.openmrs.Role" %>
 <%@ page import="org.openmrs.Privilege" %>
 <%@ page import="java.util.Set" %>
@@ -26,8 +27,15 @@
 			}
 		}
 		role.setPrivileges(privObjs);
-		adminService.updateRole(role);
-		session.setAttribute("openmrs_msg", "Role updated");
+		try {
+			context.getAdministrationService().updateRole(role);
+			session.setAttribute(Constants.OPENMRS_MSG_ATTR, "Role updated");
+			response.sendRedirect("roles.jsp");
+			return;
+		}
+		catch (APIException e) {
+			session.setAttribute(Constants.OPENMRS_ERROR_ATTR, "Unable to update role " + e.getMessage());
+		}
 	}
 	pageContext.setAttribute("role", role);
 	pageContext.setAttribute("userService", userService);

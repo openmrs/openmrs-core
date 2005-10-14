@@ -2,6 +2,7 @@
 <%@ page import="org.openmrs.context.Context" %>
 <%@ page import="org.openmrs.api.AdministrationService" %>
 <%@ page import="org.openmrs.api.PatientService" %>
+<%@ page import="org.openmrs.api.APIException" %>
 <%@ page import="org.openmrs.PatientIdentifierType" %>
 <%@ page import="org.openmrs.web.Constants" %>
 
@@ -16,9 +17,15 @@
 	if (request.getParameter("name") != null) {
 		identifierType.setName(request.getParameter("name"));
 		identifierType.setDescription(request.getParameter("description"));
-		adminService.updatePatientIdentifierType(identifierType);
-		session.setAttribute(Constants.OPENMRS_MSG_ATTR, "Patient Identifier Type updated");
-		response.sendRedirect("identifierTypes.jsp");
+		try {
+			adminService.updatePatientIdentifierType(identifierType);
+			session.setAttribute(Constants.OPENMRS_MSG_ATTR, "Patient Identifier Type updated");
+			response.sendRedirect("identifierTypes.jsp");
+			return;
+		}
+		catch (APIException e) {
+			session.setAttribute(Constants.OPENMRS_ERROR_ATTR, "Unable to update identifier type " + e.getMessage());
+		}
 		
 	}
 	pageContext.setAttribute("identifierType", identifierType);

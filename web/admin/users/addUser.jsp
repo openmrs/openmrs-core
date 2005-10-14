@@ -43,10 +43,12 @@
 		
 		try {
 			userService.createUser(user, password);
-			session.setAttribute("openmrs_msg", "User created");
+			session.setAttribute(Constants.OPENMRS_MSG_ATTR, "User created");
+			response.sendRedirect("users.jsp");
+			return;
 		}
 		catch (APIException e) {
-			session.setAttribute("openmrs_error", "Unable to add user : " + e.getMessage());
+			session.setAttribute(Constants.OPENMRS_ERROR_ATTR, "Unable to add user : " + e.getMessage());
 		}
 	}
 %>

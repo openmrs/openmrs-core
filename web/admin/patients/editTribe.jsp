@@ -3,6 +3,7 @@
 <%@ page import="org.openmrs.api.AdministrationService" %>
 <%@ page import="org.openmrs.api.PatientService" %>
 <%@ page import="org.openmrs.Tribe" %>
+<%@ page import="org.openmrs.api.APIException" %>
 <%@ page import="org.openmrs.web.Constants" %>
 
 <openmrs:require privilege="Manage Patients" otherwise="/login.jsp" />
@@ -16,9 +17,15 @@
 	if (request.getParameter("name") != null) {
 		tribe.setName(request.getParameter("name"));
 		tribe.setRetired(Boolean.valueOf(request.getParameter("retired")));
-		adminService.updateTribe(tribe);
-		session.setAttribute(Constants.OPENMRS_MSG_ATTR, "Tribe updated");
-		response.sendRedirect("tribes.jsp");
+		try {
+			adminService.updateTribe(tribe);
+			session.setAttribute(Constants.OPENMRS_MSG_ATTR, "Tribe updated");
+			response.sendRedirect("tribes.jsp");
+			return;
+		}
+		catch (APIException e) {
+			session.setAttribute(Constants.OPENMRS_ERROR_ATTR, "Unable to update tribe " + e.getMessage());
+		}
 		
 	}
 	pageContext.setAttribute("tribe", tribe);

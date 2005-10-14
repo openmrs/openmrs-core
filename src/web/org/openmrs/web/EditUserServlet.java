@@ -59,12 +59,13 @@ public class EditUserServlet extends HttpServlet {
 		try {
 			if (context.isAuthenticated()) {
 				context.getUserService().updateUser(user);
-				httpSession.setAttribute("openmrs_msg", "'" + user.getUsername() + "' updated");
-				response.sendRedirect("editUser.jsp?id=" + userId);
+				httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "'" + user.getUsername() + "' updated");
+				response.sendRedirect("users.jsp");
 				return;
 			}
 		} catch (Exception e) {
-			response.sendRedirect(request.getContextPath() + "/login.jsp?msg=Invalid+credentials.+Try again.");
+			httpSession.setAttribute(Constants.OPENMRS_ERROR_ATTR, "Unable to update user");
+			response.sendRedirect("editUsers?id=" + user.getUserId());
 		}
 	}
 

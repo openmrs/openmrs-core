@@ -337,7 +337,7 @@ CREATE TABLE `encounter` (
 #----------------------------
 drop table if exists encounter_type;
 CREATE TABLE `encounter_type` (
-  `encounter_type_id` int(11) NOT NULL default '0',
+  `encounter_type_id` int(11) NOT NULL auto_increment,
   `name` varchar(50) NOT NULL default '',
   `description` varchar(50) NOT NULL default '',
   `creator` int(11) NOT NULL default '0',
