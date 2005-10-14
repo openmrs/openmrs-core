@@ -4,7 +4,6 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.LockMode;
 import org.hibernate.Session;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
@@ -39,7 +38,16 @@ public class HibernateAdministrationService implements
 		
 		encounterType.setCreator(context.getAuthenticatedUser());
 		encounterType.setDateCreated(new Date());
-		session.save(encounterType);
+		try {
+			HibernateUtil.beginTransaction();
+			session.save(encounterType);
+			HibernateUtil.commitTransaction();
+			session.flush();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e);
+		}
 	}
 
 	/**
@@ -50,7 +58,16 @@ public class HibernateAdministrationService implements
 		
 		fieldType.setCreator(context.getAuthenticatedUser());
 		fieldType.setDateCreated(new Date());
-		session.save(fieldType);
+		try {
+			HibernateUtil.beginTransaction();
+			session.save(fieldType);
+			HibernateUtil.commitTransaction();
+			session.flush();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e);
+		}
 	}
 
 	/**
@@ -61,7 +78,16 @@ public class HibernateAdministrationService implements
 		
 		location.setCreator(context.getAuthenticatedUser());
 		location.setDateCreated(new Date());
-		session.save(location);
+		try {
+			HibernateUtil.beginTransaction();
+			session.save(location);
+			HibernateUtil.commitTransaction();
+			session.flush();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e);
+		}
 	}
 
 	/**
@@ -72,7 +98,16 @@ public class HibernateAdministrationService implements
 		
 		//mimeType.setCreator(context.getAuthenticatedUser());
 		//mimeType.setDateCreated(new Date());
-		session.save(mimeType);
+		try {
+			HibernateUtil.beginTransaction();
+			session.save(mimeType);
+			HibernateUtil.commitTransaction();
+			session.flush();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e);
+		}
 	}
 
 	/**
@@ -83,7 +118,16 @@ public class HibernateAdministrationService implements
 		
 		orderType.setCreator(context.getAuthenticatedUser());
 		orderType.setDateCreated(new Date());
-		session.save(orderType);
+		try {
+			HibernateUtil.beginTransaction();
+			session.save(orderType);
+			HibernateUtil.commitTransaction();
+			session.flush();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e);
+		}
 	}
 
 	/**
@@ -94,8 +138,16 @@ public class HibernateAdministrationService implements
 		
 		patientIdentifierType.setCreator(context.getAuthenticatedUser());
 		patientIdentifierType.setDateCreated(new Date());
-		session.save(patientIdentifierType);
-		
+		try {
+			HibernateUtil.beginTransaction();
+			session.save(patientIdentifierType);
+			HibernateUtil.commitTransaction();
+			session.flush();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e);
+		}
 	}
 
 	/**
@@ -106,7 +158,16 @@ public class HibernateAdministrationService implements
 		
 		relationshipType.setCreator(context.getAuthenticatedUser());
 		relationshipType.setDateCreated(new Date());
-		session.save(relationshipType);
+		try {
+			HibernateUtil.beginTransaction();
+			session.save(relationshipType);
+			HibernateUtil.commitTransaction();
+			session.flush();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e);
+		}
 	}
 
 	/**
@@ -117,7 +178,16 @@ public class HibernateAdministrationService implements
 		
 		//tribe.setCreator(context.getAuthenticatedUser());
 		//tribe.setDateCreated(new Date());
-		session.save(tribe);
+		try {
+			HibernateUtil.beginTransaction();
+			session.save(tribe);
+			HibernateUtil.commitTransaction();
+			session.flush();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e);
+		}
 	}
 	
 	/**
@@ -126,8 +196,8 @@ public class HibernateAdministrationService implements
 	public void createRole(Role role) throws APIException {
 		Session session = HibernateUtil.currentSession();
 		
-		//Role.setCreator(context.getAuthenticatedUser());
-		//Role.setDateCreated(new Date());
+		//role.setCreator(context.getAuthenticatedUser());
+		//role.setDateCreated(new Date());
 		
 		try {
 			HibernateUtil.beginTransaction();
@@ -147,8 +217,8 @@ public class HibernateAdministrationService implements
 	public void createPrivilege(Privilege privilege) throws APIException {
 		Session session = HibernateUtil.currentSession();
 		
-		//Privilege.setCreator(context.getAuthenticatedUser());
-		//Privilege.setDateCreated(new Date());
+		//privilege.setCreator(context.getAuthenticatedUser());
+		//privilege.setDateCreated(new Date());
 		try {
 			HibernateUtil.beginTransaction();
 			session.save(privilege);
@@ -166,8 +236,16 @@ public class HibernateAdministrationService implements
 	 */
 	public void deleteEncounterType(EncounterType encounterType) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		
-		session.delete(encounterType);
+		try {
+			HibernateUtil.beginTransaction();
+			session.delete(encounterType);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e.getMessage());
+		}
+		session.flush();
 	}
 
 	/**
@@ -175,8 +253,16 @@ public class HibernateAdministrationService implements
 	 */
 	public void deleteFieldType(FieldType fieldType) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		
-		session.delete(fieldType);
+		try {
+			HibernateUtil.beginTransaction();
+			session.delete(fieldType);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e.getMessage());
+		}
+		session.flush();
 	}
 
 	/**
@@ -184,8 +270,16 @@ public class HibernateAdministrationService implements
 	 */
 	public void deleteLocation(Location location) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		
-		session.delete(location);
+		try {
+			HibernateUtil.beginTransaction();
+			session.delete(location);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e.getMessage());
+		}
+		session.flush();
 	}
 
 	/**
@@ -193,7 +287,16 @@ public class HibernateAdministrationService implements
 	 */
 	public void deleteMimeType(MimeType mimeType) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		session.delete(mimeType);
+		try {
+			HibernateUtil.beginTransaction();
+			session.delete(mimeType);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e.getMessage());
+		}
+		session.flush();
 	}
 
 	/**
@@ -201,7 +304,16 @@ public class HibernateAdministrationService implements
 	 */
 	public void deleteOrderType(OrderType orderType) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		session.delete(orderType);
+		try {
+			HibernateUtil.beginTransaction();
+			session.delete(orderType);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e.getMessage());
+		}
+		session.flush();
 	}
 
 	/**
@@ -209,7 +321,16 @@ public class HibernateAdministrationService implements
 	 */
 	public void deletePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		session.delete(patientIdentifierType);
+		try {
+			HibernateUtil.beginTransaction();
+			session.delete(patientIdentifierType);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e.getMessage());
+		}
+		session.flush();
 	}
 
 	/**
@@ -217,7 +338,16 @@ public class HibernateAdministrationService implements
 	 */
 	public void deleteRelationshipType(RelationshipType relationshipType) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		session.delete(relationshipType);
+		try {
+			HibernateUtil.beginTransaction();
+			session.delete(relationshipType);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e.getMessage());
+		}
+		session.flush();
 	}
 
 	/**
@@ -225,8 +355,15 @@ public class HibernateAdministrationService implements
 	 */
 	public void deleteTribe(Tribe tribe) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		session.lock(tribe, LockMode.READ);
-		session.delete(tribe);
+		try {
+			HibernateUtil.beginTransaction();
+			session.delete(tribe);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e.getMessage());
+		}
 		session.flush();
 	}
 	
@@ -251,7 +388,6 @@ public class HibernateAdministrationService implements
 	 */
 	public void deleteRole(Role role) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		//session.lock(role, LockMode.READ);
 		try {
 			HibernateUtil.beginTransaction();
 			session.delete(role);
@@ -269,7 +405,6 @@ public class HibernateAdministrationService implements
 	 */
 	public void deletePrivilege(Privilege privilege) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		//session.lock(privilege, LockMode.READ);
 		try {
 			HibernateUtil.beginTransaction();
 			session.delete(privilege);
@@ -289,8 +424,16 @@ public class HibernateAdministrationService implements
 		if (encounterType.getEncounterTypeId() == null)
 			createEncounterType(encounterType);
 		else {
-			Session session = HibernateUtil.currentSession();
-			session.saveOrUpdate(encounterType);
+			try {
+				Session session = HibernateUtil.currentSession();
+				HibernateUtil.beginTransaction();
+				session.saveOrUpdate(encounterType);
+				HibernateUtil.commitTransaction();
+			}
+			catch (Exception e) {
+				HibernateUtil.rollbackTransaction();
+				throw new APIException(e.getMessage());
+			}
 		}
 	}
 
@@ -301,8 +444,16 @@ public class HibernateAdministrationService implements
 		if (fieldType.getFieldTypeId() == null)
 			createFieldType(fieldType);
 		else {
-			Session session = HibernateUtil.currentSession();
-			session.saveOrUpdate(fieldType);
+			try {
+				Session session = HibernateUtil.currentSession();
+				HibernateUtil.beginTransaction();
+				session.saveOrUpdate(fieldType);
+				HibernateUtil.commitTransaction();
+			}
+			catch (Exception e) {
+				HibernateUtil.rollbackTransaction();
+				throw new APIException(e.getMessage());
+			}
 		}
 	}
 
@@ -313,8 +464,16 @@ public class HibernateAdministrationService implements
 		if (location.getLocationId() == null)
 			createLocation(location);
 		else {
-			Session session = HibernateUtil.currentSession();
-			session.saveOrUpdate(location);
+			try {
+				Session session = HibernateUtil.currentSession();
+				HibernateUtil.beginTransaction();
+				session.saveOrUpdate(location);
+				HibernateUtil.commitTransaction();
+			}
+			catch (Exception e) {
+				HibernateUtil.rollbackTransaction();
+				throw new APIException(e.getMessage());
+			}
 		}
 	}
 
@@ -325,8 +484,16 @@ public class HibernateAdministrationService implements
 		if (mimeType.getMimeTypeId() == null)
 			createMimeType(mimeType);
 		else {
-			Session session = HibernateUtil.currentSession();
-			session.saveOrUpdate(mimeType);
+			try {
+				Session session = HibernateUtil.currentSession();
+				HibernateUtil.beginTransaction();
+				session.saveOrUpdate(mimeType);
+				HibernateUtil.commitTransaction();
+			}
+			catch (Exception e) {
+				HibernateUtil.rollbackTransaction();
+				throw new APIException(e.getMessage());
+			}
 		}
 	}
 
@@ -337,8 +504,16 @@ public class HibernateAdministrationService implements
 		if (orderType.getOrderTypeId() == null)
 			createOrderType(orderType);
 		else {
-			Session session = HibernateUtil.currentSession();
-			session.saveOrUpdate(orderType);
+			try {
+				Session session = HibernateUtil.currentSession();
+				HibernateUtil.beginTransaction();
+				session.saveOrUpdate(orderType);
+				HibernateUtil.commitTransaction();
+			}
+			catch (Exception e) {
+				HibernateUtil.rollbackTransaction();
+				throw new APIException(e.getMessage());
+			}
 		}
 	}
 
@@ -349,8 +524,16 @@ public class HibernateAdministrationService implements
 		if (patientIdentifierType.getPatientIdentifierTypeId() == null)
 			createPatientIdentifierType(patientIdentifierType);
 		else {
-			Session session = HibernateUtil.currentSession();
-			session.saveOrUpdate(patientIdentifierType);
+			try {
+				Session session = HibernateUtil.currentSession();
+				HibernateUtil.beginTransaction();
+				session.saveOrUpdate(patientIdentifierType);
+				HibernateUtil.commitTransaction();
+			}
+			catch (Exception e) {
+				HibernateUtil.rollbackTransaction();
+				throw new APIException(e.getMessage());
+			}
 		}
 	}
 
@@ -361,8 +544,16 @@ public class HibernateAdministrationService implements
 		if (relationshipType.getRelationshipTypeId() == null)
 			createRelationshipType(relationshipType);
 		else {
-			Session session = HibernateUtil.currentSession();
-			session.saveOrUpdate(relationshipType);
+			try {
+				Session session = HibernateUtil.currentSession();
+				HibernateUtil.beginTransaction();
+				session.saveOrUpdate(relationshipType);
+				HibernateUtil.commitTransaction();
+			}
+			catch (Exception e) {
+				HibernateUtil.rollbackTransaction();
+				throw new APIException(e.getMessage());
+			}
 		}
 	}
 
@@ -373,8 +564,16 @@ public class HibernateAdministrationService implements
 		if (tribe.getTribeId() == null)
 			createTribe(tribe);
 		else {
-			Session session = HibernateUtil.currentSession();
-			session.saveOrUpdate(tribe);
+			try {
+				Session session = HibernateUtil.currentSession();
+				HibernateUtil.beginTransaction();
+				session.saveOrUpdate(tribe);
+				HibernateUtil.commitTransaction();
+			}
+			catch (Exception e) {
+				HibernateUtil.rollbackTransaction();
+				throw new APIException(e.getMessage());
+			}
 		}
 	}	
 	

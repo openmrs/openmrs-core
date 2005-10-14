@@ -58,3 +58,7 @@ body {
 	.box * {
 		font-size: 12px;
 	}
+
+.retired, .voided {
+	text-decoration: line-through;
+}

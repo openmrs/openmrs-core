@@ -3,10 +3,10 @@
 <html>
 	<head>
 	<link href="/openmrs/openmrs.css" type="text/css" rel="stylesheet" />
+	<script language="JavaScript" src="/openmrs/openmrs.js"></script>
 	</head>
 
 <body>
-
 	<div id="userBar">
 		<openmrs:isAuthenticated converse="false">
 			Currently logged in as ${authenticatedUser} | <a href='/openmrs/logout'>Log out</a>
@@ -29,7 +29,8 @@
 				<%@ include file="/WEB-INF/template/gutter.jsp" %>
 			</td>
 			<td></td>
-			<td valign="top">
+			<td valign="top" id="content">
+			
 
 			<%
 				if (session.getAttribute("openmrs_msg") != null) {
@@ -45,4 +46,5 @@
 					session.removeAttribute("openmrs_error");
 				}
 			%>
-						
+
+					

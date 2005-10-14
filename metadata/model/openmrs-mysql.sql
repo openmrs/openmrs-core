@@ -831,7 +831,7 @@ CREATE TABLE `role_privilege` (
 #----------------------------
 drop table if exists tribe;
 CREATE TABLE `tribe` (
-  `tribe_id` int(11) NOT NULL default '0',
+  `tribe_id` int(11) NOT NULL auto_increment,
   `retired` tinyint(1) default NULL,
   `name` varchar(50) NOT NULL default '',
   PRIMARY KEY  (`tribe_id`)

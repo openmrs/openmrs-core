@@ -80,4 +80,18 @@
 	</attribute>
 </tag>
 
+<tag>
+	<name>includeIfExists</name>
+	<tag-class>org.openmrs.web.taglib.IncludeIfExistsTag</tag-class>
+	<body-content>empty</body-content>
+	<description>
+		includes /page/ if the page exists
+	</description>
+	<attribute>
+		<name>page</name>
+		<required>true</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+</tag>
+
 </taglib>
