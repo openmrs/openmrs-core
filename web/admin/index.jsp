@@ -33,5 +33,11 @@
 	<li><a href="observations/mimeTypes.jsp">Manage mime types</a></li>
 </ul>
 
+<h4>Orders</h4>
+<ul>
+	<li><a href="orders/orders.jsp">Void/Unvoid an order</a></li>
+	<li><a href="orders/orderTypes.jsp">Manage order types</a></li>
+</ul>
+
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

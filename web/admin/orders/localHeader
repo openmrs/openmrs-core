@@ -1,0 +1,5 @@
+<div id="menu">
+	<a href="../index.jsp">Admin</a> |
+	<a href="order.jsp">Manage Orders</a> |
+	<a href="orderTypes.jsp">Manage Order Types</a>
+</div>
