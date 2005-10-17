@@ -97,7 +97,7 @@
 		html = html + "<b>Name</b>:" + patient.givenName + " " + patient.familyName + "<br />";
 		html = html + "<b>Gender</b>:" + patient.gender + "<br />";
 		html = html + "<b>Address</b>:" + patient.address + "<br />...";
-		html = html + "<br /><input type='button' value='Switch Patient' onClick='showSearch()'>";
+		html = html + "<br /><input type='button' value='Switch Patient' onClick='showSearch(); patientListing.style.display = \"\";'>";
 		patientSummary.innerHTML = html;
 	}
 

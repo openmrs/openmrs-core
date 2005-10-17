@@ -32,9 +32,9 @@ body {
 		height: 1em;	/*fixes scrolling bug in IE6.  */
 	}
 
-#patientSummary, #patientSummary * {
-	font-size: 11px;
-}
+#patientSummary, #patientSummary * { font-size: 11px; }
+#patientSummary .boxHeader { font-size: 12px; }
+#patientSummary { width: 700px; }
 
 #gutter {
 	margin: 25px;

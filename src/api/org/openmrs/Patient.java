@@ -428,10 +428,20 @@ public class Patient extends Person implements java.io.Serializable {
 		if (!identifiers.contains(patientIdentifier) && patientIdentifier != null)
 			identifiers.add(patientIdentifier);
 	}
+	
 	public void removeIdentifier(PatientIdentifier patientIdentifier) {
 		dirty = true;
 		if (identifiers != null)
 			identifiers.remove(patientIdentifier);
+	}
+	
+	public PatientName getPatientName() {
+		if (names != null && names.size() > 0) {
+			return (PatientName)names.toArray()[0];
+		}
+		else {
+			return null;
+		}
 	}
 	
 	/*

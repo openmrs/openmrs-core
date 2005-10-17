@@ -1,0 +1,480 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?mso-infoPathSolution solutionVersion="1.0.0.43"
+                       href="http://amrs.iukenya.org/demo/infopath/amrs_formentry_demo.xsn"
+                       productVersion="11.0.6357" PIVersion="1.0.0.0" ?>
+<?mso-application progid="InfoPath.Document"?>
+<form id="14" name="AMPATH Adult Return Visit Form" version="0.01"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:amrs="http://schema.iukenya.org/2005/AMRS/FormEntry_1"
+      xmlns:my="http://schemas.iukenya.org/2005/AMRS/FormEntry_1"
+      xmlns:xd="http://schemas.microsoft.com/office/infopath/2003" >
+	<header>
+		<enterer></enterer>
+		<date_entered></date_entered>
+	</header>
+	<patient>
+		<patient.family_name></patient.family_name>
+		<patient.given_name></patient.given_name>
+		<patient.medical_record_number></patient.medical_record_number>
+		<patient.middle_name></patient.middle_name>
+		<patient.patient_id></patient.patient_id>
+		<patient.previous_mrn xsi:nil="true"></patient.previous_mrn>
+	</patient>
+	<encounter>
+		<encounter.encounter_datetime xsi:nil="true"></encounter.encounter_datetime>
+		<encounter.location_id xsi:nil="true"></encounter.location_id>
+		<encounter.provider_id xsi:nil="true"></encounter.provider_id>
+	</encounter>
+	<obs>
+		<scheduled_visit amrs_term_id="1246">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value infopath_boolean_hack="1" xsi:nil="true"></value>
+		</scheduled_visit>
+		<pay_category amrs_term_id="5282">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</pay_category>
+		<discordant_couple amrs_term_id="6096">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</discordant_couple>
+		<antiretrovirals_used_for_mtct_prophylaxis amrs_term_id="1084">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value infopath_boolean_hack="1" xsi:nil="true"></value>
+		</antiretrovirals_used_for_mtct_prophylaxis>
+		<pregnancy_status amrs_term_id="5272">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value infopath_boolean_hack="1" xsi:nil="true"></value>
+		</pregnancy_status>
+		<antiretroviral_use_during_pregnancy amrs_term_id="1147">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</antiretroviral_use_during_pregnancy>
+		<child_of_hiv_patient_in_clinic amrs_term_id="1153">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value infopath_boolean_hack="1" xsi:nil="true"></value>
+		</child_of_hiv_patient_in_clinic>
+		<conception_since_last_visit amrs_term_id="1146">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value infopath_boolean_hack="1" xsi:nil="true"></value>
+		</conception_since_last_visit>
+		<date_of_confinement amrs_term_id="5599">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</date_of_confinement>
+		<history_of_nevirapine_to_infant amrs_term_id="6095">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value infopath_boolean_hack="1" xsi:nil="true"></value>
+		</history_of_nevirapine_to_infant>
+		<infant_feeding_method amrs_term_id="1151">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</infant_feeding_method>
+		<number_of_weeks_pregnant amrs_term_id="1279">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</number_of_weeks_pregnant>
+		<new_complaints amrs_term_id="1154">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value infopath_boolean_hack="1" xsi:nil="true"></value>
+		</new_complaints>
+		<antiretroviral_use amrs_term_id="1192">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value infopath_boolean_hack="1" xsi:nil="true"></value>
+		</antiretroviral_use>
+		<medication_history>
+			<patient_reported_antiretroviral_use amrs_term_id="1088">
+				<date xsi:nil="true"></date>
+				<time xsi:nil="true"></time>
+				<combivir>false</combivir>
+				<triomune-30>false</triomune-30>
+				<triomune-40>false</triomune-40>
+				<_3tc>false</_3tc>
+				<d4t-30>false</d4t-30>
+				<d4t-40>false</d4t-40>
+				<azt>false</azt>
+				<abc>false</abc>
+				<ddi_125>false</ddi_125>
+				<ddi_200>false</ddi_200>
+				<tdf>false</tdf>
+				<efv>false</efv>
+				<nvp>false</nvp>
+				<nfv>false</nfv>
+				<kaletra>false</kaletra>
+			</patient_reported_antiretroviral_use>
+			<patient_reported_current_cryptococcus_treatment amrs_term_id="1112">
+				<date xsi:nil="true"></date>
+				<time xsi:nil="true"></time>
+				<value xsi:nil="true"></value>
+			</patient_reported_current_cryptococcus_treatment>
+			<patient_reported_current_pcp_prophylaxis amrs_term_id="1109">
+				<date xsi:nil="true"></date>
+				<time xsi:nil="true"></time>
+				<value xsi:nil="true"></value>
+			</patient_reported_current_pcp_prophylaxis>
+			<patient_reported_current_tuberculosis_prophylaxis amrs_term_id="1110">
+				<date xsi:nil="true"></date>
+				<time xsi:nil="true"></time>
+				<value xsi:nil="true"></value>
+			</patient_reported_current_tuberculosis_prophylaxis>
+			<patient_reported_current_tuberculosis_treatment amrs_term_id="1111">
+				<date xsi:nil="true"></date>
+				<time xsi:nil="true"></time>
+				<streptomycin>false</streptomycin>
+				<isoniazid>false</isoniazid>
+				<ethambutol>false</ethambutol>
+				<rifampicin>false</rifampicin>
+				<rifampicin_isoniazid_and_pyrazinamide>false</rifampicin_isoniazid_and_pyrazinamide>
+				<none>false</none>
+				<ethambutol_and_isonizaid>false</ethambutol_and_isonizaid>
+				<rifampicin_isoniazid_pyrazinamide_and_ethambutol>false</rifampicin_isoniazid_pyrazinamide_and_ethambutol>
+				<pyrazinamide>false</pyrazinamide>
+			</patient_reported_current_tuberculosis_treatment>
+		</medication_history>
+		<primary_regimen amrs_term_id="1155">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value infopath_boolean_hack="1" xsi:nil="true"></value>
+		</primary_regimen>
+		<tuberculosis_drug_treatment_start_date amrs_term_id="1113">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</tuberculosis_drug_treatment_start_date>
+		<antiretroviral_adherence_in_past_week amrs_term_id="1164">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</antiretroviral_adherence_in_past_week>
+		<cryptococcus_treatment_adherence_in_past_week amrs_term_id="1247">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</cryptococcus_treatment_adherence_in_past_week>
+		<overall_drug_adherence_in_last_month amrs_term_id="1156">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<yes>false</yes>
+			<no>false</no>
+			<antiretroviral_drugs>false</antiretroviral_drugs>
+			<pneumocystic_carinii_pneumonia_prophylactic_drugs>false</pneumocystic_carinii_pneumonia_prophylactic_drugs>
+			<tuberculosis_prophylactic_drugs>false</tuberculosis_prophylactic_drugs>
+			<tuberculosis_treatment_drugs>false</tuberculosis_treatment_drugs>
+		</overall_drug_adherence_in_last_month>
+		<pcp_prophylaxis_adherence_in_past_week amrs_term_id="6065">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</pcp_prophylaxis_adherence_in_past_week>
+		<tuberculosis_prophylaxis_adherence_in_past_week amrs_term_id="1165">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</tuberculosis_prophylaxis_adherence_in_past_week>
+		<tuberculosis_treatment_adherence_in_past_week amrs_term_id="6077">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</tuberculosis_treatment_adherence_in_past_week>
+		<blood_oxygen_saturation amrs_term_id="5092">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</blood_oxygen_saturation>
+		<diastolic_blood_pressure amrs_term_id="5086">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</diastolic_blood_pressure>
+		<general_exam_findings amrs_term_id="1119">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<lymphadenopathy>false</lymphadenopathy>
+			<jaundice>false</jaundice>
+			<oedema>false</oedema>
+			<temporal_wasting>false</temporal_wasting>
+			<gluteal_wasting>false</gluteal_wasting>
+			<oral_sores>false</oral_sores>
+			<pallor>false</pallor>
+		</general_exam_findings>
+		<height_cm amrs_term_id="5090">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</height_cm>
+		<mucocutaneous_exam_findings amrs_term_id="1166">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<candidiasis_oral>false</candidiasis_oral>
+			<kaposi_sarcoma_oral>false</kaposi_sarcoma_oral>
+			<rash>false</rash>
+		</mucocutaneous_exam_findings>
+		<pulse amrs_term_id="5087">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</pulse>
+		<systolic_blood_pressure amrs_term_id="5085">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</systolic_blood_pressure>
+		<temperature_c amrs_term_id="5088">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</temperature_c>
+		<weight_kg amrs_term_id="5089">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</weight_kg>
+		<current_who_hiv_stage amrs_term_id="5356">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</current_who_hiv_stage>
+		<new_who_slash_cdc_staging_criteria_met amrs_term_id="1248">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value infopath_boolean_hack="1" xsi:nil="true"></value>
+		</new_who_slash_cdc_staging_criteria_met>
+		<absolute_lymphocyte_count amrs_term_id="952">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</absolute_lymphocyte_count>
+		<cd4_count amrs_term_id="5497">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</cd4_count>
+		<cd4_percent amrs_term_id="730">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</cd4_percent>
+		<cd8_count amrs_term_id="853">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</cd8_count>
+		<hemoglobin amrs_term_id="21">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</hemoglobin>
+		<hiv_enzyme_immunoassay_qualitative amrs_term_id="1042">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</hiv_enzyme_immunoassay_qualitative>
+		<hiv_viral_load amrs_term_id="856">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</hiv_viral_load>
+		<mean_corpuscular_volume amrs_term_id="851">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</mean_corpuscular_volume>
+		<platelets amrs_term_id="729">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</platelets>
+		<serum_creatinine amrs_term_id="790">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</serum_creatinine>
+		<serum_glutamic-pyruvic_transaminase amrs_term_id="654">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</serum_glutamic-pyruvic_transaminase>
+		<vdrl amrs_term_id="299">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</vdrl>
+		<white_blood_cells amrs_term_id="678">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</white_blood_cells>
+		<x-ray_chest amrs_term_id="12">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</x-ray_chest>
+		<medication_received_at_vist amrs_term_id="1276">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value infopath_boolean_hack="1" xsi:nil="true"></value>
+		</medication_received_at_vist>
+		<patient_hospitalized amrs_term_id="1273">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</patient_hospitalized>
+		<return_visit_date amrs_term_id="5096">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</return_visit_date>
+		<transfer_care_to_other_center amrs_term_id="1285">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</transfer_care_to_other_center>
+	</obs>
+	<problem_list></problem_list>
+	<orders>
+		<laboratory_orders>
+			<tests_ordered amrs_term_id="1271">
+				<date xsi:nil="true"></date>
+				<time xsi:nil="true"></time>
+				<complete_blood_count>false</complete_blood_count>
+				<hemoglobin>false</hemoglobin>
+				<serum_glutamic-pyruvic_transaminase>false</serum_glutamic-pyruvic_transaminase>
+				<cd4_panel>false</cd4_panel>
+				<hiv_viral_load>false</hiv_viral_load>
+				<hiv_enzyme_immunoassay_qualitative>false</hiv_enzyme_immunoassay_qualitative>
+				<hiv_dna_polymerase_chain_reaction_qualitative>false</hiv_dna_polymerase_chain_reaction_qualitative>
+				<serum_creatinine>false</serum_creatinine>
+				<x-ray_chest>false</x-ray_chest>
+				<other_non-coded>false</other_non-coded>
+			</tests_ordered>
+		</laboratory_orders>
+		<medication_orders>
+			<antiretroviral_plan amrs_term_id="1255">
+				<date xsi:nil="true"></date>
+				<time xsi:nil="true"></time>
+				<value xsi:nil="true"></value>
+			</antiretroviral_plan>
+			<antiretrovirals_started amrs_term_id="1250">
+				<date xsi:nil="true"></date>
+				<time xsi:nil="true"></time>
+				<combivir>false</combivir>
+				<triomune-30>false</triomune-30>
+				<triomune-40>false</triomune-40>
+				<_3tc>false</_3tc>
+				<d4t-30>false</d4t-30>
+				<d4t-40>false</d4t-40>
+				<azt>false</azt>
+				<abc>false</abc>
+				<ddi_125>false</ddi_125>
+				<ddi_200>false</ddi_200>
+				<tdf>false</tdf>
+				<efv>false</efv>
+				<nvp>false</nvp>
+				<nfv>false</nfv>
+				<kaletra>false</kaletra>
+			</antiretrovirals_started>
+			<cryptococcal_treatment_plan amrs_term_id="1277">
+				<date xsi:nil="true"></date>
+				<time xsi:nil="true"></time>
+				<value xsi:nil="true"></value>
+			</cryptococcal_treatment_plan>
+			<cryptococcus_treatment_started amrs_term_id="1278">
+				<date xsi:nil="true"></date>
+				<time xsi:nil="true"></time>
+				<diflucan>false</diflucan>
+			</cryptococcus_treatment_started>
+			<pcp_prophylaxis_plan amrs_term_id="1261">
+				<date xsi:nil="true"></date>
+				<time xsi:nil="true"></time>
+				<value xsi:nil="true"></value>
+			</pcp_prophylaxis_plan>
+			<pcp_prophylaxis_started amrs_term_id="1263">
+				<date xsi:nil="true"></date>
+				<time xsi:nil="true"></time>
+				<septrin>false</septrin>
+				<dapsone>false</dapsone>
+			</pcp_prophylaxis_started>
+			<reason_antiretrovirals_started amrs_term_id="1251">
+				<date xsi:nil="true"></date>
+				<time xsi:nil="true"></time>
+				<value xsi:nil="true"></value>
+			</reason_antiretrovirals_started>
+			<reason_antiretrovirals_stopped amrs_term_id="1252">
+				<date xsi:nil="true"></date>
+				<time xsi:nil="true"></time>
+				<value xsi:nil="true"></value>
+			</reason_antiretrovirals_stopped>
+			<reason_pcp_prophylaxis_stopped amrs_term_id="1262">
+				<date xsi:nil="true"></date>
+				<time xsi:nil="true"></time>
+				<value xsi:nil="true"></value>
+			</reason_pcp_prophylaxis_stopped>
+			<reason_tuberculosis_prophylaxis_stopped amrs_term_id="1266">
+				<date xsi:nil="true"></date>
+				<time xsi:nil="true"></time>
+				<value xsi:nil="true"></value>
+			</reason_tuberculosis_prophylaxis_stopped>
+			<reason_tuberculosis_treatment_stopped amrs_term_id="1269">
+				<date xsi:nil="true"></date>
+				<time xsi:nil="true"></time>
+				<value xsi:nil="true"></value>
+			</reason_tuberculosis_treatment_stopped>
+			<tuberculosis_prophylaxis_plan amrs_term_id="1265">
+				<date xsi:nil="true"></date>
+				<time xsi:nil="true"></time>
+				<value xsi:nil="true"></value>
+			</tuberculosis_prophylaxis_plan>
+			<tuberculosis_prophylaxis_started amrs_term_id="1264">
+				<date xsi:nil="true"></date>
+				<time xsi:nil="true"></time>
+				<inh>false</inh>
+			</tuberculosis_prophylaxis_started>
+			<tuberculosis_treatment_plan amrs_term_id="1268">
+				<date xsi:nil="true"></date>
+				<time xsi:nil="true"></time>
+				<value xsi:nil="true"></value>
+			</tuberculosis_treatment_plan>
+			<tuberculosis_treatment_started amrs_term_id="1270">
+				<date xsi:nil="true"></date>
+				<time xsi:nil="true"></time>
+				<rifater>false</rifater>
+				<rifafour>false</rifafour>
+				<ethambutol>false</ethambutol>
+				<streptomycin>false</streptomycin>
+				<ethizide>false</ethizide>
+			</tuberculosis_treatment_started>
+		</medication_orders>
+		<referrals_ordered amrs_term_id="1272">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<social_support_services>false</social_support_services>
+			<tuberculosis_treatment_or_dot_program>false</tuberculosis_treatment_or_dot_program>
+			<disclosure_counseling>false</disclosure_counseling>
+			<nutritional_support>false</nutritional_support>
+			<adherence_counseling>false</adherence_counseling>
+			<mental_health_services>false</mental_health_services>
+			<psychosocial_counseling>false</psychosocial_counseling>
+			<other_non-coded>false</other_non-coded>
+			<family_planning_services>false</family_planning_services>
+			<none>false</none>
+			<alcohol_counseling>false</alcohol_counseling>
+		</referrals_ordered>
+	</orders>
+	<misc>
+		<session/>
+    </misc>
+</form>
