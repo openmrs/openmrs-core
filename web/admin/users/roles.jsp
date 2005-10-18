@@ -25,13 +25,13 @@
 				}
 				catch (APIException e)
 				{
-					session.setAttribute("openmrs_error", "Role cannot be deleted - " + e.getMessage());
+					session.setAttribute(Constants.OPENMRS_ERROR_ATTR, "Role cannot be deleted - " + e.getMessage());
 				}
 		}
 		if (roles.length == 1)
-			session.setAttribute("openmrs_msg", "Role '" + roles[0] + "' deleted");
+			session.setAttribute(Constants.OPENMRS_MSG_ATTR, "Role '" + roles[0] + "' deleted");
 		else
-			session.setAttribute("openmrs_msg", roles.length + " roles deleted");
+			session.setAttribute(Constants.OPENMRS_MSG_ATTR, roles.length + " roles deleted");
 	}
 	
 	//adding roles
@@ -49,10 +49,10 @@
 		role.setPrivileges(privObjs);
 		try {
 			adminService.createRole(role);
-			session.setAttribute("openmrs_msg", "Role added");
+			session.setAttribute(Constants.OPENMRS_MSG_ATTR, "Role added");
 		}
 		catch (APIException e) {
-			session.setAttribute("openmrs_error", "Unable to add role " + e.getMessage());
+			session.setAttribute(Constants.OPENMRS_ERROR_ATTR, "Unable to add role " + e.getMessage());
 		}
 	}
 %>

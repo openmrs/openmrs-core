@@ -30,15 +30,12 @@ public class HibernatePatientService implements PatientService {
 		this.context = c;
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * 
+	/**
 	 * @see org.openmrs.api.PatientService#getPatient(java.lang.Long)
 	 */
 	public Patient getPatient(Integer patientId) {
 		Session session = HibernateUtil.currentSession();
 		Patient patient = (Patient) session.get(Patient.class, patientId);
-		
 		return patient;
 	}
 	
@@ -74,7 +71,6 @@ public class HibernatePatientService implements PatientService {
 			
 			session.saveOrUpdate(patient);
 			HibernateUtil.commitTransaction();
-			session.flush();
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
@@ -92,7 +88,6 @@ public class HibernatePatientService implements PatientService {
 				HibernateUtil.beginTransaction();
 				session.saveOrUpdate(patient);
 				HibernateUtil.commitTransaction();
-				session.flush();
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
@@ -137,7 +132,6 @@ public class HibernatePatientService implements PatientService {
 		try {
 			HibernateUtil.beginTransaction();
 			session.save(patient);
-			session.flush();
 			HibernateUtil.commitTransaction();
 		}
 		catch (Exception e) {
@@ -161,16 +155,15 @@ public class HibernatePatientService implements PatientService {
 		updatePatient(patient);
 	}
 	
-	/*
-	 * (non-Javadoc)
+	/**
 	 * 
 	 * @see org.openmrs.api.PatientService#unvoidPatient(org.openmrs.Patient)
 	 */
-	public void unvoidPatient(Patient patient, String reason) {
+	public void unvoidPatient(Patient patient) {
 		patient.setVoided(false);
 		patient.setVoidedBy(null);
 		patient.setDateVoided(null);
-		patient.setVoidReason("");
+		patient.setVoidReason(null);
 		updatePatient(patient);
 	}
 
@@ -195,7 +188,6 @@ public class HibernatePatientService implements PatientService {
 			HibernateUtil.beginTransaction();
 			session.delete(patient);
 			HibernateUtil.commitTransaction();
-			session.flush();
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();

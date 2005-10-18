@@ -42,7 +42,7 @@ public class RequireTag extends TagSupport {
 			msg = "You are not authorized to view this page";
 		
 		if (msg != "") {
-			httpSession.setAttribute("openmrs_msg", msg);
+			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, msg);
 			httpSession.setAttribute("login_redirect", request.getContextPath() + request.getServletPath());
 			try {
 				httpResponse.sendRedirect(request.getContextPath() + otherwise);

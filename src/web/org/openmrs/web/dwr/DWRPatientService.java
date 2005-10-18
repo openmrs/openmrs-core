@@ -17,19 +17,15 @@ public class DWRPatientService {
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
-	public Collection findPatients(String identifier, String givenName, String familyName) {
+	public Collection findPatients(String identifier, String givenName, String familyName, boolean includeVoided) {
 		
 		Collection patientList = new Vector();
 
 		Context context = (Context) ExecutionContext.get().getSession()
 				.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		try {
-			if (!context.isAuthenticated())
-				context.authenticate("USER-1", "test");
 			PatientService ps = context.getPatientService();
 			List<Patient> patients;
-			
-			log.debug("ident: |" + identifier + "|");
 			
 			if (identifier != null && !identifier.equals(""))
 				patients = ps.getPatientsByIdentifier(identifier);

@@ -60,6 +60,13 @@ public interface PatientService {
 	 * @param reason reason for voiding patient
 	 */
 	public void voidPatient(Patient patient, String reason) throws APIException;
+
+	/**
+	 * Unvoid patient record 
+	 * 
+	 * @param patient patient to be revived
+	 */
+	public void unvoidPatient(Patient patient) throws APIException;
 	
 	/**
 	 * Delete patient from database. This <b>should not be called</b>

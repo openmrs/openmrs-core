@@ -1,0 +1,45 @@
+body { width: 300px; }
+h1 {
+	font-family:arial;
+	font-size:0.8em;
+	font-weight:bold;
+	text-align:center;
+	line-height:0.1em;
+	}
+input.prompt {
+	font-family:arial;
+	font-size:0.8em;
+	font-weight:bold;
+	background-color:#C3DAF9;
+	}
+.even {
+	background-color:transparent;
+	}
+.odd {
+	background-color:#E0E0E0;
+	}
+a.hit {
+	font-family:arial;
+	font-size:0.75em;
+	color: black;
+	}
+a.hit:link {
+	text-decoration: none;
+	}
+a.hit:visited {
+	text-decoration: none;
+	}
+a.hit:active {
+	text-decoration: none;
+	}
+a.hit:hover {
+	background-color:#FFFFA0;
+	cursor: hand;
+	}
+.no_hit {
+	margin-top: 1em;
+	font-family: arial;
+	font-weight: bold;
+	font-style: italic;
+	font-size: 1em;
+	}

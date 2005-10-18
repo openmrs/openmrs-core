@@ -22,13 +22,13 @@
 				}
 				catch (APIException e)
 				{
-					session.setAttribute("openmrs_error", "Privilege cannot be deleted");
+					session.setAttribute(Constants.OPENMRS_ERROR_ATTR, "Privilege cannot be deleted");
 				}
 		}
 		if (privileges.length == 1)
-			session.setAttribute("openmrs_msg", "Privilege '" + privileges[0] + "' deleted");
+			session.setAttribute(Constants.OPENMRS_MSG_ATTR, "Privilege '" + privileges[0] + "' deleted");
 		else
-			session.setAttribute("openmrs_msg", privileges.length + " privileges deleted");
+			session.setAttribute(Constants.OPENMRS_MSG_ATTR, privileges.length + " privileges deleted");
 	}
 	
 	//adding privileges
@@ -38,10 +38,10 @@
 		privilege.setDescription(request.getParameter("description"));
 		try {
 			adminService.createPrivilege(privilege);
-			session.setAttribute("openmrs_msg", "Privilege added");
+			session.setAttribute(Constants.OPENMRS_MSG_ATTR, "Privilege added");
 		}
 		catch (APIException e) {
-			session.setAttribute("openmrs_error", "Unable to add privilege " + e.getMessage());
+			session.setAttribute(Constants.OPENMRS_ERROR_ATTR, "Unable to add privilege " + e.getMessage());
 		}
 	}
 %>

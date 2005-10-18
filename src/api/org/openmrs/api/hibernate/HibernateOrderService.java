@@ -31,6 +31,7 @@ public class HibernateOrderService implements
 		log.debug("creating order");
 		
 		Session session = HibernateUtil.currentSession();
+		HibernateUtil.beginTransaction();
 		
 		order.setCreator(context.getAuthenticatedUser());
 		order.setDateCreated(new Date());

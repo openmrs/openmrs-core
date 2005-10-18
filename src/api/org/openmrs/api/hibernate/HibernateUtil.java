@@ -2,6 +2,7 @@ package org.openmrs.api.hibernate;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -38,6 +39,7 @@ public class HibernateUtil {
 		// Open a new threadLocalSession, if this Thread has none yet
 		if (s == null) {
 			s = sessionFactory.openSession();
+			s.setFlushMode(FlushMode.COMMIT);
 			threadLocalSession.set(s);
 		}
 		else if (!s.isOpen() || !s.isConnected()) {

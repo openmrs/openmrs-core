@@ -18,6 +18,7 @@
 		patientListing.style.display = "none";
 		patientSummary.style.display = "none";
 		selectForm.style.display = "none";
+		identifierBox.focus();
 	}
 	
 	function searchBoxChange(event, obj) {
@@ -49,7 +50,7 @@
 	    var identifier = searchOn == "identifier" ? identifierBox.value : "";
 	    var givenName = givenNameBox.value;
 	    var familyName = familyNameBox.value;
-	    DWRPatientService.findPatients(fillTable, identifier, givenName, familyName);
+	    DWRPatientService.findPatients(fillTable, identifier, givenName, familyName, 0);
 	    patientListing.style.display = "";
 	    return false;
 	}
@@ -68,7 +69,7 @@
 	var getRace			= function(obj) { return obj.race; };
 	var getBirthdate	= function(obj) { 
 			var str = '';
-					str += obj.birthdate.getMonth() + '-';
+			str += obj.birthdate.getMonth() + '-';
 			str += obj.birthdate.getDate() + '-';
 			str += (obj.birthdate.getYear() + 1900);
 			
@@ -202,6 +203,11 @@
 	<request:existsAttribute name="patientId">
 		selectPatient(request.getAttribute("patientId"));
 	</request:existsAttribute>
+	
+	// creates back button functionality
+	if (identifierBox.value != "" || givenNameBox.value != "" || familyNameBox.value != "")
+		updatePatients();
+	
 </script>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

@@ -20,6 +20,7 @@ public class ForEachRecordTag extends BodyTagSupport {
 	private final Log log = LogFactory.getLog(getClass());
 
 	private String name;
+	private Object select;
 	private Iterator records;
 
 	public int doStartTag() {
@@ -56,8 +57,11 @@ public class ForEachRecordTag extends BodyTagSupport {
 	 * @see javax.servlet.jsp.tagext.BodyTag#doInitBody()
 	 */
 	public void doInitBody() throws JspException {
-		if (records.hasNext())
-			pageContext.setAttribute("record", records.next());
+		if (records.hasNext()) {
+			Object obj = records.next();
+			pageContext.setAttribute("record", obj);
+			pageContext.setAttribute("selected", obj.equals(select) ? "selected" : "");
+		}
 	}
 
 	/**
@@ -65,7 +69,9 @@ public class ForEachRecordTag extends BodyTagSupport {
 	 */
 	public int doAfterBody() throws JspException {
         if(records.hasNext()) {
-        	pageContext.setAttribute("record", records.next());
+			Object obj = records.next();
+			pageContext.setAttribute("record", obj);
+			pageContext.setAttribute("selected", obj.equals(select) ? "selected" : "");
             return EVAL_BODY_BUFFERED;
         }
         else
@@ -94,5 +100,19 @@ public class ForEachRecordTag extends BodyTagSupport {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	/**
+	 * @return Returns the select.
+	 */
+	public Object getSelect() {
+		return select;
+	}
+
+	/**
+	 * @param select The select to set.
+	 */
+	public void setSelect(Object select) {
+		this.select = select;
 	}
 }

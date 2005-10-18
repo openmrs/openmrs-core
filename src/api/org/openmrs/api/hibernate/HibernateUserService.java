@@ -51,7 +51,6 @@ public class HibernateUserService implements
 			user.setCreator(context.getAuthenticatedUser());
 			session.saveOrUpdate(user);
 			HibernateUtil.commitTransaction();
-			session.flush();
 
 			
 			//update the new user with the password
@@ -64,7 +63,6 @@ public class HibernateUserService implements
 				.setParameter("username", user.getUserId())
 				.executeUpdate();
 			HibernateUtil.commitTransaction();
-			session.flush();
 			
 		}
 		catch (Exception e) {
@@ -143,7 +141,6 @@ public class HibernateUserService implements
 				HibernateUtil.beginTransaction();
 				session.saveOrUpdate(user);
 				HibernateUtil.commitTransaction();
-				session.flush();
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
@@ -178,7 +175,6 @@ public class HibernateUserService implements
 			HibernateUtil.beginTransaction();
 			session.delete(user);
 			HibernateUtil.commitTransaction();
-			session.flush();
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();

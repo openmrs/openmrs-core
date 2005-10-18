@@ -42,7 +42,6 @@ public class HibernateAdministrationService implements
 			HibernateUtil.beginTransaction();
 			session.save(encounterType);
 			HibernateUtil.commitTransaction();
-			session.flush();
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
@@ -62,7 +61,6 @@ public class HibernateAdministrationService implements
 			HibernateUtil.beginTransaction();
 			session.save(fieldType);
 			HibernateUtil.commitTransaction();
-			session.flush();
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
@@ -82,7 +80,6 @@ public class HibernateAdministrationService implements
 			HibernateUtil.beginTransaction();
 			session.save(location);
 			HibernateUtil.commitTransaction();
-			session.flush();
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
@@ -102,7 +99,6 @@ public class HibernateAdministrationService implements
 			HibernateUtil.beginTransaction();
 			session.save(mimeType);
 			HibernateUtil.commitTransaction();
-			session.flush();
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
@@ -122,7 +118,6 @@ public class HibernateAdministrationService implements
 			HibernateUtil.beginTransaction();
 			session.save(orderType);
 			HibernateUtil.commitTransaction();
-			session.flush();
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
@@ -142,7 +137,6 @@ public class HibernateAdministrationService implements
 			HibernateUtil.beginTransaction();
 			session.save(patientIdentifierType);
 			HibernateUtil.commitTransaction();
-			session.flush();
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
@@ -162,7 +156,6 @@ public class HibernateAdministrationService implements
 			HibernateUtil.beginTransaction();
 			session.save(relationshipType);
 			HibernateUtil.commitTransaction();
-			session.flush();
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
@@ -182,7 +175,6 @@ public class HibernateAdministrationService implements
 			HibernateUtil.beginTransaction();
 			session.save(tribe);
 			HibernateUtil.commitTransaction();
-			session.flush();
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
@@ -203,7 +195,6 @@ public class HibernateAdministrationService implements
 			HibernateUtil.beginTransaction();
 			session.save(role);
 			HibernateUtil.commitTransaction();
-			session.flush();
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
@@ -223,7 +214,6 @@ public class HibernateAdministrationService implements
 			HibernateUtil.beginTransaction();
 			session.save(privilege);
 			HibernateUtil.commitTransaction();
-			session.flush();
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
@@ -245,7 +235,6 @@ public class HibernateAdministrationService implements
 			HibernateUtil.rollbackTransaction();
 			throw new APIException(e.getMessage());
 		}
-		session.flush();
 	}
 
 	/**
@@ -262,7 +251,6 @@ public class HibernateAdministrationService implements
 			HibernateUtil.rollbackTransaction();
 			throw new APIException(e.getMessage());
 		}
-		session.flush();
 	}
 
 	/**
@@ -279,7 +267,6 @@ public class HibernateAdministrationService implements
 			HibernateUtil.rollbackTransaction();
 			throw new APIException(e.getMessage());
 		}
-		session.flush();
 	}
 
 	/**
@@ -296,7 +283,6 @@ public class HibernateAdministrationService implements
 			HibernateUtil.rollbackTransaction();
 			throw new APIException(e.getMessage());
 		}
-		session.flush();
 	}
 
 	/**
@@ -313,7 +299,6 @@ public class HibernateAdministrationService implements
 			HibernateUtil.rollbackTransaction();
 			throw new APIException(e.getMessage());
 		}
-		session.flush();
 	}
 
 	/**
@@ -330,7 +315,6 @@ public class HibernateAdministrationService implements
 			HibernateUtil.rollbackTransaction();
 			throw new APIException(e.getMessage());
 		}
-		session.flush();
 	}
 
 	/**
@@ -347,7 +331,6 @@ public class HibernateAdministrationService implements
 			HibernateUtil.rollbackTransaction();
 			throw new APIException(e.getMessage());
 		}
-		session.flush();
 	}
 
 	/**
@@ -364,7 +347,6 @@ public class HibernateAdministrationService implements
 			HibernateUtil.rollbackTransaction();
 			throw new APIException(e.getMessage());
 		}
-		session.flush();
 	}
 	
 	/**
@@ -397,7 +379,6 @@ public class HibernateAdministrationService implements
 			HibernateUtil.rollbackTransaction();
 			throw new APIException(e.getMessage());
 		}
-		session.flush();
 	}
 	
 	/**
@@ -414,7 +395,6 @@ public class HibernateAdministrationService implements
 			HibernateUtil.rollbackTransaction();
 			throw new APIException(e.getMessage());
 		}
-		session.flush();
 	}
 
 	/**

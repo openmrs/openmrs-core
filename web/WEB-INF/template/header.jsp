@@ -1,12 +1,14 @@
-<!DOCTYPE html PUBLIC “-//W3C//DTD XHTML 1.0 Strict//EN” “http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd”>
+<!DOCTYPE html PUBLIC “-//W3C//DTD XHTML 1.0 Strict//EN
+  http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd>
+
+<%@ page import="org.openmrs.web.Constants" %>
 
 <html>
 	<head>
 	<link href="/openmrs/openmrs.css" type="text/css" rel="stylesheet" />
-	<script language="JavaScript" src="/openmrs/openmrs.js"></script>
 	</head>
 
-<body>
+<body marginleft="0" margintop="0" marginwidth="0" marginheight="0">
 	<div id="userBar">
 		<openmrs:isAuthenticated converse="false">
 			Currently logged in as ${authenticatedUser} | <a href='/openmrs/logout'>Log out</a>
@@ -33,17 +35,17 @@
 			
 
 			<%
-				if (session.getAttribute("openmrs_msg") != null) {
+				if (session.getAttribute(Constants.OPENMRS_MSG_ATTR) != null) {
 					out.print("<div id='openmrs_msg'>");
-					out.print(session.getAttribute("openmrs_msg"));
+					out.print(session.getAttribute(Constants.OPENMRS_MSG_ATTR));
 					out.print("</div>");
-					session.removeAttribute("openmrs_msg");
+					session.removeAttribute(Constants.OPENMRS_MSG_ATTR);
 				}
-				if (session.getAttribute("openmrs_error") != null) {
+				if (session.getAttribute(Constants.OPENMRS_ERROR_ATTR) != null) {
 					out.print("<div id='openmrs_error'>");
-					out.print(session.getAttribute("openmrs_error"));
+					out.print(session.getAttribute(Constants.OPENMRS_ERROR_ATTR));
 					out.print("</div>");
-					session.removeAttribute("openmrs_error");
+					session.removeAttribute(Constants.OPENMRS_ERROR_ATTR);
 				}
 			%>
 

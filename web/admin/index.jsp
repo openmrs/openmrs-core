@@ -14,7 +14,7 @@
 
 <h4>Patients</h4>
 <ul>
-	<li><a href="patients/patients.jsp">Void/Unvoid a patient</a></li>
+	<li><a href="patients/patients.jsp">Manage the patients</a></li>
 	<li><a href="patients/tribes.jsp">Manage the tribes</a></li>
 	<li><a href="patients/identifierTypes.jsp">Manage patient identifier types</a></li>
 </ul>
