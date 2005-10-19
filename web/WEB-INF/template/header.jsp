@@ -8,7 +8,7 @@
 	<link href="/openmrs/openmrs.css" type="text/css" rel="stylesheet" />
 	</head>
 
-<body marginleft="0" margintop="0" marginwidth="0" marginheight="0">
+<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
 	<div id="userBar">
 		<openmrs:isAuthenticated converse="false">
 			Currently logged in as ${authenticatedUser} | <a href='/openmrs/logout'>Log out</a>

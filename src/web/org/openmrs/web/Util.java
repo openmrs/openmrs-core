@@ -14,4 +14,13 @@ public class Util {
 		}
 	}
 	
+	public static String formatDate(Date date) {
+		if (date == null)
+			return "";
+		else
+		{
+			return new SimpleDateFormat("dd-MMM-yy").format(date);
+		}
+	}
+	
 }

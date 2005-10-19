@@ -1,4 +1,5 @@
 <%@ include file="/WEB-INF/template/include.jsp"%>
+<%@ page import="org.openmrs.Patient" />
 
 <openmrs:require privilege="Form Entry" otherwise="/login.jsp" />
 
@@ -8,42 +9,23 @@
 
 <br>
 <form method="post" action="createPatient">
+
+	<% Patient patient = new Patient(); %>
+
 	<b class="boxHeader">Patient Identifiers</b>
 	<div id="patientIdentifier" class="box">
 		<%@ include file="/WEB-INF/include/patientInfo.jsp" %>
 	</div>
+
 	<br />
+
+	<b class="boxHeader">Patient Names</b>
 	<div id="patientName" class="box">
-		<b class="boxHeader">Patient Names</b>
-		<table>
-			<tr>
-				<td>Preferred</td>
-				<td><input type="checkbox" name="preferred" id="preferred" /></td>
-			</tr>
-			<tr>
-				<td>Given Name</td>
-				<td><input type="text" name="givenName" id="givenname" /></td>
-			</tr>
-			<tr>
-				<td>Middle Name</td>
-				<td><input type="text" name="middleName" id="middleName" /></td>
-			</tr>
-			<tr>
-				<td>Family Name</td>
-				<td>
-					<input type="text" name="familyNamePrefix" id="familyNamePrefix" size="10"/>
-					<input type="text" name="familyName" id="familyname" />
-					<input type="text" name="familyname2" id="familyname2" />
-					<input type="text" name="familyNameSuffix" id="familyNameSuffix" size="10"/>
-				</td>
-			</tr>	
-			<tr>
-				<td>Degree</td>
-				<td><input type="text" name="degree" id="degree" /></td>
-			</tr>
-		</table>
+		<%@ include file="/WEB-INF/include/patientName.jsp" %>
 	</div>
+
 	<br />
+
 	<div id="patientAddress" class="box">
 		<b class="boxHeader">Patient Addresses</b>
 		<table>

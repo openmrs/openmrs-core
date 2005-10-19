@@ -265,6 +265,8 @@ public class PatientName implements java.io.Serializable {
 	 * @return Returns the preferred.
 	 */
 	public Boolean isPreferred() {
+		if (preferred == null)
+			return new Boolean(false);
 		return preferred;
 	}
 
