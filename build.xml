@@ -16,11 +16,11 @@
 	<import file="properties.xml" />
 
     <!-- Taskdefs -->
-	<taskdef file="${tomcat.dir}/tomcatTasks.properties" />
-	
-	<!--
-	<taskdef name="list" classname="org.apache.catalina.ant.ListTask" />
-	-->
+	<taskdef file="${tomcat.dir}/tomcatTasks.properties">
+		<classpath>
+			<pathelement path="${tomcat.dir}/catalina-ant.jar"/>
+		</classpath>
+	</taskdef>
 
 	<!-- *********************************************************** -->
 	<!-- **                     TARGETS                           ** -->
