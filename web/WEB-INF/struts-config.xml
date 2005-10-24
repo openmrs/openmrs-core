@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!DOCTYPE struts-config PUBLIC
+ "-//Apache Software Foundation//DTD Struts Configuration 1.2//EN"
+ "http://jakarta.apache.org/struts/dtds/struts-config_1_2.dtd">
+
+<struts-config>
+  
+	<form-beans>
+		<form-bean name="mimeTypeForm" type="org.openmrs.web.struts.MimeTypeForm"/>
+	</form-beans>
+
+  	<global-forwards>
+        <forward name="logout" path="/logout"/>
+    </global-forwards>
+  
+	<action-mappings>
+	
+		<action path="/admin/observations/editMimeType"
+				type="org.openmrs.web.struts.GetMimeType"
+				parameter="mimeTypeId">
+			<forward name="display" path="/admin/observations/editMimeType.jsp"/>
+			<forward name="error" path="/admin/observations/mimeTypes.jsp"/>
+		</action>
+	
+		<action path="/mimeTypeSubmit" 
+				type="org.openmrs.web.struts.SubmitMimeTypeAction" 
+				input="/admin/observations/editMimeType.jsp"
+				name="mimeTypeForm"
+				scope="request">
+			<forward name="success" path="/admin/observations/editMimeType.jsp"/>
+			<forward name="failure" path="/admin/observations/editMimeType.jsp"/>
+		</action>
+		
+	</action-mappings>
+	
+	<message-resources parameter="org.openmrs.web.struts.ApplicationResources" />
+	
+</struts-config>

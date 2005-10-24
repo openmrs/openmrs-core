@@ -19,7 +19,7 @@
 		<!-- bi-directional many-to-many association to Privilege -->
 		<set name="privileges" cascade="none"
 			table="role_privilege">
-			<key not-null="true">
+			<key>
 				<column name="role" />
 			</key>
 			<many-to-many class="Privilege" >

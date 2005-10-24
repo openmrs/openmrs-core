@@ -44,13 +44,13 @@ public class PatientServiceTest extends TestCase {
 		
 		List patientList;
 		
-		patientList = ps.getPatientByIdentifier("???");
+		patientList = ps.getPatientsByIdentifier("???");
 		assertNotNull(patientList);
 		assertTrue(patientList.size() == 0);
 		
 		// TODO should we be sending strings like %-% ? 
 		// ...or have PatientService insert %'s (but that makes it db specific?
-		patientList = ps.getPatientByIdentifier("%");
+		patientList = ps.getPatientsByIdentifier("%");
 		assertNotNull(patientList);
 		assertTrue(patientList.size() > 0);
 		
@@ -99,7 +99,7 @@ public class PatientServiceTest extends TestCase {
 		patient.addAddress(pAddress);
 		//patient.removeAddress(pAddress);
 		
-		patient.setTribe(ps.getPatientTribes().get(0));
+		patient.setTribe(ps.getTribes().get(0));
 		patient.setCitizenship("citizen");
 		//TODO make an optional pointer to the actual mother obj?
 		patient.setMothersName("Mom's name");

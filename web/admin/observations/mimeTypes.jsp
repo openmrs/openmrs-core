@@ -88,8 +88,12 @@
 			<jsp:useBean id="mimeType" type="org.openmrs.MimeType" scope="page"/>
 			<tr>
 				<td valign="top"><input type="checkbox" name="mimeTypeId" value="${mimeType.mimeTypeId}"></td>
-				<td valign="top"><a href="editMimeType.jsp?mimeTypeId=${mimeType.mimeTypeId}">
-					   ${mimeType.mimeType}
+				<td valign="top">
+					<a href="editMimeType-Standard.jsp?mimeTypeId=${mimeType.mimeTypeId}">
+					   ${mimeType.mimeType} (via jsp)
+					</a> |
+					<a href="editMimeType.do?mimeTypeId=${mimeType.mimeTypeId}">
+					   ${mimeType.mimeType} (via struts)
 					</a>
 				</td>
 				<td valign="top">${mimeType.description}</td>

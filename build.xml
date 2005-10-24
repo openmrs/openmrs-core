@@ -160,7 +160,9 @@
 			<lib dir="${mysql.dir}" includes="*.jar" />
 			<lib dir="${spring.dir}" includes="*.jar" />
 			<lib dir="${taglibs.dir}" includes="*.jar" />
-			<lib dir="${velocity.dir}" includes="*.jar" />		
+			<lib dir="${velocity.dir}" includes="*.jar" />
+			<lib dir="${struts.dir}" includes="*.jar" />
+			<lib dir="${commons-digester.dir}" includes="*.jar" />
 		</war>
 	</target>
 

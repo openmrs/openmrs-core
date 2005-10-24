@@ -56,8 +56,8 @@ public class ObsServiceTest extends TestCase {
 		
 		Order order1 = null;
 		Concept concept1 = conceptService.getConcept(1);
-		Patient patient1 = (Patient)ps.getPatientByIdentifier("%").get(1);
-		System.out.println(ps.getPatientByIdentifier("%"));
+		Patient patient1 = (Patient)ps.getPatientsByIdentifier("%").get(1);
+		System.out.println(ps.getPatientsByIdentifier("%"));
 		System.out.println("patient1: " + patient1.getPatientId());
 		Encounter encounter1 = (Encounter)es.getEncounter(1);
 		Date datetime1 = new Date();
@@ -95,7 +95,7 @@ public class ObsServiceTest extends TestCase {
 		
 		Order order2 = null;
 		Concept concept2 = conceptService.getConcept(2);
-		Patient patient2 = (Patient)ps.getPatientByIdentifier("%").get(4);
+		Patient patient2 = (Patient)ps.getPatientsByIdentifier("%").get(4);
 		System.out.println("patient2: " + patient2.getPatientId());
 		Encounter encounter2 = (Encounter)es.getEncounter(2);
 		Date datetime2 = new Date();
@@ -176,7 +176,7 @@ public class ObsServiceTest extends TestCase {
 		
 		Order order1 = null;
 		Concept concept1 = conceptService.getConcept(1);
-		Patient patient1 = (Patient)ps.getPatientByIdentifier("%").get(1);
+		Patient patient1 = (Patient)ps.getPatientsByIdentifier("%").get(1);
 		Encounter encounter1 = (Encounter)es.getEncounter(1);
 		Date datetime1 = new Date();
 		Location location1 = es.getLocation(3);
@@ -219,7 +219,7 @@ public class ObsServiceTest extends TestCase {
 		
 		Order order2 = null;
 		Concept concept2 = conceptService.getConcept(2);
-		Patient patient2 = (Patient)ps.getPatientByIdentifier("%").get(4);
+		Patient patient2 = (Patient)ps.getPatientsByIdentifier("%").get(4);
 		Encounter encounter2 = (Encounter)es.getEncounter(2);
 		Date datetime2 = new Date();
 		Location location2 = es.getLocation(2);

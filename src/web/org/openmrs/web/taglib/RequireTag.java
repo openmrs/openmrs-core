@@ -21,7 +21,7 @@ public class RequireTag extends TagSupport {
 
 	private String privilege;
 	private String otherwise;
-	private String msg = "";
+	private boolean errorOccurred = false;
 	public int doStartTag() {
 		
 		HttpServletResponse httpResponse = (HttpServletResponse)pageContext.getResponse();
@@ -36,13 +36,16 @@ public class RequireTag extends TagSupport {
 			throw new APIException("The Context is currently unavailable (null)");
 		}
 		
-		if (!context.isAuthenticated())
-			msg = "You must log in to continue";
-		else if (!context.hasPrivilege(privilege))
-			msg = "You are not authorized to view this page";
+		if (!context.isAuthenticated()) {
+			errorOccurred = true;
+			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "You must log in to continue");
+		}
+		else if (!context.hasPrivilege(privilege)) {
+			errorOccurred = true;
+			httpSession.setAttribute(Constants.OPENMRS_ERROR_ATTR, "You are not authorized to view this page");
+		}
 		
-		if (msg != "") {
-			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, msg);
+		if (errorOccurred) {
 			httpSession.setAttribute("login_redirect", request.getContextPath() + request.getServletPath());
 			try {
 				httpResponse.sendRedirect(request.getContextPath() + otherwise);
@@ -57,10 +60,10 @@ public class RequireTag extends TagSupport {
 	}
 
 	public int doEndTag() {
-		if ( msg == "")
-			return EVAL_PAGE;
-		else
+		if ( errorOccurred )
 			return SKIP_PAGE;
+		else
+			return EVAL_PAGE;
 	}
 	
 	public String getPrivilege() {

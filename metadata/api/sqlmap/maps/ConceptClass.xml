@@ -39,7 +39,7 @@
 	<result property="conceptClassId" column="concept_class_id" />
 	<result property="name" column="name" />
 	<result property="description" column="description"/>
-	<result property="set" column="is_set" type="boolean" nullValue="false" />
+	<result property="set" column="is_set" nullValue="false" />
 	<result property="creator" column="creator" select="getUser" />
 	<result property="dateCreated" column="date_created" />
 </resultMap>

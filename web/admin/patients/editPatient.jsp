@@ -210,14 +210,14 @@
 				<jsp:useBean id="name" type="org.openmrs.PatientName" />
 				<div id="name${status.index}Data" class="tabBox">
 					<%@ include file="/WEB-INF/include/patientName.jsp" %>
-					<a href="javascript:null;" onClick="return removeTab(this, 'name');" class="removeTab">Remove this name <img src="/openmrs/images/delete.gif" border="0" title="Remove this name" /></span>
+					<a href="javascript:null;" onClick="return removeTab(this, 'name');" class="removeTab">Remove this name <img src="/openmrs/images/delete.gif" border="0" title="Remove this name" align="middle"/></a>
 				</div>
 			</c:forEach>
 			<div id="addNewNameData" class="tabBox">
 				<%  PatientName name = new PatientName();
 					pageContext.setAttribute("name", name); %>
 				<%@ include file="/WEB-INF/include/patientName.jsp" %>
-				<a href="javascript:null;" onClick="return removeTab(this, 'name');" class="removeTab">Remove this name <img src="/openmrs/images/delete.gif" border="0" title="Remove this name" /></span>
+				<a href="javascript:null;" onClick="return removeTab(this, 'name');" class="removeTab">Remove this name <img src="/openmrs/images/delete.gif" border="0" title="Remove this name" align="middle" /></a>
 			</div>
 		</div>
 	</div>

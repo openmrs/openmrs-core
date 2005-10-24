@@ -92,6 +92,64 @@
 		<location>/WEB-INF/view/uncaughtException.jsp</location>
 	</error-page>
 
+	
+	<!-- ==Struts Configuration===============
+			Other struts files: 
+				/lib/struts/*
+				/lib/commons-digester/*
+				/src/web/org/openmrs/web/struts/*
+				/web/WEB-INF/struts-config.xml 
+				/web/WEB-INF/taglibs/struts-*.tld
+	-->
+	  	<!-- Standard Action Servlet Configuration (with debugging) -->
+	  	<servlet>
+			<servlet-name>StrutsServlet</servlet-name>
+			<servlet-class>
+				org.apache.struts.action.ActionServlet
+			</servlet-class>
+
+			<init-param>
+				<param-name>config</param-name>
+				<param-value>/WEB-INF/struts-config.xml</param-value>
+			</init-param>
+			<init-param>
+				<param-name>debug</param-name>
+				<param-value>2</param-value>
+			</init-param>
+			<init-param>
+				<param-name>detail</param-name>
+				<param-value>2</param-value>
+			</init-param>
+			<init-param>
+				<param-name>validate</param-name>
+				<param-value>true</param-value>
+			</init-param>
+			<load-on-startup>2</load-on-startup>
+		</servlet>
+  
+		<servlet-mapping>
+			<servlet-name>StrutsServlet</servlet-name>
+			<url-pattern>*.do</url-pattern>
+		</servlet-mapping>
+	
+		<taglib>
+			<taglib-uri>/struts-bean</taglib-uri>
+			<taglib-location>/WEB-INF/taglibs/struts-bean.tld</taglib-location>
+		</taglib>
+
+		<taglib>
+			<taglib-uri>/struts-html</taglib-uri>
+			<taglib-location>/WEB-INF/taglibs/struts-html.tld</taglib-location>
+		</taglib>
+
+		  <taglib>
+			<taglib-uri>/struts-logic</taglib-uri>
+			<taglib-location>/WEB-INF/taglibs/struts-logic.tld</taglib-location>
+		</taglib>
+	
+	<!-- ==/Struts Configuration=============== -->
+		
+
 	<taglib>
 		<taglib-uri>/core-rt</taglib-uri>
 		<taglib-location>/WEB-INF/taglibs/c-rt.tld</taglib-location>
@@ -121,29 +179,5 @@
 		<taglib-uri>/spring</taglib-uri>
 		<taglib-location>/WEB-INF/taglibs/spring.tld</taglib-location>
 	</taglib>
-	
-	
-<!--	
-	<resource-ref>
-		<res-ref-name>jdbc/openmrs</res-ref-name>
-		<res-type>javax.sql.DataSource</res-type>
-		<res-auth>Container</res-auth>
-	</resource-ref>
-
-		<session-config>
-		<session-timeout>30</session-timeout>
-		</session-config>
-
-		<mime-mapping>
-		<extension>zip</extension>
-		<mime-type>application/zip</mime-type>
-		</mime-mapping>
-
-		<welcome-file-list>
-		<welcome-file>index.html</welcome-file>
-		<welcome-file>index.htm</welcome-file>
-		<welcome-file>index.jsp</welcome-file>
-		</welcome-file-list>
-	-->
 
 </web-app>

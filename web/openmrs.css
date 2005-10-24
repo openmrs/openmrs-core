@@ -62,3 +62,12 @@ body {
 .retired, .voided {
 	text-decoration: line-through;
 }
+
+span.error {
+	border: 1px dashed darkred;
+	padding: 1px 6px 1px 6px;
+	}
+	input.error, textarea.error {
+		border: 1px solid darkred;
+		background-color: lightpink;
+	}

@@ -122,10 +122,10 @@ public class HibernateContext implements Context {
 		Session session = HibernateUtil.currentSession();
 		try {
 			if (user != null)
-				session.lock(user, LockMode.READ);
+				session.merge(user);
 		}
 		catch (Exception e) {
-			log.error("Attempted locking of user to double open session");
+			log.error("Possible attempted locking of user to double open session aka: " + e.getMessage());
 		}
 		//session.merge(user);
 		return user;

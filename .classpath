@@ -23,8 +23,6 @@
 	<classpathentry kind="lib" path="lib/jta/jta.jar"/>
 	<classpathentry kind="lib" path="lib/junit/junit-3.8.1.jar"/>
 	<classpathentry kind="lib" path="lib/mysql-connector-java/mysql-connector-java-3.1.10-bin.jar"/>
-	<classpathentry kind="lib" path="lib/spring-framework/spring-framework-1.2.3.jar"/>
-	<classpathentry kind="lib" path="lib/velocity/velocity-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/asm/asm-attrs.jar"/>
 	<classpathentry kind="lib" path="lib/commons-beanutils/commons-beanutils-bean-collections-1.7.0.jar"/>
 	<classpathentry kind="lib" path="lib/commons-beanutils/commons-beanutils-core-1.7.0.jar"/>
@@ -45,5 +43,8 @@
 	<classpathentry kind="lib" path="metadata/api/sqlmap"/>
 	<classpathentry kind="lib" path="lib/tomcat/catalina-ant.jar"/>
 	<classpathentry kind="lib" path="lib/dwr/dwr.jar"/>
+	<classpathentry kind="lib" path="lib/spring-framework/spring-framework-1.2.3.jar"/>
+	<classpathentry kind="lib" path="lib/velocity/velocity-1.4.jar"/>
+	<classpathentry kind="lib" path="lib/struts-framework/struts.jar"/>
 	<classpathentry kind="output" path="build/"/>
 </classpath>

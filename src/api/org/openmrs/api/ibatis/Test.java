@@ -3,6 +3,7 @@ package org.openmrs.api.ibatis;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
@@ -33,7 +34,7 @@ public class Test {
 
 		try {
 			List patients = context.getPatientService()
-				.getPatientByIdentifier("%1");
+				.getPatientsByIdentifier("%1");
 			for (Iterator i = patients.iterator(); i.hasNext(); ) {
 				displayPatient((Patient)i.next());
 			}
@@ -52,11 +53,11 @@ public class Test {
 		if (true) return;
 		System.out.print("\tgender : " + patient.getGender());
 		System.out.println("\tborn : " + patient.getBirthdate());
-		List<PatientName> names = patient.getNames();
+		Set<PatientName> names = patient.getNames();
 		for (Iterator i = names.iterator(); i.hasNext(); ) {
 			System.out.println("\t"+(PatientName)i.next());
 		}
-		List<PatientIdentifier> ids = patient.getIdentifiers();
+		Set<PatientIdentifier> ids = patient.getIdentifiers();
 		for (Iterator i = ids.iterator(); i.hasNext(); ) {
 			System.out.println("\t"+((PatientIdentifier)i.next()).getIdentifier());
 		}
@@ -64,11 +65,11 @@ public class Test {
 
 	private void listRoles(User user) {
 		System.out.println("Roles for " + user.getFirstName());
-		List roles = user.getRoles();
+		Set roles = user.getRoles();
 		for (Iterator i = roles.iterator(); i.hasNext();) {
 			Role r = (Role) i.next();
 			System.out.println(r.getRole() + ": " + r.getDescription());
-			List privileges = r.getPrivileges();
+			Set privileges = r.getPrivileges();
 			for (Iterator j = privileges.iterator(); j.hasNext();) {
 				Privilege p = (Privilege) j.next();
 				System.out.println("\t" + p.getPrivilege() + ": "
@@ -85,7 +86,7 @@ public class Test {
 		user.setLastName("Doo");
 		user.setCreator(context.getAuthenticatedUser());
 		user.setDateCreated(new Date());
-		context.getUserService().createUser(user);
+		context.getUserService().createUser(user, "");
 		return user;
 	}
 	
