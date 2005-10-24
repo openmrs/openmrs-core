@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?mso-infoPathSolution solutionVersion="1.0.0.43"
-                       href="http://amrs.iukenya.org/demo/infopath/amrs_formentry_demo.xsn"
+                       href="http://dev.openmrs.org/openmrs/formentry/forms/adult_return_visit.xsn"
                        productVersion="11.0.6357" PIVersion="1.0.0.0" ?>
 <?mso-application progid="InfoPath.Document"?>
 <form id="14" name="AMPATH Adult Return Visit Form" version="0.01"
@@ -475,6 +475,6 @@
 		</referrals_ordered>
 	</orders>
 	<misc>
-		<session/>
+		<session />
     </misc>
 </form>
