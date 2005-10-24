@@ -28,7 +28,7 @@ public class LoginServlet extends HttpServlet {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 		String redirect = request.getParameter("redirect");
-		if (redirect == "" || redirect == null)
+		if (redirect == null || request.equals(""))
 			redirect = request.getContextPath();
 		
 		HttpSession httpSession = request.getSession();
