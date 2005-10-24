@@ -63,7 +63,7 @@ public class FormDownloadServlet extends HttpServlet {
 		
 		try {
 			DocumentBuilder builder = factory.newDocumentBuilder();
-			xmldoc = builder.parse("../webapps/openmrs/formentry/forms/" + formType + ".xml");
+			xmldoc = builder.parse(request.getRealPath("formentry/forms/" + formType + ".xml"));
 		}
 		catch (ParserConfigurationException e) {
 			throw new ServletException(e);
