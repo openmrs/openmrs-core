@@ -148,7 +148,37 @@
 		</taglib>
 	
 	<!-- ==/Struts Configuration=============== -->
+
+
+
+	<!-- ==Spring Framework Configuration====== 
+	
+			Other Spring files:
+				/web/WEB-INF/openmrs-servlet.xml
+				/src/web/org/openmrs/web/spring/*
+				/web/WEB-INF/spring/taglibs/spring.tld
+				/lib/spring-framework/spring-1.2.5.jar
+	-->
+	
+		<servlet>
+			<servlet-name>openmrs</servlet-name>
+			<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+			<load-on-startup>3</load-on-startup>
+		</servlet>
+	
+		<servlet-mapping>
+	 		<servlet-name>openmrs</servlet-name>
+	 		<url-pattern>*.form</url-pattern>
+		</servlet-mapping>
 		
+		<taglib>
+			<taglib-uri>/spring</taglib-uri>
+			<taglib-location>/WEB-INF/taglibs/spring.tld</taglib-location>
+		</taglib>
+
+	<!-- ==/Spring Configuration=============== -->
+
+
 
 	<taglib>
 		<taglib-uri>/core-rt</taglib-uri>
@@ -173,11 +203,6 @@
 	<taglib>
 		<taglib-uri>/response</taglib-uri>
 		<taglib-location>/WEB-INF/taglibs/response.tld</taglib-location>
-	</taglib>
-
-	<taglib>
-		<taglib-uri>/spring</taglib-uri>
-		<taglib-location>/WEB-INF/taglibs/spring.tld</taglib-location>
 	</taglib>
 
 </web-app>

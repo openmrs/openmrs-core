@@ -63,11 +63,11 @@ body {
 	text-decoration: line-through;
 }
 
-span.error {
+span.error, div.error {
 	border: 1px dashed darkred;
+	background-color: lightpink;
 	padding: 1px 6px 1px 6px;
 	}
 	input.error, textarea.error {
-		border: 1px solid darkred;
-		background-color: lightpink;
+		border: 2px solid darkred;
 	}

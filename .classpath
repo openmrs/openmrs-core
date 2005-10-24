@@ -32,7 +32,6 @@
 	<classpathentry kind="lib" path="lib/jakarta-taglibs/taglibs-request-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta-taglibs/taglibs-response-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta-taglibs/taglibs-standard-1.1.jar"/>
-	<classpathentry kind="lib" path="lib/velocity/velocity-dep-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/asm/asm.jar"/>
 	<classpathentry kind="lib" path="web/WEB-INF"/>
 	<classpathentry kind="lib" path="lib/ibatis/ibatis-common-2.jar"/>
@@ -43,8 +42,9 @@
 	<classpathentry kind="lib" path="metadata/api/sqlmap"/>
 	<classpathentry kind="lib" path="lib/tomcat/catalina-ant.jar"/>
 	<classpathentry kind="lib" path="lib/dwr/dwr.jar"/>
-	<classpathentry kind="lib" path="lib/spring-framework/spring-framework-1.2.3.jar"/>
+	<classpathentry kind="lib" path="lib/spring-framework/spring-1.2.5.jar"/>
 	<classpathentry kind="lib" path="lib/velocity/velocity-1.4.jar"/>
-	<classpathentry kind="lib" path="lib/struts-framework/struts.jar"/>
+	<classpathentry kind="lib" path="lib/velocity/velocity-dep-1.4.jar"/>
+	<classpathentry kind="lib" path="lib/struts-framework/struts-1.2.7.jar"/>
 	<classpathentry kind="output" path="build/"/>
 </classpath>

@@ -1,6 +1,5 @@
 package org.openmrs.web.dwr;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
 
@@ -17,9 +16,9 @@ public class DWRPatientService {
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
-	public Collection findPatients(String identifier, String givenName, String familyName, boolean includeVoided) {
+	public Vector findPatients(String identifier, String givenName, String familyName, boolean includeVoided) {
 		
-		Collection patientList = new Vector();
+		Vector patientList = new Vector();
 
 		Context context = (Context) ExecutionContext.get().getSession()
 				.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
@@ -32,11 +31,12 @@ public class DWRPatientService {
 			else
 				patients = ps.getPatientsByName(givenName, familyName);
 			
-			patientList = new Vector<PatientListItem>(patients.size());
+			patientList = new Vector(patients.size());
 			for (Patient p : patients) {
 				patientList.add(new PatientListItem(p));
 			}
 		} catch (Exception e) {
+			log.error(e);
 			e.printStackTrace();
 		}
 		return patientList;

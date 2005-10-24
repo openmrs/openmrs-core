@@ -9,14 +9,13 @@
       <param name="class" value="java.util.Date"/>
     </create>
 
-	<convert converter="bean" match="org.openmrs.web.dwr.PatientListItem"/>
-	<convert converter="bean" match="org.openmrs.Patient"/>
-	
     <create creator="new" javascript="DWRPatientService">
       <param name="class" value="org.openmrs.web.dwr.DWRPatientService" />
       <include method="findPatients"/>
       <include method="getPatient"/>
     </create>
+
+	<convert converter="bean" match="org.openmrs.web.dwr.PatientListItem"/>
 
   </allow>
   

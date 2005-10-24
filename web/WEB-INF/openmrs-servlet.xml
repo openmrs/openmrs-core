@@ -1,7 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
-<beans>
+<!--
+  - Application context definition for "springDispatcher" DispatcherServlet.
+  -->
+
+	<beans>
+	    <bean id="springController" class="org.openmrs.web.spring.SpringController"/>
+	
+	    <bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+	        <property name="mappings">
+	            <props>
+	                <prop key="**/*.htm">springController</prop>
+	                <prop key="**/editOrderType.form">orderTypeForm</prop>
+	            </props>
+	        </property>
+	    </bean>
+	    
+		<bean id="orderTypeForm" class="org.openmrs.web.spring.OrderTypeFormController" />
+
+		<!--  Validator and Form Controller for the "Price Increase" page 
+		<bean id="orderTypeValidator" class="org.openmrs.web.spring.OrderTypeValidator"/>
+		<bean id="orderTypeForm" class="org.openmrs.web.spring.OrderTypeFormController">
+			<property name="sessionForm"><value>true</value></property>
+			<property name="commandName"><value>orderType</value></property>
+			<property name="commandClass"><value>org.openmrs.OrderType</value></property>
+			<property name="validator"><ref bean="orderTypeValidator"/></property>
+			<property name="formView"><value>/admin/orders/editOrderType.jsp</value></property>
+			<property name="successView"><value>/openmrs/admin/orders/orderTypes.jsp</value></property>
+		</bean>-->
+		
+		<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+			<property name="basename">
+				<value>org.openmrs.web.spring.messages</value>
+			</property>
+		</bean>
+
+	</beans>
+
+
+
+
+<!--<beans>-->
 
 	<!-- Hibernate SessionFactory -->
 	<!-- 
@@ -50,8 +90,13 @@
 	</bean>
 	-->
 	
-	<bean id="defaultContext"
-		class="org.openmrs.context.IbatisContext" />
+	
+	
+	<!--<bean id="defaultContext"
+		class="org.openmrs.context.IbatisContext" />-->
+	
+	
+		
 
 	<!--  User service -->
 	<!-- 
@@ -186,4 +231,4 @@
 	</bean>
 	-->
 
-</beans>
+<!--</beans>-->

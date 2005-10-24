@@ -88,8 +88,12 @@
 			<jsp:useBean id="orderType" type="org.openmrs.OrderType" scope="page"/>
 			<tr>
 				<td valign="top"><input type="checkbox" name="orderTypeId" value="${orderType.orderTypeId}"></td>
-				<td valign="top"><a href="editOrderType.jsp?orderTypeId=${orderType.orderTypeId}">
-					   ${orderType.name}
+				<td valign="top">
+					<a href="editOrderType-Standard.jsp?orderTypeId=${orderType.orderTypeId}">
+					   ${orderType.name} (jsp)
+					</a> | 
+					<a href="editOrderType.form?orderTypeId=${orderType.orderTypeId}">
+					   ${orderType.name} (spring)
 					</a>
 				</td>
 				<td valign="top">${orderType.description}</td>

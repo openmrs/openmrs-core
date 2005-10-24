@@ -19,10 +19,6 @@
     </logger>
 
     <logger name="org.springframework">
-        <level value="WARN"/>
-    </logger>
-
-    <logger name="org.appfuse">
         <level value="DEBUG"/>
     </logger>
 

@@ -21,9 +21,11 @@ public class PatientListItem {
 	private Boolean birthdateEstimated;
 	private String mothersName;
 
+
 	public PatientListItem() { }
 	
 	public PatientListItem(Patient patient) {
+
 		patientId = patient.getPatientId();
 		identifier = patient.getIdentifiers().iterator().next().getIdentifier();
 		PatientName pn = patient.getNames().iterator().next();
