@@ -13,6 +13,14 @@
 
 try {
 	
+	out.write("Locale.displayName: " + request.getLocale().getDisplayName() + "<br>");
+	out.write("Locale.getLanguage: " + request.getLocale().getLanguage() + "<br>");
+	out.write("Locale.toString: " + request.getLocale().toString() + "<br>");
+	
+	out.write("request.getRequestURL" + request.getRequestURL() + "<br>");
+	out.write("request.getRequestURI" + request.getRequestURI() + "<br>");
+	out.write("request.getQueryString" + request.getQueryString() + "<br>");
+	
 	Context context = (Context)session.getValue("__openmrs_context");
 	context.authenticate("admin", "test");			
 	out.write("<br>Authenticated<br>");
