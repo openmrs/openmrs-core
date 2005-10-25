@@ -5,8 +5,7 @@
 
 <html>
 	<head>
-		
-		<link href="/openmrs.css" type="text/css" rel="stylesheet" />
+		<link href="<%= request.getContextPath() %>/openmrs.css" type="text/css" rel="stylesheet" />
 	</head>
 
 <body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
@@ -17,7 +16,7 @@
 		<openmrs:isAuthenticated converse="true">
 			Not logged in | <a href='<%= request.getContextPath() %>/login.jsp'>Log in</a>
 		</openmrs:isAuthenticated>
-		| <a href='/openmrs/help.jsp'>Help</a>
+		| <a href='<%= request.getContextPath() %>/help.jsp'>Help</a>
 	</div>
 
 	<table border="0" width="100%" cellspacing="0" cellpadding="0">

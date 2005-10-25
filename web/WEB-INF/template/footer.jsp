@@ -3,7 +3,7 @@
 		<tr>
 			<td colspan="3" valign="top" align="center">
 				<br>
-				<img src="/images/gradient_bar.gif" />
+				<img src="<%= request.getContextPath() %>/images/gradient_bar.gif" />
 			</td>
 		</tr>
 	</table>

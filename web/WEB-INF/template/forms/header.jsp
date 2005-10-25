@@ -3,7 +3,7 @@
 
 <html>
 	<head>
-		<link href="/openmrs/openmrs.css" type="text/css" rel="stylesheet" />
+		<link href="<%= request.getContextPath() %>/openmrs.css" type="text/css" rel="stylesheet" />
 		<link href="/WEB-INF/template/forms/forms.css" type="text/css" rel="stylesheet" />
 		<script language="JavaScript" src="/WEB-INF/template/forms/forms.js"></script>
 	</head>
@@ -11,12 +11,12 @@
 <body>
 	<div id="userBar">
 		<openmrs:isAuthenticated converse="false">
-			Currently logged in as ${authenticatedUser} | <a href='/openmrs/logout'>Log out</a>
+			Currently logged in as ${authenticatedUser} | <a href='<%= request.getContextPath() %>/logout'>Log out</a>
 		</openmrs:isAuthenticated>
 		<openmrs:isAuthenticated converse="true">
-			Not logged in | <a href='/openmrs/login.jsp'>Log in</a>
+			Not logged in | <a href='<%= request.getContextPath() %>/login.jsp'>Log in</a>
 		</openmrs:isAuthenticated>
-		| <a href='/openmrs/help.jsp'>Help</a>
+		| <a href='<%= request.getContextPath() %>/help.jsp'>Help</a>
 	</div>
 
 	<%

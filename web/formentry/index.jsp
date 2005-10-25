@@ -4,9 +4,9 @@
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
-<script src='/openmrs/dwr/interface/DWRPatientService.js'></script>
-<script src='/openmrs/dwr/engine.js'></script>
-<script src='/openmrs/dwr/util.js'></script>
+<script src='<%= request.getContextPath() %>/dwr/interface/DWRPatientService.js'></script>
+<script src='<%= request.getContextPath() %>/dwr/engine.js'></script>
+<script src='<%= request.getContextPath() %>/dwr/util.js'></script>
 
 <script>
 

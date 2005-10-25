@@ -174,7 +174,7 @@
 			</c:forEach>
 			<a href="javascript:null;" onClick="return addNew(this, 'identifier');" class="addNew" id="addNewIdentifier">
 				Add New Identifier
-				<img src="/openmrs/images/add.gif" border=0>
+				<img src="<%= request.getContextPath() %>/images/add.gif" border=0>
 			</a>
 		</div>
 		<div class="tabBoxes" id="pIdBoxes">
@@ -202,7 +202,7 @@
 			</c:forEach>
 			<a href="javascript:null;" onClick="return addNew(this, 'name');" class="addNew" id="addNewName">
 				Add New Name
-				<img src="/openmrs/images/add.gif" border="0" title="Add New Name">
+				<img src="<%= request.getContextPath() %>/images/add.gif" border="0" title="Add New Name">
 			</a>
 		</div>
 		<div class="tabBoxes" id="pNameBoxes">
@@ -210,14 +210,14 @@
 				<jsp:useBean id="name" type="org.openmrs.PatientName" />
 				<div id="name${status.index}Data" class="tabBox">
 					<%@ include file="/WEB-INF/include/patientName.jsp" %>
-					<a href="javascript:null;" onClick="return removeTab(this, 'name');" class="removeTab">Remove this name <img src="/openmrs/images/delete.gif" border="0" title="Remove this name" align="middle"/></a>
+					<a href="javascript:null;" onClick="return removeTab(this, 'name');" class="removeTab">Remove this name <img src="<%= request.getContextPath() %>/images/delete.gif" border="0" title="Remove this name" align="middle"/></a>
 				</div>
 			</c:forEach>
 			<div id="addNewNameData" class="tabBox">
 				<%  PatientName name = new PatientName();
 					pageContext.setAttribute("name", name); %>
 				<%@ include file="/WEB-INF/include/patientName.jsp" %>
-				<a href="javascript:null;" onClick="return removeTab(this, 'name');" class="removeTab">Remove this name <img src="/openmrs/images/delete.gif" border="0" title="Remove this name" align="middle" /></a>
+				<a href="javascript:null;" onClick="return removeTab(this, 'name');" class="removeTab">Remove this name <img src="<%= request.getContextPath() %>/images/delete.gif" border="0" title="Remove this name" align="middle" /></a>
 			</div>
 		</div>
 	</div>
