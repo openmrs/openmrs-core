@@ -221,10 +221,10 @@ public class HibernateUserService implements
 	public List<User> getUsersByRole(Role role) throws APIException {
 		Session session = HibernateUtil.currentSession();
 		
-		List<User> users = session.createCriteria(User.class)
-						.createCriteria("roles")
-						.add(Expression.like("role", role.getRole()))
-						.addOrder(Order.asc("username"))
+		List<User> users = session.createCriteria(User.class, "u")
+						.createCriteria("roles", "r")
+						.add(Expression.like("r.role", role.getRole()))
+						.addOrder(Order.asc("u.username"))
 						.list();
 		
 		return users;

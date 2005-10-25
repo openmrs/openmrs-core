@@ -257,7 +257,8 @@ public class Concept implements java.io.Serializable {
 		
 		for (Iterator<ConceptName> i = getNames().iterator(); i.hasNext();) {
 			ConceptName name = i.next();
-			if (name.getLocale().equals(locale))
+			String lang = name.getLocale();
+			if (lang.equals(locale.getLanguage()))
 				return name;
 		}
 		

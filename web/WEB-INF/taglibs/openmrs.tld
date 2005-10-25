@@ -99,4 +99,39 @@
 	</attribute>
 </tag>
 
+<tag>
+	<name>getContext</name>
+	<tag-class>org.openmrs.web.taglib.GetContextTag</tag-class>
+	<body-content>empty</body-content>
+	<description>
+		Retrieves the context from the httpSession and stores it in 
+		defined 'var' (default='context') in the page scope
+	</description>
+	<attribute>
+		<name>var</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+</tag>
+
+<tag>
+	<name>users</name>
+	<tag-class>org.openmrs.web.taglib.UsersTag</tag-class>
+	<body-content>JSP</body-content>
+	<description>
+		Loops over the current users in the system
+		Optionally searches on role
+	</description>
+	<attribute>
+		<name>var</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>role</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+</tag>
+
 </taglib>

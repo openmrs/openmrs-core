@@ -6,9 +6,8 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
-import org.openmrs.Patient;
+import org.openmrs.ConceptClass;
 import org.openmrs.api.ConceptService;
-import org.openmrs.api.PatientService;
 import org.openmrs.context.Context;
 import org.openmrs.web.Constants;
 
@@ -18,7 +17,7 @@ public class DWRConceptService {
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
-	public Vector findConcepts(String phrase) {
+	public Vector findConcepts(String phrase, List<String> classNames) {
 
 		Vector conceptList = new Vector();
 
@@ -28,17 +27,19 @@ public class DWRConceptService {
 			ConceptService cs = context.getConceptService();
 			List<Concept> concepts;
 			
-			if (phrase != null && !phrase.equals("")) {
-				concepts = cs.getConceptByName(phrase);
-			}
-			else {
+			if (phrase == null || phrase.equals("")) {
 				//TODO get all concepts?
 				concepts = new Vector();
+			}
+			else {
+				concepts = cs.getConceptByName(phrase);
 			}
 			
 			conceptList = new Vector(concepts.size());
 			for (Concept c : concepts) {
-				conceptList.add(new ConceptListItem(c));
+				for (String o : classNames) 
+					if (o.equals(c.getConceptClass().getName()))
+						conceptList.add(new ConceptListItem(c));
 			}
 		} catch (Exception e) {
 			log.error(e);
@@ -47,10 +48,10 @@ public class DWRConceptService {
 		return conceptList;
 	}
 	
-	public ConceptListItem getConcept(Integer patientId) {
+	public ConceptListItem getConcept(Integer conceptId) {
 		Context context = (Context) ExecutionContext.get().getSession().getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		ConceptService cs = context.getConceptService();
-		Concept c = cs.getConcept(patientId);
+		Concept c = cs.getConcept(conceptId);
 		
 		return new ConceptListItem(c);
 	}

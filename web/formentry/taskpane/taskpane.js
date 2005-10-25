@@ -17,7 +17,7 @@ function closeTaskPane() {
 }
 
 // set nodeName's value to obj
-function selectObj(nodeName, obj) {
+function setObj(nodeName, obj) {
 	// Fetch reference to the node
 	var node = oDOM.selectSingleNode(nodeName);
 	clearNil(node);
@@ -28,17 +28,38 @@ function selectObj(nodeName, obj) {
 	closeTaskPane();
 }
 
-function insertObj(nodeName, obj) {
+function pickProblem(mode, nodeName, o) {
+	var node = oDOM.selectSingleNode(nodeName);
+	clearNil(node);
+	if (mode == 'add')
+		insertObj(node, "problem_added", o);
+	else
+		appendObj(node, "problem_resolved", o);
+
+	closeTaskPane();
 }
 
-function appendObj(nodeName, obj) {
+function insertObj(node, newNodeName, obj) {
+	new_elem = oDOM.createNode(1, newNodeName, "");
+	new_elem_value = oDOM.createNode(1, "value", "");
+	new_elem.appendChild(new_elem_value);
+	new_elem_value.text = obj.value + '^' + obj.innerText;
+	node.insertBefore(new_elem, node.childNodes.item(0));
+}
+
+function appendObj(node, newNodeName, obj) {
+	new_elem = oDOM.createNode(1, newNodeName, "");
+	new_elem_value = oDOM.createNode(1, "value", "");
+	new_elem.appendChild(new_elem_value);
+	new_elem_value.text = obj.value + '^' + obj.innerText;
+	node.appendChild(new_elem);
 }
 
 
 
 //	hide taskpane
 function closeTaskPane() {
-     window.location = "/WEB-INF/template/forms/blank";
+     window.location = "index.jsp";
 }
 
 function reloadPage() {

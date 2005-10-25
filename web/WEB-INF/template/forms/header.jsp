@@ -1,14 +1,16 @@
 <!DOCTYPE html PUBLIC “-//W3C//DTD XHTML 1.0 Strict//EN
   http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd>
 
+<%@ page import="org.openmrs.web.Constants" %>
+
 <html>
 	<head>
 		<link href="<%= request.getContextPath() %>/openmrs.css" type="text/css" rel="stylesheet" />
-		<link href="/WEB-INF/template/forms/forms.css" type="text/css" rel="stylesheet" />
-		<script language="JavaScript" src="/WEB-INF/template/forms/forms.js"></script>
+		<link href="taskpane.css" type="text/css" rel="stylesheet" />
+		<script language="JavaScript" src="taskpane.js"></script>
 	</head>
 
-<body>
+<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
 	<div id="userBar">
 		<openmrs:isAuthenticated converse="false">
 			Currently logged in as ${authenticatedUser} | <a href='<%= request.getContextPath() %>/logout'>Log out</a>
@@ -19,6 +21,7 @@
 		| <a href='<%= request.getContextPath() %>/help.jsp'>Help</a>
 	</div>
 
+	<div id="content">
 	<%
 		if (session.getAttribute(Constants.OPENMRS_MSG_ATTR) != null) {
 			out.print("<div id='openmrs_msg'>");
@@ -34,5 +37,6 @@
 		}
 	%>
 
+	<br />
 	<br />
 				

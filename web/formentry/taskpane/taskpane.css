@@ -1,14 +1,11 @@
-body { width: 300px; }
+
 h1 {
-	font-family:arial;
-	font-size:0.8em;
 	font-weight:bold;
 	text-align:center;
-	line-height:0.1em;
+	margin: 5px;
+	font-size: 20px;
 	}
 input.prompt {
-	font-family:arial;
-	font-size:0.8em;
 	font-weight:bold;
 	background-color:#C3DAF9;
 	}
@@ -19,8 +16,6 @@ input.prompt {
 	background-color:#E0E0E0;
 	}
 a.hit {
-	font-family:arial;
-	font-size:0.75em;
 	color: black;
 	}
 a.hit:link {
@@ -38,7 +33,6 @@ a.hit:hover {
 	}
 .no_hit {
 	margin-top: 1em;
-	font-family: arial;
 	font-weight: bold;
 	font-style: italic;
 	font-size: 1em;

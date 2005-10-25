@@ -13,6 +13,7 @@ import org.openmrs.Drug;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.context.Context;
+import org.hibernate.criterion.MatchMode;
 
 public class HibernateConceptService implements
 		ConceptService {
@@ -94,7 +95,7 @@ public class HibernateConceptService implements
 		List<Concept> concepts = session.createCriteria(Concept.class)
 								.createCriteria("names")
 								//.add(Expression.eq("locale", context.getLocale().toString()))
-								.add(Expression.like("name", name))
+								.add(Expression.like("name", name, MatchMode.ANYWHERE))
 								.list();
 		return concepts;
 	}

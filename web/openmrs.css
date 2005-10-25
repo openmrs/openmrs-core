@@ -1,6 +1,7 @@
 body {
 	font-family: arial;
 	font-size: 11px;
+	padding: 0px;
 }
 
 #openmrs_msg { 
@@ -20,8 +21,19 @@ body {
 }
 
 #userBar {
-	float: right;
 	font-size: 10px;
+	width: 100%;
+	text-align: right;
+	background-color: whitesmoke;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: lightgrey;
+	margin: 0px;
+	padding: 1px;
+}
+
+#content {
+	padding: 5px;
 }
 
 #patientTableBody {

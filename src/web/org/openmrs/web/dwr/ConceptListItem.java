@@ -6,6 +6,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
+import uk.ltd.getahead.dwr.util.JavascriptUtil;
 
 public class ConceptListItem {
 	
@@ -13,6 +14,7 @@ public class ConceptListItem {
 
 	private Integer conceptId;
 	private String name;
+	private String shortName;
 	private String description;
 	private Boolean retired;
 
@@ -21,11 +23,20 @@ public class ConceptListItem {
 	
 	public ConceptListItem(Concept concept) {
 
-		conceptId = concept.getConceptId();
-		ConceptName cn = concept.getName(new Locale("en"));
-		name = cn.getName();
-		description = concept.getDescription();
-		retired = concept.isRetired();
+		if (concept != null) {
+
+			conceptId = concept.getConceptId();
+			JavascriptUtil util = new JavascriptUtil();
+			ConceptName cn = concept.getName(new Locale("en"));
+			name = "";
+			shortName = "";
+			if (cn != null) {
+				name = util.escapeJavaScript(cn.getName());
+				shortName = util.escapeJavaScript(cn.getShortName());
+			}
+			description = util.escapeJavaScript(concept.getDescription());
+			retired = concept.isRetired();
+		}
 	}
 
 	public Integer getConceptId() {
@@ -50,6 +61,14 @@ public class ConceptListItem {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getShortName() {
+		return shortName;
+	}
+
+	public void setShortName(String shortName) {
+		this.shortName = shortName;
 	}
 
 	public Boolean getRetired() {
