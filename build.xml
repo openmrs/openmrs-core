@@ -136,7 +136,7 @@
 			<!-- war task isn't interpreting ${} variables on several attributes   -->
 			<!-- (e.g., @basedir, webinf@dir) so using hardcoded values for now -->
 			<classes dir="${build.dir}/web" />
-            <metainf dir="${metadata.dir}/web" includes="context.xml"/>
+            <!--<metainf dir="${metadata.dir}/web" includes="context.xml"/>-->
 			<lib file="${dist.dir}/${app.name}-api-${app.version}.jar" />
 			<lib dir="${antlr.dir}" includes="*.jar" />
 			<lib dir="${asm.dir}" includes="*.jar" />
