@@ -9,13 +9,20 @@
       <param name="class" value="java.util.Date"/>
     </create>
 
+	<convert converter="bean" match="org.openmrs.web.dwr.PatientListItem"/>
+	<convert converter="bean" match="org.openmrs.web.dwr.ConceptListItem"/>
+
     <create creator="new" javascript="DWRPatientService">
       <param name="class" value="org.openmrs.web.dwr.DWRPatientService" />
       <include method="findPatients"/>
       <include method="getPatient"/>
     </create>
 
-	<convert converter="bean" match="org.openmrs.web.dwr.PatientListItem"/>
+    <create creator="new" javascript="DWRConceptService">
+      <param name="class" value="org.openmrs.web.dwr.DWRConceptService" />
+      <include method="findConcepts"/>
+      <include method="getConcept"/>
+    </create>
 
   </allow>
   

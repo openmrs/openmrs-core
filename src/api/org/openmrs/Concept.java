@@ -2,6 +2,8 @@ package org.openmrs;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -245,6 +247,24 @@ public class Concept implements java.io.Serializable {
 		this.name = name;
 	}
 
+	/**
+	 * Finds the name of the concept in the given locale.  Returns null if none found. 
+	 * 
+	 * @param locale
+	 * @return ConceptName attributed to the Concept in the given locale
+	 */
+	public ConceptName getName(Locale locale) {
+		
+		for (Iterator<ConceptName> i = getNames().iterator(); i.hasNext();) {
+			ConceptName name = i.next();
+			if (name.getLocale().equals(locale))
+				return name;
+		}
+		
+		//no name with the given locale was found.  returning null
+		return null;
+	}
+	
 	/**
 	 * @return Returns the names.
 	 */
