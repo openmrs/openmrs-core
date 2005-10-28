@@ -11,21 +11,33 @@ public class OrderTypeValidator implements Validator {
 	/** Log for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
 
+	/**
+	 * 
+	 * Determines if the command object being submitted is a valid type
+	 * 
+	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
+	 */
 	public boolean supports(Class c) {
 		return c.equals(OrderType.class);
 	}
 
+	/**
+	 * 
+	 * Checks the form object for any inconsistencies/errors
+	 * 
+	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 */
 	public void validate(Object obj, Errors errors) {
 		OrderType orderType = (OrderType)obj;
 		if (orderType == null) {
-			errors.rejectValue("orderType", "error.general", null, "Value required.");
+			errors.rejectValue("orderType", "general.error");
 		}
 		else {
 			if (orderType.getName() == null || orderType.getName().equals("")) {
-				errors.rejectValue("name", "error.general.name");
+				errors.rejectValue("name", "general.name.error");
 			}
 			if (orderType.getDescription() == null || orderType.getDescription().equals("")) {
-				errors.rejectValue("description", "error.general.description");
+				errors.rejectValue("description", "general.description.error");
 			}
 		}
 		//log.debug("errors: " + errors.getAllErrors().toString());

@@ -1,6 +1,7 @@
 package org.openmrs.web.spring;
 
 import java.text.NumberFormat;
+import java.util.Locale;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -34,16 +35,24 @@ public class OrderTypeFormController extends SimpleFormController {
     }
     
 	/**
+	 * 
+	 * Allows for Integers to be used as values in input tags.
+	 *   Normally, only strings and lists are expected 
+	 * 
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest, org.springframework.web.bind.ServletRequestDataBinder)
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-        NumberFormat nf = NumberFormat.getInstance(request.getLocale());
+        NumberFormat nf = NumberFormat.getInstance(new Locale("en-US"));
         binder.registerCustomEditor(java.lang.Integer.class,
                 new CustomNumberEditor(java.lang.Integer.class, nf, true));
 	}
 
 	/**
+	 * 
+	 * The onSubmit function receives the form/command object that was modified
+	 *   by the input form and saves it to the db
+	 * 
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
 	 */
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
@@ -64,6 +73,13 @@ public class OrderTypeFormController extends SimpleFormController {
 		return new ModelAndView(new RedirectView(getSuccessView()));
 	}
 
+	/**
+	 * 
+	 * This is called prior to displaying a form for the first time.  It tells Spring
+	 *   the form/command object to load into the request
+	 * 
+	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
+	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
 		HttpSession httpSession = request.getSession();
@@ -71,7 +87,7 @@ public class OrderTypeFormController extends SimpleFormController {
 		if (context == null) {
 			httpSession.setAttribute(Constants.OPENMRS_ERROR_ATTR, "Your session has expired.");
 			// response.sendRedirect(request.getContextPath() + "/logout");
-			return new ModelAndView(new RedirectView(getSuccessView()));
+			return new ModelAndView("/logout");
 		}
     	
 		OrderService os = context.getOrderService();
@@ -79,6 +95,5 @@ public class OrderTypeFormController extends SimpleFormController {
     	
         return orderType;
     }
-    
     
 }

@@ -63,6 +63,7 @@ public class FormDownloadServlet extends HttpServlet {
 		
 		try {
 			DocumentBuilder builder = factory.newDocumentBuilder();
+			//TODO find correct non-deprecated function
 			xmldoc = builder.parse(request.getRealPath("formentry/forms/" + formType + ".xml"));
 		}
 		catch (ParserConfigurationException e) {
