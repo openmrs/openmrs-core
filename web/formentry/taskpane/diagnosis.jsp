@@ -17,7 +17,7 @@
 			event.ctrlKey == false &&
 			((event.keyCode >= 32 && event.keyCode <= 127) || event.keyCode == 8)) {
 				clearTimeout(timeout);
-				timeout = setTimeout("updateConcepts()", 750);
+				timeout = setTimeout("updateConcepts()", 400);
 		}
 	}
 	

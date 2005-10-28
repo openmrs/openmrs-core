@@ -36,10 +36,16 @@ public class DWRConceptService {
 			}
 			
 			conceptList = new Vector(concepts.size());
-			for (Concept c : concepts) {
-				for (String o : classNames) 
-					if (o.equals(c.getConceptClass().getName()))
+			int maxCount = 10;
+			int curCount = 0;
+			outer: for (Concept c : concepts) {
+				inner: for (String o : classNames)
+					if (o.equals(c.getConceptClass().getName())) {
+						if ( curCount++ > maxCount ) {
+							break outer;
+						}
 						conceptList.add(new ConceptListItem(c));
+					}
 			}
 		} catch (Exception e) {
 			log.error(e);

@@ -93,9 +93,9 @@ public class HibernateConceptService implements
 		Session session = HibernateUtil.currentSession();
 		
 		List<Concept> concepts = session.createCriteria(Concept.class)
-								.createCriteria("names")
+								.createCriteria("names", "n")
 								//.add(Expression.eq("locale", context.getLocale().toString()))
-								.add(Expression.like("name", name, MatchMode.ANYWHERE))
+								.add(Expression.like("n.name", name, MatchMode.ANYWHERE))
 								.list();
 		return concepts;
 	}
