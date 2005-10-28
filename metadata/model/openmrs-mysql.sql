@@ -3,7 +3,7 @@ MySQL Backup
 Source Host:           localhost
 Source Server Version: 4.1.11-nt
 Source Database:       openmrs
-Date:                  2005/10/28 11:57:00
+Date:                  2005/10/28 14:13:22
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -105,6 +105,23 @@ CREATE TABLE `concept_datatype` (
   CONSTRAINT `concept_datatype_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 68608 kB; (`creator`) REFER `openmrs/users`(`us';
 #----------------------------
+# Table structure for concept_map
+#----------------------------
+drop table if exists concept_map;
+CREATE TABLE `concept_map` (
+  `concept_map_id` int(11) NOT NULL auto_increment,
+  `source` int(11) default NULL,
+  `source_id` int(11) default NULL,
+  `comment` varchar(255) default NULL,
+  `creator` int(11) NOT NULL default '0',
+  `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`concept_map_id`),
+  KEY `map_source` (`source`),
+  KEY `map_creator` (`creator`),
+  CONSTRAINT `map_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
+  CONSTRAINT `map_source` FOREIGN KEY (`source`) REFERENCES `concept_source` (`concept_source_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+#----------------------------
 # Table structure for concept_name
 #----------------------------
 drop table if exists concept_name;
@@ -172,6 +189,27 @@ CREATE TABLE `concept_set_derived` (
   `sort_weight` double default NULL,
   PRIMARY KEY  (`concept_id`,`concept_set`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+#----------------------------
+# Table structure for concept_source
+#----------------------------
+drop table if exists concept_source;
+CREATE TABLE `concept_source` (
+  `concept_source_id` int(11) NOT NULL auto_increment,
+  `name` varchar(50) NOT NULL default '',
+  `description` text NOT NULL,
+  `hl7_code` varchar(50) NOT NULL default '',
+  `creator` int(11) NOT NULL default '0',
+  `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
+  `voided` tinyint(4) default NULL,
+  `voided_by` int(11) default NULL,
+  `date_voided` datetime default NULL,
+  `void_reason` varchar(255) default NULL,
+  PRIMARY KEY  (`concept_source_id`),
+  KEY `concept_source_creator` (`creator`),
+  KEY `user_who_voided_concept_source` (`voided_by`),
+  CONSTRAINT `concept_source_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
+  CONSTRAINT `user_who_voided_concept_source` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 #----------------------------
 # Table structure for concept_synonym
 #----------------------------
