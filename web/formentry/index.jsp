@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="Form Entry" otherwise="/login.jsp" />
+<openmrs:require privilege="Form Entry" otherwise="/login.jsp" redirect="/formentry/index.htm" />
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
@@ -43,7 +43,7 @@
 	}
 	
 	function validateIdentifier() {
-		if (showError(isValidCheckDigit(searchBox.value), searchBox, "Invalid identifier"))
+		if (showError(isValidCheckDigit(searchBox.value), searchBox, '<spring:message code="Patient.identifier.error"/>'))
 			updatePatients();
 	}
 	
@@ -54,13 +54,14 @@
 	    return false;
 	}
 	
-	var getIdentifier	= function(obj) { 
+	var getButton		= function(obj) {
 			var str = "";
-			str += "<a href=javascript:selectPatient(" + obj.patientId + ")>";
-			str += obj.identifier;
-			str += "</a>";
+			str += "<input type='button' onClick='selectPatient(";
+			str += obj.patientId;
+			str += ")' class='small' value='<spring:message code="general.select"/>";
 			return str;
 		};
+	var getIdentifier	= function(obj) { return obj.identifier; };
 	var getGivenName	= function(obj) { return obj.givenName;  };
 	var getFamilyName	= function(obj) { return obj.familyName; };
 	var getGender		= function(obj) { return obj.gender; };
@@ -79,7 +80,7 @@
 	var getMothersName  = function(obj) { return obj.mothersName;  };
 	
 	function fillTable(patientListItem) {
-	    DWRUtil.addRows("patientTableBody", patientListItem, [getIdentifier, getGivenName, getFamilyName, getGender, getRace, getBirthdate, getMothersName]);
+	    DWRUtil.addRows("patientTableBody", patientListItem, [getButton, getIdentifier, getGivenName, getFamilyName, getGender, getRace, getBirthdate, getMothersName]);
 	}
 	
 	function selectPatient(patientId) {
@@ -91,12 +92,12 @@
 	}
 	
 	function fillPatientDetails(patient) {
-		var html = "<b class='boxHeader'>Patient Information</b>";
-		html = html + "<a href='editPatient?patientId=" + patient.patientId + "' style='float:right'>Edit patient</a>";
+		var html = "<b class='boxHeader'><spring:message code="formentry.patient.info"/></b>";
+		html = html + "<a href='editPatient?patientId=" + patient.patientId + "' style='float:right'><spring:message code="Patient.edit"/></a>";
 		html = html + "<b>Name</b>:" + patient.givenName + " " + patient.familyName + "<br />";
 		html = html + "<b>Gender</b>:" + patient.gender + "<br />";
 		html = html + "<b>Address</b>:" + patient.address + "<br />...";
-		html = html + "<br /><input type='button' value='Switch Patient' onClick='showSearch(); patientListing.style.display = \"\";'>";
+		html = html + "<br /><input type='button' value='<spring:message code="formentry.patient.switch"/>' onClick='showSearch(); patientListing.style.display = \"\";'>";
 		patientSummary.innerHTML = html;
 	}
 
@@ -105,13 +106,13 @@
 <h2>Form Entry</h2>
 
 <div id="findPatient">
-	<b class="boxHeader">1. Find a Patient</b>
+	<b class="boxHeader"><spring:message code="formentry.step1"/></b>
 	<div class="box">
 		<br>
 		<form id="findPatientForm" onSubmit="updatePatients(); return false;">
 			<table>
 				<tr>
-					<td>Identifier or Patient Name</td>
+					<td><spring:message code="formentry.searchBox"/></td>
 					<td><input type="text" id="searchBox" onKeyUp="searchBoxChange(event, this)"></td>
 					<input type="hidden" id="searchType">
 				</tr>
@@ -122,19 +123,20 @@
 			<table id="patientTable">
 			 <thead>
 				 <tr>
-				 	<th>Identifier</th>
-				 	<th>Given Name</th>
-				 	<th>Family Name</th>
-				 	<th>Gender</th>
-				 	<th>Race</th>
-				 	<th>BirthDate</th>
-				 	<th>Mother's Name</th>
+				 	<th> </th>
+				 	<th><spring:message code="Patient.identifier"/></th>
+				 	<th><spring:message code="Patient.givenName"/></th>
+				 	<th><spring:message code="Patient.familyName"/></th>
+				 	<th><spring:message code="Patient.gender"/></th>
+				 	<th><spring:message code="Patient.race"/></th>
+				 	<th><spring:message code="Patient.birthdate"/></th>
+				 	<th><spring:message code="Patient.mothersName"/></th>
 				 </tr>
 			 </thead>
 			 <tbody id="patientTableBody">
 			 </tbody>
 			 <tfoot>
-			 	<tr><td colspan="8"><br /><i>Don't see the patient?</i> Use the <a href="createPatientForm.jsp">Create New Patient Form</a></td></tr>
+			 	<tr><td colspan="8"><br /><i><spring:message code="formentry.patient.missing"/></i> <a href="createPatientForm.jsp"><spring:message code="Patient.create"/></a></td></tr>
 			 </tfoot>
 			</table>
 		</div>
@@ -146,7 +148,7 @@
 
 <br />
 
-<b class="boxHeader">2. Select a form</b>
+<b class="boxHeader"><spring:message code="formentry.step2"/></b>
 <div id="selectForm" class="box">
 	<br />
 	<form id="selectFormForm" method="post" action="<%= request.getContextPath() %>/formDownload">

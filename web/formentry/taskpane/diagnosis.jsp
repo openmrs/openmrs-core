@@ -67,8 +67,7 @@
 <p class="no_hit">
 	If you believe that you have discovered a diagnosis that should be in the
 	list, please
-	<a href="mailto:amrsprod@iukenya.org&subject=Missing Diagnosis - ${request.phrase}"
-		tal:attributes="href string:mailto:amrsprod@iukenya.org&subject=Missing Diagnosis '${request/phrase}'">
+	<a href="mailto:amrsprod@iukenya.org&subject=Missing Diagnosis - ${request.phrase}">
 		click here
 	</a>.
 <p>

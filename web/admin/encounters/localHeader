@@ -1,5 +1,5 @@
 <div id="menu">
-	<a href="../index.jsp">Admin</a> |
+	<a href="../">Admin</a> |
 	<a href="locations.jsp">Locations</a> |
 	<a href="encounterTypes.jsp">Encounter Types</a>
 </div>
