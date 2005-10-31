@@ -1,12 +1,11 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="Manage Orders" otherwise="/login.jsp" />
+<openmrs:require privilege="Manage Orders" otherwise="/login.jsp" redirect="/admin/orders/orderType.form" />
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
-<%@ include file="localHeader" %>
+<%@ include file="localHeader.jsp" %>
 
-<br />
-<h2><spring:message code="orderType.edit.title"/></h2>
+<h2><spring:message code="OrderType.title"/></h2>
 
 <spring:hasBindErrors name="orderType">
 	<spring:message code="error.fix"/>
@@ -17,7 +16,7 @@
 	<tr>
 		<td><spring:message code="OrderType.name"/></td>
 		<td>
-			<spring:bind path="OrderType.name">
+			<spring:bind path="orderType.name">
 				<input type="text" name="name" value="${status.value}" size="35" />
 				${status.errorMessage}
 			</spring:bind>
@@ -32,16 +31,18 @@
 			</spring:bind>
 		</td>
 	</tr>
-	<tr>
-		<td><spring:message code="OrderType.creator"/></td>
-		<td>${orderType.creator}</td>
-	</tr>
-	<tr>
-		<td><spring:message code="OrderType.dateCreated"/></td>
-		<td>${orderType.dateCreated}</td>
-	</tr>
+	<c:if test="${orderType.orderTypeId != null}">
+		<tr>
+			<td><spring:message code="OrderType.creator"/></td>
+			<td>${orderType.creator}</td>
+		</tr>
+		<tr>
+			<td><spring:message code="OrderType.dateCreated"/></td>
+			<td>${orderType.dateCreated}</td>
+		</tr>
+	<input type="hidden" name="orderTypeId:int" value="<c:out value="${orderType.orderTypeId}"/>">
+	</c:if>
 </table>
-<input type="hidden" name="orderTypeId:int" value="<c:out value="${orderType.orderTypeId}"/>">
 <br />
 <input type="submit" value="<spring:message code="OrderType.save"/>">
 </form>

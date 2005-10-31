@@ -4,6 +4,8 @@
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
+<script src='<%= request.getContextPath() %>/validation.js'></script>
+
 <script src='<%= request.getContextPath() %>/dwr/interface/DWRPatientService.js'></script>
 <script src='<%= request.getContextPath() %>/dwr/engine.js'></script>
 <script src='<%= request.getContextPath() %>/dwr/util.js'></script>
@@ -12,13 +14,15 @@
 
 	var timeout;
 	var searchOn;
+	var identifier;
+	var name;
 	
 	function showSearch() {
 		findPatient.style.display = "";
 		patientListing.style.display = "none";
 		patientSummary.style.display = "none";
 		selectForm.style.display = "none";
-		identifierBox.focus();
+		searchBox.focus();
 	}
 	
 	function searchBoxChange(event, obj) {
@@ -26,36 +30,30 @@
 			event.ctrlKey == false &&
 			((event.keyCode >= 32 && event.keyCode <= 127) || event.keyCode == 8)) {
 				clearTimeout(timeout);
-				timeout = setTimeout("updatePatients()",obj.id=="identifier" ? 1000 : 500);
+				if (Math.abs(event.keyCode - 48) < 10) { //if keyCode is a digit
+					searchType.value = "identifier";
+					timeout = setTimeout("validateIdentifier()", 300);
+				}
+				else {
+					searchType.value = "name";
+					showError(true, obj, "");
+					timeout = setTimeout("updatePatients()",400);
+				}
 		}
 	}
 	
-	function choose(obj) {
-		if (obj.id == "identifier") {
-			searchOn = "identifier";
-			//identifierBox.enabled = true;
-			//givenNameBox.enabled  = false;
-			//familyNameBox.enabled = false;
-		}
-		else {
-			searchOn = "name";
-			//identifierBox.enabled = false;
-			//givenNameBox.enabled  = true;
-			//familyNameBox.enabled = true;
-		}
+	function validateIdentifier() {
+		if (showError(isValidCheckDigit(searchBox.value), searchBox, "Invalid identifier"))
+			updatePatients();
 	}
 	
 	function updatePatients() {
 	    DWRUtil.removeAllRows("patientTableBody");
-	    var identifier = searchOn == "identifier" ? identifierBox.value : "";
-	    var givenName = givenNameBox.value;
-	    var familyName = familyNameBox.value;
-	    DWRPatientService.findPatients(fillTable, identifier, givenName, familyName, 0);
+	    DWRPatientService.findPatients(fillTable, searchBox.value, searchType.value, 0);
 	    patientListing.style.display = "";
 	    return false;
 	}
 	
-	var getId			= function(obj) { return obj.patientId; };
 	var getIdentifier	= function(obj) { 
 			var str = "";
 			str += "<a href=javascript:selectPatient(" + obj.patientId + ")>";
@@ -81,7 +79,7 @@
 	var getMothersName  = function(obj) { return obj.mothersName;  };
 	
 	function fillTable(patientListItem) {
-	    DWRUtil.addRows("patientTableBody", patientListItem, [ getId, getIdentifier, getGivenName, getFamilyName, getGender, getRace, getBirthdate, getMothersName]);
+	    DWRUtil.addRows("patientTableBody", patientListItem, [getIdentifier, getGivenName, getFamilyName, getGender, getRace, getBirthdate, getMothersName]);
 	}
 	
 	function selectPatient(patientId) {
@@ -113,26 +111,17 @@
 		<form id="findPatientForm" onSubmit="updatePatients(); return false;">
 			<table>
 				<tr>
-					<td>Identifier</td>
-					<td><input type="text" id="identifier" onFocus="choose(this)" onKeyUp="searchBoxChange(event, this)"></td>
-				</tr>
-				<tr><td></td><td><i>or</i></tr>
-				<tr>
-					<td>First Name</td>
-					<td><input type="text" id="givenName" onFocus="choose(this)" onKeyUp="searchBoxChange(event, this)"></td>
-				</tr>
-				<tr>
-					<td>Last Name</td>
-					<td><input type="text" id="familyName" onFocus="javascript:choose(this)" onKeyUp="searchBoxChange(event, this)"></td>
+					<td>Identifier or Patient Name</td>
+					<td><input type="text" id="searchBox" onKeyUp="searchBoxChange(event, this)"></td>
+					<input type="hidden" id="searchType">
 				</tr>
 			</table>
 			<!-- <input type="submit" value="Search" onClick="return updatePatients();"> -->
 		</form>
 		<div id="patientListing">
-			<table id="patientTable" width="100%">
+			<table id="patientTable">
 			 <thead>
 				 <tr>
-				 	<th>Id</th>
 				 	<th>Identifier</th>
 				 	<th>Given Name</th>
 				 	<th>Family Name</th>
@@ -145,7 +134,7 @@
 			 <tbody id="patientTableBody">
 			 </tbody>
 			 <tfoot>
-			 	<tr><td colspan="8"><i>Don't see the patient?</i> Use the <a href="createPatientForm.jsp">Create New Patient Form</a></td></tr>
+			 	<tr><td colspan="8"><br /><i>Don't see the patient?</i> Use the <a href="createPatientForm.jsp">Create New Patient Form</a></td></tr>
 			 </tfoot>
 			</table>
 		</div>
@@ -190,9 +179,8 @@
 	var patientListing= document.getElementById("patientListing");
 	var selectForm    = document.getElementById("selectForm");
 	var findPatient   = document.getElementById("findPatient");
-	var identifierBox = document.getElementById("identifier");
-	var givenNameBox  = document.getElementById("givenName");
-	var familyNameBox = document.getElementById("familyName");
+	var searchBox		= document.getElementById("searchBox");
+	var searchType		= document.getElementById("searchType");
 	var patientTableBody= document.getElementById("patientTableBody");
 	var findPatientForm = document.getElementById("findPatientForm");
 	var selectFormForm  = document.getElementById("selectFormForm");
@@ -205,7 +193,7 @@
 	</request:existsAttribute>
 	
 	// creates back button functionality
-	if (identifierBox.value != "" || givenNameBox.value != "" || familyNameBox.value != "")
+	if (searchBox.value != "")
 		updatePatients();
 	
 </script>

@@ -2,6 +2,17 @@
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
+<style>
+	#menu li {
+		display: list-item;
+		border-left-width: 0px;
+	}
+	
+	#menu li.first {
+		display: none;
+	}
+</style>
+
 <br>
 <h2>Administration</h2>
 
@@ -33,12 +44,9 @@
 </ul>
 
 <h4>Orders</h4>
-<ul>
-	<li><a href="orders/orders.jsp">Void/Unvoid an order</a></li>
-	<li><a href="orders/orderTypes.jsp">Manage order types</a></li>
-</ul>
+<%@ include file="orders/localHeader.jsp" %>
 
-<h4>Forms</h4>
+<h4>Forms</h4> 
 <ul>
 	<li><a href="forms/forms.jsp">Manage forms</a></li>
 	<li><a href="forms/fields.jsp">Manage fields</a></li>

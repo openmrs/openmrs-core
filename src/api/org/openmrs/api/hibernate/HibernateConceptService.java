@@ -35,7 +35,15 @@ public class HibernateConceptService implements
 		
 		concept.setCreator(context.getAuthenticatedUser());
 		concept.setDateCreated(new Date());
-		session.save(concept);
+		try {
+			HibernateUtil.beginTransaction();
+			session.save(concept);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e);
+		}
 		
 	}
 
@@ -46,7 +54,15 @@ public class HibernateConceptService implements
 		
 		Session session = HibernateUtil.currentSession();
 		
-		session.delete(concept);
+		try {
+			HibernateUtil.beginTransaction();
+			session.delete(concept);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e);
+		}
 		
 	}
 
@@ -73,7 +89,15 @@ public class HibernateConceptService implements
 		else {
 			Session session = HibernateUtil.currentSession();
 			
-			session.saveOrUpdate(concept);
+			try {
+				HibernateUtil.beginTransaction();
+				session.saveOrUpdate(concept);
+				HibernateUtil.commitTransaction();
+			}
+			catch (Exception e) {
+				HibernateUtil.rollbackTransaction();
+				throw new APIException(e);
+			}
 		}
 	}
 

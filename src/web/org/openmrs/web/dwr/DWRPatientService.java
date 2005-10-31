@@ -16,7 +16,7 @@ public class DWRPatientService {
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
-	public Vector findPatients(String identifier, String givenName, String familyName, boolean includeVoided) {
+	public Vector findPatients(String searchValue, String searchType, boolean includeVoided) {
 		
 		Vector patientList = new Vector();
 
@@ -26,10 +26,10 @@ public class DWRPatientService {
 			PatientService ps = context.getPatientService();
 			List<Patient> patients;
 			
-			if (identifier != null && !identifier.equals(""))
-				patients = ps.getPatientsByIdentifier(identifier);
+			if (searchType != null && searchType.equals("identifier"))
+				patients = ps.getPatientsByIdentifier(searchValue);
 			else
-				patients = ps.getPatientsByName(givenName, familyName);
+				patients = ps.getPatientsByName(searchValue);
 			
 			patientList = new Vector(patients.size());
 			for (Patient p : patients) {

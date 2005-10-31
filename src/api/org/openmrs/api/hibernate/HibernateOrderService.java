@@ -35,7 +35,15 @@ public class HibernateOrderService implements
 		
 		order.setCreator(context.getAuthenticatedUser());
 		order.setDateCreated(new Date());
-		session.save(order);
+		try {
+			HibernateUtil.beginTransaction();
+			session.save(order);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e);
+		}
 		
 	}
 
@@ -46,7 +54,15 @@ public class HibernateOrderService implements
 		log.debug("deleting order #" + order.getOrderId());
 		
 		Session session = HibernateUtil.currentSession();	
-		session.delete(order);
+		try {
+			HibernateUtil.beginTransaction();
+			session.delete(order);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e);
+		}
 				
 	}
 
@@ -75,8 +91,15 @@ public class HibernateOrderService implements
 		else {
 			Session session = HibernateUtil.currentSession();
 			
-			session.merge(order);
-			session.saveOrUpdate(order);
+			try {
+				HibernateUtil.beginTransaction();
+				session.saveOrUpdate(order);
+				HibernateUtil.commitTransaction();
+			}
+			catch (Exception e) {
+				HibernateUtil.rollbackTransaction();
+				throw new APIException(e);
+			}
 		}
 	}
 

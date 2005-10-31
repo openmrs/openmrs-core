@@ -32,17 +32,36 @@ body {
 	padding: 1px;
 }
 
+#menu {
+	padding-left: 2px;
+}
+
+#menu li {
+	display: inline;
+	border-left: 1px solid black;
+	padding-left: 5px;
+	padding-right: 2px;
+}
+
+#menu li.first {
+	border-left-width: 0px;
+}
+
+#menu .active {
+	font-weight: bold;
+}
+
 #content {
 	padding: 5px;
 }
 
-#patientTableBody {
-	height: 150px;
-	overflow: auto;		/*scrolls the table in non-IE* browsers*/
-	}
-	#patientTableBody tr {
-		height: 1em;	/*fixes scrolling bug in IE6.  */
-	}
+#patientTable {
+	width: 100%;
+}
+
+#patientTable thead th {
+	text-align: left;
+}
 
 #patientSummary, #patientSummary * { font-size: 11px; }
 #patientSummary .boxHeader { font-size: 12px; }
@@ -79,7 +98,9 @@ span.error, div.error {
 	border: 1px dashed darkred;
 	background-color: lightpink;
 	padding: 1px 6px 1px 6px;
+	margin-left: 4px;
+	margin-right: 4px;
 	}
 	input.error, textarea.error {
-		border: 2px solid darkred;
+		color: darkred;
 	}

@@ -12,23 +12,33 @@
 	        <property name="mappings">
 	            <props>
 	                <prop key="**/*.htm">springController</prop>
-	                <prop key="**/editOrderType.form">orderTypeForm</prop>
+	                <prop key="**/orderType.list">orderTypeList</prop>
+	                <prop key="**/orderType.form">orderTypeForm</prop>
 	            </props>
 	        </property>
 	    </bean>
 	    
-		<bean id="orderTypeForm" class="org.openmrs.web.spring.OrderTypeFormController" />
+	    <!-- Order Type -->
+			<!--<bean id="orderTypeList" class="org.openmrs.web.spring.OrderTypeListController" />-->
+			<!--<bean id="orderTypeForm" class="org.openmrs.web.spring.OrderTypeFormController" />-->
 
-		<!--  Validator and Form Controller for the "Price Increase" page 
-		<bean id="orderTypeValidator" class="org.openmrs.web.spring.OrderTypeValidator"/>
-		<bean id="orderTypeForm" class="org.openmrs.web.spring.OrderTypeFormController">
-			<property name="sessionForm"><value>true</value></property>
-			<property name="commandName"><value>orderType</value></property>
-			<property name="commandClass"><value>org.openmrs.OrderType</value></property>
-			<property name="validator"><ref bean="orderTypeValidator"/></property>
-			<property name="formView"><value>/admin/orders/editOrderType.jsp</value></property>
-			<property name="successView"><value>/openmrs/admin/orders/orderTypes.jsp</value></property>
-		</bean>-->
+			<bean id="orderTypeList" class="org.openmrs.web.spring.OrderTypeListController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>orderTypeList</value></property>
+				<property name="formView"><value>orderTypeList.jsp</value></property>
+				<property name="successView"><value>orderType.list</value></property>
+			</bean>
+	
+			<!--  Validator and Form Controller for the "Price Increase" page -->
+			<bean id="orderTypeValidator" class="org.openmrs.web.spring.OrderTypeValidator"/>
+			<bean id="orderTypeForm" class="org.openmrs.web.spring.OrderTypeFormController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>orderType</value></property>
+				<property name="validator"><ref bean="orderTypeValidator"/></property>
+				<property name="formView"><value>orderType.jsp</value></property>
+				<property name="successView"><value>orderType.list</value></property>
+			</bean>
+		<!-- /Order Type -->
 		
 		<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
 			<property name="basename">

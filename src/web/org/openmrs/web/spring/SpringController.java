@@ -14,7 +14,9 @@ public class SpringController implements Controller {
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
     	
-    	return new ModelAndView(request.getServerName());
+    	String path = request.getServletPath();
+    	path = path.replace(".htm", ".jsp");
+    	return new ModelAndView(path);
         
     }
 }

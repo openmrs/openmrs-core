@@ -35,7 +35,15 @@ public class HibernateFormService implements
 		
 		form.setCreator(context.getAuthenticatedUser());
 		form.setDateCreated(new Date());
-		session.save(form);
+		try {
+			HibernateUtil.beginTransaction();
+			session.save(form);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e);
+		}
 		
 	}
 
@@ -45,7 +53,15 @@ public class HibernateFormService implements
 	public void deleteForm(Form form) throws APIException {
 		Session session = HibernateUtil.currentSession();
 		
-		session.delete(form);		
+		try {
+			HibernateUtil.beginTransaction();
+			session.delete(form);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e);
+		}	
 	}
 
 	/**
@@ -71,7 +87,15 @@ public class HibernateFormService implements
 		else {
 			Session session = HibernateUtil.currentSession();
 			
-			session.saveOrUpdate(form);
+			try {
+				HibernateUtil.beginTransaction();
+				session.saveOrUpdate(form);
+				HibernateUtil.commitTransaction();
+			}
+			catch (Exception e) {
+				HibernateUtil.rollbackTransaction();
+				throw new APIException(e);
+			}
 		}
 	}
 
@@ -175,7 +199,15 @@ public class HibernateFormService implements
 		
 		field.setCreator(context.getAuthenticatedUser());
 		field.setDateCreated(new Date());
-		session.save(field);
+		try {
+			HibernateUtil.beginTransaction();
+			session.save(field);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e);
+		}
 	}
 	
 	/**
@@ -187,7 +219,15 @@ public class HibernateFormService implements
 		else {
 			Session session = HibernateUtil.currentSession();
 			
-			session.saveOrUpdate(field);
+			try {
+				HibernateUtil.beginTransaction();
+				session.saveOrUpdate(field);
+				HibernateUtil.commitTransaction();
+			}
+			catch (Exception e) {
+				HibernateUtil.rollbackTransaction();
+				throw new APIException(e);
+			}
 		}
 	}
 
@@ -197,7 +237,15 @@ public class HibernateFormService implements
 	public void deleteField(Field field) throws APIException {
 		Session session = HibernateUtil.currentSession();
 		
-		session.delete(field);
+		try {
+			HibernateUtil.beginTransaction();
+			session.delete(field);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e);
+		}
 		
 	}
 	

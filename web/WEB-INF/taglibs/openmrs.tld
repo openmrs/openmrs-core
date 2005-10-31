@@ -35,6 +35,11 @@
 		<required>true</required>
 		<rtexprvalue>false</rtexprvalue>
 	</attribute>
+	<attribute>
+		<name>redirect</name>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
 </tag>
 
 <tag>

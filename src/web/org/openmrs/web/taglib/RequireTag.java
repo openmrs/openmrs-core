@@ -21,6 +21,7 @@ public class RequireTag extends TagSupport {
 
 	private String privilege;
 	private String otherwise;
+	private String redirect;
 	private boolean errorOccurred = false;
 	public int doStartTag() {
 		
@@ -46,7 +47,12 @@ public class RequireTag extends TagSupport {
 		}
 		
 		if (errorOccurred) {
-			String url = request.getRequestURI();
+			String url = "";
+			if (redirect != null && !redirect.equals(""))
+				url = request.getContextPath() + redirect;
+			else
+				url = request.getRequestURI();
+			
 			if (request.getQueryString() != null)
 				url = url + "?" + request.getQueryString();
 			httpSession.setAttribute("login_redirect",  url);
@@ -54,7 +60,7 @@ public class RequireTag extends TagSupport {
 				httpResponse.sendRedirect(request.getContextPath() + otherwise);
 			}
 			catch (IOException e) {
-				// cannot redirect
+				// oops, cannot redirect
 				throw new APIException(e.getMessage());
 			}
 		}
@@ -85,4 +91,12 @@ public class RequireTag extends TagSupport {
 		this.otherwise = otherwise;
 	}
 
+	public String getRedirect() {
+		return redirect;
+	}
+
+	public void setRedirect(String redirect) {
+		this.redirect = redirect;
+	}
+	
 }

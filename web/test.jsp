@@ -17,9 +17,12 @@ try {
 	out.write("Locale.getLanguage: " + request.getLocale().getLanguage() + "<br>");
 	out.write("Locale.toString: " + request.getLocale().toString() + "<br>");
 	
-	out.write("request.getRequestURL" + request.getRequestURL() + "<br>");
-	out.write("request.getRequestURI" + request.getRequestURI() + "<br>");
-	out.write("request.getQueryString" + request.getQueryString() + "<br>");
+	out.write("request.getRequestURL: " + request.getRequestURL() + "<br>");
+	out.write("request.getRequestURI: " + request.getRequestURI() + "<br>");
+	out.write("request.getQueryString: " + request.getQueryString() + "<br>");
+	out.write("request.getPathTransalated: " + request.getPathTranslated() + "<br>");
+	out.write("request.getPathInfo: " + request.getPathInfo() + "<br>");
+	out.write("request.getServletPath: " + request.getServletPath() + "<br>");
 	
 	Context context = (Context)session.getValue("__openmrs_context");
 	context.authenticate("admin", "test");			

@@ -34,7 +34,15 @@ public class HibernateEncounterService implements
 		
 		encounter.setCreator(context.getAuthenticatedUser());
 		encounter.setDateCreated(new Date());
-		session.save(encounter);
+		try {
+			HibernateUtil.beginTransaction();
+			session.save(encounter);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e);
+		}
 	}
 
 	/**
@@ -44,7 +52,15 @@ public class HibernateEncounterService implements
 		
 		Session session = HibernateUtil.currentSession();
 		
-		session.delete(encounter);
+		try {
+			HibernateUtil.beginTransaction();
+			session.delete(encounter);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e);
+		}
 		
 	}
 
@@ -128,7 +144,15 @@ public class HibernateEncounterService implements
 			
 			//encounter.setChangedBy(context.getAuthenticatedUser());
 			//encounter.setDateChanged(new Date());
-			session.saveOrUpdate(encounter);
+			try {
+				HibernateUtil.beginTransaction();
+				session.saveOrUpdate(encounter);
+				HibernateUtil.commitTransaction();
+			}
+			catch (Exception e) {
+				HibernateUtil.rollbackTransaction();
+				throw new APIException(e);
+			}
 		}
 	}
 }

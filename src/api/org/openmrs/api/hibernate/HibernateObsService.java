@@ -36,7 +36,15 @@ public class HibernateObsService implements
 		
 		obs.setCreator(context.getAuthenticatedUser());
 		obs.setDateCreated(new Date());
-		session.save(obs);
+		try {
+			HibernateUtil.beginTransaction();
+			session.save(obs);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e);
+		}
 	}
 
 	/**
@@ -46,7 +54,15 @@ public class HibernateObsService implements
 		
 		Session session = HibernateUtil.currentSession();
 		
-		session.delete(obs);
+		try {
+			HibernateUtil.beginTransaction();
+			session.delete(obs);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e);
+		}
 		
 	}
 
