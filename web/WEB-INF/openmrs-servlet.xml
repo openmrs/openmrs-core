@@ -14,11 +14,12 @@
 	                <prop key="**/*.htm">springController</prop>
 	                <prop key="**/orderType.list">orderTypeList</prop>
 	                <prop key="**/orderType.form">orderTypeForm</prop>
+	                <prop key="**/patient.form">patientForm</prop>
 	            </props>
 	        </property>
 	    </bean>
 	    
-	    <!-- Order Type -->
+	    <!-- ====== Order Type ====== -->
 			<!--<bean id="orderTypeList" class="org.openmrs.web.spring.OrderTypeListController" />-->
 			<!--<bean id="orderTypeForm" class="org.openmrs.web.spring.OrderTypeFormController" />-->
 
@@ -29,7 +30,7 @@
 				<property name="successView"><value>orderType.list</value></property>
 			</bean>
 	
-			<!--  Validator and Form Controller for the "Price Increase" page -->
+			<!--  Validator and Form Controller for the add/edit order types page -->
 			<bean id="orderTypeValidator" class="org.openmrs.web.spring.OrderTypeValidator"/>
 			<bean id="orderTypeForm" class="org.openmrs.web.spring.OrderTypeFormController">
 				<property name="sessionForm"><value>true</value></property>
@@ -38,7 +39,22 @@
 				<property name="formView"><value>orderType.jsp</value></property>
 				<property name="successView"><value>orderType.list</value></property>
 			</bean>
-		<!-- /Order Type -->
+		<!-- ====== /Order Type ====== -->
+		
+		
+		<!-- ====== Patient ====== -->
+		
+			<!--  Validator and Form Controller for the page -->
+			<bean id="patientValidator" class="org.openmrs.web.spring.PatientValidator"/>
+			<bean id="patientForm" class="org.openmrs.web.spring.PatientFormController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>patient</value></property>
+				<property name="validator"><ref bean="patientValidator"/></property>
+				<property name="formView"><value>patientForm.jsp</value></property>
+				<property name="successView"><value>patient.list</value></property>
+			</bean>
+		
+		<!-- ====== /Patient ====== -->
 		
 		<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
 			<property name="basename">

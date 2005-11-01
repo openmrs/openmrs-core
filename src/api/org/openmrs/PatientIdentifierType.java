@@ -118,5 +118,8 @@ public class PatientIdentifierType implements java.io.Serializable {
 		this.patientIdentifierTypeId = patientIdentifierTypeId;
 	}
 
+	public String toString() {
+		return this.name;
+	}
 	
 }

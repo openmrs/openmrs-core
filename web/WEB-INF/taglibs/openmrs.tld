@@ -91,49 +91,26 @@
 </tag>
 
 <tag>
-	<name>includeIfExists</name>
-	<tag-class>org.openmrs.web.taglib.IncludeIfExistsTag</tag-class>
+	<name>formatDate</name>
+	<tag-class>org.openmrs.web.taglib.FormatDateTag</tag-class>
 	<body-content>empty</body-content>
 	<description>
-		includes /page/ if the page exists
+		Formats the given date according to either 
+		the predefined type or a given format
 	</description>
 	<attribute>
-		<name>page</name>
+		<name>date</name>
 		<required>true</required>
-		<rtexprvalue>false</rtexprvalue>
-	</attribute>
-</tag>
-
-<tag>
-	<name>getContext</name>
-	<tag-class>org.openmrs.web.taglib.GetContextTag</tag-class>
-	<body-content>empty</body-content>
-	<description>
-		Retrieves the context from the httpSession and stores it in 
-		defined 'var' (default='context') in the page scope
-	</description>
-	<attribute>
-		<name>var</name>
-		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
+		<type>java.util.Date</type>
 	</attribute>
-</tag>
-
-<tag>
-	<name>users</name>
-	<tag-class>org.openmrs.web.taglib.UsersTag</tag-class>
-	<body-content>JSP</body-content>
-	<description>
-		Loops over the current users in the system
-		Optionally searches on role
-	</description>
 	<attribute>
-		<name>var</name>
+		<name>type</name>
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
-		<name>role</name>
+		<name>format</name>
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>

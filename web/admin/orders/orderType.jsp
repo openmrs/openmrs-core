@@ -33,11 +33,11 @@
 	</tr>
 	<c:if test="${orderType.orderTypeId != null}">
 		<tr>
-			<td><spring:message code="OrderType.creator"/></td>
+			<td><spring:message code="general.creator"/></td>
 			<td>${orderType.creator}</td>
 		</tr>
 		<tr>
-			<td><spring:message code="OrderType.dateCreated"/></td>
+			<td><spring:message code="general.dateCreated"/></td>
 			<td>${orderType.dateCreated}</td>
 		</tr>
 	<input type="hidden" name="orderTypeId:int" value="<c:out value="${orderType.orderTypeId}"/>">

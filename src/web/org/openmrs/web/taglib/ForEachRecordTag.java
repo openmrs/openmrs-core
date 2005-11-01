@@ -1,5 +1,6 @@
 package org.openmrs.web.taglib;
 
+import java.util.HashMap;
 import java.util.Iterator;
 
 import javax.servlet.jsp.JspException;
@@ -29,17 +30,26 @@ public class ForEachRecordTag extends BodyTagSupport {
 		
 		Context context = (Context)pageContext.getSession().getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-		if (name.equals("PatientIdentifierType")) {
+		if (name.equals("patientIdentifierType")) {
 			PatientService ps = context.getPatientService();
 			records = ps.getPatientIdentifierTypes().iterator();
 		}
-		else if (name.equals("Location")) {
+		else if (name.equals("location")) {
 			EncounterService es = context.getEncounterService();
 			records = es.getLocations().iterator();
 		}
-		else if (name.equals("Tribe")) {
+		else if (name.equals("tribe")) {
 			PatientService ps = context.getPatientService();
 			records = ps.getTribes().iterator();
+		}
+		else if (name.equals("civilStatus")) {
+			HashMap<String, String> opts = new HashMap<String, String>();
+			opts.put("1", "Single");
+			opts.put("2", "Married");
+			opts.put("3", "Divorced");
+			opts.put("4", "Widowed");
+			records = opts.entrySet().iterator();
+			select = select.toString() + "=" + opts.get(select);
 		}
 		else {
 			log.error(name + " not found in ForEachRecord list");
@@ -61,6 +71,10 @@ public class ForEachRecordTag extends BodyTagSupport {
 			Object obj = records.next();
 			pageContext.setAttribute("record", obj);
 			pageContext.setAttribute("selected", obj.equals(select) ? "selected" : "");
+			if (name.equals("civilStatus")) {
+				String str = obj.toString();
+				pageContext.setAttribute("selected", str.equals(select) ? "selected" : "");
+			}
 		}
 	}
 
@@ -72,6 +86,10 @@ public class ForEachRecordTag extends BodyTagSupport {
 			Object obj = records.next();
 			pageContext.setAttribute("record", obj);
 			pageContext.setAttribute("selected", obj.equals(select) ? "selected" : "");
+			if (name.equals("civilStatus")) { //Kludge until this in the db and not a HashMap
+				String str = obj.toString();
+				pageContext.setAttribute("selected", str.equals(select) ? "selected" : "");
+			}
             return EVAL_BODY_BUFFERED;
         }
         else

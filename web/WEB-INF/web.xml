@@ -100,8 +100,8 @@
 				/src/web/org/openmrs/web/struts/*
 				/web/WEB-INF/struts-config.xml 
 				/web/WEB-INF/taglibs/struts-*.tld
-	-->
-	  	<!-- Standard Action Servlet Configuration (with debugging) -->
+	-
+	  	- Standard Action Servlet Configuration (with debugging) -
 	  	<servlet>
 			<servlet-name>StrutsServlet</servlet-name>
 			<servlet-class>
@@ -147,7 +147,7 @@
 			<taglib-location>/WEB-INF/taglibs/struts-logic.tld</taglib-location>
 		</taglib>
 	
-	<!-- ==/Struts Configuration=============== -->
+	- ==/Struts Configuration=============== -->
 
 
 

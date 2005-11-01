@@ -136,7 +136,10 @@
 			 <tbody id="patientTableBody">
 			 </tbody>
 			 <tfoot>
-			 	<tr><td colspan="8"><br /><i><spring:message code="formentry.patient.missing"/></i> <a href="createPatientForm.jsp"><spring:message code="Patient.create"/></a></td></tr>
+			 	<tr><td colspan="8"><br />
+			 		<i><spring:message code="formentry.patient.missing"/></i> 
+			 		<a href="${pageContext.request.contextPath}/admin/patients/patient.form"><spring:message code="Patient.create"/></a>
+				</td></tr>
 			 </tfoot>
 			</table>
 		</div>
