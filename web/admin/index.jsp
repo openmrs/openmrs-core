@@ -24,11 +24,7 @@
 </ul>
 
 <h4>Patients</h4>
-<ul>
-	<li><a href="patients/patients.jsp">Manage the patients</a></li>
-	<li><a href="patients/tribes.jsp">Manage the tribes</a></li>
-	<li><a href="patients/identifierTypes.jsp">Manage patient identifier types</a></li>
-</ul>
+	<%@ include file="patients/localHeader.jsp" %>
 
 <h4>Encounters</h4>
 <ul>
@@ -44,7 +40,7 @@
 </ul>
 
 <h4>Orders</h4>
-<%@ include file="orders/localHeader.jsp" %>
+	<%@ include file="orders/localHeader.jsp" %>
 
 <h4>Forms</h4> 
 <ul>

@@ -32,7 +32,7 @@ public class LoginServlet extends HttpServlet {
 			redirect = request.getContextPath();
 		
 		HttpSession httpSession = request.getSession();
-		
+
 		Context context = (Context)httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		if (context == null) {
 			httpSession.setAttribute(Constants.OPENMRS_ERROR_ATTR, "Your session has expired.");

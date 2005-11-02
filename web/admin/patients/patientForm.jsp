@@ -6,7 +6,7 @@
 <openmrs:require privilege="Manage Patients" otherwise="/login.jsp" redirect="/admin/patients/patient.form"/>
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
-<%@ include file="localHeader" %>
+<%@ include file="localHeader.jsp" %>
 
 <script>
 	// Saves the last tab clicked on (aka "current" or "selected" tab)

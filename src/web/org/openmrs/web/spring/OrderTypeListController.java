@@ -1,6 +1,5 @@
 package org.openmrs.web.spring;
 
-import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
@@ -38,9 +37,8 @@ public class OrderTypeListController extends SimpleFormController {
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-        NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
         binder.registerCustomEditor(java.lang.Integer.class,
-                new CustomNumberEditor(java.lang.Integer.class, nf, true));
+                new CustomNumberEditor(java.lang.Integer.class, true));
 	}
 
 	/**
@@ -55,24 +53,22 @@ public class OrderTypeListController extends SimpleFormController {
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		Locale locale = request.getLocale();
-		if (context == null) {
-			httpSession.setAttribute(Constants.OPENMRS_ERROR_ATTR, "Your session has expired.");
-			// response.sendRedirect(request.getContextPath() + "/logout");
-			return new ModelAndView("/logout");
+		String view = getFormView();
+		if (context != null && context.isAuthenticated()) {
+			String[] orderTypeList = request.getParameterValues("orderTypeId");
+			AdministrationService as = context.getAdministrationService();
+			OrderService os = context.getOrderService();
+			
+			for (String o : orderTypeList) {
+				//TODO convenience method deleteOrderType(Integer) ??
+				as.deleteOrderType(os.getOrderType(Integer.valueOf(o)));
+			}
+			
+			view = getSuccessView();
+			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Order Types deleted.");
 		}
-		
-		String[] orderTypeList = request.getParameterValues("orderTypeId");
-		AdministrationService as = context.getAdministrationService();
-		OrderService os = context.getOrderService();
-		
-		for (String o : orderTypeList) {
-			//TODO convenience method deleteOrderType(Integer) ??
-			as.deleteOrderType(os.getOrderType(Integer.valueOf(o)));
-		}
-		
-		httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Order Types deleted.");
-		
-		return new ModelAndView(new RedirectView(getSuccessView()));
+			
+		return new ModelAndView(new RedirectView(view));
 	}
 
 	/**

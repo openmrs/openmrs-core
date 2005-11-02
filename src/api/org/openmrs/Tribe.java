@@ -63,7 +63,13 @@ public class Tribe implements java.io.Serializable {
 	 * @return Returns the retired status.
 	 */
 	public Boolean isRetired() {
+		if (retired == null)
+			return false;
 		return retired;
+	}
+	
+	public Boolean getRetired() {
+		return isRetired();
 	}
 
 	/**

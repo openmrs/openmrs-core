@@ -1,5 +1,9 @@
 package org.openmrs.web.spring;
 
+import java.util.List;
+import java.util.Locale;
+import java.util.Vector;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -7,8 +11,9 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.OrderType;
-import org.openmrs.api.OrderService;
+import org.openmrs.PatientIdentifierType;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.api.PatientService;
 import org.openmrs.context.Context;
 import org.openmrs.web.Constants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -18,7 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
-public class OrderTypeFormController extends SimpleFormController {
+public class PatientIdentifierTypeListController extends SimpleFormController {
 	
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
@@ -32,7 +37,6 @@ public class OrderTypeFormController extends SimpleFormController {
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-        //NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
         binder.registerCustomEditor(java.lang.Integer.class,
                 new CustomNumberEditor(java.lang.Integer.class, true));
 	}
@@ -48,13 +52,21 @@ public class OrderTypeFormController extends SimpleFormController {
 		
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Locale locale = request.getLocale();
 		String view = getFormView();
-		
 		if (context != null && context.isAuthenticated()) {
-			OrderType orderType = (OrderType)obj;
-			context.getAdministrationService().updateOrderType(orderType);
+			
+			String[] identifierTypeList = request.getParameterValues("patientIdentifierTypeId");
+			AdministrationService as = context.getAdministrationService();
+			PatientService ps = context.getPatientService();
+			
+			for (String o : identifierTypeList) {
+				//TODO convenience method deleteIdentifierType(Integer) ??
+				as.deletePatientIdentifierType(ps.getPatientIdentifierType(Integer.valueOf(o)));
+			}
+			
 			view = getSuccessView();
-			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Order Type saved.");
+			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Identifier Types deleted.");
 		}
 		
 		return new ModelAndView(new RedirectView(view));
@@ -69,19 +81,19 @@ public class OrderTypeFormController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-		HttpSession httpSession = request.getSession();
+    	HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-		OrderType orderType = new OrderType();
+		//default empty Object
+		List<PatientIdentifierType> identifierTypeList = new Vector<PatientIdentifierType>();
 		
+		//only fill the Object is the user has authenticated properly
 		if (context != null && context.isAuthenticated()) {
-			OrderService os = context.getOrderService();
-			String orderTypeId = request.getParameter("orderTypeId");
-	    	if (orderTypeId != null)
-	    		orderType = os.getOrderType(Integer.valueOf(orderTypeId));	
+			PatientService ps = context.getPatientService();
+	    	identifierTypeList = ps.getPatientIdentifierTypes();
 		}
     	
-        return orderType;
+        return identifierTypeList;
     }
     
 }

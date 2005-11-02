@@ -5,7 +5,7 @@
 		<td>Preferred</td>
 		<td>
 			<spring:bind path="preferred">
-				<input type="hidden" name="_${status.expression}">
+				<input type="hidden" name="_preferred">
 				<input type="checkbox" name="preferred" id="preferred" <c:if test="${status.value == true}">checked</c:if> />
 				${status.errorMessage}
 			</spring:bind>

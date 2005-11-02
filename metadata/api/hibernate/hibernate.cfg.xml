@@ -13,6 +13,9 @@
 		<property name="hibernate.connection.url">
 			jdbc:mysql://localhost:3306/openmrs
 		</property>
+		<property name="hibernate.connection.validationQuery">
+			select * from users
+		</property>
 		<property name="hibernate.connection.username">test</property>
 		<property name="hibernate.connection.password">test</property>
 		<property name="hibernate.show_sql">true</property>

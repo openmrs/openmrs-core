@@ -1,6 +1,0 @@
-<div id="menu">
-	<a href="../">Admin</a> |
-	<a href="patients.jsp">Patients</a> |
-	<a href="tribes.jsp">Tribes</a> |
-	<a href="identifierTypes.jsp">Manage Identifier Types</a>
-</div>

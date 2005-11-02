@@ -2,7 +2,7 @@
 	<tr>
 		<td>Gender</td>
 		<td><spring:bind path="patient.gender">
-			<select name="${status.expression}">
+			<select name="gender">
 				<option value="M" <c:if test="${status.value == \"M\"}">selected</c:if>>Male</option>
 				<option value="F" <c:if test="${status.value == \"F\"}">selected</c:if>>Female</option>
 			</select>
@@ -14,7 +14,7 @@
 		<td>Race</td>
 		<td>
 			<spring:bind path="patient.race">
-				<input type="text" name="${status.expression}" id="${status.expression}" size="10" value="${status.value}" />
+				<input type="text" name="race" id="race" size="10" value="${status.value}" />
 				${status.errorMessage}
 			</spring:bind>
 		</td>
@@ -23,14 +23,15 @@
 		<td>Birthdate</td>
 		<td colspan="3">
 			<spring:bind path="patient.birthdate">			
-				<input type="text" name="${status.expression}" id="${status.expression}" size="10" 
+				<input type="text" name="birthdate" id="birthdate" size="10" 
 					   value="${status.value}" />
 				${status.errorMessage} 
 			</spring:bind>
 			<spring:bind path="patient.birthdateEstimated">
 				Estimated
-				<input type="checkbox" name="${status.expression}" 
-					   id="${status.expression}" value="true" 
+				<input type="hidden" name="_birthdateEstimated">
+				<input type="checkbox" name="birthdateEstimated" 
+					   id="birthdateEstimated" value="true" 
 					   <c:if test="${status.value == true}">checked</c:if> />
 				${status.errorMessage}
 			</spring:bind>
@@ -40,7 +41,7 @@
 		<td>Birthplace</td>
 		<td>
 			<spring:bind path="patient.birthplace">
-				<input type="text" name="${status.expression}" id="${status.expression}" value="${status.value}" />
+				<input type="text" name="birthplace" id="birthplace" value="${status.value}" />
 				${status.errorMessage}
 			</spring:bind>
 		</td>
@@ -48,7 +49,7 @@
 		<td>Tribe</td>
 		<td>
 			<spring:bind path="patient.tribe">
-				<select name="${status.expression}">
+				<select name="tribe">
 					<openmrs:forEachRecord name="tribe" select="${status.value}">
 						<option value="${record.tribeId}" ${selected}>
 							${record.name}
@@ -63,7 +64,7 @@
 		<td>Citizenship</td>
 		<td>
 			<spring:bind path="patient.citizenship">
-				<input type="text" name="${status.expression}" id="${status.expression}" value="${status.value}" />
+				<input type="text" name="citizenship" id="citizenship" value="${status.value}" />
 				${status.errorMessage}
 			</spring:bind>
 		</td>
@@ -72,7 +73,7 @@
 		<td>Mother's Name</td>
 		<td>
 			<spring:bind path="patient.mothersName">
-				<input type="text" name="${status.expression}" id="${status.expression}" value="${status.value}" />
+				<input type="text" name="mothersName" id="mothersName" value="${status.value}" />
 				${status.errorMessage}
 			</spring:bind>
 		</td>
@@ -82,7 +83,7 @@
 		<td>
 			<spring:bind path="patient.civilStatus">
 				<!-- TODO put this hashmap somewhere more central (in db?) -->
-				<select name="${status.expression}">
+				<select name="civilStatus">
 					<openmrs:forEachRecord name="civilStatus" select="${status.value}">
 						<option value="${record.key}" ${selected}>
 							${record.value}
@@ -97,7 +98,7 @@
 		<td>Death Date</td>
 		<td>
 			<spring:bind path="patient.deathDate">
-				<input type="text" name="deathDate" id="${status.expression}" size="10" 
+				<input type="text" name="deathDate" id="deathDate" size="10" 
 					value="<openmrs:formatDate date="${status.value}" type="textbox"/>"/>
 				${status.errorMessage}
 			</spring:bind>
@@ -105,7 +106,7 @@
 		<td>Cause of Death</td>
 		<td>
 			<spring:bind path="patient.causeOfDeath">
-				<input type="text" name="causeOfDeath" id="${status.expression}" value="${status.value}" />
+				<input type="text" name="causeOfDeath" id="causeOfDeath" value="${status.value}" />
 				${status.errorMessage}
 			</spring:bind>
 		</td>
@@ -114,7 +115,7 @@
 		<td>Health District</td>
 		<td>
 			<spring:bind path="patient.healthDistrict">
-				<input type="text" name="healthDistrict" id="${status.expression}" value="${status.value}" />
+				<input type="text" name="healthDistrict" id="healthDistrict" value="${status.value}" />
 				${status.errorMessage}
 			</spring:bind>
 		</td>
@@ -124,7 +125,7 @@
 		<td>
 			<!-- TODO make this list of locations> -->
 			<spring:bind path="patient.healthCenter">
-				<input type="text" name="healthCenter" id="${status.expression}" value="${status.value}" />
+				<input type="text" name="healthCenter" id="healthCenter" value="${status.value}" />
 				${status.errorMessage}
 			</spring:bind>
 		</td>
