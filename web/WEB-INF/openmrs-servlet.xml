@@ -62,7 +62,7 @@
 					<property name="sessionForm"><value>true</value></property>
 					<property name="commandName"><value>patient</value></property>
 					<property name="validator"><ref bean="patientValidator"/></property>
-					<property name="formView"><value>patient.jsp</value></property>
+					<property name="formView"><value>patientForm.jsp</value></property>
 					<property name="successView"><value>index.htm</value></property>
 				</bean>
 			<!-- ** /Patient ** -->
@@ -101,10 +101,12 @@
 		
 		<!-- ====== /Patient Sector ====== -->
 
+		<!--  TODO: change back to ResourceBundleMessageSource to improve speed -->
 		<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
 			<property name="basename">
-				<value>org.openmrs.web.spring.messages</value>
+				<value>messages</value>
 			</property>
+
 		</bean>
 
 	</beans>

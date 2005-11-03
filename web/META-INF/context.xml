@@ -1,14 +1,14 @@
 <Context path="/openmrs" docBase="openmrs" antiJARLocking="true">
-	<Resource name="jdbc/openmrs"
+	<!--<Resource name="jdbc/openmrs"
 		auth="Container"
 		type="javax.sql.DataSource"
 		factory="org.apache.commons.dbcp.BasicDataSourceFactory"
-		validationQuery="SELECT * FROM users WHERE user_id = 1"
+		validationQuery="SELECT * FROM users"
 		url="jdbc:mysql://localhost:3306/openmrs"
 		driverClassName="com.mysql.jdbc.Driver"
 		username="test"
 		password="test"
 		maxWait="3000"
 		maxIdle="100"
-		maxActive="10" />
+		maxActive="10" />-->
 </Context>

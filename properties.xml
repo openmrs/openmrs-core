@@ -29,14 +29,16 @@
     <property name="database.dir" value="${mysql.dir}" />
     <property name="database.type" value="mysql" />
     <property name="database.name" value="openmrs" />
-    <property name="database.host" value="localhost" />
+    <property name="database.host" value="localhost:3306" />
     <property name="database.username" value="test" />
-    <property name="database.password" value="blah" />
+	<property name="database.password" value="test" />
+    <property name="database.validationQuery" value="select * from users" />
     <property name="database.driver_class" value="com.mysql.jdbc.Driver" />
-    <property name="database.url" 
-        value="jdbc:${database.type}://${database.host}/${database.name}?autoReconnect=true&amp;amp;useUnicode=true&amp;amp;characterEncoding=utf-8" />
-    <property name="database.show_sql" value="true" />
-    <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
+    <property name="database.connection.url" 
+        value="jdbc:${database.type}://${database.host}/${database.name}?autoReconnect=true" />
+    <property name="hibernate.lazy" value="true" />
+    <property name="hibernate.show_sql" value="true" />
+    <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" /> 
     
     <!-- Environment properties -->
     <property environment="env"/>

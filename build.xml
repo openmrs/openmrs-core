@@ -14,6 +14,10 @@
 
 	<!-- import properties -->
 	<import file="properties.xml" />
+	<echo message="Attempting to load: ${user.home}/.${ant.project.name}-build.properties"/>
+	<echo message="Place any default override properties in this file. file format:"/>
+	<echo message="property=value"/>
+	<echo message="Note: A clean build is needed to refresh the connection properties"/>
 
     <!-- Taskdefs -->
 	<taskdef file="${tomcat.dir}/tomcatTasks.properties">
@@ -21,6 +25,17 @@
 			<pathelement path="${tomcat.dir}/catalina-ant.jar"/>
 		</classpath>
 	</taskdef>
+	
+	<filterset id="variables.to.replace">
+		<filter token="DATABASE-DRIVER_CLASS" value="${database.driver_class}" />
+		<filter token="DATABASE-CONNECTION-URL" value="${database.connection.url}" />
+		<filter token="DATABASE-VALIDATION" value="${database.validationQuery}" />
+		<filter token="DATABASE-USERNAME" value="${database.username}" />
+		<filter token="DATABASE-PASSWORD" value="${database.password}" />
+		<filter token="HIBERNATE-LAZY" value="${hibernate.lazy}" />
+		<filter token="HIBERNATE-SHOW_SQL" value="${hibernate.show_sql}" />
+		<filter token="HIBERNATE-DIALECT" value="${hibernate.dialect}" />
+	</filterset>
 
 	<!-- *********************************************************** -->
 	<!-- **                     TARGETS                           ** -->
@@ -33,8 +48,18 @@
 				<fileset dir="${ant-contrib.dir}" includes="*.jar" />
 			</classpath>
 		</taskdef>
-
+		<!--
+		<uptodate property="properties.isUpToDate" srcfile="properties.xml" >
+			<mapper type="identity"/>
+		</uptodate>
+		<echo message="properties.isUpToDate: ${properties.isUpToDate}"/>
+		-->
 		<!-- test for dependencies/etc here -->
+	</target>
+
+	<target name="props" unless="properties.isUpToDate">
+		<touch file="${metadata.dir}/api/hibernate/hibernate.cfg.xml"/>
+		<echo message="properties.isUpToDate: ${properties.isUpToDate}"/>
 	</target>
 
 	<target name="clean" description="Delete build and dist directories">
@@ -42,12 +67,12 @@
 		<delete dir="${dist.dir}" />
 	</target>
 
-	<target name="compile-api" description="compile api">
+	<target name="compile-api" depends="init" description="compile api">
 		<mkdir dir="${build.dir}/api" />
-		
 		<!-- Copy hibernate metadata -->
 		<copy todir="${build.dir}/api">
 			<fileset dir="${metadata.dir}/api/hibernate" includes="**/*" />
+			<filterset refid="variables.to.replace" />
 		</copy>
 
 		<javac destdir="${build.dir}/api" 
@@ -121,7 +146,10 @@
 		       optimize="${compile.optimize}" 
 		       classpathref="web.compile.classpath" />
 		<copy todir="${build.dir}/web">
-			<fileset file="web/WEB-INF/log4j.xml" />
+			<fileset dir="web/WEB-INF">
+				<include name="log4j.xml" />
+				<include name="messages*" />
+			</fileset>
 		</copy>
 	</target>
 
@@ -152,7 +180,7 @@
 			<lib dir="${dwr.dir}" includes="*.jar" />
 			<lib dir="${ehcache.dir}" includes="*.jar" />
 			<lib dir="${hibernate.dir}" includes="*.jar" />
-			<lib dir="${ibatis.dir}" includes="*.jar" />
+			<!--<lib dir="${ibatis.dir}" includes="*.jar" />-->
 			<lib dir="${log4j.dir}" includes="*.jar" />
 			<lib dir="${jstl.dir}" includes="*.jar" />
 			<lib dir="${jta.dir}" includes="*.jar" />
@@ -161,8 +189,8 @@
 			<lib dir="${spring.dir}" includes="*.jar" />
 			<lib dir="${taglibs.dir}" includes="*.jar" />
 			<lib dir="${velocity.dir}" includes="*.jar" />
-			<lib dir="${struts.dir}" includes="*.jar" />
-			<lib dir="${commons-digester.dir}" includes="*.jar" />
+			<!--<lib dir="${struts.dir}" includes="*.jar" /> -->
+			<!--<lib dir="${commons-digester.dir}" includes="*.jar" />  (for struts) -->
 		</war>
 	</target>
 

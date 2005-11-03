@@ -7,6 +7,7 @@
 
 	<session-factory>
 	
+		<!-- defined in META-INF/context.xml
 		<property name="hibernate.connection.driver_class">
 			com.mysql.jdbc.Driver
 		</property>
@@ -20,13 +21,22 @@
 		<property name="hibernate.connection.password">test</property>
 		<property name="hibernate.show_sql">true</property>
 		<property name="lazy">true</property>
+		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+		-->
+		<property name="hibernate.connection.driver_class">@DATABASE-DRIVER_CLASS@</property>
+		<property name="hibernate.connection.url">@DATABASE-CONNECTION-URL@</property>
+		<property name="hibernate.connection.validationQuery">@DATABASE-VALIDATION@</property>
+		<property name="hibernate.connection.username">@DATABASE-USERNAME@</property>
+		<property name="hibernate.connection.password">@DATABASE-PASSWORD@</property>
+		<property name="hibernate.show_sql">@HIBERNATE-SHOW_SQL@</property>
+		<property name="lazy">@HIBERNATE-LAZY@</property>
+		<property name="hibernate.dialect">@HIBERNATE-DIALECT@</property>
 		<!--
 		<property name="hibernate.connection.datasource">java:comp/env/jdbc/openmrs</property>
+		
+		<property name="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</property>
 		<property name="hibernate.cglib.use_reflection_optimizer">true</property>
-		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
-		<property name="hibernate.show_sql">false</property>
-		-->
-		<!--  <property name="hibernate.cache.provider_class">net.sf.hibernate.cache.EhCacheProvider</property> -->
+		 -->
 
 		<mapping resource="org/openmrs/api/hibernate/Concept.hbm.xml" />
 		<mapping resource="org/openmrs/api/hibernate/ConceptAnswer.hbm.xml" />
