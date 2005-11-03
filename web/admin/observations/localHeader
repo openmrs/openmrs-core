@@ -1,5 +1,0 @@
-<div id="menu">
-	<a href="../">Admin</a> |
-	<a href="observations.jsp">Manage Observations</a> |
-	<a href="mimeTypes.jsp">Manage Mime Types</a>
-</div>

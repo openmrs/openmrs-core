@@ -23,11 +23,8 @@
 			<tr>
 				<td valign="top"><input type="checkbox" name="orderTypeId" value="${orderType.orderTypeId}"></td>
 				<td valign="top">
-					<a href="editOrderType-Standard.jsp?orderTypeId=${orderType.orderTypeId}">
-					   ${orderType.name} (jsp)
-					</a> | 
 					<a href="orderType.form?orderTypeId=${orderType.orderTypeId}">
-					   ${orderType.name} (spring)
+					   ${orderType.name}
 					</a>
 				</td>
 				<td valign="top">${orderType.description}</td>

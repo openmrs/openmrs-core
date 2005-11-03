@@ -3,18 +3,23 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
 <style>
+	ul#menu, #springnote {
+		background-color: whitesmoke;
+		border: 1px solid lightgrey;
+	}
 	#menu li {
 		display: list-item;
 		border-left-width: 0px;
 	}
-	
 	#menu li.first {
 		display: none;
 	}
 </style>
 
-<br>
+<br/>
 <h2>Administration</h2>
+
+<div id="springnote">Marked sections have been springified</div>
 
 <h4>Users</h4>
 <ul>
@@ -34,10 +39,7 @@
 </ul>
 
 <h4>Observations</h4>
-<ul>
-	<li><a href="observations/observations.jsp">Void/Unvoid an observation</a></li>
-	<li><a href="observations/mimeTypes.jsp">Manage mime types</a></li>
-</ul>
+	<%@ include file="observations/localHeader.jsp" %>
 
 <h4>Orders</h4>
 	<%@ include file="orders/localHeader.jsp" %>

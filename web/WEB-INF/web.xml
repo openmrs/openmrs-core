@@ -104,57 +104,7 @@
 			Other struts files: 
 				/lib/struts/*
 				/lib/commons-digester/*
-				/src/web/org/openmrs/web/struts/*
-				/web/WEB-INF/struts-config.xml 
-				/web/WEB-INF/taglibs/struts-*.tld
-	-
-	  	- Standard Action Servlet Configuration (with debugging) -
-	  	<servlet>
-			<servlet-name>StrutsServlet</servlet-name>
-			<servlet-class>
-				org.apache.struts.action.ActionServlet
-			</servlet-class>
-
-			<init-param>
-				<param-name>config</param-name>
-				<param-value>/WEB-INF/struts-config.xml</param-value>
-			</init-param>
-			<init-param>
-				<param-name>debug</param-name>
-				<param-value>2</param-value>
-			</init-param>
-			<init-param>
-				<param-name>detail</param-name>
-				<param-value>2</param-value>
-			</init-param>
-			<init-param>
-				<param-name>validate</param-name>
-				<param-value>true</param-value>
-			</init-param>
-			<load-on-startup>2</load-on-startup>
-		</servlet>
-  
-		<servlet-mapping>
-			<servlet-name>StrutsServlet</servlet-name>
-			<url-pattern>*.do</url-pattern>
-		</servlet-mapping>
-	
-		<taglib>
-			<taglib-uri>/struts-bean</taglib-uri>
-			<taglib-location>/WEB-INF/taglibs/struts-bean.tld</taglib-location>
-		</taglib>
-
-		<taglib>
-			<taglib-uri>/struts-html</taglib-uri>
-			<taglib-location>/WEB-INF/taglibs/struts-html.tld</taglib-location>
-		</taglib>
-
-		  <taglib>
-			<taglib-uri>/struts-logic</taglib-uri>
-			<taglib-location>/WEB-INF/taglibs/struts-logic.tld</taglib-location>
-		</taglib>
-	
-	- ==/Struts Configuration=============== -->
+	     ==/Struts Configuration=============== -->
 
 
 

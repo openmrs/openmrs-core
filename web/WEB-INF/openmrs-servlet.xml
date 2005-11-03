@@ -19,9 +19,39 @@
 	                <prop key="**/tribe.form">tribeForm</prop>
 	                <prop key="**/patientIdentifierType.list">patientIdentifierTypeList</prop>
 	                <prop key="**/patientIdentifierType.form">patientIdentifierTypeForm</prop>
+	                <prop key="**/mimeType.list">mimeTypeList</prop>
+	                <prop key="**/mimeType.form">mimeTypeForm</prop>
 	            </props>
 	        </property>
 	    </bean>
+
+	    <!-- ================================ -->	    
+	    <!-- ====== Observation Sector ====== -->
+	    <!-- ================================ -->
+
+			<!-- ** Mime Type ** -->
+				<!--this is the optional method of declaring values in the constructor -->
+				<!--<bean id="mimeTypeList" class="org.openmrs.web.spring.MimeTypeListController" />-->
+				<!--<bean id="mimeTypeForm" class="org.openmrs.web.spring.MimeTypeFormController" />-->
+	
+				<bean id="mimeTypeList" class="org.openmrs.web.spring.MimeTypeListController">
+					<property name="sessionForm"><value>true</value></property>
+					<property name="commandName"><value>mimeTypeList</value></property>
+					<property name="formView"><value>mimeTypeList.jsp</value></property>
+					<property name="successView"><value>mimeType.list</value></property>
+				</bean>
+		
+				<!--  Validator and Form Controller for the add/edit order types page -->
+				<bean id="mimeTypeValidator" class="org.openmrs.web.spring.MimeTypeValidator"/>
+				<bean id="mimeTypeForm" class="org.openmrs.web.spring.MimeTypeFormController">
+					<property name="sessionForm"><value>true</value></property>
+					<property name="commandName"><value>mimeType</value></property>
+					<property name="validator"><ref bean="mimeTypeValidator"/></property>
+					<property name="formView"><value>mimeTypeForm.jsp</value></property>
+					<property name="successView"><value>mimeType.list</value></property>
+				</bean>
+			<!-- ** /Mime Type ** -->
+		<!-- ====== /Observation Sector ====== -->
 
 	    <!-- ========================== -->	    
 	    <!-- ====== Order Sector ====== -->
@@ -101,7 +131,6 @@
 		
 		<!-- ====== /Patient Sector ====== -->
 
-		<!--  TODO: change back to ResourceBundleMessageSource to improve speed -->
 		<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
 			<property name="basename">
 				<value>messages</value>
