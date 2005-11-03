@@ -1,12 +1,12 @@
-package org.openmrs.web.spring;
+package org.openmrs.web.controller.patient;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Tribe;
+import org.openmrs.Patient;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-public class TribeValidator implements Validator {
+public class PatientValidator implements Validator {
 
 	/** Log for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
@@ -18,7 +18,7 @@ public class TribeValidator implements Validator {
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	public boolean supports(Class c) {
-		return c.equals(Tribe.class);
+		return c.equals(Patient.class);
 	}
 
 	/**
@@ -28,13 +28,16 @@ public class TribeValidator implements Validator {
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	public void validate(Object obj, Errors errors) {
-		Tribe tribe = (Tribe)obj;
-		if (tribe == null) {
-			errors.rejectValue("tribe", "general.error");
+		Patient patient = (Patient)obj;
+		if (patient == null) {
+			errors.rejectValue("patient", "general.error");
 		}
 		else {
-			if (tribe.getName() == null || tribe.getName().equals("")) {
-				errors.rejectValue("name", "general.name.error");
+			if (patient.getIdentifiers() == null || patient.getIdentifiers().size() < 1) {
+				errors.rejectValue("identifiers", "patient.identifiers.error");
+			}
+			if (patient.getNames() == null || patient.getNames().size() < 1) {
+				errors.rejectValue("names", "Patient.name.error");
 			}
 		}
 	}

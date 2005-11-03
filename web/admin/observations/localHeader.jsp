@@ -7,7 +7,7 @@
 			<spring:message code="Observation.manage"/>
 		</a>
 	</li>
-	<li <c:if test="<%= request.getRequestURI().contains("mimeType.") %>">class="active"</c:if>>
+	<li <c:if test="<%= request.getRequestURI().contains("mimeType") %>">class="active"</c:if>>
 		<a href="${pageContext.request.contextPath}/admin/observations/mimeType.list">
 			<spring:message code="MimeType.manage"/>
 		</a>

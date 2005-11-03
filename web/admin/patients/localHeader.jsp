@@ -7,12 +7,12 @@
 			<spring:message code="Patient.manage"/>
 		</a>
 	</li>
-	<li <c:if test="<%= request.getRequestURI().contains("tribe.") %>">class="active"</c:if>>
+	<li <c:if test="<%= request.getRequestURI().contains("tribe") %>">class="active"</c:if>>
 		<a href="${pageContext.request.contextPath}/admin/patients/tribe.list">
 			<spring:message code="Tribe.manage"/>
 		</a>
 	</li>
-	<li <c:if test="<%= request.getRequestURI().contains("patientIdentifierType.") %>">class="active"</c:if>>
+	<li <c:if test="<%= request.getRequestURI().contains("patientIdentifierType") %>">class="active"</c:if>>
 		<a href="${pageContext.request.contextPath}/admin/patients/patientIdentifierType.list">
 			<spring:message code="PatientIdentifierType.manage"/>
 		</a>

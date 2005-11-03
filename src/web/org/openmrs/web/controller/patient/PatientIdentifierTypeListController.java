@@ -1,4 +1,4 @@
-package org.openmrs.web.spring;
+package org.openmrs.web.controller.patient;
 
 import java.util.List;
 import java.util.Locale;
@@ -11,7 +11,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Patient;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.context.Context;
@@ -23,7 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
-public class PatientListController extends SimpleFormController {
+public class PatientIdentifierTypeListController extends SimpleFormController {
 	
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
@@ -54,18 +54,19 @@ public class PatientListController extends SimpleFormController {
 		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		Locale locale = request.getLocale();
 		String view = getFormView();
-		
 		if (context != null && context.isAuthenticated()) {
-			String[] patientList = request.getParameterValues("patientId");
+			
+			String[] identifierTypeList = request.getParameterValues("patientIdentifierTypeId");
+			AdministrationService as = context.getAdministrationService();
 			PatientService ps = context.getPatientService();
 			
-			for (String o : patientList) {
-				//TODO convenience method deletePatient(Integer, String) ??
-				ps.voidPatient(ps.getPatient(Integer.valueOf(o)), "");
+			for (String o : identifierTypeList) {
+				//TODO convenience method deleteIdentifierType(Integer) ??
+				as.deletePatientIdentifierType(ps.getPatientIdentifierType(Integer.valueOf(o)));
 			}
 			
-			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Patients removed.");
 			view = getSuccessView();
+			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Identifier Types deleted.");
 		}
 		
 		return new ModelAndView(new RedirectView(view));
@@ -84,15 +85,15 @@ public class PatientListController extends SimpleFormController {
 		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		//default empty Object
-		List<Patient> patientList = new Vector<Patient>();
+		List<PatientIdentifierType> identifierTypeList = new Vector<PatientIdentifierType>();
 		
 		//only fill the Object is the user has authenticated properly
 		if (context != null && context.isAuthenticated()) {
 			PatientService ps = context.getPatientService();
-	    	patientList = ps.getPatientsByName("");
+	    	identifierTypeList = ps.getPatientIdentifierTypes();
 		}
     	
-        return patientList;
+        return identifierTypeList;
     }
     
 }

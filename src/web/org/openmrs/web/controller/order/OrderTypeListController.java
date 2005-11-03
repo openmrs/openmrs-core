@@ -1,4 +1,4 @@
-package org.openmrs.web.spring;
+package org.openmrs.web.controller.order;
 
 import java.util.List;
 import java.util.Locale;

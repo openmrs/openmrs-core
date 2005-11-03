@@ -1,4 +1,4 @@
-package org.openmrs.web.spring;
+package org.openmrs.web.controller;
 
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.ModelAndView;

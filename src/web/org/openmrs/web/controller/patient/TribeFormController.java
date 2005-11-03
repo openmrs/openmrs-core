@@ -1,4 +1,4 @@
-package org.openmrs.web.spring;
+package org.openmrs.web.controller.patient;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -7,8 +7,8 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.MimeType;
-import org.openmrs.api.ObsService;
+import org.openmrs.Tribe;
+import org.openmrs.api.PatientService;
 import org.openmrs.context.Context;
 import org.openmrs.web.Constants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -18,7 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
-public class MimeTypeFormController extends SimpleFormController {
+public class TribeFormController extends SimpleFormController {
 	
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
@@ -49,12 +49,11 @@ public class MimeTypeFormController extends SimpleFormController {
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		String view = getFormView();
-		
 		if (context != null && context.isAuthenticated()) {
-			MimeType mimeType = (MimeType)obj;
-			context.getAdministrationService().updateMimeType(mimeType);
+			Tribe tribe = (Tribe)obj;
+			context.getAdministrationService().updateTribe(tribe);
 			view = getSuccessView();
-			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Mime Type saved.");
+			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Tribe saved.");
 		}
 		
 		return new ModelAndView(new RedirectView(view));
@@ -72,16 +71,16 @@ public class MimeTypeFormController extends SimpleFormController {
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-		MimeType mimeType = new MimeType();
+		Tribe tribe = new Tribe();
 		
 		if (context != null && context.isAuthenticated()) {
-			ObsService os = context.getObsService();
-			String mimeTypeId = request.getParameter("mimeTypeId");
-	    	if (mimeTypeId != null)
-	    		mimeType = os.getMimeType(Integer.valueOf(mimeTypeId));	
+			PatientService ps = context.getPatientService();
+			String tribeId = request.getParameter("tribeId");
+	    	if (tribeId != null)
+	    		tribe = ps.getTribe(Integer.valueOf(tribeId));	
 		}
     	
-        return mimeType;
+        return tribe;
     }
     
 }

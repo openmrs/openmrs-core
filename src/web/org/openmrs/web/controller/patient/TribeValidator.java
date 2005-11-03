@@ -1,12 +1,12 @@
-package org.openmrs.web.spring;
+package org.openmrs.web.controller.patient;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.MimeType;
+import org.openmrs.Tribe;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-public class MimeTypeValidator implements Validator {
+public class TribeValidator implements Validator {
 
 	/** Log for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
@@ -18,7 +18,7 @@ public class MimeTypeValidator implements Validator {
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	public boolean supports(Class c) {
-		return c.equals(MimeType.class);
+		return c.equals(Tribe.class);
 	}
 
 	/**
@@ -28,19 +28,15 @@ public class MimeTypeValidator implements Validator {
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	public void validate(Object obj, Errors errors) {
-		MimeType orderType = (MimeType)obj;
-		if (orderType == null) {
-			errors.rejectValue("orderType", "general.error");
+		Tribe tribe = (Tribe)obj;
+		if (tribe == null) {
+			errors.rejectValue("tribe", "general.error");
 		}
 		else {
-			if (orderType.getMimeType() == null || orderType.getMimeType().equals("")) {
+			if (tribe.getName() == null || tribe.getName().equals("")) {
 				errors.rejectValue("name", "general.name.error");
 			}
-			if (orderType.getDescription() == null || orderType.getDescription().equals("")) {
-				errors.rejectValue("description", "general.description.error");
-			}
 		}
-		//log.debug("errors: " + errors.getAllErrors().toString());
 	}
 
 }

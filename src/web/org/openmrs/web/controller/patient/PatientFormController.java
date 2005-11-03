@@ -1,9 +1,7 @@
-package org.openmrs.web.spring;
+package org.openmrs.web.controller.patient;
 
 import java.text.DateFormat;
-import java.text.NumberFormat;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.ServletException;

@@ -1,4 +1,4 @@
-package org.openmrs.web.spring;
+package org.openmrs.web.controller.order;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -7,8 +7,8 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.PatientIdentifierType;
-import org.openmrs.api.PatientService;
+import org.openmrs.OrderType;
+import org.openmrs.api.OrderService;
 import org.openmrs.context.Context;
 import org.openmrs.web.Constants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -18,7 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
-public class PatientIdentifierTypeFormController extends SimpleFormController {
+public class OrderTypeFormController extends SimpleFormController {
 	
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
@@ -51,10 +51,10 @@ public class PatientIdentifierTypeFormController extends SimpleFormController {
 		String view = getFormView();
 		
 		if (context != null && context.isAuthenticated()) {
-			PatientIdentifierType identifierType = (PatientIdentifierType)obj;
-			context.getAdministrationService().updatePatientIdentifierType(identifierType);
+			OrderType orderType = (OrderType)obj;
+			context.getAdministrationService().updateOrderType(orderType);
 			view = getSuccessView();
-			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Identifier Type saved.");
+			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Order Type saved.");
 		}
 		
 		return new ModelAndView(new RedirectView(view));
@@ -72,16 +72,16 @@ public class PatientIdentifierTypeFormController extends SimpleFormController {
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-		PatientIdentifierType identifierType = new PatientIdentifierType();
+		OrderType orderType = new OrderType();
 		
 		if (context != null && context.isAuthenticated()) {
-			PatientService ps = context.getPatientService();
-			String identifierTypeId = request.getParameter("patientIdentifierTypeId");
-	    	if (identifierTypeId != null)
-	    		identifierType = ps.getPatientIdentifierType(Integer.valueOf(identifierTypeId));	
+			OrderService os = context.getOrderService();
+			String orderTypeId = request.getParameter("orderTypeId");
+	    	if (orderTypeId != null)
+	    		orderType = os.getOrderType(Integer.valueOf(orderTypeId));	
 		}
     	
-        return identifierType;
+        return orderType;
     }
     
 }

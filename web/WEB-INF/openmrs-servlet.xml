@@ -6,7 +6,7 @@
   -->
 
 	<beans>
-	    <bean id="springController" class="org.openmrs.web.spring.SpringController"/>
+	    <bean id="springController" class="org.openmrs.web.controller.SpringController"/>
 	
 	    <bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
 	        <property name="mappings">
@@ -31,10 +31,10 @@
 
 			<!-- ** Mime Type ** -->
 				<!--this is the optional method of declaring values in the constructor -->
-				<!--<bean id="mimeTypeList" class="org.openmrs.web.spring.MimeTypeListController" />-->
-				<!--<bean id="mimeTypeForm" class="org.openmrs.web.spring.MimeTypeFormController" />-->
+				<!--<bean id="mimeTypeList" class="org.openmrs.web.controller.observation.MimeTypeListController" />-->
+				<!--<bean id="mimeTypeForm" class="org.openmrs.web.controller.observation.MimeTypeFormController" />-->
 	
-				<bean id="mimeTypeList" class="org.openmrs.web.spring.MimeTypeListController">
+				<bean id="mimeTypeList" class="org.openmrs.web.controller.observation.MimeTypeListController">
 					<property name="sessionForm"><value>true</value></property>
 					<property name="commandName"><value>mimeTypeList</value></property>
 					<property name="formView"><value>mimeTypeList.jsp</value></property>
@@ -42,8 +42,8 @@
 				</bean>
 		
 				<!--  Validator and Form Controller for the add/edit order types page -->
-				<bean id="mimeTypeValidator" class="org.openmrs.web.spring.MimeTypeValidator"/>
-				<bean id="mimeTypeForm" class="org.openmrs.web.spring.MimeTypeFormController">
+				<bean id="mimeTypeValidator" class="org.openmrs.web.controller.observation.MimeTypeValidator"/>
+				<bean id="mimeTypeForm" class="org.openmrs.web.controller.observation.MimeTypeFormController">
 					<property name="sessionForm"><value>true</value></property>
 					<property name="commandName"><value>mimeType</value></property>
 					<property name="validator"><ref bean="mimeTypeValidator"/></property>
@@ -59,10 +59,10 @@
 
 			<!-- ** Order Type ** -->
 				<!--this is the optional method of declaring values in the constructor -->
-				<!--<bean id="orderTypeList" class="org.openmrs.web.spring.OrderTypeListController" />-->
-				<!--<bean id="orderTypeForm" class="org.openmrs.web.spring.OrderTypeFormController" />-->
+				<!--<bean id="orderTypeList" class="org.openmrs.web.controller.OrderTypeListController" />-->
+				<!--<bean id="orderTypeForm" class="org.openmrs.web.controller.OrderTypeFormController" />-->
 	
-				<bean id="orderTypeList" class="org.openmrs.web.spring.OrderTypeListController">
+				<bean id="orderTypeList" class="org.openmrs.web.controller.order.OrderTypeListController">
 					<property name="sessionForm"><value>true</value></property>
 					<property name="commandName"><value>orderTypeList</value></property>
 					<property name="formView"><value>orderTypeList.jsp</value></property>
@@ -70,8 +70,8 @@
 				</bean>
 		
 				<!--  Validator and Form Controller for the add/edit order types page -->
-				<bean id="orderTypeValidator" class="org.openmrs.web.spring.OrderTypeValidator"/>
-				<bean id="orderTypeForm" class="org.openmrs.web.spring.OrderTypeFormController">
+				<bean id="orderTypeValidator" class="org.openmrs.web.controller.order.OrderTypeValidator"/>
+				<bean id="orderTypeForm" class="org.openmrs.web.controller.order.OrderTypeFormController">
 					<property name="sessionForm"><value>true</value></property>
 					<property name="commandName"><value>orderType</value></property>
 					<property name="validator"><ref bean="orderTypeValidator"/></property>
@@ -87,8 +87,8 @@
 	    <!-- ========================== -->
 	    
 	    	<!-- ** Patient ** -->
-				<bean id="patientValidator" class="org.openmrs.web.spring.PatientValidator"/>
-				<bean id="patientForm" class="org.openmrs.web.spring.PatientFormController">
+				<bean id="patientValidator" class="org.openmrs.web.controller.patient.PatientValidator"/>
+				<bean id="patientForm" class="org.openmrs.web.controller.patient.PatientFormController">
 					<property name="sessionForm"><value>true</value></property>
 					<property name="commandName"><value>patient</value></property>
 					<property name="validator"><ref bean="patientValidator"/></property>
@@ -97,14 +97,14 @@
 				</bean>
 			<!-- ** /Patient ** -->
 			<!-- **  Tribe   ** -->
-				<bean id="tribeList" class="org.openmrs.web.spring.TribeListController">
+				<bean id="tribeList" class="org.openmrs.web.controller.patient.TribeListController">
 					<property name="sessionForm"><value>true</value></property>
 					<property name="commandName"><value>tribeList</value></property>
 					<property name="formView"><value>tribeList.jsp</value></property>
 					<property name="successView"><value>tribe.list</value></property>
 				</bean>
-				<bean id="tribeValidator" class="org.openmrs.web.spring.TribeValidator"/>
-				<bean id="tribeForm" class="org.openmrs.web.spring.TribeFormController">
+				<bean id="tribeValidator" class="org.openmrs.web.controller.patient.TribeValidator"/>
+				<bean id="tribeForm" class="org.openmrs.web.controller.patient.TribeFormController">
 					<property name="sessionForm"><value>true</value></property>
 					<property name="commandName"><value>tribe</value></property>
 					<property name="validator"><ref bean="tribeValidator"/></property>
@@ -113,14 +113,14 @@
 				</bean>
 			<!-- ** /Tribe   ** -->
 			<!-- **  Patient Identifier Type   ** -->
-				<bean id="patientIdentifierTypeList" class="org.openmrs.web.spring.PatientIdentifierTypeListController">
+				<bean id="patientIdentifierTypeList" class="org.openmrs.web.controller.patient.PatientIdentifierTypeListController">
 					<property name="sessionForm"><value>true</value></property>
 					<property name="commandName"><value>patientIdentifierTypeList</value></property>
 					<property name="formView"><value>patientIdentifierTypeList.jsp</value></property>
 					<property name="successView"><value>patientIdentifierType.list</value></property>
 				</bean>
-				<bean id="patientIdentifierTypeValidator" class="org.openmrs.web.spring.PatientIdentifierTypeValidator"/>
-				<bean id="patientIdentifierTypeForm" class="org.openmrs.web.spring.PatientIdentifierTypeFormController">
+				<bean id="patientIdentifierTypeValidator" class="org.openmrs.web.controller.patient.PatientIdentifierTypeValidator"/>
+				<bean id="patientIdentifierTypeForm" class="org.openmrs.web.controller.patient.PatientIdentifierTypeFormController">
 					<property name="sessionForm"><value>true</value></property>
 					<property name="commandName"><value>patientIdentifierType</value></property>
 					<property name="validator"><ref bean="patientIdentifierTypeValidator"/></property>

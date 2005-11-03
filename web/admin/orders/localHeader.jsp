@@ -7,7 +7,7 @@
 			<spring:message code="Order.manage"/>
 		</a>
 	</li>
-	<li <c:if test="<%= request.getRequestURI().contains("orderType.") %>">class="active"</c:if>>
+	<li <c:if test="<%= request.getRequestURI().contains("orderType") %>">class="active"</c:if>>
 		<a href="${pageContext.request.contextPath}/admin/orders/orderType.list">
 			<spring:message code="OrderType.manage"/>
 		</a>

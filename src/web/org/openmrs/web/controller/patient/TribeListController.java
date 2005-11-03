@@ -1,4 +1,4 @@
-package org.openmrs.web.spring;
+package org.openmrs.web.controller.patient;
 
 import java.util.List;
 import java.util.Locale;

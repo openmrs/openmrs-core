@@ -1,4 +1,4 @@
-package org.openmrs.web.spring;
+package org.openmrs.web.controller.order;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
