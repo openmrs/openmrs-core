@@ -25,12 +25,21 @@
 		-->
 		<property name="hibernate.connection.driver_class">@DATABASE-DRIVER_CLASS@</property>
 		<property name="hibernate.connection.url">@DATABASE-CONNECTION-URL@</property>
-		<property name="hibernate.connection.validationQuery">@DATABASE-VALIDATION@</property>
 		<property name="hibernate.connection.username">@DATABASE-USERNAME@</property>
 		<property name="hibernate.connection.password">@DATABASE-PASSWORD@</property>
 		<property name="hibernate.show_sql">@HIBERNATE-SHOW_SQL@</property>
 		<property name="lazy">@HIBERNATE-LAZY@</property>
 		<property name="hibernate.dialect">@HIBERNATE-DIALECT@</property>
+		<property name="hibernate.dbcp.maxActive">@HIBERNATE-DBCP-MAXACTIVE@</property>
+		<property name="hibernate.dbcp.maxIdle">@HIBERNATE-DBCP-MAXIDLE@</property>
+		<property name="hibernate.dbcp.maxWait">@HIBERNATE-DBCP-MAXWAIT@</property>
+		<property name="hibernate.dbcp.whenExhaustedAction">@HIBERNATE-DBCP-WHENEXHAUSTEDACTION@</property>
+		<property name="hibernate.dbcp.validationQuery">@HIBERNATE-DBCP-VALIDATION@</property>
+		<property name="hibernate.dbcp.ps.maxActive">@HIBERNATE-DBCP-PS-MAXACTIVE@</property>
+		<property name="hibernate.dbcp.ps.maxIdle">@HIBERNATE-DBCP-PS-MAXIDLE@</property>
+		<property name="hibernate.dbcp.ps.maxWait">@HIBERNATE-DBCP-PS-MAXWAIT@</property>
+		<property name="hibernate.dbcp.ps.whenExhaustedAction">@HIBERNATE-DBCP-PS-WHENEXHAUSTEDACTION@</property>		
+		
 		<!--
 		<property name="hibernate.connection.datasource">java:comp/env/jdbc/openmrs</property>
 		

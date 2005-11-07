@@ -35,7 +35,9 @@ public class HibernatePatientService implements PatientService {
 	 */
 	public Patient getPatient(Integer patientId) {
 		Session session = HibernateUtil.currentSession();
+		HibernateUtil.beginTransaction();
 		Patient patient = (Patient) session.get(Patient.class, patientId);
+		HibernateUtil.commitTransaction();
 		return patient;
 	}
 	
@@ -44,30 +46,8 @@ public class HibernatePatientService implements PatientService {
 		Session session = HibernateUtil.currentSession();
 		try {
 			HibernateUtil.beginTransaction();
-		
-			patient.setCreator(context.getAuthenticatedUser());
-			patient.setDateCreated(new Date());
-			if (patient.getAddresses() != null)
-				for (Iterator<PatientAddress> i = patient.getAddresses().iterator(); i.hasNext();) {
-					PatientAddress pAddress = i.next();
-					pAddress.setDateCreated(new Date());
-					pAddress.setCreator(context.getAuthenticatedUser());
-					pAddress.setPatient(patient);
-				}
-			if (patient.getNames() != null)
-				for (Iterator<PatientName> i = patient.getNames().iterator(); i.hasNext();) {
-					PatientName pName = i.next();
-					pName.setDateCreated(new Date());
-					pName.setCreator(context.getAuthenticatedUser());
-					pName.setPatient(patient);
-				}
-			if (patient.getIdentifiers() != null)
-				for (Iterator<PatientIdentifier> i = patient.getIdentifiers().iterator(); i.hasNext();) {
-					PatientIdentifier pIdentifier = i.next();
-					pIdentifier.setDateCreated(new Date());
-					pIdentifier.setCreator(context.getAuthenticatedUser());
-					pIdentifier.setPatient(patient);
-				}
+
+			setCollectionProperties(patient);
 			
 			session.saveOrUpdate(patient);
 			HibernateUtil.commitTransaction();
@@ -86,8 +66,10 @@ public class HibernatePatientService implements PatientService {
 			Session session = HibernateUtil.currentSession();
 			try {
 				HibernateUtil.beginTransaction();
+				setCollectionProperties(patient);
 				session.saveOrUpdate(patient);
 				HibernateUtil.commitTransaction();
+				
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
@@ -268,6 +250,42 @@ public class HibernatePatientService implements PatientService {
 		
 		return locations;
 
+	}
+	
+	/**
+	 * Iterates over Names/Addresses/Identifiers to set dateCreated and creator properties if needed
+	 * @param patient
+	 */
+	private void setCollectionProperties(Patient patient) {
+		patient.setCreator(context.getAuthenticatedUser());
+		patient.setDateCreated(new Date());
+		if (patient.getAddresses() != null)
+			for (Iterator<PatientAddress> i = patient.getAddresses().iterator(); i.hasNext();) {
+				PatientAddress pAddress = i.next();
+				if (pAddress.getDateCreated() == null) {
+					pAddress.setDateCreated(new Date());
+					pAddress.setCreator(context.getAuthenticatedUser());
+					pAddress.setPatient(patient);
+				}
+			}
+		if (patient.getNames() != null)
+			for (Iterator<PatientName> i = patient.getNames().iterator(); i.hasNext();) {
+				PatientName pName = i.next();
+				if (pName.getDateCreated() == null) {
+					pName.setDateCreated(new Date());
+					pName.setCreator(context.getAuthenticatedUser());
+					pName.setPatient(patient);
+				}
+			}
+		if (patient.getIdentifiers() != null)
+			for (Iterator<PatientIdentifier> i = patient.getIdentifiers().iterator(); i.hasNext();) {
+				PatientIdentifier pIdentifier = i.next();
+				if (pIdentifier.getDateCreated() == null) {
+					pIdentifier.setDateCreated(new Date());
+					pIdentifier.setCreator(context.getAuthenticatedUser());
+					pIdentifier.setPatient(patient);
+				}
+			}
 	}
 	
 }

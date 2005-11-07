@@ -29,12 +29,20 @@
 	<filterset id="variables.to.replace">
 		<filter token="DATABASE-DRIVER_CLASS" value="${database.driver_class}" />
 		<filter token="DATABASE-CONNECTION-URL" value="${database.connection.url}" />
-		<filter token="DATABASE-VALIDATION" value="${database.validationQuery}" />
 		<filter token="DATABASE-USERNAME" value="${database.username}" />
 		<filter token="DATABASE-PASSWORD" value="${database.password}" />
 		<filter token="HIBERNATE-LAZY" value="${hibernate.lazy}" />
 		<filter token="HIBERNATE-SHOW_SQL" value="${hibernate.show_sql}" />
 		<filter token="HIBERNATE-DIALECT" value="${hibernate.dialect}" />
+		<filter token="HIBERNATE-DBCP-MAXACTIVE" value="${hibernate.dbcp.maxActive}" />
+		<filter token="HIBERNATE-DBCP-MAXIDLE" value="${hibernate.dbcp.maxIdle}" />
+		<filter token="HIBERNATE-DBCP-MAXWAIT" value="${hibernate.dbcp.maxWait}" />
+		<filter token="HIBERNATE-DBCP-WHENEXHAUSTEDACTION" value="${hibernate.dbcp.whenExhaustedAction}" />
+		<filter token="HIBERNATE-DBCP-VALIDATION" value="${hibernate.dbcp.validationQuery}" />
+		<filter token="HIBERNATE-DBCP-PS-MAXACTIVE" value="${hibernate.dbcp.ps.maxActive}" />
+		<filter token="HIBERNATE-DBCP-PS-MAXIDLE" value="${hibernate.dbcp.ps.maxIdle}" />
+		<filter token="HIBERNATE-DBCP-PS-MAXWAIT" value="${hibernate.dbcp.ps.maxWait}" />
+		<filter token="HIBERNATE-DBCP-PS-WHENEXHAUSTEDACTION" value="${hibernate.dbcp.ps.whenExhaustedAction}" />		
 	</filterset>
 
 	<!-- *********************************************************** -->

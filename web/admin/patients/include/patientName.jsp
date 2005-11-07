@@ -2,71 +2,84 @@
 <!-- Assumes spring:nestedPath already set on PatientName object -->
 <table>
 	<tr>
-		<td>Preferred</td>
+		<td><spring:message code="PatientName.preferred"/></td>
 		<td>
 			<spring:bind path="preferred">
-				<input type="hidden" name="_preferred">
-				<input type="checkbox" name="preferred" id="preferred" <c:if test="${status.value == true}">checked</c:if> />
+				<input type="hidden" name="_${status.expression}">
+				<input type="checkbox" name="${status.expression}" id="preferred" <c:if test="${status.value == true}">checked</c:if> />
 				${status.errorMessage}
 			</spring:bind>
 		</td>
 	</tr>
 	<tr>
-		<td>Given Name</td>
+		<td><spring:message code="PatientName.givenName"/></td>
 		<td>
 			<spring:bind path="givenName">
-				<input type="text" name="givenName" id="givenName" value="${status.value}" onKeyUp="modifyTab(this, this.value, 0);" />
+				<input type="text" name="${status.expression}" id="givenName" value="${status.value}" onKeyUp="modifyTab(this, this.value, 0);" />
 				${status.errorMessage}
 			</spring:bind>
 		</td>
 	</tr>
 	<tr>
-		<td>Middle Name</td>
+		<td><spring:message code="PatientName.middleName"/></td>
 		<td>
 			<spring:bind path="middleName">
-				<input type="text" name="middleName" id="middleName" value="${status.value}" />
+				<input type="text" name="${status.expression}" id="middleName" value="${status.value}" />
 				${status.errorMessage}
 			</spring:bind>
 		</td>
 	</tr>
 	<tr>
-		<td>Family Name</td>
+		<td><spring:message code="PatientName.familyName"/></td>
 		<td>
 			<spring:bind path="familyNamePrefix">
-				<input type="text" name="familyNamePrefix" id="familyNamePrefix" size="10" value="${status.value}" />
+				<input type="text" name="${status.expression}" id="familyNamePrefix" size="10" value="${status.value}" />
 				${status.errorMessage}
 			</spring:bind>
 			<spring:bind path="familyName">
-				<input type="text" name="familyName" id="familyName" value="${status.value}" onKeyUp="modifyTab(this, this.value, 2);" />
+				<input type="text" name="${status.expression}" id="familyName" value="${status.value}" onKeyUp="modifyTab(this, this.value, 2);" />
 				${status.errorMessage}
 			</spring:bind>
 			<spring:bind path="familyName2">
-				<input type="text" name="familyName2" id="familyName2" value="${status.value}" />
+				<input type="text" name="${status.expression}" id="familyName2" value="${status.value}" />
 				${status.errorMessage}
 			</spring:bind>
 			<spring:bind path="familyNameSuffix">
-				<input type="text" name="familyNameSuffix" id="familyNameSuffix" size="10" value="${status.value}" />
+				<input type="text" name="${status.expression}" id="familyNameSuffix" size="10" value="${status.value}" />
 				${status.errorMessage}
 			</spring:bind>
 		</td>
 	</tr>	
 	<tr>
-		<td>Degree</td>
+		<td><spring:message code="PatientName.degree"/></td>
 		<td>
 			<spring:bind path="degree">
-				<input type="text" name="degree" id="degree" value="${degree}" />
+				<input type="text" name="${status.expression}" id="degree" value="${status.value}" />
 				${status.errorMessage}
 			</spring:bind>
 		</td>
 	</tr>
-	<c:if test="${creator ne null}" >
+	<c:if test="${!(address.creator == null)}" >
 		<tr>
-			<td>Creator</td>
-			<td>${creator.username}</td>
+			<td><spring:message code="general.creator"/></td>
+			<td>
+				<spring:bind path="creator">
+					${address.creator.username}
+					<input type="hidden" name="${status.expression}" value="${status.value}"/>
+				</spring:bind>
+			</td>
 		</tr>
 		<tr>
-			<td>Date Created</td>
-			<td><openmrs:formatDate date="${dateCreated}" type="long"/></td>
+			<td><spring:message code="general.dateCreated"/></td>
+			<td>
+				<spring:bind path="dateCreated">
+					<openmrs:formatDate date="${address.dateCreated}" type="long"/>
+					<input type="hidden" name="${status.expression}" value="${status.value}">
+				</spring:bind>
+			</td>
 		</tr>
+		<spring:bind path="patientAddressId">
+			<input type="text" name="${status.expression}" value="${status.value}">
+		</spring:bind>
 	</c:if>
 </table>

@@ -31,10 +31,10 @@ public class RequireTag extends TagSupport {
 		
 		Context context = (Context)httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		if (context == null && privilege != null) {
-			log.error("context is unavailable");
+			log.error("The openmrs_context_httpsession_attr is null. Did this pass through a filter?");
 			httpSession.removeAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 			//TODO find correct error to throw 
-			throw new APIException("The Context is currently unavailable (null)");
+			throw new APIException("The Context is currently null.  Please try reloading the site.");
 		}
 		
 		if (!context.isAuthenticated()) {

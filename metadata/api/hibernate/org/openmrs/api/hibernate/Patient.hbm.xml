@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
 
 <hibernate-mapping package="org.openmrs">
@@ -81,8 +81,8 @@
 		<!-- Associations -->
 
 		<!-- bi-directional one-to-many association to PatientAddress -->
-		<set name="addresses" lazy="true" inverse="true" cascade="save-update">
-			<key column="patient_id" />
+		<set name="addresses" lazy="true" inverse="false" cascade="all-delete-orphan">
+			<key column="patient_id" not-null="true" />
 			<one-to-many class="PatientAddress" />
 		</set>
 		
@@ -93,9 +93,10 @@
 		</set>
 		
 		<!-- bi-directional one-to-many association to PatientIdentifier -->
-		<set name="identifiers" lazy="false" inverse="true" cascade="all">
+		<set name="identifiers" inverse="false" lazy="false" cascade="all">
 			<key column="patient_id" />
 			<one-to-many class="PatientIdentifier" />
+
 		</set>
 		
 		<!--<many-to-one name="personId" column="person_id" class="Person" unique="true" />-->

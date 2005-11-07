@@ -123,6 +123,19 @@
 			<load-on-startup>3</load-on-startup>
 		</servlet>
 	
+		<filter-mapping>
+			<filter-name>OpenmrsFilter</filter-name> 
+			<url-pattern>*.htm</url-pattern> 
+		</filter-mapping>
+		<filter-mapping>
+			<filter-name>OpenmrsFilter</filter-name> 
+			<url-pattern>*.form</url-pattern> 
+		</filter-mapping>
+		<filter-mapping>
+			<filter-name>OpenmrsFilter</filter-name> 
+			<url-pattern>*.list</url-pattern> 
+		</filter-mapping>
+	
 		<servlet-mapping>
 	 		<servlet-name>openmrs</servlet-name>
 	 		<url-pattern>*.form</url-pattern>

@@ -70,7 +70,9 @@ public class Patient extends Person implements java.io.Serializable {
 	
 	public int hashCode() {
 		if (this.getPatientId() == null) return super.hashCode();
-		return this.getPatientId().hashCode();
+		int hash = 3;
+		hash = 31 * hash + this.getPatientId().hashCode(); 
+		return hash;
 	}
 
 	// Property accessors

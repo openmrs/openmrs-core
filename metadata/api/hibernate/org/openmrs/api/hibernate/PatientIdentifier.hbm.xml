@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
 
 <hibernate-mapping package="org.openmrs">
 
 	<class name="PatientIdentifier" table="patient_identifier">
 
-		<composite-id>
+		<composite-id unsaved-value="none" >
 			<key-many-to-one name="patient" column="patient_id"
 				class="Patient" />
 			<key-property name="identifier" column="identifier"
@@ -17,7 +17,7 @@
 			<key-many-to-one name="location" column="location_id"
 				class="Location" />
 		</composite-id>
-
+		
 		<many-to-one name="creator" class="User" not-null="true">
 			<column name="creator" />
 		</many-to-one>

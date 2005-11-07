@@ -32,13 +32,26 @@
     <property name="database.host" value="localhost:3306" />
     <property name="database.username" value="test" />
 	<property name="database.password" value="test" />
-    <property name="database.validationQuery" value="select * from users" />
     <property name="database.driver_class" value="com.mysql.jdbc.Driver" />
     <property name="database.connection.url" 
         value="jdbc:${database.type}://${database.host}/${database.name}?autoReconnect=true" />
     <property name="hibernate.lazy" value="true" />
     <property name="hibernate.show_sql" value="true" />
-    <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" /> 
+    <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
+	<property name="hibernate.dbcp.maxActive" value="2"/>
+	<property name="hibernate.dbcp.maxIdle" value="2"/>
+	<property name="hibernate.dbcp.maxWait" value="-1"/>
+	<property name="hibernate.dbcp.whenExhaustedAction" value="1"/>
+	<property name="hibernate.dbcp.validationQuery" value="select 1+1"/>
+	<property name="hibernate.dbcp.ps.maxActive" value="8"/>
+	<property name="hibernate.dbcp.ps.maxIdle" value="4"/>
+	<property name="hibernate.dbcp.ps.maxWait" value="1000*60*30"/>
+	<property name="hibernate.dbcp.ps.whenExhaustedAction" value="1"/> <!-- 0=fail, 1=block, 2=grow -->
+
+    <property name="hibernate.dbcp.min_size" value="5" />
+    <property name="hibernate.dbcp.max_size" value="20" />
+    <property name="hibernate.dbcp.timeout" value="1800" />
+    <property name="hibernate.dbcp.max_statements" value="50" />
     
     <!-- Environment properties -->
     <property environment="env"/>

@@ -114,8 +114,8 @@
 				 <tr>
 				 	<th> </th>
 				 	<th><spring:message code="Patient.identifier"/></th>
-				 	<th><spring:message code="Patient.givenName"/></th>
-				 	<th><spring:message code="Patient.familyName"/></th>
+				 	<th><spring:message code="PatientName.givenName"/></th>
+				 	<th><spring:message code="PatientName.familyName"/></th>
 				 	<th><spring:message code="Patient.gender"/></th>
 				 	<th><spring:message code="Patient.race"/></th>
 				 	<th><spring:message code="Patient.birthdate"/></th>

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
 
 <hibernate-mapping package="org.openmrs">
@@ -8,11 +8,11 @@
 	<class name="PatientAddress" table="patient_address">
 
 		<id name="patientAddressId" type="int"
-			column="patient_address_id" unsaved-value="0">
+			column="patient_address_id" unsaved-value="none">
 			<generator class="identity" />
 		</id>
 
-		<many-to-one name="patient" class="Patient">
+		<many-to-one name="patient" class="Patient" insert="false" update="false">
 			<column name="patient_id" />
 		</many-to-one>
 
