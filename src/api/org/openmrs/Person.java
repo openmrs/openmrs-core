@@ -170,6 +170,10 @@ public class Person implements java.io.Serializable {
 	public Boolean isVoided() {
 		return voided;
 	}
+	
+	public Boolean getVoided() {
+		return isVoided();
+	}
 
 	/**
 	 * @param voided The void status to set.

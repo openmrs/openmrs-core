@@ -215,7 +215,7 @@ public class PatientFormController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Map referenceData(HttpServletRequest arg0) throws Exception {
+	protected Map referenceData(HttpServletRequest request) throws Exception {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 

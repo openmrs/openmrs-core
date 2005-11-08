@@ -22,11 +22,7 @@
 <div id="springnote">Marked sections have been springified</div>
 
 <h4>Users</h4>
-<ul>
-	<li><a href="users/users.jsp">Manage users</a></li>
-	<li><a href="users/roles.jsp">Manage roles</a></li>
-	<li><a href="users/privileges.jsp">Manage privileges</a></li>
-</ul>
+	<%@ include file="users/localHeader.jsp" %>
 
 <h4>Patients</h4>
 	<%@ include file="patients/localHeader.jsp" %>

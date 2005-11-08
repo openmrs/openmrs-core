@@ -13,7 +13,7 @@ public class HibernateUtil {
 
 	private static final Log log = LogFactory.getLog("org.openmrs.api.hibernate.HibernateUtil");
 	
-	private static final SessionFactory sessionFactory;
+	private static SessionFactory sessionFactory;
 
 	static {
 		try {
@@ -28,8 +28,8 @@ public class HibernateUtil {
 		}
 	}
 
-	public static final ThreadLocal<Session> threadLocalSession = new ThreadLocal<Session>();
-	public static final ThreadLocal<Transaction> threadLocalTransaction = new ThreadLocal<Transaction>();
+	private static ThreadLocal<Session> threadLocalSession = new ThreadLocal<Session>();
+	private static ThreadLocal<Transaction> threadLocalTransaction = new ThreadLocal<Transaction>();
 
 	public static Session currentSession() throws HibernateException {
 		
@@ -118,6 +118,9 @@ public class HibernateUtil {
 		if (sessionFactory != null) {
 			log.debug("shutting down threadLocalSession factory");
 			sessionFactory.close();
+			sessionFactory = null;
+			threadLocalSession = null;
+			threadLocalTransaction = null;
 		}
 	}
 }

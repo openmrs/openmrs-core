@@ -34,15 +34,12 @@
 		<filter token="HIBERNATE-LAZY" value="${hibernate.lazy}" />
 		<filter token="HIBERNATE-SHOW_SQL" value="${hibernate.show_sql}" />
 		<filter token="HIBERNATE-DIALECT" value="${hibernate.dialect}" />
-		<filter token="HIBERNATE-DBCP-MAXACTIVE" value="${hibernate.dbcp.maxActive}" />
-		<filter token="HIBERNATE-DBCP-MAXIDLE" value="${hibernate.dbcp.maxIdle}" />
-		<filter token="HIBERNATE-DBCP-MAXWAIT" value="${hibernate.dbcp.maxWait}" />
-		<filter token="HIBERNATE-DBCP-WHENEXHAUSTEDACTION" value="${hibernate.dbcp.whenExhaustedAction}" />
-		<filter token="HIBERNATE-DBCP-VALIDATION" value="${hibernate.dbcp.validationQuery}" />
-		<filter token="HIBERNATE-DBCP-PS-MAXACTIVE" value="${hibernate.dbcp.ps.maxActive}" />
-		<filter token="HIBERNATE-DBCP-PS-MAXIDLE" value="${hibernate.dbcp.ps.maxIdle}" />
-		<filter token="HIBERNATE-DBCP-PS-MAXWAIT" value="${hibernate.dbcp.ps.maxWait}" />
-		<filter token="HIBERNATE-DBCP-PS-WHENEXHAUSTEDACTION" value="${hibernate.dbcp.ps.whenExhaustedAction}" />		
+		<filter token="CACHE.MAX_SIZE" value="${cache.max_size}" />
+		<filter token="CACHE.MIN_SIZE" value="${cache.min_size}" />
+		<filter token="CACHE.TIMEOUT" value="${cache.timeout}" />
+		<filter token="CACHE.MAX_STATEMENTS" value="${cache.max_statements}" />
+		<filter token="CACHE.IDLE_TEST_PERIOD" value="${cache.idle_test_period}" />
+		<filter token="CACHE.ACQUIRE_INCREMENT" value="${cache.acquire_increment}" />
 	</filterset>
 
 	<!-- *********************************************************** -->
@@ -176,14 +173,15 @@
 			<lib file="${dist.dir}/${app.name}-api-${app.version}.jar" />
 			<lib dir="${antlr.dir}" includes="*.jar" />
 			<lib dir="${asm.dir}" includes="*.jar" />
+			<lib dir="${c3p0.dir}" includes="*.jar" />
 			<lib dir="${cglib.dir}" includes="*.jar" />
 			<lib dir="${commons-beanutils.dir}" includes="*.jar" />
 			<lib dir="${commons-collections.dir}" includes="*.jar" />
-			<lib dir="${commons-dbcp.dir}" includes="*.jar" />
+			<!--<lib dir="${commons-dbcp.dir}" includes="*.jar" />-->
 			<lib dir="${commons-fileupload.dir}" includes="*.jar" />
 			<lib dir="${commons-lang.dir}" includes="*.jar" />
 			<lib dir="${commons-logging.dir}" includes="*.jar" />
-			<lib dir="${commons-pool.dir}" includes="*.jar" />
+			<!--<lib dir="${commons-pool.dir}" includes="*.jar" />-->
 			<lib dir="${dom4j.dir}" includes="*.jar" />
 			<lib dir="${dwr.dir}" includes="*.jar" />
 			<lib dir="${ehcache.dir}" includes="*.jar" />
@@ -196,7 +194,7 @@
 			<lib dir="${mysql.dir}" includes="*.jar" />
 			<lib dir="${spring.dir}" includes="*.jar" />
 			<lib dir="${taglibs.dir}" includes="*.jar" />
-			<lib dir="${velocity.dir}" includes="*.jar" />
+			<!--<lib dir="${velocity.dir}" includes="*.jar" />-->
 			<!--<lib dir="${struts.dir}" includes="*.jar" /> -->
 			<!--<lib dir="${commons-digester.dir}" includes="*.jar" />  (for struts) -->
 		</war>
@@ -234,7 +232,7 @@
     </target>
 
     <target name="remove" description="Remove application in Tomcat">
-        <undeploy url="${tomcat.manager.url}"
+    	<undeploy url="${tomcat.manager.url}"
             username="${tomcat.username}"
             password="${tomcat.password}"
             path="/${webapp.name}"/>

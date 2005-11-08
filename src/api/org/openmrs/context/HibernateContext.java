@@ -332,8 +332,10 @@ public class HibernateContext implements Context {
 		
 		log.debug("HibernateContext: Ending Transaction");
 		/*TODO	tomcat loops adinfinitum at this point after several 
-		 		restarts (during development mainly).  I assume there is 
-		 		a race/blocking condition that is causing this, but where?
+		 		redeploys (during development).
+		 		Update #1: threadlocal incorrectly configured?
+		 		Update #2: or it seems to be an issue with connections being left around |fixed|
+		 		Update #3: Memory leak ?
 		*/  
 		HibernateUtil.closeSession();
 		//session = null;

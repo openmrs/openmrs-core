@@ -77,7 +77,9 @@ public class User extends Person implements java.io.Serializable {
 	
 	public int hashCode() {
 		if (this.getUserId() == null) return super.hashCode();
-		return this.getUserId().hashCode();
+		int hash = 2;
+		hash = 31 * hash + this.getUserId(); 
+		return hash;
 	}
 	
 	// Property accessors

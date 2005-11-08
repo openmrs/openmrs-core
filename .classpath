@@ -7,15 +7,15 @@
 	<classpathentry output="build/test/web" kind="src" path="test/web"/>
 	<classpathentry kind="lib" path="lib/ant-contrib/ant-contrib-1.0b2.jar"/>
 	<classpathentry kind="lib" path="lib/antlr/antlr-2.7.5.jar"/>
-	<classpathentry kind="lib" path="lib/cglib/cglib-2.1.jar"/>
+	<classpathentry kind="lib" path="lib/cglib/cglib-2.1_3.jar"/>
 	<classpathentry kind="lib" path="lib/commons-beanutils/commons-beanutils-1.7.0.jar"/>
 	<classpathentry kind="lib" path="lib/commons-collections/commons-collections-3.1.jar"/>
-	<classpathentry kind="lib" path="lib/commons-dbcp/commons-dbcp-1.2.1.jar"/>
+	<!-- <classpathentry kind="lib" path="lib/commons-dbcp/commons-dbcp-1.2.1.jar"/>-->
 	<classpathentry kind="lib" path="lib/commons-fileupload/commons-fileupload-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang/commons-lang-2.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging/commons-logging-1.0.4.jar"/>
 	<classpathentry kind="lib" path="lib/commons-pool/commons-pool-1.2.jar"/>
-	<classpathentry kind="lib" path="lib/dom4j/dom4j-1.6.jar"/>
+	<classpathentry kind="lib" path="lib/dom4j/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/ehcache/ehcache-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta-log4j/log4j-1.2.9.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta-taglibs/taglibs-page-1.1.jar"/>
@@ -46,5 +46,6 @@
 	<classpathentry kind="lib" path="lib/velocity/velocity-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/velocity/velocity-dep-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/struts-framework/struts-1.2.7.jar"/>
+	<classpathentry kind="lib" path="lib/c3p0/c3p0-0.9.0.2.jar"/>
 	<classpathentry kind="output" path="build/"/>
 </classpath>

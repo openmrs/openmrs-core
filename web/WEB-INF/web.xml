@@ -21,14 +21,6 @@
 		<url-pattern>/admin/users/editUserServlet</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>createPatientServlet</servlet-name>
-		<servlet-class>org.openmrs.web.CreatePatientServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>createPatientServlet</servlet-name>
-		<url-pattern>/formentry/createPatient</url-pattern>
-	</servlet-mapping>
-	<servlet>
 		<servlet-name>logoutServlet</servlet-name>
 		<servlet-class>org.openmrs.web.LogoutServlet</servlet-class>
 	</servlet>
@@ -44,6 +36,14 @@
 		<servlet-name>formDownloadServlet</servlet-name>
 		<url-pattern>/formDownload</url-pattern>
 	</servlet-mapping>
+	
+	<listener>
+		<listener-class>org.openmrs.web.Listener</listener-class>
+	</listener>
+	<listener>
+		<listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
+	</listener>
+	
 	<servlet>
 		<servlet-name>dwr-invoker</servlet-name>
 		<servlet-class>uk.ltd.getahead.dwr.DWRServlet</servlet-class>

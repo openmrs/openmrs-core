@@ -1,6 +1,0 @@
-<div id="menu">
-	<a href="../">Admin</a> |
-	<a href="users.jsp">Manage Users</a> |
-	<a href="roles.jsp">Manage Roles</a> |
-	<a href="privileges.jsp">Manage Privileges</a>
-</div>

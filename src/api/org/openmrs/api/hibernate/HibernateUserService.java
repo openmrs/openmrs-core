@@ -102,6 +102,39 @@ public class HibernateUserService implements
 	}
 
 	/**
+	 * @see org.openmrs.api.UserService#isDuplicateUsername(java.lang.String)
+	 */
+	public boolean isDuplicateUsername(User user) {
+		Session session = HibernateUtil.currentSession();
+
+		String username = user.getUsername();
+		if (username == null)
+			username = "";
+		Integer userid = user.getUserId();
+		if (userid == null)
+			userid = new Integer(-1);
+		
+		Integer count = (Integer) session.createQuery(
+				"select count(*) from User u where u.username = ? and u.userId <> ?")
+				.setString(0, username)
+				.setInteger(1, userid)
+				.uniqueResult();
+		/*
+		List<User> users = session
+				.createQuery(
+						"from User u where u.username = ? and u.userId <> ?")
+				.setString(0, username)
+				.setInteger(1, userid)
+				.list();
+		*/
+		
+		if (count == null || count == 0)
+			return false;
+		else
+			return true;
+	}
+	
+	/**
 	 * @see org.openmrs.api.UserService#getUser(java.lang.Long)
 	 */
 	public User getUser(Integer userId) {

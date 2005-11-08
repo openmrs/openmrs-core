@@ -39,6 +39,14 @@ public interface UserService {
 	public User getUserByUsername(String username) throws APIException;
 
 	/**
+	 * true/false if username is already in db
+	 * @param User to compare
+	 * @return boolean
+	 * @throws APIException
+	 */
+	public boolean isDuplicateUsername(User user) throws APIException;
+	
+	/**
 	 * Get users by role granted
 	 * @param Role role that the Users must have to be returned 
 	 * @return users with requested role

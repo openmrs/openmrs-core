@@ -20,6 +20,7 @@
 	function showSearch() {
 		findPatient.style.display = "";
 		patientListing.style.display = "none";
+		selectFormForm.style.display = "none";
 		searchBox.focus();
 	}
 	

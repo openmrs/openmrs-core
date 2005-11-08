@@ -22,6 +22,10 @@
         <level value="WARN"/>
     </logger>
 
+    <logger name="org.openmrs">
+        <level value="DEBUG"/>
+    </logger>
+
     <root>
         <level value="WARN"/>
         <appender-ref ref="CONSOLE"/>

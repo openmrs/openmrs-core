@@ -23,22 +23,24 @@
 		<property name="lazy">true</property>
 		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
 		-->
-		<property name="hibernate.connection.driver_class">@DATABASE-DRIVER_CLASS@</property>
-		<property name="hibernate.connection.url">@DATABASE-CONNECTION-URL@</property>
-		<property name="hibernate.connection.username">@DATABASE-USERNAME@</property>
-		<property name="hibernate.connection.password">@DATABASE-PASSWORD@</property>
+		<property name="connection.driver_class">@DATABASE-DRIVER_CLASS@</property>
+		<property name="connection.url">@DATABASE-CONNECTION-URL@</property>
+		<property name="connection.username">@DATABASE-USERNAME@</property>
+		<property name="connection.password">@DATABASE-PASSWORD@</property>
 		<property name="hibernate.show_sql">@HIBERNATE-SHOW_SQL@</property>
 		<property name="lazy">@HIBERNATE-LAZY@</property>
 		<property name="hibernate.dialect">@HIBERNATE-DIALECT@</property>
-		<property name="hibernate.dbcp.maxActive">@HIBERNATE-DBCP-MAXACTIVE@</property>
-		<property name="hibernate.dbcp.maxIdle">@HIBERNATE-DBCP-MAXIDLE@</property>
-		<property name="hibernate.dbcp.maxWait">@HIBERNATE-DBCP-MAXWAIT@</property>
-		<property name="hibernate.dbcp.whenExhaustedAction">@HIBERNATE-DBCP-WHENEXHAUSTEDACTION@</property>
-		<property name="hibernate.dbcp.validationQuery">@HIBERNATE-DBCP-VALIDATION@</property>
-		<property name="hibernate.dbcp.ps.maxActive">@HIBERNATE-DBCP-PS-MAXACTIVE@</property>
-		<property name="hibernate.dbcp.ps.maxIdle">@HIBERNATE-DBCP-PS-MAXIDLE@</property>
-		<property name="hibernate.dbcp.ps.maxWait">@HIBERNATE-DBCP-PS-MAXWAIT@</property>
-		<property name="hibernate.dbcp.ps.whenExhaustedAction">@HIBERNATE-DBCP-PS-WHENEXHAUSTEDACTION@</property>		
+		
+		<!--<property name="connection.pool_size">1</property>
+		<property name="current_session_context_class">thread</property>--> 
+		
+		<property name="hibernate.connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>
+		<property name="hibernate.c3p0.max_size">@CACHE.MAX_SIZE@</property>
+		<property name="hibernate.c3p0.min_size">@CACHE.MIN_SIZE@</property>
+		<property name="hibernate.c3p0.timeout">@CACHE.TIMEOUT@</property>
+		<property name="hibernate.c3p0.max_statements">@CACHE.MAX_STATEMENTS@</property>
+		<property name="hibernate.c3p0.idle_test_period">@CACHE.IDLE_TEST_PERIOD@</property>
+		<property name="hibernate.c3p0.acquire_increment">@CACHE.ACQUIRE_INCREMENT@</property>
 		
 		<!--
 		<property name="hibernate.connection.datasource">java:comp/env/jdbc/openmrs</property>
