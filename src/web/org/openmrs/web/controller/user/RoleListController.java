@@ -12,6 +12,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Role;
+import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.UserService;
 import org.openmrs.context.Context;
@@ -59,13 +60,28 @@ public class RoleListController extends SimpleFormController {
 			AdministrationService as = context.getAdministrationService();
 			UserService us = context.getUserService();
 			
-			for (String r : roleList) {
+			String success = "";
+			String error = "";
+			
+			for (String p : roleList) {
 				//TODO convenience method deleteRole(String) ??
-				as.deleteRole(us.getRole(r));
+				try {
+					as.deleteRole(us.getRole(p));
+					if (!success.equals("")) success += "<br>";
+					success += p + " deleted";
+				}
+				catch (APIException e) {
+					log.warn(e);
+					if (!error.equals("")) error += "<br>";
+					error += p + " cannot be deleted";
+				}
 			}
 			
 			view = getSuccessView();
-			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Roles deleted.");
+			if (!success.equals(""))
+				httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, success);
+			if (!error.equals(""))
+				httpSession.setAttribute(Constants.OPENMRS_ERROR_ATTR, error);
 		}
 			
 		return new ModelAndView(new RedirectView(view));

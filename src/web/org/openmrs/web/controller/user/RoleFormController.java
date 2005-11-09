@@ -80,7 +80,7 @@ public class RoleFormController extends SimpleFormController {
 			Role role = (Role)obj;
 			context.getAdministrationService().updateRole(role);
 			view = getSuccessView();
-			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "User Type saved.");
+			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Role saved.");
 		}
 		
 		return new ModelAndView(new RedirectView(view));
@@ -113,7 +113,7 @@ public class RoleFormController extends SimpleFormController {
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-		Role role = new Role();
+		Role role = null;
 		
 		if (context != null && context.isAuthenticated()) {
 			UserService us = context.getUserService();
@@ -121,6 +121,9 @@ public class RoleFormController extends SimpleFormController {
 	    	if (r != null)
 	    		role = us.getRole(r);	
 		}
+		
+		if (role == null)
+			role = new Role();
     	
         return role;
     }

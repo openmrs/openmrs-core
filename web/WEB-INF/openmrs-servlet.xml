@@ -25,6 +25,8 @@
 					<prop key="**/user.form">userForm</prop>
 					<prop key="**/role.list">roleList</prop>
 					<prop key="**/role.form">roleForm</prop>
+					<prop key="**/privilege.list">privilegeList</prop>
+					<prop key="**/privilege.form">privilegeForm</prop>
 	            </props>
 	        </property>
 	    </bean>
@@ -173,7 +175,24 @@
 						<property name="successView"><value>role.list</value></property>
 					</bean>
 			<!--  ** /Role ** -->
+			<!-- ** Privilege  ** -->
+				<bean id="privilegeList" class="org.openmrs.web.controller.user.PrivilegeListController">
+						<property name="sessionForm"><value>true</value></property>
+						<property name="commandName"><value>privilegeList</value></property>
+						<property name="formView"><value>privilegeList.jsp</value></property>
+						<property name="successView"><value>privilege.list</value></property>
+					</bean>
 			
+					<!--  Validator and Form Controller for the add/edit privilege page -->
+					<bean id="privilegeValidator" class="org.openmrs.web.controller.user.PrivilegeValidator"/>
+					<bean id="privilegeForm" class="org.openmrs.web.controller.user.PrivilegeFormController">
+						<property name="sessionForm"><value>true</value></property>
+						<property name="commandName"><value>privilege</value></property>
+						<property name="validator"><ref bean="privilegeValidator"/></property>
+						<property name="formView"><value>privilegeForm.jsp</value></property>
+						<property name="successView"><value>privilege.list</value></property>
+					</bean>
+			<!--  ** /Privilege ** -->			
 		<!-- ====== /User Sector ====== -->
 		
 		<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">

@@ -1,4 +1,7 @@
-package org.openmrs.web.controller.patient;
+package org.openmrs.web.controller.user;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -7,8 +10,8 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.PatientIdentifierType;
-import org.openmrs.api.PatientService;
+import org.openmrs.Privilege;
+import org.openmrs.api.UserService;
 import org.openmrs.context.Context;
 import org.openmrs.web.Constants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -18,7 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
-public class PatientIdentifierTypeFormController extends SimpleFormController {
+public class PrivilegeFormController extends SimpleFormController {
 	
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
@@ -51,10 +54,10 @@ public class PatientIdentifierTypeFormController extends SimpleFormController {
 		String view = getFormView();
 		
 		if (context != null && context.isAuthenticated()) {
-			PatientIdentifierType identifierType = (PatientIdentifierType)obj;
-			context.getAdministrationService().updatePatientIdentifierType(identifierType);
+			Privilege privilege = (Privilege)obj;
+			context.getAdministrationService().updatePrivilege(privilege);
 			view = getSuccessView();
-			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Identifier Type saved.");
+			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Privilege saved.");
 		}
 		
 		return new ModelAndView(new RedirectView(view));
@@ -72,19 +75,19 @@ public class PatientIdentifierTypeFormController extends SimpleFormController {
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-		PatientIdentifierType identifierType = null;
+		Privilege privilege = null;
 		
 		if (context != null && context.isAuthenticated()) {
-			PatientService ps = context.getPatientService();
-			String identifierTypeId = request.getParameter("patientIdentifierTypeId");
-	    	if (identifierTypeId != null)
-	    		identifierType = ps.getPatientIdentifierType(Integer.valueOf(identifierTypeId));	
+			UserService us = context.getUserService();
+			String r = request.getParameter("privilege");
+	    	if (r != null)
+	    		privilege = us.getPrivilege(r);	
 		}
 		
-		if (identifierType == null)
-			identifierType = new PatientIdentifierType();
+		if (privilege == null)
+			privilege = new Privilege();
     	
-        return identifierType;
+        return privilege;
     }
     
 }

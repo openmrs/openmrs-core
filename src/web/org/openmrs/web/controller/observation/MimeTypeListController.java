@@ -12,6 +12,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.MimeType;
+import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ObsService;
 import org.openmrs.context.Context;
@@ -59,13 +60,27 @@ public class MimeTypeListController extends SimpleFormController {
 			AdministrationService as = context.getAdministrationService();
 			ObsService os = context.getObsService();
 			
-			for (String o : mimeTypeList) {
-				//TODO convenience method deleteMimeType(Integer) ??
-				as.deleteMimeType(os.getMimeType(Integer.valueOf(o)));
+			String success = "";
+			String error = "";
+			
+			for (String m : mimeTypeList) {
+				try {
+					as.deleteMimeType(os.getMimeType(Integer.valueOf(m)));
+					if (!success.equals("")) success += "<br>";
+					success += m + " deleted";
+				}
+				catch (APIException e) {
+					log.warn(e);
+					if (!error.equals("")) error += "<br>";
+					error += m + " cannot be deleted";
+				}
 			}
 			
 			view = getSuccessView();
-			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Mime Types deleted.");
+			if (!success.equals(""))
+				httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, success);
+			if (!error.equals(""))
+				httpSession.setAttribute(Constants.OPENMRS_ERROR_ATTR, error);
 		}
 			
 		return new ModelAndView(new RedirectView(view));

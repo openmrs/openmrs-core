@@ -71,7 +71,7 @@ public class TribeFormController extends SimpleFormController {
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-		Tribe tribe = new Tribe();
+		Tribe tribe = null;
 		
 		if (context != null && context.isAuthenticated()) {
 			PatientService ps = context.getPatientService();
@@ -79,6 +79,9 @@ public class TribeFormController extends SimpleFormController {
 	    	if (tribeId != null)
 	    		tribe = ps.getTribe(Integer.valueOf(tribeId));	
 		}
+		
+		if (tribe == null)
+			tribe = new Tribe();
     	
         return tribe;
     }

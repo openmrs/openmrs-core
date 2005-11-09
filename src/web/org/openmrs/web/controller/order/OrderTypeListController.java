@@ -12,6 +12,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.OrderType;
+import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.OrderService;
 import org.openmrs.context.Context;
@@ -59,13 +60,28 @@ public class OrderTypeListController extends SimpleFormController {
 			AdministrationService as = context.getAdministrationService();
 			OrderService os = context.getOrderService();
 			
-			for (String o : orderTypeList) {
+			String success = "";
+			String error = "";
+			
+			for (String p : orderTypeList) {
 				//TODO convenience method deleteOrderType(Integer) ??
-				as.deleteOrderType(os.getOrderType(Integer.valueOf(o)));
+				try {
+					as.deleteOrderType(os.getOrderType(Integer.valueOf(p)));
+					if (!success.equals("")) success += "<br>";
+					success += p + " deleted";
+				}
+				catch (APIException e) {
+					log.warn(e);
+					if (!error.equals("")) error += "<br>";
+					error += p + " cannot be deleted";
+				}
 			}
 			
 			view = getSuccessView();
-			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Order Types deleted.");
+			if (!success.equals(""))
+				httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, success);
+			if (!error.equals(""))
+				httpSession.setAttribute(Constants.OPENMRS_ERROR_ATTR, error);
 		}
 			
 		return new ModelAndView(new RedirectView(view));

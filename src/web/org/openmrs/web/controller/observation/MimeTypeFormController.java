@@ -72,7 +72,7 @@ public class MimeTypeFormController extends SimpleFormController {
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-		MimeType mimeType = new MimeType();
+		MimeType mimeType = null;
 		
 		if (context != null && context.isAuthenticated()) {
 			ObsService os = context.getObsService();
@@ -80,6 +80,9 @@ public class MimeTypeFormController extends SimpleFormController {
 	    	if (mimeTypeId != null)
 	    		mimeType = os.getMimeType(Integer.valueOf(mimeTypeId));	
 		}
+		
+		if (mimeType == null)
+			mimeType = new MimeType();
     	
         return mimeType;
     }

@@ -197,7 +197,7 @@ public class PatientFormController extends SimpleFormController {
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-		Patient patient = new Patient();
+		Patient patient = null;
 		
 		if (context != null && context.isAuthenticated()) {
 			PatientService ps = context.getPatientService();
@@ -205,6 +205,10 @@ public class PatientFormController extends SimpleFormController {
 	    	if (patientId != null)
 	    		patient = ps.getPatient(Integer.valueOf(patientId));
 		}
+		
+		if (patient == null)
+			patient = new Patient();
+		
         return patient;
     }
 

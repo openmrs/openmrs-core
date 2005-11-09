@@ -132,7 +132,7 @@ public class UserFormController extends SimpleFormController {
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-		User user = new User();
+		User user = null;
 		
 		if (context != null && context.isAuthenticated()) {
 			UserService us = context.getUserService();
@@ -140,6 +140,10 @@ public class UserFormController extends SimpleFormController {
 	    	if (userId != null)
 	    		user = us.getUser(Integer.valueOf(userId));
 		}
+		
+		if (user == null)
+			user = new User();
+		
         return user;
     }
     

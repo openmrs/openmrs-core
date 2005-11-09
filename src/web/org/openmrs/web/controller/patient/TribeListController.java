@@ -12,6 +12,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Tribe;
+import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.context.Context;
@@ -66,16 +67,31 @@ public class TribeListController extends SimpleFormController {
 			else if (request.getParameter("unretire") != null)
 				action = "unretire";
 			
+			String success = "";
+			String error = "";
+			
 			for (String t : tribeList) {
-				//TODO convenience method deleteTribe(Integer) ??
-				if (action.equals("retire"))
-					as.retireTribe(ps.getTribe(Integer.valueOf(t)));
-				if (action.equals("unretire"))
-					as.unretireTribe(ps.getTribe(Integer.valueOf(t)));
+				//TODO convenience method deleteOrderType(Integer) ??
+				try {
+					if (action.equals("retire"))
+						as.retireTribe(ps.getTribe(Integer.valueOf(t)));
+					if (action.equals("unretire"))
+						as.unretireTribe(ps.getTribe(Integer.valueOf(t)));
+					if (!success.equals("")) success += "<br>";
+					success += t + " changed";
+				}
+				catch (APIException e) {
+					log.warn(e);
+					if (!error.equals("")) error += "<br>";
+					error += t + " cannot be changed";
+				}
 			}
 			
 			view = getSuccessView();
-			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Tribes modified.");
+			if (!success.equals(""))
+				httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, success);
+			if (!error.equals(""))
+				httpSession.setAttribute(Constants.OPENMRS_ERROR_ATTR, error);
 		}
 		
 		return new ModelAndView(new RedirectView(view));

@@ -72,7 +72,7 @@ public class OrderTypeFormController extends SimpleFormController {
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-		OrderType orderType = new OrderType();
+		OrderType orderType = null;
 		
 		if (context != null && context.isAuthenticated()) {
 			OrderService os = context.getOrderService();
@@ -80,6 +80,9 @@ public class OrderTypeFormController extends SimpleFormController {
 	    	if (orderTypeId != null)
 	    		orderType = os.getOrderType(Integer.valueOf(orderTypeId));	
 		}
+		
+		if (orderType == null)
+			orderType = new OrderType();
     	
         return orderType;
     }

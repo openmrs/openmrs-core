@@ -2,11 +2,11 @@ package org.openmrs.web.controller.user;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Role;
+import org.openmrs.Privilege;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-public class RoleValidator implements Validator {
+public class PrivilegeValidator implements Validator {
 
 	/** Log for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
@@ -18,7 +18,7 @@ public class RoleValidator implements Validator {
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	public boolean supports(Class c) {
-		return c.equals(Role.class);
+		return c.equals(Privilege.class);
 	}
 
 	/**
@@ -28,15 +28,15 @@ public class RoleValidator implements Validator {
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	public void validate(Object obj, Errors errors) {
-		Role role = (Role)obj;
-		if (role == null) {
-			errors.rejectValue("role", "general.error");
+		Privilege privilege = (Privilege)obj;
+		if (privilege == null) {
+			errors.rejectValue("privilege", "general.error");
 		}
 		else {
-			if (role.getRole() == null || role.getRole().equals("")) {
-				errors.rejectValue("role", "Role.role.error");
+			if (privilege.getPrivilege() == null || privilege.getPrivilege().equals("")) {
+				errors.rejectValue("privilege", "Privilege.privilege.error");
 			}
-			if (role.getDescription() == null || role.getDescription().equals("")) {
+			if (privilege.getDescription() == null || privilege.getDescription().equals("")) {
 				errors.rejectValue("description", "general.description.error");
 			}
 		}
