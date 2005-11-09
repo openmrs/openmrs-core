@@ -23,6 +23,8 @@
 					<prop key="**/mimeType.form">mimeTypeForm</prop>
 					<prop key="**/user.list">userList</prop>
 					<prop key="**/user.form">userForm</prop>
+					<prop key="**/role.list">roleList</prop>
+					<prop key="**/role.form">roleForm</prop>
 	            </props>
 	        </property>
 	    </bean>
@@ -153,6 +155,24 @@
 					<property name="successView"><value>user.list</value></property>
 				</bean>
 			<!-- ** /User ** -->
+			<!-- ** Role  ** -->
+				<bean id="roleList" class="org.openmrs.web.controller.user.RoleListController">
+						<property name="sessionForm"><value>true</value></property>
+						<property name="commandName"><value>roleList</value></property>
+						<property name="formView"><value>roleList.jsp</value></property>
+						<property name="successView"><value>role.list</value></property>
+					</bean>
+			
+					<!--  Validator and Form Controller for the add/edit role page -->
+					<bean id="roleValidator" class="org.openmrs.web.controller.user.RoleValidator"/>
+					<bean id="roleForm" class="org.openmrs.web.controller.user.RoleFormController">
+						<property name="sessionForm"><value>true</value></property>
+						<property name="commandName"><value>role</value></property>
+						<property name="validator"><ref bean="roleValidator"/></property>
+						<property name="formView"><value>roleForm.jsp</value></property>
+						<property name="successView"><value>role.list</value></property>
+					</bean>
+			<!--  ** /Role ** -->
 			
 		<!-- ====== /User Sector ====== -->
 		

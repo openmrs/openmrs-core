@@ -70,7 +70,7 @@
 				<select name="roles" multiple size="5">
 					<c:forEach var="role" items="${roles}" varStatus="status">
 						<option value="<c:out value="${role.role}"/>"
-							<c:forEach var="r" items="${user.roles}" varStatus="s"><c:if test="${r == role}">selected</c:if></c:forEach>>
+							<c:forEach var="r" items="${user.roles}"><c:if test="${r == role}">selected</c:if></c:forEach>>
 								${role}
 						</option>
 					</c:forEach>
