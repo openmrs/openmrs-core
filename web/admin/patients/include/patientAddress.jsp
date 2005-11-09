@@ -40,7 +40,13 @@
 				</td>
 				${status.errorMessage}
 			</spring:bind>
-
+		<td><spring:message code="PatientAddress.postalCode"/></td>
+			<spring:bind path="postalCode">
+				<td>
+					<input type="text" name="${status.expression}" id="postalCode" size="5" value="${status.value}" />
+				</td>
+				${status.errorMessage}
+			</spring:bind>
 	</tr>
 	<tr>
 		<td><spring:message code="PatientAddress.latitude"/></td>

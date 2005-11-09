@@ -16,8 +16,8 @@
 	<table>
 		<tr>
 			<th> </th>
-			<th> <spring:message code="OrderType.name" /> </th>
-			<th> <spring:message code="OrderType.description" /> </th>
+			<th> <spring:message code="general.name" /> </th>
+			<th> <spring:message code="general.description" /> </th>
 		</tr>
 		<c:forEach var="orderType" items="${orderTypeList}">
 			<tr>

@@ -27,6 +27,10 @@
 					<prop key="**/role.form">roleForm</prop>
 					<prop key="**/privilege.list">privilegeList</prop>
 					<prop key="**/privilege.form">privilegeForm</prop>
+					<prop key="**/encounterType.list">encounterTypeList</prop>
+					<prop key="**/encounterType.form">encounterTypeForm</prop>
+					<prop key="**/location.list">locationList</prop>
+					<prop key="**/location.form">locationForm</prop>
 	            </props>
 	        </property>
 	    </bean>
@@ -194,6 +198,46 @@
 					</bean>
 			<!--  ** /Privilege ** -->			
 		<!-- ====== /User Sector ====== -->
+		
+	    <!-- ============================ -->
+		<!-- ===== Encounter Sector ===== -->
+	    <!-- ============================ -->
+				<!-- ** Encounter Type ** -->
+				<bean id="encounterTypeList" class="org.openmrs.web.controller.encounter.EncounterTypeListController">
+					<property name="sessionForm"><value>true</value></property>
+					<property name="commandName"><value>encounterTypeList</value></property>
+					<property name="formView"><value>encounterTypeList.jsp</value></property>
+					<property name="successView"><value>encounterType.list</value></property>
+				</bean>
+		
+				<!--  Validator and Form Controller for the add/edit encounter types page -->
+				<bean id="encounterTypeValidator" class="org.openmrs.web.controller.encounter.EncounterTypeValidator"/>
+				<bean id="encounterTypeForm" class="org.openmrs.web.controller.encounter.EncounterTypeFormController">
+					<property name="sessionForm"><value>true</value></property>
+					<property name="commandName"><value>encounterType</value></property>
+					<property name="validator"><ref bean="encounterTypeValidator"/></property>
+					<property name="formView"><value>encounterTypeForm.jsp</value></property>
+					<property name="successView"><value>encounterType.list</value></property>
+				</bean>
+			<!-- ** /Encounter Type ** -->
+			<!-- ** Location ** -->
+				<bean id="locationList" class="org.openmrs.web.controller.encounter.LocationListController">
+					<property name="sessionForm"><value>true</value></property>
+					<property name="commandName"><value>locationList</value></property>
+					<property name="formView"><value>locationList.jsp</value></property>
+					<property name="successView"><value>location.list</value></property>
+				</bean>
+		
+				<!--  Validator and Form Controller for the add/edit encounter types page -->
+				<bean id="locationValidator" class="org.openmrs.web.controller.encounter.LocationValidator"/>
+				<bean id="locationForm" class="org.openmrs.web.controller.encounter.LocationFormController">
+					<property name="sessionForm"><value>true</value></property>
+					<property name="commandName"><value>location</value></property>
+					<property name="validator"><ref bean="locationValidator"/></property>
+					<property name="formView"><value>locationForm.jsp</value></property>
+					<property name="successView"><value>location.list</value></property>
+				</bean>
+			<!-- ** /Location ** -->
 		
 		<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
 			<property name="basename">

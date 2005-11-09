@@ -1,13 +1,13 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="Manage Orders" otherwise="/login.jsp" redirect="/admin/orders/orderType.form" />
+<openmrs:require privilege="Manage Encounters" otherwise="/login.jsp" redirect="/admin/encounters/encounterType.form" />
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="OrderType.title"/></h2>
+<h2><spring:message code="EncounterType.title"/></h2>
 
-<spring:hasBindErrors name="orderType">
+<spring:hasBindErrors name="encounterType">
 	<spring:message code="error.fix"/>
 	<br />
 </spring:hasBindErrors>
@@ -16,7 +16,7 @@
 	<tr>
 		<td><spring:message code="general.name"/></td>
 		<td>
-			<spring:bind path="orderType.name">
+			<spring:bind path="encounterType.name">
 				<input type="text" name="name" value="${status.value}" size="35" />
 				${status.errorMessage}
 			</spring:bind>
@@ -25,26 +25,26 @@
 	<tr>
 		<td valign="top"><spring:message code="general.description"/></td>
 		<td valign="top">
-			<spring:bind path="orderType.description">
+			<spring:bind path="encounterType.description">
 				<textarea name="description" rows="3" cols="40">${status.value}</textarea>
 				${status.errorMessage}
 			</spring:bind>
 		</td>
 	</tr>
-	<c:if test="${orderType.orderTypeId != null}">
+	<c:if test="${encounterType.encounterTypeId != null}">
 		<tr>
 			<td><spring:message code="general.creator"/></td>
-			<td>${orderType.creator}</td>
+			<td>${encounterType.creator}</td>
 		</tr>
 		<tr>
 			<td><spring:message code="general.dateCreated"/></td>
-			<td>${orderType.dateCreated}</td>
+			<td>${encounterType.dateCreated}</td>
 		</tr>
-	<input type="hidden" name="orderTypeId:int" value="<c:out value="${orderType.orderTypeId}"/>">
+	<input type="hidden" name="encounterTypeId:int" value="<c:out value="${encounterType.encounterTypeId}"/>">
 	</c:if>
 </table>
 <br />
-<input type="submit" value="<spring:message code="OrderType.save"/>">
+<input type="submit" value="<spring:message code="EncounterType.save"/>">
 </form>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

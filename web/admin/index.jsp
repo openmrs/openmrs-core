@@ -28,12 +28,8 @@
 	<%@ include file="patients/localHeader.jsp" %>
 
 <h4>Encounters</h4>
-<ul>
-	<li><a href="encounters/encounters.jsp">Void/Unvoid an encounter</a></li>
-	<li><a href="encounters/locations.jsp">Manage the locations</a></li>
-	<li><a href="encounters/encounterTypes.jsp">Manage encounter types</a></li>
-</ul>
-
+	<%@ include file="encounters/localHeader.jsp" %>
+	
 <h4>Observations</h4>
 	<%@ include file="observations/localHeader.jsp" %>
 
