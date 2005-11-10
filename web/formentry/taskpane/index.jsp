@@ -1,5 +1,3 @@
-<html>
-<body bgcolor="#DDECFE" topmargin="0" leftmargin="0">
+<%@ include file="/WEB-INF/template/include.jsp" %>
 
-</body>
-</html>
+<c:redirect url="index.htm" />

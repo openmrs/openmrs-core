@@ -30,11 +30,11 @@ public class TribeValidator implements Validator {
 	public void validate(Object obj, Errors errors) {
 		Tribe tribe = (Tribe)obj;
 		if (tribe == null) {
-			errors.rejectValue("tribe", "general.error");
+			errors.rejectValue("tribe", "error.general");
 		}
 		else {
 			if (tribe.getName() == null || tribe.getName().equals("")) {
-				errors.rejectValue("name", "general.name.error");
+				errors.rejectValue("name", "error.name");
 			}
 		}
 	}

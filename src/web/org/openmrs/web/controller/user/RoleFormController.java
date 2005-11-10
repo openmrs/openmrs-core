@@ -80,7 +80,7 @@ public class RoleFormController extends SimpleFormController {
 			Role role = (Role)obj;
 			context.getAdministrationService().updateRole(role);
 			view = getSuccessView();
-			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Role saved.");
+			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Role.saved");
 		}
 		
 		return new ModelAndView(new RedirectView(view));

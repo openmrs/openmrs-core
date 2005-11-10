@@ -12,6 +12,7 @@ import org.openmrs.api.PatientService;
 import org.openmrs.context.Context;
 import org.openmrs.web.Constants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
@@ -53,7 +54,9 @@ public class TribeFormController extends SimpleFormController {
 			Tribe tribe = (Tribe)obj;
 			context.getAdministrationService().updateTribe(tribe);
 			view = getSuccessView();
-			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Tribe saved.");
+
+			MessageSourceAccessor msa = getMessageSourceAccessor();
+			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, msa.getMessage("Tribe.saved"));
 		}
 		
 		return new ModelAndView(new RedirectView(view));

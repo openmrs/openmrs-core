@@ -54,7 +54,7 @@ public class LocationFormController extends SimpleFormController {
 			Location location = (Location)obj;
 			context.getAdministrationService().updateLocation(location);
 			view = getSuccessView();
-			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Encounter Type saved.");
+			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Location.saved");
 		}
 		
 		return new ModelAndView(new RedirectView(view));

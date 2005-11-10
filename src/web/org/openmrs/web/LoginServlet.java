@@ -35,7 +35,7 @@ public class LoginServlet extends HttpServlet {
 
 		Context context = (Context)httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		if (context == null) {
-			httpSession.setAttribute(Constants.OPENMRS_ERROR_ATTR, "Your session has expired.");
+			httpSession.setAttribute(Constants.OPENMRS_ERROR_ATTR, "auth.session.expired");
 			response.sendRedirect(request.getContextPath() + "/logout");
 			return;
 		}
@@ -48,8 +48,8 @@ public class LoginServlet extends HttpServlet {
 				return;
 			}
 		} catch (ContextAuthenticationException e) {
-			httpSession.setAttribute(Constants.OPENMRS_ERROR_ATTR, "Invalid credentials. Please try again.");
-			response.sendRedirect(request.getContextPath() + "/login.jsp");
+			httpSession.setAttribute(Constants.OPENMRS_ERROR_ATTR, "auth.invalid");
+			response.sendRedirect(request.getContextPath() + "/login.htm");
 		}
 	}
 

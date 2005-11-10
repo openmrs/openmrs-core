@@ -57,7 +57,7 @@ public class PrivilegeFormController extends SimpleFormController {
 			Privilege privilege = (Privilege)obj;
 			context.getAdministrationService().updatePrivilege(privilege);
 			view = getSuccessView();
-			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Privilege saved.");
+			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Privilege.saved");
 		}
 		
 		return new ModelAndView(new RedirectView(view));

@@ -2,10 +2,10 @@
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
+<h2><spring:message code="help.title"/></h2>
+
 <br />
-
-<h2>Welcome to OpenMRS</h2>
-
-<br /><br />
+<spring:message code="help.text"/>
+<br />
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

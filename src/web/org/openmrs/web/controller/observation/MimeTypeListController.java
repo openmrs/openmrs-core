@@ -18,6 +18,7 @@ import org.openmrs.api.ObsService;
 import org.openmrs.context.Context;
 import org.openmrs.web.Constants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
@@ -63,16 +64,19 @@ public class MimeTypeListController extends SimpleFormController {
 			String success = "";
 			String error = "";
 			
+			MessageSourceAccessor msa = getMessageSourceAccessor();
+			String deleted = msa.getMessage("general.deleted");
+			String notDeleted = msa.getMessage("general.cannot.delete");
 			for (String m : mimeTypeList) {
 				try {
 					as.deleteMimeType(os.getMimeType(Integer.valueOf(m)));
 					if (!success.equals("")) success += "<br>";
-					success += m + " deleted";
+					success += m + " " + deleted;
 				}
 				catch (APIException e) {
 					log.warn(e);
 					if (!error.equals("")) error += "<br>";
-					error += m + " cannot be deleted";
+					error += m + " " + notDeleted;
 				}
 			}
 			

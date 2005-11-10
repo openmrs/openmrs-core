@@ -63,7 +63,7 @@ public class UserFormController extends SimpleFormController {
 		if (context != null && context.isAuthenticated()) {
 			// check if username is already in the database
 				if (us.isDuplicateUsername(user)) {
-					errors.rejectValue("username", "User.username.taken");
+					errors.rejectValue("username", "error.username.taken");
 				}
 				
 			// check if password and password confirm are identical
@@ -71,7 +71,7 @@ public class UserFormController extends SimpleFormController {
 				String confirm = request.getParameter("confirm");
 				
 				if (password != null && confirm != null && !password.equals(confirm))
-					errors.rejectValue("password", "User.password.error");
+					errors.rejectValue("password", "error.password");
 					
 			// check strength of password?
 				
@@ -114,7 +114,7 @@ public class UserFormController extends SimpleFormController {
 			else
 				context.getUserService().updateUser(user);
 			
-			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "User info saved.");
+			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "User.saved");
 		}
 		
 		return new ModelAndView(new RedirectView(view));

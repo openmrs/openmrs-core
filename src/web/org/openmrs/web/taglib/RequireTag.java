@@ -39,11 +39,11 @@ public class RequireTag extends TagSupport {
 		
 		if (!context.isAuthenticated()) {
 			errorOccurred = true;
-			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "You must log in to continue");
+			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "require.login");
 		}
 		else if (!context.hasPrivilege(privilege)) {
 			errorOccurred = true;
-			httpSession.setAttribute(Constants.OPENMRS_ERROR_ATTR, "You are not authorized to view this page");
+			httpSession.setAttribute(Constants.OPENMRS_ERROR_ATTR, "require.unauthorized");
 		}
 		
 		if (errorOccurred) {

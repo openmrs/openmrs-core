@@ -54,7 +54,7 @@ public class EncounterTypeFormController extends SimpleFormController {
 			EncounterType encounterType = (EncounterType)obj;
 			context.getAdministrationService().updateEncounterType(encounterType);
 			view = getSuccessView();
-			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Encounter Type saved.");
+			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "EncounterType.saved");
 		}
 		
 		return new ModelAndView(new RedirectView(view));

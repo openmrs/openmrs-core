@@ -22,18 +22,52 @@ body {
 
 #userBar {
 	font-size: 10px;
-	width: 100%;
 	text-align: right;
 	background-color: whitesmoke;
 	border-bottom-width: 1px;
 	border-bottom-style: solid;
 	border-bottom-color: lightgrey;
 	margin: 0px;
+	padding: 1px 3px 1px 1px;
+}
+
+#banner {
+	text-align: left;
+	padding: 2px;
+	margin: 0px;
+	xbackground: url(/openmrs/images/gradient.gif) top left repeat-x;
+}
+
+#gutter {
+	float: left;
+	margin-left: 10px;
+	padding: 10px;
+	line-height: 22px;
+	text-align: right;
+	font-size: 12px;
+	width: 140px;
+}
+
+#content {
+	margin-left: 175px;
+	border-left: 1px dashed lightgrey;
+	padding: 2px 5px 20px 20px;
+}
+
+#footer {
+	clear:left;
 	padding: 1px;
+	color: gray;
+	font-size: 10px;
+	border-top: 1px solid lightgrey;
+	border-bottom: 1px solid lightgrey;
+	text-align: left;
+	background-color:whitesmoke;
 }
 
 #menu {
 	padding-left: 2px;
+	font-size: 11px;
 }
 
 #menu li {
@@ -51,10 +85,6 @@ body {
 	font-weight: bold;
 }
 
-#content {
-	padding: 5px;
-}
-
 #patientTable {
 	width: 100%;
 }
@@ -66,15 +96,6 @@ body {
 #patientSummary, #patientSummary * { font-size: 11px; }
 #patientSummary .boxHeader { font-size: 12px; }
 #patientSummary { width: 700px; }
-
-#gutter {
-	margin: 25px;
-	border-right: 1px dashed black;
-	padding: 10px;
-	line-height: 22px;
-	text-align: right;
-	font-size: 12px;
-}
 
 .boxHeader {
 	background-color: navy;

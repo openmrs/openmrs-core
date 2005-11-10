@@ -30,14 +30,14 @@ public class MimeTypeValidator implements Validator {
 	public void validate(Object obj, Errors errors) {
 		MimeType orderType = (MimeType)obj;
 		if (orderType == null) {
-			errors.rejectValue("orderType", "general.error");
+			errors.rejectValue("orderType", "error.general");
 		}
 		else {
 			if (orderType.getMimeType() == null || orderType.getMimeType().equals("")) {
-				errors.rejectValue("mimeType", "general.name.error");
+				errors.rejectValue("mimeType", "error.name");
 			}
 			if (orderType.getDescription() == null || orderType.getDescription().equals("")) {
-				errors.rejectValue("description", "general.description.error");
+				errors.rejectValue("description", "error.description");
 			}
 		}
 		//log.debug("errors: " + errors.getAllErrors().toString());

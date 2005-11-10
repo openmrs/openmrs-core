@@ -64,7 +64,7 @@ public class PatientListController extends SimpleFormController {
 				ps.voidPatient(ps.getPatient(Integer.valueOf(o)), "");
 			}
 			
-			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Patients removed.");
+			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Patient.voided");
 			view = getSuccessView();
 		}
 		

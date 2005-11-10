@@ -1,11 +1,13 @@
-			</td>
-		</tr>
-		<tr>
-			<td colspan="3" valign="top" align="center">
-				<br>
-				<img src="<%= request.getContextPath() %>/images/gradient_bar.gif" />
-			</td>
-		</tr>
-	</table>
+
+	</div>
+
+	<div id="footer">
+		
+		<a href="<%= request.getContextPath() %>/index.htm?lang=en">English</a> |
+		<a href="<%= request.getContextPath() %>/index.htm?lang=fr">Français</a> |
+		<a href="<%= request.getContextPath() %>/index.htm?lang=de">Deutsch</a>
+		
+	</div>
+
 </body>
 </html>

@@ -1,0 +1,7 @@
+<div id="menu">
+	<a href="../">Admin</a> |
+	<a href="forms.jsp">Manage Forms</a> |
+	<a href="fields.jsp">Manage Fields</a> |
+	<a href="fieldsAnswers.jsp">Manage Field Answers</a> |
+	<a href="fieldTypes.jsp">Manage Field Types</a>
+</div>

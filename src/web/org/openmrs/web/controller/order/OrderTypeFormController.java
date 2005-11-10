@@ -54,7 +54,7 @@ public class OrderTypeFormController extends SimpleFormController {
 			OrderType orderType = (OrderType)obj;
 			context.getAdministrationService().updateOrderType(orderType);
 			view = getSuccessView();
-			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Order Type saved.");
+			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "OrderType.saved");
 		}
 		
 		return new ModelAndView(new RedirectView(view));

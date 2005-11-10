@@ -31,8 +31,8 @@ public class LogoutServlet extends HttpServlet {
 		if (context != null)
 			context.logout();
 		httpSession.removeAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "You are now logged out");
-		response.sendRedirect(request.getContextPath() + "/login.jsp");
+		httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "auth.logged.out");
+		response.sendRedirect(request.getContextPath() + "/login.htm");
 	}
 
 }

@@ -135,6 +135,13 @@
 			<filter-name>OpenmrsFilter</filter-name> 
 			<url-pattern>*.list</url-pattern> 
 		</filter-mapping>
+		
+		<!--
+		<servlet-mapping>
+	 		<servlet-name>openmrs</servlet-name>
+	 		<url-pattern>/openmrs/*.jsp</url-pattern>
+		</servlet-mapping>
+		-->
 	
 		<servlet-mapping>
 	 		<servlet-name>openmrs</servlet-name>

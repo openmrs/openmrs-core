@@ -30,14 +30,14 @@ public class LocationValidator implements Validator {
 	public void validate(Object obj, Errors errors) {
 		Location location = (Location)obj;
 		if (location == null) {
-			errors.rejectValue("location", "general.error");
+			errors.rejectValue("location", "error.general");
 		}
 		else {
 			if (location.getName() == null || location.getName().equals("")) {
-				errors.rejectValue("name", "general.name.error");
+				errors.rejectValue("name", "error.name");
 			}
 			if (location.getDescription() == null || location.getDescription().equals("")) {
-				errors.rejectValue("description", "general.description.error");
+				errors.rejectValue("description", "error.description");
 			}
 		}
 		//log.debug("errors: " + errors.getAllErrors().toString());

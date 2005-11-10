@@ -54,7 +54,7 @@ public class PatientIdentifierTypeFormController extends SimpleFormController {
 			PatientIdentifierType identifierType = (PatientIdentifierType)obj;
 			context.getAdministrationService().updatePatientIdentifierType(identifierType);
 			view = getSuccessView();
-			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Identifier Type saved.");
+			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "PatientIdentifierType.saved");
 		}
 		
 		return new ModelAndView(new RedirectView(view));

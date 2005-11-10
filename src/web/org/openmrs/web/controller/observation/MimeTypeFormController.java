@@ -54,7 +54,7 @@ public class MimeTypeFormController extends SimpleFormController {
 			MimeType mimeType = (MimeType)obj;
 			context.getAdministrationService().updateMimeType(mimeType);
 			view = getSuccessView();
-			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Mime Type saved.");
+			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "MimeType.saved");
 		}
 		
 		return new ModelAndView(new RedirectView(view));

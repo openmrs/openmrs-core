@@ -178,7 +178,7 @@ public class PatientFormController extends SimpleFormController {
 			if (isNew)
 				view = request.getContextPath() + "/formentry/index.htm?patientId=" + patient.getPatientId(); 
 			
-			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Patient info saved.");
+			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Patient.saved");
 			return new ModelAndView(new RedirectView(view));
 		}
 		

@@ -18,6 +18,7 @@ import org.openmrs.api.UserService;
 import org.openmrs.context.Context;
 import org.openmrs.web.Constants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
@@ -63,17 +64,20 @@ public class RoleListController extends SimpleFormController {
 			String success = "";
 			String error = "";
 			
+			MessageSourceAccessor msa = getMessageSourceAccessor();
+			String deleted = msa.getMessage("general.deleted");
+			String notDeleted = msa.getMessage("general.cannot.delete");
 			for (String p : roleList) {
 				//TODO convenience method deleteRole(String) ??
 				try {
 					as.deleteRole(us.getRole(p));
 					if (!success.equals("")) success += "<br>";
-					success += p + " deleted";
+					success += p + " " + deleted;
 				}
 				catch (APIException e) {
 					log.warn(e);
 					if (!error.equals("")) error += "<br>";
-					error += p + " cannot be deleted";
+					error += p + " " + notDeleted;
 				}
 			}
 			

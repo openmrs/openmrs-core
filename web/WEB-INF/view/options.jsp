@@ -2,10 +2,15 @@
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
-<h2>OpenMRS Help</h2>
+<h2><spring:message code="options.title"/></h2>
 
 <br />
-If in doubt, log out...and try again.
 <br />
+
+<form method="post">
+	
+	<input type="submit" value="<spring:message code="options.save"/>">
+</form>
+ 
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

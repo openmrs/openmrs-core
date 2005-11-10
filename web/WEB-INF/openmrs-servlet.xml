@@ -6,12 +6,21 @@
   -->
 
 	<beans>
-	    <bean id="springController" class="org.openmrs.web.controller.SpringController"/>
+	
+		<bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+			<property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+			<property name="prefix" value="/WEB-INF/view" />
+			<property name="suffix" value=".jsp"/>
+		</bean>
 	
 	    <bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+			<property name="interceptors">
+				<list>
+					<ref bean="localeChangeInterceptor"/>
+				</list>
+			</property>
 	        <property name="mappings">
 	            <props>
-					<prop key="**/*.htm">springController</prop>
 					<prop key="**/orderType.list">orderTypeList</prop>
 					<prop key="**/orderType.form">orderTypeForm</prop>
 					<prop key="**/patient.form">patientForm</prop>
@@ -31,10 +40,13 @@
 					<prop key="**/encounterType.form">encounterTypeForm</prop>
 					<prop key="**/location.list">locationList</prop>
 					<prop key="**/location.form">locationForm</prop>
+					<prop key="**/*.htm">springController</prop>
 	            </props>
 	        </property>
 	    </bean>
 
+		<bean id="springController" class="org.openmrs.web.controller.SpringController"/>
+	    
 	    <!-- ================================ -->	    
 	    <!-- ====== Observation Sector ====== -->
 	    <!-- ================================ -->
@@ -47,7 +59,7 @@
 				<bean id="mimeTypeList" class="org.openmrs.web.controller.observation.MimeTypeListController">
 					<property name="sessionForm"><value>true</value></property>
 					<property name="commandName"><value>mimeTypeList</value></property>
-					<property name="formView"><value>mimeTypeList.jsp</value></property>
+					<property name="formView"><value>/admin/observations/mimeTypeList</value></property>
 					<property name="successView"><value>mimeType.list</value></property>
 				</bean>
 		
@@ -57,7 +69,7 @@
 					<property name="sessionForm"><value>true</value></property>
 					<property name="commandName"><value>mimeType</value></property>
 					<property name="validator"><ref bean="mimeTypeValidator"/></property>
-					<property name="formView"><value>mimeTypeForm.jsp</value></property>
+					<property name="formView"><value>/admin/observations/mimeTypeForm</value></property>
 					<property name="successView"><value>mimeType.list</value></property>
 				</bean>
 			<!-- ** /Mime Type ** -->
@@ -75,7 +87,7 @@
 				<bean id="orderTypeList" class="org.openmrs.web.controller.order.OrderTypeListController">
 					<property name="sessionForm"><value>true</value></property>
 					<property name="commandName"><value>orderTypeList</value></property>
-					<property name="formView"><value>orderTypeList.jsp</value></property>
+					<property name="formView"><value>/admin/orders/orderTypeList</value></property>
 					<property name="successView"><value>orderType.list</value></property>
 				</bean>
 		
@@ -85,7 +97,7 @@
 					<property name="sessionForm"><value>true</value></property>
 					<property name="commandName"><value>orderType</value></property>
 					<property name="validator"><ref bean="orderTypeValidator"/></property>
-					<property name="formView"><value>orderTypeForm.jsp</value></property>
+					<property name="formView"><value>/admin/orders/orderTypeForm</value></property>
 					<property name="successView"><value>orderType.list</value></property>
 				</bean>
 			<!-- ** /Order Type ** -->
@@ -102,7 +114,7 @@
 					<property name="sessionForm"><value>true</value></property>
 					<property name="commandName"><value>patient</value></property>
 					<property name="validator"><ref bean="patientValidator"/></property>
-					<property name="formView"><value>patientForm.jsp</value></property>
+					<property name="formView"><value>/admin/patients/patientForm</value></property>
 					<property name="successView"><value>index.htm</value></property>
 				</bean>
 			<!-- ** /Patient ** -->
@@ -110,7 +122,7 @@
 				<bean id="tribeList" class="org.openmrs.web.controller.patient.TribeListController">
 					<property name="sessionForm"><value>true</value></property>
 					<property name="commandName"><value>tribeList</value></property>
-					<property name="formView"><value>tribeList.jsp</value></property>
+					<property name="formView"><value>/admin/patients/tribeList</value></property>
 					<property name="successView"><value>tribe.list</value></property>
 				</bean>
 				<bean id="tribeValidator" class="org.openmrs.web.controller.patient.TribeValidator"/>
@@ -118,7 +130,7 @@
 					<property name="sessionForm"><value>true</value></property>
 					<property name="commandName"><value>tribe</value></property>
 					<property name="validator"><ref bean="tribeValidator"/></property>
-					<property name="formView"><value>tribeForm.jsp</value></property>
+					<property name="formView"><value>/admin/patients/tribeForm</value></property>
 					<property name="successView"><value>tribe.list</value></property>
 				</bean>
 			<!-- ** /Tribe   ** -->
@@ -126,7 +138,7 @@
 				<bean id="patientIdentifierTypeList" class="org.openmrs.web.controller.patient.PatientIdentifierTypeListController">
 					<property name="sessionForm"><value>true</value></property>
 					<property name="commandName"><value>patientIdentifierTypeList</value></property>
-					<property name="formView"><value>patientIdentifierTypeList.jsp</value></property>
+					<property name="formView"><value>/admin/patients/patientIdentifierTypeList</value></property>
 					<property name="successView"><value>patientIdentifierType.list</value></property>
 				</bean>
 				<bean id="patientIdentifierTypeValidator" class="org.openmrs.web.controller.patient.PatientIdentifierTypeValidator"/>
@@ -134,7 +146,7 @@
 					<property name="sessionForm"><value>true</value></property>
 					<property name="commandName"><value>patientIdentifierType</value></property>
 					<property name="validator"><ref bean="patientIdentifierTypeValidator"/></property>
-					<property name="formView"><value>patientIdentifierTypeForm.jsp</value></property>
+					<property name="formView"><value>/admin/patients/patientIdentifierTypeForm</value></property>
 					<property name="successView"><value>patientIdentifierType.list</value></property>
 				</bean>
 			<!-- ** /Patient Identifier Type   ** -->			
@@ -149,7 +161,7 @@
 	    		<bean id="userList" class="org.openmrs.web.controller.user.UserListController">
 					<property name="sessionForm"><value>true</value></property>
 					<property name="commandName"><value>userList</value></property>
-					<property name="formView"><value>userList.jsp</value></property>
+					<property name="formView"><value>/admin/users/userList</value></property>
 					<property name="successView"><value>user.list</value></property>
 				</bean>
 				<bean id="userValidator" class="org.openmrs.web.controller.user.UserValidator"/>
@@ -157,7 +169,7 @@
 					<property name="sessionForm"><value>true</value></property>
 					<property name="commandName"><value>user</value></property>
 					<property name="validator"><ref bean="userValidator"/></property>
-					<property name="formView"><value>userForm.jsp</value></property>
+					<property name="formView"><value>/admin/users/userForm</value></property>
 					<property name="successView"><value>user.list</value></property>
 				</bean>
 			<!-- ** /User ** -->
@@ -165,7 +177,7 @@
 				<bean id="roleList" class="org.openmrs.web.controller.user.RoleListController">
 						<property name="sessionForm"><value>true</value></property>
 						<property name="commandName"><value>roleList</value></property>
-						<property name="formView"><value>roleList.jsp</value></property>
+						<property name="formView"><value>/admin/users/roleList</value></property>
 						<property name="successView"><value>role.list</value></property>
 					</bean>
 			
@@ -175,7 +187,7 @@
 						<property name="sessionForm"><value>true</value></property>
 						<property name="commandName"><value>role</value></property>
 						<property name="validator"><ref bean="roleValidator"/></property>
-						<property name="formView"><value>roleForm.jsp</value></property>
+						<property name="formView"><value>/admin/users/roleForm</value></property>
 						<property name="successView"><value>role.list</value></property>
 					</bean>
 			<!--  ** /Role ** -->
@@ -183,7 +195,7 @@
 				<bean id="privilegeList" class="org.openmrs.web.controller.user.PrivilegeListController">
 						<property name="sessionForm"><value>true</value></property>
 						<property name="commandName"><value>privilegeList</value></property>
-						<property name="formView"><value>privilegeList.jsp</value></property>
+						<property name="formView"><value>/admin/users/privilegeList</value></property>
 						<property name="successView"><value>privilege.list</value></property>
 					</bean>
 			
@@ -193,7 +205,7 @@
 						<property name="sessionForm"><value>true</value></property>
 						<property name="commandName"><value>privilege</value></property>
 						<property name="validator"><ref bean="privilegeValidator"/></property>
-						<property name="formView"><value>privilegeForm.jsp</value></property>
+						<property name="formView"><value>/admin/users/privilegeForm</value></property>
 						<property name="successView"><value>privilege.list</value></property>
 					</bean>
 			<!--  ** /Privilege ** -->			
@@ -206,7 +218,7 @@
 				<bean id="encounterTypeList" class="org.openmrs.web.controller.encounter.EncounterTypeListController">
 					<property name="sessionForm"><value>true</value></property>
 					<property name="commandName"><value>encounterTypeList</value></property>
-					<property name="formView"><value>encounterTypeList.jsp</value></property>
+					<property name="formView"><value>/admin/encounters/encounterTypeList</value></property>
 					<property name="successView"><value>encounterType.list</value></property>
 				</bean>
 		
@@ -216,7 +228,7 @@
 					<property name="sessionForm"><value>true</value></property>
 					<property name="commandName"><value>encounterType</value></property>
 					<property name="validator"><ref bean="encounterTypeValidator"/></property>
-					<property name="formView"><value>encounterTypeForm.jsp</value></property>
+					<property name="formView"><value>/admin/encounters/encounterTypeForm</value></property>
 					<property name="successView"><value>encounterType.list</value></property>
 				</bean>
 			<!-- ** /Encounter Type ** -->
@@ -224,7 +236,7 @@
 				<bean id="locationList" class="org.openmrs.web.controller.encounter.LocationListController">
 					<property name="sessionForm"><value>true</value></property>
 					<property name="commandName"><value>locationList</value></property>
-					<property name="formView"><value>locationList.jsp</value></property>
+					<property name="formView"><value>/admin/encounters/locationList</value></property>
 					<property name="successView"><value>location.list</value></property>
 				</bean>
 		
@@ -234,7 +246,7 @@
 					<property name="sessionForm"><value>true</value></property>
 					<property name="commandName"><value>location</value></property>
 					<property name="validator"><ref bean="locationValidator"/></property>
-					<property name="formView"><value>locationForm.jsp</value></property>
+					<property name="formView"><value>/admin/encounters/locationForm</value></property>
 					<property name="successView"><value>location.list</value></property>
 				</bean>
 			<!-- ** /Location ** -->
@@ -245,7 +257,17 @@
 			</property>
 
 		</bean>
-
+		
+		<bean id="localeResolver"
+			class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+		    <property name="cookieName"><value>__openmrs_language</value></property>
+		</bean>
+		
+		<bean id="localeChangeInterceptor"
+			class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+				<property name="paramName"><value>lang</value></property>
+		</bean>
+		
 	</beans>
 
 

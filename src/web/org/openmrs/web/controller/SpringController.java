@@ -15,7 +15,10 @@ public class SpringController implements Controller {
             throws ServletException, IOException {
     	
     	String path = request.getServletPath();
-    	path = path.replace(".htm", ".jsp");
+    	if (path.endsWith("htm"))
+    		path = path.replace(".htm", "");
+    	else if (path.endsWith("jsp"))
+    		path = path.replace(".jsp", "");
     	return new ModelAndView(path);
         
     }

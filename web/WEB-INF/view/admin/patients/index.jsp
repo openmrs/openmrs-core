@@ -1,8 +1,9 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="Form Entry" otherwise="/login.htm" redirect="/formentry/index.htm" />
+<openmrs:require privilege="Form Entry" otherwise="/login.htm" redirect="/admin/patients/index.htm" />
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
+<%@ include file="localHeader.jsp" %>
 
 <script src='<%= request.getContextPath() %>/validation.js'></script>
 
@@ -21,7 +22,6 @@
 		findPatient.style.display = "";
 		patientListing.style.display = "none";
 		selectForm.style.display = "none";
-		patientSummary.style.display = "none";
 		searchBox.focus();
 	}
 	
@@ -61,6 +61,13 @@
 			str += ")' class='small' value='<spring:message code="general.select"/>";
 			return str;
 		};
+	var getEditLink		= function(obj) {
+			var str = "";
+			str += "<a href='patient.form?patientId=";
+			str += obj.patientId;
+			str += "'>Edit</a>";
+			return str;
+		};
 	var getIdentifier	= function(obj) { return obj.identifier; };
 	var getGivenName	= function(obj) { return obj.givenName;  };
 	var getFamilyName	= function(obj) { return obj.familyName; };
@@ -80,33 +87,15 @@
 	var getMothersName  = function(obj) { return obj.mothersName;  };
 	
 	function fillTable(patientListItem) {
-	    DWRUtil.addRows("patientTableBody", patientListItem, [getButton, getIdentifier, getGivenName, getFamilyName, getGender, getRace, getBirthdate, getMothersName]);
+	    DWRUtil.addRows("patientTableBody", patientListItem, [getEditLink, getIdentifier, getGivenName, getFamilyName, getGender, getRace, getBirthdate, getMothersName]);
 	}
 	
-	function selectPatient(patientId) {
-		findPatient.style.display = "none";
-		patientSummary.style.display = "";
-		selectForm.style.display = "";
-		selectFormForm.patientId.value = patientId;
-		DWRPatientService.getPatient(fillPatientDetails, patientId);
-	}
-	
-	function fillPatientDetails(patient) {
-		var html = "<b class='boxHeader'><spring:message code="formentry.patient.info"/></b>";
-		html = html + "<a href='editPatient?patientId=" + patient.patientId + "' style='float:right'><spring:message code="Patient.edit"/></a>";
-		html = html + "<b>Name</b>:" + patient.givenName + " " + patient.familyName + "<br />";
-		html = html + "<b>Gender</b>:" + patient.gender + "<br />";
-		html = html + "<b>Address</b>:" + patient.address + "<br />...";
-		html = html + "<br /><input type='button' value='<spring:message code="formentry.patient.switch"/>' onClick='showSearch(); patientListing.style.display = \"\";'>";
-		patientSummary.innerHTML = html;
-	}
-
 </script>
 
 <h2>Form Entry</h2>
 
 <div id="findPatient">
-	<b class="boxHeader"><spring:message code="formentry.step1"/></b>
+	<b class="boxHeader"><spring:message code="Patient.find"/></b>
 	<div class="box">
 		<br>
 		<form id="findPatientForm" onSubmit="updatePatients(); return false;">
@@ -149,35 +138,6 @@
 <div id="patientSummary">
 </div>
 
-<br />
-
-<b class="boxHeader"><spring:message code="formentry.step2"/></b>
-<div id="selectForm" class="box">
-	<br />
-	<form id="selectFormForm" method="post" action="<%= request.getContextPath() %>/formDownload">
-		
-		<table>
-			<tr>
-				<td><input type="radio" name="formType" value="adultInitial" id="adultInitial"></td>
-				<td><label for="adultInitial">Adult Initial</label></td>
-			</tr>
-			<tr>
-				<td><input type="radio" name="formType" value="adultReturn" id="adultReturn"></td>
-				<td><label for="adultReturn">Adult Return</label></td>
-			</tr>
-			<tr>
-				<td><input type="radio" name="formType" value="pedInitial" id="pedInitial"></td>
-				<td><label for="pedInitial">Ped Initial</label></td>
-			</tr>
-			<tr>
-				<td><input type="radio" name="formType" value="pedReturn" id="pedReturn"></td>
-				<td><label for="pedReturn">Ped Return</label></td>
-			</tr>
-		</table>
-		<input type="hidden" name="patientId" id="patientId" value="">
-		<input type="submit" value="Download Form">
-	</form>
-</div>
 
 <script>
 
@@ -188,8 +148,6 @@
 	var searchType		= document.getElementById("searchType");
 	var patientTableBody= document.getElementById("patientTableBody");
 	var findPatientForm = document.getElementById("findPatientForm");
-	var selectFormForm  = document.getElementById("selectFormForm");
-	var patientSummary  = document.getElementById("patientSummary");
 	
 	showSearch();
 	

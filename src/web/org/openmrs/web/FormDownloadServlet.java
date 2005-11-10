@@ -48,7 +48,7 @@ public class FormDownloadServlet extends HttpServlet {
 		
 		Context context = (Context)httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		if (context == null) {
-			httpSession.setAttribute(Constants.OPENMRS_ERROR_ATTR, "Your session has expired.");
+			httpSession.setAttribute(Constants.OPENMRS_ERROR_ATTR, "auth.session.expired");
 			response.sendRedirect(request.getContextPath() + "/logout");
 			return;
 		}
@@ -63,7 +63,7 @@ public class FormDownloadServlet extends HttpServlet {
 		
 		try {
 			DocumentBuilder builder = factory.newDocumentBuilder();
-			//TODO find correct non-deprecated function
+			//TODO find correct (non-deprecated) function
 			xmldoc = builder.parse(request.getRealPath("formentry/forms/" + formType + ".xml"));
 		}
 		catch (ParserConfigurationException e) {

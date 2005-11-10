@@ -18,6 +18,7 @@ import org.openmrs.api.PatientService;
 import org.openmrs.context.Context;
 import org.openmrs.web.Constants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
@@ -70,6 +71,9 @@ public class TribeListController extends SimpleFormController {
 			String success = "";
 			String error = "";
 			
+			MessageSourceAccessor msa = getMessageSourceAccessor();
+			String changed = msa.getMessage("general.changed");
+			String notChanged = msa.getMessage("general.cannot.change");
 			for (String t : tribeList) {
 				//TODO convenience method deleteOrderType(Integer) ??
 				try {
@@ -78,12 +82,12 @@ public class TribeListController extends SimpleFormController {
 					if (action.equals("unretire"))
 						as.unretireTribe(ps.getTribe(Integer.valueOf(t)));
 					if (!success.equals("")) success += "<br>";
-					success += t + " changed";
+					success += t + " " + changed;
 				}
 				catch (APIException e) {
 					log.warn(e);
 					if (!error.equals("")) error += "<br>";
-					error += t + " cannot be changed";
+					error += t + " " + notChanged;
 				}
 			}
 			
