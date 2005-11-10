@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.OrderType;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 public class OrderTypeValidator implements Validator {
@@ -33,12 +34,8 @@ public class OrderTypeValidator implements Validator {
 			errors.rejectValue("orderType", "error.general");
 		}
 		else {
-			if (orderType.getName() == null || orderType.getName().equals("")) {
-				errors.rejectValue("name", "error.name");
-			}
-			if (orderType.getDescription() == null || orderType.getDescription().equals("")) {
-				errors.rejectValue("description", "error.description");
-			}
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description");
 		}
 		//log.debug("errors: " + errors.getAllErrors().toString());
 	}

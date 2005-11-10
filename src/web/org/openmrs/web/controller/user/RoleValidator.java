@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Role;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 public class RoleValidator implements Validator {
@@ -33,14 +34,9 @@ public class RoleValidator implements Validator {
 			errors.rejectValue("role", "error.general");
 		}
 		else {
-			if (role.getRole() == null || role.getRole().equals("")) {
-				errors.rejectValue("role", "error.role");
-			}
-			if (role.getDescription() == null || role.getDescription().equals("")) {
-				errors.rejectValue("description", "error.description");
-			}
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "role", "error.role");
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description");
 		}
-		//log.debug("errors: " + errors.getAllErrors().toString());
 	}
 
 }

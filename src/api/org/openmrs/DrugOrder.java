@@ -8,7 +8,7 @@ package org.openmrs;
  */
 public class DrugOrder extends Order implements java.io.Serializable {
 
-	public static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 72232L;
 
 	// Fields
 

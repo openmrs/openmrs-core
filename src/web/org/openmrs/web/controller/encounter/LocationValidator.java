@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Location;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 public class LocationValidator implements Validator {
@@ -33,14 +34,9 @@ public class LocationValidator implements Validator {
 			errors.rejectValue("location", "error.general");
 		}
 		else {
-			if (location.getName() == null || location.getName().equals("")) {
-				errors.rejectValue("name", "error.name");
-			}
-			if (location.getDescription() == null || location.getDescription().equals("")) {
-				errors.rejectValue("description", "error.description");
-			}
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description");
 		}
-		//log.debug("errors: " + errors.getAllErrors().toString());
 	}
 
 }

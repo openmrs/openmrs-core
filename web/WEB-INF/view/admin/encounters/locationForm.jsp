@@ -95,7 +95,7 @@
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 	</tr>
-	<c:if test="${!(address.creator == null)}" >
+	<c:if test="${!(user.creator == null)}" >
 		<tr>
 			<td><spring:message code="general.creator"/></td>
 			<td>

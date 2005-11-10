@@ -7,7 +7,7 @@ import java.util.Date;
  */
 public class ConceptMap implements java.io.Serializable {
 
-	public static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 754677L;
 
 	// Fields
 

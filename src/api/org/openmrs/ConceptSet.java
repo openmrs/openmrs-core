@@ -7,7 +7,7 @@ import java.util.Date;
  */
 public class ConceptSet implements java.io.Serializable {
 
-	public static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 3787L;
 
 	// Fields
 

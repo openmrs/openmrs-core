@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.PatientIdentifierType;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 public class PatientIdentifierTypeValidator implements Validator {
@@ -33,12 +34,8 @@ public class PatientIdentifierTypeValidator implements Validator {
 			errors.rejectValue("identifierType", "error.general");
 		}
 		else {
-			if (identifierType.getName() == null || identifierType.getName().equals("")) {
-				errors.rejectValue("name", "error.name");
-			}
-			if (identifierType.getDescription() == null || identifierType.getDescription().equals("")) {
-				errors.rejectValue("description", "error.description");
-			}
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description");
 		}
 	}
 

@@ -5,7 +5,7 @@ package org.openmrs;
  */
 public class MimeType implements java.io.Serializable {
 
-	public static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 8765L;
 
 	// Fields
 

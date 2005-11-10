@@ -10,7 +10,7 @@ import java.util.Date;
  */
 public class Person implements java.io.Serializable {
 
-	public static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 13533L;
 
 	// Fields
 

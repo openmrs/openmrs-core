@@ -7,6 +7,11 @@
 
 <h2><spring:message code="Role.manage.title"/></h2>	
 
+<spring:hasBindErrors name="role">
+	<spring:message code="fix.error"/>
+	<br />
+</spring:hasBindErrors>
+
 <form method="post">
 <table>
 	<tr>

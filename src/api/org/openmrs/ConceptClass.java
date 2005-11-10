@@ -7,7 +7,7 @@ import java.util.*;
  */
 public class ConceptClass implements java.io.Serializable {
 
-	public static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 33473L;
 
 	// Fields
 

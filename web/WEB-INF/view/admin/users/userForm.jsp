@@ -7,6 +7,16 @@
 
 <h2><spring:message code="User.title"/></h2>
 
+<spring:hasBindErrors name="user">
+	<spring:message code="fix.error"/>
+	<div class="error">
+		<c:forEach items="${errors.allErrors}" var="error">
+			<spring:message code="${error.code}" text="${error.code}"/><br/>
+		</c:forEach>
+	</div>
+	<br />
+</spring:hasBindErrors>
+
 <form method="post">
 	<table>
 		<tr>
@@ -21,12 +31,7 @@
 		<c:if test="${user.creator == null}">
 			<tr>
 				<td><spring:message code="User.password"/></td>
-				<td>
-					<input type="password" name="password"/>
-					<spring:hasBindErrors name="password">
-						${error.getAllErrors}
-					</spring:hasBindErrors>
-				</td>
+				<td><input type="password" name="password"/></td>
 	
 			</tr>
 			<tr>
@@ -77,6 +82,30 @@
 				</select>
 			</td>
 		</tr>
+		<c:if test="${!(user.creator == null)}" >
+			<tr>
+				<td><spring:message code="general.creator"/></td>
+				<td>
+					<spring:bind path="user.creator">
+						${address.creator.username}
+						<input type="hidden" name="${status.expression}" value="${status.value}"/>
+					</spring:bind>
+				</td>
+			</tr>
+			<tr>
+				<td><spring:message code="general.dateCreated"/></td>
+				<td>
+					<spring:bind path="user.dateCreated">
+						<openmrs:formatDate date="${address.dateCreated}" type="long"/>
+				  		<input type="hidden" name="${status.expression}" value="${status.value}">
+					</spring:bind>
+				</td>
+			</tr>
+			<spring:bind path="user.userId">
+				<input type="hidden" name="${status.expression}:int" value="${status.value}">
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</c:if>
 		<tr>
 			<td><spring:message code="general.voided"/></td>
 			<td>
@@ -121,10 +150,6 @@
 			</c:if>
 		</tr>
 	</table>
-	<spring:bind path="user.userId">
-		<input type="hidden" name="${status.expression}" value="${status.value}">
-		<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-	</spring:bind>
 	<input type="submit" value="<spring:message code="User.save"/>" />
 </form>
 

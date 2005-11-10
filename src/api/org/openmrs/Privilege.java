@@ -9,7 +9,7 @@ package org.openmrs;
  */
 public class Privilege implements java.io.Serializable {
 
-	public static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 312L;
 
 	// Fields
 

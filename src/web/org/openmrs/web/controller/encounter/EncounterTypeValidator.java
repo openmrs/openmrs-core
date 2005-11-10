@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.EncounterType;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 public class EncounterTypeValidator implements Validator {
@@ -33,14 +34,9 @@ public class EncounterTypeValidator implements Validator {
 			errors.rejectValue("encounterType", "error.general");
 		}
 		else {
-			if (encounterType.getName() == null || encounterType.getName().equals("")) {
-				errors.rejectValue("name", "error.name");
-			}
-			if (encounterType.getDescription() == null || encounterType.getDescription().equals("")) {
-				errors.rejectValue("description", "error.description");
-			}
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description");
 		}
-		//log.debug("errors: " + errors.getAllErrors().toString());
 	}
 
 }

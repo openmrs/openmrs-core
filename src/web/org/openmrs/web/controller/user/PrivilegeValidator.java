@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Privilege;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 public class PrivilegeValidator implements Validator {
@@ -33,14 +34,9 @@ public class PrivilegeValidator implements Validator {
 			errors.rejectValue("privilege", "error.general");
 		}
 		else {
-			if (privilege.getPrivilege() == null || privilege.getPrivilege().equals("")) {
-				errors.rejectValue("privilege", "error.privilege");
-			}
-			if (privilege.getDescription() == null || privilege.getDescription().equals("")) {
-				errors.rejectValue("description", "error.description");
-			}
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "privilege", "error.privilege");
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description");
 		}
-		//log.debug("errors: " + errors.getAllErrors().toString());
 	}
 
 }

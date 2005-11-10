@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 public class UserValidator implements Validator {
@@ -33,9 +34,7 @@ public class UserValidator implements Validator {
 			errors.rejectValue("user", "error.general");
 		}
 		else {
-			if (user.getUsername() == null || user.getUsername() == "") {
-				errors.rejectValue("username", "error.username");
-			}
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "username", "error.username");
 			// TODO check username check digit here
 		}
 	}

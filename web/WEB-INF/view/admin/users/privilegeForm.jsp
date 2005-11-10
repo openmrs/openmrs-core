@@ -7,6 +7,11 @@
 
 <h2><spring:message code="Privilege.manage.title"/></h2>	
 
+<spring:hasBindErrors name="privilege">
+	<spring:message code="fix.error"/>
+	<br />
+</spring:hasBindErrors>
+
 <form method="post">
 <table>
 	<tr>

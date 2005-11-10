@@ -10,7 +10,7 @@ import java.util.Date;
  */
 public class Order implements java.io.Serializable {
 
-	public static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 4334343L;
 
 	// Fields
 

@@ -41,9 +41,9 @@ public class UserFormController extends SimpleFormController {
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-        NumberFormat nf = NumberFormat.getInstance(request.getLocale());
-        binder.registerCustomEditor(java.lang.Integer.class,
-                new CustomNumberEditor(java.lang.Integer.class, nf, true));
+        //NumberFormat nf = NumberFormat.getInstance(request.getLocale());
+        //binder.registerCustomEditor(java.lang.Integer.class,
+        //        new CustomNumberEditor(java.lang.Integer.class, nf, true));
 		//binder.registerCustomEditor(java.lang.Integer.class, 
 		//		new CustomNumberEditor(java.lang.Integer.class, true));
         binder.registerCustomEditor(java.util.Date.class, 
@@ -68,10 +68,15 @@ public class UserFormController extends SimpleFormController {
 				
 			// check if password and password confirm are identical
 				String password = request.getParameter("password");
+				if (password == null) password = "";
 				String confirm = request.getParameter("confirm");
+				if (confirm == null) confirm = "";
 				
-				if (password != null && confirm != null && !password.equals(confirm))
-					errors.rejectValue("password", "error.password");
+				if (!password.equals(confirm))
+					errors.reject("error.password.match");
+				
+				if (password.equals("") && user.getUserId() == null)
+					errors.reject("error.password.weak");
 					
 			// check strength of password?
 				

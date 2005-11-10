@@ -8,7 +8,7 @@ package org.openmrs;
  */
 public class ComplexObs extends Obs implements java.io.Serializable{
 	
-	public static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 345734087L;
 
 	// Fields
 

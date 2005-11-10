@@ -12,7 +12,7 @@ import java.util.Set;
  */
 public class User extends Person implements java.io.Serializable {
 
-	public static final long serialVersionUID = 12349832489L;
+	public static final long serialVersionUID = 4489L;
 
 	// Fields
 

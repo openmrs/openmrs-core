@@ -1,9 +1,6 @@
 package org.openmrs.web.controller.user;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
@@ -13,9 +10,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.PatientAddress;
-import org.openmrs.PatientIdentifier;
-import org.openmrs.PatientName;
 import org.openmrs.User;
 import org.openmrs.api.UserService;
 import org.openmrs.context.Context;

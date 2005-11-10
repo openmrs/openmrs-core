@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.MimeType;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 public class MimeTypeValidator implements Validator {
@@ -33,6 +34,8 @@ public class MimeTypeValidator implements Validator {
 			errors.rejectValue("orderType", "error.general");
 		}
 		else {
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "mimeType", "error.mimeType");
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description");
 			if (orderType.getMimeType() == null || orderType.getMimeType().equals("")) {
 				errors.rejectValue("mimeType", "error.name");
 			}

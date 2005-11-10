@@ -7,7 +7,7 @@ import java.util.Date;
  */
 public class Relationship implements java.io.Serializable {
 
-	public static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 323423L;
 
 	// Fields
 

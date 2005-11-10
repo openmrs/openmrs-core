@@ -24,7 +24,7 @@
 			<tr>
 				<td>
 					<a href="user.form?userId=<c:out value="${user.userId}"/>"
-					   class="<c:if test="user.voided">retired</c:if>">
+					   class="<c:if test="${user.voided}">retired</c:if>">
 						${user.username}
 					</a>
 				</td>

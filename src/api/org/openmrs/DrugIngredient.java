@@ -7,7 +7,7 @@ package org.openmrs;
  */
 public class DrugIngredient implements java.io.Serializable {
 
-	public static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 94023L;
 
 	// Fields
 

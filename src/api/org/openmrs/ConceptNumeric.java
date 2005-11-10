@@ -7,7 +7,7 @@ import java.util.Date;
  */
 public class ConceptNumeric implements java.io.Serializable {
 
-	public static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 47323L;
 
 	// Fields
 

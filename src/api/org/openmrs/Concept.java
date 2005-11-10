@@ -11,7 +11,7 @@ import java.util.Set;
  */
 public class Concept implements java.io.Serializable {
 
-	public static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 5733L;
 
 	// Fields
 

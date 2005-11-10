@@ -7,7 +7,7 @@ import java.util.Date;
  */
 public class FieldType implements java.io.Serializable {
 
-	public static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 35467L;
 
 	// Fields
 

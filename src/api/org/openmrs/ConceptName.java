@@ -9,7 +9,7 @@ import java.util.Date;
  */
 public class ConceptName implements java.io.Serializable {
 
-	public static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 33226787L;
 
 	// Fields
 

@@ -4,15 +4,15 @@
 
 <br/>
 
-<form method="post" action="loginServlet" style="border: 1px solid black; padding:15px; width: 300px;">
+<form method="post" action="loginServlet" class="box" style="padding:15px; width: 300px;">
 	<table>
 		<tr>
 			<td><spring:message code="User.username"/>:</td>
-			<td><input type="text" name="username" value="" id="username"></td>
+			<td><input type="text" name="uname" value="" id="username"></td>
 		</tr>
 		<tr>
 			<td><spring:message code="User.password"/>:</td>
-			<td><input type="password" name="password" value="" id="password"></td>
+			<td><input type="password" name="pw" value="" id="password"></td>
 		</tr>
 	</table>
 	<br>

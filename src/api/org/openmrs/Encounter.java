@@ -12,7 +12,7 @@ import java.util.Set;
  */
 public class Encounter implements java.io.Serializable {
 
-	public static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 7844L;
 
 	// Fields
 

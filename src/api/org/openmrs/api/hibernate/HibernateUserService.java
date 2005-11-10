@@ -127,7 +127,7 @@ public class HibernateUserService implements
 				.setInteger(1, userid)
 				.list();
 		*/
-		
+		log.debug("# users found: " + count);
 		if (count == null || count == 0)
 			return false;
 		else

@@ -25,8 +25,8 @@ public class LoginServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 
-		String username = request.getParameter("username");
-		String password = request.getParameter("password");
+		String username = request.getParameter("uname");
+		String password = request.getParameter("pw");
 		String redirect = request.getParameter("redirect");
 		if (redirect == null || request.equals(""))
 			redirect = request.getContextPath();

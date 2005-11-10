@@ -10,7 +10,6 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Hibernate;
-import org.hibernate.LockMode;
 import org.hibernate.Session;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
@@ -70,7 +69,7 @@ public class HibernateContext implements Context {
 		Session session = HibernateUtil.currentSession();
 		
 		User candidateUser = (User) session.createQuery(
-				"from User u where u.username = ? and u.voided is null or u.voided = 0").setString(0, username)
+				"from User u where u.username = ? and (u.voided is null or u.voided = 0)").setString(0, username)
 				.uniqueResult();
 		
 		if (candidateUser == null) {

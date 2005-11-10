@@ -13,14 +13,6 @@
 		<url-pattern>/loginServlet</url-pattern>
 	</servlet-mapping>
 	<servlet>
-		<servlet-name>editUserServlet</servlet-name>
-		<servlet-class>org.openmrs.web.EditUserServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>editUserServlet</servlet-name>
-		<url-pattern>/admin/users/editUserServlet</url-pattern>
-	</servlet-mapping>
-	<servlet>
 		<servlet-name>logoutServlet</servlet-name>
 		<servlet-class>org.openmrs.web.LogoutServlet</servlet-class>
 	</servlet>

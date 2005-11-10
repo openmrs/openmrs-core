@@ -10,7 +10,7 @@ import java.util.Date;
  */
 public class Drug implements java.io.Serializable {
 
-	public static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 285L;
 
 	// Fields
 

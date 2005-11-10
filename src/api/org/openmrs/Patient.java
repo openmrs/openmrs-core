@@ -15,7 +15,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class Patient extends Person implements java.io.Serializable {
 
-	public static final long serialVersionUID = 11123L;
+	public static final long serialVersionUID = 93123L;
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	// Fields

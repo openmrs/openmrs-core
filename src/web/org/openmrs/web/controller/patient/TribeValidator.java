@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Tribe;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 public class TribeValidator implements Validator {
@@ -33,9 +34,7 @@ public class TribeValidator implements Validator {
 			errors.rejectValue("tribe", "error.general");
 		}
 		else {
-			if (tribe.getName() == null || tribe.getName().equals("")) {
-				errors.rejectValue("name", "error.name");
-			}
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
 		}
 	}
 

@@ -12,7 +12,7 @@ import java.util.Set;
  */
 public class Form implements java.io.Serializable {
 
-	public static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 845634L;
 
 	// Fields
 
