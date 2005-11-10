@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="Manage Encounters" otherwise="/login.jsp" redirect="/admin/encounters/encounterType.form" />
+<openmrs:require privilege="Manage Encounters" otherwise="/login.htm" redirect="/admin/encounters/encounterType.form" />
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
@@ -18,7 +18,7 @@
 		<td>
 			<spring:bind path="encounterType.name">
 				<input type="text" name="name" value="${status.value}" size="35" />
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 		</td>
 	</tr>
@@ -27,7 +27,7 @@
 		<td valign="top">
 			<spring:bind path="encounterType.description">
 				<textarea name="description" rows="3" cols="40">${status.value}</textarea>
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 		</td>
 	</tr>

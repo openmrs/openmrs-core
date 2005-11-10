@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="Manage Encounters" otherwise="/login.jsp" redirect="/admin/encounters/location.form" />
+<openmrs:require privilege="Manage Encounters" otherwise="/login.htm" redirect="/admin/encounters/location.form" />
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
@@ -18,7 +18,7 @@
 		<td colspan="5">
 			<spring:bind path="location.name">
 				<input type="text" name="name" value="${status.value}" size="35" />
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 		</td>
 	</tr>
@@ -27,7 +27,7 @@
 		<td valign="top" colspan="5">
 			<spring:bind path="location.description">
 				<textarea name="description" rows="3" cols="40">${status.value}</textarea>
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 		</td>
 	</tr>
@@ -36,7 +36,7 @@
 		<td>
 			<spring:bind path="location.address1">
 				<input type="text" name="${status.expression}" id="address1" value="${status.value}"/>
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 		</td>
 	</tr>
@@ -45,7 +45,7 @@
 		<td>
 			<spring:bind path="location.address2">
 				<input type="text" name="${status.expression}" id="address2" value="${status.value}" />
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 		</td>
 	</tr>
@@ -55,28 +55,28 @@
 				<td>
 					<input type="text" name="${status.expression}" id="cityVillage" value="${status.value}" onKeyUp="modifyTab(this, this.value, 0);"/>
 				</td>
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 		<td><spring:message code="Location.stateProvince"/></td>
 			<spring:bind path="location.stateProvince">
 				<td>
 					<input type="text" name="${status.expression}" id="stateProvince" size="10" value="${status.value}" />
 				</td>
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 		<td><spring:message code="Location.country"/></td>
 			<spring:bind path="location.country">
 				<td>
 					<input type="text" name="${status.expression}" id="country" size="15" value="${status.value}" />
 				</td>
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 		<td><spring:message code="Location.postalCode"/></td>
 			<spring:bind path="location.postalCode">
 				<td>
 					<input type="text" name="${status.expression}" id="postalCode" size="5" value="${status.value}" />
 				</td>
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 	</tr>
 	<tr>
@@ -85,14 +85,14 @@
 				<td>
 					<input type="text" name="${status.expression}" id="latitude" value="${status.value}" />
 				</td>
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 		<td>Longitude</td>
 			<spring:bind path="location.longitude">
 				<td>
 					<input type="text" name="${status.expression}" id="longitude" value="${status.value}" />
 				</td>
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 	</tr>
 	<c:if test="${!(address.creator == null)}" >

@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="Form Entry" otherwise="/login.jsp" redirect="/admin/patients/index.htm" />
+<openmrs:require privilege="Form Entry" otherwise="/login.htm" redirect="/admin/patients/index.htm" />
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
@@ -43,7 +43,7 @@
 	}
 	
 	function validateIdentifier() {
-		if (showError(isValidCheckDigit(searchBox.value), searchBox, '<spring:message code="Patient.identifier.error"/>'))
+		if (showError(isValidCheckDigit(searchBox.value), searchBox, '<spring:message code="error.identifier"/>'))
 			updatePatients();
 	}
 	

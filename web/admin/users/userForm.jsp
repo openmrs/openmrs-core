@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="Manage Users" otherwise="/login.jsp" redirect="/admin/users/user.form" />
+<openmrs:require privilege="Manage Users" otherwise="/login.htm" redirect="/admin/users/user.form" />
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
@@ -14,7 +14,7 @@
 			<td>
 				<spring:bind path="user.username">
 					<input type="text" name="${status.expression}" value="${status.value}"/>
-					${status.errorMessage}
+					<span class="error">${status.errorMessage}</span>
 				</spring:bind>
 			</td>
 		</tr>
@@ -39,7 +39,7 @@
 			<td>
 				<spring:bind path="user.firstName">
 					<input type="text" name="${status.expression}" value="${status.value}"/>
-					${status.errorMessage}
+					<span class="error">${status.errorMessage}</span>
 				</spring:bind>
 			</td>
 
@@ -49,7 +49,7 @@
 			<td>
 				<spring:bind path="user.middleName">
 					<input type="text" name="${status.expression}" value="${status.value}"/>
-					${status.errorMessage}
+					<span class="error">${status.errorMessage}</span>
 				</spring:bind>
 			</td>
 
@@ -59,7 +59,7 @@
 			<td>
 				<spring:bind path="user.lastName">
 					<input type="text" name="${status.expression}" value="${status.value}"/>
-					${status.errorMessage}
+					<span class="error">${status.errorMessage}</span>
 				</spring:bind>
 			</td>
 
@@ -95,7 +95,7 @@
 			<spring:bind path="user.voidReason">
 				<td>
 					<input type="text" name="${status.expression}" id="voidReason" value="${status.value}" />
-					${status.errorMessage}
+					<span class="error">${status.errorMessage}</span>
 				</td>
 			</spring:bind>
 		</tr>
@@ -123,7 +123,7 @@
 	</table>
 	<spring:bind path="user.userId">
 		<input type="hidden" name="${status.expression}" value="${status.value}">
-		${status.errorMessage}
+		<span class="error">${status.errorMessage}</span>
 	</spring:bind>
 	<input type="submit" value="<spring:message code="User.save"/>" />
 </form>

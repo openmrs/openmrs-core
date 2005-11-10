@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="Manage Users" otherwise="/login.jsp" redirect="/admin/users/privilege.form" />
+<openmrs:require privilege="Manage Users" otherwise="/login.htm" redirect="/admin/users/privilege.form" />
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
@@ -15,7 +15,7 @@
 			<spring:bind path="privilege.privilege">
 				<c:if test="${privilege.privilege == null}"><input type="text" name="${status.expression}" value="${status.value}"></c:if>
 				<c:if test="${!(privilege.privilege == null)}">${status.value}</c:if>				
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 		</td>
 	</tr>
@@ -24,7 +24,7 @@
 		<td>
 			<spring:bind path="privilege.description">
 				<input type="text" name="description" value="${status.value}"/>
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 		</td>
 	</tr>

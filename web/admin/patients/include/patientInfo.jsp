@@ -6,7 +6,7 @@
 				<option value="M" <c:if test="${status.value == \"M\"}">selected</c:if>>Male</option>
 				<option value="F" <c:if test="${status.value == \"F\"}">selected</c:if>>Female</option>
 			</select>
-			${status.errorMessage}
+			<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 		</td>
 	</tr>
@@ -15,7 +15,7 @@
 		<td>
 			<spring:bind path="patient.race">
 				<input type="text" name="race" id="race" size="10" value="${status.value}" />
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 		</td>
 	</tr>
@@ -25,7 +25,7 @@
 			<spring:bind path="patient.birthdate">			
 				<input type="text" name="birthdate" id="birthdate" size="10" 
 					   value="${status.value}" />
-				${status.errorMessage} 
+				<span class="error">${status.errorMessage}</span> 
 			</spring:bind>
 			<spring:bind path="patient.birthdateEstimated">
 				Estimated
@@ -33,7 +33,7 @@
 				<input type="checkbox" name="birthdateEstimated" 
 					   id="birthdateEstimated" value="true" 
 					   <c:if test="${status.value == true}">checked</c:if> />
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 		</td>
 	</tr>
@@ -42,7 +42,7 @@
 		<td>
 			<spring:bind path="patient.birthplace">
 				<input type="text" name="birthplace" id="birthplace" value="${status.value}" />
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 		</td>
 	<tr>
@@ -56,7 +56,7 @@
 						</option>
 					</openmrs:forEachRecord>
 				</select>
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 		</td>
 	</tr>
@@ -65,7 +65,7 @@
 		<td>
 			<spring:bind path="patient.citizenship">
 				<input type="text" name="citizenship" id="citizenship" value="${status.value}" />
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 		</td>
 	</tr>
@@ -74,7 +74,7 @@
 		<td>
 			<spring:bind path="patient.mothersName">
 				<input type="text" name="mothersName" id="mothersName" value="${status.value}" />
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 		</td>
 	</tr>
@@ -90,7 +90,7 @@
 						</option>
 					</openmrs:forEachRecord>
 				</select>
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 		</td>
 	</tr>
@@ -100,14 +100,14 @@
 			<spring:bind path="patient.deathDate">
 				<input type="text" name="deathDate" id="deathDate" size="10" 
 					value="<openmrs:formatDate date="${status.value}" type="textbox"/>"/>
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 		</td>
 		<td>Cause of Death</td>
 		<td>
 			<spring:bind path="patient.causeOfDeath">
 				<input type="text" name="causeOfDeath" id="causeOfDeath" value="${status.value}" />
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 		</td>
 	</tr>
@@ -116,7 +116,7 @@
 		<td>
 			<spring:bind path="patient.healthDistrict">
 				<input type="text" name="healthDistrict" id="healthDistrict" value="${status.value}" />
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 		</td>
 	</tr>
@@ -126,7 +126,7 @@
 			<!-- TODO make this list of locations> -->
 			<spring:bind path="patient.healthCenter">
 				<input type="text" name="healthCenter" id="healthCenter" value="${status.value}" />
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 		</td>
 	</tr>

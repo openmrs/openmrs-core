@@ -3,7 +3,7 @@
 <%@ page import="org.openmrs.PatientIdentifier" %>
 <%@ page import="org.openmrs.PatientAddress" %>
 
-<openmrs:require privilege="Manage Patients" otherwise="/login.jsp" redirect="/admin/patients/patient.form"/>
+<openmrs:require privilege="Manage Patients" otherwise="/login.htm" redirect="/admin/patients/patient.form"/>
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
@@ -281,7 +281,7 @@
 	<br />
 	<spring:bind path="patient.patientId">
 		<input type="hidden" name="patientId" value="${status.value}"/>
-		${status.errorMessage}
+		<span class="error">${status.errorMessage}</span>
 	</spring:bind>
 	<input type="submit" value="Save Patient">
 </form>

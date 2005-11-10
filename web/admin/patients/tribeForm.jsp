@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="Manage Patients" otherwise="/login.jsp" redirect="/admin/patients/tribe.form"/>
+<openmrs:require privilege="Manage Patients" otherwise="/login.htm" redirect="/admin/patients/tribe.form"/>
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
@@ -15,7 +15,7 @@
 		<td>
 			<spring:bind path="tribe.name">
 				<input type="text" name="name" value="${status.value}" />
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 		</td>
 	</tr>
@@ -25,14 +25,14 @@
 			<spring:bind path="tribe.retired">
 				<input type="hidden" name="_${status.expression}">
 				<input type="checkbox" name="${status.expression}" value="true" <c:if test="${status.value == true}">checked</c:if> />
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 		</td>
 	</tr>
 </table>
 <spring:bind path="tribe.tribeId">
 	<input type="hidden" name="tribeId:int" value="<c:out value="${status.value}"/>">
-	${status.errorMessage}
+	<span class="error">${status.errorMessage}</span>
 </spring:bind>
 <br />
 <input type="submit" value="<spring:message code="Tribe.save"/>">

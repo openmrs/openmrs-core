@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="Manage Patients" otherwise="/login.jsp" redirect="/admin/patients/patientIdentifierType.form" />
+<openmrs:require privilege="Manage Patients" otherwise="/login.htm" redirect="/admin/patients/patientIdentifierType.form" />
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
@@ -14,7 +14,7 @@
 		<td>
 			<spring:bind path="patientIdentifierType.name">
 				<input type="text" name="name" value="${status.value}" size="35" />
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 		</td>
 	</tr>
@@ -23,7 +23,7 @@
 		<td>
 			<spring:bind path="patientIdentifierType.description">
 				<textarea name="description" rows="3" cols="40">${status.value}</textarea>
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 		</td>
 	</tr>

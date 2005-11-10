@@ -7,7 +7,7 @@
 			<spring:bind path="preferred">
 				<input type="hidden" name="_${status.expression}">
 				<input type="checkbox" name="${status.expression}" id="preferred" <c:if test="${status.value == true}">checked</c:if> />
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 		</td>
 	</tr>
@@ -16,7 +16,7 @@
 		<td>
 			<spring:bind path="givenName">
 				<input type="text" name="${status.expression}" id="givenName" value="${status.value}" onKeyUp="modifyTab(this, this.value, 0);" />
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 		</td>
 	</tr>
@@ -25,7 +25,7 @@
 		<td>
 			<spring:bind path="middleName">
 				<input type="text" name="${status.expression}" id="middleName" value="${status.value}" />
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 		</td>
 	</tr>
@@ -34,19 +34,19 @@
 		<td>
 			<spring:bind path="familyNamePrefix">
 				<input type="text" name="${status.expression}" id="familyNamePrefix" size="10" value="${status.value}" />
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 			<spring:bind path="familyName">
 				<input type="text" name="${status.expression}" id="familyName" value="${status.value}" onKeyUp="modifyTab(this, this.value, 2);" />
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 			<spring:bind path="familyName2">
 				<input type="text" name="${status.expression}" id="familyName2" value="${status.value}" />
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 			<spring:bind path="familyNameSuffix">
 				<input type="text" name="${status.expression}" id="familyNameSuffix" size="10" value="${status.value}" />
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 		</td>
 	</tr>	
@@ -55,7 +55,7 @@
 		<td>
 			<spring:bind path="degree">
 				<input type="text" name="${status.expression}" id="degree" value="${status.value}" />
-				${status.errorMessage}
+				<span class="error">${status.errorMessage}</span>
 			</spring:bind>
 		</td>
 	</tr>
