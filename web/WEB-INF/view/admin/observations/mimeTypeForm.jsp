@@ -8,7 +8,7 @@
 <h2><spring:message code="MimeType.title"/></h2>
 
 <spring:hasBindErrors name="mimeType">
-	<spring:message code="error.fix"/>
+	<spring:message code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
 <form method="post">
@@ -18,7 +18,7 @@
 		<td>
 			<spring:bind path="mimeType.mimeType">
 				<input type="text" name="mimeType" value="${status.value}" size="35" />
-				<span class="error">${status.errorMessage}</span>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
 	</tr>
@@ -27,7 +27,7 @@
 		<td valign="top">
 			<spring:bind path="mimeType.description">
 				<textarea name="description" rows="3" cols="40">${status.value}</textarea>
-				<span class="error">${status.errorMessage}</span>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
 	</tr>

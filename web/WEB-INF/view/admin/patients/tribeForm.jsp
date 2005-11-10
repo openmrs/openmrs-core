@@ -15,7 +15,7 @@
 		<td>
 			<spring:bind path="tribe.name">
 				<input type="text" name="name" value="${status.value}" />
-				<span class="error">${status.errorMessage}</span>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
 	</tr>
@@ -25,14 +25,14 @@
 			<spring:bind path="tribe.retired">
 				<input type="hidden" name="_${status.expression}">
 				<input type="checkbox" name="${status.expression}" value="true" <c:if test="${status.value == true}">checked</c:if> />
-				<span class="error">${status.errorMessage}</span>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
 	</tr>
 </table>
 <spring:bind path="tribe.tribeId">
 	<input type="hidden" name="tribeId:int" value="<c:out value="${status.value}"/>">
-	<span class="error">${status.errorMessage}</span>
+	<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 </spring:bind>
 <br />
 <input type="submit" value="<spring:message code="Tribe.save"/>">

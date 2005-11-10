@@ -4,7 +4,7 @@
 		<td>
 			<spring:bind path="address1">
 				<input type="text" name="${status.expression}" id="address1" value="${status.value}"/>
-				<span class="error">${status.errorMessage}</span>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
 	</tr>
@@ -13,7 +13,7 @@
 		<td>
 			<spring:bind path="address2">
 				<input type="text" name="${status.expression}" id="address2" value="${status.value}" />
-				<span class="error">${status.errorMessage}</span>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
 			
@@ -24,28 +24,28 @@
 				<td>
 					<input type="text" name="${status.expression}" id="cityVillage" value="${status.value}" onKeyUp="modifyTab(this, this.value, 0);"/>
 				</td>
-				<span class="error">${status.errorMessage}</span>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		<td><spring:message code="PatientAddress.stateProvince"/></td>
 			<spring:bind path="stateProvince">
 				<td>
 					<input type="text" name="${status.expression}" id="stateProvince" size="10" value="${status.value}" />
 				</td>
-				<span class="error">${status.errorMessage}</span>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		<td><spring:message code="PatientAddress.country"/></td>
 			<spring:bind path="country">
 				<td>
 					<input type="text" name="${status.expression}" id="country" size="15" value="${status.value}" />
 				</td>
-				<span class="error">${status.errorMessage}</span>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		<td><spring:message code="PatientAddress.postalCode"/></td>
 			<spring:bind path="postalCode">
 				<td>
 					<input type="text" name="${status.expression}" id="postalCode" size="5" value="${status.value}" />
 				</td>
-				<span class="error">${status.errorMessage}</span>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 	</tr>
 	<tr>
@@ -54,14 +54,14 @@
 				<td>
 					<input type="text" name="${status.expression}" id="latitude" value="${status.value}" />
 				</td>
-				<span class="error">${status.errorMessage}</span>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		<td>Longitude</td>
 			<spring:bind path="longitude">
 				<td>
 					<input type="text" name="${status.expression}" id="longitude" value="${status.value}" />
 				</td>
-				<span class="error">${status.errorMessage}</span>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 	</tr>
 	<c:if test="${!(address.creator == null)}" >
@@ -105,7 +105,7 @@
 		<spring:bind path="voidReason">
 			<td>
 				<input type="text" name="${status.expression}" id="voidReason" value="${status.value}" />
-				<span class="error">${status.errorMessage}</span>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</td>
 		</spring:bind>
 	</tr>

@@ -14,7 +14,7 @@
 			<td>
 				<spring:bind path="user.username">
 					<input type="text" name="${status.expression}" value="${status.value}"/>
-					<span class="error">${status.errorMessage}</span>
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
 		</tr>
@@ -39,7 +39,7 @@
 			<td>
 				<spring:bind path="user.firstName">
 					<input type="text" name="${status.expression}" value="${status.value}"/>
-					<span class="error">${status.errorMessage}</span>
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
 
@@ -49,7 +49,7 @@
 			<td>
 				<spring:bind path="user.middleName">
 					<input type="text" name="${status.expression}" value="${status.value}"/>
-					<span class="error">${status.errorMessage}</span>
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
 
@@ -59,7 +59,7 @@
 			<td>
 				<spring:bind path="user.lastName">
 					<input type="text" name="${status.expression}" value="${status.value}"/>
-					<span class="error">${status.errorMessage}</span>
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
 
@@ -95,7 +95,7 @@
 			<spring:bind path="user.voidReason">
 				<td>
 					<input type="text" name="${status.expression}" id="voidReason" value="${status.value}" />
-					<span class="error">${status.errorMessage}</span>
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</td>
 			</spring:bind>
 		</tr>
@@ -123,7 +123,7 @@
 	</table>
 	<spring:bind path="user.userId">
 		<input type="hidden" name="${status.expression}" value="${status.value}">
-		<span class="error">${status.errorMessage}</span>
+		<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 	</spring:bind>
 	<input type="submit" value="<spring:message code="User.save"/>" />
 </form>

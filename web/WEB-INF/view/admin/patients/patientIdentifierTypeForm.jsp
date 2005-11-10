@@ -14,7 +14,7 @@
 		<td>
 			<spring:bind path="patientIdentifierType.name">
 				<input type="text" name="name" value="${status.value}" size="35" />
-				<span class="error">${status.errorMessage}</span>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
 	</tr>
@@ -23,7 +23,7 @@
 		<td>
 			<spring:bind path="patientIdentifierType.description">
 				<textarea name="description" rows="3" cols="40">${status.value}</textarea>
-				<span class="error">${status.errorMessage}</span>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
 	</tr>

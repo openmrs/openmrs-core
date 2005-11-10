@@ -281,7 +281,7 @@
 	<br />
 	<spring:bind path="patient.patientId">
 		<input type="hidden" name="patientId" value="${status.value}"/>
-		<span class="error">${status.errorMessage}</span>
+		<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 	</spring:bind>
 	<input type="submit" value="Save Patient">
 </form>

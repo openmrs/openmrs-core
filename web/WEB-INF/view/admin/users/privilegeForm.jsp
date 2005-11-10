@@ -15,7 +15,7 @@
 			<spring:bind path="privilege.privilege">
 				<c:if test="${privilege.privilege == null}"><input type="text" name="${status.expression}" value="${status.value}"></c:if>
 				<c:if test="${!(privilege.privilege == null)}">${status.value}</c:if>				
-				<span class="error">${status.errorMessage}</span>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
 	</tr>
@@ -24,7 +24,7 @@
 		<td>
 			<spring:bind path="privilege.description">
 				<input type="text" name="description" value="${status.value}"/>
-				<span class="error">${status.errorMessage}</span>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
 	</tr>

@@ -4,7 +4,7 @@
 		<td>
 			<spring:bind path="identifier">
 				<input type="text" name="${status.expression}" id="identifier" value="${status.value}" />
-				<span class="error">${status.errorMessage}</span>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 			</td>
 	</tr>
@@ -19,7 +19,7 @@
 						</option>
 					</openmrs:forEachRecord>
 				</select>
-				<span class="error">${status.errorMessage}</span>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
 	</tr>
@@ -34,7 +34,7 @@
 						</option>
 					</openmrs:forEachRecord>
 				</select>
-				<span class="error">${status.errorMessage}</span>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
 	</tr>
