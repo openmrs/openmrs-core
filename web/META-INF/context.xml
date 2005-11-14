@@ -1,4 +1,4 @@
-<Context path="/openmrs" docBase="openmrs" antiJARLocking="true">
+<Context path="/openmrs" docBase="openmrs" antiJARLocking="true" reloadable="false">
 	<!--<Resource name="jdbc/openmrs"
 		auth="Container"
 		type="javax.sql.DataSource"

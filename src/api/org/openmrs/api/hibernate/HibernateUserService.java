@@ -216,21 +216,6 @@ public class HibernateUserService implements
 	}
 
 	/**
-	 * @param q
-	 * @return
-	 */
-	public List findPatient(String q) {
-		
-		//TODO needs rewritten if used
-		return null;
-		/*return getHibernateTemplate().find(
-				"from Patient as p, PatientName as pn "
-						+ "where p.patientId = pn.patientId "
-						+ "and pn.familyName like ?", new Object[] { q });
-        */
-	}
-
-	/**
 	 * @see org.openmrs.api.UserService#grantUserRole(org.openmrs.User,
 	 *      org.openmrs.Role)
 	 */

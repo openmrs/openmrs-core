@@ -3,7 +3,11 @@
 		<td>Identifier</td>
 		<td>
 			<spring:bind path="identifier">
-				<input type="text" name="${status.expression}" value="${status.value}" />
+				<input type="text" 
+						name="${status.expression}" 
+						value="${status.value}" 
+						onKeyUp="return true; validateIdentifier(this, 'saveButton', '<spring:message code="error.identifier"/>');"
+						onChange="return true; validateIdentifier(this, 'saveButton', '<spring:message code="error.identifier"/>');"/>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 			</td>

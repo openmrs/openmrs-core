@@ -48,9 +48,7 @@ public class PatientServiceTest extends TestCase {
 		assertNotNull(patientList);
 		assertTrue(patientList.size() == 0);
 		
-		// TODO should we be sending strings like %-% ? 
-		// ...or have PatientService insert %'s (but that makes it db specific?
-		patientList = ps.getPatientsByIdentifier("%");
+		patientList = ps.getPatientsByIdentifier("");
 		assertNotNull(patientList);
 		assertTrue(patientList.size() > 0);
 		

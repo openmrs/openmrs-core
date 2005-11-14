@@ -54,7 +54,6 @@ public class EncounterServiceTest extends TestCase {
 		enc.setEncounterType(encType1);
 		enc.setEncounterDatetime(d1);
 		enc.setPatient(pat1);
-		//TODO how to get a list of providers?
 		enc.setProvider(pro1);
 
 		es.createEncounter(enc);

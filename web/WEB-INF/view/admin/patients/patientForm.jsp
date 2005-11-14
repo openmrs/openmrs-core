@@ -8,6 +8,8 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
+<script src="<%= request.getContextPath() %>/validation.js"></script>
+
 <script>
 	// Saves the last tab clicked on (aka "current" or "selected" tab)
 	var lastTab = new Array();
@@ -304,7 +306,7 @@
 		
 		<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 	</spring:bind>
-	<input type="submit" value="Save Patient">
+	<input type="submit" id="saveButton" value="Save Patient">
 </form>
 
 <script>

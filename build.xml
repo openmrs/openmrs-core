@@ -244,7 +244,9 @@
     	<antcall target="install" />
     </target>
 
-    <target name="reload" description="Reload application in Tomcat">
+    <target name="reload" depends="package-web" description="Explode war and reload application in Tomcat">
+		<mkdir dir="${tomcat.home}/webapps/${webapp.name}"/>
+		<unzip src="${dist.dir}/${webapp.name}.war" dest="${tomcat.home}/webapps/${webapp.name}" overwrite="true"/>    
         <reload url="${tomcat.manager.url}"
             username="${tomcat.username}"
             password="${tomcat.password}"

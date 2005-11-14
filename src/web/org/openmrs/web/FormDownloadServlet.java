@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -63,8 +64,9 @@ public class FormDownloadServlet extends HttpServlet {
 		
 		try {
 			DocumentBuilder builder = factory.newDocumentBuilder();
-			//TODO find correct (non-deprecated) function
-			xmldoc = builder.parse(request.getRealPath("formentry/forms/" + formType + ".xml"));
+			ServletContext servletContext = httpSession.getServletContext();
+			String realPath = servletContext.getRealPath("formentry/forms/" + formType + ".xml");
+			xmldoc = builder.parse(realPath);
 		}
 		catch (ParserConfigurationException e) {
 			throw new ServletException(e);

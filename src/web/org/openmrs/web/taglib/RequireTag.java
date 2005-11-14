@@ -37,14 +37,14 @@ public class RequireTag extends TagSupport {
 			log.error("openmrs_context_httpsession_attr is null. Did this pass through a filter?");
 			httpSession.removeAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 			//TODO find correct error to throw 
-			throw new APIException("The Context is currently null.  Please try reloading the site.");
+			throw new APIException("The context is currently null.  Please try reloading the site.");
 		}
 		
 		if (!context.isAuthenticated()) {
 			errorOccurred = true;
 			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "require.login");
 		}
-		else if (!context.hasPrivilege(privilege)) {
+		else if (!privilege.equals("") && !context.hasPrivilege(privilege)) {
 			errorOccurred = true;
 			log.warn(context.getAuthenticatedUser() + " attempted access to: " + redirect);
 			httpSession.setAttribute(Constants.OPENMRS_ERROR_ATTR, "require.unauthorized");

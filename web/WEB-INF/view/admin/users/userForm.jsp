@@ -6,28 +6,6 @@
 <%@ include file="localHeader.jsp" %>
 
 <script src="<%= request.getContextPath() %>/validation.js"></script>
-<script>
-	function validateIdentifier(obj) {
-		var btn = document.getElementById("saveButton");
-		var html = "<spring:message code="error.identifier"/>";
-		html = html + "<input type='button' value='Fix Check Digit' class='smallButton' onClick='fixCheckDigit()'/>";
-		if (showError(isValidCheckDigit(obj.value), obj, html)) {
-			btn.disabled = false;
-		} else {
-			btn.disabled = true;
-		}
-		obj.focus();
-	}
-	function fixCheckDigit() {
-		var obj = document.getElementById("username");
-		var val = obj.value;
-		var index = val.lastIndexOf("-");
-		if (index != -1)
-			val = val.substr(0, index);
-		obj.value = val + "-" + getCheckDigit(val);
-		validateIdentifier(obj);
-	}
-</script>
 
 <h2><spring:message code="User.title"/></h2>
 
@@ -51,8 +29,8 @@
 							name="${status.expression}" 
 							id="username"
 							value="${status.value}"
-							onKeyUp="validateIdentifier(this);"
-							onChange="validateIdentifier(this);"/>
+							onKeyUp="validateIdentifier(this, 'saveButton', '<spring:message code="error.identifier"/>');"
+							onChange="validateIdentifier(this, 'saveButton', '<spring:message code="error.identifier"/>');"/>
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
@@ -146,6 +124,24 @@
 				</spring:bind>
 			</td>
 		</tr>
+		<c:if test="${!(user.changedBy == null)}" >
+			<tr>
+				<td><spring:message code="general.changedBy"/></td>
+				<td>
+					<spring:bind path="user.changedBy">
+						${user.changedBy.username}
+					</spring:bind>
+				</td>
+			</tr>
+			<tr>
+				<td><spring:message code="general.dateChanged"/></td>
+				<td>
+					<spring:bind path="user.dateChanged">
+						<openmrs:formatDate date="${user.dateChanged}" type="long"/>
+					</spring:bind>
+				</td>
+			</tr>
+		</c:if>
 		<tr>
 			<td><spring:message code="general.voidReason"/></td>
 			<spring:bind path="user.voidReason">
@@ -161,7 +157,6 @@
 				<td>
 					<spring:bind path="user.voidedBy">
 						${user.voidedBy.username}
-						<input type="hidden" name="${status.expression}" value="${status.value}"/>
 					</spring:bind>
 				</td>
 			</tr>
@@ -170,7 +165,6 @@
 				<td>
 					<spring:bind path="user.dateVoided">
 						<openmrs:formatDate date="${user.dateVoided}" type="long"/>
-						<input type="hidden" name="${status.expression}" value="${status.value}">
 					</spring:bind>
 				</td>
 			</tr>

@@ -41,8 +41,6 @@ public class OpenmrsFilter implements Filter {
         //set/forward the request init attribute
         httpRequest.setAttribute( INIT_REQ_ATTR_NAME, INIT_REQ_ATTR_NAME );
         
-        //TODO how to only open a context for pages that need it ?
-        
         context = (Context)httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
         
         if (initialRequest == true && context == null) {

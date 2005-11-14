@@ -164,5 +164,30 @@ function isValidDate(obj, dtStr){
 		alert("Please enter a valid date")
 		return false
 	}
-return true
+return true;
 }
+
+	var validateObj = null;
+
+	function validateIdentifier(obj, btn, html) {
+		btn = document.getElementById(btn);
+		validateObj = obj;
+		html = html + " <input type='button' value='Fix Check Digit' class='smallButton' onClick='fixCheckDigit()'/>";
+		if (showError(isValidCheckDigit(obj.value), obj, html)) {
+			btn.disabled = false;
+		} else {
+			btn.disabled = true;
+		}
+		obj.focus();
+	}
+	function fixCheckDigit() {
+		var obj = validateObj;
+		if (obj != null) {
+			var val = obj.value;
+			var index = val.lastIndexOf("-");
+			if (index != -1)
+				val = val.substr(0, index);
+			obj.value = val + "-" + getCheckDigit(val);
+			validateIdentifier(obj);
+		}
+	}

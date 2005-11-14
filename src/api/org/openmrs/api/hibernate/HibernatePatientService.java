@@ -78,14 +78,13 @@ public class HibernatePatientService implements PatientService {
 		}
 	}
 
-
 	public List<Patient> getPatientsByIdentifier(String identifier) throws APIException {
 		Session session = HibernateUtil.currentSession();
 		
 		//TODO this will return 3 patient #1's if 3 identifiers are matched. fix?
 		List<Patient> patients = session.createCriteria(Patient.class)
-						.createCriteria("identifiers")
-						.add(Expression.like("identifier", identifier, MatchMode.ANYWHERE))
+						.createCriteria("identifiers", "i")
+						.add(Expression.like("i.identifier", identifier, MatchMode.ANYWHERE))
 						.list();
 		
 		return patients;
