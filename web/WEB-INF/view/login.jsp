@@ -17,7 +17,7 @@
 	</table>
 	<br>
 	
-		<input type="hidden" name="redirect" value="${login_redirect}" />
+		<input type="hidden" name="redirect" value="${__openmrs_login_redirect}" />
 	
 	<input type="submit" value="<spring:message code="auth.login"/>" />
 </form>	

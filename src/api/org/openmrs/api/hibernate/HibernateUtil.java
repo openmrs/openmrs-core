@@ -11,7 +11,7 @@ import org.hibernate.cfg.Configuration;
 
 public class HibernateUtil {
 
-	private static final Log log = LogFactory.getLog("org.openmrs.api.hibernate.HibernateUtil");
+	private static Log log = LogFactory.getLog("org.openmrs.api.hibernate.HibernateUtil");
 	
 	private static SessionFactory sessionFactory;
 
@@ -34,7 +34,6 @@ public class HibernateUtil {
 	public static Session currentSession() throws HibernateException {
 		
 		log.debug("getting session");
-		
 		Session s = (Session) threadLocalSession.get();
 		// Open a new threadLocalSession, if this Thread has none yet
 		if (s == null) {

@@ -5,13 +5,37 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
+<script src="<%= request.getContextPath() %>/validation.js"></script>
+<script>
+	function validateIdentifier(obj) {
+		var btn = document.getElementById("saveButton");
+		var html = "<spring:message code="error.identifier"/>";
+		html = html + "<input type='button' value='Fix Check Digit' class='smallButton' onClick='fixCheckDigit()'/>";
+		if (showError(isValidCheckDigit(obj.value), obj, html)) {
+			btn.disabled = false;
+		} else {
+			btn.disabled = true;
+		}
+		obj.focus();
+	}
+	function fixCheckDigit() {
+		var obj = document.getElementById("username");
+		var val = obj.value;
+		var index = val.lastIndexOf("-");
+		if (index != -1)
+			val = val.substr(0, index);
+		obj.value = val + "-" + getCheckDigit(val);
+		validateIdentifier(obj);
+	}
+</script>
+
 <h2><spring:message code="User.title"/></h2>
 
 <spring:hasBindErrors name="user">
 	<spring:message code="fix.error"/>
 	<div class="error">
 		<c:forEach items="${errors.allErrors}" var="error">
-			<spring:message code="${error.code}" text="${error.code}"/><br/>
+			<spring:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
 		</c:forEach>
 	</div>
 	<br />
@@ -23,7 +47,12 @@
 			<td><spring:message code="User.username"/></td>
 			<td>
 				<spring:bind path="user.username">
-					<input type="text" name="${status.expression}" value="${status.value}"/>
+					<input type="text" 
+							name="${status.expression}" 
+							id="username"
+							value="${status.value}"
+							onKeyUp="validateIdentifier(this);"
+							onChange="validateIdentifier(this);"/>
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
@@ -87,8 +116,7 @@
 				<td><spring:message code="general.creator"/></td>
 				<td>
 					<spring:bind path="user.creator">
-						${address.creator.username}
-						<input type="hidden" name="${status.expression}" value="${status.value}"/>
+						${user.creator.username}
 					</spring:bind>
 				</td>
 			</tr>
@@ -96,8 +124,7 @@
 				<td><spring:message code="general.dateCreated"/></td>
 				<td>
 					<spring:bind path="user.dateCreated">
-						<openmrs:formatDate date="${address.dateCreated}" type="long"/>
-				  		<input type="hidden" name="${status.expression}" value="${status.value}">
+						<openmrs:formatDate date="${user.dateCreated}" type="long"/>
 					</spring:bind>
 				</td>
 			</tr>
@@ -128,29 +155,28 @@
 				</td>
 			</spring:bind>
 		</tr>
-			<c:if test="${!(user.voidedBy == null)}" >
-				<tr>
-					<td><spring:message code="general.voidedBy"/></td>
-					<td>
-						<spring:bind path="user.voidedBy">
-							${user.voidedBy.username}
-							<input type="hidden" name="${status.expression}" value="${status.value}"/>
-						</spring:bind>
-					</td>
-				</tr>
-				<tr>
-					<td><spring:message code="general.dateVoided"/></td>
-					<td>
-						<spring:bind path="user.dateVoided">
-							<openmrs:formatDate date="${user.dateVoided}" type="long"/>
-							<input type="hidden" name="${status.expression}" value="${status.value}">
-						</spring:bind>
-					</td>
-				</tr>
-			</c:if>
-		</tr>
+		<c:if test="${!(user.voidedBy == null)}" >
+			<tr>
+				<td><spring:message code="general.voidedBy"/></td>
+				<td>
+					<spring:bind path="user.voidedBy">
+						${user.voidedBy.username}
+						<input type="hidden" name="${status.expression}" value="${status.value}"/>
+					</spring:bind>
+				</td>
+			</tr>
+			<tr>
+				<td><spring:message code="general.dateVoided"/></td>
+				<td>
+					<spring:bind path="user.dateVoided">
+						<openmrs:formatDate date="${user.dateVoided}" type="long"/>
+						<input type="hidden" name="${status.expression}" value="${status.value}">
+					</spring:bind>
+				</td>
+			</tr>
+		</c:if>
 	</table>
-	<input type="submit" value="<spring:message code="User.save"/>" />
+	<input type="submit" id="saveButton" value="<spring:message code="User.save"/>" />
 </form>
 
 

@@ -1,7 +1,9 @@
 package org.openmrs.web.controller.patient;
 
 import java.text.DateFormat;
+import java.text.NumberFormat;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -11,23 +13,27 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientAddress;
 import org.openmrs.PatientIdentifier;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientName;
+import org.openmrs.Tribe;
 import org.openmrs.api.PatientService;
-import org.openmrs.api.UserService;
 import org.openmrs.context.Context;
 import org.openmrs.web.Constants;
+import org.openmrs.web.propertyeditor.LocationEditor;
+import org.openmrs.web.propertyeditor.PatientIdentifierTypeEditor;
+import org.openmrs.web.propertyeditor.TribeEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
-
-import sun.security.krb5.internal.p;
 
 public class PatientFormController extends SimpleFormController {
 	
@@ -43,13 +49,17 @@ public class PatientFormController extends SimpleFormController {
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-        //NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
-        //binder.registerCustomEditor(java.lang.Integer.class,
-        //        new CustomNumberEditor(java.lang.Integer.class, nf, true));
-		binder.registerCustomEditor(java.lang.Integer.class, 
-				new CustomNumberEditor(java.lang.Integer.class, true));
+		Context context = (Context) request.getSession().getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+        NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
+        binder.registerCustomEditor(java.lang.Integer.class,
+                new CustomNumberEditor(java.lang.Integer.class, nf, true));
+		//binder.registerCustomEditor(java.lang.Integer.class, 
+		//		new CustomNumberEditor(java.lang.Integer.class, true));
         binder.registerCustomEditor(java.util.Date.class, 
         		new CustomDateEditor(DateFormat.getDateInstance(DateFormat.SHORT), true));
+        binder.registerCustomEditor(Tribe.class, new TribeEditor(context));
+        binder.registerCustomEditor(PatientIdentifierType.class, new PatientIdentifierTypeEditor(context));
+        binder.registerCustomEditor(Location.class, new LocationEditor(context));
 	}
 
 	/**
@@ -68,6 +78,7 @@ public class PatientFormController extends SimpleFormController {
 			// Patient Identifiers 
 
 				/* TODO uncomment after patient_identifier.patient_identifier_id added 
+				 
 				//Spring doesn't handle objects that are simply removed from the 
 				//	request so it is done manually here
 				Object[] objs = patient.getIdentifiers().toArray();
@@ -80,15 +91,21 @@ public class PatientFormController extends SimpleFormController {
 				String[] idTypes = request.getParameterValues("identifierType");
 				String[] locs = request.getParameterValues("location");
 				
-				for (int i = 0; i < ids.length; i++) {
-					if (ids[i] != "") { //skips invalid and blank address data box
-						PatientIdentifier pi = new PatientIdentifier();
-						pi.setIdentifier(ids[i]);
-						pi.setIdentifierType(ps.getPatientIdentifierType(Integer.valueOf(idTypes[i])));
-						pi.setLocation(ps.getLocation(Integer.valueOf(locs[i])));
-						patient.addIdentifier(pi);
+				if (ids != null) {
+					for (int i = 0; i < ids.length; i++) {
+						if (ids[i] != "") { //skips invalid and blank address data box
+							PatientIdentifier pi = new PatientIdentifier();
+							pi.setIdentifier(ids[i]);
+							pi.setIdentifierType(ps.getPatientIdentifierType(Integer.valueOf(idTypes[i])));
+							pi.setLocation(ps.getLocation(Integer.valueOf(locs[i])));
+							patient.addIdentifier(pi);
+						}
 					}
 				}
+				
+				if (patient.getIdentifiers().size() < 1)
+					errors.rejectValue("patient.identifiers", "Patient.identifiers.length");
+
 				
 			// Patient Address
 			
@@ -100,29 +117,35 @@ public class PatientFormController extends SimpleFormController {
 				String [] lats = request.getParameterValues("latitude");
 				String [] longs = request.getParameterValues("longitude");
 				
-				for (int i = 0; i < add1s.length; i++) {
-					if (add1s[i] != "") { //skips invalid and blank address data box
-						PatientAddress pa = new PatientAddress();
-						pa.setAddress1(add1s[i]);
-						pa.setAddress2(add2s[i]);
-						pa.setCityVillage(cities[i]);
-						pa.setStateProvince(states[i]);
-						pa.setCountry(countries[i]);
-						pa.setLatitude(lats[i]);
-						pa.setLongitude(longs[i]);
-						patient.addAddress(pa);
+				if (add1s != null) {
+					for (int i = 0; i < add1s.length; i++) {
+						if (add1s[i] != "") { //skips invalid and blank address data box
+							PatientAddress pa = new PatientAddress();
+							pa.setAddress1(add1s[i]);
+							pa.setAddress2(add2s[i]);
+							pa.setCityVillage(cities[i]);
+							pa.setStateProvince(states[i]);
+							pa.setCountry(countries[i]);
+							pa.setLatitude(lats[i]);
+							pa.setLongitude(longs[i]);
+							patient.addAddress(pa);
+						}
 					}
 				}
+				
+				if (patient.getAddresses().size() < 1)
+					errors.rejectValue("patient.addresses", "Patient.addresses.length");
+
 				
 			// Patient Names
 
 				objs = patient.getNames().toArray();
 				for (int i = 0; i < objs.length; i++ ) {
-					if (request.getParameter("names[" + i + "].patientNameId") == null)
+					if (request.getParameter("names[" + i + "].givenName") == null)
 						patient.removeName((PatientName)objs[i]);
 				}
 
-				//String[] prefs = request.getParameterValues("preferred");  unreliable form info
+				//String[] prefs = request.getParameterValues("preferred");  (unreliable form info)
 				String[] gNames = request.getParameterValues("givenName");
 				String[] mNames = request.getParameterValues("middleName");
 				String[] fNamePrefixes = request.getParameterValues("familyNamePrefix");
@@ -131,28 +154,34 @@ public class PatientFormController extends SimpleFormController {
 				String[] fNameSuffixes = request.getParameterValues("familyNameSuffix");
 				String[] degrees = request.getParameterValues("degree");
 				
-				
-				for (int i = 0; i < gNames.length; i++) {
-					if (gNames[i] != "") { //skips invalid and blank address data box
-						PatientName pn = new PatientName();
-						pn.setPreferred(false);
-						pn.setGivenName(gNames[i]);
-						pn.setMiddleName(mNames[i]);
-						pn.setFamilyNamePrefix(fNamePrefixes[i]);
-						pn.setFamilyName(fNames[i]);
-						pn.setFamilyName2(fName2s[i]);
-						pn.setFamilyNameSuffix(fNameSuffixes[i]);
-						pn.setDegree(degrees[i]);
-						patient.addName(pn);
+				if (gNames != null) {
+					for (int i = 0; i < gNames.length; i++) {
+						if (gNames[i] != "") { //skips invalid and blank address data box
+							PatientName pn = new PatientName();
+							pn.setPreferred(false);
+							pn.setGivenName(gNames[i]);
+							pn.setMiddleName(mNames[i]);
+							pn.setFamilyNamePrefix(fNamePrefixes[i]);
+							pn.setFamilyName(fNames[i]);
+							pn.setFamilyName2(fName2s[i]);
+							pn.setFamilyNameSuffix(fNameSuffixes[i]);
+							pn.setDegree(degrees[i]);
+							patient.addName(pn);
+						}
 					}
 				}
+				
+				if (patient.getNames().size() < 1)
+					errors.rejectValue("patient.names", "Patient.names.length");
+				
 			// Patient Info 
-				patient.setTribe(ps.getTribe(Integer.valueOf(request.getParameter("tribe"))));
+				//patient.setTribe(ps.getTribe(Integer.valueOf(request.getParameter("tribe"))));
+				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "birthdate", "error.null");
+				//ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
 		}
 		
-		return onSubmit(request, response, patient, errors);
+		return super.processFormSubmission(request, response, patient, errors); 
 	}
-	
 
 	/**
 	 * 
@@ -175,9 +204,7 @@ public class PatientFormController extends SimpleFormController {
 			context.getPatientService().updatePatient(patient);
 			
 			String view = getSuccessView();
-			if (isNew)
-				view = request.getContextPath() + "/formentry/index.htm?patientId=" + patient.getPatientId(); 
-			
+						
 			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Patient.saved");
 			return new ModelAndView(new RedirectView(view));
 		}

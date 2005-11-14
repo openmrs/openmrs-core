@@ -105,6 +105,7 @@ public class FormDownloadServlet extends HttpServlet {
 		}
 		
 		response.setHeader("Content-Type", "application/ms-infopath.xml");
+		response.setHeader("Content-Disposition", "attachment; filename=" + formType + ".xml");
 		response.getOutputStream().println(writer.toString());
 		
 	}

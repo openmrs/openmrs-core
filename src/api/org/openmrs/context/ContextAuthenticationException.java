@@ -2,7 +2,7 @@ package org.openmrs.context;
 
 public class ContextAuthenticationException extends Exception {
 	
-	public static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 22323L;
 	
 	public ContextAuthenticationException() {
 		super();

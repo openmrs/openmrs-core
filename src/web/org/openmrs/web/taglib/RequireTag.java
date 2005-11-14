@@ -15,23 +15,26 @@ import org.openmrs.web.Constants;
 
 public class RequireTag extends TagSupport {
 
-	public static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 122998L;
 	
 	private final Log log = LogFactory.getLog(getClass());
 
 	private String privilege;
 	private String otherwise;
 	private String redirect;
-	private boolean errorOccurred = false;
+	private boolean errorOccurred;
 	public int doStartTag() {
 		
+		errorOccurred = false;
 		HttpServletResponse httpResponse = (HttpServletResponse)pageContext.getResponse();
 		HttpSession httpSession = pageContext.getSession();
 		HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
+		String request_ip_addr = request.getRemoteAddr();
+		String session_ip_addr = (String)httpSession.getAttribute(Constants.OPENMRS_CLIENT_IP_HTTPSESSION_ATTR);
 		
 		Context context = (Context)httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		if (context == null && privilege != null) {
-			log.error("The openmrs_context_httpsession_attr is null. Did this pass through a filter?");
+			log.error("openmrs_context_httpsession_attr is null. Did this pass through a filter?");
 			httpSession.removeAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 			//TODO find correct error to throw 
 			throw new APIException("The Context is currently null.  Please try reloading the site.");
@@ -43,10 +46,19 @@ public class RequireTag extends TagSupport {
 		}
 		else if (!context.hasPrivilege(privilege)) {
 			errorOccurred = true;
+			log.warn(context.getAuthenticatedUser() + " attempted access to: " + redirect);
 			httpSession.setAttribute(Constants.OPENMRS_ERROR_ATTR, "require.unauthorized");
 		}
+		else if (session_ip_addr != null && !session_ip_addr.equals(request_ip_addr)){
+			errorOccurred = true;
+			log.warn("Invalid ip addr: expected " + session_ip_addr + ", but found: " + request_ip_addr);
+			httpSession.setAttribute(Constants.OPENMRS_ERROR_ATTR, "require.ip_addr");
+			//TODO test this security
+		}
+		log.debug("session ip addr: " + session_ip_addr);
 		
 		if (errorOccurred) {
+			
 			String url = "";
 			if (redirect != null && !redirect.equals(""))
 				url = request.getContextPath() + redirect;
@@ -55,9 +67,10 @@ public class RequireTag extends TagSupport {
 			
 			if (request.getQueryString() != null)
 				url = url + "?" + request.getQueryString();
-			httpSession.setAttribute("login_redirect",  url);
+			httpSession.setAttribute(Constants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR,  url);
 			try {
 				httpResponse.sendRedirect(request.getContextPath() + otherwise);
+				return 0;
 			}
 			catch (IOException e) {
 				// oops, cannot redirect

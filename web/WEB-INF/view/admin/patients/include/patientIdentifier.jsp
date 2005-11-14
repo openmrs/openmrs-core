@@ -3,7 +3,7 @@
 		<td>Identifier</td>
 		<td>
 			<spring:bind path="identifier">
-				<input type="text" name="${status.expression}" id="identifier" value="${status.value}" />
+				<input type="text" name="${status.expression}" value="${status.value}" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 			</td>
@@ -13,8 +13,8 @@
 		<td>
 			<spring:bind path="identifierType">
 				<select name="${status.expression}" onclick="modifyTab(this, this.options[this.selectedIndex].text, 0)">
-					<openmrs:forEachRecord name="patientIdentifierType" select="${status.value}">
-						<option value="${record.patientIdentifierTypeId}" ${selected}>
+					<openmrs:forEachRecord name="patientIdentifierType">
+						<option value="${record.patientIdentifierTypeId}" <c:if test="${record.patientIdentifierTypeId == status.value}">selected</c:if>>
 							${record.name}
 						</option>
 					</openmrs:forEachRecord>
@@ -28,8 +28,8 @@
 		<td>
 			<spring:bind path="location">
 				<select name="${status.expression}">
-					<openmrs:forEachRecord name="location" select="${status.value}">
-						<option value="${record.locationId}" ${selected}>
+					<openmrs:forEachRecord name="location">
+						<option value="${record.locationId}" <c:if test="${record.locationId == status.value}">selected</c:if>>
 							${record.name}
 						</option>
 					</openmrs:forEachRecord>
@@ -44,7 +44,6 @@
 			<td>
 				<spring:bind path="creator">
 					${identifier.creator.username}
-					<input type="hidden" name="${status.expression}" value="${status.value}">
 				</spring:bind>
 			</td>
 		</tr>
@@ -53,7 +52,6 @@
 			<td>
 				<spring:bind path="dateCreated">
 					<openmrs:formatDate date="${identifier.dateCreated}" type="long"/>
-					<input type="hidden" name="${status.expression}" value="${status.value}">
 				</spring:bind>
 			</td>
 		</tr>

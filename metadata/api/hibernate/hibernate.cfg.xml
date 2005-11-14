@@ -32,20 +32,22 @@
 		<property name="hibernate.dialect">@HIBERNATE-DIALECT@</property>
 		
 		<!--<property name="connection.pool_size">1</property>
-		<property name="current_session_context_class">thread</property>--> 
+		<property name="current_session_context_class">thread</property>-->
 		
 		<property name="hibernate.connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>
 		<property name="hibernate.c3p0.max_size">@CACHE.MAX_SIZE@</property>
-		<property name="hibernate.c3p0.min_size">@CACHE.MIN_SIZE@</property>
+		<property name="hibernate.c3p0.min_size">@CACHE.MIN_SIZE@</property> 
 		<property name="hibernate.c3p0.timeout">@CACHE.TIMEOUT@</property>
 		<property name="hibernate.c3p0.max_statements">@CACHE.MAX_STATEMENTS@</property>
 		<property name="hibernate.c3p0.idle_test_period">@CACHE.IDLE_TEST_PERIOD@</property>
 		<property name="hibernate.c3p0.acquire_increment">@CACHE.ACQUIRE_INCREMENT@</property>
 		
+		<property name="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</property>
+		
 		<!--
 		<property name="hibernate.connection.datasource">java:comp/env/jdbc/openmrs</property>
 		
-		<property name="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</property>
+		
 		<property name="hibernate.cglib.use_reflection_optimizer">true</property>
 		 -->
 

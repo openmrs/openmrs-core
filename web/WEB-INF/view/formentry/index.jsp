@@ -13,9 +13,7 @@
 <script>
 
 	var timeout;
-	var searchOn;
-	var identifier;
-	var name;
+	var patient;
 	
 	function showSearch() {
 		findPatient.style.display = "";
@@ -68,9 +66,11 @@
 	var getRace			= function(obj) { return obj.race; };
 	var getBirthdate	= function(obj) { 
 			var str = '';
-			str += obj.birthdate.getMonth() + '-';
-			str += obj.birthdate.getDate() + '-';
-			str += (obj.birthdate.getYear() + 1900);
+			if (obj.birthdate != null) {
+				str += obj.birthdate.getMonth() + 1 + '-';
+				str += obj.birthdate.getDate() + '-';
+				str += (obj.birthdate.getYear() + 1900);
+			}
 			
 			if (obj.birthdateEstimated)
 				str += " (?)";
@@ -91,14 +91,24 @@
 		DWRPatientService.getPatient(fillPatientDetails, patientId);
 	}
 	
-	function fillPatientDetails(patient) {
-		var html = "<b class='boxHeader'><spring:message code="formentry.patient.info"/></b>";
-		html = html + "<a href='editPatient?patientId=" + patient.patientId + "' style='float:right'><spring:message code="Patient.edit"/></a>";
-		html = html + "<b>Name</b>:" + patient.givenName + " " + patient.familyName + "<br />";
-		html = html + "<b>Gender</b>:" + patient.gender + "<br />";
-		html = html + "<b>Address</b>:" + patient.address + "<br />...";
-		html = html + "<br /><input type='button' value='<spring:message code="formentry.patient.switch"/>' onClick='showSearch(); patientListing.style.display = \"\";'>";
-		patientSummary.innerHTML = html;
+	function fillPatientDetails(p) {
+		patient = p;
+		document.getElementById("name").innerHTML = p.givenName + " " + p.familyName;
+		document.getElementById("gender").innerHTML = p.gender;
+		html = p.address.address1 + "<br/>";
+		if (p.address.address2 != null)
+			html = html + p.address.address2 + "<br/>";
+		html = html + p.address.cityVillage + ", ";
+		html = html + p.address.stateProvince + " ";
+		html = html + p.address.country + " ";
+		html = html + p.address.postalCode;
+		document.getElementById("address").innerHTML = html;
+		document.getElementById("identifiers").innerHTML = p.identifier;
+	}
+	
+	function editPatient() {
+		window.open('<%= request.getContextPath() %>/admin/patients/patient.form?patientId=' + patient.patientId);
+		return false;
 	}
 
 </script>
@@ -147,6 +157,20 @@
 </div>
 
 <div id="patientSummary">
+	<b class='boxHeader'><spring:message code="formentry.patient.info"/></b>
+	<a href='index.htm' onClick="return editPatient();" style='float:right'><spring:message code="Patient.edit"/></a>
+	<table>
+		<tr>
+			<td><b>Name</b></td><td id="name"></td>
+			<td valign="top"><b>Identifiers</b></td><td id="identifiers"></td>
+		</tr>
+		
+		<tr>
+			<td><b>Gender</b></td><td id="gender"></td>
+		</tr>
+		<tr><td valign="top"><b>Address</b><td id="address"></td></tr>
+	</table>
+	<br /><input type='button' value='<spring:message code="formentry.patient.switch"/>' onClick='showSearch(); patientListing.style.display = "";'>
 </div>
 
 <br />

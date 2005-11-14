@@ -95,13 +95,12 @@
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 	</tr>
-	<c:if test="${!(user.creator == null)}" >
+	<c:if test="${!(location.creator == null)}" >
 		<tr>
 			<td><spring:message code="general.creator"/></td>
 			<td>
 				<spring:bind path="location.creator">
-					${address.creator.username}
-					<input type="hidden" name="${status.expression}" value="${status.value}"/>
+					${location.creator.username}
 				</spring:bind>
 			</td>
 		</tr>
@@ -109,8 +108,7 @@
 			<td><spring:message code="general.dateCreated"/></td>
 			<td>
 				<spring:bind path="location.dateCreated">
-					<openmrs:formatDate date="${address.dateCreated}" type="long"/>
-					<input type="hidden" name="${status.expression}" value="${status.value}">
+					<openmrs:formatDate date="${location.dateCreated}" type="long"/>
 				</spring:bind>
 			</td>
 		</tr>

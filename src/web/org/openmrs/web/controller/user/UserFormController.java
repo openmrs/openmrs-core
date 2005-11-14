@@ -1,7 +1,6 @@
 package org.openmrs.web.controller.user;
 
 import java.text.DateFormat;
-import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -44,8 +43,8 @@ public class UserFormController extends SimpleFormController {
         //NumberFormat nf = NumberFormat.getInstance(request.getLocale());
         //binder.registerCustomEditor(java.lang.Integer.class,
         //        new CustomNumberEditor(java.lang.Integer.class, nf, true));
-		//binder.registerCustomEditor(java.lang.Integer.class, 
-		//		new CustomNumberEditor(java.lang.Integer.class, true));
+		binder.registerCustomEditor(java.lang.Integer.class, 
+				new CustomNumberEditor(java.lang.Integer.class, true));
         binder.registerCustomEditor(java.util.Date.class, 
         		new CustomDateEditor(DateFormat.getDateInstance(DateFormat.SHORT), true));
 	}

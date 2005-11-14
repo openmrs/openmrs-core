@@ -96,6 +96,9 @@ public class HibernatePatientService implements PatientService {
 		
 		//TODO simple name search to start testing, will need to make "real" name search
 		//		i.e. split on whitespace, guess at first/last name, etc
+		
+		// TODO return the matched name instead of the primary name
+		//   possible solution: create org.openmrs.PatientListItem and return a list of those 
 		List<Patient> patients = session.createCriteria(Patient.class)
 						.createAlias("names", "name")
 						.add(Expression.or(
@@ -105,25 +108,6 @@ public class HibernatePatientService implements PatientService {
 						.list();
 	
 		return patients;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.openmrs.api.PatientService#saveOrUpdate(org.openmrs.Patient)
-	 */
-	public void savePatient(Patient patient) {
-		Session session = HibernateUtil.currentSession();
-		try {
-			HibernateUtil.beginTransaction();
-			session.save(patient);
-			HibernateUtil.commitTransaction();
-		}
-		catch (Exception e) {
-			HibernateUtil.rollbackTransaction();
-			throw new APIException(e.getMessage());
-		}
-			
 	}
 
 	/*
@@ -257,8 +241,12 @@ public class HibernatePatientService implements PatientService {
 	 * @param patient
 	 */
 	private void setCollectionProperties(Patient patient) {
-		patient.setCreator(context.getAuthenticatedUser());
-		patient.setDateCreated(new Date());
+		if (patient.getCreator() == null) {
+			patient.setCreator(context.getAuthenticatedUser());
+			patient.setDateCreated(new Date());
+		}
+		patient.setChangedBy(context.getAuthenticatedUser());
+		patient.setDateChanged(new Date());
 		if (patient.getAddresses() != null)
 			for (Iterator<PatientAddress> i = patient.getAddresses().iterator(); i.hasNext();) {
 				PatientAddress pAddress = i.next();

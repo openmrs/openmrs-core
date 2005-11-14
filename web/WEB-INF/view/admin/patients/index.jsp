@@ -75,9 +75,11 @@
 	var getRace			= function(obj) { return obj.race; };
 	var getBirthdate	= function(obj) { 
 			var str = '';
-			str += obj.birthdate.getMonth() + '-';
-			str += obj.birthdate.getDate() + '-';
-			str += (obj.birthdate.getYear() + 1900);
+			if (obj.birthdate != null) {
+				str += obj.birthdate.getMonth() + 1 + '-';
+				str += obj.birthdate.getDate() + '-';
+				str += (obj.birthdate.getYear() + 1900);
+			}
 			
 			if (obj.birthdateEstimated)
 				str += " (?)";

@@ -5,6 +5,7 @@ import java.util.Date;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
+import org.openmrs.PatientAddress;
 import org.openmrs.PatientName;
 
 public class PatientListItem {
@@ -20,7 +21,7 @@ public class PatientListItem {
 	private Date birthdate;
 	private Boolean birthdateEstimated;
 	private String mothersName;
-
+	private PatientAddress address;
 
 	public PatientListItem() { }
 	
@@ -108,6 +109,14 @@ public class PatientListItem {
 
 	public void setRace(String race) {
 		this.race = race;
+	}
+
+	public PatientAddress getAddress() {
+		return address;
+	}
+
+	public void setAddress(PatientAddress address) {
+		this.address = address;
 	}
 
 }

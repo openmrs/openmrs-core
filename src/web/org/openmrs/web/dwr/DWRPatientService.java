@@ -6,6 +6,7 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
+import org.openmrs.PatientAddress;
 import org.openmrs.api.PatientService;
 import org.openmrs.context.Context;
 import org.openmrs.web.Constants;
@@ -46,8 +47,9 @@ public class DWRPatientService {
 		Context context = (Context) ExecutionContext.get().getSession().getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		PatientService ps = context.getPatientService();
 		Patient p = ps.getPatient(patientId);
-		
-		return new PatientListItem(p);
+		PatientListItem pli = new PatientListItem(p);
+		pli.setAddress((PatientAddress)p.getAddresses().toArray()[0]);
+		return pli;
 	}
 
 }

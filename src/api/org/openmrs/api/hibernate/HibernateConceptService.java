@@ -6,14 +6,13 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.MatchMode;
 import org.openmrs.Concept;
 import org.openmrs.Drug;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.context.Context;
-import org.hibernate.criterion.MatchMode;
 
 public class HibernateConceptService implements
 		ConceptService {

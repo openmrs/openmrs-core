@@ -16,7 +16,7 @@ import org.openmrs.web.Constants;
 
 public class ForEachRecordTag extends BodyTagSupport {
 
-	public static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 1232300L;
 	
 	private final Log log = LogFactory.getLog(getClass());
 

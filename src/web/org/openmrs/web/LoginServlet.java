@@ -8,12 +8,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.context.Context;
 import org.openmrs.context.ContextAuthenticationException;
 
 public class LoginServlet extends HttpServlet {
 
 	public static final long serialVersionUID = 1L;
+	protected Log log = LogFactory.getLog(getClass());
 
 	/*
 	 * (non-Javadoc)
@@ -43,8 +46,10 @@ public class LoginServlet extends HttpServlet {
 		try {
 			context.authenticate(username, password);
 			if (context.isAuthenticated()) {
+				log.debug(request.getRemoteAddr());
+				httpSession.setAttribute(Constants.OPENMRS_CLIENT_IP_HTTPSESSION_ATTR, request.getRemoteAddr());
 				response.sendRedirect(redirect);
-				httpSession.removeAttribute("login_redirect");
+				httpSession.removeAttribute(Constants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR);
 				return;
 			}
 		} catch (ContextAuthenticationException e) {

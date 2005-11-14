@@ -11,6 +11,7 @@
 
 	<convert converter="bean" match="org.openmrs.web.dwr.PatientListItem"/>
 	<convert converter="bean" match="org.openmrs.web.dwr.ConceptListItem"/>
+	<convert converter="bean" match="org.openmrs.PatientAddress"/>
 
     <create creator="new" javascript="DWRPatientService">
       <param name="class" value="org.openmrs.web.dwr.DWRPatientService" />

@@ -2,9 +2,6 @@ package org.openmrs.util;
 
 import java.util.List;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.openmrs.api.hibernate.HibernateUtil;
 
@@ -15,10 +12,7 @@ public class Test {
 	 */
 	public static void main(String[] args) {
 
-		BasicConfigurator.configure();
-		Logger.getRootLogger().setLevel(Level.ERROR);
-		// Logger logger = Logger.getLogger(Test.class);
-		// logger.setLevel(Level.INFO);
+	    //final Log log = LogFactory.getLog("org.openmrs.util.Test");
 
 		Session session = HibernateUtil.currentSession();
 		List names = session.createQuery(

@@ -1,3 +1,3 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<c:redirect url="index.htm"/>
+<c:redirect url="user.list"/>

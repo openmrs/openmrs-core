@@ -135,11 +135,22 @@
 			tab.style["text-decoration"] = "line-through";
 	}
 	
+	function removeBlankData() {
+		var obj = document.getElementById("identifierData");
+		if (obj != null)
+			obj.parentNode.removeChild(obj);
+		obj = document.getElementById("nameData");
+		if (obj != null)
+			obj.parentNode.removeChild(obj);
+		obj = document.getElementById("addressData");
+		if (obj != null)
+			obj.parentNode.removeChild(obj);
+	}
+	
 </script>
 
 <style>
 	.tabBar {
-		clear: left;
 		float: left;
 		font-size: 11px;
 		width: 150px;
@@ -167,14 +178,11 @@
 		padding: 3px;
 		min-height: 150px;
 	}
-	.tabBox {
-		height: 100%;
+	#pInformationBox .tabBoxes {
+		margin-left: 1px;
 	}
 	.addNew, .removeTab {
 		font-size: 10px;
-		text-align: right;
-		vertical-align: bottom;
-		height: 100%;
 		float: right;
 		margin: 3px;
 		cursor: pointer;
@@ -184,9 +192,16 @@
 
 <h2><spring:message code="Patient.title"/></h2>
 
-<form method="post">
+<spring:hasBindErrors name="patient">
+	<div class="error">Please fix all errors</div>
+</spring:hasBindErrors>
+
+<form method="post" onSubmit="removeBlankData()">
 
 	<h3><spring:message code="Patient.identifiers"/></h3>
+		<spring:hasBindErrors name="patient.identifiers">
+			<span class="error">${error.errorMessage}</span><br/>
+		</spring:hasBindErrors>
 		<div id="pIds">
 			<div class="tabBar" id="pIdTabBar">
 				<c:forEach var="identifier" items="${patient.identifiers}" varStatus="status">
@@ -216,6 +231,9 @@
 	<br style="clear: both" />
 	
 	<h3><spring:message code="Patient.names"/></h3>
+		<spring:hasBindErrors name="patient.names">
+			<span class="error">${error.errorMessage}</span><br/>
+		</spring:hasBindErrors>
 		<div id="pNames">
 			<div class="tabBar" id="pNameTabBar">
 				<c:forEach var="name" items="${patient.names}" varStatus="status">
@@ -245,6 +263,9 @@
 	<br style="clear: both" />
 	
 	<h3><spring:message code="Patient.addresses"/></h3>
+		<spring:hasBindErrors name="patient.addresses">
+			<span class="error">${error.errorMessage}</span><br/>
+		</spring:hasBindErrors>
 		<div id="pAddresses">
 			<div class="tabBar" id="pAddressesTabBar">
 				<c:forEach var="address" items="${patient.addresses}" varStatus="status">
@@ -258,14 +279,14 @@
 					<spring:nestedPath path="patient.addresses[${status.index}]">
 						<div id="address${status.index}Data" class="tabBox">
 							<%@ include file="include/patientAddress.jsp" %>
-							<br/>
+							<!-- <input type="button" onClick="return removeTab(this, 'name');" class="removeTab" value="Remove this address"/><br/> --> <br/>
 						</div>
 					</spring:nestedPath>
 				</c:forEach>
 				<div id="addressData" class="tabBox">
 					<spring:nestedPath path="emptyAddress">
 						<%@ include file="include/patientAddress.jsp" %>
-						<br/>
+						<!-- <input type="button" onClick="return removeTab(this, 'name');" class="removeTab" value="Remove this address"/><br/> --> <br/>
 					</spring:nestedPath>
 				</div>
 			</div>
@@ -280,7 +301,7 @@
 
 	<br />
 	<spring:bind path="patient.patientId">
-		<input type="hidden" name="patientId" value="${status.value}"/>
+		
 		<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 	</spring:bind>
 	<input type="submit" value="Save Patient">

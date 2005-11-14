@@ -87,13 +87,13 @@
 		</set>
 		
 		<!-- bi-directional one-to-many association to PatientName -->
-		<set name="names" lazy="false" inverse="true" cascade="all">
+		<set name="names" lazy="false" inverse="true" cascade="all-delete-orphan">
 			<key column="patient_id" />
 			<one-to-many class="PatientName" />
 		</set>
 		
 		<!-- bi-directional one-to-many association to PatientIdentifier -->
-		<set name="identifiers" inverse="false" lazy="false" cascade="all">
+		<set name="identifiers" inverse="false" lazy="false" cascade="all-delete-orphan">
 			<key column="patient_id" />
 			<one-to-many class="PatientIdentifier" />
 

@@ -106,6 +106,7 @@ body {
 	border: 1px solid navy;
 	width: 700px;
 	padding: 2px;
+	text-align: left;
 	}
 	.box * {
 		font-size: 12px;
@@ -125,3 +126,10 @@ span.error, div.error {
 	input.error, textarea.error {
 		color: darkred;
 	}
+	span.error {
+		vertical-align: middle;
+	}
+	
+.smallButton {
+	font-size: 9px;
+}
