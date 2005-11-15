@@ -44,15 +44,15 @@ import org.apache.commons.logging.LogFactory;
                     }
                 }
                 
-        		log.error("flushing caches");
+        		log.debug("flushing caches");
             	Introspector.flushCaches(); 
 
         	} catch (Throwable e) { 
-        		System.err.println("Failed to cleanup ClassLoader for webapp"); 
+        		log.error("Failed to cleanup ClassLoader for webapp"); 
         		e.printStackTrace(); 
         	} 
         	
-        	log.error("undeploying application : LogFactory() being destroyed");
+        	log.debug("undeploying application : LogFactory() being destroyed");
         	//LogFactory.release(Thread.currentThread().getContextClassLoader());
         	LogFactory.releaseAll();
         }

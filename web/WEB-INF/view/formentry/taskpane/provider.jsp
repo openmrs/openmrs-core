@@ -7,7 +7,7 @@
 <h1><spring:message code="provider.title"/></h1>
 
 <table border="0">
-	<openmrs:users role="provider" var="provider">
+	<c:forEach items="${list}" var="provider">
 		<tr>
 			<td>
 				<a href="#top" class="hit" onClick="javascript:setObj('//encounter.provider_id', this)" value="${provider.userId}">
@@ -15,7 +15,7 @@
 				</a>
 			</td>
 		</tr>
-	</openmrs:users>
+	</c:forEach>
 </table>
 
 <c:if test="1 == 2">

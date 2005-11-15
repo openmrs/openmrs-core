@@ -23,13 +23,15 @@
 		<property name="lazy">true</property>
 		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
 		-->
+		
 		<property name="connection.driver_class">@DATABASE-DRIVER_CLASS@</property>
 		<property name="connection.url">@DATABASE-CONNECTION-URL@</property>
 		<property name="connection.username">@DATABASE-USERNAME@</property>
 		<property name="connection.password">@DATABASE-PASSWORD@</property>
-		<property name="hibernate.show_sql">@HIBERNATE-SHOW_SQL@</property>
+		
+		<property name="show_sql">@HIBERNATE-SHOW_SQL@</property>
 		<property name="lazy">@HIBERNATE-LAZY@</property>
-		<property name="hibernate.dialect">@HIBERNATE-DIALECT@</property>
+		<property name="dialect">@HIBERNATE-DIALECT@</property>
 		
 		<!--<property name="connection.pool_size">1</property>
 		<property name="current_session_context_class">thread</property>-->

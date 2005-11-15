@@ -30,6 +30,7 @@
     <property name="database.type" value="mysql" />
     <property name="database.name" value="openmrs" />
     <property name="database.host" value="localhost:3306" />
+    
     <property name="database.username" value="test" />
 	<property name="database.password" value="test" />
     <property name="database.driver_class" value="com.mysql.jdbc.Driver" />
@@ -45,10 +46,12 @@
 	<property name="cache.idle_test_period" value="300" />
 	<property name="cache.acquire_increment" value="2" />
 
+	<!--
     <property name="dbcp.min_size" value="5" />
     <property name="dbcp.max_size" value="20" />
     <property name="dbcp.timeout" value="1" />
     <property name="dbcp.max_statements" value="50" />
+    -->
     
     <!-- Environment properties -->
     <property environment="env"/>

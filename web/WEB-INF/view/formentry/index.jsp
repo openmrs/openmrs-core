@@ -53,11 +53,11 @@
 	}
 	
 	var getButton		= function(obj) {
-			var str = "";
-			str += "<input type='button' onClick='selectPatient(";
-			str += obj.patientId;
-			str += ")' class='small' value='<spring:message code="general.select"/>";
-			return str;
+			var html = "";
+			html += "<input type='button' onClick='selectPatient(";
+			html += obj.patientId;
+			html += ")' class='small' value='<spring:message code="general.select"/>";
+			return html;
 		};
 	var getIdentifier	= function(obj) { return obj.identifier; };
 	var getGivenName	= function(obj) { return obj.givenName;  };
@@ -188,6 +188,10 @@
 			<tr>
 				<td><input type="radio" name="formType" value="adultReturn" id="adultReturn"></td>
 				<td><label for="adultReturn">Adult Return</label></td>
+			</tr>
+			<tr>
+				<td><input type="radio" name="formType" value="adultReturn_local" id="adultReturn_local"></td>
+				<td><label for="adultReturn_local">Adult Return (Localhost)</label></td>
 			</tr>
 			<tr>
 				<td><input type="radio" name="formType" value="pedInitial" id="pedInitial"></td>

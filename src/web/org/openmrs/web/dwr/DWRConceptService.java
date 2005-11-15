@@ -6,7 +6,6 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
-import org.openmrs.ConceptClass;
 import org.openmrs.api.ConceptService;
 import org.openmrs.context.Context;
 import org.openmrs.web.Constants;
@@ -38,15 +37,26 @@ public class DWRConceptService {
 			conceptList = new Vector(concepts.size());
 			int maxCount = 10;
 			int curCount = 0;
-			outer: for (Concept c : concepts) {
-				inner: for (String o : classNames)
-					if (o.equals(c.getConceptClass().getName())) {
-						if ( curCount++ > maxCount ) {
-							break outer;
+			if (classNames.size() > 0) {
+				outer: for (Concept c : concepts) {
+					inner: for (String o : classNames)
+						if (o.equals(c.getConceptClass().getName())) {
+							if ( curCount++ > maxCount ) {
+								break outer;
+							}
+							conceptList.add(new ConceptListItem(c));
 						}
-						conceptList.add(new ConceptListItem(c));
-					}
+				}
 			}
+			else {
+				outer: for (Concept c : concepts) {
+					if ( curCount++ > maxCount ) {
+						break outer;
+					}
+					conceptList.add(new ConceptListItem(c));
+				}
+			}
+			
 		} catch (Exception e) {
 			log.error(e);
 			e.printStackTrace();
