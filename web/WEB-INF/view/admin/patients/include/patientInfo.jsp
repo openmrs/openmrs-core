@@ -82,7 +82,6 @@
 		<td>Civil Status</td>
 		<td>
 			<spring:bind path="patient.civilStatus">
-				<!-- TODO put this hashmap somewhere more central (in db?) -->
 				<select name="civilStatus">
 					<openmrs:forEachRecord name="civilStatus" select="${status.value}">
 						<option value="${record.key}" ${selected}>

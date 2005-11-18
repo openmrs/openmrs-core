@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "-//Hibernate/Hibernate Mapping DTD 3.1//EN"
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
 
 <hibernate-mapping package="org.openmrs">
@@ -14,10 +14,6 @@
 
 		<property name="retired" type="java.lang.Boolean"
 			column="retired" length="1" />
-		<property name="name" type="java.lang.String" column="name"
-			not-null="true" length="255" />
-		<property name="shortName" type="java.lang.String"
-			column="short_name" length="255" />
 		<property name="description" type="java.lang.String"
 			column="description" length="65535" />
 		<property name="icd10" type="java.lang.String" column="icd10"
@@ -36,7 +32,7 @@
 		<!-- Associations -->
 
 		<!-- bi-directional many-to-one association to ConceptDatatype -->
-		<many-to-one name="conceptDatatype" class="ConceptDatatype"
+		<many-to-one name="datatype" class="ConceptDatatype"
 			not-null="true">
 			<column name="datatype_id" />
 		</many-to-one>
@@ -57,13 +53,25 @@
 			<one-to-many class="ConceptAnswer" />
 		</set>
 		<!-- bi-directional one-to-many association to ConceptSynonym -->
-		<set name="synonyms" lazy="true" inverse="true"
-			cascade="none">
-			<key>
+		
+		<!-- Ok, so it seems that Hibernate doesn't care about our multiple
+			primary keys in this composite-element.  We are able to control
+			that action via the .equals() and .hashCode() because we are using
+			a Set.
+		-->
+		<set name="synonyms" lazy="true" cascade="all-delete-orphan" table="concept_synonym">
+			<key not-null="true">
 				<column name="concept_id" />
 			</key>
-			<one-to-many class="ConceptSynonym" />
+			<composite-element class="ConceptSynonym">
+				<parent name="concept" />
+				<property name="synonym" type="java.lang.String" />
+				<property name="locale" type="java.lang.String" />
+				<property name="dateCreated" type="java.util.Date" column="date_created"/>
+				<many-to-one name="creator" class="User" column="creator"/>
+			</composite-element>
 		</set>
+		
 		<!-- bi-directional many-to-one association to ConceptClass -->
 		<many-to-one name="conceptClass" class="ConceptClass"
 			not-null="true">

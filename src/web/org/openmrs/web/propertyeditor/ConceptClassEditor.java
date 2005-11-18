@@ -4,30 +4,30 @@ import java.beans.PropertyEditorSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Location;
-import org.openmrs.api.PatientService;
+import org.openmrs.ConceptClass;
+import org.openmrs.api.ConceptService;
 import org.openmrs.context.Context;
 import org.springframework.util.StringUtils;
 
-public class LocationEditor extends PropertyEditorSupport {
+public class ConceptClassEditor extends PropertyEditorSupport {
 
 	private Log log = LogFactory.getLog(this.getClass());
 	
 	Context context;
 	
-	public LocationEditor(Context c) {
+	public ConceptClassEditor(Context c) {
 		this.context = c;
 	}
 	
 	public void setAsText(String text) throws IllegalArgumentException {
 		if (context != null) {
-			PatientService ps = context.getPatientService(); 
+			ConceptService cs = context.getConceptService(); 
 			if (StringUtils.hasText(text)) {
 				try {
-					setValue(ps.getLocation(Integer.valueOf(text)));
+					setValue(cs.getConceptClass(Integer.valueOf(text)));
 				}
 				catch (Exception ex) {
-					throw new IllegalArgumentException("Location not found: " + ex.getMessage());
+					throw new IllegalArgumentException("ConceptClass not found: " + ex.getMessage());
 				}
 			}
 			else {
@@ -37,12 +37,12 @@ public class LocationEditor extends PropertyEditorSupport {
 	}
 
 	public String getAsText() {
-		Location t = (Location) getValue();
+		ConceptClass t = (ConceptClass) getValue();
 		if (t == null) {
 			return "";
 		}
 		else {
-			return t.getLocationId().toString();
+			return t.getConceptClassId().toString();
 		}
 	}
 

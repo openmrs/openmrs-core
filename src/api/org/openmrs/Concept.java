@@ -1,5 +1,6 @@
 package org.openmrs;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -20,7 +21,7 @@ public class Concept implements java.io.Serializable {
 	private String name;
 	private String shortName;
 	private String description;
-	private ConceptDatatype conceptDatatype;
+	private ConceptDatatype datatype;
 	private ConceptClass conceptClass;
 	private String units;
 	private String icd10;
@@ -32,12 +33,15 @@ public class Concept implements java.io.Serializable {
 	private Date dateChanged;
 	private Set<ConceptName> names;
 	private Set<ConceptAnswer> answers;
-	private Set<ConceptSynonym> synonyms;
+	private Collection<ConceptSynonym> synonyms;
 
 	// Constructors
 
 	/** default constructor */
 	public Concept() {
+		names = new HashSet<ConceptName>();
+		answers = new HashSet<ConceptAnswer>();
+		synonyms = new HashSet<ConceptSynonym>();
 	}
 
 	/** constructor with id */
@@ -55,7 +59,9 @@ public class Concept implements java.io.Serializable {
 	
 	public int hashCode() {
 		if (this.getConceptId() == null) return super.hashCode();
-		return this.getConceptId().hashCode();
+		int hash = 8;
+		hash = 31 * getConceptId() + hash;
+		return hash;
 	}
 	
 	/**
@@ -124,15 +130,15 @@ public class Concept implements java.io.Serializable {
 	/**
 	 * @return Returns the conceptDatatype.
 	 */
-	public ConceptDatatype getConceptDatatype() {
-		return conceptDatatype;
+	public ConceptDatatype getDatatype() {
+		return datatype;
 	}
 
 	/**
 	 * @param conceptDatatype The conceptDatatype to set.
 	 */
-	public void setConceptDatatype(ConceptDatatype conceptDatatype) {
-		this.conceptDatatype = conceptDatatype;
+	public void setDatatype(ConceptDatatype conceptDatatype) {
+		this.datatype = conceptDatatype;
 	}
 
 	/**
@@ -308,6 +314,10 @@ public class Concept implements java.io.Serializable {
 		return retired;
 	}
 
+	public Boolean getRetired() {
+		return isRetired();
+	}
+	
 	/**
 	 * @param retired The retired to set.
 	 */
@@ -332,14 +342,14 @@ public class Concept implements java.io.Serializable {
 	/**
 	 * @return Returns the synonyms.
 	 */
-	public Set<ConceptSynonym> getSynonyms() {
+	public Collection<ConceptSynonym> getSynonyms() {
 		return synonyms;
 	}
 
 	/**
 	 * @param synonyms The synonyms to set.
 	 */
-	public void setSynonyms(Set<ConceptSynonym> synonyms) {
+	public void setSynonyms(Collection<ConceptSynonym> synonyms) {
 		this.synonyms = synonyms;
 	}
 
@@ -347,13 +357,14 @@ public class Concept implements java.io.Serializable {
 	 * Add the given ConceptSynonym to the list of synonyms for this Concept
 	 * @param conceptSynonym
 	 */
+	/*
 	public void addSynonym(ConceptSynonym conceptSynonym) {
 		conceptSynonym.setConcept(this);
 		if (synonyms == null)
 			synonyms = new HashSet<ConceptSynonym>();
 		if (!synonyms.contains(conceptSynonym) && conceptSynonym != null)
 			synonyms.add(conceptSynonym);
-	}
+	}*/
 
 	/**
 	 * Remove the given synonym from the list of synonyms for this Concept

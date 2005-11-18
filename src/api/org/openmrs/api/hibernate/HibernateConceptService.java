@@ -9,6 +9,9 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.openmrs.Concept;
+import org.openmrs.ConceptClass;
+import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptSynonym;
 import org.openmrs.Drug;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
@@ -34,6 +37,8 @@ public class HibernateConceptService implements
 		
 		concept.setCreator(context.getAuthenticatedUser());
 		concept.setDateCreated(new Date());
+		concept.setChangedBy(context.getAuthenticatedUser());
+		concept.setDateChanged(new Date());
 		try {
 			HibernateUtil.beginTransaction();
 			session.save(concept);
@@ -90,13 +95,27 @@ public class HibernateConceptService implements
 			
 			try {
 				HibernateUtil.beginTransaction();
-				session.saveOrUpdate(concept);
+				modifyCollections(concept);
+				concept.setChangedBy(context.getAuthenticatedUser());
+				concept.setDateChanged(new Date());
+				session.update(concept);
 				HibernateUtil.commitTransaction();
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new APIException(e);
+				throw new APIException(e); 
 			}
+		}
+	}
+	
+	protected void modifyCollections(Concept c) {
+		
+		for (ConceptSynonym syn : c.getSynonyms()) {
+			if (syn.getCreator() == null ) {
+				syn.setCreator(context.getAuthenticatedUser());
+				syn.setDateCreated(new Date());
+			}
+			syn.setConcept(c);
 		}
 	}
 
@@ -133,6 +152,52 @@ public class HibernateConceptService implements
 		List<Drug> drugs = session.createQuery("from Drug").list();
 		
 		return drugs;
+	}
+
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptClass(java.lang.Integer)
+	 */
+	public ConceptClass getConceptClass(Integer i) {
+		Session session = HibernateUtil.currentSession();
+		
+		ConceptClass cc = new ConceptClass();
+		cc = (ConceptClass)session.get(ConceptClass.class, i);
+		
+		return cc;
+	}
+
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptClasses()
+	 */
+	public List<ConceptClass> getConceptClasses() {
+		Session session = HibernateUtil.currentSession();
+		
+		List<ConceptClass> drugs = session.createQuery("from ConceptClass cc order by cc.name").list();
+		
+		return drugs;
+	}
+
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptDatatype(java.lang.Integer)
+	 */
+	public ConceptDatatype getConceptDatatype(Integer i) {
+		Session session = HibernateUtil.currentSession();
+		
+		ConceptDatatype cd = new ConceptDatatype();
+		cd = (ConceptDatatype)session.get(ConceptDatatype.class, i);
+		
+		return cd;
+	}
+
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptDatatypes()
+	 */
+	public List<ConceptDatatype> getConceptDatatypes() {
+		Session session = HibernateUtil.currentSession();
+		
+		List<ConceptDatatype> cds = session.createQuery("from ConceptDatatype cd order by cd.name").list();
+		
+		return cds;
 	}
 	
 	

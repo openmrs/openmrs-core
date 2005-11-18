@@ -1,6 +1,10 @@
 package org.openmrs;
 
 import java.util.Date;
+import java.util.Locale;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * ConceptSynonym 
@@ -8,6 +12,8 @@ import java.util.Date;
 public class ConceptSynonym implements java.io.Serializable {
 
 	public static final long serialVersionUID = 3785L;
+	
+	public Log log = LogFactory.getLog(this.getClass());
 
 	// Fields
 
@@ -23,19 +29,109 @@ public class ConceptSynonym implements java.io.Serializable {
 	public ConceptSynonym() {
 	}
 	
+	public ConceptSynonym(Concept c, String s, Locale l) {
+		setConcept(c);
+		setSynonym(s);
+		setLocale(l.getLanguage());
+	}
+	
 	public boolean equals(Object obj) {
+		log.debug("Does " + this.synonym + " = something?");
+		if (obj == null) return false;
 		if (obj instanceof ConceptSynonym) {
-			ConceptSynonym c = (ConceptSynonym)obj;
-			return (this.concept.equals(c.getConcept()) &&
-					this.synonym.equals(c.getSynonym()) &&
-					this.locale.equals(c.getLocale()));
+			ConceptSynonym c = (ConceptSynonym) obj;
+			boolean ret = true;
+			if (concept != null && c.getConcept() != null)
+				ret = ret && this.concept.equals(c.getConcept());
+			if (synonym != null && c.getSynonym() != null)
+				ret = ret && this.synonym.equals(c.getSynonym());
+			if (locale != null && c.getLocale() != null)
+				ret = ret && locale.equals(c.getLocale());
+			log.debug("Does " + this.synonym + " = " + c.getSynonym() + "? " + ret);
+			return ret;
 		}
 		return false;
 	}
 	
+	/*
+	public static class ConceptSynonymId implements java.io.Serializable {
+		
+		public static final long serialVersionUID = 3786L;
+		public static Log log = LogFactory.getLog("org.openmrs.ConceptSynonym.ConceptSynonymId");
+		
+		private Concept concept;
+		private String synonym;
+		private String locale;
+		
+		public ConceptSynonymId() {}
+		
+		public boolean equals(Object obj) {
+			if (obj instanceof ConceptSynonymId) {
+				ConceptSynonymId c = (ConceptSynonymId)obj;
+				
+				boolean ret = (this.concept.equals(c.getConcept()) &&
+						this.synonym.equals(c.getSynonym()) &&
+						this.locale.equals(c.getLocale()));
+				log.debug("Does " + this.synonym + " = " + c.getSynonym() + "? " + ret);
+				Object bob = null;
+				boolean tom = bob.equals(obj);
+				bob = tom;
+				return ret;
+			}
+			return false;
+		}
+		
+		public int hashCode() {
+			if (this.getConcept() == null && this.getSynonym() == null && this.getLocale() == null) return super.hashCode();
+			int hash = 2;
+			if (getConcept() != null)
+				hash = 31 * hash + getConcept().hashCode();
+			if (getSynonym() != null)
+				hash = 31 * hash + getSynonym().hashCode();
+			if (getLocale() != null)
+				hash = 31 * hash + getLocale().hashCode();
+			
+			return hash;
+		}
+		
+		public Concept getConcept() {
+			return concept;
+		}
+		
+		public void setConcept(Concept concept) {
+			this.concept = concept;
+		}
+		
+		public String getLocale() {
+			return locale;
+		}
+		
+		public void setLocale(String locale) {
+			this.locale = locale;
+		}
+		
+		public String getSynonym() {
+			return synonym;
+		}
+		
+		public void setSynonym(String synonym) {
+			this.synonym = synonym;
+		}
+		
+	}
+	*/
+	
 	public int hashCode() {
-		if (this.getConcept() == null || this.getSynonym() == null || this.getLocale() == null) return super.hashCode();
-		return this.getConcept().hashCode() + this.getSynonym().hashCode() + this.getLocale().hashCode();
+		if (this.getConcept() == null && this.getSynonym() == null && this.getLocale() == null) return super.hashCode();
+		int hash = 2;
+		if (getConcept() != null)
+			hash = 31 * hash + getConcept().hashCode();
+		if (getSynonym() != null)
+			hash = 31 * hash + getSynonym().hashCode();
+		if (getLocale() != null)
+			hash = 31 * hash + getLocale().hashCode();
+		
+		return hash;
 	}
 
 	// Property accessors
@@ -49,6 +145,7 @@ public class ConceptSynonym implements java.io.Serializable {
 
 	public void setConcept(Concept concept) {
 		this.concept = concept;
+		//id.setConcept(concept);
 	}
 
 	/**
@@ -60,6 +157,7 @@ public class ConceptSynonym implements java.io.Serializable {
 
 	public void setSynonym(String synonym) {
 		this.synonym = synonym;
+		//id.setSynonym(synonym);
 	}
 
 	/**
@@ -74,6 +172,7 @@ public class ConceptSynonym implements java.io.Serializable {
 	 */
 	public void setLocale(String locale) {
 		this.locale = locale;
+		//id.setLocale(locale);
 	}
 
 	/**
@@ -105,5 +204,34 @@ public class ConceptSynonym implements java.io.Serializable {
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
+	
+	public String toString() {
+		return synonym;
+	}
 
+	/*
+	public Integer getConceptSynonymId() {
+		return conceptSynonymId;
+	}
+
+	public void setConceptSynonymId(Integer conceptSynonymId) {
+		this.conceptSynonymId = conceptSynonymId;
+	}
+	*/
+
+	/*
+	/**
+	 * @return Returns the id.
+	 /
+	public ConceptSynonymId getId() {
+		return id;
+	}
+
+	/**
+	 * @param id The id to set.
+	 /
+	public void setId(ConceptSynonymId id) {
+		this.id = id;
+	}
+	*/
 }

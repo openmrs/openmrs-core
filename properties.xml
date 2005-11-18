@@ -37,7 +37,7 @@
     <property name="database.connection.url" 
         value="jdbc:${database.type}://${database.host}/${database.name}?autoReconnect=true" />
     <property name="hibernate.lazy" value="true" />
-    <property name="hibernate.show_sql" value="false" />
+    <property name="hibernate.show_sql" value="true" />
     <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
 	<property name="cache.max_size" value="10" />
 	<property name="cache.min_size" value="1" />

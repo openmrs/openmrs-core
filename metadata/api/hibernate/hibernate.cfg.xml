@@ -22,7 +22,7 @@
 		<property name="hibernate.show_sql">true</property>
 		<property name="lazy">true</property>
 		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
-		-->
+		--> 
 		
 		<property name="connection.driver_class">@DATABASE-DRIVER_CLASS@</property>
 		<property name="connection.url">@DATABASE-CONNECTION-URL@</property>
@@ -50,15 +50,15 @@
 		<property name="hibernate.connection.datasource">java:comp/env/jdbc/openmrs</property>
 		
 		
-		<property name="hibernate.cglib.use_reflection_optimizer">true</property>
-		 -->
+		<property name="hibernate.cglib.use_reflection_optimizer">false</property>
+		--> 
 
 		<mapping resource="org/openmrs/api/hibernate/Concept.hbm.xml" />
 		<mapping resource="org/openmrs/api/hibernate/ConceptAnswer.hbm.xml" />
 		<mapping resource="org/openmrs/api/hibernate/ConceptClass.hbm.xml" />
 		<mapping resource="org/openmrs/api/hibernate/ConceptDatatype.hbm.xml" />
 		<mapping resource="org/openmrs/api/hibernate/ConceptNumeric.hbm.xml" />
-		<mapping resource="org/openmrs/api/hibernate/ConceptSynonym.hbm.xml" />
+		<!-- <mapping resource="org/openmrs/api/hibernate/ConceptSynonym.hbm.xml" /> -->
 		<mapping resource="org/openmrs/api/hibernate/ConceptName.hbm.xml" />
 		<mapping resource="org/openmrs/api/hibernate/ConceptSet.hbm.xml" />
 		<mapping resource="org/openmrs/api/hibernate/ConceptMap.hbm.xml" />

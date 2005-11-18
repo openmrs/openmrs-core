@@ -3,6 +3,8 @@ package org.openmrs.api;
 import java.util.List;
 
 import org.openmrs.Concept;
+import org.openmrs.ConceptClass;
+import org.openmrs.ConceptDatatype;
 import org.openmrs.Drug;
 
 public interface ConceptService {
@@ -45,4 +47,29 @@ public interface ConceptService {
 	 * @return List of Drugs
 	 */
 	public List<Drug> getDrugs();
+	
+	/**
+	 * Return a list of concept classes currently in the database
+	 * @return List of Concept class objects
+	 */
+	public List<ConceptClass> getConceptClasses();
+	
+	/**
+	 * Return a Concept class matching the given identifier
+	 * @return ConceptClass
+	 */
+	public ConceptClass getConceptClass(Integer i);
+	
+	/**
+	 * Return a list of concept datatypes currently in the database
+	 * @return List of ConceptDatatypes
+	 */
+	public List<ConceptDatatype> getConceptDatatypes();
+	
+	/**
+	 * Return a ConceptDatatype matching the given identifier
+	 * @return ConceptDatatype
+	 */
+	public ConceptDatatype getConceptDatatype(Integer i);
+	
 }

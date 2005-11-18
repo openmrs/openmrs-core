@@ -1,7 +1,7 @@
 package org.openmrs.web.taglib;
 
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
@@ -43,11 +43,7 @@ public class ForEachRecordTag extends BodyTagSupport {
 			records = ps.getTribes().iterator();
 		}
 		else if (name.equals("civilStatus")) {
-			HashMap<String, String> opts = new HashMap<String, String>();
-			opts.put("1", "Single");
-			opts.put("2", "Married");
-			opts.put("3", "Divorced");
-			opts.put("4", "Widowed");
+			Map<String, String> opts = Constants.OPENMRS_CIVIL_STATUS;
 			records = opts.entrySet().iterator();
 			select = select.toString() + "=" + opts.get(select);
 		}

@@ -20,7 +20,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="Tribe.retired"/></td>
+		<td><spring:message code="general.retired"/></td>
 		<td>
 			<spring:bind path="tribe.retired">
 				<input type="hidden" name="_${status.expression}">

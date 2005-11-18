@@ -41,6 +41,7 @@
 					<prop key="**/location.list">locationList</prop>
 					<prop key="**/location.form">locationForm</prop>
 					<prop key="**/provider.htm">providerForm</prop>
+					<prop key="**/concept.form">conceptForm</prop>
 					<prop key="**/*.htm">springController</prop>
 	            </props>
 	        </property>
@@ -251,17 +252,32 @@
 					<property name="successView"><value>location.list</value></property>
 				</bean>
 			<!-- ** /Location ** -->
-			
-		    <!-- =========================== -->
-			<!-- =====      Other      ===== -->
-		    <!-- =========================== -->
-				<bean id="providerForm" class="org.openmrs.web.controller.ProviderFormController">
-					<property name="commandName"><value>list</value></property>
-					<property name="commandClass"><value>java.util.List</value></property>
-					<property name="formView"><value>/formentry/taskpane/provider</value></property>
-					<property name="successView"><value>/formentry/taskpane/provider</value></property>
-				</bean>
-			<!-- =========================== -->
+	    <!-- ============================ -->
+	    			
+	    <!-- ============================ -->
+		<!-- =====  Concept Sector  ===== -->
+	    <!-- ============================ -->
+	    	<bean id="conceptForm" class="org.openmrs.web.controller.ConceptFormController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>concept</value></property>
+				<!-- <property name="validator"><ref bean="conceptValidator"/></property> -->
+				<property name="formView"><value>/dictionary/conceptForm</value></property>
+				<property name="successView"><value>concept.form</value></property>
+			</bean>
+		
+	    <!-- ============================ -->
+		    
+		    
+	    <!-- =========================== -->
+		<!-- =====      Other      ===== -->
+	    <!-- =========================== -->
+			<bean id="providerForm" class="org.openmrs.web.controller.ProviderFormController">
+				<property name="commandName"><value>list</value></property>
+				<property name="commandClass"><value>java.util.List</value></property>
+				<property name="formView"><value>/formentry/taskpane/provider</value></property>
+				<property name="successView"><value>/formentry/taskpane/provider</value></property>
+			</bean>
+		<!-- =========================== -->
 		
 		<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
 			<property name="basename">
