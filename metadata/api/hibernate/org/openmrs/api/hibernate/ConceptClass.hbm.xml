@@ -51,6 +51,7 @@
         type="java.lang.Boolean"
         column="is_set"
         length="1"
+        access="field"
     />
 
     <!-- Associations -->

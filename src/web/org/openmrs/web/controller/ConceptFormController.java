@@ -18,13 +18,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptSynonym;
 import org.openmrs.api.ConceptService;
 import org.openmrs.context.Context;
 import org.openmrs.web.Constants;
+import org.openmrs.web.propertyeditor.ConceptAnswersEditor;
 import org.openmrs.web.propertyeditor.ConceptClassEditor;
 import org.openmrs.web.propertyeditor.ConceptDatatypeEditor;
-import org.openmrs.web.propertyeditor.ConceptSynonymsEditor;
+import org.openmrs.web.propertyeditor.ConceptSetsEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
@@ -48,6 +50,9 @@ public class ConceptFormController extends SimpleFormController {
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		Context context = (Context) request.getSession().getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Concept concept = null;
+		String conceptId = request.getParameter("conceptId");
+		
         NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
         Locale locale = request.getLocale();
         binder.registerCustomEditor(java.lang.Integer.class,
@@ -62,6 +67,11 @@ public class ConceptFormController extends SimpleFormController {
         		new ConceptDatatypeEditor(context));
         /*binder.registerCustomEditor(java.util.Collection.class, "synonyms", 
         		new ConceptSynonymsEditor(locale)); */
+        binder.registerCustomEditor(java.util.Collection.class, "conceptSets", 
+        		new ConceptSetsEditor(context));
+        binder.registerCustomEditor(java.util.Collection.class, "answers", 
+        		new ConceptAnswersEditor(context));
+
 	}
 
 	/**
@@ -77,36 +87,41 @@ public class ConceptFormController extends SimpleFormController {
 		if (context != null && context.isAuthenticated()) {
 			ConceptService cs = context.getConceptService();
 
-			
-			// the attribute *must* be named differently than the property, otherwise
-			//   spring will modify the property as text array
-			String[] tempSyns = request.getParameter("syns").split("\n");
-			Collection<ConceptSynonym> originalSyns = concept.getSynonyms();
-			Set<ConceptSynonym> parameterSyns = new HashSet<ConceptSynonym>();
-			Set<ConceptSynonym> newSyns = new HashSet<ConceptSynonym>();
-			//set up parameter Synonym Set for easier add/delete functions
-			// and removal of duplicates
-			for (String syn : tempSyns) {
-				syn = syn.trim();
-				if (!syn.equals(""))
-					parameterSyns.add(new ConceptSynonym(concept, syn, locale));
-			}
-			
-			// Union the originalSyns and parameterSyns to get the 'clean' synonyms
-			//   remove synonym from parameterSynonym if 'clean'
-			for (ConceptSynonym c : originalSyns) {
-				if (parameterSyns.contains(c)) {  //.contains only possible because we overrode .equals
-					newSyns.add(c);
-					parameterSyns.remove(c);
+			// ==== Concept Synonyms ====
+				// the attribute *must* be named differently than the property, otherwise
+				//   spring will modify the property as text array
+				String[] tempSyns = request.getParameter("syns").split("\n");
+				Collection<ConceptSynonym> originalSyns = concept.getSynonyms();
+				Set<ConceptSynonym> parameterSyns = new HashSet<ConceptSynonym>();
+				Set<ConceptSynonym> newSyns = new HashSet<ConceptSynonym>();
+				//set up parameter Synonym Set for easier add/delete functions
+				// and removal of duplicates
+				for (String syn : tempSyns) {
+					syn = syn.trim();
+					if (!syn.equals(""))
+						parameterSyns.add(new ConceptSynonym(concept, syn, locale));
 				}
-			}
-			
-			//add all remaining parameter synonyms
-			for (ConceptSynonym syn : parameterSyns) {
-					newSyns.add(syn);
-			}
-			
-			concept.setSynonyms(newSyns);
+				
+				// Union the originalSyns and parameterSyns to get the 'clean' synonyms
+				//   remove synonym from parameterSynonym if 'clean'
+				for (ConceptSynonym c : originalSyns) {
+					if (parameterSyns.contains(c)) {  //.contains only possible because we overrode .equals
+						newSyns.add(c);
+						parameterSyns.remove(c);
+					}
+				}
+				
+				//add all remaining parameter synonyms
+				for (ConceptSynonym syn : parameterSyns) {
+						newSyns.add(syn);
+				}
+				
+				concept.setSynonyms(newSyns);
+				
+				String conceptSets = request.getParameter("conceptSets");
+				if (conceptSets == null)
+					concept.setConceptSets(null); 
+				
 		}
 		
 		return super.processFormSubmission(request, response, concept, errors); 
@@ -135,7 +150,7 @@ public class ConceptFormController extends SimpleFormController {
 			String view = getSuccessView();
 						
 			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Concept.saved");
-			return new ModelAndView(new RedirectView(view));
+			return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + concept.getConceptId().toString()));
 		}
 		
 		return new ModelAndView(new RedirectView(getFormView()));
@@ -165,7 +180,10 @@ public class ConceptFormController extends SimpleFormController {
 		if (concept == null)
 			concept = new Concept();
 		
-        return concept;
+		if (concept.isNumeric() && concept.getConceptNumeric() == null)
+			concept.setConceptNumeric(new ConceptNumeric());
+		
+		return concept;
     }
     
 	/**

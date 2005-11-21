@@ -23,6 +23,11 @@ public class ConceptSet implements java.io.Serializable {
 	public ConceptSet() {
 	}
 	
+	public ConceptSet(Concept concept, Double weight) {
+		setConcept(concept);
+		setSortWeight(weight);
+	}
+	
 	public boolean equals(Object obj) {
 		if (obj instanceof ConceptSet) {
 			ConceptSet c = (ConceptSet)obj;

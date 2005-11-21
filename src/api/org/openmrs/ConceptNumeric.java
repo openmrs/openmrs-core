@@ -2,9 +2,6 @@ package org.openmrs;
 
 import java.util.Date;
 
-/**
- * ConceptNumeric 
- */
 public class ConceptNumeric implements java.io.Serializable {
 
 	public static final long serialVersionUID = 47323L;
@@ -12,6 +9,7 @@ public class ConceptNumeric implements java.io.Serializable {
 	// Fields
 
 	private Concept concept;
+	private Integer conceptId;
 	private Double hiAbsolute;
 	private Double hiCritical;
 	private Double hiNormal;
@@ -34,18 +32,39 @@ public class ConceptNumeric implements java.io.Serializable {
 	public boolean equals(Object obj) {
 		if (obj instanceof ConceptNumeric) {
 			ConceptNumeric c = (ConceptNumeric)obj;
-			return (this.concept.equals(c.getConcept()));
+			return (this.getConcept().equals(c.getConcept()));
 		}
 		return false;
 	}
 	
 	public int hashCode() {
-		if (this.getConcept() == null) return super.hashCode();
-		return this.getConcept().hashCode();
+		if (getConcept() == null) return super.hashCode();
+		int hash = 6;
+		if (getConcept() != null)
+			hash = hash + getConcept().hashCode() * 31;
+		return hash;
 	}
 
 	// Property accessors
 
+	
+	public Integer getConceptId() {
+		return this.conceptId;
+	}
+	
+	public void setConceptId(Integer conceptId) {
+		this.conceptId = conceptId;
+	}
+	
+	public Concept getConcept() {
+		return this.concept;
+	}
+	
+	public void setConcept(Concept concept) {
+		this.concept = concept;
+	}
+	
+	
 	/**
 	 * 
 	 */
@@ -159,17 +178,6 @@ public class ConceptNumeric implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	public Concept getConcept() {
-		return this.concept;
-	}
-
-	public void setConcept(Concept concept) {
-		this.concept = concept;
-	}
-
-	/**
-	 * 
-	 */
 	public User getCreator() {
 		return this.creator;
 	}
@@ -188,5 +196,4 @@ public class ConceptNumeric implements java.io.Serializable {
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
-
 }

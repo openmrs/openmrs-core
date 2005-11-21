@@ -8,11 +8,17 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.openmrs.Concept;
+import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptNumeric;
+import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSynonym;
 import org.openmrs.Drug;
+import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.context.Context;
@@ -98,7 +104,9 @@ public class HibernateConceptService implements
 				modifyCollections(concept);
 				concept.setChangedBy(context.getAuthenticatedUser());
 				concept.setDateChanged(new Date());
-				session.update(concept);
+				if (concept.getConceptNumeric() != null)
+					session.saveOrUpdate(concept.getConceptNumeric()); //necessary for the one-to-one tag 
+				session.saveOrUpdate(concept);
 				HibernateUtil.commitTransaction();
 			}
 			catch (Exception e) {
@@ -110,13 +118,44 @@ public class HibernateConceptService implements
 	
 	protected void modifyCollections(Concept c) {
 		
+		User authUser = context.getAuthenticatedUser();
+		Date timestamp = new Date();
 		for (ConceptSynonym syn : c.getSynonyms()) {
 			if (syn.getCreator() == null ) {
-				syn.setCreator(context.getAuthenticatedUser());
-				syn.setDateCreated(new Date());
+				syn.setCreator(authUser);
+				syn.setDateCreated(timestamp);
 			}
 			syn.setConcept(c);
 		}
+		if (c.getConceptSets() != null) {
+			for (ConceptSet set : c.getConceptSets()) {
+				if (set.getCreator() == null ) {
+					set.setCreator(authUser);
+					set.setDateCreated(timestamp);
+				}
+				set.setSet(c);
+			}
+		}
+		if (c.getAnswers() != null) {
+			for (ConceptAnswer ca : c.getAnswers()) {
+				if (ca.getCreator() == null ) {
+					ca.setCreator(authUser);
+					ca.setDateCreated(timestamp);
+				}
+				ca.setConcept(c);
+			}
+		}
+		if (c.getConceptNumeric() != null) {
+			ConceptNumeric cn = c.getConceptNumeric();
+			if (cn.getCreator() == null) {
+				cn.setCreator(authUser);
+				cn.setDateCreated(timestamp);
+			}
+			cn.setConcept(c);
+			cn.setChangedBy(authUser);
+			cn.setDateChanged(timestamp);
+		}
+
 	}
 
 	/**
@@ -198,6 +237,31 @@ public class HibernateConceptService implements
 		List<ConceptDatatype> cds = session.createQuery("from ConceptDatatype cd order by cd.name").list();
 		
 		return cds;
+	}
+
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptNumeric(java.lang.Integer)
+	 */
+	public ConceptNumeric getConceptNumeric(Integer i) {
+		Session session = HibernateUtil.currentSession();
+		
+		ConceptNumeric cn = new ConceptNumeric();
+		cn = (ConceptNumeric)session.get(ConceptNumeric.class, i);
+		
+		return cn;
+	}
+
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptSets(java.lang.Integer)
+	 */
+	public List<ConceptSet> getConceptSets(Concept concept) {
+		Session session = HibernateUtil.currentSession();
+		
+		List<ConceptSet> sets = session.createCriteria(ConceptSet.class)
+						.add(Restrictions.eq("set", concept))
+						.addOrder(Order.asc("sortWeight"))
+						.list();
+		return sets;
 	}
 	
 	

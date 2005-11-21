@@ -5,6 +5,8 @@ import java.util.List;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptNumeric;
+import org.openmrs.ConceptSet;
 import org.openmrs.Drug;
 
 public interface ConceptService {
@@ -71,5 +73,17 @@ public interface ConceptService {
 	 * @return ConceptDatatype
 	 */
 	public ConceptDatatype getConceptDatatype(Integer i);
+	
+	/**
+	 * Return a list of the concept sets with concept_set matching concept 
+	 * @return List
+	 */
+	public List<ConceptSet> getConceptSets(Concept c);
+	
+	/**
+	 * Return a concept numeric object given the concept id
+	 * @return ConceptNumeric
+	 */
+	public ConceptNumeric getConceptNumeric(Integer conceptId);
 	
 }

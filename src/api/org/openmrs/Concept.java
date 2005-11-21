@@ -34,6 +34,8 @@ public class Concept implements java.io.Serializable {
 	private Set<ConceptName> names;
 	private Set<ConceptAnswer> answers;
 	private Collection<ConceptSynonym> synonyms;
+	private Collection<ConceptSet> conceptSets;
+	private ConceptNumeric conceptNumeric;
 
 	// Constructors
 
@@ -42,6 +44,8 @@ public class Concept implements java.io.Serializable {
 		names = new HashSet<ConceptName>();
 		answers = new HashSet<ConceptAnswer>();
 		synonyms = new HashSet<ConceptSynonym>();
+		conceptSets = new HashSet<ConceptSet>();
+		conceptNumeric = new ConceptNumeric();
 	}
 
 	/** constructor with id */
@@ -60,7 +64,7 @@ public class Concept implements java.io.Serializable {
 	public int hashCode() {
 		if (this.getConceptId() == null) return super.hashCode();
 		int hash = 8;
-		hash = 31 * getConceptId() + hash;
+		hash = 31 * this.getConceptId() + hash;
 		return hash;
 	}
 	
@@ -76,6 +80,11 @@ public class Concept implements java.io.Serializable {
 	 */
 	public void setAnswers(Set<ConceptAnswer> answers) {
 		this.answers = answers;
+		if (answers != null) {
+			for (ConceptAnswer ca : answers) {
+				ca.setConcept(this);
+			}
+		}
 	}
 	
 	/**
@@ -87,7 +96,10 @@ public class Concept implements java.io.Serializable {
 		if (answers == null)
 			answers = new HashSet<ConceptAnswer>();
 		if (!answers.contains(conceptAnswer) && conceptAnswer != null)
+		{
+			conceptAnswer.setConcept(this);
 			answers.add(conceptAnswer);
+		}
 	}
 
 	/**
@@ -403,6 +415,39 @@ public class Concept implements java.io.Serializable {
 		this.version = version;
 	}
 
-	// Property accessors
+	/**
+	 * @return Returns the conceptNumeric.
+	 */
+	public ConceptNumeric getConceptNumeric() {
+		return conceptNumeric;
+	}
+
+	/**
+	 * @param conceptNumeric The conceptNumeric to set.
+	 */
+	public void setConceptNumeric(ConceptNumeric conceptNumeric) {
+		this.conceptNumeric = conceptNumeric;
+	}
+
+	/**
+	 * @return Returns the conceptSets.
+	 */
+	public Collection<ConceptSet> getConceptSets() {
+		return conceptSets;
+	}
+
+	/**
+	 * @param conceptSets The conceptSets to set.
+	 */
+	public void setConceptSets(Collection<ConceptSet> conceptSets) {
+		this.conceptSets = conceptSets;
+	}
+
+	public boolean isNumeric() {
+		if (this.getDatatype() != null) {
+			return this.getDatatype().getName().equals("Numeric");
+		}
+		return false;
+	}
 
 }

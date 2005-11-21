@@ -102,11 +102,13 @@ public class ConceptClass implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	public Boolean isSet() {
-		return this.set;
+	public boolean isSet() {
+		if (set == null)
+			return false;
+		return set;
 	}
 
-	public void setSet(Boolean set) {
+	public void setSet(boolean set) {
 		this.set = set;
 	}
 

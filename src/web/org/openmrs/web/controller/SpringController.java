@@ -19,6 +19,7 @@ public class SpringController implements Controller {
     		path = path.replace(".htm", "");
     	else if (path.endsWith("jsp"))
     		path = path.replace(".jsp", "");
+    	int qmark = path.indexOf("?");
     	return new ModelAndView(path);
         
     }

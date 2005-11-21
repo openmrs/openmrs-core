@@ -15,7 +15,7 @@
     </logger>
 
     <logger name="org.hibernate">
-        <level value="WARN"/>
+        <level value="DEBUG"/>
     </logger>
 
     <logger name="org.springframework">

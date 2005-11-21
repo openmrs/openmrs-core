@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
     
 <hibernate-mapping>
@@ -11,19 +11,21 @@
     http://www.hibernate.org/
 -->
 
-<class 
-    name="org.openmrs.ConceptNumeric" 
-    table="concept_numeric"
->
+<class name="org.openmrs.ConceptNumeric" table="concept_numeric">
 
-    <id
-        name="concept"
-        type="java.lang.Integer"
-        column="concept_id"
-    >
-        <generator class="assigned" />
+	
+	<!--
+	<composite-id>
+			<key-many-to-one name="concept" column="concept_id"
+				class="org.openmrs.Concept" />
+	</composite-id>
+	-->
+	<id name="conceptId" column="concept_id" unsaved-value="null">
+		<generator class="foreign" >
+        	<param name="property">concept</param>
+        </generator>
     </id>
-
+	
     <property
         name="hiAbsolute"
         type="java.lang.Double"
@@ -92,7 +94,6 @@
     <one-to-one
         name="concept"
         class="org.openmrs.Concept"
-        outer-join="auto"
         constrained="true"
     />
     <!-- bi-directional many-to-one association to User -->
@@ -100,17 +101,13 @@
         name="creator"
         class="org.openmrs.User"
         not-null="true"
-    >
-        <column name="creator" />
-    </many-to-one>
+        column="creator"/>
     <!-- bi-directional many-to-one association to User -->
     <many-to-one
         name="changedBy"
         class="org.openmrs.User"
         not-null="true"
-    >
-        <column name="changed_by" />
-    </many-to-one>
+        column="changed_by"/>
 
 </class>
 </hibernate-mapping>

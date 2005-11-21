@@ -29,6 +29,10 @@ public class ConceptAnswer implements java.io.Serializable {
 		this.conceptAnswerId = conceptAnswerId;
 	}
 	
+	public ConceptAnswer(Concept answerConcept) {
+		this.answerConcept = answerConcept;
+	}
+	
 	public boolean equals(Object obj) {
 		if (obj instanceof ConceptAnswer) {
 			ConceptAnswer c = (ConceptAnswer)obj;
