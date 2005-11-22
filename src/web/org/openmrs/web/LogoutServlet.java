@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.openmrs.context.Context;
+import org.openmrs.api.context.Context;
 
 public class LogoutServlet extends HttpServlet {
 

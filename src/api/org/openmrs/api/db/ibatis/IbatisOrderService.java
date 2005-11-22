@@ -1,4 +1,4 @@
-package org.openmrs.api.ibatis;
+package org.openmrs.api.db.ibatis;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -8,14 +8,14 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.DrugOrder;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
-import org.openmrs.api.APIException;
-import org.openmrs.api.OrderService;
-import org.openmrs.context.Context;
+import org.openmrs.api.db.APIException;
+import org.openmrs.api.db.OrderService;
+import org.openmrs.api.context.Context;
 
 /**
- * Ibatis-specific implementation of org.openmrs.api.OrderService
+ * Ibatis-specific implementation of org.openmrs.api.db.OrderService
  * 
- * @see org.openmrs.api.OrderService
+ * @see org.openmrs.api.db.OrderService
  * 
  * @author Ben Wolfe
  * @version 1.0
@@ -29,14 +29,14 @@ public class IbatisOrderService implements OrderService {
 	/**
 	 * Service must be constructed within a <code>context</code>
 	 * @param context
-	 * @see org.openmrs.context.Context
+	 * @see org.openmrs.api.context.Context
 	 */
 	public IbatisOrderService(Context context) {
 		this.context = context;
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#createOrder(Order)
+	 * @see org.openmrs.api.db.OrderService#createOrder(Order)
 	 */
 	public Order createOrder(Order order) throws APIException {
 		try {
@@ -51,7 +51,7 @@ public class IbatisOrderService implements OrderService {
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#getOrder(Integer)
+	 * @see org.openmrs.api.db.OrderService#getOrder(Integer)
 	 */
 	public Order getOrder(Integer orderId) throws APIException {
 		Order order;
@@ -70,7 +70,7 @@ public class IbatisOrderService implements OrderService {
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#updateOrder(Order)
+	 * @see org.openmrs.api.db.OrderService#updateOrder(Order)
 	 */
 	public void updateOrder(Order order) throws APIException {
 		try {
@@ -95,7 +95,7 @@ public class IbatisOrderService implements OrderService {
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#discontinueOrder(Order, String)
+	 * @see org.openmrs.api.db.OrderService#discontinueOrder(Order, String)
 	 */
 	// TODO discontinue drug order too?
 	public void discontinueOrder(Order order, String reason) throws APIException {
@@ -110,7 +110,7 @@ public class IbatisOrderService implements OrderService {
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#undiscontinueOrder(Order)
+	 * @see org.openmrs.api.db.OrderService#undiscontinueOrder(Order)
 	 */
 	public void undiscontinueOrder(Order order) {
 		//order.setChangedBy(context.getAuthenticatedUser());
@@ -122,7 +122,7 @@ public class IbatisOrderService implements OrderService {
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#deleteOrder(Order)
+	 * @see org.openmrs.api.db.OrderService#deleteOrder(Order)
 	 */
 	public void deleteOrder(Order order) throws APIException {
 		try {
@@ -141,7 +141,7 @@ public class IbatisOrderService implements OrderService {
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#voidOrder(Order, String)
+	 * @see org.openmrs.api.db.OrderService#voidOrder(Order, String)
 	 */
 	public void voidOrder(Order order, String reason) throws APIException {
 		//order.setVoided(true);
@@ -155,7 +155,7 @@ public class IbatisOrderService implements OrderService {
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#unvoidOrder(Order)
+	 * @see org.openmrs.api.db.OrderService#unvoidOrder(Order)
 	 */
 	// TODO changedBy for Order ?
 	public void unvoidOrder(Order order) {
@@ -168,7 +168,7 @@ public class IbatisOrderService implements OrderService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getOrderType(java.lang.Integer)
+	 * @see org.openmrs.api.db.OrderService#getOrderType(java.lang.Integer)
 	 */
 	public OrderType getOrderType(Integer orderTypeId) throws APIException {
 
@@ -190,7 +190,7 @@ public class IbatisOrderService implements OrderService {
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#getOrderTypes()
+	 * @see org.openmrs.api.db.OrderService#getOrderTypes()
 	 */
 	public List<OrderType> getOrderTypes() throws APIException {
 		

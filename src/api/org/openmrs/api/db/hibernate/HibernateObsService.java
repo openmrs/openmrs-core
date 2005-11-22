@@ -1,4 +1,4 @@
-package org.openmrs.api.hibernate;
+package org.openmrs.api.db.hibernate;
 
 import java.util.Date;
 import java.util.List;
@@ -10,9 +10,9 @@ import org.hibernate.Transaction;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.Obs;
-import org.openmrs.api.APIException;
-import org.openmrs.api.ObsService;
-import org.openmrs.context.Context;
+import org.openmrs.api.db.APIException;
+import org.openmrs.api.db.ObsService;
+import org.openmrs.api.context.Context;
 
 //import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
@@ -28,7 +28,7 @@ public class HibernateObsService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.ObsService#createObs(org.openmrs.Obs)
+	 * @see org.openmrs.api.db.ObsService#createObs(org.openmrs.Obs)
 	 */
 	public void createObs(Obs obs) throws APIException {
 		
@@ -48,7 +48,7 @@ public class HibernateObsService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.ObsService#deleteObs(org.openmrs.Obs)
+	 * @see org.openmrs.api.db.ObsService#deleteObs(org.openmrs.Obs)
 	 */
 	public void deleteObs(Obs obs) throws APIException {
 		
@@ -67,7 +67,7 @@ public class HibernateObsService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.ObsService#getObs(java.lang.Integer)
+	 * @see org.openmrs.api.db.ObsService#getObs(java.lang.Integer)
 	 */
 	public Obs getObs(Integer obsId) throws APIException {
 		
@@ -80,7 +80,7 @@ public class HibernateObsService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.ObsService#getMimeType(java.lang.Integer)
+	 * @see org.openmrs.api.db.ObsService#getMimeType(java.lang.Integer)
 	 */
 	public MimeType getMimeType(Integer mimeTypeId) throws APIException {
 		
@@ -93,7 +93,7 @@ public class HibernateObsService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.ObsService#getMimeTypes()
+	 * @see org.openmrs.api.db.ObsService#getMimeTypes()
 	 */
 	public List<MimeType> getMimeTypes() throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -104,7 +104,7 @@ public class HibernateObsService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.ObsService#unvoidObs(org.openmrs.Obs)
+	 * @see org.openmrs.api.db.ObsService#unvoidObs(org.openmrs.Obs)
 	 */
 	public void unvoidObs(Obs obs) throws APIException {
 		
@@ -117,7 +117,7 @@ public class HibernateObsService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.ObsService#updateObs(org.openmrs.Obs)
+	 * @see org.openmrs.api.db.ObsService#updateObs(org.openmrs.Obs)
 	 */
 	public void updateObs(Obs obs) throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -126,7 +126,7 @@ public class HibernateObsService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.ObsService#voidObs(org.openmrs.Obs, java.lang.String)
+	 * @see org.openmrs.api.db.ObsService#voidObs(org.openmrs.Obs, java.lang.String)
 	 */
 	public void voidObs(Obs obs, String reason) throws APIException {
 		obs.setVoided(true);
@@ -138,7 +138,7 @@ public class HibernateObsService implements
 	}
 	
 	/**
-	 * @see org.openmrs.api.ObsService#getLocation(java.lang.Integer)
+	 * @see org.openmrs.api.db.ObsService#getLocation(java.lang.Integer)
 	 */
 	public Location getLocation(Integer locationId) throws APIException {
 
@@ -152,7 +152,7 @@ public class HibernateObsService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.ObsService#getLocations()
+	 * @see org.openmrs.api.db.ObsService#getLocations()
 	 */
 	public List<Location> getLocations() throws APIException {
 

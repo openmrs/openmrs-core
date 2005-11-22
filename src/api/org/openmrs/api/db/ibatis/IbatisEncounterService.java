@@ -1,4 +1,4 @@
-package org.openmrs.api.ibatis;
+package org.openmrs.api.db.ibatis;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -9,14 +9,14 @@ import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Location;
 import org.openmrs.User;
-import org.openmrs.api.APIException;
-import org.openmrs.api.EncounterService;
-import org.openmrs.context.Context;
+import org.openmrs.api.db.APIException;
+import org.openmrs.api.db.EncounterService;
+import org.openmrs.api.context.Context;
 
 /**
- * Ibatis-specific implementation of org.openmrs.api.EncounterService
+ * Ibatis-specific implementation of org.openmrs.api.db.EncounterService
  * 
- * @see org.openmrs.api.EncounterService
+ * @see org.openmrs.api.db.EncounterService
  * 
  * @author Ben Wolfe
  * @version 1.0 
@@ -31,14 +31,14 @@ public class IbatisEncounterService implements EncounterService {
 	 * Service must be constructed within a <code>context</code>
 	 * 
 	 * @param context
-	 * @see org.openmrs.context.Context
+	 * @see org.openmrs.api.context.Context
 	 */
 	public IbatisEncounterService(Context context) {
 		this.context = context;
 	}
 
 	/**
-	 * @see org.openmrs.api.EncounterService#createEncounter(Encounter)
+	 * @see org.openmrs.api.db.EncounterService#createEncounter(Encounter)
 	 */
 	public Encounter createEncounter(Encounter encounter) throws APIException {
 
@@ -72,7 +72,7 @@ public class IbatisEncounterService implements EncounterService {
 	}
 
 	/**
-	 * @see org.openmrs.api.EncounterService#getEncounter(Integer)
+	 * @see org.openmrs.api.db.EncounterService#getEncounter(Integer)
 	 */
 	public Encounter getEncounter(Integer encounterId) throws APIException {
 		Encounter encounter;
@@ -86,7 +86,7 @@ public class IbatisEncounterService implements EncounterService {
 	}
 
 	/**
-	 * @see org.openmrs.api.EncounterService#updateEncounter(Encounter)
+	 * @see org.openmrs.api.db.EncounterService#updateEncounter(Encounter)
 	 */
 	public void updateEncounter(Encounter encounter) throws APIException {
 		try {
@@ -110,7 +110,7 @@ public class IbatisEncounterService implements EncounterService {
 	}
 
 	/**
-	 * @see org.openmrs.api.EncounterService#deleteEncounter(Encounter)
+	 * @see org.openmrs.api.db.EncounterService#deleteEncounter(Encounter)
 	 */
 	public void deleteEncounter(Encounter encounter) throws APIException {
 		try {
@@ -167,7 +167,7 @@ public class IbatisEncounterService implements EncounterService {
 	}
 
 	/**
-	 * @see org.openmrs.api.EncounterService#getLocation(java.lang.Integer)
+	 * @see org.openmrs.api.db.EncounterService#getLocation(java.lang.Integer)
 	 */
 	public Location getLocation(Integer locationId) throws APIException {
 		Location location;
@@ -188,7 +188,7 @@ public class IbatisEncounterService implements EncounterService {
 	}
 
 	/**
-	 * @see org.openmrs.api.EncounterService#getLocations()
+	 * @see org.openmrs.api.db.EncounterService#getLocations()
 	 */
 	public List<Location> getLocations() throws APIException {
 		List<Location> locations;

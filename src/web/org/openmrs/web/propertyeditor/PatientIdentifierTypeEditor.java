@@ -3,8 +3,8 @@ package org.openmrs.web.propertyeditor;
 import java.beans.PropertyEditorSupport;
 
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.api.PatientService;
-import org.openmrs.context.Context;
+import org.openmrs.api.db.PatientService;
+import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 
 public class PatientIdentifierTypeEditor extends PropertyEditorSupport {

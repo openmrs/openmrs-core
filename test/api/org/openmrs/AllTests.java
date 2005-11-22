@@ -4,15 +4,15 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.openmrs.api.AdministrationServiceTest;
-import org.openmrs.api.EncounterServiceTest;
-import org.openmrs.api.FormServiceTest;
-import org.openmrs.api.ObsServiceTest;
-import org.openmrs.api.OrderServiceTest;
-import org.openmrs.api.PatientServiceTest;
-import org.openmrs.api.UserServiceTest;
-import org.openmrs.api.hibernate.HibernateTest;
-//import org.openmrs.context.ContextTest;
+import org.openmrs.api.db.AdministrationServiceTest;
+import org.openmrs.api.db.EncounterServiceTest;
+import org.openmrs.api.db.FormServiceTest;
+import org.openmrs.api.db.ObsServiceTest;
+import org.openmrs.api.db.OrderServiceTest;
+import org.openmrs.api.db.PatientServiceTest;
+import org.openmrs.api.db.UserServiceTest;
+import org.openmrs.api.db.hibernate.HibernateTest;
+//import org.openmrs.api.context.ContextTest;
 
 public class AllTests extends TestCase {
 

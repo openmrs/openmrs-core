@@ -5,7 +5,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.context.Context;
+import org.openmrs.api.context.Context;
 import org.openmrs.web.Constants;
 
 public class AuthTag extends TagSupport {

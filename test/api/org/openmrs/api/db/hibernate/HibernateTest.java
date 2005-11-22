@@ -1,4 +1,4 @@
-package org.openmrs.api.hibernate;
+package org.openmrs.api.db.hibernate;
 
 import java.util.Set;
 
@@ -11,9 +11,9 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.openmrs.Role;
 import org.openmrs.User;
-import org.openmrs.api.UserService;
-import org.openmrs.context.Context;
-import org.openmrs.context.ContextFactory;
+import org.openmrs.api.db.UserService;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ContextFactory;
 
 public class HibernateTest extends TestCase {
 

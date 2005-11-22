@@ -1,4 +1,4 @@
-package org.openmrs.api;
+package org.openmrs.api.db;
 
 import java.util.List;
 

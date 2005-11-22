@@ -1,4 +1,4 @@
-package org.openmrs.api.ibatis;
+package org.openmrs.api.db.ibatis;
 
 import java.util.Date;
 import java.util.Iterator;
@@ -11,10 +11,10 @@ import org.openmrs.PatientName;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
-import org.openmrs.api.APIException;
-import org.openmrs.context.Context;
-import org.openmrs.context.ContextAuthenticationException;
-import org.openmrs.context.ContextFactory;
+import org.openmrs.api.db.APIException;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ContextAuthenticationException;
+import org.openmrs.api.context.ContextFactory;
 
 public class Test {
 

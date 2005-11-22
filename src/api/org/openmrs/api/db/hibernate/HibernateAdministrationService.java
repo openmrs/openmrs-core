@@ -1,4 +1,4 @@
-package org.openmrs.api.hibernate;
+package org.openmrs.api.db.hibernate;
 
 import java.util.Date;
 
@@ -15,9 +15,9 @@ import org.openmrs.Privilege;
 import org.openmrs.RelationshipType;
 import org.openmrs.Role;
 import org.openmrs.Tribe;
-import org.openmrs.api.APIException;
-import org.openmrs.api.AdministrationService;
-import org.openmrs.context.Context;
+import org.openmrs.api.db.APIException;
+import org.openmrs.api.db.AdministrationService;
+import org.openmrs.api.context.Context;
 
 public class HibernateAdministrationService implements
 		AdministrationService {
@@ -31,7 +31,7 @@ public class HibernateAdministrationService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#createEncounterType(org.openmrs.EncounterType)
+	 * @see org.openmrs.api.db.AdministrationService#createEncounterType(org.openmrs.EncounterType)
 	 */
 	public void createEncounterType(EncounterType encounterType) throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -50,7 +50,7 @@ public class HibernateAdministrationService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#createFieldType(org.openmrs.FieldType)
+	 * @see org.openmrs.api.db.AdministrationService#createFieldType(org.openmrs.FieldType)
 	 */
 	public void createFieldType(FieldType fieldType) throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -69,7 +69,7 @@ public class HibernateAdministrationService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#createLocation(org.openmrs.Location)
+	 * @see org.openmrs.api.db.AdministrationService#createLocation(org.openmrs.Location)
 	 */
 	public void createLocation(Location location) throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -88,7 +88,7 @@ public class HibernateAdministrationService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#createMimeType(org.openmrs.MimeType)
+	 * @see org.openmrs.api.db.AdministrationService#createMimeType(org.openmrs.MimeType)
 	 */
 	public void createMimeType(MimeType mimeType) throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -107,7 +107,7 @@ public class HibernateAdministrationService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#createOrderType(org.openmrs.OrderType)
+	 * @see org.openmrs.api.db.AdministrationService#createOrderType(org.openmrs.OrderType)
 	 */
 	public void createOrderType(OrderType orderType) throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -126,7 +126,7 @@ public class HibernateAdministrationService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#createPatientIdentifierType(org.openmrs.PatientIdentifierType)
+	 * @see org.openmrs.api.db.AdministrationService#createPatientIdentifierType(org.openmrs.PatientIdentifierType)
 	 */
 	public void createPatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -145,7 +145,7 @@ public class HibernateAdministrationService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#createRelationshipType(org.openmrs.RelationshipType)
+	 * @see org.openmrs.api.db.AdministrationService#createRelationshipType(org.openmrs.RelationshipType)
 	 */
 	public void createRelationshipType(RelationshipType relationshipType) throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -164,7 +164,7 @@ public class HibernateAdministrationService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#createTribe(org.openmrs.Tribe)
+	 * @see org.openmrs.api.db.AdministrationService#createTribe(org.openmrs.Tribe)
 	 */
 	public void createTribe(Tribe tribe) throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -183,7 +183,7 @@ public class HibernateAdministrationService implements
 	}
 	
 	/**
-	 * @see org.openmrs.api.AdministrationService#createRole(org.openmrs.Role)
+	 * @see org.openmrs.api.db.AdministrationService#createRole(org.openmrs.Role)
 	 */
 	public void createRole(Role role) throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -203,7 +203,7 @@ public class HibernateAdministrationService implements
 	}
 	
 	/**
-	 * @see org.openmrs.api.AdministrationService#createPrivilege(org.openmrs.Privilege)
+	 * @see org.openmrs.api.db.AdministrationService#createPrivilege(org.openmrs.Privilege)
 	 */
 	public void createPrivilege(Privilege privilege) throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -222,7 +222,7 @@ public class HibernateAdministrationService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#deleteEncounterType(org.openmrs.EncounterType)
+	 * @see org.openmrs.api.db.AdministrationService#deleteEncounterType(org.openmrs.EncounterType)
 	 */
 	public void deleteEncounterType(EncounterType encounterType) throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -238,7 +238,7 @@ public class HibernateAdministrationService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#deleteFieldType(org.openmrs.FieldType)
+	 * @see org.openmrs.api.db.AdministrationService#deleteFieldType(org.openmrs.FieldType)
 	 */
 	public void deleteFieldType(FieldType fieldType) throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -254,7 +254,7 @@ public class HibernateAdministrationService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#deleteLocation(org.openmrs.Location)
+	 * @see org.openmrs.api.db.AdministrationService#deleteLocation(org.openmrs.Location)
 	 */
 	public void deleteLocation(Location location) throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -270,7 +270,7 @@ public class HibernateAdministrationService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#deleteMimeType(org.openmrs.MimeType)
+	 * @see org.openmrs.api.db.AdministrationService#deleteMimeType(org.openmrs.MimeType)
 	 */
 	public void deleteMimeType(MimeType mimeType) throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -286,7 +286,7 @@ public class HibernateAdministrationService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#deleteOrderType(org.openmrs.OrderType)
+	 * @see org.openmrs.api.db.AdministrationService#deleteOrderType(org.openmrs.OrderType)
 	 */
 	public void deleteOrderType(OrderType orderType) throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -302,7 +302,7 @@ public class HibernateAdministrationService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#deletePatientIdentifierType(org.openmrs.PatientIdentifierType)
+	 * @see org.openmrs.api.db.AdministrationService#deletePatientIdentifierType(org.openmrs.PatientIdentifierType)
 	 */
 	public void deletePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -318,7 +318,7 @@ public class HibernateAdministrationService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#deleteRelationshipType(org.openmrs.RelationshipType)
+	 * @see org.openmrs.api.db.AdministrationService#deleteRelationshipType(org.openmrs.RelationshipType)
 	 */
 	public void deleteRelationshipType(RelationshipType relationshipType) throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -334,7 +334,7 @@ public class HibernateAdministrationService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#deleteTribe(org.openmrs.Tribe)
+	 * @see org.openmrs.api.db.AdministrationService#deleteTribe(org.openmrs.Tribe)
 	 */
 	public void deleteTribe(Tribe tribe) throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -350,7 +350,7 @@ public class HibernateAdministrationService implements
 	}
 	
 	/**
-	 * @see org.openmrs.api.AdministrationService#retireTribe(org.openmrs.Tribe)
+	 * @see org.openmrs.api.db.AdministrationService#retireTribe(org.openmrs.Tribe)
 	 */
 	public void retireTribe(Tribe tribe) throws APIException {
 		tribe.setRetired(true);
@@ -358,7 +358,7 @@ public class HibernateAdministrationService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#unretireTribe(org.openmrs.Tribe)
+	 * @see org.openmrs.api.db.AdministrationService#unretireTribe(org.openmrs.Tribe)
 	 */
 	public void unretireTribe(Tribe tribe) throws APIException {
 		tribe.setRetired(false);
@@ -366,7 +366,7 @@ public class HibernateAdministrationService implements
 	}
 	
 	/**
-	 * @see org.openmrs.api.AdministrationService#deleteRole(org.openmrs.Role)
+	 * @see org.openmrs.api.db.AdministrationService#deleteRole(org.openmrs.Role)
 	 */
 	public void deleteRole(Role role) throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -382,7 +382,7 @@ public class HibernateAdministrationService implements
 	}
 	
 	/**
-	 * @see org.openmrs.api.AdministrationService#deletePrivilege(org.openmrs.Privilege)
+	 * @see org.openmrs.api.db.AdministrationService#deletePrivilege(org.openmrs.Privilege)
 	 */
 	public void deletePrivilege(Privilege privilege) throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -398,7 +398,7 @@ public class HibernateAdministrationService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#updateEncounterType(org.openmrs.EncounterType)
+	 * @see org.openmrs.api.db.AdministrationService#updateEncounterType(org.openmrs.EncounterType)
 	 */
 	public void updateEncounterType(EncounterType encounterType) throws APIException {
 		if (encounterType.getEncounterTypeId() == null)
@@ -418,7 +418,7 @@ public class HibernateAdministrationService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#updateFieldType(org.openmrs.FieldType)
+	 * @see org.openmrs.api.db.AdministrationService#updateFieldType(org.openmrs.FieldType)
 	 */
 	public void updateFieldType(FieldType fieldType) throws APIException {
 		if (fieldType.getFieldTypeId() == null)
@@ -438,7 +438,7 @@ public class HibernateAdministrationService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#updateLocation(org.openmrs.Location)
+	 * @see org.openmrs.api.db.AdministrationService#updateLocation(org.openmrs.Location)
 	 */
 	public void updateLocation(Location location) throws APIException {
 		if (location.getLocationId() == null)
@@ -458,7 +458,7 @@ public class HibernateAdministrationService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#updateMimeType(org.openmrs.MimeType)
+	 * @see org.openmrs.api.db.AdministrationService#updateMimeType(org.openmrs.MimeType)
 	 */
 	public void updateMimeType(MimeType mimeType) throws APIException {
 		if (mimeType.getMimeTypeId() == null)
@@ -478,7 +478,7 @@ public class HibernateAdministrationService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#updateOrderType(org.openmrs.OrderType)
+	 * @see org.openmrs.api.db.AdministrationService#updateOrderType(org.openmrs.OrderType)
 	 */
 	public void updateOrderType(OrderType orderType) throws APIException {
 		if (orderType.getOrderTypeId() == null)
@@ -498,7 +498,7 @@ public class HibernateAdministrationService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#updatePatientIdentifierType(org.openmrs.PatientIdentifierType)
+	 * @see org.openmrs.api.db.AdministrationService#updatePatientIdentifierType(org.openmrs.PatientIdentifierType)
 	 */
 	public void updatePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException {
 		if (patientIdentifierType.getPatientIdentifierTypeId() == null)
@@ -518,7 +518,7 @@ public class HibernateAdministrationService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#updateRelationshipType(org.openmrs.RelationshipType)
+	 * @see org.openmrs.api.db.AdministrationService#updateRelationshipType(org.openmrs.RelationshipType)
 	 */
 	public void updateRelationshipType(RelationshipType relationshipType) throws APIException {
 		if (relationshipType.getRelationshipTypeId() == null)
@@ -538,7 +538,7 @@ public class HibernateAdministrationService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#updateTribe(org.openmrs.Tribe)
+	 * @see org.openmrs.api.db.AdministrationService#updateTribe(org.openmrs.Tribe)
 	 */
 	public void updateTribe(Tribe tribe) throws APIException {
 		if (tribe.getTribeId() == null)
@@ -558,7 +558,7 @@ public class HibernateAdministrationService implements
 	}	
 	
 	/**
-	 * @see org.openmrs.api.AdministrationService#updateRole(org.openmrs.Role)
+	 * @see org.openmrs.api.db.AdministrationService#updateRole(org.openmrs.Role)
 	 */
 	public void updateRole(Role role) throws APIException {
 		if (role.getRole() == null)
@@ -578,7 +578,7 @@ public class HibernateAdministrationService implements
 	}	
 	
 	/**
-	 * @see org.openmrs.api.AdministrationService#updatePrivilege(org.openmrs.Privilege)
+	 * @see org.openmrs.api.db.AdministrationService#updatePrivilege(org.openmrs.Privilege)
 	 */
 	public void updatePrivilege(Privilege privilege) throws APIException {
 		if (privilege.getPrivilege() == null)

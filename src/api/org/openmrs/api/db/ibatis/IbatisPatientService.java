@@ -1,4 +1,4 @@
-package org.openmrs.api.ibatis;
+package org.openmrs.api.db.ibatis;
 
 import java.sql.SQLException;
 import java.util.Iterator;
@@ -12,9 +12,9 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientName;
 import org.openmrs.Tribe;
 import org.openmrs.User;
-import org.openmrs.api.APIException;
-import org.openmrs.api.PatientService;
-import org.openmrs.context.Context;
+import org.openmrs.api.db.APIException;
+import org.openmrs.api.db.PatientService;
+import org.openmrs.api.context.Context;
 import org.openmrs.util.Compare;
 
 public class IbatisPatientService implements PatientService {
@@ -268,7 +268,7 @@ public class IbatisPatientService implements PatientService {
 	}
 
 	/**
-	 * @see org.openmrs.api.PatientService#getPatientTribes()
+	 * @see org.openmrs.api.db.PatientService#getPatientTribes()
 	 */
 	public List<Tribe> getPatientTribes() throws APIException {
 		List<Tribe> tribes;

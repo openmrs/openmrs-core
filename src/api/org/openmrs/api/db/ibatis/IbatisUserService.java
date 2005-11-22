@@ -1,4 +1,4 @@
-package org.openmrs.api.ibatis;
+package org.openmrs.api.db.ibatis;
 
 import java.sql.SQLException;
 import java.util.Hashtable;
@@ -11,14 +11,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Role;
 import org.openmrs.User;
-import org.openmrs.api.APIException;
-import org.openmrs.api.UserService;
-import org.openmrs.context.Context;
+import org.openmrs.api.db.APIException;
+import org.openmrs.api.db.UserService;
+import org.openmrs.api.context.Context;
 
 /**
- * Ibatis-specific implementation of org.openmrs.api.UserService
+ * Ibatis-specific implementation of org.openmrs.api.db.UserService
  * 
- * @see org.openmrs.api.UserService
+ * @see org.openmrs.api.db.UserService
  * 
  * @author Burke Mamlin
  * @version 1.0
@@ -32,14 +32,14 @@ public class IbatisUserService implements UserService {
 	/**
 	 * Service must be constructed within a <code>context</code>
 	 * @param context
-	 * @see org.openmrs.context.Context
+	 * @see org.openmrs.api.context.Context
 	 */
 	public IbatisUserService(Context context) {
 		this.context = context;
 	}
 
 	/**
-	 * @see org.openmrs.api.UserService#createUser(User)
+	 * @see org.openmrs.api.db.UserService#createUser(User)
 	 */
 	public User createUser(User user) throws APIException {
 		
@@ -54,7 +54,7 @@ public class IbatisUserService implements UserService {
 	}
 
 	/**
-	 * @see org.openmrs.api.UserService#getUser(Integer)
+	 * @see org.openmrs.api.db.UserService#getUser(Integer)
 	 */
 	public User getUser(Integer userId) throws APIException {
 		User user;
@@ -67,7 +67,7 @@ public class IbatisUserService implements UserService {
 	}
 
 	/**
-	 * @see org.openmrs.api.UserService#getUserByUsername(String)
+	 * @see org.openmrs.api.db.UserService#getUserByUsername(String)
 	 */
 	public User getUserByUsername(String username) throws APIException {
 		User user = null;
@@ -93,7 +93,7 @@ public class IbatisUserService implements UserService {
 	}
 
 	/**
-	 * @see org.openmrs.api.UserService#updateUser(User)
+	 * @see org.openmrs.api.db.UserService#updateUser(User)
 	 */
 	public void updateUser(User user) throws APIException {
 		try {
@@ -147,7 +147,7 @@ public class IbatisUserService implements UserService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.UserService#grantUserRole(User, Role)
+	 * @see org.openmrs.api.db.UserService#grantUserRole(User, Role)
 	 */
 	public void grantUserRole(User user, Role role) throws APIException {
 		try {
@@ -161,7 +161,7 @@ public class IbatisUserService implements UserService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.UserService#revokeUserRole(User, Role)
+	 * @see org.openmrs.api.db.UserService#revokeUserRole(User, Role)
 	 */
 	public void revokeUserRole(User user, Role role) throws APIException {
 		try {
@@ -175,7 +175,7 @@ public class IbatisUserService implements UserService {
 	}
 
 	/**
-	 * @see org.openmrs.api.UserService#voidUser(User, String)
+	 * @see org.openmrs.api.db.UserService#voidUser(User, String)
 	 */
 	public void voidUser(User user, String reason) throws APIException {
 		user.setVoided(true);
@@ -190,7 +190,7 @@ public class IbatisUserService implements UserService {
 	}
 
 	/**
-	 * @see org.openmrs.api.UserService#unvoidUser(User)
+	 * @see org.openmrs.api.db.UserService#unvoidUser(User)
 	 */
 	public void unvoidUser(User user) {
 		user.setVoided(false);
@@ -203,7 +203,7 @@ public class IbatisUserService implements UserService {
 	}
 
 	/**
-	 * @see org.openmrs.api.UserService#deleteUser(User)
+	 * @see org.openmrs.api.db.UserService#deleteUser(User)
 	 */
 	public void deleteUser(User user) throws APIException {
 		try {

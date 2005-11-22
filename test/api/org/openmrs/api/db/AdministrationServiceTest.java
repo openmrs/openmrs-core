@@ -1,4 +1,4 @@
-package org.openmrs.api;
+package org.openmrs.api.db;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -14,8 +14,8 @@ import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.OrderType;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.context.Context;
-import org.openmrs.context.ContextFactory;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ContextFactory;
 
 public class AdministrationServiceTest extends TestCase {
 	

@@ -1,4 +1,4 @@
-package org.openmrs.api;
+package org.openmrs.api.db;
 
 import java.util.HashSet;
 import java.util.List;
@@ -14,8 +14,8 @@ import org.openmrs.FieldAnswer;
 import org.openmrs.FieldType;
 import org.openmrs.Form;
 import org.openmrs.FormField;
-import org.openmrs.context.Context;
-import org.openmrs.context.ContextFactory;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ContextFactory;
 
 public class FormServiceTest extends TestCase {
 	

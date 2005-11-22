@@ -1,4 +1,4 @@
-package org.openmrs.api.hibernate;
+package org.openmrs.api.db.hibernate;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -11,7 +11,7 @@ import org.hibernate.cfg.Configuration;
 
 public class HibernateUtil {
 
-	private static Log log = LogFactory.getLog("org.openmrs.api.hibernate.HibernateUtil");
+	private static Log log = LogFactory.getLog("org.openmrs.api.db.hibernate.HibernateUtil");
 	
 	private static SessionFactory sessionFactory;
 

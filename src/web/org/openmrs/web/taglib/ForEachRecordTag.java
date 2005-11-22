@@ -9,9 +9,9 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.EncounterService;
-import org.openmrs.api.PatientService;
-import org.openmrs.context.Context;
+import org.openmrs.api.db.EncounterService;
+import org.openmrs.api.db.PatientService;
+import org.openmrs.api.context.Context;
 import org.openmrs.web.Constants;
 
 public class ForEachRecordTag extends BodyTagSupport {

@@ -1,4 +1,4 @@
-package org.openmrs.api.hibernate;
+package org.openmrs.api.db.hibernate;
 
 import java.util.Date;
 import java.util.List;
@@ -11,9 +11,9 @@ import org.openmrs.Field;
 import org.openmrs.FieldType;
 import org.openmrs.Form;
 import org.openmrs.FormField;
-import org.openmrs.api.APIException;
-import org.openmrs.api.FormService;
-import org.openmrs.context.Context;
+import org.openmrs.api.db.APIException;
+import org.openmrs.api.db.FormService;
+import org.openmrs.api.context.Context;
 
 public class HibernateFormService implements
 		FormService {
@@ -27,7 +27,7 @@ public class HibernateFormService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.FormService#createForm(org.openmrs.Form)
+	 * @see org.openmrs.api.db.FormService#createForm(org.openmrs.Form)
 	 */
 	public void createForm(Form form) throws APIException {
 		
@@ -48,7 +48,7 @@ public class HibernateFormService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.FormService#deleteForm(org.openmrs.Form)
+	 * @see org.openmrs.api.db.FormService#deleteForm(org.openmrs.Form)
 	 */
 	public void deleteForm(Form form) throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -65,7 +65,7 @@ public class HibernateFormService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.FormService#getForm(java.lang.Integer)
+	 * @see org.openmrs.api.db.FormService#getForm(java.lang.Integer)
 	 */
 	public Form getForm(Integer formId) throws APIException {
 		
@@ -78,7 +78,7 @@ public class HibernateFormService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.FormService#updateForm(org.openmrs.Form)
+	 * @see org.openmrs.api.db.FormService#updateForm(org.openmrs.Form)
 	 */
 	public void updateForm(Form form) {
 		
@@ -100,7 +100,7 @@ public class HibernateFormService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.FormService#voidForm(org.openmrs.Form, java.lang.String)
+	 * @see org.openmrs.api.db.FormService#voidForm(org.openmrs.Form, java.lang.String)
 	 */
 	public void retireForm(Form form, String reason) {
 		form.setRetired(true);
@@ -111,7 +111,7 @@ public class HibernateFormService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.FormService#unvoidForm(org.openmrs.Form)
+	 * @see org.openmrs.api.db.FormService#unvoidForm(org.openmrs.Form)
 	 */
 	public void unretireForm(Form form) throws APIException {
 		form.setRetired(false);
@@ -122,7 +122,7 @@ public class HibernateFormService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.FormService#getField(java.lang.Integer)
+	 * @see org.openmrs.api.db.FormService#getField(java.lang.Integer)
 	 */
 	public Field getField(Integer fieldId) throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -134,7 +134,7 @@ public class HibernateFormService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.FormService#getFields()
+	 * @see org.openmrs.api.db.FormService#getFields()
 	 */
 	public List<Field> getFields() throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -145,7 +145,7 @@ public class HibernateFormService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.FormService#getFieldType(java.lang.Integer)
+	 * @see org.openmrs.api.db.FormService#getFieldType(java.lang.Integer)
 	 */
 	public FieldType getFieldType(Integer fieldTypeId) throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -157,7 +157,7 @@ public class HibernateFormService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.FormService#getFieldTypes()
+	 * @see org.openmrs.api.db.FormService#getFieldTypes()
 	 */
 	public List<FieldType> getFieldTypes() throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -168,7 +168,7 @@ public class HibernateFormService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.FormService#getFormField(java.lang.Integer)
+	 * @see org.openmrs.api.db.FormService#getFormField(java.lang.Integer)
 	 */
 	public FormField getFormField(Integer formFieldId) throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -180,7 +180,7 @@ public class HibernateFormService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.FormService#getForms()
+	 * @see org.openmrs.api.db.FormService#getForms()
 	 */
 	public List<Form> getForms() throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -191,7 +191,7 @@ public class HibernateFormService implements
 	}
 	
 	/**
-	 * @see org.openmrs.api.FieldService#createField(org.openmrs.Field)
+	 * @see org.openmrs.api.db.FieldService#createField(org.openmrs.Field)
 	 */
 	public void createField(Field field) throws APIException {
 		
@@ -211,7 +211,7 @@ public class HibernateFormService implements
 	}
 	
 	/**
-	 * @see org.openmrs.api.FormService#updateField(org.openmrs.Field)
+	 * @see org.openmrs.api.db.FormService#updateField(org.openmrs.Field)
 	 */
 	public void updateField(Field field) throws APIException {
 		if (field.getFieldId() == null)
@@ -232,7 +232,7 @@ public class HibernateFormService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.FormService#deleteField(org.openmrs.Field)
+	 * @see org.openmrs.api.db.FormService#deleteField(org.openmrs.Field)
 	 */
 	public void deleteField(Field field) throws APIException {
 		Session session = HibernateUtil.currentSession();

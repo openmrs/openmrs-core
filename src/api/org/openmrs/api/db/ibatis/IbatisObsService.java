@@ -1,4 +1,4 @@
-package org.openmrs.api.ibatis;
+package org.openmrs.api.db.ibatis;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -10,14 +10,14 @@ import org.openmrs.EncounterType;
 import org.openmrs.MimeType;
 import org.openmrs.Obs;
 import org.openmrs.User;
-import org.openmrs.api.APIException;
-import org.openmrs.api.ObsService;
-import org.openmrs.context.Context;
+import org.openmrs.api.db.APIException;
+import org.openmrs.api.db.ObsService;
+import org.openmrs.api.context.Context;
 
 /**
- * Ibatis-specific implementation of org.openmrs.api.ObsService
+ * Ibatis-specific implementation of org.openmrs.api.db.ObsService
  * 
- * @see org.openmrs.api.ObsService
+ * @see org.openmrs.api.db.ObsService
  * 
  * @author Ben Wolfe
  * @version 1.0 
@@ -32,14 +32,14 @@ public class IbatisObsService implements ObsService {
 	 * Service must be constructed within a <code>context</code>
 	 * 
 	 * @param context
-	 * @see org.openmrs.context.Context
+	 * @see org.openmrs.api.context.Context
 	 */
 	public IbatisObsService(Context context) {
 		this.context = context;
 	}
 
 	/**
-	 * @see org.openmrs.api.ObsService#createObs(Obs)
+	 * @see org.openmrs.api.db.ObsService#createObs(Obs)
 	 */
 	public void createObs(Obs obs) throws APIException {
 
@@ -61,7 +61,7 @@ public class IbatisObsService implements ObsService {
 	}
 
 	/**
-	 * @see org.openmrs.api.ObsService#getObs(Integer)
+	 * @see org.openmrs.api.db.ObsService#getObs(Integer)
 	 */
 	public Obs getObs(Integer obsId) throws APIException {
 		Obs obs;
@@ -80,7 +80,7 @@ public class IbatisObsService implements ObsService {
 	}
 
 	/**
-	 * @see org.openmrs.api.ObsService#updateObs(Obs)
+	 * @see org.openmrs.api.db.ObsService#updateObs(Obs)
 	 */
 	public void updateObs(Obs obs) throws APIException {
 		try {
@@ -106,7 +106,7 @@ public class IbatisObsService implements ObsService {
 	}
 
 	/**
-	 * @see org.openmrs.api.ObsService#voidObs(Obs)
+	 * @see org.openmrs.api.db.ObsService#voidObs(Obs)
 	 */
 	public void voidObs(Obs obs, String reason) throws APIException {
 		try {
@@ -125,7 +125,7 @@ public class IbatisObsService implements ObsService {
 	}
 
 	/**
-	 * @see org.openmrs.api.ObsService#unVoidObs(Obs)
+	 * @see org.openmrs.api.db.ObsService#unVoidObs(Obs)
 	 */
 	public void unvoidObs(Obs obs) throws APIException {
 		try {
@@ -142,7 +142,7 @@ public class IbatisObsService implements ObsService {
 	}
 
 	/**
-	 * @see org.openmrs.api.ObsService#deleteObs(Obs)
+	 * @see org.openmrs.api.db.ObsService#deleteObs(Obs)
 	 */
 	public void deleteObs(Obs obs) throws APIException {
 		try {
@@ -161,7 +161,7 @@ public class IbatisObsService implements ObsService {
 	}
 
 	/**
-	 * @see org.openmrs.api.ObsService#getMimeType(java.lang.Integer)
+	 * @see org.openmrs.api.db.ObsService#getMimeType(java.lang.Integer)
 	 */
 	public MimeType getMimeType(Integer mimeTypeId) throws APIException {
 
@@ -183,7 +183,7 @@ public class IbatisObsService implements ObsService {
 	}
 
 	/**
-	 * @see org.openmrs.api.ObsService#getMimeTypes()
+	 * @see org.openmrs.api.db.ObsService#getMimeTypes()
 	 */
 	public List<MimeType> getMimeTypes() throws APIException {
 		

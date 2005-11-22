@@ -1,4 +1,4 @@
-package org.openmrs.api;
+package org.openmrs.api.db;
 
 /**
  * Represents an access violation

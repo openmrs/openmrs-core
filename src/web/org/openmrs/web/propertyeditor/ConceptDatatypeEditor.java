@@ -5,8 +5,8 @@ import java.beans.PropertyEditorSupport;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.ConceptDatatype;
-import org.openmrs.api.ConceptService;
-import org.openmrs.context.Context;
+import org.openmrs.api.db.ConceptService;
+import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 
 public class ConceptDatatypeEditor extends PropertyEditorSupport {

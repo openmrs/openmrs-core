@@ -1,4 +1,4 @@
-package org.openmrs.api.ibatis;
+package org.openmrs.api.db.ibatis;
 
 import java.sql.SQLException;
 import java.util.Iterator;
@@ -11,15 +11,15 @@ import org.openmrs.Field;
 import org.openmrs.FieldType;
 import org.openmrs.Form;
 import org.openmrs.FormField;
-import org.openmrs.api.APIException;
-import org.openmrs.api.FormService;
-import org.openmrs.context.Context;
+import org.openmrs.api.db.APIException;
+import org.openmrs.api.db.FormService;
+import org.openmrs.api.context.Context;
 import org.openmrs.util.Compare;
 
 /**
- * Ibatis-specific implementation of org.openmrs.api.FormService
+ * Ibatis-specific implementation of org.openmrs.api.db.FormService
  * 
- * @see org.openmrs.api.FormService
+ * @see org.openmrs.api.db.FormService
  * 
  * @author Burke Mamlin
  * @version 1.0
@@ -33,14 +33,14 @@ public class IbatisFormService implements FormService {
 	/**
 	 * Service must be constructed within a <code>context</code>
 	 * @param context
-	 * @see org.openmrs.context.Context
+	 * @see org.openmrs.api.context.Context
 	 */
 	public IbatisFormService(Context context) {
 		this.context = context;
 	}
 
 	/**
-	 * @see org.openmrs.api.FormService#createForm(Form)
+	 * @see org.openmrs.api.db.FormService#createForm(Form)
 	 */
 	// TODO add fields/field answers ?
 	public Form createForm(Form form) throws APIException {
@@ -64,7 +64,7 @@ public class IbatisFormService implements FormService {
 	}
 
 	/**
-	 * @see org.openmrs.api.FormService#getForm(Integer)
+	 * @see org.openmrs.api.db.FormService#getForm(Integer)
 	 */
 	public Form getForm(Integer formId) throws APIException {
 		Form form;
@@ -77,7 +77,7 @@ public class IbatisFormService implements FormService {
 	}
 
 	/**
-	 * @see org.openmrs.api.FormService#updateForm(Form)
+	 * @see org.openmrs.api.db.FormService#updateForm(Form)
 	 */
 	public void updateForm(Form form) throws APIException {
 		try {
@@ -119,7 +119,7 @@ public class IbatisFormService implements FormService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.FormService#retireForm(Form, String)
+	 * @see org.openmrs.api.db.FormService#retireForm(Form, String)
 	 */
 	public void retireForm(Form form, String reason) throws APIException {
 		form.setRetiredBy(context.getAuthenticatedUser());
@@ -132,7 +132,7 @@ public class IbatisFormService implements FormService {
 	}
 
 	/**
-	 * @see org.openmrs.api.FormService#unretireForm(Form)
+	 * @see org.openmrs.api.db.FormService#unretireForm(Form)
 	 */
 	public void unretireForm(Form form) {
 		try {
@@ -143,7 +143,7 @@ public class IbatisFormService implements FormService {
 	}
 
 	/**
-	 * @see org.openmrs.api.FormService#deleteForm(Form)
+	 * @see org.openmrs.api.db.FormService#deleteForm(Form)
 	 */
 	public void deleteForm(Form form) throws APIException {
 		try {

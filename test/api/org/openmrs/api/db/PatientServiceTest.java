@@ -1,4 +1,4 @@
-package org.openmrs.api;
+package org.openmrs.api.db;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -14,8 +14,8 @@ import org.openmrs.PatientAddress;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientName;
-import org.openmrs.context.Context;
-import org.openmrs.context.ContextFactory;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ContextFactory;
 
 public class PatientServiceTest extends TestCase {
 	

@@ -1,4 +1,4 @@
-package org.openmrs.api.hibernate;
+package org.openmrs.api.db.hibernate;
 
 import java.util.Date;
 import java.util.List;
@@ -10,9 +10,9 @@ import org.hibernate.Transaction;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Location;
-import org.openmrs.api.APIException;
-import org.openmrs.api.EncounterService;
-import org.openmrs.context.Context;
+import org.openmrs.api.db.APIException;
+import org.openmrs.api.db.EncounterService;
+import org.openmrs.api.context.Context;
 
 public class HibernateEncounterService implements
 		EncounterService {
@@ -26,7 +26,7 @@ public class HibernateEncounterService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.EncounterService#createEncounter(org.openmrs.Encounter)
+	 * @see org.openmrs.api.db.EncounterService#createEncounter(org.openmrs.Encounter)
 	 */
 	public void createEncounter(Encounter encounter) throws APIException {
 		
@@ -46,7 +46,7 @@ public class HibernateEncounterService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.EncounterService#deleteEncounter(org.openmrs.Encounter)
+	 * @see org.openmrs.api.db.EncounterService#deleteEncounter(org.openmrs.Encounter)
 	 */
 	public void deleteEncounter(Encounter encounter) throws APIException {
 		
@@ -65,7 +65,7 @@ public class HibernateEncounterService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.EncounterService#getEncounter(java.lang.Integer)
+	 * @see org.openmrs.api.db.EncounterService#getEncounter(java.lang.Integer)
 	 */
 	public Encounter getEncounter(Integer encounterId) throws APIException {
 		
@@ -78,7 +78,7 @@ public class HibernateEncounterService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.EncounterService#getEncounterType(java.lang.Integer)
+	 * @see org.openmrs.api.db.EncounterService#getEncounterType(java.lang.Integer)
 	 */
 	public EncounterType getEncounterType(Integer encounterTypeId) throws APIException {
 
@@ -91,7 +91,7 @@ public class HibernateEncounterService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.EncounterService#getEncounterTypes()
+	 * @see org.openmrs.api.db.EncounterService#getEncounterTypes()
 	 */
 	public List<EncounterType> getEncounterTypes() throws APIException {
 	
@@ -105,7 +105,7 @@ public class HibernateEncounterService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.EncounterService#getLocation(java.lang.Integer)
+	 * @see org.openmrs.api.db.EncounterService#getLocation(java.lang.Integer)
 	 */
 	public Location getLocation(Integer locationId) throws APIException {
 
@@ -119,7 +119,7 @@ public class HibernateEncounterService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.EncounterService#getLocations()
+	 * @see org.openmrs.api.db.EncounterService#getLocations()
 	 */
 	public List<Location> getLocations() throws APIException {
 
@@ -133,7 +133,7 @@ public class HibernateEncounterService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.EncounterService#updateEncounter(org.openmrs.Encounter)
+	 * @see org.openmrs.api.db.EncounterService#updateEncounter(org.openmrs.Encounter)
 	 */
 	public void updateEncounter(Encounter encounter) throws APIException {
 

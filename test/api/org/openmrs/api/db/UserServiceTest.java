@@ -1,4 +1,4 @@
-package org.openmrs.api;
+package org.openmrs.api.db;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -11,9 +11,9 @@ import junit.framework.TestSuite;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
-import org.openmrs.context.Context;
-import org.openmrs.context.ContextAuthenticationException;
-import org.openmrs.context.ContextFactory;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ContextAuthenticationException;
+import org.openmrs.api.context.ContextFactory;
 
 public class UserServiceTest extends TestCase {
 	

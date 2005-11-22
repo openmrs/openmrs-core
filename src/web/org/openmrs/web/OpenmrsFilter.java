@@ -13,8 +13,8 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.context.Context;
-import org.openmrs.context.ContextFactory;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ContextFactory;
 
 public class OpenmrsFilter implements Filter {
 

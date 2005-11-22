@@ -1,4 +1,4 @@
-package org.openmrs.api.ibatis;
+package org.openmrs.api.db.ibatis;
 
 import java.sql.SQLException;
 
@@ -13,14 +13,14 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.RelationshipType;
 import org.openmrs.Tribe;
 import org.openmrs.User;
-import org.openmrs.api.APIException;
-import org.openmrs.api.AdministrationService;
-import org.openmrs.context.Context;
+import org.openmrs.api.db.APIException;
+import org.openmrs.api.db.AdministrationService;
+import org.openmrs.api.context.Context;
 
 /**
- * Ibatis-specific implementation of org.openmrs.api.AdministrationService
+ * Ibatis-specific implementation of org.openmrs.api.db.AdministrationService
  * 
- * @see org.openmrs.api.AdministrationService
+ * @see org.openmrs.api.db.AdministrationService
  * 
  * @author Ben Wolfe
  * @version 1.0 
@@ -35,14 +35,14 @@ public class IbatisAdministrationService implements AdministrationService {
 	 * Service must be constructed within a <code>context</code>
 	 * 
 	 * @param context
-	 * @see org.openmrs.context.Context
+	 * @see org.openmrs.api.context.Context
 	 */
 	public IbatisAdministrationService(Context context) {
 		this.context = context;
 	}
 
 	/**
-	 * @see org.openmrs.api.EncounterTypeService#createEncounterType(EncounterType)
+	 * @see org.openmrs.api.db.EncounterTypeService#createEncounterType(EncounterType)
 	 */
 	public EncounterType createEncounterType(EncounterType encounterType) throws APIException {
 
@@ -64,7 +64,7 @@ public class IbatisAdministrationService implements AdministrationService {
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#createFieldType(org.openmrs.FieldType)
+	 * @see org.openmrs.api.db.AdministrationService#createFieldType(org.openmrs.FieldType)
 	 */
 	public FieldType createFieldType(FieldType fieldType) throws APIException {
 		fieldType.setCreator(context.getAuthenticatedUser());
@@ -85,7 +85,7 @@ public class IbatisAdministrationService implements AdministrationService {
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#createMimeType(org.openmrs.MimeType)
+	 * @see org.openmrs.api.db.AdministrationService#createMimeType(org.openmrs.MimeType)
 	 */
 	public MimeType createMimeType(MimeType mimeType) throws APIException {
 		try {
@@ -105,7 +105,7 @@ public class IbatisAdministrationService implements AdministrationService {
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#createOrderType(org.openmrs.OrderType)
+	 * @see org.openmrs.api.db.AdministrationService#createOrderType(org.openmrs.OrderType)
 	 */
 	public OrderType createOrderType(OrderType orderType) throws APIException {
 		orderType.setCreator(context.getAuthenticatedUser());
@@ -126,7 +126,7 @@ public class IbatisAdministrationService implements AdministrationService {
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#createPatientIdentifierType(org.openmrs.PatientIdentifierType)
+	 * @see org.openmrs.api.db.AdministrationService#createPatientIdentifierType(org.openmrs.PatientIdentifierType)
 	 */
 	public PatientIdentifierType createPatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException {
 		patientIdentifierType.setCreator(context.getAuthenticatedUser());
@@ -147,7 +147,7 @@ public class IbatisAdministrationService implements AdministrationService {
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#createTribe(org.openmrs.Tribe)
+	 * @see org.openmrs.api.db.AdministrationService#createTribe(org.openmrs.Tribe)
 	 */
 	public Tribe createTribe(Tribe tribe) throws APIException {
 		try {
@@ -167,7 +167,7 @@ public class IbatisAdministrationService implements AdministrationService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.EncounterTypeService#deleteEncounterType(EncounterType)
+	 * @see org.openmrs.api.db.EncounterTypeService#deleteEncounterType(EncounterType)
 	 */
 	public void deleteEncounterType(EncounterType encounterType) throws APIException {
 		try {
@@ -184,7 +184,7 @@ public class IbatisAdministrationService implements AdministrationService {
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#deleteFieldType(org.openmrs.FieldType)
+	 * @see org.openmrs.api.db.AdministrationService#deleteFieldType(org.openmrs.FieldType)
 	 */
 	public void deleteFieldType(FieldType fieldType) throws APIException {
 		try {
@@ -201,7 +201,7 @@ public class IbatisAdministrationService implements AdministrationService {
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#deleteMimeType(org.openmrs.MimeType)
+	 * @see org.openmrs.api.db.AdministrationService#deleteMimeType(org.openmrs.MimeType)
 	 */
 	public void deleteMimeType(MimeType mimeType) throws APIException {
 		try {
@@ -218,7 +218,7 @@ public class IbatisAdministrationService implements AdministrationService {
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#deleteOrderType(org.openmrs.OrderType)
+	 * @see org.openmrs.api.db.AdministrationService#deleteOrderType(org.openmrs.OrderType)
 	 */
 	public void deleteOrderType(OrderType orderType) throws APIException {
 		try {
@@ -237,7 +237,7 @@ public class IbatisAdministrationService implements AdministrationService {
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#deletePatientIdentifierType(org.openmrs.PatientIdentifierType)
+	 * @see org.openmrs.api.db.AdministrationService#deletePatientIdentifierType(org.openmrs.PatientIdentifierType)
 	 */
 	public void deletePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException {
 		try {
@@ -256,7 +256,7 @@ public class IbatisAdministrationService implements AdministrationService {
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#deleteTribe(org.openmrs.Tribe)
+	 * @see org.openmrs.api.db.AdministrationService#deleteTribe(org.openmrs.Tribe)
 	 */
 	public void deleteTribe(Tribe tribe) throws APIException {
 		try {
@@ -273,7 +273,7 @@ public class IbatisAdministrationService implements AdministrationService {
 	}
 
 	/**
-	 * @see org.openmrs.api.EncounterTypeService#updateEncounterType(EncounterType)
+	 * @see org.openmrs.api.db.EncounterTypeService#updateEncounterType(EncounterType)
 	 */
 	public void updateEncounterType(EncounterType encounterType) throws APIException {
 		try {
@@ -296,7 +296,7 @@ public class IbatisAdministrationService implements AdministrationService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.AdministrationService#updateFieldType(org.openmrs.FieldType)
+	 * @see org.openmrs.api.db.AdministrationService#updateFieldType(org.openmrs.FieldType)
 	 */
 	public void updateFieldType(FieldType fieldType) throws APIException {
 		try {
@@ -320,7 +320,7 @@ public class IbatisAdministrationService implements AdministrationService {
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#updateMimeType(org.openmrs.MimeType)
+	 * @see org.openmrs.api.db.AdministrationService#updateMimeType(org.openmrs.MimeType)
 	 */
 	public void updateMimeType(MimeType mimeType) throws APIException {
 		try {
@@ -345,7 +345,7 @@ public class IbatisAdministrationService implements AdministrationService {
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#updateOrderType(org.openmrs.OrderType)
+	 * @see org.openmrs.api.db.AdministrationService#updateOrderType(org.openmrs.OrderType)
 	 */
 	public void updateOrderType(OrderType orderType) throws APIException {
 		try {
@@ -369,7 +369,7 @@ public class IbatisAdministrationService implements AdministrationService {
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#updatePatientIdentifierType(org.openmrs.PatientIdentifierType)
+	 * @see org.openmrs.api.db.AdministrationService#updatePatientIdentifierType(org.openmrs.PatientIdentifierType)
 	 */
 	public void updatePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException {
 		try {
@@ -393,7 +393,7 @@ public class IbatisAdministrationService implements AdministrationService {
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#updateTribe(org.openmrs.Tribe)
+	 * @see org.openmrs.api.db.AdministrationService#updateTribe(org.openmrs.Tribe)
 	 */
 	public void updateTribe(Tribe tribe) throws APIException {
 		try {
@@ -418,7 +418,7 @@ public class IbatisAdministrationService implements AdministrationService {
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#createLocation(org.openmrs.Location)
+	 * @see org.openmrs.api.db.AdministrationService#createLocation(org.openmrs.Location)
 	 */
 	public Location createLocation(Location location) throws APIException {
 		
@@ -440,7 +440,7 @@ public class IbatisAdministrationService implements AdministrationService {
 	}
 
 	/**
-	 * @see org.openmrs.api.AdministrationService#deleteLocation(org.openmrs.Location)
+	 * @see org.openmrs.api.db.AdministrationService#deleteLocation(org.openmrs.Location)
 	 */
 	public void deleteLocation(Location location) throws APIException {
 		try {
@@ -457,7 +457,7 @@ public class IbatisAdministrationService implements AdministrationService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.AdministrationService#updateLocation(org.openmrs.Location)
+	 * @see org.openmrs.api.db.AdministrationService#updateLocation(org.openmrs.Location)
 	 */
 	public void updateLocation(Location location) throws APIException {
 		try {

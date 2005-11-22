@@ -1,4 +1,4 @@
-package org.openmrs.api.hibernate;
+package org.openmrs.api.db.hibernate;
 
 import java.util.Date;
 import java.util.Iterator;
@@ -16,9 +16,9 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientName;
 import org.openmrs.Tribe;
-import org.openmrs.api.APIException;
-import org.openmrs.api.PatientService;
-import org.openmrs.context.Context;
+import org.openmrs.api.db.APIException;
+import org.openmrs.api.db.PatientService;
+import org.openmrs.api.context.Context;
 
 public class HibernatePatientService implements PatientService {
 
@@ -31,7 +31,7 @@ public class HibernatePatientService implements PatientService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.PatientService#getPatient(java.lang.Long)
+	 * @see org.openmrs.api.db.PatientService#getPatient(java.lang.Long)
 	 */
 	public Patient getPatient(Integer patientId) {
 		Session session = HibernateUtil.currentSession();
@@ -112,7 +112,7 @@ public class HibernatePatientService implements PatientService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.openmrs.api.PatientService#voidPatient(org.openmrs.Patient,
+	 * @see org.openmrs.api.db.PatientService#voidPatient(org.openmrs.Patient,
 	 *      java.lang.String)
 	 */
 	public void voidPatient(Patient patient, String reason) {
@@ -125,7 +125,7 @@ public class HibernatePatientService implements PatientService {
 	
 	/**
 	 * 
-	 * @see org.openmrs.api.PatientService#unvoidPatient(org.openmrs.Patient)
+	 * @see org.openmrs.api.db.PatientService#unvoidPatient(org.openmrs.Patient)
 	 */
 	public void unvoidPatient(Patient patient) {
 		patient.setVoided(false);
@@ -148,7 +148,7 @@ public class HibernatePatientService implements PatientService {
 	*/
 
 	/**
-	 * @see org.openmrs.api.PatientService#deletePatient(org.openmrs.Patient)
+	 * @see org.openmrs.api.db.PatientService#deletePatient(org.openmrs.Patient)
 	 */
 	public void deletePatient(Patient patient) throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -165,7 +165,7 @@ public class HibernatePatientService implements PatientService {
 	}
 
 	/**
-	 * @see org.openmrs.api.PatientService#getPatientIdentifierType(java.lang.Integer)
+	 * @see org.openmrs.api.db.PatientService#getPatientIdentifierType(java.lang.Integer)
 	 */
 	public PatientIdentifierType getPatientIdentifierType(Integer patientIdentifierTypeId) throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -175,7 +175,7 @@ public class HibernatePatientService implements PatientService {
 	}
 
 	/**
-	 * @see org.openmrs.api.PatientService#getPatientIdentifierTypes()
+	 * @see org.openmrs.api.db.PatientService#getPatientIdentifierTypes()
 	 */
 	public List<PatientIdentifierType> getPatientIdentifierTypes() throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -186,7 +186,7 @@ public class HibernatePatientService implements PatientService {
 	}
 
 	/**
-	 * @see org.openmrs.api.PatientService#getTribe()
+	 * @see org.openmrs.api.db.PatientService#getTribe()
 	 */
 	public Tribe getTribe(Integer tribeId) throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -197,7 +197,7 @@ public class HibernatePatientService implements PatientService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.PatientService#getTribes()
+	 * @see org.openmrs.api.db.PatientService#getTribes()
 	 */
 	public List<Tribe> getTribes() throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -208,7 +208,7 @@ public class HibernatePatientService implements PatientService {
 	}
 
 	/**
-	 * @see org.openmrs.api.PatientService#getLocation(java.lang.Integer)
+	 * @see org.openmrs.api.db.PatientService#getLocation(java.lang.Integer)
 	 */
 	public Location getLocation(Integer locationId) throws APIException {
 
@@ -222,7 +222,7 @@ public class HibernatePatientService implements PatientService {
 	}
 
 	/**
-	 * @see org.openmrs.api.PatientService#getLocations()
+	 * @see org.openmrs.api.db.PatientService#getLocations()
 	 */
 	public List<Location> getLocations() throws APIException {
 

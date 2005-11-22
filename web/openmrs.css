@@ -133,3 +133,10 @@ span.error, div.error {
 .smallButton {
 	font-size: 9px;
 }
+
+a, a:link, a:hover, a:visited {
+	text-decoration: underline;
+}
+a:hover {
+	text-decoration: none;
+}

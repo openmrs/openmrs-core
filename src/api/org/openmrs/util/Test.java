@@ -3,7 +3,7 @@ package org.openmrs.util;
 import java.util.List;
 
 import org.hibernate.Session;
-import org.openmrs.api.hibernate.HibernateUtil;
+import org.openmrs.api.db.hibernate.HibernateUtil;
 
 public class Test {
 

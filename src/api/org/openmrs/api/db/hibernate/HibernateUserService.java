@@ -1,4 +1,4 @@
-package org.openmrs.api.hibernate;
+package org.openmrs.api.db.hibernate;
 
 import java.security.MessageDigest;
 import java.util.Date;
@@ -13,9 +13,9 @@ import org.hibernate.criterion.Order;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
-import org.openmrs.api.APIException;
-import org.openmrs.api.UserService;
-import org.openmrs.context.Context;
+import org.openmrs.api.db.APIException;
+import org.openmrs.api.db.UserService;
+import org.openmrs.api.context.Context;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
 public class HibernateUserService implements
@@ -30,7 +30,7 @@ public class HibernateUserService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.UserService#createUser(org.openmrs.User)
+	 * @see org.openmrs.api.db.UserService#createUser(org.openmrs.User)
 	 */
 	public void createUser(User user, String password) {
 		Session session = HibernateUtil.currentSession();
@@ -82,7 +82,7 @@ public class HibernateUserService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.UserService#getUserByUsername(java.lang.String)
+	 * @see org.openmrs.api.db.UserService#getUserByUsername(java.lang.String)
 	 */
 	public User getUserByUsername(String username) {
 		Session session = HibernateUtil.currentSession();
@@ -102,7 +102,7 @@ public class HibernateUserService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.UserService#isDuplicateUsername(java.lang.String)
+	 * @see org.openmrs.api.db.UserService#isDuplicateUsername(java.lang.String)
 	 */
 	public boolean isDuplicateUsername(User user) {
 		Session session = HibernateUtil.currentSession();
@@ -135,7 +135,7 @@ public class HibernateUserService implements
 	}
 	
 	/**
-	 * @see org.openmrs.api.UserService#getUser(java.lang.Long)
+	 * @see org.openmrs.api.db.UserService#getUser(java.lang.Long)
 	 */
 	public User getUser(Integer userId) {
 		Session session = HibernateUtil.currentSession();
@@ -149,7 +149,7 @@ public class HibernateUserService implements
 	}
 	
 	/**
-	 * @see org.openmrs.api.UserService#getUsers()
+	 * @see org.openmrs.api.db.UserService#getUsers()
 	 */
 	public List<User> getUsers() throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -160,7 +160,7 @@ public class HibernateUserService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.UserService#updateUser(org.openmrs.User)
+	 * @see org.openmrs.api.db.UserService#updateUser(org.openmrs.User)
 	 */
 	public void updateUser(User user) {
 		if (user.getCreator() == null)
@@ -188,7 +188,7 @@ public class HibernateUserService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.UserService#voidUser(org.openmrs.User,
+	 * @see org.openmrs.api.db.UserService#voidUser(org.openmrs.User,
 	 *      java.lang.String)
 	 */
 	public void voidUser(User user, String reason) {
@@ -200,7 +200,7 @@ public class HibernateUserService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.UserService#deleteUser(org.openmrs.User)
+	 * @see org.openmrs.api.db.UserService#deleteUser(org.openmrs.User)
 	 */
 	public void deleteUser(User user) {
 		Session session = HibernateUtil.currentSession();
@@ -216,7 +216,7 @@ public class HibernateUserService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.UserService#grantUserRole(org.openmrs.User,
+	 * @see org.openmrs.api.db.UserService#grantUserRole(org.openmrs.User,
 	 *      org.openmrs.Role)
 	 */
 	public void grantUserRole(User user, Role role) throws APIException {
@@ -225,7 +225,7 @@ public class HibernateUserService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.UserService#revokeUserRole(org.openmrs.User,
+	 * @see org.openmrs.api.db.UserService#revokeUserRole(org.openmrs.User,
 	 *      org.openmrs.Role)
 	 */
 	public void revokeUserRole(User user, Role role) throws APIException {
@@ -234,7 +234,7 @@ public class HibernateUserService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.UserService#getUserByRole(org.openmrs.Role)
+	 * @see org.openmrs.api.db.UserService#getUserByRole(org.openmrs.Role)
 	 */
 	public List<User> getUsersByRole(Role role) throws APIException {
 		Session session = HibernateUtil.currentSession();
@@ -250,7 +250,7 @@ public class HibernateUserService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.UserService#unvoidUser(org.openmrs.User)
+	 * @see org.openmrs.api.db.UserService#unvoidUser(org.openmrs.User)
 	 */
 	public void unvoidUser(User user) throws APIException {
 		user.setVoided(false);
@@ -261,7 +261,7 @@ public class HibernateUserService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.UserService#getPrivileges()
+	 * @see org.openmrs.api.db.UserService#getPrivileges()
 	 */
 	public List<Privilege> getPrivileges() throws APIException {
 		
@@ -273,7 +273,7 @@ public class HibernateUserService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.UserService#getRoles()
+	 * @see org.openmrs.api.db.UserService#getRoles()
 	 */
 	public List<Role> getRoles() throws APIException {
 
@@ -285,7 +285,7 @@ public class HibernateUserService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.UserService#getPrivilege()
+	 * @see org.openmrs.api.db.UserService#getPrivilege()
 	 */
 	public Privilege getPrivilege(String p) throws APIException {
 		
@@ -296,7 +296,7 @@ public class HibernateUserService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.UserService#getRole()
+	 * @see org.openmrs.api.db.UserService#getRole()
 	 */
 	public Role getRole(String r) throws APIException {
 

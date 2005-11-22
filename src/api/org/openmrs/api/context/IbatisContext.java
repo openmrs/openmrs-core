@@ -1,4 +1,4 @@
-package org.openmrs.context;
+package org.openmrs.api.context;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -8,22 +8,22 @@ import java.util.Locale;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
-import org.openmrs.api.AdministrationService;
-import org.openmrs.api.ConceptService;
-import org.openmrs.api.EncounterService;
-import org.openmrs.api.FormService;
-import org.openmrs.api.ObsService;
-import org.openmrs.api.OrderService;
-import org.openmrs.api.PatientService;
-import org.openmrs.api.UserService;
-import org.openmrs.api.ibatis.IbatisAdministrationService;
-import org.openmrs.api.ibatis.IbatisEncounterService;
-import org.openmrs.api.ibatis.IbatisFormService;
-import org.openmrs.api.ibatis.IbatisObsService;
-import org.openmrs.api.ibatis.IbatisOrderService;
-import org.openmrs.api.ibatis.IbatisPatientService;
-import org.openmrs.api.ibatis.IbatisUserService;
-import org.openmrs.api.ibatis.SqlMap;
+import org.openmrs.api.db.AdministrationService;
+import org.openmrs.api.db.ConceptService;
+import org.openmrs.api.db.EncounterService;
+import org.openmrs.api.db.FormService;
+import org.openmrs.api.db.ObsService;
+import org.openmrs.api.db.OrderService;
+import org.openmrs.api.db.PatientService;
+import org.openmrs.api.db.UserService;
+import org.openmrs.api.db.ibatis.IbatisAdministrationService;
+import org.openmrs.api.db.ibatis.IbatisEncounterService;
+import org.openmrs.api.db.ibatis.IbatisFormService;
+import org.openmrs.api.db.ibatis.IbatisObsService;
+import org.openmrs.api.db.ibatis.IbatisOrderService;
+import org.openmrs.api.db.ibatis.IbatisPatientService;
+import org.openmrs.api.db.ibatis.IbatisUserService;
+import org.openmrs.api.db.ibatis.SqlMap;
 
 public class IbatisContext implements Context {
 
@@ -40,7 +40,7 @@ public class IbatisContext implements Context {
 	private FormService formService;
 	private AdministrationService administrationService;
 
-	/** @see org.openmrs.context.Context#authenticate(String, String) */
+	/** @see org.openmrs.api.context.Context#authenticate(String, String) */
 	public void authenticate(String username, String password)
 			throws ContextAuthenticationException {
 		User authenticatingUser = getUserService().getUserByUsername(username);
@@ -93,46 +93,46 @@ public class IbatisContext implements Context {
 		return new String(s);
 	}
 
-	/** @see org.openmrs.context.Context#getAuthenticatedUser() */
+	/** @see org.openmrs.api.context.Context#getAuthenticatedUser() */
 	public User getAuthenticatedUser() {
 		return user;
 	}
 
 
-	/** @see org.openmrs.context.Context#getLocale() */
+	/** @see org.openmrs.api.context.Context#getLocale() */
 	public Locale getLocale() {
 		return locale;
 	}
 
-	/** @see org.openmrs.context.Context#getConceptService() */
+	/** @see org.openmrs.api.context.Context#getConceptService() */
 	public ConceptService getConceptService() {
 		//if (conceptService == null)
 		//	conceptService = new IbatisConceptService(this);
 		return conceptService;
 	}
 	
-	/** @see org.openmrs.context.Context#getEncounterService() */
+	/** @see org.openmrs.api.context.Context#getEncounterService() */
 	public EncounterService getEncounterService() {
 		if (encounterService == null)
 			encounterService = new IbatisEncounterService(this);
 		return encounterService;
 	}
 
-	/** @see org.openmrs.context.Context#getObsService() */
+	/** @see org.openmrs.api.context.Context#getObsService() */
 	public ObsService getObsService() {
 		if (obsService == null)
 			obsService = new IbatisObsService(this);
 		return obsService;
 	}
 
-	/** @see org.openmrs.context.Context#getPatientService() */
+	/** @see org.openmrs.api.context.Context#getPatientService() */
 	public PatientService getPatientService() {
 		if (patientService == null)
 			patientService = new IbatisPatientService(this);
 		return patientService;
 	}
 
-	/** @see org.openmrs.context.Context#getUserService() */
+	/** @see org.openmrs.api.context.Context#getUserService() */
 	public UserService getUserService() {
 		if (userService == null)
 			userService = new IbatisUserService(this);
@@ -140,7 +140,7 @@ public class IbatisContext implements Context {
 	}
 
 	/**
-	 * @see org.openmrs.context.Context#getOrderService()
+	 * @see org.openmrs.api.context.Context#getOrderService()
 	 */
 	public OrderService getOrderService() {
 		if (orderService == null)
@@ -149,7 +149,7 @@ public class IbatisContext implements Context {
 	}
 
 	/**
-	 * @see org.openmrs.context.Context#getFormService()
+	 * @see org.openmrs.api.context.Context#getFormService()
 	 */
 	public FormService getFormService() {
 		if (formService == null)
@@ -157,31 +157,31 @@ public class IbatisContext implements Context {
 		return formService;
 	}
 
-	/** @see org.openmrs.context.Context#getAdministrationService() */
+	/** @see org.openmrs.api.context.Context#getAdministrationService() */
 	public AdministrationService getAdministrationService() {
 		if (administrationService == null)
 			administrationService = new IbatisAdministrationService(this);
 		return administrationService;
 	}
 	
-	/** @see org.openmrs.context.Context#hasPrivilege(String) */
+	/** @see org.openmrs.api.context.Context#hasPrivilege(String) */
 	public boolean hasPrivilege(String privilege) {
 		if (isAuthenticated())
 			return getAuthenticatedUser().hasPrivilege(privilege);
 		return false;
 	}
 
-	/** @see org.openmrs.context.Context#isAuthenticated() */
+	/** @see org.openmrs.api.context.Context#isAuthenticated() */
 	public boolean isAuthenticated() {
 		return (user != null);
 	}
 
-	/** @see org.openmrs.context.Context#logout() */
+	/** @see org.openmrs.api.context.Context#logout() */
 	public void logout() {
 		user = null;
 	}
 
-	/** @see org.openmrs.context.Context#setLocale(Locale) */
+	/** @see org.openmrs.api.context.Context#setLocale(Locale) */
 	public void setLocale(Locale locale) {
 		this.locale = locale;
 	}

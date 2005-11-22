@@ -1,4 +1,4 @@
-package org.openmrs.api;
+package org.openmrs.api.db;
 
 /**
  * Represents often fatal errors that occur within the API

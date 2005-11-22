@@ -1,16 +1,16 @@
-package org.openmrs.context;
+package org.openmrs.api.context;
 
 import java.util.Locale;
 
 import org.openmrs.User;
-import org.openmrs.api.AdministrationService;
-import org.openmrs.api.ConceptService;
-import org.openmrs.api.EncounterService;
-import org.openmrs.api.FormService;
-import org.openmrs.api.ObsService;
-import org.openmrs.api.OrderService;
-import org.openmrs.api.PatientService;
-import org.openmrs.api.UserService;
+import org.openmrs.api.db.AdministrationService;
+import org.openmrs.api.db.ConceptService;
+import org.openmrs.api.db.EncounterService;
+import org.openmrs.api.db.FormService;
+import org.openmrs.api.db.ObsService;
+import org.openmrs.api.db.OrderService;
+import org.openmrs.api.db.PatientService;
+import org.openmrs.api.db.UserService;
 
 /**
  * Represents an OpenMRS <code>Context</code>, which may be used to

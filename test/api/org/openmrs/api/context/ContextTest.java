@@ -1,12 +1,12 @@
-package org.openmrs.context;
+package org.openmrs.api.context;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.openmrs.User;
-import org.openmrs.api.UserService;
-import org.openmrs.context.ContextFactory;
+import org.openmrs.api.db.UserService;
+import org.openmrs.api.context.ContextFactory;
 
 public class ContextTest extends TestCase {
 

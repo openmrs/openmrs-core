@@ -24,7 +24,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientName;
-import org.openmrs.context.Context;
+import org.openmrs.api.context.Context;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;

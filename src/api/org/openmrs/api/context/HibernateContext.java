@@ -1,4 +1,4 @@
-package org.openmrs.context;
+package org.openmrs.api.context;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -14,23 +14,23 @@ import org.hibernate.Session;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
-import org.openmrs.api.AdministrationService;
-import org.openmrs.api.ConceptService;
-import org.openmrs.api.EncounterService;
-import org.openmrs.api.FormService;
-import org.openmrs.api.ObsService;
-import org.openmrs.api.OrderService;
-import org.openmrs.api.PatientService;
-import org.openmrs.api.UserService;
-import org.openmrs.api.hibernate.HibernateAdministrationService;
-import org.openmrs.api.hibernate.HibernateConceptService;
-import org.openmrs.api.hibernate.HibernateEncounterService;
-import org.openmrs.api.hibernate.HibernateFormService;
-import org.openmrs.api.hibernate.HibernateObsService;
-import org.openmrs.api.hibernate.HibernateOrderService;
-import org.openmrs.api.hibernate.HibernatePatientService;
-import org.openmrs.api.hibernate.HibernateUserService;
-import org.openmrs.api.hibernate.HibernateUtil;
+import org.openmrs.api.db.AdministrationService;
+import org.openmrs.api.db.ConceptService;
+import org.openmrs.api.db.EncounterService;
+import org.openmrs.api.db.FormService;
+import org.openmrs.api.db.ObsService;
+import org.openmrs.api.db.OrderService;
+import org.openmrs.api.db.PatientService;
+import org.openmrs.api.db.UserService;
+import org.openmrs.api.db.hibernate.HibernateAdministrationService;
+import org.openmrs.api.db.hibernate.HibernateConceptService;
+import org.openmrs.api.db.hibernate.HibernateEncounterService;
+import org.openmrs.api.db.hibernate.HibernateFormService;
+import org.openmrs.api.db.hibernate.HibernateObsService;
+import org.openmrs.api.db.hibernate.HibernateOrderService;
+import org.openmrs.api.db.hibernate.HibernatePatientService;
+import org.openmrs.api.db.hibernate.HibernateUserService;
+import org.openmrs.api.db.hibernate.HibernateUtil;
 
 public class HibernateContext implements Context {
 
@@ -56,7 +56,7 @@ public class HibernateContext implements Context {
 	 * @param username
 	 * @param password
 	 * 
-	 * @see org.openmrs.context.Context#authenticate(String, String)
+	 * @see org.openmrs.api.context.Context#authenticate(String, String)
 	 * @throws ContextAuthenticationException
 	 */
 	public void authenticate(String username, String password)
@@ -115,7 +115,7 @@ public class HibernateContext implements Context {
 	/**
 	 * Get the currently authenticated user
 	 * 
-	 * @see org.openmrs.context.Context#getAuthenticatedUser()
+	 * @see org.openmrs.api.context.Context#getAuthenticatedUser()
 	 */
 	public User getAuthenticatedUser() {
 		Session session = HibernateUtil.currentSession();
@@ -134,7 +134,7 @@ public class HibernateContext implements Context {
 	 * Log the current user out of this context. isAuthenticated will now return
 	 * false.
 	 * 
-	 * @see org.openmrs.context.Context#logout()
+	 * @see org.openmrs.api.context.Context#logout()
 	 */
 	public void logout() {
 		user = null;
@@ -143,7 +143,7 @@ public class HibernateContext implements Context {
 	/**
 	 * Get the privileges for the authenticated user
 	 * 
-	 * @see org.openmrs.context.Context#getPrivileges()
+	 * @see org.openmrs.api.context.Context#getPrivileges()
 	 */
 	public Set<Privilege> getPrivileges() {
 		if (!isAuthenticated())
@@ -165,7 +165,7 @@ public class HibernateContext implements Context {
 	 * @param String
 	 *            privilege to authorize against
 	 * @return boolean whether the user has the given privilege
-	 * @see org.openmrs.context.Context#hasPrivilege(java.lang.String)
+	 * @see org.openmrs.api.context.Context#hasPrivilege(java.lang.String)
 	 */
 	public boolean hasPrivilege(String privilege) {
 		if (isAuthenticated()) {
@@ -178,7 +178,7 @@ public class HibernateContext implements Context {
 	/**
 	 * Determine if a user is authenticated already
 	 * 
-	 * @see org.openmrs.context.Context#isAuthenticated()
+	 * @see org.openmrs.api.context.Context#isAuthenticated()
 	 */
 	public boolean isAuthenticated() {
 		return (user != null);
@@ -187,7 +187,7 @@ public class HibernateContext implements Context {
 	/**
 	 * Get the Hibernate implementation of ConceptService
 	 * 
-	 * @see org.openmrs.context.Context#getConceptService()
+	 * @see org.openmrs.api.context.Context#getConceptService()
 	 */
 	public ConceptService getConceptService() {
 		if (!isAuthenticated()) {
@@ -212,7 +212,7 @@ public class HibernateContext implements Context {
 	/**
 	 * Get Hibernate implementation of ObsService
 	 * 
-	 * @see org.openmrs.context.Context#getObsService()
+	 * @see org.openmrs.api.context.Context#getObsService()
 	 */
 	public ObsService getObsService() {
 		if (!isAuthenticated()) {
@@ -227,7 +227,7 @@ public class HibernateContext implements Context {
 	/**
 	 * Get Hibernate implementation of PatientService
 	 * 
-	 * @see org.openmrs.context.Context#getPatientService()
+	 * @see org.openmrs.api.context.Context#getPatientService()
 	 */
 	public PatientService getPatientService() {
 		if (!isAuthenticated()) {
@@ -242,7 +242,7 @@ public class HibernateContext implements Context {
 	/**
 	 * Get Hibernate implementation of UserService
 	 * 
-	 * @see org.openmrs.context.Context#getUserService()
+	 * @see org.openmrs.api.context.Context#getUserService()
 	 */
 	public UserService getUserService() {
 		if (!isAuthenticated()) {
@@ -298,7 +298,7 @@ public class HibernateContext implements Context {
 	/**
 	 * Get the locale
 	 * 
-	 * @see org.openmrs.context.Context#getLocale()
+	 * @see org.openmrs.api.context.Context#getLocale()
 	 */
 	public Locale getLocale() {
 		return locale;
@@ -307,14 +307,14 @@ public class HibernateContext implements Context {
 	/**
 	 * Set the locale
 	 * 
-	 * @see org.openmrs.context.Context#setLocale(java.util.Locale)
+	 * @see org.openmrs.api.context.Context#setLocale(java.util.Locale)
 	 */
 	public void setLocale(Locale locale) {
 		this.locale = locale;
 	}
 
 	/**
-	 * @see org.openmrs.context.Context#beginTransaction()
+	 * @see org.openmrs.api.context.Context#beginTransaction()
 	 */
 	public void startTransaction() {
 
@@ -325,7 +325,7 @@ public class HibernateContext implements Context {
 	}
 
 	/**
-	 * @see org.openmrs.context.Context#endTransaction()
+	 * @see org.openmrs.api.context.Context#endTransaction()
 	 */
 	public void endTransaction() {
 		

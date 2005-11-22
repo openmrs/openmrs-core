@@ -1,4 +1,4 @@
-package org.openmrs.api;
+package org.openmrs.api.db;
 
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;

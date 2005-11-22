@@ -1,4 +1,4 @@
-package org.openmrs.api.hibernate;
+package org.openmrs.api.db.hibernate;
 
 import java.util.Date;
 import java.util.List;
@@ -8,9 +8,9 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
-import org.openmrs.api.APIException;
-import org.openmrs.api.OrderService;
-import org.openmrs.context.Context;
+import org.openmrs.api.db.APIException;
+import org.openmrs.api.db.OrderService;
+import org.openmrs.api.context.Context;
 
 public class HibernateOrderService implements
 		OrderService {
@@ -24,7 +24,7 @@ public class HibernateOrderService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#createOrder(org.openmrs.Order)
+	 * @see org.openmrs.api.db.OrderService#createOrder(org.openmrs.Order)
 	 */
 	public void createOrder(Order order) throws APIException {
 		log.debug("creating order");
@@ -47,7 +47,7 @@ public class HibernateOrderService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#deleteOrder(org.openmrs.Order)
+	 * @see org.openmrs.api.db.OrderService#deleteOrder(org.openmrs.Order)
 	 */
 	public void deleteOrder(Order order) throws APIException {
 		log.debug("deleting order #" + order.getOrderId());
@@ -66,7 +66,7 @@ public class HibernateOrderService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#getOrder(java.lang.Integer)
+	 * @see org.openmrs.api.db.OrderService#getOrder(java.lang.Integer)
 	 */
 	public Order getOrder(Integer orderId) throws APIException {
 		log.debug("getting order #" + orderId);
@@ -80,7 +80,7 @@ public class HibernateOrderService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#updateOrder(org.openmrs.Order)
+	 * @see org.openmrs.api.db.OrderService#updateOrder(org.openmrs.Order)
 	 */
 	public void updateOrder(Order order) {
 		log.debug("updating order #" + order.getOrderId());
@@ -103,7 +103,7 @@ public class HibernateOrderService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#voidOrder(org.openmrs.Order, java.lang.String)
+	 * @see org.openmrs.api.db.OrderService#voidOrder(org.openmrs.Order, java.lang.String)
 	 */
 	public void voidOrder(Order order, String reason) {
 		log.debug("voiding order #" + order.getOrderId());
@@ -116,7 +116,7 @@ public class HibernateOrderService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, java.lang.String)
+	 * @see org.openmrs.api.db.OrderService#discontinueOrder(org.openmrs.Order, java.lang.String)
 	 */
 	public void discontinueOrder(Order order, String reason) throws APIException {
 		log.debug("discontinuing order #" + order.getOrderId());
@@ -129,7 +129,7 @@ public class HibernateOrderService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#getOrderType(java.lang.Integer)
+	 * @see org.openmrs.api.db.OrderService#getOrderType(java.lang.Integer)
 	 */
 	public OrderType getOrderType(Integer orderTypeId) throws APIException {
 		log.debug("getting orderType #" + orderTypeId);
@@ -142,7 +142,7 @@ public class HibernateOrderService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#getOrderTypes()
+	 * @see org.openmrs.api.db.OrderService#getOrderTypes()
 	 */
 	public List<OrderType> getOrderTypes() throws APIException {
 		log.debug("getting all order types");
@@ -155,7 +155,7 @@ public class HibernateOrderService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#undiscontinueOrder(org.openmrs.Order)
+	 * @see org.openmrs.api.db.OrderService#undiscontinueOrder(org.openmrs.Order)
 	 */
 	public void undiscontinueOrder(Order order) throws APIException {
 		log.debug("undiscontinuing order #" + order.getOrderId());
@@ -168,7 +168,7 @@ public class HibernateOrderService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#unvoidOrder(org.openmrs.Order)
+	 * @see org.openmrs.api.db.OrderService#unvoidOrder(org.openmrs.Order)
 	 */
 	public void unvoidOrder(Order order) throws APIException {
 		log.debug("unvoiding order #" + order.getOrderId());

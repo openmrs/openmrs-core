@@ -1,4 +1,4 @@
-package org.openmrs.api.hibernate;
+package org.openmrs.api.db.hibernate;
 
 import java.util.Date;
 import java.util.List;
@@ -19,9 +19,9 @@ import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSynonym;
 import org.openmrs.Drug;
 import org.openmrs.User;
-import org.openmrs.api.APIException;
-import org.openmrs.api.ConceptService;
-import org.openmrs.context.Context;
+import org.openmrs.api.db.APIException;
+import org.openmrs.api.db.ConceptService;
+import org.openmrs.api.context.Context;
 
 public class HibernateConceptService implements
 		ConceptService {
@@ -35,7 +35,7 @@ public class HibernateConceptService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.ConceptService#createConcept(org.openmrs.Concept)
+	 * @see org.openmrs.api.db.ConceptService#createConcept(org.openmrs.Concept)
 	 */
 	public void createConcept(Concept concept) throws APIException {
 		
@@ -58,7 +58,7 @@ public class HibernateConceptService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.ConceptService#deleteConcept(org.openmrs.Concept)
+	 * @see org.openmrs.api.db.ConceptService#deleteConcept(org.openmrs.Concept)
 	 */
 	public void deleteConcept(Concept concept) throws APIException {
 		
@@ -77,7 +77,7 @@ public class HibernateConceptService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.ConceptService#getConcept(java.lang.Integer)
+	 * @see org.openmrs.api.db.ConceptService#getConcept(java.lang.Integer)
 	 */
 	public Concept getConcept(Integer conceptId) throws APIException {
 		
@@ -90,7 +90,7 @@ public class HibernateConceptService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.ConceptService#updateConcept(org.openmrs.Concept)
+	 * @see org.openmrs.api.db.ConceptService#updateConcept(org.openmrs.Concept)
 	 */
 	public void updateConcept(Concept concept) {
 		
@@ -159,7 +159,7 @@ public class HibernateConceptService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.ConceptService#voidConcept(org.openmrs.Concept, java.lang.String)
+	 * @see org.openmrs.api.db.ConceptService#voidConcept(org.openmrs.Concept, java.lang.String)
 	 */
 	public void voidConcept(Concept concept, String reason) {
 		concept.setRetired(false);
@@ -167,7 +167,7 @@ public class HibernateConceptService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.ConceptService#getConceptByName(java.lang.String)
+	 * @see org.openmrs.api.db.ConceptService#getConceptByName(java.lang.String)
 	 */
 	public List<Concept> getConceptByName(String name) {
 		
@@ -182,7 +182,7 @@ public class HibernateConceptService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.ConceptService#getDrugs()
+	 * @see org.openmrs.api.db.ConceptService#getDrugs()
 	 */
 	public List<Drug> getDrugs() {
 
@@ -194,7 +194,7 @@ public class HibernateConceptService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.ConceptService#getConceptClass(java.lang.Integer)
+	 * @see org.openmrs.api.db.ConceptService#getConceptClass(java.lang.Integer)
 	 */
 	public ConceptClass getConceptClass(Integer i) {
 		Session session = HibernateUtil.currentSession();
@@ -206,7 +206,7 @@ public class HibernateConceptService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.ConceptService#getConceptClasses()
+	 * @see org.openmrs.api.db.ConceptService#getConceptClasses()
 	 */
 	public List<ConceptClass> getConceptClasses() {
 		Session session = HibernateUtil.currentSession();
@@ -217,7 +217,7 @@ public class HibernateConceptService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.ConceptService#getConceptDatatype(java.lang.Integer)
+	 * @see org.openmrs.api.db.ConceptService#getConceptDatatype(java.lang.Integer)
 	 */
 	public ConceptDatatype getConceptDatatype(Integer i) {
 		Session session = HibernateUtil.currentSession();
@@ -229,7 +229,7 @@ public class HibernateConceptService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.ConceptService#getConceptDatatypes()
+	 * @see org.openmrs.api.db.ConceptService#getConceptDatatypes()
 	 */
 	public List<ConceptDatatype> getConceptDatatypes() {
 		Session session = HibernateUtil.currentSession();
@@ -240,7 +240,7 @@ public class HibernateConceptService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.ConceptService#getConceptNumeric(java.lang.Integer)
+	 * @see org.openmrs.api.db.ConceptService#getConceptNumeric(java.lang.Integer)
 	 */
 	public ConceptNumeric getConceptNumeric(Integer i) {
 		Session session = HibernateUtil.currentSession();
@@ -252,7 +252,7 @@ public class HibernateConceptService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.ConceptService#getConceptSets(java.lang.Integer)
+	 * @see org.openmrs.api.db.ConceptService#getConceptSets(java.lang.Integer)
 	 */
 	public List<ConceptSet> getConceptSets(Concept concept) {
 		Session session = HibernateUtil.currentSession();

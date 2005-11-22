@@ -1,4 +1,4 @@
-package org.openmrs.context;
+package org.openmrs.api.context;
 
 public class ContextAuthenticationException extends Exception {
 	

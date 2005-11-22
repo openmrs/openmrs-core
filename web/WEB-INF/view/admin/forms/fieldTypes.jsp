@@ -1,8 +1,8 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
-<%@ page import="org.openmrs.context.Context" %>
-<%@ page import="org.openmrs.api.AdministrationService" %>
+<%@ page import="org.openmrs.api.context.Context" %>
+<%@ page import="org.openmrs.api.db.AdministrationService" %>
 <%@ page import="org.openmrs.FieldType" %>
-<%@ page import="org.openmrs.api.APIException" %>
+<%@ page import="org.openmrs.api.db.APIException" %>
 <%@ page import="org.openmrs.web.Constants" %>
 
 <openmrs:require privilege="Manage Forms" otherwise="/login.htm" />

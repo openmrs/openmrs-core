@@ -6,8 +6,8 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
-import org.openmrs.api.ConceptService;
-import org.openmrs.context.Context;
+import org.openmrs.api.db.ConceptService;
+import org.openmrs.api.context.Context;
 import org.openmrs.web.Constants;
 
 import uk.ltd.getahead.dwr.ExecutionContext;

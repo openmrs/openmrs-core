@@ -1,4 +1,4 @@
-package org.openmrs.context;
+package org.openmrs.api.context;
 
 /**
  * Factory for obtaining an OpenMRS <code>context</code>.

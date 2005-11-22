@@ -1,9 +1,9 @@
-<%@ page import="org.openmrs.context.Context" %>
+<%@ page import="org.openmrs.api.context.Context" %>
 <%@ page import="org.openmrs.User" %>
 <%@ page import="org.openmrs.Role" %>
 <%@ page import="org.openmrs.Privilege" %>
 <%@ page import="java.util.Iterator" %>
-<%@ page import="org.openmrs.api.UserService" %>
+<%@ page import="org.openmrs.api.db.UserService" %>
 <%@ page import="java.util.List" %>
 
 <html>
