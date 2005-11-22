@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
     
 <hibernate-mapping>
@@ -12,14 +12,14 @@
 -->
 
 <class 
-    name="org.openmrs.PatientIdentifierType" 
-    table="patient_identifier_type"
+    name="org.openmrs.RelationshipType" 
+    table="relationship_type"
 >
 
     <id
-        name="patientIdentifierTypeId"
+        name="relationshipTypeId"
         type="java.lang.Integer"
-        column="patient_identifier_type_id"
+        column="relationship_type_id"
         unsaved-value="0"
     >
         <generator class="identity" />
@@ -37,7 +37,7 @@
         type="java.lang.String"
         column="description"
         not-null="true"
-        length="65535"
+        length="255"
     />
     <property
         name="dateCreated"
@@ -49,22 +49,6 @@
 
     <!-- Associations -->
   
-    <!-- bi-directional one-to-many association to PatientIdentifier -->
-    <!--
-    <set
-        name="patientIdentifiers"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
-        <key>
-            <column name="identifier_type" />
-        </key>
-        <one-to-many 
-            class="org.openmrs.PatientIdentifier"
-        />
-    </set>
-    -->
     <!-- bi-directional many-to-one association to User -->
     <many-to-one
         name="creator"

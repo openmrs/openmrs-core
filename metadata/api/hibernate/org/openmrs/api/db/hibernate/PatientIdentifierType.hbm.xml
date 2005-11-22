@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
     
 <hibernate-mapping>
@@ -12,14 +12,14 @@
 -->
 
 <class 
-    name="org.openmrs.FieldType" 
-    table="field_type"
+    name="org.openmrs.PatientIdentifierType" 
+    table="patient_identifier_type"
 >
 
     <id
-        name="fieldTypeId"
-        type="int"
-        column="field_type_id"
+        name="patientIdentifierTypeId"
+        type="java.lang.Integer"
+        column="patient_identifier_type_id"
         unsaved-value="0"
     >
         <generator class="identity" />
@@ -29,19 +29,15 @@
         name="name"
         type="java.lang.String"
         column="name"
+        not-null="true"
         length="50"
     />
     <property
         name="description"
         type="java.lang.String"
         column="description"
-        length="2147483647"
-    />
-    <property
-        name="isSet"
-        type="boolean"
-        column="is_set"
-        length="1"
+        not-null="true"
+        length="65535"
     />
     <property
         name="dateCreated"
@@ -53,23 +49,22 @@
 
     <!-- Associations -->
   
-    <!-- bi-directional one-to-many association to Field -->
+    <!-- bi-directional one-to-many association to PatientIdentifier -->
     <!--
     <set
-        name="fields"
+        name="patientIdentifiers"
         lazy="true"
         inverse="true"
 		cascade="none"
     >
         <key>
-            <column name="field_type" />
+            <column name="identifier_type" />
         </key>
         <one-to-many 
-            class="org.openmrs.Field"
+            class="org.openmrs.PatientIdentifier"
         />
     </set>
     -->
-    
     <!-- bi-directional many-to-one association to User -->
     <many-to-one
         name="creator"

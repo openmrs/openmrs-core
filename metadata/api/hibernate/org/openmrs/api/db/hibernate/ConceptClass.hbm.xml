@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
     
 <hibernate-mapping>
@@ -12,14 +12,14 @@
 -->
 
 <class 
-    name="org.openmrs.RelationshipType" 
-    table="relationship_type"
+    name="org.openmrs.ConceptClass" 
+    table="concept_class"
 >
 
     <id
-        name="relationshipTypeId"
+        name="conceptClassId"
         type="java.lang.Integer"
-        column="relationship_type_id"
+        column="concept_class_id"
         unsaved-value="0"
     >
         <generator class="identity" />
@@ -30,7 +30,7 @@
         type="java.lang.String"
         column="name"
         not-null="true"
-        length="50"
+        length="255"
     />
     <property
         name="description"
@@ -46,9 +46,32 @@
         not-null="true"
         length="19"
     />
+    <property
+        name="set"
+        type="java.lang.Boolean"
+        column="is_set"
+        length="1"
+        access="field"
+    />
 
     <!-- Associations -->
   
+    <!-- bi-directional one-to-many association to Concept -->
+    <!--
+    <set
+        name="concepts"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="class_id" />
+        </key>
+        <one-to-many 
+            class="org.openmrs.Concept"
+        />
+    </set>
+    -->
     <!-- bi-directional many-to-one association to User -->
     <many-to-one
         name="creator"

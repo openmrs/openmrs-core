@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
     
 <hibernate-mapping>
@@ -12,68 +12,54 @@
 -->
 
 <class 
-    name="org.openmrs.Form" 
-    table="form"
+    name="org.openmrs.FormField" 
+    table="form_field"
 >
 
     <id
-        name="formId"
+        name="formFieldId"
         type="int"
-        column="form_id"
+        column="form_field_id"
         unsaved-value="0"
     >
         <generator class="identity" />
     </id>
 
     <property
-        name="name"
-        type="java.lang.String"
-        column="name"
-        not-null="true"
-        length="50"
+        name="fieldNumber"
+        type="int"
+        column="field_number"
+        length="11"
     />
     <property
-        name="version"
+        name="fieldPart"
         type="java.lang.String"
-        column="version"
-        not-null="true"
-        length="50"
+        column="field_part"
+        length="5"
     />
     <property
-        name="description"
-        type="java.lang.String"
-        column="description"
-        length="2147483647"
+        name="pageNumber"
+        type="int"
+        column="page_number"
+        length="11"
     />
     <property
-        name="schemaNamespace"
-        type="java.lang.String"
-        column="schema_namespace"
-        length="255"
+        name="minOccurs"
+        type="int"
+        column="min_occurs"
+        length="11"
     />
     <property
-        name="definition"
-        type="java.lang.String"
-        column="definition"
-        length="2147483647"
+        name="maxOccurs"
+        type="int"
+        column="max_occurs"
+        length="11"
     />
     <property
-        name="retired"
+        name="required"
         type="boolean"
-        column="retired"
+        column="required"
         length="1"
-    />
-    <property
-        name="retiredReason"
-        type="java.lang.String"
-        column="retired_reason"
-        length="50"
-    />
-    <property
-        name="dateRetired"
-        type="java.util.Date"
-        column="date_retired"
-        length="19"
     />
     <property
         name="dateChanged"
@@ -85,13 +71,21 @@
         name="dateCreated"
         type="java.util.Date"
         column="date_created"
-        not-null="true"
         length="19"
     />
 
     <!-- Associations -->
   
+    <!-- bi-directional many-to-one association to Form -->
+    <many-to-one
+        name="form"
+        class="org.openmrs.Form"
+        not-null="true"
+    >
+        <column name="form_id" />
+    </many-to-one>
     <!-- bi-directional one-to-many association to FormField -->
+    <!--
     <set
         name="formFields"
         lazy="true"
@@ -99,19 +93,20 @@
 		cascade="none"
     >
         <key>
-            <column name="form_id" />
+            <column name="parent_form_field" />
         </key>
         <one-to-many 
             class="org.openmrs.FormField"
         />
     </set>
-    <!-- bi-directional many-to-one association to User -->
+    -->
+    <!-- bi-directional many-to-one association to FormField -->
     <many-to-one
-        name="creator"
-        class="org.openmrs.User"
+        name="formField"
+        class="org.openmrs.FormField"
         not-null="true"
     >
-        <column name="creator" />
+        <column name="parent_form_field" />
     </many-to-one>
     <!-- bi-directional many-to-one association to User -->
     <many-to-one
@@ -123,11 +118,20 @@
     </many-to-one>
     <!-- bi-directional many-to-one association to User -->
     <many-to-one
-        name="retiredBy"
+        name="creator"
         class="org.openmrs.User"
         not-null="true"
     >
-        <column name="retired_by" />
+        <column name="creator" />
     </many-to-one>
+    <!-- bi-directional many-to-one association to Field -->
+    <many-to-one
+        name="field"
+        class="org.openmrs.Field"
+        not-null="true"
+    >
+        <column name="field_id" />
+    </many-to-one>
+
 </class>
 </hibernate-mapping>
