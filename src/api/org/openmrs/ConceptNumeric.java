@@ -48,11 +48,11 @@ public class ConceptNumeric implements java.io.Serializable {
 	// Property accessors
 
 	
-	public Integer getConceptId() {
+	private Integer getConceptId() {
 		return this.conceptId;
 	}
 	
-	public void setConceptId(Integer conceptId) {
+	private void setConceptId(Integer conceptId) {
 		this.conceptId = conceptId;
 	}
 	

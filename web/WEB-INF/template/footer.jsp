@@ -3,9 +3,9 @@
 
 	<div id="footer">
 		
-		<a href="<%= request.getContextPath() %>/index.htm?lang=en">English</a> |
-		<a href="<%= request.getContextPath() %>/index.htm?lang=fr">Français</a> |
-		<a href="<%= request.getContextPath() %>/index.htm?lang=de">Deutsch</a>
+		<a href="?${pageContext.request.queryString}&lang=en">English</a> |
+		<a href="?${pageContext.request.queryString}&lang=fr">Français</a> |
+		<a href="?${pageContext.request.queryString}&lang=de">Deutsch</a>
 		
 	</div>
 

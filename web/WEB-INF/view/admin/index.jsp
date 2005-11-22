@@ -16,7 +16,7 @@
 	}
 </style>
 
-<h2>Administration</h2>
+<h2><spring:message code="admin.title"/></h2>
 
 <div id="springnote">Marked sections have been springified</div>
 

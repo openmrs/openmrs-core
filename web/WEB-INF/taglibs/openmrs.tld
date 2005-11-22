@@ -57,6 +57,25 @@
 </tag>
 
 <tag>
+	<name>hasPrivilege</name>
+	<tag-class>org.openmrs.web.taglib.PrivilegeTag</tag-class>
+	<body-content>JSP</body-content>
+	<description>
+		Determines if the current user has the given privilege
+	</description>
+	<attribute>
+		<name>privilege</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>converse</name>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+</tag>
+
+<tag>
 	<name>forEachRecord</name>
 	<tag-class>org.openmrs.web.taglib.ForEachRecordTag</tag-class>
 	<body-content>JSP</body-content>

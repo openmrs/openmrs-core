@@ -1,6 +1,7 @@
 package org.openmrs;
 
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * ConceptName
@@ -25,6 +26,13 @@ public class ConceptName implements java.io.Serializable {
 	/** default constructor */
 	public ConceptName() {
 	}
+	
+	public ConceptName(String name, String shortName, Locale locale) {
+		setName(name);
+		setShortName(shortName);
+		setLocale(locale);
+		//setDescription(description);  TODO move description to concept_name table
+	}
 
 	public boolean equals(Object obj) {
 		if (obj instanceof ConceptName) {
@@ -40,7 +48,11 @@ public class ConceptName implements java.io.Serializable {
 		if (this.getConcept() == null || this.getName() == null
 				|| this.getLocale() == null)
 			return super.hashCode();
-		return this.getConcept().hashCode() + this.getName().hashCode() + this.getLocale().hashCode();
+		int hash = 3;
+		hash = hash + 31 * this.getConcept().hashCode();
+		hash = hash + 31 * this.getName().hashCode();
+		hash = hash + 31 * this.getLocale().hashCode();
+		return hash;
 	}
 
 	// Property accessors
@@ -76,6 +88,10 @@ public class ConceptName implements java.io.Serializable {
 
 	public void setLocale(String locale) {
 		this.locale = locale;
+	}
+	
+	public void setLocale(Locale locale) {
+		this.locale = locale.getLanguage();
 	}
 
 	/**

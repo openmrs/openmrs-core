@@ -42,6 +42,7 @@
 					<prop key="**/location.form">locationForm</prop>
 					<prop key="**/provider.htm">providerForm</prop>
 					<prop key="**/concept.form">conceptForm</prop>
+					<prop key="**/concept.htm">conceptView</prop>
 					<prop key="**/*.htm">springController</prop>
 	            </props>
 	        </property>
@@ -264,7 +265,12 @@
 				<property name="formView"><value>/dictionary/conceptForm</value></property>
 				<property name="successView"><value>concept.form</value></property>
 			</bean>
-		
+	    	<bean id="conceptView" class="org.openmrs.web.controller.ConceptFormController">
+				<property name="commandName"><value>concept</value></property>
+				<property name="formView"><value>/dictionary/concept</value></property>
+				<property name="successView"><value>concept.htm</value></property>
+			</bean>
+
 	    <!-- ============================ -->
 		    
 		    

@@ -14,14 +14,15 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSynonym;
 import org.openmrs.Drug;
 import org.openmrs.User;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.APIException;
 import org.openmrs.api.db.ConceptService;
-import org.openmrs.api.context.Context;
 
 public class HibernateConceptService implements
 		ConceptService {
@@ -104,8 +105,6 @@ public class HibernateConceptService implements
 				modifyCollections(concept);
 				concept.setChangedBy(context.getAuthenticatedUser());
 				concept.setDateChanged(new Date());
-				if (concept.getConceptNumeric() != null)
-					session.saveOrUpdate(concept.getConceptNumeric()); //necessary for the one-to-one tag 
 				session.saveOrUpdate(concept);
 				HibernateUtil.commitTransaction();
 			}
@@ -120,6 +119,14 @@ public class HibernateConceptService implements
 		
 		User authUser = context.getAuthenticatedUser();
 		Date timestamp = new Date();
+		if (c.getNames() != null) {
+			for (ConceptName cn : c.getNames()) {
+				if (cn.getCreator() == null ) {
+					cn.setCreator(authUser);
+					cn.setDateCreated(timestamp);
+				}
+			}
+		}
 		for (ConceptSynonym syn : c.getSynonyms()) {
 			if (syn.getCreator() == null ) {
 				syn.setCreator(authUser);

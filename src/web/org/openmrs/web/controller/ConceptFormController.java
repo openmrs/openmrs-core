@@ -20,8 +20,8 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptSynonym;
-import org.openmrs.api.db.ConceptService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.ConceptService;
 import org.openmrs.web.Constants;
 import org.openmrs.web.propertyeditor.ConceptAnswersEditor;
 import org.openmrs.web.propertyeditor.ConceptClassEditor;
@@ -33,6 +33,7 @@ import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.springframework.web.servlet.support.RequestContextUtils;
 import org.springframework.web.servlet.view.RedirectView;
 
 public class ConceptFormController extends SimpleFormController {
@@ -54,7 +55,7 @@ public class ConceptFormController extends SimpleFormController {
 		String conceptId = request.getParameter("conceptId");
 		
         NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
-        Locale locale = request.getLocale();
+        Locale locale = RequestContextUtils.getLocale(request);
         binder.registerCustomEditor(java.lang.Integer.class,
                 new CustomNumberEditor(java.lang.Integer.class, nf, true));
 		//binder.registerCustomEditor(java.lang.Integer.class, 
@@ -82,7 +83,7 @@ public class ConceptFormController extends SimpleFormController {
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		Concept concept = (Concept)object;
-		Locale locale = request.getLocale();
+		Locale locale = RequestContextUtils.getLocale(request);
 		
 		if (context != null && context.isAuthenticated()) {
 			ConceptService cs = context.getConceptService();
@@ -118,11 +119,27 @@ public class ConceptFormController extends SimpleFormController {
 				
 				concept.setSynonyms(newSyns);
 				
+				//zero out conceptSets
 				String conceptSets = request.getParameter("conceptSets");
 				if (conceptSets == null)
 					concept.setConceptSets(null); 
 				
-		}
+				//set concept_name properties to the correct/current locale
+				String conceptName = request.getParameter("name");
+				String shortName = request.getParameter("shortName");
+				//String description = request.getParameter("description");
+				ConceptName cn = concept.getName(locale);
+				if (cn != null) {
+					cn.setName(conceptName);
+					cn.setShortName(shortName);
+					//cn.setDescription(description);
+				}
+				else {
+					//TODO add description
+					concept.addName(new ConceptName(conceptName, shortName, locale));
+				}
+						
+			}
 		
 		return super.processFormSubmission(request, response, concept, errors); 
 	}
@@ -198,6 +215,7 @@ public class ConceptFormController extends SimpleFormController {
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
+		Locale locale = RequestContextUtils.getLocale(request);
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		if (context != null && context.isAuthenticated()) {
@@ -205,12 +223,16 @@ public class ConceptFormController extends SimpleFormController {
 			
 			// get conceptName object
 			String conceptId = request.getParameter("conceptId");
+			ConceptName cn = null;
 	    	if (conceptId != null) {
 	    		Concept concept = cs.getConcept(Integer.valueOf(conceptId));
-	    		map.put("conceptName", concept.getName(request.getLocale()));
+	    		cn = concept.getName(locale);
+	    		if (cn == null)
+	    			cn = concept.getName(new Locale("en_US"));
 	    	}
-	    	else
-	    		map.put("conceptName", new ConceptName());
+	    	if (cn == null)
+	    		cn = new ConceptName();
+	    	map.put("conceptName", cn);
 	    	//get class and datatype lists 
 			map.put("classes", cs.getConceptClasses());
 			map.put("datatypes", cs.getConceptDatatypes());

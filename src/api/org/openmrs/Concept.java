@@ -7,12 +7,16 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Concept 
  */
 public class Concept implements java.io.Serializable {
 
 	public static final long serialVersionUID = 5733L;
+	public Log log = LogFactory.getLog(this.getClass());
 
 	// Fields
 
@@ -272,11 +276,13 @@ public class Concept implements java.io.Serializable {
 	 * @return ConceptName attributed to the Concept in the given locale
 	 */
 	public ConceptName getName(Locale locale) {
-		
+		log.debug("getting name corresponding to: " + locale.getLanguage());
+		String loc = locale.getLanguage();
 		for (Iterator<ConceptName> i = getNames().iterator(); i.hasNext();) {
 			ConceptName name = i.next();
 			String lang = name.getLocale();
-			if (lang.equals(locale.getLanguage()))
+			log.debug("name's lang: " + lang);
+			if (lang.equals(loc))
 				return name;
 		}
 		
