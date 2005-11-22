@@ -21,7 +21,7 @@ public class AuthTag extends TagSupport {
 		HttpSession httpSession = pageContext.getSession();
 		
 		Context context = (Context)httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
+
 		if (context == null) {
 			return SKIP_BODY;
 		}

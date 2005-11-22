@@ -9,7 +9,7 @@
 
 <c:if test="${concept.conceptId != null}">
 	<a href="concept.htm?conceptId=${concept.conceptId - 1}" valign="middle">&laquo; Previous</a> |
-	<openmrs:hasPrivilege privilege="Edit Dictionary">
+	<openmrs:hasPrivilege privilege="Edit Dictionary" converse="false">
 		<a href="concept.form?conceptId=${concept.conceptId}" valign="middle">Edit</a> |
 	</openmrs:hasPrivilege>
 	<a href="concept.htm?conceptId=${concept.conceptId + 1}" valign="middle">Next &raquo;</a>
@@ -39,9 +39,9 @@
 	</tr>
 	<tr>
 		<td valign="top"><spring:message code="Concept.synonyms" /></td>
-		<td valign="top"><spring:bind path="concept.synonyms">
-			<c:forEach items="${status.value}" var="syn">${syn}<br/></c:forEach>
-		</spring:bind></td>
+		<td valign="top">
+			<c:forEach items="${conceptSynonyms}" var="syn">${syn}<br/></c:forEach>
+		</td>
 	</tr>
 	<tr>
 		<td><spring:message code="Concept.conceptClass" /></td>
@@ -53,11 +53,7 @@
 		<tr id="setOptions">
 			<td valign="top"><spring:message code="Concept.conceptSets"/></td>
 			<td valign="top">
-				<c:forEach items="${concept.conceptSets}" var="set">
-					<%=((org.openmrs.ConceptSet) pageContext
-							.getAttribute("set")).getConcept().getName(
-							request.getLocale()).getName()%> <br/>
-				</c:forEach>
+				<c:forEach items="${conceptSets}" var="set">${set.value} (${set.key})<br/></c:forEach>
 			</td>
 		</tr>
 	</c:if>
@@ -71,9 +67,7 @@
 		<tr>
 			<td valign="top"><spring:message code="Concept.answers"/></td>
 			<td>
-				<c:forEach items="${concept.answers}" var="answer">
-					<%= ((org.openmrs.ConceptAnswer) pageContext.getAttribute("answer")).getAnswerConcept().getName(request.getLocale()).getName() %><br/>
-				</c:forEach>
+				<c:forEach items="${conceptAnswers}" var="answer">${answer.value} (${answer.key})<br/></c:forEach>
 			</td>
 		</tr>
 	</c:if>
@@ -179,31 +173,20 @@
 	</tr>
 	<c:if test="${!(concept.creator == null)}">
 		<tr>
-			<td><spring:message code="general.creator" /></td>
-			<td><spring:bind path="concept.creator">
-						${concept.creator.username}
-					</spring:bind></td>
-		</tr>
-		<tr>
-			<td><spring:message code="general.dateCreated" /></td>
-			<td><spring:bind path="concept.dateCreated">
+			<td><spring:message code="general.created" /></td>
+			<td>
+				${concept.creator.firstName} ${concept.creator.lastName} -
 				<openmrs:formatDate date="${concept.dateCreated}" type="long" />
-			</spring:bind></td>
+			</td>
 		</tr>
 	</c:if>
 	<c:if test="${!(concept.changedBy == null)}">
 		<tr>
-			<td><spring:message code="general.changedBy" /></td>
-			<td><spring:bind path="concept.changedBy">
-						${concept.changedBy.username}
-				</spring:bind>
-			</td>
-		</tr>
-		<tr>
-			<td><spring:message code="general.dateChanged" /></td>
-			<td><spring:bind path="concept.dateChanged">
+			<td><spring:message code="general.changed" /></td>
+			<td>
+				${concept.changedBy.firstName} ${concept.changedBy.lastName} -
 				<openmrs:formatDate date="${concept.dateChanged}" type="long" />
-			</spring:bind></td>
+			</td>
 		</tr>
 	</c:if>
 </table>

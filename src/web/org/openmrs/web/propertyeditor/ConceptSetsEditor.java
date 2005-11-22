@@ -10,8 +10,8 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.ConceptSet;
-import org.openmrs.api.db.ConceptService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.ConceptService;
 import org.springframework.util.StringUtils;
 
 public class ConceptSetsEditor extends PropertyEditorSupport {
@@ -19,8 +19,6 @@ public class ConceptSetsEditor extends PropertyEditorSupport {
 	private Log log = LogFactory.getLog(this.getClass());
 	
 	private Context context;
-	private Integer conceptId;
-	private Collection<ConceptSet> originalConceptSets;  //set in getAsText()
 	
 	public ConceptSetsEditor(Context c) {
 		this.context = c;
@@ -38,7 +36,7 @@ public class ConceptSetsEditor extends PropertyEditorSupport {
 				// and removal of duplicates
 				for (String id : conceptIds) {
 					id = id.trim();
-					if (!id.equals(""))
+					if (!id.equals("") && !requestConceptIds.contains(Integer.valueOf(id))) //remove whitespace, blank lines, and duplicate entries
 						requestConceptIds.add(Integer.valueOf(id));
 				}
 				

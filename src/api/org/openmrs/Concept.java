@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Set;
+import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -276,12 +277,10 @@ public class Concept implements java.io.Serializable {
 	 * @return ConceptName attributed to the Concept in the given locale
 	 */
 	public ConceptName getName(Locale locale) {
-		log.debug("getting name corresponding to: " + locale.getLanguage());
 		String loc = locale.getLanguage();
 		for (Iterator<ConceptName> i = getNames().iterator(); i.hasNext();) {
 			ConceptName name = i.next();
 			String lang = name.getLocale();
-			log.debug("name's lang: " + lang);
 			if (lang.equals(loc))
 				return name;
 		}
@@ -363,7 +362,25 @@ public class Concept implements java.io.Serializable {
 	public Collection<ConceptSynonym> getSynonyms() {
 		return synonyms;
 	}
-
+	
+	/**
+	 * Gets the synonyms the given locale.  Returns empty list if none found. 
+	 * 
+	 * @param locale
+	 * @return Collection of ConceptSynonym attributed to the Concept in the given locale
+	 */
+	public Collection<ConceptSynonym> getSynonyms(Locale locale) {
+		String loc = locale.getLanguage();
+		Collection<ConceptSynonym> syns = new Vector<ConceptSynonym>();
+		for (ConceptSynonym syn : getSynonyms()) {
+			String lang = syn.getLocale();
+			if (lang.equals(loc))
+				syns.add(syn);
+		}
+		log.debug("returning: " + syns);
+		return syns;
+	}
+	
 	/**
 	 * @param synonyms The synonyms to set.
 	 */

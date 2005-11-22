@@ -139,4 +139,7 @@ public class ConceptName implements java.io.Serializable {
 		this.dateCreated = dateCreated;
 	}
 
+	public String toString() {
+		return this.name;
+	}
 }

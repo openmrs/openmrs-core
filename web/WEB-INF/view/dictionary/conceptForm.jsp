@@ -102,6 +102,16 @@
 	}
 </style>
 
+<spring:hasBindErrors name="concept">
+	<spring:message code="fix.error"/>
+	<div class="error">
+		<c:forEach items="${errors.allErrors}" var="error">
+			<spring:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
+		</c:forEach>
+	</div>
+	<br />
+</spring:hasBindErrors>
+
 <form method="post" action="">
 <table>
 	<tr>
@@ -135,14 +145,11 @@
 	</tr>
 	<tr>
 		<td valign="top"><spring:message code="Concept.synonyms" /></td>
-		<td valign="top"><spring:bind path="concept.synonyms">
+		<td valign="top">
 			<textarea name="syns" rows="6" cols="25"><c:forEach
-				items="${status.value}" var="syn">${syn}
+				items="${conceptSynonyms}" var="syn">${syn}
 </c:forEach></textarea>
-			<c:if test="${status.errorMessage != ''}">
-				<span class="error">${status.errorMessage}</span>
-			</c:if>
-		</spring:bind></td>
+		</td>
 	</tr>
 	<tr>
 		<td><spring:message code="Concept.conceptClass" /></td>
@@ -163,17 +170,13 @@
 		<tr id="setOptions">
 			<td valign="top"><spring:message code="Concept.conceptSets"/></td>
 			<td valign="top">
-				<input type="text" name="conceptSets" id="conceptSets" size="40" value='<c:forEach items="${concept.conceptSets}" var="set">${set.concept.conceptId} </c:forEach>' />
+				<input type="text" name="conceptSets" id="conceptSets" size="40" value='<c:forEach items="${conceptSets}" var="set">${set.key} </c:forEach>' />
 				<table cellpadding="0" cellspacing="0">
 					<tr>
 						<td valign="top">
 							<select size="6" id="conceptSetsNames">
-								<c:forEach items="${concept.conceptSets}" var="set">
-									<option value="${set.concept.conceptId}">
-												<%=((org.openmrs.ConceptSet) pageContext
-													.getAttribute("set")).getConcept().getName(
-													request.getLocale()).getName()%>
-									</option>
+								<c:forEach items="${conceptSets}" var="set">
+									<option value="${set.key}">${set.value} (${set.key})</option>
 								</c:forEach>
 							</select>
 						</td>
@@ -206,15 +209,13 @@
 		<tr>
 			<td valign="top"><spring:message code="Concept.answers"/></td>
 			<td>
-				<input type="text" name="answers" id="answerIds" size="40" value='<c:forEach items="${concept.answers}" var="answer">${answer.answerConcept.conceptId} </c:forEach>' />
+				<input type="text" name="answers" id="answerIds" size="40" value='<c:forEach items="${conceptAnswers}" var="answer">${answer.key} </c:forEach>' />
 				<table cellspacing="0" cellpadding="0">
 					<tr>
 						<td valign="top">
 							<select size="6" id="answerNames">
-								<c:forEach items="${concept.answers}" var="answer">
-									<option value="${answer.answerConcept.conceptId}">
-										<%= ((org.openmrs.ConceptAnswer) pageContext.getAttribute("answer")).getAnswerConcept().getName(request.getLocale()).getName() %>
-									</option>
+								<c:forEach items="${conceptAnswers}" var="answer">
+									<option value="${answer.key}">${answer.value} (${answer.key})</option>
 								</c:forEach>
 							</select>
 						</td>
@@ -354,31 +355,20 @@
 	</tr>
 	<c:if test="${!(concept.creator == null)}">
 		<tr>
-			<td><spring:message code="general.creator" /></td>
-			<td><spring:bind path="concept.creator">
-						${concept.creator.username}
-					</spring:bind></td>
-		</tr>
-		<tr>
-			<td><spring:message code="general.dateCreated" /></td>
-			<td><spring:bind path="concept.dateCreated">
+			<td><spring:message code="general.created" /></td>
+			<td>
+				${concept.creator.username} -
 				<openmrs:formatDate date="${concept.dateCreated}" type="long" />
-			</spring:bind></td>
+			</td>
 		</tr>
 	</c:if>
 	<c:if test="${!(concept.changedBy == null)}">
 		<tr>
-			<td><spring:message code="general.changedBy" /></td>
-			<td><spring:bind path="concept.changedBy">
-						${concept.changedBy.username}
-				</spring:bind>
-			</td>
-		</tr>
-		<tr>
-			<td><spring:message code="general.dateChanged" /></td>
-			<td><spring:bind path="concept.dateChanged">
+			<td><spring:message code="general.changed" /></td>
+			<td>
+				${concept.changedBy.username} -
 				<openmrs:formatDate date="${concept.dateChanged}" type="long" />
-			</spring:bind></td>
+			</td>
 		</tr>
 	</c:if>
 </table>

@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -17,8 +18,10 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
+import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSynonym;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptService;
@@ -106,10 +109,13 @@ public class ConceptFormController extends SimpleFormController {
 				// Union the originalSyns and parameterSyns to get the 'clean' synonyms
 				//   remove synonym from parameterSynonym if 'clean'
 				for (ConceptSynonym c : originalSyns) {
-					if (parameterSyns.contains(c)) {  //.contains only possible because we overrode .equals
+					if (parameterSyns.contains(c)) {  // .contains() is only usable because we overrode .equals()
 						newSyns.add(c);
 						parameterSyns.remove(c);
 					}
+					// add synonyms from other locales
+					else if (!c.getLocale().equals(locale.getLanguage()))
+						newSyns.add(c);
 				}
 				
 				//add all remaining parameter synonyms
@@ -220,22 +226,45 @@ public class ConceptFormController extends SimpleFormController {
 		
 		if (context != null && context.isAuthenticated()) {
 			ConceptService cs = context.getConceptService();
-			
-			// get conceptName object
 			String conceptId = request.getParameter("conceptId");
-			ConceptName cn = null;
-	    	if (conceptId != null) {
-	    		Concept concept = cs.getConcept(Integer.valueOf(conceptId));
-	    		cn = concept.getName(locale);
-	    		if (cn == null)
-	    			cn = concept.getName(new Locale("en_US"));
-	    	}
-	    	if (cn == null)
-	    		cn = new ConceptName();
-	    	map.put("conceptName", cn);
-	    	//get class and datatype lists 
+			ConceptName conceptName = new ConceptName();
+			Collection<ConceptSynonym> conceptSynonyms = new Vector<ConceptSynonym>();
+			Map<String, ConceptName> conceptSets = new HashMap<String, ConceptName>();
+			Map<String, ConceptName> conceptAnswers = new HashMap<String, ConceptName>();
+			
+			if (conceptId != null) {
+				Concept concept = cs.getConcept(Integer.valueOf(conceptId));
+			
+			// get locale specific conceptName object
+		    	conceptName = concept.getName(locale);
+	    	
+	    	// get locale specific synonyms
+		    	conceptSynonyms = concept.getSynonyms(locale);
+		    		
+		    // get concept sets with locale decoded names
+		    	for (ConceptSet set : concept.getConceptSets()) {
+		    		conceptSets.put(set.getConcept().getConceptId().toString(), set.getConcept().getName(locale));
+		    	}
+
+		    // get concept answers with locale decoded names
+		    	for (ConceptAnswer answer : concept.getAnswers()) {
+		    		conceptAnswers.put(answer.getAnswerConcept().getConceptId().toString(), answer.getAnswerConcept().getName(locale));
+		    	}
+
+			}
+
+	    	map.put("conceptName", conceptName);
+	    	map.put("conceptSynonyms", conceptSynonyms);
+	    	map.put("conceptSets", conceptSets);
+	    	map.put("conceptAnswers", conceptAnswers);
+
+			
+	    	//get complete class and datatype lists 
 			map.put("classes", cs.getConceptClasses());
 			map.put("datatypes", cs.getConceptDatatypes());
+			// make spring locale available to jsp
+			map.put("locale", locale.getLanguage());
+			
 		}
 		
 		return map;
