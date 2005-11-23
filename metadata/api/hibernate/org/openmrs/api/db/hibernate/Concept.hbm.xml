@@ -57,7 +57,7 @@
 				<parent name="concept"/>
 				<property name="conceptAnswerId" type="java.lang.Integer" length="11" column="concept_answer_id"/>
 				<many-to-one name="answerConcept" class="org.openmrs.Concept" column="answer_concept" />
-				<many-to-one name="answerDrug" class="org.openmrs.Concept" column="answer_drug" />
+				<many-to-one name="answerDrug" class="org.openmrs.Drug" column="answer_drug" />
 				<property name="dateCreated" type="java.util.Date" column="date_created"/>
 				<many-to-one name="creator" class="User" column="creator" not-null="true"/>
 			</composite-element>

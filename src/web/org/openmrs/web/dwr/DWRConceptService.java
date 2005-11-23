@@ -49,9 +49,9 @@ public class DWRConceptService {
 				}
 			}
 			else {
-				outer: for (Concept c : concepts) {
+				for (Concept c : concepts) {
 					if ( curCount++ > maxCount ) {
-						break outer;
+						break;
 					}
 					conceptList.add(new ConceptListItem(c));
 				}

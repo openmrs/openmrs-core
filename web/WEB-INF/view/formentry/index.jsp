@@ -4,7 +4,7 @@
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
-<script src='<%= request.getContextPath() %>/validation.js'></script>
+<script src='<%= request.getContextPath() %>/scripts/validation.js'></script>
 
 <script src='<%= request.getContextPath() %>/dwr/interface/DWRPatientService.js'></script>
 <script src='<%= request.getContextPath() %>/dwr/engine.js'></script>

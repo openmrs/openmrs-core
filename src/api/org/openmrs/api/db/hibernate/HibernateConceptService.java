@@ -5,9 +5,8 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.criterion.Expression;
-import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Concept;
@@ -180,11 +179,19 @@ public class HibernateConceptService implements
 		
 		Session session = HibernateUtil.currentSession();
 		
-		List<Concept> concepts = session.createCriteria(Concept.class)
-								.createCriteria("names", "n")
-								//.add(Expression.eq("locale", context.getLocale().toString()))
-								.add(Expression.like("n.name", "%" + name + "%" , MatchMode.ANYWHERE))
-								.list();
+		Query query = session.createQuery("select concept from Concept concept where concept.names.name like '%' || ? || '%'");
+		query.setString(0, name);
+		List<Concept> concepts = query.list();
+		
+		
+		/*  Use if names is an entity, not a value type of Concept
+		 *    aka. if names is mapped with many-to-on instead of composite-element
+		Criteria criteria = session.createCriteria(Concept.class);
+		criteria.createCriteria("names", "n");
+		//criteria.add(Expression.eq("locale", context.getLocale().toString()));
+		criteria.add(Expression.like("n.name", "%" + name + "%" , MatchMode.ANYWHERE));
+		List<Concept> concepts = criteria.list();
+		*/
 		return concepts;
 	}
 

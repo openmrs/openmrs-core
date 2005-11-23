@@ -5,17 +5,22 @@
 <openmrs:require privilege="Edit Dictionary" otherwise="/login.htm"
 	redirect="/dictionary/concept.form" />
 
-<h2><spring:message code="Concept.title" /></h2>
+<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/prototype.lite.js"></script>
+<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/moo.fx.js"></script>
+<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/moo.fx.pack.js"></script>
+<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/interface/DWRConceptService.js'></script>
+<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/engine.js'></script>
+<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/util.js'></script>
+<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/conceptSearch.js"></script>
+<script type="text/javascript">
 
-<c:if test="${concept.conceptId != null}">
-	<a href="concept.form?conceptId=${concept.conceptId - 1}">&laquo; Previous</a> |
-	<a href="concept.htm?conceptId=${concept.conceptId}">View</a> |
-	<a href="concept.form?conceptId=${concept.conceptId + 1}">Next &raquo;</a>
-</c:if>
+	var nameListBox;
+	var idListBox;
 
-<br/><br/>
-
-<script>
+	window.onload = function() {
+		myConceptSearchMod = new fx.Resize("conceptSearchForm", {duration: 100});
+		myConceptSearchMod.hide();
+	};
 	function removeItem(nameList, idList)
 	{
 		var input = document.getElementById(idList);
@@ -27,16 +32,27 @@
 			optList[i] = null;
 		copyIds(nameList, idList);
 	}
-	function addMember(nameList, idList)
+	function addConcept(nameList, idList)
 	{
-		window.open(
-			'concept_selector?field=set_members',
-			'add_to_set',
-			'width=600,height=800,scrollbars=yes,resizable=yes,toolbar=no,location=no,directories=no,status=yes,menubar=no,copyhistory=no');
-	}
-	function addAnswer(nameList, idList)
-	{
-	
+		nameList = document.getElementById(nameList);
+		idList   = document.getElementById(idList);
+		if (idList != idListBox) {
+			myConceptSearchMod.hide();
+			nameListBox = nameList;	// used by onSelect()
+			idListBox   = idList;	// used by onSelect()
+		}
+		
+		conceptSearchForm = document.getElementById("conceptSearchForm");
+		conceptSearchForm.style.left = (getElementLeft(nameList) + nameList.offsetWidth + 20) + "px";
+		conceptSearchForm.style.top = (getElementTop(nameList)-50) + "px";
+		
+		DWRUtil.removeAllRows("conceptSearchBody");
+		
+		myConceptSearchMod.toggle();
+		var searchText = document.getElementById("searchText");
+		searchText.value = '';
+		searchText.select();
+		//searchText.focus();  //why does this cause the inner box to shift position?!?
 	}
 	function moveUp(nameList, idList)
 	{
@@ -90,6 +106,47 @@
 		}
 		input.value = remaining.join(' ');
 	}
+	
+	function getElementLeft(elm) {
+		var x = 0;
+		while (elm != null) {
+			x+= elm.offsetLeft;
+			elm = elm.offsetParent;
+		}
+		return parseInt(x);
+	}
+	function getElementTop(elm) {
+		var y = 0;
+		while (elm != null) {
+			y+= elm.offsetTop;
+			elm = elm.offsetParent;
+		}
+		return parseInt(y);
+	}
+
+	var onSelect = function(conceptList) {
+		var options = nameListBox.options;
+		for (i=0; i<conceptList.length; i++) {
+			var addable = true;	
+			var conceptId = conceptList[i].conceptId;
+			var conceptName = conceptList[i].name;
+			for (x=0; x<options.length; x++) {
+				if (options[x].value == conceptId) {
+					addable = false;
+				}
+			}
+			if (addable) {
+				var opt = new Option(conceptName + ' ('+conceptId+')', conceptId);
+				opt.selected = true;
+				options[options.length] = opt;
+			}
+				
+		}
+		copyIds(nameListBox.id, idListBox.id);
+		myConceptSearchMod.hide();
+		nameListBox.focus();
+	}
+
 </script>
 
 <style>
@@ -100,7 +157,40 @@
 		width: 75px;
 		margin: 2px;
 	}
+	#conceptSearchForm {
+		width: 500px;
+		position: absolute;
+		z-index: 10;
+		margin: 5px;
+	}
+	#conceptSearchForm div {
+		padding: 2px;
+		background-color: whitesmoke;
+		border: 1px solid grey;
+		height: 275px;
+	}
+	.closeButton {
+		border: 1px solid gray;
+		background-color: lightpink;
+		font-size: 8px;
+		color: black;
+		float: right;
+		margin: 2px;
+		padding: 1px;
+		cursor: pointer;
+	}
+		
 </style>
+
+<h2><spring:message code="Concept.title" /></h2>
+
+<c:if test="${concept.conceptId != null}">
+	<a href="concept.form?conceptId=${concept.conceptId - 1}">&laquo; Previous</a> |
+	<a href="concept.htm?conceptId=${concept.conceptId}">View</a> |
+	<a href="concept.form?conceptId=${concept.conceptId + 1}">Next &raquo;</a>
+</c:if>
+
+<br/><br/>
 
 <spring:hasBindErrors name="concept">
 	<spring:message code="fix.error"/>
@@ -181,7 +271,7 @@
 							</select>
 						</td>
 						<td valign="top" class="buttons">
-							<input type="button" value="<spring:message code="general.add"/>" class="smallButton" onClick="addMember('conceptSetsNames', 'conceptSets');" /> <br/>
+							<input type="button" value="<spring:message code="general.add"/>" class="smallButton" onClick="addConcept('conceptSetsNames', 'conceptSets');" /> <br/>
 							<input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('conceptSetsNames', 'conceptSets');" /> <br/>
 							<input type="button" value="<spring:message code="general.move_up"/>" class="smallButton" onClick="moveUp('conceptSetsNames', 'conceptSets');" /><br/>
 							<input type="button" value="<spring:message code="general.move_down"/>" class="smallButton" onClick="moveDown('conceptSetsNames', 'conceptSets');" /><br/>
@@ -220,7 +310,7 @@
 							</select>
 						</td>
 						<td valign="top" class="buttons">
-							<input type="button" value="<spring:message code="general.add"/>" class="smallButton" onClick="addAnswer('answerNames', 'answerIds');"/><br/>
+							<input type="button" value="<spring:message code="general.add"/>" class="smallButton" onClick="addConcept('answerNames', 'answerIds');"/><br/>
 							<input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('answerNames', 'answerIds');"/><br/>
 						</td>
 					</tr>
@@ -373,5 +463,24 @@
 	</c:if>
 </table>
 <input type="submit" value="<spring:message code="Concept.save"/>" /></form>
+
+<div id="conceptSearchForm">
+	<div>
+		<input type="button" onClick="myConceptSearchMod.toggle(); return false;" class="closeButton" value="X"/>
+		<form method="get" onSubmit="return searchBoxChange('conceptSearchBody', null, searchText); return null;">
+			<h3>Find Concept(s)</h3>
+			<input type="text" id="searchText" size="45" onkeyup="searchBoxChange('conceptSearchBody', event, this, 400);">
+		</form>
+		<table class="conceptSearchTable">
+			<tbody id="conceptSearchBody">
+				<tr>
+					<td></td>
+					<td></td>
+				</tr>
+			</tbody>
+		</table>
+		<br/>
+	</div>
+</div>
 
 <%@ include file="/WEB-INF/template/footer.jsp"%>

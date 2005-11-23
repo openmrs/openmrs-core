@@ -14,16 +14,10 @@ input.prompt {
 .odd {
 	background-color:#E0E0E0;
 	}
-a.hit {
+a.conceptHit {
 	color: black;
 	}
-a.hit:link {
-	text-decoration: none;
-	}
-a.hit:visited {
-	text-decoration: none;
-	}
-a.hit:active {
+a.conceptHit:link, a.conceptHit:visited, a.conceptHit:active {
 	text-decoration: none;
 	}
 a.hit:hover {

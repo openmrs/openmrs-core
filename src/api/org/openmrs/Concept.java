@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
-import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -36,8 +35,8 @@ public class Concept implements java.io.Serializable {
 	private Date dateCreated;
 	private User changedBy;
 	private Date dateChanged;
-	private Set<ConceptName> names;
-	private Set<ConceptAnswer> answers;
+	private Collection<ConceptName> names;
+	private Collection<ConceptAnswer> answers;
 	private Collection<ConceptSynonym> synonyms;
 	private Collection<ConceptSet> conceptSets;
 	private ConceptNumeric conceptNumeric;
@@ -76,20 +75,22 @@ public class Concept implements java.io.Serializable {
 	/**
 	 * @return Returns the answers.
 	 */
-	public Set<ConceptAnswer> getAnswers() {
+	public Collection<ConceptAnswer> getAnswers() {
 		return answers;
 	}
 
 	/**
 	 * @param answers The answers to set.
 	 */
-	public void setAnswers(Set<ConceptAnswer> answers) {
+	public void setAnswers(Collection<ConceptAnswer> answers) {
 		this.answers = answers;
+		/*
 		if (answers != null) {
 			for (ConceptAnswer ca : answers) {
 				ca.setConcept(this);
 			}
 		}
+		*/
 	}
 	
 	/**
@@ -292,14 +293,14 @@ public class Concept implements java.io.Serializable {
 	/**
 	 * @return Returns the names.
 	 */
-	public Set<ConceptName> getNames() {
+	public Collection<ConceptName> getNames() {
 		return names;
 	}
 
 	/**
 	 * @param names The names to set.
 	 */
-	public void setNames(Set<ConceptName> names) {
+	public void setNames(Collection<ConceptName> names) {
 		this.names = names;
 	}
 

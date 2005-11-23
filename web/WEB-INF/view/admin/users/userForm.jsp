@@ -5,7 +5,7 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<script src="<%= request.getContextPath() %>/validation.js"></script>
+<script src="<%= request.getContextPath() %>/scripts/validation.js"></script>
 
 <h2><spring:message code="User.title"/></h2>
 

@@ -8,7 +8,7 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<script src="<%= request.getContextPath() %>/validation.js"></script>
+<script src="<%= request.getContextPath() %>/scripts/validation.js"></script>
 
 <script>
 	// Saves the last tab clicked on (aka "current" or "selected" tab)

@@ -7,52 +7,31 @@
 <script src='<%= request.getContextPath() %>/dwr/interface/DWRConceptService.js'></script>
 <script src='<%= request.getContextPath() %>/dwr/engine.js'></script>
 <script src='<%= request.getContextPath() %>/dwr/util.js'></script>
+<script src='<%= request.getContextPath() %>/scripts/conceptSearch.js'></script>
 
 <script>
 
-	var timeout;
-	
-	function searchBoxChange(event, obj) {
-		if (event.altKey == false &&
-			event.ctrlKey == false &&
-			((event.keyCode >= 32 && event.keyCode <= 127) || event.keyCode == 8)) {
-				clearTimeout(timeout);
-				timeout = setTimeout("updateConcepts()", 400);
+	var conceptClasses = new Array();
+	conceptClasses.push("Diagnosis");
+	conceptClasses.push("Finding");
+	conceptClasses.push("Symptom");
+	conceptClasses.push("Symptom/Finding");
+
+	var onSelect = function(conceptList) {
+		for (i=0; i<conceptList.length; i++) {
+			pickProblem('<%= request.getParameter("mode") %>', '//problem_list', conceptList[i]);
 		}
 	}
-	
-	function updateConcepts() {
-	    var phrase = document.getElementById('phrase').value;
-		if (phrase.length > 1) {
-		    DWRUtil.removeAllRows("conceptTableBody");
-		    DWRConceptService.findConcepts(fillTable, phrase , ["Diagnosis", "Finding", "Symptom", "Symptom/Finding"]);
-		}
-	    return false;
-	}
-	
-	var getLink	= function(obj) { 
-			var str = "";
-			str += "<a href=\"#top\" onClick=\"javascript:pickProblem('<%= request.getParameter("mode") %>', '//problem_list', this)\" ";
-			str += "class='hit' value='" + obj.conceptId + "'>";
-			str += obj.name;
-			str += "(" + obj.conceptId + ")";
-			str += "</a>";
-			return str;
-		};
-	
-	function fillTable(concept) {
-	    DWRUtil.addRows("conceptTableBody", concept, [ getLink ]);
-	}
-	
+		
 </script>
 
 
 
 <h1><spring:message code="diagnosis.title"/></h1>
 
-<form method="POST" onSubmit="updateConcepts(); return false;">
+<form method="POST" onSubmit="return searchBoxChange('conceptTableBody', null, phrase);">
 	<input name="mode" type="hidden" value='${request.mode}'>
-	<input name="phrase" id="phrase" type="text" class="prompt" size="10" onKeyUp="searchBoxChange(event, this)"/>
+	<input name="phrase" id="phrase" type="text" class="prompt" size="10" onkeyup="searchBoxChange('conceptTableBody', event, this, 400)"/>
 	<br />
 	<small><em><spring:message code="diagnosis.hint"/></em></small>
 </form>
