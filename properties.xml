@@ -80,7 +80,6 @@
 		<fileset dir="${ibatis.dir}" includes="*.jar" />
 		<fileset dir="${log4j.dir}" includes="*.jar" />
 		<fileset dir="${spring.dir}" includes="*.jar" />
-		<fileset dir="${struts.dir}" includes="*.jar" />
     </path>
     <path id="api.test.classpath">
         <path refid="api.compile.classpath"/>
@@ -97,7 +96,6 @@
 		<fileset dir="${hibernate.dir}" includes="*.jar" />
 		<fileset dir="${jstl.dir}" includes="*.jar" />
 		<fileset dir="${spring.dir}" includes="*.jar" />
-		<fileset dir="${struts.dir}" includes="*.jar" />
     </path>
 
 </project>
