@@ -35,6 +35,9 @@
 <h4>Orders</h4>
 	<%@ include file="orders/localHeader.jsp" %>
 
+<h4>Concepts</h4>
+	<%@ include file="concepts/localHeader.jsp" %>
+
 <h4>Forms</h4> 
 <ul>
 	<li><a href="forms/forms.jsp">Manage forms</a></li>

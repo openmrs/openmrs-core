@@ -43,6 +43,10 @@
 					<prop key="**/provider.htm">providerForm</prop>
 					<prop key="**/concept.form">conceptForm</prop>
 					<prop key="**/concept.htm">conceptView</prop>
+					<prop key="**/conceptClass.list">conceptClassList</prop>
+					<prop key="**/conceptClass.form">conceptClassForm</prop>
+					<prop key="**/conceptDatatype.list">conceptDatatypeList</prop>
+					<prop key="**/conceptDatatype.form">conceptDatatypeForm</prop>
 					<prop key="**/*.htm">springController</prop>
 	            </props>
 	        </property>
@@ -258,19 +262,57 @@
 	    <!-- ============================ -->
 		<!-- =====  Concept Sector  ===== -->
 	    <!-- ============================ -->
-			<bean id="conceptValidator" class="org.openmrs.web.controller.ConceptFormValidator"/>
-	    	<bean id="conceptForm" class="org.openmrs.web.controller.ConceptFormController">
-				<property name="sessionForm"><value>true</value></property>
-				<property name="commandName"><value>concept</value></property>
-				<property name="validator"><ref bean="conceptValidator"/></property>
-				<property name="formView"><value>/dictionary/conceptForm</value></property>
-				<property name="successView"><value>concept.form</value></property>
-			</bean>
-	    	<bean id="conceptView" class="org.openmrs.web.controller.ConceptFormController">
-				<property name="commandName"><value>concept</value></property>
-				<property name="formView"><value>/dictionary/concept</value></property>
-				<property name="successView"><value>concept.htm</value></property>
-			</bean>
+			<!-- ** Concept ** -->
+				<bean id="conceptValidator" class="org.openmrs.web.controller.ConceptFormValidator"/>
+		    	<bean id="conceptForm" class="org.openmrs.web.controller.ConceptFormController">
+					<property name="sessionForm"><value>true</value></property>
+					<property name="commandName"><value>concept</value></property>
+					<property name="validator"><ref bean="conceptValidator"/></property>
+					<property name="formView"><value>/dictionary/conceptForm</value></property>
+					<property name="successView"><value>concept.form</value></property>
+				</bean>
+		    	<bean id="conceptView" class="org.openmrs.web.controller.ConceptFormController">
+					<property name="commandName"><value>concept</value></property>
+					<property name="formView"><value>/dictionary/concept</value></property>
+					<property name="successView"><value>concept.htm</value></property>
+				</bean>
+			<!-- ** /Concept ** -->
+			<!-- ** Concept Class ** -->		
+				<bean id="conceptClassList" class="org.openmrs.web.controller.concept.ConceptClassListController">
+					<property name="sessionForm"><value>true</value></property>
+					<property name="commandName"><value>conceptClassList</value></property>
+					<property name="formView"><value>/admin/concepts/conceptClassList</value></property>
+					<property name="successView"><value>conceptClass.list</value></property>
+				</bean>
+		
+				<!--  Validator and Form Controller for the add/edit concept types page -->
+				<bean id="conceptClassValidator" class="org.openmrs.web.controller.concept.ConceptClassValidator"/>
+				<bean id="conceptClassForm" class="org.openmrs.web.controller.concept.ConceptClassFormController">
+					<property name="sessionForm"><value>true</value></property>
+					<property name="commandName"><value>conceptClass</value></property>
+					<property name="validator"><ref bean="conceptClassValidator"/></property>
+					<property name="formView"><value>/admin/concepts/conceptClassForm</value></property>
+					<property name="successView"><value>conceptClass.list</value></property>
+				</bean>
+			<!--  ** /Concept Class ** -->
+			<!--  ** Concept Datatype ** -->
+				<bean id="conceptDatatypeList" class="org.openmrs.web.controller.concept.ConceptDatatypeListController">
+					<property name="sessionForm"><value>true</value></property>
+					<property name="commandName"><value>conceptDatatypeList</value></property>
+					<property name="formView"><value>/admin/concepts/conceptDatatypeList</value></property>
+					<property name="successView"><value>conceptDatatype.list</value></property>
+				</bean>
+		
+				<!--  Validator and Form Controller for the add/edit concept types page -->
+				<bean id="conceptDatatypeValidator" class="org.openmrs.web.controller.concept.ConceptDatatypeValidator"/>
+				<bean id="conceptDatatypeForm" class="org.openmrs.web.controller.concept.ConceptDatatypeFormController">
+					<property name="sessionForm"><value>true</value></property>
+					<property name="commandName"><value>conceptDatatype</value></property>
+					<property name="validator"><ref bean="conceptDatatypeValidator"/></property>
+					<property name="formView"><value>/admin/concepts/conceptDatatypeForm</value></property>
+					<property name="successView"><value>conceptDatatype.list</value></property>
+				</bean>
+			<!--  ** /Concept Datatype ** -->
 
 	    <!-- ============================ -->
 		    

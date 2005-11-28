@@ -1,5 +1,7 @@
 package org.openmrs.api.db;
 
+import org.openmrs.ConceptClass;
+import org.openmrs.ConceptDatatype;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
 import org.openmrs.Location;
@@ -243,5 +245,46 @@ public interface AdministrationService {
 	 */
 	public void deletePrivilege(Privilege privilege) throws APIException;	
 
+	/**
+	 * Create a new ConceptClass
+	 * @param ConceptClass to create
+	 * @throws APIException
+	 */
+	public void createConceptClass(ConceptClass privilege) throws APIException;
 
+	/**
+	 * Update ConceptClass
+	 * @param ConceptClass to update
+	 * @throws APIException
+	 */
+	public void updateConceptClass(ConceptClass privilege) throws APIException;
+
+	/**
+	 * Delete ConceptClass
+	 * @param ConceptClass to delete
+	 * @throws APIException
+	 */
+	public void deleteConceptClass(ConceptClass privilege) throws APIException;	
+
+	/**
+	 * Create a new ConceptDatatype
+	 * @param ConceptDatatype to create
+	 * @throws APIException
+	 */
+	public void createConceptDatatype(ConceptDatatype privilege) throws APIException;
+
+	/**
+	 * Update ConceptDatatype
+	 * @param ConceptDatatype to update
+	 * @throws APIException
+	 */
+	public void updateConceptDatatype(ConceptDatatype privilege) throws APIException;
+
+	/**
+	 * Delete ConceptDatatype
+	 * @param ConceptDatatype to delete
+	 * @throws APIException
+	 */
+	public void deleteConceptDatatype(ConceptDatatype privilege) throws APIException;	
+	
 }
