@@ -59,22 +59,17 @@
 			</spring:bind>
 		</td>
 	</tr>
-	<c:if test="${!(creator == null)}" >
-		<tr>
-			<td><spring:message code="general.creator"/></td>
-			<td>
-				<spring:bind path="creator">
-					${creator.username}
-				</spring:bind>
-			</td>
-		</tr>
-		<tr>
-			<td><spring:message code="general.dateCreated"/></td>
-			<td>
-				<spring:bind path="dateCreated">
-					<openmrs:formatDate date="${dateCreated}" type="long"/>
-				</spring:bind>
-			</td>
-		</tr>
-	</c:if>
+	<spring:bind path="creator">
+		<c:if test="${!(status.value == null)}">
+			<tr>
+				<td><spring:message code="general.createdBy" /></td>
+				<td>
+					${status.value.firstName} ${status.value.lastName} -
+					<spring:bind path="dateCreated">
+						${status.value}
+					</spring:bind>
+				</td>
+			</tr>
+		</c:if>
+	</spring:bind>
 </table>

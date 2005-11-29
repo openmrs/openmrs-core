@@ -89,27 +89,23 @@
 				</select>
 			</td>
 		</tr>
-		<c:if test="${!(user.creator == null)}" >
+		<c:if test="${!(user.creator == null)}">
 			<tr>
-				<td><spring:message code="general.creator"/></td>
+				<td><spring:message code="general.createdBy" /></td>
 				<td>
-					<spring:bind path="user.creator">
-						${user.creator.username}
-					</spring:bind>
+					${user.creator.firstName} ${user.creator.lastName} -
+					<openmrs:formatDate date="${user.dateCreated}" type="long" />
 				</td>
 			</tr>
+		</c:if>
+		<c:if test="${!(user.changedBy == null)}">
 			<tr>
-				<td><spring:message code="general.dateCreated"/></td>
+				<td><spring:message code="general.changedBy" /></td>
 				<td>
-					<spring:bind path="user.dateCreated">
-						<openmrs:formatDate date="${user.dateCreated}" type="long"/>
-					</spring:bind>
+					${user.changedBy.firstName} ${user.changedBy.lastName} -
+					<openmrs:formatDate date="${user.dateChanged}" type="long" />
 				</td>
 			</tr>
-			<spring:bind path="user.userId">
-				<input type="hidden" name="${status.expression}:int" value="${status.value}">
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
 		</c:if>
 		<tr>
 			<td><spring:message code="general.voided"/></td>
@@ -124,24 +120,6 @@
 				</spring:bind>
 			</td>
 		</tr>
-		<c:if test="${!(user.changedBy == null)}" >
-			<tr>
-				<td><spring:message code="general.changedBy"/></td>
-				<td>
-					<spring:bind path="user.changedBy">
-						${user.changedBy.username}
-					</spring:bind>
-				</td>
-			</tr>
-			<tr>
-				<td><spring:message code="general.dateChanged"/></td>
-				<td>
-					<spring:bind path="user.dateChanged">
-						<openmrs:formatDate date="${user.dateChanged}" type="long"/>
-					</spring:bind>
-				</td>
-			</tr>
-		</c:if>
 		<tr>
 			<td><spring:message code="general.voidReason"/></td>
 			<spring:bind path="user.voidReason">
@@ -151,21 +129,12 @@
 				</td>
 			</spring:bind>
 		</tr>
-		<c:if test="${!(user.voidedBy == null)}" >
+		<c:if test="${user.voided}" >
 			<tr>
 				<td><spring:message code="general.voidedBy"/></td>
 				<td>
-					<spring:bind path="user.voidedBy">
-						${user.voidedBy.username}
-					</spring:bind>
-				</td>
-			</tr>
-			<tr>
-				<td><spring:message code="general.dateVoided"/></td>
-				<td>
-					<spring:bind path="user.dateVoided">
-						<openmrs:formatDate date="${user.dateVoided}" type="long"/>
-					</spring:bind>
+					${user.voidedBy.firstName} ${user.voidedBy.lastName} -
+					<openmrs:formatDate date="${user.dateVoided}" type="long" />
 				</td>
 			</tr>
 		</c:if>

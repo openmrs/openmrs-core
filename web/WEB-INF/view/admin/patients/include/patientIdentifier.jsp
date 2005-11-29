@@ -1,6 +1,6 @@
 <table>
 	<tr>
-		<td>Identifier</td>
+		<td><spring:message code="PatientIdentifier.identifier"/></td>
 		<td>
 			<spring:bind path="identifier">
 				<input type="text" 
@@ -13,7 +13,7 @@
 			</td>
 	</tr>
 	<tr>
-		<td>Type</td>
+		<td><spring:message code="PatientIdentifier.identifierType"/></td>
 		<td>
 			<spring:bind path="identifierType">
 				<select name="${status.expression}" onclick="modifyTab(this, this.options[this.selectedIndex].text, 0)">
@@ -28,7 +28,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td>Location</td>
+		<td><spring:message code="PatientIdentifier.location"/></td>
 		<td>
 			<spring:bind path="location">
 				<select name="${status.expression}">
@@ -42,22 +42,17 @@
 			</spring:bind>
 		</td>
 	</tr>
-	<c:if test="${!(identifier.creator == null)}" >
-		<tr>
-			<td>Creator</td>
-			<td>
-				<spring:bind path="creator">
-					${identifier.creator.username}
-				</spring:bind>
-			</td>
-		</tr>
-		<tr>
-			<td>Date Created</td>
-			<td>
-				<spring:bind path="dateCreated">
-					<openmrs:formatDate date="${identifier.dateCreated}" type="long"/>
-				</spring:bind>
-			</td>
-		</tr>
-	</c:if>
+	<spring:bind path="creator">
+		<c:if test="${!(status.value == null)}">
+			<tr>
+				<td><spring:message code="general.createdBy" /></td>
+				<td>
+					${status.value.firstName} ${status.value.lastName} -
+					<spring:bind path="dateCreated">
+						${status.value}
+					</spring:bind>
+				</td>
+			</tr>
+		</c:if>
+	</spring:bind>
 </table>

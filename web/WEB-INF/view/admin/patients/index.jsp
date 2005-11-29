@@ -94,7 +94,7 @@
 	
 </script>
 
-<h2>Form Entry</h2>
+<h2><spring:message code="formentry.title"/></h2>
 
 <div id="findPatient">
 	<b class="boxHeader"><spring:message code="Patient.find"/></b>

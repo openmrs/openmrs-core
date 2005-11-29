@@ -92,10 +92,10 @@ var getCellContent = function(concept) {
     	}	
 	    else {
 			var str = "";
-			str += "<a href=\"#addConcept\" onClick=\"selectConcept('" + conceptIndex + "'); return false;\" ";
+			str += "<a href=\"#selectConcept\" onClick=\"selectConcept('" + conceptIndex + "'); return false;\" ";
 			str += "class='conceptHit'>";
 			str += concept.name;
-			str += "(" + concept.conceptId + ")";
+			str += " (" + concept.conceptId + ")";
 			str += "</a>";
 			conceptIndex = conceptIndex + 1;
 			return str;

@@ -2,13 +2,39 @@
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
-<h2><spring:message code="dictionary.title"/></h2>
+<openmrs:require privilege="" otherwise="/login.htm" redirect="/dictionary/index.htm" />
 
-[Temporary index file] <br/><br/>
+<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/interface/DWRConceptService.js'></script>
+<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/engine.js'></script>
+<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/util.js'></script>
+<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/conceptSearch.js"></script>
+<script type="text/javascript">
 
-<a href="concept.form?conceptId=235">Edit 235</a> <br/>
-<a href="concept.form?conceptId=1008">Edit 1008</a> <br/>
-<a href="concept.htm?conceptId=1257">View 1257</a> <br/>
+	var onSelect = function(conceptList) {
+		location.href = "concept.form?conceptId=" + conceptList[0].conceptId;
+	}
+
+</script>
+
+<h2><spring:message code="dictionary.title" /></h2>
+
+<div id="findPatient">
+	<b class="boxHeader"><spring:message code="Concept.find"/></b>
+	<div class="box">
+		<form method="get" onSubmit="return searchBoxChange('conceptSearchBody', null, searchText); return null;">
+			<input type="text" id="searchText" size="45" onkeyup="searchBoxChange('conceptSearchBody', event, this, 400);">
+		</form>
+		<table class="conceptSearchTable">
+			<tbody id="conceptSearchBody">
+				<tr>
+					<td></td>
+					<td></td>
+				</tr>
+			</tbody>
+		</table>
+		</div>
+	</div>
+</div>
 
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

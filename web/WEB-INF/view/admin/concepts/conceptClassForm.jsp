@@ -37,18 +37,16 @@
 			</spring:bind>
 		</td>
 	</tr>
-	<c:if test="${conceptClass.conceptClassId != null}">
+	<c:if test="${!(conceptClass.creator == null)}">
 		<tr>
-			<td><spring:message code="general.creator"/></td>
-			<td>${conceptClass.creator}</td>
-		</tr>
-		<tr>
-			<td><spring:message code="general.dateCreated"/></td>
-			<td>${conceptClass.dateCreated}</td>
+			<td><spring:message code="general.createdBy" /></td>
+			<td>
+				${conceptClass.creator.firstName} ${conceptClass.creator.lastName} -
+				<openmrs:formatDate date="${conceptClass.dateCreated}" type="long" />
+			</td>
 		</tr>
 	</c:if>
 </table>
-<input type="hidden" name="conceptClassId:int" value="${conceptClass.conceptClassId}">
 <br />
 <input type="submit" value="<spring:message code="ConceptClass.save"/>">
 </form>

@@ -170,7 +170,7 @@
 	</tr>
 	<c:if test="${!(concept.creator == null)}">
 		<tr>
-			<td><spring:message code="general.created" /></td>
+			<td><spring:message code="general.createdBy" /></td>
 			<td>
 				${concept.creator.firstName} ${concept.creator.lastName} -
 				<openmrs:formatDate date="${concept.dateCreated}" type="long" />
@@ -179,7 +179,7 @@
 	</c:if>
 	<c:if test="${!(concept.changedBy == null)}">
 		<tr>
-			<td><spring:message code="general.changed" /></td>
+			<td><spring:message code="general.changedBy" /></td>
 			<td>
 				${concept.changedBy.firstName} ${concept.changedBy.lastName} -
 				<openmrs:formatDate date="${concept.dateChanged}" type="long" />

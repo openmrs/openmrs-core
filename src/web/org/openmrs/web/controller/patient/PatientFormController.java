@@ -56,7 +56,7 @@ public class PatientFormController extends SimpleFormController {
 		//binder.registerCustomEditor(java.lang.Integer.class, 
 		//		new CustomNumberEditor(java.lang.Integer.class, true));
         binder.registerCustomEditor(java.util.Date.class, 
-        		new CustomDateEditor(DateFormat.getDateInstance(DateFormat.SHORT), true));
+        		new CustomDateEditor(DateFormat.getDateInstance(DateFormat.LONG), true));
         binder.registerCustomEditor(Tribe.class, new TribeEditor(context));
         binder.registerCustomEditor(PatientIdentifierType.class, new PatientIdentifierTypeEditor(context));
         binder.registerCustomEditor(Location.class, new LocationEditor(context));

@@ -129,39 +129,21 @@
 			</spring:bind>
 		</td>
 	</tr>
-	<c:if test="${!(patient.creator == null)}" >
+	<c:if test="${!(patient.creator == null)}">
 		<tr>
-			<td><spring:message code="general.creator"/></td>
+			<td><spring:message code="general.createdBy" /></td>
 			<td>
-				<spring:bind path="patient.creator">
-					${patient.creator.username}
-				</spring:bind>
-			</td>
-		</tr>
-		<tr>
-			<td><spring:message code="general.dateCreated"/></td>
-			<td>
-				<spring:bind path="patient.dateCreated">
-					<openmrs:formatDate date="${patient.dateCreated}" type="long"/>
-				</spring:bind>
+				${patient.creator.firstName} ${patient.creator.lastName} -
+				<openmrs:formatDate date="${patient.dateCreated}" type="long" />
 			</td>
 		</tr>
 	</c:if>
-	<c:if test="${!(patient.changedBy == null)}" >
+	<c:if test="${!(patient.changedBy == null)}">
 		<tr>
-			<td><spring:message code="general.changedBy"/></td>
+			<td><spring:message code="general.changedBy" /></td>
 			<td>
-				<spring:bind path="patient.changedBy">
-					${patient.changedBy.username}
-				</spring:bind>
-			</td>
-		</tr>
-		<tr>
-			<td><spring:message code="general.dateChanged"/></td>
-			<td>
-				<spring:bind path="patient.dateChanged">
-					<openmrs:formatDate date="${patient.dateChanged}" type="long"/>
-				</spring:bind>
+				${patient.changedBy.firstName} ${patient.changedBy.lastName} -
+				<openmrs:formatDate date="${patient.dateChanged}" type="long" />
 			</td>
 		</tr>
 	</c:if>
@@ -186,21 +168,12 @@
 			</td>
 		</spring:bind>
 	</tr>
-	<c:if test="${!(patient.voidedBy == null)}" >
+	<c:if test="${patient.voided}" >
 		<tr>
 			<td><spring:message code="general.voidedBy"/></td>
 			<td>
-				<spring:bind path="patient.voidedBy">
-					${patient.voidedBy.username}
-				</spring:bind>
-			</td>
-		</tr>
-		<tr>
-			<td><spring:message code="general.dateVoided"/></td>
-			<td>
-				<spring:bind path="patient.dateVoided">
-					<openmrs:formatDate date="${patient.dateVoided}" type="long"/>
-				</spring:bind>
+				${patient.voidedBy.firstName} ${patient.voidedBy.lastName} -
+				<openmrs:formatDate date="${patient.dateVoided}" type="long" />
 			</td>
 		</tr>
 	</c:if>

@@ -31,16 +31,14 @@
 			</spring:bind>
 		</td>
 	</tr>
-	<c:if test="${encounterType.encounterTypeId != null}">
+	<c:if test="${!(encounterType.creator == null)}">
 		<tr>
-			<td><spring:message code="general.creator"/></td>
-			<td>${encounterType.creator}</td>
+			<td><spring:message code="general.createdBy" /></td>
+			<td>
+				${encounterType.creator.firstName} ${encounterType.creator.lastName} -
+				<openmrs:formatDate date="${encounterType.dateCreated}" type="long" />
+			</td>
 		</tr>
-		<tr>
-			<td><spring:message code="general.dateCreated"/></td>
-			<td>${encounterType.dateCreated}</td>
-		</tr>
-	<input type="hidden" name="encounterTypeId:int" value="<c:out value="${encounterType.encounterTypeId}"/>">
 	</c:if>
 </table>
 <br />

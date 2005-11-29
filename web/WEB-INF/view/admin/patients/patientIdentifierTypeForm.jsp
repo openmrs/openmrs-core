@@ -27,14 +27,13 @@
 			</spring:bind>
 		</td>
 	</tr>
-	<c:if test="${patientIdentifierType.patientIdentifierTypeId != null}">
+	<c:if test="${!(patientIdentifierType.creator == null)}">
 		<tr>
-			<td><spring:message code="general.creator"/></td>
-			<td>${patientIdentifierType.creator}</td>
-		</tr>
-		<tr>
-			<td><spring:message code="general.dateCreated"/></td>
-			<td>${patientIdentifierType.dateCreated}</td>
+			<td><spring:message code="general.createdBy" /></td>
+			<td>
+				${patientIdentifierType.creator.firstName} ${patientIdentifierType.creator.lastName} -
+				<openmrs:formatDate date="${patientIdentifierType.dateCreated}" type="long" />
+			</td>
 		</tr>
 	</c:if>
 </table>
