@@ -38,21 +38,35 @@ public class PatientIdentifier implements java.io.Serializable {
 	public boolean equals(Object obj) {
 		if (obj instanceof PatientIdentifier) {
 			PatientIdentifier p = (PatientIdentifier)obj;
-			return (this.getPatient().equals(p.getPatient()) &&
+			boolean ret = true;
+			if (patient != null && p.getPatient() != null)
+				ret = ret && patient.equals(p.getPatient());
+			if (identifier != null && p.getIdentifier() != null)
+				ret = ret && identifier.equals(p.getIdentifier());
+			if (identifierType != null && p.getIdentifierType() != null)
+				ret = ret && identifierType.equals(p.getIdentifierType());
+			if (location != null && p.getLocation() != null)
+				ret = ret && location.equals(p.getLocation());
+			return ret;
+			/*return (this.getPatient().equals(p.getPatient()) &&
 					this.getIdentifier().equals(p.getIdentifier()) &&
 					this.getIdentifierType().equals(p.getIdentifierType()) &&
-					this.getLocation().equals(p.getLocation()));
+					this.getLocation().equals(p.getLocation()));*/
 		}
 		return false;
 	}
 	
 	public int hashCode() {
-		if (this.getPatient() == null || this.getIdentifier() == null || this.getIdentifierType() == null || this.getLocation() == null) return super.hashCode();
+		if (this.getPatient() == null && this.getIdentifier() == null && this.getIdentifierType() == null && this.getLocation() == null) return super.hashCode();
 		int hash = 5;
-		hash += 31 * hash + this.getPatient().hashCode();
-		hash += 31 * hash + this.getIdentifier().hashCode();
-		hash += 31 * hash + this.getIdentifierType().hashCode();
-		hash += 31 * hash + this.getLocation().hashCode();
+		if (getPatient() != null)
+			hash += 31 * hash + this.getPatient().hashCode();
+		if (getIdentifier() != null)
+			hash += 31 * hash + this.getIdentifier().hashCode();
+		if (getIdentifierType() != null)
+			hash += 31 * hash + this.getIdentifierType().hashCode();
+		if (getLocation() != null)
+			hash += 31 * hash + this.getLocation().hashCode();
 		return hash;
 	}
 

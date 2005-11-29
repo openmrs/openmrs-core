@@ -84,7 +84,7 @@
 		
 		<mapping resource="org/openmrs/api/db/hibernate/Patient.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/PatientAddress.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/PatientIdentifier.hbm.xml" />
+		<!-- <mapping resource="org/openmrs/api/db/hibernate/PatientIdentifier.hbm.xml" /> -->
 		<mapping resource="org/openmrs/api/db/hibernate/PatientIdentifierType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/PatientName.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Tribe.hbm.xml" />

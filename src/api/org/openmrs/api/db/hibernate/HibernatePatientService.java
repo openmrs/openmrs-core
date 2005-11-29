@@ -1,8 +1,10 @@
 package org.openmrs.api.db.hibernate;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -16,9 +18,9 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientName;
 import org.openmrs.Tribe;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.APIException;
 import org.openmrs.api.db.PatientService;
-import org.openmrs.api.context.Context;
 
 public class HibernatePatientService implements PatientService {
 
@@ -78,7 +80,7 @@ public class HibernatePatientService implements PatientService {
 		}
 	}
 
-	public List<Patient> getPatientsByIdentifier(String identifier) throws APIException {
+	public Set<Patient> getPatientsByIdentifier(String identifier) throws APIException {
 		Session session = HibernateUtil.currentSession();
 		
 		//TODO this will return 3 patient #1's if 3 identifiers are matched. fix?
@@ -87,25 +89,38 @@ public class HibernatePatientService implements PatientService {
 						.add(Expression.like("i.identifier", identifier, MatchMode.ANYWHERE))
 						.list();
 		
-		return patients;
+		Set<Patient> returnSet = new HashSet<Patient>();
+		for (Patient p : patients) {
+			returnSet.add(p);
+		}
+		
+		return returnSet;
 	}
 
-	public List<Patient> getPatientsByName(String name) throws APIException {
+	public Set<Patient> getPatientsByName(String name) throws APIException {
 		Session session = HibernateUtil.currentSession();
 		
 		//TODO simple name search to start testing, will need to make "real" name search
 		//		i.e. split on whitespace, guess at first/last name, etc
-		
 		// TODO return the matched name instead of the primary name
-		//   possible solution: create org.openmrs.PatientListItem and return a list of those 
-		List<Patient> patients = session.createCriteria(Patient.class)
-						.createAlias("names", "name")
-						.add(Expression.or(
-								Expression.like("name.familyName", name, MatchMode.ANYWHERE),
-								Expression.like("name.givenName", name, MatchMode.ANYWHERE)
-							)	)
-						.list();
-	
+		//   possible solution: create org.openmrs.PatientListItem and return a list of those
+		
+		Set<Patient> patients = new HashSet<Patient>();
+		
+		name.replace(", ", " ");
+		String[] names = name.split(" ");
+		
+		for (String n : names) {
+			patients.addAll(session.createCriteria(Patient.class)
+					.createAlias("names", "name")
+					.add(Expression.or(
+							Expression.like("name.familyName", n, MatchMode.ANYWHERE),
+							Expression.like("name.givenName", n, MatchMode.ANYWHERE)
+					)	)
+					.list()
+				);
+		}
+		
 		return patients;
 	}
 

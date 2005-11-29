@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
@@ -229,8 +230,9 @@ public class ConceptFormController extends SimpleFormController {
 			String conceptId = request.getParameter("conceptId");
 			ConceptName conceptName = new ConceptName();
 			Collection<ConceptSynonym> conceptSynonyms = new Vector<ConceptSynonym>();
-			Map<String, ConceptName> conceptSets = new HashMap<String, ConceptName>();
-			Map<String, ConceptName> conceptAnswers = new HashMap<String, ConceptName>();
+			//Map<String, ConceptName> conceptSets = new TreeMap<String, ConceptName>();
+			Map<Double, Object[]> conceptSets = new TreeMap<Double, Object[]>();
+			Map<String, ConceptName> conceptAnswers = new TreeMap<String, ConceptName>();
 			
 			if (conceptId != null) {
 				Concept concept = cs.getConcept(Integer.valueOf(conceptId));
@@ -243,7 +245,8 @@ public class ConceptFormController extends SimpleFormController {
 		    		
 		    // get concept sets with locale decoded names
 		    	for (ConceptSet set : concept.getConceptSets()) {
-		    		conceptSets.put(set.getConcept().getConceptId().toString(), set.getConcept().getName(locale));
+		    		Object[] arr = {set.getConcept().getConceptId().toString(), set.getConcept().getName(locale)}; 
+		    		conceptSets.put(set.getSortWeight(), arr);
 		    	}
 
 		    // get concept answers with locale decoded names

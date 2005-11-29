@@ -45,7 +45,7 @@ public class ConceptSetsEditor extends PropertyEditorSupport {
 				Collection<ConceptSet> originalConceptSets = (Collection<ConceptSet>)getValue();
 				for (ConceptSet origConceptSet : originalConceptSets) {
 					for (int x = 0; x < requestConceptIds.size(); x++) {
-						if (requestConceptIds.get(x).equals(origConceptSet.getConcept())) {
+						if (requestConceptIds.get(x).equals(origConceptSet.getConcept().getConceptId())) {
 							origConceptSet.setSortWeight(Double.valueOf(x));
 							newSets.add(origConceptSet);
 							requestConceptIds.set(x, new Integer(-1)); //'erasing' concept id in order to keep list size/sort intact

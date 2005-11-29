@@ -22,7 +22,6 @@ function searchBoxChange(bodyElementId, event, obj, delay) {
 	}
 	if (keyCode == 13) {
 		// if the user hit the enter key then check for sequence of numbers
-		
 		if (text.match(/^\s*\d+\s*(,\d+\s*)*$/))
 		{
 			if (conceptsFound.length < 1)
@@ -74,7 +73,7 @@ function updateConcepts(text) {
 
 function selectConcept(index) {
 	var conceptsReturned = new Array();
-	conceptsReturned.push(conceptsFound[index]);
+	conceptsReturned.push(conceptsFound[index-1]);
 	onSelect(conceptsReturned);
 }
 
@@ -88,16 +87,21 @@ var getNumber = function(concept) {
 	};
 
 var getCellContent = function(concept) { 
-		var str = "";
-		str += "<a href=\"#top\" onClick=\"selectConcept('" + conceptIndex + "')\" ";
-		str += "class='conceptHit'>";
-		str += concept.name;
-		str += "(" + concept.conceptId + ")";
-		str += "</a>";
-		conceptIndex = conceptIndex + 1;
-		return str;
+	    if (typeof concept == 'string') {
+    		return concept;
+    	}	
+	    else {
+			var str = "";
+			str += "<a href=\"#addConcept\" onClick=\"selectConcept('" + conceptIndex + "'); return false;\" ";
+			str += "class='conceptHit'>";
+			str += concept.name;
+			str += "(" + concept.conceptId + ")";
+			str += "</a>";
+			conceptIndex = conceptIndex + 1;
+			return str;
+		}
 	};
 
-function fillTable(concept) {
-    DWRUtil.addRows(conceptTableBody, concept, [ getNumber, getCellContent ]);
+function fillTable(concepts) {
+    DWRUtil.addRows(conceptTableBody, concepts, [ getNumber, getCellContent ]);
 }

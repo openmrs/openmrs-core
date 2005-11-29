@@ -260,13 +260,13 @@
 		<tr id="setOptions">
 			<td valign="top"><spring:message code="Concept.conceptSets"/></td>
 			<td valign="top">
-				<input type="text" name="conceptSets" id="conceptSets" size="40" value='<c:forEach items="${conceptSets}" var="set">${set.key} </c:forEach>' />
+				<input type="hidden" name="conceptSets" id="conceptSets" size="40" value='<c:forEach items="${conceptSets}" var="set">${set.key} </c:forEach>' />
 				<table cellpadding="0" cellspacing="0">
 					<tr>
 						<td valign="top">
 							<select size="6" id="conceptSetsNames">
 								<c:forEach items="${conceptSets}" var="set">
-									<option value="${set.key}">${set.value} (${set.key})</option>
+									<option value="${set.value[0]}">${set.value[1]} (${set.value[0]})</option>
 								</c:forEach>
 							</select>
 						</td>
@@ -299,7 +299,7 @@
 		<tr>
 			<td valign="top"><spring:message code="Concept.answers"/></td>
 			<td>
-				<input type="text" name="answers" id="answerIds" size="40" value='<c:forEach items="${conceptAnswers}" var="answer">${answer.key} </c:forEach>' />
+				<input type="hidden" name="answers" id="answerIds" size="40" value='<c:forEach items="${conceptAnswers}" var="answer">${answer.key} </c:forEach>' />
 				<table cellspacing="0" cellpadding="0">
 					<tr>
 						<td valign="top">

@@ -2,9 +2,6 @@
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
 
-<openmrs:require privilege="View Dictionary" otherwise="/login.htm"
-	redirect="/dictionary/concept.htm" />
-
 <h2><spring:message code="Concept.title" /></h2>
 
 <c:if test="${concept.conceptId != null}">

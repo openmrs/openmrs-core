@@ -1,14 +1,14 @@
 package org.openmrs.web.dwr;
 
-import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.PatientAddress;
-import org.openmrs.api.db.PatientService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.PatientService;
 import org.openmrs.web.Constants;
 
 import uk.ltd.getahead.dwr.ExecutionContext;
@@ -25,7 +25,7 @@ public class DWRPatientService {
 				.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		try {
 			PatientService ps = context.getPatientService();
-			List<Patient> patients;
+			Set<Patient> patients;
 			
 			if (searchType != null && searchType.equals("identifier"))
 				patients = ps.getPatientsByIdentifier(searchValue);

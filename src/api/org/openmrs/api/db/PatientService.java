@@ -1,6 +1,7 @@
 package org.openmrs.api.db;
 
 import java.util.List;
+import java.util.Set;
 
 import org.openmrs.Location;
 import org.openmrs.Patient;
@@ -38,19 +39,19 @@ public interface PatientService {
 	 * Find all patients with a given identifier
 	 * 
 	 * @param identifier
-	 * @return list of patients matching identifier
+	 * @return set of patients matching identifier
 	 * @throws APIException
 	 */
-	public List<Patient> getPatientsByIdentifier(String identifier) throws APIException;
+	public Set<Patient> getPatientsByIdentifier(String identifier) throws APIException;
 	
 	/**
 	 * Find patients by name
 	 * 
 	 * @param name
-	 * @return list of patients matching name
+	 * @return set of patients matching name
 	 * @throws APIException
 	 */
-	public List getPatientsByName(String name) throws APIException;
+	public Set<Patient> getPatientsByName(String name) throws APIException;
 	
 	/**
 	 * Void patient record (functionally delete patient from system)

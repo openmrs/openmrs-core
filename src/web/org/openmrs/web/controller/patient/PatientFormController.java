@@ -75,18 +75,14 @@ public class PatientFormController extends SimpleFormController {
 			
 			PatientService ps = context.getPatientService();
 			Object[] objs = null;
+			
 			// Patient Identifiers 
-
-				/* TODO uncomment after patient_identifier.patient_identifier_id added 
-				 
-				//Spring doesn't handle objects that are simply removed from the 
-				//	request so it is done manually here
-				Object[] objs = patient.getIdentifiers().toArray();
+				objs = patient.getIdentifiers().toArray();
 				for (int i = 0; i < objs.length; i++ ) {
-					if (request.getParameter("identifiers[" + i + "].patientIdentifierId") == null)
+					if (request.getParameter("identifiers[" + i + "].identifier") == null)
 						patient.removeIdentifier((PatientIdentifier)objs[i]);
 				}
-				*/
+				
 				String[] ids = request.getParameterValues("identifier");
 				String[] idTypes = request.getParameterValues("identifierType");
 				String[] locs = request.getParameterValues("location");
