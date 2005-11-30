@@ -112,7 +112,7 @@ CREATE TABLE `concept_map` (
   KEY `map_creator` (`creator`),
   CONSTRAINT `map_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
   CONSTRAINT `map_source` FOREIGN KEY (`source`) REFERENCES `concept_source` (`concept_source_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 #----------------------------
 # Table structure for concept_name
 #----------------------------
@@ -201,7 +201,7 @@ CREATE TABLE `concept_source` (
   KEY `user_who_voided_concept_source` (`voided_by`),
   CONSTRAINT `concept_source_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
   CONSTRAINT `user_who_voided_concept_source` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 #----------------------------
 # Table structure for concept_synonym
 #----------------------------
