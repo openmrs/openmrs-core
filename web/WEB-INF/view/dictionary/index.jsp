@@ -22,7 +22,7 @@
 	<b class="boxHeader"><spring:message code="Concept.find"/></b>
 	<div class="box">
 		<form method="get" onSubmit="return searchBoxChange('conceptSearchBody', null, searchText); return null;">
-			<input type="text" id="searchText" size="45" onkeyup="searchBoxChange('conceptSearchBody', event, this, 400);">
+			<spring:message code="dictionary.searchBox"/> <input type="text" id="searchText" size="45" onkeyup="searchBoxChange('conceptSearchBody', event, this, 400);">
 		</form>
 		<table class="conceptSearchTable">
 			<tbody id="conceptSearchBody">

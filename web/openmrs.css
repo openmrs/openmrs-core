@@ -96,20 +96,21 @@ body {
 #patientSummary .boxHeader { font-size: 12px; }
 #patientSummary { width: 700px; }
 
-.boxHeader {
-	background-color: navy;
-	color: white;
-	display: block;
-}
 .box, .boxHeader {
 	border: 1px solid navy;
 	width: 700px;
-	padding: 2px;
+	padding: 5px 2px 5px 2px;
 	text-align: left;
 	}
 	.box * {
 		font-size: 12px;
 	}
+.boxHeader {
+	background-color: navy;
+	color: white;
+	display: block;
+	padding: 2px;
+}
 
 .retired, .voided {
 	text-decoration: line-through;

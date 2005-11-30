@@ -1,8 +1,8 @@
 package org.openmrs.web.controller.patient;
 
-import java.util.List;
+import java.util.HashSet;
 import java.util.Locale;
-import java.util.Vector;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -12,9 +12,8 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
-import org.openmrs.api.db.AdministrationService;
-import org.openmrs.api.db.PatientService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.PatientService;
 import org.openmrs.web.Constants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
@@ -84,12 +83,12 @@ public class PatientListController extends SimpleFormController {
 		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		//default empty Object
-		List<Patient> patientList = new Vector<Patient>();
+		Set<Patient> patientList = new HashSet<Patient>();
 		
 		//only fill the Object is the user has authenticated properly
 		if (context != null && context.isAuthenticated()) {
 			PatientService ps = context.getPatientService();
-	    	patientList = ps.getPatientsByName("");
+	    	patientList.addAll(ps.getPatientsByName(""));
 		}
     	
         return patientList;

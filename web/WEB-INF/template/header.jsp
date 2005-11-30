@@ -28,7 +28,7 @@
 				<spring:message code="header.login"/>
 			</a>
 		</openmrs:isAuthenticated>
-		| <a href='<%= request.getContextPath() %>/help.jsp'><spring:message code="header.help"/></a>
+		| <a href='<%= request.getContextPath() %>/help.htm'><spring:message code="header.help"/></a>
 	</div>
 
 	<div id="banner">

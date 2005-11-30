@@ -118,7 +118,6 @@
 <div id="findPatient">
 	<b class="boxHeader"><spring:message code="formentry.step1"/></b>
 	<div class="box">
-		<br>
 		<form id="findPatientForm" onSubmit="updatePatients(); return false;">
 			<table>
 				<tr>
@@ -161,14 +160,14 @@
 	<a href='index.htm' onClick="return editPatient();" style='float:right'><spring:message code="Patient.edit"/></a>
 	<table>
 		<tr>
-			<td><b>Name</b></td><td id="name"></td>
-			<td valign="top"><b>Identifiers</b></td><td id="identifiers"></td>
+			<td><b><spring:message code="general.name"/></b></td><td id="name"></td>
+			<td valign="top"><b><spring:message code="Patient.identifiers"/></b></td><td id="identifiers"></td>
 		</tr>
 		
 		<tr>
-			<td><b>Gender</b></td><td id="gender"></td>
+			<td><b><spring:message code="Patient.gender"/></b></td><td id="gender"></td>
 		</tr>
-		<tr><td valign="top"><b>Address</b><td id="address"></td></tr>
+		<tr><td valign="top"><b><spring:message code="PatientAddress.address1"/></b><td id="address"></td></tr>
 	</table>
 	<br /><input type='button' value='<spring:message code="formentry.patient.switch"/>' onClick='showSearch(); patientListing.style.display = "";'>
 </div>
@@ -177,9 +176,7 @@
 
 <b class="boxHeader"><spring:message code="formentry.step2"/></b>
 <div id="selectForm" class="box">
-	<br />
 	<form id="selectFormForm" method="post" action="<%= request.getContextPath() %>/formDownload">
-		
 		<table>
 			<tr>
 				<td><input type="radio" name="formType" value="adultInitial" id="adultInitial"></td>
