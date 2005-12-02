@@ -26,10 +26,22 @@
 		var input = document.getElementById(idList);
 		var sel = document.getElementById(nameList);
 		var optList = sel.options;
-		var remaining = new Array();
-		var i = optList.selectedIndex;
-		if (i >=0 )
-			optList[i] = null;
+		var lastIndex = -1;
+		var i = 0;
+		while (i<optList.length) {
+			// loop over and erase all selected items
+			if (optList[i].selected) {
+				optList[i] = null;
+				lastIndex = i;
+			}
+			else {
+				i++;
+			}
+		}
+		while (lastIndex >= optList.length)
+			lastIndex = lastIndex - 1;
+		if (lastIndex >= 0)
+			optList[lastIndex].selected = true;
 		copyIds(nameList, idList);
 	}
 	function addConcept(nameList, idList)
@@ -58,39 +70,40 @@
 	{
 		var input = document.getElementById(idList);
 		var sel = document.getElementById(nameList);
-		var i = sel.selectedIndex;
-		if ( i > 0 ) 
-		{
-			var optList = sel.options;
-			var id   = optList[i].value;
-			var name = optList[i].text;
-			optList[i].value = optList[i-1].value;
-			optList[i].text  = optList[i-1].text;
-			optList[i].selected = false;
-			optList[i-1].value = id;
-			optList[i-1].text  = name;
-			optList[i-1].selected = true;
-			copyIds(nameList, idList);
+		var optList = sel.options;
+		for (var i=1; i<optList.length; i++) {
+			// loop over and move up all selected items
+			if (optList[i].selected) {
+				var id   = optList[i].value;
+				var name = optList[i].text;
+				optList[i].value = optList[i-1].value;
+				optList[i].text  = optList[i-1].text;
+				optList[i].selected = false;
+				optList[i-1].value = id;
+				optList[i-1].text  = name;
+				optList[i-1].selected = true;
+			}
 		}
+		copyIds(nameList, idList);
 	}
 	function moveDown(nameList, idList)
 	{
 		var input = document.getElementById(idList);
 		var sel = document.getElementById(nameList);
-		var i = sel.selectedIndex;
 		var optList = sel.options;
-		if ( i >= 0 && i != (optList.length - 1)) 
-		{
-			var id   = optList[i].value;
-			var name = optList[i].text;
-			optList[i].value = optList[i+1].value;
-			optList[i].text  = optList[i+1].text;
-			optList[i].selected = false;
-			optList[i+1].value = id;
-			optList[i+1].text  = name;
-			optList[i+1].selected = true;
-			copyIds(nameList, idList);
+		for (var i=optList.length-2; i>=0; i--) {
+			if (optList[i].selected) {
+				var id   = optList[i].value;
+				var name = optList[i].text;
+				optList[i].value = optList[i+1].value;
+				optList[i].text  = optList[i+1].text;
+				optList[i].selected = false;
+				optList[i+1].value = id;
+				optList[i+1].text  = name;
+				optList[i+1].selected = true;
+			}
 		}
+		copyIds(nameList, idList);
 	}
 	function copyIds(nameList, idList)
 	{
@@ -123,7 +136,28 @@
 		}
 		return parseInt(y);
 	}
-
+	function addSynonym(event) {
+		if (event == null || event.keyCode == 13) {
+			var obj = document.getElementById("addSynonym");
+			var synonyms = document.getElementById("syns").options;
+			if (obj.value != "") {
+				var addable = true;
+				for (var i=0; i<synonyms.length; i++) {
+					if (synonyms[i].value == obj.value)
+						addable = false;
+				}
+				if (addable) {
+					var opt = new Option(obj.value, obj.value);
+					opt.selected = true;
+					synonyms[synonyms.length] = opt;
+				}
+			}
+			obj.value = "";
+			obj.focus();
+		}
+		return false;
+	}
+	
 	var onSelect = function(conceptList) {
 		var options = nameListBox.options;
 		for (i=0; i<conceptList.length; i++) {
@@ -145,8 +179,7 @@
 		copyIds(nameListBox.id, idListBox.id);
 		myConceptSearchMod.hide();
 		nameListBox.focus();
-	}
-
+	};
 </script>
 
 <style>
@@ -163,11 +196,15 @@
 		z-index: 10;
 		margin: 5px;
 	}
-	#conceptSearchForm div {
+	#conceptSearchForm #wrapper {
 		padding: 2px;
 		background-color: whitesmoke;
 		border: 1px solid grey;
 		height: 275px;
+	}
+	#conceptSearchResults {
+		height: 200px;
+		overflow: auto;
 	}
 	.closeButton {
 		border: 1px solid gray;
@@ -190,7 +227,11 @@
 	<a href="concept.form?conceptId=${concept.conceptId + 1}">Next &raquo;</a>
 </c:if>
 
-<br/><br/>
+<br/>
+<c:if test="${concept.retired}">
+	<div class="retiredMessage"><spring:message code="Concept.retiredMessage"/></div>
+</c:if>
+<br/>
 
 <spring:hasBindErrors name="concept">
 	<spring:message code="fix.error"/>
@@ -205,17 +246,21 @@
 <form method="post" action="">
 <table>
 	<tr>
-		<td><spring:message code="general.name" /></td>
+		<td title="<spring:message code="Concept.name.help"/>">
+			<spring:message code="general.name" />
+		</td>
 		<td><spring:bind path="conceptName.name">
 			<input type="text" name="${status.expression}"
-				value="${status.value}" size="45" />
+				value="${status.value}" size="50" />
 			<c:if test="${status.errorMessage != ''}">
 				<span class="error">${status.errorMessage}</span>
 			</c:if>
 		</spring:bind></td>
 	</tr>
 	<tr>
-		<td><spring:message code="Concept.shortName" /></td>
+		<td title="<spring:message code="Concept.shortName.help"/>">
+			<spring:message code="Concept.shortName" />
+		</td>
 		<td><spring:bind path="conceptName.shortName">
 			<input type="text" name="${status.expression}"
 				value="${status.value}" size="10" />
@@ -225,24 +270,42 @@
 		</spring:bind></td>
 	</tr>
 	<tr>
-		<td valign="top"><spring:message code="general.description" /></td>
+		<td valign="top" title="<spring:message code="Concept.description.help"/>">
+			<spring:message code="general.description" />
+		</td>
 		<td valign="top"><spring:bind path="concept.description">
-			<textarea name="${status.expression}" rows="3" cols="60">${status.value}</textarea>
+			<textarea name="${status.expression}" rows="4" cols="50">${status.value}</textarea>
 			<c:if test="${status.errorMessage != ''}">
 				<span class="error">${status.errorMessage}</span>
 			</c:if>
 		</spring:bind></td>
 	</tr>
 	<tr>
-		<td valign="top"><spring:message code="Concept.synonyms" /></td>
+		<td valign="top" title="<spring:message code="Concept.synonyms.help"/>">
+			<spring:message code="Concept.synonyms" />
+		</td>
 		<td valign="top">
-			<textarea name="syns" rows="6" cols="25"><c:forEach
-				items="${conceptSynonyms}" var="syn">${syn}
-</c:forEach></textarea>
+			<input type="text" size="40" id="addSynonym" onKeyUp="return addSynonym(event);"/> <input type="button" class="smallButton" value="Add Synonym" onClick="addSynonym();"/>
+			<input type="hidden" name="synonyms" id="synonyms" value="<c:forEach items="${conceptSynonyms}" var="syn">${syn}||</c:forEach>" />
+			<br/>
+			<table cellpadding="0" cellspacing="0">
+				<tr>
+					<td>
+						<select size="5" multiple id="syns">
+							<c:forEach items="${conceptSynonyms}" var="syn"><option value="${syn}">${syn}</option></c:forEach>
+						</select>
+					</td>
+					<td valign="top" class="buttons">
+						<input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('syns', 'synonyms');" /> <br/>
+					</td>
+				</tr>
+			</table>
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="Concept.conceptClass" /></td>
+		<td title="<spring:message code="Concept.conceptClass.help"/>">
+			<spring:message code="Concept.conceptClass" />
+		</td>
 		<td valign="top"><spring:bind path="concept.conceptClass">
 			<select name="${status.expression}">
 				<c:forEach items="${classes}" var="cc">
@@ -255,8 +318,7 @@
 			</c:if>
 		</spring:bind></td>
 	</tr>
-	<c:if
-		test="${concept.conceptClass != null && concept.conceptClass.set}">
+	<c:if test="${concept.conceptClass != null && concept.conceptClass.set}">
 		<tr id="setOptions">
 			<td valign="top"><spring:message code="Concept.conceptSets"/></td>
 			<td valign="top">
@@ -264,7 +326,7 @@
 				<table cellpadding="0" cellspacing="0">
 					<tr>
 						<td valign="top">
-							<select size="6" id="conceptSetsNames">
+							<select size="6" id="conceptSetsNames" multiple>
 								<c:forEach items="${conceptSets}" var="set">
 									<option value="${set.value[0]}">${set.value[1]} (${set.value[0]})</option>
 								</c:forEach>
@@ -282,7 +344,9 @@
 		</tr>
 	</c:if>
 	<tr>
-		<td><spring:message code="Concept.datatype" /></td>
+		<td title="<spring:message code="Concept.datatype.help"/>">
+			<spring:message code="Concept.datatype" />
+		</td>
 		<td valign="top"><spring:bind path="concept.datatype">
 			<select name="${status.expression}" onChange="changeDatatype(this);">
 				<c:forEach items="${datatypes}" var="cd">
@@ -303,7 +367,7 @@
 				<table cellspacing="0" cellpadding="0">
 					<tr>
 						<td valign="top">
-							<select size="6" id="answerNames">
+							<select size="6" id="answerNames" multiple>
 								<c:forEach items="${conceptAnswers}" var="answer">
 									<option value="${answer.key}">${answer.value} (${answer.key})</option>
 								</c:forEach>
@@ -403,26 +467,6 @@
 			</td>
 	</c:if>
 	<tr>
-		<td><spring:message code="Concept.icd10"/></td>
-		<td><spring:bind path="concept.icd10">
-			<input type="text" name="${status.expression}"
-				value="${status.value}" size="10" />
-			<c:if test="${status.errorMessage != ''}">
-				<span class="error">${status.errorMessage}</span>
-			</c:if>
-		</spring:bind></td>
-	</tr>
-	<tr>
-		<td><spring:message code="Concept.loinc" /></td>
-		<td><spring:bind path="concept.loinc">
-			<input type="text" name="${status.expression}"
-				value="${status.value}" size="10" />
-			<c:if test="${status.errorMessage != ''}">
-				<span class="error">${status.errorMessage}</span>
-			</c:if>
-		</spring:bind></td>
-	</tr>
-	<tr>
 		<td><spring:message code="Concept.version" /></td>
 		<td><spring:bind path="concept.version">
 			<input type="text" name="${status.expression}"
@@ -465,21 +509,22 @@
 <input type="submit" value="<spring:message code="Concept.save"/>" /></form>
 
 <div id="conceptSearchForm">
-	<div>
+	<div id="wrapper">
 		<input type="button" onClick="myConceptSearchMod.toggle(); return false;" class="closeButton" value="X"/>
 		<form method="get" onSubmit="return searchBoxChange('conceptSearchBody', null, searchText); return null;">
-			<h3>Find Concept(s)</h3>
+			<h3><spring:message code="Concept.find"/></h3>
 			<input type="text" id="searchText" size="45" onkeyup="searchBoxChange('conceptSearchBody', event, this, 400);">
 		</form>
-		<table class="conceptSearchTable">
-			<tbody id="conceptSearchBody">
-				<tr>
-					<td></td>
-					<td></td>
-				</tr>
-			</tbody>
-		</table>
-		<br/>
+		<div id="conceptSearchResults">
+			<table>
+				<tbody id="conceptSearchBody">
+					<tr>
+						<td></td>
+						<td></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
 	</div>
 </div>
 

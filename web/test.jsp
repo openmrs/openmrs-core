@@ -5,6 +5,7 @@
 <%@ page import="java.util.Iterator" %>
 <%@ page import="org.openmrs.api.db.UserService" %>
 <%@ page import="java.util.List" %>
+<%@ page import="org.openmrs.util.Security" %>
 
 <html>
 <body>
@@ -70,6 +71,15 @@ try {
 } catch (Exception e) {
 	out.println("Uh oh, error: <b>" + e + "</b>");
 }
+
+String pw = request.getParameter("pw");
+if (pw != null) {
+	String salt = Security.getRandomToken();
+	String hashedpw = Security.encodeString(pw + salt);
+	out.write("<br/><br/>" + hashedpw.toString());
+	out.write("<br/>" + salt.toString());
+}
+
 %>
 
  <br><br> done 

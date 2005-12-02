@@ -43,13 +43,13 @@ public class DWRConceptService {
 				}
 				else {
 					objectList = new Vector(concepts.size());
-					int maxCount = 10;
+					int maxCount = 30;
 					int curCount = 0;
 					if (classNames.size() > 0) {
 						outer: for (Concept c : concepts) {
 							inner: for (String o : classNames)
 								if (o.equals(c.getConceptClass().getName())) {
-									if ( curCount++ > maxCount ) {
+									if ( ++curCount > maxCount ) {
 										break outer;
 									}
 									objectList.add(new ConceptListItem(c));
@@ -58,7 +58,7 @@ public class DWRConceptService {
 					}
 					else {
 						for (Concept c : concepts) {
-							if ( curCount++ > maxCount ) {
+							if ( ++curCount > maxCount ) {
 								break;
 							}
 							objectList.add(new ConceptListItem(c));

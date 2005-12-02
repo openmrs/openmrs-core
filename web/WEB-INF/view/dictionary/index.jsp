@@ -36,5 +36,8 @@
 	</div>
 </div>
 
+<script type="text/javascript">
+	document.getElementById("searchText").focus();
+</script>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

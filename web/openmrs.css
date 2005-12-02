@@ -26,8 +26,7 @@ body {
 	background-color: whitesmoke;
 	border-bottom-width: 1px;
 	border-bottom-style: solid;
-	border-bottom-color: lightgrey;
-	margin: 0px;
+	border-bottom-color: lightgrey;	margin: 0px;
 	padding: 1px 3px 1px 1px;
 }
 
@@ -35,6 +34,7 @@ body {
 	text-align: left;
 	padding: 2px;
 	margin: 0px;
+	float: left;
 }
 
 #gutter {
@@ -45,12 +45,13 @@ body {
 	text-align: right;
 	font-size: 12px;
 	width: 140px;
+	clear: left;
 }
 
 #content {
 	margin-left: 175px;
 	border-left: 1px dashed lightgrey;
-	padding: 2px 5px 20px 20px;
+	padding: 10px 5px 20px 20px;
 }
 
 #footer {
@@ -134,9 +135,22 @@ span.error, div.error {
 	font-size: 9px;
 }
 
-a, a:link, a:hover, a:visited {
+
+a, a:link, a:hover, a:visited, a:active {
 	text-decoration: underline;
 }
 a:hover {
 	text-decoration: none;
+}
+.retiredMessage {
+	border: 3px double red;
+	padding: 3px;
+	margin: 2px;
+}
+.conceptIndex { }
+.conceptIndexHighlight {
+	background-color: yellow;
+}
+.conceptHighlight {
+	background-color: yellow;
 }

@@ -168,15 +168,17 @@ return true;
 }
 
 	var validateObj = null;
+	var btnObj = null;
 
 	function validateIdentifier(obj, btn, html) {
-		btn = document.getElementById(btn);
 		validateObj = obj;
-		html = html + " <input type='button' value='Fix Check Digit' class='smallButton' onClick='fixCheckDigit()'/>";
+		html = html + " <input type='button' value='Fix Check Digit' class='smallButton' onClick=\"fixCheckDigit()\"/>";
+		if (btn != null) 
+			btnObj = document.getElementById(btn);
 		if (showError(isValidCheckDigit(obj.value), obj, html)) {
-			btn.disabled = false;
+			btnObj.disabled = false;
 		} else {
-			btn.disabled = true;
+			btnObj.disabled = true;
 		}
 		obj.focus();
 	}

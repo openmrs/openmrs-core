@@ -1,3 +1,5 @@
+#Date:                  2005/12/02 00:25:17
+
 SET FOREIGN_KEY_CHECKS=0;
 #----------------------------
 # Table structure for complex_obs
@@ -89,7 +91,7 @@ CREATE TABLE `concept_datatype` (
   `concept_datatype_id` int(11) NOT NULL auto_increment,
   `name` varchar(255) NOT NULL default '',
   `datatype_abbreviation` char(3) default NULL,
-  `definition` varchar(255) NOT NULL default '',
+  `description` varchar(255) NOT NULL default '',
   `creator` int(11) NOT NULL default '0',
   `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`concept_datatype_id`),
@@ -104,7 +106,7 @@ CREATE TABLE `concept_map` (
   `concept_map_id` int(11) NOT NULL auto_increment,
   `source` int(11) default NULL,
   `source_id` int(11) default NULL,
-  `comment` varchar(255) default NULL,
+  `comment` varchar(255) character set utf8 default NULL,
   `creator` int(11) NOT NULL default '0',
   `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`concept_map_id`),
@@ -121,14 +123,15 @@ CREATE TABLE `concept_name` (
   `concept_id` int(11) NOT NULL default '0',
   `name` varchar(255) NOT NULL default '',
   `short_name` varchar(255) default NULL,
+  `description` text NOT NULL,
   `locale` varchar(50) NOT NULL default '',
   `creator` int(11) NOT NULL default '0',
   `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
-  PRIMARY KEY  (`concept_id`,`name`,`locale`),
+  PRIMARY KEY  (`concept_id`,`locale`),
   KEY `user_who_created_name` (`creator`),
   CONSTRAINT `name_for_concept` FOREIGN KEY (`concept_id`) REFERENCES `concept` (`concept_id`),
   CONSTRAINT `user_who_created_name` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 49152 kB; (`concept_id`) REFER `openmrs/concept';
 #----------------------------
 # Table structure for concept_numeric
 #----------------------------
@@ -187,15 +190,15 @@ CREATE TABLE `concept_set_derived` (
 drop table if exists concept_source;
 CREATE TABLE `concept_source` (
   `concept_source_id` int(11) NOT NULL auto_increment,
-  `name` varchar(50) NOT NULL default '',
-  `description` text NOT NULL,
-  `hl7_code` varchar(50) NOT NULL default '',
+  `name` varchar(50) character set utf8 NOT NULL default '',
+  `description` text character set utf8 NOT NULL,
+  `hl7_code` varchar(50) character set utf8 NOT NULL default '',
   `creator` int(11) NOT NULL default '0',
   `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
   `voided` tinyint(4) default NULL,
   `voided_by` int(11) default NULL,
   `date_voided` datetime default NULL,
-  `void_reason` varchar(255) default NULL,
+  `void_reason` varchar(255) character set utf8 default NULL,
   PRIMARY KEY  (`concept_source_id`),
   KEY `concept_source_creator` (`creator`),
   KEY `user_who_voided_concept_source` (`voided_by`),
@@ -223,11 +226,15 @@ CREATE TABLE `concept_synonym` (
 #----------------------------
 drop table if exists concept_word;
 CREATE TABLE `concept_word` (
+  `concept_word_id` int(11) NOT NULL auto_increment,
   `concept_id` int(11) NOT NULL default '0',
-  `word` varchar(100) NOT NULL default '',
-  PRIMARY KEY  (`concept_id`,`word`),
+  `word` varchar(255) NOT NULL default '',
+  `synonym` varchar(255) default NULL,
+  `locale` varchar(255) default NULL,
+  PRIMARY KEY  (`concept_word_id`),
+  KEY `word_for` (`concept_id`),
   CONSTRAINT `word_for` FOREIGN KEY (`concept_id`) REFERENCES `concept` (`concept_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 49152 kB';
 #----------------------------
 # Table structure for drug
 #----------------------------
@@ -295,6 +302,7 @@ CREATE TABLE `encounter` (
   `patient_id` int(11) NOT NULL default '0',
   `provider_id` int(11) NOT NULL default '0',
   `location_id` int(11) NOT NULL default '0',
+  `form_id` int(11) default NULL,
   `encounter_datetime` datetime NOT NULL default '0000-00-00 00:00:00',
   `creator` int(11) NOT NULL default '0',
   `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
@@ -304,12 +312,14 @@ CREATE TABLE `encounter` (
   KEY `encounter_provider` (`provider_id`),
   KEY `encounter_type_id` (`encounter_type`),
   KEY `encounter_creator` (`creator`),
+  KEY `encounter_form` (`form_id`),
+  CONSTRAINT `encounter_form` FOREIGN KEY (`form_id`) REFERENCES `form` (`form_id`),
   CONSTRAINT `encounter_ibfk_1` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
   CONSTRAINT `encounter_location` FOREIGN KEY (`location_id`) REFERENCES `location` (`location_id`),
   CONSTRAINT `encounter_patient` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`),
   CONSTRAINT `encounter_provider` FOREIGN KEY (`provider_id`) REFERENCES `users` (`user_id`),
   CONSTRAINT `encounter_type_id` FOREIGN KEY (`encounter_type`) REFERENCES `encounter_type` (`encounter_type_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 49152 kB; (`creator`) REFER `openmrs/users`(`us';
 #----------------------------
 # Table structure for encounter_type
 #----------------------------
@@ -442,6 +452,25 @@ CREATE TABLE `form_field` (
   CONSTRAINT `user_who_last_changed_form_field` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 #----------------------------
+# Table structure for group
+#----------------------------
+drop table if exists `group`;
+CREATE TABLE `group` (
+  `group` varchar(50) NOT NULL default '',
+  `description` varchar(255) default NULL,
+  PRIMARY KEY  (`group`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+#----------------------------
+# Table structure for group_role
+#----------------------------
+drop table if exists group_role;
+CREATE TABLE `group_role` (
+  `group` varchar(50) NOT NULL default '',
+  `role` varchar(50) NOT NULL default '',
+  PRIMARY KEY  (`group`,`role`),
+  CONSTRAINT `grouping` FOREIGN KEY (`group`) REFERENCES `group` (`group`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 49152 kB';
+#----------------------------
 # Table structure for icd10
 #----------------------------
 drop table if exists icd10;
@@ -485,6 +514,35 @@ CREATE TABLE `mime_type` (
   KEY `mime_type_id` (`mime_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 69632 kB';
 #----------------------------
+# Table structure for note
+#----------------------------
+drop table if exists note;
+CREATE TABLE `note` (
+  `note_id` int(11) NOT NULL default '0',
+  `note_type` varchar(50) default NULL,
+  `patient_id` int(11) default NULL,
+  `obs_id` int(11) default NULL,
+  `encounter_id` int(11) default NULL,
+  `text` text NOT NULL,
+  `priority` int(11) default NULL,
+  `weight` int(11) default NULL,
+  `creator` int(11) NOT NULL default '0',
+  `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
+  `changed_by` int(11) default NULL,
+  `date_changed` datetime default NULL,
+  PRIMARY KEY  (`note_id`),
+  KEY `patient_note` (`patient_id`),
+  KEY `obs_note` (`obs_id`),
+  KEY `encounter_note` (`encounter_id`),
+  KEY `user_who_created_note` (`creator`),
+  KEY `user_who_changed_note` (`changed_by`),
+  CONSTRAINT `encounter_note` FOREIGN KEY (`encounter_id`) REFERENCES `encounter` (`encounter_id`),
+  CONSTRAINT `obs_note` FOREIGN KEY (`obs_id`) REFERENCES `obs` (`obs_id`),
+  CONSTRAINT `patient_note` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`),
+  CONSTRAINT `user_who_changed_note` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`),
+  CONSTRAINT `user_who_created_note` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 49152 kB; InnoDB free: 49152 kB; (`patient_id`)';
+#----------------------------
 # Table structure for obs
 #----------------------------
 drop table if exists obs;
@@ -497,13 +555,16 @@ CREATE TABLE `obs` (
   `obs_datetime` datetime NOT NULL default '0000-00-00 00:00:00',
   `location_id` int(11) NOT NULL default '0',
   `obs_group_id` int(11) default NULL,
+  `accession_number` varchar(255) default NULL,
   `value_group_id` int(11) default NULL,
   `value_boolean` tinyint(1) default NULL,
   `value_coded` int(11) default NULL,
   `value_datetime` datetime default NULL,
   `value_numeric` double default NULL,
   `value_modifier` char(2) default NULL,
-  `value_text` varchar(50) default NULL,
+  `value_text` text,
+  `date_started` datetime default NULL,
+  `date_stopped` datetime default NULL,
   `comment` varchar(255) default NULL,
   `creator` int(11) NOT NULL default '0',
   `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
@@ -528,7 +589,7 @@ CREATE TABLE `obs` (
   CONSTRAINT `obs_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`),
   CONSTRAINT `patient_obs` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`),
   CONSTRAINT `user_who_voided_obs` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 49152 kB; (`value_coded`) REFER `openmrs/concep';
 #----------------------------
 # Table structure for order_type
 #----------------------------
@@ -655,6 +716,7 @@ CREATE TABLE `patient_identifier` (
   `patient_id` int(11) NOT NULL default '0',
   `identifier` varchar(50) NOT NULL default '',
   `identifier_type` int(11) NOT NULL default '0',
+  `format` varchar(255) default NULL,
   `location_id` int(11) NOT NULL default '0',
   `creator` int(11) NOT NULL default '0',
   `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
@@ -672,7 +734,7 @@ CREATE TABLE `patient_identifier` (
   CONSTRAINT `identifier_voider` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`),
   CONSTRAINT `identifies_patient` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`),
   CONSTRAINT `patient_identifier_ibfk_2` FOREIGN KEY (`location_id`) REFERENCES `location` (`location_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 49152 kB; (`identifier_type`) REFER `openmrs/pa';
 #----------------------------
 # Table structure for patient_identifier_type
 #----------------------------
@@ -837,6 +899,9 @@ CREATE TABLE `users` (
   `middle_name` varchar(50) default NULL,
   `last_name` varchar(50) default NULL,
   `password` varchar(50) default NULL,
+  `salt` varchar(50) default NULL,
+  `secret_question` varchar(255) default NULL,
+  `secret_answer` varchar(255) default NULL,
   `creator` int(11) NOT NULL default '0',
   `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
   `changed_by` int(11) default NULL,

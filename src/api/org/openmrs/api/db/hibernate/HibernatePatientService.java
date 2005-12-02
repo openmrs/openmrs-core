@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
@@ -83,16 +84,20 @@ public class HibernatePatientService implements PatientService {
 	public Set<Patient> getPatientsByIdentifier(String identifier) throws APIException {
 		Session session = HibernateUtil.currentSession();
 		
+		Query query = session.createQuery("select patient from Patient patient where patient.identifiers.identifier like '%' || ? || '%'");
+		query.setString(0, identifier);
+		List<Patient> patients = query.list();
+
+		/*
 		//TODO this will return 3 patient #1's if 3 identifiers are matched. fix?
 		List<Patient> patients = session.createCriteria(Patient.class)
 						.createCriteria("identifiers", "i")
 						.add(Expression.like("i.identifier", identifier, MatchMode.ANYWHERE))
 						.list();
+		*/
 		
 		Set<Patient> returnSet = new HashSet<Patient>();
-		for (Patient p : patients) {
-			returnSet.add(p);
-		}
+		returnSet.addAll(patients);
 		
 		return returnSet;
 	}

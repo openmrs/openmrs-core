@@ -42,7 +42,7 @@
 					<prop key="**/location.form">locationForm</prop>
 					<prop key="**/provider.htm">providerForm</prop>
 					<prop key="**/concept.form">conceptForm</prop>
-					<prop key="**/concept.htm">conceptView</prop>
+					<prop key="**/dictionary/concept.htm">conceptView</prop>
 					<prop key="**/conceptClass.list">conceptClassList</prop>
 					<prop key="**/conceptClass.form">conceptClassForm</prop>
 					<prop key="**/conceptDatatype.list">conceptDatatypeList</prop>

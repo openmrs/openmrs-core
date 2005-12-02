@@ -12,18 +12,26 @@
 	<a href="concept.htm?conceptId=${concept.conceptId + 1}" valign="middle">Next &raquo;</a>
 </c:if>
 
-<br/><br/>
+<br/>
+<c:if test="${concept.retired}">
+	<div class="retiredMessage"><spring:message code="Concept.retiredMessage"/></div>
+</c:if>
+<br/>
 
 <table>
 	<tr>
-		<td><spring:message code="general.name" /></td>
+		<td title="<spring:message code="Concept.name.help"/>">
+			<spring:message code="general.name" />
+		</td>
 		<td><spring:bind path="conceptName.name">
 				${status.value}
 			</spring:bind>
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="Concept.shortName" /></td>
+		<td title="<spring:message code="Concept.shortName.help"/>">
+			<spring:message code="Concept.shortName" />
+		</td>
 		<td><spring:bind path="conceptName.shortName">
 			${status.value}
 		</spring:bind></td>
@@ -35,13 +43,17 @@
 		</spring:bind></td>
 	</tr>
 	<tr>
-		<td valign="top"><spring:message code="Concept.synonyms" /></td>
+		<td valign="top" title="<spring:message code="Concept.synonyms.help"/>">
+			<spring:message code="Concept.synonyms" />
+		</td>
 		<td valign="top">
 			<c:forEach items="${conceptSynonyms}" var="syn">${syn}<br/></c:forEach>
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="Concept.conceptClass" /></td>
+		<td  title="<spring:message code="Concept.conceptClass.help"/>">
+			<spring:message code="Concept.conceptClass" />
+		</td>
 		<td valign="top">
 			${concept.conceptClass.name}
 		</td>
@@ -50,12 +62,14 @@
 		<tr id="setOptions">
 			<td valign="top"><spring:message code="Concept.conceptSets"/></td>
 			<td valign="top">
-				<c:forEach items="${conceptSets}" var="set">${set.value} (${set.key})<br/></c:forEach>
+				<c:forEach items="${conceptSets}" var="set">${set.value[1]} (${set.value[0]})<br/></c:forEach>
 			</td>
 		</tr>
 	</c:if>
 	<tr>
-		<td><spring:message code="Concept.datatype" /></td>
+		<td title="<spring:message code="Concept.datatype.help"/>">
+			<spring:message code="Concept.datatype" />
+		</td>
 		<td valign="top">
 			${concept.datatype.name}
 		</td>
@@ -144,18 +158,6 @@
 				</spring:nestedPath>
 			</td>
 	</c:if>
-	<tr>
-		<td><spring:message code="Concept.icd10"/></td>
-		<td><spring:bind path="concept.icd10">
-			${status.value}
-		</spring:bind></td>
-	</tr>
-	<tr>
-		<td><spring:message code="Concept.loinc" /></td>
-		<td><spring:bind path="concept.loinc">
-			${status.value}
-		</spring:bind></td>
-	</tr>
 	<tr>
 		<td><spring:message code="Concept.version" /></td>
 		<td><spring:bind path="concept.version">

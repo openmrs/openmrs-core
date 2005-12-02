@@ -1,7 +1,5 @@
 package org.openmrs.api.context;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
@@ -31,6 +29,7 @@ import org.openmrs.api.db.hibernate.HibernateOrderService;
 import org.openmrs.api.db.hibernate.HibernatePatientService;
 import org.openmrs.api.db.hibernate.HibernateUserService;
 import org.openmrs.api.db.hibernate.HibernateUtil;
+import org.openmrs.util.Security;
 
 public class HibernateContext implements Context {
 
@@ -73,43 +72,31 @@ public class HibernateContext implements Context {
 				.uniqueResult();
 		
 		if (candidateUser == null) {
-			throw new ContextAuthenticationException("user not found: "
+			throw new ContextAuthenticationException("User not found: "
 					+ username);
 		}
 
 		String passwordOnRecord = (String) session.createSQLQuery(
-				"select password from users where user_id = ?").addScalar(
-				"password", Hibernate.STRING).setInteger(0,
-				candidateUser.getUserId()).uniqueResult();
+				"select password from users where user_id = ?")
+				.addScalar("password", Hibernate.STRING)
+				.setInteger(0, candidateUser.getUserId())
+				.uniqueResult();
+		String saltOnRecord = (String) session.createSQLQuery(
+				"select salt from users where user_id = ?")
+				.addScalar("salt", Hibernate.STRING)
+				.setInteger(0, candidateUser.getUserId())
+				.uniqueResult();
 
-		try {
-			MessageDigest md = MessageDigest.getInstance("MD5");
-			byte[] input = password.getBytes();
-			String hashedPassword = hexString(md.digest(input));
+		String hashedPassword = Security.encodeString(password + saltOnRecord);
 
-			if (hashedPassword != null
-					&& hashedPassword.equals(passwordOnRecord))
-				user = candidateUser;
-
-		} catch (NoSuchAlgorithmException e) {
-			// Yikes! Can't encode password...what to do?
-			errorMsg = "system cannot find password encryption algorithm";
-		}
+		if (hashedPassword != null
+				&& hashedPassword.equals(passwordOnRecord))
+			user = candidateUser;
 		
 		if (user == null) {
 			log.info("Failed login (username=\"" + username + ") - " + errorMsg);
 			throw new ContextAuthenticationException(errorMsg);
 		}
-	}
-
-	private String hexString(byte[] b) {
-		if (b == null || b.length < 1)
-			return "";
-		StringBuffer s = new StringBuffer();
-		for (int i = 0; i < b.length; i++) {
-			s.append(Integer.toHexString(b[i] & 0xFF));
-		}
-		return new String(s);
 	}
 
 	/**

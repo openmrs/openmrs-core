@@ -1,21 +1,20 @@
 package org.openmrs.api.db.hibernate;
 
-import java.security.MessageDigest;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.APIException;
 import org.openmrs.api.db.UserService;
-import org.openmrs.api.context.Context;
+import org.openmrs.util.Security;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
 public class HibernateUserService implements
@@ -55,11 +54,11 @@ public class HibernateUserService implements
 			
 			//update the new user with the password
 			HibernateUtil.beginTransaction();
-			MessageDigest md = MessageDigest.getInstance("MD5");
-			byte[] input = password.getBytes();
-			String hashedPassword = hexString(md.digest(input));
-			session.createQuery("update User set password = :pw where user_id = :username")
+			String salt = Security.getRandomToken();
+			String hashedPassword = Security.encodeString(password + salt);
+			session.createQuery("update User set password = :pw, salt = :salt where user_id = :username")
 				.setParameter("pw", hashedPassword)
+				.setParameter("salt", salt)
 				.setParameter("username", user.getUserId())
 				.executeUpdate();
 			HibernateUtil.commitTransaction();

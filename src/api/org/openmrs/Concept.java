@@ -375,6 +375,7 @@ public class Concept implements java.io.Serializable {
 		Collection<ConceptSynonym> syns = new Vector<ConceptSynonym>();
 		for (ConceptSynonym syn : getSynonyms()) {
 			String lang = syn.getLocale();
+			if (lang == null) lang = "en"; //TODO temporary hack until db update
 			if (lang.equals(loc))
 				syns.add(syn);
 		}

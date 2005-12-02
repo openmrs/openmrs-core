@@ -95,7 +95,8 @@
 		patient = p;
 		document.getElementById("name").innerHTML = p.givenName + " " + p.familyName;
 		document.getElementById("gender").innerHTML = p.gender;
-		html = p.address.address1 + "<br/>";
+		if (p.address.address1 != null)
+			html = p.address.address1 + "<br/>";
 		if (p.address.address2 != null)
 			html = html + p.address.address2 + "<br/>";
 		html = html + p.address.cityVillage + ", ";
