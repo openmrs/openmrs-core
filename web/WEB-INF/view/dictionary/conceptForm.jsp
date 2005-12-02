@@ -21,7 +21,7 @@
 		myConceptSearchMod = new fx.Resize("conceptSearchForm", {duration: 100});
 		myConceptSearchMod.hide();
 	};
-	function removeItem(nameList, idList)
+	function removeItem(nameList, idList, delim)
 	{
 		var input = document.getElementById(idList);
 		var sel = document.getElementById(nameList);
@@ -42,7 +42,7 @@
 			lastIndex = lastIndex - 1;
 		if (lastIndex >= 0)
 			optList[lastIndex].selected = true;
-		copyIds(nameList, idList);
+		copyIds(nameList, idList, delim);
 	}
 	function addConcept(nameList, idList)
 	{
@@ -84,7 +84,7 @@
 				optList[i-1].selected = true;
 			}
 		}
-		copyIds(nameList, idList);
+		copyIds(nameList, idList, ' ');
 	}
 	function moveDown(nameList, idList)
 	{
@@ -103,12 +103,12 @@
 				optList[i+1].selected = true;
 			}
 		}
-		copyIds(nameList, idList);
+		copyIds(nameList, idList, ' ');
 	}
-	function copyIds(nameList, idList)
+	function copyIds(from, to, delimiter)
 	{
-		var input = document.getElementById(idList);
-		var sel = document.getElementById(nameList);
+		var sel = document.getElementById(from);
+		var input = document.getElementById(to);
 		var optList = sel.options;
 		var remaining = new Array();
 		var i=0;
@@ -117,7 +117,7 @@
 			remaining.push(optList[i].value);
 			i++;
 		}
-		input.value = remaining.join(' ');
+		input.value = remaining.join(delimiter);
 	}
 	
 	function getElementLeft(elm) {
@@ -136,26 +136,28 @@
 		}
 		return parseInt(y);
 	}
-	function addSynonym(event) {
-		if (event == null || event.keyCode == 13) {
-			var obj = document.getElementById("addSynonym");
-			var synonyms = document.getElementById("syns").options;
-			if (obj.value != "") {
-				var addable = true;
-				for (var i=0; i<synonyms.length; i++) {
-					if (synonyms[i].value == obj.value)
-						addable = false;
-				}
-				if (addable) {
-					var opt = new Option(obj.value, obj.value);
-					opt.selected = true;
-					synonyms[synonyms.length] = opt;
+	function addSynonym() {
+		var obj = document.getElementById("addSyn");
+		var synonyms = document.getElementById("syns").options;
+		if (obj.value != "") {
+			var addable = true;
+			for (var i=0; i<synonyms.length; i++) {
+				synonyms[i].selected = false;
+				if (synonyms[i].value == obj.value) {
+					addable = false;
+					synonyms[i].selected = true;
 				}
 			}
-			obj.value = "";
-			obj.focus();
+			if (addable) {
+				var opt = new Option(obj.value, obj.value);
+				opt.selected = true;
+				synonyms[synonyms.length] = opt;
+			}
 		}
-		return false;
+		obj.value = "";
+		obj.focus();
+		copyIds("syns", "newSynonyms", ",");
+		window.Event.keyCode = 0;  //disable enter key submitting form
 	}
 	
 	var onSelect = function(conceptList) {
@@ -176,9 +178,10 @@
 			}
 				
 		}
-		copyIds(nameListBox.id, idListBox.id);
+		copyIds(nameListBox.id, idListBox.id, ' ');
 		myConceptSearchMod.hide();
 		nameListBox.focus();
+		
 	};
 </script>
 
@@ -216,6 +219,11 @@
 		padding: 1px;
 		cursor: pointer;
 	}
+	#newSearchForm {
+		padding: 0px;
+		margin: 0px;
+		display: inline;
+	}
 		
 </style>
 
@@ -226,6 +234,10 @@
 	<a href="concept.htm?conceptId=${concept.conceptId}">View</a> |
 	<a href="concept.form?conceptId=${concept.conceptId + 1}">Next &raquo;</a>
 </c:if>
+
+<form id="newSearchForm" action="index.htm" method="get">
+&nbsp; &nbsp; <input type="text" name="phrase" size="18"> <input type="submit" class="smallButton" value="<spring:message code="general.go"/>"/>
+</form>
 
 <br/>
 <c:if test="${concept.retired}">
@@ -285,8 +297,8 @@
 			<spring:message code="Concept.synonyms" />
 		</td>
 		<td valign="top">
-			<input type="text" size="40" id="addSynonym" onKeyUp="return addSynonym(event);"/> <input type="button" class="smallButton" value="Add Synonym" onClick="addSynonym();"/>
-			<input type="hidden" name="synonyms" id="synonyms" value="<c:forEach items="${conceptSynonyms}" var="syn">${syn}||</c:forEach>" />
+			<input type="text" size="40" id="addSyn" onKeyDown="if (event.keyCode==13) {addSynonym(); return false;}"/> <input type="button" class="smallButton" value="<spring:message code="Concept.synonym.add"/>" onClick="addSynonym();"/>
+			<input type="hidden" name="newSynonyms" id="newSynonyms" value="<c:forEach items="${conceptSynonyms}" var="syn">${syn},</c:forEach>" />
 			<br/>
 			<table cellpadding="0" cellspacing="0">
 				<tr>
@@ -296,7 +308,7 @@
 						</select>
 					</td>
 					<td valign="top" class="buttons">
-						<input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('syns', 'synonyms');" /> <br/>
+						<input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('syns', 'synonyms', ',');" /> <br/>
 					</td>
 				</tr>
 			</table>
@@ -334,7 +346,7 @@
 						</td>
 						<td valign="top" class="buttons">
 							<input type="button" value="<spring:message code="general.add"/>" class="smallButton" onClick="addConcept('conceptSetsNames', 'conceptSets');" /> <br/>
-							<input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('conceptSetsNames', 'conceptSets');" /> <br/>
+							<input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('conceptSetsNames', 'conceptSets', ' ');" /> <br/>
 							<input type="button" value="<spring:message code="general.move_up"/>" class="smallButton" onClick="moveUp('conceptSetsNames', 'conceptSets');" /><br/>
 							<input type="button" value="<spring:message code="general.move_down"/>" class="smallButton" onClick="moveDown('conceptSetsNames', 'conceptSets');" /><br/>
 						</td>
@@ -375,7 +387,7 @@
 						</td>
 						<td valign="top" class="buttons">
 							<input type="button" value="<spring:message code="general.add"/>" class="smallButton" onClick="addConcept('answerNames', 'answerIds');"/><br/>
-							<input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('answerNames', 'answerIds');"/><br/>
+							<input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('answerNames', 'answerIds', ' ');"/><br/>
 						</td>
 					</tr>
 				</table>
@@ -511,9 +523,9 @@
 <div id="conceptSearchForm">
 	<div id="wrapper">
 		<input type="button" onClick="myConceptSearchMod.toggle(); return false;" class="closeButton" value="X"/>
-		<form method="get" onSubmit="return searchBoxChange('conceptSearchBody', null, searchText); return null;">
+		<form method="get" onSubmit="return searchBoxChange('conceptSearchBody', searchText); return null;">
 			<h3><spring:message code="Concept.find"/></h3>
-			<input type="text" id="searchText" size="45" onkeyup="searchBoxChange('conceptSearchBody', event, this, 400);">
+			<input type="text" id="searchText" size="45" onkeyup="searchBoxChange('conceptSearchBody', this, event, 400);">
 		</form>
 		<div id="conceptSearchResults">
 			<table>

@@ -1,15 +1,16 @@
 var conceptTimeout;
 var conceptIndex;
-var conceptsFound;
+var conceptsFound = new Array();
 var conceptTableBody;
 var highlighted = false;
+var text = "";
 	
-function searchBoxChange(bodyElementId, event, obj, delay) {
+function searchBoxChange(bodyElementId, obj, event, delay) {
 	if (!delay) {
 		delay = 400;
 	}
 	conceptTableBody = bodyElementId;
-	var text = obj.value;
+	text = obj.value;
 	var keyCode = 0;
 	if (event == null) { 
 		// if onSubmit function called
@@ -25,11 +26,6 @@ function searchBoxChange(bodyElementId, event, obj, delay) {
 		// if the user hit the enter key then check for sequence of numbers
 		if (text.match(/^\s*\d+\s*(,\d+\s*)*$/))
 		{
-			if (conceptsFound.length < 1)
-			{
-				//alert("Empty choice list!");
-				return false;
-			}
 			var textWords = text.split(/\s*,\s*/);
 			var conceptsReturned = new Array();
 			for (i=0; i<textWords.length; i++)
@@ -40,19 +36,24 @@ function searchBoxChange(bodyElementId, event, obj, delay) {
 				}
 				else
 				{
-					alert("Invalid choice: \"" + textWords[i] + "\"");
-					return false;
+					if (textWords.length != 1) {
+						//if only one number entered, assumed searching on number and not an error
+						alert("Invalid choice: \"" + textWords[i] + "\"");
+						return false;
+					}
 				}
 			}
-			onSelect(conceptsReturned);
-			return false;
+			if (conceptsReturned.length > 0)
+				onSelect(conceptsReturned);
 		}
 		obj.focus();
 		obj.select();
 	}
 
-	if ((keyCode > 47 && keyCode <= 127) || keyCode == 13) {
-			// if alphanumeric entered or enter key
+	if ((keyCode > 57 && keyCode <= 127) ||
+		(keyCode == 13)) {
+			//	"if alpha key entered or 
+			//	enter key pressed"
 			clearTimeout(conceptTimeout);
 			hideHighlight(obj);
 			conceptTimeout = setTimeout("updateConcepts('" + text + "')", delay);
@@ -132,4 +133,10 @@ var getCellContent = function(concept) {
 
 function fillTable(concepts) {
     DWRUtil.addRows(conceptTableBody, concepts, [ getNumber, getCellContent ]);
+   	if (concepts.length == 1 && concepts[0].conceptId == text) {
+   		// timeout forces execution after "addRows"
+   		// assumes findConcepts appends searches on conceptId
+   		setTimeout("selectConcept(1)", 0);
+
+	}
 }

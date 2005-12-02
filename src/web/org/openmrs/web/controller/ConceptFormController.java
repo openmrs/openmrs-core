@@ -95,7 +95,11 @@ public class ConceptFormController extends SimpleFormController {
 			// ==== Concept Synonyms ====
 				// the attribute *must* be named differently than the property, otherwise
 				//   spring will modify the property as text array
-				String[] tempSyns = request.getParameter("syns").split("\n");
+				log.error("newSynonyms: " + request.getParameter("newSynonyms"));
+				String[] tempSyns = request.getParameter("newSynonyms").split(",");
+				log.error("tempSyns: ");
+				for (String s : tempSyns)
+					log.error(s);
 				Collection<ConceptSynonym> originalSyns = concept.getSynonyms();
 				Set<ConceptSynonym> parameterSyns = new HashSet<ConceptSynonym>();
 				Set<ConceptSynonym> newSyns = new HashSet<ConceptSynonym>();

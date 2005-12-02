@@ -29,15 +29,23 @@ public class DWRConceptService {
 		else {
 			try {
 				ConceptService cs = context.getConceptService();
-				List<Concept> concepts;
+				List<Concept> concepts = new Vector();
+				
+				if (phrase.matches("\\d+")) {
+					// user searched on a number.  Insert concept with corresponding conceptId 
+					Concept c = cs.getConcept(Integer.valueOf(phrase));
+					if (c != null)
+						concepts.add(c);
+				}
 				
 				if (phrase == null || phrase.equals("")) {
-					//TODO get all concepts?
-					concepts = new Vector();
+					//TODO get all concepts for testing purposes?
 				}
 				else {
-					concepts = cs.getConceptByName(phrase);
+					//TODO change this search to concept word
+					concepts.addAll(cs.getConceptByName(phrase));
 				}
+
 				if (concepts.size() == 0) {
 					objectList.add("No matches found");
 				}
@@ -79,7 +87,10 @@ public class DWRConceptService {
 		ConceptService cs = context.getConceptService();
 		Concept c = cs.getConcept(conceptId);
 		
-		return new ConceptListItem(c);
+		if (c == null)
+			return null;
+		else
+			return new ConceptListItem(c);
 	}
 
 }
