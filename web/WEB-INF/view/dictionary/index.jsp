@@ -11,7 +11,7 @@
 <script type="text/javascript">
 
 	var onSelect = function(conceptList) {
-		location.href = "concept.form?conceptId=" + conceptList[0].conceptId;
+		location.href = "concept.htm?conceptId=" + conceptList[0].conceptId;
 	}
 
 </script>
@@ -32,7 +32,6 @@
 				</tr>
 			</tbody>
 		</table>
-		</div>
 	</div>
 </div>
 

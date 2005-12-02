@@ -208,7 +208,7 @@ public class ConceptFormController extends SimpleFormController {
 		if (concept == null)
 			concept = new Concept();
 		
-		if (concept.isNumeric() && concept.getConceptNumeric() == null)
+		if (concept.getConceptNumeric() == null)
 			concept.setConceptNumeric(new ConceptNumeric());
 		
 		return concept;

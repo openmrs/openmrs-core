@@ -20,6 +20,10 @@
 
 <table>
 	<tr>
+		<td><spring:message code="general.id"/></td>
+		<td>${concept.conceptId}</td>
+	</tr>
+	<tr>
 		<td title="<spring:message code="Concept.name.help"/>">
 			<spring:message code="general.name" />
 		</td>
