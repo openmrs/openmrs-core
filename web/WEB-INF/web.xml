@@ -28,7 +28,7 @@
 		<servlet-name>formDownloadServlet</servlet-name>
 		<url-pattern>/formDownload</url-pattern>
 	</servlet-mapping>
-	
+		
 	<listener>
 		<listener-class>org.openmrs.web.Listener</listener-class>
 	</listener>
@@ -156,6 +156,19 @@
 
 	<!-- ==/Spring Configuration=============== -->
 
+
+	<!-- Darius Testing -->
+		<servlet>
+			<servlet-name>darius</servlet-name>
+			<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+			<load-on-startup>4</load-on-startup>
+		</servlet>
+		
+		<servlet-mapping>
+	 		<servlet-name>darius</servlet-name>
+	 		<url-pattern>*.darius</url-pattern>
+		</servlet-mapping>
+	<!-- /Darius Testing -->
 
 
 	<taglib>
