@@ -69,11 +69,15 @@ public class DariusController implements Controller {
 		
 		PatientSet results = filter.filter(ps); 
 		
+		AgeDataSelector ageSelector = new AgeDataSelector();
+		PatientDataSet pds = ageSelector.getData(results);
+		
 		Map<String, Object> myModel = new HashMap<String, Object>();
 		myModel.put("all_patients", ps);
 		myModel.put("filtered_patients", results);
 		myModel.put("filter_description", gender + " patients between the ages of " + minAgeInt + " and " + maxAgeInt);
+		myModel.put("age_table", pds.toHtmlTable());
 		return new ModelAndView("WEB-INF/view/darius.jsp", "model", myModel);
 	}
-	
+
 }
