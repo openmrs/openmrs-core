@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -20,12 +21,25 @@ public class PatientDataSet {
 	private Map<Patient, Map<String, Object>> data;
 	private Set<String> allColumnNames; //TODO: Usage of the delegate methods here can cause this to get out of sync.
 	
+	public PatientDataSet() {
+		data = new HashMap<Patient, Map<String, Object>>();
+		allColumnNames = new HashSet<String>();
+	}
+	
 	public PatientDataSet(PatientSet ps) {
 		data = new HashMap<Patient, Map<String, Object>>();
-		allColumnNames = new java.util.HashSet<String>();
+		allColumnNames = new HashSet<String>();
 		for (Iterator<Patient> i = ps.iterator(); i.hasNext(); ) {
-			data.put(i.next(), new HashMap<String, Object>());
+			Patient patient = i.next(); 
+			Map<String, Object> temp = new HashMap<String, Object>();
+			temp.put("patient", patient);
+			data.put(patient, temp);
 		}
+	}
+	
+	public void add(Patient p, Map<String, Object> map) {
+		data.put(p, map);
+		allColumnNames.addAll(map.keySet());
 	}
 
 	/**
@@ -50,6 +64,23 @@ public class PatientDataSet {
 		}
 	}
 	
+	public Map<Object, PatientDataSet> splitIntoSubsets(PatientDataClassifier c) {
+		Map<Object, PatientDataSet> ret = new HashMap<Object, PatientDataSet>();
+		for (Iterator<Map.Entry<Patient, Map<String, Object>>> i = data.entrySet().iterator(); i.hasNext(); ) {
+			Map.Entry<Patient, Map<String, Object>> e = i.next();
+			Patient patient = e.getKey();
+			Map<String, Object> row = e.getValue();
+			Object classification = c.classify(row);
+			PatientDataSet group = ret.get(classification);
+			if (group == null) {
+				group = new PatientDataSet();
+				group.data.put(patient, row);
+				ret.put(classification, group);
+			}
+		}
+		return ret;
+	}
+	
 	/**
 	 * Puts a patient-level data item in the data set, replacing any previously-existing value for that Patient and Key 
 	 * @param who	which patient to add the data item to 
@@ -72,6 +103,14 @@ public class PatientDataSet {
 			throw new IllegalArgumentException("Patient not in PatientDataSet");
 		}
 		return map.get(name);
+	}
+	
+	public Map<String, Object> getDataRow(Patient who) {
+		Map<String, Object> map = data.get(who);
+		if (who == null) {
+			throw new IllegalArgumentException("Patient not in PatientDataSet");
+		}
+		return map;
 	}
 	
 	
@@ -122,6 +161,10 @@ public class PatientDataSet {
 		return data.size();
 	}
 
+	public String toString() {
+		return toHtmlTable();
+	}
+	
 	/**
 	 * @return For debugging purposes, display this data set as an HTML table. 
 	 */
@@ -140,7 +183,7 @@ public class PatientDataSet {
 			sb.append("<tr>");
 			sb.append("<td>" + p.getPatientId() + "</td>");
 			for (Iterator<String> j = columns.iterator(); j.hasNext(); ) {
-				sb.append("<td>" + getDataItem(p, j.next()) + "<td>");
+				sb.append("<td>" + getDataItem(p, j.next()) + "</td>");
 			}
 			sb.append("</tr>");
 		}

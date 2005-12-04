@@ -35,6 +35,9 @@ public class DariusController implements Controller {
 		}
 		
 		org.openmrs.api.db.PatientService patientService = context.getPatientService();
+		if (patientService == null) {
+			log.warn("context.getPatientService() returned null. (context is " + context);
+		}
 
 		String gender = request.getParameter("gender");
 		if (gender == null) {
@@ -72,11 +75,21 @@ public class DariusController implements Controller {
 		AgeDataSelector ageSelector = new AgeDataSelector();
 		PatientDataSet pds = ageSelector.getData(results);
 		
+		NumericRangePatientGrouper nrpg = new NumericRangePatientGrouper("age_in_years", "0,10,20,30,40,50", true);
+		Map<Object, PatientDataSet> ageGroups = nrpg.groupPatientData(pds);
+		
+		PatientDataSetAggregator aggregator = new CountAggregator();
+		Map<Object, Object> ageCounts = aggregator.aggregatePatientDataSets(ageGroups);
+		
+		OutputFormatter formatter = new FrequencyDistributionFormatterHTML();
+		String ageFrequencyDistribution = (String) formatter.format(ageCounts);
+		
 		Map<String, Object> myModel = new HashMap<String, Object>();
 		myModel.put("all_patients", ps);
 		myModel.put("filtered_patients", results);
 		myModel.put("filter_description", gender + " patients between the ages of " + minAgeInt + " and " + maxAgeInt);
 		myModel.put("age_table", pds.toHtmlTable());
+		myModel.put("age_frequency", ageFrequencyDistribution);
 		return new ModelAndView("WEB-INF/view/darius.jsp", "model", myModel);
 	}
 
