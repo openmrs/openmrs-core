@@ -8,6 +8,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Hibernate;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
@@ -29,6 +30,9 @@ import org.openmrs.api.db.hibernate.HibernateOrderService;
 import org.openmrs.api.db.hibernate.HibernatePatientService;
 import org.openmrs.api.db.hibernate.HibernateUserService;
 import org.openmrs.api.db.hibernate.HibernateUtil;
+import org.openmrs.reporting.ReportService;
+import org.openmrs.reporting.TestReportService;
+import org.openmrs.reporting.db.hibernate.HibernateReportService;
 import org.openmrs.util.Security;
 
 public class HibernateContext implements Context {
@@ -45,6 +49,7 @@ public class HibernateContext implements Context {
 	private FormService formService;
 	private OrderService orderService;
 	private Locale locale;
+	private ReportService reportService;
 
 	protected HibernateContext() {
 	}
@@ -67,9 +72,17 @@ public class HibernateContext implements Context {
 		//Session session = getSession();
 		Session session = HibernateUtil.currentSession();
 		
-		User candidateUser = (User) session.createQuery(
-				"from User u where u.username = ? and (u.voided is null or u.voided = 0)").setString(0, username)
-				.uniqueResult();
+		User candidateUser = null;
+		try {
+			candidateUser = (User) session.createQuery(
+					"from User u where u.username = ? and (u.voided is null or u.voided = 0)").setString(0, username)
+					.uniqueResult();
+		} catch (HibernateException he) {
+			// TODO Auto-generated catch block
+			System.out.println("Got hibernate exception");
+		} catch (Exception e) {
+			System.out.println("Got regular exception");
+		}
 		
 		if (candidateUser == null) {
 			throw new ContextAuthenticationException("User not found: "
@@ -280,6 +293,19 @@ public class HibernateContext implements Context {
 		if (orderService == null)
 			orderService = new HibernateOrderService(this);
 		return orderService;
+	}
+
+	/**
+	 * @return Returns the orderService.
+	 */
+	public ReportService getReportService() {
+		if (!isAuthenticated()) {
+			log.warn("unauthorized access to report service");
+			return null;
+		}
+		if (reportService == null)
+			reportService = new HibernateReportService(this);
+		return reportService;
 	}
 
 	/**

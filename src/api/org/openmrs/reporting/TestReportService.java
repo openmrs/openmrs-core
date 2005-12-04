@@ -36,8 +36,7 @@ public class TestReportService implements ReportService {
 	}
 
 	public Report getReport(Integer reportId) {
-		for (Iterator<Report> i = reports.iterator(); i.hasNext(); ) {
-			Report r = i.next();
+		for (Report r : reports) {
 			if (reportId.equals(r.getReportId())) {
 				return r;
 			}

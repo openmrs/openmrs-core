@@ -919,3 +919,28 @@ CREATE TABLE `users` (
   CONSTRAINT `user_who_voided_user` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 66560 kB; (`creator`) REFER `openmrs/users`(`us';
 
+#----------------------------
+# Table structure for reports
+#----------------------------
+drop table if exists report;
+CREATE TABLE `report` (
+  `report_id` int(11) NOT NULL auto_increment,
+  `name` varchar(255) NOT NULL,
+  `description` text default NULL,
+  `creator` int(11) NOT NULL default '0',
+  `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
+  `changed_by` int(11) default NULL,
+  `date_changed` datetime default NULL,
+  `voided` tinyint(1) default NULL,
+  `voided_by` int(11) default NULL,
+  `date_voided` datetime default NULL,
+  `void_reason` varchar(255) default NULL,
+  PRIMARY KEY  (`report_id`),
+  KEY `report_creator` (`creator`),
+  KEY `user_who_changed_report` (`changed_by`),
+  KEY `user_who_voided_report` (`voided_by`),
+  CONSTRAINT `report_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
+  CONSTRAINT `user_who_changed_report` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`),
+  CONSTRAINT `user_who_voided_report` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 66560 kB; (`creator`) REFER `openmrs/users`(`us';
+

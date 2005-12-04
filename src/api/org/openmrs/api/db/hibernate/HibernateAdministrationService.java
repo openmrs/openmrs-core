@@ -20,6 +20,7 @@ import org.openmrs.Tribe;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.APIException;
 import org.openmrs.api.db.AdministrationService;
+import org.openmrs.reporting.Report;
 
 public class HibernateAdministrationService implements
 		AdministrationService {
@@ -721,4 +722,60 @@ public class HibernateAdministrationService implements
 			throw new APIException(e.getMessage());
 		}
 	}
+
+	/**
+	 * @see org.openmrs.api.db.AdministrationService#createReport(org.openmrs.reporting.Report)
+	 */
+	public void createReport(Report r) throws APIException {
+		Session session = HibernateUtil.currentSession();
+		
+		r.setCreator(context.getAuthenticatedUser());
+		r.setDateCreated(new Date());
+		try {
+			HibernateUtil.beginTransaction();
+			session.save(r);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e);
+		}
+	}
+
+	/**
+	 * @see org.openmrs.api.db.AdministrationService#updateReport(org.openmrs.reporting.Report)
+	 */
+	public void updateReport(Report r) throws APIException {
+		if (r.getReportId() == null)
+			createReport(r);
+		else {
+			try {
+				Session session = HibernateUtil.currentSession();
+				HibernateUtil.beginTransaction();
+				session.saveOrUpdate(r);
+				HibernateUtil.commitTransaction();
+			}
+			catch (Exception e) {
+				HibernateUtil.rollbackTransaction();
+				throw new APIException(e.getMessage());
+			}
+		}
+	}	
+	
+	/**
+	 * @see org.openmrs.api.db.AdministrationService#deleteReport(org.openmrs.reporting.Report)
+	 */
+	public void deleteReport(Report r) throws APIException {
+		Session session = HibernateUtil.currentSession();
+		try {
+			HibernateUtil.beginTransaction();
+			session.delete(r);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e.getMessage());
+		}
+	}
 }
+

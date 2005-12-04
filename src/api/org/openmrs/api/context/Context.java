@@ -11,6 +11,7 @@ import org.openmrs.api.db.ObsService;
 import org.openmrs.api.db.OrderService;
 import org.openmrs.api.db.PatientService;
 import org.openmrs.api.db.UserService;
+import org.openmrs.reporting.ReportService;
 
 /**
  * Represents an OpenMRS <code>Context</code>, which may be used to
@@ -70,6 +71,11 @@ public interface Context {
 	 */
 	public FormService getFormService();
 	
+	/** 
+	 * @return report service
+	 */
+	public ReportService getReportService();
+
 	/**
 	 * @return admin-related services
 	 */

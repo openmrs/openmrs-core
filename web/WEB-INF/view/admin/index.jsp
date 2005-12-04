@@ -46,4 +46,7 @@
 	<li><a href="forms/fieldTypes.jsp">Manage field types</a></li>
 </ul>
 
+<h4>Reports</h4>
+	<%@ include file="reports/localHeader.jsp" %>
+
 <%@ include file="/WEB-INF/template/footer.jsp" %>

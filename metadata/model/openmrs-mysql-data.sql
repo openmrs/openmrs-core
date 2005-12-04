@@ -13550,6 +13550,7 @@ insert  into privilege values
 ('Manage Patients', ''), 
 ('Manage Tribes', ''), 
 ('Manage Users', 'Can add & edit users/roles/privileges'), 
+('Manage Reports', 'Can add/edit/delete Reports, Filters, Patient Sets, Analyses'),
 ('View Dictionary', 'Ability to view concept details'), 
 ('Write Order', 'Can write orders');
 #----------------------------
@@ -13592,6 +13593,7 @@ insert  into role_privilege values
 ('superuser', 'Manage Patients'), 
 ('superuser', 'Manage Tribes'), 
 ('superuser', 'Manage Users'), 
+('superuser', 'Manage Reports'), 
 ('superuser', 'View Dictionary');
 #----------------------------
 # Records for table tribe
@@ -13733,5 +13735,11 @@ insert  into users values
 (60, '1-8', 'Joseph', 'Jerome', 'Mamlin', '', null, null, null, 1, '2005-08-11 00:00:00', null, null, null, null, null, ''), 
 (61, '2-6', 'Paul', 'Gene', 'Biondich', '', null, null, null, 1, '2005-10-13 10:43:06', null, null, null, null, null, null), 
 (62, '5-9', 'Benjamin', '', 'Wolfe', null, null, null, null, 2, '2005-10-20 10:43:09', null, null, null, null, null, null);
+
+		
+insert  into report values 
+(1, 'Low CD4 counts', 'List names and accompagnateurs of all patients with CD4 counts below 350.', 2, '2005-12-04-10:56:00', null, null, null, null, null, null),
+(2, 'Enrollment by month', 'Enrollment by month, subdivided by location', 2, '2005-12-04-10:56:00', null, null, null, null, null, null),
+(3, 'Outcomes', 'Pie charts of outcomes, subdivided by Gender and Age(<15 vs >=15)', 2, '2005-12-04-10:56:00', null, null, null, null, null, null);
 
 

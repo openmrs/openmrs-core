@@ -12,6 +12,7 @@ import org.openmrs.Privilege;
 import org.openmrs.RelationshipType;
 import org.openmrs.Role;
 import org.openmrs.Tribe;
+import org.openmrs.reporting.Report;
 
 /**
  * Admin-related services
@@ -287,4 +288,24 @@ public interface AdministrationService {
 	 */
 	public void deleteConceptDatatype(ConceptDatatype privilege) throws APIException;	
 	
+	/**
+	 * Create a new Report
+	 * @param Report to create
+	 * @throws APIException
+	 */
+	public void createReport(Report privilege) throws APIException;
+
+	/**
+	 * Update Report
+	 * @param Report to update
+	 * @throws APIException
+	 */
+	public void updateReport(Report privilege) throws APIException;
+
+	/**
+	 * Delete Report
+	 * @param Report to delete
+	 * @throws APIException
+	 */
+	public void deleteReport(Report privilege) throws APIException;	
 }
