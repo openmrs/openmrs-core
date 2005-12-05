@@ -2,17 +2,18 @@ package org.openmrs.api.db.hibernate;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Location;
+import org.openmrs.Patient;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.APIException;
 import org.openmrs.api.db.EncounterService;
-import org.openmrs.api.context.Context;
 
 public class HibernateEncounterService implements
 		EncounterService {
@@ -154,5 +155,29 @@ public class HibernateEncounterService implements
 				throw new APIException(e);
 			}
 		}
+	}
+
+	/**
+	 * @see org.openmrs.api.db.EncounterService#getEncounters(org.openmrs.Patient, java.util.Date, java.util.Date)
+	 */
+	public Set<Encounter> getEncounters(Patient who, Date fromDate, Date toDate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/**
+	 * @see org.openmrs.api.db.EncounterService#getEncounters(org.openmrs.Patient, org.openmrs.Location)
+	 */
+	public Set<Encounter> getEncounters(Patient who, Location where) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/**
+	 * @see org.openmrs.api.db.EncounterService#getEncounters(org.openmrs.Patient)
+	 */
+	public Set<Encounter> getEncounters(Patient who) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

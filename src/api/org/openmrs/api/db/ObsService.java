@@ -1,8 +1,14 @@
 package org.openmrs.api.db;
 
 import java.util.List;
+import java.util.Set;
 
-import org.openmrs.*;
+import org.openmrs.Concept;
+import org.openmrs.Encounter;
+import org.openmrs.Location;
+import org.openmrs.MimeType;
+import org.openmrs.Obs;
+import org.openmrs.Patient;
 
 public interface ObsService {
 
@@ -84,4 +90,26 @@ public interface ObsService {
 	 * @throws APIException
 	 */
 	public Location getLocation(Integer locationId) throws APIException;
+	
+	/**
+	 * Get all Observations for a patient
+	 * @param who
+	 * @return
+	 */
+	public Set<Obs> getObservations(Patient who);
+
+	/**
+	 * e.g. get all CD4 counts for a patient 
+	 * @param who
+	 * @param question
+	 * @return
+	 */
+    public Set<Obs> getObservations(Patient who, Concept question);
+
+    /**
+     * Get all observations from a specific encounter
+     * @param whichEncounter
+     * @return
+     */
+    public Set<Obs> getObservations(Encounter whichEncounter);
 }

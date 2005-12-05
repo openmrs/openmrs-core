@@ -1,10 +1,13 @@
 package org.openmrs.api.db;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Location;
+import org.openmrs.Patient;
 
 /**
  * Provides encounter-related services within the current context.
@@ -79,6 +82,29 @@ public interface EncounterService {
 	 */
 	public void deleteEncounter(Encounter encounter) throws APIException;
 	
+	/**
+	 * all encounters for a patient
+	 * @param who
+	 * @return
+	 */
+	public Set<Encounter> getEncounters(Patient who);
+
+	/**
+	 * Get all encounters for a patient that took place at a specific location
+	 * @param who
+	 * @param where
+	 * @return
+	 */
+    public Set<Encounter> getEncounters(Patient who, Location where);
+
+    /**
+     * Get all encounters for a patient that took place between fromDate and toDate (both nullable and inclusive)
+     * @param who
+     * @param fromDate
+     * @param toDate
+     * @return
+     */
+    public Set<Encounter> getEncounters(Patient who, Date fromDate, Date toDate);
 	
 	
 }

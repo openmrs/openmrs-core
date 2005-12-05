@@ -2,17 +2,20 @@ package org.openmrs.api.db.hibernate;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
+import org.openmrs.Concept;
+import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.Obs;
+import org.openmrs.Patient;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.APIException;
 import org.openmrs.api.db.ObsService;
-import org.openmrs.api.context.Context;
 
 //import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
@@ -163,5 +166,29 @@ public class HibernateObsService implements
 		
 		return locations;
 
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ObsService#getObservations(org.openmrs.Encounter)
+	 */
+	public Set<Obs> getObservations(Encounter whichEncounter) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ObsService#getObservations(org.openmrs.Patient, org.openmrs.Concept)
+	 */
+	public Set<Obs> getObservations(Patient who, Concept question) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ObsService#getObservations(org.openmrs.Patient)
+	 */
+	public Set<Obs> getObservations(Patient who) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
