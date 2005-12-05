@@ -318,7 +318,8 @@
 			<!--  ** /Concept Datatype ** -->
 			<!--  ** ConceptWord ** -->
 				<bean id="conceptWordForm" class="org.openmrs.web.controller.concept.ConceptWordFormController">
-					<property name="commandName"><value>conceptWord</value></property>
+					<property name="commandName"><value>dummy</value></property>
+					<property name="commandClass"><value>java.lang.String</value></property>
 					<property name="formView"><value>/admin/concepts/conceptWordForm</value></property>
 					<property name="successView"><value>conceptWord.form</value></property>
 				</bean>

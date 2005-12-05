@@ -108,11 +108,11 @@ public class ConceptFormController extends SimpleFormController {
 				for (String syn : tempSyns) {
 					syn = syn.trim();
 					if (!syn.equals(""))
-						parameterSyns.add(new ConceptSynonym(concept, syn, locale));
+						parameterSyns.add(new ConceptSynonym(concept, syn.toUpperCase(), locale));
 				}
 				
 				// Union the originalSyns and parameterSyns to get the 'clean' synonyms
-				//   remove synonym from parameterSynonym if 'clean'
+				//   remove synonym from parameterSynonym if 'clean' (already in db)
 				for (ConceptSynonym c : originalSyns) {
 					if (parameterSyns.contains(c)) {  // .contains() is only usable because we overrode .equals()
 						newSyns.add(c);

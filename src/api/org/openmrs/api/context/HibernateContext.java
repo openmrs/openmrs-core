@@ -31,7 +31,6 @@ import org.openmrs.api.db.hibernate.HibernatePatientService;
 import org.openmrs.api.db.hibernate.HibernateUserService;
 import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.reporting.ReportService;
-import org.openmrs.reporting.TestReportService;
 import org.openmrs.reporting.db.hibernate.HibernateReportService;
 import org.openmrs.util.Security;
 

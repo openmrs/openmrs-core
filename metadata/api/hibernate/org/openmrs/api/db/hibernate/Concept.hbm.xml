@@ -112,7 +112,7 @@
 		</many-to-one>
 
 		
-		<one-to-one name="conceptNumeric" class="ConceptNumeric" cascade="all"/>
+		<one-to-one name="conceptNumeric" lazy="true" class="ConceptNumeric" cascade="all"/>
 		
 
 		<!--

@@ -10,19 +10,10 @@
 		<composite-id>
 			<key-many-to-one name="concept" column="concept_id"
 				class="Concept" />
-			<key-property name="word" column="word"
-				type="java.lang.String" length="100" />
+			<key-property name="word" type="java.lang.String" length="255" />
+			<key-property name="synonym" type="java.lang.String" length="255" />
+			<key-property name="locale" type="java.lang.String" length="255" />
 		</composite-id>
-
-		<!-- Associations -->
-		<!-- derived association(s) for compound key -->
-		<!-- bi-directional many-to-one association to Concept -->
-		<many-to-one name="concept" class="Concept" update="false"
-			insert="false">
-			<column name="concept_id" />
-		</many-to-one>
-
-		<!-- end of derived association(s) -->
 
 	</class>
 	

@@ -17,4 +17,10 @@
 			<spring:message code="ConceptDatatype.manage"/>
 		</a>
 	</li>
+	<li <c:if test="<%= request.getRequestURI().contains("Word") %>">class="active"</c:if>>
+		<a href="${pageContext.request.contextPath}/admin/concepts/conceptWord.form">
+			<spring:message code="ConceptWord.manage"/>
+		</a>
+	</li>
+	
 </ul>

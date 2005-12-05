@@ -1,12 +1,17 @@
 package org.openmrs.api.db.hibernate;
 
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
+import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptWord;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
 import org.openmrs.Location;
@@ -25,7 +30,7 @@ import org.openmrs.reporting.Report;
 public class HibernateAdministrationService implements
 		AdministrationService {
 
-	protected final Log log = LogFactory.getLog(getClass());
+	protected Log log = LogFactory.getLog(getClass());
 	
 	private Context context;
 	
@@ -775,6 +780,33 @@ public class HibernateAdministrationService implements
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
 			throw new APIException(e.getMessage());
+		}
+	}
+	
+	public void updateConceptWord(Concept concept) throws APIException {
+		Session session = HibernateUtil.currentSession();
+		Collection<ConceptWord> words = ConceptWord.makeConceptWords(concept); 
+		//try {
+			HibernateUtil.beginTransaction();
+			
+			for (ConceptWord word : words) {
+				session.saveOrUpdate(word);
+			}
+			
+			HibernateUtil.commitTransaction();
+		//}
+		//catch (Exception e) {
+		//	HibernateUtil.rollbackTransaction();
+		//	log.error(e);
+		//	throw new APIException(e.getMessage());
+		//}
+	}
+	
+	public void updateConceptWords() throws APIException {
+		Set<Concept> concepts = new HashSet<Concept>();
+		concepts.addAll(context.getConceptService().getConceptByName(""));
+		for (Concept concept : concepts) {
+			updateConceptWord(concept);
 		}
 	}
 }

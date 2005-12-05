@@ -1,5 +1,6 @@
 package org.openmrs.api.db;
 
+import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.EncounterType;
@@ -307,5 +308,18 @@ public interface AdministrationService {
 	 * @param Report to delete
 	 * @throws APIException
 	 */
-	public void deleteReport(Report privilege) throws APIException;	
+	public void deleteReport(Report privilege) throws APIException;
+	
+	/**
+	 * Iterates over the words in names and synonyms (for each locale) and updates the concept word business table 
+	 * @param concept
+	 * @throws APIException
+	 */
+	public void updateConceptWord(Concept concept) throws APIException;
+	
+	/**
+	 * Iterates over all concepts calling updateConceptWord(concept)
+	 * @throws APIException
+	 */
+	public void updateConceptWords() throws APIException;
 }

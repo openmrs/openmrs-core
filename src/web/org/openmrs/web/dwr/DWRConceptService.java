@@ -1,6 +1,7 @@
 package org.openmrs.web.dwr;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -22,6 +23,8 @@ public class DWRConceptService {
 
 		Context context = (Context) ExecutionContext.get().getSession()
 				.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Locale locale = ExecutionContext.get().getHttpServletRequest().getLocale();
+		
 		if (context == null) {
 			objectList.add("Your session has expired.");
 			objectList.add("Please log in again.");
@@ -43,6 +46,9 @@ public class DWRConceptService {
 				}
 				else {
 					//TODO change this search to concept word
+					//TODO get locale method?
+					log.debug(locale.getLanguage());
+					//concepts.addAll(cs.findConcepts(phrase, locale));
 					concepts.addAll(cs.getConceptByName(phrase));
 				}
 

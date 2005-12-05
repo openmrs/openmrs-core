@@ -30,8 +30,11 @@ public class Helpers {
 	}
 	
 	public static final Map<String, String> OPENMRS_CIVIL_STATUS = civilStatus;
+	
 	public static final List<String> OPENMRS_STOP_WORDS = stopWords;
 	
+	public static final String OPENMRS_REGEX_LARGE = "[!\"#\\$%&'\\(\\)\\*,+-\\./:;<=>\\?@\\[\\\\\\\\\\]^_`{\\|}~]";
+	public static final String OPENMRS_REGEX_SMALL = "[!\"#\\$%&'\\(\\)\\*,\\./:;<=>\\?@\\[\\\\\\\\\\]^_`{\\|}~]";
 	
 	
 	

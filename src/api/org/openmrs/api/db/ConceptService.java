@@ -1,6 +1,7 @@
 package org.openmrs.api.db;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
@@ -86,4 +87,11 @@ public interface ConceptService {
 	 */
 	public ConceptNumeric getConceptNumeric(Integer conceptId);
 	
+	/**
+	 * Searches on given phrase via the concept word table
+	 * @param phrase
+	 * @param locale
+	 * @return
+	 */
+	public List<Concept> findConcepts(String phrase, Locale locale);
 }

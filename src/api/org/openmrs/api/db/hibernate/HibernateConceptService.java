@@ -2,6 +2,8 @@ package org.openmrs.api.db.hibernate;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,6 +24,7 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.APIException;
 import org.openmrs.api.db.ConceptService;
+import org.openmrs.util.Helpers;
 
 public class HibernateConceptService implements
 		ConceptService {
@@ -276,6 +279,35 @@ public class HibernateConceptService implements
 						.addOrder(Order.asc("sortWeight"))
 						.list();
 		return sets;
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ConceptService#findConcepts(java.lang.String)
+	 */
+	public List<Concept> findConcepts(String phrase, Locale loc) {
+		Session session = HibernateUtil.currentSession();
+		
+		String locale = loc.getLanguage();
+		List<Concept> concepts = new Vector<Concept>();
+		
+		if (phrase.length() > 2) {
+			phrase = phrase.replaceAll(Helpers.OPENMRS_REGEX_LARGE, " ");
+		}
+		else {
+			phrase = phrase.replaceAll(Helpers.OPENMRS_REGEX_SMALL, " ");
+		}
+		String[] words = phrase.trim().toUpperCase().replace('\n', ' ').split(" ");
+		
+		for (String word : words) {
+			if (word.length() != 0) {
+				log.debug(word);
+				if (!Helpers.OPENMRS_STOP_WORDS.contains(word)) {
+					// TODO implement search algorithm
+				}
+			}
+		}
+		
+		return concepts;
 	}
 	
 	

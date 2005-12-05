@@ -152,7 +152,7 @@
 						</select>
 					</td>
 					<td valign="top" class="buttons">
-						<input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('syns', 'synonyms', ',');" /> <br/>
+						<input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('syns', 'newSynonyms', ',');" /> <br/>
 					</td>
 				</tr>
 			</table>
