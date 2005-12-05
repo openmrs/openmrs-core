@@ -42,7 +42,7 @@
 	</tr>
 	<tr>
 		<td valign="top"><spring:message code="general.description" /></td>
-		<td valign="top"><spring:bind path="concept.description">
+		<td valign="top"><spring:bind path="conceptName.description">
 			${status.value}
 		</spring:bind></td>
 	</tr>
@@ -192,6 +192,23 @@
 			</td>
 		</tr>
 	</c:if>
+	<tr>
+		<td valign="top">Resources</td>
+		<td>
+			<a href="index.htm?phrase=${conceptName.name}"
+			       target="_similar_terms">Similar Concepts</a><br/>
+			<a href="http://www2.merriam-webster.com/cgi-bin/mwmednlm?book=Medical&va=${conceptName.name}"
+			       target="_blank">Merriam Webster&reg;</a><br/>
+			<a href="http://www.google.com/search?q=${conceptName.name}"
+			       target="_blank">Google&trade;</a><br/>
+			<a href="http://www.utdol.com/application/vocab.asp?search=${conceptName.name}&submit=Go"
+			       target="_blank">UpToDate&reg;</a><br/>
+			<a href="http://dictionary.reference.com/search?q=${conceptName.name}&submit=Go"
+			       target="_blank">Dictionary.com&reg;</a><br/>
+			<a href="http://search.atomz.com/search/?sp-q=${conceptName.name}&sp-a=sp1001878c"
+			       target="_blank">Lab Tests Online</a>
+		</td>
+	</tr>
 </table>
 
 <%@ include file="/WEB-INF/template/footer.jsp"%>

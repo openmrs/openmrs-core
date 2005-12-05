@@ -17,6 +17,7 @@ public class ConceptName implements java.io.Serializable {
 	private Concept concept;
 	private String name;
 	private String shortName;
+	private String description;
 	private String locale;
 	private User creator;
 	private Date dateCreated;
@@ -27,11 +28,11 @@ public class ConceptName implements java.io.Serializable {
 	public ConceptName() {
 	}
 	
-	public ConceptName(String name, String shortName, Locale locale) {
+	public ConceptName(String name, String shortName, String description, Locale locale) {
 		setName(name);
 		setShortName(shortName);
 		setLocale(locale);
-		//setDescription(description);  TODO move description to concept_name table
+		setDescription(description);  
 	}
 
 	public boolean equals(Object obj) {
@@ -107,6 +108,20 @@ public class ConceptName implements java.io.Serializable {
 	 */
 	public void setShortName(String shortName) {
 		this.shortName = shortName;
+	}
+
+	/**
+	 * @return Returns the description.
+	 */
+	public String getDescription() {
+		return description;
+	}
+
+	/**
+	 * @param description The description to set.
+	 */
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	/**

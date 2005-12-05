@@ -14,8 +14,6 @@
 
 		<property name="retired" type="java.lang.Boolean"
 			column="retired" length="1" />
-		<property name="description" type="java.lang.String"
-			column="description" length="65535" />
 		<property name="icd10" type="java.lang.String" column="icd10"
 			length="255" />
 		<property name="loinc" type="java.lang.String" column="loinc"
@@ -45,6 +43,7 @@
 				<property name="name" type="java.lang.String" length="255"/>
 				<property name="locale" type="java.lang.String" length="50"/>
 				<property name="shortName" type="java.lang.String" length="255" column="short_name"/>
+				<property name="description" type="java.lang.String" length="65535" />
 				<property name="dateCreated" type="java.util.Date" column="date_created"/>
 				<many-to-one name="creator" class="User" column="creator"/>
 			</composite-element>

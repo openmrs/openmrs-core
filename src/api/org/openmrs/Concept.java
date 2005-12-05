@@ -278,16 +278,33 @@ public class Concept implements java.io.Serializable {
 	 * @return ConceptName attributed to the Concept in the given locale
 	 */
 	public ConceptName getName(Locale locale) {
+		return getName(locale, false);
+	}
+	
+	/**
+	 * 
+	 * @param locale
+	 * @param exact true/false to return only exact locale (no default locale)
+	 * @return
+	 */
+	public ConceptName getName(Locale locale, boolean exact) {
 		String loc = locale.getLanguage();
+		ConceptName defaultName = null;
 		for (Iterator<ConceptName> i = getNames().iterator(); i.hasNext();) {
 			ConceptName name = i.next();
 			String lang = name.getLocale();
 			if (lang.equals(loc))
 				return name;
+			if (lang.equals("en"))
+				defaultName = name;
 		}
 		
-		//no name with the given locale was found.  returning null
-		return null;
+		//no name with the given locale was found.
+		// return null if exact match desired
+		if (exact) return null;
+		
+//		returning default name locale ("en") if exact match desired
+		return defaultName;
 	}
 	
 	/**

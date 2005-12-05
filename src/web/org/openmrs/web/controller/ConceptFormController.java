@@ -130,24 +130,24 @@ public class ConceptFormController extends SimpleFormController {
 				
 				concept.setSynonyms(newSyns);
 				
-				//zero out conceptSets
+			// ====zero out conceptSets====
 				String conceptSets = request.getParameter("conceptSets");
 				if (conceptSets == null)
 					concept.setConceptSets(null); 
 				
-				//set concept_name properties to the correct/current locale
-				String conceptName = request.getParameter("name");
+			// ====set concept_name properties to the correct/current locale
+				String conceptName = request.getParameter("name").toUpperCase();
 				String shortName = request.getParameter("shortName");
-				//String description = request.getParameter("description");
-				ConceptName cn = concept.getName(locale);
+				String description = request.getParameter("description");
+				ConceptName cn = concept.getName(locale, true);
 				if (cn != null) {
 					cn.setName(conceptName);
 					cn.setShortName(shortName);
-					//cn.setDescription(description);
+					cn.setDescription(description);
 				}
 				else {
 					//TODO add description
-					concept.addName(new ConceptName(conceptName, shortName, locale));
+					concept.addName(new ConceptName(conceptName, shortName, description, locale));
 				}
 						
 			}
