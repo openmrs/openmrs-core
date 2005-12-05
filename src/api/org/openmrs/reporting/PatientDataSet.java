@@ -64,23 +64,7 @@ public class PatientDataSet {
 		}
 	}
 	
-	public Map<Object, PatientDataSet> splitIntoSubsets(PatientDataClassifier c) {
-		Map<Object, PatientDataSet> ret = new HashMap<Object, PatientDataSet>();
-		for (Iterator<Map.Entry<Patient, Map<String, Object>>> i = data.entrySet().iterator(); i.hasNext(); ) {
-			Map.Entry<Patient, Map<String, Object>> e = i.next();
-			Patient patient = e.getKey();
-			Map<String, Object> row = e.getValue();
-			Object classification = c.classify(row);
-			PatientDataSet group = ret.get(classification);
-			if (group == null) {
-				group = new PatientDataSet();
-				group.data.put(patient, row);
-				ret.put(classification, group);
-			}
-		}
-		return ret;
-	}
-	
+
 	/**
 	 * Puts a patient-level data item in the data set, replacing any previously-existing value for that Patient and Key 
 	 * @param who	which patient to add the data item to 

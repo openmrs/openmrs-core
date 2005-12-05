@@ -5,7 +5,8 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * Represents a bounded or unbounded numeric range.
- * By default the range is closed on the low end and open on the high end: mathematically "[low, high)".
+ * By default the range is closed (ake inclusive) on the low end and open (aka exclusive) on the high end: mathematically "[low, high)".
+ * (I'm not using the similarly-named class from Apache commons because it doesn't implement comparable, and because it only allows inclusive bounds.)
  * @author djazayeri
  */
 public class DoubleRange implements Comparable<DoubleRange> {
@@ -92,7 +93,7 @@ public class DoubleRange implements Comparable<DoubleRange> {
 	
 	public String toString() {
 		StringBuffer ret = new StringBuffer();
-		if (low != null) {
+		if (low != null && low.doubleValue() != Double.NEGATIVE_INFINITY) {
 			ret.append(">");
 			if (closedLow) {
 				ret.append("=");
@@ -102,7 +103,7 @@ public class DoubleRange implements Comparable<DoubleRange> {
 				ret.append(" and ");
 			}
 		}
-		if (high != null) {
+		if (high != null && high.doubleValue() != Double.POSITIVE_INFINITY) {
 			ret.append("<");
 			if (closedHigh) {
 				ret.append("=");
