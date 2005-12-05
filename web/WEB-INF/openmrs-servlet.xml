@@ -47,6 +47,7 @@
 					<prop key="**/conceptClass.form">conceptClassForm</prop>
 					<prop key="**/conceptDatatype.list">conceptDatatypeList</prop>
 					<prop key="**/conceptDatatype.form">conceptDatatypeForm</prop>
+					<prop key="**/conceptWord.form">conceptWordForm</prop>
 					<prop key="**/report.list">reportList</prop>
 					<prop key="**/report.form">reportForm</prop>
 					<prop key="**/*.htm">springController</prop>
@@ -315,6 +316,12 @@
 					<property name="successView"><value>conceptDatatype.list</value></property>
 				</bean>
 			<!--  ** /Concept Datatype ** -->
+			<!--  ** ConceptWord ** -->
+				<bean id="conceptWordForm" class="org.openmrs.web.controller.concept.ConceptWordFormController">
+					<property name="commandName"><value>conceptWord</value></property>
+					<property name="formView"><value>/admin/concepts/conceptWordForm</value></property>
+					<property name="successView"><value>conceptWord.form</value></property>
+				</bean>
 
 	    <!-- ============================ -->
 		    
