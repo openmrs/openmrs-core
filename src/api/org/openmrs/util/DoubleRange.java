@@ -52,7 +52,7 @@ public class DoubleRange implements Comparable<DoubleRange> {
 	public void setLow(Double low) {
 		this.low = low == null ? new Double(Double.NEGATIVE_INFINITY) : low;
 	}
-
+	
 	/**
 	 * first sorts according to low-bound (ascending) then according to high-bound (descending)
 	 */
@@ -99,7 +99,7 @@ public class DoubleRange implements Comparable<DoubleRange> {
 				ret.append("=");
 			}
 			ret.append(" " + Format.format(low));
-			if (high != null) {
+			if (high != null && high.doubleValue() != Double.NEGATIVE_INFINITY) {
 				ret.append(" and ");
 			}
 		}
