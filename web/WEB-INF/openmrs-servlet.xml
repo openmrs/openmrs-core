@@ -368,10 +368,7 @@
 
 		</bean>
 		
-		<bean id="localeResolver"
-			class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
-		    <property name="cookieName"><value>__openmrs_language</value></property>
-		</bean>
+		<bean id="localeResolver" class="org.openmrs.web.OpenmrsCookieLocaleResolver" />
 		
 		<bean id="localeChangeInterceptor"
 			class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">

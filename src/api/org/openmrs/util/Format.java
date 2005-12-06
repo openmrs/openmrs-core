@@ -1,6 +1,8 @@
 package org.openmrs.util;
 
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Format {
 
@@ -22,6 +24,14 @@ public class Format {
 	
 	public static String format(Double d) {
 		return d == null ? "" : format(d.doubleValue());
+	}
+	
+	public static String formatTextBoxDate(Date date) {
+		return date == null ? "" : new SimpleDateFormat("dd-MMM-yy").format(date);
+	}
+	
+	public static String format(Date date) {
+		return date == null ? "" : new SimpleDateFormat("dd-MMM-yy").format(date);
 	}
 	
 }

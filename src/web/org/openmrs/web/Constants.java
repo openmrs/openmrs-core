@@ -9,5 +9,7 @@ public class Constants {
 	
 	public static final String OPENMRS_MSG_ATTR = "openmrs_msg";
 	public static final String OPENMRS_ERROR_ATTR = "openmrs_error";
+	
+	public static final String OPENMRS_LANGUAGE_COOKIE_NAME = "__openmrs_language";
 
 }

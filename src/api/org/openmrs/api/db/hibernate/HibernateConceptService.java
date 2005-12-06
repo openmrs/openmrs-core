@@ -7,8 +7,11 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.criterion.Disjunction;
+import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Concept;
@@ -19,12 +22,14 @@ import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSynonym;
+import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.APIException;
 import org.openmrs.api.db.ConceptService;
 import org.openmrs.util.Helpers;
+import org.openmrs.web.Util;
 
 public class HibernateConceptService implements
 		ConceptService {
@@ -288,24 +293,24 @@ public class HibernateConceptService implements
 		Session session = HibernateUtil.currentSession();
 		
 		String locale = loc.getLanguage();
+		String[] words = Util.cleanWords(phrase);
+		
 		List<Concept> concepts = new Vector<Concept>();
 		
-		if (phrase.length() > 2) {
-			phrase = phrase.replaceAll(Helpers.OPENMRS_REGEX_LARGE, " ");
-		}
-		else {
-			phrase = phrase.replaceAll(Helpers.OPENMRS_REGEX_SMALL, " ");
-		}
-		String[] words = phrase.trim().toUpperCase().replace('\n', ' ').split(" ");
-		
+		Criteria searchCriteria = session.createCriteria(ConceptWord.class);	//our search
+		searchCriteria.add(Restrictions.eq("locale", locale));	//only search on current locale's synonyms/names
+		Disjunction disjunction = Expression.disjunction();		//'or' statement that each word will be added to
 		for (String word : words) {
 			if (word.length() != 0) {
 				log.debug(word);
 				if (!Helpers.OPENMRS_STOP_WORDS.contains(word)) {
-					// TODO implement search algorithm
+					disjunction.add(Expression.eq("word", word));	//add each word to the or statement
 				}
 			}
 		}
+		searchCriteria.add(disjunction);			//add our 'or' statement to the search
+		searchCriteria.setFetchSize(100);			//only fetch 100 concepts
+		concepts.addAll(searchCriteria.list());
 		
 		return concepts;
 	}

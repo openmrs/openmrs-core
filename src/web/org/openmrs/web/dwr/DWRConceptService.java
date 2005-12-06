@@ -10,6 +10,7 @@ import org.openmrs.Concept;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptService;
 import org.openmrs.web.Constants;
+import org.openmrs.web.Util;
 
 import uk.ltd.getahead.dwr.ExecutionContext;
 
@@ -23,7 +24,8 @@ public class DWRConceptService {
 
 		Context context = (Context) ExecutionContext.get().getSession()
 				.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		Locale locale = ExecutionContext.get().getHttpServletRequest().getLocale();
+		
+		Locale locale = Util.getLocale(ExecutionContext.get().getHttpServletRequest());
 		
 		if (context == null) {
 			objectList.add("Your session has expired.");
@@ -46,7 +48,6 @@ public class DWRConceptService {
 				}
 				else {
 					//TODO change this search to concept word
-					//TODO get locale method?
 					log.debug(locale.getLanguage());
 					//concepts.addAll(cs.findConcepts(phrase, locale));
 					concepts.addAll(cs.getConceptByName(phrase));
