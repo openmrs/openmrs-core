@@ -7,6 +7,7 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.ConceptWord;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptService;
 import org.openmrs.web.Constants;
@@ -18,9 +19,11 @@ public class DWRConceptService {
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
-	public Vector findConcepts(String phrase, List<String> classNames) {
+	public Vector findConcepts(String phrase, List<String> classNames, boolean includeRetired) {
 
-		Vector objectList = new Vector();
+		// List to return
+		// Object type gives ability to return error strings
+		Vector<Object> objectList = new Vector<Object>();	
 
 		Context context = (Context) ExecutionContext.get().getSession()
 				.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
@@ -34,49 +37,53 @@ public class DWRConceptService {
 		else {
 			try {
 				ConceptService cs = context.getConceptService();
-				List<Concept> concepts = new Vector();
+				List<ConceptWord> words = new Vector<ConceptWord>();
 				
 				if (phrase.matches("\\d+")) {
-					// user searched on a number.  Insert concept with corresponding conceptId 
+					// user searched on a number.  Insert concept with corresponding conceptId
 					Concept c = cs.getConcept(Integer.valueOf(phrase));
-					if (c != null)
-						concepts.add(c);
+					ConceptWord word = new ConceptWord(phrase, c, locale.getLanguage(), "");
+					if (word != null)
+						words.add(word);
 				}
-				
+							
 				if (phrase == null || phrase.equals("")) {
 					//TODO get all concepts for testing purposes?
 				}
 				else {
 					//TODO change this search to concept word
 					log.debug(locale.getLanguage());
-					//concepts.addAll(cs.findConcepts(phrase, locale));
-					concepts.addAll(cs.getConceptByName(phrase));
+					words.addAll(cs.findConcepts(phrase, locale, includeRetired));
+					//concepts.addAll(cs.getConceptByName(phrase));
 				}
 
-				if (concepts.size() == 0) {
+				if (words.size() == 0) {
 					objectList.add("No matches found");
 				}
 				else {
-					objectList = new Vector(concepts.size());
+					// TODO speed up this 'search by class' option
+					objectList = new Vector<Object>(words.size());
 					int maxCount = 30;
 					int curCount = 0;
 					if (classNames.size() > 0) {
-						outer: for (Concept c : concepts) {
+						outer: for (ConceptWord word : words) {
 							inner: for (String o : classNames)
-								if (o.equals(c.getConceptClass().getName())) {
+								if (o.equals(word.getConcept().getConceptClass().getName())) {
 									if ( ++curCount > maxCount ) {
 										break outer;
 									}
-									objectList.add(new ConceptListItem(c));
+									objectList.add(new ConceptListItem(word));
+									//objectList.add(word);
 								}
 						}
 					}
 					else {
-						for (Concept c : concepts) {
+						for (ConceptWord word : words) {
 							if ( ++curCount > maxCount ) {
 								break;
 							}
-							objectList.add(new ConceptListItem(c));
+							objectList.add(new ConceptListItem(word));
+							//objectList.add(word);
 						}
 					}
 				}
@@ -94,10 +101,7 @@ public class DWRConceptService {
 		ConceptService cs = context.getConceptService();
 		Concept c = cs.getConcept(conceptId);
 		
-		if (c == null)
-			return null;
-		else
-			return new ConceptListItem(c);
+		return c == null ? null : new ConceptListItem(c);
 	}
 
 }

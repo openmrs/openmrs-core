@@ -12,6 +12,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Concept;
@@ -289,30 +290,42 @@ public class HibernateConceptService implements
 	/**
 	 * @see org.openmrs.api.db.ConceptService#findConcepts(java.lang.String)
 	 */
-	public List<Concept> findConcepts(String phrase, Locale loc) {
+	public List<ConceptWord> findConcepts(String phrase, Locale loc, boolean includeRetired) {
 		Session session = HibernateUtil.currentSession();
 		
 		String locale = loc.getLanguage();
 		String[] words = Util.cleanWords(phrase);
 		
-		List<Concept> concepts = new Vector<Concept>();
+		List<ConceptWord> conceptWords = new Vector<ConceptWord>();
 		
-		Criteria searchCriteria = session.createCriteria(ConceptWord.class);	//our search
-		searchCriteria.add(Restrictions.eq("locale", locale));	//only search on current locale's synonyms/names
-		Disjunction disjunction = Expression.disjunction();		//'or' statement that each word will be added to
+		Criteria searchCriteria = session.createCriteria(ConceptWord.class);
+		// only add retired criteria if 
+		if (includeRetired == false) {
+			searchCriteria.createAlias("concept", "concept");
+			searchCriteria.add(Expression.eq("concept.retired", false));
+		}
+		//only search on current locale's synonyms/names
+		searchCriteria.add(Restrictions.eq("locale", locale));
+		
+		//TODO can add option for 'and' search here.
+		//'or' statement that each word will be added to
+		Disjunction disjunction = Expression.disjunction();
 		for (String word : words) {
 			if (word.length() != 0) {
 				log.debug(word);
 				if (!Helpers.OPENMRS_STOP_WORDS.contains(word)) {
-					disjunction.add(Expression.eq("word", word));	//add each word to the or statement
+					disjunction.add(Expression.like("word", word, MatchMode.START));	//add each word to the or statement
 				}
 			}
 		}
-		searchCriteria.add(disjunction);			//add our 'or' statement to the search
-		searchCriteria.setFetchSize(100);			//only fetch 100 concepts
-		concepts.addAll(searchCriteria.list());
+		// add our 'or' statement to the search
+		searchCriteria.add(disjunction);
 		
-		return concepts;
+		searchCriteria.setFetchSize(100);			//only fetch 100 concepts
+		searchCriteria.addOrder(Order.asc("synonym")); //put hits on concept name first (hits that have an empty synonym column)
+		conceptWords.addAll(searchCriteria.list());
+		
+		return conceptWords;
 	}
 	
 	

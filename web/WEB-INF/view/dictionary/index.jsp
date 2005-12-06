@@ -21,8 +21,9 @@
 <div id="findPatient">
 	<b class="boxHeader"><spring:message code="Concept.find"/></b>
 	<div class="box">
-		<form method="get" id="searchForm" onSubmit="return searchBoxChange('conceptSearchBody', searchText); return null;">
-			<spring:message code="dictionary.searchBox"/> <input type="text" id="searchText" size="45" onkeyup="searchBoxChange('conceptSearchBody', this, event, 400);">
+		<form method="get" id="searchForm" onSubmit="return searchBoxChange('conceptSearchBody', searchText, null, includeRetired.checked); return null;">
+			<spring:message code="dictionary.searchBox"/> <input type="text" id="searchText" size="45" onkeyup="searchBoxChange('conceptSearchBody', this, event, includeRetired.checked, 400);">
+			<spring:message code="dictionary.includeRetired"/> <input type="checkbox" id="includeRetired" value="true">
 		</form>
 		<table class="conceptSearchTable">
 			<tbody id="conceptSearchBody">

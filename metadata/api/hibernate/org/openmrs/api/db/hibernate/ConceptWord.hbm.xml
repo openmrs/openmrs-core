@@ -15,6 +15,10 @@
 			<key-property name="locale" type="java.lang.String" length="255" />
 		</composite-id>
 
+		<many-to-one name="concept" column="concept_id" class="Concept" 
+					 update="false" insert="false" 
+					 outer-join="true" />
+		
 	</class>
 	
 </hibernate-mapping>

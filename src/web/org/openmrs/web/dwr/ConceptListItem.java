@@ -6,6 +6,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptWord;
+import org.openmrs.web.Util;
+
+import uk.ltd.getahead.dwr.ExecutionContext;
 import uk.ltd.getahead.dwr.util.JavascriptUtil;
 
 public class ConceptListItem {
@@ -16,10 +20,31 @@ public class ConceptListItem {
 	private String name;
 	private String shortName;
 	private String description;
+	private String synonym; 
 	private Boolean retired;
 
 
 	public ConceptListItem() { }
+	
+	public ConceptListItem(ConceptWord word) {
+
+		if (word != null) {
+
+			Concept concept = word.getConcept();
+			conceptId = concept.getConceptId();
+			JavascriptUtil util = new JavascriptUtil();
+			ConceptName cn = concept.getName(new Locale(word.getLocale()));
+			name = "";
+			shortName = "";
+			if (cn != null) {
+				name = util.escapeJavaScript(cn.getName());
+				shortName = util.escapeJavaScript(cn.getShortName());
+				description = util.escapeJavaScript(cn.getDescription());
+			}
+			synonym = word.getSynonym();
+			retired = concept.isRetired();
+		}
+	}
 	
 	public ConceptListItem(Concept concept) {
 
@@ -27,14 +52,16 @@ public class ConceptListItem {
 
 			conceptId = concept.getConceptId();
 			JavascriptUtil util = new JavascriptUtil();
-			ConceptName cn = concept.getName(new Locale("en"));
+			Locale locale = Util.getLocale(ExecutionContext.get().getHttpServletRequest());
+			ConceptName cn = concept.getName(locale);
 			name = "";
 			shortName = "";
 			if (cn != null) {
 				name = util.escapeJavaScript(cn.getName());
 				shortName = util.escapeJavaScript(cn.getShortName());
+				description = util.escapeJavaScript(cn.getDescription());
 			}
-			description = util.escapeJavaScript(concept.getDescription());
+			synonym = "";
 			retired = concept.isRetired();
 		}
 	}
@@ -69,6 +96,20 @@ public class ConceptListItem {
 
 	public void setShortName(String shortName) {
 		this.shortName = shortName;
+	}
+
+	/**
+	 * @return Returns the synonym.
+	 */
+	public String getSynonym() {
+		return synonym;
+	}
+
+	/**
+	 * @param synonym The synonym to set.
+	 */
+	public void setSynonym(String synonym) {
+		this.synonym = synonym;
 	}
 
 	public Boolean getRetired() {

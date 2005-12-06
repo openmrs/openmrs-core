@@ -4,12 +4,14 @@ var conceptsFound = new Array();
 var conceptTableBody;
 var highlighted = false;
 var text = "";
+var includeRetired = false;
 	
-function searchBoxChange(bodyElementId, obj, event, delay) {
-	if (!delay) {
-		delay = 400;
-	}
+function searchBoxChange(bodyElementId, obj, event, retired, delay) {
 	conceptTableBody = bodyElementId;
+	includeRetired = retired;
+	if (!delay)  { delay = 400; }
+	if (!retired){ includeRetired = false; }
+		
 	text = obj.value;
 	var keyCode = 0;
 	if (event == null) { 
@@ -69,7 +71,7 @@ function updateConcepts(text) {
 	    	conceptClasses = new Array();
 		clearTimeout(conceptTimeout);				//stop any timeout that may have just occurred...fixes 'duplicate data' error
 	    DWRUtil.removeAllRows(conceptTableBody);	//clear out the current rows
-	    DWRConceptService.findConcepts(fillTable, text , conceptClasses);
+	    DWRConceptService.findConcepts(fillTable, text , conceptClasses, includeRetired);
 	}
     return false;
 }
@@ -115,17 +117,25 @@ var getNumber = function(concept) {
 		return str;
 	};
 
-var getCellContent = function(concept) { 
-	    if (typeof concept == 'string') {
-    		return concept;
+var getCellContent = function(conceptHit) { 
+	    if (typeof conceptHit == 'string') {
+    		return conceptHit;
     	}	
 	    else {
 			var str = "";
 			str += "<a href=\"#selectConcept\" onClick=\"selectConcept('" + conceptIndex + "'); return false;\" ";
 			str += "class='conceptHit'>";
-			str += concept.name;
-			str += " (" + concept.conceptId + ")";
+			if (conceptHit.synonym != "") {
+				str += " <span class='mainHit'>" + conceptHit.synonym + "</span>";
+				str += " " + conceptHit.name;
+			}
+			else {
+				str += " <span class='mainHit'>" + conceptHit.name + "</span>";
+			}
 			str += "</a>";
+			if (conceptHit.retired) {
+				str = "<span class='retired'>" + str + "</span>";
+			}
 			conceptIndex = conceptIndex + 1;
 			return str;
 		}
@@ -133,10 +143,11 @@ var getCellContent = function(concept) {
 
 function fillTable(concepts) {
     DWRUtil.addRows(conceptTableBody, concepts, [ getNumber, getCellContent ]);
+    
+    // If we get only one result and that result's conceptId is what we searched on, jump to that concept
    	if (concepts.length == 1 && concepts[0].conceptId == text) {
    		// timeout forces execution after "addRows"
-   		// assumes findConcepts appends searches on conceptId
+   		// assumes findConcepts() appends a search on conceptId
    		setTimeout("selectConcept(1)", 0);
-
 	}
 }

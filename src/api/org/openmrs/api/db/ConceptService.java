@@ -8,6 +8,7 @@ import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptSet;
+import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 
 public interface ConceptService {
@@ -89,9 +90,10 @@ public interface ConceptService {
 	
 	/**
 	 * Searches on given phrase via the concept word table
-	 * @param phrase
-	 * @param locale
+	 * @param phrase/search/words String
+	 * @param locale Locale
+	 * @param includeRetired boolean
 	 * @return
 	 */
-	public List<Concept> findConcepts(String phrase, Locale locale);
+	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired);
 }
