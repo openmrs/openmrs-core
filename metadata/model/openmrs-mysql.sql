@@ -226,15 +226,14 @@ CREATE TABLE `concept_synonym` (
 #----------------------------
 drop table if exists concept_word;
 CREATE TABLE `concept_word` (
-  `concept_word_id` int(11) NOT NULL auto_increment,
   `concept_id` int(11) NOT NULL default '0',
   `word` varchar(255) NOT NULL default '',
-  `synonym` varchar(255) default NULL,
-  `locale` varchar(255) default NULL,
-  PRIMARY KEY  (`concept_word_id`),
+  `synonym` varchar(255) NOT NULL default '',
+  `locale` varchar(255) NOT NULL default '',
+  PRIMARY KEY  (`concept_id`,`word`,`synonym`,`locale`),
   KEY `word_for` (`concept_id`),
   CONSTRAINT `word_for` FOREIGN KEY (`concept_id`) REFERENCES `concept` (`concept_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 49152 kB';
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 49152 kB; InnoDB free: 72704 kB; (`concept_id`)';
 #----------------------------
 # Table structure for drug
 #----------------------------
