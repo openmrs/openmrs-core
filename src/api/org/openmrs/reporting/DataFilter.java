@@ -2,6 +2,6 @@ package org.openmrs.reporting;
 
 public interface DataFilter<T> {
 
-	public DataSet<T> filter(DataSet<T> input);
+	public <U extends T> DataSet<T> filter(DataSet<U> input);
 	
 }

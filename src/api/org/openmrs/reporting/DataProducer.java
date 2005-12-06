@@ -5,6 +5,6 @@ public interface DataProducer<T> {
 	/**
 	 * @return the input DataSet
 	 */
-	public DataSet<T> produceData(DataSet<T> dataSet);
+	public <U extends T> DataSet<U> produceData(DataSet<U> dataSet);
 	
 }

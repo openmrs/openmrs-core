@@ -2,8 +2,6 @@ package org.openmrs.reporting;
 
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.db.PatientService;
-import java.util.*;
 
 public class PatientCharacteristicFilter implements DataFilter<Patient> {
 
@@ -48,14 +46,13 @@ public class PatientCharacteristicFilter implements DataFilter<Patient> {
 
 	final static long ms_per_year = 1000l * 60 * 60 * 24 * 365;
 	
-	public DataSet<Patient> filter(DataSet<Patient> input) {
-		PatientService patientService = context.getPatientService();
+	public <P extends Patient> DataSet<Patient> filter(DataSet<P> input) {
 		DataSet<Patient> toReturn = new SimpleDataSet<Patient>();
 		boolean checkGender = gender != null;
 		boolean checkAge = minAge != null || maxAge != null;
 		int minAgeInt = minAge == null ? -1 : minAge.intValue();
 		int maxAgeInt = maxAge == null ? Integer.MAX_VALUE : maxAge.intValue();
-		for (Patient patient : input.getRowKeys()) {
+		for (P patient : input.getRowKeys()) {
 			if (checkGender && !gender.equals(patient.getGender())) {
 				continue;
 			}

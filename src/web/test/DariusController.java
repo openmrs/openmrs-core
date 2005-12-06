@@ -16,6 +16,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.DoubleRange;
 import org.openmrs.web.Constants;
 
 public class DariusController implements Controller {
@@ -57,12 +58,7 @@ public class DariusController implements Controller {
 			}
 		}
 		
-		PatientSet ps = new PatientSet();
 		Set<Patient> everyone = patientService.getPatientsByName("");
-		for (Iterator<Patient> i = everyone.iterator(); i.hasNext(); ) {
-			Patient patient = i.next();
-			ps.add(patient);
-		}
 		
 		PatientCharacteristicFilter filter = new PatientCharacteristicFilter();
 		filter.setContext(context);
@@ -70,25 +66,26 @@ public class DariusController implements Controller {
 		filter.setMinAge(minAgeInt);
 		filter.setMaxAge(maxAgeInt);
 		
-		PatientSet results = filter.filter(ps); 
+		DataSet<Patient> temp = new SimpleDataSet<Patient>(everyone);
+		DataSet<Patient> results = filter.filter(temp); 
 		
-		AgeDataSelector ageSelector = new AgeDataSelector();
-		PatientDataSet pds = ageSelector.getData(results);
+		AgeDataProducer ageSelector = new AgeDataProducer();
+		ageSelector.produceData(results);
 		
-		NumericRangePatientGrouper nrpg = new NumericRangePatientGrouper("age_in_years", "0,10,20,30,40,50", true);
-		Map<Object, PatientDataSet> ageGroups = nrpg.groupPatientData(pds);
+		NumericRangeGrouper<Patient> nrpg = new NumericRangeGrouper<Patient>("age_in_years", "0,10,20,30,40,50", true);
+		Map<DoubleRange, DataSet<Patient>> ageGroups = nrpg.groupDataSet(results);
 		
-		PatientDataSetAggregator aggregator = new CountAggregator();
-		Map<Object, Object> ageCounts = aggregator.aggregatePatientDataSets(ageGroups);
+		DataSetAggregator<Patient, DoubleRange, Integer> aggregator = new CountAggregator<Patient, DoubleRange>();
+		Map<DoubleRange, Integer> ageCounts = aggregator.aggregateDataSets(ageGroups);
 		
-		OutputFormatter formatter = new FrequencyDistributionFormatterHTML();
+		FrequencyDistributionFormatterHTML formatter = new FrequencyDistributionFormatterHTML();
 		String ageFrequencyDistribution = (String) formatter.format(ageCounts);
 		
 		Map<String, Object> myModel = new HashMap<String, Object>();
-		myModel.put("all_patients", ps);
+		myModel.put("all_patients", everyone);
 		myModel.put("filtered_patients", results);
 		myModel.put("filter_description", gender + " patients between the ages of " + minAgeInt + " and " + maxAgeInt);
-		myModel.put("age_table", pds.toHtmlTable());
+		myModel.put("age_table", ((SimpleDataSet) results).toHtmlTable());
 		myModel.put("age_frequency", ageFrequencyDistribution);
 		return new ModelAndView("WEB-INF/view/darius.jsp", "model", myModel);
 	}

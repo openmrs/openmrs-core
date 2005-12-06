@@ -18,10 +18,9 @@ public class AgeDataProducer implements DataProducer<Patient> {
 	
 	public AgeDataProducer() { }
 	
-	public DataSet<Patient> produceData(DataSet<Patient> dataSet) {
+	public <P extends Patient> DataSet<P> produceData(DataSet<P> dataSet) {
 		long now = System.currentTimeMillis();
-		for (Iterator<Patient> i = dataSet.getRowKeys().iterator(); i.hasNext(); ) {
-			Patient p = i.next();
+		for (P p : dataSet.getRowKeys()) {
 			Date birth = p.getBirthdate();
 			if (birth != null) {
 				long ageInMillis = now - birth.getTime();

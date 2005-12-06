@@ -4,7 +4,7 @@ All Patients: <c:out value="${model.all_patients}"/>
 
 <br />
 
-<c:out value="${model.filter_description}"/>: <c:out value="${model.filtered_patients}"/>
+<c:out value="${model.filter_description}"/>: <c:out value="${model.filtered_patients}" escapeXml="false"/>
 
 <br />
 Age table <c:out value="${model.age_table}" escapeXml="false"/>

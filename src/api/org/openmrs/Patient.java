@@ -399,6 +399,10 @@ public class Patient extends Person implements java.io.Serializable {
 			return null;
 		}
 	}
+
+	public String toString() {
+		return "Patient#" + patientId;
+	}
 	
 	/*
 	public User getCreator() {
