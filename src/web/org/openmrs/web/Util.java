@@ -5,8 +5,6 @@ import java.util.Locale;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
-import org.openmrs.util.Helpers;
-
 public class Util {
 
 	/**
@@ -27,14 +25,5 @@ public class Util {
 		return locale;
 	}
 
-	public static String[] cleanWords(String phrase) {
-		if (phrase.length() > 2) {
-			phrase = phrase.replaceAll(Helpers.OPENMRS_REGEX_LARGE, " ");
-		}
-		else {
-			phrase = phrase.replaceAll(Helpers.OPENMRS_REGEX_SMALL, " ");
-		}
-		String[] words = phrase.trim().toUpperCase().replace('\n', ' ').split(" ");
-		return words;
-	}
+
 }

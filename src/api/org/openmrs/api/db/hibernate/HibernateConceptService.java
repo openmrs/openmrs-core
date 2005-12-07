@@ -33,7 +33,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.APIException;
 import org.openmrs.api.db.ConceptService;
 import org.openmrs.util.Helpers;
-import org.openmrs.web.Util;
 
 public class HibernateConceptService implements
 		ConceptService {
@@ -301,7 +300,7 @@ public class HibernateConceptService implements
 		Session session = HibernateUtil.currentSession();
 		
 		String locale = loc.getLanguage();
-		String[] words = Util.cleanWords(phrase);
+		String[] words = Helpers.cleanWords(phrase);
 		
 		List<ConceptWord> conceptWords = new Vector<ConceptWord>();
 		

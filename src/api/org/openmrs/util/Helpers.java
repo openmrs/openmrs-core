@@ -36,6 +36,15 @@ public class Helpers {
 	public static final String OPENMRS_REGEX_LARGE = "[!\"#\\$%&'\\(\\)\\*,+-\\./:;<=>\\?@\\[\\\\\\\\\\]^_`{\\|}~]";
 	public static final String OPENMRS_REGEX_SMALL = "[!\"#\\$%&'\\(\\)\\*,\\./:;<=>\\?@\\[\\\\\\\\\\]^_`{\\|}~]";
 	
-	
+	public static String[] cleanWords(String phrase) {
+		if (phrase.length() > 2) {
+			phrase = phrase.replaceAll(OPENMRS_REGEX_LARGE, " ");
+		}
+		else {
+			phrase = phrase.replaceAll(OPENMRS_REGEX_SMALL, " ");
+		}
+		String[] words = phrase.trim().toUpperCase().replace('\n', ' ').split(" ");
+		return words;
+	}
 	
 }
