@@ -258,17 +258,20 @@ public class ConceptFormController extends SimpleFormController {
 		    		conceptAnswers.put(answer.getAnswerConcept().getConceptId().toString(), answer.getAnswerConcept().getName(locale));
 		    	}
 
+		    	//previous/next ids for links
+		    	map.put("previousConcept", cs.getNextConcept(concept, -1));
+		    	map.put("nextConcept", cs.getNextConcept(concept, 1));
 			}
 
 	    	map.put("conceptName", conceptName);
 	    	map.put("conceptSynonyms", conceptSynonyms);
 	    	map.put("conceptSets", conceptSets);
 	    	map.put("conceptAnswers", conceptAnswers);
-
 			
 	    	//get complete class and datatype lists 
 			map.put("classes", cs.getConceptClasses());
 			map.put("datatypes", cs.getConceptDatatypes());
+			
 			// make spring locale available to jsp
 			map.put("locale", locale.getLanguage());
 			

@@ -2,14 +2,19 @@
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
 
+<openmrs:require privilege="" otherwise="/login.htm"
+	redirect="/dictionary/concept.htm" />
+
 <h2><spring:message code="Concept.title" /></h2>
 
+<a href="index.htm">Search Again</a><br/>
+
 <c:if test="${concept.conceptId != null}">
-	<a href="concept.htm?conceptId=${concept.conceptId - 1}" valign="middle">&laquo; Previous</a> |
+	<a href="concept.htm?conceptId=${previousConcept.conceptId}" valign="middle">&laquo; Previous</a> |
 	<openmrs:hasPrivilege privilege="Edit Dictionary" converse="false">
 		<a href="concept.form?conceptId=${concept.conceptId}" valign="middle">Edit</a> |
 	</openmrs:hasPrivilege>
-	<a href="concept.htm?conceptId=${concept.conceptId + 1}" valign="middle">Next &raquo;</a>
+	<a href="concept.htm?conceptId=${nextConcept.conceptId}" valign="middle">Next &raquo;</a>
 </c:if>
 
 <br/>

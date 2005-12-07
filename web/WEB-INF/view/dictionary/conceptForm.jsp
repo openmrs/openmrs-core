@@ -65,9 +65,9 @@
 <h2><spring:message code="Concept.title" /></h2>
 
 <c:if test="${concept.conceptId != null}">
-	<a href="concept.form?conceptId=${concept.conceptId - 1}">&laquo; Previous</a> |
+	<a href="concept.form?conceptId=${previousConcept.conceptId}">&laquo; Previous</a> |
 	<a href="concept.htm?conceptId=${concept.conceptId}">View</a> |
-	<a href="concept.form?conceptId=${concept.conceptId + 1}">Next &raquo;</a>
+	<a href="concept.form?conceptId=${nextConcept.conceptId}">Next &raquo;</a>
 </c:if>
 
 <form id="newSearchForm" action="index.htm" method="get">

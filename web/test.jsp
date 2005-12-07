@@ -80,8 +80,19 @@ if (pw != null) {
 	out.write("<br/>" + salt.toString());
 }
 
+for (Cookie cookie : request.getCookies()) {
+	out.write("<br/> Cookie (domain, name, value): (");
+	out.write(cookie.getDomain() + ", ");
+	out.write(cookie.getName() + ", ");
+	out.write(cookie.getValue() + ")");
+}
+
 %>
 
+<br><br>
+
+
  <br><br> done 
+ 
 
 </html>

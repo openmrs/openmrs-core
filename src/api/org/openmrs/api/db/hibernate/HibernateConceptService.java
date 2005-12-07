@@ -1,8 +1,12 @@
 package org.openmrs.api.db.hibernate;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -63,6 +67,7 @@ public class HibernateConceptService implements
 			HibernateUtil.rollbackTransaction();
 			throw new APIException(e);
 		}
+		context.getAdministrationService().updateConceptWord(concept);
 		
 	}
 
@@ -120,6 +125,7 @@ public class HibernateConceptService implements
 				HibernateUtil.rollbackTransaction();
 				throw new APIException(e); 
 			}
+			context.getAdministrationService().updateConceptWord(concept);
 		}
 	}
 	
@@ -287,6 +293,8 @@ public class HibernateConceptService implements
 		return sets;
 	}
 
+	// TODO below are functions worthy of a second tier
+	
 	/**
 	 * @see org.openmrs.api.db.ConceptService#findConcepts(java.lang.String)
 	 */
@@ -307,27 +315,75 @@ public class HibernateConceptService implements
 		//only search on current locale's synonyms/names
 		searchCriteria.add(Restrictions.eq("locale", locale));
 		
-		//TODO can add option for 'and' search here.
-		//'or' statement that each word will be added to
-		Disjunction disjunction = Expression.disjunction();
+		//TODO can add option for 'and/'or' search here.
+		//'and'/'or' statement that each word will be added to
+		Disjunction junction = Expression.disjunction();
 		for (String word : words) {
 			if (word.length() != 0) {
 				log.debug(word);
 				if (!Helpers.OPENMRS_STOP_WORDS.contains(word)) {
-					disjunction.add(Expression.like("word", word, MatchMode.START));	//add each word to the or statement
+					junction.add(Expression.like("word", word, MatchMode.START));	//add each word to the or statement
 				}
 			}
 		}
-		// add our 'or' statement to the search
-		searchCriteria.add(disjunction);
+		// add our 'and'/'or' statement to the search
+		searchCriteria.add(junction);
 		
 		searchCriteria.setFetchSize(100);			//only fetch 100 concepts
 		searchCriteria.addOrder(Order.asc("synonym")); //put hits on concept name first (hits that have an empty synonym column)
-		conceptWords.addAll(searchCriteria.list());
+		conceptWords = searchCriteria.list();
+		
+		//this will store the unique concept hits to the concept word table
+		//we are assuming the hits are sorted with synonym matches at the bottom
+		//Map<ConceptId, ConceptWord>
+		Map<Integer, ConceptWord> uniqueConcepts = new HashMap<Integer, ConceptWord>();
+		
+		Integer id = null;
+		Concept concept = null;
+		for (ConceptWord tmpWord : conceptWords) {
+			concept = tmpWord.getConcept(); 
+			id = concept.getConceptId();
+			if (uniqueConcepts.containsKey(id)) {
+				//if the concept is already in the list, strengthen the hit
+				uniqueConcepts.get(id).increaseWeight(1);
+			}
+			else {
+				//if its not in the list, add it
+				uniqueConcepts.put(id, tmpWord);
+			}
+			
+			// if there isn't a synonym, it is matching on the name, increase the weight
+			if (tmpWord.getSynonym().length() > 0)
+				uniqueConcepts.get(id).increaseWeight(1);
+		}
+		
+		conceptWords = new Vector<ConceptWord>(); 
+		conceptWords.addAll(uniqueConcepts.values());
+		Collections.sort(conceptWords);
+		
+		//TODO this is a bit too much pre/post processing to be in the persistence layer.
+		// consider moving to different layer (eg: logic).
 		
 		return conceptWords;
 	}
 	
-	
+	/**
+	 * @see org.openmrs.api.db.ConceptService#getNextConcept(org.openmrs.Concept, java.lang.Integer)
+	 */
+	public Concept getNextConcept(Concept c, Integer offset) {
+		Session session = HibernateUtil.currentSession();
+		
+		Integer i = c.getConceptId();
+		
+		Integer count = 0;
+		while (count == 0) {
+			i+=offset;
+			count = (Integer) session.createQuery("select count(*) from Concept where conceptId = :id")
+				.setParameter("id", i)
+				.uniqueResult();
+		}
+		
+		return ((Concept)session.get(Concept.class, i));
+	}
 	
 }

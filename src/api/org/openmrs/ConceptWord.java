@@ -1,5 +1,6 @@
 package org.openmrs;
 
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -8,7 +9,7 @@ import org.openmrs.util.Helpers;
 /**
  * ConceptWord 
  */
-public class ConceptWord implements java.io.Serializable {
+public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord> {
 
 	public static final long serialVersionUID = 888677L;
 	
@@ -18,11 +19,13 @@ public class ConceptWord implements java.io.Serializable {
 	private String word;
 	private String synonym;
 	private String locale;
+	private Integer weight;
 
 	// Constructors
 
 	/** default constructor */
 	public ConceptWord() {
+		weight = 0;
 	}
 	
 	public ConceptWord(String word, Concept concept, String locale, String synonym) {
@@ -30,6 +33,7 @@ public class ConceptWord implements java.io.Serializable {
 		this.word = word;
 		this.locale = locale;
 		this.synonym = synonym;
+		this.weight = 0;
 	}
 	
 	public boolean equals(Object obj) {
@@ -119,6 +123,34 @@ public class ConceptWord implements java.io.Serializable {
 		this.concept = concept;
 	}	
 	
+	/**
+	 * @return Returns the weight.
+	 */
+	public Integer getWeight() {
+		return weight;
+	}
+
+	/**
+	 * @param weight The weight to set.
+	 */
+	public void setWeight(Integer weight) {
+		this.weight = weight;
+	}
+	
+	/**
+	 * Increment the weight by i 
+	 * @param i
+	 */
+	public void increaseWeight(Integer i) {
+		this.weight += i;
+	}
+	
+	/**
+	 * 
+	 * @param concept
+	 * @return
+	 */
+
 	public static Set<ConceptWord> makeConceptWords(Concept concept) {
 		Set<ConceptWord> words = new HashSet<ConceptWord>();
 		
@@ -171,4 +203,14 @@ public class ConceptWord implements java.io.Serializable {
 			s += locale;
 		return s;
 	}
+
+	/**
+	 * @see java.lang.Comparable#compareTo(T)
+	 */
+	public int compareTo(ConceptWord word) {
+		
+		return (word.getWeight() - weight);
+		
+	}
+		
 }

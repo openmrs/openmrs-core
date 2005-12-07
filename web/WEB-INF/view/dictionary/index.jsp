@@ -13,6 +13,12 @@
 	var onSelect = function(conceptList) {
 		location.href = "concept.htm?conceptId=" + conceptList[0].conceptId;
 	}
+	
+	function search(delay, event) {
+		var searchBox = document.getElementById("searchText");
+		var retired = document.getElementById("includeRetired").checked;
+		return searchBoxChange('conceptSearchBody', searchBox, event, retired, delay);
+	}
 
 </script>
 
@@ -21,9 +27,9 @@
 <div id="findPatient">
 	<b class="boxHeader"><spring:message code="Concept.find"/></b>
 	<div class="box">
-		<form method="get" id="searchForm" onSubmit="return searchBoxChange('conceptSearchBody', searchText, null, includeRetired.checked); return null;">
-			<spring:message code="dictionary.searchBox"/> <input type="text" id="searchText" size="45" onkeyup="searchBoxChange('conceptSearchBody', this, event, includeRetired.checked, 400);">
-			<spring:message code="dictionary.includeRetired"/> <input type="checkbox" id="includeRetired" value="true">
+		<form method="get" id="searchForm" onSubmit="return search(0); return null;">
+			<spring:message code="dictionary.searchBox"/> <input type="text" id="searchText" size="45" onkeyup="search(400, event);">
+			<spring:message code="dictionary.includeRetired"/> <input type="checkbox" id="includeRetired" value="true" onclick="search(0)">
 		</form>
 		<table class="conceptSearchTable">
 			<tbody id="conceptSearchBody">

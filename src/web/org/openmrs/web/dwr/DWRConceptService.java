@@ -42,9 +42,10 @@ public class DWRConceptService {
 				if (phrase.matches("\\d+")) {
 					// user searched on a number.  Insert concept with corresponding conceptId
 					Concept c = cs.getConcept(Integer.valueOf(phrase));
-					ConceptWord word = new ConceptWord(phrase, c, locale.getLanguage(), "");
-					if (word != null)
+					if (c != null) {
+						ConceptWord word = new ConceptWord(phrase, c, locale.getLanguage(), "");
 						words.add(word);
+					}
 				}
 							
 				if (phrase == null || phrase.equals("")) {

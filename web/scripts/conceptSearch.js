@@ -127,7 +127,7 @@ var getCellContent = function(conceptHit) {
 			str += "class='conceptHit'>";
 			if (conceptHit.synonym != "") {
 				str += " <span class='mainHit'>" + conceptHit.synonym + "</span>";
-				str += " " + conceptHit.name;
+				str += " - " + conceptHit.name;
 			}
 			else {
 				str += " <span class='mainHit'>" + conceptHit.name + "</span>";
