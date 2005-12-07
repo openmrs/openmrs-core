@@ -1,6 +1,5 @@
 package org.openmrs.api.db.hibernate;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
