@@ -259,8 +259,8 @@ public class ConceptFormController extends SimpleFormController {
 		    	}
 
 		    	//previous/next ids for links
-		    	map.put("previousConcept", cs.getNextConcept(concept, -1));
-		    	map.put("nextConcept", cs.getNextConcept(concept, 1));
+		    	map.put("previousConcept", cs.getPrevConcept(concept));
+		    	map.put("nextConcept", cs.getNextConcept(concept));
 			}
 
 	    	map.put("conceptName", conceptName);

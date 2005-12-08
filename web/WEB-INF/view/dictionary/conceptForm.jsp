@@ -26,7 +26,7 @@
 		background-color: whitesmoke;
 		cursor: pointer;
 		width: 75px;
-		margin: 2px;
+		margin: 1px;
 	}
 	#conceptSearchForm {
 		width: 500px;
@@ -59,26 +59,38 @@
 		margin: 0px;
 		display: inline;
 	}
-		
+	.smallWidth {
+		width: 140px;
+		}
+		select.smallWidth {
+			width: 144px;
+		}
+	.mediumWidth {
+		width: 340px;
+		}
+		select.mediumWidth {
+			width: 344px;
+		}
 </style>
 
 <h2><spring:message code="Concept.title" /></h2>
 
 <c:if test="${concept.conceptId != null}">
-	<a href="concept.form?conceptId=${previousConcept.conceptId}">&laquo; Previous</a> |
+	<c:if test="${previousConcept != null}"><a href="concept.form?conceptId=${previousConcept.conceptId}">&laquo; Previous</a> |</c:if>
 	<a href="concept.htm?conceptId=${concept.conceptId}">View</a> |
-	<a href="concept.form?conceptId=${nextConcept.conceptId}">Next &raquo;</a>
+	<c:if test="${nextConcept != null}"><a href="concept.form?conceptId=${nextConcept.conceptId}">Next &raquo;</a></c:if>
 </c:if>
 
 <form id="newSearchForm" action="index.htm" method="get">
-&nbsp; &nbsp; <input type="text" name="phrase" size="18"> <input type="submit" class="smallButton" value="<spring:message code="general.go"/>"/>
+  &nbsp; &nbsp; 
+  <input type="text" name="phrase" size="18"> 
+  <input type="submit" class="smallButton" value="<spring:message code="general.go"/>"/>
 </form>
 
-<br/>
+<br/><br/>
 <c:if test="${concept.retired}">
-	<div class="retiredMessage"><spring:message code="Concept.retiredMessage"/></div>
+	<div class="retiredMessage"><div><spring:message code="Concept.retiredMessage"/></div></div>
 </c:if>
-<br/>
 
 <spring:hasBindErrors name="concept">
 	<spring:message code="fix.error"/>
@@ -103,7 +115,7 @@
 		</td>
 		<td><spring:bind path="conceptName.name">
 			<input type="text" name="${status.expression}"
-				value="${status.value}" size="50" />
+				value="${status.value}" class="mediumWidth" />
 			<c:if test="${status.errorMessage != ''}">
 				<span class="error">${status.errorMessage}</span>
 			</c:if>
@@ -114,7 +126,7 @@
 			<spring:message code="Concept.shortName" />
 		</td>
 		<td><spring:bind path="conceptName.shortName">
-			<input type="text" name="${status.expression}"
+			<input class="smallWidth" type="text" name="${status.expression}"
 				value="${status.value}" size="10" />
 			<c:if test="${status.errorMessage != ''}">
 				<span class="error">${status.errorMessage}</span>
@@ -137,7 +149,8 @@
 			<spring:message code="Concept.synonyms" />
 		</td>
 		<td valign="top">
-			<input type="text" size="40" id="addSyn" onKeyDown="if (event.keyCode==13) {addSynonym(); return false;}"/> <input type="button" class="smallButton" value="<spring:message code="Concept.synonym.add"/>" onClick="addSynonym();"/>
+			<input type="text" class="mediumWidth" id="addSyn" onKeyDown="if (event.keyCode==13) {addSynonym(); return false;}"/>
+			<input type="button" class="smallButton" value="<spring:message code="Concept.synonym.add"/>" onClick="addSynonym();"/>
 			<input type="hidden" name="newSynonyms" id="newSynonyms" value="<c:forEach items="${conceptSynonyms}" var="syn">${syn},</c:forEach>" />
 		</td>
 	</tr>
@@ -147,12 +160,12 @@
 			<table cellpadding="0" cellspacing="0">
 				<tr>
 					<td>
-						<select size="5" multiple id="syns" onkeydown="listKeyPress('syns', 'newSynonyms', ',', event);">
+						<select class="mediumWidth" size="5" multiple id="syns" onkeydown="listKeyPress('syns', 'newSynonyms', ',', event);">
 							<c:forEach items="${conceptSynonyms}" var="syn"><option value="${syn}">${syn}</option></c:forEach>
 						</select>
 					</td>
 					<td valign="top" class="buttons">
-						<input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('syns', 'newSynonyms', ',');" /> <br/>
+						&nbsp;<input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('syns', 'newSynonyms', ',');" /> <br/>
 					</td>
 				</tr>
 			</table>
@@ -163,7 +176,7 @@
 			<spring:message code="Concept.conceptClass" />
 		</td>
 		<td valign="top"><spring:bind path="concept.conceptClass">
-			<select name="${status.expression}" id="conceptClass" onChange="changeClass(this);">
+			<select class="smallWidth" name="${status.expression}" id="conceptClass" onChange="changeClass(this);">
 				<c:forEach items="${classes}" var="cc">
 					<option value="${cc.conceptClassId}"
 						<c:if test="${cc.conceptClassId == status.value}">selected="selected"</c:if>>${cc.name}</option>
@@ -181,17 +194,17 @@
 			<table cellpadding="0" cellspacing="0">
 				<tr>
 					<td valign="top">
-						<select size="6" id="conceptSetsNames" multiple onkeyup="listKeyPress('conceptSetsNames', 'conceptSets', ' ', event);">
+						<select class="mediumWidth" size="6" id="conceptSetsNames" multiple onkeyup="listKeyPress('conceptSetsNames', 'conceptSets', ' ', event);">
 							<c:forEach items="${conceptSets}" var="set">
 								<option value="${set.value[0]}">${set.value[1]} (${set.value[0]})</option>
 							</c:forEach>
 						</select>
 					</td>
 					<td valign="top" class="buttons">
-						<input type="button" value="<spring:message code="general.add"/>" class="smallButton" onClick="addConcept('conceptSetsNames', 'conceptSets', this);" /> <br/>
-						<input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('conceptSetsNames', 'conceptSets', ' ');" /> <br/>
-						<input type="button" value="<spring:message code="general.move_up"/>" class="smallButton" onClick="moveUp('conceptSetsNames', 'conceptSets');" /><br/>
-						<input type="button" value="<spring:message code="general.move_down"/>" class="smallButton" onClick="moveDown('conceptSetsNames', 'conceptSets');" /><br/>
+						&nbsp;<input type="button" value="<spring:message code="general.add"/>" class="smallButton" onClick="addConcept('conceptSetsNames', 'conceptSets', this);" /> <br/>
+						&nbsp;<input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('conceptSetsNames', 'conceptSets', ' ');" /> <br/>
+						&nbsp;<input type="button" value="<spring:message code="general.move_up"/>" class="smallButton" onClick="moveUp('conceptSetsNames', 'conceptSets');" /><br/>
+						&nbsp;<input type="button" value="<spring:message code="general.move_down"/>" class="smallButton" onClick="moveDown('conceptSetsNames', 'conceptSets');" /><br/>
 					</td>
 				</tr>
 			</table>
@@ -202,7 +215,7 @@
 			<spring:message code="Concept.datatype" />
 		</td>
 		<td valign="top"><spring:bind path="concept.datatype">
-			<select name="${status.expression}" id="datatype" onChange="changeDatatype(this);">
+			<select class="smallWidth" name="${status.expression}" id="datatype" onChange="changeDatatype(this);">
 				<c:forEach items="${datatypes}" var="cd">
 					<option value="${cd.conceptDatatypeId}"
 						<c:if test="${cd.conceptDatatypeId == status.value}">selected="selected"</c:if>>${cd.name}</option>
@@ -220,15 +233,15 @@
 			<table cellspacing="0" cellpadding="0">
 				<tr>
 					<td valign="top">
-						<select size="6" id="answerNames" multiple onKeyUp="listKeyPress('answerNames', 'answerIds', ' ', event)">
+						<select class="mediumWidth" size="6" id="answerNames" multiple onKeyUp="listKeyPress('answerNames', 'answerIds', ' ', event)">
 							<c:forEach items="${conceptAnswers}" var="answer">
 								<option value="${answer.key}">${answer.value} (${answer.key})</option>
 							</c:forEach>
 						</select>
 					</td>
 					<td valign="top" class="buttons">
-						<input type="button" value="<spring:message code="general.add"/>" class="smallButton" onClick="addConcept('answerNames', 'answerIds', this);"/><br/>
-						<input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('answerNames', 'answerIds', ' ');"/><br/>
+						&nbsp;<input type="button" value="<spring:message code="general.add"/>" class="smallButton" onClick="addConcept('answerNames', 'answerIds', this);"/><br/>
+						&nbsp;<input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('answerNames', 'answerIds', ' ');"/><br/>
 					</td>
 				</tr>
 			</table>
@@ -320,7 +333,7 @@
 	<tr>
 		<td><spring:message code="Concept.version" /></td>
 		<td><spring:bind path="concept.version">
-			<input type="text" name="${status.expression}"
+			<input class="smallWidth" type="text" name="${status.expression}"
 				value="${status.value}" size="10" />
 			<c:if test="${status.errorMessage != ''}">
 				<span class="error">${status.errorMessage}</span>
@@ -378,10 +391,10 @@
 
 <div id="conceptSearchForm">
 	<div id="wrapper">
-		<input type="button" onClick="myConceptSearchMod.toggle(); return false;" class="closeButton" value="X"/>
-		<form method="get" onSubmit="return searchBoxChange('conceptSearchBody', searchText); return null;">
+		<input type="button" onClick="myConceptSearchMod.toggle(); resetForm(); return false;" class="closeButton" value="X"/>
+		<form method="get" onSubmit="return searchBoxChange('conceptSearchBody', searchText, null, false, 0); return null;">
 			<h3><spring:message code="Concept.find"/></h3>
-			<input type="text" id="searchText" size="45" onkeyup="searchBoxChange('conceptSearchBody', this, event, 400);">
+			<input type="text" id="searchText" size="45" onkeyup="return searchBoxChange('conceptSearchBody', this, event, false, 400);">
 		</form>
 		<div id="conceptSearchResults">
 			<table>

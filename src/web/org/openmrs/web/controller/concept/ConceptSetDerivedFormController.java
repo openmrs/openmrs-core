@@ -14,7 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
-public class ConceptWordFormController extends SimpleFormController {
+public class ConceptSetDerivedFormController extends SimpleFormController {
 	
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
@@ -37,13 +37,13 @@ public class ConceptWordFormController extends SimpleFormController {
 			if (s != null) {
 				Concept c = context.getConceptService().getConcept(Integer.valueOf(s));
 				if (c != null)
-					context.getAdministrationService().updateConceptWord(c);
+					context.getAdministrationService().updateConceptSetDerived(c);
 			}
 			else {
-				context.getAdministrationService().updateConceptWords();
+				context.getAdministrationService().updateConceptSetDerived();
 			}
 			view = getSuccessView();
-			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "ConceptWord.updated");
+			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "ConceptSetDerived.updated");
 		}
 		
 		return new ModelAndView(new RedirectView(view));

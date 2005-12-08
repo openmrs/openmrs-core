@@ -143,14 +143,23 @@ a:hover {
 	text-decoration: none;
 }
 .retiredMessage {
-	border: 3px double red;
-	padding: 3px;
+	border: 1px solid firebrick;
+	background-color: white;
+	font-weight: bold;
+	padding: 1px;
 	margin: 2px;
-}
+	color: white;
+	}
+	.retiredMessage div {
+		background-color: firebrick;
+		padding: 2px;
+	}
 .conceptIndex { }
 .conceptIndexHighlight {
-	background-color: yellow;
+	background-color: InfoBackground;
 }
 .conceptHighlight {
-	background-color: yellow;
+	background-color: InfoBackground;
+	border: 1px solid gray;
+	padding: 1px;
 }

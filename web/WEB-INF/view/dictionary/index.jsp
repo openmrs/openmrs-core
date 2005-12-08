@@ -42,6 +42,9 @@
 	</div>
 </div>
 
+<br/>
+<a href="concept.form">Add new Concept</a> (Use sparingly)
+
 <script type="text/javascript">
 	document.getElementById("searchText").focus();
 		
@@ -49,7 +52,7 @@
 		<!-- the user posted a search phrase, mimic user entering it into box -->
 		var searchText = document.getElementById('searchText');
 		searchText.value = "<request:parameter name="phrase"/>";
-		searchBoxChange('conceptSearchBody', searchText);
+		search(0);
 	</request:existsParameter>
 </script>
 

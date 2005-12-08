@@ -322,4 +322,17 @@ public interface AdministrationService {
 	 * @throws APIException
 	 */
 	public void updateConceptWords() throws APIException;
+	
+	/**
+	 * Updates the concept set derived business table for this concept (bursting the concept sets) 
+	 * @param concept
+	 * @throws APIException
+	 */
+	public void updateConceptSetDerived(Concept concept) throws APIException;
+	
+	/**
+	 * Iterates over all concepts calling updateConceptSetDerived(concept)
+	 * @throws APIException
+	 */
+	public void updateConceptSetDerived() throws APIException;
 }

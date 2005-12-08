@@ -9,8 +9,8 @@
 
 <form method="post">
 	<spring:message code="ConceptWord.instructions"/>
-	<br/>
-	<br/>
+	<br/><br/>
+	Concept Id: <input type="text" name="conceptId"> (Optional)<br/><br/>
 	<input type="submit" value="<spring:message code="ConceptWord.manage"/>">
 </form>
 

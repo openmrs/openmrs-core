@@ -38,18 +38,21 @@ function addConcept(nameList, idList, obj)
 	nameList = document.getElementById(nameList);
 	idList   = document.getElementById(idList);
 	if (idList != idListBox) {
+		//if user clicked on a new button
 		myConceptSearchMod.hide();
 		nameListBox = nameList;	// used by onSelect()
 		idListBox   = idList;	// used by onSelect()
 	}
 	
 	conceptSearchForm = document.getElementById("conceptSearchForm");
-	conceptSearchForm.style.left = (getElementLeft(nameList) + nameList.offsetWidth + 20) + "px";
+	var test = "";
+	var width = nameList.offsetWidth + 20;
+	conceptSearchForm.style.left = (getElementLeft(nameList) + width) + "px";
 	conceptSearchForm.style.top = (getElementTop(nameList)-50) + "px";
 	
 	DWRUtil.removeAllRows("conceptSearchBody");
 	
-	myConceptSearchMod.toggle();
+	myConceptSearchMod.show();
 	var searchText = document.getElementById("searchText");
 	searchText.value = '';
 	searchText.select();
@@ -134,17 +137,18 @@ function getElementTop(elm) {
 function addSynonym() {
 	var obj = document.getElementById("addSyn");
 	var synonyms = document.getElementById("syns").options;
-	if (obj.value != "") {
+	var syn = obj.value.toUpperCase();
+	if (syn != "") {
 		var addable = true;
 		for (var i=0; i<synonyms.length; i++) {
 			synonyms[i].selected = false;
-			if (synonyms[i].value == obj.value) {
+			if (synonyms[i].value == syn) {
 				addable = false;
 				synonyms[i].selected = true;
 			}
 		}
 		if (addable) {
-			var opt = new Option(obj.value, obj.value);
+			var opt = new Option(syn, syn);
 			opt.selected = true;
 			synonyms[synonyms.length] = opt;
 		}
@@ -176,6 +180,7 @@ var onSelect = function(conceptList) {
 	copyIds(nameListBox.id, idListBox.id, ' ');
 	myConceptSearchMod.hide();
 	addButton.focus();
+	resetForm();
 };
 
 function removeHiddenRows() {

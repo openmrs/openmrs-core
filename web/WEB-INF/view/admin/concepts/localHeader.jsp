@@ -22,5 +22,9 @@
 			<spring:message code="ConceptWord.manage"/>
 		</a>
 	</li>
-	
+	<li <c:if test="<%= request.getRequestURI().contains("SetDerived") %>">class="active"</c:if>>
+		<a href="${pageContext.request.contextPath}/admin/concepts/conceptSetDerived.form">
+			<spring:message code="ConceptSetDerived.manage"/>
+		</a>
+	</li>	
 </ul>

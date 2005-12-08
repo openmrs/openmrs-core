@@ -5,23 +5,35 @@
 <openmrs:require privilege="" otherwise="/login.htm"
 	redirect="/dictionary/concept.htm" />
 
+<style>
+	#newSearchForm {
+		padding: 0px;
+		margin: 0px;
+		display: inline;
+	}
+</style>
+
 <h2><spring:message code="Concept.title" /></h2>
 
-<a href="index.htm">Search Again</a><br/>
-
 <c:if test="${concept.conceptId != null}">
-	<a href="concept.htm?conceptId=${previousConcept.conceptId}" valign="middle">&laquo; Previous</a> |
+	<c:if test="${previousConcept != null}"><a href="concept.htm?conceptId=${previousConcept.conceptId}" valign="middle">&laquo; Previous</a> |</c:if>
 	<openmrs:hasPrivilege privilege="Edit Dictionary" converse="false">
 		<a href="concept.form?conceptId=${concept.conceptId}" valign="middle">Edit</a> |
 	</openmrs:hasPrivilege>
-	<a href="concept.htm?conceptId=${nextConcept.conceptId}" valign="middle">Next &raquo;</a>
+	<c:if test="${nextConcept != null}"><a href="concept.htm?conceptId=${nextConcept.conceptId}" valign="middle">Next &raquo;</a></c:if>
 </c:if>
 
-<br/>
+<form id="newSearchForm" action="index.htm" method="get">
+  &nbsp; &nbsp; &nbsp;
+  Search 
+  <input type="text" name="phrase" size="18"> 
+  <input type="submit" class="smallButton" value="<spring:message code="general.go"/>"/>
+</form>
+
+<br/><br/>
 <c:if test="${concept.retired}">
-	<div class="retiredMessage"><spring:message code="Concept.retiredMessage"/></div>
+	<div class="retiredMessage"><div><spring:message code="Concept.retiredMessage"/></div></div>
 </c:if>
-<br/>
 
 <table>
 	<tr>

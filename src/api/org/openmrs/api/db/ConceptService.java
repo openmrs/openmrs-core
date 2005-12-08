@@ -98,10 +98,19 @@ public interface ConceptService {
 	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired);
 	
 	/**
+	 * Finds the previous available concept via concept id  
+	 * @param c
+	 * @param offset
+	 * @return
+	 */
+	public Concept getPrevConcept(Concept c); 
+
+	/**
 	 * Finds the next available concept via concept id  
 	 * @param c
 	 * @param offset
 	 * @return
 	 */
-	public Concept getNextConcept(Concept c, Integer offset); 
+	public Concept getNextConcept(Concept c); 
+
 }

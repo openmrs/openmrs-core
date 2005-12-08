@@ -3,14 +3,19 @@ package org.openmrs.api.db.hibernate;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
+import org.hibernate.criterion.Expression;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptSet;
+import org.openmrs.ConceptSetDerived;
 import org.openmrs.ConceptWord;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
@@ -786,11 +791,61 @@ public class HibernateAdministrationService implements
 	public void updateConceptWord(Concept concept) throws APIException {
 		Session session = HibernateUtil.currentSession();
 		Collection<ConceptWord> words = ConceptWord.makeConceptWords(concept); 
-		//try {
+		try {
 			HibernateUtil.beginTransaction();
 			
 			for (ConceptWord word : words) {
 				session.saveOrUpdate(word);
+			}
+			
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			log.error(e);
+			throw new APIException(e.getMessage());
+		}
+	}
+	
+	public void updateConceptWords() throws APIException {
+		Set<Concept> concepts = new HashSet<Concept>();
+		concepts.addAll(context.getConceptService().getConceptByName(""));
+		for (Concept concept : concepts) {
+			updateConceptWord(concept);
+		}
+	}
+	
+	public void updateConceptSetDerived(Concept concept) throws APIException {
+		Session session = HibernateUtil.currentSession();
+		log.debug("Updating concept set derivisions for #" + concept.getConceptId().toString());
+		//try {
+			HibernateUtil.beginTransaction();
+			
+			List<Concept> parents = new Vector<Concept>();
+			List<Concept> children = new Vector<Concept>();
+
+			// this concept is considered a parent 
+			parents.add(concept);
+
+			log.debug("getting parents");
+			// get all parents of this concept (sets it is in)
+			parents.addAll(session.createQuery("from concept_set where concept_id = :id")
+							.setParameter("id", concept.getConceptId())
+							.list());
+			
+			log.debug("getting children");
+			for (ConceptSet set : concept.getConceptSets()) {
+				children.add(set.getConcept());
+			}
+			
+			ConceptSetDerived derivedSet = null;
+			// make each child a direct child of each parent
+			for (Concept child : children) {
+				Double sort_weight = 1.0;
+				for (Concept parent : parents) {
+					derivedSet = new ConceptSetDerived(parent, child, sort_weight++);
+					session.saveOrUpdate(derivedSet);
+				}
 			}
 			
 			HibernateUtil.commitTransaction();
@@ -802,11 +857,11 @@ public class HibernateAdministrationService implements
 		//}
 	}
 	
-	public void updateConceptWords() throws APIException {
+	public void updateConceptSetDerived() throws APIException {
 		Set<Concept> concepts = new HashSet<Concept>();
 		concepts.addAll(context.getConceptService().getConceptByName(""));
 		for (Concept concept : concepts) {
-			updateConceptWord(concept);
+			updateConceptSetDerived(concept);
 		}
 	}
 }

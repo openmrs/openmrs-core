@@ -89,10 +89,11 @@ for (Cookie cookie : request.getCookies()) {
 
 %>
 
-<br><br>
+
+<br><br>Press a key: <input type="text" onKeyDown="document.getElementById('keycode').innerHTML = event.keyCode; return false;"/> KeyCode: <span id="keycode"></span>
+
 
 
  <br><br> done 
- 
 
 </html>

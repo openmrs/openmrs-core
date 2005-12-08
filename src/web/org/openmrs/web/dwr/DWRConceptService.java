@@ -59,7 +59,7 @@ public class DWRConceptService {
 				}
 
 				if (words.size() == 0) {
-					objectList.add("No matches found");
+					objectList.add("No matches found for " + phrase);
 				}
 				else {
 					// TODO speed up this 'search by class' option

@@ -64,6 +64,7 @@
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptMap.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptWord.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptSource.hbm.xml" />
+		<mapping resource="org/openmrs/api/db/hibernate/ConceptSetDerived.hbm.xml" />
 		
 		<mapping resource="org/openmrs/api/db/hibernate/Drug.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/DrugIngredient.hbm.xml" />

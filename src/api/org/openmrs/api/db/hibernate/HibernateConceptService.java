@@ -51,11 +51,10 @@ public class HibernateConceptService implements
 	public void createConcept(Concept concept) throws APIException {
 		
 		Session session = HibernateUtil.currentSession();
-		
+
+		modifyCollections(concept);
 		concept.setCreator(context.getAuthenticatedUser());
 		concept.setDateCreated(new Date());
-		concept.setChangedBy(context.getAuthenticatedUser());
-		concept.setDateChanged(new Date());
 		try {
 			HibernateUtil.beginTransaction();
 			session.save(concept);
@@ -368,20 +367,40 @@ public class HibernateConceptService implements
 	/**
 	 * @see org.openmrs.api.db.ConceptService#getNextConcept(org.openmrs.Concept, java.lang.Integer)
 	 */
-	public Concept getNextConcept(Concept c, Integer offset) {
+	public Concept getPrevConcept(Concept c) {
 		Session session = HibernateUtil.currentSession();
 		
 		Integer i = c.getConceptId();
 		
-		Integer count = 0;
-		while (count == 0) {
-			i+=offset;
-			count = (Integer) session.createQuery("select count(*) from Concept where conceptId = :id")
-				.setParameter("id", i)
-				.uniqueResult();
-		}
+		List<Concept> concepts = session.createCriteria(Concept.class)
+				.add(Expression.lt("conceptId", i))
+				.addOrder(Order.desc("conceptId"))
+				.setFetchSize(1)
+				.list();
 		
-		return ((Concept)session.get(Concept.class, i));
+		if (concepts.size() < 1)
+			return null;
+		return concepts.get(0);
 	}
+
+	/**
+	 * @see org.openmrs.api.db.ConceptService#getNextConcept(org.openmrs.Concept, java.lang.Integer)
+	 */
+	public Concept getNextConcept(Concept c) {
+		Session session = HibernateUtil.currentSession();
+		
+		Integer i = c.getConceptId();
+		
+		List<Concept> concepts = session.createCriteria(Concept.class)
+				.add(Expression.gt("conceptId", i))
+				.addOrder(Order.asc("conceptId"))
+				.setFetchSize(1)
+				.list();
+
+		if (concepts.size() < 1)
+			return null;
+		return concepts.get(0);
+	}
+
 	
 }
