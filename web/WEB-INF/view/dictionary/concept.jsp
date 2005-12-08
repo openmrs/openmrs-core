@@ -83,7 +83,9 @@
 		<tr id="setOptions">
 			<td valign="top"><spring:message code="Concept.conceptSets"/></td>
 			<td valign="top">
-				<c:forEach items="${conceptSets}" var="set">${set.value[1]} (${set.value[0]})<br/></c:forEach>
+				<c:forEach items="${conceptSets}" var="set">
+					<a href="concept.htm?conceptId=${set.value[0]}">${set.value[1]} (${set.value[0]})</a><br/>
+				</c:forEach>
 			</td>
 		</tr>
 	</c:if>
@@ -99,7 +101,9 @@
 		<tr>
 			<td valign="top"><spring:message code="Concept.answers"/></td>
 			<td>
-				<c:forEach items="${conceptAnswers}" var="answer">${answer.value} (${answer.key})<br/></c:forEach>
+				<c:forEach items="${conceptAnswers}" var="answer">
+					<a href="concept.htm?conceptId=${answer.key}">${answer.value} (${answer.key})</a><br/>
+				</c:forEach>
 			</td>
 		</tr>
 	</c:if>

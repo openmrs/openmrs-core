@@ -10,8 +10,6 @@ var ENTERKEY = 13;
 var lastPhraseSearched = "";
 	
 function searchBoxChange(bodyElementId, obj, event, retired, delay) {
-	if (obj.value == "")
-		return false;
 	conceptTableBody = bodyElementId;
 	textbox = obj;
 	if (!delay)  { delay = 400; }
@@ -31,9 +29,16 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay) {
 		}
 	}
 	
-	hideHighlight();
-	
-	if (keyCode == ENTERKEY) {
+	if (keyCode == 27) {
+		hideHighlight();
+		obj.value = lastPhraseSearched;
+		return false;
+	}
+	else if(text == "") {
+		return false;
+	}
+	else if (keyCode == ENTERKEY) {
+		hideHighlight();
 		// if the user hit the enter key then check for sequence of numbers
 		if (text.match(/^\s*\d+\s*(,\d+\s*)*$/))
 		{
@@ -75,12 +80,8 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay) {
 		(keyCode == 8 )) {
 			//	"if alpha key entered or 
 			//  backspace key pressed"
+			hideHighlight();
 			conceptTimeout = setTimeout("updateConcepts('" + text + "')", delay);
-	}
-	else if (keyCode == 27) {
-		hideHightlight();
-		obj.value = lastPhraseSearched;
-		//obj.value = obj.value; //deselect()?
 	}
 	
 	//value applied here so as use 'includeRetired' as 'lastRetired' as well

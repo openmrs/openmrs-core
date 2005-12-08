@@ -158,8 +158,10 @@ a:hover {
 .conceptIndexHighlight {
 	background-color: InfoBackground;
 }
+input["text"] {
+	padding: 2px;
+}
 .conceptHighlight {
 	background-color: InfoBackground;
 	border: 1px solid gray;
-	padding: 1px;
 }
