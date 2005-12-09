@@ -149,7 +149,7 @@
 			<spring:message code="Concept.synonyms" />
 		</td>
 		<td valign="top">
-			<input type="text" class="mediumWidth" id="addSyn" onKeyDown="if (event.keyCode==13) {addSynonym(); return false;}"/>
+			<input type="text" class="mediumWidth" id="addSyn" onKeyDown="return synonymKeyPress(this, event);"/>
 			<input type="button" class="smallButton" value="<spring:message code="Concept.synonym.add"/>" onClick="addSynonym();"/>
 			<input type="hidden" name="newSynonyms" id="newSynonyms" value="<c:forEach items="${conceptSynonyms}" var="syn">${syn},</c:forEach>" />
 		</td>

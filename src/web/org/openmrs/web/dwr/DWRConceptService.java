@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -28,11 +30,12 @@ public class DWRConceptService {
 		Context context = (Context) ExecutionContext.get().getSession()
 				.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-		Locale locale = Util.getLocale(ExecutionContext.get().getHttpServletRequest());
+		HttpServletRequest request = ExecutionContext.get().getHttpServletRequest();
+		Locale locale = Util.getLocale(request);
 		
 		if (context == null) {
 			objectList.add("Your session has expired.");
-			objectList.add("Please log in again.");
+			objectList.add("Please <a href='" + request.getContextPath() + "/logout'>log in</a> again.");
 		}
 		else {
 			try {
@@ -59,7 +62,7 @@ public class DWRConceptService {
 				}
 
 				if (words.size() == 0) {
-					objectList.add("No matches found for " + phrase);
+					objectList.add("No matches found for <b>" + phrase + "</b>");
 				}
 				else {
 					// TODO speed up this 'search by class' option

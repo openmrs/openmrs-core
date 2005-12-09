@@ -1,14 +1,26 @@
 var conceptTimeout;
 var conceptIndex;
-var conceptsFound = new Array();
+var conceptsFound;
 var conceptTableBody;
-var text = "";
-var textbox = null;
-var includeRetired = false;
+var text;
+var textbox;
+var includeRetired;
 var keyCode;
+var lastPhraseSearched;
+
 var ENTERKEY = 13;
-var lastPhraseSearched = "";
-	
+
+resetForm();
+
+// clears variables. Equivalent to reloading the page.
+function resetForm() {
+	lastPhraseSearched = "";
+	conceptsFound = new Array();
+	text = "";
+	textbox = null;
+	includeRetired = false;
+}
+
 function searchBoxChange(bodyElementId, obj, event, retired, delay) {
 	conceptTableBody = bodyElementId;
 	textbox = obj;
@@ -16,7 +28,7 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay) {
 	
 	clearTimeout(conceptTimeout);
 	
-	text = obj.value.toString();
+	text = textbox.value.toString();
 	keyCode = 0;
 	if (event == null) { 
 		// if onSubmit function called
@@ -31,7 +43,7 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay) {
 	
 	if (keyCode == 27) {
 		hideHighlight();
-		obj.value = lastPhraseSearched;
+		textbox.value = lastPhraseSearched;
 		return false;
 	}
 	else if(text == "") {
@@ -62,25 +74,35 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay) {
 			}
 			if (conceptsReturned.length > 0) {
 				onSelect(conceptsReturned);
+				textbox.value = lastPhraseSearched;
 				return false;
 			}
 		}
-		obj.focus();
-		//obj.select();
-		obj.value = "";
+		textbox.focus();
+		//textbox.select();
+		textbox.value = "";
 		if (text != lastPhraseSearched || includeRetired != retired) {
+			//this was a new search with the enter key pressed
 			conceptTimeout = setTimeout("updateConcepts('" + text + "')", 0);
 		}
+		else if (conceptsFound.length == 1) {
+			// this was a new redundant 'search' with enter key pressed and only one concept
+			selectConcept(1);
+		}
 		else {
+			// this was a new redundant 'search' with enter key pressed
 			showHighlight();
 		}
 	}
 
 	else if ((keyCode > 57 && keyCode <= 127) ||
-		(keyCode == 8 )) {
+		keyCode == 8 || keyCode == 32 || keyCode == 46) {
 			//	"if alpha key entered or 
-			//  backspace key pressed"
+			//   backspace key pressed or
+			//   spacebar pressed or 
+			//   delete key pressed"
 			hideHighlight();
+			clearInformationBar();
 			conceptTimeout = setTimeout("updateConcepts('" + text + "')", delay);
 	}
 	
@@ -90,6 +112,26 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay) {
 	if (!retired){ includeRetired = false; }
 	
 	return false;
+}
+
+function updateInformationBar() {
+	
+	//TODO create another dwr method to just get total # of hits
+	//     so that we don't need to return all 200 hits and only show #31-#45
+	
+	var infoBar = document.getElementById("conceptSearchInfoBar");
+	if (infoBar == null) {
+		infoBar = document.createElement('div');
+		infoBar.id = "conceptSearchInfoBar";
+		var table = document.getElementById(conceptTableBody).parentNode;
+		table.parentNode.insertBefore(infoBar, table);
+	}
+	infoBar.innerHTML = "Results for '" + lastPhraseSearched + "'";
+}
+function clearInformationBar() {
+	var infoBar = document.getElementById("conceptSearchInfoBar");
+	if (infoBar != null)
+		infoBar.innerHTML = "&nbsp;";
 }
 
 function updateConcepts(text) {
@@ -110,6 +152,7 @@ function selectConcept(index) {
 	var conceptsReturned = new Array();
 	if (conceptsFound.length > 0) {
 		conceptsReturned.push(conceptsFound[index-1]);
+		//textbox.value = lastPhraseSearched;
 		onSelect(conceptsReturned);
 	}
 }
@@ -156,7 +199,7 @@ var getCellContent = function(conceptHit) {
 			str += "class='conceptHit'>";
 			if (conceptHit.synonym != "") {
 				str += " <span class='mainHit'>" + conceptHit.synonym + "</span>";
-				str += " &rArr " + conceptHit.name;
+				str += " <span class='additionalHit'>&rArr; " + conceptHit.name + "</span>";
 			}
 			else {
 				str += " <span class='mainHit'>" + conceptHit.name + "</span>";
@@ -173,28 +216,25 @@ var getCellContent = function(conceptHit) {
 function fillTable(concepts) {
     // If we get only one result and the enter key was pressed jump to that concept
    	if (concepts.length == 1 && 
-   		keyCode == ENTERKEY &&
-   		typeof concepts[0] != 'string') {
-	   		conceptsFound.push(concepts[0]);
-	   		selectConcept(1);
-	   		return;
+   		keyCode == ENTERKEY)
+   			if (typeof concepts[0] == 'string') {
+   				hideHighlight();
+   			else {
+		   		conceptsFound.push(concepts[0]);
+		   		getCellContent("Forwarding...");
+		   		selectConcept(1);
+	   			return;
+	   		}
 	}
 
     DWRUtil.addRows(conceptTableBody, concepts, [ getNumber, getCellContent ]);
     
+	updateInformationBar();
+    
     if (keyCode == ENTERKEY) {
-    	// showHighlighting must happen here to assure it occurs after concepts are returned.
-    	// must be called with Timeout because DWRUtil.addRows uses setTimeout
+    	// showHighlighting must be called here to assure it occurs after 
+    	// concepts are returned. Must be called with Timeout because 
+    	// DWRUtil.addRows uses setTimeout
     	setTimeout("showHighlight()", 0);
     }
-}
-
-// clears variables. Equivalent to reloading the page.
-function resetForm() {
-	lastPhraseSearched = "";
-	var conceptsFound = new Array();
-	var text = "";
-	var textbox = null;
-	var includeRetired = false;
-	var lastPhraseSearched = "";
 }

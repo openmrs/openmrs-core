@@ -22,14 +22,24 @@
 
 </script>
 
+<style>
+	#searchForm {
+		padding: 0px;
+		margin: 0px;
+	}
+</style>
+
 <h2><spring:message code="dictionary.title" /></h2>
 
 <div id="findPatient">
 	<b class="boxHeader"><spring:message code="Concept.find"/></b>
 	<div class="box">
 		<form method="get" id="searchForm" onSubmit="return search(0); return null;">
+			<div style="float: right">
+				<input type="checkbox" id="includeRetired" value="true" onclick="search(0)">
+				<spring:message code="dictionary.includeRetired"/>
+			</div>
 			<spring:message code="dictionary.searchBox"/> <input type="text" id="searchText" size="45" onkeyup="search(400, event);">
-			<spring:message code="dictionary.includeRetired"/> <input type="checkbox" id="includeRetired" value="true" onclick="search(0)">
 		</form>
 		<table class="conceptSearchTable">
 			<tbody id="conceptSearchBody">

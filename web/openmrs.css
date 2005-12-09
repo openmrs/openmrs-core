@@ -134,13 +134,11 @@ span.error, div.error {
 .smallButton {
 	font-size: 9px;
 }
-
-
 a, a:link, a:hover, a:visited, a:active {
-	text-decoration: underline;
+	text-decoration: none;
 }
 a:hover {
-	text-decoration: none;
+	text-decoration: underline;
 }
 .retiredMessage {
 	border: 1px solid firebrick;
@@ -154,14 +152,32 @@ a:hover {
 		background-color: firebrick;
 		padding: 2px;
 	}
-.conceptIndex { }
-.conceptIndexHighlight {
-	background-color: InfoBackground;
+.conceptIndex, .conceptIndexHighlight {
+	float: right;
+	/*text-align: right;*/
 }
-input["text"] {
+.conceptIndexHighlight, .conceptHighlight {
+	background-color: 	#F0E68C;
+}
+input[type="text"] {
 	padding: 2px;
+	border: 1px solid cadetblue;
 }
-.conceptHighlight {
-	background-color: InfoBackground;
-	border: 1px solid gray;
+a.conceptHit {
+	text-decoration: none;
 }
+a:hover span.mainHit {
+	text-decoration: underline;
+}
+a span.additionalHit {
+	color: lightgrey;
+}
+#conceptSearchInfoBar {
+	font-size: 10px;
+	line-height: 12px;
+	background-color: whitesmoke;
+	color: gray;
+	padding: 2px 0 2px 0;
+	margin: 1px 0 1px 0;
+}
+	

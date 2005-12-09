@@ -26,11 +26,14 @@ function removeItem(nameList, idList, delim)
 			i++;
 		}
 	}
+	copyIds(nameList, idList, delim);
 	while (lastIndex >= optList.length)
 		lastIndex = lastIndex - 1;
-	if (lastIndex >= 0)
+	if (lastIndex >= 0) {
 		optList[lastIndex].selected = true;
-	copyIds(nameList, idList, delim);
+		return optList[lastIndex];
+	}
+	return null;
 }
 
 function addConcept(nameList, idList, obj)
@@ -52,7 +55,7 @@ function addConcept(nameList, idList, obj)
 	
 	DWRUtil.removeAllRows("conceptSearchBody");
 	
-	myConceptSearchMod.show();
+	myConceptSearchMod.toggle();
 	var searchText = document.getElementById("searchText");
 	searchText.value = '';
 	searchText.select();
@@ -232,5 +235,16 @@ function listKeyPress(from, to, delim, event) {
 		removeItem(from, to, delim);
 		window.Event.keyCode = 0;	//attempt to prevent backspace key (#8) from going back in browser
 	}
-	
+}
+
+function synonymKeyPress(obj, event) {
+	if (event.keyCode==13) {
+		addSynonym(); 
+		return false;
+	}
+	else if (event.keyCode == 46 && obj.value == "") {
+		var selectedItem = removeItem('syns', 'newSynonyms', ',');
+		if (selectedItem != null)
+			selectedItem.selected = false;
+	}
 }
