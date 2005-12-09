@@ -72,7 +72,7 @@ public class DariusController implements Controller {
 		AgeDataProducer ageSelector = new AgeDataProducer();
 		ageSelector.produceData(results);
 		
-		NumericRangeGrouper<Patient> nrpg = new NumericRangeGrouper<Patient>("age_in_years", "0,10,20,30,40,50", true);
+		DataGrouper<Patient, DoubleRange> nrpg = new NumericRangeGrouper<Patient>("age_in_years", "0,10,20,30,40,50", true);
 		Map<DoubleRange, DataSet<Patient>> ageGroups = nrpg.groupDataSet(results);
 		
 		DataSetAggregator<Patient, DoubleRange, Integer> aggregator = new CountAggregator<Patient, DoubleRange>();

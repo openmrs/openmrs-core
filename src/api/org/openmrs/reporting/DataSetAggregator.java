@@ -11,6 +11,6 @@ import java.util.Map;
  */
 public interface DataSetAggregator<T, C, K> {
 
-	public Map<C, K> aggregateDataSets(Map<? extends C, DataSet<? extends T>> input);
+	public Map<C, K> aggregateDataSets(Map<? extends C, DataSet<T>> input);
 	
 }
