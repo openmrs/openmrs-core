@@ -216,9 +216,10 @@ var getCellContent = function(conceptHit) {
 function fillTable(concepts) {
     // If we get only one result and the enter key was pressed jump to that concept
    	if (concepts.length == 1 && 
-   		keyCode == ENTERKEY)
+   		keyCode == ENTERKEY) {
    			if (typeof concepts[0] == 'string') {
    				hideHighlight();
+			}
    			else {
 		   		conceptsFound.push(concepts[0]);
 		   		getCellContent("Forwarding...");

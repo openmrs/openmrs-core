@@ -159,7 +159,7 @@ a:hover {
 .conceptIndexHighlight, .conceptHighlight {
 	background-color: 	#F0E68C;
 }
-input[type="text"] {
+input[type="text"], input[type="password"] {
 	padding: 2px;
 	border: 1px solid cadetblue;
 }
@@ -170,7 +170,7 @@ a:hover span.mainHit {
 	text-decoration: underline;
 }
 a span.additionalHit {
-	color: lightgrey;
+	color: gray;
 }
 #conceptSearchInfoBar {
 	font-size: 10px;
