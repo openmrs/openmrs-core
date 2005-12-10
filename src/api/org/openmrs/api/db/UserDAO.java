@@ -7,7 +7,7 @@ import org.openmrs.Role;
 import org.openmrs.User;
 
 /**
- * User-related services
+ * User-related database functions
  * 
  * @author Burke Mamlin
  * @version 1.0

@@ -6,6 +6,13 @@ import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.User;
 
+/**
+ * Order-related database functions
+ * 
+ * @author Ben Wolfe
+ * @author Burke Mamlin
+ * @version 1.0
+ */
 public interface OrderDAO {
 
 	/**

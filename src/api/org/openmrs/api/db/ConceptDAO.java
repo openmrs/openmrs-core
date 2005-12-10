@@ -11,6 +11,13 @@ import org.openmrs.ConceptSet;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 
+/**
+ * Concept-related database functions
+ * 
+ * @author Ben Wolfe
+ * @author Burke Mamlin
+ * @version 1.0
+ */
 public interface ConceptDAO {
 
 	/**

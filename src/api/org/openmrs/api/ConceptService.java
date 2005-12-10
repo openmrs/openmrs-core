@@ -14,6 +14,13 @@ import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.api.context.Context;
 
+/**
+ * Concept-related services
+ * 
+ * @author Ben Wolfe
+ * @author Burke Mamlin
+ * @version 1.0
+ */
 public class ConceptService {
 	
 	private final Log log = LogFactory.getLog(getClass());

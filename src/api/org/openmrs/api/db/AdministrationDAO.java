@@ -16,9 +16,10 @@ import org.openmrs.Tribe;
 import org.openmrs.reporting.Report;
 
 /**
- * Admin-related services
+ * Admin-related database functions
  * 
  * @author Ben Wolfe
+ * @author Burke Mamlin
  * @version 1.0
  */
 public interface AdministrationDAO {

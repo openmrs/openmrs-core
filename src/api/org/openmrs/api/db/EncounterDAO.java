@@ -10,9 +10,10 @@ import org.openmrs.Location;
 import org.openmrs.Patient;
 
 /**
- * Provides encounter-related services within the current context.
+ * Encounter-related database functions
  * 
  * @author Ben Wolfe
+ * @author Burke Mamlin
  * @version 1.0
  */
 public interface EncounterDAO {

@@ -84,7 +84,7 @@ public class ComplexObs extends Obs implements java.io.Serializable{
 
 	/**
 	 * Sets the value of this complex observation
-	 * @param complex value string
+	 * @param complexValue value string
 	 */
 	public void setComplexValue(String complexValue) {
 		this.complexValue = complexValue;
@@ -100,7 +100,7 @@ public class ComplexObs extends Obs implements java.io.Serializable{
 
 	/**
 	 * Sets mime type object of this complex observation
-	 * @param MimeType object
+	 * @param mimeType object
 	 */
 	public void setMimeType(MimeType mimeType) {
 		this.mimeType = mimeType;

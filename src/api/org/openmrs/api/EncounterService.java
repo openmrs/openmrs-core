@@ -11,7 +11,7 @@ import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 
 /**
- * Provides encounter-related services within the current context.
+ * Encounter-related services
  * 
  * @author Ben Wolfe
  * @version 1.0

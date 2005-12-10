@@ -9,6 +9,13 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.Tribe;
 import org.openmrs.api.context.Context;
 
+/**
+ * Patient-related services
+ * 
+ * @author Ben Wolfe
+ * @author Burke Mamlin
+ * @vesrion 1.0
+ */
 public class PatientService {
 
 	private Context context;

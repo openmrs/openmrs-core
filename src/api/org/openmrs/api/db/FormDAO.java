@@ -7,9 +7,10 @@ import org.openmrs.FieldType;
 import org.openmrs.Form;
 
 /**
- * Form-related services
+ * Form-related database functions
  * 
  * @author Ben Wolfe
+ * @author Burke Mamlin
  * @version 1.0
  */
 public interface FormDAO {

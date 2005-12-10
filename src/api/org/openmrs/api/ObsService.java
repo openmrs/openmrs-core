@@ -11,6 +11,13 @@ import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 
+/**
+ * Observation-related services
+ * 
+ * @author Ben Wolfe
+ * @author Burke Mamlin
+ * @version 1.0
+ */
 public class ObsService {
 	
 	private Context context;

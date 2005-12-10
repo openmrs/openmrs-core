@@ -3,8 +3,8 @@ package org.openmrs.api.db;
 import org.openmrs.api.APIException;
 
 /**
- * Represents often fatal errors that occur within the API
- * infrastructure.
+ * Represents often fatal errors that occur within the database
+ * layer.
  *  
  * @author Burke Mamlin
  * @version 1.0

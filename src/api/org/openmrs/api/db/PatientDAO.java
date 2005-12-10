@@ -8,6 +8,13 @@ import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Tribe;
 
+/**
+ * Patient-related database functions
+ * 
+ * @author Ben Wolfe
+ * @author Burke Mamlin
+ * @version 1.0
+ */
 public interface PatientDAO {
 
 	/**

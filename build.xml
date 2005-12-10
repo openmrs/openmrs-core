@@ -109,6 +109,7 @@
 		</copy>
 		<javadoc packagenames="org.openmrs.*"
 		         destdir="${doc.dir}/api"
+                 classpathref="api.compile.classpath"
                  author="true"
 		         version="true" 
 		         windowtitle="${doc.title}"

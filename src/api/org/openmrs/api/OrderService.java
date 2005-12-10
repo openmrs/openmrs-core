@@ -6,6 +6,13 @@ import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.api.context.Context;
 
+/**
+ * Order-related services
+ * 
+ * @author Ben Wolfe
+ * @author Burke Mamlin
+ * @version 1.0
+ */
 public class OrderService {
 
 	Context context;
