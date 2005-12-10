@@ -1,5 +1,7 @@
 package org.openmrs.api.db;
 
+import org.openmrs.api.APIException;
+
 /**
  * Represents often fatal errors that occur within the API
  * infrastructure.
@@ -7,20 +9,20 @@ package org.openmrs.api.db;
  * @author Burke Mamlin
  * @version 1.0
  */
-public class APIException extends RuntimeException {
+public class DAOException extends APIException {
 
-	public APIException() {
+	public DAOException() {
 	}
 
-	public APIException(String message) {
+	public DAOException(String message) {
 		super(message);
 	}
 
-	public APIException(String message, Throwable cause) {
+	public DAOException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
-	public APIException(Throwable cause) {
+	public DAOException(Throwable cause) {
 		super(cause);
 	}
 

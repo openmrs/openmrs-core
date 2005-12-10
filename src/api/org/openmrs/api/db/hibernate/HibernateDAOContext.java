@@ -1,0 +1,253 @@
+package org.openmrs.api.db.hibernate;
+
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hibernate.Hibernate;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.openmrs.Privilege;
+import org.openmrs.Role;
+import org.openmrs.User;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ContextAuthenticationException;
+import org.openmrs.api.db.AdministrationDAO;
+import org.openmrs.api.db.ConceptDAO;
+import org.openmrs.api.db.DAOContext;
+import org.openmrs.api.db.EncounterDAO;
+import org.openmrs.api.db.FormDAO;
+import org.openmrs.api.db.ObsDAO;
+import org.openmrs.api.db.OrderDAO;
+import org.openmrs.api.db.PatientDAO;
+import org.openmrs.api.db.UserDAO;
+import org.openmrs.util.Security;
+
+public class HibernateDAOContext implements DAOContext {
+
+	private final Log log = LogFactory.getLog(getClass());
+
+	Context context;
+	User user;
+	private AdministrationDAO administrationDAO;
+	private ConceptDAO conceptDAO;
+	private EncounterDAO encounterDAO;
+	private FormDAO formDAO;
+	private ObsDAO obsDAO;
+	private OrderDAO orderDAO;
+	private PatientDAO patientDAO;
+	private UserDAO userDAO;
+
+	public HibernateDAOContext(Context c) {
+		this.context = c;
+	}
+
+	/**
+	 * Authenticate the user for this context.
+	 * 
+	 * @param username
+	 * @param password
+	 * 
+	 * @see org.openmrs.api.context.Context#authenticate(String, String)
+	 * @throws ContextAuthenticationException
+	 */
+	public void authenticate(String username, String password)
+			throws ContextAuthenticationException {
+
+		user = null;
+		String errorMsg = "Invalid username and/or password";
+
+		//Session session = getSession();
+		Session session = HibernateUtil.currentSession();
+		
+		User candidateUser = null;
+		try {
+			candidateUser = (User) session.createQuery(
+					"from User u where u.username = ? and (u.voided is null or u.voided = 0)").setString(0, username)
+					.uniqueResult();
+		} catch (HibernateException he) {
+			// TODO Auto-generated catch block
+			System.out.println("Got hibernate exception");
+		} catch (Exception e) {
+			System.out.println("Got regular exception");
+		}
+		
+		if (candidateUser == null) {
+			throw new ContextAuthenticationException("User not found: "
+					+ username);
+		}
+
+		String passwordOnRecord = (String) session.createSQLQuery(
+				"select password from users where user_id = ?")
+				.addScalar("password", Hibernate.STRING)
+				.setInteger(0, candidateUser.getUserId())
+				.uniqueResult();
+		String saltOnRecord = (String) session.createSQLQuery(
+				"select salt from users where user_id = ?")
+				.addScalar("salt", Hibernate.STRING)
+				.setInteger(0, candidateUser.getUserId())
+				.uniqueResult();
+
+		String hashedPassword = Security.encodeString(password + saltOnRecord);
+
+		if (hashedPassword != null
+				&& hashedPassword.equals(passwordOnRecord))
+			user = candidateUser;
+		
+		if (user == null) {
+			log.info("Failed login (username=\"" + username + ") - " + errorMsg);
+			throw new ContextAuthenticationException(errorMsg);
+		}
+	}
+
+	/**
+	 * Get the currently authenticated user
+	 * 
+	 * @see org.openmrs.api.context.Context#getAuthenticatedUser()
+	 */
+	public User getAuthenticatedUser() {
+		Session session = HibernateUtil.currentSession();
+		try {
+			if (user != null)
+				session.merge(user);
+		}
+		catch (Exception e) {
+			log.error("Possible attempted locking of user to double open session aka: " + e.getMessage());
+		}
+		//session.merge(user);
+		return user;
+	}
+
+	/**
+	 * Log the current user out of this context. isAuthenticated will now return
+	 * false.
+	 * 
+	 * @see org.openmrs.api.context.Context#logout()
+	 */
+	public void logout() {
+		user = null;
+	}
+
+	/**
+	 * Get the privileges for the authenticated user
+	 * 
+	 * @see org.openmrs.api.context.Context#getPrivileges()
+	 */
+	public Set<Privilege> getPrivileges() {
+		if (!isAuthenticated())
+			return null;
+
+		Session session = HibernateUtil.currentSession();
+		session.merge(user);
+		Set<Privilege> privileges = new HashSet<Privilege>();
+		for (Iterator<Role> i = user.getRoles().iterator(); i.hasNext();) {
+			Role role = i.next();
+			privileges.addAll(role.getPrivileges());
+		}
+		return privileges;
+	}
+
+	/**
+	 * Return whether or not the user has the given priviledge
+	 * 
+	 * @param String
+	 *            privilege to authorize against
+	 * @return boolean whether the user has the given privilege
+	 * @see org.openmrs.api.context.Context#hasPrivilege(java.lang.String)
+	 */
+	public boolean hasPrivilege(String privilege) {
+		if (isAuthenticated()) {
+			User user = getAuthenticatedUser();
+			return user.hasPrivilege(privilege);
+		}
+		return false;
+	}
+
+	/**
+	 * Determine if a user is authenticated already
+	 * 
+	 * @see org.openmrs.api.context.Context#isAuthenticated()
+	 */
+	public boolean isAuthenticated() {
+		return (user != null);
+	}
+
+	public AdministrationDAO getAdministrationDAO() {
+		if (administrationDAO == null)
+			administrationDAO = new HibernateAdministrationDAO(context);
+		return administrationDAO;
+	}
+
+	public ConceptDAO getConceptDAO() {
+		if (conceptDAO == null)
+			conceptDAO = new HibernateConceptDAO(context);
+		return conceptDAO;
+	}
+
+	public EncounterDAO getEncounterDAO() {
+		if (encounterDAO == null)
+			encounterDAO = new HibernateEncounterDAO(context);
+		return encounterDAO;
+	}
+
+	public FormDAO getFormDAO() {
+		if (formDAO == null)
+			formDAO = new HibernateFormDAO(context);
+		return formDAO;
+	}
+
+	public ObsDAO getObsDAO() {
+		if (obsDAO == null)
+			obsDAO = new HibernateObsDAO(context);
+		return obsDAO;
+	}
+
+	public OrderDAO getOrderDAO() {
+		if (orderDAO == null)
+			orderDAO = new HibernateOrderDAO(context);
+		return orderDAO;
+	}
+
+	public PatientDAO getPatientDAO() {
+		if (patientDAO == null)
+			patientDAO = new HibernatePatientDAO(context);
+		return patientDAO;
+	}
+
+	public UserDAO getUserDAO() {
+		if (userDAO == null)
+			userDAO = new HibernateUserDAO(context);
+		return userDAO;
+	}
+
+	/**
+	 * @see org.openmrs.api.context.Context#openSession()
+	 */
+	public void openSession() {
+
+		log.debug("HibernateContext: Starting Transaction");
+		//if (session == null)
+		HibernateUtil.currentSession();
+		
+	}
+
+	/**
+	 * @see org.openmrs.api.context.Context#closeSession()
+	 */
+	public void closeSession() {
+		
+		log.debug("HibernateContext: Ending Transaction");
+		/*TODO	tomcat loops adinfinitum at this point after several 
+		 		redeploys (during development).
+		 		Update #1: threadlocal incorrectly configured?
+		 		Update #2: or it seems to be an issue with connections being left around |fixed|
+		 		Update #3: Memory leak ?
+		*/  
+		HibernateUtil.closeSession();
+		//session = null;
+		
+	}
+
+}

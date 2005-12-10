@@ -20,16 +20,16 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientName;
 import org.openmrs.Tribe;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.db.APIException;
-import org.openmrs.api.db.PatientService;
+import org.openmrs.api.db.DAOException;
+import org.openmrs.api.db.PatientDAO;
 
-public class HibernatePatientService implements PatientService {
+public class HibernatePatientDAO implements PatientDAO {
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	private Context context;
 	
-	public HibernatePatientService(Context c) {
+	public HibernatePatientDAO(Context c) {
 		this.context = c;
 	}
 	
@@ -45,7 +45,7 @@ public class HibernatePatientService implements PatientService {
 	}
 	
 
-	public void createPatient(Patient patient) throws APIException {
+	public void createPatient(Patient patient) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		try {
 			HibernateUtil.beginTransaction();
@@ -57,12 +57,12 @@ public class HibernatePatientService implements PatientService {
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e.getMessage());
+			throw new DAOException(e.getMessage());
 		}
 	}
 
 
-	public void updatePatient(Patient patient) throws APIException {
+	public void updatePatient(Patient patient) throws DAOException {
 		if (patient.getPatientId() == null)
 			createPatient(patient);
 		else {
@@ -76,12 +76,12 @@ public class HibernatePatientService implements PatientService {
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new APIException(e.getMessage());
+				throw new DAOException(e.getMessage());
 			}
 		}
 	}
 
-	public Set<Patient> getPatientsByIdentifier(String identifier) throws APIException {
+	public Set<Patient> getPatientsByIdentifier(String identifier) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
 		Query query = session.createQuery("select patient from Patient patient where patient.identifiers.identifier like '%' || ? || '%'");
@@ -102,7 +102,7 @@ public class HibernatePatientService implements PatientService {
 		return returnSet;
 	}
 
-	public Set<Patient> getPatientsByName(String name) throws APIException {
+	public Set<Patient> getPatientsByName(String name) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
 		//TODO simple name search to start testing, will need to make "real" name search
@@ -170,7 +170,7 @@ public class HibernatePatientService implements PatientService {
 	/**
 	 * @see org.openmrs.api.db.PatientService#deletePatient(org.openmrs.Patient)
 	 */
-	public void deletePatient(Patient patient) throws APIException {
+	public void deletePatient(Patient patient) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		try {
 			HibernateUtil.beginTransaction();
@@ -179,7 +179,7 @@ public class HibernatePatientService implements PatientService {
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e.getMessage());
+			throw new DAOException(e.getMessage());
 		}
 			
 	}
@@ -187,7 +187,7 @@ public class HibernatePatientService implements PatientService {
 	/**
 	 * @see org.openmrs.api.db.PatientService#getPatientIdentifierType(java.lang.Integer)
 	 */
-	public PatientIdentifierType getPatientIdentifierType(Integer patientIdentifierTypeId) throws APIException {
+	public PatientIdentifierType getPatientIdentifierType(Integer patientIdentifierTypeId) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		PatientIdentifierType patientIdentifierType = (PatientIdentifierType) session.get(PatientIdentifierType.class, patientIdentifierTypeId);
 		
@@ -197,7 +197,7 @@ public class HibernatePatientService implements PatientService {
 	/**
 	 * @see org.openmrs.api.db.PatientService#getPatientIdentifierTypes()
 	 */
-	public List<PatientIdentifierType> getPatientIdentifierTypes() throws APIException {
+	public List<PatientIdentifierType> getPatientIdentifierTypes() throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
 		List<PatientIdentifierType> patientIdentifierTypes = session.createQuery("from PatientIdentifierType p order by p.name").list();
@@ -208,7 +208,7 @@ public class HibernatePatientService implements PatientService {
 	/**
 	 * @see org.openmrs.api.db.PatientService#getTribe()
 	 */
-	public Tribe getTribe(Integer tribeId) throws APIException {
+	public Tribe getTribe(Integer tribeId) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
 		Tribe tribe = (Tribe)session.get(Tribe.class, tribeId);
@@ -219,7 +219,7 @@ public class HibernatePatientService implements PatientService {
 	/**
 	 * @see org.openmrs.api.db.PatientService#getTribes()
 	 */
-	public List<Tribe> getTribes() throws APIException {
+	public List<Tribe> getTribes() throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
 		List<Tribe> tribes = session.createQuery("from Tribe t order by t.name").list();
@@ -230,7 +230,7 @@ public class HibernatePatientService implements PatientService {
 	/**
 	 * @see org.openmrs.api.db.PatientService#getLocation(java.lang.Integer)
 	 */
-	public Location getLocation(Integer locationId) throws APIException {
+	public Location getLocation(Integer locationId) throws DAOException {
 
 		Session session = HibernateUtil.currentSession();
 		
@@ -244,7 +244,7 @@ public class HibernatePatientService implements PatientService {
 	/**
 	 * @see org.openmrs.api.db.PatientService#getLocations()
 	 */
-	public List<Location> getLocations() throws APIException {
+	public List<Location> getLocations() throws DAOException {
 
 		Session session = HibernateUtil.currentSession();
 		

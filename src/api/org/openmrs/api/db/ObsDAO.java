@@ -10,86 +10,86 @@ import org.openmrs.MimeType;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 
-public interface ObsService {
+public interface ObsDAO {
 
 	/**
 	 * Create an observation 
 	 * @param Obs
-	 * @throws APIException
+	 * @throws DAOException
 	 */
-	public void createObs(Obs obs) throws APIException;
+	public void createObs(Obs obs) throws DAOException;
 
 	/**
 	 * Get an observation
 	 * @param integer obsId of observation desired
 	 * @return matching Obs
-	 * @throws APIException
+	 * @throws DAOException
 	 */
-	public Obs getObs(Integer obsId) throws APIException;
+	public Obs getObs(Integer obsId) throws DAOException;
 
 	/**
 	 * Save changes to observation
 	 * @param Obs
-	 * @throws APIException
+	 * @throws DAOException
 	 */
-	public void updateObs(Obs obs) throws APIException;
+	public void updateObs(Obs obs) throws DAOException;
 
 	/**
 	 * Equivalent to deleting an observation
 	 * @param Obs obs to void
 	 * @param String reason
-	 * @throws APIException
+	 * @throws DAOException
 	 */
-	public void voidObs(Obs obs, String reason) throws APIException;
+	public void voidObs(Obs obs, String reason) throws DAOException;
 	
 	/**
 	 * Revive an observation (pull a Lazarus)
 	 * @param Obs
-	 * @throws APIException
+	 * @throws DAOException
 	 */
-	public void unvoidObs(Obs obs) throws APIException;
+	public void unvoidObs(Obs obs) throws DAOException;
 
 	/**
 	 * Delete an observation.  SHOULD NOT BE CALLED unless caller is lower-level.
 	 * @param Obs
-	 * @throws APIException
+	 * @throws DAOException
 	 * @see voidObs(Obs)
 	 */
-	public void deleteObs(Obs obs) throws APIException;
+	public void deleteObs(Obs obs) throws DAOException;
 	
 	/**
 	 * Get all mime types
 	 * 
 	 * @return mime types list
-	 * @throws APIException
+	 * @throws DAOException
 	 */
-	public List<MimeType> getMimeTypes() throws APIException;
+	public List<MimeType> getMimeTypes() throws DAOException;
 
 	/**
 	 * Get mimeType by internal identifier
 	 * 
 	 * @param mimeType id
 	 * @return mimeType with given internal identifier
-	 * @throws APIException
+	 * @throws DAOException
 	 */
-	public MimeType getMimeType(Integer mimeTypeId) throws APIException;
+	public MimeType getMimeType(Integer mimeTypeId) throws DAOException;
 	
 	/**
 	 * Get all locations
 	 * 
 	 * @return location list
-	 * @throws APIException
+	 * @throws DAOException
 	 */
-	public List<Location> getLocations() throws APIException;
+	public List<Location> getLocations() throws DAOException;
 
 	/**
 	 * Get location by internal identifier
 	 * 
 	 * @param location id
 	 * @return location with given internal identifier
-	 * @throws APIException
+	 * @throws DAOException
 	 */
-	public Location getLocation(Integer locationId) throws APIException;
+	public Location getLocation(Integer locationId) throws DAOException;
 	
 	/**
 	 * Get all Observations for a patient

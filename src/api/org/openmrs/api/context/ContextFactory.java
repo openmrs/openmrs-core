@@ -19,6 +19,6 @@ public class ContextFactory {
 		// XmlBeanFactory factory = new XmlBeanFactory(res);
 
 		// context = (Context) factory.getBean("defaultContext");
-		return new HibernateContext();
+		return new Context();
 	}
 }

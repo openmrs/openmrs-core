@@ -11,7 +11,7 @@ import org.openmrs.ConceptSet;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 
-public interface ConceptService {
+public interface ConceptDAO {
 
 	/**
 	 * 

@@ -15,72 +15,72 @@ import org.openmrs.Patient;
  * @author Ben Wolfe
  * @version 1.0
  */
-public interface EncounterService {
+public interface EncounterDAO {
 
 	/**
 	 * Creates a new encounter
 	 * 
 	 * @param encounter to be created
-	 * @throws APIException
+	 * @throws DAOException
 	 */
-	public void createEncounter(Encounter encounter) throws APIException;
+	public void createEncounter(Encounter encounter) throws DAOException;
 
 	/**
 	 * Get encounter by internal identifier
 	 * 
 	 * @param encounterId encounter id
 	 * @return encounter with given internal identifier
-	 * @throws APIException
+	 * @throws DAOException
 	 */
-	public Encounter getEncounter(Integer encounterId) throws APIException;
+	public Encounter getEncounter(Integer encounterId) throws DAOException;
 	
 	/**
 	 * Get all encounter types
 	 * 
 	 * @return encounter types list
-	 * @throws APIException
+	 * @throws DAOException
 	 */
-	public List<EncounterType> getEncounterTypes() throws APIException;
+	public List<EncounterType> getEncounterTypes() throws DAOException;
 
 	/**
 	 * Get encounterType by internal identifier
 	 * 
 	 * @param encounterType id
 	 * @return encounterType with given internal identifier
-	 * @throws APIException
+	 * @throws DAOException
 	 */
-	public EncounterType getEncounterType(Integer encounterTypeId) throws APIException;
+	public EncounterType getEncounterType(Integer encounterTypeId) throws DAOException;
 
 	/**
 	 * Get all locations
 	 * 
 	 * @return location list
-	 * @throws APIException
+	 * @throws DAOException
 	 */
-	public List<Location> getLocations() throws APIException;
+	public List<Location> getLocations() throws DAOException;
 
 	/**
 	 * Get location by internal identifier
 	 * 
 	 * @param location id
 	 * @return location with given internal identifier
-	 * @throws APIException
+	 * @throws DAOException
 	 */
-	public Location getLocation(Integer locationId) throws APIException;
+	public Location getLocation(Integer locationId) throws DAOException;
 
 	/**
 	 * Save changes to encounter
 	 * @param encounter
-	 * @throws APIException
+	 * @throws DAOException
 	 */
-	public void updateEncounter(Encounter encounter) throws APIException;
+	public void updateEncounter(Encounter encounter) throws DAOException;
 	
 	/**
 	 * Delete encounter from database.
 	 * 
 	 * @param encounter encounter object to be deleted 
 	 */
-	public void deleteEncounter(Encounter encounter) throws APIException;
+	public void deleteEncounter(Encounter encounter) throws DAOException;
 	
 	/**
 	 * all encounters for a patient

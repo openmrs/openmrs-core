@@ -12,19 +12,19 @@ import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.db.APIException;
-import org.openmrs.api.db.UserService;
+import org.openmrs.api.db.DAOException;
+import org.openmrs.api.db.UserDAO;
 import org.openmrs.util.Security;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
-public class HibernateUserService implements
-		UserService {
+public class HibernateUserDAO implements
+		UserDAO {
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	private Context context;
 	
-	public HibernateUserService(Context c) {
+	public HibernateUserDAO(Context c) {
 		this.context = c;
 	}
 
@@ -41,7 +41,7 @@ public class HibernateUserService implements
 		//TODO check for illegal characters in username
 		
 		if (u != null)
-			throw new APIException("Username currently in use by '" + user.getFirstName() + " " + user.getLastName() + "'");
+			throw new DAOException("Username currently in use by '" + user.getFirstName() + " " + user.getLastName() + "'");
 		
 		try {
 			//add all data minus the password as a new user
@@ -66,7 +66,7 @@ public class HibernateUserService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e.getMessage());
+			throw new DAOException(e.getMessage());
 		}	
 	}
 	
@@ -150,7 +150,7 @@ public class HibernateUserService implements
 	/**
 	 * @see org.openmrs.api.db.UserService#getUsers()
 	 */
-	public List<User> getUsers() throws APIException {
+	public List<User> getUsers() throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		List<User> users = session.createQuery("from User u order by u.username")
 								.list();
@@ -176,7 +176,7 @@ public class HibernateUserService implements
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new APIException(e.getMessage());
+				throw new DAOException(e.getMessage());
 			}
 			
 			//must update the persistent user object that we have sitting around if the user
@@ -210,7 +210,7 @@ public class HibernateUserService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e.getMessage());
+			throw new DAOException(e.getMessage());
 		}
 	}
 
@@ -218,7 +218,7 @@ public class HibernateUserService implements
 	 * @see org.openmrs.api.db.UserService#grantUserRole(org.openmrs.User,
 	 *      org.openmrs.Role)
 	 */
-	public void grantUserRole(User user, Role role) throws APIException {
+	public void grantUserRole(User user, Role role) throws DAOException {
 		user.addRole(role);
 		updateUser(user);
 	}
@@ -227,7 +227,7 @@ public class HibernateUserService implements
 	 * @see org.openmrs.api.db.UserService#revokeUserRole(org.openmrs.User,
 	 *      org.openmrs.Role)
 	 */
-	public void revokeUserRole(User user, Role role) throws APIException {
+	public void revokeUserRole(User user, Role role) throws DAOException {
 		user.removeRole(role);
 		updateUser(user);
 	}
@@ -235,7 +235,7 @@ public class HibernateUserService implements
 	/**
 	 * @see org.openmrs.api.db.UserService#getUserByRole(org.openmrs.Role)
 	 */
-	public List<User> getUsersByRole(Role role) throws APIException {
+	public List<User> getUsersByRole(Role role) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
 		List<User> users = session.createCriteria(User.class, "u")
@@ -251,7 +251,7 @@ public class HibernateUserService implements
 	/**
 	 * @see org.openmrs.api.db.UserService#unvoidUser(org.openmrs.User)
 	 */
-	public void unvoidUser(User user) throws APIException {
+	public void unvoidUser(User user) throws DAOException {
 		user.setVoided(false);
 		user.setVoidReason(null);
 		user.setVoidedBy(null);
@@ -262,7 +262,7 @@ public class HibernateUserService implements
 	/**
 	 * @see org.openmrs.api.db.UserService#getPrivileges()
 	 */
-	public List<Privilege> getPrivileges() throws APIException {
+	public List<Privilege> getPrivileges() throws DAOException {
 		
 		Session session = HibernateUtil.currentSession();
 		
@@ -274,7 +274,7 @@ public class HibernateUserService implements
 	/**
 	 * @see org.openmrs.api.db.UserService#getRoles()
 	 */
-	public List<Role> getRoles() throws APIException {
+	public List<Role> getRoles() throws DAOException {
 
 		Session session = HibernateUtil.currentSession();
 		
@@ -286,7 +286,7 @@ public class HibernateUserService implements
 	/**
 	 * @see org.openmrs.api.db.UserService#getPrivilege()
 	 */
-	public Privilege getPrivilege(String p) throws APIException {
+	public Privilege getPrivilege(String p) throws DAOException {
 		
 		Session session = HibernateUtil.currentSession();
 		Privilege privilege = (Privilege)session.get(Privilege.class, p);
@@ -297,7 +297,7 @@ public class HibernateUserService implements
 	/**
 	 * @see org.openmrs.api.db.UserService#getRole()
 	 */
-	public Role getRole(String r) throws APIException {
+	public Role getRole(String r) throws DAOException {
 
 		Session session = HibernateUtil.currentSession();
 		Role role = (Role)session.get(Role.class, r);

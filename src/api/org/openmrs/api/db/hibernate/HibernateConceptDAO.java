@@ -29,26 +29,27 @@ import org.openmrs.ConceptSynonym;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.User;
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.db.APIException;
-import org.openmrs.api.db.ConceptService;
+import org.openmrs.api.db.ConceptDAO;
+import org.openmrs.api.db.DAOException;
 import org.openmrs.util.Helpers;
 
-public class HibernateConceptService implements
-		ConceptService {
+public class HibernateConceptDAO implements
+		ConceptDAO {
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	private Context context;
 	
-	public HibernateConceptService(Context c) {
+	public HibernateConceptDAO(Context c) {
 		this.context = c;
 	}
 
 	/**
 	 * @see org.openmrs.api.db.ConceptService#createConcept(org.openmrs.Concept)
 	 */
-	public void createConcept(Concept concept) throws APIException {
+	public void createConcept(Concept concept) throws DAOException {
 		
 		Session session = HibernateUtil.currentSession();
 

@@ -10,7 +10,6 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
-import org.hibernate.criterion.Expression;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
@@ -28,25 +27,25 @@ import org.openmrs.RelationshipType;
 import org.openmrs.Role;
 import org.openmrs.Tribe;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.db.APIException;
-import org.openmrs.api.db.AdministrationService;
+import org.openmrs.api.db.AdministrationDAO;
+import org.openmrs.api.db.DAOException;
 import org.openmrs.reporting.Report;
 
-public class HibernateAdministrationService implements
-		AdministrationService {
+public class HibernateAdministrationDAO implements
+		AdministrationDAO {
 
 	protected Log log = LogFactory.getLog(getClass());
 	
 	private Context context;
 	
-	public HibernateAdministrationService(Context c) {
+	public HibernateAdministrationDAO(Context c) {
 		this.context = c;
 	}
 
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#createEncounterType(org.openmrs.EncounterType)
 	 */
-	public void createEncounterType(EncounterType encounterType) throws APIException {
+	public void createEncounterType(EncounterType encounterType) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
 		encounterType.setCreator(context.getAuthenticatedUser());
@@ -58,14 +57,14 @@ public class HibernateAdministrationService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e);
+			throw new DAOException(e);
 		}
 	}
 
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#updateEncounterType(org.openmrs.EncounterType)
 	 */
-	public void updateEncounterType(EncounterType encounterType) throws APIException {
+	public void updateEncounterType(EncounterType encounterType) throws DAOException {
 		if (encounterType.getEncounterTypeId() == null)
 			createEncounterType(encounterType);
 		else {
@@ -77,7 +76,7 @@ public class HibernateAdministrationService implements
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new APIException(e.getMessage());
+				throw new DAOException(e.getMessage());
 			}
 		}
 	}
@@ -85,7 +84,7 @@ public class HibernateAdministrationService implements
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#deleteEncounterType(org.openmrs.EncounterType)
 	 */
-	public void deleteEncounterType(EncounterType encounterType) throws APIException {
+	public void deleteEncounterType(EncounterType encounterType) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		try {
 			HibernateUtil.beginTransaction();
@@ -94,7 +93,7 @@ public class HibernateAdministrationService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e.getMessage());
+			throw new DAOException(e.getMessage());
 		}
 	}
 
@@ -102,7 +101,7 @@ public class HibernateAdministrationService implements
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#createFieldType(org.openmrs.FieldType)
 	 */
-	public void createFieldType(FieldType fieldType) throws APIException {
+	public void createFieldType(FieldType fieldType) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
 		fieldType.setCreator(context.getAuthenticatedUser());
@@ -114,14 +113,14 @@ public class HibernateAdministrationService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e);
+			throw new DAOException(e);
 		}
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#deleteFieldType(org.openmrs.FieldType)
 	 */
-	public void deleteFieldType(FieldType fieldType) throws APIException {
+	public void deleteFieldType(FieldType fieldType) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		try {
 			HibernateUtil.beginTransaction();
@@ -130,14 +129,14 @@ public class HibernateAdministrationService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e.getMessage());
+			throw new DAOException(e.getMessage());
 		}
 	}
 
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#updateFieldType(org.openmrs.FieldType)
 	 */
-	public void updateFieldType(FieldType fieldType) throws APIException {
+	public void updateFieldType(FieldType fieldType) throws DAOException {
 		if (fieldType.getFieldTypeId() == null)
 			createFieldType(fieldType);
 		else {
@@ -149,7 +148,7 @@ public class HibernateAdministrationService implements
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new APIException(e.getMessage());
+				throw new DAOException(e.getMessage());
 			}
 		}
 	}
@@ -158,7 +157,7 @@ public class HibernateAdministrationService implements
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#createLocation(org.openmrs.Location)
 	 */
-	public void createLocation(Location location) throws APIException {
+	public void createLocation(Location location) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
 		location.setCreator(context.getAuthenticatedUser());
@@ -170,14 +169,14 @@ public class HibernateAdministrationService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e);
+			throw new DAOException(e);
 		}
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#updateLocation(org.openmrs.Location)
 	 */
-	public void updateLocation(Location location) throws APIException {
+	public void updateLocation(Location location) throws DAOException {
 		if (location.getLocationId() == null)
 			createLocation(location);
 		else {
@@ -189,7 +188,7 @@ public class HibernateAdministrationService implements
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new APIException(e.getMessage());
+				throw new DAOException(e.getMessage());
 			}
 		}
 	}
@@ -197,7 +196,7 @@ public class HibernateAdministrationService implements
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#deleteLocation(org.openmrs.Location)
 	 */
-	public void deleteLocation(Location location) throws APIException {
+	public void deleteLocation(Location location) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		try {
 			HibernateUtil.beginTransaction();
@@ -206,7 +205,7 @@ public class HibernateAdministrationService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e.getMessage());
+			throw new DAOException(e.getMessage());
 		}
 	}
 
@@ -214,7 +213,7 @@ public class HibernateAdministrationService implements
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#createMimeType(org.openmrs.MimeType)
 	 */
-	public void createMimeType(MimeType mimeType) throws APIException {
+	public void createMimeType(MimeType mimeType) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
 		//mimeType.setCreator(context.getAuthenticatedUser());
@@ -226,14 +225,14 @@ public class HibernateAdministrationService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e);
+			throw new DAOException(e);
 		}
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#updateMimeType(org.openmrs.MimeType)
 	 */
-	public void updateMimeType(MimeType mimeType) throws APIException {
+	public void updateMimeType(MimeType mimeType) throws DAOException {
 		if (mimeType.getMimeTypeId() == null)
 			createMimeType(mimeType);
 		else {
@@ -245,7 +244,7 @@ public class HibernateAdministrationService implements
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new APIException(e.getMessage());
+				throw new DAOException(e.getMessage());
 			}
 		}
 	}
@@ -253,7 +252,7 @@ public class HibernateAdministrationService implements
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#deleteMimeType(org.openmrs.MimeType)
 	 */
-	public void deleteMimeType(MimeType mimeType) throws APIException {
+	public void deleteMimeType(MimeType mimeType) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		try {
 			HibernateUtil.beginTransaction();
@@ -262,7 +261,7 @@ public class HibernateAdministrationService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e.getMessage());
+			throw new DAOException(e.getMessage());
 		}
 	}
 
@@ -270,7 +269,7 @@ public class HibernateAdministrationService implements
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#createOrderType(org.openmrs.OrderType)
 	 */
-	public void createOrderType(OrderType orderType) throws APIException {
+	public void createOrderType(OrderType orderType) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
 		orderType.setCreator(context.getAuthenticatedUser());
@@ -282,14 +281,14 @@ public class HibernateAdministrationService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e);
+			throw new DAOException(e);
 		}
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#updateOrderType(org.openmrs.OrderType)
 	 */
-	public void updateOrderType(OrderType orderType) throws APIException {
+	public void updateOrderType(OrderType orderType) throws DAOException {
 		if (orderType.getOrderTypeId() == null)
 			createOrderType(orderType);
 		else {
@@ -301,7 +300,7 @@ public class HibernateAdministrationService implements
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new APIException(e.getMessage());
+				throw new DAOException(e.getMessage());
 			}
 		}
 	}
@@ -309,7 +308,7 @@ public class HibernateAdministrationService implements
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#deleteOrderType(org.openmrs.OrderType)
 	 */
-	public void deleteOrderType(OrderType orderType) throws APIException {
+	public void deleteOrderType(OrderType orderType) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		try {
 			HibernateUtil.beginTransaction();
@@ -318,7 +317,7 @@ public class HibernateAdministrationService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e.getMessage());
+			throw new DAOException(e.getMessage());
 		}
 	}
 
@@ -327,7 +326,7 @@ public class HibernateAdministrationService implements
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#createPatientIdentifierType(org.openmrs.PatientIdentifierType)
 	 */
-	public void createPatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException {
+	public void createPatientIdentifierType(PatientIdentifierType patientIdentifierType) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
 		patientIdentifierType.setCreator(context.getAuthenticatedUser());
@@ -339,14 +338,14 @@ public class HibernateAdministrationService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e);
+			throw new DAOException(e);
 		}
 	}
 
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#updatePatientIdentifierType(org.openmrs.PatientIdentifierType)
 	 */
-	public void updatePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException {
+	public void updatePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws DAOException {
 		if (patientIdentifierType.getPatientIdentifierTypeId() == null)
 			createPatientIdentifierType(patientIdentifierType);
 		else {
@@ -358,7 +357,7 @@ public class HibernateAdministrationService implements
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new APIException(e.getMessage());
+				throw new DAOException(e.getMessage());
 			}
 		}
 	}
@@ -366,7 +365,7 @@ public class HibernateAdministrationService implements
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#deletePatientIdentifierType(org.openmrs.PatientIdentifierType)
 	 */
-	public void deletePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException {
+	public void deletePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		try {
 			HibernateUtil.beginTransaction();
@@ -375,7 +374,7 @@ public class HibernateAdministrationService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e.getMessage());
+			throw new DAOException(e.getMessage());
 		}
 	}
 
@@ -383,7 +382,7 @@ public class HibernateAdministrationService implements
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#createRelationshipType(org.openmrs.RelationshipType)
 	 */
-	public void createRelationshipType(RelationshipType relationshipType) throws APIException {
+	public void createRelationshipType(RelationshipType relationshipType) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
 		relationshipType.setCreator(context.getAuthenticatedUser());
@@ -395,14 +394,14 @@ public class HibernateAdministrationService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e);
+			throw new DAOException(e);
 		}
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#updateRelationshipType(org.openmrs.RelationshipType)
 	 */
-	public void updateRelationshipType(RelationshipType relationshipType) throws APIException {
+	public void updateRelationshipType(RelationshipType relationshipType) throws DAOException {
 		if (relationshipType.getRelationshipTypeId() == null)
 			createRelationshipType(relationshipType);
 		else {
@@ -414,7 +413,7 @@ public class HibernateAdministrationService implements
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new APIException(e.getMessage());
+				throw new DAOException(e.getMessage());
 			}
 		}
 	}
@@ -422,7 +421,7 @@ public class HibernateAdministrationService implements
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#deleteRelationshipType(org.openmrs.RelationshipType)
 	 */
-	public void deleteRelationshipType(RelationshipType relationshipType) throws APIException {
+	public void deleteRelationshipType(RelationshipType relationshipType) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		try {
 			HibernateUtil.beginTransaction();
@@ -431,7 +430,7 @@ public class HibernateAdministrationService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e.getMessage());
+			throw new DAOException(e.getMessage());
 		}
 	}
 
@@ -439,7 +438,7 @@ public class HibernateAdministrationService implements
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#createTribe(org.openmrs.Tribe)
 	 */
-	public void createTribe(Tribe tribe) throws APIException {
+	public void createTribe(Tribe tribe) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
 		//tribe.setCreator(context.getAuthenticatedUser());
@@ -451,14 +450,14 @@ public class HibernateAdministrationService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e);
+			throw new DAOException(e);
 		}
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#updateTribe(org.openmrs.Tribe)
 	 */
-	public void updateTribe(Tribe tribe) throws APIException {
+	public void updateTribe(Tribe tribe) throws DAOException {
 		if (tribe.getTribeId() == null)
 			createTribe(tribe);
 		else {
@@ -470,7 +469,7 @@ public class HibernateAdministrationService implements
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new APIException(e.getMessage());
+				throw new DAOException(e.getMessage());
 			}
 		}
 	}	
@@ -478,7 +477,7 @@ public class HibernateAdministrationService implements
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#deleteTribe(org.openmrs.Tribe)
 	 */
-	public void deleteTribe(Tribe tribe) throws APIException {
+	public void deleteTribe(Tribe tribe) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		try {
 			HibernateUtil.beginTransaction();
@@ -487,14 +486,14 @@ public class HibernateAdministrationService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e.getMessage());
+			throw new DAOException(e.getMessage());
 		}
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#retireTribe(org.openmrs.Tribe)
 	 */
-	public void retireTribe(Tribe tribe) throws APIException {
+	public void retireTribe(Tribe tribe) throws DAOException {
 		tribe.setRetired(true);
 		updateTribe(tribe);
 	}
@@ -502,7 +501,7 @@ public class HibernateAdministrationService implements
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#unretireTribe(org.openmrs.Tribe)
 	 */
-	public void unretireTribe(Tribe tribe) throws APIException {
+	public void unretireTribe(Tribe tribe) throws DAOException {
 		tribe.setRetired(false);
 		updateTribe(tribe);
 	}
@@ -512,7 +511,7 @@ public class HibernateAdministrationService implements
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#createRole(org.openmrs.Role)
 	 */
-	public void createRole(Role role) throws APIException {
+	public void createRole(Role role) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
 		//role.setCreator(context.getAuthenticatedUser());
@@ -525,14 +524,14 @@ public class HibernateAdministrationService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e);
+			throw new DAOException(e);
 		}
 	}
 
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#deleteRole(org.openmrs.Role)
 	 */
-	public void deleteRole(Role role) throws APIException {
+	public void deleteRole(Role role) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		try {
 			HibernateUtil.beginTransaction();
@@ -541,14 +540,14 @@ public class HibernateAdministrationService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e.getMessage());
+			throw new DAOException(e.getMessage());
 		}
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#updateRole(org.openmrs.Role)
 	 */
-	public void updateRole(Role role) throws APIException {
+	public void updateRole(Role role) throws DAOException {
 		if (role.getRole() == null)
 			createRole(role);
 		else {
@@ -560,7 +559,7 @@ public class HibernateAdministrationService implements
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new APIException(e.getMessage());
+				throw new DAOException(e.getMessage());
 			}
 		}
 	}	
@@ -569,7 +568,7 @@ public class HibernateAdministrationService implements
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#createPrivilege(org.openmrs.Privilege)
 	 */
-	public void createPrivilege(Privilege privilege) throws APIException {
+	public void createPrivilege(Privilege privilege) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
 		//privilege.setCreator(context.getAuthenticatedUser());
@@ -581,14 +580,14 @@ public class HibernateAdministrationService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e);
+			throw new DAOException(e);
 		}
 	}
 
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#updatePrivilege(org.openmrs.Privilege)
 	 */
-	public void updatePrivilege(Privilege privilege) throws APIException {
+	public void updatePrivilege(Privilege privilege) throws DAOException {
 		if (privilege.getPrivilege() == null)
 			createPrivilege(privilege);
 		else {
@@ -600,7 +599,7 @@ public class HibernateAdministrationService implements
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new APIException(e.getMessage());
+				throw new DAOException(e.getMessage());
 			}
 		}
 	}	
@@ -608,7 +607,7 @@ public class HibernateAdministrationService implements
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#deletePrivilege(org.openmrs.Privilege)
 	 */
-	public void deletePrivilege(Privilege privilege) throws APIException {
+	public void deletePrivilege(Privilege privilege) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		try {
 			HibernateUtil.beginTransaction();
@@ -617,7 +616,7 @@ public class HibernateAdministrationService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e.getMessage());
+			throw new DAOException(e.getMessage());
 		}
 	}
 	
@@ -625,7 +624,7 @@ public class HibernateAdministrationService implements
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#createConceptClass(org.openmrs.ConceptClass)
 	 */
-	public void createConceptClass(ConceptClass cc) throws APIException {
+	public void createConceptClass(ConceptClass cc) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
 		cc.setCreator(context.getAuthenticatedUser());
@@ -637,14 +636,14 @@ public class HibernateAdministrationService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e);
+			throw new DAOException(e);
 		}
 	}
 
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#updateConceptClass(org.openmrs.ConceptClass)
 	 */
-	public void updateConceptClass(ConceptClass cc) throws APIException {
+	public void updateConceptClass(ConceptClass cc) throws DAOException {
 		if (cc.getConceptClassId() == null)
 			createConceptClass(cc);
 		else {
@@ -656,7 +655,7 @@ public class HibernateAdministrationService implements
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new APIException(e.getMessage());
+				throw new DAOException(e.getMessage());
 			}
 		}
 	}	
@@ -664,7 +663,7 @@ public class HibernateAdministrationService implements
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#deleteConceptClass(org.openmrs.ConceptClass)
 	 */
-	public void deleteConceptClass(ConceptClass cc) throws APIException {
+	public void deleteConceptClass(ConceptClass cc) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		try {
 			HibernateUtil.beginTransaction();
@@ -673,7 +672,7 @@ public class HibernateAdministrationService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e.getMessage());
+			throw new DAOException(e.getMessage());
 		}
 	}
 
@@ -681,7 +680,7 @@ public class HibernateAdministrationService implements
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#createConceptClass(org.openmrs.ConceptClass)
 	 */
-	public void createConceptDatatype(ConceptDatatype cd) throws APIException {
+	public void createConceptDatatype(ConceptDatatype cd) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
 		cd.setCreator(context.getAuthenticatedUser());
@@ -693,14 +692,14 @@ public class HibernateAdministrationService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e);
+			throw new DAOException(e);
 		}
 	}
 
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#updateConceptDatatype(org.openmrs.ConceptDatatype)
 	 */
-	public void updateConceptDatatype(ConceptDatatype cd) throws APIException {
+	public void updateConceptDatatype(ConceptDatatype cd) throws DAOException {
 		if (cd.getConceptDatatypeId() == null)
 			createConceptDatatype(cd);
 		else {
@@ -712,7 +711,7 @@ public class HibernateAdministrationService implements
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new APIException(e.getMessage());
+				throw new DAOException(e.getMessage());
 			}
 		}
 	}	
@@ -720,7 +719,7 @@ public class HibernateAdministrationService implements
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#deleteConceptDatatype(org.openmrs.ConceptDatatype)
 	 */
-	public void deleteConceptDatatype(ConceptDatatype cd) throws APIException {
+	public void deleteConceptDatatype(ConceptDatatype cd) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		try {
 			HibernateUtil.beginTransaction();
@@ -729,14 +728,14 @@ public class HibernateAdministrationService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e.getMessage());
+			throw new DAOException(e.getMessage());
 		}
 	}
 
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#createReport(org.openmrs.reporting.Report)
 	 */
-	public void createReport(Report r) throws APIException {
+	public void createReport(Report r) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
 		r.setCreator(context.getAuthenticatedUser());
@@ -748,14 +747,14 @@ public class HibernateAdministrationService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e);
+			throw new DAOException(e);
 		}
 	}
 
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#updateReport(org.openmrs.reporting.Report)
 	 */
-	public void updateReport(Report r) throws APIException {
+	public void updateReport(Report r) throws DAOException {
 		if (r.getReportId() == null)
 			createReport(r);
 		else {
@@ -767,7 +766,7 @@ public class HibernateAdministrationService implements
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new APIException(e.getMessage());
+				throw new DAOException(e.getMessage());
 			}
 		}
 	}	
@@ -775,7 +774,7 @@ public class HibernateAdministrationService implements
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#deleteReport(org.openmrs.reporting.Report)
 	 */
-	public void deleteReport(Report r) throws APIException {
+	public void deleteReport(Report r) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		try {
 			HibernateUtil.beginTransaction();
@@ -784,11 +783,11 @@ public class HibernateAdministrationService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e.getMessage());
+			throw new DAOException(e.getMessage());
 		}
 	}
 	
-	public void updateConceptWord(Concept concept) throws APIException {
+	public void updateConceptWord(Concept concept) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		Collection<ConceptWord> words = ConceptWord.makeConceptWords(concept); 
 		try {
@@ -803,11 +802,11 @@ public class HibernateAdministrationService implements
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
 			log.error(e);
-			throw new APIException(e.getMessage());
+			throw new DAOException(e.getMessage());
 		}
 	}
 	
-	public void updateConceptWords() throws APIException {
+	public void updateConceptWords() throws DAOException {
 		Set<Concept> concepts = new HashSet<Concept>();
 		concepts.addAll(context.getConceptService().getConceptByName(""));
 		for (Concept concept : concepts) {
@@ -815,7 +814,7 @@ public class HibernateAdministrationService implements
 		}
 	}
 	
-	public void updateConceptSetDerived(Concept concept) throws APIException {
+	public void updateConceptSetDerived(Concept concept) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		log.debug("Updating concept set derivisions for #" + concept.getConceptId().toString());
 		//try {
@@ -853,11 +852,11 @@ public class HibernateAdministrationService implements
 		//catch (Exception e) {
 		//	HibernateUtil.rollbackTransaction();
 		//	log.error(e);
-		//	throw new APIException(e.getMessage());
+		//	throw new DAOException(e.getMessage());
 		//}
 	}
 	
-	public void updateConceptSetDerived() throws APIException {
+	public void updateConceptSetDerived() throws DAOException {
 		Set<Concept> concepts = new HashSet<Concept>();
 		concepts.addAll(context.getConceptService().getConceptByName(""));
 		for (Concept concept : concepts) {

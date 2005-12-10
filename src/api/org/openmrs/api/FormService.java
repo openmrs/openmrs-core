@@ -1,10 +1,11 @@
-package org.openmrs.api.db;
+package org.openmrs.api;
 
 import java.util.List;
 
 import org.openmrs.Field;
 import org.openmrs.FieldType;
 import org.openmrs.Form;
+import org.openmrs.api.context.Context;
 
 /**
  * Form-related services
@@ -12,14 +13,22 @@ import org.openmrs.Form;
  * @author Ben Wolfe
  * @version 1.0
  */
-public interface FormService {
+public class FormService {
+	
+	private Context context;
+	
+	public FormService(Context c) {
+		this.context = c;
+	}
 	
 	/**
 	 * Create a new form
 	 * @param form
 	 * @throws APIException
 	 */
-	public void createForm(Form form) throws APIException;
+	public void createForm(Form form) throws APIException {
+		context.getDAOContext().getFormDAO().createForm(form);
+	}
 
 	/**
 	 * Get form by internal form identifier
@@ -27,14 +36,18 @@ public interface FormService {
 	 * @return requested form
 	 * @throws APIException
 	 */
-	public Form getForm(Integer formId) throws APIException;
+	public Form getForm(Integer formId) throws APIException {
+		return context.getDAOContext().getFormDAO().getForm(formId);
+	}
 	
 	/**
 	 * Save changes to form
 	 * @param form
 	 * @throws APIException
 	 */
-	public void updateForm(Form form) throws APIException;
+	public void updateForm(Form form) throws APIException {
+		context.getDAOContext().getFormDAO().updateForm(form);
+	}
 
 	/** 
 	 * Mark form as voided (effectively deleting form without removing
@@ -46,7 +59,9 @@ public interface FormService {
 	 * @param reason
 	 * @throws APIException
 	 */
-	public void retireForm(Form form, String reason) throws APIException;
+	public void retireForm(Form form, String reason) throws APIException {
+		context.getDAOContext().getFormDAO().retireForm(form, reason);
+	}
 	
 	/**
 	 * Clear voided flag for form (equivalent to an "undelete" or
@@ -55,7 +70,9 @@ public interface FormService {
 	 * @param form
 	 * @throws APIException
 	 */
-	public void unretireForm(Form form) throws APIException;
+	public void unretireForm(Form form) throws APIException {
+		context.getDAOContext().getFormDAO().unretireForm(form);
+	}
 	
 	/**
 	 * Delete form from database. This is included for troubleshooting and
@@ -73,7 +90,9 @@ public interface FormService {
 	 * @param form
 	 * @throws APIException
 	 */
-	public void deleteForm(Form form) throws APIException;
+	public void deleteForm(Form form) throws APIException {
+		context.getDAOContext().getFormDAO().deleteForm(form);
+	}
 	
 	/**
 	 * Get all field types
@@ -81,7 +100,9 @@ public interface FormService {
 	 * @return field types list
 	 * @throws APIException
 	 */
-	public List<FieldType> getFieldTypes() throws APIException;
+	public List<FieldType> getFieldTypes() throws APIException {
+		return context.getDAOContext().getFormDAO().getFieldTypes();
+	}
 
 	/**
 	 * Get fieldType by internal identifier
@@ -90,21 +111,27 @@ public interface FormService {
 	 * @return fieldType with given internal identifier
 	 * @throws APIException
 	 */
-	public FieldType getFieldType(Integer fieldTypeId) throws APIException;
+	public FieldType getFieldType(Integer fieldTypeId) throws APIException {
+		return context.getDAOContext().getFormDAO().getFieldType(fieldTypeId);
+	}
 	
 	/**
 	 * 
 	 * @return list of forms in the db
 	 * @throws APIException
 	 */
-	public List<Form> getForms() throws APIException;
+	public List<Form> getForms() throws APIException {
+		return context.getDAOContext().getFormDAO().getForms();
+	}
 
 	/**
 	 * 
 	 * @return list of fields in the db
 	 * @throws APIException
 	 */
-	public List<Field> getFields() throws APIException;
+	public List<Field> getFields() throws APIException {
+		return context.getDAOContext().getFormDAO().getFields();
+	}
 	
 	/**
 	 * 
@@ -112,27 +139,35 @@ public interface FormService {
 	 * @return
 	 * @throws APIException
 	 */
-	public Field getField(Integer fieldId) throws APIException;
+	public Field getField(Integer fieldId) throws APIException {
+		return context.getDAOContext().getFormDAO().getField(fieldId);
+	}
 	
 	/**
 	 * 
 	 * @param field
 	 * @throws APIException
 	 */
-	public void createField(Field field) throws APIException;
+	public void createField(Field field) throws APIException {
+		context.getDAOContext().getFormDAO().createField(field);
+	}
 
 	/**
 	 * 
 	 * @param field
 	 * @throws APIException
 	 */
-	public void updateField(Field field) throws APIException;
+	public void updateField(Field field) throws APIException {
+		context.getDAOContext().getFormDAO().updateField(field);
+	}
 	
 	/**
 	 * 
 	 * @param field
 	 * @throws APIException
 	 */
-	public void deleteField(Field field) throws APIException;
+	public void deleteField(Field field) throws APIException {
+		context.getDAOContext().getFormDAO().deleteField(field);
+	}
 	
 }

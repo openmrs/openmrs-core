@@ -12,24 +12,24 @@ import org.openmrs.EncounterType;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.db.APIException;
-import org.openmrs.api.db.EncounterService;
+import org.openmrs.api.db.DAOException;
+import org.openmrs.api.db.EncounterDAO;
 
-public class HibernateEncounterService implements
-		EncounterService {
+public class HibernateEncounterDAO implements
+		EncounterDAO {
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	private Context context;
 	
-	public HibernateEncounterService(Context c) {
+	public HibernateEncounterDAO(Context c) {
 		this.context = c;
 	}
 
 	/**
 	 * @see org.openmrs.api.db.EncounterService#createEncounter(org.openmrs.Encounter)
 	 */
-	public void createEncounter(Encounter encounter) throws APIException {
+	public void createEncounter(Encounter encounter) throws DAOException {
 		
 		Session session = HibernateUtil.currentSession();
 		
@@ -42,14 +42,14 @@ public class HibernateEncounterService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e);
+			throw new DAOException(e);
 		}
 	}
 
 	/**
 	 * @see org.openmrs.api.db.EncounterService#deleteEncounter(org.openmrs.Encounter)
 	 */
-	public void deleteEncounter(Encounter encounter) throws APIException {
+	public void deleteEncounter(Encounter encounter) throws DAOException {
 		
 		Session session = HibernateUtil.currentSession();
 		
@@ -60,7 +60,7 @@ public class HibernateEncounterService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e);
+			throw new DAOException(e);
 		}
 		
 	}
@@ -68,7 +68,7 @@ public class HibernateEncounterService implements
 	/**
 	 * @see org.openmrs.api.db.EncounterService#getEncounter(java.lang.Integer)
 	 */
-	public Encounter getEncounter(Integer encounterId) throws APIException {
+	public Encounter getEncounter(Integer encounterId) throws DAOException {
 		
 		Session session = HibernateUtil.currentSession();
 		
@@ -81,7 +81,7 @@ public class HibernateEncounterService implements
 	/**
 	 * @see org.openmrs.api.db.EncounterService#getEncounterType(java.lang.Integer)
 	 */
-	public EncounterType getEncounterType(Integer encounterTypeId) throws APIException {
+	public EncounterType getEncounterType(Integer encounterTypeId) throws DAOException {
 
 		Session session = HibernateUtil.currentSession();
 		
@@ -94,7 +94,7 @@ public class HibernateEncounterService implements
 	/**
 	 * @see org.openmrs.api.db.EncounterService#getEncounterTypes()
 	 */
-	public List<EncounterType> getEncounterTypes() throws APIException {
+	public List<EncounterType> getEncounterTypes() throws DAOException {
 	
 		Session session = HibernateUtil.currentSession();
 		
@@ -108,7 +108,7 @@ public class HibernateEncounterService implements
 	/**
 	 * @see org.openmrs.api.db.EncounterService#getLocation(java.lang.Integer)
 	 */
-	public Location getLocation(Integer locationId) throws APIException {
+	public Location getLocation(Integer locationId) throws DAOException {
 
 		Session session = HibernateUtil.currentSession();
 		
@@ -122,7 +122,7 @@ public class HibernateEncounterService implements
 	/**
 	 * @see org.openmrs.api.db.EncounterService#getLocations()
 	 */
-	public List<Location> getLocations() throws APIException {
+	public List<Location> getLocations() throws DAOException {
 
 		Session session = HibernateUtil.currentSession();
 		
@@ -136,7 +136,7 @@ public class HibernateEncounterService implements
 	/**
 	 * @see org.openmrs.api.db.EncounterService#updateEncounter(org.openmrs.Encounter)
 	 */
-	public void updateEncounter(Encounter encounter) throws APIException {
+	public void updateEncounter(Encounter encounter) throws DAOException {
 
 		if (encounter.getCreator() == null)
 			createEncounter(encounter);
@@ -152,7 +152,7 @@ public class HibernateEncounterService implements
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new APIException(e);
+				throw new DAOException(e);
 			}
 		}
 	}

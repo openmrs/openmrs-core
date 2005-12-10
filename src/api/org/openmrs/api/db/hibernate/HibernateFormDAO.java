@@ -6,30 +6,29 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.openmrs.Field;
 import org.openmrs.FieldType;
 import org.openmrs.Form;
 import org.openmrs.FormField;
-import org.openmrs.api.db.APIException;
-import org.openmrs.api.db.FormService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.DAOException;
+import org.openmrs.api.db.FormDAO;
 
-public class HibernateFormService implements
-		FormService {
+public class HibernateFormDAO implements
+		FormDAO {
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	private Context context;
 	
-	public HibernateFormService(Context c) {
+	public HibernateFormDAO(Context c) {
 		this.context = c;
 	}
 
 	/**
 	 * @see org.openmrs.api.db.FormService#createForm(org.openmrs.Form)
 	 */
-	public void createForm(Form form) throws APIException {
+	public void createForm(Form form) throws DAOException {
 		
 		Session session = HibernateUtil.currentSession();
 		
@@ -42,7 +41,7 @@ public class HibernateFormService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e);
+			throw new DAOException(e);
 		}
 		
 	}
@@ -50,7 +49,7 @@ public class HibernateFormService implements
 	/**
 	 * @see org.openmrs.api.db.FormService#deleteForm(org.openmrs.Form)
 	 */
-	public void deleteForm(Form form) throws APIException {
+	public void deleteForm(Form form) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
 		try {
@@ -60,14 +59,14 @@ public class HibernateFormService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e);
+			throw new DAOException(e);
 		}	
 	}
 
 	/**
 	 * @see org.openmrs.api.db.FormService#getForm(java.lang.Integer)
 	 */
-	public Form getForm(Integer formId) throws APIException {
+	public Form getForm(Integer formId) throws DAOException {
 		
 		Session session = HibernateUtil.currentSession();
 		
@@ -94,7 +93,7 @@ public class HibernateFormService implements
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new APIException(e);
+				throw new DAOException(e);
 			}
 		}
 	}
@@ -113,7 +112,7 @@ public class HibernateFormService implements
 	/**
 	 * @see org.openmrs.api.db.FormService#unvoidForm(org.openmrs.Form)
 	 */
-	public void unretireForm(Form form) throws APIException {
+	public void unretireForm(Form form) throws DAOException {
 		form.setRetired(false);
 		form.setRetiredBy(null);
 		form.setDateRetired(null);
@@ -124,7 +123,7 @@ public class HibernateFormService implements
 	/**
 	 * @see org.openmrs.api.db.FormService#getField(java.lang.Integer)
 	 */
-	public Field getField(Integer fieldId) throws APIException {
+	public Field getField(Integer fieldId) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
 		Field field = new Field();
@@ -136,7 +135,7 @@ public class HibernateFormService implements
 	/**
 	 * @see org.openmrs.api.db.FormService#getFields()
 	 */
-	public List<Field> getFields() throws APIException {
+	public List<Field> getFields() throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
 		List fields = session.createCriteria(Field.class).list();
@@ -147,7 +146,7 @@ public class HibernateFormService implements
 	/**
 	 * @see org.openmrs.api.db.FormService#getFieldType(java.lang.Integer)
 	 */
-	public FieldType getFieldType(Integer fieldTypeId) throws APIException {
+	public FieldType getFieldType(Integer fieldTypeId) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
 		FieldType fieldType = new FieldType();
@@ -159,7 +158,7 @@ public class HibernateFormService implements
 	/**
 	 * @see org.openmrs.api.db.FormService#getFieldTypes()
 	 */
-	public List<FieldType> getFieldTypes() throws APIException {
+	public List<FieldType> getFieldTypes() throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
 		List fieldTypes = session.createCriteria(FieldType.class).list();
@@ -170,7 +169,7 @@ public class HibernateFormService implements
 	/**
 	 * @see org.openmrs.api.db.FormService#getFormField(java.lang.Integer)
 	 */
-	public FormField getFormField(Integer formFieldId) throws APIException {
+	public FormField getFormField(Integer formFieldId) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
 		FormField formField = new FormField();
@@ -182,7 +181,7 @@ public class HibernateFormService implements
 	/**
 	 * @see org.openmrs.api.db.FormService#getForms()
 	 */
-	public List<Form> getForms() throws APIException {
+	public List<Form> getForms() throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
 		List forms = session.createCriteria(Form.class).list();
@@ -193,7 +192,7 @@ public class HibernateFormService implements
 	/**
 	 * @see org.openmrs.api.db.FieldService#createField(org.openmrs.Field)
 	 */
-	public void createField(Field field) throws APIException {
+	public void createField(Field field) throws DAOException {
 		
 		Session session = HibernateUtil.currentSession();
 		
@@ -206,14 +205,14 @@ public class HibernateFormService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e);
+			throw new DAOException(e);
 		}
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.FormService#updateField(org.openmrs.Field)
 	 */
-	public void updateField(Field field) throws APIException {
+	public void updateField(Field field) throws DAOException {
 		if (field.getFieldId() == null)
 			createField(field);
 		else {
@@ -226,7 +225,7 @@ public class HibernateFormService implements
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new APIException(e);
+				throw new DAOException(e);
 			}
 		}
 	}
@@ -234,7 +233,7 @@ public class HibernateFormService implements
 	/**
 	 * @see org.openmrs.api.db.FormService#deleteField(org.openmrs.Field)
 	 */
-	public void deleteField(Field field) throws APIException {
+	public void deleteField(Field field) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
 		try {
@@ -244,7 +243,7 @@ public class HibernateFormService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e);
+			throw new DAOException(e);
 		}
 		
 	}

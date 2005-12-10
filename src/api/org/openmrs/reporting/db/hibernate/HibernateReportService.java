@@ -8,14 +8,14 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
-import org.openmrs.api.db.APIException;
-import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.DAOException;
+import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.reporting.Report;
 import org.openmrs.reporting.ReportService;
 
 public class HibernateReportService implements
-		ReportService {
+		ReportDAO {
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
@@ -28,7 +28,7 @@ public class HibernateReportService implements
 	/**
 	 * @see org.openmrs.report.db.ReportService#createReport(org.openmrs.reporting.Report)
 	 */
-	public void createReport(Report report) throws APIException {
+	public void createReport(Report report) throws DAOException {
 		
 		Session session = HibernateUtil.currentSession();
 		
@@ -41,14 +41,14 @@ public class HibernateReportService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e);
+			throw new DAOException(e);
 		}
 	}
 
 	/**
 	 * @see org.openmrs.api.db.EncounterService#deleteReport(org.openmrs.reporting.Report)
 	 */
-	public void deleteReport(Report report) throws APIException {
+	public void deleteReport(Report report) throws DAOException {
 		
 		Session session = HibernateUtil.currentSession();
 		
@@ -59,7 +59,7 @@ public class HibernateReportService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e);
+			throw new DAOException(e);
 		}
 		
 	}
@@ -67,7 +67,7 @@ public class HibernateReportService implements
 	/**
 	 * @see org.openmrs.api.db.ReportService#getReport(java.lang.Integer)
 	 */
-	public Report getReport(Integer reportId) throws APIException {
+	public Report getReport(Integer reportId) throws DAOException {
 		
 		Session session = HibernateUtil.currentSession();
 		
@@ -80,7 +80,7 @@ public class HibernateReportService implements
 	/**
 	 * @see org.openmrs.api.db.ReportService#updateReport(org.openmrs.reporting.Report)
 	 */
-	public void updateReport(Report report) throws APIException {
+	public void updateReport(Report report) throws DAOException {
 
 		if (report.getCreator() == null)
 			createReport(report);
@@ -96,7 +96,7 @@ public class HibernateReportService implements
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new APIException(e);
+				throw new DAOException(e);
 			}
 		}
 	}

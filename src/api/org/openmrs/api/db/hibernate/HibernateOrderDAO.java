@@ -8,25 +8,25 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
-import org.openmrs.api.db.APIException;
-import org.openmrs.api.db.OrderService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.DAOException;
+import org.openmrs.api.db.OrderDAO;
 
-public class HibernateOrderService implements
-		OrderService {
+public class HibernateOrderDAO implements
+		OrderDAO {
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	private Context context;
 	
-	public HibernateOrderService(Context c) {
+	public HibernateOrderDAO(Context c) {
 		this.context = c;
 	}
 
 	/**
 	 * @see org.openmrs.api.db.OrderService#createOrder(org.openmrs.Order)
 	 */
-	public void createOrder(Order order) throws APIException {
+	public void createOrder(Order order) throws DAOException {
 		log.debug("creating order");
 		
 		Session session = HibernateUtil.currentSession();
@@ -41,7 +41,7 @@ public class HibernateOrderService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e);
+			throw new DAOException(e);
 		}
 		
 	}
@@ -49,7 +49,7 @@ public class HibernateOrderService implements
 	/**
 	 * @see org.openmrs.api.db.OrderService#deleteOrder(org.openmrs.Order)
 	 */
-	public void deleteOrder(Order order) throws APIException {
+	public void deleteOrder(Order order) throws DAOException {
 		log.debug("deleting order #" + order.getOrderId());
 		
 		Session session = HibernateUtil.currentSession();	
@@ -60,7 +60,7 @@ public class HibernateOrderService implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new APIException(e);
+			throw new DAOException(e);
 		}
 				
 	}
@@ -68,7 +68,7 @@ public class HibernateOrderService implements
 	/**
 	 * @see org.openmrs.api.db.OrderService#getOrder(java.lang.Integer)
 	 */
-	public Order getOrder(Integer orderId) throws APIException {
+	public Order getOrder(Integer orderId) throws DAOException {
 		log.debug("getting order #" + orderId);
 		
 		Session session = HibernateUtil.currentSession();
@@ -97,7 +97,7 @@ public class HibernateOrderService implements
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new APIException(e);
+				throw new DAOException(e);
 			}
 		}
 	}
@@ -118,7 +118,7 @@ public class HibernateOrderService implements
 	/**
 	 * @see org.openmrs.api.db.OrderService#discontinueOrder(org.openmrs.Order, java.lang.String)
 	 */
-	public void discontinueOrder(Order order, String reason) throws APIException {
+	public void discontinueOrder(Order order, String reason) throws DAOException {
 		log.debug("discontinuing order #" + order.getOrderId());
 		
 		order.setDiscontinued(true);
@@ -131,7 +131,7 @@ public class HibernateOrderService implements
 	/**
 	 * @see org.openmrs.api.db.OrderService#getOrderType(java.lang.Integer)
 	 */
-	public OrderType getOrderType(Integer orderTypeId) throws APIException {
+	public OrderType getOrderType(Integer orderTypeId) throws DAOException {
 		log.debug("getting orderType #" + orderTypeId);
 
 		Session session = HibernateUtil.currentSession();
@@ -144,7 +144,7 @@ public class HibernateOrderService implements
 	/**
 	 * @see org.openmrs.api.db.OrderService#getOrderTypes()
 	 */
-	public List<OrderType> getOrderTypes() throws APIException {
+	public List<OrderType> getOrderTypes() throws DAOException {
 		log.debug("getting all order types");
 
 		Session session = HibernateUtil.currentSession();
@@ -157,7 +157,7 @@ public class HibernateOrderService implements
 	/**
 	 * @see org.openmrs.api.db.OrderService#undiscontinueOrder(org.openmrs.Order)
 	 */
-	public void undiscontinueOrder(Order order) throws APIException {
+	public void undiscontinueOrder(Order order) throws DAOException {
 		log.debug("undiscontinuing order #" + order.getOrderId());
 
 		order.setDiscontinued(false);
@@ -170,7 +170,7 @@ public class HibernateOrderService implements
 	/**
 	 * @see org.openmrs.api.db.OrderService#unvoidOrder(org.openmrs.Order)
 	 */
-	public void unvoidOrder(Order order) throws APIException {
+	public void unvoidOrder(Order order) throws DAOException {
 		log.debug("unvoiding order #" + order.getOrderId());
 		
 		order.setVoided(false);

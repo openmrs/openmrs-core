@@ -1,22 +1,12 @@
 <html>
 <body>
 <p>
-The primary API interfaces.  These services provide the necessary 
+OpenMRS database layer interfaces.  These data access objects (DAOs) provide the necessary 
 methods to access and manipulate OpenMRS domain objects.
 </p>
 <p>
-Services are obtained from a org.openmrs.api.context.Context
-(@see org.openmrs.api.context.Context).
-</p>
-<p>
-For example:
-<pre>
-  Context context = ContextFactory.getContext();
-  PatientService ps = context.getPatientService();
-
-  // fetch patient with identifier 3-4
-  Patient patient = ps.getPatientByIdentifier("3-4");
-</pre>
+DAOs should be used by the API (<code>org.openmrs.api.*Services</code>) and rarely 
+(if ever) accessed directly.
 </p>
 </body>
 </html>

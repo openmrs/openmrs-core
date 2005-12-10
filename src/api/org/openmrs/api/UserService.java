@@ -1,10 +1,11 @@
-package org.openmrs.api.db;
+package org.openmrs.api;
 
 import java.util.List;
 
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.api.context.Context;
 
 /**
  * User-related services
@@ -12,7 +13,13 @@ import org.openmrs.User;
  * @author Burke Mamlin
  * @version 1.0
  */
-public interface UserService {
+public class UserService {
+	
+	private Context context;
+	
+	public UserService(Context c) {
+		this.context = c;
+	}
 	
 	/**
 	 * Create a new user
@@ -20,7 +27,9 @@ public interface UserService {
 	 * @param password
 	 * @throws APIException
 	 */
-	public void createUser(User user, String password) throws APIException;
+	public void createUser(User user, String password) throws APIException {
+		context.getDAOContext().getUserDAO().createUser(user, password);
+	}
 
 	/**
 	 * Get user by internal user identifier
@@ -28,7 +37,9 @@ public interface UserService {
 	 * @return requested user
 	 * @throws APIException
 	 */
-	public User getUser(Integer userId) throws APIException;
+	public User getUser(Integer userId) throws APIException {
+		return context.getDAOContext().getUserDAO().getUser(userId);
+	}
 	
 	/**
 	 * Get user by username (user's login identifier)
@@ -36,7 +47,9 @@ public interface UserService {
 	 * @return requested user
 	 * @throws APIException
 	 */
-	public User getUserByUsername(String username) throws APIException;
+	public User getUserByUsername(String username) throws APIException {
+		return context.getDAOContext().getUserDAO().getUserByUsername(username);
+	}
 
 	/**
 	 * true/false if username is already in db
@@ -44,7 +57,9 @@ public interface UserService {
 	 * @return boolean
 	 * @throws APIException
 	 */
-	public boolean isDuplicateUsername(User user) throws APIException;
+	public boolean isDuplicateUsername(User user) throws APIException {
+		return context.getDAOContext().getUserDAO().isDuplicateUsername(user);
+	}
 	
 	/**
 	 * Get users by role granted
@@ -52,14 +67,18 @@ public interface UserService {
 	 * @return users with requested role
 	 * @throws APIException
 	 */
-	public List<User> getUsersByRole(Role role) throws APIException;
+	public List<User> getUsersByRole(Role role) throws APIException {
+		return context.getDAOContext().getUserDAO().getUsersByRole(role);
+	}
 	
 	/**
 	 * Save changes to user
 	 * @param user
 	 * @throws APIException
 	 */
-	public void updateUser(User user) throws APIException;
+	public void updateUser(User user) throws APIException {
+		context.getDAOContext().getUserDAO().updateUser(user);
+	}
 	
 	/**
 	 * Grant roles for user
@@ -67,7 +86,9 @@ public interface UserService {
 	 * @param role
 	 * @throws APIException
 	 */
-	public void grantUserRole(User user, Role role) throws APIException;
+	public void grantUserRole(User user, Role role) throws APIException {
+		context.getDAOContext().getUserDAO().grantUserRole(user, role);
+	}
 	
 	/**
 	 * Revoke roles from user
@@ -75,7 +96,9 @@ public interface UserService {
 	 * @param role
 	 * @throws APIException
 	 */
-	public void revokeUserRole(User user, Role role) throws APIException;
+	public void revokeUserRole(User user, Role role) throws APIException {
+		context.getDAOContext().getUserDAO().revokeUserRole(user, role);
+	}
 
 	/** 
 	 * Mark user as voided (effectively deleting user without removing
@@ -87,7 +110,9 @@ public interface UserService {
 	 * @param reason
 	 * @throws APIException
 	 */
-	public void voidUser(User user, String reason) throws APIException;
+	public void voidUser(User user, String reason) throws APIException {
+		context.getDAOContext().getUserDAO().voidUser(user, reason);
+	}
 	
 	/**
 	 * Clear voided flag for user (equivalent to an "undelete" or
@@ -96,7 +121,9 @@ public interface UserService {
 	 * @param user
 	 * @throws APIException
 	 */
-	public void unvoidUser(User user) throws APIException;
+	public void unvoidUser(User user) throws APIException {
+		context.getDAOContext().getUserDAO().unvoidUser(user);
+	}
 	
 	/**
 	 * Delete user from database. This is included for troubleshooting and
@@ -115,40 +142,52 @@ public interface UserService {
 	 * @throws APIException
 	 * @see #voidUser(User, String)
 	 */
-	public void deleteUser(User user) throws APIException;
+	public void deleteUser(User user) throws APIException {
+		context.getDAOContext().getUserDAO().deleteUser(user);
+	}
 	
 	/**
 	 * Returns all privileges currently possible for any User
 	 * @return Global list of privileges
 	 * @throws APIException
 	 */
-	public List<Privilege> getPrivileges() throws APIException;
+	public List<Privilege> getPrivileges() throws APIException {
+		return context.getDAOContext().getUserDAO().getPrivileges();
+	}
 	
 	/**
 	 * Returns all roles currently possible for any User
 	 * @return Global list of roles
 	 * @throws APIException
 	 */
-	public List<Role> getRoles() throws APIException;
+	public List<Role> getRoles() throws APIException {
+		return context.getDAOContext().getUserDAO().getRoles();
+	}
 
 	/**
 	 * Returns all users in the system
 	 * @return Global list of users
 	 * @throws APIException
 	 */
-	public List<User> getUsers() throws APIException;
+	public List<User> getUsers() throws APIException {
+		return context.getDAOContext().getUserDAO().getUsers();
+	}
 
 	/**
 	 * Returns role object with given string role
 	 * @return Role
 	 * @throws APIException
 	 */
-	public Role getRole(String r) throws APIException;
+	public Role getRole(String r) throws APIException {
+		return context.getDAOContext().getUserDAO().getRole(r);
+	}
 
 	/**
 	 * Returns Privilege in the system with given String privilege
 	 * @return Privilege
 	 * @throws APIException
 	 */
-	public Privilege getPrivilege(String p) throws APIException;	
+	public Privilege getPrivilege(String p) throws APIException {
+		return context.getDAOContext().getUserDAO().getPrivilege(p);
+	}
 }
