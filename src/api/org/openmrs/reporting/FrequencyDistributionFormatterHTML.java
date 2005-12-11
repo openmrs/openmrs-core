@@ -1,9 +1,5 @@
 package org.openmrs.reporting;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.Format;
@@ -12,14 +8,17 @@ import org.openmrs.util.Format;
  * @author djazayeri
  * Formats two columns of data as an HTML table showing a frequency distribution.
  */
-public class FrequencyDistributionFormatterHTML {
+public class FrequencyDistributionFormatterHTML implements DataTableFormatter {
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
+	private String frequencyColumn;
 	private boolean includePercentage = true;
 	private boolean showZeroFrequencies = false;
 	
-	public FrequencyDistributionFormatterHTML() {}
+	public FrequencyDistributionFormatterHTML(String frequencyColumn) {
+		this.frequencyColumn = frequencyColumn;
+	}
 	
 	/**
 	 * @return Returns the includePercentage.
@@ -46,32 +45,34 @@ public class FrequencyDistributionFormatterHTML {
 	 * If the input is a Map, the key is the label and the value is the numeric frequency.
 	 * If the input is a List<Object[]>, the 0th element of each array is the label and the 1st element is the numeric frequency
 	 */
-	public Object format(Object input) {
-		List<Object[]> data = new ArrayList<Object[]>();
-		if (input instanceof List) {
-			data = (List<Object[]>) input;
-		} else if (input instanceof Map) {
-			for (Map.Entry<Object, Number> e : ((Map<Object, Number>) input).entrySet()) {
-				Object[] holder = { e.getKey(), e.getValue() };
-				data.add(holder);
-			}
-		} else {
-			throw new IllegalArgumentException(input.getClass() + " is not a legal input to FrequenceDistributionFormatterHTML");
-		}
+	public String format(DataTable input) {
 		double total = 0;
 		if (includePercentage) {
-			for (Object[] holder : data) {
-				total += ((Number) holder[1]).doubleValue();
+			for (DataRow row : input.getRows()) {
+				total += ((Number) row.get(frequencyColumn)).doubleValue();
 			}
 		}
 		StringBuffer ret = new StringBuffer();
 		ret.append("<table border=1>");
-		for (Object[] holder : data) {
-			if (showZeroFrequencies || ((Number) holder[1]).doubleValue() != 0) {
-				ret.append("<tr><td>" + holder[0] + "</td><td>" + holder[1] + "</td>");
-				if (includePercentage) {
-					ret.append("<td>" + Format.formatPercentage(((Number) holder[1]).doubleValue() / total) + "</td>");
+		ret.append("<tr>");
+		for (String columnName : input.getColumnNames()) {
+			ret.append("<td>" + columnName + "</td>");
+		}
+		if (includePercentage) {
+			ret.append("<td>Percentage</td>");
+		}
+		ret.append("</tr>");
+		for (DataRow row : input.getRows()) {
+			double val = ((Number) row.get(frequencyColumn)).doubleValue();
+			if (showZeroFrequencies || val != 0) {
+				ret.append("<tr>");
+				for (String columnName : input.getColumnNames()) {
+					ret.append("<td>" + row.get(columnName) + "</td>");
 				}
+				if (includePercentage) {
+					ret.append("<td>" + Format.formatPercentage(val / total) + "</td>");
+				}
+				ret.append("</tr>");
 			}
 		}
 		ret.append("</table>");
