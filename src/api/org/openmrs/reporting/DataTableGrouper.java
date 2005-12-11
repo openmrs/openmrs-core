@@ -13,6 +13,78 @@ public class DataTableGrouper {
 	private DataRowAggregator aggregator;
 	private String columnNameForAggregation;
 	
+	public DataTableGrouper() { }
+	
+	/**
+	 * @return Returns the aggregator.
+	 */
+	public DataRowAggregator getAggregator() {
+		return aggregator;
+	}
+
+	/**
+	 * @param aggregator The aggregator to set.
+	 */
+	public void setAggregator(DataRowAggregator aggregator) {
+		this.aggregator = aggregator;
+	}
+
+	/**
+	 * @return Returns the classifier.
+	 */
+	public DataRowClassifier getClassifier() {
+		return classifier;
+	}
+
+	/**
+	 * @param classifier The classifier to set.
+	 */
+	public void setClassifier(DataRowClassifier classifier) {
+		this.classifier = classifier;
+	}
+
+	/**
+	 * @return Returns the columnNameForAggregation.
+	 */
+	public String getColumnNameForAggregation() {
+		return columnNameForAggregation;
+	}
+
+	/**
+	 * @param columnNameForAggregation The columnNameForAggregation to set.
+	 */
+	public void setColumnNameForAggregation(String columnNameForAggregation) {
+		this.columnNameForAggregation = columnNameForAggregation;
+	}
+
+	/**
+	 * @return Returns the columnNameForClassification.
+	 */
+	public String getColumnNameForClassification() {
+		return columnNameForClassification;
+	}
+
+	/**
+	 * @param columnNameForClassification The columnNameForClassification to set.
+	 */
+	public void setColumnNameForClassification(String columnNameForClassification) {
+		this.columnNameForClassification = columnNameForClassification;
+	}
+
+	/**
+	 * @return Returns the columnNames.
+	 */
+	public List<String> getColumnNames() {
+		return columnNames;
+	}
+
+	/**
+	 * @param columnNames The columnNames to set.
+	 */
+	public void setColumnNames(List<String> columnNames) {
+		this.columnNames = columnNames;
+	}
+
 	public DataTableGrouper(List<String> columnNames, DataRowAggregator aggregator, String columnNameForAggregation) {
 		if (columnNames == null) {
 			throw new IllegalArgumentException("columnNames can't be null");
@@ -35,8 +107,10 @@ public class DataTableGrouper {
 	public DataTable group(DataTable input) {
 		if (columnNames != null) {
 			return groupBy(input, columnNames, aggregator, columnNameForAggregation);
-		} else {
+		} else if (classifier != null) {
 			return groupBy(input, classifier, columnNameForClassification, aggregator, columnNameForAggregation);
+		} else {
+			throw new IllegalStateException("You must set either columnNames or classifier before calling group()");
 		}
 	}
 	

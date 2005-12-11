@@ -12,6 +12,8 @@ public class NumericRangeClassifier implements DataRowClassifier {
 	private List<DoubleRange> ranges;
 	private boolean inclusiveOfLowBound;
 	
+	public NumericRangeClassifier() { }
+	
 	/**
 	 * @param range	space- or comma-separated list of numbers
 	 * @param inclusiveOfLowBound true if the low bound of each range component is inclusive, false if the high bound is
@@ -31,6 +33,48 @@ public class NumericRangeClassifier implements DataRowClassifier {
 		ranges.add(holder);
 	}
 	
+	/**
+	 * @return Returns the dataItemName.
+	 */
+	public String getDataItemName() {
+		return dataItemName;
+	}
+
+	/**
+	 * @param dataItemName The dataItemName to set.
+	 */
+	public void setDataItemName(String dataItemName) {
+		this.dataItemName = dataItemName;
+	}
+
+	/**
+	 * @return Returns the inclusiveOfLowBound.
+	 */
+	public boolean isInclusiveOfLowBound() {
+		return inclusiveOfLowBound;
+	}
+
+	/**
+	 * @param inclusiveOfLowBound The inclusiveOfLowBound to set.
+	 */
+	public void setInclusiveOfLowBound(boolean inclusiveOfLowBound) {
+		this.inclusiveOfLowBound = inclusiveOfLowBound;
+	}
+
+	/**
+	 * @return Returns the ranges.
+	 */
+	public List<DoubleRange> getRanges() {
+		return ranges;
+	}
+
+	/**
+	 * @param ranges The ranges to set.
+	 */
+	public void setRanges(List<DoubleRange> ranges) {
+		this.ranges = ranges;
+	}
+
 	public DoubleRange classify(DataRow row) {
 		Number val = (Number) row.get(dataItemName);
 		DoubleRange foundKey = null;

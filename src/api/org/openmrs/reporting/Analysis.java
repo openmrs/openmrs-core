@@ -54,5 +54,61 @@ public class Analysis {
 		}
 		return table;
 	}
+
+
+	/**
+	 * @return Returns the groupers.
+	 */
+	public List<DataTableGrouper> getGroupers() {
+		return groupers;
+	}
+
+
+	/**
+	 * @param groupers The groupers to set.
+	 */
+	public void setGroupers(List<DataTableGrouper> groupers) {
+		this.groupers = groupers;
+	}
+
+
+	/**
+	 * @return Returns the patientFilters.
+	 */
+	public List<DataFilter<Patient>> getPatientFilters() {
+		return patientFilters;
+	}
+
+
+	/**
+	 * @param patientFilters The patientFilters to set.
+	 */
+	public void setPatientFilters(List<DataFilter<Patient>> patientFilters) {
+		this.patientFilters = patientFilters;
+	}
+
+
+	/**
+	 * @return Returns the producers.
+	 */
+	public List<DataProducer<Patient>> getProducers() {
+		return producers;
+	}
+
+
+	/**
+	 * @param producers The producers to set.
+	 */
+	public void setProducers(List<DataProducer<Patient>> producers) {
+		this.producers = producers;
+	}
+
+
+	/**
+	 * @return Returns the sorter.
+	 */
+	public Comparator<DataRow> getSorter() {
+		return sorter;
+	}
 	
 }
