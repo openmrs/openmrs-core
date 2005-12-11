@@ -3,7 +3,7 @@ package org.openmrs.reporting;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 
-public class PatientCharacteristicFilter implements DataFilter<Patient> {
+public class PatientCharacteristicFilter extends AbstractReportObject implements DataFilter<Patient> {
 
 	Context context;
 	String gender; // "M" or "F"

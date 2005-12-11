@@ -11,7 +11,7 @@ import org.openmrs.Patient;
  *  age_in_months
  * @author djazayeri
  */
-public class AgeDataProducer implements DataProducer<Patient> {
+public class AgeDataProducer extends AbstractReportObject implements DataProducer<Patient> {
 
 	private final static long MS_PER_YEAR = Math.round(365.2422 * 24 * 60 * 60 * 1000);
 	private final static long MS_PER_MONTH = Math.round((365.2422 / 12) * 24 * 60 * 60 * 1000);

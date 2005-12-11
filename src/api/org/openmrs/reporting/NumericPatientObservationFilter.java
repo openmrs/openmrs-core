@@ -11,7 +11,7 @@ import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ObsService;
 
-public class NumericPatientObservationFilter implements DataFilter<Patient> {
+public class NumericPatientObservationFilter extends AbstractReportObject implements DataFilter<Patient> {
 
 	public enum Method { ANY, ALL, FIRST, LAST }
 	public enum Modifier { LESS, LESS_EQUAL, GREATER, GREATER_EQUAL, EQUAL, NOT_EQUAL }

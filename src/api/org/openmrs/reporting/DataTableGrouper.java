@@ -1,6 +1,7 @@
 package org.openmrs.reporting;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -114,10 +115,8 @@ public class DataTableGrouper {
 		}
 	}
 	
-
-	public static DataTable groupBy(DataTable input,
-							 List<String> columnNames,
-							 DataRowAggregator aggregator, String columnNameForAggregation) {
+	public static DataTable groupBy(DataTable input, List<String> columnNames,
+			DataRowAggregator aggregator, String columnNameForAggregation) {
 		Map<List<Object>, List<DataRow>> map = new HashMap<List<Object>, List<DataRow>>();
 		for (DataRow row : input.getRows()) {
 			List<Object> key = new ArrayList<Object>();
@@ -132,45 +131,20 @@ public class DataTableGrouper {
 			list.add(row);
 		}
 		DataTable output = new SimpleDataTable();
-		for (Map.Entry<List<Object>, List<DataRow>> e : map.entrySet()) {
-			List<Object> keys = e.getKey();
-			Object o = aggregator.aggregate(e.getValue());
-			DataRow row = new SimpleDataRow();
-			row.set(columnNameForAggregation, o);
-			for (int i = 0; i < keys.size(); ++i) {
-				String columnName = columnNames.get(i);
-				Object value = keys.get(i);
-				row.set(columnName, value);
-			}
+		for (List<DataRow> list : map.values()) {
+			DataRow row = aggregator.aggregate(list, columnNameForAggregation, columnNames);
 			output.addRow(row);
 		}
 		return output;
 	}
 	
 	public static DataTable groupBy(DataTable input,
-							 DataRowClassifier classifier, String columnNameForClassification,
-							 DataRowAggregator aggregator, String columnNameForAggregation) {
-		Map<Object, List<DataRow>> map = new HashMap<Object, List<DataRow>>();
+			DataRowClassifier classifier, String columnNameForClassification,
+			DataRowAggregator aggregator, String columnNameForAggregation) {
 		for (DataRow row : input.getRows()) {
-			Object key = classifier.classify(row);
-			List<DataRow> list = map.get(key);
-			if (list == null) {
-				list = new ArrayList<DataRow>();
-				map.put(key, list);
-			}
-			list.add(row);
+			row.set(columnNameForClassification, classifier.classify(row));
 		}
-		DataTable output = new SimpleDataTable();
-		for (Map.Entry<Object, List<DataRow>> e : map.entrySet()) {
-			Object key = e.getKey();
-			Object o = aggregator.aggregate(e.getValue());
-			DataRow row = new SimpleDataRow();
-			row.set(columnNameForClassification, key);
-			row.set(columnNameForAggregation, o);
-			output.addRow(row);
-		}
-		return output;
+		return groupBy(input, Collections.singletonList(columnNameForClassification), aggregator, columnNameForAggregation);
 	}
 
-	
 }

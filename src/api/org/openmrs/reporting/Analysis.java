@@ -3,17 +3,16 @@ package org.openmrs.reporting;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.openmrs.Patient;
 
 public class Analysis {
 
-	List<DataFilter<Patient>> patientFilters;
-	List<DataProducer<Patient>> producers;
-	List<DataTableGrouper> groupers;
-	Comparator<DataRow> sorter;
+	private List<DataFilter<Patient>> patientFilters;
+	private List<DataProducer<Patient>> producers;
+	private List<DataTableGrouper> groupers;
+	private Comparator<DataRow> sorter;
 	
 	public Analysis() {
 		patientFilters = new ArrayList<DataFilter<Patient>>();
@@ -63,14 +62,12 @@ public class Analysis {
 		return groupers;
 	}
 
-
 	/**
 	 * @param groupers The groupers to set.
 	 */
 	public void setGroupers(List<DataTableGrouper> groupers) {
 		this.groupers = groupers;
 	}
-
 
 	/**
 	 * @return Returns the patientFilters.
@@ -79,14 +76,12 @@ public class Analysis {
 		return patientFilters;
 	}
 
-
 	/**
 	 * @param patientFilters The patientFilters to set.
 	 */
 	public void setPatientFilters(List<DataFilter<Patient>> patientFilters) {
 		this.patientFilters = patientFilters;
 	}
-
 
 	/**
 	 * @return Returns the producers.
@@ -95,14 +90,12 @@ public class Analysis {
 		return producers;
 	}
 
-
 	/**
 	 * @param producers The producers to set.
 	 */
 	public void setProducers(List<DataProducer<Patient>> producers) {
 		this.producers = producers;
 	}
-
 
 	/**
 	 * @return Returns the sorter.

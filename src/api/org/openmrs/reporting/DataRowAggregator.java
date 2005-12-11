@@ -4,6 +4,6 @@ import java.util.Collection;
 
 public interface DataRowAggregator {
 
-	public Object aggregate(Collection<DataRow> rows);
+	public DataRow aggregate(Collection<DataRow> rows, String columnNameForAggregation, Collection<String> columnsGroupedOn);
 	
 }
