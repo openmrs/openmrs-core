@@ -5,12 +5,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.openmrs.Patient;
 
 // TODO: think about whether things that return rows.collectionView() should be unmodifiable
 public class SimpleDataSet<T> implements DataSet<T> {
