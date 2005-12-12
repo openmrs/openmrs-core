@@ -13,14 +13,35 @@
 	}
 </style>
 
+<script type="text/javascript">
+
+function hotkeys(event) {
+	var k = event.keyCode;
+	if (event.cntrlKey == true) {
+		if (k == 69) { // e
+			document.location = document.getElementById('editConcept').href;
+		}
+	}
+	if (k == 37) { // left key
+		document.location = document.getElementById('previousConcept').href;
+	}
+	else if (k == 39) { //right key
+		document.location = document.getElementById('nextConcept').href;
+	}
+}
+
+document.onkeypress = hotkeys;
+
+</script>
+
 <h2><spring:message code="Concept.title" /></h2>
 
 <c:if test="${concept.conceptId != null}">
-	<c:if test="${previousConcept != null}"><a href="concept.htm?conceptId=${previousConcept.conceptId}" valign="middle">&laquo; Previous</a> |</c:if>
+	<c:if test="${previousConcept != null}"><a href="concept.htm?conceptId=${previousConcept.conceptId}" id="previousConcept" valign="middle">&laquo; Previous</a> |</c:if>
 	<openmrs:hasPrivilege privilege="Edit Dictionary" converse="false">
-		<a href="concept.form?conceptId=${concept.conceptId}" valign="middle">Edit</a> |
+		<a href="concept.form?conceptId=${concept.conceptId}" id="editConcept" valign="middle">Edit</a> |
 	</openmrs:hasPrivilege>
-	<c:if test="${nextConcept != null}"><a href="concept.htm?conceptId=${nextConcept.conceptId}" valign="middle">Next &raquo;</a></c:if>
+	<c:if test="${nextConcept != null}"><a href="concept.htm?conceptId=${nextConcept.conceptId}" id="nextConcept" valign="middle">Next &raquo;</a></c:if>
 </c:if>
 
 <form id="newSearchForm" action="index.htm" method="get">

@@ -15,37 +15,37 @@
 	</head>
 
 <body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
-	<div id="userBar">
-		<openmrs:isAuthenticated converse="false">
-			<spring:message code="header.logged.in"/> ${authenticatedUser} | 
-			<a href='<%= request.getContextPath() %>/logout'>
-				<spring:message code="header.logout" />
-			</a>
-		</openmrs:isAuthenticated>
-		<openmrs:isAuthenticated converse="true">
-			<spring:message code="header.logged.out"/> | 
-			<a href='<%= request.getContextPath() %>/login.htm'>
-				<spring:message code="header.login"/>
-			</a>
-		</openmrs:isAuthenticated>
-		| <a href='<%= request.getContextPath() %>/help.htm'><spring:message code="header.help"/></a>
-	</div>
-
-	<div id="banner">
-		<%@ include file="/WEB-INF/template/banner.jsp" %>
-	</div>
-	<div id="gutter">
-		<%@ include file="/WEB-INF/template/gutter.jsp" %>
-	</div>
-	<div id="content">
-
-			<c:if test="${msg != null}">
-				<div id="openmrs_msg"><spring:message code="${msg}" text="${msg}"/></div>
-			</c:if>
-			<c:if test="${err != null}">
-				<div id="openmrs_error"><spring:message code="${err}" text="${err}"/></div>
-			</c:if>
-
-			
+	<div id="body">
+		<div id="userBar">
+			<openmrs:isAuthenticated converse="false">
+				<spring:message code="header.logged.in"/> ${authenticatedUser} | 
+				<a href='<%= request.getContextPath() %>/logout'>
+					<spring:message code="header.logout" />
+				</a>
+			</openmrs:isAuthenticated>
+			<openmrs:isAuthenticated converse="true">
+				<spring:message code="header.logged.out"/> | 
+				<a href='<%= request.getContextPath() %>/login.htm'>
+					<spring:message code="header.login"/>
+				</a>
+			</openmrs:isAuthenticated>
+			| <a href='<%= request.getContextPath() %>/help.htm'><spring:message code="header.help"/></a>
+		</div>
+	
+		<div id="banner">
+			<%@ include file="/WEB-INF/template/banner.jsp" %>
+		</div>
+		<div id="gutter">
+			<%@ include file="/WEB-INF/template/gutter.jsp" %>
+		</div>
+		<div id="content">
+	
+				<c:if test="${msg != null}">
+					<div id="openmrs_msg"><spring:message code="${msg}" text="${msg}"/></div>
+				</c:if>
+				<c:if test="${err != null}">
+					<div id="openmrs_error"><spring:message code="${err}" text="${err}"/></div>
+				</c:if>
+	
 
 					

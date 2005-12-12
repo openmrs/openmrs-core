@@ -1,12 +1,15 @@
 var conceptTimeout;
 var conceptIndex;
 var conceptsFound;
+var allConceptsFound;
 var conceptTableBody;
 var text;
 var textbox;
 var includeRetired;
 var keyCode;
 var lastPhraseSearched;
+var numItemsDisplayed;
+var firstItemDisplayed;
 
 var ENTERKEY = 13;
 
@@ -16,19 +19,20 @@ resetForm();
 function resetForm() {
 	lastPhraseSearched = "";
 	conceptsFound = new Array();
+	allConceptsFound = new Array();
 	text = "";
 	textbox = null;
 	includeRetired = false;
-}
+	firstItemDisplayed = 1;
+	document.onkeypress = hotkey;}
 
 function searchBoxChange(bodyElementId, obj, event, retired, delay) {
 	conceptTableBody = bodyElementId;
 	textbox = obj;
 	if (!delay)  { delay = 400; }
-	
 	clearTimeout(conceptTimeout);
-	
 	text = textbox.value.toString();
+		
 	keyCode = 0;
 	if (event == null) { 
 		// if onSubmit function called
@@ -46,7 +50,7 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay) {
 		textbox.value = lastPhraseSearched;
 		return false;
 	}
-	else if(text == "") {
+	else if(text == "" && includeRetired == retired) {
 		return false;
 	}
 	else if (keyCode == ENTERKEY) {
@@ -83,6 +87,8 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay) {
 		textbox.value = "";
 		if (text != lastPhraseSearched || includeRetired != retired) {
 			//this was a new search with the enter key pressed
+			if (text == "")
+				text = lastPhraseSearched;
 			conceptTimeout = setTimeout("updateConcepts('" + text + "')", 0);
 		}
 		else if (conceptsFound.length == 1) {
@@ -114,26 +120,6 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay) {
 	return false;
 }
 
-function updateInformationBar() {
-	
-	//TODO create another dwr method to just get total # of hits
-	//     so that we don't need to return all 200 hits and only show #31-#45
-	
-	var infoBar = document.getElementById("conceptSearchInfoBar");
-	if (infoBar == null) {
-		infoBar = document.createElement('div');
-		infoBar.id = "conceptSearchInfoBar";
-		var table = document.getElementById(conceptTableBody).parentNode;
-		table.parentNode.insertBefore(infoBar, table);
-	}
-	infoBar.innerHTML = "Results for '" + lastPhraseSearched + "'";
-}
-function clearInformationBar() {
-	var infoBar = document.getElementById("conceptSearchInfoBar");
-	if (infoBar != null)
-		infoBar.innerHTML = "&nbsp;";
-}
-
 function updateConcepts(text) {
 	if (text.length > 1) {							//must have at least 2 characters entered
 		conceptsFound = new Array();				//zero-out numbered concept list
@@ -141,7 +127,7 @@ function updateConcepts(text) {
 	    if (typeof conceptClasses == 'undefined')	//conceptClasses is only optionally defined
 	    	conceptClasses = new Array();
 		clearTimeout(conceptTimeout);				//stop any timeout that may have just occurred...fixes 'duplicate data' error
-	    DWRUtil.removeAllRows(conceptTableBody);	//clear out the current rows
+		firstItemDisplayed = 1;
 	    DWRConceptService.findConcepts(fillTable, text, conceptClasses, includeRetired);
 	    lastPhraseSearched = text;
 	}
@@ -158,13 +144,16 @@ function selectConcept(index) {
 }
 
 function showHighlight() {
-	var elements = document.getElementsByTagName('SPAN')
-	for(i=0; i <elements.length;i++)
-	{
-		if(elements[i].className == 'conceptIndex')
-			elements[i].className = 'conceptIndexHighlight';
+	if (conceptsFound.length > 0) {
+		var elements = document.getElementsByTagName('SPAN')
+		for(i=0; i <elements.length;i++)
+		{
+			if(elements[i].className == 'conceptIndex')
+				elements[i].className = 'conceptIndexHighlight';
+		}
+		textbox.className = "conceptHighlight";
+		textbox.focus();
 	}
-	textbox.className = "conceptHighlight";
 }
 
 function hideHighlight() {
@@ -180,7 +169,7 @@ function hideHighlight() {
 var getNumber = function(conceptHit) {
 	    if (typeof conceptHit == 'string') {
     		return "";
-    	}	
+    	}
 		conceptsFound.push(conceptHit);
 		var str = "";
 		str = str + "<span class='conceptIndex'>";
@@ -206,7 +195,7 @@ var getCellContent = function(conceptHit) {
 			}
 			str += "</a>";
 			if (conceptHit.retired) {
-				str = "<span class='retired'>" + str + "</span>";
+				str = "<div class='retired'>" + str + "</div>";
 			}
 			conceptIndex = conceptIndex + 1;
 			return str;
@@ -218,6 +207,7 @@ function fillTable(concepts) {
    	if (concepts.length == 1 && 
    		keyCode == ENTERKEY) {
    			if (typeof concepts[0] == 'string') {
+   				// if only one string item returned, its the error message
    				hideHighlight();
 			}
    			else {
@@ -227,10 +217,15 @@ function fillTable(concepts) {
 	   			return;
 	   		}
 	}
-
-    DWRUtil.addRows(conceptTableBody, concepts, [ getNumber, getCellContent ]);
-    
+	
+    allConceptsFound = concepts;
+	
 	updateInformationBar();
+
+    DWRUtil.removeAllRows(conceptTableBody);	//clear out the current rows
+
+    var c = concepts.slice(firstItemDisplayed - 1, firstItemDisplayed + numItemsDisplayed);
+    DWRUtil.addRows(conceptTableBody, c, [ getNumber, getCellContent ]);
     
     if (keyCode == ENTERKEY) {
     	// showHighlighting must be called here to assure it occurs after 
@@ -238,4 +233,125 @@ function fillTable(concepts) {
     	// DWRUtil.addRows uses setTimeout
     	setTimeout("showHighlight()", 0);
     }
+}
+
+function showPrevious() {
+	firstItemDisplayed = firstItemDisplayed - numItemsDisplayed;
+	if (firstItemDisplayed < 1) {
+		firstItemDisplayed = 1;
+	}
+	conceptIndex = firstItemDisplayed;
+	fillTable(allConceptsFound);
+	showHighlight();
+	return false;
+}
+
+function showNext() {
+	firstItemDisplayed = firstItemDisplayed + numItemsDisplayed;
+	if (firstItemDisplayed > allConceptsFound.length) {
+		firstItemDisplayed = allConceptsFound.length;
+	}
+	conceptIndex = firstItemDisplayed;
+	fillTable(allConceptsFound);
+	showHighlight();
+	return false;
+}
+
+function updateInformationBar() {
+	
+	//TODO create another dwr method to just get total # of hits
+	//     so that we don't need to return all 200 hits and only show #31-#45
+	
+	//create/find information bar
+	var infoBar = document.getElementById("conceptSearchInfoBar");
+	if (infoBar == null) {
+		infoBar = document.createElement('div');
+		infoBar.id = "conceptSearchInfoBar";
+		var table = document.getElementById(conceptTableBody).parentNode;
+		table.parentNode.insertBefore(infoBar, table);
+	}
+	
+	infoBar.innerHTML = " Results for '" + lastPhraseSearched + "'. &nbsp;";
+	
+	// get top position of body element
+	var body = document.getElementById(conceptTableBody); 
+	var top = body.offsetTop;
+	var parent = conceptTableBody.offsetParent;
+	while (parent != null) {
+		top+= parent.offsetTop;
+		parent = parent.offsetParent;
+	}
+	
+	var font = getStyle(textbox, "height");//approx. row height
+	font = parseInt(font.slice(0, font.length - 2)); //remove 'px' from height
+	
+	// get approx room below tablebody
+	var remainder = window.innerHeight - parseInt(top);
+	numItemsDisplayed=Math.floor(remainder/(font + 7))-6;
+	
+	var total = allConceptsFound.length;
+	var lastItemDisplayed = firstItemDisplayed + numItemsDisplayed;
+	if (lastItemDisplayed > total) {
+		lastItemDisplayed = total;
+	}
+	
+	infoBar.innerHTML += " Viewing " + firstItemDisplayed + "-" + lastItemDisplayed + " of " + total + " ";
+	if (firstItemDisplayed > 1) {
+		//create previous link
+		var prev = document.createElement("a");
+		prev.href = "#prev";
+		prev.className = "prevItems";
+		prev.innerHTML = "Previous " + (firstItemDisplayed-numItemsDisplayed < 1 ? firstItemDisplayed + 1: numItemsDisplayed + 1) + " Results";
+		prev.onclick = showPrevious;
+		infoBar.appendChild(prev);
+		if (lastItemDisplayed != total) {
+			var s = document.createElement("span");
+			s.innerHTML = " | ";
+			infoBar.appendChild(s);	
+		}
+	}
+	if (lastItemDisplayed < total) {
+		//create next link
+		var next = document.createElement("a");
+		next.href = "#next";
+		next.className = "nextItems";
+		next.innerHTML = "Next " + (lastItemDisplayed+numItemsDisplayed > total ? total - lastItemDisplayed + 1: numItemsDisplayed + 1 ) + " Results";
+		next.onclick = showNext;
+		infoBar.appendChild(next);
+	}
+}
+
+function clearInformationBar() {
+	var infoBar = document.getElementById("conceptSearchInfoBar");
+	if (infoBar != null)
+		infoBar.innerHTML = "&nbsp;";
+}
+
+function getStyle(obj,styleProp) {
+	if (obj.currentStyle) {
+		var y = obj.currentStyle[styleProp];
+	}
+	else if (window.getComputedStyle) {
+		var y = document.defaultView.getComputedStyle(obj,null).getPropertyValue(styleProp);
+	}
+	return y;
+}
+
+function hotkey(event) {
+	var k = event.keyCode;
+	if (k == 33) { //PAGE UP
+		showPrevious();
+	}
+	else if (k == 34) { // PAGE DOWN
+		showNext();
+	}
+	else if (event.ctrlKey == true) { //if CONTROL-*
+		if (k == 37) { //LEFT key
+			showPrevious();
+		}
+		else if (k == 39) { //RIGHT key
+			showNext();
+		}
+	}
+	
 }

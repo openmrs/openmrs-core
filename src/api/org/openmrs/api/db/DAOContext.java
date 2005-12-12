@@ -12,7 +12,7 @@ import org.openmrs.reporting.db.ReportDAO;
  */
 public interface DAOContext {
 	
-	public void authenticate(String username, String password)
+	public User authenticate(String username, String password)
 		throws ContextAuthenticationException;
 
 	/**
@@ -21,25 +21,7 @@ public interface DAOContext {
 	 */
 	public User getAuthenticatedUser();
 	
-	/**
-	 * @return true if user has been authenticated in this context
-	 */
-	public boolean isAuthenticated();
-
-	/**
-	 * logs out the "active" (authenticated) user within context 
-	 * @see #authenticate
-	 */
 	public void logout();
-
-	/**
-	 * Tests whether or not currently authenticated user has a 
-	 * particular privilege
-	 * 
-	 * @param privilege
-	 * @return true if authenticated user has given privilege
-	 */
-	public boolean hasPrivilege(String privilege);
 
 	public AdministrationDAO getAdministrationDAO();
 	

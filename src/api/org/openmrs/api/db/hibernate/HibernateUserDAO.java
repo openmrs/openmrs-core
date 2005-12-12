@@ -69,16 +69,6 @@ public class HibernateUserDAO implements
 			throw new DAOException(e.getMessage());
 		}	
 	}
-	
-	private String hexString(byte[] b) {
-		if (b == null || b.length < 1)
-			return "";
-		StringBuffer s = new StringBuffer();
-		for (int i = 0; i < b.length; i++) {
-			s.append(Integer.toHexString(b[i] & 0xFF));
-		}
-		return new String(s);
-	}
 
 	/**
 	 * @see org.openmrs.api.db.UserService#getUserByUsername(java.lang.String)

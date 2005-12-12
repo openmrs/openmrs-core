@@ -1,7 +1,21 @@
+html {
+	height: 100%;
+}
+
 body {
 	font-family: arial;
 	font-size: 11px;
 	padding: 0px;
+	height: 100%;
+}
+
+#body {
+	position: relative;
+	min-height: 100%;
+}
+
+* html #body {
+	height: 100%;
 }
 
 #openmrs_msg { 
@@ -55,14 +69,16 @@ body {
 }
 
 #footer {
-	clear:left;
-	padding: 1px;
+	clear: left;
+	padding: 1px 2px 1px 2px;
 	color: gray;
 	font-size: 10px;
 	border-top: 1px solid lightgrey;
-	border-bottom: 1px solid lightgrey;
 	text-align: left;
-	background-color:whitesmoke;
+	background-color: whitesmoke;
+	/* see http://www.themaninblue.com/experiment/footerStickAlt/ for footer stick explanation */
+	position: relative;
+	margin-top: -1.5em;
 }
 
 #menu {
@@ -135,10 +151,10 @@ span.error, div.error {
 	font-size: 9px;
 }
 a, a:link, a:hover, a:visited, a:active {
-	text-decoration: none;
+	text-decoration: underline;
 }
 a:hover {
-	text-decoration: underline;
+	text-decoration: none;
 }
 .retiredMessage {
 	border: 1px solid firebrick;
@@ -165,12 +181,20 @@ input[type="text"], input[type="password"] {
 }
 a.conceptHit {
 	text-decoration: none;
+	display: block;
+}
+a:hover.conceptHit {
+	background-color: khaki;
 }
 a:hover span.mainHit {
+	text-decoration: none;
+}
+a span.mainHit {
 	text-decoration: underline;
 }
 a span.additionalHit {
 	color: gray;
+	text-decoration: none;
 }
 #conceptSearchInfoBar {
 	font-size: 10px;

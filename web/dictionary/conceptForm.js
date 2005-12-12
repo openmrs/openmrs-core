@@ -248,3 +248,20 @@ function synonymKeyPress(obj, event) {
 			selectedItem.selected = false;
 	}
 }
+
+function hotkeys(event) {
+	var k = event.keyCode;
+	if (event.cntrlKey == true) {
+		if (k == 86) { // v
+			document.location = document.getElementById('viewConcept').href;
+		}
+	}
+	if (k == 37) { // left key
+		document.location = document.getElementById('previousConcept').href;
+	}
+	else if (k == 39) { //right key
+		document.location = document.getElementById('nextConcept').href;
+	}
+}
+
+document.onkeypress = hotkeys;

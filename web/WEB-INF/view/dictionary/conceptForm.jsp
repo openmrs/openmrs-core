@@ -77,7 +77,7 @@
 
 <c:if test="${concept.conceptId != null}">
 	<c:if test="${previousConcept != null}"><a href="concept.form?conceptId=${previousConcept.conceptId}">&laquo; Previous</a> |</c:if>
-	<a href="concept.htm?conceptId=${concept.conceptId}">View</a> |
+	<a href="concept.htm?conceptId=${concept.conceptId}" id="viewConcept" >View</a> |
 	<c:if test="${nextConcept != null}"><a href="concept.form?conceptId=${nextConcept.conceptId}">Next &raquo;</a></c:if>
 </c:if>
 

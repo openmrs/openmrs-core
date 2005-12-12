@@ -1,11 +1,8 @@
 package org.openmrs.api.db.hibernate;
 
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -327,37 +324,8 @@ public class HibernateConceptDAO implements
 		// add our 'and'/'or' statement to the search
 		searchCriteria.add(junction);
 		
-		searchCriteria.setFetchSize(100);			//only fetch 100 concepts
 		searchCriteria.addOrder(Order.asc("synonym")); //put hits on concept name first (hits that have an empty synonym column)
 		conceptWords = searchCriteria.list();
-		
-		//this will store the unique concept hits to the concept word table
-		//we are assuming the hits are sorted with synonym matches at the bottom
-		//Map<ConceptId, ConceptWord>
-		Map<Integer, ConceptWord> uniqueConcepts = new HashMap<Integer, ConceptWord>();
-		
-		Integer id = null;
-		Concept concept = null;
-		for (ConceptWord tmpWord : conceptWords) {
-			concept = tmpWord.getConcept(); 
-			id = concept.getConceptId();
-			if (uniqueConcepts.containsKey(id)) {
-				//if the concept is already in the list, strengthen the hit
-				uniqueConcepts.get(id).increaseWeight(1);
-			}
-			else {
-				//if its not in the list, add it
-				uniqueConcepts.put(id, tmpWord);
-			}
-			
-			// if there isn't a synonym, it is matching on the name, increase the weight
-			if (tmpWord.getSynonym().length() > 0)
-				uniqueConcepts.get(id).increaseWeight(1);
-		}
-		
-		conceptWords = new Vector<ConceptWord>(); 
-		conceptWords.addAll(uniqueConcepts.values());
-		Collections.sort(conceptWords);
 		
 		//TODO this is a bit too much pre/post processing to be in the persistence layer.
 		// consider moving to different layer (eg: logic).

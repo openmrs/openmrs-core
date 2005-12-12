@@ -1,16 +1,10 @@
 package org.openmrs.api.db.hibernate;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.openmrs.Privilege;
-import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
@@ -56,7 +50,7 @@ public class HibernateDAOContext implements DAOContext {
 	 * @see org.openmrs.api.context.Context#authenticate(String, String)
 	 * @throws ContextAuthenticationException
 	 */
-	public void authenticate(String username, String password)
+	public User authenticate(String username, String password)
 			throws ContextAuthenticationException {
 
 		user = null;
@@ -72,9 +66,11 @@ public class HibernateDAOContext implements DAOContext {
 					.uniqueResult();
 		} catch (HibernateException he) {
 			// TODO Auto-generated catch block
-			System.out.println("Got hibernate exception");
+			log.error("Got hibernate exception");
+			log.error(he);
 		} catch (Exception e) {
-			System.out.println("Got regular exception");
+			log.error("Got regular exception");
+			log.error(e);
 		}
 		
 		if (candidateUser == null) {
@@ -103,6 +99,8 @@ public class HibernateDAOContext implements DAOContext {
 			log.info("Failed login (username=\"" + username + ") - " + errorMsg);
 			throw new ContextAuthenticationException(errorMsg);
 		}
+		
+		return user;
 	}
 
 	/**
@@ -117,64 +115,14 @@ public class HibernateDAOContext implements DAOContext {
 				session.merge(user);
 		}
 		catch (Exception e) {
-			log.error("Possible attempted locking of user to double open session aka: " + e.getMessage());
+			log.error("Possible attempted locking of user to double open session or: " + e.getMessage());
 		}
 		//session.merge(user);
 		return user;
 	}
-
-	/**
-	 * Log the current user out of this context. isAuthenticated will now return
-	 * false.
-	 * 
-	 * @see org.openmrs.api.context.Context#logout()
-	 */
+	
 	public void logout() {
 		user = null;
-	}
-
-	/**
-	 * Get the privileges for the authenticated user
-	 * 
-	 * @see org.openmrs.api.context.Context#getPrivileges()
-	 */
-	public Set<Privilege> getPrivileges() {
-		if (!isAuthenticated())
-			return null;
-
-		Session session = HibernateUtil.currentSession();
-		session.merge(user);
-		Set<Privilege> privileges = new HashSet<Privilege>();
-		for (Iterator<Role> i = user.getRoles().iterator(); i.hasNext();) {
-			Role role = i.next();
-			privileges.addAll(role.getPrivileges());
-		}
-		return privileges;
-	}
-
-	/**
-	 * Return whether or not the user has the given priviledge
-	 * 
-	 * @param String
-	 *            privilege to authorize against
-	 * @return boolean whether the user has the given privilege
-	 * @see org.openmrs.api.context.Context#hasPrivilege(java.lang.String)
-	 */
-	public boolean hasPrivilege(String privilege) {
-		if (isAuthenticated()) {
-			User user = getAuthenticatedUser();
-			return user.hasPrivilege(privilege);
-		}
-		return false;
-	}
-
-	/**
-	 * Determine if a user is authenticated already
-	 * 
-	 * @see org.openmrs.api.context.Context#isAuthenticated()
-	 */
-	public boolean isAuthenticated() {
-		return (user != null);
 	}
 
 	public AdministrationDAO getAdministrationDAO() {

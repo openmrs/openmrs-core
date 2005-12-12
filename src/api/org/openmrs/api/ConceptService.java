@@ -1,7 +1,11 @@
 package org.openmrs.api;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -138,7 +142,50 @@ public class ConceptService {
 	 * @return
 	 */
 	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired) {
-		return context.getDAOContext().getConceptDAO().findConcepts(phrase, locale, includeRetired);
+		List<ConceptWord> conceptWords = context.getDAOContext().getConceptDAO().findConcepts(phrase, locale, includeRetired);
+		
+		//this will store the unique concept hits to the concept word table
+		//we are assuming the hits are sorted with synonym matches at the bottom
+		//Map<ConceptId, ConceptWord>
+		Map<Integer, ConceptWord> uniqueConcepts = new HashMap<Integer, ConceptWord>();
+		
+		Integer id = null;
+		Concept concept = null;
+		for (ConceptWord tmpWord : conceptWords) {
+			concept = tmpWord.getConcept(); 
+			id = concept.getConceptId();
+			if (uniqueConcepts.containsKey(id)) {
+				//if the concept is already in the list, strengthen the hit
+				uniqueConcepts.get(id).increaseWeight(1);
+			}
+			else {
+				//if its not in the list, add it
+				uniqueConcepts.put(id, tmpWord);
+			}
+			
+			// if there isn't a synonym, it is matching on the name, increase the weight
+			if (tmpWord.getSynonym().length() == 0) {
+				uniqueConcepts.get(id).increaseWeight(2);
+			}
+			else {
+				uniqueConcepts.get(id).increaseWeight(5 * (1 / tmpWord.getSynonym().split(" ").length));
+			}
+		}
+		
+		conceptWords = new Vector<ConceptWord>(); 
+		conceptWords.addAll(uniqueConcepts.values());
+		Collections.sort(conceptWords);
+		
+		return conceptWords;
+	}
+	
+	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired, int start, int size) {
+		
+		List<ConceptWord> conceptWords = findConcepts(phrase, locale, includeRetired);
+		
+		List<ConceptWord> subList = conceptWords.subList(start, start + size);
+		
+		return subList;
 	}
 	
 	/**

@@ -66,6 +66,7 @@ public class Context {
 	public void authenticate(String username, String password)
 			throws ContextAuthenticationException {
 		getDAOContext().authenticate(username, password);
+		user = getDAOContext().getAuthenticatedUser();
 	}
 
 	/**
@@ -190,14 +191,15 @@ public class Context {
 	 *         otherwise <code>null</code> 
 	 */
 	public User getAuthenticatedUser() {
-		return getDAOContext().getAuthenticatedUser();
+		user = getDAOContext().getAuthenticatedUser();
+		return user;
 	}
 	
 	/**
 	 * @return true if user has been authenticated in this context
 	 */
 	public boolean isAuthenticated() {
-		return getDAOContext().isAuthenticated();
+		return user != null;
 	}
 
 	/**
@@ -205,6 +207,7 @@ public class Context {
 	 * @see #authenticate
 	 */
 	public void logout() {
+		user = null;
 		getDAOContext().logout();
 	}
 
@@ -216,7 +219,9 @@ public class Context {
 	 * @return true if authenticated user has given privilege
 	 */
 	public boolean hasPrivilege(String privilege) {
-		return user.hasPrivilege(privilege);
+		if (isAuthenticated())
+			return user.hasPrivilege(privilege);
+		return false;
 	}
 
 	/**
