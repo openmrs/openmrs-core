@@ -25,7 +25,7 @@ import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSynonym;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.db.ConceptService;
+import org.openmrs.api.ConceptService;
 import org.openmrs.web.Constants;
 import org.openmrs.web.propertyeditor.ConceptAnswersEditor;
 import org.openmrs.web.propertyeditor.ConceptClassEditor;

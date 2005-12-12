@@ -20,7 +20,7 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientName;
 import org.openmrs.Tribe;
-import org.openmrs.api.db.PatientService;
+import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.Constants;
 import org.openmrs.web.propertyeditor.LocationEditor;

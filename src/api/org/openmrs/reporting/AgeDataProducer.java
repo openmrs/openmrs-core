@@ -1,7 +1,6 @@
 package org.openmrs.reporting;
 
 import java.util.Date;
-import java.util.Iterator;
 
 import org.openmrs.Patient;
 

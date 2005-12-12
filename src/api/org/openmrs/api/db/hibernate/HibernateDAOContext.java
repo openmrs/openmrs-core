@@ -23,6 +23,8 @@ import org.openmrs.api.db.ObsDAO;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.api.db.PatientDAO;
 import org.openmrs.api.db.UserDAO;
+import org.openmrs.reporting.db.ReportDAO;
+import org.openmrs.reporting.db.hibernate.HibernateReportDAO;
 import org.openmrs.util.Security;
 
 public class HibernateDAOContext implements DAOContext {
@@ -39,6 +41,7 @@ public class HibernateDAOContext implements DAOContext {
 	private OrderDAO orderDAO;
 	private PatientDAO patientDAO;
 	private UserDAO userDAO;
+	private ReportDAO reportDAO;
 
 	public HibernateDAOContext(Context c) {
 		this.context = c;
@@ -220,6 +223,12 @@ public class HibernateDAOContext implements DAOContext {
 		if (userDAO == null)
 			userDAO = new HibernateUserDAO(context);
 		return userDAO;
+	}
+	
+	public ReportDAO getReportDAO() {
+		if (reportDAO == null)
+			reportDAO = new HibernateReportDAO(context);
+		return reportDAO;
 	}
 
 	/**

@@ -16,7 +16,6 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.db.DAOContext;
 import org.openmrs.api.db.hibernate.HibernateDAOContext;
 import org.openmrs.reporting.ReportService;
-import org.openmrs.reporting.db.hibernate.HibernateReportService;
 
 /**
  * Represents an OpenMRS <code>Context</code>, which may be used to
@@ -169,7 +168,7 @@ public class Context {
 			return null;
 		}
 		if (reportService == null)
-			reportService = new HibernateReportService(this);
+			reportService = new ReportService(this);
 		return reportService;
 	}
 

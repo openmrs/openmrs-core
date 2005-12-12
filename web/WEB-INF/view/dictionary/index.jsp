@@ -57,6 +57,7 @@
 
 <script type="text/javascript">
 	document.getElementById("searchText").focus();
+	DWRUtil.useLoadingMessage();
 		
 	<request:existsParameter name="phrase">
 		<!-- the user posted a search phrase, mimic user entering it into box -->

@@ -3,7 +3,7 @@
 <%@ page import="org.openmrs.Role" %>
 <%@ page import="org.openmrs.Privilege" %>
 <%@ page import="java.util.Iterator" %>
-<%@ page import="org.openmrs.api.db.UserService" %>
+<%@ page import="org.openmrs.api.UserService" %>
 <%@ page import="java.util.List" %>
 <%@ page import="org.openmrs.util.Security" %>
 

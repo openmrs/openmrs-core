@@ -16,8 +16,8 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.db.ConceptService;
-import org.openmrs.api.db.PatientService;
+import org.openmrs.api.ConceptService;
+import org.openmrs.api.PatientService;
 import org.openmrs.util.DoubleRange;
 import org.openmrs.web.Constants;
 

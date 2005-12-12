@@ -8,7 +8,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.PatientAddress;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.db.PatientService;
+import org.openmrs.api.PatientService;
 import org.openmrs.web.Constants;
 
 import uk.ltd.getahead.dwr.ExecutionContext;

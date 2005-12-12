@@ -11,7 +11,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptWord;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.db.ConceptService;
+import org.openmrs.api.ConceptService;
 import org.openmrs.web.Constants;
 import org.openmrs.web.Util;
 

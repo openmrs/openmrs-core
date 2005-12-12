@@ -3,9 +3,10 @@ package org.openmrs.reporting;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.openmrs.api.db.APIException;
+import org.openmrs.api.APIException;
+import org.openmrs.reporting.db.ReportDAO;
 
-public class TestReportService implements ReportService {
+public class TestReportService implements ReportDAO {
 
 	Set<Report> reports;
 	

@@ -5,7 +5,7 @@ import java.beans.PropertyEditorSupport;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Location;
-import org.openmrs.api.db.PatientService;
+import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 

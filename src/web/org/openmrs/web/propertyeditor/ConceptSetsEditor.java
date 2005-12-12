@@ -11,7 +11,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.ConceptSet;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.db.ConceptService;
+import org.openmrs.api.ConceptService;
 import org.springframework.util.StringUtils;
 
 public class ConceptSetsEditor extends PropertyEditorSupport {

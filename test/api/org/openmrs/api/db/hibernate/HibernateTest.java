@@ -11,7 +11,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.openmrs.Role;
 import org.openmrs.User;
-import org.openmrs.api.db.UserService;
+import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextFactory;
 

@@ -12,16 +12,16 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.reporting.Report;
-import org.openmrs.reporting.ReportService;
+import org.openmrs.reporting.db.ReportDAO;
 
-public class HibernateReportService implements
+public class HibernateReportDAO implements
 		ReportDAO {
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	private Context context;
 	
-	public HibernateReportService(Context c) {
+	public HibernateReportDAO(Context c) {
 		this.context = c;
 	}
 
@@ -46,7 +46,7 @@ public class HibernateReportService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.db.EncounterService#deleteReport(org.openmrs.reporting.Report)
+	 * @see org.openmrs.api.EncounterService#deleteReport(org.openmrs.reporting.Report)
 	 */
 	public void deleteReport(Report report) throws DAOException {
 		
@@ -65,7 +65,7 @@ public class HibernateReportService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.db.ReportService#getReport(java.lang.Integer)
+	 * @see org.openmrs.api.ReportService#getReport(java.lang.Integer)
 	 */
 	public Report getReport(Integer reportId) throws DAOException {
 		
@@ -78,7 +78,7 @@ public class HibernateReportService implements
 	}
 
 	/**
-	 * @see org.openmrs.api.db.ReportService#updateReport(org.openmrs.reporting.Report)
+	 * @see org.openmrs.api.ReportService#updateReport(org.openmrs.reporting.Report)
 	 */
 	public void updateReport(Report report) throws DAOException {
 

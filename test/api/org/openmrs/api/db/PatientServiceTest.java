@@ -14,6 +14,10 @@ import org.openmrs.PatientAddress;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientName;
+import org.openmrs.api.APIException;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.api.EncounterService;
+import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextFactory;
 
@@ -42,7 +46,7 @@ public class PatientServiceTest extends TestCase {
 
 		this.createPatient();
 		
-		List patientList;
+		Set patientList;
 		
 		patientList = ps.getPatientsByIdentifier("???");
 		assertNotNull(patientList);
