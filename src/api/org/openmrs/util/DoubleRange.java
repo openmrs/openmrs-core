@@ -1,8 +1,5 @@
 package org.openmrs.util;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * Represents a bounded or unbounded numeric range.
  * By default the range is closed (ake inclusive) on the low end and open (aka exclusive) on the high end: mathematically "[low, high)".
@@ -11,8 +8,6 @@ import org.apache.commons.logging.LogFactory;
  */
 public class DoubleRange implements Comparable<DoubleRange> {
 
-	protected Log log = LogFactory.getLog(getClass());
-	
 	private Double low;
 	private Double high;
 	private boolean closedLow = true; //TODO: add setters and getters for these
@@ -61,7 +56,6 @@ public class DoubleRange implements Comparable<DoubleRange> {
 		if (temp == 0) {
 			temp = other.high.compareTo(high); 
 		}
-		log.debug(this + (temp < 0 ? " < " : (temp > 0 ? " > " : " = ")) + other);
 		return temp;
  	}
 	
