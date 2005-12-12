@@ -26,7 +26,6 @@ import org.openmrs.Patient;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.ConceptService;
 import org.openmrs.reporting.Analysis;
 import org.openmrs.reporting.ColumnSorter;
 import org.openmrs.reporting.CountAggregator;
@@ -37,8 +36,6 @@ import org.openmrs.reporting.NumericPatientObservationFilter;
 import org.openmrs.reporting.NumericRangeClassifier;
 import org.openmrs.reporting.PatientCharacteristicFilter;
 import org.openmrs.reporting.PatientListFormatterHTML;
-import org.openmrs.api.PatientService;
-import org.openmrs.util.DoubleRange;
 import org.openmrs.web.Constants;
 
 public class DariusController implements Controller {
