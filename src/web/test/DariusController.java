@@ -4,9 +4,16 @@ import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.ModelAndView;
 
 import org.openmrs.reporting.*;
-import org.openmrs.Patient;
-import java.util.*;
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -15,8 +22,21 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Patient;
+import org.openmrs.api.ConceptService;
+import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.ConceptService;
+import org.openmrs.reporting.Analysis;
+import org.openmrs.reporting.ColumnSorter;
+import org.openmrs.reporting.CountAggregator;
+import org.openmrs.reporting.DataTable;
+import org.openmrs.reporting.DataTableGrouper;
+import org.openmrs.reporting.FrequencyDistributionFormatterHTML;
+import org.openmrs.reporting.NumericPatientObservationFilter;
+import org.openmrs.reporting.NumericRangeClassifier;
+import org.openmrs.reporting.PatientCharacteristicFilter;
+import org.openmrs.reporting.PatientListFormatterHTML;
 import org.openmrs.api.PatientService;
 import org.openmrs.util.DoubleRange;
 import org.openmrs.web.Constants;
@@ -85,13 +105,23 @@ public class DariusController implements Controller {
 		ageAnalysis.addProducer(new AgeDataProducer());
 		ageAnalysis.addGrouper(new DataTableGrouper(new NumericRangeClassifier("age_in_years", "0,10,20,30,40,50", true), "age range", new CountAggregator(), "total number"));
 		ageAnalysis.setSorter(new ColumnSorter("age range"));
+
+		if (false) {
+			ByteArrayOutputStream arr = new ByteArrayOutputStream();
+			XMLEncoder enc = new XMLEncoder(new BufferedOutputStream(arr));
+			enc.writeObject(ageAnalysis);
+			enc.close();
+			log.warn("ageAnalysisXml = " + arr.toString());
+			XMLDecoder dec = new XMLDecoder(new BufferedInputStream(new ByteArrayInputStream(arr.toByteArray())));
+			ageAnalysis = (Analysis) dec.readObject();
+			dec.close();
+		}
 		
 		Set<Patient> everyone = patientService.getPatientsByName("");
 		DataTable ageTable = ageAnalysis.run(everyone);
 		DataTable patientTable = patientsAnalysis.run(everyone);
 		
 		String ageFrequencyDistribution = new FrequencyDistributionFormatterHTML("total number").format(ageTable);
-		//String ageFrequencyDistribution = "Not Yet Implemented";
 		String patientList = new PatientListFormatterHTML().format(patientTable);
 		
 		Map<String, Object> myModel = new HashMap<String, Object>();
