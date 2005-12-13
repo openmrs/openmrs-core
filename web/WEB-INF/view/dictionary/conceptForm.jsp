@@ -41,8 +41,8 @@
 		height: 275px;
 	}
 	#conceptSearchResults {
-		xheight: 100px;
-		xoverflow: auto;
+		height: 220px;
+		overflow: auto;
 	}
 	.closeButton {
 		border: 1px solid gray;

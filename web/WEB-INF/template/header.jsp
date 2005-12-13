@@ -15,7 +15,7 @@
 	</head>
 
 <body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
-	<div id="body">
+	<div id="pageBody">
 		<div id="userBar">
 			<openmrs:isAuthenticated converse="false">
 				<spring:message code="header.logged.in"/> ${authenticatedUser} | 

@@ -1,6 +1,7 @@
 var nameListBox= null;
 var idListBox  = null;
 var addButton  = null;
+var myConceptSearchMod = null;
 
 window.onload = function() {
 	myConceptSearchMod = new fx.Resize("conceptSearchForm", {duration: 100});
@@ -48,11 +49,17 @@ function addConcept(nameList, idList, obj)
 		addButton   = null;
 	}
 	
-	conceptSearchForm = document.getElementById("conceptSearchForm");
-	//var test = "";
-	var width = nameList.offsetWidth + 20;
-	conceptSearchForm.style.left = (getElementLeft(nameList) + width) + "px";
-	conceptSearchForm.style.top = (getElementTop(nameList)-50) + "px";
+	var conceptSearchForm = document.getElementById("conceptSearchForm");
+	var left  = getElementLeft(nameList) + nameList.offsetWidth + 20;
+	var top   = getElementTop(nameList)-50;
+	var formWidth  = 520;
+	var formHeight = 280;
+	if (left + formWidth > window.innerWidth)
+		left = window.innerWidth - formWidth - 10;
+	if (top + formHeight > window.innerHeight)
+		top = window.innerHeight - formHeight - 10;
+	conceptSearchForm.style.left = left + "px";
+	conceptSearchForm.style.top = top + "px";
 	
 	DWRUtil.removeAllRows("conceptSearchBody");
 	

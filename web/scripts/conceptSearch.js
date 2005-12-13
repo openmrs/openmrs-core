@@ -294,7 +294,7 @@ function updateInformationBar() {
 	
 	// get approx room below tablebody
 	var remainder = window.innerHeight - parseInt(top);
-	numItemsDisplayed=Math.floor(remainder/(height + 5))-4;
+	numItemsDisplayed=Math.floor(remainder/(height + 6))-1;
 	
 	var total = allConceptsFound.length;
 	var lastItemDisplayed = firstItemDisplayed + numItemsDisplayed;

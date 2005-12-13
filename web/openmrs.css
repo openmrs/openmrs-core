@@ -9,13 +9,16 @@ body {
 	height: 100%;
 }
 
-#body {
+#pageBody {
 	position: relative;
 	min-height: 100%;
 }
 
-* html #body {
-	height: 100%;
+* html #pageBody {
+	/* TODO 
+		Uncomment below line for IE footer stick solution
+		Causes other odd css rules to disappear */
+	/* height: 100%; */
 }
 
 #openmrs_msg { 
@@ -30,7 +33,7 @@ body {
 	border: 1px dashed maroon;
 	padding: 2px 2px 2px 18px;
 	margin: 2px;
-	background: url(/openmrs/images/error.gif) center left no-repeat;
+	background: url(/openmrs/images/error.gif) no-repeat center left;
 	background-color: InfoBackground;
 }
 
@@ -73,12 +76,15 @@ body {
 	padding: 1px 2px 1px 2px;
 	color: gray;
 	font-size: 10px;
+	height: 14px;
 	border-top: 1px solid lightgrey;
 	text-align: left;
 	background-color: whitesmoke;
 	/* see http://www.themaninblue.com/experiment/footerStickAlt/ for footer stick explanation */
 	position: relative;
-	margin-top: -1.5em;
+	margin-top: -17px;
+	/*	IE footer stick 'fix'
+		width: 99.5%; */
 }
 
 #menu {
@@ -204,4 +210,3 @@ a span.additionalHit {
 	padding: 2px 0 2px 0;
 	margin: 1px 0 1px 0;
 }
-	
