@@ -9,6 +9,8 @@ package org.openmrs.api;
  */
 public class APIException extends RuntimeException {
 
+	public static final long serialVersionUID = 12121212L;
+	
 	public APIException() {
 	}
 

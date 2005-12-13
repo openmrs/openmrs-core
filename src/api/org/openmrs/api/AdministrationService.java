@@ -41,6 +41,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void createEncounterType(EncounterType encounterType) throws APIException {
+		context.getDAOContext().getAdministrationDAO().createEncounterType(encounterType);
 	}
 
 	/**
@@ -49,7 +50,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void updateEncounterType(EncounterType encounterType) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().updateEncounterType(encounterType);
 	}
 
 	/**
@@ -58,7 +59,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void deleteEncounterType(EncounterType encounterType) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().deleteEncounterType(encounterType);
 	}
 
 	/**
@@ -67,7 +68,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void createPatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().createPatientIdentifierType(patientIdentifierType);
 	}
 
 	/**
@@ -76,7 +77,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void updatePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().updatePatientIdentifierType(patientIdentifierType);
 	}
 	
 	/**
@@ -85,7 +86,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void deletePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().deletePatientIdentifierType(patientIdentifierType);
 	}
 
 	/**
@@ -94,7 +95,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void createTribe(Tribe tribe) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().createTribe(tribe);
 	}
 
 	/**
@@ -103,7 +104,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void updateTribe(Tribe tribe) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().updateTribe(tribe);
 	}
 
 	/**
@@ -112,7 +113,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void deleteTribe(Tribe tribe) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().deleteTribe(tribe);
 	}
 	
 	/**
@@ -121,7 +122,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void retireTribe(Tribe tribe) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().retireTribe(tribe);
 	}
 
 	/**
@@ -130,7 +131,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void unretireTribe(Tribe tribe) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().unretireTribe(tribe);
 	}
 	
 	/**
@@ -139,7 +140,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void createOrderType(OrderType orderType) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().createOrderType(orderType);
 	}
 
 	/**
@@ -148,7 +149,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void updateOrderType(OrderType orderType) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().updateOrderType(orderType);
 	}
 
 	/**
@@ -157,7 +158,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void deleteOrderType(OrderType orderType) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().deleteOrderType(orderType);
 	}
 	
 	/**
@@ -166,7 +167,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void createFieldType(FieldType fieldType) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().createFieldType(fieldType);
 	}
 
 	/**
@@ -175,7 +176,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void updateFieldType(FieldType fieldType) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().updateFieldType(fieldType);
 	}
 
 	/**
@@ -184,7 +185,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void deleteFieldType(FieldType fieldType) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().deleteFieldType(fieldType);
 	}
 	
 	/**
@@ -193,7 +194,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void createMimeType(MimeType mimeType) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().createMimeType(mimeType);
 	}
 
 	/**
@@ -202,7 +203,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void updateMimeType(MimeType mimeType) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().updateMimeType(mimeType);
 	}
 
 	/**
@@ -211,7 +212,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void deleteMimeType(MimeType mimeType) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().deleteMimeType(mimeType);
 	}
 
 	/**
@@ -220,7 +221,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void createLocation(Location location) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().createLocation(location);
 	}
 
 	/**
@@ -229,7 +230,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void updateLocation(Location location) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().updateLocation(location);
 	}
 
 	/**
@@ -238,7 +239,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void deleteLocation(Location location) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().deleteLocation(location);
 	}
 	
 	/**
@@ -247,7 +248,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void createRelationshipType(RelationshipType relationshipType) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().createRelationshipType(relationshipType);
 	}
 
 	/**
@@ -256,7 +257,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void updateRelationshipType(RelationshipType relationshipType) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().updateRelationshipType(relationshipType);
 	}
 
 	/**
@@ -265,7 +266,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void deleteRelationshipType(RelationshipType relationshipType) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().deleteRelationshipType(relationshipType);
 	}
 
 	/**
@@ -274,7 +275,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void createRole(Role role) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().createRole(role);
 	}
 
 	/**
@@ -283,7 +284,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void updateRole(Role role) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().updateRole(role);
 	}
 
 	/**
@@ -292,7 +293,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void deleteRole(Role role) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().deleteRole(role);
 	}
 
 	/**
@@ -301,7 +302,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void createPrivilege(Privilege privilege) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().createPrivilege(privilege);
 	}
 
 	/**
@@ -310,7 +311,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void updatePrivilege(Privilege privilege) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().updatePrivilege(privilege);
 	}
 
 	/**
@@ -319,7 +320,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void deletePrivilege(Privilege privilege) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().deletePrivilege(privilege);
 	}
 
 	/**
@@ -328,7 +329,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void createConceptClass(ConceptClass privilege) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().createConceptClass(privilege);
 	}
 
 	/**
@@ -337,7 +338,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void updateConceptClass(ConceptClass privilege) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().updateConceptClass(privilege);
 	}
 
 	/**
@@ -346,7 +347,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void deleteConceptClass(ConceptClass privilege) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().deleteConceptClass(privilege);
 	}
 
 	/**
@@ -355,7 +356,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void createConceptDatatype(ConceptDatatype privilege) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().createConceptDatatype(privilege);
 	}
 
 	/**
@@ -364,7 +365,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void updateConceptDatatype(ConceptDatatype privilege) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().updateConceptDatatype(privilege);
 	}
 
 	/**
@@ -373,7 +374,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void deleteConceptDatatype(ConceptDatatype privilege) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().deleteConceptDatatype(privilege);
 	}
 	
 	/**
@@ -409,7 +410,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void updateConceptWord(Concept concept) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().updateConceptWord(concept);
 	}
 	
 	/**
@@ -417,7 +418,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void updateConceptWords() throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().updateConceptWords();
 	}
 	
 	/**
@@ -426,7 +427,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void updateConceptSetDerived(Concept concept) throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().updateConceptSetDerived(concept);
 	}
 	
 	/**
@@ -434,6 +435,6 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void updateConceptSetDerived() throws APIException {
-		
+		context.getDAOContext().getAdministrationDAO().updateConceptSetDerived();
 	}
 }

@@ -34,7 +34,7 @@ public class ConceptSetDerivedFormController extends SimpleFormController {
 		
 		if (context != null && context.isAuthenticated()) {
 			String s = request.getParameter("conceptId");
-			if (s != null) {
+			if (s != null && !s.equals("")) {
 				Concept c = context.getConceptService().getConcept(Integer.valueOf(s));
 				if (c != null)
 					context.getAdministrationService().updateConceptSetDerived(c);

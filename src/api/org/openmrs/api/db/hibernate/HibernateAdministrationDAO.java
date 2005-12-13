@@ -9,6 +9,8 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.LockMode;
+import org.hibernate.NonUniqueObjectException;
 import org.hibernate.Session;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
@@ -789,12 +791,33 @@ public class HibernateAdministrationDAO implements
 	
 	public void updateConceptWord(Concept concept) throws DAOException {
 		Session session = HibernateUtil.currentSession();
-		Collection<ConceptWord> words = ConceptWord.makeConceptWords(concept); 
+		
+		// remove all old words
+		HibernateUtil.beginTransaction();
+		session.createQuery("delete from ConceptWord where concept = ?")
+			.setParameter(0, concept)
+			.executeUpdate();
+		HibernateUtil.commitTransaction();
+		
+		// add all new words
+		Collection<ConceptWord> words = ConceptWord.makeConceptWords(concept);
+		log.debug("words: " + words);
 		try {
 			HibernateUtil.beginTransaction();
 			
 			for (ConceptWord word : words) {
-				session.saveOrUpdate(word);
+				try {
+					session.save(word);
+				}
+				catch (NonUniqueObjectException e) {
+					log.debug("merging word: " + word);
+					ConceptWord tmp  = (ConceptWord)session.merge(word);
+					log.debug("evicting tmp");
+					session.evict(tmp);
+					log.debug("saving word");
+					session.save(word);
+					log.debug(" merged word: " + word);
+				}
 			}
 			
 			HibernateUtil.commitTransaction();

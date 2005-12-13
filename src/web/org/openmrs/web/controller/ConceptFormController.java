@@ -240,27 +240,29 @@ public class ConceptFormController extends SimpleFormController {
 			
 			if (conceptId != null) {
 				Concept concept = cs.getConcept(Integer.valueOf(conceptId));
-			
-			// get locale specific conceptName object
-		    	conceptName = concept.getName(locale);
+				
+				if (concept != null) {
+					// get locale specific conceptName object
+					conceptName = concept.getName(locale);
 	    	
-	    	// get locale specific synonyms
-		    	conceptSynonyms = concept.getSynonyms(locale);
+					// get locale specific synonyms
+					conceptSynonyms = concept.getSynonyms(locale);
 		    		
-		    // get concept sets with locale decoded names
-		    	for (ConceptSet set : concept.getConceptSets()) {
-		    		Object[] arr = {set.getConcept().getConceptId().toString(), set.getConcept().getName(locale)}; 
-		    		conceptSets.put(set.getSortWeight(), arr);
-		    	}
-
-		    // get concept answers with locale decoded names
-		    	for (ConceptAnswer answer : concept.getAnswers()) {
-		    		conceptAnswers.put(answer.getAnswerConcept().getConceptId().toString(), answer.getAnswerConcept().getName(locale));
-		    	}
-
-		    	//previous/next ids for links
-		    	map.put("previousConcept", cs.getPrevConcept(concept));
-		    	map.put("nextConcept", cs.getNextConcept(concept));
+					// get concept sets with locale decoded names
+			    	for (ConceptSet set : concept.getConceptSets()) {
+			    		Object[] arr = {set.getConcept().getConceptId().toString(), set.getConcept().getName(locale)}; 
+			    		conceptSets.put(set.getSortWeight(), arr);
+			    	}
+	
+			    	// get concept answers with locale decoded names
+			    	for (ConceptAnswer answer : concept.getAnswers()) {
+			    		conceptAnswers.put(answer.getAnswerConcept().getConceptId().toString(), answer.getAnswerConcept().getName(locale));
+			    	}
+	
+			    	//previous/next ids for links
+			    	map.put("previousConcept", cs.getPrevConcept(concept));
+			    	map.put("nextConcept", cs.getNextConcept(concept));
+				}
 			}
 
 	    	map.put("conceptName", conceptName);

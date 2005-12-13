@@ -34,10 +34,12 @@ public class ConceptWordFormController extends SimpleFormController {
 		
 		if (context != null && context.isAuthenticated()) {
 			String s = request.getParameter("conceptId");
-			if (s != null) {
+			if (s != null && !s.equals("")) {
 				Concept c = context.getConceptService().getConcept(Integer.valueOf(s));
-				if (c != null)
+				if (c != null) {
+					log.debug("c.conceptId: " + c.getConceptId());
 					context.getAdministrationService().updateConceptWord(c);
+				}
 			}
 			else {
 				context.getAdministrationService().updateConceptWords();
