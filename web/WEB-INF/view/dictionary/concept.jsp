@@ -11,6 +11,9 @@
 		margin: 0px;
 		display: inline;
 	}
+	#conceptTable th {
+		text-align: left;
+	}
 </style>
 
 <script type="text/javascript">
@@ -37,11 +40,11 @@ document.onkeypress = hotkeys;
 <h2><spring:message code="Concept.title" /></h2>
 
 <c:if test="${concept.conceptId != null}">
-	<c:if test="${previousConcept != null}"><a href="concept.htm?conceptId=${previousConcept.conceptId}" id="previousConcept" valign="middle">&laquo; Previous</a> |</c:if>
+	<c:if test="${previousConcept != null}"><a href="concept.htm?conceptId=${previousConcept.conceptId}" id="previousConcept" valign="middle">Previous</a> |</c:if>
 	<openmrs:hasPrivilege privilege="Edit Dictionary" converse="false">
 		<a href="concept.form?conceptId=${concept.conceptId}" id="editConcept" valign="middle">Edit</a> |
 	</openmrs:hasPrivilege>
-	<c:if test="${nextConcept != null}"><a href="concept.htm?conceptId=${nextConcept.conceptId}" id="nextConcept" valign="middle">Next &raquo;</a></c:if>
+	<c:if test="${nextConcept != null}"><a href="concept.htm?conceptId=${nextConcept.conceptId}" id="nextConcept" valign="middle">Next</a></c:if>
 </c:if>
 
 <form id="newSearchForm" action="index.htm" method="get">
@@ -56,46 +59,46 @@ document.onkeypress = hotkeys;
 	<div class="retiredMessage"><div><spring:message code="Concept.retiredMessage"/></div></div>
 </c:if>
 
-<table>
+<table id="conceptTable">
 	<tr>
-		<td><spring:message code="general.id"/></td>
+		<th><spring:message code="general.id"/></th>
 		<td>${concept.conceptId}</td>
 	</tr>
 	<tr>
-		<td title="<spring:message code="Concept.name.help"/>">
+		<th title="<spring:message code="Concept.name.help"/>">
 			<spring:message code="general.name" />
-		</td>
+		</th>
 		<td><spring:bind path="conceptName.name">
 				${status.value}
 			</spring:bind>
 		</td>
 	</tr>
 	<tr>
-		<td title="<spring:message code="Concept.shortName.help"/>">
+		<th title="<spring:message code="Concept.shortName.help"/>">
 			<spring:message code="Concept.shortName" />
-		</td>
+		</th>
 		<td><spring:bind path="conceptName.shortName">
 			${status.value}
 		</spring:bind></td>
 	</tr>
 	<tr>
-		<td valign="top"><spring:message code="general.description" /></td>
+		<th valign="top"><spring:message code="general.description" /></th>
 		<td valign="top"><spring:bind path="conceptName.description">
 			${status.value}
 		</spring:bind></td>
 	</tr>
 	<tr>
-		<td valign="top" title="<spring:message code="Concept.synonyms.help"/>">
+		<th valign="top" title="<spring:message code="Concept.synonyms.help"/>">
 			<spring:message code="Concept.synonyms" />
-		</td>
+		</th>
 		<td valign="top">
 			<c:forEach items="${conceptSynonyms}" var="syn">${syn}<br/></c:forEach>
 		</td>
 	</tr>
 	<tr>
-		<td  title="<spring:message code="Concept.conceptClass.help"/>">
+		<th  title="<spring:message code="Concept.conceptClass.help"/>">
 			<spring:message code="Concept.conceptClass" />
-		</td>
+		</th>
 		<td valign="top">
 			${concept.conceptClass.name}
 		</td>
@@ -111,9 +114,9 @@ document.onkeypress = hotkeys;
 		</tr>
 	</c:if>
 	<tr>
-		<td title="<spring:message code="Concept.datatype.help"/>">
+		<th title="<spring:message code="Concept.datatype.help"/>">
 			<spring:message code="Concept.datatype" />
-		</td>
+		</th>
 		<td valign="top">
 			${concept.datatype.name}
 		</td>
@@ -130,7 +133,7 @@ document.onkeypress = hotkeys;
 	</c:if>
 	<c:if test="${concept.numeric}">
 		<tr>
-			<td valign="top"><spring:message code="ConceptNumeric.name"/></td>
+			<th valign="top"><spring:message code="ConceptNumeric.name"/></th>
 			<td>
 				<spring:nestedPath path="concept.conceptNumeric">
 					<table border="0">
@@ -205,20 +208,20 @@ document.onkeypress = hotkeys;
 			</td>
 	</c:if>
 	<tr>
-		<td><spring:message code="Concept.version" /></td>
+		<th><spring:message code="Concept.version" /></th>
 		<td><spring:bind path="concept.version">
 			${status.value}
 		</spring:bind></td>
 	</tr>
 	<tr>
-		<td><spring:message code="general.retired" /></td>
+		<th><spring:message code="general.retired" /></th>
 		<td><spring:bind path="concept.retired">
 			${status.value}
 		</spring:bind></td>
 	</tr>
 	<c:if test="${!(concept.creator == null)}">
 		<tr>
-			<td><spring:message code="general.createdBy" /></td>
+			<th><spring:message code="general.createdBy" /></th>
 			<td>
 				${concept.creator.firstName} ${concept.creator.lastName} -
 				<openmrs:formatDate date="${concept.dateCreated}" type="long" />
@@ -227,7 +230,7 @@ document.onkeypress = hotkeys;
 	</c:if>
 	<c:if test="${!(concept.changedBy == null)}">
 		<tr>
-			<td><spring:message code="general.changedBy" /></td>
+			<th><spring:message code="general.changedBy" /></th>
 			<td>
 				${concept.changedBy.firstName} ${concept.changedBy.lastName} -
 				<openmrs:formatDate date="${concept.dateChanged}" type="long" />
@@ -235,7 +238,7 @@ document.onkeypress = hotkeys;
 		</tr>
 	</c:if>
 	<tr>
-		<td valign="top">Resources</td>
+		<th valign="top">Resources</th>
 		<td>
 			<a href="index.htm?phrase=${conceptName.name}"
 			       target="_similar_terms">Similar Concepts</a><br/>

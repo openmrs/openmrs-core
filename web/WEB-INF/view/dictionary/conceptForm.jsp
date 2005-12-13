@@ -41,8 +41,8 @@
 		height: 275px;
 	}
 	#conceptSearchResults {
-		height: 200px;
-		overflow: auto;
+		xheight: 100px;
+		xoverflow: auto;
 	}
 	.closeButton {
 		border: 1px solid gray;
@@ -71,14 +71,17 @@
 		select.mediumWidth {
 			width: 344px;
 		}
+	#conceptTable th {
+		text-align: left;
+	}
 </style>
 
 <h2><spring:message code="Concept.title" /></h2>
 
 <c:if test="${concept.conceptId != null}">
-	<c:if test="${previousConcept != null}"><a href="concept.form?conceptId=${previousConcept.conceptId}">&laquo; Previous</a> |</c:if>
+	<c:if test="${previousConcept != null}"><a href="concept.form?conceptId=${previousConcept.conceptId}">Previous</a> |</c:if>
 	<a href="concept.htm?conceptId=${concept.conceptId}" id="viewConcept" >View</a> |
-	<c:if test="${nextConcept != null}"><a href="concept.form?conceptId=${nextConcept.conceptId}">Next &raquo;</a></c:if>
+	<c:if test="${nextConcept != null}"><a href="concept.form?conceptId=${nextConcept.conceptId}">Next</a></c:if>
 </c:if>
 
 <form id="newSearchForm" action="index.htm" method="get">
@@ -103,16 +106,15 @@
 </spring:hasBindErrors>
 
 <form method="post" action="" onSubmit="removeHiddenRows()">
-<table>
-
+<table id=conceptTable>
 	<tr>
-		<td><spring:message code="general.id"/></td>
+		<th><spring:message code="general.id"/></th>
 		<td>${concept.conceptId}</td>
 	</tr>
 	<tr>
-		<td title="<spring:message code="Concept.name.help"/>">
+		<th title="<spring:message code="Concept.name.help"/>">
 			<spring:message code="general.name" />
-		</td>
+		</th>
 		<td><spring:bind path="conceptName.name">
 			<input type="text" name="${status.expression}"
 				value="${status.value}" class="mediumWidth" />
@@ -122,9 +124,9 @@
 		</spring:bind></td>
 	</tr>
 	<tr>
-		<td title="<spring:message code="Concept.shortName.help"/>">
+		<th title="<spring:message code="Concept.shortName.help"/>">
 			<spring:message code="Concept.shortName" />
-		</td>
+		</th>
 		<td><spring:bind path="conceptName.shortName">
 			<input class="smallWidth" type="text" name="${status.expression}"
 				value="${status.value}" size="10" />
@@ -134,9 +136,9 @@
 		</spring:bind></td>
 	</tr>
 	<tr>
-		<td valign="top" title="<spring:message code="Concept.description.help"/>">
+		<th valign="top" title="<spring:message code="Concept.description.help"/>">
 			<spring:message code="general.description" />
-		</td>
+		</th>
 		<td valign="top"><spring:bind path="conceptName.description">
 			<textarea name="${status.expression}" rows="4" cols="50">${status.value}</textarea>
 			<c:if test="${status.errorMessage != ''}">
@@ -145,9 +147,9 @@
 		</spring:bind></td>
 	</tr>
 	<tr>
-		<td valign="top" title="<spring:message code="Concept.synonyms.help"/>">
+		<th valign="top" title="<spring:message code="Concept.synonyms.help"/>">
 			<spring:message code="Concept.synonyms" />
-		</td>
+		</th>
 		<td valign="top">
 			<input type="text" class="mediumWidth" id="addSyn" onKeyDown="return synonymKeyPress(this, event);"/>
 			<input type="button" class="smallButton" value="<spring:message code="Concept.synonym.add"/>" onClick="addSynonym();"/>
@@ -155,7 +157,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td></td>
+		<th></th>
 		<td>
 			<table cellpadding="0" cellspacing="0">
 				<tr>
@@ -172,9 +174,9 @@
 		</td>
 	</tr>
 	<tr>
-		<td title="<spring:message code="Concept.conceptClass.help"/>">
+		<th title="<spring:message code="Concept.conceptClass.help"/>">
 			<spring:message code="Concept.conceptClass" />
-		</td>
+		</th>
 		<td valign="top"><spring:bind path="concept.conceptClass">
 			<select class="smallWidth" name="${status.expression}" id="conceptClass" onChange="changeClass(this);">
 				<c:forEach items="${classes}" var="cc">
@@ -188,7 +190,7 @@
 		</spring:bind></td>
 	</tr>
 	<tr id="setClassRow">
-		<td valign="top"><spring:message code="Concept.conceptSets"/></td>
+		<th valign="top"><spring:message code="Concept.conceptSets"/></th>
 		<td valign="top">
 			<input type="hidden" name="conceptSets" id="conceptSets" size="40" value='<c:forEach items="${conceptSets}" var="set">${set.key} </c:forEach>' />
 			<table cellpadding="0" cellspacing="0">
@@ -211,9 +213,9 @@
 		</td>
 	</tr>
 	<tr>
-		<td title="<spring:message code="Concept.datatype.help"/>">
+		<th title="<spring:message code="Concept.datatype.help"/>">
 			<spring:message code="Concept.datatype" />
-		</td>
+		</th>
 		<td valign="top"><spring:bind path="concept.datatype">
 			<select class="smallWidth" name="${status.expression}" id="datatype" onChange="changeDatatype(this);">
 				<c:forEach items="${datatypes}" var="cd">
@@ -227,7 +229,7 @@
 		</spring:bind></td>
 	</tr>
 	<tr id="codedDatatypeRow">
-		<td valign="top"><spring:message code="Concept.answers"/></td>
+		<th valign="top"><spring:message code="Concept.answers"/></th>
 		<td>
 			<input type="hidden" name="answers" id="answerIds" size="40" value='<c:forEach items="${conceptAnswers}" var="answer">${answer.key} </c:forEach>' />
 			<table cellspacing="0" cellpadding="0">
@@ -248,7 +250,7 @@
 		</td>
 	</tr>
 	<tr id="numericDatatypeRow">
-		<td valign="top"><spring:message code="ConceptNumeric.name"/></td>
+		<th valign="top"><spring:message code="ConceptNumeric.name"/></th>
 		<td>
 			<spring:nestedPath path="concept.conceptNumeric">
 				<table border="0">
@@ -331,7 +333,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="Concept.version" /></td>
+		<th><spring:message code="Concept.version" /></th>
 		<td><spring:bind path="concept.version">
 			<input class="smallWidth" type="text" name="${status.expression}"
 				value="${status.value}" size="10" />
@@ -341,7 +343,7 @@
 		</spring:bind></td>
 	</tr>
 	<tr>
-		<td><spring:message code="general.retired" /></td>
+		<th><spring:message code="general.retired" /></th>
 		<td><spring:bind path="concept.retired">
 			<input type="hidden" name="_${status.expression}">
 			<input type="checkbox" name="${status.expression}" value="true"
@@ -353,7 +355,7 @@
 	</tr>
 	<c:if test="${!(concept.creator == null)}">
 		<tr>
-			<td><spring:message code="general.createdBy" /></td>
+			<th><spring:message code="general.createdBy" /></th>
 			<td>
 				${concept.creator.firstName} ${concept.creator.lastName} -
 				<openmrs:formatDate date="${concept.dateCreated}" type="long" />
@@ -362,7 +364,7 @@
 	</c:if>
 	<c:if test="${!(concept.changedBy == null)}">
 		<tr>
-			<td><spring:message code="general.changedBy" /></td>
+			<th><spring:message code="general.changedBy" /></th>
 			<td>
 				${concept.changedBy.firstName} ${concept.changedBy.lastName} -
 				<openmrs:formatDate date="${concept.dateChanged}" type="long" />
@@ -370,7 +372,7 @@
 		</tr>
 	</c:if>
 	<tr>
-		<td valign="top">Resources</td>
+		<th valign="top">Resources</th>
 		<td>
 			<a href="index.htm?phrase=${conceptName.name}"
 			       target="_similar_terms">Similar Concepts</a><br/>
@@ -391,8 +393,8 @@
 
 <div id="conceptSearchForm">
 	<div id="wrapper">
-		<input type="button" onClick="myConceptSearchMod.toggle(); resetForm(); return false;" class="closeButton" value="X"/>
-		<form method="get" onSubmit="return searchBoxChange('conceptSearchBody', searchText, null, false, 0); return null;">
+		<input type="button" onClick="return closeConceptBox();" class="closeButton" value="X"/>
+		<form method="get" onSubmit="return searchBoxChange('conceptSearchBody', searchText, null, false, 0); return false;">
 			<h3><spring:message code="Concept.find"/></h3>
 			<input type="text" id="searchText" size="45" onkeyup="return searchBoxChange('conceptSearchBody', this, event, false, 400);">
 		</form>

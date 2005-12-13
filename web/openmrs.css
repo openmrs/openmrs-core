@@ -176,7 +176,7 @@ a:hover {
 	background-color: 	#F0E68C;
 }
 input[type="text"], input[type="password"] {
-	padding: 2px;
+	padding: 1px;
 	border: 1px solid cadetblue;
 }
 a.conceptHit {

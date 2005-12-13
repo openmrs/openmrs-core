@@ -24,7 +24,10 @@ function resetForm() {
 	textbox = null;
 	includeRetired = false;
 	firstItemDisplayed = 1;
-	document.onkeypress = hotkey;}
+	document.onkeypress = hotkey;
+	clearInformationBar();
+	hideHighlight();
+}
 
 function searchBoxChange(bodyElementId, obj, event, retired, delay) {
 	conceptTableBody = bodyElementId;
@@ -151,8 +154,10 @@ function showHighlight() {
 			if(elements[i].className == 'conceptIndex')
 				elements[i].className = 'conceptIndexHighlight';
 		}
-		textbox.className = "conceptHighlight";
-		textbox.focus();
+		if (textbox != null) {
+			textbox.className = "conceptHighlight";
+			textbox.focus();
+		}
 	}
 }
 
@@ -163,7 +168,9 @@ function hideHighlight() {
 		if(elements[i].className == 'conceptIndexHighlight')
 			elements[i].className = 'conceptIndex';
 	}
-	textbox.className = "";
+	if (textbox != null) {
+		textbox.className = "";
+	}
 }
 
 var getNumber = function(conceptHit) {
@@ -274,20 +281,20 @@ function updateInformationBar() {
 	infoBar.innerHTML = " Results for '" + lastPhraseSearched + "'. &nbsp;";
 	
 	// get top position of body element
-	var body = document.getElementById(conceptTableBody); 
-	var top = body.offsetTop;
-	var parent = conceptTableBody.offsetParent;
+	var tbody = document.getElementById(conceptTableBody); 
+	var top = tbody.offsetTop;
+	var parent = tbody.offsetParent;
 	while (parent != null) {
 		top+= parent.offsetTop;
 		parent = parent.offsetParent;
 	}
 	
-	var font = getStyle(textbox, "height");//approx. row height
-	font = parseInt(font.slice(0, font.length - 2)); //remove 'px' from height
+	var height = getStyle(textbox, "height");//approx. row height
+	height = parseInt(height.slice(0, height.length - 2)); //remove 'px' from height
 	
 	// get approx room below tablebody
 	var remainder = window.innerHeight - parseInt(top);
-	numItemsDisplayed=Math.floor(remainder/(font + 7))-6;
+	numItemsDisplayed=Math.floor(remainder/(height + 5))-4;
 	
 	var total = allConceptsFound.length;
 	var lastItemDisplayed = firstItemDisplayed + numItemsDisplayed;

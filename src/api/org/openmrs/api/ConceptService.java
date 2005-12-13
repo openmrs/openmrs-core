@@ -156,19 +156,23 @@ public class ConceptService {
 			id = concept.getConceptId();
 			if (uniqueConcepts.containsKey(id)) {
 				//if the concept is already in the list, strengthen the hit
-				uniqueConcepts.get(id).increaseWeight(1);
+				uniqueConcepts.get(id).increaseWeight(1.0);
 			}
 			else {
+				//normalize the weighting
+				tmpWord.setWeight(0.0);
 				//if its not in the list, add it
 				uniqueConcepts.put(id, tmpWord);
 			}
 			
-			// if there isn't a synonym, it is matching on the name, increase the weight
+			
 			if (tmpWord.getSynonym().length() == 0) {
-				uniqueConcepts.get(id).increaseWeight(2);
+				 //if there isn't a synonym, it is matching on the name, increase the weight
+				uniqueConcepts.get(id).increaseWeight(2.0);
 			}
 			else {
-				uniqueConcepts.get(id).increaseWeight(5 * (1 / tmpWord.getSynonym().split(" ").length));
+				//increase the weight by a factor of the percentage of words matched
+				uniqueConcepts.get(id).increaseWeight(5.0 * (1 / tmpWord.getSynonym().split(" ").length));
 			}
 		}
 		

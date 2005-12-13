@@ -49,7 +49,7 @@
 			</composite-element>
 		</set>
 
-		<set name="answers" lazy="true" cascade="all-delete-orphan" 
+		<set name="answers" lazy="true" cascade="none" 
 				table="concept_answer" order-by="concept_answer_id asc">
 			<key column="concept_id" not-null="true" />
 			<composite-element class="ConceptAnswer">
@@ -82,7 +82,7 @@
 		</set>
 		
 		<set name="conceptSets" table="concept_set" lazy="true" 
-				cascade="all-delete-orphan" order-by="sort_weight asc">
+				cascade="none" order-by="sort_weight asc">
 			<key not-null="true">
 				<column name="concept_set" />
 			</key>

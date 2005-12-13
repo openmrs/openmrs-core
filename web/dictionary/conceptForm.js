@@ -1,6 +1,6 @@
-var nameListBox;
-var idListBox;
-var addButton;
+var nameListBox= null;
+var idListBox  = null;
+var addButton  = null;
 
 window.onload = function() {
 	myConceptSearchMod = new fx.Resize("conceptSearchForm", {duration: 100});
@@ -45,10 +45,11 @@ function addConcept(nameList, idList, obj)
 		myConceptSearchMod.hide();
 		nameListBox = nameList;	// used by onSelect()
 		idListBox   = idList;	// used by onSelect()
+		addButton   = null;
 	}
 	
 	conceptSearchForm = document.getElementById("conceptSearchForm");
-	var test = "";
+	//var test = "";
 	var width = nameList.offsetWidth + 20;
 	conceptSearchForm.style.left = (getElementLeft(nameList) + width) + "px";
 	conceptSearchForm.style.top = (getElementTop(nameList)-50) + "px";
@@ -56,11 +57,24 @@ function addConcept(nameList, idList, obj)
 	DWRUtil.removeAllRows("conceptSearchBody");
 	
 	myConceptSearchMod.toggle();
-	var searchText = document.getElementById("searchText");
-	searchText.value = '';
-	searchText.select();
-	addButton = obj;
-	//searchText.focus();  //why does this cause the inner box to shift position?!?
+	if (addButton == null) {
+		var searchText = document.getElementById("searchText");
+		searchText.value = '';
+		searchText.select();
+		addButton = obj;
+		resetForm();
+		//searchText.focus();  //why does this cause the inner box to shift position?!?
+	}
+	else {
+		obj.focus();
+		addButton = null;
+	}
+}
+
+function closeConceptBox() {
+	myConceptSearchMod.toggle();
+	addButton = null;
+	return false;
 }
 
 function moveUp(nameList, idList)
@@ -183,7 +197,7 @@ var onSelect = function(conceptList) {
 	copyIds(nameListBox.id, idListBox.id, ' ');
 	myConceptSearchMod.hide();
 	addButton.focus();
-	resetForm();
+	addButton = null;
 };
 
 function removeHiddenRows() {

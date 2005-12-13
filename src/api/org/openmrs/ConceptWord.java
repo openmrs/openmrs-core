@@ -19,13 +19,13 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 	private String word;
 	private String synonym;
 	private String locale;
-	private Integer weight;
+	private Double weight;
 
 	// Constructors
 
 	/** default constructor */
 	public ConceptWord() {
-		weight = 0;
+		weight = 0.0;
 	}
 	
 	public ConceptWord(String word, Concept concept, String locale, String synonym) {
@@ -33,7 +33,7 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 		this.word = word;
 		this.locale = locale;
 		this.synonym = synonym;
-		this.weight = 0;
+		this.weight = 0.0;
 	}
 	
 	public boolean equals(Object obj) {
@@ -126,14 +126,14 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 	/**
 	 * @return Returns the weight.
 	 */
-	public Integer getWeight() {
+	public Double getWeight() {
 		return weight;
 	}
 
 	/**
 	 * @param weight The weight to set.
 	 */
-	public void setWeight(Integer weight) {
+	public void setWeight(Double weight) {
 		this.weight = weight;
 	}
 	
@@ -141,7 +141,7 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 	 * Increment the weight by i 
 	 * @param i
 	 */
-	public void increaseWeight(Integer i) {
+	public void increaseWeight(Double i) {
 		this.weight += i;
 	}
 	
@@ -209,7 +209,7 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 	 */
 	public int compareTo(ConceptWord word) {
 		
-		return (word.getWeight() - weight);
+		return Double.compare(word.getWeight(), weight);
 		
 	}
 		
