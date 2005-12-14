@@ -142,7 +142,7 @@ public class FormServiceTest extends TestCase {
 		
 		FormField formField1 = new FormField();
 		
-		formField1.setFormField(subFormField1);
+		formField1.setParent(subFormField1);
 		formField1.setForm(form1);
 		formField1.setField(field1);
 		formField1.setFieldNumber(fieldNumber1);
@@ -168,7 +168,7 @@ public class FormServiceTest extends TestCase {
 		Integer maxOccurs2 = new Integer(2);
 		Boolean required2 = false;
 		
-		formField2.setFormField(subFormField2);
+		formField2.setParent(subFormField2);
 		formField2.setForm(form2);
 		formField2.setField(field2);
 		formField2.setFieldNumber(fieldNumber2);
@@ -186,7 +186,7 @@ public class FormServiceTest extends TestCase {
 		
 		assertTrue(formField3.equals(formField2));
 		
-		assertFalse(formField3.getFormField().equals(formField1.getFormField()));
+		assertFalse(formField3.getParent().equals(formField1.getParent()));
 		assertFalse(formField3.getForm().equals(formField1.getForm()));
 		assertFalse(formField3.getField().equals(formField1.getField()));
 		assertFalse(formField3.getFieldNumber().equals(formField1.getFieldNumber()));

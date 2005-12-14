@@ -5,6 +5,7 @@ import java.util.List;
 import org.openmrs.Field;
 import org.openmrs.FieldType;
 import org.openmrs.Form;
+import org.openmrs.FormField;
 
 /**
  * Form-related database functions
@@ -101,12 +102,18 @@ public interface FormDAO {
 	public List<Form> getForms() throws DAOException;
 
 	/**
+	 * @return list of form fields for a specific form
+	 * @throws DAOException
+	 */
+	public List<FormField> getFormFields(Form form) throws DAOException;
+
+	/**
 	 * 
 	 * @return list of fields in the db
 	 * @throws DAOException
 	 */
 	public List<Field> getFields() throws DAOException;
-	
+		
 	/**
 	 * 
 	 * @param fieldId

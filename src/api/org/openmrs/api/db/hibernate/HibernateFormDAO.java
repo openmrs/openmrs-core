@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
+import org.hibernate.criterion.Expression;
 import org.openmrs.Field;
 import org.openmrs.FieldType;
 import org.openmrs.Form;
@@ -121,6 +122,19 @@ public class HibernateFormDAO implements
 	}
 
 	/**
+	 * @see org.openmrs.api.db.FormService#getFields(org.openmrs.Form)
+	 */
+	public List<FormField> getFormFields(Form form) throws DAOException {
+		Session session = HibernateUtil.currentSession();
+		
+		List<FormField> formFields = session.createCriteria(FormField.class, "ff")
+		.add(Expression.eq("ff.form", form))
+		.list();
+		
+		return formFields;
+	}
+
+	/**
 	 * @see org.openmrs.api.db.FormService#getField(java.lang.Integer)
 	 */
 	public Field getField(Integer fieldId) throws DAOException {
@@ -138,11 +152,11 @@ public class HibernateFormDAO implements
 	public List<Field> getFields() throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
-		List fields = session.createCriteria(Field.class).list();
+		List<Field> fields = session.createCriteria(Field.class).list();
 		
 		return fields;
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.db.FormService#getFieldType(java.lang.Integer)
 	 */
