@@ -7,12 +7,9 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Expression;
-import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Concept;
@@ -298,10 +295,30 @@ public class HibernateConceptDAO implements
 		Session session = HibernateUtil.currentSession();
 		
 		String locale = loc.getLanguage();
-		String[] words = Helpers.cleanWords(phrase);
+		String[] words = Helpers.cleanWords(phrase);  //assumes when cleaning quote (') characters are removed.  (otherwise we would have a security leak)
 		
 		List<ConceptWord> conceptWords = new Vector<ConceptWord>();
 		
+		if (words.length > 0) {
+		
+			String queryString = "from ConceptWord cw0 where cw0.word like '" + words[0] + "%' and cw0.locale = '" + locale + "'";
+			for (int i = 1; i< words.length; i++) {
+				String word = words[i];
+				if (word.length() != 0) {
+					log.debug(word);
+					if (!Helpers.OPENMRS_STOP_WORDS.contains(word)) {
+						String tablename = "cw" + String.valueOf(i);
+						queryString += " and exists(from ConceptWord " + tablename; 
+						queryString += " where word like '" + word + "%' and " + tablename + ".concept = cw0.concept and " + tablename + ".locale = '" + locale + "')";
+					}
+				}
+			}
+	
+			Query query = session.createQuery(queryString); 
+			conceptWords = query.list(); 
+		}
+		
+		/* --INCORRECT 'OR' SEARCH
 		Criteria searchCriteria = session.createCriteria(ConceptWord.class);
 		// only add retired criteria if 
 		if (includeRetired == false) {
@@ -327,6 +344,8 @@ public class HibernateConceptDAO implements
 		
 		searchCriteria.addOrder(Order.asc("synonym")); //put hits on concept name first (hits that have an empty synonym column)
 		conceptWords = searchCriteria.list();
+		 /--INCORRECT 'OR' SEARCH
+		*/
 		
 		//TODO this is a bit too much pre/post processing to be in the persistence layer.
 		// consider moving to different layer (eg: logic).
