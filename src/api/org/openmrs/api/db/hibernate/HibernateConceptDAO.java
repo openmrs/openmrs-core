@@ -165,6 +165,7 @@ public class HibernateConceptDAO implements
 				ca.setConcept(c);
 			}
 		}
+		/*
 		if (c.getConceptNumeric() != null) {
 			ConceptNumeric cn = c.getConceptNumeric();
 			if (cn.getCreator() == null) {
@@ -175,6 +176,7 @@ public class HibernateConceptDAO implements
 			cn.setChangedBy(authUser);
 			cn.setDateChanged(timestamp);
 		}
+		*/
 
 	}
 
@@ -307,7 +309,7 @@ public class HibernateConceptDAO implements
 		
 		if (words.length > 0) {
 		
-			Criteria searchCriteria = session.createCriteria(ConceptWord.class);
+			Criteria searchCriteria = session.createCriteria(ConceptWord.class, "cw1");
 			searchCriteria.add(Restrictions.eq("locale", locale));
 			if (includeRetired == false) {
 				searchCriteria.createAlias("concept", "concept");
@@ -323,7 +325,7 @@ public class HibernateConceptDAO implements
 						String tablename = "cw" + String.valueOf(i);
 						DetachedCriteria crit = DetachedCriteria.forClass(ConceptWord.class)
 									.setProjection(Property.forName("concept"))
-									.add(Expression.sql("concept_id = {alias}.concept_id"))
+									.add(Expression.eqProperty("concept", "cw1.concept"))
 									.add(Restrictions.like("word", word, MatchMode.START))
 									.add(Restrictions.eq("locale", locale));
 						junction.add(Subqueries.exists(crit));
