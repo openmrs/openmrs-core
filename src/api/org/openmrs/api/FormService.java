@@ -24,29 +24,6 @@ public class FormService {
 		this.context = c;
 	}
 	
-	/**
-	 * @param arg
-	 */
-	public static void main(String[] arg) {
-		Context context = ContextFactory.getContext();
-		try {
-			context.authenticate("admin", "test");
-			FormService fs = context.getFormService();
-			Form form = fs.getForm(14);
-			List<FormField> formFields = fs.getFormFields(form);
-			java.util.Vector<String> names = new java.util.Vector<String>();
-			for (FormField f : formFields) {
-				names.add(f.getField().getName());
-			}
-			for (String name: names) {
-				System.out.println(name);
-			}
-		} catch (ContextAuthenticationException e) {
-			e.printStackTrace();
-		}
-		System.out.println("done");
-	}
-	
 	/****************************************************************
 	 * DAO Methods
 	 ****************************************************************/
