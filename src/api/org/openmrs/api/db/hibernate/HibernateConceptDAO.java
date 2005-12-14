@@ -7,11 +7,17 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.criterion.Conjunction;
+import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.Subqueries;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
@@ -301,21 +307,31 @@ public class HibernateConceptDAO implements
 		
 		if (words.length > 0) {
 		
-			String queryString = "from ConceptWord cw0 where cw0.word like '" + words[0] + "%' and cw0.locale = '" + locale + "'";
+			Criteria searchCriteria = session.createCriteria(ConceptWord.class);
+			searchCriteria.add(Restrictions.eq("locale", locale));
+			if (includeRetired == false) {
+				searchCriteria.createAlias("concept", "concept");
+				searchCriteria.add(Expression.eq("concept.retired", false));
+			}
+			searchCriteria.add(Expression.like("word", words[0], MatchMode.START));
+			Conjunction junction = Expression.conjunction();
 			for (int i = 1; i< words.length; i++) {
 				String word = words[i];
 				if (word.length() != 0) {
 					log.debug(word);
 					if (!Helpers.OPENMRS_STOP_WORDS.contains(word)) {
 						String tablename = "cw" + String.valueOf(i);
-						queryString += " and exists(from ConceptWord " + tablename; 
-						queryString += " where word like '" + word + "%' and " + tablename + ".concept = cw0.concept and " + tablename + ".locale = '" + locale + "')";
+						DetachedCriteria crit = DetachedCriteria.forClass(ConceptWord.class)
+									.setProjection(Property.forName("concept"))
+									.add(Expression.sql("concept_id = {alias}.concept_id"))
+									.add(Restrictions.like("word", word, MatchMode.START))
+									.add(Restrictions.eq("locale", locale));
+						junction.add(Subqueries.exists(crit));
 					}
 				}
 			}
-	
-			Query query = session.createQuery(queryString); 
-			conceptWords = query.list(); 
+			searchCriteria.add(junction);
+			conceptWords = searchCriteria.list();
 		}
 		
 		/* --INCORRECT 'OR' SEARCH
