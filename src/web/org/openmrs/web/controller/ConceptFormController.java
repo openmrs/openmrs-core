@@ -21,11 +21,10 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptName;
-import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSynonym;
-import org.openmrs.api.context.Context;
 import org.openmrs.api.ConceptService;
+import org.openmrs.api.context.Context;
 import org.openmrs.web.Constants;
 import org.openmrs.web.propertyeditor.ConceptAnswersEditor;
 import org.openmrs.web.propertyeditor.ConceptClassEditor;
@@ -94,7 +93,7 @@ public class ConceptFormController extends SimpleFormController {
 
 			// ==== Concept Synonyms ====
 				// the attribute *must* be named differently than the property, otherwise
-				//   spring will modify the property as text array
+				//   spring will modify the property as a text array
 				log.error("newSynonyms: " + request.getParameter("newSynonyms"));
 				String[] tempSyns = request.getParameter("newSynonyms").split(",");
 				log.error("tempSyns: ");
@@ -102,7 +101,7 @@ public class ConceptFormController extends SimpleFormController {
 					log.error(s);
 				Collection<ConceptSynonym> originalSyns = concept.getSynonyms();
 				Set<ConceptSynonym> parameterSyns = new HashSet<ConceptSynonym>();
-				Set<ConceptSynonym> newSyns = new HashSet<ConceptSynonym>();
+				
 				//set up parameter Synonym Set for easier add/delete functions
 				// and removal of duplicates
 				for (String syn : tempSyns) {
@@ -111,24 +110,37 @@ public class ConceptFormController extends SimpleFormController {
 						parameterSyns.add(new ConceptSynonym(concept, syn.toUpperCase(), locale));
 				}
 				
+				log.error("initial originalSyns: ");
+				for (ConceptSynonym s : originalSyns)
+					log.error(s);
+				
 				// Union the originalSyns and parameterSyns to get the 'clean' synonyms
-				//   remove synonym from parameterSynonym if 'clean' (already in db)
-				for (ConceptSynonym c : originalSyns) {
-					if (parameterSyns.contains(c)) {  // .contains() is only usable because we overrode .equals()
-						newSyns.add(c);
-						parameterSyns.remove(c);
+				//   remove synonym from originalSynonym if 'clean' (already in db)
+				Set<ConceptSynonym> originalSynsCopy = new HashSet<ConceptSynonym>();
+				originalSynsCopy.addAll(originalSyns);
+				for (ConceptSynonym o : originalSynsCopy) {
+					if (o.getLocale().equals(locale.getLanguage()) &&
+						!parameterSyns.contains(o)) {  // .contains() is only usable because we overrode .equals()
+						originalSyns.remove(o);
 					}
-					// add synonyms from other locales
-					else if (!c.getLocale().equals(locale.getLanguage()))
-						newSyns.add(c);
 				}
 				
-				//add all remaining parameter synonyms
-				for (ConceptSynonym syn : parameterSyns) {
-						newSyns.add(syn);
+				// add all new syns from parameter set
+				for (ConceptSynonym p : parameterSyns) {
+					if (!originalSyns.contains(p)) {  // .contains() is only usable because we overrode .equals()
+						originalSyns.add(p);
+					}
 				}
 				
-				concept.setSynonyms(newSyns);
+				log.error("evaluated parameterSyns: ");
+				for (ConceptSynonym s : parameterSyns)
+					log.error(s);
+				
+				log.error("evaluated originalSyns: ");
+				for (ConceptSynonym s : originalSyns)
+					log.error(s);
+
+				concept.setSynonyms(originalSyns);
 				
 			// ====zero out conceptSets====
 				String conceptSets = request.getParameter("conceptSets");
@@ -208,8 +220,10 @@ public class ConceptFormController extends SimpleFormController {
 		if (concept == null)
 			concept = new Concept();
 		
+		/*
 		if (concept.getConceptNumeric() == null)
 			concept.setConceptNumeric(new ConceptNumeric());
+		*/
 		
 		return concept;
     }

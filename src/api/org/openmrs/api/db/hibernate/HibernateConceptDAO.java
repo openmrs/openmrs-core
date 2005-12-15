@@ -1,8 +1,10 @@
 package org.openmrs.api.db.hibernate;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -33,7 +35,6 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.api.db.DAOException;
-import org.openmrs.util.Helpers;
 
 public class HibernateConceptDAO implements
 		ConceptDAO {
@@ -303,11 +304,11 @@ public class HibernateConceptDAO implements
 		Session session = HibernateUtil.currentSession();
 		
 		String locale = loc.getLanguage();
-		String[] words = Helpers.cleanWords(phrase);  //assumes when cleaning quote (') characters are removed.  (otherwise we would have a security leak)
+		Set<String> words = ConceptWord.getUniqueWords(phrase);  //assumes getUniqueWords() removes quote(') characters.  (otherwise we would have a security leak)
 		
 		List<ConceptWord> conceptWords = new Vector<ConceptWord>();
 		
-		if (words.length > 0) {
+		if (words.size() > 0) {
 		
 			Criteria searchCriteria = session.createCriteria(ConceptWord.class, "cw1");
 			searchCriteria.add(Restrictions.eq("locale", locale));
@@ -315,24 +316,21 @@ public class HibernateConceptDAO implements
 				searchCriteria.createAlias("concept", "concept");
 				searchCriteria.add(Expression.eq("concept.retired", false));
 			}
-			searchCriteria.add(Expression.like("word", words[0], MatchMode.START));
+			Iterator<String> word = words.iterator();
+			searchCriteria.add(Expression.like("word", word.next(), MatchMode.START));
 			Conjunction junction = Expression.conjunction();
-			for (int i = 1; i< words.length; i++) {
-				String word = words[i];
-				if (word.length() != 0) {
-					log.debug(word);
-					if (!Helpers.OPENMRS_STOP_WORDS.contains(word)) {
-						String tablename = "cw" + String.valueOf(i);
-						DetachedCriteria crit = DetachedCriteria.forClass(ConceptWord.class)
-									.setProjection(Property.forName("concept"))
-									.add(Expression.eqProperty("concept", "cw1.concept"))
-									.add(Restrictions.like("word", word, MatchMode.START))
-									.add(Restrictions.eq("locale", locale));
-						junction.add(Subqueries.exists(crit));
-					}
-				}
+			while (word.hasNext()) {
+				String w = word.next();
+				log.debug(w);
+				DetachedCriteria crit = DetachedCriteria.forClass(ConceptWord.class)
+							.setProjection(Property.forName("concept"))
+							.add(Expression.eqProperty("concept", "cw1.concept"))
+							.add(Restrictions.like("word", w, MatchMode.START))
+							.add(Restrictions.eq("locale", locale));
+				junction.add(Subqueries.exists(crit));
 			}
 			searchCriteria.add(junction);
+			searchCriteria.addOrder(Order.asc("synonym"));
 			conceptWords = searchCriteria.list();
 		}
 		

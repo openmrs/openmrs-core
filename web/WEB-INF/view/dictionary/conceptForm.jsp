@@ -86,7 +86,7 @@
 
 <form id="newSearchForm" action="index.htm" method="get">
   &nbsp; &nbsp; 
-  <input type="text" name="phrase" size="18"> 
+  <input type="text" id="searchPhrase" name="phrase" size="18"> 
   <input type="submit" class="smallButton" value="<spring:message code="general.go"/>"/>
 </form>
 
@@ -192,7 +192,7 @@
 	<tr id="setClassRow">
 		<th valign="top"><spring:message code="Concept.conceptSets"/></th>
 		<td valign="top">
-			<input type="hidden" name="conceptSets" id="conceptSets" size="40" value='<c:forEach items="${conceptSets}" var="set">${set.key} </c:forEach>' />
+			<input type="hidden" name="conceptSets" id="conceptSets" size="40" value='<c:forEach items="${conceptSets}" var="set">${set.value[0]} </c:forEach>' />
 			<table cellpadding="0" cellspacing="0">
 				<tr>
 					<td valign="top">
@@ -252,84 +252,58 @@
 	<tr id="numericDatatypeRow">
 		<th valign="top"><spring:message code="ConceptNumeric.name"/></th>
 		<td>
-			<spring:nestedPath path="concept.conceptNumeric">
-				<table border="0">
-					<tr>
-						<th></th>
-						<th><spring:message code="ConceptNumeric.low"/></th>
-						<th><spring:message code="ConceptNumeric.high"/></th>
-					</tr>
-					<tr>
-						<th valign="middle"><spring:message code="ConceptNumeric.absolute"/></th>
-						<td valign="middle">
-							<spring:bind path="lowAbsolute">
-								<input type="text" name="${status.expression}" value="${status.value}" size="10" />
-								<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-							</spring:bind>
-						</td>
-						<td valign="middle">
-							<spring:bind path="hiAbsolute">
-								<input type="text" name="${status.expression}" value="${status.value}" size="10"/>
-								<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-							</spring:bind>
-						</td>
-					</tr>
-					<tr>
-						<th valign="middle"><spring:message code="ConceptNumeric.critical"/></th>
-						<td valign="middle">
-							<spring:bind path="lowCritical">
-								<input type="text" name="${status.expression}" value="${status.value}" size="10" />
-								<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-							</spring:bind>
-						</td>
-						<td valign="middle">
-							<spring:bind path="hiCritical">
-								<input type="text" name="${status.expression}" value="${status.value}" size="10"/>
-								<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-							</spring:bind>
-						</td>
-					</tr>
-					<tr>
-						<th valign="middle"><spring:message code="ConceptNumeric.normal"/></th>
-						<td valign="middle">
-							<spring:bind path="lowNormal">
-								<input type="text" name="${status.expression}" value="${status.value}" size="10" />
-								<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-							</spring:bind>
-						</td>
-						<td valign="middle">
-							<spring:bind path="hiNormal">
-								<input type="text" name="${status.expression}" value="${status.value}" size="10"/>
-								<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-							</spring:bind>
-						</td>
-					</tr>
-					<tr>
-						<td></td>
-						<td colspan="2"><small><em>(<spring:message code="ConceptNumeric.inclusive"/>)</em></small>
-						</td>
-					</tr>
-					<tr>
-						<td><spring:message code="ConceptNumeric.units"/></td>
-						<td colspan="2">
-							<spring:bind path="units">
-								<input type="text" name="${status.expression}" value="${status.value}" size="15"/>
-								<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-							</spring:bind>
-						</td>
-					</tr>
-					<tr>
-						<td><spring:message code="ConceptNumeric.precise"/></td>
-						<td colspan="2">
-							<spring:bind path="precise">
-								<input type="hidden" name="_${status.expression}" value=""/>
-								<input type="checkbox" name="${status.expression}" <c:if test="${status.value}">checked="checked"</c:if>/>
-								<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-							</spring:bind>
-						</td>
-					</tr>
-				</table>
-			</spring:nestedPath>
+			<table border="0">
+				<tr>
+					<th></th>
+					<th><spring:message code="ConceptNumeric.low"/></th>
+					<th><spring:message code="ConceptNumeric.high"/></th>
+				</tr>
+				<tr>
+					<th valign="middle"><spring:message code="ConceptNumeric.absolute"/></th>
+					<td valign="middle">
+						<input type="text" name="lowAbsolute" value="<c:if test="${concept.numeric}">${concept.lowAbsolute}</c:if>" size="10" />
+					</td>
+					<td valign="middle">
+						<input type="text" name="hiAbsolute" value="<c:if test="${concept.numeric}">${concept.hiAbsolute}</c:if>" size="10"/>
+					</td>
+				</tr>
+				<tr>
+					<th valign="middle"><spring:message code="ConceptNumeric.critical"/></th>
+					<td valign="middle">
+						<input type="text" name="lowCritical" value="<c:if test="${concept.numeric}">${concept.lowCritical}</c:if>" size="10" />
+					</td>
+					<td valign="middle">
+						<input type="text" name="hiCritical" value="<c:if test="${concept.numeric}">${concept.hiCritical}</c:if>" size="10"/>
+					</td>
+				</tr>
+				<tr>
+					<th valign="middle"><spring:message code="ConceptNumeric.normal"/></th>
+					<td valign="middle">
+						<input type="text" name="lowNormal" value="<c:if test="${concept.numeric}">${concept.lowNormal}</c:if>" size="10" />
+					</td>
+					<td valign="middle">
+						<input type="text" name="hiNormal" value="<c:if test="${concept.numeric}">${concept.hiNormal}</c:if>" size="10"/>
+					</td>
+				</tr>
+				<tr>
+					<td></td>
+					<td colspan="2"><small><em>(<spring:message code="ConceptNumeric.inclusive"/>)</em></small>
+					</td>
+				</tr>
+				<tr>
+					<th><spring:message code="ConceptNumeric.units"/></th>
+					<td colspan="2">
+						<input type="text" name="units" value="<c:if test="${concept.numeric}">${concept.units}</c:if>" size="15"/>
+					</td>
+				</tr>
+				<tr>
+					<th><spring:message code="ConceptNumeric.precise"/></th>
+					<td colspan="2">
+						<input type="hidden" name="_precise" value=""/>
+						<input type="checkbox" name="precise" <c:if test="${concept.numeric && concept.precise}">checked="checked"</c:if>/>
+					</td>
+				</tr>
+			</table>
 		</td>
 	</tr>
 	<tr>
@@ -410,5 +384,10 @@
 		</div>
 	</div>
 </div>
+
+<script type="text/javascript">
+	document.getElementById("searchPhrase").focus();
+</script>
+
 
 <%@ include file="/WEB-INF/template/footer.jsp"%>

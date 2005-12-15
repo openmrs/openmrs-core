@@ -9,7 +9,6 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.LockMode;
 import org.hibernate.NonUniqueObjectException;
 import org.hibernate.Session;
 import org.openmrs.Concept;
@@ -794,9 +793,9 @@ public class HibernateAdministrationDAO implements
 		
 		// remove all old words
 		HibernateUtil.beginTransaction();
-		session.createQuery("delete from ConceptWord where concept = ?")
-			.setParameter(0, concept)
-			.executeUpdate();
+			session.createQuery("delete from ConceptWord where concept_id = :c")
+				.setInteger("c", concept.getConceptId())
+				.executeUpdate();
 		HibernateUtil.commitTransaction();
 		
 		// add all new words
@@ -810,13 +809,9 @@ public class HibernateAdministrationDAO implements
 					session.save(word);
 				}
 				catch (NonUniqueObjectException e) {
-					log.debug("merging word: " + word);
 					ConceptWord tmp  = (ConceptWord)session.merge(word);
-					log.debug("evicting tmp");
 					session.evict(tmp);
-					log.debug("saving word");
 					session.save(word);
-					log.debug(" merged word: " + word);
 				}
 			}
 			
@@ -840,6 +835,14 @@ public class HibernateAdministrationDAO implements
 	public void updateConceptSetDerived(Concept concept) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		log.debug("Updating concept set derivisions for #" + concept.getConceptId().toString());
+		
+		HibernateUtil.beginTransaction();
+		//session.createQuery("delete from ConceptSet where concept = :c")
+		//	.setParameter("c", concept)
+		//	.executeUpdate();
+		HibernateUtil.commitTransaction();
+		
+		
 		//try {
 			HibernateUtil.beginTransaction();
 			
@@ -851,8 +854,8 @@ public class HibernateAdministrationDAO implements
 
 			log.debug("getting parents");
 			// get all parents of this concept (sets it is in)
-			parents.addAll(session.createQuery("from concept_set where concept_id = :id")
-							.setParameter("id", concept.getConceptId())
+			parents.addAll(session.createQuery("from ConceptSet where concept = :c")
+							.setParameter("c", concept)
 							.list());
 			
 			log.debug("getting children");

@@ -1,6 +1,5 @@
 package org.openmrs;
 
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,13 +18,12 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 	private String word;
 	private String synonym;
 	private String locale;
-	private Double weight;
+	private Double weight=0.0;
 
 	// Constructors
 
 	/** default constructor */
 	public ConceptWord() {
-		weight = 0.0;
 	}
 	
 	public ConceptWord(String word, Concept concept, String locale, String synonym) {
@@ -33,7 +31,13 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 		this.word = word;
 		this.locale = locale;
 		this.synonym = synonym;
-		this.weight = 0.0;
+	}
+	
+	public ConceptWord(Concept c) {
+		this.concept = c;
+		this.word = null;
+		this.locale = null;
+		this.synonym = null;
 	}
 	
 	public boolean equals(Object obj) {
@@ -155,7 +159,7 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 		Set<ConceptWord> words = new HashSet<ConceptWord>();
 		
 		for (ConceptName name : concept.getNames()) {
-			Set<String> uniqueParts = getUniqueParts(name.getName());
+			Set<String> uniqueParts = getUniqueWords(name.getName());
 			for (String part : uniqueParts) {
 				words.add(new ConceptWord(part, concept, name.getLocale(), ""));
 			}
@@ -163,7 +167,7 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 		
 		for (ConceptSynonym synonym : concept.getSynonyms()) {
 			String syn = synonym.getSynonym();
-			Set<String> uniqueParts = getUniqueParts(syn);
+			Set<String> uniqueParts = getUniqueWords(syn);
 			for (String part : uniqueParts) {
 				words.add(new ConceptWord(part, concept, synonym.getLocale(), syn));
 			}
@@ -172,7 +176,7 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 		return words;
 	}
 	
-	private static Set<String> getUniqueParts(String phrase) {
+	public static Set<String> getUniqueWords(String phrase) {
 		if (phrase.length() > 2) {
 			phrase = phrase.replaceAll(Helpers.OPENMRS_REGEX_LARGE, " ");
 		}
@@ -183,10 +187,11 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 		Set<String> uniqueParts = new HashSet<String>();
 		
 		for (String part : parts) {
-			if (!part.equals("") &&
-				!Helpers.OPENMRS_STOP_WORDS.contains(part) && 
-				!uniqueParts.contains(part))
-					uniqueParts.add(part);
+			String p = part.trim();
+			if (!p.equals("") &&
+				!Helpers.OPENMRS_STOP_WORDS.contains(p) && 
+				!uniqueParts.contains(p))
+					uniqueParts.add(p);
 		}
 		return uniqueParts;
 	}

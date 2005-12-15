@@ -2,12 +2,16 @@ package org.openmrs;
 
 import java.util.Date;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * ConceptAnswer 
  */
 public class ConceptAnswer implements java.io.Serializable {
 
 	public static final long serialVersionUID = 3744L;
+	public Log log = LogFactory.getLog(this.getClass());
 
 	// Fields
 
@@ -36,14 +40,37 @@ public class ConceptAnswer implements java.io.Serializable {
 	public boolean equals(Object obj) {
 		if (obj instanceof ConceptAnswer) {
 			ConceptAnswer c = (ConceptAnswer)obj;
-			return (this.conceptAnswerId.equals(c.getConceptAnswerId()));
+			if (this.conceptAnswerId != null && c.getConceptAnswerId() != null)
+				return (this.conceptAnswerId.equals(c.getConceptAnswerId()));
+			else {
+				boolean ret = true;
+				if (this.concept != null && c.getConcept() != null)
+					ret = ret && this.concept.equals(c.getConcept());
+				if (this.answerConcept != null && c.getAnswerConcept() != null)
+					ret = ret && this.answerConcept.equals(c.getAnswerConcept());
+				if (this.answerDrug != null && c.getAnswerDrug() != null)
+					ret = ret && this.answerDrug.equals(c.getAnswerDrug());
+				//log.debug("asdf " + getAnswerConcept().getConceptId() + "=" + c.getAnswerConcept().getConceptId() + "?" + ret);
+				return ret;
+			}
+						
 		}
 		return false;
 	}
 	
 	public int hashCode() {
-		if (this.getConceptAnswerId() == null) return super.hashCode();
-		return this.getConceptAnswerId().hashCode();
+		if (this.getConceptAnswerId() != null)
+			return this.getConceptAnswerId().hashCode();
+		int hash = 9;
+		if (concept != null)
+			hash = hash * concept.hashCode() + 31;
+		if (answerConcept != null)
+			hash = hash * answerConcept.hashCode() + 31;
+		if (answerDrug != null)
+			hash = hash * answerDrug.hashCode() + 31;
+		
+		return hash;
+
 	}
 
 	/**

@@ -1,15 +1,16 @@
 package org.openmrs;
 
-import java.util.Date;
 
-public class ConceptNumeric implements java.io.Serializable {
+public class ConceptNumeric extends Concept implements java.io.Serializable {
 
 	public static final long serialVersionUID = 47323L;
 
 	// Fields
 
+	/*
 	private Concept concept;
 	private Integer conceptId;
+	*/
 	private Double hiAbsolute;
 	private Double hiCritical;
 	private Double hiNormal;
@@ -17,37 +18,43 @@ public class ConceptNumeric implements java.io.Serializable {
 	private Double lowCritical;
 	private Double lowNormal;
 	private String units;
-	private Date dateCreated;
 	private Boolean precise;
+	/*
 	private Date dateChanged;
 	private User creator;
 	private User changedBy;
+	private Date dateCreated;
+	*/	
 
 	// Constructors
 
 	/** default constructor */
 	public ConceptNumeric() {
 	}
+	
+	public ConceptNumeric(Integer conceptId) {
+		setConceptId(conceptId);
+	}
 
 	public boolean equals(Object obj) {
 		if (obj instanceof ConceptNumeric) {
 			ConceptNumeric c = (ConceptNumeric)obj;
-			return (this.getConcept().equals(c.getConcept()));
+			return (this.getConceptId().equals(c.getConceptId()));
 		}
 		return false;
 	}
 	
 	public int hashCode() {
-		if (getConcept() == null) return super.hashCode();
+		if (getConceptId() == null) return super.hashCode();
 		int hash = 6;
-		if (getConcept() != null)
-			hash = hash + getConcept().hashCode() * 31;
+		if (getConceptId() != null)
+			hash = hash + getConceptId().hashCode() * 31;
 		return hash;
 	}
 
 	// Property accessors
 
-	
+	/*
 	private Integer getConceptId() {
 		return this.conceptId;
 	}
@@ -63,7 +70,7 @@ public class ConceptNumeric implements java.io.Serializable {
 	public void setConcept(Concept concept) {
 		this.concept = concept;
 	}
-	
+	*/
 	
 	/**
 	 * 
@@ -145,6 +152,19 @@ public class ConceptNumeric implements java.io.Serializable {
 	/**
 	 * 
 	 */
+	public Boolean getPrecise() {
+		return this.precise;
+	}
+
+	public void setPrecise(Boolean precise) {
+		this.precise = precise;
+	}
+	
+	public boolean isNumeric() {
+		return (getDatatype().getName().equals("Numeric"));
+	}
+	
+	/*
 	public Date getDateCreated() {
 		return this.dateCreated;
 	}
@@ -153,20 +173,6 @@ public class ConceptNumeric implements java.io.Serializable {
 		this.dateCreated = dateCreated;
 	}
 
-	/**
-	 * 
-	 */
-	public Boolean getPrecise() {
-		return this.precise;
-	}
-
-	public void setPrecise(Boolean precise) {
-		this.precise = precise;
-	}
-
-	/**
-	 * 
-	 */
 	public Date getDateChanged() {
 		return this.dateChanged;
 	}
@@ -175,9 +181,6 @@ public class ConceptNumeric implements java.io.Serializable {
 		this.dateChanged = dateChanged;
 	}
 
-	/**
-	 * 
-	 */
 	public User getCreator() {
 		return this.creator;
 	}
@@ -186,9 +189,6 @@ public class ConceptNumeric implements java.io.Serializable {
 		this.creator = creator;
 	}
 
-	/**
-	 * 
-	 */
 	public User getChangedBy() {
 		return this.changedBy;
 	}
@@ -196,4 +196,5 @@ public class ConceptNumeric implements java.io.Serializable {
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
+	*/
 }

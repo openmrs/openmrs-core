@@ -10,8 +10,8 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.ConceptAnswer;
-import org.openmrs.api.context.Context;
 import org.openmrs.api.ConceptService;
+import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 
 public class ConceptAnswersEditor extends PropertyEditorSupport {
@@ -31,7 +31,7 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 				ConceptService cs = context.getConceptService();
 				String[] conceptIds = text.split(" ");
 				List<Integer> requestConceptIds = new Vector<Integer>();
-				Set<ConceptAnswer> newSets = new HashSet<ConceptAnswer>();
+				Set<ConceptAnswer> newAnswers = new HashSet<ConceptAnswer>();
 				//set up parameter Synonym Set for easier add/delete functions
 				// and removal of duplicates
 				for (String id : conceptIds) {
@@ -45,19 +45,32 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 				for (ConceptAnswer origConceptAnswer : originalConceptAnswers) {
 					for (int x = 0; x < requestConceptIds.size(); x++) {
 						if (requestConceptIds.get(x).equals(origConceptAnswer.getAnswerConcept().getConceptId())) {
-							newSets.add(origConceptAnswer);
+							newAnswers.add(origConceptAnswer);
 							requestConceptIds.remove(x); //erasing concept id to shorten next for loop
 						}
 					}
 				}
 				
-				//add all remaining parameter synonyms
+				log.debug("originalConceptAnswers: ");
+				for (ConceptAnswer a : originalConceptAnswers)
+					log.debug("id: " + a.getAnswerConcept().getConceptId());
+				
+				
+				log.debug("requestConceptIds: ");
+				for (Integer i : requestConceptIds)
+					log.debug("id: " + i.toString());
+				
+				//add all remaining parameter answers
 				for (int x = 0; x < requestConceptIds.size(); x++) {
 					Integer answerId = requestConceptIds.get(x);
-					newSets.add(new ConceptAnswer(cs.getConcept(answerId)));
+					newAnswers.add(new ConceptAnswer(cs.getConcept(answerId)));
 				}
 				
-				setValue(newSets);
+				log.debug("newAnswers: ");
+				for (ConceptAnswer i : newAnswers)
+					log.debug("id: " + i.getAnswerConcept().getConceptId());
+				
+				setValue(newAnswers);
 			}
 			else {
 				setValue(null);

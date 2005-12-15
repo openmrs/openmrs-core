@@ -50,7 +50,7 @@ document.onkeypress = hotkeys;
 <form id="newSearchForm" action="index.htm" method="get">
   &nbsp; &nbsp; &nbsp;
   Search 
-  <input type="text" name="phrase" size="18"> 
+  <input type="text" id="searchPhrase" name="phrase" size="18"> 
   <input type="submit" class="smallButton" value="<spring:message code="general.go"/>"/>
 </form>
 
@@ -105,7 +105,7 @@ document.onkeypress = hotkeys;
 	</tr>
 	<c:if test="${concept.conceptClass != null && concept.conceptClass.set}">
 		<tr id="setOptions">
-			<td valign="top"><spring:message code="Concept.conceptSets"/></td>
+			<th valign="top"><spring:message code="Concept.conceptSets"/></th>
 			<td valign="top">
 				<c:forEach items="${conceptSets}" var="set">
 					<a href="concept.htm?conceptId=${set.value[0]}">${set.value[1]} (${set.value[0]})</a><br/>
@@ -123,7 +123,7 @@ document.onkeypress = hotkeys;
 	</tr>
 	<c:if test="${concept.datatype != null && concept.datatype.name == 'Coded'}">
 		<tr>
-			<td valign="top"><spring:message code="Concept.answers"/></td>
+			<th valign="top"><spring:message code="Concept.answers"/></th>
 			<td>
 				<c:forEach items="${conceptAnswers}" var="answer">
 					<a href="concept.htm?conceptId=${answer.key}">${answer.value} (${answer.key})</a><br/>
@@ -135,76 +135,46 @@ document.onkeypress = hotkeys;
 		<tr>
 			<th valign="top"><spring:message code="ConceptNumeric.name"/></th>
 			<td>
-				<spring:nestedPath path="concept.conceptNumeric">
-					<table border="0">
-						<tr>
-							<th></th>
-							<th><spring:message code="ConceptNumeric.low"/></th>
-							<th><spring:message code="ConceptNumeric.high"/></th>
-						</tr>
-						<tr>
-							<th valign="middle"><spring:message code="ConceptNumeric.absolute"/></th>
-							<td valign="middle">
-								<spring:bind path="lowAbsolute">
-									${status.value}
-								</spring:bind>
-							</td>
-							<td valign="middle">
-								<spring:bind path="hiAbsolute">
-									${status.value}
-								</spring:bind>
-							</td>
-						</tr>
-						<tr>
-							<th valign="middle"><spring:message code="ConceptNumeric.critical"/></th>
-							<td valign="middle">
-								<spring:bind path="lowCritical">
-									${status.value}
-								</spring:bind>
-							</td>
-							<td valign="middle">
-								<spring:bind path="hiCritical">
-									${status.value}
-								</spring:bind>
-							</td>
-						</tr>
-						<tr>
-							<th valign="middle"><spring:message code="ConceptNumeric.normal"/></th>
-							<td valign="middle">
-								<spring:bind path="lowNormal">
-									${status.value}
-								</spring:bind>
-							</td>
-							<td valign="middle">
-								<spring:bind path="hiNormal">
-									${status.value}
-								</spring:bind>
-							</td>
-						</tr>
-						<tr>
-							<td></td>
-							<td colspan="2"><small><em>(<spring:message code="ConceptNumeric.inclusive"/>)</em></small>
-							</td>
-						</tr>
-						<tr>
-							<td><spring:message code="ConceptNumeric.units"/></td>
-							<td colspan="2">
-								<spring:bind path="units">
-									${status.value}
-								</spring:bind>
-							</td>
-						</tr>
-						<tr>
-							<td><spring:message code="ConceptNumeric.precise"/></td>
-							<td colspan="2">
-								<spring:bind path="precise">
-									<c:if test="${status.value}">Yes</c:if>
-									<c:if test="${!status.value}">No</c:if>
-								</spring:bind>
-							</td>
-						</tr>
-					</table>
-				</spring:nestedPath>
+				<table border="0">
+					<tr>
+						<th></th>
+						<th><spring:message code="ConceptNumeric.low"/></th>
+						<th><spring:message code="ConceptNumeric.high"/></th>
+					</tr>
+					<tr>
+						<th valign="middle"><spring:message code="ConceptNumeric.absolute"/></th>
+						<td valign="middle">${concept.lowAbsolute}</td>
+						<td valign="middle">${concept.hiAbsolute}</td>
+					</tr>
+					<tr>
+						<th valign="middle"><spring:message code="ConceptNumeric.critical"/></th>
+						<td valign="middle">${concept.lowCritical}</td>
+						<td valign="middle">${concept.hiCritical}</td>
+					</tr>
+					<tr>
+						<th valign="middle"><spring:message code="ConceptNumeric.normal"/></th>
+						<td valign="middle">${concept.lowNormal}</td>
+						<td valign="middle">${concept.hiNormal}</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td colspan="2"><small><em>(<spring:message code="ConceptNumeric.inclusive"/>)</em></small>
+						</td>
+					</tr>
+					<tr>
+						<th><spring:message code="ConceptNumeric.units"/></th>
+						<td colspan="2">${concept.units}</td>
+					</tr>
+					<tr>
+						<th><spring:message code="ConceptNumeric.precise"/></th>
+						<td colspan="2">
+							<spring:bind path="concept.precise">
+								<c:if test="${status.value}">Yes</c:if>
+								<c:if test="${!status.value}">No</c:if>
+							</spring:bind>
+						</td>
+					</tr>
+				</table>
 			</td>
 	</c:if>
 	<tr>
@@ -255,5 +225,9 @@ document.onkeypress = hotkeys;
 		</td>
 	</tr>
 </table>
+
+<script type="text/javascript">
+	document.getElementById("searchPhrase").focus();
+</script>
 
 <%@ include file="/WEB-INF/template/footer.jsp"%>

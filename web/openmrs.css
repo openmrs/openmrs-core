@@ -202,11 +202,16 @@ a span.additionalHit {
 	color: gray;
 	text-decoration: none;
 }
-#conceptSearchInfoBar {
+#conceptSearchInfoBar, #conceptSearchInfoBar a {
 	font-size: 10px;
 	line-height: 12px;
 	background-color: whitesmoke;
+}
+#conceptSearchInfoBar {
 	color: gray;
 	padding: 2px 0 2px 0;
 	margin: 1px 0 1px 0;
+}
+#disabledZone {
+	margin-top: 17px;
 }

@@ -22,6 +22,14 @@ public class NumericPatientObservationFilter extends AbstractReportObject implem
 	private Number number;
 	private Method method;
 	
+	/**
+	 * @see org.openmrs.reporting.DataFilter#filter(org.openmrs.reporting.DataSet)
+	 */
+	public <U extends Patient> DataSet<Patient> filter(DataSet<U> input) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	public NumericPatientObservationFilter(Concept concept, Modifier modifier, Number number, Method method) {
 		this.concept = concept;
 		this.modifier = modifier;
@@ -44,10 +52,10 @@ public class NumericPatientObservationFilter extends AbstractReportObject implem
 		this.context = context;
 	}
 
-	public DataSet<Patient> filter(DataSet<Patient> input) {
+	public <P extends Patient> DataSet<P> fildter(DataSet<P> input) {
 		ObsService os = context.getObsService();
-		DataSet<Patient> ret = new SimpleDataSet<Patient>();
-		for (Patient p : input.getRowKeys()) {
+		DataSet<P> ret = null; //new SimpleDataSet<P>();
+		for (P p : input.getRowKeys()) {
 			Set<Obs> set =  os.getObservations(p, concept);
 			if (setHelper(set)) {
 				ret.setRow(p, input.getRow(p));

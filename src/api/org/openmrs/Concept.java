@@ -39,7 +39,6 @@ public class Concept implements java.io.Serializable {
 	private Collection<ConceptAnswer> answers;
 	private Collection<ConceptSynonym> synonyms;
 	private Collection<ConceptSet> conceptSets;
-	private ConceptNumeric conceptNumeric;
 
 	// Constructors
 
@@ -49,13 +48,35 @@ public class Concept implements java.io.Serializable {
 		answers = new HashSet<ConceptAnswer>();
 		synonyms = new HashSet<ConceptSynonym>();
 		conceptSets = new HashSet<ConceptSet>();
-		conceptNumeric = new ConceptNumeric();
+		//conceptNumeric = new ConceptNumeric();
 	}
 
 	/** constructor with id */
 	public Concept(Integer conceptId) {
 		this.conceptId = conceptId;
 	}
+	
+	/*
+	 * Possibly used for decapitating a ConceptNumeric (to remove the row in concept_numeric
+	public Concept(ConceptNumeric cn) {
+		conceptId = cn.getConceptId();
+		retired = cn.isRetired();
+		datatype = cn.getDatatype();
+		conceptClass = cn.getConceptClass();
+		units = cn.getUnits();
+		icd10 = cn.getIcd10();
+		loinc = cn.getLoinc();
+		version = cn.getVersion();
+		creator = cn.getCreator();
+		dateCreated = cn.getDateCreated();
+		changedBy = cn.getChangedBy();
+		dateChanged = cn.getDateChanged();
+		names = cn.getNames();
+		answers = cn.getAnswers();
+		synonyms = cn.getSynonyms();
+		conceptSets = cn.getConceptSets();
+	}
+	*/
 	
 	public boolean equals(Object obj) {
 		if (obj instanceof Concept) {
@@ -457,20 +478,16 @@ public class Concept implements java.io.Serializable {
 		this.version = version;
 	}
 
-	/**
-	 * @return Returns the conceptNumeric.
-	 */
+	/*
 	public ConceptNumeric getConceptNumeric() {
 		return conceptNumeric;
 	}
 
-	/**
-	 * @param conceptNumeric The conceptNumeric to set.
-	 */
 	public void setConceptNumeric(ConceptNumeric conceptNumeric) {
 		this.conceptNumeric = conceptNumeric;
 	}
-
+	*/
+	
 	/**
 	 * @return Returns the conceptSets.
 	 */
@@ -486,10 +503,13 @@ public class Concept implements java.io.Serializable {
 	}
 
 	public boolean isNumeric() {
+		return false;
+		/*
 		if (this.getDatatype() != null) {
 			return this.getDatatype().getName().equals("Numeric");
 		}
 		return false;
+		*/
 	}
 
 }

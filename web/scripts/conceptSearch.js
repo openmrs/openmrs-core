@@ -24,6 +24,7 @@ function resetForm() {
 	textbox = null;
 	includeRetired = false;
 	firstItemDisplayed = 1;
+	numItemsDisplayed = 0;
 	document.onkeypress = hotkey;
 	clearInformationBar();
 	hideHighlight();
@@ -45,15 +46,26 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay) {
 		if (event.altKey == false && event.ctrlKey == false) {
 			// this if statement cancels the search on alt and control keys
 			keyCode = event.keyCode;
+			if (!keyCode) {
+				//if non-key event
+				keyCode = event.which;
+			}
 		}
 	}
 	
+	//reset textbox for mouse events
+	if (keyCode == 1 && text == "") {
+		text = lastPhraseSearched;
+	}
+	
 	if (keyCode == 27) {
+		//escape key pressed
 		hideHighlight();
 		textbox.value = lastPhraseSearched;
 		return false;
 	}
-	else if(text == "" && includeRetired == retired) {
+	else if (text == "" && includeRetired == retired) {
+		//searched on empty string (and didn't change retired status)
 		return false;
 	}
 	else if (keyCode == ENTERKEY) {
@@ -105,14 +117,17 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay) {
 	}
 
 	else if ((keyCode > 57 && keyCode <= 127) ||
-		keyCode == 8 || keyCode == 32 || keyCode == 46) {
+		keyCode == 8 || keyCode == 32 || keyCode == 46 || keyCode == 1) {
 			//	"if alpha key entered or 
 			//   backspace key pressed or
 			//   spacebar pressed or 
-			//   delete key pressed"
+			//   delete key pressed or
+			//   mouse event"
 			hideHighlight();
-			clearInformationBar();
-			conceptTimeout = setTimeout("updateConcepts('" + text + "')", delay);
+			if (text.length > 1) {
+				clearInformationBar();
+				conceptTimeout = setTimeout("updateConcepts('" + text + "')", delay);
+			}
 	}
 	
 	//value applied here so as use 'includeRetired' as 'lastRetired' as well
@@ -124,15 +139,21 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay) {
 }
 
 function updateConcepts(text) {
-	if (text.length > 1) {							//must have at least 2 characters entered
-		conceptsFound = new Array();				//zero-out numbered concept list
-		conceptIndex = 1;							//our numbering is one-based
+	clearTimeout(conceptTimeout);				//stop any timeout that may have just occurred...fixes 'duplicate data' error
+	conceptsFound = new Array();				//zero-out numbered concept list
+	conceptIndex = 1;							//our numbering is one-based
+	firstItemDisplayed = 1;
+	lastPhraseSearched = text;
+	
+	//must have at least 2 characters entered or that character be a number
+	if (text.length > 1 || (parseInt(text) >= 0 && parseInt(text) <= 9)) {
 	    if (typeof conceptClasses == 'undefined')	//conceptClasses is only optionally defined
 	    	conceptClasses = new Array();
-		clearTimeout(conceptTimeout);				//stop any timeout that may have just occurred...fixes 'duplicate data' error
-		firstItemDisplayed = 1;
 	    DWRConceptService.findConcepts(fillTable, text, conceptClasses, includeRetired);
-	    lastPhraseSearched = text;
+	}
+	else {
+		conceptsFound[0] = "Invalid number of search characters";
+		fillTable(conceptsFound);
 	}
     return false;
 }
@@ -243,9 +264,10 @@ function fillTable(concepts) {
 }
 
 function showPrevious() {
-	firstItemDisplayed = firstItemDisplayed - numItemsDisplayed;
+	firstItemDisplayed = (firstItemDisplayed - numItemsDisplayed) - 1;
 	if (firstItemDisplayed < 1) {
 		firstItemDisplayed = 1;
+		return false;
 	}
 	conceptIndex = firstItemDisplayed;
 	fillTable(allConceptsFound);
@@ -254,9 +276,10 @@ function showPrevious() {
 }
 
 function showNext() {
-	firstItemDisplayed = firstItemDisplayed + numItemsDisplayed;
+	firstItemDisplayed = firstItemDisplayed + numItemsDisplayed + 1;
 	if (firstItemDisplayed > allConceptsFound.length) {
 		firstItemDisplayed = allConceptsFound.length;
+		return false;
 	}
 	conceptIndex = firstItemDisplayed;
 	fillTable(allConceptsFound);
@@ -289,26 +312,25 @@ function updateInformationBar() {
 		parent = parent.offsetParent;
 	}
 	
-	var height = getStyle(textbox, "height");//approx. row height
-	height = parseInt(height.slice(0, height.length - 2)); //remove 'px' from height
+	var height = getRowHeight(); //approx. row height
 	
 	// get approx room below tablebody
-	var remainder = window.innerHeight - parseInt(top);
+	var remainder = getInnerHeight() - parseInt(top);
 	numItemsDisplayed=Math.floor(remainder/(height + 6))-1;
-	
 	var total = allConceptsFound.length;
 	var lastItemDisplayed = firstItemDisplayed + numItemsDisplayed;
 	if (lastItemDisplayed > total) {
 		lastItemDisplayed = total;
 	}
 	
-	infoBar.innerHTML += " Viewing " + firstItemDisplayed + "-" + lastItemDisplayed + " of " + total + " ";
+	infoBar.innerHTML += " Viewing " + firstItemDisplayed + "-" + lastItemDisplayed + " of " + total + " &nbsp; ";
+	
 	if (firstItemDisplayed > 1) {
 		//create previous link
 		var prev = document.createElement("a");
 		prev.href = "#prev";
 		prev.className = "prevItems";
-		prev.innerHTML = "Previous " + (firstItemDisplayed-numItemsDisplayed < 1 ? firstItemDisplayed + 1: numItemsDisplayed + 1) + " Results";
+		prev.innerHTML = "Previous " + (firstItemDisplayed-numItemsDisplayed < 1 ? firstItemDisplayed - 1: numItemsDisplayed + 1) + " Results";
 		prev.onclick = showPrevious;
 		infoBar.appendChild(prev);
 		if (lastItemDisplayed != total) {
@@ -322,7 +344,7 @@ function updateInformationBar() {
 		var next = document.createElement("a");
 		next.href = "#next";
 		next.className = "nextItems";
-		next.innerHTML = "Next " + (lastItemDisplayed+numItemsDisplayed > total ? total - lastItemDisplayed + 1: numItemsDisplayed + 1 ) + " Results";
+		next.innerHTML = "Next " + (lastItemDisplayed+numItemsDisplayed > total ? total - lastItemDisplayed: numItemsDisplayed + 1 ) + " Results";
 		next.onclick = showNext;
 		infoBar.appendChild(next);
 	}
@@ -360,5 +382,43 @@ function hotkey(event) {
 			showNext();
 		}
 	}
-	
+}
+
+function getInnerHeight() {
+  var myWidth = 0, myHeight = 0;
+  if( typeof( window.innerWidth ) == 'number' ) {
+    //Non-IE
+    myWidth = window.innerWidth;
+    myHeight = window.innerHeight;
+    //alert("myHeight1: " + myHeight);
+  } else if( document.documentElement &&
+      ( document.documentElement.clientWidth || document.documentElement.clientHeight ) ) {
+    //IE 6+ in 'standards compliant mode'
+    myWidth = document.documentElement.clientWidth;
+    myHeight = document.documentElement.clientHeight;
+	//alert("myHeight2: " + myHeight);
+  } else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) {
+    //IE 4 compatible
+    myWidth = document.body.clientWidth;
+    myHeight = document.body.clientHeight;
+    //alert("myHeight3 : " + myHeight);
+  }
+  
+  return parseInt(myHeight);
+}
+
+function getRowHeight() {
+	var h = 0;
+	h = getStyle(textbox, 'height');
+	h = parseInt(h.slice(0, h.length - 2)); //remove 'px' from height
+	if (parseInt(h) > 0) {
+		return h;
+	}
+	// this silly code is brought to you by the great IE
+	h = getStyle(textbox, 'lineHeight');
+	if (h == 'largest')
+		return 17;
+	if (h == 'smallest')
+		return 10;
+	return 13; //normal
 }

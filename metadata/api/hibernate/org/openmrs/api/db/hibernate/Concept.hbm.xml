@@ -40,24 +40,24 @@
 			<key column="concept_id" not-null="true" />
 			<composite-element class="ConceptName">
 				<parent name="concept"/>
-				<property name="name" type="java.lang.String" length="255"/>
-				<property name="locale" type="java.lang.String" length="50"/>
-				<property name="shortName" type="java.lang.String" length="255" column="short_name"/>
-				<property name="description" type="java.lang.String" length="65535" />
-				<property name="dateCreated" type="java.util.Date" column="date_created"/>
-				<many-to-one name="creator" class="User" column="creator"/>
+				<property name="name" type="java.lang.String" length="255" not-null="true"/>
+				<property name="locale" type="java.lang.String" length="50" not-null="true"/>
+				<property name="shortName" type="java.lang.String" length="255" column="short_name" />
+				<property name="description" type="java.lang.String" length="65535" not-null="true" />
+				<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true"/>
+				<many-to-one name="creator" class="User" column="creator" not-null="true"/>
 			</composite-element>
 		</set>
 
-		<set name="answers" lazy="true" cascade="none" 
+		<set name="answers" lazy="true" cascade="all" 
 				table="concept_answer" order-by="concept_answer_id asc">
 			<key column="concept_id" not-null="true" />
 			<composite-element class="ConceptAnswer">
 				<parent name="concept"/>
-				<property name="conceptAnswerId" type="java.lang.Integer" length="11" column="concept_answer_id"/>
+				<property name="conceptAnswerId" type="java.lang.Integer" length="11" column="concept_answer_id" not-null="true" />
 				<many-to-one name="answerConcept" class="org.openmrs.Concept" column="answer_concept" />
 				<many-to-one name="answerDrug" class="org.openmrs.Drug" column="answer_drug" />
-				<property name="dateCreated" type="java.util.Date" column="date_created"/>
+				<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" />
 				<many-to-one name="creator" class="User" column="creator" not-null="true"/>
 			</composite-element>
 		</set>
@@ -67,30 +67,30 @@
 			that action via the .equals() and .hashCode() because we are using
 			a Set.
 		-->
-		<set name="synonyms" lazy="true" cascade="all-delete-orphan" 
+		<set name="synonyms" lazy="true" cascade="all" 
 			table="concept_synonym" order-by="synonym asc">
 			<key not-null="true">
 				<column name="concept_id" />
 			</key>
 			<composite-element class="ConceptSynonym">
 				<parent name="concept" />
-				<property name="synonym" type="java.lang.String" />
-				<property name="locale" type="java.lang.String" />
-				<property name="dateCreated" type="java.util.Date" column="date_created"/>
+				<property name="synonym" type="java.lang.String" not-null="true" />
+				<property name="locale" type="java.lang.String" not-null="true" />
+				<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true"/>
 				<many-to-one name="creator" class="User" column="creator" not-null="true"/>
 			</composite-element>
 		</set>
 		
 		<set name="conceptSets" table="concept_set" lazy="true" 
-				cascade="none" order-by="sort_weight asc">
+				cascade="all" order-by="sort_weight asc">
 			<key not-null="true">
 				<column name="concept_set" />
 			</key>
 			<composite-element class="ConceptSet">
 				<parent name="set"/>
 				<many-to-one name="concept" class="Concept" column="concept_id" not-null="true"/>
-				<property name="sortWeight" type="java.lang.Double" column="sort_weight" length="22"/>
-				<property name="dateCreated" type="java.util.Date" column="date_created" length="19"/>
+				<property name="sortWeight" type="java.lang.Double" column="sort_weight" length="22" not-null="true" />
+				<property name="dateCreated" type="java.util.Date" column="date_created" length="19" not-null="true" />
 				<many-to-one name="creator" class="User" column="creator" not-null="true"/>
 			</composite-element>
 		</set>
@@ -112,13 +112,13 @@
 		</many-to-one>
 
 		
-		<one-to-one name="conceptNumeric" lazy="true" class="ConceptNumeric" cascade="all"/>
-		
-
 		<!--
+		<one-to-one name="conceptNumeric" lazy="true" class="ConceptNumeric" cascade="all"/>
+		-->
+
+		
 		<joined-subclass name="ConceptNumeric" table="concept_numeric">
 			<key column="concept_id" />
-
 			<property name="hiAbsolute" type="java.lang.Double" column="hi_absolute" length="22" />
 			<property name="hiCritical" type="java.lang.Double" column="hi_critical" length="22" />
 			<property name="hiNormal" type="java.lang.Double" column="hi_normal" length="22" />
@@ -127,13 +127,8 @@
 			<property name="lowNormal" type="java.lang.Double" column="low_normal" length="22" />
 			<property name="units" type="java.lang.String" column="units" length="50" />
 			<property name="precise" type="java.lang.Boolean" column="precise" length="1" />
-			<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true"  length="19" />
-			<property name="dateChanged" type="java.util.Date" column="date_changed" length="19" />
-			
-		    <many-to-one name="creator" class="org.openmrs.User" not-null="true"/>
-			<many-to-one name="changedBy" class="org.openmrs.User" not-null="true" column="changed_by"/>
 		</joined-subclass>
-		-->
+		
 
 	</class>
 

@@ -33,6 +33,8 @@ public class DWRConceptService {
 		HttpServletRequest request = ExecutionContext.get().getHttpServletRequest();
 		Locale locale = Util.getLocale(request);
 		
+		//TODO add localization for messages
+		
 		if (context == null) {
 			objectList.add("Your session has expired.");
 			objectList.add("Please <a href='" + request.getContextPath() + "/logout'>log in</a> again.");

@@ -12,9 +12,9 @@ window.onload = function() {
 
 function removeItem(nameList, idList, delim)
 {
+	var sel   = document.getElementById(nameList);
 	var input = document.getElementById(idList);
-	var sel = document.getElementById(nameList);
-	var optList = sel.options;
+	var optList   = sel.options;
 	var lastIndex = -1;
 	var i = 0;
 	while (i<optList.length) {

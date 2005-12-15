@@ -19,7 +19,20 @@
 		var retired = document.getElementById("includeRetired").checked;
 		return searchBoxChange('conceptSearchBody', searchBox, event, retired, delay);
 	}
-
+	
+	function init() {
+		document.getElementById("searchText").focus();
+		DWRUtil.useLoadingMessage();
+		<request:existsParameter name="phrase">
+			<!-- the user posted a search phrase, mimic user entering it into box -->
+			var searchText = document.getElementById('searchText');
+			searchText.value = "<request:parameter name="phrase"/>";
+			search(0);
+		</request:existsParameter>
+	}
+	
+	window.onload = init;
+	
 </script>
 
 <style>
@@ -36,7 +49,7 @@
 	<div class="box">
 		<form method="get" id="searchForm" onSubmit="return search(0); return null;">
 			<div style="float: right">
-				<input type="checkbox" id="includeRetired" value="true" onclick="search(0)">
+				<input type="checkbox" id="includeRetired" value="true" onclick="search(0, event); searchText.focus();">
 				<spring:message code="dictionary.includeRetired"/>
 			</div>
 			<spring:message code="dictionary.searchBox"/> <input type="text" id="searchText" size="45" onkeyup="search(400, event);">
@@ -54,17 +67,5 @@
 
 <br/>
 <a href="concept.form">Add new Concept</a> (Use sparingly)
-
-<script type="text/javascript">
-	document.getElementById("searchText").focus();
-	DWRUtil.useLoadingMessage();
-		
-	<request:existsParameter name="phrase">
-		<!-- the user posted a search phrase, mimic user entering it into box -->
-		var searchText = document.getElementById('searchText');
-		searchText.value = "<request:parameter name="phrase"/>";
-		search(0);
-	</request:existsParameter>
-</script>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>
