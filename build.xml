@@ -40,6 +40,7 @@
 		<filter token="CACHE.MAX_STATEMENTS" value="${cache.max_statements}" />
 		<filter token="CACHE.IDLE_TEST_PERIOD" value="${cache.idle_test_period}" />
 		<filter token="CACHE.ACQUIRE_INCREMENT" value="${cache.acquire_increment}" />
+		<filter token="WEBAPP.NAME" value="${webapp.name}" />
 	</filterset>
 
 	<!-- *********************************************************** -->
@@ -94,9 +95,9 @@
 
 	<target name="package-api" depends="compile-api" description="create api jar">
 		<mkdir dir="${dist.dir}" />
-		<jar destfile="${dist.dir}/${app.name}-api-${app.version}.jar">
+		<jar destfile="${dist.dir}/openmrs-api-${app.version}.jar">
             <manifest>
-                <attribute name="Class-Path" value="${app.name}-api-${app.version}.jar"/>
+                <attribute name="Class-Path" value="openmrs-api-${app.version}.jar"/>
             </manifest>
             <fileset dir="${build.dir}/api" includes="**/*" />
         </jar>
@@ -135,15 +136,15 @@
 
 	<target name="package-api-tests" depends="compile-api-tests" description="create api-tests jar">
 		<mkdir dir="${dist.dir}" />
-		<jar destfile="${dist.dir}/${app.name}-api-tests-${app.version}.jar">
+		<jar destfile="${dist.dir}/openmrs-api-tests-${app.version}.jar">
             <manifest>
-                <attribute name="Class-Path" value="${app.name}-api-tests-${app.version}.jar"/>
+                <attribute name="Class-Path" value="openmrs-api-tests-${app.version}.jar"/>
             </manifest>
             <fileset dir="${build.dir}/test/api" />
         </jar>
 	</target>
 
-	<target name="compile-web" depends="package-api" description="compile webapp">
+	<target name="compile-web" depends="package-api" description="compile webapp">	
 		<mkdir dir="${build.dir}/web" />
 		<javac srcdir="${src.dir}/web" 
 		       destdir="${build.dir}/web" 
@@ -156,22 +157,35 @@
 				<include name="log4j.xml" />
 				<include name="messages*" />
 			</fileset>
+			<filterset refid="variables.to.replace" />
 		</copy>
 	</target>
 
 	<target name="package-web" depends="compile-web" description="create webapp war file">
 		<mkdir dir="${dist.dir}" />
+		
+		<!-- copy the entire web directory to the dist folder (for variable replacement) -->
+		<copy todir="${dist.dir}\web"
+				preservelastmodified="true">
+			<fileset dir="web" />
+			<filterset refid="variables.to.replace" />
+		</copy>
+		<move file="${dist.dir}\web\WEB-INF\openmrs-servlet.xml"
+				tofile="${dist.dir}\web\WEB-INF\${webapp.name}-servlet.xml"
+				preservelastmodified="true"
+				overwrite="true" />
+		
 		<!-- excludes web.xml to avoid warning message from duplicating @webxml reference -->
 		<war destfile="${dist.dir}/${webapp.name}.war"
-			 basedir="web"
+			 basedir="${dist.dir}/web"
 			 excludes="**/web.xml"
-		     webxml="web/WEB-INF/web.xml"
-		     duplicate="fail">
+		     webxml="${dist.dir}/web/WEB-INF/web.xml"
+		     duplicate="add">
 			<!-- war task isn't interpreting ${} variables on several attributes   -->
 			<!-- (e.g., @basedir, webinf@dir) so using hardcoded values for now -->
 			<classes dir="${build.dir}/web" />
             <!--<metainf dir="${metadata.dir}/web" includes="context.xml"/>-->
-			<lib file="${dist.dir}/${app.name}-api-${app.version}.jar" />
+			<lib file="${dist.dir}/openmrs-api-${app.version}.jar" />
 			<lib dir="${antlr.dir}" includes="*.jar" />
 			<lib dir="${asm.dir}" includes="*.jar" />
 			<lib dir="${c3p0.dir}" includes="*.jar" />
@@ -198,7 +212,17 @@
 			<!--<lib dir="${velocity.dir}" includes="*.jar" />-->
 			<!--<lib dir="${struts.dir}" includes="*.jar" /> -->
 			<!--<lib dir="${commons-digester.dir}" includes="*.jar" />  (for struts) -->
+			<zipfileset dir="${custom.template.dir}"
+						prefix="WEB-INF/template" />
+			<zipfileset file="${custom.style.css.file}"
+						prefix="" />
+			<zipfileset dir="${custom.images.dir}"
+						prefix="/images" />
 		</war>
+		
+		<!-- Delete the directory we just created in the dist folder -->
+		<delete dir="${dist.dir}\web" />
+
 	</target>
 
 	<target name="compile-web-tests" description="compile webapp tests">

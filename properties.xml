@@ -46,12 +46,17 @@
 	<property name="cache.idle_test_period" value="300" />
 	<property name="cache.acquire_increment" value="2" />
 
-	<!--
+	<!-- Unused cache properties (migrated to c3p0
     <property name="dbcp.min_size" value="5" />
     <property name="dbcp.max_size" value="20" />
     <property name="dbcp.timeout" value="1" />
     <property name="dbcp.max_statements" value="50" />
     -->
+    
+    <!-- Customization properties -->
+    <property name="custom.template.dir" value="WEB-INF/template" />
+    <property name="custom.style.css.file" value="style.css" />
+    <property name="custom.images.dir" value="/images" />
     
     <!-- Environment properties -->
     <property environment="env"/>

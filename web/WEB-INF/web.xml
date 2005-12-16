@@ -109,7 +109,7 @@
 	-->
 	
 		<servlet>
-			<servlet-name>openmrs</servlet-name>
+			<servlet-name>@WEBAPP.NAME@</servlet-name>
 			<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 			<load-on-startup>3</load-on-startup>
 		</servlet>
@@ -135,17 +135,17 @@
 		-->
 	
 		<servlet-mapping>
-	 		<servlet-name>openmrs</servlet-name>
+	 		<servlet-name>@WEBAPP.NAME@</servlet-name>
 	 		<url-pattern>*.form</url-pattern>
 		</servlet-mapping>
 
 		<servlet-mapping>
-	 		<servlet-name>openmrs</servlet-name>
+	 		<servlet-name>@WEBAPP.NAME@</servlet-name>
 	 		<url-pattern>*.list</url-pattern>
 		</servlet-mapping>
 
 		<servlet-mapping>
-	 		<servlet-name>openmrs</servlet-name>
+	 		<servlet-name>@WEBAPP.NAME@</servlet-name>
 	 		<url-pattern>*.htm</url-pattern>
 		</servlet-mapping>
 		

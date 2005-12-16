@@ -12,6 +12,7 @@
 <html>
 	<head>
 		<link href="<%= request.getContextPath() %>/openmrs.css" type="text/css" rel="stylesheet" />
+		<link href="<%= request.getContextPath() %>/style.css" type="text/css" rel="stylesheet" />
 	</head>
 
 <body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
