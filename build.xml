@@ -165,16 +165,31 @@
 		<mkdir dir="${dist.dir}" />
 		
 		<!-- copy the entire web directory to the dist folder (for variable replacement) -->
-		<copy todir="${dist.dir}\web"
+		<copy todir="${dist.dir}/web"
 				preservelastmodified="true"
 				overwrite="true">
 			<fileset dir="web" />
 			<filterset refid="variables.to.replace" />
 		</copy>
-		<move file="${dist.dir}\web\WEB-INF\openmrs-servlet.xml"
-				tofile="${dist.dir}\web\WEB-INF\${webapp.name}-servlet.xml"
+		<move file="${dist.dir}/web/WEB-INF/openmrs-servlet.xml"
+				tofile="${dist.dir}/web/WEB-INF/${webapp.name}-servlet.xml"
 				preservelastmodified="true"
 				overwrite="true" />
+		<copy todir="${dist.dir}/web/WEB-INF/template"
+				overwrite="true">
+			<fileset dir="${custom.template.dir}" />
+			<filterset refid="variables.to.replace" />
+		</copy>
+		<copy todir="${dist.dir}/web"
+				overwrite="true">
+			<fileset file="${custom.style.css.file}" />
+			<filterset refid="variables.to.replace" />
+		</copy>
+		<copy todir="${dist.dir}/web/images"
+				overwrite="true">
+			<fileset dir="${custom.images.dir}" />
+			<filterset refid="variables.to.replace" />
+		</copy>
 		
 		<!-- excludes web.xml to avoid warning message from duplicating @webxml reference -->
 		<war destfile="${dist.dir}/${webapp.name}.war"
@@ -213,12 +228,6 @@
 			<!--<lib dir="${velocity.dir}" includes="*.jar" />-->
 			<!--<lib dir="${struts.dir}" includes="*.jar" /> -->
 			<!--<lib dir="${commons-digester.dir}" includes="*.jar" />  (for struts) -->
-			<zipfileset dir="${custom.template.dir}"
-						prefix="WEB-INF/template" />
-			<zipfileset file="${custom.style.css.file}"
-						prefix="" />
-			<zipfileset dir="${custom.images.dir}"
-						prefix="/images" />
 		</war>
 		
 		<!-- Delete the directory we just created in the dist folder (fills recycle bin) -->
