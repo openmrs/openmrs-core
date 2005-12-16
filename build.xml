@@ -188,7 +188,6 @@
 		<copy todir="${dist.dir}/web/images"
 				overwrite="true">
 			<fileset dir="${custom.images.dir}" />
-			<filterset refid="variables.to.replace" />
 		</copy>
 		
 		<!-- excludes web.xml to avoid warning message from duplicating @webxml reference -->
