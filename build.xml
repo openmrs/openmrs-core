@@ -166,7 +166,8 @@
 		
 		<!-- copy the entire web directory to the dist folder (for variable replacement) -->
 		<copy todir="${dist.dir}\web"
-				preservelastmodified="true">
+				preservelastmodified="true"
+				overwrite="true">
 			<fileset dir="web" />
 			<filterset refid="variables.to.replace" />
 		</copy>
@@ -220,8 +221,8 @@
 						prefix="/images" />
 		</war>
 		
-		<!-- Delete the directory we just created in the dist folder -->
-		<delete dir="${dist.dir}\web" />
+		<!-- Delete the directory we just created in the dist folder (fills recycle bin) -->
+		<!-- <delete dir="${dist.dir}\web" /> -->
 
 	</target>
 
