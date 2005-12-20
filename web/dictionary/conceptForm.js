@@ -54,10 +54,12 @@ function addConcept(nameList, idList, obj)
 	var top   = getElementTop(nameList)-50;
 	var formWidth  = 520;
 	var formHeight = 280;
-	if (left + formWidth > window.innerWidth)
-		left = window.innerWidth - formWidth - 10;
-	if (top + formHeight > window.innerHeight)
-		top = window.innerHeight - formHeight - 10;
+	var windowWidth = window.innerWidth + getScrollOffsetX();
+	var windowHeight = window.innerHeight + getScrollOffsetY();
+	if (left + formWidth > windowWidth)
+		left = windowWidth - formWidth - 10;
+	if (top + formHeight > windowHeight)
+		top = windowHeight - formHeight - 10;
 	conceptSearchForm.style.left = left + "px";
 	conceptSearchForm.style.top = top + "px";
 	
@@ -282,6 +284,24 @@ function hotkeys(event) {
 	}
 	else if (k == 39) { //right key
 		document.location = document.getElementById('nextConcept').href;
+	}
+}
+
+function getScrollOffsetY() {
+	if (window.innerHeight) {
+		return window.pageYOffset;
+	}
+	else {
+		return document.documentElement.scrollTop;
+	}
+}
+
+function getScrollOffsetX() {
+	if (window.innerWidth) {
+		return window.pageXOffset;
+	}
+	else {
+		return document.documentElement.scrollLeft;
 	}
 }
 

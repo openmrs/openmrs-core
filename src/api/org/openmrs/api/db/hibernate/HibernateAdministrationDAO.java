@@ -19,6 +19,7 @@ import org.openmrs.ConceptSetDerived;
 import org.openmrs.ConceptWord;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
+import org.openmrs.Group;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.OrderType;
@@ -889,5 +890,59 @@ public class HibernateAdministrationDAO implements
 			updateConceptSetDerived(concept);
 		}
 	}
+	
+	/**
+	 * @see org.openmrs.api.db.AdministrationService#createConceptClass(org.openmrs.ConceptClass)
+	 */
+	public void createGroup(Group g) throws DAOException {
+		Session session = HibernateUtil.currentSession();
+		
+		try {
+			HibernateUtil.beginTransaction();
+			session.save(g);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new DAOException(e);
+		}
+	}
+
+	/**
+	 * @see org.openmrs.api.db.AdministrationService#updateGroup(org.openmrs.Group)
+	 */
+	public void updateGroup(Group g) throws DAOException {
+		if (g.getGroup() == null)
+			createGroup(g);
+		else {
+			try {
+				Session session = HibernateUtil.currentSession();
+				HibernateUtil.beginTransaction();
+				session.saveOrUpdate(g);
+				HibernateUtil.commitTransaction();
+			}
+			catch (Exception e) {
+				HibernateUtil.rollbackTransaction();
+				throw new DAOException(e.getMessage());
+			}
+		}
+	}	
+	
+	/**
+	 * @see org.openmrs.api.db.AdministrationService#deleteGroup(org.openmrs.Group)
+	 */
+	public void deleteGroup(Group g) throws DAOException {
+		Session session = HibernateUtil.currentSession();
+		try {
+			HibernateUtil.beginTransaction();
+			session.delete(g);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new DAOException(e.getMessage());
+		}
+	}
+	
 }
 

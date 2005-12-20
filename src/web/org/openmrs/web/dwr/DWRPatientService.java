@@ -1,14 +1,14 @@
 package org.openmrs.web.dwr;
 
-import java.util.Set;
+import java.util.List;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.PatientAddress;
-import org.openmrs.api.context.Context;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.context.Context;
 import org.openmrs.web.Constants;
 
 import uk.ltd.getahead.dwr.ExecutionContext;
@@ -17,7 +17,7 @@ public class DWRPatientService {
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
-	public Vector findPatients(String searchValue, String searchType, boolean includeVoided) {
+	public Vector findPatients(String searchValue, boolean includeVoided) {
 		
 		Vector patientList = new Vector();
 
@@ -25,12 +25,9 @@ public class DWRPatientService {
 				.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		try {
 			PatientService ps = context.getPatientService();
-			Set<Patient> patients;
+			List<Patient> patients;
 			
-			if (searchType != null && searchType.equals("identifier"))
-				patients = ps.getPatientsByIdentifier(searchValue);
-			else
-				patients = ps.getPatientsByName(searchValue);
+			patients = ps.findPatients(searchValue, includeVoided);
 			
 			patientList = new Vector(patients.size());
 			for (Patient p : patients) {
@@ -38,7 +35,6 @@ public class DWRPatientService {
 			}
 		} catch (Exception e) {
 			log.error(e);
-			e.printStackTrace();
 		}
 		return patientList;
 	}

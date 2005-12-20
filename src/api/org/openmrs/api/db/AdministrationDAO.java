@@ -5,6 +5,7 @@ import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
+import org.openmrs.Group;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.OrderType;
@@ -253,63 +254,63 @@ public interface AdministrationDAO {
 	 * @param ConceptClass to create
 	 * @throws DAOException
 	 */
-	public void createConceptClass(ConceptClass privilege) throws DAOException;
+	public void createConceptClass(ConceptClass cc) throws DAOException;
 
 	/**
 	 * Update ConceptClass
 	 * @param ConceptClass to update
 	 * @throws DAOException
 	 */
-	public void updateConceptClass(ConceptClass privilege) throws DAOException;
+	public void updateConceptClass(ConceptClass cc) throws DAOException;
 
 	/**
 	 * Delete ConceptClass
 	 * @param ConceptClass to delete
 	 * @throws DAOException
 	 */
-	public void deleteConceptClass(ConceptClass privilege) throws DAOException;	
+	public void deleteConceptClass(ConceptClass cc) throws DAOException;	
 
 	/**
 	 * Create a new ConceptDatatype
 	 * @param ConceptDatatype to create
 	 * @throws DAOException
 	 */
-	public void createConceptDatatype(ConceptDatatype privilege) throws DAOException;
+	public void createConceptDatatype(ConceptDatatype cd) throws DAOException;
 
 	/**
 	 * Update ConceptDatatype
 	 * @param ConceptDatatype to update
 	 * @throws DAOException
 	 */
-	public void updateConceptDatatype(ConceptDatatype privilege) throws DAOException;
+	public void updateConceptDatatype(ConceptDatatype cd) throws DAOException;
 
 	/**
 	 * Delete ConceptDatatype
 	 * @param ConceptDatatype to delete
 	 * @throws DAOException
 	 */
-	public void deleteConceptDatatype(ConceptDatatype privilege) throws DAOException;	
+	public void deleteConceptDatatype(ConceptDatatype cd) throws DAOException;	
 	
 	/**
 	 * Create a new Report
 	 * @param Report to create
 	 * @throws DAOException
 	 */
-	public void createReport(Report privilege) throws DAOException;
+	public void createReport(Report r) throws DAOException;
 
 	/**
 	 * Update Report
 	 * @param Report to update
 	 * @throws DAOException
 	 */
-	public void updateReport(Report privilege) throws DAOException;
+	public void updateReport(Report r) throws DAOException;
 
 	/**
 	 * Delete Report
 	 * @param Report to delete
 	 * @throws DAOException
 	 */
-	public void deleteReport(Report privilege) throws DAOException;
+	public void deleteReport(Report r) throws DAOException;
 	
 	/**
 	 * Iterates over the words in names and synonyms (for each locale) and updates the concept word business table 
@@ -336,4 +337,25 @@ public interface AdministrationDAO {
 	 * @throws DAOException
 	 */
 	public void updateConceptSetDerived() throws DAOException;
+	
+	/**
+	 * Create a new Group
+	 * @param Group to create
+	 * @throws DAOException
+	 */
+	public void createGroup(Group group) throws DAOException;
+
+	/**
+	 * Update Group
+	 * @param Group to update
+	 * @throws DAOException
+	 */
+	public void updateGroup(Group group) throws DAOException;
+
+	/**
+	 * Delete Group
+	 * @param Group to delete
+	 * @throws DAOException
+	 */
+	public void deleteGroup(Group group) throws DAOException;	
 }

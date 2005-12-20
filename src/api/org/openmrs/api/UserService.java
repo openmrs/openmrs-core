@@ -2,6 +2,7 @@ package org.openmrs.api;
 
 import java.util.List;
 
+import org.openmrs.Group;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
@@ -189,5 +190,37 @@ public class UserService {
 	 */
 	public Privilege getPrivilege(String p) throws APIException {
 		return context.getDAOContext().getUserDAO().getPrivilege(p);
+	}
+	
+	/**
+	 * Returns all groups currently possible for any User
+	 * @return Global list of groups
+	 * @throws APIException
+	 */
+	public List<Group> getGroups() throws APIException {
+		return context.getDAOContext().getUserDAO().getGroups();
+	}
+	
+	/**
+	 * Returns group object with given string group
+	 * @return Group
+	 * @throws APIException
+	 */
+	public Group getGroup(String r) throws APIException {
+		return context.getDAOContext().getUserDAO().getGroup(r);
+	}
+	
+	/**
+	 * Changes the current user's password
+	 * @param pw
+	 * @param pw2
+	 * @throws APIException
+	 */
+	public void changePassword(String pw, String pw2) throws APIException {
+		context.getDAOContext().getUserDAO().changePassword(pw, pw2);
+	}
+	
+	public void changeQuestionAnswer(String pw, String q, String a) {
+		context.getDAOContext().getUserDAO().changeQuestionAnswer(pw, q, a);
 	}
 }

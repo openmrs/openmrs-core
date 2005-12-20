@@ -7,6 +7,11 @@
 			<spring:message code="User.manage"/>
 		</a>
 	</li>
+	<li <c:if test="<%= request.getRequestURI().contains("group") %>">class="active"</c:if>>
+		<a href="${pageContext.request.contextPath}/admin/users/group.list">
+			<spring:message code="Group.manage"/>
+		</a>
+	</li>
 	<li <c:if test="<%= request.getRequestURI().contains("role") %>">class="active"</c:if>>
 		<a href="${pageContext.request.contextPath}/admin/users/role.list">
 			<spring:message code="Role.manage"/>

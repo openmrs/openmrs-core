@@ -37,20 +37,33 @@
 		</tr>
 		<c:if test="${user.creator == null}">
 			<tr>
-				<td><spring:message code="User.password"/></td>
-				<td><input type="password" name="password"/></td>
+				<td><spring:message code="User.password" /></td>
+				<td><input type="password" name="password" /></td>
 	
 			</tr>
 			<tr>
-				<td><spring:message code="User.confirm"/></td>
-				<td><input type="password" name="confirm"></td>
+				<td><spring:message code="User.confirm" /></td>
+				<td><input type="password" name="confirm" /></td>
+			</tr>
+			<tr>
+				<td><spring:message code="User.secretQuestion" /></td>
+				<td><input type="text" name="secretQuestion" size="50" /></td>
+	
+			</tr>
+			<tr>
+				<td><spring:message code="User.secretAnswer" /></td>
+				<td><input type="text" name="secretAnswer" size="50" /></td>
+			</tr>
+			<tr>
+				<td><spring:message code="User.forceChange" /></td>
+				<td><input type="checkbox" name="forceChange" value="true" /></td>
 			</tr>
 		</c:if>
 		<tr>
-			<td><spring:message code="User.firstName"/></td>
+			<td><spring:message code="User.firstName" /></td>
 			<td>
 				<spring:bind path="user.firstName">
-					<input type="text" name="${status.expression}" value="${status.value}"/>
+					<input type="text" name="${status.expression}" value="${status.value}" />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>

@@ -2,12 +2,17 @@ package org.openmrs.api;
 
 import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Tribe;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.PatientDAO;
+import org.openmrs.util.Helper;
 
 /**
  * Patient-related services
@@ -18,6 +23,8 @@ import org.openmrs.api.context.Context;
  */
 public class PatientService {
 
+	private Log log = LogFactory.getLog(this.getClass());
+	
 	private Context context;
 	
 	public PatientService(Context c) {
@@ -62,8 +69,8 @@ public class PatientService {
 	 * @return set of patients matching identifier
 	 * @throws APIException
 	 */
-	public Set<Patient> getPatientsByIdentifier(String identifier) throws APIException {
-		return context.getDAOContext().getPatientDAO().getPatientsByIdentifier(identifier);
+	public Set<Patient> getPatientsByIdentifier(String identifier, boolean includeVoided) throws APIException {
+		return context.getDAOContext().getPatientDAO().getPatientsByIdentifier(identifier, includeVoided);
 	}
 	
 	/**
@@ -73,8 +80,8 @@ public class PatientService {
 	 * @return set of patients matching name
 	 * @throws APIException
 	 */
-	public Set<Patient> getPatientsByName(String name) throws APIException {
-		return context.getDAOContext().getPatientDAO().getPatientsByName(name);
+	public Set<Patient> getPatientsByName(String name, boolean includeVoided) throws APIException {
+		return context.getDAOContext().getPatientDAO().getPatientsByName(name, includeVoided);
 	}
 	
 	/**
@@ -172,4 +179,54 @@ public class PatientService {
 		return context.getDAOContext().getPatientDAO().getLocation(locationId);
 	}
 	
+	public List<Patient> findPatients(String query, boolean includeVoided) {
+		
+		List<Patient> patients = new Vector<Patient>();
+		PatientDAO dao = context.getDAOContext().getPatientDAO();
+		
+		//query must be more than 2 characters
+		if (query.length() < 3)
+			return patients;
+		
+		// if there is a number in the query string
+		if (query.matches(".*\\d+.*")) {
+			log.debug("Query: " + query);
+			//if there is no hyphen:
+			if (query.lastIndexOf('-') != query.length() - 2) {
+				// append checkdigit and search
+				try {
+					log.debug("appended checkdigit: " + query + "-" + Helper.getCheckdigit(query));
+					patients.addAll(dao.getPatientsByIdentifier(query + "-" + Helper.getCheckdigit(query), includeVoided));
+				} catch (Exception e){}
+				
+				int ch = query.charAt(query.length()-1);
+				
+				if (ch > 48 && ch > 57) {
+					//if the last character is a number
+					try {
+						String q = query.substring(0, query.length() - 1);
+						int cd = Helper.getCheckdigit(q);
+						if (cd == ch) {
+							//if the last number is the checkdigit, do the search with that as the checkdigit
+							patients.addAll(dao.getPatientsByIdentifier(q + "-" + cd, includeVoided));
+						}
+						else {
+							// the last number is not the check digit, get the checkdigit for the entire string
+							cd = Helper.getCheckdigit(query);
+							patients.addAll(dao.getPatientsByIdentifier(query + "-" + cd, includeVoided));
+						}
+					} catch(Exception e) {}
+				}
+			}
+			else { //there is a hyphen
+				patients.addAll(dao.getPatientsByIdentifier(query, includeVoided));
+			}
+				
+		}
+		else {
+			//there is no number in the string, search on name
+			patients.addAll(dao.getPatientsByName(query, includeVoided));
+		}
+		return patients;
+	}
 }

@@ -7,6 +7,7 @@ import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
+import org.openmrs.Group;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.OrderType;
@@ -328,8 +329,8 @@ public class AdministrationService {
 	 * @param ConceptClass to create
 	 * @throws APIException
 	 */
-	public void createConceptClass(ConceptClass privilege) throws APIException {
-		context.getDAOContext().getAdministrationDAO().createConceptClass(privilege);
+	public void createConceptClass(ConceptClass cc) throws APIException {
+		context.getDAOContext().getAdministrationDAO().createConceptClass(cc);
 	}
 
 	/**
@@ -337,8 +338,8 @@ public class AdministrationService {
 	 * @param ConceptClass to update
 	 * @throws APIException
 	 */
-	public void updateConceptClass(ConceptClass privilege) throws APIException {
-		context.getDAOContext().getAdministrationDAO().updateConceptClass(privilege);
+	public void updateConceptClass(ConceptClass cc) throws APIException {
+		context.getDAOContext().getAdministrationDAO().updateConceptClass(cc);
 	}
 
 	/**
@@ -346,8 +347,8 @@ public class AdministrationService {
 	 * @param ConceptClass to delete
 	 * @throws APIException
 	 */
-	public void deleteConceptClass(ConceptClass privilege) throws APIException {
-		context.getDAOContext().getAdministrationDAO().deleteConceptClass(privilege);
+	public void deleteConceptClass(ConceptClass cc) throws APIException {
+		context.getDAOContext().getAdministrationDAO().deleteConceptClass(cc);
 	}
 
 	/**
@@ -355,8 +356,8 @@ public class AdministrationService {
 	 * @param ConceptDatatype to create
 	 * @throws APIException
 	 */
-	public void createConceptDatatype(ConceptDatatype privilege) throws APIException {
-		context.getDAOContext().getAdministrationDAO().createConceptDatatype(privilege);
+	public void createConceptDatatype(ConceptDatatype cd) throws APIException {
+		context.getDAOContext().getAdministrationDAO().createConceptDatatype(cd);
 	}
 
 	/**
@@ -364,8 +365,8 @@ public class AdministrationService {
 	 * @param ConceptDatatype to update
 	 * @throws APIException
 	 */
-	public void updateConceptDatatype(ConceptDatatype privilege) throws APIException {
-		context.getDAOContext().getAdministrationDAO().updateConceptDatatype(privilege);
+	public void updateConceptDatatype(ConceptDatatype cd) throws APIException {
+		context.getDAOContext().getAdministrationDAO().updateConceptDatatype(cd);
 	}
 
 	/**
@@ -373,8 +374,8 @@ public class AdministrationService {
 	 * @param ConceptDatatype to delete
 	 * @throws APIException
 	 */
-	public void deleteConceptDatatype(ConceptDatatype privilege) throws APIException {
-		context.getDAOContext().getAdministrationDAO().deleteConceptDatatype(privilege);
+	public void deleteConceptDatatype(ConceptDatatype cd) throws APIException {
+		context.getDAOContext().getAdministrationDAO().deleteConceptDatatype(cd);
 	}
 	
 	/**
@@ -382,8 +383,8 @@ public class AdministrationService {
 	 * @param Report to create
 	 * @throws APIException
 	 */
-	public void createReport(Report privilege) throws APIException {
-		
+	public void createReport(Report report) throws APIException {
+		context.getDAOContext().getAdministrationDAO().createReport(report);
 	}
 
 	/**
@@ -391,8 +392,8 @@ public class AdministrationService {
 	 * @param Report to update
 	 * @throws APIException
 	 */
-	public void updateReport(Report privilege) throws APIException {
-		
+	public void updateReport(Report report) throws APIException {
+		context.getDAOContext().getAdministrationDAO().updateReport(report);
 	}
 
 	/**
@@ -400,8 +401,8 @@ public class AdministrationService {
 	 * @param Report to delete
 	 * @throws APIException
 	 */
-	public void deleteReport(Report privilege) throws APIException {
-		
+	public void deleteReport(Report report) throws APIException {
+		context.getDAOContext().getAdministrationDAO().deleteReport(report);
 	}
 	
 	/**
@@ -436,5 +437,32 @@ public class AdministrationService {
 	 */
 	public void updateConceptSetDerived() throws APIException {
 		context.getDAOContext().getAdministrationDAO().updateConceptSetDerived();
+	}
+	
+	/**
+	 * Create a new Group
+	 * @param Group to create
+	 * @throws APIException
+	 */
+	public void createGroup(Group group) throws APIException {
+		context.getDAOContext().getAdministrationDAO().createGroup(group);
+	}
+
+	/**
+	 * Update Group
+	 * @param Group to update
+	 * @throws APIException
+	 */
+	public void updateGroup(Group group) throws APIException {
+		context.getDAOContext().getAdministrationDAO().updateGroup(group);
+	}
+
+	/**
+	 * Delete Group
+	 * @param Group to delete
+	 * @throws APIException
+	 */
+	public void deleteGroup(Group group) throws APIException {
+		context.getDAOContext().getAdministrationDAO().deleteGroup(group);
 	}
 }

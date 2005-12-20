@@ -2,6 +2,7 @@ package org.openmrs.api.db;
 
 import java.util.List;
 
+import org.openmrs.Group;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
@@ -150,5 +151,30 @@ public interface UserDAO {
 	 * @return Privilege
 	 * @throws DAOException
 	 */
-	public Privilege getPrivilege(String p) throws DAOException;	
+	public Privilege getPrivilege(String p) throws DAOException;
+	
+	/**
+	 * Returns all groups currently possible for any User
+	 * @return Global list of groups
+	 * @throws DAOException
+	 */
+	public List<Group> getGroups() throws DAOException;
+
+	/**
+	 * Returns group object with given string group
+	 * @return Group
+	 * @throws DAOException
+	 */
+	public Group getGroup(String r) throws DAOException;
+	
+	/**
+	 * Resets the current users password
+	 * @param pw
+	 * @param pw2
+	 * @throws DAOException
+	 */
+	public void changePassword(String pw, String pw2) throws DAOException;
+	
+	public void changeQuestionAnswer(String pw, String q, String a) throws DAOException;
+	
 }

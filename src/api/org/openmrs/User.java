@@ -21,6 +21,7 @@ public class User extends Person implements java.io.Serializable {
 	private String firstName;
 	private String middleName;
 	private String lastName;
+	private String secretQuestion;
 	private Set<Role> roles;
 
 	/*private User creator;
@@ -255,6 +256,20 @@ public class User extends Person implements java.io.Serializable {
 
 	 */
 	
+	/**
+	 * @return Returns the secretQuestion.
+	 */
+	public String getSecretQuestion() {
+		return secretQuestion;
+	}
+
+	/**
+	 * @param secretQuestion The secretQuestion to set.
+	 */
+	public void setSecretQuestion(String secretQuestion) {
+		this.secretQuestion = secretQuestion;
+	}
+
 	public String toString() {
 		return username;
 	}

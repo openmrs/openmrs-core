@@ -49,7 +49,7 @@ public interface PatientDAO {
 	 * @return set of patients matching identifier
 	 * @throws DAOException
 	 */
-	public Set<Patient> getPatientsByIdentifier(String identifier) throws DAOException;
+	public Set<Patient> getPatientsByIdentifier(String identifier, boolean includeVoided) throws DAOException;
 	
 	/**
 	 * Find patients by name
@@ -58,7 +58,7 @@ public interface PatientDAO {
 	 * @return set of patients matching name
 	 * @throws DAOException
 	 */
-	public Set<Patient> getPatientsByName(String name) throws DAOException;
+	public Set<Patient> getPatientsByName(String name, boolean includeVoided) throws DAOException;
 	
 	/**
 	 * Void patient record (functionally delete patient from system)

@@ -11,6 +11,7 @@
 <script type="text/javascript" src='<%= request.getContextPath() %>/dwr/interface/DWRConceptService.js'></script>
 <script type="text/javascript" src='<%= request.getContextPath() %>/dwr/engine.js'></script>
 <script type="text/javascript" src='<%= request.getContextPath() %>/dwr/util.js'></script>
+<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/openmrsSearch.js"></script>
 <script type="text/javascript" src="<%= request.getContextPath() %>/scripts/conceptSearch.js"></script>
 <script type="text/javascript" src="conceptForm.js"></script>
 <script type="text/javascript">

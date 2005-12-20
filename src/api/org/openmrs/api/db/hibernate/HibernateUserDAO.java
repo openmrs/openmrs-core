@@ -5,13 +5,17 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Hibernate;
+import org.hibernate.NonUniqueObjectException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
+import org.openmrs.Group;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.util.Security;
@@ -161,18 +165,20 @@ public class HibernateUserDAO implements
 			Session session = HibernateUtil.currentSession();
 			try {
 				HibernateUtil.beginTransaction();
-				session.saveOrUpdate(user);
+				try {
+					session.update(user);
+				}
+				catch (NonUniqueObjectException e) {
+					User u = (User)session.merge(user);
+					session.evict(u);
+					session.update(user);
+				}
 				HibernateUtil.commitTransaction();
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
 				throw new DAOException(e.getMessage());
 			}
-			
-			//must update the persistent user object that we have sitting around if the user
-			//updated themselves (also assists us when user changes their username)
-			if (context.getAuthenticatedUser().getUsername().equals(user.getUsername()))
-				session.update(context.getAuthenticatedUser());
 		}
 	}
 
@@ -293,5 +299,112 @@ public class HibernateUserDAO implements
 		Role role = (Role)session.get(Role.class, r);
 		
 		return role;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.UserService#getGroups()
+	 */
+	public List<Group> getGroups() throws DAOException {
+
+		Session session = HibernateUtil.currentSession();
+		
+		List<Group> groups = session.createQuery("from Group r order by r.group").list();
+		
+		return groups;
+	}
+
+	/**
+	 * @see org.openmrs.api.db.UserService#getGroup()
+	 */
+	public Group getGroup(String r) throws DAOException {
+
+		Session session = HibernateUtil.currentSession();
+		Group group = (Group)session.get(Group.class, r);
+		
+		return group;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.UserDAO#changePassword(java.lang.String, java.lang.String)
+	 */
+	public void changePassword(String pw, String pw2) throws DAOException {
+		
+		Session session = HibernateUtil.currentSession();
+		
+		User u = context.getAuthenticatedUser();
+		
+		String passwordOnRecord = (String) session.createSQLQuery(
+			"select password from users where user_id = ?")
+			.addScalar("password", Hibernate.STRING)
+			.setInteger(0, u.getUserId())
+			.uniqueResult();
+		
+		String saltOnRecord = (String) session.createSQLQuery(
+			"select salt from users where user_id = ?")
+			.addScalar("salt", Hibernate.STRING)
+			.setInteger(0, u.getUserId())
+			.uniqueResult();
+
+		try {
+			String hashedPassword = Security.encodeString(pw + saltOnRecord);
+			
+			if (!passwordOnRecord.equals(hashedPassword)) {
+				throw new DAOException("Passwords don't match");
+			}
+			
+			//update the user with the new password
+			HibernateUtil.beginTransaction();
+			String salt = Security.getRandomToken();
+			String newPassword = Security.encodeString(pw2 + salt);
+			session.createQuery("update User set password = :pw, salt = :salt where user_id = :userid")
+				.setParameter("pw", newPassword)
+				.setParameter("salt", salt)
+				.setParameter("userid", u.getUserId())
+				.executeUpdate();
+			HibernateUtil.commitTransaction();
+		}
+		catch (ContextAuthenticationException e) {
+			log.error(e);
+			throw new DAOException(e);
+		}
+	}
+	
+	public void changeQuestionAnswer(String pw, String question, String answer) throws DAOException {
+		
+		Session session = HibernateUtil.currentSession();
+		
+		User u = context.getAuthenticatedUser();
+		
+		String passwordOnRecord = (String) session.createSQLQuery(
+		"select password from users where user_id = ?")
+		.addScalar("password", Hibernate.STRING)
+		.setInteger(0, u.getUserId())
+		.uniqueResult();
+		
+		String saltOnRecord = (String) session.createSQLQuery(
+		"select salt from users where user_id = ?")
+		.addScalar("salt", Hibernate.STRING)
+		.setInteger(0, u.getUserId())
+		.uniqueResult();
+		
+		try {
+			String hashedPassword = Security.encodeString(pw + saltOnRecord);
+			
+			if (!passwordOnRecord.equals(hashedPassword)) {
+				throw new DAOException("Passwords don't match");
+			}
+		}
+		catch (ContextAuthenticationException e) {
+			log.error(e);
+			throw new DAOException(e);
+		}
+		
+		HibernateUtil.beginTransaction();
+		session.createQuery("update User set secret_question = :q, secret_answer = :a where user_id = :userid")
+			.setParameter("q", question)
+			.setParameter("a", answer)
+			.setParameter("userid", u.getUserId())
+			.executeUpdate();
+		HibernateUtil.commitTransaction();
 	}
 }

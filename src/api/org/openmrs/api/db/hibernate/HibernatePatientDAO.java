@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
@@ -81,20 +82,22 @@ public class HibernatePatientDAO implements PatientDAO {
 		}
 	}
 
-	public Set<Patient> getPatientsByIdentifier(String identifier) throws DAOException {
+	public Set<Patient> getPatientsByIdentifier(String identifier, boolean includeVoided) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
-		Query query = session.createQuery("select patient from Patient patient where patient.identifiers.identifier like '%' || ? || '%'");
-		query.setString(0, identifier);
+		Query query;
+		
+		if (includeVoided) {
+			query = session.createQuery("select patient from Patient patient where patient.identifiers.identifier = :id");
+			query.setString("id", identifier);
+		}
+		else {
+			query = session.createQuery("select patient from Patient patient where patient.identifiers.identifier = :id and patient.voided = :void");
+			query.setString("id", identifier);
+			query.setBoolean("void", includeVoided);
+		}
+		
 		List<Patient> patients = query.list();
-
-		/*
-		//TODO this will return 3 patient #1's if 3 identifiers are matched. fix?
-		List<Patient> patients = session.createCriteria(Patient.class)
-						.createCriteria("identifiers", "i")
-						.add(Expression.like("i.identifier", identifier, MatchMode.ANYWHERE))
-						.list();
-		*/
 		
 		Set<Patient> returnSet = new HashSet<Patient>();
 		returnSet.addAll(patients);
@@ -102,29 +105,32 @@ public class HibernatePatientDAO implements PatientDAO {
 		return returnSet;
 	}
 
-	public Set<Patient> getPatientsByName(String name) throws DAOException {
+	public Set<Patient> getPatientsByName(String name, boolean includeVoided) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
 		//TODO simple name search to start testing, will need to make "real" name search
 		//		i.e. split on whitespace, guess at first/last name, etc
 		// TODO return the matched name instead of the primary name
-		//   possible solution: create org.openmrs.PatientListItem and return a list of those
+		//   possible solution: "select new" org.openmrs.PatientListItem and return a list of those
 		
 		Set<Patient> patients = new HashSet<Patient>();
 		
 		name.replace(", ", " ");
 		String[] names = name.split(" ");
 		
+		Criteria criteria = session.createCriteria(Patient.class).createAlias("names", "name");
 		for (String n : names) {
-			patients.addAll(session.createCriteria(Patient.class)
-					.createAlias("names", "name")
-					.add(Expression.or(
-							Expression.like("name.familyName", n, MatchMode.ANYWHERE),
-							Expression.like("name.givenName", n, MatchMode.ANYWHERE)
-					)	)
-					.list()
-				);
+					criteria.add(Expression.or(
+							Expression.like("name.familyName", n, MatchMode.START),
+							Expression.like("name.givenName", n, MatchMode.START)
+						));
 		}
+		
+		if (includeVoided == false) {
+			criteria.add(Expression.eq("voided", new Boolean(false)));
+		}
+
+		patients.addAll(criteria.list());
 		
 		return patients;
 	}
@@ -155,18 +161,6 @@ public class HibernatePatientDAO implements PatientDAO {
 		updatePatient(patient);
 	}
 
-	/*  See getPatientByIdentifier(String)
-	 * 
-	public List findPatient(String q) {
-		return getHibernateTemplate()
-				.find(
-						"from Patient as p "
-						+ "left join fetch p.patientIdentifiers pid "
-						+ "where pid.patientIdentifierId.identifier = ?",
-						q);
-	}
-	*/
-
 	/**
 	 * @see org.openmrs.api.db.PatientService#deletePatient(org.openmrs.Patient)
 	 */
@@ -181,7 +175,6 @@ public class HibernatePatientDAO implements PatientDAO {
 			HibernateUtil.rollbackTransaction();
 			throw new DAOException(e.getMessage());
 		}
-			
 	}
 
 	/**

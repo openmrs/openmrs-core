@@ -9,10 +9,10 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.context.Context;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
-import org.openmrs.util.Helpers;
+import org.openmrs.api.context.Context;
+import org.openmrs.util.Helper;
 import org.openmrs.web.Constants;
 
 
@@ -45,7 +45,7 @@ public class ForEachRecordTag extends BodyTagSupport {
 			records = ps.getTribes().iterator();
 		}
 		else if (name.equals("civilStatus")) {
-			Map<String, String> opts = Helpers.OPENMRS_CIVIL_STATUS;
+			Map<String, String> opts = Helper.OPENMRS_CIVIL_STATUS;
 			records = opts.entrySet().iterator();
 			select = select.toString() + "=" + opts.get(select);
 		}

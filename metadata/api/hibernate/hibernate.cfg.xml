@@ -83,6 +83,7 @@
 		<mapping resource="org/openmrs/api/db/hibernate/User.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Privilege.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Role.hbm.xml" />
+		<!-- <mapping resource="org/openmrs/api/db/hibernate/Group.hbm.xml" /> -->
 		
 		<mapping resource="org/openmrs/api/db/hibernate/Patient.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/PatientAddress.hbm.xml" />
