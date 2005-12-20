@@ -73,6 +73,9 @@ public class PatientService {
 		return context.getDAOContext().getPatientDAO().getPatientsByIdentifier(identifier, includeVoided);
 	}
 	
+	public Set<Patient> getPatientsByName(String name) throws APIException {
+		return getPatientsByName(name, false);
+	}
 	/**
 	 * Find patients by name
 	 * 
