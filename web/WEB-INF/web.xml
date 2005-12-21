@@ -94,6 +94,11 @@
 		<location>/WEB-INF/view/uncaughtException.jsp</location>
 	</error-page>
 	
+	<error-page>
+		<error-code>404</error-code>
+		<location>/missing.htm</location>
+	</error-page>
+	
 	<!--
 	<resource-ref>
 		<description>Connection to database as defined in META-INF/context.xml</description>
