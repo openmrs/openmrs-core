@@ -18,7 +18,7 @@ public class ConceptAnswer implements java.io.Serializable {
 	private Integer conceptAnswerId;
 	private Concept concept;
 	private Concept answerConcept;
-	private Integer answerDrug;
+	private Drug answerDrug;
 	private User creator;
 	private Date dateCreated;
 
@@ -90,14 +90,14 @@ public class ConceptAnswer implements java.io.Serializable {
 	/**
 	 * @return Returns the answerDrug.
 	 */
-	public Integer getAnswerDrug() {
+	public Drug getAnswerDrug() {
 		return answerDrug;
 	}
 
 	/**
 	 * @param answerDrug The answerDrug to set.
 	 */
-	public void setAnswerDrug(Integer answerDrug) {
+	public void setAnswerDrug(Drug answerDrug) {
 		this.answerDrug = answerDrug;
 	}
 
