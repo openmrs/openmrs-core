@@ -48,11 +48,11 @@ public class PatientServiceTest extends TestCase {
 		
 		Set patientList;
 		
-		patientList = ps.getPatientsByIdentifier("???");
+		patientList = ps.getPatientsByIdentifier("???", true);
 		assertNotNull(patientList);
 		assertTrue(patientList.size() == 0);
 		
-		patientList = ps.getPatientsByIdentifier("");
+		patientList = ps.getPatientsByIdentifier("", true);
 		assertNotNull(patientList);
 		assertTrue(patientList.size() > 0);
 		

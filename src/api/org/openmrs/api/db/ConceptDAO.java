@@ -34,6 +34,14 @@ public interface ConceptDAO {
 	public Concept getConcept(Integer conceptId);
 	
 	/**
+	 * Return a list of concepts sorted on sortBy in direction
+	 * @param sortBy
+	 * @param direction
+	 * @return List of concepts
+	 */
+	public List<Concept> getConcepts(String sortBy, String direction);
+	
+	/**
 	 * Update the given concept
 	 * @param concept to be updated
 	 */

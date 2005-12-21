@@ -67,6 +67,7 @@
 		patient = p;
 		$("name").innerHTML = p.givenName + " " + p.familyName;
 		$("gender").innerHTML = p.gender;
+		var html = "";
 		if (p.address.address1 != null)
 			html = p.address.address1 + "<br/>";
 		if (p.address.address2 != null)

@@ -53,6 +53,16 @@ public class ConceptService {
 	}
 	
 	/**
+	 * Return a list of concepts sorted on sortBy in dir direction (asc/desc)
+	 * @param sortBy
+	 * @param dir
+	 * @return List of concepts
+	 */
+	public List<Concept> getConcepts(String sortBy, String dir) {
+		return context.getDAOContext().getConceptDAO().getConcepts(sortBy, dir);
+	}
+	
+	/**
 	 * Update the given concept
 	 * @param concept to be updated
 	 */

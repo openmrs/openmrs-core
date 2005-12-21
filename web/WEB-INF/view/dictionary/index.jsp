@@ -45,9 +45,13 @@
 
 <h2><spring:message code="dictionary.title" /></h2>
 
+<a href="<%= request.getContextPath() %>/downloadDictionary.csv">Download the concept dictionary</a> in CSV format -- (dynamically creates a CSV file containing current dictionary terms/concepts)<br />
+<br />
+
 <div id="findPatient">
 	<b class="boxHeader"><spring:message code="Concept.find"/></b>
 	<div class="box">
+
 		<form method="get" id="searchForm" onSubmit="return search(0); return null;">
 			<div style="float: right">
 				<input type="checkbox" id="includeRetired" value="true" onclick="search(0, event); searchText.focus();">

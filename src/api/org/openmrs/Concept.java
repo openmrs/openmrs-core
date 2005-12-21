@@ -22,9 +22,6 @@ public class Concept implements java.io.Serializable {
 
 	private Integer conceptId;
 	private Boolean retired;
-	private String name;
-	private String shortName;
-	private String description;
 	private ConceptDatatype datatype;
 	private ConceptClass conceptClass;
 	private String units;
@@ -237,20 +234,6 @@ public class Concept implements java.io.Serializable {
 	}
 
 	/**
-	 * @return Returns the description.
-	 */
-	public String getDescription() {
-		return description;
-	}
-
-	/**
-	 * @param description The description to set.
-	 */
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	/**
 	 * @return Returns the icd10.
 	 */
 	public String getIcd10() {
@@ -276,20 +259,6 @@ public class Concept implements java.io.Serializable {
 	 */
 	public void setLoinc(String loinc) {
 		this.loinc = loinc;
-	}
-
-	/**
-	 * @return Returns the name.
-	 */
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * @param name The name to set.
-	 */
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	/**
@@ -379,20 +348,6 @@ public class Concept implements java.io.Serializable {
 	 */
 	public void setRetired(Boolean retired) {
 		this.retired = retired;
-	}
-
-	/**
-	 * @return Returns the shortName.
-	 */
-	public String getShortName() {
-		return shortName;
-	}
-
-	/**
-	 * @param shortName The shortName to set.
-	 */
-	public void setShortName(String shortName) {
-		this.shortName = shortName;
 	}
 
 	/**

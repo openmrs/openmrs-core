@@ -12,6 +12,7 @@
 		<servlet-name>loginServlet</servlet-name>
 		<url-pattern>/loginServlet</url-pattern>
 	</servlet-mapping>
+
 	<servlet>
 		<servlet-name>logoutServlet</servlet-name>
 		<servlet-class>org.openmrs.web.LogoutServlet</servlet-class>
@@ -20,6 +21,7 @@
 		<servlet-name>logoutServlet</servlet-name>
 		<url-pattern>/logout</url-pattern>
 	</servlet-mapping>
+
 	<servlet>
 		<servlet-name>formDownloadServlet</servlet-name>
 		<servlet-class>org.openmrs.web.FormDownloadServlet</servlet-class>
@@ -28,10 +30,21 @@
 		<servlet-name>formDownloadServlet</servlet-name>
 		<url-pattern>/formDownload</url-pattern>
 	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>downloadDictionaryServlet</servlet-name>
+		<servlet-class>org.openmrs.web.DownloadDictionaryServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>downloadDictionaryServlet</servlet-name>
+		<url-pattern>/downloadDictionary.csv</url-pattern>
+	</servlet-mapping>
+
 		
 	<listener>
 		<listener-class>org.openmrs.web.Listener</listener-class>
 	</listener>
+
 	
 	<servlet>
 		<servlet-name>dwr-invoker</servlet-name>

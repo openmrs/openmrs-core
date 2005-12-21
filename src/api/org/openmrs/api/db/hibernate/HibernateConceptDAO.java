@@ -103,6 +103,44 @@ public class HibernateConceptDAO implements
 	}
 
 	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getConcepts(java.lang.String, java.lang.String)
+	 */
+	public List<Concept> getConcepts(String sort, String dir) throws APIException {
+		
+		Session session = HibernateUtil.currentSession();
+		
+		Criteria criteria;
+		Order order;
+		
+		String sql = "from Concept concept";
+		
+		try {
+			Concept.class.getDeclaredField(sort);
+		}
+		catch (NoSuchFieldException e) {
+			try {
+				ConceptName.class.getDeclaredField(sort);
+				sort = "names." + sort;
+			}
+			catch (NoSuchFieldException e2) {
+				sort = "conceptId";
+			}
+		}
+		
+		sql += " order by concept." + sort;
+		if (dir.equals("desc"))
+			sql += " desc";
+		else
+			sql += " asc";
+		
+		Query query = session.createQuery(sql);
+		 
+		List<Concept> concepts = query.list();
+		
+		return concepts;
+	}
+	
+	/**
 	 * @see org.openmrs.api.db.ConceptService#updateConcept(org.openmrs.Concept)
 	 */
 	public void updateConcept(Concept concept) {
