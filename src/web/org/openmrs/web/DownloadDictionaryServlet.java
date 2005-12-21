@@ -37,7 +37,7 @@ public class DownloadDictionaryServlet extends HttpServlet {
 			return;
 		}
 		
-		Locale locale = org.openmrs.web.Util.getLocale(request);
+		Locale locale = context.getLocale();
 		
 		ConceptService cs = context.getConceptService();
 		String s = new SimpleDateFormat("dMy_Hm").format(new Date());

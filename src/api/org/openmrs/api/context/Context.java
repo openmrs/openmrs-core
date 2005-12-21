@@ -43,7 +43,7 @@ public class Context {
 	private AdministrationService administrationService;
 	private FormService formService;
 	private OrderService orderService;
-	private Locale locale;
+	private Locale locale = new Locale("en", "US");
 	private ReportService reportService;
 
 	public Context() {

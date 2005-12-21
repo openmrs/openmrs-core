@@ -10,10 +10,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptWord;
-import org.openmrs.api.context.Context;
 import org.openmrs.api.ConceptService;
+import org.openmrs.api.context.Context;
 import org.openmrs.web.Constants;
-import org.openmrs.web.Util;
 
 import uk.ltd.getahead.dwr.ExecutionContext;
 
@@ -31,7 +30,6 @@ public class DWRConceptService {
 				.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		HttpServletRequest request = ExecutionContext.get().getHttpServletRequest();
-		Locale locale = Util.getLocale(request);
 		
 		//TODO add localization for messages
 		
@@ -40,6 +38,7 @@ public class DWRConceptService {
 			objectList.add("Please <a href='" + request.getContextPath() + "/logout'>log in</a> again.");
 		}
 		else {
+			Locale locale = context.getLocale();
 			try {
 				ConceptService cs = context.getConceptService();
 				List<ConceptWord> words = new Vector<ConceptWord>();
