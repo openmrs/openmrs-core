@@ -142,18 +142,19 @@ body {
 	text-decoration: line-through;
 }
 
-span.error, div.error {
-	border: 1px dashed darkred;
+.error {
 	background-color: lightpink;
-	padding: 1px 6px 1px 6px;
-	margin-left: 4px;
-	margin-right: 4px;
+}
+	span.error, div.error {
+		border: 1px dashed darkred;
+		padding: 1px 6px 1px 6px;
+		margin-left: 4px;
+		margin-right: 4px;
+		vertical-align: middle;
 	}
 	input.error, textarea.error {
+		background-color: white;
 		color: darkred;
-	}
-	span.error {
-		vertical-align: middle;
 	}
 	
 .smallButton {
@@ -232,8 +233,8 @@ fieldset {
 	}
 	#optionsTOC li {
 		list-style-type: none;
-		margin: 0px;
-		padding: 1px 1px 1px 0;
+		margin: 0;
+		padding: 0;
 		border: 1px solid white;
 	}
 	#optionsTOC li.selected {
@@ -244,7 +245,6 @@ fieldset {
 	}
 	#optionsTOC li a {
 		display: block;
-		width: 100%;
-		padding: 2px;
+		padding: 3px;
 	}
 	

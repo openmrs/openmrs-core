@@ -34,29 +34,30 @@ public class OptionsFormController extends SimpleFormController {
 	 */
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object object, BindException errors) throws Exception {
 	
-		//HttpSession httpSession = request.getSession();
-		//Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		HttpSession httpSession = request.getSession();
+		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		OptionsForm opts = (OptionsForm)object;
 		
-		if (!opts.getOldPassword().equals("")) {
-			if (opts.getNewPassword().equals(""))
-				errors.rejectValue("newPassword", "error.password.weak");
-			else if (!opts.getNewPassword().equals(opts.getConfirmPassword())) {
-				errors.rejectValue("newPassword", "error.password.match");
-				errors.rejectValue("confirmPassword", "error.password.match");
+		if (context != null) {
+			if (!opts.getOldPassword().equals("")) {
+				if (opts.getNewPassword().equals(""))
+					errors.rejectValue("newPassword", "error.password.weak");
+				else if (!opts.getNewPassword().equals(opts.getConfirmPassword())) {
+					errors.rejectValue("newPassword", "error.password.match");
+					errors.rejectValue("confirmPassword", "error.password.match");
+				}
 			}
-		}
-
-		if (!opts.getSecretQuestionPassword().equals("")) {
-			if (!opts.getSecretAnswerConfirm().equals(opts.getSecretAnswerNew())) {
-				errors.rejectValue("secretAnswerNew", "error.options.secretAnswer.match");
-				errors.rejectValue("secretAnswerConfirm", "error.options.secretAnswer.match");
+	
+			if (!opts.getSecretQuestionPassword().equals("")) {
+				if (!opts.getSecretAnswerConfirm().equals(opts.getSecretAnswerNew())) {
+					errors.rejectValue("secretAnswerNew", "error.options.secretAnswer.match");
+					errors.rejectValue("secretAnswerConfirm", "error.options.secretAnswer.match");
+				}
 			}
-		}
-		
-		// TODO catch errors
-		
+			
+			// TODO catch errors
+		}			
 		
 		return super.processFormSubmission(request, response, object, errors); 
 	}
@@ -103,6 +104,9 @@ public class OptionsFormController extends SimpleFormController {
 		if (!errors.hasErrors()) {
 			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "options.saved");
 		}
+		else {
+			return super.processFormSubmission(request, response, opts, errors);
+		}
 		
 		view = getSuccessView();
 		return new ModelAndView(new RedirectView(view));
@@ -126,8 +130,10 @@ public class OptionsFormController extends SimpleFormController {
 			User user = context.getAuthenticatedUser();
 
 			// TODO - add user services 
+			//Map<String, String> props = us.getUserProperties(user);
 			//opts.setDefaultLocation(us.getDefaultLocation());
 			//opts.setDefaultLanguage(us.getDefaultLanguage());
+			//opts.setShowRetiredMessage(us.getShowRetiredMessage());
 			
 		}
 		

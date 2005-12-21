@@ -5,156 +5,6 @@
 <openmrs:require privilege="" otherwise="/login.htm"
 	redirect="/options.form" />
 
-<h2><spring:message code="options.title" /></h2>
-
-<spring:hasBindErrors name="opts">
-	<spring:message code="fix.error" />
-	<div class="error"><c:forEach items="${errors.allErrors}" var="error">
-		<spring:message code="${error.code}" text="${error.code}" />
-		<br />
-		<!-- ${error} -->
-	</c:forEach></div>
-	<br />
-</spring:hasBindErrors>
-
-<form method="post" id="optionsForm">
-
-<fieldset><legend><spring:message code="options.default.legend" /></legend>
-<table>
-	<tr>
-		<td><spring:message code="options.default.location" /></td>
-		<td>
-			<spring:bind path="opts.defaultLocation">
-				<select name="location">
-					<c:forEach items="${locations}" var="loc">
-						<option value="${loc.locationId}" <c:if test="${loc.locationId == status.value}">selected</c:if>>${loc.name}</option>
-					</c:forEach>
-				</select>
-				<c:if test="${status.errorMessage != ''}">
-					<span class="error">${status.errorMessage}</span>
-				</c:if>
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
-		<td><spring:message code="options.default.language" /></td>
-		<td>
-			<spring:bind path="opts.defaultLanguage">
-				<select name="defaultLanguage">
-					<option value="en">English</option>
-					<option value="fr">Français</option>
-					<option value="de">Deutsch</option>
-				</select>
-				<c:if test="${status.errorMessage != ''}">
-					<span class="error">${status.errorMessage}</span>
-				</c:if>
-			</spring:bind>
-		</td>
-	</tr>
-</table>
-<br />
-<br />
-</fieldset>
-
-<fieldset><legend><spring:message code="options.password.legend" /></legend>
-<table>
-	<tr>
-		<td><spring:message code="options.password.old" /></td>
-		<td>
-			<spring:bind path="opts.oldPassword">
-				<input type="password" name="oldPassword" value="${status.value}" />
-				<c:if test="${status.errorMessage != ''}">
-					<span class="error">${status.errorMessage}</span>
-				</c:if>
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
-		<td><spring:message code="options.password.new" /></td>
-		<td>
-			<spring:bind path="opts.newPassword">
-				<input type="password" name="newPassword"
-			value="${status.value}" />
-				<c:if test="${status.errorMessage != ''}">
-					<span class="error">${status.errorMessage}</span>
-				</c:if>
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
-		<td><spring:message code="options.password.confirm" /></td>
-		<td>
-			<spring:bind path="opts.confirmPassword">
-				<input type="password" name="confirmPassword"
-			value="${status.value}" />
-				<c:if test="${status.errorMessage != ''}">
-					<span class="error">${status.errorMessage}</span>
-				</c:if>
-			</spring:bind>
-		</td>
-	</tr>
-</table>
-<br />
-<br />
-</fieldset>
-
-<fieldset><legend><spring:message code="options.secretQuestion.legend" /></legend>
-<table>
-	<tr>
-		<td><spring:message code="options.password.old" /></td>
-		<td>
-			<spring:bind path="opts.secretQuestionPassword">
-				<input type="password" name="oldPassword" value="${status.value}" />
-				<c:if test="${status.errorMessage != ''}">
-					<span class="error">${status.errorMessage}</span>
-				</c:if>
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
-		<td><spring:message code="options.secretQuestionNew" /></td>
-		<td>
-			<spring:bind path="opts.secretQuestionNew">
-				<input type="text" name="secretQuestionNew"
-			value="${status.value}" />
-				<c:if test="${status.errorMessage != ''}">
-					<span class="error">${status.errorMessage}</span>
-				</c:if>
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
-		<td><spring:message code="options.secretAnswerNew" /></td>
-		<td>
-			<spring:bind path="opts.secretAnswerNew">
-				<input type="password" name="secretAnswerNew"
-			value="${status.value}" />
-				<c:if test="${status.errorMessage != ''}">
-					<span class="error">${status.errorMessage}</span>
-				</c:if>
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
-		<td><spring:message code="options.secretAnswerConfirm" /></td>
-		<td>
-			<spring:bind path="opts.secretAnswerConfirm">
-				<input type="password" name="secretAnswerConfirm"
-					value="${status.value}" />
-				<c:if test="${status.errorMessage != ''}">
-					<span class="error">${status.errorMessage}</span>
-				</c:if>
-			</spring:bind>
-		</td>
-	</tr>
-</table>
-<br />
-<br />
-</fieldset>
-<div><br />
-<input type="submit" value="<spring:message code="options.save"/>"></div>
-</form>
-
 <script type="text/javascript">
 
 window.onload = init;
@@ -176,6 +26,7 @@ function init() {
 			else
 				sections[seci].text = '# ' + seci;
 			sections[seci].secid = children[i].id;
+			sections[seci].error = containsError(children[i]);
 			seci++;
 			if(sections.length != 1) children[i].style.display = 'none';
 			else var selectedid = children[i].id;
@@ -192,6 +43,9 @@ function init() {
 		a.onclick = uncoversection;
 		a.appendChild(document.createTextNode(sections[i].text));
 		a.secid = sections[i].secid;
+		if (sections[i].error) {
+			a.className = "error";
+		}
 		li.appendChild(a);
 		toc.appendChild(li);
 	}
@@ -216,6 +70,184 @@ function uncoversection() {
 	return false;
 }
 
+function containsError(element) {
+	if (element) {
+		var child = element.firstChild;
+		while (child != null) {
+			if (child.className == 'error') {
+				return true;
+			}
+			else if (containsError(child) == true) {
+				return true;
+			}
+			child = child.nextSibling;
+		}
+	}
+	return false;
+}
+
 </script>
+
+<h2><spring:message code="options.title" /></h2>
+
+<spring:hasBindErrors name="opts">
+	<spring:message code="fix.error" />
+	<div class="error"><c:forEach items="${errors.allErrors}" var="error">
+		<spring:message code="${error.code}" text="${error.code}" />
+		<br />
+		<!-- ${error} -->
+	</c:forEach></div>
+	<br />
+</spring:hasBindErrors>
+
+<form method="post" id="optionsForm">
+
+<fieldset><legend><spring:message code="options.default.legend" /></legend>
+<table>
+	<tr>
+		<td><spring:message code="options.default.location" /></td>
+		<td>
+			<spring:bind path="opts.defaultLocation">
+				<select name="${status.expression}">
+					<c:forEach items="${locations}" var="loc">
+						<option value="${loc.locationId}" <c:if test="${loc.locationId == status.value}">selected</c:if>>${loc.name}</option>
+					</c:forEach>
+				</select>
+				<c:if test="${status.errorMessage != ''}">
+					<span class="error">${status.errorMessage}</span>
+				</c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<td><spring:message code="options.default.language" /></td>
+		<td>
+			<spring:bind path="opts.defaultLanguage">
+				<select name="${status.expression}">
+					<option value="en">English</option>
+					<option value="fr">Français</option>
+					<option value="de">Deutsch</option>
+				</select>
+				<c:if test="${status.errorMessage != ''}">
+					<span class="error">${status.errorMessage}</span>
+				</c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<td><spring:message code="options.showRetiredMessage" /></td>
+		<td>
+			<spring:bind path="opts.showRetiredMessage">
+				<input type="hidden" name="_${status.expression}" value="true" />
+				<input type="checkbox" name="${status.expression}" value="true" <c:if test="${status.value == true}">checked</c:if> />
+				<c:if test="${status.errorMessage != ''}">
+					<span class="error">${status.errorMessage}</span>
+				</c:if>
+			</spring:bind>
+		</td>
+	</tr>
+</table>
+<br />
+<br />
+</fieldset>
+
+<fieldset><legend><spring:message code="options.password.legend" /></legend>
+<table>
+	<tr>
+		<td><spring:message code="options.password.old" /></td>
+		<td>
+			<spring:bind path="opts.oldPassword">
+				<input type="password" name="${status.expression}" value="${status.value}" />
+				<c:if test="${status.errorMessage != ''}">
+					<span class="error">${status.errorMessage}</span>
+				</c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<td><spring:message code="options.password.new" /></td>
+		<td>
+			<spring:bind path="opts.newPassword">
+				<input type="password" name="${status.expression}"
+			value="${status.value}" />
+				<c:if test="${status.errorMessage != ''}">
+					<span class="error">${status.errorMessage}</span>
+				</c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<td><spring:message code="options.password.confirm" /></td>
+		<td>
+			<spring:bind path="opts.confirmPassword">
+				<input type="password" name="${status.expression}"
+			value="${status.value}" />
+				<c:if test="${status.errorMessage != ''}">
+					<span class="error">${status.errorMessage}</span>
+				</c:if>
+			</spring:bind>
+		</td>
+	</tr>
+</table>
+<br />
+<br />
+</fieldset>
+
+<fieldset><legend><spring:message code="options.secretQuestion.legend" /></legend>
+<table>
+	<tr>
+		<td><spring:message code="options.password.old" /></td>
+		<td>
+			<spring:bind path="opts.secretQuestionPassword">
+				<input type="password" name="${status.expression}" value="${status.value}" />
+				<c:if test="${status.errorMessage != ''}">
+					<span class="error">${status.errorMessage}</span>
+				</c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<td><spring:message code="options.secretQuestionNew" /></td>
+		<td>
+			<spring:bind path="opts.secretQuestionNew">
+				<input type="text" name="${status.expression}"
+			value="${status.value}" />
+				<c:if test="${status.errorMessage != ''}">
+					<span class="error">${status.errorMessage}</span>
+				</c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<td><spring:message code="options.secretAnswerNew" /></td>
+		<td>
+			<spring:bind path="opts.secretAnswerNew">
+				<input type="password" name="${status.expression}"
+			value="${status.value}" />
+				<c:if test="${status.errorMessage != ''}">
+					<span class="error">${status.errorMessage}</span>
+				</c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<td><spring:message code="options.secretAnswerConfirm" /></td>
+		<td>
+			<spring:bind path="opts.secretAnswerConfirm">
+				<input type="password" name="${status.expression}"
+					value="${status.value}" />
+				<c:if test="${status.errorMessage != ''}">
+					<span class="error">${status.errorMessage}</span>
+				</c:if>
+			</spring:bind>
+		</td>
+	</tr>
+</table>
+<br />
+<br />
+</fieldset>
+<div><br />
+<input type="submit" value="<spring:message code="options.save"/>"></div>
+</form>
 
 <%@ include file="/WEB-INF/template/footer.jsp"%>

@@ -349,9 +349,11 @@ public class HibernateUserDAO implements
 			String hashedPassword = Security.encodeString(pw + saltOnRecord);
 			
 			if (!passwordOnRecord.equals(hashedPassword)) {
+				log.error("Passwords don't match");
 				throw new DAOException("Passwords don't match");
 			}
 			
+			log.debug("udpating password");
 			//update the user with the new password
 			HibernateUtil.beginTransaction();
 			String salt = Security.getRandomToken();

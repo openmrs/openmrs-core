@@ -4,6 +4,7 @@ public class OptionsForm {
 
 	private String defaultLocation = "";
 	private String defaultLanguage = "";
+	private Boolean showRetiredMessage = true;
 	
 	private String oldPassword = "";
 	private String newPassword = "";
@@ -38,6 +39,14 @@ public class OptionsForm {
 
 	public void setDefaultLocation(String defaultLocation) {
 		this.defaultLocation = defaultLocation;
+	}
+
+	public Boolean getShowRetiredMessage() {
+		return showRetiredMessage;
+	}
+
+	public void setShowRetiredMessage(Boolean showRetiredMessage) {
+		this.showRetiredMessage = showRetiredMessage;
 	}
 
 	public String getNewPassword() {
