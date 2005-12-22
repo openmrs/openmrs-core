@@ -17,18 +17,20 @@
 
 <body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
 	<div id="userBar">
-		<openmrs:isAuthenticated converse="false">
-			<spring:message code="header.logged.in"/> ${authenticatedUser} | 
-			<a href='<%= request.getContextPath() %>/logout'>
-				<spring:message code="header.logout" />
-			</a>
-		</openmrs:isAuthenticated>
-		<openmrs:isAuthenticated converse="true">
-			<spring:message code="header.logged.out"/> | 
-			<a href='<%= request.getContextPath() %>/login.htm'>
-				<spring:message code="header.login"/>
-			</a>
-		</openmrs:isAuthenticated>
+			<openmrs:authentication>
+				<c:if test="${authenticatedUser != null}">
+					<spring:message code="header.logged.in"/> ${authenticatedUser.firstName} ${authenticatedUser.lastName} | 
+					<a href='<%= request.getContextPath() %>/logout'>
+						<spring:message code="header.logout" />
+					</a>
+				</c:if>
+				<c:if test="${authenticatedUser == null}">
+					<spring:message code="header.logged.out"/> | 
+					<a href='<%= request.getContextPath() %>/login.htm'>
+						<spring:message code="header.login"/>
+					</a>
+				</c:if>
+			</openmrs:authentication>
 		| <a href='<%= request.getContextPath() %>/help.htm'><spring:message code="header.help"/></a>
 	</div>
 	<div id="content">

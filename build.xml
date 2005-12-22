@@ -156,6 +156,8 @@
 			<fileset dir="web/WEB-INF">
 				<include name="log4j.xml" />
 				<include name="messages*" />
+				<exclude name="**/lib/**" />
+				<exclude name="**/classes/**" />
 			</fileset>
 			<filterset refid="variables.to.replace" />
 		</copy>
@@ -169,7 +171,9 @@
 				preservelastmodified="true"
 				overwrite="true">
 			<fileset dir="web" >
-				<exclude name="**/images/**/*" /> 
+				<exclude name="**/images/**/*" />
+				<exclude name="**/lib/**" />
+				<exclude name="**/classes/**" />
 			</fileset>
 			<filterset refid="variables.to.replace" />
 		</copy>
