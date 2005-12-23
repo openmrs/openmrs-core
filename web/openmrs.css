@@ -25,7 +25,7 @@ body {
 	border: 1px dashed lightgrey;
 	padding: 2px 2px 2px 18px;
 	margin: 2px;
-	background: url(/openmrs/images/info.gif) no-repeat center left;
+	background: url(/@WEBAPP.NAME@/images/info.gif) no-repeat center left;
 	background-color: InfoBackground;
 }
 
@@ -33,7 +33,7 @@ body {
 	border: 1px dashed maroon;
 	padding: 2px 2px 2px 18px;
 	margin: 2px;
-	background: url(/openmrs/images/error.gif) no-repeat center left;
+	background: url(/@WEBAPP.NAME@/images/error.gif) no-repeat center left;
 	background-color: InfoBackground;
 }
 
@@ -179,8 +179,7 @@ a:hover {
 		padding: 2px;
 	}
 .searchIndex, .searchIndexHighlight {
-	float: right;
-	/*text-align: right;*/
+	text-align: right;
 }
 .searchIndexHighlight, .searchHighlight {
 	background-color: 	#F0E68C;

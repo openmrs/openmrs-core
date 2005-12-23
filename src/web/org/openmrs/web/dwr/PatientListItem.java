@@ -15,6 +15,7 @@ public class PatientListItem {
 	private Integer patientId;
 	private String identifier;
 	private String familyName;
+	private String middleName;
 	private String givenName;
 	private String gender;
 	private String race;
@@ -22,6 +23,7 @@ public class PatientListItem {
 	private Boolean birthdateEstimated;
 	private String mothersName;
 	private PatientAddress address;
+	private Boolean voided;
 
 	public PatientListItem() { }
 	
@@ -31,12 +33,14 @@ public class PatientListItem {
 		identifier = patient.getIdentifiers().iterator().next().getIdentifier();
 		PatientName pn = patient.getNames().iterator().next();
 		familyName = pn.getFamilyName();
+		middleName = pn.getMiddleName();
 		givenName = pn.getGivenName();
 		gender = patient.getGender();
 		race = patient.getRace();
 		birthdate = patient.getBirthdate();
 		birthdateEstimated = patient.isBirthdateEstimated();
 		mothersName = patient.getMothersName();
+		voided = patient.isVoided();
 	}
 	
 	public Date getBirthdate() {
@@ -56,11 +60,21 @@ public class PatientListItem {
 	}
 
 	public String getFamilyName() {
+		if (familyName == null) familyName = "";
 		return familyName;
 	}
 
 	public void setFamilyName(String familyName) {
 		this.familyName = familyName;
+	}
+
+	public String getMiddleName() {
+		if (middleName == null) middleName = "";
+		return middleName;
+	}
+
+	public void setMiddleName(String middleName) {
+		this.middleName = middleName;
 	}
 
 	public String getGender() {
@@ -72,6 +86,7 @@ public class PatientListItem {
 	}
 
 	public String getGivenName() {
+		if (givenName == null) givenName = "";
 		return givenName;
 	}
 
@@ -88,6 +103,7 @@ public class PatientListItem {
 	}
 
 	public String getMothersName() {
+		if (mothersName == null) mothersName = "";
 		return mothersName;
 	}
 
@@ -104,6 +120,7 @@ public class PatientListItem {
 	}
 
 	public String getRace() {
+		if (race == null) race = "";
 		return race;
 	}
 
@@ -118,5 +135,15 @@ public class PatientListItem {
 	public void setAddress(PatientAddress address) {
 		this.address = address;
 	}
+
+	public Boolean getVoided() {
+		return voided;
+	}
+
+	public void setVoided(Boolean voided) {
+		this.voided = voided;
+	}
+	
+	
 
 }

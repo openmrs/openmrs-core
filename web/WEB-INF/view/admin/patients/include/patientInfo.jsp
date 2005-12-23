@@ -1,6 +1,6 @@
 <table>
 	<tr>
-		<td>Gender</td>
+		<td><spring:message code="Patient.gender"/></td>
 		<td><spring:bind path="patient.gender">
 			<select name="gender">
 				<option value="M" <c:if test="${status.value == \"M\"}">selected</c:if>>Male</option>
@@ -11,7 +11,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td>Race</td>
+		<td><spring:message code="Patient.race"/></td>
 		<td>
 			<spring:bind path="patient.race">
 				<input type="text" name="race" size="10" value="${status.value}" />
@@ -20,7 +20,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td>Birthdate</td>
+		<td><spring:message code="Patient.birthdate"/></td>
 		<td colspan="3">
 			<spring:bind path="patient.birthdate">			
 				<input type="text" name="birthdate" size="10" 
@@ -28,7 +28,7 @@
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
 			</spring:bind>
 			<spring:bind path="patient.birthdateEstimated">
-				Estimated
+				<spring:message code="Patient.birthdateEstimated"/>
 				<input type="hidden" name="_birthdateEstimated">
 				<input type="checkbox" name="birthdateEstimated" value="true" 
 					   <c:if test="${status.value == true}">checked</c:if> />
@@ -37,7 +37,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td>Birthplace</td>
+		<td><spring:message code="Patient.birthplace"/></td>
 		<td>
 			<spring:bind path="patient.birthplace">
 				<input type="text" name="birthplace" value="${status.value}" />
@@ -46,7 +46,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td>Tribe</td>
+		<td><spring:message code="Patient.tribe"/></td>
 		<td>
 			<spring:bind path="patient.tribe">
 				<select name="tribe">
@@ -61,7 +61,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td>Citizenship</td>
+		<td><spring:message code="Patient.citizenship"/></td>
 		<td>
 			<spring:bind path="patient.citizenship">
 				<input type="text" name="citizenship" value="${status.value}" />
@@ -70,7 +70,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td>Mother's Name</td>
+		<td><spring:message code="Patient.mothersName"/></td>
 		<td>
 			<spring:bind path="patient.mothersName">
 				<input type="text" name="mothersName" value="${status.value}" />
@@ -79,7 +79,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td>Civil Status</td>
+		<td><spring:message code="Patient.civilStatus"/></td>
 		<td>
 			<spring:bind path="patient.civilStatus">
 				<select name="civilStatus">
@@ -94,7 +94,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td>Death Date</td>
+		<td><spring:message code="Patient.deathDate"/></td>
 		<td>
 			<spring:bind path="patient.deathDate">
 			<input type="text" name="deathDate" size="10" 
@@ -102,7 +102,7 @@
 			<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
-		<td>Cause of Death</td>
+		<td><spring:message code="Patient.causeOfDeath"/></td>
 		<td>
 			<spring:bind path="patient.causeOfDeath">
 				<input type="text" name="causeOfDeath" value="${status.value}" />
@@ -111,7 +111,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td>Health District</td>
+		<td><spring:message code="Patient.gender"/></td>
 		<td>
 			<spring:bind path="patient.healthDistrict">
 				<input type="text" name="healthDistrict" value="${status.value}" />
@@ -120,7 +120,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td>Health Center</td>
+		<td><spring:message code="Patient.healthCenter"/></td>
 		<td>
 			<!-- TODO make this list of locations> -->
 			<spring:bind path="patient.healthCenter">

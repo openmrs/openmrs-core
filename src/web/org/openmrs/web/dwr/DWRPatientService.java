@@ -1,5 +1,7 @@
 package org.openmrs.web.dwr;
 
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
@@ -46,6 +48,34 @@ public class DWRPatientService {
 		PatientListItem pli = new PatientListItem(p);
 		pli.setAddress((PatientAddress)p.getAddresses().toArray()[0]);
 		return pli;
+	}
+	
+	public Vector getSimilarPatients(String name, String birthdate, String gender) {
+		Vector patientList = new Vector();
+
+		Context context = (Context) ExecutionContext.get().getSession()
+				.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		try {
+			PatientService ps = context.getPatientService();
+			List<Patient> patients = new Vector<Patient>();
+			
+			Date d = null;
+			if (birthdate.length() > 0)
+				DateFormat.getInstance().parse(birthdate);
+			
+			if (gender.length() < 1)
+				gender = null;
+			
+			patients.addAll(ps.getSimilarPatients(name, d, gender));
+			
+			patientList = new Vector(patients.size());
+			for (Patient p : patients) {
+				patientList.add(new PatientListItem(p));
+			}
+		} catch (Exception e) {
+			log.error(e);
+		}
+		return patientList;
 	}
 
 }

@@ -3,28 +3,38 @@
 
 <dwr>
 
-  <allow>
-
-    <create creator="new" javascript="JDate">
-      <param name="class" value="java.util.Date"/>
-    </create>
-
-	<convert converter="bean" match="org.openmrs.web.dwr.PatientListItem"/>
-	<convert converter="bean" match="org.openmrs.web.dwr.ConceptListItem"/>
-	<convert converter="bean" match="org.openmrs.PatientAddress"/>
-
-    <create creator="new" javascript="DWRPatientService">
-      <param name="class" value="org.openmrs.web.dwr.DWRPatientService" />
-      <include method="findPatients"/>
-      <include method="getPatient"/>
-    </create>
-
-    <create creator="new" javascript="DWRConceptService">
-      <param name="class" value="org.openmrs.web.dwr.DWRConceptService" />
-      <include method="findConcepts"/>
-      <include method="getConcept"/>
-    </create>
-
-  </allow>
+	<allow>
+		<create creator="new" javascript="JDate">
+	      <param name="class" value="java.util.Date"/>
+		</create>
+	
+		<convert converter="bean" match="org.openmrs.web.dwr.PatientListItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.ConceptListItem"/>
+		<convert converter="bean" match="org.openmrs.PatientAddress"/>
+	
+		<create creator="new" javascript="DWRPatientService">
+			<param name="class" value="org.openmrs.web.dwr.DWRPatientService" />
+			<include method="findPatients"/>
+			<include method="getPatient"/>
+			<include method="getSimilarPatients"/>
+		</create>
+	
+		<create creator="new" javascript="DWRConceptService">
+			<param name="class" value="org.openmrs.web.dwr.DWRConceptService" />
+			<include method="findConcepts"/>
+			<include method="getConcept"/>
+		</create>
+	</allow>
+	
+	<signatures>
+		<![CDATA[
+			import org.openmrs.web.dwr.DWRPatientService;
+			import org.openmrs.web.dwr.DWRConceptService;
+			import java.util.Date;
+			import java.util.List;
+			DWRPatientService.getSimilarPatients(String name, Date birthdate, String gender);
+			DWRConceptService.findConcepts(String phrase, List<String> classNames, boolean includeRetired);
+		]]>
+	</signatures>
   
 </dwr>

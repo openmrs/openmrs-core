@@ -1,5 +1,6 @@
 package org.openmrs.api;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -86,6 +87,12 @@ public class PatientService {
 	public Set<Patient> getPatientsByName(String name, boolean includeVoided) throws APIException {
 		return context.getDAOContext().getPatientDAO().getPatientsByName(name, includeVoided);
 	}
+	
+	
+	public Set<Patient> getSimilarPatients(String name, Date birthdate, String gender) throws APIException {
+		return context.getDAOContext().getPatientDAO().getSimilarPatients(name, birthdate, gender);
+	}
+	
 	
 	/**
 	 * Void patient record (functionally delete patient from system)

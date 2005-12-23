@@ -12,7 +12,9 @@ import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.LogicalExpression;
 import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.SimpleExpression;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientAddress;
@@ -135,6 +137,48 @@ public class HibernatePatientDAO implements PatientDAO {
 		return patients;
 	}
 
+	public Set<Patient> getSimilarPatients(String name, Date birthdate, String gender) throws DAOException {
+		Session session = HibernateUtil.currentSession();
+		
+		//TODO simple name search to start testing, will need to make "real" name search
+		//		i.e. split on whitespace, guess at first/last name, etc
+		// TODO return the matched name instead of the primary name
+		//   possible solution: "select new" org.openmrs.PatientListItem and return a list of those
+		
+		Set<Patient> patients = new HashSet<Patient>();
+		
+		name.replace(", ", " ");
+		String[] names = name.split(" ");
+		
+		Criteria criteria = session.createCriteria(Patient.class).createAlias("names", "name");
+		for (String n : names) {
+					criteria.add(Expression.or(
+							Expression.like("name.familyName", n, MatchMode.START),
+							Expression.like("name.givenName", n, MatchMode.START)
+						));
+		}
+		
+		LogicalExpression birthdayMatch = Expression.or(
+				Expression.eq("birthdate", birthdate),
+				Expression.eq("birthdateEstimated", Boolean.TRUE)
+				);
+		SimpleExpression genderMatch = Expression.eq("gender", gender);
+		
+		if (birthdate != null && gender != null) {
+			criteria.add(Expression.and(birthdayMatch, genderMatch));
+		}
+		else if (birthdate != null) {
+			criteria.add(birthdayMatch);
+		}
+		else if (gender != null) {
+			criteria.add(genderMatch);
+		}
+		
+		patients.addAll(criteria.list());
+		
+		return patients;
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 

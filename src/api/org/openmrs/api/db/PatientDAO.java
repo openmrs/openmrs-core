@@ -1,5 +1,6 @@
 package org.openmrs.api.db;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -59,6 +60,8 @@ public interface PatientDAO {
 	 * @throws DAOException
 	 */
 	public Set<Patient> getPatientsByName(String name, boolean includeVoided) throws DAOException;
+	
+	public Set<Patient> getSimilarPatients(String name, Date birthdate, String gender) throws DAOException;
 	
 	/**
 	 * Void patient record (functionally delete patient from system)

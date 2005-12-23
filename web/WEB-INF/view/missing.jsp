@@ -6,7 +6,7 @@
 
 <br /><br />
 
-The page <%= request.getRequestURL() %>
+The page <b><%= request.getRequestURL() %></b>
 cannot be found.  Check the link and try again.
 
 <%@ include file="/WEB-INF/template/footer.jsp" %> 

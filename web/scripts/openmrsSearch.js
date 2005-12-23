@@ -188,7 +188,6 @@ function preFindObjects(phrase) {
 	lastPhraseSearched = text;
 	
 	return findObjects(phrase);
-	
 }
 
 function selectObject(index) {
@@ -202,7 +201,7 @@ function selectObject(index) {
 
 function showHighlight() {
 	if (objectsFound.length > 0) {
-		var elements = document.getElementsByTagName('SPAN')
+		var elements = document.getElementsByTagName('TD')
 		for(i=0; i <elements.length;i++)
 		{
 			if(elements[i].className == 'searchIndex')
@@ -216,7 +215,7 @@ function showHighlight() {
 }
 
 function hideHighlight() {
-	var elements = document.getElementsByTagName('SPAN')
+	var elements = document.getElementsByTagName('TD')
 	for(i=0; i <elements.length;i++)
 	{
 		if(elements[i].className == 'searchIndexHighlight')
@@ -233,11 +232,10 @@ var getNumber = function(searchHit) {
     	}
 		objectsFound.push(searchHit);
 		searchIndex = searchIndex + 1;
-		var str = "";
-		str = str + "<span class='searchIndex'>";
-		str = str + searchIndex + ". ";
-		str = str + "</span>";
-		return str;
+		var td = document.createElement("td");
+		td.className = "searchIndex";
+		td.innerHTML = searchIndex + ". ";
+		return td;
 	};
 
 function fillTable(objects) {
@@ -245,7 +243,7 @@ function fillTable(objects) {
    	if (objects.length == 1 && 
    		keyCode == ENTERKEY) {
    			if (typeof objects[0] == 'string') {
-   				// if only one string item returned, its the error message
+   				// if only one string item returned, its a message
    				hideHighlight();
 			}
    			else {
@@ -307,6 +305,7 @@ function updatePagingNumbers() {
 	if (infoBar == null) {
 		infoBar = document.createElement('div');
 		infoBar.id = "searchInfoBar";
+		infoBar.innerHTML = "&nbsp;";
 		var table = objectHitsTableBody.parentNode;
 		table.parentNode.insertBefore(infoBar, table);
 	}
