@@ -5,7 +5,7 @@
 
 <hibernate-mapping package="org.openmrs">
 
-	<class name="ConceptSetDerived" table="concept_set_derived">
+	<class name="ConceptSet" table="concept_set">
 
 		<composite-id>
 			<key-many-to-one name="concept" column="concept_id"
@@ -16,7 +16,9 @@
 
 		<property name="sortWeight" type="java.lang.Double"
 			column="sort_weight" length="22" />
-
+			
+		<property name="dateCreated" type="java.util.Date" column="date_created" length="19" not-null="true" />
+		
 		<!-- Associations -->
 		<!-- derived association(s) for compound key -->
 		<!-- bi-directional many-to-one association to Concept -->
@@ -30,6 +32,8 @@
 			update="false" insert="false">
 			<column name="concept_set" />
 		</many-to-one>
+
+		<many-to-one name="creator" class="User" column="creator" not-null="true"/>
 
 		<!-- end of derived association(s) -->
 

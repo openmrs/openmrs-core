@@ -3,7 +3,7 @@ package org.openmrs;
 import java.util.Date;
 
 /**
- * ConceptSet 
+ * ConceptConceptSet 
  */
 public class ConceptSet implements java.io.Serializable {
 
@@ -12,7 +12,7 @@ public class ConceptSet implements java.io.Serializable {
 	// Fields
 
 	private Concept concept;
-	private Concept set;
+	private Concept conceptSet;
 	private Double sortWeight;
 	private User creator;
 	private Date dateCreated;
@@ -32,14 +32,14 @@ public class ConceptSet implements java.io.Serializable {
 		if (obj instanceof ConceptSet) {
 			ConceptSet c = (ConceptSet)obj;
 			return (this.concept.equals(c.getConcept()) &&
-					this.set.equals(c.getSet()));
+					this.conceptSet.equals(c.getConceptSet()));
 		}
 		return false;
 	}
 	
 	public int hashCode() {
-		if (this.getConcept() == null || this.getSet() == null) return super.hashCode();
-		return this.getConcept().hashCode() + this.getSet().hashCode();
+		if (this.getConcept() == null || this.getConceptSet() == null) return super.hashCode();
+		return this.getConcept().hashCode() + this.getConceptSet().hashCode();
 	}
 
 	// Property accessors
@@ -58,12 +58,12 @@ public class ConceptSet implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	public Concept getSet() {
-		return set;
+	public Concept getConceptSet() {
+		return conceptSet;
 	}
 
-	public void setSet(Concept set) {
-		this.set = set;
+	public void setConceptSet(Concept set) {
+		this.conceptSet = set;
 	}
 
 	/**

@@ -10,6 +10,7 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.NonUniqueObjectException;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
@@ -28,6 +29,7 @@ import org.openmrs.Privilege;
 import org.openmrs.RelationshipType;
 import org.openmrs.Role;
 import org.openmrs.Tribe;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.api.db.DAOException;
@@ -838,40 +840,45 @@ public class HibernateAdministrationDAO implements
 		log.debug("Updating concept set derivisions for #" + concept.getConceptId().toString());
 		
 		HibernateUtil.beginTransaction();
-		//session.createQuery("delete from ConceptSet where concept = :c")
-		//	.setParameter("c", concept)
-		//	.executeUpdate();
+		// deletes current concept's sets and matching parent's sets
+
 		HibernateUtil.commitTransaction();
-		
 		
 		//try {
 			HibernateUtil.beginTransaction();
 			
-			List<Concept> parents = new Vector<Concept>();
-			List<Concept> children = new Vector<Concept>();
-
-			// this concept is considered a parent 
-			parents.add(concept);
-
-			log.debug("getting parents");
-			// get all parents of this concept (sets it is in)
-			parents.addAll(session.createQuery("from ConceptSet where concept = :c")
-							.setParameter("c", concept)
-							.list());
+			//recursively get all parents
+			List<Concept> parents = getParents(concept);
 			
-			log.debug("getting children");
-			for (ConceptSet set : concept.getConceptSets()) {
-				children.add(set.getConcept());
+			// delete this concept's children and their bursted parents
+			for (Concept parent : parents) {
+				session.createQuery("delete from ConceptSetDerived csd where csd.concept in (select cs.concept from ConceptSet cs where cs.conceptSet = :c) and csd.conceptSet = :parent)")
+						.setParameter("c", concept)
+						.setParameter("parent", parent)
+						.executeUpdate();
 			}
 			
-			ConceptSetDerived derivedSet = null;
-			// make each child a direct child of each parent
-			for (Concept child : children) {
-				Double sort_weight = 1.0;
-				for (Concept parent : parents) {
-					derivedSet = new ConceptSetDerived(parent, child, sort_weight++);
-					session.saveOrUpdate(derivedSet);
+			//set of updates to be passed to the server (unique list)
+			Set<ConceptSetDerived> updates = new HashSet<ConceptSetDerived>();
+			
+			//add parents as sets of parents below
+			ConceptSetDerived csd;
+			ConceptService cs = context.getConceptService();
+			for (Integer a = 0; a < parents.size() - 1; a++) {
+				Concept set = parents.get(a);
+				for (Integer b = a + 1; b < parents.size(); b++) {
+					log.debug("Matching child: " + parents.get(b).getConceptId() + " with parent: " + parents.get(a).getConceptId());
+					Concept conc = parents.get(b);
+					csd = new ConceptSetDerived(set, conc, Double.valueOf(b.doubleValue()));
+					updates.add(csd);
 				}
+			}
+			
+			//recursively add parents to children
+			updates.addAll(deriveChildren(parents, concept));
+			
+			for (ConceptSetDerived c : updates) {
+				session.saveOrUpdate(c);
 			}
 			
 			HibernateUtil.commitTransaction();
@@ -881,6 +888,70 @@ public class HibernateAdministrationDAO implements
 		//	log.error(e);
 		//	throw new DAOException(e.getMessage());
 		//}
+	}
+	
+	private Set<ConceptSetDerived> deriveChildren(List<Concept> parents, Concept current) {
+		List<Concept> children = new Vector<Concept>();
+		Set<ConceptSetDerived> updates = new HashSet<ConceptSetDerived>();
+		
+		ConceptSetDerived derivedSet = null;
+		// make each child a direct child of each parent/grandparent
+		for (ConceptSet childSet : current.getConceptSets()) {
+			Concept child = childSet.getConcept();
+			log.debug("Deriving child: " + child.getConceptId());
+			Double sort_weight = childSet.getSortWeight();
+			for (Concept parent : parents) {
+				log.debug("Matching child: " + child.getConceptId() + " with parent: " + parent.getConceptId());
+				derivedSet = new ConceptSetDerived(parent, child, sort_weight++);
+				updates.add(derivedSet);
+			}
+			
+			//recurse if this child is a set as well
+			if (child.getConceptClass().isSet()) {
+				log.debug("Concept id: " + child.getConceptId() + " is a set");
+				List<Concept> new_parents = new Vector<Concept>();
+				new_parents.addAll(parents);
+				new_parents.add(child);
+				updates.addAll(deriveChildren(new_parents, child));
+			}
+		}
+		
+		return updates;
+	}
+	
+	
+	private List<Concept> getParents(Concept current) {
+		Session session = HibernateUtil.currentSession();
+		List<Concept> parents = new Vector<Concept>();
+		
+		if (current != null) {
+			
+			//String sql = "select cs.concept_set from concept_set cs where cs.concept_id = " + current.getConceptId();
+			//ResultSet rs = session.connection().prepareStatement(sql).executeQuery();
+			//Query query = session.createSQLQuery("select {cs.*} from concept_set {cs} where {cs.concept_id} = :c")
+			//								.addEntity("cs", ConceptSet.class)
+			//								.setInteger("c", current.getConceptId());
+			//Query query = session.createQuery("select con from Concept con where con.conceptSets.concept.conceptId = " + current.getConceptId());
+			Query query = session.createQuery("from Concept c join c.conceptSets sets where sets.concept = ?")
+									.setEntity(0, current);
+			List<Concept> immed_parents = query.list();
+			
+			for (Concept c : immed_parents) {
+				parents.addAll(getParents(c));
+			}
+			
+			parents.add(current);
+			
+			if (log.isDebugEnabled()) {
+				log.debug("parents found: ");
+				for (Concept c : parents) {
+					log.debug("id: " + c.getConceptId());
+				}
+			}
+		}
+		
+		return parents;
+		
 	}
 	
 	public void updateConceptSetDerived() throws DAOException {

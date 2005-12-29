@@ -35,8 +35,9 @@ public class ConceptFormValidator implements Validator {
 			errors.rejectValue("concept", "error.general");
 		}
 		else {
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description");
+			//Won't work without name and description properties on Concept
+			//ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
+			//ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description");
 		}
 	}
 

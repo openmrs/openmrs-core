@@ -192,7 +192,7 @@ public class HibernateConceptDAO implements
 					set.setCreator(authUser);
 					set.setDateCreated(timestamp);
 				}
-				set.setSet(c);
+				set.setConceptSet(c);
 			}
 		}
 		if (c.getAnswers() != null) {

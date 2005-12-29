@@ -14,4 +14,8 @@
 	<input type="submit" value="<spring:message code="ConceptSetDerived.manage"/>">
 </form>
 
+<script type="text/javascript">
+	document.forms[0].elements[0].focus();
+</script>
+
 <%@ include file="/WEB-INF/template/footer.jsp" %>

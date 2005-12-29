@@ -466,5 +466,9 @@ public class Concept implements java.io.Serializable {
 		return false;
 		*/
 	}
+	
+	public String toString() {
+		return conceptId.toString();
+	}
 
 }

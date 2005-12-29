@@ -13,13 +13,23 @@ function findObjects(text) {
     return false;
 }
 
+var editConcept = function(event, index) {
+	if (event.ctrlKey) {
+		var win = window.open();
+		win.location.href = "concept.form?conceptId=" + objectsFound[index-1].conceptId;
+		}
+	else {
+		location.href = "concept.form?conceptId=" + objectsFound[index-1].conceptId;
+	}
+}
+
 var getCellContent = function(conceptHit) { 
 	    if (typeof conceptHit == 'string') {
     		return conceptHit;
     	}	
 	    else {
 			var str = "";
-			str += "<a href=\"#selectObject\" onClick=\"selectObject('" + searchIndex + "'); return false;\" ";
+			str += "<a href=\"#selectObject\" onClick=\"return selectObject('" + searchIndex + "');\" onDblClick=\"return editConcept(event, '" + searchIndex + "')\" ";
 			str += "class='searchHit'>";
 			if (conceptHit.synonym != "") {
 				str += " <span class='mainHit'>" + conceptHit.synonym + "</span>";

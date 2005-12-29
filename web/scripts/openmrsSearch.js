@@ -86,12 +86,12 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay) {
 		keyCode = ENTERKEY;	//mimic user hitting enter key
 	}
 	else {
-		if (event.altKey == false && event.ctrlKey == false) {
+		if (!event.altKey && !event.ctrlKey) {
 			// this if statement cancels the search on alt and control keys
 			keyCode = event.keyCode;
-			if (!keyCode) {
-				//if non-key event
-				keyCode = event.which;
+			if (!keyCode && (event.type == "click" || event.type == "change")) {
+				//if non-key event like clicking checkbox or changing dropdown list
+				keyCode = 1;
 			}
 		}
 	}
@@ -238,7 +238,7 @@ var getNumber = function(searchHit) {
 		return td;
 	};
 
-function fillTable(objects) {
+function fillTable(objects, cells) {
     // If we get only one result and the enter key was pressed jump to that object
    	if (objects.length == 1 && 
    		keyCode == ENTERKEY) {
@@ -260,9 +260,14 @@ function fillTable(objects) {
     DWRUtil.removeAllRows(objectHitsTableBody);	//clear out the current rows
 
     var objs = objects.slice(firstItemDisplayed - 1, firstItemDisplayed + numItemsDisplayed);
-    if (typeof customCellFunctions == "undefined")
-    	customCellFunctions = [ getNumber, getCellContent ];
-    DWRUtil.addRows(objectHitsTableBody, objs, customCellFunctions);
+    var funcs = new Array();
+    if (cells != null)
+    	funcs = cells;
+    else if (typeof customCellFunctions == "undefined")
+    	funcs = [ getNumber, getCellContent ];
+    else
+    	funcs = customCellFunctions;
+    DWRUtil.addRows(objectHitsTableBody, objs, funcs);
     
    	setTimeout("updateInformationBar()", 0);
     

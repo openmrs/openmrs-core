@@ -89,6 +89,7 @@ public class ConceptFormController extends SimpleFormController {
 		Locale locale = RequestContextUtils.getLocale(request);
 		
 		if (context != null && context.isAuthenticated()) {
+			
 			ConceptService cs = context.getConceptService();
 
 			// ==== Concept Synonyms ====
@@ -149,8 +150,12 @@ public class ConceptFormController extends SimpleFormController {
 				
 			// ====set concept_name properties to the correct/current locale
 				String conceptName = request.getParameter("name").toUpperCase();
+				if (conceptName.length() < 1)
+					errors.rejectValue("name", "error.name");
 				String shortName = request.getParameter("shortName");
 				String description = request.getParameter("description");
+				if (conceptName.length() < 1)
+					errors.rejectValue("description", "error.description");
 				ConceptName cn = concept.getName(locale, true);
 				if (cn != null) {
 					cn.setName(conceptName);
@@ -258,7 +263,9 @@ public class ConceptFormController extends SimpleFormController {
 				if (concept != null) {
 					// get locale specific conceptName object
 					conceptName = concept.getName(locale);
-	    	
+					if (conceptName == null) 
+						conceptName = new ConceptName();
+					
 					// get locale specific synonyms
 					conceptSynonyms = concept.getSynonyms(locale);
 		    		

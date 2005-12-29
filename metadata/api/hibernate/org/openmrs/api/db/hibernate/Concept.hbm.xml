@@ -87,7 +87,7 @@
 				<column name="concept_set" />
 			</key>
 			<composite-element class="ConceptSet">
-				<parent name="set"/>
+				<parent name="conceptSet"/>
 				<many-to-one name="concept" class="Concept" column="concept_id" not-null="true"/>
 				<property name="sortWeight" type="java.lang.Double" column="sort_weight" length="22" not-null="true" />
 				<property name="dateCreated" type="java.util.Date" column="date_created" length="19" not-null="true" />

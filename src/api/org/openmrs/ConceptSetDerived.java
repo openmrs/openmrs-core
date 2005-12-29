@@ -11,7 +11,7 @@ public class ConceptSetDerived implements java.io.Serializable {
 	// Fields
 
 	private Concept concept;
-	private Concept set;
+	private Concept conceptSet;
 	private Double sortWeight;
 
 	// Constructors
@@ -21,7 +21,7 @@ public class ConceptSetDerived implements java.io.Serializable {
 	}
 	
 	public ConceptSetDerived(Concept set, Concept concept, Double weight) {
-		setSet(set);
+		setConceptSet(set);
 		setConcept(concept);
 		setSortWeight(weight);
 	}
@@ -30,14 +30,14 @@ public class ConceptSetDerived implements java.io.Serializable {
 		if (obj instanceof ConceptSetDerived) {
 			ConceptSetDerived c = (ConceptSetDerived)obj;
 			return (this.concept.equals(c.getConcept()) &&
-					this.set.equals(c.getSet()));
+					this.conceptSet.equals(c.getConceptSet()));
 		}
 		return false;
 	}
 	
 	public int hashCode() {
-		if (this.getConcept() == null || this.getSet() == null) return super.hashCode();
-		return this.getConcept().hashCode() + this.getSet().hashCode();
+		if (this.getConcept() == null || this.getConceptSet() == null) return super.hashCode();
+		return this.getConcept().hashCode() + this.getConceptSet().hashCode();
 	}
 
 	// Property accessors
@@ -56,12 +56,12 @@ public class ConceptSetDerived implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	public Concept getSet() {
-		return set;
+	public Concept getConceptSet() {
+		return conceptSet;
 	}
 
-	public void setSet(Concept set) {
-		this.set = set;
+	public void setConceptSet(Concept set) {
+		this.conceptSet = set;
 	}
 
 	/**

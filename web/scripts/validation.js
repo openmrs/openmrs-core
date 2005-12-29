@@ -1,5 +1,5 @@
 
-function showError(isValid, obj, msg) {
+function showError(isValid, obj, msgNode, btn) {
 	if (isValid) {
 		// value is valid; hide the error message
 		obj.className = "";	// might need to save classname and re-apply eventually
@@ -23,7 +23,12 @@ function showError(isValid, obj, msg) {
 			sibling = errorTag;
 		}
 		sibling.style.display = "inline";
-		sibling.innerHTML = msg;
+		if (typeof msgNode == "string")
+			msgNode = document.createTextNode(msgNode);
+		removeChildren(sibling);
+		sibling.appendChild(msgNode);
+		if (btn != null)
+			sibling.appendChild(btn);
 		return false;
 	}
 }
@@ -170,12 +175,17 @@ return true;
 	var validateObj = null;
 	var btnObj = null;
 
-	function validateIdentifier(obj, btn, html) {
+	function validateIdentifier(obj, btn, text) {
 		validateObj = obj;
-		html = html + " <input type='button' value='Fix Check Digit' class='smallButton' onClick=\"fixCheckDigit()\"/>";
+		var textNode = document.createTextNode(text);
+		var button = document.createElement("input");
+		button.type = "button";
+		button.value = "Fix Check Digit";
+		button.className = "smallButton";
+		button.onclick = fixCheckDigit;
 		if (btn != null) 
 			btnObj = document.getElementById(btn);
-		if (showError(isValidCheckDigit(obj.value), obj, html)) {
+		if (showError(isValidCheckDigit(obj.value), obj, textNode, button)) {
 			btnObj.disabled = false;
 		} else {
 			btnObj.disabled = true;
@@ -193,3 +203,13 @@ return true;
 			validateIdentifier(obj);
 		}
 	}
+	
+function removeChildren(obj) {
+	var child = obj.firstChild;
+	while (child != null) {
+		next = child.nextSibling;
+		obj.removeChild(child);
+		child = next;
+	}
+}
+		

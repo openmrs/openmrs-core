@@ -1,9 +1,12 @@
 package org.openmrs.web.dwr;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -55,25 +58,34 @@ public class DWRPatientService {
 
 		Context context = (Context) ExecutionContext.get().getSession()
 				.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		try {
-			PatientService ps = context.getPatientService();
-			List<Patient> patients = new Vector<Patient>();
-			
-			Date d = null;
-			if (birthdate.length() > 0)
-				DateFormat.getInstance().parse(birthdate);
-			
-			if (gender.length() < 1)
-				gender = null;
-			
-			patients.addAll(ps.getSimilarPatients(name, d, gender));
-			
-			patientList = new Vector(patients.size());
-			for (Patient p : patients) {
-				patientList.add(new PatientListItem(p));
+		
+		HttpServletRequest request = ExecutionContext.get().getHttpServletRequest();
+		
+		if (context == null) {
+			patientList.add("Your session has expired.");
+			patientList.add("Please <a href='" + request.getContextPath() + "/logout'>log in</a> again.");
+		}
+		else {
+			try {
+				PatientService ps = context.getPatientService();
+				List<Patient> patients = new Vector<Patient>();
+				
+				Date d = null;
+				if (birthdate.length() > 0)
+					d = DateFormat.getDateInstance(DateFormat.SHORT, context.getLocale()).parse(birthdate);
+				
+				if (gender.length() < 1)
+					gender = null;
+				
+				patients.addAll(ps.getSimilarPatients(name, d, gender));
+				
+				patientList = new Vector(patients.size());
+				for (Patient p : patients) {
+					patientList.add(new PatientListItem(p));
+				}
+			} catch (ParseException e) {
+				log.error(e);
 			}
-		} catch (Exception e) {
-			log.error(e);
 		}
 		return patientList;
 	}

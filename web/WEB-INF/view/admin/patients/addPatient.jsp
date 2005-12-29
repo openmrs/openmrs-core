@@ -12,23 +12,29 @@
 
 <script type="text/javascript">
 
-	var name;
+	var patientName;
 	var birthdate;
 	var gender;
 	var form;
-	var noPatientsFound = "No Patients Found.  Add a new Patient";
+	var noPatientsFound = "No Patients Found.  Select to add a new Patient";
+	var patientsFound   = "Add New Patient";
 	
 	function findObjects() {
-		DWRPatientService.getSimilarPatients(preFillTable, name.value, birthdate.value, gender.selectedValue);
+		DWRPatientService.getSimilarPatients(preFillTable, patientName.value, birthdate.value, gender.value);
 		return false;
 	}
 	
 	function preFillTable(patients) {
+		var text = new Array();
 		if (patients.length < 1) {
-			var patient = new Object();
-			patients[0].patientId = noPatientsFound;
+			text.push(noPatientsFound);
+			fillTable([]);
 		}
-		fillTable(patients);
+		else {
+			text.push(patientsFound);
+			fillTable(patients);
+		}
+		setTimeout(DWRUtil.addRows(objectHitsTableBody, text, [getNumber, getTextLink]), 0);
 	}
 	
 	function onSelect(patients) {
@@ -38,14 +44,23 @@
 			document.location = "patient.form?patientId=" + patients[0].patientId;
 	}
 	
-	document.onload = init;
+	var getTextLink = function(p) {
+		var obj = document.createElement("a");
+		obj.href = "patient.form?name=" + patientName.value + "&birthdate=" + birthdate.value + "&gender=" + gender.value;
+		obj.className = "searchHit";
+		obj.innerHTML = p;
+		return obj
+	}
 	
 	var init = function() {
-			name = $("name");
+			patientName = $("patientName");
 			birthdate = $("birthdate");
 			gender = $("gender");
 			form = $("patientForm");
+			patientName.focus();
 		};
+		
+	window.onload = init;
 	
 </script>
 <!-- patientSearch.js must be imported after the findObjects() definition for override -->
@@ -58,7 +73,7 @@
 <table>
 	<tr>
 		<td><spring:message code="Patient.name"/></td>
-		<td><input type="text" name="name" id="name" value="" onKeyUp="search(this, event, false, 500);" /></td>
+		<td><input type="text" name="patientName" id="patientName" value="" onKeyUp="search(this, event, false, 500);" /></td>
 	</tr>
 	<tr>
 		<td><spring:message code="Patient.birthdate"/></td>
@@ -66,7 +81,7 @@
 	</tr>
 	<tr>
 		<td><spring:message code="Patient.gender"/></td>
-		<td><select name="gender" id="gender" onChange="search(0);">
+		<td><select name="gender" id="gender" onChange="search(patientName, event, false, 0);">
 				<option value="M">Male</option>
 				<option value="F">Female</option>
 			</select>

@@ -28,6 +28,8 @@
 
 <h2><spring:message code="Patient.title"/></h2>
 
+<a href="${pageContext.request.contextPath}/admin/patients/addPatient.htm"><spring:message code="Patient.create"/></a><br/><br/>
+
 <div id="findPatient">
 	<b class="boxHeader"><spring:message code="Patient.find"/></b>
 	<div class="box">
@@ -57,12 +59,6 @@
 			 </thead>
 			 <tbody id="patientTableBody">
 			 </tbody>
-			 <tfoot>
-			 	<tr><td colspan="8"><br />
-			 		<i><spring:message code="formentry.patient.missing"/></i> 
-			 		<a href="${pageContext.request.contextPath}/admin/patients/addPatient.htm"><spring:message code="Patient.create"/></a>
-				</td></tr>
-			 </tfoot>
 			</table>
 		</div>
 	</div>
