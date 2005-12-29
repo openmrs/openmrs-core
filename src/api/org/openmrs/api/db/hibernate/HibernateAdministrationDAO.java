@@ -1,5 +1,6 @@
 package org.openmrs.api.db.hibernate;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -955,11 +956,33 @@ public class HibernateAdministrationDAO implements
 	}
 	
 	public void updateConceptSetDerived() throws DAOException {
-		Set<Concept> concepts = new HashSet<Concept>();
-		concepts.addAll(context.getConceptService().getConceptByName(""));
-		for (Concept concept : concepts) {
-			updateConceptSetDerived(concept);
+		Session session = HibernateUtil.currentSession();
+		
+		HibernateUtil.beginTransaction();
+		
+		// remove all of the rows in the derived table
+		session.createQuery("delete from ConceptSetDerived").executeUpdate();
+		
+		try {
+			// remake the derived table by copying over the basic concept_set table
+			session.connection().prepareStatement("insert into concept_set_derived (concept_id, concept_set, sort_weight) select cs.concept_id, cs.concept_set, cs.sort_weight from concept_set cs where not exists (select concept_id from concept_set_derived csd where csd.concept_id = cs.concept_id and csd.concept_set = cs.concept_set)").execute();
+		
+			// burst the concept sets -- make grandchildren direct children of grandparents
+			session.connection().prepareStatement("insert into concept_set_derived (concept_id, concept_set, sort_weight) select cs1.concept_id, cs2.concept_set, cs1.sort_weight from concept_set cs1 join concept_set cs2 where cs2.concept_id = cs1.concept_set and not exists (select concept_id from concept_set_derived csd where csd.concept_id = cs1.concept_id and csd.concept_set = cs2.concept_set)").execute();
+			
+			// burst the concept sets -- make greatgrandchildren direct child of greatgrandparents
+			session.connection().prepareStatement("insert into concept_set_derived (concept_id, concept_set, sort_weight) select cs1.concept_id, cs3.concept_set, cs1.sort_weight from concept_set cs1 join concept_set cs2 join concept_set cs3 where cs1.concept_set = cs2.concept_id and cs2.concept_set = cs3.concept_id and not exists (select concept_id from concept_set_derived csd where csd.concept_id = cs1.concept_id and csd.concept_set = cs3.concept_set)").execute();
+			
+			// TODO This 'algorithm' only solves three layers of children.  Ooptions for correction:
+			//	1) Add a few more join statements to cover 5 layers (conceivable upper limit of layers)
+			//	2) Find the deepest layer and programmaticly create the sql statements
+			//	3) Run the joins on 
 		}
+		catch (SQLException e) {
+			throw new DAOException (e);
+		}
+		
+		HibernateUtil.commitTransaction();
 	}
 	
 	/**
