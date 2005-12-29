@@ -11,6 +11,7 @@
 
 <html>
 	<head>
+		<link href="<%= request.getContextPath() %>/openmrs.css" type="text/css" rel="stylesheet" />
 		<link href="taskpane.css" type="text/css" rel="stylesheet" />
 		<script src="taskpane.js"></script>
 	</head>

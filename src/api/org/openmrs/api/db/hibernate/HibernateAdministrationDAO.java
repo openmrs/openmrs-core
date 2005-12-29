@@ -864,11 +864,9 @@ public class HibernateAdministrationDAO implements
 			
 			//add parents as sets of parents below
 			ConceptSetDerived csd;
-			ConceptService cs = context.getConceptService();
 			for (Integer a = 0; a < parents.size() - 1; a++) {
 				Concept set = parents.get(a);
 				for (Integer b = a + 1; b < parents.size(); b++) {
-					log.debug("Matching child: " + parents.get(b).getConceptId() + " with parent: " + parents.get(a).getConceptId());
 					Concept conc = parents.get(b);
 					csd = new ConceptSetDerived(set, conc, Double.valueOf(b.doubleValue()));
 					updates.add(csd);
@@ -927,12 +925,6 @@ public class HibernateAdministrationDAO implements
 		
 		if (current != null) {
 			
-			//String sql = "select cs.concept_set from concept_set cs where cs.concept_id = " + current.getConceptId();
-			//ResultSet rs = session.connection().prepareStatement(sql).executeQuery();
-			//Query query = session.createSQLQuery("select {cs.*} from concept_set {cs} where {cs.concept_id} = :c")
-			//								.addEntity("cs", ConceptSet.class)
-			//								.setInteger("c", current.getConceptId());
-			//Query query = session.createQuery("select con from Concept con where con.conceptSets.concept.conceptId = " + current.getConceptId());
 			Query query = session.createQuery("from Concept c join c.conceptSets sets where sets.concept = ?")
 									.setEntity(0, current);
 			List<Concept> immed_parents = query.list();

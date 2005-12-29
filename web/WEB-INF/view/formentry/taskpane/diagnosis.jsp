@@ -7,6 +7,7 @@
 <script src='<%= request.getContextPath() %>/dwr/interface/DWRConceptService.js'></script>
 <script src='<%= request.getContextPath() %>/dwr/engine.js'></script>
 <script src='<%= request.getContextPath() %>/dwr/util.js'></script>
+<script src='<%= request.getContextPath() %>/scripts/openmrsSearch.js'></script>
 <script src='<%= request.getContextPath() %>/scripts/conceptSearch.js'></script>
 
 <script>
@@ -22,6 +23,11 @@
 			pickProblem('<%= request.getParameter("mode") %>', '//problem_list', conceptList[i]);
 		}
 	}
+	
+	function search(delay, event) {
+		var searchBox = document.getElementById("searchText");
+		return searchBoxChange('conceptSearchBody', searchBox, event, false, delay);
+	}
 		
 </script>
 
@@ -29,15 +35,15 @@
 
 <h1><spring:message code="diagnosis.title"/></h1>
 
-<form method="POST" onSubmit="return searchBoxChange('conceptTableBody', null, phrase);">
+<form method="POST" onSubmit="return search(0, event);">
 	<input name="mode" type="hidden" value='${request.mode}'>
-	<input name="phrase" id="phrase" type="text" class="prompt" size="10" onkeyup="searchBoxChange('conceptTableBody', event, this, 400)"/>
+	<input name="phrase" id="searchText" type="text" class="prompt" size="10" onkeyup="search(400, event)"/>
 	<br />
 	<small><em><spring:message code="diagnosis.hint"/></em></small>
 </form>
 
 <table border="0">
-	<tbody id="conceptTableBody">
+	<tbody id="conceptSearchBody">
 	</tbody>
 </table>
 
