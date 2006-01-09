@@ -14,7 +14,7 @@ public class ConceptDatatype implements java.io.Serializable {
 	private Integer conceptDatatypeId;
 	private String name;
 	private String description;
-	private String datatypeAbbreviation;
+	private String hl7Abbreviation;
 	private Date dateCreated;
 	private User creator;
 
@@ -78,17 +78,17 @@ public class ConceptDatatype implements java.io.Serializable {
 	}
 
 	/**
-	 * @return Returns the datatypeAbbreviation.
+	 * @return Returns the hl7Abbreviation.
 	 */
-	public String getDatatypeAbbreviation() {
-		return datatypeAbbreviation;
+	public String getHl7Abbreviation() {
+		return hl7Abbreviation;
 	}
 
 	/**
-	 * @param datatypeAbbreviation The datatypeAbbreviation to set.
+	 * @param hl7Abbreviation The hl7Abbreviation to set.
 	 */
-	public void setDatatypeAbbreviation(String datatypeAbbreviation) {
-		this.datatypeAbbreviation = datatypeAbbreviation;
+	public void setHl7Abbreviation(String hl7Abbreviation) {
+		this.hl7Abbreviation = hl7Abbreviation;
 	}
 
 	/**

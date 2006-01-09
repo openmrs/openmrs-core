@@ -153,7 +153,7 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	 * 
 	 */
 	public Boolean getPrecise() {
-		return this.precise;
+		return (precise == null ? false : precise);
 	}
 
 	public void setPrecise(Boolean precise) {
