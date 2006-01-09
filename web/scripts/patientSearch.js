@@ -5,10 +5,17 @@ function search(obj, event, retired, delay) {
 
 if (!findObjects) {
 	var findObjects = function (text) {
-	    DWRPatientService.findPatients(fillTable, text, includeRetired);
-	    patientListing.style.display = "";
-	    return false;
-	   };
+		if (text.length > 2) {
+			DWRPatientService.findPatients(fillTable, text, includeRetired);
+		}
+		else {
+			var msg = new Array();
+			msg.push("Invalid number of search characters");
+			fillTable(msg, [getNumber, getString]);
+		}
+		patientListing.style.display = "";
+		return false;
+	};
 }
 
 var getId		= function(p) { 

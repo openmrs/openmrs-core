@@ -34,7 +34,7 @@
 			text.push(patientsFound);
 			fillTable(patients);
 		}
-		setTimeout(DWRUtil.addRows(objectHitsTableBody, text, [getNumber, getTextLink]), 0);
+		setTimeout("DWRUtil.addRows(objectHitsTableBody, text, [getNumber, getTextLink])", 0);
 	}
 	
 	function onSelect(patients) {

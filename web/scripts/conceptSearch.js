@@ -1,14 +1,16 @@
 function findObjects(text) {
-	
+	if (debugBox) debugBox.innerHTML += '<br> Entering findObjects for: ' + text;
 	//must have at least 2 characters entered or that character be a number
 	if (text.length > 1 || (parseInt(text) >= 0 && parseInt(text) <= 9)) {
 	    if (typeof conceptClasses == 'undefined')	//conceptClasses is only optionally defined
 	    	conceptClasses = new Array();
 	    DWRConceptService.findConcepts(fillTable, text, conceptClasses, includeRetired);
+	    if (debugBox) debugBox.innerHTML += '<br> DWRConceptService.findConcepts called';
 	}
 	else {
-		objectsFound[0] = "Invalid number of search characters";
-		fillTable(objectsFound);
+		var msg = new Array();
+		msg.push("Invalid number of search characters");
+		fillTable(msg);
 	}
     return false;
 }

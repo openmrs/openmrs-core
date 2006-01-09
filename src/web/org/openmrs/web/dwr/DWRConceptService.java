@@ -47,7 +47,7 @@ public class DWRConceptService {
 					// user searched on a number.  Insert concept with corresponding conceptId
 					Concept c = cs.getConcept(Integer.valueOf(phrase));
 					if (c != null) {
-						ConceptWord word = new ConceptWord(phrase, c, locale.getLanguage(), "");
+						ConceptWord word = new ConceptWord(phrase, c, locale.getLanguage(), "Concept Id #" + phrase);
 						words.add(word);
 					}
 				}

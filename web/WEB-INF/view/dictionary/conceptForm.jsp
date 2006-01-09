@@ -390,5 +390,7 @@
 	document.getElementById("searchPhrase").focus();
 </script>
 
+<div id="debugBox"></div>
+
 
 <%@ include file="/WEB-INF/template/footer.jsp"%>

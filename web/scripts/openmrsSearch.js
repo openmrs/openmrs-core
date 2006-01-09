@@ -52,6 +52,8 @@ var lastPhraseSearched;
 var numItemsDisplayed;
 var firstItemDisplayed;
 
+var debugBox;
+
 var ENTERKEY = 13;
 
 resetForm();
@@ -59,10 +61,11 @@ resetForm();
 // clears variables. Equivalent to reloading the page.
 //  (useful for pages with multiple search boxes)
 function resetForm() {
-	lastPhraseSearched = "";
+	hideHighlight();
+	lastPhraseSearched = null;
 	objectsFound = new Array();
 	allObjectsFound = new Array();
-	text = "";
+	text = null;
 	textbox = null;
 	includeRetired = false;
 	searchIndex = 0;
@@ -70,7 +73,8 @@ function resetForm() {
 	numItemsDisplayed = 0;
 	document.onkeypress = hotkey;
 	clearInformationBar();
-	hideHighlight();
+	debugBox = $("debugBox");
+	if (debugBox) debugBox.innerHTML = "";
 }
 
 function searchBoxChange(bodyElementId, obj, event, retired, delay) {
@@ -112,10 +116,12 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay) {
 		return false;
 	}
 	else if (keyCode == ENTERKEY) {
+		if (debugBox) debugBox.innerHTML += '<br> Enter key pressed, search: ' + text;
 		hideHighlight();
 		// if the user hit the enter key then check for sequence of numbers
 		if (text.match(/^\s*\d+\s*(,\d+\s*)*$/))
 		{
+			if (debugBox) debugBox.innerHTML += '<br> text matched set of numbers';
 			var textWords = text.split(/\s*,\s*/);
 			var objectsReturned = new Array();
 			for (i=0; i<textWords.length; i++)
@@ -142,11 +148,14 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay) {
 		textbox.focus();
 		//textbox.select();
 		textbox.value = "";
+		if (debugBox) debugBox.innerHTML += '<br> textbox.value cleared';
 		if (text != lastPhraseSearched || includeRetired != retired) {
 			//this was a new search with the enter key pressed
+			if (debugBox) debugBox.innerHTML += '<br> This was a new search';
 			if (text == "")
 				text = lastPhraseSearched;
-			searchTimeout = setTimeout("preFindObjects('" + text + "')", 0);
+			preFindObjects(text);
+			if (debugBox) debugBox.innerHTML += '<br> preFindObjects timeout called for ENTERKEY';
 		}
 		else if (objectsFound.length == 1) {
 			// this was a new redundant 'search' with enter key pressed and only one object
@@ -155,6 +164,7 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay) {
 		else {
 			// this was a new redundant 'search' with enter key pressed
 			showHighlight();
+			if (debugBox) debugBox.innerHTML += '<br> This was  redundant search';
 		}
 	}
 
@@ -168,7 +178,8 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay) {
 			hideHighlight();
 			if (text.length > 1) {
 				clearInformationBar();
-				searchTimeout = setTimeout("preFindObjects('" + text + "')", delay);
+				searchTimeout = setTimeout("preFindObjects(text)", delay);
+				if (debugBox) debugBox.innerHTML += '<br> preFindObjects timeout called for other key';
 			}
 	}
 	
@@ -181,13 +192,20 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay) {
 }
 
 function preFindObjects(phrase) {
+	if (debugBox) debugBox.innerHTML += '<br> preFindObjects initialized with search on: ' + phrase;
 	clearTimeout(searchTimeout);			//stop any timeout that may have just occurred...fixes 'duplicate data' error
 	objectsFound = new Array();				//zero-out numbered object list
 	searchIndex = 0;						//our numbering is one-based, but the searchIndex is incremented prior to printing
 	firstItemDisplayed = 1;					//zero-out our paging index (but we have a one-based list, see line above)
 	lastPhraseSearched = text;
 	
-	return findObjects(phrase);
+	if (debugBox) debugBox.innerHTML += '<br> findObjects being called';
+	
+	var b = findObjects(phrase);
+	
+	if (debugBox) debugBox.innerHTML += '<br> findObjects called';
+	
+	return b;
 }
 
 function selectObject(index) {
@@ -237,6 +255,7 @@ var getNumber = function(searchHit) {
 		td.innerHTML = searchIndex + ". ";
 		return td;
 	};
+var getString  = function(s) { return s; };
 
 function fillTable(objects, cells) {
     // If we get only one result and the enter key was pressed jump to that object

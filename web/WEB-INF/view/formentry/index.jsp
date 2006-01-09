@@ -55,6 +55,13 @@
 	
 </script>
 
+<style>
+	#findPatientForm {
+		padding: 0px;
+		margin: 0px;
+	}
+</style>
+
 <h2><spring:message code="formentry.title"/></h2>
 
 <div id="findPatient">
