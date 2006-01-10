@@ -50,7 +50,7 @@ public class Context {
 		
 	}
 	
-	public DAOContext getDAOContext() {
+	private DAOContext getDAOContext() {
 		if (daoContext == null)
 			daoContext = new HibernateDAOContext(this);
 		return daoContext;
@@ -73,12 +73,12 @@ public class Context {
 	 * @return concept dictionary-related services
 	 */
 	public ConceptService getConceptService() {
-		if (!isAuthenticated()) {
-			log.warn("unauthorized access to concept service");
-			return null;
-		}
+//		if (!isAuthenticated()) {
+//			log.warn("unauthorized access to concept service");
+//			return null;
+//		}
 		if (conceptService == null)
-			conceptService = new ConceptService(this);
+			conceptService = new ConceptService(this, getDAOContext());
 		return conceptService;
 	}
 	
@@ -86,12 +86,12 @@ public class Context {
 	 * @return encounter-related services
 	 */
 	public EncounterService getEncounterService() {
-		if (!isAuthenticated()) {
-			log.warn("unauthorized access to encounter service");
-			return null;
-		}
+//		if (!isAuthenticated()) {
+//			log.warn("unauthorized access to encounter service");
+//			return null;
+//		}
 		if (encounterService == null)
-			encounterService = new EncounterService(this);
+			encounterService = new EncounterService(this, getDAOContext());
 		return encounterService;
 	}
 	
@@ -99,12 +99,12 @@ public class Context {
 	 * @return observation services
 	 */
 	public ObsService getObsService() {
-		if (!isAuthenticated()) {
-			log.warn("unauthorized access to obs service");
-			return null;
-		}
+//		if (!isAuthenticated()) {
+//			log.warn("unauthorized access to obs service");
+//			return null;
+//		}
 		if (obsService == null)
-			obsService = new ObsService(this);
+			obsService = new ObsService(this, getDAOContext());
 		return obsService;
 	}
 
@@ -112,12 +112,12 @@ public class Context {
 	 * @return patient-related services
 	 */
 	public PatientService getPatientService() {
-		if (!isAuthenticated()) {
-			log.warn("unauthorized access to patient service");
-			return null;
-		}
+//		if (!isAuthenticated()) {
+//			log.warn("unauthorized access to patient service");
+//			return null;
+//		}
 		if (patientService == null)
-			patientService = new PatientService(this);
+			patientService = new PatientService(this, getDAOContext());
 		return patientService;		
 	}
 
@@ -125,12 +125,12 @@ public class Context {
 	 * @return user-related services
 	 */
 	public UserService getUserService() {
-		if (!isAuthenticated()) {
-			log.warn("unauthorized access to user service");
-			return null;
-		}
+//		if (!isAuthenticated()) {
+//			log.warn("unauthorized access to user service");
+//			return null;
+//		}
 		if (userService == null)
-			userService = new UserService(this);
+			userService = new UserService(this, getDAOContext());
 		return userService;
 	}
 
@@ -138,12 +138,12 @@ public class Context {
 	 * @return order service
 	 */
 	public OrderService getOrderService() {
-		if (!isAuthenticated()) {
-			log.warn("unauthorized access to order service");
-			return null;
-		}
+//		if (!isAuthenticated()) {
+//			log.warn("unauthorized access to order service");
+//			return null;
+//		}
 		if (orderService == null)
-			orderService = new OrderService(this);
+			orderService = new OrderService(this, getDAOContext());
 		return orderService;
 	}
 	
@@ -156,7 +156,7 @@ public class Context {
 			return null;
 		}
 		if (formService == null)
-			formService = new FormService(this);
+			formService = new FormService(this, getDAOContext());
 		return formService;
 	}
 	
@@ -169,7 +169,7 @@ public class Context {
 			return null;
 		}
 		if (reportService == null)
-			reportService = new ReportService(this);
+			reportService = new ReportService(this, getDAOContext());
 		return reportService;
 	}
 
@@ -177,12 +177,13 @@ public class Context {
 	 * @return admin-related services
 	 */
 	public AdministrationService getAdministrationService() {
+		// TODO Add authentication on a per function level
 		if (!isAuthenticated()) {
 			log.warn("unauthorized access to administration service");
 			return null;
 		}
 		if (administrationService == null)
-			administrationService = new AdministrationService(this);
+			administrationService = new AdministrationService(this, getDAOContext());
 		return administrationService;
 	}
 

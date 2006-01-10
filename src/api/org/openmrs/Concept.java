@@ -53,8 +53,7 @@ public class Concept implements java.io.Serializable {
 		this.conceptId = conceptId;
 	}
 	
-	/*
-	 * Possibly used for decapitating a ConceptNumeric (to remove the row in concept_numeric
+	// Possibly used for decapitating a ConceptNumeric (to remove the row in concept_numeric)
 	public Concept(ConceptNumeric cn) {
 		conceptId = cn.getConceptId();
 		retired = cn.isRetired();
@@ -73,7 +72,6 @@ public class Concept implements java.io.Serializable {
 		synonyms = cn.getSynonyms();
 		conceptSets = cn.getConceptSets();
 	}
-	*/
 	
 	public boolean equals(Object obj) {
 		if (obj instanceof Concept) {

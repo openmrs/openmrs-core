@@ -1,8 +1,8 @@
 package org.openmrs.web.controller.user;
 
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Locale;
-import java.util.Vector;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -16,7 +16,8 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
-import org.openmrs.web.Constants;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
@@ -53,7 +54,7 @@ public class PrivilegeListController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		Locale locale = request.getLocale();
 		String view = getFormView();
 		if (context != null && context.isAuthenticated()) {
@@ -82,9 +83,9 @@ public class PrivilegeListController extends SimpleFormController {
 			
 			view = getSuccessView();
 			if (!success.equals(""))
-				httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, success);
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
 			if (!error.equals(""))
-				httpSession.setAttribute(Constants.OPENMRS_ERROR_ATTR, error);
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
 		}
 			
 		return new ModelAndView(new RedirectView(view));
@@ -100,15 +101,20 @@ public class PrivilegeListController extends SimpleFormController {
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
     	HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-		//default empty Object
-		List<Privilege> privilegeList = new Vector<Privilege>();
+		//map containing the privilege and true/false whether the privilege is core or not
+		Map<Privilege, Boolean> privilegeList = new LinkedHashMap<Privilege, Boolean>();
 		
 		//only fill the Object is the user has authenticated properly
 		if (context != null && context.isAuthenticated()) {
 			UserService us = context.getUserService();
-	    	privilegeList = us.getPrivileges();
+	    	for (Privilege p : us.getPrivileges()) {
+	    		if (OpenmrsConstants.OPENMRS_CORE_PRIVILEGES().contains(p.getPrivilege()))
+	    			privilegeList.put(p, true);
+	    		else
+	    			privilegeList.put(p, false);
+	    	}
 		}
     	
         return privilegeList;

@@ -17,6 +17,9 @@ import org.openmrs.ConceptSet;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.ConceptDAO;
+import org.openmrs.api.db.DAOContext;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Concept-related services
@@ -29,10 +32,20 @@ public class ConceptService {
 	
 	private final Log log = LogFactory.getLog(getClass());
 
-	Context context;
+	private Context context;
+	private DAOContext daoContext;
 	
-	public ConceptService(Context c) {
+	public ConceptService(Context c, DAOContext d) {
 		this.context = c;
+		this.daoContext = d;
+	}
+	
+	private ConceptDAO getConceptDAO() {
+		// TODO No privilege check for concepts in the openmrs model
+		//if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_CONCEPTS))
+		//	throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_CONCEPTS);
+		
+		return daoContext.getConceptDAO();
 	}
 
 	/**
@@ -40,7 +53,10 @@ public class ConceptService {
 	 * @param concept to be created
 	 */
 	public void createConcept(Concept concept) {
-		context.getDAOContext().getConceptDAO().createConcept(concept);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_CONCEPTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_CONCEPTS);
+		
+		getConceptDAO().createConcept(concept);
 	}
 	
 	/**
@@ -49,7 +65,7 @@ public class ConceptService {
 	 * @return Concept
 	 */
 	public Concept getConcept(Integer conceptId) {
-		return context.getDAOContext().getConceptDAO().getConcept(conceptId);
+		return getConceptDAO().getConcept(conceptId);
 	}
 	
 	/**
@@ -59,7 +75,7 @@ public class ConceptService {
 	 * @return List of concepts
 	 */
 	public List<Concept> getConcepts(String sortBy, String dir) {
-		return context.getDAOContext().getConceptDAO().getConcepts(sortBy, dir);
+		return getConceptDAO().getConcepts(sortBy, dir);
 	}
 	
 	/**
@@ -67,7 +83,10 @@ public class ConceptService {
 	 * @param concept to be updated
 	 */
 	public void updateConcept(Concept concept) {
-		context.getDAOContext().getConceptDAO().updateConcept(concept);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_CONCEPTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_CONCEPTS);
+		
+		getConceptDAO().updateConcept(concept);
 	}
 	
 	/**
@@ -76,7 +95,10 @@ public class ConceptService {
 	 * @param String reason
 	 */
 	public void voidConcept(Concept concept, String reason) {
-		context.getDAOContext().getConceptDAO().voidConcept(concept, reason);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_CONCEPTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_CONCEPTS);
+		
+		getConceptDAO().voidConcept(concept, reason);
 	}
 	
 	/**
@@ -85,7 +107,7 @@ public class ConceptService {
 	 * @return List of concepts
 	 */
 	public List<Concept> getConceptByName(String name) {
-		return context.getDAOContext().getConceptDAO().getConceptByName(name);
+		return getConceptDAO().getConceptByName(name);
 	}
 	
 	/**
@@ -93,7 +115,7 @@ public class ConceptService {
 	 * @return List of Drugs
 	 */
 	public List<Drug> getDrugs() {
-		return context.getDAOContext().getConceptDAO().getDrugs();
+		return getConceptDAO().getDrugs();
 	}
 	
 	/**
@@ -101,7 +123,7 @@ public class ConceptService {
 	 * @return List of Concept class objects
 	 */
 	public List<ConceptClass> getConceptClasses() {
-		return context.getDAOContext().getConceptDAO().getConceptClasses();
+		return getConceptDAO().getConceptClasses();
 	}
 	
 	/**
@@ -109,7 +131,7 @@ public class ConceptService {
 	 * @return ConceptClass
 	 */
 	public ConceptClass getConceptClass(Integer i) {
-		return context.getDAOContext().getConceptDAO().getConceptClass(i);
+		return getConceptDAO().getConceptClass(i);
 	}
 	
 	/**
@@ -117,7 +139,7 @@ public class ConceptService {
 	 * @return List of ConceptDatatypes
 	 */
 	public List<ConceptDatatype> getConceptDatatypes() {
-		return context.getDAOContext().getConceptDAO().getConceptDatatypes();
+		return getConceptDAO().getConceptDatatypes();
 	}
 	
 	/**
@@ -125,7 +147,7 @@ public class ConceptService {
 	 * @return ConceptDatatype
 	 */
 	public ConceptDatatype getConceptDatatype(Integer i) {
-		return context.getDAOContext().getConceptDAO().getConceptDatatype(i);
+		return getConceptDAO().getConceptDatatype(i);
 	}
 	
 	/**
@@ -133,7 +155,7 @@ public class ConceptService {
 	 * @return List
 	 */
 	public List<ConceptSet> getConceptSets(Concept c) {
-		return context.getDAOContext().getConceptDAO().getConceptSets(c);
+		return getConceptDAO().getConceptSets(c);
 	}
 	
 	/**
@@ -141,7 +163,7 @@ public class ConceptService {
 	 * @return ConceptNumeric
 	 */
 	public ConceptNumeric getConceptNumeric(Integer conceptId) {
-		return context.getDAOContext().getConceptDAO().getConceptNumeric(conceptId);
+		return getConceptDAO().getConceptNumeric(conceptId);
 	}
 	
 	/**
@@ -152,7 +174,7 @@ public class ConceptService {
 	 * @return
 	 */
 	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired) {
-		List<ConceptWord> conceptWords = context.getDAOContext().getConceptDAO().findConcepts(phrase, locale, includeRetired);
+		List<ConceptWord> conceptWords = getConceptDAO().findConcepts(phrase, locale, includeRetired);
 		
 		//this will store the unique concept hits to the concept word table
 		//we are assuming the hits are sorted with synonym matches at the bottom
@@ -209,7 +231,7 @@ public class ConceptService {
 	 * @return
 	 */
 	public Concept getPrevConcept(Concept c) {
-		return context.getDAOContext().getConceptDAO().getPrevConcept(c);
+		return getConceptDAO().getPrevConcept(c);
 	}
 
 	/**
@@ -219,7 +241,7 @@ public class ConceptService {
 	 * @return
 	 */
 	public Concept getNextConcept(Concept c) {
-		return context.getDAOContext().getConceptDAO().getNextConcept(c);
+		return getConceptDAO().getNextConcept(c);
 	}
 
 }

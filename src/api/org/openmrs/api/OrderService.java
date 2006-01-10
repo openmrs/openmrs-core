@@ -5,6 +5,9 @@ import java.util.List;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.DAOContext;
+import org.openmrs.api.db.OrderDAO;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Order-related services
@@ -15,10 +18,19 @@ import org.openmrs.api.context.Context;
  */
 public class OrderService {
 
-	Context context;
+	private Context context;
+	private DAOContext daoContext;
 	
-	public OrderService(Context c) {
+	public OrderService(Context c, DAOContext d) {
 		this.context = c;
+		this.daoContext = d;
+	}
+	
+	private OrderDAO getOrderDAO() {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ORDERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ORDERS);
+		
+		return daoContext.getOrderDAO();
 	}
 	
 	/**
@@ -28,7 +40,7 @@ public class OrderService {
 	 * @throws APIException
 	 */
 	public void createOrder(Order order) throws APIException {
-		context.getDAOContext().getOrderDAO().createOrder(order);
+		getOrderDAO().createOrder(order);
 	}
 
 	/**
@@ -39,7 +51,7 @@ public class OrderService {
 	 * @throws APIException
 	 */
 	public Order getOrder(Integer orderId) throws APIException {
-		return context.getDAOContext().getOrderDAO().getOrder(orderId);
+		return getOrderDAO().getOrder(orderId);
 	}
 
 	/**
@@ -49,7 +61,7 @@ public class OrderService {
 	 * @throws APIException
 	 */
 	public void updateOrder(Order order) throws APIException {
-		context.getDAOContext().getOrderDAO().updateOrder(order);
+		getOrderDAO().updateOrder(order);
 	}
 	
 	/**
@@ -68,7 +80,7 @@ public class OrderService {
 	 * @param reason reason for discontinuing order
 	 */
 	public void discontinueOrder(Order order, String reason) throws APIException {
-		context.getDAOContext().getOrderDAO().discontinueOrder(order, reason);
+		getOrderDAO().discontinueOrder(order, reason);
 	}
 
 	/**
@@ -77,7 +89,7 @@ public class OrderService {
 	 * @param order order to be undiscontinued
 	 */
 	public void undiscontinueOrder(Order order) throws APIException {
-		context.getDAOContext().getOrderDAO().undiscontinueOrder(order);
+		getOrderDAO().undiscontinueOrder(order);
 	}
 
 	
@@ -91,7 +103,7 @@ public class OrderService {
 	 * @see #discontinueOrder(Order, String) 
 	 */
 	public void deleteOrder(Order order) throws APIException {
-		context.getDAOContext().getOrderDAO().deleteOrder(order);
+		getOrderDAO().deleteOrder(order);
 	}
 
 	/**
@@ -101,7 +113,7 @@ public class OrderService {
 	 * @param reason reason for voiding order
 	 */
 	public void voidOrder(Order order, String reason) throws APIException {
-		context.getDAOContext().getOrderDAO().voidOrder(order, reason);
+		getOrderDAO().voidOrder(order, reason);
 	}
 
 	/**
@@ -110,7 +122,7 @@ public class OrderService {
 	 * @param order order to be unvoided
 	 */
 	public void unvoidOrder(Order order) throws APIException {
-		context.getDAOContext().getOrderDAO().unvoidOrder(order);
+		getOrderDAO().unvoidOrder(order);
 	}
 
 	/**
@@ -120,7 +132,7 @@ public class OrderService {
 	 * @throws APIException
 	 */
 	public List<OrderType> getOrderTypes() throws APIException {
-		return context.getDAOContext().getOrderDAO().getOrderTypes();
+		return getOrderDAO().getOrderTypes();
 	}
 
 	/**
@@ -131,7 +143,7 @@ public class OrderService {
 	 * @throws APIException
 	 */
 	public OrderType getOrderType(Integer orderTypeId) throws APIException {
-		return context.getDAOContext().getOrderDAO().getOrderType(orderTypeId);
+		return getOrderDAO().getOrderType(orderTypeId);
 	}
 	
 }

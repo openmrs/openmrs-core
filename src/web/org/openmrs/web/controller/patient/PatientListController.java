@@ -14,7 +14,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.PatientService;
-import org.openmrs.web.Constants;
+import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -50,7 +50,7 @@ public class PatientListController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		Locale locale = request.getLocale();
 		String view = getFormView();
 		
@@ -63,7 +63,7 @@ public class PatientListController extends SimpleFormController {
 				ps.voidPatient(ps.getPatient(Integer.valueOf(o)), "");
 			}
 			
-			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Patient.voided");
+			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.voided");
 			view = getSuccessView();
 		}
 		
@@ -80,7 +80,7 @@ public class PatientListController extends SimpleFormController {
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
     	HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		//default empty Object
 		Set<Patient> patientList = new HashSet<Patient>();

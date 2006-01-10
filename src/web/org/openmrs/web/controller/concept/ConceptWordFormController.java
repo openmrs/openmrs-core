@@ -8,7 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.api.context.Context;
-import org.openmrs.web.Constants;
+import org.openmrs.web.WebConstants;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -29,7 +29,7 @@ public class ConceptWordFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		String view = getFormView();
 		
 		if (context != null && context.isAuthenticated()) {
@@ -45,7 +45,7 @@ public class ConceptWordFormController extends SimpleFormController {
 				context.getAdministrationService().updateConceptWords();
 			}
 			view = getSuccessView();
-			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "ConceptWord.updated");
+			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptWord.updated");
 		}
 		
 		return new ModelAndView(new RedirectView(view));

@@ -41,13 +41,13 @@ public class OpenmrsFilter implements Filter {
         //set/forward the request init attribute
         httpRequest.setAttribute( INIT_REQ_ATTR_NAME, INIT_REQ_ATTR_NAME );
         
-        context = (Context)httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+        context = (Context)httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
         
         if (initialRequest == true && context == null) {
         	log.debug("setting context in httpSession");
         	//set the context it needs one
        		context = ContextFactory.getContext();
-       		httpSession.setAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR, context);
+       		httpSession.setAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR, context);
         }
 
 		log.debug("before doFilter");
@@ -62,7 +62,7 @@ public class OpenmrsFilter implements Filter {
 			//only close the transaction if this was the initial request
 			if (initialRequest == true) {
 				log.debug("ending transaction - file: " + httpRequest.getRequestURI());
-//				httpSession.removeAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+//				httpSession.removeAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 				context.endTransaction();
 			}
 		}

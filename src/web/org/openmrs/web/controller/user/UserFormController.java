@@ -17,14 +17,13 @@ import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
-import org.openmrs.web.Constants;
+import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.springframework.web.servlet.view.RedirectView;
 
 public class UserFormController extends SimpleFormController {
 	
@@ -55,7 +54,7 @@ public class UserFormController extends SimpleFormController {
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		User user = (User)obj;
 		UserService us = context.getUserService();
 		
@@ -89,6 +88,9 @@ public class UserFormController extends SimpleFormController {
 				}
 				user.setRoles(set);
 		}
+		else {
+			errors.reject("auth.invalid");
+		}
 				
 		return super.processFormSubmission(request, response, obj, errors);
 	}
@@ -104,24 +106,22 @@ public class UserFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		User user = (User)obj;
-		String view = getFormView();
 		
 		if (context != null && context.isAuthenticated()) {
 			
 			boolean isNew = (user.getUserId() == null);
 			
-			view = getSuccessView();
 			if (isNew)
 				context.getUserService().createUser(user, request.getParameter("password"));
 			else
 				context.getUserService().updateUser(user);
 			
-			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "User.saved");
+			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.saved");
 		}
 		
-		return new ModelAndView(new RedirectView(view));
+		return super.onSubmit(request, response, obj, errors);
 	}
 
 	/**
@@ -134,7 +134,7 @@ public class UserFormController extends SimpleFormController {
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		User user = null;
 		
@@ -154,7 +154,7 @@ public class UserFormController extends SimpleFormController {
     protected Map referenceData(HttpServletRequest request) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		if (context != null && context.isAuthenticated()) {

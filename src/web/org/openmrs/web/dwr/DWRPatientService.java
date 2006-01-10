@@ -14,7 +14,7 @@ import org.openmrs.Patient;
 import org.openmrs.PatientAddress;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
-import org.openmrs.web.Constants;
+import org.openmrs.web.WebConstants;
 
 import uk.ltd.getahead.dwr.ExecutionContext;
 
@@ -27,7 +27,7 @@ public class DWRPatientService {
 		Vector patientList = new Vector();
 
 		Context context = (Context) ExecutionContext.get().getSession()
-				.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		try {
 			PatientService ps = context.getPatientService();
 			List<Patient> patients;
@@ -45,7 +45,7 @@ public class DWRPatientService {
 	}
 	
 	public PatientListItem getPatient(Integer patientId) {
-		Context context = (Context) ExecutionContext.get().getSession().getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context context = (Context) ExecutionContext.get().getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		PatientService ps = context.getPatientService();
 		Patient p = ps.getPatient(patientId);
 		PatientListItem pli = new PatientListItem(p);
@@ -57,7 +57,7 @@ public class DWRPatientService {
 		Vector patientList = new Vector();
 
 		Context context = (Context) ExecutionContext.get().getSession()
-				.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		HttpServletRequest request = ExecutionContext.get().getHttpServletRequest();
 		

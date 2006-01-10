@@ -2,6 +2,8 @@
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
+<openmrs:require privilege="" otherwise="/login.htm" redirect="/admin/index.htm" />
+
 <style>
 	ul#menu, #springnote {
 		background-color: whitesmoke;

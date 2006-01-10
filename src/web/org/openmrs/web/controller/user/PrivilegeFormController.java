@@ -10,7 +10,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Privilege;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
-import org.openmrs.web.Constants;
+import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -47,14 +47,14 @@ public class PrivilegeFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		String view = getFormView();
 		
 		if (context != null && context.isAuthenticated()) {
 			Privilege privilege = (Privilege)obj;
 			context.getAdministrationService().updatePrivilege(privilege);
 			view = getSuccessView();
-			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Privilege.saved");
+			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Privilege.saved");
 		}
 		
 		return new ModelAndView(new RedirectView(view));
@@ -70,7 +70,7 @@ public class PrivilegeFormController extends SimpleFormController {
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		Privilege privilege = null;
 		

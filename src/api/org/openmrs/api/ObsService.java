@@ -10,6 +10,9 @@ import org.openmrs.MimeType;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.DAOContext;
+import org.openmrs.api.db.ObsDAO;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Observation-related services
@@ -21,9 +24,18 @@ import org.openmrs.api.context.Context;
 public class ObsService {
 	
 	private Context context;
+	private DAOContext daoContext;
 	
-	public ObsService(Context c) {
+	public ObsService(Context c, DAOContext d) {
 		this.context = c;
+		this.daoContext = d;
+	}
+	
+	private ObsDAO getObsDAO() {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_OBS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_OBS);
+		
+		return daoContext.getObsDAO();
 	}
 
 	/**
@@ -32,7 +44,7 @@ public class ObsService {
 	 * @throws APIException
 	 */
 	public void createObs(Obs obs) throws APIException {
-		context.getDAOContext().getObsDAO().createObs(obs);
+		getObsDAO().createObs(obs);
 	}
 
 	/**
@@ -42,7 +54,7 @@ public class ObsService {
 	 * @throws APIException
 	 */
 	public Obs getObs(Integer obsId) throws APIException {
-		return context.getDAOContext().getObsDAO().getObs(obsId);
+		return getObsDAO().getObs(obsId);
 	}
 
 	/**
@@ -51,7 +63,7 @@ public class ObsService {
 	 * @throws APIException
 	 */
 	public void updateObs(Obs obs) throws APIException {
-		context.getDAOContext().getObsDAO().updateObs(obs);
+		getObsDAO().updateObs(obs);
 	}
 
 	/**
@@ -61,7 +73,7 @@ public class ObsService {
 	 * @throws APIException
 	 */
 	public void voidObs(Obs obs, String reason) throws APIException {
-		context.getDAOContext().getObsDAO().voidObs(obs, reason);
+		getObsDAO().voidObs(obs, reason);
 	}
 	
 	/**
@@ -70,7 +82,7 @@ public class ObsService {
 	 * @throws APIException
 	 */
 	public void unvoidObs(Obs obs) throws APIException {
-		context.getDAOContext().getObsDAO().unvoidObs(obs);
+		getObsDAO().unvoidObs(obs);
 	}
 
 	/**
@@ -80,7 +92,7 @@ public class ObsService {
 	 * @see voidObs(Obs)
 	 */
 	public void deleteObs(Obs obs) throws APIException {
-		context.getDAOContext().getObsDAO().deleteObs(obs);
+		getObsDAO().deleteObs(obs);
 	}
 	
 	/**
@@ -90,7 +102,7 @@ public class ObsService {
 	 * @throws APIException
 	 */
 	public List<MimeType> getMimeTypes() throws APIException {
-		return context.getDAOContext().getObsDAO().getMimeTypes();
+		return getObsDAO().getMimeTypes();
 	}
 
 	/**
@@ -101,7 +113,7 @@ public class ObsService {
 	 * @throws APIException
 	 */
 	public MimeType getMimeType(Integer mimeTypeId) throws APIException {
-		return context.getDAOContext().getObsDAO().getMimeType(mimeTypeId);
+		return getObsDAO().getMimeType(mimeTypeId);
 	}
 	
 	/**
@@ -111,7 +123,7 @@ public class ObsService {
 	 * @throws APIException
 	 */
 	public List<Location> getLocations() throws APIException {
-		return context.getDAOContext().getObsDAO().getLocations();
+		return getObsDAO().getLocations();
 	}
 
 	/**
@@ -122,7 +134,7 @@ public class ObsService {
 	 * @throws APIException
 	 */
 	public Location getLocation(Integer locationId) throws APIException {
-		return context.getDAOContext().getObsDAO().getLocation(locationId);
+		return getObsDAO().getLocation(locationId);
 	}
 	
 	/**
@@ -131,7 +143,7 @@ public class ObsService {
 	 * @return
 	 */
 	public Set<Obs> getObservations(Patient who) {
-		return context.getDAOContext().getObsDAO().getObservations(who);
+		return getObsDAO().getObservations(who);
 	}
 
 	/**
@@ -141,7 +153,7 @@ public class ObsService {
 	 * @return
 	 */
     public Set<Obs> getObservations(Patient who, Concept question) {
-    	return context.getDAOContext().getObsDAO().getObservations(who, question);
+    	return getObsDAO().getObservations(who, question);
     }
 
     /**
@@ -150,6 +162,6 @@ public class ObsService {
      * @return
      */
     public Set<Obs> getObservations(Encounter whichEncounter) {
-    	return context.getDAOContext().getObsDAO().getObservations(whichEncounter);
+    	return getObsDAO().getObservations(whichEncounter);
     }
 }

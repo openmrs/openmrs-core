@@ -14,8 +14,8 @@ import org.openmrs.Group;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.util.Security;
@@ -365,7 +365,7 @@ public class HibernateUserDAO implements
 				.executeUpdate();
 			HibernateUtil.commitTransaction();
 		}
-		catch (ContextAuthenticationException e) {
+		catch (APIException e) {
 			log.error(e);
 			throw new DAOException(e);
 		}
@@ -396,7 +396,7 @@ public class HibernateUserDAO implements
 				throw new DAOException("Passwords don't match");
 			}
 		}
-		catch (ContextAuthenticationException e) {
+		catch (APIException e) {
 			log.error(e);
 			throw new DAOException(e);
 		}

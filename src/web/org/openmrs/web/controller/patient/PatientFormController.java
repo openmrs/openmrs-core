@@ -22,7 +22,7 @@ import org.openmrs.PatientName;
 import org.openmrs.Tribe;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
-import org.openmrs.web.Constants;
+import org.openmrs.web.WebConstants;
 import org.openmrs.web.propertyeditor.LocationEditor;
 import org.openmrs.web.propertyeditor.PatientIdentifierTypeEditor;
 import org.openmrs.web.propertyeditor.TribeEditor;
@@ -49,7 +49,7 @@ public class PatientFormController extends SimpleFormController {
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-		Context context = (Context) request.getSession().getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context context = (Context) request.getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
         NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
         binder.registerCustomEditor(java.lang.Integer.class,
                 new CustomNumberEditor(java.lang.Integer.class, nf, true));
@@ -68,7 +68,7 @@ public class PatientFormController extends SimpleFormController {
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object object, BindException errors) throws Exception {
 	
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		Patient patient = (Patient)object;
 		
 		if (context != null && context.isAuthenticated()) {
@@ -189,7 +189,7 @@ public class PatientFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		Patient patient = (Patient)obj;
 				
 		if (context != null && context.isAuthenticated()) {
@@ -201,7 +201,7 @@ public class PatientFormController extends SimpleFormController {
 			
 			String view = getSuccessView();
 						
-			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Patient.saved");
+			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.saved");
 			return new ModelAndView(new RedirectView(view));
 		}
 		
@@ -218,7 +218,7 @@ public class PatientFormController extends SimpleFormController {
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		Patient patient = null;
 		

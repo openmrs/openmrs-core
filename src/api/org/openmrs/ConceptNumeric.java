@@ -7,10 +7,6 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 
 	// Fields
 
-	/*
-	private Concept concept;
-	private Integer conceptId;
-	*/
 	private Double hiAbsolute;
 	private Double hiCritical;
 	private Double hiNormal;
@@ -19,17 +15,33 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	private Double lowNormal;
 	private String units;
 	private Boolean precise;
-	/*
-	private Date dateChanged;
-	private User creator;
-	private User changedBy;
-	private Date dateCreated;
-	*/	
 
 	// Constructors
 
 	/** default constructor */
 	public ConceptNumeric() {
+	}
+	
+	/**
+	 * Optional constructor for turning a Concept into a ConceptNumeric
+	 * @param c
+	 */
+	public ConceptNumeric(Concept c) {
+		this.setAnswers(c.getAnswers());
+		this.setChangedBy(c.getChangedBy());
+		this.setConceptClass(c.getConceptClass());
+		this.setConceptId(c.getConceptId());
+		this.setConceptSets(c.getConceptSets());
+		this.setCreator(c.getCreator());
+		this.setDatatype(c.getDatatype());
+		this.setDateChanged(c.getDateChanged());
+		this.setDateCreated(c.getDateCreated());
+		this.setIcd10(c.getIcd10());
+		this.setLoinc(c.getLoinc());
+		this.setNames(c.getNames());
+		this.setRetired(c.getRetired());
+		this.setSynonyms(c.getSynonyms());
+		this.setVersion(c.getVersion());
 	}
 	
 	public ConceptNumeric(Integer conceptId) {
@@ -54,24 +66,6 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 
 	// Property accessors
 
-	/*
-	private Integer getConceptId() {
-		return this.conceptId;
-	}
-	
-	private void setConceptId(Integer conceptId) {
-		this.conceptId = conceptId;
-	}
-	
-	public Concept getConcept() {
-		return this.concept;
-	}
-	
-	public void setConcept(Concept concept) {
-		this.concept = concept;
-	}
-	*/
-	
 	/**
 	 * 
 	 */
@@ -163,38 +157,4 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	public boolean isNumeric() {
 		return (getDatatype().getName().equals("Numeric"));
 	}
-	
-	/*
-	public Date getDateCreated() {
-		return this.dateCreated;
-	}
-
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
-	}
-
-	public Date getDateChanged() {
-		return this.dateChanged;
-	}
-
-	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
-	}
-
-	public User getCreator() {
-		return this.creator;
-	}
-
-	public void setCreator(User creator) {
-		this.creator = creator;
-	}
-
-	public User getChangedBy() {
-		return this.changedBy;
-	}
-
-	public void setChangedBy(User changedBy) {
-		this.changedBy = changedBy;
-	}
-	*/
 }

@@ -25,7 +25,7 @@ import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSynonym;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
-import org.openmrs.web.Constants;
+import org.openmrs.web.WebConstants;
 import org.openmrs.web.propertyeditor.ConceptAnswersEditor;
 import org.openmrs.web.propertyeditor.ConceptClassEditor;
 import org.openmrs.web.propertyeditor.ConceptDatatypeEditor;
@@ -53,7 +53,7 @@ public class ConceptFormController extends SimpleFormController {
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-		Context context = (Context) request.getSession().getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context context = (Context) request.getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		Concept concept = null;
 		String conceptId = request.getParameter("conceptId");
 		
@@ -84,7 +84,7 @@ public class ConceptFormController extends SimpleFormController {
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object object, BindException errors) throws Exception {
 	
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		Concept concept = (Concept)object;
 		Locale locale = RequestContextUtils.getLocale(request);
 		
@@ -166,8 +166,10 @@ public class ConceptFormController extends SimpleFormController {
 					//TODO add description
 					concept.addName(new ConceptName(conceptName, shortName, description, locale));
 				}
-						
-			}
+		}
+		else {
+			errors.reject("auth.invalid");
+		}
 		
 		return super.processFormSubmission(request, response, concept, errors); 
 	}
@@ -182,7 +184,7 @@ public class ConceptFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		Concept concept = (Concept)obj;
 				
 		if (context != null && context.isAuthenticated()) {
@@ -194,7 +196,7 @@ public class ConceptFormController extends SimpleFormController {
 			
 			String view = getSuccessView();
 						
-			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "Concept.saved");
+			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Concept.saved");
 			return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + concept.getConceptId().toString()));
 		}
 		
@@ -211,11 +213,11 @@ public class ConceptFormController extends SimpleFormController {
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		Concept concept = null;
 		
-		if (context != null && context.isAuthenticated()) {
+		if (context != null) {
 			ConceptService cs = context.getConceptService();
 			String conceptId = request.getParameter("conceptId");
 	    	if (conceptId != null)
@@ -243,12 +245,12 @@ public class ConceptFormController extends SimpleFormController {
 	protected Map referenceData(HttpServletRequest request) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		Locale locale = RequestContextUtils.getLocale(request);
 		Map<String, Object> map = new HashMap<String, Object>();
 		
-		if (context != null && context.isAuthenticated()) {
+		if (context != null) {
 			ConceptService cs = context.getConceptService();
 			String conceptId = request.getParameter("conceptId");
 			ConceptName conceptName = new ConceptName();

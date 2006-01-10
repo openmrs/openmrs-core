@@ -1,7 +1,7 @@
 package org.openmrs.web;
 
 
-public class Constants {
+public class WebConstants {
 	
 	public static final String OPENMRS_CONTEXT_HTTPSESSION_ATTR = "__openmrs_context";
 	public static final String OPENMRS_CLIENT_IP_HTTPSESSION_ATTR = "__openmrs_client_ip";

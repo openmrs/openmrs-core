@@ -1,4 +1,6 @@
 <%@page isErrorPage="true" %>
+<%@ page import="org.openmrs.web.WebConstants" %>
+<%@ page import="org.openmrs.api.APIAuthenticationException" %>
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
@@ -49,9 +51,15 @@ try {
 	<a href="javascript:showOrHide()" id="toggleLink" style="font-size: 12px;">Show stack trace</a>
 	<br />
 	<div id="stackTrace">
-	<%		
+	<%
 	if (exception != null) {
-		if (exception instanceof ServletException) {
+		if (exception instanceof APIAuthenticationException) {
+			// If they are not authorized to use a function
+			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.invalid");
+			session.setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR, request.getAttribute("javax.servlet.error.request_uri"));
+			response.sendRedirect("/@WEBAPP.NAME@/login.htm");
+		}
+		else if (exception instanceof ServletException) {
 			// It's a ServletException: we should extract the root cause
 			ServletException sEx = (ServletException) exception;
 			Throwable rootCause = sEx.getRootCause();

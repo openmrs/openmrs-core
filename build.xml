@@ -90,6 +90,7 @@
 			<include name="**/*.java" />
 			<exclude name="**/ibatis/*" />
 			<exclude name="**/Ibatis*" />
+			<exclude name="**/FormSchemaBuilder*" />
 		</javac>
 	</target>
 

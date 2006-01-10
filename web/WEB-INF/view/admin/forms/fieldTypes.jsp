@@ -3,12 +3,12 @@
 <%@ page import="org.openmrs.api.AdministrationService" %>
 <%@ page import="org.openmrs.FieldType" %>
 <%@ page import="org.openmrs.api.APIException" %>
-<%@ page import="org.openmrs.web.Constants" %>
+<%@ page import="org.openmrs.web.WebConstants" %>
 
 <openmrs:require privilege="Manage Forms" otherwise="/login.htm" />
 
 <%
-	Context context = (Context)session.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+	Context context = (Context)session.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 	AdministrationService adminService = context.getAdministrationService();
 	pageContext.setAttribute("formService", context.getFormService());
 
@@ -23,13 +23,13 @@
 				}
 				catch (APIException e)
 				{
-					session.setAttribute(Constants.OPENMRS_ERROR_ATTR, "Field type cannot be deleted - " + e.getMessage());
+					session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Field type cannot be deleted - " + e.getMessage());
 				}
 		}
 		if (fieldTypes.length == 1)
-			session.setAttribute(Constants.OPENMRS_MSG_ATTR, "Field type '" + tmpFieldType.getName() + "' deleted");
+			session.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Field type '" + tmpFieldType.getName() + "' deleted");
 		else
-			session.setAttribute(Constants.OPENMRS_MSG_ATTR, fieldTypes.length + " field types deleted");
+			session.setAttribute(WebConstants.OPENMRS_MSG_ATTR, fieldTypes.length + " field types deleted");
 	}
 	
 	//adding an field type
@@ -43,10 +43,10 @@
 		t.setIsSet(Boolean.valueOf(isSet));
 		try {
 			adminService.createFieldType(t);
-			session.setAttribute(Constants.OPENMRS_MSG_ATTR, "Field type added");
+			session.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Field type added");
 		}
 		catch (APIException e) {
-			session.setAttribute(Constants.OPENMRS_ERROR_ATTR, "Unable to add field type " + e.getMessage());
+			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Unable to add field type " + e.getMessage());
 		}
 	}
 %>

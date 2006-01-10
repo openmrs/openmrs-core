@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-<%@ page import="org.openmrs.web.Constants" %>
+<%@ page import="org.openmrs.web.WebConstants" %>
 <%
-	pageContext.setAttribute("msg", session.getAttribute(Constants.OPENMRS_MSG_ATTR)); 
-	pageContext.setAttribute("err", session.getAttribute(Constants.OPENMRS_ERROR_ATTR));
-	session.removeAttribute(Constants.OPENMRS_MSG_ATTR);
-	session.removeAttribute(Constants.OPENMRS_ERROR_ATTR); 
+	pageContext.setAttribute("msg", session.getAttribute(WebConstants.OPENMRS_MSG_ATTR)); 
+	pageContext.setAttribute("err", session.getAttribute(WebConstants.OPENMRS_ERROR_ATTR));
+	session.removeAttribute(WebConstants.OPENMRS_MSG_ATTR);
+	session.removeAttribute(WebConstants.OPENMRS_ERROR_ATTR); 
 %>
 
 <html>

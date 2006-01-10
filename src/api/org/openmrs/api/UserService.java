@@ -7,6 +7,9 @@ import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.DAOContext;
+import org.openmrs.api.db.UserDAO;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * User-related services
@@ -17,9 +20,15 @@ import org.openmrs.api.context.Context;
 public class UserService {
 	
 	private Context context;
+	private DAOContext daoContext;
 	
-	public UserService(Context c) {
+	public UserService(Context c, DAOContext d) {
 		this.context = c;
+		this.daoContext = d;
+	}
+	
+	private UserDAO getUserDAO() {
+		return daoContext.getUserDAO();
 	}
 	
 	/**
@@ -29,7 +38,9 @@ public class UserService {
 	 * @throws APIException
 	 */
 	public void createUser(User user, String password) throws APIException {
-		context.getDAOContext().getUserDAO().createUser(user, password);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_USERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_USERS);
+		getUserDAO().createUser(user, password);
 	}
 
 	/**
@@ -39,7 +50,9 @@ public class UserService {
 	 * @throws APIException
 	 */
 	public User getUser(Integer userId) throws APIException {
-		return context.getDAOContext().getUserDAO().getUser(userId);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_USERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_USERS);
+		return getUserDAO().getUser(userId);
 	}
 	
 	/**
@@ -49,7 +62,9 @@ public class UserService {
 	 * @throws APIException
 	 */
 	public User getUserByUsername(String username) throws APIException {
-		return context.getDAOContext().getUserDAO().getUserByUsername(username);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_USERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_USERS);
+		return getUserDAO().getUserByUsername(username);
 	}
 
 	/**
@@ -59,7 +74,9 @@ public class UserService {
 	 * @throws APIException
 	 */
 	public boolean isDuplicateUsername(User user) throws APIException {
-		return context.getDAOContext().getUserDAO().isDuplicateUsername(user);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_USERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_USERS);
+		return getUserDAO().isDuplicateUsername(user);
 	}
 	
 	/**
@@ -69,7 +86,9 @@ public class UserService {
 	 * @throws APIException
 	 */
 	public List<User> getUsersByRole(Role role) throws APIException {
-		return context.getDAOContext().getUserDAO().getUsersByRole(role);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_USERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_USERS);
+		return getUserDAO().getUsersByRole(role);
 	}
 	
 	/**
@@ -78,7 +97,9 @@ public class UserService {
 	 * @throws APIException
 	 */
 	public void updateUser(User user) throws APIException {
-		context.getDAOContext().getUserDAO().updateUser(user);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_USERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_USERS);
+		getUserDAO().updateUser(user);
 	}
 	
 	/**
@@ -88,7 +109,9 @@ public class UserService {
 	 * @throws APIException
 	 */
 	public void grantUserRole(User user, Role role) throws APIException {
-		context.getDAOContext().getUserDAO().grantUserRole(user, role);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_USERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_USERS);
+		getUserDAO().grantUserRole(user, role);
 	}
 	
 	/**
@@ -98,7 +121,9 @@ public class UserService {
 	 * @throws APIException
 	 */
 	public void revokeUserRole(User user, Role role) throws APIException {
-		context.getDAOContext().getUserDAO().revokeUserRole(user, role);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_USERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_USERS);
+		getUserDAO().revokeUserRole(user, role);
 	}
 
 	/** 
@@ -112,7 +137,9 @@ public class UserService {
 	 * @throws APIException
 	 */
 	public void voidUser(User user, String reason) throws APIException {
-		context.getDAOContext().getUserDAO().voidUser(user, reason);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_USERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_USERS);
+		getUserDAO().voidUser(user, reason);
 	}
 	
 	/**
@@ -123,7 +150,9 @@ public class UserService {
 	 * @throws APIException
 	 */
 	public void unvoidUser(User user) throws APIException {
-		context.getDAOContext().getUserDAO().unvoidUser(user);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_USERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_USERS);
+		getUserDAO().unvoidUser(user);
 	}
 	
 	/**
@@ -144,7 +173,9 @@ public class UserService {
 	 * @see #voidUser(User, String)
 	 */
 	public void deleteUser(User user) throws APIException {
-		context.getDAOContext().getUserDAO().deleteUser(user);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_USERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_USERS);
+		getUserDAO().deleteUser(user);
 	}
 	
 	/**
@@ -153,7 +184,7 @@ public class UserService {
 	 * @throws APIException
 	 */
 	public List<Privilege> getPrivileges() throws APIException {
-		return context.getDAOContext().getUserDAO().getPrivileges();
+		return getUserDAO().getPrivileges();
 	}
 	
 	/**
@@ -162,7 +193,7 @@ public class UserService {
 	 * @throws APIException
 	 */
 	public List<Role> getRoles() throws APIException {
-		return context.getDAOContext().getUserDAO().getRoles();
+		return getUserDAO().getRoles();
 	}
 
 	/**
@@ -171,7 +202,9 @@ public class UserService {
 	 * @throws APIException
 	 */
 	public List<User> getUsers() throws APIException {
-		return context.getDAOContext().getUserDAO().getUsers();
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_USERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_USERS);
+		return getUserDAO().getUsers();
 	}
 
 	/**
@@ -180,7 +213,7 @@ public class UserService {
 	 * @throws APIException
 	 */
 	public Role getRole(String r) throws APIException {
-		return context.getDAOContext().getUserDAO().getRole(r);
+		return getUserDAO().getRole(r);
 	}
 
 	/**
@@ -189,7 +222,7 @@ public class UserService {
 	 * @throws APIException
 	 */
 	public Privilege getPrivilege(String p) throws APIException {
-		return context.getDAOContext().getUserDAO().getPrivilege(p);
+		return getUserDAO().getPrivilege(p);
 	}
 	
 	/**
@@ -198,7 +231,7 @@ public class UserService {
 	 * @throws APIException
 	 */
 	public List<Group> getGroups() throws APIException {
-		return context.getDAOContext().getUserDAO().getGroups();
+		return getUserDAO().getGroups();
 	}
 	
 	/**
@@ -207,7 +240,7 @@ public class UserService {
 	 * @throws APIException
 	 */
 	public Group getGroup(String r) throws APIException {
-		return context.getDAOContext().getUserDAO().getGroup(r);
+		return getUserDAO().getGroup(r);
 	}
 	
 	/**
@@ -217,10 +250,16 @@ public class UserService {
 	 * @throws APIException
 	 */
 	public void changePassword(String pw, String pw2) throws APIException {
-		context.getDAOContext().getUserDAO().changePassword(pw, pw2);
+		// TODO or check if its the current user
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_USERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_USERS);
+		getUserDAO().changePassword(pw, pw2);
 	}
 	
 	public void changeQuestionAnswer(String pw, String q, String a) {
-		context.getDAOContext().getUserDAO().changeQuestionAnswer(pw, q, a);
+		// TODO or check if its the current user
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_USERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_USERS);
+		getUserDAO().changeQuestionAnswer(pw, q, a);
 	}
 }

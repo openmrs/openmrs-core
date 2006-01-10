@@ -6,7 +6,7 @@ import java.util.Random;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.context.ContextAuthenticationException;
+import org.openmrs.api.APIException;
 
 public class Security {
 
@@ -16,7 +16,7 @@ public class Security {
      * @param string to encode
      * @return the SHA-1 encryption of a given string
      */
-    public static String encodeString(String strToEncode) throws ContextAuthenticationException {
+    public static String encodeString(String strToEncode) throws APIException {
     	MessageDigest md;
     	try {
     		md = MessageDigest.getInstance("SHA1");
@@ -24,7 +24,7 @@ public class Security {
     	catch (NoSuchAlgorithmException e) {
 			// Yikes! Can't encode password...what to do?
     		log.error(e);
-			throw new ContextAuthenticationException("System cannot find password encryption algorithm");
+			throw new APIException("System cannot find password encryption algorithm");
     	}
 		byte[] input = strToEncode.getBytes(); //TODO: pick a specific character encoding, don't rely on the platform default
 		return hexString(md.digest(input));
@@ -48,7 +48,7 @@ public class Security {
     /**
      * Returns a secure random token.
      */
-    public static String getRandomToken() throws ContextAuthenticationException {
+    public static String getRandomToken() throws APIException {
     	Random rng = new Random();
     	return encodeString(Long.toString(System.currentTimeMillis()) 
     			+ Long.toString(rng.nextLong()));

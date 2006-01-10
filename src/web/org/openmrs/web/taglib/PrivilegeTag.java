@@ -6,7 +6,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
-import org.openmrs.web.Constants;
+import org.openmrs.web.WebConstants;
 
 public class PrivilegeTag extends TagSupport {
 
@@ -21,7 +21,7 @@ public class PrivilegeTag extends TagSupport {
 
 		HttpSession httpSession = pageContext.getSession();
 		
-		Context context = (Context)httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context context = (Context)httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		// must have an active context to be able to authenticate
 		if (context == null) {

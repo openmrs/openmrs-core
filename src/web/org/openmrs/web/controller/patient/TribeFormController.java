@@ -10,7 +10,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Tribe;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
-import org.openmrs.web.Constants;
+import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
@@ -48,7 +48,7 @@ public class TribeFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		String view = getFormView();
 		if (context != null && context.isAuthenticated()) {
 			Tribe tribe = (Tribe)obj;
@@ -56,7 +56,7 @@ public class TribeFormController extends SimpleFormController {
 			view = getSuccessView();
 
 			MessageSourceAccessor msa = getMessageSourceAccessor();
-			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, msa.getMessage("Tribe.saved"));
+			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, msa.getMessage("Tribe.saved"));
 		}
 		
 		return new ModelAndView(new RedirectView(view));
@@ -72,7 +72,7 @@ public class TribeFormController extends SimpleFormController {
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		Tribe tribe = null;
 		

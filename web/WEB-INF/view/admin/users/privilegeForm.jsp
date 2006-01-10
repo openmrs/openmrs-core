@@ -18,8 +18,8 @@
 		<td><spring:message code="Privilege.privilege"/></td>
 		<td>
 			<spring:bind path="privilege.privilege">
-				<c:if test="${privilege.privilege == null}"><input type="text" name="${status.expression}" value="${status.value}"></c:if>
-				<c:if test="${!(privilege.privilege == null)}">${status.value}</c:if>				
+				<c:if test="${status.value == null || status.value == \"\"}"><input type="text" name="${status.expression}" value="${status.value}"></c:if>
+				<c:if test="${!(status.value == null)}">${status.value}</c:if>				
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>

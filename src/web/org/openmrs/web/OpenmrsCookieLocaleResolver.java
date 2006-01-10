@@ -15,7 +15,7 @@ public class OpenmrsCookieLocaleResolver extends CookieLocaleResolver {
 	public Locale resolveLocale(HttpServletRequest request) {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context)httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context context = (Context)httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		Locale locale;
 		
@@ -32,7 +32,7 @@ public class OpenmrsCookieLocaleResolver extends CookieLocaleResolver {
 	@Override
 	public void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale) {
 		HttpSession httpSession = request.getSession();
-		Context context = (Context)httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context context = (Context)httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		if (context != null)
 			context.setLocale(locale);
@@ -43,7 +43,7 @@ public class OpenmrsCookieLocaleResolver extends CookieLocaleResolver {
 
 	@Override
 	public String getCookieName() {
-		return Constants.OPENMRS_LANGUAGE_COOKIE_NAME;
+		return WebConstants.OPENMRS_LANGUAGE_COOKIE_NAME;
 	}
 
 	

@@ -7,8 +7,10 @@ import org.openmrs.FieldType;
 import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.DAOContext;
 import org.openmrs.api.db.FormDAO;
 import org.openmrs.form.FormSchemaBuilder;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Form-related services
@@ -20,9 +22,11 @@ import org.openmrs.form.FormSchemaBuilder;
 public class FormService {
 	
 	private Context context;
+	private DAOContext daoContext;
 	
-	public FormService(Context c) {
+	public FormService(Context c, DAOContext d) {
 		this.context = c;
+		this.daoContext = d;
 	}
 	
 	/**
@@ -31,7 +35,10 @@ public class FormService {
 	 * @return context's FormDAO
 	 */
 	private FormDAO dao() {
-		return context.getDAOContext().getFormDAO();
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_FORMS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_FORMS);
+		
+		return daoContext.getFormDAO();
 	}
 	
 	/**

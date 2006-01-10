@@ -89,14 +89,18 @@
 	</welcome-file-list>
 
 	<error-page>
-		<exception-type>java.lang.Exception</exception-type>
-		<!-- Displays a stack trace -->
-		<location>/WEB-INF/view/uncaughtException.jsp</location>
+		<error-code>401</error-code>
+		<location>/login.htm</location>
 	</error-page>
 	
 	<error-page>
 		<error-code>404</error-code>
 		<location>/missing.htm</location>
+	</error-page>
+	
+	<error-page>
+		<exception-type>java.lang.Exception</exception-type>
+		<location>/WEB-INF/view/uncaughtException.jsp</location>
 	</error-page>
 	
 	<!--

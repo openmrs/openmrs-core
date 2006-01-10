@@ -9,6 +9,9 @@ import org.openmrs.EncounterType;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.DAOContext;
+import org.openmrs.api.db.EncounterDAO;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Encounter-related services
@@ -19,11 +22,19 @@ import org.openmrs.api.context.Context;
 public class EncounterService {
 	
 	private Context context;
+	private DAOContext daoContext;
 
-	public EncounterService(Context c) {
+	public EncounterService(Context c, DAOContext d) {
 		this.context = c;
+		this.daoContext = d;
 	}
 	
+	private EncounterDAO getEncounterDAO() {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ENC))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ENC);
+		
+		return daoContext.getEncounterDAO();
+	}
 	/**
 	 * Creates a new encounter
 	 * 
@@ -31,7 +42,7 @@ public class EncounterService {
 	 * @throws APIException
 	 */
 	public void createEncounter(Encounter encounter) throws APIException {
-		context.getDAOContext().getEncounterDAO().createEncounter(encounter);
+		getEncounterDAO().createEncounter(encounter);
 	}
 
 	/**
@@ -42,7 +53,7 @@ public class EncounterService {
 	 * @throws APIException
 	 */
 	public Encounter getEncounter(Integer encounterId) throws APIException {
-		return context.getDAOContext().getEncounterDAO().getEncounter(encounterId);
+		return getEncounterDAO().getEncounter(encounterId);
 	}
 	
 	/**
@@ -52,7 +63,7 @@ public class EncounterService {
 	 * @throws APIException
 	 */
 	public List<EncounterType> getEncounterTypes() throws APIException {
-		return context.getDAOContext().getEncounterDAO().getEncounterTypes();
+		return getEncounterDAO().getEncounterTypes();
 	}
 
 	/**
@@ -63,7 +74,7 @@ public class EncounterService {
 	 * @throws APIException
 	 */
 	public EncounterType getEncounterType(Integer encounterTypeId) throws APIException {
-		return context.getDAOContext().getEncounterDAO().getEncounterType(encounterTypeId);
+		return getEncounterDAO().getEncounterType(encounterTypeId);
 	}
 
 	/**
@@ -73,7 +84,7 @@ public class EncounterService {
 	 * @throws APIException
 	 */
 	public List<Location> getLocations() throws APIException {
-		return context.getDAOContext().getEncounterDAO().getLocations();
+		return getEncounterDAO().getLocations();
 	}
 
 	/**
@@ -84,7 +95,7 @@ public class EncounterService {
 	 * @throws APIException
 	 */
 	public Location getLocation(Integer locationId) throws APIException {
-		return context.getDAOContext().getEncounterDAO().getLocation(locationId);
+		return getEncounterDAO().getLocation(locationId);
 	}
 
 	/**
@@ -93,7 +104,7 @@ public class EncounterService {
 	 * @throws APIException
 	 */
 	public void updateEncounter(Encounter encounter) throws APIException {
-		context.getDAOContext().getEncounterDAO().updateEncounter(encounter);
+		getEncounterDAO().updateEncounter(encounter);
 	}
 	
 	/**
@@ -102,7 +113,7 @@ public class EncounterService {
 	 * @param encounter encounter object to be deleted 
 	 */
 	public void deleteEncounter(Encounter encounter) throws APIException {
-		context.getDAOContext().getEncounterDAO().deleteEncounter(encounter);
+		getEncounterDAO().deleteEncounter(encounter);
 	}
 	
 	/**
@@ -111,7 +122,7 @@ public class EncounterService {
 	 * @return
 	 */
 	public Set<Encounter> getEncounters(Patient who) {
-		return context.getDAOContext().getEncounterDAO().getEncounters(who);
+		return getEncounterDAO().getEncounters(who);
 	}
 
 	/**
@@ -121,7 +132,7 @@ public class EncounterService {
 	 * @return
 	 */
     public Set<Encounter> getEncounters(Patient who, Location where) {
-    	return context.getDAOContext().getEncounterDAO().getEncounters(who, where);
+    	return getEncounterDAO().getEncounters(who, where);
     }
 
     /**
@@ -132,7 +143,7 @@ public class EncounterService {
      * @return
      */
     public Set<Encounter> getEncounters(Patient who, Date fromDate, Date toDate) {
-    	return context.getDAOContext().getEncounterDAO().getEncounters(who, fromDate, toDate);
+    	return getEncounterDAO().getEncounters(who, fromDate, toDate);
     }
 	
 	

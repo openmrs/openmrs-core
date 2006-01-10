@@ -16,7 +16,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
-import org.openmrs.web.Constants;
+import org.openmrs.web.WebConstants;
 import org.openmrs.web.OptionsForm;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
@@ -35,7 +35,7 @@ public class OptionsFormController extends SimpleFormController {
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object object, BindException errors) throws Exception {
 	
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		OptionsForm opts = (OptionsForm)object;
 		
@@ -72,7 +72,7 @@ public class OptionsFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 
 		String view = getFormView();
 		
@@ -102,7 +102,7 @@ public class OptionsFormController extends SimpleFormController {
 		}
 		
 		if (!errors.hasErrors()) {
-			httpSession.setAttribute(Constants.OPENMRS_MSG_ATTR, "options.saved");
+			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "options.saved");
 		}
 		else {
 			return super.processFormSubmission(request, response, opts, errors);
@@ -121,7 +121,7 @@ public class OptionsFormController extends SimpleFormController {
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		OptionsForm opts = new OptionsForm();
 		
@@ -150,7 +150,7 @@ public class OptionsFormController extends SimpleFormController {
 	protected Map referenceData(HttpServletRequest request) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		Locale locale = RequestContextUtils.getLocale(request);
 		Map<String, Object> map = new HashMap<String, Object>();

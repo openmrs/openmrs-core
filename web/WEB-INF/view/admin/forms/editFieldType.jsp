@@ -4,12 +4,12 @@
 <%@ page import="org.openmrs.api.FormService" %>
 <%@ page import="org.openmrs.api.APIException" %>
 <%@ page import="org.openmrs.FieldType" %>
-<%@ page import="org.openmrs.web.Constants" %>
+<%@ page import="org.openmrs.web.WebConstants" %>
 
 <openmrs:require privilege="Manage Forms" otherwise="/login.htm" />
 
 <%
-	Context context = (Context)session.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+	Context context = (Context)session.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 	AdministrationService adminService = context.getAdministrationService();
 	FormService fieldService = context.getFormService();
 	FieldType fieldType = fieldService.getFieldType(Integer.valueOf(request.getParameter("fieldTypeId")));
@@ -20,12 +20,12 @@
 		fieldType.setIsSet(Boolean.valueOf(request.getParameter("isSet")));
 		try {
 			adminService.updateFieldType(fieldType);
-			session.setAttribute(Constants.OPENMRS_MSG_ATTR, "Field Type updated");
+			session.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Field Type updated");
 			response.sendRedirect("fieldTypes.jsp");
 			return;
 		}
 		catch (APIException e) {
-			session.setAttribute(Constants.OPENMRS_ERROR_ATTR, "Unable to update field type " + e.getMessage());
+			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Unable to update field type " + e.getMessage());
 		}
 		
 	}

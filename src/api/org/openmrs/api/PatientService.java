@@ -12,8 +12,10 @@ import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Tribe;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.DAOContext;
 import org.openmrs.api.db.PatientDAO;
 import org.openmrs.util.Helper;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Patient-related services
@@ -27,9 +29,18 @@ public class PatientService {
 	private Log log = LogFactory.getLog(this.getClass());
 	
 	private Context context;
+	private DAOContext daoContext;
 	
-	public PatientService(Context c) {
+	public PatientService(Context c, DAOContext d) {
 		this.context = c;
+		this.daoContext = d;
+	}
+	
+	private PatientDAO getPatientDAO() {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_PATIENTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_PATIENTS);
+		
+		return daoContext.getPatientDAO();
 	}
 	
 	/**
@@ -39,7 +50,7 @@ public class PatientService {
 	 * @throws APIException
 	 */
 	public void createPatient(Patient patient) throws APIException {
-		context.getDAOContext().getPatientDAO().createPatient(patient);
+		getPatientDAO().createPatient(patient);
 	}
 
 	/**
@@ -50,7 +61,7 @@ public class PatientService {
 	 * @throws APIException
 	 */
 	public Patient getPatient(Integer patientId) throws APIException {
-		return context.getDAOContext().getPatientDAO().getPatient(patientId);
+		return getPatientDAO().getPatient(patientId);
 	}
 
 	/**
@@ -60,7 +71,7 @@ public class PatientService {
 	 * @throws APIException
 	 */
 	public void updatePatient(Patient patient) throws APIException {
-		context.getDAOContext().getPatientDAO().updatePatient(patient);
+		getPatientDAO().updatePatient(patient);
 	}
 
 	/**
@@ -71,7 +82,7 @@ public class PatientService {
 	 * @throws APIException
 	 */
 	public Set<Patient> getPatientsByIdentifier(String identifier, boolean includeVoided) throws APIException {
-		return context.getDAOContext().getPatientDAO().getPatientsByIdentifier(identifier, includeVoided);
+		return getPatientDAO().getPatientsByIdentifier(identifier, includeVoided);
 	}
 	
 	public Set<Patient> getPatientsByName(String name) throws APIException {
@@ -85,12 +96,12 @@ public class PatientService {
 	 * @throws APIException
 	 */
 	public Set<Patient> getPatientsByName(String name, boolean includeVoided) throws APIException {
-		return context.getDAOContext().getPatientDAO().getPatientsByName(name, includeVoided);
+		return getPatientDAO().getPatientsByName(name, includeVoided);
 	}
 	
 	
 	public Set<Patient> getSimilarPatients(String name, Date birthdate, String gender) throws APIException {
-		return context.getDAOContext().getPatientDAO().getSimilarPatients(name, birthdate, gender);
+		return getPatientDAO().getSimilarPatients(name, birthdate, gender);
 	}
 	
 	
@@ -101,7 +112,7 @@ public class PatientService {
 	 * @param reason reason for voiding patient
 	 */
 	public void voidPatient(Patient patient, String reason) throws APIException {
-		context.getDAOContext().getPatientDAO().voidPatient(patient, reason);
+		getPatientDAO().voidPatient(patient, reason);
 	}
 
 	/**
@@ -110,7 +121,7 @@ public class PatientService {
 	 * @param patient patient to be revived
 	 */
 	public void unvoidPatient(Patient patient) throws APIException {
-		context.getDAOContext().getPatientDAO().unvoidPatient(patient);
+		getPatientDAO().unvoidPatient(patient);
 	}
 	
 	/**
@@ -123,7 +134,7 @@ public class PatientService {
 	 * @see #voidPatient(Patient, String) 
 	 */
 	public void deletePatient(Patient patient) throws APIException {
-		context.getDAOContext().getPatientDAO().deletePatient(patient);
+		getPatientDAO().deletePatient(patient);
 	}
 	
 	/**
@@ -133,7 +144,7 @@ public class PatientService {
 	 * @throws APIException
 	 */
 	public List<PatientIdentifierType> getPatientIdentifierTypes() throws APIException {
-		return context.getDAOContext().getPatientDAO().getPatientIdentifierTypes();
+		return getPatientDAO().getPatientIdentifierTypes();
 	}
 
 	/**
@@ -144,7 +155,7 @@ public class PatientService {
 	 * @throws APIException
 	 */
 	public PatientIdentifierType getPatientIdentifierType(Integer patientIdentifierTypeId) throws APIException {
-		return context.getDAOContext().getPatientDAO().getPatientIdentifierType(patientIdentifierTypeId);
+		return getPatientDAO().getPatientIdentifierType(patientIdentifierTypeId);
 	}
 
 	/**
@@ -155,7 +166,7 @@ public class PatientService {
 	 * @throws APIException
 	 */
 	public Tribe getTribe(Integer tribeId) throws APIException {
-		return context.getDAOContext().getPatientDAO().getTribe(tribeId);
+		return getPatientDAO().getTribe(tribeId);
 	}
 	
 	/**
@@ -165,7 +176,7 @@ public class PatientService {
 	 * @throws APIException
 	 */
 	public List<Tribe> getTribes() throws APIException {
-		return context.getDAOContext().getPatientDAO().getTribes();
+		return getPatientDAO().getTribes();
 	}
 	
 	/**
@@ -175,7 +186,7 @@ public class PatientService {
 	 * @throws APIException
 	 */
 	public List<Location> getLocations() throws APIException {
-		return context.getDAOContext().getPatientDAO().getLocations();
+		return getPatientDAO().getLocations();
 	}
 
 	/**
@@ -186,13 +197,13 @@ public class PatientService {
 	 * @throws APIException
 	 */
 	public Location getLocation(Integer locationId) throws APIException {
-		return context.getDAOContext().getPatientDAO().getLocation(locationId);
+		return getPatientDAO().getLocation(locationId);
 	}
 	
 	public List<Patient> findPatients(String query, boolean includeVoided) {
 		
 		List<Patient> patients = new Vector<Patient>();
-		PatientDAO dao = context.getDAOContext().getPatientDAO();
+		PatientDAO dao = getPatientDAO();
 		
 		//query must be more than 2 characters
 		if (query.length() < 3)

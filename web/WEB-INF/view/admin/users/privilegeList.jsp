@@ -18,15 +18,19 @@
 			<th> <spring:message code="Privilege.privilege"/> </th>
 			<th> <spring:message code="general.description"/> </th>
 		</tr>
-	<c:forEach var="privilege" items="${privilegeList}">
+	<c:forEach var="map" items="${privilegeList}">
 		<tr>
-			<td><input type="checkbox" name="privilegeId" value="<c:out value="${privilege.privilege}"/>"></td>
 			<td>
-				<a href="privilege.form?privilege=<c:out value="${privilege.privilege}"/>">
-					<c:out value="${privilege.privilege}"/>
+				<c:if test="${map.value == false}">
+					<input type="checkbox" name="privilegeId" value="<c:out value="${map.key.privilege}"/>">
+				</c:if>
+			</td>
+			<td>
+				<a href="privilege.form?privilege=<c:out value="${map.key.privilege}"/>">
+					<c:out value="${map.key.privilege}"/>
 				</a>
 			</td>
-			<td><c:out value="${privilege.description}"/></td>
+			<td><c:out value="${map.key.description}"/></td>
 		</tr>
 	</c:forEach>
 	</table>

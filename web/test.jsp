@@ -87,6 +87,16 @@ for (Cookie cookie : request.getCookies()) {
 	out.write(cookie.getValue() + ")");
 }
 
+ java.util.Enumeration e;
+ e = request.getAttributeNames();
+ while (e.hasMoreElements()) { out.write(e.nextElement().toString()); out.write("<br>");}
+ out.write("<br>");out.write("<br>");
+ e = request.getHeaderNames();
+ while (e.hasMoreElements()) { out.write(e.nextElement().toString()); out.write("<br>");} 
+ out.write("<br>");out.write("<br>");
+ e = request.getParameterNames();
+ while (e.hasMoreElements()) { out.write(e.nextElement().toString()); out.write("<br>");}
+
 %>
 
 

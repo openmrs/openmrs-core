@@ -23,7 +23,8 @@
 
 		<property name="hl7Abbreviation" type="java.lang.String" 
 			column="datatype_abbreviation" not-null="false" length="3" />
-
+		<!-- TODO change db column name to hl7_abbreviation -->
+		
 		<!-- bi-directional many-to-one association to User -->
 		<many-to-one name="creator" class="User" not-null="true">
 			<column name="creator" />

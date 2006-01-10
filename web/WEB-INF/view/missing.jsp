@@ -1,3 +1,4 @@
+<%@page isErrorPage="true" %>
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
@@ -6,7 +7,10 @@
 
 <br /><br />
 
-The page <b><%= request.getRequestURL() %></b>
+The page "<b><%= request.getAttribute("javax.servlet.error.request_uri") %></b>"
 cannot be found.  Check the link and try again.
+
+<br><br>
+
 
 <%@ include file="/WEB-INF/template/footer.jsp" %> 

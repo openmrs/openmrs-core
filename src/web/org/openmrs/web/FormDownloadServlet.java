@@ -47,9 +47,9 @@ public class FormDownloadServlet extends HttpServlet {
 		String patientId = request.getParameter("patientId");
 		HttpSession httpSession = request.getSession();
 		
-		Context context = (Context)httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context context = (Context)httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		if (context == null) {
-			httpSession.setAttribute(Constants.OPENMRS_ERROR_ATTR, "auth.session.expired");
+			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
 			response.sendRedirect(request.getContextPath() + "/logout");
 			return;
 		}

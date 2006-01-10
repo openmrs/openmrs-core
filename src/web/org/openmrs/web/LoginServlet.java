@@ -36,9 +36,9 @@ public class LoginServlet extends HttpServlet {
 		
 		HttpSession httpSession = request.getSession();
 
-		Context context = (Context)httpSession.getAttribute(Constants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context context = (Context)httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		if (context == null) {
-			httpSession.setAttribute(Constants.OPENMRS_ERROR_ATTR, "auth.session.expired");
+			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
 			response.sendRedirect(request.getContextPath() + "/logout");
 			return;
 		}
@@ -47,13 +47,13 @@ public class LoginServlet extends HttpServlet {
 			context.authenticate(username, password);
 			if (context.isAuthenticated()) {
 				log.debug(request.getRemoteAddr());
-				httpSession.setAttribute(Constants.OPENMRS_CLIENT_IP_HTTPSESSION_ATTR, request.getRemoteAddr());
+				httpSession.setAttribute(WebConstants.OPENMRS_CLIENT_IP_HTTPSESSION_ATTR, request.getRemoteAddr());
 				response.sendRedirect(redirect);
-				httpSession.removeAttribute(Constants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR);
+				httpSession.removeAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR);
 				return;
 			}
 		} catch (ContextAuthenticationException e) {
-			httpSession.setAttribute(Constants.OPENMRS_ERROR_ATTR, "auth.invalid");
+			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.invalid");
 			response.sendRedirect(request.getContextPath() + "/login.htm");
 		}
 	}
