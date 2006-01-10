@@ -9,7 +9,7 @@ import java.util.Date;
  * @author Burke Mamlin
  * @version 1.0
  */
-public class FormField implements java.io.Serializable {
+public class FormField implements java.io.Serializable, Comparable {
 
 	public static final long serialVersionUID = 3456L;
 
@@ -65,6 +65,32 @@ public class FormField implements java.io.Serializable {
 		if (this.getFormFieldId() == null)
 			return super.hashCode();
 		return this.getFormFieldId().hashCode();
+	}
+
+	public int compareTo(Object obj) {
+		FormField f = (FormField) obj;
+		if (getFieldNumber() != null || f.getFieldNumber() != null) {
+			if (getFieldNumber() == null)
+				return -1;
+			if (f.getFieldNumber() == null)
+				return 1;
+			int c = getFieldNumber().compareTo(f.getFieldNumber());
+			if (c != 0)
+				return c;
+		}
+		if (getFieldPart() != null || f.getFieldPart() != null) {
+			if (getFieldPart() == null)
+				return -1;
+			if (f.getFieldPart() == null)
+				return 1;
+			int c = getFieldPart().compareTo(f.getFieldPart());
+			if (c != 0)
+				return c;
+		}
+		int c = getField().getName().compareTo(f.getField().getName());
+		if (c != 0)
+			return c;
+		return (getFormFieldId().compareTo(f.getFormFieldId()));
 	}
 
 	// Property accessors
@@ -208,7 +234,7 @@ public class FormField implements java.io.Serializable {
 	 * @return Returns the required status.
 	 */
 	public Boolean isRequired() {
-		return required;
+		return (required == null ? false : required);
 	}
 
 	/**
