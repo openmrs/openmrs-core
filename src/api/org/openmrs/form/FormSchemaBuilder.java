@@ -16,6 +16,21 @@ import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.api.context.Context;
 
+/**
+ * Schema generator for OpenMRS forms.
+ * 
+ * Usage:
+ * 
+ * <pre>
+ * Context context = ContextFactory.getContext();
+ * context.authenticate(username, password);
+ * Form myForm = context.getFormService().getForm(myFormId);
+ * String schema = new FormSchemaBuilder(context, myForm).getSchema();
+ * </pre>
+ * 
+ * @author Burke Mamlin
+ * @version 1.0
+ */
 public class FormSchemaBuilder {
 
 	Context context;
