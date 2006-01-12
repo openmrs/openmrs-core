@@ -100,8 +100,8 @@ public class PatientService {
 	}
 	
 	
-	public Set<Patient> getSimilarPatients(String name, Date birthdate, String gender) throws APIException {
-		return getPatientDAO().getSimilarPatients(name, birthdate, gender);
+	public Set<Patient> getSimilarPatients(String name, Integer birthyear, String gender) throws APIException {
+		return getPatientDAO().getSimilarPatients(name, birthyear, gender);
 	}
 	
 	

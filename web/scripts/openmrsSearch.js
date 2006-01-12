@@ -78,44 +78,45 @@ function resetForm() {
 }
 
 function searchBoxChange(bodyElementId, obj, event, retired, delay) {
+	if (debugBox) debugBox.innerHTML += '<br>---- delay: ' + delay;
 	objectHitsTableBody = $(bodyElementId);
 	textbox = obj;
 	if (!delay)  { delay = 400; }
 	clearTimeout(searchTimeout);
 	text = textbox.value.toString();
 		
-	keyCode = 0;
+	key = 0;
 	if (event == null) { 
 		// if onSubmit function called
-		keyCode = ENTERKEY;	//mimic user hitting enter key
+		key = ENTERKEY;	//mimic user hitting enter key
 	}
 	else {
 		if (!event.altKey && !event.ctrlKey) {
 			// this if statement cancels the search on alt and control keys
-			keyCode = event.keyCode;
-			if (!keyCode && (event.type == "click" || event.type == "change")) {
+			key = event.keyCode;
+			if (!key && (event.type == "click" || event.type == "change")) {
 				//if non-key event like clicking checkbox or changing dropdown list
-				keyCode = 1;
+				key = 1;
 			}
 		}
 	}
+	if (debugBox) debugBox.innerHTML += '<br> key: ' + key;
 	
 	//reset textbox for mouse events
-	if (keyCode == 1 && text == "") {
+	if (key == 1 && text == "") {
 		text = lastPhraseSearched;
 	}
 	
-	if (keyCode == 27) {
+	if (key == 27) {
 		//escape key pressed
-		hideHighlight();
-		textbox.value = lastPhraseSearched;
+		exitNumberMode(textbox);
 		return false;
 	}
 	else if (text == "" && includeRetired == retired) {
 		//searched on empty string (and didn't change retired status)
 		return false;
 	}
-	else if (keyCode == ENTERKEY) {
+	else if (key == ENTERKEY) {
 		if (debugBox) debugBox.innerHTML += '<br> Enter key pressed, search: ' + text;
 		hideHighlight();
 		// if the user hit the enter key then check for sequence of numbers
@@ -149,27 +150,28 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay) {
 		//textbox.select();
 		textbox.value = "";
 		if (debugBox) debugBox.innerHTML += '<br> textbox.value cleared';
-		if (text != lastPhraseSearched || includeRetired != retired) {
+		if (text != lastPhraseSearched || includeRetired != retired || (typeof allowNewSearch != 'undefined' && allowNewSearch() == true)) {
 			//this was a new search with the enter key pressed
 			if (debugBox) debugBox.innerHTML += '<br> This was a new search';
 			if (text == "")
 				text = lastPhraseSearched;
+			keyCode = key; 	//save keyCode for later testing in fillTable()
 			preFindObjects(text);
-			if (debugBox) debugBox.innerHTML += '<br> preFindObjects timeout called for ENTERKEY';
+			if (debugBox) debugBox.innerHTML += '<br> preFindObjects called for ENTERKEY';
 		}
-		else if (objectsFound.length == 1) {
+		else if (objectsFound.length == 1 && (typeof allowAutoJump != 'undefined' && allowAutoJump() == true)) {
 			// this was a new redundant 'search' with enter key pressed and only one object
 			selectObject(1);
 		}
 		else {
 			// this was a new redundant 'search' with enter key pressed
 			showHighlight();
-			if (debugBox) debugBox.innerHTML += '<br> This was  redundant search';
+			if (debugBox) debugBox.innerHTML += '<br> This was a redundant search';
 		}
 	}
 
-	else if ((keyCode > 57 && keyCode <= 127) ||
-		keyCode == 8 || keyCode == 32 || keyCode == 46 || keyCode == 1) {
+	else if ((key > 57 && key <= 127) ||
+		key == 8 || key == 32 || key == 46 || key == 1) {
 			//	"if alpha key entered or 
 			//   backspace key pressed or
 			//   spacebar pressed or 
@@ -178,8 +180,10 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay) {
 			hideHighlight();
 			if (text.length > 1) {
 				clearInformationBar();
+				if (debugBox) debugBox.innerHTML += '<br> setting preFindObjects timeout for other key: ' + key;
+				keyCode = key;	//save keyCode for later testing in fillTable
 				searchTimeout = setTimeout("preFindObjects(text)", delay);
-				if (debugBox) debugBox.innerHTML += '<br> preFindObjects timeout called for other key';
+				if (debugBox) debugBox.innerHTML += '<br> preFindObjects timeout called for other key: ' + key;
 			}
 	}
 	
@@ -217,7 +221,7 @@ function selectObject(index) {
 	}
 }
 
-function showHighlight() {
+function showHighlight(box) {
 	if (objectsFound.length > 0) {
 		var elements = document.getElementsByTagName('TD')
 		for(i=0; i <elements.length;i++)
@@ -225,22 +229,32 @@ function showHighlight() {
 			if(elements[i].className == 'searchIndex')
 				elements[i].className = 'searchIndexHighlight';
 		}
-		if (textbox != null) {
-			textbox.className = "searchHighlight";
-			textbox.focus();
+		if (box != null)
+			obj = box;
+		else
+			obj = textbox;
+			
+		if (obj != null) {
+			obj.className = "searchHighlight";
+			obj.focus();
 		}
 	}
 }
 
-function hideHighlight() {
+function hideHighlight(box) {
 	var elements = document.getElementsByTagName('TD')
 	for(i=0; i <elements.length;i++)
 	{
 		if(elements[i].className == 'searchIndexHighlight')
 			elements[i].className = 'searchIndex';
 	}
-	if (textbox != null) {
-		textbox.className = "";
+	if (box != null)
+		obj = box;
+	else
+		obj = textbox;
+		
+	if (obj != null) {
+		obj.className = "";
 	}
 }
 
@@ -265,7 +279,7 @@ function fillTable(objects, cells) {
    				// if only one string item returned, its a message
    				hideHighlight();
 			}
-   			else {
+   			else if (typeof allowAutoJump != 'undefined' && allowAutoJump() == true){
 		   		objectsFound.push(objects[0]);
 		   		selectObject(1);
 	   			return;
@@ -294,8 +308,10 @@ function fillTable(objects, cells) {
     	// showHighlighting must be called here to assure it occurs after 
     	// objects are returned. Must be called with Timeout because 
     	// DWRUtil.addRows uses setTimeout
+    	if (debugBox) debugBox.innerHTML += "<br>showing highlight at end of fillTable() due to enterkey";
     	setTimeout("showHighlight()", 0);
     }
+    if (debugBox) debugBox.innerHTML += "<br>ending fillTable().  Keycode was: " + keyCode;
 }
 
 function showPrevious() {
@@ -306,7 +322,9 @@ function showPrevious() {
 	}
 	searchIndex = firstItemDisplayed - 1;
 	fillTable(allObjectsFound);
-	showHighlight();
+	//if we're in 'number mode'
+	if (textbox.value == "") 
+		showHighlight();
 	return false;
 }
 
@@ -318,7 +336,9 @@ function showNext() {
 	}
 	searchIndex = firstItemDisplayed - 1;
 	fillTable(allObjectsFound);
-	showHighlight();
+	//if we're in 'number mode'
+	if (textbox.value == "") 
+		showHighlight();
 	return false;
 }
 
@@ -463,4 +483,9 @@ function getRowHeight() {
 	if (h == 'smallest')
 		return 10;
 	return 13; //normal
+}
+
+function exitNumberMode(txtbox) {
+	hideHighlight(txtbox);
+	txtbox.value = lastPhraseSearched;
 }

@@ -13,54 +13,70 @@
 <script type="text/javascript">
 
 	var patientName;
-	var birthdate;
+	var birthyear;
 	var gender;
 	var form;
-	var noPatientsFound = "No Patients Found.  Select to add a new Patient";
-	var patientsFound   = "Add New Patient";
+	var noPatientsFound;
+	var patientsFound ;
+	var inputChanged = false;
 	
-	function findObjects() {
-		DWRPatientService.getSimilarPatients(preFillTable, patientName.value, birthdate.value, gender.value);
+	function findObjects(text) {
+		DWRPatientService.getSimilarPatients(preFillTable, text, birthyear.value, gender.value);
 		return false;
 	}
 	
 	function preFillTable(patients) {
-		var text = new Array();
+		var links = new Array();
 		if (patients.length < 1) {
-			text.push(noPatientsFound);
-			fillTable([]);
+			links.push(noPatientsFound);
+			fillTable([]);	//this call sets up the table/info bar
 		}
 		else {
-			text.push(patientsFound);
-			fillTable(patients);
+			links.push(patientsFound);	//setup links for appending to the end
+			fillTable(patients);		//continue as normal
 		}
-		setTimeout("DWRUtil.addRows(objectHitsTableBody, text, [getNumber, getTextLink])", 0);
+		DWRUtil.addRows(objectHitsTableBody, links, [getNumber, getTextLink]);
+		setTimeout("showHighlight()", 0);	//assumption for this page only: we're only here because the enter key was pressed
 	}
 	
 	function onSelect(patients) {
-		if (patients[0].patientId == noPatientsFound)
-			document.location = "patient.form";
+		if (patients[0].patientId == null) // this is a [no]PatientsFound link
+			document.location = patients[0].href;
 		else
-			document.location = "patient.form?patientId=" + patients[0].patientId;
+			document.location = "/@WEBAPP.NAME@/formentry/index.htm?phrase=" + patients[0].identifier;
 	}
 	
-	var getTextLink = function(p) {
-		var obj = document.createElement("a");
-		obj.href = "patient.form?name=" + patientName.value + "&birthdate=" + birthdate.value + "&gender=" + gender.value;
-		obj.className = "searchHit";
-		obj.innerHTML = p;
-		return obj
+	var getTextLink = function(link) {
+		link.href = "newPatient.form?name=" + patientName.value + "&birthyear=" + birthyear.value + "&gender=" + gender.value;
+		link.className = "searchHit";
+		return link;
 	}
 	
 	var init = function() {
 			patientName = $("patientName");
-			birthdate = $("birthdate");
+			birthyear = $("birthyear");
 			gender = $("gender");
 			form = $("patientForm");
+			noPatientsFound = document.createElement("a");
+			patientsFound   = document.createElement("a");
+			noPatientsFound.innerHTML = "No Patients Found.  Select to add a new Patient";
+			patientsFound.innerHTML   = "Add New Patient";
 			patientName.focus();
 		};
 		
 	window.onload = init;
+	
+	var allowNewSearch = function() {
+		if (inputChanged = true) {
+			inputChanged = false;
+			return true;
+		}
+		return false;
+	}
+	
+	var allowAutoJump = function() {
+		return false;
+	}
 	
 </script>
 <!-- patientSearch.js must be imported after the findObjects() definition for override -->
@@ -69,34 +85,37 @@
 <br />
 <h2><spring:message code="Patient.title"/></h2>
 
-<form method="get" action="patient.form" onSubmit="return search(name, event, false, 0);" id="patientForm">
-<table>
-	<tr>
-		<td><spring:message code="Patient.name"/></td>
-		<td><input type="text" name="patientName" id="patientName" value="" onKeyUp="search(this, event, false, 500);" /></td>
-	</tr>
-	<tr>
-		<td><spring:message code="Patient.birthdate"/></td>
-		<td><input type="text" name="birthdate" id="birthdate" size="10" value="" /></td>
-	</tr>
-	<tr>
-		<td><spring:message code="Patient.gender"/></td>
-		<td><select name="gender" id="gender" onChange="search(patientName, event, false, 0);">
-				<option value="M">Male</option>
-				<option value="F">Female</option>
-			</select>
-		</td>
-	</tr>
-</table>
-<br />
-
-<div id="patientsFound">
+<form method="get" action="newPatient.form" onSubmit="return search(patientName, null, false, 0);" id="patientForm">
 	<table>
-		<tbody id="patientTableBody">
-		</tbody>
+		<tr>
+			<td><spring:message code="Patient.name"/></td>
+			<td><input type="text" name="patientName" id="patientName" value=""/></td>
+		</tr>
+		<tr>
+			<td><spring:message code="Patient.birthyear"/></td>
+			<td><input type="text" name="birthyear" id="birthyear" size="5" value="" onChange="inputChanged=true;" onFocus="exitNumberMode(patientName)" /></td>
+		</tr>
+		<tr>
+			<td><spring:message code="Patient.gender"/></td>
+			<td><select name="gender" id="gender" onChange="inputChanged=true;" onFocus="exitNumberMode(patientName)">
+					<openmrs:forEachRecord name="gender">
+						<option value="${record.key}"><spring:message code="Patient.gender.${record.value}"/></option>
+					</openmrs:forEachRecord>
+				</select>
+			</td>
+		</tr>
 	</table>
-</div>
-
+	
+	<input type="submit" value="<spring:message code="general.continue"/>" onClick="return search(patientName, null, false, 0);"/>
+	
+	<br /><br />
+	
+	<div id="patientsFound">
+		<table>
+			<tbody id="patientTableBody">
+			</tbody>
+		</table>
+	</div>
 </form>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

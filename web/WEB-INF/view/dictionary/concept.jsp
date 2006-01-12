@@ -37,18 +37,17 @@ document.onkeypress = hotkeys;
 <h2><spring:message code="Concept.title" /></h2>
 
 <c:if test="${concept.conceptId != null}">
-	<c:if test="${previousConcept != null}"><a href="concept.htm?conceptId=${previousConcept.conceptId}" id="previousConcept" valign="middle">Previous</a> |</c:if>
-	<openmrs:hasPrivilege privilege="Edit Dictionary" converse="false">
-		<a href="concept.form?conceptId=${concept.conceptId}" id="editConcept" valign="middle">Edit</a> |
-	</openmrs:hasPrivilege>
-	<c:if test="${nextConcept != null}"><a href="concept.htm?conceptId=${nextConcept.conceptId}" id="nextConcept" valign="middle">Next</a></c:if>
+	<c:if test="${previousConcept != null}"><a href="concept.htm?conceptId=${previousConcept.conceptId}" id="previousConcept" valign="middle"><spring:message code="general.previous"/></a> |</c:if>
+	<a href="concept.form?conceptId=${concept.conceptId}" id="editConcept" valign="middle"><spring:message code="general.edit"/></a> |
+	<c:if test="${nextConcept != null}"><a href="concept.htm?conceptId=${nextConcept.conceptId}" id="nextConcept" valign="middle"><spring:message code="general.next"/></a></c:if>
 </c:if>
+
+<a href="concept.form" id="newConcept" valign="middle"><spring:message code="general.new"/></a>
 
 <form id="newSearchForm" action="index.htm" method="get">
   &nbsp; &nbsp; &nbsp;
-  Search 
   <input type="text" id="searchPhrase" name="phrase" size="18"> 
-  <input type="submit" class="smallButton" value="<spring:message code="general.go"/>"/>
+  <input type="submit" class="smallButton" value="<spring:message code="general.search"/>"/>
 </form>
 
 <br/><br/>

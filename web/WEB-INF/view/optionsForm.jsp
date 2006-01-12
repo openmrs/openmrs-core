@@ -196,7 +196,7 @@ function containsError(element) {
 <fieldset><legend><spring:message code="options.secretQuestion.legend" /></legend>
 <table>
 	<tr>
-		<td><spring:message code="options.password.old" /></td>
+		<td><spring:message code="User.password" /></td>
 		<td>
 			<spring:bind path="opts.secretQuestionPassword">
 				<input type="password" name="${status.expression}" value="${status.value}" />

@@ -1,6 +1,7 @@
 package org.openmrs.util;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -35,6 +36,15 @@ public class OpenmrsConstants {
 		stopWords.add("TO");
 		
 		return stopWords;
+	}
+	
+	// TODO issues with localization
+	public static final Map<String, String> OPENMRS_GENDER() {
+		Map<String, String> genders = new LinkedHashMap<String, String>();
+		genders.put("", "Choose");
+		genders.put("M", "Male");
+		genders.put("F", "Female");
+		return genders;
 	}
 	
 	

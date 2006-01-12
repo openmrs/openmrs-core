@@ -22,7 +22,7 @@ public class Person implements java.io.Serializable {
 	private Date dateCreated;
 	private User changedBy;
 	private Date dateChanged;
-	private Boolean voided;
+	private Boolean voided = false;
 	private User voidedBy;
 	private Date dateVoided;
 	private String voidReason;

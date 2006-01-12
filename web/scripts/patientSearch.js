@@ -35,7 +35,7 @@ var getId		= function(p) {
 var getGiven	= function(p) { return p.givenName;  };
 var getMiddle	= function(p) { return p.middleName; };
 var getFamily	= function(p) { return p.familyName; };
-var getRace		= function(p) { return p.race; };
+var getTribe	= function(p) { return p.tribe; };
 var getGender	= function(p) {
 		var src = "/@WEBAPP.NAME@/images/";
 		if (p.gender.toUpperCase() == "F")
@@ -49,11 +49,10 @@ var getGender	= function(p) {
 var getBirthday	= function(p) { 
 		var str = '';
 		if (p.birthdate != null) {
-			str += p.birthdate.getMonth() + 1 + '-';
 			str += p.birthdate.getDate() + '-';
+			str += p.birthdate.getMonth() + 1 + '-';
 			str += (p.birthdate.getYear() + 1900);
 		}
-		
 		if (p.birthdateEstimated)
 			str += " (?)";
 		
@@ -61,4 +60,4 @@ var getBirthday	= function(p) {
 	};
 var getMother  = function(p) { return p.mothersName;  };
 
-var customCellFunctions = [getNumber, getId, getFamily, getGiven, getMiddle, getGender, getRace, getBirthday, getMother];
+var customCellFunctions = [getNumber, getId, getFamily, getGiven, getMiddle, getGender, getTribe, getBirthday, getMother];

@@ -52,7 +52,7 @@
 				 	<th><spring:message code="PatientName.givenName"/></th>
 				 	<th><spring:message code="PatientName.middleName"/></th>
 				 	<th><spring:message code="Patient.gender"/></th>
-				 	<th><spring:message code="Patient.race"/></th>
+				 	<th><spring:message code="Patient.tribe"/></th>
 				 	<th><spring:message code="Patient.birthdate"/></th>
 				 	<th><spring:message code="Patient.mothersName"/></th>
 				 </tr>

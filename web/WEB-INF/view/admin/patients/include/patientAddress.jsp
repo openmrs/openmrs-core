@@ -16,7 +16,6 @@
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
-			
 	</tr>
 	<tr>
 		<td><spring:message code="PatientAddress.cityVillage"/></td>

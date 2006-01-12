@@ -137,7 +137,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		return patients;
 	}
 
-	public Set<Patient> getSimilarPatients(String name, Date birthdate, String gender) throws DAOException {
+	public Set<Patient> getSimilarPatients(String name, Integer birthyear, String gender) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
 		//TODO simple name search to start testing, will need to make "real" name search
@@ -153,21 +153,25 @@ public class HibernatePatientDAO implements PatientDAO {
 		Criteria criteria = session.createCriteria(Patient.class).createAlias("names", "name");
 		for (String n : names) {
 					criteria.add(Expression.or(
-							Expression.like("name.familyName", n, MatchMode.START),
+						Expression.like("name.familyName", n, MatchMode.START),
+						Expression.or(
+							Expression.like("name.middleName", n, MatchMode.START),
 							Expression.like("name.givenName", n, MatchMode.START)
-						));
+							)
+						)
+					);
 		}
 		
 		LogicalExpression birthdayMatch = Expression.or(
-				Expression.eq("birthdate", birthdate),
-				Expression.eq("birthdateEstimated", Boolean.TRUE)
+				Expression.sql("year(birthdate) = " + birthyear),
+				Expression.isNull("birthdate")
 				);
 		SimpleExpression genderMatch = Expression.eq("gender", gender);
 		
-		if (birthdate != null && gender != null) {
+		if (birthyear != null && gender != null) {
 			criteria.add(Expression.and(birthdayMatch, genderMatch));
 		}
-		else if (birthdate != null) {
+		else if (birthyear != null) {
 			criteria.add(birthdayMatch);
 		}
 		else if (gender != null) {

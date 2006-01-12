@@ -47,7 +47,14 @@ public class ForEachRecordTag extends BodyTagSupport {
 		else if (name.equals("civilStatus")) {
 			Map<String, String> opts = OpenmrsConstants.OPENMRS_CIVIL_STATUS();
 			records = opts.entrySet().iterator();
-			select = select.toString() + "=" + opts.get(select);
+			if (select != null)
+				select = select.toString() + "=" + opts.get(select);
+		}
+		else if (name.equals("gender")) {
+			Map<String, String> opts = OpenmrsConstants.OPENMRS_GENDER();
+			records = opts.entrySet().iterator();
+			if (select != null)
+				select = select.toString() + "=" + opts.get(select);
 		}
 		else {
 			log.error(name + " not found in ForEachRecord list");
@@ -67,12 +74,7 @@ public class ForEachRecordTag extends BodyTagSupport {
 	public void doInitBody() throws JspException {
 		if (records.hasNext()) {
 			Object obj = records.next();
-			pageContext.setAttribute("record", obj);
-			pageContext.setAttribute("selected", obj.equals(select) ? "selected" : "");
-			if (name.equals("civilStatus")) {
-				String str = obj.toString();
-				pageContext.setAttribute("selected", str.equals(select) ? "selected" : "");
-			}
+			iterate(obj);
 		}
 	}
 
@@ -82,16 +84,25 @@ public class ForEachRecordTag extends BodyTagSupport {
 	public int doAfterBody() throws JspException {
         if(records.hasNext()) {
 			Object obj = records.next();
-			pageContext.setAttribute("record", obj);
-			pageContext.setAttribute("selected", obj.equals(select) ? "selected" : "");
-			if (name.equals("civilStatus")) { //Kludge until this in the db and not a HashMap
-				String str = obj.toString();
-				pageContext.setAttribute("selected", str.equals(select) ? "selected" : "");
-			}
+			iterate(obj);
             return EVAL_BODY_BUFFERED;
         }
         else
             return SKIP_BODY;
+	}
+	
+	private void iterate(Object obj) {
+		if (name.equals("gender")) {
+			Map.Entry<String, String> e = (Map.Entry<String, String>)obj;
+			e.setValue(e.getValue().toLowerCase());
+			obj = e;
+		}
+		pageContext.setAttribute("record", obj);
+		pageContext.setAttribute("selected", obj.equals(select) ? "selected" : "");
+		if (name.equals("civilStatus")) { //Kludge until this in the db and not a HashMap
+			String str = obj.toString();
+			pageContext.setAttribute("selected", str.equals(select) ? "selected" : "");
+		}
 	}
 
 	/**

@@ -68,7 +68,7 @@ public class DWRConceptService {
 				else {
 					// TODO speed up this 'search by class' option
 					objectList = new Vector<Object>(words.size());
-					int maxCount = 200;
+					int maxCount = 500;
 					int curCount = 0;
 					if (classNames.size() > 0) {
 						outer: for (ConceptWord word : words) {

@@ -18,7 +18,7 @@ public class PatientListItem {
 	private String middleName;
 	private String givenName;
 	private String gender;
-	private String race;
+	private String tribe;
 	private Date birthdate;
 	private Boolean birthdateEstimated;
 	private String mothersName;
@@ -36,7 +36,7 @@ public class PatientListItem {
 		middleName = pn.getMiddleName();
 		givenName = pn.getGivenName();
 		gender = patient.getGender();
-		race = patient.getRace();
+		tribe = patient.getTribe().getName();
 		birthdate = patient.getBirthdate();
 		birthdateEstimated = patient.isBirthdateEstimated();
 		mothersName = patient.getMothersName();
@@ -119,13 +119,13 @@ public class PatientListItem {
 		this.patientId = patientId;
 	}
 
-	public String getRace() {
-		if (race == null) race = "";
-		return race;
+	public String getTribe() {
+		if (tribe == null) tribe = "";
+		return tribe;
 	}
 
-	public void setRace(String race) {
-		this.race = race;
+	public void setTribe(String tribe) {
+		this.tribe = tribe;
 	}
 
 	public PatientAddress getAddress() {

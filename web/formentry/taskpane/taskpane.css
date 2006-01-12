@@ -30,3 +30,8 @@ a.hit:hover {
 	font-style: italic;
 	font-size: 1em;
 	}
+#content {
+	margin-left: 0px;
+	padding: 5px;
+	border-style: none;
+}

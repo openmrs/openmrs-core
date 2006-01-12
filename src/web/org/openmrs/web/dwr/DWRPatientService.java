@@ -1,8 +1,5 @@
 package org.openmrs.web.dwr;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
@@ -53,7 +50,7 @@ public class DWRPatientService {
 		return pli;
 	}
 	
-	public Vector getSimilarPatients(String name, String birthdate, String gender) {
+	public Vector getSimilarPatients(String name, String birthyear, String gender) {
 		Vector patientList = new Vector();
 
 		Context context = (Context) ExecutionContext.get().getSession()
@@ -66,25 +63,21 @@ public class DWRPatientService {
 			patientList.add("Please <a href='" + request.getContextPath() + "/logout'>log in</a> again.");
 		}
 		else {
-			try {
-				PatientService ps = context.getPatientService();
-				List<Patient> patients = new Vector<Patient>();
-				
-				Date d = null;
-				if (birthdate.length() > 0)
-					d = DateFormat.getDateInstance(DateFormat.SHORT, context.getLocale()).parse(birthdate);
-				
-				if (gender.length() < 1)
-					gender = null;
-				
-				patients.addAll(ps.getSimilarPatients(name, d, gender));
-				
-				patientList = new Vector(patients.size());
-				for (Patient p : patients) {
-					patientList.add(new PatientListItem(p));
-				}
-			} catch (ParseException e) {
-				log.error(e);
+			PatientService ps = context.getPatientService();
+			List<Patient> patients = new Vector<Patient>();
+			
+			Integer d = null;
+			if (birthyear.length() > 3)
+				d = Integer.valueOf(birthyear);
+			
+			if (gender.length() < 1)
+				gender = null;
+			
+			patients.addAll(ps.getSimilarPatients(name, d, gender));
+			
+			patientList = new Vector(patients.size());
+			for (Patient p : patients) {
+				patientList.add(new PatientListItem(p));
 			}
 		}
 		return patientList;

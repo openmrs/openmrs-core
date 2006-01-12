@@ -33,19 +33,14 @@
 		selectForm.style.display = "";
 		selectFormForm.patientId.value = p.patientId;
 		patient = p;
-		$("name").innerHTML = p.givenName + " " + p.familyName;
+		$("name").innerHTML = p.givenName + " " + p.middleName + " " + p.familyName;
 		$("gender").innerHTML = p.gender;
-		var html = "";
-		if (p.address.address1 != null)
-			html = p.address.address1 + "<br/>";
-		if (p.address.address2 != null)
-			html = html + p.address.address2 + "<br/>";
-		html = html + p.address.cityVillage + ", ";
-		html = html + p.address.stateProvince + " ";
-		html = html + p.address.country + " ";
-		html = html + p.address.postalCode;
-		$("address").innerHTML = html;
-		$("identifiers").innerHTML = p.identifier;
+		$("address1").innerHTML = p.address.address1;
+		$("address2").innerHTML = p.address.address2;
+		$("identifier").innerHTML = p.identifier;
+		$("tribe").innerHTML = p.tribe;
+		$("birthdate").innerHTML = getBirthday(p);
+		$("mothersName").innerHTML = p.mothersName;
 	}
 	
 	function editPatient() {
@@ -67,12 +62,11 @@
 <div id="findPatient">
 	<b class="boxHeader"><spring:message code="formentry.step1"/></b>
 	<div class="box">
-		<form id="findPatientForm" onSubmit="return search(searchBox, event, includeVoided.checked, 0);">
+		<form id="findPatientForm" onSubmit="return search(searchBox, event, false, 0);">
 			<table>
 				<tr>
 					<td><spring:message code="formentry.searchBox"/></td>
-					<td><input type="text" id="searchBox" onKeyUp="search(this, event, includeVoided.checked, 400)"></td>
-					<td><spring:message code="formentry.includeVoided"/><input type="checkbox" id="includeVoided" onClick="search(searchBox, event, this.checked, 0); searchBox.focus();" /></td>
+					<td><input type="text" id="searchBox" onKeyUp="search(this, event, false, 400)"></td>
 				</tr>
 			</table>
 			<!-- <input type="submit" value="Search" onClick="return updatePatients();"> -->
@@ -87,7 +81,7 @@
 				 	<th><spring:message code="PatientName.givenName"/></th>
 				 	<th><spring:message code="PatientName.middleName"/></th>
 				 	<th><spring:message code="Patient.gender"/></th>
-				 	<th><spring:message code="Patient.race"/></th>
+				 	<th><spring:message code="Patient.tribe"/></th>
 				 	<th><spring:message code="Patient.birthdate"/></th>
 				 	<th><spring:message code="Patient.mothersName"/></th>
 				 </tr>
@@ -110,14 +104,23 @@
 	<a href='index.htm' onClick="return editPatient();" style='float:right'><spring:message code="Patient.edit"/></a>
 	<table>
 		<tr>
-			<td><b><spring:message code="general.name"/></b></td><td id="name"></td>
-			<td valign="top"><b><spring:message code="Patient.identifiers"/></b></td><td id="identifiers"></td>
+			<td valign="top"><b><spring:message code="Patient.identifier"/></b></td>
+			<td id="identifier"></td>
+		</tr>
+		<tr>
+			<td><b><spring:message code="general.name"/></b></td>
+			<td id="name"></td>
 		</tr>
 		
 		<tr>
-			<td><b><spring:message code="Patient.gender"/></b></td><td id="gender"></td>
+			<td><b><spring:message code="Patient.gender"/></b></td>
+			<td id="gender"></td>
 		</tr>
-		<tr><td valign="top"><b><spring:message code="PatientAddress.address1"/></b><td id="address"></td></tr>
+		<tr><td valign="top"><b><spring:message code="PatientAddress.address1"/></b><td id="address1"></td></tr>
+		<tr><td valign="top"><b><spring:message code="PatientAddress.address2"/></b><td id="address2"></td></tr>
+		<tr><td valign="top"><b><spring:message code="Tribe.name"/></b><td id="tribe"></td></tr>
+		<tr><td valign="top"><b><spring:message code="Patient.birthdate"/></b><td id="birthdate"></td></tr>
+		<tr><td valign="top"><b><spring:message code="Patient.mothersName"/></b><td id="mothersName"></td></tr>
 	</table>
 	<br /><input type='button' value='<spring:message code="formentry.patient.switch"/>' onClick='showSearch(); patientListing.style.display = "";'>
 </div>
@@ -166,12 +169,19 @@
 	
 	showSearch();
 	
-	<request:existsAttribute name="patientId">
+	<request:existsParameter name="patientId">
+		<!-- User has 'patientId' in the request params -- selecting that patient -->
 		var pats = new Array();
-		var pats[0] = new Object();
-		pats[0].patientId = request.getAttribute("patientId");
+		pats.push(new Object());
+		pats[0].patientId = '<request:parameter name="patientId"/>';
 		onSelect(pats);
-	</request:existsAttribute>
+	</request:existsParameter>
+	
+	<request:existsParameter name="phrase">
+		<!-- User has 'phrase' in the request params -- searching on that -->
+		searchBox.value = '<request:parameter name="phrase"/>';
+		search(searchBox, null, false, 0);
+	</request:existsParameter>
 	
 	// creates back button functionality
 	if (searchBox.value != "")

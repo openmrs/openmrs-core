@@ -24,6 +24,7 @@
 					<prop key="**/orderType.list">orderTypeList</prop>
 					<prop key="**/orderType.form">orderTypeForm</prop>
 					<prop key="**/patient.form">patientForm</prop>
+					<prop key="**/newPatient.form">newPatientForm</prop>
 					<prop key="**/tribe.list">tribeList</prop>
 					<prop key="**/tribe.form">tribeForm</prop>
 					<prop key="**/patientIdentifierType.list">patientIdentifierTypeList</prop>
@@ -132,6 +133,16 @@
 					<property name="successView"><value>index.htm</value></property>
 				</bean>
 			<!-- ** /Patient ** -->
+			<!-- ** New (mini) Patient ** -->
+				<bean id="newPatientForm" class="org.openmrs.web.controller.patient.NewPatientFormController">
+					<property name="sessionForm"><value>true</value></property>
+					<property name="commandName"><value>patient</value></property>
+					<property name="commandClass"><value>org.openmrs.web.dwr.PatientListItem</value></property>
+					<property name="formView"><value>/admin/patients/newPatientForm</value></property>
+					<property name="successView"><value>/@WEBAPP.NAME@/formentry/index.htm</value></property>
+				</bean>
+			<!-- ** /New Patient ** -->
+			
 			<!-- **  Tribe   ** -->
 				<bean id="tribeList" class="org.openmrs.web.controller.patient.TribeListController">
 					<property name="sessionForm"><value>true</value></property>

@@ -28,6 +28,18 @@ public class PatientIdentifier implements java.io.Serializable {
 	/** default constructor */
 	public PatientIdentifier() {
 	}
+	
+	/**
+	 * Constructor for creating a basic identifier
+	 * @param identifier
+	 * @param type
+	 * @param location
+	 */
+	public PatientIdentifier(String identifier, PatientIdentifierType type, Location location) {
+		this.identifier = identifier;
+		this.identifierType = type;
+		this.location = location;
+	}
 
 	/** 
 	 * Compares two objects for similarity
