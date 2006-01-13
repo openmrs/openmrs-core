@@ -39,7 +39,7 @@
 			column="max_occurs" length="11" />
 
 		<property name="required" type="boolean" 
-			column="required" length="1" />
+			column="required" length="1" not-null="true"/>
 
 		<many-to-one name="creator" class="User" not-null="true">
 			<column name="creator" />

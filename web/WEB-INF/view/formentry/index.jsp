@@ -14,24 +14,86 @@
 <script>
 
 	var patient;
+	var savedText;
 	
 	function showSearch() {
 		findPatient.style.display = "";
 		patientListing.style.display = "none";
 		selectForm.style.display = "none";
 		patientSummary.style.display = "none";
+		savedText = "";
 		searchBox.focus();
 	}
 	
 	function onSelect(arr) {
-		DWRPatientService.getPatient(fillPatientDetails, arr[0].patientId);
+		if (arr[0].patientId != null) {
+			DWRPatientService.getPatient(fillPatientDetails, arr[0].patientId);
+		}
+		else if (arr[0].href != null) {
+			document.location = arr[0].href;
+		}
 	}
+	
+	function findObjects(text) {
+		if (text.length > 2) {
+			savedText = text;
+			DWRPatientService.findPatients(preFillTable, text, includeRetired);
+		}
+		else {
+			var msg = new Array();
+			msg.push("Invalid number of search characters");
+			fillTable(msg, [getNumber, getString]);
+		}
+		patientListing.style.display = "";
+		return false;
+	}
+	
+	function preFillTable(patients) {
+		var links = new Array();
+		patientTableHead.style.display = "";
+		if (patients.length < 1) {
+			if (savedText.match(/\d/)) {
+				if (isValidCheckDigit(savedText) == false) {
+					//the user didn't input an identifier with a valid check digit
+					patientTableHead.style.display = "none";
+					var img = getProblemImage();
+					var tmp = invalidCheckDigitText + " <img src='" + img.src + "' title='" + img.title + "' />";
+					links.push(tmp);
+					links.push(noPatientsFoundText);
+					links.push(searchOnPatientNameText);
+				}
+				else {
+					//the user did input a valid identifier, but we don't have it
+					links.push(noPatientsFoundText);
+					links.push(addPatientLink);
+				}
+			}
+			else {
+				// the user put in a text search
+				links.push(noPatientsFoundText);
+				links.push(addPatientLink);
+			}
+			fillTable([]);	//this call sets up the table/info bar
+		}
+		else {
+			links.push(addPatientLink);	//setup links for appending to the end
+			fillTable(patients);		//continue as normal
+		}
+		
+		DWRUtil.addRows(objectHitsTableBody, links, [getNumber, getString]);
+		
+		if (keyCode == ENTERKEY)
+			setTimeout("showHighlight()", 0);
+		
+		return false;
+	};
 	
 	function fillPatientDetails(p) {
 		findPatient.style.display = "none";
 		patientSummary.style.display = "";
 		selectForm.style.display = "";
 		selectFormForm.patientId.value = p.patientId;
+		selectFormForm.elements[0].focus();
 		patient = p;
 		$("name").innerHTML = p.givenName + " " + p.middleName + " " + p.familyName;
 		$("gender").innerHTML = p.gender;
@@ -44,6 +106,7 @@
 	}
 	
 	function editPatient() {
+		//TODO make this function just modify the current form to include text boxes
 		window.open('<%= request.getContextPath() %>/admin/patients/patient.form?patientId=' + patient.patientId);
 		return false;
 	}
@@ -73,7 +136,7 @@
 		</form>
 		<div id="patientListing">
 			<table id="patientTable">
-			 <thead>
+			 <thead id="patientTableHead">
 				 <tr>
 				 	<th> </th>
 				 	<th><spring:message code="Patient.identifier"/></th>
@@ -88,12 +151,6 @@
 			 </thead>
 			 <tbody id="patientTableBody">
 			 </tbody>
-			 <tfoot>
-			 	<tr><td colspan="8"><br />
-			 		<i><spring:message code="formentry.patient.missing"/></i> 
-			 		<a href="${pageContext.request.contextPath}/admin/patients/addPatient.htm"><spring:message code="Patient.create"/></a>
-				</td></tr>
-			 </tfoot>
 			</table>
 		</div>
 	</div>
@@ -158,7 +215,7 @@
 </div>
 
 <script>
-
+	
 	var patientListing= document.getElementById("patientListing");
 	var selectForm    = document.getElementById("selectForm");
 	var findPatient   = document.getElementById("findPatient");
@@ -166,27 +223,37 @@
 	var findPatientForm = document.getElementById("findPatientForm");
 	var selectFormForm  = document.getElementById("selectFormForm");
 	var patientSummary  = document.getElementById("patientSummary");
+	var patientTableHead= document.getElementById("patientTableHead");
 	
-	showSearch();
+	var invalidCheckDigitText   = "Invalid check digit. ";
+	var searchOnPatientNameText = "Please search on part of the patient's name. ";
+	var noPatientsFoundText     = "No patients found. ";
+	var addPatientLink = document.createElement("a");
+	addPatientLink.href= "${pageContext.request.contextPath}/admin/patients/addPatient.htm";
+	addPatientLink.innerHTML = "Add a new patient ";
 	
-	<request:existsParameter name="patientId">
-		<!-- User has 'patientId' in the request params -- selecting that patient -->
-		var pats = new Array();
-		pats.push(new Object());
-		pats[0].patientId = '<request:parameter name="patientId"/>';
-		onSelect(pats);
-	</request:existsParameter>
-	
-	<request:existsParameter name="phrase">
-		<!-- User has 'phrase' in the request params -- searching on that -->
-		searchBox.value = '<request:parameter name="phrase"/>';
-		search(searchBox, null, false, 0);
-	</request:existsParameter>
-	
-	// creates back button functionality
-	if (searchBox.value != "")
-		searchBoxChange(searchBox, event, $('includeVoided').checked, 0);
-	
+	function init() {
+		<request:existsParameter name="patientId">
+			<!-- User has 'patientId' in the request params -- selecting that patient -->
+			var pats = new Array();
+			pats.push(new Object());
+			pats[0].patientId = '<request:parameter name="patientId"/>';
+			onSelect(pats);
+		</request:existsParameter>
+		
+		<request:existsParameter name="phrase">
+			<!-- User has 'phrase' in the request params -- searching on that -->
+			searchBox.value = '<request:parameter name="phrase"/>';
+		</request:existsParameter>
+		
+		// creates back button functionality
+		if (searchBox.value != "")
+			searchBoxChange(searchBox, null, false, 0);
+			
+		showSearch();
+	}
+		
+	window.onload=init;
 </script>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

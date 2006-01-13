@@ -170,13 +170,14 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay) {
 		}
 	}
 
-	else if ((key > 57 && key <= 127) ||
-		key == 8 || key == 32 || key == 46 || key == 1) {
-			//	"if alpha key entered or 
+	else if (!text.match(/\d/) && ((key > 57 && key <= 127) ||
+		key == 8 || key == 32 || key == 46 || key == 1)) {
+			//	"If there isn't a number in the search (force usage of enter key) and
+			//	 (if alpha key entered or 
 			//   backspace key pressed or
 			//   spacebar pressed or 
 			//   delete key pressed or
-			//   mouse event"
+			//   mouse event)"
 			hideHighlight();
 			if (text.length > 1) {
 				clearInformationBar();

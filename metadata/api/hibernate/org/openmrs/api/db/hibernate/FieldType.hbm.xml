@@ -42,6 +42,7 @@
         type="boolean"
         column="is_set"
         length="1"
+        not-null="true"
     />
     <property
         name="dateCreated"

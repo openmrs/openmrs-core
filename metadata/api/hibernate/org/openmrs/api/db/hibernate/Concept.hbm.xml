@@ -13,7 +13,7 @@
 		</id>
 
 		<property name="retired" type="java.lang.Boolean"
-			column="retired" length="1" />
+			column="retired" length="1" not-null="true"/>
 		<property name="icd10" type="java.lang.String" column="icd10"
 			length="255" />
 		<property name="loinc" type="java.lang.String" column="loinc"
@@ -126,7 +126,7 @@
 			<property name="lowCritical" type="java.lang.Double" column="low_critical" length="22" />
 			<property name="lowNormal" type="java.lang.Double" column="low_normal" length="22" />
 			<property name="units" type="java.lang.String" column="units" length="50" />
-			<property name="precise" type="java.lang.Boolean" column="precise" length="1" />
+			<property name="precise" type="java.lang.Boolean" column="precise" length="1" not-null="true"/>
 		</joined-subclass>
 		
 

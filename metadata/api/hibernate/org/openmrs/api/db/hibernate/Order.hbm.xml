@@ -48,6 +48,7 @@
 		type="java.lang.Boolean"
 		column="discontinued"
 		length="1"
+		not-null="true"
 	/>
     <property
         name="discontinuedDate"
@@ -73,6 +74,7 @@
 		type="java.lang.Boolean" 
 		column="voided"
 		length="1" 
+		not-null="true"
 	/>
 	<property
         name="dateVoided"
@@ -173,12 +175,14 @@
 	        type="boolean"
 	        column="prn"
 	        length="1"
+	        not-null="true"
 	    />
 	    <property
 	        name="complex"
 	        type="boolean"
 	        column="complex"
 	        length="1"
+	        not-null="true"
 	    />
 	    <property
 	        name="quantity"

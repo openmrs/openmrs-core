@@ -48,7 +48,7 @@
 		</set>
 
 		<property name="retired" type="boolean" 
-			column="retired" length="1" />
+			column="retired" length="1" not-null="true"/>
 
 		<many-to-one name="retiredBy" class="User">
 			<column name="retired_by" />

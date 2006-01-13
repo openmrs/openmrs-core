@@ -211,8 +211,9 @@ public class PatientService {
 		
 		// if there is a number in the query string
 		if (query.matches(".*\\d+.*")) {
-			log.debug("Query: " + query);
-			//if there is no hyphen:
+			log.debug("[Identifier search] Query: " + query);
+			//if there is no hyphen, get the appropriate check digit:
+			/*
 			if (query.lastIndexOf('-') != query.length() - 2) {
 				// append checkdigit and search
 				try {
@@ -239,7 +240,8 @@ public class PatientService {
 					} catch(Exception e) {}
 				}
 			}
-			else { //there is a hyphen
+			*/
+			{ //there is a hyphen
 				patients.addAll(dao.getPatientsByIdentifier(query, includeVoided));
 			}
 				

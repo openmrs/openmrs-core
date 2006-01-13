@@ -43,7 +43,7 @@
 		if (patients[0].patientId == null) // this is a [no]PatientsFound link
 			document.location = patients[0].href;
 		else
-			document.location = "/@WEBAPP.NAME@/formentry/index.htm?phrase=" + patients[0].identifier;
+			document.location = "${pageContext.request.contextPath}/formentry/index.htm?phrase=" + patients[0].identifier;
 	}
 	
 	var getTextLink = function(link) {

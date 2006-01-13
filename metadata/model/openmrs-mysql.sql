@@ -1,4 +1,4 @@
-#Date:                  2005/12/02 00:25:17
+#Date:                  2006/01/13 15:30:38
 
 SET FOREIGN_KEY_CHECKS=0;
 #----------------------------
@@ -21,7 +21,7 @@ CREATE TABLE `complex_obs` (
 drop table if exists concept;
 CREATE TABLE `concept` (
   `concept_id` int(11) NOT NULL auto_increment,
-  `retired` tinyint(1) default NULL,
+  `retired` tinyint(1) NOT NULL default '0',
   `name` varchar(255) NOT NULL default '',
   `short_name` varchar(255) default NULL,
   `description` text,
@@ -78,7 +78,7 @@ CREATE TABLE `concept_class` (
   `description` varchar(255) NOT NULL default '',
   `creator` int(11) NOT NULL default '0',
   `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
-  `is_set` tinyint(1) default NULL,
+  `is_set` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`concept_class_id`),
   KEY `concept_class_creator` (`creator`),
   CONSTRAINT `concept_class_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`)
@@ -90,7 +90,7 @@ drop table if exists concept_datatype;
 CREATE TABLE `concept_datatype` (
   `concept_datatype_id` int(11) NOT NULL auto_increment,
   `name` varchar(255) NOT NULL default '',
-  `datatype_abbreviation` char(3) default NULL,
+  `hl7_abbreviation` char(3) default NULL,
   `description` varchar(255) NOT NULL default '',
   `creator` int(11) NOT NULL default '0',
   `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
@@ -145,18 +145,10 @@ CREATE TABLE `concept_numeric` (
   `low_critical` double default NULL,
   `low_normal` double default NULL,
   `units` varchar(50) default NULL,
-  `creator` int(11) NOT NULL default '0',
-  `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
-  `precise` tinyint(1) default NULL,
-  `changed_by` int(11) default NULL,
-  `date_changed` datetime default NULL,
+  `precise` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`concept_id`),
-  KEY `concept_numeric_creator` (`creator`),
-  KEY `user_who_changed_concept_numeric` (`changed_by`),
-  CONSTRAINT `concept_numeric_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
-  CONSTRAINT `numeric_attributes` FOREIGN KEY (`concept_id`) REFERENCES `concept` (`concept_id`),
-  CONSTRAINT `user_who_changed_concept_numeric` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  CONSTRAINT `numeric_attributes` FOREIGN KEY (`concept_id`) REFERENCES `concept` (`concept_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 38912 kB; (`creator`) REFER `openmrs/users`(`us';
 #----------------------------
 # Table structure for concept_set
 #----------------------------
@@ -165,15 +157,15 @@ CREATE TABLE `concept_set` (
   `concept_id` int(11) NOT NULL default '0',
   `concept_set` int(11) NOT NULL default '0',
   `sort_weight` double default NULL,
-  `creator` int(11) default NULL,
-  `date_created` datetime default NULL,
+  `creator` int(11) NOT NULL default '0',
+  `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`concept_id`,`concept_set`),
   KEY `has_a` (`concept_set`),
-  KEY `user_who_created_set` (`creator`),
+  KEY `user_who_created` (`creator`),
   CONSTRAINT `has_a` FOREIGN KEY (`concept_set`) REFERENCES `concept` (`concept_id`),
   CONSTRAINT `is_a` FOREIGN KEY (`concept_id`) REFERENCES `concept` (`concept_id`),
-  CONSTRAINT `user_who_created_set` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  CONSTRAINT `user_who_created` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 47104 kB; InnoDB free: 47104 kB';
 #----------------------------
 # Table structure for concept_set_derived
 #----------------------------
@@ -231,9 +223,8 @@ CREATE TABLE `concept_word` (
   `synonym` varchar(255) NOT NULL default '',
   `locale` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`concept_id`,`word`,`synonym`,`locale`),
-  KEY `word_for` (`concept_id`),
   CONSTRAINT `word_for` FOREIGN KEY (`concept_id`) REFERENCES `concept` (`concept_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 49152 kB; InnoDB free: 72704 kB; (`concept_id`)';
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 49152 kB; InnoDB free: 48128 kB; (`concept_id`)';
 #----------------------------
 # Table structure for drug
 #----------------------------
@@ -242,7 +233,7 @@ CREATE TABLE `drug` (
   `drug_id` int(11) NOT NULL default '0',
   `concept_id` int(11) NOT NULL default '0',
   `name` varchar(50) default NULL,
-  `combination` tinyint(1) default NULL,
+  `combination` tinyint(1) NOT NULL default '0',
   `daily_mg_per_kg` double default NULL,
   `dosage_form` varchar(255) default NULL,
   `dose_strength` double default NULL,
@@ -260,7 +251,7 @@ CREATE TABLE `drug` (
   KEY `primary_drug_concept` (`concept_id`),
   CONSTRAINT `drug_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
   CONSTRAINT `primary_drug_concept` FOREIGN KEY (`concept_id`) REFERENCES `concept` (`concept_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 38912 kB; (`creator`) REFER `openmrs/users`(`us';
 #----------------------------
 # Table structure for drug_ingredient
 #----------------------------
@@ -283,14 +274,14 @@ CREATE TABLE `drug_order` (
   `dose` int(11) default NULL,
   `units` varchar(255) default NULL,
   `frequency` varchar(255) default NULL,
-  `prn` tinyint(1) default NULL,
-  `complex` tinyint(1) default NULL,
+  `prn` tinyint(1) NOT NULL default '0',
+  `complex` tinyint(1) NOT NULL default '0',
   `quantity` int(11) default NULL,
   PRIMARY KEY  (`order_id`),
   KEY `inventory_item` (`drug_inventory_id`),
   CONSTRAINT `extends_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`),
   CONSTRAINT `inventory_item` FOREIGN KEY (`drug_inventory_id`) REFERENCES `drug` (`drug_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 38912 kB; (`order_id`) REFER `openmrs/orders`(`';
 #----------------------------
 # Table structure for encounter
 #----------------------------
@@ -339,13 +330,13 @@ CREATE TABLE `encounter_type` (
 drop table if exists `field`;
 CREATE TABLE `field` (
   `field_id` int(11) NOT NULL auto_increment,
-  `name` varchar(255) default NULL,
+  `name` varchar(255) NOT NULL default '',
   `description` text,
   `field_type` int(11) default NULL,
   `concept_id` int(11) default NULL,
   `table_name` varchar(50) default NULL,
   `attribute_name` varchar(50) default NULL,
-  `select_multiple` tinyint(1) default NULL,
+  `select_multiple` tinyint(1) NOT NULL default '0',
   `creator` int(11) NOT NULL default '0',
   `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
   `changed_by` int(11) default NULL,
@@ -359,7 +350,7 @@ CREATE TABLE `field` (
   CONSTRAINT `type_of_field` FOREIGN KEY (`field_type`) REFERENCES `field_type` (`field_type_id`),
   CONSTRAINT `user_who_changed_field` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`),
   CONSTRAINT `user_who_created_field` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 38912 kB; (`concept_id`) REFER `openmrs/concept';
 #----------------------------
 # Table structure for field_answer
 #----------------------------
@@ -385,13 +376,13 @@ CREATE TABLE `field_type` (
   `field_type_id` int(11) NOT NULL auto_increment,
   `name` varchar(50) default NULL,
   `description` longtext,
-  `is_set` tinyint(1) default NULL,
+  `is_set` tinyint(1) NOT NULL default '0',
   `creator` int(11) NOT NULL default '0',
   `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`field_type_id`),
   KEY `user_who_created_field_type` (`creator`),
   CONSTRAINT `user_who_created_field_type` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 38912 kB; (`creator`) REFER `openmrs/users`(`us';
 #----------------------------
 # Table structure for form
 #----------------------------
@@ -403,7 +394,7 @@ CREATE TABLE `form` (
   `description` longtext,
   `schema_namespace` varchar(255) default NULL,
   `definition` longtext,
-  `retired` tinyint(1) default NULL,
+  `retired` tinyint(1) NOT NULL default '0',
   `retired_by` int(11) default NULL,
   `date_retired` datetime default NULL,
   `retired_reason` varchar(255) default NULL,
@@ -418,7 +409,7 @@ CREATE TABLE `form` (
   CONSTRAINT `user_who_created_form` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
   CONSTRAINT `user_who_last_changed_form` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`),
   CONSTRAINT `user_who_retired_form` FOREIGN KEY (`retired_by`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 38912 kB; (`creator`) REFER `openmrs/users`(`us';
 #----------------------------
 # Table structure for form_field
 #----------------------------
@@ -449,26 +440,26 @@ CREATE TABLE `form_field` (
   CONSTRAINT `form_field_hierarchy` FOREIGN KEY (`parent_form_field`) REFERENCES `form_field` (`form_field_id`),
   CONSTRAINT `user_who_created_form_field` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
   CONSTRAINT `user_who_last_changed_form_field` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-#----------------------------
-# Table structure for group
-#----------------------------
-drop table if exists `group`;
-CREATE TABLE `group` (
-  `group` varchar(50) NOT NULL default '',
-  `description` varchar(255) default NULL,
-  PRIMARY KEY  (`group`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 38912 kB; (`field_id`) REFER `openmrs/field`(`f';
 #----------------------------
 # Table structure for group_role
 #----------------------------
 drop table if exists group_role;
 CREATE TABLE `group_role` (
-  `group` varchar(50) NOT NULL default '',
+  `group_name` varchar(50) NOT NULL default '',
   `role` varchar(50) NOT NULL default '',
-  PRIMARY KEY  (`group`,`role`),
-  CONSTRAINT `grouping` FOREIGN KEY (`group`) REFERENCES `group` (`group`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 49152 kB';
+  PRIMARY KEY  (`group_name`,`role`),
+  CONSTRAINT `group_definition` FOREIGN KEY (`group_name`) REFERENCES `group_role` (`group_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='InnoDB free: 49152 kB; InnoDB free: 38912 kB; (`group`) REFE';
+#----------------------------
+# Table structure for groups
+#----------------------------
+drop table if exists groups;
+CREATE TABLE `groups` (
+  `group_name` varchar(50) NOT NULL default '',
+  `description` varchar(255) default NULL,
+  PRIMARY KEY  (`group_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='InnoDB free: 38912 kB';
 #----------------------------
 # Table structure for icd10
 #----------------------------
@@ -540,7 +531,7 @@ CREATE TABLE `note` (
   CONSTRAINT `patient_note` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`),
   CONSTRAINT `user_who_changed_note` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`),
   CONSTRAINT `user_who_created_note` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 49152 kB; InnoDB free: 49152 kB; (`patient_id`)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='InnoDB free: 49152 kB; InnoDB free: 49152 kB; (`patient_id`)';
 #----------------------------
 # Table structure for obs
 #----------------------------
@@ -567,7 +558,7 @@ CREATE TABLE `obs` (
   `comment` varchar(255) default NULL,
   `creator` int(11) NOT NULL default '0',
   `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
-  `voided` tinyint(1) default NULL,
+  `voided` tinyint(1) NOT NULL default '0',
   `voided_by` int(11) default NULL,
   `date_voided` datetime default NULL,
   `void_reason` varchar(255) default NULL,
@@ -616,13 +607,13 @@ CREATE TABLE `orders` (
   `instructions` text,
   `start_date` datetime default NULL,
   `auto_expire_date` datetime default NULL,
-  `discontinued` tinyint(4) default NULL,
+  `discontinued` tinyint(1) NOT NULL default '0',
   `discontinued_date` datetime default NULL,
   `discontinued_by` int(11) default NULL,
   `discontinued_reason` varchar(255) default NULL,
   `creator` int(11) NOT NULL default '0',
   `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
-  `voided` tinyint(4) default NULL,
+  `voided` tinyint(1) NOT NULL default '0',
   `voided_by` int(11) default NULL,
   `date_voided` datetime default NULL,
   `void_reason` varchar(255) default NULL,
@@ -663,7 +654,7 @@ CREATE TABLE `patient` (
   `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
   `changed_by` int(11) default NULL,
   `date_changed` datetime default NULL,
-  `voided` tinyint(1) default NULL,
+  `voided` tinyint(1) NOT NULL default '0',
   `voided_by` int(11) default NULL,
   `date_voided` datetime default NULL,
   `void_reason` varchar(255) default NULL,
@@ -676,7 +667,7 @@ CREATE TABLE `patient` (
   CONSTRAINT `user_who_changed_pat` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`),
   CONSTRAINT `user_who_created_patient` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
   CONSTRAINT `user_who_voided_patient` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 38912 kB; (`tribe`) REFER `openmrs/tribe`(`trib';
 #----------------------------
 # Table structure for patient_address
 #----------------------------
@@ -684,7 +675,7 @@ drop table if exists patient_address;
 CREATE TABLE `patient_address` (
   `patient_address_id` int(11) NOT NULL auto_increment,
   `patient_id` int(11) NOT NULL default '0',
-  `preferred` tinyint(4) default NULL,
+  `preferred` tinyint(1) NOT NULL default '0',
   `address1` varchar(50) default NULL,
   `address2` varchar(50) default NULL,
   `city_village` varchar(50) default NULL,
@@ -695,7 +686,7 @@ CREATE TABLE `patient_address` (
   `longitude` varchar(50) default NULL,
   `creator` int(11) NOT NULL default '0',
   `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
-  `voided` tinyint(4) default NULL,
+  `voided` tinyint(1) NOT NULL default '0',
   `voided_by` int(11) default NULL,
   `date_voided` datetime default NULL,
   `void_reason` varchar(255) default NULL,
@@ -715,11 +706,10 @@ CREATE TABLE `patient_identifier` (
   `patient_id` int(11) NOT NULL default '0',
   `identifier` varchar(50) NOT NULL default '',
   `identifier_type` int(11) NOT NULL default '0',
-  `format` varchar(255) default NULL,
   `location_id` int(11) NOT NULL default '0',
   `creator` int(11) NOT NULL default '0',
   `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
-  `voided` tinyint(4) default NULL,
+  `voided` tinyint(1) NOT NULL default '0',
   `voided_by` int(11) default NULL,
   `date_voided` datetime default NULL,
   `void_reason` varchar(255) default NULL,
@@ -742,19 +732,20 @@ CREATE TABLE `patient_identifier_type` (
   `patient_identifier_type_id` int(11) NOT NULL auto_increment,
   `name` varchar(50) NOT NULL default '',
   `description` text NOT NULL,
+  `format` varchar(50) default NULL,
   `creator` int(11) NOT NULL default '0',
   `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`patient_identifier_type_id`),
   KEY `type_creator` (`creator`),
   CONSTRAINT `type_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 38912 kB; (`creator`) REFER `openmrs/users`(`us';
 #----------------------------
 # Table structure for patient_name
 #----------------------------
 drop table if exists patient_name;
 CREATE TABLE `patient_name` (
   `patient_name_id` int(11) NOT NULL auto_increment,
-  `preferred` tinyint(1) default NULL,
+  `preferred` tinyint(1) NOT NULL default '0',
   `patient_id` int(11) NOT NULL default '0',
   `prefix` varchar(50) default NULL,
   `given_name` varchar(50) default NULL,
@@ -766,7 +757,7 @@ CREATE TABLE `patient_name` (
   `degree` varchar(50) default NULL,
   `creator` int(11) NOT NULL default '0',
   `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
-  `voided` tinyint(1) default NULL,
+  `voided` tinyint(1) NOT NULL default '0',
   `voided_by` int(11) default NULL,
   `date_voided` datetime default NULL,
   `void_reason` varchar(255) default NULL,
@@ -814,7 +805,7 @@ CREATE TABLE `relationship` (
   `relative_id` int(11) NOT NULL default '0',
   `creator` int(11) NOT NULL default '0',
   `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
-  `voided` tinyint(4) default NULL,
+  `voided` tinyint(1) NOT NULL default '0',
   `voided_by` int(11) default NULL,
   `date_voided` datetime default NULL,
   `void_reason` varchar(255) default NULL,
@@ -829,7 +820,7 @@ CREATE TABLE `relationship` (
   CONSTRAINT `relationship_type` FOREIGN KEY (`relationship`) REFERENCES `relationship_type` (`relationship_id`),
   CONSTRAINT `relation_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
   CONSTRAINT `relation_voider` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 38912 kB; (`person_id`) REFER `openmrs/person`(';
 #----------------------------
 # Table structure for relationship_type
 #----------------------------
@@ -871,10 +862,33 @@ CREATE TABLE `role_privilege` (
 drop table if exists tribe;
 CREATE TABLE `tribe` (
   `tribe_id` int(11) NOT NULL auto_increment,
-  `retired` tinyint(1) default NULL,
+  `retired` tinyint(1) NOT NULL default '0',
   `name` varchar(50) NOT NULL default '',
   PRIMARY KEY  (`tribe_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 67584 kB';
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 67584 kB; InnoDB free: 38912 kB; InnoDB free: 3';
+#----------------------------
+# Table structure for user_group
+#----------------------------
+drop table if exists user_group;
+CREATE TABLE `user_group` (
+  `user_id` int(11) NOT NULL default '0',
+  `group_name` varchar(50) NOT NULL default '',
+  KEY `user_group` (`user_id`),
+  KEY `group_role` (`group_name`),
+  CONSTRAINT `group_role` FOREIGN KEY (`group_name`) REFERENCES `groups` (`group_name`),
+  CONSTRAINT `user_group` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='InnoDB free: 38912 kB; (`user_id`) REFER `openmrs/users`(`us';
+#----------------------------
+# Table structure for user_property
+#----------------------------
+drop table if exists user_property;
+CREATE TABLE `user_property` (
+  `user_id` int(11) NOT NULL default '0',
+  `key` varchar(100) NOT NULL default '',
+  `value` varchar(255) NOT NULL default '',
+  PRIMARY KEY  (`user_id`,`key`),
+  CONSTRAINT `user_property` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='InnoDB free: 38912 kB; (`user_id`) REFER `openmrs/users`(`us';
 #----------------------------
 # Table structure for user_role
 #----------------------------
@@ -905,7 +919,7 @@ CREATE TABLE `users` (
   `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
   `changed_by` int(11) default NULL,
   `date_changed` datetime default NULL,
-  `voided` tinyint(1) default NULL,
+  `voided` tinyint(1) NOT NULL default '0',
   `voided_by` int(11) default NULL,
   `date_voided` datetime default NULL,
   `void_reason` varchar(255) default NULL,
@@ -916,30 +930,5 @@ CREATE TABLE `users` (
   CONSTRAINT `user_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
   CONSTRAINT `user_who_changed_user` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`),
   CONSTRAINT `user_who_voided_user` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 66560 kB; (`creator`) REFER `openmrs/users`(`us';
-
-#----------------------------
-# Table structure for reports
-#----------------------------
-drop table if exists report;
-CREATE TABLE `report` (
-  `report_id` int(11) NOT NULL auto_increment,
-  `name` varchar(255) NOT NULL,
-  `description` text default NULL,
-  `creator` int(11) NOT NULL default '0',
-  `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
-  `changed_by` int(11) default NULL,
-  `date_changed` datetime default NULL,
-  `voided` tinyint(1) default NULL,
-  `voided_by` int(11) default NULL,
-  `date_voided` datetime default NULL,
-  `void_reason` varchar(255) default NULL,
-  PRIMARY KEY  (`report_id`),
-  KEY `report_creator` (`creator`),
-  KEY `user_who_changed_report` (`changed_by`),
-  KEY `user_who_voided_report` (`voided_by`),
-  CONSTRAINT `report_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
-  CONSTRAINT `user_who_changed_report` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`),
-  CONSTRAINT `user_who_voided_report` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='InnoDB free: 66560 kB; (`creator`) REFER `openmrs/users`(`us';
 

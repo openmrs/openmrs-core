@@ -24,6 +24,7 @@
         type="java.lang.Boolean"
         column="voided"
         length="1"
+        not-null="true"
     />
     <property
         name="dateVoided"

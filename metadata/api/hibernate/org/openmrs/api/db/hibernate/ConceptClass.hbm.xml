@@ -52,6 +52,7 @@
         column="is_set"
         length="1"
         access="field"
+        not-null="true"
     />
 
     <!-- Associations -->

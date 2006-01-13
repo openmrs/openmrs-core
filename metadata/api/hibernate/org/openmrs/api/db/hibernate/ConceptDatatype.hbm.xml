@@ -22,8 +22,7 @@
 			column="date_created" not-null="true" length="19" />
 
 		<property name="hl7Abbreviation" type="java.lang.String" 
-			column="datatype_abbreviation" not-null="false" length="3" />
-		<!-- TODO change db column name to hl7_abbreviation -->
+			column="hl7_abbreviation" not-null="false" length="3" />
 		
 		<!-- bi-directional many-to-one association to User -->
 		<many-to-one name="creator" class="User" not-null="true">

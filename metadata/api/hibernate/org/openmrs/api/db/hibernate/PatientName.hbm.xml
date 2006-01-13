@@ -12,7 +12,7 @@
 			<generator class="identity" />
 		</id>
 
-		<property name="preferred" type="boolean" column="preferred" />
+		<property name="preferred" type="boolean" column="preferred" not-null="true"/>
 
 		<many-to-one name="patient" class="Patient">
 			<column name="patient_id" />
@@ -56,6 +56,16 @@
 		<property name="dateChanged" type="java.util.Date"
 			column="date_changed" length="19" />
 
+		<many-to-one name="voidedBy" class="User" column="voided_by" />
+
+		<property name="dateVoided" type="java.util.Date"
+			column="date_voided" length="19" />
+
+		<property name="voidReason" type="java.lang.String"
+			column="void_reason" length="255" />
+			
+		<property name="voided" type="boolean" column="voided" length="1" not-null="true" />
+		
 	</class>
 
 </hibernate-mapping>

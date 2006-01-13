@@ -2,7 +2,7 @@
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
 
-<openmrs:require privilege="Edit Dictionary" otherwise="/login.htm"
+<openmrs:require privilege="Edit Concepts" otherwise="/login.htm"
 	redirect="/dictionary/concept.form" />
 
 <script type="text/javascript" src="<%= request.getContextPath() %>/scripts/prototype.lite.js"></script>

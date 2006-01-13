@@ -31,6 +31,7 @@ public class PatientAddress implements java.io.Serializable {
 	private Date dateVoided;
 	private String voidReason;
 	private boolean dirty;
+	private Boolean preferred;
 
 	// Constructors
 
@@ -144,6 +145,26 @@ public class PatientAddress implements java.io.Serializable {
 	public void setCountry(String country) {
 		dirty = true;
 		this.country = country;
+	}
+	
+	/**
+	 * @return Returns the preferred.
+	 */
+	public Boolean isPreferred() {
+		if (preferred == null)
+			return new Boolean(false);
+		return preferred;
+	}
+	
+	public Boolean getPreferred() {
+		return isPreferred();
+	}
+
+	/**
+	 * @param preferred The preferred to set.
+	 */
+	public void setPreferred(Boolean preferred) {
+		this.preferred = preferred;
 	}
 
 	/**

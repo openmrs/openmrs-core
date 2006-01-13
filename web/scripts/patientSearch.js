@@ -3,34 +3,21 @@ function search(obj, event, retired, delay) {
 	return false;
 }
 
-if (!findObjects) {
-	var findObjects = function (text) {
-		if (text.length > 2) {
-			DWRPatientService.findPatients(fillTable, text, includeRetired);
-		}
-		else {
-			var msg = new Array();
-			msg.push("Invalid number of search characters");
-			fillTable(msg, [getNumber, getString]);
-		}
-		patientListing.style.display = "";
-		return false;
-	};
-}
-
-var getId		= function(p) { 
+var getId		= function(p) {
+		div = document.createElement("div");
 		var obj = document.createElement("a");
 		obj.href = "#" + searchIndex;
 		obj.className = "searchHit";
 		obj.onclick = function() { return selectObject(parseInt(this.href.substring(this.href.indexOf('#')+1, this.href.length))); };
-		obj.innerHTML = p.identifier;
-		if (p.voided) {
-			div = document.createElement("div");
-			div.className = "retired";
-			div.appendChild(obj);
-			obj = div;
+		obj.appendChild(document.createTextNode(p.identifier));
+		div.appendChild(obj);
+		if (typeof isValidCheckDigit != 'undefined' && isValidCheckDigit(p.identifier)==false) {
+			div.appendChild(getProblemImage());
 		}
-		return obj;
+		if (p.voided) {
+			div.className = "retired";
+		}
+		return div;
 	};
 var getGiven	= function(p) { return p.givenName;  };
 var getMiddle	= function(p) { return p.middleName; };
@@ -61,3 +48,11 @@ var getBirthday	= function(p) {
 var getMother  = function(p) { return p.mothersName;  };
 
 var customCellFunctions = [getNumber, getId, getFamily, getGiven, getMiddle, getGender, getTribe, getBirthday, getMother];
+
+function getProblemImage() {
+	var img = document.createElement("img");
+	img.src = "/@WEBAPP.NAME@/images/problem.gif";
+	if (typeof invalidCheckDigit != 'undefined') img.onclick=invalidCheckDigit;
+	img.title="The check digit on this identifier is invalid.  Please double check this patient";
+	return img;
+}

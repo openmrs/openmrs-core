@@ -12,7 +12,7 @@
 		</id>
 
 		<property name="name" type="java.lang.String"
-			column="name" length="255" />
+			column="name" length="255" not-null="true"/>
 		
 		<property name="description" type="java.lang.String"
 			column="description" length="65535" />
@@ -32,7 +32,7 @@
 			column="attribute_name" length="50" />
 		
 		<property name="selectMultiple" type="boolean"
-			column="select_multiple" length="1" />
+			column="select_multiple" length="1" not-null="true"/>
 		
 		<many-to-one name="creator" class="User" not-null="true">
 			<column name="creator" />
