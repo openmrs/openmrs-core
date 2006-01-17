@@ -82,7 +82,7 @@
 <c:if test="${concept.conceptId != null}">
 	<c:if test="${previousConcept != null}"><a href="concept.form?conceptId=${previousConcept.conceptId}"><spring:message code="general.previous"/></a> |</c:if>
 	<a href="concept.htm?conceptId=${concept.conceptId}" id="viewConcept" ><spring:message code="general.view"/></a> |
-	<c:if test="${nextConcept != null}"><a href="concept.form?conceptId=${nextConcept.conceptId}"><spring:message code="general.next"/></a></c:if>
+	<c:if test="${nextConcept != null}"><a href="concept.form?conceptId=${nextConcept.conceptId}"><spring:message code="general.next"/></a></c:if> |
 </c:if>
 
 <a href="concept.form" id="newConcept" valign="middle"><spring:message code="general.new"/></a>

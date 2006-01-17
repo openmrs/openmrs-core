@@ -99,17 +99,17 @@
 		patient = p;
 		$("name").innerHTML = p.givenName + " " + p.middleName + " " + p.familyName;
 		$("gender").innerHTML = p.gender;
-		$("address1").innerHTML = p.address.address1;
-		$("address2").innerHTML = p.address.address2;
-		$("identifier").innerHTML = p.identifier;
+		$("address1").innerHTML = p.address1;
+		$("address2").innerHTML = p.address2;
+		$("identifier").innerHTML = getId(p).innerHTML;
 		$("tribe").innerHTML = p.tribe;
 		$("birthdate").innerHTML = getBirthday(p);
 		$("mothersName").innerHTML = p.mothersName;
 	}
 	
 	function editPatient() {
-		//TODO make this function just modify the current form to include text boxes
-		window.open('<%= request.getContextPath() %>/admin/patients/patient.form?patientId=' + patient.patientId);
+		//TODO make this function just modify the current form to include text boxes?
+		document.location = '<%= request.getContextPath() %>/admin/patients/newPatient.form?patientId=' + patient.patientId;
 		return false;
 	}
 	

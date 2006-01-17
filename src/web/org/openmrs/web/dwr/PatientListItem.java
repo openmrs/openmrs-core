@@ -20,27 +20,35 @@ public class PatientListItem {
 	private String gender;
 	private String tribe;
 	private Date birthdate;
-	private Boolean birthdateEstimated;
+	private Boolean birthdateEstimated = false;
 	private String mothersName;
-	private PatientAddress address;
-	private Boolean voided;
+	private String address1;
+	private String address2;
+	private Boolean voided = false;
 
 	public PatientListItem() { }
 	
 	public PatientListItem(Patient patient) {
 
-		patientId = patient.getPatientId();
-		identifier = patient.getIdentifiers().iterator().next().getIdentifier();
-		PatientName pn = patient.getNames().iterator().next();
-		familyName = pn.getFamilyName();
-		middleName = pn.getMiddleName();
-		givenName = pn.getGivenName();
-		gender = patient.getGender();
-		tribe = patient.getTribe().getName();
-		birthdate = patient.getBirthdate();
-		birthdateEstimated = patient.isBirthdateEstimated();
-		mothersName = patient.getMothersName();
-		voided = patient.isVoided();
+		if (patient != null) {
+			patientId = patient.getPatientId();
+			identifier = patient.getIdentifiers().iterator().next().getIdentifier();
+			PatientName pn = patient.getNames().iterator().next();
+			familyName = pn.getFamilyName();
+			middleName = pn.getMiddleName();
+			givenName = pn.getGivenName();
+			gender = patient.getGender();
+			tribe = patient.getTribe().getName();
+			birthdate = patient.getBirthdate();
+			birthdateEstimated = patient.isBirthdateEstimated();
+			mothersName = patient.getMothersName();
+			voided = patient.isVoided();
+			if (patient.getAddresses().size() > 0) {
+				PatientAddress pa = (PatientAddress)patient.getAddresses().toArray()[0];
+				address1 = pa.getAddress1();
+				address2 = pa.getAddress2();
+			}
+		}
 	}
 	
 	public Date getBirthdate() {
@@ -128,12 +136,20 @@ public class PatientListItem {
 		this.tribe = tribe;
 	}
 
-	public PatientAddress getAddress() {
-		return address;
+	public String getAddress1() {
+		return address1;
 	}
 
-	public void setAddress(PatientAddress address) {
-		this.address = address;
+	public void setAddress1(String address1) {
+		this.address1 = address1;
+	}
+	
+	public String getAddress2() {
+		return address2;
+	}
+
+	public void setAddress2(String address2) {
+		this.address2 = address2;
 	}
 
 	public Boolean getVoided() {

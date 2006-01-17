@@ -73,6 +73,7 @@ public class HibernatePatientDAO implements PatientDAO {
 			try {
 				HibernateUtil.beginTransaction();
 				setCollectionProperties(patient);
+				patient = (Patient)session.merge(patient);
 				session.saveOrUpdate(patient);
 				HibernateUtil.commitTransaction();
 				

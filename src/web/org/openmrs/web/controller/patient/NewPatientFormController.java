@@ -2,7 +2,11 @@ package org.openmrs.web.controller.patient;
 
 import java.text.DateFormat;
 import java.text.NumberFormat;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -74,23 +78,41 @@ public class NewPatientFormController extends SimpleFormController {
 			
 			PatientListItem p = (PatientListItem)obj;
 			Patient patient = new Patient();
-			patient.addAddress(p.getAddress());
+			if (p.getPatientId() != null)
+				patient = ps.getPatient(p.getPatientId());
+			
 			patient.addName(new PatientName(p.getGivenName(), p.getMiddleName(), p.getFamilyName()));
-			PatientIdentifierType type = ps.getPatientIdentifierType(Integer.valueOf(request.getParameter("identifierType")));
-			Location loc = ps.getLocation(Integer.valueOf(request.getParameter("location")));
-			patient.addIdentifier(new PatientIdentifier(p.getIdentifier(), type, loc));
+			
+			PatientAddress pa = new PatientAddress();
+			pa.setAddress1(p.getAddress1());
+			pa.setAddress2(p.getAddress2());
+			patient.addAddress(pa);
+			
+			if (p.getIdentifier().length() > 0) {
+				PatientIdentifierType type = ps.getPatientIdentifierType(Integer.valueOf(request.getParameter("identifierType")));
+				Location loc = ps.getLocation(Integer.valueOf(request.getParameter("location")));
+				patient.addIdentifier(new PatientIdentifier(p.getIdentifier(), type, loc));
+			}
+			
+			String identifier = "";
+			if (patient.getIdentifiers().size() > 0) {
+				PatientIdentifier pi = (PatientIdentifier)patient.getIdentifiers().toArray()[0];
+				identifier = pi.getIdentifier();
+			}
+			
 			patient.setBirthdate(p.getBirthdate());
+			patient.setBirthdateEstimated(p.getBirthdateEstimated());
 			patient.setGender(p.getGender());
 			patient.setMothersName(p.getMothersName());
 			Tribe t = ps.getTribe(Integer.valueOf(p.getTribe()));
 			patient.setTribe(t);
 			
-			ps.createPatient(patient);
+			ps.updatePatient(patient);
 			
 			String view = getSuccessView();
 						
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.saved");
-			return new ModelAndView(new RedirectView(view + "?phrase=" + p.getIdentifier()));
+			return new ModelAndView(new RedirectView(view + "?phrase=" + identifier));
 		}
 		
 		return new ModelAndView(new RedirectView(getFormView()));
@@ -105,12 +127,59 @@ public class NewPatientFormController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-		PatientListItem patient = new PatientListItem();
-		patient.setAddress(new PatientAddress());
-		patient.setGender(request.getParameter("gender"));
-		patient.setGivenName(request.getParameter("name"));
+		HttpSession httpSession = request.getSession();
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
+		Patient p = null;
+		
+		if (context != null && context.isAuthenticated()) {
+			PatientService ps = context.getPatientService();
+			String patientId = request.getParameter("patientId");
+	    	if (patientId != null) {
+	    		p = ps.getPatient(Integer.valueOf(patientId));
+	    	}
+		}
+		
+		PatientListItem patient = new PatientListItem(p);
+		
+		if (p == null) {
+			patient.setGender(request.getParameter("gender"));
+			patient.setGivenName(request.getParameter("name"));
+		}
 		
         return patient;
     }
+    
+	/**
+	 * 
+	 * Called prior to form display.  Allows for data to be put 
+	 * 	in the request to be used in the view
+	 * 
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
+	 */
+	protected Map referenceData(HttpServletRequest request) throws Exception {
+		
+		HttpSession httpSession = request.getSession();
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+
+		List identifiers = new Vector<PatientIdentifier>();
+		
+		Patient patient = null;
+		
+		if (context != null && context.isAuthenticated()) {
+			PatientService ps = context.getPatientService();
+			String patientId = request.getParameter("patientId");
+	    	if (patientId != null) {
+	    		patient = ps.getPatient(Integer.valueOf(patientId));
+	    		identifiers.addAll(patient.getIdentifiers());
+	    	}
+		}
+		
+		map.put("identifiers", identifiers);
+		
+		return map;
+	}   
 	
 }

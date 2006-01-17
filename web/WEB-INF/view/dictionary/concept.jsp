@@ -39,7 +39,7 @@ document.onkeypress = hotkeys;
 <c:if test="${concept.conceptId != null}">
 	<c:if test="${previousConcept != null}"><a href="concept.htm?conceptId=${previousConcept.conceptId}" id="previousConcept" valign="middle"><spring:message code="general.previous"/></a> |</c:if>
 	<a href="concept.form?conceptId=${concept.conceptId}" id="editConcept" valign="middle"><spring:message code="general.edit"/></a> |
-	<c:if test="${nextConcept != null}"><a href="concept.htm?conceptId=${nextConcept.conceptId}" id="nextConcept" valign="middle"><spring:message code="general.next"/></a></c:if>
+	<c:if test="${nextConcept != null}"><a href="concept.htm?conceptId=${nextConcept.conceptId}" id="nextConcept" valign="middle"><spring:message code="general.next"/></a></c:if> |
 </c:if>
 
 <a href="concept.form" id="newConcept" valign="middle"><spring:message code="general.new"/></a>

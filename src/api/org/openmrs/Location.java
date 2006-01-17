@@ -254,6 +254,9 @@ public class Location implements java.io.Serializable {
 	public void setStateProvince(String stateProvince) {
 		this.stateProvince = stateProvince;
 	}
-
+	
+	public String toString() {
+		return name;
+	}
 	
 }
