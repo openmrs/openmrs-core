@@ -24,6 +24,12 @@
 		document.location = "patient.form?patientId=" + arr[0].patientId;
 	}
 	
+	function findObjects(text) {
+		DWRPatientService.findPatients(fillTable, text, $('includeVoided').checked);
+		patientListing.style.display = "";
+		return false;
+	}
+	
 </script>
 
 <h2><spring:message code="Patient.title"/></h2>

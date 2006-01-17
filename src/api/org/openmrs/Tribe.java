@@ -13,7 +13,7 @@ public class Tribe implements java.io.Serializable {
 	// Fields
 
 	private Integer tribeId;
-	private Boolean retired;
+	private Boolean retired = false;
 	private String name;
 
 	// Constructors

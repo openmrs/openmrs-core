@@ -17,7 +17,7 @@ public class ConceptSource implements java.io.Serializable {
 	private String hl7Code;
 	private User creator;
 	private Date dateCreated;
-	private Boolean voided;
+	private Boolean voided = false;
 	private User voidedBy;
 	private Date dateVoided;
 	private String voidReason;

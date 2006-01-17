@@ -14,7 +14,7 @@ public class ConceptClass implements java.io.Serializable {
 	private Integer conceptClassId;
 	private String name;
 	private String description;
-	private Boolean set;
+	private Boolean set = false;
 	private User creator;
 	private Date dateCreated;
 

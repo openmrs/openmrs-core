@@ -20,7 +20,7 @@ public class Obs implements java.io.Serializable {
 	protected Integer obsGroupId;
 	protected Concept valueCoded;
 	protected Integer valueGroupId;
-	protected Boolean valueBoolean;
+	protected Boolean valueBoolean = false;
 	protected Date valueDatetime;
 	protected Double valueNumeric;
 	protected String valueModifier;
@@ -32,7 +32,7 @@ public class Obs implements java.io.Serializable {
 	protected Encounter encounter;
 	protected User creator;
 	protected Date dateCreated;
-	protected Boolean voided;
+	protected Boolean voided = false;
 	protected User voidedBy;
 	protected Date dateVoided;
 	protected String voidReason;

@@ -13,7 +13,7 @@ public class PatientName implements java.io.Serializable {
 
 	private Integer patientNameId;
 	private Patient patient;
-	private Boolean preferred;
+	private Boolean preferred = false;
 	private String prefix;
 	private String givenName;
 	private String middleName;
@@ -24,7 +24,7 @@ public class PatientName implements java.io.Serializable {
 	private String degree;
 	private Date dateCreated;
 	private User creator;
-	private Boolean voided;
+	private Boolean voided = false;
 	private User voidedBy;
 	private Date dateVoided;
 	private String voidReason;

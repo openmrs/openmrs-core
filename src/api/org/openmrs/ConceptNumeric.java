@@ -14,7 +14,7 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	private Double lowCritical;
 	private Double lowNormal;
 	private String units;
-	private Boolean precise;
+	private Boolean precise = false;
 
 	// Constructors
 

@@ -24,11 +24,11 @@ public class Order implements java.io.Serializable {
 	private User orderer;
 	private User creator;
 	private Date dateCreated;
-	private Boolean discontinued;
+	private Boolean discontinued = false;
 	private User discontinuedBy;
 	private Date discontinuedDate;
 	private String discontinuedReason;
-	private Boolean voided;
+	private Boolean voided = false;
 	private User voidedBy;
 	private Date dateVoided;
 	private String voidReason;

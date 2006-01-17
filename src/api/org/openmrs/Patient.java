@@ -24,7 +24,7 @@ public class Patient extends Person implements java.io.Serializable {
 	private String gender;
 	private String race;
 	private Date birthdate;
-	private Boolean birthdateEstimated;
+	private Boolean birthdateEstimated = false;
 	private String birthplace;
 	private String citizenship;
 	private Tribe tribe;

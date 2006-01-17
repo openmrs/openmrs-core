@@ -16,7 +16,7 @@ public class Drug implements java.io.Serializable {
 
 	private Integer drugId;
 	private String name;
-	private Boolean combination;
+	private Boolean combination = false;
 	private Double dailyMgPerKg;
 	private String dosageForm;
 	private Double doseStrength;

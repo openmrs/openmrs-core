@@ -27,7 +27,7 @@ public class Form implements java.io.Serializable {
 	private Date dateCreated;
 	private User changedBy;
 	private Date dateChanged;
-	private Boolean retired;
+	private Boolean retired = false;
 	private User retiredBy;
 	private Date dateRetired;
 	private String retiredReason;

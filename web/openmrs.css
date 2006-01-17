@@ -45,9 +45,11 @@ body {
 	border-bottom-style: solid;
 	border-bottom-color: lightgrey;	margin: 0px;
 	padding: 1px 3px 1px 1px;
-	
 	margin: 0px;
-}
+	}
+	#userBar a:visited {
+		color: blue;
+	}
 
 #banner {
 	text-align: left;
@@ -66,8 +68,11 @@ body {
 	font-size: 12px;
 	width: 140px;
 	margin-top: 90px;
-}
-
+	}
+	#gutter a:visited {
+		color: blue;
+	}
+	
 #content {
 	margin-left: 175px;
 	border-left: 1px dashed lightgrey;
@@ -108,6 +113,10 @@ body {
 
 #menu .active {
 	font-weight: bold;
+}
+
+#menu a:visited {
+	color: blue;
 }
 
 #patientTable {
@@ -163,9 +172,16 @@ body {
 a, a:link, a:hover, a:visited, a:active {
 	text-decoration: underline;
 }
+a, a:link {
+	color: blue;
+}
 a:hover {
 	text-decoration: none;
 }
+a:visited {
+	color: purple;
+}
+
 .retiredMessage {
 	border: 1px solid firebrick;
 	background-color: white;

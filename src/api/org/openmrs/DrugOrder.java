@@ -15,8 +15,8 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	private Integer dose;
 	private String units;
 	private String frequency;
-	private Boolean prn;
-	private Boolean complex;
+	private Boolean prn = false;
+	private Boolean complex = false;
 	private Integer quantity;
 	private Drug drug;
 	

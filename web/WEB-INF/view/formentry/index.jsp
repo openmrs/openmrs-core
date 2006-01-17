@@ -76,7 +76,9 @@
 			fillTable([]);	//this call sets up the table/info bar
 		}
 		else {
-			links.push(addPatientLink);	//setup links for appending to the end
+			if (patients.length > 1 || isValidCheckDigit(savedText) == false) {
+				links.push(addPatientLink);	//setup links for appending to the end
+			}
 			fillTable(patients);		//continue as normal
 		}
 		
@@ -109,6 +111,12 @@
 		//TODO make this function just modify the current form to include text boxes
 		window.open('<%= request.getContextPath() %>/admin/patients/patient.form?patientId=' + patient.patientId);
 		return false;
+	}
+	
+	function allowAutoJump() {
+		//	only allow the first item to be automatically selected if:
+		//		the entered text is a string or the entered text is a valid identifier
+		return (savedText.match(/\d/) == false || isValidCheckDigit(savedText));	
 	}
 	
 </script>
@@ -245,12 +253,13 @@
 			<!-- User has 'phrase' in the request params -- searching on that -->
 			searchBox.value = '<request:parameter name="phrase"/>';
 		</request:existsParameter>
-		
+	
+		showSearch();
+
 		// creates back button functionality
 		if (searchBox.value != "")
-			searchBoxChange(searchBox, null, false, 0);
-			
-		showSearch();
+			search(searchBox, null, false, 0);
+		
 	}
 		
 	window.onload=init;

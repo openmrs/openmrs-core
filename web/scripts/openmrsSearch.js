@@ -280,7 +280,7 @@ function fillTable(objects, cells) {
    				// if only one string item returned, its a message
    				hideHighlight();
 			}
-   			else if (typeof allowAutoJump != 'undefined' && allowAutoJump() == true){
+   			else if (typeof allowAutoJump == 'undefined' || allowAutoJump() == true){
 		   		objectsFound.push(objects[0]);
 		   		selectObject(1);
 	   			return;
@@ -488,5 +488,6 @@ function getRowHeight() {
 
 function exitNumberMode(txtbox) {
 	hideHighlight(txtbox);
-	txtbox.value = lastPhraseSearched;
+	if (lastPhraseSearched != null && lastPhraseSearched != "")
+		txtbox.value = lastPhraseSearched;
 }

@@ -14,7 +14,7 @@ public class FieldType implements java.io.Serializable {
 	private Integer fieldTypeId;
 	private String name;
 	private String description;
-	private Boolean isSet;
+	private Boolean isSet = false;
 	private Date dateCreated;
 	private User creator;
 

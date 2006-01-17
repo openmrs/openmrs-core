@@ -21,7 +21,7 @@ public class Concept implements java.io.Serializable {
 	// Fields
 
 	private Integer conceptId;
-	private Boolean retired;
+	private Boolean retired = false;
 	private ConceptDatatype datatype;
 	private ConceptClass conceptClass;
 	private String units;

@@ -17,7 +17,7 @@ public class Relationship implements java.io.Serializable {
 	private Person relative;
 	private User creator;
 	private Date dateCreated;
-	private Boolean voided;
+	private Boolean voided = false;
 	private User voidedBy;
 	private Date dateVoided;
 	private String voidReason;

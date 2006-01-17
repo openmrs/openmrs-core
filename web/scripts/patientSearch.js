@@ -9,7 +9,7 @@ var getId		= function(p) {
 		obj.href = "#" + searchIndex;
 		obj.className = "searchHit";
 		obj.onclick = function() { return selectObject(parseInt(this.href.substring(this.href.indexOf('#')+1, this.href.length))); };
-		obj.appendChild(document.createTextNode(p.identifier));
+		obj.appendChild(document.createTextNode(p.identifier + " "));
 		div.appendChild(obj);
 		if (typeof isValidCheckDigit != 'undefined' && isValidCheckDigit(p.identifier)==false) {
 			div.appendChild(getProblemImage());

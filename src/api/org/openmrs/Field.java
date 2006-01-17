@@ -24,7 +24,7 @@ public class Field implements java.io.Serializable {
 	private Concept concept;
 	private String attributeName;
 	private String tableName;
-	private Boolean selectMultiple;
+	private Boolean selectMultiple = false;
 	private User creator;
 	private Date dateCreated;
 	private User changedBy;

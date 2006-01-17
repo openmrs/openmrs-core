@@ -20,7 +20,7 @@ public class PatientIdentifier implements java.io.Serializable {
 	private Location location;
 	private User creator;
 	private Date dateCreated;
-	private Boolean voided;
+	private Boolean voided = false;
 	private User voidedBy;
 	private Date dateVoided;
 	private String voidReason;

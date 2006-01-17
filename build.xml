@@ -172,6 +172,7 @@
 				overwrite="true">
 			<fileset dir="web" >
 				<exclude name="**/images/**/*" />
+				<exclude name="**/*.xsn" />
 				<exclude name="**/lib/**" />
 				<exclude name="**/classes/**" />
 			</fileset>
@@ -181,7 +182,8 @@
 				preservelastmodified="true"
 				overwrite="true">
 			<fileset dir="web" >
-				<include name="**/images/**/*" /> 
+				<include name="**/images/**/*" />
+				<include name="**/*.xsn" />
 			</fileset>
 		</copy>
 		<!-- Rename spring servlet to name of webapp -->
