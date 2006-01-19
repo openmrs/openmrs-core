@@ -23,20 +23,49 @@ public class DWRPatientService {
 		
 		Vector patientList = new Vector();
 
+		HttpServletRequest request = ExecutionContext.get().getHttpServletRequest();
+		
 		Context context = (Context) ExecutionContext.get().getSession()
 				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		try {
-			PatientService ps = context.getPatientService();
-			List<Patient> patients;
-			
-			patients = ps.findPatients(searchValue, includeVoided);
-			
-			patientList = new Vector(patients.size());
-			for (Patient p : patients) {
-				patientList.add(new PatientListItem(p));
+
+		if (context == null) {
+			patientList.add("Your session has expired.");
+			patientList.add("Please <a href='" + request.getContextPath() + "/logout'>log in</a> again.");
+		}
+		else {
+			try {
+				PatientService ps = context.getPatientService();
+				List<Patient> patients;
+				
+				patients = ps.findPatients(searchValue, includeVoided);
+				patientList = new Vector(patients.size());
+				for (Patient p : patients) {
+					patientList.add(new PatientListItem(p));
+				}
+				
+				// only 2 results found ( TODO change to "no results found")
+				// decapitated search
+				if (patientList.size() < 3) {
+					String[] names = searchValue.split(" ");
+					String newSearch = "";
+					for (String name : names) {
+						if (name.length() > 3)
+							name = name.substring(0, 4);
+						newSearch += " " + name;
+					}
+					
+					patients = ps.findPatients(newSearch, includeVoided);
+					if (patients.size() > 0) {
+						patientList.add("Minimal patients returned. Results for <b>" + newSearch + "</b>");
+						for (Patient p : patients) {
+							patientList.add(new PatientListItem(p));
+						}
+					}
+				}
+				
+			} catch (Exception e) {
+				log.error(e);
 			}
-		} catch (Exception e) {
-			log.error(e);
 		}
 		return patientList;
 	}

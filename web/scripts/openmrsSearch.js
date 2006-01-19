@@ -384,7 +384,7 @@ function updateInformationBar() {
 		lastItemDisplayed = total;
 	}
 	
-	infoBar.innerHTML = " Results for '" + lastPhraseSearched + "'. &nbsp;";
+	infoBar.innerHTML = " &nbsp; Results for '" + lastPhraseSearched + "'. &nbsp;";
 	
 	infoBar.innerHTML += " Viewing " + firstItemDisplayed + "-" + lastItemDisplayed + " of " + total + " &nbsp; ";
 	

@@ -2,6 +2,7 @@ package org.openmrs;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -23,6 +24,7 @@ public class User extends Person implements java.io.Serializable {
 	private String lastName;
 	private String secretQuestion;
 	private Set<Role> roles;
+	private Map<String, String> properties;
 
 	/*private User creator;
 	private Date dateCreated;
@@ -272,6 +274,20 @@ public class User extends Person implements java.io.Serializable {
 
 	public String toString() {
 		return username;
+	}
+
+	/**
+	 * @return Returns the properties.
+	 */
+	public Map<String, String> getProperties() {
+		return properties;
+	}
+
+	/**
+	 * @param properties The properties to set.
+	 */
+	public void setProperties(Map<String, String> properties) {
+		this.properties = properties;
 	}
 
 }

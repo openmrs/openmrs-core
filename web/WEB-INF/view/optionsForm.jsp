@@ -124,9 +124,9 @@ function containsError(element) {
 		<td>
 			<spring:bind path="opts.defaultLanguage">
 				<select name="${status.expression}">
-					<option value="en">English</option>
-					<option value="fr">Français</option>
-					<option value="de">Deutsch</option>
+					<c:forEach items="${languages}" var="map">
+						<option value="${map.key}" <c:if test="${map.key == status.value}">selected</c:if>>${map.value}</option>
+					</c:forEach>
 				</select>
 				<c:if test="${status.errorMessage != ''}">
 					<span class="error">${status.errorMessage}</span>

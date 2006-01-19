@@ -34,7 +34,8 @@ function showError(isValid, obj, msgNode, btn) {
 }
 
 function isValidCheckDigit(value) {
-
+	if (value == null) return false;
+	
 	if (value.length < 3 || value.indexOf('-') != value.length - 2)
 		return false;
 	

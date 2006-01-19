@@ -16,8 +16,8 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
-import org.openmrs.web.WebConstants;
 import org.openmrs.web.OptionsForm;
+import org.openmrs.web.WebConstants;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -76,12 +76,22 @@ public class OptionsFormController extends SimpleFormController {
 
 		String view = getFormView();
 		
-		if (context == null || !context.isAuthenticated())
-			errors.rejectValue("opts", "auth.session.expired");
+		if (context == null || !context.isAuthenticated()) {
+			errors.reject("auth.session.expired");
+			return super.processFormSubmission(request, response, obj, errors);
+		}
 
 		User user = context.getAuthenticatedUser();
 		UserService us = context.getUserService();
 		OptionsForm opts = (OptionsForm)obj;
+		
+		Map<String, String> properties = new HashMap<String, String>();
+		
+		properties.put("defaultLocation", opts.getDefaultLocation());
+		properties.put("defaultLanguage", opts.getDefaultLanguage());
+		properties.put("showRetired", opts.getShowRetiredMessage().toString());
+		user.setProperties(properties);
+		
 		
 		if (!opts.getOldPassword().equals("")) {
 			try {
@@ -102,6 +112,7 @@ public class OptionsFormController extends SimpleFormController {
 		}
 		
 		if (!errors.hasErrors()) {
+			us.updateUser(user);
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "options.saved");
 		}
 		else {
@@ -126,14 +137,12 @@ public class OptionsFormController extends SimpleFormController {
 		OptionsForm opts = new OptionsForm();
 		
 		if (context != null && context.isAuthenticated()) {
-			UserService us = context.getUserService();
 			User user = context.getAuthenticatedUser();
 
-			// TODO - add user services 
-			//Map<String, String> props = us.getUserProperties(user);
-			//opts.setDefaultLocation(us.getDefaultLocation());
-			//opts.setDefaultLanguage(us.getDefaultLanguage());
-			//opts.setShowRetiredMessage(us.getShowRetiredMessage());
+			Map<String, String> props = user.getProperties();
+			opts.setDefaultLocation(props.get("defaultLocation"));
+			opts.setDefaultLanguage(props.get("defaultLanguage"));
+			opts.setShowRetiredMessage(new Boolean(props.get("showRetired")));
 			
 		}
 		
@@ -165,6 +174,7 @@ public class OptionsFormController extends SimpleFormController {
 	    	// make spring locale available to jsp
 			map.put("locale", locale.getLanguage());
 			
+			map.put("languages", WebConstants.OPENMRS_LANGUAGES());
 		}
 		
 		return map;

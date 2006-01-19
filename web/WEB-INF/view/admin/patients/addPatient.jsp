@@ -21,15 +21,24 @@
 	var inputChanged = false;
 	
 	function findObjects(text) {
-		DWRPatientService.getSimilarPatients(preFillTable, text, birthyear.value, gender.value);
+		patientName = text;
+		birthyear = $("birthyear").value.toString();
+		gender = $("gender").value.toString();
+		DWRPatientService.getSimilarPatients(preFillTable, text, birthyear, gender);
 		return false;
 	}
 	
 	function preFillTable(patients) {
 		var links = new Array();
 		if (patients.length < 1) {
-			links.push(noPatientsFound);
-			fillTable([]);	//this call sets up the table/info bar
+			if (patientName != "" && birthyear != "" && gender != "") {
+				var href = getTextLink(document.createElement("a")).href;
+				document.location = href;
+			}
+			else {
+				links.push(noPatientsFound);
+				fillTable([]);	//this call sets up the table/info bar
+			}
 		}
 		else {
 			links.push(patientsFound);	//setup links for appending to the end
@@ -47,21 +56,19 @@
 	}
 	
 	var getTextLink = function(link) {
-		link.href = "newPatient.form?name=" + patientName.value + "&birthyear=" + birthyear.value + "&gender=" + gender.value;
+		link.href = "newPatient.form?name=" + patientName + "&birthyear=" + birthyear + "&gender=" + gender;
 		link.className = "searchHit";
 		return link;
 	}
 	
 	var init = function() {
-			patientName = $("patientName");
-			birthyear = $("birthyear");
-			gender = $("gender");
+
 			form = $("patientForm");
 			noPatientsFound = document.createElement("a");
 			patientsFound   = document.createElement("a");
 			noPatientsFound.innerHTML = "No Patients Found.  Select to add a new Patient";
 			patientsFound.innerHTML   = "Add New Patient";
-			patientName.focus();
+			$("patientName").focus();
 		};
 		
 	window.onload = init;

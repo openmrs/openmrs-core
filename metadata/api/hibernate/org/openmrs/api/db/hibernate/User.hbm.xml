@@ -65,6 +65,12 @@
 				<column name="role" />
 			</many-to-many>
 		</set>
+		
+		<map name="properties" table="user_property" lazy="true" cascade="save-update">
+			<key column="user_id" not-null="true" />
+			<map-key column="property" type="java.lang.String" length="100" />
+			<element column="value" type="java.lang.String" length="255" />
+		</map>
 
 	</class>
 

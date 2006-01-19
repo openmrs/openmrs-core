@@ -57,7 +57,7 @@
 					//the user didn't input an identifier with a valid check digit
 					patientTableHead.style.display = "none";
 					var img = getProblemImage();
-					var tmp = invalidCheckDigitText + " <img src='" + img.src + "' title='" + img.title + "' />";
+					var tmp = " <img src='" + img.src + "' title='" + img.title + "' /> " + invalidCheckDigitText + savedText;
 					links.push(tmp);
 					links.push(noPatientsFoundText);
 					links.push(searchOnPatientNameText);
@@ -109,7 +109,7 @@
 	
 	function editPatient() {
 		//TODO make this function just modify the current form to include text boxes?
-		document.location = '<%= request.getContextPath() %>/admin/patients/newPatient.form?patientId=' + patient.patientId;
+		document.location = '<%= request.getContextPath() %>/admin/patients/newPatient.form?pId=' + patient.patientId;
 		return false;
 	}
 	
@@ -137,7 +137,7 @@
 			<table>
 				<tr>
 					<td><spring:message code="formentry.searchBox"/></td>
-					<td><input type="text" id="searchBox" onKeyUp="search(this, event, false, 400)"></td>
+					<td><input type="text" id="searchBox" size="40" onKeyUp="search(this, event, false, 400)"></td>
 				</tr>
 			</table>
 			<!-- <input type="submit" value="Search" onClick="return updatePatients();"> -->
@@ -233,7 +233,7 @@
 	var patientSummary  = document.getElementById("patientSummary");
 	var patientTableHead= document.getElementById("patientTableHead");
 	
-	var invalidCheckDigitText   = "Invalid check digit. ";
+	var invalidCheckDigitText   = "Invalid check digit for MRN: ";
 	var searchOnPatientNameText = "Please search on part of the patient's name. ";
 	var noPatientsFoundText     = "No patients found. ";
 	var addPatientLink = document.createElement("a");

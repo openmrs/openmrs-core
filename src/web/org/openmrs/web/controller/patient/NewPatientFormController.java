@@ -150,7 +150,7 @@ public class NewPatientFormController extends SimpleFormController {
 		
 		if (context != null && context.isAuthenticated()) {
 			PatientService ps = context.getPatientService();
-			String patientId = request.getParameter("patientId");
+			String patientId = request.getParameter("pId");
 	    	if (patientId != null) {
 	    		p = ps.getPatient(Integer.valueOf(patientId));
 	    	}
@@ -186,7 +186,7 @@ public class NewPatientFormController extends SimpleFormController {
 		
 		if (context != null && context.isAuthenticated()) {
 			PatientService ps = context.getPatientService();
-			String patientId = request.getParameter("patientId");
+			String patientId = request.getParameter("pId");
 	    	if (patientId != null) {
 	    		patient = ps.getPatient(Integer.valueOf(patientId));
 	    		identifiers.addAll(patient.getIdentifiers());

@@ -141,7 +141,7 @@
 				<spring:bind path="patient.tribe">
 					<select name="tribe">
 						<openmrs:forEachRecord name="tribe">
-							<option value="${record.tribeId}" <c:if test="${record.name == status.value || record.tribeId == status.value}">selected</c:if>>
+							<option value="${record.tribeId}" <c:catch><c:if test="${record.name == status.value || status.value == record.tribeId}">selected</c:if></c:catch>>
 								${record.name}
 							</option>
 						</openmrs:forEachRecord>
@@ -160,6 +160,8 @@
 			</td>
 		</tr>
 	</table>
+	
+	<input type="hidden" name="pId" value="${param.pId}" />
 	
 	<br />
 	<input type="submit" value="<spring:message code="general.save" />" id="addButton">

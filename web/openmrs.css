@@ -212,15 +212,15 @@ a span.additionalHit {
 	text-decoration: none;
 }
 #searchInfoBar, #searchInfoBar a {
-	font-size: 10px;
-	line-height: 12px;
+	font-size: 12px;
+	line-height: 14px;
 	background-color: whitesmoke;
 }
 #searchInfoBar {
 	color: gray;
 	padding: 2px 0 2px 0;
 	margin: 1px 0 1px 0;
-	height: 12px;
+	height: 14px;
 }
 #disabledZone {
 	margin-top: 17px;

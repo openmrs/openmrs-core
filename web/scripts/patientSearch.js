@@ -4,6 +4,12 @@ function search(obj, event, retired, delay) {
 }
 
 var getId		= function(p) {
+		if (typeof p == 'string') {
+			var td = document.createElement("td");
+			td.colspan = 0;
+			td.innerHTML = "<div style='float: left;'>" + p + "</div>";
+			return td;
+		}
 		div = document.createElement("div");
 		var obj = document.createElement("a");
 		obj.href = "#" + searchIndex;
@@ -19,11 +25,13 @@ var getId		= function(p) {
 		}
 		return div;
 	};
-var getGiven	= function(p) { return p.givenName;  };
-var getMiddle	= function(p) { return p.middleName; };
-var getFamily	= function(p) { return p.familyName; };
-var getTribe	= function(p) { return p.tribe; };
+var getGiven	= function(p) { return p.givenName == null ? "" : p.givenName;  };
+var getMiddle	= function(p) { return p.middleName == null ? "" : p.middleName; };
+var getFamily	= function(p) { return p.familyName == null ? "" : p.familyName; };
+var getTribe	= function(p) { return p.tribe == null ? "" : p.tribe; };
 var getGender	= function(p) {
+		if (typeof p == 'string') return "";
+		
 		var src = "/@WEBAPP.NAME@/images/";
 		if (p.gender.toUpperCase() == "F")
 			src += "female.gif";
@@ -34,6 +42,8 @@ var getGender	= function(p) {
 		return img;
 	};
 var getBirthday	= function(p) { 
+		if (typeof p == 'string') return "";
+		
 		var str = '';
 		if (p.birthdate != null) {
 			str += p.birthdate.getDate() + '-';
@@ -42,10 +52,9 @@ var getBirthday	= function(p) {
 		}
 		if (p.birthdateEstimated)
 			str += " (?)";
-		
 		return str;
 	};
-var getMother  = function(p) { return p.mothersName;  };
+var getMother  = function(p) { return p.mothersName == null ? "" : p.mothersName;  };
 
 var customCellFunctions = [getNumber, getId, getFamily, getGiven, getMiddle, getGender, getTribe, getBirthday, getMother];
 

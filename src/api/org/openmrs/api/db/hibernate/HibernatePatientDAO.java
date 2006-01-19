@@ -118,15 +118,23 @@ public class HibernatePatientDAO implements PatientDAO {
 		
 		Set<Patient> patients = new HashSet<Patient>();
 		
-		name.replace(", ", " ");
+		name = name.replace(", ", " ");
 		String[] names = name.split(" ");
+		
+		log.debug("name: " + name);
 		
 		Criteria criteria = session.createCriteria(Patient.class).createAlias("names", "name");
 		for (String n : names) {
-					criteria.add(Expression.or(
-							Expression.like("name.familyName", n, MatchMode.START),
-							Expression.like("name.givenName", n, MatchMode.START)
-						));
+			if (n != null && n.length() > 0) {
+				criteria.add(Expression.or(
+					Expression.like("name.familyName", n, MatchMode.START),
+					Expression.or(
+						Expression.like("name.middleName", n, MatchMode.START),
+						Expression.like("name.givenName", n, MatchMode.START)
+						)
+					)
+				);
+			}
 		}
 		
 		if (includeVoided == false) {
@@ -153,6 +161,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		
 		Criteria criteria = session.createCriteria(Patient.class).createAlias("names", "name");
 		for (String n : names) {
+				if (n != null && n.length() > 0) {
 					criteria.add(Expression.or(
 						Expression.like("name.familyName", n, MatchMode.START),
 						Expression.or(
@@ -161,6 +170,7 @@ public class HibernatePatientDAO implements PatientDAO {
 							)
 						)
 					);
+				}
 		}
 		
 		LogicalExpression birthdayMatch = Expression.or(
