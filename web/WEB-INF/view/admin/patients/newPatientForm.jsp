@@ -4,6 +4,8 @@
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
+<script src="<%= request.getContextPath() %>/scripts/calendar/calendar.js"></script>
+
 <style>
 	th {
 		text-align: left;
@@ -11,7 +13,8 @@
 </style>
 
 <form method="post" action="newPatient.form">
-	<h2><spring:message code="Patient.create"/></h2>
+	<c:if test="patient.patientId == null"><h2><spring:message code="Patient.create"/></h2></c:if>
+	<c:if test="patient.patientId != null"><h2><spring:message code="Patient.edit"/></h2></c:if>
 	
 	<table>
 			<tr>
@@ -20,19 +23,19 @@
 				<th><spring:message code="PatientName.familyName"/></th>
 			</tr>
 			<tr>
-				<td>
-					<spring:bind path="patient.givenName">
-						<input type="text" name="${status.expression}" value="${status.value}" />
-					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			<td valign="top">
+				<spring:bind path="patient.givenName">
+					<input type="text" name="${status.expression}" value="${status.value}" />
+					<c:if test="${status.errorMessage != ''}"><br/><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
-			<td>
+			<td valign="top">
 				<spring:bind path="patient.middleName">
 					<input type="text" name="${status.expression}" value="${status.value}" />
-					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+					<c:if test="${status.errorMessage != ''}"><br/><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
-			<td>
+			<td valign="top">
 				<spring:bind path="patient.familyName">
 					<input type="text" name="${status.expression}" value="${status.value}" />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
@@ -53,16 +56,16 @@
 			</tr>
 		</c:forEach>
 		<tr>
-			<td>
+			<td valign="top">
 				<spring:bind path="patient.identifier">
 					<input type="text" 
 							name="${status.expression}" 
-							value="" 
+							value="<spring:hasBindErrors name="patient">${status.value}</spring:hasBindErrors>" 
 							onBlur="return true; validateIdentifier(this, 'addButton', '<spring:message code="error.identifier"/>');"/>
-					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+					<c:if test="${status.errorMessage != ''}"><br/><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
-			<td>
+			<td valign="top">
 				<select name="identifierType">
 					<openmrs:forEachRecord name="patientIdentifierType">
 						<option value="${record.patientIdentifierTypeId}">
@@ -71,7 +74,7 @@
 					</openmrs:forEachRecord>
 				</select>
 			</td>
-			<td>
+			<td valign="top">
 				<select name="location">
 					<openmrs:forEachRecord name="location">
 						<option value="${record.locationId}">
@@ -120,7 +123,7 @@
 			<td colspan="3">
 				<spring:bind path="patient.birthdate">			
 					<input type="text" name="birthdate" size="10" 
-						   value="${status.value}" />
+						   value="${status.value}" onClick="showCalendar(this)" />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
 				</spring:bind>
 				<spring:bind path="patient.birthdateEstimated">
@@ -138,7 +141,7 @@
 				<spring:bind path="patient.tribe">
 					<select name="tribe">
 						<openmrs:forEachRecord name="tribe">
-							<option value="${record.tribeId}" <c:if test="${record.name == status.value}">selected</c:if>>
+							<option value="${record.tribeId}" <c:if test="${record.name == status.value || record.tribeId == status.value}">selected</c:if>>
 								${record.name}
 							</option>
 						</openmrs:forEachRecord>

@@ -30,6 +30,7 @@ import org.openmrs.web.propertyeditor.TribeEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -58,6 +59,21 @@ public class NewPatientFormController extends SimpleFormController {
         binder.registerCustomEditor(java.util.Date.class, 
         		new CustomDateEditor(DateFormat.getDateInstance(DateFormat.SHORT), true));
         binder.registerCustomEditor(Tribe.class, new TribeEditor(context));
+	}
+
+	@Override
+	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
+	
+		PatientListItem pli = (PatientListItem)obj;
+
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "familyName", "error.name");
+		if (pli.getPatientId() == null) {
+			// if this is a new patient, they must input an identifier
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "identifier", "error.null");
+		}
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "gender", "error.null");
+		
+		return super.processFormSubmission(request, response, pli, errors);
 	}
 
 	/**

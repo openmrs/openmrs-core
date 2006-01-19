@@ -102,6 +102,44 @@ for (Cookie cookie : request.getCookies()) {
 
 <br><br>Press a key: <input type="text" onKeyDown="document.getElementById('keycode').innerHTML = event.keyCode; return false;"/> KeyCode: <span id="keycode"></span>
 
+<br><br>Random MRNs<br>
+<input type="button" onclick="createMRNs()" value="Create" />
+<div id="ids"></div>
+
+
+<script type="text/javascript" src="/openmrs/scripts/validation.js" ></script>
+<script type="text/javascript">
+	var sites = new Array();
+	sites[0] = 'BF';
+	sites[1] = 'MO';
+	sites[2] = 'MT'; 
+	sites[3] = 'MP'; 
+	sites[4] = 'TU';
+	sites[5] = 'AM';
+	sites[6] = 'CH';
+	sites[7] = 'EG';
+	sites[8] = 'KP';
+	sites[9] = 'KT';
+	sites[10] = 'NT';
+	sites[11] = 'TS';
+	sites[12] = 'WB';
+	
+	function createMRNs() {
+		var ids = document.getElementById("ids");
+		
+		var i=0;
+		var str = "";
+		while (i <10000) {
+			var mrn = i + sites[Math.floor(Math.random()*12)];
+			mrn = mrn + "-" + getCheckDigit(mrn);
+			str += "<br>" + mrn;
+			i = i + 1;
+		}
+		ids.innerHTML = str;
+	}
+	
+</script>
+
 
 
  <br><br> done 
