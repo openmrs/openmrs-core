@@ -253,4 +253,11 @@ fieldset {
 		display: block;
 		padding: 3px;
 	}
+
+.sideNote {
+	border: 1px solid burlywood;
+	background-color: lightyellow;
+	padding: 2px;
+	margin: 1px;
+}
 	

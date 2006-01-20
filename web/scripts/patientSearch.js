@@ -65,3 +65,7 @@ function getProblemImage() {
 	img.title="The check digit on this identifier is invalid.  Please double check this patient";
 	return img;
 }
+
+function customGetRowHeight() {
+	return 25;
+}

@@ -471,6 +471,8 @@ function getWindowHeight() {
 }
 
 function getRowHeight() {
+	if (typeof customGetRowHeight != 'undefined') return customGetRowHeight();
+	
 	var h = 0;
 	h = getStyle(textbox, 'height');
 	h = parseInt(h.slice(0, h.length - 2)); //remove 'px' from height

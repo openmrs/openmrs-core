@@ -13,6 +13,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Hibernate;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientAddress;
@@ -225,8 +226,9 @@ public class PatientFormController extends SimpleFormController {
 		if (context != null && context.isAuthenticated()) {
 			PatientService ps = context.getPatientService();
 			String patientId = request.getParameter("patientId");
-	    	if (patientId != null)
+	    	if (patientId != null) {
 	    		patient = ps.getPatient(Integer.valueOf(patientId));
+	    	}
 		}
 		
 		if (patient == null)

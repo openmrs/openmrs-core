@@ -19,15 +19,13 @@
 	function showSearch() {
 		findPatient.style.display = "";
 		patientListing.style.display = "none";
-		selectForm.style.display = "none";
-		patientSummary.style.display = "none";
 		savedText = "";
 		searchBox.focus();
 	}
 	
 	function onSelect(arr) {
 		if (arr[0].patientId != null) {
-			DWRPatientService.getPatient(fillPatientDetails, arr[0].patientId);
+			document.location = "patientSummary.form?patientId=" + arr[0].patientId + "&phrase=" + savedText;
 		}
 		else if (arr[0].href != null) {
 			document.location = arr[0].href;
@@ -90,29 +88,6 @@
 		return false;
 	};
 	
-	function fillPatientDetails(p) {
-		findPatient.style.display = "none";
-		patientSummary.style.display = "";
-		selectForm.style.display = "";
-		selectFormForm.patientId.value = p.patientId;
-		selectFormForm.elements[0].focus();
-		patient = p;
-		$("name").innerHTML = p.givenName + " " + p.middleName + " " + p.familyName;
-		$("gender").innerHTML = p.gender;
-		$("address1").innerHTML = p.address1;
-		$("address2").innerHTML = p.address2;
-		$("identifier").innerHTML = getId(p).innerHTML;
-		$("tribe").innerHTML = p.tribe;
-		$("birthdate").innerHTML = getBirthday(p);
-		$("mothersName").innerHTML = p.mothersName;
-	}
-	
-	function editPatient() {
-		//TODO make this function just modify the current form to include text boxes?
-		document.location = '<%= request.getContextPath() %>/admin/patients/newPatient.form?pId=' + patient.patientId;
-		return false;
-	}
-	
 	function allowAutoJump() {
 		//	only allow the first item to be automatically selected if:
 		//		the entered text is a string or the entered text is a valid identifier
@@ -164,73 +139,12 @@
 	</div>
 </div>
 
-<div id="patientSummary">
-	<b class='boxHeader'><spring:message code="formentry.patient.info"/></b>
-	<a href='index.htm' onClick="return editPatient();" style='float:right'><spring:message code="Patient.edit"/></a>
-	<table>
-		<tr>
-			<td valign="top"><b><spring:message code="Patient.identifier"/></b></td>
-			<td id="identifier"></td>
-		</tr>
-		<tr>
-			<td><b><spring:message code="general.name"/></b></td>
-			<td id="name"></td>
-		</tr>
-		
-		<tr>
-			<td><b><spring:message code="Patient.gender"/></b></td>
-			<td id="gender"></td>
-		</tr>
-		<tr><td valign="top"><b><spring:message code="PatientAddress.address1"/></b><td id="address1"></td></tr>
-		<tr><td valign="top"><b><spring:message code="PatientAddress.address2"/></b><td id="address2"></td></tr>
-		<tr><td valign="top"><b><spring:message code="Tribe.name"/></b><td id="tribe"></td></tr>
-		<tr><td valign="top"><b><spring:message code="Patient.birthdate"/></b><td id="birthdate"></td></tr>
-		<tr><td valign="top"><b><spring:message code="Patient.mothersName"/></b><td id="mothersName"></td></tr>
-	</table>
-	<br /><input type='button' value='<spring:message code="formentry.patient.switch"/>' onClick='showSearch(); patientListing.style.display = "";'>
-</div>
-
-<br />
-
-<b class="boxHeader"><spring:message code="formentry.step2"/></b>
-<div id="selectForm" class="box">
-	<form id="selectFormForm" method="post" action="<%= request.getContextPath() %>/formDownload">
-		<table>
-			<tr>
-				<td><input type="radio" name="formType" value="adultInitial" id="adultInitial"></td>
-				<td><label for="adultInitial">Adult Initial</label></td>
-			</tr>
-			<tr>
-				<td><input type="radio" name="formType" value="adultReturn" id="adultReturn"></td>
-				<td><label for="adultReturn">Adult Return</label></td>
-			</tr>
-			<tr>
-				<td><input type="radio" name="formType" value="adultReturn_local" id="adultReturn_local"></td>
-				<td><label for="adultReturn_local">Adult Return (Localhost)</label></td>
-			</tr>
-			<tr>
-				<td><input type="radio" name="formType" value="pedInitial" id="pedInitial"></td>
-				<td><label for="pedInitial">Ped Initial</label></td>
-			</tr>
-			<tr>
-				<td><input type="radio" name="formType" value="pedReturn" id="pedReturn"></td>
-				<td><label for="pedReturn">Ped Return</label></td>
-			</tr>
-		</table>
-		<input type="hidden" name="patientId" id="patientId" value="">
-		<input type="submit" value="<spring:message code="formentry.download.form"/>">
-	</form>
-</div>
-
 <script>
 	
 	var patientListing= document.getElementById("patientListing");
-	var selectForm    = document.getElementById("selectForm");
 	var findPatient   = document.getElementById("findPatient");
 	var searchBox		= document.getElementById("searchBox");
 	var findPatientForm = document.getElementById("findPatientForm");
-	var selectFormForm  = document.getElementById("selectFormForm");
-	var patientSummary  = document.getElementById("patientSummary");
 	var patientTableHead= document.getElementById("patientTableHead");
 	
 	var invalidCheckDigitText   = "Invalid check digit for MRN: ";
@@ -259,7 +173,6 @@
 		// creates back button functionality
 		if (searchBox.value != "")
 			search(searchBox, null, false, 0);
-		
 	}
 		
 	window.onload=init;

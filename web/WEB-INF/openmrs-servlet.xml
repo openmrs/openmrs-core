@@ -55,6 +55,7 @@
 					<prop key="**/report.list">reportList</prop>
 					<prop key="**/report.form">reportForm</prop>
 					<prop key="**/options.form">optionsForm</prop>
+					<prop key="**/patientSummary.form">patientSummaryForm</prop>
 					<prop key="**/*.htm">springController</prop>
 	            </props>
 	        </property>
@@ -407,13 +408,18 @@
 				<property name="formView"><value>/optionsForm</value></property>
 				<property name="successView"><value>options.form</value></property>
 			</bean>
+			<bean id="patientSummaryForm" class="org.openmrs.web.controller.patient.PatientFormController">
+				<property name="commandName"><value>patient</value></property>
+				<property name="formView"><value>/formentry/patientSummaryForm</value></property>
+				<property name="successView"><value>patientSummary.form</value></property>
+			</bean>
+			
 		<!-- =========================== -->
 		
 		<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
 			<property name="basename">
 				<value>messages</value>
 			</property>
-
 		</bean>
 		
 		<bean id="localeResolver" class="org.openmrs.web.OpenmrsCookieLocaleResolver" />
