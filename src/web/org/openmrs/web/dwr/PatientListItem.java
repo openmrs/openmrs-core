@@ -5,7 +5,6 @@ import java.util.Date;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
-import org.openmrs.PatientAddress;
 import org.openmrs.PatientName;
 
 public class PatientListItem {
@@ -43,12 +42,30 @@ public class PatientListItem {
 			birthdateEstimated = patient.isBirthdateEstimated();
 			mothersName = patient.getMothersName();
 			voided = patient.isVoided();
+			/*
 			if (patient.getAddresses().size() > 0) {
 				PatientAddress pa = (PatientAddress)patient.getAddresses().toArray()[0];
 				address1 = pa.getAddress1();
 				address2 = pa.getAddress2();
 			}
+			*/
 		}
+	}
+	
+	public boolean equals(Object obj) {
+		if (obj instanceof PatientListItem) {
+			PatientListItem pi = (PatientListItem)obj;
+			if (pi.getPatientId() == null || patientId == null)
+				return false;
+			return pi.getPatientId().equals(patientId);
+		}
+		return false;
+	}
+	
+	public int hashCode() {
+		if (patientId == null)
+			return super.hashCode();
+		return patientId.hashCode();
 	}
 	
 	public Date getBirthdate() {

@@ -272,6 +272,36 @@ var getNumber = function(searchHit) {
 	};
 var getString  = function(s) { return s; };
 
+function rowMouseover(self) {
+	var c = self.className;
+	if (c.indexOf("searchHighlight") == -1) {
+		c = "searchHighlight " + c;
+		self.className = c;
+	}
+}
+
+function rowMouseout(self) {
+	var c = self.className;
+	c = c.substring(c.indexOf(" ") + 1, c.length);
+	self.className = c;
+}
+
+var rowCreator = function(row, i) {
+	var tr = document.createElement("tr");
+	if (i % 2 == 0)
+		tr.className = "evenRow";
+	else
+		tr.className = "oddRow";
+	tr.id = i+1;
+	
+	if (typeof row != "string") {
+		tr.onclick= function() { selectObject(this.id); };
+		tr.onmouseover= function()  {rowMouseover(this)};
+		tr.onmouseout = function () {rowMouseout(this)};
+	}
+	return tr;
+}
+
 function fillTable(objects, cells) {
     // If we get only one result and the enter key was pressed jump to that object
    	if (objects.length == 1 && 
@@ -294,6 +324,7 @@ function fillTable(objects, cells) {
     DWRUtil.removeAllRows(objectHitsTableBody);	//clear out the current rows
 
     var objs = objects.slice(firstItemDisplayed - 1, firstItemDisplayed + numItemsDisplayed);
+    
     var funcs = new Array();
     if (cells != null)
     	funcs = cells;
@@ -301,7 +332,11 @@ function fillTable(objects, cells) {
     	funcs = [ getNumber, getCellContent ];
     else
     	funcs = customCellFunctions;
-    DWRUtil.addRows(objectHitsTableBody, objs, funcs);
+    	
+    if (typeof customRowOptions == "undefined")
+    	customRowOptions = {'rowCreator':rowCreator};
+    	
+    DWRUtil.addRows(objectHitsTableBody, objs, funcs, customRowOptions);
     
    	setTimeout("updateInformationBar()", 0);
     
@@ -490,6 +525,6 @@ function getRowHeight() {
 
 function exitNumberMode(txtbox) {
 	hideHighlight(txtbox);
-	if (lastPhraseSearched != null && lastPhraseSearched != "")
+	if (txtbox.value == "")
 		txtbox.value = lastPhraseSearched;
 }

@@ -12,9 +12,9 @@ var getId		= function(p) {
 		}
 		div = document.createElement("div");
 		var obj = document.createElement("a");
-		obj.href = "#" + searchIndex;
-		obj.className = "searchHit";
-		obj.onclick = function() { return selectObject(parseInt(this.href.substring(this.href.indexOf('#')+1, this.href.length))); };
+		//obj.href = "#" + searchIndex;
+		//obj.className = "searchHit";
+		//obj.onclick = function() { return selectObject(parseInt(this.href.substring(this.href.indexOf('#')+1, this.href.length))); };
 		obj.appendChild(document.createTextNode(p.identifier + " "));
 		div.appendChild(obj);
 		if (typeof isValidCheckDigit != 'undefined' && isValidCheckDigit(p.identifier)==false) {
@@ -67,5 +67,5 @@ function getProblemImage() {
 }
 
 function customGetRowHeight() {
-	return 25;
+	return 23;
 }

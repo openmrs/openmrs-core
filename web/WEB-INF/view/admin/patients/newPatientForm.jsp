@@ -13,8 +13,8 @@
 </style>
 
 <form method="post" action="newPatient.form">
-	<c:if test="patient.patientId == null"><h2><spring:message code="Patient.create"/></h2></c:if>
-	<c:if test="patient.patientId != null"><h2><spring:message code="Patient.edit"/></h2></c:if>
+	<c:if test="${patient.patientId == null}"><h2><spring:message code="Patient.create"/></h2></c:if>
+	<c:if test="${patient.patientId != null}"><h2><spring:message code="Patient.edit"/></h2></c:if>
 	
 	<table>
 			<tr>

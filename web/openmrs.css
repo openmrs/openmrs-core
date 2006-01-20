@@ -190,6 +190,11 @@ a:visited {
 .searchIndexHighlight, .searchHighlight {
 	background-color: 	#F0E68C;
 }
+tr.searchHighlight {
+	cursor: pointer;
+	background-color: #F0E68C;
+}
+
 input[type="text"], input[type="password"] {
 	padding: 1px;
 	border: 1px solid cadetblue;
@@ -259,5 +264,13 @@ fieldset {
 	background-color: lightyellow;
 	padding: 2px;
 	margin: 1px;
+}
+
+.oddRow {
+	background-color: white;
+}
+
+.evenRow {
+	background-color: #FBFBFB;
 }
 	

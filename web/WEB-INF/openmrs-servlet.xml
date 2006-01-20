@@ -140,7 +140,7 @@
 					<property name="commandName"><value>patient</value></property>
 					<property name="commandClass"><value>org.openmrs.web.dwr.PatientListItem</value></property>
 					<property name="formView"><value>/admin/patients/newPatientForm</value></property>
-					<property name="successView"><value>/@WEBAPP.NAME@/formentry/index.htm</value></property>
+					<property name="successView"><value>/@WEBAPP.NAME@/formentry/patientSummary.form</value></property>
 				</bean>
 			<!-- ** /New Patient ** -->
 			

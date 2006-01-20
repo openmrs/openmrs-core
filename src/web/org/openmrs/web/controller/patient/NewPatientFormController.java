@@ -128,7 +128,7 @@ public class NewPatientFormController extends SimpleFormController {
 			String view = getSuccessView();
 						
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.saved");
-			return new ModelAndView(new RedirectView(view + "?phrase=" + identifier));
+			return new ModelAndView(new RedirectView(view + "?patientId=" + patient.getPatientId()));
 		}
 		
 		return new ModelAndView(new RedirectView(getFormView()));
@@ -151,7 +151,7 @@ public class NewPatientFormController extends SimpleFormController {
 		if (context != null && context.isAuthenticated()) {
 			PatientService ps = context.getPatientService();
 			String patientId = request.getParameter("pId");
-	    	if (patientId != null) {
+	    	if (patientId != null && !patientId.equals("")) {
 	    		p = ps.getPatient(Integer.valueOf(patientId));
 	    	}
 		}
@@ -187,7 +187,7 @@ public class NewPatientFormController extends SimpleFormController {
 		if (context != null && context.isAuthenticated()) {
 			PatientService ps = context.getPatientService();
 			String patientId = request.getParameter("pId");
-	    	if (patientId != null) {
+	    	if (patientId != null && !patientId.equals("")) {
 	    		patient = ps.getPatient(Integer.valueOf(patientId));
 	    		identifiers.addAll(patient.getIdentifiers());
 	    	}

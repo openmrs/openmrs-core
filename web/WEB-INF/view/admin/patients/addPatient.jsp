@@ -29,45 +29,34 @@
 	}
 	
 	function preFillTable(patients) {
-		var links = new Array();
 		if (patients.length < 1) {
 			if (patientName != "" && birthyear != "" && gender != "") {
-				var href = getTextLink(document.createElement("a")).href;
-				document.location = href;
+				document.location = getHref();
 			}
 			else {
-				links.push(noPatientsFound);
-				fillTable([]);	//this call sets up the table/info bar
+				patients.push(noPatientsFound);
 			}
 		}
 		else {
-			links.push(patientsFound);	//setup links for appending to the end
-			fillTable(patients);		//continue as normal
+			patients.push(patientsFound);	//setup links for appending to the end
 		}
-		DWRUtil.addRows(objectHitsTableBody, links, [getNumber, getTextLink]);
-		setTimeout("showHighlight()", 0);	//assumption for this page only: we're only here because the enter key was pressed
+		fillTable(patients);		//continue as normal
 	}
 	
 	function onSelect(patients) {
-		if (patients[0].patientId == null) // this is a [no]PatientsFound link
-			document.location = patients[0].href;
-		else
-			document.location = "${pageContext.request.contextPath}/formentry/index.htm?phrase=" + patients[0].identifier;
+		document.location = "${pageContext.request.contextPath}/formentry/patientSummary.form?patientId=" + patients[0].patientId;
 	}
 	
-	var getTextLink = function(link) {
-		link.href = "newPatient.form?name=" + patientName + "&birthyear=" + birthyear + "&gender=" + gender;
-		link.className = "searchHit";
-		return link;
+	var getHref = function() {
+		return "newPatient.form?name=" + patientName + "&birthyear=" + birthyear + "&gender=" + gender;
 	}
 	
 	var init = function() {
 
 			form = $("patientForm");
-			noPatientsFound = document.createElement("a");
-			patientsFound   = document.createElement("a");
-			noPatientsFound.innerHTML = "No Patients Found.  Select to add a new Patient";
-			patientsFound.innerHTML   = "Add New Patient";
+
+			noPatientsFound = "<a href='#' class='searchHit' onclick='document.location=getHref()'>No Patients Found.  Select to add a new Patient</a>";
+			patientsFound = "<a href='#' class='searchHit' onclick='document.location=getHref()'>Add New Patient</a>";
 			$("patientName").focus();
 		};
 		
@@ -118,7 +107,7 @@
 	<br /><br />
 	
 	<div id="patientsFound">
-		<table>
+		<table cellspacing="0" cellpadding="1">
 			<tbody id="patientTableBody">
 			</tbody>
 		</table>

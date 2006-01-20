@@ -47,7 +47,6 @@
 	}
 	
 	function preFillTable(patients) {
-		var links = new Array();
 		patientTableHead.style.display = "";
 		if (patients.length < 1) {
 			if (savedText.match(/\d/)) {
@@ -56,34 +55,28 @@
 					patientTableHead.style.display = "none";
 					var img = getProblemImage();
 					var tmp = " <img src='" + img.src + "' title='" + img.title + "' /> " + invalidCheckDigitText + savedText;
-					links.push(tmp);
-					links.push(noPatientsFoundText);
-					links.push(searchOnPatientNameText);
+					patients.push(tmp);
+					patients.push(noPatientsFoundText);
+					patients.push(searchOnPatientNameText);
 				}
 				else {
 					//the user did input a valid identifier, but we don't have it
-					links.push(noPatientsFoundText);
-					links.push(addPatientLink);
+					patients.push(noPatientsFoundText);
+					patients.push(addPatientLink);
 				}
 			}
 			else {
 				// the user put in a text search
-				links.push(noPatientsFoundText);
-				links.push(addPatientLink);
+				patients.push(noPatientsFoundText);
+				patients.push(addPatientLink);
 			}
 			fillTable([]);	//this call sets up the table/info bar
 		}
-		else {
-			if (patients.length > 1 || isValidCheckDigit(savedText) == false) {
-				links.push(addPatientLink);	//setup links for appending to the end
-			}
-			fillTable(patients);		//continue as normal
+		else if (patients.length > 1 || isValidCheckDigit(savedText) == false) {
+			patients.push(addPatientLink);	//setup links for appending to the end
 		}
 		
-		DWRUtil.addRows(objectHitsTableBody, links, [getNumber, getString]);
-		
-		if (keyCode == ENTERKEY)
-			setTimeout("showHighlight()", 0);
+		fillTable(patients);		//continue as normal
 		
 		return false;
 	};
@@ -118,7 +111,7 @@
 			<!-- <input type="submit" value="Search" onClick="return updatePatients();"> -->
 		</form>
 		<div id="patientListing">
-			<table id="patientTable">
+			<table id="patientTable" cellpadding="1" cellspacing="0">
 			 <thead id="patientTableHead">
 				 <tr>
 				 	<th> </th>
@@ -150,9 +143,7 @@
 	var invalidCheckDigitText   = "Invalid check digit for MRN: ";
 	var searchOnPatientNameText = "Please search on part of the patient's name. ";
 	var noPatientsFoundText     = "No patients found. ";
-	var addPatientLink = document.createElement("a");
-	addPatientLink.href= "${pageContext.request.contextPath}/admin/patients/addPatient.htm";
-	addPatientLink.innerHTML = "Add a new patient ";
+	var addPatientLink = "<a href='${pageContext.request.contextPath}/admin/patients/addPatient.htm'>Add a new patient</a>";
 	
 	function init() {
 		<request:existsParameter name="patientId">

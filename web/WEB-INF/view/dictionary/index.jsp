@@ -57,7 +57,7 @@
 			</div>
 			<spring:message code="dictionary.searchBox"/> <input type="text" id="searchText" size="45" onkeyup="search(400, event);">
 		</form>
-		<table class="conceptSearchTable">
+		<table class="conceptSearchTable" cellspacing="0" cellpadding="1">
 			<tbody id="conceptSearchBody">
 				<tr>
 					<td></td>

@@ -49,7 +49,7 @@
 			</table>
 		</form>
 		<div id="patientListing">
-			<table id="patientTable">
+			<table id="patientTable" cellspacing="0" cellpadding="1">
 			 <thead>
 				 <tr>
 				 	<th> </th>

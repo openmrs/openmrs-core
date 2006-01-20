@@ -54,11 +54,13 @@ public class DWRPatientService {
 						newSearch += " " + name;
 					}
 					
-					patients = ps.findPatients(newSearch, includeVoided);
-					if (patients.size() > 0) {
+					List<Patient> newPatients = ps.findPatients(newSearch, includeVoided);
+					newPatients.removeAll(patients);
+					if (newPatients.size() > 0) {
 						patientList.add("Minimal patients returned. Results for <b>" + newSearch + "</b>");
-						for (Patient p : patients) {
-							patientList.add(new PatientListItem(p));
+						for (Patient p : newPatients) {
+							PatientListItem pi = new PatientListItem(p);
+							patientList.add(pi);
 						}
 					}
 				}
