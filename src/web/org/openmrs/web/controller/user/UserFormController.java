@@ -159,6 +159,7 @@ public class UserFormController extends SimpleFormController {
 		
 		if (context != null && context.isAuthenticated()) {
 			map.put("roles", context.getUserService().getRoles());
+			map.put("groups", context.getUserService().getGroups());
 		}	
 		return map;
     }

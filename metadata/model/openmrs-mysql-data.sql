@@ -14605,3 +14605,7 @@ insert  into users values
 (61, '2-6', 'Paul', 'Gene', 'Biondich', '', null, null, null, 1, '2005-10-13 10:43:06', null, null, 0, null, null, null), 
 (62, '5-9', 'Benjamin', '', 'Wolfe', null, null, null, null, 2, '2005-10-20 10:43:09', null, null, 0, null, null, null);
 
+insert  into report values 
+(1, 'Low CD4 counts', 'List names and accompagnateurs of all patients with CD4 counts below 350.', 2, '2005-12-04-10:56:00', null, null, null, null, null, null),
+(2, 'Enrollment by month', 'Enrollment by month, subdivided by location', 2, '2005-12-04-10:56:00', null, null, null, null, null, null),
+(3, 'Outcomes', 'Pie charts of outcomes, subdivided by Gender and Age(<15 vs >=15)', 2, '2005-12-04-10:56:00', null, null, null, null, null, null);

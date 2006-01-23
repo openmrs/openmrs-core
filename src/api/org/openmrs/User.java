@@ -24,6 +24,7 @@ public class User extends Person implements java.io.Serializable {
 	private String lastName;
 	private String secretQuestion;
 	private Set<Role> roles;
+	private Set<Group> groups;
 	private Map<String, String> properties;
 
 	/*private User creator;
@@ -56,6 +57,10 @@ public class User extends Person implements java.io.Serializable {
 		boolean hasPrivilege = false;
 		Set roles = getRoles();
 
+		for (Group g : getGroups()) {
+			roles.addAll(g.getRoles());
+		}
+		
 		check_privileges: for (Iterator i = roles.iterator(); i.hasNext();) {
 			Role role = (Role) i.next();
 			Privilege oPrivilege = new Privilege();
@@ -158,9 +163,43 @@ public class User extends Person implements java.io.Serializable {
 	 * Remove the given obervation from the list of roles for this User
 	 * @param roleservation
 	 */
-	public void removeRole(Role roleservation) {
+	public void removeRole(Role role) {
 		if (roles != null)
-			roles.remove(roleservation);
+			roles.remove(role);
+	}
+
+	/**
+	 * @return Returns the groups.
+	 */
+	public Set<Group> getGroups() {
+		return groups;
+	}
+
+	/**
+	 * @param groups The groups to set.
+	 */
+	public void setGroups(Set<Group> groups) {
+		this.groups = groups;
+	}
+	
+	/**
+	 * Add the given Group to the list of groups for this User
+	 * @param groupservation
+	 */
+	public void addGroup(Group group) {
+		if (groups == null)
+			groups = new HashSet<Group>();
+		if (!groups.contains(group) && group != null)
+			groups.add(group);
+	}
+
+	/**
+	 * Remove the given obervation from the list of groups for this User
+	 * @param groupservation
+	 */
+	public void removeGroup(Group group) {
+		if (groups != null)
+			groups.remove(group);
 	}
 
 	/**

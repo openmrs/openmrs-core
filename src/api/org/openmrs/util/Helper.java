@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class Helper {
 
-	public static int getCheckdigit(String idWithoutCheckdigit) throws Exception {
+	public static int getCheckDigit(String idWithoutCheckdigit) throws Exception {
 
 		// allowable characters within identifier
 		String validChars = "0123456789ABCDEFGHIJKLMNOPQRSTUVYWXZ_";
@@ -70,12 +70,34 @@ public class Helper {
 	}
 	
 	/**
+	 * 
+	 * @param id
+	 * @return true/false whether id has a valid check digit
+	 * @throws Exception on invalid characters and invalid id formation
+	 */
+	public static boolean isValidCheckDigit(String id) throws Exception {
+		
+		if (!id.matches("^[A-Za-z0-9_]+-[0-9]$")) {
+			throw new Exception("Invalid characters and/or id formation");
+		}
+		
+		String idWithoutCheckDigit = id.substring(0, id.indexOf("-"));
+		
+		int computedCheckDigit = getCheckDigit(idWithoutCheckDigit);
+		
+		int givenCheckDigit = Integer.valueOf(id.substring(id.indexOf("-")+1, id.length()));
+
+		return (computedCheckDigit == givenCheckDigit);
+	}
+	
+	/**
 	 * Compares origList to newList returning map of differences 
 	 * @param origList
 	 * @param newList
 	 * @return Map (List toAdd, List toDelete) with respect to origList
 	 */
 	public static Map compareLists(List origList, List newList) {
+		//TODO finish function
 		
 		HashMap map = new HashMap();
 		
