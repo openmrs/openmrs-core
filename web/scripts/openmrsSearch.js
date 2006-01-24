@@ -271,6 +271,17 @@ var getNumber = function(searchHit) {
 		return td;
 	};
 var getString  = function(s) { return s; };
+var getDateString = function(d) {
+	var str = '';
+	if (d != null) {
+		str += (d.getYear() + 1900);
+		str += '-';
+		str += d.getMonth() + 1;
+		str += '-';
+		str += d.getDate();
+	}
+	return str;
+}
 
 function rowMouseover(self) {
 	var c = self.className;
@@ -336,6 +347,8 @@ function fillTable(objects, cells) {
     if (typeof customRowOptions == "undefined")
     	customRowOptions = {'rowCreator':rowCreator};
     	
+    if (debugBox != null) debugBox.innerHTML += "<br>funcs: " + customCellFunctions + ":";
+    
     DWRUtil.addRows(objectHitsTableBody, objs, funcs, customRowOptions);
     
    	setTimeout("updateInformationBar()", 0);

@@ -2,13 +2,16 @@ package org.openmrs.api.db.hibernate;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.NonUniqueObjectException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.openmrs.Group;
 import org.openmrs.Privilege;
@@ -408,5 +411,30 @@ public class HibernateUserDAO implements
 			.setParameter("userid", u.getUserId())
 			.executeUpdate();
 		HibernateUtil.commitTransaction();
+	}
+	
+	public List<User> findUsers(String name) {
+		
+		Session session = HibernateUtil.currentSession();
+		
+		List<User> users = new Vector<User>();
+		
+		name = name.replace(", ", " ");
+		String[] names = name.split(" ");
+		
+		log.debug("name: " + name);
+		
+		Criteria criteria = session.createCriteria(User.class);
+		for (String n : names) {
+			if (n != null && n.length() > 0) {
+				criteria.add(Expression.or(
+						Expression.like("firstName", n, MatchMode.START),
+						Expression.like("lastName", n, MatchMode.START)
+						)
+				);
+			}
+		}
+
+		return criteria.list();
 	}
 }

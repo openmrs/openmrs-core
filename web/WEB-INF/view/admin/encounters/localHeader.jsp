@@ -2,8 +2,8 @@
 	<li class="first">
 		<a href="${pageContext.request.contextPath}/admin"><spring:message code="admin.title.short"/></a>
 	</li>
-	<li <c:if test="<%= request.getRequestURI().contains("encounter.") %>">class="active"</c:if>>
-		<a href="${pageContext.request.contextPath}/admin/encounters/encounter.jsp" class="retired">
+	<li <c:if test="<%= request.getRequestURI().contains("encounters/index") %>">class="active"</c:if>>
+		<a href="${pageContext.request.contextPath}/admin/encounters/index.htm">
 			<spring:message code="Encounter.manage"/>
 		</a>
 	</li>

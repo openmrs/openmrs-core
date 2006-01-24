@@ -36,6 +36,15 @@ public interface EncounterDAO {
 	public Encounter getEncounter(Integer encounterId) throws DAOException;
 	
 	/**
+	 * 
+	 * @param patientId
+	 * @param includeVoided
+	 * @return list of encounters for this patient
+	 * @throws DAOException
+	 */
+	public List<Encounter> getEncountersByPatientId(Integer patientId, boolean includeVoided) throws DAOException;
+	
+	/**
 	 * Get all encounter types
 	 * 
 	 * @return encounter types list

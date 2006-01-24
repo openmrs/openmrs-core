@@ -6,7 +6,9 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Expression;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Location;
@@ -78,6 +80,24 @@ public class HibernateEncounterDAO implements
 		return encounter;
 	}
 
+	public List<Encounter> getEncountersByPatientId(Integer patientId, boolean includeVoided) throws DAOException {
+		
+		Session session = HibernateUtil.currentSession();
+		
+		//if (includeVoided) {
+			Criteria crit = session.createCriteria(Encounter.class)
+				.createAlias("patient", "p")
+				.add(Expression.eq("p.patientId", patientId));
+		//}
+		//else {
+		//	query = session.createQuery("select encounter from Encounter enc where enc.patient.patientId = :id and patient.voided = :void");
+		//	query.setInteger("id", patientId);
+		//	query.setBoolean("void", includeVoided);
+		//}
+		
+		return crit.list();
+	}
+	
 	/**
 	 * @see org.openmrs.api.db.EncounterService#getEncounterType(java.lang.Integer)
 	 */
@@ -147,6 +167,8 @@ public class HibernateEncounterDAO implements
 			//encounter.setDateChanged(new Date());
 			try {
 				HibernateUtil.beginTransaction();
+				Encounter e = (Encounter)session.merge(encounter);
+				session.evict(e);
 				session.saveOrUpdate(encounter);
 				HibernateUtil.commitTransaction();
 			}

@@ -14,7 +14,7 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
 
-import uk.ltd.getahead.dwr.ExecutionContext;
+import uk.ltd.getahead.dwr.WebContextFactory;
 
 public class DWRConceptService {
 
@@ -26,10 +26,10 @@ public class DWRConceptService {
 		// Object type gives ability to return error strings
 		Vector<Object> objectList = new Vector<Object>();	
 
-		Context context = (Context) ExecutionContext.get().getSession()
+		Context context = (Context) WebContextFactory.get().getSession()
 				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-		HttpServletRequest request = ExecutionContext.get().getHttpServletRequest();
+		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
 		
 		//TODO add localization for messages
 		
@@ -102,7 +102,7 @@ public class DWRConceptService {
 	}
 	
 	public ConceptListItem getConcept(Integer conceptId) {
-		Context context = (Context) ExecutionContext.get().getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context context = (Context) WebContextFactory.get().getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		ConceptService cs = context.getConceptService();
 		Concept c = cs.getConcept(conceptId);
 		

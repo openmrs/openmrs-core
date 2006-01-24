@@ -158,6 +158,11 @@ body {
 	
 .smallButton {
 	font-size: 9px;
+	border: 1px solid lightgrey;
+	background-color: whitesmoke;
+	cursor: pointer;
+	width: 75px;
+	margin: 1px;
 }
 a, a:link, a:hover, a:visited, a:active {
 	text-decoration: underline;

@@ -246,6 +246,31 @@ function containsError(element) {
 <br />
 <br />
 </fieldset>
+
+<fieldset><legend><spring:message code="options.notify.legend" /></legend>
+<table>
+	<tr>
+		<td><input type="radio" name="notification" value="internalOnly" <c:if test="${opts.notification == 'internalOnly'}">checked</c:if> /></td>
+		<td><spring:message code="options.notify.internalOnly" /></td>
+	</tr>
+	<tr>
+		<td><input type="radio" name="internal" value="internal" <c:if test="${opts.notification == 'internal'}">checked</c:if> /></td>
+		<td><spring:message code="options.notify.internal" /></td>
+	</tr>
+	<tr>
+		<td><input type="radio" name="internalProtected" value="internalProtected" <c:if test="${opts.notification == 'internalProtected'}">checked</c:if> /></td>
+		<td><spring:message code="options.notify.internalProtected" /></td>
+	</tr>
+	<tr>
+		<td><input type="radio" name="email" value="email" <c:if test="${opts.notification == 'email'}">checked</c:if> /></td>
+		<td><spring:message code="options.notify.email" /></td>
+	</tr>
+</table>
+<br />
+<br />
+</fieldset>
+
+
 <div><br />
 <input type="submit" value="<spring:message code="options.save"/>"></div>
 </form>

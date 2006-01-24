@@ -262,4 +262,9 @@ public class UserService {
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_USERS);
 		getUserDAO().changeQuestionAnswer(pw, q, a);
 	}
+	
+	public List<User> findUsers(String name) {
+		name = name.replace(", ", " ");
+		return getUserDAO().findUsers(name);
+	}
 }

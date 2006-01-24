@@ -27,6 +27,10 @@
 		<many-to-one name="location" class="Location" not-null="true">
 			<column name="location_id" />
 		</many-to-one>
+		<!-- bi-directional many-to-one association to Form -->
+		<many-to-one name="form" class="Form" not-null="false">
+			<column name="form_id" />
+		</many-to-one>
 		<!-- bi-directional one-to-many association to Order -->
 		<set name="orders" inverse="true" cascade="all">
 			<key column="encounter_id" />

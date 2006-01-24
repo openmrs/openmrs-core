@@ -21,6 +21,7 @@ public class Encounter implements java.io.Serializable {
 	private Date dateCreated;
 	private Patient patient;
 	private Location location;
+	private Form form;
 	private EncounterType encounterType;
 	private User creator;
 	private User provider;
@@ -246,6 +247,20 @@ public class Encounter implements java.io.Serializable {
 	 */
 	public void setProvider(User provider) {
 		this.provider = provider;
+	}
+
+	/**
+	 * @return Returns the form.
+	 */
+	public Form getForm() {
+		return form;
+	}
+
+	/**
+	 * @param form The form to set.
+	 */
+	public void setForm(Form form) {
+		this.form = form;
 	}
 
 }

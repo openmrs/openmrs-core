@@ -177,4 +177,6 @@ public interface UserDAO {
 	
 	public void changeQuestionAnswer(String pw, String q, String a) throws DAOException;
 	
+	public List<User> findUsers(String name) throws DAOException;
+	
 }

@@ -39,6 +39,7 @@
 					<prop key="**/privilege.form">privilegeForm</prop>
 					<prop key="**/group.list">groupList</prop>
 					<prop key="**/group.form">groupForm</prop>
+					<prop key="**/encounter.form">encounterForm</prop>
 					<prop key="**/encounterType.list">encounterTypeList</prop>
 					<prop key="**/encounterType.form">encounterTypeForm</prop>
 					<prop key="**/location.list">locationList</prop>
@@ -54,6 +55,10 @@
 					<prop key="**/conceptSetDerived.form">conceptSetDerivedForm</prop>
 					<prop key="**/report.list">reportList</prop>
 					<prop key="**/report.form">reportForm</prop>
+					<prop key="**/form.form">formForm</prop>
+					<prop key="**/form.list">formList</prop>
+					<prop key="**/fieldType.form">fieldTypeForm</prop>
+					<prop key="**/fieldType.list">fieldTypeList</prop>
 					<prop key="**/options.form">optionsForm</prop>
 					<prop key="**/patientSummary.form">patientSummaryForm</prop>
 					<prop key="**/*.htm">springController</prop>
@@ -258,6 +263,15 @@
 	    <!-- ============================ -->
 		<!-- ===== Encounter Sector ===== -->
 	    <!-- ============================ -->
+	    		<!-- ** Encounter      ** -->
+	    		<bean id="encounterForm" class="org.openmrs.web.controller.encounter.EncounterFormController">
+					<property name="sessionForm"><value>true</value></property>
+					<property name="commandName"><value>encounter</value></property>
+					<property name="formView"><value>/admin/encounters/encounterForm</value></property>
+					<property name="successView"><value>index.htm</value></property>
+				</bean>
+				<!-- ** /Encounter     ** -->
+				
 				<!-- ** Encounter Type ** -->
 				<bean id="encounterTypeList" class="org.openmrs.web.controller.encounter.EncounterTypeListController">
 					<property name="sessionForm"><value>true</value></property>
@@ -391,6 +405,49 @@
 					<property name="successView"><value>report.list</value></property>
 				</bean>
 			<!-- ** /Report ** -->
+	    <!-- ============================ -->
+
+	    <!-- ============================ -->
+		<!-- ===== Form Sector ===== -->
+	    <!-- ============================ -->
+	    
+			<!-- ** Form ** -->
+				<bean id="formList" class="org.openmrs.web.controller.form.FormListController">
+					<property name="sessionForm"><value>true</value></property>
+					<property name="commandName"><value>formList</value></property>
+					<property name="formView"><value>/admin/forms/formList</value></property>
+					<property name="successView"><value>form.list</value></property>
+				</bean>
+		
+				<!--  Validator and Form Controller for the add/edit forms page -->
+				<bean id="formValidator" class="org.openmrs.web.controller.form.FormValidator"/>
+				<bean id="formForm" class="org.openmrs.web.controller.form.FormFormController">
+					<property name="sessionForm"><value>true</value></property>
+					<property name="commandName"><value>form</value></property>
+					<property name="validator"><ref bean="formValidator"/></property>
+					<property name="formView"><value>/admin/forms/formForm</value></property>
+					<property name="successView"><value>form.list</value></property>
+				</bean>
+			<!-- ** /Form ** -->
+	    
+			<!-- ** Field Type ** -->
+				<bean id="fieldTypeList" class="org.openmrs.web.controller.form.FieldTypeListController">
+					<property name="sessionForm"><value>true</value></property>
+					<property name="commandName"><value>fieldTypeList</value></property>
+					<property name="formView"><value>/admin/forms/fieldTypeList</value></property>
+					<property name="successView"><value>fieldType.list</value></property>
+				</bean>
+		
+				<!--  Validator and Form Controller for the add/edit forms page -->
+				<bean id="fieldTypeValidator" class="org.openmrs.web.controller.form.FieldTypeValidator"/>
+				<bean id="fieldTypeForm" class="org.openmrs.web.controller.form.FieldTypeFormController">
+					<property name="sessionForm"><value>true</value></property>
+					<property name="commandName"><value>fieldType</value></property>
+					<property name="validator"><ref bean="fieldTypeValidator"/></property>
+					<property name="formView"><value>/admin/forms/fieldTypeForm</value></property>
+					<property name="successView"><value>fieldType.list</value></property>
+				</bean>
+			<!-- ** /Field Type ** -->
 	    <!-- ============================ -->
 
 	    <!-- =========================== -->

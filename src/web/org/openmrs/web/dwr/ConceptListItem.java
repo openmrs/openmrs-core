@@ -9,7 +9,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.ConceptWord;
 import org.openmrs.web.Util;
 
-import uk.ltd.getahead.dwr.ExecutionContext;
+import uk.ltd.getahead.dwr.WebContextFactory;
 import uk.ltd.getahead.dwr.util.JavascriptUtil;
 
 public class ConceptListItem {
@@ -52,7 +52,7 @@ public class ConceptListItem {
 
 			conceptId = concept.getConceptId();
 			JavascriptUtil util = new JavascriptUtil();
-			Locale locale = Util.getLocale(ExecutionContext.get().getHttpServletRequest());
+			Locale locale = Util.getLocale(WebContextFactory.get().getHttpServletRequest());
 			ConceptName cn = concept.getName(locale);
 			name = "";
 			shortName = "";

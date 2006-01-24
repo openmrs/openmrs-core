@@ -15,6 +15,8 @@ public class OptionsForm {
 	private String secretAnswerNew = "";
 	private String secretAnswerConfirm = "";
 	
+	private String notifications = "";
+	
 	public OptionsForm() {}
 
 	public String getConfirmPassword() {
@@ -95,6 +97,20 @@ public class OptionsForm {
 
 	public void setSecretAnswerConfirm(String secretAnswerConfirm) {
 		this.secretAnswerConfirm = secretAnswerConfirm;
+	}
+
+	/**
+	 * @return Returns the notifications.
+	 */
+	public String getNotifications() {
+		return notifications;
+	}
+
+	/**
+	 * @param notifications The notifications to set.
+	 */
+	public void setNotifications(String notifications) {
+		this.notifications = notifications;
 	}
 
 		

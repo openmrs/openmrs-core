@@ -13,7 +13,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Hibernate;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientAddress;

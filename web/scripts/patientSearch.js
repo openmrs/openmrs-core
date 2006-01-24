@@ -43,13 +43,7 @@ var getGender	= function(p) {
 	};
 var getBirthday	= function(p) { 
 		if (typeof p == 'string') return "";
-		
-		var str = '';
-		if (p.birthdate != null) {
-			str += p.birthdate.getDate() + '-';
-			str += p.birthdate.getMonth() + 1 + '-';
-			str += (p.birthdate.getYear() + 1900);
-		}
+		str = getDateString(p.birthdate);
 		if (p.birthdateEstimated)
 			str += " (?)";
 		return str;

@@ -3,6 +3,7 @@ package org.openmrs.api;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
@@ -54,6 +55,32 @@ public class EncounterService {
 	 */
 	public Encounter getEncounter(Integer encounterId) throws APIException {
 		return getEncounterDAO().getEncounter(encounterId);
+	}
+	
+	/**
+	 * 
+	 * @param identifier
+	 * @param includeVoided
+	 * @return all encounters for the given patient identifer
+	 * @throws APIException
+	 */
+	public List<Encounter> getEncountersByPatientIdentifier(String identifier, boolean includeVoided) throws APIException {
+		List<Encounter> encs = new Vector<Encounter>();
+		for(Patient p : daoContext.getPatientDAO().getPatientsByIdentifier(identifier, includeVoided)) {
+			encs.addAll(getEncountersByPatientId(p.getPatientId(), includeVoided));
+		}
+		return encs;
+	}
+	
+	/**
+	 * 
+	 * @param patientId
+	 * @param includeVoided
+	 * @return all encounters for the given patient identifer
+	 * @throws APIException
+	 */
+	public List<Encounter> getEncountersByPatientId(Integer patientId, boolean includeVoided) throws APIException {
+		return getEncounterDAO().getEncountersByPatientId(patientId, includeVoided);
 	}
 	
 	/**

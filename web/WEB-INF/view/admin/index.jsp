@@ -41,12 +41,7 @@
 	<%@ include file="concepts/localHeader.jsp" %>
 
 <h4>Forms</h4> 
-<ul>
-	<li><a href="forms/forms.jsp">Manage forms</a></li>
-	<li><a href="forms/fields.jsp">Manage fields</a></li>
-	<li><a href="forms/fieldsAnswers.jsp">Manage field answers</a></li>
-	<li><a href="forms/fieldTypes.jsp">Manage field types</a></li>
-</ul>
+	<%@ include file="forms/localHeader.jsp" %>
 
 <h4>Reports</h4>
 	<%@ include file="reports/localHeader.jsp" %>

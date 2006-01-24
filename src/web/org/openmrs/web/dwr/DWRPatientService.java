@@ -13,7 +13,7 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
 
-import uk.ltd.getahead.dwr.ExecutionContext;
+import uk.ltd.getahead.dwr.WebContextFactory;
 
 public class DWRPatientService {
 
@@ -23,9 +23,9 @@ public class DWRPatientService {
 		
 		Vector patientList = new Vector();
 
-		HttpServletRequest request = ExecutionContext.get().getHttpServletRequest();
+		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
 		
-		Context context = (Context) ExecutionContext.get().getSession()
+		Context context = (Context) WebContextFactory.get().getSession()
 				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 
 		if (context == null) {
@@ -73,7 +73,7 @@ public class DWRPatientService {
 	}
 	
 	public PatientListItem getPatient(Integer patientId) {
-		Context context = (Context) ExecutionContext.get().getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context context = (Context) WebContextFactory.get().getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		PatientService ps = context.getPatientService();
 		Patient p = ps.getPatient(patientId);
 		PatientListItem pli = new PatientListItem(p);
@@ -88,10 +88,10 @@ public class DWRPatientService {
 	public Vector getSimilarPatients(String name, String birthyear, String gender) {
 		Vector patientList = new Vector();
 
-		Context context = (Context) ExecutionContext.get().getSession()
+		Context context = (Context) WebContextFactory.get().getSession()
 				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-		HttpServletRequest request = ExecutionContext.get().getHttpServletRequest();
+		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
 		
 		if (context == null) {
 			patientList.add("Your session has expired.");
