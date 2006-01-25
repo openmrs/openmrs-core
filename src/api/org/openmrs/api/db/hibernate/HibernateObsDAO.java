@@ -3,10 +3,13 @@ package org.openmrs.api.db.hibernate;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Expression;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
@@ -81,6 +84,28 @@ public class HibernateObsDAO implements
 		
 		return obs;
 	}
+	
+	public List<Obs> findObservations(Integer id, boolean includeVoided) throws DAOException {
+		
+		Session session = HibernateUtil.currentSession();
+		
+		List<Obs> obs = new Vector<Obs>();
+		
+		Criteria criteria = session.createCriteria(Obs.class)
+			.createAlias("patient", "p")
+			.createAlias("encounter", "e")
+			.add(Expression.or(
+				Expression.eq("p.patientId", id),
+				Expression.like("e.encounterId", id)
+				)
+			);
+		
+		if (includeVoided == false) {
+			criteria.add(Expression.eq("voided", new Boolean(false)));
+		}
+
+		return criteria.list();
+	}
 
 	/**
 	 * @see org.openmrs.api.db.ObsService#getMimeType(java.lang.Integer)
@@ -124,6 +149,8 @@ public class HibernateObsDAO implements
 	 */
 	public void updateObs(Obs obs) throws DAOException {
 		Session session = HibernateUtil.currentSession();
+		
+		
 		
 		session.saveOrUpdate(obs);
 	}

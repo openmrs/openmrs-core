@@ -103,7 +103,7 @@ public interface ObsDAO {
 	 * @param who
 	 * @return
 	 */
-	public Set<Obs> getObservations(Patient who);
+	public Set<Obs> getObservations(Patient who) throws DAOException;
 
 	/**
 	 * e.g. get all CD4 counts for a patient 
@@ -111,12 +111,14 @@ public interface ObsDAO {
 	 * @param question
 	 * @return
 	 */
-    public Set<Obs> getObservations(Patient who, Concept question);
+    public Set<Obs> getObservations(Patient who, Concept question) throws DAOException;
 
     /**
      * Get all observations from a specific encounter
      * @param whichEncounter
      * @return
      */
-    public Set<Obs> getObservations(Encounter whichEncounter);
+    public Set<Obs> getObservations(Encounter whichEncounter) throws DAOException;
+    
+    public List<Obs> findObservations(Integer id, boolean includeVoided) throws DAOException;
 }

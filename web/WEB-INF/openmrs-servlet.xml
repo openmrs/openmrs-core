@@ -29,6 +29,7 @@
 					<prop key="**/tribe.form">tribeForm</prop>
 					<prop key="**/patientIdentifierType.list">patientIdentifierTypeList</prop>
 					<prop key="**/patientIdentifierType.form">patientIdentifierTypeForm</prop>
+					<prop key="**/obs.form">obsForm</prop>
 					<prop key="**/mimeType.list">mimeTypeList</prop>
 					<prop key="**/mimeType.form">mimeTypeForm</prop>
 					<prop key="**/user.list">userList</prop>
@@ -73,6 +74,13 @@
 	    <!-- ================================ -->
 
 			<!-- ** Mime Type ** -->
+			
+				<bean id="obsForm" class="org.openmrs.web.controller.observation.ObsFormController">
+					<property name="commandName"><value>obs</value></property>
+					<property name="formView"><value>/admin/observations/obsForm</value></property>
+					<property name="successView"><value>index.htm</value></property>
+				</bean>
+			
 				<!--this is the optional method of declaring values in the constructor -->
 				<!--<bean id="mimeTypeList" class="org.openmrs.web.controller.observation.MimeTypeListController" />-->
 				<!--<bean id="mimeTypeForm" class="org.openmrs.web.controller.observation.MimeTypeFormController" />-->

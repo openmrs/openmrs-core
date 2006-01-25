@@ -2,6 +2,7 @@ package org.openmrs.api;
 
 import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
@@ -163,5 +164,20 @@ public class ObsService {
      */
     public Set<Obs> getObservations(Encounter whichEncounter) {
     	return getObsDAO().getObservations(whichEncounter);
+    }
+    
+    public List<Obs> findObservations(String search, boolean includeVoided) {
+    	List<Obs> obs = new Vector<Obs>();
+    	for (Patient p : context.getPatientService().getPatientsByIdentifier(search, includeVoided)) {
+    		obs.addAll(getObsDAO().findObservations(p.getPatientId(), includeVoided));
+    	}
+    	try {
+    		Integer i = Integer.valueOf(search);
+    		if (i != null)
+    			obs.addAll(getObsDAO().findObservations(i, includeVoided));
+    	}
+    	catch (Exception e) {}
+    	
+    	return obs;
     }
 }

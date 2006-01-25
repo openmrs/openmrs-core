@@ -15,6 +15,7 @@
 			column="obs_datetime" not-null="true" length="19" />
 		<property name="obsGroupId" type="java.lang.Integer"
 			column="obs_group_id" length="11" />
+			
 		<property name="valueGroupId" type="java.lang.Integer"
 			column="value_group_id" length="11" />
 		<property name="valueBoolean" type="boolean"
@@ -27,8 +28,17 @@
 			column="value_modifier" length="2" />
 		<property name="valueText" type="java.lang.String"
 			column="value_text" length="50" />
+			
 		<property name="comment" type="java.lang.String"
 			column="comment" length="255" />
+		<property name="accessionNumber" type="java.lang.String"
+			column="accession_number" length="255" />
+			
+		<property name="dateStarted" type="java.util.Date"
+			column="date_started" length="19" />
+		<property name="dateStopped" type="java.util.Date"
+			column="date_stopped" length="19" />
+			
 		<property name="dateCreated" type="java.util.Date"
 			column="date_created" not-null="true" length="19" />
 		<property name="voided" type="java.lang.Boolean" column="voided"
@@ -45,17 +55,15 @@
 			<column name="patient_id" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to Concept -->
-		<many-to-one name="concept" class="Concept"
-			not-null="true">
+		<many-to-one name="concept" class="Concept" not-null="true">
 			<column name="concept_id" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to Concept -->
-		<many-to-one name="valueCoded" class="Concept"
-			not-null="true">
+		<many-to-one name="valueCoded" class="Concept">
 			<column name="value_coded" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to Order -->
-		<many-to-one name="order" class="Order" not-null="true">
+		<many-to-one name="order" class="Order">
 			<column name="order_id" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to Location -->
@@ -63,18 +71,15 @@
 			<column name="location_id" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to Encounter -->
-		<many-to-one name="encounter" class="Encounter"
-			not-null="true">
+		<many-to-one name="encounter" class="Encounter">
 			<column name="encounter_id" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to User -->
-		<many-to-one name="creator" class="User"
-			not-null="true">
+		<many-to-one name="creator" class="User" not-null="true">
 			<column name="creator" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to User -->
-		<many-to-one name="voidedBy" class="User"
-			not-null="true">
+		<many-to-one name="voidedBy" class="User">
 			<column name="voided_by" />
 		</many-to-one>
 		

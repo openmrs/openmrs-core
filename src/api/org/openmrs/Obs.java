@@ -18,9 +18,10 @@ public class Obs implements java.io.Serializable {
 	protected Concept concept;
 	protected Date obsDatetime;
 	protected Integer obsGroupId;
+	protected String accessionNumber;
 	protected Concept valueCoded;
 	protected Integer valueGroupId;
-	protected Boolean valueBoolean = false;
+	protected Boolean valueBoolean;
 	protected Date valueDatetime;
 	protected Double valueNumeric;
 	protected String valueModifier;
@@ -30,6 +31,8 @@ public class Obs implements java.io.Serializable {
 	protected Order order;
 	protected Location location;
 	protected Encounter encounter;
+	protected Date dateStarted;
+	protected Date dateStopped;
 	protected User creator;
 	protected Date dateCreated;
 	protected Boolean voided = false;
@@ -355,6 +358,13 @@ public class Obs implements java.io.Serializable {
 	}
 
 	/**
+	 * @return Returns the voided.
+	 */
+	public Boolean getVoided() {
+		return voided;
+	}
+
+	/**
 	 * @param voided The voided to set.
 	 */
 	public void setVoided(Boolean voided) {
@@ -389,5 +399,46 @@ public class Obs implements java.io.Serializable {
 		this.voidReason = voidReason;
 	}
 
+	/**
+	 * @return Returns the accessionNumber.
+	 */
+	public String getAccessionNumber() {
+		return accessionNumber;
+	}
+
+	/**
+	 * @param accessionNumber The accessionNumber to set.
+	 */
+	public void setAccessionNumber(String accessionNumber) {
+		this.accessionNumber = accessionNumber;
+	}
+
+	/**
+	 * @return Returns the dateStarted.
+	 */
+	public Date getDateStarted() {
+		return dateStarted;
+	}
+
+	/**
+	 * @param dateStarted The dateStarted to set.
+	 */
+	public void setDateStarted(Date dateStarted) {
+		this.dateStarted = dateStarted;
+	}
+
+	/**
+	 * @return Returns the dateStopped.
+	 */
+	public Date getDateStopped() {
+		return dateStopped;
+	}
+
+	/**
+	 * @param dateStopped The dateStopped to set.
+	 */
+	public void setDateStopped(Date dateStopped) {
+		this.dateStopped = dateStopped;
+	}
 
 }

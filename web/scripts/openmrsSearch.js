@@ -283,20 +283,6 @@ var getDateString = function(d) {
 	return str;
 }
 
-function rowMouseover(self) {
-	var c = self.className;
-	if (c.indexOf("searchHighlight") == -1) {
-		c = "searchHighlight " + c;
-		self.className = c;
-	}
-}
-
-function rowMouseout(self) {
-	var c = self.className;
-	c = c.substring(c.indexOf(" ") + 1, c.length);
-	self.className = c;
-}
-
 var rowCreator = function(row, i) {
 	var tr = document.createElement("tr");
 	if (i % 2 == 0)
@@ -307,8 +293,14 @@ var rowCreator = function(row, i) {
 	
 	if (typeof row != "string") {
 		tr.onclick= function() { selectObject(this.id); };
-		tr.onmouseover= function()  {rowMouseover(this)};
-		tr.onmouseout = function () {rowMouseout(this)};
+		tr.onmouseover= function()  {
+					if (this.className.indexOf("searchHighlight") == -1)
+						this.className = "searchHighlight " + this.className;
+				};
+		tr.onmouseout = function () {
+					var c = this.className;
+					this.className = c.substring(c.indexOf(" ") + 1, c.length);
+				};
 	}
 	return tr;
 }
