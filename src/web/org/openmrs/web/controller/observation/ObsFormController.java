@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Location;
@@ -21,6 +20,7 @@ import org.openmrs.web.propertyeditor.LocationEditor;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
@@ -60,15 +60,15 @@ public class ObsFormController extends SimpleFormController {
 		Obs obs = (Obs)obj;
 		
 		if (context != null && context.isAuthenticated()) {
-			if (!StringUtils.isEmpty(request.getParameter("patientId")))
+			if (!StringUtils.hasText(request.getParameter("patientId")))
 				obs.setPatient(context.getPatientService().getPatient(Integer.valueOf(request.getParameter("patientId"))));
-			if (!StringUtils.isEmpty(request.getParameter("orderId")))
+			if (!StringUtils.hasText(request.getParameter("orderId")))
 				obs.setOrder(context.getOrderService().getOrder(Integer.valueOf(request.getParameter("orderId"))));
-			if (!StringUtils.isEmpty(request.getParameter("conceptId")))
+			if (!StringUtils.hasText(request.getParameter("conceptId")))
 				obs.setConcept(context.getConceptService().getConcept(Integer.valueOf(request.getParameter("conceptId"))));
-			if (!StringUtils.isEmpty(request.getParameter("valueCodedId")))
+			if (!StringUtils.hasText(request.getParameter("valueCodedId")))
 				obs.setValueCoded(context.getConceptService().getConcept(Integer.valueOf(request.getParameter("valueCodedId"))));
-			if (!StringUtils.isEmpty(request.getParameter("encounterId")))
+			if (!StringUtils.hasText(request.getParameter("encounterId")))
 				obs.setEncounter(context.getEncounterService().getEncounter(Integer.valueOf(request.getParameter("encounterId"))));
 			
 		}
@@ -90,15 +90,15 @@ public class ObsFormController extends SimpleFormController {
 		
 		if (context != null && context.isAuthenticated()) {
 			Obs obs = (Obs)obj;
-			if (!StringUtils.isEmpty(request.getParameter("patientId")))
+			if (!StringUtils.hasText(request.getParameter("patientId")))
 				obs.setPatient(context.getPatientService().getPatient(Integer.valueOf(request.getParameter("patientId"))));
-			if (!StringUtils.isEmpty(request.getParameter("orderId")))
+			if (!StringUtils.hasText(request.getParameter("orderId")))
 				obs.setOrder(context.getOrderService().getOrder(Integer.valueOf(request.getParameter("orderId"))));
-			if (!StringUtils.isEmpty(request.getParameter("conceptId")))
+			if (!StringUtils.hasText(request.getParameter("conceptId")))
 				obs.setConcept(context.getConceptService().getConcept(Integer.valueOf(request.getParameter("conceptId"))));
-			if (!StringUtils.isEmpty(request.getParameter("valueCodedId")))
+			if (!StringUtils.hasText(request.getParameter("valueCodedId")))
 				obs.setValueCoded(context.getConceptService().getConcept(Integer.valueOf(request.getParameter("valueCodedId"))));
-			if (!StringUtils.isEmpty(request.getParameter("encounterId")))
+			if (!StringUtils.hasText(request.getParameter("encounterId")))
 				obs.setEncounter(context.getEncounterService().getEncounter(Integer.valueOf(request.getParameter("encounterId"))));
 			
 			context.getObsService().updateObs(obs);
