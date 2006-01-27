@@ -8,3 +8,6 @@ All Patients: <c:out value="${model.all_patients}"/>
 
 <br />
 Age frequency distribution <c:out value="${model.age_frequency}" escapeXml="false"/>
+
+<br />
+Birthdate table <c:out value="${model.birth_table}" escapeXml="false"/>
