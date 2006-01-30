@@ -101,6 +101,7 @@
 		<fileset dir="${hibernate.dir}" includes="*.jar" />
 		<fileset dir="${jstl.dir}" includes="*.jar" />
 		<fileset dir="${spring.dir}" includes="*.jar" />
+		<fileset dir="${velocity.dir}" includes="*.jar" />
     </path>
 
 </project>
