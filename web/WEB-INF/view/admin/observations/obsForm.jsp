@@ -15,12 +15,11 @@
 <script type="text/javascript" src='<%= request.getContextPath() %>/dwr/interface/DWRPatientService.js'></script>
 <script type="text/javascript" src='<%= request.getContextPath() %>/dwr/interface/DWRConceptService.js'></script>
 <script type="text/javascript" src='<%= request.getContextPath() %>/dwr/interface/DWREncounterService.js'></script>
+<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/conceptSearch.js"></script>
 
 <script type="text/javascript">
 
-var myPatientSearch = null;
-var myUserSearch = null;
-var findObjects = null;
+var mySearch = null;
 var searchType = "";
 var changeButton = null;
 
@@ -94,9 +93,7 @@ var getName = function(obj) {
 		str += obj.givenName;
 	}
 	else if (searchType == 'concept' || searchType == 'valueCoded') {
-		str += obj.name;
-		str += ' (' + obj.conceptId + ')';
-		return str;
+		return getCellContent(obj);
 	}
 	else if (searchType == 'encounter') {
 		str += obj.patientName;
@@ -108,59 +105,9 @@ var getName = function(obj) {
 	return str;
 }
 
-function setPosition(btn, form) {
-	var left  = getElementLeft(btn) + btn.offsetWidth + 20;
-	var top   = getElementTop(btn)-50;
-	var formWidth  = 520;
-	var formHeight = 280;
-	var windowWidth = window.innerWidth + getScrollOffsetX();
-	var windowHeight = window.innerHeight + getScrollOffsetY();
-	if (left + formWidth > windowWidth)
-		left = windowWidth - formWidth - 10;
-	if (top + formHeight > windowHeight)
-		top = windowHeight - formHeight - 10;
-	form.style.left = left + "px";
-	form.style.top = top + "px";
-}
-
-function getElementLeft(elm) {
-	var x = 0;
-	while (elm != null) {
-		x+= elm.offsetLeft;
-		elm = elm.offsetParent;
-	}
-	return parseInt(x);
-}
-
-function getElementTop(elm) {
-	var y = 0;
-	while (elm != null) {
-		y+= elm.offsetTop;
-		elm = elm.offsetParent;
-	}
-	return parseInt(y);
-}
-
-function getScrollOffsetY() {
-	if (window.innerHeight) {
-		return window.pageYOffset;
-	}
-	else {
-		return document.documentElement.scrollTop;
-	}
-}
-
-function getScrollOffsetX() {
-	if (window.innerWidth) {
-		return window.pageXOffset;
-	}
-	else {
-		return document.documentElement.scrollLeft;
-	}
-}
-
 function closeBox() {
-	mySearch.toggle();
+	searchType = "";
+	mySearch.hide();
 	return false;
 }
 
@@ -179,7 +126,7 @@ if (typeof window.onload != 'function') {
 </script>
 
 <style>
-	.searchForm {
+.searchForm {
 		width: 450px;
 		position: absolute;
 		z-index: 10;
@@ -189,21 +136,12 @@ if (typeof window.onload != 'function') {
 		padding: 2px;
 		background-color: whitesmoke;
 		border: 1px solid grey;
-		height: 275px;
+		height: 500px;
 	}
 	.searchResults {
-		height: 215px;
+		height: 415px;
 		overflow: auto;
-	}
-	.closeButton {
-		border: 1px solid gray;
-		background-color: lightpink;
-		font-size: 8px;
-		color: black;
-		float: right;
-		margin: 2px;
-		padding: 1px;
-		cursor: pointer;
+		width: 440px;
 	}
 </style>
 
@@ -445,9 +383,10 @@ if (typeof window.onload != 'function') {
 <div id="searchForm" class="searchForm">
 	<div class="wrapper">
 		<input type="button" onClick="return closeBox();" class="closeButton" value="X"/>
-		<form method="get" onSubmit="return searchBoxChange('searchBody', searchText, null, false, 0); return false;">
+		<form method="get" onSubmit="return searchBoxChange('searchBody', searchText, event, false, 0); return false;">
 			<h3><spring:message code="general.search"/></h3>
-			<input type="text" id="searchText" size="35" onkeyup="return searchBoxChange('searchBody', this, event, false, 400);">
+			<input type="text" id="searchText" size="35" onkeyup="return searchBoxChange('searchBody', this, event, false, 400);"> &nbsp;
+			<input type="checkbox" id="verboseListing" value="true" onclick="searchBoxChange('searchBody', searchText, event, false, 0); searchText.focus();"><label for="verboseListing"><spring:message code="dictionary.verboseListing"/></label>
 		</form>
 		<div id="searchResults" class="searchResults">
 			<table width="100%">

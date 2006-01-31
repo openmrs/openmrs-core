@@ -23,7 +23,7 @@ function setObj(nodeName, obj) {
 	clearNil(node);
 
 	// Set value of node to the obj
-	node.text = obj.value + '^' + obj.innerText;
+	node.text = obj.conceptId + '^' + obj.name;
 
 	closeTaskPane();
 }
@@ -43,7 +43,7 @@ function insertObj(node, newNodeName, obj) {
 	new_elem = oDOM.createNode(1, newNodeName, "");
 	new_elem_value = oDOM.createNode(1, "value", "");
 	new_elem.appendChild(new_elem_value);
-	new_elem_value.text = obj.value + '^' + obj.innerText;
+	new_elem_value.text = obj.conceptId + '^' + obj.name;
 	node.insertBefore(new_elem, node.childNodes.item(0));
 }
 
@@ -51,7 +51,7 @@ function appendObj(node, newNodeName, obj) {
 	new_elem = oDOM.createNode(1, newNodeName, "");
 	new_elem_value = oDOM.createNode(1, "value", "");
 	new_elem.appendChild(new_elem_value);
-	new_elem_value.text = obj.value + '^' + obj.innerText;
+	new_elem_value.text = obj.conceptId + '^' + obj.name;
 	node.appendChild(new_elem);
 }
 

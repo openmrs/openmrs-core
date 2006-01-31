@@ -23,7 +23,7 @@
 		<!-- This is the first loading of the page, get the session id and post it back -->
 		
 		<form id="bootstrap_form" method="POST">
-			<input id="session" name="session" type="hidden" value="">
+			<input id="session" name="session" type="text" value="">
 		</form>
 		
 		<script type="text/javascript">

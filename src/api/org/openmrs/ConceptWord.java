@@ -178,18 +178,18 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 	
 	public static Set<String> getUniqueWords(String phrase) {
 		if (phrase.length() > 2) {
-			phrase = phrase.replaceAll(OpenmrsConstants.OPENMRS_REGEX_LARGE, " ");
+			phrase = phrase.replaceAll(OpenmrsConstants.REGEX_LARGE, " ");
 		}
 		else {
-			phrase = phrase.replaceAll(OpenmrsConstants.OPENMRS_REGEX_SMALL, " ");
+			phrase = phrase.replaceAll(OpenmrsConstants.REGEX_SMALL, " ");
 		}
-		String[] parts = phrase.trim().toUpperCase().replace('\n', ' ').split(" ");
+		String[] parts = phrase.trim().replace('\n', ' ').split(" ");
 		Set<String> uniqueParts = new HashSet<String>();
 		
 		for (String part : parts) {
 			String p = part.trim();
 			if (!p.equals("") &&
-				!OpenmrsConstants.OPENMRS_STOP_WORDS().contains(p) && 
+				!OpenmrsConstants.STOP_WORDS().contains(p) && 
 				!uniqueParts.contains(p))
 					uniqueParts.add(p);
 		}

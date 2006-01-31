@@ -15,7 +15,7 @@ public class OptionsForm {
 	private String secretAnswerNew = "";
 	private String secretAnswerConfirm = "";
 	
-	private String notifications = "";
+	private String notification = "";
 	
 	public OptionsForm() {}
 
@@ -102,15 +102,15 @@ public class OptionsForm {
 	/**
 	 * @return Returns the notifications.
 	 */
-	public String getNotifications() {
-		return notifications;
+	public String getNotification() {
+		return notification;
 	}
 
 	/**
 	 * @param notifications The notifications to set.
 	 */
-	public void setNotifications(String notifications) {
-		this.notifications = notifications;
+	public void setNotification(String notification) {
+		this.notification = notification;
 	}
 
 		

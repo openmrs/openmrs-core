@@ -19,6 +19,11 @@
 	<c:forEach items="${classes}" var="cc">
 	<c:if test="${cc.set}">setClasses.push("${cc.conceptClassId}");</c:if>
 	</c:forEach>
+	
+	function addName(anchor) {
+		if (anchor.href.lastIndexOf("=") == anchor.href.length - 1)
+			anchor.href += $("conceptName").value;
+	}
 </script>
 
 <style>
@@ -39,21 +44,12 @@
 		padding: 2px;
 		background-color: whitesmoke;
 		border: 1px solid grey;
-		height: 275px;
+		height: 325px;
 	}
 	#conceptSearchResults {
-		height: 220px;
+		height: 270px;
 		overflow: auto;
-	}
-	.closeButton {
-		border: 1px solid gray;
-		background-color: lightpink;
-		font-size: 8px;
-		color: black;
-		float: right;
-		margin: 2px;
-		padding: 1px;
-		cursor: pointer;
+		width: 490px;
 	}
 	#newSearchForm {
 		padding: 0px;
@@ -120,7 +116,7 @@
 		</th>
 		<td><spring:bind path="conceptName.name">
 			<input type="text" name="${status.expression}"
-				value="${status.value}" class="mediumWidth" />
+				value="${status.value}" id="conceptName" class="mediumWidth" />
 			<c:if test="${status.errorMessage != ''}">
 				<span class="error">${status.errorMessage}</span>
 			</c:if>
@@ -352,17 +348,17 @@
 		<th valign="top">Resources</th>
 		<td>
 			<a href="index.htm?phrase=${conceptName.name}"
-			       target="_similar_terms">Similar Concepts</a><br/>
+			       target="_similar_terms" onclick="addName(this)">Similar Concepts</a><br/>
 			<a href="http://www2.merriam-webster.com/cgi-bin/mwmednlm?book=Medical&va=${conceptName.name}"
-			       target="_blank">Merriam Webster&reg;</a><br/>
+			       target="_blank" onclick="addName(this)">Merriam Webster&reg;</a><br/>
 			<a href="http://www.google.com/search?q=${conceptName.name}"
-			       target="_blank">Google&trade;</a><br/>
-			<a href="http://www.utdol.com/application/vocab.asp?search=${conceptName.name}&submit=Go"
-			       target="_blank">UpToDate&reg;</a><br/>
-			<a href="http://dictionary.reference.com/search?q=${conceptName.name}&submit=Go"
-			       target="_blank">Dictionary.com&reg;</a><br/>
-			<a href="http://search.atomz.com/search/?sp-q=${conceptName.name}&sp-a=sp1001878c"
-			       target="_blank">Lab Tests Online</a>
+			       target="_blank" onclick="addName(this)">Google&trade;</a><br/>
+			<a href="http://www.utdol.com/application/vocab.asp?submit=Go&search=${conceptName.name}"
+			       target="_blank" onclick="addName(this)">UpToDate&reg;</a><br/>
+			<a href="http://dictionary.reference.com/search?submit=Go&q=${conceptName.name}"
+			       target="_blank" onclick="addName(this)">Dictionary.com&reg;</a><br/>
+			<a href="http://search.atomz.com/search/?sp-a=sp1001878c&sp-q=${conceptName.name}"
+			       target="_blank" onclick="addName(this)">Lab Tests Online</a>
 		</td>
 	</tr>
 </table>
@@ -373,7 +369,8 @@
 		<input type="button" onClick="return closeConceptBox();" class="closeButton" value="X"/>
 		<form method="get" onSubmit="return searchBoxChange('conceptSearchBody', searchText, null, false, 0); return false;">
 			<h3><spring:message code="Concept.find"/></h3>
-			<input type="text" id="searchText" size="45" onkeyup="return searchBoxChange('conceptSearchBody', this, event, false, 400);">
+			<input type="text" id="searchText" size="45" onkeyup="return searchBoxChange('conceptSearchBody', this, event, false, 400);"> &nbsp;
+			<input type="checkbox" id="verboseListing" value="true" onclick="searchBoxChange('conceptSearchBody', searchText, event, false, 0); searchText.focus();"><label for="verboseListing"><spring:message code="dictionary.verboseListing"/></label>
 		</form>
 		<div id="conceptSearchResults">
 			<table>
@@ -390,6 +387,12 @@
 
 <script type="text/javascript">
 	document.getElementById("searchPhrase").focus();
+	<request:existsParameter name="conceptName">
+		<!-- the user has a default concept name in the request -->
+		var text = document.getElementById('conceptName');
+		if (text.value.length == 0)
+			text.value = "<request:parameter name="conceptName"/>";
+	</request:existsParameter>
 </script>
 
 <div id="xdebugBox"></div>

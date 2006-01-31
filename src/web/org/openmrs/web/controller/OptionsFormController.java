@@ -137,7 +137,8 @@ public class OptionsFormController extends SimpleFormController {
 		OptionsForm opts = new OptionsForm();
 		
 		if (context != null && context.isAuthenticated()) {
-			User user = context.getAuthenticatedUser();
+			UserService us = context.getUserService();
+			User user = us.getUser(context.getAuthenticatedUser().getUserId());
 
 			Map<String, String> props = user.getProperties();
 			opts.setDefaultLocation(props.get("defaultLocation"));

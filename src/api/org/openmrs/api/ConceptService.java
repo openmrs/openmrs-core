@@ -13,6 +13,7 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptNumeric;
+import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
@@ -242,6 +243,22 @@ public class ConceptService {
 	 */
 	public Concept getNextConcept(Concept c) {
 		return getConceptDAO().getNextConcept(c);
+	}
+	
+	public List<ConceptProposal> getConceptProposals(boolean includeCompleted) {
+		return getConceptDAO().getConceptProposals(includeCompleted);
+	}
+	
+	public ConceptProposal getConceptProposal(Integer c) {
+		return getConceptDAO().getConceptProposal(c);
+	}
+	
+	public List<Concept> findProposedConcepts(String text) {
+		return getConceptDAO().findProposedConcepts(text);
+	}
+	
+	public void proposeConcept(ConceptProposal cp) {
+		getConceptDAO().proposeConcept(cp);
 	}
 
 }

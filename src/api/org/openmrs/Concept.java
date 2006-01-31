@@ -380,6 +380,19 @@ public class Concept implements java.io.Serializable {
 	public void setSynonyms(Collection<ConceptSynonym> synonyms) {
 		this.synonyms = synonyms;
 	}
+	
+	public void addSynonym(String s, Locale locale) {
+		ConceptSynonym cs = new ConceptSynonym(this, s, locale);
+		if (!synonyms.contains(cs)) {
+			synonyms.add(cs);
+		}
+	}
+	
+	public void addSynonym(ConceptSynonym syn) {
+		if (!synonyms.contains(syn)) {
+			synonyms.add(syn);
+		}
+	}
 
 	/**
 	 * Add the given ConceptSynonym to the list of synonyms for this Concept

@@ -1,5 +1,6 @@
 package org.openmrs.util;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -8,10 +9,10 @@ import java.util.Vector;
 
 public class OpenmrsConstants {
 
-	public static final String OPENMRS_REGEX_LARGE = "[!\"#\\$%&'\\(\\)\\*,+-\\./:;<=>\\?@\\[\\\\\\\\\\]^_`{\\|}~]";
-	public static final String OPENMRS_REGEX_SMALL = "[!\"#\\$%&'\\(\\)\\*,\\./:;<=>\\?@\\[\\\\\\\\\\]^_`{\\|}~]";
+	public static final String REGEX_LARGE = "[!\"#\\$%&'\\(\\)\\*,+-\\./:;<=>\\?@\\[\\\\\\\\\\]^_`{\\|}~]";
+	public static final String REGEX_SMALL = "[!\"#\\$%&'\\(\\)\\*,\\./:;<=>\\?@\\[\\\\\\\\\\]^_`{\\|}~]";
 	
-	public static final Map<String, String> OPENMRS_CIVIL_STATUS() {
+	public static final Map<String, String> CIVIL_STATUS() {
 		HashMap<String, String> civilStatus = new HashMap<String, String>();
 		civilStatus.put("1", "Single");
 		civilStatus.put("2", "Married");
@@ -22,7 +23,7 @@ public class OpenmrsConstants {
 	}
 	
 	// TODO put civilStatus in database ?
-	public static final List<String> OPENMRS_STOP_WORDS() {
+	public static final Collection<String> STOP_WORDS() {
 		List<String> stopWords = new Vector<String>();
 		stopWords.add("A");
 		stopWords.add("AND");
@@ -39,7 +40,7 @@ public class OpenmrsConstants {
 	}
 	
 	// TODO issues with localization
-	public static final Map<String, String> OPENMRS_GENDER() {
+	public static final Map<String, String> GENDER() {
 		Map<String, String> genders = new LinkedHashMap<String, String>();
 		genders.put("", "Choose");
 		genders.put("M", "Male");
@@ -63,7 +64,7 @@ public class OpenmrsConstants {
 	public static final String PRIV_MANAGE_FORMS    = "Manage Forms";
 	public static final String PRIV_MANAGE_ENC      = "Manage Encounters";
 	
-	public static List<String> OPENMRS_CORE_PRIVILEGES() {
+	public static Collection<String> CORE_PRIVILEGES() {
 		List<String> privs = new Vector<String>();
 		
 		privs.add(PRIV_VIEW_CONCEPTS);
@@ -79,6 +80,23 @@ public class OpenmrsConstants {
 		privs.add(PRIV_MANAGE_ENC);
 		
 		return privs;
+	}
+	
+	// ConceptProposal states
+	public static final String CONCEPT_PROPOSAL_UNMAPPED = "UNMAPPED";
+	public static final String CONCEPT_PROPOSAL_CONCEPT  = "CONCEPT";
+	public static final String CONCEPT_PROPOSAL_SYNONYM  = "SYNONYM";
+	public static final String CONCEPT_PROPOSAL_REJECT   = "REJECT";
+	
+	public static Collection<String> CONCEPT_PROPOSAL_STATES() {
+		Collection<String> states = new Vector<String>();
+		
+		states.add(CONCEPT_PROPOSAL_UNMAPPED);
+		states.add(CONCEPT_PROPOSAL_CONCEPT);
+		states.add(CONCEPT_PROPOSAL_SYNONYM);
+		states.add(CONCEPT_PROPOSAL_REJECT);
+		
+		return states;
 	}
 	
 }

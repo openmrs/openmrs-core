@@ -1,15 +1,20 @@
 package org.openmrs.api;
 
+import java.util.Date;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptProposal;
+import org.openmrs.ConceptSynonym;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
 import org.openmrs.Group;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
+import org.openmrs.Obs;
 import org.openmrs.OrderType;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Privilege;
@@ -21,6 +26,7 @@ import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.api.db.DAOContext;
 import org.openmrs.reporting.Report;
 import org.openmrs.util.OpenmrsConstants;
+import org.springframework.util.StringUtils;
 
 /**
  * Admin-related services
@@ -330,7 +336,7 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void deletePrivilege(Privilege privilege) throws APIException {
-		if (OpenmrsConstants.OPENMRS_CORE_PRIVILEGES().contains(privilege.getPrivilege()))
+		if (OpenmrsConstants.CORE_PRIVILEGES().contains(privilege.getPrivilege()))
 			throw new APIException("Cannot delete a core privilege");
 		getAdminDAO().deletePrivilege(privilege);
 	}
@@ -476,4 +482,62 @@ public class AdministrationService {
 	public void deleteGroup(Group group) throws APIException {
 		getAdminDAO().deleteGroup(group);
 	}
+
+	public void createConceptProposal(ConceptProposal cp) throws APIException {
+		getAdminDAO().createConceptProposal(cp);
+	}
+	
+	public void updateConceptProposal(ConceptProposal cp) throws APIException {
+		cp.setChangedBy(context.getAuthenticatedUser());
+		cp.setDateChanged(new Date());
+		getAdminDAO().updateConceptProposal(cp);
+	}
+	
+	public void mapConceptProposalToConcept(ConceptProposal cp, Concept mappedConcept) throws APIException {
+		
+		if (cp.getState().equals(OpenmrsConstants.CONCEPT_PROPOSAL_REJECT)) {
+			rejectConceptProposal(cp);
+		}
+		
+		if (mappedConcept == null)
+			throw new APIException("Illegal Mapped Concept");
+		
+		if (cp.getState().equals(OpenmrsConstants.CONCEPT_PROPOSAL_CONCEPT) || 
+				!StringUtils.hasText(cp.getFinalText())) {
+			cp.setState(OpenmrsConstants.CONCEPT_PROPOSAL_CONCEPT);
+			cp.setFinalText("");
+		}
+		else if (cp.getState().equals(OpenmrsConstants.CONCEPT_PROPOSAL_SYNONYM)); {
+			ConceptSynonym syn = new ConceptSynonym(mappedConcept, cp.getFinalText(), context.getLocale());
+			syn.setDateCreated(new Date());
+			syn.setCreator(context.getAuthenticatedUser());
+			
+			mappedConcept.addSynonym(syn);
+			updateConceptWord(mappedConcept);
+		}
+		
+		cp.setMappedConcept(mappedConcept);
+		
+		if (cp.getObsConcept() != null) {
+			Obs ob = new Obs();
+			ob.setEncounter(cp.getEncounter());
+			ob.setConcept(cp.getObsConcept());
+			ob.setValueCoded(cp.getMappedConcept());
+			ob.setCreator(context.getAuthenticatedUser());
+			ob.setDateCreated(new Date());
+			ob.setObsDatetime(cp.getEncounter().getEncounterDatetime());
+			ob.setLocation(cp.getEncounter().getLocation());
+			ob.setPatient(cp.getEncounter().getPatient());
+			cp.setObs(ob);
+		}
+		
+		updateConceptProposal(cp);
+	}
+	
+	void rejectConceptProposal(ConceptProposal cp) {
+		cp.setState(OpenmrsConstants.CONCEPT_PROPOSAL_REJECT);
+		cp.setFinalText("");
+		updateConceptProposal(cp);
+	}
+	
 }

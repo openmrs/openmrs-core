@@ -3,6 +3,7 @@ package org.openmrs.api.db;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptProposal;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
 import org.openmrs.Group;
@@ -357,5 +358,10 @@ public interface AdministrationDAO {
 	 * @param Group to delete
 	 * @throws DAOException
 	 */
-	public void deleteGroup(Group group) throws DAOException;	
+	public void deleteGroup(Group group) throws DAOException;
+	
+	public void createConceptProposal(ConceptProposal cp) throws DAOException;
+	
+	public void updateConceptProposal(ConceptProposal cp) throws DAOException;
 }
+

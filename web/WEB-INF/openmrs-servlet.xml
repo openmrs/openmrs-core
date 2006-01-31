@@ -52,6 +52,8 @@
 					<prop key="**/conceptClass.form">conceptClassForm</prop>
 					<prop key="**/conceptDatatype.list">conceptDatatypeList</prop>
 					<prop key="**/conceptDatatype.form">conceptDatatypeForm</prop>
+					<prop key="**/conceptProposal.list">conceptProposalList</prop>
+					<prop key="**/conceptProposal.form">conceptProposalForm</prop>
 					<prop key="**/conceptWord.form">conceptWordForm</prop>
 					<prop key="**/conceptSetDerived.form">conceptSetDerivedForm</prop>
 					<prop key="**/report.list">reportList</prop>
@@ -388,7 +390,20 @@
 					<property name="successView"><value>conceptSetDerived.form</value></property>
 				</bean>
 			<!-- ** /Concept Set Derived ** -->
-
+			<!--  ** Concept Proposal ** -->
+				<bean id="conceptProposalList" class="org.openmrs.web.controller.concept.ConceptProposalListController">
+					<property name="commandName"><value>conceptProposalList</value></property>
+					<property name="formView"><value>/admin/concepts/conceptProposalList</value></property>
+					<property name="successView"><value>conceptProposal.list</value></property>
+				</bean>
+		
+				<!--  Validator and Form Controller for the add/edit concept types page -->
+				<bean id="conceptProposalForm" class="org.openmrs.web.controller.concept.ConceptProposalFormController">
+					<property name="commandName"><value>conceptProposal</value></property>
+					<property name="formView"><value>/admin/concepts/conceptProposalForm</value></property>
+					<property name="successView"><value>conceptProposal.list</value></property>
+				</bean>
+			<!--  ** /Concept Proposal ** -->
 	    <!-- ============================ -->
 		    
 		    

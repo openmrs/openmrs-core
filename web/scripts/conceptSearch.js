@@ -4,7 +4,10 @@ function findObjects(text) {
 	if (text.length > 1 || (parseInt(text) >= 0 && parseInt(text) <= 9)) {
 	    if (typeof conceptClasses == 'undefined')	//conceptClasses is only optionally defined
 	    	conceptClasses = new Array();
-	    DWRConceptService.findConcepts(fillTable, text, conceptClasses, includeRetired);
+	    if (typeof preFillTable == 'function')
+	    	DWRConceptService.findConcepts(preFillTable, text, conceptClasses, includeRetired);
+	    else
+	    	DWRConceptService.findConcepts(fillTable, text, conceptClasses, includeRetired);
 	    if (debugBox) debugBox.innerHTML += '<br> DWRConceptService.findConcepts called';
 	}
 	else {
@@ -44,6 +47,16 @@ var getCellContent = function(conceptHit) {
 			if (conceptHit.retired) {
 				str = "<div class='retired'>" + str + "</div>";
 			}
+			if ($('verboseListing').checked) {
+				str += "<div class='description'>#" + conceptHit.conceptId + ": " + conceptHit.description + "</div>";
+			}
 			return str;
 		}
 	};
+	
+function customGetRowHeight(height) {
+	if ($('verboseListing').checked)
+		return parseInt(height * 2.5);
+	else
+		return height;
+}

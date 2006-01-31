@@ -59,19 +59,7 @@ public class ObsFormController extends SimpleFormController {
 		
 		Obs obs = (Obs)obj;
 		
-		if (context != null && context.isAuthenticated()) {
-			if (!StringUtils.hasText(request.getParameter("patientId")))
-				obs.setPatient(context.getPatientService().getPatient(Integer.valueOf(request.getParameter("patientId"))));
-			if (!StringUtils.hasText(request.getParameter("orderId")))
-				obs.setOrder(context.getOrderService().getOrder(Integer.valueOf(request.getParameter("orderId"))));
-			if (!StringUtils.hasText(request.getParameter("conceptId")))
-				obs.setConcept(context.getConceptService().getConcept(Integer.valueOf(request.getParameter("conceptId"))));
-			if (!StringUtils.hasText(request.getParameter("valueCodedId")))
-				obs.setValueCoded(context.getConceptService().getConcept(Integer.valueOf(request.getParameter("valueCodedId"))));
-			if (!StringUtils.hasText(request.getParameter("encounterId")))
-				obs.setEncounter(context.getEncounterService().getEncounter(Integer.valueOf(request.getParameter("encounterId"))));
-			
-		}
+
 		return super.processFormSubmission(request, reponse, obs, errors);
 	}
 
@@ -90,15 +78,15 @@ public class ObsFormController extends SimpleFormController {
 		
 		if (context != null && context.isAuthenticated()) {
 			Obs obs = (Obs)obj;
-			if (!StringUtils.hasText(request.getParameter("patientId")))
+			if (StringUtils.hasText(request.getParameter("patientId")))
 				obs.setPatient(context.getPatientService().getPatient(Integer.valueOf(request.getParameter("patientId"))));
-			if (!StringUtils.hasText(request.getParameter("orderId")))
+			if (StringUtils.hasText(request.getParameter("orderId")))
 				obs.setOrder(context.getOrderService().getOrder(Integer.valueOf(request.getParameter("orderId"))));
-			if (!StringUtils.hasText(request.getParameter("conceptId")))
+			if (StringUtils.hasText(request.getParameter("conceptId")))
 				obs.setConcept(context.getConceptService().getConcept(Integer.valueOf(request.getParameter("conceptId"))));
-			if (!StringUtils.hasText(request.getParameter("valueCodedId")))
+			if (StringUtils.hasText(request.getParameter("valueCodedId")))
 				obs.setValueCoded(context.getConceptService().getConcept(Integer.valueOf(request.getParameter("valueCodedId"))));
-			if (!StringUtils.hasText(request.getParameter("encounterId")))
+			if (StringUtils.hasText(request.getParameter("encounterId")))
 				obs.setEncounter(context.getEncounterService().getEncounter(Integer.valueOf(request.getParameter("encounterId"))));
 			
 			context.getObsService().updateObs(obs);

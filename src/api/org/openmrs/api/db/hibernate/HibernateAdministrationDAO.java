@@ -16,6 +16,7 @@ import org.hibernate.Session;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSetDerived;
 import org.openmrs.ConceptWord;
@@ -1029,5 +1030,40 @@ public class HibernateAdministrationDAO implements
 		}
 	}
 	
+	/**
+	 * @see org.openmrs.api.db.AdministrationService#addConceptProposal(org.openmrs.ConceptProposal)
+	 */
+	public void createConceptProposal(ConceptProposal cp) throws DAOException {
+		Session session = HibernateUtil.currentSession();
+		
+		try {
+			HibernateUtil.beginTransaction();
+			session.save(cp);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new DAOException(e);
+		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.AdministrationService#updateConceptProposal(org.openmrs.ConceptProposal)
+	 */
+	public void updateConceptProposal(ConceptProposal cp) throws DAOException {
+		if (cp.getConceptProposalId() == null)
+			createConceptProposal(cp);
+		else {
+			try {
+				Session session = HibernateUtil.currentSession();
+				HibernateUtil.beginTransaction();
+				session.update(cp);
+				HibernateUtil.commitTransaction();
+			}
+			catch (Exception e) {
+				HibernateUtil.rollbackTransaction();
+				throw new DAOException(e.getMessage());
+			}
+		}
+	}
 }
-

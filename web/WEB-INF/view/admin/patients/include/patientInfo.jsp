@@ -3,7 +3,7 @@
 		<td><spring:message code="Patient.gender"/></td>
 		<td><spring:bind path="patient.gender">
 			<select name="gender">
-				<c:forEach items="${org.openmrs.util.OpenmrsConstants.OPENMRS_GENDER}" var="map">
+				<c:forEach items="${org.openmrs.util.OpenmrsConstants.GENDER}" var="map">
 					<option value="${map.key}" <c:if test="${status.value == map.key}">selected</c:if>><spring:message code="Patient.gender.${map.key}"/></option>
 				</c:forEach>
 			</select>

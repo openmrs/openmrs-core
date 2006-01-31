@@ -12,7 +12,6 @@ window.onload = init;
 function init() {
 	var sections = new Array();
 	var optform = document.getElementById("optionsForm");
-	optform.id = "optionsForm";
 	children = optform.childNodes;
 	var seci = 0;
 	for(i=0;i<children.length;i++) {
@@ -100,8 +99,9 @@ function containsError(element) {
 	<br />
 </spring:hasBindErrors>
 
-<form method="post" id="optionsForm">
+<form method="post">
 
+<div id="optionsForm">
 <fieldset><legend><spring:message code="options.default.legend" /></legend>
 <table>
 	<tr>
@@ -147,7 +147,7 @@ function containsError(element) {
 		</td>
 	</tr>
 </table>
-<br />
+<br /><br />
 <br />
 </fieldset>
 
@@ -189,7 +189,7 @@ function containsError(element) {
 		</td>
 	</tr>
 </table>
-<br />
+<br /><br />
 <br />
 </fieldset>
 
@@ -270,9 +270,9 @@ function containsError(element) {
 <br />
 </fieldset>
 
-
-<div><br />
-<input type="submit" value="<spring:message code="options.save"/>"></div>
+</div>
+<br />
+<input type="submit" value="<spring:message code="options.save"/>">
 </form>
 
 <%@ include file="/WEB-INF/template/footer.jsp"%>

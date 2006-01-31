@@ -45,13 +45,13 @@ public class ForEachRecordTag extends BodyTagSupport {
 			records = ps.getTribes().iterator();
 		}
 		else if (name.equals("civilStatus")) {
-			Map<String, String> opts = OpenmrsConstants.OPENMRS_CIVIL_STATUS();
+			Map<String, String> opts = OpenmrsConstants.CIVIL_STATUS();
 			records = opts.entrySet().iterator();
 			if (select != null)
 				select = select.toString() + "=" + opts.get(select);
 		}
 		else if (name.equals("gender")) {
-			Map<String, String> opts = OpenmrsConstants.OPENMRS_GENDER();
+			Map<String, String> opts = OpenmrsConstants.GENDER();
 			records = opts.entrySet().iterator();
 			if (select != null)
 				select = select.toString() + "=" + opts.get(select);

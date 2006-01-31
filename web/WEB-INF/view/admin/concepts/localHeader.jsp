@@ -7,6 +7,11 @@
 			<spring:message code="Concept.manage"/>
 		</a>
 	</li>
+	<li <c:if test="<%= request.getRequestURI().contains("Proposal") %>">class="active"</c:if>>
+		<a href="${pageContext.request.contextPath}/admin/concepts/conceptProposal.list">
+			<spring:message code="ConceptProposal.manage"/>
+		</a>
+	</li>	
 	<li <c:if test="<%= request.getRequestURI().contains("Class") %>">class="active"</c:if>>
 		<a href="${pageContext.request.contextPath}/admin/concepts/conceptClass.list">
 			<spring:message code="ConceptClass.manage"/>

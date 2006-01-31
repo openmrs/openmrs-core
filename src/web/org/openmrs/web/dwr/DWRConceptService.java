@@ -12,6 +12,7 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptWord;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
+import org.openmrs.web.Util;
 import org.openmrs.web.WebConstants;
 
 import uk.ltd.getahead.dwr.WebContextFactory;
@@ -20,7 +21,7 @@ public class DWRConceptService {
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
-	public Vector findConcepts(String phrase, List<String> classNames, boolean includeRetired) {
+	public Vector findConcepts(String phrase, List<String> classNames, boolean includeRetired, List<String> ignoreClassNames) {
 
 		// List to return
 		// Object type gives ability to return error strings
@@ -39,6 +40,10 @@ public class DWRConceptService {
 		}
 		else {
 			Locale locale = context.getLocale();
+			if (classNames == null)
+				classNames = new Vector<String>();
+			if (ignoreClassNames == null)
+				ignoreClassNames = new Vector<String>();
 			try {
 				ConceptService cs = context.getConceptService();
 				List<ConceptWord> words = new Vector<ConceptWord>();
@@ -82,6 +87,18 @@ public class DWRConceptService {
 								}
 						}
 					}
+					else if (ignoreClassNames.size() > 0) {
+						outer: for (ConceptWord word : words) {
+							inner: for (String o : ignoreClassNames)
+								if (!o.equals(word.getConcept().getConceptClass().getName())) {
+									if ( ++curCount > maxCount ) {
+										break outer;
+									}
+									objectList.add(new ConceptListItem(word));
+									//objectList.add(word);
+								}
+						}
+					}
 					else {
 						for (ConceptWord word : words) {
 							if ( ++curCount > maxCount ) {
@@ -103,10 +120,26 @@ public class DWRConceptService {
 	
 	public ConceptListItem getConcept(Integer conceptId) {
 		Context context = (Context) WebContextFactory.get().getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
+		Locale locale = Util.getLocale(request);
 		ConceptService cs = context.getConceptService();
 		Concept c = cs.getConcept(conceptId);
 		
-		return c == null ? null : new ConceptListItem(c);
+		return c == null ? null : new ConceptListItem(c, locale);
+	}
+	
+	public List<ConceptListItem> findProposedConcepts(String text) {
+		Context context = (Context) WebContextFactory.get().getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
+		Locale locale = Util.getLocale(request);
+		ConceptService cs = context.getConceptService();
+		
+		List<Concept> concepts = cs.findProposedConcepts(text);
+		List<ConceptListItem> cli = new Vector<ConceptListItem>();
+		for (Concept c : concepts)
+			cli.add(new ConceptListItem(c, locale));
+		
+		return cli;
 	}
 
 }

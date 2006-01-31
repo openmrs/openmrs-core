@@ -195,16 +195,6 @@ if (typeof window.onload != 'function') {
 		height: 220px;
 		overflow: auto;
 	}
-	.closeButton {
-		border: 1px solid gray;
-		background-color: lightpink;
-		font-size: 8px;
-		color: black;
-		float: right;
-		margin: 2px;
-		padding: 1px;
-		cursor: pointer;
-	}
 </style>
 
 <h2><spring:message code="Encounter.title"/></h2>

@@ -511,25 +511,83 @@ function getWindowHeight() {
 }
 
 function getRowHeight() {
-	if (typeof customGetRowHeight != 'undefined') return customGetRowHeight();
-	
 	var h = 0;
 	h = getStyle(textbox, 'height');
 	h = parseInt(h.slice(0, h.length - 2)); //remove 'px' from height
-	if (parseInt(h) > 0) {
-		return h;
+	if (parseInt(h) >= 0) {
+		// this silly code is brought to you courtesy of the ever-standards-compliant IE web browser designers
+		h = getStyle(textbox, 'lineHeight');
+		if (h == 'largest')
+			h = 17;
+		else if (h == 'smallest')
+			h = 10;
+		else
+			h = 13; //normal
 	}
-	// this silly code is brought to you courtesy of the ever-standards-compliant IE web browser designers
-	h = getStyle(textbox, 'lineHeight');
-	if (h == 'largest')
-		return 17;
-	if (h == 'smallest')
-		return 10;
-	return 13; //normal
+	
+	if (typeof customGetRowHeight != 'undefined') return customGetRowHeight(h);
+	
+	return h;
+	
 }
 
 function exitNumberMode(txtbox) {
 	hideHighlight(txtbox);
 	if (txtbox.value == "")
 		txtbox.value = lastPhraseSearched;
+}
+
+function setPosition(btn, form, formWidth, formHeight) {
+	var left  = getElementLeft(btn) + btn.offsetWidth + 20;
+	var top   = getElementTop(btn)-50;
+	//if (formWidth == null)
+	//	formWidth  = 520;
+	//if (formHeight == null)
+	//	formHeight = 280;
+	formWidth = form.style.width;
+	formHeight = form.style.height;
+	var windowWidth = window.innerWidth + getScrollOffsetX();
+	var windowHeight = window.innerHeight + getScrollOffsetY();
+	if (left + formWidth > windowWidth)
+		left = windowWidth - formWidth - 10;
+	if (top + formHeight > windowHeight)
+		top = windowHeight - formHeight - 10;
+	form.style.left = left + "px";
+	form.style.top = top + "px";
+}
+
+function getElementLeft(elm) {
+	var x = 0;
+	while (elm != null) {
+		x+= elm.offsetLeft;
+		elm = elm.offsetParent;
+	}
+	return parseInt(x);
+}
+
+function getElementTop(elm) {
+	var y = 0;
+	while (elm != null) {
+		y+= elm.offsetTop;
+		elm = elm.offsetParent;
+	}
+	return parseInt(y);
+}
+
+function getScrollOffsetY() {
+	if (window.innerHeight) {
+		return window.pageYOffset;
+	}
+	else {
+		return document.documentElement.scrollTop;
+	}
+}
+
+function getScrollOffsetX() {
+	if (window.innerWidth) {
+		return window.pageXOffset;
+	}
+	else {
+		return document.documentElement.scrollLeft;
+	}
 }

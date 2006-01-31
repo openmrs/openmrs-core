@@ -110,7 +110,7 @@ public class PrivilegeListController extends SimpleFormController {
 		if (context != null && context.isAuthenticated()) {
 			UserService us = context.getUserService();
 	    	for (Privilege p : us.getPrivileges()) {
-	    		if (OpenmrsConstants.OPENMRS_CORE_PRIVILEGES().contains(p.getPrivilege()))
+	    		if (OpenmrsConstants.CORE_PRIVILEGES().contains(p.getPrivilege()))
 	    			privilegeList.put(p, true);
 	    		else
 	    			privilegeList.put(p, false);

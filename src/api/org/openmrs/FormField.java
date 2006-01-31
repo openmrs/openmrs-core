@@ -304,5 +304,9 @@ public class FormField implements java.io.Serializable, Comparable {
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}
+	
+	public String toString() {
+		return this.formFieldId.toString();
+	}
 
 }

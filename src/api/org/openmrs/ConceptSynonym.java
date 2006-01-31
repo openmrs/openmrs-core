@@ -48,6 +48,7 @@ public class ConceptSynonym implements java.io.Serializable {
 				ret = ret && locale.equals(c.getLocale());
 			return ret;
 		}
+
 		return false;
 	}
 	

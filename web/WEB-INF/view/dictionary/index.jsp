@@ -52,8 +52,8 @@
 
 		<form method="get" id="searchForm" onSubmit="return search(0); return null;">
 			<div style="float: right">
-				<input type="checkbox" id="includeRetired" value="true" onclick="search(0, event); searchText.focus();">
-				<spring:message code="dictionary.includeRetired"/>
+				<input type="checkbox" id="includeRetired" value="true" onclick="search(0, event); searchText.focus();"><label for="includeRetired"><spring:message code="dictionary.includeRetired"/></label>
+				<input type="checkbox" id="verboseListing" value="true" onclick="search(0, event); searchText.focus();"><label for="verboseListing"><spring:message code="dictionary.verboseListing"/></label>
 			</div>
 			<spring:message code="dictionary.searchBox"/> <input type="text" id="searchText" size="45" onkeyup="search(400, event);">
 		</form>

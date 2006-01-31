@@ -7,6 +7,7 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptNumeric;
+import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
@@ -128,4 +129,22 @@ public interface ConceptDAO {
 	 */
 	public Concept getNextConcept(Concept c); 
 
+	/**
+	 * Returns a list of ConceptProposals currently in the database
+	 * @param includeComplete
+	 * @return
+	 */
+	public List<ConceptProposal> getConceptProposals(boolean includeComplete);
+	
+	public ConceptProposal getConceptProposal(Integer i);
+	
+	/**
+	 * Looks in the proposed concepts table for a completed proposed concept that 
+	 * has the same text 
+	 * @param text
+	 * @return
+	 */
+	public List<Concept> findProposedConcepts(String text);
+	
+	public void proposeConcept(ConceptProposal cp);
 }

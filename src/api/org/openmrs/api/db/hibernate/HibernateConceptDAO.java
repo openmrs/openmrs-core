@@ -17,6 +17,7 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.Subqueries;
@@ -26,6 +27,7 @@ import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
+import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSynonym;
 import org.openmrs.ConceptWord;
@@ -35,6 +37,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.api.db.DAOException;
+import org.openmrs.util.OpenmrsConstants;
 
 public class HibernateConceptDAO implements
 		ConceptDAO {
@@ -388,7 +391,7 @@ public class HibernateConceptDAO implements
 		for (String word : words) {
 			if (word.length() != 0) {
 				log.debug(word);
-				if (!Helpers.OPENMRS_STOP_WORDS.contains(word)) {
+				if (!Helpers.STOP_WORDS.contains(word)) {
 					junction.add(Expression.like("word", word, MatchMode.START));	//add each word to the or statement
 				}
 			}
@@ -445,5 +448,59 @@ public class HibernateConceptDAO implements
 		return concepts.get(0);
 	}
 
+	/**
+	 * @see org.openmrs.api.db.ConceptService#getConceptProposals(boolean)
+	 */
+	public List<ConceptProposal> getConceptProposals(boolean includeCompleted) throws APIException {
+		
+		Session session = HibernateUtil.currentSession();
+		
+		Criteria crit = session.createCriteria(ConceptProposal.class);
+		
+		if (includeCompleted == false) {
+			crit.add(Expression.eq("state", OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED));
+		}
+		
+		return crit.list();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptService#getConceptProposal(java.lang.Integer)
+	 */
+	public ConceptProposal getConceptProposal(Integer conceptProposalId) throws APIException {
+		
+		Session session = HibernateUtil.currentSession();
+		
+		ConceptProposal c = new ConceptProposal();
+		c = (ConceptProposal)session.get(ConceptProposal.class, conceptProposalId);
+		
+		return c;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptService#findProposedConcepts(java.lang.String)
+	 */
+	public List<Concept> findProposedConcepts(String text) throws APIException {
+		
+		Session session = HibernateUtil.currentSession();
+		
+		Criteria crit = session.createCriteria(ConceptProposal.class);
+		crit.add(Expression.ne("state", OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED));
+		crit.add(Expression.eq("final_text", text));
+		crit.setProjection(Projections.distinct(Projections.property("concept")));
+		
+		return crit.list();
+	}
+	
+	public void proposeConcept(ConceptProposal cp) throws APIException {
+		Session session = HibernateUtil.currentSession();
+		
+		if (cp.getCreator() == null)
+			cp.setCreator(cp.getEncounter().getCreator());
+		if (cp.getDateCreated() == null)
+			cp.setDateCreated(cp.getEncounter().getDateCreated());
+		
+		session.save(cp);
+	}
 	
 }

@@ -81,7 +81,7 @@ function addConcept(nameList, idList, obj)
 }
 
 function closeConceptBox() {
-	myConceptSearchMod.toggle();
+	myConceptSearchMod.hide();
 	addButton = null;
 	return false;
 }
@@ -140,24 +140,6 @@ function copyIds(from, to, delimiter)
 		i++;
 	}
 	input.value = remaining.join(delimiter);
-}
-
-function getElementLeft(elm) {
-	var x = 0;
-	while (elm != null) {
-		x+= elm.offsetLeft;
-		elm = elm.offsetParent;
-	}
-	return parseInt(x);
-}
-
-function getElementTop(elm) {
-	var y = 0;
-	while (elm != null) {
-		y+= elm.offsetTop;
-		elm = elm.offsetParent;
-	}
-	return parseInt(y);
 }
 
 function addSynonym() {
@@ -284,24 +266,6 @@ function hotkeys(event) {
 	}
 	else if (k == 39) { //right key
 		document.location = document.getElementById('nextConcept').href;
-	}
-}
-
-function getScrollOffsetY() {
-	if (window.innerHeight) {
-		return window.pageYOffset;
-	}
-	else {
-		return document.documentElement.scrollTop;
-	}
-}
-
-function getScrollOffsetX() {
-	if (window.innerWidth) {
-		return window.pageXOffset;
-	}
-	else {
-		return document.documentElement.scrollLeft;
 	}
 }
 

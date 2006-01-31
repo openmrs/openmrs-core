@@ -3,8 +3,7 @@ html {
 }
 
 body {
-	font-family: arial;
-	font-size: 11px;
+	font-family: 'Trebuchet MS', 'Lucida Grande', Verdana, Arial, Sans-Serif;
 	padding: 0px;
 	height: 100%;
 }
@@ -38,7 +37,7 @@ body {
 }
 
 #userBar {
-	font-size: 10px;
+	font-size: .7em;
 	text-align: right;
 	background-color: whitesmoke;
 	border-bottom-width: 1px;
@@ -62,7 +61,6 @@ body {
 	padding: 10px;
 	line-height: 22px;
 	text-align: right;
-	font-size: 12px;
 	width: 140px;
 	margin-top: 90px;
 	}
@@ -77,7 +75,7 @@ body {
 	clear: both;
 	padding: 1px 2px 1px 2px;
 	color: gray;
-	font-size: 10px;
+	font-size: .7em;
 	height: 14px;
 	border-top: 1px solid lightgrey;
 	text-align: left;
@@ -91,7 +89,6 @@ body {
 
 #menu {
 	padding-left: 2px;
-	font-size: 11px;
 }
 
 #menu li {
@@ -99,6 +96,7 @@ body {
 	border-left: 1px solid black;
 	padding-left: 5px;
 	padding-right: 2px;
+	white-space: nowrap;
 }
 
 #menu li.first {
@@ -117,8 +115,7 @@ body {
 	text-align: left;
 }
 
-#patientSummary, #patientSummary * { font-size: 11px; }
-#patientSummary .boxHeader { font-size: 12px; }
+#patientSummary { font-size: .8em; }
 #patientSummary { width: 700px; }
 
 .box, .boxHeader {
@@ -127,8 +124,8 @@ body {
 	padding: 5px 2px 5px 2px;
 	text-align: left;
 	}
-	.box * {
-		font-size: 12px;
+	.box>* {
+		font-size: .8em;
 	}
 .boxHeader {
 	background-color: navy;
@@ -157,12 +154,22 @@ body {
 	}
 	
 .smallButton {
-	font-size: 9px;
+	font-size: .7em;
 	border: 1px solid lightgrey;
 	background-color: whitesmoke;
 	cursor: pointer;
 	width: 75px;
 	margin: 1px;
+}
+.closeButton {
+	border: 1px solid gray;
+	background-color: lightpink;
+	font-size: .6em;
+	color: black;
+	float: right;
+	margin: 2px;
+	padding: 1px;
+	cursor: pointer;
 }
 a, a:link, a:hover, a:visited, a:active {
 	text-decoration: underline;
@@ -191,6 +198,7 @@ a:visited {
 	}
 .searchIndex, .searchIndexHighlight {
 	text-align: right;
+	vertical-align: top;
 }
 .searchIndexHighlight, .searchHighlight {
 	background-color: 	#F0E68C;
@@ -221,16 +229,20 @@ a span.additionalHit {
 	color: gray;
 	text-decoration: none;
 }
+.description {
+	font-size: .7em;
+	padding-left: 10px;
+	color: gray;
+}
 #searchInfoBar, #searchInfoBar a {
-	font-size: 12px;
-	line-height: 14px;
 	background-color: whitesmoke;
 }
 #searchInfoBar {
+	font-size: .7em;
+	line-height: .9em;
 	color: gray;
 	padding: 2px 0 2px 0;
 	margin: 1px 0 1px 0;
-	height: 14px;
 }
 #disabledZone {
 	margin-top: 17px;
@@ -245,7 +257,7 @@ fieldset {
 	margin-left: 0px;
 	padding-left: 0px;
 	padding-top: 8px;
-	width: 130px;
+	width: 140px;
 	}
 	#optionsTOC li {
 		list-style-type: none;

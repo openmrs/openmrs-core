@@ -24,8 +24,9 @@
 	
 		<create creator="new" javascript="DWRConceptService">
 			<param name="class" value="org.openmrs.web.dwr.DWRConceptService" />
-			<include method="findConcepts"/>
-			<include method="getConcept"/>
+			<include method="findConcepts" />
+			<include method="getConcept" />
+			<include method="findProposedConcepts" />
 		</create>
 		
 		<create creator="new" javascript="DWREncounterService">
@@ -55,7 +56,7 @@
 			import java.util.Date;
 			import java.util.List;
 			DWRPatientService.getSimilarPatients(String name, Date birthdate, String gender);
-			DWRConceptService.findConcepts(String phrase, List<String> classNames, boolean includeRetired);
+			DWRConceptService.findConcepts(String phrase, List<String> classNames, boolean includeRetired, List<string> ignoreClassNames);
 			DWREncounterService.findEncounters(String phrase, boolean includeVoided);
 			DWRUserService.findUsers(String phrase);
 			DWRObsService.findObs(String phrase, boolean includeVoided);
