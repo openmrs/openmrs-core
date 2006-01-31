@@ -284,6 +284,10 @@ public class PatientName implements java.io.Serializable {
 	public Boolean isVoided() {
 		return voided;
 	}
+	
+	public Boolean getVoided() {
+		return isVoided();
+	}
 
 	/**
 	 * @param voided The voided to set.

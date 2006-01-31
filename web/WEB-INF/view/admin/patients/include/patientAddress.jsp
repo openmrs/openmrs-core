@@ -1,5 +1,15 @@
 <table>
 	<tr>
+		<td><spring:message code="PatientAddress.preferred"/></td>
+		<td>
+			<spring:bind path="preferred">
+				<input type="hidden" name="_${status.expression}">
+				<input type="checkbox" name="${status.expression}" <c:if test="${status.value == true}">checked</c:if> />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
 		<td><spring:message code="PatientAddress.address1"/></td>
 		<td>
 			<spring:bind path="address1">

@@ -135,7 +135,7 @@ body {
 	padding: 2px;
 }
 
-.retired, .voided {
+.retired, .voided, .retired *, .voided * {
 	text-decoration: line-through;
 }
 

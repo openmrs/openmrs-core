@@ -55,4 +55,38 @@
 			</tr>
 		</c:if>
 	</spring:bind>
+	<tr>
+		<td><spring:message code="general.voided"/></td>
+		<td>
+			<spring:bind path="voided">
+				<input type="hidden" name="_${status.expression}"/>
+				<input type="checkbox" name="${status.expression}" 
+					   <c:if test="${status.value == true}">checked="checked"</c:if> 
+					   onClick="voidedBoxClick(this)"
+				/>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<td><spring:message code="general.voidReason"/></td>
+		<spring:bind path="voidReason">
+			<td>
+				<input type="text" name="${status.expression}" value="${status.value}" />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</td>
+		</spring:bind>
+	</tr>
+	<spring:bind path="voidedBy">
+		<c:if test="${!(status.value == null)}">
+			<tr>
+				<td><spring:message code="general.createdBy" /></td>
+				<td>
+					${status.value.firstName} ${status.value.lastName} -
+					<spring:bind path="dateVoided">
+						${status.value}
+					</spring:bind>
+				</td>
+			</tr>
+		</c:if>
+	</spring:bind>
 </table>

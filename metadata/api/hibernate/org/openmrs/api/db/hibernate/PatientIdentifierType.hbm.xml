@@ -40,6 +40,12 @@
         length="65535"
     />
     <property
+        name="format"
+        type="java.lang.String"
+        column="format"
+        length="50"
+    />
+    <property
         name="dateCreated"
         type="java.util.Date"
         column="date_created"

@@ -19,6 +19,15 @@
 		</td>
 	</tr>
 	<tr>
+		<td><spring:message code="PatientIdentifierType.format"/></td>
+		<td>
+			<spring:bind path="patientIdentifierType.format">
+				<input type="text" name="format" value="${status.value}" size="35" />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
 		<td valign="top"><spring:message code="general.description"/></td>
 		<td valign="top">
 			<spring:bind path="patientIdentifierType.description">

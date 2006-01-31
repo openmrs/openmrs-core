@@ -13,6 +13,7 @@ public class PatientIdentifierType implements java.io.Serializable {
 
 	private Integer patientIdentifierTypeId;
 	private String name;
+	private String format;
 	private String description;
 	private Date dateCreated;
 	private User creator;
@@ -102,6 +103,20 @@ public class PatientIdentifierType implements java.io.Serializable {
 	 */
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	/**
+	 * @return Returns the format.
+	 */
+	public String getFormat() {
+		return format;
+	}
+
+	/**
+	 * @param format The format to set.
+	 */
+	public void setFormat(String format) {
+		this.format = format;
 	}
 
 	/**

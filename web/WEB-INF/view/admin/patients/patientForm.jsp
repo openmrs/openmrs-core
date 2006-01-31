@@ -161,7 +161,7 @@
 			display: block;
 			border-width: 2px;
 			border-style: none solid none none;
-			border-color: dodgerblue;
+			border-color: navy;
 			background-color: WhiteSmoke;
 			text-decoration: none;
 			padding: 4px;
@@ -172,11 +172,11 @@
 		.tabBar .selected {
 			border-width: 2px;
 			border-style: solid none solid solid;
-			border-color: dodgerblue;
+			border-color: navy;
 		}
 	.tabBoxes {
 		margin-left: 148px;
-		border: 2px solid DodgerBlue;
+		border: 2px solid navy;
 		padding: 3px;
 		min-height: 150px;
 	}
@@ -207,7 +207,7 @@
 		<div id="pIds">
 			<div class="tabBar" id="pIdTabBar">
 				<c:forEach var="identifier" items="${patient.identifiers}" varStatus="status">
-					<a href="javascript:return false;" onClick="return selectTab(this, 'identifier');" id="identifier${status.index}"><span>${identifier.identifierType.name}</span>&nbsp;</a>
+					<a href="javascript:return false;" onClick="return selectTab(this, 'identifier');" id="identifier${status.index}" <c:if test="${identifier.voided}">class='voided'</c:if>><span>${identifier.identifierType.name}</span>&nbsp;</a>
 				</c:forEach>
 				<a href="javascript:return false;" onClick="return selectTab(this, 'identifier');" id="identifierTab" style="display: none"><span></span>&nbsp;</a>
 				<input type="button" onClick="return addNew('identifier');" class="addNew" id="identifier" value="Add New Identifier"/>
@@ -217,14 +217,14 @@
 					<spring:nestedPath path="patient.identifiers[${status.index}]">
 						<div id="identifier${status.index}Data" class="tabBox">
 							<%@ include file="include/patientIdentifier.jsp" %>
-							<input type="button" onClick="return removeTab(this, 'identifier');" class="removeTab" value="Remove this identifier"/><br/><br/>
+							<!-- <input type="button" onClick="return removeTab(this, 'identifier');" class="removeTab" value="Remove this identifier"/><br/> --> <br/>
 						</div>
 					</spring:nestedPath>
 				</c:forEach>
 				<div id="identifierData" class="tabBox">
 					<spring:nestedPath path="emptyIdentifier">
 						<%@ include file="include/patientIdentifier.jsp" %>
-						<input type="button" onClick="return removeTab(this, 'identifier');" class="removeTab" value="Remove this identifier"/><br/><br/>
+						<!-- <input type="button" onClick="return removeTab(this, 'identifier');" class="removeTab" value="Remove this identifier"/><br/> --> <br/>
 					</spring:nestedPath>
 				</div>
 			</div>
@@ -239,7 +239,7 @@
 		<div id="pNames">
 			<div class="tabBar" id="pNameTabBar">
 				<c:forEach var="name" items="${patient.names}" varStatus="status">
-					<a href="javascript:return false;" onClick="return selectTab(this, 'name');" id="name${status.index}"><span>${name.givenName}</span>&nbsp;<span>${name.familyName}</span></a>
+					<a href="javascript:return false;" onClick="return selectTab(this, 'name');" id="name${status.index}" <c:if test="${name.voided}">class='voided'</c:if>><span>${name.givenName}</span>&nbsp;<span>${name.familyName}</span></a>
 				</c:forEach>
 				<a href="javascript:return false;" onClick="return selectTab(this, 'name');" id="nameTab" style="display: none"><span></span>&nbsp;<span></span></a>
 				<input type="button" onClick="return addNew('name');" class="addNew" id="name" value="Add New Name"/>
@@ -249,14 +249,14 @@
 					<spring:nestedPath path="patient.names[${status.index}]">
 						<div id="name${status.index}Data" class="tabBox">
 							<%@ include file="include/patientName.jsp" %>
-							<input type="button" onClick="return removeTab(this, 'name');" class="removeTab" value="Remove this name"/><br/><br/>
+							<!-- <input type="button" onClick="return removeTab(this, 'name');" class="removeTab" value="Remove this name"/><br/> --> <br/>
 						</div>
 					</spring:nestedPath>
 				</c:forEach>
 				<div id="nameData" class="tabBox">
 					<spring:nestedPath path="emptyName">
 						<%@ include file="include/patientName.jsp" %>
-						<input type="button" onClick="return removeTab(this, 'name');" class="removeTab" value="Remove this name"/><br/><br/>
+						<!-- <input type="button" onClick="return removeTab(this, 'name');" class="removeTab" value="Remove this name"/><br/> --> <br/>
 					</spring:nestedPath>
 				</div>
 			</div>
@@ -271,7 +271,7 @@
 		<div id="pAddresses">
 			<div class="tabBar" id="pAddressesTabBar">
 				<c:forEach var="address" items="${patient.addresses}" varStatus="status">
-					<a href="javascript:return false;" onClick="return selectTab(this, 'address');" id="address${status.index}"><span>${address.cityVillage}</span>&nbsp;</a>
+					<a href="javascript:return false;" onClick="return selectTab(this, 'address');" id="address${status.index}" <c:if test="${address.voided}">class='voided'</c:if>><span>${address.cityVillage}</span>&nbsp;</a>
 				</c:forEach>
 				<a href="javascript:return false;" onClick="return selectTab(this, 'address');" id="addressTab" style="display: none"><span></span>&nbsp;</a>
 				<input type="button" onClick="return addNew('address');" class="addNew" id="address" value="Add New Address"/>			
