@@ -16,7 +16,7 @@ import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
-import org.openmrs.form.FormSchemaBuilder;
+import org.openmrs.form.FormUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -91,7 +91,7 @@ public class FormFormController extends SimpleFormController {
 		String tree = "";
 		
 		if (context != null && context.isAuthenticated()) {
-			TreeMap<Integer, TreeSet<FormField>> formFields = FormSchemaBuilder.getFormStructure(context, form);
+			TreeMap<Integer, TreeSet<FormField>> formFields = FormUtil.getFormStructure(context, form);
 			tree = generateTree(formFields, 0);
 		}
 		
