@@ -13,6 +13,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Group;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.UserService;
@@ -24,6 +25,7 @@ import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.springframework.web.servlet.view.RedirectView;
 
 public class UserFormController extends SimpleFormController {
 	
@@ -87,6 +89,16 @@ public class UserFormController extends SimpleFormController {
 					}
 				}
 				user.setRoles(set);
+			
+			// add Groups to user (because spring can't handle lists as properties...)
+				String[] groups = request.getParameterValues("groups");
+				Set<Group> gs = new HashSet<Group>();
+				if (groups != null) {
+					for (String group : groups) {
+						gs.add(us.getGroup(group));
+					}
+				}
+				user.setGroups(gs);
 		}
 		else {
 			errors.reject("auth.invalid");
@@ -108,6 +120,7 @@ public class UserFormController extends SimpleFormController {
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		User user = (User)obj;
+		String view = getFormView();
 		
 		if (context != null && context.isAuthenticated()) {
 			
@@ -119,9 +132,10 @@ public class UserFormController extends SimpleFormController {
 				context.getUserService().updateUser(user);
 			
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.saved");
+			view = getSuccessView();
 		}
 		
-		return super.onSubmit(request, response, obj, errors);
+		return new ModelAndView(new RedirectView(view));
 	}
 
 	/**

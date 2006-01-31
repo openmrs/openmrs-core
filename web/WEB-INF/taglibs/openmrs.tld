@@ -92,6 +92,36 @@
 </tag>
 
 <tag>
+	<name>listPicker</name>
+	<tag-class>org.openmrs.web.taglib.ListPickerTag</tag-class>
+	<body-content>empty</body-content>
+	<description>
+		Creates a pair of combo boxes to allow for picking values
+		from the 'allItems' list and adding to the 'currentItems' list
+	</description>
+	<attribute>
+		<name>name</name>
+		<required>true</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>allItems</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>currentItems</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>contextPath</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+</tag>
+
+<tag>
 	<name>formatDate</name>
 	<tag-class>org.openmrs.web.taglib.FormatDateTag</tag-class>
 	<body-content>empty</body-content>

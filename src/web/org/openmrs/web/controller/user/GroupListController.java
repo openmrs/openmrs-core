@@ -67,19 +67,20 @@ public class GroupListController extends SimpleFormController {
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			String deleted = msa.getMessage("general.deleted");
 			String notDeleted = msa.getMessage("general.cannot.delete");
-			for (String p : groupList) {
-				//TODO convenience method deleteGroup(String) ??
-				try {
-					as.deleteGroup(us.getGroup(p));
-					if (!success.equals("")) success += "<br>";
-					success += p + " " + deleted;
+			if (groupList != null)
+				for (String p : groupList) {
+					//TODO convenience method deleteGroup(String) ??
+					try {
+						as.deleteGroup(us.getGroup(p));
+						if (!success.equals("")) success += "<br>";
+						success += p + " " + deleted;
+					}
+					catch (APIException e) {
+						log.warn(e);
+						if (!error.equals("")) error += "<br>";
+						error += p + " " + notDeleted;
+					}
 				}
-				catch (APIException e) {
-					log.warn(e);
-					if (!error.equals("")) error += "<br>";
-					error += p + " " + notDeleted;
-				}
-			}
 			
 			view = getSuccessView();
 			if (!success.equals(""))

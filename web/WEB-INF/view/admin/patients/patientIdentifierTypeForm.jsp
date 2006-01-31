@@ -20,7 +20,7 @@
 	</tr>
 	<tr>
 		<td valign="top"><spring:message code="general.description"/></td>
-		<td>
+		<td valign="top">
 			<spring:bind path="patientIdentifierType.description">
 				<textarea name="description" rows="3" cols="40">${status.value}</textarea>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>

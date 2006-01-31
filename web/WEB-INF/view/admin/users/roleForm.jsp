@@ -25,10 +25,10 @@
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="general.description"/></td>
-		<td>
+		<td valign="top"><spring:message code="general.description"/></td>
+		<td valign="top">
 			<spring:bind path="role.description">
-				<input type="text" name="description" value="${status.value}"/>
+				<textarea name="description" rows="3" cols="50">${status.value}</textarea>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
@@ -36,14 +36,7 @@
 	<tr>
 		<td valign="top"><spring:message code="Role.privileges"/></td>
 		<td>
-			<select name="privileges" multiple size="5">
-				<c:forEach var="privilege" items="${privileges}">
-					<option value="<c:out value="${privilege.privilege}"/>"
-							<c:forEach var="p" items="${role.privileges}"><c:if test="${p == privilege}">selected</c:if></c:forEach>>
-						<c:out value="${privilege}"/>
-					</option>
-				</c:forEach>
-			</select>
+			<openmrs:listPicker name="privileges" allItems="${privileges}" currentItems="${role.privileges}" contextPath="${pageContext.request.contextPath}" />
 		</td>
 	</tr>
 </table>

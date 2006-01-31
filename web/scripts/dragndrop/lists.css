@@ -1,0 +1,35 @@
+ul.sortable li {
+	position: relative;
+}
+
+ul.boxy {
+	list-style-type: none;
+	padding: 4px 4px 0 4px;
+	margin: 0px;
+	width: 10em;
+	font-size: 13px;
+	font-family: Arial, sans-serif;
+        border: 1px solid #ccc;
+}
+ul.boxy li {
+	cursor:move;
+	margin-bottom: 4px;
+	padding: 2px 2px;
+	border: 1px solid #ccc;
+	background-color: #eee;
+}
+
+
+#currentItems, #currentItems li {
+border-color: darkgray;
+}
+
+#allItems, #allItems li {
+border-color: #EEEEEE;
+background-color: white;
+color: darkgray;
+}
+
+.savedItems {
+	display: none;
+}

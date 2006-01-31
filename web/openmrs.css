@@ -103,8 +103,9 @@ body {
 	border-left-width: 0px;
 }
 
-#menu .active {
+#menu .active a{
 	font-weight: bold;
+	text-decoration: none;
 }
 
 #patientTable {

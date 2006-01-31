@@ -25,10 +25,10 @@
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="general.description"/></td>
-		<td>
+		<td valign="top"><spring:message code="general.description"/></td>
+		<td valign="top">
 			<spring:bind path="privilege.description">
-				<input type="text" name="description" value="${status.value}"/>
+				<textarea name="description" rows="3" cols="50">${status.value}</textarea>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>

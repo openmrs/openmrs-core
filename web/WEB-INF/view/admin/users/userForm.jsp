@@ -91,28 +91,14 @@
 		</tr>
 		<tr>
 			<td valign="top"><spring:message code="User.groups"/></td>
-			<td>
-				<select name="groups" multiple size="5" style="width: 150px">
-					<c:forEach var="group" items="${groups}" varStatus="status">
-						<option value="<c:out value="${group.group}"/>"
-							<c:forEach var="g" items="${user.groups}"><c:if test="${g == group}">selected</c:if></c:forEach>>
-								${group.group}
-						</option>
-					</c:forEach>
-				</select>
+			<td valign="top">
+				<openmrs:listPicker name="groups" allItems="${groups}" currentItems="${user.groups}" contextPath="${pageContext.request.contextPath}" />
 			</td>
 		</tr>
 		<tr>
 			<td valign="top"><spring:message code="User.roles"/></td>
-			<td>
-				<select name="roles" multiple size="5" style="width: 150px">
-					<c:forEach var="role" items="${roles}" varStatus="status">
-						<option value="<c:out value="${role.role}"/>"
-							<c:forEach var="r" items="${user.roles}"><c:if test="${r == role}">selected</c:if></c:forEach>>
-								${role.role}
-						</option>
-					</c:forEach>
-				</select>
+			<td valign="top">
+				<openmrs:listPicker name="roles" allItems="${roles}" currentItems="${user.roles}" contextPath="${pageContext.request.contextPath}" />
 			</td>
 		</tr>
 		<c:if test="${!(user.creator == null)}">

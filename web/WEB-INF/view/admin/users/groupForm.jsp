@@ -25,25 +25,18 @@
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="general.description"/></td>
-		<td>
+		<td valign="top"><spring:message code="general.description"/></td>
+		<td valign="top">
 			<spring:bind path="group.description">
-				<input type="text" name="description" value="${status.value}"/>
+				<textarea name="description" rows="3" cols="50">${status.value}</textarea>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
 	</tr>
 	<tr>
 		<td valign="top"><spring:message code="Group.roles"/></td>
-		<td>
-			<select name="roles" multiple size="5">
-				<c:forEach var="role" items="${roles}">
-					<option value="<c:out value="${role.role}"/>"
-							<c:forEach var="p" items="${group.roles}"><c:if test="${p == role}">selected</c:if></c:forEach>>
-						<c:out value="${role}"/>
-					</option>
-				</c:forEach>
-			</select>
+		<td valign="top">
+			<openmrs:listPicker name="roles" allItems="${roles}" currentItems="${group.roles}" contextPath="${pageContext.request.contextPath}" />
 		</td>
 	</tr>
 </table>

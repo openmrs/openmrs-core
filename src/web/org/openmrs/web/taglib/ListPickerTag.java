@@ -1,0 +1,119 @@
+package org.openmrs.web.taglib;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Vector;
+
+import javax.servlet.jsp.tagext.TagSupport;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+public class ListPickerTag extends TagSupport {
+
+	public static final long serialVersionUID = 1122112233L;
+	
+	private final Log log = LogFactory.getLog(getClass());
+	
+	private String name;
+	private Collection<Object> allItems;
+	private Collection<Object> currentItems;
+	private String contextPath = null;
+	
+	public int doStartTag() {
+		
+		if (contextPath == null)
+			contextPath = "/openmrs";
+		if (currentItems == null)
+			currentItems = new Vector();
+		if (allItems == null)
+			allItems = new Vector();
+		
+		contextPath += "/scripts/dragndrop";
+		
+		String str = "";
+		
+		str += "<span id='" + name + "'>";
+		str += "<select name='" + name + "' id='savedItems_" + name + "' class='savedItems' multiple>";
+		for (Object s : currentItems) {
+			str += "<option selected>" + s + "</option>\n";
+		}
+		str += "</select>";
+		
+		str += "<table><tr>\n";
+		
+		str += "<td valign='top'>Current:<br><ul id='currentItems_" + name + "' class='sortable boxy'>\n";
+		for (Object s : currentItems) {
+			str += "<li id='" + s + "'>" + s + "</li>\n";
+			allItems.remove(s);
+		}
+		str += "</ul></td>";
+		
+		
+		str += "<td valign='top'>All: <br><ul id='allItems_" + name + "' class='sortable boxy'>\n";
+		for (Object s : allItems) {
+			str += "<li id='" + s + "'>" + s + "</li>\n";
+		}
+		str += "</ul></td>\n";
+		
+		str += "</tr></table>";
+		str += "</span>";
+		
+		if (pageContext.getAttribute("ListPicker") == null) {
+			str += "\n<link rel='stylesheet' href='" + contextPath + "/lists.css' type='text/css'>";
+			str += "\n<script language='JavaScript' type='text/javascript' src='" + contextPath + "/coordinates.js'></script>";
+			str += "\n<script language='JavaScript' type='text/javascript' src='" + contextPath + "/drag.js'></script>";
+			str += "\n<script language='JavaScript' type='text/javascript' src='" + contextPath + "/dragdrop.js'></script>";
+			str += "\n<script language='JavaScript' type='text/javascript' src='" + contextPath + "/custom.js'></script>";
+			
+			pageContext.setAttribute("ListPicker", true);
+		}
+		
+		str += "\n<script type='text/javascript'>";
+
+		str += "	init('" + name + "');";
+		str += "</script>\n";
+		
+		try {
+			pageContext.getOut().write(str);
+		}
+		catch (IOException e) {
+			log.error(e);
+		}
+
+		return SKIP_BODY;
+	}
+
+	public Collection<Object> getAllItems() {
+		return allItems;
+	}
+
+	public void setAllItems(Collection<Object> allItems) {
+		this.allItems = allItems;
+	}
+
+	public Collection<Object> getCurrentItems() {
+		return currentItems;
+	}
+
+	public void setCurrentItems(Collection<Object> currentItems) {
+		this.currentItems = currentItems;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getContextPath() {
+		return contextPath;
+	}
+
+	public void setContextPath(String contextPath) {
+		this.contextPath = contextPath;
+	}
+
+}

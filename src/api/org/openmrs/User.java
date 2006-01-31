@@ -55,11 +55,12 @@ public class User extends Person implements java.io.Serializable {
 	public boolean hasPrivilege(String privilege) {
 
 		boolean hasPrivilege = false;
-		Set roles = getRoles();
+		Set<Role> roles = getRoles();
 
-		for (Group g : getGroups()) {
-			roles.addAll(g.getRoles());
-		}
+		if (groups != null)
+			for (Group g : groups) {
+				roles.addAll(g.getRoles());
+			}
 		
 		check_privileges: for (Iterator i = roles.iterator(); i.hasNext();) {
 			Role role = (Role) i.next();
