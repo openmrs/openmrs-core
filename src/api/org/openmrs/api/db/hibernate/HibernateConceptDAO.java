@@ -486,8 +486,9 @@ public class HibernateConceptDAO implements
 		
 		Criteria crit = session.createCriteria(ConceptProposal.class);
 		crit.add(Expression.ne("state", OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED));
-		crit.add(Expression.eq("final_text", text));
-		crit.setProjection(Projections.distinct(Projections.property("concept")));
+		crit.add(Expression.eq("originalText", text));
+		crit.add(Expression.isNotNull("mappedConcept"));
+		crit.setProjection(Projections.distinct(Projections.property("mappedConcept")));
 		
 		return crit.list();
 	}

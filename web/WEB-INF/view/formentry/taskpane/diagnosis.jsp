@@ -2,7 +2,7 @@
 
 <openmrs:require privilege="Form Entry" otherwise="/login.htm" redirect="/formentry/taskpane/diagnosis.htm" />
 
-<%@ include file="/WEB-INF/template/taskpane/header.jsp" %>
+<%@ include file="/WEB-INF/template/header.jsp" %>
 
 <script src='<%= request.getContextPath() %>/dwr/interface/DWRConceptService.js'></script>
 <script src='<%= request.getContextPath() %>/dwr/engine.js'></script>
@@ -63,4 +63,4 @@
 </script>
 
 
-<%@ include file="/WEB-INF/template/taskpane/footer.jsp" %>
+<%@ include file="/WEB-INF/template/footer.jsp" %>

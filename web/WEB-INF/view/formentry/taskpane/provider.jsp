@@ -2,7 +2,7 @@
 
 <openmrs:require privilege="Form Entry" otherwise="/login.htm" redirect="/formentry/taskpane/provider.htm" />
 
-<%@ include file="/WEB-INF/template/taskpane/header.jsp" %>
+<%@ include file="/WEB-INF/template/header.jsp" %>
 
 <h1><spring:message code="provider.title"/></h1>
 
@@ -26,4 +26,4 @@
 	</p>
 </c:if>
 
-<%@ include file="/WEB-INF/template/taskpane/footer.jsp" %>
+<%@ include file="/WEB-INF/template/footer.jsp" %>

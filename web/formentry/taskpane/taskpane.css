@@ -1,8 +1,6 @@
 h1 {
-	font-weight:bold;
 	text-align:center;
 	margin: 5px;
-	font-size: 20px;
 	}
 input.prompt {
 	font-weight:bold;
@@ -22,7 +20,7 @@ a.conceptHit:link, a.conceptHit:visited, a.conceptHit:active {
 	}
 a.hit:hover {
 	background-color:#FFFFA0;
-	cursor: hand;
+	cursor: pointer;
 	}
 .no_hit {
 	margin-top: 1em;
@@ -34,4 +32,10 @@ a.hit:hover {
 	margin-left: 0px;
 	padding: 5px;
 	border-style: none;
+}
+#banner {
+	display: none;
+}
+#gutter {
+	display: none;
 }

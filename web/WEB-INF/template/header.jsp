@@ -13,6 +13,10 @@
 	<head>
 		<link href="<%= request.getContextPath() %>/openmrs.css" type="text/css" rel="stylesheet" />
 		<link href="<%= request.getContextPath() %>/style.css" type="text/css" rel="stylesheet" />
+		<c:if test="<%= request.getRequestURI().contains("taskpane") || (session.getAttribute("__openmrs_login_redirect")!=null && ((String)session.getAttribute("__openmrs_login_redirect")).contains("taskpane")) %>">
+			<link href="<%= request.getContextPath() %>/formentry/taskpane/taskpane.css" type="text/css" rel="stylesheet" />
+			<script src="<%= request.getContextPath() %>/formentry/taskpane/taskpane.js"></script>
+		</c:if>
 	</head>
 
 <body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">

@@ -2,7 +2,7 @@
 
 <openmrs:require privilege="Form Entry" otherwise="/login.htm" redirect="/formentry/taskpane/concept.htm" />
 
-<%@ include file="/WEB-INF/template/taskpane/header.jsp" %>
+<%@ include file="/WEB-INF/template/header.jsp" %>
 
 <script src='<%= request.getContextPath() %>/dwr/interface/DWRConceptService.js'></script>
 <script src='<%= request.getContextPath() %>/dwr/engine.js'></script>
@@ -13,6 +13,7 @@
 <script>
 
 	var conceptClasses = new Array();
+	var savedSearch = "";
 	<request:parameters id="className" name="class">
 		conceptClasses.push("${class}");
 	</request:parameters>
@@ -25,20 +26,24 @@
 	
 	function search(delay, event) {
 		var searchBox = document.getElementById("phrase");
+		savedSearch = searchBox.value.toString();
 		return searchBoxChange('conceptSearchBody', searchBox, event, false, delay);
 	}
 	
 	function preFillTable(concepts) {
 		if (concepts.length == 1 && typeof concepts[0] == 'string') {
 			//if the only object in the list is a string, its an error message
-			concepts.push("<a href='#proposeConcept' onclick='showProposeConceptForm()'>Possible new concept?</a>");
-			fillTable(concepts);
+			concepts.push("<a href='#proposeConcept' onclick='javascript:return showProposeConceptForm();'><spring:message code="ConceptProposal.propose.new"/></a>");
 		}
+		fillTable(concepts);
 	}
 	
 	function showProposeConceptForm() {
-		$('proposeConceptForm').style.display = "";
-		$('proposedText').focus();
+		$('proposeConceptForm').style.display = "block";
+		txt = $('proposedText');
+		txt.value = savedSearch;
+		txt.focus();
+		return false;
 	}
 	
 	function proposeConcept() {
@@ -62,13 +67,13 @@
 		}
 		else {
 			//display a box telling them to pick a preposed concept:
-			$("preProposedAlert").style.display = "";
+			$("preProposedAlert").style.display = "block";
 			fillTable(concepts);
 		}
 	}
 	
 	function miniConcept(n) {
-		this.conceptId = 0;
+		this.conceptId = "PROPOSED";
 		if (n == null)
 			this.name = $('proposedText').value;
 		else
@@ -81,12 +86,18 @@
 	#proposeConceptForm {
 		display: none;
 	}
+	#preProposedAlert {
+		display: none;
+	}
+	.alert {
+		color: red;
+	}
 </style>
 
 <h1><spring:message code="diagnosis.title"/></h1>
 
-<div id="preProposedAlert">
-	These concepts were proposed and accepted with the same text
+<div id="preProposedAlert" class="alert">
+	<br><spring:message code="ConceptProposal.proposeDuplicate"/><br>
 </div>
 
 <form method="POST" onSubmit="return search(0, event);">
@@ -103,13 +114,14 @@
 </table>
 
 <div id="proposeConceptForm">
+    <br>
 	<table>
 		<tr>
-			<td><spring:message code="ConceptProposal.text"/></td>
-			<td><input type="text" name="text" id="proposedText" value="" size="40" /></td>
+			<td><spring:message code="ConceptProposal.originalText"/></td>
+			<td><input type="text" name="originalText" id="proposedText" value="" size="40" /></td>
 		</tr>
 	</table>
-	This text will be saved temporarily until an administrator can review and it to the list.<br/>
+	<span class="alert"><spring:message code="ConceptProposal.proposeWarning"/></span><br/>
 	<input type="button" onclick="proposeConcept()" value="<spring:message code="ConceptProposal.propose" />" />
 </div>
 
@@ -119,4 +131,4 @@
   document.getElementById('phrase').focus();
 </script>
 
-<%@ include file="/WEB-INF/template/taskpane/footer.jsp" %>
+<%@ include file="/WEB-INF/template/footer.jsp" %>
