@@ -26,6 +26,9 @@ var changeButton = null;
 var init = function() {
 	mySearch = new fx.Resize("searchForm", {duration: 100});
 	mySearch.hide();
+	<c:if test="${obs.concept.conceptId != null}">
+		DWRConceptService.getConcept(updateObsValues, '${obs.concept.conceptId}');
+	</c:if>
 };
 
 var findObjects = function(txt) {
@@ -50,6 +53,7 @@ var onSelect = function(objs) {
 	else if (searchType == 'concept') {
 		$("concept").value = obj.conceptId;
 		$("conceptName").innerHTML = getName(obj);
+		updateObsValues(obj);
 	}
 	else if (searchType == 'valueCoded') {
 		$("valueCoded").value = obj.conceptId;
@@ -63,6 +67,27 @@ var onSelect = function(objs) {
 	searchType = "";
 	changeButton.focus();
 	return false;
+}
+
+function updateObsValues(concept) {
+	var values = ['valueBoolean', 'valueCoded', 'valueDatetime', 'valueModifier', 'valueText', 'valueNumeric'];
+	for (var i=0; i<values.length; i++)
+		$(values[i]).style.display = "none";
+	
+	var datatype = concept.datatype;
+	if (typeof datatype != 'string')
+		datatype = concept.datatype.name;
+		
+	if (datatype == 'Boolean')
+		$('valueBoolean').style.display = "";
+	if (datatype == 'Numeric' || datatype == 'Structured Numeric')
+		$('valueNumeric').style.display = "";
+	if (datatype == 'Coded')
+		$('valueCoded').style.display = "";
+	if (datatype == 'Text')
+		$('valueText').style.display = "";
+	if (datatype == 'Date' || datatype == 'Datetime' || datatype == 'Time')
+		$('valueDatetime').style.display = "";
 }
 
 function showSearch(btn, type) {
@@ -123,6 +148,19 @@ if (typeof window.onload != 'function') {
 	}
 }
 
+function removeHiddenRows() {
+	var rows = document.getElementsByTagName("TR");
+	var i = 0;
+	while (i < rows.length) {
+		if (rows[i].style.display == "none") {
+			rows[i].parentNode.removeChild(rows[i]);
+		}
+		else {
+			i = i + 1;
+		}
+	}
+}
+
 </script>
 
 <style>
@@ -151,7 +189,7 @@ if (typeof window.onload != 'function') {
 	<spring:message code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
-<form method="post">
+<form method="post" onSubmit="removeHiddenRows()">
 <table>
 	<tr>
 		<td><spring:message code="general.id"/></td>
@@ -244,7 +282,7 @@ if (typeof window.onload != 'function') {
 			</td>
 		</spring:bind>
 	</tr>
-	<tr>
+	<tr id="valueBoolean">
 		<td><spring:message code="Obs.valueBoolean"/></td>
 		<spring:bind path="obs.valueBoolean">
 			<td>
@@ -257,7 +295,7 @@ if (typeof window.onload != 'function') {
 			</td>
 		</spring:bind>
 	</tr>
-	<tr>
+	<tr id="valueCoded">
 		<td><spring:message code="Obs.valueCoded"/></td>
 		<td>
 			<spring:bind path="obs.valueCoded">
@@ -268,7 +306,7 @@ if (typeof window.onload != 'function') {
 			</spring:bind>
 		</td>
 	</tr>
-	<tr>
+	<tr id="valueDatetime">
 		<td><spring:message code="Obs.valueDatetime"/></td>
 		<td>
 			<spring:bind path="obs.valueDatetime">			
@@ -278,7 +316,7 @@ if (typeof window.onload != 'function') {
 			</spring:bind>
 		</td>
 	</tr>
-	<tr>
+	<tr id="valueNumeric">
 		<td><spring:message code="Obs.valueNumeric"/></td>
 		<spring:bind path="obs.valueNumeric">
 			<td>
@@ -287,7 +325,7 @@ if (typeof window.onload != 'function') {
 			</td>
 		</spring:bind>
 	</tr>
-	<tr>
+	<tr id="valueModifier">
 		<td><spring:message code="Obs.valueModifier"/></td>
 		<spring:bind path="obs.valueModifier">
 			<td>
@@ -296,7 +334,7 @@ if (typeof window.onload != 'function') {
 			</td>
 		</spring:bind>
 	</tr>
-	<tr>
+	<tr id="valueText">
 		<td><spring:message code="Obs.valueText"/></td>
 		<spring:bind path="obs.valueText">
 			<td>
@@ -351,7 +389,6 @@ if (typeof window.onload != 'function') {
 				<input type="checkbox" name="${status.expression}" 
 					   id="${status.expression}" 
 					   <c:if test="${status.value == true}">checked</c:if> 
-					   onClick="voidedBoxClick(this)"
 				/>
 			</spring:bind>
 		</td>
@@ -377,7 +414,7 @@ if (typeof window.onload != 'function') {
 </table>
 <br />
 <input type="hidden" name="phrase" value="<request:parameter name="phrase" />"/>
-<input type="submit" value="<spring:message code="Obs.save"/>">
+<input type="submit" value="<spring:message code="Obs.save"/>" >
 </form>
 
 <div id="searchForm" class="searchForm">

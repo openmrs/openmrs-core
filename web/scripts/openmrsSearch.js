@@ -268,6 +268,7 @@ var getNumber = function(searchHit) {
 		var td = document.createElement("td");
 		td.className = "searchIndex";
 		td.innerHTML = searchIndex + ". ";
+		td.id = searchIndex;
 		return td;
 	};
 var getString  = function(s) { return s; };
@@ -289,10 +290,12 @@ var rowCreator = function(row, i) {
 		tr.className = "evenRow";
 	else
 		tr.className = "oddRow";
-	tr.id = i+1;
+	
+	if (row.voided == true || row.retired == true)
+		tr.className += " voided";
 	
 	if (typeof row != "string") {
-		tr.onclick= function() { selectObject(this.id); };
+		tr.onclick= function() { selectObject(this.firstChild.id); };
 		tr.onmouseover= function()  {
 					if (this.className.indexOf("searchHighlight") == -1)
 						this.className = "searchHighlight " + this.className;
@@ -302,6 +305,7 @@ var rowCreator = function(row, i) {
 					this.className = c.substring(c.indexOf(" ") + 1, c.length);
 				};
 	}
+	
 	return tr;
 }
 

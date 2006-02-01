@@ -42,21 +42,6 @@ public interface ObsDAO {
 	public void updateObs(Obs obs) throws DAOException;
 
 	/**
-	 * Equivalent to deleting an observation
-	 * @param Obs obs to void
-	 * @param String reason
-	 * @throws DAOException
-	 */
-	public void voidObs(Obs obs, String reason) throws DAOException;
-	
-	/**
-	 * Revive an observation (pull a Lazarus)
-	 * @param Obs
-	 * @throws DAOException
-	 */
-	public void unvoidObs(Obs obs) throws DAOException;
-
-	/**
 	 * Delete an observation.  SHOULD NOT BE CALLED unless caller is lower-level.
 	 * @param Obs
 	 * @throws DAOException

@@ -18,6 +18,15 @@ public class ObsListItem {
  	private String order = "";
  	private String location = "";
  	private Date datetime;
+ 	private Boolean voided = false;
+
+	public Boolean getVoided() {
+		return voided;
+	}
+
+	public void setVoided(Boolean voided) {
+		this.voided = voided;
+	}
 
 	public ObsListItem() { }
 		
@@ -33,6 +42,7 @@ public class ObsListItem {
 				order = obs.getOrder().getOrderId().toString();
 			location = obs.getLocation().getName();
 			datetime = obs.getObsDatetime();
+			voided = obs.isVoided();
 		}
 	}
 

@@ -186,10 +186,12 @@ return true;
 		button.onclick = fixCheckDigit;
 		if (btn != null) 
 			btnObj = document.getElementById(btn);
-		if (showError(isValidCheckDigit(obj.value), obj, textNode, button)) {
-			btnObj.disabled = false;
-		} else {
-			btnObj.disabled = true;
+		if (btnObj != null) {
+			if (showError(isValidCheckDigit(obj.value), obj, textNode, button)) {
+				btnObj.disabled = false;
+			} else {
+				btnObj.disabled = true;
+			}
 		}
 		obj.focus();
 	}

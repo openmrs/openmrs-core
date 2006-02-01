@@ -78,7 +78,6 @@
 <!-- patientSearch.js must be imported after the findObjects() definition for override -->
 <script src='<%= request.getContextPath() %>/scripts/patientSearch.js'></script>
 
-<br />
 <h2><spring:message code="Patient.title"/></h2>
 
 <form method="get" action="newPatient.form" onSubmit="return search(patientName, null, false, 0);" id="patientForm">

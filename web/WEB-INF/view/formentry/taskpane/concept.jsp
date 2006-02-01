@@ -10,18 +10,25 @@
 <script src='<%= request.getContextPath() %>/scripts/openmrsSearch.js'></script>
 <script src='<%= request.getContextPath() %>/scripts/conceptSearch.js'></script>
 
-<script>
+<script type="text/javascript">
 
 	var conceptClasses = new Array();
 	var savedSearch = "";
-	<request:parameters id="className" name="class">
-		conceptClasses.push("${class}");
+	<request:parameters id="c" name="className">
+		<request:parameterValues id="names">
+			conceptClasses.push('<jsp:getProperty name="names" property="value"/>');
+		</request:parameterValues>
 	</request:parameters>
 
 	var onSelect = function(conceptList) {
 		for (i=0; i<conceptList.length; i++) {
-			pickProblem('<%= request.getParameter("mode") %>', '//problem_list', conceptList[i]);
+			pickProblem('<%= request.getParameter("mode") %>', '//problem_list', new miniObject(conceptList[i]));
 		}
+	}
+	
+	function miniObject(c) {
+		c.key = c.conceptId;
+		c.value = c.name;
 	}
 	
 	function search(delay, event) {
@@ -105,7 +112,7 @@
 	<input name="phrase" id="phrase" type="text" class="prompt" size="10" onkeyup="search(400, event)"/> &nbsp;
 	<input type="checkbox" id="verboseListing" value="true" onclick="search(0, event); phrase.focus();"><label for="verboseListing"><spring:message code="dictionary.verboseListing"/></label>
 	<br />
-	<small><em><spring:message code="diagnosis.hint"/></em></small>
+	<small><em><spring:message code="general.search.hint"/></em></small>
 </form>
 
 <table border="0">

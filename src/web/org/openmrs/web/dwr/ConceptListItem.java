@@ -20,6 +20,7 @@ public class ConceptListItem {
 	private String description;
 	private String synonym; 
 	private Boolean retired;
+	private String datatype;
 
 
 	public ConceptListItem() { }
@@ -41,6 +42,7 @@ public class ConceptListItem {
 			}
 			synonym = word.getSynonym();
 			retired = concept.isRetired();
+			datatype = concept.getDatatype().getName();
 		}
 	}
 	
@@ -60,6 +62,7 @@ public class ConceptListItem {
 			}
 			synonym = "";
 			retired = concept.isRetired();
+			datatype = concept.getDatatype().getName();
 		}
 	}
 
@@ -115,6 +118,14 @@ public class ConceptListItem {
 
 	public void setRetired(Boolean retired) {
 		this.retired = retired;
+	}
+
+	public String getDatatype() {
+		return datatype;
+	}
+
+	public void setDatatype(String datatype) {
+		this.datatype = datatype;
 	}
 	
 

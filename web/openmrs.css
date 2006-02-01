@@ -116,7 +116,7 @@ body {
 	text-align: left;
 }
 
-#patientSummary { font-size: .8em; }
+#patientSummary { font-size: .9em; }
 #patientSummary { width: 700px; }
 
 .box, .boxHeader {
@@ -126,7 +126,7 @@ body {
 	text-align: left;
 	}
 	.box>* {
-		font-size: .8em;
+		font-size: .9em;
 	}
 .boxHeader {
 	background-color: navy;

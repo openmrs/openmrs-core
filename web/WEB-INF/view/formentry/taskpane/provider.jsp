@@ -1,5 +1,10 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
+<c:redirect url="user.htm?role=Provider"/>
+
+
+
+
 <openmrs:require privilege="Form Entry" otherwise="/login.htm" redirect="/formentry/taskpane/provider.htm" />
 
 <%@ include file="/WEB-INF/template/header.jsp" %>

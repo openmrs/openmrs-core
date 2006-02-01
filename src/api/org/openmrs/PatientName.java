@@ -65,6 +65,13 @@ public class PatientName implements java.io.Serializable {
 			PatientName pname = (PatientName) obj;
 			if (this.patientNameId != null && pname.getPatientNameId() != null)
 				return (this.patientNameId.equals(pname.getPatientNameId())); 
+			else {
+				return (patient.equals(pname.getPatient()) &&
+						givenName.equals(pname.getGivenName()) &&
+						middleName.equals(pname.getMiddleName()) &&
+						familyName.equals(pname.getFamilyName()));
+			}
+				
 		}
 		return false;
 	}

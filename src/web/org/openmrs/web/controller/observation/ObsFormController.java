@@ -59,6 +59,7 @@ public class ObsFormController extends SimpleFormController {
 		
 		Obs obs = (Obs)obj;
 		
+    	obs = setObjects(obs, request);
 
 		return super.processFormSubmission(request, reponse, obs, errors);
 	}
@@ -78,17 +79,7 @@ public class ObsFormController extends SimpleFormController {
 		
 		if (context != null && context.isAuthenticated()) {
 			Obs obs = (Obs)obj;
-			if (StringUtils.hasText(request.getParameter("patientId")))
-				obs.setPatient(context.getPatientService().getPatient(Integer.valueOf(request.getParameter("patientId"))));
-			if (StringUtils.hasText(request.getParameter("orderId")))
-				obs.setOrder(context.getOrderService().getOrder(Integer.valueOf(request.getParameter("orderId"))));
-			if (StringUtils.hasText(request.getParameter("conceptId")))
-				obs.setConcept(context.getConceptService().getConcept(Integer.valueOf(request.getParameter("conceptId"))));
-			if (StringUtils.hasText(request.getParameter("valueCodedId")))
-				obs.setValueCoded(context.getConceptService().getConcept(Integer.valueOf(request.getParameter("valueCodedId"))));
-			if (StringUtils.hasText(request.getParameter("encounterId")))
-				obs.setEncounter(context.getEncounterService().getEncounter(Integer.valueOf(request.getParameter("encounterId"))));
-			
+			obs = setObjects(obs, request);
 			context.getObsService().updateObs(obs);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Obs.saved");
@@ -116,7 +107,7 @@ public class ObsFormController extends SimpleFormController {
 			ObsService es = context.getObsService();
 			String obsId = request.getParameter("obsId");
 	    	if (obsId != null)
-	    		obs = es.getObs(Integer.valueOf(obsId));	
+	    		obs = es.getObs(Integer.valueOf(obsId));
 		}
 		
 		if (obs == null)
@@ -139,6 +130,38 @@ public class ObsFormController extends SimpleFormController {
 		}
 		
 		return map;
+	}
+	
+	private Obs setObjects(Obs obs, HttpServletRequest request) {
+
+		HttpSession httpSession = request.getSession();
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+
+		if (context != null && context.isAuthenticated()) {
+			if (StringUtils.hasText(request.getParameter("patientId")))
+				obs.setPatient(context.getPatientService().getPatient(Integer.valueOf(request.getParameter("patientId"))));
+			else
+				obs.setPatient(null);
+			if (StringUtils.hasText(request.getParameter("orderId")))
+				obs.setOrder(context.getOrderService().getOrder(Integer.valueOf(request.getParameter("orderId"))));
+			else
+				obs.setOrder(null);
+			if (StringUtils.hasText(request.getParameter("conceptId")))
+				obs.setConcept(context.getConceptService().getConcept(Integer.valueOf(request.getParameter("conceptId"))));
+			else
+				obs.setConcept(null);
+			if (StringUtils.hasText(request.getParameter("valueCodedId")))
+				obs.setValueCoded(context.getConceptService().getConcept(Integer.valueOf(request.getParameter("valueCodedId"))));
+			else
+				obs.setValueCoded(null);
+			if (StringUtils.hasText(request.getParameter("encounterId")))
+				obs.setEncounter(context.getEncounterService().getEncounter(Integer.valueOf(request.getParameter("encounterId"))));
+			else
+				obs.setEncounter(null);
+		}
+		
+		return obs;
+
 	}
     
 }

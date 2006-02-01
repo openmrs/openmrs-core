@@ -1,9 +1,12 @@
 package org.openmrs.api;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
@@ -23,6 +26,8 @@ import org.openmrs.util.OpenmrsConstants;
  * @version 1.0
  */
 public class ObsService {
+	
+	private Log log = LogFactory.getLog(this.getClass());
 	
 	private Context context;
 	private DAOContext daoContext;
@@ -64,7 +69,15 @@ public class ObsService {
 	 * @throws APIException
 	 */
 	public void updateObs(Obs obs) throws APIException {
-		getObsDAO().updateObs(obs);
+		if (obs.isVoided() && obs.getVoidedBy() == null)
+			voidObs(obs, obs.getVoidReason());
+		else if (obs.isVoided() == false && obs.getVoidedBy() != null)
+			unvoidObs(obs);
+		else {
+			log.debug(obs.getVoidedBy());
+			log.debug(obs.getDateVoided());
+			getObsDAO().updateObs(obs);
+		}
 	}
 
 	/**
@@ -74,7 +87,11 @@ public class ObsService {
 	 * @throws APIException
 	 */
 	public void voidObs(Obs obs, String reason) throws APIException {
-		getObsDAO().voidObs(obs, reason);
+		obs.setVoided(true);
+		obs.setVoidReason(reason);
+		obs.setVoidedBy(context.getAuthenticatedUser());
+		obs.setDateVoided(new Date());
+		updateObs(obs);
 	}
 	
 	/**
@@ -83,7 +100,11 @@ public class ObsService {
 	 * @throws APIException
 	 */
 	public void unvoidObs(Obs obs) throws APIException {
-		getObsDAO().unvoidObs(obs);
+		obs.setVoided(false);
+		obs.setVoidReason(null);
+		obs.setVoidedBy(null);
+		obs.setDateVoided(new Date());
+		updateObs(obs);
 	}
 
 	/**

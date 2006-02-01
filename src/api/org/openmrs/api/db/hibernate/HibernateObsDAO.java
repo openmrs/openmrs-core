@@ -132,39 +132,15 @@ public class HibernateObsDAO implements
 	}
 
 	/**
-	 * @see org.openmrs.api.db.ObsService#unvoidObs(org.openmrs.Obs)
-	 */
-	public void unvoidObs(Obs obs) throws DAOException {
-		
-		obs.setVoided(false);
-		obs.setVoidedBy(null);
-		obs.setDateVoided(null);
-		
-		updateObs(obs);
-		
-	}
-
-	/**
 	 * @see org.openmrs.api.db.ObsService#updateObs(org.openmrs.Obs)
 	 */
 	public void updateObs(Obs obs) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
-		
-		
-		session.saveOrUpdate(obs);
-	}
-
-	/**
-	 * @see org.openmrs.api.db.ObsService#voidObs(org.openmrs.Obs, java.lang.String)
-	 */
-	public void voidObs(Obs obs, String reason) throws DAOException {
-		obs.setVoided(true);
-		obs.setVoidedBy(context.getAuthenticatedUser());
-		obs.setDateVoided(new Date());
-		obs.setVoidReason(reason);
-		
-		updateObs(obs);	
+		if (obs.getObsId() == null)
+			createObs(obs);
+		else
+			session.update(obs);
 	}
 	
 	/**

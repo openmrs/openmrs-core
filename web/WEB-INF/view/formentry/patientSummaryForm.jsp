@@ -61,7 +61,7 @@
 
 <br />
 
-<b class="boxHeader"><spring:message code="formentry.step2"/></b>
+<b class="boxHeader" style="clear: right"><spring:message code="formentry.step2"/></b>
 <div id="selectForm" class="box">
 	<form id="selectFormForm" method="post" action="<%= request.getContextPath() %>/formDownload">
 		<table>

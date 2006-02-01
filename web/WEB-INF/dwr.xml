@@ -58,7 +58,7 @@
 			DWRPatientService.getSimilarPatients(String name, Date birthdate, String gender);
 			DWRConceptService.findConcepts(String phrase, List<String> classNames, boolean includeRetired, List<string> ignoreClassNames);
 			DWREncounterService.findEncounters(String phrase, boolean includeVoided);
-			DWRUserService.findUsers(String phrase);
+			DWRUserService.findUsers(String phrase, List<String> roles, boolean includeVoided);
 			DWRObsService.findObs(String phrase, boolean includeVoided);
 		]]>
 	</signatures>

@@ -29,8 +29,8 @@
 							name="${status.expression}" 
 							id="username"
 							value="${status.value}"
-							onKeyUp="validateIdentifier(this, 'saveButton', '<spring:message code="error.identifier"/>');"
-							onChange="validateIdentifier(this, 'saveButton', '<spring:message code="error.identifier"/>');"/>
+							onKeyUp="validateIdentifier(this, '', '<spring:message code="error.identifier"/>');"
+							onChange="validateIdentifier(this, '', '<spring:message code="error.identifier"/>');"/>
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>

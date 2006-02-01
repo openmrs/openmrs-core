@@ -413,7 +413,7 @@ public class HibernateUserDAO implements
 		HibernateUtil.commitTransaction();
 	}
 	
-	public List<User> findUsers(String name) {
+	public List<User> findUsers(String name, List<String> roles, boolean includeVoided) {
 		
 		Session session = HibernateUtil.currentSession();
 		
@@ -434,6 +434,11 @@ public class HibernateUserDAO implements
 				);
 			}
 		}
+		
+		if (roles != null && roles.size() > 0)
+			criteria.createCriteria("roles", "r").add(Expression.in("role", roles));
+		if (includeVoided == false)
+			criteria.add(Expression.eq("voided", false));
 
 		return criteria.list();
 	}

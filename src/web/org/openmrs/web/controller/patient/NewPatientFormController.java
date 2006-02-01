@@ -96,13 +96,29 @@ public class NewPatientFormController extends SimpleFormController {
 			Patient patient = new Patient();
 			if (p.getPatientId() != null)
 				patient = ps.getPatient(p.getPatientId());
+			boolean duplicate = false;
+			for (PatientName pn : patient.getNames()) {
+				if (pn.getGivenName().equals(p.getGivenName()) &&
+					pn.getMiddleName().equals(p.getMiddleName()) &&
+					pn.getFamilyName().equals(p.getFamilyName()))
+					duplicate = true;
+			}
 			
-			patient.addName(new PatientName(p.getGivenName(), p.getMiddleName(), p.getFamilyName()));
+			if (!duplicate)
+				patient.addName(new PatientName(p.getGivenName(), p.getMiddleName(), p.getFamilyName()));
 			
-			PatientAddress pa = new PatientAddress();
-			pa.setAddress1(p.getAddress1());
-			pa.setAddress2(p.getAddress2());
-			patient.addAddress(pa);
+			if (p.getAddress1() != "" && p.getAddress2() != "") {
+				duplicate = false;
+				for (PatientAddress pa : patient.getAddresses()) {
+					if (pa.getAddress1() == p.getAddress1() && pa.getAddress2() == p.getAddress2())
+						duplicate = true;
+				}
+				if (!duplicate) {
+					PatientAddress pa = new PatientAddress();
+					pa.setAddress1(p.getAddress1());
+					pa.setAddress2(p.getAddress2());
+					patient.addAddress(pa);
+						}			}
 			
 			if (p.getIdentifier().length() > 0) {
 				PatientIdentifierType type = ps.getPatientIdentifierType(Integer.valueOf(request.getParameter("identifierType")));

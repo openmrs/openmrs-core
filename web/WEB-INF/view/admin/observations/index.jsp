@@ -39,12 +39,12 @@
 	}
 	
 	var getConcept = function(ob) {
-		if (typeof ob != 'string')
-			return ob.conceptName;
+		if (typeof ob == 'string') return '';
+		return ob.conceptName;
 	}
 	
 	var getOrder = function(ob) {
-		if (typeof ob != 'string')
+		if (typeof ob == 'string') return '';
 		var str = '';
 		if (ob.order != null) 
 			str = ob.order;
@@ -52,13 +52,13 @@
 	}
 	
 	var getLocation = function(ob) {
-		if (typeof ob != 'string')
-			return ob.location;
+		if (typeof ob == 'string') return "";
+		return ob.location;
 	}
 	
 	var getDateTime = function(ob) {
 		if (typeof p == 'string') return "";
-		return getDateString(ob.dateTime);
+		return getDateString(ob.datetime);
 	}
 	
 	var customCellFunctions = [getNumber, getEncounter, getPatient, getConcept, getOrder, getLocation, getDateTime];
@@ -82,7 +82,7 @@
 				<tr>
 					<td><spring:message code="Obs.search"/></td>
 					<td><input type="text" id="searchBox" onKeyUp="search(this, event, includeVoided.checked, 400)"></td>
-					<td><spring:message code="formentry.includeVoided"/><input type="checkbox" id="includeVoided" onClick="search(searchBox, event, includeVoided.checked, 0); searchBox.focus();" /></td>
+					<td><spring:message code="formentry.includeVoided"/><input type="checkbox" id="includeVoided" onClick="search(searchBox, null, this.checked, 0); searchBox.focus();" /></td>
 				</tr>
 			</table>
 		</form>

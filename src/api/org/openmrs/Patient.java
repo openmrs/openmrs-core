@@ -357,6 +357,7 @@ public class Patient extends Person implements java.io.Serializable {
 		name.setPatient(this);
 		if (names == null)
 			names = new HashSet<PatientName>();
+		name.setPatient(this);
 		if (!names.contains(name) && name != null)
 			names.add(name);
 	}

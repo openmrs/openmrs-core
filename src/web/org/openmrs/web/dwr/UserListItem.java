@@ -11,6 +11,7 @@ public class UserListItem {
 	private Integer userId;
 	private String firstName;
 	private String lastName;
+	private String username;
 
 	public UserListItem() { }
 		
@@ -20,6 +21,7 @@ public class UserListItem {
 			userId = user.getUserId();
 			firstName = user.getFirstName();
 			lastName = user.getLastName();
+			username = user.getUsername();
 		}
 	}
 
@@ -45,6 +47,14 @@ public class UserListItem {
 
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 }

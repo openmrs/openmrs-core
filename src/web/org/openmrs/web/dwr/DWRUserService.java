@@ -18,7 +18,7 @@ public class DWRUserService {
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
-	public Vector findUsers(String searchValue) {
+	public Vector findUsers(String searchValue, List<String> roles, boolean includeVoided) {
 		
 		Vector userList = new Vector();
 
@@ -34,9 +34,20 @@ public class DWRUserService {
 		else {
 			try {
 				UserService us = context.getUserService();
-				List<User> users;
+				List<User> users = new Vector<User>();
+				User user = null;
+				try {
+					user = us.getUserByUsername(searchValue);
+				}
+				catch (Exception e) {}
 				
-				users = us.findUsers(searchValue);
+				if (user != null)
+					users.add(user);
+				
+				if (roles == null) 
+					roles = new Vector<String>();
+				
+				users.addAll(us.findUsers(searchValue, roles, includeVoided));
 				userList = new Vector(users.size());
 				for (User u : users) {
 					userList.add(new UserListItem(u));

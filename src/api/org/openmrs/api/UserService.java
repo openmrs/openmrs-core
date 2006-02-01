@@ -263,8 +263,8 @@ public class UserService {
 		getUserDAO().changeQuestionAnswer(pw, q, a);
 	}
 	
-	public List<User> findUsers(String name) {
+	public List<User> findUsers(String name, List<String> roles, boolean includeVoided) {
 		name = name.replace(", ", " ");
-		return getUserDAO().findUsers(name);
+		return getUserDAO().findUsers(name, roles, includeVoided);
 	}
 }

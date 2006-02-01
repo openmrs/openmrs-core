@@ -35,7 +35,7 @@ var findObjects = function(txt) {
 		DWRPatientService.findPatients(fillTable, txt, 0);
 	}
 	else if (searchType == 'user') {
-		DWRUserService.findUsers(fillTable, txt);
+		DWRUserService.findUsers(fillTable, txt, [], false);
 	}
 	return false;
 }
