@@ -4,12 +4,15 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.Locale;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 import java.util.Map.Entry;
 
+import org.openmrs.Concept;
+import org.openmrs.Drug;
 import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.api.context.Context;
@@ -172,10 +175,24 @@ public class FormUtil {
 	}
 
 	private static final DateFormat dateFormatter = new SimpleDateFormat(
-			FormConstants.DATE_FORMAT);
+			"yyyy-MM-dd'T'HH:mm:ssZ");
 
 	public static String dateToString(Date date) {
-		return dateFormatter.format(new Date());
+		String dateString = dateFormatter.format(new Date());
+		// ISO 8601 requires a colon in time zone offset (Java doesn't
+		// include the colon, so we need to insert it
+		return dateString.substring(0, 22) + ":" + dateString.substring(22);
+	}
+
+	public static String conceptToString(Concept concept, Locale locale) {
+		return concept.getConceptId() + "^"
+				+ concept.getName(locale).getName() + "^"
+				+ FormConstants.HL7_LOCAL_CONCEPT;
+	}
+
+	public static String drugToString(Drug drug) {
+		return drug.getDrugId() + "^" + drug.getName() + "^"
+				+ FormConstants.HL7_LOCAL_DRUG;
 	}
 
 }

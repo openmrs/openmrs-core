@@ -1,0 +1,224 @@
+package org.openmrs.form;
+
+import java.io.StringWriter;
+import java.util.Date;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.Vector;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
+import org.openmrs.Concept;
+import org.openmrs.ConceptAnswer;
+import org.openmrs.Drug;
+import org.openmrs.Field;
+import org.openmrs.Form;
+import org.openmrs.FormField;
+import org.openmrs.Patient;
+import org.openmrs.api.context.Context;
+
+/**
+ * XML template builder for OpenMRS forms.
+ * 
+ * @author Burke Mamlin
+ * @version 1.0
+ */
+public class FormXmlTemplateBuilder {
+
+	protected final Log log = LogFactory.getLog(getClass());
+
+	Context context;
+	Form form;
+	String xmlTemplate = null;
+	Vector<String> tagList;
+
+	public FormXmlTemplateBuilder(Context context, Form form) {
+		this.context = context;
+		this.form = form;
+	}
+
+	public synchronized String getXmlTemplate(Patient patient) {
+		if (xmlTemplate != null)
+			return xmlTemplate;
+
+		try {
+			Velocity.init();
+		} catch (Exception e) {
+			log.error("Error initializing Velocity engine", e);
+		}
+		VelocityContext velocityContext = new VelocityContext();
+		velocityContext.put("patient", patient);
+
+		StringBuffer xml = new StringBuffer();
+		xml.append(FormXmlTemplateFragment.header(form.getName()));
+		xml.append(FormXmlTemplateFragment.openForm(form.getFormId(), form
+				.getName(), form.getVersion(), form.getSchemaNamespace(),
+				context.getAuthenticatedUser(), new Date()));
+
+		TreeMap<Integer, TreeSet<FormField>> formStructure = FormUtil
+				.getFormStructure(context, form);
+
+		renderStructure(xml, formStructure, velocityContext, 0, 2);
+
+		xml.append(FormXmlTemplateFragment.closeForm());
+
+		xmlTemplate = xml.toString();
+		return xmlTemplate;
+	}
+
+	public void renderStructure(StringBuffer xml,
+			TreeMap<Integer, TreeSet<FormField>> formStructure,
+			VelocityContext velocityContext, Integer sectionId, int indent) {
+		if (!formStructure.containsKey(sectionId))
+			return;
+		for (FormField formField : formStructure.get(sectionId)) {
+			String xmlTag = FormUtil.getNewTag(formField.getField().getName(),
+					tagList);
+			Integer subSectionId = formField.getFormFieldId();
+			char[] indentation = new char[indent];
+			for (int i = 0; i < indent; i++)
+				indentation[i] = ' ';
+			xml.append(indentation);
+			xml.append("<" + xmlTag);
+			Field field = formField.getField();
+			Integer fieldTypeId = field.getFieldType().getFieldTypeId();
+			if (fieldTypeId.equals(FormConstants.FIELD_TYPE_DATABASE)) {
+				xml.append(" openmrs_table=\"");
+				xml.append(formField.getField().getTableName());
+				xml.append("\" openmrs_attribute=\"");
+				xml.append(formField.getField().getAttributeName());
+				if (formStructure.containsKey(formField.getFormFieldId())) {
+					xml.append("\">\n");
+					renderStructure(xml, formStructure, velocityContext,
+							subSectionId, indent + FormConstants.INDENT_SIZE);
+					xml.append(indentation);
+				} else {
+					if (field.getDefaultValue() != null) {
+						xml.append("\">");
+						renderDefaultValue(xml, velocityContext, field);
+					} else {
+						xml.append("\" xsi:nil=\"true\">");
+					}
+				}
+				xml.append("</");
+				xml.append(xmlTag);
+				xml.append(">\n");
+			} else if (fieldTypeId.equals(FormConstants.FIELD_TYPE_CONCEPT)) {
+				Concept concept = field.getConcept();
+				xml.append(" openmrs_concept=\"");
+				xml.append(FormUtil.conceptToString(concept, context
+						.getLocale()));
+				xml.append("\" openmrs_datatype=\"");
+				xml.append(concept.getDatatype().getHl7Abbreviation());
+				xml.append("\"");
+				if (formStructure.containsKey(formField.getFormFieldId())) {
+					xml.append(">\n");
+					renderStructure(xml, formStructure, velocityContext,
+							subSectionId, indent + FormConstants.INDENT_SIZE);
+					xml.append(indentation);
+					xml.append("</");
+					xml.append(xmlTag);
+					xml.append(">\n");
+				} else {
+					if (concept.getDatatype().getHl7Abbreviation().equals(
+							FormConstants.HL7_CODED)
+							|| concept
+									.getDatatype()
+									.getHl7Abbreviation()
+									.equals(
+											FormConstants.HL7_CODED_WITH_EXCEPTIONS)) {
+						xml.append(" multiple=\"");
+						xml.append(field.getSelectMultiple() ? "1" : "0");
+						xml.append("\"");
+					}
+					xml.append(">\n");
+					xml.append(indentation);
+					xml.append(indentation);
+					xml.append("<date xsi:nil=\"true\"></date>\n");
+					xml.append(indentation);
+					xml.append(indentation);
+					xml.append("<time xsi:nil=\"true\"></time>\n");
+					if ((concept.getDatatype().getHl7Abbreviation().equals(
+							FormConstants.HL7_CODED) || concept.getDatatype()
+							.getHl7Abbreviation().equals(
+									FormConstants.HL7_CODED_WITH_EXCEPTIONS))
+							&& field.getSelectMultiple()) {
+						for (ConceptAnswer answer : concept.getAnswers()) {
+							xml.append(indentation);
+							xml.append(indentation);
+							xml.append("<");
+							String answerConceptName = answer
+									.getAnswerConcept().getName(
+											context.getLocale()).getName();
+							Drug answerDrug = answer.getAnswerDrug();
+							if (answerDrug == null) {
+								String answerTag = FormUtil.getNewTag(
+										answerConceptName, tagList);
+								xml.append(answerTag);
+								xml.append(" openmrs_concept=\"");
+								xml.append(FormUtil.conceptToString(answer
+										.getAnswerConcept(), context
+										.getLocale()));
+								xml.append("\">false</");
+								xml.append(answerTag);
+								xml.append(">\n");
+							} else {
+								String answerDrugName = answerDrug.getName();
+								String answerTag = FormUtil.getNewTag(
+										answerDrugName, tagList);
+								xml.append(answerTag);
+								xml.append(" openmrs_concept=\"");
+								xml.append(FormUtil.conceptToString(answer
+										.getAnswerConcept(), context
+										.getLocale()));
+								xml.append("^");
+								xml.append(FormUtil.drugToString(answerDrug));
+								// xml.append("\" openmrs_drug_id=\"");
+								// xml.append(FormUtil.drugToString(answerDrug));
+								xml.append("\">false</");
+								xml.append(answerTag);
+								xml.append(">\n");
+							}
+						}
+					} else {
+						xml.append(indentation);
+						xml.append(indentation);
+						xml.append("<value");
+						if (concept.getDatatype().getHl7Abbreviation().equals(
+								FormConstants.HL7_BOOLEAN))
+							xml.append(" infopath_boolean_hack=\"1\"");
+						xml.append(" xsi:nil=\"true\"></value>\n");
+					}
+					xml.append(indentation);
+					xml.append("</");
+					xml.append(xmlTag);
+					xml.append(">\n");
+				}
+			} else {
+				xml.append(">\n");
+				renderStructure(xml, formStructure, velocityContext,
+						subSectionId, indent + FormConstants.INDENT_SIZE);
+				xml.append(indentation);
+				xml.append("</");
+				xml.append(xmlTag);
+				xml.append(">\n");
+			}
+		}
+	}
+	
+	private void renderDefaultValue(StringBuffer xml, VelocityContext velocityContext, Field field) {
+		try {
+			StringWriter w = new StringWriter();
+			Velocity.evaluate(velocityContext, w, this
+					.getClass().getName(), field
+					.getDefaultValue());
+			xml.append(w.toString());
+		} catch (Exception e) {
+			log.error("Error evaluating default value for "
+					+ field.getName() + "["
+					+ field.getFieldId() + "]", e);
+		}
+	}
+}

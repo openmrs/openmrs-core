@@ -31,6 +31,9 @@
 		<property name="attributeName" type="java.lang.String"
 			column="attribute_name" length="50" />
 		
+		<property name="defaultValue" type="java.lang.String"
+			column="default_value" length="65535" />
+
 		<property name="selectMultiple" type="boolean"
 			column="select_multiple" length="1" not-null="true"/>
 		

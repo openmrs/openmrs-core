@@ -22,8 +22,9 @@ public class Field implements java.io.Serializable {
 	private String description;
 	private FieldType fieldType;
 	private Concept concept;
-	private String attributeName;
 	private String tableName;
+	private String attributeName;
+	private String defaultValue;
 	private Boolean selectMultiple = false;
 	private User creator;
 	private Date dateCreated;
@@ -169,6 +170,21 @@ public class Field implements java.io.Serializable {
 	public void setAttributeName(String attributeName) {
 		// this.dirty = true;
 		this.attributeName = attributeName;
+	}
+	
+	/**
+	 * @return Returns the default value.
+	 */
+	public String getDefaultValue() {
+		return defaultValue;
+	}
+	
+	/**
+	 * @param defaultValue
+	 * 			The defaultValue to set.
+	 */
+	public void setDefaultValue(String defaultValue) {
+		this.defaultValue = defaultValue;
 	}
 
 	/**

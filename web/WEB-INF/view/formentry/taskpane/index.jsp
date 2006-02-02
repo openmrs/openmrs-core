@@ -13,7 +13,7 @@
 		  var oDOM = oXDocument.DOM;
 		  
 		  // return session identifier
-		  return oDOM.selectSingleNode('/form/misc/session').text;
+		  return oDOM.selectSingleNode('/form/header/session').text;
 		}
 		
 	</script>

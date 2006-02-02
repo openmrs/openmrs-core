@@ -5,7 +5,7 @@ import java.util.Locale;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
-import org.openmrs.ConceptDatatype;
+import org.openmrs.Drug;
 
 /**
  * Convenience class for generating various fragments of an XML Schema for
@@ -27,7 +27,7 @@ public class FormSchemaFragment {
 	public static String header(String namespace) {
 		return "<?xml version=\"1.0\"?>\n"
 				+ "<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"\n"
-				+ "           xmlns:amrs=\"" + namespace + "\"\n"
+				+ "           xmlns:openmrs=\"" + namespace + "\"\n"
 				+ "           elementFormDefault=\"qualified\"\n"
 				+ "           attributeFormDefault=\"unqualified\">\n\n";
 	}
@@ -77,6 +77,7 @@ public class FormSchemaFragment {
 				+ "  <xs:sequence>\n"
 				+ "    <xs:element name=\"enterer\" type=\"xs:string\" />\n"
 				+ "    <xs:element name=\"date_entered\" type=\"xs:dateTime\" />\n"
+				+ "    <xs:element name=\"session\" type=\"xs:string\" />\n"
 				+ "  </xs:sequence>\n"
 				+ "</xs:complexType>\n\n"
 				+ "<xs:complexType name=\"_other_type\">\n"
@@ -98,18 +99,6 @@ public class FormSchemaFragment {
 	}
 
 	/**
-	 * Convenience method for converting datatypes into HL7 equivalents
-	 * 
-	 * @param datatype
-	 *            OpenMRS datatype
-	 * @return HL7 abbreviation for given datatype
-	 */
-	private static String getHL7Datatype(ConceptDatatype datatype) {
-		return FormSchemaBuilder
-				.getHl7Datatype(datatype.getConceptDatatypeId());
-	}
-
-	/**
 	 * Returns XML Schema fragment for a simple concept
 	 * 
 	 * @param token
@@ -123,7 +112,7 @@ public class FormSchemaFragment {
 	 * @return XML Schema fragment for a simple concept
 	 */
 	public static String simpleConcept(String token, Concept concept,
-			String xsType, boolean required) {
+			String xsType, boolean required, Locale locale) {
 		if (required && xsType.equals("xs:string"))
 			xsType = "_requiredString";
 		return "<xs:complexType name=\""
@@ -138,11 +127,11 @@ public class FormSchemaFragment {
 				+ (required ? "0" : "1")
 				+ "\" />\n"
 				+ "  </xs:sequence>\n"
-				+ "  <xs:attribute name=\"amrs_concept_id\" type=\"xs:positiveInteger\" use=\"required\" fixed=\""
-				+ concept.getConceptId()
+				+ "  <xs:attribute name=\"openmrs_concept\" type=\"xs:string\" use=\"required\" fixed=\""
+				+ FormUtil.conceptToString(concept, locale)
 				+ "\" />\n"
-				+ "  <xs:attribute name=\"amrs_datatype\" type=\"xs:string\" use=\"required\" fixed=\""
-				+ getHL7Datatype(concept.getDatatype()) + "\" />\n"
+				+ "  <xs:attribute name=\"openmrs_datatype\" type=\"xs:string\" use=\"required\" fixed=\""
+				+ concept.getDatatype().getHl7Abbreviation() + "\" />\n"
 				+ "</xs:complexType>\n\n";
 	}
 
@@ -166,7 +155,7 @@ public class FormSchemaFragment {
 	 */
 	public static String numericConcept(String token, Concept concept,
 			boolean required, Double minInclusive, Double maxInclusive,
-			boolean precise) {
+			boolean precise, Locale locale) {
 		boolean skipBounds = (minInclusive == null && maxInclusive == null);
 		String xml = "";
 		if (!skipBounds) {
@@ -199,11 +188,11 @@ public class FormSchemaFragment {
 								+ "_restricted_type\" nillable=\""
 								+ (required ? "0" : "1") + "\" />\n")
 				+ "  </xs:sequence>\n"
-				+ "  <xs:attribute name=\"amrs_concept_id\" type=\"xs:positiveInteger\" use=\"required\" fixed=\""
-				+ concept.getConceptId()
+				+ "  <xs:attribute name=\"openmrs_concept\" type=\"xs:string\" use=\"required\" fixed=\""
+				+ FormUtil.conceptToString(concept, locale)
 				+ "\" />\n"
-				+ "  <xs:attribute name=\"amrs_datatype\" type=\"xs:string\" use=\"required\" fixed=\""
-				+ getHL7Datatype(concept.getDatatype()) + "\" />\n"
+				+ "  <xs:attribute name=\"openmrs_datatype\" type=\"xs:string\" use=\"required\" fixed=\""
+				+ concept.getDatatype().getHl7Abbreviation() + "\" />\n"
 				+ "</xs:complexType>\n\n";
 		return xml;
 	}
@@ -254,33 +243,33 @@ public class FormSchemaFragment {
 				+ (required ? "0" : "1") + "\">\n" + "      <xs:simpleType>\n"
 				+ "        <xs:restriction base=\"xs:string\">\n";
 		for (ConceptAnswer answer : answerList) {
-			Integer answerConceptId = answer.getAnswerConcept().getConceptId();
 			String answerConceptName = answer.getAnswerConcept()
 					.getName(locale).getName();
 			if (answer.getAnswerConcept().getConceptClass().getConceptClassId()
-					.equals(FormSchemaBuilder.CLASS_DRUG)
+					.equals(FormConstants.CLASS_DRUG)
 					&& answer.getAnswerDrug() != null) {
-				Integer answerDrugId = answer.getAnswerDrug().getDrugId();
 				String answerDrugName = answer.getAnswerDrug().getName();
-				xml += "          <xs:enumeration value=\"" + answerConceptId
-						+ "^" + answerConceptName + "^99DCT^" + answerDrugId
-						+ "^" + answerDrugName + "^99RXS\" /> <!-- "
-						+ answerDrugName + " -->\n";
+				xml += "          <xs:enumeration value=\""
+						+ FormUtil.conceptToString(answer.getAnswerConcept(),
+								locale) + "^"
+						+ FormUtil.drugToString(answer.getAnswerDrug())
+						+ "\" /> <!-- " + answerDrugName + " -->\n";
 			} else {
-				xml += "          <xs:enumeration value=\"" + answerConceptId
-						+ "^" + answerConceptName + "^99DCT\" /> <!-- "
-						+ answerConceptName + " -->\n";
+				xml += "          <xs:enumeration value=\""
+						+ FormUtil.conceptToString(answer.getAnswerConcept(),
+								locale) + "\" /> <!-- " + answerConceptName
+						+ " -->\n";
 			}
 		}
 		xml += "        </xs:restriction>\n"
 				+ "      </xs:simpleType>\n"
 				+ "    </xs:element>\n"
 				+ "  </xs:sequence>\n"
-				+ "  <xs:attribute name=\"amrs_concept_id\" type=\"xs:positiveInteger\" use=\"required\" fixed=\""
-				+ concept.getConceptId()
+				+ "  <xs:attribute name=\"openmrs_concept\" type=\"xs:string\" use=\"required\" fixed=\""
+				+ FormUtil.conceptToString(concept, locale)
 				+ "\" />\n"
-				+ "  <xs:attribute name=\"amrs_datatype\" type=\"xs:string\" use=\"required\" fixed=\""
-				+ getHL7Datatype(concept.getDatatype())
+				+ "  <xs:attribute name=\"openmrs_datatype\" type=\"xs:string\" use=\"required\" fixed=\""
+				+ concept.getDatatype().getHl7Abbreviation()
 				+ "\" />\n"
 				+ "  <xs:attribute name=\"multiple\" type=\"xs:integer\" use=\"required\" fixed=\"0\" />\n"
 				+ "</xs:complexType>\n\n";
@@ -309,48 +298,49 @@ public class FormSchemaFragment {
 				+ "    <xs:element name=\"date\" type=\"xs:date\" nillable=\"true\" minOccurs=\"0\" />\n"
 				+ "    <xs:element name=\"time\" type=\"xs:time\" nillable=\"true\" minOccurs=\"0\" />\n";
 		for (ConceptAnswer answer : answerList) {
-			Integer answerConceptId = answer.getAnswerConcept().getConceptId();
 			String answerConceptName = answer.getAnswerConcept()
 					.getName(locale).getName();
-			if (answer.getAnswerConcept().getConceptClass().getConceptClassId()
-					.equals(FormSchemaBuilder.CLASS_DRUG)
-					&& answer.getAnswerDrug() != null) {
-				Integer answerDrugId = answer.getAnswerDrug().getDrugId();
-				String answerDrugName = answer.getAnswerDrug().getName();
+			Drug answerDrug = answer.getAnswerDrug();
+			if (answerDrug != null) {
+				String answerDrugName = answerDrug.getName();
 				xml += "    <xs:element name=\""
-						+ FormSchemaBuilder.getToken(answerDrugName)
+						+ FormUtil.getXmlToken(answerDrugName)
 						+ "\" default=\"false\" nillable=\"true\">\n"
 						+ "      <xs:complexType>\n"
 						+ "        <xs:simpleContent>\n"
 						+ "          <xs:extension base=\"xs:boolean\">\n"
-						+ "            <xs:attribute name=\"amrs_concept_id\" type=\"xs:positiveInteger\" use=\"required\" fixed=\""
-						+ answerConceptId
-						+ "\" />\n"
-						+ "            <xs:attribute name=\"amrs_drug_id\" type=\"xs:positiveInteger\" use=\"required\" fixed=\""
-						+ answerDrugId + "\" />\n"
+						+ "            <xs:attribute name=\"openmrs_concept\" type=\"xs:string\" use=\"required\" fixed=\""
+						+ FormUtil.conceptToString(answer.getAnswerConcept(),
+								locale) + "^"
+						+ FormUtil.drugToString(answerDrug) + "\" />\n"
+						// + " <xs:attribute name=\"openmrs_drug\"
+						// type=\"xs:string\" use=\"required\" fixed=\""
+						// + FormUtil.drugToString(answer.getAnswerDrug())
+						// + "\" />\n"
 						+ "          </xs:extension>\n"
 						+ "        </xs:simpleContent>\n"
 						+ "      </xs:complexType>\n" + "    </xs:element>\n";
 			} else {
 				xml += "    <xs:element name=\""
-						+ FormSchemaBuilder.getToken(answerConceptName)
+						+ FormUtil.getXmlToken(answerConceptName)
 						+ "\" default=\"false\" nillable=\"true\">\n"
 						+ "      <xs:complexType>\n"
 						+ "        <xs:simpleContent>\n"
 						+ "          <xs:extension base=\"xs:boolean\">\n"
-						+ "            <xs:attribute name=\"amrs_concept_id\" type=\"xs:positiveInteger\" use=\"required\" fixed=\""
-						+ answerConceptId + "\" />\n"
+						+ "            <xs:attribute name=\"openmrs_concept\" type=\"xs:string\" use=\"required\" fixed=\""
+						+ FormUtil.conceptToString(answer.getAnswerConcept(),
+								locale) + "\" />\n"
 						+ "          </xs:extension>\n"
 						+ "        </xs:simpleContent>\n"
 						+ "      </xs:complexType>\n" + "    </xs:element>\n";
 			}
 		}
 		xml += "  </xs:sequence>\n"
-				+ "  <xs:attribute name=\"amrs_concept_id\" type=\"xs:positiveInteger\" use=\"required\" fixed=\""
-				+ concept.getConceptId()
+				+ "  <xs:attribute name=\"openmrs_concept\" type=\"xs:string\" use=\"required\" fixed=\""
+				+ FormUtil.conceptToString(concept, locale)
 				+ "\" />\n"
-				+ "  <xs:attribute name=\"amrs_datatype\" type=\"xs:string\" use=\"required\" fixed=\""
-				+ getHL7Datatype(concept.getDatatype())
+				+ "  <xs:attribute name=\"openmrs_datatype\" type=\"xs:string\" use=\"required\" fixed=\""
+				+ concept.getDatatype().getHl7Abbreviation()
 				+ "\" />\n"
 				+ "  <xs:attribute name=\"multiple\" type=\"xs:integer\" use=\"required\" fixed=\"1\" />\n"
 				+ "</xs:complexType>\n\n";
