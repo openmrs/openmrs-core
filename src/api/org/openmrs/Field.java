@@ -30,6 +30,7 @@ public class Field implements java.io.Serializable {
 	private User changedBy;
 	private Date dateChanged;
 	private Set<FieldAnswer> fieldAnswers;
+	private Set<Form> forms;
 
 	// Constructors
 
@@ -284,5 +285,13 @@ public class Field implements java.io.Serializable {
 		if (fieldAnswers != null) {
 			fieldAnswers.remove(fieldAnswer);
 		}
+	}
+
+	public Set<Form> getForms() {
+		return forms;
+	}
+
+	public void setForms(Set<Form> forms) {
+		this.forms = forms;
 	}
 }

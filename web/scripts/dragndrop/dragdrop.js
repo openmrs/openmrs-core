@@ -206,12 +206,15 @@ var DragDrop = {
                            container = container.nextContainer;
                         }
 			this.isOutside = false;
+
+			var grouping = this.parentNode.id.substring(this.parentNode.id.indexOf('_'), this.parentNode.id.length);
+
 			this.parentNode.removeChild( this );
 
-			if (container.id.indexOf('allItems') == -1) {
+			if (container.id.indexOf('allItems' + grouping) == -1) {
 				var container = DragDrop.firstContainer;
 				while (container != null) {
-					if(container.id.indexOf('allItems') == 0)
+					if(container.id.indexOf('allItems' + grouping) == 0)
 					{
 						break;
 					}

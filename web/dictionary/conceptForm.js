@@ -53,7 +53,7 @@ function addConcept(nameList, idList, obj)
 	var left  = getElementLeft(nameList) + nameList.offsetWidth + 20;
 	var top   = getElementTop(nameList)-50;
 	var formWidth  = 520;
-	var formHeight = 280;
+	var formHeight = 320;
 	var windowWidth = window.innerWidth + getScrollOffsetX();
 	var windowHeight = window.innerHeight + getScrollOffsetY();
 	if (left + formWidth > windowWidth)

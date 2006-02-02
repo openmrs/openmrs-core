@@ -145,7 +145,7 @@ public class FormFormController extends SimpleFormController {
     	}
 		if (ff.isRequired())
 			s += "<span class='required'> * </span>";
-		s += "<a href='#" + ff.getFieldNumber() + "' onclick='selectField(" + ff.getFieldNumber() + ", this)' class='edit'>";
+		s += "<a href='#" + ff.getFieldNumber() + "' onmouseover='hoverField(" + ff.getFormFieldId() + ", this)' onmouseout='unHoverField(this)' onclick='selectField(" + ff.getFormFieldId() + ", this)' class='edit'>";
 		if (ff.getField().getFieldType().getFieldTypeId() == 1)
 			s += "CONCEPT." + ff.getField().getName() + " " + ff.getField().getFieldId();
 		else

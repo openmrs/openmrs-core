@@ -55,5 +55,10 @@
 			<one-to-many class="FieldAnswer" />
 		</set>
 		
+		<set name="forms" lazy="true" inverse="true" cascade="none">
+			<key column="field_id" />
+			<one-to-many class="Form" />
+		</set>
+		
 	</class>
 </hibernate-mapping>

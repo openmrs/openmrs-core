@@ -42,15 +42,17 @@ public class ListPickerTag extends TagSupport {
 		
 		str += "<table><tr>\n";
 		
-		str += "<td valign='top'>Current:<br><ul id='currentItems_" + name + "' class='sortable boxy'>\n";
+		str += "<td valign='top'>Current:<br><ul id='currentItems_" + name + "' class='sortable boxy currentItems'>\n";
 		for (Object s : currentItems) {
 			str += "<li id='" + s + "'>" + s + "</li>\n";
 			allItems.remove(s);
 		}
-		str += "</ul></td>";
 		
+		str += "</ul>";
+		str += "<div class='drophere'>Drop Here</div>";
+		str += "</td>";
 		
-		str += "<td valign='top'>All: <br><ul id='allItems_" + name + "' class='sortable boxy'>\n";
+		str += "<td style='vertical-align: top; padding-left: 30px;'>All: <br><ul id='allItems_" + name + "' class='sortable boxy allItems'>\n";
 		for (Object s : allItems) {
 			str += "<li id='" + s + "'>" + s + "</li>\n";
 		}

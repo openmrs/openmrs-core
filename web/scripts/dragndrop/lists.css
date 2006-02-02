@@ -4,12 +4,12 @@ ul.sortable li {
 
 ul.boxy {
 	list-style-type: none;
-	padding: 4px 4px 0 4px;
+	padding: 4px 4px 20px 4px;
 	margin: 0px;
 	width: 10em;
 	font-size: 13px;
 	font-family: Arial, sans-serif;
-        border: 1px solid #ccc;
+	border: 1px solid #ccc;
 }
 ul.boxy li {
 	cursor:move;
@@ -19,15 +19,21 @@ ul.boxy li {
 	background-color: #eee;
 }
 
-
-#currentItems, #currentItems li {
-border-color: darkgray;
+.drophere {
+	color: gray;
+	font-style: italic;
+	font-size: .8em;
+	float: right;
 }
 
-#allItems, #allItems li {
-border-color: #EEEEEE;
-background-color: white;
-color: darkgray;
+ul.currentItems, ul.currentItems li {
+	border-color: darkgray;
+}
+
+ul.allItems, ul.allItems li {
+	border-color: #EEEEEE;
+	background-color: white;
+	color: darkgray;
 }
 
 .savedItems {

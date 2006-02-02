@@ -143,4 +143,33 @@ public interface FormDAO {
 	 */
 	public void deleteField(Field field) throws DAOException;
 	
+	/**
+	 * 
+	 * @param formFieldId
+	 * @return
+	 * @throws DAOException
+	 */
+	public FormField getFormField(Integer formFieldId) throws DAOException;
+	
+	/**
+	 * 
+	 * @param formField
+	 * @throws DAOException
+	 */
+	public void createFormField(FormField formField) throws DAOException;
+
+	/**
+	 * 
+	 * @param formField
+	 * @throws DAOException
+	 */
+	public void updateFormField(FormField formField) throws DAOException;
+	
+	/**
+	 * 
+	 * @param formField
+	 * @throws DAOException
+	 */
+	public void deleteFormField(FormField formField) throws DAOException;
+	
 }

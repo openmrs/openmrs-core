@@ -214,4 +214,41 @@ public class FormService {
 		dao().deleteField(field);
 	}
 	
+	/**
+	 * 
+	 * @param fieldId
+	 * @return
+	 * @throws APIException
+	 */
+	public FormField getFormField(Integer formFieldId) throws APIException {
+		return dao().getFormField(formFieldId);
+	}
+	
+	/**
+	 * 
+	 * @param formField
+	 * @throws APIException
+	 */
+	public void createFormField(FormField formField) throws APIException {
+		dao().createFormField(formField);
+	}
+
+	/**
+	 * 
+	 * @param formField
+	 * @throws APIException
+	 */
+	public void updateFormField(FormField formField) throws APIException {
+		dao().updateFormField(formField);
+	}
+	
+	/**
+	 * 
+	 * @param formField
+	 * @throws APIException
+	 */
+	public void deleteFormField(FormField formField) throws APIException {
+		dao().deleteFormField(formField);
+	}
+	
 }

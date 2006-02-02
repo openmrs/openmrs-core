@@ -412,7 +412,7 @@ function updatePagingNumbers() {
 	
 	// get approx room below tablebody
 	var remainder = getWindowHeight() - parseInt(top);
-	numItemsDisplayed=Math.floor(remainder/(height + 6))-1;
+	numItemsDisplayed=Math.floor(remainder/(height + 6))-2;
 }
 
 function updateInformationBar() {

@@ -44,6 +44,13 @@
 			<param name="class" value="org.openmrs.web.dwr.DWRObsService" />
 			<include method="findObs"/>
 		</create>
+		
+		<create creator="new" javascript="DWRFormService">
+			<param name="class" value="org.openmrs.web.dwr.DWRFormService" />
+			<include method="getFormField"/>
+			<include method="getField"/>
+		</create>
+		
 	</allow>
 	
 	<signatures>

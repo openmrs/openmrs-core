@@ -44,10 +44,10 @@
 		padding: 2px;
 		background-color: whitesmoke;
 		border: 1px solid grey;
-		height: 325px;
+		height: 360px;
 	}
 	#conceptSearchResults {
-		height: 270px;
+		height: 275px;
 		overflow: auto;
 		width: 490px;
 	}

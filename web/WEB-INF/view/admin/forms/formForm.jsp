@@ -5,9 +5,9 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/prototype.lite.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/moo.fx.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/moo.fx.pack.js"></script>
+<script src='<%= request.getContextPath() %>/dwr/interface/DWRFormService.js'></script>
+<script src='<%= request.getContextPath() %>/dwr/engine.js'></script>
+<script src='<%= request.getContextPath() %>/dwr/util.js'></script>
 
 <style>
 	.indent {
@@ -16,99 +16,103 @@
 	.required {
 		color: red;
 	}
-	#addForm {
-		width: 400px;
-		position: absolute;
-		z-index: 10;
-		margin: 5px;
+	x.delete {
+		background: url(/@WEBAPP.NAME@/images/delete.gif) no-repeat center center;
 	}
-	#addForm #wrapper {
-		padding: 2px;
+	.disabled * {
+		color: gray;
 		background-color: whitesmoke;
-		border: 1px solid grey;
-		height: 235px;
-		overflow: auto;
 	}
-	.delete {
-		background-image: (/@WEBAPP.NAME@/images/delete.gif no-repeat center center);
+	.selected {
+		background-color: lightgrey;
+	}
+	
+	#previewForm {
+		width: 250px;
+		border: 1px solid darkgray;
+	}
+	
+	#formTree {
+		height: 800px;
+		overflow: auto;
+		width: 400px;
+	}
+	
+	#editForm {
+		width: 250px;
+		border: 1px solid black;
 	}
 </style>
 
 <script type="text/javascript">
-
-	var myEffect = null;
+	
+	var editForm = null;
+	var previewForm = null;
+	var selectedLink = null;
 	
 	function init() {
-		myEffect = new fx.Resize("addForm", {duration: 100});
-		myEffect.hide();
+		editForm = $('editForm');
+		previewForm = $('previewForm');
 	}
 	
-	function selectField(id, link) {
-		div = document.getElementById("addForm");
-		setPosition(link, div);
-		myEffect.toggle();
+	function hoverField(id, link) {
+		previewForm.className = "";
+		DWRFormService.getFormField(previewFormField, id);
 		return false;
+	}
+	
+	function unHoverField(link) {
+		previewForm.className = "disabled";
+		clearFormFieldPreview();
 	}
 	
 	function deleteField(id, link) {
+		//TODO: finish delete function
+		return false;
+	}
+	
+	var previewFormField = function(ff) {
+		$('p_formFieldId').innerHTML = ff.formFieldId;
+		$('p_parent').innerHTML = ff.parent.formFieldId;
+		$('p_field').innerHTML = '#' + ff.field.fieldId + " " + ff.field.name;
+		$('p_fieldNumber').innerHTML = ff.fieldNumber;
+		$('p_fieldPart').innerHTML = ff.fieldPart;
+		$('p_pageNumber').innerHTML = ff.pageNumber;
+		$('p_minOccurs').innerHTML = ff.minOccurs;
+		$('p_maxOccurs').innerHTML = ff.maxOccurs;
+		$('p_required').innerHTML = ff.required == true ? 'yes' : 'no';
+		$('p_createdBy').innerHTML = ff.createdBy.firstName + " " + ff.createdBy.lastName;
+		$('p_changedBy').innerHTML = ff.changedBy.firstName + " " + ff.changedBy.lastName;
+	}
+	
+	function clearFormFieldPreview() {
+		$('p_formFieldId').innerHTML = '';
+		$('p_parent').innerHTML = '';
+		$('p_field').innerHTML = '';
+		$('p_fieldNumber').innerHTML = '';
+		$('p_fieldPart').innerHTML = '';
+		$('p_pageNumber').innerHTML = '';
+		$('p_minOccurs').innerHTML = '';
+		$('p_maxOccurs').innerHTML = '';
+		$('p_required').innerHTML = '';
+		$('p_createdBy').innerHTML = '';
+		$('p_changedBy').innerHTML = '';
+	}
+	
+	function selectField(id, link) {
+		link.className = 'selected';
+		selectedLink = link;
+		editForm.style.visibility = 'show';
+		DWRFormService.getFormField(editFormField, id);
+	}
+	
+	var editFormField = function (ff) {
 		
-		return false;
 	}
 	
-	function setPosition(btn, form) {
-		var left  = getElementLeft(btn) + 10;
-		var top   = getElementTop(btn)+13;
-		var formWidth  = 520;
-		var formHeight = 280;
-		var windowWidth = window.innerWidth + getScrollOffsetX();
-		var windowHeight = window.innerHeight + getScrollOffsetY();
-		if (left + formWidth > windowWidth)
-			left = windowWidth - formWidth - 10;
-		if (top + formHeight > windowHeight)
-			top = windowHeight - formHeight - 10;
-		form.style.left = left + "px";
-		form.style.top = top + "px";
-	}
-	
-	function getElementLeft(elm) {
-		var x = 0;
-		while (elm != null) {
-			x+= elm.offsetLeft;
-			elm = elm.offsetParent;
-		}
-		return parseInt(x);
-	}
-	
-	function getElementTop(elm) {
-		var y = 0;
-		while (elm != null) {
-			y+= elm.offsetTop;
-			elm = elm.offsetParent;
-		}
-		return parseInt(y);
-	}
-	
-	function getScrollOffsetY() {
-		if (window.innerHeight) {
-			return window.pageYOffset;
-		}
-		else {
-			return document.documentElement.scrollTop;
-		}
-	}
-	
-	function getScrollOffsetX() {
-		if (window.innerWidth) {
-			return window.pageXOffset;
-		}
-		else {
-			return document.documentElement.scrollLeft;
-		}
-	}
-	
-	function closeBox() {
-		myEffect.hide();
-		return false;
+	function unSelectField() {
+		selectedLink.className = '';
+		editForm.style.visibility = 'hide';
 	}
 
 	var oldonload = window.onload;
@@ -129,17 +133,29 @@
 
 <br />
 
-<c:set var="parent" value=""/>
-<c:set var="last_ff" value=""/>
-
-${tree}
-
-<div id="addForm">
-	<form id="wrapper">
-		<input type="button" onClick="return closeBox();" class="closeButton" value="X"/>
-		<%@ include file="formField.jsp" %>
-		<input type="submit" value="<spring:message code="general.save"/>"/>
-	</form>
-</div>
+<table>
+	<tr>
+		<td valign="top">
+			<div id="formTree">
+				${tree}
+			</div>
+		</td>
+		<td valign="top">
+			<div id="previewForm" class="disabled">
+				<form>
+					<%@ include file="formFieldPreview.jsp" %>
+				</form>
+			</div>
+		</td>
+		<td valign="top">
+			<div id="editForm">
+				<form>
+					<%@ include file="formFieldEdit.jsp" %>
+					<input type="submit" value="<spring:message code="general.save"/>"/>
+				</form>
+			</div>
+		</td>
+	</tr>
+</table>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

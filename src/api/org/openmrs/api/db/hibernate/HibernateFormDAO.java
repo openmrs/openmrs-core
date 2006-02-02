@@ -133,7 +133,7 @@ public class HibernateFormDAO implements
 		
 		return formFields;
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.db.FormService#getField(java.lang.Integer)
 	 */
@@ -253,6 +253,65 @@ public class HibernateFormDAO implements
 		try {
 			HibernateUtil.beginTransaction();
 			session.delete(field);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new DAOException(e);
+		}
+		
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.FormFieldService#createFormField(org.openmrs.FormField)
+	 */
+	public void createFormField(FormField formField) throws DAOException {
+		
+		Session session = HibernateUtil.currentSession();
+		
+		formField.setCreator(context.getAuthenticatedUser());
+		formField.setDateCreated(new Date());
+		try {
+			HibernateUtil.beginTransaction();
+			session.save(formField);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new DAOException(e);
+		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.FormService#updateFormField(org.openmrs.FormField)
+	 */
+	public void updateFormField(FormField formField) throws DAOException {
+		if (formField.getFormFieldId() == null)
+			createFormField(formField);
+		else {
+			Session session = HibernateUtil.currentSession();
+			
+			try {
+				HibernateUtil.beginTransaction();
+				session.saveOrUpdate(formField);
+				HibernateUtil.commitTransaction();
+			}
+			catch (Exception e) {
+				HibernateUtil.rollbackTransaction();
+				throw new DAOException(e);
+			}
+		}
+	}
+
+	/**
+	 * @see org.openmrs.api.db.FormService#deleteFormField(org.openmrs.FormField)
+	 */
+	public void deleteFormField(FormField formField) throws DAOException {
+		Session session = HibernateUtil.currentSession();
+		
+		try {
+			HibernateUtil.beginTransaction();
+			session.delete(formField);
 			HibernateUtil.commitTransaction();
 		}
 		catch (Exception e) {
