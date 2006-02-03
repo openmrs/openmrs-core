@@ -2,8 +2,11 @@ html {
 	height: 100%;
 }
 
-body {
+* {
 	font-family: 'Trebuchet MS', 'Lucida Grande', Verdana, Arial, Sans-Serif;
+}
+
+body {
 	padding: 0px;
 	height: 100%;
 }

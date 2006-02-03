@@ -5,6 +5,7 @@ public class OptionsForm {
 	private String defaultLocation = "";
 	private String defaultLanguage = "";
 	private Boolean showRetiredMessage = true;
+	private Boolean verbose = false;
 	
 	private String oldPassword = "";
 	private String newPassword = "";
@@ -111,6 +112,14 @@ public class OptionsForm {
 	 */
 	public void setNotification(String notification) {
 		this.notification = notification;
+	}
+
+	public Boolean getVerbose() {
+		return verbose;
+	}
+
+	public void setVerbose(Boolean verbose) {
+		this.verbose = verbose;
 	}
 
 		

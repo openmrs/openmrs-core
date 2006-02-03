@@ -146,6 +146,18 @@ function containsError(element) {
 			</spring:bind>
 		</td>
 	</tr>
+	<tr>
+		<td><spring:message code="options.default.verbose" /></td>
+		<td>
+			<spring:bind path="opts.verbose">
+				<input type="hidden" name="_${status.expression}" value="true" />
+				<input type="checkbox" name="${status.expression}" value="true" <c:if test="${status.value == true}">checked</c:if> />
+				<c:if test="${status.errorMessage != ''}">
+					<span class="error">${status.errorMessage}</span>
+				</c:if>
+			</spring:bind>
+		</td>
+	</tr>
 </table>
 <br /><br />
 <br />
@@ -188,13 +200,7 @@ function containsError(element) {
 			</spring:bind>
 		</td>
 	</tr>
-</table>
-<br /><br />
-<br />
-</fieldset>
-
-<fieldset><legend><spring:message code="options.secretQuestion.legend" /></legend>
-<table>
+	<tr><td colspan="2"><br/></td></tr>
 	<tr>
 		<td><spring:message code="User.password" /></td>
 		<td>
@@ -243,7 +249,7 @@ function containsError(element) {
 		</td>
 	</tr>
 </table>
-<br />
+<br /><br />
 <br />
 </fieldset>
 

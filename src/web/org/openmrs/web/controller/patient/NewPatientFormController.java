@@ -29,6 +29,7 @@ import org.openmrs.web.dwr.PatientListItem;
 import org.openmrs.web.propertyeditor.TribeEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -66,13 +67,15 @@ public class NewPatientFormController extends SimpleFormController {
 	
 		PatientListItem pli = (PatientListItem)obj;
 
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "familyName", "error.name");
-		if (pli.getPatientId() == null) {
-			// if this is a new patient, they must input an identifier
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "identifier", "error.null");
+		MessageSourceAccessor msa = getMessageSourceAccessor();
+		if (request.getParameter("action") == null || request.getParameter("action").equals(msa.getMessage("general.save"))) {
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "familyName", "error.name");
+			if (pli.getPatientId() == null) {
+				// if this is a new patient, they must input an identifier
+				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "identifier", "error.null");
+			}
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "gender", "error.null");
 		}
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "gender", "error.null");
-		
 		return super.processFormSubmission(request, response, pli, errors);
 	}
 
@@ -87,12 +90,18 @@ public class NewPatientFormController extends SimpleFormController {
 		
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-				
+		
 		if (context != null && context.isAuthenticated()) {
-			
 			PatientService ps = context.getPatientService();
-			
 			PatientListItem p = (PatientListItem)obj;
+			String view = getSuccessView();
+			
+			MessageSourceAccessor msa = getMessageSourceAccessor();
+			if (request.getParameter("action") != null && request.getParameter("action").equals(msa.getMessage("general.cancel"))) {
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "general.canceled");
+				return new ModelAndView(new RedirectView(view + "?patientId=" + p.getPatientId()));
+			}
+			
 			Patient patient = new Patient();
 			if (p.getPatientId() != null)
 				patient = ps.getPatient(p.getPatientId());
@@ -140,8 +149,6 @@ public class NewPatientFormController extends SimpleFormController {
 			patient.setTribe(t);
 			
 			ps.updatePatient(patient);
-			
-			String view = getSuccessView();
 						
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.saved");
 			return new ModelAndView(new RedirectView(view + "?patientId=" + patient.getPatientId()));

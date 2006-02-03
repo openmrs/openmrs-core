@@ -343,7 +343,7 @@ function fillTable(objects, cells) {
     if (typeof customRowOptions == "undefined")
     	customRowOptions = {'rowCreator':rowCreator};
     	
-    if (debugBox != null) debugBox.innerHTML += "<br>funcs: " + customCellFunctions + ":";
+    if (debugBox != null) debugBox.innerHTML += "<br>funcs: " + funcs + ":";
     
     DWRUtil.addRows(objectHitsTableBody, objs, funcs, customRowOptions);
     
@@ -401,17 +401,16 @@ function updatePagingNumbers() {
 
 	// get top position of body element
 	var tbody = objectHitsTableBody;
-	var top = tbody.offsetTop;
-	var parent = tbody.offsetParent;
-	while (parent != null) {
-		top+= parent.offsetTop;
-		parent = parent.offsetParent;
-	}
+	var top = getElementTop(tbody);
 	
 	var height = getRowHeight(); //approx. row height
 	
 	// get approx room below tablebody
 	var remainder = getWindowHeight() - parseInt(top);
+	
+	if (debugBox != null) debugBox.innerHTML += "<br>rowHeight(): " + height;
+	if (debugBox != null) debugBox.innerHTML += "<br>top: " + top;
+	
 	numItemsDisplayed=Math.floor(remainder/(height + 6))-2;
 }
 
@@ -511,15 +510,14 @@ function getWindowHeight() {
     myHeight = document.body.clientHeight;
     //alert("myHeight3 : " + myHeight);
   }
-  
+
   return parseInt(myHeight);
 }
 
 function getRowHeight() {
 	var h = 0;
 	h = getStyle(textbox, 'height');
-	h = parseInt(h.slice(0, h.length - 2)); //remove 'px' from height
-	if (parseInt(h) >= 0) {
+	if (h == 'auto') {
 		// this silly code is brought to you courtesy of the ever-standards-compliant IE web browser designers
 		h = getStyle(textbox, 'lineHeight');
 		if (h == 'largest')
@@ -529,8 +527,11 @@ function getRowHeight() {
 		else
 			h = 13; //normal
 	}
-	
-	if (typeof customGetRowHeight != 'undefined') return customGetRowHeight(h);
+	else {
+		h = parseInt(h.slice(0, h.length - 2)); //remove 'px' from height
+	}
+
+	if (typeof customGetRowHeight != 'undefined') h = customGetRowHeight(h);
 	
 	return h;
 	

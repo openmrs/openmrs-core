@@ -90,6 +90,7 @@ public class OptionsFormController extends SimpleFormController {
 		properties.put("defaultLocation", opts.getDefaultLocation());
 		properties.put("defaultLanguage", opts.getDefaultLanguage());
 		properties.put("showRetired", opts.getShowRetiredMessage().toString());
+		properties.put("verbose", opts.getVerbose().toString());
 		user.setProperties(properties);
 		
 		
@@ -144,6 +145,7 @@ public class OptionsFormController extends SimpleFormController {
 			opts.setDefaultLocation(props.get("defaultLocation"));
 			opts.setDefaultLanguage(props.get("defaultLanguage"));
 			opts.setShowRetiredMessage(new Boolean(props.get("showRetired")));
+			opts.setVerbose(new Boolean(props.get("verbose")));
 			
 		}
 		

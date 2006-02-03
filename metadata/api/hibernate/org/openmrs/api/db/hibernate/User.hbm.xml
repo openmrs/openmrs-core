@@ -57,7 +57,7 @@
 		<!-- Associations -->
 
 		<!-- bi-directional many-to-many association to Role -->
-		<set name="groups" table="user_group" lazy="false" cascade="save-update">
+		<set name="groups" table="user_group" lazy="false" cascade="save-update,merge,evict">
 			<key>
 				<column name="user_id" />
 			</key>
@@ -68,7 +68,7 @@
 		
 
 		<!-- bi-directional many-to-many association to Role -->
-		<set name="roles" table="user_role" lazy="false" cascade="save-update">
+		<set name="roles" table="user_role" lazy="false" cascade="save-update,merge,evict">
 			<key>
 				<column name="user_id" />
 			</key>

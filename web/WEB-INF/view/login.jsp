@@ -21,7 +21,7 @@
 	<input type="submit" value="<spring:message code="auth.login"/>" />
 </form>	
 
-<script>
+<script type="text/javascript">
  document.getElementById('username').focus();
 </script>
 	

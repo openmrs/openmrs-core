@@ -66,23 +66,23 @@
 	<form id="selectFormForm" method="post" action="<%= request.getContextPath() %>/formDownload">
 		<table>
 			<tr>
-				<td><input type="radio" name="formType" value="adultInitial" id="adultInitial"></td>
+				<td><input type="radio" name="formId" value="adultInitial" id="adultInitial"></td>
 				<td><strike><label for="adultInitial">Adult Initial</label></strike></td>
 			</tr>
 			<tr>
-				<td><input type="radio" name="formType" value="adultReturn" id="adultReturn"></td>
+				<td><input type="radio" name="formId" value="14" id="adultReturn"></td>
 				<td><label for="adultReturn">Adult Return</label></td>
 			</tr>
 			<tr>
-				<td><input type="radio" name="formType" value="adultReturn_local" id="adultReturn_local"></td>
+				<td><input type="radio" name="formId" value="adultReturn_local" id="adultReturn_local"></td>
 				<td><label for="adultReturn_local">Adult Return (Localhost)</label></td>
 			</tr>
 			<tr>
-				<td><input type="radio" name="formType" value="pedInitial" id="pedInitial"></td>
+				<td><input type="radio" name="formId" value="pedInitial" id="pedInitial"></td>
 				<td><strike><label for="pedInitial">Ped Initial</label></strike></td>
 			</tr>
 			<tr>
-				<td><input type="radio" name="formType" value="pedReturn" id="pedReturn"></td>
+				<td><input type="radio" name="formId" value="pedReturn" id="pedReturn"></td>
 				<td><strike><label for="pedReturn">Ped Return</label></strike></td>
 			</tr>
 		</table>

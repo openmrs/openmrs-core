@@ -164,7 +164,8 @@
 	<input type="hidden" name="pId" value="${param.pId}" />
 	
 	<br />
-	<input type="submit" value="<spring:message code="general.save" />" id="addButton">
+	<input type="submit" value="<spring:message code="general.save" />" name="action" id="addButton"> &nbsp; &nbsp; 
+	<input type="submit" value="<spring:message code="general.cancel" />" name="action" id="cancelButton">
 </form>
 
 <script type="text/javascript">

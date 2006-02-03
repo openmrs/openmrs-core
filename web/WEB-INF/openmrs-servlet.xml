@@ -45,7 +45,7 @@
 					<prop key="**/encounterType.form">encounterTypeForm</prop>
 					<prop key="**/location.list">locationList</prop>
 					<prop key="**/location.form">locationForm</prop>
-					<prop key="**/provider.htm">providerForm</prop>
+					<prop key="**/tribe.htm">tribeListTaskpane</prop>
 					<prop key="**/concept.form">conceptForm</prop>
 					<prop key="**/dictionary/concept.htm">conceptView</prop>
 					<prop key="**/conceptClass.list">conceptClassList</prop>
@@ -174,6 +174,13 @@
 					<property name="formView"><value>/admin/patients/tribeForm</value></property>
 					<property name="successView"><value>tribe.list</value></property>
 				</bean>
+				<bean id="tribeListTaskpane" class="org.openmrs.web.controller.TribeListController">
+					<property name="commandName"><value>tribes</value></property>
+					<property name="commandClass"><value>java.util.List</value></property>
+					<property name="formView"><value>/formentry/taskpane/tribe</value></property>
+					<property name="successView"><value>/formentry/taskpane/tribe</value></property>
+				</bean>
+				
 			<!-- ** /Tribe   ** -->
 			<!-- **  Patient Identifier Type   ** -->
 				<bean id="patientIdentifierTypeList" class="org.openmrs.web.controller.patient.PatientIdentifierTypeListController">
@@ -476,12 +483,6 @@
 	    <!-- =========================== -->
 		<!-- =====      Other      ===== -->
 	    <!-- =========================== -->
-			<bean id="providerForm" class="org.openmrs.web.controller.ProviderFormController">
-				<property name="commandName"><value>list</value></property>
-				<property name="commandClass"><value>java.util.List</value></property>
-				<property name="formView"><value>/formentry/taskpane/provider</value></property>
-				<property name="successView"><value>/formentry/taskpane/provider</value></property>
-			</bean>
 			<bean id="optionsForm" class="org.openmrs.web.controller.OptionsFormController">
 				<property name="commandName"><value>opts</value></property>
 				<property name="commandClass"><value>org.openmrs.web.OptionsForm</value></property>

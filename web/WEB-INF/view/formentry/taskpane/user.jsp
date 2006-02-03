@@ -86,4 +86,6 @@
   document.getElementById('phrase').focus();
 </script>
 
+<br/><br/>
+
 <%@ include file="/WEB-INF/template/footer.jsp" %>

@@ -9,12 +9,12 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.UserService;
+import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
-public class ProviderFormController extends SimpleFormController {
+public class TribeListController extends SimpleFormController {
 	
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
@@ -31,16 +31,14 @@ public class ProviderFormController extends SimpleFormController {
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-		List userList = null;
+		List tribeList = new Vector();
+		
 		if (context != null && context.isAuthenticated()) {
-			UserService us = context.getUserService();
-	    	userList = us.getUsersByRole(us.getRole("provider"));	
+			PatientService ps = context.getPatientService();
+	    	tribeList = ps.getTribes();
 		}
 		
-		if (userList == null)
-			userList = new Vector();
-    	
-        return userList;
+        return tribeList;
     }
     
 }

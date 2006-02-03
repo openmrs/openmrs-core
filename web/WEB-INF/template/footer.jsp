@@ -2,6 +2,7 @@
 		</div>
 	</div>
 
+	<br/>
 	<div id="footer">
 		
 		<%  //removes last instance of lang= from querystring

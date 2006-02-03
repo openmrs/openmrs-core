@@ -55,7 +55,8 @@ var getCellContent = function(conceptHit) {
 	};
 	
 function customGetRowHeight(height) {
-	if ($('verboseListing').checked)
+	var verbose = $('verboseListing');
+	if (verbose != null && verbose.checked)
 		return parseInt(height * 3);
 	else
 		return height;
