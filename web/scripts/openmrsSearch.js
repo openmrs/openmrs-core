@@ -474,6 +474,7 @@ function getStyle(obj,styleProp) {
 }
 
 function hotkey(event) {
+	if (!event) var event = window.event;
 	var k = event.keyCode;
 	if (event.ctrlKey == true) { //if CONTROL-*
 		if (k == 33) { //PAGE UP
