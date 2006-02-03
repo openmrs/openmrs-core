@@ -1,480 +1,496 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?mso-infoPathSolution solutionVersion="1.0.0.43"
-                       href="http://dev.openmrs.org/openmrs/formentry/forms/adult_return_visit.xsn"
-                       productVersion="11.0.6357" PIVersion="1.0.0.0" ?>
+<?mso-infoPathSolution name="urn:schemas-microsoft-com:office:infopath:arsf-0-1:" href="manifest.xsf" solutionVersion="1.0.0.46" productVersion="11.0.6357" PIVersion="1.0.0.0" ?>
 <?mso-application progid="InfoPath.Document"?>
-<form id="14" name="AMPATH Adult Return Visit Form" version="0.01"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xmlns:amrs="http://schema.iukenya.org/2005/AMRS/FormEntry_1"
-      xmlns:my="http://schemas.iukenya.org/2005/AMRS/FormEntry_1"
-      xmlns:xd="http://schemas.microsoft.com/office/infopath/2003" >
+<form id="14" name="AMPATH Adult Return Visit Form" version="0.10" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:openmrs="http://schema.iukenya.org/2005/AMRS/FormEntry_1" xmlns:my="http://schemas.microsoft.com/office/infopath/2003/myXSD/2005-02-23T09:03:23" xmlns:xd="http://schemas.microsoft.com/office/infopath/2003">
 	<header>
-		<enterer></enterer>
-		<date_entered></date_entered>
+		<enterer>2^Super User</enterer>
+		<date_entered>2006-02-02T15:20:04-05:00</date_entered>
+		<session></session>
 	</header>
 	<patient>
-		<patient.family_name></patient.family_name>
-		<patient.given_name></patient.given_name>
-		<patient.medical_record_number></patient.medical_record_number>
-		<patient.middle_name></patient.middle_name>
-		<patient.patient_id></patient.patient_id>
-		<patient.previous_mrn xsi:nil="true"></patient.previous_mrn>
+		<patient.family_name openmrs_table="patient_name" openmrs_attribute="family_name">Patient</patient.family_name>
+		<patient.given_name openmrs_table="patient_name" openmrs_attribute="given_name">John</patient.given_name>
+		<patient.medical_record_number openmrs_table="patient_identifier" openmrs_attribute="identifier">0CH-9</patient.medical_record_number>
+		<patient.middle_name openmrs_table="patient" openmrs_attribute="middle_name">D</patient.middle_name>
+		<patient.patient_id openmrs_table="patient" openmrs_attribute="patient_id">1</patient.patient_id>
+		<patient.previous_mrn openmrs_table="patient_identifier" openmrs_attribute="identifier" xsi:nil="true"></patient.previous_mrn>
 	</patient>
 	<encounter>
-		<encounter.encounter_datetime xsi:nil="true"></encounter.encounter_datetime>
-		<encounter.location_id xsi:nil="true"></encounter.location_id>
-		<encounter.provider_id xsi:nil="true"></encounter.provider_id>
+		<encounter.encounter_datetime openmrs_table="encounter" openmrs_attribute="encounter_datetime"></encounter.encounter_datetime>
+		<encounter.location_id openmrs_table="encounter" openmrs_attribute="location_id"></encounter.location_id>
+		<encounter.provider_id openmrs_table="encounter" openmrs_attribute="provider_id"></encounter.provider_id>
 	</encounter>
-	<obs>
-		<scheduled_visit amrs_term_id="1246">
+	<obs openmrs_concept="1238^MEDICAL RECORD OBSERVATIONS^99DCT" openmrs_datatype="ZZ">
+		<scheduled_visit openmrs_concept="1246^SCHEDULED VISIT^99DCT" openmrs_datatype="BIT">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value infopath_boolean_hack="1" xsi:nil="true"></value>
 		</scheduled_visit>
-		<pay_category amrs_term_id="5282">
+		<pay_category openmrs_concept="5282^PAY CATEGORY^99DCT" openmrs_datatype="CWE" multiple="0">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</pay_category>
-		<discordant_couple amrs_term_id="6096">
+		<discordant_couple openmrs_concept="6096^DISCORDANT COUPLE^99DCT" openmrs_datatype="CWE" multiple="0">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</discordant_couple>
-		<antiretrovirals_used_for_mtct_prophylaxis amrs_term_id="1084">
+		<antiretrovirals_used_for_mtct_prophylaxis openmrs_concept="1084^ANTIRETROVIRALS USED FOR MTCT PROPHYLAXIS^99DCT" openmrs_datatype="BIT">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value infopath_boolean_hack="1" xsi:nil="true"></value>
 		</antiretrovirals_used_for_mtct_prophylaxis>
-		<pregnancy_status amrs_term_id="5272">
+		<pregnancy_status openmrs_concept="5272^PREGNANCY STATUS^99DCT" openmrs_datatype="BIT">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value infopath_boolean_hack="1" xsi:nil="true"></value>
 		</pregnancy_status>
-		<antiretroviral_use_during_pregnancy amrs_term_id="1147">
+		<antiretroviral_use_during_pregnancy openmrs_concept="1147^ANTIRETROVIRAL USE DURING PREGNANCY^99DCT" openmrs_datatype="CWE" multiple="0">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</antiretroviral_use_during_pregnancy>
-		<child_of_hiv_patient_in_clinic amrs_term_id="1153">
+		<child_of_hiv_patient_in_clinic openmrs_concept="1153^CHILD OF HIV PATIENT IN CLINIC^99DCT" openmrs_datatype="BIT">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value infopath_boolean_hack="1" xsi:nil="true"></value>
 		</child_of_hiv_patient_in_clinic>
-		<conception_since_last_visit amrs_term_id="1146">
+		<conception_since_last_visit openmrs_concept="1146^CONCEPTION SINCE LAST VISIT^99DCT" openmrs_datatype="BIT">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value infopath_boolean_hack="1" xsi:nil="true"></value>
 		</conception_since_last_visit>
-		<date_of_confinement amrs_term_id="5599">
+		<date_of_confinement openmrs_concept="5599^DATE OF CONFINEMENT^99DCT" openmrs_datatype="TS">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</date_of_confinement>
-		<history_of_nevirapine_to_infant amrs_term_id="6095">
+		<history_of_nevirapine_to_infant openmrs_concept="6095^HISTORY OF NEVIRAPINE TO INFANT^99DCT" openmrs_datatype="BIT">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value infopath_boolean_hack="1" xsi:nil="true"></value>
 		</history_of_nevirapine_to_infant>
-		<infant_feeding_method amrs_term_id="1151">
+		<infant_feeding_method openmrs_concept="1151^INFANT FEEDING METHOD^99DCT" openmrs_datatype="CWE" multiple="0">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</infant_feeding_method>
-		<number_of_weeks_pregnant amrs_term_id="1279">
+		<number_of_weeks_pregnant openmrs_concept="1279^NUMBER OF WEEKS PREGNANT^99DCT" openmrs_datatype="NM">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</number_of_weeks_pregnant>
-		<new_complaints amrs_term_id="1154">
+		<new_complaints openmrs_concept="1154^NEW COMPLAINTS^99DCT" openmrs_datatype="BIT">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value infopath_boolean_hack="1" xsi:nil="true"></value>
 		</new_complaints>
-		<antiretroviral_use amrs_term_id="1192">
+		<antiretroviral_use openmrs_concept="1192^ANTIRETROVIRAL USE^99DCT" openmrs_datatype="BIT">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value infopath_boolean_hack="1" xsi:nil="true"></value>
 		</antiretroviral_use>
-		<medication_history>
-			<patient_reported_antiretroviral_use amrs_term_id="1088">
-				<date xsi:nil="true"></date>
-				<time xsi:nil="true"></time>
-				<combivir>false</combivir>
-				<triomune-30>false</triomune-30>
-				<triomune-40>false</triomune-40>
-				<_3tc>false</_3tc>
-				<d4t-30>false</d4t-30>
-				<d4t-40>false</d4t-40>
-				<azt>false</azt>
-				<abc>false</abc>
-				<ddi_125>false</ddi_125>
-				<ddi_200>false</ddi_200>
-				<tdf>false</tdf>
-				<efv>false</efv>
-				<nvp>false</nvp>
-				<nfv>false</nfv>
-				<kaletra>false</kaletra>
-			</patient_reported_antiretroviral_use>
-			<patient_reported_current_cryptococcus_treatment amrs_term_id="1112">
-				<date xsi:nil="true"></date>
-				<time xsi:nil="true"></time>
-				<value xsi:nil="true"></value>
-			</patient_reported_current_cryptococcus_treatment>
-			<patient_reported_current_pcp_prophylaxis amrs_term_id="1109">
-				<date xsi:nil="true"></date>
-				<time xsi:nil="true"></time>
-				<value xsi:nil="true"></value>
-			</patient_reported_current_pcp_prophylaxis>
-			<patient_reported_current_tuberculosis_prophylaxis amrs_term_id="1110">
-				<date xsi:nil="true"></date>
-				<time xsi:nil="true"></time>
-				<value xsi:nil="true"></value>
-			</patient_reported_current_tuberculosis_prophylaxis>
-			<patient_reported_current_tuberculosis_treatment amrs_term_id="1111">
-				<date xsi:nil="true"></date>
-				<time xsi:nil="true"></time>
-				<streptomycin>false</streptomycin>
-				<isoniazid>false</isoniazid>
-				<ethambutol>false</ethambutol>
-				<rifampicin>false</rifampicin>
-				<rifampicin_isoniazid_and_pyrazinamide>false</rifampicin_isoniazid_and_pyrazinamide>
-				<none>false</none>
-				<ethambutol_and_isonizaid>false</ethambutol_and_isonizaid>
-				<rifampicin_isoniazid_pyrazinamide_and_ethambutol>false</rifampicin_isoniazid_pyrazinamide_and_ethambutol>
-				<pyrazinamide>false</pyrazinamide>
-			</patient_reported_current_tuberculosis_treatment>
-		</medication_history>
-		<primary_regimen amrs_term_id="1155">
+		<primary_regimen openmrs_concept="1155^PRIMARY REGIMEN^99DCT" openmrs_datatype="BIT">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value infopath_boolean_hack="1" xsi:nil="true"></value>
 		</primary_regimen>
-		<tuberculosis_drug_treatment_start_date amrs_term_id="1113">
+		<tuberculosis_drug_treatment_start_date openmrs_concept="1113^TUBERCULOSIS DRUG TREATMENT START DATE^99DCT" openmrs_datatype="DT">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</tuberculosis_drug_treatment_start_date>
-		<antiretroviral_adherence_in_past_week amrs_term_id="1164">
+		<antiretroviral_adherence_in_past_week openmrs_concept="1164^ANTIRETROVIRAL ADHERENCE IN PAST WEEK^99DCT" openmrs_datatype="CWE" multiple="0">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</antiretroviral_adherence_in_past_week>
-		<cryptococcus_treatment_adherence_in_past_week amrs_term_id="1247">
+		<cryptococcus_treatment_adherence_in_past_week openmrs_concept="1247^CRYPTOCOCCUS TREATMENT ADHERENCE IN PAST WEEK^99DCT" openmrs_datatype="CWE" multiple="0">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</cryptococcus_treatment_adherence_in_past_week>
-		<overall_drug_adherence_in_last_month amrs_term_id="1156">
+		<overall_drug_adherence_in_last_month openmrs_concept="1156^OVERALL DRUG ADHERENCE IN LAST MONTH^99DCT" openmrs_datatype="CWE" multiple="1">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
-			<yes>false</yes>
-			<no>false</no>
-			<antiretroviral_drugs>false</antiretroviral_drugs>
-			<pneumocystic_carinii_pneumonia_prophylactic_drugs>false</pneumocystic_carinii_pneumonia_prophylactic_drugs>
-			<tuberculosis_prophylactic_drugs>false</tuberculosis_prophylactic_drugs>
-			<tuberculosis_treatment_drugs>false</tuberculosis_treatment_drugs>
+			<yes openmrs_concept="1065^YES^99DCT">false</yes>
+			<no openmrs_concept="1066^NO^99DCT">false</no>
+			<antiretroviral_drugs openmrs_concept="1085^ANTIRETROVIRAL DRUGS^99DCT">false</antiretroviral_drugs>
+			<pneumocystic_carinii_pneumonia_prophylactic_drugs openmrs_concept="1157^PNEUMOCYSTIC CARINII PNEUMONIA PROPHYLACTIC DRUGS^99DCT">false</pneumocystic_carinii_pneumonia_prophylactic_drugs>
+			<tuberculosis_prophylactic_drugs openmrs_concept="1158^TUBERCULOSIS PROPHYLACTIC DRUGS^99DCT">false</tuberculosis_prophylactic_drugs>
+			<tuberculosis_treatment_drugs openmrs_concept="1159^TUBERCULOSIS TREATMENT DRUGS^99DCT">false</tuberculosis_treatment_drugs>
 		</overall_drug_adherence_in_last_month>
-		<pcp_prophylaxis_adherence_in_past_week amrs_term_id="6065">
+		<pcp_prophylaxis_adherence_in_past_week openmrs_concept="6065^PCP PROPHYLAXIS ADHERENCE IN PAST WEEK^99DCT" openmrs_datatype="CWE" multiple="0">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</pcp_prophylaxis_adherence_in_past_week>
-		<tuberculosis_prophylaxis_adherence_in_past_week amrs_term_id="1165">
+		<tuberculosis_prophylaxis_adherence_in_past_week openmrs_concept="1165^TUBERCULOSIS PROPHYLAXIS ADHERENCE IN PAST WEEK^99DCT" openmrs_datatype="CWE" multiple="0">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</tuberculosis_prophylaxis_adherence_in_past_week>
-		<tuberculosis_treatment_adherence_in_past_week amrs_term_id="6077">
+		<tuberculosis_treatment_adherence_in_past_week openmrs_concept="6077^TUBERCULOSIS TREATMENT ADHERENCE IN PAST WEEK^99DCT" openmrs_datatype="CWE" multiple="0">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</tuberculosis_treatment_adherence_in_past_week>
-		<blood_oxygen_saturation amrs_term_id="5092">
+		<blood_oxygen_saturation openmrs_concept="5092^BLOOD OXYGEN SATURATION^99DCT" openmrs_datatype="NM">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</blood_oxygen_saturation>
-		<diastolic_blood_pressure amrs_term_id="5086">
+		<diastolic_blood_pressure openmrs_concept="5086^DIASTOLIC BLOOD PRESSURE^99DCT" openmrs_datatype="NM">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</diastolic_blood_pressure>
-		<general_exam_findings amrs_term_id="1119">
+		<general_exam_findings openmrs_concept="1119^GENERAL EXAM FINDINGS^99DCT" openmrs_datatype="CWE" multiple="1">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
-			<lymphadenopathy>false</lymphadenopathy>
-			<jaundice>false</jaundice>
-			<oedema>false</oedema>
-			<temporal_wasting>false</temporal_wasting>
-			<gluteal_wasting>false</gluteal_wasting>
-			<oral_sores>false</oral_sores>
-			<pallor>false</pallor>
+			<lymphadenopathy openmrs_concept="161^LYMPHADENOPATHY^99DCT">false</lymphadenopathy>
+			<jaundice openmrs_concept="215^JAUNDICE^99DCT">false</jaundice>
+			<oedema openmrs_concept="460^OEDEMA^99DCT">false</oedema>
+			<temporal_wasting openmrs_concept="5201^TEMPORAL WASTING^99DCT">false</temporal_wasting>
+			<gluteal_wasting openmrs_concept="5243^GLUTEAL WASTING^99DCT">false</gluteal_wasting>
+			<oral_sores openmrs_concept="5244^ORAL SORES^99DCT">false</oral_sores>
+			<pallor openmrs_concept="5245^PALLOR^99DCT">false</pallor>
 		</general_exam_findings>
-		<height_cm amrs_term_id="5090">
+		<height_cm openmrs_concept="5090^HEIGHT (CM)^99DCT" openmrs_datatype="NM">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</height_cm>
-		<mucocutaneous_exam_findings amrs_term_id="1166">
+		<mucocutaneous_exam_findings openmrs_concept="1166^MUCOCUTANEOUS EXAM FINDINGS^99DCT" openmrs_datatype="CWE" multiple="1">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
-			<candidiasis_oral>false</candidiasis_oral>
-			<kaposi_sarcoma_oral>false</kaposi_sarcoma_oral>
-			<rash>false</rash>
+			<candidiasis_oral openmrs_concept="5334^CANDIDIASIS, ORAL^99DCT">false</candidiasis_oral>
+			<kaposi_sarcoma_oral openmrs_concept="644^KAPOSI SARCOMA ORAL^99DCT">false</kaposi_sarcoma_oral>
+			<rash openmrs_concept="512^RASH^99DCT">false</rash>
 		</mucocutaneous_exam_findings>
-		<pulse amrs_term_id="5087">
+		<pulse openmrs_concept="5087^PULSE^99DCT" openmrs_datatype="NM">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</pulse>
-		<systolic_blood_pressure amrs_term_id="5085">
+		<systolic_blood_pressure openmrs_concept="5085^SYSTOLIC BLOOD PRESSURE^99DCT" openmrs_datatype="NM">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</systolic_blood_pressure>
-		<temperature_c amrs_term_id="5088">
+		<temperature_c openmrs_concept="5088^TEMPERATURE (C)^99DCT" openmrs_datatype="NM">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</temperature_c>
-		<weight_kg amrs_term_id="5089">
+		<weight_kg openmrs_concept="5089^WEIGHT (KG)^99DCT" openmrs_datatype="NM">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</weight_kg>
-		<current_who_hiv_stage amrs_term_id="5356">
+		<current_who_hiv_stage openmrs_concept="5356^CURRENT WHO HIV STAGE^99DCT" openmrs_datatype="CWE" multiple="0">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</current_who_hiv_stage>
-		<new_who_slash_cdc_staging_criteria_met amrs_term_id="1248">
+		<new_who_slash_cdc_staging_criteria_met openmrs_concept="1248^NEW WHO/CDC STAGING CRITERIA MET^99DCT" openmrs_datatype="BIT">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value infopath_boolean_hack="1" xsi:nil="true"></value>
 		</new_who_slash_cdc_staging_criteria_met>
-		<absolute_lymphocyte_count amrs_term_id="952">
+		<absolute_lymphocyte_count openmrs_concept="952^ABSOLUTE LYMPHOCYTE COUNT^99DCT" openmrs_datatype="NM">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</absolute_lymphocyte_count>
-		<cd4_count amrs_term_id="5497">
+		<cd4_count openmrs_concept="5497^CD4 COUNT^99DCT" openmrs_datatype="NM">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</cd4_count>
-		<cd4_percent amrs_term_id="730">
+		<cd4_percent openmrs_concept="730^CD4%^99DCT" openmrs_datatype="NM">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</cd4_percent>
-		<cd8_count amrs_term_id="853">
+		<cd8_count openmrs_concept="853^CD8 COUNT^99DCT" openmrs_datatype="NM">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</cd8_count>
-		<hemoglobin amrs_term_id="21">
+		<hemoglobin openmrs_concept="21^HEMOGLOBIN^99DCT" openmrs_datatype="NM">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</hemoglobin>
-		<hiv_enzyme_immunoassay_qualitative amrs_term_id="1042">
+		<hiv_enzyme_immunoassay_qualitative openmrs_concept="1042^HIV ENZYME IMMUNOASSAY, QUALITATIVE^99DCT" openmrs_datatype="CWE" multiple="0">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</hiv_enzyme_immunoassay_qualitative>
-		<hiv_viral_load amrs_term_id="856">
+		<hiv_viral_load openmrs_concept="856^HIV VIRAL LOAD^99DCT" openmrs_datatype="NM">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</hiv_viral_load>
-		<mean_corpuscular_volume amrs_term_id="851">
+		<mean_corpuscular_volume openmrs_concept="851^MEAN CORPUSCULAR VOLUME^99DCT" openmrs_datatype="NM">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</mean_corpuscular_volume>
-		<platelets amrs_term_id="729">
+		<platelets openmrs_concept="729^PLATELETS^99DCT" openmrs_datatype="NM">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</platelets>
-		<serum_creatinine amrs_term_id="790">
+		<serum_creatinine openmrs_concept="790^SERUM CREATININE^99DCT" openmrs_datatype="NM">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</serum_creatinine>
-		<serum_glutamic-pyruvic_transaminase amrs_term_id="654">
+		<serum_glutamic-pyruvic_transaminase openmrs_concept="654^SERUM GLUTAMIC-PYRUVIC TRANSAMINASE^99DCT" openmrs_datatype="NM">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</serum_glutamic-pyruvic_transaminase>
-		<vdrl amrs_term_id="299">
+		<vdrl openmrs_concept="299^VDRL^99DCT" openmrs_datatype="CWE" multiple="0">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</vdrl>
-		<white_blood_cells amrs_term_id="678">
+		<white_blood_cells openmrs_concept="678^WHITE BLOOD CELLS^99DCT" openmrs_datatype="NM">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</white_blood_cells>
-		<x-ray_chest amrs_term_id="12">
+		<x-ray_chest openmrs_concept="12^X-RAY, CHEST^99DCT" openmrs_datatype="CWE" multiple="0">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</x-ray_chest>
-		<medication_received_at_vist amrs_term_id="1276">
+		<medication_received_at_vist openmrs_concept="1276^MEDICATION RECEIVED AT VIST^99DCT" openmrs_datatype="BIT">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value infopath_boolean_hack="1" xsi:nil="true"></value>
 		</medication_received_at_vist>
-		<patient_hospitalized amrs_term_id="1273">
+		<patient_hospitalized openmrs_concept="1273^PATIENT HOSPITALIZED^99DCT" openmrs_datatype="CWE" multiple="0">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</patient_hospitalized>
-		<return_visit_date amrs_term_id="5096">
+		<return_visit_date openmrs_concept="5096^RETURN VISIT DATE^99DCT" openmrs_datatype="DT">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</return_visit_date>
-		<transfer_care_to_other_center amrs_term_id="1285">
+		<transfer_care_to_other_center openmrs_concept="1285^TRANSFER CARE TO OTHER CENTER^99DCT" openmrs_datatype="CWE" multiple="0">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
 			<value xsi:nil="true"></value>
 		</transfer_care_to_other_center>
 	</obs>
-	<problem_list></problem_list>
+	<problem_list openmrs_concept="1284^PROBLEM LIST^99DCT" openmrs_datatype="ZZ">
+		<problem_added openmrs_concept="6042^PROBLEM ADDED^99DCT" openmrs_datatype="CWE" multiple="0">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</problem_added>
+		<problem_resolved openmrs_concept="6097^PROBLEM RESOLVED^99DCT" openmrs_datatype="CWE" multiple="0">
+			<date xsi:nil="true"></date>
+			<time xsi:nil="true"></time>
+			<value xsi:nil="true"></value>
+		</problem_resolved>
+	</problem_list>
 	<orders>
-		<laboratory_orders>
-			<tests_ordered amrs_term_id="1271">
+		<medication_history openmrs_concept="1281^MEDICATION HISTORY^99DCT" openmrs_datatype="ZZ">
+			<patient_reported_antiretroviral_use openmrs_concept="1088^PATIENT REPORTED ANTIRETROVIRAL USE^99DCT" openmrs_datatype="CWE" multiple="1">
 				<date xsi:nil="true"></date>
 				<time xsi:nil="true"></time>
-				<complete_blood_count>false</complete_blood_count>
-				<hemoglobin>false</hemoglobin>
-				<serum_glutamic-pyruvic_transaminase>false</serum_glutamic-pyruvic_transaminase>
-				<cd4_panel>false</cd4_panel>
-				<hiv_viral_load>false</hiv_viral_load>
-				<hiv_enzyme_immunoassay_qualitative>false</hiv_enzyme_immunoassay_qualitative>
-				<hiv_dna_polymerase_chain_reaction_qualitative>false</hiv_dna_polymerase_chain_reaction_qualitative>
-				<serum_creatinine>false</serum_creatinine>
-				<x-ray_chest>false</x-ray_chest>
-				<other_non-coded>false</other_non-coded>
-			</tests_ordered>
-		</laboratory_orders>
-		<medication_orders>
-			<antiretroviral_plan amrs_term_id="1255">
+				<zidovudine_and_lamivudine openmrs_concept="630^ZIDOVUDINE AND LAMIVUDINE^99DCT">false</zidovudine_and_lamivudine>
+				<triomune-30 openmrs_concept="792^STAVUDINE LAMIVUDINE AND NEVIRAPINE^99DCT^2^Triomune-30^99RX">false</triomune-30>
+				<triomune-40 openmrs_concept="792^STAVUDINE LAMIVUDINE AND NEVIRAPINE^99DCT^3^Triomune-40^99RX">false</triomune-40>
+				<lamivudine openmrs_concept="628^LAMIVUDINE^99DCT">false</lamivudine>
+				<d4t-30 openmrs_concept="625^STAVUDINE^99DCT^5^d4T-30^99RX">false</d4t-30>
+				<d4t-40 openmrs_concept="625^STAVUDINE^99DCT^6^d4T-40^99RX">false</d4t-40>
+				<zidovudine openmrs_concept="797^ZIDOVUDINE^99DCT">false</zidovudine>
+				<abacavir openmrs_concept="814^ABACAVIR^99DCT">false</abacavir>
+				<ddi_125 openmrs_concept="796^DIDANOSINE^99DCT^9^DDI 125^99RX">false</ddi_125>
+				<ddi_200 openmrs_concept="796^DIDANOSINE^99DCT^10^DDI 200^99RX">false</ddi_200>
+				<tenofovir openmrs_concept="802^TENOFOVIR^99DCT">false</tenofovir>
+				<efavirenz openmrs_concept="633^EFAVIRENZ^99DCT">false</efavirenz>
+				<nevirapine openmrs_concept="631^NEVIRAPINE^99DCT">false</nevirapine>
+				<nelfinavir openmrs_concept="635^NELFINAVIR^99DCT">false</nelfinavir>
+				<lopinavir_and_ritonavir openmrs_concept="794^LOPINAVIR AND RITONAVIR^99DCT">false</lopinavir_and_ritonavir>
+			</patient_reported_antiretroviral_use>
+			<patient_reported_current_cryptococcus_treatment openmrs_concept="1112^PATIENT REPORTED CURRENT CRYPTOCOCCUS TREATMENT^99DCT" openmrs_datatype="CWE" multiple="0">
+				<date xsi:nil="true"></date>
+				<time xsi:nil="true"></time>
+				<value xsi:nil="true"></value>
+			</patient_reported_current_cryptococcus_treatment>
+			<patient_reported_current_pcp_prophylaxis openmrs_concept="1109^PATIENT REPORTED CURRENT PCP PROPHYLAXIS^99DCT" openmrs_datatype="CWE" multiple="0">
+				<date xsi:nil="true"></date>
+				<time xsi:nil="true"></time>
+				<value xsi:nil="true"></value>
+			</patient_reported_current_pcp_prophylaxis>
+			<patient_reported_current_tuberculosis_prophylaxis openmrs_concept="1110^PATIENT REPORTED CURRENT TUBERCULOSIS PROPHYLAXIS^99DCT" openmrs_datatype="CWE" multiple="0">
+				<date xsi:nil="true"></date>
+				<time xsi:nil="true"></time>
+				<value xsi:nil="true"></value>
+			</patient_reported_current_tuberculosis_prophylaxis>
+			<patient_reported_current_tuberculosis_treatment openmrs_concept="1111^PATIENT REPORTED CURRENT TUBERCULOSIS TREATMENT^99DCT" openmrs_datatype="CWE" multiple="1">
+				<date xsi:nil="true"></date>
+				<time xsi:nil="true"></time>
+				<streptomycin openmrs_concept="438^STREPTOMYCIN^99DCT">false</streptomycin>
+				<isoniazid openmrs_concept="656^ISONIAZID^99DCT">false</isoniazid>
+				<ethambutol openmrs_concept="745^ETHAMBUTOL^99DCT">false</ethambutol>
+				<rifampicin openmrs_concept="767^RIFAMPICIN^99DCT">false</rifampicin>
+				<rifampicin_isoniazid_and_pyrazinamide openmrs_concept="768^RIFAMPICIN ISONIAZID AND PYRAZINAMIDE^99DCT">false</rifampicin_isoniazid_and_pyrazinamide>
+				<none openmrs_concept="1107^NONE^99DCT">false</none>
+				<ethambutol_and_isonizaid openmrs_concept="1108^ETHAMBUTOL AND ISONIZAID^99DCT">false</ethambutol_and_isonizaid>
+				<rifampicin_isoniazid_pyrazinamide_and_ethambutol openmrs_concept="1131^RIFAMPICIN ISONIAZID PYRAZINAMIDE AND ETHAMBUTOL^99DCT">false</rifampicin_isoniazid_pyrazinamide_and_ethambutol>
+				<pyrazinamide openmrs_concept="5829^PYRAZINAMIDE^99DCT">false</pyrazinamide>
+			</patient_reported_current_tuberculosis_treatment>
+		</medication_history>
+		<medication_orders openmrs_concept="1282^MEDICATION ORDERS^99DCT" openmrs_datatype="ZZ">
+			<antiretroviral_plan openmrs_concept="1255^ANTIRETROVIRAL PLAN^99DCT" openmrs_datatype="CWE" multiple="0">
 				<date xsi:nil="true"></date>
 				<time xsi:nil="true"></time>
 				<value xsi:nil="true"></value>
 			</antiretroviral_plan>
-			<antiretrovirals_started amrs_term_id="1250">
+			<antiretrovirals_started openmrs_concept="1250^ANTIRETROVIRALS STARTED^99DCT" openmrs_datatype="CWE" multiple="1">
 				<date xsi:nil="true"></date>
 				<time xsi:nil="true"></time>
-				<combivir>false</combivir>
-				<triomune-30>false</triomune-30>
-				<triomune-40>false</triomune-40>
-				<_3tc>false</_3tc>
-				<d4t-30>false</d4t-30>
-				<d4t-40>false</d4t-40>
-				<azt>false</azt>
-				<abc>false</abc>
-				<ddi_125>false</ddi_125>
-				<ddi_200>false</ddi_200>
-				<tdf>false</tdf>
-				<efv>false</efv>
-				<nvp>false</nvp>
-				<nfv>false</nfv>
-				<kaletra>false</kaletra>
+				<zidovudine_and_lamivudine openmrs_concept="630^ZIDOVUDINE AND LAMIVUDINE^99DCT">false</zidovudine_and_lamivudine>
+				<triomune-30 openmrs_concept="792^STAVUDINE LAMIVUDINE AND NEVIRAPINE^99DCT^2^Triomune-30^99RX">false</triomune-30>
+				<triomune-40 openmrs_concept="792^STAVUDINE LAMIVUDINE AND NEVIRAPINE^99DCT^3^Triomune-40^99RX">false</triomune-40>
+				<lamivudine openmrs_concept="628^LAMIVUDINE^99DCT">false</lamivudine>
+				<d4t-30 openmrs_concept="625^STAVUDINE^99DCT^5^d4T-30^99RX">false</d4t-30>
+				<d4t-40 openmrs_concept="625^STAVUDINE^99DCT^6^d4T-40^99RX">false</d4t-40>
+				<zidovudine openmrs_concept="797^ZIDOVUDINE^99DCT">false</zidovudine>
+				<abacavir openmrs_concept="814^ABACAVIR^99DCT">false</abacavir>
+				<ddi_125 openmrs_concept="796^DIDANOSINE^99DCT^9^DDI 125^99RX">false</ddi_125>
+				<ddi_200 openmrs_concept="796^DIDANOSINE^99DCT^10^DDI 200^99RX">false</ddi_200>
+				<tenofovir openmrs_concept="802^TENOFOVIR^99DCT">false</tenofovir>
+				<efavirenz openmrs_concept="633^EFAVIRENZ^99DCT">false</efavirenz>
+				<nevirapine openmrs_concept="631^NEVIRAPINE^99DCT">false</nevirapine>
+				<nelfinavir openmrs_concept="635^NELFINAVIR^99DCT">false</nelfinavir>
+				<lopinavir_and_ritonavir openmrs_concept="794^LOPINAVIR AND RITONAVIR^99DCT">false</lopinavir_and_ritonavir>
 			</antiretrovirals_started>
-			<cryptococcal_treatment_plan amrs_term_id="1277">
+			<cryptococcal_treatment_plan openmrs_concept="1277^CRYPTOCOCCAL TREATMENT PLAN^99DCT" openmrs_datatype="CWE" multiple="0">
 				<date xsi:nil="true"></date>
 				<time xsi:nil="true"></time>
 				<value xsi:nil="true"></value>
 			</cryptococcal_treatment_plan>
-			<cryptococcus_treatment_started amrs_term_id="1278">
+			<cryptococcus_treatment_started openmrs_concept="1278^CRYPTOCOSSUS TREATMENT STARTED^99DCT" openmrs_datatype="CWE" multiple="1">
 				<date xsi:nil="true"></date>
 				<time xsi:nil="true"></time>
-				<diflucan>false</diflucan>
+				<fluconazole openmrs_concept="747^FLUCONAZOLE^99DCT">false</fluconazole>
 			</cryptococcus_treatment_started>
-			<pcp_prophylaxis_plan amrs_term_id="1261">
+			<pcp_prophylaxis_plan openmrs_concept="1261^PCP PROPHYLAXIS PLAN^99DCT" openmrs_datatype="CWE" multiple="0">
 				<date xsi:nil="true"></date>
 				<time xsi:nil="true"></time>
 				<value xsi:nil="true"></value>
 			</pcp_prophylaxis_plan>
-			<pcp_prophylaxis_started amrs_term_id="1263">
+			<pcp_prophylaxis_started openmrs_concept="1263^PCP PROPHYLAXIS STARTED^99DCT" openmrs_datatype="CWE" multiple="1">
 				<date xsi:nil="true"></date>
 				<time xsi:nil="true"></time>
-				<septrin>false</septrin>
-				<dapsone>false</dapsone>
+				<trimethoprim_and_sulfamethoxazole openmrs_concept="916^TRIMETHOPRIM AND SULFAMETHOXAZOLE^99DCT">false</trimethoprim_and_sulfamethoxazole>
+				<dapsone openmrs_concept="92^DAPSONE^99DCT">false</dapsone>
 			</pcp_prophylaxis_started>
-			<reason_antiretrovirals_started amrs_term_id="1251">
+			<reason_antiretrovirals_started openmrs_concept="1251^REASON ANTIRETROVIRALS STARTED^99DCT" openmrs_datatype="CWE" multiple="0">
 				<date xsi:nil="true"></date>
 				<time xsi:nil="true"></time>
 				<value xsi:nil="true"></value>
 			</reason_antiretrovirals_started>
-			<reason_antiretrovirals_stopped amrs_term_id="1252">
+			<reason_antiretrovirals_stopped openmrs_concept="1252^REASON ANTIRETROVIRALS STOPPED^99DCT" openmrs_datatype="CWE" multiple="0">
 				<date xsi:nil="true"></date>
 				<time xsi:nil="true"></time>
 				<value xsi:nil="true"></value>
 			</reason_antiretrovirals_stopped>
-			<reason_pcp_prophylaxis_stopped amrs_term_id="1262">
+			<reason_pcp_prophylaxis_stopped openmrs_concept="1262^REASON PCP PROPHYLAXIS STOPPED^99DCT" openmrs_datatype="CWE" multiple="0">
 				<date xsi:nil="true"></date>
 				<time xsi:nil="true"></time>
 				<value xsi:nil="true"></value>
 			</reason_pcp_prophylaxis_stopped>
-			<reason_tuberculosis_prophylaxis_stopped amrs_term_id="1266">
+			<reason_tuberculosis_prophylaxis_stopped openmrs_concept="1266^REASON TUBERCULOSIS PROPHYLAXIS STOPPED^99DCT" openmrs_datatype="CWE" multiple="0">
 				<date xsi:nil="true"></date>
 				<time xsi:nil="true"></time>
 				<value xsi:nil="true"></value>
 			</reason_tuberculosis_prophylaxis_stopped>
-			<reason_tuberculosis_treatment_stopped amrs_term_id="1269">
+			<reason_tuberculosis_treatment_stopped openmrs_concept="1269^REASON TUBERCULOSIS TREATMENT STOPPED^99DCT" openmrs_datatype="CWE" multiple="0">
 				<date xsi:nil="true"></date>
 				<time xsi:nil="true"></time>
 				<value xsi:nil="true"></value>
 			</reason_tuberculosis_treatment_stopped>
-			<tuberculosis_prophylaxis_plan amrs_term_id="1265">
+			<tuberculosis_prophylaxis_plan openmrs_concept="1265^TUBERCULOSIS PROPHYLAXIS PLAN^99DCT" openmrs_datatype="CWE" multiple="0">
 				<date xsi:nil="true"></date>
 				<time xsi:nil="true"></time>
 				<value xsi:nil="true"></value>
 			</tuberculosis_prophylaxis_plan>
-			<tuberculosis_prophylaxis_started amrs_term_id="1264">
+			<tuberculosis_prophylaxis_started openmrs_concept="1264^TUBERCULOSIS PROPHYLAXIS STARTED^99DCT" openmrs_datatype="CWE" multiple="1">
 				<date xsi:nil="true"></date>
 				<time xsi:nil="true"></time>
-				<inh>false</inh>
+				<isoniazid openmrs_concept="656^ISONIAZID^99DCT">false</isoniazid>
 			</tuberculosis_prophylaxis_started>
-			<tuberculosis_treatment_plan amrs_term_id="1268">
+			<tuberculosis_treatment_plan openmrs_concept="1268^TUBERCULOSIS TREATMENT PLAN^99DCT" openmrs_datatype="CWE" multiple="0">
 				<date xsi:nil="true"></date>
 				<time xsi:nil="true"></time>
 				<value xsi:nil="true"></value>
 			</tuberculosis_treatment_plan>
-			<tuberculosis_treatment_started amrs_term_id="1270">
+			<tuberculosis_treatment_started openmrs_concept="1270^TUBERCULOSIS TREATMENT STARTED^99DCT" openmrs_datatype="CWE" multiple="1">
 				<date xsi:nil="true"></date>
 				<time xsi:nil="true"></time>
-				<rifater>false</rifater>
-				<rifafour>false</rifafour>
-				<ethambutol>false</ethambutol>
-				<streptomycin>false</streptomycin>
-				<ethizide>false</ethizide>
+				<rifampicin_isoniazid_and_pyrazinamide openmrs_concept="768^RIFAMPICIN ISONIAZID AND PYRAZINAMIDE^99DCT">false</rifampicin_isoniazid_and_pyrazinamide>
+				<rifampicin_isoniazid_pyrazinamide_and_ethambutol openmrs_concept="1131^RIFAMPICIN ISONIAZID PYRAZINAMIDE AND ETHAMBUTOL^99DCT">false</rifampicin_isoniazid_pyrazinamide_and_ethambutol>
+				<ethambutol openmrs_concept="745^ETHAMBUTOL^99DCT">false</ethambutol>
+				<streptomycin openmrs_concept="438^STREPTOMYCIN^99DCT">false</streptomycin>
+				<ethambutol_and_isonizaid openmrs_concept="1108^ETHAMBUTOL AND ISONIZAID^99DCT">false</ethambutol_and_isonizaid>
+				<isoniazid openmrs_concept="656^ISONIAZID^99DCT">false</isoniazid>
+				<rifampicin openmrs_concept="767^RIFAMPICIN^99DCT">false</rifampicin>
+				<pyrazinamide openmrs_concept="5829^PYRAZINAMIDE^99DCT">false</pyrazinamide>
 			</tuberculosis_treatment_started>
 		</medication_orders>
-		<referrals_ordered amrs_term_id="1272">
+		<laboratory_orders openmrs_concept="1283^LABORATORY ORDERS^99DCT" openmrs_datatype="ZZ">
+			<tests_ordered openmrs_concept="1271^TESTS ORDERED^99DCT" openmrs_datatype="CWE" multiple="1">
+				<date xsi:nil="true"></date>
+				<time xsi:nil="true"></time>
+				<complete_blood_count openmrs_concept="1019^COMPLETE BLOOD COUNT^99DCT">false</complete_blood_count>
+				<hemoglobin openmrs_concept="21^HEMOGLOBIN^99DCT">false</hemoglobin>
+				<serum_glutamic-pyruvic_transaminase openmrs_concept="654^SERUM GLUTAMIC-PYRUVIC TRANSAMINASE^99DCT">false</serum_glutamic-pyruvic_transaminase>
+				<cd4_panel openmrs_concept="657^CD4 PANEL^99DCT">false</cd4_panel>
+				<hiv_viral_load openmrs_concept="856^HIV VIRAL LOAD^99DCT">false</hiv_viral_load>
+				<hiv_enzyme_immunoassay_qualitative openmrs_concept="1042^HIV ENZYME IMMUNOASSAY, QUALITATIVE^99DCT">false</hiv_enzyme_immunoassay_qualitative>
+				<hiv_dna_polymerase_chain_reaction_qualitative openmrs_concept="1030^HIV DNA POLYMERASE CHAIN REACTION, QUALITATIVE^99DCT">false</hiv_dna_polymerase_chain_reaction_qualitative>
+				<serum_creatinine openmrs_concept="790^SERUM CREATININE^99DCT">false</serum_creatinine>
+				<x-ray_chest openmrs_concept="12^X-RAY, CHEST^99DCT">false</x-ray_chest>
+				<other_non-coded openmrs_concept="5622^OTHER NON-CODED^99DCT">false</other_non-coded>
+				<serum_glutamic-oxaloacetic_transaminase openmrs_concept="653^SERUM GLUTAMIC-OXALOACETIC TRANSAMINASE^99DCT">false</serum_glutamic-oxaloacetic_transaminase>
+				<serum_electrolytes openmrs_concept="5473^SERUM ELECTROLYTES^99DCT">false</serum_electrolytes>
+				<tuberculin_skin_test openmrs_concept="5475^TUBERCULIN SKIN TEST^99DCT">false</tuberculin_skin_test>
+				<sputum_for_acid_fast_bacilli openmrs_concept="307^SPUTUM FOR ACID FAST BACILLI^99DCT">false</sputum_for_acid_fast_bacilli>
+				<urine_pregnancy_test openmrs_concept="45^URINE PREGNANCY TEST^99DCT">false</urine_pregnancy_test>
+				<none openmrs_concept="1107^NONE^99DCT">false</none>
+				<vdrl openmrs_concept="299^VDRL^99DCT">false</vdrl>
+			</tests_ordered>
+		</laboratory_orders>
+		<referrals_ordered openmrs_concept="1272^REFERRALS ORDERED^99DCT" openmrs_datatype="CWE" multiple="1">
 			<date xsi:nil="true"></date>
 			<time xsi:nil="true"></time>
-			<social_support_services>false</social_support_services>
-			<tuberculosis_treatment_or_dot_program>false</tuberculosis_treatment_or_dot_program>
-			<disclosure_counseling>false</disclosure_counseling>
-			<nutritional_support>false</nutritional_support>
-			<adherence_counseling>false</adherence_counseling>
-			<mental_health_services>false</mental_health_services>
-			<psychosocial_counseling>false</psychosocial_counseling>
-			<other_non-coded>false</other_non-coded>
-			<family_planning_services>false</family_planning_services>
-			<none>false</none>
-			<alcohol_counseling>false</alcohol_counseling>
+			<social_support_services openmrs_concept="5486^SOCIAL SUPPORT SERVICES^99DCT">false</social_support_services>
+			<tuberculosis_treatment_or_dot_program openmrs_concept="5487^TUBERCULOSIS TREATMENT OR DOT PROGRAM^99DCT">false</tuberculosis_treatment_or_dot_program>
+			<disclosure_counseling openmrs_concept="1167^DISCLOSURE COUNSELING^99DCT">false</disclosure_counseling>
+			<nutritional_support openmrs_concept="5484^NUTRITIONAL SUPPORT^99DCT">false</nutritional_support>
+			<adherence_counseling openmrs_concept="5488^ADHERENCE COUNSELING^99DCT">false</adherence_counseling>
+			<mental_health_services openmrs_concept="5489^MENTAL HEALTH SERVICES^99DCT">false</mental_health_services>
+			<psychosocial_counseling openmrs_concept="5490^PSYCHOSOCIAL COUNSELING^99DCT">false</psychosocial_counseling>
+			<other_non-coded openmrs_concept="5622^OTHER NON-CODED^99DCT">false</other_non-coded>
+			<family_planning_services openmrs_concept="5483^FAMILY PLANNING SERVICES^99DCT">false</family_planning_services>
+			<none openmrs_concept="1107^NONE^99DCT">false</none>
+			<alcohol_counseling openmrs_concept="1288^ALCOHOL COUNSELING^99DCT">false</alcohol_counseling>
+			<inpatient_care_or_hospitalization openmrs_concept="5485^INPATIENT CARE OR HOSPITALIZATION^99DCT">false</inpatient_care_or_hospitalization>
+			<no_referral openmrs_concept="5482^NO REFERRAL^99DCT">false</no_referral>
 		</referrals_ordered>
 	</orders>
-	<misc>
-		<session />
-    </misc>
+	<other></other>
 </form>
