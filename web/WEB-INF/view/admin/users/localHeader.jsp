@@ -9,19 +9,25 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
-	<li <c:if test="<%= request.getRequestURI().contains("group") %>">class="active"</c:if>>
-		<a href="${pageContext.request.contextPath}/admin/users/group.list">
-			<spring:message code="Group.manage"/>
-		</a>
-	</li>
-	<li <c:if test="<%= request.getRequestURI().contains("role") %>">class="active"</c:if>>
-		<a href="${pageContext.request.contextPath}/admin/users/role.list">
-			<spring:message code="Role.manage"/>
-		</a>
-	</li>
-	<li <c:if test="<%= request.getRequestURI().contains("privilege") %>">class="active"</c:if>>
-		<a href="${pageContext.request.contextPath}/admin/users/privilege.list">
-			<spring:message code="Privilege.manage"/>
-		</a>
-	</li>
+	<openmrs:hasPrivilege privilege="Manage Groups">
+		<li <c:if test="<%= request.getRequestURI().contains("group") %>">class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/users/group.list">
+				<spring:message code="Group.manage"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
+	<openmrs:hasPrivilege privilege="Manage Roles">
+		<li <c:if test="<%= request.getRequestURI().contains("role") %>">class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/users/role.list">
+				<spring:message code="Role.manage"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
+	<openmrs:hasPrivilege privilege="Manage Privileges">
+		<li <c:if test="<%= request.getRequestURI().contains("privilege") %>">class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/users/privilege.list">
+				<spring:message code="Privilege.manage"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
 </ul>

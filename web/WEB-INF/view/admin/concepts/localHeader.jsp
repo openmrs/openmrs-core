@@ -28,14 +28,18 @@
 			</a>
 		</li>	
 	</openmrs:hasPrivilege>
-	<li <c:if test="<%= request.getRequestURI().contains("Class") %>">class="active"</c:if>>
-		<a href="${pageContext.request.contextPath}/admin/concepts/conceptClass.list">
-			<spring:message code="ConceptClass.manage"/>
-		</a>
-	</li>
-	<li <c:if test="<%= request.getRequestURI().contains("Datatype") %>">class="active"</c:if>>
-		<a href="${pageContext.request.contextPath}/admin/concepts/conceptDatatype.list">
-			<spring:message code="ConceptDatatype.manage"/>
-		</a>
-	</li>
+	<openmrs:hasPrivilege privilege="Manage Concept Classes">
+		<li <c:if test="<%= request.getRequestURI().contains("Class") %>">class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/concepts/conceptClass.list">
+				<spring:message code="ConceptClass.manage"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
+	<openmrs:hasPrivilege privilege="Manage Concept Datatypes">
+		<li <c:if test="<%= request.getRequestURI().contains("Datatype") %>">class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/concepts/conceptDatatype.list">
+				<spring:message code="ConceptDatatype.manage"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
 </ul>

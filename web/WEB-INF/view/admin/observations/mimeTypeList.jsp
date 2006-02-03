@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="Manage Observations" otherwise="/login.htm" redirect="/admin/observations/mimeType.list" />
+<openmrs:require privilege="Manage Mime Types" otherwise="/login.htm" redirect="/admin/observations/mimeType.list" />
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>

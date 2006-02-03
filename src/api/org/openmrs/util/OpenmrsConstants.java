@@ -90,6 +90,19 @@ public class OpenmrsConstants {
 	public static final String PRIV_ADD_REPORTS		= "Add Reports";
 	public static final String PRIV_EDIT_REPORTS	= "Edit Reports";
 	public static final String PRIV_DELETE_REPORTS	= "Delete Reports";
+	
+	public static final String MANAGE_TRIBES			= "Manage Tribes";
+	public static final String MANAGE_IDENTIFIER_TYPES	= "Manage Identifier Types";
+	public static final String MANAGE_LOCATIONS			= "Manage Locations";
+	public static final String MANAGE_MIME_TYPEs		= "Manage Mime Types";
+	public static final String MANAGE_CONCEPT_CLASSES	= "Manage Concept Classes";
+	public static final String MANAGE_CONCEPT_DATATYPES	= "Manage Concept Datatypes";
+	public static final String MANAGE_ENCOUNTER_TYPES	= "Manage Encounter Types";
+	public static final String MANAGE_GROUPS		= "Manage Groups";
+	public static final String MANAGE_PRIVILEGES	= "Manage Privileges";
+	public static final String MANAGE_ROLES			= "Manage Roles";
+	public static final String MANAGE_FIELD_TYPES	= "Manage Field Types";
+	public static final String MANAGE_ORDER_TYPES	= "Manage Order Types";
 
 	public static final String PRIV_FORM_ENTRY      = "Form Entry";
 	
@@ -137,6 +150,18 @@ public class OpenmrsConstants {
 		privs.add(PRIV_ADD_REPORTS);
 		privs.add(PRIV_EDIT_REPORTS);
 		privs.add(PRIV_DELETE_REPORTS);
+		
+		privs.add(MANAGE_TRIBES);
+		privs.add(MANAGE_IDENTIFIER_TYPES);
+		privs.add(MANAGE_LOCATIONS);
+		privs.add(MANAGE_MIME_TYPEs);
+		privs.add(MANAGE_CONCEPT_CLASSES);
+		privs.add(MANAGE_CONCEPT_DATATYPES);
+		privs.add(MANAGE_ENCOUNTER_TYPES);
+		privs.add(MANAGE_GROUPS);
+		privs.add(MANAGE_PRIVILEGES);
+		privs.add(MANAGE_FIELD_TYPES);
+		privs.add(MANAGE_ORDER_TYPES);
 		
 		return privs;
 	}

@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="Manage Users" otherwise="/login.htm" redirect="/admin/users/privilege.form" />
+<openmrs:require privilege="Manage Privileges" otherwise="/login.htm" redirect="/admin/users/privilege.form" />
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>

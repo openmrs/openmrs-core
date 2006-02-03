@@ -9,9 +9,11 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
-	<li <c:if test="<%= request.getRequestURI().contains("orderType") %>">class="active"</c:if>>
-		<a href="${pageContext.request.contextPath}/admin/orders/orderType.list">
-			<spring:message code="OrderType.manage"/>
-		</a>
-	</li>
+	<openmrs:hasPrivilege privilege="Manage Order Types">
+		<li <c:if test="<%= request.getRequestURI().contains("orderType") %>">class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/orders/orderType.list">
+				<spring:message code="OrderType.manage"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
 </ul>
