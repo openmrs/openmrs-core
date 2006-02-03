@@ -2,6 +2,7 @@ package org.openmrs.api;
 
 import java.util.List;
 
+import org.openmrs.Concept;
 import org.openmrs.Field;
 import org.openmrs.FieldType;
 import org.openmrs.Form;
@@ -166,6 +167,25 @@ public class FormService {
 	public List<FormField> getFormFields(Form form) throws APIException {
 		return dao().getFormFields(form);
 	}
+	
+	/**
+	 * 
+	 * @return list of fields in the db matching part of search term
+	 * @throws APIException
+	 */
+	public List<Field> findFields(String searchPhrase) throws APIException {
+		return dao().findFields(searchPhrase);
+	}
+	
+	/**
+	 * 
+	 * @return list of fields in the db for given concept
+	 * @throws APIException
+	 */
+	public List<Field> findFields(Concept concept) throws APIException {
+		return dao().findFields(concept);
+	}
+	
 	
 	/**
 	 * 

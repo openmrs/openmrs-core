@@ -187,11 +187,14 @@ public class Field implements java.io.Serializable {
 		this.defaultValue = defaultValue;
 	}
 
+	public Boolean isSelectMultiple() {
+		return selectMultiple;
+	}
 	/**
 	 * @return Returns the selectMultiple.
 	 */
 	public Boolean getSelectMultiple() {
-		return selectMultiple;
+		return isSelectMultiple();
 	}
 
 	/**

@@ -1,9 +1,9 @@
 package org.openmrs.web.controller.form;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -12,11 +12,10 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.FieldType;
 import org.openmrs.Form;
-import org.openmrs.FormField;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
-import org.openmrs.form.FormUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -86,75 +85,15 @@ public class FormFormController extends SimpleFormController {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		
-		Form form = (Form)obj;
-		
-		String tree = "";
+		List<FieldType> fieldTypes = new Vector<FieldType>();
 		
 		if (context != null && context.isAuthenticated()) {
-			TreeMap<Integer, TreeSet<FormField>> formFields = FormUtil.getFormStructure(context, form);
-			tree = generateTree(formFields, 0);
+
+			fieldTypes = context.getFormService().getFieldTypes();
 		}
-		
-		map.put("tree", tree);
+
+		map.put("fieldTypes", fieldTypes);
 		
 		return map;
 	}
-    
-	private String generateTree(TreeMap<Integer, TreeSet<FormField>> formFields, Integer current) {
-		
-		String s = "";
-		
-		if (formFields.containsKey(current)) {
-			TreeSet<FormField> set = formFields.get(current);
-			for (FormField ff : set) {
-				s += generateFormFieldHTML(ff);
-				if (formFields.containsKey(ff.getFormFieldId())) {
-					s += "<div class='indent'>";
-					s += generateTree(formFields, ff.getFormFieldId());
-					s += "</div>";
-				}
-			}
-		}
-		
-		return s;
-	}
-    
-    private String generateFormFieldHTML(FormField ff) {
-    	String s = "<div class='formField'>";
-    	
-    	if (ff.getFieldNumber() != null)
-    		s += ff.getFieldNumber() + ". ";
-    	if (ff.getFieldPart() != null)
-    		s += ff.getFieldPart() + ". ";
-    	if ((ff.getMinOccurs() != null && ff.getMinOccurs() > 0) || (ff.getMaxOccurs() != null && ff.getMaxOccurs() != 1)){
-    		s += " (";
-    		if (ff.getMinOccurs() == null)
-    			s += "0";
-    		else
-    			s += ff.getMinOccurs().toString();
-    		s += "..";
-    		if (ff.getMaxOccurs() == -1)
-    			s += "n";
-    		else {
-    			if (ff.getMaxOccurs() == null)
-    				s += "0";
-    			else
-    				s += ff.getMaxOccurs();
-    		}
-    		s += ") ";
-    	}
-		if (ff.isRequired())
-			s += "<span class='required'> * </span>";
-		s += "<a href='#" + ff.getFieldNumber() + "' onmouseover='hoverField(" + ff.getFormFieldId() + ", this)' onmouseout='unHoverField(this)' onclick='selectField(" + ff.getFormFieldId() + ", this)' class='edit'>";
-		if (ff.getField().getFieldType().getFieldTypeId() == 1)
-			s += "CONCEPT." + ff.getField().getName() + " " + ff.getField().getFieldId();
-		else
-			s += ff.getField().getName();
-		s += "</a> ";
-		s += "<a href='#delete' onclick='deleteField(" + ff.getFieldNumber() + ", this)' class='delete'>delete</a>";
-		
-		s += "</div>";
-    	
-    	return s;
-    }
 }

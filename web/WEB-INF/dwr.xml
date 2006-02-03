@@ -13,6 +13,8 @@
 		<convert converter="bean" match="org.openmrs.web.dwr.EncounterListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.UserListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.ObsListItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.FormFieldListItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.FieldListItem"/>
 		<convert converter="bean" match="org.openmrs.PatientAddress"/>
 	
 		<create creator="new" javascript="DWRPatientService">
@@ -49,6 +51,9 @@
 			<param name="class" value="org.openmrs.web.dwr.DWRFormService" />
 			<include method="getFormField"/>
 			<include method="getField"/>
+			<include method="getHTMLTree"/>
+			<include method="getOptionTree"/>
+			<include method="findFields"/>
 		</create>
 		
 	</allow>
@@ -63,7 +68,7 @@
 			import java.util.Date;
 			import java.util.List;
 			DWRPatientService.getSimilarPatients(String name, Date birthdate, String gender);
-			DWRConceptService.findConcepts(String phrase, List<String> classNames, boolean includeRetired, List<string> ignoreClassNames);
+			DWRConceptService.findConcepts(String phrase, List<String> classNames, boolean includeRetired, List<String> ignoreClassNames);
 			DWREncounterService.findEncounters(String phrase, boolean includeVoided);
 			DWRUserService.findUsers(String phrase, List<String> roles, boolean includeVoided);
 			DWRObsService.findObs(String phrase, boolean includeVoided);

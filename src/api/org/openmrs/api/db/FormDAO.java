@@ -2,6 +2,7 @@ package org.openmrs.api.db;
 
 import java.util.List;
 
+import org.openmrs.Concept;
 import org.openmrs.Field;
 import org.openmrs.FieldType;
 import org.openmrs.Form;
@@ -107,6 +108,20 @@ public interface FormDAO {
 	 */
 	public List<FormField> getFormFields(Form form) throws DAOException;
 
+	/**
+	 * 
+	 * @return list of fields in the db matching search phrase
+	 * @throws DAOException
+	 */
+	public List<Field> findFields(String search) throws DAOException;
+
+	/**
+	 * 
+	 * @return list of fields in the db with given concept
+	 * @throws DAOException
+	 */	
+	public List<Field> findFields(Concept concept) throws DAOException;
+	
 	/**
 	 * 
 	 * @return list of fields in the db

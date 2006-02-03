@@ -65,7 +65,7 @@ public class ConceptListItem {
 			datatype = concept.getDatatype().getName();
 		}
 	}
-
+	
 	public Integer getConceptId() {
 		return conceptId;
 	}

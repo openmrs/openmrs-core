@@ -5,8 +5,13 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
+import org.openmrs.Concept;
 import org.openmrs.Field;
 import org.openmrs.FieldType;
 import org.openmrs.Form;
@@ -132,6 +137,30 @@ public class HibernateFormDAO implements
 		.list();
 		
 		return formFields;
+	}
+
+	/**
+	 * @see org.openmrs.api.db.FormDAO#findFields(java.lang.String)
+	 */
+	public List<Field> findFields(String search) throws DAOException {
+		Session session = HibernateUtil.currentSession();
+		
+		Criteria criteria = session.createCriteria(Field.class);
+		criteria.add(Restrictions.like("name", search, MatchMode.ANYWHERE));
+		criteria.addOrder(Order.asc("name"));
+		return criteria.list();
+	}
+
+	/**
+	 * @see org.openmrs.api.db.FormDAO#findFields(org.openmrs.Concept)
+	 */
+	public List<Field> findFields(Concept concept) throws DAOException {
+		Session session = HibernateUtil.currentSession();
+		
+		Criteria criteria = session.createCriteria(Field.class);
+		criteria.add(Expression.eq("concept", concept));
+		criteria.addOrder(Order.asc("name"));
+		return criteria.list();
 	}
 	
 	/**
