@@ -31,12 +31,26 @@ public class FormXmlTemplateBuilder {
 
 	Context context;
 	Form form;
+	String url;
 	String xmlTemplate = null;
 	Vector<String> tagList;
 
-	public FormXmlTemplateBuilder(Context context, Form form) {
+	/**
+	 * Construct an XML template builder for generating patient-based templates
+	 * for a given OpenMRS form.
+	 * 
+	 * @param context
+	 *            active OpenMRS context
+	 * @param form
+	 *            OpenMRS form for which template(s) will be made
+	 * @param url
+	 *            absolute (full, including "http://" and ending with ".xsn")
+	 *            url location of InfoPath form (.xsn file)
+	 */
+	public FormXmlTemplateBuilder(Context context, Form form, String url) {
 		this.context = context;
 		this.form = form;
+		this.url = url;
 	}
 
 	public synchronized String getXmlTemplate(Patient patient) {
@@ -52,7 +66,7 @@ public class FormXmlTemplateBuilder {
 		velocityContext.put("patient", patient);
 
 		StringBuffer xml = new StringBuffer();
-		xml.append(FormXmlTemplateFragment.header(form.getName()));
+		xml.append(FormXmlTemplateFragment.header(form.getName(), url));
 		xml.append(FormXmlTemplateFragment.openForm(form.getFormId(), form
 				.getName(), form.getVersion(), form.getSchemaNamespace(),
 				context.getAuthenticatedUser(), new Date()));
@@ -207,18 +221,17 @@ public class FormXmlTemplateBuilder {
 			}
 		}
 	}
-	
-	private void renderDefaultValue(StringBuffer xml, VelocityContext velocityContext, Field field) {
+
+	private void renderDefaultValue(StringBuffer xml,
+			VelocityContext velocityContext, Field field) {
 		try {
 			StringWriter w = new StringWriter();
-			Velocity.evaluate(velocityContext, w, this
-					.getClass().getName(), field
-					.getDefaultValue());
+			Velocity.evaluate(velocityContext, w, this.getClass().getName(),
+					field.getDefaultValue());
 			xml.append(w.toString());
 		} catch (Exception e) {
-			log.error("Error evaluating default value for "
-					+ field.getName() + "["
-					+ field.getFieldId() + "]", e);
+			log.error("Error evaluating default value for " + field.getName()
+					+ "[" + field.getFieldId() + "]", e);
 		}
 	}
 }
