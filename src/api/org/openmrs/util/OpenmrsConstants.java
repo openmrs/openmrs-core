@@ -52,34 +52,104 @@ public class OpenmrsConstants {
 	// Baked in Privileges:
 	
 	public static final String PRIV_VIEW_CONCEPTS   = "View Concepts";
+	public static final String PRIV_ADD_CONCEPTS	= "Add Concepts";
 	public static final String PRIV_EDIT_CONCEPTS   = "Edit Concepts";
 	public static final String PRIV_DELETE_CONCEPTS = "Delete Concepts";
 	
-	public static final String PRIV_MANAGE_USERS    = "Manage Users";
-	public static final String PRIV_MANAGE_PATIENTS = "Manage Patients";
-	public static final String PRIV_MANAGE_REPORTS  = "Manage Reports";
+	public static final String PRIV_VIEW_USERS	= "View Users";
+	public static final String PRIV_ADD_USERS	= "Add Users";
+	public static final String PRIV_EDIT_USERS	= "Edit Users";
+	public static final String PRIV_DELETE_USERS= "Delete Users";
+
+	public static final String PRIV_VIEW_ENCOUNTERS		= "View Encounters";
+	public static final String PRIV_ADD_ENCOUNTERS		= "Add Encounters";
+	public static final String PRIV_EDIT_ENCOUNTERS		= "Edit Encounters";
+	public static final String PRIV_DELETE_ENCOUNTERS	= "Delete Encounters";
+
+	public static final String PRIV_VIEW_OBS	= "View Observations";
+	public static final String PRIV_ADD_OBS		= "Add Observations";
+	public static final String PRIV_EDIT_OBS	= "Edit Observations";
+	public static final String PRIV_DELETE_OBS	= "Delete Observations";
+
+	public static final String PRIV_VIEW_PATIENTS   = "View Patients";
+	public static final String PRIV_ADD_PATIENTS	= "Add Patients";
+	public static final String PRIV_EDIT_PATIENTS   = "Edit Patients";
+	public static final String PRIV_DELETE_PATIENTS = "Delete Patients";
+
+	public static final String PRIV_VIEW_ORDERS		= "View Orders";
+	public static final String PRIV_ADD_ORDERS		= "Add Orders";
+	public static final String PRIV_EDIT_ORDERS		= "Edit Orders";
+	public static final String PRIV_DELETE_ORDERS	= "Delete Orders";
+
+	public static final String PRIV_VIEW_FORMS		= "View Forms";
+	public static final String PRIV_ADD_FORMS		= "Add Forms";
+	public static final String PRIV_EDIT_FORMS		= "Edit Forms";
+	public static final String PRIV_DELETE_FORMS	= "Delete Forms";
+	
+	public static final String PRIV_VIEW_REPORTS	= "View Reports";
+	public static final String PRIV_ADD_REPORTS		= "Add Reports";
+	public static final String PRIV_EDIT_REPORTS	= "Edit Reports";
+	public static final String PRIV_DELETE_REPORTS	= "Delete Reports";
+
 	public static final String PRIV_FORM_ENTRY      = "Form Entry";
-	public static final String PRIV_MANAGE_ORDERS   = "Manage Orders";
-	public static final String PRIV_MANAGE_OBS      = "Manage Observations";
-	public static final String PRIV_MANAGE_FORMS    = "Manage Forms";
-	public static final String PRIV_MANAGE_ENC      = "Manage Encounters";
 	
 	public static Collection<String> CORE_PRIVILEGES() {
 		List<String> privs = new Vector<String>();
 		
+		privs.add(PRIV_FORM_ENTRY);
+		
 		privs.add(PRIV_VIEW_CONCEPTS);
+		privs.add(PRIV_ADD_CONCEPTS);
 		privs.add(PRIV_EDIT_CONCEPTS);
 		privs.add(PRIV_DELETE_CONCEPTS);
-		privs.add(PRIV_MANAGE_USERS);
-		privs.add(PRIV_MANAGE_PATIENTS);
-		privs.add(PRIV_MANAGE_REPORTS);
-		privs.add(PRIV_FORM_ENTRY);
-		privs.add(PRIV_MANAGE_ORDERS);
-		privs.add(PRIV_MANAGE_OBS);
-		privs.add(PRIV_MANAGE_FORMS);
-		privs.add(PRIV_MANAGE_ENC);
+		
+		privs.add(PRIV_VIEW_USERS);
+		privs.add(PRIV_ADD_USERS);
+		privs.add(PRIV_EDIT_USERS);
+		privs.add(PRIV_DELETE_USERS);
+		
+		privs.add(PRIV_VIEW_ENCOUNTERS);
+		privs.add(PRIV_ADD_ENCOUNTERS);
+		privs.add(PRIV_EDIT_ENCOUNTERS);
+		privs.add(PRIV_DELETE_ENCOUNTERS);
+		
+		privs.add(PRIV_VIEW_OBS);
+		privs.add(PRIV_ADD_OBS);
+		privs.add(PRIV_EDIT_OBS);
+		privs.add(PRIV_DELETE_OBS);
+		
+		privs.add(PRIV_VIEW_PATIENTS);
+		privs.add(PRIV_ADD_PATIENTS);
+		privs.add(PRIV_EDIT_PATIENTS);
+		privs.add(PRIV_DELETE_PATIENTS);
+		
+		privs.add(PRIV_VIEW_ORDERS);
+		privs.add(PRIV_ADD_ORDERS);
+		privs.add(PRIV_EDIT_ORDERS);
+		privs.add(PRIV_DELETE_ORDERS);
+		
+		privs.add(PRIV_VIEW_FORMS);
+		privs.add(PRIV_ADD_FORMS);
+		privs.add(PRIV_EDIT_FORMS);
+		privs.add(PRIV_DELETE_FORMS);
+		
+		privs.add(PRIV_VIEW_REPORTS);
+		privs.add(PRIV_ADD_REPORTS);
+		privs.add(PRIV_EDIT_REPORTS);
+		privs.add(PRIV_DELETE_REPORTS);
 		
 		return privs;
+	}
+	
+	// Baked in Role:
+	public static final String SUPERUSER_ROLE = "superuser";
+	
+	public static Collection<String> CORE_ROLES() {
+		List<String> roles = new Vector<String>();
+		
+		roles.add(SUPERUSER_ROLE);
+		
+		return roles;
 	}
 	
 	// ConceptProposal states

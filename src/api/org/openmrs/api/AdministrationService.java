@@ -309,6 +309,8 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void deleteRole(Role role) throws APIException {
+		if (OpenmrsConstants.CORE_ROLES().contains(role.getRole()))
+			throw new APIException("Cannot delete a core role");
 		getAdminDAO().deleteRole(role);
 	}
 
@@ -338,7 +340,7 @@ public class AdministrationService {
 	public void deletePrivilege(Privilege privilege) throws APIException {
 		if (OpenmrsConstants.CORE_PRIVILEGES().contains(privilege.getPrivilege()))
 			throw new APIException("Cannot delete a core privilege");
-		getAdminDAO().deletePrivilege(privilege);
+			getAdminDAO().deletePrivilege(privilege);
 	}
 
 	/**

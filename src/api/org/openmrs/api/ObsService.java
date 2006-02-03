@@ -38,8 +38,8 @@ public class ObsService {
 	}
 	
 	private ObsDAO getObsDAO() {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_OBS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_OBS);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_OBS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_OBS);
 		
 		return daoContext.getObsDAO();
 	}
@@ -50,6 +50,8 @@ public class ObsService {
 	 * @throws APIException
 	 */
 	public void createObs(Obs obs) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_ADD_OBS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_OBS);
 		getObsDAO().createObs(obs);
 	}
 
@@ -69,6 +71,9 @@ public class ObsService {
 	 * @throws APIException
 	 */
 	public void updateObs(Obs obs) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_OBS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_OBS);
+
 		if (obs.isVoided() && obs.getVoidedBy() == null)
 			voidObs(obs, obs.getVoidReason());
 		else if (obs.isVoided() == false && obs.getVoidedBy() != null)
@@ -87,6 +92,8 @@ public class ObsService {
 	 * @throws APIException
 	 */
 	public void voidObs(Obs obs, String reason) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_OBS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_OBS);
 		obs.setVoided(true);
 		obs.setVoidReason(reason);
 		obs.setVoidedBy(context.getAuthenticatedUser());
@@ -100,6 +107,8 @@ public class ObsService {
 	 * @throws APIException
 	 */
 	public void unvoidObs(Obs obs) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_OBS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_OBS);
 		obs.setVoided(false);
 		obs.setVoidReason(null);
 		obs.setVoidedBy(null);
@@ -114,6 +123,8 @@ public class ObsService {
 	 * @see voidObs(Obs)
 	 */
 	public void deleteObs(Obs obs) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_DELETE_OBS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_DELETE_OBS);
 		getObsDAO().deleteObs(obs);
 	}
 	

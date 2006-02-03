@@ -1,7 +1,9 @@
 package org.openmrs.web.controller.user;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
@@ -11,11 +13,13 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -104,12 +108,17 @@ public class RoleListController extends SimpleFormController {
 		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		//default empty Object
-		List<Role> roleList = new Vector<Role>();
+		Map<Role, Boolean> roleList = new LinkedHashMap<Role, Boolean>();
 		
 		//only fill the Object is the user has authenticated properly
 		if (context != null && context.isAuthenticated()) {
 			UserService us = context.getUserService();
-	    	roleList = us.getRoles();
+	    	for (Role r : us.getRoles()) {
+	    		if (OpenmrsConstants.CORE_ROLES().contains(r.getRole()))
+	    			roleList.put(r, true);
+	    		else
+	    			roleList.put(r, false);
+	    	}
 		}
     	
         return roleList;

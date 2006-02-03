@@ -1,6 +1,5 @@
 package org.openmrs.api;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -14,7 +13,6 @@ import org.openmrs.Tribe;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOContext;
 import org.openmrs.api.db.PatientDAO;
-import org.openmrs.util.Helper;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -37,9 +35,8 @@ public class PatientService {
 	}
 	
 	private PatientDAO getPatientDAO() {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_PATIENTS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_PATIENTS);
-		
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		return daoContext.getPatientDAO();
 	}
 	
@@ -50,6 +47,8 @@ public class PatientService {
 	 * @throws APIException
 	 */
 	public void createPatient(Patient patient) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_ADD_PATIENTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_PATIENTS);
 		getPatientDAO().createPatient(patient);
 	}
 
@@ -71,6 +70,8 @@ public class PatientService {
 	 * @throws APIException
 	 */
 	public void updatePatient(Patient patient) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_PATIENTS);
 		getPatientDAO().updatePatient(patient);
 	}
 
@@ -112,6 +113,8 @@ public class PatientService {
 	 * @param reason reason for voiding patient
 	 */
 	public void voidPatient(Patient patient, String reason) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_PATIENTS);
 		getPatientDAO().voidPatient(patient, reason);
 	}
 
@@ -121,6 +124,8 @@ public class PatientService {
 	 * @param patient patient to be revived
 	 */
 	public void unvoidPatient(Patient patient) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_PATIENTS);
 		getPatientDAO().unvoidPatient(patient);
 	}
 	
@@ -134,6 +139,8 @@ public class PatientService {
 	 * @see #voidPatient(Patient, String) 
 	 */
 	public void deletePatient(Patient patient) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_DELETE_PATIENTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_DELETE_PATIENTS);
 		getPatientDAO().deletePatient(patient);
 	}
 	

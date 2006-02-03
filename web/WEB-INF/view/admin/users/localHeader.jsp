@@ -2,11 +2,13 @@
 	<li class="first">
 		<a href="${pageContext.request.contextPath}/admin"><spring:message code="admin.title.short"/></a>
 	</li>
-	<li <c:if test="<%= request.getRequestURI().contains("users/user") %>">class="active"</c:if>>
-		<a href="${pageContext.request.contextPath}/admin/users/user.list">
-			<spring:message code="User.manage"/>
-		</a>
-	</li>
+	<openmrs:hasPrivilege privilege="Add Users,Edit Users,Delete Users,View Users">
+		<li <c:if test="<%= request.getRequestURI().contains("users/user") %>">class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/users/user.list">
+				<spring:message code="User.manage"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
 	<li <c:if test="<%= request.getRequestURI().contains("group") %>">class="active"</c:if>>
 		<a href="${pageContext.request.contextPath}/admin/users/group.list">
 			<spring:message code="Group.manage"/>

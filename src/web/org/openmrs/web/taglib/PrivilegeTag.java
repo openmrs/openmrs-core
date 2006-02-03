@@ -15,7 +15,6 @@ public class PrivilegeTag extends TagSupport {
 	private final Log log = LogFactory.getLog(getClass());
 
 	private String privilege;
-	private boolean converse;
 
 	public int doStartTag() {
 
@@ -28,12 +27,23 @@ public class PrivilegeTag extends TagSupport {
 			return SKIP_BODY;
 		}
 		
-		// must have authenticated to have a privilege
-		if (!context.isAuthenticated()) {
-			return SKIP_BODY;
+		log.debug("privilege: " + privilege);
+		
+		boolean hasPrivilege = false;
+		if (privilege.contains(",")) {
+			String[] privs = privilege.split(",");
+			for (String p : privs) {
+				if (context.hasPrivilege(p)) {
+					hasPrivilege = true;
+					break;
+				}
+			}
+		}
+		else {
+			hasPrivilege = context.hasPrivilege(privilege);
 		}
 		
-		if (converse ^= context.getAuthenticatedUser().hasPrivilege(privilege)) {
+		if (hasPrivilege) {
 			pageContext.setAttribute("authenticatedUser", context.getAuthenticatedUser());
 			return EVAL_BODY_INCLUDE;
 		}
@@ -43,30 +53,16 @@ public class PrivilegeTag extends TagSupport {
 	}
 	
 	/**
-	 * @return Returns the converse.
+	 * @return Returns the privilege.
 	 */
 	public String getPrivilege() {
 		return privilege;
 	}
 
 	/**
-	 * @param converse The converse to set.
+	 * @param converse The privilege to set.
 	 */
 	public void setPrivilege(String privilege) {
 		this.privilege = privilege;
-	}
-
-	/**
-	 * @return Returns the converse.
-	 */
-	public boolean isConverse() {
-		return converse;
-	}
-
-	/**
-	 * @param converse The converse to set.
-	 */
-	public void setConverse(boolean converse) {
-		this.converse = converse;
 	}
 }

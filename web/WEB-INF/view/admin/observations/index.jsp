@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="Manage Observations" otherwise="/login.htm" redirect="/admin/observations/index.htm" />
+<openmrs:require privilege="View Observations" otherwise="/login.htm" redirect="/admin/observations/index.htm" />
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>

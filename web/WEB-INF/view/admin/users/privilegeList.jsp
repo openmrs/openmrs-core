@@ -24,6 +24,9 @@
 				<c:if test="${map.value == false}">
 					<input type="checkbox" name="privilegeId" value="<c:out value="${map.key.privilege}"/>">
 				</c:if>
+				<c:if test="${map.value == true}">
+					<img src="${pageContext.request.contextPath}/images/lock.gif"/>
+				</c:if>
 			</td>
 			<td>
 				<a href="privilege.form?privilege=<c:out value="${map.key.privilege}"/>">

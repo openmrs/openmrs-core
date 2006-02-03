@@ -38,8 +38,8 @@ public class UserService {
 	 * @throws APIException
 	 */
 	public void createUser(User user, String password) throws APIException {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_USERS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_USERS);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_ADD_USERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_USERS);
 		getUserDAO().createUser(user, password);
 	}
 
@@ -50,8 +50,8 @@ public class UserService {
 	 * @throws APIException
 	 */
 	public User getUser(Integer userId) throws APIException {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_USERS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_USERS);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_USERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_USERS);
 		return getUserDAO().getUser(userId);
 	}
 	
@@ -62,8 +62,8 @@ public class UserService {
 	 * @throws APIException
 	 */
 	public User getUserByUsername(String username) throws APIException {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_USERS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_USERS);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_USERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_USERS);
 		return getUserDAO().getUserByUsername(username);
 	}
 
@@ -74,8 +74,8 @@ public class UserService {
 	 * @throws APIException
 	 */
 	public boolean isDuplicateUsername(User user) throws APIException {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_USERS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_USERS);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_USERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_USERS);
 		return getUserDAO().isDuplicateUsername(user);
 	}
 	
@@ -86,8 +86,8 @@ public class UserService {
 	 * @throws APIException
 	 */
 	public List<User> getUsersByRole(Role role) throws APIException {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_USERS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_USERS);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_USERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_USERS);
 		return getUserDAO().getUsersByRole(role);
 	}
 	
@@ -97,8 +97,8 @@ public class UserService {
 	 * @throws APIException
 	 */
 	public void updateUser(User user) throws APIException {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_USERS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_USERS);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_USERS);
 		getUserDAO().updateUser(user);
 	}
 	
@@ -109,8 +109,8 @@ public class UserService {
 	 * @throws APIException
 	 */
 	public void grantUserRole(User user, Role role) throws APIException {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_USERS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_USERS);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_USERS);
 		getUserDAO().grantUserRole(user, role);
 	}
 	
@@ -121,8 +121,8 @@ public class UserService {
 	 * @throws APIException
 	 */
 	public void revokeUserRole(User user, Role role) throws APIException {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_USERS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_USERS);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_USERS);
 		getUserDAO().revokeUserRole(user, role);
 	}
 
@@ -137,8 +137,8 @@ public class UserService {
 	 * @throws APIException
 	 */
 	public void voidUser(User user, String reason) throws APIException {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_USERS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_USERS);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_USERS);
 		getUserDAO().voidUser(user, reason);
 	}
 	
@@ -150,8 +150,8 @@ public class UserService {
 	 * @throws APIException
 	 */
 	public void unvoidUser(User user) throws APIException {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_USERS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_USERS);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_USERS);
 		getUserDAO().unvoidUser(user);
 	}
 	
@@ -173,8 +173,8 @@ public class UserService {
 	 * @see #voidUser(User, String)
 	 */
 	public void deleteUser(User user) throws APIException {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_USERS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_USERS);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_DELETE_USERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_DELETE_USERS);
 		getUserDAO().deleteUser(user);
 	}
 	
@@ -202,8 +202,8 @@ public class UserService {
 	 * @throws APIException
 	 */
 	public List<User> getUsers() throws APIException {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_USERS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_USERS);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_USERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_USERS);
 		return getUserDAO().getUsers();
 	}
 
@@ -250,20 +250,20 @@ public class UserService {
 	 * @throws APIException
 	 */
 	public void changePassword(String pw, String pw2) throws APIException {
-		// TODO or check if its the current user
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_USERS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_USERS);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_USERS);
 		getUserDAO().changePassword(pw, pw2);
 	}
 	
 	public void changeQuestionAnswer(String pw, String q, String a) {
-		// TODO or check if its the current user
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_USERS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_USERS);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_USERS);
 		getUserDAO().changeQuestionAnswer(pw, q, a);
 	}
 	
 	public List<User> findUsers(String name, List<String> roles, boolean includeVoided) {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_USERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_USERS);
 		name = name.replace(", ", " ");
 		return getUserDAO().findUsers(name, roles, includeVoided);
 	}

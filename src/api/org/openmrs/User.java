@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.openmrs.util.OpenmrsConstants;
+
 /**
  * User
  * 
@@ -62,8 +64,13 @@ public class User extends Person implements java.io.Serializable {
 				roles.addAll(g.getRoles());
 			}
 		
+		Role role = new Role(OpenmrsConstants.SUPERUSER_ROLE);	//default administrator with complete control
+		
+		if (roles.contains(role))
+			return true;
+		
 		check_privileges: for (Iterator i = roles.iterator(); i.hasNext();) {
-			Role role = (Role) i.next();
+			role = (Role) i.next();
 			Privilege oPrivilege = new Privilege();
 			oPrivilege.setPrivilege(privilege);
 			Set privileges = role.getPrivileges();

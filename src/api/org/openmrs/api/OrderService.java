@@ -27,8 +27,8 @@ public class OrderService {
 	}
 	
 	private OrderDAO getOrderDAO() {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ORDERS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ORDERS);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ORDERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_ORDERS);
 		
 		return daoContext.getOrderDAO();
 	}
@@ -40,6 +40,8 @@ public class OrderService {
 	 * @throws APIException
 	 */
 	public void createOrder(Order order) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_ADD_ORDERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_ORDERS);
 		getOrderDAO().createOrder(order);
 	}
 
@@ -61,6 +63,8 @@ public class OrderService {
 	 * @throws APIException
 	 */
 	public void updateOrder(Order order) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_ORDERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_ORDERS);
 		getOrderDAO().updateOrder(order);
 	}
 	
@@ -80,6 +84,8 @@ public class OrderService {
 	 * @param reason reason for discontinuing order
 	 */
 	public void discontinueOrder(Order order, String reason) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_ORDERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_ORDERS);
 		getOrderDAO().discontinueOrder(order, reason);
 	}
 
@@ -89,6 +95,8 @@ public class OrderService {
 	 * @param order order to be undiscontinued
 	 */
 	public void undiscontinueOrder(Order order) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_ORDERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_ORDERS);
 		getOrderDAO().undiscontinueOrder(order);
 	}
 
@@ -103,6 +111,8 @@ public class OrderService {
 	 * @see #discontinueOrder(Order, String) 
 	 */
 	public void deleteOrder(Order order) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_DELETE_ORDERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_DELETE_ORDERS);
 		getOrderDAO().deleteOrder(order);
 	}
 
@@ -113,6 +123,8 @@ public class OrderService {
 	 * @param reason reason for voiding order
 	 */
 	public void voidOrder(Order order, String reason) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_ORDERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_ORDERS);
 		getOrderDAO().voidOrder(order, reason);
 	}
 
@@ -122,6 +134,8 @@ public class OrderService {
 	 * @param order order to be unvoided
 	 */
 	public void unvoidOrder(Order order) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_ORDERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_ORDERS);
 		getOrderDAO().unvoidOrder(order);
 	}
 

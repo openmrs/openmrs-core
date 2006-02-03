@@ -19,16 +19,23 @@
 			<th> <spring:message code="general.description"/> </th>
 			<th> <spring:message code="Role.privileges"/> </th>
 		</tr>
-	<c:forEach var="role" items="${roleList}">
+	<c:forEach var="map" items="${roleList}">
 		<tr>
-			<td><input type="checkbox" name="roleId" value="<c:out value="${role.role}"/>"></td>
 			<td>
-				<a href="role.form?role=<c:out value="${role.role}"/>">
-					<c:out value="${role.role}"/>
+				<c:if test="${map.value == false}">
+					<input type="checkbox" name="roleId" value="<c:out value="${map.key.role}"/>">
+				</c:if>
+				<c:if test="${map.value == true}">
+					<img src="${pageContext.request.contextPath}/images/lock.gif"/>
+				</c:if>
+			</td>
+			<td>
+				<a href="role.form?role=<c:out value="${map.key.role}"/>">
+					<c:out value="${map.key.role}"/>
 				</a>
 			</td>
-			<td><c:out value="${role.description}"/></td>
-			<td><c:out value="${role.privileges}"/></td>
+			<td><c:out value="${map.key.description}"/></td>
+			<td><c:out value="${map.key.privileges}"/></td>
 		</tr>
 	</c:forEach>
 	</table>

@@ -36,8 +36,8 @@ public class FormService {
 	 * @return context's FormDAO
 	 */
 	private FormDAO dao() {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_FORMS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_FORMS);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_FORMS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_FORMS);
 		
 		return daoContext.getFormDAO();
 	}
@@ -62,6 +62,8 @@ public class FormService {
 	 * @throws APIException
 	 */
 	public void createForm(Form form) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_ADD_FORMS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_FORMS);
 		dao().createForm(form);
 	}
 
@@ -81,6 +83,8 @@ public class FormService {
 	 * @throws APIException
 	 */
 	public void updateForm(Form form) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_FORMS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_FORMS);
 		dao().updateForm(form);
 	}
 
@@ -95,6 +99,8 @@ public class FormService {
 	 * @throws APIException
 	 */
 	public void retireForm(Form form, String reason) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_FORMS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_FORMS);
 		dao().retireForm(form, reason);
 	}
 	
@@ -106,6 +112,8 @@ public class FormService {
 	 * @throws APIException
 	 */
 	public void unretireForm(Form form) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_FORMS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_FORMS);
 		dao().unretireForm(form);
 	}
 	
@@ -126,6 +134,8 @@ public class FormService {
 	 * @throws APIException
 	 */
 	public void deleteForm(Form form) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_DELETE_FORMS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_DELETE_FORMS);
 		dao().deleteForm(form);
 	}
 	
@@ -213,6 +223,8 @@ public class FormService {
 	 * @throws APIException
 	 */
 	public void createField(Field field) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_FORMS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_FORMS);
 		dao().createField(field);
 	}
 
@@ -222,6 +234,8 @@ public class FormService {
 	 * @throws APIException
 	 */
 	public void updateField(Field field) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_FORMS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_FORMS);
 		dao().updateField(field);
 	}
 	
@@ -231,6 +245,8 @@ public class FormService {
 	 * @throws APIException
 	 */
 	public void deleteField(Field field) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_FORMS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_FORMS);
 		dao().deleteField(field);
 	}
 	
@@ -250,6 +266,8 @@ public class FormService {
 	 * @throws APIException
 	 */
 	public void createFormField(FormField formField) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_FORMS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_FORMS);
 		dao().createFormField(formField);
 	}
 
@@ -259,6 +277,8 @@ public class FormService {
 	 * @throws APIException
 	 */
 	public void updateFormField(FormField formField) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_FORMS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_FORMS);
 		dao().updateFormField(formField);
 	}
 	
@@ -268,6 +288,8 @@ public class FormService {
 	 * @throws APIException
 	 */
 	public void deleteFormField(FormField formField) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_FORMS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_FORMS);
 		dao().deleteFormField(formField);
 	}
 	

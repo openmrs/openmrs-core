@@ -23,7 +23,7 @@ ul.boxy li {
 	color: gray;
 	font-style: italic;
 	font-size: .8em;
-	float: right;
+	text-align: center;
 }
 
 ul.currentItems, ul.currentItems li {

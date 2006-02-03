@@ -42,9 +42,8 @@ public class ConceptService {
 	}
 	
 	private ConceptDAO getConceptDAO() {
-		// TODO No privilege check for concepts in the openmrs model
-		//if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_CONCEPTS))
-		//	throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_CONCEPTS);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_CONCEPTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_CONCEPTS);
 		
 		return daoContext.getConceptDAO();
 	}
@@ -54,8 +53,8 @@ public class ConceptService {
 	 * @param concept to be created
 	 */
 	public void createConcept(Concept concept) {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_CONCEPTS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_CONCEPTS);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_ADD_CONCEPTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_CONCEPTS);
 		
 		getConceptDAO().createConcept(concept);
 	}

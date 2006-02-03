@@ -31,8 +31,8 @@ public class EncounterService {
 	}
 	
 	private EncounterDAO getEncounterDAO() {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ENC))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ENC);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ENCOUNTERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_ENCOUNTERS);
 		
 		return daoContext.getEncounterDAO();
 	}
@@ -43,6 +43,8 @@ public class EncounterService {
 	 * @throws APIException
 	 */
 	public void createEncounter(Encounter encounter) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_ADD_ENCOUNTERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_ENCOUNTERS);
 		getEncounterDAO().createEncounter(encounter);
 	}
 
@@ -131,6 +133,8 @@ public class EncounterService {
 	 * @throws APIException
 	 */
 	public void updateEncounter(Encounter encounter) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_ENCOUNTERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_ENCOUNTERS);
 		getEncounterDAO().updateEncounter(encounter);
 	}
 	
@@ -140,6 +144,8 @@ public class EncounterService {
 	 * @param encounter encounter object to be deleted 
 	 */
 	public void deleteEncounter(Encounter encounter) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_DELETE_ENCOUNTERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_DELETE_ENCOUNTERS);
 		getEncounterDAO().deleteEncounter(encounter);
 	}
 	
