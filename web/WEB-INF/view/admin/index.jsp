@@ -5,22 +5,25 @@
 <openmrs:require privilege="" otherwise="/login.htm" redirect="/admin/index.htm" />
 
 <style>
-	ul#menu, #springnote {
-		background-color: whitesmoke;
-		border: 1px solid lightgrey;
-	}
 	#menu li {
 		display: list-item;
 		border-left-width: 0px;
+		
 	}
 	#menu li.first {
 		display: none;
 	}
+	#menu {
+		list-style: none;
+		margin-left: 10px;
+		margin-top: 0;
+	}
+	h4 {
+		margin-bottom: 0;
+	}
 </style>
 
 <h2><spring:message code="admin.title"/></h2>
-
-<div id="springnote">Marked sections have been springified</div>
 
 <h4>Users</h4>
 	<%@ include file="users/localHeader.jsp" %>

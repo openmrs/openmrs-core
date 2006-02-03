@@ -57,7 +57,7 @@ public class FormDownloadServlet extends HttpServlet {
 			url += "adult_return_form";
 		}
 		
-		String xmldoc = new FormXmlTemplateBuilder(context, form).getXmlTemplate(patient);
+		String xmldoc = new FormXmlTemplateBuilder(context, form, url).getXmlTemplate(patient);
 		
 		
 		response.setHeader("Content-Type", "application/ms-infopath.xml");
