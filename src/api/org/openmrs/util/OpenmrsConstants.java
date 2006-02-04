@@ -76,6 +76,8 @@ public class OpenmrsConstants {
 	public static final String PRIV_EDIT_PATIENTS   = "Edit Patients";
 	public static final String PRIV_DELETE_PATIENTS = "Delete Patients";
 
+	public static final String PRIV_VIEW_PATIENT_SETS = "View Patient Sets";
+	
 	public static final String PRIV_VIEW_ORDERS		= "View Orders";
 	public static final String PRIV_ADD_ORDERS		= "Add Orders";
 	public static final String PRIV_EDIT_ORDERS		= "Edit Orders";
@@ -135,6 +137,8 @@ public class OpenmrsConstants {
 		privs.add(PRIV_ADD_PATIENTS);
 		privs.add(PRIV_EDIT_PATIENTS);
 		privs.add(PRIV_DELETE_PATIENTS);
+		
+		privs.add(PRIV_VIEW_PATIENT_SETS);
 		
 		privs.add(PRIV_VIEW_ORDERS);
 		privs.add(PRIV_ADD_ORDERS);

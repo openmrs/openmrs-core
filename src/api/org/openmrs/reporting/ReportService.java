@@ -38,4 +38,19 @@ public class ReportService {
 	public void updateReport(Report report) throws APIException {
 		dao().updateReport(report);
 	}
+	
+	/*
+	 * placeholder for testing -DJ
+	 */
+	public PatientFilter getPatientFilterById(Integer filterId) throws APIException {
+		switch (filterId.intValue()) {
+		case 1:
+			return new CharacteristicFilter("M", null, null);
+		case 2: 
+			return new CharacteristicFilter("F", null, null);
+		case 3:
+			return new CharacteristicFilter(null, new java.util.Date(78, 3, 11), null);
+		}
+		return null;
+	}
 }

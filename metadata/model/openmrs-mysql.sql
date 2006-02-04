@@ -1,5 +1,7 @@
 #Date:                  2006/01/13 15:30:38
 
+use openmrs;
+
 SET FOREIGN_KEY_CHECKS=0;
 #----------------------------
 # Table structure for complex_obs

@@ -16,6 +16,7 @@ import org.openmrs.api.db.FormDAO;
 import org.openmrs.api.db.ObsDAO;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.api.db.PatientDAO;
+import org.openmrs.api.db.PatientSetDAO;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.reporting.db.ReportDAO;
 import org.openmrs.reporting.db.hibernate.HibernateReportDAO;
@@ -34,6 +35,7 @@ public class HibernateDAOContext implements DAOContext {
 	private ObsDAO obsDAO;
 	private OrderDAO orderDAO;
 	private PatientDAO patientDAO;
+	private PatientSetDAO patientSetDAO;
 	private UserDAO userDAO;
 	private ReportDAO reportDAO;
 
@@ -165,6 +167,12 @@ public class HibernateDAOContext implements DAOContext {
 		if (patientDAO == null)
 			patientDAO = new HibernatePatientDAO(context);
 		return patientDAO;
+	}
+	
+	public PatientSetDAO getPatientSetDAO() {
+		if (patientSetDAO == null)
+			patientSetDAO = new HibernatePatientSetDAO(context);
+		return patientSetDAO;
 	}
 
 	public UserDAO getUserDAO() {

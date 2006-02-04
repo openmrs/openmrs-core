@@ -58,6 +58,8 @@
 					<prop key="**/conceptSetDerived.form">conceptSetDerivedForm</prop>
 					<prop key="**/report.list">reportList</prop>
 					<prop key="**/report.form">reportForm</prop>
+					<prop key="**/analysis.list">otfaController</prop>
+					<prop key="**/analysis.form">otfaActionController</prop>
 					<prop key="**/form.form">formForm</prop>
 					<prop key="**/form.list">formList</prop>
 					<prop key="**/fieldType.form">fieldTypeForm</prop>
@@ -436,6 +438,23 @@
 				</bean>
 			<!-- ** /Report ** -->
 	    <!-- ============================ -->
+
+	    <!-- ============================ -->
+		<!-- ===== Analysis Sector ===== -->
+	    <!-- ============================ -->
+			<!-- ** Analysis ** -->
+				<bean id="otfaController" class="org.openmrs.web.controller.analysis.OnTheFlyAnalysisController"/>
+			    <bean id="otfaParamResolver" class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
+					<property name="paramName"><value>method</value></property>
+					<property name="defaultMethodName"><value>handleRequest</value></property>
+				</bean>
+			    <bean id="otfaActionController" class="org.springframework.web.servlet.mvc.multiaction.MultiActionController">
+					<property name="methodNameResolver"><ref bean="otfaParamResolver"/></property>
+					<property name="delegate"><ref bean="otfaController"/></property>
+				</bean>
+				<!-- ** /Analysis ** -->
+	    <!-- ============================ -->
+
 
 	    <!-- ============================ -->
 		<!-- ===== Form Sector ===== -->

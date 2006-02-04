@@ -37,6 +37,8 @@ public interface DAOContext {
 	
 	public PatientDAO getPatientDAO();
 	
+	public PatientSetDAO getPatientSetDAO();
+	
 	public UserDAO getUserDAO();
 	
 	public ReportDAO getReportDAO();

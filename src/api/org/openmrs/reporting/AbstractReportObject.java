@@ -111,4 +111,12 @@ public abstract class AbstractReportObject {
 		this.voidReason = voidReason;
 	}
 	
+	/**
+	 * Helper function that does a null-safe test for equality between two objects. Does not check for type-safety. 
+	 * @return Whether or not two objects (of the same class) are equal. 
+	 */
+	public static boolean equals(Object o1, Object o2) {
+		return o1 == null ? o2 == null : o1.equals(o2);
+	}
+	
 }

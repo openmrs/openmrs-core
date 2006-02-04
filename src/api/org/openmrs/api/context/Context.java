@@ -12,6 +12,7 @@ import org.openmrs.api.FormService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.PatientSetService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.db.DAOContext;
 import org.openmrs.api.db.hibernate.HibernateDAOContext;
@@ -39,6 +40,7 @@ public class Context {
 	private EncounterService encounterService;
 	private ObsService obsService;
 	private PatientService patientService;
+	private PatientSetService patientSetService;
 	private UserService userService;
 	private AdministrationService administrationService;
 	private FormService formService;
@@ -119,6 +121,16 @@ public class Context {
 		if (patientService == null)
 			patientService = new PatientService(this, getDAOContext());
 		return patientService;		
+	}
+	
+	/**
+	 * @return patientset-related services
+	 */
+	public PatientSetService getPatientSetService() {
+		if (patientSetService == null) {
+			patientSetService = new PatientSetService(this, getDAOContext());
+		}
+		return patientSetService;
 	}
 
 	/**

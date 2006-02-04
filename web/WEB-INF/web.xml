@@ -178,21 +178,6 @@
 
 	<!-- ==/Spring Configuration=============== -->
 
-
-	<!-- Darius Testing -->
-		<servlet>
-			<servlet-name>darius</servlet-name>
-			<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-			<load-on-startup>4</load-on-startup>
-		</servlet>
-		
-		<servlet-mapping>
-	 		<servlet-name>darius</servlet-name>
-	 		<url-pattern>*.darius</url-pattern>
-		</servlet-mapping>
-	<!-- /Darius Testing -->
-
-
 	<taglib>
 		<taglib-uri>/core-rt</taglib-uri>
 		<taglib-location>/WEB-INF/taglibs/c-rt.tld</taglib-location>
