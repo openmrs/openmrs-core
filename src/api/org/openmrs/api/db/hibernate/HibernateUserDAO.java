@@ -327,6 +327,38 @@ public class HibernateUserDAO implements
 		return group;
 	}
 	
+	
+	
+	/**
+	 * @see org.openmrs.api.db.UserDAO#changePassword(org.openmrs.User, java.lang.String)
+	 */
+	public void changePassword(User u, String pw) throws DAOException {
+		
+		Session session = HibernateUtil.currentSession();
+		
+		User authUser = context.getAuthenticatedUser();
+		
+		try {
+			log.debug("udpating password");
+			//update the user with the new password
+			HibernateUtil.beginTransaction();
+			String salt = Security.getRandomToken();
+			String newPassword = Security.encodeString(pw + salt);
+			session.createQuery("update User set password = :pw, salt = :salt, changed_by = :changed, date_changed = :date where user_id = :userid")
+				.setParameter("pw", newPassword)
+				.setParameter("salt", salt)
+				.setParameter("userid", u.getUserId())
+				.setParameter("changed", authUser.getUserId())
+				.setParameter("date", new Date())
+				.executeUpdate();
+			HibernateUtil.commitTransaction();
+		}
+		catch (APIException e) {
+			log.error(e);
+			throw new DAOException(e);
+		}
+	}
+
 	/**
 	 * @see org.openmrs.api.db.UserDAO#changePassword(java.lang.String, java.lang.String)
 	 */

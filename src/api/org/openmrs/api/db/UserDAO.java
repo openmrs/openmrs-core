@@ -168,6 +168,14 @@ public interface UserDAO {
 	public Group getGroup(String r) throws DAOException;
 	
 	/**
+	 * Resets the password for the given user
+	 * @param User to change
+	 * @param New Password
+	 * @throws DAOException
+	 */
+	public void changePassword(User u, String pw) throws DAOException;
+	
+	/**
 	 * Resets the current users password
 	 * @param pw
 	 * @param pw2

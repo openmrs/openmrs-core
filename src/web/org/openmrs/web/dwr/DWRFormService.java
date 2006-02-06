@@ -12,6 +12,7 @@ import org.openmrs.ConceptWord;
 import org.openmrs.Field;
 import org.openmrs.Form;
 import org.openmrs.FormField;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.form.FormUtil;
@@ -53,21 +54,23 @@ public class DWRFormService {
 		
 		if (context != null) {
 
-			for(Field field : context.getFormService().findFields(txt))
-				objects.add(new FieldListItem(field));
-			
 			List<ConceptWord> conceptWords = context.getConceptService().findConcepts(txt, locale, false);
 			for (ConceptWord word : conceptWords) {
 				objects.add(new ConceptListItem(word));
 				for (Field field : context.getFormService().findFields(word.getConcept()))
 					objects.add(new FieldListItem(field));
 			}
+
+			for(Field field : context.getFormService().findFields(txt)) {
+				FieldListItem fi = new FieldListItem(field);
+				if (!objects.contains(fi))
+					objects.add(fi);
+			}
+			
 		}
 		
 		return objects;
 	}
-	
-	
 	
 	public String getHTMLTree(Integer formId) {
 		Context context = (Context) WebContextFactory.get().getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
@@ -79,7 +82,6 @@ public class DWRFormService {
 		return "";
 	}
 	
-	
 	public String getOptionTree(Integer formId) {
 		Context context = (Context) WebContextFactory.get().getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		String str = "";
@@ -89,6 +91,55 @@ public class DWRFormService {
 			str = generateOptionTree(formFields, 0, 0);
 		}
 		return "<option value=''><option>" + str;	
+	}
+	
+	public void saveFormField(Integer fieldId, String name, String fieldDesc, Integer fieldTypeId, Integer conceptId, String table, String attr, boolean multiple, Integer formFieldId, Integer formId, Integer parent, Integer number, String part, Integer page, Integer min, Integer max, boolean required) {
+		Context context = (Context) WebContextFactory.get().getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		if (context != null && context.isAuthenticated()) {
+			FormService fs = context.getFormService();
+			ConceptService cs = context.getConceptService();
+			
+			FormField ff;
+			if (formFieldId != null && formFieldId != 0)
+				ff = fs.getFormField(formFieldId);
+			else
+				ff = new FormField(formFieldId);
+			
+			ff.setForm(fs.getForm(formId));
+			ff.setParent(fs.getFormField(parent));
+			ff.setFieldNumber(number);
+			ff.setFieldPart(part);
+			ff.setPageNumber(page);
+			ff.setMinOccurs(min);
+			ff.setMaxOccurs(max);
+			ff.setRequired(required);
+			
+			log.debug("fieldId: " + fieldId);
+			log.debug("formFieldId: " + formFieldId);
+			log.debug("parentId: "+ parent);
+			log.debug("parent: " + ff.getParent());
+			
+			Field field;
+			if (fieldId != null && fieldId != 0)
+				field = fs.getField(fieldId);
+			else
+				field = new Field(fieldId);
+			
+			field.setName(name);
+			field.setDescription(fieldDesc);
+			field.setFieldType(fs.getFieldType(fieldTypeId));
+			if (conceptId != null && conceptId != 0)
+				field.setConcept(cs.getConcept(conceptId));
+			field.setTableName(table);
+			field.setAttributeName(attr);
+			field.setSelectMultiple(multiple);
+		
+			ff.setField(field);
+			
+			fs.updateFormField(ff);
+		}
+		
+		return;
 	}
 
 	private String generateOptionTree(TreeMap<Integer, TreeSet<FormField>> formFields, Integer current, Integer level) {
@@ -154,13 +205,13 @@ public class DWRFormService {
     	}
 		if (ff.isRequired())
 			s += "<span class='required'> * </span>";
-		s += "<a href='#" + ff.getFieldNumber() + "' onmouseover='hoverField(" + ff.getFormFieldId() + ", this)' onmouseout='unHoverField(this)' onclick='selectField(" + ff.getFormFieldId() + ", this)' class='edit'>";
+		s += "<a href='#" + ff.getFormFieldId() + "' onmouseover='hoverField(" + ff.getFormFieldId() + ", this)' onmouseout='unHoverField(this)' onclick='return selectField(" + ff.getFormFieldId() + ", this)' class='edit'>";
 		if (ff.getField().getFieldType().getFieldTypeId() == 1)
 			s += "CONCEPT." + ff.getField().getName() + " " + ff.getField().getFieldId();
 		else
 			s += ff.getField().getName();
 		s += "</a> ";
-		s += "<a href='#delete' onclick='deleteField(" + ff.getFieldNumber() + ", this)' class='delete'> &nbsp; &nbsp; </a>";
+		s += "<a href='#delete' onclick='return deleteField(" + ff.getFieldNumber() + ", this)' class='delete'> &nbsp; &nbsp; </a>";
 		
 		s += "</div>";
     	
@@ -196,6 +247,5 @@ public class DWRFormService {
     	
     	return s;
     }
-
-
+    
 }

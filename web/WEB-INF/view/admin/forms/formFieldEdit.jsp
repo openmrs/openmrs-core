@@ -4,12 +4,12 @@
 		<td valign="top">
 			<spring:message code="Field.name"/>
 			<div id="searchForm" class="searchForm">
-				<div style="text-align: right">
-					<input type="checkbox" id="verboseListing" onclick="showVerbose()">
-					<label for="verbose"><spring:message code="dictionary.verboseListing"/></label> &nbsp; 
-					<input type="button" onClick="return closeBox();" style="float: none" class="closeButton" value="X"/>
-				</div>
 				<div class="wrapper">
+					<div style="text-align: right">
+						<input type="checkbox" id="verboseListing" onclick="showVerbose()">
+						<label for="verbose"><spring:message code="dictionary.verboseListing"/></label> &nbsp; 
+						<input type="button" onClick="return closeBox();" id="closeButton" value="X"/>
+					</div>
 					<div id="searchResults" class="searchResults">
 						<table width="100%">
 							<tbody id="searchBody"></tbody>
@@ -19,8 +19,8 @@
 			</div>
 		</td>
 		<td>
-			<input type="text" name="name" id="name" size="40" onKeyDown="showSearchForm(this, event)"/>
-			(<spring:message code="Field.forms"/> <span id="forms"></span>)
+			<input type="text" name="name" id="name" size="37" onKeyDown="showSearchForm(this, event)"/>
+			<spring:message code="Field.forms"/> <span id="forms"></span>
 		</td>
 	</tr>
 	<tr>
@@ -39,6 +39,7 @@
 	</tr>
 	<tr id="concept">
 		<td valign="top"><spring:message code="Field.concept"/><br/>&nbsp;</td>
+		<input type="hidden" name="conceptId" id="conceptId" />
 		<td id="conceptName" valign="top"></td>
 	</tr>
 	<tr id="database">

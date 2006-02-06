@@ -35,7 +35,7 @@
 				</spring:bind>
 			</td>
 		</tr>
-		<c:if test="${user.creator == null}">
+		<c:if test="${modifyPasswords == true}">
 			<tr>
 				<td><spring:message code="User.password" /></td>
 				<td><input type="password" name="password" /></td>

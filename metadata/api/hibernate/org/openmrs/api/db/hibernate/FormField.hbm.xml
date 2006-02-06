@@ -19,7 +19,7 @@
 			<column name="form_id" />
 		</many-to-one>
 
-		<many-to-one name="field" class="Field" not-null="true">
+		<many-to-one name="field" class="Field" not-null="true" cascade="save-update,merge,evict">
 			<column name="field_id" />
 		</many-to-one>
 

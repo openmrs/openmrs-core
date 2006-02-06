@@ -22,6 +22,7 @@ import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -124,12 +125,19 @@ public class UserFormController extends SimpleFormController {
 		
 		if (context != null && context.isAuthenticated()) {
 			
-			boolean isNew = (user.getUserId() == null);
+			UserService us = context.getUserService();
+
+			String password = request.getParameter("password");
 			
-			if (isNew)
-				context.getUserService().createUser(user, request.getParameter("password"));
+			if ((context.getAuthenticatedUser().isSuperUser() && password != null) && !password.equals("")) {
+				log.debug("calling changePassword");
+				us.changePassword(user, password);
+			}
+			
+			if (user.getUserId() == null)
+				us.createUser(user, password);
 			else
-				context.getUserService().updateUser(user);
+				us.updateUser(user);
 			
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.saved");
 			view = getSuccessView();
@@ -165,15 +173,19 @@ public class UserFormController extends SimpleFormController {
         return user;
     }
     
-    protected Map referenceData(HttpServletRequest request) throws Exception {
+    protected Map referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		Map<String, Object> map = new HashMap<String, Object>();
 		
+		User user = (User)obj;
+		
 		if (context != null && context.isAuthenticated()) {
 			map.put("roles", context.getUserService().getRoles());
 			map.put("groups", context.getUserService().getGroups());
+			if (user.getUserId() == null || context.getAuthenticatedUser().isSuperUser()) 
+				map.put("modifyPasswords", true);
 		}	
 		return map;
     }

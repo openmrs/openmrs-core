@@ -1,5 +1,6 @@
 package org.openmrs.api;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.openmrs.Group;
@@ -40,6 +41,7 @@ public class UserService {
 	public void createUser(User user, String password) throws APIException {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_ADD_USERS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_USERS);
+		checkPrivileges(user);
 		getUserDAO().createUser(user, password);
 	}
 
@@ -99,6 +101,7 @@ public class UserService {
 	public void updateUser(User user) throws APIException {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USERS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_USERS);
+		checkPrivileges(user);
 		getUserDAO().updateUser(user);
 	}
 	
@@ -243,6 +246,14 @@ public class UserService {
 		return getUserDAO().getGroup(r);
 	}
 	
+	public void changePassword(User u, String pw) throws APIException {
+		User user = context.getAuthenticatedUser();
+		if (user == null || user.isSuperUser() == false)
+			throw new APIAuthenticationException("Role required: " + OpenmrsConstants.SUPERUSER_ROLE);
+		
+		getUserDAO().changePassword(u, pw);
+	}
+	
 	/**
 	 * Changes the current user's password
 	 * @param pw
@@ -250,14 +261,10 @@ public class UserService {
 	 * @throws APIException
 	 */
 	public void changePassword(String pw, String pw2) throws APIException {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USERS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_USERS);
 		getUserDAO().changePassword(pw, pw2);
 	}
 	
 	public void changeQuestionAnswer(String pw, String q, String a) {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USERS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_USERS);
 		getUserDAO().changeQuestionAnswer(pw, q, a);
 	}
 	
@@ -266,5 +273,16 @@ public class UserService {
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_USERS);
 		name = name.replace(", ", " ");
 		return getUserDAO().findUsers(name, roles, includeVoided);
+	}
+	
+	private void checkPrivileges(User user) {
+		Collection<Privilege> privileges = user.getPrivileges();
+		
+		User currentUser = context.getAuthenticatedUser();
+		
+		for (Privilege p : privileges) {
+			if (!currentUser.hasPrivilege(p.getPrivilege()))
+				throw new APIAuthenticationException("Privilege required: " + p);
+		}
 	}
 }

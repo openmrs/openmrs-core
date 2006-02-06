@@ -46,16 +46,17 @@ public class FormDownloadServlet extends HttpServlet {
 		
 		Patient patient = context.getPatientService().getPatient(patientId);
 		Form form = context.getFormService().getForm(formId);
-		String server = request.getServerName();
-		Integer port = request.getServerPort();
-		String path = request.getContextPath();
-		String url = server + ":" + port + path + "/formentry/forms/";
-		String type = "";
+		String url = request.getRequestURL().toString();
+		url = url.substring(0, url.lastIndexOf("/"));
+		url += "/formentry/forms/";
 		
+		String type = "";
 		if (formId == 14) {
 			type = "adultReturn";
-			url += "adult_return_form";
+			url += "adult_return_visit";
 		}
+		
+		url += ".xsn";
 		
 		String xmldoc = new FormXmlTemplateBuilder(context, form, url).getXmlTemplate(patient);
 		

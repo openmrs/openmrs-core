@@ -24,6 +24,7 @@ ul.boxy li {
 	font-style: italic;
 	font-size: .8em;
 	text-align: center;
+	margin-top: -1.5em;
 }
 
 ul.currentItems, ul.currentItems li {

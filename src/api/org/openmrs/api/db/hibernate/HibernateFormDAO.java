@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.CacheMode;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
@@ -263,7 +264,9 @@ public class HibernateFormDAO implements
 			
 			try {
 				HibernateUtil.beginTransaction();
-				session.saveOrUpdate(field);
+				Field f = (Field)session.merge(field);
+				session.evict(f);
+				session.update(field);
 				HibernateUtil.commitTransaction();
 			}
 			catch (Exception e) {
@@ -315,14 +318,20 @@ public class HibernateFormDAO implements
 	 * @see org.openmrs.api.db.FormService#updateFormField(org.openmrs.FormField)
 	 */
 	public void updateFormField(FormField formField) throws DAOException {
+		if (formField.getField().getCreator() == null) {
+			Field field = formField.getField();
+			field.setCreator(context.getAuthenticatedUser());
+			field.setDateCreated(new Date());
+		}
+		
+		Session session = HibernateUtil.currentSession();
+		
 		if (formField.getFormFieldId() == null)
 			createFormField(formField);
 		else {
-			Session session = HibernateUtil.currentSession();
-			
 			try {
 				HibernateUtil.beginTransaction();
-				session.saveOrUpdate(formField);
+				session.merge(formField);	// save if needs saving
 				HibernateUtil.commitTransaction();
 			}
 			catch (Exception e) {
@@ -330,6 +339,8 @@ public class HibernateFormDAO implements
 				throw new DAOException(e);
 			}
 		}
+		session.evict(formField);
+		log.debug("formField cache mode: " + session.getCacheMode());
 	}
 
 	/**

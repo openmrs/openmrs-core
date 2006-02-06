@@ -1,5 +1,6 @@
 package org.openmrs;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -50,13 +51,10 @@ public class User extends Person implements java.io.Serializable {
 	}
 
 	/**
-	 * return true if this user has the specified privilege
-	 * @param privilege
-	 * @return true/false
+	 * Return true is this user has all privileges
+	 * @return
 	 */
-	public boolean hasPrivilege(String privilege) {
-
-		boolean hasPrivilege = false;
+	public boolean isSuperUser() {
 		Set<Role> roles = getRoles();
 
 		if (groups != null)
@@ -68,6 +66,29 @@ public class User extends Person implements java.io.Serializable {
 		
 		if (roles.contains(role))
 			return true;
+		
+		return false;
+	}
+
+	/**
+	 * return true if this user has the specified privilege
+	 * @param privilege
+	 * @return true/false
+	 */
+	public boolean hasPrivilege(String privilege) {
+
+		if (isSuperUser())
+			return true;
+		
+		boolean hasPrivilege = false;
+		Set<Role> roles = getRoles();
+
+		if (groups != null)
+			for (Group g : groups) {
+				roles.addAll(g.getRoles());
+			}
+		
+		Role role;
 		
 		check_privileges: for (Iterator i = roles.iterator(); i.hasNext();) {
 			role = (Role) i.next();
@@ -81,6 +102,27 @@ public class User extends Person implements java.io.Serializable {
 		}
 
 		return hasPrivilege;
+	}
+	
+	public Collection<Privilege> getPrivileges() {
+		Set<Privilege> privileges = new HashSet<Privilege>();
+		Set<Role> roles = getRoles();
+
+		if (groups != null)
+			for (Group g : groups) {
+				roles.addAll(g.getRoles());
+			}
+		
+		roles.addAll(getRoles());
+		
+		Role role;
+		for (Iterator i = roles.iterator(); i.hasNext();) {
+			role = (Role) i.next();
+			privileges.addAll(role.getPrivileges());
+		}
+		
+		return privileges;
+		
 	}
 	
 	public boolean equals(Object obj) {

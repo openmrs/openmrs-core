@@ -74,6 +74,15 @@
 		overflow: auto;
 		width: 390px;
 	}
+	#closeButton {
+		border: 1px solid gray;
+		background-color: lightpink;
+		font-size: .6em;
+		color: black;
+		margin: 2px;
+		padding: 1px;
+		cursor: pointer;
+	}
 </style>
 
 <script type="text/javascript">
@@ -137,6 +146,8 @@
 		DWRFormService.getFormField(fillForm, id);
 		disableField();
 		enableFormField();
+		
+		return false;
 	}
 
 	var fillForm = function (ff) {
@@ -157,6 +168,8 @@
 		$('ff_maxOccurs').value = ff.maxOccurs;
 		if (ff.required == 'yes')
 			$('ff_required').checked = true;
+		else
+			$('ff_required').checked = false;
 		$('ff_creator').innerHTML = ff.creator;
 		$('ff_changedBy').innerHTML = ff.changedBy;
 	}
@@ -174,13 +187,17 @@
 				options[i].selected = false;
 		}
 		chooseFieldType(field.fieldTypeId);
-		if (field.concept != null)
+		if (field.concept != null) {
 			$('conceptName').innerHTML = field.concept.name;
+			$('conceptId').value = field.concept.conceptId;
+		}
 		$('tableName').value = field.table;
 		$('attributeName').value = field.attribute;
 		
 		if (field.selectMultiple == 'yes')
 			$('selectMultiple').checked = true;
+		else
+			$('selectMultiple').checked = false;
 		$('creator').innerHTML = field.creator;
 	}
 	
@@ -230,6 +247,7 @@
 		}
 		$('concept').style.display = "";
 		$('conceptName').innerHTML = "";
+		$('conceptId').value = "";
 		$('database').style.display = "none";
 		$('other').style.display = "none"
 		$('selectMultiple').checked = false;
@@ -240,6 +258,22 @@
 		clearField();
 		enableField();
 		$('name').focus();
+	}
+	
+	function addNewFormField() {
+		cancel();
+		editForm.className = "";
+		enableFormField();
+		enableField();
+		formTitle.innerHTML = "Add New: ";
+		$('name').focus();
+		editButtons.style.display = "";
+		
+		return false;
+	}
+	
+	function refresh() {
+		document.location = document.location;
 	}
 	
 	function editForThisForm() {
@@ -292,8 +326,9 @@
 	}
 	
 	function updateParents() {
-		DWRFormService.getHTMLTree(updateHTMLTree, <request:parameter name="formId"/>);
 		DWRFormService.getOptionTree(updateOptionTree, <request:parameter name="formId"/>);
+		DWRFormService.getHTMLTree(updateHTMLTree, <request:parameter name="formId"/>);
+		cancel();	
 	}
 	
 	function unSelectField(link) {
@@ -307,6 +342,44 @@
 	}
 
 	function save() {
+		var fieldId = $('fieldId').value;
+		var fieldName = $('name').value;
+		var fieldDesc = $('description').value;
+		var fieldType = $('fieldType').value;
+		var concept = null
+		var table = '';
+		var attr  = '';
+		if ($('concept').style.display != "none")
+			concept = $('conceptId').value;
+		else {
+			table = $('tableName').value;
+			attr = $('attributeName').value;
+		}
+		var multiple = $('selectMultiple').checked;
+		
+		var formFieldId = $('ff_formFieldId').innerHTML;
+		var parent = $('ff_parent').value;
+		var number = $('ff_fieldNumber').value;
+		if (number.length == 0)
+			number = null;
+		var part   = $('ff_fieldPart').value;
+		if (part.length == 0)
+			part = null;
+		var page   = $('ff_pageNumber').value;
+		if (page.length == 0)
+			page = null;
+		var min    = $('ff_minOccurs').value;
+		if (min.length == 0)
+			min = null;
+		var max    = $('ff_maxOccurs').value;
+		if (max.length == 0)
+			max = null;
+		var required = $('ff_required').checked;
+		
+		var formId = <request:parameter name="formId"/>;
+		
+		DWRFormService.saveFormField(updateParents, fieldId, fieldName, fieldDesc, fieldType, concept, table, attr, 
+			multiple, formFieldId, formId, parent, number, part, page, min, max, required);
 	}
 	
 	function cancel() {
@@ -379,17 +452,15 @@
 
 <h2><spring:message code="Form.manage" /></h2>	
 
-<a href="formField.edit"><spring:message code="FormField.add" /></a> <br />
-
-<br />
-
 <table width="99%">
 	<tr>
 		<td valign="top" width="625">
+			<a href="javascript:refresh()"><spring:message code="general.refresh"/></a>
 			<div id="HTMLTree">
 			</div>
 		</td>
 		<td valign="top" style="padding-left: 10px;">
+			<a href="#add" onclick="return addNewFormField();"><spring:message code="FormField.add" /></a> <br /><br />
 			<div id="editForm">
 				<div id="formTitle"></div>
 				
