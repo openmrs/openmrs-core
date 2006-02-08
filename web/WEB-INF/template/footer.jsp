@@ -18,6 +18,9 @@
 		<a href="?${qs}&lang=fr">Français</a> |
 		<a href="?${qs}&lang=de">Deutsch</a>
 		
+		&nbsp; &nbsp; &nbsp;
+		
+		Last Build: @TIMESTAMP@
 	</div>
 
 </body>

@@ -43,8 +43,21 @@ public class DWRFormService {
 		}
 		return new FormFieldListItem(f);
 	}
+
+	public List<FieldListItem> findFields(String txt) {
+		Context context = (Context) WebContextFactory.get().getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
+		List<FieldListItem> fields = new Vector<FieldListItem>();
+		
+		if (context != null) {
+			for(Field field : context.getFormService().findFields(txt))
+				fields.add(new FieldListItem(field));
+		}
+		
+		return fields;
+	}
 	
-	public List<Object> findFields(String txt) {
+	public List<Object> findFieldsAndConcepts(String txt) {
 		Context context = (Context) WebContextFactory.get().getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		Locale locale = context.getLocale();
@@ -141,6 +154,13 @@ public class DWRFormService {
 		
 		return;
 	}
+	
+	public void deleteFormField(Integer id) {
+		Context context = (Context) WebContextFactory.get().getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		if (context != null && context.isAuthenticated()) {
+			context.getFormService().deleteFormField(context.getFormService().getFormField(id));
+		}
+	}
 
 	private String generateOptionTree(TreeMap<Integer, TreeSet<FormField>> formFields, Integer current, Integer level) {
 		
@@ -211,7 +231,7 @@ public class DWRFormService {
 		else
 			s += ff.getField().getName();
 		s += "</a> ";
-		s += "<a href='#delete' onclick='return deleteField(" + ff.getFieldNumber() + ", this)' class='delete'> &nbsp; &nbsp; </a>";
+		s += "<a href='#delete' onclick='return deleteField(" + ff.getFormFieldId() + ", this)' class='delete'> &nbsp; &nbsp; </a>";
 		
 		s += "</div>";
     	

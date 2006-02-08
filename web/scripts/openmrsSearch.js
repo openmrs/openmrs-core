@@ -56,8 +56,6 @@ var debugBox;
 
 var ENTERKEY = 13;
 
-resetForm();
-
 // clears variables. Equivalent to reloading the page.
 //  (useful for pages with multiple search boxes)
 function resetForm() {
@@ -71,7 +69,7 @@ function resetForm() {
 	searchIndex = 0;
 	firstItemDisplayed = 1;
 	numItemsDisplayed = 0;
-	document.onkeypress = hotkey;
+	window.onkeypress = hotkey;
 	clearInformationBar();
 	debugBox = $("debugBox");
 	if (debugBox) debugBox.innerHTML = "";
@@ -94,13 +92,14 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay) {
 		if (!event.altKey && !event.ctrlKey) {
 			// this if statement cancels the search on alt and control keys
 			key = event.keyCode;
-			if (!key && (event.type == "click" || event.type == "change")) {
+			if ((key==0 || key==null) && (event.type == "click" || event.type == "change" || event.type == "submit")) {
 				//if non-key event like clicking checkbox or changing dropdown list
 				key = 1;
 			}
 		}
 	}
 	if (debugBox) debugBox.innerHTML += '<br> key: ' + key;
+	if (debugBox) debugBox.innerHTML += '<br> event: ' + event;
 	
 	//reset textbox for mouse events
 	if (key == 1 && text == "") {
@@ -170,21 +169,27 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay) {
 		}
 	}
 
-	else if (!text.match(/\d/) && ((key > 57 && key <= 127) ||
-		key == 8 || key == 32 || key == 46 || key == 1)) {
-			//	"If there isn't a number in the search (force usage of enter key) and
+	else if ((key > 57 && key <= 127) ||
+		key == 8 || key == 32 || key == 46 || key == 1) {
 			//	 (if alpha key entered or 
 			//   backspace key pressed or
 			//   spacebar pressed or 
 			//   delete key pressed or
 			//   mouse event)"
-			hideHighlight();
-			if (text.length > 1) {
-				clearInformationBar();
-				if (debugBox) debugBox.innerHTML += '<br> setting preFindObjects timeout for other key: ' + key;
-				keyCode = key;	//save keyCode for later testing in fillTable
-				searchTimeout = setTimeout("preFindObjects(text)", delay);
-				if (debugBox) debugBox.innerHTML += '<br> preFindObjects timeout called for other key: ' + key;
+			if (!text.match(/\d/)) {
+				// If there isn't a number in the search (force usage of enter key) and
+				hideHighlight();
+				if (text.length > 1) {
+					clearInformationBar();
+					if (debugBox) debugBox.innerHTML += '<br> setting preFindObjects timeout for other key: ' + key;
+					keyCode = key;	//save keyCode for later testing in fillTable
+					searchTimeout = setTimeout("preFindObjects(text)", delay);
+					if (debugBox) debugBox.innerHTML += '<br> preFindObjects timeout called for other key: ' + key;
+				}
+			}
+			if (event.type == "submit") {
+				//infopath taskpane kludge to allow for no keyup and only onsubmit
+				searchBoxChange(bodyElementId, obj, null, retired, 0);
 			}
 	}
 	
@@ -597,3 +602,5 @@ function getScrollOffsetX() {
 		return document.documentElement.scrollLeft;
 	}
 }
+
+resetForm();

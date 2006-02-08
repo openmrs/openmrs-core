@@ -27,8 +27,8 @@
 	}
 	
 	function miniObject(c) {
-		c.key = c.conceptId;
-		c.value = c.name;
+		this.key = c.conceptId;
+		this.value = c.name;
 	}
 	
 	function search(delay, event) {

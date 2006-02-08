@@ -2,6 +2,7 @@ package org.openmrs;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
@@ -68,7 +69,7 @@ public class Concept implements java.io.Serializable {
 		changedBy = cn.getChangedBy();
 		dateChanged = cn.getDateChanged();
 		names = cn.getNames();
-		answers = cn.getAnswers();
+		answers = cn.getAnswers(true);
 		synonyms = cn.getSynonyms();
 		conceptSets = cn.getConceptSets();
 	}
@@ -89,12 +90,26 @@ public class Concept implements java.io.Serializable {
 	}
 	
 	/**
-	 * @return Returns the answers.
+	 * @return Returns the non-retired answers.
 	 */
 	public Collection<ConceptAnswer> getAnswers() {
-		return answers;
+		Collection<ConceptAnswer> newAnswers = new Vector<ConceptAnswer>();
+		for (ConceptAnswer ca : answers) {
+			if (!ca.getAnswerConcept().isRetired())
+				newAnswers.add(ca);
+		}
+		return newAnswers;
 	}
 
+	/**
+	 * @return Returns the answers.
+	 */
+	public Collection<ConceptAnswer> getAnswers(boolean includeRetired) {
+		if (includeRetired == false)
+			return getAnswers();
+		return answers;
+	}
+	
 	/**
 	 * @param answers The answers to set.
 	 */

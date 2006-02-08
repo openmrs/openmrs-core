@@ -27,8 +27,6 @@ public class PrivilegeTag extends TagSupport {
 			return SKIP_BODY;
 		}
 		
-		log.debug("privilege: " + privilege);
-		
 		boolean hasPrivilege = false;
 		if (privilege.contains(",")) {
 			String[] privs = privilege.split(",");

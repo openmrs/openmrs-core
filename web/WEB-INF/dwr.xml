@@ -54,7 +54,9 @@
 			<include method="getHTMLTree"/>
 			<include method="getOptionTree"/>
 			<include method="findFields"/>
+			<include method="findFieldsAndConcepts"/>
 			<include method="saveFormField"/>
+			<include method="deleteFormField"/>
 		</create>
 		
 	</allow>

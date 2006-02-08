@@ -43,23 +43,30 @@ public class FormDownloadServlet extends HttpServlet {
 			response.sendRedirect(request.getContextPath() + "/logout");
 			return;
 		}
+
+		String type = "";
+		String name = "";
+		if (formId == 14) {
+			type = "adultReturn";
+			name += "adult_return_visit";
+		}
+		else if (formId == -1) {
+			type = "adultReturn_local";
+			name += "adult_return_visit_localhost";
+			formId = 14;
+		}
 		
 		Patient patient = context.getPatientService().getPatient(patientId);
 		Form form = context.getFormService().getForm(formId);
 		String url = request.getRequestURL().toString();
 		url = url.substring(0, url.lastIndexOf("/"));
 		url += "/formentry/forms/";
-		
-		String type = "";
-		if (formId == 14) {
-			type = "adultReturn";
-			url += "adult_return_visit";
-		}
+	
+		url += name;
 		
 		url += ".xsn";
 		
 		String xmldoc = new FormXmlTemplateBuilder(context, form, url).getXmlTemplate(patient);
-		
 		
 		response.setHeader("Content-Type", "application/ms-infopath.xml");
 		response.setHeader("Content-Disposition", "attachment; filename=" + type + ".xml");

@@ -27,7 +27,7 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	 * @param c
 	 */
 	public ConceptNumeric(Concept c) {
-		this.setAnswers(c.getAnswers());
+		this.setAnswers(c.getAnswers(true));
 		this.setChangedBy(c.getChangedBy());
 		this.setConceptClass(c.getConceptClass());
 		this.setConceptId(c.getConceptId());

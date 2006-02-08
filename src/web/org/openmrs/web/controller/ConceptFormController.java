@@ -257,7 +257,7 @@ public class ConceptFormController extends SimpleFormController {
 			Collection<ConceptSynonym> conceptSynonyms = new Vector<ConceptSynonym>();
 			//Map<String, ConceptName> conceptSets = new TreeMap<String, ConceptName>();
 			Map<Double, Object[]> conceptSets = new TreeMap<Double, Object[]>();
-			Map<String, ConceptName> conceptAnswers = new TreeMap<String, ConceptName>();
+			Map<String, String> conceptAnswers = new TreeMap<String, String>();
 			
 			if (conceptId != null) {
 				Concept concept = cs.getConcept(Integer.valueOf(conceptId));
@@ -278,8 +278,11 @@ public class ConceptFormController extends SimpleFormController {
 			    	}
 	
 			    	// get concept answers with locale decoded names
-			    	for (ConceptAnswer answer : concept.getAnswers()) {
-			    		conceptAnswers.put(answer.getAnswerConcept().getConceptId().toString(), answer.getAnswerConcept().getName(locale));
+			    	for (ConceptAnswer answer : concept.getAnswers(true)) {
+			    		String name = answer.getAnswerConcept().getName(locale).toString();
+			    		if (answer.getAnswerConcept().isRetired())
+			    			name = "<span class='retired'>" + name + "</span>";
+			    		conceptAnswers.put(answer.getAnswerConcept().getConceptId().toString(), name);
 			    	}
 	
 			    	//previous/next ids for links

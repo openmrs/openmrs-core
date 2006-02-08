@@ -62,6 +62,8 @@
 					<prop key="**/analysis.form">otfaActionController</prop>
 					<prop key="**/form.form">formForm</prop>
 					<prop key="**/form.list">formList</prop>
+					<prop key="**/field.form">fieldForm</prop>
+					<prop key="**/field.list">fieldList</prop>
 					<prop key="**/fieldType.form">fieldTypeForm</prop>
 					<prop key="**/fieldType.list">fieldTypeList</prop>
 					<prop key="**/options.form">optionsForm</prop>
@@ -478,6 +480,22 @@
 					<property name="successView"><value>form.list</value></property>
 				</bean>
 			<!-- ** /Form ** -->
+
+			<!-- ** Field  ** -->
+				<bean id="fieldList" class="org.openmrs.web.controller.form.FieldListController">
+					<property name="commandName"><value>fieldList</value></property>
+					<property name="formView"><value>/admin/forms/fieldList</value></property>
+					<property name="successView"><value>field.list</value></property>
+				</bean>
+
+				<bean id="fieldForm" class="org.openmrs.web.controller.form.FieldFormController">
+					<property name="sessionForm"><value>true</value></property>
+					<property name="commandName"><value>field</value></property>
+					<property name="formView"><value>/admin/forms/fieldForm</value></property>
+					<property name="successView"><value>field.list</value></property>
+				</bean>
+			<!-- ** /Field  ** -->
+
 	    
 			<!-- ** Field Type ** -->
 				<bean id="fieldTypeList" class="org.openmrs.web.controller.form.FieldTypeListController">

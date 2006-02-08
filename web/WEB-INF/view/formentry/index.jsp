@@ -94,6 +94,9 @@
 		padding: 0px;
 		margin: 0px;
 	}
+	.searchIndexHighlight {
+		vertical-align: middle;
+	}
 </style>
 
 <h2><spring:message code="formentry.title"/></h2>

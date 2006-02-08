@@ -18,7 +18,7 @@
 		<td><spring:message code="Privilege.privilege"/></td>
 		<td>
 			<spring:bind path="privilege.privilege">
-				<c:if test="${status.value == null || status.value == \"\"}"><input type="text" name="${status.expression}" value="${status.value}"></c:if>
+				<c:if test="${status.value == null || status.value == \"\"}"><input type="text" name="${status.expression}" id="priv" value="${status.value}"></c:if>
 				<c:if test="${!(status.value == null)}">${status.value}</c:if>				
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
@@ -37,5 +37,9 @@
 
 <input type="submit" value="<spring:message code="Privilege.save"/>">
 </form>
+
+<script type="text/javascript">
+ document.getElementById('priv').focus();
+</script>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

@@ -132,6 +132,10 @@
 	
 	function deleteField(id, link) {
 		//TODO: finish delete function
+		var answer = confirm("Are you sure you want to delete '" + id + "'?");
+		if (answer == true) {
+			DWRFormService.deleteFormField(updateParents, id);
+		}
 		return false;
 	}
 	

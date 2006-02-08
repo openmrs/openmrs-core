@@ -25,28 +25,44 @@
 
 <h2><spring:message code="admin.title"/></h2>
 
-<h4>Users</h4>
-	<%@ include file="users/localHeader.jsp" %>
+<openmrs:hasPrivilege privilege="View Users,Manage Groups,Manage Roles,Manage Privileges">
+	<h4>Users</h4>
+		<%@ include file="users/localHeader.jsp" %>
+</openmrs:hasPrivilege>
 
-<h4>Patients</h4>
-	<%@ include file="patients/localHeader.jsp" %>
+<openmrs:hasPrivilege privilege="View Patients,Manage Tribes,Manage Identifier Types">
+	<h4>Patients</h4>
+		<%@ include file="patients/localHeader.jsp" %>
+</openmrs:hasPrivilege>
 
-<h4>Encounters</h4>
-	<%@ include file="encounters/localHeader.jsp" %>
-	
-<h4>Observations</h4>
-	<%@ include file="observations/localHeader.jsp" %>
+<openmrs:hasPrivilege privilege="View Encounters,Manage Locations,Manage Encounter Types">
+	<h4>Encounters</h4>
+		<%@ include file="encounters/localHeader.jsp" %>
+</openmrs:hasPrivilege>
 
-<h4>Orders</h4>
-	<%@ include file="orders/localHeader.jsp" %>
+<openmrs:hasPrivilege privilege="View Encounters,Manage Mime Types">
+	<h4>Observations</h4>
+		<%@ include file="observations/localHeader.jsp" %>
+</openmrs:hasPrivilege>
 
-<h4>Concepts</h4>
-	<%@ include file="concepts/localHeader.jsp" %>
+<openmrs:hasPrivilege privilege="View Orders,Manage Order Types">
+	<h4>Orders</h4>
+		<%@ include file="orders/localHeader.jsp" %>
+</openmrs:hasPrivilege>
 
-<h4>Forms</h4> 
-	<%@ include file="forms/localHeader.jsp" %>
+<openmrs:hasPrivilege privilege="View Concepts,Manage Concept Classes,Manage Concept Datatypes,Manage Concept Proposals">
+	<h4>Concepts</h4>
+		<%@ include file="concepts/localHeader.jsp" %>
+</openmrs:hasPrivilege>
 
-<h4>Reports</h4>
-	<%@ include file="reports/localHeader.jsp" %>
+<openmrs:hasPrivilege privilege="View Forms,Manage Field Types">
+	<h4>Forms</h4> 
+		<%@ include file="forms/localHeader.jsp" %>
+</openmrs:hasPrivilege>
+
+<openmrs:hasPrivilege privilege="View Reports">
+	<h4>Reports</h4>
+		<%@ include file="reports/localHeader.jsp" %>
+</openmrs:hasPrivilege>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

@@ -74,7 +74,7 @@
 				<td><label for="adultReturn">Adult Return</label></td>
 			</tr>
 			<tr>
-				<td><input type="radio" name="formId" value="adultReturn_local" id="adultReturn_local"></td>
+				<td><input type="radio" name="formId" value="-1" id="adultReturn_local"></td>
 				<td><label for="adultReturn_local">Adult Return (Localhost)</label></td>
 			</tr>
 			<tr>
