@@ -16,6 +16,7 @@ import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
@@ -94,6 +95,7 @@ public class RoleFormController extends SimpleFormController {
 		
 		if (context != null && context.isAuthenticated()) {
 			map.put("privileges", context.getUserService().getPrivileges());
+			map.put("superuser", OpenmrsConstants.SUPERUSER_ROLE);
 		}
 		
 		return map;

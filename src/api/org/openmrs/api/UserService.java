@@ -278,10 +278,8 @@ public class UserService {
 	private void checkPrivileges(User user) {
 		Collection<Privilege> privileges = user.getPrivileges();
 		
-		User currentUser = context.getAuthenticatedUser();
-		
 		for (Privilege p : privileges) {
-			if (!currentUser.hasPrivilege(p.getPrivilege()))
+			if (!context.hasPrivilege(p.getPrivilege()))
 				throw new APIAuthenticationException("Privilege required: " + p);
 		}
 	}

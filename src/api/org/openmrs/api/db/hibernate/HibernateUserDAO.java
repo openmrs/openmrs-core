@@ -85,7 +85,7 @@ public class HibernateUserDAO implements
 
 		List<User> users = session
 				.createQuery(
-						"from User u where (u.voided is null or u.voided = 0) and u.username = ?")
+						"from User u where u.voided = 0 and u.username = ?")
 				.setString(0, username).list();
 		
 		if (users == null || users.size() == 0) {

@@ -1,6 +1,6 @@
 <table>
 	<tr>
-		<td><spring:message code="PatientAddress.preferred"/></td>
+		<td><spring:message code="general.preferred"/></td>
 		<td>
 			<spring:bind path="preferred">
 				<input type="hidden" name="_${status.expression}">

@@ -95,7 +95,7 @@
 		
 		<!-- bi-directional one-to-many association to PatientIdentifier -->
 		<set name="identifiers" lazy="true" cascade="all-delete-orphan" 
-			table="patient_identifier" order-by="date_created desc">
+			table="patient_identifier" order-by="voided desc,preferred desc,date_created desc">
 			<key not-null="true">
 				<column name="patient_id" />
 			</key>
@@ -103,9 +103,10 @@
 				<parent name="patient" />
 				<property name="identifier" type="java.lang.String" length="50" not-null="true"/>
 				<many-to-one name="identifierType" class="PatientIdentifierType" column="identifier_type" not-null="true" />
-				<many-to-one name="location" class="Location" column="location_id" not-null="true" />
+				<many-to-one name="location" class="Location" column="location_id" />
 				<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" />
 				<property name="dateVoided" type="java.util.Date" column="date_voided"/>
+				<property name="preferred" type="boolean" not-null="true" />
 				<property name="voided" type="boolean" not-null="true" />
 				<property name="voidReason" type="java.lang.String" column="void_reason" length="255"/>
 				<many-to-one name="creator" class="User" column="creator" not-null="true"/>

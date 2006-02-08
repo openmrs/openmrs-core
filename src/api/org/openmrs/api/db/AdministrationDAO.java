@@ -360,6 +360,14 @@ public interface AdministrationDAO {
 	 */
 	public void deleteGroup(Group group) throws DAOException;
 	
+	/**
+	 *  Renames a group's key to the newGroupName
+	 * @param group
+	 * @param newGroupName
+	 * @throws DAOException
+	 */
+	public void renameGroup(Group group, String newGroupName) throws DAOException;
+	
 	public void createConceptProposal(ConceptProposal cp) throws DAOException;
 	
 	public void updateConceptProposal(ConceptProposal cp) throws DAOException;

@@ -81,12 +81,15 @@ public class User extends Person implements java.io.Serializable {
 			return true;
 		
 		boolean hasPrivilege = false;
+		
 		Set<Role> roles = getRoles();
 
 		if (groups != null)
 			for (Group g : groups) {
 				roles.addAll(g.getRoles());
 			}
+		
+		roles.add(new Role(OpenmrsConstants.ANONYMOUS_ROLE));
 		
 		Role role;
 		

@@ -20,6 +20,7 @@ public class PatientIdentifier implements java.io.Serializable {
 	private Location location;
 	private User creator;
 	private Date dateCreated;
+	private Boolean preferred = false;
 	private Boolean voided = false;
 	private User voidedBy;
 	private Date dateVoided;
@@ -57,8 +58,9 @@ public class PatientIdentifier implements java.io.Serializable {
 				ret = ret && identifier.equals(p.getIdentifier());
 			if (identifierType != null && p.getIdentifierType() != null)
 				ret = ret && identifierType.equals(p.getIdentifierType());
-			if (location != null && p.getLocation() != null)
-				ret = ret && location.equals(p.getLocation());
+			// As of discussion on Feb-8th-2006, location is no longer part of the key for identifier
+			//if (location != null && p.getLocation() != null)
+			//	ret = ret && location.equals(p.getLocation());
 			return ret;
 			/*return (this.getPatient().equals(p.getPatient()) &&
 					this.getIdentifier().equals(p.getIdentifier()) &&
@@ -77,8 +79,8 @@ public class PatientIdentifier implements java.io.Serializable {
 			hash += 31 * hash + this.getIdentifier().hashCode();
 		if (getIdentifierType() != null)
 			hash += 31 * hash + this.getIdentifierType().hashCode();
-		if (getLocation() != null)
-			hash += 31 * hash + this.getLocation().hashCode();
+		//if (getLocation() != null)
+		//	hash += 31 * hash + this.getLocation().hashCode();
 		return hash;
 	}
 
@@ -231,6 +233,25 @@ public class PatientIdentifier implements java.io.Serializable {
 	public String toString() {
 		return this.identifier;
 	}
+
+	/**
+	 * @return Returns the preferred.
+	 */
+	public Boolean getPreferred() {
+		return isPreferred();
+	}
+
+	/**
+	 * @param preferred The preferred to set.
+	 */
+	public void setPreferred(Boolean preferred) {
+		this.preferred = preferred;
+	}
 	
-	
+	/** 
+	 * @return the preferred status
+	 */
+	public Boolean isPreferred() {
+		return preferred;
+	}
 }

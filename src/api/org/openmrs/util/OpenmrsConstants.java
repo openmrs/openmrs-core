@@ -93,18 +93,19 @@ public class OpenmrsConstants {
 	public static final String PRIV_EDIT_REPORTS	= "Edit Reports";
 	public static final String PRIV_DELETE_REPORTS	= "Delete Reports";
 	
-	public static final String MANAGE_TRIBES			= "Manage Tribes";
-	public static final String MANAGE_IDENTIFIER_TYPES	= "Manage Identifier Types";
-	public static final String MANAGE_LOCATIONS			= "Manage Locations";
-	public static final String MANAGE_MIME_TYPEs		= "Manage Mime Types";
-	public static final String MANAGE_CONCEPT_CLASSES	= "Manage Concept Classes";
-	public static final String MANAGE_CONCEPT_DATATYPES	= "Manage Concept Datatypes";
-	public static final String MANAGE_ENCOUNTER_TYPES	= "Manage Encounter Types";
-	public static final String MANAGE_GROUPS		= "Manage Groups";
-	public static final String MANAGE_PRIVILEGES	= "Manage Privileges";
-	public static final String MANAGE_ROLES			= "Manage Roles";
-	public static final String MANAGE_FIELD_TYPES	= "Manage Field Types";
-	public static final String MANAGE_ORDER_TYPES	= "Manage Order Types";
+	public static final String PRIV_MANAGE_TRIBES			= "Manage Tribes";
+	public static final String PRIV_MANAGE_IDENTIFIER_TYPES	= "Manage Identifier Types";
+	public static final String PRIV_MANAGE_LOCATIONS		= "Manage Locations";
+	public static final String PRIV_MANAGE_MIME_TYPES		= "Manage Mime Types";
+	public static final String PRIV_MANAGE_CONCEPT_CLASSES	= "Manage Concept Classes";
+	public static final String PRIV_MANAGE_CONCEPT_DATATYPES= "Manage Concept Datatypes";
+	public static final String PRIV_MANAGE_ENCOUNTER_TYPES	= "Manage Encounter Types";
+	public static final String PRIV_MANAGE_GROUPS		= "Manage Groups";
+	public static final String PRIV_MANAGE_PRIVILEGES	= "Manage Privileges";
+	public static final String PRIV_MANAGE_ROLES		= "Manage Roles";
+	public static final String PRIV_MANAGE_FIELD_TYPES	= "Manage Field Types";
+	public static final String PRIV_MANAGE_ORDER_TYPES	= "Manage Order Types";
+	public static final String PRIV_MANAGE_RELATIONSHIP_TYPES	= "Manage Relationship Types";
 
 	public static final String PRIV_FORM_ENTRY      = "Form Entry";
 	
@@ -155,28 +156,31 @@ public class OpenmrsConstants {
 		privs.add(PRIV_EDIT_REPORTS);
 		privs.add(PRIV_DELETE_REPORTS);
 		
-		privs.add(MANAGE_TRIBES);
-		privs.add(MANAGE_IDENTIFIER_TYPES);
-		privs.add(MANAGE_LOCATIONS);
-		privs.add(MANAGE_MIME_TYPEs);
-		privs.add(MANAGE_CONCEPT_CLASSES);
-		privs.add(MANAGE_CONCEPT_DATATYPES);
-		privs.add(MANAGE_ENCOUNTER_TYPES);
-		privs.add(MANAGE_GROUPS);
-		privs.add(MANAGE_PRIVILEGES);
-		privs.add(MANAGE_FIELD_TYPES);
-		privs.add(MANAGE_ORDER_TYPES);
+		privs.add(PRIV_MANAGE_TRIBES);
+		privs.add(PRIV_MANAGE_IDENTIFIER_TYPES);
+		privs.add(PRIV_MANAGE_LOCATIONS);
+		privs.add(PRIV_MANAGE_MIME_TYPES);
+		privs.add(PRIV_MANAGE_CONCEPT_CLASSES);
+		privs.add(PRIV_MANAGE_CONCEPT_DATATYPES);
+		privs.add(PRIV_MANAGE_ENCOUNTER_TYPES);
+		privs.add(PRIV_MANAGE_GROUPS);
+		privs.add(PRIV_MANAGE_PRIVILEGES);
+		privs.add(PRIV_MANAGE_FIELD_TYPES);
+		privs.add(PRIV_MANAGE_ORDER_TYPES);
+		privs.add(PRIV_MANAGE_RELATIONSHIP_TYPES);
 		
 		return privs;
 	}
 	
-	// Baked in Role:
-	public static final String SUPERUSER_ROLE = "superuser";
+	// Baked in Roles:
+	public static final String SUPERUSER_ROLE = "System Developer";
+	public static final String ANONYMOUS_ROLE = "Anonymous";
 	
 	public static Collection<String> CORE_ROLES() {
 		List<String> roles = new Vector<String>();
 		
 		roles.add(SUPERUSER_ROLE);
+		roles.add(ANONYMOUS_ROLE);
 		
 		return roles;
 	}

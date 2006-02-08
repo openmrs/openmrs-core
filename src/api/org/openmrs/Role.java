@@ -110,6 +110,16 @@ public class Role implements java.io.Serializable {
 	public String toString() {
 		return this.role;
 	}
+	
+	public boolean hasPrivilege(String s) {
+		
+		for (Privilege p : privileges) {
+			if (p.getPrivilege().equals(s))
+				return true;
+		}
+		
+		return false;
+	}
 
 
 }

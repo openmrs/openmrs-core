@@ -81,7 +81,7 @@ public class HibernateAdministrationDAO implements
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new DAOException(e.getMessage());
+				throw new DAOException(e);
 			}
 		}
 	}
@@ -98,7 +98,7 @@ public class HibernateAdministrationDAO implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e.getMessage());
+			throw new DAOException(e);
 		}
 	}
 
@@ -134,7 +134,7 @@ public class HibernateAdministrationDAO implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e.getMessage());
+			throw new DAOException(e);
 		}
 	}
 
@@ -153,7 +153,7 @@ public class HibernateAdministrationDAO implements
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new DAOException(e.getMessage());
+				throw new DAOException(e);
 			}
 		}
 	}
@@ -193,7 +193,7 @@ public class HibernateAdministrationDAO implements
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new DAOException(e.getMessage());
+				throw new DAOException(e);
 			}
 		}
 	}
@@ -210,7 +210,7 @@ public class HibernateAdministrationDAO implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e.getMessage());
+			throw new DAOException(e);
 		}
 	}
 
@@ -249,7 +249,7 @@ public class HibernateAdministrationDAO implements
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new DAOException(e.getMessage());
+				throw new DAOException(e);
 			}
 		}
 	}
@@ -266,7 +266,7 @@ public class HibernateAdministrationDAO implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e.getMessage());
+			throw new DAOException(e);
 		}
 	}
 
@@ -305,7 +305,7 @@ public class HibernateAdministrationDAO implements
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new DAOException(e.getMessage());
+				throw new DAOException(e);
 			}
 		}
 	}
@@ -322,7 +322,7 @@ public class HibernateAdministrationDAO implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e.getMessage());
+			throw new DAOException(e);
 		}
 	}
 
@@ -362,7 +362,7 @@ public class HibernateAdministrationDAO implements
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new DAOException(e.getMessage());
+				throw new DAOException(e);
 			}
 		}
 	}
@@ -379,7 +379,7 @@ public class HibernateAdministrationDAO implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e.getMessage());
+			throw new DAOException(e);
 		}
 	}
 
@@ -418,7 +418,7 @@ public class HibernateAdministrationDAO implements
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new DAOException(e.getMessage());
+				throw new DAOException(e);
 			}
 		}
 	}
@@ -435,7 +435,7 @@ public class HibernateAdministrationDAO implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e.getMessage());
+			throw new DAOException(e);
 		}
 	}
 
@@ -474,7 +474,7 @@ public class HibernateAdministrationDAO implements
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new DAOException(e.getMessage());
+				throw new DAOException(e);
 			}
 		}
 	}	
@@ -491,7 +491,7 @@ public class HibernateAdministrationDAO implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e.getMessage());
+			throw new DAOException(e);
 		}
 	}
 	
@@ -545,7 +545,7 @@ public class HibernateAdministrationDAO implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e.getMessage());
+			throw new DAOException(e);
 		}
 	}
 	
@@ -564,7 +564,7 @@ public class HibernateAdministrationDAO implements
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new DAOException(e.getMessage());
+				throw new DAOException(e);
 			}
 		}
 	}	
@@ -604,7 +604,7 @@ public class HibernateAdministrationDAO implements
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new DAOException(e.getMessage());
+				throw new DAOException(e);
 			}
 		}
 	}	
@@ -621,7 +621,7 @@ public class HibernateAdministrationDAO implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e.getMessage());
+			throw new DAOException(e);
 		}
 	}
 	
@@ -660,7 +660,7 @@ public class HibernateAdministrationDAO implements
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new DAOException(e.getMessage());
+				throw new DAOException(e);
 			}
 		}
 	}	
@@ -677,7 +677,7 @@ public class HibernateAdministrationDAO implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e.getMessage());
+			throw new DAOException(e);
 		}
 	}
 
@@ -716,7 +716,7 @@ public class HibernateAdministrationDAO implements
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new DAOException(e.getMessage());
+				throw new DAOException(e);
 			}
 		}
 	}	
@@ -733,7 +733,7 @@ public class HibernateAdministrationDAO implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e.getMessage());
+			throw new DAOException(e);
 		}
 	}
 
@@ -771,7 +771,7 @@ public class HibernateAdministrationDAO implements
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new DAOException(e.getMessage());
+				throw new DAOException(e);
 			}
 		}
 	}	
@@ -788,7 +788,7 @@ public class HibernateAdministrationDAO implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e.getMessage());
+			throw new DAOException(e);
 		}
 	}
 	
@@ -824,7 +824,7 @@ public class HibernateAdministrationDAO implements
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
 			log.error(e);
-			throw new DAOException(e.getMessage());
+			throw new DAOException(e);
 		}
 	}
 	
@@ -885,7 +885,7 @@ public class HibernateAdministrationDAO implements
 		//catch (Exception e) {
 		//	HibernateUtil.rollbackTransaction();
 		//	log.error(e);
-		//	throw new DAOException(e.getMessage());
+		//	throw new DAOException(e);
 		//}
 	}
 	
@@ -1009,7 +1009,7 @@ public class HibernateAdministrationDAO implements
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new DAOException(e.getMessage());
+				throw new DAOException(e);
 			}
 		}
 	}	
@@ -1026,7 +1026,45 @@ public class HibernateAdministrationDAO implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e.getMessage());
+			throw new DAOException(e);
+		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.AdministrationService#renameGroup(org.openmrs.Group,java.lang.String)
+	 */
+	public void renameGroup(Group group, String newGroupName) throws DAOException {
+		Session session = HibernateUtil.currentSession();
+		try {
+			HibernateUtil.beginTransaction();
+			
+			Group newGroup = new Group(newGroupName);
+			newGroup.setDescription(group.getDescription());
+			newGroup.setRoles(group.getRoles());
+			
+			session.save(newGroup);
+			
+			HibernateUtil.commitTransaction();
+			
+			HibernateUtil.beginTransaction();
+			//session.createQuery("update User u set group = :newGroup where u.groups.group.group = :oldGroup")
+			session.createQuery("update User u set group = :newGroup where u = (select User from User u2 where u2.groups.group.group = :oldGroup)")
+//			session.createQuery("update User as u set group = :newGroup where u.groups.group.group = :oldGroup");
+//			from Cat as fatcat 
+//where fatcat.weight > ( 
+//    select avg(cat.weight) from DomesticCat cat 
+//)
+				.setEntity("newGroup", newGroup)
+				.setString("oldGroup", group.getGroup())
+				.executeUpdate();
+			
+			session.delete(group);
+			
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new DAOException(e);
 		}
 	}
 	
@@ -1062,7 +1100,7 @@ public class HibernateAdministrationDAO implements
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new DAOException(e.getMessage());
+				throw new DAOException(e);
 			}
 		}
 	}

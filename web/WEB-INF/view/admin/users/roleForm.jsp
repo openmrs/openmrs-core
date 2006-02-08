@@ -36,12 +36,20 @@
 	<tr>
 		<td valign="top"><spring:message code="Role.privileges"/></td>
 		<td>
-			<openmrs:listPicker name="privileges" allItems="${privileges}" currentItems="${role.privileges}" contextPath="${pageContext.request.contextPath}" />
+			<c:if test="${role.role == superuser}"><spring:message code="Role.superuser.hasAllPrivileges"/></c:if>
+			<c:if test="${role.role != superuser}">
+				<openmrs:listPicker name="privileges" allItems="${privileges}" currentItems="${role.privileges}" contextPath="${pageContext.request.contextPath}" />
+			</c:if>
 		</td>
 	</tr>
 </table>
 
 <input type="submit" value="<spring:message code="Role.save"/>">
 </form>
+
+<script type="text/javascript">
+ document.forms[0].elements[0].focus();
+</script>
+
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

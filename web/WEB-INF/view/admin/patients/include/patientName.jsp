@@ -2,7 +2,7 @@
 <!-- Assumes spring:nestedPath already set on PatientName object -->
 <table>
 	<tr>
-		<td><spring:message code="PatientName.preferred"/></td>
+		<td><spring:message code="general.preferred"/></td>
 		<td>
 			<spring:bind path="preferred">
 				<input type="hidden" name="_${status.expression}">

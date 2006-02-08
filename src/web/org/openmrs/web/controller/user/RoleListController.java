@@ -1,10 +1,9 @@
 package org.openmrs.web.controller.user;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -13,7 +12,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
@@ -124,4 +122,18 @@ public class RoleListController extends SimpleFormController {
         return roleList;
     }
     
+	protected Map referenceData(HttpServletRequest request) throws Exception {
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		HttpSession httpSession = request.getSession();
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
+		if (context != null && context.isAuthenticated()) {
+			map.put("superuser", OpenmrsConstants.SUPERUSER_ROLE);
+		}
+		
+		return map;
+		
+	}
 }

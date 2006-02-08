@@ -35,7 +35,14 @@
 				</a>
 			</td>
 			<td><c:out value="${map.key.description}"/></td>
-			<td><c:out value="${map.key.privileges}"/></td>
+			<td>
+				<c:if test="${map.key.role == superuser}">
+					<spring:message code="Role.superuser.hasAllPrivileges"/>
+				</c:if>
+				<c:if test="${map.key.role != superuser}">
+					<c:out value="${map.key.privileges}"/>
+				</c:if>
+			</td>
 		</tr>
 	</c:forEach>
 	</table>

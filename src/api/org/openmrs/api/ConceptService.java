@@ -42,6 +42,9 @@ public class ConceptService {
 	}
 	
 	private ConceptDAO getConceptDAO() {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_CONCEPTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_CONCEPTS);
+		
 		return daoContext.getConceptDAO();
 	}
 

@@ -1,9 +1,12 @@
 package org.openmrs.api.context;
 
+import java.util.List;
 import java.util.Locale;
+import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
@@ -17,6 +20,7 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.db.DAOContext;
 import org.openmrs.api.db.hibernate.HibernateDAOContext;
 import org.openmrs.reporting.ReportService;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Represents an OpenMRS <code>Context</code>, which may be used to
@@ -47,6 +51,7 @@ public class Context {
 	private OrderService orderService;
 	private Locale locale = new Locale("en", "US");
 	private ReportService reportService;
+	private List<String> proxies = new Vector<String>();
 
 	public Context() {
 		
@@ -232,11 +237,47 @@ public class Context {
 	 * @return true if authenticated user has given privilege
 	 */
 	public boolean hasPrivilege(String privilege) {
+		
 		if (isAuthenticated())
 			return user.hasPrivilege(privilege);
+		else {
+			Role role = getUserService().getRole(OpenmrsConstants.ANONYMOUS_ROLE);
+			if (role.hasPrivilege(privilege))
+				return true;
+		}
+		
+		for (String s : proxies)
+			if (s.equals(privilege))
+				return true;
+		
 		return false;
 	}
-
+	
+	/**
+	 * Gives the given privilege to all calls to hasPrivilege.  This method was visualized as being
+	 * used as follows:
+	 * 
+	 * <code>
+	 * context.addProxyPrivilege("AAA");
+	 * context.get*Service().methodRequiringAAAPrivilege();
+	 * context.removeProxyPrivilege("AAA");
+	 * </code>
+	 * 
+	 * @param privilege to give to users
+	 */
+	public void addProxyPrivilege(String privilege) {
+		proxies.add(privilege);
+	}
+	
+	/**
+	 * Will remove one instance of privilege from the privileges that are currently proxied
+	 * @param privilege
+	 */
+	public void removeProxyPrivilege(String privilege) {
+		if (proxies.contains(privilege))
+			proxies.remove(privilege);
+	}
+	
 	/**
 	 * @param locale new locale for this context
 	 */

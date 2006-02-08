@@ -14,6 +14,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Group;
 import org.openmrs.Role;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
@@ -61,6 +62,13 @@ public class GroupFormController extends SimpleFormController {
 		
 		if (context != null && context.isAuthenticated()) {
 			Group group = (Group)obj;
+			AdministrationService as = context.getAdministrationService();
+			
+			String newGroupName = request.getParameter("new_group"); 
+			if (newGroupName != null && !newGroupName.equals(group.getGroup())) {
+				as.renameGroup(group, newGroupName);
+			}
+			
 			context.getAdministrationService().updateGroup(group);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Group.saved");

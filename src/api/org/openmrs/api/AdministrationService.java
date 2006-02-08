@@ -57,6 +57,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void createEncounterType(EncounterType encounterType) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ENCOUNTER_TYPES))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ENCOUNTER_TYPES);
+
 		getAdminDAO().createEncounterType(encounterType);
 	}
 
@@ -66,6 +69,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void updateEncounterType(EncounterType encounterType) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ENCOUNTER_TYPES))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ENCOUNTER_TYPES);
+
 		getAdminDAO().updateEncounterType(encounterType);
 	}
 
@@ -75,6 +81,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void deleteEncounterType(EncounterType encounterType) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ENCOUNTER_TYPES))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ENCOUNTER_TYPES);
+
 		getAdminDAO().deleteEncounterType(encounterType);
 	}
 
@@ -84,6 +93,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void createPatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_IDENTIFIER_TYPES))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_IDENTIFIER_TYPES);
+
 		getAdminDAO().createPatientIdentifierType(patientIdentifierType);
 	}
 
@@ -93,6 +105,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void updatePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_IDENTIFIER_TYPES))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_IDENTIFIER_TYPES);
+
 		getAdminDAO().updatePatientIdentifierType(patientIdentifierType);
 	}
 	
@@ -102,6 +117,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void deletePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_IDENTIFIER_TYPES))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_IDENTIFIER_TYPES);
+
 		getAdminDAO().deletePatientIdentifierType(patientIdentifierType);
 	}
 
@@ -111,6 +129,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void createTribe(Tribe tribe) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_TRIBES))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_TRIBES);
+
 		getAdminDAO().createTribe(tribe);
 	}
 
@@ -120,6 +141,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void updateTribe(Tribe tribe) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_TRIBES))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_TRIBES);
+
 		getAdminDAO().updateTribe(tribe);
 	}
 
@@ -129,6 +153,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void deleteTribe(Tribe tribe) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_TRIBES))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_TRIBES);
+
 		getAdminDAO().deleteTribe(tribe);
 	}
 	
@@ -138,6 +165,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void retireTribe(Tribe tribe) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_TRIBES))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_TRIBES);
+
 		getAdminDAO().retireTribe(tribe);
 	}
 
@@ -147,6 +177,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void unretireTribe(Tribe tribe) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_TRIBES))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_TRIBES);
+
 		getAdminDAO().unretireTribe(tribe);
 	}
 	
@@ -156,6 +189,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void createOrderType(OrderType orderType) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ORDER_TYPES))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ORDER_TYPES);
+
 		getAdminDAO().createOrderType(orderType);
 	}
 
@@ -165,6 +201,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void updateOrderType(OrderType orderType) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ORDER_TYPES))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ORDER_TYPES);
+
 		getAdminDAO().updateOrderType(orderType);
 	}
 
@@ -174,6 +213,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void deleteOrderType(OrderType orderType) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ORDER_TYPES))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ORDER_TYPES);
+
 		getAdminDAO().deleteOrderType(orderType);
 	}
 	
@@ -183,6 +225,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void createFieldType(FieldType fieldType) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_FIELD_TYPES))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_FIELD_TYPES);
+
 		getAdminDAO().createFieldType(fieldType);
 	}
 
@@ -192,6 +237,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void updateFieldType(FieldType fieldType) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_FIELD_TYPES))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_FIELD_TYPES);
+
 		getAdminDAO().updateFieldType(fieldType);
 	}
 
@@ -201,6 +249,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void deleteFieldType(FieldType fieldType) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_FIELD_TYPES))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_FIELD_TYPES);
+
 		getAdminDAO().deleteFieldType(fieldType);
 	}
 	
@@ -210,6 +261,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void createMimeType(MimeType mimeType) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_MIME_TYPES))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_MIME_TYPES);
+
 		getAdminDAO().createMimeType(mimeType);
 	}
 
@@ -219,6 +273,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void updateMimeType(MimeType mimeType) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_MIME_TYPES))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_MIME_TYPES);
+
 		getAdminDAO().updateMimeType(mimeType);
 	}
 
@@ -228,6 +285,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void deleteMimeType(MimeType mimeType) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_MIME_TYPES))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_MIME_TYPES);
+
 		getAdminDAO().deleteMimeType(mimeType);
 	}
 
@@ -237,6 +297,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void createLocation(Location location) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_LOCATIONS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_LOCATIONS);
+
 		getAdminDAO().createLocation(location);
 	}
 
@@ -246,6 +309,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void updateLocation(Location location) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_LOCATIONS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_LOCATIONS);
+
 		getAdminDAO().updateLocation(location);
 	}
 
@@ -255,6 +321,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void deleteLocation(Location location) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_LOCATIONS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_LOCATIONS);
+
 		getAdminDAO().deleteLocation(location);
 	}
 	
@@ -264,6 +333,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void createRelationshipType(RelationshipType relationshipType) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIP_TYPES))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_RELATIONSHIP_TYPES);
+
 		getAdminDAO().createRelationshipType(relationshipType);
 	}
 
@@ -273,6 +345,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void updateRelationshipType(RelationshipType relationshipType) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIP_TYPES))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_RELATIONSHIP_TYPES);
+
 		getAdminDAO().updateRelationshipType(relationshipType);
 	}
 
@@ -282,6 +357,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void deleteRelationshipType(RelationshipType relationshipType) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIP_TYPES))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_RELATIONSHIP_TYPES);
+
 		getAdminDAO().deleteRelationshipType(relationshipType);
 	}
 
@@ -291,6 +369,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void createRole(Role role) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ROLES))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ROLES);
+
 		getAdminDAO().createRole(role);
 	}
 
@@ -300,6 +381,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void updateRole(Role role) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ROLES))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ROLES);
+
 		getAdminDAO().updateRole(role);
 	}
 
@@ -309,6 +393,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void deleteRole(Role role) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ROLES))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ROLES);
+
 		if (OpenmrsConstants.CORE_ROLES().contains(role.getRole()))
 			throw new APIException("Cannot delete a core role");
 		getAdminDAO().deleteRole(role);
@@ -320,6 +407,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void createPrivilege(Privilege privilege) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_PRIVILEGES))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_PRIVILEGES);
+
 		getAdminDAO().createPrivilege(privilege);
 	}
 
@@ -329,6 +419,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void updatePrivilege(Privilege privilege) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_PRIVILEGES))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_PRIVILEGES);
+
 		getAdminDAO().updatePrivilege(privilege);
 	}
 
@@ -338,6 +431,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void deletePrivilege(Privilege privilege) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_PRIVILEGES))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_PRIVILEGES);
+
 		if (OpenmrsConstants.CORE_PRIVILEGES().contains(privilege.getPrivilege()))
 			throw new APIException("Cannot delete a core privilege");
 			getAdminDAO().deletePrivilege(privilege);
@@ -349,6 +445,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void createConceptClass(ConceptClass cc) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_CONCEPT_CLASSES))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_CONCEPT_CLASSES);
+
 		getAdminDAO().createConceptClass(cc);
 	}
 
@@ -358,6 +457,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void updateConceptClass(ConceptClass cc) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_CONCEPT_CLASSES))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_CONCEPT_CLASSES);
+
 		getAdminDAO().updateConceptClass(cc);
 	}
 
@@ -367,6 +469,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void deleteConceptClass(ConceptClass cc) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_CONCEPT_CLASSES))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_CONCEPT_CLASSES);
+
 		getAdminDAO().deleteConceptClass(cc);
 	}
 
@@ -376,6 +481,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void createConceptDatatype(ConceptDatatype cd) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_CONCEPT_DATATYPES))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_CONCEPT_DATATYPES);
+
 		getAdminDAO().createConceptDatatype(cd);
 	}
 
@@ -385,6 +493,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void updateConceptDatatype(ConceptDatatype cd) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_CONCEPT_DATATYPES))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_CONCEPT_DATATYPES);
+
 		getAdminDAO().updateConceptDatatype(cd);
 	}
 
@@ -394,6 +505,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void deleteConceptDatatype(ConceptDatatype cd) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_CONCEPT_DATATYPES))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_CONCEPT_DATATYPES);
+
 		getAdminDAO().deleteConceptDatatype(cd);
 	}
 	
@@ -403,6 +517,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void createReport(Report report) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_ADD_REPORTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_REPORTS);
+
 		getAdminDAO().createReport(report);
 	}
 
@@ -412,6 +529,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void updateReport(Report report) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_REPORTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_REPORTS);
+
 		getAdminDAO().updateReport(report);
 	}
 
@@ -421,6 +541,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void deleteReport(Report report) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_DELETE_REPORTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_DELETE_REPORTS);
+
 		getAdminDAO().deleteReport(report);
 	}
 	
@@ -430,6 +553,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void updateConceptWord(Concept concept) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_CONCEPTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_CONCEPTS);
+
 		getAdminDAO().updateConceptWord(concept);
 	}
 	
@@ -438,6 +564,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void updateConceptWords() throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_CONCEPTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_CONCEPTS);
+
 		getAdminDAO().updateConceptWords();
 	}
 	
@@ -447,6 +576,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void updateConceptSetDerived(Concept concept) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_CONCEPTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_CONCEPTS);
+
 		getAdminDAO().updateConceptSetDerived(concept);
 	}
 	
@@ -455,6 +587,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void updateConceptSetDerived() throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_CONCEPTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_CONCEPTS);
+
 		getAdminDAO().updateConceptSetDerived();
 	}
 	
@@ -464,6 +599,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void createGroup(Group group) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_GROUPS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_GROUPS);
+
 		getAdminDAO().createGroup(group);
 	}
 
@@ -473,6 +611,9 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void updateGroup(Group group) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_GROUPS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_GROUPS);
+
 		getAdminDAO().updateGroup(group);
 	}
 
@@ -482,20 +623,39 @@ public class AdministrationService {
 	 * @throws APIException
 	 */
 	public void deleteGroup(Group group) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_GROUPS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_GROUPS);
+
 		getAdminDAO().deleteGroup(group);
+	}
+	
+	public void renameGroup(Group group, String newGroupName) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_GROUPS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_GROUPS);
+
+		getAdminDAO().renameGroup(group, newGroupName);
 	}
 
 	public void createConceptProposal(ConceptProposal cp) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_FORM_ENTRY);
+
 		getAdminDAO().createConceptProposal(cp);
 	}
 	
 	public void updateConceptProposal(ConceptProposal cp) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_FORM_ENTRY);
+
 		cp.setChangedBy(context.getAuthenticatedUser());
 		cp.setDateChanged(new Date());
 		getAdminDAO().updateConceptProposal(cp);
 	}
 	
 	public void mapConceptProposalToConcept(ConceptProposal cp, Concept mappedConcept) throws APIException {
+		
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_ADD_CONCEPTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_CONCEPTS);
 		
 		if (cp.getState().equals(OpenmrsConstants.CONCEPT_PROPOSAL_REJECT)) {
 			rejectConceptProposal(cp);

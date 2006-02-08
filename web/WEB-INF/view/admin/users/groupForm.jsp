@@ -18,8 +18,7 @@
 		<td><spring:message code="Group.group"/></td>
 		<td>
 			<spring:bind path="group.group">
-				<c:if test="${group.group == null}"><input type="text" name="${status.expression}" value="${status.value}"></c:if>
-				<c:if test="${!(group.group == null)}">${status.value}</c:if>				
+				<input type="text" name="<c:if test="${group.group!=null}">new_</c:if>${status.expression}" value="${status.value}" />	
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
@@ -43,5 +42,10 @@
 
 <input type="submit" value="<spring:message code="Group.save"/>">
 </form>
+
+<script type="text/javascript">
+ document.forms[0].elements[0].focus();
+</script>
+
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

@@ -39,7 +39,7 @@
 </form>
 
 <script type="text/javascript">
- document.getElementById('priv').focus();
+ document.forms[0].elements[0].focus();
 </script>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

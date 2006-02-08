@@ -196,6 +196,11 @@
 
 <spring:hasBindErrors name="patient">
 	<div class="error">Please fix all errors</div>
+	<div class="error">
+		<c:forEach items="${errors.allErrors}" var="error">
+			<spring:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
+		</c:forEach>
+	</div>
 </spring:hasBindErrors>
 
 <form method="post" onSubmit="removeBlankData()">

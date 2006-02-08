@@ -99,7 +99,7 @@ public class PatientFormController extends SimpleFormController {
 					}
 				}
 				
-				if (patient.getIdentifiers().size() < 1)
+				if (patient.getIdentifiers() == null || patient.getIdentifiers().size() < 1)
 					errors.rejectValue("patient.identifiers", "Patient.identifiers.length");
 
 				
@@ -129,8 +129,8 @@ public class PatientFormController extends SimpleFormController {
 					}
 				}
 				
-				if (patient.getAddresses().size() < 1)
-					errors.rejectValue("patient.addresses", "Patient.addresses.length");
+				if (patient.getAddresses() == null || patient.getAddresses().size() < 1)
+					errors.rejectValue("patient", "Patient.addresses.length");
 
 				
 			// Patient Names
