@@ -15,6 +15,10 @@
 
 	var patient;
 	var savedText;
+	var autoJump = true;
+	<request:existsParameter name="autoJump">
+		autoJump = <request:parameter name="autoJump"/>;
+	</request:existsParameter>
 	
 	function showSearch() {
 		findPatient.style.display = "";
@@ -82,6 +86,10 @@
 	};
 	
 	function allowAutoJump() {
+		if (autoJump == false) {
+			autoJump = true;
+			return false;
+		}
 		//	only allow the first item to be automatically selected if:
 		//		the entered text is a string or the entered text is a valid identifier
 		return (savedText.match(/\d/) == false || isValidCheckDigit(savedText));	
@@ -94,7 +102,7 @@
 		padding: 0px;
 		margin: 0px;
 	}
-	.searchIndexHighlight {
+	.searchIndex, .searchIndexHighlight {
 		vertical-align: middle;
 	}
 </style>
@@ -119,12 +127,13 @@
 				 <tr>
 				 	<th> </th>
 				 	<th><spring:message code="Patient.identifier"/></th>
-				 	<th><spring:message code="PatientName.familyName"/></th>
 				 	<th><spring:message code="PatientName.givenName"/></th>
 				 	<th><spring:message code="PatientName.middleName"/></th>
+				 	<th><spring:message code="PatientName.familyName"/></th>
 				 	<th><spring:message code="Patient.gender"/></th>
 				 	<th><spring:message code="Patient.tribe"/></th>
 				 	<th><spring:message code="Patient.birthdate"/></th>
+				 	<th><spring:message code="Patient.age"/></th>
 				 	<th><spring:message code="Patient.mothersName"/></th>
 				 </tr>
 			 </thead>
@@ -145,7 +154,7 @@
 	
 	var invalidCheckDigitText   = "Invalid check digit for MRN: ";
 	var searchOnPatientNameText = "Please search on part of the patient's name. ";
-	var noPatientsFoundText     = "No patients found. ";
+	var noPatientsFoundText     = "No patients found. <br/> " + searchOnPatientNameText;
 	var addPatientLink = "<a href='${pageContext.request.contextPath}/admin/patients/addPatient.htm'>Add a new patient</a>";
 	
 	function init() {

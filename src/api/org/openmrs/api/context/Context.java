@@ -11,6 +11,7 @@ import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.FormEntryService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
@@ -51,6 +52,7 @@ public class Context {
 	private OrderService orderService;
 	private Locale locale = new Locale("en", "US");
 	private ReportService reportService;
+	private FormEntryService formEntryService;
 	private List<String> proxies = new Vector<String>();
 
 	public Context() {
@@ -80,10 +82,6 @@ public class Context {
 	 * @return concept dictionary-related services
 	 */
 	public ConceptService getConceptService() {
-//		if (!isAuthenticated()) {
-//			log.warn("unauthorized access to concept service");
-//			return null;
-//		}
 		if (conceptService == null)
 			conceptService = new ConceptService(this, getDAOContext());
 		return conceptService;
@@ -93,10 +91,6 @@ public class Context {
 	 * @return encounter-related services
 	 */
 	public EncounterService getEncounterService() {
-//		if (!isAuthenticated()) {
-//			log.warn("unauthorized access to encounter service");
-//			return null;
-//		}
 		if (encounterService == null)
 			encounterService = new EncounterService(this, getDAOContext());
 		return encounterService;
@@ -106,10 +100,6 @@ public class Context {
 	 * @return observation services
 	 */
 	public ObsService getObsService() {
-//		if (!isAuthenticated()) {
-//			log.warn("unauthorized access to obs service");
-//			return null;
-//		}
 		if (obsService == null)
 			obsService = new ObsService(this, getDAOContext());
 		return obsService;
@@ -119,13 +109,18 @@ public class Context {
 	 * @return patient-related services
 	 */
 	public PatientService getPatientService() {
-//		if (!isAuthenticated()) {
-//			log.warn("unauthorized access to patient service");
-//			return null;
-//		}
 		if (patientService == null)
 			patientService = new PatientService(this, getDAOContext());
 		return patientService;		
+	}
+	
+	/**
+	 * @return concept dictionary-related services
+	 */
+	public FormEntryService getFormEntryService() {
+		if (formEntryService == null)
+			formEntryService = new FormEntryService(this, getDAOContext());
+		return formEntryService;
 	}
 	
 	/**
@@ -142,10 +137,6 @@ public class Context {
 	 * @return user-related services
 	 */
 	public UserService getUserService() {
-//		if (!isAuthenticated()) {
-//			log.warn("unauthorized access to user service");
-//			return null;
-//		}
 		if (userService == null)
 			userService = new UserService(this, getDAOContext());
 		return userService;
@@ -155,10 +146,6 @@ public class Context {
 	 * @return order service
 	 */
 	public OrderService getOrderService() {
-//		if (!isAuthenticated()) {
-//			log.warn("unauthorized access to order service");
-//			return null;
-//		}
 		if (orderService == null)
 			orderService = new OrderService(this, getDAOContext());
 		return orderService;

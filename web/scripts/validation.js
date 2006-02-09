@@ -173,39 +173,38 @@ function isValidDate(obj, dtStr){
 return true;
 }
 
-	var validateObj = null;
-	var btnObj = null;
+var validateObj = null;
+var btnObj = null;
 
-	function validateIdentifier(obj, btn, text) {
-		validateObj = obj;
-		var textNode = document.createTextNode(text);
-		var button = document.createElement("input");
-		button.type = "button";
-		button.value = "Fix Check Digit";
-		button.className = "smallButton";
-		button.onclick = fixCheckDigit;
-		if (btn != null) 
-			btnObj = document.getElementById(btn);
-		if (btnObj != null) {
-			if (showError(isValidCheckDigit(obj.value), obj, textNode, button)) {
-				btnObj.disabled = false;
-			} else {
-				btnObj.disabled = true;
-			}
-		}
-		obj.focus();
+function validateIdentifier(obj, btn, text) {
+	validateObj = obj;
+	var textNode = document.createTextNode(text);
+	var button = document.createElement("input");
+	button.type = "button";
+	button.value = "Fix Check Digit";
+	button.className = "smallButton";
+	button.onclick = fixCheckDigit;
+	if (btn != null) 
+		btnObj = document.getElementById(btn);
+	var hasError = showError(isValidCheckDigit(obj.value), obj, textNode, button);
+	if (hasError) {
+		btnObj.disabled = false;
+	} else {
+		btnObj.disabled = true;
 	}
-	function fixCheckDigit() {
-		var obj = validateObj;
-		if (obj != null) {
-			var val = obj.value;
-			var index = val.lastIndexOf("-");
-			if (index != -1)
-				val = val.substr(0, index);
-			obj.value = val + "-" + getCheckDigit(val);
-			validateIdentifier(obj);
-		}
+	obj.focus();
+}
+function fixCheckDigit() {
+	var obj = validateObj;
+	if (obj != null) {
+		var val = obj.value;
+		var index = val.lastIndexOf("-");
+		if (index != -1)
+			val = val.substr(0, index);
+		obj.value = val + "-" + getCheckDigit(val);
+		validateIdentifier(obj);
 	}
+}
 	
 function removeChildren(obj) {
 	var child = obj.firstChild;

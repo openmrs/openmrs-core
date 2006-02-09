@@ -45,6 +45,9 @@
         column="format"
         length="50"
     />
+    
+    <property name="checkDigit" type="boolean" column="check_digit" not-null="true"/>
+    
     <property
         name="dateCreated"
         type="java.util.Date"

@@ -17,6 +17,7 @@ var getId		= function(p) {
 		//obj.onclick = function() { return selectObject(parseInt(this.href.substring(this.href.indexOf('#')+1, this.href.length))); };
 		obj.appendChild(document.createTextNode(p.identifier + " "));
 		div.appendChild(obj);
+		if (p.identifierCheckDigit)
 		if (typeof isValidCheckDigit != 'undefined' && isValidCheckDigit(p.identifier)==false) {
 			div.appendChild(getProblemImage());
 		}
@@ -45,12 +46,18 @@ var getBirthday	= function(p) {
 		if (typeof p == 'string') return "";
 		str = getDateString(p.birthdate);
 		if (p.birthdateEstimated)
-			str += " (?)";
+			str = "&asymp;" + str;
 		return str;
 	};
+var getAge = function(p) { 
+	var age = p.age;
+	if (p.age == null) return '';
+	return age;
+}
+
 var getMother  = function(p) { return p.mothersName == null ? "" : p.mothersName;  };
 
-var customCellFunctions = [getNumber, getId, getFamily, getGiven, getMiddle, getGender, getTribe, getBirthday, getMother];
+var customCellFunctions = [getNumber, getId, getGiven, getMiddle, getFamily, getGender, getTribe, getBirthday, getAge, getMother];
 
 function getProblemImage() {
 	var img = document.createElement("img");

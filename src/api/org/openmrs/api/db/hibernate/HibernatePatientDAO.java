@@ -10,6 +10,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.LogicalExpression;
@@ -25,6 +26,7 @@ import org.openmrs.Tribe;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PatientDAO;
+import org.openmrs.util.OpenmrsConstants;
 
 public class HibernatePatientDAO implements PatientDAO {
 
@@ -90,16 +92,55 @@ public class HibernatePatientDAO implements PatientDAO {
 		
 		Query query;
 		
+		String sql = "select patient from Patient patient where patient.identifiers.identifier = :id";
+		
 		if (includeVoided) {
-			query = session.createQuery("select patient from Patient patient where patient.identifiers.identifier = :id");
+			query = session.createQuery(sql);
 			query.setString("id", identifier);
 		}
 		else {
-			query = session.createQuery("select patient from Patient patient where patient.identifiers.identifier = :id and patient.voided = :void");
+			query = session.createQuery(sql + " and patient.voided = :void");
 			query.setString("id", identifier);
 			query.setBoolean("void", includeVoided);
 		}
 		
+		List<Patient> patients = query.list();
+		
+		Set<Patient> returnSet = new HashSet<Patient>();
+		returnSet.addAll(patients);
+		
+		return returnSet;
+	}
+	
+	
+
+	/**
+	 * @see org.openmrs.api.db.PatientDAO#getPatientsByIdentifierPattern(java.lang.String, boolean)
+	 */
+	public Set<Patient> getPatientsByIdentifierPattern(String identifier, boolean includeVoided) throws DAOException {
+		Session session = HibernateUtil.currentSession();
+		
+		SQLQuery query;
+		
+		String regex = OpenmrsConstants.PATIENT_IDENTIFIER_REGEX;
+		
+		regex = regex.replace("@SEARCH@", identifier);
+		
+		String sql = "select {pat.*} from patient {pat}, patient_identifier ident where ident.identifier regexp :regex and ident.patient_id = {pat}.patient_id";
+		//String sql = "select {ident.*} from patient_identifier ident where {ident.identifier} regexp :regex";
+		
+		if (includeVoided) {
+			query = session.createSQLQuery(sql);
+			query.setString("regex", regex);
+		}
+		else {
+			query = session.createSQLQuery(sql + " and {pat}.voided = :void");
+			query.setString("regex", regex);
+			query.setBoolean("void", includeVoided);
+		}
+		
+		//query.addEntity("ident", PatientIdentifier.class);
+		query.addEntity("pat", Patient.class);
 		List<Patient> patients = query.list();
 		
 		Set<Patient> returnSet = new HashSet<Patient>();

@@ -1,10 +1,13 @@
 package org.openmrs.web.dwr;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientName;
 
 public class PatientListItem {
@@ -13,6 +16,7 @@ public class PatientListItem {
 
 	private Integer patientId;
 	private String identifier;
+	private Boolean identifierCheckDigit = false;
 	private String familyName;
 	private String middleName;
 	private String givenName;
@@ -31,13 +35,18 @@ public class PatientListItem {
 
 		if (patient != null) {
 			patientId = patient.getPatientId();
-			identifier = patient.getIdentifiers().iterator().next().getIdentifier();
-			PatientName pn = patient.getNames().iterator().next();
+			PatientIdentifier pi = patient.getPatientIdentifier();
+			identifier = pi.getIdentifier();
+			identifierCheckDigit = pi.getIdentifierType().hasCheckDigit();
+			PatientName pn = patient.getPatientName();
 			familyName = pn.getFamilyName();
 			middleName = pn.getMiddleName();
 			givenName = pn.getGivenName();
 			gender = patient.getGender();
-			tribe = patient.getTribe().getName();
+			if (patient.getTribe() == null)
+				tribe = "";
+			else
+				tribe = patient.getTribe().getName();
 			birthdate = patient.getBirthdate();
 			birthdateEstimated = patient.isBirthdateEstimated();
 			mothersName = patient.getMothersName();
@@ -175,6 +184,43 @@ public class PatientListItem {
 
 	public void setVoided(Boolean voided) {
 		this.voided = voided;
+	}
+
+	/**
+	 * @return Returns the identifierIdentifierCheckdigit.
+	 */
+	public Boolean getIdentifierCheckDigit() {
+		return identifierCheckDigit;
+	}
+
+	/**
+	 * @param identifierIdentifierCheckdigit The identifierIdentifierCheckdigit to set.
+	 */
+	public void setIdentifierCheckDigit(Boolean identifierCheckDigit) {
+		this.identifierCheckDigit = identifierCheckDigit;
+	}
+	
+	public Integer getAge() {
+		
+		if (birthdate == null)
+			return null;
+		
+		Calendar today = Calendar.getInstance();
+		
+		Calendar bday = new GregorianCalendar();
+		bday.setTime(birthdate);
+		
+		int age = today.get(Calendar.YEAR) - bday.get(Calendar.YEAR);
+		
+		//tricky bit:
+		// set birthday calendar to this year
+		// if the current date is less that the new 'birthday', subtract a year
+		bday.set(Calendar.YEAR, today.get(Calendar.YEAR));
+		if (today.before(bday)) {
+				age = age -1;
+		}
+		
+		return age;
 	}
 	
 	

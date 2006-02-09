@@ -9,6 +9,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.PatientAddress;
+import org.openmrs.api.FormEntryService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
@@ -33,8 +34,8 @@ public class DWRPatientService {
 			patientList.add("Please <a href='" + request.getContextPath() + "/logout'>log in</a> again.");
 		}
 		else {
-			try {
-				PatientService ps = context.getPatientService();
+			//try {
+				FormEntryService ps = context.getFormEntryService();
 				List<Patient> patients;
 				
 				patients = ps.findPatients(searchValue, includeVoided);
@@ -65,16 +66,16 @@ public class DWRPatientService {
 					}
 				}
 				
-			} catch (Exception e) {
-				log.error(e);
-			}
+			//} catch (Exception e) {
+			//	log.error(e);
+			//}
 		}
 		return patientList;
 	}
 	
 	public PatientListItem getPatient(Integer patientId) {
 		Context context = (Context) WebContextFactory.get().getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		PatientService ps = context.getPatientService();
+		FormEntryService ps = context.getFormEntryService();
 		Patient p = ps.getPatient(patientId);
 		PatientListItem pli = new PatientListItem(p);
 		if (p.getAddresses() != null && p.getAddresses().size() > 0) {
@@ -98,7 +99,7 @@ public class DWRPatientService {
 			patientList.add("Please <a href='" + request.getContextPath() + "/logout'>log in</a> again.");
 		}
 		else {
-			PatientService ps = context.getPatientService();
+			FormEntryService ps = context.getFormEntryService();
 			List<Patient> patients = new Vector<Patient>();
 			
 			Integer d = null;

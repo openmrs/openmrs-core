@@ -14,6 +14,7 @@ public class PatientIdentifierType implements java.io.Serializable {
 	private Integer patientIdentifierTypeId;
 	private String name;
 	private String format;
+	private Boolean checkDigit;
 	private String description;
 	private Date dateCreated;
 	private User creator;
@@ -135,6 +136,27 @@ public class PatientIdentifierType implements java.io.Serializable {
 
 	public String toString() {
 		return this.name;
+	}
+
+	/**
+	 * @return Returns the checkdigit.
+	 */
+	public Boolean getCheckDigit() {
+		return hasCheckDigit();
+	}
+	
+	/**
+	 * @return Returns the checkdigit.
+	 */
+	public Boolean hasCheckDigit() {
+		return checkDigit;
+	}
+
+	/**
+	 * @param checkdigit The checkdigit to set.
+	 */
+	public void setCheckDigit(Boolean checkDigit) {
+		this.checkDigit = checkDigit;
 	}
 	
 }

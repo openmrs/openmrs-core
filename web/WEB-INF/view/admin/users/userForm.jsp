@@ -29,8 +29,8 @@
 							name="${status.expression}" 
 							id="username"
 							value="${status.value}"
-							onKeyUp="validateIdentifier(this, '', '<spring:message code="error.identifier"/>');"
-							onChange="validateIdentifier(this, '', '<spring:message code="error.identifier"/>');"/>
+							onKeyUp="validateIdentifier(this, null, '<spring:message code="error.identifier"/>');"
+							onChange="validateIdentifier(this, null, '<spring:message code="error.identifier"/>');"/>
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
@@ -154,5 +154,8 @@
 	<input type="submit" id="saveButton" value="<spring:message code="User.save"/>" />
 </form>
 
+<script type="text/javascript">
+ document.forms[0].elements[0].focus();
+</script>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

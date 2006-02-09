@@ -53,6 +53,19 @@ public interface PatientDAO {
 	public Set<Patient> getPatientsByIdentifier(String identifier, boolean includeVoided) throws DAOException;
 	
 	/**
+	 * Find all patients with a given identifier and use the regex 
+	 * <code>OpenmrsConstants.PATIENT_IDENTIFIER_REGEX</code>
+	 * 
+	 * Note: Uses NON-STANDARD SQL: "...WHERE identifier REGEXP '...' ..."
+	 * 
+	 * @param identifier
+	 * @param includeVoided
+	 * @return
+	 * @throws DAOException
+	 */
+	public Set<Patient> getPatientsByIdentifierPattern(String identifier, boolean includeVoided) throws DAOException;
+	
+	/**
 	 * Find patients by name
 	 * 
 	 * @param name
@@ -139,5 +152,4 @@ public interface PatientDAO {
 	 * @throws DAOException
 	 */
 	public Location getLocation(Integer locationId) throws DAOException;
-	
 }

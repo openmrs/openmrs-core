@@ -17,7 +17,7 @@
 		<br/>
 		<b><spring:message code="Patient.names"/></b><br/>
 			<c:forEach var="name" items="${patient.names}" varStatus="status">
-				<c:if test="${status.index != 0}">${name.familyName}, ${name.givenName} ${name.middleName}<br/></c:if>
+				<c:if test="${status.index != 0}">${name.givenName} ${name.middleName} ${name.familyName}<br/></c:if>
 			</c:forEach>
 		<br/>
 		<b><spring:message code="Patient.addresses"/></b><br/>
@@ -38,7 +38,7 @@
 			<td><b><spring:message code="general.name"/></b></td>
 			<td id="name">
 				<c:forEach var="name" items="${patient.names}" varStatus="status">
-					<c:if test="${status.index == 0}"><b>${name.familyName}</b>, ${name.givenName} ${name.middleName}</c:if>
+					<c:if test="${status.index == 0}"><b>${name.givenName} ${name.middleName}</b> ${name.familyName}</c:if>
 				</c:forEach>
 			</td>
 		</tr>
@@ -56,7 +56,7 @@
 		<tr><td valign="top"><b><spring:message code="Patient.birthdate"/></b><td id="birthdate"><spring:bind path="patient.birthdate">${status.value}</spring:bind></td></tr>
 		<tr><td valign="top"><b><spring:message code="Patient.mothersName"/></b><td id="mothersName">${patient.mothersName}</td></tr>
 	</table>
-	<br /><input type='button' value='<spring:message code="formentry.patient.switch"/>' onClick="document.location='index.htm?phrase=${param.phrase}'" />
+	<br /><input type='button' value='<spring:message code="formentry.patient.switch"/>' onClick="document.location='index.htm?phrase=${param.phrase}&autoJump=false'" />
 </div>
 
 <br />

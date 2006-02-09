@@ -86,6 +86,21 @@ public class PatientService {
 		return getPatientDAO().getPatientsByIdentifier(identifier, includeVoided);
 	}
 	
+	/**
+	 * Find all patients with a given identifier and use the regex 
+	 * <code>OpenmrsConstants.PATIENT_IDENTIFIER_REGEX</code>
+	 * 
+	 * Note: Uses NON-STANDARD SQL: "...WHERE identifier REGEXP '...' ..."
+	 * 
+	 * @param identifier
+	 * @return set of patients matching identifier
+	 * @throws APIException
+	 */
+	public Set<Patient> getPatientsByIdentifierPattern(String identifier, boolean includeVoided) throws APIException {
+		return getPatientDAO().getPatientsByIdentifierPattern(identifier, includeVoided);
+	}
+	
+	
 	public Set<Patient> getPatientsByName(String name) throws APIException {
 		return getPatientsByName(name, false);
 	}
@@ -219,44 +234,12 @@ public class PatientService {
 		// if there is a number in the query string
 		if (query.matches(".*\\d+.*")) {
 			log.debug("[Identifier search] Query: " + query);
-			//if there is no hyphen, get the appropriate check digit:
-			/*
-			if (query.lastIndexOf('-') != query.length() - 2) {
-				// append checkdigit and search
-				try {
-					log.debug("appended checkdigit: " + query + "-" + Helper.getCheckdigit(query));
-					patients.addAll(dao.getPatientsByIdentifier(query + "-" + Helper.getCheckdigit(query), includeVoided));
-				} catch (Exception e){}
-				
-				int ch = query.charAt(query.length()-1);
-				
-				if (ch > 48 && ch > 57) {
-					//if the last character is a number
-					try {
-						String q = query.substring(0, query.length() - 1);
-						int cd = Helper.getCheckdigit(q);
-						if (cd == ch) {
-							//if the last number is the checkdigit, do the search with that as the checkdigit
-							patients.addAll(dao.getPatientsByIdentifier(q + "-" + cd, includeVoided));
-						}
-						else {
-							// the last number is not the check digit, get the checkdigit for the entire string
-							cd = Helper.getCheckdigit(query);
-							patients.addAll(dao.getPatientsByIdentifier(query + "-" + cd, includeVoided));
-						}
-					} catch(Exception e) {}
-				}
-			}
-			*/
-			{ //there is a hyphen
-				patients.addAll(dao.getPatientsByIdentifier(query, includeVoided));
-			}
-				
+			patients.addAll(dao.getPatientsByIdentifierPattern(query, includeVoided));
 		}
 		else {
 			//there is no number in the string, search on name
 			patients.addAll(dao.getPatientsByName(query, includeVoided));
 		}
 		return patients;
-	}
+	}	
 }

@@ -202,4 +202,8 @@ public class OpenmrsConstants {
 		return states;
 	}
 	
+	// This regex is used in identifier pattern searches.  
+	// @SEARCH@ is needs to be replaced with the searched string
+	public static final String PATIENT_IDENTIFIER_REGEX = "^0*@SEARCH@([A-Z]+-[0-9])?$";
+	
 }
