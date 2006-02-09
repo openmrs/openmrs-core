@@ -4,7 +4,7 @@
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
-<h2><spring:message code="formentry.title"/></h2>
+<h3><spring:message code="formentry.title"/></h3>
 
 <div id="patientSummary">
 	<b class='boxHeader'><spring:message code="formentry.patient.info"/></b>

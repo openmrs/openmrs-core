@@ -4,6 +4,8 @@
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
+<div id="xdebugBox" style="float: right; width: 350px;"></div>
+
 <script src='<%= request.getContextPath() %>/dwr/interface/DWRPatientService.js'></script>
 <script src='<%= request.getContextPath() %>/dwr/engine.js'></script>
 <script src='<%= request.getContextPath() %>/dwr/util.js'></script>
@@ -66,6 +68,7 @@
 				else {
 					//the user did input a valid identifier, but we don't have it
 					patients.push(noPatientsFoundText);
+					patients.push(searchOnPatientNameText);
 					patients.push(addPatientLink);
 				}
 			}
@@ -105,9 +108,12 @@
 	.searchIndex, .searchIndexHighlight {
 		vertical-align: middle;
 	}
+	tr th#patientGender, tr th#patientAge, .patientGender, .patientAge {
+		text-align: center;
+	}
 </style>
 
-<h2><spring:message code="formentry.title"/></h2>
+<h3><spring:message code="formentry.title"/></h3>
 
 <div id="findPatient">
 	<b class="boxHeader"><spring:message code="formentry.step1"/></b>
@@ -126,15 +132,15 @@
 			 <thead id="patientTableHead">
 				 <tr>
 				 	<th> </th>
-				 	<th><spring:message code="Patient.identifier"/></th>
-				 	<th><spring:message code="PatientName.givenName"/></th>
-				 	<th><spring:message code="PatientName.middleName"/></th>
-				 	<th><spring:message code="PatientName.familyName"/></th>
-				 	<th><spring:message code="Patient.gender"/></th>
-				 	<th><spring:message code="Patient.tribe"/></th>
-				 	<th><spring:message code="Patient.birthdate"/></th>
-				 	<th><spring:message code="Patient.age"/></th>
-				 	<th><spring:message code="Patient.mothersName"/></th>
+				 	<th> <spring:message code="Patient.identifier"/> </th>
+				 	<th> <spring:message code="PatientName.givenName"/> </th>
+				 	<th> <spring:message code="PatientName.middleName"/> </th>
+				 	<th> <spring:message code="PatientName.familyName"/> </th>
+				 	<th id='patientAge'> <spring:message code="Patient.age"/> </th>
+				 	<th id='patientGender'> <spring:message code="Patient.gender"/> </th>
+				 	<th> <spring:message code="Patient.tribe"/> </th>
+				 	<th></th>
+				 	<th> <spring:message code="Patient.birthdate"/> </th>
 				 </tr>
 			 </thead>
 			 <tbody id="patientTableBody">
@@ -154,10 +160,12 @@
 	
 	var invalidCheckDigitText   = "Invalid check digit for MRN: ";
 	var searchOnPatientNameText = "Please search on part of the patient's name. ";
-	var noPatientsFoundText     = "No patients found. <br/> " + searchOnPatientNameText;
+	var noPatientsFoundText     = "No patients found. <br/> ";
 	var addPatientLink = "<a href='${pageContext.request.contextPath}/admin/patients/addPatient.htm'>Add a new patient</a>";
 	
 	function init() {
+		DWRUtil.useLoadingMessage();
+	
 		<request:existsParameter name="patientId">
 			<!-- User has 'patientId' in the request params -- selecting that patient -->
 			var pats = new Array();

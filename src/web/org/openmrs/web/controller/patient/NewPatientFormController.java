@@ -62,9 +62,11 @@ public class NewPatientFormController extends SimpleFormController {
         binder.registerCustomEditor(Tribe.class, new TribeEditor(context));
 	}
 
-	@Override
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 	
+		HttpSession httpSession = request.getSession();
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		PatientListItem pli = (PatientListItem)obj;
 
 		MessageSourceAccessor msa = getMessageSourceAccessor();
@@ -73,6 +75,10 @@ public class NewPatientFormController extends SimpleFormController {
 			if (pli.getPatientId() == null) {
 				// if this is a new patient, they must input an identifier
 				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "identifier", "error.null");
+			}
+			else {
+				//PatientIdentifierType pi = context.getPatientService().getPatientIdentifierType(pli.);
+				//if ()
 			}
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "gender", "error.null");
 		}

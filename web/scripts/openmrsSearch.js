@@ -51,6 +51,7 @@ var keyCode;
 var lastPhraseSearched;
 var numItemsDisplayed;
 var firstItemDisplayed;
+var allowAutoListWithNumber;
 
 var debugBox;
 
@@ -71,6 +72,7 @@ function resetForm() {
 	numItemsDisplayed = 0;
 	window.onkeypress = hotkey;
 	clearInformationBar();
+	allowAutoListWithNumber = false;
 	debugBox = $("debugBox");
 	if (debugBox) debugBox.innerHTML = "";
 }
@@ -79,9 +81,12 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay) {
 	if (debugBox) debugBox.innerHTML += '<br>---- delay: ' + delay;
 	objectHitsTableBody = $(bodyElementId);
 	textbox = obj;
+	text = textbox.value.toString();
+	text = text.replace(/^\s+/, '')
+	text = text.replace(/\s+$/, '');
+	
 	if (!delay)  { delay = 400; }
 	clearTimeout(searchTimeout);
-	text = textbox.value.toString();
 		
 	key = 0;
 	if (event == null) { 
@@ -92,17 +97,21 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay) {
 		if (!event.altKey && !event.ctrlKey) {
 			// this if statement cancels the search on alt and control keys
 			key = event.keyCode;
+			if (debugBox) debugBox.innerHTML += '<br>event.type : ' + event.type;
 			if ((key==0 || key==null) && (event.type == "click" || event.type == "change" || event.type == "submit")) {
 				//if non-key event like clicking checkbox or changing dropdown list
 				key = 1;
 			}
 		}
 	}
-	if (debugBox) debugBox.innerHTML += '<br> key: ' + key;
-	if (debugBox) debugBox.innerHTML += '<br> event: ' + event;
+	
+	if (typeof allowAutoListWithNumber == 'function' && allowAutoListWithNumber()) {
+		allowAutoListWithNumber = allowAutoListWithNumber();
+	}
 	
 	//reset textbox for mouse events
-	if (key == 1 && text == "") {
+	if (key == 1 && (text == "" || text == lastPhraseSearched)) {
+		if (event.type == 'submit') return false; //exit searching if user hit enter on empty box
 		text = lastPhraseSearched;
 	}
 	
@@ -169,14 +178,14 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay) {
 		}
 	}
 
-	else if ((key > 57 && key <= 127) ||
+	else if ((key > 48 && key <= 127) ||
 		key == 8 || key == 32 || key == 46 || key == 1) {
-			//	 (if alpha key entered or 
+			//	 (if alphanumeric key entered or 
 			//   backspace key pressed or
 			//   spacebar pressed or 
 			//   delete key pressed or
 			//   mouse event)"
-			if (!text.match(/\d/)) {
+			if (!text.match(/\d/) || allowAutoListWithNumber) {
 				// If there isn't a number in the search (force usage of enter key) and
 				hideHighlight();
 				if (text.length > 1) {
@@ -193,7 +202,7 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay) {
 			}
 	}
 	
-	//value applied here so as use 'includeRetired' as 'lastRetired' as well
+	//value applied here because we use 'includeRetired' as 'lastRetired' as well
 	// (this will still be called before the preFindObjects() timeout is called.)
 	includeRetired = retired;
 	if (!retired){ includeRetired = false; }
@@ -280,11 +289,17 @@ var getString  = function(s) { return s; };
 var getDateString = function(d) {
 	var str = '';
 	if (d != null) {
+		var date = d.getDate();
+		if (date < 10)
+			str += "0";
+		str += date;
+		str += '-';
+		var month = d.getMonth() + 1;
+		if (month < 10)
+			str += "0";
+		str += month;
+		str += '-';
 		str += (d.getYear() + 1900);
-		str += '-';
-		str += d.getMonth() + 1;
-		str += '-';
-		str += d.getDate();
 	}
 	return str;
 }
@@ -347,8 +362,6 @@ function fillTable(objects, cells) {
     	
     if (typeof customRowOptions == "undefined")
     	customRowOptions = {'rowCreator':rowCreator};
-    	
-    if (debugBox != null) debugBox.innerHTML += "<br>funcs: " + funcs + ":";
     
     DWRUtil.addRows(objectHitsTableBody, objs, funcs, customRowOptions);
     
@@ -435,28 +448,39 @@ function updateInformationBar() {
 	infoBar.innerHTML = " &nbsp; Results for '" + lastPhraseSearched + "'. &nbsp;";
 	
 	infoBar.innerHTML += " Viewing " + firstItemDisplayed + "-" + lastItemDisplayed + " of " + total + " &nbsp; ";
-	
-	if (firstItemDisplayed > 1) {
-		//create previous link
-		var prev = document.createElement("a");
-		prev.href = "#prev";
-		prev.className = "prevItems";
-		prev.innerHTML = "Previous " + (firstItemDisplayed-numItemsDisplayed < 1 ? firstItemDisplayed - 1: numItemsDisplayed + 1) + " Results";
-		prev.onclick = showPrevious;
-		infoBar.appendChild(prev);
-		if (lastItemDisplayed != total) {
-			var s = document.createElement("span");
-			s.innerHTML = " | ";
-			infoBar.appendChild(s);	
+
+	if (lastItemDisplayed != total || firstItemDisplayed > 1) {
+		// if need to show previous or next links	
+		var prev;
+		if (firstItemDisplayed > 1) {
+			//create previous link
+			prev = document.createElement("a");
+			prev.href = "#prev";
+			prev.className = "prevItems";
+			prev.innerHTML = "Previous " + (firstItemDisplayed-numItemsDisplayed < 1 ? firstItemDisplayed - 1: numItemsDisplayed + 1) + " Results";
+			prev.onclick = showPrevious;
 		}
-	}
-	if (lastItemDisplayed < total) {
-		//create next link
-		var next = document.createElement("a");
-		next.href = "#next";
-		next.className = "nextItems";
-		next.innerHTML = "Next " + (lastItemDisplayed+numItemsDisplayed > total ? total - lastItemDisplayed: numItemsDisplayed + 1 ) + " Results";
-		next.onclick = showNext;
+		else {
+			// create previous text node
+			prev = document.createTextNode("Previous Results");
+		}
+		infoBar.appendChild(prev);
+		var s = document.createElement("span");
+		s.innerHTML = " | ";
+		infoBar.appendChild(s);	
+	
+		var next;
+		if (lastItemDisplayed < total) {
+			//create next link
+			next = document.createElement("a");
+			next.href = "#next";
+			next.className = "nextItems";
+			next.innerHTML = "Next " + (lastItemDisplayed+numItemsDisplayed > total ? total - lastItemDisplayed: numItemsDisplayed + 1 ) + " Results";
+			next.onclick = showNext;
+		}
+		else {
+			next = document.createTextNode("Next Results");
+		}
 		infoBar.appendChild(next);
 	}
 }

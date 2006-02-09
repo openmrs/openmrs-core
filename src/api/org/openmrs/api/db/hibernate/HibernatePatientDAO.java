@@ -3,6 +3,7 @@ package org.openmrs.api.db.hibernate;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -15,6 +16,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.LogicalExpression;
 import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.SimpleExpression;
 import org.openmrs.Location;
 import org.openmrs.Patient;
@@ -93,20 +95,21 @@ public class HibernatePatientDAO implements PatientDAO {
 		Query query;
 		
 		String sql = "select patient from Patient patient where patient.identifiers.identifier = :id";
+		String order = " order by patient.name.givenName asc";
 		
 		if (includeVoided) {
-			query = session.createQuery(sql);
+			query = session.createQuery(sql + order);
 			query.setString("id", identifier);
 		}
 		else {
-			query = session.createQuery(sql + " and patient.voided = :void");
+			query = session.createQuery(sql + " and patient.voided = :void" + order);
 			query.setString("id", identifier);
 			query.setBoolean("void", includeVoided);
 		}
 		
 		List<Patient> patients = query.list();
 		
-		Set<Patient> returnSet = new HashSet<Patient>();
+		Set<Patient> returnSet = new LinkedHashSet<Patient>();
 		returnSet.addAll(patients);
 		
 		return returnSet;
@@ -123,6 +126,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		SQLQuery query;
 		
 		String regex = OpenmrsConstants.PATIENT_IDENTIFIER_REGEX;
+		String order = ""; //" order by patient.name.givenName asc";
 		
 		regex = regex.replace("@SEARCH@", identifier);
 		
@@ -130,11 +134,11 @@ public class HibernatePatientDAO implements PatientDAO {
 		//String sql = "select {ident.*} from patient_identifier ident where {ident.identifier} regexp :regex";
 		
 		if (includeVoided) {
-			query = session.createSQLQuery(sql);
+			query = session.createSQLQuery(sql + order);
 			query.setString("regex", regex);
 		}
 		else {
-			query = session.createSQLQuery(sql + " and {pat}.voided = :void");
+			query = session.createSQLQuery(sql + " and {pat}.voided = :void" + order);
 			query.setString("regex", regex);
 			query.setBoolean("void", includeVoided);
 		}
@@ -143,7 +147,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		query.addEntity("pat", Patient.class);
 		List<Patient> patients = query.list();
 		
-		Set<Patient> returnSet = new HashSet<Patient>();
+		Set<Patient> returnSet = new LinkedHashSet<Patient>();
 		returnSet.addAll(patients);
 		
 		return returnSet;
@@ -157,7 +161,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		// TODO return the matched name instead of the primary name
 		//   possible solution: "select new" org.openmrs.PatientListItem and return a list of those
 		
-		Set<Patient> patients = new HashSet<Patient>();
+		Set<Patient> patients = new LinkedHashSet<Patient>();
 		
 		name = name.replace(", ", " ");
 		String[] names = name.split(" ");
@@ -182,6 +186,7 @@ public class HibernatePatientDAO implements PatientDAO {
 			criteria.add(Expression.eq("voided", new Boolean(false)));
 		}
 
+		criteria.addOrder(Order.asc("name.givenName"));
 		patients.addAll(criteria.list());
 		
 		return patients;
@@ -195,7 +200,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		// TODO return the matched name instead of the primary name
 		//   possible solution: "select new" org.openmrs.PatientListItem and return a list of those
 		
-		Set<Patient> patients = new HashSet<Patient>();
+		Set<Patient> patients = new LinkedHashSet<Patient>();
 		
 		name.replace(", ", " ");
 		String[] names = name.split(" ");
@@ -230,6 +235,7 @@ public class HibernatePatientDAO implements PatientDAO {
 			criteria.add(genderMatch);
 		}
 		
+		criteria.addOrder(Order.asc("name.givenName"));
 		patients.addAll(criteria.list());
 		
 		return patients;

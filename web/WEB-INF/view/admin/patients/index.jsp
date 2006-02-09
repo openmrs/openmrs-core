@@ -32,6 +32,12 @@
 	
 </script>
 
+<style>
+	tr th#patientGender, tr th#patientAge, .patientGender, .patientAge {
+		text-align: center;
+	}
+</style>
+
 <h2><spring:message code="Patient.title"/></h2>
 
 <a href="${pageContext.request.contextPath}/admin/patients/addPatient.htm"><spring:message code="Patient.create"/></a><br/><br/>
@@ -57,11 +63,11 @@
 				 	<th><spring:message code="PatientName.givenName"/></th>
 				 	<th><spring:message code="PatientName.middleName"/></th>
 				 	<th><spring:message code="PatientName.familyName"/></th>
-				 	<th><spring:message code="Patient.gender"/></th>
+				 	<th id='patientAge'> <spring:message code="Patient.age"/> </th>
+				 	<th id='patientGender'> <spring:message code="Patient.gender"/> </th>
 				 	<th><spring:message code="Patient.tribe"/></th>
+				 	<th></th>
 				 	<th><spring:message code="Patient.birthdate"/></th>
-				 	<th><spring:message code="Patient.age"/></th>
-				 	<th><spring:message code="Patient.mothersName"/></th>
 				 </tr>
 			 </thead>
 			 <tbody id="patientTableBody">

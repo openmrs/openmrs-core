@@ -23,6 +23,11 @@ body {
 	 /* height: 100%; */
 }
 
+h1, h2, h3, h4, h5 {
+	margin-top: 5px;
+	margin-bottom: 7px;
+}
+
 #openmrs_msg { 
 	border: 1px dashed lightgrey;
 	padding: 2px 2px 2px 18px;
@@ -52,7 +57,7 @@ body {
 
 #banner {
 	text-align: left;
-	padding: 2px;
+	padding: 15px 2px 2px 2px;
 	margin: 0;
 	float: left;
 	border: 1px none white;
@@ -124,7 +129,7 @@ body {
 
 .box, .boxHeader {
 	border: 1px solid navy;
-	width: 700px;
+	width: 97%;
 	padding: 5px 2px 5px 2px;
 	text-align: left;
 	}
@@ -249,7 +254,7 @@ a span.additionalHit {
 	margin: 1px 0 1px 0;
 }
 #disabledZone {
-	margin-top: 17px;
+	margin-top: 1.3em
 }
 fieldset {
 	margin: 0px;

@@ -33,31 +33,43 @@ var getTribe	= function(p) { return p.tribe == null ? "" : p.tribe; };
 var getGender	= function(p) {
 		if (typeof p == 'string') return "";
 		
+		var td = document.createElement("td");
+		td.className = "patientGender";
 		var src = "/@WEBAPP.NAME@/images/";
 		if (p.gender.toUpperCase() == "F")
 			src += "female.gif";
 		else
 			src += "male.gif";
 		var img = document.createElement("img");
-		img.src = src;
-		return img;
+		td.innerHTML = "<img src='" + src + "'>";
+		return td;
+	};
+var getBirthdayEstimated = function(p) {
+		if (typeof p == 'string') return "";
+		if (p.birthdateEstimated)
+			return "&asymp;";
+		else
+			return "";
 	};
 var getBirthday	= function(p) { 
 		if (typeof p == 'string') return "";
 		str = getDateString(p.birthdate);
-		if (p.birthdateEstimated)
-			str = "&asymp;" + str;
 		return str;
 	};
 var getAge = function(p) { 
-	var age = p.age;
-	if (p.age == null) return '';
-	return age;
+		if (p == null || p.age == null) return '';
+		var td = document.createElement("td");
+		td.className = 'patientAge';
+		var age = p.age;
+		if (age < 1)
+			age = "<1";
+		td.innerHTML = age;
+		return td;
 }
 
 var getMother  = function(p) { return p.mothersName == null ? "" : p.mothersName;  };
 
-var customCellFunctions = [getNumber, getId, getGiven, getMiddle, getFamily, getGender, getTribe, getBirthday, getAge, getMother];
+var customCellFunctions = [getNumber, getId, getGiven, getMiddle, getFamily, getAge, getGender, getTribe, getBirthdayEstimated, getBirthday];
 
 function getProblemImage() {
 	var img = document.createElement("img");
@@ -69,4 +81,8 @@ function getProblemImage() {
 
 function customGetRowHeight() {
 	return 23;
+}
+
+function allowAutoListWithNumber() {
+	return true;
 }
