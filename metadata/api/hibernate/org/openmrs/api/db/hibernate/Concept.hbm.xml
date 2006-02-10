@@ -9,7 +9,7 @@
 
 		<id name="conceptId" type="java.lang.Integer"
 			column="concept_id">
-			<generator class="identity" />
+			<generator class="assigned" />
 		</id>
 
 		<property name="retired" type="java.lang.Boolean"

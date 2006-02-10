@@ -8,7 +8,7 @@
 	<class name="Tribe" table="tribe">
 
 		<id name="tribeId" type="int" column="tribe_id">
-			<generator class="identity" />
+			<generator class="native" />
 		</id>
 
 		<property name="retired" type="boolean" column="retired"

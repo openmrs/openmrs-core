@@ -362,7 +362,16 @@
 		</td>
 	</tr>
 </table>
-<input type="submit" value="<spring:message code="Concept.save"/>" /></form>
+<input type="submit" name="action" value="<spring:message code="Concept.save"/>" />
+
+<c:if test="${concept.conceptId != null}">
+	<openmrs:hasPrivilege privilege="Delete Concepts">
+		 &nbsp; &nbsp; &nbsp;
+		<input type="submit" name="action" value="<spring:message code="Concept.delete"/>" />
+	</openmrs:hasPrivilege>
+</c:if>
+
+</form>
 
 <div id="conceptSearchForm">
 	<div id="wrapper">

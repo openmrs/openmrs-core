@@ -14,7 +14,7 @@
         type="java.lang.Integer"
         column="report_id"
     >
-        <generator class="identity" />
+        <generator class="native" />
     </id>
 
     <property

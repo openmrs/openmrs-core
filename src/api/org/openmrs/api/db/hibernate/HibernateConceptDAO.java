@@ -1,5 +1,6 @@
 package org.openmrs.api.db.hibernate;
 
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -58,8 +59,7 @@ public class HibernateConceptDAO implements
 		Session session = HibernateUtil.currentSession();
 
 		modifyCollections(concept);
-		concept.setCreator(context.getAuthenticatedUser());
-		concept.setDateCreated(new Date());
+
 		try {
 			HibernateUtil.beginTransaction();
 			session.save(concept);
@@ -82,6 +82,11 @@ public class HibernateConceptDAO implements
 		
 		try {
 			HibernateUtil.beginTransaction();
+			
+			session.createQuery("delete from ConceptWord where concept_id = :c")
+					.setInteger("c", concept.getConceptId())
+					.executeUpdate();
+			
 			session.delete(concept);
 			HibernateUtil.commitTransaction();
 		}
@@ -156,8 +161,6 @@ public class HibernateConceptDAO implements
 			try {
 				HibernateUtil.beginTransaction();
 				modifyCollections(concept);
-				concept.setChangedBy(context.getAuthenticatedUser());
-				concept.setDateChanged(new Date());
 				session.merge(concept);
 				//session.saveOrUpdate(concept);
 				HibernateUtil.commitTransaction();
@@ -174,6 +177,16 @@ public class HibernateConceptDAO implements
 		
 		User authUser = context.getAuthenticatedUser();
 		Date timestamp = new Date();
+		
+		if (c.getCreator() == null) {
+			c.setCreator(authUser);
+			c.setDateCreated(timestamp);
+		}
+		if (c.getChangedBy() == null) {
+			c.setChangedBy(authUser);
+			c.setDateChanged(timestamp);
+		}
+		
 		if (c.getNames() != null) {
 			for (ConceptName cn : c.getNames()) {
 				if (cn.getCreator() == null ) {
@@ -502,6 +515,18 @@ public class HibernateConceptDAO implements
 			cp.setDateCreated(cp.getEncounter().getDateCreated());
 		
 		session.save(cp);
+	}
+	
+	public Integer getNextAvailableId() {
+		Session session = HibernateUtil.currentSession();
+		
+		String sql = "select min(concept_id+1) as concept_id from concept where (concept_id+1) not in (select concept_id from concept)";
+		
+		Query query = session.createSQLQuery(sql);
+		
+		BigInteger big = (BigInteger)query.uniqueResult();
+		
+		return new Integer(big.intValue());
 	}
 	
 }

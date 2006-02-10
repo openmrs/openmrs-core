@@ -23,6 +23,7 @@ import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSynonym;
+import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
@@ -32,6 +33,7 @@ import org.openmrs.web.propertyeditor.ConceptDatatypeEditor;
 import org.openmrs.web.propertyeditor.ConceptSetsEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
@@ -90,82 +92,87 @@ public class ConceptFormController extends SimpleFormController {
 		
 		if (context != null && context.isAuthenticated()) {
 			
-			ConceptService cs = context.getConceptService();
-
-			// ==== Concept Synonyms ====
-				// the attribute *must* be named differently than the property, otherwise
-				//   spring will modify the property as a text array
-				log.debug("newSynonyms: " + request.getParameter("newSynonyms"));
-				String[] tempSyns = request.getParameter("newSynonyms").split(",");
-				log.debug("tempSyns: ");
-				for (String s : tempSyns)
-					log.debug(s);
-				Collection<ConceptSynonym> originalSyns = concept.getSynonyms();
-				Set<ConceptSynonym> parameterSyns = new HashSet<ConceptSynonym>();
-				
-				//set up parameter Synonym Set for easier add/delete functions
-				// and removal of duplicates
-				for (String syn : tempSyns) {
-					syn = syn.trim();
-					if (!syn.equals(""))
-						parameterSyns.add(new ConceptSynonym(concept, syn.toUpperCase(), locale));
-				}
-				
-				log.debug("initial originalSyns: ");
-				for (ConceptSynonym s : originalSyns)
-					log.debug(s);
-				
-				// Union the originalSyns and parameterSyns to get the 'clean' synonyms
-				//   remove synonym from originalSynonym if 'clean' (already in db)
-				Set<ConceptSynonym> originalSynsCopy = new HashSet<ConceptSynonym>();
-				originalSynsCopy.addAll(originalSyns);
-				for (ConceptSynonym o : originalSynsCopy) {
-					if (o.getLocale().equals(locale.getLanguage()) &&
-						!parameterSyns.contains(o)) {  // .contains() is only usable because we overrode .equals()
-						originalSyns.remove(o);
+			MessageSourceAccessor msa = getMessageSourceAccessor();
+			String action = request.getParameter("action");
+			
+			if (!action.equals(msa.getMessage("Concept.delete"))) {
+				ConceptService cs = context.getConceptService();
+	
+				// ==== Concept Synonyms ====
+					// the attribute *must* be named differently than the property, otherwise
+					//   spring will modify the property as a text array
+					log.debug("newSynonyms: " + request.getParameter("newSynonyms"));
+					String[] tempSyns = request.getParameter("newSynonyms").split(",");
+					log.debug("tempSyns: ");
+					for (String s : tempSyns)
+						log.debug(s);
+					Collection<ConceptSynonym> originalSyns = concept.getSynonyms();
+					Set<ConceptSynonym> parameterSyns = new HashSet<ConceptSynonym>();
+					
+					//set up parameter Synonym Set for easier add/delete functions
+					// and removal of duplicates
+					for (String syn : tempSyns) {
+						syn = syn.trim();
+						if (!syn.equals(""))
+							parameterSyns.add(new ConceptSynonym(concept, syn.toUpperCase(), locale));
 					}
-				}
-				
-				// add all new syns from parameter set
-				for (ConceptSynonym p : parameterSyns) {
-					if (!originalSyns.contains(p)) {  // .contains() is only usable because we overrode .equals()
-						originalSyns.add(p);
+					
+					log.debug("initial originalSyns: ");
+					for (ConceptSynonym s : originalSyns)
+						log.debug(s);
+					
+					// Union the originalSyns and parameterSyns to get the 'clean' synonyms
+					//   remove synonym from originalSynonym if 'clean' (already in db)
+					Set<ConceptSynonym> originalSynsCopy = new HashSet<ConceptSynonym>();
+					originalSynsCopy.addAll(originalSyns);
+					for (ConceptSynonym o : originalSynsCopy) {
+						if (o.getLocale().equals(locale.getLanguage()) &&
+							!parameterSyns.contains(o)) {  // .contains() is only usable because we overrode .equals()
+							originalSyns.remove(o);
+						}
 					}
+					
+					// add all new syns from parameter set
+					for (ConceptSynonym p : parameterSyns) {
+						if (!originalSyns.contains(p)) {  // .contains() is only usable because we overrode .equals()
+							originalSyns.add(p);
+						}
+					}
+					
+					log.debug("evaluated parameterSyns: ");
+					for (ConceptSynonym s : parameterSyns)
+						log.debug(s);
+					
+					log.debug("evaluated originalSyns: ");
+					for (ConceptSynonym s : originalSyns)
+						log.debug(s);
+	
+					concept.setSynonyms(originalSyns);
+					
+				// ====zero out conceptSets====
+					String conceptSets = request.getParameter("conceptSets");
+					if (conceptSets == null)
+						concept.setConceptSets(null); 
+					
+				// ====set concept_name properties to the correct/current locale
+					String conceptName = request.getParameter("name").toUpperCase();
+					if (conceptName.length() < 1)
+						errors.rejectValue("name", "error.name");
+					String shortName = request.getParameter("shortName");
+					String description = request.getParameter("description");
+					if (conceptName.length() < 1)
+						errors.rejectValue("description", "error.description");
+					ConceptName cn = concept.getName(locale, true);
+					if (cn != null) {
+						cn.setName(conceptName);
+						cn.setShortName(shortName);
+						cn.setDescription(description);
+					}
+					else {
+						//TODO add description
+						concept.addName(new ConceptName(conceptName, shortName, description, locale));
 				}
-				
-				log.debug("evaluated parameterSyns: ");
-				for (ConceptSynonym s : parameterSyns)
-					log.debug(s);
-				
-				log.debug("evaluated originalSyns: ");
-				for (ConceptSynonym s : originalSyns)
-					log.debug(s);
-
-				concept.setSynonyms(originalSyns);
-				
-			// ====zero out conceptSets====
-				String conceptSets = request.getParameter("conceptSets");
-				if (conceptSets == null)
-					concept.setConceptSets(null); 
-				
-			// ====set concept_name properties to the correct/current locale
-				String conceptName = request.getParameter("name").toUpperCase();
-				if (conceptName.length() < 1)
-					errors.rejectValue("name", "error.name");
-				String shortName = request.getParameter("shortName");
-				String description = request.getParameter("description");
-				if (conceptName.length() < 1)
-					errors.rejectValue("description", "error.description");
-				ConceptName cn = concept.getName(locale, true);
-				if (cn != null) {
-					cn.setName(conceptName);
-					cn.setShortName(shortName);
-					cn.setDescription(description);
-				}
-				else {
-					//TODO add description
-					concept.addName(new ConceptName(conceptName, shortName, description, locale));
-				}
+			}
 		}
 		else {
 			errors.reject("auth.invalid");
@@ -189,15 +196,50 @@ public class ConceptFormController extends SimpleFormController {
 				
 		if (context != null && context.isAuthenticated()) {
 			
+			MessageSourceAccessor msa = getMessageSourceAccessor();
+			String action = request.getParameter("action");
+			ConceptService cs = context.getConceptService();
 			
-			boolean isNew = (concept.getConceptId() == null);
+			if (action.equals(msa.getMessage("Concept.delete"))) {
+				try {
+					cs.deleteConcept(concept);
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Concept.deleted");
+					return new ModelAndView(new RedirectView("index.htm"));
+				}
+				catch (APIException e) {
+					log.error(e);
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.cannot.delete");
+					return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + concept.getConceptId().toString()));
+				}
+			}
+			else {
 			
-			context.getConceptService().updateConcept(concept);
-			
-			String view = getSuccessView();
-						
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Concept.saved");
-			return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + concept.getConceptId().toString()));
+				boolean isNew = false;
+				String view = getSuccessView();
+				try {
+					if (concept.getConceptId() == null) {
+						isNew = true;
+						Integer newId = cs.getNextAvailableId();
+						log.debug("new Id: " + newId);
+						concept.setConceptId(newId);
+						log.debug("concept id: " + concept.getConceptId());
+						cs.createConcept(concept);
+					}
+					else {
+						cs.updateConcept(concept);
+					}
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Concept.saved");
+				}
+				catch (APIException e) {
+					log.error(e);
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.cannot.save");
+					if (isNew) {
+						return new ModelAndView(new RedirectView(getSuccessView()));
+					}
+				}
+				
+				return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + concept.getConceptId().toString()));
+			}
 		}
 		
 		return new ModelAndView(new RedirectView(getFormView()));

@@ -796,11 +796,7 @@ public class HibernateAdministrationDAO implements
 		Session session = HibernateUtil.currentSession();
 		
 		// remove all old words
-		HibernateUtil.beginTransaction();
-			session.createQuery("delete from ConceptWord where concept_id = :c")
-				.setInteger("c", concept.getConceptId())
-				.executeUpdate();
-		HibernateUtil.commitTransaction();
+		deleteConceptWord(concept);
 		
 		// add all new words
 		Collection<ConceptWord> words = ConceptWord.makeConceptWords(concept);
@@ -826,6 +822,17 @@ public class HibernateAdministrationDAO implements
 			log.error(e);
 			throw new DAOException(e);
 		}
+	}
+
+	public void deleteConceptWord(Concept concept) throws DAOException {
+		
+		Session session = HibernateUtil.currentSession();
+		
+		HibernateUtil.beginTransaction();
+			session.createQuery("delete from ConceptWord where concept_id = :c")
+				.setInteger("c", concept.getConceptId())
+				.executeUpdate();
+		HibernateUtil.commitTransaction();
 	}
 	
 	public void updateConceptWords() throws DAOException {

@@ -9,7 +9,7 @@
 
 		<id name="patientNameId" type="java.lang.Integer"
 			column="patient_name_id" unsaved-value="0">
-			<generator class="identity" />
+			<generator class="native" />
 		</id>
 
 		<property name="preferred" type="boolean" column="preferred" not-null="true"/>

@@ -9,7 +9,7 @@
 
 		<id name="patientAddressId" type="int"
 			column="patient_address_id" unsaved-value="none">
-			<generator class="identity" />
+			<generator class="native" />
 		</id>
 
 		<many-to-one name="patient" class="Patient" insert="false" update="false">

@@ -22,7 +22,7 @@
         column="concept_class_id"
         unsaved-value="0"
     >
-        <generator class="identity" />
+        <generator class="native" />
     </id>
 
     <property

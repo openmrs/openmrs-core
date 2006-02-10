@@ -8,7 +8,7 @@
 	<class name="FormField" table="form_field">
 
 		<id name="formFieldId" type="int" column="form_field_id" unsaved-value="0">
-			<generator class="identity" />
+			<generator class="native" />
 		</id>
 
 		<many-to-one name="parent" class="FormField">

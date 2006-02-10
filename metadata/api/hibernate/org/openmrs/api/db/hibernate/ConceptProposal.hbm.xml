@@ -9,7 +9,7 @@
 
 		<id name="conceptProposalId" type="java.lang.Integer"
 			column="concept_proposal_id">
-			<generator class="identity" />
+			<generator class="native" />
 		</id>
 
 		<property name="originalText" type="java.lang.String" length="255" not-null="true" column="original_text" />

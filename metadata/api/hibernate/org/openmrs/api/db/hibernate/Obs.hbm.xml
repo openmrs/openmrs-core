@@ -8,7 +8,7 @@
 	<class name="Obs" table="obs">
 
 		<id name="obsId" type="int" column="obs_id">
-			<generator class="identity" />
+			<generator class="native" />
 		</id>
 
 		<property name="obsDatetime" type="java.util.Date"

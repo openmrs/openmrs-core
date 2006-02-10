@@ -8,7 +8,7 @@
 	<class name="Field" table="field">
 
 		<id name="fieldId" type="int" column="field_id" unsaved-value="0">
-			<generator class="identity" />
+			<generator class="native" />
 		</id>
 
 		<property name="name" type="java.lang.String"

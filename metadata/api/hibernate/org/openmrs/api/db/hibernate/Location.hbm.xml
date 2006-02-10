@@ -21,7 +21,7 @@
         type="int"
         column="location_id"
     >
-        <generator class="identity" />
+        <generator class="native" />
     </id>
 
     <property

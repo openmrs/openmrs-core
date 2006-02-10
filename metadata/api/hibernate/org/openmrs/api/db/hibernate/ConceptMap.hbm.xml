@@ -9,7 +9,7 @@
 
 		<id name="conceptMapId" type="java.lang.Integer"
 			column="concept_map_id" unsaved-value="0">
-			<generator class="identity" />
+			<generator class="native" />
 		</id>
 
 

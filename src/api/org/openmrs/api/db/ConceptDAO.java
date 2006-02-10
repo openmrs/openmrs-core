@@ -49,6 +49,15 @@ public interface ConceptDAO {
 	public void updateConcept(Concept concept);
 	
 	/**
+	 * Delete the given concept
+	 * 
+	 * For super users only.  If dereferencing concepts, use <code>voidConcept(org.openmrs.Concept)</code>
+	 * 
+	 * @param Concept to be deleted
+	 */
+	public void deleteConcept(Concept concept);
+	
+	/**
 	 * Voiding a concept essentially removes it from circulation
 	 * @param Concept concept
 	 * @param String reason
@@ -147,4 +156,6 @@ public interface ConceptDAO {
 	public List<Concept> findProposedConcepts(String text);
 	
 	public void proposeConcept(ConceptProposal cp);
+	
+	public Integer getNextAvailableId();
 }

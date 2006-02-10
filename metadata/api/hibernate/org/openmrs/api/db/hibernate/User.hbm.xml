@@ -9,7 +9,7 @@
 
 		<id name="userId" type="int" column="user_id"
 			unsaved-value="0">
-			<generator class="identity" />
+			<generator class="native" />
 		</id>
 
 		<property name="username" type="java.lang.String"

@@ -9,7 +9,7 @@
 
 		<id name="encounterId" type="int" column="encounter_id"
 			unsaved-value="0">
-			<generator class="identity" />
+			<generator class="native" />
 		</id>
 
 		<property name="encounterDatetime" type="java.util.Date"
