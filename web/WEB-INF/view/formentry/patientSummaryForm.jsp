@@ -19,11 +19,6 @@
 		)
 	</b>
 	<a href='<%= request.getContextPath() %>/admin/patients/newPatient.form?pId=${patient.patientId}' style='float:right'><spring:message code="Patient.edit"/></a>
-	<div id="otherInfo" class="sideNote" style="width: 200px; float: right; clear: right">
-		
-		
-		
-	</div>
 	<table>
 		<tr>
 			<td><spring:message code="Patient.gender"/></td>
@@ -36,30 +31,35 @@
 				</c:if>
 			</td>
 		</tr>
-		<c:if test="${patient.names.size > 1}">
-			<tr>
-				<td valign="top"><spring:message code="Patient.names"/></td>
-				<td>
-					<c:forEach var="name" items="${patient.names}" varStatus="status">
-						<c:if test="${status.index != 0}"><b>${name.givenName} ${name.middleName} ${name.familyName}</b><br/></c:if>
-					</c:forEach>
-				</td>
-			</tr>
-		</c:if>
-		<c:if test="${patient.identifiers.getSize > 1}">
-			<tr>
-				<td valign="top"><spring:message code="Patient.other.identifiers"/></td>
-				<td>
-					<c:forEach var="identifier" items="${patient.identifiers}" varStatus="status">
-						<c:if test="${status.index != 0}"><b>${identifier.identifier}</b><br/></c:if>
-					</c:forEach>
-				</td>
-			</tr>
-		</c:if>
-		<c:if test="${patient.addresses.getSize > 0}">
-			<tr>
-				<td valign="top"><spring:message code="Patient.addresses"/></td>
-				<td>
+		<c:forEach var="name" items="${patient.names}" varStatus="status">
+			<c:if test="${status.index == 0}">
+				<tr>
+					<td valign="top"><spring:message code="Patient.names"/></td>
+					<td>
+						<c:forEach var="name" items="${patient.names}" varStatus="status">
+							<c:if test="${status.index != 0}"><b>${name.givenName} ${name.middleName} ${name.familyName}</b><br/></c:if>
+						</c:forEach>
+					</td>
+				</tr>
+			</c:if>
+		</c:forEach>
+		<c:forEach var="name" items="${patient.identifiers}" varStatus="status">
+			<c:if test="${status.index == 0}">
+				<tr>
+					<td valign="top"><spring:message code="Patient.other.identifiers"/></td>
+					<td>
+						<c:forEach var="identifier" items="${patient.identifiers}" varStatus="status">
+							<c:if test="${status.index != 0}"><b>${identifier.identifier}</b><br/></c:if>
+						</c:forEach>
+					</td>
+				</tr>
+			</c:if>
+		</c:forEach>
+		<c:forEach var="name" items="${patient.addresses}" varStatus="status">
+			<c:if test="${status.index == 0}">
+				<tr>
+					<td valign="top"><spring:message code="Patient.other.addresses"/></td>
+					<td>
 					<c:forEach var="address" items="${patient.addresses}" varStatus="status">
 						<b>
 							${address.address1} <br/>
@@ -69,7 +69,8 @@
 					</c:forEach>
 				</td>
 			</tr>
-		</c:if>
+			</c:if>
+		</c:forEach>
 		<tr>
 			<td valign="top"><spring:message code="Patient.tribe"/></td>
 			<td id="tribe"><b>${patient.tribe.name}</b></td>
