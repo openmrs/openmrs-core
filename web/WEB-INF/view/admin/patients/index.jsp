@@ -58,8 +58,8 @@
 			<table id="patientTable" cellspacing="0" cellpadding="1">
 			 <thead>
 				 <tr>
-				 	<th> </th>
-				 	<th><spring:message code="Patient.identifier"/></th>
+				 	<th class="searchIndex"> </th>
+				 	<th class="patientIdentifier"><spring:message code="Patient.identifier"/></th>
 				 	<th><spring:message code="PatientName.givenName"/></th>
 				 	<th><spring:message code="PatientName.middleName"/></th>
 				 	<th><spring:message code="PatientName.familyName"/></th>

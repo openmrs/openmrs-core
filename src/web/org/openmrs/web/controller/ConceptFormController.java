@@ -95,11 +95,11 @@ public class ConceptFormController extends SimpleFormController {
 			// ==== Concept Synonyms ====
 				// the attribute *must* be named differently than the property, otherwise
 				//   spring will modify the property as a text array
-				log.error("newSynonyms: " + request.getParameter("newSynonyms"));
+				log.debug("newSynonyms: " + request.getParameter("newSynonyms"));
 				String[] tempSyns = request.getParameter("newSynonyms").split(",");
-				log.error("tempSyns: ");
+				log.debug("tempSyns: ");
 				for (String s : tempSyns)
-					log.error(s);
+					log.debug(s);
 				Collection<ConceptSynonym> originalSyns = concept.getSynonyms();
 				Set<ConceptSynonym> parameterSyns = new HashSet<ConceptSynonym>();
 				
@@ -111,9 +111,9 @@ public class ConceptFormController extends SimpleFormController {
 						parameterSyns.add(new ConceptSynonym(concept, syn.toUpperCase(), locale));
 				}
 				
-				log.error("initial originalSyns: ");
+				log.debug("initial originalSyns: ");
 				for (ConceptSynonym s : originalSyns)
-					log.error(s);
+					log.debug(s);
 				
 				// Union the originalSyns and parameterSyns to get the 'clean' synonyms
 				//   remove synonym from originalSynonym if 'clean' (already in db)
@@ -133,13 +133,13 @@ public class ConceptFormController extends SimpleFormController {
 					}
 				}
 				
-				log.error("evaluated parameterSyns: ");
+				log.debug("evaluated parameterSyns: ");
 				for (ConceptSynonym s : parameterSyns)
-					log.error(s);
+					log.debug(s);
 				
-				log.error("evaluated originalSyns: ");
+				log.debug("evaluated originalSyns: ");
 				for (ConceptSynonym s : originalSyns)
-					log.error(s);
+					log.debug(s);
 
 				concept.setSynonyms(originalSyns);
 				

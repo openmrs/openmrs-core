@@ -1,5 +1,6 @@
 package org.openmrs.api;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -35,8 +36,6 @@ public class PatientService {
 	}
 	
 	private PatientDAO getPatientDAO() {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		return daoContext.getPatientDAO();
 	}
 	
@@ -60,6 +59,8 @@ public class PatientService {
 	 * @throws APIException
 	 */
 	public Patient getPatient(Integer patientId) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		return getPatientDAO().getPatient(patientId);
 	}
 
@@ -83,6 +84,8 @@ public class PatientService {
 	 * @throws APIException
 	 */
 	public Set<Patient> getPatientsByIdentifier(String identifier, boolean includeVoided) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		return getPatientDAO().getPatientsByIdentifier(identifier, includeVoided);
 	}
 	
@@ -97,11 +100,15 @@ public class PatientService {
 	 * @throws APIException
 	 */
 	public Set<Patient> getPatientsByIdentifierPattern(String identifier, boolean includeVoided) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		return getPatientDAO().getPatientsByIdentifierPattern(identifier, includeVoided);
 	}
 	
 	
 	public Set<Patient> getPatientsByName(String name) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		return getPatientsByName(name, false);
 	}
 	/**
@@ -112,11 +119,15 @@ public class PatientService {
 	 * @throws APIException
 	 */
 	public Set<Patient> getPatientsByName(String name, boolean includeVoided) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		return getPatientDAO().getPatientsByName(name, includeVoided);
 	}
 	
 	
 	public Set<Patient> getSimilarPatients(String name, Integer birthyear, String gender) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		return getPatientDAO().getSimilarPatients(name, birthyear, gender);
 	}
 	
@@ -166,6 +177,9 @@ public class PatientService {
 	 * @throws APIException
 	 */
 	public List<PatientIdentifierType> getPatientIdentifierTypes() throws APIException {
+		if (!context.isAuthenticated())
+			throw new APIAuthenticationException("Authentication required");
+		
 		return getPatientDAO().getPatientIdentifierTypes();
 	}
 
@@ -177,6 +191,9 @@ public class PatientService {
 	 * @throws APIException
 	 */
 	public PatientIdentifierType getPatientIdentifierType(Integer patientIdentifierTypeId) throws APIException {
+		if (!context.isAuthenticated())
+			throw new APIAuthenticationException("Authentication required");
+		
 		return getPatientDAO().getPatientIdentifierType(patientIdentifierTypeId);
 	}
 
@@ -188,6 +205,9 @@ public class PatientService {
 	 * @throws APIException
 	 */
 	public Tribe getTribe(Integer tribeId) throws APIException {
+		if (!context.isAuthenticated())
+			throw new APIAuthenticationException("Authentication required");
+		
 		return getPatientDAO().getTribe(tribeId);
 	}
 	
@@ -198,6 +218,9 @@ public class PatientService {
 	 * @throws APIException
 	 */
 	public List<Tribe> getTribes() throws APIException {
+		if (!context.isAuthenticated())
+			throw new APIAuthenticationException("Authentication required");
+		
 		return getPatientDAO().getTribes();
 	}
 	
@@ -208,6 +231,9 @@ public class PatientService {
 	 * @throws APIException
 	 */
 	public List<Location> getLocations() throws APIException {
+		if (!context.isAuthenticated())
+			throw new APIAuthenticationException("Authentication required");
+		
 		return getPatientDAO().getLocations();
 	}
 
@@ -219,10 +245,16 @@ public class PatientService {
 	 * @throws APIException
 	 */
 	public Location getLocation(Integer locationId) throws APIException {
+		// TODO use 'Authenticated User' option
+		if (!context.isAuthenticated())
+			throw new APIAuthenticationException("Authentication required");
+		
 		return getPatientDAO().getLocation(locationId);
 	}
 	
 	public List<Patient> findPatients(String query, boolean includeVoided) {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		
 		List<Patient> patients = new Vector<Patient>();
 		PatientDAO dao = getPatientDAO();

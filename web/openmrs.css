@@ -82,7 +82,7 @@ h1, h2, h3, h4, h5 {
 #footer {
 	clear: both;
 	padding: 1px 2px 1px 2px;
-	color: gray;
+	/*color: gray;*/
 	font-size: .7em;
 	height: 14px;
 	border-top: 1px solid lightgrey;
@@ -124,9 +124,12 @@ h1, h2, h3, h4, h5 {
 	text-align: left;
 }
 
-#patientSummary { font-size: .9em; }
-#patientSummary { width: 700px; }
+#patientSummary { font-size: 1.1em; }
+#patientSummary { /*width: 700px;*/ }
 
+.patientIdentifier {
+	width: 7em;
+}
 .box, .boxHeader {
 	border: 1px solid navy;
 	width: 97%;
@@ -208,6 +211,7 @@ a:visited {
 .searchIndex, .searchIndexHighlight {
 	text-align: right;
 	vertical-align: top;
+	width: 1.8em;
 }
 .searchIndexHighlight, .searchHighlight {
 	background-color: 	#F0E68C;
@@ -247,11 +251,20 @@ a span.additionalHit {
 	background-color: whitesmoke;
 }
 #searchInfoBar {
-	font-size: .7em;
+	font-size: 1em;
+	text-align: right;
 	line-height: .9em;
-	color: gray;
+	height: 1em;
+	color: black;
 	padding: 2px 0 2px 0;
 	margin: 1px 0 1px 0;
+	font-style: italic;
+}
+#searchPagingBar {
+	font-size: 1em;
+	padding: 2px 0 2px 0;
+	width: 100%;
+	text-align: center;
 }
 #disabledZone {
 	margin-top: 1.3em
@@ -297,6 +310,6 @@ fieldset {
 }
 
 .evenRow {
-	background-color: #FBFBFB;
+	background-color: whitesmoke;
 }
 	

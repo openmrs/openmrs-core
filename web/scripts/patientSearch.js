@@ -11,6 +11,7 @@ var getId		= function(p) {
 			return td;
 		}
 		div = document.createElement("div");
+		div.className = "patientIdentifier";
 		var obj = document.createElement("a");
 		//obj.href = "#" + searchIndex;
 		//obj.className = "searchHit";

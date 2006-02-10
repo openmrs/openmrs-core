@@ -71,7 +71,7 @@ function resetForm() {
 	firstItemDisplayed = 1;
 	numItemsDisplayed = 0;
 	window.onkeypress = hotkey;
-	clearInformationBar();
+	clearPagingBars();
 	allowAutoListWithNumber = false;
 	debugBox = $("debugBox");
 	if (debugBox) debugBox.innerHTML = "";
@@ -178,7 +178,7 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay) {
 		}
 	}
 
-	else if ((key > 48 && key <= 127) ||
+	else if ((key >= 48 && key <= 127) ||
 		key == 8 || key == 32 || key == 46 || key == 1) {
 			//	 (if alphanumeric key entered or 
 			//   backspace key pressed or
@@ -189,7 +189,7 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay) {
 				// If there isn't a number in the search (force usage of enter key) and
 				hideHighlight();
 				if (text.length > 1) {
-					clearInformationBar();
+					clearPagingBars();
 					if (debugBox) debugBox.innerHTML += '<br> setting preFindObjects timeout for other key: ' + key;
 					keyCode = key;	//save keyCode for later testing in fillTable
 					searchTimeout = setTimeout("preFindObjects(text)", delay);
@@ -365,7 +365,7 @@ function fillTable(objects, cells) {
     
     DWRUtil.addRows(objectHitsTableBody, objs, funcs, customRowOptions);
     
-   	setTimeout("updateInformationBar()", 0);
+   	setTimeout("updatePagingBars()", 0);
     
     if (keyCode == ENTERKEY) {
     	// showHighlighting must be called here to assure it occurs after 
@@ -407,14 +407,25 @@ function showNext() {
 
 function updatePagingNumbers() {
 
-	//create/find information bar
+	//create/find information bars
 	var infoBar = document.getElementById("searchInfoBar");
+	var pagingBar = document.getElementById("searchPagingBar");
 	if (infoBar == null) {
 		infoBar = document.createElement('div');
 		infoBar.id = "searchInfoBar";
 		infoBar.innerHTML = "&nbsp;";
 		var table = objectHitsTableBody.parentNode;
 		table.parentNode.insertBefore(infoBar, table);
+	}
+	if (pagingBar == null) {
+		pagingBar = document.createElement('div');
+		pagingBar.id = "searchPagingBar";
+		pagingBar.innerHTML = "&nbsp;";
+		var table = objectHitsTableBody.parentNode;
+		if (table.nextSibling == null)
+			table.parentNode.appendChild(pagingBar);
+		else
+			table.parentNode.insertBefore(pagingBar, table.nextSibling);
 	}
 
 	// get top position of body element
@@ -432,12 +443,13 @@ function updatePagingNumbers() {
 	numItemsDisplayed=Math.floor(remainder/(height + 6))-2;
 }
 
-function updateInformationBar() {
+function updatePagingBars() {
 	
 	//TODO optional: create another dwr method to just get total # of hits
 	//     so that we don't need to return all 200 hits and only show #31-#45
 	
 	var infoBar = document.getElementById("searchInfoBar");
+	var pagingBar = document.getElementById("searchPagingBar");
 	
 	var total = allObjectsFound.length;
 	var lastItemDisplayed = firstItemDisplayed + numItemsDisplayed;
@@ -445,9 +457,11 @@ function updateInformationBar() {
 		lastItemDisplayed = total;
 	}
 	
-	infoBar.innerHTML = " &nbsp; Results for '" + lastPhraseSearched + "'. &nbsp;";
+	infoBar.innerHTML = ' &nbsp; Results for "' + lastPhraseSearched + '". &nbsp;';
 	
-	infoBar.innerHTML += " Viewing " + firstItemDisplayed + "-" + lastItemDisplayed + " of " + total + " &nbsp; ";
+	infoBar.innerHTML += " Viewing <b>" + firstItemDisplayed + "-" + lastItemDisplayed + "</b> of <b>" + total + "</b> &nbsp; ";
+	
+	pagingBar.innerHTML = "&nbsp;";
 
 	if (lastItemDisplayed != total || firstItemDisplayed > 1) {
 		// if need to show previous or next links	
@@ -464,10 +478,12 @@ function updateInformationBar() {
 			// create previous text node
 			prev = document.createTextNode("Previous Results");
 		}
-		infoBar.appendChild(prev);
+		//infoBar.appendChild(prev.cloneNode(true));
+		pagingBar.appendChild(prev);
 		var s = document.createElement("span");
 		s.innerHTML = " | ";
-		infoBar.appendChild(s);	
+		//infoBar.appendChild(s.cloneNode(true));	
+		pagingBar.appendChild(s);
 	
 		var next;
 		if (lastItemDisplayed < total) {
@@ -481,14 +497,20 @@ function updateInformationBar() {
 		else {
 			next = document.createTextNode("Next Results");
 		}
-		infoBar.appendChild(next);
+		//infoBar.appendChild(next.cloneNode(true));
+		pagingBar.appendChild(next);
 	}
 }
 
-function clearInformationBar() {
+function clearPagingBars() {
 	var infoBar = document.getElementById("searchInfoBar");
-	if (infoBar != null)
+	var pagingBar = document.getElementById("searchPagingBar");
+	if (infoBar != null) {
 		infoBar.innerHTML = "&nbsp;";
+	}
+	if (pagingBar != null) {
+		pagingBar.innerHTML = "&nbsp;";
+	}
 }
 
 function getStyle(obj,styleProp) {

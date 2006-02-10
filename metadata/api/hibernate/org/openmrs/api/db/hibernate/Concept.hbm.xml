@@ -50,7 +50,7 @@
 		</set>
 
 		<set name="answers" lazy="true" cascade="all" 
-				table="concept_answer" order-by="concept_answer_id asc">
+				table="concept_answer" order-by="concept_answer_id asc" access="field">
 			<key column="concept_id" not-null="true" />
 			<composite-element class="ConceptAnswer">
 				<parent name="concept"/>

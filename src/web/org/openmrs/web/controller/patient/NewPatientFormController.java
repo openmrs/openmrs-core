@@ -22,8 +22,9 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientName;
 import org.openmrs.Tribe;
-import org.openmrs.api.PatientService;
+import org.openmrs.api.FormEntryService;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.Helper;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.dwr.PatientListItem;
 import org.openmrs.web.propertyeditor.TribeEditor;
@@ -77,8 +78,11 @@ public class NewPatientFormController extends SimpleFormController {
 				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "identifier", "error.null");
 			}
 			else {
-				//PatientIdentifierType pi = context.getPatientService().getPatientIdentifierType(pli.);
-				//if ()
+				Integer type = Integer.valueOf(request.getParameter("identifierType"));
+				PatientIdentifierType pit = context.getFormEntryService().getPatientIdentifierType(type);
+				if (pit.hasCheckDigit() && !Helper.isValidCheckDigit(pli.getIdentifier())) {
+					errors.rejectValue("identifier", "error.checkdigits");
+				}
 			}
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "gender", "error.null");
 		}
@@ -98,7 +102,7 @@ public class NewPatientFormController extends SimpleFormController {
 		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		if (context != null && context.isAuthenticated()) {
-			PatientService ps = context.getPatientService();
+			FormEntryService ps = context.getFormEntryService();
 			PatientListItem p = (PatientListItem)obj;
 			String view = getSuccessView();
 			
@@ -178,7 +182,7 @@ public class NewPatientFormController extends SimpleFormController {
 		Patient p = null;
 		
 		if (context != null && context.isAuthenticated()) {
-			PatientService ps = context.getPatientService();
+			FormEntryService ps = context.getFormEntryService();
 			String patientId = request.getParameter("pId");
 	    	if (patientId != null && !patientId.equals("")) {
 	    		p = ps.getPatient(Integer.valueOf(patientId));
@@ -214,7 +218,7 @@ public class NewPatientFormController extends SimpleFormController {
 		Patient patient = null;
 		
 		if (context != null && context.isAuthenticated()) {
-			PatientService ps = context.getPatientService();
+			FormEntryService ps = context.getFormEntryService();
 			String patientId = request.getParameter("pId");
 	    	if (patientId != null && !patientId.equals("")) {
 	    		patient = ps.getPatient(Integer.valueOf(patientId));

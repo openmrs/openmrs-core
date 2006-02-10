@@ -1,7 +1,6 @@
 package org.openmrs.api.db.hibernate;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -95,7 +94,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		Query query;
 		
 		String sql = "select patient from Patient patient where patient.identifiers.identifier = :id";
-		String order = " order by patient.name.givenName asc";
+		String order = " order by patient.name.givenName asc, patient.name.middleName asc, patient.name.familyName asc";
 		
 		if (includeVoided) {
 			query = session.createQuery(sql + order);
@@ -187,6 +186,8 @@ public class HibernatePatientDAO implements PatientDAO {
 		}
 
 		criteria.addOrder(Order.asc("name.givenName"));
+		criteria.addOrder(Order.asc("name.middleName"));
+		criteria.addOrder(Order.asc("name.familyName"));
 		patients.addAll(criteria.list());
 		
 		return patients;
@@ -236,6 +237,8 @@ public class HibernatePatientDAO implements PatientDAO {
 		}
 		
 		criteria.addOrder(Order.asc("name.givenName"));
+		criteria.addOrder(Order.asc("name.middleName"));
+		criteria.addOrder(Order.asc("name.familyName"));
 		patients.addAll(criteria.list());
 		
 		return patients;

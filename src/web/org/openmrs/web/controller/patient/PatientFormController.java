@@ -20,7 +20,7 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientName;
 import org.openmrs.Tribe;
-import org.openmrs.api.PatientService;
+import org.openmrs.api.FormEntryService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.propertyeditor.LocationEditor;
@@ -73,7 +73,7 @@ public class PatientFormController extends SimpleFormController {
 		
 		if (context != null && context.isAuthenticated()) {
 			
-			PatientService ps = context.getPatientService();
+			FormEntryService ps = context.getFormEntryService();
 			Object[] objs = null;
 			
 			// Patient Identifiers 
@@ -197,7 +197,7 @@ public class PatientFormController extends SimpleFormController {
 			
 			boolean isNew = (patient.getPatientId() == null);
 			
-			context.getPatientService().updatePatient(patient);
+			context.getFormEntryService().updatePatient(patient);
 			
 			String view = getSuccessView();
 						
@@ -223,13 +223,13 @@ public class PatientFormController extends SimpleFormController {
 		Patient patient = null;
 		
 		if (context != null && context.isAuthenticated()) {
-			PatientService ps = context.getPatientService();
+			FormEntryService ps = context.getFormEntryService();
 			String patientId = request.getParameter("patientId");
 	    	if (patientId != null) {
 	    		patient = ps.getPatient(Integer.valueOf(patientId));
 	    	}
 		}
-		
+
 		if (patient == null)
 			patient = new Patient();
 		

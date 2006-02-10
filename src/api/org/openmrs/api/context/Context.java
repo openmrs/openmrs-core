@@ -225,17 +225,24 @@ public class Context {
 	 */
 	public boolean hasPrivilege(String privilege) {
 		
-		if (isAuthenticated())
-			return user.hasPrivilege(privilege);
+		// if a user has logged in, check their privileges
+		if (isAuthenticated()) {
+			// check user's privileges
+			if (user.hasPrivilege(privilege))
+				return true;
+			
+			// check proxied privileges
+			for (String s : proxies)
+				if (s.equals(privilege))
+					return true;
+			
+			// TODO check Anonymous Role here
+		}
 		else {
 			Role role = getUserService().getRole(OpenmrsConstants.ANONYMOUS_ROLE);
 			if (role.hasPrivilege(privilege))
 				return true;
 		}
-		
-		for (String s : proxies)
-			if (s.equals(privilege))
-				return true;
 		
 		return false;
 	}

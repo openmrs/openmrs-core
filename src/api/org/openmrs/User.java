@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -17,6 +19,7 @@ import org.openmrs.util.OpenmrsConstants;
 public class User extends Person implements java.io.Serializable {
 
 	public static final long serialVersionUID = 4489L;
+	public Log log = LogFactory.getLog(getClass());
 
 	// Fields
 
@@ -80,8 +83,6 @@ public class User extends Person implements java.io.Serializable {
 		if (isSuperUser())
 			return true;
 		
-		boolean hasPrivilege = false;
-		
 		Set<Role> roles = getRoles();
 
 		if (groups != null)
@@ -93,18 +94,20 @@ public class User extends Person implements java.io.Serializable {
 		
 		Role role;
 		
-		check_privileges: for (Iterator i = roles.iterator(); i.hasNext();) {
+		Privilege oPrivilege = new Privilege(privilege);
+		
+		for (Iterator i = roles.iterator(); i.hasNext();) {
 			role = (Role) i.next();
-			Privilege oPrivilege = new Privilege();
-			oPrivilege.setPrivilege(privilege);
-			Set privileges = role.getPrivileges();
-			if (privileges.contains(oPrivilege)) {
-				hasPrivilege = true;
-				break;
-			}
+		
+			if (role.getPrivileges() == null)
+				log.debug("role.getPrivileges==null for role: " + role.getRole());
+			else
+				if (role.getPrivileges().contains(oPrivilege)) {
+					return true;
+				}
 		}
 
-		return hasPrivilege;
+		return false;
 	}
 	
 	public Collection<Privilege> getPrivileges() {

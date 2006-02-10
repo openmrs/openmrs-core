@@ -131,8 +131,8 @@
 			<table id="patientTable" cellpadding="1" cellspacing="0">
 			 <thead id="patientTableHead">
 				 <tr>
-				 	<th> </th>
-				 	<th> <spring:message code="Patient.identifier"/> </th>
+				 	<th class="searchIndex"> </th>
+				 	<th class="patientIdentifier"> <spring:message code="Patient.identifier"/> </th>
 				 	<th> <spring:message code="PatientName.givenName"/> </th>
 				 	<th> <spring:message code="PatientName.middleName"/> </th>
 				 	<th> <spring:message code="PatientName.familyName"/> </th>

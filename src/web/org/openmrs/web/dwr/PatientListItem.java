@@ -199,7 +199,6 @@ public class PatientListItem {
 	public void setIdentifierCheckDigit(Boolean identifierCheckDigit) {
 		this.identifierCheckDigit = identifierCheckDigit;
 	}
-	
 	public Integer getAge() {
 		
 		if (birthdate == null)
@@ -222,7 +221,4 @@ public class PatientListItem {
 		
 		return age;
 	}
-	
-	
-
 }

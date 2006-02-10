@@ -1,5 +1,6 @@
 package org.openmrs.api;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -31,9 +32,6 @@ public class EncounterService {
 	}
 	
 	private EncounterDAO getEncounterDAO() {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ENCOUNTERS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_ENCOUNTERS);
-		
 		return daoContext.getEncounterDAO();
 	}
 	/**
@@ -56,6 +54,9 @@ public class EncounterService {
 	 * @throws APIException
 	 */
 	public Encounter getEncounter(Integer encounterId) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ENCOUNTERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_ENCOUNTERS);
+		
 		return getEncounterDAO().getEncounter(encounterId);
 	}
 	
@@ -82,6 +83,9 @@ public class EncounterService {
 	 * @throws APIException
 	 */
 	public List<Encounter> getEncountersByPatientId(Integer patientId, boolean includeVoided) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ENCOUNTERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_ENCOUNTERS);
+		
 		return getEncounterDAO().getEncountersByPatientId(patientId, includeVoided);
 	}
 	
@@ -92,6 +96,9 @@ public class EncounterService {
 	 * @throws APIException
 	 */
 	public List<EncounterType> getEncounterTypes() throws APIException {
+		if (!context.isAuthenticated())
+			throw new APIAuthenticationException("Authentication required");
+		
 		return getEncounterDAO().getEncounterTypes();
 	}
 
@@ -103,6 +110,9 @@ public class EncounterService {
 	 * @throws APIException
 	 */
 	public EncounterType getEncounterType(Integer encounterTypeId) throws APIException {
+		if (!context.isAuthenticated())
+			throw new APIAuthenticationException("Authentication required");
+		
 		return getEncounterDAO().getEncounterType(encounterTypeId);
 	}
 
@@ -113,6 +123,9 @@ public class EncounterService {
 	 * @throws APIException
 	 */
 	public List<Location> getLocations() throws APIException {
+		if (!context.isAuthenticated())
+			throw new APIAuthenticationException("Authentication required");
+		
 		return getEncounterDAO().getLocations();
 	}
 
@@ -124,6 +137,9 @@ public class EncounterService {
 	 * @throws APIException
 	 */
 	public Location getLocation(Integer locationId) throws APIException {
+		if (!context.isAuthenticated())
+			throw new APIAuthenticationException("Authentication required");
+		
 		return getEncounterDAO().getLocation(locationId);
 	}
 
@@ -155,6 +171,9 @@ public class EncounterService {
 	 * @return
 	 */
 	public Set<Encounter> getEncounters(Patient who) {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ENCOUNTERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_ENCOUNTERS);
+		
 		return getEncounterDAO().getEncounters(who);
 	}
 
@@ -165,7 +184,10 @@ public class EncounterService {
 	 * @return
 	 */
     public Set<Encounter> getEncounters(Patient who, Location where) {
-    	return getEncounterDAO().getEncounters(who, where);
+    	if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ENCOUNTERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_ENCOUNTERS);
+		
+		return getEncounterDAO().getEncounters(who, where);
     }
 
     /**
@@ -176,7 +198,10 @@ public class EncounterService {
      * @return
      */
     public Set<Encounter> getEncounters(Patient who, Date fromDate, Date toDate) {
-    	return getEncounterDAO().getEncounters(who, fromDate, toDate);
+    	if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ENCOUNTERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_ENCOUNTERS);
+		
+		return getEncounterDAO().getEncounters(who, fromDate, toDate);
     }
 	
 	

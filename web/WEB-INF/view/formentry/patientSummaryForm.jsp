@@ -7,54 +7,85 @@
 <h3><spring:message code="formentry.title"/></h3>
 
 <div id="patientSummary">
-	<b class='boxHeader'><spring:message code="formentry.patient.info"/></b>
+	<b class='boxHeader'>
+		<spring:message code="formentry.patient.info"/>
+		<c:forEach var="name" items="${patient.names}" varStatus="status">
+			<c:if test="${status.index == 0}">${name.givenName} ${name.middleName} ${name.familyName}</c:if>
+		</c:forEach>
+		(
+		<c:forEach var="identifier" items="${patient.identifiers}" varStatus="status">
+					<c:if test="${status.index == 0}">${identifier.identifier}</c:if>
+		</c:forEach>
+		)
+	</b>
 	<a href='<%= request.getContextPath() %>/admin/patients/newPatient.form?pId=${patient.patientId}' style='float:right'><spring:message code="Patient.edit"/></a>
 	<div id="otherInfo" class="sideNote" style="width: 200px; float: right; clear: right">
-		<b><spring:message code="Patient.identifiers"/></b><br/>
-			<c:forEach var="identifier" items="${patient.identifiers}" varStatus="status">
-				<c:if test="${status.index != 0}">${identifier.identifier}<br/></c:if>
-			</c:forEach>
-		<br/>
-		<b><spring:message code="Patient.names"/></b><br/>
-			<c:forEach var="name" items="${patient.names}" varStatus="status">
-				<c:if test="${status.index != 0}">${name.givenName} ${name.middleName} ${name.familyName}<br/></c:if>
-			</c:forEach>
-		<br/>
-		<b><spring:message code="Patient.addresses"/></b><br/>
-			<c:forEach var="address" items="${patient.addresses}" varStatus="status">
-				<c:if test="${status.index != 0}">${address.address1} - ${address.address2}<br/></c:if>
-			</c:forEach>
+		
+		
+		
 	</div>
 	<table>
 		<tr>
-			<td valign="top"><b><spring:message code="Patient.identifier"/></b></td>
-			<td id="identifier">
-				<c:forEach var="identifier" items="${patient.identifiers}" varStatus="status">
-					<c:if test="${status.index == 0}">${identifier.identifier}</c:if>
-				</c:forEach>
+			<td><spring:message code="Patient.gender"/></td>
+			<td id="gender">
+				<c:if test="${patient.gender == 'M'}">
+					<img src="/${pageContext.request.contextPath}/images/male.gif" />
+				</c:if>
+				<c:if test="${patient.gender == 'F'}">
+					<img src="/${pageContext.request.contextPath}/images/female.gif" />
+				</c:if>
 			</td>
 		</tr>
+		<c:if test="${patient.names.size > 1}">
+			<tr>
+				<td valign="top"><spring:message code="Patient.names"/></td>
+				<td>
+					<c:forEach var="name" items="${patient.names}" varStatus="status">
+						<c:if test="${status.index != 0}"><b>${name.givenName} ${name.middleName} ${name.familyName}</b><br/></c:if>
+					</c:forEach>
+				</td>
+			</tr>
+		</c:if>
+		<c:if test="${patient.identifiers.getSize > 1}">
+			<tr>
+				<td valign="top"><spring:message code="Patient.other.identifiers"/></td>
+				<td>
+					<c:forEach var="identifier" items="${patient.identifiers}" varStatus="status">
+						<c:if test="${status.index != 0}"><b>${identifier.identifier}</b><br/></c:if>
+					</c:forEach>
+				</td>
+			</tr>
+		</c:if>
+		<c:if test="${patient.addresses.getSize > 0}">
+			<tr>
+				<td valign="top"><spring:message code="Patient.addresses"/></td>
+				<td>
+					<c:forEach var="address" items="${patient.addresses}" varStatus="status">
+						<b>
+							${address.address1} <br/>
+							${address.address2} <br/>
+						</b>
+						<br/>
+					</c:forEach>
+				</td>
+			</tr>
+		</c:if>
 		<tr>
-			<td><b><spring:message code="general.name"/></b></td>
-			<td id="name">
-				<c:forEach var="name" items="${patient.names}" varStatus="status">
-					<c:if test="${status.index == 0}"><b>${name.givenName} ${name.middleName}</b> ${name.familyName}</c:if>
-				</c:forEach>
+			<td valign="top"><spring:message code="Patient.tribe"/></td>
+			<td id="tribe"><b>${patient.tribe.name}</b></td>
+		</tr>
+		<tr>
+			<td valign="top"><spring:message code="Patient.birthdate"/></td>
+			<td id="birthdate">
+				<b><spring:bind path="patient.birthdate">${status.value}</spring:bind></b>
+				<c:if test="${patient.age > 0}">
+					( ${patient.age} <spring:message code="Patient.age.years"/> )
+				</c:if>
+				<c:if test="${patient.age == 0}">
+					( < 1 <spring:message code="Patient.age.year"/> )
+				</c:if>
 			</td>
 		</tr>
-		<tr>
-			<td><b><spring:message code="Patient.gender"/></b></td>
-			<td id="gender">${patient.gender}</td>
-		</tr>
-		<c:forEach var="address" items="${patient.addresses}" varStatus="status">
-			<c:if test="${status.index == 0}">
-				<tr><td valign="top"><b><spring:message code="PatientAddress.address1"/></b><td id="address1">${address.address1}</td></tr>
-				<tr><td valign="top"><b><spring:message code="PatientAddress.address2"/></b><td id="address2">${address.address2}</td></tr>
-			</c:if>
-		</c:forEach>
-		<tr><td valign="top"><b><spring:message code="Tribe.name"/></b><td id="tribe">${patient.tribe.name}</td></tr>
-		<tr><td valign="top"><b><spring:message code="Patient.birthdate"/></b><td id="birthdate"><spring:bind path="patient.birthdate">${status.value}</spring:bind></td></tr>
-		<tr><td valign="top"><b><spring:message code="Patient.mothersName"/></b><td id="mothersName">${patient.mothersName}</td></tr>
 	</table>
 	<br /><input type='button' value='<spring:message code="formentry.patient.switch"/>' onClick="document.location='index.htm?phrase=${param.phrase}&autoJump=false'" />
 </div>

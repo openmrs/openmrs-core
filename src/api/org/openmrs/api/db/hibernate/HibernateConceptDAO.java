@@ -158,8 +158,8 @@ public class HibernateConceptDAO implements
 				modifyCollections(concept);
 				concept.setChangedBy(context.getAuthenticatedUser());
 				concept.setDateChanged(new Date());
-				concept = (Concept)session.merge(concept);
-				session.saveOrUpdate(concept);
+				session.merge(concept);
+				//session.saveOrUpdate(concept);
 				HibernateUtil.commitTransaction();
 			}
 			catch (Exception e) {
