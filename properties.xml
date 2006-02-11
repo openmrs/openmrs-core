@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="properties">
 
+    <!-- Environment properties -->
+    <property environment="env"/>
+    <property name="env.COMPUTERNAME" value="${env.HOSTNAME}"/>
+    <property name="tomcat.home" value="${env.CATALINA_HOME}"/>
+
     <!-- Load user overrides -->
     <property file="${user.home}/.${ant.project.name}-build.properties"/>
     <property file="${user.home}/.build.properties"/>
@@ -58,11 +63,6 @@
     <property name="custom.style.css.file" value="web/style.css" />
     <property name="custom.images.dir" value="web/images" />
     
-    <!-- Environment properties -->
-    <property environment="env"/>
-    <property name="env.COMPUTERNAME" value="${env.HOSTNAME}"/>
-    <property name="tomcat.home" value="${env.CATALINA_HOME}"/>    
-
     <!-- =================================================================== -->
     <!-- Classpaths                                                          -->
     <!-- =================================================================== -->
