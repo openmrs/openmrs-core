@@ -70,15 +70,15 @@ public class UserService {
 	}
 
 	/**
-	 * true/false if username is already in db
+	 * true/false if username or systemId is already in db in username or system_id columns
 	 * @param User to compare
 	 * @return boolean
 	 * @throws APIException
 	 */
-	public boolean isDuplicateUsername(User user) throws APIException {
+	public boolean hasDuplicateUsername(User user) throws APIException {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_USERS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_USERS);
-		return getUserDAO().isDuplicateUsername(user);
+		return getUserDAO().hasDuplicateUsername(user);
 	}
 	
 	/**
@@ -268,6 +268,14 @@ public class UserService {
 		getUserDAO().changeQuestionAnswer(pw, q, a);
 	}
 	
+	/**
+	 * Return a user if any part of the search matches first/last/system id and the user
+	 * has one of the roles supplied
+	 * @param name
+	 * @param roles
+	 * @param includeVoided
+	 * @return
+	 */
 	public List<User> findUsers(String name, List<String> roles, boolean includeVoided) {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_USERS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_USERS);
@@ -275,12 +283,37 @@ public class UserService {
 		return getUserDAO().findUsers(name, roles, includeVoided);
 	}
 	
+	public List<User> getAllUsers(List<String> roles, boolean includeVoided) {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_USERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_USERS);
+		return getUserDAO().getAllUsers(roles, includeVoided);
+	}
+	
+	/**
+	 * This function checks if the authenticated user has all privileges they are giving out
+	 * @param new user that has privileges 
+	 */
 	private void checkPrivileges(User user) {
-		Collection<Privilege> privileges = user.getPrivileges();
+		Collection<Role> roles = user.getRoles();
 		
-		for (Privilege p : privileges) {
-			if (!context.hasPrivilege(p.getPrivilege()))
-				throw new APIAuthenticationException("Privilege required: " + p);
+		for (Group g : user.getGroups())
+			if (g.getRoles() != null)
+				roles.addAll(g.getRoles());
+		
+		
+		for (Role r : roles) {
+			for (Privilege p : r.getPrivileges())
+				if (!user.hasPrivilege(p.getPrivilege()))
+					throw new APIAuthenticationException("Privilege required: " + p);
 		}
+	}
+	
+	/**
+	 * Get/generate/find the next system id to be doled out.  Assume check digit /not/ applied
+	 * in this method
+	 * @return new system id
+	 */
+	public String generateSystemId() {
+		return getUserDAO().generateSystemId();
 	}
 }

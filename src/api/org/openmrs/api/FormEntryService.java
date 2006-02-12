@@ -1,10 +1,13 @@
 package org.openmrs.api;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
@@ -243,5 +246,37 @@ public class FormEntryService {
 			context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		}
 		return patients;
+	}
+	
+	/**
+	 * @see org.openmrs.api.FormService.getForm(java.lang.Integer)
+	 */
+	public Form getForm(Integer formId) {
+		
+		Form form;
+		context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_FORMS);
+		try {
+			form = context.getFormService().getForm(formId);
+		}
+		finally {
+			context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_FORMS);
+		}
+		return form;
+	}
+	
+	public Collection<Form> getForms() {
+		List<Form> forms = new Vector<Form>();
+		context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_FORMS);
+		try {
+			forms = context.getFormService().getForms(true);
+			log.debug(forms);
+		}
+		catch (Exception e) {
+			log.error(e);
+		}
+		finally {
+			context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_FORMS);
+		}
+		return forms;
 	}
 }

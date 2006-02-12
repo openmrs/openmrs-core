@@ -1,5 +1,6 @@
 package org.openmrs.api;
 
+import java.util.Collection;
 import java.util.Date;
 
 import org.apache.commons.logging.Log;
@@ -372,6 +373,8 @@ public class AdministrationService {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ROLES))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ROLES);
 
+		checkPrivileges(role);
+		
 		getAdminDAO().createRole(role);
 	}
 
@@ -384,6 +387,8 @@ public class AdministrationService {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ROLES))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ROLES);
 
+		checkPrivileges(role);
+		
 		getAdminDAO().updateRole(role);
 	}
 
@@ -602,6 +607,8 @@ public class AdministrationService {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_GROUPS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_GROUPS);
 
+		checkPrivileges(group);
+		
 		getAdminDAO().createGroup(group);
 	}
 
@@ -614,6 +621,8 @@ public class AdministrationService {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_GROUPS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_GROUPS);
 
+		checkPrivileges(group);
+		
 		getAdminDAO().updateGroup(group);
 	}
 
@@ -702,4 +711,30 @@ public class AdministrationService {
 		updateConceptProposal(cp);
 	}
 	
+	/**
+	 * This function checks if the authenticated user has all privileges they are giving out to the new role
+	 * @param new user that has privileges 
+	 */
+	private void checkPrivileges(Role role) {
+		Collection<Privilege> privileges = role.getPrivileges();
+		
+		for (Privilege p : privileges) {
+			if (!context.hasPrivilege(p.getPrivilege()))
+				throw new APIAuthenticationException("Privilege required: " + p);
+		}
+	}
+	
+	/**
+	 * This function checks if the authenticated user has all privileges they are giving out to the new group
+	 * @param new user that has privileges 
+	 */
+	private void checkPrivileges(Group group) {
+		Collection<Role> roles = group.getRoles();
+		/*
+		for (Role r : roles) {
+			if (!context.hasPrivilege(r))
+				throw new APIAuthenticationException("Privilege required: " + p);
+		}
+		*/
+	}
 }

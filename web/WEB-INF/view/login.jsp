@@ -8,7 +8,7 @@
 	<table>
 		<tr>
 			<td><spring:message code="User.username"/>:</td>
-			<td><input type="text" name="uname" value="" id="username"></td>
+			<td><input type="text" name="uname" value="" id="username" maxlength="50"></td>
 		</tr>
 		<tr>
 			<td><spring:message code="User.password"/>:</td>

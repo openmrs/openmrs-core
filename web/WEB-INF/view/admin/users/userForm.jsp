@@ -22,15 +22,21 @@
 <form method="post">
 	<table>
 		<tr>
+			<td><spring:message code="User.systemId"/></td>
+			<td>
+				<spring:bind path="user.systemId">
+					${status.value}
+				</spring:bind>
+			</td>
+		</tr>
+		<tr>
 			<td><spring:message code="User.username"/></td>
 			<td>
 				<spring:bind path="user.username">
 					<input type="text" 
 							name="${status.expression}" 
 							id="username"
-							value="${status.value}"
-							onKeyUp="validateIdentifier(this, null, '<spring:message code="error.identifier"/>');"
-							onChange="validateIdentifier(this, null, '<spring:message code="error.identifier"/>');"/>
+							value="${status.value}" />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
@@ -56,7 +62,7 @@
 			</tr>
 			<tr>
 				<td><spring:message code="User.forceChange" /></td>
-				<td><input type="checkbox" name="forceChange" value="true" /></td>
+				<td><input type="checkbox" name="${changePasswordName}" value="true" <c:if test="${changePassword == true}">checked</c:if> /></td>
 			</tr>
 		</c:if>
 		<tr>

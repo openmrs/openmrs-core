@@ -2,6 +2,7 @@ package org.openmrs.web.controller.user;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -17,6 +18,7 @@ import org.openmrs.Role;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
@@ -84,8 +86,15 @@ public class GroupFormController extends SimpleFormController {
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
+		List<Role> roles = context.getUserService().getRoles();
+		
+		for (String s : OpenmrsConstants.AUTO_ROLES()) {
+			Role r = new Role(s);
+			roles.remove(r);
+		}
+		
 		if (context != null && context.isAuthenticated()) {
-			map.put("roles", context.getUserService().getRoles());
+			map.put("roles", roles);
 		}
 		
 		return map;

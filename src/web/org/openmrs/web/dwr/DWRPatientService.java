@@ -33,7 +33,11 @@ public class DWRPatientService {
 			patientList.add("Please <a href='" + request.getContextPath() + "/logout'>log in</a> again.");
 		}
 		else {
-			//try {
+			try {
+				
+				Integer userId = context.getAuthenticatedUser().getUserId();
+				log.info(userId + "|" + searchValue);
+				
 				FormEntryService ps = context.getFormEntryService();
 				List<Patient> patients;
 				
@@ -65,9 +69,10 @@ public class DWRPatientService {
 					}
 				}
 				
-			//} catch (Exception e) {
-			//	log.error(e);
-			//}
+			} catch (Exception e) {
+				log.error(e);
+				patientList.add("Error while attempting to find obs - " + e.getMessage());
+			}
 		}
 		return patientList;
 	}
@@ -98,6 +103,10 @@ public class DWRPatientService {
 			patientList.add("Please <a href='" + request.getContextPath() + "/logout'>log in</a> again.");
 		}
 		else {
+			
+			Integer userId = context.getAuthenticatedUser().getUserId();
+			log.info(userId + "|" + name + "|" + birthyear + "|" + gender);
+			
 			FormEntryService ps = context.getFormEntryService();
 			List<Patient> patients = new Vector<Patient>();
 			

@@ -77,6 +77,10 @@ public class FormService {
 		return dao().getForm(formId);
 	}
 	
+	public List<Form> getForms(boolean published) throws APIException {
+		return dao().getForms(published);
+	}
+	
 	/**
 	 * Save changes to form
 	 * @param form

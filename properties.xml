@@ -12,7 +12,8 @@
 
 	<!-- Base definitions -->
 	<property file="build.properties" />
-
+	<property file="build.description" value="Open-Source EMR for Developing Countries" />
+	
     <!-- Library versions and JARs -->
     <property name="lib.dir" location="lib" />
     <property file="${lib.dir}/lib.properties" />
@@ -101,6 +102,7 @@
 		<fileset dir="${dwr.dir}" includes="*.jar" />
 		<fileset dir="${commons-io.dir}" includes="*.jar" />
 		<fileset dir="${commons-logging.dir}" includes="*.jar" />
+		<fileset dir="${commons-lang.dir}" includes="*.jar" />
 		<fileset dir="${hibernate.dir}" includes="*.jar" />
 		<fileset dir="${jstl.dir}" includes="*.jar" />
 		<fileset dir="${spring.dir}" includes="*.jar" />

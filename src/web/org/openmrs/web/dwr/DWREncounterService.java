@@ -67,8 +67,7 @@ public class DWREncounterService {
 				}
 			} catch (Exception e) {
 				log.error(e);
-				e.printStackTrace();
-				objectList.add("Error while attempting to find encounter");
+				objectList.add("Error while attempting to find encounter - " + e.getMessage());
 			}
 		}
 		return objectList;

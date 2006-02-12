@@ -175,12 +175,23 @@ public class OpenmrsConstants {
 	// Baked in Roles:
 	public static final String SUPERUSER_ROLE = "System Developer";
 	public static final String ANONYMOUS_ROLE = "Anonymous";
+	public static final String AUTHENTICATED_ROLE = "Authenticated";
 	
 	public static Collection<String> CORE_ROLES() {
 		List<String> roles = new Vector<String>();
 		
 		roles.add(SUPERUSER_ROLE);
 		roles.add(ANONYMOUS_ROLE);
+		roles.add(AUTHENTICATED_ROLE);
+		
+		return roles;
+	}
+	
+	public static Collection<String> AUTO_ROLES() {
+		List<String> roles = new Vector<String>();
+		
+		roles.add(ANONYMOUS_ROLE);
+		roles.add(AUTHENTICATED_ROLE);
 		
 		return roles;
 	}
@@ -206,4 +217,6 @@ public class OpenmrsConstants {
 	// @SEARCH@ is needs to be replaced with the searched string
 	public static final String PATIENT_IDENTIFIER_REGEX = "^0*@SEARCH@([A-Z]+-[0-9])?$";
 	
+	public static final String USER_PROPERTY_CHANGE_PASSWORD = "forcePassword";
+
 }

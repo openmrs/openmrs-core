@@ -213,7 +213,7 @@ public class NewPatientFormController extends SimpleFormController {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 
-		List identifiers = new Vector<PatientIdentifier>();
+		List<PatientIdentifier> identifiers = new Vector<PatientIdentifier>();
 		
 		Patient patient = null;
 		

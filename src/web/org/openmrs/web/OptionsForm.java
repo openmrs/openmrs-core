@@ -7,6 +7,7 @@ public class OptionsForm {
 	private Boolean showRetiredMessage = true;
 	private Boolean verbose = false;
 	
+	private String username = "";
 	private String oldPassword = "";
 	private String newPassword = "";
 	private String confirmPassword = "";
@@ -19,6 +20,14 @@ public class OptionsForm {
 	private String notification = "";
 	
 	public OptionsForm() {}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
 
 	public String getConfirmPassword() {
 		return confirmPassword;

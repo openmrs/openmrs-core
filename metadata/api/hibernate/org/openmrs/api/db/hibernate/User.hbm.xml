@@ -12,6 +12,9 @@
 			<generator class="native" />
 		</id>
 
+		<property name="systemId" type="java.lang.String" not-null="true"
+			column="system_id" length="50" />
+			
 		<property name="username" type="java.lang.String"
 			column="username" length="50" />
 
@@ -77,7 +80,7 @@
 			</many-to-many>
 		</set>
 		
-		<map name="properties" table="user_property" lazy="true" cascade="save-update,merge,evict">
+		<map name="properties" table="user_property" lazy="false" cascade="save-update,merge,evict">
 			<key column="user_id" not-null="true" />
 			<map-key column="property" type="java.lang.String" length="100" />
 			<element column="value" type="java.lang.String" length="255" />

@@ -9,6 +9,26 @@
                 value="%p - %C{1}.%M(%L) | %m%n"/>
         </layout>
     </appender>
+    
+    <appender name="CONCEPT_FILE" class="org.apache.log4j.FileAppender">
+		<param name="File" value="logs\\concepts.log" />
+		<param name="Append" value="true"/>
+		
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern"
+                value="%C{1}.%M|%d|%m%n"/>
+        </layout>
+    </appender>
+
+    <appender name="DWR_FILE" class="org.apache.log4j.FileAppender">
+		<param name="File" value="logs\\dwr.log" />
+		<param name="Append" value="true"/>
+		
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern"
+                value="%C{1}.%M|%d|%m%n"/>
+        </layout>
+    </appender>
 
     <logger name="org.apache">
         <level value="WARN"/>
@@ -22,10 +42,24 @@
         <level value="WARN"/>
     </logger>
 
-    <logger name="org.openmrs">
-        <level value="DEBUG"/>
+    <logger name="org.openmrs.api.ConceptService">
+    	<level value="INFO"/>
+    	<appender-ref ref="CONCEPT_FILE"/>
+    </logger>
+    <logger name="org.openmrs.api.db.hibernate.HibernateAdministrationDAO">
+    	<level value="INFO"/>
+    	<appender-ref ref="CONCEPT_FILE"/>
+    </logger>
+    
+    <logger name="org.openmrs.web.dwr">
+    	<level value="INFO"/>
+    	<appender-ref ref="DWR_FILE"/>
     </logger>
 
+	<logger name="org.openmrs">
+        <level value="DEBUG"/>
+    </logger>
+    
     <root>
         <level value="WARN"/>
         <appender-ref ref="CONSOLE"/>

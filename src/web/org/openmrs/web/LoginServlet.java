@@ -10,8 +10,10 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
+import org.openmrs.util.OpenmrsConstants;
 
 public class LoginServlet extends HttpServlet {
 
@@ -46,10 +48,21 @@ public class LoginServlet extends HttpServlet {
 		try {
 			context.authenticate(username, password);
 			if (context.isAuthenticated()) {
-				log.debug(request.getRemoteAddr());
-				httpSession.setAttribute(WebConstants.OPENMRS_CLIENT_IP_HTTPSESSION_ATTR, request.getRemoteAddr());
+				
+				User user = context.getAuthenticatedUser();
+				
+				Boolean forcePasswordChange = new Boolean(user.getProperties().get(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD)); 
+				if (forcePasswordChange) {
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.password.change");
+					redirect = request.getContextPath() + "/options.form#Change Login Info";
+				}
+				
 				response.sendRedirect(redirect);
+			
+				log.debug(request.getLocalAddr());
+				httpSession.setAttribute(WebConstants.OPENMRS_CLIENT_IP_HTTPSESSION_ATTR, request.getLocalAddr());
 				httpSession.removeAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR);
+				
 				return;
 			}
 		} catch (ContextAuthenticationException e) {

@@ -3,6 +3,7 @@ package org.openmrs.web.controller.user;
 import java.text.DateFormat;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Group;
@@ -18,6 +20,7 @@ import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -63,7 +66,7 @@ public class UserFormController extends SimpleFormController {
 		
 		if (context != null && context.isAuthenticated()) {
 			// check if username is already in the database
-				if (us.isDuplicateUsername(user)) {
+				if (us.hasDuplicateUsername(user)) {
 					errors.rejectValue("username", "error.username.taken");
 				}
 				
@@ -76,11 +79,19 @@ public class UserFormController extends SimpleFormController {
 				if (!password.equals(confirm))
 					errors.reject("error.password.match");
 				
-				if (password.equals("") && user.getUserId() == null)
+				if (password.length() == 0 && user.getUserId() == null)
 					errors.reject("error.password.weak");
-					
-			// check strength of password?
 				
+			//check password strength
+				if (password.length() > 0) {
+					if (password.length() < 6)
+						errors.reject("error.password.length");
+					if (StringUtils.isAlpha(password))
+						errors.reject("error.password.characters");
+					if (password.equals(user.getUsername()) || password.equals(user.getSystemId()))
+						errors.reject("error.password.weak");
+				}
+					
 			// add Roles to user (because spring can't handle lists as properties...)
 				String[] roles = request.getParameterValues("roles");
 				Set<Role> set = new HashSet<Role>();
@@ -89,6 +100,20 @@ public class UserFormController extends SimpleFormController {
 						set.add(us.getRole(role));
 					}
 				}
+				
+				
+				/*  TODO check if user can delete privilege
+				Collection<Collection> lists = Helper.compareLists(user.getRoles(), set);
+				
+				Collection toDel = (Collection)lists.toArray()[1];
+				for (Object o : toDel) {
+					Role r = (Role)o;
+					for (Privilege p : r.getPrivileges())
+						if (!user.hasPrivilege(p.getPrivilege()))
+							throw new APIException("Privilege required: " + p.getPrivilege());
+				}
+				*/
+				
 				user.setRoles(set);
 			
 			// add Groups to user (because spring can't handle lists as properties...)
@@ -99,6 +124,22 @@ public class UserFormController extends SimpleFormController {
 						gs.add(us.getGroup(group));
 					}
 				}
+				
+				/*  TODO check if user can delete privilege
+				lists = Helper.compareLists(user.getGroups(), gs);
+				
+				toDel = (Collection)lists.toArray()[1];
+				for (Object o : toDel) {
+					Group g = (Group)o;
+					for (Role r : g.getRoles()) {
+						for (Privilege p : r.getPrivileges())
+							if (!user.hasPrivilege(p.getPrivilege()))
+								throw new APIException("Privilege required: " + p.getPrivilege());
+					}
+				}
+				*/
+				
+				
 				user.setGroups(gs);
 		}
 		else {
@@ -128,6 +169,18 @@ public class UserFormController extends SimpleFormController {
 			UserService us = context.getUserService();
 
 			String password = request.getParameter("password");
+			
+			Map<String, String> properties = user.getProperties();
+			Boolean newChangePassword = new Boolean(request.getParameter(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD));
+			
+			if (!newChangePassword.booleanValue() && properties.containsKey(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD)) {
+				properties.remove(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD);
+			}
+			if (newChangePassword.booleanValue()) {
+				properties.put(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD, newChangePassword.toString());
+			}
+			
+			user.setProperties(properties);
 			
 			if ((context.getAuthenticatedUser().isSuperUser() && password != null) && !password.equals("")) {
 				log.debug("calling changePassword");
@@ -181,11 +234,20 @@ public class UserFormController extends SimpleFormController {
 		
 		User user = (User)obj;
 		
+		List<Role> roles = context.getUserService().getRoles();
+		
+		for (String s : OpenmrsConstants.AUTO_ROLES()) {
+			Role r = new Role(s);
+			roles.remove(r);
+		}
+		
 		if (context != null && context.isAuthenticated()) {
-			map.put("roles", context.getUserService().getRoles());
+			map.put("roles", roles);
 			map.put("groups", context.getUserService().getGroups());
 			if (user.getUserId() == null || context.getAuthenticatedUser().isSuperUser()) 
 				map.put("modifyPasswords", true);
+			map.put("changePasswordName", OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD);
+			map.put("changePassword", new Boolean(user.getProperties().get(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD)).booleanValue());
 		}	
 		return map;
     }

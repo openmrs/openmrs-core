@@ -33,9 +33,9 @@
 	var getName = function(p) {
 		if (typeof p == 'string') return p;
 		str = ''
-		str += p.firstName + ", ";
+		str += p.firstName + " ";
 		str += p.lastName;
-		str += " (" + p.username + ")";
+		str += " (" + p.systemId + ")";
 		return str;
 	}
 	
@@ -71,8 +71,8 @@
 	
 </script>
 
-<form method="POST" onSubmit="return search(0, event);">
-	<input name="phrase" id="phrase" type="text" class="prompt" size="10" onKeyUp="search(400, event)"/> &nbsp;
+<form method="post" onSubmit="return search(0, event);">
+	<input name="phrase" id="phrase" type="text" class="prompt" size="20" onKeyUp="search(400, event)"/> &nbsp;
 	<!-- <input type="checkbox" id="verboseListing" value="true" onclick="search(0, event); phrase.focus();"><label for="verboseListing"><spring:message code="dictionary.verboseListing"/></label> -->
 	<br />
 	<small><em><spring:message code="general.search.hint"/></em></small>
@@ -85,6 +85,8 @@
 
 <script type="text/javascript">
   document.getElementById('phrase').focus();
+  search(0, null);
+  timeout("DWRUserService.getAllUsers(preFillTable, roles, false)", 0);
 </script>
 
 <div id="xdebugBox"></div> <script>resetForm()</script>

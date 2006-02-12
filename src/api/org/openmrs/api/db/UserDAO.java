@@ -40,12 +40,12 @@ public interface UserDAO {
 	public User getUserByUsername(String username) throws DAOException;
 
 	/**
-	 * true/false if username is already in db
+	 * true/false if username or systemId is already in db in username or system_id columns
 	 * @param User to compare
 	 * @return boolean
 	 * @throws DAOException
 	 */
-	public boolean isDuplicateUsername(User user) throws DAOException;
+	public boolean hasDuplicateUsername(User user) throws DAOException;
 	
 	/**
 	 * Get users by role granted
@@ -187,4 +187,12 @@ public interface UserDAO {
 	
 	public List<User> findUsers(String name, List<String> roles, boolean includeRetired) throws DAOException;
 	
+	public List<User> getAllUsers(List<String> roles, boolean includeRetired) throws DAOException;
+	
+	/**
+	 * Get/generate/find the next system id to be doled out.  Assume check digit /not/ applied
+	 * in this method
+	 * @return new system id
+	 */
+	public String generateSystemId() throws DAOException;
 }

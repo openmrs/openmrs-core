@@ -34,7 +34,9 @@ public class UserValidator implements Validator {
 			errors.rejectValue("user", "error.general");
 		}
 		else {
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "username", "error.username");
+			if (user.getUserId() != null)
+				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "systemId", "error.systemId");
+			
 			// TODO validate username checkdigit here
 			if (user.isVoided() && user.getVoidReason().trim().equals(""))
 				errors.rejectValue("voidReason", "error.null");

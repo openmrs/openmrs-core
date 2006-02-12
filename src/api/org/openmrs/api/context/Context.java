@@ -6,6 +6,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
@@ -236,7 +237,10 @@ public class Context {
 				if (s.equals(privilege))
 					return true;
 			
-			// TODO check Anonymous Role here
+			Role auth = getUserService().getRole(OpenmrsConstants.AUTHENTICATED_ROLE);
+			for (Privilege p : auth.getPrivileges())
+				if (p.getPrivilege().equals(privilege))
+					return true;
 		}
 		else {
 			Role role = getUserService().getRole(OpenmrsConstants.ANONYMOUS_ROLE);

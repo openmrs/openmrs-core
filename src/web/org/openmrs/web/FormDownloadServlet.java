@@ -44,32 +44,32 @@ public class FormDownloadServlet extends HttpServlet {
 			return;
 		}
 
-		String type = "";
-		String name = "";
-		if (formId == 14) {
-			type = "adultReturn";
-			name += "adult_return_visit";
-		}
-		else if (formId == -1) {
-			type = "adultReturn_local";
-			name += "adult_return_visit_local";
-			formId = 14;
-		}
+		Patient patient = context.getFormEntryService().getPatient(patientId);
+		Form form = context.getFormEntryService().getForm(formId);
 		
-		Patient patient = context.getPatientService().getPatient(patientId);
-		Form form = context.getFormService().getForm(formId);
+		String title = form.getName();
+		
+		title += " (" + form.getVersion();
+		if (form.getBuild() != null)
+			title += "-" + form.getBuild();
+		title += ")";
+		
+		title = title.replaceAll(" ", "_");
+		
 		String url = request.getRequestURL().toString();
 		url = url.substring(0, url.lastIndexOf("/"));
 		url += "/formentry/forms/";
 	
-		url += name;
+		url += form.getUri();
 		
 		url += ".xsn";
 		
 		String xmldoc = new FormXmlTemplateBuilder(context, form, url).getXmlTemplate(patient);
 		
+		xmldoc = xmldoc.replaceAll("@SESSION@", httpSession.getId());
+		
 		response.setHeader("Content-Type", "application/ms-infopath.xml");
-		response.setHeader("Content-Disposition", "attachment; filename=" + type + ".xml");
+		response.setHeader("Content-Disposition", "attachment; filename=" + title + ".xml");
 		response.getOutputStream().println(xmldoc.toString());
 		
 	}

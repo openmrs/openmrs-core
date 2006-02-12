@@ -27,10 +27,13 @@ function init() {
 			sections[seci].secid = children[i].id;
 			sections[seci].error = containsError(children[i]);
 			seci++;
-			if(sections.length != 1) children[i].style.display = 'none';
-			else var selectedid = children[i].id;
+			if(sections.length != 1)
+				children[i].style.display = 'none';
+			else
+				var selectedid = children[i].id;
 		}
 	}
+	
 	var toc = document.createElement('ul');
 	toc.id = 'optionsTOC';
 	toc.selectedid = selectedid;
@@ -42,6 +45,7 @@ function init() {
 		a.onclick = uncoversection;
 		a.appendChild(document.createTextNode(sections[i].text));
 		a.secid = sections[i].secid;
+		a.id = sections[i].secid + "_link";
 		if (sections[i].error) {
 			a.className = "error";
 		}
@@ -49,21 +53,37 @@ function init() {
 		toc.appendChild(li);
 	}
 	optform.insertBefore(toc, children[0]);
+
+	var hash = document.location.hash;
+	if (hash.length > 1) {
+		var autoSelect = hash.substring(1, hash.length);
+		for(i=0;i<sections.length;i++) {
+			if (sections[i].text == autoSelect)
+				uncoversection(sections[i].secid + "_link");
+		}
+	}
 }
 
-function uncoversection() {
-	oldsecid = this.parentNode.parentNode.selectedid;
-	newsec = document.getElementById(this.secid);
-	if(oldsecid != this.secid) {
-		ul = document.getElementById('optionsTOC');
+function uncoversection(secid) {
+	var obj = this;
+	if (typeof secid == 'string') {
+		obj = document.getElementById(secid);
+		if (obj == null)
+			return false;
+	}
+
+	var ul = document.getElementById('optionsTOC');
+	var oldsecid = ul.selectedid;
+	var newsec = document.getElementById(obj.secid);
+	if(oldsecid != obj.secid) {
 		document.getElementById(oldsecid).style.display = 'none';
 		newsec.style.display = 'block';
-		ul.selectedid = this.secid;
+		ul.selectedid = obj.secid;
 		lis = ul.getElementsByTagName('li');
 		for(i=0;i< lis.length;i++) {
 			lis[i].className = '';
 		}
-		this.parentNode.className = 'selected';
+		obj.parentNode.className = 'selected';
 	}
 	newsec.blur();
 	return false;
@@ -163,10 +183,22 @@ function containsError(element) {
 <br />
 </fieldset>
 
-<fieldset><legend><spring:message code="options.password.legend" /></legend>
+<fieldset><legend><spring:message code="options.login.legend" /></legend>
 <table>
 	<tr>
-		<td><spring:message code="options.password.old" /></td>
+		<td><spring:message code="options.login.username" /></td>
+		<td>
+			<spring:bind path="opts.username">
+				<input type="text" name="${status.expression}" value="${status.value}" />
+				<c:if test="${status.errorMessage != ''}">
+					<span class="error">${status.errorMessage}</span>
+				</c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr><td colspan="2"><br/></td></tr>
+	<tr>
+		<td><spring:message code="options.login.password.old" /></td>
 		<td>
 			<spring:bind path="opts.oldPassword">
 				<input type="password" name="${status.expression}" value="${status.value}" />
@@ -177,7 +209,7 @@ function containsError(element) {
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="options.password.new" /></td>
+		<td><spring:message code="options.login.password.new" /></td>
 		<td>
 			<spring:bind path="opts.newPassword">
 				<input type="password" name="${status.expression}"
@@ -189,7 +221,7 @@ function containsError(element) {
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="options.password.confirm" /></td>
+		<td><spring:message code="options.login.password.confirm" /></td>
 		<td>
 			<spring:bind path="opts.confirmPassword">
 				<input type="password" name="${status.expression}"
@@ -201,8 +233,9 @@ function containsError(element) {
 		</td>
 	</tr>
 	<tr><td colspan="2"><br/></td></tr>
+	<tr><td colspan="2"><spring:message code="options.login.secretQuestion.about" /></td></tr>
 	<tr>
-		<td><spring:message code="User.password" /></td>
+		<td><spring:message code="options.login.password.old" /></td>
 		<td>
 			<spring:bind path="opts.secretQuestionPassword">
 				<input type="password" name="${status.expression}" value="${status.value}" />
@@ -213,7 +246,7 @@ function containsError(element) {
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="options.secretQuestionNew" /></td>
+		<td><spring:message code="options.login.secretQuestionNew" /></td>
 		<td>
 			<spring:bind path="opts.secretQuestionNew">
 				<input type="text" name="${status.expression}"
@@ -225,7 +258,7 @@ function containsError(element) {
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="options.secretAnswerNew" /></td>
+		<td><spring:message code="options.login.secretAnswerNew" /></td>
 		<td>
 			<spring:bind path="opts.secretAnswerNew">
 				<input type="password" name="${status.expression}"
@@ -237,7 +270,7 @@ function containsError(element) {
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="options.secretAnswerConfirm" /></td>
+		<td><spring:message code="options.login.secretAnswerConfirm" /></td>
 		<td>
 			<spring:bind path="opts.secretAnswerConfirm">
 				<input type="password" name="${status.expression}"

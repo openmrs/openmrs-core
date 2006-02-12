@@ -3,8 +3,10 @@ package org.openmrs.web.controller.patient;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +15,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientAddress;
@@ -245,8 +248,19 @@ public class PatientFormController extends SimpleFormController {
 	 */
 	protected Map referenceData(HttpServletRequest request) throws Exception {
 		
+		HttpSession httpSession = request.getSession();
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
+		List<Form> forms = new Vector<Form>();
 		Map<String, Object> map = new HashMap<String, Object>();
 
+		if (context != null && context.isAuthenticated()) {
+			forms.addAll(context.getFormEntryService().getForms());
+		}
+			
+			
+		map.put("forms", forms);
+				
 		// empty objects used to create blank template in the view
 		map.put("emptyIdentifier", new PatientIdentifier());
 		map.put("emptyName", new PatientName());

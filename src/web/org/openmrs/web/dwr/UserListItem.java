@@ -11,7 +11,7 @@ public class UserListItem {
 	private Integer userId;
 	private String firstName;
 	private String lastName;
-	private String username;
+	private String systemId;
 
 	public UserListItem() { }
 		
@@ -21,7 +21,7 @@ public class UserListItem {
 			userId = user.getUserId();
 			firstName = user.getFirstName();
 			lastName = user.getLastName();
-			username = user.getUsername();
+			systemId = user.getSystemId();
 		}
 	}
 
@@ -49,12 +49,12 @@ public class UserListItem {
 		this.lastName = lastName;
 	}
 
-	public String getUsername() {
-		return username;
+	public String getSystemId() {
+		return systemId;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setSystemId(String systemId) {
+		this.systemId = systemId;
 	}
 
 }

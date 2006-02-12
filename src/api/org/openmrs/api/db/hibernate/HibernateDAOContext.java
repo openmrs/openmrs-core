@@ -52,7 +52,7 @@ public class HibernateDAOContext implements DAOContext {
 	 * @see org.openmrs.api.context.Context#authenticate(String, String)
 	 * @throws ContextAuthenticationException
 	 */
-	public User authenticate(String username, String password)
+	public User authenticate(String login, String password)
 			throws ContextAuthenticationException {
 
 		user = null;
@@ -61,10 +61,17 @@ public class HibernateDAOContext implements DAOContext {
 		//Session session = getSession();
 		Session session = HibernateUtil.currentSession();
 		
+		String loginWithoutDash = login;
+		if (login.length() >= 3 && login.charAt(login.length()-2) == '-')
+			loginWithoutDash = login.substring(0, login.length()-2) + login.charAt(login.length()-1);
+		
 		User candidateUser = null;
 		try {
 			candidateUser = (User) session.createQuery(
-					"from User u where u.username = ? and (u.voided is null or u.voided = 0)").setString(0, username)
+					"from User u where (u.username = ? or u.systemId = ? or u.systemId = ?) and u.voided = 0")
+					.setString(0, login)
+					.setString(1, login)
+					.setString(2, loginWithoutDash)
 					.uniqueResult();
 		} catch (HibernateException he) {
 			// TODO Auto-generated catch block
@@ -77,7 +84,7 @@ public class HibernateDAOContext implements DAOContext {
 		
 		if (candidateUser == null) {
 			throw new ContextAuthenticationException("User not found: "
-					+ username);
+					+ login);
 		}
 
 		String passwordOnRecord = (String) session.createSQLQuery(
@@ -98,7 +105,7 @@ public class HibernateDAOContext implements DAOContext {
 			user = candidateUser;
 		
 		if (user == null) {
-			log.info("Failed login (username=\"" + username + ") - " + errorMsg);
+			log.info("Failed login attempt (login=\"" + login + ") - " + errorMsg);
 			throw new ContextAuthenticationException(errorMsg);
 		}
 		
@@ -117,7 +124,7 @@ public class HibernateDAOContext implements DAOContext {
 				session.merge(user);
 		}
 		catch (Exception e) {
-			log.error("Possible attempted locking of user to double open session or: " + e.getMessage());
+			log.debug("Possible attempted locking of user to double open session or: " + e.getMessage());
 		}
 		//session.merge(user);
 		return user;

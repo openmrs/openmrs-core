@@ -40,6 +40,7 @@
 		<create creator="new" javascript="DWRUserService">
 			<param name="class" value="org.openmrs.web.dwr.DWRUserService" />
 			<include method="findUsers"/>
+			<include method="getAllUsers"/>
 		</create>
 		
 		<create creator="new" javascript="DWRObsService">
@@ -74,6 +75,7 @@
 			DWRConceptService.findConcepts(String phrase, List<String> classNames, boolean includeRetired, List<String> ignoreClassNames);
 			DWREncounterService.findEncounters(String phrase, boolean includeVoided);
 			DWRUserService.findUsers(String phrase, List<String> roles, boolean includeVoided);
+			DWRUserService.getAllUsers(List<String> roles, boolean includeVoided);
 			DWRObsService.findObs(String phrase, boolean includeVoided);
 		]]>
 	</signatures>

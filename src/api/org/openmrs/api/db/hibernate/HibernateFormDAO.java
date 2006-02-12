@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.CacheMode;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
@@ -231,6 +230,19 @@ public class HibernateFormDAO implements
 		List forms = session.createCriteria(Form.class).list();
 		
 		return forms;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.FormService#getForms(boolean)
+	 */
+	public List<Form> getForms(boolean published) throws DAOException {
+		Session session = HibernateUtil.currentSession();
+		
+		Criteria crit = session.createCriteria(Form.class);
+		
+		crit.add(Expression.eq("published", published));
+		
+		return crit.list();
 	}
 	
 	/**

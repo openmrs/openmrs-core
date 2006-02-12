@@ -110,6 +110,4 @@ public class Group implements java.io.Serializable {
 	public String toString() {
 		return this.group;
 	}
-
-
 }

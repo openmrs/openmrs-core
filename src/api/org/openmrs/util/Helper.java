@@ -1,10 +1,9 @@
 package org.openmrs.util;
 
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.Vector;
 
 public class Helper {
 
@@ -94,15 +93,15 @@ public class Helper {
 	 * Compares origList to newList returning map of differences 
 	 * @param origList
 	 * @param newList
-	 * @return Map (List toAdd, List toDelete) with respect to origList
+	 * @return [List toAdd, List toDelete] with respect to origList
 	 */
-	public static Map compareLists(List origList, List newList) {
+	public static Collection<Collection> compareLists(Collection origList, Collection newList) {
 		//TODO finish function
 		
-		HashMap map = new HashMap();
+		Collection<Collection> returnList = new Vector<Collection>();
 		
-		List toAdd = new LinkedList();
-		List toDel;
+		Collection toAdd = new LinkedList();
+		Collection toDel = new LinkedList();
 		
 		//loop over the new list. 
 		for(Iterator newListIter = newList.iterator(); newListIter.hasNext();) {
@@ -128,8 +127,10 @@ public class Helper {
 			
 		}
 		
+		returnList.add(toAdd);
+		returnList.add(toDel);
 		
-		return map;
+		return returnList;
 	}
 	
 }

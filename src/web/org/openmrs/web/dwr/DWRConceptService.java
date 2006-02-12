@@ -10,6 +10,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptWord;
+import org.openmrs.User;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.Util;
@@ -39,6 +40,13 @@ public class DWRConceptService {
 			objectList.add("Please <a href='" + request.getContextPath() + "/logout'>log in</a> again.");
 		}
 		else {
+			Integer userId = -1;
+			User u = context.getAuthenticatedUser();
+			if (u != null)
+				userId = u.getUserId();
+			
+			log.info(userId + "|" + phrase + "|" + classNames.toString());
+			
 			Locale locale = context.getLocale();
 			if (classNames == null)
 				classNames = new Vector<String>();
@@ -111,8 +119,7 @@ public class DWRConceptService {
 				}
 			} catch (Exception e) {
 				log.error(e);
-				e.printStackTrace();
-				objectList.add("Error while attempting to find concepts");
+				objectList.add("Error while attempting to find concepts - " + e.getMessage());
 			}
 		}
 		return objectList;

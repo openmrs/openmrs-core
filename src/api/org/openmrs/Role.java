@@ -3,6 +3,8 @@ package org.openmrs;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.openmrs.util.OpenmrsConstants;
+
 /**
  * Role
  * 
@@ -113,6 +115,9 @@ public class Role implements java.io.Serializable {
 	
 	public boolean hasPrivilege(String s) {
 		
+		if (this.role.equals(OpenmrsConstants.SUPERUSER_ROLE))
+			return true;
+		
 		for (Privilege p : privileges) {
 			if (p.getPrivilege().equals(s))
 				return true;
@@ -120,6 +125,5 @@ public class Role implements java.io.Serializable {
 		
 		return false;
 	}
-
 
 }

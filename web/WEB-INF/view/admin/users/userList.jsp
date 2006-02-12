@@ -15,7 +15,7 @@
 <form class="box">
 	<table>
 		<tr>
-			<th> <spring:message code="User.username"/> </th>
+			<th> <spring:message code="User.systemId"/> </th>
 			<th> <spring:message code="User.firstName"/></th>
 			<th> <spring:message code="User.lastName"/> </th>
 			<th> <spring:message code="User.roles"/>    </th>
@@ -25,7 +25,7 @@
 				<td>
 					<a href="user.form?userId=<c:out value="${user.userId}"/>"
 					   class="<c:if test="${user.voided}">retired</c:if>">
-						${user.username}
+						${user.systemId}
 					</a>
 				</td>
 				<td>${user.firstName}</td>

@@ -1,5 +1,6 @@
 package org.openmrs.api.db.hibernate;
 
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
@@ -9,6 +10,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.NonUniqueObjectException;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
@@ -21,6 +23,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.UserDAO;
+import org.openmrs.util.Helper;
 import org.openmrs.util.Security;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
@@ -41,23 +44,22 @@ public class HibernateUserDAO implements
 	public void createUser(User user, String password) {
 		Session session = HibernateUtil.currentSession();
 
-		User u = (User)session.createQuery("from User u where u.username = ?")
-						.setString(0, user.getUsername())
-						.uniqueResult();
-		
-		//TODO check for illegal characters in username
-		
-		if (u != null)
+		if (hasDuplicateUsername(user))
 			throw new DAOException("Username currently in use by '" + user.getFirstName() + " " + user.getLastName() + "'");
 		
 		try {
 			//add all data minus the password as a new user
 			HibernateUtil.beginTransaction();
-			user.setDateCreated(new Date());
-			user.setCreator(context.getAuthenticatedUser());
-			session.saveOrUpdate(user);
+			
+			String systemId = generateSystemId();
+			Integer checkDigit = Helper.getCheckDigit(systemId);
+			user.setSystemId(systemId + "-" + checkDigit);
+			
+			user = updateProperties(user);
+			
+			session.save(user);
 			HibernateUtil.commitTransaction();
-
+			
 			
 			//update the new user with the password
 			HibernateUtil.beginTransaction();
@@ -98,31 +100,39 @@ public class HibernateUserDAO implements
 	}
 
 	/**
-	 * @see org.openmrs.api.db.UserService#isDuplicateUsername(java.lang.String)
+	 * @see org.openmrs.api.db.UserService#hasDuplicateUsername(org.openmrs.User)
 	 */
-	public boolean isDuplicateUsername(User user) {
+	public boolean hasDuplicateUsername(User user) {
 		Session session = HibernateUtil.currentSession();
 
 		String username = user.getUsername();
-		if (username == null)
-			username = "";
+		if (username == null || username.length() == 0)
+			username = "-";
+		String systemId = user.getSystemId();
+		if (systemId == null || username.length() == 0)
+			systemId = "-";
+		
 		Integer userid = user.getUserId();
 		if (userid == null)
 			userid = new Integer(-1);
 		
+		String usernameWithCheckDigit = username;
+		try {
+			Integer cd = Helper.getCheckDigit(username);
+			usernameWithCheckDigit = usernameWithCheckDigit + "-" + cd;
+		}
+		catch (Exception e) {}
+		
 		Integer count = (Integer) session.createQuery(
-				"select count(*) from User u where u.username = ? and u.userId <> ?")
-				.setString(0, username)
-				.setInteger(1, userid)
+				"select count(*) from User u where (u.username = :uname1 or u.systemId = :uname2 or u.username = :sysid1 or u.systemId = :sysid2 or u.systemId = :uname3) and u.userId <> :uid")
+				.setString("uname1", username)
+				.setString("uname2", username)
+				.setString("sysid1", systemId)
+				.setString("sysid2", systemId)
+				.setString("uname3", usernameWithCheckDigit)
+				.setInteger("uid", userid)
 				.uniqueResult();
-		/*
-		List<User> users = session
-				.createQuery(
-						"from User u where u.username = ? and u.userId <> ?")
-				.setString(0, username)
-				.setInteger(1, userid)
-				.list();
-		*/
+
 		log.debug("# users found: " + count);
 		if (count == null || count == 0)
 			return false;
@@ -138,7 +148,7 @@ public class HibernateUserDAO implements
 		User user = (User) session.get(User.class, userId);
 		
 		if (user == null) {
-			log.warn("request for user '" + userId + "' not found");
+			log.warn("request or user '" + userId + "' not found");
 			throw new ObjectRetrievalFailureException(User.class, userId);
 		}
 		return user;
@@ -149,7 +159,7 @@ public class HibernateUserDAO implements
 	 */
 	public List<User> getUsers() throws DAOException {
 		Session session = HibernateUtil.currentSession();
-		List<User> users = session.createQuery("from User u order by u.username")
+		List<User> users = session.createQuery("from User u order by u.userId")
 								.list();
 		
 		return users;
@@ -168,19 +178,18 @@ public class HibernateUserDAO implements
 			Session session = HibernateUtil.currentSession();
 			try {
 				HibernateUtil.beginTransaction();
+				user = updateProperties(user);
 				try {
 					session.update(user);
 				}
 				catch (NonUniqueObjectException e) {
-					User u = (User)session.merge(user);
-					session.evict(u);
-					session.update(user);
+					session.merge(user);
 				}
 				HibernateUtil.commitTransaction();
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new DAOException(e.getMessage());
+				throw new DAOException(e);
 			}
 		}
 	}
@@ -460,10 +469,13 @@ public class HibernateUserDAO implements
 		for (String n : names) {
 			if (n != null && n.length() > 0) {
 				criteria.add(Expression.or(
-						Expression.like("firstName", n, MatchMode.START),
-						Expression.like("lastName", n, MatchMode.START)
+						Expression.like("lastName", n, MatchMode.START),
+						Expression.or(
+							Expression.like("firstName", n, MatchMode.START),
+							Expression.like("systemId", n, MatchMode.START)
+							)
 						)
-				);
+					);
 			}
 		}
 		
@@ -473,5 +485,52 @@ public class HibernateUserDAO implements
 			criteria.add(Expression.eq("voided", false));
 
 		return criteria.list();
+	}
+	
+	public List<User> getAllUsers(List<String> roles, boolean includeVoided) {
+		
+		Session session = HibernateUtil.currentSession();
+		
+		List<User> users = new Vector<User>();
+		
+		Criteria criteria = session.createCriteria(User.class);
+			
+		if (roles != null && roles.size() > 0)
+			criteria.createCriteria("roles", "r").add(Expression.in("role", roles));
+		if (includeVoided == false)
+			criteria.add(Expression.eq("voided", false));
+
+		return criteria.list();
+	}
+	
+	/**
+	 * Get/generate/find the next system id to be doled out.  Assume check digit /not/ applied
+	 * in this method
+	 * @return new system id
+	 */
+	public String generateSystemId() {
+		Session session = HibernateUtil.currentSession();
+		
+		String sql = "select max(user_id) as user_id from users";
+		
+		Query query = session.createSQLQuery(sql);
+		
+		Integer id = ((BigInteger)query.uniqueResult()).intValue() + 1;
+		
+		return id.toString();
+	}
+	
+	private User updateProperties(User user) {
+		
+		if (user.getCreator() == null) {
+			user.setDateCreated(new Date());
+			user.setCreator(context.getAuthenticatedUser());
+		}
+		
+		user.setChangedBy(context.getAuthenticatedUser());
+		user.setDateChanged(new Date());
+		
+		return user;
+		
 	}
 }

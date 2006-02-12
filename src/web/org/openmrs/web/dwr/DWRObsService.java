@@ -68,8 +68,7 @@ public class DWRObsService {
 				}
 			} catch (Exception e) {
 				log.error(e);
-				e.printStackTrace();
-				objectList.add("Error while attempting to find obs");
+				objectList.add("Error while attempting to find obs - " + e.getMessage());
 			}
 		}
 		return objectList;

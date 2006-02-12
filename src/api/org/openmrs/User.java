@@ -23,6 +23,7 @@ public class User extends Person implements java.io.Serializable {
 
 	// Fields
 
+	private String systemId;
 	private Integer userId;
 	private String username;
 	private String firstName;
@@ -58,16 +59,16 @@ public class User extends Person implements java.io.Serializable {
 	 * @return
 	 */
 	public boolean isSuperUser() {
-		Set<Role> roles = getRoles();
+		Set<Role> tmproles = getRoles();
 
 		if (groups != null)
 			for (Group g : groups) {
-				roles.addAll(g.getRoles());
+				tmproles.addAll(g.getRoles());
 			}
 		
 		Role role = new Role(OpenmrsConstants.SUPERUSER_ROLE);	//default administrator with complete control
 		
-		if (roles.contains(role))
+		if (tmproles.contains(role))
 			return true;
 		
 		return false;
@@ -83,28 +84,22 @@ public class User extends Person implements java.io.Serializable {
 		if (isSuperUser())
 			return true;
 		
-		Set<Role> roles = getRoles();
+		Set<Role> tmproles = getRoles();
 
 		if (groups != null)
 			for (Group g : groups) {
-				roles.addAll(g.getRoles());
+				tmproles.addAll(g.getRoles());
 			}
-		
-		roles.add(new Role(OpenmrsConstants.ANONYMOUS_ROLE));
 		
 		Role role;
 		
 		Privilege oPrivilege = new Privilege(privilege);
 		
-		for (Iterator i = roles.iterator(); i.hasNext();) {
+		for (Iterator i = tmproles.iterator(); i.hasNext();) {
 			role = (Role) i.next();
 		
-			if (role.getPrivileges() == null)
-				log.debug("role.getPrivileges==null for role: " + role.getRole());
-			else
-				if (role.getPrivileges().contains(oPrivilege)) {
-					return true;
-				}
+			if (role.hasPrivilege(oPrivilege.getPrivilege()))
+				return true;
 		}
 
 		return false;
@@ -112,23 +107,24 @@ public class User extends Person implements java.io.Serializable {
 	
 	public Collection<Privilege> getPrivileges() {
 		Set<Privilege> privileges = new HashSet<Privilege>();
-		Set<Role> roles = getRoles();
+		Set<Role> tmproles = getRoles();
 
 		if (groups != null)
 			for (Group g : groups) {
-				roles.addAll(g.getRoles());
+				tmproles.addAll(g.getRoles());
 			}
 		
-		roles.addAll(getRoles());
+		tmproles.addAll(getRoles());
 		
 		Role role;
-		for (Iterator i = roles.iterator(); i.hasNext();) {
+		for (Iterator i = tmproles.iterator(); i.hasNext();) {
 			role = (Role) i.next();
-			privileges.addAll(role.getPrivileges());
+			Collection<Privilege> privs = role.getPrivileges();
+			if (privs != null)
+				privileges.addAll(privs);
 		}
 		
 		return privileges;
-		
 	}
 	
 	public boolean equals(Object obj) {
@@ -256,6 +252,20 @@ public class User extends Person implements java.io.Serializable {
 	public void removeGroup(Group group) {
 		if (groups != null)
 			groups.remove(group);
+	}
+
+	/**
+	 * @return Returns the systemId.
+	 */
+	public String getSystemId() {
+		return systemId;
+	}
+
+	/**
+	 * @param systemId The systemId to set.
+	 */
+	public void setSystemId(String systemId) {
+		this.systemId = systemId;
 	}
 
 	/**

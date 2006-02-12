@@ -32,6 +32,8 @@ public interface FormDAO {
 	 */
 	public Form getForm(Integer formId) throws DAOException;
 	
+	public List<Form> getForms(boolean published) throws DAOException;
+	
 	/**
 	 * Save changes to form
 	 * @param form

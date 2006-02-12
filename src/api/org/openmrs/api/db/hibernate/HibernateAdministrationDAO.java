@@ -10,9 +10,11 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Criteria;
 import org.hibernate.NonUniqueObjectException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.criterion.Expression;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
@@ -42,9 +44,12 @@ public class HibernateAdministrationDAO implements
 	protected Log log = LogFactory.getLog(getClass());
 	
 	private Context context;
+	private String authUserId;
 	
 	public HibernateAdministrationDAO(Context c) {
 		this.context = c;
+		if (c.isAuthenticated())
+			authUserId = c.getAuthenticatedUser().getUserId().toString();
 	}
 
 	/**
@@ -827,6 +832,13 @@ public class HibernateAdministrationDAO implements
 	public void deleteConceptWord(Concept concept) throws DAOException {
 		
 		Session session = HibernateUtil.currentSession();
+		
+		Criteria crit = session.createCriteria(ConceptWord.class);
+		crit.add(Expression.eq("concept", concept));
+		
+		List<ConceptWord> words = crit.list();
+		
+		log.info(authUserId + "|ConceptWord|" + words);
 		
 		HibernateUtil.beginTransaction();
 			session.createQuery("delete from ConceptWord where concept_id = :c")

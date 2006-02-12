@@ -9,7 +9,7 @@
 <!-- *********************************************************** -->
 <project name="OpenMRS" default="dist">
 	<description>
-    	Open-Source EMR for Developing Countries
+    	${build.description}
     </description>
 
 	<tstamp>

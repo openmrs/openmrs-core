@@ -56,6 +56,10 @@ public class ConceptService {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_ADD_CONCEPTS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_CONCEPTS);
 		
+		String authUserId = context.getAuthenticatedUser().getUserId().toString();
+		
+		log.info(authUserId + "|" + concept.getConceptId().toString());
+		
 		getConceptDAO().createConcept(concept);
 	}
 	
@@ -86,6 +90,10 @@ public class ConceptService {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_CONCEPTS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_CONCEPTS);
 		
+		String authUserId = context.getAuthenticatedUser().getUserId().toString();
+		
+		log.info(authUserId + "|" + concept.getConceptId().toString());
+		
 		getConceptDAO().updateConcept(concept);
 	}
 	
@@ -100,6 +108,10 @@ public class ConceptService {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_DELETE_CONCEPTS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_DELETE_CONCEPTS);
 		
+		String authUserId = context.getAuthenticatedUser().getUserId().toString();
+		
+		log.info(authUserId + "|" + concept.getConceptId().toString());
+		
 		getConceptDAO().deleteConcept(concept);
 	}
 	
@@ -111,6 +123,10 @@ public class ConceptService {
 	public void voidConcept(Concept concept, String reason) {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_CONCEPTS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_CONCEPTS);
+		
+		String authUserId = context.getAuthenticatedUser().getUserId().toString();
+		
+		log.info(authUserId + "|" + concept.getConceptId().toString());
 		
 		getConceptDAO().voidConcept(concept, reason);
 	}
@@ -277,5 +293,4 @@ public class ConceptService {
 	public Integer getNextAvailableId() {
 		return getConceptDAO().getNextAvailableId();
 	}
-
 }
