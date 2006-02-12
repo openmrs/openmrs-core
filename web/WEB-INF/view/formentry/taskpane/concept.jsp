@@ -1,8 +1,8 @@
-<%@ include file="/WEB-INF/template/include.jsp" %>
+<%@ include file="/WEB-INF/template/include.jsp"%>
 
 <openmrs:require privilege="Form Entry" otherwise="/login.htm" redirect="/formentry/taskpane/concept.htm" />
 
-<%@ include file="/WEB-INF/template/header.jsp" %>
+<%@ include file="/WEB-INF/template/header.jsp"%>
 
 <script src='<%= request.getContextPath() %>/dwr/interface/DWRConceptService.js'></script>
 <script src='<%= request.getContextPath() %>/dwr/engine.js'></script>
@@ -86,6 +86,14 @@
 		else
 			this.name = n;
 	}
+	
+	/*
+	   Disable concept editing from within the taskpane 
+	   act like simple selection instead
+	*/
+	function editConcept(event, index) {
+		return selectObject(index);
+	}
 		
 </script>
 
@@ -101,18 +109,30 @@
 	}
 </style>
 
-<h1><spring:message code="diagnosis.title"/></h1>
+<h1>
+	<spring:message code="diagnosis.title" />
+</h1>
 
 <div id="preProposedAlert" class="alert">
-	<br><spring:message code="ConceptProposal.proposeDuplicate"/><br>
+	<br>
+	<spring:message code="ConceptProposal.proposeDuplicate" />
+	<br>
 </div>
 
 <form method="POST" onSubmit="return search(0, event);">
 	<input name="mode" type="hidden" value='${request.mode}'>
-	<input name="phrase" id="phrase" type="text" class="prompt" size="10" onkeyup="search(400, event)"/> &nbsp;
-	<input type="checkbox" id="verboseListing" value="true" onclick="search(0, event); phrase.focus();"><label for="verboseListing"><spring:message code="dictionary.verboseListing"/></label>
+	<input name="phrase" id="phrase" type="text" class="prompt" size="10" onkeyup="search(400, event)" />
+	&nbsp;
+	<input type="checkbox" id="verboseListing" value="true" onclick="search(0, event); phrase.focus();">
+	<label for="verboseListing">
+		<spring:message code="dictionary.verboseListing" />
+	</label>
 	<br />
-	<small><em><spring:message code="general.search.hint"/></em></small>
+	<small>
+		<em>
+			<spring:message code="general.search.hint" />
+		</em>
+	</small>
 </form>
 
 <table border="0">
@@ -121,14 +141,21 @@
 </table>
 
 <div id="proposeConceptForm">
-    <br>
+	<br>
 	<table>
 		<tr>
-			<td><spring:message code="ConceptProposal.originalText"/></td>
-			<td><input type="text" name="originalText" id="proposedText" value="" size="40" /></td>
+			<td>
+				<spring:message code="ConceptProposal.originalText" />
+			</td>
+			<td>
+				<input type="text" name="originalText" id="proposedText" value="" size="40" />
+			</td>
 		</tr>
 	</table>
-	<span class="alert"><spring:message code="ConceptProposal.proposeWarning"/></span><br/>
+	<span class="alert">
+		<spring:message code="ConceptProposal.proposeWarning" />
+	</span>
+	<br />
 	<input type="button" onclick="proposeConcept()" value="<spring:message code="ConceptProposal.propose" />" />
 </div>
 
@@ -138,4 +165,4 @@
   document.getElementById('phrase').focus();
 </script>
 
-<%@ include file="/WEB-INF/template/footer.jsp" %>
+<%@ include file="/WEB-INF/template/footer.jsp"%>

@@ -80,6 +80,7 @@
     
     <!-- API -->
     <path id="api.compile.classpath">
+		<fileset dir="${commons-io.dir}" includes="*.jar" />
 		<fileset dir="${commons-logging.dir}" includes="*.jar" />
 		<fileset dir="${hibernate.dir}" includes="*.jar" />
 		<fileset dir="${ibatis.dir}" includes="*.jar" />
@@ -98,6 +99,7 @@
 		<pathelement location="${dist.dir}/${app.name}-api-${app.version}.jar" />
 		<fileset dir="${tomcat.dir}" includes="*.jar" />
 		<fileset dir="${dwr.dir}" includes="*.jar" />
+		<fileset dir="${commons-io.dir}" includes="*.jar" />
 		<fileset dir="${commons-logging.dir}" includes="*.jar" />
 		<fileset dir="${hibernate.dir}" includes="*.jar" />
 		<fileset dir="${jstl.dir}" includes="*.jar" />
