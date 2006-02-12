@@ -30,6 +30,15 @@
 		<servlet-name>formDownloadServlet</servlet-name>
 		<url-pattern>/formDownload</url-pattern>
 	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>formUploadServlet</servlet-name>
+		<servlet-class>org.openmrs.web.FormUploadServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>formUploadServlet</servlet-name>
+		<url-pattern>/formUpload</url-pattern>
+	</servlet-mapping>
 
 	<servlet>
 		<servlet-name>downloadDictionaryServlet</servlet-name>

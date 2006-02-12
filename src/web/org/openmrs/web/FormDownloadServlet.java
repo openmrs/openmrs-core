@@ -52,7 +52,7 @@ public class FormDownloadServlet extends HttpServlet {
 		}
 		else if (formId == -1) {
 			type = "adultReturn_local";
-			name += "adult_return_visit_localhost";
+			name += "adult_return_visit_local";
 			formId = 14;
 		}
 		

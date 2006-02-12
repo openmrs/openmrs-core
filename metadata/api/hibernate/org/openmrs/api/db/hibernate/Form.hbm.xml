@@ -16,15 +16,28 @@
 
 		<property name="version" type="java.lang.String" 
 			column="version" not-null="true" length="50" />
+		
+		<property name="build" type="java.lang.Integer" column="build" 
+			not-null="false" />
+		
+		<property name="published" type="boolean" column="published"
+			length="1" not-null="false" />
 
 		<property name="description" type="java.lang.String" 
 			column="description" length="1024" />
 
+		<many-to-one name="encounterType" class="EncounterType">
+			<column name="encounter_type" />
+		</many-to-one>
+
 		<property name="schemaNamespace" type="java.lang.String" 
 			column="schema_namespace" length="255" />
 
-		<property name="definition" type="java.lang.String" 
-			column="definition" length="2147483647" />
+		<property name="uri" type="java.lang.String" 
+			column="uri" length="255" />
+			
+		<property name="xslt" type="java.lang.String"
+			column="xslt" length="2147483647" />
 
 		<many-to-one name="creator" class="User" not-null="true">
 			<column name="creator" />
@@ -33,7 +46,7 @@
 		<property name="dateCreated" type="java.util.Date" 
 			column="date_created" not-null="true" length="19" />
 
-		<many-to-one name="changedBy" class="org.openmrs.User">
+		<many-to-one name="changedBy" class="User">
 			<column name="changed_by" />
 		</many-to-one>
 

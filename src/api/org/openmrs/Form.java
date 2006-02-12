@@ -20,9 +20,13 @@ public class Form implements java.io.Serializable {
 	private Integer formId;
 	private String name;
 	private String version;
+	private Integer build;
+	private Boolean published = false;
 	private String description;
+	private EncounterType encounterType;
 	private String schemaNamespace;
-	private String definition;
+	private String uri;
+	private String xslt;
 	private User creator;
 	private Date dateCreated;
 	private User changedBy;
@@ -117,6 +121,35 @@ public class Form implements java.io.Serializable {
 	}
 
 	/**
+	 * @return Returns the build number
+	 */
+	public Integer getBuild() {
+		return build;
+	}
+
+	/**
+	 * @param build
+	 * 			The build number to set
+	 */
+	public void setBuild(Integer build) {
+		this.build = build;
+	}
+
+	/**
+	 * @return Returns the published.
+	 */
+	public Boolean getPublished() {
+		return published;
+	}
+
+	/**
+	 * @param published The published to set.
+	 */
+	public void setPublished(Boolean published) {
+		this.published = published;
+	}
+
+	/**
 	 * @return Returns the description.
 	 */
 	public String getDescription() {
@@ -129,6 +162,20 @@ public class Form implements java.io.Serializable {
 	 */
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	/**
+	 * @return the type of encounter associated with this form
+	 */
+	public EncounterType getEncounterType() {
+		return encounterType;
+	}
+
+	/**
+	 * @param encounterType type of encounter associated with this form
+	 */
+	public void setEncounterType(EncounterType encounterType) {
+		this.encounterType = encounterType;
 	}
 
 	/**
@@ -147,18 +194,29 @@ public class Form implements java.io.Serializable {
 	}
 
 	/**
-	 * @return Returns the definition.
+	 * @return location of the actual form
 	 */
-	public String getDefinition() {
-		return definition;
+	public String getUri() {
+		return uri;
 	}
 
 	/**
-	 * @param definition
-	 *            The definition to set.
+	 * @param uri
+	 * 			The location of the actual form
 	 */
-	public void setDefinition(String definition) {
-		this.definition = definition;
+	public void setUri(String uri) {
+		this.uri = uri;
+	}
+
+	/**
+	 * @return Returns the creator
+	 */
+	public String getXslt() {
+		return xslt;
+	}
+
+	public void setXslt(String xslt) {
+		this.xslt = xslt;
 	}
 
 	/**

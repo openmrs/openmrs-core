@@ -16,6 +16,9 @@
 		<c:if test="<%= request.getRequestURI().contains("taskpane") || (session.getAttribute("__openmrs_login_redirect")!=null && ((String)session.getAttribute("__openmrs_login_redirect")).contains("taskpane")) %>">
 			<link href="<%= request.getContextPath() %>/formentry/taskpane/taskpane.css" type="text/css" rel="stylesheet" />
 			<script src="<%= request.getContextPath() %>/formentry/taskpane/taskpane.js"></script>
+			<meta http-equiv="msthemecompatible" content="yes" />
+			<meta http-equiv="pragma" content="no-cache" />
+			<meta http-equiv="expires" content="-1" />
 		</c:if>
 	</head>
 

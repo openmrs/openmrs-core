@@ -42,7 +42,7 @@ public class FormXmlTemplateFragment {
 				+ enterer.getFirstName() + " " + enterer.getLastName()
 				+ "</enterer>\n" + "    <date_entered>"
 				+ FormUtil.dateToString() + "</date_entered>\n"
-				+ "    <session />\n"
+				+ "    <session>@SESSION@</session>\n"
 				+ "  </header>\n";
 	}
 
