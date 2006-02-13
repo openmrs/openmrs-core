@@ -1,7 +1,7 @@
-package org.openmrs.form.db;
+package org.openmrs.formentry.db;
 
 import org.openmrs.api.db.DAOException;
-import org.openmrs.form.FormEntryQueue;
+import org.openmrs.formentry.FormEntryQueue;
 
 public interface FormEntryDAO {
 

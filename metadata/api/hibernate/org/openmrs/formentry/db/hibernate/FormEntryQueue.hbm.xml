@@ -5,7 +5,7 @@
 
 <hibernate-mapping package="org.openmrs">
 
-	<class name="org.openmrs.form.FormEntryQueue" table="formentry_queue">
+	<class name="org.openmrs.formentry.FormEntryQueue" table="formentry_queue">
 
 		<id name="formEntryQueueId" type="int" column="formentry_queue_id" 
 			unsaved-value="0">
@@ -14,6 +14,14 @@
 
 		<property name="formData" type="java.lang.String" 
 			column="form_data" not-null="true" length="16777215" />
+			
+		<property name="status" type="int" column="status" not-null="true" />
+		
+		<property name="dateProcessed" type="java.util.Date"
+			column="date_processed" />
+		
+		<property name="errorMsg" type="java.lang.String"
+			column="error_msg" />
 
 		<many-to-one name="creator" class="User" not-null="true">
 			<column name="creator" />

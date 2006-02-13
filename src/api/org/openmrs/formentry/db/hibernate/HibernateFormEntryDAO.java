@@ -1,4 +1,4 @@
-package org.openmrs.form.db.hibernate;
+package org.openmrs.formentry.db.hibernate;
 
 import java.math.BigInteger;
 import java.util.Date;
@@ -10,8 +10,8 @@ import org.hibernate.Session;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.hibernate.HibernateUtil;
-import org.openmrs.form.FormEntryQueue;
-import org.openmrs.form.db.FormEntryDAO;
+import org.openmrs.formentry.FormEntryQueue;
+import org.openmrs.formentry.db.FormEntryDAO;
 
 public class HibernateFormEntryDAO implements FormEntryDAO {
 

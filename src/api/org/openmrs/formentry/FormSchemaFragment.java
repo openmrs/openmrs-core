@@ -13,7 +13,7 @@ import org.openmrs.Drug;
  * 
  * @author Burke Mamlin
  * @version 1.0
- * @see org.openmrs.form.FormSchemaBuilder
+ * @see org.openmrs.formentry.FormSchemaBuilder
  */
 public class FormSchemaFragment {
 

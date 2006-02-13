@@ -2,7 +2,7 @@ package org.openmrs.api.db;
 
 import org.openmrs.User;
 import org.openmrs.api.context.ContextAuthenticationException;
-import org.openmrs.form.db.FormEntryDAO;
+import org.openmrs.formentry.db.FormEntryDAO;
 import org.openmrs.reporting.db.ReportDAO;
 
 /**

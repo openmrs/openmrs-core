@@ -16,7 +16,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.FormEntryService;
 import org.openmrs.api.context.Context;
-import org.openmrs.form.FormEntryQueue;
 import org.openmrs.web.WebConstants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

@@ -10,7 +10,7 @@ import org.openmrs.FormField;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOContext;
 import org.openmrs.api.db.FormDAO;
-import org.openmrs.form.FormSchemaBuilder;
+import org.openmrs.formentry.FormSchemaBuilder;
 import org.openmrs.util.OpenmrsConstants;
 
 /**

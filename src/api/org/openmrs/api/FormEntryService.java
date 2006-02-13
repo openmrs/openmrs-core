@@ -15,8 +15,8 @@ import org.openmrs.Tribe;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOContext;
-import org.openmrs.form.FormEntryConstants;
-import org.openmrs.form.FormEntryQueue;
+import org.openmrs.formentry.FormEntryConstants;
+import org.openmrs.formentry.FormEntryQueue;
 import org.openmrs.util.OpenmrsConstants;
 
 /**

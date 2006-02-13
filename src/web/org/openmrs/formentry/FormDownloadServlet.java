@@ -13,7 +13,6 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Form;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
-import org.openmrs.form.FormXmlTemplateBuilder;
 import org.openmrs.web.WebConstants;
 
 public class FormDownloadServlet extends HttpServlet {
