@@ -34,7 +34,7 @@ var getCellContent = function(conceptHit) {
     	}	
 	    else {
 			var str = "";
-			str += "<a href=\"#selectObject\" onClick=\"return selectObject('" + searchIndex + "');\" onDblClick=\"return editConcept(event, '" + searchIndex + "')\" ";
+			str += "<a href=\"#selectObject\" onClick=\"return false; return selectObject('" + searchIndex + "');\" onDblClick=\"return editConcept(event, '" + searchIndex + "')\" ";
 			str += "class='searchHit'>";
 			if (conceptHit.synonym != "") {
 				str += " <span class='mainHit'>" + conceptHit.synonym + "</span>";
