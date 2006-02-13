@@ -1,8 +1,13 @@
-// Reference to InfoPath document
-var oXDocument = window.external.Window.XDocument;
 
-// Reference to XML DOM in InfoPath's active window
-var oDOM = oXDocument.DOM;
+if (window.external != null) {
+	// Reference to InfoPath document
+	var oXDocument = window.external.Window.XDocument;
+}
+
+if (typeof oXDocument != 'undefined') {
+	// Reference to XML DOM in InfoPath's active window
+	var oDOM = oXDocument.DOM;
+}
 
 // Clear xsi:nil entry (needed before adding children to nodes)
 function clearNil(node) {

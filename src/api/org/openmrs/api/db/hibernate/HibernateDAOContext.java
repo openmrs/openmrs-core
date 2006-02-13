@@ -105,7 +105,7 @@ public class HibernateDAOContext implements DAOContext {
 			user = candidateUser;
 		
 		if (user == null) {
-			log.info("Failed login attempt (login=\"" + login + ") - " + errorMsg);
+			log.info("Failed login attempt (login=" + login + ") - " + errorMsg);
 			throw new ContextAuthenticationException(errorMsg);
 		}
 		

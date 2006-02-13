@@ -62,6 +62,7 @@
     <!-- Customization properties -->
     <property name="custom.template.dir" value="web/WEB-INF/template" />
     <property name="custom.style.css.file" value="web/style.css" />
+    <property name="custom.index.jsp.file" value="web/WEB-INF/view/index.jsp" />
     <property name="custom.images.dir" value="web/images" />
     
     <!-- =================================================================== -->

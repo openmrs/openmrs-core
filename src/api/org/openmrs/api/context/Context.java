@@ -228,6 +228,7 @@ public class Context {
 		
 		// if a user has logged in, check their privileges
 		if (isAuthenticated()) {
+			
 			// check user's privileges
 			if (user.hasPrivilege(privilege))
 				return true;

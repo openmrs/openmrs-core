@@ -125,6 +125,7 @@ h1, h2, h3, h4, h5 {
 }
 
 #patientSummary { font-size: 1.1em; }
+#patientSummary .boxHeader { font-size: 1.55em;}
 #patientSummary { /*width: 700px;*/ }
 
 .patientIdentifier {
@@ -313,3 +314,6 @@ fieldset {
 	background-color: whitesmoke;
 }
 	
+.webappName {
+	text-transform:capitalize;
+}

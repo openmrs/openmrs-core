@@ -8,9 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
-import org.openmrs.api.UserService;
+import org.openmrs.api.FormEntryService;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 
 import uk.ltd.getahead.dwr.WebContextFactory;
@@ -34,14 +33,20 @@ public class DWRUserService {
 		}
 		else {
 			try {
-				UserService us = context.getUserService();
+				Integer userId = -1;
+				User us = context.getAuthenticatedUser();
+				if (us != null)
+					userId = us.getUserId();
+				
+				log.info(userId + "|" + searchValue + "|" + roles.toString());
+				
+				FormEntryService fs = context.getFormEntryService();
 				List<User> users = new Vector<User>();
 				
 				if (roles == null) 
 					roles = new Vector<String>();
 				
-				context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
-				users.addAll(us.findUsers(searchValue, roles, includeVoided));
+				users.addAll(fs.findUsers(searchValue, roles, includeVoided));
 				
 				userList = new Vector(users.size());
 				
@@ -52,13 +57,15 @@ public class DWRUserService {
 				log.error(e);
 				userList.add("Error while attempting to find users - " + e.getMessage());
 			}
-			finally {
-				context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+			
+			if (userList.size() == 0) {
+				userList.add("No users found. Please search again.");
 			}
 		}
 		return userList;
 	}
 
+	
 	public Vector getAllUsers(List<String> roles, boolean includeVoided) {
 		
 		Vector userList = new Vector();
@@ -74,26 +81,23 @@ public class DWRUserService {
 		}
 		else {
 			try {
-				UserService us = context.getUserService();
+				FormEntryService fs = context.getFormEntryService();
 				List<User> users = new Vector<User>();
 				
 				if (roles == null) 
 					roles = new Vector<String>();
 				
-				context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
-				users.addAll(us.getAllUsers(roles, includeVoided));
+				users.addAll(fs.getAllUsers(roles, includeVoided));
 				
 				userList = new Vector(users.size());
 				
 				for (User u : users) {
 					userList.add(new UserListItem(u));
 				}
+				
 			} catch (Exception e) {
 				log.error(e);
 				userList.add("Error while attempting to get users - " + e.getMessage());
-			}
-			finally {
-				context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
 			}
 		}
 		return userList;

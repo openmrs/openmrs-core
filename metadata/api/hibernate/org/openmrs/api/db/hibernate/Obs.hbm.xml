@@ -11,6 +11,9 @@
 			<generator class="native" />
 		</id>
 
+		<property name="patientId" type="java.lang.Integer" length="11" 
+			column="patient_id" not-null="true" insert="false" update="false" />
+			
 		<property name="obsDatetime" type="java.util.Date"
 			column="obs_datetime" not-null="true" length="19" />
 		<property name="obsGroupId" type="java.lang.Integer"

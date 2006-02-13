@@ -27,6 +27,7 @@ public class Obs implements java.io.Serializable {
 	protected String valueModifier;
 	protected String valueText;
 	protected String comment;
+	protected Integer patientId;
 	protected Patient patient;
 	protected Order order;
 	protected Location location;
@@ -250,6 +251,14 @@ public class Obs implements java.io.Serializable {
 	 */
 	public void setPatient(Patient patient) {
 		this.patient = patient;
+	}
+
+	public Integer getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(Integer patientId) {
+		this.patientId = patientId;
 	}
 
 	/**

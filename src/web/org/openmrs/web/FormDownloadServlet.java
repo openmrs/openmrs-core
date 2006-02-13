@@ -58,11 +58,10 @@ public class FormDownloadServlet extends HttpServlet {
 		
 		String url = request.getRequestURL().toString();
 		url = url.substring(0, url.lastIndexOf("/"));
+		url = url.substring(0, url.lastIndexOf("/"));
 		url += "/formentry/forms/";
 	
 		url += form.getUri();
-		
-		url += ".xsn";
 		
 		String xmldoc = new FormXmlTemplateBuilder(context, form, url).getXmlTemplate(patient);
 		

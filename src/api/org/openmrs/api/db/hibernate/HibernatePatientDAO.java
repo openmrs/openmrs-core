@@ -93,8 +93,8 @@ public class HibernatePatientDAO implements PatientDAO {
 		
 		Query query;
 		
-		String sql = "select patient from Patient patient where patient.identifiers.identifier = :id";
-		String order = " order by patient.name.givenName asc, patient.name.middleName asc, patient.name.familyName asc";
+		String sql = "select patient from Patient patient, PatientName name where patient.identifiers.identifier = :id and patient = name.patient";
+		String order = " order by name.givenName asc, name.middleName asc, name.familyName asc";
 		
 		if (includeVoided) {
 			query = session.createQuery(sql + order);

@@ -116,7 +116,7 @@
 			<c:forEach items="${forms}" var="form">
 				<tr>
 					<td><input type="radio" name="formId" value="${form.formId}" id="${form.formId}"></td>
-					<td><label for="${form.formId}">${form.name}</label></td>
+					<td><label for="${form.formId}">${form.name} (v.${form.version}<c:if test="${form.build != null}">-${form.build}</c:if>)</label></td>
 				</tr>
 			</c:forEach>
 		</table>

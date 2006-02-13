@@ -93,12 +93,10 @@ public class User extends Person implements java.io.Serializable {
 		
 		Role role;
 		
-		Privilege oPrivilege = new Privilege(privilege);
-		
 		for (Iterator i = tmproles.iterator(); i.hasNext();) {
 			role = (Role) i.next();
 		
-			if (role.hasPrivilege(oPrivilege.getPrivilege()))
+			if (role.hasPrivilege(privilege))
 				return true;
 		}
 

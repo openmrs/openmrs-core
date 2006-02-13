@@ -514,13 +514,16 @@ function clearPagingBars() {
 }
 
 function getStyle(obj,styleProp) {
-	if (obj.currentStyle) {
-		var y = obj.currentStyle[styleProp];
+	if (obj != null) {
+		if (obj.currentStyle) {
+			var y = obj.currentStyle[styleProp];
+		}
+		else if (window.getComputedStyle) {
+			var y = document.defaultView.getComputedStyle(obj,null).getPropertyValue(styleProp);
+		}
+		return y;
 	}
-	else if (window.getComputedStyle) {
-		var y = document.defaultView.getComputedStyle(obj,null).getPropertyValue(styleProp);
-	}
-	return y;
+	return '';
 }
 
 function hotkey(event) {

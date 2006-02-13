@@ -55,8 +55,12 @@
 	}
 	
 	function findObjects(text) {
+		// on page startup, call search with 'All' to return all users. (or in the middle of searching, obviously)
+		if (text == 'All') {
+			DWRUserService.getAllUsers(preFillTable, roles, false);
+		}
 		//must have at least 2 characters entered or that character be a number
-		if (text.length > 1 || (parseInt(text) >= 0 && parseInt(text) <= 9)) {
+		else if (text.length > 1 || (parseInt(text) >= 0 && parseInt(text) <= 9)) {
 	    	DWRUserService.findUsers(preFillTable, text, roles, false);
 		}
 		else {
@@ -67,12 +71,19 @@
 	    return false;
 	}
 	
+	function allowAutoJump() {
+		if ($('phrase').value == 'All')
+			return false;
+		else
+			return true;
+	}
+	
 	var customCellFunctions = [getNumber, getName];
 	
 </script>
 
 <form method="post" onSubmit="return search(0, event);">
-	<input name="phrase" id="phrase" type="text" class="prompt" size="20" onKeyUp="search(400, event)"/> &nbsp;
+	<input name="phrase" id="phrase" type="text" class="prompt" size="23" onKeyUp="search(400, event)"/> &nbsp;
 	<!-- <input type="checkbox" id="verboseListing" value="true" onclick="search(0, event); phrase.focus();"><label for="verboseListing"><spring:message code="dictionary.verboseListing"/></label> -->
 	<br />
 	<small><em><spring:message code="general.search.hint"/></em></small>
@@ -84,13 +95,13 @@
 </table>
 
 <script type="text/javascript">
-  document.getElementById('phrase').focus();
+  var phrase = document.getElementById('phrase');
+  phrase.focus();
+  phrase.value = "All";
   search(0, null);
-  timeout("DWRUserService.getAllUsers(preFillTable, roles, false)", 0);
 </script>
 
-<div id="xdebugBox"></div> <script>resetForm()</script>
-
+<!-- <div id="debugBox"></div> <script>resetForm()</script> -->
 
 <br/><br/>
 

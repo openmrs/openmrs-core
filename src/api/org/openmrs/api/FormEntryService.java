@@ -12,6 +12,7 @@ import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Tribe;
+import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOContext;
 import org.openmrs.util.OpenmrsConstants;
@@ -279,4 +280,35 @@ public class FormEntryService {
 		}
 		return forms;
 	}
+	
+	public Collection<User> findUsers(String searchValue, List<String> roles, boolean includeVoided) {
+		List<User> users = new Vector<User>();
+		context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+		try {
+			users = context.getUserService().findUsers(searchValue, roles, includeVoided);
+		}
+		catch (Exception e) {
+			log.error(e);
+		}
+		finally {
+			context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+		}
+		return users;
+	}
+
+	public Collection<User> getAllUsers(List<String> roles, boolean includeVoided) {
+		List<User> users = new Vector<User>();
+		context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+		try {
+			users = context.getUserService().getAllUsers(roles, includeVoided);
+		}
+		catch (Exception e) {
+			log.error(e);
+		}
+		finally {
+			context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+		}
+		return users;
+	}
+
 }

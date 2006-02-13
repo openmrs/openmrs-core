@@ -202,11 +202,14 @@
 			<fileset dir="${custom.template.dir}" />
 			<filterset refid="variables.to.replace" />
 		</copy>
-		<copy todir="${dist.dir}/web"
-				overwrite="true">
+		<copy todir="${dist.dir}/web" overwrite="true">
 			<fileset file="${custom.style.css.file}" />
 			<filterset refid="variables.to.replace" />
 		</copy>
+		<copy todir="${dist.dir}/web/WEB-INF/view" overwrite="true">
+				<fileset file="${custom.index.jsp.file}" />
+				<filterset refid="variables.to.replace" />
+		</copy>	
 		<copy todir="${dist.dir}/web/images"
 				overwrite="true">
 			<fileset dir="${custom.images.dir}" />
