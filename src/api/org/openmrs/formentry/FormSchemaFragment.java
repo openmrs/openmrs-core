@@ -1,4 +1,4 @@
-package org.openmrs.form;
+package org.openmrs.formentry;
 
 import java.util.Collection;
 import java.util.Locale;
@@ -251,7 +251,7 @@ public class FormSchemaFragment {
 			String answerConceptName = answer.getAnswerConcept()
 					.getName(locale).getName();
 			if (answer.getAnswerConcept().getConceptClass().getConceptClassId()
-					.equals(FormConstants.CLASS_DRUG)
+					.equals(FormEntryConstants.CLASS_DRUG)
 					&& answer.getAnswerDrug() != null) {
 				String answerDrugName = answer.getAnswerDrug().getName();
 				xml += "          <xs:enumeration value=\""

@@ -1,4 +1,4 @@
-package org.openmrs.form;
+package org.openmrs.formentry;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -187,12 +187,12 @@ public class FormUtil {
 	public static String conceptToString(Concept concept, Locale locale) {
 		return concept.getConceptId() + "^"
 				+ concept.getName(locale).getName() + "^"
-				+ FormConstants.HL7_LOCAL_CONCEPT;
+				+ FormEntryConstants.HL7_LOCAL_CONCEPT;
 	}
 
 	public static String drugToString(Drug drug) {
 		return drug.getDrugId() + "^" + drug.getName() + "^"
-				+ FormConstants.HL7_LOCAL_DRUG;
+				+ FormEntryConstants.HL7_LOCAL_DRUG;
 	}
 
 }

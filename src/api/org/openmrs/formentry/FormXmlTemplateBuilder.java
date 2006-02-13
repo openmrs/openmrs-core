@@ -1,4 +1,4 @@
-package org.openmrs.form;
+package org.openmrs.formentry;
 
 import java.io.StringWriter;
 import java.util.Date;
@@ -98,7 +98,7 @@ public class FormXmlTemplateBuilder {
 			xml.append("<" + xmlTag);
 			Field field = formField.getField();
 			Integer fieldTypeId = field.getFieldType().getFieldTypeId();
-			if (fieldTypeId.equals(FormConstants.FIELD_TYPE_DATABASE)) {
+			if (fieldTypeId.equals(FormEntryConstants.FIELD_TYPE_DATABASE)) {
 				xml.append(" openmrs_table=\"");
 				xml.append(formField.getField().getTableName());
 				xml.append("\" openmrs_attribute=\"");
@@ -106,7 +106,7 @@ public class FormXmlTemplateBuilder {
 				if (formStructure.containsKey(formField.getFormFieldId())) {
 					xml.append("\">\n");
 					renderStructure(xml, formStructure, velocityContext,
-							subSectionId, indent + FormConstants.INDENT_SIZE);
+							subSectionId, indent + FormEntryConstants.INDENT_SIZE);
 					xml.append(indentation);
 				} else {
 					if (field.getDefaultValue() != null) {
@@ -119,7 +119,7 @@ public class FormXmlTemplateBuilder {
 				xml.append("</");
 				xml.append(xmlTag);
 				xml.append(">\n");
-			} else if (fieldTypeId.equals(FormConstants.FIELD_TYPE_CONCEPT)) {
+			} else if (fieldTypeId.equals(FormEntryConstants.FIELD_TYPE_CONCEPT)) {
 				Concept concept = field.getConcept();
 				xml.append(" openmrs_concept=\"");
 				xml.append(FormUtil.conceptToString(concept, context
@@ -130,19 +130,19 @@ public class FormXmlTemplateBuilder {
 				if (formStructure.containsKey(formField.getFormFieldId())) {
 					xml.append(">\n");
 					renderStructure(xml, formStructure, velocityContext,
-							subSectionId, indent + FormConstants.INDENT_SIZE);
+							subSectionId, indent + FormEntryConstants.INDENT_SIZE);
 					xml.append(indentation);
 					xml.append("</");
 					xml.append(xmlTag);
 					xml.append(">\n");
 				} else {
 					if (concept.getDatatype().getHl7Abbreviation().equals(
-							FormConstants.HL7_CODED)
+							FormEntryConstants.HL7_CODED)
 							|| concept
 									.getDatatype()
 									.getHl7Abbreviation()
 									.equals(
-											FormConstants.HL7_CODED_WITH_EXCEPTIONS)) {
+											FormEntryConstants.HL7_CODED_WITH_EXCEPTIONS)) {
 						xml.append(" multiple=\"");
 						xml.append(field.getSelectMultiple() ? "1" : "0");
 						xml.append("\"");
@@ -155,9 +155,9 @@ public class FormXmlTemplateBuilder {
 					xml.append(indentation);
 					xml.append("<time xsi:nil=\"true\"></time>\n");
 					if ((concept.getDatatype().getHl7Abbreviation().equals(
-							FormConstants.HL7_CODED) || concept.getDatatype()
+							FormEntryConstants.HL7_CODED) || concept.getDatatype()
 							.getHl7Abbreviation().equals(
-									FormConstants.HL7_CODED_WITH_EXCEPTIONS))
+									FormEntryConstants.HL7_CODED_WITH_EXCEPTIONS))
 							&& field.getSelectMultiple()) {
 						for (ConceptAnswer answer : concept.getAnswers()) {
 							xml.append(indentation);
@@ -201,7 +201,7 @@ public class FormXmlTemplateBuilder {
 						xml.append(indentation);
 						xml.append("<value");
 						if (concept.getDatatype().getHl7Abbreviation().equals(
-								FormConstants.HL7_BOOLEAN))
+								FormEntryConstants.HL7_BOOLEAN))
 							xml.append(" infopath_boolean_hack=\"1\"");
 						xml.append(" xsi:nil=\"true\"></value>\n");
 					}
@@ -213,7 +213,7 @@ public class FormXmlTemplateBuilder {
 			} else {
 				xml.append(">\n");
 				renderStructure(xml, formStructure, velocityContext,
-						subSectionId, indent + FormConstants.INDENT_SIZE);
+						subSectionId, indent + FormEntryConstants.INDENT_SIZE);
 				xml.append(indentation);
 				xml.append("</");
 				xml.append(xmlTag);

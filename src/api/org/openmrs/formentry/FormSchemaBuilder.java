@@ -1,4 +1,4 @@
-package org.openmrs.form;
+package org.openmrs.formentry;
 
 import java.util.Collection;
 import java.util.Enumeration;
@@ -121,26 +121,26 @@ public class FormSchemaBuilder {
 			Field field = complexType.field;
 			boolean required = complexType.required;
 			if (field.getFieldType().getFieldTypeId().equals(
-					FormConstants.FIELD_TYPE_CONCEPT)) {
+					FormEntryConstants.FIELD_TYPE_CONCEPT)) {
 				Concept concept = field.getConcept();
 				ConceptDatatype datatype = concept.getDatatype();
-				if (FormConstants.simpleDatatypes.containsKey(datatype
+				if (FormEntryConstants.simpleDatatypes.containsKey(datatype
 						.getHl7Abbreviation()))
 					s.append(FormSchemaFragment.simpleConcept(token, concept,
-							FormConstants.simpleDatatypes.get(datatype
+							FormEntryConstants.simpleDatatypes.get(datatype
 									.getHl7Abbreviation()), required, context
 									.getLocale()));
 				else if (datatype.getHl7Abbreviation().equals(
-						FormConstants.HL7_NUMERIC)) {
+						FormEntryConstants.HL7_NUMERIC)) {
 					ConceptNumeric conceptNumeric = new ConceptNumeric(concept);
 					s.append(FormSchemaFragment.numericConcept(token, concept,
 							required, conceptNumeric.getLowAbsolute(),
 							conceptNumeric.getHiAbsolute(), conceptNumeric
 									.getPrecise(), context.getLocale()));
 				} else if (datatype.getHl7Abbreviation().equals(
-						FormConstants.HL7_CODED)
+						FormEntryConstants.HL7_CODED)
 						|| datatype.getHl7Abbreviation().equals(
-								FormConstants.HL7_CODED_WITH_EXCEPTIONS)) {
+								FormEntryConstants.HL7_CODED_WITH_EXCEPTIONS)) {
 					Collection<ConceptAnswer> answers = field.getConcept()
 							.getAnswers();
 					if (field.getSelectMultiple())
@@ -197,7 +197,7 @@ public class FormSchemaBuilder {
 				}
 				if (subSectionFormField.getField().getFieldType()
 						.getFieldTypeId().equals(
-								FormConstants.FIELD_TYPE_DATABASE)) {
+								FormEntryConstants.FIELD_TYPE_DATABASE)) {
 					s.append("    <xs:element name=\"" + elemTag + "\" ");
 					if (subSectionFormField.getMinOccurs() != null)
 						s.append("minOccurs=\""
@@ -241,7 +241,7 @@ public class FormSchemaBuilder {
 			}
 			s.append("  </xs:sequence>\n");
 			if (sectionFormField.getField().getFieldType().getFieldTypeId()
-					.equals(FormConstants.FIELD_TYPE_CONCEPT)) {
+					.equals(FormEntryConstants.FIELD_TYPE_CONCEPT)) {
 				Concept concept = sectionFormField.getField().getConcept();
 
 				s
@@ -283,7 +283,7 @@ public class FormSchemaBuilder {
 	 */
 	private String getNewTypeTag(FormField f) {
 		if (f.getField().getFieldType().getFieldTypeId().equals(
-				FormConstants.FIELD_TYPE_CONCEPT)) {
+				FormEntryConstants.FIELD_TYPE_CONCEPT)) {
 			String typeTag = FormUtil.getNewTag(FormUtil.getXmlToken(f
 					.getField().getName()
 					+ "_type"), tagList);
@@ -292,7 +292,7 @@ public class FormSchemaBuilder {
 				complexTypes.put(ct, typeTag);
 			return typeTag;
 		} else if (f.getField().getFieldType().getFieldTypeId().equals(
-				FormConstants.FIELD_TYPE_DATABASE)) {
+				FormEntryConstants.FIELD_TYPE_DATABASE)) {
 			// TODO: currently defaulting to string for all database fields
 			// this will need to change!
 			if (f.isRequired())

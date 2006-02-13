@@ -1,4 +1,4 @@
-package org.openmrs.form;
+package org.openmrs.formentry;
 
 import java.util.Date;
 
