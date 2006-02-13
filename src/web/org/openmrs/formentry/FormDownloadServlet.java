@@ -1,4 +1,4 @@
-package org.openmrs.web;
+package org.openmrs.formentry;
 
 import java.io.IOException;
 
@@ -8,14 +8,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.Form;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.form.FormXmlTemplateBuilder;
+import org.openmrs.web.WebConstants;
 
 public class FormDownloadServlet extends HttpServlet {
 
 	public static final long serialVersionUID = 123423L;
+
+	private Log log = LogFactory.getLog(this.getClass());
 
 	/**
 	 * 
@@ -34,6 +39,9 @@ public class FormDownloadServlet extends HttpServlet {
 			patientId = Integer.valueOf(request.getParameter("patientId"));
 		}
 		catch (NumberFormatException e) {
+			log.warn("Invalid parameter for formDownload request (formId='"
+					+ request.getParameter("formId") + "', patientId='"
+					+ request.getParameter("patientId") + "')", e);
 			return ;
 		}
 		

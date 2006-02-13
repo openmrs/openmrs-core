@@ -15,6 +15,8 @@ import org.openmrs.Tribe;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOContext;
+import org.openmrs.form.FormEntryConstants;
+import org.openmrs.form.FormEntryQueue;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -27,21 +29,22 @@ import org.openmrs.util.OpenmrsConstants;
 public class FormEntryService {
 
 	private Log log = LogFactory.getLog(this.getClass());
-	
+
 	private Context context;
 	private DAOContext daoContext;
-	
+
 	public FormEntryService(Context c, DAOContext d) {
 		this.context = c;
 		this.daoContext = d;
 	}
-	
+
 	private PatientService getPatientService() {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_FORM_ENTRY);
+			throw new APIAuthenticationException("Privilege required: "
+					+ OpenmrsConstants.PRIV_FORM_ENTRY);
 		return context.getPatientService();
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.PatientService.createPatient(org.openmrs.Patient)
 	 */
@@ -49,8 +52,7 @@ public class FormEntryService {
 		context.addProxyPrivilege(OpenmrsConstants.PRIV_ADD_PATIENTS);
 		try {
 			getPatientService().createPatient(patient);
-		}
-		finally {
+		} finally {
 			context.removeProxyPrivilege(OpenmrsConstants.PRIV_ADD_PATIENTS);
 		}
 	}
@@ -63,8 +65,7 @@ public class FormEntryService {
 		Patient p;
 		try {
 			p = getPatientService().getPatient(patientId);
-		}
-		finally {
+		} finally {
 			context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		}
 		return p;
@@ -77,8 +78,7 @@ public class FormEntryService {
 		context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS);
 		try {
 			getPatientService().updatePatient(patient);
-		}
-		finally {
+		} finally {
 			context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS);
 		}
 	}
@@ -86,18 +86,19 @@ public class FormEntryService {
 	/**
 	 * @see org.openmrs.api.PatientService.getPatientsByIdentifier(java.lang.String,boolean)
 	 */
-	public Set<Patient> getPatientsByIdentifier(String identifier, boolean includeVoided) throws APIException {
+	public Set<Patient> getPatientsByIdentifier(String identifier,
+			boolean includeVoided) throws APIException {
 		context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		Set<Patient> p;
 		try {
-			p = getPatientService().getPatientsByIdentifier(identifier, includeVoided);
-		}
-		finally {
+			p = getPatientService().getPatientsByIdentifier(identifier,
+					includeVoided);
+		} finally {
 			context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		}
 		return p;
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.PatientService.getPatientsByName(java.lang.String)
 	 */
@@ -106,8 +107,7 @@ public class FormEntryService {
 		Set<Patient> p;
 		try {
 			p = getPatientsByName(name, false);
-		}
-		finally {
+		} finally {
 			context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		}
 		return p;
@@ -116,43 +116,43 @@ public class FormEntryService {
 	/**
 	 * @see org.openmrs.api.PatientService.getPatientsByName(java.lang.String,boolean)
 	 */
-	public Set<Patient> getPatientsByName(String name, boolean includeVoided) throws APIException {
+	public Set<Patient> getPatientsByName(String name, boolean includeVoided)
+			throws APIException {
 		context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		Set<Patient> p;
 		try {
 			p = getPatientService().getPatientsByName(name, includeVoided);
-		}
-		finally {
+		} finally {
 			context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		}
 		return p;
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.PatientService.getSimilarPatients(java.lang.String,java.lang.Integer,java.lang.String)
 	 */
-	public Set<Patient> getSimilarPatients(String name, Integer birthyear, String gender) throws APIException {
+	public Set<Patient> getSimilarPatients(String name, Integer birthyear,
+			String gender) throws APIException {
 		context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		Set<Patient> p;
 		try {
 			p = getPatientService().getSimilarPatients(name, birthyear, gender);
-		}
-		finally {
+		} finally {
 			context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		}
 		return p;
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.PatientService.getPatientIdentifierTypes()
 	 */
-	public List<PatientIdentifierType> getPatientIdentifierTypes() throws APIException {
+	public List<PatientIdentifierType> getPatientIdentifierTypes()
+			throws APIException {
 		context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		List<PatientIdentifierType> p;
 		try {
 			p = getPatientService().getPatientIdentifierTypes();
-		}
-		finally {
+		} finally {
 			context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		}
 		return p;
@@ -161,13 +161,14 @@ public class FormEntryService {
 	/**
 	 * @see org.openmrs.api.PatientService.getPatientIdentifierType(java.lang.Integer)
 	 */
-	public PatientIdentifierType getPatientIdentifierType(Integer patientIdentifierTypeId) throws APIException {
+	public PatientIdentifierType getPatientIdentifierType(
+			Integer patientIdentifierTypeId) throws APIException {
 		context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		PatientIdentifierType p;
 		try {
-			p = getPatientService().getPatientIdentifierType(patientIdentifierTypeId);
-		}
-		finally {
+			p = getPatientService().getPatientIdentifierType(
+					patientIdentifierTypeId);
+		} finally {
 			context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		}
 		return p;
@@ -181,13 +182,12 @@ public class FormEntryService {
 		Tribe t;
 		try {
 			t = getPatientService().getTribe(tribeId);
-		}
-		finally {
+		} finally {
 			context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		}
-		return t; 
+		return t;
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.PatientService.getTribes()
 	 */
@@ -196,13 +196,12 @@ public class FormEntryService {
 		List<Tribe> t;
 		try {
 			t = getPatientService().getTribes();
-		}
-		finally {
+		} finally {
 			context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		}
-		return t; 
+		return t;
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.PatientService.getLocations()
 	 */
@@ -211,11 +210,10 @@ public class FormEntryService {
 		List<Location> t;
 		try {
 			t = getPatientService().getLocations();
-		}
-		finally {
+		} finally {
 			context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		}
-		return t; 
+		return t;
 	}
 
 	/**
@@ -226,89 +224,122 @@ public class FormEntryService {
 		Location t;
 		try {
 			t = getPatientService().getLocation(locationId);
-		}
-		finally {
+		} finally {
 			context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		}
-		return t; 
+		return t;
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.PatientService.findPatients(java.lang.String,boolean)
 	 */
 	public List<Patient> findPatients(String query, boolean includeVoided) {
-		
+
 		List<Patient> patients;
 		context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		try {
 			patients = getPatientService().findPatients(query, includeVoided);
-		}
-		finally {
+		} finally {
 			context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		}
 		return patients;
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.FormService.getForm(java.lang.Integer)
 	 */
 	public Form getForm(Integer formId) {
-		
+
 		Form form;
 		context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_FORMS);
 		try {
 			form = context.getFormService().getForm(formId);
-		}
-		finally {
+		} finally {
 			context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_FORMS);
 		}
 		return form;
 	}
-	
+
 	public Collection<Form> getForms() {
 		List<Form> forms = new Vector<Form>();
 		context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_FORMS);
 		try {
 			forms = context.getFormService().getForms(true);
 			log.debug(forms);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.error(e);
-		}
-		finally {
+		} finally {
 			context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_FORMS);
 		}
 		return forms;
 	}
-	
-	public Collection<User> findUsers(String searchValue, List<String> roles, boolean includeVoided) {
+
+	public Collection<User> findUsers(String searchValue, List<String> roles,
+			boolean includeVoided) {
 		List<User> users = new Vector<User>();
 		context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
 		try {
-			users = context.getUserService().findUsers(searchValue, roles, includeVoided);
-		}
-		catch (Exception e) {
+			users = context.getUserService().findUsers(searchValue, roles,
+					includeVoided);
+		} catch (Exception e) {
 			log.error(e);
-		}
-		finally {
+		} finally {
 			context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
 		}
 		return users;
 	}
 
-	public Collection<User> getAllUsers(List<String> roles, boolean includeVoided) {
+	public Collection<User> getAllUsers(List<String> roles,
+			boolean includeVoided) {
 		List<User> users = new Vector<User>();
 		context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
 		try {
 			users = context.getUserService().getAllUsers(roles, includeVoided);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			log.error(e);
-		}
-		finally {
+		} finally {
 			context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
 		}
 		return users;
+	}
+
+	/***************************************************************************
+	 * FormEntryQueue Service Methods
+	 **************************************************************************/
+	public void createFormEntryQueue(FormEntryQueue formEntryQueue) {
+		if (!context.hasPrivilege(FormEntryConstants.PRIV_ADD_FORMENTRY_QUEUE))
+			throw new APIAuthenticationException("Privilege required: "
+					+ FormEntryConstants.PRIV_ADD_FORMENTRY_QUEUE);
+		daoContext.getFormEntryDAO().createFormEntryQueue(formEntryQueue);
+	}
+
+	public void updateFormEntryQueue(FormEntryQueue formEntryQueue) {
+		if (!context.hasPrivilege(FormEntryConstants.PRIV_EDIT_FORMENTRY_QUEUE))
+			throw new APIAuthenticationException("Privilege required: "
+					+ FormEntryConstants.PRIV_EDIT_FORMENTRY_QUEUE);
+		daoContext.getFormEntryDAO().updateFormEntryQueue(formEntryQueue);
+	}
+
+	public FormEntryQueue getFormEntryQueue(int formEntryQueueId) {
+		if (!context.hasPrivilege(FormEntryConstants.PRIV_VIEW_FORMENTRY_QUEUE))
+			throw new APIAuthenticationException("Privilege required: "
+					+ FormEntryConstants.PRIV_VIEW_FORMENTRY_QUEUE);
+		return daoContext.getFormEntryDAO().getFormEntryQueue(formEntryQueueId);
+	}
+
+	public FormEntryQueue getNextFormEntryQueue() {
+		if (!context.hasPrivilege(FormEntryConstants.PRIV_VIEW_FORMENTRY_QUEUE))
+			throw new APIAuthenticationException("Privilege required: "
+					+ FormEntryConstants.PRIV_VIEW_FORMENTRY_QUEUE);
+		return daoContext.getFormEntryDAO().getNextFormEntryQueue();
+	}
+
+	public void deleteFormEntryQueue(FormEntryQueue formEntryQueue) {
+		if (!context
+				.hasPrivilege(FormEntryConstants.PRIV_DELETE_FORMENTRY_QUEUE))
+			throw new APIAuthenticationException("Privilege required: "
+					+ FormEntryConstants.PRIV_DELETE_FORMENTRY_QUEUE);
+		daoContext.getFormEntryDAO().deleteFormEntryQueue(formEntryQueue);
 	}
 
 }

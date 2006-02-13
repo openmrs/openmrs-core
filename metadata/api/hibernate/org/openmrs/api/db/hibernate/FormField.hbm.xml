@@ -46,7 +46,7 @@
 		</many-to-one>
 
 		<property name="dateCreated" type="java.util.Date" 
-			column="date_created" length="19" />
+			column="date_created" length="19" not-null="true" />
 
 		<many-to-one name="changedBy" class="User">
 			<column name="changed_by" />

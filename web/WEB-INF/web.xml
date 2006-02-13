@@ -24,7 +24,7 @@
 
 	<servlet>
 		<servlet-name>formDownloadServlet</servlet-name>
-		<servlet-class>org.openmrs.web.FormDownloadServlet</servlet-class>
+		<servlet-class>org.openmrs.formentry.FormDownloadServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>formDownloadServlet</servlet-name>
@@ -33,7 +33,7 @@
 	
 	<servlet>
 		<servlet-name>formUploadServlet</servlet-name>
-		<servlet-class>org.openmrs.web.FormUploadServlet</servlet-class>
+		<servlet-class>org.openmrs.formentry.FormUploadServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>formUploadServlet</servlet-name>
