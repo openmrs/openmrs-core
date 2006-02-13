@@ -17,6 +17,7 @@ import org.openmrs.Field;
 import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.Patient;
+import org.openmrs.User;
 import org.openmrs.api.context.Context;
 
 /**
@@ -63,13 +64,20 @@ public class FormXmlTemplateBuilder {
 			log.error("Error initializing Velocity engine", e);
 		}
 		VelocityContext velocityContext = new VelocityContext();
-		velocityContext.put("patient", patient);
+		if (patient != null)
+			velocityContext.put("patient", patient);
 
 		StringBuffer xml = new StringBuffer();
 		xml.append(FormXmlTemplateFragment.header(form.getName(), url));
+		User user = null;
+		Date date = null;
+		if (patient != null) {
+			user = context.getAuthenticatedUser();
+			date = new Date();			
+		}
 		xml.append(FormXmlTemplateFragment.openForm(form.getFormId(), form
 				.getName(), form.getVersion(), form.getSchemaNamespace(),
-				context.getAuthenticatedUser(), new Date()));
+				user, date));
 
 		TreeMap<Integer, TreeSet<FormField>> formStructure = FormUtil
 				.getFormStructure(context, form);

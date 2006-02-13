@@ -81,7 +81,7 @@ public class FormDownloadServlet extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 
 		Integer formId = null;
-		String target = request.getParameter("part");
+		String target = request.getParameter("file");
 		HttpSession httpSession = request.getSession();
 
 		Context context = getContext(httpSession);
@@ -131,7 +131,7 @@ public class FormDownloadServlet extends HttpServlet {
 
 	private String getFormAbsoluteUrl(HttpServletRequest request, Form form) {
 		String url = request.getRequestURL().toString();
-		String baseUrl = url.substring(0, url.indexOf("/", 6));
+		String baseUrl = url.substring(0, url.indexOf("/", 7));
 		return (baseUrl.startsWith("http://localhost") ? "file:///c:/amrs_forms/"
 				: baseUrl + "/formentry/forms/")
 				+ form.getUri();

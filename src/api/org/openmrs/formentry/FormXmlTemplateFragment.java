@@ -18,7 +18,9 @@ public class FormXmlTemplateFragment {
 		return "<?xml version=\"1.0\"?>\n"
 				+ "<?mso-infoPathSolution name=\""
 				+ urn
-				+ "\" href=\"" + url + "\" solutionVersion=\"1.0.0.42\" productVersion=\"11.0.6357\" PIVersion=\"1.0.0.0\" ?>\n"
+				+ "\" href=\""
+				+ url
+				+ "\" solutionVersion=\"1.0.0.42\" productVersion=\"11.0.6357\" PIVersion=\"1.0.0.0\" ?>\n"
 				+ "<?mso-application progid=\"InfoPath.Document\"?>\n";
 	}
 
@@ -38,12 +40,15 @@ public class FormXmlTemplateFragment {
 				+ "\" "
 				+ "xmlns:my=\"http://schemas.microsoft.com/office/infopath/2003/myXSD/2005-02-23T09:03:23\" "
 				+ "xmlns:xd=\"http://schemas.microsoft.com/office/infopath/2003\">\n"
-				+ "  <header>\n" + "    <enterer>" + enterer.getUserId() + "^"
-				+ enterer.getFirstName() + " " + enterer.getLastName()
-				+ "</enterer>\n" + "    <date_entered>"
-				+ FormUtil.dateToString() + "</date_entered>\n"
-				+ "    <session>@SESSION@</session>\n"
-				+ "  </header>\n";
+				+ "  <header>\n"
+				+ "    <enterer>"
+				+ (enterer == null ? "" : enterer.getUserId() + "^"
+						+ enterer.getFirstName() + " " + enterer.getLastName())
+				+ "</enterer>\n"
+				+ "    <date_entered>"
+				+ (dateEntered == null ? "" : FormUtil
+						.dateToString(dateEntered)) + "</date_entered>\n"
+				+ "    <session>@SESSION@</session>\n" + "  </header>\n";
 	}
 
 	public static String closeForm() {
