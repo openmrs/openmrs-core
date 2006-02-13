@@ -88,6 +88,13 @@
 		return false;
 	};
 	
+	var postFillTable = function(numObjects) {
+		if (numObjects > 0)
+			$('patientTableHead').style.display = '';
+		else
+			$('patientTableHead').style.display = 'none';
+	}
+	
 	function allowAutoJump() {
 		if (autoJump == false) {
 			autoJump = true;

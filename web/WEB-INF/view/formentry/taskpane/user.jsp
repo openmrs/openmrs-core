@@ -4,7 +4,7 @@
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
-<h1><spring:message code="provider.title"/></h1>
+<h3><spring:message code="provider.title"/></h3>
 
 <script src='<%= request.getContextPath() %>/dwr/interface/DWRUserService.js'></script>
 <script src='<%= request.getContextPath() %>/dwr/engine.js'></script>
@@ -57,11 +57,11 @@
 	function findObjects(text) {
 		// on page startup, call search with 'All' to return all users. (or in the middle of searching, obviously)
 		if (text == 'All') {
-			DWRUserService.getAllUsers(preFillTable, roles, false);
+			DWRUserService.getAllUsers(roles, false, preFillTable);
 		}
 		//must have at least 2 characters entered or that character be a number
 		else if (text.length > 1 || (parseInt(text) >= 0 && parseInt(text) <= 9)) {
-	    	DWRUserService.findUsers(preFillTable, text, roles, false);
+	    	DWRUserService.findUsers(text, roles, false, preFillTable);
 		}
 		else {
 			var msg = new Array();

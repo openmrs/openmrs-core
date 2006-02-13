@@ -33,6 +33,6 @@ a.hit:hover {
 	padding: 5px;
 	border-style: none;
 }
-#banner, #gutter, #footer, #userBar {
+#banner, #gutter, #footer, #xuserBar {
 	display: none;
 }

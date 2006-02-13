@@ -375,6 +375,9 @@ function fillTable(objects, cells) {
     	setTimeout("showHighlight()", 0);
     }
     if (debugBox) debugBox.innerHTML += "<br>ending fillTable().  Keycode was: " + keyCode;
+    
+    if (typeof postFillTable == 'function')
+    	postFillTable(objectsFound.length);
 }
 
 function showPrevious() {
@@ -459,7 +462,8 @@ function updatePagingBars() {
 	
 	infoBar.innerHTML = ' &nbsp; Results for "' + lastPhraseSearched + '". &nbsp;';
 	
-	infoBar.innerHTML += " Viewing <b>" + firstItemDisplayed + "-" + lastItemDisplayed + "</b> of <b>" + total + "</b> &nbsp; ";
+	if (objectsFound.length > 0)
+		infoBar.innerHTML += " Viewing <b>" + firstItemDisplayed + "-" + lastItemDisplayed + "</b> of <b>" + total + "</b> &nbsp; ";
 	
 	pagingBar.innerHTML = "&nbsp;";
 

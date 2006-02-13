@@ -109,9 +109,9 @@
 	}
 </style>
 
-<h1>
+<h3>
 	<spring:message code="diagnosis.title" />
-</h1>
+</h3>
 
 <div id="preProposedAlert" class="alert">
 	<br>

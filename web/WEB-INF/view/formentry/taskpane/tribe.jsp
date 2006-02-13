@@ -4,7 +4,7 @@
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
-<h1><spring:message code="Tribe.title"/></h1>
+<h3><spring:message code="Tribe.title"/></h3>
 
 <table border="0">
 	<c:forEach items="${tribes}" var="tribe">

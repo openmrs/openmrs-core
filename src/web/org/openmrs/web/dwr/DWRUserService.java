@@ -1,5 +1,6 @@
 package org.openmrs.web.dwr;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
 
@@ -18,13 +19,12 @@ public class DWRUserService {
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
-	public Vector findUsers(String searchValue, List<String> roles, boolean includeVoided) {
+	public Collection<UserListItem> findUsers(String searchValue, List<String> roles, boolean includeVoided) {
 		
 		Vector userList = new Vector();
 
 		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
-		
-		Context context = (Context) WebContextFactory.get().getSession()
+		Context context = (Context) request.getSession()
 				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 
 		if (context == null) {
@@ -33,10 +33,11 @@ public class DWRUserService {
 		}
 		else {
 			try {
-				Integer userId = -1;
-				User us = context.getAuthenticatedUser();
-				if (us != null)
-					userId = us.getUserId();
+				String userId = "Anonymous";
+				if (context.isAuthenticated()) {
+					User us = context.getAuthenticatedUser();
+					userId = us.getUserId().toString();
+				}
 				
 				log.info(userId + "|" + searchValue + "|" + roles.toString());
 				
@@ -66,13 +67,13 @@ public class DWRUserService {
 	}
 
 	
-	public Vector getAllUsers(List<String> roles, boolean includeVoided) {
+	public Collection<UserListItem> getAllUsers(List<String> roles, boolean includeVoided) {
 		
 		Vector userList = new Vector();
 
 		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
 		
-		Context context = (Context) WebContextFactory.get().getSession()
+		Context context = (Context) request.getSession(false)
 				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 
 		if (context == null) {
