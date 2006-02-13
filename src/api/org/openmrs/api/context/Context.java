@@ -12,7 +12,6 @@ import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
-import org.openmrs.api.FormEntryService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
@@ -21,6 +20,7 @@ import org.openmrs.api.PatientSetService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.db.DAOContext;
 import org.openmrs.api.db.hibernate.HibernateDAOContext;
+import org.openmrs.formentry.FormEntryService;
 import org.openmrs.reporting.ReportService;
 import org.openmrs.util.OpenmrsConstants;
 
