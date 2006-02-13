@@ -81,7 +81,7 @@ public class FormDownloadServlet extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 
 		Integer formId = null;
-		String target = request.getParameter("file");
+		String target = request.getParameter("target");
 		HttpSession httpSession = request.getSession();
 
 		Context context = getContext(httpSession);
