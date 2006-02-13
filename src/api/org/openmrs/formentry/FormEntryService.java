@@ -1,4 +1,4 @@
-package org.openmrs.api;
+package org.openmrs.formentry;
 
 import java.util.Collection;
 import java.util.List;
@@ -13,10 +13,11 @@ import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Tribe;
 import org.openmrs.User;
+import org.openmrs.api.APIAuthenticationException;
+import org.openmrs.api.APIException;
+import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOContext;
-import org.openmrs.formentry.FormEntryConstants;
-import org.openmrs.formentry.FormEntryQueue;
 import org.openmrs.util.OpenmrsConstants;
 
 /**

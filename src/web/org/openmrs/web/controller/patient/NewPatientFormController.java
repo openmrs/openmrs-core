@@ -22,7 +22,7 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientName;
 import org.openmrs.Tribe;
-import org.openmrs.api.FormEntryService;
+import org.openmrs.formentry.FormEntryService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.Helper;
 import org.openmrs.web.WebConstants;
