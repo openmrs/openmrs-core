@@ -9,6 +9,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
@@ -61,9 +62,10 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 					log.debug("id: " + i.toString());
 				
 				//add all remaining parameter answers
-				for (int x = 0; x < requestConceptIds.size(); x++) {
-					Integer answerId = requestConceptIds.get(x);
-					newAnswers.add(new ConceptAnswer(cs.getConcept(answerId)));
+				for (Integer i : requestConceptIds) {
+					Concept c = cs.getConcept(i);
+					ConceptAnswer ca = new ConceptAnswer(c);
+					newAnswers.add(ca);
 				}
 				
 				log.debug("newAnswers: ");

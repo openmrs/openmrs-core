@@ -16,7 +16,6 @@ import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -125,7 +124,8 @@ public class FieldFormController extends SimpleFormController {
 		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 
 		if (context != null && context.isAuthenticated()) {
-			if (StringUtils.hasText(request.getParameter("conceptId")))
+			String conceptId = request.getParameter("conceptId");
+			if (conceptId != null && conceptId.length() > 0)
 				field.setConcept(context.getConceptService().getConcept(Integer.valueOf(request.getParameter("conceptId"))));
 			else
 				field.setConcept(null);

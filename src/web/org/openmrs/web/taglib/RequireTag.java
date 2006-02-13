@@ -57,7 +57,7 @@ public class RequireTag extends TagSupport {
 				otherwise = redirect;
 				try {
 					httpResponse.sendRedirect(redirect);
-					return SKIP_BODY;
+					return SKIP_PAGE;
 				}
 				catch (IOException e) {
 					// oops, cannot redirect
@@ -93,7 +93,7 @@ public class RequireTag extends TagSupport {
 			httpSession.setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR, url);
 			try {
 				httpResponse.sendRedirect(request.getContextPath() + otherwise);
-				return SKIP_BODY;
+				return SKIP_PAGE;
 			}
 			catch (IOException e) {
 				// oops, cannot redirect

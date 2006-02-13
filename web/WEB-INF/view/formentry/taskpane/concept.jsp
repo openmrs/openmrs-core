@@ -38,10 +38,8 @@
 	}
 	
 	function preFillTable(concepts) {
-		if (concepts.length == 1 && typeof concepts[0] == 'string') {
-			//if the only object in the list is a string, its an error message
-			concepts.push("<a href='#proposeConcept' onclick='javascript:return showProposeConceptForm();'><spring:message code="ConceptProposal.propose.new"/></a>");
-		}
+		// append "Propose Concept" box
+		concepts.push("<a href='#proposeConcept' onclick='javascript:return showProposeConceptForm();'><spring:message code="ConceptProposal.propose.new"/></a>");
 		fillTable(concepts);
 	}
 	
@@ -122,7 +120,7 @@
 <form method="POST" onSubmit="return search(0, event);">
 	<input name="mode" type="hidden" value='${request.mode}'>
 	<input name="phrase" id="phrase" type="text" class="prompt" size="10" onkeyup="search(400, event)" />
-	&nbsp;
+	<br />
 	<input type="checkbox" id="verboseListing" value="true" onclick="search(0, event); phrase.focus();">
 	<label for="verboseListing">
 		<spring:message code="dictionary.verboseListing" />

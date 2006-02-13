@@ -286,6 +286,10 @@ public class Form implements java.io.Serializable {
 		return retired;
 	}
 
+	public Boolean getRetired() {
+		return isRetired();
+	}
+	
 	/**
 	 * @param retired
 	 *            The retired status to set.

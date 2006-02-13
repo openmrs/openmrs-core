@@ -105,6 +105,14 @@ public interface FormDAO {
 	public List<Form> getForms() throws DAOException;
 
 	/**
+	 * 
+	 * @param Concept to search for in the forms
+	 * @return List of forms relating to this concept
+	 * @throws DAOException
+	 */
+	public List<Form> getForms(Concept c) throws DAOException;
+	
+	/**
 	 * @return list of form fields for a specific form
 	 * @throws DAOException
 	 */

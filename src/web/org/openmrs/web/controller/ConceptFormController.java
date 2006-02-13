@@ -23,6 +23,7 @@ import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSynonym;
+import org.openmrs.Form;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
@@ -234,10 +235,11 @@ public class ConceptFormController extends SimpleFormController {
 					log.error(e);
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.cannot.save");
 					if (isNew) {
+						errors.reject("concept", "Concept.cannot.save");
 						return new ModelAndView(new RedirectView(getSuccessView()));
 					}
 				}
-				
+
 				return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + concept.getConceptId().toString()));
 			}
 		}
@@ -300,6 +302,7 @@ public class ConceptFormController extends SimpleFormController {
 			//Map<String, ConceptName> conceptSets = new TreeMap<String, ConceptName>();
 			Map<Double, Object[]> conceptSets = new TreeMap<Double, Object[]>();
 			Map<String, String> conceptAnswers = new TreeMap<String, String>();
+			Collection<Form> forms = new Vector<Form>();
 			
 			if (conceptId != null) {
 				Concept concept = cs.getConcept(Integer.valueOf(conceptId));
@@ -330,6 +333,7 @@ public class ConceptFormController extends SimpleFormController {
 			    	//previous/next ids for links
 			    	map.put("previousConcept", cs.getPrevConcept(concept));
 			    	map.put("nextConcept", cs.getNextConcept(concept));
+			    	forms = context.getFormService().getForms(concept);
 				}
 			}
 
@@ -337,6 +341,7 @@ public class ConceptFormController extends SimpleFormController {
 	    	map.put("conceptSynonyms", conceptSynonyms);
 	    	map.put("conceptSets", conceptSets);
 	    	map.put("conceptAnswers", conceptAnswers);
+	    	map.put("formsInUse", forms);
 			
 	    	//get complete class and datatype lists 
 			map.put("classes", cs.getConceptClasses());

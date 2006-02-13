@@ -36,8 +36,8 @@ public class FormService {
 	 * @return context's FormDAO
 	 */
 	private FormDAO dao() {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_FORMS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_FORMS);
+		//if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_FORMS))
+		//	throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_FORMS);
 		
 		return daoContext.getFormDAO();
 	}
@@ -171,6 +171,15 @@ public class FormService {
 	 */
 	public List<Form> getForms() throws APIException {
 		return dao().getForms();
+	}
+	
+	/**
+	 * Returns the forms with which this form is associated
+	 * @return
+	 * @throws APIException
+	 */
+	public List<Form> getForms(Concept c) throws APIException {
+		return dao().getForms(c);
 	}
 
 	/**

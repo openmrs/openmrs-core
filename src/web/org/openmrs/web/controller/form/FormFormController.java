@@ -12,13 +12,17 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
 import org.openmrs.Form;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
+import org.openmrs.web.propertyeditor.EncounterTypeEditor;
+import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
@@ -28,6 +32,15 @@ public class FormFormController extends SimpleFormController {
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
 
+	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
+		super.initBinder(request, binder);
+		Context context = (Context) request.getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+        //NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
+        binder.registerCustomEditor(java.lang.Integer.class,
+                new CustomNumberEditor(java.lang.Integer.class, true));
+        binder.registerCustomEditor(EncounterType.class, new EncounterTypeEditor(context));
+	}
+    
 	/** 
 	 * 
 	 * The onSubmit function receives the form/command object that was modified
@@ -86,13 +99,16 @@ public class FormFormController extends SimpleFormController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		List<FieldType> fieldTypes = new Vector<FieldType>();
+		List<EncounterType> encTypes = new Vector<EncounterType>();
 		
 		if (context != null && context.isAuthenticated()) {
 
 			fieldTypes = context.getFormService().getFieldTypes();
+			encTypes = context.getEncounterService().getEncounterTypes();
 		}
 
 		map.put("fieldTypes", fieldTypes);
+		map.put("encounterTypes", encTypes);
 		
 		return map;
 	}

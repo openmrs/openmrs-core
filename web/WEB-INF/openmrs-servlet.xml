@@ -60,7 +60,8 @@
 					<prop key="**/report.form">reportForm</prop>
 					<prop key="**/analysis.list">otfaController</prop>
 					<prop key="**/analysis.form">otfaActionController</prop>
-					<prop key="**/form.form">formForm</prop>
+					<prop key="**/formDesign.form">formDesignForm</prop>
+					<prop key="**/formEdit.form">formEditForm</prop>
 					<prop key="**/form.list">formList</prop>
 					<prop key="**/field.form">fieldForm</prop>
 					<prop key="**/field.list">fieldList</prop>
@@ -464,19 +465,20 @@
 	    
 			<!-- ** Form ** -->
 				<bean id="formList" class="org.openmrs.web.controller.form.FormListController">
-					<property name="sessionForm"><value>true</value></property>
 					<property name="commandName"><value>formList</value></property>
 					<property name="formView"><value>/admin/forms/formList</value></property>
 					<property name="successView"><value>form.list</value></property>
 				</bean>
 		
-				<!--  Validator and Form Controller for the add/edit forms page -->
-				<bean id="formValidator" class="org.openmrs.web.controller.form.FormValidator"/>
-				<bean id="formForm" class="org.openmrs.web.controller.form.FormFormController">
-					<property name="sessionForm"><value>true</value></property>
+				<bean id="formDesignForm" class="org.openmrs.web.controller.form.FormFormController">
 					<property name="commandName"><value>form</value></property>
-					<property name="validator"><ref bean="formValidator"/></property>
-					<property name="formView"><value>/admin/forms/formForm</value></property>
+					<property name="formView"><value>/admin/forms/formDesignForm</value></property>
+					<property name="successView"><value>form.list</value></property>
+				</bean>
+
+				<bean id="formEditForm" class="org.openmrs.web.controller.form.FormFormController">
+					<property name="commandName"><value>form</value></property>
+					<property name="formView"><value>/admin/forms/formEditForm</value></property>
 					<property name="successView"><value>form.list</value></property>
 				</bean>
 			<!-- ** /Form ** -->

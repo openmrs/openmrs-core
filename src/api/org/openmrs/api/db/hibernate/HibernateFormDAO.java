@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
@@ -38,8 +39,8 @@ public class HibernateFormDAO implements
 		
 		Session session = HibernateUtil.currentSession();
 		
-		form.setCreator(context.getAuthenticatedUser());
-		form.setDateCreated(new Date());
+		updateFormProperties(form);
+		
 		try {
 			HibernateUtil.beginTransaction();
 			session.save(form);
@@ -87,21 +88,41 @@ public class HibernateFormDAO implements
 	 */
 	public void updateForm(Form form) {
 		
-		if (form.getFormId() == null)
-			createForm(form);
+		if (form.isRetired() && form.getRetiredBy() == null) {
+			retireForm(form, form.getRetiredReason());
+		}
+		else if (!form.isRetired() && form.getRetiredBy() != null) {
+			unretireForm(form);
+		}
 		else {
-			Session session = HibernateUtil.currentSession();
 			
-			try {
-				HibernateUtil.beginTransaction();
-				session.saveOrUpdate(form);
-				HibernateUtil.commitTransaction();
-			}
-			catch (Exception e) {
-				HibernateUtil.rollbackTransaction();
-				throw new DAOException(e);
+			if (form.getFormId() == null)
+				createForm(form);
+			else {
+				Session session = HibernateUtil.currentSession();
+				
+				updateFormProperties(form);
+				
+				try {
+					HibernateUtil.beginTransaction();
+					session.saveOrUpdate(form);
+					HibernateUtil.commitTransaction();
+				}
+				catch (Exception e) {
+					HibernateUtil.rollbackTransaction();
+					throw new DAOException(e);
+				}
 			}
 		}
+	}
+	
+	private void updateFormProperties(Form form) {
+		if (form.getCreator() == null) {
+			form.setCreator(context.getAuthenticatedUser());
+			form.setDateCreated(new Date());
+		}
+		form.setChangedBy(context.getAuthenticatedUser());
+		form.setDateChanged(new Date());
 	}
 
 	/**
@@ -246,6 +267,18 @@ public class HibernateFormDAO implements
 	}
 	
 	/**
+	 * @see org.openmrs.api.db.FormDAO#getForms(org.openmrs.Concept)
+	 */
+	public List<Form> getForms(Concept c) throws DAOException {
+		Session session = HibernateUtil.currentSession();
+		
+		Query query = session.createQuery("from Form as form inner join form.formFields as ff inner join ff.field as f where f.concept = :concept");
+		query.setEntity("concept", c);
+		
+		return query.list();
+	}
+
+	/**
 	 * @see org.openmrs.api.db.FieldService#createField(org.openmrs.Field)
 	 */
 	public void createField(Field field) throws DAOException {
@@ -315,6 +348,7 @@ public class HibernateFormDAO implements
 		
 		formField.setCreator(context.getAuthenticatedUser());
 		formField.setDateCreated(new Date());
+		
 		try {
 			HibernateUtil.beginTransaction();
 			session.save(formField);
@@ -337,10 +371,17 @@ public class HibernateFormDAO implements
 		}
 		
 		Session session = HibernateUtil.currentSession();
+
+		formField.setChangedBy(context.getAuthenticatedUser());
+		formField.setDateChanged(new Date());
 		
 		if (formField.getFormFieldId() == null)
 			createFormField(formField);
 		else {
+			
+			formField.setCreator(context.getAuthenticatedUser());
+			formField.setDateCreated(new Date());
+
 			try {
 				HibernateUtil.beginTransaction();
 				session.merge(formField);	// save if needs saving

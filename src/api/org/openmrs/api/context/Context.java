@@ -156,10 +156,6 @@ public class Context {
 	 * @return form service
 	 */
 	public FormService getFormService() {
-		if (!isAuthenticated()) {
-			log.warn("unauthorized access to form service");
-			return null;
-		}
 		if (formService == null)
 			formService = new FormService(this, getDAOContext());
 		return formService;

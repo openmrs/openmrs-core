@@ -81,7 +81,7 @@
 		|
 	<a href="concept.htm?conceptId=${concept.conceptId}" id="viewConcept" ><spring:message code="general.view"/></a>
 		|
-	<c:if test="${nextConcept != null}"><a href="concept.form?conceptId=${nextConcept.conceptId}"><spring:message code="general.next"/></a></c:if> |
+	<c:if test="${nextConcept != null}"><a href="concept.form?conceptId=${nextConcept.conceptId}"><spring:message code="general.next"/></a></c:if>
 	<c:if test="${nextConcept == null}"><spring:message code="general.next"/></c:if>
 		|
 </c:if>
@@ -110,6 +110,7 @@
 </spring:hasBindErrors>
 
 <form method="post" action="" onSubmit="removeHiddenRows()">
+
 <table id=conceptTable>
 	<tr>
 		<th><spring:message code="general.id"/></th>
@@ -349,8 +350,23 @@
 			</td>
 		</tr>
 	</c:if>
-	<tr>
-		<th valign="top">Resources</th>
+	<!--
+	<cif test="${forms != null}">
+		<tr>
+			<td>
+				<b><spring:message code="Concept.forms" /></b><br />
+					<c:forEach items="${formsInUse}" var="form">
+						${form} <br>
+					</c:forEach>
+				<br/>
+			</td>
+		</tr>
+	</cif>
+	-->
+	<tr>	
+		<td valign="top">
+			<b><spring:message code="Concept.resources" /></b>
+		</td>
 		<td>
 			<a href="index.htm?phrase=${conceptName.name}"
 			       target="_similar_terms" onclick="addName(this)">Similar Concepts</a><br/>
@@ -367,6 +383,9 @@
 		</td>
 	</tr>
 </table>
+
+<br />
+
 <input type="submit" name="action" value="<spring:message code="Concept.save"/>" />
 
 <c:if test="${concept.conceptId != null}">

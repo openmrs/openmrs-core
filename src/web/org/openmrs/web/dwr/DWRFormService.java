@@ -8,6 +8,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
 import org.openmrs.ConceptWord;
 import org.openmrs.Field;
 import org.openmrs.Form;
@@ -67,6 +68,19 @@ public class DWRFormService {
 		
 		if (context != null) {
 
+			Concept concept = null;
+			try {
+				Integer i = Integer.valueOf(txt);
+				concept = context.getConceptService().getConcept(i);
+			}
+			catch (NumberFormatException e) {}
+			
+			if (concept != null) {
+				objects.add(new ConceptListItem(concept, new Locale("en", "US")));
+				for (Field field : context.getFormService().findFields(concept))
+					objects.add(new FieldListItem(field));
+			}
+			
 			List<ConceptWord> conceptWords = context.getConceptService().findConcepts(txt, locale, false);
 			for (ConceptWord word : conceptWords) {
 				objects.add(new ConceptListItem(word));
@@ -227,7 +241,7 @@ public class DWRFormService {
 			s += "<span class='required'> * </span>";
 		s += "<a href='#" + ff.getFormFieldId() + "' onmouseover='hoverField(" + ff.getFormFieldId() + ", this)' onmouseout='unHoverField(this)' onclick='return selectField(" + ff.getFormFieldId() + ", this)' class='edit'>";
 		if (ff.getField().getFieldType().getFieldTypeId() == 1)
-			s += "CONCEPT." + ff.getField().getName() + " " + ff.getField().getFieldId();
+			s += ff.getField().getName() + " (" + ff.getField().getConcept().getConceptId() + ")";
 		else
 			s += ff.getField().getName();
 		s += "</a> ";

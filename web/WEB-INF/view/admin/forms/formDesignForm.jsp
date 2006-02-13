@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="View Forms" otherwise="/login.htm" redirect="/admin/forms/form.form" />
+<openmrs:require privilege="View Forms" otherwise="/login.htm" redirect="/admin/forms/formDesign.form" />
 	
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
@@ -178,31 +178,53 @@
 		$('ff_changedBy').innerHTML = ff.changedBy;
 	}
 	
-	function fillField(field) {
-		$('fieldId').value = field.fieldId;
-		$('name').value = field.name;
-		$('forms').innerHTML = field.numForms;
-		$('description').innerHTML = field.description;
-		var options = $('fieldType').options;
-		for (var i = 0; i<options.length; i++) {
-			if (options[i].value == field.fieldTypeId)
-				options[i].selected = true;
-			else
-				options[i].selected = false;
-		}
-		chooseFieldType(field.fieldTypeId);
-		if (field.concept != null) {
-			$('conceptName').innerHTML = field.concept.name;
-			$('conceptId').value = field.concept.conceptId;
-		}
-		$('tableName').value = field.table;
-		$('attributeName').value = field.attribute;
-		
-		if (field.selectMultiple == 'yes')
-			$('selectMultiple').checked = true;
-		else
+	function fillField(obj) {
+		if (obj.conceptId != null) {
+			$('fieldId').value = '';
+			$('name').value = obj.name;
+			$('conceptName').innerHTML = obj.name + "(" + obj.conceptId + ")";
+			$('conceptId').value = obj.conceptId;
+			$('creator').innerHTML = '';
 			$('selectMultiple').checked = false;
-		$('creator').innerHTML = field.creator;
+			var options = $('fieldType').options;
+			for (var i = 0; i<options.length; i++) {
+				if (options[i].value == 1)
+					options[i].selected = true;
+				else
+					options[i].selected = false;
+			}
+			$('forms').innerHTML = '';
+			chooseFieldType(1);
+		}
+		else {
+			$('fieldId').value = obj.fieldId;
+			$('name').value = obj.name;
+			$('forms').innerHTML = obj.numForms;
+			$('description').innerHTML = obj.description;
+			var options = $('fieldType').options;
+			for (var i = 0; i<options.length; i++) {
+				if (options[i].value == obj.fieldTypeId)
+					options[i].selected = true;
+				else
+					options[i].selected = false;
+			}
+			chooseFieldType(obj.fieldTypeId);
+			if (obj.concept != null) {
+				$('conceptName').innerHTML = obj.concept.name + "(" + obj.concept.conceptId + ")";
+				$('conceptId').value = obj.concept.conceptId;
+			}
+			$('tableName').value = obj.table;
+			$('attributeName').value = obj.attribute;
+		
+			if (obj.selectMultiple == 'yes')
+				$('selectMultiple').checked = true;
+			else
+				$('selectMultiple').checked = false;
+			if (obj.creator != null)
+				$('creator').innerHTML = obj.creator;
+			else
+				$('creator').innerHTML = '';
+		}
 	}
 	
 	function chooseFieldType(fieldTypeId) {
@@ -346,7 +368,9 @@
 	}
 
 	function save() {
-		var fieldId = $('fieldId').value;
+		var fieldId = null;
+		if ($('fieldId').value != 'undefined')
+			fieldId = $('fieldId').value;
 		var fieldName = $('name').value;
 		var fieldDesc = $('description').value;
 		var fieldType = $('fieldType').value;
@@ -402,7 +426,7 @@
 	}
 	
 	var findObjects = function(txt) {
-		DWRFormService.findFields(fillTable, txt);
+		DWRFormService.findFieldsAndConcepts(fillTable, txt);
 	}
 	
 	var lastConceptId = "-1";
@@ -411,12 +435,12 @@
 		var s = "";
 		if (obj.conceptId != null) {
 			lastConceptId = obj.conceptId;
-			s = "CONCEPT." + obj.name;
+			s = "CONCEPT." + obj.name + " (" + obj.conceptId + ")";
 		}
 		else if (obj.fieldId != null) {
 			if (obj.concept != null && obj.concept.conceptId == lastConceptId)
 				s = " &nbsp; &nbsp; ";
-			s += obj.name;
+			s += obj.name + " (" + obj.numForms + " forms)";
 		}
 		
 		if ($('verboseListing').checked)
@@ -434,6 +458,10 @@
 	
 	function showVerbose() {
 		showSearchForm($('name'), null);
+	}
+	
+	function allowAutoListWithNumber() {
+		return true;
 	}
 	
 	function closeBox() {
@@ -454,7 +482,7 @@
 
 </script>
 
-<h2><spring:message code="Form.manage" /></h2>	
+<h2><spring:message code="Form.design.title" /></h2>	
 
 <table width="99%">
 	<tr>
@@ -462,6 +490,11 @@
 			<a href="javascript:refresh()"><spring:message code="general.refresh"/></a>
 			<div id="HTMLTree">
 			</div>
+			
+			<br/><br/>
+			<a href="formEdit.form?formId=${form.formId}"><spring:message code="Form.editProperties" /></a>
+			<br/>
+			
 		</td>
 		<td valign="top" style="padding-left: 10px;">
 			<a href="#add" onclick="return addNewFormField();"><spring:message code="FormField.add" /></a> <br /><br />
