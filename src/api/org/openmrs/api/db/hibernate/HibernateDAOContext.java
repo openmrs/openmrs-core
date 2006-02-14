@@ -13,10 +13,12 @@ import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.api.db.DAOContext;
 import org.openmrs.api.db.EncounterDAO;
 import org.openmrs.api.db.FormDAO;
+import org.openmrs.api.db.NoteDAO;
 import org.openmrs.api.db.ObsDAO;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.api.db.PatientDAO;
 import org.openmrs.api.db.PatientSetDAO;
+import org.openmrs.api.db.TemplateDAO;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.formentry.db.FormEntryDAO;
 import org.openmrs.formentry.db.hibernate.HibernateFormEntryDAO;
@@ -30,6 +32,8 @@ public class HibernateDAOContext implements DAOContext {
 
 	Context context;
 	User user;
+	
+	
 	private AdministrationDAO administrationDAO;
 	private ConceptDAO conceptDAO;
 	private EncounterDAO encounterDAO;
@@ -39,8 +43,16 @@ public class HibernateDAOContext implements DAOContext {
 	private PatientDAO patientDAO;
 	private PatientSetDAO patientSetDAO;
 	private UserDAO userDAO;
+
+	// Report DAOs
 	private FormEntryDAO formEntryDAO;
 	private ReportDAO reportDAO;
+	
+	// Messaging DAOs
+	private TemplateDAO templateDAO;
+	private NoteDAO noteDAO;
+	
+	public HibernateDAOContext() { }
 
 	public HibernateDAOContext(Context c) {
 		this.context = c;
@@ -142,6 +154,11 @@ public class HibernateDAOContext implements DAOContext {
 			administrationDAO = new HibernateAdministrationDAO(context);
 		return administrationDAO;
 	}
+	
+	public void setAdministrationDAO(AdministrationDAO dao) { 
+		this.administrationDAO = dao;
+	}	
+
 
 	public ConceptDAO getConceptDAO() {
 		if (conceptDAO == null)
@@ -149,11 +166,20 @@ public class HibernateDAOContext implements DAOContext {
 		return conceptDAO;
 	}
 
+	public void setConceptDAO(ConceptDAO dao) { 
+		this.conceptDAO = dao;
+	}	
+	
 	public EncounterDAO getEncounterDAO() {
 		if (encounterDAO == null)
 			encounterDAO = new HibernateEncounterDAO(context);
 		return encounterDAO;
 	}
+	
+	public void setEncounterDAO(EncounterDAO dao) { 
+		this.encounterDAO = dao;
+	}	
+	
 
 	public FormDAO getFormDAO() {
 		if (formDAO == null)
@@ -161,17 +187,29 @@ public class HibernateDAOContext implements DAOContext {
 		return formDAO;
 	}
 
+	public void setFormDAO(FormDAO dao) { 
+		this.formDAO = dao;
+	}	
+	
 	public ObsDAO getObsDAO() {
 		if (obsDAO == null)
 			obsDAO = new HibernateObsDAO(context);
 		return obsDAO;
 	}
+	
+	public void setObsDAO(ObsDAO dao) { 
+		this.obsDAO = dao;
+	}	
 
 	public OrderDAO getOrderDAO() {
 		if (orderDAO == null)
 			orderDAO = new HibernateOrderDAO(context);
 		return orderDAO;
 	}
+	
+	public void setOrderDAO(OrderDAO dao) { 
+		this.orderDAO = dao;
+	}	
 
 	public PatientDAO getPatientDAO() {
 		if (patientDAO == null)
@@ -179,17 +217,29 @@ public class HibernateDAOContext implements DAOContext {
 		return patientDAO;
 	}
 	
+	public void setPatientDAO(PatientDAO dao) { 
+		this.patientDAO = dao;
+	}	
+	
 	public PatientSetDAO getPatientSetDAO() {
 		if (patientSetDAO == null)
 			patientSetDAO = new HibernatePatientSetDAO(context);
 		return patientSetDAO;
 	}
+	
+	public void setPatientSetDAO(PatientSetDAO dao) { 
+		this.patientSetDAO = dao;
+	}	
 
 	public UserDAO getUserDAO() {
 		if (userDAO == null)
 			userDAO = new HibernateUserDAO(context);
 		return userDAO;
 	}
+	
+	public void setUserDAO(UserDAO dao) { 
+		this.userDAO = dao;
+	}	
 	
 	public FormEntryDAO getFormEntryDAO() {
 		if (formEntryDAO == null)
@@ -203,6 +253,26 @@ public class HibernateDAOContext implements DAOContext {
 		return reportDAO;
 	}
 
+	public void setReportDAO(ReportDAO dao) { 
+		this.reportDAO = dao;
+	}	
+	
+	public NoteDAO getNoteDAO() {
+		return noteDAO;
+	}
+	
+	public void setNoteDAO(NoteDAO dao) { 
+		this.noteDAO = dao;
+	}	
+	
+	public TemplateDAO getTemplateDAO() {
+		return templateDAO;
+	}
+	
+	public void setTemplateDAO(TemplateDAO dao) { 
+		this.templateDAO = dao;
+	}	
+	
 	/**
 	 * @see org.openmrs.api.context.Context#openSession()
 	 */
