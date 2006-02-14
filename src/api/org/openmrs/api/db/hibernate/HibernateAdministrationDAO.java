@@ -46,6 +46,8 @@ public class HibernateAdministrationDAO implements
 	private Context context;
 	private String authUserId;
 	
+	public HibernateAdministrationDAO() { }
+	
 	public HibernateAdministrationDAO(Context c) {
 		this.context = c;
 		if (c.isAuthenticated())

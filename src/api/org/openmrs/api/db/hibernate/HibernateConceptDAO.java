@@ -47,6 +47,8 @@ public class HibernateConceptDAO implements
 	
 	private Context context;
 	
+	public HibernateConceptDAO() { }
+	
 	public HibernateConceptDAO(Context c) {
 		this.context = c;
 	}
