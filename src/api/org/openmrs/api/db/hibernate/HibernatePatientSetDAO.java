@@ -27,6 +27,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	
 	private Context context;
 	
+	public HibernatePatientSetDAO() { }
+	
 	public HibernatePatientSetDAO(Context c) {
 		this.context = c;
 	}

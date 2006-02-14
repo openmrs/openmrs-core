@@ -34,6 +34,9 @@ public class HibernateUserDAO implements
 	
 	private Context context;
 	
+	public HibernateUserDAO() { }
+
+	
 	public HibernateUserDAO(Context c) {
 		this.context = c;
 	}

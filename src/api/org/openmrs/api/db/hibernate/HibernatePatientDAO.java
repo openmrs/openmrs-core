@@ -35,6 +35,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	
 	private Context context;
 	
+	public HibernatePatientDAO() { }
+
 	public HibernatePatientDAO(Context c) {
 		this.context = c;
 	}

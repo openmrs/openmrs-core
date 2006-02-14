@@ -28,6 +28,9 @@ public class HibernateFormDAO implements
 	
 	private Context context;
 	
+	public HibernateFormDAO() { }
+
+	
 	public HibernateFormDAO(Context c) {
 		this.context = c;
 	}

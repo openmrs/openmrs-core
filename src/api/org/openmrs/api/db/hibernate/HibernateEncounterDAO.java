@@ -24,6 +24,8 @@ public class HibernateEncounterDAO implements
 	
 	private Context context;
 	
+	public HibernateEncounterDAO() { }
+	
 	public HibernateEncounterDAO(Context c) {
 		this.context = c;
 	}

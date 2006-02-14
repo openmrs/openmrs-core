@@ -19,6 +19,8 @@ public class HibernateOrderDAO implements
 	
 	private Context context;
 	
+	public HibernateOrderDAO() { }
+	
 	public HibernateOrderDAO(Context c) {
 		this.context = c;
 	}

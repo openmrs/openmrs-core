@@ -29,6 +29,8 @@ public class HibernateObsDAO implements
 	
 	private Context context;
 	
+	public HibernateObsDAO() { }
+	
 	public HibernateObsDAO(Context c) {
 		this.context = c;
 	}
