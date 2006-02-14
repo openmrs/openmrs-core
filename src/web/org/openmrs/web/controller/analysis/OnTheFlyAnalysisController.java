@@ -139,7 +139,7 @@ public class OnTheFlyAnalysisController implements Controller {
 			if (temp.size() > 0) {
 				Integer ptId = temp.iterator().next();
 				log.debug("preparing xml view of patient " + ptId);
-				xmlToDisplay = patientSetService.exportXml(ptId);
+				xmlToDisplay = patientSetService.exportXml(ptId).replaceAll(">", ">\n");
 			}
 		}
 		
