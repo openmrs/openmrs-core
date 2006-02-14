@@ -36,6 +36,7 @@ import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Patient;
+import org.openmrs.PatientName;
 import org.openmrs.User;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
@@ -205,6 +206,41 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			
 			Element patientNode = doc.createElement("patient");
 			patientNode.setAttribute("patient_id", p.getPatientId().toString());
+			
+			boolean firstName = true;
+			Element namesNode = doc.createElement("names");
+			for (PatientName name : p.getNames()) {
+				if (firstName) {
+					if (name.getGivenName() != null) {
+						patientNode.setAttribute("given_name", name.getGivenName());
+					}
+					if (name.getMiddleName() != null) {
+						patientNode.setAttribute("middle_name", name.getMiddleName());
+					}
+					if (name.getFamilyName() != null) {
+						patientNode.setAttribute("family_name", name.getFamilyName());
+					}
+					if (name.getFamilyName2() != null) {
+						patientNode.setAttribute("family_name2", name.getFamilyName2());
+					}
+					firstName = false;
+				}
+				Element nameNode = doc.createElement("name");
+				if (name.getGivenName() != null) {
+					nameNode.setAttribute("given_name", name.getGivenName());
+				}
+				if (name.getMiddleName() != null) {
+					nameNode.setAttribute("middle_name", name.getMiddleName());
+				}
+				if (name.getFamilyName() != null) {
+					nameNode.setAttribute("family_name", name.getFamilyName());
+				}
+				if (name.getFamilyName2() != null) {
+					nameNode.setAttribute("family_name2", name.getFamilyName2());
+				}
+				namesNode.appendChild(nameNode);
+			}
+			patientNode.appendChild(namesNode);
 			patientNode.setAttribute("gender", p.getGender());
 			if (p.getRace() != null) {
 				patientNode.setAttribute("race", p.getRace());
@@ -268,7 +304,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 					}
 					Form f = e.getForm();
 					if (f != null) {
-						Element temp = doc.createElement("form_id");
+						Element temp = doc.createElement("form");
 						temp.setAttribute("form_id", f.getFormId().toString());
 						temp.appendChild(doc.createTextNode(f.getName()));
 						metadataNode.appendChild(temp);
@@ -303,13 +339,13 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 
 						Concept concept = order.getConcept();
 						orderNode.setAttribute("concept_id", concept.getConceptId().toString());
-						orderNode.setAttribute("concept_name", concept.getName(locale).getName());
+						orderNode.appendChild(doc.createTextNode(concept.getName(locale).getName()));
 
 						if (order.getInstructions() != null) {
 							orderNode.setAttribute("instructions", order.getInstructions());
 						}
 						if (order.getStartDate() != null) {
-							orderNode.setAttribute("start_date", order.getStartDate().toString());
+							orderNode.setAttribute("start_date", df.format(order.getStartDate()));
 						}
 						if (order.getAutoExpireDate() != null) {
 							orderNode.setAttribute("auto_expire_date", df.format(order.getAutoExpireDate()));
