@@ -25,26 +25,41 @@ public interface DAOContext {
 	public void logout();
 
 	public AdministrationDAO getAdministrationDAO();
+	public void setAdministrationDAO(AdministrationDAO dao);
 	
 	public ConceptDAO getConceptDAO();
+	public void setConceptDAO(ConceptDAO dao);
 	
 	public EncounterDAO getEncounterDAO();
+	public void setEncounterDAO(EncounterDAO dao);
 	
 	public FormDAO getFormDAO();
+	public void setFormDAO(FormDAO dao);
 	
 	public ObsDAO getObsDAO();
+	public void setObsDAO(ObsDAO dao);
 	
 	public OrderDAO getOrderDAO();
+	public void setOrderDAO(OrderDAO dao);
 	
 	public PatientDAO getPatientDAO();
+	public void setPatientDAO(PatientDAO dao);
 	
 	public PatientSetDAO getPatientSetDAO();
+	public void setPatientSetDAO(PatientSetDAO dao);
 	
 	public UserDAO getUserDAO();
+	public void setUserDAO(UserDAO dao);
 	
 	public FormEntryDAO getFormEntryDAO();
 	
 	public ReportDAO getReportDAO();
+	public void setReportDAO(ReportDAO dao);
+	
+	public TemplateDAO getTemplateDAO();
+	public void setTemplateDAO(TemplateDAO dao);
+	
+	public NoteDAO getNoteDAO();
 	
 	public void openSession();
 	
