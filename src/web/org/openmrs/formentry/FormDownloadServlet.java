@@ -131,7 +131,8 @@ public class FormDownloadServlet extends HttpServlet {
 
 	private String getFormAbsoluteUrl(HttpServletRequest request, Form form) {
 		String url = request.getRequestURL().toString();
-		String baseUrl = url.substring(0, url.indexOf("/", 7));
+		int endOfDomain = url.indexOf('/', 8);
+		String baseUrl = url.substring(0, (endOfDomain > 8 ? endOfDomain : url.length()));
 		return (baseUrl.startsWith("http://localhost") ? "file:///c:/amrs_forms/"
 				: baseUrl + "/formentry/forms/")
 				+ form.getUri();
