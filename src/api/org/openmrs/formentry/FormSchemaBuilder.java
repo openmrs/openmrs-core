@@ -132,7 +132,7 @@ public class FormSchemaBuilder {
 									.getLocale()));
 				else if (datatype.getHl7Abbreviation().equals(
 						FormEntryConstants.HL7_NUMERIC)) {
-					ConceptNumeric conceptNumeric = new ConceptNumeric(concept);
+					ConceptNumeric conceptNumeric = context.getConceptService().getConceptNumeric(concept.getConceptId());
 					s.append(FormSchemaFragment.numericConcept(token, concept,
 							required, conceptNumeric.getLowAbsolute(),
 							conceptNumeric.getHiAbsolute(), conceptNumeric
