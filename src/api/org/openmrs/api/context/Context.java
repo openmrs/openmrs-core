@@ -52,6 +52,8 @@ public class Context implements ApplicationContextAware {
 
 	DAOContext daoContext;
 	private User user = null;
+	private static MessageService messageService;
+	private static ApplicationContext applicationContext;
 	
 	// Services
 	private ConceptService conceptService;
@@ -71,6 +73,7 @@ public class Context implements ApplicationContextAware {
 
 	/**
 	 *  Default public constructor
+	 *
 	 */
 	public Context() { }
 
