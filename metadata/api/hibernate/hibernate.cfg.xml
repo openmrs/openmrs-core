@@ -106,7 +106,7 @@
         <mapping resource="org/openmrs/formentry/db/hibernate/FormEntryQueue.hbm.xml" />
 		
 		<mapping resource="org/openmrs/reporting/db/hibernate/Report.hbm.xml" />
-		
+		<mapping resource="org/openmrs/api/db/hibernate/Template.hbm.xml" />
 	</session-factory>
 
 </hibernate-configuration>
