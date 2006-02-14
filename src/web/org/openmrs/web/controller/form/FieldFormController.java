@@ -112,7 +112,10 @@ public class FieldFormController extends SimpleFormController {
 			FormService fs = context.getFormService();
 			//map.put("fieldTypes", es.getFieldTypes());
 			map.put("fieldTypes", fs.getFieldTypes());
-			map.put("conceptName", field.getConcept().getName(locale));
+			if (field.getConcept() != null)
+				map.put("conceptName", field.getConcept().getName(locale));
+			else
+				map.put("conceptName", "");
 		}
 		
 		return map;

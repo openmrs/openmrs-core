@@ -492,9 +492,10 @@
 			</div>
 			
 			<br/><br/>
-			<a href="formEdit.form?formId=${form.formId}"><spring:message code="Form.editProperties" /></a>
-			<br/>
-			
+			<a href="formEdit.form?formId=${form.formId}"><spring:message code="Form.editProperties" /></a> |
+			<a href="/@WEBAPP.NAME@/formDownload?target=schema"><spring:message code="Form.downloadSchema" /></a> |
+			<a href="/@WEBAPP.NAME@/formDownload?target=template"><spring:message code="Form.downloadTemplate" /></a>
+
 		</td>
 		<td valign="top" style="padding-left: 10px;">
 			<a href="#add" onclick="return addNewFormField();"><spring:message code="FormField.add" /></a> <br /><br />
