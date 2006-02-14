@@ -1,14 +1,28 @@
 <Context path="/@WEBAPP.NAME@" docBase="@WEBAPP.NAME@" antiJARLocking="true" reloadable="false">
 	<!--<Resource name="jdbc/openmrs"
-		auth="Container"
-		type="javax.sql.DataSource"
-		factory="org.apache.commons.dbcp.BasicDataSourceFactory"
-		validationQuery="SELECT * FROM users"
-		url="jdbc:mysql://localhost:3306/openmrs"
-		driverClassName="com.mysql.jdbc.Driver"
-		username="test"
-		password="test"
-		maxWait="3000"
-		maxIdle="100"
-		maxActive="10" />-->
+			auth="Container"
+			type="javax.sql.DataSource"
+			factory="org.apache.commons.dbcp.BasicDataSourceFactory"
+			validationQuery="SELECT * FROM users"
+			url="jdbc:mysql://localhost:3306/openmrs"
+			driverClassName="com.mysql.jdbc.Driver"
+			username="openmrs"
+			password="openmrs"
+			maxWait="3000"
+			maxIdle="100"
+			maxActive="10" />
+	-->
+	
+	<Resource 
+		name="mail/OpenmrsMailSession" 
+		auth="Container" 
+		type="javax.mail.Session" 
+		mail.smtp.host="localhost"
+        mail.smtp.port="25"
+        mail.transport.protocol="smtp"
+        mail.smtp.auth="true"
+        mail.smtp.user="openmrs"
+        password="openmrs"
+	/>
+	
 </Context>
