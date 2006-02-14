@@ -7,6 +7,78 @@
 
 	<beans>
 	
+
+		<!--  **************************  MESSAGE CONFIGURATION  *************************  -->
+	
+		<!-- Configure mail session, message sender, and message preparator -->
+		<bean id="mailSession" class="org.springframework.jndi.JndiObjectFactoryBean">
+		    <property name="jndiName"><value>java:comp/env/mail/OpenmrsMailSession</value></property>
+		</bean>
+		
+		<bean id="mailMessageSender" class="org.openmrs.notification.mail.MailMessageSender">
+			<property name="session"><ref bean="mailSession"/></property>
+		</bean> 
+		
+		<bean id="mailMessagePreparator" class="org.openmrs.notification.mail.velocity.VelocityMessagePreparator"/>
+
+		
+		<!--  **************************  DATA ACCESS CONFIGURATION  *************************  -->
+	
+		<!-- List all the data access objects -->
+		<bean id="administrationDAO" class="org.openmrs.api.db.hibernate.HibernateAdministrationDAO"/>
+		<bean id="conceptDAO" class="org.openmrs.api.db.hibernate.HibernateConceptDAO"/>
+		<bean id="encounterDAO" class="org.openmrs.api.db.hibernate.HibernateEncounterDAO"/>
+		<bean id="formDAO" class="org.openmrs.api.db.hibernate.HibernateFormDAO"/>
+		<bean id="noteDAO" class="org.openmrs.api.db.hibernate.HibernateNoteDAO"/>
+		<bean id="obsDAO" class="org.openmrs.api.db.hibernate.HibernateObsDAO"/>
+		<bean id="orderDAO" class="org.openmrs.api.db.hibernate.HibernateOrderDAO"/>
+		<bean id="patientDAO" class="org.openmrs.api.db.hibernate.HibernatePatientDAO"/>
+		<bean id="patientSetDAO" class="org.openmrs.api.db.hibernate.HibernatePatientSetDAO"/>
+		<bean id="templateDAO" class="org.openmrs.api.db.hibernate.HibernateTemplateDAO"/>
+		<bean id="userDAO" class="org.openmrs.api.db.hibernate.HibernateUserDAO"/>
+
+		<!-- Single data acccess context -->
+		<bean id="daoContext" class="org.openmrs.api.db.hibernate.HibernateDAOContext">
+			<property name="administrationDAO"><ref bean="administrationDAO"/></property>
+	    	<property name="conceptDAO"><ref bean="conceptDAO"/></property>
+	    	<property name="encounterDAO"><ref bean="encounterDAO"/></property>
+	    	<property name="formDAO"><ref bean="formDAO"/></property>
+	    	<property name="noteDAO"><ref bean="noteDAO"/></property>
+	    	<property name="obsDAO"><ref bean="obsDAO"/></property>
+	    	<property name="orderDAO"><ref bean="orderDAO"/></property>
+	    	<property name="patientDAO"><ref bean="patientDAO"/></property>
+	    	<property name="patientSetDAO"><ref bean="patientSetDAO"/></property>    	
+	    	<property name="templateDAO"><ref bean="templateDAO"/></property>
+	    	<property name="userDAO"><ref bean="userDAO"/></property>
+		</bean>	
+
+		
+		<!--  **************************  APP CONTEXT CONFIGURATION  *************************  -->
+	
+		<!-- Single application context (our own context, not Spring's ApplicationContext
+		     NOTE:  There will be 100's of Context objects in memory.  This is just a general
+		            one that should be used by the services layer.  I would like to refactor
+		            this class so that it is used separately from the user context. (JMIRANDA)
+		-->
+		<bean id="context" class="org.openmrs.api.context.Context">
+	        <property name="daoContext"><ref bean="daoContext"/></property>
+		</bean>	
+	
+		
+		<!--  ******************************  SERVICES  ****************************** -->
+	
+		<!-- USAGE:  Inject this object into the controller or service layer object of your choice. -->
+		<!-- List all of the services that exist -->
+	    <bean id="messageService" class="org.openmrs.api.MessageServiceImpl">
+	        <property name="context"><ref bean="context"/></property>
+	        <property name="messageSender"><ref bean="mailMessageSender"/></property>        
+	        <property name="messagePreparator"><ref bean="mailMessagePreparator"/></property>        
+	    </bean>   
+		
+	
+	
+		<!--  **************************  VIEW RESOLVER / CONTROLLERS  *************************  -->
+	
 		<bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 			<property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
 			<property name="prefix" value="/WEB-INF/view" />
