@@ -1,6 +1,8 @@
 package org.openmrs.api.db.hibernate;
 
 import java.io.StringWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -43,6 +45,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PatientSetDAO;
 import org.openmrs.reporting.PatientSet;
+import org.openmrs.util.OpenmrsConstants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -104,6 +107,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret.toString();
 	}
 
+	DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
 	private Element obsElementHelper(Document doc, Locale locale, Obs obs) {
 		Element obsNode = doc.createElement("obs");
 		Concept c = obs.getConcept();
@@ -113,7 +118,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		obsNode.setAttribute("concept_name", c.getName(locale).getName());
 		
 		if (obs.getObsDatetime() != null) {
-			obsNode.setAttribute("datetime", obs.getObsDatetime().toString());
+			obsNode.setAttribute("datetime", df.format(obs.getObsDatetime()));
 		}
 		if (obs.getAccessionNumber() != null) {
 			obsNode.setAttribute("accession_number", obs.getAccessionNumber());
@@ -122,10 +127,10 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			obsNode.setAttribute("comment", obs.getComment());
 		}
 		if (obs.getDateStarted() != null) {
-			obsNode.setAttribute("date_started", obs.getDateStarted().toString());
+			obsNode.setAttribute("date_started", df.format(obs.getDateStarted()));
 		}
 		if (obs.getDateStopped() != null) {
-			obsNode.setAttribute("date_stopped", obs.getDateStopped().toString());
+			obsNode.setAttribute("date_stopped", df.format(obs.getDateStopped()));
 		}
 		if (obs.getObsGroupId() != null) {
 			obsNode.setAttribute("obs_group_id", obs.getObsGroupId().toString());
@@ -150,7 +155,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			value = obs.getValueBoolean().toString();
 		}
 		if (obs.getValueDatetime() != null) {
-			obsNode.setAttribute("value_datetime", obs.getValueDatetime().toString());
+			obsNode.setAttribute("value_datetime", df.format(obs.getValueDatetime()));
 			dataType = "datetime";
 			value = obs.getValueDatetime().toString();
 		}
@@ -205,7 +210,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 				patientNode.setAttribute("race", p.getRace());
 			}
 			if (p.getBirthdate() != null) {
-				patientNode.setAttribute("birthdate", p.getBirthdate().toString());
+				patientNode.setAttribute("birthdate", df.format(p.getBirthdate()));
 			}
 			if (p.getBirthdateEstimated() != null) {
 				patientNode.setAttribute("birthdate_estimated", p.getBirthdateEstimated().toString());
@@ -217,31 +222,32 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 				patientNode.setAttribute("citizenship", p.getCitizenship());
 			}
 			if (p.getTribe() != null) {
-				patientNode.setAttribute("tribe", p.getTribe().toString());
+				patientNode.setAttribute("tribe", p.getTribe().getName());
 			}
 			if (p.getMothersName() != null) {
-				patientNode.setAttribute("mothersName", p.getMothersName());
+				patientNode.setAttribute("mothers_name", p.getMothersName());
 			}
 			if (p.getCivilStatus() != null) {
-				patientNode.setAttribute("civilStatus", p.getCivilStatus().toString());
+				patientNode.setAttribute("civil_status", OpenmrsConstants.CIVIL_STATUS().get(p.getCivilStatus()));
 			}
 			if (p.getDeathDate() != null) {
-				patientNode.setAttribute("deathDate", p.getDeathDate().toString());
+				patientNode.setAttribute("death_date", df.format(p.getDeathDate()));
 			}
 			if (p.getCauseOfDeath() != null) {
-				patientNode.setAttribute("causeOfDeath", p.getCauseOfDeath());
+				patientNode.setAttribute("cause_of_death", p.getCauseOfDeath());
 			}
 			if (p.getHealthDistrict() != null) {
-				patientNode.setAttribute("healthDistrict", p.getHealthDistrict());
+				patientNode.setAttribute("health_district", p.getHealthDistrict());
 			}
 			if (p.getHealthCenter() != null) {
-				patientNode.setAttribute("healthCenter", p.getHealthCenter().toString()); // location
+				patientNode.setAttribute("health_center", encounterService.getLocation(p.getHealthCenter()).getName());
+				patientNode.setAttribute("health_center_id", p.getHealthCenter().toString());
 			}
 			
 			for (Encounter e : encounters) {
 				Element encounterNode = doc.createElement("encounter");
 				if (e.getEncounterDatetime() != null) {
-					encounterNode.setAttribute("datetime", e.getEncounterDatetime().toString());
+					encounterNode.setAttribute("datetime", df.format(e.getEncounterDatetime()));
 				}
 				
 				Element metadataNode = doc.createElement("metadata");
@@ -306,7 +312,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 							orderNode.setAttribute("start_date", order.getStartDate().toString());
 						}
 						if (order.getAutoExpireDate() != null) {
-							orderNode.setAttribute("auto_expire_date", order.getAutoExpireDate().toString());
+							orderNode.setAttribute("auto_expire_date", df.format(order.getAutoExpireDate()));
 						}
 						if (order.getOrderer() != null) {
 							orderNode.setAttribute("orderer", formatUser(order.getOrderer()));
@@ -315,7 +321,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 							orderNode.setAttribute("discontinued", order.isDiscontinued().toString());
 						}
 						if (order.getDiscontinuedDate() != null) {
-							orderNode.setAttribute("discontinued_date", order.getDiscontinuedDate().toString());
+							orderNode.setAttribute("discontinued_date", df.format(order.getDiscontinuedDate()));
 						}
 						if (order.getDiscontinuedReason() != null) {
 							orderNode.setAttribute("discontinued_reason", order.getDiscontinuedReason());
