@@ -121,7 +121,9 @@ public class FormXmlTemplateBuilder {
 						xml.append("\">");
 						renderDefaultValue(xml, velocityContext, field);
 					} else {
-						xml.append("\" xsi:nil=\"true\">");
+						if (!formField.isRequired())
+							xml.append("\" xsi:nil=\"true");
+						xml.append("\">");
 					}
 				}
 				xml.append("</");
