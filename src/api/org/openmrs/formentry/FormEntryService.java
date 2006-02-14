@@ -307,8 +307,9 @@ public class FormEntryService {
 	/***************************************************************************
 	 * FormEntryQueue Service Methods
 	 **************************************************************************/
-	public void createFormEntryQueue(FormEntryQueue formEntryQueue) {
-		if (!context.hasPrivilege(FormEntryConstants.PRIV_ADD_FORMENTRY_QUEUE))
+	public void createFormEntryQueue(FormEntryQueue formEntryQueue) {		
+		if (!context.hasPrivilege(FormEntryConstants.PRIV_ADD_FORMENTRY_QUEUE)
+				&& !context.hasPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY))
 			throw new APIAuthenticationException("Privilege required: "
 					+ FormEntryConstants.PRIV_ADD_FORMENTRY_QUEUE);
 		daoContext.getFormEntryDAO().createFormEntryQueue(formEntryQueue);
