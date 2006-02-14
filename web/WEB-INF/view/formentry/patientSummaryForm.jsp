@@ -77,10 +77,6 @@
 				</c:if>
 			</c:forEach>
 			<tr>
-				<td valign="top"><spring:message code="Patient.tribe"/></td>
-				<td id="tribe"><b>${patient.tribe.name}</b></td>
-			</tr>
-			<tr>
 				<td valign="top"><spring:message code="Patient.birthdate"/></td>
 				<td id="birthdate">
 					<b><spring:bind path="patient.birthdate">${status.value}</spring:bind></b>
@@ -91,6 +87,10 @@
 						( < 1 <spring:message code="Patient.age.year"/> )
 					</c:if>
 				</td>
+			</tr>
+			<tr>
+				<td valign="top"><spring:message code="Patient.tribe"/></td>
+				<td id="tribe"><b>${patient.tribe.name}</b></td>
 			</tr>
 		</table>
 	</div>	

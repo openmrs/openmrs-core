@@ -49,11 +49,12 @@
 			</composite-element>
 		</set>
 
-		<set name="answers" lazy="true" cascade="all" inverse="true"
+		<set name="answers" lazy="true" cascade="all"
 				table="concept_answer" order-by="concept_answer_id asc" access="field">
 			<key column="concept_id" not-null="true" />
 			<composite-element class="ConceptAnswer">
 				<parent name="concept"/>
+				<property name="conceptAnswerId" type="java.lang.Integer" column="concept_answer_id" not-null="true" />
 				<many-to-one name="answerConcept" class="org.openmrs.Concept" column="answer_concept" />
 				<many-to-one name="answerDrug" class="org.openmrs.Drug" column="answer_drug" />
 				<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" />

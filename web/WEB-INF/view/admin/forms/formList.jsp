@@ -22,23 +22,21 @@
 			<th> <spring:message code="Form.version" /> </th>
 			<th> <spring:message code="Form.build" /> </th>
 			<th> <spring:message code="general.description" /></th>
-			<th> </th>
+
 		</tr>
 		<c:forEach var="form" items="${formList}">
 			<tr>
-				<td><input type="checkbox" name="formId" value="${form.formId}"></td>
-				<td>${form.name}</td>
-				<td>${form.version}</td>
-				<td>${form.build}</td>
-				<td>${form.description}</td>
-				<td>
+				<td valign="top">
 					<a href="formEdit.form?formId=${form.formId}"><spring:message code="Form.editProperties"/></a> | 
 					<a href="formDesign.form?formId=${form.formId}"><spring:message code="Form.designSchema"/></a>
 				</td>
+				<td valign="top">${form.name}</td>
+				<td valign="top">${form.version}</td>
+				<td valign="top">${form.build}</td>
+				<td valign="top">${form.description}</td>
 			</tr>
 		</c:forEach>
 	</table>
-	<input type="submit" value="<spring:message code="Form.delete"/>" />
 </form>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>
