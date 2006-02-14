@@ -14,13 +14,17 @@ import org.openmrs.User;
  */
 public class FormXmlTemplateFragment {
 
-	public static String header(String urn, String url) {
+	public static String header(String urn, String infoPathSolutionVersion,
+			String url) {
 		return "<?xml version=\"1.0\"?>\n"
 				+ "<?mso-infoPathSolution name=\""
 				+ urn
 				+ "\" href=\""
 				+ url
-				+ "\" solutionVersion=\"1.0.0.42\" productVersion=\"11.0.6357\" PIVersion=\"1.0.0.0\" ?>\n"
+				+ "\" solutionVersion=\""
+				+ (infoPathSolutionVersion == null ? "1.0.0.1"
+						: infoPathSolutionVersion)
+				+ "\" productVersion=\"11.0.6357\" PIVersion=\"1.0.0.0\" ?>\n"
 				+ "<?mso-application progid=\"InfoPath.Document\"?>\n";
 	}
 

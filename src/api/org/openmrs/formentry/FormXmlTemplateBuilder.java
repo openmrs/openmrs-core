@@ -68,7 +68,7 @@ public class FormXmlTemplateBuilder {
 			velocityContext.put("patient", patient);
 
 		StringBuffer xml = new StringBuffer();
-		xml.append(FormXmlTemplateFragment.header(form.getName(), url));
+		xml.append(FormXmlTemplateFragment.header(form.getName(), form.getInfoPathSolutionVersion(), url));
 		User user = null;
 		Date date = null;
 		if (patient != null) {

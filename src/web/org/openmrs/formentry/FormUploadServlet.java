@@ -73,5 +73,4 @@ public class FormUploadServlet extends HttpServlet {
 		out.print("<html><head>Invalid Request</head><body>Invalid Request</body></html>");
 	}
 	
-	
 }

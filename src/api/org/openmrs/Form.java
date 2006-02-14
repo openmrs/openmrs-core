@@ -25,6 +25,7 @@ public class Form implements java.io.Serializable {
 	private String description;
 	private EncounterType encounterType;
 	private String schemaNamespace;
+	private String infoPathSolutionVersion;
 	private String uri;
 	private String xslt;
 	private User creator;
@@ -129,7 +130,7 @@ public class Form implements java.io.Serializable {
 
 	/**
 	 * @param build
-	 * 			The build number to set
+	 *            The build number to set
 	 */
 	public void setBuild(Integer build) {
 		this.build = build;
@@ -143,7 +144,8 @@ public class Form implements java.io.Serializable {
 	}
 
 	/**
-	 * @param published The published to set.
+	 * @param published
+	 *            The published to set.
 	 */
 	public void setPublished(Boolean published) {
 		this.published = published;
@@ -172,7 +174,8 @@ public class Form implements java.io.Serializable {
 	}
 
 	/**
-	 * @param encounterType type of encounter associated with this form
+	 * @param encounterType
+	 *            type of encounter associated with this form
 	 */
 	public void setEncounterType(EncounterType encounterType) {
 		this.encounterType = encounterType;
@@ -194,6 +197,21 @@ public class Form implements java.io.Serializable {
 	}
 
 	/**
+	 * @return Returns the infoPathSolutionVersion.
+	 */
+	public String getInfoPathSolutionVersion() {
+		return infoPathSolutionVersion;
+	}
+
+	/**
+	 * @param infoPathSolutionVersion
+	 *            The infoPathSolutionVersion to set.
+	 */
+	public void setInfoPathSolutionVersion(String infoPathSolutionVersion) {
+		this.infoPathSolutionVersion = infoPathSolutionVersion;
+	}
+
+	/**
 	 * @return location of the actual form
 	 */
 	public String getUri() {
@@ -202,7 +220,7 @@ public class Form implements java.io.Serializable {
 
 	/**
 	 * @param uri
-	 * 			The location of the actual form
+	 *            The location of the actual form
 	 */
 	public void setUri(String uri) {
 		this.uri = uri;
@@ -289,7 +307,7 @@ public class Form implements java.io.Serializable {
 	public Boolean getRetired() {
 		return isRetired();
 	}
-	
+
 	/**
 	 * @param retired
 	 *            The retired status to set.
