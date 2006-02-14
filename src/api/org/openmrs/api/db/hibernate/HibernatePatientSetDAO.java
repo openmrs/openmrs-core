@@ -373,18 +373,21 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			ObsService obsService = context.getObsService();
 			Set<Obs> allObservations = obsService.getObservations(p);
 			if (allObservations != null && allObservations.size() > 0) {
+				log.debug("allObservations has " + allObservations.size() + " obs");
 				Set<Obs> undoneObservations = new HashSet<Obs>();
 				for (Obs obs : allObservations) {
-					if (obs.getEncounter().getEncounterId() != null) {
+					if (obs.getEncounter() == null) {
 						undoneObservations.add(obs);
 					}
 				}
+				log.debug("undoneObservations has " + undoneObservations.size() + " obs");
 
 				if (undoneObservations.size() > 0) {
 					Element observationsNode = doc.createElement("observations");
 					for (Obs obs : undoneObservations) {
 						Element obsNode = obsElementHelper(doc, locale, obs);
 						observationsNode.appendChild(obsNode);
+						log.debug("added node " + obsNode + " to observationsNode");
 					}
 					patientNode.appendChild(observationsNode);
 				}
