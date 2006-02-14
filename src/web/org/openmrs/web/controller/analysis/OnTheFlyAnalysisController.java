@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -15,8 +17,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
+import org.openmrs.reporting.ObsListProducer;
 import org.openmrs.reporting.PatientAnalysis;
 import org.openmrs.reporting.PatientDataSet;
+import org.openmrs.reporting.PatientDataSetFormatter;
 import org.openmrs.reporting.PatientFilter;
 import org.openmrs.reporting.PatientSet;
 import org.openmrs.reporting.ReportService;
@@ -80,17 +84,15 @@ public class OnTheFlyAnalysisController implements Controller {
 			}
 		}
 		
-		//return handleRequest(request, response);
 		return new ModelAndView(new RedirectView("analysis.list"));
 	}
 	
     public ModelAndView handleRequest(HttpServletRequest request,
     		HttpServletResponse response) throws ServletException, IOException {
 
-    	log.warn("entering handleRequest");
-    	
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Locale locale = context.getLocale();
 		
 		if (context == null) {
 			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
@@ -122,16 +124,42 @@ public class OnTheFlyAnalysisController implements Controller {
 		ShortDescriptionProducer sdp = new ShortDescriptionProducer();
 		pds.putDataSeries("description", sdp.produceData(context, result));
 		
+		Object resultsToDisplay = pds;
+		Object xmlToDisplay = null;
+		
+		String viewMethod = request.getParameter("view");
+		if ("cd4".equals(viewMethod)) {
+			log.debug("preparing cd4 view");
+			ObsListProducer olp = new ObsListProducer(context.getConceptService().getConcept(new Integer(5497)));
+			pds.putDataSeries("cd4s", olp.produceData(context, result));
+			PatientDataSetFormatter formatter = new ChronologicalObsFormatterHtml("cd4s");
+			resultsToDisplay = formatter.format(pds, locale);
+		} else if ("xml".equals(viewMethod)) {
+			Set<Integer> temp = result.getPatientIds();
+			if (temp.size() > 0) {
+				Integer ptId = temp.iterator().next();
+				log.debug("preparing xml view of patient " + ptId);
+				xmlToDisplay = patientSetService.exportXml(ptId);
+			}
+		}
+		
 		List<PatientFilter> filters = analysis.getPatientFilters();
 		if (filters == null) {
 			filters = new ArrayList<PatientFilter>();
 		}
 		
+		List availableFilters = new ArrayList<PatientFilter>(reportService.getAllPatientFilters());
+		for (PatientFilter pf : filters) {
+			availableFilters.remove(pf);
+		}		
+		
 		Map myModel = new HashMap();
 		myModel.put("no_filters", new Boolean(filters.size() == 0));
-		myModel.put("filters", filters);
+		myModel.put("active_filters", filters);
+		myModel.put("suggested_filters", availableFilters);
 		myModel.put("number_of_results", new Integer(result.size()));
-		myModel.put("analysis_results", pds);
+		myModel.put("analysis_results", resultsToDisplay);
+		myModel.put("xml_debug", xmlToDisplay);
 
 		return new ModelAndView("/analysis/on-the-fly-analysis", "model", myModel);
 	}

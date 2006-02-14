@@ -12,7 +12,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.reporting.Report;
-import org.openmrs.reporting.ReportService;
 
 public class HibernateReportService implements
 		org.openmrs.reporting.db.ReportDAO {

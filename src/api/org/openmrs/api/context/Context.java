@@ -366,6 +366,9 @@ public class Context implements ApplicationContextAware {
 		}
 		else {
 			Role role = getUserService().getRole(OpenmrsConstants.ANONYMOUS_ROLE);
+			if (role == null) {
+				throw new RuntimeException("Database out of sync with code: " + OpenmrsConstants.ANONYMOUS_ROLE + " role does not exist");
+			}
 			if (role.hasPrivilege(privilege))
 				return true;
 		}

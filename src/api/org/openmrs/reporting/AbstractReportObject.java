@@ -5,6 +5,7 @@ import org.openmrs.User;
 
 public abstract class AbstractReportObject {
 
+	private Integer reportObjectId; // database primary key
 	private User creator;
 	private Date dateCreated;
 	private User changedBy;
@@ -14,6 +15,20 @@ public abstract class AbstractReportObject {
 	private Date dateVoided;
 	private String voidReason;
 
+	/**
+	 * @return Returns the reportObjectId.
+	 */
+	public Integer getReportObjectId() {
+		return reportObjectId;
+	}
+	
+	/**
+	 * @param reportObjectId The reportObjectId to set.
+	 */
+	public void setReportObjectId(Integer reportObjectId) {
+		this.reportObjectId = reportObjectId;
+	
+	}
 	/**
 	 * @return Returns the changedBy.
 	 */

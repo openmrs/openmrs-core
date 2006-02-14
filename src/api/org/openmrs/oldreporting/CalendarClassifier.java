@@ -1,7 +1,6 @@
 package org.openmrs.oldreporting;
 
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 
 public class CalendarClassifier implements DataRowClassifier {

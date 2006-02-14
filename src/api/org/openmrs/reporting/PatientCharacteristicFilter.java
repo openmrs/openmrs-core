@@ -1,30 +1,20 @@
 package org.openmrs.reporting;
 
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
-import org.hibernate.Query;
-import org.hibernate.Session;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.db.DAOException;
-import org.openmrs.api.db.hibernate.HibernateUtil;
 
-public class CharacteristicFilter extends AbstractReportObject implements PatientFilter {
+public class PatientCharacteristicFilter extends AbstractReportObject implements PatientFilter {
 
 	private String gender;
 	private Date minBirthdate;
 	private Date maxBirthdate;
 	
-	public CharacteristicFilter() { }
+	public PatientCharacteristicFilter() { }
 	
-	public CharacteristicFilter(String gender, Date minBirthdate, Date maxBirthdate) {
+	public PatientCharacteristicFilter(String gender, Date minBirthdate, Date maxBirthdate) {
 		this.gender = gender;
 		this.minBirthdate = minBirthdate;
 		this.maxBirthdate = maxBirthdate;
@@ -34,8 +24,8 @@ public class CharacteristicFilter extends AbstractReportObject implements Patien
 		if (o == null) {
 			return false;
 		}
-		if (o instanceof CharacteristicFilter) {
-			CharacteristicFilter other = (CharacteristicFilter) o;
+		if (o instanceof PatientCharacteristicFilter) {
+			PatientCharacteristicFilter other = (PatientCharacteristicFilter) o;
 			return equals(gender, other.gender) && equals(minBirthdate, other.minBirthdate) && equals(maxBirthdate, other.maxBirthdate);
 		} else {
 			return false;
@@ -118,4 +108,9 @@ public class CharacteristicFilter extends AbstractReportObject implements Patien
 		return input.intersect(service.getPatientsByCharacteristics(gender, minBirthdate, maxBirthdate));
 	}
 
+	public PatientSet filterInverse(Context context, PatientSet input) {
+		PatientSetService service = context.getPatientSetService();
+		return input.subtract(service.getPatientsByCharacteristics(gender, minBirthdate, maxBirthdate));
+	}
+	
 }

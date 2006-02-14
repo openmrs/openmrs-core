@@ -103,6 +103,16 @@ public class PatientSet {
 		ret.patientIds.retainAll(other.patientIds);
 		return ret;
 	}
+
+	/**
+	 * Does not change this PatientSet object
+	 * @return this set *minus* all members of the other set
+	 */
+	public PatientSet subtract(PatientSet other) {
+		PatientSet ret = copy();
+		ret.patientIds.removeAll(other.patientIds);
+		return ret;
+	}
 		
 	public String toString() {
 		StringBuffer ret = new StringBuffer();

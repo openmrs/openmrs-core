@@ -1,6 +1,12 @@
 package org.openmrs.reporting;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.openmrs.api.APIException;
+import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOContext;
 import org.openmrs.reporting.db.ReportDAO;
@@ -38,19 +44,58 @@ public class ReportService {
 	public void updateReport(Report report) throws APIException {
 		dao().updateReport(report);
 	}
-	
+
 	/*
-	 * placeholder for testing -DJ
+	 * placeholders for testing -DJ
 	 */
-	public PatientFilter getPatientFilterById(Integer filterId) throws APIException {
-		switch (filterId.intValue()) {
-		case 1:
-			return new CharacteristicFilter("M", null, null);
-		case 2: 
-			return new CharacteristicFilter("F", null, null);
-		case 3:
-			return new CharacteristicFilter(null, new java.util.Date(78, 3, 11), null);
+	static Map<Integer, PatientFilter> tempFilters;
+	private void fillTempFilters() {
+		if (tempFilters != null) {
+			return;
 		}
-		return null;
+		tempFilters = new HashMap<Integer, PatientFilter>();
+		{
+			PatientCharacteristicFilter temp;
+			temp = new PatientCharacteristicFilter("M", null, null);
+			temp.setReportObjectId(1);
+			tempFilters.put(new Integer(1), temp);
+			temp = new PatientCharacteristicFilter("F", null, null);
+			temp.setReportObjectId(2);
+			tempFilters.put(new Integer(2), temp);
+			temp = new PatientCharacteristicFilter(null, new java.util.Date(78, 3, 11), null);
+			temp.setReportObjectId(3);
+			tempFilters.put(new Integer(3), temp);	
+		}
+		{
+			NumericObsPatientFilter temp;
+			temp = new NumericObsPatientFilter(
+					context.getConceptService().getConcept(new Integer(5497)),
+					PatientSetService.Modifier.LESS_THAN,
+					new Double(350));
+			temp.setReportObjectId(4);
+			tempFilters.put(new Integer(4), temp);
+			temp = new NumericObsPatientFilter(
+					context.getConceptService().getConcept(new Integer(5497)),
+					PatientSetService.Modifier.LESS_EQUAL,
+					new Double(350));
+			temp.setReportObjectId(5);
+			tempFilters.put(new Integer(5), temp);
+			temp = new NumericObsPatientFilter(
+					context.getConceptService().getConcept(new Integer(5497)),
+					PatientSetService.Modifier.LESS_THAN,
+					new Double(200));
+			temp.setReportObjectId(6);
+			tempFilters.put(new Integer(6), temp);
+		}
+	}
+	
+	public PatientFilter getPatientFilterById(Integer filterId) throws APIException {
+		fillTempFilters();
+		return tempFilters.get(filterId);
+	}
+	
+	public Collection<PatientFilter> getAllPatientFilters() throws APIException {
+		fillTempFilters();
+		return Collections.unmodifiableCollection(tempFilters.values());
 	}
 }

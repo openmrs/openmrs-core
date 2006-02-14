@@ -1,12 +1,24 @@
 package org.openmrs.reporting;
 
-import java.util.Locale;
-
 import org.openmrs.api.context.Context;
 
 public interface PatientFilter {
 
+	/**
+	 * Determine all patients in _input_ who also match some criteria
+	 * @param context
+	 * @param input
+	 * @return
+	 */
 	public PatientSet filter(Context context, PatientSet input);
+
+	/**
+	 * Determine all patients in _input_ who do *not* match some criteria
+	 * @param context
+	 * @param input
+	 * @return
+	 */
+	public PatientSet filterInverse(Context context, PatientSet input);
 	
 	public String getDescription();
 	
