@@ -1,6 +1,7 @@
 package org.openmrs.api.db.hibernate;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -8,6 +9,7 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 import org.openmrs.Concept;
@@ -185,15 +187,30 @@ public class HibernateObsDAO implements
 	 * @see org.openmrs.api.db.ObsService#getObservations(org.openmrs.Patient, org.openmrs.Concept)
 	 */
 	public Set<Obs> getObservations(Patient who, Concept question) {
-		// TODO Auto-generated method stub
-		return null;
+		Session session = HibernateUtil.currentSession();
+		HibernateUtil.beginTransaction();
+
+		Query query = session.createQuery("from Obs obs where obs.patientId = :patientId and concept_id = :conceptId");
+		query.setInteger("patientId", who.getPatientId());
+		query.setInteger("conceptId", question.getConceptId());
+		Set<Obs> ret = new HashSet<Obs>(query.list());
+
+		HibernateUtil.commitTransaction();
+		return ret;
 	}
 
 	/**
 	 * @see org.openmrs.api.db.ObsService#getObservations(org.openmrs.Patient)
 	 */
 	public Set<Obs> getObservations(Patient who) {
-		// TODO Auto-generated method stub
-		return null;
+		Session session = HibernateUtil.currentSession();
+		HibernateUtil.beginTransaction();
+
+		Query query = session.createQuery("from Obs obs where obs.patientId = :patientId");
+		query.setInteger("patientId", who.getPatientId());
+		Set<Obs> ret = new HashSet<Obs>(query.list());
+
+		HibernateUtil.commitTransaction();
+		return ret;
 	}
 }
