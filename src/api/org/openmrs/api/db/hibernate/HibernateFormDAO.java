@@ -312,9 +312,9 @@ public class HibernateFormDAO implements
 			
 			try {
 				HibernateUtil.beginTransaction();
-				Field f = (Field)session.merge(field);
-				session.evict(f);
-				session.update(field);
+				field.setChangedBy(context.getAuthenticatedUser());
+				field.setDateChanged(new Date());
+				session.merge(field);
 				HibernateUtil.commitTransaction();
 			}
 			catch (Exception e) {
