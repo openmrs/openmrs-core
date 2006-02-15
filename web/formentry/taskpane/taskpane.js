@@ -33,6 +33,11 @@ function setObj(nodeName, obj) {
 	closeTaskPane();
 }
 
+// returns HL7 version of problem for inserting into form
+function getProblemValue(obj) {
+	return obj.key + "^" + obj.value.toUpperCase() + "^99DCT";
+}
+
 // add problem (diagnosis) concept to a list (new problems or resolved problems)
 function pickProblem(mode, nodeName, obj) {
 	var node = oDOM.selectSingleNode(nodeName);
