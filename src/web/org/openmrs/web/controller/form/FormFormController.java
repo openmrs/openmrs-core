@@ -17,6 +17,7 @@ import org.openmrs.FieldType;
 import org.openmrs.Form;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
+import org.openmrs.formentry.FormUtil;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.propertyeditor.EncounterTypeEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -100,15 +101,23 @@ public class FormFormController extends SimpleFormController {
 		
 		List<FieldType> fieldTypes = new Vector<FieldType>();
 		List<EncounterType> encTypes = new Vector<EncounterType>();
+		String url = "";
 		
 		if (context != null && context.isAuthenticated()) {
 
 			fieldTypes = context.getFormService().getFieldTypes();
 			encTypes = context.getEncounterService().getEncounterTypes();
+			
+			Form form = (Form) obj;
+			if (form.getFormId() != null) {
+				url = FormUtil.getFormAbsoluteUrl(request.getRequestURL().toString(), form);
+			}
 		}
 
 		map.put("fieldTypes", fieldTypes);
 		map.put("encounterTypes", encTypes);
+		map.put("formURL", url);
+		
 		
 		return map;
 	}

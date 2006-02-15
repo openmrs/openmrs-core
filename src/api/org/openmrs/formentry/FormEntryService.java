@@ -202,6 +202,20 @@ public class FormEntryService {
 		}
 		return t;
 	}
+	
+	/**
+	 * @see org.openmrs.api.PatientService.findTribes(java.lang.String)
+	 */
+	public List<Tribe> findTribes(String s) throws APIException {
+		context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
+		List<Tribe> t;
+		try {
+			t = getPatientService().findTribes(s);
+		} finally {
+			context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
+		}
+		return t;
+	}
 
 	/**
 	 * @see org.openmrs.api.PatientService.getLocations()
@@ -262,11 +276,14 @@ public class FormEntryService {
 	}
 
 	public Collection<Form> getForms() {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY))
+			throw new APIAuthenticationException("Privilege required: "
+					+ OpenmrsConstants.PRIV_FORM_ENTRY);
+		
 		List<Form> forms = new Vector<Form>();
 		context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_FORMS);
 		try {
 			forms = context.getFormService().getForms(true);
-			log.debug(forms);
 		} catch (Exception e) {
 			log.error(e);
 		} finally {
@@ -277,6 +294,10 @@ public class FormEntryService {
 
 	public Collection<User> findUsers(String searchValue, List<String> roles,
 			boolean includeVoided) {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY))
+			throw new APIAuthenticationException("Privilege required: "
+					+ OpenmrsConstants.PRIV_FORM_ENTRY);
+		
 		List<User> users = new Vector<User>();
 		context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
 		try {
@@ -292,6 +313,10 @@ public class FormEntryService {
 
 	public Collection<User> getAllUsers(List<String> roles,
 			boolean includeVoided) {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY))
+			throw new APIAuthenticationException("Privilege required: "
+					+ OpenmrsConstants.PRIV_FORM_ENTRY);
+		
 		List<User> users = new Vector<User>();
 		context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
 		try {
@@ -303,10 +328,13 @@ public class FormEntryService {
 		}
 		return users;
 	}
+	
+	
 
 	/***************************************************************************
 	 * FormEntryQueue Service Methods
 	 **************************************************************************/
+	
 	public void createFormEntryQueue(FormEntryQueue formEntryQueue) {		
 		if (!context.hasPrivilege(FormEntryConstants.PRIV_ADD_FORMENTRY_QUEUE)
 				&& !context.hasPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY))

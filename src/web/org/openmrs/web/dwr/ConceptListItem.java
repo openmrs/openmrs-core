@@ -7,6 +7,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptWord;
+import org.openmrs.web.Util;
 
 import uk.ltd.getahead.dwr.util.JavascriptUtil;
 
@@ -36,9 +37,9 @@ public class ConceptListItem {
 			name = "";
 			shortName = "";
 			if (cn != null) {
-				name = util.escapeJavaScript(cn.getName());
-				shortName = util.escapeJavaScript(cn.getShortName());
-				description = util.escapeJavaScript(cn.getDescription());
+				name = Util.escapeHTML(util.escapeJavaScript(cn.getName()));
+				shortName = Util.escapeHTML(util.escapeJavaScript(cn.getShortName()));
+				description = Util.escapeHTML(util.escapeJavaScript(cn.getDescription()));
 			}
 			synonym = word.getSynonym();
 			retired = concept.isRetired();

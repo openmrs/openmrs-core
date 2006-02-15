@@ -16,12 +16,15 @@
 		<convert converter="bean" match="org.openmrs.web.dwr.FormFieldListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.FieldListItem"/>
 		<convert converter="bean" match="org.openmrs.PatientAddress"/>
+		<convert converter="bean" match="org.openmrs.Tribe"/>
 	
 		<create creator="new" javascript="DWRPatientService">
 			<param name="class" value="org.openmrs.web.dwr.DWRPatientService" />
 			<include method="findPatients"/>
 			<include method="getPatient"/>
 			<include method="getSimilarPatients"/>
+			<include method="getTribes" />
+			<include method="findTribes" />
 		</create>
 	
 		<create creator="new" javascript="DWRConceptService">

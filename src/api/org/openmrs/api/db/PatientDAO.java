@@ -137,6 +137,15 @@ public interface PatientDAO {
 	public List<Tribe> getTribes() throws DAOException;
 	
 	/**
+	 * Get tribes by partial name lookup
+	 * 
+	 * @param Search string
+	 * @return non-retired Tribe list
+	 * @throws DAOException
+	 */
+	public List<Tribe> findTribes(String s) throws DAOException;
+	
+	/**
 	 * Get all locations
 	 * 
 	 * @return location list

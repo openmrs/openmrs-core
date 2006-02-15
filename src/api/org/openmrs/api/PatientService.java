@@ -225,6 +225,19 @@ public class PatientService {
 	}
 	
 	/**
+	 * Find tribes by partial name lookup
+	 * 
+	 * @return non-retired Tribe list
+	 * @throws APIException
+	 */
+	public List<Tribe> findTribes(String search) throws APIException {
+		if (!context.isAuthenticated())
+			throw new APIAuthenticationException("Authentication required");
+		
+		return getPatientDAO().findTribes(search);
+	}
+	
+	/**
 	 * Get all locations
 	 * 
 	 * @return location list

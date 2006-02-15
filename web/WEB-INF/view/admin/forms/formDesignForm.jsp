@@ -493,9 +493,9 @@
 			
 			<br/><br/>
 			<a href="formEdit.form?formId=${form.formId}"><spring:message code="Form.editProperties" /></a> |
-			<a href="/@WEBAPP.NAME@/formDownload?target=schema"><spring:message code="Form.downloadSchema" /></a> |
-			<a href="/@WEBAPP.NAME@/formDownload?target=template"><spring:message code="Form.downloadTemplate" /></a>
-
+			<a href="/@WEBAPP.NAME@/formDownload?target=schema&formId=${form.formId}"><spring:message code="Form.downloadSchema" /></a> |
+			<a href="/@WEBAPP.NAME@/formDownload?target=template&formId=${form.formId}"><spring:message code="Form.downloadTemplate" /></a> |
+			<a href="${formURL}"><spring:message code="Form.downloadXSN" /></a>
 		</td>
 		<td valign="top" style="padding-left: 10px;">
 			<a href="#add" onclick="return addNewFormField();"><spring:message code="FormField.add" /></a> <br /><br />

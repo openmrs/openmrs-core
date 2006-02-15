@@ -14,6 +14,7 @@
 
 	var patientName;
 	var birthyear;
+	var age;
 	var gender;
 	var form;
 	var noPatientsFound;
@@ -23,14 +24,15 @@
 	function findObjects(text) {
 		patientName = text;
 		birthyear = $("birthyear").value.toString();
+		age = $("age").value.toString();
 		gender = $("gender").value.toString();
-		DWRPatientService.getSimilarPatients(preFillTable, text, birthyear, gender);
+		DWRPatientService.getSimilarPatients(preFillTable, text, birthyear, age, gender);
 		return false;
 	}
 	
 	function preFillTable(patients) {
 		if (patients.length < 1) {
-			if (patientName != "" && birthyear != "" && gender != "") {
+			if (patientName != "" && (birthyear != "" || age != "") && gender != "") {
 				document.location = getHref();
 			}
 			else {
@@ -48,7 +50,7 @@
 	}
 	
 	var getHref = function() {
-		return "newPatient.form?name=" + patientName + "&birthyear=" + birthyear + "&gender=" + gender;
+		return "newPatient.form?name=" + patientName + "&birthyear=" + birthyear + "&gender=" + gender + "&age=" + age;
 	}
 	
 	var init = function() {
@@ -74,13 +76,17 @@
 		return false;
 	}
 	
+	var cancel() {
+		window.location = "${pageContext.request.contextPath}/formentry";
+	}
+	
 </script>
 <!-- patientSearch.js must be imported after the findObjects() definition for override -->
 <script src='<%= request.getContextPath() %>/scripts/patientSearch.js'></script>
 
 <h2><spring:message code="Patient.title"/></h2>
 
-<form method="get" action="newPatient.form" onSubmit="return search(patientName, null, false, 0);" id="patientForm">
+<form method="get" action="" onSubmit="return search(patientName, null, false, 0);" id="patientForm">
 	<table>
 		<tr>
 			<td><spring:message code="Patient.name"/></td>
@@ -89,19 +95,22 @@
 		<tr>
 			<td><spring:message code="Patient.birthyear"/></td>
 			<td><input type="text" name="birthyear" id="birthyear" size="5" value="" onChange="inputChanged=true;" onFocus="exitNumberMode(patientName)" /></td>
+			<td><spring:message code="Patient.age.or"/></td>
+			<td><input type="text" name="age" id="age" size="5" value="" onChange="inputChanged=true;" onFocus="exitNumberMode(patientName)" /></td>
 		</tr>
 		<tr>
 			<td><spring:message code="Patient.gender"/></td>
-			<td><select name="gender" id="gender" onChange="inputChanged=true;" onFocus="exitNumberMode(patientName)">
-					<openmrs:forEachRecord name="gender">
-						<option value="${record.key}"><spring:message code="Patient.gender.${record.value}"/></option>
-					</openmrs:forEachRecord>
-				</select>
+			<td>
+				<openmrs:forEachRecord name="gender">
+					<input type="radio" name="gender" id="${record.key}" value="${record.key}" <c:if test="${record.key == status.value}">checked</c:if> onclick="inputChanged=true" onFocus="exitNumberMode(patientName)" />
+						<label for="${record.key}"> <spring:message code="Patient.gender.${record.value}"/> </label>
+				</openmrs:forEachRecord>
 			</td>
 		</tr>
 	</table>
 	
-	<input type="submit" value="<spring:message code="general.continue"/>" onClick="return search(patientName, null, false, 0);"/>
+	<input type="button" value="<spring:message code="general.continue"/>" onClick="return search(patientName, null, false, 0);"/> &nbsp; &nbsp; 
+	<input type="button" value="<spring:message code="general.cancel" />" name="action" id="cancelButton" onClick="return cancel()">
 	
 	<br /><br />
 	

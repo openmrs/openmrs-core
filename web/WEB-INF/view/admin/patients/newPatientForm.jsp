@@ -25,24 +25,26 @@
 			<tr>
 			<td valign="top">
 				<spring:bind path="patient.givenName">
-					<input type="text" name="${status.expression}" value="${status.value}" />
+					<input type="text" name="${status.expression}" value="${status.value}" size="30" />
 					<c:if test="${status.errorMessage != ''}"><br/><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
 			<td valign="top">
 				<spring:bind path="patient.middleName">
-					<input type="text" name="${status.expression}" value="${status.value}" />
+					<input type="text" name="${status.expression}" value="${status.value}" size="30" />
 					<c:if test="${status.errorMessage != ''}"><br/><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
 			<td valign="top">
 				<spring:bind path="patient.familyName">
-					<input type="text" name="${status.expression}" value="${status.value}" />
+					<input type="text" name="${status.expression}" value="${status.value}" size="30" />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
 		</tr>
-		<tr><td><br/></td><td><br/></td></tr>
+	</table>
+	<br/>
+	<table>
 		<tr>
 			<th><spring:message code="PatientIdentifier.identifier"/></th>
 			<th><spring:message code="PatientIdentifier.identifierType"/></th>
@@ -58,7 +60,7 @@
 		<tr>
 			<td valign="top">
 				<spring:bind path="patient.identifier">
-					<input type="text" 
+					<input type="text" size="30"
 							name="${status.expression}" 
 							value="<spring:hasBindErrors name="patient">${status.value}</spring:hasBindErrors>" 
 							onBlur="return true; validateIdentifier(this, 'addButton', '<spring:message code="error.identifier"/>');"/>
@@ -91,9 +93,9 @@
 			<th><spring:message code="Patient.gender"/></th>
 			<td>
 				<spring:bind path="patient.gender">
-					<select name="gender" id="gender">
 						<openmrs:forEachRecord name="gender">
-							<option value="${record.key}" <c:if test="${record.key == status.value}">selected</c:if>><spring:message code="Patient.gender.${record.value}"/></option>
+							<input type="radio" name="gender" id="${record.key}" value="${record.key}" <c:if test="${record.key == status.value}">checked</c:if> />
+								<label for="${record.key}"> <spring:message code="Patient.gender.${record.value}"/> </label>
 						</openmrs:forEachRecord>
 					</select>
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
@@ -104,7 +106,7 @@
 			<th><spring:message code="PatientAddress.address1"/></th>
 			<td>
 				<spring:bind path="patient.address1">
-					<input type="text" name="${status.expression}" value="${status.value}"/>
+					<input type="text" name="${status.expression}" value="${status.value}" size="45" />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
@@ -113,7 +115,7 @@
 			<th><spring:message code="PatientAddress.address2"/></th>
 			<td>
 				<spring:bind path="patient.address2">
-					<input type="text" name="${status.expression}" value="${status.value}" />
+					<input type="text" name="${status.expression}" value="${status.value}" size="45" />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
@@ -141,6 +143,7 @@
 				<spring:bind path="patient.tribe">
 					<select name="tribe">
 						<openmrs:forEachRecord name="tribe">
+							<option value=""></option>
 							<option value="${record.tribeId}" <c:catch><c:if test="${record.name == status.value || status.value == record.tribeId}">selected</c:if></c:catch>>
 								${record.name}
 							</option>
@@ -154,7 +157,7 @@
 			<th><spring:message code="Patient.mothersName"/></th>
 			<td>
 				<spring:bind path="patient.mothersName">
-					<input type="text" name="mothersName" value="${status.value}" />
+					<input type="text" name="mothersName" value="${status.value}" size="45" />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>

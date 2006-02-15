@@ -55,7 +55,7 @@ public class FormDownloadServlet extends HttpServlet {
 
 		Patient patient = context.getFormEntryService().getPatient(patientId);
 		Form form = context.getFormEntryService().getForm(formId);
-		String url = getFormAbsoluteUrl(request, form);
+		String url = FormUtil.getFormAbsoluteUrl(request.getRequestURL().toString(), form);
 
 		String title = form.getName();
 		title += " (" + form.getVersion();
@@ -101,7 +101,7 @@ public class FormDownloadServlet extends HttpServlet {
 		}
 
 		Form form = context.getFormEntryService().getForm(formId);
-		String url = getFormAbsoluteUrl(request, form);
+		String url = FormUtil.getFormAbsoluteUrl(request.getRequestURL().toString(), form);
 		
 		String payload;
 		String filename;
@@ -127,14 +127,5 @@ public class FormDownloadServlet extends HttpServlet {
 	private Context getContext(HttpSession httpSession) {
 		return (Context) httpSession
 				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-	}
-
-	private String getFormAbsoluteUrl(HttpServletRequest request, Form form) {
-		String url = request.getRequestURL().toString();
-		int endOfDomain = url.indexOf('/', 8);
-		String baseUrl = url.substring(0, (endOfDomain > 8 ? endOfDomain : url.length()));
-		return (baseUrl.startsWith("http://localhost") ? "file:///c:/amrs_forms/"
-				: baseUrl + "/formentry/forms/")
-				+ form.getUri();
 	}
 }

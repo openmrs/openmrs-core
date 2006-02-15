@@ -1,3 +1,9 @@
+form, table, #searchPagingBar {
+	font-size: .85em;
+}
+#verboseListing, #searchInfoBar {
+	font-size: .7em;
+}
 h1 {
 	text-align:center;
 	margin: 5px;

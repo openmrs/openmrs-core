@@ -42,7 +42,6 @@ public class OpenmrsConstants {
 	// TODO issues with localization
 	public static final Map<String, String> GENDER() {
 		Map<String, String> genders = new LinkedHashMap<String, String>();
-		genders.put("", "Choose");
 		genders.put("M", "Male");
 		genders.put("F", "Female");
 		return genders;

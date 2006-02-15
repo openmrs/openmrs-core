@@ -195,4 +195,12 @@ public class FormUtil {
 				+ FormEntryConstants.HL7_LOCAL_DRUG;
 	}
 
+	public static String getFormAbsoluteUrl(String requestURL, Form form) {
+		int endOfDomain = requestURL.indexOf('/', 8);
+		String baseUrl = requestURL.substring(0, (endOfDomain > 8 ? endOfDomain : requestURL.length()));
+		return (baseUrl.startsWith("http://localhost") ? "file:///c:/amrs_forms/"
+				: baseUrl + "/formentry/forms/")
+				+ form.getUri();
+	}
+
 }

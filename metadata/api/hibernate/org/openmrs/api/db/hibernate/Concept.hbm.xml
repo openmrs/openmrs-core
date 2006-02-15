@@ -117,8 +117,8 @@
 		-->
 
 		
-		<joined-subclass name="ConceptNumeric" table="concept_numeric">
-			<key column="concept_id" />
+		<joined-subclass name="ConceptNumeric" table="concept_numeric" extends="org.openmrs.Concept">
+			<key column="concept_id" not-null="true" />
 			<property name="hiAbsolute" type="java.lang.Double" column="hi_absolute" length="22" />
 			<property name="hiCritical" type="java.lang.Double" column="hi_critical" length="22" />
 			<property name="hiNormal" type="java.lang.Double" column="hi_normal" length="22" />

@@ -34,7 +34,7 @@
 	function search(delay, event) {
 		var searchBox = document.getElementById("phrase");
 		savedSearch = searchBox.value.toString();
-		return searchBoxChange('conceptSearchBody', searchBox, event, false, delay);
+		searchBoxChange('conceptSearchBody', searchBox, event, false, delay);
 	}
 	
 	function preFillTable(concepts) {
@@ -44,6 +44,7 @@
 	}
 	
 	function showProposeConceptForm() {
+		$('searchForm').style.display = "none";
 		$('proposeConceptForm').style.display = "block";
 		txt = $('proposedText');
 		txt.value = savedSearch;
@@ -53,7 +54,7 @@
 	
 	function proposeConcept() {
 		var box = $('proposedText');
-		if (box.value == '')  {
+		if (box.innerHTML == '')  {
 			alert("Proposed Concept text must be entered");
 			box.focus();
 		}
@@ -73,6 +74,7 @@
 		else {
 			//display a box telling them to pick a preposed concept:
 			$("preProposedAlert").style.display = "block";
+			$('searchForm').style.display = "";
 			fillTable(concepts);
 		}
 	}
@@ -80,7 +82,7 @@
 	function miniConcept(n) {
 		this.conceptId = "PROPOSED";
 		if (n == null)
-			this.name = $('proposedText').value;
+			this.name = $('proposedText').innerHTML;
 		else
 			this.name = n;
 	}
@@ -117,9 +119,9 @@
 	<br>
 </div>
 
-<form method="POST" onSubmit="return search(0, event);">
+<form method="POST" onSubmit="search(0, event); return false;" id="searchForm">
 	<input name="mode" type="hidden" value='${request.mode}'>
-	<input name="phrase" id="phrase" type="text" class="prompt" size="10" onkeyup="search(400, event)" />
+	<input name="phrase" id="phrase" type="text" class="prompt" size="23" onkeyup="search(400, event)" />
 	<br />
 	<input type="checkbox" id="verboseListing" value="true" onclick="search(0, event); phrase.focus();">
 	<label for="verboseListing">
@@ -131,30 +133,26 @@
 			<spring:message code="general.search.hint" />
 		</em>
 	</small>
+
+	<table border="0">
+		<tbody id="conceptSearchBody">
+		</tbody>
+	</table>
+
 </form>
 
-<table border="0">
-	<tbody id="conceptSearchBody">
-	</tbody>
-</table>
-
 <div id="proposeConceptForm">
-	<br>
-	<table>
-		<tr>
-			<td>
-				<spring:message code="ConceptProposal.originalText" />
-			</td>
-			<td>
-				<input type="text" name="originalText" id="proposedText" value="" size="40" />
-			</td>
-		</tr>
-	</table>
+	<br />
+	<spring:message code="ConceptProposal.proposeInfo" />
+	<br /><br />
+	<b><spring:message code="ConceptProposal.originalText" /></b><br />
+	<textarea name="originalText" id="proposedText" rows="4" cols="40" /><br />
+	<input type="button" onclick="proposeConcept()" value="<spring:message code="ConceptProposal.propose" />" /><br />
+
 	<span class="alert">
 		<spring:message code="ConceptProposal.proposeWarning" />
 	</span>
-	<br />
-	<input type="button" onclick="proposeConcept()" value="<spring:message code="ConceptProposal.propose" />" />
+	
 </div>
 
 <br />

@@ -1,5 +1,7 @@
 package org.openmrs.web.dwr;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
@@ -9,8 +11,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.PatientAddress;
-import org.openmrs.formentry.FormEntryService;
+import org.openmrs.Tribe;
 import org.openmrs.api.context.Context;
+import org.openmrs.formentry.FormEntryService;
 import org.openmrs.web.WebConstants;
 
 import uk.ltd.getahead.dwr.WebContextFactory;
@@ -71,7 +74,7 @@ public class DWRPatientService {
 				
 			} catch (Exception e) {
 				log.error(e);
-				patientList.add("Error while attempting to find obs - " + e.getMessage());
+				patientList.add("Error while attempting to find patient - " + e.getMessage());
 			}
 		}
 		return patientList;
@@ -90,7 +93,7 @@ public class DWRPatientService {
 		return pli;
 	}
 	
-	public Vector getSimilarPatients(String name, String birthyear, String gender) {
+	public Vector getSimilarPatients(String name, String birthyear, String age, String gender) {
 		Vector patientList = new Vector();
 
 		Context context = (Context) WebContextFactory.get().getSession()
@@ -105,7 +108,7 @@ public class DWRPatientService {
 		else {
 			
 			Integer userId = context.getAuthenticatedUser().getUserId();
-			log.info(userId + "|" + name + "|" + birthyear + "|" + gender);
+			log.info(userId + "|" + name + "|" + birthyear + "|" + age + "|" + gender);
 			
 			FormEntryService ps = context.getFormEntryService();
 			List<Patient> patients = new Vector<Patient>();
@@ -113,6 +116,12 @@ public class DWRPatientService {
 			Integer d = null;
 			if (birthyear.length() > 3)
 				d = Integer.valueOf(birthyear);
+			else if (age.length() > 0) {
+				Calendar c = Calendar.getInstance();
+				c.setTime(new Date());
+				c.add(Integer.parseInt(age) * -1, Calendar.YEAR);
+				d = c.get(Calendar.YEAR);
+			}
 			
 			if (gender.length() < 1)
 				gender = null;
@@ -125,6 +134,55 @@ public class DWRPatientService {
 			}
 		}
 		return patientList;
+	}
+	
+	public Vector findTribes(String search) {
+		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
+		
+		Context context = (Context) WebContextFactory.get().getSession()
+				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+
+		Vector tribeList = new Vector();
+		
+		if (context == null) {
+			tribeList.add("Your session has expired.");
+			tribeList.add("Please <a href='" + request.getContextPath() + "/logout'>log in</a> again.");
+		}
+		else {
+			try {
+				tribeList.addAll(context.getFormEntryService().findTribes(search));
+			} catch (Exception e) {
+				log.error(e);
+				tribeList.add("Error while attempting to find tribe - " + e.getMessage());
+			}
+		}
+		
+		return tribeList;
+			
+	}
+	
+	public Vector<Tribe> getTribes() {
+		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
+		
+		Context context = (Context) WebContextFactory.get().getSession()
+				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+
+		Vector tribeList = new Vector();
+		
+		if (context == null) {
+			tribeList.add("Your session has expired.");
+			tribeList.add("Please <a href='" + request.getContextPath() + "/logout'>log in</a> again.");
+		}
+		else {
+			try {
+				tribeList.addAll(context.getFormEntryService().getTribes());
+			} catch (Exception e) {
+				log.error(e);
+				tribeList.add("Error while attempting to find tribe - " + e.getMessage());
+			}
+		}
+		
+		return tribeList;
 	}
 
 }

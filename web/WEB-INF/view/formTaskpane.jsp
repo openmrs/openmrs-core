@@ -28,7 +28,7 @@
 		
 		<script type="text/javascript">
 			document.getElementById("jsessionid").value = getSessionId();
-			//document.getElementById("bootstrap_form").submit();
+			document.getElementById("bootstrap_form").submit();
 		</script>
 	
 	</c:if>

@@ -6,6 +6,36 @@
 
 <h3><spring:message code="formentry.title"/></h3>
 
+<script type="text/javascript">
+	
+	var timeOut = null;
+
+	function startDownloading() {
+		var choiceMade = false;
+		var options = document.getElementsByTagName("input");
+		for (var i=0; i<options.length;i++) {
+			if (options[i].type == 'radio' && options[i].checked == true)
+				choiceMade = true;
+		}
+		if (choiceMade == false)
+			return false;
+		
+		timeOut = setTimeout("switchPatient()", 30000);
+	}
+	
+	function switchPatient() {
+		document.location='index.htm?phrase=${param.phrase}&autoJump=false';
+	}
+	
+	function cancelTimeout() {
+		if (timeOut != null)
+			clearTimeout(timeOut);
+	}
+	
+	//window.onfocus=cancelTimeout;
+	
+</script>
+
 <div id="patientSummary">
 	<b class='boxHeader'>
 		<c:forEach var="name" items="${patient.names}" varStatus="status">
@@ -20,13 +50,13 @@
 
 	<div class="box">	
 		<a href='<%= request.getContextPath() %>/admin/patients/newPatient.form?pId=${patient.patientId}' style='float:right'><spring:message code="Patient.edit"/></a>
-		<a href="#switch" onClick="document.location='index.htm?phrase=${param.phrase}&autoJump=false'" style='float:right; clear:right'>
+		<a href="#switch" onClick="switchPatient()" style='float:right; clear:right'>
 			<spring:message code="formentry.patient.switch"/>
 		</a>
 
 		<table>
 			<tr>
-				<td><spring:message code="Patient.gender"/></td>
+				<td><spring:message code="Patient.gender"/>: </td>
 				<td id="gender">
 					<c:if test="${patient.gender == 'M'}">
 						<img src="${pageContext.request.contextPath}/images/male.gif" />
@@ -39,7 +69,7 @@
 			<c:forEach var="name" items="${patient.names}" varStatus="status">
 				<c:if test="${status.index == 1}">
 					<tr>
-						<td valign="top"><spring:message code="Patient.other.names"/></td>
+						<td valign="top"><spring:message code="Patient.other.names"/>: </td>
 						<td>
 							<c:forEach var="name" items="${patient.names}" varStatus="status">
 								<c:if test="${status.index != 0}"><b>${name.givenName} ${name.middleName} ${name.familyName}</b><br/></c:if>
@@ -51,10 +81,10 @@
 			<c:forEach var="name" items="${patient.identifiers}" varStatus="status">
 				<c:if test="${status.index == 1}">
 					<tr>
-						<td valign="top"><spring:message code="Patient.other.identifiers"/></td>
+						<td valign="top"><spring:message code="Patient.other.identifiers"/>: </td>
 						<td>
 							<c:forEach var="identifier" items="${patient.identifiers}" varStatus="status">
-								<c:if test="${status.index != 0}"><b>${identifier.identifier}</b><br/></c:if>
+								<c:if test="${status.index != 0}"><b>${identifier.identifier}</b> (${identifier.identifierType.name}) <br/></c:if>
 							</c:forEach>
 						</td>
 					</tr>
@@ -63,7 +93,7 @@
 			<c:forEach var="name" items="${patient.addresses}" varStatus="status">
 				<c:if test="${status.index == 1}">
 					<tr>
-						<td valign="top"><spring:message code="Patient.addresses"/></td>
+						<td valign="top"><spring:message code="Patient.addresses"/>: </td>
 						<td>
 						<c:forEach var="address" items="${patient.addresses}" varStatus="status">
 							<b>
@@ -77,7 +107,7 @@
 				</c:if>
 			</c:forEach>
 			<tr>
-				<td valign="top"><spring:message code="Patient.birthdate"/></td>
+				<td valign="top"><spring:message code="Patient.birthdate"/>: </td>
 				<td id="birthdate">
 					<b><spring:bind path="patient.birthdate">${status.value}</spring:bind></b>
 					<c:if test="${patient.age > 0}">
@@ -89,7 +119,7 @@
 				</td>
 			</tr>
 			<tr>
-				<td valign="top"><spring:message code="Patient.tribe"/></td>
+				<td valign="top"><spring:message code="Patient.tribe"/>: </td>
 				<td id="tribe"><b>${patient.tribe.name}</b></td>
 			</tr>
 		</table>
@@ -121,7 +151,7 @@
 			</c:forEach>
 		</table>
 		<input type="hidden" name="patientId" id="patientId" value="${patient.patientId}">
-		<input type="submit" value="<spring:message code="formentry.download.form"/>">
+		<input type="submit" value="<spring:message code="formentry.download.form"/>" onclick="return startDownloading()">
 	</form>
 </div>
 

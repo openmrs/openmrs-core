@@ -13,25 +13,17 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.FormService;
+import org.openmrs.api.MessageService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.UserService;
-import org.openmrs.api.MessageService;
 import org.openmrs.api.db.DAOContext;
 import org.openmrs.api.db.hibernate.HibernateDAOContext;
 import org.openmrs.formentry.FormEntryService;
 import org.openmrs.reporting.ReportService;
 import org.openmrs.util.OpenmrsConstants;
-
-//TODO: Need to remove these dependencies
-//import org.openmrs.api.MessageServiceImpl;  
-//import org.openmrs.notification.mail.MailMessageSender;
-//import org.openmrs.notification.mail.velocity.VelocityMessagePreparator;
-import org.springframework.beans.factory.xml.XmlBeanFactory;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
@@ -364,15 +356,14 @@ public class Context implements ApplicationContextAware {
 				if (p.getPrivilege().equals(privilege))
 					return true;
 		}
-		else {
-			Role role = getUserService().getRole(OpenmrsConstants.ANONYMOUS_ROLE);
-			if (role == null) {
-				throw new RuntimeException("Database out of sync with code: " + OpenmrsConstants.ANONYMOUS_ROLE + " role does not exist");
-			}
-			if (role.hasPrivilege(privilege))
-				return true;
-		}
 		
+		Role role = getUserService().getRole(OpenmrsConstants.ANONYMOUS_ROLE);
+		if (role == null) {
+			throw new RuntimeException("Database out of sync with code: " + OpenmrsConstants.ANONYMOUS_ROLE + " role does not exist");
+		}
+		if (role.hasPrivilege(privilege))
+			return true;
+	
 		return false;
 	}
 	

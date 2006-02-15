@@ -19,9 +19,10 @@ var gbFixedPos=false;	// true: pop the calendar absolutely at gPosOffset; false:
 var gMonths=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 var gWeekDay=["Su","Mo","Tu","We","Th","Fr","Sa"];	// weekday caption from Sunday to Saturday
 
-var gBegin=[1980,1,1];	// calendar date range begin from [Year,Month,Date]. Using gToday here will make it start from today.
+var gBegin=[1910,1,1];	// calendar date range begin from [Year,Month,Date]. Using gToday here will make it start from today.
 var gEnd=[2030,12,31];	// calendar date range end at [Year,Month,Date]
-var gsOutOfRange="Sorry, you may not go beyond the designated range!";	// out-of-date-range error message. If set to "", no alerts will popup on such error.
+//var gsOutOfRange="Sorry, you may not go beyond the designated range!";	// out-of-date-range error message. If set to "", no alerts will popup on such error.
+var gsOutOfRange="";
 var guOutOfRange=null;	// the background image url for the out-range dates. e.g. "outrange.gif"
 
 var giFirstDOW=1;	// indicates the first day of week. 0:Sunday; 1-6:Monday-Saturday.

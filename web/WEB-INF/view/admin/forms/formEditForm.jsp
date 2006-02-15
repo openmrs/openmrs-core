@@ -18,8 +18,9 @@
 
 <br/>
 <a href="formDesign.form?formId=${form.formId}"><spring:message code="Form.designSchema" /></a> |
-<a href="/@WEBAPP.NAME@/formDownload?target=schema"><spring:message code="Form.downloadSchema" /></a> |
-<a href="/@WEBAPP.NAME@/formDownload?target=template"><spring:message code="Form.downloadTemplate" /></a>
+<a href="/@WEBAPP.NAME@/formDownload?target=schema&formId=${form.formId}"><spring:message code="Form.downloadSchema" /></a> |
+<a href="/@WEBAPP.NAME@/formDownload?target=template&formId=${form.formId}"><spring:message code="Form.downloadTemplate" /></a> |
+<a href="${formURL}"><spring:message code="Form.downloadXSN" /></a>
 <br/>
 <br/>
 

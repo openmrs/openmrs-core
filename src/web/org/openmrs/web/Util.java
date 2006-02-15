@@ -18,6 +18,14 @@ public class Util {
 		
 		return locale;
 	}
+	
+	public static String escapeHTML(String s) {
+		
+		s = s.replace("<", "&lt;");
+		s = s.replace(">", "&gt;");
+		
+		return s;
+	}
 
 
 }

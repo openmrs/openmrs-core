@@ -326,9 +326,22 @@ public class HibernatePatientDAO implements PatientDAO {
 	public List<Tribe> getTribes() throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
-		List<Tribe> tribes = session.createQuery("from Tribe t order by t.name").list();
+		List<Tribe> tribes = session.createQuery("from Tribe t order by t.name asc").list();
 		
 		return tribes;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.PatientService#findTribes()
+	 */
+	public List<Tribe> findTribes(String s) throws DAOException {
+		Session session = HibernateUtil.currentSession();
+		
+		Criteria crit = session.createCriteria(Tribe.class);
+		crit.add(Expression.like("name", s, MatchMode.START));
+		crit.addOrder(Order.asc("name"));
+		
+		return crit.list();
 	}
 
 	/**

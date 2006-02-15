@@ -31,23 +31,34 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 			if (StringUtils.hasText(text)) {
 				ConceptService cs = context.getConceptService();
 				String[] conceptIds = text.split(" ");
-				List<Integer> requestConceptIds = new Vector<Integer>();
+				List<String> requestConceptIds = new Vector<String>();
 				Set<ConceptAnswer> newAnswers = new HashSet<ConceptAnswer>();
-				//set up parameter Synonym Set for easier add/delete functions
+				//set up parameter answer Set for easier add/delete functions
 				// and removal of duplicates
 				for (String id : conceptIds) {
 					id = id.trim();
-					if (!id.equals("") && !requestConceptIds.contains(Integer.valueOf(id))) //remove whitespace, blank lines, and duplicates
-						requestConceptIds.add(Integer.valueOf(id));
+					if (!id.equals("") && !requestConceptIds.contains(id)) //remove whitespace, blank lines, and duplicates
+						requestConceptIds.add(id);
 				}
 				
 				// Union the original and request (submitted) sets to get the 'clean' sets
 				Collection<ConceptAnswer> originalConceptAnswers = (Collection<ConceptAnswer>)getValue();
 				for (ConceptAnswer origConceptAnswer : originalConceptAnswers) {
-					for (int x = 0; x < requestConceptIds.size(); x++) {
-						if (requestConceptIds.get(x).equals(origConceptAnswer.getAnswerConcept().getConceptId())) {
+					for (String conceptId : requestConceptIds) {
+						Integer id = null;
+						Integer drugId = null;
+						if (conceptId.contains("^")) {
+							id = Integer.valueOf(conceptId.substring(0, conceptId.indexOf("^")));
+							drugId = Integer.valueOf(conceptId.substring(0, conceptId.indexOf("^")));
+						}
+						else {
+							id = Integer.valueOf(conceptId);
+						}
+						if (conceptId.equals(origConceptAnswer.getAnswerConcept().getConceptId())) {
+							if ((drugId == null && origConceptAnswer.getAnswerDrug() == null) ||
+									drugId == origConceptAnswer.getAnswerDrug().getDrugId())
 							newAnswers.add(origConceptAnswer);
-							requestConceptIds.remove(x); //erasing concept id to shorten next for loop
+							requestConceptIds.remove(conceptId); //erasing concept id to shorten next for loop
 						}
 					}
 				}
@@ -58,12 +69,12 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 				
 				
 				log.debug("requestConceptIds: ");
-				for (Integer i : requestConceptIds)
-					log.debug("id: " + i.toString());
+				for (String i : requestConceptIds)
+					log.debug("id: " + i);
 				
 				//add all remaining parameter answers
-				for (Integer i : requestConceptIds) {
-					Concept c = cs.getConcept(i);
+				for (String i : requestConceptIds) {
+					Concept c = cs.getConcept(Integer.valueOf(i));
 					ConceptAnswer ca = new ConceptAnswer(c);
 					newAnswers.add(ca);
 				}

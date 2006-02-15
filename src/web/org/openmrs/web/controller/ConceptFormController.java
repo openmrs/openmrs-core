@@ -21,6 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSynonym;
 import org.openmrs.Form;
@@ -264,17 +265,15 @@ public class ConceptFormController extends SimpleFormController {
 		if (context != null) {
 			ConceptService cs = context.getConceptService();
 			String conceptId = request.getParameter("conceptId");
-	    	if (conceptId != null)
+	    	if (conceptId != null) {
 	    		concept = cs.getConcept(Integer.valueOf(conceptId));
+	    		//if (concept.isNumeric())
+	    		//	concept = (ConceptNumeric)concept;
+	    	}
 		}
 		
 		if (concept == null)
 			concept = new Concept();
-		
-		/*
-		if (concept.getConceptNumeric() == null)
-			concept.setConceptNumeric(new ConceptNumeric());
-		*/
 		
 		return concept;
     }
@@ -321,13 +320,22 @@ public class ConceptFormController extends SimpleFormController {
 			    		Object[] arr = {set.getConcept().getConceptId().toString(), set.getConcept().getName(locale)}; 
 			    		conceptSets.put(set.getSortWeight(), arr);
 			    	}
-	
+					
 			    	// get concept answers with locale decoded names
 			    	for (ConceptAnswer answer : concept.getAnswers(true)) {
-			    		String name = answer.getAnswerConcept().getName(locale).toString();
+			    		log.debug("getting answers");
+			    		String key = answer.getAnswerConcept().getConceptId().toString();
+			    		ConceptName cn = answer.getAnswerConcept().getName(locale);
+			    		String name = "";
+			    		if (cn != null)
+			    			name = cn.toString();
+			    		if (answer.getAnswerDrug() != null) {
+			    			key = key + "^" + answer.getAnswerDrug().getDrugId();
+			    			name = name + " (Drug: " + answer.getAnswerDrug().getName() + ")";
+			    		}
 			    		if (answer.getAnswerConcept().isRetired())
 			    			name = "<span class='retired'>" + name + "</span>";
-			    		conceptAnswers.put(answer.getAnswerConcept().getConceptId().toString(), name);
+			    		conceptAnswers.put(key, name);
 			    	}
 	
 			    	//previous/next ids for links

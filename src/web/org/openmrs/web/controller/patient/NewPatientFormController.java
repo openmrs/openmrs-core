@@ -2,6 +2,9 @@ package org.openmrs.web.controller.patient;
 
 import java.text.DateFormat;
 import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -22,8 +25,8 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientName;
 import org.openmrs.Tribe;
-import org.openmrs.formentry.FormEntryService;
 import org.openmrs.api.context.Context;
+import org.openmrs.formentry.FormEntryService;
 import org.openmrs.util.Helper;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.dwr.PatientListItem;
@@ -80,7 +83,11 @@ public class NewPatientFormController extends SimpleFormController {
 			else {
 				Integer type = Integer.valueOf(request.getParameter("identifierType"));
 				PatientIdentifierType pit = context.getFormEntryService().getPatientIdentifierType(type);
-				if (pit.hasCheckDigit() && !Helper.isValidCheckDigit(pli.getIdentifier())) {
+				try {
+					if (pit.hasCheckDigit() && !Helper.isValidCheckDigit(pli.getIdentifier())) {
+						errors.rejectValue("identifier", "error.checkdigits");
+					}
+				} catch (Exception e) {
 					errors.rejectValue("identifier", "error.checkdigits");
 				}
 			}
@@ -109,7 +116,7 @@ public class NewPatientFormController extends SimpleFormController {
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			if (request.getParameter("action") != null && request.getParameter("action").equals(msa.getMessage("general.cancel"))) {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "general.canceled");
-				return new ModelAndView(new RedirectView(view + "?patientId=" + p.getPatientId()));
+				return new ModelAndView(new RedirectView(getFormView()));
 			}
 			
 			Patient patient = new Patient();
@@ -192,8 +199,60 @@ public class NewPatientFormController extends SimpleFormController {
 		PatientListItem patient = new PatientListItem(p);
 		
 		if (p == null) {
+			String name = request.getParameter("name");
+			String firstName = name;
+			String middleName = "";
+			String lastName = "";
+			
+			if (name.contains(",")) {
+				String[] names = name.split(",");
+				if (names.length == 3) {
+					lastName = names[0];
+					String[] firstNames = name.split(" ");
+					firstName = firstNames[0];
+					middleName = firstNames[1];
+				}
+				else {
+					firstName = names[0];
+					lastName = names[1];
+				}
+			}
+			else if (name.contains(" ")) {
+				String[] names = name.split(" ");
+				if (names.length == 3) {
+					firstName = names[0];
+					middleName = names[1];
+					lastName = names[2];
+				}
+				else {
+					firstName = names[0];
+					lastName = names[1];
+				}
+			}
+			patient.setGivenName(firstName);
+			patient.setMiddleName(middleName);
+			patient.setFamilyName(lastName);
+			
 			patient.setGender(request.getParameter("gender"));
-			patient.setGivenName(request.getParameter("name"));
+			Date birthdate = null;
+			String date = request.getParameter("birthyear");
+			String age = request.getParameter("age");
+			if (date != null && !date.equals("")) {
+				try {
+					birthdate = DateFormat.getDateInstance().parse("01/01/" + date);
+				} catch (ParseException e) { }
+			}
+			else if (age != null && !age.equals("")) {
+				Calendar c = Calendar.getInstance();
+				c.setTime(new Date());
+				c.add(Integer.parseInt(age) * -1, Calendar.YEAR);
+				Integer d = c.get(Calendar.YEAR);
+				try {
+					birthdate = DateFormat.getDateInstance().parse("01/01/" + d);
+				} catch (ParseException e) { }
+			}
+			if (birthdate != null)
+				patient.setBirthdate(birthdate);
 		}
 		
         return patient;
