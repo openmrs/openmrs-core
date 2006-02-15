@@ -23,13 +23,13 @@
 	}
 </style>
 
+<h2><spring:message code="admin.title"/></h2>
+
 <table border="0" width="80%">
 <tbody>
 <tr>
 
 <td>
-
-<h2><spring:message code="admin.title"/></h2>
 
 <openmrs:hasPrivilege privilege="View Users,Manage Groups,Manage Roles,Manage Privileges">
 	<h4>Users</h4>
