@@ -1,6 +1,7 @@
 package org.openmrs.formentry;
 
 import java.io.StringWriter;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -66,6 +67,7 @@ public class FormXmlTemplateBuilder {
 		VelocityContext velocityContext = new VelocityContext();
 		if (patient != null) {
 			velocityContext.put("patient", patient);
+			velocityContext.put("date", new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss.SSSZ"));
 		}
 		
 		StringBuffer xml = new StringBuffer();
