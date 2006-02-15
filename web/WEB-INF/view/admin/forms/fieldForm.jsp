@@ -228,7 +228,7 @@ if (typeof window.onload != 'function') {
 			</td>
 			<td>
 				<spring:bind path="field.defaultValue">
-					<input type="text" name="${status.expression}" id="${status.expression}" value="${status.value}" />
+					<input type="text" name="${status.expression}" id="${status.expression}" value="${status.value}" size="55" />
 					<c:if test="${status.errorMessage != ''}">
 						<span class="error">
 							${status.errorMessage}
