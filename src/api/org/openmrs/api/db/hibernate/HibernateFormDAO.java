@@ -251,7 +251,7 @@ public class HibernateFormDAO implements
 	public List<Form> getForms() throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
-		List forms = session.createCriteria(Form.class).list();
+		List forms = session.createCriteria(Form.class).addOrder(Order.asc("name")).addOrder(Order.asc("formId")).list();
 		
 		return forms;
 	}
@@ -265,6 +265,8 @@ public class HibernateFormDAO implements
 		Criteria crit = session.createCriteria(Form.class);
 		
 		crit.add(Expression.eq("published", published));
+		crit.addOrder(Order.asc("name"));
+		crit.addOrder(Order.asc("formId"));
 		
 		return crit.list();
 	}

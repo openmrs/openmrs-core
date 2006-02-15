@@ -3,6 +3,7 @@ package org.openmrs.web.controller.patient;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -46,6 +47,9 @@ public class NewPatientFormController extends SimpleFormController {
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
     
+    Locale locale = Locale.UK;
+    String datePattern = "dd/MM/yyyy";
+    
 	/**
 	 * 
 	 * Allows for other Objects to be used as values in input tags.
@@ -56,13 +60,13 @@ public class NewPatientFormController extends SimpleFormController {
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		Context context = (Context) request.getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-        NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
+        NumberFormat nf = NumberFormat.getInstance(locale);
         binder.registerCustomEditor(java.lang.Integer.class,
                 new CustomNumberEditor(java.lang.Integer.class, nf, true));
 		//binder.registerCustomEditor(java.lang.Integer.class, 
 		//		new CustomNumberEditor(java.lang.Integer.class, true));
         binder.registerCustomEditor(java.util.Date.class, 
-        		new CustomDateEditor(DateFormat.getDateInstance(DateFormat.SHORT), true));
+        		new CustomDateEditor(new SimpleDateFormat(datePattern, locale), true, 10));
         binder.registerCustomEditor(Tribe.class, new TribeEditor(context));
 	}
 
@@ -70,28 +74,46 @@ public class NewPatientFormController extends SimpleFormController {
 	
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		PatientListItem pli = (PatientListItem)obj;
-
-		MessageSourceAccessor msa = getMessageSourceAccessor();
-		if (request.getParameter("action") == null || request.getParameter("action").equals(msa.getMessage("general.save"))) {
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "familyName", "error.name");
-			if (pli.getPatientId() == null) {
-				// if this is a new patient, they must input an identifier
-				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "identifier", "error.null");
-			}
-			else {
-				Integer type = Integer.valueOf(request.getParameter("identifierType"));
-				PatientIdentifierType pit = context.getFormEntryService().getPatientIdentifierType(type);
-				try {
-					if (pit.hasCheckDigit() && !Helper.isValidCheckDigit(pli.getIdentifier())) {
-						errors.rejectValue("identifier", "error.checkdigits");
+		
+		if (context != null && context.isAuthenticated()) {
+			FormEntryService ps = context.getFormEntryService();
+		
+			MessageSourceAccessor msa = getMessageSourceAccessor();
+			if (request.getParameter("action") == null || request.getParameter("action").equals(msa.getMessage("general.save"))) {
+				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "familyName", "error.name");
+				if (pli.getPatientId() == null) {
+					// if this is a new patient, they must input an identifier
+					boolean invalid = true;
+					for (String identifier : request.getParameterValues("newIdentifier")) {
+						if (identifier != null && !identifier.equals("")) {
+							invalid = false;
+						}
 					}
-				} catch (Exception e) {
-					errors.rejectValue("identifier", "error.checkdigits");
+					if (invalid)
+						ValidationUtils.rejectIfEmptyOrWhitespace(errors, "identifier", "error.null");
 				}
+				else {
+					String[] identifiers = request.getParameterValues("newIdentifier");
+					String[] types = request.getParameterValues("newIdentifierType");
+					//String[] locs = request.getParameterValues("newLocation");
+					for (int i=0; i<identifiers.length;i++) {
+						if (identifiers[i].length() > 0) {
+							PatientIdentifierType type = ps.getPatientIdentifierType(Integer.valueOf(types[i]));
+							//Location loc = ps.getLocation(Integer.valueOf(locs[i]));
+							try {
+								if (type.hasCheckDigit() && !Helper.isValidCheckDigit(identifiers[i])) {
+									errors.rejectValue("identifier", "error.checkdigits");
+								}
+							} catch (Exception e) {
+								//Object[] objs = {identifiers[i]};
+								errors.rejectValue("identifier", "error.checkdigits");
+							}
+						}
+					}
+				}
+				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "gender", "error.null");
 			}
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "gender", "error.null");
 		}
 		return super.processFormSubmission(request, response, pli, errors);
 	}
@@ -116,7 +138,7 @@ public class NewPatientFormController extends SimpleFormController {
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			if (request.getParameter("action") != null && request.getParameter("action").equals(msa.getMessage("general.cancel"))) {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "general.canceled");
-				return new ModelAndView(new RedirectView(getFormView()));
+				return new ModelAndView(new RedirectView("addPatient.htm"));
 			}
 			
 			Patient patient = new Patient();
@@ -144,26 +166,37 @@ public class NewPatientFormController extends SimpleFormController {
 					pa.setAddress1(p.getAddress1());
 					pa.setAddress2(p.getAddress2());
 					patient.addAddress(pa);
-						}			}
-			
-			if (p.getIdentifier().length() > 0) {
-				PatientIdentifierType type = ps.getPatientIdentifierType(Integer.valueOf(request.getParameter("identifierType")));
-				Location loc = ps.getLocation(Integer.valueOf(request.getParameter("location")));
-				patient.addIdentifier(new PatientIdentifier(p.getIdentifier(), type, loc));
+				}			
 			}
 			
-			String identifier = "";
+			String[] identifiers = request.getParameterValues("newIdentifier");
+			String[] types = request.getParameterValues("newIdentifierType");
+			String[] locs = request.getParameterValues("newLocation");
+			for (int i=0; i<identifiers.length;i++) {
+				if (identifiers[i].length() > 0) {
+					PatientIdentifierType type = ps.getPatientIdentifierType(Integer.valueOf(types[i]));
+					Location loc = ps.getLocation(Integer.valueOf(locs[i]));
+					patient.addIdentifier(new PatientIdentifier(identifiers[i], type, loc));
+				}
+			}
+			
+			/*
 			if (patient.getIdentifiers().size() > 0) {
 				PatientIdentifier pi = (PatientIdentifier)patient.getIdentifiers().toArray()[0];
 				identifier = pi.getIdentifier();
 			}
+			*/
 			
 			patient.setBirthdate(p.getBirthdate());
 			patient.setBirthdateEstimated(p.getBirthdateEstimated());
 			patient.setGender(p.getGender());
 			patient.setMothersName(p.getMothersName());
-			Tribe t = ps.getTribe(Integer.valueOf(p.getTribe()));
-			patient.setTribe(t);
+			if (p.getTribe() == "")
+				patient.setTribe(null);
+			else {
+				Tribe t = ps.getTribe(Integer.valueOf(p.getTribe()));
+				patient.setTribe(t);
+			}
 			
 			ps.updatePatient(patient);
 						
@@ -188,7 +221,10 @@ public class NewPatientFormController extends SimpleFormController {
 		
 		Patient p = null;
 		
-		if (context != null && context.isAuthenticated()) {
+		if (context == null || !context.isAuthenticated()) {
+			
+		}
+		else {
 			FormEntryService ps = context.getFormEntryService();
 			String patientId = request.getParameter("pId");
 	    	if (patientId != null && !patientId.equals("")) {
@@ -198,23 +234,23 @@ public class NewPatientFormController extends SimpleFormController {
 		
 		PatientListItem patient = new PatientListItem(p);
 		
-		if (p == null) {
-			String name = request.getParameter("name");
+		String name = request.getParameter("name");
+		if (p == null && name != null) {
 			String firstName = name;
 			String middleName = "";
 			String lastName = "";
 			
 			if (name.contains(",")) {
-				String[] names = name.split(",");
-				if (names.length == 3) {
+				String[] names = name.split(", ");
+				String[] firstNames = names[1].split(" ");
+				if (firstNames.length == 2) {
 					lastName = names[0];
-					String[] firstNames = name.split(" ");
 					firstName = firstNames[0];
 					middleName = firstNames[1];
 				}
 				else {
-					firstName = names[0];
-					lastName = names[1];
+					firstName = names[1];
+					lastName = names[2];
 				}
 			}
 			else if (name.contains(" ")) {
@@ -239,17 +275,17 @@ public class NewPatientFormController extends SimpleFormController {
 			String age = request.getParameter("age");
 			if (date != null && !date.equals("")) {
 				try {
-					birthdate = DateFormat.getDateInstance().parse("01/01/" + date);
-				} catch (ParseException e) { }
+					birthdate = DateFormat.getDateInstance(DateFormat.SHORT).parse("01/01/" + date);
+				} catch (ParseException e) { log.debug(e); }
 			}
 			else if (age != null && !age.equals("")) {
 				Calendar c = Calendar.getInstance();
 				c.setTime(new Date());
-				c.add(Integer.parseInt(age) * -1, Calendar.YEAR);
 				Integer d = c.get(Calendar.YEAR);
+				d = d - Integer.parseInt(age);
 				try {
-					birthdate = DateFormat.getDateInstance().parse("01/01/" + d);
-				} catch (ParseException e) { }
+					birthdate = DateFormat.getDateInstance(DateFormat.SHORT).parse("01/01/" + d);
+				} catch (ParseException e) { log.debug(e); }
 			}
 			if (birthdate != null)
 				patient.setBirthdate(birthdate);

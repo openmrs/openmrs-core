@@ -5,7 +5,7 @@
 
 // ---- PopCalendar Specific Options ----
 var gsSplit="/";	// separator of date string. If set it to empty string, then giMonthMode and gbPadZero will be fixed to 0 and true.
-var giDatePos=1;	// date format sequence  0: D-M-Y ; 1: M-D-Y; 2: Y-M-D
+var giDatePos=0;	// date format sequence  0: D-M-Y ; 1: M-D-Y; 2: Y-M-D
 var gbPadZero=true;	// whether to pad the digits with 0 in the left when less than 10.
 var giMonthMode=0;	// month format 0: digits ; 1: full name from gMonths; >2: abbreviated month name in specified length.
 var gbShortYear=false;   // year format   true: 2-digits; false: 4-digits

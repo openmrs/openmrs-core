@@ -25,7 +25,12 @@
 		patientName = text;
 		birthyear = $("birthyear").value.toString();
 		age = $("age").value.toString();
-		gender = $("gender").value.toString();
+		gender = "";
+		var options = document.getElementsByTagName("input");
+		for (var i=0; i<options.length;i++) {
+			if (options[i].type == 'radio' && options[i].name=='gender' && options[i].checked == true)
+				gender = options[i].value.toString();
+		}
 		DWRPatientService.getSimilarPatients(preFillTable, text, birthyear, age, gender);
 		return false;
 	}
@@ -76,7 +81,7 @@
 		return false;
 	}
 	
-	var cancel() {
+	function cancel() {
 		window.location = "${pageContext.request.contextPath}/formentry";
 	}
 	
@@ -94,9 +99,11 @@
 		</tr>
 		<tr>
 			<td><spring:message code="Patient.birthyear"/></td>
-			<td><input type="text" name="birthyear" id="birthyear" size="5" value="" onChange="inputChanged=true;" onFocus="exitNumberMode(patientName)" /></td>
-			<td><spring:message code="Patient.age.or"/></td>
-			<td><input type="text" name="age" id="age" size="5" value="" onChange="inputChanged=true;" onFocus="exitNumberMode(patientName)" /></td>
+			<td>
+				<input type="text" name="birthyear" id="birthyear" size="5" value="" onChange="inputChanged=true;" onFocus="exitNumberMode(patientName)" />
+				<spring:message code="Patient.age.or"/>
+				<input type="text" name="age" id="age" size="5" value="" onChange="inputChanged=true;" onFocus="exitNumberMode(patientName)" />
+			</td>
 		</tr>
 		<tr>
 			<td><spring:message code="Patient.gender"/></td>

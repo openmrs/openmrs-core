@@ -11,16 +11,12 @@
 	var timeOut = null;
 
 	function startDownloading() {
-		var choiceMade = false;
-		var options = document.getElementsByTagName("input");
-		for (var i=0; i<options.length;i++) {
-			if (options[i].type == 'radio' && options[i].checked == true)
-				choiceMade = true;
-		}
-		if (choiceMade == false)
-			return false;
+		timeOut = setTimeout("goBack()", 30000);
 		
-		timeOut = setTimeout("switchPatient()", 30000);
+	}
+	
+	function goBack() {
+		document.location='index.htm';
 	}
 	
 	function switchPatient() {
@@ -35,6 +31,13 @@
 	//window.onfocus=cancelTimeout;
 	
 </script>
+
+<style>
+	.formLink {
+		line-height: 1.5em;
+		font-size: 1.2em;
+	}
+</style>
 
 <div id="patientSummary">
 	<b class='boxHeader'>
@@ -142,16 +145,13 @@
 
 <div id="selectForm" class="box">
 	<form id="selectFormForm" method="post" action="<%= request.getContextPath() %>/formDownload">
-		<table>
-			<c:forEach items="${forms}" var="form">
-				<tr>
-					<td><input type="radio" name="formId" value="${form.formId}" id="${form.formId}"></td>
-					<td><label for="${form.formId}">${form.name} (v.${form.version}<c:if test="${form.build != null}">-${form.build}</c:if>)</label></td>
-				</tr>
-			</c:forEach>
-		</table>
-		<input type="hidden" name="patientId" id="patientId" value="${patient.patientId}">
-		<input type="submit" value="<spring:message code="formentry.download.form"/>" onclick="return startDownloading()">
+		<c:forEach items="${forms}" var="form">
+			<a href="${pageContext.request.contextPath}/formDownload?target=formEntry&formId=${form.formId}&patientId=${patient.patientId}" onclick="startDownloading()" class="formLink">
+				${form.name} 
+			</a> (v.${form.version})
+			
+			<br />
+		</c:forEach>
 	</form>
 </div>
 

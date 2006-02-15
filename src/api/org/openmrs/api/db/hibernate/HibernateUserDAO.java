@@ -469,25 +469,54 @@ public class HibernateUserDAO implements
 		log.debug("name: " + name);
 		
 		Criteria criteria = session.createCriteria(User.class);
+		//criteria.setProjection(Projections.distinct(Projections.property("user")));
 		for (String n : names) {
 			if (n != null && n.length() > 0) {
 				criteria.add(Expression.or(
 						Expression.like("lastName", n, MatchMode.START),
 						Expression.or(
 							Expression.like("firstName", n, MatchMode.START),
-							Expression.like("systemId", n, MatchMode.START)
+								Expression.or(
+										Expression.like("middleName", n, MatchMode.START),
+										Expression.like("systemId", n, MatchMode.START)
+										)
 							)
 						)
 					);
 			}
 		}
 		
-		if (roles != null && roles.size() > 0)
-			criteria.createCriteria("roles", "r").add(Expression.in("role", roles));
+		/*
+		if (roles != null && roles.size() > 0) {
+			criteria.createAlias("roles", "r")
+				.add(Expression.in("r.role", roles))
+				.createAlias("groups", "g")
+				.createAlias("g.roles", "gr")
+					.add(Expression.or(
+							Expression.in("r.role", roles),
+							Expression.in("gr.role", roles)
+							));
+		}
+		 */
+		
 		if (includeVoided == false)
 			criteria.add(Expression.eq("voided", false));
 
-		return criteria.list();
+		// TODO figure out how to get Hibernate to do the sql for us
+		
+		List returnList = new Vector();
+		if (roles != null && roles.size() > 0) {
+			for (Object o : criteria.list()) {
+				User u = (User)o;
+				for (String r : roles)
+				if (u.hasRole(r, true))
+					returnList.add(u);
+			}
+		}
+		else
+			returnList = criteria.list();
+		
+		return returnList;
 	}
 	
 	public List<User> getAllUsers(List<String> roles, boolean includeVoided) {
@@ -497,13 +526,63 @@ public class HibernateUserDAO implements
 		List<User> users = new Vector<User>();
 		
 		Criteria criteria = session.createCriteria(User.class);
-			
-		if (roles != null && roles.size() > 0)
-			criteria.createCriteria("roles", "r").add(Expression.in("role", roles));
+		
 		if (includeVoided == false)
 			criteria.add(Expression.eq("voided", false));
 
-		return criteria.list();
+		List returnList = new Vector();
+		if (roles != null && roles.size() > 0) {
+			for (Object o : criteria.list()) {
+				User u = (User)o;
+				for (String r : roles)
+				if (u.hasRole(r, true))
+					returnList.add(u);
+			}
+		}
+		else
+			returnList = criteria.list();
+		
+		return returnList;
+		
+		// TODO figure out how to get Hibernate to do the sql for us
+		
+		/*
+		String sql = "select user from User as user";
+		String order = " order by u.userId asc";
+		
+		Query query;
+			
+		if (roles != null && roles.size() > 0) {
+			sql += ", Role r, Group g";
+			sql += " where (r.userId = user.userId and r.role in (";
+			for (int i=0; i<roles.size(); i++) {
+				sql += "'" + roles.get(i) + "'";
+				if (i != roles.size() -1)
+					sql += ",";
+			}
+			sql += "))";
+			
+			sql += " or ( g.userId = user.userId and g.role in (";
+			for (int i=0; i<roles.size(); i++) {
+				sql += "'" + roles.get(i) + "'";
+				if (i != roles.size() -1)
+					sql += ",";
+			}
+			sql += "))";
+
+			if (includeVoided == false) {
+				sql += " and user.voided = 0";
+			}
+			
+		}
+		else {
+			if (includeVoided == false) {
+				sql += " user.voided = 0";
+			}
+		}
+		
+		return session.createQuery(sql).list();
+		*/
 	}
 	
 	/**
@@ -522,7 +601,7 @@ public class HibernateUserDAO implements
 		
 		return id.toString();
 	}
-	
+
 	private User updateProperties(User user) {
 		
 		if (user.getCreator() == null) {

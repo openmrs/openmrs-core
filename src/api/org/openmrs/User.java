@@ -60,6 +60,9 @@ public class User extends Person implements java.io.Serializable {
 	 */
 	public boolean isSuperUser() {
 		Set<Role> tmproles = getRoles();
+		
+		if (tmproles == null)
+			tmproles = new HashSet<Role>();
 
 		if (groups != null)
 			for (Group g : groups) {
@@ -100,6 +103,31 @@ public class User extends Person implements java.io.Serializable {
 				return true;
 		}
 
+		return false;
+	}
+	
+	public boolean hasRole(String r) {
+		return hasRole(r, false);
+	}
+	
+	public boolean hasRole(String r, boolean ignoreSuperUser) {
+		if (ignoreSuperUser == false) {
+			if (isSuperUser())
+				return true;
+		}
+		
+		Set<Role> tmproles = getRoles();
+
+		if (groups != null)
+			for (Group g : groups) {
+				tmproles.addAll(g.getRoles());
+			}
+		
+		Role role = new Role(r);
+		
+		if (tmproles.contains(role))
+			return true;
+		
 		return false;
 	}
 	

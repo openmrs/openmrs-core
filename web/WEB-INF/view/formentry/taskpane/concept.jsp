@@ -34,7 +34,13 @@
 	function search(delay, event) {
 		var searchBox = document.getElementById("phrase");
 		savedSearch = searchBox.value.toString();
-		searchBoxChange('conceptSearchBody', searchBox, event, false, delay);
+		
+		// stinkin' infopath hack.  It doesn't give us onkeyup or onkeypress
+		var onkeydown = true;
+		if (event == null || event.type == 'onkeyup')
+			onkeydown = false;
+		
+		searchBoxChange('conceptSearchBody', searchBox, event, false, delay, onkeydown);
 	}
 	
 	function preFillTable(concepts) {
@@ -121,7 +127,7 @@
 
 <form method="POST" onSubmit="search(0, event); return false;" id="searchForm">
 	<input name="mode" type="hidden" value='${request.mode}'>
-	<input name="phrase" id="phrase" type="text" class="prompt" size="23" onkeyup="search(400, event)" />
+	<input name="phrase" id="phrase" type="text" class="prompt" size="23" onkeydown="search(400, event)" />
 	<br />
 	<input type="checkbox" id="verboseListing" value="true" onclick="search(0, event); phrase.focus();">
 	<label for="verboseListing">
@@ -146,9 +152,10 @@
 	<spring:message code="ConceptProposal.proposeInfo" />
 	<br /><br />
 	<b><spring:message code="ConceptProposal.originalText" /></b><br />
-	<textarea name="originalText" id="proposedText" rows="4" cols="40" /><br />
+	<textarea name="originalText" id="proposedText" rows="4" cols="20" /></textarea><br />
 	<input type="button" onclick="proposeConcept()" value="<spring:message code="ConceptProposal.propose" />" /><br />
-
+	
+	<br />
 	<span class="alert">
 		<spring:message code="ConceptProposal.proposeWarning" />
 	</span>

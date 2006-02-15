@@ -77,7 +77,7 @@ function resetForm() {
 	if (debugBox) debugBox.innerHTML = "";
 }
 
-function searchBoxChange(bodyElementId, obj, event, retired, delay) {
+function searchBoxChange(bodyElementId, obj, event, retired, delay, onkeydownused) {
 	if (debugBox) debugBox.innerHTML += '<br>---- delay: ' + delay;
 	objectHitsTableBody = $(bodyElementId);
 	textbox = obj;
@@ -98,10 +98,32 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay) {
 			// this if statement cancels the search on alt and control keys
 			key = event.keyCode;
 			if (debugBox) debugBox.innerHTML += '<br>event.type : ' + event.type;
-			if ((key==0 || key==null) && (event.type == "click" || event.type == "change" || event.type == "submit")) {
-				//if non-key event like clicking checkbox or changing dropdown list
-				key = 1;
+			var type = null;
+			try {
+				if ((key==0 || key==null) && (event.type == "click" || event.type == "change" || event.type == "submit")) {
+					//if non-key event like clicking checkbox or changing dropdown list
+					key = 1;
+				}
+				else if (key == 0 && event.charCode != null) {
+					key = event.charCode;
+				}
 			}
+			catch (err) {
+				// event.type gave an error
+				if (key == 0 && event.charCode != null) {
+					key = event.charCode;
+				}
+			}
+		}
+	}
+	
+	// infopath hack since it doesn't let us use onkeyup or onkeypress	
+	if (onkeydownused == true) {
+		if ((key >= 48 && key <= 127)) {
+			text = text + String.fromCharCode(key).toLowerCase();
+		}
+		if (key == 8 && text.length > 1) {//backspace
+			text = text.substring(0, text.length - 1);
 		}
 	}
 	

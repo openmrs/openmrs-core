@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -235,6 +236,8 @@ public class UserFormController extends SimpleFormController {
 		User user = (User)obj;
 		
 		List<Role> roles = context.getUserService().getRoles();
+		if (roles == null)
+			roles = new Vector<Role>();
 		
 		for (String s : OpenmrsConstants.AUTO_ROLES()) {
 			Role r = new Role(s);
@@ -247,7 +250,11 @@ public class UserFormController extends SimpleFormController {
 			if (user.getUserId() == null || context.getAuthenticatedUser().isSuperUser()) 
 				map.put("modifyPasswords", true);
 			map.put("changePasswordName", OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD);
-			map.put("changePassword", new Boolean(user.getProperties().get(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD)).booleanValue());
+			String s = "";
+			if (user.getProperties() != null)
+				if (user.getProperties().containsKey(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD))
+					s = user.getProperties().get(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD);
+			map.put("changePassword", new Boolean(s).booleanValue());
 		}	
 		return map;
     }

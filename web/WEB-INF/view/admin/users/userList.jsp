@@ -27,7 +27,15 @@
 	
 	var getSystemId = function(u) {
 		if (typeof u == 'string') return u;
-		return " &nbsp; " + u.systemId;
+		s = " &nbsp; " + u.systemId;;
+		if (u.voided)
+			s = "<span class='retired'>" + s + "</span>";
+		return s;
+	}
+	
+	var getUsername = function(u) {
+		if (typeof u == 'string') return '';
+		return u.username;
 	}
 
 	var getFirst = function(u) {
@@ -81,7 +89,7 @@
 			return true;
 	}
 	
-	var customCellFunctions = [getNumber, getSystemId, getFirst, getLast, getGroups, getRoles];
+	var customCellFunctions = [getNumber, getSystemId, getUsername, getFirst, getLast, getGroups, getRoles];
 	
 </script>
 
@@ -97,6 +105,7 @@
 		<tr>
 			<th> </th>
 			<th> &nbsp; <spring:message code="User.systemId"/>&nbsp; </th>
+			<th> &nbsp; <spring:message code="User.username"/>&nbsp; </th>
 			<th> &nbsp;<spring:message code="User.firstName"/>&nbsp; </th>
 			<th> &nbsp;<spring:message code="User.lastName"/>&nbsp;  </th>
 			<th> &nbsp;<spring:message code="User.groups"/>&nbsp;    </th>

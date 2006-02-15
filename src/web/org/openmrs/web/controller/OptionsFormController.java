@@ -17,7 +17,6 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.Helper;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.OptionsForm;
 import org.openmrs.web.WebConstants;
@@ -51,12 +50,6 @@ public class OptionsFormController extends SimpleFormController {
 					errors.rejectValue("username", "error.username.invalid");
 				}
 				
-				try {
-					if (Helper.isValidCheckDigit(opts.getUsername()))
-						errors.rejectValue("username", "error.username.invalid");
-				}
-				catch (Exception e) {}	
-				
 			}
 			if (opts.getUsername().length() > 0)
 			
@@ -77,7 +70,7 @@ public class OptionsFormController extends SimpleFormController {
 			}
 			
 			// TODO catch errors
-		}			
+		}
 		
 		return super.processFormSubmission(request, response, object, errors); 
 	}
@@ -101,74 +94,77 @@ public class OptionsFormController extends SimpleFormController {
 			return super.processFormSubmission(request, response, obj, errors);
 		}
 
-		User user = context.getAuthenticatedUser();
-		UserService us = context.getUserService();
-		OptionsForm opts = (OptionsForm)obj;
-		
-		Map<String, String> properties = user.getProperties();
-		
-		properties.put("defaultLocation", opts.getDefaultLocation());
-		properties.put("defaultLanguage", opts.getDefaultLanguage());
-		properties.put("showRetired", opts.getShowRetiredMessage().toString());
-		properties.put("verbose", opts.getVerbose().toString());
-		
-		if (!opts.getOldPassword().equals("")) {
-			try {
-				String password = opts.getNewPassword();
-				
-				//check password strength
-				if (password.length() > 0) {
-					if (password.length() < 6)
-						errors.reject("error.password.length");
-					if (StringUtils.isAlpha(password))
-						errors.reject("error.password.characters");
-					if (password.equals(user.getUsername()) || password.equals(user.getSystemId()))
-						errors.reject("error.password.weak");
-					if (password.equals(opts.getOldPassword()) && !errors.hasErrors())
-						errors.reject("error.password.different");
-				}
-				
-				us.changePassword(opts.getOldPassword(), password);
-				if (properties.containsKey(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD))
-					properties.remove(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD);
-			}
-			catch (APIException e) {
-				errors.rejectValue("oldPassword", "error.password.match");
-			}
-		}
-		
-		if (!opts.getSecretQuestionPassword().equals("") && !errors.hasErrors()) {
-			try {
-				us.changeQuestionAnswer(opts.getSecretQuestionPassword(), opts.getSecretQuestionNew(), opts.getSecretAnswerNew());
-			}
-			catch (APIException e) {
-				errors.rejectValue("secretQuestionPassword", "error.password.match");
-			}
-		}
-		
-		if (opts.getUsername().length() > 0 && !errors.hasErrors()) {
-			context.addProxyPrivilege("View Users");
-			if (us.hasDuplicateUsername(user)) {
-				errors.rejectValue("username", "error.username.taken");
-			}
-		}
-		
-		user.setUsername(opts.getUsername());
-		
 		if (!errors.hasErrors()) {
-			user.setProperties(properties);
+			User user = context.getAuthenticatedUser();
+			UserService us = context.getUserService();
+			OptionsForm opts = (OptionsForm)obj;
 			
-			context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
-			us.updateUser(user);
-			context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+			Map<String, String> properties = user.getProperties();
 			
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "options.saved");
+			properties.put("defaultLocation", opts.getDefaultLocation());
+			properties.put("defaultLanguage", opts.getDefaultLanguage());
+			properties.put("showRetired", opts.getShowRetiredMessage().toString());
+			properties.put("verbose", opts.getVerbose().toString());
+			
+			if (!opts.getOldPassword().equals("")) {
+				try {
+					String password = opts.getNewPassword();
+					
+					//check password strength
+					if (password.length() > 0) {
+						if (password.length() < 6)
+							errors.reject("error.password.length");
+						if (StringUtils.isAlpha(password))
+							errors.reject("error.password.characters");
+						if (password.equals(user.getUsername()) || password.equals(user.getSystemId()))
+							errors.reject("error.password.weak");
+						if (password.equals(opts.getOldPassword()) && !errors.hasErrors())
+							errors.reject("error.password.different");
+					}
+					
+					if (!errors.hasErrors()) {
+						us.changePassword(opts.getOldPassword(), password);
+						if (properties.containsKey(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD))
+							properties.remove(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD);
+					}
+				}
+				catch (APIException e) {
+					errors.rejectValue("oldPassword", "error.password.match");
+				}
+			}
+			
+			if (!opts.getSecretQuestionPassword().equals("") && !errors.hasErrors()) {
+				try {
+					us.changeQuestionAnswer(opts.getSecretQuestionPassword(), opts.getSecretQuestionNew(), opts.getSecretAnswerNew());
+				}
+				catch (APIException e) {
+					errors.rejectValue("secretQuestionPassword", "error.password.match");
+				}
+			}
+			
+			if (opts.getUsername().length() > 0 && !errors.hasErrors()) {
+				context.addProxyPrivilege("View Users");
+				if (us.hasDuplicateUsername(user)) {
+					errors.rejectValue("username", "error.username.taken");
+				}
+			}
+			
+			if (!errors.hasErrors()) {
+				user.setUsername(opts.getUsername());
+				user.setProperties(properties);
+				
+				context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+				us.updateUser(user);
+				context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+				
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "options.saved");
+			}
+			else {
+				return super.processFormSubmission(request, response, opts, errors);
+			}
+			
+			view = getSuccessView();
 		}
-		else {
-			return super.processFormSubmission(request, response, opts, errors);
-		}
-		
-		view = getSuccessView();
 		return new ModelAndView(new RedirectView(view));
 	}
 

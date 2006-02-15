@@ -119,8 +119,8 @@ public class DWRPatientService {
 			else if (age.length() > 0) {
 				Calendar c = Calendar.getInstance();
 				c.setTime(new Date());
-				c.add(Integer.parseInt(age) * -1, Calendar.YEAR);
 				d = c.get(Calendar.YEAR);
+				d = d - Integer.parseInt(age);
 			}
 			
 			if (gender.length() < 1)

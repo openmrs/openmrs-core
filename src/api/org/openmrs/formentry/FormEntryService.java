@@ -274,7 +274,7 @@ public class FormEntryService {
 		}
 		return form;
 	}
-
+	
 	public Collection<Form> getForms() {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY))
 			throw new APIAuthenticationException("Privilege required: "

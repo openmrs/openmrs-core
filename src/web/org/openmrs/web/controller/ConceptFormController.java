@@ -21,7 +21,6 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptName;
-import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSynonym;
 import org.openmrs.Form;
@@ -61,14 +60,14 @@ public class ConceptFormController extends SimpleFormController {
 		Concept concept = null;
 		String conceptId = request.getParameter("conceptId");
 		
-        NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
+        NumberFormat nf = NumberFormat.getInstance(new Locale("en_UK"));
         Locale locale = RequestContextUtils.getLocale(request);
         binder.registerCustomEditor(java.lang.Integer.class,
                 new CustomNumberEditor(java.lang.Integer.class, nf, true));
-		//binder.registerCustomEditor(java.lang.Integer.class, 
-		//		new CustomNumberEditor(java.lang.Integer.class, true));
+        binder.registerCustomEditor(java.lang.Double.class,
+                new CustomNumberEditor(java.lang.Double.class, nf, true));
         binder.registerCustomEditor(java.util.Date.class, 
-        		new CustomDateEditor(DateFormat.getDateInstance(DateFormat.SHORT), true));
+        		new CustomDateEditor(DateFormat.getDateInstance(DateFormat.SHORT, Locale.UK), true));
         binder.registerCustomEditor(org.openmrs.ConceptClass.class, 
         		new ConceptClassEditor(context));
         binder.registerCustomEditor(org.openmrs.ConceptDatatype.class, 

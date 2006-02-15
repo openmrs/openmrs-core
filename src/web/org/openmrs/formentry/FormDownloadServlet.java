@@ -30,35 +30,19 @@ public class FormDownloadServlet extends HttpServlet {
 
 	private Log log = LogFactory.getLog(this.getClass());
 
-	/**
-	 * 
-	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse)
-	 */
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	protected void doFormEntryGet(HttpServletRequest request, HttpServletResponse response, 
+			Context context, HttpSession httpSession) throws ServletException, IOException {
 
 		Integer formId = null;
 		Integer patientId = null;
-		HttpSession httpSession = request.getSession();
-
-		Context context = getContext(httpSession);
-		if (context == null) {
-			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
-					"auth.session.expired");
-			response.sendRedirect(request.getContextPath() + "/logout");
-			return;
-		}
-
+		
 		try {
-			formId = Integer.valueOf(request.getParameter("formId"));
-			String patientIdParam = request.getParameter("patientId");
-			if (patientIdParam != null)
-				patientId = Integer.valueOf(request.getParameter("patientId"));
+			formId = Integer.parseInt(request.getParameter("formId"));
+			patientId = Integer.parseInt(request.getParameter("patientId"));
 		} catch (NumberFormatException e) {
-			log.warn("Invalid parameter for formDownload request (formId='"
-					+ request.getParameter("formId") + "', patientId='"
-					+ request.getParameter("patientId") + "')", e);
+			log.warn("Invalid formId or patientId parameter: formId: \""
+					+ request.getParameter("formId") + "\" patientId: "
+					+ request.getParameter("patientId") + "\"", e);
 			return;
 		}
 
@@ -85,10 +69,9 @@ public class FormDownloadServlet extends HttpServlet {
 
 	}
 
-	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-
+		
 		Integer formId = null;
 		String target = request.getParameter("target");
 		HttpSession httpSession = request.getSession();
@@ -108,29 +91,34 @@ public class FormDownloadServlet extends HttpServlet {
 					+ request.getParameter("formId") + "\"", e);
 			return;
 		}
-
-		Form form = context.getFormEntryService().getForm(formId);
-		String url = FormUtil.getFormAbsoluteUrl(request.getRequestURL().toString(), form);
 		
-		String payload;
-		String filename;
-		if ("schema".equalsIgnoreCase(target)) {
-			payload = new FormSchemaBuilder(context, form).getSchema();
-			filename = FormEntryConstants.FORMENTRY_DEFAULT_SCHEMA_NAME;
-		} else if ("template".equalsIgnoreCase(target)) {
-			payload = new FormXmlTemplateBuilder(context, form, url)
-					.getXmlTemplate(null);
-			payload = payload.replaceAll("@SESSION@", "");
-			filename = FormEntryConstants.FORMENTRY_DEFAULT_TEMPLATE_NAME;
-		} else {
-			log.warn("Invalid template parameter: \"" + target + "\"");
-			return;
+		if (target.equals("formEntry")) {
+			doFormEntryGet(request, response, context, httpSession);
 		}
-
-		response.setHeader("Content-Type", "application/ms-infopath.xml");
-		response.setHeader("Content-Disposition", "attachment; filename="
-				+ filename);
-		response.getOutputStream().print(payload);
+		else {
+			Form form = context.getFormEntryService().getForm(formId);
+			String url = FormUtil.getFormAbsoluteUrl(request.getRequestURL().toString(), form);
+			
+			String payload;
+			String filename;
+			if ("schema".equalsIgnoreCase(target)) {
+				payload = new FormSchemaBuilder(context, form).getSchema();
+				filename = FormEntryConstants.FORMENTRY_DEFAULT_SCHEMA_NAME;
+			} else if ("template".equalsIgnoreCase(target)) {
+				payload = new FormXmlTemplateBuilder(context, form, url)
+						.getXmlTemplate(null);
+				payload = payload.replaceAll("@SESSION@", "");
+				filename = FormEntryConstants.FORMENTRY_DEFAULT_TEMPLATE_NAME;
+			} else {
+				log.warn("Invalid template parameter: \"" + target + "\"");
+				return;
+			}
+	
+			response.setHeader("Content-Type", "application/ms-infopath.xml");
+			response.setHeader("Content-Disposition", "attachment; filename="
+					+ filename);
+			response.getOutputStream().print(payload);
+		}
 	}
 
 	private Context getContext(HttpSession httpSession) {

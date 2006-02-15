@@ -13,6 +13,8 @@
 
 <script>
 
+	var savedEvent = null;
+	
 	var roles = new Array();
 	<request:parameters id="r" name="role">
 		<request:parameterValues id="names">
@@ -42,8 +44,15 @@
 	function search(delay, event) {
 		if (debugBox) debugBox.innerHTML += '<br> search() event.keyCode: ' + event.keyCode;
 		var searchBox = document.getElementById("phrase");
+		if (debugBox) debugBox.innerHTML += '<br> searchBox.value: ' + searchBox.value;
 		savedSearch = searchBox.value.toString();
-		return searchBoxChange('searchBody', searchBox, event, false, delay);
+		
+		// stinkin' infopath hack.  It doesn't give us onkeyup or onkeypress
+		var onkeydown = true;
+		if (event == null || event.type == 'onkeyup')
+			onkeydown = false;
+		
+		return searchBoxChange('searchBody', searchBox, event, false, delay, onkeydown);
 	}
 	
 	function preFillTable(users) {
@@ -78,12 +87,16 @@
 			return true;
 	}
 	
-	var customCellFunctions = [getNumber, getName];
+	function allowAutoListWithNumber() {
+		return true;
+	}
 	
+	var customCellFunctions = [getNumber, getName];
+
 </script>
 
 <form method="post" onSubmit="return search(0, event);">
-	<input name="phrase" id="phrase" type="text" class="prompt" size="23" onKeyUp="search(400, event)"/> &nbsp;
+	<input name="phrase" id="phrase" type="text" class="prompt" size="23" onkeydown="search(400, event);" /> &nbsp;
 	<!-- <input type="checkbox" id="verboseListing" value="true" onclick="search(0, event); phrase.focus();"><label for="verboseListing"><spring:message code="dictionary.verboseListing"/></label> -->
 	<br />
 	<small><em><spring:message code="general.search.hint"/></em></small>
@@ -101,7 +114,7 @@
   search(0, null);
 </script>
 
-<!-- <div id="debugBox"></div> <script>resetForm()</script> -->
+<!-- <div id="xdebugBox"></div> <script>resetForm()</script> -->
 
 <br/><br/>
 

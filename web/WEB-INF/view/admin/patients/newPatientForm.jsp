@@ -6,17 +6,40 @@
 
 <script src="<%= request.getContextPath() %>/scripts/calendar/calendar.js"></script>
 
+<script type="text/javascript">
+	function addIdentifier() {
+		var table = document.getElementById('identifiers');
+		var row = document.getElementById('newIdentifierRow');
+		var newrow = row.cloneNode(true);
+		newrow.style.display = "";
+		newrow.id = table.childNodes.length;
+		table.appendChild(newrow);
+	}
+</script>
+
 <style>
 	th {
 		text-align: left;
 	}
+	#newIdentifierRow {
+		display: none;
+	}
 </style>
+
+<spring:hasBindErrors name="patient">
+	<div class="error">Please fix all errors</div>
+	<div class="error">
+		<c:forEach items="${errors.allErrors}" var="error">
+			<spring:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
+		</c:forEach>
+	</div>
+</spring:hasBindErrors>
 
 <form method="post" action="newPatient.form">
 	<c:if test="${patient.patientId == null}"><h2><spring:message code="Patient.create"/></h2></c:if>
 	<c:if test="${patient.patientId != null}"><h2><spring:message code="Patient.edit"/></h2></c:if>
 	
-	<table>
+	<table cellspacing="2">
 			<tr>
 				<th><spring:message code="PatientName.givenName"/></th>
 				<th><spring:message code="PatientName.middleName"/></th>
@@ -44,11 +67,11 @@
 		</tr>
 	</table>
 	<br/>
-	<table>
+	<table id="identifiers" cellspacing="2">
 		<tr>
 			<th><spring:message code="PatientIdentifier.identifier"/></th>
 			<th><spring:message code="PatientIdentifier.identifierType"/></th>
-			<th><spring:message code="PatientIdentifier.location"/></th>
+			<th><spring:message code="PatientIdentifier.location.identifier"/></th>
 		</tr>
 		<c:forEach items="${identifiers}" var="id">
 			<tr>
@@ -57,18 +80,15 @@
 				<td>${id.location.name}</td>
 			</tr>
 		</c:forEach>
-		<tr>
+		<tr id="newIdentifierRow">
 			<td valign="top">
-				<spring:bind path="patient.identifier">
-					<input type="text" size="30"
-							name="${status.expression}" 
-							value="<spring:hasBindErrors name="patient">${status.value}</spring:hasBindErrors>" 
-							onBlur="return true; validateIdentifier(this, 'addButton', '<spring:message code="error.identifier"/>');"/>
-					<c:if test="${status.errorMessage != ''}"><br/><span class="error">${status.errorMessage}</span></c:if>
-				</spring:bind>
+				<input type="text" size="30"
+						name="newIdentifier" 
+						value="" 
+						onBlur="return true; validateIdentifier(this, 'addButton', '<spring:message code="error.identifier"/>');"/>
 			</td>
 			<td valign="top">
-				<select name="identifierType">
+				<select name="newIdentifierType">
 					<openmrs:forEachRecord name="patientIdentifierType">
 						<option value="${record.patientIdentifierTypeId}">
 							${record.name}
@@ -77,7 +97,7 @@
 				</select>
 			</td>
 			<td valign="top">
-				<select name="location">
+				<select name="newLocation">
 					<openmrs:forEachRecord name="location">
 						<option value="${record.locationId}">
 							${record.name}
@@ -87,7 +107,8 @@
 			</td>
 		</tr>
 	</table>
-	<br/>
+	<input type="button" class="smallButton" onclick="addIdentifier()" value="<spring:message code="PatientIdentifier.add" />" />
+	<br/><br/>
 	<table>
 		<tr>
 			<th><spring:message code="Patient.gender"/></th>
@@ -97,7 +118,6 @@
 							<input type="radio" name="gender" id="${record.key}" value="${record.key}" <c:if test="${record.key == status.value}">checked</c:if> />
 								<label for="${record.key}"> <spring:message code="Patient.gender.${record.value}"/> </label>
 						</openmrs:forEachRecord>
-					</select>
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
@@ -125,7 +145,7 @@
 			<td colspan="3">
 				<spring:bind path="patient.birthdate">			
 					<input type="text" name="birthdate" size="10" 
-						   value="${status.value}" onClick="showCalendar(this)" />
+						   value="${status.value}" onClick="showCalendar(this)" /> Format: dd/mm/yyyy
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
 				</spring:bind>
 				<spring:bind path="patient.birthdateEstimated">
@@ -142,8 +162,8 @@
 			<td>
 				<spring:bind path="patient.tribe">
 					<select name="tribe">
+						<option value=""></option>
 						<openmrs:forEachRecord name="tribe">
-							<option value=""></option>
 							<option value="${record.tribeId}" <c:catch><c:if test="${record.name == status.value || status.value == record.tribeId}">selected</c:if></c:catch>>
 								${record.name}
 							</option>
@@ -168,11 +188,12 @@
 	
 	<br />
 	<input type="submit" value="<spring:message code="general.save" />" name="action" id="addButton"> &nbsp; &nbsp; 
-	<input type="submit" value="<spring:message code="general.cancel" />" name="action" id="cancelButton">
+	<input type="button" value="<spring:message code="general.cancel" />" onclick="history.go(-1);">
 </form>
 
 <script type="text/javascript">
 	document.forms[0].elements[0].focus();
+	addIdentifier();
 </script>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

@@ -14,6 +14,7 @@ public class UserListItem {
 	private String firstName;
 	private String lastName;
 	private String systemId;
+	private String username;
 	private String[] groups = new String[0];
 	private String[] roles = new String[0];
 	
@@ -26,6 +27,7 @@ public class UserListItem {
 			firstName = user.getFirstName();
 			lastName = user.getLastName();
 			systemId = user.getSystemId();
+			username = user.getUsername();
 			groups = new String[user.getGroups().size()];
 			int i = 0;
 			for (Group g : user.getGroups()) {
@@ -85,6 +87,14 @@ public class UserListItem {
 
 	public void setRoles(String[] roles) {
 		this.roles = roles;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 	
 	
