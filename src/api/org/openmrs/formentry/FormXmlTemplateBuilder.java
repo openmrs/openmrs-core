@@ -67,7 +67,9 @@ public class FormXmlTemplateBuilder {
 		VelocityContext velocityContext = new VelocityContext();
 		if (patient != null) {
 			velocityContext.put("patient", patient);
-			velocityContext.put("date", new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss.SSSZ"));
+			velocityContext.put("timestamp", new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss.SSSZ"));
+			velocityContext.put("date", new SimpleDateFormat("yyyyMMdd"));
+			velocityContext.put("time", new SimpleDateFormat("HH:mm:ss"));
 		}
 		
 		StringBuffer xml = new StringBuffer();
