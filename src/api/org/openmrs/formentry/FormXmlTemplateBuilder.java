@@ -64,9 +64,10 @@ public class FormXmlTemplateBuilder {
 			log.error("Error initializing Velocity engine", e);
 		}
 		VelocityContext velocityContext = new VelocityContext();
-		if (patient != null)
+		if (patient != null) {
 			velocityContext.put("patient", patient);
-
+		}
+		
 		StringBuffer xml = new StringBuffer();
 		xml.append(FormXmlTemplateFragment.header(form.getName(), form.getInfoPathSolutionVersion(), url));
 		User user = null;

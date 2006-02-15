@@ -423,6 +423,22 @@ public class Patient extends Person implements java.io.Serializable {
 		}
 	}
 	
+	public PatientIdentifier getPatientIdentifier(Integer identifierTypeId) {
+		if (identifiers != null && identifiers.size() > 0) {
+			PatientIdentifier found = null;
+			for (PatientIdentifier id : identifiers) {
+				if (id.getIdentifierType().getPatientIdentifierTypeId().equals(identifierTypeId)) {
+					found = id;
+					if (found.isPreferred())
+						return found;
+				}
+			}
+			return found;
+		} else {
+			return null;
+		}
+	}
+	
 	public Integer getAge() {
 		
 		if (birthdate == null)
