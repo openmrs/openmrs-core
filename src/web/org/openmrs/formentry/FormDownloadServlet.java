@@ -15,6 +15,15 @@ import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
 
+/**
+ * Provides form download services, including download of the form template to
+ * trigger the form application (e.g., Microsoft&reg; InfoPath&trade;) on the
+ * client, download of an empty template, and download of a form schema.
+ *  
+ * @author Ben Wolfe
+ * @author Burke Mamlin
+ * @version 1.0
+ */
 public class FormDownloadServlet extends HttpServlet {
 
 	public static final long serialVersionUID = 123423L;
@@ -71,7 +80,7 @@ public class FormDownloadServlet extends HttpServlet {
 
 		response.setHeader("Content-Type", "application/ms-infopath.xml");
 		response.setHeader("Content-Disposition", "attachment; filename="
-				+ title + ".xml");
+				+ title + ".infopathxml");
 		response.getOutputStream().print(xmldoc.toString());
 
 	}

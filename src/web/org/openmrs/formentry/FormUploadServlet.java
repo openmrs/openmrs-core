@@ -21,6 +21,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+/**
+ * Handles uploads of form data and loads them into a queue for processing
+ * 
+ * @author Burke Mamlin
+ * @version 1.0
+ */
 public class FormUploadServlet extends HttpServlet {
 
 	private static final long serialVersionUID = -3545085468235057302L;
