@@ -50,12 +50,12 @@
 	
 	var getGroups = function(u) {
 		if (typeof u == 'string') return '';
-		return u.groups;
+		return " &nbsp; " + u.groups;
 	}
 	
 	var getRoles = function(u) {
 		if (typeof u == 'string') return '';	
-		return u.roles;
+		return " &nbsp; " + u.roles;
 	}
 	
 	function search(delay, event) {
@@ -106,10 +106,10 @@
 			<th> </th>
 			<th> &nbsp; <spring:message code="User.systemId"/>&nbsp; </th>
 			<th> &nbsp; <spring:message code="User.username"/>&nbsp; </th>
-			<th> &nbsp;<spring:message code="User.firstName"/>&nbsp; </th>
-			<th> &nbsp;<spring:message code="User.lastName"/>&nbsp;  </th>
-			<th> &nbsp;<spring:message code="User.groups"/>&nbsp;    </th>
-			<th> &nbsp;<spring:message code="User.roles"/>&nbsp;     </th>
+			<th> &nbsp; <spring:message code="User.firstName"/>&nbsp; </th>
+			<th> &nbsp; <spring:message code="User.lastName"/>&nbsp;  </th>
+			<th> &nbsp; <spring:message code="User.groups"/>&nbsp;    </th>
+			<th> &nbsp; <spring:message code="User.roles"/>&nbsp;     </th>
 		</tr>
 		<tbody id="searchBody">
 		</tbody>

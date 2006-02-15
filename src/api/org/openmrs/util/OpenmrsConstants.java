@@ -106,7 +106,10 @@ public class OpenmrsConstants {
 	public static final String PRIV_MANAGE_ORDER_TYPES	= "Manage Order Types";
 	public static final String PRIV_MANAGE_RELATIONSHIP_TYPES	= "Manage Relationship Types";
 
+	public static final String PRIV_VIEW_ADMIN_FUNCTIONS	= "View Administration Functions";
+	
 	public static final String PRIV_FORM_ENTRY      = "Form Entry";
+	
 	
 	public static Collection<String> CORE_PRIVILEGES() {
 		List<String> privs = new Vector<String>();
@@ -167,6 +170,8 @@ public class OpenmrsConstants {
 		privs.add(PRIV_MANAGE_FIELD_TYPES);
 		privs.add(PRIV_MANAGE_ORDER_TYPES);
 		privs.add(PRIV_MANAGE_RELATIONSHIP_TYPES);
+		
+		privs.add(PRIV_VIEW_ADMIN_FUNCTIONS);
 		
 		return privs;
 	}

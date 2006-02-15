@@ -107,39 +107,9 @@
 			</td>
 		</tr>
 	</table>
-	<input type="button" class="smallButton" onclick="addIdentifier()" value="<spring:message code="PatientIdentifier.add" />" />
+	<input type="button" class="smallButton" onclick="addIdentifier()" value="<spring:message code="PatientIdentifier.add" />" hidefocus />
 	<br/><br/>
 	<table>
-		<tr>
-			<th><spring:message code="Patient.gender"/></th>
-			<td>
-				<spring:bind path="patient.gender">
-						<openmrs:forEachRecord name="gender">
-							<input type="radio" name="gender" id="${record.key}" value="${record.key}" <c:if test="${record.key == status.value}">checked</c:if> />
-								<label for="${record.key}"> <spring:message code="Patient.gender.${record.value}"/> </label>
-						</openmrs:forEachRecord>
-					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-				</spring:bind>
-			</td>
-		</tr>
-		<tr>
-			<th><spring:message code="PatientAddress.address1"/></th>
-			<td>
-				<spring:bind path="patient.address1">
-					<input type="text" name="${status.expression}" value="${status.value}" size="45" />
-					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-				</spring:bind>
-			</td>
-		</tr>
-		<tr>
-			<th><spring:message code="PatientAddress.address2"/></th>
-			<td>
-				<spring:bind path="patient.address2">
-					<input type="text" name="${status.expression}" value="${status.value}" size="45" />
-					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-				</spring:bind>
-			</td>
-		</tr>
 		<tr>
 			<th><spring:message code="Patient.birthdate"/></th>
 			<td colspan="3">
@@ -158,6 +128,18 @@
 			</td>
 		</tr>
 		<tr>
+			<th><spring:message code="Patient.gender"/></th>
+			<td>
+				<spring:bind path="patient.gender">
+						<openmrs:forEachRecord name="gender">
+							<input type="radio" name="gender" id="${record.key}" value="${record.key}" <c:if test="${record.key == status.value}">checked</c:if> />
+								<label for="${record.key}"> <spring:message code="Patient.gender.${record.value}"/> </label>
+						</openmrs:forEachRecord>
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				</spring:bind>
+			</td>
+		</tr>
+		<tr>
 			<th><spring:message code="Patient.tribe"/></th>
 			<td>
 				<spring:bind path="patient.tribe">
@@ -169,6 +151,24 @@
 							</option>
 						</openmrs:forEachRecord>
 					</select>
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				</spring:bind>
+			</td>
+		</tr>
+		<tr>
+			<th><spring:message code="PatientAddress.address1"/></th>
+			<td>
+				<spring:bind path="patient.address1">
+					<input type="text" name="${status.expression}" value="${status.value}" size="45" />
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				</spring:bind>
+			</td>
+		</tr>
+		<tr>
+			<th><spring:message code="PatientAddress.address2"/></th>
+			<td>
+				<spring:bind path="patient.address2">
+					<input type="text" name="${status.expression}" value="${status.value}" size="45" />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>

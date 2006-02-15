@@ -45,29 +45,62 @@ public class LoginServlet extends HttpServlet {
 			return;
 		}
 		
+		Object attempts = httpSession.getAttribute("loginAttempts");
+		Integer loginAttempts = 0;
+		if (attempts != null)
+			loginAttempts = (Integer)attempts;
+		
 		try {
-			context.authenticate(username, password);
-			if (context.isAuthenticated()) {
+			String forgotPassword = request.getParameter("forgotPassword");
+			String secretQuestion = request.getParameter("secretQuestion");
+			if (forgotPassword != null && new Boolean(forgotPassword).booleanValue()) {
+				// if they checked the box for "I forgot my password"
 				
-				User user = context.getAuthenticatedUser();
+				context.addProxyPrivilege("View Users");
+				User user = context.getUserService().getUserByUsername(username);
+				httpSession.setAttribute("loginAttempts", loginAttempts++);
 				
-				Boolean forcePasswordChange = new Boolean(user.getProperties().get(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD)); 
-				if (forcePasswordChange) {
-					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.password.change");
-					redirect = request.getContextPath() + "/options.form#Change Login Info";
+				if (user.getSecretQuestion() == null || user.getSecretQuestion().equals("")) {
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.question.empty");
 				}
+				else {
+					request.setAttribute("forgotPassword", true);
+					request.setAttribute("secretQuestion", user.getSecretQuestion());
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "auth.question.fill");
+				}
+				response.sendRedirect(request.getContextPath() + "/login.htm");
+			}
+			else if (secretQuestion != null && !secretQuestion.equals("")) {
 				
-				response.sendRedirect(redirect);
-			
-				log.debug(request.getLocalAddr());
-				httpSession.setAttribute(WebConstants.OPENMRS_CLIENT_IP_HTTPSESSION_ATTR, request.getLocalAddr());
-				httpSession.removeAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR);
+			}
+			else {
+				context.authenticate(username, password);
 				
-				return;
+				if (context.isAuthenticated()) {
+					
+					User user = context.getAuthenticatedUser();
+					
+					Boolean forcePasswordChange = new Boolean(user.getProperties().get(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD)); 
+					if (forcePasswordChange) {
+						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.password.change");
+						redirect = request.getContextPath() + "/options.form#Change Login Info";
+					}
+					
+					response.sendRedirect(redirect);
+				
+					log.debug(request.getLocalAddr());
+					httpSession.setAttribute(WebConstants.OPENMRS_CLIENT_IP_HTTPSESSION_ATTR, request.getLocalAddr());
+					httpSession.removeAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR);
+					
+					return;
+				}
 			}
 		} catch (ContextAuthenticationException e) {
-			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.invalid");
+			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.password.invalid");
 			response.sendRedirect(request.getContextPath() + "/login.htm");
+		}
+		finally {
+			context.removeProxyPrivilege("View Users");
 		}
 	}
 

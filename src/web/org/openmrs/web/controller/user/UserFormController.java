@@ -247,7 +247,7 @@ public class UserFormController extends SimpleFormController {
 		if (context != null && context.isAuthenticated()) {
 			map.put("roles", roles);
 			map.put("groups", context.getUserService().getGroups());
-			if (user.getUserId() == null || context.getAuthenticatedUser().isSuperUser()) 
+			if (user.getUserId() == null || context.hasPrivilege("Edit Passwords")) 
 				map.put("modifyPasswords", true);
 			map.put("changePasswordName", OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD);
 			String s = "";
