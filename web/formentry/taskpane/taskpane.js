@@ -33,55 +33,46 @@ function setObj(nodeName, obj) {
 	closeTaskPane();
 }
 
-function pickProblem(mode, nodeName, o) {
+// add problem (diagnosis) concept to a list (new problems or resolved problems)
+function pickProblem(mode, nodeName, obj) {
 	var node = oDOM.selectSingleNode(nodeName);
 	clearNil(node);
+	var newProblem;
+	var nodeName;
+	if (mode == 'add') {
+		newProblem = true;
+		nodeName = "problem_added";
+	} else if (mode == 'remove') {
+		newProblem = false;
+		nodeName = "problem_resolved";
+	} else {
+		return;
+	}
 	
-	o.value = o.value.toUpperCase();
-	
-	if (mode == 'add')
-		insertObj(node, "problem_added", o);
-	else
-		appendObj(node, "problem_resolved", o);
+	var refNode = node.selectSingleNode(nodeName);
+	var valueNode = refNode.selectSingleNode("value");
+	if (valueNode.text == "") {
+		clearNil(valueNode);
+		valueNode.text = getProblemValue(obj);
+	} else {
+		// create new elem as clone with proper value
+		var newElem = refNode.cloneNode(true);
+		var newElemValue = newElem.selectSingleNode("value");
+		clearNil(newElemValue);
+
+		// insert *before* setting value to avoid a bug where value is corrupted during insert
+		if (newProblem) {
+			var firstResolved = node.selectSingleNode("problem_resolved");
+			node.insertBefore(newElem, firstResolved);
+		} else {
+			node.appendChild(newElem);
+		}
+
+		// value must be set *after* inserting node; otherwise it gets munged
+		newElemValue.text = getProblemValue(obj);
+	}
 
 	closeTaskPane();
-}
-
-function insertObj(node, newNodeName, obj) {
-	var firstChild = node.childNodes.item(0);
-	var new_elem = firstChild.cloneNode(true);
-	
-	var new_elem_value = new_elem.selectSingleNode("value");
-	clearNil(new_elem_value);
-	new_elem_value.text = obj.key + '^' + obj.value;
-	var firstResolved = node.selectSingleNode("problem_resolved");
-	if (firstChild.selectSingleNode("value").text == "")
-		node.removeChild(firstChild);
-	node.insertBefore(new_elem, firstResolved);
-}
-
-function appendObj(node, newNodeName, obj) {
-	var firstResolved = node.selectSingleNode("problem_resolved");
-	var new_elem = firstResolved.cloneNode(true);
-	var new_elem_value = new_elem.selectSingleNode("value");
-	clearNil(new_elem_value);
-	new_elem_value.text = obj.key + '^' + obj.value;
-	if (firstResolved.selectSingleNode("value").text == "")
-		node.removeChild(firstResolved);
-		
-	node.appendChild(new_elem);
-}
-
-function old_appendObj(node, newNodeName, obj) {
-	
-	var lastChild = node.lastChild;
-	var new_elem = oDOM.createNode(1, newNodeName, "");
-	var new_elem_value = oDOM.createNode(1, "value", "");
-	new_elem.appendChild(new_elem_value);
-	new_elem_value.text = obj.key + '^' + obj.value;
-	node.appendChild(new_elem);
-	if (lastChild.text == '')
-		node.removeChild(lastChild);
 }
 
 //	hide taskpane
