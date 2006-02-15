@@ -23,6 +23,12 @@
 	}
 </style>
 
+<table border="0" width="80%">
+<tbody>
+<tr>
+
+<td>
+
 <h2><spring:message code="admin.title"/></h2>
 
 <openmrs:hasPrivilege privilege="View Users,Manage Groups,Manage Roles,Manage Privileges">
@@ -45,6 +51,10 @@
 		<%@ include file="observations/localHeader.jsp" %>
 </openmrs:hasPrivilege>
 
+</td>
+
+<td>
+
 <openmrs:hasPrivilege privilege="View Orders,Manage Order Types">
 	<h4>Orders</h4>
 		<%@ include file="orders/localHeader.jsp" %>
@@ -64,5 +74,11 @@
 	<h4>Reports</h4>
 		<%@ include file="reports/localHeader.jsp" %>
 </openmrs:hasPrivilege>
+
+</td>
+
+</tr>
+</tbody>
+</table>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>
