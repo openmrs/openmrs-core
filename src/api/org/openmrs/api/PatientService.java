@@ -1,6 +1,5 @@
 package org.openmrs.api;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -46,6 +45,12 @@ public class PatientService {
 	 * @throws APIException
 	 */
 	public void createPatient(Patient patient) throws APIException {
+		String s = patient.getPatientId().toString();
+		if (patient.getIdentifiers() != null)
+			s += "|" + patient.getIdentifiers();
+		
+		log.info(s);
+		
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_ADD_PATIENTS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_PATIENTS);
 		getPatientDAO().createPatient(patient);

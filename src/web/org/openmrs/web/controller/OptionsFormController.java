@@ -135,6 +135,7 @@ public class OptionsFormController extends SimpleFormController {
 			
 			if (!opts.getSecretQuestionPassword().equals("") && !errors.hasErrors()) {
 				try {
+					user.setSecretQuestion(opts.getSecretQuestionNew());
 					us.changeQuestionAnswer(opts.getSecretQuestionPassword(), opts.getSecretQuestionNew(), opts.getSecretAnswerNew());
 				}
 				catch (APIException e) {
@@ -191,6 +192,7 @@ public class OptionsFormController extends SimpleFormController {
 			opts.setShowRetiredMessage(new Boolean(props.get("showRetired")));
 			opts.setVerbose(new Boolean(props.get("verbose")));
 			opts.setUsername(user.getUsername());
+			opts.setSecretQuestionNew(user.getSecretQuestion());
 		}
 		
 		return opts;
@@ -222,6 +224,14 @@ public class OptionsFormController extends SimpleFormController {
 			map.put("locale", locale.getLanguage());
 			
 			map.put("languages", WebConstants.OPENMRS_LANGUAGES());
+			
+			String resetPassword = (String)httpSession.getAttribute("resetPassword");
+			if (resetPassword==null)
+				resetPassword = "";
+			else
+				httpSession.removeAttribute("resetPassword");
+			map.put("resetPassword", resetPassword);
+			
 		}
 		
 		return map;

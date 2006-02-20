@@ -2,6 +2,7 @@ package org.openmrs.web.controller.patient;
 
 import java.text.DateFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -42,6 +43,9 @@ public class PatientFormController extends SimpleFormController {
 	
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
+
+    Locale locale = Locale.UK;
+    String datePattern = "dd/MM/yyyy";
     
 	/**
 	 * 
@@ -59,7 +63,7 @@ public class PatientFormController extends SimpleFormController {
 		//binder.registerCustomEditor(java.lang.Integer.class, 
 		//		new CustomNumberEditor(java.lang.Integer.class, true));
         binder.registerCustomEditor(java.util.Date.class, 
-        		new CustomDateEditor(DateFormat.getDateInstance(DateFormat.LONG), true));
+        		new CustomDateEditor(new SimpleDateFormat(datePattern, locale), true, 10));
         binder.registerCustomEditor(Tribe.class, new TribeEditor(context));
         binder.registerCustomEditor(PatientIdentifierType.class, new PatientIdentifierTypeEditor(context));
         binder.registerCustomEditor(Location.class, new LocationEditor(context));
@@ -102,8 +106,8 @@ public class PatientFormController extends SimpleFormController {
 					}
 				}
 				
-				if (patient.getIdentifiers() == null || patient.getIdentifiers().size() < 1)
-					errors.rejectValue("patient.identifiers", "Patient.identifiers.length");
+				//if (patient.getIdentifiers() == null || patient.getIdentifiers().size() < 1)
+				//	errors.rejectValue("patient.identifiers", "Patient.identifiers.length");
 
 				
 			// Patient Address
@@ -132,8 +136,8 @@ public class PatientFormController extends SimpleFormController {
 					}
 				}
 				
-				if (patient.getAddresses() == null || patient.getAddresses().size() < 1)
-					errors.rejectValue("patient", "Patient.addresses.length");
+				//if (patient.getAddresses() == null || patient.getAddresses().size() < 1)
+				//	errors.rejectValue("patient", "Patient.addresses.length");
 
 				
 			// Patient Names
@@ -175,7 +179,7 @@ public class PatientFormController extends SimpleFormController {
 				
 			// Patient Info 
 				//patient.setTribe(ps.getTribe(Integer.valueOf(request.getParameter("tribe"))));
-				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "birthdate", "error.null");
+				//ValidationUtils.rejectIfEmptyOrWhitespace(errors, "birthdate", "error.null");
 				//ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
 		}
 		

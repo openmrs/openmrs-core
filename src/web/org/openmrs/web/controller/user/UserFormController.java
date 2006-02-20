@@ -172,7 +172,14 @@ public class UserFormController extends SimpleFormController {
 			String password = request.getParameter("password");
 			
 			Map<String, String> properties = user.getProperties();
-			Boolean newChangePassword = new Boolean(request.getParameter(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD));
+			if (properties == null)
+				properties = new HashMap<String, String>();
+			
+			Boolean newChangePassword = false;
+			String chk = request.getParameter(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD);
+			
+			if (chk != null)
+				newChangePassword = true;
 			
 			if (!newChangePassword.booleanValue() && properties.containsKey(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD)) {
 				properties.remove(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD);

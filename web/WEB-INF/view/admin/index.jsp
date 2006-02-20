@@ -29,7 +29,7 @@
 <tbody>
 <tr>
 
-<td>
+<td valign="top">
 
 <openmrs:hasPrivilege privilege="View Users,Manage Groups,Manage Roles,Manage Privileges">
 	<h4>Users</h4>
@@ -53,7 +53,7 @@
 
 </td>
 
-<td>
+<td valign="top">
 
 <openmrs:hasPrivilege privilege="View Orders,Manage Order Types">
 	<h4>Orders</h4>

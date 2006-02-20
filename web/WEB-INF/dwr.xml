@@ -80,7 +80,7 @@
 			import org.openmrs.web.dwr.DWRMessageService;
 			import java.util.Date;
 			import java.util.List;
-			DWRPatientService.getSimilarPatients(String name, Date birthdate, String gender);
+			DWRPatientService.getSimilarPatients(String name, Date birthdate, String age, String gender);
 			DWRConceptService.findConcepts(String phrase, List<String> classNames, boolean includeRetired, List<String> ignoreClassNames);
 			DWREncounterService.findEncounters(String phrase, boolean includeVoided);
 			DWRUserService.findUsers(String phrase, List<String> roles, boolean includeVoided);

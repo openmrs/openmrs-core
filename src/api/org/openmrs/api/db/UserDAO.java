@@ -185,6 +185,8 @@ public interface UserDAO {
 	
 	public void changeQuestionAnswer(String pw, String q, String a) throws DAOException;
 	
+	public boolean isSecretAnswer(User u, String answer) throws DAOException;
+	
 	public List<User> findUsers(String name, List<String> roles, boolean includeRetired) throws DAOException;
 	
 	public List<User> getAllUsers(List<String> roles, boolean includeRetired) throws DAOException;

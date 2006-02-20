@@ -247,9 +247,8 @@ public class UserService {
 	}
 	
 	public void changePassword(User u, String pw) throws APIException {
-		User user = context.getAuthenticatedUser();
-		if (user == null || user.isSuperUser() == false)
-			throw new APIAuthenticationException("Role required: " + OpenmrsConstants.SUPERUSER_ROLE);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_USERS);
 		
 		getUserDAO().changePassword(u, pw);
 	}
@@ -266,6 +265,10 @@ public class UserService {
 	
 	public void changeQuestionAnswer(String pw, String q, String a) {
 		getUserDAO().changeQuestionAnswer(pw, q, a);
+	}
+	
+	public boolean isSecretAnswer(User u, String answer) {
+		return getUserDAO().isSecretAnswer(u, answer);
 	}
 	
 	/**

@@ -115,7 +115,7 @@
 			<td colspan="3">
 				<spring:bind path="patient.birthdate">			
 					<input type="text" name="birthdate" size="10" 
-						   value="${status.value}" onClick="showCalendar(this)" /> Format: dd/mm/yyyy
+						   value="${status.value}" onClick="showCalendar(this)" /> <i>(Format: dd/mm/yyyy)</i>
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
 				</spring:bind>
 				<spring:bind path="patient.birthdateEstimated">

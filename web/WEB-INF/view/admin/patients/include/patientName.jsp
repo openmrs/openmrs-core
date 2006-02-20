@@ -88,7 +88,7 @@
 		<td><spring:message code="general.voidReason"/></td>
 		<spring:bind path="voidReason">
 			<td>
-				<input type="text" name="${status.expression}" value="${status.value}" />
+				<input type="text" name="name${status.expression}" value="${status.value}" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</td>
 		</spring:bind>

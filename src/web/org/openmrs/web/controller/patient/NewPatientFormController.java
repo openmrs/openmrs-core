@@ -101,13 +101,22 @@ public class NewPatientFormController extends SimpleFormController {
 						if (identifiers[i].length() > 0) {
 							PatientIdentifierType type = ps.getPatientIdentifierType(Integer.valueOf(types[i]));
 							//Location loc = ps.getLocation(Integer.valueOf(locs[i]));
+							String[] args = {identifiers[i]};
 							try {
 								if (type.hasCheckDigit() && !Helper.isValidCheckDigit(identifiers[i])) {
-									errors.rejectValue("identifier", "error.checkdigits");
+									log.error("hasCheckDigit and is not valid: " + type.getName() + " " + identifiers[i]);
+									errors.rejectValue("identifier", "error.checkdigits", args, "Invalid Checkdigit " + identifiers[i]);
+								}
+								else if (type.hasCheckDigit() == false && identifiers[i].contains("-")) {
+									log.error("hasn't CheckDigit and contains '-': " + type.getName() + " " + identifiers[i]);
+									String[] args2 = {"-", identifiers[i]}; 
+									errors.rejectValue("identifier", "error.character.invalid", args2, "Invalid character '-' in " + identifiers[i]);
 								}
 							} catch (Exception e) {
+								log.error("exception thrown: " + type.getName() + " " + identifiers[i]);
 								//Object[] objs = {identifiers[i]};
-								errors.rejectValue("identifier", "error.checkdigits");
+								log.error(e);
+								errors.rejectValue("identifier", "error.checkdigits", args, "Invalid Checkdigit " + identifiers[i]);
 							}
 						}
 					}

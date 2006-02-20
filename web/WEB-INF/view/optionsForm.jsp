@@ -201,7 +201,7 @@ function containsError(element) {
 		<td><spring:message code="options.login.password.old" /></td>
 		<td>
 			<spring:bind path="opts.oldPassword">
-				<input type="password" name="${status.expression}" value="${status.value}" />
+				<input type="password" name="${status.expression}" value="${status.value}${resetPassword}" />
 				<c:if test="${status.errorMessage != ''}">
 					<span class="error">${status.errorMessage}</span>
 				</c:if>
@@ -218,6 +218,7 @@ function containsError(element) {
 					<span class="error">${status.errorMessage}</span>
 				</c:if>
 			</spring:bind>
+			<spring:message code="options.login.password.hint"/>
 		</td>
 	</tr>
 	<tr>
@@ -250,7 +251,7 @@ function containsError(element) {
 		<td>
 			<spring:bind path="opts.secretQuestionNew">
 				<input type="text" name="${status.expression}"
-			value="${status.value}" />
+					value="${status.value}" size="35"/>
 				<c:if test="${status.errorMessage != ''}">
 					<span class="error">${status.errorMessage}</span>
 				</c:if>
@@ -262,7 +263,7 @@ function containsError(element) {
 		<td>
 			<spring:bind path="opts.secretAnswerNew">
 				<input type="password" name="${status.expression}"
-			value="${status.value}" />
+					value="${status.value}" size="35" />
 				<c:if test="${status.errorMessage != ''}">
 					<span class="error">${status.errorMessage}</span>
 				</c:if>
@@ -274,7 +275,7 @@ function containsError(element) {
 		<td>
 			<spring:bind path="opts.secretAnswerConfirm">
 				<input type="password" name="${status.expression}"
-					value="${status.value}" />
+					value="${status.value}" size="35" />
 				<c:if test="${status.errorMessage != ''}">
 					<span class="error">${status.errorMessage}</span>
 				</c:if>

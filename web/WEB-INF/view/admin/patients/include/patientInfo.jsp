@@ -2,11 +2,10 @@
 	<tr>
 		<td><spring:message code="Patient.gender"/></td>
 		<td><spring:bind path="patient.gender">
-			<select name="gender">
-				<c:forEach items="${org.openmrs.util.OpenmrsConstants.GENDER}" var="map">
-					<option value="${map.key}" <c:if test="${status.value == map.key}">selected</c:if>><spring:message code="Patient.gender.${map.key}"/></option>
-				</c:forEach>
-			</select>
+				<openmrs:forEachRecord name="gender">
+					<input type="radio" name="gender" id="${record.key}" value="${record.key}" <c:if test="${record.key == status.value}">checked</c:if> />
+						<label for="${record.key}"> <spring:message code="Patient.gender.${record.value}"/> </label>
+				</openmrs:forEachRecord>
 			<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
@@ -28,6 +27,7 @@
 					   value="${status.value}" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
 			</spring:bind>
+			(Format: dd/mm/yyyy)
 			<spring:bind path="patient.birthdateEstimated">
 				<spring:message code="Patient.birthdateEstimated"/>
 				<input type="hidden" name="_birthdateEstimated">
@@ -51,6 +51,7 @@
 		<td>
 			<spring:bind path="patient.tribe">
 				<select name="tribe">
+					<option value=""></option>
 					<openmrs:forEachRecord name="tribe">
 						<option value="${record.tribeId}" <c:if test="${record.tribeId == status.value}">selected</c:if>>
 							${record.name}
@@ -102,9 +103,8 @@
 				   value="${status.value}" />
 			<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
-		</td>
-		<td><spring:message code="Patient.causeOfDeath"/></td>
-		<td>
+		&nbsp; &nbsp; 
+		<spring:message code="Patient.causeOfDeath"/>
 			<spring:bind path="patient.causeOfDeath">
 				<input type="text" name="causeOfDeath" value="${status.value}" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
@@ -112,7 +112,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="Patient.gender"/></td>
+		<td><spring:message code="Patient.healthDistrict"/></td>
 		<td>
 			<spring:bind path="patient.healthDistrict">
 				<input type="text" name="healthDistrict" value="${status.value}" />
@@ -142,7 +142,7 @@
 	<c:if test="${!(patient.changedBy == null)}">
 		<tr>
 			<td><spring:message code="general.changedBy" /></td>
-			<td>
+			<td colspan="2">
 				${patient.changedBy.firstName} ${patient.changedBy.lastName} -
 				<openmrs:formatDate date="${patient.dateChanged}" type="long" />
 			</td>

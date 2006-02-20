@@ -58,7 +58,7 @@
 			</tr>
 			<tr>
 				<td><spring:message code="User.secretAnswer" /></td>
-				<td><input type="text" name="secretAnswer" size="50" /></td>
+				<td><input type="password" name="secretAnswer" size="50" /></td>
 			</tr>
 			<tr>
 				<td><spring:message code="User.forceChange" /></td>

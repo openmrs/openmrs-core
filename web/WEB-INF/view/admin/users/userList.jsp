@@ -35,17 +35,17 @@
 	
 	var getUsername = function(u) {
 		if (typeof u == 'string') return '';
-		return u.username;
+		return " &nbsp; " + u.username;
 	}
 
 	var getFirst = function(u) {
 		if (typeof u == 'string') return '';	
-		return u.firstName;
+		return " &nbsp; " + u.firstName;
 	}
 
 	var getLast = function(u) {
 		if (typeof u == 'string') return '';	
-		return u.lastName;
+		return " &nbsp; " + u.lastName;
 	}
 	
 	var getGroups = function(u) {

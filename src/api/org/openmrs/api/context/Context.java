@@ -346,17 +346,18 @@ public class Context implements ApplicationContextAware {
 			if (user.hasPrivilege(privilege))
 				return true;
 			
-			// check proxied privileges
-			for (String s : proxies)
-				if (s.equals(privilege))
-					return true;
-			
 			Role auth = getUserService().getRole(OpenmrsConstants.AUTHENTICATED_ROLE);
 			for (Privilege p : auth.getPrivileges())
 				if (p.getPrivilege().equals(privilege))
 					return true;
 		}
 		
+		// check proxied privileges
+		for (String s : proxies)
+			if (s.equals(privilege))
+				return true;
+		
+		// check anonymous privileges
 		Role role = getUserService().getRole(OpenmrsConstants.ANONYMOUS_ROLE);
 		if (role == null) {
 			throw new RuntimeException("Database out of sync with code: " + OpenmrsConstants.ANONYMOUS_ROLE + " role does not exist");
@@ -364,6 +365,7 @@ public class Context implements ApplicationContextAware {
 		if (role.hasPrivilege(privilege))
 			return true;
 	
+		// default return value
 		return false;
 	}
 	

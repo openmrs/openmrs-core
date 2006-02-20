@@ -52,25 +52,48 @@ public class LoginServlet extends HttpServlet {
 		
 		try {
 			String forgotPassword = request.getParameter("forgotPassword");
-			String secretQuestion = request.getParameter("secretQuestion");
+			String secretAnswer = request.getParameter("secretAnswer");
 			if (forgotPassword != null && new Boolean(forgotPassword).booleanValue()) {
 				// if they checked the box for "I forgot my password"
 				
-				context.addProxyPrivilege("View Users");
+				context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
 				User user = context.getUserService().getUserByUsername(username);
 				httpSession.setAttribute("loginAttempts", loginAttempts++);
 				
 				if (user.getSecretQuestion() == null || user.getSecretQuestion().equals("")) {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.question.empty");
+					response.sendRedirect(request.getContextPath() + "/login.htm?username=" + username);
 				}
 				else {
-					request.setAttribute("forgotPassword", true);
-					request.setAttribute("secretQuestion", user.getSecretQuestion());
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "auth.question.fill");
+					response.sendRedirect(request.getContextPath() + "/login.htm?username=" + username + "&forgotPassword=true&secretQuestion=" + user.getSecretQuestion());
 				}
-				response.sendRedirect(request.getContextPath() + "/login.htm");
 			}
-			else if (secretQuestion != null && !secretQuestion.equals("")) {
+			else if (secretAnswer != null) {
+				// if they've checked the box and then entered their secret answer
+				
+				context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+				User user = context.getUserService().getUserByUsername(username);
+				httpSession.setAttribute("loginAttempts", loginAttempts++);
+				
+				if (user.getSecretQuestion() != null && context.getUserService().isSecretAnswer(user, secretAnswer)) {
+					
+					context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+					String randomPassword = "";
+					for (int i=0; i<8; i++) {
+						randomPassword += String.valueOf((Math.random() * (127-48) + 48));
+					}
+					context.getUserService().changePassword(user, randomPassword);
+					httpSession.setAttribute("resetPassword", randomPassword);
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "auth.password.reset");
+					context.authenticate(username, randomPassword);
+					response.sendRedirect(request.getContextPath() + "/options.form#Change Login Info");
+				}
+				else {
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.answer.invalid");
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "auth.question.fill");
+					response.sendRedirect(request.getContextPath() + "/login.htm?username=" + username + "&forgotPassword=true&secretQuestion=" + user.getSecretQuestion());
+				}
 				
 			}
 			else {
@@ -100,7 +123,8 @@ public class LoginServlet extends HttpServlet {
 			response.sendRedirect(request.getContextPath() + "/login.htm");
 		}
 		finally {
-			context.removeProxyPrivilege("View Users");
+			context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+			context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
 		}
 	}
 

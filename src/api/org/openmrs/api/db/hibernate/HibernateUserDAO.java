@@ -1,6 +1,5 @@
 package org.openmrs.api.db.hibernate;
 
-import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
@@ -78,7 +77,7 @@ public class HibernateUserDAO implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e.getMessage());
+			throw new DAOException(e);
 		}	
 	}
 
@@ -90,8 +89,10 @@ public class HibernateUserDAO implements
 
 		List<User> users = session
 				.createQuery(
-						"from User u where u.voided = 0 and u.username = ?")
-				.setString(0, username).list();
+						"from User u where u.voided = 0 and (u.username = ? or u.systemId = ?)")
+				.setString(0, username)
+				.setString(1, username)
+				.list();
 		
 		if (users == null || users.size() == 0) {
 			log.warn("request for username '" + username + "' not found");
@@ -221,7 +222,7 @@ public class HibernateUserDAO implements
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e.getMessage());
+			throw new DAOException(e);
 		}
 	}
 
@@ -350,6 +351,9 @@ public class HibernateUserDAO implements
 		
 		User authUser = context.getAuthenticatedUser();
 		
+		if (authUser == null)
+			authUser = u;
+		
 		try {
 			log.debug("udpating password");
 			//update the user with the new password
@@ -455,6 +459,30 @@ public class HibernateUserDAO implements
 			.setParameter("userid", u.getUserId())
 			.executeUpdate();
 		HibernateUtil.commitTransaction();
+	}
+	
+	public boolean isSecretAnswer(User u, String answer) throws DAOException {
+		
+		if (answer == null || answer.equals(""))
+			return false;
+		
+		Session session = HibernateUtil.currentSession();
+		String answerOnRecord = "";
+		
+		try {
+			answerOnRecord = (String) session.createSQLQuery(
+			"select secret_answer from users where user_id = ?")
+			.addScalar("secret_answer", Hibernate.STRING)
+			.setInteger(0, u.getUserId())
+			.uniqueResult();
+		}
+		catch (Exception e) {
+			return false;
+		}
+		
+		return (answerOnRecord.equals(answer));
+		
+		
 	}
 	
 	public List<User> findUsers(String name, List<String> roles, boolean includeVoided) {
@@ -597,7 +625,7 @@ public class HibernateUserDAO implements
 		
 		Query query = session.createSQLQuery(sql);
 		
-		Integer id = ((BigInteger)query.uniqueResult()).intValue() + 1;
+		Integer id = ((Integer)query.uniqueResult()).intValue() + 1;
 		
 		return id.toString();
 	}
