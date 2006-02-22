@@ -181,6 +181,7 @@
 	function fillField(obj) {
 		if (obj.conceptId != null) {
 			$('fieldId').value = '';
+			$('fieldIdDisplay').innerHTML = '';
 			$('name').value = obj.name;
 			$('conceptName').innerHTML = obj.name + "(" + obj.conceptId + ")";
 			$('conceptId').value = obj.conceptId;
@@ -198,6 +199,7 @@
 		}
 		else {
 			$('fieldId').value = obj.fieldId;
+			$('fieldIdDisplay').innerHTML = obj.fieldId;
 			$('name').value = obj.name;
 			$('forms').innerHTML = obj.numForms;
 			$('description').innerHTML = obj.description;
@@ -264,6 +266,7 @@
 	
 	function clearField() {
 		$('fieldId').value = '';
+		$('fieldIdDisplay').innerHTML = '';
 		$('name').value = '';
 		$('forms').innerHTML = '';
 		$('description').innerHTML = '';
@@ -284,6 +287,7 @@
 		clearField();
 		enableField();
 		$('name').focus();
+		selectedLink = "new";
 	}
 	
 	function addNewFormField() {
@@ -294,6 +298,7 @@
 		formTitle.innerHTML = "Add New: ";
 		$('name').focus();
 		editButtons.style.display = "";
+		selectedLink = "new";
 		
 		return false;
 	}
@@ -304,8 +309,10 @@
 	
 	function editForThisForm() {
 		enableField();
-		if ($('forms').innerHTML != '1' && $('forms').innerHTML != '')
+		if ($('forms').innerHTML != '1' && $('forms').innerHTML != '') {
 			$('fieldId').value = '';
+			$('fieldIdDisplay').innerHTML = '';
+		}
 		$('name').focus();
 	}
 	
@@ -358,13 +365,13 @@
 	}
 	
 	function unSelectField(link) {
-		if (selectedLink != null)
-			selectedLink.className = '';
 		editForm.className = 'preview';
 		formTitle.innerHTML = '&nbsp;';
 		selectedLink = null;
 		disableField();
 		disableFormField();
+		if (selectedLink != null && typeof selectedLink != "string")
+			selectedLink.className = '';
 	}
 
 	function save() {
@@ -502,9 +509,11 @@
 			<div id="editForm">
 				<div id="formTitle"></div>
 				
-				<input type="button" onclick="addNewField()" value="<spring:message code="Field.addNewField"/>"/>
-				<input type="button" onclick="editForThisForm()" value="<spring:message code="Field.editForThisForm"/>"/>
-				<input type="button" onclick="editForAllForms()" value="<spring:message code="Field.editForAllForms"/>"/>
+				<div id="addButtons">
+					<input type="button" onclick="addNewField()" value="<spring:message code="Field.addNewField"/>"/>
+					<input type="button" onclick="editForThisForm()" value="<spring:message code="Field.editForThisForm"/>"/>
+					<input type="button" onclick="editForAllForms()" value="<spring:message code="Field.editForAllForms"/>"/>
+				</div>
 				
 				<%@ include file="formFieldEdit.jsp" %>
 				<div id="editButtons">

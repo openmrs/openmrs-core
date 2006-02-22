@@ -29,6 +29,9 @@ var init = function() {
 	<c:if test="${obs.concept.conceptId != null}">
 		DWRConceptService.getConcept(updateObsValues, '${obs.concept.conceptId}');
 	</c:if>
+	<c:if test="${obs.concept.conceptId == null}">
+		updateObsValues();
+	</c:if>
 };
 
 var findObjects = function(txt) {
@@ -74,20 +77,22 @@ function updateObsValues(concept) {
 	for (var i=0; i<values.length; i++)
 		$(values[i]).style.display = "none";
 	
-	var datatype = concept.datatype;
-	if (typeof datatype != 'string')
-		datatype = concept.datatype.name;
-		
-	if (datatype == 'Boolean')
-		$('valueBoolean').style.display = "";
-	if (datatype == 'Numeric' || datatype == 'Structured Numeric')
-		$('valueNumeric').style.display = "";
-	if (datatype == 'Coded')
-		$('valueCoded').style.display = "";
-	if (datatype == 'Text')
-		$('valueText').style.display = "";
-	if (datatype == 'Date' || datatype == 'Datetime' || datatype == 'Time')
-		$('valueDatetime').style.display = "";
+	if (concept != null) {
+		var datatype = concept.datatype;
+		if (typeof datatype != 'string')
+			datatype = concept.datatype.name;
+			
+		if (datatype == 'Boolean')
+			$('valueBoolean').style.display = "";
+		if (datatype == 'Numeric' || datatype == 'Structured Numeric')
+			$('valueNumeric').style.display = "";
+		if (datatype == 'Coded')
+			$('valueCoded').style.display = "";
+		if (datatype == 'Text')
+			$('valueText').style.display = "";
+		if (datatype == 'Date' || datatype == 'Datetime' || datatype == 'Time')
+			$('valueDatetime').style.display = "";
+	}
 }
 
 function showSearch(btn, type) {

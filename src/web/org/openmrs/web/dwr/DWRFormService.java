@@ -164,6 +164,7 @@ public class DWRFormService {
 			ff.setField(field);
 			
 			fs.updateFormField(ff);
+			context.endTransaction();
 		}
 		
 		return;
@@ -173,6 +174,7 @@ public class DWRFormService {
 		Context context = (Context) WebContextFactory.get().getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		if (context != null && context.isAuthenticated()) {
 			context.getFormService().deleteFormField(context.getFormService().getFormField(id));
+			context.endTransaction();
 		}
 	}
 

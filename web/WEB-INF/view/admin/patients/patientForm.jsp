@@ -311,7 +311,15 @@
 		
 		<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 	</spring:bind>
-	<input type="submit" id="saveButton" value="Save Patient">
+	<input type="submit" name="action" id="saveButton" value='<spring:message code="Patient.save"/>' />
+	
+	<c:if test="${patient.patientId != null}">
+	<openmrs:hasPrivilege privilege="Delete Patients">
+		 &nbsp; &nbsp; &nbsp;
+		<input type="submit" name="action" value="<spring:message code="Patient.delete"/>" onclick="return confirm('Are you sure you want to delete this ENTIRE PATIENT?')"/>
+	</openmrs:hasPrivilege>
+</c:if>
+	
 </form>
 
 <script>

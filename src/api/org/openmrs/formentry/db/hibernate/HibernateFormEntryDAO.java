@@ -1,6 +1,7 @@
 package org.openmrs.formentry.db.hibernate;
 
 import java.math.BigInteger;
+import java.util.Collection;
 import java.util.Date;
 
 import org.apache.commons.logging.Log;
@@ -76,6 +77,19 @@ public class HibernateFormEntryDAO implements FormEntryDAO {
 				formEntryQueueId);
 
 		return feq;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.openmrs.form.db.FormEntryQueueDAO#getFormEntryQueue(int)
+	 */
+	public Collection<FormEntryQueue> getFormEntryQueues()
+			throws DAOException {
+		Session session = HibernateUtil.currentSession();
+
+		return session.createQuery("from FormEntryQueue order by formEntryQueueId").list();
+		
 	}
 
 	/*

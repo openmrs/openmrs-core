@@ -1,6 +1,5 @@
 package org.openmrs.web.controller.patient;
 
-import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -24,6 +23,8 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientName;
 import org.openmrs.Tribe;
+import org.openmrs.api.APIException;
+import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.formentry.FormEntryService;
 import org.openmrs.web.WebConstants;
@@ -32,8 +33,8 @@ import org.openmrs.web.propertyeditor.PatientIdentifierTypeEditor;
 import org.openmrs.web.propertyeditor.TribeEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -83,105 +84,111 @@ public class PatientFormController extends SimpleFormController {
 			FormEntryService ps = context.getFormEntryService();
 			Object[] objs = null;
 			
-			// Patient Identifiers 
-				objs = patient.getIdentifiers().toArray();
-				for (int i = 0; i < objs.length; i++ ) {
-					if (request.getParameter("identifiers[" + i + "].identifier") == null)
-						patient.removeIdentifier((PatientIdentifier)objs[i]);
-				}
-				
-				String[] ids = request.getParameterValues("identifier");
-				String[] idTypes = request.getParameterValues("identifierType");
-				String[] locs = request.getParameterValues("location");
-				
-				if (ids != null) {
-					for (int i = 0; i < ids.length; i++) {
-						if (ids[i] != "") { //skips invalid and blank address data box
-							PatientIdentifier pi = new PatientIdentifier();
-							pi.setIdentifier(ids[i]);
-							pi.setIdentifierType(ps.getPatientIdentifierType(Integer.valueOf(idTypes[i])));
-							pi.setLocation(ps.getLocation(Integer.valueOf(locs[i])));
-							patient.addIdentifier(pi);
-						}
-					}
-				}
-				
-				//if (patient.getIdentifiers() == null || patient.getIdentifiers().size() < 1)
-				//	errors.rejectValue("patient.identifiers", "Patient.identifiers.length");
-
-				
-			// Patient Address
+			MessageSourceAccessor msa = getMessageSourceAccessor();
+			String action = request.getParameter("action");
 			
-				String [] add1s = request.getParameterValues("address1");
-				String [] add2s = request.getParameterValues("address2");
-				String [] cities = request.getParameterValues("cityVillage");
-				String [] states = request.getParameterValues("stateProvince");
-				String [] countries = request.getParameterValues("country");
-				String [] lats = request.getParameterValues("latitude");
-				String [] longs = request.getParameterValues("longitude");
-				
-				if (add1s != null) {
-					for (int i = 0; i < add1s.length; i++) {
-						if (add1s[i] != "") { //skips invalid and blank address data box
-							PatientAddress pa = new PatientAddress();
-							pa.setAddress1(add1s[i]);
-							pa.setAddress2(add2s[i]);
-							pa.setCityVillage(cities[i]);
-							pa.setStateProvince(states[i]);
-							pa.setCountry(countries[i]);
-							pa.setLatitude(lats[i]);
-							pa.setLongitude(longs[i]);
-							patient.addAddress(pa);
+			if (!action.equals(msa.getMessage("Patient.delete"))) {
+			
+				// Patient Identifiers 
+					objs = patient.getIdentifiers().toArray();
+					for (int i = 0; i < objs.length; i++ ) {
+						if (request.getParameter("identifiers[" + i + "].identifier") == null)
+							patient.removeIdentifier((PatientIdentifier)objs[i]);
+					}
+					
+					String[] ids = request.getParameterValues("identifier");
+					String[] idTypes = request.getParameterValues("identifierType");
+					String[] locs = request.getParameterValues("location");
+					
+					if (ids != null) {
+						for (int i = 0; i < ids.length; i++) {
+							if (ids[i] != "") { //skips invalid and blank address data box
+								PatientIdentifier pi = new PatientIdentifier();
+								pi.setIdentifier(ids[i]);
+								pi.setIdentifierType(ps.getPatientIdentifierType(Integer.valueOf(idTypes[i])));
+								pi.setLocation(ps.getLocation(Integer.valueOf(locs[i])));
+								patient.addIdentifier(pi);
+							}
 						}
 					}
-				}
+					
+					//if (patient.getIdentifiers() == null || patient.getIdentifiers().size() < 1)
+					//	errors.rejectValue("patient.identifiers", "Patient.identifiers.length");
+	
+					
+				// Patient Address
 				
-				//if (patient.getAddresses() == null || patient.getAddresses().size() < 1)
-				//	errors.rejectValue("patient", "Patient.addresses.length");
-
-				
-			// Patient Names
-
-				objs = patient.getNames().toArray();
-				for (int i = 0; i < objs.length; i++ ) {
-					if (request.getParameter("names[" + i + "].givenName") == null)
-						patient.removeName((PatientName)objs[i]);
-				}
-
-				//String[] prefs = request.getParameterValues("preferred");  (unreliable form info)
-				String[] gNames = request.getParameterValues("givenName");
-				String[] mNames = request.getParameterValues("middleName");
-				String[] fNamePrefixes = request.getParameterValues("familyNamePrefix");
-				String[] fNames = request.getParameterValues("familyName");
-				String[] fName2s = request.getParameterValues("familyName2");
-				String[] fNameSuffixes = request.getParameterValues("familyNameSuffix");
-				String[] degrees = request.getParameterValues("degree");
-				
-				if (gNames != null) {
-					for (int i = 0; i < gNames.length; i++) {
-						if (gNames[i] != "") { //skips invalid and blank address data box
-							PatientName pn = new PatientName();
-							pn.setPreferred(false);
-							pn.setGivenName(gNames[i]);
-							pn.setMiddleName(mNames[i]);
-							pn.setFamilyNamePrefix(fNamePrefixes[i]);
-							pn.setFamilyName(fNames[i]);
-							pn.setFamilyName2(fName2s[i]);
-							pn.setFamilyNameSuffix(fNameSuffixes[i]);
-							pn.setDegree(degrees[i]);
-							patient.addName(pn);
+					String [] add1s = request.getParameterValues("address1");
+					String [] add2s = request.getParameterValues("address2");
+					String [] cities = request.getParameterValues("cityVillage");
+					String [] states = request.getParameterValues("stateProvince");
+					String [] countries = request.getParameterValues("country");
+					String [] lats = request.getParameterValues("latitude");
+					String [] longs = request.getParameterValues("longitude");
+					
+					if (add1s != null) {
+						for (int i = 0; i < add1s.length; i++) {
+							if (add1s[i] != "") { //skips invalid and blank address data box
+								PatientAddress pa = new PatientAddress();
+								pa.setAddress1(add1s[i]);
+								pa.setAddress2(add2s[i]);
+								pa.setCityVillage(cities[i]);
+								pa.setStateProvince(states[i]);
+								pa.setCountry(countries[i]);
+								pa.setLatitude(lats[i]);
+								pa.setLongitude(longs[i]);
+								patient.addAddress(pa);
+							}
 						}
 					}
-				}
-				
-				if (patient.getNames().size() < 1)
-					errors.rejectValue("patient.names", "Patient.names.length");
-				
-			// Patient Info 
-				//patient.setTribe(ps.getTribe(Integer.valueOf(request.getParameter("tribe"))));
-				//ValidationUtils.rejectIfEmptyOrWhitespace(errors, "birthdate", "error.null");
-				//ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
-		}
+					
+					//if (patient.getAddresses() == null || patient.getAddresses().size() < 1)
+					//	errors.rejectValue("patient", "Patient.addresses.length");
+	
+					
+				// Patient Names
+	
+					objs = patient.getNames().toArray();
+					for (int i = 0; i < objs.length; i++ ) {
+						if (request.getParameter("names[" + i + "].givenName") == null)
+							patient.removeName((PatientName)objs[i]);
+					}
+	
+					//String[] prefs = request.getParameterValues("preferred");  (unreliable form info)
+					String[] gNames = request.getParameterValues("givenName");
+					String[] mNames = request.getParameterValues("middleName");
+					String[] fNamePrefixes = request.getParameterValues("familyNamePrefix");
+					String[] fNames = request.getParameterValues("familyName");
+					String[] fName2s = request.getParameterValues("familyName2");
+					String[] fNameSuffixes = request.getParameterValues("familyNameSuffix");
+					String[] degrees = request.getParameterValues("degree");
+					
+					if (gNames != null) {
+						for (int i = 0; i < gNames.length; i++) {
+							if (gNames[i] != "") { //skips invalid and blank address data box
+								PatientName pn = new PatientName();
+								pn.setPreferred(false);
+								pn.setGivenName(gNames[i]);
+								pn.setMiddleName(mNames[i]);
+								pn.setFamilyNamePrefix(fNamePrefixes[i]);
+								pn.setFamilyName(fNames[i]);
+								pn.setFamilyName2(fName2s[i]);
+								pn.setFamilyNameSuffix(fNameSuffixes[i]);
+								pn.setDegree(degrees[i]);
+								patient.addName(pn);
+							}
+						}
+					}
+					
+					if (patient.getNames().size() < 1)
+						errors.rejectValue("patient.names", "Patient.names.length");
+					
+				// Patient Info 
+					//patient.setTribe(ps.getTribe(Integer.valueOf(request.getParameter("tribe"))));
+					//ValidationUtils.rejectIfEmptyOrWhitespace(errors, "birthdate", "error.null");
+					//ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
+			}
+		}		
 		
 		return super.processFormSubmission(request, response, patient, errors); 
 	}
@@ -200,18 +207,34 @@ public class PatientFormController extends SimpleFormController {
 		Patient patient = (Patient)obj;
 				
 		if (context != null && context.isAuthenticated()) {
+
+			MessageSourceAccessor msa = getMessageSourceAccessor();
+			String action = request.getParameter("action");
+			PatientService ps = context.getPatientService();
 			
-			
-			boolean isNew = (patient.getPatientId() == null);
-			
-			context.getFormEntryService().updatePatient(patient);
-			
-			String view = getSuccessView();
-						
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.saved");
-			return new ModelAndView(new RedirectView(view));
+			if (action.equals(msa.getMessage("Patient.delete"))) {
+				try {
+					ps.deletePatient(patient);
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.deleted");
+					return new ModelAndView(new RedirectView("index.htm"));
+				}
+				catch (APIException e) {
+					log.error(e);
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Patient.cannot.delete");
+					return new ModelAndView(new RedirectView(getSuccessView() + "?patientId=" + patient.getPatientId().toString()));
+				}
+			}
+			else {
+				boolean isNew = (patient.getPatientId() == null);
+				
+				context.getFormEntryService().updatePatient(patient);
+				
+				String view = getSuccessView();
+							
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.saved");
+				return new ModelAndView(new RedirectView(view));
+			}
 		}
-		
 		return new ModelAndView(new RedirectView(getFormView()));
 	}
 

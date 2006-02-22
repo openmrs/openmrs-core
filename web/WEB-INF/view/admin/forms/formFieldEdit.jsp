@@ -19,7 +19,8 @@
 			</div>
 		</td>
 		<td>
-			<input type="text" name="name" id="name" size="37" onKeyDown="showSearchForm(this, event)"/>
+			<input type="text" name="name" id="name" size="37" onKeyDown="showSearchForm(this, event)"/><br/>
+			<spring:message code="general.id"/>: <span id="fieldIdDisplay"></span> &nbsp; 
 			<spring:message code="Field.forms"/> <span id="forms"></span>
 		</td>
 	</tr>
@@ -78,8 +79,7 @@
 
 <table>
 	<tr>
-		<td><spring:message code="FormField.id"/></td>
-		<td id="ff_formFieldId"></td>
+		<td colspan="3"><spring:message code="FormField.id"/> <span id="ff_formFieldId"></span></td>
 	</tr>
 	<tr>
 		<td><spring:message code="FormField.parent"/></td>
@@ -113,10 +113,10 @@
 	</tr>
 	<tr>
 		<td><spring:message code="general.createdBy" /></td>
-		<td id="ff_creator"></td>
+		<td id="ff_creator" colspan="2"></td>
 	</tr>
 	<tr>
 		<td><spring:message code="general.changedBy" /></td>
-		<td id="ff_changedBy"></td>
+		<td id="ff_changedBy" colspan="2"></td>
 	</tr>
 </table>	

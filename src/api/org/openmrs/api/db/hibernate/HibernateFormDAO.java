@@ -294,6 +294,7 @@ public class HibernateFormDAO implements
 		field.setDateCreated(new Date());
 		try {
 			HibernateUtil.beginTransaction();
+			session.clear();
 			session.save(field);
 			HibernateUtil.commitTransaction();
 		}
@@ -316,6 +317,7 @@ public class HibernateFormDAO implements
 				HibernateUtil.beginTransaction();
 				field.setChangedBy(context.getAuthenticatedUser());
 				field.setDateChanged(new Date());
+				session.clear();
 				session.merge(field);
 				HibernateUtil.commitTransaction();
 			}
@@ -356,6 +358,7 @@ public class HibernateFormDAO implements
 		
 		try {
 			HibernateUtil.beginTransaction();
+			session.clear();
 			session.save(formField);
 			HibernateUtil.commitTransaction();
 		}
@@ -389,6 +392,7 @@ public class HibernateFormDAO implements
 
 			try {
 				HibernateUtil.beginTransaction();
+				session.clear();
 				session.merge(formField);	// save if needs saving
 				HibernateUtil.commitTransaction();
 			}
@@ -409,6 +413,7 @@ public class HibernateFormDAO implements
 		
 		try {
 			HibernateUtil.beginTransaction();
+			session.clear();
 			session.delete(formField);
 			HibernateUtil.commitTransaction();
 		}

@@ -357,6 +357,13 @@ public class FormEntryService {
 		return daoContext.getFormEntryDAO().getFormEntryQueue(formEntryQueueId);
 	}
 
+	public Collection<FormEntryQueue> getFormEntryQueues() {
+		if (!context.hasPrivilege(FormEntryConstants.PRIV_VIEW_FORMENTRY_QUEUE))
+			throw new APIAuthenticationException("Privilege required: "
+					+ FormEntryConstants.PRIV_VIEW_FORMENTRY_QUEUE);
+		return daoContext.getFormEntryDAO().getFormEntryQueues();
+	}
+	
 	public FormEntryQueue getNextFormEntryQueue() {
 		if (!context.hasPrivilege(FormEntryConstants.PRIV_VIEW_FORMENTRY_QUEUE))
 			throw new APIAuthenticationException("Privilege required: "

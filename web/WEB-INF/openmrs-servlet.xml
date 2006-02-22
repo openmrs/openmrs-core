@@ -139,6 +139,8 @@
 					<prop key="**/field.list">fieldList</prop>
 					<prop key="**/fieldType.form">fieldTypeForm</prop>
 					<prop key="**/fieldType.list">fieldTypeList</prop>
+					<prop key="**/formEntryQueue.form">formEntryQueueForm</prop>
+					<prop key="**/formEntryQueue.list">formEntryQueueList</prop>
 					<prop key="**/options.form">optionsForm</prop>
 					<prop key="**/patientSummary.form">patientSummaryForm</prop>
 					<prop key="**/*.htm">springController</prop>
@@ -590,6 +592,24 @@
 				</bean>
 			<!-- ** /Field Type ** -->
 	    <!-- ============================ -->
+	    
+	    <!-- =========================== -->
+		<!-- =====    FormEntry    ===== -->
+	    <!-- =========================== -->
+	    
+			<!-- ** Form Entry Queue ** -->
+				<bean id="formEntryQueueList" class="org.openmrs.formentry.controller.FormEntryQueueListController">
+					<property name="commandName"><value>formEntryQueueList</value></property>
+					<property name="formView"><value>/admin/formentry/formEntryQueueList</value></property>
+					<property name="successView"><value>formEntryQueue.list</value></property>
+				</bean>
+		
+				<bean id="formEntryQueueForm" class="org.openmrs.formentry.controller.FormEntryQueueFormController">
+					<property name="commandName"><value>entry</value></property>
+					<property name="formView"><value>/admin/formentry/formEntryQueueForm</value></property>
+					<property name="successView"><value>formEntryQueue.list</value></property>
+				</bean>
+			<!-- ** /Form Entry Queue ** -->
 
 	    <!-- =========================== -->
 		<!-- =====      Other      ===== -->

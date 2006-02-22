@@ -65,7 +65,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e.getMessage());
+			throw new DAOException(e);
 		}
 	}
 
@@ -85,7 +85,7 @@ public class HibernatePatientDAO implements PatientDAO {
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new DAOException(e.getMessage());
+				throw new DAOException(e);
 			}
 		}
 	}
@@ -284,7 +284,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e.getMessage());
+			throw new DAOException(e);
 		}
 	}
 
