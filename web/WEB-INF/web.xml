@@ -72,7 +72,7 @@
 		<!--  this off (set value to "false") in production mode        -->
 		<init-param>
 			<param-name>debug</param-name>
-			<param-value>true</param-value>
+			<param-value>false</param-value>
 		</init-param>
 	</servlet>
 	<servlet-mapping>

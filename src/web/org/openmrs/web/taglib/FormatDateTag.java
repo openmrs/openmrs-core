@@ -25,6 +25,9 @@ public class FormatDateTag extends TagSupport {
 			if (type.equals("long")) {
 				format = "MMMMM dd, yyyy h:mm a";
 			}
+			else if (type.equals("medium")) {
+				format = "dd-MM-yyyy h:mm a";
+			}
 			else if (type.equals("textbox")) {
 				format = "MM-dd-yyyy";
 			}
@@ -32,7 +35,7 @@ public class FormatDateTag extends TagSupport {
 				format = "dd-MMM-yyyy";
 			}
 			else {
-				format = "MM-dd-yyyy";
+				format = "dd-MM-yyyy";
 			}
 		}
 		

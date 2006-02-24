@@ -1,7 +1,6 @@
 package org.openmrs.web.dwr;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,7 +34,6 @@ public class DWREncounterService {
 			objectList.add("Please <a href='" + request.getContextPath() + "/logout'>log in</a> again.");
 		}
 		else {
-			Locale locale = context.getLocale();
 			try {
 				EncounterService es = context.getEncounterService();
 				List<Encounter> encs = new Vector<Encounter>();
@@ -59,7 +57,6 @@ public class DWREncounterService {
 					objectList.add("No matches found for <b>" + phrase + "</b>");
 				}
 				else {
-					// TODO speed up this 'search by class' option
 					objectList = new Vector<Object>(encs.size());
 					for (Encounter e : encs) {
 						objectList.add(new EncounterListItem(e));

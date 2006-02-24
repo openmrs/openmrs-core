@@ -143,6 +143,7 @@
 					<prop key="**/formEntryQueue.list">formEntryQueueList</prop>
 					<prop key="**/options.form">optionsForm</prop>
 					<prop key="**/patientSummary.form">patientSummaryForm</prop>
+					<prop key="**/encounterSummary.form">encounterSummaryForm</prop>
 					<prop key="**/*.htm">springController</prop>
 	            </props>
 	        </property>
@@ -159,7 +160,7 @@
 				<bean id="obsForm" class="org.openmrs.web.controller.observation.ObsFormController">
 					<property name="commandName"><value>obs</value></property>
 					<property name="formView"><value>/admin/observations/obsForm</value></property>
-					<property name="successView"><value>index.htm</value></property>
+					<property name="successView"><value>encounterSummary.form</value></property>
 				</bean>
 			
 				<!--this is the optional method of declaring values in the constructor -->
@@ -183,6 +184,15 @@
 					<property name="successView"><value>mimeType.list</value></property>
 				</bean>
 			<!-- ** /Mime Type ** -->
+			
+			<!--  ** Encounter Summary ** -->
+				<bean id="encounterSummaryForm" class="org.openmrs.web.controller.encounter.EncounterFormController">
+					<property name="commandName"><value>encounter</value></property>
+					<property name="formView"><value>/admin/observations/encounterSummaryForm</value></property>
+					<property name="successView"><value>encounterSummary.form</value></property>
+				</bean>
+			<!--  ** /Encounter Summary ** -->
+			
 		<!-- ====== /Observation Sector ====== -->
 
 	    <!-- ========================== -->	    

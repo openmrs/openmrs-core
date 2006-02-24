@@ -33,12 +33,23 @@ public class ListPickerTag extends TagSupport {
 		
 		String str = "";
 		
-		str += "<span id='" + name + "'>";
-		str += "<select name='" + name + "' id='savedItems_" + name + "' class='savedItems' multiple>";
+		if (pageContext.getAttribute("ListPicker") == null) {
+			str += "\n<link rel='stylesheet' href='" + contextPath + "/lists.css' type='text/css' />";
+			str += "\n<script language='JavaScript' type='text/javascript' src='" + contextPath + "/coordinates.js'></script>";
+			str += "\n<script language='JavaScript' type='text/javascript' src='" + contextPath + "/drag.js'></script>";
+			str += "\n<script language='JavaScript' type='text/javascript' src='" + contextPath + "/dragdrop.js'></script>";
+			str += "\n<script language='JavaScript' type='text/javascript' src='" + contextPath + "/custom.js'></script>";
+			
+			pageContext.setAttribute("ListPicker", true);
+		}
+		
+		
+		str += "\n<div id='" + name + "'>";
+		str += "\n<select name='" + name + "' id='savedItems_" + name + "' class='savedItems' multiple>";
 		for (Object s : currentItems) {
 			str += "<option selected>" + s + "</option>\n";
 		}
-		str += "</select>";
+		str += "\n</select>\n\n";
 		
 		str += "<table><tr>\n";
 		
@@ -48,8 +59,8 @@ public class ListPickerTag extends TagSupport {
 			allItems.remove(s);
 		}
 		
-		str += "</ul>";
-		str += "<div class='drophere'>Drop Here</div>";
+		str += "</ul>\n";
+		str += "<div class='drophere'>Drop Here</div>\n";
 		str += "</td>";
 		
 		str += "<td style='vertical-align: top; padding-left: 30px;'>All: <br><ul id='allItems_" + name + "' class='sortable boxy allItems'>\n";
@@ -58,22 +69,21 @@ public class ListPickerTag extends TagSupport {
 		}
 		str += "</ul></td>\n";
 		
-		str += "</tr></table>";
-		str += "</span>";
+		str += "</tr></table>\n";
+		str += "</div>\n\n";
 		
-		if (pageContext.getAttribute("ListPicker") == null) {
-			str += "\n<link rel='stylesheet' href='" + contextPath + "/lists.css' type='text/css'>";
-			str += "\n<script language='JavaScript' type='text/javascript' src='" + contextPath + "/coordinates.js'></script>";
-			str += "\n<script language='JavaScript' type='text/javascript' src='" + contextPath + "/drag.js'></script>";
-			str += "\n<script language='JavaScript' type='text/javascript' src='" + contextPath + "/dragdrop.js'></script>";
-			str += "\n<script language='JavaScript' type='text/javascript' src='" + contextPath + "/custom.js'></script>";
-			
-			pageContext.setAttribute("ListPicker", true);
-		}
-		
-		str += "\n<script type='text/javascript'>";
+		str += "<script type='text/javascript'>\n";
 
-		str += "	init('" + name + "');";
+		str += "  var oldonload = window.onload;\n";
+		str += "  if (typeof window.onload != 'function') {\n";
+		str += "  	window.onload = function() { init('" + name + "'); };\n";
+		str += "  } else {\n";
+		str += "  	window.onload = function() {\n";
+		str += "  		oldonload();\n";
+		str += "  		init('" + name + "');\n";
+		str += "  	}\n";
+		str += "  }\n";
+		
 		str += "</script>\n";
 		
 		try {

@@ -42,11 +42,14 @@ public class RequireTag extends TagSupport {
 			throw new APIException("The context is currently null.  Please try reloading the site.");
 		}
 		
-		if (!context.isAuthenticated()) {
+		if (!context.hasPrivilege(privilege)) {
 			errorOccurred = true;
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "require.login");
+			if (context.isAuthenticated())
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "require.unauthorized");
+			else
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "require.login");
 		}
-		else {
+		else if (context.hasPrivilege(privilege) && context.isAuthenticated()) {
 			User user = context.getAuthenticatedUser();
 			Boolean forcePasswordChange = new Boolean(user.getProperties().get(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD));
 			log.debug(redirect);
@@ -65,19 +68,15 @@ public class RequireTag extends TagSupport {
 					throw new APIException(e);
 				}
 			}
-			
-			else if (!privilege.equals("") && !context.hasPrivilege(privilege)) {
-				errorOccurred = true;
-				log.warn(context.getAuthenticatedUser() + " attempted access to: " + redirect);
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "require.unauthorized");
-			}
-			else if (session_ip_addr != null && !session_ip_addr.equals(request_ip_addr)){
-				errorOccurred = true;
-				log.warn("Invalid ip addr: expected " + session_ip_addr + ", but found: " + request_ip_addr);
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "require.ip_addr");
-				//TODO test this security
-			}
 		}
+		
+		if (session_ip_addr != null && !session_ip_addr.equals(request_ip_addr)) {
+			errorOccurred = true;
+			log.warn("Invalid ip addr: expected " + session_ip_addr + ", but found: " + request_ip_addr);
+			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "require.ip_addr");
+			//TODO test this security
+		}
+	
 		log.debug("session ip addr: " + session_ip_addr);
 		
 		if (errorOccurred) {

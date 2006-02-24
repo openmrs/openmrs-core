@@ -1,7 +1,7 @@
 package org.openmrs.web.controller;
 
-import java.text.DateFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -47,6 +47,9 @@ public class ConceptFormController extends SimpleFormController {
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
     
+    Locale locale = Locale.UK;
+    String datePattern = "dd/MM/yyyy";
+    
 	/**
 	 * 
 	 * Allows for other Objects to be used as values in input tags.
@@ -67,7 +70,7 @@ public class ConceptFormController extends SimpleFormController {
         binder.registerCustomEditor(java.lang.Double.class,
                 new CustomNumberEditor(java.lang.Double.class, nf, true));
         binder.registerCustomEditor(java.util.Date.class, 
-        		new CustomDateEditor(DateFormat.getDateInstance(DateFormat.SHORT, Locale.UK), true));
+        		new CustomDateEditor(new SimpleDateFormat(datePattern, locale), true));
         binder.registerCustomEditor(org.openmrs.ConceptClass.class, 
         		new ConceptClassEditor(context));
         binder.registerCustomEditor(org.openmrs.ConceptDatatype.class, 

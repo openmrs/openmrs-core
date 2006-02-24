@@ -1,7 +1,9 @@
 package org.openmrs.web.controller.observation;
 
-import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -22,6 +24,7 @@ import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -31,6 +34,9 @@ public class ObsFormController extends SimpleFormController {
 	
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
+    
+    Locale locale = Locale.UK;
+    String datePattern = "dd/MM/yyyy";
     
 	/**
 	 * 
@@ -46,7 +52,7 @@ public class ObsFormController extends SimpleFormController {
         binder.registerCustomEditor(java.lang.Integer.class,
                 new CustomNumberEditor(java.lang.Integer.class, true));
         binder.registerCustomEditor(java.util.Date.class, 
-        		new CustomDateEditor(DateFormat.getDateInstance(DateFormat.SHORT), true));
+        		new CustomDateEditor(new SimpleDateFormat(datePattern, locale), true));
         binder.registerCustomEditor(Location.class, new LocationEditor(context));
         binder.registerCustomEditor(java.lang.Boolean.class,
         		new CustomBooleanEditor(true)); //allow for an empty boolean value
@@ -54,12 +60,16 @@ public class ObsFormController extends SimpleFormController {
 
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse reponse, Object obj, BindException errors) throws Exception {
 		
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		//HttpSession httpSession = request.getSession();
+		//Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		Obs obs = (Obs)obj;
 		
-    	obs = setObjects(obs, request);
+    	//obs = setObjects(obs, request);
+    	
+    	String reason = request.getParameter("editReason");
+    	if (obs.getObsId() != null && (reason == null || reason.length() == 0))
+    		errors.reject("Obs.edit.reason.empty");
 
 		return super.processFormSubmission(request, reponse, obs, errors);
 	}
@@ -80,10 +90,25 @@ public class ObsFormController extends SimpleFormController {
 		if (context != null && context.isAuthenticated()) {
 			Obs obs = (Obs)obj;
 			obs = setObjects(obs, request);
-			context.getObsService().updateObs(obs);
+			ObsService os = context.getObsService();
+			if (obs.getObsId() == null)
+				os.createObs(obs);
+			else {
+				//void the previous obs
+				os.voidObs(obs, request.getParameter("editReason"));
+				
+				context.endTransaction();
+				context.startTransaction();
+				
+				//and recreate the obs as this editor
+				obs.setObsId(null);
+				obs.setCreator(context.getAuthenticatedUser());
+				obs.setDateCreated(new Date());
+				os.unvoidObs(obs);
+			}
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Obs.saved");
-			view = view + "?phrase=" + request.getParameter("phrase");
+			view = view + "?encounterId=" + obs.getEncounter().getEncounterId() + "&phrase=" + request.getParameter("phrase");
 		}
 		
 		return new ModelAndView(new RedirectView(view));
@@ -116,17 +141,21 @@ public class ObsFormController extends SimpleFormController {
         return obs;
     }
 
-	protected Map referenceData(HttpServletRequest request) throws Exception {
+	protected Map referenceData(HttpServletRequest request, Object obj, Errors errs) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 
+		Obs obs = (Obs)obj;
+		
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		if (context != null && context.isAuthenticated()) {
 			ObsService es = context.getObsService();
 			//map.put("obsTypes", es.getObsTypes());
 			map.put("forms", context.getFormService().getForms());
+			if (obs.getConcept() != null)
+				map.put("conceptName", obs.getConcept().getName(request.getLocale()));
 		}
 		
 		return map;
@@ -138,26 +167,29 @@ public class ObsFormController extends SimpleFormController {
 		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 
 		if (context != null && context.isAuthenticated()) {
-			if (StringUtils.hasText(request.getParameter("patientId")))
-				obs.setPatient(context.getPatientService().getPatient(Integer.valueOf(request.getParameter("patientId"))));
-			else
-				obs.setPatient(null);
-			if (StringUtils.hasText(request.getParameter("orderId")))
-				obs.setOrder(context.getOrderService().getOrder(Integer.valueOf(request.getParameter("orderId"))));
-			else
-				obs.setOrder(null);
-			if (StringUtils.hasText(request.getParameter("conceptId")))
-				obs.setConcept(context.getConceptService().getConcept(Integer.valueOf(request.getParameter("conceptId"))));
-			else
-				obs.setConcept(null);
+			if (obs.getObsId() == null) { //patient/order/concept/encounter only change when adding a new observation
+				if (StringUtils.hasText(request.getParameter("patientId")))
+					obs.setPatient(context.getPatientService().getPatient(Integer.valueOf(request.getParameter("patientId"))));
+				else
+					obs.setPatient(null);
+				if (StringUtils.hasText(request.getParameter("orderId")))
+					obs.setOrder(context.getOrderService().getOrder(Integer.valueOf(request.getParameter("orderId"))));
+				else
+					obs.setOrder(null);
+				if (StringUtils.hasText(request.getParameter("conceptId")))
+					obs.setConcept(context.getConceptService().getConcept(Integer.valueOf(request.getParameter("conceptId"))));
+				else
+					obs.setConcept(null);
+				if (StringUtils.hasText(request.getParameter("encounterId")))
+					obs.setEncounter(context.getEncounterService().getEncounter(Integer.valueOf(request.getParameter("encounterId"))));
+				else
+					obs.setEncounter(null);
+			}
+			
 			if (StringUtils.hasText(request.getParameter("valueCodedId")))
 				obs.setValueCoded(context.getConceptService().getConcept(Integer.valueOf(request.getParameter("valueCodedId"))));
 			else
 				obs.setValueCoded(null);
-			if (StringUtils.hasText(request.getParameter("encounterId")))
-				obs.setEncounter(context.getEncounterService().getEncounter(Integer.valueOf(request.getParameter("encounterId"))));
-			else
-				obs.setEncounter(null);
 		}
 		
 		return obs;

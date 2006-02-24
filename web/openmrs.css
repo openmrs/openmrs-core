@@ -306,6 +306,11 @@ fieldset {
 	margin: 1px;
 }
 
+.tableTitle {
+	text-align: center;
+	background-color: whitesmoke;
+}
+
 .oddRow {
 	background-color: white;
 }

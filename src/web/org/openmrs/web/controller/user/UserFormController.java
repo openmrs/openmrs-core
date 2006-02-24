@@ -1,9 +1,10 @@
 package org.openmrs.web.controller.user;
 
-import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
@@ -37,6 +38,9 @@ public class UserFormController extends SimpleFormController {
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
     
+    Locale locale = Locale.UK;
+    String datePattern = "dd/MM/yyyy";
+    
 	/**
 	 * 
 	 * Allows for other Objects to be used as values in input tags.
@@ -52,7 +56,7 @@ public class UserFormController extends SimpleFormController {
 		binder.registerCustomEditor(java.lang.Integer.class, 
 				new CustomNumberEditor(java.lang.Integer.class, true));
         binder.registerCustomEditor(java.util.Date.class, 
-        		new CustomDateEditor(DateFormat.getDateInstance(DateFormat.SHORT), true));
+        		new CustomDateEditor(new SimpleDateFormat(datePattern, locale), true));
 	}
 
 	/**

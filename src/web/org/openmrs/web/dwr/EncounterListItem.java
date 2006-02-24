@@ -16,6 +16,7 @@ public class EncounterListItem {
 	private String patientName;
 	private String location;
 	private String providerName;
+	private String formName;
 	private Date encounterDateTime;
 
 
@@ -25,17 +26,25 @@ public class EncounterListItem {
 
 		if (encounter != null) {
 			encounterId = encounter.getEncounterId();
-			PatientName pn = encounter.getPatient().getNames().iterator().next();
+			encounterDateTime = encounter.getEncounterDatetime();
+			PatientName pn = encounter.getPatient().getPatientName();
 			if (pn != null) {
-				patientName = pn.getFamilyName() + ", " + pn.getGivenName();
+				patientName = "";
+				if (pn.getGivenName() != null)
+					patientName += pn.getGivenName();
+				if (pn.getMiddleName() != null)
+					patientName += " " + pn.getMiddleName();
+				if (pn.getFamilyName() != null)
+					patientName += " " + pn.getFamilyName();
 			}
 			if (encounter.getProvider() != null)
 				providerName = encounter.getProvider().getLastName() + ", " + encounter.getProvider().getFirstName();
-			encounterDateTime = encounter.getEncounterDatetime();
 			if (encounter.getLocation() != null)
 				location = encounter.getLocation().getName();
 			if (encounter.getEncounterType() != null)
 				encounterType = encounter.getEncounterType().getName();
+			if (encounter.getForm() != null)
+				formName = encounter.getForm().getName();
 		}
 	}
 
@@ -87,5 +96,12 @@ public class EncounterListItem {
 		this.providerName = providerName;
 	}
 
+	public String getFormName() {
+		return formName;
+	}
+
+	public void setFormName(String formName) {
+		this.formName = formName;
+	}
 
 }

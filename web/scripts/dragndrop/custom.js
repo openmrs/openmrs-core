@@ -31,7 +31,7 @@ function onDrop(ul) {
 			opt.value = li.id;
 			opt.innerHTML = li.innerHTML;
 			opt.selected = true;
-			list.options[list.options.length] = opt;
+			list.appendChild(opt);
 		}
 	}
 };

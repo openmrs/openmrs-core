@@ -2,6 +2,9 @@
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
 
+<openmrs:require privilege="View Concepts" otherwise="/login.htm"
+	redirect="/dictionary/concept.htm" />
+
 <style>
 	#newSearchForm {
 		padding: 0px;

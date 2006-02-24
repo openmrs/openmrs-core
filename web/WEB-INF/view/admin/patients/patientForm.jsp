@@ -195,7 +195,7 @@
 <h2><spring:message code="Patient.title"/></h2>
 
 <spring:hasBindErrors name="patient">
-	<div class="error">Please fix all errors</div>
+	<spring:message code="fix.error"/>
 	<div class="error">
 		<c:forEach items="${errors.allErrors}" var="error">
 			<spring:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->

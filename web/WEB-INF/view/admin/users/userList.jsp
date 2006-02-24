@@ -35,6 +35,7 @@
 	
 	var getUsername = function(u) {
 		if (typeof u == 'string') return '';
+		if (u.username == null) return '';
 		return " &nbsp; " + u.username;
 	}
 

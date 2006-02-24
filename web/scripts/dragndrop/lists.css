@@ -1,5 +1,11 @@
 ul.sortable li {
-	position: relative;
+	/* 	With our layout, positioning this relatively here renders 
+		it in an offset position in IE.
+			IE Hack: comment this out and manually add "item.style.position = relative"
+					 in DragDrop.makeItemDraggable 
+	*/
+	
+	/* position: relative; */
 }
 
 ul.boxy {
@@ -7,7 +13,7 @@ ul.boxy {
 	padding: 4px 4px 20px 4px;
 	margin: 0px;
 	width: 10em;
-	font-size: 1em;
+	font-size: 13px;
 	font-family: Arial, sans-serif;
 	border: 1px solid #ccc;
 }

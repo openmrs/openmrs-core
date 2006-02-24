@@ -15,6 +15,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Encounter;
 import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Patient;
@@ -35,6 +36,7 @@ import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -273,18 +275,20 @@ public class PatientFormController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Map referenceData(HttpServletRequest request) throws Exception {
+	protected Map referenceData(HttpServletRequest request, Object obj, Errors err) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
+		Patient patient = (Patient)obj;
 		List<Form> forms = new Vector<Form>();
 		Map<String, Object> map = new HashMap<String, Object>();
+		List<Encounter> encounters = new Vector<Encounter>();
 
 		if (context != null && context.isAuthenticated()) {
 			forms.addAll(context.getFormEntryService().getForms());
+			encounters.addAll(context.getEncounterService().getEncounters(patient));
 		}
-			
 			
 		map.put("forms", forms);
 				
@@ -292,6 +296,7 @@ public class PatientFormController extends SimpleFormController {
 		map.put("emptyIdentifier", new PatientIdentifier());
 		map.put("emptyName", new PatientName());
 		map.put("emptyAddress", new PatientAddress());
+		map.put("encounters", encounters);
 		
 		return map;
 	}    

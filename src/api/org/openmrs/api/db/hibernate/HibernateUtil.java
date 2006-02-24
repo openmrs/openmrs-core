@@ -64,6 +64,9 @@ public class HibernateUtil {
 		try {
 			commitTransaction();
 		}
+		catch (Exception e) {
+			log.error(e);
+		}
 		finally {
 			//close session
 			Session s = (Session) threadLocalSession.get();

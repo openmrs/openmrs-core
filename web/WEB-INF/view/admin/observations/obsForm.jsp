@@ -192,7 +192,12 @@ function removeHiddenRows() {
 
 <spring:hasBindErrors name="obs">
 	<spring:message code="fix.error"/>
-	<br />
+	<div class="error">
+		<c:forEach items="${errors.allErrors}" var="error">
+			<spring:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
+		</c:forEach>
+	</div>
+	<br/>
 </spring:hasBindErrors>
 <form method="post" onSubmit="removeHiddenRows()">
 <table>
@@ -208,10 +213,12 @@ function removeHiddenRows() {
 		<td><spring:message code="Obs.patient"/></td>
 		<td>
 			<spring:bind path="obs.patient">
-				<input type="text" size="7" id="patient" value="${status.value.patientId}" name="patientId"/>
-				<div style="width:200px; float: left; display: none" id="patientName">${status.value.patientName.familyName}, ${status.value.patientName.givenName}</div>
-				<input type="button" id="patientButton" class="smallButton" value="<spring:message code="general.change"/>" onclick="showSearch(this, 'patient')" />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				<div style="width:200px; float: left;" id="patientName">${status.value.patientName.givenName} ${status.value.patientName.middleName} ${status.value.patientName.familyName}</div>
+				<c:if test="${obs.obsId == null}">
+					<input type="hidden" id="patient" value="${status.value.patientId}" name="patientId"/>
+					<input type="button" id="patientButton" class="smallButton" value="<spring:message code="general.change"/>" onclick="showSearch(this, 'patient')" />
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				</c:if>
 			</spring:bind>
 		</td>
 	</tr>
@@ -219,10 +226,12 @@ function removeHiddenRows() {
 		<td><spring:message code="Obs.concept"/></td>
 		<td>
 			<spring:bind path="obs.concept">
-				<input type="text" size="7" id="concept" value="${status.value.conceptId}" name="conceptId" />
-				<div style="width:200px; float:left; display: none" id="conceptName">${status.value.conceptId}</div>
-				<input type="button" id="conceptButton" class="smallButton" value="<spring:message code="general.change"/>" onclick="showSearch(this, 'concept')" />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				<div style="width:200px; float:left;" id="conceptName">${conceptName}</div>
+				<c:if test="${obs.obsId == null}">
+					<input type="hidden" id="concept" value="${status.value.conceptId}" name="conceptId" />
+					<input type="button" id="conceptButton" class="smallButton" value="<spring:message code="general.change"/>" onclick="showSearch(this, 'concept')" />
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				</c:if>
 			</spring:bind>
 		</td>
 	</tr>
@@ -230,21 +239,22 @@ function removeHiddenRows() {
 		<td><spring:message code="Obs.encounter"/></td>
 		<td>
 			<spring:bind path="obs.encounter">
-				<input type="text" size="7" id="encounter" value="${status.value.encounterId}" name="encounterId" />
-				<div style="width:200px; float:left; display: none" id="encounterName">${status.value.encounterId}</div>
-				<input type="button" id="encounterButton" class="smallButton" value="<spring:message code="general.change"/>" onclick="showSearch(this, 'encounter')" />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				<input type="text" size="7" id="encounter" value="${status.value.encounterId}" name="encounterId" <c:if test="${obs.obsId != null}">disabled</c:if> />
+				<c:if test="${obs.obsId == null}">
+					<input type="button" id="encounterButton" class="smallButton" value="<spring:message code="general.change"/>" onclick="showSearch(this, 'encounter')" />
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				</c:if>
 			</spring:bind>
 		</td>
 	</tr>
 	<tr>
 		<td><spring:message code="Obs.order"/></td>
-		<spring:bind path="obs.order">
-			<td>
-				<input type="text" name="orderId" id="order" value="${status.value.orderId}" size="7"/>
+		<td>
+			<spring:bind path="obs.order">
+				<input type="text" name="orderId" id="order" value="${status.value.orderId}" size="7" <c:if test="${obs.obsId != null}">disabled</c:if> />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</td>
-		</spring:bind>
+			</spring:bind>
+		</td>
 	</tr>
 	<tr>
 		<td><spring:message code="Obs.datetime"/></td>
@@ -260,7 +270,7 @@ function removeHiddenRows() {
 		<td><spring:message code="Obs.location"/></td>
 		<td>
 			<spring:bind path="obs.location">
-				<select name="location">
+				<select name="location" <c:if test="${obs.obsId != null}">disabled</c:if>>
 					<openmrs:forEachRecord name="location">
 						<option value="${record.locationId}" <c:if test="${status.value == record.locationId}">selected</c:if>>${record.name}</option>
 					</openmrs:forEachRecord>
@@ -271,18 +281,18 @@ function removeHiddenRows() {
 	</tr>
 	<tr>
 		<td><spring:message code="Obs.accessionNumber"/></td>
-		<spring:bind path="obs.accessionNumber">
-			<td>
-				<input type="text" name="${status.expression}" id="accessionNumber" value="${status.value}" size="10"/>
+		<td>
+			<spring:bind path="obs.accessionNumber">
+				<input type="text" name="${status.expression}" id="accessionNumber" value="${status.value}" size="10" <c:if test="${obs.obsId != null}">disabled</c:if> />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</td>
-		</spring:bind>
+			</spring:bind>
+		</td>
 	</tr>
 	<tr>
 		<td><spring:message code="Obs.valueGroupId"/></td>
 		<spring:bind path="obs.valueGroupId">
 			<td>
-				<input type="text" name="${status.expression}" id="valueGroupId" value="${status.value}" size="10"/>
+				<input type="text" name="${status.expression}" id="valueGroupId" value="${status.value}" size="10" <c:if test="${obs.obsId != null}">disabled</c:if> />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</td>
 		</spring:bind>
@@ -372,7 +382,7 @@ function removeHiddenRows() {
 		<td><spring:message code="Obs.comment"/></td>
 		<spring:bind path="obs.comment">
 			<td>
-				<textarea name="${status.expression}" rows="3" cols="35">${status.value}</textarea>
+				<textarea name="${status.expression}" rows="2" cols="45">${status.value}</textarea>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</td>
 		</spring:bind>
@@ -417,9 +427,17 @@ function removeHiddenRows() {
 		</tr>
 	</c:if>
 </table>
-<br />
 <input type="hidden" name="phrase" value="<request:parameter name="phrase" />"/>
+<br /><br />
+
+<c:if test="${obs.obsId != null}">
+	<spring:message code="Obs.edit.reason"/> <input type="text" size="40" name="editReason"/>
+	<br/><br/>
+</c:if>
+
 <input type="submit" value="<spring:message code="Obs.save"/>" >
+&nbsp; 
+<input type="button" value="<spring:message code="general.cancel"/>" onclick="history.go(-1);">
 </form>
 
 <div id="searchForm" class="searchForm">
@@ -442,7 +460,5 @@ function removeHiddenRows() {
 		</div>
 	</div>
 </div>
-
-
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

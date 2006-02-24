@@ -81,6 +81,7 @@ var DragDrop = {
 		item.onDragStart = DragDrop.onDragStart;
 		item.onDrag = DragDrop.onDrag;
 		item.onDragEnd = DragDrop.onDragEnd;
+		item.style.position = 'relative';
 	},
 
 	onDragStart : function(nwPosition, sePosition, nwOffset, seOffset) {

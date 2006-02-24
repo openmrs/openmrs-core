@@ -367,11 +367,11 @@
 	function unSelectField(link) {
 		editForm.className = 'preview';
 		formTitle.innerHTML = '&nbsp;';
-		selectedLink = null;
 		disableField();
 		disableFormField();
 		if (selectedLink != null && typeof selectedLink != "string")
 			selectedLink.className = '';
+		selectedLink = null;
 	}
 
 	function save() {

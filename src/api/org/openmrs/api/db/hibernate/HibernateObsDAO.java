@@ -51,10 +51,23 @@ public class HibernateObsDAO implements
 			session.save(obs);
 			HibernateUtil.commitTransaction();
 		}
-		catch (Exception e) {
-			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e);
-		}
+		/*
+		catch (HibernateException he) {
+			try {
+				HibernateUtil.closeSession();
+				session = HibernateUtil.currentSession();
+				HibernateUtil.beginTransaction();
+					session.clear();
+					session.save(obs);
+				HibernateUtil.commitTransaction();
+			}
+		*/
+		
+			catch (Exception e) {
+				HibernateUtil.rollbackTransaction();
+				throw new DAOException(e);
+			}
+		//}
 	}
 
 	/**
@@ -143,8 +156,17 @@ public class HibernateObsDAO implements
 		
 		if (obs.getObsId() == null)
 			createObs(obs);
-		else
-			session.update(obs);
+		else {
+			try {
+				HibernateUtil.beginTransaction();
+				session.update(obs);
+				HibernateUtil.commitTransaction();
+			}
+			catch (Exception e) {
+				HibernateUtil.rollbackTransaction();
+				throw new DAOException(e);
+			}
+		}
 	}
 	
 	/**

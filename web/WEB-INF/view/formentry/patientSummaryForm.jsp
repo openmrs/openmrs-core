@@ -126,6 +126,31 @@
 				<td id="tribe"><b>${patient.tribe.name}</b></td>
 			</tr>
 		</table>
+		
+		<center>
+			<table class="box" cellspacing="0" cellpadding="2">
+				<tr>
+					<th colspan="5" class="tableTitle"><spring:message code="FormEntry.last.encounters"/></th>
+				</tr>
+				<tr>
+					<th><spring:message code="Encounter.type"/></th>
+					<th><spring:message code="Encounter.provider"/></th>
+					<th><spring:message code="Encounter.form"/></th>
+					<th><spring:message code="Encounter.location"/></th>
+					<th><spring:message code="Encounter.datetime"/></th>
+				</tr>
+				<c:forEach items="${encounters}" var="enc">
+					<tr>
+					 	<td>${enc.encounterType.name}</td>
+					 	<td>${enc.provider.firstName} ${enc.provider.lastName}</td>
+					 	<td>${enc.form.name}</td>
+					 	<td>${enc.location.name}</td>
+					 	<td><openmrs:formatDate date="${enc.encounterDatetime}" type="small" /></td>
+					</tr>
+				</c:forEach>
+			</table>
+		</center>
+		
 	</div>	
 </div>
 

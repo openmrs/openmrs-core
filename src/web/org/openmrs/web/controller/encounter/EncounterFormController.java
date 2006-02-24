@@ -1,7 +1,8 @@
 package org.openmrs.web.controller.encounter;
 
-import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -34,6 +35,9 @@ public class EncounterFormController extends SimpleFormController {
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
     
+    Locale locale = Locale.UK;
+    String datePattern = "dd/MM/yyyy";
+    
 	/**
 	 * 
 	 * Allows for Integers to be used as values in input tags.
@@ -48,7 +52,7 @@ public class EncounterFormController extends SimpleFormController {
         binder.registerCustomEditor(java.lang.Integer.class,
                 new CustomNumberEditor(java.lang.Integer.class, true));
         binder.registerCustomEditor(java.util.Date.class, 
-        		new CustomDateEditor(DateFormat.getDateInstance(DateFormat.SHORT), true));
+        		new CustomDateEditor(new SimpleDateFormat(datePattern, locale), true));
         binder.registerCustomEditor(EncounterType.class, new EncounterTypeEditor(context));
         binder.registerCustomEditor(Location.class, new LocationEditor(context));
         binder.registerCustomEditor(Form.class, new FormEditor(context));
@@ -90,7 +94,7 @@ public class EncounterFormController extends SimpleFormController {
 			context.getEncounterService().updateEncounter(encounter);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Encounter.saved");
-			view = view + "?phrase=" + request.getParameter("phrase");
+			view = view + "?autoJump=false&phrase=" + request.getParameter("phrase");
 		}
 		
 		return new ModelAndView(new RedirectView(view));
@@ -113,8 +117,10 @@ public class EncounterFormController extends SimpleFormController {
 		if (context != null && context.isAuthenticated()) {
 			EncounterService es = context.getEncounterService();
 			String encounterId = request.getParameter("encounterId");
-	    	if (encounterId != null)
-	    		encounter = es.getEncounter(Integer.valueOf(encounterId));	
+	    	if (encounterId != null) {
+	    		encounter = es.getEncounter(Integer.valueOf(encounterId));
+	    		//encounter.getObs();
+	    	}
 		}
 		
 		if (encounter == null)

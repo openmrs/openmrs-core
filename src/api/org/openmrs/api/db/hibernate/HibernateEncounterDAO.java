@@ -1,6 +1,7 @@
 package org.openmrs.api.db.hibernate;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -86,16 +87,12 @@ public class HibernateEncounterDAO implements
 		
 		Session session = HibernateUtil.currentSession();
 		
-		//if (includeVoided) {
-			Criteria crit = session.createCriteria(Encounter.class)
-				.createAlias("patient", "p")
-				.add(Expression.eq("p.patientId", patientId));
-		//}
-		//else {
-		//	query = session.createQuery("select encounter from Encounter enc where enc.patient.patientId = :id and patient.voided = :void");
-		//	query.setInteger("id", patientId);
-		//	query.setBoolean("void", includeVoided);
-		//}
+		Criteria crit = session.createCriteria(Encounter.class)
+			.createAlias("patient", "p")
+			.add(Expression.eq("p.patientId", patientId));
+	
+		if (!includeVoided)
+			crit.add(Expression.eq("p.voided", false));
 		
 		return crit.list();
 	}
@@ -185,23 +182,49 @@ public class HibernateEncounterDAO implements
 	 * @see org.openmrs.api.db.EncounterService#getEncounters(org.openmrs.Patient, java.util.Date, java.util.Date)
 	 */
 	public Set<Encounter> getEncounters(Patient who, Date fromDate, Date toDate) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		Session session = HibernateUtil.currentSession();
+		
+		Criteria crit = session.createCriteria(Encounter.class)
+			.add(Expression.eq("patient", who))
+			.add(Expression.between("encounterDatetime", fromDate, toDate));
+			
+		Set<Encounter> encounters = new HashSet<Encounter>();
+		encounters.addAll(crit.list());
+		
+		return encounters;
 	}
 
 	/**
 	 * @see org.openmrs.api.db.EncounterService#getEncounters(org.openmrs.Patient, org.openmrs.Location)
 	 */
 	public Set<Encounter> getEncounters(Patient who, Location where) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		Session session = HibernateUtil.currentSession();
+		
+		Criteria crit = session.createCriteria(Encounter.class)
+			.add(Expression.eq("patient", who))
+			.add(Expression.eq("location", where));
+			
+		Set<Encounter> encounters = new HashSet<Encounter>();
+		encounters.addAll(crit.list());
+		
+		return encounters;
+		
 	}
 
 	/**
 	 * @see org.openmrs.api.db.EncounterService#getEncounters(org.openmrs.Patient)
 	 */
 	public Set<Encounter> getEncounters(Patient who) {
-		// TODO Auto-generated method stub
-		return null;
+		Session session = HibernateUtil.currentSession();
+		
+		Criteria crit = session.createCriteria(Encounter.class)
+			.add(Expression.eq("patient", who));
+			
+		Set<Encounter> encounters = new HashSet<Encounter>();
+		encounters.addAll(crit.list());
+		
+		return encounters;
 	}
 }

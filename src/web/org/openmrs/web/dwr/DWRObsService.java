@@ -1,7 +1,6 @@
 package org.openmrs.web.dwr;
 
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Set;
 import java.util.Vector;
 
@@ -9,10 +8,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Obs;
-import org.openmrs.api.ObsService;
+import org.openmrs.Encounter;
+import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
-import org.openmrs.web.Util;
 import org.openmrs.web.WebConstants;
 
 import uk.ltd.getahead.dwr.WebContextFactory;
@@ -37,24 +35,25 @@ public class DWRObsService {
 			objectList.add("Please <a href='" + request.getContextPath() + "/logout'>log in</a> again.");
 		}
 		else {
-			Locale locale = Util.getLocale(request);
 			try {
-				ObsService os = context.getObsService();
-				Set<Obs> encs = new HashSet<Obs>();
+				EncounterService es = context.getEncounterService();
+				Set<Encounter> encs = new HashSet<Encounter>();
 				
+				/*
 				if (phrase.matches("\\d+")) {
-					// user searched on a number.  Insert concept with corresponding obsId
+					// user searched on a number.  Insert obs with corresponding obsId
 					Obs e = os.getObs(Integer.valueOf(phrase));
 					if (e != null) {
 						encs.add(e);
 					}
 				}
-							
+				*/
+				
 				if (phrase == null || phrase.equals("")) {
 					//TODO get all concepts for testing purposes?
 				}
 				else {
-					encs.addAll(os.findObservations(phrase, includeVoided));
+					encs.addAll(es.getEncountersByPatientIdentifier(phrase, includeVoided));
 				}
 
 				if (encs.size() == 0) {
@@ -62,8 +61,8 @@ public class DWRObsService {
 				}
 				else {
 					objectList = new Vector<Object>(encs.size());
-					for (Obs e : encs) {
-						objectList.add(new ObsListItem(e, locale));
+					for (Encounter e : encs) {
+						objectList.add(new EncounterListItem(e));
 					}
 				}
 			} catch (Exception e) {
