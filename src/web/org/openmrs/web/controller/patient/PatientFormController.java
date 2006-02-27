@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
@@ -287,7 +288,9 @@ public class PatientFormController extends SimpleFormController {
 
 		if (context != null && context.isAuthenticated()) {
 			forms.addAll(context.getFormEntryService().getForms());
-			encounters.addAll(context.getEncounterService().getEncounters(patient));
+			Set<Encounter> encs = context.getEncounterService().getEncounters(patient);
+			if (encs != null && encs.size() > 0)
+				encounters.addAll(encs);
 		}
 			
 		map.put("forms", forms);
