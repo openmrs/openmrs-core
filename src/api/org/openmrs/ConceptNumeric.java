@@ -25,6 +25,38 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	public ConceptNumeric(Integer conceptId) {
 		setConceptId(conceptId);
 	}
+	
+	/**
+	 * Optional constructor for turning a Concept into a ConceptNumeric
+	 * Note: This cannot copy over numeric specific values
+	 * @param c
+	 */
+	public ConceptNumeric(Concept c) {
+		this.setAnswers(c.getAnswers(true));
+		this.setChangedBy(c.getChangedBy());
+		this.setConceptClass(c.getConceptClass());
+		this.setConceptId(c.getConceptId());
+		this.setConceptSets(c.getConceptSets());
+		this.setCreator(c.getCreator());
+		this.setDatatype(c.getDatatype());
+		this.setDateChanged(c.getDateChanged());
+		this.setDateCreated(c.getDateCreated());
+		this.setIcd10(c.getIcd10());
+		this.setLoinc(c.getLoinc());
+		this.setNames(c.getNames());
+		this.setRetired(c.getRetired());
+		this.setSynonyms(c.getSynonyms());
+		this.setVersion(c.getVersion());
+		
+		this.hiAbsolute  = null;
+		this.hiCritical  = null;
+		this.hiNormal    = null;
+		this.lowAbsolute = null;
+		this.lowCritical = null;
+		this.lowNormal   = null;
+		this.units     = "";
+		this.precise   = false;
+	}
 
 	public boolean equals(Object obj) {
 		if (obj instanceof ConceptNumeric) {

@@ -21,6 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSynonym;
 import org.openmrs.Form;
@@ -60,8 +61,6 @@ public class ConceptFormController extends SimpleFormController {
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		Context context = (Context) request.getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		Concept concept = null;
-		String conceptId = request.getParameter("conceptId");
 		
         NumberFormat nf = NumberFormat.getInstance(new Locale("en_UK"));
         Locale locale = RequestContextUtils.getLocale(request);
@@ -100,7 +99,6 @@ public class ConceptFormController extends SimpleFormController {
 			String action = request.getParameter("action");
 			
 			if (!action.equals(msa.getMessage("Concept.delete"))) {
-				ConceptService cs = context.getConceptService();
 	
 				// ==== Concept Synonyms ====
 					// the attribute *must* be named differently than the property, otherwise
@@ -196,13 +194,14 @@ public class ConceptFormController extends SimpleFormController {
 		
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		Concept concept = (Concept)obj;
 				
 		if (context != null && context.isAuthenticated()) {
 			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			String action = request.getParameter("action");
 			ConceptService cs = context.getConceptService();
+			
+			Concept concept = (Concept)obj;
 			
 			if (action.equals(msa.getMessage("Concept.delete"))) {
 				try {
@@ -219,18 +218,26 @@ public class ConceptFormController extends SimpleFormController {
 			else {
 			
 				boolean isNew = false;
-				String view = getSuccessView();
 				try {
 					if (concept.getConceptId() == null) {
 						isNew = true;
-						Integer newId = cs.getNextAvailableId();
-						log.debug("new Id: " + newId);
-						concept.setConceptId(newId);
-						log.debug("concept id: " + concept.getConceptId());
-						cs.createConcept(concept);
+						concept.setConceptId(cs.getNextAvailableId());
+						if (concept.getDatatype() != null && concept.getDatatype().getName().equals("Numeric")) {
+							ConceptNumeric cn = getConceptNumeric(concept, request);
+							cs.createConcept(cn);
+						}
+						else {
+							cs.createConcept(concept);
+						}
 					}
 					else {
-						cs.updateConcept(concept);
+						if (concept.getDatatype() != null && concept.getDatatype().getName().equals("Numeric")) {
+							ConceptNumeric cn = getConceptNumeric(concept, request);
+							cs.updateConcept(cn);
+						}
+						else {
+							cs.updateConcept(concept);
+						}
 					}
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Concept.saved");
 				}
@@ -364,4 +371,40 @@ public class ConceptFormController extends SimpleFormController {
 		
 		return map;
 	} 
+	
+	private ConceptNumeric getConceptNumeric(Concept concept, HttpServletRequest request) {
+		
+		ConceptNumeric cn = new ConceptNumeric(concept);
+		
+		String d = null;
+		
+		d = request.getParameter("hiAbsolute");
+		if (d != null && d.length() > 0)
+			cn.setHiAbsolute(new Double(d));
+		d = request.getParameter("hiCritical");
+		if (d != null && d.length() > 0)
+			cn.setHiCritical(new Double(d));
+		d = request.getParameter("hiNormal");
+		if (d != null && d.length() > 0)
+				cn.setHiNormal(new Double(d));
+		
+		d = request.getParameter("lowAbsolute");
+		if (d != null && d.length() > 0)
+				cn.setLowAbsolute(new Double(d));
+		d = request.getParameter("lowCritical");
+		if (d != null && d.length() > 0)
+				cn.setLowCritical(new Double(d));
+		d = request.getParameter("lowNormal");
+		if (d != null && d.length() > 0)
+				cn.setLowNormal(new Double(d));
+		
+		cn.setUnits(request.getParameter("units"));
+		
+		Boolean precise = false;
+		if (request.getParameter("precise") != null)
+			precise = true;
+		cn.setPrecise(precise);
+		
+		return cn;
+	}
 }

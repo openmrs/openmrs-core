@@ -40,7 +40,7 @@
 
 <br/>
 
-<div>
+<div style="display: none">
 	<b class="boxHeader">
 		<spring:message code="FormEntryQueue.select" />
 	</b>
@@ -57,7 +57,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				<c:forEach items="${formEntryQueueList}" var="entry">
+				<cforEach items="${formEntryQueueList}" var="entry">
 					<tr>
 						<td>${entry.formEntryQueueId}</td>
 						<td><a href="formEntryQueue.form?formEntryQueueId=${entry.formEntryQueueId}"><spring:message code="general.download" /></a></td>
@@ -69,7 +69,7 @@
 							<openmrs:formatDate date="${entry.dateCreated}" type="long" />
 						</td>
 					</tr>
-				</c:forEach>
+				</cforEach>
 			</tbody>
 		</table>
 	</div>

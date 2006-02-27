@@ -31,7 +31,7 @@ public class FormEntryQueueListController extends SimpleFormController {
 		//only fill the Object is the user has authenticated properly
 		if (context != null && context.isAuthenticated()) {
 			FormEntryService fs = context.getFormEntryService();
-	    	queueList.addAll(fs.getFormEntryQueues());
+	    	return fs.getFormEntryQueues();
 		}
     	
         return queueList;

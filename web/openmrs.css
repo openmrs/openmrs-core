@@ -17,10 +17,7 @@ body {
 }
 
 * html #pageBody {
-	/* TODO 
-		Uncomment below line for IE footer stick solution
-		Causes other odd css rules to disappear */
-	 /* height: 100%; */
+	  height: 100%; 
 }
 
 h1, h2, h3, h4, h5 {
@@ -28,19 +25,19 @@ h1, h2, h3, h4, h5 {
 	margin-bottom: 7px;
 }
 
-#openmrs_msg { 
-	border: 1px dashed lightgrey;
-	padding: 2px 2px 2px 18px;
-	margin: 2px;
+#openmrs_msg {
 	background: url(/@WEBAPP.NAME@/images/info.gif) no-repeat center left;
-	background-color: InfoBackground;
 }
 
 #openmrs_error {
-	border: 1px dashed maroon;
+	background: url(/@WEBAPP.NAME@/images/error.gif) no-repeat center left;
+}
+
+#openmrs_msg, #openmrs_error { 
+	border: 1px dashed lightgrey;
 	padding: 2px 2px 2px 18px;
 	margin: 2px;
-	background: url(/@WEBAPP.NAME@/images/error.gif) no-repeat center left;
+	height: 1.5em;
 	background-color: InfoBackground;
 }
 

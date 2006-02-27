@@ -22,10 +22,14 @@ import org.openmrs.Drug;
 public interface ConceptDAO {
 
 	/**
-	 * 
-	 * @param concept to be created
+	 * @param Concept to be created
 	 */
 	public void createConcept(Concept concept);
+	
+	/**
+	 * @param Numeric concept to be created
+	 */
+	public void createConcept(ConceptNumeric concept);
 	
 	/**
 	 * Gets the concept with the given internal identifier
@@ -47,6 +51,12 @@ public interface ConceptDAO {
 	 * @param concept to be updated
 	 */
 	public void updateConcept(Concept concept);
+	
+	/**
+	 * Update the given numeric concept
+	 * @param numeric concept to be updated
+	 */
+	public void updateConcept(ConceptNumeric concept);
 	
 	/**
 	 * Delete the given concept

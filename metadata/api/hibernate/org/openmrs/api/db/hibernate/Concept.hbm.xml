@@ -110,15 +110,9 @@
 			not-null="true">
 			<column name="creator" />
 		</many-to-one>
-
 		
-		<!--
-		<one-to-one name="conceptNumeric" lazy="true" class="ConceptNumeric" cascade="all"/>
-		-->
-
-		
-		<joined-subclass name="ConceptNumeric" table="concept_numeric" extends="org.openmrs.Concept">
-			<key column="concept_id" not-null="true" />
+		<joined-subclass name="org.openmrs.ConceptNumeric" table="concept_numeric" extends="org.openmrs.Concept">
+			<key column="concept_id" not-null="true" on-delete="cascade" />
 			<property name="hiAbsolute" type="java.lang.Double" column="hi_absolute" length="22" />
 			<property name="hiCritical" type="java.lang.Double" column="hi_critical" length="22" />
 			<property name="hiNormal" type="java.lang.Double" column="hi_normal" length="22" />
@@ -129,7 +123,6 @@
 			<property name="precise" type="java.lang.Boolean" column="precise" length="1" not-null="true"/>
 		</joined-subclass>
 		
-
 	</class>
 
 </hibernate-mapping>

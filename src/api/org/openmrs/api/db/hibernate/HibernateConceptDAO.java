@@ -13,6 +13,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.StaleObjectStateException;
 import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Expression;
@@ -62,6 +63,28 @@ public class HibernateConceptDAO implements
 
 		modifyCollections(concept);
 
+		try {
+			HibernateUtil.beginTransaction();
+			session.save(concept);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e);
+		}
+		context.getAdministrationService().updateConceptWord(concept);
+		
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptService#createConcept(org.openmrs.ConceptNumeric)
+	 */
+	public void createConcept(ConceptNumeric concept) throws DAOException {
+		
+		Session session = HibernateUtil.currentSession();
+
+		modifyCollections(concept);
+		
 		try {
 			HibernateUtil.beginTransaction();
 			session.save(concept);
@@ -165,6 +188,38 @@ public class HibernateConceptDAO implements
 				modifyCollections(concept);
 				session.merge(concept);
 				//session.saveOrUpdate(concept);
+				HibernateUtil.commitTransaction();
+			}
+			catch (Exception e) {
+				HibernateUtil.rollbackTransaction();
+				throw new APIException(e); 
+			}
+			context.getAdministrationService().updateConceptWord(concept);
+		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptService#updateConcept(org.openmrs.ConceptNumeric)
+	 */
+	public void updateConcept(ConceptNumeric concept) {
+		
+		if (concept.getConceptId() == null)
+			createConcept(concept);
+		else {
+			Session session = HibernateUtil.currentSession();
+			
+			try {
+				HibernateUtil.beginTransaction();
+				modifyCollections(concept);
+				session.update(concept);
+				HibernateUtil.commitTransaction();
+			}
+			catch (StaleObjectStateException sose) {
+				HibernateUtil.beginTransaction();
+				Query query = session.createQuery("insert into ConceptNumeric (conceptId) select c.conceptId from Concept c where c.conceptId = :id)");
+					query.setInteger("id", concept.getConceptId());
+					query.executeUpdate();
+				session.update(concept);
 				HibernateUtil.commitTransaction();
 			}
 			catch (Exception e) {

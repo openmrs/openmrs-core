@@ -49,7 +49,6 @@ public class ConceptService {
 	}
 
 	/**
-	 * 
 	 * @param concept to be created
 	 */
 	public void createConcept(Concept concept) {
@@ -59,6 +58,20 @@ public class ConceptService {
 		String authUserId = context.getAuthenticatedUser().getUserId().toString();
 		
 		log.info(authUserId + "|" + concept.getConceptId().toString());
+		
+		getConceptDAO().createConcept(concept);
+	}
+	
+	/**
+	 * @param numeric concept to be created
+	 */
+	public void createConcept(ConceptNumeric concept) {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_ADD_CONCEPTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_CONCEPTS);
+		
+		String authUserId = context.getAuthenticatedUser().getUserId().toString();
+		
+		log.info(authUserId + "|" + concept.getConceptId().toString() + "|numeric");
 		
 		getConceptDAO().createConcept(concept);
 	}
@@ -87,6 +100,21 @@ public class ConceptService {
 	 * @param concept to be updated
 	 */
 	public void updateConcept(Concept concept) {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_CONCEPTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_CONCEPTS);
+		
+		String authUserId = context.getAuthenticatedUser().getUserId().toString();
+		
+		log.info(authUserId + "|" + concept.getConceptId().toString());
+		
+		getConceptDAO().updateConcept(concept);
+	}
+	
+	/**
+	 * Update the given numeric concept
+	 * @param numeric concept to be updated
+	 */
+	public void updateConcept(ConceptNumeric concept) {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_CONCEPTS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_CONCEPTS);
 		
