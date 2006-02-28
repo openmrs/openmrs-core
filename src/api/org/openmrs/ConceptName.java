@@ -92,7 +92,7 @@ public class ConceptName implements java.io.Serializable {
 	}
 	
 	public void setLocale(Locale locale) {
-		this.locale = locale.getLanguage();
+		this.locale = locale.getLanguage().substring(0, 2);
 	}
 
 	/**

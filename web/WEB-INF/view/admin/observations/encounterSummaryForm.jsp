@@ -15,6 +15,9 @@
 
 <b class="boxHeader"><spring:message code="Encounter.summary"/></b>
 <div class="box">
+	<a href="${pageContext.request.contextPath}/admin/encounters/encounter.form?encounterId=${encounter.encounterId}" style='float:right; clear:right'>
+		<spring:message code="Encounter.edit"/>
+	</a>
 	<table id="encounter">
 		<tr>
 			<th><spring:message code="Encounter.type"/></th>
@@ -42,7 +45,7 @@
 		</tr>
 		<tr>
 			<th><spring:message code="Encounter.datetime"/></th>
-			<td>${encounter.encounterDatetime}</td>
+			<td><openmrs:formatDate date="${encounter.encounterDatetime}" type="long" /></td>
 		</tr>
 		<c:if test="${!(encounter.creator == null)}">
 			<tr>
@@ -70,7 +73,7 @@
 	<c:forEach items="${encounter.obs}" var="obs" varStatus="status">
 		<tr <c:if test="${status.index % 2 == 0}">class="evenRow"</c:if>>
 			<td><a href="obs.form?obsId=${obs.obsId}"><%= ((org.openmrs.Obs)pageContext.getAttribute("obs")).getConcept().getName(request.getLocale()) %></a></td>
-			<td><openmrs:formatDate date="${obs.obsDatetime}" type="short" /></td>
+			<td><openmrs:formatDate date="${obs.obsDatetime}" type="medium" /></td>
 			<td>${obs.location.name}</td>
 			<td>${obs.comment}</td>
 			<td>

@@ -32,7 +32,7 @@ public class ConceptSynonym implements java.io.Serializable {
 	public ConceptSynonym(Concept c, String s, Locale l) {
 		setConcept(c);
 		setSynonym(s);
-		setLocale(l.getLanguage());
+		setLocale(l.getLanguage().substring(0, 2));
 	}
 	
 	public boolean equals(Object obj) {

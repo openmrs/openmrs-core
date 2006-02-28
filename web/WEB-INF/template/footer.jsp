@@ -12,14 +12,17 @@
 			if (i == -1)
 				i = qs.length();
 			pageContext.setAttribute("qs", qs.substring(0, i));
+			pageContext.setAttribute("locales", org.openmrs.web.WebConstants.OPENMRS_LOCALES());
+			pageContext.setAttribute("context", session.getAttribute(org.openmrs.web.WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR));
 		%>
-		
-		<a href="?${qs}&lang=en">English</a> |
-		<a href="?${qs}&lang=fr">Français</a> |
-		<a href="?${qs}&lang=de">Deutsch</a>
-		
+
+		<c:forEach items="${locales}" var="loc" varStatus="status">		
+			<c:if test="${status.index != 0}">| </c:if>
+			<c:if test="${fn:toLowerCase(context.locale) == fn:toLowerCase(loc)}">${loc.displayName}</c:if>
+			<c:if test="${fn:toLowerCase(context.locale) != fn:toLowerCase(loc)}"><a href="?${qs}&lang=${loc}">${loc.displayName}</a></c:if> 
+		</c:forEach>
 		&nbsp; &nbsp; &nbsp;
-		
+
 		Last Build: @TIMESTAMP@
 	</div>
 

@@ -3,7 +3,7 @@ package org.openmrs.web;
 public class OptionsForm {
 
 	private String defaultLocation = "";
-	private String defaultLanguage = "";
+	private String defaultLocale = "";
 	private Boolean showRetiredMessage = true;
 	private Boolean verbose = false;
 	
@@ -37,12 +37,12 @@ public class OptionsForm {
 		this.confirmPassword = confirmPassword;
 	}
 
-	public String getDefaultLanguage() {
-		return defaultLanguage;
+	public String getDefaultLocale() {
+		return defaultLocale;
 	}
 
-	public void setDefaultLanguage(String defaultLanguage) {
-		this.defaultLanguage = defaultLanguage;
+	public void setDefaultLocale(String defaultLocale) {
+		this.defaultLocale = defaultLocale;
 	}
 
 	public String getDefaultLocation() {

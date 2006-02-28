@@ -262,6 +262,7 @@ function removeHiddenRows() {
 			<spring:bind path="obs.obsDatetime">			
 				<input type="text" name="${status.expression}" size="10" 
 					   value="${status.value}" onClick="showCalendar(this)" />
+				(<spring:message code="general.format"/>: ${datePattern})
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
 			</spring:bind>
 		</td>

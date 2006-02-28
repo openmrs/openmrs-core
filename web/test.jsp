@@ -96,9 +96,20 @@ for (Cookie cookie : request.getCookies()) {
  out.write("<br>");out.write("<br>");
  e = request.getParameterNames();
  while (e.hasMoreElements()) { out.write(e.nextElement().toString()); out.write("<br>");}
-
 %>
-
+<br/><br/>Locale.UK
+<% 
+  java.util.Locale locale = java.util.Locale.UK;
+  out.write("<br/>.getDisplayLanguage: " + locale.getDisplayLanguage());
+  out.write("<br/>.getDisplayCountry: " + locale.getDisplayCountry());
+  out.write("<br/>.getDisplayVariant: " + locale.getDisplayVariant());
+  out.write("<br/>.getLanguage: " + locale.getLanguage());
+  out.write("<br/>.getCountry: " + locale.getCountry());
+  out.write("<br/>.getVariant: " + locale.getVariant());
+  out.write("<br/>.getDisplayName: " + locale.getDisplayName());
+  out.write("<br/>.toString: " + locale);
+ 
+ %>
 
 <br><br>Press a key: <input type="text" onKeyDown="document.getElementById('keycode').innerHTML = event.keyCode; return false;"/> KeyCode: <span id="keycode"></span>
 

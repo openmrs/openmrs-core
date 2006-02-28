@@ -69,10 +69,7 @@ public class DWRConceptService {
 					//TODO get all concepts for testing purposes?
 				}
 				else {
-					//TODO change this search to concept word
-					log.debug(locale.getLanguage());
 					words.addAll(cs.findConcepts(phrase, locale, includeRetired));
-					//concepts.addAll(cs.getConceptByName(phrase));
 				}
 
 				if (words.size() == 0) {
@@ -91,7 +88,6 @@ public class DWRConceptService {
 										break outer;
 									}
 									objectList.add(new ConceptListItem(word));
-									//objectList.add(word);
 								}
 						}
 					}
@@ -103,7 +99,6 @@ public class DWRConceptService {
 										break outer;
 									}
 									objectList.add(new ConceptListItem(word));
-									//objectList.add(word);
 								}
 						}
 					}
@@ -113,7 +108,6 @@ public class DWRConceptService {
 								break;
 							}
 							objectList.add(new ConceptListItem(word));
-							//objectList.add(word);
 						}
 					}
 				}

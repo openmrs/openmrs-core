@@ -3,7 +3,6 @@ package org.openmrs.web.controller.observation;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -35,8 +34,7 @@ public class ObsFormController extends SimpleFormController {
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
     
-    Locale locale = Locale.UK;
-    String datePattern = "dd/MM/yyyy";
+    SimpleDateFormat dateFormat;
     
 	/**
 	 * 
@@ -48,11 +46,13 @@ public class ObsFormController extends SimpleFormController {
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		Context context = (Context) request.getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-        //NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
+		
+		dateFormat = new SimpleDateFormat(WebConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(context.getLocale().toString().toLowerCase()), context.getLocale());
+		
         binder.registerCustomEditor(java.lang.Integer.class,
                 new CustomNumberEditor(java.lang.Integer.class, true));
         binder.registerCustomEditor(java.util.Date.class, 
-        		new CustomDateEditor(new SimpleDateFormat(datePattern, locale), true));
+        		new CustomDateEditor(dateFormat, true));
         binder.registerCustomEditor(Location.class, new LocationEditor(context));
         binder.registerCustomEditor(java.lang.Boolean.class,
         		new CustomBooleanEditor(true)); //allow for an empty boolean value
@@ -157,6 +157,7 @@ public class ObsFormController extends SimpleFormController {
 			if (obs.getConcept() != null)
 				map.put("conceptName", obs.getConcept().getName(request.getLocale()));
 		}
+		map.put("datePattern", dateFormat.toLocalizedPattern().toLowerCase());
 		
 		return map;
 	}

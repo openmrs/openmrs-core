@@ -2,7 +2,6 @@ package org.openmrs.web.controller.encounter;
 
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -35,8 +34,7 @@ public class EncounterFormController extends SimpleFormController {
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
     
-    Locale locale = Locale.UK;
-    String datePattern = "dd/MM/yyyy";
+    SimpleDateFormat dateFormat;
     
 	/**
 	 * 
@@ -48,11 +46,13 @@ public class EncounterFormController extends SimpleFormController {
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		Context context = (Context) request.getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-        //NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
+
+		dateFormat = new SimpleDateFormat(WebConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(context.getLocale().toString().toLowerCase()), context.getLocale());
+		
         binder.registerCustomEditor(java.lang.Integer.class,
                 new CustomNumberEditor(java.lang.Integer.class, true));
         binder.registerCustomEditor(java.util.Date.class, 
-        		new CustomDateEditor(new SimpleDateFormat(datePattern, locale), true));
+        		new CustomDateEditor(dateFormat, true));
         binder.registerCustomEditor(EncounterType.class, new EncounterTypeEditor(context));
         binder.registerCustomEditor(Location.class, new LocationEditor(context));
         binder.registerCustomEditor(Form.class, new FormEditor(context));
@@ -141,6 +141,7 @@ public class EncounterFormController extends SimpleFormController {
 			map.put("encounterTypes", es.getEncounterTypes());
 			map.put("forms", context.getFormService().getForms());
 		}
+		map.put("datePattern", dateFormat.toLocalizedPattern().toLowerCase());
 		
 		return map;
 	}

@@ -217,6 +217,7 @@ if (typeof window.onload != 'function') {
 			<spring:bind path="encounter.encounterDatetime">			
 				<input type="text" name="${status.expression}" size="10" 
 					   value="${status.value}" onClick="showCalendar(this)" />
+			   (<spring:message code="general.format"/>: ${datePattern})
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
 			</spring:bind>
 		</td>
@@ -226,7 +227,7 @@ if (typeof window.onload != 'function') {
 			<td><spring:message code="general.createdBy" /></td>
 			<td>
 				${encounter.creator.firstName} ${encounter.creator.lastName} -
-				<openmrs:formatDate date="${encounter.dateCreated}" type="long" />
+				<openmrs:formatDate date="${encounter.dateCreated}" type="medium" />
 			</td>
 		</tr>
 	</c:if>
@@ -234,7 +235,7 @@ if (typeof window.onload != 'function') {
 		<tr>
 			<td><spring:message code="Encounter.observations" /></td>
 			<td>
-				<a href="${pageContext.request.contextPath}/admin/observations/obsSummary.form?encounterId=${encounter.encounterId}"><spring:message code="Encounter.observations.view"/></a>
+				<a href="${pageContext.request.contextPath}/admin/observations/encounterSummary.form?encounterId=${encounter.encounterId}"><spring:message code="Encounter.observations.view"/></a>
 			</td>
 		</tr>
 	</c:if>

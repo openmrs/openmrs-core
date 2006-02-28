@@ -11,7 +11,6 @@ import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
 public class OpenmrsCookieLocaleResolver extends CookieLocaleResolver {
 
-	@Override
 	public Locale resolveLocale(HttpServletRequest request) {
 		
 		HttpSession httpSession = request.getSession();
@@ -29,7 +28,6 @@ public class OpenmrsCookieLocaleResolver extends CookieLocaleResolver {
 		return super.resolveLocale(request);
 	}
 
-	@Override
 	public void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale) {
 		HttpSession httpSession = request.getSession();
 		Context context = (Context)httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
@@ -37,15 +35,14 @@ public class OpenmrsCookieLocaleResolver extends CookieLocaleResolver {
 		if (context != null)
 			context.setLocale(locale);
 		
+		response.setLocale(locale);
+		
 		//still set the cookie for later possible use.
 		super.setLocale(request, response, locale);
 	}
 
-	@Override
 	public String getCookieName() {
 		return WebConstants.OPENMRS_LANGUAGE_COOKIE_NAME;
 	}
 
-	
-	
 }

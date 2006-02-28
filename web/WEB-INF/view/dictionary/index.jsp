@@ -47,7 +47,7 @@
 
 <h2><spring:message code="dictionary.title" /></h2>
 
-<a href="<%= request.getContextPath() %>/downloadDictionary.csv">Download the concept dictionary</a> in CSV format -- (dynamically creates a CSV file containing current dictionary terms/concepts)<br />
+<a href="<%= request.getContextPath() %>/downloadDictionary.csv"><spring:message code="dictionary.download.link"/></a> <spring:message code="dictionary.download.description"/><br />
 <br />
 
 <div id="findPatient">
@@ -73,6 +73,6 @@
 </div>
 
 <br/>
-<a href="concept.form">Add new Concept</a> (Use sparingly)
+<a href="concept.form"><spring:message code="Concept.add"/></a> (Use sparingly)
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

@@ -76,7 +76,7 @@ public class DWRFormService {
 			catch (NumberFormatException e) {}
 			
 			if (concept != null) {
-				objects.add(new ConceptListItem(concept, new Locale("en", "US")));
+				objects.add(new ConceptListItem(concept, locale));
 				for (Field field : context.getFormService().findFields(concept))
 					objects.add(new FieldListItem(field));
 			}

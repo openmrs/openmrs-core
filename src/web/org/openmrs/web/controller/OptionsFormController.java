@@ -101,10 +101,10 @@ public class OptionsFormController extends SimpleFormController {
 			
 			Map<String, String> properties = user.getProperties();
 			
-			properties.put("defaultLocation", opts.getDefaultLocation());
-			properties.put("defaultLanguage", opts.getDefaultLanguage());
-			properties.put("showRetired", opts.getShowRetiredMessage().toString());
-			properties.put("verbose", opts.getVerbose().toString());
+			properties.put(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION, opts.getDefaultLocation());
+			properties.put(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE, opts.getDefaultLocale());
+			properties.put(OpenmrsConstants.USER_PROPERTY_SHOW_RETIRED, opts.getShowRetiredMessage().toString());
+			properties.put(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE, opts.getVerbose().toString());
 			
 			if (!opts.getOldPassword().equals("")) {
 				try {
@@ -187,10 +187,10 @@ public class OptionsFormController extends SimpleFormController {
 			User user = context.getAuthenticatedUser();
 
 			Map<String, String> props = user.getProperties();
-			opts.setDefaultLocation(props.get("defaultLocation"));
-			opts.setDefaultLanguage(props.get("defaultLanguage"));
-			opts.setShowRetiredMessage(new Boolean(props.get("showRetired")));
-			opts.setVerbose(new Boolean(props.get("verbose")));
+			opts.setDefaultLocation(props.get(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION));
+			opts.setDefaultLocale(props.get(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE));
+			opts.setShowRetiredMessage(new Boolean(props.get(OpenmrsConstants.USER_PROPERTY_SHOW_RETIRED)));
+			opts.setVerbose(new Boolean(props.get(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE)));
 			opts.setUsername(user.getUsername());
 			opts.setSecretQuestionNew(user.getSecretQuestion());
 		}
@@ -220,10 +220,8 @@ public class OptionsFormController extends SimpleFormController {
 			// set location options
 			map.put("locations", ps.getLocations());
 			
-	    	// make spring locale available to jsp
-			map.put("locale", locale.getLanguage());
-			
-			map.put("languages", WebConstants.OPENMRS_LANGUAGES());
+			// set language/locale options
+			map.put("languages", WebConstants.OPENMRS_LOCALES());
 			
 			String resetPassword = (String)httpSession.getAttribute("resetPassword");
 			if (resetPassword==null)

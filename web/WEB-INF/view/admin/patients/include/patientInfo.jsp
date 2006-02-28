@@ -24,10 +24,10 @@
 		<td colspan="3">
 			<spring:bind path="patient.birthdate">			
 				<input type="text" name="birthdate" size="10" 
-					   value="${status.value}" />
+					   value="${status.value}" onClick="showCalendar(this)" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
 			</spring:bind>
-			(Format: dd/mm/yyyy)
+			(<spring:message code="general.format"/>: ${datePattern})
 			<spring:bind path="patient.birthdateEstimated">
 				<spring:message code="Patient.birthdateEstimated"/>
 				<input type="hidden" name="_birthdateEstimated">
@@ -135,7 +135,7 @@
 			<td><spring:message code="general.createdBy" /></td>
 			<td>
 				${patient.creator.firstName} ${patient.creator.lastName} -
-				<openmrs:formatDate date="${patient.dateCreated}" type="long" />
+				<openmrs:formatDate date="${patient.dateCreated}" type="short" />
 			</td>
 		</tr>
 	</c:if>
@@ -144,7 +144,7 @@
 			<td><spring:message code="general.changedBy" /></td>
 			<td colspan="2">
 				${patient.changedBy.firstName} ${patient.changedBy.lastName} -
-				<openmrs:formatDate date="${patient.dateChanged}" type="long" />
+				<openmrs:formatDate date="${patient.dateChanged}" type="short" />
 			</td>
 		</tr>
 	</c:if>
@@ -174,7 +174,7 @@
 			<td><spring:message code="general.voidedBy"/></td>
 			<td>
 				${patient.voidedBy.firstName} ${patient.voidedBy.lastName} -
-				<openmrs:formatDate date="${patient.dateVoided}" type="long" />
+				<openmrs:formatDate date="${patient.dateVoided}" type="short" />
 			</td>
 		</tr>
 	</c:if>

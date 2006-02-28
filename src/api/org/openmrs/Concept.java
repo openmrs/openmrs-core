@@ -290,7 +290,7 @@ public class Concept implements java.io.Serializable {
 	 * @return
 	 */
 	public ConceptName getName(Locale locale, boolean exact) {
-		String loc = locale.getLanguage();
+		String loc = locale.getLanguage().substring(0, 2);
 		ConceptName defaultName = null;
 		for (Iterator<ConceptName> i = getNames().iterator(); i.hasNext();) {
 			ConceptName name = i.next();
@@ -376,7 +376,7 @@ public class Concept implements java.io.Serializable {
 	 * @return Collection of ConceptSynonym attributed to the Concept in the given locale
 	 */
 	public Collection<ConceptSynonym> getSynonyms(Locale locale) {
-		String loc = locale.getLanguage();
+		String loc = locale.getLanguage().substring(0, 2);
 		Collection<ConceptSynonym> syns = new Vector<ConceptSynonym>();
 		for (ConceptSynonym syn : getSynonyms()) {
 			String lang = syn.getLocale();

@@ -26,8 +26,11 @@
 	}
 	.preview, .preview * {
 		color: gray;
+		background-color: whitesmoke;
 	}
-	
+	#concept, #database, #other {
+		height: 4em;
+	}
 	#editForm.preview {
 		border-color: grey;
 	}
@@ -327,6 +330,7 @@
 		$('attributeName').disabled = true;
 		$('fieldType').disabled = true;
 		$('selectMultiple').disabled = true;
+		$('field').className = 'preview';
 	}
 	
 	function enableField() {
@@ -336,6 +340,7 @@
 		$('attributeName').disabled = false;
 		$('fieldType').disabled = false;
 		$('selectMultiple').disabled = false;
+		$('field').className = '';
 	}
 	
 	function disableFormField() {
@@ -509,7 +514,7 @@
 			<div id="editForm">
 				<div id="formTitle"></div>
 				
-				<div id="addButtons">
+				<div id="fieldButtons">
 					<input type="button" onclick="addNewField()" value="<spring:message code="Field.addNewField"/>"/>
 					<input type="button" onclick="editForThisForm()" value="<spring:message code="Field.editForThisForm"/>"/>
 					<input type="button" onclick="editForAllForms()" value="<spring:message code="Field.editForAllForms"/>"/>

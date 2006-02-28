@@ -1,5 +1,5 @@
 <input type="hidden" name="fieldId" id="fieldId" value=""/>
-<table>
+<table id="field">
 	<tr>
 		<td valign="top">
 			<spring:message code="Field.name"/>
@@ -64,7 +64,7 @@
 		<td colspan="2">&nbsp;<br/>&nbsp;</td>
 	</tr>
 	<tr>
-		<td><spring:message code="Field.selectMultiple"/></td>
+		<td style="white-space: nowrap;"><spring:message code="Field.selectMultiple"/></td>
 		<td><input type="checkbox" name="selectMultiple" id="selectMultiple" value="on"/></td>
 	</tr>
 	<tr>

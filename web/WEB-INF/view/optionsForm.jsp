@@ -129,6 +129,7 @@ function containsError(element) {
 		<td>
 			<spring:bind path="opts.defaultLocation">
 				<select name="${status.expression}">
+					<option value=""></option>
 					<c:forEach items="${locations}" var="loc">
 						<option value="${loc.locationId}" <c:if test="${loc.locationId == status.value}">selected</c:if>>${loc.name}</option>
 					</c:forEach>
@@ -140,12 +141,13 @@ function containsError(element) {
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="options.default.language" /></td>
+		<td><spring:message code="options.default.locale" /></td>
 		<td>
-			<spring:bind path="opts.defaultLanguage">
+			<spring:bind path="opts.defaultLocale">
 				<select name="${status.expression}">
-					<c:forEach items="${languages}" var="map">
-						<option value="${map.key}" <c:if test="${map.key == status.value}">selected</c:if>>${map.value}</option>
+					<option value=""></option>
+					<c:forEach items="${languages}" var="locale">
+						<option value="${locale}" <c:if test="${locale == status.value}">selected</c:if>>${locale.displayName}</option>
 					</c:forEach>
 				</select>
 				<c:if test="${status.errorMessage != ''}">
@@ -157,9 +159,9 @@ function containsError(element) {
 	<tr>
 		<td><spring:message code="options.showRetiredMessage" /></td>
 		<td>
-			<spring:bind path="opts.showRetiredMessage">
+			<label for="${status.expression}"><spring:bind path="opts.showRetiredMessage"></label>
 				<input type="hidden" name="_${status.expression}" value="true" />
-				<input type="checkbox" name="${status.expression}" value="true" <c:if test="${status.value == true}">checked</c:if> />
+				<input type="checkbox" name="${status.expression}" value="true" id="${status.expression}" <c:if test="${status.value == true}">checked</c:if> />
 				<c:if test="${status.errorMessage != ''}">
 					<span class="error">${status.errorMessage}</span>
 				</c:if>
@@ -169,9 +171,9 @@ function containsError(element) {
 	<tr>
 		<td><spring:message code="options.default.verbose" /></td>
 		<td>
-			<spring:bind path="opts.verbose">
+			<label for="${status.expression}"><spring:bind path="opts.verbose"></label>
 				<input type="hidden" name="_${status.expression}" value="true" />
-				<input type="checkbox" name="${status.expression}" value="true" <c:if test="${status.value == true}">checked</c:if> />
+				<input type="checkbox" name="${status.expression}" value="true" id="${status.expression}" <c:if test="${status.value == true}">checked</c:if> />
 				<c:if test="${status.errorMessage != ''}">
 					<span class="error">${status.errorMessage}</span>
 				</c:if>
@@ -290,20 +292,20 @@ function containsError(element) {
 <fieldset><legend><spring:message code="options.notify.legend" /></legend>
 <table>
 	<tr>
-		<td><input type="radio" name="notification" value="internalOnly" <c:if test="${opts.notification == 'internalOnly'}">checked</c:if> /></td>
-		<td><spring:message code="options.notify.internalOnly" /></td>
+		<td><input type="radio" name="notification" value="internalOnly" id="internalOnly" <c:if test="${opts.notification == 'internalOnly'}">checked</c:if> /></td>
+		<td><label for="internalOnly"><spring:message code="options.notify.internalOnly" /></label></td>
 	</tr>
 	<tr>
-		<td><input type="radio" name="internal" value="internal" <c:if test="${opts.notification == 'internal'}">checked</c:if> /></td>
-		<td><spring:message code="options.notify.internal" /></td>
+		<td><input type="radio" name="internal" value="internal" id="internal" <c:if test="${opts.notification == 'internal'}">checked</c:if> /></td>
+		<td><label for="internal"><spring:message code="options.notify.internal" /></label></td>
 	</tr>
 	<tr>
-		<td><input type="radio" name="internalProtected" value="internalProtected" <c:if test="${opts.notification == 'internalProtected'}">checked</c:if> /></td>
-		<td><spring:message code="options.notify.internalProtected" /></td>
+		<td><input type="radio" name="internalProtected" value="internalProtected" id="internalProtected" <c:if test="${opts.notification == 'internalProtected'}">checked</c:if> /></td>
+		<td><label for="internalProtected"><spring:message code="options.notify.internalProtected" /></label></td>
 	</tr>
 	<tr>
-		<td><input type="radio" name="email" value="email" <c:if test="${opts.notification == 'email'}">checked</c:if> /></td>
-		<td><spring:message code="options.notify.email" /></td>
+		<td><input type="radio" name="email" value="email" id="email" <c:if test="${opts.notification == 'email'}">checked</c:if> /></td>
+		<td><label for="email"><spring:message code="options.notify.email" /></label></td>
 	</tr>
 </table>
 <br />

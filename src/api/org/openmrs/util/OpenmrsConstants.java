@@ -221,6 +221,10 @@ public class OpenmrsConstants {
 	// @SEARCH@ is needs to be replaced with the searched string
 	public static final String PATIENT_IDENTIFIER_REGEX = "^0*@SEARCH@([A-Z]+-[0-9])?$";
 	
-	public static final String USER_PROPERTY_CHANGE_PASSWORD = "forcePassword";
-
+	public static final String USER_PROPERTY_CHANGE_PASSWORD  = "forcePassword";
+	public static final String USER_PROPERTY_DEFAULT_LOCALE   = "defaultLocale";
+	public static final String USER_PROPERTY_DEFAULT_LOCATION = "defaultLocation";
+	public static final String USER_PROPERTY_SHOW_RETIRED = "showRetired";
+	public static final String USER_PROPERTY_SHOW_VERBOSE = "showVerbose";
+	public static final String USER_PROPERTY_NOTIFICATION = "notification";
 }

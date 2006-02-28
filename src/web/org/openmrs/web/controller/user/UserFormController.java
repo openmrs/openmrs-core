@@ -4,7 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
@@ -38,10 +37,7 @@ public class UserFormController extends SimpleFormController {
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
     
-    Locale locale = Locale.UK;
-    String datePattern = "dd/MM/yyyy";
-    
-	/**
+    /**
 	 * 
 	 * Allows for other Objects to be used as values in input tags.
 	 *   Normally, only strings and lists are expected 
@@ -50,13 +46,13 @@ public class UserFormController extends SimpleFormController {
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-        //NumberFormat nf = NumberFormat.getInstance(request.getLocale());
-        //binder.registerCustomEditor(java.lang.Integer.class,
-        //        new CustomNumberEditor(java.lang.Integer.class, nf, true));
+		
+		Context context = (Context) request.getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		binder.registerCustomEditor(java.lang.Integer.class, 
 				new CustomNumberEditor(java.lang.Integer.class, true));
         binder.registerCustomEditor(java.util.Date.class, 
-        		new CustomDateEditor(new SimpleDateFormat(datePattern, locale), true));
+        		new CustomDateEditor(SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT, context.getLocale()), true));
 	}
 
 	/**

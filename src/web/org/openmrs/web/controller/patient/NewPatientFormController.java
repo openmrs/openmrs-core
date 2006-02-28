@@ -8,7 +8,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Vector;
 
@@ -47,8 +46,7 @@ public class NewPatientFormController extends SimpleFormController {
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
     
-    Locale locale = Locale.UK;
-    String datePattern = "dd/MM/yyyy";
+    SimpleDateFormat dateFormat;
     
 	/**
 	 * 
@@ -60,13 +58,14 @@ public class NewPatientFormController extends SimpleFormController {
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		Context context = (Context) request.getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-        NumberFormat nf = NumberFormat.getInstance(locale);
+		
+		dateFormat = new SimpleDateFormat(WebConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(context.getLocale().toString().toLowerCase()), context.getLocale());
+		
+        NumberFormat nf = NumberFormat.getInstance(context.getLocale());
         binder.registerCustomEditor(java.lang.Integer.class,
                 new CustomNumberEditor(java.lang.Integer.class, nf, true));
-		//binder.registerCustomEditor(java.lang.Integer.class, 
-		//		new CustomNumberEditor(java.lang.Integer.class, true));
         binder.registerCustomEditor(java.util.Date.class, 
-        		new CustomDateEditor(new SimpleDateFormat(datePattern, locale), true, 10));
+        		new CustomDateEditor(dateFormat, true, 10));
         binder.registerCustomEditor(Tribe.class, new TribeEditor(context));
 	}
 
@@ -329,7 +328,7 @@ public class NewPatientFormController extends SimpleFormController {
 	    		identifiers.addAll(patient.getIdentifiers());
 	    	}
 		}
-		
+		map.put("datePattern", dateFormat.toLocalizedPattern().toLowerCase());
 		map.put("identifiers", identifiers);
 		
 		return map;

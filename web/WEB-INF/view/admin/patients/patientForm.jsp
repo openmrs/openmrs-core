@@ -8,6 +8,7 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
+<script src="<%= request.getContextPath() %>/scripts/calendar/calendar.js"></script>
 <script src="<%= request.getContextPath() %>/scripts/validation.js"></script>
 
 <script>
@@ -298,6 +299,8 @@
 				</div>
 			</div>
 		</div>
+	
+	<br/>
 	
 	<h3><spring:message code="Patient.information"/></h3>
 		<div class="tabBox" id="pInformationBox">

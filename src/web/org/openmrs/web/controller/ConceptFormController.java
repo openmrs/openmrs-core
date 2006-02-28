@@ -48,10 +48,7 @@ public class ConceptFormController extends SimpleFormController {
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
     
-    Locale locale = Locale.UK;
-    String datePattern = "dd/MM/yyyy";
-    
-	/**
+    /**
 	 * 
 	 * Allows for other Objects to be used as values in input tags.
 	 *   Normally, only strings and lists are expected 
@@ -62,14 +59,14 @@ public class ConceptFormController extends SimpleFormController {
 		super.initBinder(request, binder);
 		Context context = (Context) request.getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-        NumberFormat nf = NumberFormat.getInstance(new Locale("en_UK"));
+        NumberFormat nf = NumberFormat.getInstance(context.getLocale());
         Locale locale = RequestContextUtils.getLocale(request);
         binder.registerCustomEditor(java.lang.Integer.class,
                 new CustomNumberEditor(java.lang.Integer.class, nf, true));
         binder.registerCustomEditor(java.lang.Double.class,
                 new CustomNumberEditor(java.lang.Double.class, nf, true));
         binder.registerCustomEditor(java.util.Date.class, 
-        		new CustomDateEditor(new SimpleDateFormat(datePattern, locale), true));
+        		new CustomDateEditor(SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT, context.getLocale()), true));
         binder.registerCustomEditor(org.openmrs.ConceptClass.class, 
         		new ConceptClassEditor(context));
         binder.registerCustomEditor(org.openmrs.ConceptDatatype.class, 
@@ -128,7 +125,7 @@ public class ConceptFormController extends SimpleFormController {
 					Set<ConceptSynonym> originalSynsCopy = new HashSet<ConceptSynonym>();
 					originalSynsCopy.addAll(originalSyns);
 					for (ConceptSynonym o : originalSynsCopy) {
-						if (o.getLocale().equals(locale.getLanguage()) &&
+						if (o.getLocale().equals(locale.getLanguage().substring(0, 2)) &&
 							!parameterSyns.contains(o)) {  // .contains() is only usable because we overrode .equals()
 							originalSyns.remove(o);
 						}
@@ -365,7 +362,7 @@ public class ConceptFormController extends SimpleFormController {
 			map.put("datatypes", cs.getConceptDatatypes());
 			
 			// make spring locale available to jsp
-			map.put("locale", locale.getLanguage());
+			map.put("locale", locale.getLanguage().substring(0, 2));
 			
 		}
 		

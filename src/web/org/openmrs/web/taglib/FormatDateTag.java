@@ -1,13 +1,17 @@
 package org.openmrs.web.taglib;
 
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.context.Context;
+import org.openmrs.web.WebConstants;
 
 public class FormatDateTag extends TagSupport {
 
@@ -20,45 +24,64 @@ public class FormatDateTag extends TagSupport {
 	private String format;
 
 	public int doStartTag() {
+		HttpSession session = pageContext.getSession();
+		Context context = (Context)session.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-		if (type != null) {
-			if (type.equals("long")) {
-				format = "MMMMM dd, yyyy h:mm a";
-			}
-			else if (type.equals("medium")) {
-				format = "dd-MM-yyyy h:mm a";
-			}
-			else if (type.equals("textbox")) {
-				format = "MM-dd-yyyy";
-			}
-			else if (type.equals("xml")) {
-				format = "dd-MMM-yyyy";
+		DateFormat dateFormat = null;
+		
+		if (type == null)
+			type = "";
+		
+		if (format != null && format.length() > 0) {
+			dateFormat = new SimpleDateFormat(format);
+		}
+		else if (type.equals("xml")) {
+			dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
+		}
+		else {
+			if (context == null) {
+				if (type.equals("long")) {
+					dateFormat = new SimpleDateFormat("MMMMM dd, yyyy h:mm a");
+				}
+				else if (type.equals("medium")) {
+					dateFormat = new SimpleDateFormat("MM-dd-yyyy h:mm a");
+				}
+				else if (type.equals("textbox")) {
+					dateFormat = new SimpleDateFormat("MM-dd-yyyy");
+				}
+				else {
+					dateFormat = new SimpleDateFormat("MM-dd-yyyy");
+				}
 			}
 			else {
-				format = "dd-MM-yyyy";
+				if (type.equals("long")) {
+					dateFormat = SimpleDateFormat.getDateInstance(SimpleDateFormat.LONG, context.getLocale());
+				}
+				else if (type.equals("medium")) {
+					dateFormat = SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM, context.getLocale());
+				}
+				else if (type.equals("textbox")) {
+					dateFormat = SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT, context.getLocale());
+				}
+				else {
+					dateFormat = SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT, context.getLocale());
+				}
 			}
 		}
 		
-		if (format == null || format.equals(""))
-			format = "dd-MMM-yyyy";
+		if (dateFormat == null)
+			dateFormat = new SimpleDateFormat("MM-dd-yyyy");
 		
 		String datestr = "";
 		
 		try {
 			if (date != null && !date.equals("")) {
-				//Date d = DateFormat.getDateInstance(DateFormat.SHORT).parse(var);
-				datestr = new SimpleDateFormat(format).format(date).toString();
+				datestr = dateFormat.format(date).toString();
 			}
 		}
-		/*catch (ParseException e) {
-			//date is unparsable
-			log.error("unable to parse date obj: " + var);
-			log.error(e);
-			datestr = var.toString();
-		}*/
 		catch (IllegalArgumentException e) {
 			//format or date is invalid
-			log.error("var: " + date);
+			log.error("date: " + date);
 			log.error("format: " + format);
 			log.error(e);
 			datestr = date.toString();

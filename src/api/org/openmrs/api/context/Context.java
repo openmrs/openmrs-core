@@ -57,7 +57,7 @@ public class Context implements ApplicationContextAware {
 	private AdministrationService administrationService;
 	private FormService formService;
 	private OrderService orderService;
-	private Locale locale = new Locale("en", "US");
+	private Locale locale = Locale.US;	// every user's default locale
 	private ReportService reportService;
 	private FormEntryService formEntryService;
 	private List<String> proxies = new Vector<String>();

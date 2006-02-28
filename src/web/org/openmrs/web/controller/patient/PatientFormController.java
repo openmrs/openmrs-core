@@ -4,7 +4,6 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
@@ -48,8 +47,7 @@ public class PatientFormController extends SimpleFormController {
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
 
-    Locale locale = Locale.UK;
-    String datePattern = "dd/MM/yyyy";
+    SimpleDateFormat dateFormat;
     
 	/**
 	 * 
@@ -61,13 +59,14 @@ public class PatientFormController extends SimpleFormController {
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		Context context = (Context) request.getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-        NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
+		
+		dateFormat = new SimpleDateFormat(WebConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(context.getLocale().toString().toLowerCase()), context.getLocale());
+		
+        NumberFormat nf = NumberFormat.getInstance(context.getLocale());
         binder.registerCustomEditor(java.lang.Integer.class,
                 new CustomNumberEditor(java.lang.Integer.class, nf, true));
-		//binder.registerCustomEditor(java.lang.Integer.class, 
-		//		new CustomNumberEditor(java.lang.Integer.class, true));
         binder.registerCustomEditor(java.util.Date.class, 
-        		new CustomDateEditor(new SimpleDateFormat(datePattern, locale), true, 10));
+        		new CustomDateEditor(dateFormat, true, 10));
         binder.registerCustomEditor(Tribe.class, new TribeEditor(context));
         binder.registerCustomEditor(PatientIdentifierType.class, new PatientIdentifierTypeEditor(context));
         binder.registerCustomEditor(Location.class, new LocationEditor(context));
@@ -300,6 +299,7 @@ public class PatientFormController extends SimpleFormController {
 		map.put("emptyName", new PatientName());
 		map.put("emptyAddress", new PatientAddress());
 		map.put("encounters", encounters);
+		map.put("datePattern", dateFormat.toLocalizedPattern().toLowerCase());
 		
 		return map;
 	}    

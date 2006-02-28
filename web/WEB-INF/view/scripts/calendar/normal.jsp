@@ -1,11 +1,43 @@
+<%@ include file="/WEB-INF/template/include.jsp" %>
+
 ////////// JS theme file for PopCalendarXP 9.0 /////////
 // This file is totally configurable. You may remove all the comments in this file to minimize the download size.
 // Since the plugins are loaded after theme config, sometimes we would redefine(override) some theme options there for convenience.
 ////////////////////////////////////////////////////////
 
+<%
+	org.openmrs.api.context.Context context = (org.openmrs.api.context.Context)session.getAttribute(org.openmrs.web.WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+	String datePattern = org.openmrs.web.WebConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(context.getLocale().toString().toLowerCase());
+	pageContext.setAttribute("datePatternSeparator", datePattern.substring(2,3));
+	pageContext.setAttribute("datePatternStart", datePattern.substring(0,1).toLowerCase());
+%>
+
 // ---- PopCalendar Specific Options ----
-var gsSplit="/";	// separator of date string. If set it to empty string, then giMonthMode and gbPadZero will be fixed to 0 and true.
-var giDatePos=0;	// date format sequence  0: D-M-Y ; 1: M-D-Y; 2: Y-M-D
+
+<c:if test="${datePatternSeparator == null}">
+	var gsSplit="/";	// separator of date string. If set it to empty string, then giMonthMode and gbPadZero will be fixed to 0 and true.
+</c:if>
+<c:if test="${datePatternSeparator != null}">
+	var gsSplit="${datePatternSeparator}";
+</c:if>
+
+
+<c:if test="${datePatternStart == null}">
+	var giDatePos=1;	// date format sequence  0: D-M-Y ; 1: M-D-Y; 2: Y-M-D
+</c:if>
+<c:if test="${datePatternStart != null}">
+	<c:if test="${datePatternStart == 'd'}">
+		var giDatePos=0;
+	</c:if>
+	<c:if test="${datePatternStart == 'm'}">
+		var giDatePos=1;
+	</c:if>
+	<c:if test="${datePatternStart == 'y'}">
+		var giDatePos=2;
+	</c:if>
+</c:if>
+
+
 var gbPadZero=true;	// whether to pad the digits with 0 in the left when less than 10.
 var giMonthMode=0;	// month format 0: digits ; 1: full name from gMonths; >2: abbreviated month name in specified length.
 var gbShortYear=false;   // year format   true: 2-digits; false: 4-digits

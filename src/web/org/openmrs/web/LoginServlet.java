@@ -1,6 +1,7 @@
 package org.openmrs.web;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -102,6 +103,15 @@ public class LoginServlet extends HttpServlet {
 				if (context.isAuthenticated()) {
 					
 					User user = context.getAuthenticatedUser();
+					
+					// load the user's default locale if possible
+					if (user.getProperties() != null) {
+						if (user.getProperties().containsKey(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE)) {
+							Locale locale = new Locale(user.getProperties().get(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE));
+							context.setLocale(locale);
+							response.setLocale(locale);
+						}
+					}
 					
 					Boolean forcePasswordChange = new Boolean(user.getProperties().get(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD)); 
 					if (forcePasswordChange) {

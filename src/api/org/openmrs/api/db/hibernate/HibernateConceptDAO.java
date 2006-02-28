@@ -408,13 +408,13 @@ public class HibernateConceptDAO implements
 	// TODO below are functions worthy of a second tier
 	
 	/**
-	 * @see org.openmrs.api.db.ConceptService#findConcepts(java.lang.String)
+	 * @see org.openmrs.api.db.ConceptService#findConcepts(java.lang.String,java.util.Locale,boolean)
 	 */
 	public List<ConceptWord> findConcepts(String phrase, Locale loc, boolean includeRetired) {
 		Session session = HibernateUtil.currentSession();
 		
-		String locale = loc.getLanguage();
-		Set<String> words = ConceptWord.getUniqueWords(phrase);  //assumes getUniqueWords() removes quote(') characters.  (otherwise we would have a security leak)
+		String locale = loc.getLanguage().substring(0, 2);		//only get language portion of locale
+		Set<String> words = ConceptWord.getUniqueWords(phrase); //assumes getUniqueWords() removes quote(') characters.  (otherwise we would have a security leak)
 		
 		List<ConceptWord> conceptWords = new Vector<ConceptWord>();
 		
