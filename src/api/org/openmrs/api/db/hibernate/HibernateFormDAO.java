@@ -46,14 +46,14 @@ public class HibernateFormDAO implements
 		
 		try {
 			HibernateUtil.beginTransaction();
-			session.save(form);
+			session.clear();
+			session.merge(form);
 			HibernateUtil.commitTransaction();
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
 			throw new DAOException(e);
 		}
-		
 	}
 
 	/**

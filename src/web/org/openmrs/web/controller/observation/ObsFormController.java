@@ -16,6 +16,7 @@ import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.propertyeditor.LocationEditor;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
@@ -149,6 +150,7 @@ public class ObsFormController extends SimpleFormController {
 		Obs obs = (Obs)obj;
 		
 		Map<String, Object> map = new HashMap<String, Object>();
+		String defaultVerbose = "false";
 		
 		if (context != null && context.isAuthenticated()) {
 			ObsService es = context.getObsService();
@@ -156,8 +158,11 @@ public class ObsFormController extends SimpleFormController {
 			map.put("forms", context.getFormService().getForms());
 			if (obs.getConcept() != null)
 				map.put("conceptName", obs.getConcept().getName(request.getLocale()));
+			defaultVerbose = context.getAuthenticatedUser().getProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
 		}
 		map.put("datePattern", dateFormat.toLocalizedPattern().toLowerCase());
+
+		map.put("defaultVerbose", defaultVerbose.equals("true") ? true : false);
 		
 		return map;
 	}

@@ -9,7 +9,11 @@
 
 <spring:hasBindErrors name="form">
 	<spring:message code="fix.error"/>
-	<br />
+	<div class="error">
+		<c:forEach items="${errors.allErrors}" var="error">
+			<spring:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
+		</c:forEach>
+	</div>
 </spring:hasBindErrors>
 
 <c:if test="${form.retired}">
@@ -173,7 +177,22 @@
 	</c:if>
 </table>
 <br />
-<input type="submit" value="<spring:message code="Form.save"/>">
+<c:if test="${not empty param.duplicate}">
+	<input type="submit" name="action" value="<spring:message code="Form.create.duplicate"/>">
+</c:if>
+<c:if test="${empty param.duplicate}">
+	<input type="submit" name="action" value="<spring:message code="Form.save"/>">
+	
+	<c:if test="${form.formId != null}">
+		<openmrs:hasPrivilege privilege="Delete Forms">
+			 &nbsp; &nbsp; &nbsp;
+			<input type="submit" name="action" value="<spring:message code="Form.delete"/>" onclick="return confirm('Are you sure you want to delete this entire form AND schema?')"/>
+		</openmrs:hasPrivilege>
+	</c:if>
+</c:if>
+
 </form>
+
+
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

@@ -40,6 +40,7 @@ public class FormatDateTag extends TagSupport {
 		}
 		else {
 			if (context == null) {
+				log.debug("context is null");
 				if (type.equals("long")) {
 					dateFormat = new SimpleDateFormat("MMMMM dd, yyyy h:mm a");
 				}
@@ -54,17 +55,20 @@ public class FormatDateTag extends TagSupport {
 				}
 			}
 			else {
+				log.debug("context found");
+				log.debug("context locale: " + context.getLocale());
+				
 				if (type.equals("long")) {
-					dateFormat = SimpleDateFormat.getDateInstance(SimpleDateFormat.LONG, context.getLocale());
+					dateFormat = DateFormat.getDateInstance(DateFormat.LONG, context.getLocale());
 				}
 				else if (type.equals("medium")) {
-					dateFormat = SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM, context.getLocale());
+					dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM, context.getLocale());
 				}
 				else if (type.equals("textbox")) {
-					dateFormat = SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT, context.getLocale());
+					dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, context.getLocale());
 				}
 				else {
-					dateFormat = SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT, context.getLocale());
+					dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, context.getLocale());
 				}
 			}
 		}

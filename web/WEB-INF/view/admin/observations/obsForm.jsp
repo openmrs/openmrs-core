@@ -447,7 +447,7 @@ function removeHiddenRows() {
 		<form method="get" onSubmit="return searchBoxChange('searchBody', searchText, event, false, 0); return false;">
 			<h3><spring:message code="general.search"/></h3>
 			<input type="text" id="searchText" size="35" onkeyup="return searchBoxChange('searchBody', this, event, false, 400);"> &nbsp;
-			<input type="checkbox" id="verboseListing" value="true" onclick="searchBoxChange('searchBody', searchText, event, false, 0); searchText.focus();"><label for="verboseListing"><spring:message code="dictionary.verboseListing"/></label>
+			<input type="checkbox" id="verboseListing" value="true" <c:if test="${defaultVerbose == true}">checked</c:if> onclick="searchBoxChange('searchBody', searchText, event, false, 0); searchText.focus();"><label for="verboseListing"><spring:message code="dictionary.verboseListing"/></label>
 		</form>
 		<div id="searchResults" class="searchResults">
 			<table width="100%">

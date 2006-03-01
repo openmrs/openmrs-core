@@ -107,9 +107,20 @@ public class LoginServlet extends HttpServlet {
 					// load the user's default locale if possible
 					if (user.getProperties() != null) {
 						if (user.getProperties().containsKey(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE)) {
-							Locale locale = new Locale(user.getProperties().get(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE));
-							context.setLocale(locale);
-							response.setLocale(locale);
+							String localeString = user.getProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE);
+							Locale locale = null;
+							if (localeString.length() == 5) {
+								//user's locale is language_COUNTRY (i.e. en_US)
+								String lang = localeString.substring(0,2);
+								String country = localeString.substring(3,5);
+								locale = new Locale(lang, country);
+							}
+							else {
+								// user's locale is only the language (language plus greater than 2 char country code
+								locale = new Locale(localeString);
+							}
+							OpenmrsCookieLocaleResolver oclr = new OpenmrsCookieLocaleResolver();
+							oclr.setLocale(request, response, locale);
 						}
 					}
 					

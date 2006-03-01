@@ -120,7 +120,7 @@
 		if (selectedLink == null) {
 			editForm.className = "preview";
 			editButtons.style.display = "none";
-			formTitle.innerHTML = "Preview: (click to edit)";
+			formTitle.innerHTML = "<spring:message code="Form.preview"/>";
 			DWRFormService.getFormField(fillForm, id);
 		}
 		return false;
@@ -134,7 +134,6 @@
 	}
 	
 	function deleteField(id, link) {
-		//TODO: finish delete function
 		var answer = confirm("Are you sure you want to delete '" + id + "'?");
 		if (answer == true) {
 			DWRFormService.deleteFormField(updateParents, id);
@@ -496,6 +495,10 @@
 
 <h2><spring:message code="Form.design.title" /></h2>	
 
+<c:if test="${form.published == true}">
+	<div class="retiredMessage"><div><spring:message code="Form.design.disabled"/></div></div>
+</c:if>
+
 <table width="99%">
 	<tr>
 		<td valign="top" width="625">
@@ -515,15 +518,19 @@
 				<div id="formTitle"></div>
 				
 				<div id="fieldButtons">
-					<input type="button" onclick="addNewField()" value="<spring:message code="Field.addNewField"/>"/>
-					<input type="button" onclick="editForThisForm()" value="<spring:message code="Field.editForThisForm"/>"/>
-					<input type="button" onclick="editForAllForms()" value="<spring:message code="Field.editForAllForms"/>"/>
+					<c:if test="${form.published == false}">
+						<input type="button" onclick="addNewField()" value="<spring:message code="Field.addNewField"/>"/>
+						<input type="button" onclick="editForThisForm()" value="<spring:message code="Field.editForThisForm"/>"/>
+						<input type="button" onclick="editForAllForms()" value="<spring:message code="Field.editForAllForms"/>"/>
+					</c:if>
 				</div>
 				
 				<%@ include file="formFieldEdit.jsp" %>
 				<div id="editButtons">
-					<input type="button" value="<spring:message code="general.save"/>" onclick="save()" />
-					<input type="button" value="<spring:message code="general.cancel"/>" onclick="cancel()" />
+					<c:if test="${form.published == false}">
+						<input type="button" value="<spring:message code="general.save"/>" onclick="save()" />
+						<input type="button" value="<spring:message code="general.cancel"/>" onclick="cancel()" />
+					</c:if>
 				</div>
 			</div>
 		</td>

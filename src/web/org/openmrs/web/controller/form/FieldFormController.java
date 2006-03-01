@@ -14,6 +14,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Field;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
@@ -107,6 +108,7 @@ public class FieldFormController extends SimpleFormController {
 		Locale locale = context.getLocale();
 		
 		Map<String, Object> map = new HashMap<String, Object>();
+		String defaultVerbose = "false";
 		
 		if (context != null && context.isAuthenticated()) {
 			FormService fs = context.getFormService();
@@ -116,7 +118,10 @@ public class FieldFormController extends SimpleFormController {
 				map.put("conceptName", field.getConcept().getName(locale));
 			else
 				map.put("conceptName", "");
+			defaultVerbose = context.getAuthenticatedUser().getProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE); 
 		}
+		
+		map.put("defaultVerbose", defaultVerbose.equals("true") ? true : false);
 		
 		return map;
 	}

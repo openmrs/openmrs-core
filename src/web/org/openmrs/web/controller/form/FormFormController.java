@@ -21,6 +21,7 @@ import org.openmrs.formentry.FormUtil;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.propertyeditor.EncounterTypeEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -41,7 +42,7 @@ public class FormFormController extends SimpleFormController {
                 new CustomNumberEditor(java.lang.Integer.class, true));
         binder.registerCustomEditor(EncounterType.class, new EncounterTypeEditor(context));
 	}
-    
+
 	/** 
 	 * 
 	 * The onSubmit function receives the form/command object that was modified
@@ -57,9 +58,51 @@ public class FormFormController extends SimpleFormController {
 		
 		if (context != null && context.isAuthenticated()) {
 			Form form = (Form)obj;
-			context.getFormService().updateForm(form);
-			view = getSuccessView();
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.saved");
+			MessageSourceAccessor msa = getMessageSourceAccessor();
+			String action = request.getParameter("action");
+			if (action == null) {
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.not.saved");
+			}
+			else {
+				if (action.equals(msa.getMessage("Form.save"))) {
+					try {
+						context.getFormService().updateForm(form);
+						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.saved");
+					}
+					catch (Exception e) {
+						log.error(e);
+						errors.reject(e.getMessage());
+						httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.not.saved");
+						return showForm(request, response, errors);
+					}
+				}
+				else if (action.equals(msa.getMessage("Form.delete"))) {
+					try {
+						context.getFormService().deleteForm(form);
+						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.deleted");
+					}
+					catch (Exception e) {
+						log.error(e);
+						errors.reject(e.getMessage());
+						httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.cannot.delete");
+						return showForm(request, response, errors);
+					}
+				}
+				else {
+					try {
+						context.getFormService().duplicateForm(form);
+						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.duplicated");
+					}
+					catch (Exception e) {
+						log.error(e);
+						errors.reject(e.getMessage());
+						httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.cannot.duplicate");
+						return showForm(request, response, errors);
+					}
+				}
+
+				view = getSuccessView();
+			}
 		}
 		
 		return new ModelAndView(new RedirectView(view));

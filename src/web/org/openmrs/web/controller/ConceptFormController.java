@@ -28,6 +28,7 @@ import org.openmrs.Form;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.propertyeditor.ConceptAnswersEditor;
 import org.openmrs.web.propertyeditor.ConceptClassEditor;
@@ -296,8 +297,9 @@ public class ConceptFormController extends SimpleFormController {
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-		Locale locale = RequestContextUtils.getLocale(request);
+		Locale locale = context.getLocale();
 		Map<String, Object> map = new HashMap<String, Object>();
+		String defaultVerbose = "false";
 		
 		if (context != null) {
 			ConceptService cs = context.getConceptService();
@@ -349,8 +351,11 @@ public class ConceptFormController extends SimpleFormController {
 			    	map.put("nextConcept", cs.getNextConcept(concept));
 			    	forms = context.getFormService().getForms(concept);
 				}
+				
+				if (context.isAuthenticated())
+					defaultVerbose = context.getAuthenticatedUser().getProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
 			}
-
+			
 	    	map.put("conceptName", conceptName);
 	    	map.put("conceptSynonyms", conceptSynonyms);
 	    	map.put("conceptSets", conceptSets);
@@ -365,6 +370,8 @@ public class ConceptFormController extends SimpleFormController {
 			map.put("locale", locale.getLanguage().substring(0, 2));
 			
 		}
+		
+		map.put("defaultVerbose", defaultVerbose.equals("true") ? true : false);
 		
 		return map;
 	} 

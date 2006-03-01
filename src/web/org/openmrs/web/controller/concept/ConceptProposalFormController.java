@@ -137,6 +137,9 @@ public class ConceptProposalFormController extends SimpleFormController {
     }
     
 	protected Map referenceData(HttpServletRequest request, Object object, Errors errors) throws Exception {
+		HttpSession httpSession = request.getSession();
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		ConceptProposal cp = (ConceptProposal)object;
@@ -148,6 +151,12 @@ public class ConceptProposalFormController extends SimpleFormController {
 		map.put("obsConcept", listItem);
 		
 		map.put("states", OpenmrsConstants.CONCEPT_PROPOSAL_STATES());
+		
+		String defaultVerbose = "false";
+		if (context != null && context.isAuthenticated()){
+			defaultVerbose = context.getAuthenticatedUser().getProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE); 
+		}
+		map.put("defaultVerbose", defaultVerbose.equals("true") ? true : false);
 		
 		return map;
 	}

@@ -420,5 +420,19 @@ public class User extends Person implements java.io.Serializable {
 	public void setProperties(Map<String, String> properties) {
 		this.properties = properties;
 	}
+	
+	/**
+	 * Get prop property from this user's properties.
+	 * If prop is not found in properties, return empty string
+	 * @param prop
+	 * @return property value
+	 */
+	public String getProperty(String prop) {
+		if (properties != null)
+			if (properties.containsKey(prop))
+				return properties.get(prop);
+		
+		return "";
+	}
 
 }

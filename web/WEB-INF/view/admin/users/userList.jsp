@@ -98,7 +98,6 @@
 	<form method="post" onSubmit="return search(0, event);">
 		<spring:message code="User.find"/>
 		<input name="phrase" id="phrase" type="text" class="prompt" size="30" onKeyUp="search(400, event)"/> &nbsp;
-		<!-- <input type="checkbox" id="verboseListing" value="true" onclick="search(0, event); phrase.focus();"><label for="verboseListing"><spring:message code="dictionary.verboseListing"/></label> -->
 		<br />
 	</form>
 	

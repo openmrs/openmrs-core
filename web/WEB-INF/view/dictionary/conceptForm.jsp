@@ -403,7 +403,7 @@
 		<form method="get" onSubmit="return searchBoxChange('conceptSearchBody', searchText, null, false, 0); return false;">
 			<h3><spring:message code="Concept.find"/></h3>
 			<input type="text" id="searchText" size="45" onkeyup="return searchBoxChange('conceptSearchBody', this, event, false, 400);"> &nbsp;
-			<input type="checkbox" id="verboseListing" value="true" onclick="searchBoxChange('conceptSearchBody', searchText, event, false, 0); searchText.focus();"><label for="verboseListing"><spring:message code="dictionary.verboseListing"/></label>
+			<input type="checkbox" id="verboseListing" value="true" <c:if test="${defaultVerbose == true}">checked</c:if> onclick="searchBoxChange('conceptSearchBody', searchText, event, false, 0); searchText.focus();"><label for="verboseListing"><spring:message code="dictionary.verboseListing"/></label>
 		</form>
 		<div id="conceptSearchResults">
 			<table>

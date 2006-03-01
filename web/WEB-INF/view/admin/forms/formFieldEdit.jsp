@@ -6,7 +6,7 @@
 			<div id="searchForm" class="searchForm">
 				<div class="wrapper">
 					<div style="text-align: right">
-						<input type="checkbox" id="verboseListing" onclick="showVerbose()">
+						<input type="checkbox" id="verboseListing" <c:if test="${defaultVerbose == true}">checked</c:if> onclick="showVerbose()">
 						<label for="verbose"><spring:message code="dictionary.verboseListing"/></label> &nbsp; 
 						<input type="button" onClick="return closeBox();" id="closeButton" value="X"/>
 					</div>
