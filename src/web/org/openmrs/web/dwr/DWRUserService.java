@@ -1,7 +1,9 @@
 package org.openmrs.web.dwr;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
@@ -42,7 +44,7 @@ public class DWRUserService {
 				log.info(userId + "|" + searchValue + "|" + roles.toString());
 				
 				FormEntryService fs = context.getFormEntryService();
-				List<User> users = new Vector<User>();
+				Set<User> users = new HashSet<User>();
 				
 				if (roles == null) 
 					roles = new Vector<String>();
@@ -83,7 +85,7 @@ public class DWRUserService {
 		else {
 			try {
 				FormEntryService fs = context.getFormEntryService();
-				List<User> users = new Vector<User>();
+				Set<User> users = new HashSet<User>();
 				
 				if (roles == null) 
 					roles = new Vector<String>();
