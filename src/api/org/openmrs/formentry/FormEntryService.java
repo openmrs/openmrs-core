@@ -292,7 +292,7 @@ public class FormEntryService {
 		return forms;
 	}
 
-	public Collection<User> findUsers(String searchValue, List<String> roles,
+	public Collection<User> findUsers(String searchValue, List<String> groups, List<String> roles,
 			boolean includeVoided) {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY))
 			throw new APIAuthenticationException("Privilege required: "
@@ -301,7 +301,7 @@ public class FormEntryService {
 		List<User> users = new Vector<User>();
 		context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
 		try {
-			users = context.getUserService().findUsers(searchValue, roles,
+			users = context.getUserService().findUsers(searchValue, groups, roles,
 					includeVoided);
 		} catch (Exception e) {
 			log.error(e);
@@ -311,7 +311,7 @@ public class FormEntryService {
 		return users;
 	}
 
-	public Collection<User> getAllUsers(List<String> roles,
+	public Collection<User> getAllUsers(List<String> groups, List<String> roles,
 			boolean includeVoided) {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY))
 			throw new APIAuthenticationException("Privilege required: "
@@ -320,7 +320,7 @@ public class FormEntryService {
 		List<User> users = new Vector<User>();
 		context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
 		try {
-			users = context.getUserService().getAllUsers(roles, includeVoided);
+			users = context.getUserService().getAllUsers(groups, roles, includeVoided);
 		} catch (Exception e) {
 			log.error(e);
 		} finally {

@@ -62,6 +62,10 @@
 	<listener>
 		<listener-class>org.openmrs.web.Listener</listener-class>
 	</listener>
+	
+	<listener>
+		<listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
+	</listener>
 
 	
 	<servlet>

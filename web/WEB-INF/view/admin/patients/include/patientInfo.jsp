@@ -85,6 +85,7 @@
 		<td>
 			<spring:bind path="patient.civilStatus">
 				<select name="civilStatus">
+					<option value=""></option>
 					<openmrs:forEachRecord name="civilStatus" select="${status.value}">
 						<option value="${record.key}" ${selected}>
 							${record.value}

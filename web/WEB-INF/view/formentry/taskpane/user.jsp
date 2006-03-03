@@ -22,6 +22,13 @@
 		</request:parameterValues>
 	</request:parameters>
 	
+	var groups = new Array();
+	<request:parameters id="g" name="group">
+		<request:parameterValues id="names">
+			groups.push('<jsp:getProperty name="names" property="value"/>');
+		</request:parameterValues>
+	</request:parameters>
+	
 	var onSelect = function(userList) {
 		var user = new miniObject(userList[0]);
 		setObj('//encounter.provider_id', user)
@@ -66,11 +73,11 @@
 	function findObjects(text) {
 		// on page startup, call search with 'All' to return all users. (or in the middle of searching, obviously)
 		if (text == 'All') {
-			DWRUserService.getAllUsers(roles, false, preFillTable);
+			DWRUserService.getAllUsers(groups, roles, false, preFillTable);
 		}
 		//must have at least 2 characters entered or that character be a number
 		else if (text.length > 1 || (parseInt(text) >= 0 && parseInt(text) <= 9)) {
-	    	DWRUserService.findUsers(text, roles, false, preFillTable);
+	    	DWRUserService.findUsers(text, groups, roles, false, preFillTable);
 		}
 		else {
 			var msg = new Array();

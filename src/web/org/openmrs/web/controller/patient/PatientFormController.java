@@ -15,6 +15,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Form;
 import org.openmrs.Location;
@@ -29,6 +30,7 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.formentry.FormEntryService;
 import org.openmrs.web.WebConstants;
+import org.openmrs.web.propertyeditor.ConceptEditor;
 import org.openmrs.web.propertyeditor.LocationEditor;
 import org.openmrs.web.propertyeditor.PatientIdentifierTypeEditor;
 import org.openmrs.web.propertyeditor.TribeEditor;
@@ -70,6 +72,7 @@ public class PatientFormController extends SimpleFormController {
         binder.registerCustomEditor(Tribe.class, new TribeEditor(context));
         binder.registerCustomEditor(PatientIdentifierType.class, new PatientIdentifierTypeEditor(context));
         binder.registerCustomEditor(Location.class, new LocationEditor(context));
+        binder.registerCustomEditor(Concept.class, "civilStatus", new ConceptEditor(context));
 	}
 
 	/**
@@ -213,7 +216,7 @@ public class PatientFormController extends SimpleFormController {
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			String action = request.getParameter("action");
 			PatientService ps = context.getPatientService();
-			
+						
 			if (action.equals(msa.getMessage("Patient.delete"))) {
 				try {
 					ps.deletePatient(patient);

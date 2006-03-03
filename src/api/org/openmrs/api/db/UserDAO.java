@@ -187,9 +187,9 @@ public interface UserDAO {
 	
 	public boolean isSecretAnswer(User u, String answer) throws DAOException;
 	
-	public List<User> findUsers(String name, List<String> roles, boolean includeRetired) throws DAOException;
+	public List<User> findUsers(String name, List<String> groups, List<String> roles, boolean includeRetired) throws DAOException;
 	
-	public List<User> getAllUsers(List<String> roles, boolean includeRetired) throws DAOException;
+	public List<User> getAllUsers(List<String> groups, List<String> roles, boolean includeRetired) throws DAOException;
 	
 	/**
 	 * Get/generate/find the next system id to be doled out.  Assume check digit /not/ applied

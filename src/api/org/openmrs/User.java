@@ -59,11 +59,9 @@ public class User extends Person implements java.io.Serializable {
 	 * @return
 	 */
 	public boolean isSuperUser() {
-		Set<Role> tmproles = getRoles();
+		Set<Role> tmproles = new HashSet<Role>();
+		tmproles.addAll(getRoles());
 		
-		if (tmproles == null)
-			tmproles = new HashSet<Role>();
-
 		if (groups != null)
 			for (Group g : groups) {
 				tmproles.addAll(g.getRoles());
@@ -87,7 +85,8 @@ public class User extends Person implements java.io.Serializable {
 		if (isSuperUser())
 			return true;
 		
-		Set<Role> tmproles = getRoles();
+		Set<Role> tmproles = new HashSet<Role>();
+		tmproles.addAll(getRoles());
 
 		if (groups != null)
 			for (Group g : groups) {
@@ -116,7 +115,11 @@ public class User extends Person implements java.io.Serializable {
 				return true;
 		}
 		
-		Set<Role> tmproles = getRoles();
+		if (roles == null)
+			return false;
+		
+		Set<Role> tmproles = new HashSet<Role>();
+		tmproles.addAll(getRoles());
 
 		if (groups != null)
 			for (Group g : groups) {
@@ -131,9 +134,26 @@ public class User extends Person implements java.io.Serializable {
 		return false;
 	}
 	
+	public boolean isInGroup(String g) {
+		return isInGroup(g, false);
+	}
+	
+	public boolean isInGroup(String g, boolean ignoreSuperUser) {
+		if (ignoreSuperUser == false) {
+			if (isSuperUser())
+				return true;
+		}
+		
+		if (groups == null)
+			return false;
+		
+		return groups.contains(new Group(g));
+	}
+	
 	public Collection<Privilege> getPrivileges() {
 		Set<Privilege> privileges = new HashSet<Privilege>();
-		Set<Role> tmproles = getRoles();
+		Set<Role> tmproles = new HashSet<Role>();
+		tmproles.addAll(getRoles());
 
 		if (groups != null)
 			for (Group g : groups) {
@@ -262,7 +282,7 @@ public class User extends Person implements java.io.Serializable {
 	
 	/**
 	 * Add the given Group to the list of groups for this User
-	 * @param groupservation
+	 * @param group
 	 */
 	public void addGroup(Group group) {
 		if (groups == null)
@@ -273,7 +293,7 @@ public class User extends Person implements java.io.Serializable {
 
 	/**
 	 * Remove the given obervation from the list of groups for this User
-	 * @param groupservation
+	 * @param group
 	 */
 	public void removeGroup(Group group) {
 		if (groups != null)

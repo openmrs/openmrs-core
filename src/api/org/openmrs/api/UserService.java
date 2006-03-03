@@ -1,6 +1,7 @@
 package org.openmrs.api;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import org.openmrs.Group;
@@ -279,17 +280,17 @@ public class UserService {
 	 * @param includeVoided
 	 * @return
 	 */
-	public List<User> findUsers(String name, List<String> roles, boolean includeVoided) {
+	public List<User> findUsers(String name, List<String> groups, List<String> roles, boolean includeVoided) {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_USERS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_USERS);
 		name = name.replace(", ", " ");
-		return getUserDAO().findUsers(name, roles, includeVoided);
+		return getUserDAO().findUsers(name, groups, roles, includeVoided);
 	}
 	
-	public List<User> getAllUsers(List<String> roles, boolean includeVoided) {
+	public List<User> getAllUsers(List<String> groups, List<String> roles, boolean includeVoided) {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_USERS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_USERS);
-		return getUserDAO().getAllUsers(roles, includeVoided);
+		return getUserDAO().getAllUsers(groups, roles, includeVoided);
 	}
 	
 	/**
@@ -297,7 +298,8 @@ public class UserService {
 	 * @param new user that has privileges 
 	 */
 	private void checkPrivileges(User user) {
-		Collection<Role> roles = user.getRoles();
+		Collection<Role> roles = new HashSet<Role>();
+		roles.addAll(user.getRoles());
 		
 		for (Group g : user.getGroups())
 			if (g.getRoles() != null)

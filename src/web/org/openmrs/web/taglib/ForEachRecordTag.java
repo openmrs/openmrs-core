@@ -1,6 +1,8 @@
 package org.openmrs.web.taglib;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.jsp.JspException;
@@ -9,6 +11,9 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
+import org.openmrs.ConceptAnswer;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
@@ -31,6 +36,7 @@ public class ForEachRecordTag extends BodyTagSupport {
 		records = null;
 		
 		Context context = (Context)pageContext.getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Locale locale = context.getLocale();
 		
 		if (name.equals("patientIdentifierType")) {
 			PatientService ps = context.getPatientService();
@@ -45,7 +51,17 @@ public class ForEachRecordTag extends BodyTagSupport {
 			records = ps.getTribes().iterator();
 		}
 		else if (name.equals("civilStatus")) {
-			Map<String, String> opts = OpenmrsConstants.CIVIL_STATUS();
+			ConceptService cs = context.getConceptService();
+			Concept civilStatus = cs.getConcept(OpenmrsConstants.CIVIL_STATUS_CONCEPT_ID);
+			if (civilStatus == null)
+				log.error("OpenmrsConstants.CIVIL_STATUS_CONCEPT_ID is defined incorrectly.");
+			
+			records = civilStatus.getAnswers().iterator();
+			
+			Map<String, String> opts = new HashMap<String, String>();
+			for (ConceptAnswer a : civilStatus.getAnswers()) {
+				opts.put(a.getAnswerConcept().getConceptId().toString(), a.getAnswerConcept().getName(locale, false).getName());
+			}
 			records = opts.entrySet().iterator();
 			if (select != null)
 				select = select.toString() + "=" + opts.get(select);

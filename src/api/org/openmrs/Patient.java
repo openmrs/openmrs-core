@@ -31,7 +31,7 @@ public class Patient extends Person implements java.io.Serializable {
 	private String citizenship;
 	private Tribe tribe;
 	private String mothersName;
-	private Integer civilStatus;
+	private Concept civilStatus;
 	private Date deathDate;
 	private String causeOfDeath;
 	private String healthDistrict;
@@ -225,7 +225,7 @@ public class Patient extends Person implements java.io.Serializable {
 	 * @return patient's civil status (single, married, separated, divorced,
 	 *         etc.)
 	 */
-	public Integer getCivilStatus() {
+	public Concept getCivilStatus() {
 		return this.civilStatus;
 	}
 
@@ -233,7 +233,7 @@ public class Patient extends Person implements java.io.Serializable {
 	 * @param civilStatus
 	 *            patient's civil(marriage) status
 	 */
-	public void setCivilStatus(Integer civilStatus) {
+	public void setCivilStatus(Concept civilStatus) {
 		this.civilStatus = civilStatus;
 	}
 

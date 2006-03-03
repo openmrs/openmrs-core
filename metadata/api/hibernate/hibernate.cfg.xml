@@ -7,23 +7,6 @@
 
 	<session-factory>
 	
-		<!-- defined in META-INF/context.xml
-		<property name="hibernate.connection.driver_class">
-			com.mysql.jdbc.Driver
-		</property>
-		<property name="hibernate.connection.url">
-			jdbc:mysql://localhost:3306/openmrs
-		</property>
-		<property name="hibernate.connection.validationQuery">
-			select * from users
-		</property>
-		<property name="hibernate.connection.username">test</property>
-		<property name="hibernate.connection.password">test</property>
-		<property name="hibernate.show_sql">true</property>
-		<property name="lazy">true</property>
-		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
-		--> 
-		
 		<property name="connection.driver_class">@DATABASE-DRIVER_CLASS@</property>
 		<property name="connection.url">@DATABASE-CONNECTION-URL@</property>
 		<property name="connection.username">@DATABASE-USERNAME@</property>
@@ -33,10 +16,8 @@
 		<property name="lazy">@HIBERNATE-LAZY@</property>
 		<property name="dialect">@HIBERNATE-DIALECT@</property>
 		
-		<!--<property name="connection.pool_size">1</property>
-		<property name="current_session_context_class">thread</property>-->
-		
 		<property name="hibernate.connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>
+		<property name="hibernate.connection.release_mode">after_transaction</property>
 		<property name="hibernate.c3p0.max_size">@CACHE.MAX_SIZE@</property>
 		<property name="hibernate.c3p0.min_size">@CACHE.MIN_SIZE@</property> 
 		<property name="hibernate.c3p0.timeout">@CACHE.TIMEOUT@</property>
@@ -46,13 +27,6 @@
 		
 		<property name="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</property>
 		
-		<!--
-		<property name="hibernate.connection.datasource">java:comp/env/jdbc/openmrs</property>
-		
-		
-		<property name="hibernate.cglib.use_reflection_optimizer">false</property>
-		--> 
-
 		<mapping resource="org/openmrs/api/db/hibernate/Concept.hbm.xml" />
 		<!-- <mapping resource="org/openmrs/api/db/hibernate/ConceptAnswer.hbm.xml" /> -->
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptClass.hbm.xml" />

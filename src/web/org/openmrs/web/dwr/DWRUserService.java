@@ -21,7 +21,7 @@ public class DWRUserService {
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
-	public Collection<UserListItem> findUsers(String searchValue, List<String> roles, boolean includeVoided) {
+	public Collection<UserListItem> findUsers(String searchValue, List<String> groups, List<String> roles, boolean includeVoided) {
 		
 		Vector userList = new Vector();
 
@@ -49,7 +49,7 @@ public class DWRUserService {
 				if (roles == null) 
 					roles = new Vector<String>();
 				
-				users.addAll(fs.findUsers(searchValue, roles, includeVoided));
+				users.addAll(fs.findUsers(searchValue, groups, roles, includeVoided));
 				
 				userList = new Vector(users.size());
 				
@@ -69,7 +69,7 @@ public class DWRUserService {
 	}
 
 	
-	public Collection<UserListItem> getAllUsers(List<String> roles, boolean includeVoided) {
+	public Collection<UserListItem> getAllUsers(List<String> groups, List<String> roles, boolean includeVoided) {
 		
 		Vector userList = new Vector();
 
@@ -90,7 +90,7 @@ public class DWRUserService {
 				if (roles == null) 
 					roles = new Vector<String>();
 				
-				users.addAll(fs.getAllUsers(roles, includeVoided));
+				users.addAll(fs.getAllUsers(groups, roles, includeVoided));
 				
 				userList = new Vector(users.size());
 				

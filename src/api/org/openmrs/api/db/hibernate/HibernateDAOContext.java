@@ -300,5 +300,13 @@ public class HibernateDAOContext implements DAOContext {
 		//session = null;
 		
 	}
+	
+	public static void startup() {
+		HibernateUtil.startup();
+	}
+	
+	public static void shutdown() {
+		HibernateUtil.shutdown();
+	}
 
 }

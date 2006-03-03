@@ -67,7 +67,7 @@ public class Context implements ApplicationContextAware {
 	 *  Default public constructor
 	 *
 	 */
-	public Context() { }
+	public Context() {}
 
 	
 	/**
@@ -414,5 +414,20 @@ public class Context implements ApplicationContextAware {
 	
 	public void endTransaction() {
 		getDaoContext().closeSession();
+	}
+	
+	public static void startup() {
+		// TODO see shutdown()
+		
+		//applicationContext.startup();
+	}
+	
+	public static void shutdown() {
+		// TODO create static methods for startup and shutdown of the context
+		//		currently, org.openmrs.web.Listener calls HibernateUtil.startup/shutdown.
+		//		I would prefer it call Context.startup() (or similar) for a non-hibernate dependent listener
+		//		I assume this is possible once we create a user and an app context
+		
+		// applicationContext().shutdown();
 	}
 }

@@ -36,10 +36,11 @@
 
 		<property name="mothersName" type="java.lang.String"
 			column="mothers_name" length="50" />
-
-		<property name="civilStatus" type="int" column="civil_status"
-			length="11" />
-
+		
+		<many-to-one name="civilStatus" class="Concept" not-null="false">
+			<column name="civil_status" />
+		</many-to-one>
+		
 		<property name="deathDate" type="java.util.Date"
 			column="death_date" length="19" />
 

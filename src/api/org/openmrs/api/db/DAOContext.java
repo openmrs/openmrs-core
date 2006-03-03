@@ -62,7 +62,6 @@ public interface DAOContext {
 	public NoteDAO getNoteDAO();
 	
 	public void openSession();
-	
 	public void closeSession();
 	
 }

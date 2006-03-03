@@ -46,7 +46,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PatientSetDAO;
 import org.openmrs.reporting.PatientSet;
-import org.openmrs.util.OpenmrsConstants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -264,7 +263,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 				patientNode.setAttribute("mothers_name", p.getMothersName());
 			}
 			if (p.getCivilStatus() != null) {
-				patientNode.setAttribute("civil_status", OpenmrsConstants.CIVIL_STATUS().get(p.getCivilStatus()));
+				patientNode.setAttribute("civil_status", p.getCivilStatus().getName(locale, false).getName());
 			}
 			if (p.getDeathDate() != null) {
 				patientNode.setAttribute("death_date", df.format(p.getDeathDate()));

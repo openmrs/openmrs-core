@@ -1,7 +1,6 @@
 package org.openmrs.util;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,17 +11,8 @@ public class OpenmrsConstants {
 	public static final String REGEX_LARGE = "[!\"#\\$%&'\\(\\)\\*,+-\\./:;<=>\\?@\\[\\\\\\\\\\]^_`{\\|}~]";
 	public static final String REGEX_SMALL = "[!\"#\\$%&'\\(\\)\\*,\\./:;<=>\\?@\\[\\\\\\\\\\]^_`{\\|}~]";
 	
-	public static final Map<String, String> CIVIL_STATUS() {
-		HashMap<String, String> civilStatus = new HashMap<String, String>();
-		civilStatus.put("1", "Single");
-		civilStatus.put("2", "Married");
-		civilStatus.put("3", "Divorced");
-		civilStatus.put("4", "Widowed");
-		
-		return civilStatus;
-	}
+	public static final Integer CIVIL_STATUS_CONCEPT_ID = 1054;
 	
-	// TODO put civilStatus in database ?
 	public static final Collection<String> STOP_WORDS() {
 		List<String> stopWords = new Vector<String>();
 		stopWords.add("A");

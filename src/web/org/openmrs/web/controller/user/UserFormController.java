@@ -95,13 +95,14 @@ public class UserFormController extends SimpleFormController {
 					
 			// add Roles to user (because spring can't handle lists as properties...)
 				String[] roles = request.getParameterValues("roles");
-				Set<Role> set = new HashSet<Role>();
+				Set<Role> newRoles = new HashSet<Role>();
 				if (roles != null) {
-					for (String role : roles) {
-						set.add(us.getRole(role));
+					for (String r : roles) {
+						Role role = us.getRole(r);
+						newRoles.add(role);
+						user.addRole(role);
 					}
 				}
-				
 				
 				/*  TODO check if user can delete privilege
 				Collection<Collection> lists = Helper.compareLists(user.getRoles(), set);
@@ -115,14 +116,16 @@ public class UserFormController extends SimpleFormController {
 				}
 				*/
 				
-				user.setRoles(set);
+				user.getRoles().retainAll(newRoles);
 			
 			// add Groups to user (because spring can't handle lists as properties...)
 				String[] groups = request.getParameterValues("groups");
-				Set<Group> gs = new HashSet<Group>();
+				Set<Group> newGroups = new HashSet<Group>();
 				if (groups != null) {
-					for (String group : groups) {
-						gs.add(us.getGroup(group));
+					for (String g : groups) {
+						Group group = us.getGroup(g); 
+						newGroups.add(group);
+						user.addGroup(group);
 					}
 				}
 				
@@ -141,7 +144,7 @@ public class UserFormController extends SimpleFormController {
 				*/
 				
 				
-				user.setGroups(gs);
+				user.getGroups().retainAll(newGroups);
 		}
 		else {
 			errors.reject("auth.invalid");

@@ -34,8 +34,7 @@
 	}
 	
 	var getUsername = function(u) {
-		if (typeof u == 'string') return '';
-		if (u.username == null) return '';
+		if (typeof u == 'string' || u.username == null) return '';
 		return " &nbsp; " + u.username;
 	}
 
@@ -69,11 +68,11 @@
 	function findObjects(text) {
 		// on page startup, call search with 'All' to return all users. (or in the middle of searching, obviously)
 		if (text == 'All') {
-			DWRUserService.getAllUsers(fillTable, [], true);
+			DWRUserService.getAllUsers(fillTable, [], [], true);
 		}
 		//must have at least 2 characters entered or that character be a number
 		else if (text.length > 1 || (parseInt(text) >= 0 && parseInt(text) <= 9)) {
-	    	DWRUserService.findUsers(fillTable, text, [], true);
+	    	DWRUserService.findUsers(fillTable, text, [], [], true);
 		}
 		else {
 			var msg = new Array();

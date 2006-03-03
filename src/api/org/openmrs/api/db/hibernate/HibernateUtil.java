@@ -14,20 +14,6 @@ public class HibernateUtil {
 	private static Log log = LogFactory.getLog("org.openmrs.api.db.hibernate.HibernateUtil");
 	
 	private static SessionFactory sessionFactory;
-
-	static {
-		try {
-			// Create the sessionFactory
-			sessionFactory = new Configuration().configure()
-					.buildSessionFactory();
-			log.debug("Creating sessionFactory");
-		} catch (Throwable ex) {
-			// Make sure you log the exception, as it might be swallowed
-			System.err.println("Initial sessionFactory creation failed." + ex);
-			throw new ExceptionInInitializerError(ex);
-		}
-	}
-
 	private static ThreadLocal<Session> threadLocalSession = new ThreadLocal<Session>();
 	private static ThreadLocal<Transaction> threadLocalTransaction = new ThreadLocal<Transaction>();
 
@@ -42,7 +28,7 @@ public class HibernateUtil {
 			threadLocalSession.set(s);
 		}
 		else if (!s.isOpen() || !s.isConnected()) {
-			s.reconnect();
+			s.reconnect(s.connection());
 		}
 
 		return s;
@@ -70,11 +56,15 @@ public class HibernateUtil {
 		finally {
 			//close session
 			Session s = (Session) threadLocalSession.get();
-			threadLocalSession.set(null);
+			//threadLocalSession.set(null);
 			if (s != null) {
-				log.debug("closing threadLocalSession");
+				log.debug("Closing threadLocalSession");
 				s.close();
 			}
+			else
+				log.debug("Couldn't close threadLocalSession");
+			
+			threadLocalSession.remove();
 		}
 	}
 	
@@ -116,13 +106,27 @@ public class HibernateUtil {
 		}
 	}
 	
-	public static void shutdown() throws HibernateException {
-		if (sessionFactory != null) {
-			log.debug("shutting down threadLocalSession factory");
-			sessionFactory.close();
-			sessionFactory = null;
-			threadLocalSession = null;
-			threadLocalTransaction = null;
+	public static void startup() throws HibernateException {
+		try {
+			// Create the sessionFactory
+			log.debug("Creating sessionFactory");
+			sessionFactory = new Configuration().configure()
+					.buildSessionFactory();
+		} catch (Throwable ex) {
+			// Make sure you log the exception, as it might be swallowed
+			log.error("Initial sessionFactory creation failed." + ex);
+			throw new ExceptionInInitializerError(ex);
 		}
 	}
+	
+	public static void shutdown() throws HibernateException {
+		if (sessionFactory != null) {
+			log.debug("Closing any open sessions");
+			closeSession();
+			log.debug("Shutting down threadLocalSession factory");
+			sessionFactory.close();
+			log.debug("The threadLocalSession has been closed");
+		}
+	}
+	
 }

@@ -485,7 +485,7 @@ public class HibernateUserDAO implements
 		
 	}
 	
-	public List<User> findUsers(String name, List<String> roles, boolean includeVoided) {
+	public List<User> findUsers(String name, List<String> groups, List<String> roles, boolean includeVoided) {
 		
 		Session session = HibernateUtil.currentSession();
 		
@@ -533,12 +533,26 @@ public class HibernateUserDAO implements
 		// TODO figure out how to get Hibernate to do the sql for us
 		
 		List returnList = new Vector();
-		if (roles != null && roles.size() > 0) {
+		if ((roles != null && roles.size() > 0) || (groups != null && groups.size() > 0)) {
+			boolean userAdded;
 			for (Object o : criteria.list()) {
 				User u = (User)o;
-				for (String r : roles)
-				if (u.hasRole(r, true))
-					returnList.add(u);
+				userAdded = false;
+				if (roles.size() > 0) {
+					for (String r : roles)
+						if (u.hasRole(r, true)) {
+							returnList.add(u);
+							userAdded = true;
+							break;
+						}
+				}
+				if (groups.size() > 0 && userAdded == false) {
+					for (String g : groups)
+						if (u.isInGroup(g, true)) {
+							returnList.add(u);
+							break;
+						}
+				}
 			}
 		}
 		else
@@ -547,7 +561,7 @@ public class HibernateUserDAO implements
 		return returnList;
 	}
 	
-	public List<User> getAllUsers(List<String> roles, boolean includeVoided) {
+	public List<User> getAllUsers(List<String> groups, List<String> roles, boolean includeVoided) {
 		
 		Session session = HibernateUtil.currentSession();
 		
@@ -559,12 +573,26 @@ public class HibernateUserDAO implements
 			criteria.add(Expression.eq("voided", false));
 
 		List returnList = new Vector();
-		if (roles != null && roles.size() > 0) {
+		if ((roles != null && roles.size() > 0) || (groups != null && groups.size() > 0)) {
+			boolean userAdded;
 			for (Object o : criteria.list()) {
 				User u = (User)o;
-				for (String r : roles)
-				if (u.hasRole(r, true))
-					returnList.add(u);
+				userAdded = false;
+				if (roles.size() > 0) {
+					for (String r : roles)
+						if (u.hasRole(r, true)) {
+							returnList.add(u);
+							userAdded = true;
+							break;
+						}
+				}
+				if (groups.size() > 0 && userAdded == false) {
+					for (String g : groups)
+						if (u.isInGroup(g, true)) {
+							returnList.add(u);
+							break;
+						}
+				}
 			}
 		}
 		else

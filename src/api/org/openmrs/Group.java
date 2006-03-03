@@ -69,6 +69,11 @@ public class Group implements java.io.Serializable {
 	public void setRoles(Set<Role> roles) {
 		this.roles = roles;
 	}
+	
+	public boolean hasRole(String r) {
+		Role role = new Role(r);
+		return roles.contains(role);
+	}
 
 	/**
 	 * Adds the given Role to the list of roles

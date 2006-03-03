@@ -47,7 +47,7 @@
     <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
 	<property name="cache.max_size" value="10" />
 	<property name="cache.min_size" value="1" />
-	<property name="cache.timeout" value="5000" />
+	<property name="cache.timeout" value="100" />
 	<property name="cache.max_statements" value="100" />
 	<property name="cache.idle_test_period" value="300" />
 	<property name="cache.acquire_increment" value="2" />
