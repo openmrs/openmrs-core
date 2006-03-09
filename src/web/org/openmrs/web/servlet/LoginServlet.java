@@ -1,4 +1,4 @@
-package org.openmrs.web;
+package org.openmrs.web.servlet;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -15,6 +15,8 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.web.OpenmrsCookieLocaleResolver;
+import org.openmrs.web.WebConstants;
 
 public class LoginServlet extends HttpServlet {
 

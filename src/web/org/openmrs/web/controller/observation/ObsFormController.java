@@ -70,7 +70,7 @@ public class ObsFormController extends SimpleFormController {
     	
     	String reason = request.getParameter("editReason");
     	if (obs.getObsId() != null && (reason == null || reason.length() == 0))
-    		errors.reject("Obs.edit.reason.empty");
+    		errors.reject("editReason", "Obs.edit.reason.empty");
 
 		return super.processFormSubmission(request, reponse, obs, errors);
 	}
@@ -95,9 +95,9 @@ public class ObsFormController extends SimpleFormController {
 			if (obs.getObsId() == null)
 				os.createObs(obs);
 			else {
-				//void the previous obs
-				os.voidObs(obs, request.getParameter("editReason"));
-				
+				//save the current obsId so we can void this obs after creating the new one
+				Integer oldObsId = obs.getObsId();
+
 				context.endTransaction();
 				context.startTransaction();
 				
@@ -105,7 +105,15 @@ public class ObsFormController extends SimpleFormController {
 				obs.setObsId(null);
 				obs.setCreator(context.getAuthenticatedUser());
 				obs.setDateCreated(new Date());
-				os.unvoidObs(obs);
+				os.updateObs(obs);
+				Integer newObsId = obs.getObsId();
+				
+				context.endTransaction();
+				context.startTransaction();
+				
+				Obs oldObs = os.getObs(oldObsId);
+				os.voidObs(oldObs, request.getParameter("editReason") + " (new obsId: " + newObsId + ")");
+				
 			}
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Obs.saved");
@@ -163,6 +171,12 @@ public class ObsFormController extends SimpleFormController {
 		map.put("datePattern", dateFormat.toLocalizedPattern().toLowerCase());
 
 		map.put("defaultVerbose", defaultVerbose.equals("true") ? true : false);
+		
+		String editReason = request.getParameter("editReason");
+		if (editReason == null)
+			editReason = "";
+		
+		map.put("editReason", editReason);
 		
 		return map;
 	}

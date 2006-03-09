@@ -9,6 +9,13 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
+	<openmrs:hasPrivilege privilege="Manage Relationships">
+		<li <c:if test="<%= request.getRequestURI().contains("relationship") %>">class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/patients/relationship.list">
+				<spring:message code="Relationship.manage"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="Manage Tribes">
 		<li <c:if test="<%= request.getRequestURI().contains("tribe") %>">class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/patients/tribe.list">

@@ -16,6 +16,11 @@
 		padding: 2px;
 		width: 585px;
 	}
+	#exceptionMessage {
+		background-color: white;
+		padding: 1px;
+		color: black;
+	}
 </style>
 
 <script>
@@ -38,8 +43,11 @@ try {
 	// The Servlet spec guarantees this attribute will be available
 	//Throwable exception = (Throwable) request.getAttribute("javax.servlet.error.exception"); 
 
-	out.println("<b>" + exception.getClass().getName() + "</b>");
-	out.println(exception.getMessage()); 
+	if (exception != null) {
+		out.println("<b>" + exception.getClass().getName() + "</b>");
+		if (exception.getMessage() != null)
+			out.println("<pre id='exceptionMessage'>" + exception.getMessage().replaceAll("<", "&lt;") + "</pre>"); 
+	}
 	%>
 	
 	<br /><br />

@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -23,6 +24,9 @@ import org.openmrs.PatientAddress;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientName;
+import org.openmrs.Person;
+import org.openmrs.Relationship;
+import org.openmrs.RelationshipType;
 import org.openmrs.Tribe;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
@@ -289,6 +293,43 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 
 	/**
+	 * @see org.openmrs.api.db.PatientService#getPatientIdentifiers(org.openmrs.PatientIdentifierType)
+	 */
+	public List<PatientIdentifier> getPatientIdentifiers(PatientIdentifierType pit) throws DAOException {
+		Session session = HibernateUtil.currentSession();
+		List<PatientIdentifier> patientIdentifiers = session.createQuery("from PatientIdentifier p where p.identifierType = :pit")
+				.setParameter("pit", pit)
+				.list();
+		
+		return patientIdentifiers;
+	}
+	
+	/**
+	 * Only updates the identifier type at the moment
+	 * 
+	 * 
+	 * @see org.openmrs.api.db.PatientService#updatePatientIdentifier(org.openmrs.PatientIdentifier)
+	 */
+	public void updatePatientIdentifier(PatientIdentifier pi) throws DAOException {
+		Session session = HibernateUtil.currentSession();
+		try {
+			HibernateUtil.beginTransaction();
+			log.debug("type: " + pi.getIdentifierType().getName());
+			session.createQuery("update PatientIdentifier p set p.identifierType = :pit where p.patient = :pat and p.identifier = :id and p.location = :loc")
+				.setParameter("pit", pi.getIdentifierType())
+				.setParameter("pat", pi.getPatient())
+				.setParameter("id", pi.getIdentifier())
+				.setParameter("loc", pi.getLocation())
+				.executeUpdate();
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new DAOException(e);
+		}
+	}
+	
+	/**
 	 * @see org.openmrs.api.db.PatientService#getPatientIdentifierType(java.lang.Integer)
 	 */
 	public PatientIdentifierType getPatientIdentifierType(Integer patientIdentifierTypeId) throws DAOException {
@@ -344,6 +385,86 @@ public class HibernatePatientDAO implements PatientDAO {
 		return crit.list();
 	}
 
+	/**
+	 * @see org.openmrs.api.db.PatientService#getRelationship()
+	 */
+	public Relationship getRelationship(Integer relationshipId) throws DAOException {
+		Session session = HibernateUtil.currentSession();
+		
+		Relationship relationship = (Relationship)session.get(Relationship.class, relationshipId);
+		
+		return relationship;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.PatientService#getRelationships()
+	 */
+	public List<Relationship> getRelationships() throws DAOException {
+		Session session = HibernateUtil.currentSession();
+		
+		List<Relationship> relationships = session.createQuery("from Relationship r order by r.relationshipId asc").list();
+		
+		return relationships;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.PatientService#getRelationships(org.openmrs.Person)
+	 */
+	public List<Relationship> getRelationships(Person person) throws DAOException {
+		Session session = HibernateUtil.currentSession();
+		
+		Query query = null;
+		List<Relationship> relationships = new Vector<Relationship>();
+		
+		if (person.getPatient() != null) {
+			query = session.createQuery(
+				"from Relationship r where r.person.patient = :p1 or r.relative.patient = :p2 order by r.relationshipId asc "
+			)
+			.setParameter("p1", person.getPatient())
+			.setParameter("p2", person.getPatient());
+		}
+		else if (person.getUser() != null) {
+			query = session.createQuery(
+					"from Relationship r where r.person.user = :p1 or r.relative.user = :p2 order by r.relationshipId asc "
+				)
+				.setParameter("p1", person.getUser())
+				.setParameter("p2", person.getUser());
+		}
+		
+		if (query != null)
+			relationships = query.list(); 
+			
+		return relationships;
+	}
+
+	/**
+	 * @see org.openmrs.api.db.PatientService#getRelationshipType(java.lang.Integer)
+	 */
+	public RelationshipType getRelationshipType(Integer relationshipTypeId) throws DAOException {
+
+		Session session = HibernateUtil.currentSession();
+		
+		RelationshipType relationshipType = new RelationshipType();
+		relationshipType = (RelationshipType)session.get(RelationshipType.class, relationshipTypeId);
+		
+		return relationshipType;
+
+	}
+
+	/**
+	 * @see org.openmrs.api.db.PatientService#getRelationshipTypes()
+	 */
+	public List<RelationshipType> getRelationshipTypes() throws DAOException {
+
+		Session session = HibernateUtil.currentSession();
+		
+		List<RelationshipType> relationshipTypes;
+		relationshipTypes = session.createQuery("from RelationshipType r order by r.name").list();
+		
+		return relationshipTypes;
+
+	}
+	
 	/**
 	 * @see org.openmrs.api.db.PatientService#getLocation(java.lang.Integer)
 	 */

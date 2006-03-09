@@ -10,6 +10,39 @@
 		text-align: left;
 	}
 </style>
+<script type="text/javascript">
+	function mouseover(row, isDescription) {
+		if (row.className.indexOf("searchHighlight") == -1) {
+			row.className = "searchHighlight " + row.className;
+			var other = getOtherRow(row, isDescription);
+			other.className = "searchHighlight " + other.className;
+		}
+	}
+	function mouseout(row, isDescription) {
+		var c = row.className;
+		row.className = c.substring(c.indexOf(" ") + 1, c.length);
+		var other = getOtherRow(row, isDescription);
+		c = other.className;
+		other.className = c.substring(c.indexOf(" ") + 1, c.length);
+	}
+	function getOtherRow(row, isDescription) {
+		if (isDescription == null) {
+			var other = row.nextSibling;
+			if (other.tagName == null)
+				other = other.nextSibling;
+		}
+		else {
+			var other = row.previousSibling;
+			if (other.tagName == null)
+				other = other.previousSibling;
+		}
+		return other;
+	}
+	function click(obsId) {
+		document.location = "obs.form?obsId=" + obsId;
+		return false;
+	}
+</script>
 
 <h2><spring:message code="Encounter.title"/></h2>
 
@@ -71,8 +104,8 @@
 		<th><spring:message code="general.creator"/></th>
 	</tr>
 	<c:forEach items="${encounter.obs}" var="obs" varStatus="status">
-		<tr <c:if test="${status.index % 2 == 0}">class="evenRow"</c:if>>
-			<td><a href="obs.form?obsId=${obs.obsId}"><%= ((org.openmrs.Obs)pageContext.getAttribute("obs")).getConcept().getName(request.getLocale()) %></a></td>
+		<tr class="<c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>" onmouseover="mouseover(this)" onmouseout="mouseout(this)" onclick="click('${obs.obsId}')">
+			<td><a href="obs.form?obsId=${obs.obsId}" onclick="return click('${obs.obsId}')"><%= ((org.openmrs.Obs)pageContext.getAttribute("obs")).getConcept().getName(request.getLocale()) %></a></td>
 			<td><openmrs:formatDate date="${obs.obsDatetime}" type="medium" /></td>
 			<td>${obs.location.name}</td>
 			<td>${obs.comment}</td>
@@ -80,6 +113,9 @@
 				${obs.creator.firstName} ${obs.creator.lastName} -
 				<openmrs:formatDate date="${obs.dateCreated}" type="medium" />
 			</td>
+		</tr>
+		<tr class="<c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>" onmouseover="mouseover(this, true)" onmouseout="mouseout(this, true)" onclick="click('${obs.obsId}')">
+			<td colspan="5"><div class="description"><%= ((org.openmrs.Obs)pageContext.getAttribute("obs")).getConcept().getName(request.getLocale()).getDescription() %></div></td>
 		</tr>
 	</c:forEach>
 </table>

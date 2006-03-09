@@ -6,7 +6,7 @@
 
 	<servlet>
 		<servlet-name>loginServlet</servlet-name>
-		<servlet-class>org.openmrs.web.LoginServlet</servlet-class>
+		<servlet-class>org.openmrs.web.servlet.LoginServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>loginServlet</servlet-name>
@@ -15,7 +15,7 @@
 
 	<servlet>
 		<servlet-name>logoutServlet</servlet-name>
-		<servlet-class>org.openmrs.web.LogoutServlet</servlet-class>
+		<servlet-class>org.openmrs.web.servlet.LogoutServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>logoutServlet</servlet-name>
@@ -51,11 +51,29 @@
 
 	<servlet>
 		<servlet-name>downloadDictionaryServlet</servlet-name>
-		<servlet-class>org.openmrs.web.DownloadDictionaryServlet</servlet-class>
+		<servlet-class>org.openmrs.web.servlet.DownloadDictionaryServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>downloadDictionaryServlet</servlet-name>
 		<url-pattern>/downloadDictionary.csv</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>mrnGeneratorServlet</servlet-name>
+		<servlet-class>org.openmrs.web.servlet.MRNGeneratorServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>mrnGeneratorServlet</servlet-name>
+		<url-pattern>/mrnGenerator</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>auditServlet</servlet-name>
+		<servlet-class>org.openmrs.web.servlet.AuditServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>auditServlet</servlet-name>
+		<url-pattern>/auditServlet</url-pattern>
 	</servlet-mapping>
 
 		

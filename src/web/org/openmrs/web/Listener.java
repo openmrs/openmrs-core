@@ -8,6 +8,7 @@ import java.util.Enumeration;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.db.hibernate.HibernateUtil;
 
 public final class Listener implements ServletContextListener {
@@ -52,7 +53,7 @@ public final class Listener implements ServletContextListener {
 
 		// log.debug("undeploying application : LogFactory() being destroyed");
 		//LogFactory.release(Thread.currentThread().getContextClassLoader());
-		//LogFactory.releaseAll();
+		LogFactory.releaseAll();
 		
 		//Introspector.flushCaches();
 		HibernateUtil.shutdown();

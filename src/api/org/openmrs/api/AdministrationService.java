@@ -17,8 +17,11 @@ import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.Obs;
 import org.openmrs.OrderType;
+import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.Person;
 import org.openmrs.Privilege;
+import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.Role;
 import org.openmrs.Tribe;
@@ -50,6 +53,62 @@ public class AdministrationService {
 	
 	private AdministrationDAO getAdminDAO() {
 		return daoContext.getAdministrationDAO();
+	}
+
+	/**
+	 * Create a new Person
+	 * @param Person to create
+	 * @throws APIException
+	 */
+	public void createPerson(Person person) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS);
+
+		getAdminDAO().createPerson(person);
+	}
+	
+	/**
+	 * Update an encounter type
+	 * @param Person to update
+	 * @throws APIException
+	 */
+	public void updatePerson(Person person) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS);
+
+		getAdminDAO().updatePerson(person);
+	}
+
+	/**
+	 * Delete an encounter type
+	 * @param Person to delete
+	 * @throws APIException
+	 */
+	public void deletePerson(Person person) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS);
+
+		getAdminDAO().deletePerson(person);
+	}
+	
+	/**
+	 * 
+	 * @param personId to get
+	 * @return Person
+	 * @throws APIException
+	 */
+	public Person getPerson(Integer personId) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS);
+
+		return getAdminDAO().getPerson(personId);
+	}
+	
+	public Person getPerson(Patient pat) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS);
+
+		return getAdminDAO().getPerson(pat);
 	}
 	
 	/**
@@ -182,6 +241,66 @@ public class AdministrationService {
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_TRIBES);
 
 		getAdminDAO().unretireTribe(tribe);
+	}
+	
+	/**
+	 * Create a new Relationship
+	 * @param Relationship to create
+	 * @throws APIException
+	 */
+	public void createRelationship(Relationship relationship) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS);
+
+		getAdminDAO().createRelationship(relationship);
+	}
+
+	/**
+	 * Update Relationship
+	 * @param Relationship to update
+	 * @throws APIException
+	 */
+	public void updateRelationship(Relationship relationship) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS);
+
+		getAdminDAO().updateRelationship(relationship);
+	}
+
+	/**
+	 * Delete Relationship
+	 * @param Relationship to delete
+	 * @throws APIException
+	 */
+	public void deleteRelationship(Relationship relationship) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS);
+
+		getAdminDAO().deleteRelationship(relationship);
+	}
+	
+	/**
+	 * Retire Relationship
+	 * @param Relationship to void
+	 * @throws APIException
+	 */
+	public void voidRelationship(Relationship relationship) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS);
+
+		getAdminDAO().voidRelationship(relationship);
+	}
+
+	/**
+	 * Unretire Relationship
+	 * @param Relationship to unvoid
+	 * @throws APIException
+	 */
+	public void unvoidRelationship(Relationship relationship) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS);
+
+		getAdminDAO().unvoidRelationship(relationship);
 	}
 	
 	/**
@@ -705,7 +824,7 @@ public class AdministrationService {
 		updateConceptProposal(cp);
 	}
 	
-	void rejectConceptProposal(ConceptProposal cp) {
+	public void rejectConceptProposal(ConceptProposal cp) {
 		cp.setState(OpenmrsConstants.CONCEPT_PROPOSAL_REJECT);
 		cp.setFinalText("");
 		updateConceptProposal(cp);
@@ -736,5 +855,19 @@ public class AdministrationService {
 				throw new APIAuthenticationException("Privilege required: " + p);
 		}
 		*/
+	}
+	
+	public void mrnGeneratorLog(String site, Integer start, Integer count) {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_PATIENTS);
+
+		getAdminDAO().mrnGeneratorLog(site, start, count);
+	}
+	
+	public Collection getMRNGeneratorLog() {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_PATIENTS);
+
+		return getAdminDAO().getMRNGeneratorLog();		
 	}
 }

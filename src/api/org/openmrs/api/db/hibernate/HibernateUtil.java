@@ -44,6 +44,31 @@ public class HibernateUtil {
 	
 	public static void closeSession() throws HibernateException {
 		
+		if (log.isDebugEnabled() && sessionFactory.getStatistics().isStatisticsEnabled()) {
+			log.debug("Session Entity Count: " + currentSession().getStatistics().getEntityCount());
+
+			log.debug("Displaying second level cache stats");
+			log.debug("Cache Load count: " + sessionFactory.getStatistics().getEntityLoadCount());
+			log.debug("Cache Put count: " + sessionFactory.getStatistics().getSecondLevelCachePutCount());
+			log.debug("Cache Hit count: " + sessionFactory.getStatistics().getSecondLevelCacheHitCount());
+			log.debug("Cache Miss count: " + sessionFactory.getStatistics().getSecondLevelCacheMissCount());
+			
+			/*
+			String[] regions = sessionFactory.getStatistics()
+	        	.getSecondLevelCacheRegionNames();
+			for (String region : regions) {
+				log.debug("region: " + region);
+				Map<Object, Object> cacheEntries = sessionFactory.getStatistics()
+		        	.getSecondLevelCacheStatistics(region)
+		        	.getEntries();
+				for (Object key : cacheEntries.keySet()) {
+					log.debug("entries.key: " + key);
+					log.debug("entries.value: " + cacheEntries.get(key));
+				}
+			}
+			*/
+		}
+		
 		log.debug("attempting to close session");
 		
 		//if committing errors out, too bad: the session gets closed anyway.
@@ -56,14 +81,12 @@ public class HibernateUtil {
 		finally {
 			//close session
 			Session s = (Session) threadLocalSession.get();
-			//threadLocalSession.set(null);
 			if (s != null) {
-				log.debug("Closing threadLocalSession");
+				log.debug("Closing session");
 				s.close();
 			}
 			else
-				log.debug("Couldn't close threadLocalSession");
-			
+				log.debug("Couldn't close session");
 			threadLocalSession.remove();
 		}
 	}
@@ -100,10 +123,10 @@ public class HibernateUtil {
 		log.debug("rolling back transaction");
 		
 		Transaction tx = (Transaction) threadLocalTransaction.get();
-		threadLocalTransaction.set(null);
 		if (tx != null && !tx.wasCommitted() && !tx.wasRolledBack()) {
 			tx.rollback();
 		}
+		threadLocalTransaction.set(null);
 	}
 	
 	public static void startup() throws HibernateException {
@@ -121,12 +144,25 @@ public class HibernateUtil {
 	
 	public static void shutdown() throws HibernateException {
 		if (sessionFactory != null) {
-			log.debug("Closing any open sessions");
+			
+			log.debug("Closing any open sessions");	
 			closeSession();
 			log.debug("Shutting down threadLocalSession factory");
+			
 			sessionFactory.close();
 			log.debug("The threadLocalSession has been closed");
+			
+			log.debug("Setting static variables to null");
+			sessionFactory = null;
 		}
+		else
+			log.error("SessionFactory is null");
+		
+		threadLocalSession.remove();
+		threadLocalTransaction.remove();
+		
+		threadLocalSession = null;
+		threadLocalTransaction = null;
 	}
 	
 }

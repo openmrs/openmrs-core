@@ -82,15 +82,16 @@ var getName = function(obj) {
 	if (typeof obj == 'string') return '';
 	str = '';
 	if (searchType == 'patient') {
-		str += obj.familyName;
-		str += ', ';
 		str += obj.givenName;
+		str += ' ';
+		str += obj.middleName;
+		str += ' ';
+		str += obj.familyName;
 	}
 	else if (searchType == 'user') {
-		str += obj.lastName;
-		str += ', ';
 		str += obj.firstName;
-		return str;
+		str += ' ';
+		str += obj.lastName;
 	}
 	return str;
 }
@@ -166,7 +167,7 @@ if (typeof window.onload != 'function') {
 		<td><spring:message code="Encounter.patient"/></td>
 		<td>
 			<spring:bind path="encounter.patient">
-				<div style="width:200px; float: left;" id="patientName">${status.value.patientName.familyName}, ${status.value.patientName.givenName}</div>
+				<div style="width:200px; float: left;" id="patientName">${status.value.patientName.givenName} ${status.value.patientName.middleName} ${status.value.patientName.familyName}</div>
 				<input type="hidden" id="patient" value="${status.value.patientId}" name="patientId"/>
 				<input type="button" id="patientButton" class="smallButton" value="<spring:message code="general.change"/>" onclick="showSearch(this)" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
@@ -177,7 +178,7 @@ if (typeof window.onload != 'function') {
 		<td><spring:message code="Encounter.provider"/></td>
 		<td>
 			<spring:bind path="encounter.provider">
-				<div style="width:200px; float:left" id="providerName">${status.value.lastName}, ${status.value.firstName}</div>
+				<div style="width:200px; float:left" id="providerName">${status.value.firstName} ${status.value.lastName}</div>
 				<input type="hidden" id="provider" value="${status.value.userId}" name="providerId" />
 				<input type="button" id="userButton" class="smallButton" value="<spring:message code="general.change"/>" onclick="showSearch(this)" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>

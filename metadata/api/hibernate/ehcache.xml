@@ -9,7 +9,7 @@
 		user.home - User's home directory
 		user.dir - User's current working directory
 		java.io.tmpdir - Default temp file path -->
-	<diskStore path="java.io.tmpdir" />
+	<diskStore path="user.home" />
 
 
 	<!--Default Cache configuration. These will applied to caches programmatically created through
@@ -75,18 +75,8 @@
 		is 120 seconds.
 	-->
 
-	<!-- Sample cache named sampleCache1
-		This cache contains a maximum in memory of 10000 elements, and will expire
-		an element if it is idle for more than 5 minutes and lives for more than
-		10 minutes.
-		
-		If there are more than 10000 elements it will overflow to the
-		disk cache, which in this configuration will go to wherever java.io.tmp is
-		defined on your system. On a standard Linux system this will be /tmp"
-	-->
-	<cache name="sampleCache1" maxElementsInMemory="10000"
-		eternal="false" overflowToDisk="true" timeToIdleSeconds="300"
-		timeToLiveSeconds="600" />
+	<cache name="org.openmrs.Concept" maxElementsInMemory="1000"
+		eternal="true" overflowToDisk="true" />
 
 	<!-- Sample cache named sampleCache2
 		This cache has a maximum of 1000 elements in memory. There is no overflow to disk, so 1000

@@ -8,7 +8,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Location;
 import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.Person;
+import org.openmrs.Relationship;
+import org.openmrs.RelationshipType;
 import org.openmrs.Tribe;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOContext;
@@ -176,6 +180,32 @@ public class PatientService {
 	}
 	
 	/**
+	 * Get all patientIdentifiers 
+	 * 
+	 * @param pit
+	 * @return patientIdentifier list
+	 * @throws APIException
+	 */
+	public List<PatientIdentifier> getPatientIdentifiers(PatientIdentifierType pit) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PATIENTS);
+		
+		return getPatientDAO().getPatientIdentifiers(pit);
+	}
+	
+	/**
+	 * Update patient identifier
+	 * 
+	 * @param patient to be updated
+	 * @throws APIException
+	 */
+	public void updatePatientIdentifier(PatientIdentifier pi) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_PATIENTS);
+		getPatientDAO().updatePatientIdentifier(pi);
+	}
+	
+	/**
 	 * Get all patientIdentifier types
 	 * 
 	 * @return patientIdentifier types list
@@ -240,6 +270,74 @@ public class PatientService {
 			throw new APIAuthenticationException("Authentication required");
 		
 		return getPatientDAO().findTribes(search);
+	}
+	
+	/**
+	 * Get relationship by internal relationship identifier
+	 * 
+	 * @return Relationship
+	 * @param relationshipId 
+	 * @throws APIException
+	 */
+	public Relationship getRelationship(Integer relationshipId) throws APIException {
+		if (!context.isAuthenticated())
+			throw new APIAuthenticationException("Authentication required");
+		
+		return getPatientDAO().getRelationship(relationshipId);
+	}
+	
+	/**
+	 * Get list of relationships that are not retired
+	 * 
+	 * @return non-voided Relationship list
+	 * @throws APIException
+	 */
+	public List<Relationship> getRelationships() throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS);
+		
+		return getPatientDAO().getRelationships();
+	}
+	
+	/**
+	 * Get list of relationships that include Person in person_id or relative_id
+	 * 
+	 * @return Relationship list
+	 * @throws APIException
+	 */
+	public List<Relationship> getRelationships(Person p) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS);
+		
+		return getPatientDAO().getRelationships(p);
+	}
+	
+	/**
+	 * Get all relationshipTypes
+	 * 
+	 * @return relationshipType list
+	 * @throws APIException
+	 */
+	public List<RelationshipType> getRelationshipTypes() throws APIException {
+		if (!context.isAuthenticated())
+			throw new APIAuthenticationException("Authentication required");
+		
+		return getPatientDAO().getRelationshipTypes();
+	}
+
+	/**
+	 * Get relationshipType by internal identifier
+	 * 
+	 * @param relationshipType id
+	 * @return relationshipType with given internal identifier
+	 * @throws APIException
+	 */
+	public RelationshipType getRelationshipType(Integer relationshipTypeId) throws APIException {
+		// TODO use 'Authenticated User' option
+		if (!context.isAuthenticated())
+			throw new APIAuthenticationException("Authentication required");
+		
+		return getPatientDAO().getRelationshipType(relationshipTypeId);
 	}
 	
 	/**

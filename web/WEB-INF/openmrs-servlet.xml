@@ -99,6 +99,8 @@
 					<prop key="**/newPatient.form">newPatientForm</prop>
 					<prop key="**/tribe.list">tribeList</prop>
 					<prop key="**/tribe.form">tribeForm</prop>
+					<prop key="**/relationship.list">relationshipList</prop>
+					<prop key="**/relationship.form">relationshipForm</prop>
 					<prop key="**/patientIdentifierType.list">patientIdentifierTypeList</prop>
 					<prop key="**/patientIdentifierType.form">patientIdentifierTypeForm</prop>
 					<prop key="**/obs.form">obsForm</prop>
@@ -268,9 +270,23 @@
 					<property name="commandClass"><value>java.util.List</value></property>
 					<property name="formView"><value>/formentry/taskpane/tribe</value></property>
 					<property name="successView"><value>/formentry/taskpane/tribe</value></property>
-				</bean>
-				
+				</bean>	
 			<!-- ** /Tribe   ** -->
+			
+			<!-- **  Relationship   ** -->
+				<bean id="relationshipList" class="org.openmrs.web.controller.patient.RelationshipListController">
+					<property name="commandName"><value>relationshipList</value></property>
+					<property name="formView"><value>/admin/patients/relationshipList</value></property>
+					<property name="successView"><value>relationship.list</value></property>
+				</bean>
+				<bean id="relationshipForm" class="org.openmrs.web.controller.patient.RelationshipFormController">
+					<property name="commandName"><value>person</value></property>
+					<property name="formView"><value>/admin/patients/relationshipForm</value></property>
+					<property name="successView"><value>relationship.list</value></property>
+				</bean>
+			<!-- **  /Relationship ** -->
+			
+						
 			<!-- **  Patient Identifier Type   ** -->
 				<bean id="patientIdentifierTypeList" class="org.openmrs.web.controller.patient.PatientIdentifierTypeListController">
 					<property name="sessionForm"><value>true</value></property>

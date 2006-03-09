@@ -1,13 +1,17 @@
 package org.openmrs.api.db;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 import org.openmrs.Location;
 import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.Person;
+import org.openmrs.Relationship;
+import org.openmrs.RelationshipType;
 import org.openmrs.Tribe;
+import org.openmrs.api.APIException;
 
 /**
  * Patient-related database functions
@@ -103,6 +107,23 @@ public interface PatientDAO {
 	public void deletePatient(Patient patient) throws DAOException;
 	
 	/**
+	 * Get all patientIdentifiers
+	 * 
+	 * @param PatientIdentifierType
+	 * @return patientIdentifier list
+	 * @throws DAOException
+	 */
+	public List<PatientIdentifier> getPatientIdentifiers(PatientIdentifierType p) throws DAOException;
+	
+	/**
+	 * 
+	 * @param pi
+	 * @throws APIException
+	 */
+	public void updatePatientIdentifier(PatientIdentifier pi) throws APIException;
+	
+	
+	/**
 	 * Get all patientIdentifier types
 	 * 
 	 * @return patientIdentifier types list
@@ -144,6 +165,48 @@ public interface PatientDAO {
 	 * @throws DAOException
 	 */
 	public List<Tribe> findTribes(String s) throws DAOException;
+
+	/**
+	 * Get relationship by internal relationship identifier
+	 * 
+	 * @return Relationship
+	 * @param relationshipId 
+	 * @throws DAOException
+	 */
+	public Relationship getRelationship(Integer relationshipId) throws DAOException;
+	
+	/**
+	 * Get list of relationships that are not retired
+	 * 
+	 * @return non-voided Relationship list
+	 * @throws DAOException
+	 */
+	public List<Relationship> getRelationships() throws DAOException;
+	
+	/**
+	 * Get list of relationships containing Person 
+	 * 
+	 * @return Relationship list
+	 * @throws DAOException
+	 */
+	public List<Relationship> getRelationships(Person p) throws DAOException;
+	
+	/**
+	 * Get all relationshipTypes
+	 * 
+	 * @return relationshipType list
+	 * @throws DAOException
+	 */
+	public List<RelationshipType> getRelationshipTypes() throws DAOException;
+
+	/**
+	 * Get relationshipType by internal identifier
+	 * 
+	 * @param relationshipType id
+	 * @return relationshipType with given internal identifier
+	 * @throws DAOException
+	 */
+	public RelationshipType getRelationshipType(Integer relationshipTypeId) throws DAOException;
 	
 	/**
 	 * Get all locations

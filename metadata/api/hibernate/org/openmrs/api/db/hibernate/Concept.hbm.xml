@@ -6,7 +6,9 @@
 <hibernate-mapping package="org.openmrs">
 
 	<class name="Concept" table="concept">
-
+		
+		<cache usage="read-write"/>
+		
 		<id name="conceptId" type="java.lang.Integer"
 			column="concept_id">
 			<generator class="assigned" />

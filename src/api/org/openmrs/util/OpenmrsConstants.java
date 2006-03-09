@@ -83,6 +83,7 @@ public class OpenmrsConstants {
 	public static final String PRIV_DELETE_REPORTS	= "Delete Reports";
 	
 	public static final String PRIV_MANAGE_TRIBES			= "Manage Tribes";
+	public static final String PRIV_MANAGE_RELATIONSHIPS	= "Manage Relationships";
 	public static final String PRIV_MANAGE_IDENTIFIER_TYPES	= "Manage Identifier Types";
 	public static final String PRIV_MANAGE_LOCATIONS		= "Manage Locations";
 	public static final String PRIV_MANAGE_MIME_TYPES		= "Manage Mime Types";
@@ -149,6 +150,7 @@ public class OpenmrsConstants {
 		privs.add(PRIV_DELETE_REPORTS);
 		
 		privs.add(PRIV_MANAGE_TRIBES);
+		privs.add(PRIV_MANAGE_RELATIONSHIPS);
 		privs.add(PRIV_MANAGE_IDENTIFIER_TYPES);
 		privs.add(PRIV_MANAGE_LOCATIONS);
 		privs.add(PRIV_MANAGE_MIME_TYPES);

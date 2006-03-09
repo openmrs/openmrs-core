@@ -3,16 +3,10 @@
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
     
-<hibernate-mapping>
-<!-- 
-    Created by the Middlegen Hibernate plugin 2.1
-
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
+<hibernate-mapping package="org.openmrs">
 
 <class 
-    name="org.openmrs.RelationshipType" 
+    name="RelationshipType" 
     table="relationship_type"
 >
 

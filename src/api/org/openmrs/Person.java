@@ -33,6 +33,18 @@ public class Person implements java.io.Serializable {
 	public Person() {
 	}
 
+	public Person(Integer personId) {
+		this.personId = personId;
+	}
+	
+	public Person(Patient patient) {
+		this.patient = patient;
+	}
+	
+	public Person(User user) {
+		this.user = user;
+	}
+	
 	public boolean equals(Object obj) {
 		if (obj instanceof Person) {
 			Person u = (Person)obj;;

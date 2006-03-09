@@ -37,7 +37,7 @@
 		</td>
 	</tr>
 	<tr>
-		<th><spring:message code="PatientIdentifierType.checkDigit" /></th>
+		<td><spring:message code="PatientIdentifierType.checkDigit" /></td>
 		<td><spring:bind path="patientIdentifierType.checkDigit">
 			<input type="hidden" name="_${status.expression}">
 			<input type="checkbox" name="${status.expression}" value="true"

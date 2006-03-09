@@ -1,6 +1,5 @@
 package org.openmrs.api;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -9,6 +8,7 @@ import java.util.Vector;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Location;
+import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOContext;
@@ -151,7 +151,17 @@ public class EncounterService {
 	public void updateEncounter(Encounter encounter) throws APIException {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_ENCOUNTERS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_ENCOUNTERS);
+
 		getEncounterDAO().updateEncounter(encounter);
+		
+		// Our data model duplicates the patient column to allow for observations to 
+		//   not have to look up the parent Encounter to find the patient
+		// Therefore, encounter.patient must always equal encounter.observations[0-n].patient
+		Patient p = encounter.getPatient();
+		for (Obs obs : daoContext.getObsDAO().getObservations(encounter)) {
+			obs.setPatient(p);
+			daoContext.getObsDAO().updateObs(obs);
+		}
 	}
 	
 	/**

@@ -1,4 +1,4 @@
-package org.openmrs.web;
+package org.openmrs.web.servlet;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -16,6 +16,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.ConceptSynonym;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
+import org.openmrs.web.WebConstants;
 
 public class DownloadDictionaryServlet extends HttpServlet {
 

@@ -1,10 +1,16 @@
 package org.openmrs.api.db.hibernate;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
@@ -28,8 +34,11 @@ import org.openmrs.Group;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.OrderType;
+import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.Person;
 import org.openmrs.Privilege;
+import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.Role;
 import org.openmrs.Tribe;
@@ -52,6 +61,89 @@ public class HibernateAdministrationDAO implements
 		this.context = c;
 		if (c.isAuthenticated())
 			authUserId = c.getAuthenticatedUser().getUserId().toString();
+	}
+
+	
+	
+	/**
+	 * @see org.openmrs.api.db.AdministrationDAO#createPerson(org.openmrs.Person)
+	 */
+	public void createPerson(Person person) throws DAOException {
+		Session session = HibernateUtil.currentSession();
+		
+		person.setCreator(context.getAuthenticatedUser());
+		person.setDateCreated(new Date());
+		try {
+			HibernateUtil.beginTransaction();
+			session.save(person);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new DAOException(e);
+		}
+	}
+
+	/**
+	 * @see org.openmrs.api.db.AdministrationDAO#deletePerson(org.openmrs.Person)
+	 */
+	public void deletePerson(Person person) throws DAOException {
+		Session session = HibernateUtil.currentSession();
+		try {
+			HibernateUtil.beginTransaction();
+			session.delete(person);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new DAOException(e);
+		}
+	}
+
+	/**
+	 * @see org.openmrs.api.db.AdministrationDAO#getPerson(java.lang.Integer)
+	 */
+	public Person getPerson(Integer personId) throws DAOException {
+
+		Session session = HibernateUtil.currentSession();
+		
+		Person person = new Person();
+		person = (Person)session.get(Person.class, personId);
+		
+		return person;
+
+	}
+	
+	public Person getPerson(Patient pat) throws DAOException {
+		Session session = HibernateUtil.currentSession();
+		
+		Criteria crit = session.createCriteria(Person.class);
+		crit.add(Expression.eq("patient", pat));
+		
+		Person person = (Person)crit.uniqueResult();
+		
+		return person;
+	}
+
+
+	/**
+	 * @see org.openmrs.api.db.AdministrationDAO#updatePerson(org.openmrs.Person)
+	 */
+	public void updatePerson(Person person) throws DAOException {
+		if (person.getPersonId() == null)
+			createPerson(person);
+		else {
+			try {
+				Session session = HibernateUtil.currentSession();
+				HibernateUtil.beginTransaction();
+				session.saveOrUpdate(person);
+				HibernateUtil.commitTransaction();
+			}
+			catch (Exception e) {
+				HibernateUtil.rollbackTransaction();
+				throw new DAOException(e);
+			}
+		}
 	}
 
 	/**
@@ -516,6 +608,78 @@ public class HibernateAdministrationDAO implements
 	public void unretireTribe(Tribe tribe) throws DAOException {
 		tribe.setRetired(false);
 		updateTribe(tribe);
+	}
+
+	
+	/**
+	 * @see org.openmrs.api.db.AdministrationService#createRelationship(org.openmrs.Relationship)
+	 */
+	public void createRelationship(Relationship relationship) throws DAOException {
+		Session session = HibernateUtil.currentSession();
+		
+		relationship.setCreator(context.getAuthenticatedUser());
+		relationship.setDateCreated(new Date());
+		try {
+			HibernateUtil.beginTransaction();
+			session.save(relationship);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new DAOException(e);
+		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.AdministrationService#updateRelationship(org.openmrs.Relationship)
+	 */
+	public void updateRelationship(Relationship relationship) throws DAOException {
+		if (relationship.getRelationshipId() == null)
+			createRelationship(relationship);
+		else {
+			try {
+				Session session = HibernateUtil.currentSession();
+				HibernateUtil.beginTransaction();
+				session.saveOrUpdate(relationship);
+				HibernateUtil.commitTransaction();
+			}
+			catch (Exception e) {
+				HibernateUtil.rollbackTransaction();
+				throw new DAOException(e);
+			}
+		}
+	}	
+
+	/**
+	 * @see org.openmrs.api.db.AdministrationService#deleteRelationship(org.openmrs.Relationship)
+	 */
+	public void deleteRelationship(Relationship relationship) throws DAOException {
+		Session session = HibernateUtil.currentSession();
+		try {
+			HibernateUtil.beginTransaction();
+			session.delete(relationship);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new DAOException(e);
+		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.AdministrationService#voidRelationship(org.openmrs.Relationship)
+	 */
+	public void voidRelationship(Relationship relationship) throws DAOException {
+		relationship.setVoided(true);
+		updateRelationship(relationship);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.AdministrationService#unvoidRelationship(org.openmrs.Relationship)
+	 */
+	public void unvoidRelationship(Relationship relationship) throws DAOException {
+		relationship.setVoided(false);
+		updateRelationship(relationship);
 	}
 
 	
@@ -1124,5 +1288,63 @@ public class HibernateAdministrationDAO implements
 				throw new DAOException(e);
 			}
 		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.AdministrationService#mrnGeneratorLog(java.lang.String,java.lang.Integer,java.lang.Integer)
+	 */
+	public void mrnGeneratorLog(String site, Integer start, Integer count) {
+		try {
+			Session session = HibernateUtil.currentSession();
+			HibernateUtil.beginTransaction();
+			
+			Connection connection = session.connection();
+			PreparedStatement ps = connection.prepareStatement("insert into ext_mrn_log (date_generated, generated_by, site, mrn_first, mrn_count) values (?, ?, ?, ?, ?)");
+			
+			ps.setTimestamp(1, new Timestamp(new Date().getTime()));
+			ps.setInt(2, context.getAuthenticatedUser().getUserId());
+			ps.setString(3, site);
+			ps.setInt(4, start);
+			ps.setInt(5, count);
+			ps.execute();
+			
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new DAOException(e);
+		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.AdministrationService#getMRNGeneratorLog()
+	 */
+	public Collection getMRNGeneratorLog() {
+		Collection log = new Vector<Map>();
+		
+		try {
+			Session session = HibernateUtil.currentSession();
+			
+			Map<String, Object> row;
+			
+			Connection connection = session.connection();
+			PreparedStatement ps = connection.prepareStatement("select * from ext_mrn_log order by mrn_log_id desc");
+			ps.execute();
+			ResultSet rs = ps.getResultSet();
+			while(rs.next()) {
+				row = new HashMap<String, Object>();
+				row.put("date", rs.getTimestamp("date_generated"));
+				row.put("user", rs.getString("generated_by"));
+				row.put("site", rs.getString("site"));
+				row.put("first", rs.getInt("mrn_first"));
+				row.put("count", rs.getInt("mrn_count"));
+				log.add(row);
+			}
+		}
+		catch (Exception e) {
+			throw new DAOException(e);
+		}
+		
+		return log;
 	}
 }

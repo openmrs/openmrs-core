@@ -38,7 +38,7 @@ public class EncounterListItem {
 					patientName += " " + pn.getFamilyName();
 			}
 			if (encounter.getProvider() != null)
-				providerName = encounter.getProvider().getLastName() + ", " + encounter.getProvider().getFirstName();
+				providerName = encounter.getProvider().getFirstName() + " " + encounter.getProvider().getLastName();
 			if (encounter.getLocation() != null)
 				location = encounter.getLocation().getName();
 			if (encounter.getEncounterType() != null)

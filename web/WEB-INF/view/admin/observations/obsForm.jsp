@@ -55,12 +55,14 @@ var onSelect = function(objs) {
 	}
 	else if (searchType == 'concept') {
 		$("concept").value = obj.conceptId;
-		$("conceptName").innerHTML = getName(obj);
+		$("conceptName").innerHTML = obj.name;
+		$("conceptDescription").innerHTML = obj.description;
 		updateObsValues(obj);
 	}
 	else if (searchType == 'valueCoded') {
 		$("valueCoded").value = obj.conceptId;
-		$("valueCodedName").innerHTML = getName(obj);
+		$("valueCodedName").innerHTML = obj.name;
+		$("valueCodedDescription").innerHTML = obj.description;
 	}
 	else if (searchType == 'encounter') {
 		$("encounter").value = obj.encounterId;
@@ -169,7 +171,7 @@ function removeHiddenRows() {
 </script>
 
 <style>
-.searchForm {
+	.searchForm {
 		width: 450px;
 		position: absolute;
 		z-index: 10;
@@ -232,6 +234,7 @@ function removeHiddenRows() {
 					<input type="button" id="conceptButton" class="smallButton" value="<spring:message code="general.change"/>" onclick="showSearch(this, 'concept')" />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</c:if>
+				<div class="description" style="clear: left;" id="conceptDescription">${conceptName.description}</div>
 			</spring:bind>
 		</td>
 	</tr>
@@ -319,6 +322,7 @@ function removeHiddenRows() {
 				<div style="width:200px; float:left; display: none;" id="valueCodedName">${status.value.conceptId}&nbsp;</div>
 				<input type="button" id="valueCodedButton" class="smallButton" value="<spring:message code="general.change"/>" onclick="showSearch(this, 'valueCoded')" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				<div class="description" id="valueCodedDescription"></div>
 			</spring:bind>
 		</td>
 	</tr>
@@ -432,7 +436,12 @@ function removeHiddenRows() {
 <br /><br />
 
 <c:if test="${obs.obsId != null}">
-	<spring:message code="Obs.edit.reason"/> <input type="text" size="40" name="editReason"/>
+		<spring:message code="Obs.edit.reason"/> <input type="text" value="${editReason}" size="40" name="editReason"/>
+		<spring:hasBindErrors name="obs">
+			<c:forEach items="${errors.allErrors}" var="error">
+				<c:if test="${error.code == 'editReason'}"><span class="error"><spring:message code="${error.defaultMessage}" text="${error.defaultMessage}"/></span></c:if>
+			</c:forEach>
+		</spring:hasBindErrors>
 	<br/><br/>
 </c:if>
 

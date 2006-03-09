@@ -1,4 +1,4 @@
-package org.openmrs.web;
+package org.openmrs.web.servlet;
 
 import java.io.IOException;
 
@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.openmrs.api.context.Context;
+import org.openmrs.web.WebConstants;
 
 public class LogoutServlet extends HttpServlet {
 
