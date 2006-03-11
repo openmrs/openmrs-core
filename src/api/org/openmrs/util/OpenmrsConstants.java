@@ -192,6 +192,9 @@ public class OpenmrsConstants {
 		return roles;
 	}
 	
+	// ConceptProposal proposed concept identifier keyword
+	public static final String PROPOSED_CONCEPT_IDENTIFIER = "PROPOSED";
+	
 	// ConceptProposal states
 	public static final String CONCEPT_PROPOSAL_UNMAPPED = "UNMAPPED";
 	public static final String CONCEPT_PROPOSAL_CONCEPT  = "CONCEPT";

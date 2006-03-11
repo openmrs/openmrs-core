@@ -86,7 +86,7 @@
 	}
 	
 	function miniConcept(n) {
-		this.conceptId = "PROPOSED";
+		this.conceptId = "<%= org.openmrs.util.OpenmrsConstants.PROPOSED_CONCEPT_IDENTIFIER %>";
 		if (n == null)
 			this.name = $('proposedText').innerHTML;
 		else
