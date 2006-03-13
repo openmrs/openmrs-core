@@ -18,14 +18,15 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOContext;
+import org.openmrs.formentry.db.FormEntryDAO;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
- * Patient-related services
+ * Data entry-related services
  * 
  * @author Ben Wolfe
  * @author Burke Mamlin
- * @vesrion 1.0
+ * @version 1.0
  */
 public class FormEntryService {
 
@@ -38,11 +39,13 @@ public class FormEntryService {
 		this.context = c;
 		this.daoContext = d;
 	}
+	
+	private FormEntryDAO dao() {
+		return daoContext.getFormEntryDAO();
+	}
 
 	private PatientService getPatientService() {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY))
-			throw new APIAuthenticationException("Privilege required: "
-					+ OpenmrsConstants.PRIV_FORM_ENTRY);
+		checkPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY);
 		return context.getPatientService();
 	}
 
@@ -292,6 +295,9 @@ public class FormEntryService {
 		return forms;
 	}
 
+	/**
+	 * @see org.openmrs.api.UserService.findUsers(String, List<String>, List<String>, boolean)
+	 */
 	public Collection<User> findUsers(String searchValue, List<String> groups, List<String> roles,
 			boolean includeVoided) {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY))
@@ -311,6 +317,9 @@ public class FormEntryService {
 		return users;
 	}
 
+	/**
+	 * @see org.openmrs.api.UserService.getAllUsers(List<String>, List<String>, boolean)
+	 */
 	public Collection<User> getAllUsers(List<String> groups, List<String> roles,
 			boolean includeVoided) {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY))
@@ -329,54 +338,100 @@ public class FormEntryService {
 		return users;
 	}
 	
+	private void checkPrivilege(String privilege) {
+		if (!context.hasPrivilege(privilege))
+			throw new APIAuthenticationException("Privilege required: " + privilege);		
+	}
 	
+	private void checkPrivileges(String privilegeA, String privilegeB) {
+		boolean hasA = context.hasPrivilege(privilegeA);
+		boolean hasB = context.hasPrivilege(privilegeB);
+		if (!hasA && !hasB) {
+			if (!hasA)
+				throw new APIAuthenticationException("Privilege required: " + privilegeA);
+			else
+				throw new APIAuthenticationException("Privilege required: " + privilegeB);
+		}
+	}	
 
 	/***************************************************************************
 	 * FormEntryQueue Service Methods
 	 **************************************************************************/
 	
-	public void createFormEntryQueue(FormEntryQueue formEntryQueue) {		
-		if (!context.hasPrivilege(FormEntryConstants.PRIV_ADD_FORMENTRY_QUEUE)
-				&& !context.hasPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY))
-			throw new APIAuthenticationException("Privilege required: "
-					+ FormEntryConstants.PRIV_ADD_FORMENTRY_QUEUE);
-		daoContext.getFormEntryDAO().createFormEntryQueue(formEntryQueue);
+	public void createFormEntryQueue(FormEntryQueue formEntryQueue) {
+		checkPrivileges(FormEntryConstants.PRIV_ADD_FORMENTRY_QUEUE,
+				OpenmrsConstants.PRIV_FORM_ENTRY);
+		dao().createFormEntryQueue(formEntryQueue);
 	}
 
 	public void updateFormEntryQueue(FormEntryQueue formEntryQueue) {
-		if (!context.hasPrivilege(FormEntryConstants.PRIV_EDIT_FORMENTRY_QUEUE))
-			throw new APIAuthenticationException("Privilege required: "
-					+ FormEntryConstants.PRIV_EDIT_FORMENTRY_QUEUE);
-		daoContext.getFormEntryDAO().updateFormEntryQueue(formEntryQueue);
+		checkPrivilege(FormEntryConstants.PRIV_EDIT_FORMENTRY_QUEUE);
+		dao().updateFormEntryQueue(formEntryQueue);
 	}
 
 	public FormEntryQueue getFormEntryQueue(int formEntryQueueId) {
-		if (!context.hasPrivilege(FormEntryConstants.PRIV_VIEW_FORMENTRY_QUEUE))
-			throw new APIAuthenticationException("Privilege required: "
-					+ FormEntryConstants.PRIV_VIEW_FORMENTRY_QUEUE);
-		return daoContext.getFormEntryDAO().getFormEntryQueue(formEntryQueueId);
+		checkPrivilege(FormEntryConstants.PRIV_VIEW_FORMENTRY_QUEUE);
+		return dao().getFormEntryQueue(formEntryQueueId);
 	}
 
 	public Collection<FormEntryQueue> getFormEntryQueues() {
-		if (!context.hasPrivilege(FormEntryConstants.PRIV_VIEW_FORMENTRY_QUEUE))
-			throw new APIAuthenticationException("Privilege required: "
-					+ FormEntryConstants.PRIV_VIEW_FORMENTRY_QUEUE);
-		return daoContext.getFormEntryDAO().getFormEntryQueues();
+		checkPrivilege(FormEntryConstants.PRIV_VIEW_FORMENTRY_QUEUE);
+		return dao().getFormEntryQueues();
 	}
 	
 	public FormEntryQueue getNextFormEntryQueue() {
-		if (!context.hasPrivilege(FormEntryConstants.PRIV_VIEW_FORMENTRY_QUEUE))
-			throw new APIAuthenticationException("Privilege required: "
-					+ FormEntryConstants.PRIV_VIEW_FORMENTRY_QUEUE);
-		return daoContext.getFormEntryDAO().getNextFormEntryQueue();
+		checkPrivilege(FormEntryConstants.PRIV_VIEW_FORMENTRY_QUEUE);
+		return dao().getNextFormEntryQueue();
 	}
 
 	public void deleteFormEntryQueue(FormEntryQueue formEntryQueue) {
-		if (!context
-				.hasPrivilege(FormEntryConstants.PRIV_DELETE_FORMENTRY_QUEUE))
-			throw new APIAuthenticationException("Privilege required: "
-					+ FormEntryConstants.PRIV_DELETE_FORMENTRY_QUEUE);
-		daoContext.getFormEntryDAO().deleteFormEntryQueue(formEntryQueue);
+		checkPrivilege(FormEntryConstants.PRIV_DELETE_FORMENTRY_QUEUE);
+		dao().deleteFormEntryQueue(formEntryQueue);
+	}
+	
+	public void createFormEntryArchive(FormEntryArchive formEntryArchive) {
+		checkPrivilege(FormEntryConstants.PRIV_ADD_FORMENTRY_ARCHIVE);
+		dao().createFormEntryArchive(formEntryArchive);
+	}
+	
+	public FormEntryArchive getFormEntryArchive(Integer formEntryArchive) {
+		checkPrivilege(FormEntryConstants.PRIV_VIEW_FORMENTRY_ARCHIVE);
+		return dao().getFormEntryArchive(formEntryArchive);
+	}
+	
+	public Collection<FormEntryArchive> getFormEntryArchives() {
+		checkPrivilege(FormEntryConstants.PRIV_VIEW_FORMENTRY_ARCHIVE);
+		return dao().getFormEntryArchives();
+	}
+	
+	public void deleteFormEntryArchive(FormEntryArchive formEntryArchive) {
+		checkPrivilege(FormEntryConstants.PRIV_DELETE_FORMENTRY_ARCHIVE);
+		dao().deleteFormEntryArchive(formEntryArchive);
+	}
+	
+	public void createFormEntryError(FormEntryError formEntryError) {
+		checkPrivilege(FormEntryConstants.PRIV_ADD_FORMENTRY_ERROR);
+		dao().createFormEntryError(formEntryError);
+	}
+	
+	public FormEntryError getFormEntryError(Integer formEntryErrorId) {
+		checkPrivilege(FormEntryConstants.PRIV_VIEW_FORMENTRY_ERROR);
+		return dao().getFormEntryError(formEntryErrorId);
+	}
+	
+	public Collection<FormEntryError> getFormEntryErrors() {
+		checkPrivilege(FormEntryConstants.PRIV_VIEW_FORMENTRY_ERROR);
+		return dao().getFormEntryErrors();
+	}
+	
+	public void updateFormEntryError(FormEntryError formEntryError) {
+		checkPrivilege(FormEntryConstants.PRIV_EDIT_FORMENTRY_ERROR);
+		dao().updateFormEntryError(formEntryError);
+	}
+	
+	public void deleteFormEntryError(FormEntryError formEntryError) {
+		checkPrivilege(FormEntryConstants.PRIV_DELETE_FORMENTRY_ERROR);
+		dao().deleteFormEntryError(formEntryError);
 	}
 
 }

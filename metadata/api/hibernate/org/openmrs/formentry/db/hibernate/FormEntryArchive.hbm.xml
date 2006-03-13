@@ -5,9 +5,9 @@
 
 <hibernate-mapping package="org.openmrs">
 
-	<class name="org.openmrs.formentry.FormEntryQueue" table="formentry_queue">
+	<class name="org.openmrs.formentry.FormEntryArchive" table="formentry_archive">
 
-		<id name="formEntryQueueId" type="int" column="formentry_queue_id" 
+		<id name="formEntryArchiveId" type="int" column="formentry_archive_id" 
 			unsaved-value="0">
 				<generator class="native" />
 		</id>

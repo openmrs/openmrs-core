@@ -569,8 +569,16 @@ public class HibernateConceptDAO implements
 			cp.setCreator(cp.getEncounter().getCreator());
 		if (cp.getDateCreated() == null)
 			cp.setDateCreated(cp.getEncounter().getDateCreated());
-		
-		session.save(cp);
+
+		try {
+			HibernateUtil.beginTransaction();
+			session.save(cp);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new APIException(e);
+		}
 	}
 	
 	public Integer getNextAvailableId() {

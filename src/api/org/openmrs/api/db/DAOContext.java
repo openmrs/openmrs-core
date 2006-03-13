@@ -3,6 +3,7 @@ package org.openmrs.api.db;
 import org.openmrs.User;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.formentry.db.FormEntryDAO;
+import org.openmrs.hl7.db.HL7DAO;
 import org.openmrs.reporting.db.ReportDAO;
 
 /**
@@ -52,6 +53,8 @@ public interface DAOContext {
 	public void setUserDAO(UserDAO dao);
 	
 	public FormEntryDAO getFormEntryDAO();
+	
+	public HL7DAO getHL7DAO();
 	
 	public ReportDAO getReportDAO();
 	public void setReportDAO(ReportDAO dao);

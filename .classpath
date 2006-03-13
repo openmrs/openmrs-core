@@ -47,5 +47,6 @@
 	<classpathentry kind="lib" path="lib/commons-io/commons-io-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/mail/activation.jar"/>
 	<classpathentry kind="lib" path="lib/mail/mail.jar"/>
+	<classpathentry kind="lib" path="lib/saxon/saxon8.jar"/>
 	<classpathentry kind="output" path="build/"/>
 </classpath>

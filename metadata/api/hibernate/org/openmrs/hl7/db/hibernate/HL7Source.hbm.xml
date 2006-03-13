@@ -5,15 +5,18 @@
 
 <hibernate-mapping package="org.openmrs">
 
-	<class name="org.openmrs.formentry.FormEntryQueue" table="formentry_queue">
+	<class name="org.openmrs.hl7.HL7Source" table="hl7_source">
 
-		<id name="formEntryQueueId" type="int" column="formentry_queue_id" 
+		<id name="HL7SourceId" type="int" column="hl7_source_id" 
 			unsaved-value="0">
 				<generator class="native" />
 		</id>
 
-		<property name="formData" type="java.lang.String" 
-			column="form_data" not-null="true" length="16777215" />
+		<property name="name" type="java.lang.String" 
+			column="name" not-null="true" length="255" />
+			
+		<property name="description" type="java.lang.String" 
+			column="description" not-null="true" length="2048" />
 			
 		<many-to-one name="creator" class="User" not-null="true">
 			<column name="creator" />

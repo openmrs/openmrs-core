@@ -7,8 +7,7 @@
 
 	<class name="ConceptProposal" table="concept_proposal">
 
-		<id name="conceptProposalId" type="java.lang.Integer"
-			column="concept_proposal_id">
+		<id name="conceptProposalId" type="java.lang.Integer" column="concept_proposal_id">
 			<generator class="native" />
 		</id>
 
@@ -17,10 +16,8 @@
 		<property name="state" type="java.lang.String" length="32" not-null="true" />
 		<property name="comments" type="java.lang.String" length="255" />
 
-		<property name="dateCreated" type="java.util.Date"
-			column="date_created" not-null="true" length="19" />
-		<property name="dateChanged" type="java.util.Date"
-			column="date_changed" length="19" />
+		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
+		<property name="dateChanged" type="java.util.Date" column="date_changed" length="19" />
 
 		<many-to-one name="encounter" class="Encounter">
 			<column name="encounter_id" />
@@ -39,8 +36,7 @@
 			<column name="changed_by" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to User -->
-		<many-to-one name="creator" class="User"
-			not-null="true">
+		<many-to-one name="creator" class="User" not-null="true">
 			<column name="creator" />
 		</many-to-one>
 

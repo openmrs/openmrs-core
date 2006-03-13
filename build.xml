@@ -335,5 +335,19 @@
             username="${tomcat.username}"
             password="${tomcat.password}"/>
     </target>
-		
+
+	<target name="schemaexport">
+	    <taskdef name="schemaexport"
+	        classname="org.hibernate.tool.hbm2ddl.SchemaExportTask"
+	        classpathref="hibernate.classpath"/>
+	    
+	    <schemaexport
+	    	config="${build.dir}/api/hibernate.cfg.xml"
+	        quiet="no"
+	        text="yes"
+	        drop="no"
+	        delimiter=";"
+	        output="schema-export.sql">
+	    </schemaexport>
+	</target>
 </project>

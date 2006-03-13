@@ -5,15 +5,21 @@
 
 <hibernate-mapping package="org.openmrs">
 
-	<class name="org.openmrs.formentry.FormEntryQueue" table="formentry_queue">
+	<class name="org.openmrs.formentry.FormEntryError" table="formentry_error">
 
-		<id name="formEntryQueueId" type="int" column="formentry_queue_id" 
+		<id name="formEntryErrorId" type="int" column="formentry_error_id" 
 			unsaved-value="0">
 				<generator class="native" />
 		</id>
 
 		<property name="formData" type="java.lang.String" 
 			column="form_data" not-null="true" length="16777215" />
+
+		<property name="error" type="java.lang.String" length="255"
+			column="error" not-null="true" />
+
+		<property name="errorDetails" type="java.lang.String" length="2048"
+			column="error_details" />
 			
 		<many-to-one name="creator" class="User" not-null="true">
 			<column name="creator" />

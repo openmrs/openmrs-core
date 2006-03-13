@@ -32,13 +32,14 @@ public class FormUploadServlet extends HttpServlet {
 	private static final long serialVersionUID = -3545085468235057302L;
 
 	private Log log = LogFactory.getLog(this.getClass());
+	
+	private static final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String formName = "";
 		String xml = "no xml!";
 		try {
-			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			xml = IOUtils.toString(request.getInputStream());
 			Document doc = db.parse(IOUtils.toInputStream(xml));

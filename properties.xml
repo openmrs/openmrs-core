@@ -71,13 +71,16 @@
    
     <!-- Hibernate -->
     <path id="hibernate.classpath">
-        <fileset dir="${hibernate.dir}" includes="*.jar" />
-        <fileset dir="${hibernate.dir}/lib" includes="*.jar" />
+    	<fileset dir="${cglib.dir}" includes="*.jar" />
+		<fileset dir="${commons-beanutils.dir}" includes="*.jar" />
+		<fileset dir="${commons-collections.dir}" includes="*.jar" />
+        <fileset dir="${commons-lang.dir}" includes="*.jar" />
+        <fileset dir="${commons-logging.dir}" includes="*.jar" />
 		<fileset dir="${database.dir}" includes="*.jar" />
-        <pathelement location="${database.jar}"/> 
-        <pathelement location="${commons-beanutils.jar}" />
-        <pathelement location="${commons-lang.jar}" />
-        <path location="${build.dir}/api/classes" />
+		<fileset dir="${dom4j.dir}" includes="*.jar" />
+        <fileset dir="${hibernate.dir}" includes="*.jar" />
+        <fileset dir="${jta.dir}" includes="*.jar" />
+        <pathelement location="${build.dir}/api" />
     </path>
     
     <!-- API -->

@@ -22,6 +22,8 @@ import org.openmrs.api.db.TemplateDAO;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.formentry.db.FormEntryDAO;
 import org.openmrs.formentry.db.hibernate.HibernateFormEntryDAO;
+import org.openmrs.hl7.db.HL7DAO;
+import org.openmrs.hl7.db.hibernate.HibernateHL7DAO;
 import org.openmrs.reporting.db.ReportDAO;
 import org.openmrs.reporting.db.hibernate.HibernateReportDAO;
 import org.openmrs.util.Security;
@@ -32,8 +34,7 @@ public class HibernateDAOContext implements DAOContext {
 
 	Context context;
 	User user;
-	
-	
+
 	private AdministrationDAO administrationDAO;
 	private ConceptDAO conceptDAO;
 	private EncounterDAO encounterDAO;
@@ -43,16 +44,18 @@ public class HibernateDAOContext implements DAOContext {
 	private PatientDAO patientDAO;
 	private PatientSetDAO patientSetDAO;
 	private UserDAO userDAO;
+	private HL7DAO hl7DAO;
+	private FormEntryDAO formEntryDAO;
 
 	// Report DAOs
-	private FormEntryDAO formEntryDAO;
 	private ReportDAO reportDAO;
-	
+
 	// Messaging DAOs
 	private TemplateDAO templateDAO;
 	private NoteDAO noteDAO;
-	
-	public HibernateDAOContext() { }
+
+	public HibernateDAOContext() {
+	}
 
 	public HibernateDAOContext(Context c) {
 		this.context = c;
@@ -73,21 +76,21 @@ public class HibernateDAOContext implements DAOContext {
 		user = null;
 		String errorMsg = "Invalid username and/or password";
 
-		//Session session = getSession();
+		// Session session = getSession();
 		Session session = HibernateUtil.currentSession();
-		
+
 		String loginWithoutDash = login;
-		if (login.length() >= 3 && login.charAt(login.length()-2) == '-')
-			loginWithoutDash = login.substring(0, login.length()-2) + login.charAt(login.length()-1);
-		
+		if (login.length() >= 3 && login.charAt(login.length() - 2) == '-')
+			loginWithoutDash = login.substring(0, login.length() - 2)
+					+ login.charAt(login.length() - 1);
+
 		User candidateUser = null;
 		try {
-			candidateUser = (User) session.createQuery(
-					"from User u where (u.username = ? or u.systemId = ? or u.systemId = ?) and u.voided = 0")
-					.setString(0, login)
-					.setString(1, login)
-					.setString(2, loginWithoutDash)
-					.uniqueResult();
+			candidateUser = (User) session
+					.createQuery(
+							"from User u where (u.username = ? or u.systemId = ? or u.systemId = ?) and u.voided = 0")
+					.setString(0, login).setString(1, login).setString(2,
+							loginWithoutDash).uniqueResult();
 		} catch (HibernateException he) {
 			// TODO Auto-generated catch block
 			log.error("Got hibernate exception");
@@ -96,34 +99,32 @@ public class HibernateDAOContext implements DAOContext {
 			log.error("Got regular exception");
 			log.error(e);
 		}
-		
+
 		if (candidateUser == null) {
-			throw new ContextAuthenticationException("User not found: "
-					+ login);
+			throw new ContextAuthenticationException("User not found: " + login);
 		}
 
 		String passwordOnRecord = (String) session.createSQLQuery(
-				"select password from users where user_id = ?")
-				.addScalar("password", Hibernate.STRING)
-				.setInteger(0, candidateUser.getUserId())
-				.uniqueResult();
+				"select password from users where user_id = ?").addScalar(
+				"password", Hibernate.STRING).setInteger(0,
+				candidateUser.getUserId()).uniqueResult();
 		String saltOnRecord = (String) session.createSQLQuery(
-				"select salt from users where user_id = ?")
-				.addScalar("salt", Hibernate.STRING)
-				.setInteger(0, candidateUser.getUserId())
+				"select salt from users where user_id = ?").addScalar("salt",
+				Hibernate.STRING).setInteger(0, candidateUser.getUserId())
 				.uniqueResult();
 
 		String hashedPassword = Security.encodeString(password + saltOnRecord);
 
-		if (hashedPassword != null
-				&& hashedPassword.equals(passwordOnRecord))
+		if (hashedPassword != null && hashedPassword.equals(passwordOnRecord))
 			user = candidateUser;
-		
+
 		if (user == null) {
-			log.info("Failed login attempt (login=" + login + ") - " + errorMsg);
+			log
+					.info("Failed login attempt (login=" + login + ") - "
+							+ errorMsg);
 			throw new ContextAuthenticationException(errorMsg);
 		}
-		
+
 		return user;
 	}
 
@@ -137,14 +138,15 @@ public class HibernateDAOContext implements DAOContext {
 		try {
 			if (user != null)
 				session.merge(user);
+		} catch (Exception e) {
+			log
+					.debug("Possible attempted locking of user to double open session or: "
+							+ e.getMessage());
 		}
-		catch (Exception e) {
-			log.debug("Possible attempted locking of user to double open session or: " + e.getMessage());
-		}
-		//session.merge(user);
+		// session.merge(user);
 		return user;
 	}
-	
+
 	public void logout() {
 		user = null;
 	}
@@ -154,11 +156,10 @@ public class HibernateDAOContext implements DAOContext {
 			administrationDAO = new HibernateAdministrationDAO(context);
 		return administrationDAO;
 	}
-	
-	public void setAdministrationDAO(AdministrationDAO dao) { 
-		this.administrationDAO = dao;
-	}	
 
+	public void setAdministrationDAO(AdministrationDAO dao) {
+		this.administrationDAO = dao;
+	}
 
 	public ConceptDAO getConceptDAO() {
 		if (conceptDAO == null)
@@ -166,20 +167,19 @@ public class HibernateDAOContext implements DAOContext {
 		return conceptDAO;
 	}
 
-	public void setConceptDAO(ConceptDAO dao) { 
+	public void setConceptDAO(ConceptDAO dao) {
 		this.conceptDAO = dao;
-	}	
-	
+	}
+
 	public EncounterDAO getEncounterDAO() {
 		if (encounterDAO == null)
 			encounterDAO = new HibernateEncounterDAO(context);
 		return encounterDAO;
 	}
-	
-	public void setEncounterDAO(EncounterDAO dao) { 
+
+	public void setEncounterDAO(EncounterDAO dao) {
 		this.encounterDAO = dao;
-	}	
-	
+	}
 
 	public FormDAO getFormDAO() {
 		if (formDAO == null)
@@ -187,118 +187,128 @@ public class HibernateDAOContext implements DAOContext {
 		return formDAO;
 	}
 
-	public void setFormDAO(FormDAO dao) { 
+	public void setFormDAO(FormDAO dao) {
 		this.formDAO = dao;
-	}	
-	
+	}
+
 	public ObsDAO getObsDAO() {
 		if (obsDAO == null)
 			obsDAO = new HibernateObsDAO(context);
 		return obsDAO;
 	}
-	
-	public void setObsDAO(ObsDAO dao) { 
+
+	public void setObsDAO(ObsDAO dao) {
 		this.obsDAO = dao;
-	}	
+	}
 
 	public OrderDAO getOrderDAO() {
 		if (orderDAO == null)
 			orderDAO = new HibernateOrderDAO(context);
 		return orderDAO;
 	}
-	
-	public void setOrderDAO(OrderDAO dao) { 
+
+	public void setOrderDAO(OrderDAO dao) {
 		this.orderDAO = dao;
-	}	
+	}
 
 	public PatientDAO getPatientDAO() {
 		if (patientDAO == null)
 			patientDAO = new HibernatePatientDAO(context);
 		return patientDAO;
 	}
-	
-	public void setPatientDAO(PatientDAO dao) { 
+
+	public void setPatientDAO(PatientDAO dao) {
 		this.patientDAO = dao;
-	}	
-	
+	}
+
 	public PatientSetDAO getPatientSetDAO() {
 		if (patientSetDAO == null)
 			patientSetDAO = new HibernatePatientSetDAO(context);
 		return patientSetDAO;
 	}
-	
-	public void setPatientSetDAO(PatientSetDAO dao) { 
+
+	public void setPatientSetDAO(PatientSetDAO dao) {
 		this.patientSetDAO = dao;
-	}	
+	}
 
 	public UserDAO getUserDAO() {
 		if (userDAO == null)
 			userDAO = new HibernateUserDAO(context);
 		return userDAO;
 	}
-	
-	public void setUserDAO(UserDAO dao) { 
+
+	public void setUserDAO(UserDAO dao) {
 		this.userDAO = dao;
-	}	
-	
+	}
+
 	public FormEntryDAO getFormEntryDAO() {
 		if (formEntryDAO == null)
 			formEntryDAO = new HibernateFormEntryDAO(context);
 		return formEntryDAO;
 	}
-	
+
+	public HL7DAO getHL7DAO() {
+		if (hl7DAO == null)
+			hl7DAO = new HibernateHL7DAO(context);
+		return hl7DAO;
+	}
+
+	public void setHL7DAO(HL7DAO dao) {
+		this.hl7DAO = dao;
+	}
+
 	public ReportDAO getReportDAO() {
 		if (reportDAO == null)
 			reportDAO = new HibernateReportDAO(context);
 		return reportDAO;
 	}
 
-	public void setReportDAO(ReportDAO dao) { 
+	public void setReportDAO(ReportDAO dao) {
 		this.reportDAO = dao;
-	}	
-	
+	}
+
 	public NoteDAO getNoteDAO() {
 		return noteDAO;
 	}
-	
-	public void setNoteDAO(NoteDAO dao) { 
+
+	public void setNoteDAO(NoteDAO dao) {
 		this.noteDAO = dao;
-	}	
-	
+	}
+
 	public TemplateDAO getTemplateDAO() {
 		return templateDAO;
 	}
-	
-	public void setTemplateDAO(TemplateDAO dao) { 
+
+	public void setTemplateDAO(TemplateDAO dao) {
 		this.templateDAO = dao;
-	}	
-	
+	}
+
 	/**
 	 * @see org.openmrs.api.context.Context#openSession()
 	 */
 	public void openSession() {
 
 		log.debug("HibernateContext: Starting Transaction");
-		//if (session == null)
+		// if (session == null)
 		HibernateUtil.currentSession();
-		
+
 	}
 
 	/**
 	 * @see org.openmrs.api.context.Context#closeSession()
 	 */
 	public void closeSession() {
-		
+
 		log.debug("HibernateContext: Ending Transaction");
-		/*TODO	tomcat loops adinfinitum at this point after several 
-		 		redeploys (during development).
-		 		Update #1: threadlocal incorrectly configured?
-		 		Update #2: or it seems to be an issue with connections being left around |fixed|
-		 		Update #3: Memory leak ?
-		*/  
+		/*
+		 * TODO tomcat loops adinfinitum at this point after several redeploys
+		 * (during development). Update #1: threadlocal incorrectly configured?
+		 * Update #2: or it seems to be an issue with connections being left
+		 * around |fixed| Update #3: Memory leak ?
+		 */
 		HibernateUtil.closeSession();
-		//session = null;
-		
+		// session = null;
+
 	}
 	
 	public static void startup() {
