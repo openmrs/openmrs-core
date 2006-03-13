@@ -5,7 +5,6 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
@@ -303,15 +302,15 @@ public class HibernateHL7DAO implements HL7DAO {
 	/* (non-Javadoc)
 	 * @see org.openmrs.hl7.db.HL7DAO#updateHL7InException(org.openmrs.hl7.HL7InException)
 	 */
-	public void updateHL7InException(HL7InError hl7InException) throws DAOException {
-		if (hl7InException.getHL7InExceptionId() == 0)
-			createHL7InError(hl7InException);
+	public void updateHL7InError(HL7InError hl7InErr) throws DAOException {
+		if (hl7InErr.getHL7InErrorId() == 0)
+			createHL7InError(hl7InErr);
 		else {
 			Session session = HibernateUtil.currentSession();
 	
 			try {
 				HibernateUtil.beginTransaction();
-				session.saveOrUpdate(hl7InException);
+				session.saveOrUpdate(hl7InErr);
 				HibernateUtil.commitTransaction();
 			} catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
