@@ -12,7 +12,6 @@
 
 	<!-- Base definitions -->
 	<property file="build.properties" />
-	<property file="build.description" value="Open-Source EMR for Developing Countries" />
 	
     <!-- Library versions and JARs -->
     <property name="lib.dir" location="lib" />

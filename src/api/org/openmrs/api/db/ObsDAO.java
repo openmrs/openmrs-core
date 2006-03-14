@@ -98,6 +98,13 @@ public interface ObsDAO {
 	 */
     public Set<Obs> getObservations(Patient who, Concept question) throws DAOException;
 
+	/**
+	 * e.g. get all observations referring to RETURN VISIT DATE
+	 * @param question (Concept: RETURN VISIT DATE)
+	 * @return
+	 */
+    public Set<Obs> getObservations(Concept question, String sort) throws DAOException;
+    
     /**
      * Get all observations from a specific encounter
      * @param whichEncounter

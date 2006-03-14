@@ -36,7 +36,7 @@
     <appender name="DWR_FILE" class="org.apache.log4j.DailyRollingFileAppender">
 		<param name="File" value="logs\\dwr.log" />
 		<param name="Append" value="true"/>
-		<param name="DatePattern" value="yyyy-MM-dd"/>
+		<param name="DatePattern" value="'.'yyyy-MM-dd"/>
 		
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern"

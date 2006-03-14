@@ -8,9 +8,6 @@
 <!-- ** @version 1.0                                          ** -->
 <!-- *********************************************************** -->
 <project name="OpenMRS" default="dist">
-	<description>
-    	${build.description}
-    </description>
 
 	<tstamp>
 		<format property="timestamp" pattern="MM/dd/yyyy hh:mm aa" />
@@ -47,6 +44,8 @@
 		<filter token="CACHE.IDLE_TEST_PERIOD" value="${cache.idle_test_period}" />
 		<filter token="CACHE.ACQUIRE_INCREMENT" value="${cache.acquire_increment}" />
 		<filter token="WEBAPP.NAME" value="${webapp.name}" />
+		<filter token="WEBAPP.WEBAPP.NAME" value="${webapp.display.name}" />
+		<filter token="WEBAPP.DESCRIPTION" value="${webapp.description}" />
 		<filter token="TIMESTAMP" value="${timestamp}" />
 	</filterset>
 

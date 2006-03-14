@@ -185,6 +185,15 @@ function removeHiddenRows() {
 <br />
 <h2><spring:message code="Relationship.title"/></h2>
 
+<spring:hasBindErrors name="patient">
+	<div class="error">Please fix all errors</div>
+	<div class="error">
+		<c:forEach items="${errors.allErrors}" var="error">
+			<spring:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
+		</c:forEach>
+	</div>
+</spring:hasBindErrors>
+
 <form method="post">
 
 	<table>
@@ -240,7 +249,7 @@ function removeHiddenRows() {
 					</c:if>
 				</tr>
 			</c:forEach>
-			<tr id="newRelationship">
+			<tr id="newRelationship" style="display: none">
 				<td></td>
 				<td>
 					${person.patient.patientName.givenName} ${person.patient.patientName.middleName} ${person.patient.patientName.familyName}<spring:message code="Relationship.possessive"/>

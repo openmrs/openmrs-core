@@ -188,6 +188,15 @@ public class ObsService {
     public Set<Obs> getObservations(Patient who, Concept question) {
     	return getObsDAO().getObservations(who, question);
     }
+    
+	/**
+	 * e.g. get all observations referring to RETURN VISIT DATE
+	 * @param question (Concept: RETURN VISIT DATE)
+	 * @return
+	 */
+    public Set<Obs> getObservations(Concept question, String sort) {
+    	return getObsDAO().getObservations(question, sort);
+    }
 
     /**
      * Get all observations from a specific encounter

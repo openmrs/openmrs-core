@@ -4,6 +4,9 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
 	version="2.4">
 
+	<display-name>@WEBAPP.DISPLAY.NAME@</display-name>
+	<display-name>@WEBAPP.DESCRIPTION@</display-name> 
+
 	<servlet>
 		<servlet-name>loginServlet</servlet-name>
 		<servlet-class>org.openmrs.web.servlet.LoginServlet</servlet-class>
@@ -74,6 +77,15 @@
 	<servlet-mapping>
 		<servlet-name>auditServlet</servlet-name>
 		<url-pattern>/auditServlet</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>quickReportServlet</servlet-name>
+		<servlet-class>org.openmrs.web.servlet.QuickReportServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>quickReportServlet</servlet-name>
+		<url-pattern>/quickReportServlet</url-pattern>
 	</servlet-mapping>
 
 		

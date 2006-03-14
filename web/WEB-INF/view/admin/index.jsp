@@ -80,7 +80,7 @@
 					<%@ include file="formentry/localHeader.jsp" %>
 			</openmrs:hasPrivilege>
 			
-			<openmrs:hasPrivilege privilege="Edit Patients,Audit">
+			<openmrs:hasPrivilege privilege="Edit Patients,Audit,View Patients">
 				<h4><spring:message code="Maintenance.header"/></h4>
 					<%@ include file="maintenance/localHeader.jsp" %>
 			</openmrs:hasPrivilege>

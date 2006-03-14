@@ -217,9 +217,25 @@ public class HibernateObsDAO implements
 		Session session = HibernateUtil.currentSession();
 		HibernateUtil.beginTransaction();
 
-		Query query = session.createQuery("from Obs obs where obs.patientId = :patientId and concept_id = :conceptId");
-		query.setInteger("patientId", who.getPatientId());
-		query.setInteger("conceptId", question.getConceptId());
+		Query query = session.createQuery("from Obs obs where obs.patient = :p and concept = :c");
+		query.setParameter("p", who);
+		query.setParameter("c", question);
+		Set<Obs> ret = new HashSet<Obs>(query.list());
+
+		HibernateUtil.commitTransaction();
+		return ret;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ObsService#getObservations(org.openmrs.Concept)
+	 */
+	public Set<Obs> getObservations(Concept question, String sort) {
+		Session session = HibernateUtil.currentSession();
+		HibernateUtil.beginTransaction();
+
+		Query query = session.createQuery("from Obs obs where obs.concept = :c and obs.voided = false order by :sort");
+		query.setParameter("c", question);
+		query.setString("sort", sort);
 		Set<Obs> ret = new HashSet<Obs>(query.list());
 
 		HibernateUtil.commitTransaction();
@@ -233,8 +249,8 @@ public class HibernateObsDAO implements
 		Session session = HibernateUtil.currentSession();
 		HibernateUtil.beginTransaction();
 
-		Query query = session.createQuery("from Obs obs where obs.patientId = :patientId");
-		query.setInteger("patientId", who.getPatientId());
+		Query query = session.createQuery("from Obs obs where obs.patient = :p");
+		query.setParameter("p", who);
 		Set<Obs> ret = new HashSet<Obs>(query.list());
 
 		HibernateUtil.commitTransaction();
