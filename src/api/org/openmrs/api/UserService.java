@@ -299,11 +299,13 @@ public class UserService {
 	 */
 	private void checkPrivileges(User user) {
 		Collection<Role> roles = new HashSet<Role>();
-		roles.addAll(user.getRoles());
+		if (user.getRoles() != null)
+			roles.addAll(user.getRoles());
 		
-		for (Group g : user.getGroups())
-			if (g.getRoles() != null)
-				roles.addAll(g.getRoles());
+		if (user.getGroups() != null)
+			for (Group g : user.getGroups())
+				if (g.getRoles() != null)
+					roles.addAll(g.getRoles());
 		
 		
 		for (Role r : roles) {

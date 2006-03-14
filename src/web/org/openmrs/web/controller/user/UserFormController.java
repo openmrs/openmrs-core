@@ -116,7 +116,10 @@ public class UserFormController extends SimpleFormController {
 				}
 				*/
 				
-				user.getRoles().retainAll(newRoles);
+				if (user.getRoles() == null)
+					newRoles.clear();
+				else
+					user.getRoles().retainAll(newRoles);
 			
 			// add Groups to user (because spring can't handle lists as properties...)
 				String[] groups = request.getParameterValues("groups");
@@ -143,8 +146,10 @@ public class UserFormController extends SimpleFormController {
 				}
 				*/
 				
-				
-				user.getGroups().retainAll(newGroups);
+				if (user.getGroups() == null)
+					newGroups.clear();
+				else
+					user.getGroups().retainAll(newGroups);
 		}
 		else {
 			errors.reject("auth.invalid");
