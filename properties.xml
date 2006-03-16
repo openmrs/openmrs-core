@@ -44,12 +44,12 @@
     <property name="hibernate.lazy" value="true" />
     <property name="hibernate.show_sql" value="true" />
     <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
-	<property name="cache.max_size" value="10" />
-	<property name="cache.min_size" value="1" />
-	<property name="cache.timeout" value="100" />
-	<property name="cache.max_statements" value="100" />
-	<property name="cache.idle_test_period" value="300" />
-	<property name="cache.acquire_increment" value="2" />
+	<property name="pool.max_size" value="10" />
+	<property name="pool.min_size" value="1" />
+	<property name="pool.timeout" value="100" />
+	<property name="pool.max_statements" value="100" />
+	<property name="pool.idle_test_period" value="300" />
+	<property name="pool.acquire_increment" value="2" />
 
 	<!-- Unused cache properties (migrated to c3p0
     <property name="dbcp.min_size" value="5" />
@@ -57,6 +57,19 @@
     <property name="dbcp.timeout" value="1" />
     <property name="dbcp.max_statements" value="50" />
     -->
+    
+    <!--  infopath properties -->
+    <!--  should go into formentry module -->
+    <property name="infopath.server.url" value="http://${tomcat.server}:${tomcat.port}/${webapp.name}"/>
+    <!-- use:
+    	infopath.publish.url+form.getUri() inserted into xsn document as publishUrl 
+    	same url used for downloading xsn -->
+    <property name="infopath.publish.url" value="file://C:\\" /> 
+    <property name="infopath.taskpane.caption" value="Welcome!"/>
+    <property name="infopath.taskpane.initial.url" value="${infopath.server.url}/taskPane.htm"/>
+    <property name="infopath.submit.url" value="${infopath.server.url}/formUpload"/>
+    <property name="infopath.schema.filename" value="FormEntry.xsd"/>
+    <property name="infopath.output.dir" value="C:/"/> <!--  filesystem directory uploaded xsn is saved to -->
     
     <!-- Customization properties -->
     <property name="custom.template.dir" value="web/WEB-INF/template" />
@@ -101,7 +114,7 @@
         
     <!-- Web -->
     <path id="web.compile.classpath">
-		<pathelement location="${dist.dir}/${app.name}-api-${app.version}.jar" />
+		<pathelement location="${dist.dir}/openmrs-api-${app.version}.jar" />
 		<fileset dir="${tomcat.dir}" includes="*.jar" />
 		<fileset dir="${dwr.dir}" includes="*.jar" />
 		<fileset dir="${commons-io.dir}" includes="*.jar" />

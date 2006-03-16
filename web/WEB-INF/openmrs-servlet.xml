@@ -84,6 +84,15 @@
 			<property name="prefix" value="/WEB-INF/view" />
 			<property name="suffix" value=".jsp"/>
 		</bean>
+		
+		<bean id="multipartResolver"
+    		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+			<!-- one of the properties available; the maximum file size in bytes -->
+			    <property name="maxUploadSize">
+			        <value>100000</value>
+			    </property>
+		</bean>
+ 
 	
 	    <bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
 			<property name="interceptors">
@@ -143,6 +152,7 @@
 					<prop key="**/fieldType.list">fieldTypeList</prop>
 					<prop key="**/formEntryQueue.form">formEntryQueueForm</prop>
 					<prop key="**/formEntryQueue.list">formEntryQueueList</prop>
+					<prop key="**/xsnUpload.form">xsnUploadForm</prop>
 					<prop key="**/options.form">optionsForm</prop>
 					<prop key="**/patientSummary.form">patientSummaryForm</prop>
 					<prop key="**/encounterSummary.form">encounterSummaryForm</prop>
@@ -636,6 +646,12 @@
 					<property name="successView"><value>formEntryQueue.list</value></property>
 				</bean>
 			<!-- ** /Form Entry Queue ** -->
+			
+				<bean id="xsnUploadForm" class="org.openmrs.formentry.controller.XsnUploadFormController">
+					<property name="commandName"><value>formList</value></property>
+					<property name="formView"><value>/admin/formentry/xsnUploadForm</value></property>
+					<property name="successView"><value>xsnUpload.form</value></property>
+				</bean>
 
 	    <!-- =========================== -->
 		<!-- =====      Other      ===== -->

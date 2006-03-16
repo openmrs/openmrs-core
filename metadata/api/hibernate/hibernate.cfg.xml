@@ -18,12 +18,12 @@
 		
 		<property name="hibernate.connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>
 		<property name="hibernate.connection.release_mode">after_transaction</property>
-		<property name="hibernate.c3p0.max_size">@CACHE.MAX_SIZE@</property>
-		<property name="hibernate.c3p0.min_size">@CACHE.MIN_SIZE@</property> 
-		<property name="hibernate.c3p0.timeout">@CACHE.TIMEOUT@</property>
-		<property name="hibernate.c3p0.max_statements">@CACHE.MAX_STATEMENTS@</property>
-		<property name="hibernate.c3p0.idle_test_period">@CACHE.IDLE_TEST_PERIOD@</property>
-		<property name="hibernate.c3p0.acquire_increment">@CACHE.ACQUIRE_INCREMENT@</property>
+		<property name="hibernate.c3p0.max_size">@POOL-MAX_SIZE@</property>
+		<property name="hibernate.c3p0.min_size">@POOL-MIN_SIZE@</property> 
+		<property name="hibernate.c3p0.timeout">@POOL-TIMEOUT@</property>
+		<property name="hibernate.c3p0.max_statements">@POOL-MAX_STATEMENTS@</property>
+		<property name="hibernate.c3p0.idle_test_period">@POOL-IDLE_TEST_PERIOD@</property>
+		<property name="hibernate.c3p0.acquire_increment">@POOL-ACQUIRE_INCREMENT@</property>
 
 		<property name="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</property>
 		<property name="hibernate.generate_statistics">false</property>

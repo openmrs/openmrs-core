@@ -43,7 +43,7 @@
                 value="%C{1}.%M|%d|%m%n"/>
         </layout>
     </appender>
-
+    
     <logger name="org.apache">
         <level value="WARN"/>
     </logger>
@@ -75,7 +75,7 @@
     </logger>
 
 	<logger name="org.openmrs">
-        <level value="WARN"/>
+        <level value="DEBUG"/>
     </logger>
     
     <root>
