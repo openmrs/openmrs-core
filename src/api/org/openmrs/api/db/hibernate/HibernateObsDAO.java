@@ -21,18 +21,19 @@ import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.ObsDAO;
+import org.openmrs.util.OpenmrsConstants;
 
 //import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
-public class HibernateObsDAO implements
-		ObsDAO {
+public class HibernateObsDAO implements ObsDAO {
 
 	protected final Log log = LogFactory.getLog(getClass());
-	
+
 	private Context context;
-	
-	public HibernateObsDAO() { }
-	
+
+	public HibernateObsDAO() {
+	}
+
 	public HibernateObsDAO(Context c) {
 		this.context = c;
 	}
@@ -41,82 +42,80 @@ public class HibernateObsDAO implements
 	 * @see org.openmrs.api.db.ObsService#createObs(org.openmrs.Obs)
 	 */
 	public void createObs(Obs obs) throws DAOException {
-		
+
 		Session session = HibernateUtil.currentSession();
-		
+
 		obs.setCreator(context.getAuthenticatedUser());
-		obs.setDateCreated(new Date());
+
+		// if dateCreated not set OR use lacks privilege to override, then set
+		// dateCreated to current time
+		if (obs.getDateCreated() == null
+				|| !context
+						.hasPrivilege(OpenmrsConstants.PRIV_OVERRIDE_DATE_CREATED))
+			obs.setDateCreated(new Date());
+
 		try {
 			HibernateUtil.beginTransaction();
 			session.save(obs);
 			HibernateUtil.commitTransaction();
 		}
 		/*
-		catch (HibernateException he) {
-			try {
-				HibernateUtil.closeSession();
-				session = HibernateUtil.currentSession();
-				HibernateUtil.beginTransaction();
-					session.clear();
-					session.save(obs);
-				HibernateUtil.commitTransaction();
-			}
-		*/
-		
-			catch (Exception e) {
-				HibernateUtil.rollbackTransaction();
-				throw new DAOException(e);
-			}
-		//}
+		 * catch (HibernateException he) { try { HibernateUtil.closeSession();
+		 * session = HibernateUtil.currentSession();
+		 * HibernateUtil.beginTransaction(); session.clear(); session.save(obs);
+		 * HibernateUtil.commitTransaction(); }
+		 */
+
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new DAOException(e);
+		}
+		// }
 	}
 
 	/**
 	 * @see org.openmrs.api.db.ObsService#deleteObs(org.openmrs.Obs)
 	 */
 	public void deleteObs(Obs obs) throws DAOException {
-		
+
 		Session session = HibernateUtil.currentSession();
-		
+
 		try {
 			HibernateUtil.beginTransaction();
 			session.delete(obs);
 			HibernateUtil.commitTransaction();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
 			throw new DAOException(e);
 		}
-		
+
 	}
 
 	/**
 	 * @see org.openmrs.api.db.ObsService#getObs(java.lang.Integer)
 	 */
 	public Obs getObs(Integer obsId) throws DAOException {
-		
+
 		Session session = HibernateUtil.currentSession();
-		
+
 		Obs obs = new Obs();
-		obs = (Obs)session.get(Obs.class, obsId);
-		
+		obs = (Obs) session.get(Obs.class, obsId);
+
 		return obs;
 	}
-	
-	public List<Obs> findObservations(Integer id, boolean includeVoided) throws DAOException {
-		
+
+	public List<Obs> findObservations(Integer id, boolean includeVoided)
+			throws DAOException {
+
 		Session session = HibernateUtil.currentSession();
-		
+
 		List<Obs> obs = new Vector<Obs>();
-		
-		Criteria criteria = session.createCriteria(Obs.class)
-			.createAlias("patient", "p")
-			.createAlias("encounter", "e")
-			.add(Expression.or(
-				Expression.eq("p.patientId", id),
-				Expression.like("e.encounterId", id)
-				)
-			);
-		
+
+		Criteria criteria = session.createCriteria(Obs.class).createAlias(
+				"patient", "p").createAlias("encounter", "e").add(
+				Expression.or(Expression.eq("p.patientId", id), Expression
+						.like("e.encounterId", id)));
+
 		if (includeVoided == false) {
 			criteria.add(Expression.eq("voided", new Boolean(false)));
 		}
@@ -128,12 +127,12 @@ public class HibernateObsDAO implements
 	 * @see org.openmrs.api.db.ObsService#getMimeType(java.lang.Integer)
 	 */
 	public MimeType getMimeType(Integer mimeTypeId) throws DAOException {
-		
+
 		Session session = HibernateUtil.currentSession();
-		
+
 		MimeType mimeType = new MimeType();
-		mimeType = (MimeType)session.get(MimeType.class, mimeTypeId);
-		
+		mimeType = (MimeType) session.get(MimeType.class, mimeTypeId);
+
 		return mimeType;
 	}
 
@@ -142,9 +141,10 @@ public class HibernateObsDAO implements
 	 */
 	public List<MimeType> getMimeTypes() throws DAOException {
 		Session session = HibernateUtil.currentSession();
-		
-		List<MimeType> mimeTypes = session.createCriteria(MimeType.class).list();
-		
+
+		List<MimeType> mimeTypes = session.createCriteria(MimeType.class)
+				.list();
+
 		return mimeTypes;
 	}
 
@@ -153,7 +153,7 @@ public class HibernateObsDAO implements
 	 */
 	public void updateObs(Obs obs) throws DAOException {
 		Session session = HibernateUtil.currentSession();
-		
+
 		if (obs.getObsId() == null)
 			createObs(obs);
 		else {
@@ -161,24 +161,23 @@ public class HibernateObsDAO implements
 				HibernateUtil.beginTransaction();
 				session.update(obs);
 				HibernateUtil.commitTransaction();
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
 				throw new DAOException(e);
 			}
 		}
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.ObsService#getLocation(java.lang.Integer)
 	 */
 	public Location getLocation(Integer locationId) throws DAOException {
 
 		Session session = HibernateUtil.currentSession();
-		
+
 		Location location = new Location();
-		location = (Location)session.get(Location.class, locationId);
-		
+		location = (Location) session.get(Location.class, locationId);
+
 		return location;
 
 	}
@@ -189,10 +188,10 @@ public class HibernateObsDAO implements
 	public List<Location> getLocations() throws DAOException {
 
 		Session session = HibernateUtil.currentSession();
-		
+
 		List<Location> locations;
 		locations = session.createQuery("from Location l").list();
-		
+
 		return locations;
 
 	}
@@ -203,7 +202,8 @@ public class HibernateObsDAO implements
 	public Set<Obs> getObservations(Encounter whichEncounter) {
 		Session session = HibernateUtil.currentSession();
 
-		Query query = session.createQuery("from Obs obs where obs.encounter = :e");
+		Query query = session
+				.createQuery("from Obs obs where obs.encounter = :e");
 		query.setParameter("e", whichEncounter);
 		Set<Obs> ret = new HashSet<Obs>(query.list());
 
@@ -211,13 +211,15 @@ public class HibernateObsDAO implements
 	}
 
 	/**
-	 * @see org.openmrs.api.db.ObsService#getObservations(org.openmrs.Patient, org.openmrs.Concept)
+	 * @see org.openmrs.api.db.ObsService#getObservations(org.openmrs.Patient,
+	 *      org.openmrs.Concept)
 	 */
 	public Set<Obs> getObservations(Patient who, Concept question) {
 		Session session = HibernateUtil.currentSession();
 		HibernateUtil.beginTransaction();
 
-		Query query = session.createQuery("from Obs obs where obs.patient = :p and concept = :c");
+		Query query = session
+				.createQuery("from Obs obs where obs.patient = :p and concept = :c");
 		query.setParameter("p", who);
 		query.setParameter("c", question);
 		Set<Obs> ret = new HashSet<Obs>(query.list());
@@ -225,7 +227,7 @@ public class HibernateObsDAO implements
 		HibernateUtil.commitTransaction();
 		return ret;
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.ObsService#getObservations(org.openmrs.Concept)
 	 */
@@ -233,7 +235,8 @@ public class HibernateObsDAO implements
 		Session session = HibernateUtil.currentSession();
 		HibernateUtil.beginTransaction();
 
-		Query query = session.createQuery("from Obs obs where obs.concept = :c and obs.voided = false order by :sort");
+		Query query = session
+				.createQuery("from Obs obs where obs.concept = :c and obs.voided = false order by :sort");
 		query.setParameter("c", question);
 		query.setString("sort", sort);
 		Set<Obs> ret = new HashSet<Obs>(query.list());
@@ -249,7 +252,8 @@ public class HibernateObsDAO implements
 		Session session = HibernateUtil.currentSession();
 		HibernateUtil.beginTransaction();
 
-		Query query = session.createQuery("from Obs obs where obs.patient = :p");
+		Query query = session
+				.createQuery("from Obs obs where obs.patient = :p");
 		query.setParameter("p", who);
 		Set<Obs> ret = new HashSet<Obs>(query.list());
 

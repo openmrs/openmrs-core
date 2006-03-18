@@ -15,26 +15,34 @@ import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.formentry.FormEntryQueueProcessor;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Processes message in the HL7 inbound queue. Messages are moved into either
- * the archive or error table depending on success or failure of the
- * processing.
+ * the archive or error table depending on success or failure of the processing.
  * 
  * @author Burke Mamlin
  * @version 1.0
  */
-public class HL7InQueueProcessor {
+public class HL7InQueueProcessor implements Runnable {
 
 	private Log log = LogFactory.getLog(this.getClass());
 
 	private Context context;
 
 	/**
+	 * Empty constructor (requires context to be set before any other calls are
+	 * made)
+	 */
+	public HL7InQueueProcessor() {
+	}
+
+	/**
 	 * Default constructor
 	 * 
-	 * @param context OpenMRS context
+	 * @param context
+	 *            OpenMRS context
 	 */
 	public HL7InQueueProcessor(Context context) {
 		this.context = context;
@@ -43,7 +51,8 @@ public class HL7InQueueProcessor {
 	/**
 	 * Process a single queue entry from the inbound HL7 queue
 	 * 
-	 * @param hl7InQueue queue entry to be processed
+	 * @param hl7InQueue
+	 *            queue entry to be processed
 	 */
 	public void processHL7InQueue(HL7InQueue hl7InQueue) {
 
@@ -76,12 +85,31 @@ public class HL7InQueueProcessor {
 	}
 
 	/**
+	 * Transform the next pending HL7 inbound queue entry. If there are no
+	 * pending items in the queue, this method simply returns quietly.
+	 * 
+	 * @return true if a queue entry was processed, false if queue was empty
+	 */
+	public boolean processNextHL7InQueue() {
+		boolean entryProcessed = false;
+		HL7Service hl7Service = context.getHL7Service();
+		HL7InQueue hl7InQueue;
+		if ((hl7InQueue = hl7Service.getNextHL7InQueue()) != null) {
+			processHL7InQueue(hl7InQueue);
+			entryProcessed = true;
+		}
+		return entryProcessed;
+	}
+
+	/**
 	 * Process ORU messages (this will eventually be moved into a separate class
 	 * as we expand to processing more message types ... or be replaced by part
 	 * of an HL7 library)
 	 * 
-	 * @param hl7InQueue inbound queue entry to be processed
-	 * @param hl7Message message generated from the queue entry
+	 * @param hl7InQueue
+	 *            inbound queue entry to be processed
+	 * @param hl7Message
+	 *            message generated from the queue entry
 	 */
 	public void processORU(HL7InQueue hl7InQueue, HL7Message hl7Message) {
 
@@ -108,7 +136,6 @@ public class HL7InQueueProcessor {
 
 		// Determine the enterer for obs data
 		User enterer = null;
-		Date dateEntered = null;
 		try {
 			enterer = getEnterer(evn);
 		} catch (HL7Exception e) {
@@ -186,7 +213,8 @@ public class HL7InQueueProcessor {
 			HL7Segment pid, HL7Segment pv1) throws HL7Exception {
 		Encounter encounter = new Encounter();
 
-		Date encounterDate = HL7Util.parseHL7Timestamp(evn.getField(2));
+		Date encounterDate = HL7Util.parseHL7Date(pv1.getField(44));
+		Date dateEntered = HL7Util.parseHL7Timestamp(evn.getField(2));
 		EncounterType encounterType = form.getEncounterType();
 		Location location = getLocation(pv1);
 		Patient patient = getPatient(pid);
@@ -199,6 +227,7 @@ public class HL7InQueueProcessor {
 		encounter.setPatient(patient);
 		encounter.setProvider(provider);
 		encounter.setCreator(enterer);
+		encounter.setDateCreated(dateEntered);
 		context.getEncounterService().createEncounter(encounter);
 
 		if (encounter == null || encounter.getEncounterId() == null
@@ -350,8 +379,8 @@ public class HL7InQueueProcessor {
 	}
 
 	/**
-	 * Creates an observation.  If the observed conceptId matches the keyword
-	 * for proposed concepts, then a ConceptProposal is generated instead.
+	 * Creates an observation. If the observed conceptId matches the keyword for
+	 * proposed concepts, then a ConceptProposal is generated instead.
 	 */
 	private void createObservation(User enterer, Patient patient,
 			Encounter encounter, User provider, HL7Segment obx)
@@ -434,8 +463,8 @@ public class HL7InQueueProcessor {
 	}
 
 	/**
-	 * Convenience method to respond to fatal errors by moving the queue
-	 * entry into an error bin prior to aborting
+	 * Convenience method to respond to fatal errors by moving the queue entry
+	 * into an error bin prior to aborting
 	 */
 	private void setFatalError(HL7InQueue hl7InQueue, String error,
 			Throwable cause) {
@@ -491,4 +520,41 @@ public class HL7InQueueProcessor {
 			this.errorDetails = errorDetails;
 		}
 	}
+
+	/**
+	 * Convenience method to allow for dependency injection
+	 * 
+	 * @param context
+	 *            OpenMRS context to be used by the processor
+	 */
+	public void setContext(Context context) {
+		this.context = context;
+	}
+
+	/**
+	 * Run method for processing all entries in the HL7 inbound queue
+	 */
+	public void run() {
+		try {
+			while (processNextHL7InQueue()) {
+				// loop until queue is empty
+			}
+		} catch (Exception e) {
+			log.error("Error while processing HL7 inbound queue", e);
+		}
+	}
+
+	/**
+	 * Starts up a thread to process all existing FormEntryQueue entries
+	 * 
+	 * @param context
+	 *            context from which process should start (required for
+	 *            authentication)
+	 */
+	public static void processHL7InQueue(Context context) {
+		HL7InQueueProcessor processor = new HL7InQueueProcessor(context);
+		Thread t = new Thread(processor);
+		t.start();
+	}
+
 }

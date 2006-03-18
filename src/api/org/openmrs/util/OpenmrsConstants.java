@@ -101,6 +101,9 @@ public class OpenmrsConstants {
 	
 	public static final String PRIV_FORM_ENTRY      = "Form Entry";
 	
+	// This privilege allows users/processes to set the creation date on domain
+	// objects, overriding the current timestamp as the date created.
+	public static final String PRIV_OVERRIDE_DATE_CREATED = "Override Date Created";
 	
 	public static Collection<String> CORE_PRIVILEGES() {
 		List<String> privs = new Vector<String>();
@@ -164,6 +167,8 @@ public class OpenmrsConstants {
 		privs.add(PRIV_MANAGE_RELATIONSHIP_TYPES);
 		
 		privs.add(PRIV_VIEW_ADMIN_FUNCTIONS);
+		
+		privs.add(PRIV_OVERRIDE_DATE_CREATED);
 		
 		return privs;
 	}

@@ -37,7 +37,7 @@ import org.xml.sax.SAXException;
  * @author Burke Mamlin
  * @version 1.0
  */
-public class FormEntryQueueProcessor {
+public class FormEntryQueueProcessor implements Runnable {
 
 	private Log log = LogFactory.getLog(this.getClass());
 
@@ -45,6 +45,13 @@ public class FormEntryQueueProcessor {
 	private DocumentBuilderFactory documentBuilderFactory;
 	private XPathFactory xPathFactory;
 	private TransformerFactory transformerFactory;
+
+	/**
+	 * Empty constructor (requires context to be set before any other calls are
+	 * made)
+	 */
+	public FormEntryQueueProcessor() {
+	}
 
 	/**
 	 * Constructs a FormEntryQueueProcessor
@@ -74,7 +81,7 @@ public class FormEntryQueueProcessor {
 		FormService formService = context.getFormService();
 		Integer formId = null;
 		String errorDetails = null;
-		
+
 		// First we parse the FormEntry xml data to obtain the formId of the
 		// form that was used to create the xml data
 		try {
@@ -84,16 +91,7 @@ public class FormEntryQueueProcessor {
 			XPath xp = xpf.newXPath();
 			Document doc = db.parse(IOUtils.toInputStream(formData));
 			formId = Integer.parseInt(xp.evaluate("/form/@id", doc));
-		} catch (XPathExpressionException e) {
-			errorDetails = e.getMessage();
-			log.error(e);
-		} catch (ParserConfigurationException e) {
-			errorDetails = e.getMessage();
-			log.error(e);
-		} catch (SAXException e) {
-			errorDetails = e.getMessage();
-			log.error(e);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			errorDetails = e.getMessage();
 			log.error(e);
 		}
@@ -139,7 +137,7 @@ public class FormEntryQueueProcessor {
 		}
 
 		// At this point, we have successfully transformed the XML data into
-		// HL7.  Create a new entry in the HL7 inbound queue and move the
+		// HL7. Create a new entry in the HL7 inbound queue and move the
 		// current FormEntry queue item into the archive.
 		HL7InQueue hl7InQueue = new HL7InQueue();
 		hl7InQueue.setHL7Data(out.toString());
@@ -156,13 +154,18 @@ public class FormEntryQueueProcessor {
 	/**
 	 * Transform the next pending FormEntryQueue entry. If there are no pending
 	 * items in the queue, this method simply returns quietly.
+	 * 
+	 * @return true if a queue entry was processed, false if queue was empty
 	 */
-	public void transformNextFormEntryQueue() {
+	public boolean transformNextFormEntryQueue() {
+		boolean transformOccurred = false;
 		FormEntryService fes = context.getFormEntryService();
 		FormEntryQueue feq;
 		if ((feq = fes.getNextFormEntryQueue()) != null) {
 			transformFormEntryQueue(feq);
+			transformOccurred = true;
 		}
+		return transformOccurred;
 	}
 
 	/**
@@ -193,13 +196,16 @@ public class FormEntryQueueProcessor {
 	}
 
 	/**
-	 * Convenience method to handle fatal errors.  In this case, a
-	 * FormEntryError object is built and stored based on the current queue
-	 * entry and then the current queue entry is removed from the queue.
+	 * Convenience method to handle fatal errors. In this case, a FormEntryError
+	 * object is built and stored based on the current queue entry and then the
+	 * current queue entry is removed from the queue.
 	 * 
-	 * @param formEntryQueue queue entry with fatal error
-	 * @param error name and/or brief description of the error
-	 * @param errorDetails specifics for the fatal error
+	 * @param formEntryQueue
+	 *            queue entry with fatal error
+	 * @param error
+	 *            name and/or brief description of the error
+	 * @param errorDetails
+	 *            specifics for the fatal error
 	 */
 	private void setFatalError(FormEntryQueue formEntryQueue, String error,
 			String errorDetails) {
@@ -211,4 +217,39 @@ public class FormEntryQueueProcessor {
 		context.getFormEntryService().deleteFormEntryQueue(formEntryQueue);
 	}
 
+	/**
+	 * Convenience method to allow for dependency injection
+	 * 
+	 * @param context
+	 *            OpenMRS context to be used by the processor
+	 */
+	public void setContext(Context context) {
+		this.context = context;
+	}
+
+	/**
+	 * Run method for processing all entries in the FormEntry queue
+	 */
+	public void run() {
+		try {
+			while (transformNextFormEntryQueue()) {
+				// loop until queue is empty
+			}
+		} catch (Exception e) {
+			log.error("Error while processing FormEntryQueue", e);
+		}
+	}
+
+	/**
+	 * Starts up a thread to process all existing FormEntryQueue entries
+	 * 
+	 * @param context
+	 *            context from which process should start (required for
+	 *            authentication)
+	 */
+	public static void processFormEntryQueue(Context context) {
+		FormEntryQueueProcessor feqp = new FormEntryQueueProcessor(context);
+		Thread t = new Thread(feqp);
+		t.start();
+	}
 }

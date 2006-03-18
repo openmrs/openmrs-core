@@ -51,6 +51,26 @@
 		<servlet-name>formEntryQueueDownloadServlet</servlet-name>
 		<url-pattern>/formEntryQueueDownload</url-pattern>
 	</servlet-mapping>
+	
+	<!-- #### TEMPORARY ACCESS TO QUEUE PROCESSING SERVLETS (Burke 3/18/2006) #### -->
+	<servlet>
+		<servlet-name>formEntryQueueProcessorServlet</servlet-name>
+		<servlet-class>org.openmrs.formentry.FormEntryQueueProcessorServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>formEntryQueueProcessorServlet</servlet-name>
+		<url-pattern>/formEntryQueueProcessor</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>hl7InQueueProcessorServlet</servlet-name>
+		<servlet-class>org.openmrs.hl7.HL7InQueueProcessorServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>hl7InQueueProcessorServlet</servlet-name>
+		<url-pattern>/hl7InQueueProcessor</url-pattern>
+	</servlet-mapping>
+	<!-- #### TEMPORARY ACCESS TO QUEUE PROCESSING SERVLETS (Burke 3/18/2006) #### -->
 
 	<servlet>
 		<servlet-name>downloadDictionaryServlet</servlet-name>
