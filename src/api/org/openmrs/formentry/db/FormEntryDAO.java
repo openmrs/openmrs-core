@@ -42,4 +42,6 @@ public interface FormEntryDAO {
 	public void updateFormEntryError(FormEntryError formEntryError) throws DAOException;
 	
 	public void deleteFormEntryError(FormEntryError formEntryError) throws DAOException;
+
+	public void garbageCollect();
 }

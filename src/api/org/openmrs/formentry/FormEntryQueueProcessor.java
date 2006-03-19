@@ -149,6 +149,9 @@ public class FormEntryQueueProcessor implements Runnable {
 		FormEntryArchive formEntryArchive = new FormEntryArchive(formEntryQueue);
 		context.getFormEntryService().createFormEntryArchive(formEntryArchive);
 		context.getFormEntryService().deleteFormEntryQueue(formEntryQueue);
+		
+		// clean up memory
+		context.getFormEntryService().garbageCollect();
 	}
 
 	/**

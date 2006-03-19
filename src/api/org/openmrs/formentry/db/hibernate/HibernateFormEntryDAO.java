@@ -245,5 +245,9 @@ public class HibernateFormEntryDAO implements FormEntryDAO {
 			throw new DAOException(e);
 		}
 	}
+	
+	public void garbageCollect() {
+		HibernateUtil.clear();
+	}
 
 }

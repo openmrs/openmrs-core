@@ -433,5 +433,9 @@ public class FormEntryService {
 		checkPrivilege(FormEntryConstants.PRIV_DELETE_FORMENTRY_ERROR);
 		dao().deleteFormEntryError(formEntryError);
 	}
+	
+	public void garbageCollect() {
+		dao().garbageCollect();
+	}
 
 }

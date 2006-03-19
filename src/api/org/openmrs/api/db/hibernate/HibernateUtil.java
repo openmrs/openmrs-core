@@ -33,6 +33,10 @@ public class HibernateUtil {
 
 		return s;
 	}
+	
+	public static void clear() {
+		currentSession().clear();
+	}
 
 	public static void disconnectSession() throws HibernateException {
 		Session s = (Session) threadLocalSession.get();
