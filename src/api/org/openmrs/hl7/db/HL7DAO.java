@@ -64,4 +64,5 @@ public interface HL7DAO {
 	
 	public void deleteHL7InError(HL7InError hl7InError) throws DAOException;
 
+	public void garbageCollect();
 }

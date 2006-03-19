@@ -82,6 +82,9 @@ public class HL7InQueueProcessor implements Runnable {
 					+ messageType + "\"", null);
 			return;
 		}
+		
+		// clean up memory after processing each queue entry
+		context.getHL7Service().garbageCollect();
 	}
 
 	/**

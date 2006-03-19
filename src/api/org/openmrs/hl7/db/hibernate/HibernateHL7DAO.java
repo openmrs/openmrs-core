@@ -335,6 +335,8 @@ public class HibernateHL7DAO implements HL7DAO {
 		}
 	}
 	
-	
+	public void garbageCollect() {
+		HibernateUtil.clear();
+	}
 
 }

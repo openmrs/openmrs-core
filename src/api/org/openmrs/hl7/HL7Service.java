@@ -171,4 +171,7 @@ public class HL7Service {
 		dao().deleteHL7InError(hl7InError);
 	}
 
+	public void garbageCollect() {
+		dao().garbageCollect();
+	}
 }
