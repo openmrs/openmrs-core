@@ -139,6 +139,11 @@
 			</fileset>
 		</javadoc>
 	</target>
+	
+	<target name="package-javadoc-api" depends="javadoc-api" description="packages api documentation">
+		<delete file="${doc.dir}/api.zip" />
+		<zip destfile="${doc.dir}/api.zip" basedir="${doc.dir}" includes="api/**" />
+	</target>
 
 	<target name="compile-api-tests" description="compile api tests">
 		<mkdir dir="${build.dir}/test/api" />
