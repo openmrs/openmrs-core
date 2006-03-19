@@ -251,7 +251,7 @@ public class FormEntryQueueProcessor implements Runnable {
 	public static synchronized void processFormEntryQueue(Context context)
 			throws APIException {
 		Thread t = getThreadForContext(context);
-		if (t.isAlive())
+		if (t.isAlive() && !t.isInterrupted())
 			throw new APIException(
 					"FormEntry queue processor is already running");
 		t.start();

@@ -556,7 +556,7 @@ public class HL7InQueueProcessor implements Runnable {
 	 */
 	public static synchronized void processHL7InQueue(Context context) throws HL7Exception {
 		Thread t = getThreadForContext(context);
-		if (t.isAlive())
+		if (t.isAlive() && !t.isInterrupted())
 			throw new HL7Exception("HL7 processor is already running");
 		t.start();
 	}

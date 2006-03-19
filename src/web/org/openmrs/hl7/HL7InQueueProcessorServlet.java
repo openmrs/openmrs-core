@@ -16,7 +16,7 @@ import org.openmrs.web.WebConstants;
 public class HL7InQueueProcessorServlet extends HttpServlet {
 
 	private static final long serialVersionUID = -5108204671262339759L;
-	
+
 	// private Log log = LogFactory.getLog(this.getClass());
 
 	protected void doGet(HttpServletRequest request,
@@ -31,16 +31,21 @@ public class HL7InQueueProcessorServlet extends HttpServlet {
 			return;
 		}
 
-		HL7InQueueProcessor.processHL7InQueue(context);
-		
 		ServletOutputStream out = response.getOutputStream();
-		out.print("HL7InQueueProcessor has started");
+
+		try {
+			HL7InQueueProcessor.processHL7InQueue(context);
+			out.print("HL7 inbound queue processor has started");
+		} catch (HL7Exception e) {
+			out
+					.print("Unable to start HL7 inbound queue processor. Perhaps it is already going?");
+		}
+
 	}
 
 	private Context getContext(HttpSession httpSession) {
 		return (Context) httpSession
 				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 	}
-
 
 }

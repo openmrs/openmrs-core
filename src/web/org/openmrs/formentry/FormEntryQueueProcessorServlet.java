@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
 
@@ -36,10 +37,16 @@ public class FormEntryQueueProcessorServlet extends HttpServlet {
 			return;
 		}
 
-		FormEntryQueueProcessor.processFormEntryQueue(context);
-		
 		ServletOutputStream out = response.getOutputStream();
-		out.print("FormEntryQueueProcessor has started");
+
+		try {
+			FormEntryQueueProcessor.processFormEntryQueue(context);
+			out.print("FormEntry queue processor has started");
+		} catch (APIException e) {
+			out
+					.print("FormEntry queue processor failed to start.  Perhaps it is already running?");
+		}
+
 	}
 
 	private Context getContext(HttpSession httpSession) {
