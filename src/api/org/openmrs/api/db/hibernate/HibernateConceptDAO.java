@@ -562,17 +562,17 @@ public class HibernateConceptDAO implements
 		return crit.list();
 	}
 	
-	public void proposeConcept(ConceptProposal cp) throws APIException {
+	public void proposeConcept(ConceptProposal conceptProposal) throws APIException {
 		Session session = HibernateUtil.currentSession();
 		
-		if (cp.getCreator() == null)
-			cp.setCreator(cp.getEncounter().getCreator());
-		if (cp.getDateCreated() == null)
-			cp.setDateCreated(cp.getEncounter().getDateCreated());
+		if (conceptProposal.getCreator() == null)
+			conceptProposal.setCreator(conceptProposal.getEncounter().getCreator());
+		if (conceptProposal.getDateCreated() == null)
+			conceptProposal.setDateCreated(conceptProposal.getEncounter().getDateCreated());
 
 		try {
 			HibernateUtil.beginTransaction();
-			session.save(cp);
+			session.save(conceptProposal);
 			HibernateUtil.commitTransaction();
 		}
 		catch (Exception e) {

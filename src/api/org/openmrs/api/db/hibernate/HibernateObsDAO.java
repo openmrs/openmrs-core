@@ -45,13 +45,10 @@ public class HibernateObsDAO implements ObsDAO {
 
 		Session session = HibernateUtil.currentSession();
 
-		obs.setCreator(context.getAuthenticatedUser());
+		if (obs.getCreator() == null)
+			obs.setCreator(context.getAuthenticatedUser());
 
-		// if dateCreated not set OR use lacks privilege to override, then set
-		// dateCreated to current time
-		if (obs.getDateCreated() == null
-				|| !context
-						.hasPrivilege(OpenmrsConstants.PRIV_OVERRIDE_DATE_CREATED))
+		if (obs.getDateCreated() == null)
 			obs.setDateCreated(new Date());
 
 		try {

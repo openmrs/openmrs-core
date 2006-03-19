@@ -306,16 +306,16 @@ public class ConceptService {
 		return getConceptDAO().getConceptProposals(includeCompleted);
 	}
 	
-	public ConceptProposal getConceptProposal(Integer c) {
-		return getConceptDAO().getConceptProposal(c);
+	public ConceptProposal getConceptProposal(Integer conceptProposalId) {
+		return getConceptDAO().getConceptProposal(conceptProposalId);
 	}
 	
 	public List<Concept> findProposedConcepts(String text) {
 		return getConceptDAO().findProposedConcepts(text);
 	}
 	
-	public void proposeConcept(ConceptProposal cp) {
-		getConceptDAO().proposeConcept(cp);
+	public void proposeConcept(ConceptProposal conceptProposal) {
+		getConceptDAO().proposeConcept(conceptProposal);
 	}
 	
 	public Integer getNextAvailableId() {

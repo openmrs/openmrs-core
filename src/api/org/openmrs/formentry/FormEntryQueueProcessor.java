@@ -1,11 +1,10 @@
 package org.openmrs.formentry;
 
-import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Hashtable;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -15,17 +14,16 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.APIException;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.hl7.HL7InQueue;
 import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
 /**
  * Processes FormEntryQueue entries. Each entry is translated into an HL7
@@ -149,7 +147,7 @@ public class FormEntryQueueProcessor implements Runnable {
 		FormEntryArchive formEntryArchive = new FormEntryArchive(formEntryQueue);
 		context.getFormEntryService().createFormEntryArchive(formEntryArchive);
 		context.getFormEntryService().deleteFormEntryQueue(formEntryQueue);
-		
+
 		// clean up memory
 		context.getFormEntryService().garbageCollect();
 	}
@@ -250,9 +248,26 @@ public class FormEntryQueueProcessor implements Runnable {
 	 *            context from which process should start (required for
 	 *            authentication)
 	 */
-	public static void processFormEntryQueue(Context context) {
-		FormEntryQueueProcessor feqp = new FormEntryQueueProcessor(context);
-		Thread t = new Thread(feqp);
+	public static synchronized void processFormEntryQueue(Context context)
+			throws APIException {
+		Thread t = getThreadForContext(context);
+		if (t.isAlive())
+			throw new APIException(
+					"FormEntry queue processor is already running");
 		t.start();
 	}
+
+	private static Hashtable<Context, Thread> threadCache = new Hashtable<Context, Thread>();
+
+	private static Thread getThreadForContext(Context context) {
+		Thread thread;
+		if (threadCache.containsKey(context))
+			thread = threadCache.get(context);
+		else {
+			thread = new Thread(new FormEntryQueueProcessor(context));
+			threadCache.put(context, thread);
+		}
+		return thread;
+	}
+
 }

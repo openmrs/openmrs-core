@@ -39,13 +39,10 @@ public class HibernateEncounterDAO implements EncounterDAO {
 
 		Session session = HibernateUtil.currentSession();
 
-		encounter.setCreator(context.getAuthenticatedUser());
+		if (encounter.getCreator() == null)
+			encounter.setCreator(context.getAuthenticatedUser());
 
-		// if dateCreated not set OR use lacks privilege to override, then set
-		// dateCreated to current time
-		if (encounter.getDateCreated() == null
-				|| !context
-						.hasPrivilege(OpenmrsConstants.PRIV_OVERRIDE_DATE_CREATED))
+		if (encounter.getDateCreated() == null)
 			encounter.setDateCreated(new Date());
 
 		try {

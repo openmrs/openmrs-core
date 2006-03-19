@@ -1,6 +1,7 @@
 package org.openmrs.hl7;
 
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -15,7 +16,6 @@ import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
-import org.openmrs.formentry.FormEntryQueueProcessor;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -554,10 +554,23 @@ public class HL7InQueueProcessor implements Runnable {
 	 *            context from which process should start (required for
 	 *            authentication)
 	 */
-	public static void processHL7InQueue(Context context) {
-		HL7InQueueProcessor processor = new HL7InQueueProcessor(context);
-		Thread t = new Thread(processor);
+	public static synchronized void processHL7InQueue(Context context) throws HL7Exception {
+		Thread t = getThreadForContext(context);
+		if (t.isAlive())
+			throw new HL7Exception("HL7 processor is already running");
 		t.start();
 	}
 
+	private static Hashtable<Context, Thread> threadCache = new Hashtable<Context, Thread>();
+
+	private static Thread getThreadForContext(Context context) {
+		Thread thread;
+		if (threadCache.containsKey(context))
+			thread = threadCache.get(context);
+		else {
+			thread = new Thread(new HL7InQueueProcessor(context));
+			threadCache.put(context, thread);
+		}
+		return thread;
+	}
 }
