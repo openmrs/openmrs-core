@@ -107,7 +107,15 @@
 		<servlet-name>quickReportServlet</servlet-name>
 		<url-pattern>/quickReportServlet</url-pattern>
 	</servlet-mapping>
-
+	
+	<servlet>
+		<servlet-name>sampleFlowsheetServlet</servlet-name>
+		<servlet-class>org.openmrs.web.servlet.SampleFlowsheetServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>sampleFlowsheetServlet</servlet-name>
+		<url-pattern>/sampleFlowsheet</url-pattern>
+	</servlet-mapping>
 		
 	<listener>
 		<listener-class>org.openmrs.web.Listener</listener-class>
