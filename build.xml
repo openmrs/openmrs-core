@@ -268,6 +268,7 @@
 			<lib dir="${jta.dir}" includes="*.jar" />
 			<lib dir="${junit.dir}" includes="*.jar" />
 			<lib dir="${mysql.dir}" includes="*.jar" />
+			<lib dir="${saxon.dir}" includes="*.jar" />
 			<lib dir="${spring.dir}" includes="*.jar" />
 			<lib dir="${taglibs.dir}" includes="*.jar" />
 			<lib dir="${velocity.dir}" includes="*.jar" />
