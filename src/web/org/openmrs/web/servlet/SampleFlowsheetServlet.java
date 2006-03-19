@@ -81,7 +81,7 @@ public class SampleFlowsheetServlet extends HttpServlet {
 		out.println("</style>");
 		out.println("<table cellspacing=0 cellpadding=3>");
 		Locale locale = context.getLocale();
-		Calendar date = new GregorianCalendar();
+		Calendar date = new GregorianCalendar(1900, Calendar.JANUARY, 1);
 		Calendar obsDate = new GregorianCalendar();
 		for (Obs obs : obsList) {
 			obsDate.setTime(obs.getObsDatetime());
