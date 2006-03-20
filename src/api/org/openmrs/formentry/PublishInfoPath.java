@@ -33,98 +33,144 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-public class PublishInfoPath { //extends TestCase {
+/**
+ * Performs the <em>publish</em> process for InfoPath forms. Publishing an
+ * InfoPath form requires that multiple URL references and some specific XML
+ * attributes are altered within the contents of the XSN file.
+ * 
+ * @author Ben Wolfe
+ * @author Burke Mamlin
+ * @version 1.0
+ */
+public class PublishInfoPath { // extends TestCase {
 
 	private static Log log = LogFactory.getLog(PublishInfoPath.class);
-	/*
-	public void testClass() throws Exception {
-		
-		String namespace = "http://schema.iukenya.org/amrs/2006/FormEntry/1";
-		String fileDir   = "c:\\documents and settings\\bwolfe.rii\\desktop\\java_xsn";
-		String filename  = "arvf-4.1-1.xsn";
-		String xsnFile   = fileDir + "\\" + filename;
 
-		publishXSN(xsnFile, filename, namespace);
-	}
-	*/
-	
+	/*
+	 * public void testClass() throws Exception {
+	 * 
+	 * String namespace = "http://schema.iukenya.org/amrs/2006/FormEntry/1";
+	 * String fileDir = "c:\\documents and
+	 * settings\\bwolfe.rii\\desktop\\java_xsn"; String filename =
+	 * "arvf-4.1-1.xsn"; String xsnFile = fileDir + "\\" + filename;
+	 * 
+	 * publishXSN(xsnFile, filename, namespace); }
+	 */
+
+	/**
+	 * Public access method for publishing an InfoPath&reg; form (XSN file). The
+	 * given file is expanded into its constituents and the various URL and
+	 * schema references within those files are updated before the files are
+	 * re-constituted into an XSN archive.
+	 * 
+	 * @param file
+	 *            the XSN file to be published
+	 * @param form
+	 *            the OpenMRS form with which the given XSN is to be associated
+	 */
 	public static void publishXSN(File file, Form form) throws IOException {
 		if (file.exists())
 			publishXSN(file.getAbsolutePath(), form);
 		else
 			publishXSN(new FileInputStream(file), form);
 	}
-	
-	public static void publishXSN(InputStream inputStream, Form form) throws IOException {
+
+	/**
+	 * Public access method for publishing an InfoPath&reg; form (XSN file). The
+	 * given file is expanded into its constituents and the various URL and
+	 * schema references within those files are updated before the files are
+	 * re-constituted into an XSN archive.
+	 * 
+	 * @param inputStream
+	 *            inputStream from which XSN may be read
+	 * @param form
+	 *            the OpenMRS form with which the given XSN is to be associated
+	 */
+	public static void publishXSN(InputStream inputStream, Form form)
+			throws IOException {
 		File tempDir = createTempDirectory("UPLOADEDXSN");
-		
+
 		log.debug("Temp publish dir: " + tempDir.getAbsolutePath());
-		
+
 		// create file on file system to hold the uploaded file
 		File filesystemXSN = File.createTempFile("upload", ".xsn", tempDir);
-		
+
 		// copy the uploaded file over to the temp file system file
 		FileOutputStream out = new FileOutputStream(filesystemXSN);
-        byte[] c = new byte[1];
-        while (inputStream.read(c) != -1)
-           out.write(c);
-        out.close();
-        
-        publishXSN(filesystemXSN.getAbsolutePath(), form);
-        
-        //deleteDirectory(tempDir);
+		byte[] c = new byte[1];
+		while (inputStream.read(c) != -1)
+			out.write(c);
+		out.close();
+
+		publishXSN(filesystemXSN.getAbsolutePath(), form);
+
+		// deleteDirectory(tempDir);
 	}
-	
-	public static void publishXSN(String xsnFilepath, Form form) throws IOException {
-		
+
+	/**
+	 * Public access method for publishing an InfoPath&reg; form (XSN file). The
+	 * given file is expanded into its constituents and the various URL and
+	 * schema references within those files are updated before the files are
+	 * re-constituted into an XSN archive.
+	 * 
+	 * @param xsnFilepath
+	 *            full path to the XSN file
+	 * @param form
+	 *            the OpenMRS form with which the given XSN is to be associated
+	 */
+	public static void publishXSN(String xsnFilepath, Form form)
+			throws IOException {
+
 		log.debug("publishing xsn at: " + xsnFilepath);
-		
+
 		File tempDir = expandXsn(xsnFilepath);
 		if (tempDir == null)
 			throw new IOException("Filename not found: '" + xsnFilepath + "'");
-		
-		String outputFilename	= form.getUri();
-		String namespace		= form.getSchemaNamespace();
-		
-		String serverUrl		= "@INFOPATH-SERVER-URL@";
-		String publishUrl		= "@INFOPATH-PUBLISH-URL@" + outputFilename;
-		String taskPaneCaption	= "@INFOPATH-TASKPANE-CAPTION@"; //"Welcome!";
-		String taskPaneInitialUrl = "@INFOPATH-TASKPANE-INITIAL-URL@"; //"http://localhost:8080/amrs/taskPane.htm";
-		String submitUrl		= "@INFOPATH-SUBMIT-URL@"; //"http://localhost:8080/amrs/formUpload";
-		String schemaFilename	= "@INFOPATH-SCHEMA-FILENAME@"; //"FormEntry.xsd";
-		String outputDir		= "@INFOPATH-OUTPUT-DIR@"; //System.getProperty("user.home");
-		
+
+		String outputFilename = form.getUri();
+		String namespace = form.getSchemaNamespace();
+
+		String serverUrl = "@INFOPATH-SERVER-URL@";
+		String publishUrl = "@INFOPATH-PUBLISH-URL@" + outputFilename;
+		String taskPaneCaption = "@INFOPATH-TASKPANE-CAPTION@"; // "Welcome!";
+		String taskPaneInitialUrl = "@INFOPATH-TASKPANE-INITIAL-URL@"; // "http://localhost:8080/amrs/taskPane.htm";
+		String submitUrl = "@INFOPATH-SUBMIT-URL@"; // "http://localhost:8080/amrs/formUpload";
+		String schemaFilename = "@INFOPATH-SCHEMA-FILENAME@"; // "FormEntry.xsd";
+		String outputDir = "@INFOPATH-OUTPUT-DIR@"; // System.getProperty("user.home");
+
 		// prepare manifest
-		String solutionVersion = prepareManifest(tempDir, publishUrl, namespace,
-				taskPaneCaption, taskPaneInitialUrl, submitUrl);
+		String solutionVersion = prepareManifest(tempDir, publishUrl,
+				namespace, taskPaneCaption, taskPaneInitialUrl, submitUrl);
 
 		log.debug("\nsolution version: " + solutionVersion);
-		
+
 		// set namespace
 		File schema = findFile(tempDir, schemaFilename);
 		if (schema == null)
-			throw new IOException("Schema: '" + schemaFilename + "' cannot be null");
-		String tag  = "xs:schema";
+			throw new IOException("Schema: '" + schemaFilename
+					+ "' cannot be null");
+		String tag = "xs:schema";
 		setNamespace(schema, tag, namespace);
-		
+
 		// update server_url in openmrs-infopath.js
 		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("SERVER_URL", serverUrl);
 		vars.put("SUBMIT_URL", submitUrl);
 		setVariables(tempDir, "openmrs-infopath.js", vars);
-		
+
 		// create ddf
 		createDdf(tempDir, outputDir, outputFilename);
-		
+
 		// make cab
 		makeCab(tempDir);
-		
+
 		// clean up
-		//deleteDirectory(tempDir);
+		// deleteDirectory(tempDir);
 	}
 
-	private static String prepareManifest(File tempDir, String url, String namespace,
-			String taskPaneCaption, String taskPaneInitialUrl, String submitUrl) {
+	private static String prepareManifest(File tempDir, String url,
+			String namespace, String taskPaneCaption,
+			String taskPaneInitialUrl, String submitUrl) {
 		File manifest = findManifest(tempDir);
 		if (manifest == null) {
 			log.warn("Missing manifest!");
@@ -155,7 +201,8 @@ public class PublishInfoPath { //extends TestCase {
 			// Find xsf:taskpane element
 			elem = getSingleElement(doc, "xsf:taskpane");
 			if (elem == null) {
-				log.warn("Could not locate xsf:taskpane element within manifest");
+				log
+						.warn("Could not locate xsf:taskpane element within manifest");
 				return null;
 			}
 			elem.setAttribute("caption", taskPaneCaption);
@@ -167,7 +214,8 @@ public class PublishInfoPath { //extends TestCase {
 			}
 
 			writeXml(doc, manifest.getPath());
-					//"c:\\documents and settings\\bwolfe.rii\\desktop\\java_xsn\\manifest.xsf");
+			// "c:\\documents and
+			// settings\\bwolfe.rii\\desktop\\java_xsn\\manifest.xsf");
 		} catch (ParserConfigurationException e) {
 			log.error("Error parsing form data", e);
 		} catch (SAXException e) {
@@ -202,7 +250,8 @@ public class PublishInfoPath { //extends TestCase {
 		}
 	}
 
-	private static void createDdf(File tempDir, String outputDir, String outputFileName) {
+	private static void createDdf(File tempDir, String outputDir,
+			String outputFileName) {
 		String ddf = ";*** MakeCAB Directive file for "
 				+ outputFileName
 				+ "\n"
@@ -214,7 +263,7 @@ public class PublishInfoPath { //extends TestCase {
 				+ ".Set CompressionType=MSZIP		; all files are compressed in cabinet files\n"
 				+ ".Set UniqueFiles=\"OFF\"\n" + ".Set Cabinet=on\n"
 				+ ".Set DiskDirectory1=\"" + outputDir + "\"\n";
-		
+
 		for (File f : tempDir.listFiles())
 			ddf += "\"" + f.getPath() + "\"\n";
 
@@ -229,9 +278,10 @@ public class PublishInfoPath { //extends TestCase {
 	}
 
 	private static void makeCab(File tempDir) {
-		//"""calls MakeCAB to make a CAB file from DDF in tempdir directory"""
-		
-		String cmd = "makecab /F \"" + tempDir.getAbsolutePath() + "\\publish.ddf\"";
+		// """calls MakeCAB to make a CAB file from DDF in tempdir directory"""
+
+		String cmd = "makecab /F \"" + tempDir.getAbsolutePath()
+				+ "\\publish.ddf\"";
 		log.debug("executing command: " + cmd);
 		String output = execCmd(cmd);
 		log.debug("make cab output: " + output);
@@ -261,22 +311,22 @@ public class PublishInfoPath { //extends TestCase {
 					+ tempDir.getAbsolutePath() + "'");
 		return tempDir;
 	}
-	
+
 	private static File expandXsn(String xsn) throws IOException {
 		File xsnFile = new File(xsn);
 		if (!xsnFile.exists())
 			return null;
-	
+
 		File tempDir = createTempDirectory("XSN");
 		if (tempDir == null)
 			throw new IOException("Failed to create temporary directory");
-	
+
 		String cmd = "expand -F:* \"" + xsn + "\" \""
 				+ tempDir.getAbsolutePath() + "\"";
 		log.debug("executing command: " + cmd);
 		String output = execCmd(cmd);
 		log.debug("expandXsn output: " + output);
-		
+
 		return tempDir;
 	}
 
@@ -300,7 +350,7 @@ public class PublishInfoPath { //extends TestCase {
 	private static File findManifest(File dir) {
 		return findFile(dir, "manifest.xsf");
 	}
-	
+
 	private static File findFile(File dir, String filename) {
 		File file = null;
 		for (File f : dir.listFiles()) {
@@ -341,17 +391,19 @@ public class PublishInfoPath { //extends TestCase {
 		}
 		return dir.delete();
 	}
-	
-	private static void setVariables(File dir, String filename, Map<String, String> vars) throws IOException {
+
+	private static void setVariables(File dir, String filename,
+			Map<String, String> vars) throws IOException {
 		File file = findFile(dir, filename);
 		FileInputStream inputStream = new FileInputStream(file);
 		byte[] b = new byte[inputStream.available()];
-        inputStream.read(b);
-        inputStream.close ();
-        String fileContent = new String (b); 
+		inputStream.read(b);
+		inputStream.close();
+		String fileContent = new String(b);
 		for (String variableName : vars.keySet()) {
 			String regexp = "var\\s" + variableName + "\\s=[^\n]*;";
-			String rplcmnt = "var " + variableName + " = \"" + vars.get(variableName) + "\";"; 
+			String rplcmnt = "var " + variableName + " = \""
+					+ vars.get(variableName) + "\";";
 			fileContent = fileContent.replaceAll(regexp, rplcmnt);
 		}
 		try {
@@ -370,5 +422,5 @@ public class PublishInfoPath { //extends TestCase {
 			elem = (Element) elemList.item(0);
 		return elem;
 	}
-	
+
 }

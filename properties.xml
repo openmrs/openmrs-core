@@ -60,14 +60,14 @@
     
     <!--  infopath properties -->
     <!--  should go into formentry module -->
-    <property name="infopath.server.url" value="http://${tomcat.server}:${tomcat.port}/${webapp.name}"/>
+    <property name="infopath.server.url" value="http://${tomcat.server}:${tomcat.port}/"/>
     <!-- use:
     	infopath.publish.url+form.getUri() inserted into xsn document as publishUrl 
     	same url used for downloading xsn -->
-    <property name="infopath.publish.url" value="file://C:\\" /> 
+    <property name="infopath.publish.url" value="${infopath.server.url}/formentry/forms/" /> 
     <property name="infopath.taskpane.caption" value="Welcome!"/>
-    <property name="infopath.taskpane.initial.url" value="${infopath.server.url}/taskPane.htm"/>
-    <property name="infopath.submit.url" value="${infopath.server.url}/formUpload"/>
+    <property name="infopath.taskpane.initial.url" value="${infopath.server.url}/${webapp.name}/taskPane.htm"/>
+    <property name="infopath.submit.url" value="${infopath.server.url}/${webapp.name}/formUpload"/>
     <property name="infopath.schema.filename" value="FormEntry.xsd"/>
     <property name="infopath.output.dir" value="C:/"/> <!--  filesystem directory uploaded xsn is saved to -->
     
