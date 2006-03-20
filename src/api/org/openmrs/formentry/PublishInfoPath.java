@@ -104,7 +104,7 @@ public class PublishInfoPath { // extends TestCase {
 
 		publishXSN(filesystemXSN.getAbsolutePath(), form);
 
-		// deleteDirectory(tempDir);
+		deleteDirectory(tempDir);
 	}
 
 	/**
@@ -165,7 +165,7 @@ public class PublishInfoPath { // extends TestCase {
 		makeCab(tempDir);
 
 		// clean up
-		// deleteDirectory(tempDir);
+		deleteDirectory(tempDir);
 	}
 
 	private static String prepareManifest(File tempDir, String url,

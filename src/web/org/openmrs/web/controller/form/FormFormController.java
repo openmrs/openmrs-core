@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.EncounterType;
@@ -25,6 +26,8 @@ import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
@@ -66,6 +69,17 @@ public class FormFormController extends SimpleFormController {
 			else {
 				if (action.equals(msa.getMessage("Form.save"))) {
 					try {
+						// retrieve xslt from request if it was uploaded
+						if (request instanceof MultipartHttpServletRequest) {
+							MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
+							MultipartFile xsltFile = multipartRequest.getFile("xslt_file");
+							if (xsltFile != null && !xsltFile.isEmpty()) {
+								String xslt = IOUtils.toString(xsltFile.getInputStream());
+								form.setXslt(xslt);
+							}
+						}
+						
+						// save form
 						context.getFormService().updateForm(form);
 						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.saved");
 					}

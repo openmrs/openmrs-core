@@ -44,8 +44,8 @@
 				 	<th> </th>
 				 	<th><spring:message code="Patient.name"/></th>
 				 	<th><spring:message code="Encounter.type"/></th>
-				 	<th><spring:message code="Encounter.provider"/></th>
 				 	<th><spring:message code="Encounter.form"/></th>
+				 	<th><spring:message code="Encounter.provider"/></th>
 				 	<th><spring:message code="Encounter.location"/></th>
 				 	<th><spring:message code="Encounter.datetime"/></th>
 				 </tr>

@@ -28,7 +28,7 @@
 <br/>
 <br/>
 
-<form method="post">
+<form method="post" enctype="multipart/form-data">
 <table>
 	<tr>
 		<td><spring:message code="general.name"/></td>
@@ -122,7 +122,8 @@
 		<td><spring:message code="Form.xslt"/></td>
 		<td>
 			<spring:bind path="form.xslt">
-				<input type="text" name="${status.expression}" value="${status.value}" size="55" />
+				<c:if test="${form.xslt != ''}"><a target="_new" href="formViewXslt.form?formId=${form.formId}"><spring:message code="Form.xslt.view"/></a><br/></c:if>
+				<spring:message code="Form.xslt.upload"/> <input type="file" name="xslt_file" size="25" />
 				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if></c:if>
 			</spring:bind>
 		</td>
