@@ -9,28 +9,56 @@
 	<spring:message code="FormEntryQueue.title" />
 </h2>
 
+<script type="text/javascript">
+
+	var lists = new Array();
+	lists[""] = 0;
+	lists["pending"] = ${queueSize};
+	lists["archive"] = ${archiveSize};
+	lists["error"] = ${errorSize};
+
+	function changeSize(list) {
+		var queueType = list.value;
+		var start = document.getElementById("start");
+		var end   = document.getElementById("end");
+		var startOpts = start.options;
+		var endOpts = end.options;
+		while (startOpts.length) {
+			startOpts[0] = null;
+			endOpts[0] = null;
+		}
+		for (var i=1; i <= lists[queueType]; i++) {
+			start.appendChild(new Option(i, i));
+			end.appendChild(new Option(i, i));
+		}
+	}
+</script>
+
 <form method="post" action="${pageContext.request.contextPath}/formEntryQueueDownload">
 	<b class="boxHeader"><spring:message code="FormEntryQueue.multiple" />:</b>
 	<div class="box">
 		<table>
 			<tr>
+				<td><spring:message code="FormEntryQueue.select"/></td>
+				<td>
+					<select name="queueType" onChange="changeSize(this)">
+						<option value=""></option>
+						<option value="pending"><spring:message code="FormEntryQueue.pending"/></option>
+						<option value="archive"><spring:message code="FormEntryQueue.archive"/></option>
+						<option value="error"><spring:message code="FormEntryQueue.error"/></option>
+					</select>
+				</td>
+			</tr>
+			<tr>
 				<td><spring:message code="general.start" /></td>
 				<td>
-					<select name="startId">
-						<c:forEach items="${formEntryQueueList}" var="entry">
-							<option value="${entry.formEntryQueueId}">${entry.formEntryQueueId}</option>
-						</c:forEach>
-					</select>
+					<select name="startId" id="start"> </select>
 				</td>
 			</tr>
 			<tr>
 				<td><spring:message code="general.end" /></td>
 				<td>
-					<select name="endId">
-						<c:forEach items="${formEntryQueueList}" var="entry">
-							<option value="${entry.formEntryQueueId}">${entry.formEntryQueueId}</option>
-						</c:forEach>
-					</select>
+					<select name="endId" id="end"> </select>
 				</td>
 			</tr>
 		</table>
@@ -39,64 +67,5 @@
 </form>
 
 <br/>
-
-<div style="display: none">
-	<b class="boxHeader">
-		<spring:message code="FormEntryQueue.select" />
-	</b>
-	<div class="box">
-		<table cellspacing="0" cellpadding="1" width="100%">
-			<thead>
-				<tr>
-					<th><spring:message code="general.id" /></th>
-					<th></th>
-					<th><spring:message code="FormEntryQueue.status" /></th>
-					<th><spring:message code="FormEntryQueue.date" /></th>
-					<th><spring:message code="FormEntryQueue.errorMsg" /></th>
-					<th><spring:message code="general.createdBy" /></th>
-				</tr>
-			</thead>
-			<tbody>
-				<cforEach items="${formEntryQueueList}" var="entry">
-					<tr>
-						<td>${entry.formEntryQueueId}</td>
-						<td><a href="formEntryQueue.form?formEntryQueueId=${entry.formEntryQueueId}"><spring:message code="general.download" /></a></td>
-						<td><spring:message code="FormEntryQueue.status.${entry.status}"/></td>
-						<td>${entry.dateProcessed}</td>
-						<td>${entry.errorMsg}</td>
-						<td>
-							${entry.creator.firstName} ${entry.creator.lastName} -
-							<openmrs:formatDate date="${entry.dateCreated}" type="long" />
-						</td>
-					</tr>
-				</cforEach>
-			</tbody>
-		</table>
-	</div>
-</div>
-
-<script type="text/javascript">
-
-	var fieldListing	= document.getElementById("fieldListing");
-	var searchBox		= document.getElementById("searchBox");
-	
-	showSearch();
-	
-	<request:existsParameter name="fieldId">
-		var fields = new Array();
-		var fields[0] = new Object();
-		fields[0].fieldId = request.getAttribute("fieldId");
-		onSelect(fields);
-	</request:existsParameter>
-	
-	<request:existsParameter name="phrase">
-		searchBox.value = '<request:parameter name="phrase" />';
-	</request:existsParameter>
-	
-	// creates back button functionality
-	if (searchBox.value != "")
-		searchBoxChange("fieldTableBody", searchBox, null, 0, 0);
-	
-</script>
 
 <%@ include file="/WEB-INF/template/footer.jsp"%>

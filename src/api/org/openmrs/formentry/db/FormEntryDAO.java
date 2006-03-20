@@ -25,6 +25,9 @@ public interface FormEntryDAO {
 	
 	public void deleteFormEntryQueue(FormEntryQueue formEntryQueue) throws DAOException;
 	
+	public Integer getFormEntryQueueSize() throws DAOException;
+	
+	
 	public void createFormEntryArchive(FormEntryArchive formEntryArchive) throws DAOException;
 	
 	public FormEntryArchive getFormEntryArchive(Integer formEntryArchiveId) throws DAOException;
@@ -32,6 +35,9 @@ public interface FormEntryDAO {
 	public Collection<FormEntryArchive> getFormEntryArchives() throws DAOException;
 	
 	public void deleteFormEntryArchive(FormEntryArchive formEntryArchive) throws DAOException;
+	
+	public Integer getFormEntryArchiveSize() throws DAOException;
+	
 	
 	public void createFormEntryError(FormEntryError formEntryError) throws DAOException;
 	
@@ -43,5 +49,7 @@ public interface FormEntryDAO {
 	
 	public void deleteFormEntryError(FormEntryError formEntryError) throws DAOException;
 
+	public Integer getFormEntryErrorSize() throws DAOException;
+	
 	public void garbageCollect();
 }

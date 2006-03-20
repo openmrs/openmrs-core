@@ -814,7 +814,7 @@ public class AdministrationService {
 			ob.setConcept(cp.getObsConcept());
 			ob.setValueCoded(cp.getMappedConcept());
 			ob.setCreator(context.getAuthenticatedUser());
-			ob.setDateCreated(new Date());
+			ob.setDateCreated(cp.getDateCreated());
 			ob.setObsDatetime(cp.getEncounter().getEncounterDatetime());
 			ob.setLocation(cp.getEncounter().getLocation());
 			ob.setPatient(cp.getEncounter().getPatient());

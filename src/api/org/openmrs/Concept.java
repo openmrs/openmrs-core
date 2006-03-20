@@ -290,7 +290,9 @@ public class Concept implements java.io.Serializable {
 	 * @return
 	 */
 	public ConceptName getName(Locale locale, boolean exact) {
-		String loc = locale.getLanguage().substring(0, 2);
+		String loc = locale.getLanguage();
+		if (loc.length() > 2)
+			loc = loc.substring(0, 2);
 		ConceptName defaultName = null;
 		for (Iterator<ConceptName> i = getNames().iterator(); i.hasNext();) {
 			ConceptName name = i.next();

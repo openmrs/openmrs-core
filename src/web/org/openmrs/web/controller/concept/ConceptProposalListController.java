@@ -14,6 +14,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.ConceptProposal;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
@@ -53,7 +54,8 @@ public class ConceptProposalListController extends SimpleFormController {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		
-		map.put("states", org.openmrs.util.OpenmrsConstants.CONCEPT_PROPOSAL_STATES());
+		map.put("unmapped", OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED);
+		map.put("states", OpenmrsConstants.CONCEPT_PROPOSAL_STATES());
 		
 		return map;
 	}

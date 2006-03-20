@@ -35,6 +35,7 @@ public class FormEntryQueueDownloadServlet extends HttpServlet {
 		
 		Integer startId = null;
 		Integer endId = null;
+		String queueType = "";
 		HttpSession httpSession = request.getSession();
 
 		Context context = getContext(httpSession);
@@ -53,8 +54,10 @@ public class FormEntryQueueDownloadServlet extends HttpServlet {
 			return;
 		}
 		
+		queueType = request.getParameter("queueType");
+		
 		response.setHeader("Content-Type", "application/zip");
-		response.setHeader("Content-Disposition", "attachment; filename=formEntryQueues(" + startId + "-" + endId + ").zip");
+		response.setHeader("Content-Disposition", "attachment; filename=formEntryQueue-" + queueType + "-(" + startId + "-" + endId + ").zip");
 	
 		//ByteArrayOutputStream baos  = new ByteArrayOutputStream();
 		//GZIPOutputStream gzos        = new GZIPOutputStream(baos);
@@ -63,24 +66,43 @@ public class FormEntryQueueDownloadServlet extends HttpServlet {
 		ZipEntry zipEntry			= null;
 
 		while (startId <= endId) {
+	        
+			// formData of queue
+			String formData = "";
+			
+			if (queueType.equals("pending")) {
+				FormEntryQueue queue = fs.getFormEntryQueue(startId);
+				if (queue != null)
+					formData = queue.getFormData();
+			}
+			else if (queueType.equals("archive")) {
+				FormEntryArchive queue = fs.getFormEntryArchive(startId);
+				if (queue != null)
+					formData = queue.getFormData();
+			}
+			else if (queueType.equals("error")) {
+				FormEntryError queue = fs.getFormEntryError(startId);
+				if (queue != null)
+					formData = queue.getFormData();
+			}
+	        
+			byte [] uncompressedBytes = formData.getBytes();
+	        
+			// name this entry
+	        zipEntry = new ZipEntry("formEntryQueue-" + queueType + "-" + startId + ".xml");
 
-		        FormEntryQueue queue = fs.getFormEntryQueue(startId);
-		        
-		        // name this entry
-		        zipEntry = new ZipEntry("formEntryQueue-" + queue.getFormEntryQueueId() + ".xml");
-		        
-		        byte [] uncompressedBytes   = queue.getFormData().getBytes();
-		        
-		        // Add ZIP entry to output stream.
-	            zos.putNextEntry(zipEntry);
-	    
-	            // Transfer bytes from the formData to the ZIP file
-                zos.write(uncompressedBytes, 0, uncompressedBytes.length);
-		
-                zos.closeEntry();
-                
-				startId += 1;
-		}
+	        // Add ZIP entry to output stream.
+            zos.putNextEntry(zipEntry);
+    
+            // Transfer bytes from the formData to the ZIP file
+            zos.write(uncompressedBytes, 0, uncompressedBytes.length);
+	
+            zos.closeEntry();
+            
+			startId += 1;
+			
+			fs.garbageCollect();
+	}
 		
 		zos.close();
 		

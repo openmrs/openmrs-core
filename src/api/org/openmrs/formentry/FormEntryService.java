@@ -389,6 +389,12 @@ public class FormEntryService {
 		dao().deleteFormEntryQueue(formEntryQueue);
 	}
 	
+	public Integer getFormEntryQueueSize() {
+		checkPrivilege(FormEntryConstants.PRIV_VIEW_FORMENTRY_ERROR);
+		return dao().getFormEntryQueueSize();
+	}
+	
+	
 	public void createFormEntryArchive(FormEntryArchive formEntryArchive) {
 		checkPrivilege(FormEntryConstants.PRIV_ADD_FORMENTRY_ARCHIVE);
 		dao().createFormEntryArchive(formEntryArchive);
@@ -408,6 +414,12 @@ public class FormEntryService {
 		checkPrivilege(FormEntryConstants.PRIV_DELETE_FORMENTRY_ARCHIVE);
 		dao().deleteFormEntryArchive(formEntryArchive);
 	}
+	
+	public Integer getFormEntryArchiveSize() {
+		checkPrivilege(FormEntryConstants.PRIV_VIEW_FORMENTRY_ERROR);
+		return dao().getFormEntryArchiveSize();
+	}
+	
 	
 	public void createFormEntryError(FormEntryError formEntryError) {
 		checkPrivilege(FormEntryConstants.PRIV_ADD_FORMENTRY_ERROR);
@@ -432,6 +444,11 @@ public class FormEntryService {
 	public void deleteFormEntryError(FormEntryError formEntryError) {
 		checkPrivilege(FormEntryConstants.PRIV_DELETE_FORMENTRY_ERROR);
 		dao().deleteFormEntryError(formEntryError);
+	}
+	
+	public Integer getFormEntryErrorSize() {
+		checkPrivilege(FormEntryConstants.PRIV_VIEW_FORMENTRY_ERROR);
+		return dao().getFormEntryErrorSize();
 	}
 	
 	public void garbageCollect() {

@@ -303,6 +303,14 @@ fieldset {
 	margin: 1px;
 }
 
+.subnote {
+	background-color: whitesmoke;
+	border: 1px solid lightgray;
+	padding: 2px;
+	font-size: .8em;
+	color: gray;
+}
+
 .tableTitle {
 	text-align: center;
 	background-color: whitesmoke;

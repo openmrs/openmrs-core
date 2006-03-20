@@ -10,7 +10,7 @@
 <br />
 
 <b class="boxHeader">
-<a style="display: block; float: right" href="?includeCompleted=true"><spring:message code="ConceptProposal.includeCompleted"/></a>
+<a style="display: block; float: right" href="?includeCompleted=${!param.includeCompleted}"><spring:message code="ConceptProposal.includeCompleted"/></a>
 <spring:message code="ConceptProposal.list.title"/>
 </b>
 <form method="post" class="box">
@@ -23,7 +23,7 @@
 			<th> <spring:message code="general.dateCreated"/> </th>
 		</tr>
 		<c:forEach var="conceptProposal" items="${conceptProposalList}">
-			<tr>
+			<tr <c:if test="${conceptProposal.state != unmapped}">class="voided"</c:if>>
 				<td valign="top"><a href="conceptProposal.form?conceptProposalId=${conceptProposal.conceptProposalId}">edit</a></td>
 				<td valign="top">${conceptProposal.encounter.encounterId}</td>
 				<td valign="top">${conceptProposal.originalText}</td>

@@ -32,6 +32,13 @@ var onSelect = function(objs) {
 	return false;
 }
 
+var onPossibleSelect = function(id) {
+	$("concept").value = id;
+	mySearch.hide();
+	searchType = "";
+	return false;
+}
+
 function showSearch(btn, type) {
 	mySearch.hide();
 	if (searchType != type) {
@@ -121,7 +128,7 @@ if (typeof window.onload != 'function') {
 					</tr>
 					<tr>
 						<th><spring:message code="Encounter.provider"/></th>
-						<td>${conceptProposal.encounter.provider.lastName}, ${conceptProposal.encounter.provider.firstName}</td>
+						<td>${conceptProposal.encounter.provider.firstName} ${conceptProposal.encounter.provider.lastName}</td>
 					</tr>
 					<tr>
 						<th><spring:message code="Encounter.datetime"/></th>
@@ -169,7 +176,41 @@ if (typeof window.onload != 'function') {
 		<th><spring:message code="ConceptProposal.originalText"/></th>
 		<td>${conceptProposal.originalText}</td>
 	</tr>
+	<tr>
+		<th></th>
+		<td>
+			<div class="subnote">
+				<spring:message code="ConceptProposal.possibleConcepts"/>:
+				<table> 
+					<tr>
+						<td>
+							<c:forEach items="${possibleConcepts}" var="listItem" varStatus="status" begin="0" end="6">
+								<c:if test="${status.index == 4}"></td><td></c:if>
+								<a href="#selectObject" 
+									onClick="return onPossibleSelect('${listItem.conceptId}')";
+									title="${listItem.description}"
+									class='searchHit'>
+									${status.number})
+									<c:choose >
+										<c:when test="${listItem.synonym != ''}">
+											<span class='mainHit'>${listItem.synonym}</span>
+											<span class='additionalHit'>&rArr; ${listItem.name}</span>
+										</c:when>
+										<c:otherwise>
+											<span class='mainHit'>${listItem.name}</span>
+										</c:otherwise>
+									</c:choose>
+								</a><br/>
+							</c:forEach>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</td>
+	</tr>
+	
 	<tr><td>&nbsp;</td><td></td></tr>
+	
 	<tr>
 		<th><spring:message code="ConceptProposal.finalText"/></th>
 		<td>
@@ -196,7 +237,7 @@ if (typeof window.onload != 'function') {
 		<th valign="top"><spring:message code="ConceptProposal.comments"/></th>
 		<td valign="top">
 			<spring:bind path="conceptProposal.comments">
-				<textarea name="${status.expression}" rows="3" cols="40">${status.value}</textarea>
+				<textarea name="${status.expression}" rows="3" cols="45">${status.value}</textarea>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
@@ -208,7 +249,7 @@ if (typeof window.onload != 'function') {
 				<input type="text" size="7" id="concept" value="${status.value.conceptId}" name="conceptId" />
 				<div style="width:200px; float:left; display: none" id="conceptName">${status.value.conceptId}</div>
 				<input type="button" id="conceptButton" class="smallButton" value="<spring:message code="general.change"/>" onclick="showSearch(this, 'concept')" />
-				<a target="_blank" href="${pageContext.request.contextPath}/admin/concept.form?conceptName=${conceptProposal.originalText}">Add new Concept</a>
+				<a target="_blank" href="${pageContext.request.contextPath}/dictionary/concept.form?conceptName=${conceptProposal.originalText}">Add new Concept</a>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>

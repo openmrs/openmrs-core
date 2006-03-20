@@ -1,8 +1,10 @@
 package org.openmrs.web.controller.concept;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +15,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptProposal;
+import org.openmrs.ConceptWord;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
@@ -143,20 +146,28 @@ public class ConceptProposalFormController extends SimpleFormController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		ConceptProposal cp = (ConceptProposal)object;
-		
-		ConceptListItem listItem = null;
 		Locale locale = Util.getLocale(request);
+		List<ConceptListItem> possibleConceptsListItems = new Vector<ConceptListItem>();
+		ConceptListItem listItem = null;
+		
 		if (cp.getObsConcept() != null)
 			listItem = new ConceptListItem(cp.getObsConcept(), locale);
 		map.put("obsConcept", listItem);
 		
-		map.put("states", OpenmrsConstants.CONCEPT_PROPOSAL_STATES());
-		
 		String defaultVerbose = "false";
 		if (context != null && context.isAuthenticated()){
-			defaultVerbose = context.getAuthenticatedUser().getProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE); 
+			defaultVerbose = context.getAuthenticatedUser().getProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
+			String phrase = cp.getOriginalText();
+			if (phrase.length() > 3)
+				phrase = phrase.substring(0, 3);
+			List<ConceptWord> possibleConcepts = context.getConceptService().findConcepts(phrase, locale, false);
+			if (possibleConcepts != null)
+				for (ConceptWord word : possibleConcepts)
+					possibleConceptsListItems.add(new ConceptListItem(word));
 		}
+		map.put("possibleConcepts", possibleConceptsListItems);
 		map.put("defaultVerbose", defaultVerbose.equals("true") ? true : false);
+		map.put("states", OpenmrsConstants.CONCEPT_PROPOSAL_STATES());
 		
 		return map;
 	}
