@@ -1,9 +1,12 @@
 package org.openmrs;
 
 import java.util.Date;
+import java.util.Locale;
+
+import org.openmrs.util.Format;
 
 /**
- * Obs 
+ * Obs
  * 
  * @author Ben Wolfe
  * @version 1.0
@@ -52,7 +55,7 @@ public class Obs implements java.io.Serializable {
 		this.obsId = obsId;
 	}
 
-	/** 
+	/**
 	 * Compares two objects for similarity
 	 * 
 	 * @param obj
@@ -60,29 +63,33 @@ public class Obs implements java.io.Serializable {
 	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof Obs) {
-			Obs o = (Obs)obj;
+			Obs o = (Obs) obj;
 			if (this.getObsId() != null && o.getObsId() != null)
 				return (this.getObsId().equals(o.getObsId()));
-			/*return (this.getConcept().equals(o.getConcept()) &&
-					this.getPatient().equals(o.getPatient()) &&
-					this.getEncounter().equals(o.getEncounter()) &&
-					this.getLocation().equals(o.getLocation())); */
+			/*
+			 * return (this.getConcept().equals(o.getConcept()) &&
+			 * this.getPatient().equals(o.getPatient()) &&
+			 * this.getEncounter().equals(o.getEncounter()) &&
+			 * this.getLocation().equals(o.getLocation()));
+			 */
 		}
 		return false;
 	}
-	
+
 	public int hashCode() {
-		if (this.getObsId() == null) return super.hashCode();
+		if (this.getObsId() == null)
+			return super.hashCode();
 		return this.getObsId().hashCode();
 	}
 
-	/** determine if the current observation is complex
-	 *  --overridden in extending ComplexObs class
+	/**
+	 * determine if the current observation is complex --overridden in extending
+	 * ComplexObs class
 	 */
 	public boolean isComplexObs() {
 		return false;
 	}
-	
+
 	// Property accessors
 
 	/**
@@ -93,7 +100,8 @@ public class Obs implements java.io.Serializable {
 	}
 
 	/**
-	 * @param comment The comment to set.
+	 * @param comment
+	 *            The comment to set.
 	 */
 	public void setComment(String comment) {
 		this.comment = comment;
@@ -107,7 +115,8 @@ public class Obs implements java.io.Serializable {
 	}
 
 	/**
-	 * @param concept The concept to set.
+	 * @param concept
+	 *            The concept to set.
 	 */
 	public void setConcept(Concept concept) {
 		this.concept = concept;
@@ -121,7 +130,8 @@ public class Obs implements java.io.Serializable {
 	}
 
 	/**
-	 * @param creator The creator to set.
+	 * @param creator
+	 *            The creator to set.
 	 */
 	public void setCreator(User creator) {
 		this.creator = creator;
@@ -135,7 +145,8 @@ public class Obs implements java.io.Serializable {
 	}
 
 	/**
-	 * @param dateCreated The dateCreated to set.
+	 * @param dateCreated
+	 *            The dateCreated to set.
 	 */
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
@@ -149,7 +160,8 @@ public class Obs implements java.io.Serializable {
 	}
 
 	/**
-	 * @param dateVoided The dateVoided to set.
+	 * @param dateVoided
+	 *            The dateVoided to set.
 	 */
 	public void setDateVoided(Date dateVoided) {
 		this.dateVoided = dateVoided;
@@ -163,7 +175,8 @@ public class Obs implements java.io.Serializable {
 	}
 
 	/**
-	 * @param encounter The encounter to set.
+	 * @param encounter
+	 *            The encounter to set.
 	 */
 	public void setEncounter(Encounter encounter) {
 		this.encounter = encounter;
@@ -177,7 +190,8 @@ public class Obs implements java.io.Serializable {
 	}
 
 	/**
-	 * @param location The location to set.
+	 * @param location
+	 *            The location to set.
 	 */
 	public void setLocation(Location location) {
 		this.location = location;
@@ -191,7 +205,8 @@ public class Obs implements java.io.Serializable {
 	}
 
 	/**
-	 * @param obsDatetime The obsDatetime to set.
+	 * @param obsDatetime
+	 *            The obsDatetime to set.
 	 */
 	public void setObsDatetime(Date obsDatetime) {
 		this.obsDatetime = obsDatetime;
@@ -205,7 +220,8 @@ public class Obs implements java.io.Serializable {
 	}
 
 	/**
-	 * @param obsGroupId The obsGroupId to set.
+	 * @param obsGroupId
+	 *            The obsGroupId to set.
 	 */
 	public void setObsGroupId(Integer obsGroupId) {
 		this.obsGroupId = obsGroupId;
@@ -219,7 +235,8 @@ public class Obs implements java.io.Serializable {
 	}
 
 	/**
-	 * @param obsId The obsId to set.
+	 * @param obsId
+	 *            The obsId to set.
 	 */
 	public void setObsId(Integer obsId) {
 		this.obsId = obsId;
@@ -233,7 +250,8 @@ public class Obs implements java.io.Serializable {
 	}
 
 	/**
-	 * @param order The order to set.
+	 * @param order
+	 *            The order to set.
 	 */
 	public void setOrder(Order order) {
 		this.order = order;
@@ -247,7 +265,8 @@ public class Obs implements java.io.Serializable {
 	}
 
 	/**
-	 * @param patient The patient to set.
+	 * @param patient
+	 *            The patient to set.
 	 */
 	public void setPatient(Patient patient) {
 		this.patient = patient;
@@ -269,7 +288,8 @@ public class Obs implements java.io.Serializable {
 	}
 
 	/**
-	 * @param valueBoolean The valueBoolean to set.
+	 * @param valueBoolean
+	 *            The valueBoolean to set.
 	 */
 	public void setValueBoolean(Boolean valueBoolean) {
 		this.valueBoolean = valueBoolean;
@@ -283,7 +303,8 @@ public class Obs implements java.io.Serializable {
 	}
 
 	/**
-	 * @param valueCoded The valueCoded to set.
+	 * @param valueCoded
+	 *            The valueCoded to set.
 	 */
 	public void setValueCoded(Concept valueCoded) {
 		this.valueCoded = valueCoded;
@@ -297,7 +318,8 @@ public class Obs implements java.io.Serializable {
 	}
 
 	/**
-	 * @param valueDatetime The valueDatetime to set.
+	 * @param valueDatetime
+	 *            The valueDatetime to set.
 	 */
 	public void setValueDatetime(Date valueDatetime) {
 		this.valueDatetime = valueDatetime;
@@ -311,7 +333,8 @@ public class Obs implements java.io.Serializable {
 	}
 
 	/**
-	 * @param valueGroupId The valueGroupId to set.
+	 * @param valueGroupId
+	 *            The valueGroupId to set.
 	 */
 	public void setValueGroupId(Integer valueGroupId) {
 		this.valueGroupId = valueGroupId;
@@ -325,7 +348,8 @@ public class Obs implements java.io.Serializable {
 	}
 
 	/**
-	 * @param valueModifier The valueModifier to set.
+	 * @param valueModifier
+	 *            The valueModifier to set.
 	 */
 	public void setValueModifier(String valueModifier) {
 		this.valueModifier = valueModifier;
@@ -339,7 +363,8 @@ public class Obs implements java.io.Serializable {
 	}
 
 	/**
-	 * @param valueNumeric The valueNumeric to set.
+	 * @param valueNumeric
+	 *            The valueNumeric to set.
 	 */
 	public void setValueNumeric(Double valueNumeric) {
 		this.valueNumeric = valueNumeric;
@@ -353,7 +378,8 @@ public class Obs implements java.io.Serializable {
 	}
 
 	/**
-	 * @param valueText The valueText to set.
+	 * @param valueText
+	 *            The valueText to set.
 	 */
 	public void setValueText(String valueText) {
 		this.valueText = valueText;
@@ -374,7 +400,8 @@ public class Obs implements java.io.Serializable {
 	}
 
 	/**
-	 * @param voided The voided to set.
+	 * @param voided
+	 *            The voided to set.
 	 */
 	public void setVoided(Boolean voided) {
 		this.voided = voided;
@@ -388,7 +415,8 @@ public class Obs implements java.io.Serializable {
 	}
 
 	/**
-	 * @param voidedBy The voidedBy to set.
+	 * @param voidedBy
+	 *            The voidedBy to set.
 	 */
 	public void setVoidedBy(User voidedBy) {
 		this.voidedBy = voidedBy;
@@ -402,7 +430,8 @@ public class Obs implements java.io.Serializable {
 	}
 
 	/**
-	 * @param voidReason The voidReason to set.
+	 * @param voidReason
+	 *            The voidReason to set.
 	 */
 	public void setVoidReason(String voidReason) {
 		this.voidReason = voidReason;
@@ -416,7 +445,8 @@ public class Obs implements java.io.Serializable {
 	}
 
 	/**
-	 * @param accessionNumber The accessionNumber to set.
+	 * @param accessionNumber
+	 *            The accessionNumber to set.
 	 */
 	public void setAccessionNumber(String accessionNumber) {
 		this.accessionNumber = accessionNumber;
@@ -430,7 +460,8 @@ public class Obs implements java.io.Serializable {
 	}
 
 	/**
-	 * @param dateStarted The dateStarted to set.
+	 * @param dateStarted
+	 *            The dateStarted to set.
 	 */
 	public void setDateStarted(Date dateStarted) {
 		this.dateStarted = dateStarted;
@@ -444,10 +475,35 @@ public class Obs implements java.io.Serializable {
 	}
 
 	/**
-	 * @param dateStopped The dateStopped to set.
+	 * @param dateStopped
+	 *            The dateStopped to set.
 	 */
 	public void setDateStopped(Date dateStopped) {
 		this.dateStopped = dateStopped;
+	}
+
+	/***************************************************************************
+	 * Convenience methods
+	 **************************************************************************/
+
+	/**
+	 * Convenience method for obtaining the observation's value as a string
+	 * 
+	 * @param locale
+	 *            locale for locale-specific depictions of value
+	 */
+	public String getValueAsString(Locale locale) {
+		// TODO: report what is not null for now. alternatively, we could branch
+		// on getConcept().getDatatype().getHL7Abbreviation()
+		if (getValueNumeric() != null)
+			return getValueNumeric().toString();
+		else if (getValueCoded() != null)
+			return getValueCoded().getName(locale).getName();
+		else if (getValueDatetime() != null)
+			return Format.format(getValueDatetime());
+		else if (getValueText() != null)
+			return getValueText();
+		return "";
 	}
 
 }
