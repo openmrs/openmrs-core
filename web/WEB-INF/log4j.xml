@@ -55,7 +55,7 @@
     <logger name="org.springframework">
         <level value="WARN"/>
     </logger>
-
+     
     <logger name="org.openmrs.api.ConceptService">
     	<level value="INFO"/>
     	<appender-ref ref="CONCEPT_FILE"/>

@@ -63,7 +63,7 @@ try {
 	if (exception != null) {
 		if (exception instanceof APIAuthenticationException) {
 			// If they are not authorized to use a function
-			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.invalid");
+			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, exception.getMessage());
 			session.setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR, request.getAttribute("javax.servlet.error.request_uri"));
 			response.sendRedirect("/@WEBAPP.NAME@/login.htm");
 		}

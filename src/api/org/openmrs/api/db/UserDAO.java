@@ -2,7 +2,6 @@ package org.openmrs.api.db;
 
 import java.util.List;
 
-import org.openmrs.Group;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
@@ -154,20 +153,6 @@ public interface UserDAO {
 	public Privilege getPrivilege(String p) throws DAOException;
 	
 	/**
-	 * Returns all groups currently possible for any User
-	 * @return Global list of groups
-	 * @throws DAOException
-	 */
-	public List<Group> getGroups() throws DAOException;
-
-	/**
-	 * Returns group object with given string group
-	 * @return Group
-	 * @throws DAOException
-	 */
-	public Group getGroup(String r) throws DAOException;
-	
-	/**
 	 * Resets the password for the given user
 	 * @param User to change
 	 * @param New Password
@@ -187,9 +172,9 @@ public interface UserDAO {
 	
 	public boolean isSecretAnswer(User u, String answer) throws DAOException;
 	
-	public List<User> findUsers(String name, List<String> groups, List<String> roles, boolean includeRetired) throws DAOException;
+	public List<User> findUsers(String name, List<String> roles, boolean includeRetired) throws DAOException;
 	
-	public List<User> getAllUsers(List<String> groups, List<String> roles, boolean includeRetired) throws DAOException;
+	public List<User> getAllUsers(List<String> roles, boolean includeRetired) throws DAOException;
 	
 	/**
 	 * Get/generate/find the next system id to be doled out.  Assume check digit /not/ applied

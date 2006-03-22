@@ -16,6 +16,17 @@
 
 		<!-- Associations -->
 
+		<!-- bi-directional many-to-many association to Role to create parentRoles-->
+		<set name="parentRoles" cascade="none" lazy="false"
+			table="role_role">
+			<key>
+				<column name="child_role" />
+			</key>
+			<many-to-many class="Role" >
+				<column name="parent_role" />
+			</many-to-many>
+		</set>
+
 		<!-- bi-directional many-to-many association to Privilege -->
 		<set name="privileges" cascade="none" lazy="false"
 			table="role_privilege">

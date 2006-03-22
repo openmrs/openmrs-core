@@ -34,6 +34,7 @@
     <property name="database.dir" value="${mysql.dir}" />
     <property name="database.type" value="mysql" />
     <property name="database.name" value="openmrs" />
+    <property name="database.business.name" value="${database.name}" />
     <property name="database.host" value="localhost:3306" />
     
     <property name="database.username" value="test" />
@@ -105,6 +106,7 @@
 		<fileset dir="${mail.dir}" includes="*.jar" />
 		<fileset dir="${spring.dir}" includes="*.jar" />
 		<fileset dir="${velocity.dir}" includes="*.jar" />
+		<fileset dir="${junit.dir}" includes="*.jar" />
     </path>
     <path id="api.test.classpath">
         <path refid="api.compile.classpath"/>

@@ -90,7 +90,10 @@ h1, h2, h3, h4, h5 {
 	margin-top: -17px;
 	/*	IE footer stick 'fix'
 		width: 99.5%; */
-}
+	}
+	#footer span {
+		color: gray;
+	}
 
 #menu {
 	padding-left: 2px;

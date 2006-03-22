@@ -121,8 +121,6 @@
 					<prop key="**/role.form">roleForm</prop>
 					<prop key="**/privilege.list">privilegeList</prop>
 					<prop key="**/privilege.form">privilegeForm</prop>
-					<prop key="**/group.list">groupList</prop>
-					<prop key="**/group.form">groupForm</prop>
 					<prop key="**/encounter.form">encounterForm</prop>
 					<prop key="**/encounterType.list">encounterTypeList</prop>
 					<prop key="**/encounterType.form">encounterTypeForm</prop>
@@ -373,24 +371,6 @@
 						<property name="successView"><value>privilege.list</value></property>
 					</bean>
 			<!--  ** /Privilege ** -->
-			<!-- ** Group  ** -->
-				<bean id="groupList" class="org.openmrs.web.controller.user.GroupListController">
-						<property name="sessionForm"><value>true</value></property>
-						<property name="commandName"><value>groupList</value></property>
-						<property name="formView"><value>/admin/users/groupList</value></property>
-						<property name="successView"><value>group.list</value></property>
-					</bean>
-			
-					<!--  Validator and Form Controller for the add/edit group page -->
-					<bean id="groupValidator" class="org.openmrs.web.controller.user.GroupValidator"/>
-					<bean id="groupForm" class="org.openmrs.web.controller.user.GroupFormController">
-						<property name="sessionForm"><value>true</value></property>
-						<property name="commandName"><value>group</value></property>
-						<property name="validator"><ref bean="groupValidator"/></property>
-						<property name="formView"><value>/admin/users/groupForm</value></property>
-						<property name="successView"><value>group.list</value></property>
-					</bean>
-			<!--  ** /Group ** -->		
 		<!-- ====== /User Sector ====== -->
 		
 	    <!-- ============================ -->

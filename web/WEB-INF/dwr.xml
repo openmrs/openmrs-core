@@ -83,8 +83,8 @@
 			DWRPatientService.getSimilarPatients(String name, Date birthdate, String age, String gender);
 			DWRConceptService.findConcepts(String phrase, List<String> classNames, boolean includeRetired, List<String> ignoreClassNames);
 			DWREncounterService.findEncounters(String phrase, boolean includeVoided);
-			DWRUserService.findUsers(String phrase, List<String> groups, List<String> roles, boolean includeVoided);
-			DWRUserService.getAllUsers(List<String> groups, List<String> roles, boolean includeVoided);
+			DWRUserService.findUsers(String phrase, List<String> roles, boolean includeVoided);
+			DWRUserService.getAllUsers(List<String> roles, boolean includeVoided);
 			DWRObsService.findObs(String phrase, boolean includeVoided);
 			DWRMessageService.sendMessage(String recipients, String sender, String subject, String content);
 		]]>

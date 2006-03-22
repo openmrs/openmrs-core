@@ -9,7 +9,11 @@
 
 <spring:hasBindErrors name="role">
 	<spring:message code="fix.error"/>
-	<br />
+	<div class="error">
+		<c:forEach items="${errors.allErrors}" var="error">
+			<spring:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
+		</c:forEach>
+	</div>
 </spring:hasBindErrors>
 
 <form method="post">
@@ -34,9 +38,19 @@
 		</td>
 	</tr>
 	<tr>
+		<td valign="top"><spring:message code="Role.parentRoles"/></td>
+		<td>
+			<i><spring:message code="Role.parentRoles.description" /></i><br/>
+			<c:if test="${role.role == superuser}"><spring:message code="Role.superuser.hasAllRolesAndPrivileges"/></c:if>
+			<c:if test="${role.role != superuser}">
+				<openmrs:listPicker name="parentRoles" allItems="${parentRoles}" currentItems="${role.parentRoles}" contextPath="${pageContext.request.contextPath}" />
+			</c:if>
+		</td>
+	</tr>
+	<tr>
 		<td valign="top"><spring:message code="Role.privileges"/></td>
 		<td>
-			<c:if test="${role.role == superuser}"><spring:message code="Role.superuser.hasAllPrivileges"/></c:if>
+			<c:if test="${role.role == superuser}"><spring:message code="Role.superuser.hasAllRolesAndPrivileges"/></c:if>
 			<c:if test="${role.role != superuser}">
 				<openmrs:listPicker name="privileges" allItems="${privileges}" currentItems="${role.privileges}" contextPath="${pageContext.request.contextPath}" />
 			</c:if>

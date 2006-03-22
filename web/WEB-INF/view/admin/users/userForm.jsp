@@ -96,12 +96,6 @@
 
 		</tr>
 		<tr>
-			<td valign="top"><spring:message code="User.groups"/></td>
-			<td valign="top">
-				<openmrs:listPicker name="groups" allItems="${groups}" currentItems="${user.groups}" contextPath="${pageContext.request.contextPath}" />
-			</td>
-		</tr>
-		<tr>
 			<td valign="top"><spring:message code="User.roles"/></td>
 			<td valign="top">
 				<openmrs:listPicker name="roles" allItems="${roles}" currentItems="${user.roles}" contextPath="${pageContext.request.contextPath}" />

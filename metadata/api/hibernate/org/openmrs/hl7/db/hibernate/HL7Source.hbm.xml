@@ -5,7 +5,7 @@
 
 <hibernate-mapping package="org.openmrs">
 
-	<class name="org.openmrs.hl7.HL7Source" table="hl7_source">
+	<class name="org.openmrs.hl7.HL7Source" table="hl7_source" schema="@DATABASE-BUSINESS-NAME@">
 
 		<id name="HL7SourceId" type="int" column="hl7_source_id" 
 			unsaved-value="0">

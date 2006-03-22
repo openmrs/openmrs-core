@@ -2,6 +2,7 @@ package org.openmrs.web.controller.user;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -14,12 +15,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
+import org.openmrs.api.APIException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -49,16 +52,34 @@ public class RoleFormController extends SimpleFormController {
 	 */
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
+		HttpSession httpSession = request.getSession();
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		Role role = (Role)obj;
-		log.debug("Editing Role: " + role.getRole());
-		String[] privs = request.getParameterValues("privileges");
-		Set privObjs = new HashSet();
-		if (privs != null) {
-			for(String p : privs) {
-				privObjs.add(new Privilege(p));
+		
+		if (context != null && context.isAuthenticated()) {
+			log.debug("Editing Role: " + role.getRole());
+			
+			// retrieving the parentRoles from the request
+			String[] parentRoles = request.getParameterValues("parentRoles");
+			Set<Role> parentRoleObjs = new HashSet<Role>();
+			if (parentRoles != null) {
+				for(String r : parentRoles) {
+					Role tmprole = context.getUserService().getRole(r);
+					parentRoleObjs.add(tmprole);
+				}
 			}
+			role.setParentRoles(parentRoleObjs);
+	
+			// retrieving the privileges from the request
+			String[] privs = request.getParameterValues("privileges");
+			Set<Privilege> privObjs = new HashSet<Privilege>();
+			if (privs != null) {
+				for(String p : privs) {
+					privObjs.add(new Privilege(p));
+				}
+			}
+			role.setPrivileges(privObjs);
 		}
-		role.setPrivileges(privObjs);
 		
 		return super.processFormSubmission(request, response, role, errors);
 	}
@@ -78,28 +99,42 @@ public class RoleFormController extends SimpleFormController {
 		
 		if (context != null && context.isAuthenticated()) {
 			Role role = (Role)obj;
-			context.getAdministrationService().updateRole(role);
-			view = getSuccessView();
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Role.saved");
+			try {
+				context.getAdministrationService().updateRole(role);
+				view = getSuccessView();
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Role.saved");
+			}
+			catch (APIException e) {
+				errors.reject(e.getMessage());
+				return showForm(request, response, errors);
+			}
 		}
 		
 		return new ModelAndView(new RedirectView(view));
 	}
 
-	protected Map referenceData(HttpServletRequest request) throws Exception {
+	protected Map referenceData(HttpServletRequest request, Object object, Errors errors) throws Exception {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
+		
+		Role role = (Role)object;
 		
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		if (context != null && context.isAuthenticated()) {
+			List<Role> allRoles = context.getUserService().getRoles();
+			allRoles.remove(role);
+			for (String s : OpenmrsConstants.AUTO_ROLES()) {
+				Role r = context.getUserService().getRole(s);
+				allRoles.remove(r);
+			}
+			map.put("parentRoles", allRoles);
 			map.put("privileges", context.getUserService().getPrivileges());
 			map.put("superuser", OpenmrsConstants.SUPERUSER_ROLE);
 		}
 		
 		return map;
-		
 	}
 
 	/**

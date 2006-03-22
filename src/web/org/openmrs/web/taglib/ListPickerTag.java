@@ -67,6 +67,8 @@ public class ListPickerTag extends TagSupport {
 		for (Object s : allItems) {
 			str += "<li id='" + s + "'>" + s + "</li>\n";
 		}
+		
+		str += "<div class='clear'></div>";
 		str += "</ul></td>\n";
 		
 		str += "</tr></table>\n";

@@ -12,16 +12,17 @@
 
 <b class="boxHeader"><spring:message code="Role.list.title"/></b>
 <form method="post" class="box">
-	<table>
+	<table cellpadding="2" cellspacing="0">
 		<tr>
 			<th> </th>
 			<th> <spring:message code="Role.role"/> </th>
 			<th> <spring:message code="general.description"/> </th>
+			<th> <spring:message code="Role.parentRoles"/> </th>
 			<th> <spring:message code="Role.privileges"/> </th>
 		</tr>
-	<c:forEach var="map" items="${roleList}">
-		<tr>
-			<td>
+	<c:forEach var="map" items="${roleList}" varStatus="rowStatus">
+		<tr class="<c:choose><c:when test="${rowStatus.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">
+			<td style="text-align: center">
 				<c:if test="${map.value == false}">
 					<input type="checkbox" name="roleId" value="<c:out value="${map.key.role}"/>">
 				</c:if>
@@ -29,20 +30,33 @@
 					<img src="${pageContext.request.contextPath}/images/lock.gif"/>
 				</c:if>
 			</td>
-			<td>
+			<td style="white-space: nowrap">
 				<a href="role.form?role=<c:out value="${map.key.role}"/>">
 					<c:out value="${map.key.role}"/>
 				</a>
 			</td>
 			<td><c:out value="${map.key.description}"/></td>
-			<td>
-				<c:if test="${map.key.role == superuser}">
-					<spring:message code="Role.superuser.hasAllPrivileges"/>
-				</c:if>
-				<c:if test="${map.key.role != superuser}">
-					<c:out value="${map.key.privileges}"/>
-				</c:if>
-			</td>
+			<c:choose>
+				<c:when test="${map.key.role == superuser}">
+					<td colspan="2" style="white-space: nowrap"><spring:message code="Role.superuser.hasAllRolesAndPrivileges"/></td>
+				</c:when>
+				<c:otherwise>
+					<td style="white-space: nowrap" <c:if test="${fn:length(map.key.parentRoles)>2}">title="${map.key.parentRoles}"</c:if>>
+						<c:forEach items="${map.key.parentRoles}" var="role" begin="0" end="1" varStatus="status">
+							<c:if test="${!status.first}">,</c:if>
+							${role}
+							<c:if test="${status.last && fn:length(map.key.parentRoles) > 2}"> ... </c:if>
+						</c:forEach>
+					</td>
+					<td style="white-space: nowrap" <c:if test="${fn:length(map.key.privileges)>2}">title="${map.key.privileges}"</c:if>>
+						<c:forEach items="${map.key.privileges}" var="priv" begin="0" end="1" varStatus="status">
+							<c:if test="${!status.first}">,</c:if>
+							${priv}
+							<c:if test="${status.last && fn:length(map.key.privileges) > 2}"> ... </c:if>
+						</c:forEach>
+					</td>
+				</c:otherwise>
+			</c:choose>
 		</tr>
 	</c:forEach>
 	</table>

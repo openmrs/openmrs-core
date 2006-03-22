@@ -5,7 +5,7 @@
 
 <hibernate-mapping package="org.openmrs">
 
-	<class name="org.openmrs.formentry.FormEntryQueue" table="formentry_queue">
+	<class name="org.openmrs.formentry.FormEntryQueue" table="formentry_queue" schema="@DATABASE-BUSINESS-NAME@">
 
 		<id name="formEntryQueueId" type="int" column="formentry_queue_id" 
 			unsaved-value="0">

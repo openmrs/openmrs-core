@@ -20,6 +20,8 @@ public final class Listener implements ServletContextListener {
 		 * related data here.
 		 */
 		
+		// TODO generify this call once we have an application context
+		// I'd prefer this not be a Hibernate-specific call.  
 		HibernateUtil.startup();
 
 	}

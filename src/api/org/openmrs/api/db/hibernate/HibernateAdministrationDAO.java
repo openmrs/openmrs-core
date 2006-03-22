@@ -30,7 +30,6 @@ import org.openmrs.ConceptSetDerived;
 import org.openmrs.ConceptWord;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
-import org.openmrs.Group;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.OrderType;
@@ -1163,97 +1162,6 @@ public class HibernateAdministrationDAO implements
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.AdministrationService#createConceptClass(org.openmrs.ConceptClass)
-	 */
-	public void createGroup(Group g) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		
-		try {
-			HibernateUtil.beginTransaction();
-			session.save(g);
-			HibernateUtil.commitTransaction();
-		}
-		catch (Exception e) {
-			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e);
-		}
-	}
-
-	/**
-	 * @see org.openmrs.api.db.AdministrationService#updateGroup(org.openmrs.Group)
-	 */
-	public void updateGroup(Group g) throws DAOException {
-		if (g.getGroup() == null)
-			createGroup(g);
-		else {
-			try {
-				Session session = HibernateUtil.currentSession();
-				HibernateUtil.beginTransaction();
-				session.saveOrUpdate(g);
-				HibernateUtil.commitTransaction();
-			}
-			catch (Exception e) {
-				HibernateUtil.rollbackTransaction();
-				throw new DAOException(e);
-			}
-		}
-	}	
-	
-	/**
-	 * @see org.openmrs.api.db.AdministrationService#deleteGroup(org.openmrs.Group)
-	 */
-	public void deleteGroup(Group g) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		try {
-			HibernateUtil.beginTransaction();
-			session.delete(g);
-			HibernateUtil.commitTransaction();
-		}
-		catch (Exception e) {
-			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e);
-		}
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.AdministrationService#renameGroup(org.openmrs.Group,java.lang.String)
-	 */
-	public void renameGroup(Group group, String newGroupName) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		try {
-			HibernateUtil.beginTransaction();
-			
-			Group newGroup = new Group(newGroupName);
-			newGroup.setDescription(group.getDescription());
-			newGroup.setRoles(group.getRoles());
-			
-			session.save(newGroup);
-			
-			HibernateUtil.commitTransaction();
-			
-			HibernateUtil.beginTransaction();
-			//session.createQuery("update User u set group = :newGroup where u.groups.group.group = :oldGroup")
-			session.createQuery("update User u set group = :newGroup where u = (select User from User u2 where u2.groups.group.group = :oldGroup)")
-//			session.createQuery("update User as u set group = :newGroup where u.groups.group.group = :oldGroup");
-//			from Cat as fatcat 
-//where fatcat.weight > ( 
-//    select avg(cat.weight) from DomesticCat cat 
-//)
-				.setEntity("newGroup", newGroup)
-				.setString("oldGroup", group.getGroup())
-				.executeUpdate();
-			
-			session.delete(group);
-			
-			HibernateUtil.commitTransaction();
-		}
-		catch (Exception e) {
-			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e);
-		}
-	}
-	
-	/**
 	 * @see org.openmrs.api.db.AdministrationService#addConceptProposal(org.openmrs.ConceptProposal)
 	 */
 	public void createConceptProposal(ConceptProposal cp) throws DAOException {
@@ -1299,7 +1207,7 @@ public class HibernateAdministrationDAO implements
 			HibernateUtil.beginTransaction();
 			
 			Connection connection = session.connection();
-			PreparedStatement ps = connection.prepareStatement("insert into ext_mrn_log (date_generated, generated_by, site, mrn_first, mrn_count) values (?, ?, ?, ?, ?)");
+			PreparedStatement ps = connection.prepareStatement("insert into @DATABASE-BUSINESS-NAME@.ext_mrn_log (date_generated, generated_by, site, mrn_first, mrn_count) values (?, ?, ?, ?, ?)");
 			
 			ps.setTimestamp(1, new Timestamp(new Date().getTime()));
 			ps.setInt(2, context.getAuthenticatedUser().getUserId());
@@ -1328,7 +1236,7 @@ public class HibernateAdministrationDAO implements
 			Map<String, Object> row;
 			
 			Connection connection = session.connection();
-			PreparedStatement ps = connection.prepareStatement("select * from ext_mrn_log order by mrn_log_id desc");
+			PreparedStatement ps = connection.prepareStatement("select * from @DATABASE-BUSINESS-NAME@.ext_mrn_log order by mrn_log_id desc");
 			ps.execute();
 			ResultSet rs = ps.getResultSet();
 			while(rs.next()) {

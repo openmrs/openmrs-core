@@ -1,10 +1,8 @@
 package org.openmrs.api;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 
-import org.openmrs.Group;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
@@ -229,24 +227,6 @@ public class UserService {
 		return getUserDAO().getPrivilege(p);
 	}
 	
-	/**
-	 * Returns all groups currently possible for any User
-	 * @return Global list of groups
-	 * @throws APIException
-	 */
-	public List<Group> getGroups() throws APIException {
-		return getUserDAO().getGroups();
-	}
-	
-	/**
-	 * Returns group object with given string group
-	 * @return Group
-	 * @throws APIException
-	 */
-	public Group getGroup(String r) throws APIException {
-		return getUserDAO().getGroup(r);
-	}
-	
 	public void changePassword(User u, String pw) throws APIException {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USERS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_USERS);
@@ -280,17 +260,17 @@ public class UserService {
 	 * @param includeVoided
 	 * @return
 	 */
-	public List<User> findUsers(String name, List<String> groups, List<String> roles, boolean includeVoided) {
+	public List<User> findUsers(String name, List<String> roles, boolean includeVoided) {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_USERS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_USERS);
 		name = name.replace(", ", " ");
-		return getUserDAO().findUsers(name, groups, roles, includeVoided);
+		return getUserDAO().findUsers(name, roles, includeVoided);
 	}
 	
-	public List<User> getAllUsers(List<String> groups, List<String> roles, boolean includeVoided) {
+	public List<User> getAllUsers(List<String> roles, boolean includeVoided) {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_USERS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_USERS);
-		return getUserDAO().getAllUsers(groups, roles, includeVoided);
+		return getUserDAO().getAllUsers(roles, includeVoided);
 	}
 	
 	/**
@@ -298,15 +278,7 @@ public class UserService {
 	 * @param new user that has privileges 
 	 */
 	private void checkPrivileges(User user) {
-		Collection<Role> roles = new HashSet<Role>();
-		if (user.getRoles() != null)
-			roles.addAll(user.getRoles());
-		
-		if (user.getGroups() != null)
-			for (Group g : user.getGroups())
-				if (g.getRoles() != null)
-					roles.addAll(g.getRoles());
-		
+		Collection<Role> roles = user.getAllRoles();
 		
 		for (Role r : roles) {
 			for (Privilege p : r.getPrivileges())

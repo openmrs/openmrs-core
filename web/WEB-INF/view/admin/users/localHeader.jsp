@@ -9,13 +9,6 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
-	<openmrs:hasPrivilege privilege="Manage Groups">
-		<li <c:if test="<%= request.getRequestURI().contains("group") %>">class="active"</c:if>>
-			<a href="${pageContext.request.contextPath}/admin/users/group.list">
-				<spring:message code="Group.manage"/>
-			</a>
-		</li>
-	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="Manage Roles">
 		<li <c:if test="<%= request.getRequestURI().contains("role") %>">class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/users/role.list">

@@ -8,7 +8,6 @@ import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptProposal;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
-import org.openmrs.Group;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.OrderType;
@@ -410,35 +409,6 @@ public interface AdministrationDAO {
 	 * @throws DAOException
 	 */
 	public void updateConceptSetDerived() throws DAOException;
-	
-	/**
-	 * Create a new Group
-	 * @param Group to create
-	 * @throws DAOException
-	 */
-	public void createGroup(Group group) throws DAOException;
-
-	/**
-	 * Update Group
-	 * @param Group to update
-	 * @throws DAOException
-	 */
-	public void updateGroup(Group group) throws DAOException;
-
-	/**
-	 * Delete Group
-	 * @param Group to delete
-	 * @throws DAOException
-	 */
-	public void deleteGroup(Group group) throws DAOException;
-	
-	/**
-	 *  Renames a group's key to the newGroupName
-	 * @param group
-	 * @param newGroupName
-	 * @throws DAOException
-	 */
-	public void renameGroup(Group group, String newGroupName) throws DAOException;
 	
 	public void createConceptProposal(ConceptProposal cp) throws DAOException;
 	

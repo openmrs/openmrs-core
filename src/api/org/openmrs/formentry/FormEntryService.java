@@ -296,9 +296,9 @@ public class FormEntryService {
 	}
 
 	/**
-	 * @see org.openmrs.api.UserService.findUsers(String, List<String>, List<String>, boolean)
+	 * @see org.openmrs.api.UserService.findUsers(String, List<String>, boolean)
 	 */
-	public Collection<User> findUsers(String searchValue, List<String> groups, List<String> roles,
+	public Collection<User> findUsers(String searchValue, List<String> roles,
 			boolean includeVoided) {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY))
 			throw new APIAuthenticationException("Privilege required: "
@@ -307,8 +307,7 @@ public class FormEntryService {
 		List<User> users = new Vector<User>();
 		context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
 		try {
-			users = context.getUserService().findUsers(searchValue, groups, roles,
-					includeVoided);
+			users = context.getUserService().findUsers(searchValue, roles, includeVoided);
 		} catch (Exception e) {
 			log.error(e);
 		} finally {
@@ -318,9 +317,9 @@ public class FormEntryService {
 	}
 
 	/**
-	 * @see org.openmrs.api.UserService.getAllUsers(List<String>, List<String>, boolean)
+	 * @see org.openmrs.api.UserService.getAllUsers(List<String>, boolean)
 	 */
-	public Collection<User> getAllUsers(List<String> groups, List<String> roles,
+	public Collection<User> getAllUsers(List<String> roles,
 			boolean includeVoided) {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY))
 			throw new APIAuthenticationException("Privilege required: "
@@ -329,7 +328,7 @@ public class FormEntryService {
 		List<User> users = new Vector<User>();
 		context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
 		try {
-			users = context.getUserService().getAllUsers(groups, roles, includeVoided);
+			users = context.getUserService().getAllUsers(roles, includeVoided);
 		} catch (Exception e) {
 			log.error(e);
 		} finally {

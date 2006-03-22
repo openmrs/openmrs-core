@@ -46,3 +46,17 @@ ul.allItems, ul.allItems li {
 .savedItems {
 	display: none;
 }
+
+ul.allItems {
+	width: 325px;
+}
+
+ul.allItems li {
+	width: 150px;
+	margin: 3px;
+	float: left;
+}
+
+div.clear {
+	clear: both;
+}

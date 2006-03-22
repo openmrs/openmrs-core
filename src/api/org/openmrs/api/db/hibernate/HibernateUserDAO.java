@@ -14,7 +14,6 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
-import org.openmrs.Group;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
@@ -318,31 +317,6 @@ public class HibernateUserDAO implements
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.UserService#getGroups()
-	 */
-	public List<Group> getGroups() throws DAOException {
-
-		Session session = HibernateUtil.currentSession();
-		
-		List<Group> groups = session.createQuery("from Group r order by r.group").list();
-		
-		return groups;
-	}
-
-	/**
-	 * @see org.openmrs.api.db.UserService#getGroup()
-	 */
-	public Group getGroup(String r) throws DAOException {
-
-		Session session = HibernateUtil.currentSession();
-		Group group = (Group)session.get(Group.class, r);
-		
-		return group;
-	}
-	
-	
-	
-	/**
 	 * @see org.openmrs.api.db.UserDAO#changePassword(org.openmrs.User, java.lang.String)
 	 */
 	public void changePassword(User u, String pw) throws DAOException {
@@ -485,7 +459,7 @@ public class HibernateUserDAO implements
 		
 	}
 	
-	public List<User> findUsers(String name, List<String> groups, List<String> roles, boolean includeVoided) {
+	public List<User> findUsers(String name, List<String> roles, boolean includeVoided) {
 		
 		Session session = HibernateUtil.currentSession();
 		
@@ -533,26 +507,14 @@ public class HibernateUserDAO implements
 		// TODO figure out how to get Hibernate to do the sql for us
 		
 		List returnList = new Vector();
-		if ((roles != null && roles.size() > 0) || (groups != null && groups.size() > 0)) {
-			boolean userAdded;
+		if (roles != null && roles.size() > 0) {
 			for (Object o : criteria.list()) {
 				User u = (User)o;
-				userAdded = false;
-				if (roles.size() > 0) {
-					for (String r : roles)
-						if (u.hasRole(r, true)) {
-							returnList.add(u);
-							userAdded = true;
-							break;
-						}
-				}
-				if (groups.size() > 0 && userAdded == false) {
-					for (String g : groups)
-						if (u.isInGroup(g, true)) {
-							returnList.add(u);
-							break;
-						}
-				}
+				for (String r : roles)
+					if (u.hasRole(r, true)) {
+						returnList.add(u);
+						break;
+					}
 			}
 		}
 		else
@@ -561,7 +523,7 @@ public class HibernateUserDAO implements
 		return returnList;
 	}
 	
-	public List<User> getAllUsers(List<String> groups, List<String> roles, boolean includeVoided) {
+	public List<User> getAllUsers(List<String> roles, boolean includeVoided) {
 		
 		Session session = HibernateUtil.currentSession();
 		
@@ -573,26 +535,14 @@ public class HibernateUserDAO implements
 			criteria.add(Expression.eq("voided", false));
 
 		List returnList = new Vector();
-		if ((roles != null && roles.size() > 0) || (groups != null && groups.size() > 0)) {
-			boolean userAdded;
+		if (roles != null && roles.size() > 0) {
 			for (Object o : criteria.list()) {
 				User u = (User)o;
-				userAdded = false;
-				if (roles.size() > 0) {
-					for (String r : roles)
-						if (u.hasRole(r, true)) {
-							returnList.add(u);
-							userAdded = true;
-							break;
-						}
-				}
-				if (groups.size() > 0 && userAdded == false) {
-					for (String g : groups)
-						if (u.isInGroup(g, true)) {
-							returnList.add(u);
-							break;
-						}
-				}
+				for (String r : roles)
+					if (u.hasRole(r, true)) {
+						returnList.add(u);
+						break;
+					}
 			}
 		}
 		else

@@ -5,7 +5,7 @@
 
 <hibernate-mapping package="org.openmrs">
 
-	<class name="org.openmrs.formentry.FormEntryArchive" table="formentry_archive">
+	<class name="org.openmrs.formentry.FormEntryArchive" table="formentry_archive" schema="@DATABASE-BUSINESS-NAME@">
 
 		<id name="formEntryArchiveId" type="int" column="formentry_archive_id" 
 			unsaved-value="0">

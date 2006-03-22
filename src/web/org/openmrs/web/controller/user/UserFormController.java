@@ -16,7 +16,6 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Group;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.UserService;
@@ -120,36 +119,6 @@ public class UserFormController extends SimpleFormController {
 					newRoles.clear();
 				else
 					user.getRoles().retainAll(newRoles);
-			
-			// add Groups to user (because spring can't handle lists as properties...)
-				String[] groups = request.getParameterValues("groups");
-				Set<Group> newGroups = new HashSet<Group>();
-				if (groups != null) {
-					for (String g : groups) {
-						Group group = us.getGroup(g); 
-						newGroups.add(group);
-						user.addGroup(group);
-					}
-				}
-				
-				/*  TODO check if user can delete privilege
-				lists = Helper.compareLists(user.getGroups(), gs);
-				
-				toDel = (Collection)lists.toArray()[1];
-				for (Object o : toDel) {
-					Group g = (Group)o;
-					for (Role r : g.getRoles()) {
-						for (Privilege p : r.getPrivileges())
-							if (!user.hasPrivilege(p.getPrivilege()))
-								throw new APIException("Privilege required: " + p.getPrivilege());
-					}
-				}
-				*/
-				
-				if (user.getGroups() == null)
-					newGroups.clear();
-				else
-					user.getGroups().retainAll(newGroups);
 		}
 		else {
 			errors.reject("auth.invalid");
@@ -261,7 +230,6 @@ public class UserFormController extends SimpleFormController {
 		
 		if (context != null && context.isAuthenticated()) {
 			map.put("roles", roles);
-			map.put("groups", context.getUserService().getGroups());
 			if (user.getUserId() == null || context.hasPrivilege("Edit Passwords")) 
 				map.put("modifyPasswords", true);
 			map.put("changePasswordName", OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD);

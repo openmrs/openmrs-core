@@ -2,7 +2,6 @@ package org.openmrs.web.dwr;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Group;
 import org.openmrs.Role;
 import org.openmrs.User;
 
@@ -15,7 +14,6 @@ public class UserListItem {
 	private String lastName;
 	private String systemId;
 	private String username;
-	private String[] groups = new String[0];
 	private String[] roles = new String[0];
 	
 	public UserListItem() { }
@@ -28,11 +26,7 @@ public class UserListItem {
 			lastName = user.getLastName();
 			systemId = user.getSystemId();
 			username = user.getUsername();
-			groups = new String[user.getGroups().size()];
 			int i = 0;
-			for (Group g : user.getGroups()) {
-				groups[i++] = g.getGroup();
-			}
 			roles = new String[user.getRoles().size()];
 			i = 0;
 			for (Role r : user.getRoles()) {
@@ -71,14 +65,6 @@ public class UserListItem {
 
 	public void setSystemId(String systemId) {
 		this.systemId = systemId;
-	}
-
-	public String[] getGroups() {
-		return groups;
-	}
-
-	public void setGroups(String[] groups) {
-		this.groups = groups;
 	}
 
 	public String[] getRoles() {

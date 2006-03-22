@@ -3,6 +3,8 @@ package org.openmrs;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -14,12 +16,14 @@ import org.openmrs.util.OpenmrsConstants;
 public class Role implements java.io.Serializable {
 
 	public static final long serialVersionUID = 1234233L;
+	private static Log log = LogFactory.getLog(Role.class);
 
 	// Fields
 
 	private String role;
 	private String description;
 	private Set<Privilege> privileges;
+	private Set<Role> parentRoles;
 
 	// Constructors
 
@@ -33,7 +37,7 @@ public class Role implements java.io.Serializable {
 	}
 
 	public boolean equals(Object obj) {
-		if (obj == null || !(obj instanceof Role)) return false;
+		if (obj == null || !(obj instanceof Role) || role == null) return false;
 		return role.equals(((Role)obj).getRole());
 	}
 	
@@ -124,6 +128,56 @@ public class Role implements java.io.Serializable {
 		}
 		
 		return false;
+	}
+
+	/**
+	 * @return Returns the parentRoles.
+	 */
+	public Set<Role> getParentRoles() {
+		return parentRoles;
+	}
+
+	/**
+	 * @param parentRoles The parentRoles to set.
+	 */
+	public void setParentRoles(Set<Role> parentRoles) {
+		this.parentRoles = parentRoles;
+	}
+	
+	public boolean hasParents() {
+		return (getParentRoles() != null && getParentRoles().size() > 0); 
+	}
+	
+	/**
+	 * Recursive (if need be) method to return all parent roles of this role
+	 *  
+	 * @return Return this role's parents
+	 */
+	public Set<Role> getAllParentRoles() {
+		Set<Role> parents = new HashSet<Role>();
+		if (hasParents()) {
+			parents.addAll(this.recurseOverParents(parents));
+		}
+		return parents;
+	}
+	
+	public Set<Role> recurseOverParents(final Set<Role> children) {
+		if (!this.hasParents()) return children;
+		
+		Set<Role> allRoles = new HashSet<Role>();
+		Set<Role> myRoles = new HashSet<Role>();
+		allRoles.addAll(children);
+		
+		myRoles.addAll(this.getParentRoles());
+		myRoles.removeAll(children);
+		myRoles.remove(this);	//prevent an obvious looping problem
+		allRoles.addAll(myRoles);
+		
+		for (Role r : myRoles) {
+			if (r.hasParents())
+				allRoles.addAll(r.recurseOverParents(allRoles));
+		}
+		return allRoles;
 	}
 
 }

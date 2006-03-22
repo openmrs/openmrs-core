@@ -106,9 +106,11 @@ public class RoleListController extends SimpleFormController {
 		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		//default empty Object
+		// Object = the role
+		// Boolean= whether or not the role is a core role (not able to be deleted)
 		Map<Role, Boolean> roleList = new LinkedHashMap<Role, Boolean>();
 		
-		//only fill the Object is the user has authenticated properly
+		//only fill the Object if the user has authenticated properly
 		if (context != null && context.isAuthenticated()) {
 			UserService us = context.getUserService();
 	    	for (Role r : us.getRoles()) {

@@ -5,7 +5,7 @@
 
 <hibernate-mapping package="org.openmrs">
 
-	<class name="org.openmrs.hl7.HL7InError" table="hl7_in_error">
+	<class name="org.openmrs.hl7.HL7InError" table="hl7_in_error" schema="@DATABASE-BUSINESS-NAME@">
 
 		<id name="HL7InErrorId" type="int" column="hl7_in_error_id" 
 			unsaved-value="0">

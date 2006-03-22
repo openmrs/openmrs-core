@@ -5,7 +5,7 @@
 
 <hibernate-mapping package="org.openmrs">
 
-	<class name="org.openmrs.hl7.HL7InQueue" table="hl7_in_queue">
+	<class name="org.openmrs.hl7.HL7InQueue" table="hl7_in_queue" schema="@DATABASE-BUSINESS-NAME@">
 
 		<id name="HL7InQueueId" type="int" column="hl7_in_queue_id" 
 			unsaved-value="0">

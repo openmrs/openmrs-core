@@ -176,6 +176,10 @@ var DragDrop = {
 			var item = next;
 			var next = DragUtils.nextItem(item);
 		}
+		
+		//if (item.className == "clear")
+		//	var asdf = "break here";
+		
 		if (this != item) {
 			DragUtils.swap(this, next);
 			return;
@@ -187,10 +191,15 @@ var DragDrop = {
 			var item = previous;
 			var previous = DragUtils.previousItem(item);
 		}
+		
 		if (this != item) {
 			DragUtils.swap(this, item);
 			return;
 		}
+		
+		if (this.previousSibling != null && this.previousSibling.className == "clear")
+			DragUtils.swap(this, this.previousSibling);
+		
 	},
 
 	onDragEnd : function(nwPosition, sePosition, nwOffset, seOffset) {
@@ -222,8 +231,16 @@ var DragDrop = {
 					container = container.nextContainer;
 				}
 			}
-
-			container.appendChild( this );
+			
+			var div = container.lastChild;
+			while (div.className != "clear" && div != container.firstChild) {
+				div = div.previousSibling;
+			}
+			if (div.className == "clear")
+				container.insertBefore(this, div);
+			else
+				container.appendChild( this );
+			
 			this.style["top"] = "0px";
 			this.style["left"] = "0px";
 			//var container = DragDrop.firstContainer;

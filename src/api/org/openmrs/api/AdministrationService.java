@@ -12,7 +12,6 @@ import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptSynonym;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
-import org.openmrs.Group;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.Obs;
@@ -492,6 +491,8 @@ public class AdministrationService {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ROLES))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ROLES);
 
+		checkLooping(role);
+		
 		checkPrivileges(role);
 		
 		getAdminDAO().createRole(role);
@@ -506,6 +507,8 @@ public class AdministrationService {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ROLES))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ROLES);
 
+		checkLooping(role);
+		
 		checkPrivileges(role);
 		
 		getAdminDAO().updateRole(role);
@@ -717,53 +720,6 @@ public class AdministrationService {
 		getAdminDAO().updateConceptSetDerived();
 	}
 	
-	/**
-	 * Create a new Group
-	 * @param Group to create
-	 * @throws APIException
-	 */
-	public void createGroup(Group group) throws APIException {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_GROUPS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_GROUPS);
-
-		checkPrivileges(group);
-		
-		getAdminDAO().createGroup(group);
-	}
-
-	/**
-	 * Update Group
-	 * @param Group to update
-	 * @throws APIException
-	 */
-	public void updateGroup(Group group) throws APIException {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_GROUPS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_GROUPS);
-
-		checkPrivileges(group);
-		
-		getAdminDAO().updateGroup(group);
-	}
-
-	/**
-	 * Delete Group
-	 * @param Group to delete
-	 * @throws APIException
-	 */
-	public void deleteGroup(Group group) throws APIException {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_GROUPS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_GROUPS);
-
-		getAdminDAO().deleteGroup(group);
-	}
-	
-	public void renameGroup(Group group, String newGroupName) throws APIException {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_GROUPS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_GROUPS);
-
-		getAdminDAO().renameGroup(group, newGroupName);
-	}
-
 	public void createConceptProposal(ConceptProposal cp) throws APIException {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_FORM_ENTRY);
@@ -843,18 +799,14 @@ public class AdministrationService {
 		}
 	}
 	
-	/**
-	 * This function checks if the authenticated user has all privileges they are giving out to the new group
-	 * @param new user that has privileges 
-	 */
-	private void checkPrivileges(Group group) {
-		Collection<Role> roles = group.getRoles();
-		/*
-		for (Role r : roles) {
-			if (!context.hasPrivilege(r))
-				throw new APIAuthenticationException("Privilege required: " + p);
-		}
-		*/
+	private void checkLooping(Role role) {
+		
+		log.debug("allParentRoles: " + role.getAllParentRoles());
+		log.debug("role: " + role);
+		
+		if (role.getAllParentRoles().contains(role))
+			throw new APIAuthenticationException("Invalid Role or parent Role.  A role cannot inherit itself.");
+		
 	}
 	
 	public void mrnGeneratorLog(String site, Integer start, Integer count) {

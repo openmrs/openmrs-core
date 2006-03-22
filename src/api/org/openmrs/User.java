@@ -31,7 +31,6 @@ public class User extends Person implements java.io.Serializable {
 	private String lastName;
 	private String secretQuestion;
 	private Set<Role> roles;
-	private Set<Group> groups;
 	private Map<String, String> properties;
 
 	/*private User creator;
@@ -59,13 +58,7 @@ public class User extends Person implements java.io.Serializable {
 	 * @return
 	 */
 	public boolean isSuperUser() {
-		Set<Role> tmproles = new HashSet<Role>();
-		tmproles.addAll(getRoles());
-		
-		if (groups != null)
-			for (Group g : groups) {
-				tmproles.addAll(g.getRoles());
-			}
+		Set<Role> tmproles = getAllRoles();
 		
 		Role role = new Role(OpenmrsConstants.SUPERUSER_ROLE);	//default administrator with complete control
 		
@@ -82,16 +75,14 @@ public class User extends Person implements java.io.Serializable {
 	 */
 	public boolean hasPrivilege(String privilege) {
 
+		// All authenticated users have the "" (empty) privilege
+		if (privilege == null || privilege.equals(""))
+			return true;
+		
 		if (isSuperUser())
 			return true;
 		
-		Set<Role> tmproles = new HashSet<Role>();
-		tmproles.addAll(getRoles());
-
-		if (groups != null)
-			for (Group g : groups) {
-				tmproles.addAll(g.getRoles());
-			}
+		Set<Role> tmproles = getAllRoles();
 		
 		Role role;
 		
@@ -118,13 +109,7 @@ public class User extends Person implements java.io.Serializable {
 		if (roles == null)
 			return false;
 		
-		Set<Role> tmproles = new HashSet<Role>();
-		tmproles.addAll(getRoles());
-
-		if (groups != null)
-			for (Group g : groups) {
-				tmproles.addAll(g.getRoles());
-			}
+		Set<Role> tmproles = getAllRoles();
 		
 		Role role = new Role(r);
 		
@@ -134,34 +119,10 @@ public class User extends Person implements java.io.Serializable {
 		return false;
 	}
 	
-	public boolean isInGroup(String g) {
-		return isInGroup(g, false);
-	}
-	
-	public boolean isInGroup(String g, boolean ignoreSuperUser) {
-		if (ignoreSuperUser == false) {
-			if (isSuperUser())
-				return true;
-		}
-		
-		if (groups == null)
-			return false;
-		
-		return groups.contains(new Group(g));
-	}
-	
 	public Collection<Privilege> getPrivileges() {
 		Set<Privilege> privileges = new HashSet<Privilege>();
-		Set<Role> tmproles = new HashSet<Role>();
-		tmproles.addAll(getRoles());
+		Set<Role> tmproles = getAllRoles();
 
-		if (groups != null)
-			for (Group g : groups) {
-				tmproles.addAll(g.getRoles());
-			}
-		
-		tmproles.addAll(getRoles());
-		
 		Role role;
 		for (Iterator i = tmproles.iterator(); i.hasNext();) {
 			role = (Role) i.next();
@@ -233,6 +194,22 @@ public class User extends Person implements java.io.Serializable {
 	}
 
 	/**
+	 * 
+	 * Returns all roles attributed to this user by expanding the role list
+	 * to include the parents of the assigned roles
+	 * 
+	 * @return all roles (inherited from parents and given) for this user
+	 */
+	public Set<Role> getAllRoles() {
+		Set<Role> tmpRoles = new HashSet<Role>();
+		tmpRoles.addAll(getRoles());
+		for (Role r : tmpRoles) {
+			tmpRoles.addAll(r.getAllParentRoles());
+		}
+		return tmpRoles;
+	}
+	
+	/**
 	 * @return Returns the roles.
 	 */
 	public Set<Role> getRoles() {
@@ -264,40 +241,6 @@ public class User extends Person implements java.io.Serializable {
 	public void removeRole(Role role) {
 		if (roles != null)
 			roles.remove(role);
-	}
-
-	/**
-	 * @return Returns the groups.
-	 */
-	public Set<Group> getGroups() {
-		return groups;
-	}
-
-	/**
-	 * @param groups The groups to set.
-	 */
-	public void setGroups(Set<Group> groups) {
-		this.groups = groups;
-	}
-	
-	/**
-	 * Add the given Group to the list of groups for this User
-	 * @param group
-	 */
-	public void addGroup(Group group) {
-		if (groups == null)
-			groups = new HashSet<Group>();
-		if (!groups.contains(group) && group != null)
-			groups.add(group);
-	}
-
-	/**
-	 * Remove the given obervation from the list of groups for this User
-	 * @param group
-	 */
-	public void removeGroup(Group group) {
-		if (groups != null)
-			groups.remove(group);
 	}
 
 	/**

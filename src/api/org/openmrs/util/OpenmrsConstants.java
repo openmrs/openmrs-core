@@ -7,6 +7,10 @@ import java.util.Map;
 import java.util.Vector;
 
 public class OpenmrsConstants {
+	
+	public static final String OPENMRS_VERSION = "@OPENMRS.VERSION@";
+	public static final String DATABASE_VERSION = "@DATABASE.VERSION@";
+	public static final String DATABASE_VERSION_EXPECTED = "@DATABASE.VERSION.EXPECTED@";
 
 	public static final String REGEX_LARGE = "[!\"#\\$%&'\\(\\)\\*,+-\\./:;<=>\\?@\\[\\\\\\\\\\]^_`{\\|}~]";
 	public static final String REGEX_SMALL = "[!\"#\\$%&'\\(\\)\\*,\\./:;<=>\\?@\\[\\\\\\\\\\]^_`{\\|}~]";
@@ -90,7 +94,6 @@ public class OpenmrsConstants {
 	public static final String PRIV_MANAGE_CONCEPT_CLASSES	= "Manage Concept Classes";
 	public static final String PRIV_MANAGE_CONCEPT_DATATYPES= "Manage Concept Datatypes";
 	public static final String PRIV_MANAGE_ENCOUNTER_TYPES	= "Manage Encounter Types";
-	public static final String PRIV_MANAGE_GROUPS		= "Manage Groups";
 	public static final String PRIV_MANAGE_PRIVILEGES	= "Manage Privileges";
 	public static final String PRIV_MANAGE_ROLES		= "Manage Roles";
 	public static final String PRIV_MANAGE_FIELD_TYPES	= "Manage Field Types";
@@ -101,7 +104,7 @@ public class OpenmrsConstants {
 	
 	public static final String PRIV_FORM_ENTRY      = "Form Entry";
 	
-	public static Collection<String> CORE_PRIVILEGES() {
+	public static final Collection<String> CORE_PRIVILEGES() {
 		List<String> privs = new Vector<String>();
 		
 		privs.add(PRIV_FORM_ENTRY);
@@ -156,7 +159,6 @@ public class OpenmrsConstants {
 		privs.add(PRIV_MANAGE_CONCEPT_CLASSES);
 		privs.add(PRIV_MANAGE_CONCEPT_DATATYPES);
 		privs.add(PRIV_MANAGE_ENCOUNTER_TYPES);
-		privs.add(PRIV_MANAGE_GROUPS);
 		privs.add(PRIV_MANAGE_PRIVILEGES);
 		privs.add(PRIV_MANAGE_FIELD_TYPES);
 		privs.add(PRIV_MANAGE_ORDER_TYPES);
@@ -172,7 +174,7 @@ public class OpenmrsConstants {
 	public static final String ANONYMOUS_ROLE = "Anonymous";
 	public static final String AUTHENTICATED_ROLE = "Authenticated";
 	
-	public static Collection<String> CORE_ROLES() {
+	public static final Collection<String> CORE_ROLES() {
 		List<String> roles = new Vector<String>();
 		
 		roles.add(SUPERUSER_ROLE);
@@ -182,7 +184,8 @@ public class OpenmrsConstants {
 		return roles;
 	}
 	
-	public static Collection<String> AUTO_ROLES() {
+	// These roles are given to a user automatically and cannot be assigned
+	public static final Collection<String> AUTO_ROLES() {
 		List<String> roles = new Vector<String>();
 		
 		roles.add(ANONYMOUS_ROLE);
@@ -200,7 +203,7 @@ public class OpenmrsConstants {
 	public static final String CONCEPT_PROPOSAL_SYNONYM  = "SYNONYM";
 	public static final String CONCEPT_PROPOSAL_REJECT   = "REJECT";
 	
-	public static Collection<String> CONCEPT_PROPOSAL_STATES() {
+	public static final Collection<String> CONCEPT_PROPOSAL_STATES() {
 		Collection<String> states = new Vector<String>();
 		
 		states.add(CONCEPT_PROPOSAL_UNMAPPED);

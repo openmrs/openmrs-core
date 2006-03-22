@@ -31,7 +31,7 @@
 	
 		<td valign="top">
 		
-			<openmrs:hasPrivilege privilege="View Users,Manage Groups,Manage Roles,Manage Privileges">
+			<openmrs:hasPrivilege privilege="View Users,Manage Roles,Manage Privileges">
 				<h4><spring:message code="User.header"/></h4>
 					<%@ include file="users/localHeader.jsp" %>
 			</openmrs:hasPrivilege>

@@ -27,36 +27,6 @@
 			<pathelement path="${tomcat.dir}/catalina-ant.jar"/>
 		</classpath>
 	</taskdef>
-	
-	<filterset id="variables.to.replace">
-		<filter token="DATABASE-DRIVER_CLASS" value="${database.driver_class}" />
-		<filter token="DATABASE-CONNECTION-URL" value="${database.connection.url}" />
-		<filter token="DATABASE-USERNAME" value="${database.username}" />
-		<filter token="DATABASE-PASSWORD" value="${database.password}" />
-		<filter token="DATABASE-NAME" value="${database.name}" />
-		<filter token="DATABASE-NAME" value="${database.name}" />
-		<filter token="HIBERNATE-LAZY" value="${hibernate.lazy}" />
-		<filter token="HIBERNATE-SHOW_SQL" value="${hibernate.show_sql}" />
-		<filter token="HIBERNATE-DIALECT" value="${hibernate.dialect}" />
-		<filter token="POOL-MAX_SIZE" value="${pool.max_size}" />
-		<filter token="POOL-MIN_SIZE" value="${pool.min_size}" />
-		<filter token="POOL-TIMEOUT" value="${pool.timeout}" />
-		<filter token="POOL-MAX_STATEMENTS" value="${pool.max_statements}" />
-		<filter token="POOL-IDLE_TEST_PERIOD" value="${pool.idle_test_period}" />
-		<filter token="POOL-ACQUIRE_INCREMENT" value="${pool.acquire_increment}" />
-		<filter token="WEBAPP.NAME" value="${webapp.name}" />
-		<filter token="WEBAPP.DISPLAY.NAME" value="${webapp.display.name}" />
-		<filter token="WEBAPP.DESCRIPTION" value="${webapp.description}" />
-		<filter token="TIMESTAMP" value="${timestamp}" />
-		
-		<filter token="INFOPATH-SERVER-URL" value="${infopath.server.url}"/>
-		<filter token="INFOPATH-PUBLISH-URL" value="${infopath.publish.url}"/>
-		<filter token="INFOPATH-TASKPANE-CAPTION" value="${infopath.taskpane.caption}"/>
-		<filter token="INFOPATH-TASKPANE-INITIAL-URL" value="${infopath.taskpane.initial.url}"/>	
-		<filter token="INFOPATH-SUBMIT-URL" value="${infopath.submit.url}"/>
-		<filter token="INFOPATH-SCHEMA-FILENAME" value="${infopath.schema.filename}"/>
-		<filter token="INFOPATH-OUTPUT-DIR" value="${infopath.output.dir}"/>
-	</filterset>
 
 	<!-- *********************************************************** -->
 	<!-- **                     TARGETS                           ** -->
@@ -68,13 +38,64 @@
 				<fileset dir="${ant-contrib.dir}" includes="*.jar" />
 			</classpath>
 		</taskdef>
-		<!--
-		<uptodate property="properties.isUpToDate" srcfile="properties.xml" >
-			<mapper type="identity"/>
-		</uptodate>
-		<echo message="properties.isUpToDate: ${properties.isUpToDate}"/>
-		-->
-		<!-- test for dependencies/etc here -->
+
+		<sql 
+			driver="${database.driver_class}"
+			url="${database.connection.url}"
+			userid="${database.username}"
+			password="${database.password}"
+			showheaders="false"
+			output="database.version"
+			append="false"
+			print="true">
+			
+			SELECT 'openmrs.database_version=', property_value FROM global_property WHERE property = 'database_version';
+			
+			<classpath>
+				<fileset dir="${database.dir}" includes="*.jar" />
+			</classpath>
+		</sql>
+		
+		<!-- remove the comma from the newly created database.version file -->
+		<replace file="database.version" token="," value="" />
+		
+		<property file="database.version" />
+		
+		<delete file="database.version" />
+				
+		<filterset id="variables.to.replace">
+			<filter token="DATABASE-DRIVER_CLASS" value="${database.driver_class}" />
+			<filter token="DATABASE-CONNECTION-URL" value="${database.connection.url}" />
+			<filter token="DATABASE-USERNAME" value="${database.username}" />
+			<filter token="DATABASE-PASSWORD" value="${database.password}" />
+			<filter token="DATABASE-NAME" value="${database.name}" />
+			<filter token="DATABASE-BUSINESS-NAME" value="${database.business.name}" />
+			<filter token="HIBERNATE-LAZY" value="${hibernate.lazy}" />
+			<filter token="HIBERNATE-SHOW_SQL" value="${hibernate.show_sql}" />
+			<filter token="HIBERNATE-DIALECT" value="${hibernate.dialect}" />
+			<filter token="POOL-MAX_SIZE" value="${pool.max_size}" />
+			<filter token="POOL-MIN_SIZE" value="${pool.min_size}" />
+			<filter token="POOL-TIMEOUT" value="${pool.timeout}" />
+			<filter token="POOL-MAX_STATEMENTS" value="${pool.max_statements}" />
+			<filter token="POOL-IDLE_TEST_PERIOD" value="${pool.idle_test_period}" />
+			<filter token="POOL-ACQUIRE_INCREMENT" value="${pool.acquire_increment}" />
+			<filter token="WEBAPP.NAME" value="${webapp.name}" />
+			<filter token="WEBAPP.DISPLAY.NAME" value="${webapp.display.name}" />
+			<filter token="WEBAPP.DESCRIPTION" value="${webapp.description}" />
+			<filter token="TIMESTAMP" value="${timestamp}" />
+			<filter token="OPENMRS.VERSION" value="${openmrs.version}" />
+			<filter token="DATABASE.VERSION" value="${openmrs.database_version}" />
+			<filter token="DATABASE.VERSION.EXPECTED" value="${openmrs.database_version_expected}" />
+			
+			<filter token="INFOPATH-SERVER-URL" value="${infopath.server.url}"/>
+			<filter token="INFOPATH-PUBLISH-URL" value="${infopath.publish.url}"/>
+			<filter token="INFOPATH-TASKPANE-CAPTION" value="${infopath.taskpane.caption}"/>
+			<filter token="INFOPATH-TASKPANE-INITIAL-URL" value="${infopath.taskpane.initial.url}"/>	
+			<filter token="INFOPATH-SUBMIT-URL" value="${infopath.submit.url}"/>
+			<filter token="INFOPATH-SCHEMA-FILENAME" value="${infopath.schema.filename}"/>
+			<filter token="INFOPATH-OUTPUT-DIR" value="${infopath.output.dir}"/>
+		</filterset>
+	
 	</target>
 
 	<target name="props" unless="properties.isUpToDate">
