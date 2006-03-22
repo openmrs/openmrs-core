@@ -116,7 +116,7 @@
         
     <!-- Web -->
     <path id="web.compile.classpath">
-		<pathelement location="${dist.dir}/openmrs-api-${app.version}.jar" />
+		<pathelement location="${dist.dir}/openmrs-api-${openmrs.version}.jar" />
 		<fileset dir="${tomcat.dir}" includes="*.jar" />
 		<fileset dir="${dwr.dir}" includes="*.jar" />
 		<fileset dir="${commons-io.dir}" includes="*.jar" />

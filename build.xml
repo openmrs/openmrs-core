@@ -132,9 +132,9 @@
 
 	<target name="package-api" depends="compile-api" description="create api jar">
 		<mkdir dir="${dist.dir}" />
-		<jar destfile="${dist.dir}/openmrs-api-${app.version}.jar">
+		<jar destfile="${dist.dir}/openmrs-api-${openmrs.version}.jar">
             <manifest>
-                <attribute name="Class-Path" value="openmrs-api-${app.version}.jar"/>
+                <attribute name="Class-Path" value="openmrs-api-${openmrs.version}.jar"/>
             </manifest>
             <fileset dir="${build.dir}/api" includes="**/*" />
         </jar>
@@ -178,9 +178,9 @@
 
 	<target name="package-api-tests" depends="compile-api-tests" description="create api-tests jar">
 		<mkdir dir="${dist.dir}" />
-		<jar destfile="${dist.dir}/openmrs-api-tests-${app.version}.jar">
+		<jar destfile="${dist.dir}/openmrs-api-tests-${openmrs.version}.jar">
             <manifest>
-                <attribute name="Class-Path" value="openmrs-api-tests-${app.version}.jar"/>
+                <attribute name="Class-Path" value="openmrs-api-tests-${openmrs.version}.jar"/>
             </manifest>
             <fileset dir="${build.dir}/test/api" />
         </jar>
@@ -199,7 +199,7 @@
 				optimize="${compile.optimize}" >
 			<classpath>
 				<path refid="web.compile.classpath"/>
-				<path location="${dist.dir}/openmrs-api-${app.version}.jar"/>
+				<path location="${dist.dir}/openmrs-api-${openmrs.version}.jar"/>
 			</classpath>
 		</javac>
 		<copy todir="${build.dir}/web">
@@ -271,7 +271,7 @@
 			<!-- (e.g., @basedir, webinf@dir) so using hardcoded values for now -->
 			<classes dir="${build.dir}/web" />
             <!--<metainf dir="${metadata.dir}/web" includes="context.xml"/>-->
-			<lib file="${dist.dir}/openmrs-api-${app.version}.jar" />
+			<lib file="${dist.dir}/openmrs-api-${openmrs.version}.jar" />
 			<lib dir="${antlr.dir}" includes="*.jar" />
 			<lib dir="${asm.dir}" includes="*.jar" />
 			<lib dir="${c3p0.dir}" includes="*.jar" />
