@@ -33,7 +33,7 @@
 			column="value_text" length="50" />
 			
 		<property name="comment" type="java.lang.String"
-			column="comment" length="255" />
+			column="comments" length="255" />
 		<property name="accessionNumber" type="java.lang.String"
 			column="accession_number" length="255" />
 			
