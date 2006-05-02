@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="org.openmrs.FieldAnswer" 
+    table="field_answer"
+>
+
+    <composite-id>
+        <key-many-to-one name="concept" class="org.openmrs.Concept" column="concept_id" />
+        <key-many-to-one name="field" class="org.openmrs.Field" column="field_id" />
+    </composite-id>    
+
+    <property 
+        name="dateCreated" 
+        column="date_created" 
+        type="java.util.Date"
+        length="19"
+    />
+
+    <!-- Associations -->
+  
+    <!-- bi-directional many-to-one association to Concept -->
+    <!--
+    <many-to-one
+        name="concept"
+        class="org.openmrs.Concept"
+        not-null="true"
+    >
+        <column name="answer_id" />
+    </many-to-one>
+    -->
+    <!-- bi-directional many-to-one association to Field -->
+    <!--
+    <many-to-one
+        name="field"
+        class="org.openmrs.Field"
+        not-null="true"
+    >
+        <column name="field_id" />
+    </many-to-one>
+    -->
+    <!-- bi-directional many-to-one association to User -->
+    <many-to-one
+        name="creator"
+        class="org.openmrs.User"
+        not-null="true"
+    >
+        <column name="creator" />
+    </many-to-one>
+</class>
+</hibernate-mapping>

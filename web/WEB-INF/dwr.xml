@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dwr PUBLIC "-//GetAhead Limited//DTD Direct Web Remoting 1.0//EN" "http://www.getahead.ltd.uk/dwr/dwr10.dtd">
+
+<dwr>
+
+	<allow>
+		<create creator="new" javascript="JDate">
+	      <param name="class" value="java.util.Date"/>
+		</create>
+	
+		<convert converter="bean" match="org.openmrs.web.dwr.PatientListItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.ConceptListItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.ConceptDrugListItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.EncounterListItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.UserListItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.ObsListItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.FormFieldListItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.FieldListItem"/>
+		<convert converter="bean" match="org.openmrs.PatientAddress"/>
+		<convert converter="bean" match="org.openmrs.Tribe"/>
+		<convert converter="bean" match="org.openmrs.notification.web.dwr.AlertListItem"/>
+	
+		<create creator="new" javascript="DWRPatientService">
+			<param name="class" value="org.openmrs.web.dwr.DWRPatientService" />
+			<include method="findPatients"/>
+			<include method="getPatient"/>
+			<include method="getSimilarPatients"/>
+			<include method="getTribes" />
+			<include method="findTribes" />
+			<include method="findDuplicatePatients" />
+		</create>
+	
+		<create creator="new" javascript="DWRConceptService">
+			<param name="class" value="org.openmrs.web.dwr.DWRConceptService" />
+			<include method="findConcepts" />
+			<include method="findConceptAnswers" />
+			<include method="getConcept" />
+			<include method="findProposedConcepts" />
+			<include method="isValidNumericValue" />
+			<include method="getConceptNumericUnits" />
+			<include method="getDrug" />
+			<include method="getDrugs" />
+			<include method="findDrugs" />
+		</create>
+		
+		<create creator="new" javascript="DWREncounterService">
+			<param name="class" value="org.openmrs.web.dwr.DWREncounterService" />
+			<include method="findEncounters"/>
+			<include method="getEncounter"/>
+		</create>
+		
+		<create creator="new" javascript="DWRUserService">
+			<param name="class" value="org.openmrs.web.dwr.DWRUserService" />
+			<include method="findUsers"/>
+			<include method="getAllUsers"/>
+		</create>
+		
+		<create creator="new" javascript="DWRObsService">
+			<param name="class" value="org.openmrs.web.dwr.DWRObsService" />
+			<include method="findObs"/>
+		</create>
+		
+		<create creator="new" javascript="DWRFormService">
+			<param name="class" value="org.openmrs.web.dwr.DWRFormService" />
+			<include method="getFormField"/>
+			<include method="getField"/>
+			<include method="getHTMLTree"/>
+			<include method="getOptionTree"/>
+			<include method="findFields"/>
+			<include method="findFieldsAndConcepts"/>
+			<include method="saveFormField"/>
+			<include method="deleteFormField"/>
+		</create>
+
+		<create creator="new" javascript="DWRMessageService">
+			<param name="class" value="org.openmrs.notification.web.dwr.DWRMessageService" />
+			<include method="sendFeedback"/>
+			<include method="sendMessage"/>
+		</create>
+		
+		<create creator="new" javascript="DWRAlertService">
+			<param name="class" value="org.openmrs.notification.web.dwr.DWRAlertService" />
+			<include method="getAlerts"/>
+			<include method="markAlertRead"/>
+		</create>
+	</allow>
+	
+	<signatures>
+		<![CDATA[
+			import org.openmrs.web.dwr.DWRPatientService;
+			import org.openmrs.web.dwr.DWRConceptService;
+			import org.openmrs.web.dwr.DWREncounterService;
+			import org.openmrs.web.dwr.DWRUserService;
+			import org.openmrs.web.dwr.DWRObsService;
+			import org.openmrs.notification.web.dwr.DWRMessageService;
+			import java.util.Date;
+			import java.util.List;
+			DWRPatientService.getSimilarPatients(String name, Date birthdate, String age, String gender);
+			DWRPatientService.findDuplicatePatients(String[] searchOn);
+			DWRConceptService.findConcepts(String phrase, List<String> classNames, boolean includeRetired, List<String> ignoreClassNames);
+			DWRConceptService.findConceptAnswers(String phrase, ConceptListItem concept, boolean includeRetired);
+			DWRConceptService.isValidNumericValue(Float value, Integer conceptId);
+			DWRConceptService.getDrugs(Integer conceptId, boolean showConcept);
+			DWRConceptService.findDrugs(String phrase, boolean includeRetired);
+			DWREncounterService.findEncounters(String phrase, boolean includeVoided);
+			DWRUserService.findUsers(String phrase, List<String> roles, boolean includeVoided);
+			DWRUserService.getAllUsers(List<String> roles, boolean includeVoided);
+			DWRObsService.findObs(String phrase, boolean includeVoided);
+			DWRMessageService.sendFeedback(String sender, String subject, String content);
+			DWRMessageService.sendMessage( String recipients, String sender, String subject, String content );
+		]]>
+	</signatures>
+  
+</dwr>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="org.openmrs.FormField">
+
+<!-- ************************************************************ -->
+<!-- ** Creation                                               ** -->
+<!-- ************************************************************ -->
+
+<insert id="createFormField" parameterClass="org.openmrs.FormField">
+	INSERT INTO form_field
+		(
+		parent_form_field,
+		form_id,
+		field_id,
+		field_number,
+		field_part,
+		page_number
+		min_occurs,
+		max_occurs,
+		required,
+		creator,
+		date_created,
+		changed_by,
+		date_changed
+		)
+	VALUES
+		(
+		#formField.formFieldId#,
+		#form.formId#,
+		#field.fieldId#,
+		#fieldNumber#,
+		#fieldPart#,
+		#pageNumber#,
+		#minOccurs#,
+		#maxOccurs#,
+		#required#,
+		#creator.userId#,
+		NOW(),
+		#changedBy.userId#,
+		NOW()
+		);
+	<selectKey keyProperty="formFieldId">
+		SELECT LAST_INSERT_ID() AS formFieldId
+	</selectKey>
+</insert>
+
+<!-- ************************************************************ -->
+<!-- ** Read                                                   ** -->
+<!-- ************************************************************ -->
+
+<resultMap id="fieldResult" class="org.openmrs.FormField">
+	<result property="formFieldId" column="form_field_id" />
+	<result property="formField" column="parent_form_id" select="getFormField" />
+	<result property="form" column="form_id" select="getForm" />
+	<result property="field" column="field_id" select="getField" />
+	<result property="fieldNumber" column="field_number" />
+	<result property="fieldPart" column="field_part" />
+	<result property="pageNumber" column="page_number" />
+	<result property="minOccurs" column="min_occurs" />
+	<result property="maxOccurs" column="max_occurs" />
+	<result property="required" column="required" />
+	<result property="creator" column="creator" select="getUser" />
+	<result property="dateCreated" column="date_created" />
+	<result property="changedBy" column="changed_by" select="getUser" />
+	<result property="dateChanged" column="date_changed" />
+</resultMap>
+
+<select id="getFormField" parameterClass="int" resultMap="fieldResult">
+	SELECT * FROM form_field WHERE form_field_id = #value#
+</select>
+
+<select id="getFormFieldByFormId" parameterClass="int" resultMap="fieldResult">
+	SELECT * FROM form_field WHERE form_id = #value#
+</select>
+
+<select id="getFormFieldByFieldId" parameterClass="int" resultMap="fieldResult">
+	SELECT * FROM form_field WHERE field_id = #value#
+</select>
+
+
+<!-- ************************************************************ -->
+<!-- ** Update                                                 ** -->
+<!-- ************************************************************ -->
+
+<update id="updateFormField" parameterClass="org.openmrs.FormField">
+	UPDATE
+		form_field
+	SET
+		parent_form_field = #formField.formFieldId#,
+		form_id = #form.formId#,
+		field_id = #field.fieldId#,
+		field_number = #fieldNumber#,
+		field_part = #fieldPart#,
+		page_number = #pageNumber#,
+		min_occurs = #minOccurs#,
+		max_occurs = #maxOccurs#,
+		required = #required#,
+		changed_by = #changedBy.userId#,
+		date_changed = NOW()
+	WHERE
+		form_field_id = #formFieldId#
+</update>
+
+<!-- ************************************************************ -->
+<!-- ** Deletion                                               ** -->
+<!-- ************************************************************ -->
+
+<delete id="deleteFormField" parameterClass="org.openmrs.FormField">
+	DELETE FROM form_field WHERE form_field_id = #formFieldId#
+</delete>
+
+</sqlMap>

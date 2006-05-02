@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs.notification">
+
+	<class name="org.openmrs.notification.Alert" table="alert">
+
+		<id name="alertId" type="int" column="alert_id"
+			unsaved-value="0">
+			<generator class="native" />
+		</id>
+
+		<many-to-one name="user" column="user_id" class="org.openmrs.User" not-null="false" />
+		<many-to-one name="role" column="role" class="org.openmrs.Role" not-null="false" />
+		<property name="text" type="java.lang.String" not-null="true" length="512" />
+		<property name="dateToExpire" column="date_to_expire" type="java.util.Date" 
+			not-null="false" length="19" />
+			
+		<many-to-one name="creator" class="org.openmrs.User" not-null="true" />
+		<property name="dateCreated" type="java.util.Date"
+			column="date_created" not-null="true" length="19" />
+		
+		<many-to-one name="changedBy" class="org.openmrs.User" column="changed_by" />
+		<property name="dateChanged" type="java.util.Date"
+			column="date_changed" length="19" />
+			
+		<set name="readByUsers" table="alert_read" lazy="true" cascade="none">
+			<key>
+				<column name="alert_id" />
+			</key>
+			<many-to-many class="org.openmrs.User">
+				<column name="user_id" />
+			</many-to-many>
+		</set>
+
+	</class>
+
+</hibernate-mapping>

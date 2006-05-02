@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+	version="2.4">
+
+	<display-name>@WEBAPP.DISPLAY.NAME@</display-name>
+	<display-name>@WEBAPP.DESCRIPTION@</display-name> 
+
+	<servlet>
+		<servlet-name>loginServlet</servlet-name>
+		<servlet-class>org.openmrs.web.servlet.LoginServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>loginServlet</servlet-name>
+		<url-pattern>/loginServlet</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>logoutServlet</servlet-name>
+		<servlet-class>org.openmrs.web.servlet.LogoutServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>logoutServlet</servlet-name>
+		<url-pattern>/logout</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>formDownloadServlet</servlet-name>
+		<servlet-class>org.openmrs.formentry.FormDownloadServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>formDownloadServlet</servlet-name>
+		<url-pattern>/formDownload</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>formUploadServlet</servlet-name>
+		<servlet-class>org.openmrs.formentry.FormUploadServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>formUploadServlet</servlet-name>
+		<url-pattern>/formUpload</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>formEntryQueueDownloadServlet</servlet-name>
+		<servlet-class>org.openmrs.formentry.FormEntryQueueDownloadServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>formEntryQueueDownloadServlet</servlet-name>
+		<url-pattern>/formEntryQueueDownload</url-pattern>
+	</servlet-mapping>
+	
+	<!-- #### TEMPORARY ACCESS TO QUEUE PROCESSING SERVLETS (Burke 3/18/2006) #### -->
+	<servlet>
+		<servlet-name>formEntryQueueProcessorServlet</servlet-name>
+		<servlet-class>org.openmrs.formentry.FormEntryQueueProcessorServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>formEntryQueueProcessorServlet</servlet-name>
+		<url-pattern>/formEntryQueueProcessor</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>hl7InQueueProcessorServlet</servlet-name>
+		<servlet-class>org.openmrs.hl7.HL7InQueueProcessorServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>hl7InQueueProcessorServlet</servlet-name>
+		<url-pattern>/hl7InQueueProcessor</url-pattern>
+	</servlet-mapping>
+	<!-- #### TEMPORARY ACCESS TO QUEUE PROCESSING SERVLETS (Burke 3/18/2006) #### -->
+
+	<servlet>
+		<servlet-name>downloadDictionaryServlet</servlet-name>
+		<servlet-class>org.openmrs.web.servlet.DownloadDictionaryServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>downloadDictionaryServlet</servlet-name>
+		<url-pattern>/downloadDictionary.csv</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>mrnGeneratorServlet</servlet-name>
+		<servlet-class>org.openmrs.web.servlet.MRNGeneratorServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>mrnGeneratorServlet</servlet-name>
+		<url-pattern>/mrnGenerator</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>auditServlet</servlet-name>
+		<servlet-class>org.openmrs.web.servlet.AuditServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>auditServlet</servlet-name>
+		<url-pattern>/auditServlet</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>quickReportServlet</servlet-name>
+		<servlet-class>org.openmrs.web.servlet.QuickReportServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>quickReportServlet</servlet-name>
+		<url-pattern>/quickReportServlet</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>sampleFlowsheetServlet</servlet-name>
+		<servlet-class>org.openmrs.web.servlet.SampleFlowsheetServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>sampleFlowsheetServlet</servlet-name>
+		<url-pattern>/sampleFlowsheet</url-pattern>
+	</servlet-mapping>
+		
+	<listener>
+		<listener-class>org.openmrs.web.Listener</listener-class>
+	</listener>
+	
+	<listener>
+		<listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
+	</listener>
+
+	
+	<servlet>
+		<servlet-name>dwr-invoker</servlet-name>
+		<servlet-class>uk.ltd.getahead.dwr.DWRServlet</servlet-class>
+		<!--  debug parameter exposes DWR methods via [webapp]/dwr url  -->
+		<!--  good for testing, bad for security...so make sure to turn -->
+		<!--  this off (set value to "false") in production mode        -->
+		<init-param>
+			<param-name>debug</param-name>
+			<param-value>false</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>dwr-invoker</servlet-name>
+		<url-pattern>/dwr/*</url-pattern>
+	</servlet-mapping>
+	
+	<!-- FormEntry -->
+	<servlet>
+		<servlet-name>infopath</servlet-name>
+		<servlet-class>org.openmrs.formentry.InfoPathServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>infopath</servlet-name>
+		<url-pattern>/formentry/submit</url-pattern>
+	</servlet-mapping>
+
+	<filter>
+		<filter-name>OpenmrsFilter</filter-name> 
+		<filter-class>org.openmrs.web.OpenmrsFilter</filter-class> 
+	</filter>
+	<filter-mapping>
+		<filter-name>OpenmrsFilter</filter-name> 
+		<url-pattern>*.jsp</url-pattern> 
+	</filter-mapping>
+	
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+		<welcome-file>index.form</welcome-file>
+		<welcome-file>index.htm</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
+
+	<error-page>
+		<error-code>401</error-code>
+		<location>/login.htm</location>
+	</error-page>
+	
+	<error-page>
+		<error-code>404</error-code>
+		<location>/missing.htm</location>
+	</error-page>
+	
+	<error-page>
+		<exception-type>java.lang.Exception</exception-type>
+		<location>/WEB-INF/view/uncaughtException.jsp</location>
+	</error-page>
+	
+	<!--
+	<resource-ref>
+		<description>Connection to database as defined in META-INF/context.xml</description>
+		<res-ref-name>jdbc/openmrs</res-ref-name>
+		<res-type>javax.sql.DataSource</res-type>
+		<res-auth>Container</res-auth>
+	</resource-ref>
+	-->
+
+	
+	<!-- ==Struts Configuration===============
+			Other struts files: 
+				/lib/struts/*
+				/lib/commons-digester/*
+	     ==/Struts Configuration=============== -->
+
+
+
+	<!-- ==Spring Framework Configuration====== 
+	
+			Other Spring files:
+				/web/WEB-INF/openmrs-servlet.xml
+				/src/web/org/openmrs/web/spring/*
+				/web/WEB-INF/spring/taglibs/spring.tld
+				/lib/spring-framework/spring-1.2.5.jar
+	-->
+	
+		<servlet>
+			<servlet-name>@WEBAPP.NAME@</servlet-name>
+			<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+			<load-on-startup>3</load-on-startup>
+		</servlet>
+	
+		<filter-mapping>
+			<filter-name>OpenmrsFilter</filter-name> 
+			<url-pattern>*.htm</url-pattern> 
+		</filter-mapping>
+		<filter-mapping>
+			<filter-name>OpenmrsFilter</filter-name> 
+			<url-pattern>*.form</url-pattern> 
+		</filter-mapping>
+		<filter-mapping>
+			<filter-name>OpenmrsFilter</filter-name> 
+			<url-pattern>*.list</url-pattern> 
+		</filter-mapping>
+		
+		<!--
+		<servlet-mapping>
+	 		<servlet-name>openmrs</servlet-name>
+	 		<url-pattern>/openmrs/*.jsp</url-pattern>
+		</servlet-mapping>
+		-->
+	
+		<servlet-mapping>
+	 		<servlet-name>@WEBAPP.NAME@</servlet-name>
+	 		<url-pattern>*.form</url-pattern>
+		</servlet-mapping>
+
+		<servlet-mapping>
+	 		<servlet-name>@WEBAPP.NAME@</servlet-name>
+	 		<url-pattern>*.list</url-pattern>
+		</servlet-mapping>
+
+		<servlet-mapping>
+	 		<servlet-name>@WEBAPP.NAME@</servlet-name>
+	 		<url-pattern>*.htm</url-pattern>
+		</servlet-mapping>
+		
+		<taglib>
+			<taglib-uri>/spring</taglib-uri>
+			<taglib-location>/WEB-INF/taglibs/spring.tld</taglib-location>
+		</taglib>
+
+	<!-- ==/Spring Configuration=============== -->
+
+	<taglib>
+		<taglib-uri>/core-rt</taglib-uri>
+		<taglib-location>/WEB-INF/taglibs/c-rt.tld</taglib-location>
+	</taglib>
+	
+	<taglib>
+		<taglib-uri>/openmrs</taglib-uri>
+		<taglib-location>/WEB-INF/taglibs/openmrs.tld</taglib-location>
+	</taglib>
+	
+	<taglib>
+		<taglib-uri>/page</taglib-uri>
+		<taglib-location>/WEB-INF/taglibs/page.tld</taglib-location>
+	</taglib>
+
+	<taglib>
+		<taglib-uri>/request</taglib-uri>
+		<taglib-location>/WEB-INF/taglibs/request.tld</taglib-location>
+	</taglib>
+
+	<taglib>
+		<taglib-uri>/response</taglib-uri>
+		<taglib-location>/WEB-INF/taglibs/response.tld</taglib-location>
+	</taglib>
+
+</web-app>

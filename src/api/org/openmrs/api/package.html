@@ -1,0 +1,29 @@
+<html>
+<body>
+<p>
+The primary OpenMRS API interfaces. These services provide the necessary methods to access and 
+manipulate OpenMRS domain objects.
+</p>
+<p>
+Services are obtained from a org.openmrs.api.context.Context (@see org.openmrs.api.context.Context).
+</p>
+<p>
+These services compose the OpenMRS business layer API. The majority of developer interaction with the
+OpenMRS system should occur through these services.&nbsp; Lower level (database) API methods are 
+reflected within these services so that	business logic hooks may be placed in front of the database 
+layer. Developers should favor calling these services for database access, rather than going directly 
+to the DAO objects in the <code>org.openmrs.api.db</code> package.
+</p>
+<p>
+For example:
+<pre>
+  Context context = ContextFactory.getContext();
+  PatientService ps = context.getPatientService();
+
+  // fetch patient with identifier 3-4
+  Patient patient = ps.getPatientByIdentifier("3-4");
+</pre>
+</p>
+
+</body>
+</html>

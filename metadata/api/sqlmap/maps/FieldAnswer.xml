@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="org.openmrs.FieldAnswer">
+
+<!-- ************************************************************ -->
+<!-- ** Creation                                               ** -->
+<!-- ************************************************************ -->
+
+<insert id="createFieldAnswer" parameterClass="org.openmrs.FieldAnswer">
+	INSERT INTO field_answer
+		(
+		concept_id,
+		field_id,
+		creator,
+		date_created
+		)
+	VALUES
+		(
+		#concept.conceptId#,
+		#field.fieldId#,
+		#creator.userId#,
+		NOW()
+		);
+</insert>
+
+<!-- ************************************************************ -->
+<!-- ** Read                                                   ** -->
+<!-- ************************************************************ -->
+
+<resultMap id="fieldAnswerResult" class="org.openmrs.FieldAnswer">
+	<result property="concept" column="concept_id" select="getConcept" />
+	<result property="field" column="field_id" select="getField" />
+	<result property="creator" column="creator" select="getUser" />
+	<result property="dateCreated" column="date_created" />
+</resultMap>
+
+<select id="getFieldAnswer" parameterClass="int" resultMap="fieldAnswerResult">
+	SELECT * FROM field_answer WHERE field_id = #value#
+</select>
+
+<!-- ************************************************************ -->
+<!-- ** No Update                                              ** -->
+<!-- ************************************************************ -->
+
+<!-- ************************************************************ -->
+<!-- ** No Deletion                                            ** -->
+<!-- ************************************************************ -->
+
+</sqlMap>

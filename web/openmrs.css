@@ -1,0 +1,373 @@
+html {
+	height: 100%;
+}
+
+* {
+	font-family: 'Trebuchet MS', 'Lucida Grande', Verdana, Arial, Sans-Serif;
+    -moz-box-sizing: border-box;  /* Use IE-like Border-Box model */
+}
+
+body {
+	padding: 0px;
+	height: 100%;
+}
+
+#pageBody {
+	position: relative;
+	min-height: 100%;
+}
+
+* html #pageBody {
+	  height: 100%; 
+}
+
+h1, h2, h3, h4, h5 {
+	margin-top: 5px;
+	margin-bottom: 7px;
+}
+
+#openmrs_msg {
+	background: url(/@WEBAPP.NAME@/images/info.gif) no-repeat center left;
+}
+
+#openmrs_error {
+	background: url(/@WEBAPP.NAME@/images/error.gif) no-repeat center left;
+}
+
+#openmrs_msg, #openmrs_error { 
+	border: 1px dashed lightgrey;
+	padding: 2px 2px 2px 18px;
+	margin: 2px;
+	width: 95%;
+	background-color: InfoBackground;
+}
+
+#userBar {
+	font-size: .7em;
+	text-align: right;
+	background-color: whitesmoke;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: lightgrey;	margin: 0px;
+	padding: 1px 3px 1px 1px;
+	margin: 0px;
+	}
+
+#banner {
+	text-align: left;
+	padding: 15px 2px 2px 2px;
+	margin: 0;
+	float: left;
+	border: 1px none white;
+}
+
+#gutter {
+	float: left;
+	margin-left: -190px;
+	padding-right: 10px;
+	line-height: 22px;
+	text-align: right;
+	width: 160px;
+	margin-top: 90px;
+	}
+	
+#content {
+	margin-left: 175px;
+	border-left: 1px dashed lightgrey;
+	padding: 10px 5px 20px 20px;
+}
+
+#footer {
+	clear: both;
+	padding: 1px 2px 1px 2px;
+	font-size: .7em;
+	border-top: 1px solid lightgrey;
+	text-align: left;
+	height: 1.5em;
+	background-color: whitesmoke;
+	/* see http://www.themaninblue.com/experiment/footerStickAlt/ for footer stick explanation */
+	position: relative;
+	margin: -1.5em auto 0 auto;
+	/*	IE footer stick 'fix'
+		width: 99.5%; */
+	}
+	#footer span {
+		color: gray;
+	}
+
+#menu {
+	padding-left: 2px;
+}
+
+#menu li {
+	display: inline;
+	border-left: 1px solid black;
+	padding-left: 5px;
+	padding-right: 2px;
+	white-space: nowrap;
+}
+
+#menu li.first {
+	border-left-width: 0px;
+}
+
+#menu .active a{
+	font-weight: bold;
+	text-decoration: none;
+}
+
+#patientTable {
+	width: 100%;
+}
+
+#patientTable thead th {
+	text-align: left;
+}
+
+#patientSummary { font-size: 1.1em; }
+#patientSummary .boxHeader { font-size: 1.55em;}
+#patientSummary { /*width: 700px;*/ }
+
+.patientIdentifier {
+	width: 7em;
+}
+.box, .boxHeader {
+	border: 1px solid navy;
+	width: 97%;
+	padding: 5px 2px 5px 2px;
+	text-align: left;
+	}
+	.box>* {
+		font-size: .9em;
+	}
+.boxHeader {
+	background-color: navy;
+	color: white;
+	display: block;
+	padding: 2px;
+}
+
+.retired, .voided, .retired *, .voided * {
+	text-decoration: line-through;
+}
+
+.error {
+	background-color: lightpink;
+}
+	span.error, div.error {
+		border: 1px dashed darkred;
+		padding: 1px 6px 1px 6px;
+		margin-left: 4px;
+		margin-right: 4px;
+		vertical-align: middle;
+	}
+	input.error, textarea.error {
+		background-color: white;
+		color: darkred;
+	}
+	
+.smallButton {
+	font-size: .7em;
+	border: 1px solid lightgrey;
+	background-color: whitesmoke;
+	cursor: pointer;
+	width: 75px;
+	margin: 1px;
+}
+.closeButton {
+	border: 1px solid gray;
+	background-color: lightpink;
+	font-size: .6em;
+	color: black;
+	float: right;
+	margin: 2px;
+	padding: 1px;
+	cursor: pointer;
+}
+a, a:link, a:hover, a:visited, a:active {
+	text-decoration: underline;
+}
+a, a:link {
+	color: #3366CC;
+}
+a:hover {
+	text-decoration: none;
+}
+a:visited {
+	color: #3366CC;
+}
+
+.retiredMessage {
+	border: 1px solid firebrick;
+	background-color: white;
+	font-weight: bold;
+	padding: 1px;
+	margin: 2px;
+	color: white;
+	}
+	.retiredMessage div {
+		background-color: firebrick;
+		padding: 2px;
+	}
+.searchIndex, .searchIndexHighlight {
+	text-align: right;
+	vertical-align: top;
+	width: 1.8em;
+}
+.searchIndexHighlight, .searchHighlight {
+	background-color: 	#F0E68C;
+}
+tr.searchHighlight {
+	cursor: pointer;
+	background-color: #F0E68C;
+}
+
+input[type="text"], input[type="password"] {
+	padding: 1px;
+	border: 1px solid cadetblue;
+}
+a.conceptHit {
+	text-decoration: none;
+	display: block;
+}
+a:hover.searchHit {
+	background-color: khaki;
+}
+a:hover span.mainHit {
+	text-decoration: none;
+}
+a span.mainHit {
+	text-decoration: underline;
+}
+a span.additionalHit {
+	color: gray;
+	text-decoration: none;
+}
+.description {
+	font-size: .9em;
+	padding-left: 10px;
+	color: gray;
+}
+#searchInfoBar, #searchInfoBar a {
+	background-color: whitesmoke;
+}
+#searchInfoBar {
+	font-size: 1em;
+	text-align: right;
+	line-height: .9em;
+	color: black;
+	padding: 2px 0 2px 0;
+	margin: 1px 0 1px 0;
+	font-style: italic;
+}
+#searchPagingBar {
+	font-size: 1em;
+	padding: 2px 0 2px 0;
+	width: 100%;
+	text-align: center;
+}
+#disabledZone {
+	margin-top: 1.3em
+}
+fieldset {
+	margin: 0px;
+	padding: 3px;
+	border: 1px solid cadetblue;
+}
+#optionsTOC {
+	float: left;
+	margin-left: 0px;
+	padding-left: 0px;
+	padding-top: 8px;
+	width: 140px;
+	}
+	#optionsTOC li {
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+		border: 1px solid white;
+	}
+	#optionsTOC li.selected {
+		border-color: cadetblue whitesmoke cadetblue cadetblue;
+		border-width: 1px;
+		border-style: solid dashed solid solid;
+		margin-right: -1px;
+	}
+	#optionsTOC li a {
+		display: block;
+		padding: 3px;
+	}
+
+.sideNote {
+	border: 1px solid burlywood;
+	background-color: lightyellow;
+	padding: 2px;
+	margin: 1px;
+}
+
+.subnote {
+	background-color: whitesmoke;
+	border: 1px solid lightgray;
+	padding: 2px;
+	font-size: .8em;
+	color: gray;
+}
+
+.tableTitle {
+	text-align: center;
+	background-color: whitesmoke;
+}
+
+.oddRow {
+	background-color: white;
+}
+
+.evenRow {
+	background-color: whitesmoke;
+}
+	
+.webappName {
+	text-transform:capitalize;
+}
+
+#alertOuterBox {
+	margin: -10px 0 10px 0;
+	border: 1px solid lightgrey;
+	border-top-width: 0px;
+	max-height: 6em;
+	width: 97%;
+}
+#alertInnerBox {
+	max-height: 4.3em;
+	overflow-y: auto;
+	padding: 2px;
+}
+.alert {
+	margin-bottom: 1px;
+	padding: 0 2px 0 2px;
+	border-top: 1px dotted lightgrey;
+	background-color: white;
+	}
+	.alert:first-child {
+		border-top-width: 0px;
+	}
+#alertBar {
+	border-top: 1px solid lightgrey;
+	font-size: .8em;
+	font-weight: bold;
+	padding-left: 2px;
+	background-color: lightpink;
+	}
+	#alertBar img {
+		vertical-align: middle;
+	}
+.markAlertRead, .markAlertRead:link, .markAlertRead:visited {
+	float: right;
+	padding: 0 3px 0 3px;
+	text-decoration: none;
+	}
+	.markAlertRead img {
+		border-width: 0px;
+		height: 1em;
+		margin: 2px;
+	}

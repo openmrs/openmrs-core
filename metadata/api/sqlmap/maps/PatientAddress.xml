@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="org.openmrs.PatientAddress">
+
+<!-- ************************************************************ -->
+<!-- ** Creation                                               ** -->
+<!-- ************************************************************ -->
+
+<!-- TODO : add postal_code as attribute in patient_address table -->
+<insert id="createPatientAddress" parameterClass="org.openmrs.PatientAddress">
+	INSERT INTO patient_address
+		(
+		patient_id,
+		address1,
+		address2,
+		city_village,
+		state_province,
+		country,
+		postal_code,
+		latitude,
+		longitude,
+		creator,
+		date_created
+		)
+	VALUES
+		(
+		#patient.patientId#,
+		#address1#,
+		#address2#,
+		#cityVillage#,
+		#stateProvince#,
+		#country#,
+		#postalCode#,
+		#latitude#,
+		#longitude#,
+		#creator.userId#,
+		NOW()
+		);
+</insert>
+
+<!-- ************************************************************ -->
+<!-- ** Read                                                   ** -->
+<!-- ************************************************************ -->
+
+<resultMap id="patientAddressResult" class="org.openmrs.PatientAddress">
+	<result property="patientAddressId" column="patient_address_id" />
+	<result property="address1" column="address1" />
+	<result property="address2" column="address2" />
+	<result property="cityVillage" column="city_village" />
+	<result property="stateProvince" column="state_province" />
+	<result property="country" column="country" />
+	<result property="postalCode" column="postal_code" />
+	<result property="latitude" column="latitude" />
+	<result property="longitude" column="longitude" />
+	<result property="creator" column="creator" select="getUser" />
+	<result property="dateCreated" column="date_created" />
+</resultMap>
+
+<select id="getPatientAddress" parameterClass="int" resultMap="patientAddressResult">
+	SELECT * FROM patient_address WHERE patient_address_id = #value#
+</select>
+
+<select id="getAllPatientAddresses" resultMap="patientAddressResult">
+	SELECT * FROM patient_address
+</select>
+
+<select id="getPatientAddressByPatientId" parameterClass="int" resultMap="patientAddressResult">
+	SELECT * FROM patient_address WHERE patient_id = #value#
+</select>
+
+<!-- ************************************************************ -->
+<!-- ** Update                                                 ** -->
+<!-- ************************************************************ -->
+
+<update id="updatePatientAddress" parameterClass="org.openmrs.PatientAddress">
+	UPDATE
+		patient_address
+	SET
+		patient_id = #patient.patientId#,
+		address1 = #address1#,
+		address2 = #address2#,
+		city_village = #cityVillage#,
+		state_province = #stateProvince#,
+		country = #country#,
+		postal_code = #postalCode#,
+		latitude = #latitude#,
+		longitude = #longitude#
+	WHERE
+		patient_address_id = #patientAddressId#
+</update>
+
+<!-- ************************************************************ -->
+<!-- ** Deletion                                               ** -->
+<!-- ************************************************************ -->
+
+<delete id="deletePatientAddress" parameterClass="org.openmrs.PatientAddress">
+	DELETE FROM patient_address WHERE patient_address_id = #patientAddressId#
+</delete>
+
+</sqlMap>

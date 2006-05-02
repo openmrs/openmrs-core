@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping package="org.openmrs">
+
+<class 
+    name="Person" 
+    table="person"
+>
+
+    <id
+        name="personId"
+        type="java.lang.Integer"
+        column="person_id"
+        unsaved-value="0"
+    >
+        <generator class="native" />
+    </id>
+
+    <!-- Associations -->
+
+    <many-to-one name="user" 
+        column="user_id" 
+        unique="true"
+        not-null="false"/>
+    
+    <many-to-one name="patient" 
+        column="patient_id" 
+        unique="true"
+        not-null="false"/>
+        
+</class>
+</hibernate-mapping>

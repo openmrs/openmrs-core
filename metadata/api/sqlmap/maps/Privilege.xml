@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="org.openmrs.Privilege">
+
+<!-- ************************************************************ -->
+<!-- ** Creation                                               ** -->
+<!-- ************************************************************ -->
+
+<insert id="createPrivilege" parameterClass="org.openmrs.Privilege">
+	INSERT INTO privilege
+		(
+		privilege,
+		description
+		)
+	VALUES
+		(
+		#privilege#,
+		#description#
+		);
+</insert>
+
+<!-- ************************************************************ -->
+<!-- ** Read                                                   ** -->
+<!-- ************************************************************ -->
+
+<select id="getAllPrivileges" resultClass="org.openmrs.Privilege">
+	SELECT * FROM privilege
+</select>
+
+<select id="getPrivilege" parameterClass="string" resultClass="org.openmrs.Privilege">
+	SELECT * FROM privilege WHERE privilege = #value#
+</select>
+
+<select id="getPrivilegeByRole" resultClass="org.openmrs.Privilege">
+	SELECT p.*
+	FROM role_privilege AS rp LEFT OUTER JOIN privilege AS p ON rp.privilege = p.privilege
+	WHERE role = #value#
+</select>
+
+<!-- ************************************************************ -->
+<!-- ** Update                                                 ** -->
+<!-- ************************************************************ -->
+
+<update id="updatePrivilege" parameterClass="org.openmrs.Privilege">
+	UPDATE
+		privilege
+	SET
+		description = #description#
+	WHERE
+		privilege = #privilege#
+</update>
+
+<!-- ************************************************************ -->
+<!-- ** Deletion                                               ** -->
+<!-- ************************************************************ -->
+
+<delete id="deletePrivilege" parameterClass="string">
+	DELETE FROM privilege WHERE privilege = #value#
+</delete>
+
+</sqlMap>

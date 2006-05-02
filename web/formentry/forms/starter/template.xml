@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?mso-infoPathSolution name="urn:schemas-openmrs-org:formentry:formid:starter" href="manifest.xsf" solutionVersion="1.0.0.1" productVersion="11.0.6565" PIVersion="1.0.0.0" ?>
+<?mso-application progid="InfoPath.Document"?>
+<my:myFields xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:my="http://schemas.openmrs.org/2006/FormEntry" xmlns:xd="http://schemas.microsoft.com/office/infopath/2003"></my:myFields>

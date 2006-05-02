@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+ 
+<sqlMap namespace="org.openmrs.Encounter">
+
+<!-- ************************************************************ -->
+<!-- ** Creation                                               ** -->
+<!-- ************************************************************ -->
+
+<insert id="createEncounter" parameterClass="org.openmrs.Encounter">
+	INSERT INTO encounter
+		(
+		encounter_type,
+		encounter_datetime,
+		patient_id,
+		provider_id,
+		location_id,
+		creator,
+		date_created
+		)
+	VALUES
+		(
+		#encounterType.encounterTypeId#,
+		#encounterDatetime#,
+		#patient.patientId#,
+		#provider.userId#,
+		#location.locationId#,
+		#creator.userId#,
+		NOW()
+		);
+	<selectKey keyProperty="encounterId">
+		SELECT LAST_INSERT_ID() AS encounterId
+	</selectKey>
+</insert>
+
+<!-- ************************************************************ -->
+<!-- ** Read                                                   ** -->
+<!-- ************************************************************ -->
+
+<resultMap id="encounterResult" class="org.openmrs.Encounter">
+	<result property="encounterId" column="encounter_id" />
+	<result property="encounterType" column="encounter_type" select="getEncounterType" />
+	<result property="encounterDatetime" column="encounter_datetime" />
+	<result property="patient" column="patient_id" select="getPatient" />
+	<result property="location" column="location_id" select="getLocation" />
+	<result property="orders" column="encounter_id" select="getOrderByEncounterId" />
+	<result property="obs" column="encounter_id" select="getObsByEncounterId" />
+	<result property="provider" column="provider_id" select="getUser" />
+	<result property="creator" column="creator" select="getUser" />
+	<result property="dateCreated" column="date_created" />
+	
+</resultMap>
+
+<select id="getEncounter" parameterClass="int" resultMap="encounterResult">
+	SELECT * FROM encounter WHERE encounter_id = #value#
+</select>
+
+<!-- ************************************************************ -->
+<!-- ** Update                                                 ** -->
+<!-- ************************************************************ -->
+
+<update id="updateEncounter" parameterClass="org.openmrs.Encounter">
+	UPDATE
+		encounter
+	SET
+		encounter_type = #encounterType.encounterTypeId#,
+		patient_id = #patient.patientId#,
+		provider_id = #provider.userId#,
+		location_id = #location.locationId#,
+		encounter_datetime = #encounterDatetime#
+	WHERE
+		encounter_id = #encounterId#
+</update>
+
+<!-- ************************************************************ -->
+<!-- ** Delete                                                 ** -->
+<!-- ************************************************************ -->
+
+<delete id="deleteEncounter" parameterClass="int">
+	DELETE FROM encounter WHERE encounter_id = #value#
+</delete>
+
+</sqlMap>
