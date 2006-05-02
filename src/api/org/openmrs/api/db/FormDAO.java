@@ -41,27 +41,6 @@ public interface FormDAO {
 	 * @throws DAOException
 	 */
 	public void updateForm(Form form) throws DAOException;
-
-	/** 
-	 * Mark form as voided (effectively deleting form without removing
-	 * their data &mdash; since anything the form touched in the database
-	 * will still have their internal identifier and point to the voided
-	 * form for historical tracking purposes.
-	 * 
-	 * @param form
-	 * @param reason
-	 * @throws DAOException
-	 */
-	public void retireForm(Form form, String reason) throws DAOException;
-	
-	/**
-	 * Clear voided flag for form (equivalent to an "undelete" or
-	 * Lazarus Effect for form)
-	 * 
-	 * @param form
-	 * @throws DAOException
-	 */
-	public void unretireForm(Form form) throws DAOException;
 	
 	/**
 	 * Delete form from database. This is included for troubleshooting and
