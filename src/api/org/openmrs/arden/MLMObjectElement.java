@@ -1,6 +1,8 @@
 package org.openmrs.arden;
 
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.Locale;
@@ -16,8 +18,10 @@ import org.openmrs.Patient;
 
 
 
-public class MLMObjectElement {
 
+public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
+
+	private boolean dbAccessRequired;
 	private String conceptName;
 	private String type;    // Exist, Last, First etc
 	private String duration; // TODO
@@ -27,9 +31,13 @@ public class MLMObjectElement {
 	private ConceptService cs;
 	private ObsService os;
 	private boolean evaluated;
+	private boolean isEvaluated;
 	private String answer;
 	private Integer answerInt;
-	private String compOp;
+	private Integer compOp;
+	private boolean hasConclude;
+	private boolean concludeVal;
+	private HashMap<String, String> userVarMap ;
 	
 	public MLMObjectElement(String s, String t, String d) {
 		conceptName = s;
@@ -37,6 +45,9 @@ public class MLMObjectElement {
 		type = t;
 		duration = d;
 		evaluated = false;
+		isEvaluated = false;
+		userVarMap = new HashMap <String, String>();
+		dbAccessRequired = true;  // by default assume that we have to make an API call to get data
 	}
 	
 	private void setObs(Obs o) {
@@ -59,9 +70,25 @@ public class MLMObjectElement {
 	public void setAnswer (Integer i){
 		answerInt = i;
 	}
-	public void setCompOp (String op){
+	public void setCompOp (Integer op){
 		compOp = op;
 	}
+	public void setConcludeVal (boolean val) {
+		hasConclude = true;
+		concludeVal = val;
+	}
+	
+	public void addUserVarVal(String var, String val) {
+		if(!userVarMap.containsKey(var)) {
+			userVarMap.put(var, val);
+		}
+		else
+		{
+			//TODO either an error or overwrite previous one
+		}
+		
+	}
+	
 	public boolean getConceptForPatient(Locale locale, Patient patient ) {
 		
 		boolean retVal = false;
@@ -103,6 +130,24 @@ public class MLMObjectElement {
 	   }
 	   return val;
    }
+   
+   public boolean evaluate(){
+	   boolean retVal = false;
+	   if (isEvaluated){
+	      retVal = evaluated;
+	   }
+	   else {
+	   switch(compOp) {
+	   		case EQUALS:
+	   			retVal = evaluateEquals(true);
+	   			break;
+	   		default:
+	   			break;
+	   	}
+	   
+	   }
+	  return retVal;
+   }
    public boolean evaluateEquals(boolean RHS) {
 	   boolean retVal = false;
 	   
@@ -113,6 +158,7 @@ public class MLMObjectElement {
 	   	   retVal = true;
 	   }
 	   evaluated = retVal;
+	   isEvaluated = true;
 	   return retVal;
    }
    
@@ -129,13 +175,17 @@ public class MLMObjectElement {
 	   	   retVal = false;
 	   }
 	   evaluated = retVal;
+	   isEvaluated = true;
 	   return retVal;
    }
 	
    public boolean getEvaluated(){
-	   return evaluated;
+	      return evaluated;
    }
-   
+
+   public boolean isElementEvaluated(){
+	   return isEvaluated;
+   }
 	public String getConceptName(){
 		
 		return conceptName;
@@ -151,6 +201,41 @@ public class MLMObjectElement {
 	}
 	
 	public String getCompOp(){
-		return compOp;	
+		String s =  Integer.toString(compOp);
+		System.err.println(s);
+		return s;
+	}
+	
+	public String getConcludeVal(){
+		String retVal;
+		if(hasConclude){
+			if(concludeVal == true) 
+				retVal="true"; 
+			else
+				retVal="false";
+		}
+		else {
+			retVal = "unknown";
+		}
+		return retVal;
+	}
+	
+	public String getUserVarVal() {
+		String s = "";
+		if(!userVarMap.isEmpty()) {
+			Set<String> keys = userVarMap.keySet();
+			for(String key : keys) {
+			     s += key + " = " + userVarMap.get(key)+ "\n";
+			}
+		}
+		return s;
+	}
+	
+	public void setDBAccessRequired(boolean val){
+		dbAccessRequired = val;
+	}
+	
+	public boolean getDBAccessRequired(){
+		return dbAccessRequired;
 	}
 }

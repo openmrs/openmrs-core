@@ -7,7 +7,7 @@ import java.io.*;
 import antlr.CommonAST;
 import antlr.collections.AST;
 import antlr.*;
-import org.openmrs.arden.parser.*;
+//import org.openmrs.arden.parser.*;
 import org.openmrs.arden.MLMObject;
 import org.openmrs.arden.MLMObjectElement;
 import java.lang.Integer;
@@ -142,7 +142,7 @@ tokens {
 
   // Here's where we do the real work...
   public static void parseFile(InputStream s) throws Exception {
-  	new ArdenReadNode();
+  	//new ArdenReadNode();
     try {
       // Create a scanner that reads from the input stream passed to us
       ArdenLexer lexer = new ArdenLexer(s);
@@ -853,7 +853,7 @@ conclude_statement
  	
 logic_assignment
 :
-	 (ACTION_OP)? identifier_becomes (ACTION_OP)? expr
+	 (ACTION_OP^)? identifier_or_object_ref (ACTION_OP)? (BECOMES! | EQUALS!) expr
 	;
 		
 //	 identifier_becomes expr
@@ -1157,10 +1157,21 @@ logic [MLMObject obj] returns [String s=""]
 {String a,b;}
 : #(LOGIC {System.err.println("\n"); System.err.println("-------Starting LOGIC--------");} 
 	 (
-	   {System.err.println("-----------Starting IF -------");} a=ifAST[obj]  {System.err.println("\n");System.err.println("-----------End IF -------");}
-	  | {System.err.println("-----------Starting CONCLUDE -------");} concludeAST[obj]  {System.err.println("\n");System.err.println("-----------End CONCLUDE -------");}
-	  | {System.err.println("-----------Starting Logic Assignment -------");} logicAssignmentAST[obj]  {System.err.println("\n");System.err.println("-----------End logic assignment -------");}
-	  | {System.err.println("-----------Starting ELSE - ELSEIF -------");} logic_elseifAST  {System.err.println("\n");System.err.println("-----------End ELSE- ELSEIF -------");}
+	   {System.err.println("-----------Starting IF -------");} a=ifAST[obj]
+			   (	{System.err.println("-----------Starting CONCLUDE -------");} (concludeAST[obj, a])? {System.err.println("\n");System.err.println("-----------End CONCLUDE -------");}
+			      | {System.err.println("-----------Starting Logic Assignment -------");} logicAssignmentAST[obj, a]  {System.err.println("\n");System.err.println("-----------End logic assignment -------");}
+			      
+			   )
+	   {System.err.println("\n");System.err.println("-----------End IF -------");} 
+	   
+	  | {System.err.println("-----------Starting ELSE - ELSEIF -------");} a=logic_elseifAST[obj] 
+			  (		{System.err.println("-----------Starting CONCLUDE -------");} (concludeAST[obj, a])? {System.err.println("\n");System.err.println("-----------End CONCLUDE -------");}
+				  | {System.err.println("-----------Starting Logic Assignment -------");} logicAssignmentAST[obj, a]  {System.err.println("\n");System.err.println("-----------End logic assignment -------");}
+					      
+			  )
+	   {System.err.println("\n");System.err.println("-----------End ELSE- ELSEIF -------");}
+	  | {System.err.println("-----------Starting CONCLUDE -------");} concludeAST[obj, ""]  {System.err.println("\n");System.err.println("-----------End CONCLUDE -------");}
+
 	 )* 
   (ENDBLOCK){System.err.println("\n");System.err.println("-----------End Action -------");})
 ;
@@ -1178,10 +1189,10 @@ ifAST [MLMObject obj] returns [String s=""]
 //	 exprAST[obj] #(THEN ) 
 //;
 
-logicAssignmentAST [MLMObject obj] returns [String s=""]
+logicAssignmentAST [MLMObject obj, String key] returns [String s=""]
 {String a,b;}
 :
-      #(ACTION_OP exprStringAST[obj, ""])
+      exprStringAST[obj, key]
 
 ;
 
@@ -1203,7 +1214,7 @@ exprStringAST [MLMObject obj, String instr] returns [String s=""]
 			      { a = ift.getText(); System.err.println("IF text = " + a); 
 			        if(instr.equals(""))
 			        	obj.AddToEvaluateList(a);
-			        	obj.RetrieveConcept(a); 
+			      //  	obj.RetrieveConcept(a); 
 			        s= a;
 			      }
 	   )   
@@ -1219,6 +1230,30 @@ exprStringAST [MLMObject obj, String instr] returns [String s=""]
 		  obj.SetAnswer(i, instr);
 		}
 	  )
+	| (strlit: STRING_LITERAL
+		{
+			b = val.getText();
+			obj.SetAnswer(b,instr);					
+			
+		}
+	  )
+	| #(ACTION_OP 
+		id: ID {a = id.getText(); } 
+		ACTION_OP 
+		str: STRING_LITERAL {b = str.getText(); 
+				obj.SetUserVarVal(a, b, instr);}
+		
+	  )
+	| ( // Empty as in else conclude
+		{ a = "tmp_01"; System.err.println("IF text = " + a); 
+			        if(instr.equals(""))
+			        	obj.AddToEvaluateList(a);
+			        	
+			      //  	obj.RetrieveConcept(a); 
+			        s= a;
+        }
+	  )
+	
       
   )
 ;
@@ -1228,69 +1263,77 @@ simple_comp_opAST [MLMObject obj, String key] returns [String s=""]
 :
    #(EQUALS {
    				System.err.println("Found = ");
-   				 obj.SetCompOperator("=", key);
+   				 obj.SetCompOperator(EQUALS, key);
    			}
    	 )
 	|
 	#(GTE {
    				System.err.println("Found >= ");
-   				 obj.SetCompOperator(">=", key);
+   				 obj.SetCompOperator(GTE, key);
    			}
    	 )
    	 |
    	 #(GT {
    				System.err.println("Found > ");
-   				 obj.SetCompOperator(">", key);
+   				 obj.SetCompOperator(GT, key);
    			}
    	 )
    	 |
    	 #(LT {
    				System.err.println("Found < ");
-   				 obj.SetCompOperator("<", key);
+   				 obj.SetCompOperator(LT, key);
    			}
    	 )
    	 |
    	 #(LTE {
    				System.err.println("Found <= ");
-   				 obj.SetCompOperator("<=", key);
+   				 obj.SetCompOperator(LTE, key);
    			}
    	 )
 ;
 	
 
-thenAST[MLMObject obj] returns [String s=""]
-{String a, b;}
-:
-    (
-    	#(THEN concludeAST[obj] { System.err.println("Evaluating expr ...\n");     }
-    		)
-    )
+//thenAST[MLMObject obj] returns [String s=""]
+//{String a, b;}
+//:
+//   (
+//    	#(THEN concludeAST[obj] { System.err.println("Evaluating expr ...\n");     }
+//   		)
+//    )
  
-;
+//;
 
 
-concludeAST [MLMObject obj] returns [String s=""]
+concludeAST [MLMObject obj, String key] returns [String s=""]
 {String a,b;}
 : (
-    #(CONCLUDE  
-      (   FALSE {System.err.println("***CONCLUDE FALSE " );obj.SetBooleanVal(false);} 
-  	    | TRUE  {System.err.println("***CONCLUDE TRUE " );obj.SetBooleanVal(true);}  
+    #(CONCLUDE {if(key == "") {
+    			a = "tmp_conclude";
+    			key = a;
+    			obj.SetConceptVar(a);
+    			obj.AddConcept(key);
+    			obj.AddToEvaluateList(a);
+    			obj.SetDBAccess(false,a);
+    			} 
+    		   } 
+      (   FALSE {System.err.println("***CONCLUDE FALSE " );
+      				obj.SetConcludeVal(false, key);} 
+  	    | TRUE  {System.err.println("***CONCLUDE TRUE " );
+  	    			obj.SetConcludeVal(true, key);}  
   	  )
      )
   )
 ;
 
-logic_elseifAST returns [String s=""]
+logic_elseifAST [MLMObject obj]returns [String s=""]
 {String a,b;}
 : (
      (
-     	 #(ELSEIF lift:ID {System.err.println("ELSE IF text = " + lift.getText());} )
-       | (ELSE) {System.err.println("ELSE FOUND");}
-       | ENDIF {System.err.println("ENDIF FOUND");}
+     	 #(ELSEIF {obj.InitForIf();} s=exprAST[obj] THEN )
+       | #(ELSE {obj.InitForIf();} s=exprAST[obj] {obj.AddConcept(s);obj.SetDBAccess(false,s);}  )
+       | #(ENDIF {System.err.println("ENDIF FOUND");} )
      )   
-     
-    
-  )
+   )
 ;
 
 /***********************ACTION*******************************************/

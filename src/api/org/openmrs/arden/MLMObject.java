@@ -76,16 +76,41 @@ public class MLMObject {
 		IsVarAdded = false;
 	}
 	
+	public void PrintConcept(String key)
+	{
+		System.out.println("__________________________________");
+	     MLMObjectElement mo = conceptMap.get(key);
+	     {
+	       System.out.println(mo.getConceptName() + " = " + mo.getObsVal(locale) + 
+	    		   "\n Answer = " + mo.getAnswer() + 
+	    		   //"\n Operator = " + mo.getCompOp() +
+	    		   "\n Conclude Val = " + mo.getConcludeVal() +
+	    		   "\n User Vars = " + mo.getUserVarVal()
+	       	);
+	    System.out.println("__________________________________");
+		    
+	       
+	     }
+	}
+	
 	public void PrintConceptMap()
 	{
-		System.out.println("Concepts are - ");
-		Set<String> keys = conceptMap.keySet();
-		for(String key : keys) {
-		     System.out.println(key);
-		}
+	//	System.out.println("Concepts are - ");
+	//	Set<String> keys = conceptMap.keySet();
+	//	for(String key : keys) {
+	//	     System.out.println(key);
+	//	}
+		System.out.println("__________________________________");
 	     Collection<MLMObjectElement> collection = conceptMap.values();
 	     for(MLMObjectElement mo : collection) {
-	       System.out.println(mo.getConceptName() + " = " + mo.getObsVal(locale) + " Answer = " + mo.getAnswer() + " Operator = " + mo.getCompOp() );
+	       System.out.println(mo.getConceptName() + " = " + mo.getObsVal(locale) + 
+	    		   "\n Answer = " + mo.getAnswer() + 
+	    		   //"\n Operator = " + mo.getCompOp() +
+	    		   "\n Conclude Val = " + mo.getConcludeVal() +
+	    		   "\n User Vars = " + mo.getUserVarVal()
+	    		   );
+	    System.out.println("__________________________________");
+		    
 	       
 	     }
 	}
@@ -98,6 +123,21 @@ public class MLMObject {
 		}
 	}
 	
+	public boolean Evaluate(){
+		boolean retVal = false;
+		String key;
+		ListIterator<String> thisList = ifList.listIterator(0);
+		while (thisList.hasNext()){
+			key = thisList.next();
+			if(RetrieveConcept(key)){
+				PrintConcept(key);
+				if(EvaluateConcept(key)){ // concluded true
+					break;
+				}
+			}
+		}
+		return retVal;
+	}
 	public int GetSize(){
 		return conceptMap.size();
 	}
@@ -140,19 +180,20 @@ public class MLMObject {
 		//TODO check to see if user authenticated
 		boolean retVal = false;
 		MLMObjectElement mObjElem = GetMLMObjectElement(key);
-		if(mObjElem != null){
+		if(mObjElem != null ){
 			mObjElem.setServicesContext(context.getConceptService(), context.getObsService());
-			mObjElem.getConceptForPatient(locale, patient);
-			retVal = mObjElem.evaluateEquals(true);
+			if(mObjElem.getDBAccessRequired()){
+				retVal = mObjElem.getConceptForPatient(locale, patient);
+			}
 		}
 		return retVal;
 	}
 	
-	public boolean EvaluateConcept(String key, boolean val) {
+	public boolean EvaluateConcept(String key) {
 		boolean retVal = false;
 		MLMObjectElement mObjElem = GetMLMObjectElement(key);
-		if(mObjElem != null){
-			retVal = mObjElem.evaluateEquals(val);
+		if(mObjElem != null && !mObjElem.isElementEvaluated()){
+			retVal = mObjElem.evaluate();
 		}
 		return retVal;
 	}
@@ -176,7 +217,7 @@ public class MLMObject {
 		SetConceptVar(key);
 	}
 	
-	public void SetCompOperator(String op, String key) {
+	public void SetCompOperator(Integer op, String key) {
 		MLMObjectElement mObjElem = GetMLMObjectElement(key);
 		if(mObjElem != null){
 			mObjElem.setCompOp(op);
@@ -196,7 +237,33 @@ public class MLMObject {
 			mObjElem.setAnswer(val);
 		}
 	}
-	public void SetBooleanVal (boolean val){
+	public void SetConcludeVal (boolean val, String key){
+		MLMObjectElement mObjElem = GetMLMObjectElement(key);
+		if(mObjElem != null){
+			mObjElem.setConcludeVal(val);
+		}
+	}
 		
+	public void SetUserVarVal (String var, String val, String key) {
+		MLMObjectElement mObjElem = GetMLMObjectElement(key);
+		if(mObjElem != null){
+			mObjElem.addUserVarVal(var, val);
+		}
+	}
+	
+	public void SetDBAccess(boolean val, String key ) {
+		MLMObjectElement mObjElem = GetMLMObjectElement(key);
+		if(mObjElem != null){
+			mObjElem.setDBAccessRequired(val);
+		}
+	}
+	
+	public boolean GetDBAccess(String key ) {
+		boolean retVal = false;
+		MLMObjectElement mObjElem = GetMLMObjectElement(key);
+		if(mObjElem != null){
+			retVal = mObjElem.getDBAccessRequired();
+		}
+		return retVal;
 	}
 }
