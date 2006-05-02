@@ -259,7 +259,7 @@ public class HibernateFormDAO implements
 			.add(Expression.eq("form", form));
 
 		if (crit.list().size() < 1) {
-			String err = "FormField warning.  No FormField matching concept " + concept.getConceptId() + " for form " + form.getFormId();
+			String err = "FormField warning.  No FormField matching concept '" + concept + "' for form '" + form + "'";
 			log.warn(err);
 			return null;
 		}
