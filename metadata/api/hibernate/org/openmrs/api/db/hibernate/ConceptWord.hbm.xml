@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs">
+
+	<class name="ConceptWord" table="concept_word">
+
+		<composite-id>
+			<key-many-to-one name="concept" column="concept_id"
+				class="Concept" />
+			<key-property name="word" type="java.lang.String" length="255" />
+			<key-property name="synonym" type="java.lang.String" length="255" />
+			<key-property name="locale" type="java.lang.String" length="255" />
+		</composite-id>
+
+		<many-to-one name="concept" column="concept_id" class="Concept" 
+					 update="false" insert="false" 
+					 outer-join="true" />
+		
+	</class>
+	
+</hibernate-mapping>

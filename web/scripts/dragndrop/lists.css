@@ -1,0 +1,62 @@
+ul.sortable li {
+	/* 	With our layout, positioning this relatively here renders 
+		it in an offset position in IE.
+			IE Hack: comment this out and manually add "item.style.position = relative"
+					 in DragDrop.makeItemDraggable 
+	*/
+	
+	/* position: relative; */
+}
+
+ul.boxy {
+	list-style-type: none;
+	padding: 4px 4px 20px 4px;
+	margin: 0px;
+	width: 10em;
+	font-size: 13px;
+	font-family: Arial, sans-serif;
+	border: 1px solid #ccc;
+}
+ul.boxy li {
+	cursor:move;
+	margin-bottom: 4px;
+	padding: 2px 2px;
+	border: 1px solid #ccc;
+	background-color: #eee;
+}
+
+.drophere {
+	color: gray;
+	font-style: italic;
+	font-size: .8em;
+	text-align: center;
+	margin-top: -1.5em;
+}
+
+ul.currentItems, ul.currentItems li {
+	border-color: darkgray;
+}
+
+ul.allItems, ul.allItems li {
+	border-color: #EEEEEE;
+	background-color: white;
+	color: darkgray;
+}
+
+.savedItems {
+	display: none;
+}
+
+ul.allItems {
+	width: 325px;
+}
+
+ul.allItems li {
+	width: 150px;
+	margin: 3px;
+	float: left;
+}
+
+div.clear {
+	clear: both;
+}

@@ -1,0 +1,144 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="org.openmrs.Drug" 
+    table="drug"
+>
+
+    <id
+        name="drugId"
+        type="java.lang.Integer"
+        column="drug_id"
+    >
+        <generator class="native" />
+    </id>
+
+    <property
+        name="name"
+        type="java.lang.String"
+        column="name"
+        length="50"
+    />
+    <property
+        name="combination"
+        type="java.lang.Boolean"
+        column="combination"
+        length="1"
+        not-null="true"
+    />
+    <property
+        name="dailyMgPerKg"
+        type="java.lang.Double"
+        column="daily_mg_per_kg"
+        length="22"
+    />
+    <property
+        name="dosageForm"
+        type="java.lang.String"
+        column="dosage_form"
+        length="255"
+    />
+    <property
+        name="doseStrength"
+        type="java.lang.Double"
+        column="dose_strength"
+        length="22"
+    />
+    <property
+        name="inn"
+        type="java.lang.String"
+        column="inn"
+        length="2147483647"
+    />
+    <property
+        name="maximumDose"
+        type="java.lang.Double"
+        column="maximum_dose"
+        length="22"
+    />
+    <property
+        name="minimumDose"
+        type="java.lang.Double"
+        column="minimum_dose"
+        length="22"
+    />
+    <property
+        name="route"
+        type="java.lang.String"
+        column="route"
+        length="255"
+    />
+    <property
+        name="shelfLife"
+        type="java.lang.Integer"
+        column="shelf_life"
+        length="11"
+    />
+    <property
+        name="therapyClass"
+        type="java.lang.Integer"
+        column="therapy_class"
+        length="11"
+    />
+    <property
+        name="units"
+        type="java.lang.String"
+        column="units"
+        length="50"
+    />
+    <property
+        name="dateCreated"
+        type="java.util.Date"
+        column="date_created"
+        not-null="true"
+        length="19"
+    />
+
+    <!-- Associations -->
+  
+    <!-- bi-directional many-to-one association to Concept -->
+    <many-to-one
+        name="concept"
+        class="org.openmrs.Concept"
+        not-null="true"
+    >
+        <column name="concept_id" />
+    </many-to-one>
+    <!-- bi-directional one-to-many association to DrugOrder -->
+    <!--
+    <set
+        name="drugOrders"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="drug_inventory_id" />
+        </key>
+        <one-to-many 
+            class="org.openmrs.DrugOrder"
+        />
+    </set>
+    -->
+    <!-- bi-directional many-to-one association to User -->
+    <many-to-one
+        name="creator"
+        class="org.openmrs.User"
+        not-null="true"
+    >
+        <column name="creator" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

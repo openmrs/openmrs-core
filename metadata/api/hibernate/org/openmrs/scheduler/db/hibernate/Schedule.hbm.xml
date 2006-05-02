@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs.scheduler">
+
+	<class name="Schedule" table="scheduler_schedule">
+		<id name="id" type="int" column="schedule_id" unsaved-value="0">
+			<generator class="native" />
+		</id>
+		<property name="name" type="java.lang.String" column="name" not-null="true" length="50" />
+		<property name="description" type="java.lang.String" column="description" length="1024" />
+		<property name="repeatInterval" type="long" column="repeat_interval" />
+		<property name="startTime" type="java.util.Date" column="start_time" />
+		
+		<!--
+		<property name="startOnStartup" type="java.lang.Boolean" column="start_on_startup" length="1" not-null="true"/>
+		-->
+	</class>
+</hibernate-mapping>

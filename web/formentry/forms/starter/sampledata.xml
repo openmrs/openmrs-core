@@ -1,0 +1,7 @@
+<my:myFields xmlns:my="http://schemas.openmrs.org/2006/FormEntry" xmlns:xd="http://schemas.microsoft.com/office/infopath/2003">
+	<xd:SchemaInfo LocalName="myFields" NamespaceURI="http://schemas.openmrs.org/2006/FormEntry">
+		<xd:Namespaces>
+			<xd:Namespace LocalName="myFields" NamespaceURI="http://schemas.openmrs.org/2006/FormEntry"/>
+		</xd:Namespaces>
+	</xd:SchemaInfo>
+</my:myFields>

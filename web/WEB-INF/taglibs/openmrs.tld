@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE taglib
+	PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.2//EN"
+	"http://java.sun.com/dtd/web-jsptaglibrary_1_2.dtd">
+
+<taglib>
+	<tlib-version>1.0</tlib-version>
+	<jsp-version>1.2</jsp-version>
+	<short-name>openmrs</short-name>
+	<description>Core OpenMRS tag library</description>
+
+<tag>
+	<name>css</name>
+	<tag-class>org.openmrs.web.taglib.CssTag</tag-class>
+	<body-content>empty</body-content>
+	<description>Insert link to site's CSS</description>
+</tag>
+
+<tag>
+	<name>require</name>
+	<tag-class>org.openmrs.web.taglib.RequireTag</tag-class>
+	<body-content>empty</body-content>
+	<description>
+		Enforces user privileges and redirects if the active user
+		does not have the required privileges
+	</description>
+	<attribute>
+		<name>privilege</name>
+		<required>true</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>otherwise</name>
+		<required>true</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>redirect</name>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+</tag>
+
+<tag>
+	<name>authentication</name>
+	<tag-class>org.openmrs.web.taglib.AuthTag</tag-class>
+	<body-content>JSP</body-content>
+	<description>
+		Determines if a user is currently logged in.
+		authenticatedUser will be set if a user is logged in
+	</description>
+</tag>
+
+<tag>
+	<name>hasPrivilege</name>
+	<tag-class>org.openmrs.web.taglib.PrivilegeTag</tag-class>
+	<body-content>JSP</body-content>
+	<description>
+		Determines if the current user has the given privilege (comma delimited)
+	</description>
+	<attribute>
+		<name>privilege</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+</tag>
+
+<tag>
+	<name>forEachRecord</name>
+	<tag-class>org.openmrs.web.taglib.ForEachRecordTag</tag-class>
+	<body-content>JSP</body-content>
+	<description>
+		Loops over all the records specified of the type 
+		specified by the name attribute
+	</description>
+	<attribute>
+		<name>name</name>
+		<required>true</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>select</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+</tag>
+
+<tag>
+	<name>listPicker</name>
+	<tag-class>org.openmrs.web.taglib.ListPickerTag</tag-class>
+	<body-content>empty</body-content>
+	<description>
+		Creates a pair of combo boxes to allow for picking values
+		from the 'allItems' list and adding to the 'currentItems' list
+	</description>
+	<attribute>
+		<name>name</name>
+		<required>true</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>allItems</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>currentItems</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>contextPath</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+</tag>
+
+<tag>
+	<name>formatDate</name>
+	<tag-class>org.openmrs.web.taglib.FormatDateTag</tag-class>
+	<body-content>empty</body-content>
+	<description>
+		Formats the given date according to either 
+		the predefined type or a given format
+	</description>
+	<attribute>
+		<name>date</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.util.Date</type>
+	</attribute>
+	<attribute>
+		<name>type</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>format</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+</tag>
+
+<tag>
+	<name>fieldGen</name>
+	<tag-class>org.openmrs.web.taglib.FieldGenTag</tag-class>
+	<body-content>JSP</body-content>
+	<description>
+		Generates a field, based on the field type.
+	</description>
+	<attribute>
+		<name>type</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>formFieldName</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>fieldLength</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>startVal</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>forceInputType</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>isNullable</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>hasLabelBefore</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>trueLabel</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>falseLabel</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>unknownLabel</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+</tag>
+
+<tag>
+	<name>forEachAlert</name>
+	<tag-class>org.openmrs.notification.web.ForEachAlertTag</tag-class>
+	<body-content>JSP</body-content>
+	<description>
+		Loops over all the alerts for a user.  If user is not defined, the
+		authenticated user is searched.  
+	</description>
+	<attribute>
+		<name>user</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>role</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>includeRead</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>includeExpired</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+</tag>
+
+</taglib>
