@@ -104,6 +104,7 @@ public class ArdenTest extends TestCase {
 	      ardObj.PrintEvaluateList();
 	      if(ardObj.Evaluate())
 	      {
+	    	  System.err.println("---------------------------------CONCLUDED TRUE ----------------------------------");
 	    	  String actionstr = treeParser.action(t.getNextSibling().getNextSibling());
 	      }
 	      
