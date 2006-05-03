@@ -3,14 +3,13 @@ package org.openmrs.api.context;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
-import java.util.Properties;
 
-//TODO Need to remove dependency on specific implementations
-import javax.mail.Session;
 import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,31 +25,22 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.db.DAOContext;
-
-//TODO Need to remove dependency on specific implementations
 import org.openmrs.api.db.hibernate.HibernateDAOContext;
 import org.openmrs.formentry.FormEntryService;
 import org.openmrs.hl7.HL7Service;
 import org.openmrs.notification.AlertService;
 import org.openmrs.notification.MessageException;
 import org.openmrs.notification.MessagePreparator;
-import org.openmrs.notification.MessageService;
 import org.openmrs.notification.MessageSender;
-
-//TODO Need to remove dependency on specific implementations
+import org.openmrs.notification.MessageService;
 import org.openmrs.notification.impl.MessageServiceImpl;
 import org.openmrs.notification.mail.MailMessageSender;
-import org.openmrs.notification.mail.velocity.VelocityMessagePreparator;  
-
+import org.openmrs.notification.mail.velocity.VelocityMessagePreparator;
 import org.openmrs.reporting.ReportObjectFactory;
 import org.openmrs.reporting.ReportService;
 import org.openmrs.scheduler.SchedulerService;
-
-//TODO Need to remove dependency on specific implementations
 import org.openmrs.scheduler.timer.TimerSchedulerService;
 import org.openmrs.util.OpenmrsConstants;
-
-// TODO Need to remove dependency on Spring
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
@@ -146,7 +136,7 @@ public class Context implements ApplicationContextAware {
 	 */
 	public DAOContext getDaoContext() {
 		if (daoContext == null)
-			daoContext = new HibernateDAOContext();
+			daoContext = new HibernateDAOContext(this);
 		return daoContext;
 	}
 

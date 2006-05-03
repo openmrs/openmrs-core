@@ -96,6 +96,8 @@ public class FormField implements java.io.Serializable, Comparable {
 			return -1;
 		if (getFormFieldId() != null && f.getFormFieldId() == null)
 			return 1;
+		if (getFormFieldId() == null && f.getFormFieldId() == null)
+			return 1;
 		
 		return getFormFieldId().compareTo(f.getFormFieldId());
 		

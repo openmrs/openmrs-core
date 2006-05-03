@@ -7,7 +7,7 @@ import java.io.*;
 import antlr.CommonAST;
 import antlr.collections.AST;
 import antlr.*;
-import org.openmrs.arden.parser.*;
+//import org.openmrs.arden.parser.*;
 import org.openmrs.arden.MLMObject;
 import org.openmrs.arden.MLMObjectElement;
 import java.lang.Integer;
@@ -41,13 +41,13 @@ public ArdenBaseTreeParser() {
 		String a,b;
 		
 		try {      // for error handling
-			AST __t302 = _t;
+			AST __t303 = _t;
 			AST tmp1_AST_in = (AST)_t;
 			match(_t,DATA);
 			_t = _t.getFirstChild();
 			System.err.println("\n"); System.err.println("-------Starting Data--------");
 			{
-			_loop304:
+			_loop305:
 			do {
 				if (_t==null) _t=ASTNULL;
 				if ((_tokenSet_0.member(_t.getType()))) {
@@ -63,7 +63,7 @@ public ArdenBaseTreeParser() {
 					System.err.println("\n");System.err.println("-----------End Event -------");
 				}
 				else {
-					break _loop304;
+					break _loop305;
 				}
 				
 			} while (true);
@@ -74,7 +74,7 @@ public ArdenBaseTreeParser() {
 			_t = _t.getNextSibling();
 			}
 			System.err.println("\n");System.err.println("-----------End Data -------");
-			_t = __t302;
+			_t = __t303;
 			_t = _t.getNextSibling();
 		}
 		catch (RecognitionException ex) {
@@ -107,7 +107,7 @@ public ArdenBaseTreeParser() {
 			switch ( _t.getType()) {
 			case READ:
 			{
-				AST __t308 = _t;
+				AST __t309 = _t;
 				AST tmp3_AST_in = (AST)_t;
 				match(_t,READ);
 				_t = _t.getFirstChild();
@@ -115,7 +115,7 @@ public ArdenBaseTreeParser() {
 				_t = _retTree;
 				b=readAST(_t,obj);
 				_t = _retTree;
-				_t = __t308;
+				_t = __t309;
 				_t = _t.getNextSibling();
 				s += ret_val;
 				break;
@@ -646,13 +646,13 @@ public ArdenBaseTreeParser() {
 			switch ( _t.getType()) {
 			case EVENT:
 			{
-				AST __t336 = _t;
+				AST __t337 = _t;
 				AST tmp25_AST_in = (AST)_t;
 				match(_t,EVENT);
 				_t = _t.getFirstChild();
 				b=eventAST(_t);
 				_t = _retTree;
-				_t = __t336;
+				_t = __t337;
 				_t = _t.getNextSibling();
 				break;
 			}
@@ -807,13 +807,13 @@ public ArdenBaseTreeParser() {
 		String a,b;
 		
 		try {      // for error handling
-			AST __t338 = _t;
+			AST __t339 = _t;
 			AST tmp40_AST_in = (AST)_t;
 			match(_t,LOGIC);
 			_t = _t.getFirstChild();
 			System.err.println("\n"); System.err.println("-------Starting LOGIC--------");
 			{
-			_loop340:
+			_loop345:
 			do {
 				if (_t==null) _t=ASTNULL;
 				switch ( _t.getType()) {
@@ -822,23 +822,37 @@ public ArdenBaseTreeParser() {
 					System.err.println("-----------Starting IF -------");
 					a=ifAST(_t,obj);
 					_t = _retTree;
+					{
+					if (_t==null) _t=ASTNULL;
+					if ((_tokenSet_1.member(_t.getType()))) {
+						System.err.println("-----------Starting CONCLUDE -------");
+						{
+						if (_t==null) _t=ASTNULL;
+						if ((_t.getType()==CONCLUDE)) {
+							concludeAST(_t,obj, a);
+							_t = _retTree;
+						}
+						else if ((_tokenSet_1.member(_t.getType()))) {
+						}
+						else {
+							throw new NoViableAltException(_t);
+						}
+						
+						}
+						System.err.println("\n");System.err.println("-----------End CONCLUDE -------");
+					}
+					else if ((_tokenSet_2.member(_t.getType()))) {
+						System.err.println("-----------Starting Logic Assignment -------");
+						logicAssignmentAST(_t,obj, a);
+						_t = _retTree;
+						System.err.println("\n");System.err.println("-----------End logic assignment -------");
+					}
+					else {
+						throw new NoViableAltException(_t);
+					}
+					
+					}
 					System.err.println("\n");System.err.println("-----------End IF -------");
-					break;
-				}
-				case CONCLUDE:
-				{
-					System.err.println("-----------Starting CONCLUDE -------");
-					concludeAST(_t,obj);
-					_t = _retTree;
-					System.err.println("\n");System.err.println("-----------End CONCLUDE -------");
-					break;
-				}
-				case ACTION_OP:
-				{
-					System.err.println("-----------Starting Logic Assignment -------");
-					logicAssignmentAST(_t,obj);
-					_t = _retTree;
-					System.err.println("\n");System.err.println("-----------End logic assignment -------");
 					break;
 				}
 				case ELSE:
@@ -846,14 +860,52 @@ public ArdenBaseTreeParser() {
 				case ENDIF:
 				{
 					System.err.println("-----------Starting ELSE - ELSEIF -------");
-					logic_elseifAST(_t);
+					a=logic_elseifAST(_t,obj);
 					_t = _retTree;
+					{
+					if (_t==null) _t=ASTNULL;
+					if ((_tokenSet_1.member(_t.getType()))) {
+						System.err.println("-----------Starting CONCLUDE -------");
+						{
+						if (_t==null) _t=ASTNULL;
+						if ((_t.getType()==CONCLUDE)) {
+							concludeAST(_t,obj, a);
+							_t = _retTree;
+						}
+						else if ((_tokenSet_1.member(_t.getType()))) {
+						}
+						else {
+							throw new NoViableAltException(_t);
+						}
+						
+						}
+						System.err.println("\n");System.err.println("-----------End CONCLUDE -------");
+					}
+					else if ((_tokenSet_2.member(_t.getType()))) {
+						System.err.println("-----------Starting Logic Assignment -------");
+						logicAssignmentAST(_t,obj, a);
+						_t = _retTree;
+						System.err.println("\n");System.err.println("-----------End logic assignment -------");
+					}
+					else {
+						throw new NoViableAltException(_t);
+					}
+					
+					}
 					System.err.println("\n");System.err.println("-----------End ELSE- ELSEIF -------");
+					break;
+				}
+				case CONCLUDE:
+				{
+					System.err.println("-----------Starting CONCLUDE -------");
+					concludeAST(_t,obj, "");
+					_t = _retTree;
+					System.err.println("\n");System.err.println("-----------End CONCLUDE -------");
 					break;
 				}
 				default:
 				{
-					break _loop340;
+					break _loop345;
 				}
 				}
 			} while (true);
@@ -864,7 +916,7 @@ public ArdenBaseTreeParser() {
 			_t = _t.getNextSibling();
 			}
 			System.err.println("\n");System.err.println("-----------End Action -------");
-			_t = __t338;
+			_t = __t339;
 			_t = _t.getNextSibling();
 		}
 		catch (RecognitionException ex) {
@@ -885,7 +937,7 @@ public ArdenBaseTreeParser() {
 		
 		try {      // for error handling
 			{
-			AST __t344 = _t;
+			AST __t349 = _t;
 			AST tmp42_AST_in = (AST)_t;
 			match(_t,IF);
 			_t = _t.getFirstChild();
@@ -895,7 +947,7 @@ public ArdenBaseTreeParser() {
 			AST tmp43_AST_in = (AST)_t;
 			match(_t,THEN);
 			_t = _t.getNextSibling();
-			_t = __t344;
+			_t = __t349;
 			_t = _t.getNextSibling();
 			}
 		}
@@ -908,7 +960,7 @@ public ArdenBaseTreeParser() {
 	}
 	
 	public final String  concludeAST(AST _t,
-		MLMObject obj
+		MLMObject obj, String key
 	) throws RecognitionException {
 		String s="";
 		
@@ -917,10 +969,19 @@ public ArdenBaseTreeParser() {
 		
 		try {      // for error handling
 			{
-			AST __t368 = _t;
+			AST __t372 = _t;
 			AST tmp44_AST_in = (AST)_t;
 			match(_t,CONCLUDE);
 			_t = _t.getFirstChild();
+			if(key == "") {
+						a = "tmp_conclude";
+						key = a;
+						obj.SetConceptVar(a);
+						obj.AddConcept(key);
+						obj.AddToEvaluateList(a);
+						obj.SetDBAccess(false,a);
+						} 
+					
 			{
 			if (_t==null) _t=ASTNULL;
 			switch ( _t.getType()) {
@@ -929,7 +990,8 @@ public ArdenBaseTreeParser() {
 				AST tmp45_AST_in = (AST)_t;
 				match(_t,FALSE);
 				_t = _t.getNextSibling();
-				System.err.println("***CONCLUDE FALSE " );obj.SetBooleanVal(false);
+				System.err.println("***CONCLUDE FALSE " );
+								obj.SetConcludeVal(false, key);
 				break;
 			}
 			case TRUE:
@@ -937,7 +999,8 @@ public ArdenBaseTreeParser() {
 				AST tmp46_AST_in = (AST)_t;
 				match(_t,TRUE);
 				_t = _t.getNextSibling();
-				System.err.println("***CONCLUDE TRUE " );obj.SetBooleanVal(true);
+				System.err.println("***CONCLUDE TRUE " );
+					    			obj.SetConcludeVal(true, key);
 				break;
 			}
 			default:
@@ -946,7 +1009,7 @@ public ArdenBaseTreeParser() {
 			}
 			}
 			}
-			_t = __t368;
+			_t = __t372;
 			_t = _t.getNextSibling();
 			}
 		}
@@ -959,7 +1022,7 @@ public ArdenBaseTreeParser() {
 	}
 	
 	public final String  logicAssignmentAST(AST _t,
-		MLMObject obj
+		MLMObject obj, String key
 	) throws RecognitionException {
 		String s="";
 		
@@ -967,14 +1030,8 @@ public ArdenBaseTreeParser() {
 		String a,b;
 		
 		try {      // for error handling
-			AST __t346 = _t;
-			AST tmp47_AST_in = (AST)_t;
-			match(_t,ACTION_OP);
-			_t = _t.getFirstChild();
-			exprStringAST(_t,obj, "");
+			exprStringAST(_t,obj, key);
 			_t = _retTree;
-			_t = __t346;
-			_t = _t.getNextSibling();
 		}
 		catch (RecognitionException ex) {
 			reportError(ex);
@@ -984,11 +1041,12 @@ public ArdenBaseTreeParser() {
 		return s;
 	}
 	
-	public final String  logic_elseifAST(AST _t) throws RecognitionException {
+	public final String  logic_elseifAST(AST _t,
+		MLMObject obj
+	) throws RecognitionException {
 		String s="";
 		
 		AST logic_elseifAST_AST_in = (_t == ASTNULL) ? null : (AST)_t;
-		AST lift = null;
 		String a,b;
 		
 		try {      // for error handling
@@ -998,34 +1056,43 @@ public ArdenBaseTreeParser() {
 			switch ( _t.getType()) {
 			case ELSEIF:
 			{
-				AST __t373 = _t;
-				AST tmp48_AST_in = (AST)_t;
+				AST __t377 = _t;
+				AST tmp47_AST_in = (AST)_t;
 				match(_t,ELSEIF);
 				_t = _t.getFirstChild();
-				lift = (AST)_t;
-				match(_t,ID);
+				obj.InitForIf();
+				s=exprAST(_t,obj);
+				_t = _retTree;
+				AST tmp48_AST_in = (AST)_t;
+				match(_t,THEN);
 				_t = _t.getNextSibling();
-				System.err.println("ELSE IF text = " + lift.getText());
-				_t = __t373;
+				_t = __t377;
 				_t = _t.getNextSibling();
 				break;
 			}
 			case ELSE:
 			{
-				{
+				AST __t378 = _t;
 				AST tmp49_AST_in = (AST)_t;
 				match(_t,ELSE);
+				_t = _t.getFirstChild();
+				obj.InitForIf();
+				s=exprAST(_t,obj);
+				_t = _retTree;
+				obj.AddConcept(s);obj.SetDBAccess(false,s);
+				_t = __t378;
 				_t = _t.getNextSibling();
-				}
-				System.err.println("ELSE FOUND");
 				break;
 			}
 			case ENDIF:
 			{
+				AST __t379 = _t;
 				AST tmp50_AST_in = (AST)_t;
 				match(_t,ENDIF);
-				_t = _t.getNextSibling();
+				_t = _t.getFirstChild();
 				System.err.println("ENDIF FOUND");
+				_t = __t379;
+				_t = _t.getNextSibling();
 				break;
 			}
 			default:
@@ -1073,6 +1140,7 @@ public ArdenBaseTreeParser() {
 				obj.SetAnswer(b, a);
 				break;
 			}
+			case 3:
 			case THEN:
 			{
 				break;
@@ -1101,6 +1169,9 @@ public ArdenBaseTreeParser() {
 		AST exprStringAST_AST_in = (_t == ASTNULL) ? null : (AST)_t;
 		AST ift = null;
 		AST val = null;
+		AST strlit = null;
+		AST id = null;
+		AST str = null;
 		String a,b;
 		
 		try {      // for error handling
@@ -1109,17 +1180,17 @@ public ArdenBaseTreeParser() {
 			switch ( _t.getType()) {
 			case ID:
 			{
-				AST __t352 = _t;
+				AST __t356 = _t;
 				ift = _t==ASTNULL ? null :(AST)_t;
 				match(_t,ID);
 				_t = _t.getFirstChild();
 				a = ift.getText(); System.err.println("IF text = " + a); 
 							        if(instr.equals(""))
 							        	obj.AddToEvaluateList(a);
-							        	obj.RetrieveConcept(a); 
+							      //  	obj.RetrieveConcept(a); 
 							        s= a;
 							
-				_t = __t352;
+				_t = __t356;
 				_t = _t.getNextSibling();
 				break;
 			}
@@ -1131,23 +1202,23 @@ public ArdenBaseTreeParser() {
 				switch ( _t.getType()) {
 				case TRUE:
 				{
-					AST __t354 = _t;
+					AST __t358 = _t;
 					AST tmp51_AST_in = (AST)_t;
 					match(_t,TRUE);
 					_t = _t.getFirstChild();
 					obj.SetAnswer("true", instr);
-					_t = __t354;
+					_t = __t358;
 					_t = _t.getNextSibling();
 					break;
 				}
 				case FALSE:
 				{
-					AST __t355 = _t;
+					AST __t359 = _t;
 					AST tmp52_AST_in = (AST)_t;
 					match(_t,FALSE);
 					_t = _t.getFirstChild();
 					obj.SetAnswer("false", instr);
-					_t = __t355;
+					_t = __t359;
 					_t = _t.getNextSibling();
 					break;
 				}
@@ -1170,6 +1241,67 @@ public ArdenBaseTreeParser() {
 						  Integer i = Integer.parseInt(b);
 						  obj.SetAnswer(i, instr);
 						
+				}
+				break;
+			}
+			case STRING_LITERAL:
+			{
+				{
+				strlit = (AST)_t;
+				match(_t,STRING_LITERAL);
+				_t = _t.getNextSibling();
+				
+							b = val.getText();
+							obj.SetAnswer(b,instr);					
+							
+						
+				}
+				break;
+			}
+			case ACTION_OP:
+			{
+				AST __t362 = _t;
+				AST tmp53_AST_in = (AST)_t;
+				match(_t,ACTION_OP);
+				_t = _t.getFirstChild();
+				id = (AST)_t;
+				match(_t,ID);
+				_t = _t.getNextSibling();
+				a = id.getText();
+				AST tmp54_AST_in = (AST)_t;
+				match(_t,ACTION_OP);
+				_t = _t.getNextSibling();
+				str = (AST)_t;
+				match(_t,STRING_LITERAL);
+				_t = _t.getNextSibling();
+				b = str.getText(); 
+								obj.SetUserVarVal(a, b, instr);
+				_t = __t362;
+				_t = _t.getNextSibling();
+				break;
+			}
+			case 3:
+			case IF:
+			case THEN:
+			case CONCLUDE:
+			case ELSE:
+			case ELSEIF:
+			case ENDIF:
+			case ENDBLOCK:
+			case EQUALS:
+			case LT:
+			case GT:
+			case LTE:
+			case GTE:
+			{
+				{
+				a = "tmp_01"; System.err.println("IF text = " + a); 
+							        if(instr.equals(""))
+							        	obj.AddToEvaluateList(a);
+							        	
+							      //  	obj.RetrieveConcept(a); 
+							        s= a;
+				
 				}
 				break;
 			}
@@ -1201,71 +1333,71 @@ public ArdenBaseTreeParser() {
 			switch ( _t.getType()) {
 			case EQUALS:
 			{
-				AST __t358 = _t;
-				AST tmp53_AST_in = (AST)_t;
+				AST __t365 = _t;
+				AST tmp55_AST_in = (AST)_t;
 				match(_t,EQUALS);
 				_t = _t.getFirstChild();
 				
 								System.err.println("Found = ");
-								 obj.SetCompOperator("=", key);
+								 obj.SetCompOperator(EQUALS, key);
 							
-				_t = __t358;
+				_t = __t365;
 				_t = _t.getNextSibling();
 				break;
 			}
 			case GTE:
 			{
-				AST __t359 = _t;
-				AST tmp54_AST_in = (AST)_t;
+				AST __t366 = _t;
+				AST tmp56_AST_in = (AST)_t;
 				match(_t,GTE);
 				_t = _t.getFirstChild();
 				
 								System.err.println("Found >= ");
-								 obj.SetCompOperator(">=", key);
+								 obj.SetCompOperator(GTE, key);
 							
-				_t = __t359;
+				_t = __t366;
 				_t = _t.getNextSibling();
 				break;
 			}
 			case GT:
 			{
-				AST __t360 = _t;
-				AST tmp55_AST_in = (AST)_t;
+				AST __t367 = _t;
+				AST tmp57_AST_in = (AST)_t;
 				match(_t,GT);
 				_t = _t.getFirstChild();
 				
 								System.err.println("Found > ");
-								 obj.SetCompOperator(">", key);
+								 obj.SetCompOperator(GT, key);
 							
-				_t = __t360;
+				_t = __t367;
 				_t = _t.getNextSibling();
 				break;
 			}
 			case LT:
 			{
-				AST __t361 = _t;
-				AST tmp56_AST_in = (AST)_t;
+				AST __t368 = _t;
+				AST tmp58_AST_in = (AST)_t;
 				match(_t,LT);
 				_t = _t.getFirstChild();
 				
 								System.err.println("Found < ");
-								 obj.SetCompOperator("<", key);
+								 obj.SetCompOperator(LT, key);
 							
-				_t = __t361;
+				_t = __t368;
 				_t = _t.getNextSibling();
 				break;
 			}
 			case LTE:
 			{
-				AST __t362 = _t;
-				AST tmp57_AST_in = (AST)_t;
+				AST __t369 = _t;
+				AST tmp59_AST_in = (AST)_t;
 				match(_t,LTE);
 				_t = _t.getFirstChild();
 				
 								System.err.println("Found <= ");
-								 obj.SetCompOperator("<=", key);
+								 obj.SetCompOperator(LTE, key);
 							
-				_t = __t362;
+				_t = __t369;
 				_t = _t.getNextSibling();
 				break;
 			}
@@ -1273,35 +1405,6 @@ public ArdenBaseTreeParser() {
 			{
 				throw new NoViableAltException(_t);
 			}
-			}
-		}
-		catch (RecognitionException ex) {
-			reportError(ex);
-			if (_t!=null) {_t = _t.getNextSibling();}
-		}
-		_retTree = _t;
-		return s;
-	}
-	
-	public final String  thenAST(AST _t,
-		MLMObject obj
-	) throws RecognitionException {
-		String s="";
-		
-		AST thenAST_AST_in = (_t == ASTNULL) ? null : (AST)_t;
-		String a, b;
-		
-		try {      // for error handling
-			{
-			AST __t365 = _t;
-			AST tmp58_AST_in = (AST)_t;
-			match(_t,THEN);
-			_t = _t.getFirstChild();
-			concludeAST(_t,obj);
-			_t = _retTree;
-			System.err.println("Evaluating expr ...\n");
-			_t = __t365;
-			_t = _t.getNextSibling();
 			}
 		}
 		catch (RecognitionException ex) {
@@ -1320,13 +1423,13 @@ public ArdenBaseTreeParser() {
 		String a,b;
 		
 		try {      // for error handling
-			AST __t376 = _t;
-			AST tmp59_AST_in = (AST)_t;
+			AST __t381 = _t;
+			AST tmp60_AST_in = (AST)_t;
 			match(_t,ACTION);
 			_t = _t.getFirstChild();
 			System.err.println("\n"); System.err.println("-------Starting Action--------");
 			{
-			_loop378:
+			_loop383:
 			do {
 				if (_t==null) _t=ASTNULL;
 				if ((_t.getType()==WRITE)) {
@@ -1336,18 +1439,18 @@ public ArdenBaseTreeParser() {
 					System.err.println("\n");System.err.println("-----------End Write -------");
 				}
 				else {
-					break _loop378;
+					break _loop383;
 				}
 				
 			} while (true);
 			}
 			{
-			AST tmp60_AST_in = (AST)_t;
+			AST tmp61_AST_in = (AST)_t;
 			match(_t,ENDBLOCK);
 			_t = _t.getNextSibling();
 			}
 			System.err.println("\n");System.err.println("-----------End Action -------");
-			_t = __t376;
+			_t = __t381;
 			_t = _t.getNextSibling();
 		}
 		catch (RecognitionException ex) {
@@ -1367,14 +1470,14 @@ public ArdenBaseTreeParser() {
 		
 		try {      // for error handling
 			{
-			AST __t382 = _t;
-			AST tmp61_AST_in = (AST)_t;
+			AST __t387 = _t;
+			AST tmp62_AST_in = (AST)_t;
 			match(_t,WRITE);
 			_t = _t.getFirstChild();
 			i = (AST)_t;
 			match(_t,STRING_LITERAL);
 			_t = _t.getNextSibling();
-			_t = __t382;
+			_t = __t387;
 			_t = _t.getNextSibling();
 			System.err.println("Action text = " + i.getText());
 			}
@@ -1569,5 +1672,15 @@ public ArdenBaseTreeParser() {
 		return data;
 	}
 	public static final BitSet _tokenSet_0 = new BitSet(mk_tokenSet_0());
+	private static final long[] mk_tokenSet_1() {
+		long[] data = { 1080863910636027904L, 128L, 0L, 0L};
+		return data;
+	}
+	public static final BitSet _tokenSet_1 = new BitSet(mk_tokenSet_1());
+	private static final long[] mk_tokenSet_2() {
+		long[] data = { 4539628424456568832L, 268468352L, 17626545782784L, 0L, 0L, 0L};
+		return data;
+	}
+	public static final BitSet _tokenSet_2 = new BitSet(mk_tokenSet_2());
 	}
 	

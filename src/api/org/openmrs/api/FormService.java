@@ -1,5 +1,6 @@
 package org.openmrs.api;
 
+import java.util.Date;
 import java.util.List;
 
 import org.openmrs.Concept;
@@ -64,6 +65,9 @@ public class FormService {
 	public void createForm(Form form) throws APIException {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_ADD_FORMS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_FORMS);
+		
+		updateFormProperties(form);
+		
 		dao().createForm(form);
 	}
 
@@ -89,9 +93,40 @@ public class FormService {
 	public void updateForm(Form form) throws APIException {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_FORMS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_FORMS);
-		dao().updateForm(form);
+		
+		updateFormProperties(form);
+		
+		if (form.isRetired() && form.getRetiredBy() == null) {
+			retireForm(form, form.getRetiredReason());
+		}
+		else if (!form.isRetired() && form.getRetiredBy() != null) {
+			unretireForm(form);
+		}
+		else {
+			dao().updateForm(form);
+		}
 	}
 	
+	/**
+	 * Set the change time and (conditionally) creation time attributes
+	 * @param form
+	 */
+	private void updateFormProperties(Form form) {
+		if (form.getCreator() == null) {
+			form.setCreator(context.getAuthenticatedUser());
+			form.setDateCreated(new Date());
+		}
+		form.setChangedBy(context.getAuthenticatedUser());
+		form.setDateChanged(new Date());
+	}
+	
+	/**
+	 * Duplicate this form and form_fields associated with this form
+	 * 
+	 * @param form
+	 * @return New duplicated form
+	 * @throws APIException
+	 */
 	public Form duplicateForm(Form form) throws APIException {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_ADD_FORMS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_FORMS);
@@ -125,7 +160,11 @@ public class FormService {
 	public void retireForm(Form form, String reason) throws APIException {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_FORMS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_FORMS);
-		dao().retireForm(form, reason);
+		form.setRetired(true);
+		form.setRetiredBy(context.getAuthenticatedUser());
+		form.setDateRetired(new Date());
+		form.setRetiredReason(reason);
+		updateForm(form);
 	}
 	
 	/**
@@ -138,7 +177,11 @@ public class FormService {
 	public void unretireForm(Form form) throws APIException {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_FORMS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_FORMS);
-		dao().unretireForm(form);
+		form.setRetired(false);
+		form.setRetiredBy(null);
+		form.setDateRetired(null);
+		form.setRetiredReason("");
+		updateForm(form);
 	}
 	
 	/**
@@ -258,6 +301,7 @@ public class FormService {
 	public void createField(Field field) throws APIException {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_FORMS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_FORMS);
+		updateFieldProperties(field);
 		dao().createField(field);
 	}
 
@@ -269,7 +313,21 @@ public class FormService {
 	public void updateField(Field field) throws APIException {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_FORMS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_FORMS);
+		updateFieldProperties(field);
 		dao().updateField(field);
+	}
+	
+	/**
+	 * Set the change time and (conditionally) creation time attributes
+	 * @param form
+	 */
+	private void updateFieldProperties(Field field) {
+		if (field.getCreator() == null) {
+			field.setCreator(context.getAuthenticatedUser());
+			field.setDateCreated(new Date());
+		}
+		field.setChangedBy(context.getAuthenticatedUser());
+		field.setDateChanged(new Date());
 	}
 	
 	/**
@@ -313,9 +371,12 @@ public class FormService {
 	public void createFormField(FormField formField) throws APIException {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_FORMS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_FORMS);
+		
+		updateFormFieldProperties(formField);
+		
 		dao().createFormField(formField);
 	}
-
+	
 	/**
 	 * 
 	 * @param formField
@@ -324,7 +385,30 @@ public class FormService {
 	public void updateFormField(FormField formField) throws APIException {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_FORMS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_FORMS);
+		
+		updateFormFieldProperties(formField);
+		
 		dao().updateFormField(formField);
+	}
+	
+	/**
+	 * Set the change time and (conditionally) creation time attributes
+	 * @param form
+	 */
+	private void updateFormFieldProperties(FormField formField) {
+		if (formField.getCreator() == null) {
+			formField.setCreator(context.getAuthenticatedUser());
+			formField.setDateCreated(new Date());
+		}
+		
+		if (formField.getField().getCreator() == null) {
+			Field field = formField.getField();
+			field.setCreator(context.getAuthenticatedUser());
+			field.setDateCreated(new Date());
+		}
+		
+		formField.setChangedBy(context.getAuthenticatedUser());
+		formField.setDateChanged(new Date());
 	}
 	
 	/**
