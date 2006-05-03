@@ -13,6 +13,7 @@
     	var subject = document.getElementById("subject").value;
     	var content = document.getElementById("content").value
 		DWRMessageService.sendMessage(recipients, sender, subject, content);
+		return false;
 	}
 	
 </script>

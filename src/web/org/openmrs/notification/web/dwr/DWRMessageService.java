@@ -1,20 +1,15 @@
 package org.openmrs.notification.web.dwr;
 
-import java.util.List;
-import java.util.Locale;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.openmrs.api.context.Context;
-import org.openmrs.web.WebConstants;
-import org.openmrs.notification.NotificationConstants;
-import org.openmrs.notification.Template;
-import org.openmrs.notification.Message;
 import org.openmrs.notification.MessageService;
+import org.openmrs.notification.NotificationConstants;
+import org.openmrs.web.WebConstants;
 
 import uk.ltd.getahead.dwr.WebContextFactory;
 
@@ -38,8 +33,8 @@ public class DWRMessageService {
 				if (subject == null || subject.equals(""))
 					subject = NotificationConstants.FEEDBACK_EMAIL_SUBJECT;
 
-				String referer = request.getHeader("referer");
-				String userName = "an 'Anonymous User'";
+				String referer = request.getPathTranslated();
+				String userName = "an Anonymous User";
 				if (context.isAuthenticated())
 					userName = context.getAuthenticatedUser().getFirstName()
 							+ " "
@@ -70,6 +65,13 @@ public class DWRMessageService {
 				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
+		
+		// testing remote access ability
+		log.error("path translated: " + request.getPathTranslated());
+		log.error("uri: " + request.getRequestURI());
+		log.error("server name: " + request.getServerName());
+		log.error("local name: " + request.getLocalName());
+		//
 		
 		if (context == null) {
 			objectList.add("Your session has expired.");
