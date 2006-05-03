@@ -1137,7 +1137,7 @@ public ArdenBaseTreeParser() {
 				_t = _retTree;
 				b=exprStringAST(_t,obj, a);
 				_t = _retTree;
-				obj.SetAnswer(b, a);
+				/*obj.SetAnswer(b, a);*/
 				break;
 			}
 			case 3:
@@ -1206,7 +1206,7 @@ public ArdenBaseTreeParser() {
 					AST tmp51_AST_in = (AST)_t;
 					match(_t,TRUE);
 					_t = _t.getFirstChild();
-					obj.SetAnswer("true", instr);
+					obj.SetAnswer(true, instr);
 					_t = __t358;
 					_t = _t.getNextSibling();
 					break;
@@ -1217,7 +1217,7 @@ public ArdenBaseTreeParser() {
 					AST tmp52_AST_in = (AST)_t;
 					match(_t,FALSE);
 					_t = _t.getFirstChild();
-					obj.SetAnswer("false", instr);
+					obj.SetAnswer(false, instr);
 					_t = __t359;
 					_t = _t.getNextSibling();
 					break;

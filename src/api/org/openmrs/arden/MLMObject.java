@@ -131,7 +131,8 @@ public class MLMObject {
 			key = thisList.next();
 			if(RetrieveConcept(key)){
 				PrintConcept(key);
-				if(EvaluateConcept(key)){ // concluded true
+				retVal = EvaluateConcept(key);
+				if(retVal){ // concluded true
 					break;
 				}
 			}
@@ -237,6 +238,13 @@ public class MLMObject {
 			mObjElem.setAnswer(val);
 		}
 	}
+	public void SetAnswer (boolean val, String key) {
+		MLMObjectElement mObjElem = GetMLMObjectElement(key);
+		if(mObjElem != null){
+			mObjElem.setAnswer(val);
+		}
+	}
+	
 	public void SetConcludeVal (boolean val, String key){
 		MLMObjectElement mObjElem = GetMLMObjectElement(key);
 		if(mObjElem != null){

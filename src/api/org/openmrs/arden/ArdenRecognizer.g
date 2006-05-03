@@ -1202,7 +1202,7 @@ exprAST [MLMObject obj] returns [String s=""]
 {String a,b;}
 :
 ( 
-	a = exprStringAST[obj, ""] {s=a;}(simple_comp_opAST[obj, a] b = exprStringAST[obj, a] {obj.SetAnswer(b, a);})? 
+	a = exprStringAST[obj, ""] {s=a;}(simple_comp_opAST[obj, a] b = exprStringAST[obj, a] {/*obj.SetAnswer(b, a);*/})? 
 
 );
 
@@ -1219,8 +1219,8 @@ exprStringAST [MLMObject obj, String instr] returns [String s=""]
 			      }
 	   )   
     | (
-    	  #(TRUE {obj.SetAnswer("true", instr);})
-    	| #(FALSE {obj.SetAnswer("false", instr);})
+    	  #(TRUE {obj.SetAnswer(true, instr);})
+    	| #(FALSE {obj.SetAnswer(false, instr);})
       )
 	  
 	| (val:INTLIT

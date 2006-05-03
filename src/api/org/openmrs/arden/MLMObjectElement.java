@@ -32,8 +32,10 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 	private ObsService os;
 	private boolean evaluated;
 	private boolean isEvaluated;
-	private String answer;
+	private String answerStr;
 	private Integer answerInt;
+	private boolean answerBool;
+	private Integer compOpType; // 0 = none, 1= Str, 2= Integer, 3 = Boolean
 	private Integer compOp;
 	private boolean hasConclude;
 	private boolean concludeVal;
@@ -65,10 +67,16 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 	}
 	
 	public void setAnswer (String s){
-		answer = s;
+		answerStr = s;
+		compOpType = 1;  //TODO define a better RHS object
 	}
 	public void setAnswer (Integer i){
 		answerInt = i;
+		compOpType = 2;
+	}
+	public void setAnswer (boolean b){
+		answerBool = b;
+		compOpType = 3;
 	}
 	public void setCompOp (Integer op){
 		compOp = op;
@@ -97,17 +105,16 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 		Concept concept;
 		Set <Obs> MyObs ;
 		Obs obs;
-		List <ConceptWord>  conceptsWords;
+		List <Concept>  concepts;
 		
 		
 //		 TODO: Need a better method to find a concept
 		
 		index = conceptName.indexOf("from");	// First substring
 		cn = conceptName.substring(1,index);
-		conceptsWords = cs.findConcepts(cn, locale, false);  
-		if (!conceptsWords.isEmpty()) {
-			    ConceptWord conceptWord = conceptsWords.get(0);
-			    concept = conceptWord.getConcept(); 
+		concepts = cs.getConceptByName(cn);  
+		if (!concepts.isEmpty()) {
+			    concept = concepts.get(0); 
 			    setConcept(concept);
 			    // Now get observations
 			    MyObs = os.getObservations(patient, conceptObj);
@@ -139,8 +146,35 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 	   else {
 	   switch(compOp) {
 	   		case EQUALS:
-	   			retVal = evaluateEquals(true);
-	   			break;
+	   		{switch(compOpType){
+	   			case 3: // boolean
+	   				retVal = evaluateEquals(answerBool);
+	   				break;
+	   			case 2: // integer
+	   				retVal = evaluateEquals(answerInt);
+	   				break;
+	   			case 1: // String
+	   				retVal = evaluateEquals(answerStr);
+	   				break;
+	   		}
+	   			
+	   		}
+	   		break;
+	   		case GTE:
+	   		{switch(compOpType){
+	   			case 3: // boolean
+	   				retVal = evaluateEquals(answerBool); //TODO ERROR
+	   				break;
+	   			case 2: // integer
+	   				retVal = evaluateGTE(answerInt);
+	   				break;
+	   			case 1: // String
+	   				retVal = evaluateEquals(answerStr); //TODO 
+	   				break;
+		   	}
+   			
+	   		}
+	   		break;
 	   		default:
 	   			break;
 	   	}
@@ -179,6 +213,39 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 	   return retVal;
    }
 	
+   public boolean evaluateEquals(Integer RHS) {
+	   boolean retVal = false;
+	   
+	   if(isObsAvailable){
+		   double val = obsObj.getValueNumeric();
+		   if(val == RHS){
+			   retVal = true;  
+		   }
+	   }
+	   else {
+	   	   retVal = false;
+	   }
+	   evaluated = retVal;
+	   isEvaluated = true;
+	   return retVal;
+   }
+   
+   public boolean evaluateGTE(Integer RHS) {
+	   boolean retVal = false;
+	   
+	   if(isObsAvailable){
+		   double val = obsObj.getValueNumeric();
+		   if(val >= RHS){
+			   retVal = true;  
+		   }
+	   }
+	   else {
+	   	   retVal = false;
+	   }
+	   evaluated = retVal;
+	   isEvaluated = true;
+	   return retVal;
+   }
    public boolean getEvaluated(){
 	      return evaluated;
    }
@@ -196,7 +263,7 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 		if(answerInt != null)
 			retVal = Integer.toString(answerInt);
 		else
-			retVal = answer;
+			retVal = answerStr;
 		return retVal;
 	}
 	
