@@ -30,7 +30,7 @@ HiPbSibFriend := read Last {HiPbSibFriend from CHICA} Where it Occurred Within P
 	Evoke:	;;
 
 Logic:
-if (Last_Pb >= 14) then conclude False;
+if (Last_Pb >= 14) then conclude True;
 if (Qual_Pb = True) then conclude False;
 if (HousePre50 = YES) then || LeadRisk || = "lives in a house built before 1950";
 elseif (RenovatedPre78 = YES) then || LeadRisk || = "lives in a pre-1978 house undergoing renovation";

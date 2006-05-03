@@ -93,7 +93,7 @@ public class FormFormController extends SimpleFormController {
 						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR,
 								"Form.saved");
 					} catch (Exception e) {
-						log.error(e);
+						log.error("Error while saving form", e);
 						errors.reject(e.getMessage());
 						httpSession.setAttribute(
 								WebConstants.OPENMRS_ERROR_ATTR,

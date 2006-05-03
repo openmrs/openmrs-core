@@ -91,18 +91,21 @@ public class ArdenTest extends TestCase {
 	      ArdenBaseTreeParser treeParser = new ArdenBaseTreeParser();
 	      //String datastr = treeParser.data(t);
 	   	  treeParser.data(t,ardObj);
-	      
+	   	  System.err.println("---------------------------------AFter data ----------------------------------");
+	   	  	ardObj.PrintConceptMap();
+	   	  System.err.println("-------------------------------------------------------------------");
+	   	  
 	      System.err.println(t.getNextSibling().toStringTree());
 	      
 	      String logicstr = treeParser.logic(t.getNextSibling(), ardObj);
-	      String actionstr = treeParser.action(t.getNextSibling().getNextSibling());
-	      
-	      
-	      System.err.println(actionstr);
-	      System.err.println(logicstr);
-	     // System.err.println(datastr);
-	      ardObj.PrintConceptMap();
+	      System.err.println("---------------------------------AFter Logic ----------------------------------");
+	      	      ardObj.PrintConceptMap();
+	      System.err.println("-------------------------------------------------------------------");	      	  
 	      ardObj.PrintEvaluateList();
+	      if(ardObj.Evaluate())
+	      {
+	    	  String actionstr = treeParser.action(t.getNextSibling().getNextSibling());
+	      }
 	      
 	    }
 	    catch (Exception e) {

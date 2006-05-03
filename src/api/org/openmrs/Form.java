@@ -400,5 +400,11 @@ public class Form implements java.io.Serializable {
 			this.formFields.remove(formField);
 		}
 	}
+	
+	public String toString() {
+		if (formId == null)
+			return "";
+		return formId.toString();
+	}
 
 }
