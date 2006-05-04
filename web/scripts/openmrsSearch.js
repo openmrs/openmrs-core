@@ -95,8 +95,8 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay, onkeydownuse
 		key = ENTERKEY;	//mimic user hitting enter key
 	}
 	else {
-		if (!event.altKey && !event.ctrlKey) {
-			// this if statement cancels the search on alt and control keys
+		if (!event.altKey && (!event.ctrlKey || event.keyCode == 86)) {
+			// this if statement cancels the search on alt and control keys, except for ctrl-v
 			key = event.keyCode;
 			if (debugBox) debugBox.innerHTML += '<br>event.type : ' + event.type;
 			var type = null;
@@ -120,7 +120,8 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay, onkeydownuse
 	
 	// infopath hack since it doesn't let us use onkeyup or onkeypress	
 	if (onkeydownused == true) {
-		if ((key >= 48 && key <= 127)) {
+		// only add if the key is a letter and no modifier key was pressed
+		if (key >= 48 && key <= 90 && !event.altKey && !event.ctrlKey) {
 			var newKey = String.fromCharCode(key).toLowerCase();
 			// IE interprets all char codes as upper case.  
 			// Only leave in uppercase if the previous char is uppercase (hack #2)
@@ -210,7 +211,7 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay, onkeydownuse
 		}
 	}
 
-	else if ((key >= 48 && key <= 127) ||
+	else if ((key >= 48 && key <= 90) ||
 		key == 8 || key == 32 || key == 46 || key == 1) {
 			//	 (if alphanumeric key entered or 
 			//   backspace key pressed or
