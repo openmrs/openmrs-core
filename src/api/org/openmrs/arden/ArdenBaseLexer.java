@@ -70,7 +70,6 @@ public ArdenBaseLexer(LexerSharedInputState state) {
 	literals.put(new ANTLRHashString("expired", this), new Integer(91));
 	literals.put(new ANTLRHashString("endif", this), new Integer(59));
 	literals.put(new ANTLRHashString("specialist", this), new Integer(85));
-	literals.put(new ANTLRHashString("||", this), new Integer(169));
 	literals.put(new ANTLRHashString("end", this), new Integer(65));
 	literals.put(new ANTLRHashString("Event", this), new Integer(119));
 	literals.put(new ANTLRHashString("production", this), new Integer(88));
@@ -92,7 +91,7 @@ public ArdenBaseLexer(LexerSharedInputState state) {
 	literals.put(new ANTLRHashString("OCCUR", this), new Integer(139));
 	literals.put(new ANTLRHashString("write", this), new Integer(19));
 	literals.put(new ANTLRHashString("past", this), new Integer(45));
-	literals.put(new ANTLRHashString("*", this), new Integer(170));
+	literals.put(new ANTLRHashString("*", this), new Integer(169));
 	literals.put(new ANTLRHashString("then", this), new Integer(31));
 	literals.put(new ANTLRHashString("be", this), new Integer(23));
 	literals.put(new ANTLRHashString("t", this), new Integer(97));
@@ -167,7 +166,7 @@ public ArdenBaseLexer(LexerSharedInputState state) {
 	literals.put(new ANTLRHashString("conclude", this), new Integer(56));
 	literals.put(new ANTLRHashString("average", this), new Integer(53));
 	literals.put(new ANTLRHashString("LT", this), new Integer(154));
-	literals.put(new ANTLRHashString("/", this), new Integer(171));
+	literals.put(new ANTLRHashString("/", this), new Integer(170));
 	literals.put(new ANTLRHashString("T", this), new Integer(96));
 	literals.put(new ANTLRHashString("research", this), new Integer(89));
 	literals.put(new ANTLRHashString("mlmname", this), new Integer(72));
@@ -425,15 +424,15 @@ tryAgain:
 		
 		mLCURLY(false);
 		{
-		_loop390:
+		_loop398:
 		do {
 			// nongreedy exit test
-			if ((LA(1)=='}') && (true)) break _loop390;
+			if ((LA(1)=='}') && (true)) break _loop398;
 			if (((LA(1) >= '\u0000' && LA(1) <= '\u00ff')) && ((LA(2) >= '\u0000' && LA(2) <= '\u00ff'))) {
 				matchNot(EOF_CHAR);
 			}
 			else {
-				break _loop390;
+				break _loop398;
 			}
 			
 		} while (true);
@@ -479,7 +478,7 @@ tryAgain:
 		
 		match("//");
 		{
-		_loop394:
+		_loop402:
 		do {
 			if ((_tokenSet_0.member(LA(1)))) {
 				{
@@ -487,7 +486,7 @@ tryAgain:
 				}
 			}
 			else {
-				break _loop394;
+				break _loop402;
 			}
 			
 		} while (true);
@@ -507,7 +506,7 @@ tryAgain:
 		
 		match("/*");
 		{
-		_loop398:
+		_loop406:
 		do {
 			if (((LA(1)=='*') && ((LA(2) >= '\u0000' && LA(2) <= '\u00ff')))&&( LA(2)!='/' )) {
 				match('*');
@@ -531,7 +530,7 @@ tryAgain:
 				}
 			}
 			else {
-				break _loop398;
+				break _loop406;
 			}
 			
 		} while (true);
@@ -565,21 +564,21 @@ tryAgain:
 		
 		{
 		{
-		_loop406:
+		_loop414:
 		do {
 			if (((LA(1) >= '0' && LA(1) <= '9'))) {
 				{
-				int _cnt404=0;
-				_loop404:
+				int _cnt412=0;
+				_loop412:
 				do {
 					if (((LA(1) >= '0' && LA(1) <= '9')) && (true)) {
 						mDIGIT(false);
 					}
 					else {
-						if ( _cnt404>=1 ) { break _loop404; } else {throw new NoViableAltForCharException((char)LA(1), getFilename(), getLine(), getColumn());}
+						if ( _cnt412>=1 ) { break _loop412; } else {throw new NoViableAltForCharException((char)LA(1), getFilename(), getLine(), getColumn());}
 					}
 					
-					_cnt404++;
+					_cnt412++;
 				} while (true);
 				}
 				{
@@ -592,7 +591,7 @@ tryAgain:
 				}
 			}
 			else {
-				break _loop406;
+				break _loop414;
 			}
 			
 		} while (true);
@@ -602,17 +601,17 @@ tryAgain:
 			{
 			mLPAREN(false);
 			{
-			int _cnt410=0;
-			_loop410:
+			int _cnt418=0;
+			_loop418:
 			do {
 				if (((LA(1) >= '0' && LA(1) <= '9'))) {
 					mDIGIT(false);
 				}
 				else {
-					if ( _cnt410>=1 ) { break _loop410; } else {throw new NoViableAltForCharException((char)LA(1), getFilename(), getLine(), getColumn());}
+					if ( _cnt418>=1 ) { break _loop418; } else {throw new NoViableAltForCharException((char)LA(1), getFilename(), getLine(), getColumn());}
 				}
 				
-				_cnt410++;
+				_cnt418++;
 			} while (true);
 			}
 			mRPAREN(false);
@@ -678,7 +677,7 @@ tryAgain:
 		match('"');
 		text.setLength(_saveIndex);
 		{
-		_loop414:
+		_loop422:
 		do {
 			if ((LA(1)=='"') && (LA(2)=='"')) {
 				match('"');
@@ -692,7 +691,7 @@ tryAgain:
 				}
 			}
 			else {
-				break _loop414;
+				break _loop422;
 			}
 			
 		} while (true);
@@ -807,7 +806,7 @@ tryAgain:
 		}
 		}
 		{
-		_loop423:
+		_loop431:
 		do {
 			switch ( LA(1)) {
 			case 'a':  case 'b':  case 'c':  case 'd':
@@ -871,7 +870,7 @@ tryAgain:
 			}
 			default:
 			{
-				break _loop423;
+				break _loop431;
 			}
 			}
 		} while (true);

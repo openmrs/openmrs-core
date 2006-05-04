@@ -168,7 +168,7 @@ tokens {
       System.err.println(t.getNextSibling().toStringTree());
       
       String logicstr = treeParser.logic(t.getNextSibling(), ardObj);
-      String actionstr = treeParser.action(t.getNextSibling().getNextSibling());
+      String actionstr = treeParser.action(t.getNextSibling().getNextSibling(), ardObj);
       
       
       System.err.println(actionstr);
@@ -870,11 +870,11 @@ action_slot:
 action_statement:
 	(WRITE^) 
 	(
-	   	expr
-     	| (LPAREN!) expr (RPAREN!) 
+	   	(LPAREN!)? ( (ACTION_OP expr_factor)* | expr ) (RPAREN!)? 
+     	
 		//expr_factor 
-	)
-	(ACTION_OP expr_factor)* ((AT) ID)? 
+	)  /*(ACTION_OP^ expr_factor)* */ ((AT) ID)? 
+	
 	
 	;
 
@@ -959,7 +959,7 @@ expr_comparison :
 
 /**********************************************************************************/
 expr_string
-	: expr_plus ("||" expr_plus)*
+	: expr_plus (ACTION_OP expr_plus)*
 //	| expr_string "||" expr_plus
 	;
 	
@@ -1325,7 +1325,7 @@ concludeAST [MLMObject obj, String key] returns [String s=""]
   )
 ;
 
-logic_elseifAST [MLMObject obj]returns [String s=""]
+logic_elseifAST [MLMObject obj] returns [String s=""]
 {String a,b;}
 : (
      (
@@ -1337,20 +1337,46 @@ logic_elseifAST [MLMObject obj]returns [String s=""]
 ;
 
 /***********************ACTION*******************************************/
-action returns [String s=""]
+action [MLMObject obj] returns [String s=""]
 {String a,b;}
 : #(ACTION {System.err.println("\n"); System.err.println("-------Starting Action--------");} 
 	 (
-	   {System.err.println("-----------Starting Write -------");} writeAST  {System.err.println("\n");System.err.println("-----------End Write -------");}
+	   {System.err.println("-----------Starting Write -------");} s = writeAST[obj] {System.err.println("\n");System.err.println("-----------End Write -------");}
 	 )* 
   (ENDBLOCK){System.err.println("\n");System.err.println("-----------End Action -------");})
 ;
 
-writeAST returns [String s=""]
+writeAST [MLMObject obj] returns [String s=""]
+{String a="",b="";}
+: (
+    #(WRITE 
+       	
+       ( 
+       		(ACTION_OP id: ID {a = id.getText(); 
+       							b= obj.getUserVarVal(a);
+       							s += b;}
+       		ACTION_OP) 
+           | (i:STRING_LITERAL {s += i.getText();} ) 
+       )*
+       		
+       		
+       	
+       	
+     ) 
+      
+     
+  )
+;
+
+actionExprAST [MLMObject obj] returns [String s=""]
 {String a,b;}
 : (
-    #(WRITE i:STRING_LITERAL ) 
-      {System.err.println("Action text = " + i.getText());}
+
+  	     ( 
+  	      id: ID {a = id.getText(); s= obj.getUserVarVal(a);} 
+		 )
+		    
+  
   )
  
 ;

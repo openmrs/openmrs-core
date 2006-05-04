@@ -23,7 +23,7 @@ public class MLMObject {
 	private Locale locale;
 	private Patient patient;
 	private LinkedList<String> ifList;
-	
+	private HashMap<String, String> userVarMapFinal ;
 
 //	private Iterator<String> iter; 
 	
@@ -31,6 +31,7 @@ public class MLMObject {
 	public MLMObject(){
 		conceptMap = new HashMap <String, MLMObjectElement>();
 		IsVarAdded = false;
+		userVarMapFinal = new HashMap <String, String>();
 	}
 	
 	public MLMObject(Context c, Locale l, Patient p)
@@ -41,6 +42,7 @@ public class MLMObject {
 		locale = l;
 		patient = p;
 		ifList = new LinkedList <String>();
+		userVarMapFinal = new HashMap <String, String>();
 	}
 
 	public void SetContext(Context c) {
@@ -131,9 +133,15 @@ public class MLMObject {
 			key = thisList.next();
 			if(RetrieveConcept(key)){
 				PrintConcept(key);
-				retVal = EvaluateConcept(key);
-				if(retVal){ // concluded true
-					break;
+				if(EvaluateConcept(key)){ 
+					if(isConclude(key)) {
+					  retVal = conclude(key);	
+					  break;  // concluded true or false
+					}
+					else {
+							// set all the user defined variables
+						addUserVarValFinal(key);
+					}
 				}
 			}
 		}
@@ -185,6 +193,9 @@ public class MLMObject {
 			mObjElem.setServicesContext(context.getConceptService(), context.getObsService());
 			if(mObjElem.getDBAccessRequired()){
 				retVal = mObjElem.getConceptForPatient(locale, patient);
+			}
+			else {
+				retVal = true; // No DB access required like else or simply conclude
 			}
 		}
 		return retVal;
@@ -271,6 +282,53 @@ public class MLMObject {
 		MLMObjectElement mObjElem = GetMLMObjectElement(key);
 		if(mObjElem != null){
 			retVal = mObjElem.getDBAccessRequired();
+		}
+		return retVal;
+	}
+	
+	public void addUserVarValFinal(String key) {
+		MLMObjectElement mObjElem = GetMLMObjectElement(key);
+		if(mObjElem != null){
+			String var = "", val = "";
+		    Iterator iter = mObjElem.iterator();
+			while(iter.hasNext()) {
+				var = (String) iter.next();
+				val = mObjElem.getUserVarVal(var);
+				if(!userVarMapFinal.containsKey(var)) {
+					userVarMapFinal.put(var, val);
+				}
+				else
+				{
+					//TODO either an error or overwrite previous one
+				}
+			}
+		}
+	}
+	public boolean isConclude(String key) {
+		boolean retVal = false;
+		MLMObjectElement mObjElem = GetMLMObjectElement(key);
+		if(mObjElem != null){
+			retVal = mObjElem.isConclude();
+		}
+		return retVal;
+	}
+	
+	public boolean conclude(String key) {
+		boolean retVal = false;
+		MLMObjectElement mObjElem = GetMLMObjectElement(key);
+		if(mObjElem != null){
+			retVal = mObjElem.conclude();
+		}
+		return retVal;
+	}
+	
+	public String getUserVarVal(String key) {
+		String retVal = "";
+		if(userVarMapFinal.containsKey(key)) {
+			retVal = userVarMapFinal.get(key);
+		}
+		else if(key.equals("firstname")) {
+			retVal = patient.getPatientName().getGivenName();
 		}
 		return retVal;
 	}

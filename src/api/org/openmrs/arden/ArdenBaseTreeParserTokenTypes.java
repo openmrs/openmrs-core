@@ -180,8 +180,7 @@ public interface ArdenBaseTreeParserTokenTypes {
 	int LITERAL_SORT = 166;
 	int LITERAL_DATA = 167;
 	int LITERAL_SEQTO = 168;
-	// "||" = 169
-	// "*" = 170
-	// "/" = 171
-	int STRING_LITERAL = 172;
+	// "*" = 169
+	// "/" = 170
+	int STRING_LITERAL = 171;
 }

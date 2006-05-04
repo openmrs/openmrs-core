@@ -143,7 +143,10 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 	   if (isEvaluated){
 	      retVal = evaluated;
 	   }
-	   else {
+	   else if(hasConclude) {
+		   retVal = concludeVal;
+	   }
+	   else if (compOp != null){
 	   switch(compOp) {
 	   		case EQUALS:
 	   		{switch(compOpType){
@@ -287,6 +290,14 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 		return retVal;
 	}
 	
+	public boolean isConclude() {
+		return hasConclude;
+	}
+	
+	public boolean conclude(){
+		return concludeVal;
+	}
+	
 	public String getUserVarVal() {
 		String s = "";
 		if(!userVarMap.isEmpty()) {
@@ -296,6 +307,19 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 			}
 		}
 		return s;
+	}
+	
+	public String getUserVarVal(String var){
+		String val = "";
+		if(!userVarMap.isEmpty()) {
+			val = userVarMap.get(var);
+		}
+		return val;
+	}
+	
+	public Iterator <String> iterator(){
+		Iterator iter;
+		return iter = userVarMap.keySet().iterator();
 	}
 	
 	public void setDBAccessRequired(boolean val){
