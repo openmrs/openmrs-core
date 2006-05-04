@@ -104,8 +104,10 @@ public class ArdenTest extends TestCase {
 	      ardObj.PrintEvaluateList();
 	      if(ardObj.Evaluate())
 	      {
+	    	  System.err.println(t.getNextSibling().getNextSibling().toStringTree());
 	    	  System.err.println("---------------------------------CONCLUDED TRUE ----------------------------------");
-	    	  String actionstr = treeParser.action(t.getNextSibling().getNextSibling());
+	    	  String actionstr = treeParser.action(t.getNextSibling().getNextSibling(), ardObj);
+	    	  System.err.println(actionstr);
 	      }
 	      
 	    }
@@ -124,6 +126,8 @@ public class ArdenTest extends TestCase {
 		Locale locale = context.getLocale();
 		Patient patient = new Patient();
 		patient.setPatientId(1);
+		PatientName pn = new PatientName("Jenny", "M", "Patient");
+		patient.addName(pn);
 		
 		MLMObject ardObj = new MLMObject(context, locale, patient);
 		RunTest("test/arden test/HiRiskLeadScreen.mlm", ardObj ); //populates ardObj
