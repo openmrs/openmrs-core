@@ -51,7 +51,7 @@ try {
 	if (exception != null) {
 		out.println("<b>" + exception.getClass().getName() + "</b>");
 		if (exception.getMessage() != null)
-			out.println("<pre id='exceptionMessage'>" + exception.getMessage().replaceAll("<", "&lt;") + "</pre>"); 
+			out.println("<pre id='exceptionMessage'>" + WebUtil.escapeHTML(exception.getMessage()) + "</pre>"); 
 	}
 	%>
 	

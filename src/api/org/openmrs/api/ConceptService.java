@@ -416,6 +416,7 @@ public class ConceptService {
 				// this concept is already in the list
 				// because we're sort synonyms at the bottom, the initial
 				// concept must be a match on the conceptName
+				// check synonym in case we have multiple synonym hits
 				String toSplit = initialWord.getSynonym();
 				if (toSplit == null || toSplit.equals("")) {
 					ConceptName cn = initialWord.getConcept().getName(locale);
@@ -423,30 +424,41 @@ public class ConceptService {
 				}
 				List<String> nameWords = ConceptWord.getUniqueWords(toSplit);
 
-				initialWord.increaseWeight(1.0);
 				// if the conceptName doesn't contain all of the search words,
 				// replace the initial word with this synonym based word
 				if (!containsAll(nameWords, searchedWords)) {
 					tmpWord.setWeight(initialWord.getWeight());
+					log.error("word.weight: " + tmpWord.getWord() + "." + tmpWord.getWeight());
 					uniqueConcepts.put(id, tmpWord);
 					log.debug("Using new conceptWord: " + tmpWord);
-				}
+				} else
+					tmpWord = null;
 
 			} else {
 				// normalize the weighting
 				tmpWord.setWeight(0.0);
+				log.error("word.weight: " + tmpWord + "." + tmpWord.getWeight());
 				// its not in the list, add it
 				uniqueConcepts.put(id, tmpWord);
 			}
 
-			if (tmpWord.getSynonym().length() == 0) {
+			// don't increase weight with second/third/... synonym
+			if (tmpWord != null) {
+				// default matched string
+				String matchedString = tmpWord.getSynonym();
+	
 				// if there isn't a synonym, it is matching on the name,
-				// increase the weight
-				uniqueConcepts.get(id).increaseWeight(2.0);
-			} else {
+				if (matchedString.length() == 0) {
+					// We weight name matches higher
+					tmpWord.increaseWeight(2.0);
+					matchedString = tmpWord.getConcept().getName(locale).getName();
+					log.error("word.weight: " + tmpWord.getWord() + "." + tmpWord.getWeight());
+				}
+	
 				// increase the weight by a factor of the % of words matched
-				uniqueConcepts.get(id).increaseWeight(
-						5.0 * (1 / tmpWord.getSynonym().split(" ").length));
+				Double percentMatched = getPercentMatched(searchedWords, matchedString);
+				tmpWord.increaseWeight(5.0 * percentMatched);
+				log.error("word.weight: " + tmpWord.getWord() + "." + tmpWord.getWeight());
 			}
 		}
 
@@ -454,6 +466,9 @@ public class ConceptService {
 		conceptWords.addAll(uniqueConcepts.values());
 		Collections.sort(conceptWords);
 
+		for (ConceptWord cw : conceptWords)
+			log.error("Name: " + cw.getConcept().getName(locale).getName() + " weight: " + cw.getWeight());
+		
 		return conceptWords;
 	}
 
@@ -503,7 +518,7 @@ public class ConceptService {
 		return getConceptDAO().getNextAvailableId();
 	}
 
-	public Boolean containsAll(Collection<String> parent,
+	private Boolean containsAll(Collection<String> parent,
 			Collection<String> subList) {
 
 		for (String s : subList) {
@@ -519,4 +534,24 @@ public class ConceptService {
 		}
 		return true;
 	}
+	
+	private double getPercentMatched(Collection<String> searchedWords,
+			String matchedString) {
+
+		List<String> subList = ConceptWord.getUniqueWords(matchedString);
+		double size = ConceptWord.splitPhrase(matchedString).length; // total # of words
+		
+		double matches = 0.0;
+		for (String s : subList) {
+			s = s.toUpperCase();
+			for (String p : searchedWords) {
+				p = p.toUpperCase();
+				if (p.startsWith(s))
+					matches += 1.0;
+			}
+		}
+		
+		return matches == 0 ? 0 : (matches / size);
+	}
+	
 }

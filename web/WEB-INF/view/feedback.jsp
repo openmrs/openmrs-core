@@ -8,6 +8,7 @@
 <script type="text/javascript">
 
  function sendFeedback() {
+    clearNote();
 	var from = document.getElementById("feedbackFrom").value;
 	var subj = document.getElementById("feedbackSubject").value;
 	var content = document.getElementById("feedbackContent").value;
@@ -22,13 +23,19 @@
 	else
 		note.innerHTML = '<spring:message code="feedback.error"/>';
  }
-
+ 
+ function clearNote() {
+   var note = document.getElementById("feedbackNote");
+   note.style.display = "none";
+   note.innerHTML = "";
+ }
+	
 </script>
 
 <style>
 #feedbackNote {
 	border: 1px dashed lightgrey;
-	padding: 2px 2px 2px 18px;
+	padding: 2px;
 	margin: 4px;
 	width: 95%;
 	background-color: InfoBackground;
@@ -58,5 +65,11 @@
 
 <br />
 <input type="submit" value='<spring:message code="feedback.send"/>' onclick="sendFeedback()">
+
+<script type="text/javascript">
+
+document.getElementById("feedbackNote").style.display = "none";
+
+</script>
 
 <%@ include file="/WEB-INF/template/footer.jsp"%>

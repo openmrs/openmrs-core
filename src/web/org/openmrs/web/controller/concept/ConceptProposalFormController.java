@@ -24,7 +24,6 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.AlertService;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.web.Util;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.dwr.ConceptListItem;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -176,7 +175,7 @@ public class ConceptProposalFormController extends SimpleFormController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		ConceptProposal cp = (ConceptProposal)object;
-		Locale locale = Util.getLocale(request);
+		Locale locale = context.getLocale();
 		List<ConceptProposal> matchingProposals = new Vector<ConceptProposal>();
 		List<ConceptListItem> possibleConceptsListItems = new Vector<ConceptListItem>();
 		ConceptListItem listItem = null;
