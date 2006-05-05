@@ -105,16 +105,16 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 		Concept concept;
 		Set <Obs> MyObs ;
 		Obs obs;
-		List <Concept>  concepts;
+		
 		
 		
 //		 TODO: Need a better method to find a concept
 		
 		index = conceptName.indexOf("from");	// First substring
 		cn = conceptName.substring(1,index);
-		concepts = cs.getConceptByName(cn);  
-		if (!concepts.isEmpty()) {
-			    concept = concepts.get(0); 
+		concept = cs.getConceptByName(cn);  
+		//TODO: Check if concept populated
+		{
 			    setConcept(concept);
 			    // Now get observations
 			    MyObs = os.getObservations(patient, conceptObj);
@@ -125,7 +125,7 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 			      System.out.println(obsObj.getValueAsString(locale));
 			      retVal = true;
 				}
-			}		
+		}		
 		return retVal;
 	}
 	
