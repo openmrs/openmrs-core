@@ -234,7 +234,17 @@ public class ConceptService {
 	 * @param name
 	 * @return List of concepts
 	 */
-	public List<Concept> getConceptByName(String name) {
+	public List<Concept> getConceptsByName(String name) {
+		return getConceptDAO().getConceptsByName(name);
+	}
+	
+	/**
+	 * Return a Concept that matches the name exactly
+	 * 
+	 * @param name
+	 * @return Concept with matching name
+	 */
+	public Concept getConceptByName(String name) {
 		return getConceptDAO().getConceptByName(name);
 	}
 

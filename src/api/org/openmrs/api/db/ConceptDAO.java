@@ -91,7 +91,15 @@ public interface ConceptDAO {
 	 * @param name
 	 * @return List of concepts
 	 */
-	public List<Concept> getConceptByName(String name);
+	public List<Concept> getConceptsByName(String name);
+	
+	/**
+	 * Return a Concept that matches the name exactly
+	 * 
+	 * @param name
+	 * @return Concept with matching name
+	 */
+	public Concept getConceptByName(String name);
 	
 	/**
 	 * Return drug object corresponding to the given id
