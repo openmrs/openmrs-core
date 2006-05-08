@@ -175,7 +175,7 @@
 		</copy>
 	</target>
 	
-	<target name="package-web" depends="compile-web" description="create webapp war file">
+	<target name="package-web-init" depends="compile-web" description="start creation of webapp. Use package-web for complete">
 		<mkdir dir="${dist.dir}" />
 
 		<!-- copy the entire web directory to the dist folder (for variable replacement) -->
@@ -196,13 +196,11 @@
 		</copy>
 		<!-- Rename spring servlet to name of webapp -->
 		<move file="${dist.dir}/web/WEB-INF/openmrs-servlet.xml" tofile="${dist.dir}/web/WEB-INF/${webapp.name}-servlet.xml" preservelastmodified="true" overwrite="true" />
-
-		<!-- excludes web.xml to avoid warning message from duplicating @webxml reference -->
+	</target>
+	
+	<target name="package-web" depends="package-web-init" description="create webapp war file">
 		<war destfile="${dist.dir}/${webapp.name}.war" basedir="${dist.dir}/web" excludes="**/web.xml" webxml="${dist.dir}/web/WEB-INF/web.xml" duplicate="add">
-			<!-- war task isn't interpreting ${} variables on several attributes   -->
-			<!-- (e.g., @basedir, webinf@dir) so using hardcoded values for now -->
 			<classes dir="${build.dir}/web" />
-			<!--<metainf dir="${metadata.dir}/web" includes="context.xml"/>-->
 			<lib file="${dist.dir}/openmrs-api-${openmrs.version}.jar" />
 			<lib dir="${antlr.dir}" includes="*.jar" />
 			<lib dir="${asm.dir}" includes="*.jar" />
@@ -235,12 +233,50 @@
 			<!--<lib dir="${struts.dir}" includes="*.jar" /> -->
 			<!--<lib dir="${commons-digester.dir}" includes="*.jar" />  (for struts) -->
 		</war>
-
-		<!-- Delete the directory we just created in the dist folder (fills recycle bin) -->
-		<!-- <delete dir="${dist.dir}\web" /> -->
-
+	</target>
+	
+	<target name="package-web-without-libs" depends="package-web-init" description="create webapp war file without libs">
+		<war destfile="${dist.dir}/${webapp.name}.war" basedir="${dist.dir}/web" excludes="**/web.xml" webxml="${dist.dir}/web/WEB-INF/web.xml" duplicate="add">
+			<classes dir="${build.dir}/web" />
+			<lib file="${dist.dir}/openmrs-api-${openmrs.version}.jar" />
+		</war>
 	</target>
 
+	<target name="package-web-libs-only" description="create zip file of webapp libraries">
+		<zip destfile="${dist.dir}/libs-${webapp.version}.zip">
+			<zipfileset dir="${antlr.dir}" includes="*.jar" />
+			<zipfileset dir="${asm.dir}" includes="*.jar" />
+			<zipfileset dir="${c3p0.dir}" includes="*.jar" />
+			<zipfileset dir="${cglib.dir}" includes="*.jar" />
+			<zipfileset dir="${commons-beanutils.dir}" includes="*.jar" />
+			<zipfileset dir="${commons-collections.dir}" includes="*.jar" />
+			<!--<zipfileset dir="${commons-dbcp.dir}" includes="*.jar" />-->
+			<zipfileset dir="${commons-fileupload.dir}" includes="*.jar" />
+			<zipfileset dir="${commons-io.dir}" includes="*.jar" />
+			<zipfileset dir="${commons-lang.dir}" includes="*.jar" />
+			<zipfileset dir="${commons-logging.dir}" includes="*.jar" />
+			<!--<zipfileset dir="${commons-pool.dir}" includes="*.jar" />-->
+			<zipfileset dir="${dom4j.dir}" includes="*.jar" />
+			<zipfileset dir="${dwr.dir}" includes="*.jar" />
+			<zipfileset dir="${ehcache.dir}" includes="*.jar" />
+			<zipfileset dir="${hibernate.dir}" includes="*.jar" />
+			<!--<zipfileset dir="${ibatis.dir}" includes="*.jar" />-->
+			<zipfileset dir="${log4j.dir}" includes="*.jar" />
+			<zipfileset dir="${jstl.dir}" includes="*.jar" />
+			<zipfileset dir="${jta.dir}" includes="*.jar" />
+			<zipfileset dir="${junit.dir}" includes="*.jar" />
+			<zipfileset dir="${database.dir}" includes="*.jar" />
+			<zipfileset dir="${saxon.dir}" includes="*.jar" />
+			<zipfileset dir="${spring.dir}" includes="*.jar" />
+			<zipfileset dir="${taglibs.dir}" includes="*.jar" />
+			<zipfileset dir="${velocity.dir}" includes="*.jar" />
+			<!--<zipfileset dir="${quartz.dir}" includes="*.jar" />-->
+			<zipfileset dir="${mail.dir}" includes="*.jar" />
+			<!--<zipfileset dir="${struts.dir}" includes="*.jar" /> -->
+			<!--<zipfileset dir="${commons-digester.dir}" includes="*.jar" />  (for struts) -->
+		</zip>
+	</target>
+	
 	<target name="compile-web-tests" description="compile webapp tests">
 		<mkdir dir="${build.dir}/test/web" />
 		<javac srcdir="${test.dir}/web" destdir="${build.dir}/test/web" debug="${javac.debug}" deprecation="${compile.deprecation}" optimize="${compile.optimize}" classpathref="web.test.classpath" />
@@ -298,38 +334,36 @@
 	</target>
 	
 	<target name="cleanGrammar">
-				<delete>
-					<fileset dir="${build.dir}/api/org/openmrs/arden">
-					    <include name="**/*.class"/>
-					    <include name="**/*.java"/>
-					</fileset>
-					<fileset dir="${build.dir}/api/org/openmrs/arden/parser">
-										    <include name="**/*.class"/>
-										    <include name="**/*.java"/>
-					</fileset>
-					<fileset dir="${src.dir}/api/org/openmrs/arden">
-								    <include name="**/ArdenBase*.java"/>
-								    <include name="**/*.txt"/>
-								    <include name="**/*.smap"/>
-								    <include name="**/*.class"/>
-								    <include name="**/*.txt"/>
-
-
-					</fileset>
-				</delete>
+		<delete>
+			<fileset dir="${build.dir}/api/org/openmrs/arden">
+			    <include name="**/*.class"/>
+			    <include name="**/*.java"/>
+			</fileset>
+			<fileset dir="${build.dir}/api/org/openmrs/arden/parser">
+			    <include name="**/*.class"/>
+			    <include name="**/*.java"/>
+			</fileset>
+			<fileset dir="${src.dir}/api/org/openmrs/arden">
+			    <include name="**/ArdenBase*.java"/>
+			    <include name="**/*.txt"/>
+			    <include name="**/*.smap"/>
+			    <include name="**/*.class"/>
+			    <include name="**/*.txt"/>
+			</fileset>
+		</delete>
 	</target>
 	
 	<target name="makeantlr" depends="cleanGrammar" >
-			<antlr target="${src.dir}/api/org/openmrs/arden/ArdenRecognizer.g">
-				<classpath path="lib/antlr/antlr_2.7.6.jar" />
-			</antlr>
+		<antlr target="${src.dir}/api/org/openmrs/arden/ArdenRecognizer.g">
+			<classpath path="lib/antlr/antlr_2.7.6.jar" />
+		</antlr>
 	</target>
 	
 	<target name="Arden Tests">
-			<java 
-				classpath=".;build/api;lib/antlr/antlrdebug_1.0.0.jar;lib/antlr/antlr_2.7.6.jar" 
-				classname="org.openmrs.arden.ArdenBaseParser">
-				<arg value="${src.dir}/api/org/openmrs/arden/test"/>
-			</java>
+		<java 
+			classpath=".;build/api;lib/antlr/antlrdebug_1.0.0.jar;lib/antlr/antlr_2.7.6.jar" 
+			classname="org.openmrs.arden.ArdenBaseParser">
+			<arg value="${src.dir}/api/org/openmrs/arden/test"/>
+		</java>
 	</target>
 </project>
