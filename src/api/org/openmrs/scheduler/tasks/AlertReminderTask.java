@@ -2,19 +2,15 @@ package org.openmrs.scheduler.tasks;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Map;
-
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-
 import org.openmrs.User;
-import org.openmrs.Role;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.context.ContextFactory;
 import org.openmrs.notification.Alert;
+import org.openmrs.notification.AlertRecipient;
 import org.openmrs.notification.Message;
 import org.openmrs.scheduler.Schedulable;
 import org.openmrs.scheduler.SchedulerConstants;
@@ -77,22 +73,13 @@ public class AlertReminderTask implements Schedulable {
 			Message message = context.getMessageService().create("Alert Reminder", "You have unread alerts.");
 
 			for (Alert alert : alerts) { 
-				log.debug("Send emailing email to alert recipient(s) ...");
-				if (alert.getUser()!=null)
-					users.add(alert.getUser());
-				
-				if (alert.getRole()!=null) { 
-					context.getUserService().getUsersByRole(alert.getRole());
-					
+				log.debug("Send email to alert recipient(s) ...");
+				if (alert.isAlertRead() == false && alert.getRecipients() != null) {
+					for (AlertRecipient recipient : alert.getRecipients()) {
+						if (recipient.isAlertRead() == false && recipient.getRecipient() != null)
+							users.add(recipient.getRecipient());
+					}
 				}
-
-				// We could send the message this way, but we users may get duplicate message 
-				
-				//if ( alert.getUser() != null )
-				//	context.getMessageService().send(message, alert.getUser());
-
-				//if ( alert.getRole() != null )
-				//	context.getMessageService().send(message, alert.getRole());
 			}
 			
 			// Send a message to each person only once

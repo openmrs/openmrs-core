@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,8 +15,11 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Role;
+import org.openmrs.User;
+import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.Alert;
+import org.openmrs.notification.AlertRecipient;
 import org.openmrs.notification.AlertService;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
@@ -76,21 +80,70 @@ public class AlertFormController extends SimpleFormController {
 
 		context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
 		try {
-			if (context != null && context.isAuthenticated()) {
-				String userId = request.getParameter("userId");
-				if (userId != null && !userId.equals(""))
-					alert.setUser(context.getUserService().getUser(
-							Integer.valueOf(userId)));
-				
-				String role = request.getParameter("roleStr");
-				if (role != null && !role.equals(""))
-					alert.setRole(context.getUserService().getRole(role));
+			UserService us = context.getUserService();
 
-				if (alert.getRole() == null && alert.getUser() == null) {
-					errors.rejectValue("user", "Alert.userOrRoleRequired");
+			if (context != null && context.isAuthenticated()) {
+				String[] userIdValues = request.getParameter("userIds").split(" ");
+				List<Integer> userIds = new Vector<Integer>(); 
+				String[] roleValues = request.getParameter("newRoles").split(",");
+				List<String> roles = new Vector<String>();
+				
+				// create user list
+				if (userIdValues != null)
+					for (String userId : userIdValues) {
+						if (!userId.trim().equals(""))
+							userIds.add(Integer.valueOf(userId.trim()));
+					}
+				
+				// create role list
+				if (roleValues != null)
+					for (String role : roleValues) {
+						if (!role.trim().equals(""))
+							roles.add(role.trim());
+					}
+				
+				
+				// remove all recipients not in the userIds list
+				List<AlertRecipient> recipientsToRemove = new Vector<AlertRecipient>();
+				if (alert.getRecipients() != null) {
+					for (AlertRecipient recipient : alert.getRecipients()) {
+						Integer userId = recipient.getRecipient().getUserId();
+						if (!userIds.contains(userId))
+							recipientsToRemove.add(recipient);
+					}
+				}
+				for (AlertRecipient ar : recipientsToRemove)
+					alert.removeRecipient(ar);
+				
+				// add all new users
+				if (userIds != null) {
+					for (Integer userId : userIds) {
+						alert.addRecipient(us.getUser(userId));
+					}
+				}
+				
+				// add all new users according to the role(s) selected
+				if (roles != null) {
+					for (String roleStr : roles) {
+						Role role = us.getRole(roleStr);
+						List<User> users = us.getUsersByRole(role);
+						for (User user : users)
+							alert.addRecipient(user);
+					}
 				}
 			}
-		} finally {
+			
+			if (alert.getRecipients() == null
+					|| alert.getRecipients().size() == 0) {
+				errors.rejectValue("user", "Alert.recipientRequired");
+			}
+			
+		} 
+		catch (Exception e) {
+			log.error(e);
+			errors.reject(e.getMessage());
+		}
+		finally {
 			context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
 		}
 

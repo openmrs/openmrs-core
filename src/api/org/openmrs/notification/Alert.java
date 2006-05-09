@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.openmrs.Role;
 import org.openmrs.User;
 
 /**
@@ -22,11 +21,11 @@ public class Alert implements Serializable {
 
 	private Integer alertId;
 
-	private User user;
-
-	private Role role;
-
 	private String text;
+
+	private Boolean satisfiedByAny = false;
+	
+	private Boolean alertRead = false;
 
 	private Date dateToExpire;
 
@@ -38,7 +37,7 @@ public class Alert implements Serializable {
 
 	private Date dateChanged;
 
-	private Set<User> readByUsers;
+	private Set<AlertRecipient> recipients;
 
 	/**
 	 * Default empty constructor
@@ -53,6 +52,22 @@ public class Alert implements Serializable {
 		this.alertId = alertId;
 	}
 
+	public boolean equals(Object obj) {
+		if (obj instanceof Alert) {
+			Alert a = (Alert)obj;
+			if (alertId != null && a != null)
+				return (alertId.equals(a.getAlertId()));
+		}
+		return false;
+	}
+	
+	public int hashCode() {
+		if (this.getAlertId() == null) return super.hashCode();
+		int hash = 8;
+		hash = 31 * this.getAlertId().hashCode() + hash;
+		return hash;
+	}
+	
 	/**
 	 * @return Returns the alertId.
 	 */
@@ -114,21 +129,6 @@ public class Alert implements Serializable {
 	}
 
 	/**
-	 * @return Returns the role.
-	 */
-	public Role getRole() {
-		return role;
-	}
-
-	/**
-	 * @param role
-	 *            The role to set.
-	 */
-	public void setRole(Role role) {
-		this.role = role;
-	}
-
-	/**
 	 * @return Returns the text.
 	 */
 	public String getText() {
@@ -144,20 +144,49 @@ public class Alert implements Serializable {
 	}
 
 	/**
-	 * @return Returns the user.
+	 * @see isSatisfiedByAny()
 	 */
-	public User getUser() {
-		return user;
+	public Boolean getSatisfiedByAny() {
+		return isSatisfiedByAny();
 	}
 
 	/**
-	 * @param user
-	 *            The user to set.
+	 * @return Returns the satisfiedByAny.
 	 */
-	public void setUser(User user) {
-		this.user = user;
+	public Boolean isSatisfiedByAny() {
+		return satisfiedByAny;
+	}
+
+	/**
+	 * @param satisfiedByAny
+	 *            The satisfiedByAny to set.
+	 */
+	public void setSatisfiedByAny(Boolean satisfiedByAny) {
+		this.satisfiedByAny = satisfiedByAny;
 	}
 	
+	/**
+	 * @see isAlertRead()
+	 */
+	public Boolean getAlertRead() {
+		return isAlertRead();
+	}
+
+	/**
+	 * @return Returns the alertRead.
+	 */
+	public Boolean isAlertRead() {
+		return alertRead;
+	}
+
+	/**
+	 * @param alertRead
+	 *            The alertRead to set.
+	 */
+	public void setAlertRead(Boolean alertRead) {
+		this.alertRead = alertRead;
+	}
+
 	/**
 	 * @return Returns the changedBy.
 	 */
@@ -166,7 +195,8 @@ public class Alert implements Serializable {
 	}
 
 	/**
-	 * @param changedBy The user that changed this alert
+	 * @param changedBy
+	 *            The user that changed this alert
 	 */
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
@@ -180,34 +210,57 @@ public class Alert implements Serializable {
 	}
 
 	/**
-	 * @param dateChanged The date this alert was changed
+	 * @param dateChanged
+	 *            The date this alert was changed
 	 */
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}
 
 	/**
-	 * @return Returns the Users that have read this alert.
+	 * @return Returns the Recipients of this alert
 	 */
-	public Set<User> getReadByUsers() {
-		return readByUsers;
+	public Set<AlertRecipient> getRecipients() {
+		return recipients;
 	}
 
 	/**
-	 * @param readByUsers
-	 *            The Users that have read this alert
+	 * @param recipients
+	 *            The recipients of this alert
 	 */
-	public void setReadByUsers(Set<User> readByUsers) {
-		this.readByUsers = readByUsers;
+	public void setRecipients(Set<AlertRecipient> recipients) {
+		this.recipients = recipients;
+	}
+
+	public void addRecipient(AlertRecipient r) {
+		if (this.recipients == null)
+			this.recipients = new HashSet<AlertRecipient>();
+		r.setAlert(this);
+		// duplicates are avoided by depending on the .equals and .hashcode 
+		//  methods of Alert
+		recipients.add(r);
+	}
+
+	public void addRecipient(User u) {
+		addRecipient(new AlertRecipient(u, false));
 	}
 	
-	public void addReadByUser(User u) {
-		if (this.readByUsers == null)
-			this.readByUsers = new HashSet<User>();
-		readByUsers.add(u);
+	public void removeRecipient(AlertRecipient r) {
+		if (recipients != null) {
+			if (recipients.contains(r))
+				recipients.remove(r);
+		}
 	}
 	
-	//@override
+	public AlertRecipient getRecipient(User recipient) {
+		for (AlertRecipient ar : recipients) {
+			if (ar.getRecipient() == recipient)
+				return ar;
+		}
+		return null;
+	}
+
+	// @override
 	public String toString() {
 		return "Alert: #" + alertId;
 	}

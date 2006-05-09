@@ -97,6 +97,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public Set<Patient> getPatientsByIdentifier(String identifier, boolean includeVoided) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
@@ -128,6 +129,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	/**
 	 * @see org.openmrs.api.db.PatientDAO#getPatientsByIdentifierPattern(java.lang.String, boolean)
 	 */
+	@SuppressWarnings("unchecked")
 	public Set<Patient> getPatientsByIdentifierPattern(String identifier, boolean includeVoided) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
@@ -161,6 +163,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		return returnSet;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Set<Patient> getPatientsByName(String name, boolean includeVoided) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
@@ -202,6 +205,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		return patients;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Set<Patient> getSimilarPatients(String name, Integer birthyear, String gender) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
@@ -275,6 +279,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	/**
 	 * @see org.openmrs.api.db.PatientService#getPatientIdentifiers(org.openmrs.PatientIdentifierType)
 	 */
+	@SuppressWarnings("unchecked")
 	public List<PatientIdentifier> getPatientIdentifiers(PatientIdentifierType pit) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		List<PatientIdentifier> patientIdentifiers = session.createQuery("from PatientIdentifier p where p.identifierType = :pit and p.voided = false")
@@ -287,6 +292,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	/**
 	 * @see org.openmrs.api.db.PatientService#getPatientIdentifiers(java.lang.String,org.openmrs.PatientIdentifierType)
 	 */
+	@SuppressWarnings("unchecked")
 	public List<PatientIdentifier> getPatientIdentifiers(String identifier, PatientIdentifierType pit) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		List<PatientIdentifier> ids;
@@ -336,6 +342,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	/**
 	 * @see org.openmrs.api.db.PatientService#getPatientIdentifierTypes()
 	 */
+	@SuppressWarnings("unchecked")
 	public List<PatientIdentifierType> getPatientIdentifierTypes() throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
@@ -358,6 +365,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	/**
 	 * @see org.openmrs.api.db.PatientService#getTribes()
 	 */
+	@SuppressWarnings("unchecked")
 	public List<Tribe> getTribes() throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
@@ -369,6 +377,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	/**
 	 * @see org.openmrs.api.db.PatientService#findTribes()
 	 */
+	@SuppressWarnings("unchecked")
 	public List<Tribe> findTribes(String s) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
@@ -393,6 +402,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	/**
 	 * @see org.openmrs.api.db.PatientService#getRelationships()
 	 */
+	@SuppressWarnings("unchecked")
 	public List<Relationship> getRelationships() throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
@@ -404,6 +414,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	/**
 	 * @see org.openmrs.api.db.PatientService#getRelationships(org.openmrs.Person)
 	 */
+	@SuppressWarnings("unchecked")
 	public List<Relationship> getRelationships(Person person) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
@@ -448,6 +459,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	/**
 	 * @see org.openmrs.api.db.PatientService#getRelationshipTypes()
 	 */
+	@SuppressWarnings("unchecked")
 	public List<RelationshipType> getRelationshipTypes() throws DAOException {
 
 		Session session = HibernateUtil.currentSession();
@@ -489,6 +501,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	/**
 	 * @see org.openmrs.api.db.PatientService#getLocations()
 	 */
+	@SuppressWarnings("unchecked")
 	public List<Location> getLocations() throws DAOException {
 
 		Session session = HibernateUtil.currentSession();
@@ -501,6 +514,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	/** @see org.openmrs.api.db.PatientService#findDuplicatePatients(java.util.Set<String>) */
+	@SuppressWarnings("unchecked")
 	public List<Patient> findDuplicatePatients(Set<String> attributes) {
 		Session session = HibernateUtil.currentSession();
 		

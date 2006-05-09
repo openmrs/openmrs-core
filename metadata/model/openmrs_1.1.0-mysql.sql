@@ -503,7 +503,7 @@ CREATE TABLE `global_property` (
   `property_value` varchar(255) default NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-insert into `global_property` values ('database_version', '1.0.11');
+insert into `global_property` values ('database_version', '1.0.18');
 
 #----------------------------
 # Table structure for hl7_in_archive
@@ -1061,40 +1061,42 @@ CREATE TABLE `report_object` (
   CONSTRAINT `user_who_changed_report_object` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`),
   CONSTRAINT `user_who_voided_report_object` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='';
+
 #----------------------------
-# Table structure for alert
+# Table structure for notification_alert
 #----------------------------
- CREATE TABLE `alert` (
-   `alert_id` int(11) NOT NULL auto_increment,
-   `user_id` int(11) default NULL,
-   `role` varchar(50) default NULL,
-   `text` varchar(512) NOT NULL,
-   `date_to_expire` datetime default NULL,
-   `creator` int(11) NOT NULL,
-   `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
-   `changed_by` int(11) default NULL,
-   `date_changed` datetime default NULL,
-   PRIMARY KEY (`alert_id`),
-   KEY `alert_creator` (`creator`),
-   KEY `alert_assigned_to_user` (`user_id`),
-   KEY `alert_assigned_to_role` (`role`),
-   KEY `user_who_changed_alert` (`changed_by`),
-   CONSTRAINT `alert_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
-   CONSTRAINT `alert_assigned_to_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
-   CONSTRAINT `alert_assigned_to_role` FOREIGN KEY (`role`) REFERENCES `role` (`role`),
-   CONSTRAINT `user_who_changed_alert` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`)
+ CREATE TABLE `notification_alert` (
+  `alert_id` int(11) NOT NULL auto_increment,
+  `text` varchar(512) NOT NULL,
+  `satisfied_by_any` int(1) NOT NULL default '0',
+  `alert_read` int(1) NOT NULL default '0',
+  `date_to_expire` datetime default NULL,
+  `creator` int(11) NOT NULL,
+  `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
+  `changed_by` int(11) default NULL,
+  `date_changed` datetime default NULL,
+  PRIMARY KEY  (`alert_id`),
+  KEY `alert_creator` (`creator`),
+  KEY `user_who_changed_alert` (`changed_by`),
+  CONSTRAINT `alert_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
+  CONSTRAINT `user_who_changed_alert` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`)
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='';
+
 #----------------------------
-# Table structure for alert_read
+# Table structure for notification_alert_recipient
 #----------------------------
- CREATE TABLE `alert_read` (
-   `alert_id` int(11) NOT NULL,
-   `user_id` int(11) NOT NULL,
-   `date_read` timestamp NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-   PRIMARY KEY (`alert_id`, `user_id`),
-   CONSTRAINT `alert_read` FOREIGN KEY (`alert_id`) REFERENCES `alert` (`alert_id`),
-   CONSTRAINT `alert_read_by_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
+ CREATE TABLE `notification_alert_recipient` (
+  `alert_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `alert_read` int(1) NOT NULL default '0',
+  `date_changed` timestamp NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`alert_id`,`user_id`),
+  KEY `alert_read_by_user` (`user_id`),
+  KEY `id_of_alert` (`alert_id`),
+  CONSTRAINT `id_of_alert` FOREIGN KEY (`alert_id`) REFERENCES `notification_alert` (`alert_id`),
+  CONSTRAINT `alert_read_by_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='';
+
 #--------------------------------------------------------
 # Table structure for scheduler_task_config
 #--------------------------------------------------------
@@ -1141,7 +1143,3 @@ CREATE TABLE `report_object` (
    `ordinal` int(11) default 0,
    primary key (`template_id`)
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
- 
- 
- 

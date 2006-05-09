@@ -1,8 +1,10 @@
 package org.openmrs.notification;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -70,12 +72,33 @@ public class AlertService implements Serializable {
 	 * @throws Exception
 	 */
 	public void createAlert(String text, User user) throws Exception {
-		Alert a = new Alert();
-		a.setText(text);
-		a.setUser(user);
-		createAlert(a);
+		List<User> users = new Vector<User>();
+		users.add(user);
+		createAlert(text, users);
 	}
-
+	
+	/**
+	 * Convenience method for creating an alert
+	 * @param text
+	 * @param Collection<User> users assigned to this alert
+	 * @throws Exception
+	 */
+	public void createAlert(String text, Collection<User> users) throws Exception {
+		Alert alert = new Alert();
+		alert.setText(text);
+		for (User user : users) 
+			alert.addRecipient(user);
+		
+		// Make sure all recipients are assigned to this alert
+		if (alert.getRecipients() != null) {
+			for (AlertRecipient recipient : alert.getRecipients()) {
+				if (!alert.equals(recipient.getAlert()))
+					recipient.setAlert(alert);
+			}
+		}
+		createAlert(alert);
+	}
+		
 	/**
 	 * Get alert by internal identifier
 	 * 
@@ -107,6 +130,14 @@ public class AlertService implements Serializable {
 		alert.setChangedBy(context.getAuthenticatedUser());
 		alert.setDateChanged(new Date());
 		
+		// Make sure all recipients are assigned to this alert
+		if (alert.getRecipients() != null) {
+			for (AlertRecipient recipient : alert.getRecipients()) {
+				if (!alert.equals(recipient.getAlert()))
+					recipient.setAlert(alert);
+			}
+		}
+		
 		dao().updateAlert(alert);
 	}
 	
@@ -120,7 +151,10 @@ public class AlertService implements Serializable {
 		log.debug("Marking alert as read " + alert);
 		User authUser = context.getAuthenticatedUser();
 		if (authUser != null) {
-			alert.addReadByUser(authUser);
+			AlertRecipient ar = alert.getRecipient(authUser);
+			ar.setAlertRead(true);
+			if (alert.isSatisfiedByAny())
+				alert.setAlertRead(true);
 			dao().updateAlert(alert);
 		}
 			
@@ -184,7 +218,6 @@ public class AlertService implements Serializable {
 	/**
 	 * 
 	 * @param user to restrict to 
-	 * @param roles to search on
 	 * @param includeRead
 	 * @param includeExpired
 	 * @return alerts for this user with these options
@@ -192,7 +225,7 @@ public class AlertService implements Serializable {
 	 */
 	public List<Alert> getAlerts(User user, boolean includeRead, boolean includeExpired) throws Exception {
 		log.debug("Getting alerts for user " + user + " read? " + includeRead + " expired? " + includeExpired);
-		return dao().getAlerts(user, context.getAllRoles(user), includeRead, includeExpired);
+		return dao().getAlerts(user, includeRead, includeExpired);
 	}
 	
 	/**

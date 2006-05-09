@@ -1,4 +1,5 @@
 <%@page isErrorPage="true" %>
+<%@ page import="org.openmrs.web.WebUtil" %>
 <%@ page import="org.openmrs.web.WebConstants" %>
 <%@ page import="org.openmrs.api.APIAuthenticationException" %>
 <%@ include file="/WEB-INF/template/include.jsp" %>

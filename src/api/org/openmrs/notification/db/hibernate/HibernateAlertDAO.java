@@ -1,9 +1,7 @@
 package org.openmrs.notification.db.hibernate;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -12,8 +10,6 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
-import org.hibernate.sql.JoinFragment;
-import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.hibernate.HibernateUtil;
@@ -63,8 +59,9 @@ public class HibernateAlertDAO implements AlertDAO {
 		return alert;
 	}
 
-	public List<Alert> getAlerts(User user, Set<Role> userRoles,
-			boolean includeRead, boolean includeExpired) throws DAOException {
+	@SuppressWarnings("unchecked")
+	public List<Alert> getAlerts(User user, boolean includeRead, 
+				boolean includeExpired) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		log.debug("Getting alerts for user " + user + " read? " + includeRead
 				+ " expired? " + includeExpired);
@@ -72,53 +69,51 @@ public class HibernateAlertDAO implements AlertDAO {
 		// return list
 		List<Alert> alerts = new Vector<Alert>();
 
-		// a null userRoles object would break later code, set to empty list
-		if (userRoles == null)
-			userRoles = new HashSet<Role>();
-
-		// only find roles users that have roles or an id
-		if (user != null && (!userRoles.isEmpty() || user.getUserId() != null)) {
-
-			Criteria crit = session.createCriteria(Alert.class, "alert");
-			// We only want one alert displayed even if a user is
-			// qualified for it more than once
-			crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-			if (user != null) {
-
-				if (user.getUserId() == null) {
-					if (!userRoles.isEmpty())
-						// If the userId is null, only check the roles
-						// (Anonymous)
-						crit.add(Expression.in("role", userRoles));
-				} else {
-					if (userRoles.isEmpty())
-						// user does not have any roles, only check on userId
-						crit.add(Expression.eq("user", user));
-					else
-						// check both the userId and the user's roles
-						crit.add(Expression.or(Expression.eq("user", user),
-								Expression.in("role", userRoles)));
-				}
-			}
-			// include the expired alerts if requested
-			if (includeExpired == false)
-				crit.add(Expression.or(Expression.isNull("dateToExpire"),
-						Expression.gt("dateToExpire", new Date())));
-			// include the read alerts if requested
-			if (includeRead == false && user.getUserId() != null) {
-				crit.createCriteria("readByUsers", "readBy",
-						JoinFragment.LEFT_OUTER_JOIN);
-				crit.add(Expression.or(Expression.isNull("readBy.userId"),
-						Expression.ne("readBy.userId", user.getUserId())));
-			}
-			crit.addOrder(Order.desc("dateChanged"));
-
-			alerts = crit.list();
+		Criteria crit = session.createCriteria(Alert.class, "alert");
+		crit.createCriteria("recipients", "recipient");
+		
+		if (user != null && user.getUserId() != null)
+			crit.add(Expression.eq("recipient.recipient", user));
+		else
+			crit.add(Expression.isNull("recipient.recipient"));
+		
+		// exclude the expired alerts unless requested
+		if (includeExpired == false)
+			crit.add(Expression.or(Expression.isNull("dateToExpire"),
+					Expression.gt("dateToExpire", new Date())));
+		
+		// exclude the read alerts unless requested
+		if (includeRead == false && user.getUserId() != null) {
+			crit.add(Expression.eq("alertRead", false));
+			crit.add(Expression.eq("recipient.alertRead", false));
 		}
+		
+		crit.addOrder(Order.desc("dateChanged"));
+
+		alerts = crit.list();
+
+		/*	
+		if (user != null && user.getUserId() != null) {
+			String sql = "select alert from Alert alert where recipient.recipientId = :userId";
+			String order = " order by alert.dateChanged desc";
+			
+			if (includeExpired == false)
+				sql = sql + " and (alert.dateToExpire is null or alert.dateToExpire > current_date())";
+			
+			if (includeRead == false)
+				sql = sql + " and alert.alertRead = false and recipient.alertRead = false";
+			
+			Query query = session.createQuery(sql + order);
+			query.setInteger("userId", user.getUserId());
+			
+			alerts = query.list();
+		}
+		*/
 
 		return alerts;
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Alert> getAllAlerts(boolean includeExpired) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 
@@ -126,10 +121,7 @@ public class HibernateAlertDAO implements AlertDAO {
 		List<Alert> alerts = new Vector<Alert>();
 
 		Criteria crit = session.createCriteria(Alert.class, "alert");
-		// We only want one alert displayed even if a user is
-		// qualified for it more than once
-		crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-		// include the expired alerts if requested
+		// exclude the expired alerts unless requested
 		if (includeExpired == false)
 			crit.add(Expression.or(Expression.isNull("dateToExpire"),
 					Expression.gt("dateToExpire", new Date())));
