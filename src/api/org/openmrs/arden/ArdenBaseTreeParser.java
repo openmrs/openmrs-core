@@ -1558,6 +1558,161 @@ public ArdenBaseTreeParser() {
 		return s;
 	}
 	
+	public final String  maintenance(AST _t,
+		MLMObject obj
+	) throws RecognitionException {
+		String s="";
+		
+		AST maintenance_AST_in = (_t == ASTNULL) ? null : (AST)_t;
+		String a="",b = "";
+		
+		try {      // for error handling
+			{
+			AST __t398 = _t;
+			AST tmp65_AST_in = (AST)_t;
+			match(_t,MAINTENANCE);
+			_t = _t.getFirstChild();
+			{
+			_loop402:
+			do {
+				if (_t==null) _t=ASTNULL;
+				if (((_t.getType() >= AND && _t.getType() <= STRING_LITERAL))) {
+					{
+					if (_t==null) _t=ASTNULL;
+					if ((_t.getType()==FILENAME)) {
+						AST __t401 = _t;
+						AST tmp66_AST_in = (AST)_t;
+						match(_t,FILENAME);
+						_t = _t.getFirstChild();
+						AST tmp67_AST_in = (AST)_t;
+						match(_t,COLON);
+						_t = _t.getNextSibling();
+						s += " Filename: ";
+						b=textAST(_t,obj);
+						_t = _retTree;
+						obj.setClassName(b); s += b; s += "\n";
+						_t = __t401;
+						_t = _t.getNextSibling();
+					}
+					else if (((_t.getType() >= AND && _t.getType() <= STRING_LITERAL))) {
+						a=textAST(_t,obj);
+						_t = _retTree;
+						s += a;
+						AST tmp68_AST_in = (AST)_t;
+						match(_t,ENDBLOCK);
+						_t = _t.getNextSibling();
+						s += "\n";
+					}
+					else {
+						throw new NoViableAltException(_t);
+					}
+					
+					}
+				}
+				else {
+					break _loop402;
+				}
+				
+			} while (true);
+			}
+			_t = __t398;
+			_t = _t.getNextSibling();
+			}
+		}
+		catch (RecognitionException ex) {
+			reportError(ex);
+			if (_t!=null) {_t = _t.getNextSibling();}
+		}
+		_retTree = _t;
+		return s;
+	}
+	
+	public final String  textAST(AST _t,
+		MLMObject obj
+	) throws RecognitionException {
+		String s="";
+		
+		AST textAST_AST_in = (_t == ASTNULL) ? null : (AST)_t;
+		AST str = null;
+		String a="",b="";
+		
+		try {      // for error handling
+			{
+			{
+			{
+			_loop408:
+			do {
+				if (_t==null) _t=ASTNULL;
+				if ((_tokenSet_3.member(_t.getType()))) {
+					{
+					str = (AST)_t;
+					match(_t,_tokenSet_3);
+					_t = _t.getNextSibling();
+					}
+					a = " " + str.getText();s += a; System.err.println(s);
+				}
+				else {
+					break _loop408;
+				}
+				
+			} while (true);
+			}
+			}
+			}
+		}
+		catch (RecognitionException ex) {
+			reportError(ex);
+			if (_t!=null) {_t = _t.getNextSibling();}
+		}
+		_retTree = _t;
+		return s;
+	}
+	
+	public final String  library(AST _t,
+		MLMObject obj
+	) throws RecognitionException {
+		String s="";
+		
+		AST library_AST_in = (_t == ASTNULL) ? null : (AST)_t;
+		String a="",b="";
+		
+		try {      // for error handling
+			{
+			AST __t411 = _t;
+			AST tmp69_AST_in = (AST)_t;
+			match(_t,LIBRARY);
+			_t = _t.getFirstChild();
+			{
+			_loop413:
+			do {
+				if (_t==null) _t=ASTNULL;
+				if (((_t.getType() >= AND && _t.getType() <= STRING_LITERAL))) {
+					a=textAST(_t,obj);
+					_t = _retTree;
+					s += a;
+					AST tmp70_AST_in = (AST)_t;
+					match(_t,ENDBLOCK);
+					_t = _t.getNextSibling();
+					s += "\n";
+				}
+				else {
+					break _loop413;
+				}
+				
+			} while (true);
+			}
+			_t = __t411;
+			_t = _t.getNextSibling();
+			}
+		}
+		catch (RecognitionException ex) {
+			reportError(ex);
+			if (_t!=null) {_t = _t.getNextSibling();}
+		}
+		_retTree = _t;
+		return s;
+	}
+	
 	
 	public static final String[] _tokenNames = {
 		"<0>",
@@ -1625,15 +1780,15 @@ public ArdenBaseTreeParser() {
 		"\"data\"",
 		"\"logic\"",
 		"\"action\"",
-		"\"end\"",
-		"COLON",
 		"\"maintenance\"",
 		"\"library\"",
+		"\"filename\"",
+		"\"mlmname\"",
+		"\"end\"",
+		"COLON",
 		"\"knowledge\"",
 		"\"title\"",
 		";;",
-		"\"mlmname\"",
-		"\"filename\"",
 		"DOT",
 		"MINUS",
 		"UNDERSCORE",
@@ -1740,14 +1895,22 @@ public ArdenBaseTreeParser() {
 	}
 	public static final BitSet _tokenSet_0 = new BitSet(mk_tokenSet_0());
 	private static final long[] mk_tokenSet_1() {
-		long[] data = { 1080863910636027904L, 128L, 0L, 0L};
+		long[] data = { 1080863910636027904L, 512L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_1 = new BitSet(mk_tokenSet_1());
 	private static final long[] mk_tokenSet_2() {
-		long[] data = { 4539628424456568832L, 268468352L, 8830452760576L, 0L, 0L, 0L};
+		long[] data = { 4539628424456568832L, 268468736L, 8830452760576L, 0L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_2 = new BitSet(mk_tokenSet_2());
+	private static final long[] mk_tokenSet_3() {
+		long[] data = new long[8];
+		data[0]=-16L;
+		data[1]=-513L;
+		data[2]=17592186044415L;
+		return data;
+	}
+	public static final BitSet _tokenSet_3 = new BitSet(mk_tokenSet_3());
 	}
 	

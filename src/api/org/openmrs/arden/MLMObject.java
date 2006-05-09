@@ -24,6 +24,7 @@ public class MLMObject {
 	private Patient patient;
 	private LinkedList<String> ifList;
 	private HashMap<String, String> userVarMapFinal ;
+	private String className;
 
 //	private Iterator<String> iter; 
 	
@@ -331,5 +332,12 @@ public class MLMObject {
 			retVal = patient.getPatientName().getGivenName();
 		}
 		return retVal;
+	}
+	
+	public void setClassName(String name) {
+		className = name;
+	}
+	public String getClassName() {
+		return className;
 	}
 }

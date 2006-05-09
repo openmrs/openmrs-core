@@ -91,6 +91,10 @@ tokens {
 	DATA="data";
 	LOGIC="logic";
 	ACTION="action";
+	MAINTENANCE ="maintenance";
+	LIBRARY="library";
+	FILENAME="filename";
+	MLMNAME="mlmname";
 	
 }
 
@@ -158,17 +162,27 @@ tokens {
       
       //String tree = parser.getAST().toStringList();
       
-     System.err.println(t.toStringTree());
+     System.err.println(t.toStringTree());   // prints maintenance
       
       ArdenBaseTreeParser treeParser = new ArdenBaseTreeParser();
  //     String datastr = treeParser.data(t);
  	  MLMObject ardObj = new MLMObject();
- 	  treeParser.data(t,ardObj);
+ 	  
+ 	  treeParser.maintenance(t, ardObj);
+ 	  
+ 	 System.err.println(t.getNextSibling().toStringTree());   // prints library
       
-      System.err.println(t.getNextSibling().toStringTree());
+      treeParser.library(t.getNextSibling(), ardObj);
       
-      String logicstr = treeParser.logic(t.getNextSibling(), ardObj);
-      String actionstr = treeParser.action(t.getNextSibling().getNextSibling(), ardObj);
+     System.err.println(t.getNextSibling().getNextSibling().toStringTree()); // Print data
+ 	  treeParser.data(t.getNextSibling().getNextSibling(),ardObj);
+      
+
+     System.err.println(t.getNextSibling().getNextSibling().getNextSibling().toStringTree()); // Print logic
+      String logicstr = treeParser.logic(t.getNextSibling().getNextSibling().getNextSibling(), ardObj);
+      
+     System.err.println(t.getNextSibling().getNextSibling().getNextSibling().getNextSibling().toStringTree()); // Print action
+      String actionstr = treeParser.action(t.getNextSibling().getNextSibling().getNextSibling().getNextSibling(), ardObj);
       
       
       System.err.println(actionstr);
@@ -200,14 +214,14 @@ tokens {
 // @@startrules
 
 startRule:
-	  maintenance_category!
-	  library_category!
+	  maintenance_category
+	  library_category
 	  knowledge_category
 	  "end"! COLON!
 	  ;
 	 
 maintenance_category:	
-   	("maintenance" COLON) maintenance_body
+   	("maintenance"^ COLON!) maintenance_body
   	;
 
 maintenance_body :
@@ -223,7 +237,7 @@ maintenance_body :
 	;
 
 library_category:
-	 "library" COLON library_body
+	 "library"^ COLON! library_body
 	;
 
 library_body:
@@ -254,8 +268,8 @@ title_slot: ("title" COLON (text)* ENDBLOCK
    	;
 
 mlmname_slot :
-	  "mlmname" COLON mlmname_text 
-	| "filename" COLON mlmname_text  
+	  MLMNAME^ COLON mlmname_text 
+	| FILENAME^ COLON mlmname_text  
 	;
 									
 mlmname_text
@@ -1381,6 +1395,45 @@ actionExprAST [MLMObject obj] returns [String s=""]
  
 ;
 
+maintenance [MLMObject obj] returns [String s=""]
+{String a="",b = "";}
+: (
+  #(MAINTENANCE 
+  	( 
+  		(#(FILENAME COLON {s += " Filename: "; }  b = textAST[obj] {obj.setClassName(b); s += b; s += "\n";})
+  		| a = textAST[obj] {s += a;} ENDBLOCK {s += "\n";} 
+  		)
+  		
+    )* 
+   )
+   
+  )
+;
+
+textAST [MLMObject obj] returns [String s=""]
+{String a="",b="";}
+: (
+	(
+ 	//	 #(FILENAME COLON {s = " Filename: "; }  b = textAST[obj] {obj.setClassName(b); s += b;})
+	//	|
+		(str: ~(ENDBLOCK) {a = " " + str.getText();s += a; System.err.println(s);} )*  
+		
+
+	)
+)
+;
+
+library [MLMObject obj] returns [String s=""]
+{String a="",b="";}
+: (
+  #(LIBRARY 
+  	 ( 
+  		a = textAST[obj] {s += a;} ENDBLOCK {s += "\n";} 
+    )* 
+   
+   )
+  )
+;
 
 
 /*************************************************************************************/
