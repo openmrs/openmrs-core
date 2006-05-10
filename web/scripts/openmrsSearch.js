@@ -52,6 +52,7 @@ var lastPhraseSearched;
 var numItemsDisplayed;
 var firstItemDisplayed;
 var allowAutoListWithNumber;
+var previousHit;
 
 var debugBox;
 
@@ -76,6 +77,7 @@ function resetForm() {
 	debugBox = $("debugBox");
 	if (debugBox) debugBox.innerHTML = "";
 	keyCode = null;
+	previousHit = null;
 }
 
 function searchBoxChange(bodyElementId, obj, event, retired, delay, onkeydownused) {
@@ -317,13 +319,14 @@ var noCell = function() {
 }
 
 var getNumber = function(searchHit) {
-	    if (typeof searchHit == 'string') {
+		if (typeof searchHit == 'string') {
     		return "";
     	}
-		objectsFound.push(searchHit);
-		searchIndex = searchIndex + 1;
-		var td = document.createElement("td");
+    	var td = document.createElement("td");
 		td.className = "searchIndex";
+		if (searchIndex >= objectsFound.length)
+    		objectsFound.push(searchHit);
+		searchIndex = searchIndex + 1;
 		td.innerHTML = searchIndex + ". ";
 		td.id = searchIndex;
 		return td;
@@ -347,26 +350,33 @@ var getDateString = function(d) {
 	return str;
 }
 
+var rowMouseOver = function() {
+	if (this.className.indexOf("searchHighlight") == -1)
+		this.className = "searchHighlight " + this.className;
+}
+
+var rowMouseOut = function() {
+	var c = this.className;
+	this.className = c.substring(c.indexOf(" ") + 1, c.length);
+}
+
 var rowCreator = function(row, i) {
+	previousHit = objectsFound[searchIndex-1];
+	
 	var tr = document.createElement("tr");
+	
 	if (i % 2 == 0)
 		tr.className = "evenRow";
 	else
 		tr.className = "oddRow";
-	
+
 	if (row.voided == true || row.retired == true)
 		tr.className += " voided";
 	
 	if (typeof row != "string") {
 		tr.onclick= function() { selectObject(this.firstChild.id); };
-		tr.onmouseover= function()  {
-					if (this.className.indexOf("searchHighlight") == -1)
-						this.className = "searchHighlight " + this.className;
-				};
-		tr.onmouseout = function () {
-					var c = this.className;
-					this.className = c.substring(c.indexOf(" ") + 1, c.length);
-				};
+		tr.onmouseover= rowMouseOver;
+		tr.onmouseout = rowMouseOut;
 	}
 	
 	return tr;
@@ -420,7 +430,7 @@ function fillTable(objects, cells) {
     if (debugBox) debugBox.innerHTML += "<br>ending fillTable().  Keycode was: " + keyCode;
     
     if (typeof postFillTable == 'function')
-    	postFillTable(objectsFound.length);
+    	postFillTable(objectsFound);
 }
 
 function showPrevious() {

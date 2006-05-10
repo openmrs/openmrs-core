@@ -65,6 +65,7 @@ public class DWRPatientService {
 						newSearch += " " + name;
 					}
 					
+					newSearch = newSearch.trim();
 					List<Patient> newPatients = ps.findPatients(newSearch, includeVoided);
 					newPatients.removeAll(patients);
 					if (newPatients.size() > 0) {

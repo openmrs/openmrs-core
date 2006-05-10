@@ -173,21 +173,24 @@
 		toggle("tr", "voided");
 		
 		var table = document.getElementById("obs");
-		var rows = table.rows;
-		var oddRow = true;
 		
-		for (var i=1; i<rows.length; i++) {
-			if (rows[i].style.display == "") {
-				var c = "";
-				if (rows[i].className.substr(0, 6) == "voided")
-					c = "voided ";
-				if (oddRow)
-					c = c + "oddRow";
-				else
-					c = c + "evenRow";
-				oddRow = !oddRow;
-				rows[i++].className = c;
-				rows[i].className = c;
+		if (table) {
+			var rows = table.rows;
+			var oddRow = true;
+			
+			for (var i=1; i<rows.length; i++) {
+				if (rows[i].style.display == "") {
+					var c = "";
+					if (rows[i].className.substr(0, 6) == "voided")
+						c = "voided ";
+					if (oddRow)
+						c = c + "oddRow";
+					else
+						c = c + "evenRow";
+					oddRow = !oddRow;
+					rows[i++].className = c;
+					rows[i].className = c;
+				}
 			}
 		}
 		
@@ -249,7 +252,7 @@
 				<spring:bind path="encounter.patient">
 					<table>
 						<tr>
-							<td><a id="patientName" href="#View Patient" onclick="return gotoPatient('patientName')">${status.value.patientName.givenName} ${status.value.patientName.middleName} ${status.value.patientName.familyName}</a></td>
+							<td><a id="patientName" href="#View Patient" onclick="return gotoPatient('patient')">${status.value.patientName.givenName} ${status.value.patientName.middleName} ${status.value.patientName.familyName}</a></td>
 							<td>
 								<c:if test="${encounter.encounterId == null}">
 									&nbsp;

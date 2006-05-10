@@ -89,7 +89,8 @@
 	function gotoUser(select, userId) {
 		if (userId == null)
 			userId = $(select).value;
-		window.location = "${pageContext.request.contextPath}/admin/users/user.form?userId=" + userId;
+		if (userId != "")
+			window.location = "${pageContext.request.contextPath}/admin/users/user.form?userId=" + userId;
 		return false;
 	}
 	
