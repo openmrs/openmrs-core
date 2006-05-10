@@ -1,6 +1,7 @@
 package org.openmrs.arden;
 
 
+import java.io.Writer;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -128,7 +129,15 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 		}		
 		return retVal;
 	}
-	
+
+   public String getConcept(){
+	   String  cn;
+		int index;
+		
+		index = conceptName.indexOf("from");	// First substring
+		cn = conceptName.substring(1,index);
+		return cn;
+   }
   
    public String getObsVal(Locale locale){
 	   String val = null;
@@ -185,6 +194,18 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 	   }
 	  return retVal;
    }
+   
+   public boolean writeEvaluate(Writer w) throws Exception{
+	   boolean retVal = false;
+	   if(!hasConclude){
+		   String cn = getConcept();
+		   
+		   w.append("\t\t concept = context.getConceptService().getConceptByName(" + cn + ");\n");
+		   w.append("if(" + cn + "){}\n");
+	   }
+	   return retVal;
+   }
+   
    public boolean evaluateEquals(boolean RHS) {
 	   boolean retVal = false;
 	   

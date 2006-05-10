@@ -1,4 +1,7 @@
 package org.openmrs.arden;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -8,6 +11,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
+import org.openmrs.Concept;
 import org.openmrs.ConceptWord;
 import org.openmrs.api.context.Context;
 import org.openmrs.Patient;
@@ -148,6 +152,40 @@ public class MLMObject {
 		}
 		return retVal;
 	}
+	
+	public void WriteEvaluate(Writer w) throws Exception {
+	
+	try{
+		 w.append("\n");
+	     w.append("public boolean Evaluate() {\n");
+	     w.append("\tConcept concept;\n");
+	     w.append("\tboolean retVal = false;\n");
+	     w.append("\tObs obs;\n");
+
+	    
+		String key;
+		ListIterator<String> thisList = ifList.listIterator(0);
+		while (thisList.hasNext()){
+			key = thisList.next();
+			if(writeEvaluateConcept(key, w)){ 
+	//			if(isConclude(key)) {
+	//			  retVal = conclude(key);	
+	//			  break;  // concluded true or false
+				}
+				else {
+						// set all the user defined variables
+	//				addUserVarValFinal(key);
+				}
+			}
+		w.append("}\n");	// End of this function
+		w.append("\n");
+		}
+		catch (Exception e) {
+		      System.err.println("Write Evaluate: "+e);
+		      e.printStackTrace();   // so we can get stack trace		
+		    }
+	}
+	
 	public int GetSize(){
 		return conceptMap.size();
 	}
@@ -202,6 +240,7 @@ public class MLMObject {
 		return retVal;
 	}
 	
+		
 	public boolean EvaluateConcept(String key) {
 		boolean retVal = false;
 		MLMObjectElement mObjElem = GetMLMObjectElement(key);
@@ -211,6 +250,16 @@ public class MLMObject {
 		return retVal;
 	}
 	
+	public boolean writeEvaluateConcept(String key, Writer w) throws Exception{
+		boolean retVal = false;
+		MLMObjectElement mObjElem = GetMLMObjectElement(key);
+		if(mObjElem != null ){
+			retVal = mObjElem.writeEvaluate(w);
+			w.flush();
+		}
+		return retVal;
+	}
+
 	public boolean Evaluated(String key){
 		boolean retVal = false;
 		MLMObjectElement mObjElem = GetMLMObjectElement(key);
