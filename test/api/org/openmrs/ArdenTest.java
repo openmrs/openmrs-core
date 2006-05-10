@@ -110,15 +110,41 @@ public class ArdenTest extends TestCase {
 	     w.write("import org.openmrs.api.context.Context;\n\n");
 	     
 	     String classname = ardObj.getClassName();
-	     w.write("public class " + classname + "{\n");
+	     w.write("public class " + classname + "{\n"); // Start of class
 	     w.write("private Context context;\nprivate Patient patient;\nprivate Locale locale;\nprivate String firstname;\n");
 	     w.write("\n\n//Constructor\n");
 	     w.write("public " + classname + "(Context c, Integer pid, Locale l){\n");
 	     w.write("\tcontext = c;\n\tlocale = l;\n\tpatient = c.getPatientService().getPatient(pid);\n");
-	     w.write("\tfirstname = patient.getPatientName().getGivenName();\n\t}\n");
-	     w.write("}");	// end class
+	     w.write("\tfirstname = patient.getPatientName().getGivenName();\n\t}\n\n\n");
+	     w.write("public Obs getObsForConceptForPatient(Concept concept, Locale locale, Patient patient) {\n");
+	     w.write("\tSet <obs> MyObs;\n");
+	     w.write("\tObs obs = new Obs();\n\t{");
+	     w.write("\t\tMyObs = context.getObsService().getObservations(patient, concept);\n");
+	     w.write("\t\tIterator iter = MyObs.iterator();\n");
+	     w.write("\t\tif(iter.hasNext()) {\n");
+	     w.write("\t\t\twhile(iter.hasNext())	{\n");
+	     w.write("\t\t\t\tobs = (Obs) iter.next();\n");
+	     w.write("\t\t\t\tSystem.out.println(obs.getValueAsString(locale));\n");
+	     w.write("\t\t\t}\n");
+	     w.write("\t\t\t\treturn obs;\n");
+	     w.write("\t\t}\n");
+	     w.write("\t\telse {\n");
+	     w.write("\t\t\treturn null;\n");
+	     w.write("\t\t}\n");
+	     w.write("\t}\n");
+	     w.write("}\n");  // End of this function
 	     
-	   	 w.flush();
+	     w.write("public boolean Run() {\n");
+	     w.write("\tboolean retVal = false;\n");
+	     w.write("\tif(Evaluate()) {\n");
+	     w.write("\t\tSystem.out.println();\n");
+	     w.write("\t}\n");
+	     w.write("\treturn retVal;\n");
+	     w.write("}\n");	// End of this function
+	     w.flush();
+	     
+	     
+	     
 	     
 	     System.err.println(t.getNextSibling().getNextSibling().toStringTree()); // Print data
 	  	 
@@ -150,6 +176,14 @@ public class ArdenTest extends TestCase {
 	    	  String actionstr = treeParser.action(t.getNextSibling().getNextSibling().getNextSibling().getNextSibling(), ardObj);
 	    	  System.err.println(actionstr);
 	      }
+	      
+	      ardObj.WriteEvaluate(w);
+		     
+		     
+		     
+		     w.append("}");	// end class
+		     w.flush();
+		     w.close();
 	      
 	    }
 	    catch (Exception e) {
