@@ -106,15 +106,18 @@ public class ArdenTest extends TestCase {
 	     w.write("\n********************************************************************/\n");
 	     w.write("package org.openrms.arden;\n\n");
 	     w.write("import java.util.Iterator;\nimport java.util.Locale;\nimport java.util.Set;\n");
+	     w.write("import java.util.HashMap;\n");
 	     w.write("import org.openmrs.Concept;\nimport org.openmrs.Obs;\nimport org.openmrs.Patient;\n");
 	     w.write("import org.openmrs.api.context.Context;\n\n");
 	     
 	     String classname = ardObj.getClassName();
 	     w.write("public class " + classname + "{\n"); // Start of class
 	     w.write("private Context context;\nprivate Patient patient;\nprivate Locale locale;\nprivate String firstname;\n");
+	     w.write("private HashMap<String, String> userVarMap;\n");
 	     w.write("\n\n//Constructor\n");
 	     w.write("public " + classname + "(Context c, Integer pid, Locale l){\n");
 	     w.write("\tcontext = c;\n\tlocale = l;\n\tpatient = c.getPatientService().getPatient(pid);\n");
+	     w.write("\tuserVarMap = new HashMap <String, String>();\n");
 	     w.write("\tfirstname = patient.getPatientName().getGivenName();\n\t}\n\n\n");
 	     w.write("public Obs getObsForConceptForPatient(Concept concept, Locale locale, Patient patient) {\n");
 	     w.write("\tSet <obs> MyObs;\n");
