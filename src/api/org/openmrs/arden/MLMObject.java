@@ -160,7 +160,7 @@ public class MLMObject {
 	     w.append("public boolean Evaluate() {\n");
 	     w.append("\tConcept concept;\n");
 	     w.append("\tboolean retVal = false;\n");
-	     w.append("\tObs obs;\n");
+	     w.append("\tObs obs;\n\n");
 
 	    
 		String key;
@@ -254,7 +254,7 @@ public class MLMObject {
 		boolean retVal = false;
 		MLMObjectElement mObjElem = GetMLMObjectElement(key);
 		if(mObjElem != null ){
-			retVal = mObjElem.writeEvaluate(w);
+			retVal = mObjElem.writeEvaluate(key, w);
 			w.flush();
 		}
 		return retVal;

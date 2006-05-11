@@ -1185,9 +1185,13 @@ public ArdenBaseTreeParser() {
 				match(_t,ID);
 				_t = _t.getFirstChild();
 				a = ift.getText(); System.err.println("IF text = " + a); 
-							        if(instr.equals(""))
-							        	obj.AddToEvaluateList(a);
-							      //  	obj.RetrieveConcept(a); 
+							        if(instr.equals("")) {
+							        		obj.AddToEvaluateList(a);
+								      //  	obj.RetrieveConcept(a); 
+							        }
+							        else { // if instr is not empty then we are evaluating RHS of an equation, it can be a non string literal
+							        	obj.SetAnswer(a,instr);					
+							        }
 							        s= a;
 							
 				_t = __t357;

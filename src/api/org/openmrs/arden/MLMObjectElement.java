@@ -195,13 +195,132 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 	  return retVal;
    }
    
-   public boolean writeEvaluate(Writer w) throws Exception{
+   public boolean writeEvaluate(String key, Writer w) throws Exception{
 	   boolean retVal = false;
-	   if(!hasConclude){
+	   if(dbAccessRequired){
 		   String cn = getConcept();
 		   
-		   w.append("\t\t concept = context.getConceptService().getConceptByName(" + cn + ");\n");
-		   w.append("if(" + cn + "){}\n");
+		   w.append("\tconcept = context.getConceptService().getConceptByName(\"" + cn.trim() + "\");\n");
+		   w.append("\tobs = getObsForConceptForPatient(concept,locale, patient);\n");
+		   w.append("\tif(obs != null) {\n");
+		   
+		   if (compOp != null){
+			   switch(compOp) {
+			   		case EQUALS:
+			   		{switch(compOpType){
+		  			case 3: // boolean
+		  				w.append("\t\tboolean " + key + " = obs.getValueAsBoolean();\n");
+		  				w.append("\t\tif (" + key + " == " + Boolean.toString(answerBool) + ") {\n");
+		  				if(!hasConclude) {	// no conclude
+			  				String var = "", val = "";
+			  			    Iterator iter = iterator();
+			  				while(iter.hasNext()) {
+			  					var = (String) iter.next();
+			  					val = getUserVarVal(var);
+			  					w.append("\t\t\t//"+var+ " = \"" + val +"\";\n"); // write as comment
+			  					w.append("\t\t\tif(!userVarMap.containsKey("+ var + ")) {\n\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n\t\t\t}\n");
+			  					w.append("\t\t\telse {\n");
+			  					w.append("\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n");
+			  					w.append("\t\t\t}");
+			  				}
+		  				}
+		  				else { // has conclude
+		  					w.append("\t\t\tretVal = true;\n");
+		  					w.append("\t\t\treturn retVal;\n");
+		  				}
+		  				w.append("\t\t}\n");
+		  				break;
+		  			case 2: // integer
+		  				w.append("\t\tdouble " + key + " = obs.getValueNumeric();\n");
+		  				w.append("\t\tif (" + key + " = " + Integer.toString(answerInt) + ") {\n");
+		  				if(!hasConclude) {	
+			  				String var = "", val = "";
+			  			    Iterator iter = iterator();
+			  				while(iter.hasNext()) {
+			  					var = (String) iter.next();
+			  					val = getUserVarVal(var);
+			  					w.append("\t\t\t//"+var+ " = \"" + val +"\";\n"); // write as comment
+			  					w.append("\t\t\tif(!userVarMap.containsKey("+ var + ")) {\n\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n\t\t\t}\n");
+			  					w.append("\t\t\telse {\n");
+			  					w.append("\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n");
+			  					w.append("\t\t\t}");
+			  				}
+		  				}
+		  				else { // has conclude
+		  					w.append("\t\t\tretVal = true;\n");
+		  					w.append("\t\t\treturn retVal;\n");
+		  				}
+		  				w.append("\t\t}\n");
+		  				break;
+		  			case 1: // String
+		  				w.append("\t\tString " + key + " = obs.getValueText();\n");
+		  				w.append("\t\tif (" + key + ".equals(\"" + answerStr + "\")) {\n");
+		  				if(!hasConclude) {	
+			  				String var = "", val = "";
+			  			    Iterator iter = iterator();
+			  				while(iter.hasNext()) {
+			  					var = (String) iter.next();
+			  					val = getUserVarVal(var);
+			  					w.append("\t\t\t//"+var+ " = \"" + val +"\";\n"); // write as comment
+			  					w.append("\t\t\tif(!userVarMap.containsKey("+ var + ")) {\n\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n\t\t\t}\n");
+			  					w.append("\t\t\telse {\n");
+			  					w.append("\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n");
+			  					w.append("\t\t\t}");
+			  				}
+		  				}
+		  				else { // has conclude
+		  					w.append("\t\t\tretVal = true;\n");
+		  					w.append("\t\t\treturn retVal;\n");
+		  				}
+		  				w.append("\t\t}\n");
+		  				break;
+				   }
+			   			
+			   		}
+			   		break;
+			   		case GTE:
+			   		{switch(compOpType){
+		  			case 3: // boolean
+		  				
+		  				break;
+		  			case 2: // integer
+		  				w.append("\t\tdouble " + key + " = obs.getValueNumeric();\n");
+		  				w.append("\t\tif (" + key + " >= " + Integer.toString(answerInt) + ") {\n");
+		  				
+		  				if(!hasConclude) {
+			  				String var = "", val = "";
+			  			    Iterator iter = iterator();
+			  				while(iter.hasNext()) {
+			  					var = (String) iter.next();
+			  					val = getUserVarVal(var);
+			  					w.append("\t\t\t//"+var+ " = \"" + val +"\";\n");   // write as comment
+			  					w.append("\t\t\tif(!userVarMap.containsKey("+ var + ")) {\n\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n\t\t\t}\n");
+			  					w.append("\t\t\telse {\n");
+			  					w.append("\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n");
+			  					w.append("\t\t\t}");
+			  				}
+		  				}
+		  				w.append("\t\t}\n");
+		  				break;
+		  			case 1: // String
+		  				
+		  				break;
+				   }
+		   			
+			   		}
+			   		break;
+			   		default:
+			   			break;
+			   	}
+			   
+			   }  
+			
+		   
+		   w.append("\t}\n\n");
+		   
+	   }  // end of DB access required
+	   else {  // No DB access, simply conclude or else conclude
+	   
 	   }
 	   return retVal;
    }
