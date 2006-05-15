@@ -897,7 +897,7 @@ public ArdenBaseTreeParser() {
 				}
 				case CONCLUDE:
 				{
-					System.err.println("-----------Starting CONCLUDE -------");
+					System.err.println("-----------Starting CONCLUDE -------");obj.InitEvaluateList();
 					concludeAST(_t,obj, "");
 					_t = _retTree;
 					System.err.println("\n");System.err.println("-----------End CONCLUDE -------");
@@ -941,7 +941,7 @@ public ArdenBaseTreeParser() {
 			AST tmp42_AST_in = (AST)_t;
 			match(_t,IF);
 			_t = _t.getFirstChild();
-			obj.InitForIf();
+			obj.ResetConceptVar(); obj.InitEvaluateList();
 			s=exprAST(_t,obj);
 			_t = _retTree;
 			AST tmp43_AST_in = (AST)_t;
@@ -978,7 +978,7 @@ public ArdenBaseTreeParser() {
 						key = a;
 						obj.SetConceptVar(a);
 						obj.AddConcept(key);
-						obj.AddToEvaluateList(a);
+						obj.AddToEvaluateList(a); obj.SetConceptVar(a);
 						obj.SetDBAccess(false,a);
 						} 
 					
@@ -1060,7 +1060,7 @@ public ArdenBaseTreeParser() {
 				AST tmp47_AST_in = (AST)_t;
 				match(_t,ELSEIF);
 				_t = _t.getFirstChild();
-				obj.InitForIf();
+				obj.ResetConceptVar();
 				s=exprAST(_t,obj);
 				_t = _retTree;
 				AST tmp48_AST_in = (AST)_t;
@@ -1076,7 +1076,7 @@ public ArdenBaseTreeParser() {
 				AST tmp49_AST_in = (AST)_t;
 				match(_t,ELSE);
 				_t = _t.getFirstChild();
-				obj.InitForIf();
+				obj.ResetConceptVar();
 				s=exprAST(_t,obj);
 				_t = _retTree;
 				obj.AddConcept(s);obj.SetDBAccess(false,s);
@@ -1186,7 +1186,7 @@ public ArdenBaseTreeParser() {
 				_t = _t.getFirstChild();
 				a = ift.getText(); System.err.println("IF text = " + a); 
 							        if(instr.equals("")) {
-							        		obj.AddToEvaluateList(a);
+							        		obj.AddToEvaluateList(a); obj.SetConceptVar(a);
 								      //  	obj.RetrieveConcept(a); 
 							        }
 							        else { // if instr is not empty then we are evaluating RHS of an equation, it can be a non string literal
@@ -1301,7 +1301,7 @@ public ArdenBaseTreeParser() {
 				{
 				a = "tmp_01"; System.err.println("IF text = " + a); 
 							        if(instr.equals(""))
-							        	obj.AddToEvaluateList(a);
+							        	obj.AddToEvaluateList(a); obj.SetConceptVar(a);
 							        	
 							      //  	obj.RetrieveConcept(a); 
 							        s= a;
@@ -1498,7 +1498,8 @@ public ArdenBaseTreeParser() {
 					match(_t,ID);
 					_t = _t.getNextSibling();
 					a = id.getText(); 
-												b= obj.getUserVarVal(a);
+												//b= obj.getUserVarVal(a);
+												b = "||" + a + "||";
 												s += b;
 					AST tmp64_AST_in = (AST)_t;
 					match(_t,ACTION_OP);

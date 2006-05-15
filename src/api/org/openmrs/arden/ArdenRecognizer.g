@@ -1,4 +1,3 @@
-
 header {
 package org.openmrs.arden;
 
@@ -1172,7 +1171,7 @@ logic [MLMObject obj] returns [String s=""]
 : #(LOGIC {System.err.println("\n"); System.err.println("-------Starting LOGIC--------");} 
 	 (
 	   {System.err.println("-----------Starting IF -------");} a=ifAST[obj]
-			   (	{System.err.println("-----------Starting CONCLUDE -------");} (concludeAST[obj, a])? {System.err.println("\n");System.err.println("-----------End CONCLUDE -------");}
+			   (	{System.err.println("-----------Starting CONCLUDE -------"); } (concludeAST[obj, a])? {System.err.println("\n");System.err.println("-----------End CONCLUDE -------");}
 			      | {System.err.println("-----------Starting Logic Assignment -------");} logicAssignmentAST[obj, a]  {System.err.println("\n");System.err.println("-----------End logic assignment -------");}
 			      
 			   )
@@ -1184,7 +1183,7 @@ logic [MLMObject obj] returns [String s=""]
 					      
 			  )
 	   {System.err.println("\n");System.err.println("-----------End ELSE- ELSEIF -------");}
-	  | {System.err.println("-----------Starting CONCLUDE -------");} concludeAST[obj, ""]  {System.err.println("\n");System.err.println("-----------End CONCLUDE -------");}
+	  | {System.err.println("-----------Starting CONCLUDE -------");obj.InitEvaluateList();} concludeAST[obj, ""]  {System.err.println("\n");System.err.println("-----------End CONCLUDE -------");}
 
 	 )* 
   (ENDBLOCK){System.err.println("\n");System.err.println("-----------End Action -------");})
@@ -1193,7 +1192,7 @@ logic [MLMObject obj] returns [String s=""]
 ifAST [MLMObject obj] returns [String s=""]
 {String a,b;}
 : (
-    #(IF {obj.InitForIf();} s=exprAST[obj] THEN ) 
+    #(IF {obj.ResetConceptVar(); obj.InitEvaluateList();} s=exprAST[obj] THEN ) 
    )
    ;
 
@@ -1227,7 +1226,7 @@ exprStringAST [MLMObject obj, String instr] returns [String s=""]
    #(ift:ID 
 			      { a = ift.getText(); System.err.println("IF text = " + a); 
 			        if(instr.equals("")) {
-			        		obj.AddToEvaluateList(a);
+			        		obj.AddToEvaluateList(a); obj.SetConceptVar(a);
 				      //  	obj.RetrieveConcept(a); 
 			        }
 			        else { // if instr is not empty then we are evaluating RHS of an equation, it can be a non string literal
@@ -1265,7 +1264,7 @@ exprStringAST [MLMObject obj, String instr] returns [String s=""]
 	| ( // Empty as in else conclude
 		{ a = "tmp_01"; System.err.println("IF text = " + a); 
 			        if(instr.equals(""))
-			        	obj.AddToEvaluateList(a);
+			        	obj.AddToEvaluateList(a); obj.SetConceptVar(a);
 			        	
 			      //  	obj.RetrieveConcept(a); 
 			        s= a;
@@ -1330,7 +1329,7 @@ concludeAST [MLMObject obj, String key] returns [String s=""]
     			key = a;
     			obj.SetConceptVar(a);
     			obj.AddConcept(key);
-    			obj.AddToEvaluateList(a);
+    			obj.AddToEvaluateList(a); obj.SetConceptVar(a);
     			obj.SetDBAccess(false,a);
     			} 
     		   } 
@@ -1347,8 +1346,8 @@ logic_elseifAST [MLMObject obj] returns [String s=""]
 {String a,b;}
 : (
      (
-     	 #(ELSEIF {obj.InitForIf();} s=exprAST[obj] THEN )
-       | #(ELSE {obj.InitForIf();} s=exprAST[obj] {obj.AddConcept(s);obj.SetDBAccess(false,s);}  )
+     	 #(ELSEIF {obj.ResetConceptVar();} s=exprAST[obj] THEN )
+       | #(ELSE {obj.ResetConceptVar();} s=exprAST[obj] {obj.AddConcept(s);obj.SetDBAccess(false,s);}  )
        | #(ENDIF {System.err.println("ENDIF FOUND");} )
      )   
    )
@@ -1371,7 +1370,8 @@ writeAST [MLMObject obj] returns [String s=""]
        	
        ( 
        		(ACTION_OP id: ID {a = id.getText(); 
-       							b= obj.getUserVarVal(a);
+       							//b= obj.getUserVarVal(a);
+       							b = "||" + a + "||";
        							s += b;}
        		ACTION_OP) 
            | (i:STRING_LITERAL {s += i.getText();} ) 

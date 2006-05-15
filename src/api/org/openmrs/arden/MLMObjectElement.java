@@ -2,18 +2,16 @@ package org.openmrs.arden;
 
 
 import java.io.Writer;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-import java.util.Locale;
 import java.util.Iterator;
+import java.util.Locale;
+import java.util.Set;
+
 import org.openmrs.Concept;
-import org.openmrs.ConceptWord;
 import org.openmrs.Obs;
+import org.openmrs.Patient;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.ObsService;
-import org.openmrs.Patient;
 
 
 
@@ -195,10 +193,50 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 	  return retVal;
    }
    
+   public boolean writeAction(String key, Writer w) throws Exception {
+	   boolean retVal = false;
+		if(!hasConclude) {	// no conclude
+				String var = "", val = "";
+			    Iterator iter = iterator();
+				while(iter.hasNext()) {
+					var = (String) iter.next();
+					val = getUserVarVal(var);
+					w.append("\t\t//"+var+ " = \"" + val +"\"\n"); // write as comment
+				//	w.append("\t\t\tif(!userVarMap.containsKey("+ var + ")) {\n\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n\t\t\t}\n");
+				//	w.append("\t\t\telse {\n");
+				//	w.append("\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n");
+				//	w.append("\t\t\t}");
+					w.append("\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");");
+				}
+				retVal = true;
+			}
+			else { // has conclude
+				if(concludeVal == true) {
+					w.append("\t\tretVal = true;\n");
+				}
+				else if(concludeVal == false){
+					w.append("\t\tretVal = false;\n");
+				}
+				else {	// TODO error
+					
+				}
+				w.append("\t\treturn retVal;\n");
+				retVal = true;
+			}
+			
+
+			return retVal;
+   }
+  
    public boolean writeEvaluate(String key, Writer w) throws Exception{
 	   boolean retVal = false;
 	   if(dbAccessRequired){
 		   String cn = getConcept();
+		   
+		   w.append("public boolean evaluate_" + key + "(){\n");
+		   w.append("\tConcept concept;\n");
+	       w.append("\tboolean retVal = false;\n");
+	       w.append("\tObs obs;\n\n");
 		   
 		   w.append("\tconcept = context.getConceptService().getConceptByName(\"" + cn.trim() + "\");\n");
 		   w.append("\tobs = getObsForConceptForPatient(concept,locale, patient);\n");
@@ -211,68 +249,77 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 		  			case 3: // boolean
 		  				w.append("\t\tboolean " + key + " = obs.getValueAsBoolean();\n");
 		  				w.append("\t\tif (" + key + " == " + Boolean.toString(answerBool) + ") {\n");
-		  				if(!hasConclude) {	// no conclude
+		  			/*	if(!hasConclude) {	// no conclude
 			  				String var = "", val = "";
 			  			    Iterator iter = iterator();
 			  				while(iter.hasNext()) {
 			  					var = (String) iter.next();
 			  					val = getUserVarVal(var);
 			  					w.append("\t\t\t//"+var+ " = \"" + val +"\";\n"); // write as comment
-			  					w.append("\t\t\tif(!userVarMap.containsKey("+ var + ")) {\n\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n\t\t\t}\n");
-			  					w.append("\t\t\telse {\n");
-			  					w.append("\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n");
-			  					w.append("\t\t\t}");
+			  				//	w.append("\t\t\tif(!userVarMap.containsKey("+ var + ")) {\n\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n\t\t\t}\n");
+			  				//	w.append("\t\t\telse {\n");
+			  				//	w.append("\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n");
+			  				//	w.append("\t\t\t}");
+			  					w.append("\n\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");");
 			  				}
 		  				}
 		  				else { // has conclude
 		  					w.append("\t\t\tretVal = true;\n");
 		  					w.append("\t\t\treturn retVal;\n");
 		  				}
-		  				w.append("\t\t}\n");
+		  			*/	
+		  				w.append("\t\tretVal = true;");
+		  				w.append("\n\t\t}\n");
 		  				break;
 		  			case 2: // integer
 		  				w.append("\t\tdouble " + key + " = obs.getValueNumeric();\n");
 		  				w.append("\t\tif (" + key + " = " + Integer.toString(answerInt) + ") {\n");
-		  				if(!hasConclude) {	
+		  			/*	if(!hasConclude) {	
 			  				String var = "", val = "";
 			  			    Iterator iter = iterator();
 			  				while(iter.hasNext()) {
 			  					var = (String) iter.next();
 			  					val = getUserVarVal(var);
-			  					w.append("\t\t\t//"+var+ " = \"" + val +"\";\n"); // write as comment
-			  					w.append("\t\t\tif(!userVarMap.containsKey("+ var + ")) {\n\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n\t\t\t}\n");
-			  					w.append("\t\t\telse {\n");
-			  					w.append("\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n");
-			  					w.append("\t\t\t}");
+			  				//	w.append("\t\t\t//"+var+ " = \"" + val +"\";\n"); // write as comment
+			  				//	w.append("\t\t\tif(!userVarMap.containsKey("+ var + ")) {\n\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n\t\t\t}\n");
+			  				//	w.append("\t\t\telse {\n");
+			  				//	w.append("\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n");
+			  				//	w.append("\t\t\t}");
+			  					w.append("\n\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");");
 			  				}
 		  				}
 		  				else { // has conclude
 		  					w.append("\t\t\tretVal = true;\n");
 		  					w.append("\t\t\treturn retVal;\n");
 		  				}
-		  				w.append("\t\t}\n");
+		  				*/
+		  				w.append("\t\tretVal = true;");
+		  				w.append("\n\t\t}\n");
 		  				break;
 		  			case 1: // String
 		  				w.append("\t\tString " + key + " = obs.getValueText();\n");
 		  				w.append("\t\tif (" + key + ".equals(\"" + answerStr + "\")) {\n");
-		  				if(!hasConclude) {	
+		  		/*		if(!hasConclude) {	
 			  				String var = "", val = "";
 			  			    Iterator iter = iterator();
 			  				while(iter.hasNext()) {
 			  					var = (String) iter.next();
 			  					val = getUserVarVal(var);
-			  					w.append("\t\t\t//"+var+ " = \"" + val +"\";\n"); // write as comment
-			  					w.append("\t\t\tif(!userVarMap.containsKey("+ var + ")) {\n\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n\t\t\t}\n");
-			  					w.append("\t\t\telse {\n");
-			  					w.append("\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n");
-			  					w.append("\t\t\t}");
+			  				//	w.append("\t\t\t//"+var+ " = \"" + val +"\";\n"); // write as comment
+			  				//	w.append("\t\t\tif(!userVarMap.containsKey("+ var + ")) {\n\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n\t\t\t}\n");
+			  				//	w.append("\t\t\telse {\n");
+			  				//	w.append("\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n");
+			  				//	w.append("\t\t\t}");
+			  					w.append("\n\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");");
 			  				}
 		  				}
 		  				else { // has conclude
 		  					w.append("\t\t\tretVal = true;\n");
 		  					w.append("\t\t\treturn retVal;\n");
 		  				}
-		  				w.append("\t\t}\n");
+		  			*/
+		  				w.append("\t\tretVal = true;");
+		  				w.append("\n\t\t}\n");
 		  				break;
 				   }
 			   			
@@ -287,20 +334,23 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 		  				w.append("\t\tdouble " + key + " = obs.getValueNumeric();\n");
 		  				w.append("\t\tif (" + key + " >= " + Integer.toString(answerInt) + ") {\n");
 		  				
-		  				if(!hasConclude) {
+		  			/*	if(!hasConclude) {
 			  				String var = "", val = "";
 			  			    Iterator iter = iterator();
 			  				while(iter.hasNext()) {
 			  					var = (String) iter.next();
 			  					val = getUserVarVal(var);
-			  					w.append("\t\t\t//"+var+ " = \"" + val +"\";\n");   // write as comment
-			  					w.append("\t\t\tif(!userVarMap.containsKey("+ var + ")) {\n\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n\t\t\t}\n");
-			  					w.append("\t\t\telse {\n");
-			  					w.append("\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n");
-			  					w.append("\t\t\t}");
+			  				//	w.append("\t\t\t//"+var+ " = \"" + val +"\";\n");   // write as comment
+			  				//	w.append("\t\t\tif(!userVarMap.containsKey("+ var + ")) {\n\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n\t\t\t}\n");
+			  				//	w.append("\t\t\telse {\n");
+			  				//	w.append("\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n");
+			  				//	w.append("\t\t\t}");
+			  					w.append("\n\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");");
 			  				}
 		  				}
-		  				w.append("\t\t}\n");
+		  			*/
+		  				w.append("\t\tretVal = true;");
+		  				w.append("\n\t\t}\n");
 		  				break;
 		  			case 1: // String
 		  				
@@ -317,6 +367,8 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 			
 		   
 		   w.append("\t}\n\n");
+		   w.append("\treturn retVal;\n");
+		   w.append("}\n\n");
 		   
 	   }  // end of DB access required
 	   else {  // No DB access, simply conclude or else conclude
