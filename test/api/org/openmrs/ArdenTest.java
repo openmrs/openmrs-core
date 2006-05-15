@@ -16,7 +16,7 @@ import org.openmrs.arden.ArdenBaseLexer;
 import org.openmrs.arden.ArdenBaseParser;
 import org.openmrs.arden.ArdenBaseTreeParser;
 import org.openmrs.arden.MLMObject;
-import org.openmrs.arden.LeadRisk;
+import org.openmrs.arden.HiRiskLeadScreen;
 import org.openmrs.api.*;
 
 
@@ -104,7 +104,7 @@ public class ArdenTest extends TestCase {
 	     String library = treeParser.library(t.getNextSibling(), ardObj);
 	     w.write(library);
 	     w.write("\n********************************************************************/\n");
-	     w.write("package org.openrms.arden;\n\n");
+	     w.write("package org.openmrs.arden;\n\n");
 	     w.write("import java.util.Iterator;\nimport java.util.Locale;\nimport java.util.Set;\n");
 	     w.write("import java.util.HashMap;\n");
 	     w.write("import org.openmrs.Concept;\nimport org.openmrs.Obs;\nimport org.openmrs.Patient;\n");
@@ -118,9 +118,9 @@ public class ArdenTest extends TestCase {
 	     w.write("public " + classname + "(Context c, Integer pid, Locale l){\n");
 	     w.write("\tcontext = c;\n\tlocale = l;\n\tpatient = c.getPatientService().getPatient(pid);\n");
 	     w.write("\tuserVarMap = new HashMap <String, String>();\n");
-	     w.write("\tfirstname = patient.getPatientName().getGivenName();\n\t}\n\n\n");
+	     w.write("\tfirstname = patient.getPatientName().getGivenName();\n}\n\n\n");
 	     w.write("public Obs getObsForConceptForPatient(Concept concept, Locale locale, Patient patient) {\n");
-	     w.write("\tSet <obs> MyObs;\n");
+	     w.write("\tSet <Obs> MyObs;\n");
 	     w.write("\tObs obs = new Obs();\n\t{");
 	     w.write("\t\tMyObs = context.getObsService().getObservations(patient, concept);\n");
 	     w.write("\t\tIterator iter = MyObs.iterator();\n");
@@ -135,15 +135,17 @@ public class ArdenTest extends TestCase {
 	     w.write("\t\t\treturn null;\n");
 	     w.write("\t\t}\n");
 	     w.write("\t}\n");
-	     w.write("}\n");  // End of this function
+	     w.write("}\n\n");  // End of this function
 	     
-	     w.write("public boolean Run() {\n");
+	     w.write("public boolean run() {\n");
 	     w.write("\tboolean retVal = false;\n");
-	     w.write("\tif(Evaluate()) {\n");
-	     w.write("\t\tSystem.out.println();\n");
+	     w.write("\tif(evaluate()) {\n");
+	     w.write("\taction();\n");
+	     w.write("\t\tString str = userVarMap.get(\"ActionStr\");\n");
+	     w.write("\t\tSystem.out.println(str);\n");
 	     w.write("\t}\n");
 	     w.write("\treturn retVal;\n");
-	     w.write("}\n");	// End of this function
+	     w.write("}\n\n");	// End of this function
 	     w.flush();
 	     
 	     
@@ -169,19 +171,20 @@ public class ArdenTest extends TestCase {
 	          ardObj.PrintConceptMap();
 	      System.err.println("-------------------------------------------------------------------");	      	  
 	      ardObj.PrintEvaluateList();
-	      if(ardObj.Evaluate())
-	      {
-	          System.err.println(t.getNextSibling().getNextSibling().getNextSibling().getNextSibling().toStringTree()); // Print action
+	   //   if(ardObj.Evaluate())
+	    //  {
+	     //     System.err.println(t.getNextSibling().getNextSibling().getNextSibling().getNextSibling().toStringTree()); // Print action
 		     
-	    	  System.err.println(t.getNextSibling().getNextSibling().toStringTree());
-	    	  System.err.println("---------------------------------CONCLUDED TRUE ----------------------------------");
+	    //	  System.err.println(t.getNextSibling().getNextSibling().toStringTree());
+	    //	  System.err.println("---------------------------------CONCLUDED TRUE ----------------------------------");
 	    	  
-	    	  String actionstr = treeParser.action(t.getNextSibling().getNextSibling().getNextSibling().getNextSibling(), ardObj);
-	    	  System.err.println(actionstr);
-	      }
+	    //	  String actionstr = treeParser.action(t.getNextSibling().getNextSibling().getNextSibling().getNextSibling(), ardObj);
+	    //	  System.err.println(actionstr);
+	    //  }
 	      
 	      ardObj.WriteEvaluate(w);
-		     
+	      String actionstr = treeParser.action(t.getNextSibling().getNextSibling().getNextSibling().getNextSibling(), ardObj);
+	      ardObj.WriteAction(actionstr, w);
 		     
 		     
 		     w.append("}");	// end class
@@ -203,16 +206,17 @@ public class ArdenTest extends TestCase {
 		context.authenticate("vibha", "chicachica");
 		Locale locale = context.getLocale();
 		
-	//	LeadRisk mlm = new LeadRisk(context,1,locale);
-	//	mlm.Run();
-		Patient patient = new Patient();
+		HiRiskLeadScreen mlm = new HiRiskLeadScreen(context,1,locale);
+		mlm.run();
+	
+	  /*  Patient patient = new Patient();
 		patient.setPatientId(1);
 		PatientName pn = new PatientName("Jenny", "M", "Patient");
 		patient.addName(pn);
 		
 		MLMObject ardObj = new MLMObject(context, locale, patient);
 		RunTest("test/arden test/HiRiskLeadScreen.mlm", ardObj ); //populates ardObj
-		
+	*/	
 		
 	//	ConceptService cs = context.getConceptService();
 	//	ObsService os = context.getObsService();
