@@ -154,13 +154,58 @@ public class MLMObject {
 	public void WriteAction(String str, Writer w) throws Exception {
 		
 		try{
-			 w.write("public boolean action() {\n");
-		     w.write("\tboolean retVal = false;\n");
-		     w.write("\t{\n");
+			 w.write("public void initAction() {\n");
 		     w.append("\t\tuserVarMap.put(\"ActionStr\", \"" +  str + "\");\n");
-		     w.write("\t}\n");
-		     w.write("\treturn retVal;\n");
 		     w.write("}\n\n");	// End of this function
+		     w.flush();
+		
+			 w.write("public String action() {\n");
+		     w.write("\tint index = 0, nindex = 0, endindex = 0, startindex = 0;\n");
+		     w.write("\tString tempstr, variable, outStr = \"\";\n");
+		     w.write("\tString inStr = userVarMap.get(\"ActionStr\");\n\n");
+		     w.write("\ttempstr = inStr;\n\n");
+		     w.write("\tindex = tempstr.indexOf(\"||\", nindex);\n");
+		     w.write("\tif(index != -1) {\n");
+		     w.write("\t\tif(index == 0) { // At the beginning\n");
+		     w.write("\t\t\tnindex = tempstr.indexOf(\"||\", index+1);\n");
+		     w.write("\t\t\tstartindex = index + 2;\n");
+		     w.write("\t\t\tendindex = nindex;\n");
+		     w.write("\t\t\tvariable = inStr.substring(startindex, endindex);\n");
+		     w.write("\t\t\toutStr += userVarMap.get(variable);\n");
+		     w.write("\t\t\tindex = tempstr.indexOf(\"||\", nindex+2);\n");
+		     w.write("\t\t}\n");
+		     
+		     w.write("\t\twhile(index > 0){\n");
+		     w.write("\t\t\tif(nindex == 0){ // Are we starting now\n");
+		     w.write("\t\t\t\tstartindex = nindex;\n");
+		     w.write("\t\t\t\tendindex = index;\n");
+		     w.write("\t\t\t\toutStr += tempstr.substring(startindex, endindex);\n");
+		     w.write("\t\t\t}\n");
+		     
+		     w.write("\t\t\telse {\n");
+		     w.write("\t\t\t\tstartindex = nindex + 2;\n");
+		     w.write("\t\t\t\tendindex = index;\n");
+		     w.write("\t\t\t\toutStr += tempstr.substring(startindex, endindex);\n");
+		     w.write("\t\t\t}\n");
+		     
+		     
+		     w.write("\t\t\tnindex = tempstr.indexOf(\"||\", index+2);\n");
+		     w.write("\t\t\tstartindex = index + 2;\n");
+		     w.write("\t\t\tendindex = nindex;\n");
+		     w.write("\t\t\tvariable = inStr.substring(startindex, endindex);\n");
+		     w.write("\t\t\toutStr += userVarMap.get(variable);\n");
+		     w.write("\t\t\tindex = tempstr.indexOf(\"||\", nindex+2);\n");
+		     w.write("\t\t}\n");
+		     w.write("\t\toutStr += tempstr.substring(nindex+2);\n");
+		     w.write("\t}\n");
+		     
+		     w.write("\telse {\n");
+		     w.write("\t\toutStr += tempstr;\n");
+		     w.write("\t}\n");
+		     
+		     w.write("\treturn outStr;\n");
+		     w.write("}\n");
+		     
 		     w.flush();
 		}
 		catch (Exception e) {

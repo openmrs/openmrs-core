@@ -1404,7 +1404,12 @@ maintenance [MLMObject obj] returns [String s=""]
 : (
   #(MAINTENANCE 
   	( 
-  		(#(FILENAME COLON {s += " Filename: "; }  b = textAST[obj] {obj.setClassName(b); s += b; s += "\n";})
+  		(#(FILENAME 
+  			 COLON {s += " Filename: "; }  b = textAST[obj] {obj.setClassName(b); s += b; s += "\n";} 
+  		  )
+  		|#(MLMNAME 
+  			 COLON {s += " Filename: "; }  b = textAST[obj] {obj.setClassName(b); s += b; s += "\n";} 
+  		  )
   		| a = textAST[obj] {s += a;} ENDBLOCK {s += "\n";} 
   		)
   		
@@ -1420,7 +1425,7 @@ textAST [MLMObject obj] returns [String s=""]
 	(
  	//	 #(FILENAME COLON {s = " Filename: "; }  b = textAST[obj] {obj.setClassName(b); s += b;})
 	//	|
-		(str: ~(ENDBLOCK) {a = " " + str.getText();s += a; System.err.println(s);} )*  
+		(str: ~(ENDBLOCK) {a = " " + str.getText();s += a; /*System.err.println(s);*/} )*  
 		
 
 	)
