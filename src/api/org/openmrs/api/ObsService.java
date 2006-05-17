@@ -214,6 +214,17 @@ public class ObsService {
     	return getObsDAO().getObservations(who, question);
     }
     
+    /**
+	 * e.g. get last 'n' number of observations for a patient for given concept
+	 * @param n number of concepts to retrieve
+	 * @param who
+	 * @param question
+	 * @return
+	 */
+    public List<Obs> getLastNObservations(Integer n, Patient who, Concept question) {
+    	return getObsDAO().getLastNObservations(n, who, question);
+    }
+    
 	/**
 	 * e.g. get all observations referring to RETURN VISIT DATE
 	 * @param question (Concept: RETURN VISIT DATE)

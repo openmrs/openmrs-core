@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.openmrs.Concept;
+import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOContext;
@@ -42,6 +43,10 @@ public class PatientSetService {
 		return getPatientSetDAO().exportXml(patientId);
 	}
 	
+	public PatientSet getAllPatients() throws DAOException {
+		return getPatientSetDAO().getAllPatients();
+	}
+	
 	public PatientSet getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate) throws DAOException {
 		return getPatientSetDAO().getPatientsByCharacteristics(gender, minBirthdate, maxBirthdate);
 	}
@@ -60,6 +65,14 @@ public class PatientSetService {
 	
 	public PatientSet getPatientsHavingTextObs(Integer conceptId, String value) {
 		return getPatientSetDAO().getPatientsHavingTextObs(conceptId, value);
+	}
+	
+	public PatientSet getPatientsHavingLocation(Location loc) {
+		return getPatientsHavingLocation(loc.getLocationId());
+	}
+	
+	public PatientSet getPatientsHavingLocation(Integer locationId) {
+		return getPatientSetDAO().getPatientsHavingLocation(locationId);
 	}
 	
 	public Map<Integer, String> getShortPatientDescriptions(PatientSet patients) {

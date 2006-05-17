@@ -15,11 +15,15 @@ public interface PatientSetDAO {
 	
 	public String exportXml(Integer patientId) throws DAOException;
 	
+	public PatientSet getAllPatients();
+	
 	public PatientSet getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate) throws DAOException;
 	
 	public PatientSet getPatientsHavingNumericObs(Integer conceptId, PatientSetService.Modifier modifier, Number value) throws DAOException;
 	
 	public PatientSet getPatientsHavingTextObs(Integer conceptId, String value) throws DAOException;
+	
+	public PatientSet getPatientsHavingLocation(Integer locationId) throws DAOException;
 	
 	public Map<Integer, String> getShortPatientDescriptions(PatientSet patients) throws DAOException;
 	

@@ -1,6 +1,7 @@
 package org.openmrs.reporting;
 
 import java.util.Date;
+
 import org.openmrs.User;
 
 public abstract class AbstractReportObject {
@@ -14,7 +15,7 @@ public abstract class AbstractReportObject {
 	private Date dateCreated;
 	private User changedBy;
 	private Date dateChanged;
-	private Boolean voided;
+	private Boolean voided = false;
 	private User voidedBy;
 	private Date dateVoided;
 	private String voidReason;
