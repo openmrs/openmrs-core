@@ -26,6 +26,7 @@ import org.openmrs.api.PatientSetService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.db.DAOContext;
 import org.openmrs.api.db.hibernate.HibernateDAOContext;
+import org.openmrs.arden.ArdenService;
 import org.openmrs.formentry.FormEntryService;
 import org.openmrs.hl7.HL7Service;
 import org.openmrs.notification.AlertService;
@@ -88,6 +89,7 @@ public class Context implements ApplicationContextAware {
 	private AlertService alertService;
 	private static SchedulerService schedulerService;
 	private static MessageService messageService;
+	private ArdenService ardenService;
 
 
 	/**
@@ -325,7 +327,15 @@ public class Context implements ApplicationContextAware {
 		return alertService;
 	}
 
-
+	/**
+	 * @return arden service
+	 */
+	public ArdenService getArdenService() {
+		if (ardenService == null)
+		  ardenService = new ArdenService(this, getDaoContext());
+		return ardenService;
+	}
+	
 	/**
 	 * Get the message service.
 	 * 
