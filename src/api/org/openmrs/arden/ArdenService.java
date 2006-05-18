@@ -74,7 +74,7 @@ public class ArdenService {
 	    // otherwise, if this is a mlm file, parse it!
 	    else if (f.getName().substring(f.getName().length()-4).equals(".mlm")) {
 	      log.info("Parsing file name:" + f.getName());
-	      parseFile(new FileInputStream(f), f.getAbsolutePath());
+	      parseFile(new FileInputStream(f), f.getName()/*f.getAbsolutePath()*/);
 	    }
 	 }
 	 catch(Exception e) {
@@ -105,7 +105,7 @@ public class ArdenService {
 		      // start parsing at the compilationUnit rule
 		      parser.startRule();
 		      BaseAST t = (BaseAST) parser.getAST();
-		      OutputStream os = new FileOutputStream(cfn+".java");
+		      OutputStream os = new FileOutputStream("src/api/org/openmrs/arden/compiled/" + cfn+".java");
 		      Writer w = new OutputStreamWriter(os);
 		      log.info("Writing to file - " + cfn+".java");
 		      	      
@@ -121,7 +121,7 @@ public class ArdenService {
 		     String library = treeParser.library(t.getNextSibling(), ardObj);
 		     w.write(library);
 		     w.write("\n********************************************************************/\n");
-		     w.write("package org.openmrs.arden;\n\n");
+		     w.write("package org.openmrs.arden.compiled;\n\n");
 		     w.write("import java.util.Iterator;\nimport java.util.Locale;\nimport java.util.Set;\n");
 		     w.write("import java.util.HashMap;\n");
 		     w.write("import org.openmrs.Concept;\nimport org.openmrs.Obs;\nimport org.openmrs.Patient;\n");
