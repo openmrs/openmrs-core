@@ -353,7 +353,7 @@ validation_code :
 // Wraps the ID token from the lexer, in order to provide
 // 'keyword as identifier' trickery.
 any_reserved_word
-	: AND | IS | ARE | WAS | WERE | COUNT | IN | LESS | THE | THAN | FROM | BEFORE |AFTER | AGO
+	: AND | IS | ARE | WAS | WERE | COUNT | IN | LESS | THE | THAN | FROM | BEFORE |AFTER | AGO | AT
 	| WRITE | BE | LET | YEAR | YEARS | IF | IT | THEY | NOT | OR | THEN | MONTH | MONTHS
 	| READ | MINIMUM | MIN | MAXIMUM | MAX | LAST | FIRST | EARLIEST | LATEST | EVENT | WHERE | EXIST | EXISTS | PAST
 	| AVERAGE | AVG | SUM | MEDIAN | CONCLUDE | ELSE | ELSEIF | ENDIF | TRUE | FALSE | DATA | LOGIC | ACTION
@@ -461,7 +461,9 @@ single_citation:
 /* This is a separate definition to allow for future expansion */
 
 citation_text:
-    (text | INTLIT)* (COLON (text)* | (INTLIT MINUS INTLIT DOT))*  //ENDBLOCK
+//    (text | INTLIT)* (COLON (text)* | (INTLIT MINUS INTLIT DOT) | DOT)*  //ENDBLOCK
+      (text | INTLIT)* (COLON (text)* (MINUS INTLIT)? (text)* (DOT)?)* 
+      					 
 	;	
 
 citation_type :
@@ -552,7 +554,7 @@ data_assignment
 	//	| "OBJECT" <object_definition>
 	//	| <call_phrase>
 	//	| <new_object_phrase>
-	//	| <expr>
+		| expr
 	  
 	  
 	)
