@@ -168,7 +168,7 @@
 	</filter>
 	<filter-mapping>
 		<filter-name>OpenmrsFilter</filter-name> 
-		<url-pattern>*.jsp</url-pattern> 
+		<url-pattern>/*</url-pattern> 
 	</filter-mapping>
 	
 	<welcome-file-list>
@@ -225,19 +225,6 @@
 			<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 			<load-on-startup>3</load-on-startup>
 		</servlet>
-	
-		<filter-mapping>
-			<filter-name>OpenmrsFilter</filter-name> 
-			<url-pattern>*.htm</url-pattern> 
-		</filter-mapping>
-		<filter-mapping>
-			<filter-name>OpenmrsFilter</filter-name> 
-			<url-pattern>*.form</url-pattern> 
-		</filter-mapping>
-		<filter-mapping>
-			<filter-name>OpenmrsFilter</filter-name> 
-			<url-pattern>*.list</url-pattern> 
-		</filter-mapping>
 		
 		<!--
 		<servlet-mapping>
