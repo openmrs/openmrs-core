@@ -106,7 +106,8 @@ public class DataExportFormController extends SimpleFormController {
 							// concept column
 							String modifier = request.getParameter("conceptModifier_" + columnId);
 							String conceptName = request.getParameter("conceptName_" + columnId);
-							report.addConceptColumn(columnName, modifier, conceptName);
+							String[] extras = request.getParameterValues("conceptExtra_" + columnId);
+							report.addConceptColumn(columnName, modifier, conceptName, extras);
 						}
 						else {
 							columnName = request.getParameter("calculatedName_" + columnId);

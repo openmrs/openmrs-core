@@ -29,6 +29,8 @@ public interface PatientSetDAO {
 	
 	public Map<Integer, List<Obs>> getObservations(PatientSet patients, Concept concept) throws DAOException;
 	
+	public Map<Integer, Object> getPatientAttributes(PatientSet patients, String className, String property);
+	
 	public Map<Integer, Map<String, Object>> getCharacteristics(PatientSet patients) throws DAOException;
 	
 }

@@ -11,43 +11,65 @@ public class ConceptColumn implements ExportColumn, Serializable {
 	private String modifier = "";
 	private int modifierNum = 5;
 	private String conceptName = "";
+	private String[] extras = null;
 	
 	public ConceptColumn() { }
 	
-	public ConceptColumn(String columnName, String modifier, String conceptName) {
+	public ConceptColumn(String columnName, String modifier, String conceptName, String[] extras) {
 		this.columnName = columnName;
 		this.modifier = modifier;
 		this.conceptName = conceptName;
+		this.extras = extras;
 	}
 	
 	public String toTemplateString() {
 		String s = "";
 		
 		if (DataExportReportObject.MODIFIER_ANY.equals(modifier)) {
-			s += "$!{fn.getLastObs('" + conceptName + "').getValueAsString($locale)}";
-			s += "$!{fn.getSeparator()}";
-			s += "$!{fn.formatDate('short', $fn.getLastObs('" + conceptName + "').getObsDatetime())}";
+			s += "#set($o = $fn.getLastObs('" + conceptName + "')) ";
+			s += "$!{o.getValueAsString($locale)}";
+			s += extrasToTemplateString();
 		}
 		else if (DataExportReportObject.MODIFIER_FIRST.equals(modifier)) {
-			s += "$!{fn.getFirstObs('" + conceptName + "').getValueAsString($locale)}";
-			s += "$!{fn.getSeparator()}";
-			s += "$!{fn.formatDate('short', $fn.getFirstObs('" + conceptName + "').getObsDatetime())}";
+			s += "#set($o = $fn.getLastObs('" + conceptName + "')) ";
+			s += "$!{o.getValueAsString($locale)}";
+			s += extrasToTemplateString();
 		}
 		else if (DataExportReportObject.MODIFIER_LAST.equals(modifier)) {
-			s += "$!{fn.getLastObs('" + conceptName + "').getValueAsString($locale)}";
-			s += "$!{fn.getSeparator()}";
-			s += "$!{fn.formatDate('short', $fn.getLastObs('" + conceptName + "').getObsDatetime())}";
+			s += "#set($o = $fn.getLastObs('" + conceptName + "')) ";
+			s += "$!{o.getValueAsString($locale)}";
+			s += extrasToTemplateString();
 		}
 		else if (DataExportReportObject.MODIFIER_LAST_NUM.equals(modifier)) {
-			s += "#set($obs = $fn.getLastNObs(" + modifierNum + ", '" + conceptName + "')) ";
-			s += "#foreach($o in $obs) ";
-			s += "  #if($velocityCount > 1)";
-			s += "    $!{fn.getSeparator()}";
-			s += "  #end";
-			s += "  $!{o.getValueAsString($locale)}";
-			s += "  $!{fn.getSeparator()}";
-			s += "  $!{fn.formatDate('short', $o.getObsDatetime())}";
+			s += "#set($obs = $fn.getLastNObs(" + modifierNum + ", '" + conceptName + "'))";
+			s += "#foreach($o in $obs)";
+			s += "#if($velocityCount > 1)";
+			s += "$!{fn.getSeparator()}";
+			s += "#end";
+			s += "$!{o.getValueAsString($locale)}";
+			s += extrasToTemplateString();
 			s += "#end\n";
+		}
+		
+		return s;
+	}
+	
+	private String extrasToTemplateString() {
+		String s = "";
+		if (extras != null)  {
+			for (String ext : extras) {
+				s += "$!{fn.getSeparator()}";
+				if ("obsDatetime".equals(ext))
+					s += "$!{fn.formatDate('short', $o.getObsDatetime())}";
+				else if("location".equals(ext))
+					s += "$!{$o.getLocation().getName()}";
+				else if ("comment".equals(ext))
+					s += "$!{$o.getComment()}";
+				else if ("provider".equals(ext))
+					s += "$!{$o.getEncounter().getProvider().getFirstName()} $!{$o.getEncounter().getProvider().getFirstName()}";
+				else if ("encounterType".equals(ext))
+					s += "$!{$o.getEncounter().getEncounter().getEncounterType.getName()}";
+			}
 		}
 		
 		return s;
@@ -67,18 +89,29 @@ public class ConceptColumn implements ExportColumn, Serializable {
 	
 	public String getTemplateColumnName() {
 		String s = columnName;
-		s += "$!{fn.getSeparator()}";
-		s += columnName + " Datetime";
+		s += getExtrasTemplateColumnNames(false);
 		
 		if (DataExportReportObject.MODIFIER_LAST_NUM.equals(modifier)) {
 			s += "#foreach($o in [1.." + (modifierNum - 1) +"]) ";
 			s += "$!{fn.getSeparator()}";
 			s += columnName + " ($velocityCount)";
-			s += "$!{fn.getSeparator()}";
-			s += columnName + " Datetime ($velocityCount)";
+			s += getExtrasTemplateColumnNames(true);
 			s += "#end\n";
 		}
 		
+		return s;
+	}
+	
+	private String getExtrasTemplateColumnNames(boolean appendCount) {
+		String s = "";
+		if (extras != null) {
+			for (String ext : extras) {
+				s += "$!{fn.getSeparator()}";
+				s += columnName + " " + ext;
+				if (appendCount)
+					s += " ($velocityCount)";
+			}
+		}
 		return s;
 	}
 
@@ -100,6 +133,14 @@ public class ConceptColumn implements ExportColumn, Serializable {
 
 	public void setModifier(String modifier) {
 		this.modifier = modifier;
+	}
+
+	public String[] getExtras() {
+		return extras;
+	}
+
+	public void setExtras(String[] extras) {
+		this.extras = extras;
 	}
 	
 }

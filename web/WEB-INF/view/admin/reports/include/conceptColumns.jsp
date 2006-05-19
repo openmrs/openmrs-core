@@ -22,5 +22,13 @@
 				onclick="showSearch(this, 'concept')" />
 		</td>
 	</tr>
+	<tr>
+		<td><spring:message code="DataExport.conceptExtras"/></td>
+		<td>
+			<input type="checkbox" name="conceptExtra" value="obsDatetime" checked="checked" /><span onclick="this.previousSibling.click()"><spring:message code="DataExport.conceptExtra.obsDatetime"/></span>
+			<input type="checkbox" name="conceptExtra" value="location" /><span onclick="this.previousSibling.click()"><spring:message code="DataExport.conceptExtra.location"/></span>
+			<input type="checkbox" name="conceptExtra" value="comment" /><span onclick="this.previousSibling.click()"><spring:message code="DataExport.conceptExtra.comment"/></span>
+			<input type="checkbox" name="conceptExtra" value="encounterType" /><span onclick="this.previousSibling.click()"><spring:message code="DataExport.conceptExtra.encounterType"/></span>
+			<input type="checkbox" name="conceptExtra" value="provider" /><span onclick="this.previousSibling.click()"><spring:message code="DataExport.conceptExtra.provider"/></span>
 </table>
 <br/>

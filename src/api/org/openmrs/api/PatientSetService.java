@@ -83,6 +83,10 @@ public class PatientSetService {
 		return getPatientSetDAO().getObservations(patients, concept);
 	}
 	
+	public Map<Integer, Object> getPatientAttributes(PatientSet patients, String className, String property) {
+		return getPatientSetDAO().getPatientAttributes(patients, className, property);
+	}
+	
 	public Map<Integer, Map<String, Object>> getCharacteristics(PatientSet patients) {
 		return getPatientSetDAO().getCharacteristics(patients);
 	}

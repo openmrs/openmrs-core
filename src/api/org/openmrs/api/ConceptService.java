@@ -438,16 +438,13 @@ public class ConceptService {
 				// replace the initial word with this synonym based word
 				if (!containsAll(nameWords, searchedWords)) {
 					tmpWord.setWeight(initialWord.getWeight());
-					log.error("word.weight: " + tmpWord.getWord() + "." + tmpWord.getWeight());
 					uniqueConcepts.put(id, tmpWord);
-					log.debug("Using new conceptWord: " + tmpWord);
 				} else
 					tmpWord = null;
 
 			} else {
 				// normalize the weighting
 				tmpWord.setWeight(0.0);
-				log.error("word.weight: " + tmpWord + "." + tmpWord.getWeight());
 				// its not in the list, add it
 				uniqueConcepts.put(id, tmpWord);
 			}
@@ -462,22 +459,17 @@ public class ConceptService {
 					// We weight name matches higher
 					tmpWord.increaseWeight(2.0);
 					matchedString = tmpWord.getConcept().getName(locale).getName();
-					log.error("word.weight: " + tmpWord.getWord() + "." + tmpWord.getWeight());
 				}
 	
 				// increase the weight by a factor of the % of words matched
 				Double percentMatched = getPercentMatched(searchedWords, matchedString);
 				tmpWord.increaseWeight(5.0 * percentMatched);
-				log.error("word.weight: " + tmpWord.getWord() + "." + tmpWord.getWeight());
 			}
 		}
 
 		conceptWords = new Vector<ConceptWord>();
 		conceptWords.addAll(uniqueConcepts.values());
 		Collections.sort(conceptWords);
-
-		for (ConceptWord cw : conceptWords)
-			log.error("Name: " + cw.getConcept().getName(locale).getName() + " weight: " + cw.getWeight());
 		
 		return conceptWords;
 	}

@@ -7,7 +7,6 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Location;
-import org.openmrs.Patient;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
 import org.openmrs.reporting.AbstractReportObject;
@@ -39,6 +38,21 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 		super.setType(DataExportReportObject.TYPE_NAME);
 		super.setSubType(DataExportReportObject.SUB_TYPE_NAME);		
 	}
+	
+	public boolean equals(Object obj) {
+		if (obj instanceof DataExportReportObject) {
+			DataExportReportObject c = (DataExportReportObject)obj;
+			return (this.getReportObjectId().equals(c.getReportObjectId()));
+		}
+		return false;
+	}
+	
+	public int hashCode() {
+		if (this.getReportObjectId() == null) return super.hashCode();
+		int hash = 5;
+		hash = 31 * this.getReportObjectId() + hash;
+		return hash;
+	}
 
 	/**
 	 * Append a simple column
@@ -55,8 +69,8 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 	 * @param modifier
 	 * @param columnValue
 	 */
-	public void addConceptColumn(String columnName, String modifier, String columnValue) {
-		columns.add(new ConceptColumn(columnName, modifier, columnValue));
+	public void addConceptColumn(String columnName, String modifier, String columnValue, String[] extras) {
+		columns.add(new ConceptColumn(columnName, modifier, columnValue, extras));
 	}
 	
 	/**
@@ -77,11 +91,11 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 	}
 	
 	/**
-	 * Export data using this object's columns and these patients
-	 * @param set
+	 * Generate a template according to this reports columns
+	 * Assumes there is a patientSet object available
 	 * @return template string to be evaluated
 	 */
-	public String export(PatientSet set) {
+	public String generateTemplate() {
 		StringBuilder sb = new StringBuilder();
 		
 		// print out the columns
@@ -97,30 +111,30 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 		
 		// print out the data
 		
-		for (Integer patientId : set.getPatientIds()) {
-			sb.append("$!{fn.setPatient(" + patientId + ")}");
-			if (columns.size() >= 1) {
-				sb.append(columns.get(0).toTemplateString());
-				for (int i=1; i<columns.size(); i++) {
-					sb.append("$!{fn.getSeparator()}");
-					sb.append(columns.get(i).toTemplateString());
-				}
+		sb.append("$!{fn.setPatientSet($patientSet)}");
+		sb.append("#foreach($patientId in $patientSet.patientIds)\n");
+		sb.append("$!{fn.setPatientId($patientId)}");
+		if (columns.size() >= 1) {
+			sb.append(columns.get(0).toTemplateString());
+			for (int i=1; i<columns.size(); i++) {
+				sb.append("$!{fn.getSeparator()}");
+				sb.append(columns.get(i).toTemplateString());
 			}
-			else
-				log.warn("Report has column size less than 1");
-			
-			sb.append("\n");
 		}
+		else
+			log.warn("Report has column size less than 1");
+		
+		sb.append("\n#end\n\n");
 		
 		return sb.toString();
 	}
 	
 	/**
-	 * Export data using this object's columns and this objects characteristics
+	 * Generate the patientSet according to this report's characteristics
 	 * @param context
-	 * @return template string to be evaluated
+	 * @return patientSet to be used with report template
 	 */
-	public String export(Context context) {
+	public PatientSet generatePatientSet(Context context) {
 		PatientSetService pss = context.getPatientSetService();
 		PatientSet patientSet = new PatientSet();
 		
@@ -134,20 +148,7 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 			patientSet = context.getPatientSetService().getAllPatients();
 		}
 		
-		return export(patientSet);
-	}
-	
-	/**
-	 * Export data for this patient with this report's columns
-	 * @param p
-	 * @return template string to be evaluated
-	 */
-	public String export(Patient p) {
-		PatientSet patientSet = new PatientSet();
-		
-		patientSet.add(p);
-		
-		return export(patientSet);
+		return patientSet;
 	}
 
 	@Override

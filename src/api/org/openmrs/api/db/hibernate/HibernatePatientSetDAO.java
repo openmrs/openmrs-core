@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
@@ -608,7 +609,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		Criteria criteria = session.createCriteria(Obs.class);
 		criteria.add(Restrictions.eq("concept", concept));
 		criteria.add(Restrictions.in("patient.patientId", ids));
-		criteria.addOrder(org.hibernate.criterion.Order.asc("obsDatetime"));
+		criteria.addOrder(org.hibernate.criterion.Order.desc("obsDatetime"));
 		log.debug("criteria: " + criteria);
 		List<Obs> temp = criteria.list();
 		for (Obs obs : temp) {
@@ -626,6 +627,39 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret;
 	}
 
+	@SuppressWarnings("unchecked")
+	public Map<Integer, Object> getPatientAttributes(PatientSet patients, String className, String property) throws DAOException {
+		Session session = HibernateUtil.currentSession();
+		
+		Map<Integer, Object> ret = new HashMap<Integer, Object>();
+		
+		Set<Integer> ids = patients.getPatientIds();
+		
+		// default query
+		Criteria criteria = session.createCriteria("org.openmrs." + className);
+		
+		// make 'patient.**' reference 'patient' like alias instead of object
+		if (className.equals("Patient"))
+			criteria = session.createCriteria("org.openmrs." + className, "patient");
+		
+		// set up the query
+		criteria.setProjection(Projections.projectionList().add(
+				Projections.distinct(Projections.property("patient.patientId"))).add(
+				Projections.property(property)));
+		criteria.add(Restrictions.in("patient.patientId", ids));
+		criteria.addOrder(org.hibernate.criterion.Order.desc("dateCreated"));
+		List<Object[]> rows = criteria.list();
+		
+		// set up the return map
+		for (Object[] row : rows) {
+			Integer ptId = (Integer)row[0];
+			Object columnValue = row[1];
+			ret.put(ptId, columnValue);
+		}
+		
+		return ret;
+	}
+	
 	public PatientSet getPatientsHavingTextObs(Integer conceptId, String value) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		HibernateUtil.beginTransaction();

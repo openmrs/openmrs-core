@@ -18,6 +18,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.openmrs.api.context.Context;
+import org.openmrs.reporting.PatientSet;
 import org.openmrs.reporting.ReportService;
 import org.openmrs.reporting.export.DataExportReportObject;
 import org.openmrs.reporting.export.DataExportUtility;
@@ -33,6 +34,7 @@ public class DataExportServlet extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 		
 		String reportId = request.getParameter("dataExportId");
+		String[] patientIds = request.getParameterValues("patientId");
 		HttpSession session = request.getSession();
 		Context context = (Context)session.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
@@ -56,10 +58,11 @@ public class DataExportServlet extends HttpServlet {
 		ReportService rs = context.getReportService();
 		DataExportReportObject dataExport = (DataExportReportObject)rs.getReportObject(Integer.valueOf(reportId));
 		
-		response.setContentType("text/csv");
+		response.setContentType("application/vnd.ms-excel");
 		String s = new SimpleDateFormat("yyyyMMdd_Hm").format(new Date());
-		String filename = dataExport.getName().replace(" ", "_") + "-" + s + ".csv";
-		response.setHeader("Content-Disposition", "filename=" + filename);
+		String filename = dataExport.getName().replace(" ", "_") + "-" + s + ".xls";
+		response.setHeader("Content-Disposition", "attachment; filename=" + filename);
+		response.setHeader("Pragma", "no-cache");
 		
 		VelocityContext velocityContext = new VelocityContext();
 		Writer report = new StringWriter();
@@ -74,7 +77,19 @@ public class DataExportServlet extends HttpServlet {
 		
 		report.append("Report: " + dataExport.getName() + "\n\n");
 		
-		String template = dataExport.export(context);
+		// Set up list of patients
+		PatientSet patientSet = new PatientSet();
+		if (patientIds == null || patientIds.length == 0)
+			patientSet = dataExport.generatePatientSet(context);
+		else {
+			// list of patient ids was passed through the request
+			for (String id : patientIds)
+				patientSet.add(Integer.valueOf(id));
+		}
+		
+		velocityContext.put("patientSet", patientSet);
+		
+		String template = dataExport.generateTemplate();
 		
 		log.debug("Template: " + template.substring(0, template.length() < 3500 ? template.length() : 3500) + "...");
 		

@@ -4,6 +4,7 @@
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
+<% pageContext.setAttribute("linefeed", "\r\n"); %>
 
 <script src="<%= request.getContextPath() %>/scripts/calendar/calendar.js"></script>
 <script type="text/javascript" src="<%= request.getContextPath() %>/scripts/prototype.lite.js"></script>
@@ -194,10 +195,16 @@
 		getChildByName(obj, "simplePatient").name += suffix;
 		getChildByName(obj, "conceptColumnName").name += suffix;
 		getChildByName(obj, "conceptName").name += suffix;
-		getChildByName(obj, "conceptModifier").name += suffix;
-		getChildByName(obj, "conceptModifier").name += suffix;
-		getChildByName(obj, "conceptModifier").name += suffix;
-		getChildByName(obj, "conceptModifier").name += suffix;
+		var mod = getChildByName(obj, "conceptModifier");
+		while (mod != null) {
+			mod.name += suffix;
+			mod = getChildByName(obj, "conceptModifier");
+		}
+		var ext = getChildByName(obj, "conceptExtra");
+		while (ext != null) {
+			ext.name += suffix;
+			ext = getChildByName(obj, "conceptExtra");
+		}
 		getChildByName(obj, "conceptButton").name += suffix;
 		getChildByName(obj, "calculatedName").name += suffix;
 		getChildByName(obj, "calculatedValue").name += suffix;
@@ -332,6 +339,10 @@
 	
 	function redirectPage(url) {
 		setTimeout("document.location='" + url + "'", 3000);
+	}
+	
+	function customGetRowHeight(h) {
+		return (h - 6);
 	}
 
 </script>
@@ -534,7 +545,7 @@
 <input type="checkbox" id="saveAsNew" name="saveAsNew" value="1" /><label for="saveAsNew"><spring:message code="DataExport.saveAs"/></label>
 <br />
 <input type="submit" name="action" value='<spring:message code="DataExport.save"/>'>
-<input type="submit" name="action" value='<spring:message code="DataExport.saveGenerate"/>' onclick="redirectPage('dataExport.list')">
+<!-- <input type="submit" name="action" value='<spring:message code="DataExport.saveGenerate"/>' onclick="redirectPage('dataExport.list')"> -->
 </form>
 
 <div id="searchForm" class="searchForm">
@@ -577,18 +588,25 @@
 				<c:if test="${column.columnType == 'concept'}">
 					selectTab(getChildById(obj, 'conceptTab'));
 					getChildByName(obj, "conceptColumnName_" + count).value = "${column.columnName}";
+					var extras = new Array();
+					<c:forEach items="${column.extras}" var="ext">
+						extras["${ext}"] = 1;
+					</c:forEach>
 					var children = obj.getElementsByTagName("input");
 					for(var i=0; i<children.length; i++) {
-						if (children[i].name == ("conceptModifier_" + count) && 
-							children[i].value == '${column.modifier}')
-								children[i].checked = true;
+						if (children[i].name == ("conceptModifier_" + count))
+							children[i].checked = (children[i].value == '${column.modifier}');
+						if (children[i].name == ("conceptExtra_" + count))
+							children[i].checked = (extras[children[i].value] == 1);
 					}
 					getChildByName(obj, "conceptName_" + count).value = "${column.conceptName}";
 				</c:if>
 				<c:if test="${column.columnType == 'calculated'}">
 					selectTab(getChildById(obj, 'calcTab'));
 					getChildByName(obj, "calculatedName_" + count).value = "${column.columnName}";
-					getChildByName(obj, "calculatedValue_" + count).value = "${column.returnValue}";
+					<c:forEach items="${fn:split(column.returnValue, linefeed)}" var="line" varStatus="varStatus">
+						getChildByName(obj, "calculatedValue_" + count).value += "${line}" <c:if test="${varStatus.last != true}"> + '\n'</c:if>;
+					</c:forEach>
 				</c:if>
 			</c:forEach>
 			
