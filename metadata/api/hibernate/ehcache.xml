@@ -78,6 +78,20 @@
 	<cache name="org.openmrs.Concept" maxElementsInMemory="1000"
 		eternal="true" overflowToDisk="true" />
 
+	<cache name="org.openmrs.User"
+        maxElementsInMemory="5000"
+        eternal="false"
+        overflowToDisk="false"
+        timeToIdleSeconds="300"
+        timeToLiveSeconds="600"
+    />
+    
+    <cache name="org.openmrs.Role"
+        maxElementsInMemory="100"
+        eternal="true"
+        overflowToDisk="false"
+    />
+
 	<!-- Sample cache named sampleCache2
 		This cache has a maximum of 1000 elements in memory. There is no overflow to disk, so 1000
 		is also the maximum cache size. Note that when a cache is eternal, timeToLive and timeToIdle
