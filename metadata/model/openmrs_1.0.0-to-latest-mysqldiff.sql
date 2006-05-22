@@ -221,8 +221,6 @@
  ALTER TABLE `notification_alert_recipient` CHANGE COLUMN `date_read` `date_changed` timestamp NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP;
  ALTER TABLE `notification_alert_recipient` ADD INDEX `id_of_alert` (`alert_id`);
  ALTER TABLE `notification_alert_recipient` ADD CONSTRAINT `id_of_alert` FOREIGN KEY (`alert_id`) REFERENCES `notification_alert` (`alert_id`);
-
- ALTER TABLE ADD FOREIGN KEY `id_of_alert` `notification_alert` (`alert_id`);
  
  UPDATE `notification_alert_recipient` SET alert_read = 1;
  
