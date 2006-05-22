@@ -176,6 +176,25 @@ public class DWRConceptService {
 
 		return items;
 	}
+	
+	public List<ConceptListItem> getQuestionsForAnswer(Integer conceptId) {
+		Context context = (Context) WebContextFactory.get().getSession()
+		.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+
+		Locale locale = context.getLocale();
+		ConceptService cs = context.getConceptService();
+		
+		Concept concept = cs.getConcept(conceptId);
+		
+		List<Concept> concepts = cs.getQuestionsForAnswer(concept);
+		
+		List<ConceptListItem> items = new Vector<ConceptListItem>();
+		for (Concept c : concepts) {
+			items.add(new ConceptListItem(c, locale));
+		}
+		
+		return items;
+	}
 
 	public ConceptDrugListItem getDrug(Integer drugId) {
 		Context context = (Context) WebContextFactory.get().getSession()

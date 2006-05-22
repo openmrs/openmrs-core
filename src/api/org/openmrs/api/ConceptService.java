@@ -391,6 +391,20 @@ public class ConceptService {
 		return weightWords(phrase, locale, conceptWords);
 
 	}
+	
+	/**
+	 * Get the questions that have this concept as a possible answer
+	 * 
+	 * @param concept Concept to get 
+	 * @return list of concepts
+	 */
+	public List<Concept> getQuestionsForAnswer(Concept concept) {
+		List<Concept> concepts = getConceptDAO().getQuestionsForAnswer(concept);
+
+		return concepts;
+	}
+	
+	
 
 	/**
 	 * This will weight and sort the concepts we are assuming the hits are

@@ -187,6 +187,14 @@ public interface ConceptDAO {
 	public List<ConceptWord> findConceptAnswers(String phrase, Locale locale, Concept concept, boolean includeRetired);
 	
 	/**
+	 * Get the questions that have this concept as a possible answer
+	 * 
+	 * @param concept Concept to get 
+	 * @return list of concepts
+	 */
+	public List<Concept> getQuestionsForAnswer(Concept concept);
+	
+	/**
 	 * Finds the previous available concept via concept id  
 	 * @param c
 	 * @param offset

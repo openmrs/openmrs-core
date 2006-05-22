@@ -635,6 +635,21 @@ public class HibernateConceptDAO implements
 	}
 	
 	/**
+	 * @see org.openmrs.api.db.ConceptService#getQuestionsForAnswer(org.openmrs.Concept)
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Concept> getQuestionsForAnswer(Concept concept) {
+		
+		Session session = HibernateUtil.currentSession();
+		// TODO broken until Hibernate fixes component and HQL code
+		String q = "select c from Concept c where c.answers.answerConcept.conceptId = :answerId";
+		Query query = session.createQuery(q);
+		query.setParameter("answerId", concept.getConceptId());
+		
+		return query.list();
+	}
+	
+	/**
 	 * @see org.openmrs.api.db.ConceptService#getNextConcept(org.openmrs.Concept, java.lang.Integer)
 	 */
 	public Concept getPrevConcept(Concept c) {
