@@ -36,6 +36,8 @@
 	}
 	
 	function preFillTable(patients) {
+		$("patientTable").style.display = "";
+		
 		if (patients.length < 1) {
 			if (patientName != "" && (birthyear != "" || age != "") && gender != "") {
 				document.location = getHref();
@@ -60,12 +62,13 @@
 	
 	var init = function() {
 
-			form = $("patientForm");
+		form = $("patientForm");
 
-			noPatientsFound = "<a href='#' class='searchHit' onclick='document.location=getHref()'>No Patients Found.  Select to add a new Patient</a>";
-			patientsFound = "<a href='#' class='searchHit' onclick='document.location=getHref()'>Add New Patient</a>";
-			$("patientName").focus();
-		};
+		noPatientsFound = "<a href='#' class='searchHit' onclick='document.location=getHref()'>No Patients Found.  Select to add a new Patient</a>";
+		patientsFound = "<a href='#' class='searchHit' onclick='document.location=getHref()'>Add New Patient</a>";
+		$("patientName").focus();
+		$("patientTable").style.display = "none";
+	};
 		
 	window.onload = init;
 	
@@ -88,6 +91,12 @@
 </script>
 <!-- patientSearch.js must be imported after the findObjects() definition for override -->
 <script src='<%= request.getContextPath() %>/scripts/patientSearch.js'></script>
+
+<style>
+	tr th#patientGender, tr th#patientAge, .patientGender, .patientAge {
+		text-align: center;
+	}
+</style>
 
 <h2><spring:message code="Patient.title"/></h2>
 
@@ -121,12 +130,24 @@
 	
 	<br /><br />
 	
-	<div id="patientsFound">
-		<table cellspacing="0" cellpadding="1">
-			<tbody id="patientTableBody">
-			</tbody>
-		</table>
-	</div>
+	<table cellspacing="0" cellpadding="1" id="patientTable">
+		<thead>
+			<tr>
+			 	<th class="searchIndex"> </th>
+			 	<th class="patientIdentifier"> <spring:message code="Patient.identifier"/> </th>
+			 	<th> <spring:message code="PatientName.givenName"/> </th>
+			 	<th> <spring:message code="PatientName.middleName"/> </th>
+			 	<th> <spring:message code="PatientName.familyName"/> </th>
+			 	<th id='patientAge'> <spring:message code="Patient.age"/> </th>
+			 	<th id='patientGender'> <spring:message code="Patient.gender"/> </th>
+			 	<th> <spring:message code="Patient.tribe"/> </th>
+			 	<th></th>
+			 	<th> <spring:message code="Patient.birthdate"/> </th>
+			 </tr>
+		</thead>
+		<tbody id="patientTableBody">
+		</tbody>
+	</table>
 </form>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

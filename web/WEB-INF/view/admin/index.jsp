@@ -75,7 +75,7 @@
 					<%@ include file="forms/localHeader.jsp" %>
 			</openmrs:hasPrivilege>
 			
-			<openmrs:hasPrivilege privilege="View Reports">
+			<openmrs:hasPrivilege privilege="View Reports,View Data Exports">
 				<h4><spring:message code="Report.header"/></h4>
 					<%@ include file="reports/localHeader.jsp" %>
 			</openmrs:hasPrivilege>

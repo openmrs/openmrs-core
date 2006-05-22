@@ -1,4 +1,5 @@
 <%@page isErrorPage="true" %>
+<%@ page import="org.openmrs.web.WebUtil" %>
 <%@ page import="org.openmrs.web.WebConstants" %>
 <%@ page import="org.openmrs.api.APIAuthenticationException" %>
 <%@ include file="/WEB-INF/template/include.jsp" %>
@@ -51,7 +52,7 @@ try {
 	if (exception != null) {
 		out.println("<b>" + exception.getClass().getName() + "</b>");
 		if (exception.getMessage() != null)
-			out.println("<pre id='exceptionMessage'>" + exception.getMessage().replaceAll("<", "&lt;") + "</pre>"); 
+			out.println("<pre id='exceptionMessage'>" + WebUtil.escapeHTML(exception.getMessage()) + "</pre>"); 
 	}
 	%>
 	

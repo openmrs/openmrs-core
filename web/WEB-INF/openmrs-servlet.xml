@@ -175,6 +175,8 @@
 					<prop key="**/conceptSetDerived.form">conceptSetDerivedForm</prop>
 					<prop key="**/report.list">reportList</prop>
 					<prop key="**/report.form">reportForm</prop>
+					<prop key="**/dataExport.list">dataExportList</prop>
+					<prop key="**/dataExport.form">dataExportForm</prop>
 					<prop key="**/reportObject.list">reportObjectList</prop>
 					<prop key="**/reportObject.form">reportObjectForm</prop>
 					<prop key="**/analysis.list">otfaController</prop>
@@ -629,6 +631,21 @@
 					<property name="successView"><value>reportObject.list</value></property>
 				</bean>
 			<!-- ** /Report ** -->
+			<!-- ** DataExport ** -->
+				<bean id="dataExportList" class="org.openmrs.web.controller.report.export.DataExportListController">
+					<property name="sessionForm"><value>true</value></property>
+					<property name="commandName"><value>dataExportList</value></property>
+					<property name="formView"><value>/admin/reports/dataExportList</value></property>
+					<property name="successView"><value>dataExport.list</value></property>
+				</bean>
+		
+				<bean id="dataExportForm" class="org.openmrs.web.controller.report.export.DataExportFormController">
+					<property name="sessionForm"><value>true</value></property>
+					<property name="commandName"><value>dataExport</value></property>
+					<property name="formView"><value>/admin/reports/dataExportForm</value></property>
+					<property name="successView"><value>dataExport.list</value></property>
+				</bean>
+			<!-- ** /DataExport ** -->
 	    <!-- ============================ -->
 
 	    <!-- ============================ -->

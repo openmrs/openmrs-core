@@ -43,7 +43,7 @@
 		<property name="dateCreated" type="java.util.Date"
 			column="date_created" not-null="true" length="19" />
 		<property name="voided" type="java.lang.Boolean" column="voided"
-			length="1" />
+			length="1" not-null="true" />
 		<property name="dateVoided" type="java.util.Date"
 			column="date_voided" length="19" />
 		<property name="voidReason" type="java.lang.String"

@@ -26,6 +26,7 @@ import org.openmrs.api.PatientSetService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.db.DAOContext;
 import org.openmrs.api.db.hibernate.HibernateDAOContext;
+import org.openmrs.arden.ArdenService;
 import org.openmrs.formentry.FormEntryService;
 import org.openmrs.hl7.HL7Service;
 import org.openmrs.notification.AlertService;
@@ -37,6 +38,7 @@ import org.openmrs.notification.impl.MessageServiceImpl;
 import org.openmrs.notification.mail.MailMessageSender;
 import org.openmrs.notification.mail.velocity.VelocityMessagePreparator;
 import org.openmrs.reporting.ReportObjectFactory;
+import org.openmrs.reporting.ReportObjectFactoryModule;
 import org.openmrs.reporting.ReportService;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.timer.TimerSchedulerService;
@@ -88,6 +90,7 @@ public class Context implements ApplicationContextAware {
 	private AlertService alertService;
 	private static SchedulerService schedulerService;
 	private static MessageService messageService;
+	private ArdenService ardenService;
 
 
 	/**
@@ -263,8 +266,38 @@ public class Context implements ApplicationContextAware {
 			log.warn("unauthorized access to report service");
 			return null;
 		}
-		if (reportService == null)
-			reportService = new ReportService(this, getDaoContext(), (ReportObjectFactory)applicationContext.getBean("reportObjectFactory"));
+		
+		//
+		// TODO This is a temporary solution until report info is moved out of openmrs-servlet.xml
+		//
+		if (reportService == null) {
+			List<ReportObjectFactoryModule> modules = new Vector<ReportObjectFactoryModule>();
+			ReportObjectFactoryModule module = new ReportObjectFactoryModule();
+			module.setName("PatientCharacteristicFilter");
+			module.setDisplayName("Patient Characteristic Filter");
+			module.setClassName("org.openmrs.reporting.PatientCharacteristicFilter");
+			module.setType("Patient Filter");
+			module.setValidatorClass("org.openmrs.reporting.PatientCharacteristicFilterValidator");
+			modules.add(module);
+			module = new ReportObjectFactoryModule();
+			module.setName("NumericObsPatientFilter");
+			module.setDisplayName("Numeric Observation Patient Filter");
+			module.setClassName("org.openmrs.reporting.NumericObsPatientFilter");
+			module.setType("Patient Filter");
+			module.setValidatorClass("org.openmrs.reporting.NumericObsPatientFilterValidator");
+			modules.add(module);
+			module = new ReportObjectFactoryModule();
+			module.setName("ShortDescriptionProducer");
+			module.setDisplayName("Short Description Producer");
+			module.setClassName("org.openmrs.reporting.ShortDescriptionProducer");
+			module.setType("Patient Data Producer");
+			module.setValidatorClass("org.openmrs.reporting.ShortDescriptionProducerValidator");
+			modules.add(module);
+			ReportObjectFactory factory = new ReportObjectFactory();
+			factory.setModules(modules);
+			
+			reportService = new ReportService(this, getDaoContext(), factory);
+		}
 		return reportService;
 	}
 
@@ -325,7 +358,15 @@ public class Context implements ApplicationContextAware {
 		return alertService;
 	}
 
-
+	/**
+	 * @return arden service
+	 */
+	public ArdenService getArdenService() {
+		if (ardenService == null)
+		  ardenService = new ArdenService(this, getDaoContext());
+		return ardenService;
+	}
+	
 	/**
 	 * Get the message service.
 	 * 

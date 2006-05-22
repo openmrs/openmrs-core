@@ -7,8 +7,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptWord;
-
-import uk.ltd.getahead.dwr.util.JavascriptUtil;
+import org.openmrs.web.WebUtil;
 
 public class ConceptListItem {
 	
@@ -45,26 +44,15 @@ public class ConceptListItem {
 			ConceptName cn = concept.getName(locale);
 			name = shortName = description = "";
 			if (cn != null) {
-				name = escape(cn.getName());
-				shortName = escape(cn.getShortName());
-				description = escape(cn.getDescription());
+				name = WebUtil.escapeHTML(cn.getName());
+				shortName = WebUtil.escapeHTML(cn.getShortName());
+				description = WebUtil.escapeHTML(cn.getDescription());
 			}
 			synonym = "";
 			retired = concept.isRetired();
 			hl7Abbreviation = concept.getDatatype().getHl7Abbreviation();
 			className = concept.getConceptClass().getName();
 		}
-	}
-	
-	private String escape(String input) {
-		JavascriptUtil util = new JavascriptUtil();
-		
-		input = util.escapeJavaScript(input);
-		
-		input = input.replace("<", "&lt;");
-		input = input.replace(">", "&gt;");
-		
-		return input;
 	}
 	
 	public Integer getConceptId() {

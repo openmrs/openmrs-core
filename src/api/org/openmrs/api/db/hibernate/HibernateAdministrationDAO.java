@@ -1025,7 +1025,7 @@ public class HibernateAdministrationDAO implements
 	
 	public void updateConceptWords() throws DAOException {
 		Set<Concept> concepts = new HashSet<Concept>();
-		concepts.addAll(context.getConceptService().getConceptByName(""));
+		concepts.addAll(context.getConceptService().getConceptsByName(""));
 		for (Concept concept : concepts) {
 			updateConceptWord(concept);
 		}

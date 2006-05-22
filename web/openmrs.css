@@ -371,3 +371,25 @@ fieldset {
 		height: 1em;
 		margin: 2px;
 	}
+.smallWidth {
+	width: 140px;
+	}
+	select.smallWidth {
+		width: 144px;
+	}
+.mediumWidth {
+	width: 240px;
+	}
+	select.mediumWidth {
+		width: 244px;
+	}	
+.largeWidth {
+	width: 340px;
+	}
+	select.largeWidth {
+		width: 344px;
+	}
+.smallMessage {
+	font-size: .9em;
+	color: grey;
+}

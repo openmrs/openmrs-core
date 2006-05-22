@@ -25,7 +25,8 @@
 	}
 	
 	function findObjects(text) {
-		DWRPatientService.findPatients(fillTable, text, $('includeVoided').checked);
+		savedText = text;
+		DWRPatientService.findPatients(preFillTable, text, $('includeVoided').checked);
 		patientListing.style.display = "";
 		return false;
 	}
@@ -52,13 +53,14 @@
 				<tr>
 					<td><spring:message code="formentry.searchBox"/></td>
 					<td><input type="text" id="searchBox" onKeyUp="search(this, event, includeVoided.checked, 400)"></td>
-					<td><spring:message code="formentry.includeVoided"/><input type="checkbox" id="includeVoided" onClick="search(searchBox, event, includeVoided.checked, 0); searchBox.focus();" /></td>
+					<td><label for="includeVoided"><spring:message code="formentry.includeVoided"/></label><input type="checkbox" id="includeVoided" onClick="search(searchBox, event, includeVoided.checked, 0); searchBox.focus();" /></td>
+					<td><label for="verbose"><spring:message code="Patient.verboseListing"/></label><input type="checkbox" id="verbose" onClick="toggleVerbose(this, 'div', 'description')"></td>
 				</tr>
 			</table>
 		</form>
 		<div id="patientListing">
 			<table id="patientTable" cellspacing="0" cellpadding="1">
-			 <thead>
+			 <thead id="patientTableHead">
 				 <tr>
 				 	<th class="searchIndex"> </th>
 				 	<th class="patientIdentifier"><spring:message code="Patient.identifier"/></th>
@@ -100,6 +102,8 @@
 	// creates back button functionality
 	if (searchBox.value != "")
 		searchBoxChange(searchBox, event, $('includeVoided').checked, 0);
+		
+	changeClassProperty("description", "display", "none");
 	
 </script>
 

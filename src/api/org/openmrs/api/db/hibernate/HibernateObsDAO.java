@@ -256,6 +256,22 @@ public class HibernateObsDAO implements ObsDAO {
 
 		return ret;
 	}
+	
+	/**
+	 * @see org.openmrs.api.db.ObsService#getObservations(java.lang.Integer,org.openmrs.Patient,org.openmrs.Concept)
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Obs> getLastNObservations(Integer n, Patient who, Concept question) {
+		Session session = HibernateUtil.currentSession();
+
+		Query query = session
+				.createQuery("from Obs obs where obs.patient = :p and obs.concept = :c order by obs.obsDatetime desc");
+		query.setParameter("p", who);
+		query.setParameter("c", question);
+		query.setFetchSize(n);
+		
+		return query.list();
+	}
 
 	/**
 	 * @see org.openmrs.api.db.ObsService#getObservations(org.openmrs.Concept)

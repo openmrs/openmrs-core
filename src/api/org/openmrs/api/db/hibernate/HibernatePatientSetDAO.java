@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
@@ -417,6 +418,20 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public PatientSet getAllPatients() {
+		Session session = HibernateUtil.currentSession();
+		Query query = session.createQuery("select distinct patientId from Patient p where p.voided = 0");
+		
+		Set<Integer> ids = new HashSet<Integer>();
+		ids.addAll(query.list());
+		
+		PatientSet patientSet = new PatientSet();
+		patientSet.setPatientIds(ids);
+		
+		return patientSet;
+	}
+	
 	public PatientSet getPatientsHavingNumericObs(Integer conceptId, PatientSetService.Modifier modifier, Number value) {
 		Session session = HibernateUtil.currentSession();
 		HibernateUtil.beginTransaction();
@@ -594,7 +609,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		Criteria criteria = session.createCriteria(Obs.class);
 		criteria.add(Restrictions.eq("concept", concept));
 		criteria.add(Restrictions.in("patient.patientId", ids));
-		criteria.addOrder(org.hibernate.criterion.Order.asc("obsDatetime"));
+		criteria.add(Restrictions.eq("voided", false));
+		criteria.addOrder(org.hibernate.criterion.Order.desc("obsDatetime"));
 		log.debug("criteria: " + criteria);
 		List<Obs> temp = criteria.list();
 		for (Obs obs : temp) {
@@ -611,7 +627,70 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		
 		return ret;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public Map<Integer, Encounter> getEncountersByType(PatientSet patients, EncounterType encType) {
+		Session session = HibernateUtil.currentSession();
+		
+		Map<Integer, Encounter> ret = new HashMap<Integer, Encounter>();
+		
+		Set<Integer> ids = patients.getPatientIds();
+		
+		// default query
+		Criteria criteria = session.createCriteria(Encounter.class);
+		criteria.add(Restrictions.in("patient.patientId", ids));
+		
+		if (encType != null)
+			criteria.add(Restrictions.eq("encounterType", encType));
+		
+		criteria.addOrder(org.hibernate.criterion.Order.desc("patient.patientId"));
+		criteria.addOrder(org.hibernate.criterion.Order.desc("encounterDatetime"));
+		
+		List<Encounter> encounters = criteria.list();
+		
+		// set up the return map
+		for (Encounter enc : encounters) {
+			Integer ptId = enc.getPatient().getPatientId();
+			if (!ret.containsKey(ptId))
+				ret.put(ptId, enc);
+		}
+		
+		return ret;
+	}
 
+	@SuppressWarnings("unchecked")
+	public Map<Integer, Object> getPatientAttributes(PatientSet patients, String className, String property) throws DAOException {
+		Session session = HibernateUtil.currentSession();
+		
+		Map<Integer, Object> ret = new HashMap<Integer, Object>();
+		
+		Set<Integer> ids = patients.getPatientIds();
+		
+		// default query
+		Criteria criteria = session.createCriteria("org.openmrs." + className);
+		
+		// make 'patient.**' reference 'patient' like alias instead of object
+		if (className.equals("Patient"))
+			criteria = session.createCriteria("org.openmrs." + className, "patient");
+		
+		// set up the query
+		criteria.setProjection(Projections.projectionList().add(
+				Projections.distinct(Projections.property("patient.patientId"))).add(
+				Projections.property(property)));
+		criteria.add(Restrictions.in("patient.patientId", ids));
+		criteria.addOrder(org.hibernate.criterion.Order.desc("dateCreated"));
+		List<Object[]> rows = criteria.list();
+		
+		// set up the return map
+		for (Object[] row : rows) {
+			Integer ptId = (Integer)row[0];
+			Object columnValue = row[1];
+			ret.put(ptId, columnValue);
+		}
+		
+		return ret;
+	}
+	
 	public PatientSet getPatientsHavingTextObs(Integer conceptId, String value) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		HibernateUtil.beginTransaction();
@@ -636,6 +715,27 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 
 		PatientSet ret = new PatientSet();
 		List patientIds = query.list();
+		ret.setPatientIds(new HashSet<Integer>(patientIds));
+
+		HibernateUtil.commitTransaction();
+		
+		return ret;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public PatientSet getPatientsHavingLocation(Integer locationId) throws DAOException {
+		Session session = HibernateUtil.currentSession();
+		HibernateUtil.beginTransaction();
+
+		Query query;
+		StringBuffer sb = new StringBuffer();
+		sb.append("select distinct patient_id from encounter e " +
+				"where location_id = :location_id ");
+		query = session.createSQLQuery(sb.toString());
+		query.setInteger("location_id", locationId);
+
+		PatientSet ret = new PatientSet();
+		List<Integer> patientIds = query.list();
 		ret.setPatientIds(new HashSet<Integer>(patientIds));
 
 		HibernateUtil.commitTransaction();

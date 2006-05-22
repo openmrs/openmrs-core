@@ -112,7 +112,7 @@ var onSelect = function(objs) {
 
 function updateObsValues(tmpConcept) {
 	concept = tmpConcept;
-	var values = ['valueBoolean', 'valueCoded', 'valueDatetime', 'valueModifier', 'valueText', 'valueNumeric'];
+	var values = ['valueBoolean', 'valueCoded', 'valueDatetime', 'valueModifier', 'valueText', 'valueNumeric', 'valueInvalid'];
 	for (var i=0; i<values.length; i++)
 		$(values[i]).style.display = "none";
 	
@@ -134,6 +134,10 @@ function updateObsValues(tmpConcept) {
 		else if (datatype == 'DT' || datatype == 'TS' || datatype == 'TM')
 			$('valueDatetime').style.display = "";
 		// TODO move datatype 'TM' to own time box.  How to have them select?
+		else {
+			$('valueInvalid').style.display = "";
+			//DWRConceptService.getQuestionsForAnswer(fillValueInvalidPossible, tmpConcept.conceptId);
+		}
 	}
 }
 
@@ -238,6 +242,31 @@ function numericErrorMessage(validValue) {
 		errorTag.innerHTML = "";
 		errorTag.className = "";
 	}
+}
+
+function fillValueInvalidPossible(questions) {
+	var div = $('valueInvalidPossibleConcepts');
+	var txt = documentCreateTextNode('<spring:message code="Obs.valueInvalid.didYouMean"/> ');
+	for (var i=0; i<questions.length && i < 5; i++) {
+		if (i == 0)
+			div.appendChild(txt);
+		var concept = questions[i];
+		var link = document.createElement("a");
+		link.href = "#selectAsQuestion";
+		link.onclick = function() { selectNewQuestion(concept.conceptId); return false; };
+		link.title = concept.description;
+		link.innerHTML = concept.name;
+		if (i == (questions.length - 1))
+			link.innerHTML += "?";
+		else
+			link.innerHTML += ", ";
+		div.appendChild(link);
+	}
+}
+
+function selectNewQuestion(conceptId) {
+	searchType = "concept";
+	DWRConceptService.getConcept(onSelect, conceptId);
 }
 
 function allowAutoListWithNumber() {
@@ -490,6 +519,13 @@ function allowAutoListWithNumber() {
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</td>
 		</spring:bind>
+	</tr>
+	<tr id="valueInvalid">
+		<th><spring:message code="general.value"/></th>
+		<td>
+			<div class="error"><spring:message code="Obs.valueInvalid.description"/></div>
+			<div id="valueInvalidPossibleConcepts"></div>
+		</td>
 	</tr>
 	<!-- 
 	<tr>

@@ -16,7 +16,6 @@
 <script>
 
 	var patient;
-	var savedText;
 	var autoJump = true;
 	<request:existsParameter name="autoJump">
 		autoJump = <request:parameter name="autoJump"/>;
@@ -50,49 +49,6 @@
 		}
 		patientListing.style.display = "";
 		return false;
-	}
-	
-	function preFillTable(patients) {
-		patientTableHead.style.display = "";
-		if (patients.length < 1) {
-			if (savedText.match(/\d/)) {
-				if (isValidCheckDigit(savedText) == false) {
-					//the user didn't input an identifier with a valid check digit
-					patientTableHead.style.display = "none";
-					var img = getProblemImage();
-					var tmp = " <img src='" + img.src + "' title='" + img.title + "' /> " + invalidCheckDigitText + savedText;
-					patients.push(tmp);
-					patients.push(noPatientsFoundText);
-					patients.push(searchOnPatientNameText);
-				}
-				else {
-					//the user did input a valid identifier, but we don't have it
-					patients.push(noPatientsFoundText);
-					patients.push(searchOnPatientNameText);
-					patients.push(addPatientLink);
-				}
-			}
-			else {
-				// the user put in a text search
-				patients.push(noPatientsFoundText);
-				patients.push(addPatientLink);
-			}
-			fillTable([]);	//this call sets up the table/info bar
-		}
-		else if (patients.length > 1 || isValidCheckDigit(savedText) == false) {
-			patients.push(addPatientLink);	//setup links for appending to the end
-		}
-		
-		fillTable(patients);		//continue as normal
-		
-		return false;
-	};
-	
-	var postFillTable = function(numObjects) {
-		if (numObjects > 0)
-			$('patientTableHead').style.display = '';
-		else
-			$('patientTableHead').style.display = 'none';
 	}
 	
 	function allowAutoJump() {
@@ -130,6 +86,7 @@
 				<tr>
 					<td><spring:message code="formentry.searchBox"/></td>
 					<td><input type="text" id="searchBox" size="40" onKeyUp="search(this, event, false, 400)"></td>
+					<td><label for="verbose"><spring:message code="Patient.verboseListing"/></label><input type="checkbox" id="verbose" onClick="toggleVerbose(this, 'div', 'description')"></td>
 				</tr>
 			</table>
 			<!-- <input type="submit" value="Search" onClick="return updatePatients();"> -->
@@ -146,7 +103,7 @@
 				 	<th id='patientAge'> <spring:message code="Patient.age"/> </th>
 				 	<th id='patientGender'> <spring:message code="Patient.gender"/> </th>
 				 	<th> <spring:message code="Patient.tribe"/> </th>
-				 	<th></th>
+				 	<th> </th>
 				 	<th> <spring:message code="Patient.birthdate"/> </th>
 				 </tr>
 			 </thead>
@@ -163,12 +120,6 @@
 	var findPatient   = document.getElementById("findPatient");
 	var searchBox		= document.getElementById("searchBox");
 	var findPatientForm = document.getElementById("findPatientForm");
-	var patientTableHead= document.getElementById("patientTableHead");
-	
-	var invalidCheckDigitText   = "Invalid check digit for MRN: ";
-	var searchOnPatientNameText = "Please search on part of the patient's name. ";
-	var noPatientsFoundText     = "No patients found. <br/> ";
-	var addPatientLink = "<a href='${pageContext.request.contextPath}/admin/patients/addPatient.htm'>Add a new patient</a>";
 	
 	function init() {
 		DWRUtil.useLoadingMessage();
@@ -191,6 +142,8 @@
 		// creates back button functionality
 		if (searchBox.value != "")
 			search(searchBox, null, false, 0);
+			
+		changeClassProperty("description", "display", "none");
 	}
 		
 	window.onload=init;

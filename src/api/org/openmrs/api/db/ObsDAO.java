@@ -117,6 +117,14 @@ public interface ObsDAO {
 	 */
     public Set<Obs> getObservations(Patient who, Concept question) throws DAOException;
 
+    /**
+	 * e.g. get last 'n' number of observations for a patient for given concept
+	 * @param n number of concepts to retrieve
+	 * @param who
+	 * @param question
+	 * @return
+	 */
+    public List<Obs> getLastNObservations(Integer n, Patient who, Concept question);
 	/**
 	 * e.g. get all observations referring to RETURN VISIT DATE
 	 * @param question (Concept: RETURN VISIT DATE)

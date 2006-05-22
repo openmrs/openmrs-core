@@ -1,4 +1,3 @@
-
 header {
 package org.openmrs.arden;
 
@@ -91,6 +90,10 @@ tokens {
 	DATA="data";
 	LOGIC="logic";
 	ACTION="action";
+	MAINTENANCE ="maintenance";
+	LIBRARY="library";
+	FILENAME="filename";
+	MLMNAME="mlmname";
 	
 }
 
@@ -158,17 +161,27 @@ tokens {
       
       //String tree = parser.getAST().toStringList();
       
-     System.err.println(t.toStringTree());
+     System.err.println(t.toStringTree());   // prints maintenance
       
       ArdenBaseTreeParser treeParser = new ArdenBaseTreeParser();
  //     String datastr = treeParser.data(t);
  	  MLMObject ardObj = new MLMObject();
- 	  treeParser.data(t,ardObj);
+ 	  
+ 	  treeParser.maintenance(t, ardObj);
+ 	  
+ 	 System.err.println(t.getNextSibling().toStringTree());   // prints library
       
-      System.err.println(t.getNextSibling().toStringTree());
+      treeParser.library(t.getNextSibling(), ardObj);
       
-      String logicstr = treeParser.logic(t.getNextSibling(), ardObj);
-      String actionstr = treeParser.action(t.getNextSibling().getNextSibling());
+     System.err.println(t.getNextSibling().getNextSibling().toStringTree()); // Print data
+ 	  treeParser.data(t.getNextSibling().getNextSibling(),ardObj);
+      
+
+     System.err.println(t.getNextSibling().getNextSibling().getNextSibling().toStringTree()); // Print logic
+      String logicstr = treeParser.logic(t.getNextSibling().getNextSibling().getNextSibling(), ardObj);
+      
+     System.err.println(t.getNextSibling().getNextSibling().getNextSibling().getNextSibling().toStringTree()); // Print action
+      String actionstr = treeParser.action(t.getNextSibling().getNextSibling().getNextSibling().getNextSibling(), ardObj);
       
       
       System.err.println(actionstr);
@@ -200,14 +213,14 @@ tokens {
 // @@startrules
 
 startRule:
-	  maintenance_category!
-	  library_category!
+	  maintenance_category
+	  library_category
 	  knowledge_category
 	  "end"! COLON!
 	  ;
 	 
 maintenance_category:	
-   	("maintenance" COLON) maintenance_body
+   	("maintenance"^ COLON!) maintenance_body
   	;
 
 maintenance_body :
@@ -223,7 +236,7 @@ maintenance_body :
 	;
 
 library_category:
-	 "library" COLON library_body
+	 "library"^ COLON! library_body
 	;
 
 library_body:
@@ -254,8 +267,8 @@ title_slot: ("title" COLON (text)* ENDBLOCK
    	;
 
 mlmname_slot :
-	  "mlmname" COLON mlmname_text 
-	| "filename" COLON mlmname_text  
+	  MLMNAME^ COLON mlmname_text 
+	| FILENAME^ COLON mlmname_text  
 	;
 									
 mlmname_text
@@ -340,7 +353,7 @@ validation_code :
 // Wraps the ID token from the lexer, in order to provide
 // 'keyword as identifier' trickery.
 any_reserved_word
-	: AND | IS | ARE | WAS | WERE | COUNT | IN | LESS | THE | THAN | FROM | BEFORE |AFTER | AGO
+	: AND | IS | ARE | WAS | WERE | COUNT | IN | LESS | THE | THAN | FROM | BEFORE |AFTER | AGO | AT
 	| WRITE | BE | LET | YEAR | YEARS | IF | IT | THEY | NOT | OR | THEN | MONTH | MONTHS
 	| READ | MINIMUM | MIN | MAXIMUM | MAX | LAST | FIRST | EARLIEST | LATEST | EVENT | WHERE | EXIST | EXISTS | PAST
 	| AVERAGE | AVG | SUM | MEDIAN | CONCLUDE | ELSE | ELSEIF | ENDIF | TRUE | FALSE | DATA | LOGIC | ACTION
@@ -448,7 +461,9 @@ single_citation:
 /* This is a separate definition to allow for future expansion */
 
 citation_text:
-    (text | INTLIT)* (COLON (text)* | (INTLIT MINUS INTLIT DOT))*  //ENDBLOCK
+//    (text | INTLIT)* (COLON (text)* | (INTLIT MINUS INTLIT DOT) | DOT)*  //ENDBLOCK
+      (text | INTLIT)* (COLON (text)* (MINUS INTLIT)? (text)* (DOT)?)* 
+      					 
 	;	
 
 citation_type :
@@ -539,7 +554,7 @@ data_assignment
 	//	| "OBJECT" <object_definition>
 	//	| <call_phrase>
 	//	| <new_object_phrase>
-	//	| <expr>
+		| expr
 	  
 	  
 	)
@@ -870,11 +885,11 @@ action_slot:
 action_statement:
 	(WRITE^) 
 	(
-	   	expr
-     	| (LPAREN!) expr (RPAREN!) 
+	   	(LPAREN!)? ( (ACTION_OP expr_factor)* | expr ) (RPAREN!)? 
+     	
 		//expr_factor 
-	)
-	(ACTION_OP expr_factor)* ((AT) ID)? 
+	)  /*(ACTION_OP^ expr_factor)* */ ((AT) ID)? 
+	
 	
 	;
 
@@ -959,7 +974,7 @@ expr_comparison :
 
 /**********************************************************************************/
 expr_string
-	: expr_plus ("||" expr_plus)*
+	: expr_plus (ACTION_OP expr_plus)*
 //	| expr_string "||" expr_plus
 	;
 	
@@ -1158,7 +1173,7 @@ logic [MLMObject obj] returns [String s=""]
 : #(LOGIC {System.err.println("\n"); System.err.println("-------Starting LOGIC--------");} 
 	 (
 	   {System.err.println("-----------Starting IF -------");} a=ifAST[obj]
-			   (	{System.err.println("-----------Starting CONCLUDE -------");} (concludeAST[obj, a])? {System.err.println("\n");System.err.println("-----------End CONCLUDE -------");}
+			   (	{System.err.println("-----------Starting CONCLUDE -------"); } (concludeAST[obj, a])? {System.err.println("\n");System.err.println("-----------End CONCLUDE -------");}
 			      | {System.err.println("-----------Starting Logic Assignment -------");} logicAssignmentAST[obj, a]  {System.err.println("\n");System.err.println("-----------End logic assignment -------");}
 			      
 			   )
@@ -1170,7 +1185,7 @@ logic [MLMObject obj] returns [String s=""]
 					      
 			  )
 	   {System.err.println("\n");System.err.println("-----------End ELSE- ELSEIF -------");}
-	  | {System.err.println("-----------Starting CONCLUDE -------");} concludeAST[obj, ""]  {System.err.println("\n");System.err.println("-----------End CONCLUDE -------");}
+	  | {System.err.println("-----------Starting CONCLUDE -------");obj.InitEvaluateList();} concludeAST[obj, ""]  {System.err.println("\n");System.err.println("-----------End CONCLUDE -------");}
 
 	 )* 
   (ENDBLOCK){System.err.println("\n");System.err.println("-----------End Action -------");})
@@ -1179,7 +1194,7 @@ logic [MLMObject obj] returns [String s=""]
 ifAST [MLMObject obj] returns [String s=""]
 {String a,b;}
 : (
-    #(IF {obj.InitForIf();} s=exprAST[obj] THEN ) 
+    #(IF {obj.ResetConceptVar(); obj.InitEvaluateList();} s=exprAST[obj] THEN ) 
    )
    ;
 
@@ -1202,7 +1217,7 @@ exprAST [MLMObject obj] returns [String s=""]
 {String a,b;}
 :
 ( 
-	a = exprStringAST[obj, ""] {s=a;}(simple_comp_opAST[obj, a] b = exprStringAST[obj, a] {obj.SetAnswer(b, a);})? 
+	a = exprStringAST[obj, ""] {s=a;}(simple_comp_opAST[obj, a] b = exprStringAST[obj, a] {/*obj.SetAnswer(b, a);*/})? 
 
 );
 
@@ -1212,15 +1227,19 @@ exprStringAST [MLMObject obj, String instr] returns [String s=""]
 (
    #(ift:ID 
 			      { a = ift.getText(); System.err.println("IF text = " + a); 
-			        if(instr.equals(""))
-			        	obj.AddToEvaluateList(a);
-			      //  	obj.RetrieveConcept(a); 
+			        if(instr.equals("")) {
+			        		obj.AddToEvaluateList(a); obj.SetConceptVar(a);
+				      //  	obj.RetrieveConcept(a); 
+			        }
+			        else { // if instr is not empty then we are evaluating RHS of an equation, it can be a non string literal
+			        	obj.SetAnswer(a,instr);					
+			        }
 			        s= a;
 			      }
 	   )   
     | (
-    	  #(TRUE {obj.SetAnswer("true", instr);})
-    	| #(FALSE {obj.SetAnswer("false", instr);})
+    	  #(TRUE {obj.SetAnswer(true, instr);})
+    	| #(FALSE {obj.SetAnswer(false, instr);})
       )
 	  
 	| (val:INTLIT
@@ -1247,7 +1266,7 @@ exprStringAST [MLMObject obj, String instr] returns [String s=""]
 	| ( // Empty as in else conclude
 		{ a = "tmp_01"; System.err.println("IF text = " + a); 
 			        if(instr.equals(""))
-			        	obj.AddToEvaluateList(a);
+			        	obj.AddToEvaluateList(a); obj.SetConceptVar(a);
 			        	
 			      //  	obj.RetrieveConcept(a); 
 			        s= a;
@@ -1312,7 +1331,7 @@ concludeAST [MLMObject obj, String key] returns [String s=""]
     			key = a;
     			obj.SetConceptVar(a);
     			obj.AddConcept(key);
-    			obj.AddToEvaluateList(a);
+    			obj.AddToEvaluateList(a); obj.SetConceptVar(a);
     			obj.SetDBAccess(false,a);
     			} 
     		   } 
@@ -1325,36 +1344,107 @@ concludeAST [MLMObject obj, String key] returns [String s=""]
   )
 ;
 
-logic_elseifAST [MLMObject obj]returns [String s=""]
+logic_elseifAST [MLMObject obj] returns [String s=""]
 {String a,b;}
 : (
      (
-     	 #(ELSEIF {obj.InitForIf();} s=exprAST[obj] THEN )
-       | #(ELSE {obj.InitForIf();} s=exprAST[obj] {obj.AddConcept(s);obj.SetDBAccess(false,s);}  )
+     	 #(ELSEIF {obj.ResetConceptVar();} s=exprAST[obj] THEN )
+       | #(ELSE {obj.ResetConceptVar();} s=exprAST[obj] {obj.AddConcept(s);obj.SetDBAccess(false,s);}  )
        | #(ENDIF {System.err.println("ENDIF FOUND");} )
      )   
    )
 ;
 
 /***********************ACTION*******************************************/
-action returns [String s=""]
+action [MLMObject obj] returns [String s=""]
 {String a,b;}
 : #(ACTION {System.err.println("\n"); System.err.println("-------Starting Action--------");} 
 	 (
-	   {System.err.println("-----------Starting Write -------");} writeAST  {System.err.println("\n");System.err.println("-----------End Write -------");}
+	   {System.err.println("-----------Starting Write -------");} s = writeAST[obj] {System.err.println("\n");System.err.println("-----------End Write -------");}
 	 )* 
   (ENDBLOCK){System.err.println("\n");System.err.println("-----------End Action -------");})
 ;
 
-writeAST returns [String s=""]
+writeAST [MLMObject obj] returns [String s=""]
+{String a="",b="";}
+: (
+    #(WRITE 
+       	
+       ( 
+       		(ACTION_OP id: ID {a = id.getText(); 
+       							//b= obj.getUserVarVal(a);
+       							b = "||" + a + "||";
+       							s += b;}
+       		ACTION_OP) 
+           | (i:STRING_LITERAL {s += i.getText();} ) 
+       )*
+       		
+       		
+       	
+       	
+     ) 
+      
+     
+  )
+;
+
+actionExprAST [MLMObject obj] returns [String s=""]
 {String a,b;}
 : (
-    #(WRITE i:STRING_LITERAL ) 
-      {System.err.println("Action text = " + i.getText());}
+
+  	     ( 
+  	      id: ID {a = id.getText(); s= obj.getUserVarVal(a);} 
+		 )
+		    
+  
   )
  
 ;
 
+maintenance [MLMObject obj] returns [String s=""]
+{String a="",b = "";}
+: (
+  #(MAINTENANCE 
+  	( 
+  		(#(FILENAME 
+  			 COLON {s += " Filename: "; }  b = textAST[obj] {obj.setClassName(b); s += b; s += "\n";} 
+  		  )
+  		|#(MLMNAME 
+  			 COLON {s += " Filename: "; }  b = textAST[obj] {obj.setClassName(b); s += b; s += "\n";} 
+  		  )
+  		| a = textAST[obj] {s += a;} ENDBLOCK {s += "\n";} 
+  		)
+  		
+    )* 
+   )
+   
+  )
+;
+
+textAST [MLMObject obj] returns [String s=""]
+{String a="",b="";}
+: (
+	(
+ 	//	 #(FILENAME COLON {s = " Filename: "; }  b = textAST[obj] {obj.setClassName(b); s += b;})
+	//	|
+		(str: ~(ENDBLOCK) {a = " " + str.getText();s += a; /*System.err.println(s);*/} )*  
+		
+
+	)
+)
+;
+
+library [MLMObject obj] returns [String s=""]
+{String a="",b="";}
+: (
+  #(LIBRARY 
+  	 ( 
+  		a = textAST[obj] {s += a;} ENDBLOCK {s += "\n";} 
+    )* 
+   
+   )
+  )
+;
 
 
 /*************************************************************************************/

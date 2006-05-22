@@ -39,7 +39,7 @@ public final class Listener implements ServletContextListener {
 			FileInputStream propertyStream = null;
 
 			// Look for environment variable {WEBAPP.NAME}_RUNTIME_PROPERTIES_FILE
-			String webapp = "@WEBAPP.NAME@";
+			String webapp = WebConstants.OPENMRS_WEBAPP_NAME;
 			webapp = webapp.toUpperCase();
 			String env = webapp + "_RUNTIME_PROPERTIES_FILE";
 			

@@ -8,8 +8,13 @@ import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Field;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 public class ReportObjectXMLEncoder {
 
+	private Log log = LogFactory.getLog(this.getClass());
+	
 	private Object objectToEncode;
 	
 	public ReportObjectXMLEncoder( Object objectToEncode ) {
@@ -30,6 +35,7 @@ public class ReportObjectXMLEncoder {
 	    		}
 	    	}
 	    }
+	    log.error("objectToEncode.type: " + objectToEncode.getClass());
 	    enc.writeObject(this.objectToEncode);
 	    enc.close();
 	    

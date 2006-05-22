@@ -15,7 +15,8 @@
 <script type="text/javascript" src='<%= request.getContextPath() %>/dwr/interface/DWRUserService.js'></script>
 
 <script type="text/javascript">
-var init = function() {
+
+	var init = function() {
 		mySearch = new fx.Resize("searchForm", {duration: 100});
 		mySearch.hide();
 	};
@@ -27,11 +28,24 @@ var init = function() {
 	
 	var onSelect = function(objs) {
 		var obj = objs[0];
-		$("user").value = obj.userId;
-		$("userName").innerHTML = getName(obj);
+		var options = $("userNames").options;
+		if (isAddable(obj.userId, options)) {
+			var opt = new Option(getName(obj), obj.userId);
+			opt.selected = true;
+			options[options.length] = opt;
+			copyIds("userNames", "userIds", " ");
+		}
 		changeButton.focus();
 		mySearch.hide();
 		return false;
+	}
+	
+	function isAddable(value, options) {
+		for (x=0; x<options.length; x++)
+			if (options[x].value == value)
+				return false;
+	
+		return true;
 	}
 	
 	function showSearch(btn) {
@@ -72,11 +86,94 @@ var init = function() {
 		}
 	}
 	
-	function gotoUser(tagName, userId) {
+	function gotoUser(select, userId) {
 		if (userId == null)
-			userId = $(tagName).value;
-		window.location = "${pageContext.request.contextPath}/admin/users/user.form?userId=" + userId;
+			userId = $(select).value;
+		if (userId != "")
+			window.location = "${pageContext.request.contextPath}/admin/users/user.form?userId=" + userId;
 		return false;
+	}
+	
+	function removeItem(nameList, idList, delim)
+	{
+		var sel   = document.getElementById(nameList);
+		var input = document.getElementById(idList);
+		var optList   = sel.options;
+		var lastIndex = -1;
+		var i = 0;
+		while (i<optList.length) {
+			// loop over and erase all selected items
+			if (optList[i].selected) {
+				optList[i] = null;
+				lastIndex = i;
+			}
+			else {
+				i++;
+			}
+		}
+		copyIds(nameList, idList, delim);
+		while (lastIndex >= optList.length)
+			lastIndex = lastIndex - 1;
+		if (lastIndex >= 0) {
+			optList[lastIndex].selected = true;
+			return optList[lastIndex];
+		}
+		return null;
+	}
+	
+	function copyIds(from, to, delimiter)
+	{
+		var sel = document.getElementById(from);
+		var input = document.getElementById(to);
+		var optList = sel.options;
+		var remaining = new Array();
+		var i=0;
+		while (i < optList.length)
+		{
+			remaining.push(optList[i].value);
+			i++;
+		}
+		input.value = remaining.join(delimiter);
+	}
+	
+	function removeHiddenRows() {
+		var rows = document.getElementsByTagName("TR");
+		var i = 0;
+		while (i < rows.length) {
+			if (rows[i].style.display == "none") {
+				rows[i].parentNode.removeChild(rows[i]);
+			}
+			else {
+				i = i + 1;
+			}
+		}
+	}
+	
+	function listKeyPress(from, to, delim, event) {
+		var keyCode = event.keyCode;
+		if (keyCode == 8 || keyCode == 46) {
+			removeItem(from, to, delim);
+			window.Event.keyCode = 0;	//attempt to prevent backspace key (#8) from going back in browser
+		}
+	}
+	
+	function addRole() {
+		var obj = document.getElementById("roleStr");
+		var synonyms = document.getElementById("roles").options;
+		if (synonyms == null)
+			synonyms = new Array();
+		var syn = obj.value;
+		if (syn != "") {
+			if (isAddable(syn, synonyms)) {
+				var opt = new Option(syn, syn);
+				opt.selected = true;
+				synonyms[synonyms.length] = opt;
+			}
+		}
+		obj.value = "";
+		obj.focus();
+		copyIds("roles", "newRoles", ",");
+		window.Event.keyCode = 0;  //disable enter key submitting form
 	}
 </script>
 
@@ -123,34 +220,65 @@ var init = function() {
 		</td>
 	</tr>
 	<tr>
-		<th valign="top"><spring:message code="Alert.user"/></th>
+		<th valign="top"><spring:message code="Alert.recipients"/></th>
 		<td valign="top">
-			<spring:bind path="alert.user">
-				<table>
-					<tr>
-						<td><a id="userName" href="#View User" onclick="return gotoUser('user')">${status.value.firstName} ${status.value.middleName} ${status.value.lastName}</a></td>
-						<td>
-							&nbsp;
-							<input type="hidden" id="user" value="${status.value.userId}" name="userId" />
-							<input type="button" id="userButton" class="smallButton" value="<spring:message code="general.change"/>" onclick="showSearch(this)" />
-							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-						</td>
-					</tr>
-				</table>
-			</spring:bind>
+			<input type="hidden" name="userIds" id="userIds" size="40" value='<c:forEach items="${alert.recipients}" var="recipient">${recipient.recipient.userId} </c:forEach>' />
+			<table cellpadding="0" cellspacing="0">
+				<tr>
+					<td valign="top">
+						<select class="mediumWidth" size="6" id="userNames" multiple onkeyup="listKeyPress('userNames', 'userIds', ' ', event);">
+							<c:forEach items="${alert.recipients}" var="recipient">
+								<option value="${recipient.recipient.userId}">${recipient.recipient.firstName} ${recipient.recipient.middleName} ${recipient.recipient.lastName}</option>
+							</c:forEach>
+						</select>
+					</td>
+					<td valign="top" class="buttons">
+						&nbsp;<input type="button" value="<spring:message code="general.add"/>" class="smallButton" onClick="showSearch(this);" /> <br/>
+						&nbsp;<input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('userNames', 'userIds', ' ');" /> <br/>
+						&nbsp;<input type="button" value="<spring:message code="User.goTo"/>" class="smallButton" onClick="gotoUser('userNames');" /><br/>
+					</td>
+				</tr>
+			</table>
 		</td>
 	</tr>
 	<tr>
-		<th valign="top"><spring:message code="Alert.role"/></th>
+		<th valign="top"><spring:message code="Alert.roles"/></th>
 		<td valign="top">
-			<spring:bind path="alert.role">
-				<select name="roleStr">
-					<option value=""><spring:message code="general.none"/></option>
-					<c:forEach items="${allRoles}" var="role">
-						<option value="${role.role}" <c:if test="${role == status.value}">selected</c:if>>${role.role}</option>
-					</c:forEach>
-				</select>
+			<select id="roleStr" class="mediumWidth">
+				<option value=""><spring:message code="general.none"/></option>
+				<c:forEach items="${allRoles}" var="role">
+					<option value="${role.role}" <c:if test="${role == status.value}">selected</c:if>>${role.role}</option>
+				</c:forEach>
+			</select>
+			<input type="button" class="smallButton" value="<spring:message code="Alert.addRole"/>" onClick="addRole();"/>
+			<input type="hidden" name="newRoles" id="newRoles" value="" />
+		</td>
+	</tr>
+	<tr>
+		<th></th>
+		<td>
+			<table cellpadding="0" cellspacing="0">
+				<tr>
+					<td>
+						<select class="mediumWidth" size="3" multiple id="roles" onkeydown="listKeyPress('roles', 'newRoles', ',', event);">
+						</select>
+					</td>
+					<td valign="top" class="buttons">
+						&nbsp;<input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('roles', 'newRoles', ',');" /> <br/>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<th valign="top"><spring:message code="Alert.satisfiedByAny"/></th>
+		<td valign="top">
+			<spring:bind path="alert.satisfiedByAny">
+				<input type="hidden" name="_${status.expression}" value="on" />
+				<input type="checkbox" name="${status.expression}"
+					   value="on" <c:if test="${alert.satisfiedByAny}">checked</c:if> />
 			</spring:bind>
+			<i><spring:message code="Alert.satisfiedByAny.description"/></i>
 		</td>
 	</tr>
 	<tr>

@@ -47,6 +47,8 @@ public class PatientListItem {
 					first = false;
 				}
 				else {
+					if (otherIdentifiers != "")
+						otherIdentifiers += ",";
 					otherIdentifiers += " " + pi.getIdentifier();
 				}
 			}
@@ -60,6 +62,8 @@ public class PatientListItem {
 					givenName = pn.getGivenName();
 					first = false;
 				} else {
+					if (otherNames != "")
+						otherNames += ",";
 					otherNames += " " + pn.getGivenName() + " " + pn.getMiddleName() + " " + pn.getFamilyName();
 				}
 			}

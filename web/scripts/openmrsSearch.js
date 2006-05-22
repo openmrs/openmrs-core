@@ -52,6 +52,7 @@ var lastPhraseSearched;
 var numItemsDisplayed;
 var firstItemDisplayed;
 var allowAutoListWithNumber;
+var previousHit;
 
 var debugBox;
 
@@ -76,6 +77,7 @@ function resetForm() {
 	debugBox = $("debugBox");
 	if (debugBox) debugBox.innerHTML = "";
 	keyCode = null;
+	previousHit = null;
 }
 
 function searchBoxChange(bodyElementId, obj, event, retired, delay, onkeydownused) {
@@ -95,8 +97,8 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay, onkeydownuse
 		key = ENTERKEY;	//mimic user hitting enter key
 	}
 	else {
-		if (!event.altKey && !event.ctrlKey) {
-			// this if statement cancels the search on alt and control keys
+		if (!event.altKey && (!event.ctrlKey || event.keyCode == 86)) {
+			// this if statement cancels the search on alt and control keys, except for ctrl-v
 			key = event.keyCode;
 			if (debugBox) debugBox.innerHTML += '<br>event.type : ' + event.type;
 			var type = null;
@@ -120,7 +122,8 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay, onkeydownuse
 	
 	// infopath hack since it doesn't let us use onkeyup or onkeypress	
 	if (onkeydownused == true) {
-		if ((key >= 48 && key <= 127)) {
+		// only add if the key is a letter and no modifier key was pressed
+		if (key >= 48 && key <= 90 && !event.altKey && !event.ctrlKey) {
 			var newKey = String.fromCharCode(key).toLowerCase();
 			// IE interprets all char codes as upper case.  
 			// Only leave in uppercase if the previous char is uppercase (hack #2)
@@ -210,7 +213,7 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay, onkeydownuse
 		}
 	}
 
-	else if ((key >= 48 && key <= 127) ||
+	else if ((key >= 48 && key <= 90) ||
 		key == 8 || key == 32 || key == 46 || key == 1) {
 			//	 (if alphanumeric key entered or 
 			//   backspace key pressed or
@@ -316,13 +319,14 @@ var noCell = function() {
 }
 
 var getNumber = function(searchHit) {
-	    if (typeof searchHit == 'string') {
+		if (typeof searchHit == 'string') {
     		return "";
     	}
-		objectsFound.push(searchHit);
-		searchIndex = searchIndex + 1;
-		var td = document.createElement("td");
+    	var td = document.createElement("td");
 		td.className = "searchIndex";
+		if (searchIndex >= objectsFound.length)
+    		objectsFound.push(searchHit);
+		searchIndex = searchIndex + 1;
 		td.innerHTML = searchIndex + ". ";
 		td.id = searchIndex;
 		return td;
@@ -346,26 +350,33 @@ var getDateString = function(d) {
 	return str;
 }
 
+var rowMouseOver = function() {
+	if (this.className.indexOf("searchHighlight") == -1)
+		this.className = "searchHighlight " + this.className;
+}
+
+var rowMouseOut = function() {
+	var c = this.className;
+	this.className = c.substring(c.indexOf(" ") + 1, c.length);
+}
+
 var rowCreator = function(row, i) {
+	previousHit = objectsFound[searchIndex-1];
+	
 	var tr = document.createElement("tr");
+	
 	if (i % 2 == 0)
 		tr.className = "evenRow";
 	else
 		tr.className = "oddRow";
-	
+
 	if (row.voided == true || row.retired == true)
 		tr.className += " voided";
 	
 	if (typeof row != "string") {
 		tr.onclick= function() { selectObject(this.firstChild.id); };
-		tr.onmouseover= function()  {
-					if (this.className.indexOf("searchHighlight") == -1)
-						this.className = "searchHighlight " + this.className;
-				};
-		tr.onmouseout = function () {
-					var c = this.className;
-					this.className = c.substring(c.indexOf(" ") + 1, c.length);
-				};
+		tr.onmouseover= rowMouseOver;
+		tr.onmouseout = rowMouseOut;
 	}
 	
 	return tr;
@@ -419,7 +430,7 @@ function fillTable(objects, cells) {
     if (debugBox) debugBox.innerHTML += "<br>ending fillTable().  Keycode was: " + keyCode;
     
     if (typeof postFillTable == 'function')
-    	postFillTable(objectsFound.length);
+    	postFillTable(objectsFound);
 }
 
 function showPrevious() {
@@ -646,7 +657,7 @@ function getRowHeight() {
 			h = 13; //normal
 	}
 	else {
-		h = parseInt(h.slice(0, h.length - 2)); //remove 'px' from height
+		h = parseInt(h.slice(0, h.length - 2)) - 4; //remove 'px' from height
 	}
 
 	if (typeof customGetRowHeight != 'undefined') h = customGetRowHeight(h);
