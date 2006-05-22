@@ -91,7 +91,15 @@ public interface ConceptDAO {
 	 * @param name
 	 * @return List of concepts
 	 */
-	public List<Concept> getConceptByName(String name);
+	public List<Concept> getConceptsByName(String name);
+	
+	/**
+	 * Return a Concept that matches the name exactly
+	 * 
+	 * @param name
+	 * @return Concept with matching name
+	 */
+	public Concept getConceptByName(String name);
 	
 	/**
 	 * Return drug object corresponding to the given id
@@ -177,6 +185,14 @@ public interface ConceptDAO {
 	 * @return
 	 */
 	public List<ConceptWord> findConceptAnswers(String phrase, Locale locale, Concept concept, boolean includeRetired);
+	
+	/**
+	 * Get the questions that have this concept as a possible answer
+	 * 
+	 * @param concept Concept to get 
+	 * @return list of concepts
+	 */
+	public List<Concept> getQuestionsForAnswer(Concept concept);
 	
 	/**
 	 * Finds the previous available concept via concept id  

@@ -60,18 +60,6 @@
 		margin: 0px;
 		display: inline;
 	}
-	.smallWidth {
-		width: 140px;
-		}
-		select.smallWidth {
-			width: 144px;
-		}
-	.mediumWidth {
-		width: 340px;
-		}
-		select.mediumWidth {
-			width: 344px;
-		}
 	#conceptTable th {
 		text-align: left;
 	}
@@ -126,7 +114,7 @@
 		</th>
 		<td><spring:bind path="conceptName.name">
 			<input type="text" name="${status.expression}"
-				value="${status.value}" id="conceptName" class="mediumWidth" />
+				value="${status.value}" id="conceptName" class="largeWidth" />
 			<c:if test="${status.errorMessage != ''}">
 				<span class="error">${status.errorMessage}</span>
 			</c:if>
@@ -160,7 +148,7 @@
 			<spring:message code="Concept.synonyms" />
 		</th>
 		<td valign="top">
-			<input type="text" class="mediumWidth" id="addSyn" onKeyDown="return synonymKeyPress(this, event);"/>
+			<input type="text" class="largeWidth" id="addSyn" onKeyDown="return synonymKeyPress(this, event);"/>
 			<input type="button" class="smallButton" value="<spring:message code="Concept.synonym.add"/>" onClick="addSynonym();"/>
 			<input type="hidden" name="newSynonyms" id="newSynonyms" value="<c:forEach items="${conceptSynonyms}" var="syn">${syn},</c:forEach>" />
 		</td>
@@ -171,7 +159,7 @@
 			<table cellpadding="0" cellspacing="0">
 				<tr>
 					<td>
-						<select class="mediumWidth" size="5" multiple id="syns" onkeydown="listKeyPress('syns', 'newSynonyms', ',', event);">
+						<select class="largeWidth" size="5" multiple id="syns" onkeydown="listKeyPress('syns', 'newSynonyms', ',', event);">
 							<c:forEach items="${conceptSynonyms}" var="syn"><option value="${syn}">${syn}</option></c:forEach>
 						</select>
 					</td>
@@ -205,7 +193,7 @@
 			<table cellpadding="0" cellspacing="0">
 				<tr>
 					<td valign="top">
-						<select class="mediumWidth" size="6" id="conceptSetsNames" multiple onkeyup="listKeyPress('conceptSetsNames', 'conceptSets', ' ', event);">
+						<select class="largeWidth" size="6" id="conceptSetsNames" multiple onkeyup="listKeyPress('conceptSetsNames', 'conceptSets', ' ', event);">
 							<c:forEach items="${conceptSets}" var="set">
 								<option value="${set.value[0]}">${set.value[1]} (${set.value[0]})</option>
 							</c:forEach>
@@ -244,7 +232,7 @@
 			<table cellspacing="0" cellpadding="0">
 				<tr>
 					<td valign="top">
-						<select class="mediumWidth" size="6" id="answerNames" multiple onKeyUp="listKeyPress('answerNames', 'answerIds', ' ', event)">
+						<select class="largeWidth" size="6" id="answerNames" multiple onKeyUp="listKeyPress('answerNames', 'answerIds', ' ', event)">
 							<c:forEach items="${conceptAnswers}" var="answer">
 								<option value="${answer.key}">${answer.value} (${fn:substring(answer.key, 0, fn:indexOf(answer.key, '^'))})</option>
 							</c:forEach>

@@ -45,6 +45,7 @@
 					</optgroup>
 					<optgroup label="Group B sites">
 						<option value="AM">AM - Amukura</option>
+						<option value="BS">BS - Busia</option>
 						<option value="CH">CH - Chulaimbo</option>
 						<option value="EG">EG - Mt. Elgon Clinic</option>
 						<option value="KB">KB - Kabarnet</option>

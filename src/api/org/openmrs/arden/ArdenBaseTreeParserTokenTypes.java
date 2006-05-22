@@ -76,15 +76,15 @@ public interface ArdenBaseTreeParserTokenTypes {
 	int DATA = 62;
 	int LOGIC = 63;
 	int ACTION = 64;
-	int LITERAL_end = 65;
-	int COLON = 66;
-	int LITERAL_maintenance = 67;
-	int LITERAL_library = 68;
-	int LITERAL_knowledge = 69;
-	int LITERAL_title = 70;
-	int ENDBLOCK = 71;
-	int LITERAL_mlmname = 72;
-	int LITERAL_filename = 73;
+	int MAINTENANCE = 65;
+	int LIBRARY = 66;
+	int FILENAME = 67;
+	int MLMNAME = 68;
+	int LITERAL_end = 69;
+	int COLON = 70;
+	int LITERAL_knowledge = 71;
+	int LITERAL_title = 72;
+	int ENDBLOCK = 73;
 	int DOT = 74;
 	int MINUS = 75;
 	int UNDERSCORE = 76;
@@ -180,8 +180,7 @@ public interface ArdenBaseTreeParserTokenTypes {
 	int LITERAL_SORT = 166;
 	int LITERAL_DATA = 167;
 	int LITERAL_SEQTO = 168;
-	// "||" = 169
-	// "*" = 170
-	// "/" = 171
-	int STRING_LITERAL = 172;
+	// "*" = 169
+	// "/" = 170
+	int STRING_LITERAL = 171;
 }

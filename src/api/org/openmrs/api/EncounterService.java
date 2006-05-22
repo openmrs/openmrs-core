@@ -116,6 +116,20 @@ public class EncounterService {
 		
 		return getEncounterDAO().getEncounterType(encounterTypeId);
 	}
+	
+	/**
+	 * Get encounterType by name
+	 * 
+	 * @param encounterType string
+	 * @return EncounterType
+	 * @throws APIException
+	 */
+	public EncounterType getEncounterType(String name) throws APIException {
+		if (!context.isAuthenticated())
+			throw new APIAuthenticationException("Authentication required");
+		
+		return getEncounterDAO().getEncounterType(name);
+	}
 
 	/**
 	 * Get all locations

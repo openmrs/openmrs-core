@@ -5,16 +5,21 @@
 
 <hibernate-mapping package="org.openmrs.notification">
 
-	<class name="org.openmrs.notification.Alert" table="alert">
-
+	<class name="org.openmrs.notification.Alert" table="notification_alert">
+		
 		<id name="alertId" type="int" column="alert_id"
 			unsaved-value="0">
 			<generator class="native" />
 		</id>
-
-		<many-to-one name="user" column="user_id" class="org.openmrs.User" not-null="false" />
-		<many-to-one name="role" column="role" class="org.openmrs.Role" not-null="false" />
+		
 		<property name="text" type="java.lang.String" not-null="true" length="512" />
+		
+		<property name="satisfiedByAny" column="satisfied_by_any" type="java.lang.Boolean" 
+				not-null="true" length="1"/>
+		
+		<property name="alertRead" column="alert_read" type="java.lang.Boolean" 
+				not-null="true" length="1"/>
+		
 		<property name="dateToExpire" column="date_to_expire" type="java.util.Date" 
 			not-null="false" length="19" />
 			
@@ -25,16 +30,12 @@
 		<many-to-one name="changedBy" class="org.openmrs.User" column="changed_by" />
 		<property name="dateChanged" type="java.util.Date"
 			column="date_changed" length="19" />
-			
-		<set name="readByUsers" table="alert_read" lazy="true" cascade="none">
-			<key>
-				<column name="alert_id" />
-			</key>
-			<many-to-many class="org.openmrs.User">
-				<column name="user_id" />
-			</many-to-many>
+		
+		<set name="recipients" lazy="true" inverse="true" cascade="all-delete-orphan" table="notification_alert_recipients">
+			<key column="alert_id" />
+			<one-to-many class="AlertRecipient" />
 		</set>
-
+		
 	</class>
 
 </hibernate-mapping>

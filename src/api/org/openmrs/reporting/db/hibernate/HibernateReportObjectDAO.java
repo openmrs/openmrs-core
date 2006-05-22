@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
@@ -99,7 +100,8 @@ public class HibernateReportObjectDAO implements
 
 			try {
 				HibernateUtil.beginTransaction();
-				session.saveOrUpdate(wrappedReportObject);
+				wrappedReportObject = (ReportObjectWrapper)session.merge(wrappedReportObject);
+				session.update(wrappedReportObject);
 				HibernateUtil.commitTransaction();
 			}
 			catch (Exception e) {
@@ -114,7 +116,9 @@ public class HibernateReportObjectDAO implements
 		
 		Set<AbstractReportObject> reportObjects = new HashSet<AbstractReportObject>();
 		Set<ReportObjectWrapper> wrappedObjects = new HashSet<ReportObjectWrapper>();
-		wrappedObjects.addAll((ArrayList<ReportObjectWrapper>)session.createQuery("from ReportObjectWrapper ro where ro='" + reportObjectType + "' order by date_created, name").list());
+		Query query = session.createQuery("from ReportObjectWrapper ro where ro.type=:type order by date_created, name");
+		query.setString("type", reportObjectType);
+		wrappedObjects.addAll((ArrayList<ReportObjectWrapper>)query.list());
 		for ( ReportObjectWrapper wrappedObject : wrappedObjects ) {
 			AbstractReportObject reportObject = (AbstractReportObject)wrappedObject.getReportObject();
 			if ( reportObject.getReportObjectId() == null ) {

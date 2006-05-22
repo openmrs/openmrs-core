@@ -15,12 +15,11 @@
 	<spring:message code="Alert.list.title"/>
 </b>
 <form method="post" class="box">
-	<table cellpadding="2" cellspacing="0">
+	<table cellpadding="2" cellspacing="0" width="100%">
 		<tr>
 			<th> </th>
 			<th> <spring:message code="Alert.text"/> </th>
-			<th> <spring:message code="Alert.user"/> </th>
-			<th> <spring:message code="Alert.role"/> </th>
+			<th> <spring:message code="Alert.assignedTo"/> </th>
 			<th> <spring:message code="Alert.dateToExpire"/> </th>
 		</tr>
 	<c:forEach var="alert" items="${alertList}" varStatus="rowStatus">
@@ -35,8 +34,16 @@
 					<c:out value="${alert.text}"/>
 				</a>
 			</td>
-			<td>${alert.user.firstName} ${status.value.middleName} ${alert.user.lastName}</td>
-			<td>${alert.role.role}</td>
+			<td>
+				<c:choose>
+					<c:when test="${fn:length(alert.recipients) == 1}">
+						<spring:message code="Alert.assignedTo.recipient" />
+					</c:when>
+					<c:otherwise>
+						<spring:message code="Alert.assignedTo.recipients" arguments="${fn:length(alert.recipients)}" />
+					</c:otherwise>
+				</c:choose>
+			</td>
 			<td><openmrs:formatDate date="${alert.dateToExpire}" type="medium" /></td>
 		</tr>
 	</c:forEach>

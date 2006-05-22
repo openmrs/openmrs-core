@@ -30,16 +30,16 @@ HiPbSibFriend := read Last {HiPbSibFriend from CHICA} Where it Occurred Within P
 	Evoke:	;;
 
 Logic:
-if (Last_Pb >= 14) then conclude True;
+if (Last_Pb >= 14) then || LeadRisk || = "has lead level greater than 14 mg/dcl";
 if (Qual_Pb = True) then conclude False;
 if (HousePre50 = YES) then || LeadRisk || = "lives in a house built before 1950";
 elseif (RenovatedPre78 = YES) then || LeadRisk || = "lives in a pre-1978 house undergoing renovation";
 elseif (HiPbSibFriend = YES) then || LeadRisk || = "has a friend or sibling with elevated blood lead";
-else conclude False;
+else conclude True;
 conclude True;
 ;;
 Action:
-write ("|| firstname || reportedly || LeadRisk ||.  Drawing a blood lead level is recommended annually:");
+write (|| firstname || " reportedly " || LeadRisk ||".  Drawing a blood lead level is recommended annually:");
 ;;
 	Urgency:	;;
 /*

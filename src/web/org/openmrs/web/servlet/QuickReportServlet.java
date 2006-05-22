@@ -149,8 +149,9 @@ public class QuickReportServlet extends HttpServlet {
 		
 		for (Obs o : allObs) {
 			log.debug("location: " + o.getLocation().getLocationId());
-			if (o.getValueDatetime().after(start) && o.getValueDatetime().before(end))
-				obs.add(o);
+			if (o.getValueDatetime() != null)
+				if (o.getValueDatetime().after(start) && o.getValueDatetime().before(end))
+					obs.add(o);
 		}
 		
 		if (obs != null) {

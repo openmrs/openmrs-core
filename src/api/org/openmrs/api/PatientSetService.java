@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.openmrs.Concept;
+import org.openmrs.Encounter;
+import org.openmrs.EncounterType;
+import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOContext;
@@ -42,6 +45,10 @@ public class PatientSetService {
 		return getPatientSetDAO().exportXml(patientId);
 	}
 	
+	public PatientSet getAllPatients() throws DAOException {
+		return getPatientSetDAO().getAllPatients();
+	}
+	
 	public PatientSet getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate) throws DAOException {
 		return getPatientSetDAO().getPatientsByCharacteristics(gender, minBirthdate, maxBirthdate);
 	}
@@ -62,12 +69,28 @@ public class PatientSetService {
 		return getPatientSetDAO().getPatientsHavingTextObs(conceptId, value);
 	}
 	
+	public PatientSet getPatientsHavingLocation(Location loc) {
+		return getPatientsHavingLocation(loc.getLocationId());
+	}
+	
+	public PatientSet getPatientsHavingLocation(Integer locationId) {
+		return getPatientSetDAO().getPatientsHavingLocation(locationId);
+	}
+	
 	public Map<Integer, String> getShortPatientDescriptions(PatientSet patients) {
 		return getPatientSetDAO().getShortPatientDescriptions(patients);
 	}
 	
 	public Map<Integer, List<Obs>> getObservations(PatientSet patients, Concept concept) {
 		return getPatientSetDAO().getObservations(patients, concept);
+	}
+
+	public Map<Integer, Encounter> getEncountersByType(PatientSet patients, EncounterType encType) {
+		return getPatientSetDAO().getEncountersByType(patients, encType);
+	}
+	
+	public Map<Integer, Object> getPatientAttributes(PatientSet patients, String className, String property) {
+		return getPatientSetDAO().getPatientAttributes(patients, className, property);
 	}
 	
 	public Map<Integer, Map<String, Object>> getCharacteristics(PatientSet patients) {

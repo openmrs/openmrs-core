@@ -18,7 +18,6 @@ import org.openmrs.User;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.Helper;
-import org.openmrs.web.Util;
 import org.openmrs.web.WebConstants;
 
 import uk.ltd.getahead.dwr.WebContextFactory;
@@ -135,9 +134,7 @@ public class DWRConceptService {
 	public ConceptListItem getConcept(Integer conceptId) {
 		Context context = (Context) WebContextFactory.get().getSession()
 				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		HttpServletRequest request = WebContextFactory.get()
-				.getHttpServletRequest();
-		Locale locale = Util.getLocale(request);
+		Locale locale = context.getLocale();
 		ConceptService cs = context.getConceptService();
 		Concept c = cs.getConcept(conceptId);
 
@@ -147,9 +144,7 @@ public class DWRConceptService {
 	public List<ConceptListItem> findProposedConcepts(String text) {
 		Context context = (Context) WebContextFactory.get().getSession()
 				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		HttpServletRequest request = WebContextFactory.get()
-				.getHttpServletRequest();
-		Locale locale = Util.getLocale(request);
+		Locale locale = context.getLocale();
 		ConceptService cs = context.getConceptService();
 
 		List<Concept> concepts = cs.findProposedConcepts(text);
@@ -181,13 +176,30 @@ public class DWRConceptService {
 
 		return items;
 	}
+	
+	public List<ConceptListItem> getQuestionsForAnswer(Integer conceptId) {
+		Context context = (Context) WebContextFactory.get().getSession()
+		.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+
+		Locale locale = context.getLocale();
+		ConceptService cs = context.getConceptService();
+		
+		Concept concept = cs.getConcept(conceptId);
+		
+		List<Concept> concepts = cs.getQuestionsForAnswer(concept);
+		
+		List<ConceptListItem> items = new Vector<ConceptListItem>();
+		for (Concept c : concepts) {
+			items.add(new ConceptListItem(c, locale));
+		}
+		
+		return items;
+	}
 
 	public ConceptDrugListItem getDrug(Integer drugId) {
 		Context context = (Context) WebContextFactory.get().getSession()
 				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		HttpServletRequest request = WebContextFactory.get()
-				.getHttpServletRequest();
-		Locale locale = Util.getLocale(request);
+		Locale locale = context.getLocale();
 		ConceptService cs = context.getConceptService();
 		Drug d = cs.getDrug(drugId);
 

@@ -70,7 +70,7 @@
 							<a href="#markRead" onClick="return markAlertRead(this, '${alert.alertId}')" HIDEFOCUS class="markAlertRead">
 								<img src="<%= request.getContextPath() %>/images/markRead.gif" alt='<spring:message code="Alert.mark"/>' title='<spring:message code="Alert.mark"/>'/>
 							</a>
-							${alert.text} ${alert.dateToExpire} 
+							${alert.text} ${alert.dateToExpire} <c:if test="${alert.satisfiedByAny}"><i class="smallMessage">(<spring:message code="Alert.mark.satisfiedByAny"/>)</i></c:if>
 						</div>
 					<c:if test="${varStatus.last}">
 						</div>

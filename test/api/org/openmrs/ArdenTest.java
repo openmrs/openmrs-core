@@ -16,6 +16,7 @@ import org.openmrs.arden.ArdenBaseLexer;
 import org.openmrs.arden.ArdenBaseParser;
 import org.openmrs.arden.ArdenBaseTreeParser;
 import org.openmrs.arden.MLMObject;
+import org.openmrs.arden.HiRiskLeadScreen;
 import org.openmrs.api.*;
 
 
@@ -57,14 +58,17 @@ public class ArdenTest extends TestCase {
 	      System.err.println("-------------------------------------------");
 	      System.err.println("--------------File name--" + f.getName());
 	      System.err.println(f.getAbsolutePath());
-	      parseFile(new FileInputStream(f), ardObj);
+	      parseFile(new FileInputStream(f), f.getAbsolutePath(), ardObj);
 	    }
 	  }
 
 	  // Here's where we do the real work...
-	  public static void parseFile(InputStream s, MLMObject ardObj) throws Exception {
+	  public static void parseFile(InputStream s, String fn, MLMObject ardObj) throws Exception {
 	  	//new ArdenReadNode();
 	    try {
+	      int index  = fn.indexOf(".mlm");
+	      String cfn = fn.substring(0,index); 
+	    	  
 	      // Create a scanner that reads from the input stream passed to us
 	      ArdenBaseLexer lexer = new ArdenBaseLexer(s);
 
@@ -74,38 +78,118 @@ public class ArdenTest extends TestCase {
 	      // start parsing at the compilationUnit rule
 	      parser.startRule();
 	      BaseAST t = (BaseAST) parser.getAST();
-	      OutputStream os = new FileOutputStream("Testfile");
+	      OutputStream os = new FileOutputStream(cfn+".java");
 	      Writer w = new OutputStreamWriter(os);
-	      t.xmlSerialize(w);
-	      w.write("\n");
-	      w.flush();
-	      System.err.println("Wrote to file - " + "Testfile");
-	      DumpASTVisitor visitor = new DumpASTVisitor ();
-	      visitor.visit(t);
+	      //t.xmlSerialize(w);
+	      //w.write("\n");
+	      //w.flush();
+	      System.err.println("Wrote to file - " + cfn+".java");
+	      //DumpASTVisitor visitor = new DumpASTVisitor ();
+	      //visitor.visit(t);
 	      
 	      
 	   //   String tree = parser.getAST().toStringList();
 	      
-	     System.err.println(t.toStringTree());
-	      
+	     System.err.println(t.toStringTree());     // prints maintenance
+	     
 	      ArdenBaseTreeParser treeParser = new ArdenBaseTreeParser();
+	      
 	      //String datastr = treeParser.data(t);
-	   	  treeParser.data(t,ardObj);
+	      
+	     String maintenance =  treeParser.maintenance(t, ardObj);
+	 	 w.write("/********************************************************************" + "\n");
+	 	 w.write(maintenance);
+	 	
+	 	 System.err.println(t.getNextSibling().toStringTree());   // prints library
+	     String library = treeParser.library(t.getNextSibling(), ardObj);
+	     w.write(library);
+	     w.write("\n********************************************************************/\n");
+	     w.write("package org.openmrs.arden;\n\n");
+	     w.write("import java.util.Iterator;\nimport java.util.Locale;\nimport java.util.Set;\n");
+	     w.write("import java.util.HashMap;\n");
+	     w.write("import org.openmrs.Concept;\nimport org.openmrs.Obs;\nimport org.openmrs.Patient;\n");
+	     w.write("import org.openmrs.api.context.Context;\n\n");
+	     
+	     String classname = ardObj.getClassName();
+	     w.write("public class " + classname + "{\n"); // Start of class
+	     w.write("private Context context;\nprivate Patient patient;\nprivate Locale locale;\nprivate String firstname;\n");
+	     w.write("private HashMap<String, String> userVarMap;\n");
+	     w.write("\n\n//Constructor\n");
+	     w.write("public " + classname + "(Context c, Integer pid, Locale l){\n");
+	     w.write("\tcontext = c;\n\tlocale = l;\n\tpatient = c.getPatientService().getPatient(pid);\n");
+	     w.write("\tuserVarMap = new HashMap <String, String>();\n");
+	     w.write("\tfirstname = patient.getPatientName().getGivenName();\n}\n\n\n");
+	     w.write("public Obs getObsForConceptForPatient(Concept concept, Locale locale, Patient patient) {\n");
+	     w.write("\tSet <Obs> MyObs;\n");
+	     w.write("\tObs obs = new Obs();\n\t{");
+	     w.write("\t\tMyObs = context.getObsService().getObservations(patient, concept);\n");
+	     w.write("\t\tIterator iter = MyObs.iterator();\n");
+	     w.write("\t\tif(iter.hasNext()) {\n");
+	     w.write("\t\t\twhile(iter.hasNext())	{\n");
+	     w.write("\t\t\t\tobs = (Obs) iter.next();\n");
+	     w.write("\t\t\t\tSystem.out.println(obs.getValueAsString(locale));\n");
+	     w.write("\t\t\t}\n");
+	     w.write("\t\t\t\treturn obs;\n");
+	     w.write("\t\t}\n");
+	     w.write("\t\telse {\n");
+	     w.write("\t\t\treturn null;\n");
+	     w.write("\t\t}\n");
+	     w.write("\t}\n");
+	     w.write("}\n\n");  // End of this function
+	     
+	     w.write("public boolean run() {\n");
+	     w.write("\tboolean retVal = false;\n");
+	     w.write("\tif(evaluate()) {\n");
+	     w.write("\taction();\n");
+	     w.write("\t\tString str = userVarMap.get(\"ActionStr\");\n");
+	     w.write("\t\tSystem.out.println(str);\n");
+	     w.write("\t}\n");
+	     w.write("\treturn retVal;\n");
+	     w.write("}\n\n");	// End of this function
+	     w.flush();
+	     
+	     
+	     
+	     
+	     System.err.println(t.getNextSibling().getNextSibling().toStringTree()); // Print data
+	  	 
+	       
+
+	       
+	    
+	      
+	   	  //treeParser.data(t,ardObj);
+	      treeParser.data(t.getNextSibling().getNextSibling(),ardObj);
 	   	  System.err.println("---------------------------------AFter data ----------------------------------");
 	   	  	ardObj.PrintConceptMap();
 	   	  System.err.println("-------------------------------------------------------------------");
 	   	  
-	      System.err.println(t.getNextSibling().toStringTree());
-	      
-	      String logicstr = treeParser.logic(t.getNextSibling(), ardObj);
+	   	  System.err.println(t.getNextSibling().getNextSibling().getNextSibling().toStringTree()); // Print logic
+	      String logicstr = treeParser.logic(t.getNextSibling().getNextSibling().getNextSibling(), ardObj);
+	    
 	      System.err.println("---------------------------------AFter Logic ----------------------------------");
-	      	      ardObj.PrintConceptMap();
+	          ardObj.PrintConceptMap();
 	      System.err.println("-------------------------------------------------------------------");	      	  
 	      ardObj.PrintEvaluateList();
-	      if(ardObj.Evaluate())
-	      {
-	    	  String actionstr = treeParser.action(t.getNextSibling().getNextSibling());
-	      }
+	   //   if(ardObj.Evaluate())
+	    //  {
+	     //     System.err.println(t.getNextSibling().getNextSibling().getNextSibling().getNextSibling().toStringTree()); // Print action
+		     
+	    //	  System.err.println(t.getNextSibling().getNextSibling().toStringTree());
+	    //	  System.err.println("---------------------------------CONCLUDED TRUE ----------------------------------");
+	    	  
+	    //	  String actionstr = treeParser.action(t.getNextSibling().getNextSibling().getNextSibling().getNextSibling(), ardObj);
+	    //	  System.err.println(actionstr);
+	    //  }
+	      
+	      ardObj.WriteEvaluate(w);
+	      String actionstr = treeParser.action(t.getNextSibling().getNextSibling().getNextSibling().getNextSibling(), ardObj);
+	      ardObj.WriteAction(actionstr, w);
+		     
+		     
+		     w.append("}");	// end class
+		     w.flush();
+		     w.close();
 	      
 	    }
 	    catch (Exception e) {
@@ -121,12 +205,18 @@ public class ArdenTest extends TestCase {
 		Context context = ContextFactory.getContext();
 		context.authenticate("vibha", "chicachica");
 		Locale locale = context.getLocale();
-		Patient patient = new Patient();
+		
+		HiRiskLeadScreen mlm = new HiRiskLeadScreen(context,1,locale);
+		mlm.run();
+	
+	  /*  Patient patient = new Patient();
 		patient.setPatientId(1);
+		PatientName pn = new PatientName("Jenny", "M", "Patient");
+		patient.addName(pn);
 		
 		MLMObject ardObj = new MLMObject(context, locale, patient);
 		RunTest("test/arden test/HiRiskLeadScreen.mlm", ardObj ); //populates ardObj
-		
+	*/	
 		
 	//	ConceptService cs = context.getConceptService();
 	//	ObsService os = context.getObsService();

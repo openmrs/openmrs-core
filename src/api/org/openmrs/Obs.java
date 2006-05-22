@@ -538,5 +538,12 @@ public class Obs implements java.io.Serializable {
 		
 		return "";
 	}
+	
+	public String toString() {
+		if (obsId == null)
+			return "null";
+		
+		return "Obs #" + obsId.toString();
+	}
 
 }

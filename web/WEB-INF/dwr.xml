@@ -34,6 +34,7 @@
 			<param name="class" value="org.openmrs.web.dwr.DWRConceptService" />
 			<include method="findConcepts" />
 			<include method="findConceptAnswers" />
+			<include method="getQuestionsForAnswer" />
 			<include method="getConcept" />
 			<include method="findProposedConcepts" />
 			<include method="isValidNumericValue" />

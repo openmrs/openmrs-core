@@ -14,6 +14,8 @@ public class AlertListItem {
 
 	private String text = "";
 
+	private boolean satisfiedByAny = false;
+	
 	private Date dateToExpire;
 
 	public AlertListItem() {
@@ -24,6 +26,7 @@ public class AlertListItem {
 			this.alertId = alert.getAlertId();
 			this.text = alert.getText();
 			this.dateToExpire = alert.getDateToExpire();
+			this.satisfiedByAny = alert.getSatisfiedByAny();
 		}
 	}
 
@@ -51,4 +54,11 @@ public class AlertListItem {
 		this.text = text;
 	}
 
+	public boolean isSatisfiedByAny() {
+		return satisfiedByAny;
+	}
+
+	public void setSatisfiedByAny(boolean satisfiedByAny) {
+		this.satisfiedByAny = satisfiedByAny;
+	}
 }

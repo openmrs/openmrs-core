@@ -262,5 +262,12 @@ public class Encounter implements java.io.Serializable {
 	public void setForm(Form form) {
 		this.form = form;
 	}
+	
+	@Override
+	public String toString() {
+		if (encounterId == null)
+			return null;
+		return "Encounter #" + encounterId;
+	}
 
 }

@@ -353,9 +353,9 @@ public class HibernateConceptDAO implements
 	}
 
 	/**
-	 * @see org.openmrs.api.db.ConceptService#getConceptByName(java.lang.String)
+	 * @see org.openmrs.api.db.ConceptService#getConceptsByName(java.lang.String)
 	 */
-	public List<Concept> getConceptByName(String name) {
+	public List<Concept> getConceptsByName(String name) {
 		
 		Session session = HibernateUtil.currentSession();
 		
@@ -363,16 +363,28 @@ public class HibernateConceptDAO implements
 		query.setString(0, name);
 		List<Concept> concepts = query.list();
 		
-		
-		/*  Use if names is an entity, not a value type of Concept
-		 *    aka. if names is mapped with many-to-on instead of composite-element
-		Criteria criteria = session.createCriteria(Concept.class);
-		criteria.createCriteria("names", "n");
-		//criteria.add(Expression.eq("locale", context.getLocale().toString()));
-		criteria.add(Expression.like("n.name", "%" + name + "%" , MatchMode.ANYWHERE));
-		List<Concept> concepts = criteria.list();
-		*/
 		return concepts;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptService#getConceptByName(java.lang.String)
+	 */
+	public Concept getConceptByName(String name) {
+		
+		Session session = HibernateUtil.currentSession();
+		
+		Query query = session.createQuery("select concept from Concept concept where concept.names.name = ?");
+		query.setString(0, name);
+		List<Concept> concepts = query.list();
+		
+		int size = concepts.size(); 
+		if (size > 0){
+			if (size > 1)
+				log.warn("Multiple concepts found for '" + name + "'");
+			return concepts.get(0);
+		}
+		
+		return null;
 	}
 
 	/**
@@ -620,6 +632,21 @@ public class HibernateConceptDAO implements
 		}
 		
 		return conceptWords;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptService#getQuestionsForAnswer(org.openmrs.Concept)
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Concept> getQuestionsForAnswer(Concept concept) {
+		
+		Session session = HibernateUtil.currentSession();
+		// TODO broken until Hibernate fixes component and HQL code
+		String q = "select c from Concept c where c.answers.answerConcept.conceptId = :answerId";
+		Query query = session.createQuery(q);
+		query.setParameter("answerId", concept.getConceptId());
+		
+		return query.list();
 	}
 	
 	/**

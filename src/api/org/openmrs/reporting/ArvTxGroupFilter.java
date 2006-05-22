@@ -1,7 +1,5 @@
 package org.openmrs.reporting;
 
-import java.util.List;
-
 import org.openmrs.Concept;
 import org.openmrs.api.context.ContextFactory;
 
@@ -11,9 +9,9 @@ public class ArvTxGroupFilter extends TextObsPatientFilter {
 		super();
 		super.setType("Patient Filter");
 		super.setSubType("ARV Treatment Group Filter");
-		List<Concept> temp = ContextFactory.getContext().getConceptService().getConceptByName("ARV TREATMENT GROUP");
-		if (temp != null && temp.size() > 0) {
-			super.setConcept(temp.get(0));
+		Concept temp = ContextFactory.getContext().getConceptService().getConceptByName("ARV TREATMENT GROUP");
+		if (temp != null) {
+			super.setConcept(temp);
 		} else {
 			throw new RuntimeException("Cannot find concept ARV TREATMENT GROUP");
 		}

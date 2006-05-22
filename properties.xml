@@ -4,7 +4,7 @@
     <!-- Environment properties -->
     <property environment="env"/>
     <property name="env.COMPUTERNAME" value="${env.HOSTNAME}"/>
-    <property name="tomcat.home" value="${env.CATALINA_HOME}"/>
+    <property name="tomcat.home" value="C:/Program Files/Apache Group/Tomcat"/>
 
 	<!-- Base definitions (cannot be overwritten by user property file) -->
 	<property file="build.properties" />

@@ -65,6 +65,7 @@ public class DWRPatientService {
 						newSearch += " " + name;
 					}
 					
+					newSearch = newSearch.trim();
 					List<Patient> newPatients = ps.findPatients(newSearch, includeVoided);
 					newPatients.removeAll(patients);
 					if (newPatients.size() > 0) {
@@ -121,6 +122,8 @@ public class DWRPatientService {
 			List<Patient> patients = new Vector<Patient>();
 			
 			Integer d = null;
+			birthyear = birthyear.trim();
+			age = age.trim();
 			if (birthyear.length() > 3)
 				d = Integer.valueOf(birthyear);
 			else if (age.length() > 0) {

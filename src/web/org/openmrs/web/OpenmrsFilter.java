@@ -50,10 +50,6 @@ public class OpenmrsFilter implements Filter {
 	       		context = ContextFactory.getContext();
 	       		httpSession.setAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR, context);
         	}
-        	else {
-        		// close the session if dwr (or the like) left it open
-        		context.endTransaction();
-        	}
         	
         }
 

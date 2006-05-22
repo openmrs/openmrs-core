@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Properties;
 import java.util.Vector;
@@ -15,7 +14,6 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.ConceptNumeric;
-import org.openmrs.formentry.FormEntryConstants;
 
 public class Helper {
 
@@ -113,24 +111,20 @@ public class Helper {
 	 * @param newList
 	 * @return [List toAdd, List toDelete] with respect to origList
 	 */
-	public static Collection<Collection> compareLists(Collection origList,
-			Collection newList) {
+	public static <E extends Object> Collection<Collection<E>> compareLists(Collection<E> origList,
+			Collection<E> newList) {
 		// TODO finish function
 
-		Collection<Collection> returnList = new Vector<Collection>();
+		Collection<Collection<E>> returnList = new Vector<Collection<E>>();
 
-		Collection toAdd = new LinkedList();
-		Collection toDel = new LinkedList();
+		Collection<E> toAdd = new LinkedList<E>();
+		Collection<E> toDel = new LinkedList<E>();
 
 		// loop over the new list.
-		for (Iterator newListIter = newList.iterator(); newListIter.hasNext();) {
-			Object currentNewListObj = newListIter.next();
-
+		for (E currentNewListObj : newList) {
 			// loop over the original list
 			boolean foundInList = false;
-			for (Iterator origListIter = origList.iterator(); origListIter
-					.hasNext();) {
-				Object currentOrigListObj = origListIter.next();
+			for (E currentOrigListObj : origList) {
 				// checking if the current new list object is in the original
 				// list
 				if (currentNewListObj.equals(currentOrigListObj)) {
@@ -252,6 +246,32 @@ public class Helper {
 		val = p.getProperty("obscure_patients.middle_name", null);
 		if (val != null)
 			OpenmrsConstants.OBSCURE_PATIENTS_MIDDLE_NAME = val;
+
+		// Override the default "openmrs" database name
+		val = p.getProperty("connection.database_name", null);
+		if (val == null)
+			// the database name wasn't supplied explicitly, guess it 
+			//   from the connection string
+			val = p.getProperty("connection.url", null);
+			if (val != null) {
+				try {
+					int endIndex = val.lastIndexOf("?");
+					if (endIndex == -1)
+						endIndex = val.length();
+					int startIndex = val.lastIndexOf("/", endIndex);
+					val = val.substring(startIndex + 1, endIndex);
+					OpenmrsConstants.DATABASE_NAME = val;
+				}
+				catch (Exception e) {
+					log.fatal("Database name cannot be configured from 'connection.url' ." +
+							"Either supply 'connection.database_name' or correct the url", e);
+				}
+			}
+
+		val = p.getProperty("connection.database_business_name", null);
+		if (val == null)
+			val = OpenmrsConstants.DATABASE_NAME;
+		OpenmrsConstants.DATABASE_BUSINESS_NAME = val;
 
 	}
 }

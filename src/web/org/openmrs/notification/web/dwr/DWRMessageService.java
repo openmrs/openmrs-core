@@ -66,13 +66,6 @@ public class DWRMessageService {
 		
 		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
 		
-		// testing remote access ability
-		log.error("path translated: " + request.getPathTranslated());
-		log.error("uri: " + request.getRequestURI());
-		log.error("server name: " + request.getServerName());
-		log.error("local name: " + request.getLocalName());
-		//
-		
 		if (context == null) {
 			objectList.add("Your session has expired.");
 			objectList.add("Please <a href='" + request.getContextPath() + "/logout'>log in</a> again.");

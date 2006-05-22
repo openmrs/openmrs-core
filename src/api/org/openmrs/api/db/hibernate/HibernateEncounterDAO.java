@@ -87,13 +87,16 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		return encounter;
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Encounter> getEncountersByPatientId(Integer patientId,
 			boolean includeVoided) throws DAOException {
 
 		Session session = HibernateUtil.currentSession();
 
-		Criteria crit = session.createCriteria(Encounter.class).createAlias(
-				"patient", "p").add(Expression.eq("p.patientId", patientId));
+		Criteria crit = session.createCriteria(Encounter.class)
+				.createAlias("patient", "p")
+				.add(Expression.eq("p.patientId", patientId))
+				.addOrder(Order.desc("encounterDatetime"));
 
 		if (!includeVoided)
 			crit.add(Expression.eq("p.voided", false));
@@ -115,10 +118,27 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		return encounterType;
 
 	}
+	
+	/**
+	 * @see org.openmrs.api.db.EncounterService#getEncounterType(java.lang.String)
+	 */
+	public EncounterType getEncounterType(String name)
+			throws DAOException {
+
+		Session session = HibernateUtil.currentSession();
+
+		Criteria crit = session.createCriteria(EncounterType.class);
+		crit.add(Expression.eq("name", name));
+		EncounterType encounterType = (EncounterType)crit.uniqueResult();
+
+		return encounterType;
+
+	}
 
 	/**
 	 * @see org.openmrs.api.db.EncounterService#getEncounterTypes()
 	 */
+	@SuppressWarnings("unchecked")
 	public List<EncounterType> getEncounterTypes() throws DAOException {
 
 		Session session = HibernateUtil.currentSession();
@@ -161,6 +181,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	/**
 	 * @see org.openmrs.api.db.EncounterService#getLocations()
 	 */
+	@SuppressWarnings("unchecked")
 	public List<Location> getLocations() throws DAOException {
 
 		Session session = HibernateUtil.currentSession();
@@ -202,6 +223,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 * @see org.openmrs.api.db.EncounterService#getEncounters(org.openmrs.Patient,
 	 *      java.util.Date, java.util.Date)
 	 */
+	@SuppressWarnings("unchecked")
 	public Set<Encounter> getEncounters(Patient who, Date fromDate, Date toDate) {
 
 		Session session = HibernateUtil.currentSession();
@@ -220,6 +242,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 * @see org.openmrs.api.db.EncounterService#getEncounters(org.openmrs.Patient,
 	 *      org.openmrs.Location)
 	 */
+	@SuppressWarnings("unchecked")
 	public Set<Encounter> getEncounters(Patient who, Location where) {
 
 		Session session = HibernateUtil.currentSession();
@@ -239,8 +262,6 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 * @see org.openmrs.api.db.EncounterService#getEncounters(org.openmrs.Patient)
 	 */
 	public Set<Encounter> getEncounters(Patient who) {
-		Session session = HibernateUtil.currentSession();
-		
 		Set<Encounter> encounters = new HashSet<Encounter>();
 		encounters.addAll(getEncountersByPatientId(who.getPatientId(), true));
 
@@ -250,6 +271,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
     /**
      * @see org.openmrs.api.db.EncounterService#getEncounters(java.util.Date,java.util.Date)
      */
+	@SuppressWarnings("unchecked")
     public Collection<Encounter> getEncounters(Date fromDate, Date toDate) {
 		Session session = HibernateUtil.currentSession();
 
@@ -264,6 +286,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
     /**
      * @see org.openmrs.api.db.EncounterService#getEncounters(org.openmrs.Location,java.util.Date,java.util.Date)
      */
+	@SuppressWarnings("unchecked")
     public Collection<Encounter> getEncounters(Location loc, Date fromDate, Date toDate) {
 		Session session = HibernateUtil.currentSession();
 
