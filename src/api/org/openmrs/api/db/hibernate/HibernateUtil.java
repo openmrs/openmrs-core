@@ -207,20 +207,8 @@ public class HibernateUtil {
 	
 	public static void shutdown() throws HibernateException {
 		
-		if (log.isInfoEnabled() && sessionFactory.getStatistics().isStatisticsEnabled()) {
-			log.debug("Getting query statistics: ");
-			Statistics stats = sessionFactory.getStatistics();
-			for (String query : stats.getQueries()) {
-				log.info("QUERY: " + query);
-				QueryStatistics qstats = stats.getQueryStatistics(query);
-				log.info("Cache Hit Count : " + qstats.getCacheHitCount());
-				log.info("Cache Miss Count: " + qstats.getCacheMissCount());
-				log.info("Cache Put Count : " + qstats.getCachePutCount());
-				log.info("Execution Count : " + qstats.getExecutionCount());
-				log.info("Average time    : " + qstats.getExecutionAvgTime());
-				log.info("Row Count       : " + qstats.getExecutionRowCount());
-			}
-		}
+		if (log.isInfoEnabled())
+			showUsageStatistics();
 		
 		if (sessionFactory != null) {
 			
@@ -264,6 +252,24 @@ public class HibernateUtil {
 		} catch (SQLException e) {
 			log.error(e);
 		}
+	}
+	
+	private static void showUsageStatistics() {
+		 if (sessionFactory.getStatistics().isStatisticsEnabled()) {
+				log.debug("Getting query statistics: ");
+				Statistics stats = sessionFactory.getStatistics();
+				for (String query : stats.getQueries()) {
+					log.info("QUERY: " + query);
+					QueryStatistics qstats = stats.getQueryStatistics(query);
+					log.info("Cache Hit Count : " + qstats.getCacheHitCount());
+					log.info("Cache Miss Count: " + qstats.getCacheMissCount());
+					log.info("Cache Put Count : " + qstats.getCachePutCount());
+					log.info("Execution Count : " + qstats.getExecutionCount());
+					log.info("Average time    : " + qstats.getExecutionAvgTime());
+					log.info("Row Count       : " + qstats.getExecutionRowCount());
+				}
+		 }
+		 
 	}
 	
 }

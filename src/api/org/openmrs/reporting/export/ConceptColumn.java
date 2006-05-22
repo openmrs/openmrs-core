@@ -62,13 +62,13 @@ public class ConceptColumn implements ExportColumn, Serializable {
 				if ("obsDatetime".equals(ext))
 					s += "$!{fn.formatDate('short', $o.getObsDatetime())}";
 				else if("location".equals(ext))
-					s += "$!{$o.getLocation().getName()}";
+					s += "$!{o.getLocation().getName()}";
 				else if ("comment".equals(ext))
-					s += "$!{$o.getComment()}";
+					s += "$!{o.getComment()}";
 				else if ("provider".equals(ext))
-					s += "$!{$o.getEncounter().getProvider().getFirstName()} $!{$o.getEncounter().getProvider().getFirstName()}";
+					s += "$!{o.getEncounter().getProvider().getFirstName()} $!{o.getEncounter().getProvider().getLastName()}";
 				else if ("encounterType".equals(ext))
-					s += "$!{$o.getEncounter().getEncounter().getEncounterType.getName()}";
+					s += "$!{o.getEncounter().getEncounterType().getName()}";
 			}
 		}
 		
@@ -94,7 +94,7 @@ public class ConceptColumn implements ExportColumn, Serializable {
 		if (DataExportReportObject.MODIFIER_LAST_NUM.equals(modifier)) {
 			s += "#foreach($o in [1.." + (modifierNum - 1) +"]) ";
 			s += "$!{fn.getSeparator()}";
-			s += columnName + " ($velocityCount)";
+			s += columnName + "_($velocityCount)";
 			s += getExtrasTemplateColumnNames(true);
 			s += "#end\n";
 		}
@@ -107,9 +107,9 @@ public class ConceptColumn implements ExportColumn, Serializable {
 		if (extras != null) {
 			for (String ext : extras) {
 				s += "$!{fn.getSeparator()}";
-				s += columnName + " " + ext;
+				s += columnName + "_" + ext;
 				if (appendCount)
-					s += " ($velocityCount)";
+					s += "_($velocityCount)";
 			}
 		}
 		return s;

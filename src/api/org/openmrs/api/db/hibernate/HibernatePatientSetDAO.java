@@ -421,7 +421,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	@SuppressWarnings("unchecked")
 	public PatientSet getAllPatients() {
 		Session session = HibernateUtil.currentSession();
-		Query query = session.createQuery("select distinct patientId from Patient p");
+		Query query = session.createQuery("select distinct patientId from Patient p where p.voided = 0");
 		
 		Set<Integer> ids = new HashSet<Integer>();
 		ids.addAll(query.list());
@@ -609,6 +609,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		Criteria criteria = session.createCriteria(Obs.class);
 		criteria.add(Restrictions.eq("concept", concept));
 		criteria.add(Restrictions.in("patient.patientId", ids));
+		criteria.add(Restrictions.eq("voided", false));
 		criteria.addOrder(org.hibernate.criterion.Order.desc("obsDatetime"));
 		log.debug("criteria: " + criteria);
 		List<Obs> temp = criteria.list();
@@ -623,6 +624,36 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		}
 				
 		HibernateUtil.commitTransaction();
+		
+		return ret;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public Map<Integer, Encounter> getEncountersByType(PatientSet patients, EncounterType encType) {
+		Session session = HibernateUtil.currentSession();
+		
+		Map<Integer, Encounter> ret = new HashMap<Integer, Encounter>();
+		
+		Set<Integer> ids = patients.getPatientIds();
+		
+		// default query
+		Criteria criteria = session.createCriteria(Encounter.class);
+		criteria.add(Restrictions.in("patient.patientId", ids));
+		
+		if (encType != null)
+			criteria.add(Restrictions.eq("encounterType", encType));
+		
+		criteria.addOrder(org.hibernate.criterion.Order.desc("patient.patientId"));
+		criteria.addOrder(org.hibernate.criterion.Order.desc("encounterDatetime"));
+		
+		List<Encounter> encounters = criteria.list();
+		
+		// set up the return map
+		for (Encounter enc : encounters) {
+			Integer ptId = enc.getPatient().getPatientId();
+			if (!ret.containsKey(ptId))
+				ret.put(ptId, enc);
+		}
 		
 		return ret;
 	}

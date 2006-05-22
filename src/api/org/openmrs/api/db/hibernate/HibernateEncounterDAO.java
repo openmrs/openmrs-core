@@ -118,6 +118,22 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		return encounterType;
 
 	}
+	
+	/**
+	 * @see org.openmrs.api.db.EncounterService#getEncounterType(java.lang.String)
+	 */
+	public EncounterType getEncounterType(String name)
+			throws DAOException {
+
+		Session session = HibernateUtil.currentSession();
+
+		Criteria crit = session.createCriteria(EncounterType.class);
+		crit.add(Expression.eq("name", name));
+		EncounterType encounterType = (EncounterType)crit.uniqueResult();
+
+		return encounterType;
+
+	}
 
 	/**
 	 * @see org.openmrs.api.db.EncounterService#getEncounterTypes()

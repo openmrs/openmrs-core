@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="Manage DataExports" otherwise="/login.htm" redirect="/admin/dataExports/dataExport.list" />
+<openmrs:require privilege="View Data Exports" otherwise="/login.htm" redirect="/admin/dataExports/dataExport.list" />
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>

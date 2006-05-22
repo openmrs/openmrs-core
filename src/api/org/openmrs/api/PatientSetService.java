@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.openmrs.Concept;
+import org.openmrs.Encounter;
+import org.openmrs.EncounterType;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.api.context.Context;
@@ -81,6 +83,10 @@ public class PatientSetService {
 	
 	public Map<Integer, List<Obs>> getObservations(PatientSet patients, Concept concept) {
 		return getPatientSetDAO().getObservations(patients, concept);
+	}
+
+	public Map<Integer, Encounter> getEncountersByType(PatientSet patients, EncounterType encType) {
+		return getPatientSetDAO().getEncountersByType(patients, encType);
 	}
 	
 	public Map<Integer, Object> getPatientAttributes(PatientSet patients, String className, String property) {

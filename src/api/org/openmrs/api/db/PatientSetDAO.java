@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.openmrs.Concept;
+import org.openmrs.Encounter;
+import org.openmrs.EncounterType;
 import org.openmrs.Obs;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.reporting.PatientSet;
@@ -28,6 +30,8 @@ public interface PatientSetDAO {
 	public Map<Integer, String> getShortPatientDescriptions(PatientSet patients) throws DAOException;
 	
 	public Map<Integer, List<Obs>> getObservations(PatientSet patients, Concept concept) throws DAOException;
+	
+	public Map<Integer, Encounter> getEncountersByType(PatientSet patients, EncounterType encType);
 	
 	public Map<Integer, Object> getPatientAttributes(PatientSet patients, String className, String property);
 	

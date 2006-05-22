@@ -9,6 +9,7 @@ import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Location;
 import org.openmrs.Patient;
+import org.openmrs.api.APIException;
 
 /**
  * Encounter-related database functions
@@ -62,6 +63,15 @@ public interface EncounterDAO {
 	 */
 	public EncounterType getEncounterType(Integer encounterTypeId) throws DAOException;
 
+	/**
+	 * Get encounterType by name
+	 * 
+	 * @param encounterType string
+	 * @return EncounterType
+	 * @throws APIException
+	 */
+	public EncounterType getEncounterType(String name) throws DAOException;
+	
 	/**
 	 * Get all locations
 	 * 

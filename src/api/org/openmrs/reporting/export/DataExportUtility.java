@@ -3,24 +3,22 @@ package org.openmrs.reporting.export;
 import java.text.DateFormat;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
+import org.openmrs.EncounterType;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
-import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
 import org.openmrs.reporting.PatientSet;
 
@@ -36,9 +34,8 @@ public class DataExportUtility {
 	private DateFormat dateFormatLong = null; 
 	private DateFormat dateFormatShort = null; 
 	
-	private Encounter lastEncounter = null;
-	
-	private Set<Encounter> encounters = new TreeSet<Encounter>(new CompareEncounterDatetime());
+	// Map<EncounterType, Map<patientId, Encounter>>
+	private Map<String, Map<Integer, Encounter>> patientEncounterMap = new HashMap<String, Map<Integer, Encounter>>();
 	
 	private Map<String, Concept> conceptNameMap = new HashMap<String, Concept>();
 	
@@ -48,7 +45,7 @@ public class DataExportUtility {
 	private Map<String, Map<Integer, Object>> attributeMap = new HashMap<String, Map<Integer, Object>>();
 	
 	private Context context;
-	private EncounterService encounterService;
+	private PatientSetService patientSetService;
 	private PatientService patientService;
 	
 	// Constructors
@@ -64,7 +61,7 @@ public class DataExportUtility {
 	
 	public DataExportUtility(Context c) {
 		this.context = c;
-		this.encounterService = context.getEncounterService();
+		this.patientSetService = context.getPatientSetService();
 		this.patientService = context.getPatientService();
 		
 		Locale locale = context.getLocale();
@@ -91,8 +88,6 @@ public class DataExportUtility {
 	 */
 	public void setPatient(Patient patient) {
 		this.patient = patient;
-		this.lastEncounter = null;
-		this.encounters.clear();
 	}
 
 	public Integer getPatientId() {
@@ -142,20 +137,22 @@ public class DataExportUtility {
 	}
 	
 	/**
-	 * @return Encounter last encounter
+	 * @return Encounter last encounter of type <code>encounterType</code>
+	 * @param encounterType
 	 */
-	public Encounter getLastEncounter() {
-		long t = new Date().getTime();
-		if (lastEncounter != null)
-			return lastEncounter;
+	public Encounter getLastEncounter(String encounterType) {
+		if (patientEncounterMap.containsKey(encounterType))
+			return patientEncounterMap.get(encounterType).get(getPatientId());
 		
-		for(Encounter e : getEncounters()) {
-			lastEncounter = e;
-			log.debug("execution time: " + (new Date().getTime() - t));
-			return lastEncounter;
-		}
+		EncounterType type = null;
+		if (!encounterType.equals(""))
+			type = context.getEncounterService().getEncounterType(encounterType);
 		
-		return null;
+		Map<Integer, Encounter> encounterMap = patientSetService.getEncountersByType(getPatientSet(), type);
+		
+		patientEncounterMap.put(encounterType, encounterMap);
+		
+		return encounterMap.get(getPatientId());
 	}
 	
 	
@@ -181,17 +178,6 @@ public class DataExportUtility {
 		conceptNameMap.put(conceptName, c);
 		log.debug("execution time: " + (new Date().getTime() - t));
 		return c;
-	}
-	
-	/**
-	 * Get the patient's encounters.  Sorts the list on encounterDatetime
-	 * @return
-	 */
-	public Set<Encounter> getEncounters() {
-		if (encounters.size() == 0) {
-			encounters.addAll(encounterService.getEncounters(getPatient()));
-		}
-		return encounters;
 	}
 	
 	public List<Obs> getObs(Concept c) {
@@ -356,20 +342,5 @@ public class DataExportUtility {
 		else
 			return dateFormatShort.format(d);
 	}
-	
-	
-	
-	
-	
-	private class CompareEncounterDatetime implements Comparator<Encounter> {
-		
-		public int compare(Encounter enc1, Encounter enc2) throws ClassCastException {
-			
-			int value = 1;
-			if (enc2.getEncounterDatetime().after(enc1.getEncounterDatetime()))
-				value = -1;
-			
-			return value;
-		}
-	}
+
 }
