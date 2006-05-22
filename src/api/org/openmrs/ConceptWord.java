@@ -210,7 +210,6 @@ public class ConceptWord implements java.io.Serializable,
 					&& !uniqueParts.contains(upper))
 				uniqueParts.add(p);
 		}
-		System.out.println("After removing unique: " + uniqueParts);
 		return uniqueParts;
 	}
 
@@ -226,10 +225,8 @@ public class ConceptWord implements java.io.Serializable,
 		} else {
 			phrase = phrase.replaceAll(OpenmrsConstants.REGEX_SMALL, " ");
 		}
-		System.out.println("After regex: " + phrase);
 		
 		String[] words = phrase.trim().replace('\n', ' ').split(" ");
-		System.out.println("after trim: " + words);
 		return words;
 	}
 

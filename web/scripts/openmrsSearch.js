@@ -657,7 +657,7 @@ function getRowHeight() {
 			h = 13; //normal
 	}
 	else {
-		h = parseInt(h.slice(0, h.length - 2)); //remove 'px' from height
+		h = parseInt(h.slice(0, h.length - 2)) - 4; //remove 'px' from height
 	}
 
 	if (typeof customGetRowHeight != 'undefined') h = customGetRowHeight(h);
