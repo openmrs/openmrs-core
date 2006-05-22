@@ -224,7 +224,7 @@
 
  ALTER TABLE ADD FOREIGN KEY `id_of_alert` `notification_alert` (`alert_id`);
  
- UPDATE `alert_recipient` SET alert_read = 1;
+ UPDATE `notification_alert_recipient` SET alert_read = 1;
  
  UPDATE `global_property` SET property_value='1.0.18' WHERE property = 'database_version';
 
