@@ -2,6 +2,7 @@ package org.openmrs.api;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -527,6 +528,22 @@ public class ConceptService {
 	}
 
 	public void proposeConcept(ConceptProposal conceptProposal) {
+		
+		// set the state of the proposal
+		if (conceptProposal.getState() == null)
+			conceptProposal.setState(OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED);
+		
+		// set the creator and date created
+		if (conceptProposal.getCreator() == null && conceptProposal.getEncounter() != null)
+			conceptProposal.setCreator(conceptProposal.getEncounter().getCreator());
+		else
+			conceptProposal.setCreator(context.getAuthenticatedUser());
+		
+		if (conceptProposal.getDateCreated() == null && conceptProposal.getEncounter() != null)
+			conceptProposal.setDateCreated(conceptProposal.getEncounter().getDateCreated());
+		else
+			conceptProposal.setDateCreated(new Date());
+		
 		getConceptDAO().proposeConcept(conceptProposal);
 	}
 
