@@ -120,7 +120,7 @@ var savedText="";
 var invalidCheckDigitText   = "Invalid check digit for MRN: ";
 var searchOnPatientNameText = "Please search on part of the patient's name. ";
 var noPatientsFoundText     = "No patients found. <br/> ";
-var addPatientLink = "<a href='${pageContext.request.contextPath}/admin/patients/addPatient.htm'>Add a new patient</a>";
+var addPatientLink = "<a href='/@WEBAPP.NAME@/admin/patients/addPatient.htm'>Add a new patient</a>";
 function preFillTable(patients) {
 	var patientTableHead = $('patientTableHead');
 	if (patientTableHead)
