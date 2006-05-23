@@ -4,5 +4,5 @@
 #be skipped.
 
 drop database if exists openmrs;
-create database openmrs;
+create database openmrs default charset utf8;
 use openmrs;

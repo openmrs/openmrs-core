@@ -245,7 +245,7 @@ CREATE TABLE `concept_word` (
 # Table structure for drug
 #----------------------------
 CREATE TABLE `drug` (
-  `drug_id` int(11) NOT NULL auto_increment default '0',
+  `drug_id` int(11) NOT NULL auto_increment,
   `concept_id` int(11) NOT NULL default '0',
   `name` varchar(50) default NULL,
   `combination` tinyint(1) NOT NULL default '0',
