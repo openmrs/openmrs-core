@@ -9,6 +9,8 @@
 <script src='<%= request.getContextPath() %>/dwr/engine.js'></script>
 <script src='<%= request.getContextPath() %>/dwr/util.js'></script>
 <script src='<%= request.getContextPath() %>/scripts/openmrsSearch.js'></script>
+<script src='<%= request.getContextPath() %>/scripts/validation.js'></script>
+<script src='<%= request.getContextPath() %>/scripts/patientSearch.js'></script>
 
 <script type="text/javascript">
 
@@ -89,8 +91,6 @@
 	}
 	
 </script>
-<!-- patientSearch.js must be imported after the findObjects() definition for override -->
-<script src='<%= request.getContextPath() %>/scripts/patientSearch.js'></script>
 
 <style>
 	tr th#patientGender, tr th#patientAge, .patientGender, .patientAge {
