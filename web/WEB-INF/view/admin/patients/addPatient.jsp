@@ -70,6 +70,8 @@
 		patientsFound = "<a href='#' class='searchHit' onclick='document.location=getHref()'>Add New Patient</a>";
 		$("patientName").focus();
 		$("patientTable").style.display = "none";
+		
+		DWRUtil.useLoadingMessage();
 	};
 		
 	window.onload = init;

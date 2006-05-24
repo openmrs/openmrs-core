@@ -213,7 +213,7 @@ function searchBoxChange(bodyElementId, obj, event, retired, delay, onkeydownuse
 		}
 	}
 
-	else if ((key >= 48 && key <= 90) ||
+	else if (((key >= 48 && key <= 90) || (key >= 96 && key <= 111) ) ||
 		key == 8 || key == 32 || key == 46 || key == 1) {
 			//	 (if alphanumeric key entered or 
 			//   backspace key pressed or
