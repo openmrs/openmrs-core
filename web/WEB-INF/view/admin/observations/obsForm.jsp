@@ -52,7 +52,7 @@ var findObjects = function(txt) {
 		DWRConceptService.findConcepts(fillTable, txt, [], 0, ['N/A']);
 	}
 	else if (searchType == 'valueCoded') {
-		DWRConceptService.findConceptAnswers(fillTable, txt, concept, 0);
+		DWRConceptService.findConceptAnswers(preFillTable, txt, concept, 0);
 	}
 	else if (searchType == 'valueDrug') {
 		DWRConceptService.findDrugs(fillTable, txt);
@@ -61,6 +61,23 @@ var findObjects = function(txt) {
 		DWREncounterService.findEncounters(fillTable, txt, 0);
 	}
 	return false;
+}
+
+function preFillTable(concepts) {
+	// append "Propose Concept" box
+	concepts.push("<a href='#proposeConcept' onclick='javascript:return showProposeConceptForm();'><spring:message code="ConceptProposal.propose.new"/></a>");
+	fillTable(concepts);
+}
+
+function showProposeConceptForm() {
+	var qs = "?";
+	var encounterId = $("encounter").value;
+	if (encounterId != "")
+		qs += "&encounterId=" + encounterId;
+	var obsConceptId = $("concept").value
+	if (obsConceptId != "")
+		qs += "&obsConceptId=" + obsConceptId;
+	document.location = "${pageContext.request.contextPath}/admin/concepts/proposeConcept.form" + qs;
 }
 
 var onSelect = function(objs) {
@@ -283,6 +300,7 @@ function allowAutoListWithNumber() {
 		width: 450px;
 		position: absolute;
 		z-index: 10;
+		left: -1000px;
 		margin: 5px;
 	}
 	.searchForm .wrapper {

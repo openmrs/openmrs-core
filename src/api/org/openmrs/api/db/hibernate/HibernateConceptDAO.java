@@ -137,12 +137,10 @@ public class HibernateConceptDAO implements
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConcepts(java.lang.String, java.lang.String)
 	 */
+	@SuppressWarnings("unchecked")
 	public List<Concept> getConcepts(String sort, String dir) throws APIException {
 		
 		Session session = HibernateUtil.currentSession();
-		
-		Criteria criteria;
-		Order order;
 		
 		String sql = "from Concept concept";
 		
@@ -355,6 +353,7 @@ public class HibernateConceptDAO implements
 	/**
 	 * @see org.openmrs.api.db.ConceptService#getConceptsByName(java.lang.String)
 	 */
+	@SuppressWarnings("unchecked")
 	public List<Concept> getConceptsByName(String name) {
 		
 		Session session = HibernateUtil.currentSession();
@@ -369,6 +368,7 @@ public class HibernateConceptDAO implements
 	/**
 	 * @see org.openmrs.api.db.ConceptService#getConceptByName(java.lang.String)
 	 */
+	@SuppressWarnings("unchecked")
 	public Concept getConceptByName(String name) {
 		
 		Session session = HibernateUtil.currentSession();
@@ -402,6 +402,7 @@ public class HibernateConceptDAO implements
 	/**
 	 * @see org.openmrs.api.db.ConceptService#getDrugs()
 	 */
+	@SuppressWarnings("unchecked")
 	public List<Drug> getDrugs() {
 
 		Session session = HibernateUtil.currentSession();
@@ -415,6 +416,7 @@ public class HibernateConceptDAO implements
 	/**
 	 * @see org.openmrs.api.db.ConceptService#findDrugs(java.lang.String,boolean)
 	 */
+	@SuppressWarnings("unchecked")
 	public List<Drug> findDrugs(String phrase, boolean includeRetired) {
 		Session session = HibernateUtil.currentSession();
 		
@@ -446,6 +448,7 @@ public class HibernateConceptDAO implements
 	/**
 	 * @see org.openmrs.api.db.ConceptService#getDrugs(org.openmrs.Concept)
 	 */
+	@SuppressWarnings("unchecked")
 	public List<Drug> getDrugs(Concept concept) {
 
 		Session session = HibernateUtil.currentSession();
@@ -471,6 +474,7 @@ public class HibernateConceptDAO implements
 	/**
 	 * @see org.openmrs.api.db.ConceptService#getConceptClasses()
 	 */
+	@SuppressWarnings("unchecked")
 	public List<ConceptClass> getConceptClasses() {
 		Session session = HibernateUtil.currentSession();
 		
@@ -494,6 +498,7 @@ public class HibernateConceptDAO implements
 	/**
 	 * @see org.openmrs.api.db.ConceptService#getConceptDatatypes()
 	 */
+	@SuppressWarnings("unchecked")
 	public List<ConceptDatatype> getConceptDatatypes() {
 		Session session = HibernateUtil.currentSession();
 		
@@ -517,6 +522,7 @@ public class HibernateConceptDAO implements
 	/**
 	 * @see org.openmrs.api.db.ConceptService#getConceptSets(java.lang.Integer)
 	 */
+	@SuppressWarnings("unchecked")
 	public List<ConceptSet> getConceptSets(Concept concept) {
 		Session session = HibernateUtil.currentSession();
 		
@@ -532,6 +538,7 @@ public class HibernateConceptDAO implements
 	/**
 	 * @see org.openmrs.api.db.ConceptService#findConcepts(java.lang.String,java.util.Locale,boolean)
 	 */
+	@SuppressWarnings("unchecked")
 	public List<ConceptWord> findConcepts(String phrase, Locale loc, boolean includeRetired) {
 		Session session = HibernateUtil.currentSession();
 		
@@ -577,6 +584,7 @@ public class HibernateConceptDAO implements
 	/**
 	 * @see org.openmrs.api.db.ConceptService#findConcepts(java.lang.String,java.util.Locale,org.openmrs.Concept,boolean)
 	 */
+	@SuppressWarnings("unchecked")
 	public List<ConceptWord> findConceptAnswers(String phrase, Locale loc, Concept concept, boolean includeRetired) {
 		Session session = HibernateUtil.currentSession();
 		
@@ -652,6 +660,7 @@ public class HibernateConceptDAO implements
 	/**
 	 * @see org.openmrs.api.db.ConceptService#getNextConcept(org.openmrs.Concept, java.lang.Integer)
 	 */
+	@SuppressWarnings("unchecked")
 	public Concept getPrevConcept(Concept c) {
 		Session session = HibernateUtil.currentSession();
 		
@@ -671,6 +680,7 @@ public class HibernateConceptDAO implements
 	/**
 	 * @see org.openmrs.api.db.ConceptService#getNextConcept(org.openmrs.Concept, java.lang.Integer)
 	 */
+	@SuppressWarnings("unchecked")
 	public Concept getNextConcept(Concept c) {
 		Session session = HibernateUtil.currentSession();
 		
@@ -690,6 +700,7 @@ public class HibernateConceptDAO implements
 	/**
 	 * @see org.openmrs.api.db.ConceptService#getConceptProposals(boolean)
 	 */
+	@SuppressWarnings("unchecked")
 	public List<ConceptProposal> getConceptProposals(boolean includeCompleted) throws APIException {
 		
 		Session session = HibernateUtil.currentSession();
@@ -721,6 +732,7 @@ public class HibernateConceptDAO implements
 	/**
 	 * @see org.openmrs.api.db.ConceptService#findMatchingConceptProposals(java.lang.String)
 	 */
+	@SuppressWarnings("unchecked")
 	public List<ConceptProposal> findMatchingConceptProposals(String text) throws APIException {
 		Session session = HibernateUtil.currentSession();
 		
@@ -734,6 +746,7 @@ public class HibernateConceptDAO implements
 	/**
 	 * @see org.openmrs.api.db.ConceptService#findProposedConcepts(java.lang.String)
 	 */
+	@SuppressWarnings("unchecked")
 	public List<Concept> findProposedConcepts(String text) throws APIException {
 		
 		Session session = HibernateUtil.currentSession();
@@ -749,11 +762,6 @@ public class HibernateConceptDAO implements
 	
 	public void proposeConcept(ConceptProposal conceptProposal) throws APIException {
 		Session session = HibernateUtil.currentSession();
-		
-		if (conceptProposal.getCreator() == null)
-			conceptProposal.setCreator(conceptProposal.getEncounter().getCreator());
-		if (conceptProposal.getDateCreated() == null)
-			conceptProposal.setDateCreated(conceptProposal.getEncounter().getDateCreated());
 
 		try {
 			HibernateUtil.beginTransaction();
