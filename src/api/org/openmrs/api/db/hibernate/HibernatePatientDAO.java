@@ -15,12 +15,9 @@ import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
-import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Expression;
-import org.hibernate.criterion.LogicalExpression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
-import org.hibernate.criterion.SimpleExpression;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientAddress;
@@ -220,42 +217,100 @@ public class HibernatePatientDAO implements PatientDAO {
 		name.replace(", ", " ");
 		String[] names = name.split(" ");
 		
-		Criteria criteria = session.createCriteria(Patient.class).createAlias("names", "name");
-		Disjunction disjunction = Expression.disjunction();
-		for (String n : names) {
-				if (n != null && n.length() > 0) {
-					disjunction.add(Expression.or(
-						Expression.like("name.familyName", n, MatchMode.START),
-						Expression.or(
-							Expression.like("name.middleName", n, MatchMode.START),
-							Expression.like("name.givenName", n, MatchMode.START)
-							)
-						)
-					);
-				}
-		}
-		criteria.add(disjunction);
+		String q = "select p from Patient p where";
 		
-		LogicalExpression birthdayMatch = Expression.or(
-				Expression.sql("year(birthdate) between " + (birthyear - 1) + " and " + (birthyear + 1)),
-				Expression.isNull("birthdate")
-				);
-		SimpleExpression genderMatch = Expression.eq("gender", gender);
+		if (names.length == 1) {
+			q += " soundex(p.names.givenName) = soundex(:n1)";
+			q += " or soundex(p.names.middleName) = soundex(:n2)";
+			q += " or soundex(p.names.familyName) = soundex(:n3)";
+		}
+		else if (names.length == 2) {
+			q += "(";
+			q += " case";
+			q += "  when p.names.givenName is null then 1";
+			q += "  when soundex(p.names.givenName) = soundex(:n1) then 2";
+			q += "  when soundex(p.names.givenName) = soundex(:n2) then 4";
+			q += "  else 0 ";
+			q += " end";
+			q += " + ";
+			q += " case";
+			q += "  when p.names.middleName is null then 1";
+			q += "  when soundex(p.names.middleName) = soundex(:n3) then 2";
+			q += "  when soundex(p.names.middleName) = soundex(:n4) then 4";
+			q += "  else 0 ";
+			q += " end";
+			q += " +";
+			q += " case";
+			q += "  when p.names.familyName is null then 1";
+			q += "  when soundex(p.names.familyName) = soundex(:n5) then 2";
+			q += "  when soundex(p.names.familyName) = soundex(:n6) then 4";
+			q += "  else 0 ";
+			q += " end";
+			q += ") between 6 and 7";
+		}
+		else if (names.length == 3) {
+			q += "(";
+			q += " case";
+			q += "  when p.names.givenName is null then 0";
+			q += "  when soundex(p.names.givenName) = soundex(:n1) then 3";
+			q += "  when soundex(p.names.givenName) = soundex(:n2) then 2";
+			q += "  when soundex(p.names.givenName) = soundex(:n3) then 1";
+			q += "  else 0 ";
+			q += " end";
+			q += " + ";
+			q += " case";
+			q += "  when p.names.middleName is null then 0";
+			q += "  when soundex(p.names.middleName) = soundex(:n4) then 2";
+			q += "  when soundex(p.names.middleName) = soundex(:n5) then 3";
+			q += "  when soundex(p.names.middleName) = soundex(:n6) then 1";
+			q += "  else 0";
+			q += " end";
+			q += " +";
+			q += " case";
+			q += "  when p.names.familyName is null then 0";
+			q += "  when soundex(p.names.familyName) = soundex(:n7) then 1";
+			q += "  when soundex(p.names.familyName) = soundex(:n8) then 2";
+			q += "  when soundex(p.names.familyName) = soundex(:n9) then 3";
+			q += "  else 0";
+			q += " end";
+			q += ") >= 5";
+		}
+		else
+			throw new DAOException("Too many names");
+		
+		String birthdayMatch = "(year(p.birthdate) between " + (birthyear - 1) + " and " + (birthyear + 1) +
+								" or p.birthdate is null)";
+		
+		String genderMatch = "p.gender = :gender";
 		
 		if (birthyear != 0 && gender != null) {
-			criteria.add(Expression.and(birthdayMatch, genderMatch));
+			q += " and (" + birthdayMatch + "and " + genderMatch + ")"; 
 		}
 		else if (birthyear != 0) {
-			criteria.add(birthdayMatch);
+			q += " and " + birthdayMatch;
 		}
 		else if (gender != null) {
-			criteria.add(genderMatch);
+			q += " and " + genderMatch;
 		}
 		
-		criteria.addOrder(Order.asc("name.givenName"));
-		criteria.addOrder(Order.asc("name.middleName"));
-		criteria.addOrder(Order.asc("name.familyName"));
-		patients.addAll(criteria.list());
+		q += " order by p.names.givenName asc, ";
+		q += "p.names.middleName asc, ";
+		q += "p.names.familyName asc";
+		
+		Query query = session.createQuery(q);
+		
+		int count = 1;
+		for (int i = 0; i < 3; i++) {
+			for (int nameIndex = 0; nameIndex < names.length; nameIndex++) {
+				query.setString("n" + count, names[nameIndex]);
+				count++;
+			}
+		}
+		
+		if (q.contains(":gender"))
+			query.setString("gender", gender);
+		
+		patients.addAll(query.list());
 		
 		return patients;
 	}
