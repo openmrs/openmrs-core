@@ -167,6 +167,8 @@
 					<prop key="**/dictionary/concept.htm">conceptView</prop>
 					<prop key="**/conceptClass.list">conceptClassList</prop>
 					<prop key="**/conceptClass.form">conceptClassForm</prop>
+					<prop key="**/conceptDrug.list">conceptDrugList</prop>
+					<prop key="**/conceptDrug.form">conceptDrugForm</prop>
 					<prop key="**/conceptDatatype.list">conceptDatatypeList</prop>
 					<prop key="**/conceptDatatype.form">conceptDatatypeForm</prop>
 					<prop key="**/conceptProposal.list">conceptProposalList</prop>
@@ -523,6 +525,21 @@
 					<property name="successView"><value>concept.htm</value></property>
 				</bean>
 			<!-- ** /Concept ** -->
+			<!-- ** Concept Drug ** -->		
+				<bean id="conceptDrugList" class="org.openmrs.web.controller.concept.ConceptDrugListController">
+					<property name="sessionForm"><value>true</value></property>
+					<property name="commandName"><value>conceptDrugList</value></property>
+					<property name="formView"><value>/admin/concepts/conceptDrugList</value></property>
+					<property name="successView"><value>conceptDrug.list</value></property>
+				</bean>
+		
+				<bean id="conceptDrugForm" class="org.openmrs.web.controller.concept.ConceptDrugFormController">
+					<property name="sessionForm"><value>true</value></property>
+					<property name="commandName"><value>drug</value></property>
+					<property name="formView"><value>/admin/concepts/conceptDrugForm</value></property>
+					<property name="successView"><value>conceptDrug.list</value></property>
+				</bean>
+			<!--  ** /Concept Drug ** -->
 			<!-- ** Concept Class ** -->		
 				<bean id="conceptClassList" class="org.openmrs.web.controller.concept.ConceptClassListController">
 					<property name="sessionForm"><value>true</value></property>
