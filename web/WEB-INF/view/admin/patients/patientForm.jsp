@@ -156,7 +156,7 @@
 			for (var i=0; i<inputs.length; i++) {
 				var input = inputs[i];
 				if (input.type == "checkbox")
-					if (input.alt = obj.alt && input != obj)
+					if (input.alt == obj.alt && input != obj)
 						input.checked = false;
 			}
 		}

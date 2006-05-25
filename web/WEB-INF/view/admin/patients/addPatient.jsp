@@ -120,8 +120,7 @@
 			<td><spring:message code="Patient.gender"/></td>
 			<td>
 				<openmrs:forEachRecord name="gender">
-					<input type="radio" name="gender" id="${record.key}" value="${record.key}" <c:if test="${record.key == status.value}">checked</c:if> onclick="inputChanged=true" onFocus="exitNumberMode(patientName)" />
-						<label for="${record.key}"> <spring:message code="Patient.gender.${record.value}"/> </label>
+					<input type="radio" name="gender" id="${record.key}" value="${record.key}" <c:if test="${record.key == status.value}">checked</c:if> onclick="inputChanged=true" onFocus="exitNumberMode(patientName)" /><label for="${record.key}"> <spring:message code="Patient.gender.${record.value}"/> </label>
 				</openmrs:forEachRecord>
 			</td>
 		</tr>

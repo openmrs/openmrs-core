@@ -171,6 +171,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		
 		Set<Patient> patients = new LinkedHashSet<Patient>();
 		
+		name = name.replaceAll("  ", " ");
 		name = name.replace(", ", " ");
 		String[] names = name.split(" ");
 		
@@ -214,8 +215,10 @@ public class HibernatePatientDAO implements PatientDAO {
 		
 		Set<Patient> patients = new LinkedHashSet<Patient>();
 		
+		name = name.replaceAll("  ", " ");
 		name.replace(", ", " ");
 		String[] names = name.split(" ");
+		
 		
 		String q = "select p from Patient p where";
 		

@@ -84,7 +84,7 @@
 		<!-- Associations -->
 
 		<!-- bi-directional one-to-many association to PatientAddress -->
-		<set name="addresses" lazy="true" inverse="false" cascade="all-delete-orphan"
+		<set name="addresses" lazy="true" inverse="true" cascade="all-delete-orphan"
 			order-by="voided asc, preferred desc, date_created desc">
 			<key column="patient_id" not-null="true" />
 			<one-to-many class="PatientAddress" />
