@@ -40,6 +40,7 @@ import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -183,9 +184,11 @@ public class PatientFormController extends SimpleFormController {
 						errors.rejectValue("patient.names", "Patient.names.length");
 					
 				// Patient Info 
-					//patient.setTribe(ps.getTribe(Integer.valueOf(request.getParameter("tribe"))));
 					//ValidationUtils.rejectIfEmptyOrWhitespace(errors, "birthdate", "error.null");
-					//ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
+					if (patient.isVoided())
+						ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
+					if (patient.isDead() == (patient.getDeathDate() == null))
+						errors.rejectValue("dead", "Patient.dead.deathDateError");
 			}
 		}		
 		

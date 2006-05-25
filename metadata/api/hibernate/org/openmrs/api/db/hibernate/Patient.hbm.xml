@@ -41,6 +41,8 @@
 			<column name="civil_status" />
 		</many-to-one>
 		
+		<property name="dead" type="boolean" not-null="true"/>
+		
 		<property name="deathDate" type="java.util.Date"
 			column="death_date" length="19" />
 

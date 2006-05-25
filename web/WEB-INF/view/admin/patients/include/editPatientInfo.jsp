@@ -97,6 +97,18 @@
 		</td>
 	</tr>
 	<tr>
+		<td><spring:message code="Patient.dead"/></td>
+		<td>
+			<spring:bind path="patient.dead">
+				<input type="hidden" name="_${status.expression}"/>
+				<input type="checkbox" name="${status.expression}" 
+					   <c:if test="${status.value == true}">checked</c:if>
+				/>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
 		<td><spring:message code="Patient.deathDate"/></td>
 		<td>
 			<spring:bind path="patient.deathDate">

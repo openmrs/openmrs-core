@@ -732,6 +732,7 @@ CREATE TABLE `patient` (
   `citizenship` varchar(50) default NULL,
   `mothers_name` varchar(50) default NULL,
   `civil_status` int(11) default NULL,
+  `dead` int(1) NOT NULL default '0',
   `death_date` datetime default NULL,
   `cause_of_death` varchar(255) default NULL,
   `health_district` varchar(255) default NULL,

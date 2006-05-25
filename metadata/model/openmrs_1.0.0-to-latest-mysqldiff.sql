@@ -116,7 +116,7 @@
 
 
  #-----------------------------------
- # OpenMRS Datamodel version 1.015
+ # OpenMRS Datamodel version 1.0.15
  # Burke Mamlin  Apr 25 2006 5:47 AM
  # Added form.template
  #-----------------------------------
@@ -126,7 +126,7 @@
  
  
  #-----------------------------------
- # OpenMRS Datamodel version 1.016
+ # OpenMRS Datamodel version 1.0.16
  # Ben Wolfe    May 1 2006 9:15 AM
  # Added database indexes (Directed towards patient merging)
  #-----------------------------------
@@ -226,3 +226,16 @@
  
  UPDATE `global_property` SET property_value='1.0.18' WHERE property = 'database_version';
 
+
+ #-----------------------------------
+ # OpenMRS Datamodel version 1.0.21
+ # Burke Mamlin  Apr 25 2006 5:47 AM
+ # Added patient.dead
+ #-----------------------------------
+ 
+ ALTER TABLE `patient` ADD COLUMN `dead` int(1) NOT NULL default '0' AFTER `civil_status`;
+ 
+ UPDATE `patient` SET `dead` = 1 WHERE `death_date` IS NOT NULL;
+ UPDATE `patient` p SET `dead` = 1 WHERE `cause_of_death` IS NOT NULL AND `cause_of_death` <> '' AND NOT EXISTS (SELECT e.encounter_id FROM encounter e WHERE e.patient_id = p.patient_id);
+ UPDATE `global_property` SET property_value='1.0.21' WHERE property = 'database_version';
+ 
