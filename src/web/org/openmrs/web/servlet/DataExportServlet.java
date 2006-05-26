@@ -99,6 +99,7 @@ public class DataExportServlet extends HttpServlet {
 		catch (Exception e) {
 			log.error("Error evaluating data export " + dataExport.getReportObjectId(), e);
 			log.error("Template: " + template.substring(0, template.length() < 3500 ? template.length() : 3500) + "...");
+			report.append(e.toString());
 		}
 		finally {
 			context.endTransaction();
