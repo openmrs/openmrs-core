@@ -288,10 +288,14 @@ public class UserService {
 	 */
 	private void checkPrivileges(User user) {
 		Collection<Role> roles = user.getAllRoles();
+		User authUser = context.getAuthenticatedUser();
 		
 		for (Role r : roles) {
+			if (r.getRole().equals(OpenmrsConstants.SUPERUSER_ROLE) &&
+				!authUser.hasRole(OpenmrsConstants.SUPERUSER_ROLE))
+					throw new APIAuthenticationException("Role required: " + OpenmrsConstants.SUPERUSER_ROLE);
 			for (Privilege p : r.getPrivileges())
-				if (!user.hasPrivilege(p.getPrivilege()))
+				if (!authUser.hasPrivilege(p.getPrivilege()))
 					throw new APIAuthenticationException("Privilege required: " + p);
 		}
 	}
