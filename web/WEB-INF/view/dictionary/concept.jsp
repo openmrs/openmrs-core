@@ -107,10 +107,11 @@ document.onkeypress = hotkeys;
 			${concept.conceptClass.name}
 		</td>
 	</tr>
-	<c:if test="${concept.conceptClass != null && concept.conceptClass.set}">
+	<c:if test="${concept.set}">
 		<tr id="setOptions">
 			<th valign="top"><spring:message code="Concept.conceptSets"/></th>
 			<td valign="top">
+				<c:if test="${fn:length(conceptSets) == 0}"><spring:message code="Concept.conceptSets.empty"/></c:if>
 				<c:forEach items="${conceptSets}" var="set">
 					<a href="concept.htm?conceptId=${set.value[0]}">${set.value[1]} (${set.value[0]})</a><br/>
 				</c:forEach>

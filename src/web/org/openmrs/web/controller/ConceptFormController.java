@@ -38,6 +38,7 @@ import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
+import org.springframework.web.bind.RequestUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -61,7 +62,6 @@ public class ConceptFormController extends SimpleFormController {
 		Context context = (Context) request.getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
         NumberFormat nf = NumberFormat.getInstance(context.getLocale());
-        Locale locale = RequestContextUtils.getLocale(request);
         binder.registerCustomEditor(java.lang.Integer.class,
                 new CustomNumberEditor(java.lang.Integer.class, nf, true));
         binder.registerCustomEditor(java.lang.Double.class,
@@ -98,6 +98,14 @@ public class ConceptFormController extends SimpleFormController {
 			
 			if (!action.equals(msa.getMessage("Concept.delete"))) {
 	
+				String isSet = RequestUtils.getStringParameter(request, "conceptSet", "");
+				if (isSet.equals(""))
+					concept.setSet(false);
+				else
+					concept.setSet(true);
+				log.error("isSet: '" + isSet + "' ");
+				log.error("concept.set: '" + concept.isSet() + "'");
+				
 				// ==== Concept Synonyms ====
 					// the attribute *must* be named differently than the property, otherwise
 					//   spring will modify the property as a text array
@@ -170,7 +178,7 @@ public class ConceptFormController extends SimpleFormController {
 					}
 					else {
 						concept.addName(new ConceptName(conceptName, shortName, description, locale));
-				}
+					}
 			}
 		}
 		else {
@@ -213,7 +221,12 @@ public class ConceptFormController extends SimpleFormController {
 				}
 			}
 			else {
-			
+				String isSet = RequestUtils.getStringParameter(request, "conceptSet", "");
+				if (isSet.equals(""))
+					concept.setSet(false);
+				else
+					concept.setSet(true);
+				
 				boolean isNew = false;
 				try {
 					if (concept.getConceptId() == null) {

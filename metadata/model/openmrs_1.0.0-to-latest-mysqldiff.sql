@@ -229,7 +229,7 @@
 
  #-----------------------------------
  # OpenMRS Datamodel version 1.0.21
- # Burke Mamlin  Apr 25 2006 5:47 AM
+ # Ben Wolfe    May 25 2006 9:40 AM
  # Added patient.dead
  #-----------------------------------
  
@@ -238,4 +238,17 @@
  UPDATE `patient` SET `dead` = 1 WHERE `death_date` IS NOT NULL;
  UPDATE `patient` p SET `dead` = 1 WHERE `cause_of_death` IS NOT NULL AND `cause_of_death` <> '' AND NOT EXISTS (SELECT e.encounter_id FROM encounter e WHERE e.patient_id = p.patient_id);
  UPDATE `global_property` SET property_value='1.0.21' WHERE property = 'database_version';
+
+
+ #-----------------------------------
+ # OpenMRS Datamodel version 1.0.22
+ # Ben Wolfe   May 26 2006 10:00 AM
+ # Moved concept_class.is_set to concept.is_set
+ #-----------------------------------
  
+ ALTER TABLE `concept` ADD COLUMN `is_set` tinyint(1) NOT NULL default '0' AFTER `class_id`;
+ UPDATE `concept` c, `concept_class` class SET c.`is_set` = class.`is_set` WHERE class.`concept_class_id` = c.`class_id`;
+ ALTER TABLE `concept_class` DROP COLUMN `is_set`;
+ 
+ UPDATE `global_property` SET property_value='1.0.22' WHERE property = 'database_version';
+

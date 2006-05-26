@@ -1085,7 +1085,6 @@ public class HibernateAdministrationDAO implements
 	}
 	
 	private Set<ConceptSetDerived> deriveChildren(List<Concept> parents, Concept current) {
-		List<Concept> children = new Vector<Concept>();
 		Set<ConceptSetDerived> updates = new HashSet<ConceptSetDerived>();
 		
 		ConceptSetDerived derivedSet = null;
@@ -1101,7 +1100,7 @@ public class HibernateAdministrationDAO implements
 			}
 			
 			//recurse if this child is a set as well
-			if (child.getConceptClass().isSet()) {
+			if (child.isSet()) {
 				log.debug("Concept id: " + child.getConceptId() + " is a set");
 				List<Concept> new_parents = new Vector<Concept>();
 				new_parents.addAll(parents);

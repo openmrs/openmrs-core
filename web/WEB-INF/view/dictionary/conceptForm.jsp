@@ -15,11 +15,6 @@
 <script type="text/javascript" src="<%= request.getContextPath() %>/scripts/conceptSearch.js"></script>
 <script type="text/javascript" src="conceptForm.js"></script>
 <script type="text/javascript">
-	var setClasses = new Array();
-	<c:forEach items="${classes}" var="cc">
-	<c:if test="${cc.set}">setClasses.push("${cc.conceptClassId}");</c:if>
-	</c:forEach>
-	
 	function addName(anchor) {
 		if (anchor.href.lastIndexOf("=") == anchor.href.length - 1)
 			anchor.href += $("conceptName").value;
@@ -186,7 +181,16 @@
 			</c:if>
 		</spring:bind></td>
 	</tr>
-	<tr id="setClassRow">
+	<tr>
+		<th valign="top"><spring:message code="Concept.set"/></th>
+		<td>
+			<spring:bind path="concept.set">
+				<input type="checkbox" name="conceptSet" id="conceptSet" <c:if test="${status.value}">checked="checked"</c:if> onChange="changeSetStatus(this)"/>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr id="conceptSetRow">
 		<th valign="top"><spring:message code="Concept.conceptSets"/></th>
 		<td valign="top">
 			<input type="hidden" name="conceptSets" id="conceptSets" size="40" value='<c:forEach items="${conceptSets}" var="set">${set.value[0]} </c:forEach>' />

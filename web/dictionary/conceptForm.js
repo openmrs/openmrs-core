@@ -9,6 +9,7 @@ window.onload = function() {
 	myConceptSearchMod.hide();
 	changeClass(document.getElementById("conceptClass"));
 	changeDatatype(document.getElementById("datatype"));
+	changeSetStatus(document.getElementById('conceptSet'));
 };
 
 function removeItem(nameList, idList, delim)
@@ -218,19 +219,19 @@ function removeHiddenRows() {
 }
 
 function changeClass(obj) {
-	var row = document.getElementById("setClassRow");
-	var isSet = false;
-	for (var i=0; i < setClasses.length; i++) {
-		if (obj[obj.selectedIndex].value == setClasses[i]) {
-			isSet = true;
-		}
-	}
-	if (isSet) {
+	var row = document.getElementById("conceptSetRow");
+	//if (isSet)
+	//	row.style.display = "";
+	//else
+	//	row.style.display = "none";
+}
+
+function changeSetStatus(obj) {
+	var row = document.getElementById("conceptSetRow");
+	if (obj.checked)
 		row.style.display = "";
-	}
-	else {
+	else
 		row.style.display = "none";
-	}
 }
 
 var customDatatypes = new Array();
