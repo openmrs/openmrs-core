@@ -21,6 +21,7 @@ import org.openmrs.web.WebConstants;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.RequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
@@ -65,9 +66,9 @@ public class MergePatientsFormController extends SimpleFormController {
 			String view = getSuccessView();
 			PatientService ps = context.getPatientService();
 			
-			String patient1Id = request.getParameter("patient1");
-			String patient2Id = request.getParameter("patient2");
-			String preferredId  = request.getParameter("preferred");
+			String patient1Id = RequestUtils.getRequiredStringParameter(request, "patient1");
+			String patient2Id = RequestUtils.getRequiredStringParameter(request, "patient2");
+			String preferredId  = RequestUtils.getRequiredStringParameter(request, "preferred");
 			
 			Patient preferred = null;
 			Patient notPreferred = null;

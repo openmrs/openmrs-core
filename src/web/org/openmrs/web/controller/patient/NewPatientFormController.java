@@ -161,9 +161,9 @@ public class NewPatientFormController extends SimpleFormController {
 				patient = ps.getPatient(p.getPatientId());
 			boolean duplicate = false;
 			for (PatientName pn : patient.getNames()) {
-				if (pn.getGivenName().equals(p.getGivenName()) &&
-					pn.getMiddleName().equals(p.getMiddleName()) &&
-					pn.getFamilyName().equals(p.getFamilyName()))
+				if (((pn.getGivenName() == null && p.getGivenName() == null) || pn.getGivenName().equals(p.getGivenName())) &&
+					((pn.getMiddleName() == null && p.getMiddleName() == null) || pn.getMiddleName().equals(p.getMiddleName())) &&
+					((pn.getFamilyName() == null && p.getFamilyName() == null) || pn.getFamilyName().equals(p.getFamilyName())))
 					duplicate = true;
 			}
 			
