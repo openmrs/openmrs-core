@@ -96,6 +96,8 @@ tokens {
 	MLMNAME="mlmname";
 	OF = "of";
 	TIME = "time";
+	WITHIN = "within";
+	
 	
 }
 
@@ -356,7 +358,7 @@ validation_code :
 // 'keyword as identifier' trickery.
 any_reserved_word
 	: AND | IS | ARE | WAS | WERE | COUNT | IN | LESS | THE | THAN | FROM | BEFORE |AFTER | AGO | AT | OF
-	| WRITE | BE | LET | YEAR | YEARS | IF | IT | THEY | NOT | OR | THEN | MONTH | MONTHS | TIME | TIMES
+	| WRITE | BE | LET | YEAR | YEARS | IF | IT | THEY | NOT | OR | THEN | MONTH | MONTHS | TIME | TIMES | WITHIN
 	| READ | MINIMUM | MIN | MAXIMUM | MAX | LAST | FIRST | EARLIEST | LATEST | EVENT | WHERE | EXIST | EXISTS | PAST
 	| AVERAGE | AVG | SUM | MEDIAN | CONCLUDE | ELSE | ELSEIF | ENDIF | TRUE | FALSE | DATA | LOGIC | ACTION
 	;
@@ -700,7 +702,8 @@ duration_op
  	;
 
 temporal_comp_op
-	: "within"! (the!)? PAST expr_string
+	: WITHIN! (the!)? PAST expr_string
+	| AFTER expr_string
 	;
 /************************************************************************************************/
 where
@@ -871,6 +874,7 @@ conclude_statement
 logic_assignment
 :
 	 (ACTION_OP^)? identifier_or_object_ref (ACTION_OP)? (BECOMES! | EQUALS!) expr
+	 |  identifier_becomes expr
 	;
 		
 //	 identifier_becomes expr
@@ -1030,7 +1034,8 @@ expr_function
 //expr_duration
 	:
 	expr_factor
-    | (the)? from_of_func_op OF expr_factor //(is)? binary_comp_op (the)? (expr_factor | from_of_func_op expr_factor)
+    | (the)? from_of_func_op (OF)? expr_factor //(is)? binary_comp_op (the)? (expr_factor | from_of_func_op expr_factor)
+    | of_func_op (OF)? expr_function
 	//	("as" as_func_op ) 
 	;
 
@@ -1061,6 +1066,15 @@ boolean_value :
 	| ( FALSE^ )
 	;
 
+of_func_op:
+	of_read_func_op
+	| of_noread_func_op
+;
+
+
+of_noread_func_op:
+	TIME
+;
 /*************************************************************************************/
 class ArdenBaseTreeParser extends TreeParser;
 
