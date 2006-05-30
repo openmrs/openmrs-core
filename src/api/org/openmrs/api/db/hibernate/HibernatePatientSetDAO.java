@@ -1,6 +1,7 @@
 package org.openmrs.api.db.hibernate;
 
 import java.io.StringWriter;
+import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -432,6 +433,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return patientSet;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public PatientSet getPatientsHavingNumericObs(Integer conceptId, PatientSetService.Modifier modifier, Number value) {
 		Session session = HibernateUtil.currentSession();
 		HibernateUtil.beginTransaction();
@@ -463,6 +465,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public PatientSet getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		HibernateUtil.beginTransaction();
@@ -517,6 +520,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 
 	private static final long MS_PER_YEAR = 365l * 24 * 60 * 60 * 1000l; 
 	
+	@SuppressWarnings("unchecked")
 	public Map<Integer, String> getShortPatientDescriptions(PatientSet patients) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		HibernateUtil.beginTransaction();
@@ -550,6 +554,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Map<Integer, Map<String, Object>> getCharacteristics(PatientSet patients) throws DAOException {
 		Map<Integer, Map<String, Object>> ret = new HashMap<Integer, Map<String, Object>>();
 
@@ -578,6 +583,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Map<Integer, List<Obs>> getObservations(PatientSet patients, Concept concept) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		HibernateUtil.beginTransaction();
@@ -666,18 +672,36 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		
 		Set<Integer> ids = patients.getPatientIds();
 		
+		className = "org.openmrs." + className;
+		
 		// default query
-		Criteria criteria = session.createCriteria("org.openmrs." + className);
+		Criteria criteria = session.createCriteria(className);
 		
 		// make 'patient.**' reference 'patient' like alias instead of object
-		if (className.equals("Patient"))
-			criteria = session.createCriteria("org.openmrs." + className, "patient");
+		if (className.equals("org.openmrs.Patient"))
+			criteria = session.createCriteria(className, "patient");
 		
 		// set up the query
 		criteria.setProjection(Projections.projectionList().add(
-				Projections.distinct(Projections.property("patient.patientId"))).add(
+				Projections.property("patient.patientId")).add(
 				Projections.property(property)));
 		criteria.add(Restrictions.in("patient.patientId", ids));
+		criteria.addOrder(org.hibernate.criterion.Order.desc("voided"));
+		
+		// add 'preferred' sort order if necessary
+		try {
+			boolean hasPreferred = false;
+			for(Field f : Class.forName(className).getDeclaredFields()) {
+				if (f.getName().equals("preferred"))
+					hasPreferred = true;
+			}
+			
+			if (hasPreferred)
+				criteria.addOrder(org.hibernate.criterion.Order.desc("preferred"));
+		} catch (ClassNotFoundException e) {
+			log.warn("Class not found: " + className);
+		}
+		
 		criteria.addOrder(org.hibernate.criterion.Order.desc("dateCreated"));
 		List<Object[]> rows = criteria.list();
 		
@@ -685,12 +709,14 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		for (Object[] row : rows) {
 			Integer ptId = (Integer)row[0];
 			Object columnValue = row[1];
-			ret.put(ptId, columnValue);
+			if (!ret.containsKey(ptId))
+				ret.put(ptId, columnValue);
 		}
 		
 		return ret;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public PatientSet getPatientsHavingTextObs(Integer conceptId, String value) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		HibernateUtil.beginTransaction();
