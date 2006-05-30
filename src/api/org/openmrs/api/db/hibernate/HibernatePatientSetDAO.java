@@ -432,6 +432,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return patientSet;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public PatientSet getPatientsHavingNumericObs(Integer conceptId, PatientSetService.Modifier modifier, Number value) {
 		Session session = HibernateUtil.currentSession();
 		HibernateUtil.beginTransaction();
@@ -463,6 +464,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public PatientSet getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		HibernateUtil.beginTransaction();
@@ -517,6 +519,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 
 	private static final long MS_PER_YEAR = 365l * 24 * 60 * 60 * 1000l; 
 	
+	@SuppressWarnings("unchecked")
 	public Map<Integer, String> getShortPatientDescriptions(PatientSet patients) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		HibernateUtil.beginTransaction();
@@ -550,6 +553,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Map<Integer, Map<String, Object>> getCharacteristics(PatientSet patients) throws DAOException {
 		Map<Integer, Map<String, Object>> ret = new HashMap<Integer, Map<String, Object>>();
 
@@ -578,6 +582,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Map<Integer, List<Obs>> getObservations(PatientSet patients, Concept concept) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		HibernateUtil.beginTransaction();
@@ -691,6 +696,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public PatientSet getPatientsHavingTextObs(Integer conceptId, String value) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		HibernateUtil.beginTransaction();
