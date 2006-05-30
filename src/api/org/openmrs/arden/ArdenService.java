@@ -172,6 +172,7 @@ public class ArdenService {
 		  	 		      
 		   	 treeParser.data(t.getNextSibling().getNextSibling(),ardObj);
 		   	 log.debug(t.getNextSibling().getNextSibling().getNextSibling().toStringTree()); // Print logic
+		   	 System.out.println(t.getNextSibling().getNextSibling().getNextSibling().toStringTree()); // Print logic
 		     String logicstr = treeParser.logic(t.getNextSibling().getNextSibling().getNextSibling(), ardObj);
 		    
 		     ardObj.WriteEvaluate(w);

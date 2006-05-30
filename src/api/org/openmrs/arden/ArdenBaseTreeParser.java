@@ -1804,6 +1804,8 @@ public ArdenBaseTreeParser() {
 		"\"library\"",
 		"\"filename\"",
 		"\"mlmname\"",
+		"\"of\"",
+		"\"time\"",
 		"\"end\"",
 		"COLON",
 		"\"knowledge\"",
@@ -1827,6 +1829,7 @@ public ArdenBaseTreeParser() {
 		"\"research\"",
 		"\"testing\"",
 		"\"expired\"",
+		"TIMES",
 		"an identifier",
 		"LPAREN",
 		"RPAREN",
@@ -1860,7 +1863,6 @@ public ArdenBaseTreeParser() {
 		"\"NULL\"",
 		"\"BOOLEAN\"",
 		"\"NUMBER\"",
-		"\"TIME\"",
 		"\"DURATION\"",
 		"\"STRING\"",
 		"\"LIST\"",
@@ -1910,25 +1912,25 @@ public ArdenBaseTreeParser() {
 	};
 	
 	private static final long[] mk_tokenSet_0() {
-		long[] data = { 67582577417913344L, 72057594306363392L, 0L, 0L};
+		long[] data = { 67582577417913344L, 576460754450907136L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_0 = new BitSet(mk_tokenSet_0());
 	private static final long[] mk_tokenSet_1() {
-		long[] data = { 1080863910636027904L, 512L, 0L, 0L};
+		long[] data = { 1080863910636027904L, 2048L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_1 = new BitSet(mk_tokenSet_1());
 	private static final long[] mk_tokenSet_2() {
-		long[] data = { 4539628424456568832L, 268468736L, 8830452760576L, 0L, 0L, 0L};
+		long[] data = { 4539628424456568832L, 2147616768L, 35321811042304L, 0L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_2 = new BitSet(mk_tokenSet_2());
 	private static final long[] mk_tokenSet_3() {
 		long[] data = new long[8];
 		data[0]=-16L;
-		data[1]=-513L;
-		data[2]=17592186044415L;
+		data[1]=-2049L;
+		data[2]=70368744177663L;
 		return data;
 	}
 	public static final BitSet _tokenSet_3 = new BitSet(mk_tokenSet_3());

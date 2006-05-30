@@ -94,6 +94,8 @@ tokens {
 	LIBRARY="library";
 	FILENAME="filename";
 	MLMNAME="mlmname";
+	OF = "of";
+	TIME = "time";
 	
 }
 
@@ -353,8 +355,8 @@ validation_code :
 // Wraps the ID token from the lexer, in order to provide
 // 'keyword as identifier' trickery.
 any_reserved_word
-	: AND | IS | ARE | WAS | WERE | COUNT | IN | LESS | THE | THAN | FROM | BEFORE |AFTER | AGO | AT
-	| WRITE | BE | LET | YEAR | YEARS | IF | IT | THEY | NOT | OR | THEN | MONTH | MONTHS
+	: AND | IS | ARE | WAS | WERE | COUNT | IN | LESS | THE | THAN | FROM | BEFORE |AFTER | AGO | AT | OF
+	| WRITE | BE | LET | YEAR | YEARS | IF | IT | THEY | NOT | OR | THEN | MONTH | MONTHS | TIME | TIMES
 	| READ | MINIMUM | MIN | MAXIMUM | MAX | LAST | FIRST | EARLIEST | LATEST | EVENT | WHERE | EXIST | EXISTS | PAST
 	| AVERAGE | AVG | SUM | MEDIAN | CONCLUDE | ELSE | ELSEIF | ENDIF | TRUE | FALSE | DATA | LOGIC | ACTION
 	;
@@ -670,7 +672,7 @@ unary_comp_op :
 	| "NULL"
 	| "BOOLEAN"
 	| "NUMBER"
-	| "TIME"
+	| TIME
 	| "DURATION"
 	| "STRING"
 	| "LIST"
@@ -765,7 +767,7 @@ event_factor :
 /*
 evoke_time :
 	  evoke_duration "AFTER" evoke_time
-	| "TIME" event_any
+	| TIME event_any
 	| "TIME" "OF" event_any
 	| iso_date_time
 	| iso_date
@@ -917,7 +919,7 @@ expr_sort :
 */	;
 
 sort_option :
-	  "TIME"
+	  TIME
 	| "DATA"
 	;
 
@@ -1028,7 +1030,7 @@ expr_function
 //expr_duration
 	:
 	expr_factor
-    | (the)? from_of_func_op expr_factor //(is)? binary_comp_op (the)? (expr_factor | from_of_func_op expr_factor)
+    | (the)? from_of_func_op OF expr_factor //(is)? binary_comp_op (the)? (expr_factor | from_of_func_op expr_factor)
 	//	("as" as_func_op ) 
 	;
 
@@ -1038,7 +1040,10 @@ expr_factor
 
 expr_factor_atom
 	: ID
-	//| (LPAREN ID RPAREN)
+	| LPAREN! 
+		//	( ID | ( (LPAREN expr_factor_atom RPAREN) (COMMA (LPAREN ID RPAREN))*) ) 
+		expr		
+	  RPAREN!
 	| INTLIT
 	| time_value
 	| boolean_value
