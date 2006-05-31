@@ -1116,7 +1116,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			_loop112:
 			do {
 				if ((_tokenSet_18.member(LA(1)))) {
-					data_assignment();
+					data_statement();
 					astFactory.addASTChild(currentAST, returnAST);
 					match(SEMI);
 				}
@@ -1240,7 +1240,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			match(LOGIC);
 			match(COLON);
 			{
-			_loop203:
+			_loop213:
 			do {
 				if ((_tokenSet_22.member(LA(1)))) {
 					logic_statement();
@@ -1248,7 +1248,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 					match(SEMI);
 				}
 				else {
-					break _loop203;
+					break _loop213;
 				}
 				
 			} while (true);
@@ -1283,7 +1283,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			match(ACTION);
 			match(COLON);
 			{
-			_loop236:
+			_loop246:
 			do {
 				if ((LA(1)==WRITE)) {
 					action_statement();
@@ -1291,7 +1291,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 					match(SEMI);
 				}
 				else {
-					break _loop236;
+					break _loop246;
 				}
 				
 			} while (true);
@@ -3437,6 +3437,85 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		returnAST = type_code_AST;
 	}
 	
+	public final void data_statement() throws RecognitionException, TokenStreamException {
+		
+		returnAST = null;
+		ASTPair currentAST = new ASTPair();
+		AST data_statement_AST = null;
+		
+		try {      // for error handling
+			{
+			switch ( LA(1)) {
+			case IF:
+			{
+				{
+				data_if_statement();
+				astFactory.addASTChild(currentAST, returnAST);
+				}
+				break;
+			}
+			case LET:
+			case NOW:
+			case SEMI:
+			case ID:
+			{
+				data_assignment();
+				astFactory.addASTChild(currentAST, returnAST);
+				break;
+			}
+			case ELSE:
+			case ELSEIF:
+			case ENDIF:
+			{
+				data_elseif();
+				astFactory.addASTChild(currentAST, returnAST);
+				break;
+			}
+			default:
+			{
+				throw new NoViableAltException(LT(1), getFilename());
+			}
+			}
+			}
+			data_statement_AST = (AST)currentAST.root;
+		}
+		catch (RecognitionException ex) {
+			if (inputState.guessing==0) {
+				reportError(ex);
+				recover(ex,_tokenSet_32);
+			} else {
+			  throw ex;
+			}
+		}
+		returnAST = data_statement_AST;
+	}
+	
+	public final void data_if_statement() throws RecognitionException, TokenStreamException {
+		
+		returnAST = null;
+		ASTPair currentAST = new ASTPair();
+		AST data_if_statement_AST = null;
+		
+		try {      // for error handling
+			AST tmp285_AST = null;
+			tmp285_AST = astFactory.create(LT(1));
+			astFactory.makeASTRoot(currentAST, tmp285_AST);
+			match(IF);
+			data_if_then_else2();
+			astFactory.addASTChild(currentAST, returnAST);
+			data_if_statement_AST = (AST)currentAST.root;
+		}
+		catch (RecognitionException ex) {
+			if (inputState.guessing==0) {
+				reportError(ex);
+				recover(ex,_tokenSet_32);
+			} else {
+			  throw ex;
+			}
+		}
+		returnAST = data_if_statement_AST;
+	}
+	
 	public final void data_assignment() throws RecognitionException, TokenStreamException {
 		
 		returnAST = null;
@@ -3456,20 +3535,20 @@ public ArdenBaseParser(ParserSharedInputState state) {
 				case READ:
 				{
 					{
-					AST tmp285_AST = null;
-					tmp285_AST = astFactory.create(LT(1));
-					astFactory.makeASTRoot(currentAST, tmp285_AST);
+					AST tmp286_AST = null;
+					tmp286_AST = astFactory.create(LT(1));
+					astFactory.makeASTRoot(currentAST, tmp286_AST);
 					match(READ);
 					}
 					{
 					{
-					if ((_tokenSet_32.member(LA(1)))) {
+					if ((_tokenSet_33.member(LA(1)))) {
 						{
 						of_read_func_op();
 						astFactory.addASTChild(currentAST, returnAST);
 						}
 					}
-					else if ((_tokenSet_33.member(LA(1)))) {
+					else if ((_tokenSet_34.member(LA(1)))) {
 						{
 						from_of_func_op();
 						astFactory.addASTChild(currentAST, returnAST);
@@ -3477,13 +3556,13 @@ public ArdenBaseParser(ParserSharedInputState state) {
 						switch ( LA(1)) {
 						case INTLIT:
 						{
-							AST tmp286_AST = null;
-							tmp286_AST = astFactory.create(LT(1));
-							astFactory.addASTChild(currentAST, tmp286_AST);
-							match(INTLIT);
 							AST tmp287_AST = null;
 							tmp287_AST = astFactory.create(LT(1));
 							astFactory.addASTChild(currentAST, tmp287_AST);
+							match(INTLIT);
+							AST tmp288_AST = null;
+							tmp288_AST = astFactory.create(LT(1));
+							astFactory.addASTChild(currentAST, tmp288_AST);
 							match(FROM);
 							break;
 						}
@@ -3553,9 +3632,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 							}
 							case NOT:
 							{
-								AST tmp288_AST = null;
-								tmp288_AST = astFactory.create(LT(1));
-								astFactory.addASTChild(currentAST, tmp288_AST);
+								AST tmp289_AST = null;
+								tmp289_AST = astFactory.create(LT(1));
+								astFactory.addASTChild(currentAST, tmp289_AST);
 								match(NOT);
 								temporal_comp_op();
 								astFactory.addASTChild(currentAST, returnAST);
@@ -3608,9 +3687,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 							}
 							case NOT:
 							{
-								AST tmp290_AST = null;
-								tmp290_AST = astFactory.create(LT(1));
-								astFactory.addASTChild(currentAST, tmp290_AST);
+								AST tmp291_AST = null;
+								tmp291_AST = astFactory.create(LT(1));
+								astFactory.addASTChild(currentAST, tmp291_AST);
 								match(NOT);
 								temporal_comp_op();
 								astFactory.addASTChild(currentAST, returnAST);
@@ -3650,9 +3729,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 				case EVENT:
 				{
 					{
-					AST tmp292_AST = null;
-					tmp292_AST = astFactory.create(LT(1));
-					astFactory.makeASTRoot(currentAST, tmp292_AST);
+					AST tmp293_AST = null;
+					tmp293_AST = astFactory.create(LT(1));
+					astFactory.makeASTRoot(currentAST, tmp293_AST);
 					match(EVENT);
 					}
 					mapping_factor();
@@ -3716,12 +3795,154 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		catch (RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
-				recover(ex,_tokenSet_34);
+				recover(ex,_tokenSet_32);
 			} else {
 			  throw ex;
 			}
 		}
 		returnAST = data_assignment_AST;
+	}
+	
+	public final void data_elseif() throws RecognitionException, TokenStreamException {
+		
+		returnAST = null;
+		ASTPair currentAST = new ASTPair();
+		AST data_elseif_AST = null;
+		
+		try {      // for error handling
+			switch ( LA(1)) {
+			case ELSE:
+			{
+				AST tmp294_AST = null;
+				tmp294_AST = astFactory.create(LT(1));
+				astFactory.makeASTRoot(currentAST, tmp294_AST);
+				match(ELSE);
+				data_elseif_AST = (AST)currentAST.root;
+				break;
+			}
+			case ELSEIF:
+			{
+				AST tmp295_AST = null;
+				tmp295_AST = astFactory.create(LT(1));
+				astFactory.makeASTRoot(currentAST, tmp295_AST);
+				match(ELSEIF);
+				data_if_then_else2();
+				astFactory.addASTChild(currentAST, returnAST);
+				data_elseif_AST = (AST)currentAST.root;
+				break;
+			}
+			case ENDIF:
+			{
+				{
+				AST tmp296_AST = null;
+				tmp296_AST = astFactory.create(LT(1));
+				astFactory.makeASTRoot(currentAST, tmp296_AST);
+				match(ENDIF);
+				}
+				data_elseif_AST = (AST)currentAST.root;
+				break;
+			}
+			default:
+			{
+				throw new NoViableAltException(LT(1), getFilename());
+			}
+			}
+		}
+		catch (RecognitionException ex) {
+			if (inputState.guessing==0) {
+				reportError(ex);
+				recover(ex,_tokenSet_32);
+			} else {
+			  throw ex;
+			}
+		}
+		returnAST = data_elseif_AST;
+	}
+	
+	public final void data_if_then_else2() throws RecognitionException, TokenStreamException {
+		
+		returnAST = null;
+		ASTPair currentAST = new ASTPair();
+		AST data_if_then_else2_AST = null;
+		
+		try {      // for error handling
+			{
+			if ((_tokenSet_35.member(LA(1)))) {
+				expr();
+				astFactory.addASTChild(currentAST, returnAST);
+			}
+			else if ((LA(1)==LPAREN)) {
+				{
+				match(LPAREN);
+				}
+				expr();
+				astFactory.addASTChild(currentAST, returnAST);
+				{
+				match(RPAREN);
+				}
+			}
+			else {
+				throw new NoViableAltException(LT(1), getFilename());
+			}
+			
+			}
+			AST tmp299_AST = null;
+			tmp299_AST = astFactory.create(LT(1));
+			astFactory.addASTChild(currentAST, tmp299_AST);
+			match(THEN);
+			data_statement();
+			astFactory.addASTChild(currentAST, returnAST);
+			data_if_then_else2_AST = (AST)currentAST.root;
+		}
+		catch (RecognitionException ex) {
+			if (inputState.guessing==0) {
+				reportError(ex);
+				recover(ex,_tokenSet_32);
+			} else {
+			  throw ex;
+			}
+		}
+		returnAST = data_if_then_else2_AST;
+	}
+	
+/****** expressions ******/
+	public final void expr() throws RecognitionException, TokenStreamException {
+		
+		returnAST = null;
+		ASTPair currentAST = new ASTPair();
+		AST expr_AST = null;
+		
+		try {      // for error handling
+			expr_sort();
+			astFactory.addASTChild(currentAST, returnAST);
+			{
+			_loop261:
+			do {
+				if ((LA(1)==COMMA)) {
+					AST tmp300_AST = null;
+					tmp300_AST = astFactory.create(LT(1));
+					astFactory.addASTChild(currentAST, tmp300_AST);
+					match(COMMA);
+					expr_sort();
+					astFactory.addASTChild(currentAST, returnAST);
+				}
+				else {
+					break _loop261;
+				}
+				
+			} while (true);
+			}
+			expr_AST = (AST)currentAST.root;
+		}
+		catch (RecognitionException ex) {
+			if (inputState.guessing==0) {
+				reportError(ex);
+				recover(ex,_tokenSet_36);
+			} else {
+			  throw ex;
+			}
+		}
+		returnAST = expr_AST;
 	}
 	
 	public final void data_comment() throws RecognitionException, TokenStreamException {
@@ -3735,9 +3956,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			case COMMENT:
 			{
 				{
-				AST tmp293_AST = null;
-				tmp293_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp293_AST);
+				AST tmp301_AST = null;
+				tmp301_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp301_AST);
 				match(COMMENT);
 				}
 				data_comment_AST = (AST)currentAST.root;
@@ -3746,9 +3967,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			case ML_COMMENT:
 			{
 				{
-				AST tmp294_AST = null;
-				tmp294_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp294_AST);
+				AST tmp302_AST = null;
+				tmp302_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp302_AST);
 				match(ML_COMMENT);
 				}
 				data_comment_AST = (AST)currentAST.root;
@@ -3812,25 +4033,25 @@ public ArdenBaseParser(ParserSharedInputState state) {
 				}
 				}
 				}
-				AST tmp298_AST = null;
-				tmp298_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp298_AST);
+				AST tmp306_AST = null;
+				tmp306_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp306_AST);
 				match(ID);
 				{
-				_loop143:
+				_loop153:
 				do {
 					if ((LA(1)==COMMA)) {
-						AST tmp299_AST = null;
-						tmp299_AST = astFactory.create(LT(1));
-						astFactory.addASTChild(currentAST, tmp299_AST);
+						AST tmp307_AST = null;
+						tmp307_AST = astFactory.create(LT(1));
+						astFactory.addASTChild(currentAST, tmp307_AST);
 						match(COMMA);
-						AST tmp300_AST = null;
-						tmp300_AST = astFactory.create(LT(1));
-						astFactory.addASTChild(currentAST, tmp300_AST);
+						AST tmp308_AST = null;
+						tmp308_AST = astFactory.create(LT(1));
+						astFactory.addASTChild(currentAST, tmp308_AST);
 						match(ID);
 					}
 					else {
-						break _loop143;
+						break _loop153;
 					}
 					
 				} while (true);
@@ -3858,13 +4079,13 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			}
 			case NOW:
 			{
-				AST tmp303_AST = null;
-				tmp303_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp303_AST);
+				AST tmp311_AST = null;
+				tmp311_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp311_AST);
 				match(NOW);
-				AST tmp304_AST = null;
-				tmp304_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp304_AST);
+				AST tmp312_AST = null;
+				tmp312_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp312_AST);
 				match(BECOMES);
 				identifier_becomes_AST = (AST)currentAST.root;
 				break;
@@ -3878,7 +4099,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		catch (RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
-				recover(ex,_tokenSet_35);
+				recover(ex,_tokenSet_37);
 			} else {
 			  throw ex;
 			}
@@ -3897,27 +4118,27 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			switch ( LA(1)) {
 			case AVERAGE:
 			{
-				AST tmp305_AST = null;
-				tmp305_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp305_AST);
+				AST tmp313_AST = null;
+				tmp313_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp313_AST);
 				match(AVERAGE);
 				of_read_func_op_AST = (AST)currentAST.root;
 				break;
 			}
 			case AVG:
 			{
-				AST tmp306_AST = null;
-				tmp306_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp306_AST);
+				AST tmp314_AST = null;
+				tmp314_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp314_AST);
 				match(AVG);
 				of_read_func_op_AST = (AST)currentAST.root;
 				break;
 			}
 			case COUNT:
 			{
-				AST tmp307_AST = null;
-				tmp307_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp307_AST);
+				AST tmp315_AST = null;
+				tmp315_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp315_AST);
 				match(COUNT);
 				of_read_func_op_AST = (AST)currentAST.root;
 				break;
@@ -3925,9 +4146,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			case EXIST:
 			{
 				{
-				AST tmp308_AST = null;
-				tmp308_AST = astFactory.create(LT(1));
-				astFactory.makeASTRoot(currentAST, tmp308_AST);
+				AST tmp316_AST = null;
+				tmp316_AST = astFactory.create(LT(1));
+				astFactory.makeASTRoot(currentAST, tmp316_AST);
 				match(EXIST);
 				}
 				of_read_func_op_AST = (AST)currentAST.root;
@@ -3935,27 +4156,27 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			}
 			case EXISTS:
 			{
-				AST tmp309_AST = null;
-				tmp309_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp309_AST);
+				AST tmp317_AST = null;
+				tmp317_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp317_AST);
 				match(EXISTS);
 				of_read_func_op_AST = (AST)currentAST.root;
 				break;
 			}
 			case SUM:
 			{
-				AST tmp310_AST = null;
-				tmp310_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp310_AST);
+				AST tmp318_AST = null;
+				tmp318_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp318_AST);
 				match(SUM);
 				of_read_func_op_AST = (AST)currentAST.root;
 				break;
 			}
 			case MEDIAN:
 			{
-				AST tmp311_AST = null;
-				tmp311_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp311_AST);
+				AST tmp319_AST = null;
+				tmp319_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp319_AST);
 				match(MEDIAN);
 				of_read_func_op_AST = (AST)currentAST.root;
 				break;
@@ -3969,7 +4190,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		catch (RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
-				recover(ex,_tokenSet_36);
+				recover(ex,_tokenSet_38);
 			} else {
 			  throw ex;
 			}
@@ -3992,17 +4213,17 @@ public ArdenBaseParser(ParserSharedInputState state) {
 				switch ( LA(1)) {
 				case MINIMUM:
 				{
-					AST tmp312_AST = null;
-					tmp312_AST = astFactory.create(LT(1));
-					astFactory.addASTChild(currentAST, tmp312_AST);
+					AST tmp320_AST = null;
+					tmp320_AST = astFactory.create(LT(1));
+					astFactory.addASTChild(currentAST, tmp320_AST);
 					match(MINIMUM);
 					break;
 				}
 				case MIN:
 				{
-					AST tmp313_AST = null;
-					tmp313_AST = astFactory.create(LT(1));
-					astFactory.addASTChild(currentAST, tmp313_AST);
+					AST tmp321_AST = null;
+					tmp321_AST = astFactory.create(LT(1));
+					astFactory.addASTChild(currentAST, tmp321_AST);
 					match(MIN);
 					break;
 				}
@@ -4022,17 +4243,17 @@ public ArdenBaseParser(ParserSharedInputState state) {
 				switch ( LA(1)) {
 				case MAXIMUM:
 				{
-					AST tmp314_AST = null;
-					tmp314_AST = astFactory.create(LT(1));
-					astFactory.addASTChild(currentAST, tmp314_AST);
+					AST tmp322_AST = null;
+					tmp322_AST = astFactory.create(LT(1));
+					astFactory.addASTChild(currentAST, tmp322_AST);
 					match(MAXIMUM);
 					break;
 				}
 				case MAX:
 				{
-					AST tmp315_AST = null;
-					tmp315_AST = astFactory.create(LT(1));
-					astFactory.addASTChild(currentAST, tmp315_AST);
+					AST tmp323_AST = null;
+					tmp323_AST = astFactory.create(LT(1));
+					astFactory.addASTChild(currentAST, tmp323_AST);
 					match(MAX);
 					break;
 				}
@@ -4048,9 +4269,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			case LAST:
 			{
 				{
-				AST tmp316_AST = null;
-				tmp316_AST = astFactory.create(LT(1));
-				astFactory.makeASTRoot(currentAST, tmp316_AST);
+				AST tmp324_AST = null;
+				tmp324_AST = astFactory.create(LT(1));
+				astFactory.makeASTRoot(currentAST, tmp324_AST);
 				match(LAST);
 				}
 				from_of_func_op_AST = (AST)currentAST.root;
@@ -4059,9 +4280,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			case FIRST:
 			{
 				{
-				AST tmp317_AST = null;
-				tmp317_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp317_AST);
+				AST tmp325_AST = null;
+				tmp325_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp325_AST);
 				match(FIRST);
 				}
 				from_of_func_op_AST = (AST)currentAST.root;
@@ -4070,9 +4291,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			case EARLIEST:
 			{
 				{
-				AST tmp318_AST = null;
-				tmp318_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp318_AST);
+				AST tmp326_AST = null;
+				tmp326_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp326_AST);
 				match(EARLIEST);
 				}
 				from_of_func_op_AST = (AST)currentAST.root;
@@ -4081,9 +4302,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			case LATEST:
 			{
 				{
-				AST tmp319_AST = null;
-				tmp319_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp319_AST);
+				AST tmp327_AST = null;
+				tmp327_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp327_AST);
 				match(LATEST);
 				}
 				from_of_func_op_AST = (AST)currentAST.root;
@@ -4111,7 +4332,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		catch (RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
-				recover(ex,_tokenSet_37);
+				recover(ex,_tokenSet_39);
 			} else {
 			  throw ex;
 			}
@@ -4126,16 +4347,16 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		AST mapping_factor_AST = null;
 		
 		try {      // for error handling
-			AST tmp320_AST = null;
-			tmp320_AST = astFactory.create(LT(1));
-			astFactory.makeASTRoot(currentAST, tmp320_AST);
+			AST tmp328_AST = null;
+			tmp328_AST = astFactory.create(LT(1));
+			astFactory.makeASTRoot(currentAST, tmp328_AST);
 			match(ARDEN_CURLY_BRACKETS);
 			mapping_factor_AST = (AST)currentAST.root;
 		}
 		catch (RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
-				recover(ex,_tokenSet_38);
+				recover(ex,_tokenSet_40);
 			} else {
 			  throw ex;
 			}
@@ -4152,9 +4373,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		
 		try {      // for error handling
 			{
-			AST tmp321_AST = null;
-			tmp321_AST = astFactory.create(LT(1));
-			astFactory.makeASTRoot(currentAST, tmp321_AST);
+			AST tmp329_AST = null;
+			tmp329_AST = astFactory.create(LT(1));
+			astFactory.makeASTRoot(currentAST, tmp329_AST);
 			match(WHERE);
 			}
 			where_AST = (AST)currentAST.root;
@@ -4162,7 +4383,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		catch (RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
-				recover(ex,_tokenSet_39);
+				recover(ex,_tokenSet_41);
 			} else {
 			  throw ex;
 			}
@@ -4200,7 +4421,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		catch (RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
-				recover(ex,_tokenSet_40);
+				recover(ex,_tokenSet_42);
 			} else {
 			  throw ex;
 			}
@@ -4306,7 +4527,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		catch (RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
-				recover(ex,_tokenSet_41);
+				recover(ex,_tokenSet_43);
 			} else {
 			  throw ex;
 			}
@@ -4342,9 +4563,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 				}
 				}
 				}
-				AST tmp334_AST = null;
-				tmp334_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp334_AST);
+				AST tmp342_AST = null;
+				tmp342_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp342_AST);
 				match(PAST);
 				expr_string();
 				astFactory.addASTChild(currentAST, returnAST);
@@ -4353,9 +4574,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			}
 			case AFTER:
 			{
-				AST tmp335_AST = null;
-				tmp335_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp335_AST);
+				AST tmp343_AST = null;
+				tmp343_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp343_AST);
 				match(AFTER);
 				expr_string();
 				astFactory.addASTChild(currentAST, returnAST);
@@ -4371,52 +4592,12 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		catch (RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
-				recover(ex,_tokenSet_42);
+				recover(ex,_tokenSet_44);
 			} else {
 			  throw ex;
 			}
 		}
 		returnAST = temporal_comp_op_AST;
-	}
-	
-/****** expressions ******/
-	public final void expr() throws RecognitionException, TokenStreamException {
-		
-		returnAST = null;
-		ASTPair currentAST = new ASTPair();
-		AST expr_AST = null;
-		
-		try {      // for error handling
-			expr_sort();
-			astFactory.addASTChild(currentAST, returnAST);
-			{
-			_loop251:
-			do {
-				if ((LA(1)==COMMA)) {
-					AST tmp336_AST = null;
-					tmp336_AST = astFactory.create(LT(1));
-					astFactory.addASTChild(currentAST, tmp336_AST);
-					match(COMMA);
-					expr_sort();
-					astFactory.addASTChild(currentAST, returnAST);
-				}
-				else {
-					break _loop251;
-				}
-				
-			} while (true);
-			}
-			expr_AST = (AST)currentAST.root;
-		}
-		catch (RecognitionException ex) {
-			if (inputState.guessing==0) {
-				reportError(ex);
-				recover(ex,_tokenSet_43);
-			} else {
-			  throw ex;
-			}
-		}
-		returnAST = expr_AST;
 	}
 	
 	public final void endassignment() throws RecognitionException, TokenStreamException {
@@ -4429,9 +4610,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			switch ( LA(1)) {
 			case SEMI:
 			{
-				AST tmp337_AST = null;
-				tmp337_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp337_AST);
+				AST tmp344_AST = null;
+				tmp344_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp344_AST);
 				match(SEMI);
 				endassignment_AST = (AST)currentAST.root;
 				break;
@@ -4470,9 +4651,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			switch ( LA(1)) {
 			case ENDBLOCK:
 			{
-				AST tmp338_AST = null;
-				tmp338_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp338_AST);
+				AST tmp345_AST = null;
+				tmp345_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp345_AST);
 				match(ENDBLOCK);
 				endblock_AST = (AST)currentAST.root;
 				break;
@@ -4508,25 +4689,25 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		AST identifier_or_object_ref_AST = null;
 		
 		try {      // for error handling
-			AST tmp339_AST = null;
-			tmp339_AST = astFactory.create(LT(1));
-			astFactory.addASTChild(currentAST, tmp339_AST);
+			AST tmp346_AST = null;
+			tmp346_AST = astFactory.create(LT(1));
+			astFactory.addASTChild(currentAST, tmp346_AST);
 			match(ID);
 			{
-			_loop147:
+			_loop157:
 			do {
 				if ((LA(1)==DOT)) {
-					AST tmp340_AST = null;
-					tmp340_AST = astFactory.create(LT(1));
-					astFactory.addASTChild(currentAST, tmp340_AST);
+					AST tmp347_AST = null;
+					tmp347_AST = astFactory.create(LT(1));
+					astFactory.addASTChild(currentAST, tmp347_AST);
 					match(DOT);
-					AST tmp341_AST = null;
-					tmp341_AST = astFactory.create(LT(1));
-					astFactory.addASTChild(currentAST, tmp341_AST);
+					AST tmp348_AST = null;
+					tmp348_AST = astFactory.create(LT(1));
+					astFactory.addASTChild(currentAST, tmp348_AST);
 					match(ID);
 				}
 				else {
-					break _loop147;
+					break _loop157;
 				}
 				
 			} while (true);
@@ -4536,7 +4717,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		catch (RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
-				recover(ex,_tokenSet_44);
+				recover(ex,_tokenSet_45);
 			} else {
 			  throw ex;
 			}
@@ -4555,9 +4736,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			switch ( LA(1)) {
 			case READ:
 			{
-				AST tmp342_AST = null;
-				tmp342_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp342_AST);
+				AST tmp349_AST = null;
+				tmp349_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp349_AST);
 				match(READ);
 				read_phrase();
 				astFactory.addASTChild(currentAST, returnAST);
@@ -4571,25 +4752,25 @@ public ArdenBaseParser(ParserSharedInputState state) {
 				switch ( LA(1)) {
 				case LITERAL_EVENT:
 				{
-					AST tmp343_AST = null;
-					tmp343_AST = astFactory.create(LT(1));
-					astFactory.addASTChild(currentAST, tmp343_AST);
+					AST tmp350_AST = null;
+					tmp350_AST = astFactory.create(LT(1));
+					astFactory.addASTChild(currentAST, tmp350_AST);
 					match(LITERAL_EVENT);
 					break;
 				}
 				case LITERAL_Event:
 				{
-					AST tmp344_AST = null;
-					tmp344_AST = astFactory.create(LT(1));
-					astFactory.addASTChild(currentAST, tmp344_AST);
+					AST tmp351_AST = null;
+					tmp351_AST = astFactory.create(LT(1));
+					astFactory.addASTChild(currentAST, tmp351_AST);
 					match(LITERAL_Event);
 					break;
 				}
 				case EVENT:
 				{
-					AST tmp345_AST = null;
-					tmp345_AST = astFactory.create(LT(1));
-					astFactory.addASTChild(currentAST, tmp345_AST);
+					AST tmp352_AST = null;
+					tmp352_AST = astFactory.create(LT(1));
+					astFactory.addASTChild(currentAST, tmp352_AST);
 					match(EVENT);
 					break;
 				}
@@ -4669,14 +4850,14 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			{
 				from_of_func_op();
 				astFactory.addASTChild(currentAST, returnAST);
-				AST tmp346_AST = null;
-				tmp346_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp346_AST);
+				AST tmp353_AST = null;
+				tmp353_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp353_AST);
 				match(INTLIT);
 				{
-				AST tmp347_AST = null;
-				tmp347_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp347_AST);
+				AST tmp354_AST = null;
+				tmp354_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp354_AST);
 				match(FROM);
 				}
 				read_where();
@@ -4716,25 +4897,25 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			}
 			case ID:
 			{
-				AST tmp348_AST = null;
-				tmp348_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp348_AST);
+				AST tmp355_AST = null;
+				tmp355_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp355_AST);
 				match(ID);
 				{
-				_loop153:
+				_loop163:
 				do {
 					if ((LA(1)==COMMA)) {
-						AST tmp349_AST = null;
-						tmp349_AST = astFactory.create(LT(1));
-						astFactory.addASTChild(currentAST, tmp349_AST);
+						AST tmp356_AST = null;
+						tmp356_AST = astFactory.create(LT(1));
+						astFactory.addASTChild(currentAST, tmp356_AST);
 						match(COMMA);
-						AST tmp350_AST = null;
-						tmp350_AST = astFactory.create(LT(1));
-						astFactory.addASTChild(currentAST, tmp350_AST);
+						AST tmp357_AST = null;
+						tmp357_AST = astFactory.create(LT(1));
+						astFactory.addASTChild(currentAST, tmp357_AST);
 						match(ID);
 					}
 					else {
-						break _loop153;
+						break _loop163;
 					}
 					
 				} while (true);
@@ -4814,9 +4995,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 					}
 					case NOT:
 					{
-						AST tmp351_AST = null;
-						tmp351_AST = astFactory.create(LT(1));
-						astFactory.addASTChild(currentAST, tmp351_AST);
+						AST tmp358_AST = null;
+						tmp358_AST = astFactory.create(LT(1));
+						astFactory.addASTChild(currentAST, tmp358_AST);
 						match(NOT);
 						temporal_comp_op();
 						astFactory.addASTChild(currentAST, returnAST);
@@ -4879,9 +5060,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 					}
 					case NOT:
 					{
-						AST tmp353_AST = null;
-						tmp353_AST = astFactory.create(LT(1));
-						astFactory.addASTChild(currentAST, tmp353_AST);
+						AST tmp360_AST = null;
+						tmp360_AST = astFactory.create(LT(1));
+						astFactory.addASTChild(currentAST, tmp360_AST);
 						match(NOT);
 						temporal_comp_op();
 						astFactory.addASTChild(currentAST, returnAST);
@@ -4920,7 +5101,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		catch (RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
-				recover(ex,_tokenSet_45);
+				recover(ex,_tokenSet_46);
 			} else {
 			  throw ex;
 			}
@@ -4938,9 +5119,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			switch ( LA(1)) {
 			case NOW:
 			{
-				AST tmp355_AST = null;
-				tmp355_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp355_AST);
+				AST tmp362_AST = null;
+				tmp362_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp362_AST);
 				match(NOW);
 				time_value_AST = (AST)currentAST.root;
 				break;
@@ -4961,7 +5142,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		catch (RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
-				recover(ex,_tokenSet_46);
+				recover(ex,_tokenSet_47);
 			} else {
 			  throw ex;
 			}
@@ -4979,90 +5160,90 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			switch ( LA(1)) {
 			case LITERAL_PRESENT:
 			{
-				AST tmp356_AST = null;
-				tmp356_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp356_AST);
+				AST tmp363_AST = null;
+				tmp363_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp363_AST);
 				match(LITERAL_PRESENT);
 				unary_comp_op_AST = (AST)currentAST.root;
 				break;
 			}
 			case LITERAL_NULL:
 			{
-				AST tmp357_AST = null;
-				tmp357_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp357_AST);
+				AST tmp364_AST = null;
+				tmp364_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp364_AST);
 				match(LITERAL_NULL);
 				unary_comp_op_AST = (AST)currentAST.root;
 				break;
 			}
 			case LITERAL_BOOLEAN:
 			{
-				AST tmp358_AST = null;
-				tmp358_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp358_AST);
+				AST tmp365_AST = null;
+				tmp365_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp365_AST);
 				match(LITERAL_BOOLEAN);
 				unary_comp_op_AST = (AST)currentAST.root;
 				break;
 			}
 			case LITERAL_NUMBER:
 			{
-				AST tmp359_AST = null;
-				tmp359_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp359_AST);
+				AST tmp366_AST = null;
+				tmp366_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp366_AST);
 				match(LITERAL_NUMBER);
 				unary_comp_op_AST = (AST)currentAST.root;
 				break;
 			}
 			case TIME:
 			{
-				AST tmp360_AST = null;
-				tmp360_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp360_AST);
+				AST tmp367_AST = null;
+				tmp367_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp367_AST);
 				match(TIME);
 				unary_comp_op_AST = (AST)currentAST.root;
 				break;
 			}
 			case LITERAL_DURATION:
 			{
-				AST tmp361_AST = null;
-				tmp361_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp361_AST);
+				AST tmp368_AST = null;
+				tmp368_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp368_AST);
 				match(LITERAL_DURATION);
 				unary_comp_op_AST = (AST)currentAST.root;
 				break;
 			}
 			case LITERAL_STRING:
 			{
-				AST tmp362_AST = null;
-				tmp362_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp362_AST);
+				AST tmp369_AST = null;
+				tmp369_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp369_AST);
 				match(LITERAL_STRING);
 				unary_comp_op_AST = (AST)currentAST.root;
 				break;
 			}
 			case LITERAL_LIST:
 			{
-				AST tmp363_AST = null;
-				tmp363_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp363_AST);
+				AST tmp370_AST = null;
+				tmp370_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp370_AST);
 				match(LITERAL_LIST);
 				unary_comp_op_AST = (AST)currentAST.root;
 				break;
 			}
 			case LITERAL_OBJECT:
 			{
-				AST tmp364_AST = null;
-				tmp364_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp364_AST);
+				AST tmp371_AST = null;
+				tmp371_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp371_AST);
 				match(LITERAL_OBJECT);
 				unary_comp_op_AST = (AST)currentAST.root;
 				break;
 			}
 			case ID:
 			{
-				AST tmp365_AST = null;
-				tmp365_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp365_AST);
+				AST tmp372_AST = null;
+				tmp372_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp372_AST);
 				match(ID);
 				unary_comp_op_AST = (AST)currentAST.root;
 				break;
@@ -5092,69 +5273,69 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		
 		try {      // for error handling
 			if ((LA(1)==LESS)) {
-				AST tmp366_AST = null;
-				tmp366_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp366_AST);
-				match(LESS);
-				AST tmp367_AST = null;
-				tmp367_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp367_AST);
-				match(THAN);
-				binary_comp_op_AST = (AST)currentAST.root;
-			}
-			else if ((LA(1)==LITERAL_GREATER)) {
-				AST tmp368_AST = null;
-				tmp368_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp368_AST);
-				match(LITERAL_GREATER);
-				AST tmp369_AST = null;
-				tmp369_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp369_AST);
-				match(THAN);
-				binary_comp_op_AST = (AST)currentAST.root;
-			}
-			else if ((LA(1)==LITERAL_GREATER)) {
-				AST tmp370_AST = null;
-				tmp370_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp370_AST);
-				match(LITERAL_GREATER);
-				AST tmp371_AST = null;
-				tmp371_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp371_AST);
-				match(THAN);
-				AST tmp372_AST = null;
-				tmp372_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp372_AST);
-				match(OR);
 				AST tmp373_AST = null;
 				tmp373_AST = astFactory.create(LT(1));
 				astFactory.addASTChild(currentAST, tmp373_AST);
+				match(LESS);
+				AST tmp374_AST = null;
+				tmp374_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp374_AST);
+				match(THAN);
+				binary_comp_op_AST = (AST)currentAST.root;
+			}
+			else if ((LA(1)==LITERAL_GREATER)) {
+				AST tmp375_AST = null;
+				tmp375_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp375_AST);
+				match(LITERAL_GREATER);
+				AST tmp376_AST = null;
+				tmp376_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp376_AST);
+				match(THAN);
+				binary_comp_op_AST = (AST)currentAST.root;
+			}
+			else if ((LA(1)==LITERAL_GREATER)) {
+				AST tmp377_AST = null;
+				tmp377_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp377_AST);
+				match(LITERAL_GREATER);
+				AST tmp378_AST = null;
+				tmp378_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp378_AST);
+				match(THAN);
+				AST tmp379_AST = null;
+				tmp379_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp379_AST);
+				match(OR);
+				AST tmp380_AST = null;
+				tmp380_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp380_AST);
 				match(LITERAL_EQUAL);
 				binary_comp_op_AST = (AST)currentAST.root;
 			}
 			else if ((LA(1)==LESS)) {
-				AST tmp374_AST = null;
-				tmp374_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp374_AST);
+				AST tmp381_AST = null;
+				tmp381_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp381_AST);
 				match(LESS);
-				AST tmp375_AST = null;
-				tmp375_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp375_AST);
+				AST tmp382_AST = null;
+				tmp382_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp382_AST);
 				match(THAN);
-				AST tmp376_AST = null;
-				tmp376_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp376_AST);
+				AST tmp383_AST = null;
+				tmp383_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp383_AST);
 				match(OR);
-				AST tmp377_AST = null;
-				tmp377_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp377_AST);
+				AST tmp384_AST = null;
+				tmp384_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp384_AST);
 				match(LITERAL_EQUAL);
 				binary_comp_op_AST = (AST)currentAST.root;
 			}
 			else if ((LA(1)==IN)) {
-				AST tmp378_AST = null;
-				tmp378_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp378_AST);
+				AST tmp385_AST = null;
+				tmp385_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp385_AST);
 				match(IN);
 				binary_comp_op_AST = (AST)currentAST.root;
 			}
@@ -5166,7 +5347,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		catch (RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
-				recover(ex,_tokenSet_47);
+				recover(ex,_tokenSet_48);
 			} else {
 			  throw ex;
 			}
@@ -5184,126 +5365,126 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			switch ( LA(1)) {
 			case YEAR:
 			{
-				AST tmp379_AST = null;
-				tmp379_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp379_AST);
+				AST tmp386_AST = null;
+				tmp386_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp386_AST);
 				match(YEAR);
 				duration_op_AST = (AST)currentAST.root;
 				break;
 			}
 			case YEARS:
 			{
-				AST tmp380_AST = null;
-				tmp380_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp380_AST);
+				AST tmp387_AST = null;
+				tmp387_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp387_AST);
 				match(YEARS);
 				duration_op_AST = (AST)currentAST.root;
 				break;
 			}
 			case MONTH:
 			{
-				AST tmp381_AST = null;
-				tmp381_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp381_AST);
+				AST tmp388_AST = null;
+				tmp388_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp388_AST);
 				match(MONTH);
 				duration_op_AST = (AST)currentAST.root;
 				break;
 			}
 			case MONTHS:
 			{
-				AST tmp382_AST = null;
-				tmp382_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp382_AST);
+				AST tmp389_AST = null;
+				tmp389_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp389_AST);
 				match(MONTHS);
 				duration_op_AST = (AST)currentAST.root;
 				break;
 			}
 			case WEEK:
 			{
-				AST tmp383_AST = null;
-				tmp383_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp383_AST);
+				AST tmp390_AST = null;
+				tmp390_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp390_AST);
 				match(WEEK);
 				duration_op_AST = (AST)currentAST.root;
 				break;
 			}
 			case WEEKS:
 			{
-				AST tmp384_AST = null;
-				tmp384_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp384_AST);
+				AST tmp391_AST = null;
+				tmp391_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp391_AST);
 				match(WEEKS);
 				duration_op_AST = (AST)currentAST.root;
 				break;
 			}
 			case DAY:
 			{
-				AST tmp385_AST = null;
-				tmp385_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp385_AST);
+				AST tmp392_AST = null;
+				tmp392_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp392_AST);
 				match(DAY);
 				duration_op_AST = (AST)currentAST.root;
 				break;
 			}
 			case DAYS:
 			{
-				AST tmp386_AST = null;
-				tmp386_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp386_AST);
+				AST tmp393_AST = null;
+				tmp393_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp393_AST);
 				match(DAYS);
 				duration_op_AST = (AST)currentAST.root;
 				break;
 			}
 			case LITERAL_hour:
 			{
-				AST tmp387_AST = null;
-				tmp387_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp387_AST);
+				AST tmp394_AST = null;
+				tmp394_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp394_AST);
 				match(LITERAL_hour);
 				duration_op_AST = (AST)currentAST.root;
 				break;
 			}
 			case LITERAL_hours:
 			{
-				AST tmp388_AST = null;
-				tmp388_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp388_AST);
+				AST tmp395_AST = null;
+				tmp395_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp395_AST);
 				match(LITERAL_hours);
 				duration_op_AST = (AST)currentAST.root;
 				break;
 			}
 			case LITERAL_minute:
 			{
-				AST tmp389_AST = null;
-				tmp389_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp389_AST);
+				AST tmp396_AST = null;
+				tmp396_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp396_AST);
 				match(LITERAL_minute);
 				duration_op_AST = (AST)currentAST.root;
 				break;
 			}
 			case LITERAL_minutes:
 			{
-				AST tmp390_AST = null;
-				tmp390_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp390_AST);
+				AST tmp397_AST = null;
+				tmp397_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp397_AST);
 				match(LITERAL_minutes);
 				duration_op_AST = (AST)currentAST.root;
 				break;
 			}
 			case LITERAL_second:
 			{
-				AST tmp391_AST = null;
-				tmp391_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp391_AST);
+				AST tmp398_AST = null;
+				tmp398_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp398_AST);
 				match(LITERAL_second);
 				duration_op_AST = (AST)currentAST.root;
 				break;
 			}
 			case LITERAL_seconds:
 			{
-				AST tmp392_AST = null;
-				tmp392_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp392_AST);
+				AST tmp399_AST = null;
+				tmp399_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp399_AST);
 				match(LITERAL_seconds);
 				duration_op_AST = (AST)currentAST.root;
 				break;
@@ -5317,7 +5498,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		catch (RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
-				recover(ex,_tokenSet_48);
+				recover(ex,_tokenSet_49);
 			} else {
 			  throw ex;
 			}
@@ -5332,16 +5513,16 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		AST the_AST = null;
 		
 		try {      // for error handling
-			AST tmp393_AST = null;
-			tmp393_AST = astFactory.create(LT(1));
-			astFactory.addASTChild(currentAST, tmp393_AST);
+			AST tmp400_AST = null;
+			tmp400_AST = astFactory.create(LT(1));
+			astFactory.addASTChild(currentAST, tmp400_AST);
 			match(THE);
 			the_AST = (AST)currentAST.root;
 		}
 		catch (RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
-				recover(ex,_tokenSet_49);
+				recover(ex,_tokenSet_50);
 			} else {
 			  throw ex;
 			}
@@ -5360,18 +5541,18 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			expr_plus();
 			astFactory.addASTChild(currentAST, returnAST);
 			{
-			_loop280:
+			_loop290:
 			do {
 				if ((LA(1)==ACTION_OP)) {
-					AST tmp394_AST = null;
-					tmp394_AST = astFactory.create(LT(1));
-					astFactory.addASTChild(currentAST, tmp394_AST);
+					AST tmp401_AST = null;
+					tmp401_AST = astFactory.create(LT(1));
+					astFactory.addASTChild(currentAST, tmp401_AST);
 					match(ACTION_OP);
 					expr_plus();
 					astFactory.addASTChild(currentAST, returnAST);
 				}
 				else {
-					break _loop280;
+					break _loop290;
 				}
 				
 			} while (true);
@@ -5381,7 +5562,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		catch (RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
-				recover(ex,_tokenSet_50);
+				recover(ex,_tokenSet_51);
 			} else {
 			  throw ex;
 			}
@@ -5400,36 +5581,36 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			switch ( LA(1)) {
 			case IS:
 			{
-				AST tmp395_AST = null;
-				tmp395_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp395_AST);
+				AST tmp402_AST = null;
+				tmp402_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp402_AST);
 				match(IS);
 				is_AST = (AST)currentAST.root;
 				break;
 			}
 			case ARE:
 			{
-				AST tmp396_AST = null;
-				tmp396_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp396_AST);
+				AST tmp403_AST = null;
+				tmp403_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp403_AST);
 				match(ARE);
 				is_AST = (AST)currentAST.root;
 				break;
 			}
 			case WERE:
 			{
-				AST tmp397_AST = null;
-				tmp397_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp397_AST);
+				AST tmp404_AST = null;
+				tmp404_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp404_AST);
 				match(WERE);
 				is_AST = (AST)currentAST.root;
 				break;
 			}
 			case WAS:
 			{
-				AST tmp398_AST = null;
-				tmp398_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp398_AST);
+				AST tmp405_AST = null;
+				tmp405_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp405_AST);
 				match(WAS);
 				is_AST = (AST)currentAST.root;
 				break;
@@ -5443,7 +5624,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		catch (RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
-				recover(ex,_tokenSet_51);
+				recover(ex,_tokenSet_52);
 			} else {
 			  throw ex;
 			}
@@ -5470,9 +5651,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			}
 			case LITERAL_CALL:
 			{
-				AST tmp399_AST = null;
-				tmp399_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp399_AST);
+				AST tmp406_AST = null;
+				tmp406_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp406_AST);
 				match(LITERAL_CALL);
 				evoke_statement_AST = (AST)currentAST.root;
 				break;
@@ -5510,18 +5691,18 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			event_any();
 			astFactory.addASTChild(currentAST, returnAST);
 			{
-			_loop196:
+			_loop206:
 			do {
 				if ((LA(1)==OR)) {
-					AST tmp400_AST = null;
-					tmp400_AST = astFactory.create(LT(1));
-					astFactory.addASTChild(currentAST, tmp400_AST);
+					AST tmp407_AST = null;
+					tmp407_AST = astFactory.create(LT(1));
+					astFactory.addASTChild(currentAST, tmp407_AST);
 					match(OR);
 					event_any();
 					astFactory.addASTChild(currentAST, returnAST);
 				}
 				else {
-					break _loop196;
+					break _loop206;
 				}
 				
 			} while (true);
@@ -5531,7 +5712,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		catch (RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
-				recover(ex,_tokenSet_52);
+				recover(ex,_tokenSet_53);
 			} else {
 			  throw ex;
 			}
@@ -5549,19 +5730,19 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			switch ( LA(1)) {
 			case LITERAL_Any:
 			{
-				AST tmp401_AST = null;
-				tmp401_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp401_AST);
+				AST tmp408_AST = null;
+				tmp408_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp408_AST);
 				match(LITERAL_Any);
-				AST tmp402_AST = null;
-				tmp402_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp402_AST);
+				AST tmp409_AST = null;
+				tmp409_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp409_AST);
 				match(LPAREN);
 				event_list();
 				astFactory.addASTChild(currentAST, returnAST);
-				AST tmp403_AST = null;
-				tmp403_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp403_AST);
+				AST tmp410_AST = null;
+				tmp410_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp410_AST);
 				match(RPAREN);
 				event_any_AST = (AST)currentAST.root;
 				break;
@@ -5583,7 +5764,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		catch (RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
-				recover(ex,_tokenSet_53);
+				recover(ex,_tokenSet_54);
 			} else {
 			  throw ex;
 			}
@@ -5601,9 +5782,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			event_or();
 			astFactory.addASTChild(currentAST, returnAST);
 			{
-			AST tmp404_AST = null;
-			tmp404_AST = astFactory.create(LT(1));
-			astFactory.addASTChild(currentAST, tmp404_AST);
+			AST tmp411_AST = null;
+			tmp411_AST = astFactory.create(LT(1));
+			astFactory.addASTChild(currentAST, tmp411_AST);
 			match(COMMA);
 			event_or();
 			astFactory.addASTChild(currentAST, returnAST);
@@ -5613,7 +5794,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		catch (RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
-				recover(ex,_tokenSet_54);
+				recover(ex,_tokenSet_55);
 			} else {
 			  throw ex;
 			}
@@ -5631,24 +5812,24 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			switch ( LA(1)) {
 			case LPAREN:
 			{
-				AST tmp405_AST = null;
-				tmp405_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp405_AST);
+				AST tmp412_AST = null;
+				tmp412_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp412_AST);
 				match(LPAREN);
 				event_or();
 				astFactory.addASTChild(currentAST, returnAST);
-				AST tmp406_AST = null;
-				tmp406_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp406_AST);
+				AST tmp413_AST = null;
+				tmp413_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp413_AST);
 				match(RPAREN);
 				event_factor_AST = (AST)currentAST.root;
 				break;
 			}
 			case ID:
 			{
-				AST tmp407_AST = null;
-				tmp407_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp407_AST);
+				AST tmp414_AST = null;
+				tmp414_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp414_AST);
 				match(ID);
 				event_factor_AST = (AST)currentAST.root;
 				break;
@@ -5662,7 +5843,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		catch (RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
-				recover(ex,_tokenSet_53);
+				recover(ex,_tokenSet_54);
 			} else {
 			  throw ex;
 			}
@@ -5678,7 +5859,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		
 		try {      // for error handling
 			{
-			_loop206:
+			_loop216:
 			do {
 				switch ( LA(1)) {
 				case IF:
@@ -5712,7 +5893,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 				}
 				default:
 				{
-					break _loop206;
+					break _loop216;
 				}
 				}
 			} while (true);
@@ -5722,7 +5903,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		catch (RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
-				recover(ex,_tokenSet_34);
+				recover(ex,_tokenSet_32);
 			} else {
 			  throw ex;
 			}
@@ -5737,9 +5918,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		AST if_statement_AST = null;
 		
 		try {      // for error handling
-			AST tmp408_AST = null;
-			tmp408_AST = astFactory.create(LT(1));
-			astFactory.makeASTRoot(currentAST, tmp408_AST);
+			AST tmp415_AST = null;
+			tmp415_AST = astFactory.create(LT(1));
+			astFactory.makeASTRoot(currentAST, tmp415_AST);
 			match(IF);
 			logic_if_then_else2();
 			astFactory.addASTChild(currentAST, returnAST);
@@ -5764,9 +5945,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		
 		try {      // for error handling
 			{
-			AST tmp409_AST = null;
-			tmp409_AST = astFactory.create(LT(1));
-			astFactory.makeASTRoot(currentAST, tmp409_AST);
+			AST tmp416_AST = null;
+			tmp416_AST = astFactory.create(LT(1));
+			astFactory.makeASTRoot(currentAST, tmp416_AST);
 			match(CONCLUDE);
 			}
 			boolean_value();
@@ -5796,9 +5977,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 				switch ( LA(1)) {
 				case ACTION_OP:
 				{
-					AST tmp410_AST = null;
-					tmp410_AST = astFactory.create(LT(1));
-					astFactory.makeASTRoot(currentAST, tmp410_AST);
+					AST tmp417_AST = null;
+					tmp417_AST = astFactory.create(LT(1));
+					astFactory.makeASTRoot(currentAST, tmp417_AST);
 					match(ACTION_OP);
 					break;
 				}
@@ -5818,9 +5999,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 				switch ( LA(1)) {
 				case ACTION_OP:
 				{
-					AST tmp411_AST = null;
-					tmp411_AST = astFactory.create(LT(1));
-					astFactory.addASTChild(currentAST, tmp411_AST);
+					AST tmp418_AST = null;
+					tmp418_AST = astFactory.create(LT(1));
+					astFactory.addASTChild(currentAST, tmp418_AST);
 					match(ACTION_OP);
 					break;
 				}
@@ -5890,18 +6071,18 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			switch ( LA(1)) {
 			case ELSE:
 			{
-				AST tmp414_AST = null;
-				tmp414_AST = astFactory.create(LT(1));
-				astFactory.makeASTRoot(currentAST, tmp414_AST);
+				AST tmp421_AST = null;
+				tmp421_AST = astFactory.create(LT(1));
+				astFactory.makeASTRoot(currentAST, tmp421_AST);
 				match(ELSE);
 				logic_elseif_AST = (AST)currentAST.root;
 				break;
 			}
 			case ELSEIF:
 			{
-				AST tmp415_AST = null;
-				tmp415_AST = astFactory.create(LT(1));
-				astFactory.makeASTRoot(currentAST, tmp415_AST);
+				AST tmp422_AST = null;
+				tmp422_AST = astFactory.create(LT(1));
+				astFactory.makeASTRoot(currentAST, tmp422_AST);
 				match(ELSEIF);
 				logic_if_then_else2();
 				astFactory.addASTChild(currentAST, returnAST);
@@ -5911,9 +6092,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			case ENDIF:
 			{
 				{
-				AST tmp416_AST = null;
-				tmp416_AST = astFactory.create(LT(1));
-				astFactory.makeASTRoot(currentAST, tmp416_AST);
+				AST tmp423_AST = null;
+				tmp423_AST = astFactory.create(LT(1));
+				astFactory.makeASTRoot(currentAST, tmp423_AST);
 				match(ENDIF);
 				}
 				logic_elseif_AST = (AST)currentAST.root;
@@ -6037,11 +6218,11 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			}
 			}
 			{
-			if ((_tokenSet_55.member(LA(1)))) {
+			if ((_tokenSet_56.member(LA(1)))) {
 				expr_factor();
 				astFactory.addASTChild(currentAST, returnAST);
 			}
-			else if ((_tokenSet_56.member(LA(1)))) {
+			else if ((_tokenSet_57.member(LA(1)))) {
 				from_of_func_op();
 				astFactory.addASTChild(currentAST, returnAST);
 				expr_factor();
@@ -6075,18 +6256,18 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			expr_factor_atom();
 			astFactory.addASTChild(currentAST, returnAST);
 			{
-			_loop302:
+			_loop313:
 			do {
 				if ((LA(1)==DOT)) {
-					AST tmp417_AST = null;
-					tmp417_AST = astFactory.create(LT(1));
-					astFactory.addASTChild(currentAST, tmp417_AST);
+					AST tmp424_AST = null;
+					tmp424_AST = astFactory.create(LT(1));
+					astFactory.addASTChild(currentAST, tmp424_AST);
 					match(DOT);
 					expr_factor_atom();
 					astFactory.addASTChild(currentAST, returnAST);
 				}
 				else {
-					break _loop302;
+					break _loop313;
 				}
 				
 			} while (true);
@@ -6096,7 +6277,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		catch (RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
-				recover(ex,_tokenSet_57);
+				recover(ex,_tokenSet_58);
 			} else {
 			  throw ex;
 			}
@@ -6116,9 +6297,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			case AND:
 			{
 				{
-				AST tmp418_AST = null;
-				tmp418_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp418_AST);
+				AST tmp425_AST = null;
+				tmp425_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp425_AST);
 				match(AND);
 				}
 				break;
@@ -6126,9 +6307,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			case OR:
 			{
 				{
-				AST tmp419_AST = null;
-				tmp419_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp419_AST);
+				AST tmp426_AST = null;
+				tmp426_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp426_AST);
 				match(OR);
 				}
 				break;
@@ -6136,9 +6317,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			case NOT:
 			{
 				{
-				AST tmp420_AST = null;
-				tmp420_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp420_AST);
+				AST tmp427_AST = null;
+				tmp427_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp427_AST);
 				match(NOT);
 				}
 				break;
@@ -6173,9 +6354,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			case EQUALS:
 			{
 				{
-				AST tmp421_AST = null;
-				tmp421_AST = astFactory.create(LT(1));
-				astFactory.makeASTRoot(currentAST, tmp421_AST);
+				AST tmp428_AST = null;
+				tmp428_AST = astFactory.create(LT(1));
+				astFactory.makeASTRoot(currentAST, tmp428_AST);
 				match(EQUALS);
 				}
 				simple_comp_op_AST = (AST)currentAST.root;
@@ -6184,9 +6365,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			case LITERAL_EQ:
 			{
 				{
-				AST tmp422_AST = null;
-				tmp422_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp422_AST);
+				AST tmp429_AST = null;
+				tmp429_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp429_AST);
 				match(LITERAL_EQ);
 				}
 				simple_comp_op_AST = (AST)currentAST.root;
@@ -6194,90 +6375,90 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			}
 			case LT:
 			{
-				AST tmp423_AST = null;
-				tmp423_AST = astFactory.create(LT(1));
-				astFactory.makeASTRoot(currentAST, tmp423_AST);
+				AST tmp430_AST = null;
+				tmp430_AST = astFactory.create(LT(1));
+				astFactory.makeASTRoot(currentAST, tmp430_AST);
 				match(LT);
 				simple_comp_op_AST = (AST)currentAST.root;
 				break;
 			}
 			case LITERAL_LT:
 			{
-				AST tmp424_AST = null;
-				tmp424_AST = astFactory.create(LT(1));
-				astFactory.makeASTRoot(currentAST, tmp424_AST);
+				AST tmp431_AST = null;
+				tmp431_AST = astFactory.create(LT(1));
+				astFactory.makeASTRoot(currentAST, tmp431_AST);
 				match(LITERAL_LT);
 				simple_comp_op_AST = (AST)currentAST.root;
 				break;
 			}
 			case GT:
 			{
-				AST tmp425_AST = null;
-				tmp425_AST = astFactory.create(LT(1));
-				astFactory.makeASTRoot(currentAST, tmp425_AST);
+				AST tmp432_AST = null;
+				tmp432_AST = astFactory.create(LT(1));
+				astFactory.makeASTRoot(currentAST, tmp432_AST);
 				match(GT);
 				simple_comp_op_AST = (AST)currentAST.root;
 				break;
 			}
 			case LITERAL_GT:
 			{
-				AST tmp426_AST = null;
-				tmp426_AST = astFactory.create(LT(1));
-				astFactory.makeASTRoot(currentAST, tmp426_AST);
+				AST tmp433_AST = null;
+				tmp433_AST = astFactory.create(LT(1));
+				astFactory.makeASTRoot(currentAST, tmp433_AST);
 				match(LITERAL_GT);
 				simple_comp_op_AST = (AST)currentAST.root;
 				break;
 			}
 			case LTE:
 			{
-				AST tmp427_AST = null;
-				tmp427_AST = astFactory.create(LT(1));
-				astFactory.makeASTRoot(currentAST, tmp427_AST);
+				AST tmp434_AST = null;
+				tmp434_AST = astFactory.create(LT(1));
+				astFactory.makeASTRoot(currentAST, tmp434_AST);
 				match(LTE);
 				simple_comp_op_AST = (AST)currentAST.root;
 				break;
 			}
 			case LITERAL_LE:
 			{
-				AST tmp428_AST = null;
-				tmp428_AST = astFactory.create(LT(1));
-				astFactory.makeASTRoot(currentAST, tmp428_AST);
+				AST tmp435_AST = null;
+				tmp435_AST = astFactory.create(LT(1));
+				astFactory.makeASTRoot(currentAST, tmp435_AST);
 				match(LITERAL_LE);
 				simple_comp_op_AST = (AST)currentAST.root;
 				break;
 			}
 			case GTE:
 			{
-				AST tmp429_AST = null;
-				tmp429_AST = astFactory.create(LT(1));
-				astFactory.makeASTRoot(currentAST, tmp429_AST);
+				AST tmp436_AST = null;
+				tmp436_AST = astFactory.create(LT(1));
+				astFactory.makeASTRoot(currentAST, tmp436_AST);
 				match(GTE);
 				simple_comp_op_AST = (AST)currentAST.root;
 				break;
 			}
 			case LITERAL_GE:
 			{
-				AST tmp430_AST = null;
-				tmp430_AST = astFactory.create(LT(1));
-				astFactory.makeASTRoot(currentAST, tmp430_AST);
+				AST tmp437_AST = null;
+				tmp437_AST = astFactory.create(LT(1));
+				astFactory.makeASTRoot(currentAST, tmp437_AST);
 				match(LITERAL_GE);
 				simple_comp_op_AST = (AST)currentAST.root;
 				break;
 			}
 			case NE:
 			{
-				AST tmp431_AST = null;
-				tmp431_AST = astFactory.create(LT(1));
-				astFactory.makeASTRoot(currentAST, tmp431_AST);
+				AST tmp438_AST = null;
+				tmp438_AST = astFactory.create(LT(1));
+				astFactory.makeASTRoot(currentAST, tmp438_AST);
 				match(NE);
 				simple_comp_op_AST = (AST)currentAST.root;
 				break;
 			}
 			case LITERAL_NE:
 			{
-				AST tmp432_AST = null;
-				tmp432_AST = astFactory.create(LT(1));
-				astFactory.makeASTRoot(currentAST, tmp432_AST);
+				AST tmp439_AST = null;
+				tmp439_AST = astFactory.create(LT(1));
+				astFactory.makeASTRoot(currentAST, tmp439_AST);
 				match(LITERAL_NE);
 				simple_comp_op_AST = (AST)currentAST.root;
 				break;
@@ -6291,7 +6472,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		catch (RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
-				recover(ex,_tokenSet_47);
+				recover(ex,_tokenSet_48);
 			} else {
 			  throw ex;
 			}
@@ -6315,7 +6496,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		catch (RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
-				recover(ex,_tokenSet_58);
+				recover(ex,_tokenSet_59);
 			} else {
 			  throw ex;
 			}
@@ -6331,7 +6512,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		
 		try {      // for error handling
 			{
-			if ((_tokenSet_59.member(LA(1)))) {
+			if ((_tokenSet_35.member(LA(1)))) {
 				expr();
 				astFactory.addASTChild(currentAST, returnAST);
 			}
@@ -6350,9 +6531,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			}
 			
 			}
-			AST tmp435_AST = null;
-			tmp435_AST = astFactory.create(LT(1));
-			astFactory.addASTChild(currentAST, tmp435_AST);
+			AST tmp442_AST = null;
+			tmp442_AST = astFactory.create(LT(1));
+			astFactory.addASTChild(currentAST, tmp442_AST);
 			match(THEN);
 			logic_if_then_else2_AST = (AST)currentAST.root;
 		}
@@ -6378,9 +6559,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			case TRUE:
 			{
 				{
-				AST tmp436_AST = null;
-				tmp436_AST = astFactory.create(LT(1));
-				astFactory.makeASTRoot(currentAST, tmp436_AST);
+				AST tmp443_AST = null;
+				tmp443_AST = astFactory.create(LT(1));
+				astFactory.makeASTRoot(currentAST, tmp443_AST);
 				match(TRUE);
 				}
 				boolean_value_AST = (AST)currentAST.root;
@@ -6389,9 +6570,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			case FALSE:
 			{
 				{
-				AST tmp437_AST = null;
-				tmp437_AST = astFactory.create(LT(1));
-				astFactory.makeASTRoot(currentAST, tmp437_AST);
+				AST tmp444_AST = null;
+				tmp444_AST = astFactory.create(LT(1));
+				astFactory.makeASTRoot(currentAST, tmp444_AST);
 				match(FALSE);
 				}
 				boolean_value_AST = (AST)currentAST.root;
@@ -6406,7 +6587,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		catch (RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
-				recover(ex,_tokenSet_46);
+				recover(ex,_tokenSet_47);
 			} else {
 			  throw ex;
 			}
@@ -6422,9 +6603,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		
 		try {      // for error handling
 			{
-			AST tmp438_AST = null;
-			tmp438_AST = astFactory.create(LT(1));
-			astFactory.makeASTRoot(currentAST, tmp438_AST);
+			AST tmp445_AST = null;
+			tmp445_AST = astFactory.create(LT(1));
+			astFactory.makeASTRoot(currentAST, tmp445_AST);
 			match(WRITE);
 			}
 			{
@@ -6442,18 +6623,18 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			{
 			if ((_tokenSet_61.member(LA(1)))) {
 				{
-				_loop243:
+				_loop253:
 				do {
 					if ((LA(1)==ACTION_OP)) {
-						AST tmp440_AST = null;
-						tmp440_AST = astFactory.create(LT(1));
-						astFactory.addASTChild(currentAST, tmp440_AST);
+						AST tmp447_AST = null;
+						tmp447_AST = astFactory.create(LT(1));
+						astFactory.addASTChild(currentAST, tmp447_AST);
 						match(ACTION_OP);
 						expr_factor();
 						astFactory.addASTChild(currentAST, returnAST);
 					}
 					else {
-						break _loop243;
+						break _loop253;
 					}
 					
 				} while (true);
@@ -6492,14 +6673,14 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			case AT:
 			{
 				{
-				AST tmp442_AST = null;
-				tmp442_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp442_AST);
+				AST tmp449_AST = null;
+				tmp449_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp449_AST);
 				match(AT);
 				}
-				AST tmp443_AST = null;
-				tmp443_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp443_AST);
+				AST tmp450_AST = null;
+				tmp450_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp450_AST);
 				match(ID);
 				break;
 			}
@@ -6518,7 +6699,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		catch (RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
-				recover(ex,_tokenSet_34);
+				recover(ex,_tokenSet_32);
 			} else {
 			  throw ex;
 			}
@@ -6536,9 +6717,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			switch ( LA(1)) {
 			case INTLIT:
 			{
-				AST tmp444_AST = null;
-				tmp444_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp444_AST);
+				AST tmp451_AST = null;
+				tmp451_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp451_AST);
 				match(INTLIT);
 				urgency_val_AST = (AST)currentAST.root;
 				break;
@@ -6575,25 +6756,25 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			expr_where();
 			astFactory.addASTChild(currentAST, returnAST);
 			{
-			_loop257:
+			_loop267:
 			do {
 				if ((LA(1)==LITERAL_MERGE||LA(1)==LITERAL_SORT)) {
 					{
 					switch ( LA(1)) {
 					case LITERAL_MERGE:
 					{
-						AST tmp445_AST = null;
-						tmp445_AST = astFactory.create(LT(1));
-						astFactory.addASTChild(currentAST, tmp445_AST);
+						AST tmp452_AST = null;
+						tmp452_AST = astFactory.create(LT(1));
+						astFactory.addASTChild(currentAST, tmp452_AST);
 						match(LITERAL_MERGE);
 						break;
 					}
 					case LITERAL_SORT:
 					{
 						{
-						AST tmp446_AST = null;
-						tmp446_AST = astFactory.create(LT(1));
-						astFactory.addASTChild(currentAST, tmp446_AST);
+						AST tmp453_AST = null;
+						tmp453_AST = astFactory.create(LT(1));
+						astFactory.addASTChild(currentAST, tmp453_AST);
 						match(LITERAL_SORT);
 						{
 						if ((LA(1)==TIME||LA(1)==LITERAL_DATA)) {
@@ -6620,7 +6801,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 					astFactory.addASTChild(currentAST, returnAST);
 				}
 				else {
-					break _loop257;
+					break _loop267;
 				}
 				
 			} while (true);
@@ -6645,22 +6826,22 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		AST expr_where_AST = null;
 		
 		try {      // for error handling
-			if ((_tokenSet_47.member(LA(1)))) {
+			if ((_tokenSet_48.member(LA(1)))) {
 				expr_range();
 				astFactory.addASTChild(currentAST, returnAST);
 				{
-				_loop261:
+				_loop271:
 				do {
 					if ((LA(1)==WHERE)) {
-						AST tmp447_AST = null;
-						tmp447_AST = astFactory.create(LT(1));
-						astFactory.addASTChild(currentAST, tmp447_AST);
+						AST tmp454_AST = null;
+						tmp454_AST = astFactory.create(LT(1));
+						astFactory.addASTChild(currentAST, tmp454_AST);
 						match(WHERE);
 						expr_range();
 						astFactory.addASTChild(currentAST, returnAST);
 					}
 					else {
-						break _loop261;
+						break _loop271;
 					}
 					
 				} while (true);
@@ -6696,18 +6877,18 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			switch ( LA(1)) {
 			case TIME:
 			{
-				AST tmp448_AST = null;
-				tmp448_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp448_AST);
+				AST tmp455_AST = null;
+				tmp455_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp455_AST);
 				match(TIME);
 				sort_option_AST = (AST)currentAST.root;
 				break;
 			}
 			case LITERAL_DATA:
 			{
-				AST tmp449_AST = null;
-				tmp449_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp449_AST);
+				AST tmp456_AST = null;
+				tmp456_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp456_AST);
 				match(LITERAL_DATA);
 				sort_option_AST = (AST)currentAST.root;
 				break;
@@ -6739,18 +6920,18 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			expr_or();
 			astFactory.addASTChild(currentAST, returnAST);
 			{
-			_loop264:
+			_loop274:
 			do {
 				if ((LA(1)==LITERAL_SEQTO)) {
-					AST tmp450_AST = null;
-					tmp450_AST = astFactory.create(LT(1));
-					astFactory.addASTChild(currentAST, tmp450_AST);
+					AST tmp457_AST = null;
+					tmp457_AST = astFactory.create(LT(1));
+					astFactory.addASTChild(currentAST, tmp457_AST);
 					match(LITERAL_SEQTO);
 					expr_or();
 					astFactory.addASTChild(currentAST, returnAST);
 				}
 				else {
-					break _loop264;
+					break _loop274;
 				}
 				
 			} while (true);
@@ -6778,18 +6959,18 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			expr_and();
 			astFactory.addASTChild(currentAST, returnAST);
 			{
-			_loop267:
+			_loop277:
 			do {
 				if ((LA(1)==OR)) {
-					AST tmp451_AST = null;
-					tmp451_AST = astFactory.create(LT(1));
-					astFactory.addASTChild(currentAST, tmp451_AST);
+					AST tmp458_AST = null;
+					tmp458_AST = astFactory.create(LT(1));
+					astFactory.addASTChild(currentAST, tmp458_AST);
 					match(OR);
 					expr_and();
 					astFactory.addASTChild(currentAST, returnAST);
 				}
 				else {
-					break _loop267;
+					break _loop277;
 				}
 				
 			} while (true);
@@ -6817,18 +6998,18 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			expr_not();
 			astFactory.addASTChild(currentAST, returnAST);
 			{
-			_loop270:
+			_loop280:
 			do {
 				if ((LA(1)==AND)) {
-					AST tmp452_AST = null;
-					tmp452_AST = astFactory.create(LT(1));
-					astFactory.addASTChild(currentAST, tmp452_AST);
+					AST tmp459_AST = null;
+					tmp459_AST = astFactory.create(LT(1));
+					astFactory.addASTChild(currentAST, tmp459_AST);
 					match(AND);
 					expr_not();
 					astFactory.addASTChild(currentAST, returnAST);
 				}
 				else {
-					break _loop270;
+					break _loop280;
 				}
 				
 			} while (true);
@@ -6856,18 +7037,18 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			expr_comparison();
 			astFactory.addASTChild(currentAST, returnAST);
 			{
-			_loop273:
+			_loop283:
 			do {
 				if ((LA(1)==NOT)) {
-					AST tmp453_AST = null;
-					tmp453_AST = astFactory.create(LT(1));
-					astFactory.addASTChild(currentAST, tmp453_AST);
+					AST tmp460_AST = null;
+					tmp460_AST = astFactory.create(LT(1));
+					astFactory.addASTChild(currentAST, tmp460_AST);
 					match(NOT);
 					expr_comparison();
 					astFactory.addASTChild(currentAST, returnAST);
 				}
 				else {
-					break _loop273;
+					break _loop283;
 				}
 				
 			} while (true);
@@ -6965,7 +7146,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		catch (RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
-				recover(ex,_tokenSet_58);
+				recover(ex,_tokenSet_59);
 			} else {
 			  throw ex;
 			}
@@ -6983,24 +7164,24 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			expr_times();
 			astFactory.addASTChild(currentAST, returnAST);
 			{
-			_loop284:
+			_loop294:
 			do {
 				if ((LA(1)==103||LA(1)==104)) {
 					{
 					switch ( LA(1)) {
 					case 103:
 					{
-						AST tmp454_AST = null;
-						tmp454_AST = astFactory.create(LT(1));
-						astFactory.addASTChild(currentAST, tmp454_AST);
+						AST tmp461_AST = null;
+						tmp461_AST = astFactory.create(LT(1));
+						astFactory.addASTChild(currentAST, tmp461_AST);
 						match(103);
 						break;
 					}
 					case 104:
 					{
-						AST tmp455_AST = null;
-						tmp455_AST = astFactory.create(LT(1));
-						astFactory.addASTChild(currentAST, tmp455_AST);
+						AST tmp462_AST = null;
+						tmp462_AST = astFactory.create(LT(1));
+						astFactory.addASTChild(currentAST, tmp462_AST);
 						match(104);
 						break;
 					}
@@ -7014,7 +7195,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 					astFactory.addASTChild(currentAST, returnAST);
 				}
 				else {
-					break _loop284;
+					break _loop294;
 				}
 				
 			} while (true);
@@ -7024,7 +7205,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		catch (RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
-				recover(ex,_tokenSet_50);
+				recover(ex,_tokenSet_51);
 			} else {
 			  throw ex;
 			}
@@ -7042,24 +7223,24 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			expr_power();
 			astFactory.addASTChild(currentAST, returnAST);
 			{
-			_loop288:
+			_loop298:
 			do {
 				if ((LA(1)==171||LA(1)==172)) {
 					{
 					switch ( LA(1)) {
 					case 171:
 					{
-						AST tmp456_AST = null;
-						tmp456_AST = astFactory.create(LT(1));
-						astFactory.addASTChild(currentAST, tmp456_AST);
+						AST tmp463_AST = null;
+						tmp463_AST = astFactory.create(LT(1));
+						astFactory.addASTChild(currentAST, tmp463_AST);
 						match(171);
 						break;
 					}
 					case 172:
 					{
-						AST tmp457_AST = null;
-						tmp457_AST = astFactory.create(LT(1));
-						astFactory.addASTChild(currentAST, tmp457_AST);
+						AST tmp464_AST = null;
+						tmp464_AST = astFactory.create(LT(1));
+						astFactory.addASTChild(currentAST, tmp464_AST);
 						match(172);
 						break;
 					}
@@ -7073,7 +7254,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 					astFactory.addASTChild(currentAST, returnAST);
 				}
 				else {
-					break _loop288;
+					break _loop298;
 				}
 				
 			} while (true);
@@ -7101,32 +7282,32 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			expr_duration();
 			astFactory.addASTChild(currentAST, returnAST);
 			{
-			_loop292:
+			_loop302:
 			do {
 				if (((LA(1) >= FROM && LA(1) <= AFTER))) {
 					{
 					switch ( LA(1)) {
 					case BEFORE:
 					{
-						AST tmp458_AST = null;
-						tmp458_AST = astFactory.create(LT(1));
-						astFactory.addASTChild(currentAST, tmp458_AST);
+						AST tmp465_AST = null;
+						tmp465_AST = astFactory.create(LT(1));
+						astFactory.addASTChild(currentAST, tmp465_AST);
 						match(BEFORE);
 						break;
 					}
 					case AFTER:
 					{
-						AST tmp459_AST = null;
-						tmp459_AST = astFactory.create(LT(1));
-						astFactory.addASTChild(currentAST, tmp459_AST);
+						AST tmp466_AST = null;
+						tmp466_AST = astFactory.create(LT(1));
+						astFactory.addASTChild(currentAST, tmp466_AST);
 						match(AFTER);
 						break;
 					}
 					case FROM:
 					{
-						AST tmp460_AST = null;
-						tmp460_AST = astFactory.create(LT(1));
-						astFactory.addASTChild(currentAST, tmp460_AST);
+						AST tmp467_AST = null;
+						tmp467_AST = astFactory.create(LT(1));
+						astFactory.addASTChild(currentAST, tmp467_AST);
 						match(FROM);
 						break;
 					}
@@ -7140,7 +7321,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 					astFactory.addASTChild(currentAST, returnAST);
 				}
 				else {
-					break _loop292;
+					break _loop302;
 				}
 				
 			} while (true);
@@ -7149,9 +7330,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			switch ( LA(1)) {
 			case AGO:
 			{
-				AST tmp461_AST = null;
-				tmp461_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp461_AST);
+				AST tmp468_AST = null;
+				tmp468_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp468_AST);
 				match(AGO);
 				break;
 			}
@@ -7329,7 +7510,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		catch (RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
-				recover(ex,_tokenSet_48);
+				recover(ex,_tokenSet_49);
 			} else {
 			  throw ex;
 			}
@@ -7344,12 +7525,12 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		AST expr_function_AST = null;
 		
 		try {      // for error handling
-			if ((_tokenSet_55.member(LA(1)))) {
+			if ((_tokenSet_56.member(LA(1)))) {
 				expr_factor();
 				astFactory.addASTChild(currentAST, returnAST);
 				expr_function_AST = (AST)currentAST.root;
 			}
-			else if ((_tokenSet_71.member(LA(1)))) {
+			else if ((_tokenSet_48.member(LA(1)))) {
 				{
 				switch ( LA(1)) {
 				case THE:
@@ -7358,6 +7539,41 @@ public ArdenBaseParser(ParserSharedInputState state) {
 					astFactory.addASTChild(currentAST, returnAST);
 					break;
 				}
+				case COUNT:
+				case NOW:
+				case MINIMUM:
+				case MIN:
+				case MAXIMUM:
+				case MAX:
+				case LAST:
+				case FIRST:
+				case EARLIEST:
+				case LATEST:
+				case EXIST:
+				case EXISTS:
+				case AVG:
+				case AVERAGE:
+				case SUM:
+				case MEDIAN:
+				case TRUE:
+				case FALSE:
+				case OF:
+				case TIME:
+				case INTLIT:
+				case ID:
+				case LPAREN:
+				case STRING_LITERAL:
+				{
+					break;
+				}
+				default:
+				{
+					throw new NoViableAltException(LT(1), getFilename());
+				}
+				}
+				}
+				{
+				switch ( LA(1)) {
 				case NOW:
 				case MINIMUM:
 				case MIN:
@@ -7375,6 +7591,65 @@ public ArdenBaseParser(ParserSharedInputState state) {
 				case LPAREN:
 				case STRING_LITERAL:
 				{
+					from_of_func_op();
+					astFactory.addASTChild(currentAST, returnAST);
+					{
+					switch ( LA(1)) {
+					case OF:
+					{
+						AST tmp469_AST = null;
+						tmp469_AST = astFactory.create(LT(1));
+						astFactory.addASTChild(currentAST, tmp469_AST);
+						match(OF);
+						break;
+					}
+					case NOW:
+					case TRUE:
+					case FALSE:
+					case INTLIT:
+					case ID:
+					case LPAREN:
+					case STRING_LITERAL:
+					{
+						break;
+					}
+					default:
+					{
+						throw new NoViableAltException(LT(1), getFilename());
+					}
+					}
+					}
+					expr_factor();
+					astFactory.addASTChild(currentAST, returnAST);
+					break;
+				}
+				case COUNT:
+				case EXIST:
+				case EXISTS:
+				case AVG:
+				case AVERAGE:
+				case SUM:
+				case MEDIAN:
+				case TIME:
+				{
+					of_func_op();
+					astFactory.addASTChild(currentAST, returnAST);
+					{
+					if ((LA(1)==OF)) {
+						AST tmp470_AST = null;
+						tmp470_AST = astFactory.create(LT(1));
+						astFactory.addASTChild(currentAST, tmp470_AST);
+						match(OF);
+					}
+					else if ((_tokenSet_48.member(LA(1)))) {
+					}
+					else {
+						throw new NoViableAltException(LT(1), getFilename());
+					}
+					
+					}
+					expr_function();
+					astFactory.addASTChild(currentAST, returnAST);
 					break;
 				}
 				default:
@@ -7383,57 +7658,6 @@ public ArdenBaseParser(ParserSharedInputState state) {
 				}
 				}
 				}
-				from_of_func_op();
-				astFactory.addASTChild(currentAST, returnAST);
-				{
-				switch ( LA(1)) {
-				case OF:
-				{
-					AST tmp462_AST = null;
-					tmp462_AST = astFactory.create(LT(1));
-					astFactory.addASTChild(currentAST, tmp462_AST);
-					match(OF);
-					break;
-				}
-				case NOW:
-				case TRUE:
-				case FALSE:
-				case INTLIT:
-				case ID:
-				case LPAREN:
-				case STRING_LITERAL:
-				{
-					break;
-				}
-				default:
-				{
-					throw new NoViableAltException(LT(1), getFilename());
-				}
-				}
-				}
-				expr_factor();
-				astFactory.addASTChild(currentAST, returnAST);
-				expr_function_AST = (AST)currentAST.root;
-			}
-			else if ((_tokenSet_72.member(LA(1)))) {
-				of_func_op();
-				astFactory.addASTChild(currentAST, returnAST);
-				{
-				if ((LA(1)==OF)) {
-					AST tmp463_AST = null;
-					tmp463_AST = astFactory.create(LT(1));
-					astFactory.addASTChild(currentAST, tmp463_AST);
-					match(OF);
-				}
-				else if ((_tokenSet_47.member(LA(1)))) {
-				}
-				else {
-					throw new NoViableAltException(LT(1), getFilename());
-				}
-				
-				}
-				expr_function();
-				astFactory.addASTChild(currentAST, returnAST);
 				expr_function_AST = (AST)currentAST.root;
 			}
 			else {
@@ -7444,7 +7668,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		catch (RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
-				recover(ex,_tokenSet_73);
+				recover(ex,_tokenSet_71);
 			} else {
 			  throw ex;
 			}
@@ -7489,7 +7713,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		catch (RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
-				recover(ex,_tokenSet_47);
+				recover(ex,_tokenSet_48);
 			} else {
 			  throw ex;
 			}
@@ -7507,9 +7731,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			switch ( LA(1)) {
 			case ID:
 			{
-				AST tmp464_AST = null;
-				tmp464_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp464_AST);
+				AST tmp471_AST = null;
+				tmp471_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp471_AST);
 				match(ID);
 				expr_factor_atom_AST = (AST)currentAST.root;
 				break;
@@ -7533,18 +7757,18 @@ public ArdenBaseParser(ParserSharedInputState state) {
 			}
 			case STRING_LITERAL:
 			{
-				AST tmp467_AST = null;
-				tmp467_AST = astFactory.create(LT(1));
-				astFactory.addASTChild(currentAST, tmp467_AST);
+				AST tmp474_AST = null;
+				tmp474_AST = astFactory.create(LT(1));
+				astFactory.addASTChild(currentAST, tmp474_AST);
 				match(STRING_LITERAL);
 				expr_factor_atom_AST = (AST)currentAST.root;
 				break;
 			}
 			default:
 				if ((LA(1)==INTLIT)) {
-					AST tmp468_AST = null;
-					tmp468_AST = astFactory.create(LT(1));
-					astFactory.addASTChild(currentAST, tmp468_AST);
+					AST tmp475_AST = null;
+					tmp475_AST = astFactory.create(LT(1));
+					astFactory.addASTChild(currentAST, tmp475_AST);
 					match(INTLIT);
 					expr_factor_atom_AST = (AST)currentAST.root;
 				}
@@ -7561,7 +7785,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		catch (RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
-				recover(ex,_tokenSet_46);
+				recover(ex,_tokenSet_47);
 			} else {
 			  throw ex;
 			}
@@ -7576,9 +7800,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		AST as_func_op_AST = null;
 		
 		try {      // for error handling
-			AST tmp469_AST = null;
-			tmp469_AST = astFactory.create(LT(1));
-			astFactory.addASTChild(currentAST, tmp469_AST);
+			AST tmp476_AST = null;
+			tmp476_AST = astFactory.create(LT(1));
+			astFactory.addASTChild(currentAST, tmp476_AST);
 			match(LITERAL_NUMBER);
 			as_func_op_AST = (AST)currentAST.root;
 		}
@@ -7600,16 +7824,16 @@ public ArdenBaseParser(ParserSharedInputState state) {
 		AST of_noread_func_op_AST = null;
 		
 		try {      // for error handling
-			AST tmp470_AST = null;
-			tmp470_AST = astFactory.create(LT(1));
-			astFactory.addASTChild(currentAST, tmp470_AST);
+			AST tmp477_AST = null;
+			tmp477_AST = astFactory.create(LT(1));
+			astFactory.addASTChild(currentAST, tmp477_AST);
 			match(TIME);
 			of_noread_func_op_AST = (AST)currentAST.root;
 		}
 		catch (RecognitionException ex) {
 			if (inputState.guessing==0) {
 				reportError(ex);
-				recover(ex,_tokenSet_47);
+				recover(ex,_tokenSet_48);
 			} else {
 			  throw ex;
 			}
@@ -7899,7 +8123,7 @@ public ArdenBaseParser(ParserSharedInputState state) {
 	}
 	public static final BitSet _tokenSet_17 = new BitSet(mk_tokenSet_17());
 	private static final long[] mk_tokenSet_18() {
-		long[] data = { 6291456L, 4303355904L, 0L, 0L};
+		long[] data = { 1008806316604391424L, 4303355904L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_18 = new BitSet(mk_tokenSet_18());
@@ -7969,142 +8193,142 @@ public ArdenBaseParser(ParserSharedInputState state) {
 	}
 	public static final BitSet _tokenSet_31 = new BitSet(mk_tokenSet_31());
 	private static final long[] mk_tokenSet_32() {
-		long[] data = { 67580382689625088L, 0L, 0L};
+		long[] data = { 0L, 8388608L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_32 = new BitSet(mk_tokenSet_32());
 	private static final long[] mk_tokenSet_33() {
-		long[] data = { 2190433320960L, 1152921513197043712L, 0L, 0L};
+		long[] data = { 67580382689625088L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_33 = new BitSet(mk_tokenSet_33());
 	private static final long[] mk_tokenSet_34() {
-		long[] data = { 0L, 8388608L, 0L, 0L};
+		long[] data = { 2190433320960L, 1152921513197043712L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_34 = new BitSet(mk_tokenSet_34());
 	private static final long[] mk_tokenSet_35() {
-		long[] data = { 4607213200904037376L, 144115200969408608L, 36971078483968L, 0L, 0L, 0L};
+		long[] data = { 3526347089095173120L, 144115200961020000L, 36833639530496L, 0L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_35 = new BitSet(mk_tokenSet_35());
 	private static final long[] mk_tokenSet_36() {
-		long[] data = { 3526347086947689472L, 1152921517492011104L, 35184372088832L, 0L, 0L, 0L};
+		long[] data = { 1080863912790851584L, 21483225088L, 137438953472L, 0L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_36 = new BitSet(mk_tokenSet_36());
 	private static final long[] mk_tokenSet_37() {
-		long[] data = { 3458764513824735232L, 1152921517492011040L, 35184372088832L, 0L, 0L, 0L};
+		long[] data = { 4607213200904037376L, 144115200969408608L, 36971078483968L, 0L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_37 = new BitSet(mk_tokenSet_37());
 	private static final long[] mk_tokenSet_38() {
-		long[] data = { 6589016834050L, 1152921530385039488L, 0L, 0L};
+		long[] data = { 3526347086947689472L, 1152921517492011104L, 35184372088832L, 0L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_38 = new BitSet(mk_tokenSet_38());
 	private static final long[] mk_tokenSet_39() {
-		long[] data = { 402653184L, 0L, 0L};
+		long[] data = { 3458764513824735232L, 1152921517492011040L, 35184372088832L, 0L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_39 = new BitSet(mk_tokenSet_39());
 	private static final long[] mk_tokenSet_40() {
-		long[] data = { 0L, 0L, 2088960L, 0L, 0L, 0L};
+		long[] data = { 6589016834050L, 1152921530385039488L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_40 = new BitSet(mk_tokenSet_40());
 	private static final long[] mk_tokenSet_41() {
-		long[] data = { 537001984L, 128L, 0L, 0L};
+		long[] data = { 402653184L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_41 = new BitSet(mk_tokenSet_41());
 	private static final long[] mk_tokenSet_42() {
-		long[] data = { 2190433320962L, 1152921530385039360L, 0L, 0L};
+		long[] data = { 0L, 0L, 2088960L, 0L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_42 = new BitSet(mk_tokenSet_42());
 	private static final long[] mk_tokenSet_43() {
-		long[] data = { 1080863912790851584L, 21483225088L, 137438953472L, 0L, 0L, 0L};
+		long[] data = { 537001984L, 128L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_43 = new BitSet(mk_tokenSet_43());
 	private static final long[] mk_tokenSet_44() {
-		long[] data = { 0L, 72057594037927936L, 137472507904L, 0L, 0L, 0L};
+		long[] data = { 2190433320962L, 1152921530385039360L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_44 = new BitSet(mk_tokenSet_44());
 	private static final long[] mk_tokenSet_45() {
-		long[] data = { 2190433320962L, 1152921513196781568L, 0L, 0L};
+		long[] data = { 0L, 72057594037927936L, 137472507904L, 0L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_45 = new BitSet(mk_tokenSet_45());
 	private static final long[] mk_tokenSet_46() {
-		long[] data = { 1085303733815319506L, 1297038372023312384L, 32710437380000L, 0L, 0L, 0L};
+		long[] data = { 2190433320962L, 1152921513196781568L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_46 = new BitSet(mk_tokenSet_46());
 	private static final long[] mk_tokenSet_47() {
-		long[] data = { 3526347086947689472L, 12885164128L, 35184372088832L, 0L, 0L, 0L};
+		long[] data = { 1085303733815319506L, 1297038372023312384L, 32710437380000L, 0L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_47 = new BitSet(mk_tokenSet_47());
 	private static final long[] mk_tokenSet_48() {
-		long[] data = { 1080870502881788882L, 1297038372023304192L, 32710437371904L, 0L, 0L, 0L};
+		long[] data = { 3526347086947689472L, 12885164128L, 35184372088832L, 0L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_48 = new BitSet(mk_tokenSet_48());
 	private static final long[] mk_tokenSet_49() {
-		long[] data = { 3458801888630145024L, 12885164064L, 35184372088832L, 0L, 0L, 0L};
+		long[] data = { 1080870502881788882L, 1297038372023304192L, 32710437371904L, 0L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_49 = new BitSet(mk_tokenSet_49());
 	private static final long[] mk_tokenSet_50() {
-		long[] data = { 1080870502881297362L, 1297036722755862528L, 6322158305280L, 0L, 0L, 0L};
+		long[] data = { 3526382271319770112L, 12885164128L, 35184372088832L, 0L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_50 = new BitSet(mk_tokenSet_50());
 	private static final long[] mk_tokenSet_51() {
-		long[] data = { 6144L, 0L, 32L, 0L, 0L, 0L};
+		long[] data = { 1080870502881297362L, 1297036722755862528L, 6322158305280L, 0L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_51 = new BitSet(mk_tokenSet_51());
 	private static final long[] mk_tokenSet_52() {
-		long[] data = { 0L, 144115205255729152L, 0L, 0L};
+		long[] data = { 6144L, 0L, 32L, 0L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_52 = new BitSet(mk_tokenSet_52());
 	private static final long[] mk_tokenSet_53() {
-		long[] data = { 1073741824L, 144115205255729152L, 0L, 0L};
+		long[] data = { 0L, 144115205255729152L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_53 = new BitSet(mk_tokenSet_53());
 	private static final long[] mk_tokenSet_54() {
-		long[] data = { 0L, 17179869184L, 0L, 0L};
+		long[] data = { 1073741824L, 144115205255729152L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_54 = new BitSet(mk_tokenSet_54());
 	private static final long[] mk_tokenSet_55() {
-		long[] data = { 3458764513824735232L, 12885164032L, 35184372088832L, 0L, 0L, 0L};
+		long[] data = { 0L, 17179869184L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_55 = new BitSet(mk_tokenSet_55());
 	private static final long[] mk_tokenSet_56() {
-		long[] data = { 3458766704258056192L, 12885164032L, 35184372088832L, 0L, 0L, 0L};
+		long[] data = { 3458764513824735232L, 12885164032L, 35184372088832L, 0L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_56 = new BitSet(mk_tokenSet_56());
 	private static final long[] mk_tokenSet_57() {
-		long[] data = { 1085303733815319506L, 1297038372023304192L, 32710437380000L, 0L, 0L, 0L};
+		long[] data = { 3458766704258056192L, 12885164032L, 35184372088832L, 0L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_57 = new BitSet(mk_tokenSet_57());
 	private static final long[] mk_tokenSet_58() {
-		long[] data = { 1080868312447975440L, 144115209559080960L, 6184752906240L, 0L, 0L, 0L};
+		long[] data = { 1085303733815319506L, 1297038372023304192L, 32710437380000L, 0L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_58 = new BitSet(mk_tokenSet_58());
 	private static final long[] mk_tokenSet_59() {
-		long[] data = { 3526347089095173120L, 144115200961020000L, 36833639530496L, 0L, 0L, 0L};
+		long[] data = { 1080868312447975440L, 144115209559080960L, 6184752906240L, 0L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_59 = new BitSet(mk_tokenSet_59());
@@ -8164,19 +8388,9 @@ public ArdenBaseParser(ParserSharedInputState state) {
 	}
 	public static final BitSet _tokenSet_70 = new BitSet(mk_tokenSet_70());
 	private static final long[] mk_tokenSet_71() {
-		long[] data = { 3458766704258064384L, 12885164064L, 35184372088832L, 0L, 0L, 0L};
-		return data;
-	}
-	public static final BitSet _tokenSet_71 = new BitSet(mk_tokenSet_71());
-	private static final long[] mk_tokenSet_72() {
-		long[] data = { 67580382689625088L, 64L, 0L, 0L};
-		return data;
-	}
-	public static final BitSet _tokenSet_72 = new BitSet(mk_tokenSet_72());
-	private static final long[] mk_tokenSet_73() {
 		long[] data = { 1085303733815313362L, 1297038372023304192L, 32710437379968L, 0L, 0L, 0L};
 		return data;
 	}
-	public static final BitSet _tokenSet_73 = new BitSet(mk_tokenSet_73());
+	public static final BitSet _tokenSet_71 = new BitSet(mk_tokenSet_71());
 	
 	}
