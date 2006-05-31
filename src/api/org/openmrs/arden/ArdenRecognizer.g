@@ -498,7 +498,9 @@ type_code
 	;
 
 data_slot
-	: "data"^ COLON! (data_assignment SEMI!)* ENDBLOCK
+	: 
+	//"data"^ COLON! (data_assignment SEMI!)* ENDBLOCK
+	DATA^ COLON! (data_statement SEMI!)* ENDBLOCK
 	;
 
 /*
@@ -509,19 +511,36 @@ data_block
 	| data_comment
 	) 
 	;
-
+*/
 data_statement
 	: 
-     (data_assignment endassignment)* endassignment endblock
-	//(
-	//	(endassignment data_assignment)*
-//
-//	)
-//	| "IF" data_if_then_else2
+    ( (data_if_statement) 
+	| data_assignment
+	| data_elseif
+	)
 //	| "FOR" identifier "IN" expr "DO" data_block SEMI "ENDDO"
 //	| "WHILE" expr "DO" data_block SEMI "ENDDO"
 	;
-*/
+
+data_if_statement
+	:IF^ data_if_then_else2
+	;
+data_if_then_else2:
+     (
+     	expr
+     	| (LPAREN!) expr (RPAREN!) 
+     )
+     THEN data_statement
+    ;
+
+data_elseif
+	:
+	 ELSE^ 
+	 | ELSEIF^ data_if_then_else2
+	 | 	  (ENDIF^)
+
+	;
+	
 
 data_comment
 	:	
@@ -1034,8 +1053,11 @@ expr_function
 //expr_duration
 	:
 	expr_factor
-    | (the)? from_of_func_op (OF)? expr_factor //(is)? binary_comp_op (the)? (expr_factor | from_of_func_op expr_factor)
-    | of_func_op (OF)? expr_function
+    | (the)?
+     (
+    	from_of_func_op (OF)? expr_factor //(is)? binary_comp_op (the)? (expr_factor | from_of_func_op expr_factor)
+    	| of_func_op (OF)? expr_function
+     )
 	//	("as" as_func_op ) 
 	;
 
@@ -1053,6 +1075,7 @@ expr_factor_atom
 	| time_value
 	| boolean_value
 	| STRING_LITERAL
+	
 	;
 
 as_func_op
@@ -1551,6 +1574,8 @@ INTLIT
 //  : 
 //  '\''! TEXT (WS)? (DOT)? (INTLIT)? (DOT)? (INTLIT)? (DOT)? (INTLIT)? '\''!
 //  ;
+
+
 
 // string literals
 STRING_LITERAL
