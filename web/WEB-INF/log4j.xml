@@ -6,7 +6,7 @@
     <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern"
-                value="%p - %C{1}.%M(%L) | %m%n"/>
+                value="%p - %C{1}.%M(%L) |%d{ISO8601}| %m%n"/>
         </layout>
     </appender>
     
@@ -18,7 +18,7 @@
 		
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern"
-                value="%C{1}.%M|%d|%m%n"/>
+                value="%C{1}.%M|%d{ISO8601}|%m%n"/>
         </layout>
     </appender>
 
@@ -30,7 +30,7 @@
 		
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern"
-                value="%C{1}.%M|%d|%m%n"/>
+                value="%C{1}.%M|%d{ISO8601}|%m%n"/>
         </layout>
     </appender>
 
@@ -42,7 +42,7 @@
 		
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern"
-                value="%C{1}.%M|%d|%m%n"/>
+                value="%C{1}.%M|%d{ISO8601}|%m%n"/>
         </layout>
     </appender>
     
@@ -82,8 +82,8 @@
 	<logger name="org.openmrs.web.controller.analysis">
         <level value="DEBUG"/>
     </logger>
-		
-	<logger name="org.openmrs">
+    
+    <logger name="org.openmrs">
         <level value="WARN"/>
     </logger>
     
