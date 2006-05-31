@@ -16,7 +16,7 @@ import org.openmrs.arden.ArdenBaseLexer;
 import org.openmrs.arden.ArdenBaseParser;
 import org.openmrs.arden.ArdenBaseTreeParser;
 import org.openmrs.arden.MLMObject;
-import org.openmrs.arden.HiRiskLeadScreen;
+import org.openmrs.arden.compiled.*;
 import org.openmrs.api.*;
 
 
@@ -209,15 +209,15 @@ public class ArdenTest extends TestCase {
 		HiRiskLeadScreen mlm = new HiRiskLeadScreen(context,1,locale);
 		mlm.run();
 	
-	  /*  Patient patient = new Patient();
+	/*    Patient patient = new Patient();
 		patient.setPatientId(1);
 		PatientName pn = new PatientName("Jenny", "M", "Patient");
 		patient.addName(pn);
 		
 		MLMObject ardObj = new MLMObject(context, locale, patient);
-		RunTest("test/arden test/HiRiskLeadScreen.mlm", ardObj ); //populates ardObj
+		//RunTest("test/arden test/HiRiskLeadScreen.mlm", ardObj ); //populates ardObj
+		RunTest("test/arden test/4.mlm", ardObj ); //populates ardObj
 	*/	
-		
 	//	ConceptService cs = context.getConceptService();
 	//	ObsService os = context.getObsService();
 		
