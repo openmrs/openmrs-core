@@ -58,6 +58,9 @@
 	#conceptTable th {
 		text-align: left;
 	}
+	#conceptNameTable th {
+		text-align: left;	
+	}
 </style>
 
 <h2><spring:message code="Concept.title" /></h2>
@@ -98,45 +101,62 @@
 
 <form method="post" action="" onSubmit="removeHiddenRows()">
 
-<table id=conceptTable>
+<table id="conceptNameTable">
 	<tr>
-		<th><spring:message code="general.id"/></th>
-		<td>${concept.conceptId}</td>
+		<th><spring:message code="general.locale"/></th>
+		<c:forEach items="${locales}" var="loc">
+			<th>${loc.displayName}</th>
+		</c:forEach>
 	</tr>
 	<tr>
 		<th title="<spring:message code="Concept.name.help"/>">
 			<spring:message code="general.name" />
 		</th>
-		<td><spring:bind path="conceptName.name">
-			<input type="text" name="${status.expression}"
-				value="${status.value}" id="conceptName" class="largeWidth" />
-			<c:if test="${status.errorMessage != ''}">
-				<span class="error">${status.errorMessage}</span>
-			</c:if>
-		</spring:bind></td>
+		<c:forEach items="${localesAsStrings}" var="loc">
+			<td>
+				<spring:bind path="conceptName_${loc}.name">
+				<input type="text" name="${status.expression}_${loc}"
+					value="${status.value}" id="conceptName_${loc}" class="largeWidth" />
+				<c:if test="${status.errorMessage != ''}">
+					<span class="error">${status.errorMessage}</span>
+				</c:if>
+				</spring:bind>
+			</td>
+		</c:forEach>
 	</tr>
 	<tr>
 		<th title="<spring:message code="Concept.shortName.help"/>">
 			<spring:message code="Concept.shortName" />
 		</th>
-		<td><spring:bind path="conceptName.shortName">
-			<input class="smallWidth" type="text" name="${status.expression}"
-				value="${status.value}" size="10" />
-			<c:if test="${status.errorMessage != ''}">
-				<span class="error">${status.errorMessage}</span>
-			</c:if>
-		</spring:bind></td>
+		<c:forEach items="${localesAsStrings}" var="loc">
+			<td><spring:bind path="conceptName_${loc}.shortName">
+				<input class="smallWidth" type="text" name="${status.expression}_${loc}"
+					value="${status.value}" size="10" />
+				<c:if test="${status.errorMessage != ''}">
+					<span class="error">${status.errorMessage}</span>
+				</c:if>
+			</spring:bind></td>
+		</c:forEach>
 	</tr>
 	<tr>
 		<th valign="top" title="<spring:message code="Concept.description.help"/>">
 			<spring:message code="general.description" />
 		</th>
-		<td valign="top"><spring:bind path="conceptName.description">
-			<textarea name="${status.expression}" rows="4" cols="50">${status.value}</textarea>
-			<c:if test="${status.errorMessage != ''}">
-				<span class="error">${status.errorMessage}</span>
-			</c:if>
-		</spring:bind></td>
+		<c:forEach items="${localesAsStrings}" var="loc">
+			<td valign="top"><spring:bind path="conceptName_${loc}.description">
+				<textarea name="${status.expression}_${loc}" rows="4" cols="50">${status.value}</textarea>
+				<c:if test="${status.errorMessage != ''}">
+					<span class="error">${status.errorMessage}</span>
+				</c:if>
+			</spring:bind></td>
+		</c:forEach>
+	</tr>
+</table>
+
+<table id="conceptTable">
+	<tr>
+		<th><spring:message code="general.id"/></th>
+		<td>${concept.conceptId}</td>
 	</tr>
 	<tr>
 		<th valign="top" title="<spring:message code="Concept.synonyms.help"/>">

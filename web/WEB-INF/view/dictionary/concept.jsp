@@ -14,6 +14,10 @@
 	#conceptTable th {
 		text-align: left;
 	}
+	#conceptNameTable th {
+		text-align: left;	
+	}
+	
 </style>
 
 <script type="text/javascript">
@@ -63,47 +67,63 @@ document.onkeypress = hotkeys;
 	<div class="retiredMessage"><div><spring:message code="Concept.retiredMessage"/></div></div>
 </c:if>
 
+<table id="conceptNameTable" cellspacing="0" cellpadding="2" border="1">
+	<tr>
+		<th><spring:message code="general.locale"/></th>
+		<c:forEach items="${locales}" var="loc">
+			<th>${loc.displayName}</th>
+		</c:forEach>
+	</tr>
+	<tr>
+		<th title="<spring:message code="Concept.name.help"/>">
+			<spring:message code="general.name" />
+		</th>
+		<c:forEach items="${localesAsStrings}" var="loc">
+			<td><spring:bind path="conceptName_${loc}.name">
+					${status.value}
+				</spring:bind>
+			</td>
+		</c:forEach>
+	</tr>
+	<tr>
+		<th title="<spring:message code="Concept.shortName.help"/>">
+			<spring:message code="Concept.shortName" />
+		</th>
+		<c:forEach items="${localesAsStrings}" var="loc">
+			<td><spring:bind path="conceptName_${loc}.shortName">
+				${status.value}
+			</spring:bind></td>
+		</c:forEach>
+	</tr>
+	<tr>
+		<th valign="top"><spring:message code="general.description" /></th>
+		<c:forEach items="${localesAsStrings}" var="loc">
+			<td valign="top"><spring:bind path="conceptName_${loc}.description">
+				${status.value}
+			</spring:bind></td>
+		</c:forEach>
+	</tr>
+	<tr>
+		<th valign="top" title="<spring:message code="Concept.synonyms.help"/>">
+			<spring:message code="Concept.synonyms" />
+		</th>
+		<c:forEach items="${localesAsStrings}" var="loc">
+			<td valign="top">
+				<c:forEach items="${conceptSynonymsByLocale[loc]}" var="syn">${syn}<br/></c:forEach>
+			</td>
+		</c:forEach>
+	</tr>
+</table>
 <table id="conceptTable">
 	<tr>
 		<th><spring:message code="general.id"/></th>
 		<td>${concept.conceptId}</td>
 	</tr>
 	<tr>
-		<th title="<spring:message code="Concept.name.help"/>">
-			<spring:message code="general.name" />
-		</th>
-		<td><spring:bind path="conceptName.name">
-				${status.value}
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
-		<th title="<spring:message code="Concept.shortName.help"/>">
-			<spring:message code="Concept.shortName" />
-		</th>
-		<td><spring:bind path="conceptName.shortName">
-			${status.value}
-		</spring:bind></td>
-	</tr>
-	<tr>
-		<th valign="top"><spring:message code="general.description" /></th>
-		<td valign="top"><spring:bind path="conceptName.description">
-			${status.value}
-		</spring:bind></td>
-	</tr>
-	<tr>
-		<th valign="top" title="<spring:message code="Concept.synonyms.help"/>">
-			<spring:message code="Concept.synonyms" />
-		</th>
-		<td valign="top">
-			<c:forEach items="${conceptSynonyms}" var="syn">${syn}<br/></c:forEach>
-		</td>
-	</tr>
-	<tr>
 		<th  title="<spring:message code="Concept.conceptClass.help"/>">
 			<spring:message code="Concept.conceptClass" />
 		</th>
-		<td valign="top">
+		<td valign="top" colspan="${num_locales}">
 			${concept.conceptClass.name}
 		</td>
 	</tr>

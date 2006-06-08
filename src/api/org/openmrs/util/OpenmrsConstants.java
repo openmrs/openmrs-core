@@ -244,7 +244,18 @@ public class OpenmrsConstants {
 		languages.add(Locale.US);
 		languages.add(Locale.UK);
 		languages.add(Locale.FRENCH);
-		languages.add(Locale.GERMAN);
+		
+		return languages;
+	}
+
+	/**
+	 * @return Collection of locales that the concept dictionary should be aware of
+	 */
+	public static final Collection<Locale> OPENMRS_CONCEPT_LOCALES() {
+		List<Locale> languages = new Vector<Locale>();
+		
+		languages.add(Locale.ENGLISH);
+		languages.add(Locale.FRENCH);
 		
 		return languages;
 	}

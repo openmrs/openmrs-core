@@ -1,10 +1,15 @@
 package org.openmrs.web.controller;
 
+import static org.openmrs.util.OpenmrsConstants.OPENMRS_CONCEPT_LOCALES;
+
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -161,24 +166,38 @@ public class ConceptFormController extends SimpleFormController {
 					String conceptSets = request.getParameter("conceptSets");
 					if (conceptSets == null)
 						concept.setConceptSets(null); 
-					
-				// ====set concept_name properties to the correct/current locale
-					String conceptName = request.getParameter("name").toUpperCase();
-					if (conceptName.length() < 1)
-						errors.rejectValue("name", "error.name");
-					String shortName = request.getParameter("shortName");
-					String description = request.getParameter("description");
-					if (conceptName.length() < 1)
-						errors.rejectValue("description", "error.description");
-					ConceptName cn = concept.getName(locale, true);
-					if (cn != null) {
-						cn.setName(conceptName);
-						cn.setShortName(shortName);
-						cn.setDescription(description);
+				
+				// ====set concept_name properties for locales in this page
+					int numberOfNamesSpecified = 0;
+					for (Locale l : OPENMRS_CONCEPT_LOCALES()) {
+						String localeName = l.toString();
+						String conceptName = request.getParameter("name_" + localeName).toUpperCase();
+						String shortName = request.getParameter("shortName_" + localeName);
+						String description = request.getParameter("description_" + localeName);
+						if ((shortName.length() > 0 || description.length() > 0) && conceptName.length() < 1) {
+							errors.reject("dictionary.error.needName");
+						}
+						ConceptName cn = concept.getName(l, true);
+						if (cn != null) {
+							if (conceptName.length() > 0) {
+								++numberOfNamesSpecified;
+								cn.setName(conceptName);
+								cn.setShortName(shortName);
+								cn.setDescription(description);
+							} else {
+								concept.removeName(cn);
+							}
+						} else {
+							if (conceptName.length() > 0) {
+								++numberOfNamesSpecified;
+								concept.addName(new ConceptName(conceptName, shortName, description, l));
+							}
+						}
 					}
-					else {
-						concept.addName(new ConceptName(conceptName, shortName, description, locale));
+					if (numberOfNamesSpecified == 0) { 
+						errors.reject("error.names.length");
 					}
+
 			}
 		}
 		else {
@@ -318,15 +337,33 @@ public class ConceptFormController extends SimpleFormController {
 			String conceptId = request.getParameter("conceptId");
 			ConceptName conceptName = new ConceptName();
 			Collection<ConceptSynonym> conceptSynonyms = new Vector<ConceptSynonym>();
+			Map<String, ConceptName> conceptNamesByLocale = new HashMap<String, ConceptName>();
+			Map<String, Collection<ConceptSynonym>> conceptSynonymsByLocale = new HashMap<String, Collection<ConceptSynonym>>();
 			//Map<String, ConceptName> conceptSets = new TreeMap<String, ConceptName>();
 			Map<Double, Object[]> conceptSets = new TreeMap<Double, Object[]>();
 			Map<String, String> conceptAnswers = new TreeMap<String, String>();
 			Collection<Form> forms = new Vector<Form>();
+			boolean isNew = true;
 			
 			if (conceptId != null) {
 				Concept concept = cs.getConcept(Integer.valueOf(conceptId));
 				
 				if (concept != null) {
+					isNew = false;
+					// get conceptNames for all locales 
+					for (Locale l : OPENMRS_CONCEPT_LOCALES()) {
+						ConceptName cn = concept.getName(l, true);
+						if (cn == null) {
+							cn = new ConceptName();
+						}
+						conceptNamesByLocale.put(l.toString(), cn);
+					}
+					
+					// get conceptSynonyms for all locales
+					for (Locale l : OPENMRS_CONCEPT_LOCALES()) { 
+						conceptSynonymsByLocale.put(l.toString(), concept.getSynonyms(l));
+					}
+					
 					// get locale specific conceptName object
 					conceptName = concept.getName(locale);
 					if (conceptName == null) 
@@ -368,9 +405,34 @@ public class ConceptFormController extends SimpleFormController {
 				if (context.isAuthenticated())
 					defaultVerbose = context.getAuthenticatedUser().getProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
 			}
+			 
+			if (isNew) {
+				for (Locale l : OPENMRS_CONCEPT_LOCALES()) {
+					conceptNamesByLocale.put(l.toString(), new ConceptName());
+				}
+				
+				// get conceptSynonyms for all locales
+				for (Locale l : OPENMRS_CONCEPT_LOCALES()) { 
+					conceptSynonymsByLocale.put(l.toString(), new HashSet<ConceptSynonym>());
+				}
+			}
 			
+			List<Locale> locales = new ArrayList<Locale>();
+			List<String> localesAsStrings = new ArrayList<String>();
+			for (Locale l : OPENMRS_CONCEPT_LOCALES()) {
+				locales.add(l);
+				localesAsStrings.add(l.toString());
+			}
+			
+			map.put("locales", locales);
+			map.put("localesAsStrings", localesAsStrings);
+			map.put("num_locales", locales.size());
 	    	map.put("conceptName", conceptName);
+	    	for (Map.Entry<String, ConceptName> e : conceptNamesByLocale.entrySet()) {
+	    		map.put("conceptName_" + e.getKey(), e.getValue());
+	    	}
 	    	map.put("conceptSynonyms", conceptSynonyms);
+	    	map.put("conceptSynonymsByLocale", conceptSynonymsByLocale);
 	    	map.put("conceptSets", conceptSets);
 	    	map.put("conceptAnswers", conceptAnswers);
 	    	map.put("formsInUse", forms);
