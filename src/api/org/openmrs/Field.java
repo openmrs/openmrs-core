@@ -51,9 +51,9 @@ public class Field implements java.io.Serializable {
 	 * @return boolean true/false whether or not they are the same objects
 	 */
 	public boolean equals(Object obj) {
-		if (obj == null || !(obj instanceof Field))
+		if (obj == null || !(obj instanceof Field) || fieldId == null)
 			return false;
-
+		
 		Field field = (Field) obj;
 		return (this.fieldId.equals(field.getFieldId()));
 	}

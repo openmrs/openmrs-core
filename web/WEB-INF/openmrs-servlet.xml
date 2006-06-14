@@ -185,7 +185,7 @@
 					<prop key="**/analysis.list">otfaController</prop>
 					<prop key="**/analysis.form">otfaActionController</prop>
 					<prop key="**/migration.form">migrationActionController</prop>
-					<prop key="**/formDesign.form">formDesignForm</prop>
+					<prop key="**/formSchemaDesign.form">formSchemaDesignForm</prop>
 					<prop key="**/formEdit.form">formEditForm</prop>
 					<prop key="**/formViewXslt.form">formViewXsltForm</prop>
 					<prop key="**/form.list">formList</prop>
@@ -722,9 +722,9 @@
 					<property name="successView"><value>form.list</value></property>
 				</bean>
 		
-				<bean id="formDesignForm" class="org.openmrs.web.controller.form.FormFormController">
+				<bean id="formSchemaDesignForm" class="org.openmrs.web.controller.form.FormFormController">
 					<property name="commandName"><value>form</value></property>
-					<property name="formView"><value>/admin/forms/formDesignForm</value></property>
+					<property name="formView"><value>/admin/forms/formSchemaDesignForm</value></property>
 					<property name="successView"><value>form.list</value></property>
 				</bean>
 

@@ -370,7 +370,7 @@ var rowCreator = function(row, i) {
 	else
 		tr.className = "oddRow";
 
-	if (row.voided == true || row.retired == true)
+	if (row != null && (row.voided == true || row.retired == true))
 		tr.className += " voided";
 	
 	if (typeof row != "string") {
@@ -673,16 +673,16 @@ function exitNumberMode(txtbox) {
 }
 
 function setPosition(btn, form, formWidth, formHeight) {
-	var left  = getElementLeft(btn) + btn.offsetWidth + 20;
-	var top   = getElementTop(btn)-50;
+	var left = parseInt(getElementLeft(btn) + btn.offsetWidth + 20);
+	var top  = parseInt(getElementTop(btn)-50);
 	
 	if (formWidth == null)
 		formWidth = getDimension(form.style.width);
 	if (formHeight == null)
 		formHeight = getDimension(form.style.height);
 	
-	var windowWidth = window.innerWidth + getScrollOffsetX();
-	var windowHeight = window.innerHeight + getScrollOffsetY();
+	var windowWidth = parseInt(window.innerWidth + getScrollOffsetX());
+	var windowHeight = parseInt(window.innerHeight + getScrollOffsetY());
 	
 	// if the box is popping off the right/bottom, move it back 
 	//  onto the screen
@@ -700,10 +700,13 @@ function setPosition(btn, form, formWidth, formHeight) {
 }
 
 function getDimension(style) {
+	var s = "0";
 	if (style.indexOf("px") == -1)
-		return style;
+		s = style;
 	else
-		return style.substring(0, style.indexOf("px"));
+		s = style.substring(0, style.indexOf("px"));
+		
+	return parseInt(s);
 }
 
 function getElementLeft(elm) {
@@ -726,10 +729,10 @@ function getElementTop(elm) {
 
 function getScrollOffsetY() {
 	if (window.innerHeight) {
-		return window.pageYOffset;
+		return parseInt(window.pageYOffset);
 	}
 	else {
-		return document.documentElement.scrollTop;
+		return parseInt(document.documentElement.scrollTop);
 	}
 }
 
