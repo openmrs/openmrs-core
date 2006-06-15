@@ -298,7 +298,7 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 	},
 
 	markSelected: function() {
-		dojo.html.addClass(this.titleNode, 'dojoTreeNodeLabelSelected');
+		//dojo.html.addClass(this.titleNode, 'dojoTreeNodeLabelSelected');
 	},
 
 

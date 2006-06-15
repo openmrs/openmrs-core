@@ -161,16 +161,19 @@ public class DWRFormService {
 		return "";
 	}
 	
-	public Integer saveFormField(Integer fieldId, String name, String fieldDesc, Integer fieldTypeId, Integer conceptId, String table, String attr, 
+	public Integer[] saveFormField(Integer fieldId, String name, String fieldDesc, Integer fieldTypeId, Integer conceptId, String table, String attr, 
 			String defaultValue, boolean multiple, Integer formFieldId, Integer formId, Integer parent, Integer number, String part, Integer page, Integer min, Integer max, boolean required) {
 		
 		Context context = (Context) WebContextFactory.get().getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
+		FormField ff = null;
+		Field field = null;
 		
 		if (context != null && context.isAuthenticated()) {
 			FormService fs = context.getFormService();
 			ConceptService cs = context.getConceptService();
 			
-			FormField ff;
+			
 			if (formFieldId != null && formFieldId != 0)
 				ff = fs.getFormField(formFieldId);
 			else
@@ -193,11 +196,14 @@ public class DWRFormService {
 			log.debug("parentId: "+ parent);
 			log.debug("parent: " + ff.getParent());
 			
-			Field field;
 			if (fieldId != null && fieldId != 0)
 				field = fs.getField(fieldId);
 			else
 				field = new Field(fieldId);
+			
+			if (field == null) {
+				log.error("Field is null. Field Id: " + fieldId);
+			}
 			
 			field.setName(name);
 			field.setDescription(fieldDesc);
@@ -219,7 +225,9 @@ public class DWRFormService {
 			context.endTransaction();
 		}
 		
-		return formFieldId;
+		Integer[] arr = {field.getFieldId(), ff.getFormFieldId()};
+		
+		return arr;
 	}
 	
 	public void deleteFormField(Integer id) {

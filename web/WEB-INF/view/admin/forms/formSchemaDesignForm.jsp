@@ -195,7 +195,37 @@
 		
 		tree.containerNode.style.display = "";
 		
+		//remove ability to mark tree nodes.
+		//dojo.widget.TreeNode.markSelected = function() { };
+		
+		dojo.event.topic.subscribe(tree.eventNames.createDOMNode, new domNodeCreated(), "execute");
+		
 	});
+	
+	var domNodeCreated = function(val) {
+		this.value = val;
+		this.execute = function(msg) {
+			var child = msg.source;
+			if (child && child.domNode && child.data) {
+				child.domNode.onmouseover = function() {
+						var widg = dojo.widget.byNode(this);
+						var data = widg.data;
+						if (data) {
+							var s = "";
+							if (data.formFieldId)
+								s += " FormField Id: " + data.formFieldId + " ";
+							if (data.fieldId)
+								s += " Field Id: " + data.fieldId + " ";
+							if (data.conceptId)
+								s += " Concept Id: " + data.conceptId + " ";
+								
+							window.status = s;
+						}
+				}
+			}
+			var t = 8;
+		};
+	}
 	
 	var nodeMoved = function() {
 		this.value = null;
@@ -585,7 +615,9 @@
 			var ext = false;
 			if (!label) {
 				label = getFieldLabel(data);
-				ext = getRemoveLink(data);
+				<c:if test="${form.published != true}">
+					ext = getRemoveLink(data);
+				</c:if>
 			}
 			
 			var props = [];
@@ -634,24 +666,15 @@
 		}
 	}
 	
-	var cancelClicked = function(savedNodeId) {
+	var cancelClicked = function(savedNodeIds) {
 		clearFormField();
 		closeBox();
 		searchType = "";
 		tree.editDiv.style.display = "none";
 		
-		if (savedNodeId && selectedNode.data) {
-			selectedNode.data["formFieldId"] = savedNodeId;
-	        //delete dojo.widget.widgetIds[selectedNode.widgetId];
-	        //dojo.widget.widgetIds[savedNodeId] = selectedNode;
-	        
-			//var cntlr = selectedNode.tree.controller.DNDController;
-			//cntlr.unregisterDNDNode(selectedNode);
-			
-			//selectedNode.id = savedNodeId;
-	        //selectedNode.widgetId = savedNodeId;
-	        
-	        //cntlr.registerDNDNode(selectedNode);
+		if (savedNodeIds && selectedNode.data) {
+			selectedNode.data["formFieldId"] = savedNodeIds[1];
+			selectedNode.data["fieldId"] = savedNodeIds[0];
 		}
 			
 		// remove from main tree because they just dragged it over from the search
@@ -760,6 +783,8 @@
 		
 		var node = addNode(miniTree, data, data.label);
 		
+		obj.widgetId = node.widgetId;
+		
 		miniTree.actionIsDisabled = function(action) {
 				if (!action || action.toUpperCase() == "MOVE")
 					return false;
@@ -813,11 +838,11 @@
 		}
 		
 		data["formFieldId"] = null;
-		data["fieldNumber"] = '';
+		data["fieldNumber"] = null;
 		data["fieldPart"] = '';
-		data["pageNumber"] = '';
-		data["minOccurs"] = '';
-		data["maxOccurs"] = '';
+		data["pageNumber"] = null;
+		data["minOccurs"] = null;
+		data["maxOccurs"] = null;
 		data["isRequired"] = false;
 		
 		return data;
@@ -869,12 +894,14 @@
 			</div>
 		</td>
 		<td valign="top" style="padding-left: 5px;" id="fieldSearch" width="40%">
-			<spring:message code="Field.find" /> <br/>
-			<input type="text" id="searchField" size="25" onFocus="searchType='field'" onKeyUp="searchBoxChange(fieldResults, this, event, false, 400)"/>
-			<table cellspacing="0" cellpadding="2" width="100%">
-				<tbody id="fieldResults">
-				</tbody>
-			</table>
+			<c:if test="${form.published != true}">
+				<spring:message code="Field.find" /> <br/>
+				<input type="text" id="searchField" size="25" onFocus="searchType='field'" onKeyUp="searchBoxChange(fieldResults, this, event, false, 400)"/>
+				<table cellspacing="0" cellpadding="2" width="100%">
+					<tbody id="fieldResults">
+					</tbody>
+				</table>
+			</c:if>
 		</td>
 	</tr>
 </table>
@@ -882,13 +909,14 @@
 <div id="editFormField">
 	<div id="formFieldTitle"><spring:message code="FormField.edit"/>:</div>
 	
-	<%@ include file="include/formFieldEdit.jsp" %>
+	<form>
+		<%@ include file="include/formFieldEdit.jsp" %>
 	
-	<c:if test="${form.published != true}">
-		<input type="button" id="saveFormField" onclick="save(selectedNode)" value="<spring:message code="general.save"/>" />
-	</c:if>
-	<input type="button" id="cancelFormField" onclick="cancelClicked()" value="<spring:message code="general.cancel"/>" />
-	
+		<c:if test="${form.published != true}">
+			<input type="button" id="saveFormField" onclick="save(selectedNode)" value="<spring:message code="general.save"/>" />
+		</c:if>
+		<input type="button" id="cancelFormField" onclick="cancelClicked()" value="<spring:message code="general.cancel"/>" />
+	</form>
 </div>
 
 <div id="searchForm" class="searchForm">
