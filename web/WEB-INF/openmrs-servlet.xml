@@ -308,7 +308,7 @@
 				</bean>
 			<!-- ** /Patient ** -->
 			<!-- ** New (mini) Patient ** -->
-				<bean id="newPatientForm" class="org.openmrs.web.controller.patient.NewPatientFormController">
+				<bean id="newPatientForm" class="org.openmrs.web.controller.patient.NewPatientFormController" singleton="false">
 					<property name="sessionForm"><value>true</value></property>
 					<property name="commandName"><value>patient</value></property>
 					<property name="commandClass"><value>org.openmrs.web.dwr.PatientListItem</value></property>
