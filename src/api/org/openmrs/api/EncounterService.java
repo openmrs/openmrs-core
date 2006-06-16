@@ -173,6 +173,21 @@ public class EncounterService {
 	}
 	
 	/**
+	 * Search for locations by name.  Matches returned match the given string at 
+	 * the beginning of the name
+	 * 
+	 * @param name location's name
+	 * @return list of locations with similar name
+	 * @throws APIException
+	 */
+	public List<Location> findLocations(String name) throws APIException {
+		if (!context.isAuthenticated())
+			throw new APIAuthenticationException("Authentication required");
+		
+		return getEncounterDAO().findLocations(name);
+	}
+	
+	/**
 	 * Save changes to encounter.  
 	 * Automatically applys encounter.patient to all encounter.obs.patient
 	 * 

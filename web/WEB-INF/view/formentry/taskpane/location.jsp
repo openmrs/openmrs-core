@@ -1,12 +1,12 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="Form Entry" otherwise="/login.htm" redirect="/formentry/taskpane/user.htm" />
+<openmrs:require privilege="Form Entry" otherwise="/login.htm" redirect="/formentry/taskpane/location.htm" />
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
-<h3><spring:message code="provider.title"/></h3>
+<h3><spring:message code="Location.title"/></h3>
 
-<script src='<%= request.getContextPath() %>/dwr/interface/DWRUserService.js'></script>
+<script src='<%= request.getContextPath() %>/dwr/interface/DWREncounterService.js'></script>
 <script src='<%= request.getContextPath() %>/dwr/engine.js'></script>
 <script src='<%= request.getContextPath() %>/dwr/util.js'></script>
 <script src='<%= request.getContextPath() %>/scripts/openmrsSearch.js'></script>
@@ -15,36 +15,18 @@
 
 	var savedEvent = null;
 	
-	var roles = new Array();
-	<request:parameters id="r" name="role">
-		<request:parameterValues id="names">
-			roles.push('<jsp:getProperty name="names" property="value"/>');
-		</request:parameterValues>
-	</request:parameters>
-	
-	var onSelect = function(userList) {
-		var user = new miniObject(userList[0]);
-		setObj('//encounter.provider_id', user)
+	var onSelect = function(locList) {
+		var loc = new miniObject(locList[0]);
+		setObj('//encounter.location_id', loc)
 	}
 	
 	function miniObject(p) {
-		this.key = p.userId;
-		this.value = getName(p);
-	}
-	
-	var getName = function(p) {
-		if (typeof p == 'string') return p;
-		str = ''
-		str += p.firstName + " ";
-		str += p.lastName;
-		str += " (" + p.systemId + ")";
-		return str;
+		this.key = p.locationId;
+		this.value = p.name;
 	}
 	
 	function search(delay, event) {
-		if (debugBox) debugBox.innerHTML += '<br> search() event.keyCode: ' + event.keyCode;
 		var searchBox = document.getElementById("phrase");
-		if (debugBox) debugBox.innerHTML += '<br> searchBox.value: ' + searchBox.value;
 		savedSearch = searchBox.value.toString();
 		
 		// stinkin' infopath hack.  It doesn't give us onkeyup or onkeypress
@@ -55,22 +37,22 @@
 		return searchBoxChange('searchBody', searchBox, event, false, delay, onkeydown);
 	}
 	
-	function preFillTable(users) {
-		if (users.length == 1 && typeof users[0] == 'string') {
+	function preFillTable(locations) {
+		if (locations.length == 1 && typeof locations[0] == 'string') {
 			//if the only object in the list is a string, its an error message
-			users.push('<p class="no_hit"><spring:message code="provider.missing" /></p>');
+			locations.push('<p class="no_hit"><spring:message code="Location.missing" /></p>');
 		}
-		fillTable(users);
+		fillTable(locations);
 	}
 	
 	function findObjects(text) {
 		// on page startup, call search with 'All' to return all users. (or in the middle of searching, obviously)
 		if (text == 'All') {
-			DWRUserService.getAllUsers(roles, false, preFillTable);
+			DWREncounterService.getLocations(preFillTable);
 		}
 		//must have at least 2 characters entered or that character be a number
 		else if (text.length > 1 || (parseInt(text) >= 0 && parseInt(text) <= 9)) {
-	    	DWRUserService.findUsers(text, roles, false, preFillTable);
+	    	DWREncounterService.findLocations(preFillTable, text);
 		}
 		else {
 			var msg = new Array();
@@ -90,6 +72,11 @@
 	function allowAutoListWithNumber() {
 		return true;
 	}
+	
+	var getName = function(loc) {
+		if (typeof loc == 'string') return loc;
+		return loc.name;
+	}	
 	
 	var customCellFunctions = [getNumber, getName];
 

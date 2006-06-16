@@ -99,6 +99,16 @@ public interface EncounterDAO {
 	public Location getLocationByName(String name) throws DAOException;
 	
 	/**
+	 * Search for locations by name.  Matches returned match the given string at 
+	 * the beginning of the name
+	 * 
+	 * @param name location's name
+	 * @return list of locations with similar name
+	 * @throws APIException
+	 */
+	public List<Location> findLocations(String name) throws DAOException;
+	
+	/**
 	 * Save changes to encounter
 	 * @param encounter
 	 * @throws DAOException

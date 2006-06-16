@@ -11,6 +11,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
@@ -192,6 +193,20 @@ public class HibernateEncounterDAO implements EncounterDAO {
 
 		return locations;
 
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.EncounterService#findLocations(java.lang.String)
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Location> findLocations(String name) throws DAOException {
+		Session session = HibernateUtil.currentSession();
+		List result = session.createCriteria(Location.class)
+			.add(Expression.like("name", name, MatchMode.START))
+			.addOrder(Order.asc("name"))
+			.list();
+		
+		return result;
 	}
 
 	/**
