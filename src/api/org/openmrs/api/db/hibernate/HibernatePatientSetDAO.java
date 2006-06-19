@@ -645,6 +645,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		// default query
 		Criteria criteria = session.createCriteria(Encounter.class);
 		criteria.add(Restrictions.in("patient.patientId", ids));
+		criteria.add(Restrictions.eq("voided", false));
 		
 		if (encType != null)
 			criteria.add(Restrictions.eq("encounterType", encType));

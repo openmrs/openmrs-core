@@ -18,6 +18,7 @@ public class EncounterListItem {
 	private String providerName;
 	private String formName;
 	private Date encounterDateTime;
+	private boolean voided = false;
 
 
 	public EncounterListItem() { }
@@ -45,6 +46,7 @@ public class EncounterListItem {
 				encounterType = encounter.getEncounterType().getName();
 			if (encounter.getForm() != null)
 				formName = encounter.getForm().getName();
+			voided = encounter.isVoided();
 		}
 	}
 
@@ -103,5 +105,15 @@ public class EncounterListItem {
 	public void setFormName(String formName) {
 		this.formName = formName;
 	}
+
+	public boolean isVoided() {
+		return voided;
+	}
+
+	public void setVoided(boolean voided) {
+		this.voided = voided;
+	}
+	
+	
 
 }

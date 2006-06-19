@@ -213,6 +213,9 @@ public class EncounterService {
 	/**
 	 * Delete encounter from database.
 	 * 
+	 * For super users only. If dereferencing encounters, use
+	 * <code>voidEncounter(org.openmrs.Encounter)</code>
+	 * 
 	 * @param encounter encounter object to be deleted 
 	 */
 	public void deleteEncounter(Encounter encounter) throws APIException {
@@ -222,15 +225,65 @@ public class EncounterService {
 	}
 	
 	/**
-	 * all encounters for a patient
+	 * Voiding a encounter essentially removes it from circulation
+	 * 
+	 * @param Encounter
+	 *            encounter
+	 * @param String
+	 *            reason
+	 */
+	public void voidEncounter(Encounter encounter, String reason) {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_ENCOUNTERS))
+			throw new APIAuthenticationException("Privilege required: "
+					+ OpenmrsConstants.PRIV_EDIT_ENCOUNTERS);
+
+		encounter.setVoided(true);
+		encounter.setVoidedBy(context.getAuthenticatedUser());
+		encounter.setDateVoided(new Date());
+		encounter.setVoidReason(reason);
+		updateEncounter(encounter);
+	}
+	
+	/**
+	 * Unvoid encounter record 
+	 * 
+	 * @param encounter encounter to be revived
+	 */
+	public void unvoidEncounter(Encounter encounter) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_ENCOUNTERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_ENCOUNTERS);
+		
+		String voidReason = encounter.getVoidReason();
+		if (voidReason == null)
+			voidReason = "";
+		
+		encounter.setVoided(false);
+		encounter.setVoidedBy(null);
+		encounter.setDateVoided(null);
+		encounter.setVoidReason(null);
+		updateEncounter(encounter);
+	}
+	
+	/**
+	 * All unvoided encounters for a patient
 	 * @param who
 	 * @return
 	 */
 	public Set<Encounter> getEncounters(Patient who) {
+		return getEncounters(who, false);
+	}
+	
+	/**
+	 * All encounters for a patient
+	 * @param who
+	 * @param includeVoided
+	 * @return
+	 */
+	public Set<Encounter> getEncounters(Patient who, boolean includeVoided) {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ENCOUNTERS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_ENCOUNTERS);
 		
-		return getEncounterDAO().getEncounters(who);
+		return getEncounterDAO().getEncounters(who, includeVoided);
 	}
 
 	/**

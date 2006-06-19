@@ -252,3 +252,20 @@
  
  UPDATE `global_property` SET property_value='1.0.22' WHERE property = 'database_version';
 
+
+ #-----------------------------------
+ # OpenMRS Datamodel version 1.0.23
+ # Ben Wolfe   June 19 2006 8:45 AM
+ # Make encounters voidable
+ #-----------------------------------
+ 
+ ALTER TABLE `encounter` ADD COLUMN `voided` tinyint(1) NOT NULL default '0';
+ ALTER TABLE `encounter` ADD COLUMN `voided_by` int(11) default NULL;
+ ALTER TABLE `encounter` ADD COLUMN `date_voided` datetime default NULL;
+ ALTER TABLE `encounter` ADD COLUMN `void_reason` varchar(255) default NULL;
+ ALTER TABLE `encounter` ADD INDEX `user_who_voided_encounter` (`voided_by`);
+ ALTER TABLE `encounter` ADD CONSTRAINT `user_who_voided_encounter` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`);
+ 
+ UPDATE `global_property` SET property_value='1.0.23' WHERE property = 'database_version';
+ 
+

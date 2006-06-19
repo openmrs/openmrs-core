@@ -20,7 +20,7 @@ public class DWREncounterService {
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
-	public Vector findEncounters(String phrase, boolean includeRetired) {
+	public Vector findEncounters(String phrase, boolean includeVoided) {
 
 		// List to return
 		// Object type gives ability to return error strings
@@ -44,7 +44,8 @@ public class DWREncounterService {
 					// user searched on a number.  Insert concept with corresponding encounterId
 					Encounter e = es.getEncounter(Integer.valueOf(phrase));
 					if (e != null) {
-						encs.add(e);
+						if (!e.isVoided() || includeVoided == true)
+							encs.add(e);
 					}
 				}
 							
@@ -52,7 +53,7 @@ public class DWREncounterService {
 					//TODO get all concepts for testing purposes?
 				}
 				else {
-					encs.addAll(es.getEncountersByPatientIdentifier(phrase, includeRetired));
+					encs.addAll(es.getEncountersByPatientIdentifier(phrase, includeVoided));
 				}
 
 				if (encs.size() == 0) {

@@ -35,7 +35,7 @@
 				<tr>
 					<td><spring:message code="Encounter.search"/></td>
 					<td><input type="text" id="searchBox" onKeyUp="search(event, 500)"></td>
-					<td style="display: none"><spring:message code="formentry.includeVoided"/><input type="checkbox" id="includeVoided" onClick="search(event, 0); searchBox.focus();" /></td>
+					<td><spring:message code="formentry.includeVoided"/><input type="checkbox" id="includeVoided" onClick="search(event, 0); searchBox.focus();" /></td>
 				</tr>
 			</table>
 		</form>

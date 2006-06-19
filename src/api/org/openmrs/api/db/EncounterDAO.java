@@ -125,9 +125,10 @@ public interface EncounterDAO {
 	/**
 	 * all encounters for a patient
 	 * @param who
+	 * @param includeVoided
 	 * @return
 	 */
-	public Set<Encounter> getEncounters(Patient who);
+	public Set<Encounter> getEncounters(Patient who, boolean includeVoided);
 
 	/**
 	 * Get all encounters for a patient that took place at a specific location
