@@ -271,7 +271,7 @@ public class ConceptFormController extends SimpleFormController {
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Concept.saved");
 				}
 				catch (APIException e) {
-					log.error(e);
+					log.error("Error while trying to save concept", e);
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.cannot.save");
 					if (isNew) {
 						errors.reject("concept", "Concept.cannot.save");
