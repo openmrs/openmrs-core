@@ -24,34 +24,7 @@
 
 <body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
 	<div id="pageBody">
-		<div id="topBar">
-			<div id="banner">
-				<%@ include file="/WEB-INF/template/banner.jsp" %>
-			</div>
-			<div id="userBar">
-				<openmrs:authentication>
-					<c:if test="${authenticatedUser != null}">
-						<spring:message code="header.logged.in"/> ${authenticatedUser.firstName} ${authenticatedUser.lastName} | 
-						<a href='<%= request.getContextPath() %>/logout'>
-							<spring:message code="header.logout" />
-						</a>
-					</c:if>
-					<c:if test="${authenticatedUser == null}">
-						<spring:message code="header.logged.out"/> | 
-						<a href='<%= request.getContextPath() %>/login.htm'>
-							<spring:message code="header.login"/>
-						</a>
-					</c:if>
-				</openmrs:authentication>
-				| <a href='<%= request.getContextPath() %>/help.htm'><spring:message code="header.help"/></a>
-			</div>
-		</div>
-			
-		<div id="gutter">
-			<%@ include file="/WEB-INF/template/gutter.jsp" %>
-		</div>
-		<div id="content">
-	
+		<div id="contentMinimal">
 				<c:if test="${msg != null}">
 					<div id="openmrs_msg"><spring:message code="${msg}" text="${msg}"/></div>
 				</c:if>
@@ -59,5 +32,3 @@
 					<div id="openmrs_error"><spring:message code="${err}" text="${err}"/></div>
 				</c:if>
 	
-
-					
