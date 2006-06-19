@@ -95,6 +95,21 @@
 		}
 	}
 	
+	function updateCalcColumn(sel) {
+		if (sel.value != "") {
+			var count = sel.name.substr(sel.name.indexOf("_")+1, 3);
+			var input = getPreviousSibling(sel, "calculatedValue_" + count);
+			input.value = sel.value;
+			input.value += '\n';
+			var tbl = getParentByTagName(sel, "table");
+			input = getChildByName(tbl, "calculatedName_" + count);
+			if (input != null && input.value == "") {
+				var opt = sel.options[sel.selectedIndex];
+				input.value = opt.text.substr(2, opt.text.length);
+			}
+		}
+	}
+	
 	function getPreviousSibling(obj, name) {
 		var sibling = obj.previousSibling;
 		name = name.toLowerCase();
@@ -208,6 +223,7 @@
 		getChildByName(obj, "conceptButton").name += suffix;
 		getChildByName(obj, "calculatedName").name += suffix;
 		getChildByName(obj, "calculatedValue").name += suffix;
+		getChildByName(obj, "calculatedPatient").name += suffix;
 	}
 	
 	var mySearch = null;
@@ -398,6 +414,7 @@
 		position: absolute;
 		z-index: 10;
 		margin: 5px;
+		left: -1000px;
 	}
 	.searchForm .wrapper {
 		padding: 2px;
@@ -607,6 +624,7 @@
 					<c:forEach items="${fn:split(column.returnValue, linefeed)}" var="line" varStatus="varStatus">
 						getChildByName(obj, "calculatedValue_" + count).value += "${line}" <c:if test="${varStatus.last != true}"> + '\n'</c:if>;
 					</c:forEach>
+					getChildByName(obj, "calculatedValue_" + count).value += '\n';
 				</c:if>
 			</c:forEach>
 			

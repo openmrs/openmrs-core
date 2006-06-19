@@ -666,7 +666,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Map<Integer, Object> getPatientAttributes(PatientSet patients, String className, String property) throws DAOException {
+	public Map<Integer, Object> getPatientAttributes(PatientSet patients, String className, String property, boolean returnAll) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
 		Map<Integer, Object> ret = new HashMap<Integer, Object>();
@@ -707,11 +707,30 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		List<Object[]> rows = criteria.list();
 		
 		// set up the return map
-		for (Object[] row : rows) {
-			Integer ptId = (Integer)row[0];
-			Object columnValue = row[1];
-			if (!ret.containsKey(ptId))
-				ret.put(ptId, columnValue);
+		if (returnAll) {
+			for (Object[] row : rows) {
+				Integer ptId = (Integer)row[0];
+				Object columnValue = row[1];
+				if (!ret.containsKey(ptId)) {
+					Object[] arr = {columnValue};
+					ret.put(ptId, arr);
+				}
+				else {
+					Object[] oldArr = (Object[])ret.get(ptId);
+					Object[] newArr = new Object[oldArr.length + 1];
+					System.arraycopy(oldArr,0,newArr,0,oldArr.length);
+					newArr[oldArr.length] = columnValue;
+					ret.put(ptId, newArr);
+				}
+			}
+		}
+		else {
+			for (Object[] row : rows) {
+				Integer ptId = (Integer)row[0];
+				Object columnValue = row[1];
+				if (!ret.containsKey(ptId))
+					ret.put(ptId, columnValue);
+			}
 		}
 		
 		return ret;
