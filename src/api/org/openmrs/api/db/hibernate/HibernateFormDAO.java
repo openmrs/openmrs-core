@@ -38,7 +38,7 @@ public class HibernateFormDAO implements
 		
 		try {
 			HibernateUtil.beginTransaction();
-			//session.clear();
+			session.clear();
 			session.merge(form);
 			HibernateUtil.commitTransaction();
 		}
