@@ -70,7 +70,7 @@ dojo.data.Item.compare = function(/* dojo.data.Item */ itemOne, /* dojo.data.Ite
 		for (var i in attributeArrayOne) {
 			var attribute = attributeArrayOne[i];
 			var arrayOfValuesOne = itemOne.getValues(attribute);
-			var arrayOfValuesTwo = otherItem.getValues(attribute);
+			var arrayOfValuesTwo = itemTwo.getValues(attribute);
 			dojo.lang.assert(arrayOfValuesOne && (arrayOfValuesOne.length > 0));
 			if (!arrayOfValuesTwo) {
 				return 1;
@@ -280,7 +280,7 @@ dojo.data.Item.prototype.setValues = function(/* string or dojo.data.Attribute *
 	var finalArray = [];
 	this._dictionaryOfAttributeValues[attributeId] = finalArray;
 	for (var i in arrayOfValues) {
-		value = arrayOfValues[i];
+		var value = arrayOfValues[i];
 		if (!(value instanceof dojo.data.Value)) {
 			value = new dojo.data.Value(value);
 		}

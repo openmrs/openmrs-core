@@ -101,15 +101,15 @@ dojo.lang.extend(dojo.selection.Selection, {
 		// remove item
 		var idx = this._find(item);
 		if(idx > -1) {
-			this.items.splice(i, 1);
+			this.items.splice(idx, 1);
 		}
 		// remove from selection
 		// FIXME: do we call deselect? I don't think so because this isn't how
 		// you usually want to deselect an item. For example, if you deleted an
 		// item, you don't really want to deselect it -- you want it gone. -DS
-		id = this._find(item, true);
+		idx = this._find(item, true);
 		if(idx > -1) {
-			this.selection.splice(i, 1);
+			this.selection.splice(idx, 1);
 		}
 	},
 
@@ -225,7 +225,7 @@ dojo.lang.extend(dojo.selection.Selection, {
 		// now deselect...
 		for(var i in toDeselect) {
 			if(this.items[i] == this.lastSelected) {
-				dbg("oops!");
+				//dojo.debug("oops!");
 			}
 			this.deselect(this.items[i]);
 		}

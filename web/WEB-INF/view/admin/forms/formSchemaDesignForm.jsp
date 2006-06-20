@@ -6,7 +6,7 @@
 <%@ include file="localHeader.jsp" %>
 
 <script type="text/javascript">
-	var djConfig = {debugAtAllCosts: true };
+	//var djConfig = {debugAtAllCosts: true };
 </script>
 
 <script type="text/javascript" src="<%= request.getContextPath() %>/scripts/dojo/dojo.js"></script>
@@ -107,6 +107,9 @@
 	span.treeNodeRow div.dojoTree div.dojoTreeNode {
 		display: inline;
 	}
+	#fieldResults tr td div {
+		overflow: hidden;
+	}
 	
 </style>
 
@@ -206,11 +209,11 @@
 		this.value = val;
 		this.execute = function(msg) {
 			var child = msg.source;
-			if (child && child.domNode && child.data) {
-				child.domNode.onmouseover = function() {
+			if (child && child.labelNode && child.data) {
+				child.labelNode.onmouseover = function() {
 						var widg = dojo.widget.byNode(this);
-						var data = widg.data;
-						if (data) {
+						if (widg && widg.data) {
+							var data = widg.data;
 							var s = "";
 							if (data.formFieldId)
 								s += " FormField Id: " + data.formFieldId + " ";
@@ -371,6 +374,8 @@
 			if (data["numForms"] && parseInt(data["numForms"]) > 1)
 				disableField();
 		}
+		else
+			node.data = [];
 		
 		s.display = "";
 		
@@ -403,7 +408,7 @@
 		$('fieldId').value = '';
 		$('fieldName').value = '';
 		$('numForms').innerHTML = '';
-		$('description').innerHTML = '';
+		$('description').value = '';
 		var options = $('fieldType').options;
 		for (var i = 0; i<options.length; i++) {
 			options[i].selected = false;
@@ -416,9 +421,8 @@
 		$('attributeName').value = "";
 		$('defaultValue').value = "";
 		$('selectMultiple').checked = false;
-		$('numForms').innerHTML = "";
 		
-		$('formFieldId').innerHTML = '';
+		$('formFieldId').value = '';
 		$('fieldNumber').value = '';
 		$('fieldPart').value = '';
 		$('pageNumber').value = '';
@@ -456,17 +460,28 @@
 	}
 	
 	function editAllFields() {
-		var target = tree.getTreeNode(tree.contextMenu.contextEventTarget);
-		document.location = "field.form?fieldId=" + target.data["fieldId"];
+		if (tree && tree.fieldIdInput) {
+			var val = tree.fieldIdInput.value;
+			if (val && val.length)
+				window.open("field.form?fieldId=" + val);
+			else
+				alert("Field widget does not exist yet.  It will be created when you save this formField");
+		}
+		
+		return false;
 	}
 	
 	function editFieldForThisForm() {
-		var target = tree.getTreeNode(tree.contextMenu.contextEventTarget);
-		
-		tree.fieldIdInput.value = "";
-		enableField();
-		$("fieldName").focus();
-		tree.numFormsTag.innerHTML = "1";
+		try {
+			tree.fieldIdInput.value = "";
+			enableField();
+			$("fieldName").focus();
+			tree.numFormsTag.innerHTML = "1";
+		}
+		catch (e) {
+			alert("An error occured: " + e);
+		}
+		return false;
 	}
 	
 	function getFieldLabel(data) {
@@ -759,7 +774,8 @@
 	}
 	
 	var getConceptCellContent = getCellContent;
-	
+	var searchTreeNodes = [];	
+
 	var getCellContent = function(obj) {
 		if (searchType == "concept")
 			return getConceptCellContent(obj);
@@ -780,6 +796,7 @@
 						
 		var parentNode = span;
 		var miniTree = dojo.widget.fromScript("Tree", properties, parentNode, "last");
+		searchTreeNodes.push(miniTree);
 		
 		var node = addNode(miniTree, data, data.label);
 		
@@ -806,6 +823,7 @@
 		var data = [];
 		data["selectMultiple"] = false;
 		data["fieldId"] = null;
+		data["defaultValue"] = "";
 		
 		// object is a conceptListItem
 		if (obj.conceptId != null) {
@@ -858,6 +876,14 @@
 		mySearch.hide();
 		mySearchStatus = null;
 		return false;
+	}
+	
+	// remove the nodes that were added in the search
+	function onRemoveAllRows(tbody) {
+		while(searchTreeNodes.length) {
+			searchTreeNodes[0].destroy();
+			searchTreeNodes.splice(0,1);
+		}
 	}
 
 </script>

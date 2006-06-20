@@ -74,7 +74,6 @@ dojo.widget.html.stabile.commit = function(state){
 	dojo.widget.html.stabile.getStorage().value = dojo.widget.html.stabile.description(state);
 }
 
-
 // Return a JSON "description string" for the given value.
 // Supports only core JavaScript types with literals, plus Date,
 // and cyclic structures are unsupported.
@@ -85,6 +84,10 @@ dojo.widget.html.stabile.description = function(v, showAll){
 	// Save and later restore dojo.widget.html.stabile._depth;
 	var depth = dojo.widget.html.stabile._depth;
 
+	var describeThis = function() {
+		 return this.description(this, true);
+	} 
+	
 	try {
 
 		if(v===void(0)){
@@ -161,7 +164,7 @@ dojo.widget.html.stabile.description = function(v, showAll){
 				}else{
 					d += ", ";
 				}
-				kd = key;
+				var kd = key;
 				// If the key is not a legal identifier, use its description.
 				// For strings this will quote the stirng.
 				if(!kd.match(/^[a-zA-Z_][a-zA-Z0-9_]*$/)){
@@ -174,6 +177,8 @@ dojo.widget.html.stabile.description = function(v, showAll){
 
 		if(showAll){
 			if(dojo.widget.html.stabile._recur){
+				// Save the original definitions of toString;
+				var objectToString = Object.prototype.toString;
 				return objectToString.apply(v, []);
 			}else{
 				dojo.widget.html.stabile._recur = true;

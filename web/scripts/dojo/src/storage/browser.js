@@ -35,6 +35,10 @@ dojo.lang.extend(dojo.storage.browser.FlashStorageProvider, {
 	_statusHandler: null,
 	
 	initialize: function(){
+		if(djConfig["disableFlashStorage"] == true){
+			return;
+		}
+		
 		// initialize our Flash
 		var loadedListener = function(){
 			dojo.storage._flashLoaded();

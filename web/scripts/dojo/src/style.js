@@ -150,7 +150,7 @@ dojo.require("dojo.lang.common");
 	
 	ds._sumPixelValues = function(node, selectors, autoIsZero){
 		var total = 0;
-		for(x=0; x<selectors.length; x++){
+		for(var x=0; x<selectors.length; x++){
 			total += ds.getPixelValue(node, selectors[x], autoIsZero);
 		}
 		return total;
@@ -283,6 +283,7 @@ dojo.require("dojo.lang.common");
 	 * by event.clientX/Y if the mouse were directly over the top/left of this node.
 	 */
 	ds.getAbsolutePosition = ds.abs = function(node, includeScroll){
+		node = dojo.byId(node);
 		var ret = [];
 		ret.x = ret.y = 0;
 		var st = dojo.html.getScrollTop();
@@ -293,13 +294,12 @@ dojo.require("dojo.lang.common");
 				ret.x = left-2;
 				ret.y = top-2;
 			}
-/**
 		}else if(document.getBoxObjectFor){
 			// mozilla
-			var bo=document.getBoxObjectFor(node);
-			ret.x=bo.x-sl;
-			ret.y=bo.y-st;
-**/		}else{
+			var bo = document.getBoxObjectFor(node);
+			ret.x = bo.x - ds.sumAncestorProperties(node, "scrollLeft");
+			ret.y = bo.y - ds.sumAncestorProperties(node, "scrollTop");
+		}else{
 			if(node["offsetParent"]){
 				var endNode;		
 				// in Safari, if the node is an absolutely positioned child of
@@ -313,10 +313,12 @@ dojo.require("dojo.lang.common");
 				}else{
 					endNode = db.parentNode;
 				}
-				
+
 				if(node.parentNode != db){
-					ret.x -= ds.sumAncestorProperties(node, "scrollLeft");
-					ret.y -= ds.sumAncestorProperties(node, "scrollTop");
+					var nd = node;
+					if(window.opera){ nd = db; }
+					ret.x -= ds.sumAncestorProperties(nd, "scrollLeft");
+					ret.y -= ds.sumAncestorProperties(nd, "scrollTop");
 				}
 				do{
 					var n = node["offsetLeft"];
@@ -351,6 +353,7 @@ dojo.require("dojo.lang.common");
 			var val = node[prop];
 			if(val){
 				retVal += val - 0;
+				if(node==document.body){ break; }// opera and khtml #body & #html has the same values, we only need one value
 			}
 			node = node.parentNode;
 		}
@@ -358,7 +361,6 @@ dojo.require("dojo.lang.common");
 	}
 
 	ds.getTotalOffset = function(node, type, includeScroll){
-		node = dojo.byId(node);
 		return ds.abs(node, includeScroll)[(type == "top") ? "y" : "x"];
 	}
 
@@ -455,17 +457,20 @@ dojo.require("dojo.lang.common");
 		}
 		var style = doc.createElement("style");
 		style.setAttribute("type", "text/css");
-		if(style.styleSheet){// IE
-			style.styleSheet.cssText = cssStr;
-		} else {// w3c
-			var cssText = doc.createTextNode(cssStr);
-			style.appendChild(cssText);
-		}
+		// IE is b0rken enough to require that we add the element to the doc
+		// before changing it's properties
 		var head = doc.getElementsByTagName("head")[0];
 		if(!head){ // must have a head tag 
 			dojo.debug("No head tag in document, aborting styles");
+			return;
 		}else{
 			head.appendChild(style);
+		}
+		if(style.styleSheet){// IE
+			style.styleSheet.cssText = cssStr;
+		}else{ // w3c
+			var cssText = doc.createTextNode(cssStr);
+			style.appendChild(cssText);
 		}
 		return style;
 	}
@@ -648,6 +653,45 @@ dojo.require("dojo.lang.common");
 			ns.opacity = 1;
 		}
 	}
+
+	/** 
+	* Set the given style attributes for the node. 
+	* Patch submitted by Wolfram Kriesing, 22/03/2006.
+	*
+	* Ie. dojo.style.setStyleAttributes(myNode, "position:absolute; left:10px; top:10px;") 
+	* This just makes it easier to set a style directly without the need to  
+	* override it completely (as node.setAttribute() would). 
+	* If there is a dojo-method for an attribute, like for "opacity" there 
+	* is setOpacity, the dojo method is called instead. 
+	* For example: dojo.style.setStyleAttributes(myNode, "opacity: .4"); 
+	*  
+	* Additionally all the dojo.style.set* methods can also be used. 
+	* Ie. when attributes contains "outer-height: 10;" it will call dojo.style.setOuterHeight("10"); 
+	* 
+	* @param object The node to set the style attributes for. 
+	* @param string Ie. "position:absolute; left:10px; top:10px;" 
+	*/ 
+	ds.setStyleAttributes = function(node, attributes) { 
+		var methodMap={ 
+			"opacity":dojo.style.setOpacity,
+			"content-height":dojo.style.setContentHeight,
+			"content-width":dojo.style.setContentWidth,
+			"outer-height":dojo.style.setOuterHeight,
+			"outer-width":dojo.style.setOuterWidth 
+		} 
+
+		var splittedAttribs=attributes.replace(/(;)?\s*$/, "").split(";"); 
+		for(var i=0; i<splittedAttribs.length; i++){ 
+			var nameValue=splittedAttribs[i].split(":"); 
+			var name=nameValue[0].replace(/\s*$/, "").replace(/^\s*/, "").toLowerCase();
+			var value=nameValue[1].replace(/\s*$/, "").replace(/^\s*/, "");
+			if(dojo.lang.has(methodMap,name)) { 
+				methodMap[name](node,value); 
+			} else { 
+				node.style[dojo.style.toCamelCase(name)]=value; 
+			} 
+		} 
+	} 
 
 	ds._toggle = function(node, tester, setter){
 		node = dojo.byId(node);

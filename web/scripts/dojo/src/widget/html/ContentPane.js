@@ -19,6 +19,8 @@ dojo.require("dojo.string.extras");
 dojo.require("dojo.style");
 
 dojo.widget.html.ContentPane = function(){
+	this._onLoadStack = [];
+	this._onUnLoadStack = [];
 	dojo.widget.HtmlWidget.call(this);
 }
 dojo.inherits(dojo.widget.html.ContentPane, dojo.widget.HtmlWidget);
@@ -28,6 +30,7 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 	isContainer: true,
 
 	// remote loading options
+	adjustPaths: true,
 	href: "",
 	extractContent: true,
 	parseContent: true,
@@ -61,7 +64,6 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 							// by remote content, used when we clean up for new content
 
 	_callOnUnLoad: false,		// used by setContent and _handleDefults, makes sure onUnLoad is only called once
-
 
 	postCreate: function(args, frag, parentComp){
 		if ( this.handler != "" ){
@@ -120,7 +122,7 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 				if(type == "load") {
 					self.onDownloadEnd.call(self, url, data);
 				} else {
-					// works best when from a live serveer instead of from file system
+					// works best when from a live server instead of from file system 
 					self._handleDefaults.call(self, "Error loading '" + url + "' (" + e.status + " "+  e.statusText + ")", "onDownloadError");
 					self.onLoad();
 				}
@@ -129,11 +131,51 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 	},
 
 	// called when setContent is finished
-	onLoad: function(e){ /*stub*/ },
+	onLoad: function(e){
+		this._runStack("_onLoadStack");
+	},
 
 	// called before old content is cleared
-	onUnLoad: function(e){ 
-			this.scriptScope = null;
+	onUnLoad: function(e){
+		this._runStack("_onUnLoadStack");
+		this.scriptScope = null;
+	},
+
+	_runStack: function(stName){
+		var st = this[stName]; var err = "";
+		for(var i = 0;i < st.length; i++){
+			try{
+				st[i].call(this.scriptScope);
+			}catch(e){ 
+				err += "\n"+st[i]+" failed: "+e.description;
+			}
+		}
+		this[stName] = [];
+
+		if(err.length){
+			var name = (stName== "_onLoadStack") ? "addOnLoad" : "addOnUnLoad";
+			this._handleDefaults(name+" failure\n "+err, "onExecError", true);
+		}
+	},
+
+	addOnLoad: function(obj, func){
+		// summary
+		// 	same as to dojo.addOnLoad but does not take "function_name" as a string
+		this._pushOnStack(this._onLoadStack, obj, func);
+	},
+
+	addOnUnLoad: function(obj, func){
+		// summary
+		// 	same as to dojo.addUnOnLoad but does not take "function_name" as a string
+		this._pushOnStack(this._onUnLoadStack, obj, func);
+	},
+
+	_pushOnStack: function(stack, obj, func){
+		if(typeof func == 'undefined') {
+			stack.push(obj);
+		}else{
+			stack.push(function(){ obj[func](); });
+		}
 	},
 
 	destroy: function(){
@@ -385,7 +427,7 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 				node.innerHTML = xml;
 			}
 		} catch(e){
-			e = "Could'nt load html:"+e;
+			e = "Could'nt load content:"+e;
 			this._handleDefaults(e, "onContentError");
 		}
 	},
@@ -402,9 +444,11 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 		if(!data || dojo.dom.isNode(data)){
 			// if we do a clean using setContent(""); or setContent(#node) bypass all parseing, extractContent etc
 			this._setContent(data);
+			this.onResized();
+			this.onLoad();
 		}else{
 			// need to run splitAndFixPaths? ie. manually setting content
-			 if(!data.xml){
+			 if((!data.xml)&&(this.adjustPaths)){
 				data = this.splitAndFixPaths(data);
 			}
 			if(this.extractContent) {
@@ -435,19 +479,33 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 						this._handleDefaults(e, "onContentError", true);
 					}
 				}
-				var node = this.containerNode || this.domNode;
-				var parser = new dojo.xml.Parse();
-				var frag = parser.parseElement(node, null, true);
-				// createSubComponents not createComponents because frag has already been created
-				dojo.widget.getParser().createSubComponents(frag, this);
 			}
+			// need to allow async load, Xdomain uses it
+			// is inline function because we cant send args to addOnLoad function
+			var _self = this;
+			function asyncParse(){
+				if(_self.executeScripts){
+					_self._executeScripts(data);
+				}
 
-			if(this.executeScripts){
-				this._executeScripts(data);
+				if(_self.parseContent){
+					var node = _self.containerNode || _self.domNode;
+					var parser = new dojo.xml.Parse();
+					var frag = parser.parseElement(node, null, true);
+					// createSubComponents not createComponents because frag has already been created
+					dojo.widget.getParser().createSubComponents(frag, _self);
+				}
+
+				_self.onResized();
+				_self.onLoad();
+			}
+			// try as long as possible to make setContent sync call
+			if(dojo.hostenv.isXDomain && data.requires.length){
+				dojo.addOnLoad(asyncParse);
+			}else{
+				asyncParse();
 			}
 		}
-		this.onResized(); // move this here so that resize is called when we set "" to reset sizing code
-		this.onLoad(); // tell system that we have finished
 	},
 
 	// Generate pane content from given java function
@@ -494,11 +552,11 @@ dojo.lang.extend(dojo.widget.html.ContentPane, {
 			scripts += data.scripts[i];
 		}
 
+		try{
 			// initialize a new anonymous container for our script, dont make it part of this widgets scope chain
 			// instead send in a variable that points to this widget, usefull to connect events to onLoad, onUnLoad etc..
 			this.scriptScope = null;
 			this.scriptScope = new (new Function('_container_', scripts+'; return this;'))(self);
-	try{
 		}catch(e){
 			this._handleDefaults("Error running scripts from content:\n"+e, "onExecError", true);
 		}

@@ -1,7 +1,7 @@
 .dojoTaskBarItem {
+	display: inline-block;
 	background-color: ThreeDFace;
 	border: outset 2px;
-	display: inline;
 	margin-right: 5px;
 	cursor: pointer;
 	height: 35px;
@@ -9,6 +9,8 @@
 	font-size: 10pt;
 	white-space: nowrap;
 	text-align: center;
+	float: left;
+	overflow: hidden;
 }
 
 .dojoTaskBarItem img {

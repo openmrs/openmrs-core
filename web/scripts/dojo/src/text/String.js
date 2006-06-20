@@ -8,7 +8,7 @@
 		http://dojotoolkit.org/community/licensing.shtml
 */
 
-dojo.deprecated("dojo.text.String is being replaced by dojo.string");
+dojo.deprecated("dojo.text.String", "replaced by dojo.string", "0.4");
 dojo.require("dojo.string");
 
 dojo.text = dojo.string;

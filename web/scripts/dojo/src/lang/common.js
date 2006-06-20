@@ -9,13 +9,12 @@
 */
 
 dojo.provide("dojo.lang.common");
-
 dojo.require("dojo.lang");
 
 /*
  * Adds the given properties/methods to the specified object
  */
-dojo.lang.mixin = function(obj, props){
+dojo.lang._mixin = function(obj, props){
 	var tobj = {};
 	for(var x in props){
 		// the "tobj" condition avoid copying properties in "props"
@@ -34,10 +33,23 @@ dojo.lang.mixin = function(obj, props){
 }
 
 /*
- * Adds the given properties/methods to the specified object's prototype
+ * Adds the properties/methods of argument Objects to obj
  */
-dojo.lang.extend = function(ctor, props){
-	this.mixin(ctor.prototype, props);
+dojo.lang.mixin = function(obj, props /*, props, ..., props */){
+	for(var i=1, l=arguments.length; i<l; i++){
+		dojo.lang._mixin(obj, arguments[i]);
+	}
+	return obj;
+}
+
+/*
+ * Adds the properties/methods of argument Objects to ctor's prototype
+ */
+dojo.lang.extend = function(ctor /*function*/, props /*, props, ..., props */){
+	for(var i=1, l=arguments.length; i<l; i++){
+		dojo.lang._mixin(ctor.prototype, arguments[i]);
+	}
+	return ctor;
 }
 
 /**
@@ -103,15 +115,16 @@ dojo.lang.inArray = function(arr /*Array*/, val /*Object*/){
  * The following is* functions are fairly "safe"
  */
 
-dojo.lang.isObject = function(wh) {
-	return typeof wh == "object" || dojo.lang.isArray(wh) || dojo.lang.isFunction(wh);
+dojo.lang.isObject = function(wh){
+	if(typeof wh == "undefined"){ return false; }
+	return (typeof wh == "object" || wh === null || dojo.lang.isArray(wh) || dojo.lang.isFunction(wh));
 }
 
-dojo.lang.isArray = function(wh) {
+dojo.lang.isArray = function(wh){
 	return (wh instanceof Array || typeof wh == "array");
 }
 
-dojo.lang.isArrayLike = function(wh) {
+dojo.lang.isArrayLike = function(wh){
 	if(dojo.lang.isString(wh)){ return false; }
 	if(dojo.lang.isFunction(wh)){ return false; } // keeps out built-in ctors (Number, String, ...) which have length properties
 	if(dojo.lang.isArray(wh)){ return true; }
@@ -120,19 +133,21 @@ dojo.lang.isArrayLike = function(wh) {
 	return false;
 }
 
-dojo.lang.isFunction = function(wh) {
+dojo.lang.isFunction = function(wh){
+	if(!wh){ return false; }
 	return (wh instanceof Function || typeof wh == "function");
 }
 
-dojo.lang.isString = function(wh) {
+dojo.lang.isString = function(wh){
 	return (wh instanceof String || typeof wh == "string");
 }
 
-dojo.lang.isAlien = function(wh) {
+dojo.lang.isAlien = function(wh){
+	if(!wh){ return false; }
 	return !dojo.lang.isFunction() && /\{\s*\[native code\]\s*\}/.test(String(wh));
 }
 
-dojo.lang.isBoolean = function(wh) {
+dojo.lang.isBoolean = function(wh){
 	return (wh instanceof Boolean || typeof wh == "boolean");
 }
 
@@ -152,7 +167,7 @@ dojo.lang.isBoolean = function(wh) {
  *
  * RECOMMENDATION: Use isNaN(wh) when possible
  */
-dojo.lang.isNumber = function(wh) {
+dojo.lang.isNumber = function(wh){
 	return (wh instanceof Number || typeof wh == "number");
 }
 
@@ -168,7 +183,7 @@ dojo.lang.isNumber = function(wh) {
  *
  * FIXME: Should isUndefined go away since it is error prone?
  */
-dojo.lang.isUndefined = function(wh) {
+dojo.lang.isUndefined = function(wh){
 	return ((wh == undefined)&&(typeof wh == "undefined"));
 }
 

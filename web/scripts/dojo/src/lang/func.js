@@ -33,9 +33,10 @@ dojo.lang.hitch = function(thisObject, method) {
 
 dojo.lang.anonCtr = 0;
 dojo.lang.anon = {};
-dojo.lang.nameAnonFunc = function(anonFuncPtr, namespaceObj){
+dojo.lang.nameAnonFunc = function(anonFuncPtr, namespaceObj, searchForNames){
 	var nso = (namespaceObj || dojo.lang.anon);
-	if((dj_global["djConfig"])&&(djConfig["slowAnonFuncLookups"] == true)){
+	if( (searchForNames) ||
+		((dj_global["djConfig"])&&(djConfig["slowAnonFuncLookups"] == true)) ){
 		for(var x in nso){
 			if(nso[x] === anonFuncPtr){
 				return x;

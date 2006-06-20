@@ -973,28 +973,31 @@ dojo.widget.defineWidget(
 		 * @param command The command to execute
 		 * @param argument An optional argument to the command
 		 */
-		execCommand: function (command, argument) {
+		execCommand: function (command, argument){
 			var returnValue;
-			if (this.object) {
-				if (command == "forecolor") { command = "setforecolor"; }
-				else if (command == "backcolor") { command = "setbackcolor"; }
+			if(this.object){
+				if(command == "forecolor"){
+					command = "setforecolor";
+				}else if(command == "backcolor"){
+					command = "setbackcolor";
+				}
 			
 				//if (typeof this._activeX.command[command] == "undefined") { return null; }
 			
-				if (command == "inserttable") {
+				if(command == "inserttable"){
 					var tableInfo = this.constructor._tableInfo;
-					if (!tableInfo) {
+					if(!tableInfo){
 						tableInfo = document.createElement("object");
 						tableInfo.classid = "clsid:47B0DFC7-B7A3-11D1-ADC5-006008A5848C";
 						document.body.appendChild(tableInfo);
 						this.constructor._table = tableInfo;
 					}
 					
-					tableInfo.NumRows = argument.rows;
-					tableInfo.NumCols = argument.cols;
+					tableInfo.NumRows = argument["rows"];
+					tableInfo.NumCols = argument["cols"];
 					tableInfo.TableAttrs = argument["TableAttrs"];
-					tableInfo.CellAttrs = arr["CellAttrs"];
-					tableInfo.Caption = arr["Caption"];
+					tableInfo.CellAttrs = argument["CellAttrs"];
+					tableInfo.Caption = argument["Caption"];
 				}
 			
 				if(command == "inserthtml"){
@@ -1027,8 +1030,9 @@ dojo.widget.defineWidget(
 				}
 			/* */
 			// fix up unlink in Mozilla to unlink the link and not just the selection
-			} else if (command == "unlink" &&
-				this.queryCommandEnabled("unlink") && dojo.render.html.mozilla) {
+			}else if((command == "unlink")&&
+				(this.queryCommandEnabled("unlink"))&&
+				(dojo.render.html.mozilla)){
 				// grab selection
 				// Mozilla gets upset if we just store the range so we have to
 				// get the basic properties and recreate to save the selection
@@ -1042,7 +1046,7 @@ dojo.widget.defineWidget(
 				// select our link and unlink
 				var range = document.createRange();
 				var a = this.getSelectedNode();
-				while (a.nodeName != "A") { a = a.parentNode; }
+				while(a.nodeName != "A"){ a = a.parentNode; }
 				range.selectNode(a);
 				selection.removeAllRanges();
 				selection.addRange(range);
@@ -1057,7 +1061,7 @@ dojo.widget.defineWidget(
 				selection.addRange(selectionRange);
 				
 				return returnValue;
-			} else if (command == "inserttable" && dojo.render.html.mozilla) {
+			}else if((command == "inserttable")&&(dojo.render.html.mozilla)){
 
 				var cols = "<tr>";
 				for (var i = 0; i < argument.cols; i++) { cols += "<td></td>"; }
@@ -1068,7 +1072,7 @@ dojo.widget.defineWidget(
 				table += "</tbody></table>";
 				returnValue = this.document.execCommand("inserthtml", false, table);
 
-			} else if (command == "hilitecolor" && dojo.render.html.mozilla) {
+			}else if((command == "hilitecolor")&&(dojo.render.html.mozilla)){
 				// mozilla doesn't support hilitecolor properly when useCSS is
 				// set to false (bugzilla #279330)
 				
@@ -1076,7 +1080,7 @@ dojo.widget.defineWidget(
 				returnValue = this.document.execCommand(command, false, argument);			
 				this.document.execCommand("useCSS", false, true);
 			
-			} else if ((dojo.render.html.ie)&&( (command == "backcolor")||(command == "forecolor")) ){
+			}else if((dojo.render.html.ie)&&( (command == "backcolor")||(command == "forecolor") )){
 				// IE weirdly collapses ranges when we exec these commands, so prevent it	
 				var tr = this.document.selection.createRange();
 				argument = arguments.length > 1 ? argument : null;
@@ -1085,7 +1089,7 @@ dojo.widget.defineWidget(
 				// selection gets correctly re-created, but subsequent input
 				// apparently isn't bound to it
 				setTimeout(function(){tr.select();}, 1);
-			} else {
+			}else{
 				// dojo.debug("command:", command, "arg:", argument);
 
 				argument = arguments.length > 1 ? argument : null;
@@ -1104,18 +1108,21 @@ dojo.widget.defineWidget(
 			return returnValue;
 		},
 
-		queryCommandEnabled: function (command, argument) {
-			if (this.object) {
-				if (command == "forecolor") { command = "setforecolor"; }
-				else if (command == "backcolor") { command = "setbackcolor"; }
+		queryCommandEnabled: function(command, argument){
+			if(this.object){
+				if(command == "forecolor"){
+					command = "setforecolor";
+				}else if(command == "backcolor"){
+					command = "setbackcolor";
+				}
 
-				if (typeof this._activeX.command[command] == "undefined") { return false; }
+				if(typeof this._activeX.command[command] == "undefined"){ return false; }
 				var status = this.object.QueryStatus(this._activeX.command[command]);
-				return (status != this.activeX.status.notsupported && 
-					status != this.activeX.status.diabled);
-			} else {
+				return ((status != this.activeX.status.notsupported)&& 
+					(status != this.activeX.status.diabled));
+			}else{
 				// mozilla returns true always
-				if (command == "unlink" && dojo.render.html.mozilla) {
+				if(command == "unlink" && dojo.render.html.mozilla){
 					var node = this.getSelectedNode();
 					while (node.parentNode && node.nodeName != "A") { node = node.parentNode; }
 					return node.nodeName == "A";
@@ -1129,16 +1136,19 @@ dojo.widget.defineWidget(
 			}
 		},
 
-		queryCommandState: function (command, argument) {
-			if (this.object) {
-				if (command == "forecolor") { command = "setforecolor"; }
-				else if (command == "backcolor") { command = "setbackcolor"; }
+		queryCommandState: function(command, argument){
+			if(this.object){
+				if(command == "forecolor"){
+					command = "setforecolor";
+				}else if(command == "backcolor"){
+					command = "setbackcolor";
+				}
 
-				if (typeof this._activeX.command[command] == "undefined") { return null; }
+				if(typeof this._activeX.command[command] == "undefined"){ return null; }
 				var status = this.object.QueryStatus(this._activeX.command[command]);
-				return (status == this._activeX.status.enabled ||
-					status == this._activeX.status.ninched);
-			} else {
+				return ((status == this._activeX.status.enabled)||
+					(status == this._activeX.status.ninched));
+			}else{
 				return this.document.queryCommandState(command);
 			}
 		},
@@ -1167,7 +1177,7 @@ dojo.widget.defineWidget(
 	/* Misc.
 	 ********/
 
-		getSelectedNode: function (){
+		getSelectedNode: function(){
 			if(!this.isLoaded){ return; }
 			if(this.document.selection){
 				return this.document.selection.createRange().parentElement();
@@ -1185,17 +1195,17 @@ dojo.widget.defineWidget(
 			dojo.event.disconnect(this, "onLoad", this, "placeCursorAtEnd");
 			if(this.window.getSelection){
 				var selection = this.window.getSelection;
-				if (selection.removeAllRanges) { // Mozilla			
+				if(selection.removeAllRanges){ // Mozilla
 					var range = this.document.createRange();
 					range.selectNode(this.editNode.firstChild);
 					range.collapse(true);
 					var selection = this.window.getSelection();
 					selection.removeAllRanges();
 					selection.addRange(range);
-				} else { // Safari
+				}else{ // Safari
 					// not a great deal we can do
 				}
-			} else if (this.document.selection) { // IE
+			}else if(this.document.selection){ // IE
 				var range = this.document.body.createTextRange();
 				range.moveToElementText(this.editNode);
 				range.collapse(true);
@@ -1226,25 +1236,25 @@ dojo.widget.defineWidget(
 			}
 		},
 		
-		placeCursorAtEnd: function () {
+		placeCursorAtEnd: function(){
 			if(!this.isLoaded){
 				dojo.event.connect(this, "onLoad", this, "placeCursorAtEnd");
 				return;
 			}
 			dojo.event.disconnect(this, "onLoad", this, "placeCursorAtEnd");
-			if (this.window.getSelection) {
+			if(this.window.getSelection){
 				var selection = this.window.getSelection;
-				if (selection.removeAllRanges) { // Mozilla			
+				if(selection.removeAllRanges){ // Mozilla
 					var range = this.document.createRange();
 					range.selectNode(this.editNode.lastChild);
 					range.collapse(false);
 					var selection = this.window.getSelection();
 					selection.removeAllRanges();
 					selection.addRange(range);
-				} else { // Safari
+				}else{ // Safari
 					// not a great deal we can do
 				}
-			} else if (this.document.selection) { // IE
+			}else if(this.document.selection){ // IE
 				var range = this.document.body.createTextRange();
 				range.moveToElementText(this.editNode);
 				range.collapse(true);
@@ -1255,7 +1265,7 @@ dojo.widget.defineWidget(
 		_lastHeight: 0,
 
 		/** Updates the height of the iframe to fit the contents. */
-		_updateHeight: function () {
+		_updateHeight: function(){
 			if(!this.isLoaded){ return; }
 			if(this.height){ return; }
 			if(this.iframe){
@@ -1269,10 +1279,10 @@ dojo.widget.defineWidget(
 				var heights = ["margin-top", "margin-bottom",
 					"padding-bottom", "padding-top",
 					"border-width-bottom", "border-width-top"];
-				for (var i = 0, chromeheight = 0; i < heights.length; i++) {
+				for(var i = 0, chromeheight = 0; i < heights.length; i++){
 					var height = dojo.style.getStyle(this.iframe, heights[i]);
 					// Safari doesn't have all the heights so we have to test
-					if (height) {
+					if(height){
 						chromeheight += Number(height.replace(/[^0-9]/g, ""));
 					}
 				}

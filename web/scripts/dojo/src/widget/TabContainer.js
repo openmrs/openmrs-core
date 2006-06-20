@@ -38,6 +38,8 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 	closeButton: "none",
 
 	useVisibility: false,		// true-->use visibility:hidden instead of display:none
+	
+	// if false, TabContainers size changes according to size of currently selected tab
 	doLayout: true,
 
 	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlTabContainer.html"),
@@ -46,15 +48,10 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 	selectedTab: "",		// initially selected tab (widgetId)
 
 	fillInTemplate: function(args, frag) {
-		// Copy style info and id from input node to output node
+		// Copy style info from input node to output node
 		var source = this.getFragNodeRef(frag);
-		// get around opera wich doesnt have cssText, and IE wich bugs on setAttribute 
-		if(dojo.lang.isUndefined(source.style.cssText)){ 
-			this.domNode.setAttribute("style", source.getAttribute("style")); 
-		}else{
-			this.domNode.style.cssText = source.style.cssText; 
-		}
-		dojo.html.addClass(this.domNode, dojo.html.getClass(source));
+		dojo.html.copyStyle(this.domNode, source);
+
 		dojo.widget.html.TabContainer.superclass.fillInTemplate.call(this, args, frag);
 	},
 
@@ -74,7 +71,11 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 			this.dojoTabLabels.appendChild(div);
 		}
 
-		dojo.html.addClass(this.dojoTabLabels, "dojoTabLabels-"+this.labelPosition);
+		if(this.doLayout){
+			dojo.html.addClass(this.dojoTabLabels, "dojoTabLabels-"+this.labelPosition);
+		} else {
+			dojo.html.addClass(this.dojoTabLabels, "dojoTabLabels-"+this.labelPosition+"-noLayout");
+		}
 
         this._doSizing();
 
@@ -97,6 +98,7 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 
 		// Create label
 		tab.div = document.createElement("div");
+		dojo.widget.wai.setAttr(tab.div, "waiRole", "tab");
 		dojo.html.addClass(tab.div, "dojoTabPaneTab");
 		var span = document.createElement("span");
 		span.innerHTML = tab.label;
@@ -121,6 +123,12 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
         } else {
             this._hideTab(tab);
         }
+
+		dojo.html.addClass(tab.domNode, "dojoTabPane");
+		with(tab.domNode.style){
+			top = dojo.style.getPixelValue(this.containerNode, "padding-top", true);
+			left = dojo.style.getPixelValue(this.containerNode, "padding-left", true);
+		}
 	},
 
 	// Configure the content pane to take up all the space except for where the tab labels are
@@ -230,15 +238,12 @@ dojo.lang.extend(dojo.widget.html.TabContainer, {
 	_runOnCloseTab: function(tab) {
 		var onc = tab.extraArgs.onClose || tab.extraArgs.onclose;
 		var fcn = dojo.lang.isFunction(onc) ? onc : window[onc];
-		if(dojo.lang.isFunction(fcn)) {
-			if(fcn(this,tab)) {
-				this.removeChild(tab);
-			}
-		} else {
+		var remove = dojo.lang.isFunction(fcn) ? fcn(this,tab) : true;
+		if(remove) {
 			this.removeChild(tab);
+			// makes sure we can clean up executeScripts in ContentPane onUnLoad
+			tab.destroy();
 		}
-		// makes sure we can clean up executeScripts in ContentPane onUnLoad
-		tab.destroy();
 	},
 
 	onResized: function() {

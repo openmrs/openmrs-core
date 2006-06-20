@@ -49,7 +49,7 @@ dojo.lang.extend(dojo.widget.html.SortableTable, {
 		//	summary
 		//	Compare two objects using a shallow property compare
 		for(var p in o1){
-			if(!o2[p]) return false;	//	boolean
+			if(!(p in o2)) return false;	//	boolean
 			if(o1[p].valueOf()!=o2[p].valueOf()) return false;	//	boolean
 		}
 		return true;	// boolean

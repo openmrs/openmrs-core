@@ -55,7 +55,7 @@ dojo.collections.SkipList = function(){
 		this.moveNext = function(){
 			if (this.atEnd) return !this.atEnd;
 			this.current = this.current.nodes[0];
-			this.atEnd = (current == null);
+			this.atEnd = (this.current == null);
 			return !this.atEnd;
 		};
 		this.reset = function(){
@@ -86,11 +86,11 @@ dojo.collections.SkipList = function(){
 			updates[i] = current;
 		}
 		if (current.nodes[0] != null && current.nodes[0].compare(val) == 0) return;
-		var n = new node(val, chooseRandomHeight(head.height + 1));
+		var n = new node(val, chooseRandomHeight(this.head.height + 1));
 		this.count++;
-		if (n.height > head.height){
-			head.incrementHeight();
-			head.nodes[head.height - 1] = n;
+		if (n.height > this.head.height){
+			this.head.incrementHeight();
+			this.head.nodes[this.head.height - 1] = n;
 		}
 		for (i = 0; i < n.height; i++){
 			if (i < updates.length) {
@@ -103,7 +103,7 @@ dojo.collections.SkipList = function(){
 	this.contains = function(val){
 		var current = this.head;
 		var i;
-		for (i = head.height - 1; i >= 0; i--) {
+		for (i = this.head.height - 1; i >= 0; i--) {
 			while (current.item(i) != null) {
 				comparisons++;
 				var result = current.nodes[i].compare(val);
@@ -133,11 +133,11 @@ dojo.collections.SkipList = function(){
 		current = current.nodes[0];
 		if (current != null && current.compare(val) == 0){
 			this.count--;
-			for (var i = 0; i < head.height; i++){
+			for (var i = 0; i < this.head.height; i++){
 				if (updates[i].nodes[i] != current) break;
 				else updates[i].nodes[i] = current.nodes[i];
 			}
-			if (head.nodes[head.height - 1] == null) head.decrementHeight();
+			if (this.head.nodes[this.head.height - 1] == null) this.head.decrementHeight();
 		}
 	};
 	this.resetComparisons = function(){ 

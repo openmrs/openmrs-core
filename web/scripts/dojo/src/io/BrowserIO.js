@@ -228,7 +228,8 @@ dojo.io.XMLHTTPTransport = new function(){
 
 	// moved successful load stuff here
 	function doLoad(kwArgs, http, url, query, useCache) {
-		if((http.status==200)||(http.status==304)||(http.status==204)||
+		if(	((http.status>=200)&&(http.status<300))|| 	// allow any 2XX response code
+			(http.status==304)|| 						// get it out of the cache
 			(location.protocol=="file:" && (http.status==0 || http.status==undefined))||
 			(location.protocol=="chrome:" && (http.status==0 || http.status==undefined))
 		){
@@ -263,7 +264,7 @@ dojo.io.XMLHTTPTransport = new function(){
 			}else if((kwArgs.mimetype == "application/xml")||
 						(kwArgs.mimetype == "text/xml")){
 				ret = http.responseXML;
-				if(!ret || typeof ret == "string") {
+				if(!ret || typeof ret == "string" || !http.getResponseHeader("Content-Type")) {
 					ret = dojo.dom.createDocumentFromText(http.responseText);
 				}
 			}else{
@@ -356,7 +357,8 @@ dojo.io.XMLHTTPTransport = new function(){
 			if( !kwArgs["formNode"]
 				&& (kwArgs["backButton"] || kwArgs["back"] || kwArgs["changeUrl"] || kwArgs["watchForURL"])
 				&& (!djConfig.preventBackButtonFix)) {
-        dojo.deprecated("Using dojo.io.XMLHTTPTransport.bind() to add to browser history without doing an IO request is deprecated. Use dojo.undo.browser.addToHistory() instead.");
+        dojo.deprecated("Using dojo.io.XMLHTTPTransport.bind() to add to browser history without doing an IO request",
+        				"Use dojo.undo.browser.addToHistory() instead.", "0.4");
 				dojo.undo.browser.addToHistory(kwArgs);
 				return true;
 			}

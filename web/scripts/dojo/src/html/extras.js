@@ -353,7 +353,7 @@ dojo.html.placeOnScreenPoint = function(node, desiredX, desiredY, padding, hasSc
  *        Attaches frame to document.body.  User must call size() to set size.
  */
 dojo.html.BackgroundIframe = function(node) {
-	if(dojo.render.html.ie) {
+	if(dojo.render.html.ie55 || dojo.render.html.ie60) {
 		var html=
 				 "<iframe "
 				+"style='position: absolute; left: 0px; top: 0px; width: 100%; height: 100%;"
@@ -374,7 +374,7 @@ dojo.lang.extend(dojo.html.BackgroundIframe, {
 
 	// TODO: this function shouldn't be necessary but setting width=height=100% doesn't work!
 	onResized: function(){
-		if(this.iframe && this.domNode){
+		if(this.iframe && this.domNode && this.domNode.parentElement){ // No parentElement if onResized() timeout event occurs on a removed domnode
 			var w = dojo.style.getOuterWidth(this.domNode);
 			var h = dojo.style.getOuterHeight(this.domNode);
 			if (w  == 0 || h == 0 ){
@@ -392,7 +392,7 @@ dojo.lang.extend(dojo.html.BackgroundIframe, {
 	size: function(node) {
 		if(!this.iframe) { return; }
 
-		coords = dojo.style.toCoordinateArray(node, true);
+		var coords = dojo.style.toCoordinateArray(node, true);
 
 		var s = this.iframe.style;
 		s.width = coords.w + "px";

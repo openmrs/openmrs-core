@@ -35,7 +35,7 @@ dojo.io.cookie.getCookie = function(name) {
 	//        deepest subdomain, which is what we're doing here.
 	var idx = document.cookie.lastIndexOf(name+'=');
 	if(idx == -1) { return null; }
-	value = document.cookie.substring(idx+name.length+1);
+	var value = document.cookie.substring(idx+name.length+1);
 	var end = value.indexOf(';');
 	if(end == -1) { end = value.length; }
 	value = value.substring(0, end);

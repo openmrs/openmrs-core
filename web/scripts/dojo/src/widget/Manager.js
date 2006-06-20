@@ -99,7 +99,7 @@ dojo.widget.manager = new function(){
 	}
 
 	this.getWidgetsOfType = function (id) {
-		dojo.deprecated("getWidgetsOfType is depecrecated, use getWidgetsByType");
+		dojo.deprecated("getWidgetsOfType", "use getWidgetsByType", "0.4");
 		return dojo.widget.manager.getWidgetsByType(id);
 	}
 
@@ -253,8 +253,8 @@ dojo.widget.manager = new function(){
 			this.resizing=true;
 			for(var id in this.topWidgets){
 				var child = this.topWidgets[id];
-				if(child.onParentResized ){
-					child.onParentResized();
+				if(child.checkSize ){
+					child.checkSize();
 				}
 			};
 		}catch(e){

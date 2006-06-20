@@ -17,6 +17,9 @@ dojo.collections.Dictionary=function(/* dojo.collections.Dictionary? */dictionar
 	var items={};
 	this.count=0;
 
+	//	comparator for property addition and access.
+	var testObject={};
+
 	this.add=function(/* string */k, /* object */v){
 		//	summary
 		//	Add a new item to the Dictionary.
@@ -40,6 +43,9 @@ dojo.collections.Dictionary=function(/* dojo.collections.Dictionary? */dictionar
 	this.contains=this.containsKey=function(/* string */k){
 		//	summary
 		//	Check to see if the dictionary has an entry at key "k".
+		if(testObject[k]){
+			return false;			// bool
+		}
 		return (items[k]!=null);	//	bool
 	};
 	this.containsValue=function(/* object */v){
@@ -63,7 +69,9 @@ dojo.collections.Dictionary=function(/* dojo.collections.Dictionary? */dictionar
 		//	functional iterator, following the mozilla spec.
 		var a=[];	//	Create an indexing array
 		for(var p in items) {
-			a.push(items[p]);	//	fill it up
+			if(!testObject[p]){
+				a.push(items[p]);	//	fill it up
+			}
 		}
 		var s=scope||dj_global;
 		if(Array.forEach){
@@ -77,15 +85,15 @@ dojo.collections.Dictionary=function(/* dojo.collections.Dictionary? */dictionar
 	this.getKeyList=function(){
 		//	summary
 		//	Returns an array of the keys in the dictionary.
-		return (this.getIterator()).map(function(e){ 
-			return e.key; 
+		return (this.getIterator()).map(function(entry){ 
+			return entry.key; 
 		});	//	array
 	};
 	this.getValueList=function(){
 		//	summary
 		//	Returns an array of the values in the dictionary.
-		return (this.getIterator()).map(function(e){ 
-			return e.value; 
+		return (this.getIterator()).map(function(entry){ 
+			return entry.value; 
 		});	//	array
 	};
 	this.item=function(/* string */k){
@@ -104,7 +112,7 @@ dojo.collections.Dictionary=function(/* dojo.collections.Dictionary? */dictionar
 	this.remove=function(/* string */k){
 		//	summary
 		//	Removes the item at k from the internal collection.
-		if(k in items){
+		if(k in items && !testObject[k]){
 			delete items[k];
 			this.count--;
 			return true;	//	bool

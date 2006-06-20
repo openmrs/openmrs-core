@@ -13,7 +13,7 @@ dojo.require("dojo.graphics.color");
 dojo.require("dojo.dom");
 dojo.require("dojo.style");
 
-dojo.deprecated("dojo.xml.domUtil is deprecated, use dojo.dom instead");
+dojo.deprecated("dojo.xml.domUtil", "use dojo.dom instead", "0.4");
 
 // for loading script:
 dojo.xml.domUtil = new function(){

@@ -20,6 +20,7 @@ public class FieldListItem {
 	private String attribute = "";
 	private String selectMultiple;
 	private Integer numForms = 0;
+	private String defaultValue = "";
 	
 	//private String creator = "";
 	//private String changedBy = "";
@@ -46,6 +47,7 @@ public class FieldListItem {
 			//if (field.getChangedBy() != null)
 			//	changedBy = field.getChangedBy().getFirstName() + " " + field.getChangedBy().getLastName();
 			numForms = field.getForms().size();
+			defaultValue = field.getDefaultValue();
 		}
 	}
 	
@@ -163,6 +165,14 @@ public class FieldListItem {
 
 	public void setNumForms(Integer numForms) {
 		this.numForms = numForms;
+	}
+
+	public String getDefaultValue() {
+		return defaultValue;
+	}
+
+	public void setDefaultValue(String defaultValue) {
+		this.defaultValue = defaultValue;
 	}
 
 }

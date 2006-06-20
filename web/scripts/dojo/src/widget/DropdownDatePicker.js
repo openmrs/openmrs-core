@@ -21,8 +21,7 @@ dojo.widget.defineWidget(
 	{
 		iconURL: dojo.uri.dojoUri("src/widget/templates/images/dateIcon.gif"),
 		iconAlt: "Select a Date",
-		iconTitle: "Select a Date",
-		
+		zIndex: "10",
 		datePicker: null,
 		
 		dateFormat: "%m/%d/%Y",
@@ -32,7 +31,6 @@ dojo.widget.defineWidget(
 			dojo.widget.DropdownDatePicker.superclass.fillInTemplate.call(this, args, frag);
 			var source = this.getFragNodeRef(frag);
 			
-			if(args.dateFormat){ this.dateFormat = args.dateFormat; }
 			if(args.date){ this.date = new Date(args.date); }
 			
 			var dpNode = document.createElement("div");
@@ -46,11 +44,13 @@ dojo.widget.defineWidget(
 			}
 			this.datePicker = dojo.widget.createWidget("DatePicker", dateProps, dpNode);
 			dojo.event.connect(this.datePicker, "onSetDate", this, "onSetDate");
+			this.containerNode.style.zIndex = this.zIndex;
+			this.containerNode.style.backgroundColor = "transparent";
 		},
 		
 		onSetDate: function(){
 			this.inputNode.value = dojo.date.format(this.datePicker.date, this.dateFormat);
-			this.onHide();
+			this.hideContainer();
 		},
 		
 		onInputChange: function(){

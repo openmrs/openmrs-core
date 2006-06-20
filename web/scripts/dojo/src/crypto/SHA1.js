@@ -1,17 +1,18 @@
-/*
-	Copyright (c) 2004-2006, The Dojo Foundation
-	All Rights Reserved.
-
-	Licensed under the Academic Free License version 2.1 or above OR the
-	modified BSD license. For more information on Dojo licensing, see:
-
-		http://dojotoolkit.org/community/licensing.shtml
-*/
-
 dojo.require("dojo.crypto");
 dojo.provide("dojo.crypto.SHA1");
 dojo.require("dojo.experimental");
 
+/*
+ *	A JavaScript implementation of the Secure Hash Algorithm, SHA-1, as defined
+ *	in FIPS PUB 180-1
+ *
+ * 	Version 2.1a Copyright Paul Johnston 2000 - 2002.
+ * 	Other contributors: Greg Holt, Andrew Kepert, Ydnar, Lostinet
+ * 	Distributed under the BSD License
+ * 	See http://pajhome.org.uk/crypt/md5 for details.
+ *
+ *	Dojo port by Tom Trenka
+ */
 dojo.experimental("dojo.crypto.SHA1");
 
 dojo.crypto.SHA1 = new function(){

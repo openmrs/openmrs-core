@@ -195,6 +195,23 @@ dojo.widget.defineWidget(
 					tdn.style.zIndex = 1000;
 					this._fixEnabled = true;
 				}
+				// if we're showing the floating toolbar, make sure that if
+				// we've scrolled past the bottom of the editor that we hide
+				// the toolbar for this instance of the editor.
+
+				// TODO: when we get multiple editor toolbar support working
+				// correctly, ensure that we check this against the scroll
+				// position of the bottom-most editor instance.
+				if(!dojo.render.html.safari){
+					// safari reports a bunch of things incorrectly here
+					var eHeight = (this.height) ? parseInt(this.height) : ((this.object) ? dojo.style.getInnerHeight(this.editNode) : this._lastHeight);
+					if(scrollPos > (this._scrollThreshold+eHeight)){
+						tdn.style.display = "none";
+					}else{
+						tdn.style.display = "";
+					}
+				}
+
 			}else if(this._fixEnabled){
 				this.domNode.style.marginTop = null;
 				with(tdn.style){

@@ -131,6 +131,14 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 		}
 	},
 
+	/**
+	* Get the DOM element that is meant to drag.
+	* Loop through the parent nodes of the event target until
+	* the element is found that was created as a DragSource and 
+	* return it.
+	*
+	* @param event object The event for which to get the drag source.
+	*/
 	getDragSource: function(e){
 		var tn = e.target;
 		if(tn === document.body){ return; }
@@ -175,6 +183,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 
 		if(!dojo.lang.inArray(this.selectedSources, ds)){
 			this.selectedSources.push(ds);
+			ds.onSelected();
 		}
 
  		this.mouseDownX = e.pageX;
@@ -232,8 +241,31 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 				}
 
 				e.dragStatus = this.dropAcceptable && ret ? "dropSuccess" : "dropFailure";
-				tempDragObj.dragSource.onDragEnd(e);
-				tempDragObj.onDragEnd(e);
+				// decouple the calls for onDragEnd, so they don't block the execution here
+				// ie. if the onDragEnd would call an alert, the execution here is blocked until the
+				// user has confirmed the alert box and then the rest of the dnd code is executed
+				// while the mouse doesnt "hold" the dragged object anymore ... and so on
+				dojo.lang.delayThese([
+					function() {
+						// in FF1.5 this throws an exception, see 
+						// http://dojotoolkit.org/pipermail/dojo-interest/2006-April/006751.html
+						try{
+							tempDragObj.dragSource.onDragEnd(e)
+						} catch(err) {
+							// since the problem seems passing e, we just copy all 
+							// properties and try the copy ...
+							var ecopy = {};
+							for (var i in e) {
+								if (i=="type") { // the type property contains the exception, no idea why...
+									ecopy.type = "mouseup";
+									continue;
+								}
+								ecopy[i] = e[i];
+							}
+							tempDragObj.dragSource.onDragEnd(ecopy);
+						}
+					}
+					, function() {tempDragObj.onDragEnd(e)}]);
 			}, this);
 
 			this.selectedSources = [];
@@ -312,10 +344,11 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 				dy = e.pageY - this.mouseDownY;
 			}
 
-			if (this.selectedSources.length == 1) {
-				this.dragSource = this.selectedSources[0];
-			}
-
+			// the first element is always our dragSource, if there are multiple
+			// selectedSources (elements that move along) then the first one is the master
+			// and for it the events will be fired etc.
+			this.dragSource = this.selectedSources[0];
+			
 			dojo.lang.forEach(this.selectedSources, function(tempSource){
 				if(!tempSource){ return; }
 				var tdo = tempSource.onDragStart(e);

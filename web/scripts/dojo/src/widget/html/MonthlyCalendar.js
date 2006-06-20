@@ -44,7 +44,7 @@ dojo.lang.extend(dojo.widget.html.MonthlyCalendar, {
 		dojo.dom.removeChildren(node);
 		node.appendChild(document.createTextNode(mydate.getDate()));	
 			for(var x=0; x<this.iCalendars.length; x++) {
-				evts = this.iCalendars[x].getEvents(mydate);
+				var evts = this.iCalendars[x].getEvents(mydate);
 				if ((dojo.lang.isArray(evts)) && (evts.length>0)) {
 				for(var y=0;y<evts.length;y++) {
 					var el = document.createElement("div");

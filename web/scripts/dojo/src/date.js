@@ -454,14 +454,14 @@ dojo.date.format = dojo.date.strftime = function (dateObject, format) {
 		}
 
 		// toggle case if a flag is set
-		property = $(format.charAt(index++));
+		var property = $(format.charAt(index++));
 		if (switchCase == "upper" ||
 			(switchCase == "swap" && /[a-z]/.test(property))) {
 			property = property.toUpperCase();
 		} else if (switchCase == "swap" && !/[a-z]/.test(property)) {
 			property = property.toLowerCase();
 		}
-		swicthCase = null;
+		var swicthCase = null;
 		
 		string += property;
 		i = index;

@@ -86,7 +86,6 @@ dojo.widget.HtmlCiviCrmDatePicker = function(){
 			var mfd = this.modeFormats.date;
 			for(var x=0; x<mfd.length; x++){
 				this[this.formatMappings[mfd[x]]] = sref[this.idPrefix+"["+mfd[x]+"]"];
-				fr = this[this.formatMappings[mfd[x]]].form;
 			}
 		}
 		if(this.mode.indexOf("time") != -1){

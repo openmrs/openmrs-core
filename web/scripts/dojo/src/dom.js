@@ -262,19 +262,41 @@ dojo.dom.isDescendantOf = function(node, ancestor, guaranteeDescendant){
 dojo.dom.innerXML = function(node){
 	if(node.innerXML){
 		return node.innerXML;
+	}else if (node.xml){
+		return node.xml;
 	}else if(typeof XMLSerializer != "undefined"){
 		return (new XMLSerializer()).serializeToString(node);
 	}
 }
 
+dojo.dom.createDocument = function(){
+	var doc = null;
+
+	if(!dj_undef("ActiveXObject")){
+		var prefixes = [ "MSXML2", "Microsoft", "MSXML", "MSXML3" ];
+		for(var i = 0; i<prefixes.length; i++){
+			try{
+				doc = new ActiveXObject(prefixes[i]+".XMLDOM");
+			}catch(e){ /* squelch */ };
+
+			if(doc){ break; }
+		}
+	}else if((document.implementation)&&
+		(document.implementation.createDocument)){
+		doc = document.implementation.createDocument("", "", null);
+	}
+	
+	return doc;
+}
+
 dojo.dom.createDocumentFromText = function(str, mimetype){
-	if(!mimetype) { mimetype = "text/xml"; }
-	if(typeof DOMParser != "undefined") {
+	if(!mimetype){ mimetype = "text/xml"; }
+	if(!dj_undef("DOMParser")){
 		var parser = new DOMParser();
 		return parser.parseFromString(str, mimetype);
-	}else if(typeof ActiveXObject != "undefined"){
-		var domDoc = new ActiveXObject("Microsoft.XMLDOM");
-		if(domDoc) {
+	}else if(!dj_undef("ActiveXObject")){
+		var domDoc = dojo.dom.createDocument();
+		if(domDoc){
 			domDoc.async = false;
 			domDoc.loadXML(str);
 			return domDoc;
@@ -309,8 +331,8 @@ dojo.dom.createDocumentFromText = function(str, mimetype){
 		// FIXME: probably not a good idea to have to return an HTML fragment
 		// FIXME: the tmp.doc.firstChild is as tested from IE, so it may not
 		// work that way across the board
-		return tmp.document && tmp.document.firstChild ?
-			tmp.document.firstChild : tmp;
+		return ((tmp.document)&&
+			(tmp.document.firstChild ?  tmp.document.firstChild : tmp));
 	}
 	return null;
 }

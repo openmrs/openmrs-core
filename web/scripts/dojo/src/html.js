@@ -129,17 +129,17 @@ dojo.html.getEventTarget = function(evt){
 }
 
 dojo.html.getDocumentWidth = function(){
-	dojo.deprecated("dojo.html.getDocument* has been deprecated in favor of dojo.html.getViewport*");
+	dojo.deprecated("dojo.html.getDocument*", "replaced by dojo.html.getViewport*", "0.4");
 	return dojo.html.getViewportWidth();
 }
 
 dojo.html.getDocumentHeight = function(){
-	dojo.deprecated("dojo.html.getDocument* has been deprecated in favor of dojo.html.getViewport*");
+	dojo.deprecated("dojo.html.getDocument*", "replaced by dojo.html.getViewport*", "0.4");
 	return dojo.html.getViewportHeight();
 }
 
 dojo.html.getDocumentSize = function(){
-	dojo.deprecated("dojo.html.getDocument* has been deprecated in favor of dojo.html.getViewport*");
+	dojo.deprecated("dojo.html.getDocument*", "replaced of dojo.html.getViewport*", "0.4");
 	return dojo.html.getViewportSize();
 }
 
@@ -209,7 +209,7 @@ dojo.html.getScrollOffset = function(){
 }
 
 dojo.html.getParentOfType = function(node, type){
-	dojo.deprecated("dojo.html.getParentOfType has been deprecated in favor of dojo.html.getParentByType*");
+	dojo.deprecated("dojo.html.getParentOfType", "replaced by dojo.html.getParentByType*", "0.4");
 	return dojo.html.getParentByType(node, type);
 }
 
@@ -398,49 +398,73 @@ dojo.html.classMatchType = {
  * Returns an array of nodes for the given classStr, children of a
  * parent, and optionally of a certain nodeType
  */
-dojo.html.getElementsByClass = function(classStr, parent, nodeType, classMatchType){
+dojo.html.getElementsByClass = function(classStr, parent, nodeType, classMatchType, useNonXpath){
 	parent = dojo.byId(parent) || document;
 	var classes = classStr.split(/\s+/g);
 	var nodes = [];
 	if( classMatchType != 1 && classMatchType != 2 ) classMatchType = 0; // make it enum
 	var reClass = new RegExp("(\\s|^)((" + classes.join(")|(") + "))(\\s|$)");
-
-	// FIXME: doesn't have correct parent support!
-	if(!nodeType){ nodeType = "*"; }
-	var candidateNodes = parent.getElementsByTagName(nodeType);
-
-	var node, i = 0;
-	outer:
-	while (node = candidateNodes[i++]) {
-		var nodeClasses = dojo.html.getClasses(node);
-		if(nodeClasses.length == 0) { continue outer; }
-		var matches = 0;
-
-		for(var j = 0; j < nodeClasses.length; j++) {
-			if( reClass.test(nodeClasses[j]) ) {
-				if( classMatchType == dojo.html.classMatchType.ContainsAny ) {
-					nodes.push(node);
-					continue outer;
-				} else {
-					matches++;
-				}
-			} else {
-				if( classMatchType == dojo.html.classMatchType.IsOnly ) {
-					continue outer;
-				}
-			}
-		}
-
-		if( matches == classes.length ) {
-			if( classMatchType == dojo.html.classMatchType.IsOnly && matches == nodeClasses.length ) {
-				nodes.push(node);
-			} else if( classMatchType == dojo.html.classMatchType.ContainsAll ) {
-				nodes.push(node);
-			}
-		}
-	}
+	var candidateNodes = [];
 	
-	return nodes;
+	if(!useNonXpath && document.evaluate) { // supports dom 3 xpath
+		var xpath = "//" + (nodeType || "*") + "[contains(";
+		if(classMatchType != dojo.html.classMatchType.ContainsAny){
+			xpath += "concat(' ',@class,' '), ' " +
+			classes.join(" ') and contains(concat(' ',@class,' '), ' ") +
+			" ')]";
+		}else{
+			xpath += "concat(' ',@class,' '), ' " +
+			classes.join(" ')) or contains(concat(' ',@class,' '), ' ") +
+			" ')]";
+		}
+		var xpathResult = document.evaluate(xpath, parent, null, XPathResult.ANY_TYPE, null);
+		var result = xpathResult.iterateNext();
+		while(result){
+			try{
+				candidateNodes.push(result);
+				result = xpathResult.iterateNext();
+			}catch(e){ break; }
+		}
+		return candidateNodes;
+	}else{
+		if(!nodeType){
+			nodeType = "*";
+		}
+		candidateNodes = parent.getElementsByTagName(nodeType);
+
+		var node, i = 0;
+		outer:
+		while(node = candidateNodes[i++]){
+			var nodeClasses = dojo.html.getClasses(node);
+			if(nodeClasses.length == 0){ continue outer; }
+			var matches = 0;
+	
+			for(var j = 0; j < nodeClasses.length; j++){
+				if(reClass.test(nodeClasses[j])){
+					if(classMatchType == dojo.html.classMatchType.ContainsAny){
+						nodes.push(node);
+						continue outer;
+					}else{
+						matches++;
+					}
+				}else{
+					if(classMatchType == dojo.html.classMatchType.IsOnly){
+						continue outer;
+					}
+				}
+			}
+	
+			if(matches == classes.length){
+				if(	(classMatchType == dojo.html.classMatchType.IsOnly)&&
+					(matches == nodeClasses.length)){
+					nodes.push(node);
+				}else if(classMatchType == dojo.html.classMatchType.ContainsAll){
+					nodes.push(node);
+				}
+			}
+		}
+		return nodes;
+	}
 }
 
 dojo.html.getElementsByClassName = dojo.html.getElementsByClass;
@@ -512,7 +536,7 @@ dojo.html.getPreferredStyleSheet = function(){
 }
 
 dojo.html.body = function(){
-	dojo.deprecated("dojo.html.body", "use document.body instead");
+	// Note: document.body is not defined for a strict xhtml document
 	return document.body || document.getElementsByTagName("body")[0];
 }
 
@@ -529,9 +553,19 @@ dojo.html.isTag = function(node /* ... */) {
 	return "";
 }
 
+dojo.html.copyStyle = function(target, source){
+	// work around for opera which doesn't have cssText, and for IE which fails on setAttribute 
+	if(dojo.lang.isUndefined(source.style.cssText)){ 
+		target.setAttribute("style", source.getAttribute("style")); 
+	}else{
+		target.style.cssText = source.style.cssText; 
+	}
+	dojo.html.addClass(target, dojo.html.getClass(source));
+}
+
 dojo.html._callExtrasDeprecated = function(inFunc, args) {
 	var module = "dojo.html.extras";
-	dojo.deprecated("dojo.html." + inFunc + " has been moved to " + module);
+	dojo.deprecated("dojo.html." + inFunc, "moved to " + module, "0.4");
 	dojo["require"](module); // weird syntax to fool list-profile-deps (build)
 	return dojo.html[inFunc].apply(dojo.html, args);
 }

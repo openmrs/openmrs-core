@@ -832,9 +832,9 @@ dojo.graphics.Colorspace.prototype.HSV_to_RGB = function(){
 	if (src.S == 0){
 		// color is on black-and-white center line
 		// achromatic: shades of gray
-		R = src.V;
-		G = src.V;
-		B = src.V;
+		var R = src.V;
+		var G = src.V;
+		var B = src.V;
 	}else{
 		// chromatic color
 		var hTemp = src.H / 60;		// h is now IN [0,6]

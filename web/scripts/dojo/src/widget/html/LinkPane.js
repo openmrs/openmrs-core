@@ -48,13 +48,7 @@ dojo.lang.extend(dojo.widget.html.LinkPane, {
 		// (the link must be plain text)
 		this.label += source.innerHTML;
 
-		// Copy style info from input node to output node
-		// get around opera wich doesnt have cssText, and IE wich bugs on setAttribute
-		if(dojo.lang.isUndefined(source.style.cssText)){
-			this.domNode.setAttribute("style", source.getAttribute("style"));
-		}else{
-			this.domNode.style.cssText = source.style.cssText;
-		}
-		dojo.html.addClass(this.domNode, dojo.html.getClass(source));
+		var source = this.getFragNodeRef(frag);
+		dojo.html.copyStyle(this.domNode, source);
 	}
 });

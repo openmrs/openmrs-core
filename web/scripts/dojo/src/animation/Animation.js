@@ -147,7 +147,7 @@ dojo.lang.extend(dojo.animation.Animation, {
 			step = 1;
 		}
 		var e = new dojo.animation.AnimationEvent(this, "stop", this.curve.getValue(step),
-			this._startTime, new Date().valueOf(), this._endTime, this.duration, this._percent, Math.round(fps));
+			this._startTime, new Date().valueOf(), this._endTime, this.duration, this._percent);
 		if(typeof this.handler == "function") { this.handler(e); }
 		if(typeof this.onStop == "function") { this.onStop(e); }
 		this._active = false;
@@ -168,7 +168,7 @@ dojo.lang.extend(dojo.animation.Animation, {
 		if( this._active ) {
 			var curr = new Date().valueOf();
 			var step = (curr - this._startTime) / (this._endTime - this._startTime);
-			fps = 1000 / (curr - this._lastFrame);
+			var fps = 1000 / (curr - this._lastFrame);
 			this._lastFrame = curr;
 
 			if( step >= 1 ) {

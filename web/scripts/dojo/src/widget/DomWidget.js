@@ -16,6 +16,7 @@ dojo.require("dojo.dom");
 dojo.require("dojo.xml.Parse");
 dojo.require("dojo.uri.*");
 dojo.require("dojo.lang.func");
+dojo.require("dojo.lang.extras");
 
 dojo.widget._cssFiles = {};
 dojo.widget._cssStrings = {};
@@ -39,11 +40,11 @@ dojo.widget.fillFromTemplateCache = function(obj, templatePath, templateCssPath,
 	// DEPRECATED: use Uri objects, not strings
 	if (tpath && !(tpath instanceof dojo.uri.Uri)) {
 		tpath = dojo.uri.dojoUri(tpath);
-		dojo.deprecated("templatePath should be of type dojo.uri.Uri");
+		dojo.deprecated("templatePath should be of type dojo.uri.Uri", null, "0.4");
 	}
 	if (cpath && !(cpath instanceof dojo.uri.Uri)) {
 		cpath = dojo.uri.dojoUri(cpath);
-		dojo.deprecated("templateCssPath should be of type dojo.uri.Uri");
+		dojo.deprecated("templateCssPath should be of type dojo.uri.Uri", null, "0.4");
 	}
 	
 	var tmplts = dojo.widget._templateCache;
@@ -55,15 +56,17 @@ dojo.widget.fillFromTemplateCache = function(obj, templatePath, templateCssPath,
 	}
 	var wt = obj.widgetType;
 
-	if((!obj.templateCssString)&&(cpath)&&(!dojo.widget._cssFiles[cpath])){
-		obj.templateCssString = dojo.hostenv.getText(cpath);
-		obj.templateCssPath = null;
-		dojo.widget._cssFiles[cpath] = true;
-	}
-	if((obj["templateCssString"])&&(!obj.templateCssString["loaded"])){
-		dojo.style.insertCssText(obj.templateCssString, null, cpath);
-		if(!obj.templateCssString){ obj.templateCssString = ""; }
-		obj.templateCssString.loaded = true;
+	if(cpath && !dojo.widget._cssFiles[cpath.toString()]){
+		if((!obj.templateCssString)&&(cpath)){
+			obj.templateCssString = dojo.hostenv.getText(cpath);
+			obj.templateCssPath = null;
+		}
+		if((obj["templateCssString"])&&(!obj.templateCssString["loaded"])){
+			dojo.style.insertCssText(obj.templateCssString, null, cpath);
+			if(!obj.templateCssString){ obj.templateCssString = ""; }
+			obj.templateCssString.loaded = true;
+		}
+		dojo.widget._cssFiles[cpath.toString()] = true;
 	}
 
 	var ts = tmplts[wt];
@@ -75,10 +78,10 @@ dojo.widget.fillFromTemplateCache = function(obj, templatePath, templateCssPath,
 			ts = tmplts[wt];
 		}
 	}
-	if(!obj.templateString){
+	if((!obj.templateString)&&(!avoidCache)){
 		obj.templateString = templateString || ts["string"];
 	}
-	if(!obj.templateNode){
+	if((!obj.templateNode)&&(!avoidCache)){
 		obj.templateNode = ts["node"];
 	}
 	if((!obj.templateNode)&&(!obj.templateString)&&(tpath)){
@@ -86,6 +89,9 @@ dojo.widget.fillFromTemplateCache = function(obj, templatePath, templateCssPath,
 		// NOTE: we rely on blocking IO here!
 		var tstring = dojo.hostenv.getText(tpath);
 		if(tstring){
+			// strip <?xml ...?> declarations so that external SVG and XML
+			// documents can be added to a document without worry
+			tstring = tstring.replace(/^\s*<\?xml(\s)+version=[\'\"](\d)*.(\d)*[\'\"](\s)*\?>/im, "");
 			var matches = tstring.match(/<body[^>]*>\s*([\s\S]+)\s*<\/body>/im);
 			if(matches){
 				tstring = matches[1];
@@ -107,6 +113,28 @@ dojo.widget._templateCache.dummyCount = 0;
 dojo.widget.attachProperties = ["dojoAttachPoint", "id"];
 dojo.widget.eventAttachProperty = "dojoAttachEvent";
 dojo.widget.onBuildProperty = "dojoOnBuild";
+dojo.widget.waiNames  = ["waiRole", "waiState"];
+dojo.widget.wai = {
+	waiRole: { 	name: "waiRole", 
+				namespace: "http://www.w3.org/TR/xhtml2", 
+				alias: "x2",
+				prefix: "wairole:",
+				nsName: "role"
+	},
+	waiState: { name: "waiState", 
+				namespace: "http://www.w3.org/2005/07/aaa" , 
+				alias: "aaa",
+				prefix: "",
+				nsName: "state"
+	},
+	setAttr: function(node, attr, value){
+		if(dojo.render.html.ie){
+			node.setAttribute(this[attr].alias+":"+this[attr].nsName, this[attr].prefix+value);
+		}else{
+			node.setAttributeNS(this[attr].namespace, this[attr].nsName, this[attr].prefix+value);
+		}
+	}
+};
 
 dojo.widget.attachTemplateNodes = function(rootNode, targetObj, events){
 	// FIXME: this method is still taking WAAAY too long. We need ways of optimizing:
@@ -157,6 +185,14 @@ dojo.widget.attachTemplateNodes = function(rootNode, targetObj, events){
 		if(tmpltPoint){
 			targetObj[tmpltPoint]=baseNode;
 		}
+
+		dojo.lang.forEach(dojo.widget.waiNames, function(name){
+			var wai = dojo.widget.wai[name];
+			var val = baseNode.getAttribute(wai.name);
+			if(val){
+				dojo.widget.wai.setAttr(baseNode, wai.name, val);
+			}
+		}, this);
 
 		var attachEvent = baseNode.getAttribute(this.eventAttachProperty);
 		if(attachEvent){
@@ -472,7 +508,7 @@ dojo.declare("dojo.widget.DomWidget", dojo.widget.Widget, {
 				for(var i = 0; i < matches.length; i++) {
 					var key = matches[i];
 					key = key.substring(2, key.length-1);
-					var kval = (key.substring(0, 5) == "this.") ? this[key.substring(5)] : hash[key];
+					var kval = (key.substring(0, 5) == "this.") ? dojo.lang.getObjPathValue(key.substring(5), this) : hash[key];
 					var value;
 					if((kval)||(dojo.lang.isString(kval))){
 						value = (dojo.lang.isFunction(kval)) ? kval.call(this, key, this.templateString) : kval;
@@ -490,7 +526,9 @@ dojo.declare("dojo.widget.DomWidget", dojo.widget.Widget, {
 				// node = this.createNodesFromText(this.templateString, true);
 				// this.templateNode = node[0].cloneNode(true); // we're optimistic here
 				this.templateNode = this.createNodesFromText(this.templateString, true)[0];
-				ts.node = this.templateNode;
+				if(!avoidCache){
+					ts.node = this.templateNode;
+				}
 			}
 		}
 		if((!this.templateNode)&&(!matches)){ 

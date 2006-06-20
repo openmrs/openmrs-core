@@ -50,7 +50,7 @@ dojo.collections.Stack=function(/* array? */arr){
 		if(Array.forEach){
 			Array.forEach(q, fn, s);
 		}else{
-			for(var i=0; i<items.length; i++){
+			for(var i=0; i<q.length; i++){
 				fn.call(s, q[i], i, q);
 			}
 		}

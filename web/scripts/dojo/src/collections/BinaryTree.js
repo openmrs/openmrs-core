@@ -77,8 +77,8 @@ dojo.collections.BinaryTree=function(data){
 	function searchHelper(current, data){
 		if (!current) return null;
 		var i=current.compareData(data);
-		if (i == 0) return current;
-		if (result > 0) return searchHelper(current.left, data);
+		if (i==0) return current;
+		if (i>0) return searchHelper(current.left, data);
 		else return searchHelper(current.right, data);
 	}
 

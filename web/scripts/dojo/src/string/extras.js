@@ -14,12 +14,35 @@ dojo.require("dojo.string.common");
 dojo.require("dojo.lang");
 
 /**
+ * Performs parameterized substitutions on a string.  For example,
+ *   dojo.string.substituteParams("File '%{0}' is not found in directory '%{1}'.","foo.html","/temp");
+ * returns
+ *   "File 'foo.html' is not found in directory '/temp'."
+ * 
+ * @param template the original string template with %{values} to be replaced
+ * @param hash name/value pairs (type object) to provide substitutions.  Alternatively, substitutions may be
+ *  included as arguments 1..n to this function, corresponding to template parameters 0..n-1
+ * @return the completed string. Throws an exception if any parameter is unmatched
+ */
+//TODO: use ${} substitution syntax instead, like widgets do?
+dojo.string.substituteParams = function(template /*string */, hash /* object - optional or ... */) {
+	var map = (typeof hash == 'object') ? hash : dojo.lang.toArray(arguments, 1);
+
+	return template.replace(/\%\{(\w+)\}/g, function(match, key){
+		return map[key] || dojo.raise("Substitution not found: " + key);
+	});
+};
+
+/**
  * Parameterized string function
  * str - formatted string with %{values} to be replaces
  * pairs - object of name: "value" value pairs
  * killExtra - remove all remaining %{values} after pairs are inserted
  */
 dojo.string.paramString = function(str, pairs, killExtra) {
+	dojo.deprecated("dojo.string.paramString",
+		"use dojo.string.substituteParams instead", "0.4");
+
 	for(var name in pairs) {
 		var re = new RegExp("\\%\\{" + name + "\\}", "g");
 		str = str.replace(re, pairs[name]);
@@ -33,18 +56,12 @@ dojo.string.paramString = function(str, pairs, killExtra) {
 dojo.string.capitalize = function (str) {
 	if (!dojo.lang.isString(str)) { return ""; }
 	if (arguments.length == 0) { str = this; }
+
 	var words = str.split(' ');
-	var retval = "";
-	var len = words.length;
-	for (var i=0; i<len; i++) {
-		var word = words[i];
-		word = word.charAt(0).toUpperCase() + word.substring(1, word.length);
-		retval += word;
-		if (i < len-1)
-			retval += " ";
+	for(var i=0; i<words.length; i++){
+		words[i] = words[i].charAt(0).toUpperCase() + words[i].substring(1);
 	}
-	
-	return new String(retval);
+	return words.join(" ");
 }
 
 /**
@@ -71,8 +88,7 @@ dojo.string.encodeAscii = function(str) {
 }
 
 dojo.string.escape = function(type, str) {
-	var args = [];
-	for(var i = 1; i < arguments.length; i++) { args.push(arguments[i]); }
+	var args = dojo.lang.toArray(arguments, 1);
 	switch(type.toLowerCase()) {
 		case "xml":
 		case "html":
@@ -182,7 +198,7 @@ dojo.string.startsWithAny = function(str /* , ... */) {
 }
 
 /**
- * Returns true if 'str' starts with any of the arguments 2 -> n
+ * Returns true if 'str' contains any of the arguments 2 -> n
  */
 dojo.string.has = function(str /* , ... */) {
 	for(var i = 1; i < arguments.length; i++) {

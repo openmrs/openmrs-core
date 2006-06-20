@@ -162,7 +162,7 @@ dojo.lang.extend(dojo.widget.TreeSelector, {
 
 	doSelect: function(node){
 
-		node.markSelected();
+		//node.markSelected();
 
 		this.selectedNode = node;
 	},
@@ -172,7 +172,7 @@ dojo.lang.extend(dojo.widget.TreeSelector, {
 		var node = this.selectedNode;
 
 		this.selectedNode = null;
-		node.unMarkSelected();
+		//node.unMarkSelected();
 		dojo.event.topic.publish(this.eventNames.deselect, {node: node} );
 
 	}

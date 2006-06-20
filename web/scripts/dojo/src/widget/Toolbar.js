@@ -841,94 +841,93 @@ dojo.lang.extend(dojo.widget.html.ToolbarSelect, {
 /* Icon
  *********/
 // arguments can be IMG nodes, Image() instances or URLs -- enabled is the only one required
-dojo.widget.Icon = function(enabled, disabled, hover, selected) {
-	if(arguments.length == 0) {
+dojo.widget.Icon = function(enabled, disabled, hover, selected){
+	if(!arguments.length){
+		// FIXME: should this be dojo.raise?
 		throw new Error("Icon must have at least an enabled state");
 	}
 	var states = ["enabled", "disabled", "hover", "selected"];
 	var currentState = "enabled";
 	var domNode = document.createElement("img");
 
-	this.getState = function() { return currentState; }
-	this.setState = function(value) {
-		if(dojo.lang.inArray(value, states)) {
-			if(this[value]) {
+	this.getState = function(){ return currentState; }
+	this.setState = function(value){
+		if(dojo.lang.inArray(value, states)){
+			if(this[value]){
 				currentState = value;
 				domNode.setAttribute("src", this[currentState].src);
 			}
-		} else {
+		}else{
 			throw new Error("Invalid state set on Icon (state: " + value + ")");
 		}
 	}
 
-	this.setSrc = function(state, value) {
-		if(/^img$/i.test(value.tagName)) {
+	this.setSrc = function(state, value){
+		if(/^img$/i.test(value.tagName)){
 			this[state] = value;
-		} else if(typeof value == "string" || value instanceof String
-			|| value instanceof dojo.uri.Uri) {
+		}else if(typeof value == "string" || value instanceof String
+			|| value instanceof dojo.uri.Uri){
 			this[state] = new Image();
 			this[state].src = value.toString();
 		}
 		return this[state];
 	}
 
-	this.setIcon = function(icon) {
-		for(var i = 0; i < states.length; i++) {
-			if(icon[states[i]]) {
+	this.setIcon = function(icon){
+		for(var i = 0; i < states.length; i++){
+			if(icon[states[i]]){
 				this.setSrc(states[i], icon[states[i]]);
 			}
 		}
 		this.update();
 	}
 
-	this.enable = function() { this.setState("enabled"); }
-	this.disable = function() { this.setState("disabled"); }
-	this.hover = function() { this.setState("hover"); }
-	this.select = function() { this.setState("selected"); }
+	this.enable = function(){ this.setState("enabled"); }
+	this.disable = function(){ this.setState("disabled"); }
+	this.hover = function(){ this.setState("hover"); }
+	this.select = function(){ this.setState("selected"); }
 
-	this.getSize = function() {
+	this.getSize = function(){
 		return {
 			width: domNode.width||domNode.offsetWidth,
 			height: domNode.height||domNode.offsetHeight
 		};
 	}
 
-	this.setSize = function(w, h) {
+	this.setSize = function(w, h){
 		domNode.width = w;
 		domNode.height = h;
 		return { width: w, height: h };
 	}
 
-	this.getNode = function() {
+	this.getNode = function(){
 		return domNode;
 	}
 
-	this.getSrc = function(state) {
-		if(state) { return this[state].src; }
+	this.getSrc = function(state){
+		if(state){ return this[state].src; }
 		return domNode.src||"";
 	}
 
-	this.update = function() {
+	this.update = function(){
 		this.setState(currentState);
 	}
 
-	for(var i = 0; i < states.length; i++) {
+	for(var i = 0; i < states.length; i++){
 		var arg = arguments[i];
 		var state = states[i];
 		this[state] = null;
-		if(!arg) { continue; }
+		if(!arg){ continue; }
 		this.setSrc(state, arg);
 	}
 
 	this.enable();
 }
 
-dojo.widget.Icon.make = function(a,b,c,d) {
-	for(var i = 0; i < arguments.length; i++) {
-		if(arguments[i] instanceof dojo.widget.Icon) {
+dojo.widget.Icon.make = function(a,b,c,d){
+	for(var i = 0; i < arguments.length; i++){
+		if(arguments[i] instanceof dojo.widget.Icon){
 			return arguments[i];
-		} else if(!arguments[i]) {
-			nullArgs++;
 		}
 	}
 

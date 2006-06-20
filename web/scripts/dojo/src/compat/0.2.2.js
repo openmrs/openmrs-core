@@ -15,7 +15,7 @@ Compatibility package to get 0.2.2 functionality in later Dojo releases.
 //**********************************
 //From bootstrap1.js
 dj_throw = dj_rethrow = function(m, e){
-	dojo.deprecated("dj_throw and dj_rethrow deprecated, use dojo.raise instead");
+	dojo.deprecated("dj_throw and dj_rethrow", "use dojo.raise instead", "0.4");
 	dojo.raise(m, e);
 }
 
@@ -24,7 +24,7 @@ dj_unimplemented = dojo.unimplemented;
 dj_deprecated = dojo.deprecated;
 
 dj_inherits = function(subclass, superclass){
-	dojo.deprecated("dj_inherits deprecated, use dojo.inherits instead");
+	dojo.deprecated("dj_inherits", "use dojo.inherits instead", "0.4");
 	dojo.inherits(subclass, superclass);
 }
 

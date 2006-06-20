@@ -16,16 +16,13 @@ dojo.require("dojo.json")
 dojo.require("dojo.io.*");
 dojo.require("dojo.widget.TreeLoadingController");
 
-
 dojo.widget.tags.addParseTreeHandler("dojo:TreeRPCController");
 
-
-dojo.widget.TreeRPCController = function() {
+dojo.widget.TreeRPCController = function(){
 	dojo.widget.TreeLoadingController.call(this);
 }
 
 dojo.inherits(dojo.widget.TreeRPCController, dojo.widget.TreeLoadingController);
-
 
 dojo.lang.extend(dojo.widget.TreeRPCController, {
 	widgetType: "TreeRPCController",
@@ -41,7 +38,7 @@ dojo.lang.extend(dojo.widget.TreeRPCController, {
 	 *
 	 * Also, "loading" icon is not shown until function finishes execution, so no indication for remote request.
 	*/
-	doMove: function(child, newParent, index) {
+	doMove: function(child, newParent, index){
 
 		//if (newParent.isTreeNode) newParent.markLoading();
 
@@ -60,7 +57,7 @@ dojo.lang.extend(dojo.widget.TreeRPCController, {
 		this.runRPC({		
 			url: this.getRPCUrl('move'),
 			/* I hitch to get this.loadOkHandler */
-			load: function(response) {
+			load: function(response){
 				success = this.doMoveProcessResponse(response, child, newParent, index) ;
 			},
 			sync: true,
@@ -72,9 +69,9 @@ dojo.lang.extend(dojo.widget.TreeRPCController, {
 		return success;
 	},
 
-	doMoveProcessResponse: function(response, child, newParent, index) {
+	doMoveProcessResponse: function(response, child, newParent, index){
 
-		if (!dojo.lang.isUndefined(response.error)) {
+		if(!dojo.lang.isUndefined(response.error)){
 			this.RPCErrorHandler("server", response.error);
 			return false;
 		}
@@ -85,7 +82,7 @@ dojo.lang.extend(dojo.widget.TreeRPCController, {
 	},
 
 
-	doRemoveNode: function(node, callObj, callFunc) {
+	doRemoveNode: function(node, callObj, callFunc){
 
 		var params = {
 			node: this.getInfo(node),
@@ -95,7 +92,7 @@ dojo.lang.extend(dojo.widget.TreeRPCController, {
 		this.runRPC({
 				url: this.getRPCUrl('removeNode'),
 				/* I hitch to get this.loadOkHandler */
-				load: function(response) {
+				load: function(response){
 					this.doRemoveNodeProcessResponse(response, node, callObj, callFunc) 
 				},
 				params: params,
@@ -105,24 +102,24 @@ dojo.lang.extend(dojo.widget.TreeRPCController, {
 	},
 
 
-	doRemoveNodeProcessResponse: function(response, node, callObj, callFunc) {
-		if (!dojo.lang.isUndefined(response.error)) {
+	doRemoveNodeProcessResponse: function(response, node, callObj, callFunc){
+		if(!dojo.lang.isUndefined(response.error)){
 			this.RPCErrorHandler("server", response.error);
 			return false;
 		}
 
-		if (!response) return false;
+		if(!response){ return false; }
 
-		if (response == true) {
+		if(response == true){
 			/* change parent succeeded */
 			var args = [ node, callObj, callFunc ];
 			dojo.widget.TreeLoadingController.prototype.doRemoveNode.apply(this, args);
 
 			return;
-		} else if (dojo.lang.isObject(response)) {
+		}else if(dojo.lang.isObject(response)){
 			dojo.raise(response.error);
-		} else {
-			dojo.raise("Invalid response "+obj)
+		}else{
+			dojo.raise("Invalid response "+response)
 		}
 
 
@@ -135,7 +132,7 @@ dojo.lang.extend(dojo.widget.TreeRPCController, {
 	// -----------------------------------------------------------------------------
 
 
-	doCreateChild: function(parent, index, output, callObj, callFunc) {
+	doCreateChild: function(parent, index, output, callObj, callFunc){
 
 			var params = {
 				tree: this.getInfo(parent.tree),
@@ -156,21 +153,19 @@ dojo.lang.extend(dojo.widget.TreeRPCController, {
 
 	},
 
-	doCreateChildProcessResponse: function(response, parent, index, callObj, callFunc) {
+	doCreateChildProcessResponse: function(response, parent, index, callObj, callFunc){
 
-		if (!dojo.lang.isUndefined(response.error)) {
+		if(!dojo.lang.isUndefined(response.error)){
 			this.RPCErrorHandler("server",response.error);
 			return false;
 		}
 
-		if (!dojo.lang.isObject(response)) {
+		if(!dojo.lang.isObject(response)){
 			dojo.raise("Invalid result "+response)
 		}
 
 		var args = [parent, index, response, callObj, callFunc];
 		
 		dojo.widget.TreeLoadingController.prototype.doCreateChild.apply(this, args);
-
 	}
-
 });

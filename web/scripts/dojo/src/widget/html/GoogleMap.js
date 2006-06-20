@@ -12,11 +12,28 @@ dojo.provide("dojo.widget.html.GoogleMap");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html");
 dojo.require("dojo.math");
+dojo.require("dojo.uri.Uri");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.GoogleMap");
 
 (function(){
 	var gkey = djConfig["gMapKey"]||djConfig["googleMapKey"];
+
+	//	the Google API key mechanism sucks.  We're hardcoding here for love and affection but I don't like it.
+	var uri=new dojo.uri.Uri(window.location.href);
+	if(uri.host=="www.dojotoolkit.org"){
+		gkey="ABQIAAAACUNdgv_7FGOmUslbm9l6_hRqjp7ri2mNiOEYqetD3xnFHpt5rBSjszDd1sdufPyQKUTyCf_YxoIxvw";
+	}
+	else if(uri.host=="blog.dojotoolkit.org"){
+		gkey="ABQIAAAACUNdgv_7FGOmUslbm9l6_hSkep6Av1xaMhVn3yCLkorJeXeLARQ6fammI_P3qSGleTJhoI5_1JmP_Q";
+	}
+	else if(uri.host=="archive.dojotoolkit.org"){
+		gkey="ABQIAAAACUNdgv_7FGOmUslbm9l6_hTaQpDt0dyGLIHbXMPTzg1kWeAfwRTwZNyrUfbfxYE9yIvRivEjcXoDTg";
+	}
+	else if(uri.host=="dojotoolkit.org"){
+		gkey="ABQIAAAACUNdgv_7FGOmUslbm9l6_hSaOaO_TgJ5c3mtQFnk5JO2zD5dZBRZk-ieqVs7BORREYNzAERmcJoEjQ";
+	}
+
 	if(!dojo.hostenv.post_load_){
 		var tag = "<scr"+"ipt src='http://maps.google.com/maps?file=api&amp;v=2&amp;key="+gkey+"'></scri"+"pt>";
 		if(!dj_global["GMap2"]){ // prevent multi-inclusion

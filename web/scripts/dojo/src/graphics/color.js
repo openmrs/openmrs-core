@@ -72,7 +72,7 @@ dojo.lang.extend(dojo.graphics.color.Color, {
 	},
 
 	blend: function(color, weight) {
-		return dojo.graphics.color.blend(this.toRgb(), new Color(color).toRgb(), weight);
+		return dojo.graphics.color.blend(this.toRgb(), new dojo.graphics.color.Color(color).toRgb(), weight);
 	}
 });
 

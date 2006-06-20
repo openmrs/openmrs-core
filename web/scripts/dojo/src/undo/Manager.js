@@ -59,32 +59,32 @@ dojo.lang.extend(dojo.undo.Manager, {
 
 		this.isUndoing = true;
 		var top = this._undoStack.pop();
-		if(top instanceof this.constructor) {
+		if(top instanceof dojo.undo.Manager){
 			top.undoAll();
-		} else {
+		}else{
 			top.undo();
 		}
-		if(top.redo) {
+		if(top.redo){
 			this._redoStack.push(top);
 		}
 		this.isUndoing = false;
 
 		this._updateStatus();
 		this.onUndo(this, top);
-		if(!(top instanceof this.constructor)) {
+		if(!(top instanceof dojo.undo.Manager)){
 			this.getTop().onUndoAny(this, top);
 		}
 		return true;
 	},
 
 	redo: function() {
-		if(!this.canRedo) { return false; }
+		if(!this.canRedo){ return false; }
 
 		this.isRedoing = true;
 		var top = this._redoStack.pop();
-		if(top instanceof this.constructor) {
+		if(top instanceof dojo.undo.Manager){
 			top.redoAll();
-		} else {
+		}else{
 			top.redo();
 		}
 		this._undoStack.push(top);
@@ -92,7 +92,7 @@ dojo.lang.extend(dojo.undo.Manager, {
 
 		this._updateStatus();
 		this.onRedo(this, top);
-		if(!(top instanceof this.constructor)) {
+		if(!(top instanceof dojo.undo.Manager)){
 			this.getTop().onRedoAny(this, top);
 		}
 		return true;
@@ -134,6 +134,8 @@ dojo.lang.extend(dojo.undo.Manager, {
 			for(var x=0; x < manager._undoStack.length; x++) {
 				this._undoStack.push(manager._undoStack[x]);
 			}
+			// adding a new undo-able item clears out the redo stack
+			this._redoStack = [];
 			this._updateStatus();
 		} else {
 			this._currentManager.concat.apply(this._currentManager, arguments);

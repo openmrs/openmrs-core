@@ -1,3 +1,13 @@
+/*
+	Copyright (c) 2004-2006, The Dojo Foundation
+	All Rights Reserved.
+
+	Licensed under the Academic Free License version 2.1 or above OR the
+	modified BSD license. For more information on Dojo licensing, see:
+
+		http://dojotoolkit.org/community/licensing.shtml
+*/
+
 dojo.provide("dojo.widget.Rounded");
 dojo.widget.tags.addParseTreeHandler("dojo:rounded");
 
@@ -6,31 +16,11 @@ dojo.require("dojo.widget.html.ContentPane");
 dojo.require("dojo.html");
 dojo.require("dojo.style");
 
-	/***************************************************************
-	* The following script is derived (with permission) from		 *
-	* curvyCorners (attribution below) and was adapted to			 *
-	* Dojo Toolkit by Brian Lucas	(brian.lucas <at> gmail.com)	 *
-	****************************************************************
-	*                                                              *
-	*  curvyCorners                                                *
-	*  ------------                                                *
-	*  This script generates rounded corners for your divs.        *
-	*                                                              *
-	*  Version 1.00 beta                                           *
-	*  Copyright (c) 2006 Cameron Cooke                            *
-	*  By: Cameron Cooke and Tim Hutchison.                        *
-	*                                                              *
-	*  Website: http://www.curvycorners.net                        *
-	*  Email:   info@totalinfinity.com                             *
-	*                                                              *
-	*  This library is free software; you can redistribute         *
-	*  it and/or modify it under the terms of the GNU              *
-	*  Lesser General Public License as published by the           *
-	*  Free Software Foundation; either version 2.1 of the         *
-	*  License, or (at your option) any later version.             *
-	*                                                              *
-	*  (...standard GPL disclaimer follows, snipped for space...)  *
-	****************************************************************/
+/*
+ *	The following script is derived (with permission) from curvyCorners,
+ *	written by Cameron Cooke (CLA on file) and was adapted to Dojo by Brian
+ *	Lucas (CLA on file)
+ */
 
 dojo.widget.Rounded = function() {
 	dojo.widget.html.ContentPane.call(this);
@@ -54,37 +44,35 @@ dojo.lang.extend(dojo.widget.Rounded, {
 
 		// Magic to automatically calculate the box height/width if not supplied
 		if (this.domNode.style.height<=0) {
-			minHeight = (this.radius*1)+this.domNode.clientHeight;
+			var minHeight = (this.radius*1)+this.domNode.clientHeight;
 			this.domNode.style.height = minHeight+"px";
 		}
 
 		if (this.domNode.style.width<=0) {
-			minWidth = (this.radius*1)+this.domNode.clientWidth;
+			var minWidth = (this.radius*1)+this.domNode.clientWidth;
 			this.domNode.style.width = minWidth+"px";
 		}
 
-		cornersAvailable = ["TR", "TL", "BR", "BL"];
-		cornersPassed = this.corners.split(",");
+		var cornersAvailable = ["TR", "TL", "BR", "BL"];
+		var cornersPassed = this.corners.split(",");
 
 		this.settings = {
 			antiAlias: this.antiAlias
 		};
 
-		setCorner = function(currentCorner, cornersAvailable, radius, settings) {
-			this.settings = settings;
-			val = currentCorner.toLowerCase(); 
-			if(dojo.lang.inArray(cornersAvailable, currentCorner)) {
-				this.settings[val] = { radius: radius, enabled: true };
-			} else { 
+		var setCorner = function(currentCorner) {
+			var val = currentCorner.toLowerCase();
+			if(dojo.lang.inArray(cornersPassed, currentCorner)) {
+				this.settings[val] = { radius: this.radius, enabled: true };
+			} else {
 				this.settings[val] = { radius: 0 }
 			}
 		}
+		dojo.lang.forEach(cornersAvailable, setCorner, this);
 
-		dojo.lang.map(cornersAvailable, this, function(currentCorner){setCorner(currentCorner, cornersPassed, this.radius, this.settings); } );
 		this.domNode.style.margin = this.boxMargin;
 		this.curvyCorners(this.settings);
 		this.applyCorners();
-
 	},
 
 	// ------------- curvyCorners OBJECT
@@ -121,7 +109,7 @@ dojo.lang.extend(dojo.widget.Rounded, {
 		// DEBUG ME?
 
 		//dojo.debug(this.rgb2Hex(boxColour));
-		test  = new dojo.graphics.color.Color(boxColour);
+		var test  = new dojo.graphics.color.Color(boxColour);
 		//dojo.debug(test.toHex()); 
 
 		this.boxColour       = ((boxColour != "" && boxColour != "transparent")? ((boxColour.substr(0, 3) == "rgb")? this.rgb2Hex(boxColour) : boxColour) : "#ffffff");
@@ -401,6 +389,7 @@ dojo.lang.extend(dojo.widget.Rounded, {
 							if(cc == "tr" || cc == "tl") {
 								pixelBar.style.top =  this.settings[cc].radius -pixelBarHeight -pixelBarTop + "px"; // Top
 							}
+							var value;
 					
 							switch(cc) {
 								case "tr":
@@ -462,7 +451,7 @@ dojo.lang.extend(dojo.widget.Rounded, {
 			radiusDiff["t"] = this.settings.tl.enabled && this.settings.tr.enabled ? Math.abs(this.settings.tl.radius - this.settings.tr.radius) : 0;
 			radiusDiff["b"] = this.settings.bl.enabled && this.settings.br.enabled ? Math.abs(this.settings.bl.radius - this.settings.br.radius) : 0;
 
-			for(z in radiusDiff) {
+			for(var z in radiusDiff) {
 				if(radiusDiff[z]) {
 					// Get the type of corner that is the smaller one
 					var smallerCornerType = ((this.settings[z + "l"].radius < this.settings[z + "r"].radius)? z +"l" : z +"r");
@@ -688,11 +677,11 @@ dojo.lang.extend(dojo.widget.Rounded, {
 	//Converts a number to hexadecimal format
 
 	intToHex: function (strNum) {
-		base = strNum / 16;
-		rem = strNum % 16;
-		base = base - (rem / 16);
-		baseS = this.makeHex(base);
-		remS = this.makeHex(rem);
+		var base = strNum / 16;
+		var rem = strNum % 16;
+		var base = base - (rem / 16);
+		var baseS = this.makeHex(base);
+		var remS = this.makeHex(rem);
 		return baseS + '' + remS;
 	},
 	//gets the hex bits of a number

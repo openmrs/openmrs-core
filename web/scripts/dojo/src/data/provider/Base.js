@@ -88,6 +88,7 @@ dojo.data.provider.Base.prototype.newAttribute = function(/* string */ attribute
 
 dojo.data.provider.Base.prototype.getAttribute = function(/* string */ attributeId) {
 	dojo.unimplemented('dojo.data.provider.Base');
+	var attribute;
 	return attribute; // dojo.data.Attribute
 };
 
@@ -103,6 +104,7 @@ dojo.data.provider.Base.prototype.fetchArray = function() {
 
 dojo.data.provider.Base.prototype.fetchResultSet = function() {
 	dojo.unimplemented('dojo.data.provider.Base');
+	var resultSet;
 	return resultSet; // dojo.data.ResultSet
 };
 

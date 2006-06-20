@@ -65,7 +65,7 @@ dojo.textDirectoryTokeniser.Property = function (line) {
 // tokeniser, parses into an array of properties.
 dojo.textDirectoryTokeniser.tokenise = function (text) {
 	// normlize to one propterty per line and parse
-	nText = dojo.string.normalizeNewlines(text,"\n");
+	var nText = dojo.string.normalizeNewlines(text,"\n");
 	nText = nText.replace(/\n[ \t]/g, '');
 	nText = nText.replace(/\x00/g, '');
 		

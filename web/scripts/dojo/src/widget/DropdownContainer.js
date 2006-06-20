@@ -21,31 +21,27 @@ dojo.widget.defineWidget(
 		initializer: function(){
 		},
 
-		isContainer: true,
-		snarfChildDomOutput: true,
-		
 		inputWidth: "7em",
 		inputId: "",
 		inputName: "",
-		iconURL: null,
-		iconAlt: null,
+		iconURL: dojo.uri.dojoUri("src/widget/templates/images/combo_box_arrow.png"),
+		iconAlt: "",
 
 		inputNode: null,
 		buttonNode: null,
 		containerNode: null,
 		subWidgetNode: null,
 
-		templateString: '<div><span style="white-space:nowrap"><input type="text" value="" style="vertical-align:middle;" dojoAttachPoint="inputNode" autocomplete="off" /> <img src="" alt="" dojoAttachPoint="buttonNode" dojoAttachEvent="onclick: onIconClick;" style="vertical-align:middle; cursor:pointer; cursor:hand;" /></span><br /><div dojoAttachPoint="containerNode" style="display:none;position:absolute;width:12em;background-color:#fff;"></div></div>',
+		containerToggle: "plain",
+		containerToggleDuration: 150,
+		containerAnimInProgress: false,
+
+		templateString: '<div><span style="white-space:nowrap"><input type="text" value="" style="vertical-align:middle;" dojoAttachPoint="inputNode" autocomplete="off" /> <img src="${this.iconURL}" alt="${this.iconAlt}" dojoAttachPoint="buttonNode" dojoAttachEvent="onclick: onIconClick;" style="vertical-align:middle; cursor:pointer; cursor:hand;" /></span><br /><div dojoAttachPoint="containerNode" style="display:none;position:absolute;width:12em;background-color:#fff;"></div></div>',
 		templateCssPath: "",
 
 		fillInTemplate: function(args, frag){
 			var source = this.getFragNodeRef(frag);
 			
-			if(args.inputId){ this.inputId = args.inputId; }
-			if(args.inputName){ this.inputName = args.inputName; }
-			if(args.iconURL){ this.iconURL = args.iconURL; }
-			if(args.iconAlt){ this.iconAlt = args.iconAlt; }
-
 			this.containerNode.style.left = "";
 			this.containerNode.style.top = "";
 
@@ -53,13 +49,18 @@ dojo.widget.defineWidget(
 			if(this.inputName){ this.inputNode.name = this.inputName; }
 			this.inputNode.style.width = this.inputWidth;
 
-			if(this.iconURL){ this.buttonNode.src = this.iconURL; }
-			if(this.iconAlt){ this.buttonNode.alt = this.iconAlt; }
-
 			dojo.event.connect(this.inputNode, "onchange", this, "onInputChange");
 			
 			this.containerIframe = new dojo.html.BackgroundIframe(this.containerNode);
 			this.containerIframe.size([0,0,0,0]);
+		},
+
+		postMixInProperties: function(args, frag, parentComp){
+			// now that we know the setting for toggle, get toggle object
+			// (default to plain toggler if user specified toggler not present)
+			this.containerToggleObj =
+				dojo.lfx.toggle[this.containerToggle.toLowerCase()] || dojo.lfx.toggle.plain;
+			dojo.widget.DropdownContainer.superclass.postMixInProperties.call(this, args, frag, parentComp);
 		},
 
 		onIconClick: function(evt){
@@ -68,19 +69,32 @@ dojo.widget.defineWidget(
 
 		toggleContainerShow: function(){
 			if(dojo.html.isShowing(this.containerNode)){
-				dojo.html.hide(this.containerNode);
+				this.hideContainer();
 			}else{
 				this.showContainer();
 			}
 		},
 		
 		showContainer: function(){
-			dojo.html.show(this.containerNode);
-			this.sizeBackgroundIframe();
+			this.containerAnimInProgress=true;
+			this.containerToggleObj.show(this.containerNode, this.containerToggleDuration, null,
+				dojo.lang.hitch(this, this.onContainerShow), this.explodeSrc);
+			dojo.lang.setTimeout(this, this.sizeBackgroundIframe, this.containerToggleDuration);
 		},
-		
-		onHide: function(evt){
-			dojo.html.hide(this.containerNode);
+
+		onContainerShow: function(){
+			this.containerAnimInProgress=false;
+		},
+
+		hideContainer: function(){
+			this.containerAnimInProgress=true;
+			this.containerToggleObj.hide(this.containerNode, this.containerToggleDuration, null,
+				dojo.lang.hitch(this, this.onContainerHide), this.explodeSrc);
+			dojo.lang.setTimeout(this, this.sizeBackgroundIframe, this.containerToggleDuration);
+		},
+
+		onContainerHide: function(){
+			this.containerAnimInProgress=false;
 		},
 		
 		sizeBackgroundIframe: function(){

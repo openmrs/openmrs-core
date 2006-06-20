@@ -233,13 +233,16 @@ dojo.widget.defineWidget(
 		},
 
 		uninitialize: function(){
-			dojo.event.kwDisconnect({
-				srcObj:		document.body, 
-				srcFunc:	"onclick", 
-				targetObj:	this,
-				targetFunc:	"hideAllDropDowns",
-				once:		true
-			});
+			if(!dojo.render.html.ie){
+				// apparently this causes leakage on IE!
+				dojo.event.kwDisconnect({
+					srcObj:		document.body, 
+					srcFunc:	"onclick", 
+					targetObj:	this,
+					targetFunc:	"hideAllDropDowns",
+					once:		true
+				});
+			}
 		},
 
 		// stub for observers

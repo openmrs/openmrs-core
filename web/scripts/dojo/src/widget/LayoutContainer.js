@@ -52,7 +52,7 @@ dojo.lang.extend(dojo.widget.html.LayoutContainer, {
 		// If this node was created while display=="none" then it
 		// hasn't been laid out yet.  Do that now.
 		this.domNode.style.display="";
-		this.onParentResized();
+		this.checkSize();
 		this.domNode.style.display="none";
 		this.domNode.style.visibility="";
 

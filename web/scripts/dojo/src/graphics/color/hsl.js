@@ -93,7 +93,7 @@ dojo.graphics.color.hsl2rgb = function(h, s, l){
 
 	while (h < 0){ h += 360; }
 	while (h > 360){ h -= 360; }
-
+	var r, g, b;
 	if (h < 120){
 		r = (120 - h) / 60;
 		g = h / 60;

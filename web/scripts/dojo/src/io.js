@@ -299,7 +299,17 @@ dojo.io.setIFrameSrc = function(iframe, src, replace){
 			}else{ //  if(r.moz){
 				idoc = iframe.contentWindow;
 			}
-			idoc.location.replace(src);
+
+			//For Safari (at least 2.0.3) and Opera, if the iframe
+			//has just been created but it doesn't have content
+			//yet, then iframe.document may be null. In that case,
+			//use iframe.location and return.
+			if(!idoc){
+				iframe.location = src;
+				return;
+			}else{
+				idoc.location.replace(src);
+			}
 		}
 	}catch(e){ 
 		dojo.debug(e); 

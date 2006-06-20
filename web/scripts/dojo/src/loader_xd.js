@@ -163,7 +163,11 @@ dojo.hostenv.loadUri = function(uri, cb, currentIsXDomain, module){
 			var pkg = this.createXdPackage(contents);
 			dj_eval(pkg);
 		}else{
+			if(cb){ contents = '('+contents+')'; }
 			var value = dj_eval(contents);
+			if(cb){
+				cb(value);
+			}
 		}
 	}
 
@@ -176,6 +180,7 @@ dojo.hostenv.loadUri = function(uri, cb, currentIsXDomain, module){
 dojo.hostenv.packageLoaded = function(pkg){
 	var deps = pkg.depends;
 	var requireList = null;
+	var requireAfterList = null;
 	var provideList = [];
 	if(deps && deps.length > 0){
 		var dep = null;
@@ -191,7 +196,17 @@ dojo.hostenv.packageLoaded = function(pkg){
 				if(!requireList){
 					requireList = [];
 				}
-				requireList = requireList.concat(this.unpackXdDependency(dep));
+				if(!requireAfterList){
+					requireAfterList = [];
+				}
+
+				var unpackedDeps = this.unpackXdDependency(dep);
+				if(unpackedDeps.requires){
+					requireList = requireList.concat(unpackedDeps.requires);
+				}
+				if(unpackedDeps.requiresAfter){
+					requireAfterList = requireAfterList.concat(unpackedDeps.requiresAfter);
+				}
 			}
 
 			//Call the dependency indicator to allow for the normal dojo setup.
@@ -210,7 +225,7 @@ dojo.hostenv.packageLoaded = function(pkg){
 
 		//Add provide/requires to dependency map.
 		for(var i = 0; i < provideList.length; i++){
-			this.xdDepMap[provideList[i]] = { requires: requireList, contentIndex: contentIndex };
+			this.xdDepMap[provideList[i]] = { requires: requireList, requiresAfter: requireAfterList, contentIndex: contentIndex };
 		}
 
 		//Now update the inflight status for any provided packages in this loaded package.
@@ -229,6 +244,7 @@ dojo.hostenv.packageLoaded = function(pkg){
 dojo.hostenv.unpackXdDependency = function(dep){
 	//Extract the dependency(ies).
 	var newDeps = null;
+	var newAfterDeps = null;
 	switch(dep[0]){
 		case "requireIf":
 		case "requireAfterIf":
@@ -241,8 +257,8 @@ dojo.hostenv.unpackXdDependency = function(dep){
 		case "requireAll":
 			//the arguments are an array, each element a call to require.
 			//Get rid of first item, which is "requireAll".
-			deps.shift();
-			newDeps = deps;
+			dep.shift();
+			newDeps = dep;
 			dojo.hostenv.flattenRequireArray(newDeps);
 			break;
 		case "kwCompoundRequire":
@@ -260,21 +276,12 @@ dojo.hostenv.unpackXdDependency = function(dep){
 			break;
 	}
 
-	return newDeps;
-}
-
-//Evaluate package contents for the given provide.
-dojo.hostenv.xdResolve = function(provide, pkg){
-	var contents = this.xdContents[pkg.contentIndex];
-	if(!contents.isDefined){
-		//Evaluate the package to bring it into being.
-		//Pass dojo in so that later, to support multiple versions of dojo
-		//in a page, we can pass which version of dojo to use.
-		contents.content(dojo);
-		contents.isDefined = true;
+	//The requireAfterIf or requireAfter needs to be evaluated after the current package is evaluated.
+	if(dep[0] == "requireAfterIf"){
+		newAfterDeps = newDeps;
+		newDeps = null;
 	}
-
-	this.xdDepMap[provide] = null;
+	return {requires: newDeps, requiresAfter: newAfterDeps};
 }
 
 //Walks the requires and evaluates package contents in
@@ -292,28 +299,44 @@ dojo.hostenv.xdWalkReqs = function(){
 	}
 }
 
+//Trace down any requires.
+dojo.hostenv.xdTraceReqs = function(reqs, reqChain){
+	if(reqs && reqs.length > 0){
+		var nextReq;
+		for(var i = 0; i < reqs.length; i++){
+			nextReq = reqs[i].name;
+			if(nextReq && !reqChain[nextReq]){
+				//New req depedency. Follow it down.
+				reqChain.push(nextReq);
+				reqChain[nextReq] = true;
+				this.xdEvalReqs(reqChain);
+			}
+		}
+	}
+}
+
 //Do a depth first, breadth second search and eval or reqs.
 dojo.hostenv.xdEvalReqs = function(reqChain){
 	if(reqChain.length > 0){
 		var req = reqChain[reqChain.length - 1];
 		var pkg = this.xdDepMap[req];
 		if(pkg){
-			//Trace down any dependencies for this package.
-			if(pkg.requires && pkg.requires.length > 0){
-				var nextReq;
-				for(var i = 0; i < pkg.requires.length; i++){
-					nextReq = pkg.requires[i].name;
-					if(nextReq && !reqChain[nextReq]){
-						//New req depedency. Follow it down.
-						reqChain.push(nextReq);
-						reqChain[nextReq] = true;
-						this.xdEvalReqs(reqChain);
-					}
-				}
-			}
+			//Trace down any requires for this package.
+			this.xdTraceReqs(pkg.requires, reqChain);
 
 			//Evaluate the package.
-			this.xdResolve(req, pkg);
+			var contents = this.xdContents[pkg.contentIndex];
+			if(!contents.isDefined){
+				//Evaluate the package to bring it into being.
+				//Pass dojo in so that later, to support multiple versions of dojo
+				//in a page, we can pass which version of dojo to use.
+				contents.content(dojo);
+				contents.isDefined = true;
+			}
+			this.xdDepMap[req] = null;
+
+			//Trace down any requireAfters for this package..
+			this.xdTraceReqs(pkg.requiresAfter, reqChain);
 		}
 
 		//Done with that require. Remove it and go to the next one.

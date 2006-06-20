@@ -47,7 +47,7 @@
 			}
 			return module;
 		},
-	
+
 		getTextStack: [],
 		loadUriStack: [],
 		loadedUris: [],
@@ -56,7 +56,9 @@
 		post_load_: false,
 		
 		//Egad! Lots of test files push on this directly instead of using dojo.addOnLoad.
-		modulesLoadedListeners: []
+		modulesLoadedListeners: [],
+		unloadListeners: [],
+		loadNotifying: false
 	};
 	
 	//Add all of these properties to dojo.hostenv
@@ -78,13 +80,19 @@
  * ending in '.js').
  * @param module A module whose existance to check for after loading a path.
  * Can be used to determine success or failure of the load.
+ * @param cb a function to pass the result of evaluating the script (optional)
  */
 dojo.hostenv.loadPath = function(relpath, module /*optional*/, cb /*optional*/){
+	var uri;
 	if((relpath.charAt(0) == '/')||(relpath.match(/^\w+:/))){
-		dojo.raise("relpath '" + relpath + "'; must be relative");
+		// dojo.raise("relpath '" + relpath + "'; must be relative");
+		uri = relpath;
+	}else{
+		uri = this.getBaseScriptUri() + relpath;
 	}
-	var uri = this.getBaseScriptUri() + relpath;
-	if(djConfig.cacheBust && dojo.render.html.capable) { uri += "?" + String(djConfig.cacheBust).replace(/\W+/g,""); }
+	if(djConfig.cacheBust && dojo.render.html.capable){
+		uri += "?" + String(djConfig.cacheBust).replace(/\W+/g,"");
+	}
 	try{
 		return ((!module) ? this.loadUri(uri, cb) : this.loadUriAndCheck(uri, module, cb));
 	}catch(e){
@@ -97,16 +105,23 @@ dojo.hostenv.loadPath = function(relpath, module /*optional*/, cb /*optional*/){
  * Reads the contents of the URI, and evaluates the contents.
  * Returns true if it succeeded. Returns false if the URI reading failed.
  * Throws if the evaluation throws.
- * The result of the eval is not available to the caller.
+ * The result of the eval is not available to the caller TODO: now it is; was this a deliberate restriction?
+ *
+ * @param uri a uri which points at the script to be loaded
+ * @param cb a function to process the result of evaluating the script as an expression (optional)
  */
-dojo.hostenv.loadUri = function(uri, cb){
+dojo.hostenv.loadUri = function(uri, cb /*optional*/){
 	if(this.loadedUris[uri]){
-		return;
+		return 1;
 	}
 	var contents = this.getText(uri, null, true);
 	if(contents == null){ return 0; }
 	this.loadedUris[uri] = true;
+	if(cb){ contents = '('+contents+')'; }
 	var value = dj_eval(contents);
+	if(cb){
+		cb(value);
+	}
 	return 1;
 }
 
@@ -122,17 +137,30 @@ dojo.hostenv.loadUriAndCheck = function(uri, module, cb){
 }
 
 dojo.loaded = function(){ }
+dojo.unloaded = function(){ }
 
 dojo.hostenv.loaded = function(){
+	this.loadNotifying = true;
 	this.post_load_ = true;
 	var mll = this.modulesLoadedListeners;
-	//Clear listeners so new ones can be added
-	//For other xdomain package loads after the initial load.
-	this.modulesLoadedListeners = [];
 	for(var x=0; x<mll.length; x++){
 		mll[x]();
 	}
+
+	//Clear listeners so new ones can be added
+	//For other xdomain package loads after the initial load.
+	this.modulesLoadedListeners = [];
+	this.loadNotifying = false;
+
 	dojo.loaded();
+}
+
+dojo.hostenv.unloaded = function(){
+	var mll = this.unloadListeners;
+	while(mll.length){
+		(mll.pop())();
+	}
+	dojo.unloaded();
 }
 
 /*
@@ -154,8 +182,19 @@ dojo.addOnLoad = function(obj, fcnName) {
 	//indicate callbacks after doing some dojo.require() statements.
 	//In the xdomain case, if all the requires are loaded (after initial
 	//page load), then immediately call any listeners.
-	if(dh.post_load_ && dh.inFlightCount == 0){
+	if(dh.post_load_ && dh.inFlightCount == 0 && !dh.loadNotifying){
 		dh.callLoaded();
+	}
+}
+
+dojo.addOnUnload = function(obj, fcnName){
+	var dh = dojo.hostenv;
+	if(arguments.length == 1){
+		dh.unloadListeners.push(obj);
+	} else if(arguments.length > 1) {
+		dh.unloadListeners.push(function() {
+			obj[fcnName]();
+		});
 	}
 }
 
@@ -176,6 +215,19 @@ dojo.hostenv.callLoaded = function(){
 	}else{
 		dojo.hostenv.loaded();
 	}
+}
+
+dojo.hostenv.getModuleSymbols = function(modulename) {
+	var syms = modulename.split(".");
+	for(var i = syms.length - 1; i > 0; i--){
+		var parentModule = syms.slice(0, i).join(".");
+		var parentModulePath = this.getModulePrefix(parentModule);
+		if(parentModulePath != parentModule){
+			syms.splice(0, i, parentModulePath);
+			break;
+		}
+	}
+	return syms;
 }
 
 /**
@@ -223,19 +275,12 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 	// convert periods to slashes
 	var relpath = modulename.replace(/\./g, '/') + '.js';
 
-	var syms = modulename.split(".");
-	var nsyms = modulename.split(".");
-	for (var i = syms.length - 1; i > 0; i--) {
-		var parentModule = syms.slice(0, i).join(".");
-		var parentModulePath = this.getModulePrefix(parentModule);
-		if (parentModulePath != parentModule) {
-			syms.splice(0, i, parentModulePath);
-			break;
-		}
-	}
+	var syms = this.getModuleSymbols(modulename);
+	var startedRelative = ((syms[0].charAt(0) != '/')&&(!syms[0].match(/^\w+:/)));
 	var last = syms[syms.length - 1];
 	// figure out if we're looking for a full package, if so, we want to do
 	// things slightly diffrently
+	var nsyms = modulename.split(".");
 	if(last=="*"){
 		modulename = (nsyms.slice(0, -1)).join('.');
 
@@ -243,7 +288,7 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 			syms.pop();
 			syms.push(this.pkgFileName);
 			relpath = syms.join("/") + '.js';
-			if(relpath.charAt(0)=="/"){
+			if(startedRelative && (relpath.charAt(0)=="/")){
 				relpath = relpath.slice(1);
 			}
 			ok = this.loadPath(relpath, ((!omit_module_check) ? modulename : null));
@@ -262,7 +307,7 @@ dojo.hostenv.loadModule = function(modulename, exact_only, omit_module_check){
 				if(ok){ break; }
 				syms.pop();
 				relpath = syms.join('/') + '/'+this.pkgFileName+'.js';
-				if(relpath.charAt(0)=="/"){
+				if(startedRelative && (relpath.charAt(0)=="/")){
 					relpath = relpath.slice(1);
 				}
 				ok = this.loadPath(relpath, ((!omit_module_check) ? modulename : null));

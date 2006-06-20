@@ -160,6 +160,7 @@ dojo.widget.Parse = function(fragment) {
 		for(var x=0; x < this.propertySetsList.length; x++){
 			var cpl = this.propertySetsList[x];
 			var cpcc = cpl["componentClass"]||cpl["componentType"]||null;
+			// FIXME: propertySetId is not in scope here
 			if((cpcc)&&(propertySetId == cpcc[0].value)){
 				propertySets.push(cpl);
 			}
@@ -180,7 +181,7 @@ dojo.widget.Parse = function(fragment) {
 			// FIXME: need a better test to see if this is local or external
 			// FIXME: doesn't handle nested propertySets, or propertySets that
 			// 		  just contain information about css documents, etc.
-			for(propertySetId in propertyProviderIds){
+			for(var propertySetId in propertyProviderIds){
 				if((propertySetId.indexOf("..")==-1)&&(propertySetId.indexOf("://")==-1)){
 					// get a reference to a propertySet within the current parsed structure
 					var propertySet = this.getPropertySetById(propertySetId);
@@ -270,7 +271,7 @@ dojo.widget.createWidget = function(name, props, refNode, position){
 	if (typeof name != "string" && typeof props == "string") {
 		dojo.deprecated("dojo.widget.createWidget", 
 			"argument order is now of the form " +
-			"dojo.widget.createWidget(NAME, [PROPERTIES, [REFERENCENODE, [POSITION]]])");
+			"dojo.widget.createWidget(NAME, [PROPERTIES, [REFERENCENODE, [POSITION]]])", "0.4");
 		return fromScript(name, props, refNode);
 	}
 	
@@ -293,7 +294,7 @@ dojo.widget.createWidget = function(name, props, refNode, position){
 		tn = refNode;
 	}
 	var widgetArray = fromScript(tn, name, props);
-	if (!widgetArray[0] || typeof widgetArray[0].widgetType == "undefined") {
+	if (!widgetArray || !widgetArray[0] || typeof widgetArray[0].widgetType == "undefined") {
 		throw new Error("createWidget: Creation of \"" + name + "\" widget failed.");
 	}
 	if (notRef) {
@@ -306,6 +307,6 @@ dojo.widget.createWidget = function(name, props, refNode, position){
  
 dojo.widget.fromScript = function(name, props, refNode, position){
 	dojo.deprecated("dojo.widget.fromScript", " use " +
-		"dojo.widget.createWidget instead");
+		"dojo.widget.createWidget instead", "0.4");
 	return dojo.widget.createWidget(name, props, refNode, position);
 }

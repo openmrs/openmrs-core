@@ -13,7 +13,7 @@ dojo.require("dojo.html");
 dojo.require("dojo.style");
 dojo.require("dojo.dom");
 
-dojo.deprecated("dojo.xml.htmlUtil is deprecated, use dojo.html instead");
+dojo.deprecated("dojo.xml.htmlUtil", "use dojo.html instead", "0.4");
 
 dojo.xml.htmlUtil = new function(){
 	this.styleSheet = dojo.style.styleSheet;
@@ -52,13 +52,13 @@ dojo.xml.htmlUtil = new function(){
 	this.getParentOfType = function(){return dojo.html.getParentOfType.apply(dojo.html, arguments);}
 	this.getAttribute = function(){return dojo.html.getAttribute.apply(dojo.html, arguments);}
 	this.getAttr = function (node, attr) { // for backwards compat (may disappear!!!)
-		dojo.deprecated("dojo.xml.htmlUtil.getAttr is deprecated, use dojo.xml.htmlUtil.getAttribute instead");
+		dojo.deprecated("dojo.xml.htmlUtil.getAttr", "use dojo.xml.htmlUtil.getAttribute instead", "0.4");
 		return dojo.xml.htmlUtil.getAttribute(node, attr);
 	}
 	this.hasAttribute = function(){return dojo.html.hasAttribute.apply(dojo.html, arguments);}
 
 	this.hasAttr = function (node, attr) { // for backwards compat (may disappear!!!)
-		dojo.deprecated("dojo.xml.htmlUtil.hasAttr is deprecated, use dojo.xml.htmlUtil.hasAttribute instead");
+		dojo.deprecated("dojo.xml.htmlUtil.hasAttr", "use dojo.xml.htmlUtil.hasAttribute instead", "0.4");
 		return dojo.xml.htmlUtil.hasAttribute(node, attr);
 	}
 	
@@ -95,21 +95,21 @@ dojo.xml.htmlUtil = new function(){
 	this.insertCssRule = function(){return dojo.style.insertCssRule.apply(dojo.style, arguments)}
 	
 	this.insertCSSRule = function(selector, declaration, index){
-		dojo.deprecated("dojo.xml.htmlUtil.insertCSSRule is deprecated, use dojo.xml.htmlUtil.insertCssRule instead");
+		dojo.deprecated("dojo.xml.htmlUtil.insertCSSRule", "use dojo.style.insertCssRule instead", "0.4");
 		return dojo.xml.htmlUtil.insertCssRule(selector, declaration, index);
 	}
 	
 	this.removeCssRule = function(){return dojo.style.removeCssRule.apply(dojo.style, arguments)}
 
 	this.removeCSSRule = function(index){
-		dojo.deprecated("dojo.xml.htmlUtil.removeCSSRule is deprecated, use dojo.xml.htmlUtil.removeCssRule instead");
+		dojo.deprecated("dojo.xml.htmlUtil.removeCSSRule", "use dojo.xml.htmlUtil.removeCssRule instead", "0.4");
 		return dojo.xml.htmlUtil.removeCssRule(index);
 	}
 
 	this.insertCssFile = function(){return dojo.style.insertCssFile.apply(dojo.style, arguments)}
 
 	this.insertCSSFile = function(URI, doc, checkDuplicates){
-		dojo.deprecated("dojo.xml.htmlUtil.insertCSSFile is deprecated, use dojo.xml.htmlUtil.insertCssFile instead");
+		dojo.deprecated("dojo.xml.htmlUtil.insertCSSFile", "use dojo.xml.htmlUtil.insertCssFile instead", "0.4");
 		return dojo.xml.htmlUtil.insertCssFile(URI, doc, checkDuplicates);
 	}
 

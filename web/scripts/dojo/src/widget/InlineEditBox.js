@@ -12,7 +12,7 @@ dojo.provide("dojo.widget.InlineEditBox");
 dojo.provide("dojo.widget.html.InlineEditBox");
 
 dojo.require("dojo.widget.*");
-dojo.require("dojo.fx.*");
+dojo.require("dojo.lfx.*");
 dojo.require("dojo.graphics.color");
 dojo.require("dojo.string");
 dojo.require("dojo.style");

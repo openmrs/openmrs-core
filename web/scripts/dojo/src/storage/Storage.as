@@ -18,6 +18,7 @@ class Storage {
 	public var so;
 	
 	public function Storage(){
+		//getURL("javascript:dojo.debug('FLASH:Storage constructor')");
 		DojoExternalInterface.initialize();
 		DojoExternalInterface.addCallback("put", this, put);
 		DojoExternalInterface.addCallback("get", this, get);
@@ -30,7 +31,7 @@ class Storage {
 		// preload the System Settings finished button movie for offline
 		// access so it is in the cache
 		_root.createEmptyMovieClip("_settingsBackground", 1);
-		_root._settingsBackground.loadMovie("../../storage_dialog.swf");
+		_root._settingsBackground.loadMovie(DojoExternalInterface.dojoPath + "storage_dialog.swf");
 	}
 
 	public function put(keyName, keyValue, namespace){
@@ -97,7 +98,7 @@ class Storage {
 		// to hide the Flash dialog. Instead, we need to load a movie in the
 		// background that we can show a close button on.
 		_root.createEmptyMovieClip("_settingsBackground", 1);
-		_root._settingsBackground.loadMovie("../../storage_dialog.swf");
+		_root._settingsBackground.loadMovie(DojoExternalInterface.dojoPath + "storage_dialog.swf");
 	}
 	
 	public function clear(namespace){
@@ -117,7 +118,7 @@ class Storage {
 		for(var i in so.data)
 			results.push(i);	
 		
-		// join the keys together in a comma seperate string
+		// join the keys together in a comma seperated string
 		results = results.join(",");
 		
 		return results;

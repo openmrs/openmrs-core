@@ -400,9 +400,12 @@ function fillTable(objects, cells) {
     allObjectsFound = objects;
 	
 	updatePagingNumbers();
-
+	
+	// signal to the using script that we've cleared the rows
+	if (onRemoveAllRows)
+		onRemoveAllRows(objectHitsTableBody);
     DWRUtil.removeAllRows(objectHitsTableBody);	//clear out the current rows
-
+	
     var objs = objects.slice(firstItemDisplayed - 1, (firstItemDisplayed - 1) + numItemsDisplayed);
     
     var funcs = new Array();

@@ -389,7 +389,7 @@ dojo.flash = {
 	installing: function(){
 	 //dojo.debug("installing");
 	 if(dojo.flash._installingListeners.length > 0){
-			for(var i = 0;i < dojo.flash._installingListeners.length; i++){
+			for(var i = 0; i < dojo.flash._installingListeners.length; i++){
 				dojo.flash._installingListeners[i].call(null);
 			}
 		}
@@ -532,7 +532,7 @@ dojo.flash.Info.prototype = {
 				this.versionRevision = versionArray[2];
 				
 				// 7.0r24 == 7.24
-				versionString = this.versionMajor + "." + this.versionRevision;
+				var versionString = this.versionMajor + "." + this.versionRevision;
 				this.version = parseFloat(versionString);
 				
 				this.capable = true;
@@ -559,9 +559,9 @@ dojo.flash.Info.prototype = {
 				var versionMajor = tempArrayMajor[0];
 				var versionMinor = tempArrayMajor[1];
 				if(descArray[3] != ""){
-					tempArrayMinor = descArray[3].split("r");
+					var tempArrayMinor = descArray[3].split("r");
 				}else{
-					tempArrayMinor = descArray[4].split("r");
+					var tempArrayMinor = descArray[4].split("r");
 				}
 				var versionRevision = tempArrayMinor[1] > 0 ? tempArrayMinor[1] : 0;
 				var version = versionMajor + "." + versionMinor + "." 
@@ -676,7 +676,9 @@ dojo.flash.Embed.prototype = {
 						+ '    pluginspage="http://www.macromedia.com/go/getflashplayer">';
 		}else{ // Flash 8
 			swfloc = dojo.flash.flash8_version;
-			var swflocObject = swfloc, swflocEmbed = swfloc;
+			var swflocObject = swfloc;
+			var swflocEmbed = swfloc;
+			var dojoPath = djConfig.baseRelativePath;
 			if(doExpressInstall){
 				// the location to redirect to after installing
 				var redirectURL = escape(window.location);
@@ -684,8 +686,11 @@ dojo.flash.Embed.prototype = {
 				var docTitle = escape(document.title);
 				swflocObject += "?MMredirectURL=" + redirectURL
 				                + "&MMplayerType=ActiveX"
-				                + "&MMdoctitle="+docTitle;
-				swflocEmbed += "?MMredirectURL=" + redirectURL + "&MMplayerType=PlugIn";
+				                + "&MMdoctitle=" + docTitle
+								+ "&baseRelativePath=" + escape(dojoPath);
+				swflocEmbed += "?MMredirectURL=" + redirectURL 
+								+ "&MMplayerType=PlugIn"
+								+ "&baseRelativePath=" + escape(dojoPath);
 			}
 			
 			objectHTML =
@@ -709,7 +714,7 @@ dojo.flash.Embed.prototype = {
 				  + 'swLiveConnect="true" '
 				  + 'align="middle" '
 				  + 'allowScriptAccess="sameDomain" '
-				  + 'type="application/x-shockwave-flash" '
+				  + 'type="application/x-shockwave-flash" '+ "&baseRelativePath=" + escape(dojoPath);
 				  + 'pluginspage="http://www.macromedia.com/go/getflashplayer" />'
 				+ '</object>';
 		}

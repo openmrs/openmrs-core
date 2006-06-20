@@ -17,6 +17,7 @@ dojo.kwCompoundRequire({
 			  "dojo.widget.HtmlWidget"],
 	dashboard: ["dojo.widget.DomWidget",
 			  "dojo.widget.HtmlWidget"],
-	svg: 	 ["dojo.widget.SvgWidget"]
+	svg: 	 ["dojo.widget.SvgWidget"],
+	rhino: 	 ["dojo.widget.SwtWidget"]
 });
 dojo.provide("dojo.widget.*");

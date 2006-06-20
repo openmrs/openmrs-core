@@ -87,11 +87,7 @@ dojo.lang.extend(dojo.lfx.IAnimation, {
 	
 	fire: function(evt, args){
 		if(this[evt]){
-			if(args){
-				this[evt].apply(this, args);
-			}else{
-				this[evt].apply(this);
-			}
+			this[evt].apply(this, (args||[]));
 		}
 	},
 	
@@ -161,25 +157,26 @@ dojo.lang.extend(dojo.lfx.Animation, {
 	_startRepeatCount: 0,
 
 	// public methods
-	play: function(delay, gotoStart) {
-		if( gotoStart ) {
+	play: function(delay, gotoStart){
+		if(gotoStart){
 			clearTimeout(this._timer);
 			this._active = false;
 			this._paused = false;
 			this._percent = 0;
-		} else if( this._active && !this._paused ) {
-			return;
+		}else if(this._active && !this._paused){
+			return this;
 		}
 		
+		this.fire("handler", ["beforeBegin"]);
 		this.fire("beforeBegin");
 
 		if(delay > 0){
 			setTimeout(dojo.lang.hitch(this, function(){ this.play(null, gotoStart); }), delay);
-			return;
+			return this;
 		}
 		
 		this._startTime = new Date().valueOf();
-		if( this._paused ) {
+		if(this._paused){
 			this._startTime -= (this.duration * this._percent / 100);
 		}
 		this._endTime = this._startTime + this.duration;
@@ -201,15 +198,17 @@ dojo.lang.extend(dojo.lfx.Animation, {
 		this.fire("onPlay", [value]);
 
 		this._cycle();
+		return this;
 	},
 
 	pause: function() {
 		clearTimeout(this._timer);
-		if( !this._active ) { return; }
+		if(!this._active){ return this; }
 		this._paused = true;
 		var value = this.curve.getValue(this._percent / 100);
 		this.fire("handler", ["pause", value]);
 		this.fire("onPause", [value]);
+		return this;
 	},
 
 	gotoPercent: function(pct, andPlay) {
@@ -231,6 +230,7 @@ dojo.lang.extend(dojo.lfx.Animation, {
 		this.fire("onStop", [value]);
 		this._active = false;
 		this._paused = false;
+		return this;
 	},
 
 	status: function() {
@@ -244,19 +244,19 @@ dojo.lang.extend(dojo.lfx.Animation, {
 	// "private" methods
 	_cycle: function() {
 		clearTimeout(this._timer);
-		if( this._active ) {
+		if(this._active){
 			var curr = new Date().valueOf();
 			var step = (curr - this._startTime) / (this._endTime - this._startTime);
 
-			if( step >= 1 ) {
+			if(step >= 1){
 				step = 1;
 				this._percent = 100;
-			} else {
+			}else{
 				this._percent = step * 100;
 			}
 			
 			// Perform easing
-			if(this.easing && dojo.lang.isFunction(this.easing)) {
+			if((this.easing)&&(dojo.lang.isFunction(this.easing))){
 				step = this.easing(step);
 			}
 
@@ -284,6 +284,7 @@ dojo.lang.extend(dojo.lfx.Animation, {
 				}
 			}
 		}
+		return this;
 	}
 });
 
@@ -300,7 +301,8 @@ dojo.lfx.Combine = function(){
 	var _this = this;
 	dojo.lang.forEach(anims, function(anim){
 		_this._anims.push(anim);
-		dojo.event.connect(anim, "onEnd", function(){ _this._onAnimsEnded(); });
+		var oldOnEnd = (anim["onEnd"]) ? dojo.lang.hitch(anim, "onEnd") : function(){};
+		anim.onEnd = function(){ oldOnEnd(); _this._onAnimsEnded(); };
 	});
 }
 dojo.inherits(dojo.lfx.Combine, dojo.lfx.IAnimation);
@@ -310,13 +312,13 @@ dojo.lang.extend(dojo.lfx.Combine, {
 	
 	// public methods
 	play: function(delay, gotoStart){
-		if( !this._anims.length ){ return; }
+		if( !this._anims.length ){ return this; }
 
 		this.fire("beforeBegin");
 
 		if(delay > 0){
 			setTimeout(dojo.lang.hitch(this, function(){ this.play(null, gotoStart); }), delay);
-			return;
+			return this;
 		}
 		
 		if(gotoStart || this._anims[0].percent == 0){
@@ -324,16 +326,19 @@ dojo.lang.extend(dojo.lfx.Combine, {
 		}
 		this.fire("onPlay");
 		this._animsCall("play", null, gotoStart);
+		return this;
 	},
 	
 	pause: function(){
 		this.fire("onPause");
 		this._animsCall("pause"); 
+		return this;
 	},
 	
 	stop: function(gotoEnd){
 		this.fire("onStop");
 		this._animsCall("stop", gotoEnd);
+		return this;
 	},
 	
 	// private methods
@@ -342,6 +347,7 @@ dojo.lang.extend(dojo.lfx.Combine, {
 		if(this._animsEnded >= this._anims.length){
 			this.fire("onEnd");
 		}
+		return this;
 	},
 	
 	_animsCall: function(funcName){
@@ -355,6 +361,7 @@ dojo.lang.extend(dojo.lfx.Combine, {
 		dojo.lang.forEach(this._anims, function(anim){
 			anim[funcName](args);
 		}, _this);
+		return this;
 	}
 });
 
@@ -371,10 +378,11 @@ dojo.lfx.Chain = function() {
 	var _this = this;
 	dojo.lang.forEach(anims, function(anim, i, anims_arr){
 		_this._anims.push(anim);
+		var oldOnEnd = (anim["onEnd"]) ? dojo.lang.hitch(anim, "onEnd") : function(){};
 		if(i < anims_arr.length - 1){
-			dojo.event.connect(anim, "onEnd", function(){ _this._playNext(); });
+			anim.onEnd = function(){ oldOnEnd(); _this._playNext(); };
 		}else{
-			dojo.event.connect(anim, "onEnd", function(){ _this.fire("onEnd"); });
+			anim.onEnd = function(){ oldOnEnd(); _this.fire("onEnd"); };
 		}
 	}, _this);
 }
@@ -385,25 +393,28 @@ dojo.lang.extend(dojo.lfx.Chain, {
 	
 	// public methods
 	play: function(delay, gotoStart){
-		if( !this._anims.length ) { return; }
+		if( !this._anims.length ) { return this; }
 		if( gotoStart || !this._anims[this._currAnim] ) {
 			this._currAnim = 0;
 		}
 
+		var currentAnimation = this._anims[this._currAnim];
+
 		this.fire("beforeBegin");
 		if(delay > 0){
 			setTimeout(dojo.lang.hitch(this, function(){ this.play(null, gotoStart); }), delay);
-			return;
+			return this;
 		}
 		
-		if( this._anims[this._currAnim] ){
-			if( this._currAnim == 0 ){
+		if(currentAnimation){
+			if(this._currAnim == 0){
 				this.fire("handler", ["begin", this._currAnim]);
 				this.fire("onBegin", [this._currAnim]);
 			}
 			this.fire("onPlay", [this._currAnim]);
-			this._anims[this._currAnim].play(null, gotoStart);
+			currentAnimation.play(null, gotoStart);
 		}
+		return this;
 	},
 	
 	pause: function(){
@@ -411,11 +422,12 @@ dojo.lang.extend(dojo.lfx.Chain, {
 			this._anims[this._currAnim].pause();
 			this.fire("onPause", [this._currAnim]);
 		}
+		return this;
 	},
 	
 	playPause: function(){
-		if( this._anims.length == 0 ) { return; }
-		if( this._currAnim == -1 ) { this._currAnim = 0; }
+		if(this._anims.length == 0){ return this; }
+		if(this._currAnim == -1){ this._currAnim = 0; }
 		var currAnim = this._anims[this._currAnim];
 		if( currAnim ) {
 			if( !currAnim._active || currAnim._paused ) {
@@ -424,22 +436,26 @@ dojo.lang.extend(dojo.lfx.Chain, {
 				this.pause();
 			}
 		}
+		return this;
 	},
 	
 	stop: function(){
-		if( this._anims[this._currAnim] ){
-			this._anims[this._currAnim].stop();
+		var currAnim = this._anims[this._currAnim];
+		if(currAnim){
+			currAnim.stop();
 			this.fire("onStop", [this._currAnim]);
 		}
+		return currAnim;
 	},
 	
 	// private methods
 	_playNext: function(){
-		if( this._currAnim == -1 || this._anims.length == 0 ) { return; }
+		if( this._currAnim == -1 || this._anims.length == 0 ) { return this; }
 		this._currAnim++;
 		if( this._anims[this._currAnim] ){
 			this._anims[this._currAnim].play(null, true);
 		}
+		return this;
 	}
 });
 

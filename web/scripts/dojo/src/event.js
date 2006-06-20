@@ -18,7 +18,7 @@ dojo.event = new function(){
 	this.canTimeout = dojo.lang.isFunction(dj_global["setTimeout"])||dojo.lang.isAlien(dj_global["setTimeout"]);
 
 	// FIXME: where should we put this method (not here!)?
-	function interpolateArgs(args){
+	function interpolateArgs(args, searchForNames){
 		var dl = dojo.lang;
 		var ao = {
 			srcObj: dj_global,
@@ -55,12 +55,12 @@ dojo.event = new function(){
 					ao.adviceType = "after";
 					ao.srcObj = args[0];
 					ao.srcFunc = args[1];
-					var tmpName  = dojo.lang.nameAnonFunc(args[2], ao.adviceObj);
+					var tmpName  = dl.nameAnonFunc(args[2], ao.adviceObj, searchForNames);
 					ao.adviceFunc = tmpName;
 				}else if((dl.isFunction(args[0]))&&(dl.isObject(args[1]))&&(dl.isString(args[2]))){
 					ao.adviceType = "after";
 					ao.srcObj = dj_global;
-					var tmpName  = dojo.lang.nameAnonFunc(args[0], ao.srcObj);
+					var tmpName  = dl.nameAnonFunc(args[0], ao.srcObj, searchForNames);
 					ao.srcFunc = tmpName;
 					ao.adviceObj = args[1];
 					ao.adviceFunc = args[2];
@@ -85,14 +85,14 @@ dojo.event = new function(){
 				}else if((dl.isString(args[0]))&&(dl.isFunction(args[1]))&&(dl.isObject(args[2]))){
 					ao.adviceType = args[0];
 					ao.srcObj = dj_global;
-					var tmpName  = dojo.lang.nameAnonFunc(args[1], dj_global);
+					var tmpName  = dl.nameAnonFunc(args[1], dj_global, searchForNames);
 					ao.srcFunc = tmpName;
 					ao.adviceObj = args[2];
 					ao.adviceFunc = args[3];
 				}else if((dl.isString(args[0]))&&(dl.isObject(args[1]))&&(dl.isString(args[2]))&&(dl.isFunction(args[3]))){
 					ao.srcObj = args[1];
 					ao.srcFunc = args[2];
-					var tmpName  = dojo.lang.nameAnonFunc(args[3], dj_global);
+					var tmpName  = dl.nameAnonFunc(args[3], dj_global, searchForNames);
 					ao.adviceObj = dj_global;
 					ao.adviceFunc = tmpName;
 				}else if(dl.isObject(args[1])){
@@ -135,20 +135,20 @@ dojo.event = new function(){
 		}
 
 		if(dl.isFunction(ao.aroundFunc)){
-			var tmpName  = dojo.lang.nameAnonFunc(ao.aroundFunc, ao.aroundObj);
+			var tmpName  = dl.nameAnonFunc(ao.aroundFunc, ao.aroundObj, searchForNames);
 			ao.aroundFunc = tmpName;
 		}
 
-		if(!dl.isString(ao.srcFunc)){
-			ao.srcFunc = dojo.lang.getNameInObj(ao.srcObj, ao.srcFunc);
+		if(dl.isFunction(ao.srcFunc)){
+			ao.srcFunc = dl.getNameInObj(ao.srcObj, ao.srcFunc);
 		}
 
-		if(!dl.isString(ao.adviceFunc)){
-			ao.adviceFunc = dojo.lang.getNameInObj(ao.adviceObj, ao.adviceFunc);
+		if(dl.isFunction(ao.adviceFunc)){
+			ao.adviceFunc = dl.getNameInObj(ao.adviceObj, ao.adviceFunc);
 		}
 
-		if((ao.aroundObj)&&(!dl.isString(ao.aroundFunc))){
-			ao.aroundFunc = dojo.lang.getNameInObj(ao.aroundObj, ao.aroundFunc);
+		if((ao.aroundObj)&&(dl.isFunction(ao.aroundFunc))){
+			ao.aroundFunc = dl.getNameInObj(ao.aroundObj, ao.aroundFunc);
 		}
 
 		if(!ao.srcObj){
@@ -164,7 +164,7 @@ dojo.event = new function(){
 		if(arguments.length == 1){
 			var ao = arguments[0];
 		}else{
-			var ao = interpolateArgs(arguments);
+			var ao = interpolateArgs(arguments, true);
 		}
 
 		if(dojo.lang.isArray(ao.srcObj) && ao.srcObj!=""){
@@ -231,7 +231,7 @@ dojo.event = new function(){
 	}
 
 	this.connectOnce = function(){
-		var ao = interpolateArgs(arguments);
+		var ao = interpolateArgs(arguments, true);
 		ao.once = true;
 		return this.connect(ao);
 	}
@@ -240,12 +240,12 @@ dojo.event = new function(){
 		var fn = (disconnect) ? "disconnect" : "connect";
 		if(typeof kwArgs["srcFunc"] == "function"){
 			kwArgs.srcObj = kwArgs["srcObj"]||dj_global;
-			var tmpName  = dojo.lang.nameAnonFunc(kwArgs.srcFunc, kwArgs.srcObj);
+			var tmpName  = dojo.lang.nameAnonFunc(kwArgs.srcFunc, kwArgs.srcObj, true);
 			kwArgs.srcFunc = tmpName;
 		}
 		if(typeof kwArgs["adviceFunc"] == "function"){
 			kwArgs.adviceObj = kwArgs["adviceObj"]||dj_global;
-			var tmpName  = dojo.lang.nameAnonFunc(kwArgs.adviceFunc, kwArgs.adviceObj);
+			var tmpName  = dojo.lang.nameAnonFunc(kwArgs.adviceFunc, kwArgs.adviceObj, true);
 			kwArgs.adviceFunc = tmpName;
 		}
 		return dojo.event[fn](	(kwArgs["type"]||kwArgs["adviceType"]||"after"),
@@ -267,7 +267,7 @@ dojo.event = new function(){
 	}
 
 	this.disconnect = function(){
-		var ao = interpolateArgs(arguments);
+		var ao = interpolateArgs(arguments, true);
 		if(!ao.adviceFunc){ return; } // nothing to disconnect
 		var mjp = dojo.event.MethodJoinPoint.getForMethod(ao.srcObj, ao.srcFunc);
 		return mjp.removeAdvice(ao.adviceObj, ao.adviceFunc, ao.adviceType, ao.once);
@@ -320,6 +320,10 @@ dojo.event.MethodJoinPoint.getForMethod = function(obj, methname) {
 	if(!obj[methname]){
 		// supply a do-nothing method implementation
 		obj[methname] = function(){};
+		if(!obj[methname]){
+			// e.g. cannot add to inbuilt objects in IE6
+			dojo.raise("Cannot set do-nothing method on that object "+methname);
+		}
 	}else if((!dojo.lang.isFunction(obj[methname]))&&(!dojo.lang.isAlien(obj[methname]))){
 		return null; // FIXME: should we throw an exception here instead?
 	}
@@ -546,7 +550,9 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 		if(!arr){ arr = this.getArr(advice_kind); }
 		var ind = -1;
 		for(var x=0; x<arr.length; x++){
-			if((arr[x][0] == thisAdviceObj)&&(arr[x][1] == thisAdvice)){
+			var aao = (typeof thisAdvice == "object") ? (new String(thisAdvice)).toString() : thisAdvice;
+			var a1o = (typeof arr[x][1] == "object") ? (new String(arr[x][1])).toString() : arr[x][1];
+			if((arr[x][0] == thisAdviceObj)&&(a1o == aao)){
 				ind = x;
 			}
 		}

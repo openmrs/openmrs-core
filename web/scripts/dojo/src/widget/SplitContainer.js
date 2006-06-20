@@ -239,7 +239,7 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
 		var size = this.children[0].sizeActual;
 		this.movePanel(this.children[0].domNode, pos, size);
 		this.children[0].position = pos;
-        this.children[0].onParentResized();
+        this.children[0].checkSize();
 		pos += size;
 
 		for(var i=1; i<this.children.length; i++){
@@ -252,7 +252,7 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
 			size = this.children[i].sizeActual;
 			this.movePanel(this.children[i].domNode, pos, size);
 			this.children[i].position = pos;
-            this.children[i].onParentResized();
+            this.children[i].checkSize();
 			pos += size;
 		}
 	},
@@ -404,7 +404,7 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
 	movePoint: function(){
 
 		// make sure FLastPoint is a legal point to drag to
-		p = this.screenToMainClient(this.lastPoint);
+		var p = this.screenToMainClient(this.lastPoint);
 
 		if (this.isHorizontal){
 

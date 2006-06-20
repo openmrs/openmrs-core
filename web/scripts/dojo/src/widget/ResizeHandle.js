@@ -43,12 +43,14 @@ dojo.lang.extend(dojo.widget.html.ResizeHandle, {
 	beginSizing: function(e){
 		if (this.isSizing){ return false; }
 
-		this.targetElm = dojo.widget.byId(this.targetElmId);
-		if (!this.targetElm){ return; }
+		// get the target dom node to adjust.  targetElmId can refer to either a widget or a simple node
+		this.targetWidget = dojo.widget.byId(this.targetElmId);
+		this.targetDomNode = this.targetWidget ? this.targetWidget.domNode : dojo.byId(this.targetElmId);
+		if (!this.targetDomNode){ return; }
 
 		this.isSizing = true;
 		this.startPoint  = {'x':e.clientX, 'y':e.clientY};
-		this.startSize  = {'w':dojo.style.getOuterWidth(this.targetElm.domNode), 'h':dojo.style.getOuterHeight(this.targetElm.domNode)};
+		this.startSize  = {'w':dojo.style.getOuterWidth(this.targetDomNode), 'h':dojo.style.getOuterHeight(this.targetDomNode)};
 
 		dojo.event.kwConnect({
 			srcObj: document.body, 
@@ -80,14 +82,19 @@ dojo.lang.extend(dojo.widget.html.ResizeHandle, {
 		// minimum size check
 		if (this.minSize) {
 			if (newW < this.minSize.w) {
-				newW = dojo.style.getOuterWidth(this.targetElm.domNode);
+				newW = dojo.style.getOuterWidth(this.targetDomNode);
 			}
 			if (newH < this.minSize.h) {
-				newH = dojo.style.getOuterHeight(this.targetElm.domNode);
+				newH = dojo.style.getOuterHeight(this.targetDomNode);
 			}
 		}
 		
-		this.targetElm.resizeTo(newW, newH);
+		if(this.targetWidget){
+			this.targetWidget.resizeTo(newW, newH);
+		}else{
+			dojo.style.setOuterWidth(this.targetDomNode, newW);
+			dojo.style.setOuterHeight(this.targetDomNode, newH);
+		}
 		
 		e.preventDefault();
 	},

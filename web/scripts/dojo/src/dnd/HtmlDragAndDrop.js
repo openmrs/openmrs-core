@@ -22,25 +22,22 @@ dojo.require("dojo.html");
 dojo.require("dojo.html.extras");
 dojo.require("dojo.lang.extras");
 dojo.require("dojo.lfx.*");
+dojo.require("dojo.event");
 
 dojo.dnd.HtmlDragSource = function(node, type){
 	node = dojo.byId(node);
+	this.dragObjects = [];
 	this.constrainToContainer = false;
 	if(node){
 		this.domNode = node;
 		this.dragObject = node;
-
 		// register us
 		dojo.dnd.DragSource.call(this);
-
 		// set properties that might have been clobbered by the mixin
-		this.type = type||this.domNode.nodeName.toLowerCase();
+		this.type = (type)||(this.domNode.nodeName.toLowerCase());
 	}
-
 }
-
 dojo.inherits(dojo.dnd.HtmlDragSource, dojo.dnd.DragSource);
-
 dojo.lang.extend(dojo.dnd.HtmlDragSource, {
 	dragClass: "", // CSS classname(s) applied to node when it is being dragged
 
@@ -71,6 +68,35 @@ dojo.lang.extend(dojo.dnd.HtmlDragSource, {
 		if (container) {
 			this.constrainingContainer = container;
 		}
+	},
+	
+	/*
+	*
+	* see dojo.dnd.DragSource.onSelected
+	*/
+	onSelected: function() {
+		for (var i=0; i<this.dragObjects.length; i++) {
+			dojo.dnd.dragManager.selectedSources.push(new dojo.dnd.HtmlDragSource(this.dragObjects[i]));
+		}
+	},
+
+	/**
+	* Register elements that should be dragged along with
+	* the actual DragSource.
+	*
+	* Example usage:
+	* 	var dragSource = new dojo.dnd.HtmlDragSource(...);
+	*	// add a single element
+	*	dragSource.addDragObjects(dojo.byId('id1'));
+	*	// add multiple elements to drag along
+	*	dragSource.addDragObjects(dojo.byId('id2'), dojo.byId('id3'));
+	*
+	* el A dom node to add to the drag list.
+	*/
+	addDragObjects: function(/*DOMNode*/ el) {
+		for (var i=0; i<arguments.length; i++) {
+			this.dragObjects.push(arguments[i]);
+		}
 	}
 });
 
@@ -80,9 +106,7 @@ dojo.dnd.HtmlDragObject = function(node, type){
 	this.constrainToContainer = false;
 	this.dragSource = null;
 }
-
 dojo.inherits(dojo.dnd.HtmlDragObject, dojo.dnd.DragObject);
-
 dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 	dragClass: "",
 	opacity: 0.5,
@@ -96,7 +120,27 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 		var node = this.domNode.cloneNode(true);
 		if(this.dragClass) { dojo.html.addClass(node, this.dragClass); }
 		if(this.opacity < 1) { dojo.style.setOpacity(node, this.opacity); }
-		if(dojo.render.html.ie && this.createIframe){
+		if(node.tagName.toLowerCase() == "tr"){
+			// dojo.debug("Dragging table row")
+			// Create a table for the cloned row
+			var doc = this.domNode.ownerDocument;
+			var table = doc.createElement("table");
+			var tbody = doc.createElement("tbody");
+			tbody.appendChild(node);
+			table.appendChild(tbody);
+
+			// Set a fixed width to the cloned TDs
+			var domTds = this.domNode.childNodes;
+			var cloneTds = node.childNodes;
+			for(var i = 0; i < domTds.length; i++){
+			    if((cloneTds[i])&&(cloneTds[i].style)){
+				    cloneTds[i].style.width = dojo.style.getContentWidth(domTds[i]) + "px";
+			    }
+			}
+			node = table;
+		}
+
+		if((dojo.render.html.ie55||dojo.render.html.ie60) && this.createIframe){
 			with(node.style) {
 				top="0px";
 				left="0px";
@@ -122,11 +166,8 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 
 		this.dragClone = this.createDragNode();
 
- 		if ((this.domNode.parentNode.nodeName.toLowerCase() == 'body') || (dojo.style.getComputedStyle(this.domNode.parentNode,"position") == "static")) {
-			this.parentPosition = {y: 0, x: 0};
-		} else {
-			this.parentPosition = dojo.style.getAbsolutePosition(this.domNode.parentNode, true);
-		}
+		this.containingBlockPosition = this.domNode.offsetParent ? 
+			dojo.style.getAbsolutePosition(this.domNode.offsetParent) : {x:0, y:0};
 
 		if (this.constrainToContainer) {
 			this.constraints = this.getConstraints();
@@ -140,27 +181,35 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 		}
 
 		document.body.appendChild(this.dragClone);
+
+		dojo.event.topic.publish('dragStart', { source: this } );
 	},
 
+	/** Return min/max x/y (relative to document.body) for this object) **/
 	getConstraints: function() {
-
 		if (this.constrainingContainer.nodeName.toLowerCase() == 'body') {
-			width = dojo.html.getViewportWidth();
-			height = dojo.html.getViewportHeight();
-			padLeft = 0;
-			padTop = 0;
+			var width = dojo.html.getViewportWidth();
+			var height = dojo.html.getViewportHeight();
+			var x = 0;
+			var y = 0;
 		} else {
 			width = dojo.style.getContentWidth(this.constrainingContainer);
 			height = dojo.style.getContentHeight(this.constrainingContainer);
-			padLeft = dojo.style.getPixelValue(this.constrainingContainer, "padding-left", true);
-			padTop = dojo.style.getPixelValue(this.constrainingContainer, "padding-top", true);
+			x =
+				this.containingBlockPosition.x +
+				dojo.style.getPixelValue(this.constrainingContainer, "padding-left", true) +
+				dojo.style.getBorderExtent(this.constrainingContainer, "left");
+			y =
+				this.containingBlockPosition.y +
+				dojo.style.getPixelValue(this.constrainingContainer, "padding-top", true) +
+				dojo.style.getBorderExtent(this.constrainingContainer, "top");
 		}
 
 		return {
-			minX: padLeft,
-			minY: padTop,
-			maxX: padLeft+width - dojo.style.getOuterWidth(this.domNode),
-			maxY: padTop+height - dojo.style.getOuterHeight(this.domNode)
+			minX: x,
+			minY: y,
+			maxX: x + width - dojo.style.getOuterWidth(this.domNode),
+			maxY: y + height - dojo.style.getOuterHeight(this.domNode)
 		}
 	},
 
@@ -191,9 +240,20 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 			if (y > this.constraints.maxY) { y = this.constraints.maxY; }
 		}
 
+		this.setAbsolutePosition(x, y);
+
+		dojo.event.topic.publish('dragMove', { source: this } );
+	},
+
+	/**
+	 * Set the position of the drag clone.  (x,y) is relative to <body>.
+	 */
+	setAbsolutePosition: function(x, y){
+		// The drag clone is attached to document.body so this is trivial
 		if(!this.disableY) { this.dragClone.style.top = y + "px"; }
 		if(!this.disableX) { this.dragClone.style.left = x + "px"; }
 	},
+
 
 	/**
 	 * If the drag operation returned a success we reomve the clone of
@@ -207,7 +267,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 			case "dropSuccess":
 				dojo.dom.removeNode(this.dragClone);
 				this.dragClone = null;
-				break; 
+				break;
 
 			case "dropFailure": // slide back to the start
 				var startCoords = dojo.style.getAbsolutePosition(this.dragClone, true);
@@ -225,8 +285,12 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 				});
 				dojo.event.connect(anim, "onEnd", function (e) {
 					// pause for a second (not literally) and disappear
-					dojo.lang.setTimeout(dojo.dom.removeNode, 200,
-						dragObject.dragClone);
+					dojo.lang.setTimeout(function() {
+							dojo.dom.removeNode(dragObject.dragClone);
+							// Allow drag clone to be gc'ed
+							dragObject.dragClone = null;
+						},
+						200);
 				});
 				anim.play();
 				break;
@@ -235,6 +299,8 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 		// shortly the browser will fire an onClick() event,
 		// but since this was really a drag, just squelch it
 		dojo.event.connect(this.domNode, "onclick", this, "squelchOnClick");
+
+		dojo.event.topic.publish('dragEnd', { source: this } );
 	},
 
 	squelchOnClick: function(e){

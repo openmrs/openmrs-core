@@ -16,8 +16,8 @@
 }
 
 .dojoTreeNodeLabelSelected {
-	/* zzbackground-color: Highlight; */
-	/* zzcolor: HighlightText; */
+	background-color: Highlight;
+	color: HighlightText;
 }
 
 .dojoTree div {

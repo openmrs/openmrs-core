@@ -201,7 +201,7 @@ dojo.math.curves = {
 				value = curves[curves.length-1].getValue(1);
 			}
 
-			for(j = 0; j < i; j++) {
+			for(var j = 0; j < i; j++) {
 				value = dojo.math.points.translate(value, curves[j].getValue(1));
 			}
 			return value;

@@ -57,20 +57,23 @@ dojo.widget.html.TaskBar = function(){
 
 	dojo.widget.html.FloatingPane.call(this);
 	dojo.widget.TaskBar.call(this);
-	this.titleBarDisplay = "none";
 	this._addChildStack = [];
 }
 
 dojo.inherits(dojo.widget.html.TaskBar, dojo.widget.html.FloatingPane);
 
 dojo.lang.extend(dojo.widget.html.TaskBar, {
+
+	resizable: false,
+	titleBarDisplay: "none",
+
 	addChild: function(child) {
 		if(!this.containerNode){ 
 			this._addChildStack.push(child);
 		}else if(this._addChildStack.length > 0){
 			var oarr = this._addChildStack;
 			this._addChildStack = [];
-			dojo.lang.forEach(oarr, function(c){ this.addChild(c); }, this);
+			dojo.lang.forEach(oarr, this.addChild, this);
 		}
 		var tbi = dojo.widget.createWidget("TaskBarItem",
 			{	windowId: child.widgetId, 

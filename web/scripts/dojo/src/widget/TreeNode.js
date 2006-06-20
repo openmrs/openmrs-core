@@ -298,7 +298,7 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 	},
 
 	markSelected: function() {
-		//dojo.html.addClass(this.titleNode, 'dojoTreeNodeLabelSelected');
+		dojo.html.addClass(this.titleNode, 'dojoTreeNodeLabelSelected');
 	},
 
 
@@ -392,7 +392,6 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 		//dojo.debug("Update icons for "+this)
 		//dojo.debug(this.isFolder)
 
-		var blank = this.tree.makeBlankImg();
 		for (img in this.imgs) {
 				this.imgs[img].style.display = this.tree.showRootGrid ? 'inline' : 'none';
 		}
@@ -470,9 +469,8 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 	},
 
 	hideChildren: function(){
-		var _this = this;
 		this.tree.toggleObj.hide(
-			_this.containerNode, _this.toggleDuration, _this.explodeSrc, _this.onHide
+			this.containerNode, this.toggleDuration, this.explodeSrc, dojo.lang.hitch(this, "onHide")
 		);
 
 		/* if dnd is in action, recalculate changed coordinates */
@@ -482,9 +480,8 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 	},
 
 	showChildren: function(){
-		var _this = this;
 		this.tree.toggleObj.show(
-			_this.containerNode, _this.toggleDuration,	_this.explodeSrc, _this.onShow
+			this.containerNode, this.toggleDuration, this.explodeSrc, dojo.lang.hitch(this, "onShow")
 		);
 
 		/* if dnd is in action, recalculate changed coordinates */
@@ -498,9 +495,7 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 	},
 
 	doAddChild: function(){
-		var child = this.tree.doAddChild.apply(this, arguments);
-		this.updateIconTree();
-		return child;
+		return this.tree.doAddChild.apply(this, arguments);
 	},
 
 

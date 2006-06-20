@@ -521,27 +521,56 @@ dojo.widget.buildWidgetFromParseTree = function(type, frag,
 }
 
 /*
- * it would be best to be able to call defineWidget for any widget namespace
+ * Create a widget constructor function (aka widgetClass)
  */
-dojo.widget.defineWidget = function(widgetClass /*string*/, superclass /*function*/, props /*object*/, renderer /*string*/, ctor /*function*/){
+dojo.widget.defineWidget = function(widgetClass /*string*/, renderer /*string*/, superclasses /*function||array*/, init /*function*/, props /*object*/){
+	// This meta-function does parameter juggling for backward compat and overloading
+	// if 4th argument is a string, we are using the old syntax
+	// old sig: widgetClass, superclasses, props (object), renderer (string), init (function)
+	if(dojo.lang.isString(arguments[3])){
+		dojo.widget._defineWidget(arguments[0], arguments[3], arguments[1], arguments[4], arguments[2]);
+	}else{
+		// widgetClass
+		var args = [ arguments[0] ], p = 3;
+		if(dojo.lang.isString(arguments[1])){
+			// renderer, superclass
+			args.push(arguments[1], arguments[2]);
+		}else{
+			// superclass
+			args.push('', arguments[1]);
+			p = 2;
+		}
+		if(dojo.lang.isFunction(arguments[p])){
+			// init (function), props (object) 
+			args.push(arguments[p], arguments[p+1]);
+		}else{
+			// props (object) 
+			args.push(null, arguments[p]);
+		}
+		dojo.widget._defineWidget.apply(this, args);
+	}
+}
+
+dojo.widget.defineWidget.renderers = "html|svg|vml";
+
+dojo.widget._defineWidget = function(widgetClass /*string*/, renderer /*string*/, superclasses /*function||array*/, init /*function*/, props /*object*/){
+	// FIXME: uncomment next line to test parameter juggling ... remove when confidence improves
+	//dojo.debug('(c:)' + widgetClass + '\n\n(r:)' + renderer + '\n\n(i:)' + init + '\n\n(p:)' + props);
 	// widgetClass takes the form foo.bar.baz<.renderer>.WidgetName (e.g. foo.bar.baz.WidgetName or foo.bar.baz.html.WidgetName)
 	var namespace = widgetClass.split(".");
 	var type = namespace.pop(); // type <= WidgetName, namespace <= foo.bar.baz<.renderer>
-	if(renderer){
-		// FIXME: could just be namespace.pop(), unless there can be foo.bar.baz.html.zot.WidgetName
-		while ((namespace.length)&&(namespace.pop() != renderer)); // namespace <= foo.bar.baz
-	}
-	namespace = namespace.join(".");
+	var regx = "\\.(" + (renderer ? renderer + '|' : '') + dojo.widget.defineWidget.renderers + ")\\.";
+	var r = widgetClass.search(new RegExp(regx));
+	namespace = (r < 0 ? namespace.join(".") : widgetClass.substr(0, r));
 
 	dojo.widget.manager.registerWidgetPackage(namespace);
 	dojo.widget.tags.addParseTreeHandler("dojo:"+type.toLowerCase());
 
-	if(!props){ props = {}; }
+	props=(props)||{};
 	props.widgetType = type;
-
-	if((!ctor)&&(props["classConstructor"])){
-		ctor = props.classConstructor;
+	if((!init)&&(props["classConstructor"])){
+		init = props.classConstructor;
 		delete props.classConstructor;
 	}
-	dojo.declare(widgetClass, superclass, props, ctor);
+	dojo.declare(widgetClass, superclasses, init, props);
 }

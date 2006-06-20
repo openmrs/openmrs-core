@@ -80,8 +80,11 @@ dojo.collections.DictionaryIterator=function(/* object */obj){
 	//	summary
 	//	return an object of type dojo.collections.DictionaryIterator
 	var a=[];	//	Create an indexing array
-	for(var p in obj) {
-		a.push(obj[p]);	//	fill it up
+	var testObject={};
+	for(var p in obj){
+		if(!testObject[p]){
+			a.push(obj[p]);	//	fill it up
+		}
 	}
 	var position=0;
 	this.element=a[position]||null;

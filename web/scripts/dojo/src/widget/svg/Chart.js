@@ -508,7 +508,8 @@ dojo.widget.svg.Chart.Plotter=new function(){
 		var min=chart.properties.axes.x.range.min;
 		var max=chart.properties.axes.x.range.max;
 		var ofst=0-min;
-		min+=ofst; max+=ofst; v+=ofst;
+		min+=ofst; max+=ofst;
+
 		var xmin=chart.properties.padding.left;
 		var xmax=chart.properties.width-chart.properties.padding.right;
 		var factor=(max-min)/(xmax-xmin)*25;

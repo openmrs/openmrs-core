@@ -8,5 +8,5 @@
 		http://dojotoolkit.org/community/licensing.shtml
 */
 
-dojo.deprecated("dojo.math.Math does not exist, include dojo.math");
+dojo.deprecated("dojo.math.Math", "include dojo.math instead", "0.4");
 dojo.require("dojo.math");

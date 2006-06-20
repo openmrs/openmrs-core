@@ -147,7 +147,21 @@ dojo.lang.extend(dojo.widget.html.FisheyeList, {
 	},
 	
 	postCreate: function(args, frag) {
+		this.initializePositioning();
 
+		//
+		// in liberal trigger mode, activate menu whenever mouse is close
+		//
+		if( !this.conservativeTrigger ){
+			dojo.event.connect(document.documentElement, "onmousemove", this, "mouseHandler");
+		}
+		
+		// Deactivate the menu if mouse is moved off screen (doesn't work for FF?)
+		dojo.event.connect(document.documentElement, "onmouseout", this, "onBodyOut");
+		dojo.event.connect(this, "addChild", this, "initializePositioning");
+	},
+
+	initializePositioning: function(){
 		this.itemCount = this.children.length;
 
 		this.barWidth  = (this.isHorizontal ? this.itemCount : 1) * this.itemWidth;
@@ -229,16 +243,6 @@ dojo.lang.extend(dojo.widget.html.FisheyeList, {
 		//
 
 		this.calcHitGrid();
-
-		//
-		// in liberal trigger mode, activate menu whenever mouse is close
-		//
-		if( !this.conservativeTrigger ){
-			dojo.event.connect(document.documentElement, "onmousemove", this, "mouseHandler");
-		}
-		
-		// Deactivate the menu if mouse is moved off screen (doesn't work for FF?)
-		dojo.event.connect(document.documentElement, "onmouseout", this, "onBodyOut");
 	},
 
 	onBodyOut: function(e){
@@ -610,8 +614,14 @@ dojo.lang.extend(dojo.widget.html.FisheyeList, {
 		if ( this.timerScale<1.0 ) {
 			dojo.lang.setTimeout(this, "expandSlowly", 10);
 		}
-	}
+	},
 
+	destroy: function(){
+		// need to disconnect when we destroy
+		dojo.event.disconnect(document.documentElement, "onmouseout", this, "onBodyOut");
+		dojo.event.disconnect(document.documentElement, "onmousemove", this, "mouseHandler");
+		dojo.widget.html.FisheyeList.superclass.destroy.call(this);
+	}
 });
 
 dojo.widget.html.FisheyeListItem = function(){

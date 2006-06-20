@@ -1,18 +1,14 @@
-/*
-	Copyright (c) 2004-2006, The Dojo Foundation
-	All Rights Reserved.
-
-	Licensed under the Academic Free License version 2.1 or above OR the
-	modified BSD license. For more information on Dojo licensing, see:
-
-		http://dojotoolkit.org/community/licensing.shtml
-*/
-
 dojo.require("dojo.crypto");
 dojo.provide("dojo.crypto.MD5");
 
 /*	Return to a port of Paul Johnstone's MD5 implementation
  *	http://pajhome.org.uk/crypt/md5/index.html
+ *
+ *	Copyright (C) Paul Johnston 1999 - 2002.
+ *	Other contributors: Greg Holt, Andrew Kepert, Ydnar, Lostinet
+ * 	Distributed under the BSD License
+ *
+ *	Dojo port by Tom Trenka
  *
  *	2005-12-7
  *	All conversions are internalized (no dependencies)

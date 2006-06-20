@@ -20,6 +20,11 @@ dojo.widget.incrementalComboBoxDataProvider = function(url, limit, timeout){
 	this.allowCache = false;
 
 	this.cache = {};
+
+	this.init = function(cbox){
+		this.searchUrl = cbox.dataUrl;
+	}
+
 	this.addToCache = function(keyword, data){
 		if(this.allowCache){
 			this.cache[keyword] = data;
@@ -70,6 +75,45 @@ dojo.widget.ComboBoxDataProvider = function(dataPairs, limit, timeout){
 	this._lastSearch = "";
 	this._lastSearchResults = null;
 
+	this.init = function(cbox, node){
+		if(!dojo.string.isBlank(cbox.dataUrl)){
+			this.getData(cbox.dataUrl);
+		}else{
+			// check to see if we can populate the list from <option> elements
+			if((node)&&(node.nodeName.toLowerCase() == "select")){
+				// NOTE: we're not handling <optgroup> here yet
+				var opts = node.getElementsByTagName("option");
+				var ol = opts.length;
+				var data = [];
+				for(var x=0; x<ol; x++){
+					var keyValArr = [new String(opts[x].innerHTML), new String(opts[x].value)];
+					data.push(keyValArr);
+					if(opts[x].selected){ 
+						cbox.setAllValues(keyValArr[0], keyValArr[1]);
+					}
+				}
+				this.setData(data);
+			}
+		}
+	}
+
+	this.getData = function(url){
+		dojo.io.bind({
+			url: url,
+			load: dojo.lang.hitch(this, function(type, data, evt){ 
+				if(!dojo.lang.isArray(data)){
+					var arrData = [];
+					for(var key in data){
+						arrData.push([data[key], key]);
+					}
+					data = arrData;
+				}
+				this.setData(data);
+			}),
+			mimetype: "text/json"
+		});
+	}
+
 	this.startSearch = function(searchStr, type, ignoreLimit){
 		// FIXME: need to add timeout handling here!!
 		this._preformSearch(searchStr, type, ignoreLimit);
@@ -78,7 +122,7 @@ dojo.widget.ComboBoxDataProvider = function(dataPairs, limit, timeout){
 	this._preformSearch = function(searchStr, type, ignoreLimit){
 		//
 		//	NOTE: this search is LINEAR, which means that it exhibits perhaps
-		//	the worst possible speed charachteristics of any search type. It's
+		//	the worst possible speed characteristics of any search type. It's
 		//	written this way to outline the responsibilities and interfaces for
 		//	a search.
 		//
@@ -136,7 +180,7 @@ dojo.widget.ComboBoxDataProvider = function(dataPairs, limit, timeout){
 						// FIXME: what about tab chars?
 						matches = true; break;
 					}
-					idx = dataLabel.indexOf(searchStr, tti+1);
+					idx = dataLabel.indexOf(searchStr, idx+1);
 				}
 				if(!matches){
 					continue;
@@ -166,38 +210,26 @@ dojo.widget.ComboBoxDataProvider = function(dataPairs, limit, timeout){
 	}
 }
 
-dojo.widget.ComboBox = function(){
-	dojo.widget.Widget.call(this);
-}
-
-dojo.inherits(dojo.widget.ComboBox, dojo.widget.Widget);
-
-dojo.widget.ComboBox.defaults = {
-	widgetType: "ComboBox",
-	isContainer: false,
-
-	forceValidOption: false,
-	searchType: "stringstart",
-	dataProvider: null,
-
-	startSearch: function(searchString){},
-	openResultList: function(results){},
-	clearResultList: function(){},
-	hideResultList: function(){},
-	selectNextResult: function(){},
-	selectPrevResult: function(){},
-	setSelectedResult: function(){}
-};
-
-dojo.lang.extend(dojo.widget.ComboBox, dojo.widget.ComboBox.defaults);
-
-dojo.widget.DomComboBox = function(){
-	dojo.widget.ComboBox.call(this);
-	dojo.widget.DomWidget.call(this, true);
-}
-
-dojo.inherits(dojo.widget.DomComboBox, dojo.widget.DomWidget);
-dojo.widget.tags.addParseTreeHandler("dojo:combobox");
+dojo.declare(
+	"dojo.widget.ComboBox",
+	null,
+	{
+		widgetType: "ComboBox",
+		isContainer: false,
+	
+		forceValidOption: false,
+		searchType: "stringstart",
+		dataProvider: null,
+	
+		startSearch: function(searchString){},
+		openResultList: function(results){},
+		clearResultList: function(){},
+		hideResultList: function(){},
+		selectNextResult: function(){},
+		selectPrevResult: function(){},
+		setSelectedResult: function(){}
+	}
+);
 
 // render-specific includes
 dojo.requireAfterIf("html", "dojo.widget.html.ComboBox");

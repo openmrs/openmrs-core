@@ -256,7 +256,7 @@ dojo.lang.extend(dojo.Deferred, {
 			enclosed = dojo.lang.curryArguments(null, enclosed, arguments, 2);
 		}
 		return this.addCallbacks(null, enclosed);
-		return this.addCallbacks(null, fn);
+		return this.addCallbacks(null, cbfn);
 	},
 
 	addCallbacks: function (cb, eb) {

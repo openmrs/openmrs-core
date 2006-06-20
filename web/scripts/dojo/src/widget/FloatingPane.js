@@ -57,16 +57,12 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlFloatingPane.html"),
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlFloatingPane.css"),
 
+	drag: null,
+
 	fillInTemplate: function(args, frag){
 		// Copy style info from input node to output node
 		var source = this.getFragNodeRef(frag);
-		// get around opera wich doesnt have cssText, and IE wich bugs on setAttribute 
-		if(dojo.lang.isUndefined(source.style.cssText)){ 
-			this.domNode.setAttribute("style", source.getAttribute("style")); 
-		}else{
-			this.domNode.style.cssText = source.style.cssText; 
-		}
-		dojo.html.addClass(this.domNode, dojo.html.getClass(source));
+		dojo.html.copyStyle(this.domNode, source);
 
 		// necessary for safari, khtml (for computing width/height)
 		document.body.appendChild(this.domNode);
@@ -95,11 +91,23 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 			this.restoreAction.style.display= 
 				(this.displayMaximizeAction && this.windowState=="maximized" ? "" : "none");
 			this.closeAction.style.display= (this.displayCloseAction ? "" : "none");
-			var drag = new dojo.dnd.HtmlDragMoveSource(this.domNode);	
+
+			this.drag = new dojo.dnd.HtmlDragMoveSource(this.domNode);	
 			if (this.constrainToContainer) {
-				drag.constrainTo();
+				this.drag.constrainTo();
 			}
-			drag.setDragHandle(this.titleBar);
+			this.drag.setDragHandle(this.titleBar);
+
+			var self = this;
+
+			dojo.event.topic.subscribe("dragMove",
+				function (info){
+					if (info.source.domNode == self.domNode){
+						dojo.event.topic.publish('floatingPaneMove', { source: self } );
+					}
+				}
+			);
+
 		}
 
 		if(this.resizable){
@@ -175,14 +183,18 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 	},
 
 	restoreWindow: function(evt) {
-		for(var attr in this.previous){
-			this.domNode.style[attr] = this.previous[attr];
-		}
-		this.resizeTo(this.previous.width, this.previous.height);
-		this.previous=null;
+		if (this.windowState=="minimized") {
+			this.show() 
+		} else {
+			for(var attr in this.previous){
+				this.domNode.style[attr] = this.previous[attr];
+			}
+			this.resizeTo(this.previous.width, this.previous.height);
+			this.previous=null;
 
-		this.restoreAction.style.display="none";
-		this.maximizeAction.style.display=this.displayMaximizeAction ? "" : "none";
+			this.restoreAction.style.display="none";
+			this.maximizeAction.style.display=this.displayMaximizeAction ? "" : "none";
+		}
 
 		this.windowState="normal";
 	},
@@ -282,8 +294,8 @@ dojo.lang.extend(dojo.widget.html.FloatingPane, {
 		this.onResized();
 	},
 
-	onParentResized: function() {
-		// onParentResized() is called when the user has resized the browser window,
+	checkSize: function() {
+		// checkSize() is called when the user has resized the browser window,
 		// but that doesn't affect this widget (or this widget's children)
 		// so it can be safely ignored...
 		// TODO: unless we are maximized.  then we should resize ourself.

@@ -25,12 +25,15 @@ dojo.require("dojo.html");
 dojo.html.layout = function(container, children, layoutPriority) {
 	dojo.html.addClass(container, "dojoLayoutContainer");
 
-	// copy children array and remove elements w/out layout
-	children = dojo.lang.filter(children, function(child){
+	// Copy children array and remove elements w/out layout.
+	// Also record each child's position in the input array, for sorting purposes.
+	children = dojo.lang.filter(children, function(child, idx){
+		child.idx = idx;
 		return dojo.lang.inArray(["top","bottom","left","right","client","flood"], child.layoutAlign)
 	});
 
-	// order the children according to layoutPriority
+	// Order the children according to layoutPriority.
+	// Multiple children w/the same layoutPriority will be sorted by their position in the input array.
 	if(layoutPriority && layoutPriority!="none"){
 		var rank = function(child){
 			switch(child.layoutAlign){
@@ -46,7 +49,9 @@ dojo.html.layout = function(container, children, layoutPriority) {
 					return 4;
 			}
 		};
-		children.sort(function(a,b){ return rank(a)-rank(b); });
+		children.sort(function(a,b){
+			return (rank(a)-rank(b)) || (a.idx - b.idx);
+		});
 	}
 
 	// remaining space (blank area where nothing has been written)
@@ -61,7 +66,6 @@ dojo.html.layout = function(container, children, layoutPriority) {
 	dojo.lang.forEach(children, function(child){
 		var elm=child.domNode;
 		var pos=child.layoutAlign;
-
 		// set elem to upper left corner of unused space; may move it later
 		with(elm.style){
 			left = f.left+"px";
@@ -111,6 +115,7 @@ dojo.html.layout = function(container, children, layoutPriority) {
 dojo.style.insertCssText(
 	".dojoLayoutContainer{ position: relative; display: block; }\n" +
 	"body .dojoAlignTop, body .dojoAlignBottom, body .dojoAlignLeft, body .dojoAlignRight { position: absolute; overflow: hidden; }\n" +
-	"body .dojoAlignClient, body .dojoAlignFloat { position: absolute; overflow: auto; }\n"
+	"body .dojoAlignClient { position: absolute }\n" +
+	".dojoAlignClient { overflow: auto; }\n"
 );
 

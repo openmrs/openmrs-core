@@ -164,7 +164,7 @@ dojo.regexp.host = function(flags) {
 	var domainNameRE = "([0-9a-zA-Z]([-0-9a-zA-Z]{0,61}[0-9a-zA-Z])?\\.)+" + dojo.regexp.tld(flags);
 
 	// port number RE
-	portRE = ( flags.allowPort ) ? "(\\:" + dojo.regexp.integer({signed: false}) + ")?" : "";
+	var portRE = ( flags.allowPort ) ? "(\\:" + dojo.regexp.integer({signed: false}) + ")?" : "";
 
 	// build host RE
 	var hostNameRE = domainNameRE;

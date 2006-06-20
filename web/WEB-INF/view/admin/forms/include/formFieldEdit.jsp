@@ -1,8 +1,8 @@
 
 <div id="fieldWarning">
 		<spring:message code="Field.editWarning"/><br/>
-		<a target="newField" href="field.form?fieldId=" onclick="editAllFields(); return false;"><spring:message code="Field.editWarning.allForms"/></a> | 
-		<a target="newField" href="#" onclick="editFieldForThisForm(); return false;"><spring:message code="Field.editWarning.thisForm"/></a>
+		<a target="newField" href="field.form?fieldId=" onclick="return editAllFields();"><spring:message code="Field.editWarning.allForms"/></a> | 
+		<a target="newField" href="#" onclick="return editFieldForThisForm();"><spring:message code="Field.editWarning.thisForm"/></a>
 </div>
 
 <table id="field" width="100%">

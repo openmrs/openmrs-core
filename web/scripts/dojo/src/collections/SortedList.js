@@ -31,6 +31,7 @@ dojo.collections.SortedList=function(/* object? */ dictionary){
 		}
 		q.sort(sorter);
 	};
+	var testObject={};
 
 	this.count=q.length;
 	this.add=function(/* string */ k,/* object */v){
@@ -57,6 +58,9 @@ dojo.collections.SortedList=function(/* object? */ dictionary){
 	this.contains=this.containsKey=function(/* string */ k){
 		//	summary
 		//	Check to see if the list has a location k
+		if(testObject[k]){
+			return false;			//	bool
+		}
 		return (items[k]!=null);	//	bool
 	};
 	this.containsValue=function(/* object */ o){
@@ -156,7 +160,7 @@ dojo.collections.SortedList=function(/* object? */ dictionary){
 	this.item=function(/* string */ k){
 		// 	summary
 		//	return the value of the object at location k.
-		if(k in items){
+		if(k in items && !testObject[k]){
 			return items[k].valueOf();	//	object
 		}
 		return undefined;	//	object

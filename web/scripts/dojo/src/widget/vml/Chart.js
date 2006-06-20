@@ -170,8 +170,8 @@ dojo.lang.extend(dojo.widget.vml.Chart, {
 		//	y axis
 		var line=document.createElement("v:line");
 		var y=dojo.widget.vml.Chart.Plotter.getX(this.properties.axes.y.plotAt, this);
-		line.setAttribute("from", x+","+this.properties.padding.top);
-		line.setAttribute("to", x+","+this.properties.height-this.properties.padding.bottom);
+		line.setAttribute("from", y+","+this.properties.padding.top);
+		line.setAttribute("to", y+","+this.properties.height-this.properties.padding.bottom);
 		line.style.position="absolute";
 		line.style.antialias="false";
 		line.setAttribute("strokecolor", "#666");
@@ -400,7 +400,8 @@ dojo.widget.vml.Chart.Plotter=new function(){
 		var min=chart.properties.axes.x.range.min;
 		var max=chart.properties.axes.x.range.max;
 		var ofst=0-min;
-		min+=ofst; max+=ofst; v+=ofst;
+
+		min+=ofst; max+=ofst;
 		var xmin=chart.properties.padding.left;
 		var xmax=chart.properties.width-chart.properties.padding.right;
 		var factor=(max-min)/(xmax-xmin)*25;
