@@ -396,6 +396,19 @@ public class HibernatePatientDAO implements PatientDAO {
 		
 		return patientIdentifierType;
 	}
+	
+	/**
+	 * @see org.openmrs.api.db.PatientService#getPatientIdentifierType(java.lang.String)
+	 */
+	public PatientIdentifierType getPatientIdentifierType(String name) throws DAOException {
+		Session session = HibernateUtil.currentSession();
+
+		PatientIdentifierType ret = (PatientIdentifierType) session.createQuery("from PatientIdentifierType t where t.name = :name")
+		.setString("name", name)
+		.uniqueResult();
+
+		return ret;
+	}	
 
 	/**
 	 * @see org.openmrs.api.db.PatientService#getPatientIdentifierTypes()

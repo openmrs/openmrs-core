@@ -247,6 +247,8 @@ public class OpenmrsConstants {
 		
 		return languages;
 	}
+	
+	public static final Locale GLOBAL_DEFAULT_LOCALE = Locale.US;
 
 	/**
 	 * @return Collection of locales that the concept dictionary should be aware of

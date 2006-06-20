@@ -186,6 +186,7 @@
 					<prop key="**/analysis.form">otfaActionController</prop>
 					<prop key="**/migration.form">migrationActionController</prop>
 					<prop key="**/formSchemaDesign.form">formSchemaDesignForm</prop>
+					<prop key="**/nealreport.form">nealReportController</prop>
 					<prop key="**/formEdit.form">formEditForm</prop>
 					<prop key="**/formViewXslt.form">formViewXsltForm</prop>
 					<prop key="**/form.list">formList</prop>
@@ -677,10 +678,19 @@
 			<!-- ** Analysis ** -->
 				<bean id="otfaController" class="org.openmrs.web.controller.analysis.OnTheFlyAnalysisController">
 					<property name="shortcuts">
-						<value>
-							gender!both:*,male:@org.openmrs.reporting.PatientCharacteristicFilter(gender=m$String),female:@org.openmrs.reporting.PatientCharacteristicFilter(gender=f$String)
-							arv_tx_group!treatmentGroup:@org.openmrs.reporting.ArvTxGroupFilter(treatmentGroup$String)
-						</value>
+						<list>
+							<value>gender!both:*,male:@org.openmrs.reporting.PatientCharacteristicFilter(gender=m$String),female:@org.openmrs.reporting.PatientCharacteristicFilter(gender=f$String)</value>
+							<value>arv_tx_group!treatmentGroup:@org.openmrs.reporting.ArvTxGroupFilter(treatmentGroup$String)</value>						
+						</list>
+					</property>
+					<property name="links">
+						<list>
+							<value>nealreport.form:nealreport.ConsultReport.name:reportType=Consult Report</value>
+							<value>nealreport.form:nealreport.AlertReport.name:reportType=Alert Report</value>
+							<value>nealreport.form:nealreport.PmtctReport.name:reportType=PMTCT Report</value>
+							<value>nealreport.form:nealreport.PedReport.name:reportType=Ped Report</value>
+							<value>nealreport.form:nealreport.ConsultReport.name:reportType=Consult Report</value>
+						</list>
 					</property>
 				</bean>
 			    <bean id="otfaParamResolver" class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
@@ -692,6 +702,12 @@
 					<property name="delegate"><ref bean="otfaController"/></property>
 				</bean>
 				<!-- ** /Analysis ** -->
+	    <!-- ============================ -->
+		
+		<!-- ================================= -->
+		<!-- ===== Neal's Reports Sector ===== -->
+	    <!-- ================================= -->
+				<bean id="nealReportController" class="org.openmrs.web.controller.nealreports.NealReportController"/>
 	    <!-- ============================ -->
 
 	    <!-- ============================ -->

@@ -345,6 +345,20 @@ public class PatientService {
 	}
 
 	/**
+	 * Get patientIdentifierType by name
+	 * 
+	 * @param name
+	 * @return patientIdentifierType with given name
+	 * @throws APIException
+	 */
+	public PatientIdentifierType getPatientIdentifierType(String name) throws APIException {
+		if (!context.isAuthenticated())
+			throw new APIAuthenticationException("Authentication required");
+		
+		return getPatientDAO().getPatientIdentifierType(name);
+	}
+	
+	/**
 	 * Get tribe by internal tribe identifier
 	 * 
 	 * @return Tribe

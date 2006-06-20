@@ -6,7 +6,6 @@ import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -19,12 +18,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.User;
-import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.EmptyReportObject;
-import org.openmrs.reporting.NumericObsPatientFilter;
-import org.openmrs.reporting.ReportObjectFactory;
 import org.openmrs.reporting.ReportService;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.propertyeditor.ConceptEditor;
@@ -137,7 +133,7 @@ public class ReportObjectFormController extends SimpleFormController {
 				v = (Validator)ct.newInstance();
 				this.setValidator(v);
 			} catch ( Throwable t ) {
-				//System.out.println("Could not instantiate default validator \"" + currentClassName + "Validator\" for ReportObject class " + currentClassName + "; Using default validator.");
+				log.debug("Could not instantiate default validator \"" + currentClassName + "Validator\" for ReportObject class " + currentClassName + "; Using default validator: " + rs.getDefaultReportObjectValidator());
 				Class cls = Class.forName(rs.getDefaultReportObjectValidator());
 				Constructor ct = cls.getConstructor();
 				v = (Validator)ct.newInstance();

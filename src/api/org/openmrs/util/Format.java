@@ -1,5 +1,7 @@
 package org.openmrs.util;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -48,6 +50,13 @@ public class Format {
 			pattern = OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Locale.UK.toString().toLowerCase());
 			
 		return date == null ? "" : new SimpleDateFormat(pattern).format(date);
+	}
+	
+	public static String format(Throwable t) {
+		StringWriter sw = new StringWriter();
+		PrintWriter pw = new PrintWriter(sw);
+		t.printStackTrace(pw);
+		return t + "\n" + sw.toString();
 	}
 	
 }

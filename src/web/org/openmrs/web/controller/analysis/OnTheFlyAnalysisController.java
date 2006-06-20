@@ -39,22 +39,34 @@ public class OnTheFlyAnalysisController implements Controller {
 	final static String ON_THE_FLY_ANALYSIS_ATTR = "__openmrs_on_the_fly_analysis";
 	protected Log log = LogFactory.getLog(getClass());
 
-	private String shortcuts;
+	private List<String> shortcuts;
+	private List<String> links;
 	
-	public String getShortcuts() {
+	public List<String> getShortcuts() {
 		return shortcuts;
 	}
 
 	// Example: gender!both:*,male:male_only_filter,female:female_only_filter
-	public void setShortcuts(String shortcuts) {
+	public void setShortcuts(List<String> shortcuts) {
 		this.shortcuts = shortcuts;
 	}
 	
+	public List<String> getLinks() {
+		return links;
+	}
+
+	/**
+	 * The spec string should be LINK_TO_SUBMIT_TO:KEY_OF_MESSAGE_FOR_BUTTON:name_1=val_1:name_2=val_2:...:name_n=val_n
+	 * Example: nealreport.form:nealreport.ConsultReport.name:reportType=Consult+Report
+	 */
+	public void setLinks(List<String> links) {
+		this.links = links;
+	}
+
 	private List<ShortcutSpec> shortcutHelper() {
 		try {
 			List<ShortcutSpec> ret = new ArrayList<ShortcutSpec>();
-			for (StringTokenizer st = new StringTokenizer(shortcuts); st.hasMoreTokens(); ) { // shortcuts are whitespace-separated
-				String s = st.nextToken();
+			for (String s : shortcuts) {
 				String[] temp = s.split("!");
 				String shortcutLabel = temp[0];
 				String[] opts = temp[1].split(",");
@@ -103,6 +115,8 @@ public class OnTheFlyAnalysisController implements Controller {
 			analysis = new PatientAnalysis();
 		}
 		
+		List<LinkSpec> linkList = linkHelper();
+		
 		List<ShortcutSpec> shortcutList = shortcutHelper();
 		if (reportService != null) {
 			for (ShortcutSpec s : shortcutList) {
@@ -110,7 +124,9 @@ public class OnTheFlyAnalysisController implements Controller {
 				s.test(reportService);
 				// find which filter (if any) is currently selected for this shortcut
 				PatientFilter pf = analysis.getPatientFilters().get(s.getLabel());
+				log.debug("Looked at ShortcutSpec " + s + " to see if there's a currently-selected filter for label " + s.getLabel() + " (keyset = " + analysis.getPatientFilters().keySet() + "). Result: " + pf);
 				if (pf != null) {
+					log.debug("set current filter for " + s + " to " + pf.getName());
 					s.setCurrentFilter(((AbstractReportObject) pf).getName());
 				}
 			}
@@ -182,11 +198,21 @@ public class OnTheFlyAnalysisController implements Controller {
 		myModel.put("analysis_results", resultsToDisplay);
 		myModel.put("xml_debug", xmlToDisplay);
 		myModel.put("shortcuts", shortcutList);
+		myModel.put("patient_set_for_links", result.toCommaSeparatedPatientIds());
+		myModel.put("links", linkList);
 
 		return new ModelAndView("/analysis/on-the-fly-analysis", "model", myModel);
 	}
 
-    /*
+    private List<LinkSpec> linkHelper() {
+    	List<LinkSpec> ret = new ArrayList<LinkSpec>();
+    	for (String spec : links) {
+    		ret.add(new LinkSpec(spec));
+    	}
+		return ret;
+	}
+
+	/*
 	public ModelAndView setClassifier(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
@@ -464,6 +490,56 @@ public class OnTheFlyAnalysisController implements Controller {
 				ret.addAll(hiddenArgNames);
 			}
 			return ret;
+		}
+	}
+	
+	public class LinkArg {
+		String name;
+		String value;
+		public LinkArg() { }
+		public LinkArg(String name, String value) {
+			this.name = name;
+			this.value = value;
+		}
+		public LinkArg(String nameEqualsValue) {
+			int i = nameEqualsValue.indexOf('=');
+			name = nameEqualsValue.substring(0, i);
+			value = nameEqualsValue.substring(i + 1);
+		}
+		public String getName() {
+			return name;
+		}
+		public void setName(String name) {
+			this.name = name;
+		}
+		public String getValue() {
+			return value;
+		}
+		public void setValue(String value) {
+			this.value = value;
+		}
+	}
+	
+	public class LinkSpec {
+		String label;
+		String url;
+		List<LinkArg> arguments = new ArrayList<LinkArg>();
+		public LinkSpec(String spec) {
+			StringTokenizer st = new StringTokenizer(spec, ":");
+			url = st.nextToken();
+			label = st.nextToken();
+			while (st.hasMoreTokens()) {
+				arguments.add(new LinkArg(st.nextToken()));
+			}
+		}
+		public List<LinkArg> getArguments() {
+			return arguments;
+		}
+		public String getLabel() {
+			return label;
+		}
+		public String getUrl() {
+			return url;
 		}
 	}
 	

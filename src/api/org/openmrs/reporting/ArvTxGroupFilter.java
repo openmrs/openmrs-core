@@ -9,11 +9,11 @@ public class ArvTxGroupFilter extends TextObsPatientFilter {
 		super();
 		super.setType("Patient Filter");
 		super.setSubType("ARV Treatment Group Filter");
-		Concept temp = ContextFactory.getContext().getConceptService().getConceptByName("ARV TREATMENT GROUP");
+		Concept temp = ContextFactory.getContext().getConceptService().getConceptByName("ANTIRETROVIRAL TREATMENT GROUP");
 		if (temp != null) {
 			super.setConcept(temp);
 		} else {
-			throw new RuntimeException("Cannot find concept ARV TREATMENT GROUP");
+			throw new RuntimeException("Cannot find concept ANTIRETROVIRAL TREATMENT GROUP");
 		}
 	}
 	
