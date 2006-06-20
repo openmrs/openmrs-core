@@ -271,10 +271,9 @@
 						<tr>
 							<td><a id="patientName" href="#View Patient" onclick="return gotoPatient('patient')">${status.value.patientName.givenName} ${status.value.patientName.middleName} ${status.value.patientName.familyName}</a></td>
 							<td>
+								<input type="hidden" id="patient" value="${status.value.patientId}" name="patientId"/>
 								<c:if test="${encounter.encounterId == null}">
-									&nbsp;
-									<input type="hidden" id="patient" value="${status.value.patientId}" name="patientId"/>
-									<input type="button" id="patientButton" class="smallButton" value='<spring:message code="general.change"/>' onclick="showSearch(this)" />
+									&nbsp; <input type="button" id="patientButton" class="smallButton" value='<spring:message code="general.change"/>' onclick="showSearch(this)" />
 								</c:if>
 								<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 							</td>
@@ -389,7 +388,7 @@
 			<th><spring:message code="general.voidReason" /></th>
 			<td>
 				<spring:bind path="encounter.voidReason">
-					<input type="text" value="${status.value}" name="${status.expression}" size="30" />
+					<input type="text" value="${status.value}" name="${status.expression}" size="40" />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>

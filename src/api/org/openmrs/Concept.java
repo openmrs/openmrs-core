@@ -338,7 +338,10 @@ public class Concept implements java.io.Serializable {
 		
 		//no name with the given locale was found.
 		// return null if exact match desired
-		if (exact) return null;
+		if (exact) {
+			log.warn("No concept name found for concept id " + conceptId + " for locale " + loc);
+			return null;
+		}
 		
 //		returning default name locale ("en") if exact match desired
 		return defaultName;

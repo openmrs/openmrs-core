@@ -237,6 +237,16 @@ public class EncounterService {
 			throw new APIAuthenticationException("Privilege required: "
 					+ OpenmrsConstants.PRIV_EDIT_ENCOUNTERS);
 
+		if (reason == null)
+			reason = "";
+		
+		ObsService os = context.getObsService();
+		for (Obs o : encounter.getObs()) {
+			if (!o.isVoided()) {
+				os.voidObs(o, reason);
+			}
+		}
+		
 		encounter.setVoided(true);
 		encounter.setVoidedBy(context.getAuthenticatedUser());
 		encounter.setDateVoided(new Date());
@@ -256,6 +266,12 @@ public class EncounterService {
 		String voidReason = encounter.getVoidReason();
 		if (voidReason == null)
 			voidReason = "";
+		
+		ObsService os = context.getObsService();
+		for (Obs o : encounter.getObs()) {
+			if (voidReason.equals(o.getVoidReason()))
+				os.unvoidObs(o);
+		}
 		
 		encounter.setVoided(false);
 		encounter.setVoidedBy(null);
