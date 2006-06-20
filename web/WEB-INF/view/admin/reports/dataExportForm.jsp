@@ -62,6 +62,22 @@
 		if (sibling != null && column.tagName == sibling.tagName) {
 			var newSibling = sibling.cloneNode(true);
 			var newColumn = column.cloneNode(true);
+			
+			// fix for javascript cloneNode function.  Doesn't seem to be copying the value of 
+			// either textareas or dropdowns.
+			var id = newSibling.id.substr(newSibling.id.indexOf("_")+1, 3);
+			var newTextarea = getChildByName(newSibling, "calculatedValue_" + id);
+			id = sibling.id.substr(sibling.id.indexOf("_")+1, 3);
+			var oldTextarea = getChildByName(sibling, "calculatedValue_" + id);
+			newTextarea.value = oldTextarea.value;
+			
+			id = newColumn.id.substr(newColumn.id.indexOf("_")+1, 3);
+			newTextarea = getChildByName(newColumn, "calculatedValue_" + id);
+			id = column.id.substr(column.id.indexOf("_")+1, 3);
+			oldTextarea = getChildByName(column, "calculatedValue_" + id);
+			newTextarea.value = oldTextarea.value;
+			
+			
 			parent.replaceChild(newColumn, sibling);
 			parent.replaceChild(newSibling, column);
 			updateColumnClasses(newColumn);

@@ -47,12 +47,6 @@
 				<option value="$!{fn.getLastEncounter('').getLocation().getName()}">&nbsp; <spring:message code="Encounter.location" /></option>
 				<option value="$!{fn.getLastEncounter('').getForm().getName()}">&nbsp; <spring:message code="Encounter.form" /></option>
 				<option value="$!{fn.formatDate('short', $fn.getLastEncounter('').getEncounterDatetime())}">&nbsp; <spring:message code="Encounter.datetime" /></option>
-				<option value=""> </option>
-				<option disabled><spring:message code="DataExport.simpleAllAttributes"/></option>
-				<option value="$!{fn.getPatientAttr('PatientName', 'familyName', true)}">&nbsp; <spring:message code="PatientName.familyName" /></option>
-				<option value="$!{fn.getPatientAttr('PatientIdentifier', 'identifier', true)}">&nbsp; <spring:message code="PatientIdentifier.identifier" /></option>
-				<option value="$!{fn.getPatientAttr('PatientAddress', 'address1', true)}">&nbsp; <spring:message code="PatientIdentifier.identifier" /></option>
-				
 			</select>
 			
 		</td>
