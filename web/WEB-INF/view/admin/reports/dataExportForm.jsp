@@ -84,19 +84,6 @@
 		}
 	}
 	
-	function addClass(obj, c) {
-		if (obj.className.indexOf(c) == -1)
-			obj.className = c + " " + obj.className;
-	}
-	
-	function removeClass(obj, newClassName) {
-		var className = obj.className;
-		if (className.indexOf(newClassName) != -1) {
-			var index = obj.className.indexOf(" ");
-			obj.className = className.substring(index + 1, className.length);
-		}
-	}
-	
 	function updateSimpleColumn(sel) {
 		if (sel.value != "") {
 			var count = sel.name.substr(sel.name.indexOf("_")+1, 3);

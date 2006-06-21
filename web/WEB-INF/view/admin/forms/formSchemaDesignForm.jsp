@@ -782,10 +782,10 @@
 			
 		if (typeof obj == 'string') return obj;
 		
-		var span = document.createElement("span");
+		var domNode = document.createElement("span");
 		
 		var data = getData(obj);
-		span.title = data.title;
+		domNode.title = data.title;
 		
 		// create a mini tree
 		var properties = {id: "miniTree", 
@@ -794,7 +794,7 @@
 						DNDAcceptTypes: ["tree", "miniTree"],
 						selector: "treeSelector"};
 						
-		var parentNode = span;
+		var parentNode = domNode;
 		var miniTree = dojo.widget.fromScript("Tree", properties, parentNode, "last");
 		searchTreeNodes.push(miniTree);
 		
@@ -813,10 +813,10 @@
 			var n2 = addNode(miniTree, d2, d2["label"]);
 			dojo.html.addClass(n2.titleNode, "fieldConceptHit");
 			node.afterLabelNode.appendChild(document.createTextNode(" -"));
-			span.className = "treeNodeRow";
+			domNode.className = "treeNodeRow";
 		}
 		
-		return span;
+		return domNode;
 	}
 	
 	function getData(obj) {

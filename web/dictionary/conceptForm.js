@@ -133,9 +133,9 @@ function copyIds(from, to, delimiter)
 	input.value = remaining.join(delimiter);
 }
 
-function addSynonym() {
-	var obj = document.getElementById("addSyn");
-	var synonyms = document.getElementById("syns").options;
+function addSynonym(locale) {
+	var obj = document.getElementById("addSyn" + locale);
+	var synonyms = document.getElementById("syns" + locale).options;
 	var syn = obj.value.toUpperCase();
 	if (syn != "") {
 		var addable = true;
@@ -154,7 +154,7 @@ function addSynonym() {
 	}
 	obj.value = "";
 	obj.focus();
-	copyIds("syns", "newSynonyms", ",");
+	copyIds("syns" + locale, "newSynonyms" + locale, ",");
 	window.Event.keyCode = 0;  //disable enter key submitting form
 }
 
@@ -256,13 +256,13 @@ function listKeyPress(from, to, delim, event) {
 	}
 }
 
-function synonymKeyPress(obj, event) {
+function synonymKeyPress(obj, event, locale) {
 	if (event.keyCode==13) {
-		addSynonym(); 
+		addSynonym(locale); 
 		return false;
 	}
 	else if (event.keyCode == 46 && obj.value == "") {
-		var selectedItem = removeItem('syns', 'newSynonyms', ',');
+		var selectedItem = removeItem('syns' + locale, 'newSynonyms' + locale, ',');
 		if (selectedItem != null)
 			selectedItem.selected = false;
 	}
