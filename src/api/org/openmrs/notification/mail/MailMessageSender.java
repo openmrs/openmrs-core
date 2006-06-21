@@ -1,19 +1,16 @@
 package org.openmrs.notification.mail;
 
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.notification.Message;
 import org.openmrs.notification.MessageException;
 import org.openmrs.notification.MessageSender;
 import org.openmrs.util.OpenmrsConstants;
-
-import javax.mail.internet.MimeMessage;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.Address;
-import javax.mail.internet.InternetAddress;
-import javax.naming.Context;
-import javax.naming.InitialContext;
 
 public class MailMessageSender implements MessageSender { 
 	

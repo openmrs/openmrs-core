@@ -1,13 +1,11 @@
 package org.openmrs.arden.parser;
 
-import antlr.Parser;
-import antlr.RecognitionException;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import antlr.Parser;
+import antlr.RecognitionException;
 
 /**
  * An error handler that counts parsing errors and warnings.

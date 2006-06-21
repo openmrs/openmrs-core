@@ -2,34 +2,22 @@
 
 package org.openmrs.arden;
 
-import java.io.*;
-//import org.Syntax.Parser.ArdenToken;
-import antlr.CommonAST;
-import antlr.collections.AST;
-import antlr.*;
-//import org.openmrs.arden.parser.*;
-import org.openmrs.arden.MLMObject;
-import org.openmrs.arden.MLMObjectElement;
-import java.lang.Integer;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 
-import antlr.TokenBuffer;
-import antlr.TokenStreamException;
-import antlr.TokenStreamIOException;
-import antlr.ANTLRException;
-import antlr.LLkParser;
-import antlr.Token;
-import antlr.TokenStream;
-import antlr.RecognitionException;
-import antlr.NoViableAltException;
-import antlr.MismatchedTokenException;
-import antlr.SemanticException;
-import antlr.ParserSharedInputState;
-import antlr.collections.impl.BitSet;
-import antlr.collections.AST;
-import java.util.Hashtable;
 import antlr.ASTFactory;
 import antlr.ASTPair;
-import antlr.collections.impl.ASTArray;
+import antlr.DumpASTVisitor;
+import antlr.NoViableAltException;
+import antlr.ParserSharedInputState;
+import antlr.RecognitionException;
+import antlr.Token;
+import antlr.TokenBuffer;
+import antlr.TokenStream;
+import antlr.TokenStreamException;
+import antlr.collections.AST;
+import antlr.collections.impl.BitSet;
 
 public class ArdenBaseParser extends antlr.LLkParser       implements ArdenBaseParserTokenTypes
  {

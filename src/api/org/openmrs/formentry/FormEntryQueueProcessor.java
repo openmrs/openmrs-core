@@ -1,7 +1,6 @@
 package org.openmrs.formentry;
 
 import java.io.StringWriter;
-import java.util.Hashtable;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;

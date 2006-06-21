@@ -1,7 +1,6 @@
 package org.openmrs.scheduler.timer;
 
 import java.util.TimerTask;
-import java.util.Timer;
 
 import org.openmrs.scheduler.Schedulable;
 

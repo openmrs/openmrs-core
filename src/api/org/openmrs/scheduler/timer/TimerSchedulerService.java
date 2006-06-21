@@ -1,28 +1,23 @@
 package org.openmrs.scheduler.timer;
 
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Timer;
-import java.util.TimerTask;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOContext;
-import org.openmrs.scheduler.TaskConfig;
 import org.openmrs.scheduler.Schedulable;
 import org.openmrs.scheduler.SchedulableFactory;
-import org.openmrs.scheduler.Schedule;
 import org.openmrs.scheduler.SchedulerConstants;
 import org.openmrs.scheduler.SchedulerException;
 import org.openmrs.scheduler.SchedulerService;
+import org.openmrs.scheduler.TaskConfig;
 
 /**
  *  Simple scheduler service that uses JDK timer to trigger and execute scheduled tasks.

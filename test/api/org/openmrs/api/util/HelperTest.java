@@ -6,8 +6,6 @@ import junit.framework.TestSuite;
 
 import org.openmrs.util.Helper;
 
-import com.mchange.util.AssertException;
-
 public class HelperTest extends TestCase {
 	
 	public void testGetCheckDigit() throws Exception {

@@ -4,12 +4,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.openmrs.notification.Message;
-import org.openmrs.notification.Template;
-import org.openmrs.User;
 import org.openmrs.Role;
-
-import org.openmrs.notification.MessageException;
+import org.openmrs.User;
 
 public interface MessageService { 
 	

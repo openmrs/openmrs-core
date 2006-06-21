@@ -7,14 +7,12 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
-import antlr.CommonAST;
-import antlr.collections.AST;
-import antlr.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOContext;
+
+import antlr.BaseAST;
 
 /**
  * Arden-related services

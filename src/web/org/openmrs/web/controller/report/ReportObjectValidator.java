@@ -3,8 +3,6 @@ package org.openmrs.web.controller.report;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.reporting.AbstractReportObject;
-import org.openmrs.reporting.ReportService;
-import org.openmrs.util.Helper;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;

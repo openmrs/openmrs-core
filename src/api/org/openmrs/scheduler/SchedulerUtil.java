@@ -1,6 +1,7 @@
 package org.openmrs.scheduler;
 
 import java.util.Properties;
+
 import org.openmrs.api.context.ContextFactory;
 
 public class SchedulerUtil {

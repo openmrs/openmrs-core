@@ -1,22 +1,15 @@
 package org.openmrs.scheduler.web.dwr;
 
 import java.util.Date;
-import java.util.List;
-import java.util.Locale;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.openmrs.api.context.Context;
-import org.openmrs.web.WebConstants;
-import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.Schedule;
-import org.openmrs.scheduler.TaskConfig;
-
-
+import org.openmrs.web.WebConstants;
 
 import uk.ltd.getahead.dwr.WebContextFactory;
 

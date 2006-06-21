@@ -2,9 +2,6 @@ package org.openmrs.scheduler.tasks;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.context.ContextAuthenticationException;
-import org.openmrs.api.context.ContextFactory;
-import org.openmrs.formentry.FormEntryQueueProcessor;
 import org.openmrs.scheduler.Schedulable;
 import org.openmrs.scheduler.TaskConfig;
 

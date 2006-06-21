@@ -2,15 +2,6 @@
 
 package org.openmrs.arden;
 
-import java.io.*;
-//import org.Syntax.Parser.ArdenToken;
-import antlr.CommonAST;
-import antlr.collections.AST;
-import antlr.*;
-//import org.openmrs.arden.parser.*;
-import org.openmrs.arden.MLMObject;
-import org.openmrs.arden.MLMObjectElement;
-import java.lang.Integer;
 
 public interface ArdenBaseTreeParserTokenTypes {
 	int EOF = 1;

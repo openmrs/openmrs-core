@@ -1,6 +1,7 @@
 package org.openmrs.reporting;
 
 import java.util.Map;
+
 import org.openmrs.api.context.Context;
 
 public interface PatientClassifier {

@@ -1,7 +1,8 @@
 package org.openmrs.hl7;
 
-public class HL7Segment {
 
+public class HL7Segment {
+	
 	private HL7Message parent;
 	private String line;
 	private String[] fields;

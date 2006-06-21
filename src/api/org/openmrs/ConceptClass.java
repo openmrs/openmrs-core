@@ -1,6 +1,6 @@
 package org.openmrs;
 
-import java.util.*;
+import java.util.Date;
 
 /**
  * ConceptClass 
