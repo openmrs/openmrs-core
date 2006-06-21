@@ -402,7 +402,7 @@ function fillTable(objects, cells) {
 	updatePagingNumbers();
 	
 	// signal to the using script that we've cleared the rows
-	if (onRemoveAllRows)
+	if (typeof onRemoveAllRows != "undefined")
 		onRemoveAllRows(objectHitsTableBody);
     DWRUtil.removeAllRows(objectHitsTableBody);	//clear out the current rows
 	
