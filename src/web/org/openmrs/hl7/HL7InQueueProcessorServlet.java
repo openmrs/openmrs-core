@@ -55,10 +55,8 @@ public class HL7InQueueProcessorServlet extends HttpServlet {
 	 * @return an instance of the HL7 In queue processor
 	 */
 	private HL7InQueueProcessor getHL7InQueueProcessor(Context context) {
-		synchronized (processor) {
-			if (processor == null) {
-				processor = new HL7InQueueProcessor(context);
-			}
+		if (processor == null) {
+			processor = new HL7InQueueProcessor(context);
 		}
 		return processor;
 	}
