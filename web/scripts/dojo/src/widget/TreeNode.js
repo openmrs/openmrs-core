@@ -308,7 +308,7 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 	},
 
 	updateExpandIcon: function() {
-		if (this.isFolder){
+		if (this.isFolder && this.children && this.children.length){
 			this.expandIcon.src = this.isExpanded ? this.tree.expandIconSrcMinus : this.tree.expandIconSrcPlus;
 		} else {
 			this.expandIcon.src = this.tree.blankIconSrc;

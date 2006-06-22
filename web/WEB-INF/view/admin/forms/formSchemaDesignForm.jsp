@@ -6,7 +6,7 @@
 <%@ include file="localHeader.jsp" %>
 
 <script type="text/javascript">
-	//var djConfig = {debugAtAllCosts: true };
+	var djConfig = {debugAtAllCosts: true };
 </script>
 
 <script type="text/javascript" src="<%= request.getContextPath() %>/scripts/dojo/dojo.js"></script>
@@ -132,7 +132,8 @@
 	var fieldResults = null;
 	var tree;
 	var controller;
-	var selector;
+	var treeSelector;
+	var searchTreeSelector;
 	var searchTree;
 	var selectedNode = null;
 	var nodesToAdd = [];
@@ -163,13 +164,15 @@
 		controller = dojo.widget.manager.getWidgetById('treeController');
 		tree = dojo.widget.manager.getWidgetById('tree');
 		treeSelector = dojo.widget.manager.getWidgetById('treeSelector');
+		searchTreeSelector = dojo.widget.manager.getWidgetById('searchTreeSelector');
 		fieldResults = document.getElementById("fieldResults");
 		
 		DWRFormService.getJSTree(evalTreeJS, <request:parameter name="formId"/>);
 		
-		dojo.event.topic.subscribe(tree.eventNames.moveTo, new nodeMoved(), "execute")
-		dojo.event.topic.subscribe(tree.eventNames.removeNode, new nodeRemoved(), "execute")
-		dojo.event.topic.subscribe(treeSelector.eventNames.select, new nodeSelected(), "execute")
+		dojo.event.topic.subscribe(tree.eventNames.moveTo, new nodeMoved(), "execute");
+		dojo.event.topic.subscribe(tree.eventNames.removeNode, new nodeRemoved(), "execute");
+		dojo.event.topic.subscribe(searchTreeSelector.eventNames.select, new nodeSelected(), "execute");
+		dojo.event.topic.subscribe(treeSelector.eventNames.dblselect, function ( msg ){ editClicked(msg.node); } );
 		
 		// Get div and input for editable formfields
 		tree.editDiv = document.getElementById("editFormField");
@@ -238,6 +241,7 @@
 				var isFieldNode = false;
 				if (msg.child.data.fieldId)
 					isFieldNode = true;
+				// add node back into search tree
 				var node = addNode(msg.oldTree, msg.child.data, msg.child.title, 0, isFieldNode);
 				
 				if (isFieldNode)
@@ -259,10 +263,13 @@
 				dojo.html.removeClass(msg.child.titleNode, "fieldConceptHit");
 				dojo.dom.removeChildren(msg.child.afterLabelNode);
 				msg.child.afterLabelNode.appendChild(getRemoveLink(msg.child.data));
+				msg.child.unMarkSelected();
 			}
 			else if (msg.oldParent != msg.newParent) {
 				// save node's new parent 
 				save(msg.child, true);
+				if (msg.oldParent && msg.oldParent.updateExpandIcon)
+					msg.oldParent.updateExpandIcon();
 			}
 		};
 	}
@@ -290,8 +297,10 @@
 		this.execute = function(msg) {
 			// mimic drag and drop "move" action
 			if (msg.node) {
-				tree.controller.move(msg.node, tree, tree.children.length);
-				//msg.node.updateIconTree();
+				var node = tree;
+				if (treeSelector.selectedNode)
+					node = treeSelector.selectedNode;
+				tree.controller.move(msg.node, node, node.children.length);
 			}
 		};
 	}
@@ -379,6 +388,7 @@
 		
 		s.display = "";
 		
+		tree.saveFieldButton.focus();
 		tree.fieldNumberInput.focus();
 	}
 	
@@ -596,10 +606,13 @@
 					data.formFieldId, formId, data.parent, data.fieldNumber, data.fieldPart, data.pageNumber, data.minOccurs, data.maxOccurs, data.isRequired);
 				
 				target.titleNode.innerHTML = target.title = getFieldLabel(data);
+				
+				target.unMarkSelected();
 			}
 			else
 				tree.editDiv.style.display = "none";
 		}
+		return false;
 	}
 
 	
@@ -744,32 +757,44 @@
 			
 			var oldParent = child.parent;
 			var oldTree = child.tree;
-	
-			tree.doAddChild(child, tree.children.length);
-	
+			
+			var newParent = tree;
+			
+			if (treeSelector.selectedNode)
+				newParent = treeSelector.selectedNode;
+			
+			// create a new node for this item so that it mimicks the "move" functionality
+			var node = addNode(newParent, child.data);
+			
+			// newParent.doAddChild(child, newParent.children.length);
+			
+			if (newParent.expand)
+				newParent.expand();
+			
 			var newParent = child.parent;
 			var newTree = child.tree;
 	
 			var message = {
 					oldParent: oldParent, oldTree: oldTree,
 					newParent: newParent, newTree: newTree,
-					child: child,
+					child: node,
 					skipEdit: true
 			};
 			
-			dojo.html.removeClass(child.titleNode, "fieldConceptHit");
-			dojo.dom.removeChildren(child.afterLabelNode);
-			child.afterLabelNode.appendChild(getRemoveLink(child.data));
+			dojo.html.removeClass(node.titleNode, "fieldConceptHit");
+			dojo.dom.removeChildren(node.afterLabelNode);
+			node.afterLabelNode.appendChild(getRemoveLink(node.data));
 			
 			dojo.event.topic.publish(tree.eventNames.moveFrom, message);
 			dojo.event.topic.publish(tree.eventNames.moveTo, message);
 		}
 		
 		resetForm();
+		onRemoveAllRows();
 		DWRUtil.removeAllRows(fieldResults);
 		$('searchField').value = "";
 		fieldResults.style.display = "none";
-		
+		document.getElementById("searchField").focus();
 		return false;
 	}
 	
@@ -792,9 +817,10 @@
 						DNDMode: "between", 
 						showRootGrid: false,
 						DNDAcceptTypes: ["tree", "miniTree"],
-						selector: "treeSelector"};
+						selector: "searchTreeSelector"};
 						
 		var parentNode = domNode;
+		
 		var miniTree = dojo.widget.fromScript("Tree", properties, parentNode, "last");
 		searchTreeNodes.push(miniTree);
 		
@@ -885,6 +911,10 @@
 			searchTreeNodes.splice(0,1);
 		}
 	}
+	
+	function allowAutoJump() {
+		return false;
+	}
 
 </script>
 
@@ -906,6 +936,7 @@
 </c:if>
 
 <div dojoType="TreeBasicController" widgetId="treeController" DNDController="create"></div>
+<div dojoType="TreeSelector" widgetId="searchTreeSelector"></div>
 <div dojoType="TreeSelector" widgetId="treeSelector"></div>
 <div dojoType="TreeContextMenu" toggle="explode" contextMenuForWindow="false" widgetId="treeContextMenu">
 	<div dojoType="TreeMenuItem" treeActions="edit" caption="Edit Field" widgetId="treeContextMenuEdit"></div>
@@ -916,7 +947,7 @@
 <table width="99%">
 	<tr>
 		<td valign="top">
-			<div dojoType="Tree" menu="treeContextMenu" strictFolders="false" DNDMode="between" toggler="fade" widgetId="tree" DNDAcceptTypes="<c:if test="${form.published != true}">tree;miniTree</c:if>" controller="treeController">
+			<div dojoType="Tree" menu="treeContextMenu" strictFolders="false" DNDMode="between" toggler="fade" widgetId="tree" DNDAcceptTypes="<c:if test="${form.published != true}">tree;miniTree</c:if>" controller="treeController" selector="treeSelector">
 			</div>
 		</td>
 		<td valign="top" style="padding-left: 5px;" id="fieldSearch" width="40%">
@@ -935,11 +966,11 @@
 <div id="editFormField">
 	<div id="formFieldTitle"><spring:message code="FormField.edit"/>:</div>
 	
-	<form>
+	<form xonsubmit="save(selectedNode)">
 		<%@ include file="include/formFieldEdit.jsp" %>
 	
 		<c:if test="${form.published != true}">
-			<input type="button" id="saveFormField" onclick="save(selectedNode)" value="<spring:message code="general.save"/>" />
+			<input type="submit" id="saveFormField" onclick="return save(selectedNode);" value="<spring:message code="general.save"/>" />
 		</c:if>
 		<input type="button" id="cancelFormField" onclick="cancelClicked()" value="<spring:message code="general.cancel"/>" />
 	</form>

@@ -64,7 +64,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td style="white-space: nowrap;"><spring:message code="Field.selectMultiple"/></td>
+		<td style="white-space: nowrap;"><label for="selectMultiple"><spring:message code="Field.selectMultiple"/></label></td>
 		<td><input type="checkbox" id="selectMultiple" value="on"/></td>
 	</tr>
 </table>
@@ -86,7 +86,7 @@
 		<td align="center"><input type="text" size="5" id="maxOccurs" /></td>
 	</tr>
 	<tr>
-		<td><spring:message code="FormField.required"/></td>
+		<td><label for="required"><spring:message code="FormField.required"/></label></td>
 		<td><input type="checkbox" id="required" /></td>
 	</tr>
 </table>
