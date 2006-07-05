@@ -267,11 +267,11 @@ public class Helper {
 							"Either supply 'connection.database_name' or correct the url", e);
 				}
 			}
-
+			
 		val = p.getProperty("connection.database_business_name", null);
 		if (val == null)
 			val = OpenmrsConstants.DATABASE_NAME;
 		OpenmrsConstants.DATABASE_BUSINESS_NAME = val;
-
+		
 	}
 }

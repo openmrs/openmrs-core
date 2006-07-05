@@ -97,9 +97,9 @@ public class OpenmrsConstants {
 	public static final String PRIV_EDIT_REPORTS	= "Edit Reports";
 	public static final String PRIV_DELETE_REPORTS	= "Delete Reports";
 	
-	public static final String PRIV_VIEW_REPORT_OBJECTS	= "View Report Objects";
+	public static final String PRIV_VIEW_REPORT_OBJECTS		= "View Report Objects";
 	public static final String PRIV_ADD_REPORT_OBJECTS		= "Add Report Objects";
-	public static final String PRIV_EDIT_REPORT_OBJECTS	= "Edit Report Objects";
+	public static final String PRIV_EDIT_REPORT_OBJECTS		= "Edit Report Objects";
 	public static final String PRIV_DELETE_REPORT_OBJECTS	= "Delete Report Objects";
 
 	public static final String PRIV_MANAGE_TRIBES			= "Manage Tribes";
@@ -110,12 +110,13 @@ public class OpenmrsConstants {
 	public static final String PRIV_MANAGE_CONCEPT_CLASSES	= "Manage Concept Classes";
 	public static final String PRIV_MANAGE_CONCEPT_DATATYPES= "Manage Concept Datatypes";
 	public static final String PRIV_MANAGE_ENCOUNTER_TYPES	= "Manage Encounter Types";
-	public static final String PRIV_MANAGE_PRIVILEGES	= "Manage Privileges";
-	public static final String PRIV_MANAGE_ROLES		= "Manage Roles";
-	public static final String PRIV_MANAGE_FIELD_TYPES	= "Manage Field Types";
-	public static final String PRIV_MANAGE_ORDER_TYPES	= "Manage Order Types";
+	public static final String PRIV_MANAGE_PRIVILEGES		= "Manage Privileges";
+	public static final String PRIV_MANAGE_ROLES			= "Manage Roles";
+	public static final String PRIV_MANAGE_FIELD_TYPES		= "Manage Field Types";
+	public static final String PRIV_MANAGE_ORDER_TYPES		= "Manage Order Types";
 	public static final String PRIV_MANAGE_RELATIONSHIP_TYPES	= "Manage Relationship Types";
-
+	
+	public static final String PRIV_VIEW_NAVIGATION_MENU	= "View Navigation Menu";
 	public static final String PRIV_VIEW_ADMIN_FUNCTIONS	= "View Administration Functions";
 	
 	public static final String PRIV_FORM_ENTRY      = "Form Entry";
@@ -180,6 +181,7 @@ public class OpenmrsConstants {
 		privs.add(PRIV_MANAGE_ORDER_TYPES);
 		privs.add(PRIV_MANAGE_RELATIONSHIP_TYPES);
 		
+		privs.add(PRIV_VIEW_NAVIGATION_MENU);
 		privs.add(PRIV_VIEW_ADMIN_FUNCTIONS);
 		
 		return privs;
