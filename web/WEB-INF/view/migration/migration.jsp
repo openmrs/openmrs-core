@@ -40,11 +40,23 @@
 <h3><spring:message code="Migration.locationsHeader"/></h3>
 <form method=post action="migration.form">
 	<input type=hidden name="method" value="uploadLocations"/>
-	<spring:message code="Migration.pasteUserXmlHere"/>
+	<spring:message code="Migration.pasteLocationXmlHere"/>
 	<br/>
 	<textarea name="location_xml" rows="5" cols="72" wrap="soft"></textarea>
 	<br/>
 	<input type="submit" value="<spring:message code="Migration.uploadButton"/>" />
 </form>
+
+<hr />
+<h3><spring:message code="Migration.hl7Header"/></h3>
+<form method=post action="migration.form">
+	<input type=hidden name="method" value="runHl7"/>
+	<spring:message code="Migration.pasteHl7Here"/>
+	<br/>
+	<textarea name="hl7" rows="5" cols="72" wrap="soft"></textarea>
+	<br/>
+	<input type="submit" value="<spring:message code="Migration.uploadButton"/>" />
+</form>
+
 
 <%@ include file="/WEB-INF/template/footer.jsp" %> 
