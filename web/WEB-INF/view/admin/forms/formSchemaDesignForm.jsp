@@ -771,8 +771,8 @@
 			if (newParent.expand)
 				newParent.expand();
 			
-			var newParent = child.parent;
-			var newTree = child.tree;
+			var newParent = node.parent;
+			var newTree = node.tree;
 	
 			var message = {
 					oldParent: oldParent, oldTree: oldTree,

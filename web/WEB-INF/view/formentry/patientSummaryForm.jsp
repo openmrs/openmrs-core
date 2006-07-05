@@ -141,7 +141,7 @@
 						<th> <spring:message code="Encounter.datetime"/> </th>
 						<th> <spring:message code="Encounter.enterer"/>  </th>
 					</tr>
-					<c:forEach items="${encounters}" var="enc">
+					<c:forEach items="${encounters}" var="enc" end="2">
 						<tr>
 						 	<td>${enc.encounterType.name}</td>
 						 	<td>${enc.provider.firstName} ${enc.provider.lastName}</td>
