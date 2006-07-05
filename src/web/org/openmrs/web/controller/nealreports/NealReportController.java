@@ -32,7 +32,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.view.AbstractView;
 
-import reports.ConsultReport;
 import reports.ReportMaker;
 import reports.keys.General;
 import reports.keys.Hiv;
