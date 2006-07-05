@@ -247,7 +247,18 @@
 	 		<servlet-name>@WEBAPP.NAME@</servlet-name>
 	 		<url-pattern>*.htm</url-pattern>
 		</servlet-mapping>
-		
+
+		<servlet-mapping>
+	 		<servlet-name>@WEBAPP.NAME@</servlet-name>
+	 		<url-pattern>*.widget</url-pattern>
+		</servlet-mapping>
+
+		<servlet-mapping>
+	 		<servlet-name>@WEBAPP.NAME@</servlet-name>
+	 		<url-pattern>*.dynamic</url-pattern>
+		</servlet-mapping>
+
+			
 		<taglib>
 			<taglib-uri>/spring</taglib-uri>
 			<taglib-location>/WEB-INF/taglibs/spring.tld</taglib-location>

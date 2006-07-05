@@ -6,8 +6,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -273,5 +276,32 @@ public class Helper {
 			val = OpenmrsConstants.DATABASE_NAME;
 		OpenmrsConstants.DATABASE_BUSINESS_NAME = val;
 		
+		// Dynamically generated homepage
+		val = p.getProperty("dynamicpage.home", null);
+		if (val != null) {
+			OpenmrsConstants.DYNAMIC_HOME_PAGE_SPEC = val;
+		}
+		
+	}
+	
+	/**
+	 * Takes a String like "size=compact|order=date" and returns a Map<String,String> from the keys to the values.
+	 * @param paramList
+	 * @return
+	 */
+	public static Map<String, String> parseParameterList(String paramList) {
+		Map<String, String> ret = new HashMap<String, String>();
+		if (paramList != null && paramList.length() > 0) {
+			String[] args = paramList.split("\\|");
+			for (String s : args) {
+				String[] thisArg = s.split("=");
+				if (thisArg.length == 2) {
+					ret.put(thisArg[0], thisArg[1]);
+				} else {
+					throw new IllegalArgumentException("Misformed argument in dynamic page specification string: '" + s + "' is not 'key=value'.");
+				}
+			}
+		}
+		return ret;
 	}
 }

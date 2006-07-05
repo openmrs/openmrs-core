@@ -201,6 +201,9 @@
 					<prop key="**/patientSummary.form">patientSummaryForm</prop>          
 					<prop key="**/scheduler.list">schedulerListController</prop>
 					<prop key="**/scheduler.form">schedulerFormController</prop>
+					<prop key="**/welcomeMessage.widget">welcomeMessageWidget</prop>
+					<prop key="**/findOnePatient.widget">findOnePatientWidget</prop>
+					<prop key="**/homePage.dynamic">homePageController</prop>
 					<prop key="**/*.htm">springController</prop>
 	            </props>
 	        </property>
@@ -208,8 +211,14 @@
 
 		<bean id="springController" class="org.openmrs.web.controller.SpringController"/>
 
+	    <!-- =============================== -->
+		<!-- ===== Dynamic Home Page   ===== -->
+	    <!-- =============================== -->
 
-
+		<bean id="homePageController" class="org.openmrs.web.controller.DynamicPageController">
+			<property name="pageName"><value>homePage</value></property>
+		</bean>
+		
 	    <!-- =============================== -->
 		<!-- =====      Scheduler      ===== -->
 	    <!-- =============================== -->
@@ -832,8 +841,12 @@
 				<property name="successView"><value>patientSummary.form</value></property>
 			</bean>
 		
-      
-
+			<!-- =========================== -->	    
+			<!-- ====== Widget Sector ====== -->
+			<!-- =========================== -->
+	
+			<bean id="welcomeMessageWidget" class="org.openmrs.web.controller.widget.WelcomeMessageWidget" />
+			<bean id="findOnePatientWidget" class="org.openmrs.web.controller.widget.FindOnePatientWidget" />
 
 		<!-- =========================== -->
 		
