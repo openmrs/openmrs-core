@@ -28,8 +28,6 @@ public class OpenmrsConstants {
 	
 	public static final Integer CIVIL_STATUS_CONCEPT_ID = 1054;
 	
-	public static String DYNAMIC_HOME_PAGE_SPEC = "<h2>@welcomeMessage!welcome@</h2><br>@findOnePatient:size=full!findPatient@<br>";
-	
 	public static final Collection<String> STOP_WORDS() {
 		List<String> stopWords = new Vector<String>();
 		stopWords.add("A");

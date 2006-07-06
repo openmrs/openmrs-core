@@ -1,9 +1,9 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<c:if test="${model.authenticated}">
+<c:if test="${model.authenticatedUser != null}">
 	<c:choose>
 		<c:when test="${model.size == 'compact'}">
-			<form method=get action="formentry">
+			<form method=get action="${model.postURL}">
 				<spring:message code="Widget.findOnePatient.find" />
 				<input type="text" name="phrase" />
 				<input type="submit" value="<spring:message code="general.searchButton" />" />
@@ -39,7 +39,7 @@
 				
 				function onSelect(arr) {
 					if (arr[0].patientId != null) {
-						document.location = "patientSummary.form?patientId=" + arr[0].patientId + "&phrase=" + savedText;
+						document.location = "${model.postURL}?patientId=" + arr[0].patientId + "&phrase=" + savedText;
 					}
 					else if (arr[0].href != null) {
 						document.location = arr[0].href;
@@ -85,7 +85,7 @@
 				}
 			</style>
 			
-			<h3><spring:message code="Widget.findOnePatient.find"/></h3>
+			<h3><spring:message code="Patient.findBy"/></h3>
 			
 			<div id="findPatient">
 				<b class="boxHeader"><spring:message code="formentry.step1"/></b>

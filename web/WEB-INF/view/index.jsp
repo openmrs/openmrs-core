@@ -2,7 +2,11 @@
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
-<h2><spring:message code="welcome"/></h2>
+<openmrs:portlet url="welcome" parameters="showName=true" />
+
+<br/><br/>
+
+<openmrs:portlet url="findPatient" size="full" parameters="postURL=formentry/patientSummary.form" />
 
 <br /><br />
 
