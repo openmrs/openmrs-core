@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -275,12 +274,6 @@ public class Helper {
 		if (val == null)
 			val = OpenmrsConstants.DATABASE_NAME;
 		OpenmrsConstants.DATABASE_BUSINESS_NAME = val;
-		
-		// Dynamically generated homepage
-		val = p.getProperty("dynamicpage.home", null);
-		if (val != null) {
-			OpenmrsConstants.DYNAMIC_HOME_PAGE_SPEC = val;
-		}
 		
 	}
 	
