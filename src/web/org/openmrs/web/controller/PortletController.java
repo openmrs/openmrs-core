@@ -13,6 +13,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
+import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
 import org.springframework.web.servlet.ModelAndView;
@@ -22,6 +23,23 @@ public class PortletController implements Controller {
 
 	protected Log log = LogFactory.getLog(this.getClass());
 
+	/**
+	 * This method produces a model containing the following mappings:
+	 * 	   (always)
+	 *     		(String) size
+	 *     		(other parameters)
+	 *     (if there's currently an authenticated user)
+	 *         	(User) authenticatedUser
+	 *         	(Locale) locale
+	 *     (if the request has a patientId attribute)
+	 *        	(Patient) patient
+	 *         	(Set<Obs>) patientObs
+	 *     (if the request has an encounterId attribute)
+	 *         	(Encounter) encounter
+	 *         	(Set<Obs>) encounterObs
+	 *     (if the request has a userId attribute)
+	 *         	(User) user
+	 */
 	@SuppressWarnings("unchecked")
 	public ModelAndView handleRequest(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
@@ -53,19 +71,29 @@ public class PortletController implements Controller {
 			
 			if (context != null) {
 				model.put("authenticatedUser", context.getAuthenticatedUser());
+				model.put("locale", context.getLocale());
 				
-				// if a patient id is available, put "obs" in the request
+				// if a patient id is available, put "patient" and "patientObs" in the request
 				Object o = request.getAttribute("patientId");
 				if (o != null && !"".equals(o)) {
 					Patient p = context.getPatientService().getPatient(Integer.valueOf((String)o));
-					model.put("obs", context.getObsService().getObservations(p));
+					model.put("patient", p);
+					model.put("patientObs", context.getObsService().getObservations(p));
 				}
 				
-				// if an encounter id is available, put its "obs" in the request
+				// if an encounter id is available, put "encounter" and "encounterObs" in the request
 				o = request.getAttribute("encounterId");
 				if (o != null && !"".equals(o)) {
 					Encounter e = context.getEncounterService().getEncounter(Integer.valueOf((String)o));
-					model.put("obs", context.getObsService().getObservations(e));
+					model.put("encounter", e);
+					model.put("encounterObs", context.getObsService().getObservations(e));
+				}
+				
+				// if a user id is available, put "user" in the model
+				o = request.getAttribute("userId");
+				if (o != null && !"".equals(o)) {
+					User u = context.getUserService().getUser(Integer.valueOf((String) o));
+					model.put("user", u);
 				}
 				
 			}
