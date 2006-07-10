@@ -524,6 +524,10 @@ function updatePagingBars() {
 	var pagingBar = document.getElementById("searchPagingBar");
 	
 	var total = allObjectsFound.length;
+	
+	if (typeof(allObjectsFound[total-1]) == "string")
+		total = total - 1;
+	
 	var lastItemDisplayed = (firstItemDisplayed + numItemsDisplayed) - 1;
 	if (lastItemDisplayed > total) {
 		lastItemDisplayed = total;
