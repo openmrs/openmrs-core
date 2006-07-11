@@ -513,6 +513,11 @@ function updatePagingNumbers() {
 		numItemsDisplayed = Math.round(numItemsDisplayed / 5) * 5;
 		if (numItemsDisplayed > idealNumItemsDisplayed) numItemsDisplayed += -5;
 	}
+	
+	// if last object would be the only item on the 'next page', add it back in
+	if (numItemsDisplayed + 1 == allObjectsFound.length) {
+		numItemsDisplayed = numItemsDisplayed + 1;
+	}
 }
 
 function updatePagingBars() {
@@ -525,12 +530,21 @@ function updatePagingBars() {
 	
 	var total = allObjectsFound.length;
 	
+	// if the last object is a string (eg a link to Add New Patient), correct list size
 	if (typeof(allObjectsFound[total-1]) == "string")
 		total = total - 1;
 	
 	var lastItemDisplayed = (firstItemDisplayed + numItemsDisplayed) - 1;
+	
+	// if its a shortened page
 	if (lastItemDisplayed > total) {
 		lastItemDisplayed = total;
+	}
+	
+	// there may be strings mixed in the list, correct the list size here
+	if (lastItemDisplayed != objectsFound.length) {
+		total = total - (lastItemDisplayed - objectsFound.length);
+		lastItemDisplayed = objectsFound.length;
 	}
 	
 	if (lastPhraseSearched != null)
@@ -558,11 +572,11 @@ function updatePagingBars() {
 			// create previous text node
 			prev = document.createTextNode("Previous Results");
 		}
-		//infoBar.appendChild(prev.cloneNode(true));
+		
 		pagingBar.appendChild(prev);
 		var s = document.createElement("span");
 		s.innerHTML = " | ";
-		//infoBar.appendChild(s.cloneNode(true));	
+			
 		pagingBar.appendChild(s);
 	
 		var next;
@@ -577,7 +591,7 @@ function updatePagingBars() {
 		else {
 			next = document.createTextNode("Next Results");
 		}
-		//infoBar.appendChild(next.cloneNode(true));
+		
 		pagingBar.appendChild(next);
 	}
 }
