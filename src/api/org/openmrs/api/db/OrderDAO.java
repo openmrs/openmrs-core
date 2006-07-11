@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.openmrs.Order;
 import org.openmrs.OrderType;
-import org.openmrs.User;
 
 /**
  * Order-related database functions

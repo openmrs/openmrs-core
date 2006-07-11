@@ -31,6 +31,7 @@
 		mySearch.hide();
 		toggle("div", "description");
 		toggleVoided();
+		voidedClicked(document.getElementById("voided"));
 	};
 	
 	var findObjects = function(txt) {
@@ -151,6 +152,22 @@
 		return false;
 	}
 	
+	function voidedClicked(input) {
+		var reason = document.getElementById("voidReason");
+		var voidedBy = document.getElementById("voidedBy");
+		if (input.checked) {
+			reason.style.display = "";
+			if (voidedBy)
+				voidedBy.style.display = "";
+		}
+		else {
+			reason.style.display = "none";
+			if (voidedBy)
+				voidedBy.style.display = "none";
+		}
+	}
+	
+	
 	function toggle(tagName, className) {
 		if (display[tagName] == "none")
 			display[tagName] = "";
@@ -247,17 +264,16 @@
 	<form method="post">
 	<table cellpadding="3" cellspacing="0">
 		<tr>
-			<td><spring:message code="Encounter.patient"/></td>
+			<th><spring:message code="Encounter.patient"/></th>
 			<td>
 				<spring:bind path="encounter.patient">
 					<table>
 						<tr>
 							<td><a id="patientName" href="#View Patient" onclick="return gotoPatient('patient')">${status.value.patientName.givenName} ${status.value.patientName.middleName} ${status.value.patientName.familyName}</a></td>
 							<td>
+								<input type="hidden" id="patient" value="${status.value.patientId}" name="patientId"/>
 								<c:if test="${encounter.encounterId == null}">
-									&nbsp;
-									<input type="hidden" id="patient" value="${status.value.patientId}" name="patientId"/>
-									<input type="button" id="patientButton" class="smallButton" value="<spring:message code="general.change"/>" onclick="showSearch(this)" />
+									&nbsp; <input type="button" id="patientButton" class="smallButton" value='<spring:message code="general.change"/>' onclick="showSearch(this)" />
 								</c:if>
 								<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 							</td>
@@ -267,7 +283,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td><spring:message code="Encounter.provider"/></td>
+			<th><spring:message code="Encounter.provider"/></th>
 			<td>
 				<spring:bind path="encounter.provider">
 					<table>
@@ -276,7 +292,7 @@
 							<td>
 								&nbsp;
 								<input type="hidden" id="provider" value="${status.value.userId}" name="providerId" />
-								<input type="button" id="userButton" class="smallButton" value="<spring:message code="general.change"/>" onclick="showSearch(this)" />
+								<input type="button" id="userButton" class="smallButton" value='<spring:message code="general.change"/>' onclick="showSearch(this)" />
 								<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 							</td>
 						</tr>
@@ -285,7 +301,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td><spring:message code="Encounter.location"/></td>
+			<th><spring:message code="Encounter.location"/></th>
 			<td>
 				<spring:bind path="encounter.location">
 					<select name="location">
@@ -298,7 +314,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td><spring:message code="Encounter.datetime"/></td>
+			<th><spring:message code="Encounter.datetime"/></th>
 			<td>
 				<spring:bind path="encounter.encounterDatetime">			
 					<input type="text" name="${status.expression}" size="10" 
@@ -309,7 +325,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td><spring:message code="Encounter.type"/></td>
+			<th><spring:message code="Encounter.type"/></th>
 			<td>
 				<spring:bind path="encounter.encounterType">
 					<c:choose>
@@ -329,7 +345,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td><spring:message code="Encounter.form"/></td>
+			<th><spring:message code="Encounter.form"/></th>
 			<td>
 				<spring:bind path="encounter.form">
 					<c:choose>
@@ -351,15 +367,43 @@
 		</tr>
 		<c:if test="${!(encounter.creator == null)}">
 			<tr>
-				<td><spring:message code="general.createdBy" /></td>
+				<th><spring:message code="general.createdBy" /></th>
 				<td>
 					<a href="#View User" onclick="return gotoUser(null, '${encounter.creator.userId}')">${encounter.creator.firstName} ${encounter.creator.lastName}</a> -
 					<openmrs:formatDate date="${encounter.dateCreated}" type="medium" />
 				</td>
 			</tr>
 		</c:if>
+		<tr>
+			<th><spring:message code="general.voided" /></th>
+			<td>
+				<spring:bind path="encounter.voided">
+					<input type="hidden" name="_${status.expression}" />
+					<input type="checkbox" name="${status.expression}" id="voided" onClick="voidedClicked(this)" <c:if test="${encounter.voided}">checked</c:if> />					
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				</spring:bind>
+			</td>
+		</tr>
+		<tr id="voidReason">
+			<th><spring:message code="general.voidReason" /></th>
+			<td>
+				<spring:bind path="encounter.voidReason">
+					<input type="text" value="${status.value}" name="${status.expression}" size="40" />
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				</spring:bind>
+			</td>
+		</tr>
+		<c:if test="${!(encounter.voidedBy == null)}">
+			<tr id="voidedBy">
+				<th><spring:message code="general.voidedBy" /></th>
+				<td>
+					<a href="#View User" onclick="return gotoUser(null, '${encounter.voidedBy.userId}')">${encounter.voidedBy.firstName} ${encounter.voidedBy.lastName}</a> -
+					<openmrs:formatDate date="${encounter.dateVoided}" type="medium" />
+				</td>
+			</tr>
+		</c:if>
 	</table>
-	<br />
+	
 	<input type="hidden" name="phrase" value='<request:parameter name="phrase" />'/>
 	<input type="submit" value='<spring:message code="Encounter.save"/>'>
 	&nbsp;

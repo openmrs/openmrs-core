@@ -71,7 +71,8 @@ public class HibernateHL7DAO implements HL7DAO {
 	public Collection<HL7Source> getHL7Sources() throws DAOException {
 		Session session = HibernateUtil.currentSession();
 
-		return session.createQuery("from HL7Source order by hL7SourceId")
+		// return session.createQuery("from HL7Source order by hL7SourceId")
+		return session.createQuery("from HL7Source")
 				.list();
 	}
 

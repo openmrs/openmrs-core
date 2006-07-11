@@ -137,6 +137,15 @@ public interface PatientDAO {
 	public PatientIdentifierType getPatientIdentifierType(Integer patientIdentifierTypeId) throws DAOException;
 
 	/**
+	 * Get patientIdentifierType by name
+	 * 
+	 * @param name
+	 * @return patientIdentifierType with given name
+	 * @throws APIException
+	 */
+	public PatientIdentifierType getPatientIdentifierType(String name) throws DAOException;
+	
+	/**
 	 * Get tribe by internal tribe identifier
 	 * 
 	 * @return Tribe

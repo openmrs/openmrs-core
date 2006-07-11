@@ -31,6 +31,7 @@ Changes made to the file outside of InfoPath might be lost if the form template 
 					<xsf:property name="scriptType" type="string" value="userEvents"></xsf:property>
 				</xsf:fileProperties>
 			</xsf:file>
+			<xsf:file name="openmrs-infopath.js"></xsf:file>
 		</xsf:files>
 	</xsf:package>
 	<xsf:importParameters enabled="yes"></xsf:importParameters>
@@ -56,5 +57,6 @@ Changes made to the file outside of InfoPath might be lost if the form template 
 	</xsf:fileNew>
 	<xsf:scripts language="jscript" enforceScriptTimeout="yes">
 		<xsf:script src="script.js"></xsf:script>
+		<xsf:script src="openmrs-infopath.js"></xsf:script>
 	</xsf:scripts>
 </xsf:xDocumentClass>

@@ -1,15 +1,15 @@
 package org.openmrs.notification.mail.velocity;
 
+import java.io.StringWriter;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.VelocityContext;
-import java.io.StringWriter;
-import java.util.Map;
-import org.openmrs.notification.Template;
-import org.openmrs.notification.MessagePreparator;
+import org.apache.velocity.app.VelocityEngine;
 import org.openmrs.notification.Message;
 import org.openmrs.notification.MessageException;
+import org.openmrs.notification.MessagePreparator;
+import org.openmrs.notification.Template;
 
 public class VelocityMessagePreparator implements MessagePreparator { 
 

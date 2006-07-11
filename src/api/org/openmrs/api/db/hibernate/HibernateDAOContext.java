@@ -104,10 +104,10 @@ public class HibernateDAOContext implements DAOContext {
 							loginWithoutDash).uniqueResult();
 		} catch (HibernateException he) {
 			// TODO Auto-generated catch block
-			log.error("Got hibernate exception");
+			log.error("Got hibernate exception while logging in: '" + login + "'");
 			log.error(he);
 		} catch (Exception e) {
-			log.error("Got regular exception");
+			log.error("Got regular exception while logging in: '" + login + "'");
 			log.error(e);
 		}
 

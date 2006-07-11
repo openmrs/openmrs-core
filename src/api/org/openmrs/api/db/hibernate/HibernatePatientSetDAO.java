@@ -1,6 +1,7 @@
 package org.openmrs.api.db.hibernate;
 
 import java.io.StringWriter;
+import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -644,6 +645,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		// default query
 		Criteria criteria = session.createCriteria(Encounter.class);
 		criteria.add(Restrictions.in("patient.patientId", ids));
+		criteria.add(Restrictions.eq("voided", false));
 		
 		if (encType != null)
 			criteria.add(Restrictions.eq("encounterType", encType));
@@ -664,33 +666,71 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Map<Integer, Object> getPatientAttributes(PatientSet patients, String className, String property) throws DAOException {
+	public Map<Integer, Object> getPatientAttributes(PatientSet patients, String className, String property, boolean returnAll) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
 		Map<Integer, Object> ret = new HashMap<Integer, Object>();
 		
 		Set<Integer> ids = patients.getPatientIds();
 		
+		className = "org.openmrs." + className;
+		
 		// default query
-		Criteria criteria = session.createCriteria("org.openmrs." + className);
+		Criteria criteria = session.createCriteria(className);
 		
 		// make 'patient.**' reference 'patient' like alias instead of object
-		if (className.equals("Patient"))
-			criteria = session.createCriteria("org.openmrs." + className, "patient");
+		if (className.equals("org.openmrs.Patient"))
+			criteria = session.createCriteria(className, "patient");
 		
 		// set up the query
 		criteria.setProjection(Projections.projectionList().add(
-				Projections.distinct(Projections.property("patient.patientId"))).add(
+				Projections.property("patient.patientId")).add(
 				Projections.property(property)));
 		criteria.add(Restrictions.in("patient.patientId", ids));
+		criteria.addOrder(org.hibernate.criterion.Order.desc("voided"));
+		
+		// add 'preferred' sort order if necessary
+		try {
+			boolean hasPreferred = false;
+			for(Field f : Class.forName(className).getDeclaredFields()) {
+				if (f.getName().equals("preferred"))
+					hasPreferred = true;
+			}
+			
+			if (hasPreferred)
+				criteria.addOrder(org.hibernate.criterion.Order.desc("preferred"));
+		} catch (ClassNotFoundException e) {
+			log.warn("Class not found: " + className);
+		}
+		
 		criteria.addOrder(org.hibernate.criterion.Order.desc("dateCreated"));
 		List<Object[]> rows = criteria.list();
 		
 		// set up the return map
-		for (Object[] row : rows) {
-			Integer ptId = (Integer)row[0];
-			Object columnValue = row[1];
-			ret.put(ptId, columnValue);
+		if (returnAll) {
+			for (Object[] row : rows) {
+				Integer ptId = (Integer)row[0];
+				Object columnValue = row[1];
+				if (!ret.containsKey(ptId)) {
+					Object[] arr = {columnValue};
+					ret.put(ptId, arr);
+				}
+				else {
+					Object[] oldArr = (Object[])ret.get(ptId);
+					Object[] newArr = new Object[oldArr.length + 1];
+					System.arraycopy(oldArr,0,newArr,0,oldArr.length);
+					newArr[oldArr.length] = columnValue;
+					ret.put(ptId, newArr);
+				}
+			}
+		}
+		else {
+			for (Object[] row : rows) {
+				Integer ptId = (Integer)row[0];
+				Object columnValue = row[1];
+				if (!ret.containsKey(ptId))
+					ret.put(ptId, columnValue);
+			}
 		}
 		
 		return ret;

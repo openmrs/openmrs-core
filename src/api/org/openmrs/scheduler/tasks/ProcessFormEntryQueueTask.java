@@ -7,7 +7,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.context.ContextFactory;
 import org.openmrs.formentry.FormEntryQueueProcessor;
-import org.openmrs.hl7.HL7Exception;
 import org.openmrs.scheduler.Schedulable;
 import org.openmrs.scheduler.SchedulerConstants;
 import org.openmrs.scheduler.TaskConfig;

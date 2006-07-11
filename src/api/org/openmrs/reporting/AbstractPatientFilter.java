@@ -1,6 +1,7 @@
 package org.openmrs.reporting;
 
 import java.util.Date;
+
 import org.openmrs.User;
 
 public abstract class AbstractPatientFilter extends AbstractReportObject {

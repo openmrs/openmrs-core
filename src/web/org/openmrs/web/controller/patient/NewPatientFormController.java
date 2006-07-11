@@ -7,8 +7,10 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
@@ -49,6 +51,11 @@ public class NewPatientFormController extends SimpleFormController {
     
     SimpleDateFormat dateFormat;
     
+    // identifiers submitted with the form.  Stored here so that they can
+    // be redisplayed for the user after an error
+    Set<PatientIdentifier> newIdentifiers = new HashSet<PatientIdentifier>();
+    String pref = "";
+    
 	/**
 	 * 
 	 * Allows for other Objects to be used as values in input tags.
@@ -78,56 +85,78 @@ public class NewPatientFormController extends SimpleFormController {
 		
 		if (context != null && context.isAuthenticated()) {
 			FormEntryService ps = context.getFormEntryService();
-		
 			MessageSourceAccessor msa = getMessageSourceAccessor();
+			
 			if (request.getParameter("action") == null || request.getParameter("action").equals(msa.getMessage("general.save"))) {
 				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "familyName", "error.name");
-				if (pli.getPatientId() == null) {
-					// if this is a new patient, they must input an identifier
-					boolean invalid = true;
-					for (String identifier : request.getParameterValues("newIdentifier")) {
-						if (identifier != null && !identifier.equals("")) {
-							invalid = false;
-						}
-					}
-					if (invalid) {
-						ValidationUtils.rejectIfEmptyOrWhitespace(errors, "identifier", "PatientIdentifier.error.null");
-					}
-				}
-				else {
-					String[] identifiers = request.getParameterValues("newIdentifier");
-					String[] types = request.getParameterValues("newIdentifierType");
-					//String[] locs = request.getParameterValues("newLocation");
-					for (int i=0; i<identifiers.length;i++) {
-						if (identifiers[i].length() > 0) {
-							if (types[i].equals("") || types[i] == null)
-								errors.reject("Identifier.identifierType.null");
-							else {
-								PatientIdentifierType type = ps.getPatientIdentifierType(Integer.valueOf(types[i]));
-								//Location loc = ps.getLocation(Integer.valueOf(locs[i]));
-								String[] args = {identifiers[i]};
-								try {
-									if (type.hasCheckDigit() && !Helper.isValidCheckDigit(identifiers[i])) {
-										log.error("hasCheckDigit and is not valid: " + type.getName() + " " + identifiers[i]);
-										errors.rejectValue("identifier", "error.checkdigits", args, "Invalid Checkdigit " + identifiers[i]);
-									}
-									else if (type.hasCheckDigit() == false && identifiers[i].contains("-")) {
-										log.error("hasn't CheckDigit and contains '-': " + type.getName() + " " + identifiers[i]);
-										String[] args2 = {"-", identifiers[i]}; 
-										errors.rejectValue("identifier", "error.character.invalid", args2, "Invalid character '-' in " + identifiers[i]);
-									}
-								} catch (Exception e) {
-									log.error("exception thrown: " + type.getName() + " " + identifiers[i]);
-									//Object[] objs = {identifiers[i]};
-									log.error(e);
+				
+				String[] identifiers = request.getParameterValues("identifier");
+				String[] types = request.getParameterValues("identifierType");
+				String[] locs = request.getParameterValues("location");
+				pref = request.getParameter("preferred");
+				if (pref == null)
+					pref = "";
+				
+				log.debug("identifiers: " + identifiers);
+				for (String s : identifiers)
+					log.debug(s);
+				log.debug("types: " + types);
+				for (String s : types)
+					log.debug(s);
+				log.debug("locations: " + locs);
+				for (String s : locs)
+					log.debug(s);
+				log.debug("preferred: " + pref);
+				
+				// loop over the identifiers to create the patient.identifiers set
+				for (int i=0; i<identifiers.length;i++) {
+					// arguments for the spring error messages
+					String[] args = {identifiers[i]};
+					
+					// add the new identifier only if they put in some identifier string
+					if (identifiers[i].length() > 0) {
+						
+						// set up the actual identifier java object
+						PatientIdentifierType pit = null;
+						if (types[i] == null || types[i].equals(""))
+							errors.reject("Identifier.identifierType.null", args, "Identifier type for '" + identifiers[i] + "' cannot be null");
+						else
+							pit = ps.getPatientIdentifierType(Integer.valueOf(types[i]));
+						
+						Location loc = null;
+						if (locs[i] == null || locs[i].equals(""))
+							errors.reject("Identifier.location.null", args, "Location for '" + identifiers[i] + "' cannot be null");
+						else
+							loc = ps.getLocation(Integer.valueOf(locs[i]));
+						
+						PatientIdentifier pi = new PatientIdentifier(identifiers[i], pit, loc);
+						pi.setPreferred(pref.equals(identifiers[i]+types[i]));
+						newIdentifiers.add(pi);
+						
+						log.debug("Creating patient identifier with identifier: " + identifiers[i]);
+						log.debug("and type: " + types[i]);
+						log.debug("and location: " + locs[i]);
+					
+						try {
+							if (pit.hasCheckDigit() && !Helper.isValidCheckDigit(identifiers[i])) {
+									log.error("hasCheckDigit and is not valid: " + pit.getName() + " " + identifiers[i]);
 									errors.rejectValue("identifier", "error.checkdigits", args, "Invalid Checkdigit " + identifiers[i]);
 								}
+								else if (pit.hasCheckDigit() == false && identifiers[i].contains("-")) {
+									log.error("hasn't CheckDigit and contains '-': " + pit.getName() + " " + identifiers[i]);
+									String[] args2 = {"-", identifiers[i]}; 
+									errors.rejectValue("identifier", "error.character.invalid", args2, "Invalid character '-' in " + identifiers[i]);
+								}
+							} catch (Exception e) {
+								log.error("exception thrown with: " + pit.getName() + " " + identifiers[i]);
+								log.error("Error while adding patient identifiers to savedIdentifier list", e);
+								errors.rejectValue("identifier", "error.checkdigits", args, "Invalid Checkdigit " + identifiers[i]);
 							}
 						}
 					}
 				}
-				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "gender", "error.null");
-			}
+			
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "gender", "error.null");
 		}
 			
 		return super.processFormSubmission(request, response, pli, errors);
@@ -161,9 +190,9 @@ public class NewPatientFormController extends SimpleFormController {
 				patient = ps.getPatient(p.getPatientId());
 			boolean duplicate = false;
 			for (PatientName pn : patient.getNames()) {
-				if (pn.getGivenName().equals(p.getGivenName()) &&
-					pn.getMiddleName().equals(p.getMiddleName()) &&
-					pn.getFamilyName().equals(p.getFamilyName()))
+				if (((pn.getGivenName() == null && p.getGivenName() == null) || pn.getGivenName().equals(p.getGivenName())) &&
+					((pn.getMiddleName() == null && p.getMiddleName() == null) || pn.getMiddleName().equals(p.getMiddleName())) &&
+					((pn.getFamilyName() == null && p.getFamilyName() == null) || pn.getFamilyName().equals(p.getFamilyName())))
 					duplicate = true;
 			}
 			
@@ -184,33 +213,18 @@ public class NewPatientFormController extends SimpleFormController {
 				}			
 			}
 			
-			String[] identifiers = request.getParameterValues("newIdentifier");
-			String[] types = request.getParameterValues("newIdentifierType");
-			String[] locs = request.getParameterValues("newLocation");
-			for (int i=0; i<identifiers.length;i++) {
-				String identifier = identifiers[i].trim();
-				PatientIdentifierType type = null;
-				Location loc = null;
-				if (identifier.length() > 0) {
-					if (types[i] != null && types[i].length() > 0) {
-						type = ps.getPatientIdentifierType(Integer.valueOf(types[i]));
-					}
-					if (locs[i] != null && locs[i].length() > 0) {
-						loc = ps.getLocation(Integer.valueOf(locs[i]));
-					}
-					if (identifier != null && type != null) {
-						patient.addIdentifier(new PatientIdentifier(identifier, type, loc));
-					}
-				}
+			// set or unset the preferred bit for the old identifiers if needed
+			if (patient.getIdentifiers() == null)
+				patient.setIdentifiers(new HashSet<PatientIdentifier>());
+			
+			for (PatientIdentifier pi : patient.getIdentifiers()) {
+				pi.setPreferred(pref.equals(pi.getIdentifier()+pi.getIdentifierType().getPatientIdentifierTypeId()));
 			}
 			
-			/*
-			if (patient.getIdentifiers().size() > 0) {
-				PatientIdentifier pi = (PatientIdentifier)patient.getIdentifiers().toArray()[0];
-				identifier = pi.getIdentifier();
-			}
-			*/
+			// add the new identifiers
+			patient.getIdentifiers().addAll(newIdentifiers);
 			
+			// set the other patient attributes
 			patient.setBirthdate(p.getBirthdate());
 			patient.setBirthdateEstimated(p.getBirthdateEstimated());
 			patient.setGender(p.getGender());
@@ -345,6 +359,14 @@ public class NewPatientFormController extends SimpleFormController {
 	    	}
 		}
 		map.put("datePattern", dateFormat.toLocalizedPattern().toLowerCase());
+		
+		// give them both the just-entered identifiers and the patient's current identifiers
+		identifiers.addAll(newIdentifiers);
+		
+		if (pref.length() > 0)
+			for (PatientIdentifier pi : identifiers)
+				pi.setPreferred(pref.equals(pi.getIdentifier()+pi.getIdentifierType().getPatientIdentifierTypeId()));
+		
 		map.put("identifiers", identifiers);
 		
 		return map;

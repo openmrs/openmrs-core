@@ -28,7 +28,10 @@
 			column="date_changed" length="19" />
 		<property name="units" type="java.lang.String" column="units"
 			length="50" />
-
+		<property name="set" type="java.lang.Boolean" column="is_set"
+			length="1" not-null="true" />
+		
+		
 		<!-- Associations -->
 
 		<!-- bi-directional many-to-one association to ConceptDatatype -->

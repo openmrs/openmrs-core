@@ -213,8 +213,19 @@ public class User implements java.io.Serializable {
 			totalRoles.addAll(getRoles());
 		}
 		log.debug("User's base roles: " + baseRoles);
-		for (Role r : baseRoles) {
-			totalRoles.addAll(r.getAllParentRoles());
+		try {
+			for (Role r : baseRoles) {
+				totalRoles.addAll(r.getAllParentRoles());
+			}
+		}
+		catch (ClassCastException e) {
+			log.error("Error converting roles for user: " + this);
+			log.error("baseRoles.class: " + baseRoles.getClass().getName());
+			log.error("baseRoles: " + baseRoles.toString());
+			Iterator<Role> iter = baseRoles.iterator();
+			while (iter.hasNext()) {
+				log.error("baseRole: '" + iter.next() + "'");
+			}
 		}
 		return totalRoles;
 	}

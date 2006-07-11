@@ -15,11 +15,6 @@
 <script type="text/javascript" src="<%= request.getContextPath() %>/scripts/conceptSearch.js"></script>
 <script type="text/javascript" src="conceptForm.js"></script>
 <script type="text/javascript">
-	var setClasses = new Array();
-	<c:forEach items="${classes}" var="cc">
-	<c:if test="${cc.set}">setClasses.push("${cc.conceptClassId}");</c:if>
-	</c:forEach>
-	
 	function addName(anchor) {
 		if (anchor.href.lastIndexOf("=") == anchor.href.length - 1)
 			anchor.href += $("conceptName").value;
@@ -27,6 +22,34 @@
 	
 	function showConceptIds() {
 		return true;
+	}
+	
+		function selectTab(tab) {
+		var displays = new Array();
+		
+		var tabs = tab.parentNode.getElementsByTagName("a");
+		for (var tabIndex=0; tabIndex<tabs.length; tabIndex++) {
+			var index = tabs[tabIndex].id.indexOf("Tab");
+			var tabName = tabs[tabIndex].id.substr(0, index);
+			if (tabs[tabIndex] == tab) {
+				displays[tabName] = "";
+				addClass(tabs[tabIndex], 'selectedTab');
+			}
+			else {
+				displays[tabName] = "none";
+				removeClass(tabs[tabIndex], 'selectedTab');
+			}
+		}
+		
+		var parent = tab.parentNode.parentNode.parentNode;
+		var elements = parent.getElementsByTagName("td");	
+		for (var i=0; i<elements.length; i++) {
+			if (displays[elements[i].className] != null)
+					elements[i].style.display = displays[elements[i].className];
+		}
+		
+		tab.blur();
+		return false;
 	}
 </script>
 
@@ -62,6 +85,17 @@
 	}
 	#conceptTable th {
 		text-align: left;
+	}
+	#conceptNameTable th {
+		text-align: left;	
+	}
+	.localeSpecific td, a.selectedTab {
+		background-color: whitesmoke;
+	}
+	a.tab {
+		border-bottom: 1px solid whitesmoke;
+		padding-left: 3px;
+		padding-right: 3px;
 	}
 </style>
 
@@ -103,73 +137,103 @@
 
 <form method="post" action="" onSubmit="removeHiddenRows()">
 
-<table id=conceptTable>
+<table id="conceptTable" cellpadding="2" cellspacing="0">
+
 	<tr>
 		<th><spring:message code="general.id"/></th>
-		<td>${concept.conceptId}</td>
+		<td colspan="${fn:length(locales)}">${concept.conceptId}</td>
 	</tr>
+
 	<tr>
+		<th><spring:message code="general.locale"/></th>
+		<td style="padding-bottom: 0px; padding-left: 0px;">
+			<c:forEach items="${locales}" var="loc" varStatus="varStatus">
+				<a id="${loc}Tab" class="tab ${loc}" href="#select${loc.displayName}" onclick="return selectTab(this)">${loc.displayName}</a><c:if test="${varStatus.last==false}"> | </c:if>
+			</c:forEach>
+		</td>
+	</tr>
+	<tr class="localeSpecific">
 		<th title="<spring:message code="Concept.name.help"/>">
 			<spring:message code="general.name" />
 		</th>
-		<td><spring:bind path="conceptName.name">
-			<input type="text" name="${status.expression}"
-				value="${status.value}" id="conceptName" class="largeWidth" />
-			<c:if test="${status.errorMessage != ''}">
-				<span class="error">${status.errorMessage}</span>
-			</c:if>
-		</spring:bind></td>
+		<c:forEach items="${locales}" var="loc">
+			<td class="${loc}">
+				<spring:bind path="conceptName_${loc}.name">
+				<input type="text" name="${status.expression}_${loc}"
+					value="${status.value}" id="conceptName_${loc}" class="largeWidth" />
+				<c:if test="${status.errorMessage != ''}">
+					<span class="error">${status.errorMessage}</span>
+				</c:if>
+				</spring:bind>
+			</td>
+		</c:forEach>
 	</tr>
-	<tr>
+	<tr class="localeSpecific">
 		<th title="<spring:message code="Concept.shortName.help"/>">
 			<spring:message code="Concept.shortName" />
 		</th>
-		<td><spring:bind path="conceptName.shortName">
-			<input class="smallWidth" type="text" name="${status.expression}"
-				value="${status.value}" size="10" />
-			<c:if test="${status.errorMessage != ''}">
-				<span class="error">${status.errorMessage}</span>
-			</c:if>
-		</spring:bind></td>
+		<c:forEach items="${locales}" var="loc">
+			<td class="${loc}">
+				<spring:bind path="conceptName_${loc}.shortName">
+					<input class="smallWidth" type="text" name="${status.expression}_${loc}"
+						value="${status.value}" size="10" />
+					<c:if test="${status.errorMessage != ''}">
+						<span class="error">${status.errorMessage}</span>
+					</c:if>
+				</spring:bind>
+			</td>
+		</c:forEach>
 	</tr>
-	<tr>
+	<tr class="localeSpecific">
 		<th valign="top" title="<spring:message code="Concept.description.help"/>">
 			<spring:message code="general.description" />
 		</th>
-		<td valign="top"><spring:bind path="conceptName.description">
-			<textarea name="${status.expression}" rows="4" cols="50">${status.value}</textarea>
-			<c:if test="${status.errorMessage != ''}">
-				<span class="error">${status.errorMessage}</span>
-			</c:if>
-		</spring:bind></td>
+		<c:forEach items="${locales}" var="loc">
+			<td valign="top" class="${loc}">
+				<spring:bind path="conceptName_${loc}.description">
+					<textarea name="${status.expression}_${loc}" rows="4" cols="50">${status.value}</textarea>
+					<c:if test="${status.errorMessage != ''}">
+						<span class="error">${status.errorMessage}</span>
+					</c:if>
+				</spring:bind>
+			</td>
+		</c:forEach>
 	</tr>
-	<tr>
+	
+	<tr class="localeSpecific">
 		<th valign="top" title="<spring:message code="Concept.synonyms.help"/>">
 			<spring:message code="Concept.synonyms" />
 		</th>
-		<td valign="top">
-			<input type="text" class="largeWidth" id="addSyn" onKeyDown="return synonymKeyPress(this, event);"/>
-			<input type="button" class="smallButton" value="<spring:message code="Concept.synonym.add"/>" onClick="addSynonym();"/>
-			<input type="hidden" name="newSynonyms" id="newSynonyms" value="<c:forEach items="${conceptSynonyms}" var="syn">${syn},</c:forEach>" />
-		</td>
+		<c:forEach items="${locales}" var="loc">
+			<td valign="top" class="${loc}">
+				<input type="text" class="largeWidth" id="addSyn${loc}" onKeyDown="return synonymKeyPress(this, event, '${loc}');"/>
+				<input type="button" class="smallButton" value="<spring:message code="Concept.synonym.add"/>" onClick="addSynonym('${loc}');"/>
+				<input type="hidden" name="newSynonyms_${loc}" id="newSynonyms${loc}" value="<c:forEach items="${conceptSynonymsByLocale[loc]}" var="syn">${syn},</c:forEach>" />
+			</td>
+		</c:forEach>
 	</tr>
-	<tr>
+	<tr class="localeSpecific">
 		<th></th>
-		<td>
-			<table cellpadding="0" cellspacing="0">
-				<tr>
-					<td>
-						<select class="largeWidth" size="5" multiple id="syns" onkeydown="listKeyPress('syns', 'newSynonyms', ',', event);">
-							<c:forEach items="${conceptSynonyms}" var="syn"><option value="${syn}">${syn}</option></c:forEach>
-						</select>
-					</td>
-					<td valign="top" class="buttons">
-						&nbsp;<input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('syns', 'newSynonyms', ',');" /> <br/>
-					</td>
-				</tr>
-			</table>
-		</td>
+		<c:forEach items="${locales}" var="loc">
+			<td class="${loc}">
+				<table cellpadding="0" cellspacing="0">
+					<tr>
+						<td>
+							<select class="largeWidth" size="5" multiple id="syns${loc}" onkeydown="listKeyPress('syns${loc}', 'newSynonyms${loc}', ',', event);">
+								<c:forEach items="${conceptSynonymsByLocale[loc]}" var="syn"><option value="${syn}">${syn}</option></c:forEach>
+							</select>
+						</td>
+						<td valign="top" class="buttons">
+							&nbsp;<input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('syns${loc}', 'newSynonyms${loc}', ',');" /> <br/>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</c:forEach>
 	</tr>
+	
+	
+	
 	<tr>
 		<th title="<spring:message code="Concept.conceptClass.help"/>">
 			<spring:message code="Concept.conceptClass" />
@@ -186,7 +250,16 @@
 			</c:if>
 		</spring:bind></td>
 	</tr>
-	<tr id="setClassRow">
+	<tr>
+		<th valign="top"><spring:message code="Concept.set"/></th>
+		<td>
+			<spring:bind path="concept.set">
+				<input type="checkbox" name="conceptSet" id="conceptSet" <c:if test="${status.value}">checked="checked"</c:if> onChange="changeSetStatus(this)"/>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr id="conceptSetRow">
 		<th valign="top"><spring:message code="Concept.conceptSets"/></th>
 		<td valign="top">
 			<input type="hidden" name="conceptSets" id="conceptSets" size="40" value='<c:forEach items="${conceptSets}" var="set">${set.value[0]} </c:forEach>' />
@@ -418,6 +491,7 @@
 		if (text.value.length == 0)
 			text.value = "<request:parameter name="conceptName"/>";
 	</request:existsParameter>
+	selectTab(document.getElementById("${locale}Tab"));
 </script>
 
 <div id="xdebugBox"></div>

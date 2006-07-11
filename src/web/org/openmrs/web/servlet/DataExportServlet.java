@@ -91,7 +91,8 @@ public class DataExportServlet extends HttpServlet {
 		
 		String template = dataExport.generateTemplate();
 		
-		log.debug("Template: " + template.substring(0, template.length() < 3500 ? template.length() : 3500) + "...");
+		if (log.isDebugEnabled())
+			log.debug("Template: " + template.substring(0, template.length() < 3500 ? template.length() : 3500) + "...");
 		
 		try {
 			Velocity.evaluate(velocityContext, report, this.getClass().getName(), template);
@@ -99,6 +100,7 @@ public class DataExportServlet extends HttpServlet {
 		catch (Exception e) {
 			log.error("Error evaluating data export " + dataExport.getReportObjectId(), e);
 			log.error("Template: " + template.substring(0, template.length() < 3500 ? template.length() : 3500) + "...");
+			report.append("\n\nError: \n" + e.toString());
 		}
 		finally {
 			context.endTransaction();

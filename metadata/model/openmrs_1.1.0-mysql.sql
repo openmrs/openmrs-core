@@ -24,6 +24,7 @@ CREATE TABLE `concept` (
   `form_text` text,
   `datatype_id` int(11) NOT NULL default '0',
   `class_id` int(11) NOT NULL default '0',
+  `is_set` tinyint(1) NOT NULL default '0',
   `icd10` varchar(255) default NULL,
   `loinc` varchar(255) default NULL,
   `creator` int(11) NOT NULL default '0',
@@ -72,7 +73,6 @@ CREATE TABLE `concept_class` (
   `description` varchar(255) NOT NULL default '',
   `creator` int(11) NOT NULL default '0',
   `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
-  `is_set` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`concept_class_id`),
   KEY `concept_class_creator` (`creator`),
   CONSTRAINT `concept_class_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`)
@@ -732,6 +732,7 @@ CREATE TABLE `patient` (
   `citizenship` varchar(50) default NULL,
   `mothers_name` varchar(50) default NULL,
   `civil_status` int(11) default NULL,
+  `dead` int(1) NOT NULL default '0',
   `death_date` datetime default NULL,
   `cause_of_death` varchar(255) default NULL,
   `health_district` varchar(255) default NULL,

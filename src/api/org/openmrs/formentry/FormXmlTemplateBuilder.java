@@ -253,7 +253,7 @@ public class FormXmlTemplateBuilder {
 					field.getDefaultValue());
 			xml.append(w.toString());
 		} catch (Exception e) {
-			log.error("Error evaluating default value for " + field.getName()
+			log.warn("Error evaluating default value for " + field.getName()
 					+ "[" + field.getFieldId() + "]", e);
 		}
 	}

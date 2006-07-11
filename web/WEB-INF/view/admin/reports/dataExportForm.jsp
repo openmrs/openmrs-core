@@ -62,22 +62,25 @@
 		if (sibling != null && column.tagName == sibling.tagName) {
 			var newSibling = sibling.cloneNode(true);
 			var newColumn = column.cloneNode(true);
+			
+			// fix for javascript cloneNode function.  Doesn't seem to be copying the value of 
+			// either textareas or dropdowns.
+			var id = newSibling.id.substr(newSibling.id.indexOf("_")+1, 3);
+			var newTextarea = getChildByName(newSibling, "calculatedValue_" + id);
+			id = sibling.id.substr(sibling.id.indexOf("_")+1, 3);
+			var oldTextarea = getChildByName(sibling, "calculatedValue_" + id);
+			newTextarea.value = oldTextarea.value;
+			
+			id = newColumn.id.substr(newColumn.id.indexOf("_")+1, 3);
+			newTextarea = getChildByName(newColumn, "calculatedValue_" + id);
+			id = column.id.substr(column.id.indexOf("_")+1, 3);
+			oldTextarea = getChildByName(column, "calculatedValue_" + id);
+			newTextarea.value = oldTextarea.value;
+			
+			
 			parent.replaceChild(newColumn, sibling);
 			parent.replaceChild(newSibling, column);
 			updateColumnClasses(newColumn);
-		}
-	}
-	
-	function addClass(obj, c) {
-		if (obj.className.indexOf(c) == -1)
-			obj.className = c + " " + obj.className;
-	}
-	
-	function removeClass(obj, newClassName) {
-		var className = obj.className;
-		if (className.indexOf(newClassName) != -1) {
-			var index = obj.className.indexOf(" ");
-			obj.className = className.substring(index + 1, className.length);
 		}
 	}
 	
@@ -88,6 +91,21 @@
 			input.value = sel.value;
 			var tbl = getParentByTagName(sel, "table");
 			input = getChildByName(tbl, "simpleName_" + count);
+			if (input != null && input.value == "") {
+				var opt = sel.options[sel.selectedIndex];
+				input.value = opt.text.substr(2, opt.text.length);
+			}
+		}
+	}
+	
+	function updateCalcColumn(sel) {
+		if (sel.value != "") {
+			var count = sel.name.substr(sel.name.indexOf("_")+1, 3);
+			var input = getPreviousSibling(sel, "calculatedValue_" + count);
+			input.value = sel.value;
+			input.value += '\n';
+			var tbl = getParentByTagName(sel, "table");
+			input = getChildByName(tbl, "calculatedName_" + count);
 			if (input != null && input.value == "") {
 				var opt = sel.options[sel.selectedIndex];
 				input.value = opt.text.substr(2, opt.text.length);
@@ -208,6 +226,7 @@
 		getChildByName(obj, "conceptButton").name += suffix;
 		getChildByName(obj, "calculatedName").name += suffix;
 		getChildByName(obj, "calculatedValue").name += suffix;
+		getChildByName(obj, "calculatedPatient").name += suffix;
 	}
 	
 	var mySearch = null;
@@ -398,6 +417,7 @@
 		position: absolute;
 		z-index: 10;
 		margin: 5px;
+		left: -1000px;
 	}
 	.searchForm .wrapper {
 		padding: 2px;
@@ -607,6 +627,7 @@
 					<c:forEach items="${fn:split(column.returnValue, linefeed)}" var="line" varStatus="varStatus">
 						getChildByName(obj, "calculatedValue_" + count).value += "${line}" <c:if test="${varStatus.last != true}"> + '\n'</c:if>;
 					</c:forEach>
+					getChildByName(obj, "calculatedValue_" + count).value += '\n';
 				</c:if>
 			</c:forEach>
 			

@@ -27,16 +27,6 @@
 			</spring:bind>
 		</td>
 	</tr>
-	<tr>
-		<td valign="top"><spring:message code="ConceptClass.set"/></td>
-		<td>
-			<spring:bind path="conceptClass.set">
-				<input type="hidden" name="_${status.expression}" value="" />
-				<input type="checkbox" name="${status.expression}" <c:if test="${status.value}">checked="checked"</c:if> />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		</td>
-	</tr>
 	<c:if test="${!(conceptClass.creator == null)}">
 		<tr>
 			<td><spring:message code="general.createdBy" /></td>

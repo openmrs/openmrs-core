@@ -20,6 +20,9 @@ import org.openmrs.User;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
+import org.openmrs.hl7.HL7InQueue;
+import org.openmrs.hl7.HL7Service;
+import org.openmrs.hl7.HL7Source;
 import org.openmrs.migration.MigrationHelper;
 import org.openmrs.web.WebConstants;
 import org.springframework.web.servlet.ModelAndView;
@@ -86,6 +89,33 @@ public class MigrationController implements Controller {
 		log.debug("xml to upload = " + xml);
 		int numAdded = MigrationHelper.importLocations(context, MigrationHelper.parseXml(xml));	
 		return new ModelAndView(new RedirectView("migration.form?message=" + URLEncoder.encode("Uploaded " + numAdded + " locations", "UTF-8")));
+	}
+	
+	public ModelAndView runHl7(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		HttpSession httpSession = request.getSession();
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		if (context == null) {
+			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
+			response.sendRedirect(request.getContextPath() + "/logout");
+			return null;
+		}
+		String hl7 = request.getParameter("hl7");
+		//log.debug("hl7 to run = " + hl7);
+		hl7 = hl7.replaceAll("\\n", "");
+		HL7InQueue hl7InQueue = new HL7InQueue();
+		hl7InQueue.setHL7Data(hl7);
+		HL7Service hs = context.getHL7Service();
+		if (hs.getHL7Sources().isEmpty()) {
+			HL7Source hl7Source = new HL7Source();
+			hl7Source.setName("MigrationTestTool");
+			hl7Source.setDescription("Testing migrating data, from MigrationController.");
+			hs.createHL7Source(hl7Source);
+		}
+		hl7InQueue.setHL7Source(context.getHL7Service().getHL7Source(1));
+		//hl7InQueue.setHL7SourceKey(String.valueOf(formEntryQueue.getFormEntryQueueId()));
+		context.getHL7Service().createHL7InQueue(hl7InQueue);
+
+		return new ModelAndView(new RedirectView("migration.form"));
 	}
 
 }

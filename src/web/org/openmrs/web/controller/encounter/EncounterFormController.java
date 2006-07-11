@@ -32,6 +32,7 @@ import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -81,6 +82,9 @@ public class EncounterFormController extends SimpleFormController {
 					encounter.setPatient(context.getPatientService().getPatient(Integer.valueOf(request.getParameter("patientId"))));
 				if (request.getParameter("providerId") != null)
 					encounter.setProvider(context.getUserService().getUser(Integer.valueOf(request.getParameter("providerId"))));
+				if (encounter.isVoided())
+					ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
+				
 			}
 		} finally {
 			context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
@@ -108,13 +112,27 @@ public class EncounterFormController extends SimpleFormController {
 		try {
 			if (context != null && context.isAuthenticated()) {
 				Encounter encounter = (Encounter)obj;
+				
+				// if this is a new encounter, they can specify a patient.  add it
 				if (request.getParameter("patientId") != null)
 					encounter.setPatient(context.getPatientService().getPatient(Integer.valueOf(request.getParameter("patientId"))));
+				
+				// set the provider if they changed it
 				encounter.setProvider(context.getUserService().getUser(Integer.valueOf(request.getParameter("providerId"))));
-				context.getEncounterService().updateEncounter(encounter);
+				
+				if (encounter.isVoided() && encounter.getVoidedBy() == null)
+					// if this is a "new" voiding, call voidEncounter to set appropriate attributes
+					context.getEncounterService().voidEncounter(encounter, encounter.getVoidReason());
+				else if (!encounter.isVoided() && encounter.getVoidedBy() != null)
+					// if this was just unvoided, call unvoidEncounter to unset appropriate attributes
+					context.getEncounterService().unvoidEncounter(encounter);
+				else
+					context.getEncounterService().updateEncounter(encounter);
+				
 				view = getSuccessView();
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Encounter.saved");
 				view = view + "?encounterId=" + encounter.getEncounterId();
+				
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Encounter.saved");
 			}
 		} finally {
 			context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);

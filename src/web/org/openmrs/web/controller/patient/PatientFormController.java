@@ -40,6 +40,8 @@ import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
+import org.springframework.web.bind.RequestUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -121,25 +123,32 @@ public class PatientFormController extends SimpleFormController {
 					
 				// Patient Address
 				
-					String [] add1s = request.getParameterValues("address1");
-					String [] add2s = request.getParameterValues("address2");
-					String [] cities = request.getParameterValues("cityVillage");
-					String [] states = request.getParameterValues("stateProvince");
-					String [] countries = request.getParameterValues("country");
-					String [] lats = request.getParameterValues("latitude");
-					String [] longs = request.getParameterValues("longitude");
+					String [] add1s = RequestUtils.getStringParameters(request, "address1");
+					String [] add2s = RequestUtils.getStringParameters(request, "address2");
+					String [] cities = RequestUtils.getStringParameters(request, "cityVillage");
+					String [] states = RequestUtils.getStringParameters(request, "stateProvince");
+					String [] countries = RequestUtils.getStringParameters(request, "country");
+					String [] lats = RequestUtils.getStringParameters(request, "latitude");
+					String [] longs = RequestUtils.getStringParameters(request, "longitude");
 					
 					if (add1s != null) {
 						for (int i = 0; i < add1s.length; i++) {
 							if (add1s[i] != "") { //skips invalid and blank address data box
 								PatientAddress pa = new PatientAddress();
-								pa.setAddress1(add1s[i]);
-								pa.setAddress2(add2s[i]);
-								pa.setCityVillage(cities[i]);
-								pa.setStateProvince(states[i]);
-								pa.setCountry(countries[i]);
-								pa.setLatitude(lats[i]);
-								pa.setLongitude(longs[i]);
+								if (add1s.length >= i+1)
+									pa.setAddress1(add1s[i]);
+								if (add2s.length >= i+1)
+									pa.setAddress2(add2s[i]);
+								if (cities.length >= i+1)
+									pa.setCityVillage(cities[i]);
+								if (states.length >= i+1)
+									pa.setStateProvince(states[i]);
+								if (countries.length >= i+1)
+									pa.setCountry(countries[i]);
+								if (lats.length >= i+1)
+									pa.setLatitude(lats[i]);
+								if (longs.length >= i+1)
+									pa.setLongitude(longs[i]);
 								patient.addAddress(pa);
 							}
 						}
@@ -154,26 +163,33 @@ public class PatientFormController extends SimpleFormController {
 					}
 	
 					//String[] prefs = request.getParameterValues("preferred");  (unreliable form info)
-					String[] gNames = request.getParameterValues("givenName");
-					String[] mNames = request.getParameterValues("middleName");
-					String[] fNamePrefixes = request.getParameterValues("familyNamePrefix");
-					String[] fNames = request.getParameterValues("familyName");
-					String[] fName2s = request.getParameterValues("familyName2");
-					String[] fNameSuffixes = request.getParameterValues("familyNameSuffix");
-					String[] degrees = request.getParameterValues("degree");
+					String[] gNames = RequestUtils.getStringParameters(request, "givenName");
+					String[] mNames = RequestUtils.getStringParameters(request, "middleName");
+					String[] fNamePrefixes = RequestUtils.getStringParameters(request, "familyNamePrefix");
+					String[] fNames = RequestUtils.getStringParameters(request, "familyName");
+					String[] fName2s = RequestUtils.getStringParameters(request, "familyName2");
+					String[] fNameSuffixes = RequestUtils.getStringParameters(request, "familyNameSuffix");
+					String[] degrees = RequestUtils.getStringParameters(request, "degree");
 					
 					if (gNames != null) {
 						for (int i = 0; i < gNames.length; i++) {
 							if (gNames[i] != "") { //skips invalid and blank address data box
 								PatientName pn = new PatientName();
 								pn.setPreferred(false);
-								pn.setGivenName(gNames[i]);
-								pn.setMiddleName(mNames[i]);
-								pn.setFamilyNamePrefix(fNamePrefixes[i]);
-								pn.setFamilyName(fNames[i]);
-								pn.setFamilyName2(fName2s[i]);
-								pn.setFamilyNameSuffix(fNameSuffixes[i]);
-								pn.setDegree(degrees[i]);
+								if (gNames.length >= i+1)
+									pn.setGivenName(gNames[i]);
+								if (mNames.length >= i+1)
+									pn.setMiddleName(mNames[i]);
+								if (fNamePrefixes.length >= i+1)
+									pn.setFamilyNamePrefix(fNamePrefixes[i]);
+								if (fNames.length >= i+1)
+									pn.setFamilyName(fNames[i]);
+								if (fName2s.length >= i+1)
+									pn.setFamilyName2(fName2s[i]);
+								if (fNameSuffixes.length >= i+1)
+									pn.setFamilyNameSuffix(fNameSuffixes[i]);
+								if (degrees.length >= i+1)
+									pn.setDegree(degrees[i]);
 								patient.addName(pn);
 							}
 						}
@@ -183,9 +199,11 @@ public class PatientFormController extends SimpleFormController {
 						errors.rejectValue("patient.names", "Patient.names.length");
 					
 				// Patient Info 
-					//patient.setTribe(ps.getTribe(Integer.valueOf(request.getParameter("tribe"))));
 					//ValidationUtils.rejectIfEmptyOrWhitespace(errors, "birthdate", "error.null");
-					//ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
+					if (patient.isVoided())
+						ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
+					if (patient.isDead() && (patient.getCauseOfDeath() == null || patient.getCauseOfDeath().equals("")))
+						errors.rejectValue("causeOfDeath", "Patient.dead.causeOfDeathNull");
 			}
 		}		
 		

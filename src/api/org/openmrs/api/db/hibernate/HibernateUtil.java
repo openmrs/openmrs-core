@@ -1,6 +1,8 @@
 package org.openmrs.api.db.hibernate;
 
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -197,12 +199,13 @@ public class HibernateUtil {
 			sessionFactory = cfg.buildSessionFactory();
 		} catch (Throwable ex) {
 			// Make sure you log the exception, as it might be swallowed
-			log.error("Initial sessionFactory creation failed." + ex);
+			log.error("Initial sessionFactory creation failed.", ex);
 			throw new ExceptionInInitializerError(ex);
 		}
 		
-		// TODO generify and/or move this to business type layer
+		// TODO generify and/or move these to business type layer
 		checkDatabaseVersion();
+		checkCoreDataSet();
 	}
 	
 	public static void shutdown() throws HibernateException {
@@ -250,7 +253,42 @@ public class HibernateUtil {
 				OpenmrsConstants.DATABASE_VERSION = result.getString(1);
 			}
 		} catch (SQLException e) {
-			log.error(e);
+			log.error("Error while getting database version", e);
+		}
+	}
+	
+	private static void checkCoreDataSet() {
+		Connection conn = currentSession().connection();
+		
+		try {
+			PreparedStatement psSelect = conn.prepareStatement("SELECT * FROM role WHERE UPPER(role) = UPPER(?)");  
+			PreparedStatement psInsert = conn.prepareStatement("INSERT INTO role VALUES (?, 'Core Role')");
+			
+			for (String role : OpenmrsConstants.CORE_ROLES()) {
+				psSelect.setString(1, role);
+				ResultSet result = psSelect.executeQuery();
+				if (!result.next()) {
+					psInsert.setString(1, role);
+					psInsert.execute();
+				}
+			}
+			
+			psSelect = conn.prepareStatement("SELECT * FROM privilege WHERE UPPER(privilege) = UPPER(?)");  
+			psInsert = conn.prepareStatement("INSERT INTO privilege VALUES (?, 'Core Privilege')");
+			
+			for (String priv : OpenmrsConstants.CORE_PRIVILEGES()) {
+				psSelect.setString(1, priv);
+				ResultSet result = psSelect.executeQuery();
+				if (!result.next()) {
+					psInsert.setString(1, priv);
+					psInsert.execute();
+				}
+			}
+			
+			conn.commit();
+		}
+		catch (SQLException e) {
+			log.error("Error while setting core dataset", e);
 		}
 	}
 	

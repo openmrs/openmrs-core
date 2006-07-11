@@ -1,126 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
-<!--
-  - Application context definition for "springDispatcher" DispatcherServlet.
-  -->
-
-	<beans>
-		
-		<!--  **************************  DATA ACCESS OBJECTS  *************************  -->
-		
-<!--
-		<bean id="administrationDAO" class="org.openmrs.api.db.hibernate.HibernateAdministrationDAO"/>
-		<bean id="conceptDAO" class="org.openmrs.api.db.hibernate.HibernateConceptDAO"/>
-		<bean id="encounterDAO" class="org.openmrs.api.db.hibernate.HibernateEncounterDAO"/>
-		<bean id="formDAO" class="org.openmrs.api.db.hibernate.HibernateFormDAO"/>
-		<bean id="noteDAO" class="org.openmrs.api.db.hibernate.HibernateNoteDAO"/>
-		<bean id="obsDAO" class="org.openmrs.api.db.hibernate.HibernateObsDAO"/>
-		<bean id="orderDAO" class="org.openmrs.api.db.hibernate.HibernateOrderDAO"/>
-		<bean id="patientDAO" class="org.openmrs.api.db.hibernate.HibernatePatientDAO"/>
-		<bean id="patientSetDAO" class="org.openmrs.api.db.hibernate.HibernatePatientSetDAO"/>
-		<bean id="templateDAO" class="org.openmrs.api.db.hibernate.HibernateTemplateDAO"/>
-		<bean id="userDAO" class="org.openmrs.api.db.hibernate.HibernateUserDAO"/>
-		<bean id="formEntryDAO" class="org.openmrs.formentry.db.hibernate.HibernateFormEntryDAO"/>
-		<bean id="alertDAO" class="org.openmrs.notification.db.hibernate.HibernateAlertDAO"/>
-		<bean id="schedulerDAO" class="org.openmrs.scheduler.db.hibernate.HibernateSchedulerDAO"/>
--->
-
-		<!--  **************************  DATA ACCESS CONTEXT  *************************  -->
-			
-		<!-- Single data acccess context -->
-<!--
-		<bean id="daoContext" class="org.openmrs.api.db.hibernate.HibernateDAOContext">
-			<property name="administrationDAO"><ref bean="administrationDAO"/></property>
-			<property name="conceptDAO"><ref bean="conceptDAO"/></property>
-			<property name="encounterDAO"><ref bean="encounterDAO"/></property>
-			<property name="formDAO"><ref bean="formDAO"/></property>
-			<property name="noteDAO"><ref bean="noteDAO"/></property>
-			<property name="obsDAO"><ref bean="obsDAO"/></property>
-			<property name="orderDAO"><ref bean="orderDAO"/></property>
-			<property name="patientDAO"><ref bean="patientDAO"/></property>
-			<property name="patientSetDAO"><ref bean="patientSetDAO"/></property>    	
-			<property name="templateDAO"><ref bean="templateDAO"/></property>
-			<property name="userDAO"><ref bean="userDAO"/></property>
-			<property name="formEntryDAO"><ref bean="formEntryDAO"/></property>
-			<property name="alertDAO"><ref bean="alertDAO"/></property>
-			<property name="schedulerDAO"><ref bean="schedulerDAO"/></property>
-		</bean>	
--->
-
-		<!--  ******************************  SERVICES  ****************************** -->
+<beans>
 	
-		<!-- Messaging Service -->
-<!--
-	    <bean id="messageService" class="org.openmrs.notification.impl.MessageServiceImpl">
+	<!--  **************************  VIEW RESOLVER / CONTROLLERS  *************************  -->
 
-	        <property name="daoContext">
-	        	<ref bean="daoContext"/>
-	        </property>
-
-	        <property name="messagePreparator">
-				<bean id="mailMessagePreparator" class="org.openmrs.notification.mail.velocity.VelocityMessagePreparator"/>
-			</property>        
-
-	        <property name="messageSender">
-				<bean id="mailMessageSender" class="org.openmrs.notification.mail.MailMessageSender">
-					<property name="mailSession">
-						<bean id="mailSession" class="org.springframework.jndi.JndiObjectFactoryBean">
-						    <property name="jndiName"><value>java:comp/env/mail/OpenmrsMailSession</value></property>
-						</bean>
-					</property>
-				</bean> 		
-			</property>
-
-	    </bean>   
--->		
-			
-	    <!--  Scheduler Service -->
-<!--
-		<bean id="schedulerService" class="org.openmrs.scheduler.timer.TimerSchedulerService" init-method="startup">	
-			<property name="daoContext"><ref bean="daoContext"/></property>	
-		</bean>
--->
-		
-
-		<!--  **************************  SERVICE CONTEXT CONFIGURATION  *************************  -->
-
-		<!-- Single application context (our own context, not Spring's ApplicationContext
-		     NOTE:  There will be 100's of Context objects in memory.  This is just a general
-		            one that should be used by the services layer.  I would like to refactor
-		            this class so that it is used separately from the user context. (JMIRANDA)
-		-->
-		<!-- TODO This will be replaced with the service context -->
-<!--
-		<bean id="context" class="org.openmrs.api.context.Context">
-	        <property name="schedulerService"><ref bean="schedulerService"/></property>
-	        <property name="messageService"><ref bean="messageService"/></property>
-		</bean>	
--->
-
-		<!-- TODO Use the Service Context to replace the Context object defined above -->
-<!--
-		<bean id="serviceContext" class="org.openmrs.api.context.ServiceContext">
-	        <property name="schedulerService"><ref bean="schedulerService"/></property>
-	        <property name="messageService"><ref bean="messageService"/></property>
-		</bean>	
--->
-		
- 
-
+	<bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+		<property name="prefix" value="/WEB-INF/view" />
+		<property name="suffix" value=".jsp"/>
+	</bean>
 	
-		
-		<!--  **************************  VIEW RESOLVER / CONTROLLERS  *************************  -->
-	
-		<bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-			<property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
-			<property name="prefix" value="/WEB-INF/view" />
-			<property name="suffix" value=".jsp"/>
-		</bean>
-		
-		<bean id="multipartResolver"
-    		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-			<!-- one of the properties available; the maximum file size in bytes -->
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- one of the properties available; the maximum file size in bytes -->
 			    <property name="maxUploadSize">
 			        <value>100000</value>
 			    </property>
@@ -167,6 +60,8 @@
 					<prop key="**/dictionary/concept.htm">conceptView</prop>
 					<prop key="**/conceptClass.list">conceptClassList</prop>
 					<prop key="**/conceptClass.form">conceptClassForm</prop>
+					<prop key="**/conceptDrug.list">conceptDrugList</prop>
+					<prop key="**/conceptDrug.form">conceptDrugForm</prop>
 					<prop key="**/conceptDatatype.list">conceptDatatypeList</prop>
 					<prop key="**/conceptDatatype.form">conceptDatatypeForm</prop>
 					<prop key="**/conceptProposal.list">conceptProposalList</prop>
@@ -183,7 +78,8 @@
 					<prop key="**/analysis.list">otfaController</prop>
 					<prop key="**/analysis.form">otfaActionController</prop>
 					<prop key="**/migration.form">migrationActionController</prop>
-					<prop key="**/formDesign.form">formDesignForm</prop>
+					<prop key="**/formSchemaDesign.form">formSchemaDesignForm</prop>
+					<prop key="**/nealreport.form">nealReportController</prop>
 					<prop key="**/formEdit.form">formEditForm</prop>
 					<prop key="**/formViewXslt.form">formViewXsltForm</prop>
 					<prop key="**/form.list">formList</prop>
@@ -198,20 +94,20 @@
 					<prop key="**/patientSummary.form">patientSummaryForm</prop>          
 					<prop key="**/scheduler.list">schedulerListController</prop>
 					<prop key="**/scheduler.form">schedulerFormController</prop>
+					<prop key="**/*.portlet">portletController</prop>
 					<prop key="**/*.htm">springController</prop>
 	            </props>
 	        </property>
 	    </bean>
 
+		<bean id="portletController" class="org.openmrs.web.controller.PortletController"/>
 		<bean id="springController" class="org.openmrs.web.controller.SpringController"/>
 
+    <!-- =============================== -->
+	<!-- =====      Scheduler      ===== -->
+    <!-- =============================== -->
 
-
-	    <!-- =============================== -->
-		<!-- =====      Scheduler      ===== -->
-	    <!-- =============================== -->
-
-			<!-- ** Scheduler List Controller ** -->
+		<!-- ** Scheduler List Controller ** -->
 			<bean id="schedulerListController" class="org.openmrs.scheduler.web.controller.SchedulerListController">
 				<property name="commandName"><value>taskList</value></property>
 				<property name="formView"><value>/admin/scheduler/schedulerList</value></property>
@@ -224,559 +120,589 @@
 				<property name="successView"><value>scheduler.list</value></property>
 			</bean>
 	      <!-- ** /Scheduler ** -->
-	      
-	    
-	    <!-- ================================ -->	    
-	    <!-- ====== Observation Sector ====== -->
-	    <!-- ================================ -->
+      
+    
+    <!-- ================================ -->	    
+    <!-- ====== Observation Sector ====== -->
+    <!-- ================================ -->
 
-			<!-- ** Mime Type ** -->
-			
-				<bean id="obsForm" class="org.openmrs.web.controller.observation.ObsFormController">
-					<property name="commandName"><value>obs</value></property>
-					<property name="formView"><value>/admin/observations/obsForm</value></property>
-					<property name="successView"><value>/@WEBAPP.NAME@/admin/encounters/encounter.form</value></property>
-				</bean>
-			
-				<!--this is the optional method of declaring values in the constructor -->
-				<!--<bean id="mimeTypeList" class="org.openmrs.web.controller.observation.MimeTypeListController" />-->
-				<!--<bean id="mimeTypeForm" class="org.openmrs.web.controller.observation.MimeTypeFormController" />-->
+		<!-- ** Mime Type ** -->
+		
+			<bean id="obsForm" class="org.openmrs.web.controller.observation.ObsFormController">
+				<property name="commandName"><value>obs</value></property>
+				<property name="formView"><value>/admin/observations/obsForm</value></property>
+				<property name="successView"><value>/@WEBAPP.NAME@/admin/encounters/encounter.form</value></property>
+			</bean>
+		
+			<!--this is the optional method of declaring values in the constructor -->
+			<!--<bean id="mimeTypeList" class="org.openmrs.web.controller.observation.MimeTypeListController" />-->
+			<!--<bean id="mimeTypeForm" class="org.openmrs.web.controller.observation.MimeTypeFormController" />-->
+
+			<bean id="mimeTypeList" class="org.openmrs.web.controller.observation.MimeTypeListController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>mimeTypeList</value></property>
+				<property name="formView"><value>/admin/observations/mimeTypeList</value></property>
+				<property name="successView"><value>mimeType.list</value></property>
+			</bean>
 	
-				<bean id="mimeTypeList" class="org.openmrs.web.controller.observation.MimeTypeListController">
-					<property name="sessionForm"><value>true</value></property>
-					<property name="commandName"><value>mimeTypeList</value></property>
-					<property name="formView"><value>/admin/observations/mimeTypeList</value></property>
-					<property name="successView"><value>mimeType.list</value></property>
-				</bean>
+			<!--  Validator and Form Controller for the add/edit order types page -->
+			<bean id="mimeTypeValidator" class="org.openmrs.web.controller.observation.MimeTypeValidator"/>
+			<bean id="mimeTypeForm" class="org.openmrs.web.controller.observation.MimeTypeFormController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>mimeType</value></property>
+				<property name="validator"><ref bean="mimeTypeValidator"/></property>
+				<property name="formView"><value>/admin/observations/mimeTypeForm</value></property>
+				<property name="successView"><value>mimeType.list</value></property>
+			</bean>
+		<!-- ** /Mime Type ** -->
 		
-				<!--  Validator and Form Controller for the add/edit order types page -->
-				<bean id="mimeTypeValidator" class="org.openmrs.web.controller.observation.MimeTypeValidator"/>
-				<bean id="mimeTypeForm" class="org.openmrs.web.controller.observation.MimeTypeFormController">
-					<property name="sessionForm"><value>true</value></property>
-					<property name="commandName"><value>mimeType</value></property>
-					<property name="validator"><ref bean="mimeTypeValidator"/></property>
-					<property name="formView"><value>/admin/observations/mimeTypeForm</value></property>
-					<property name="successView"><value>mimeType.list</value></property>
-				</bean>
-			<!-- ** /Mime Type ** -->
-			
-		<!-- ====== /Observation Sector ====== -->
+	<!-- ====== /Observation Sector ====== -->
 
-	    <!-- ========================== -->	    
-	    <!-- ====== Order Sector ====== -->
-	    <!-- ========================== -->
+    <!-- ========================== -->	    
+    <!-- ====== Order Sector ====== -->
+    <!-- ========================== -->
 
-			<!-- ** Order Type ** -->
-				<!--this is the optional method of declaring values in the constructor -->
-				<!--<bean id="orderTypeList" class="org.openmrs.web.controller.OrderTypeListController" />-->
-				<!--<bean id="orderTypeForm" class="org.openmrs.web.controller.OrderTypeFormController" />-->
+		<!-- ** Order Type ** -->
+			<!--this is the optional method of declaring values in the constructor -->
+			<!--<bean id="orderTypeList" class="org.openmrs.web.controller.OrderTypeListController" />-->
+			<!--<bean id="orderTypeForm" class="org.openmrs.web.controller.OrderTypeFormController" />-->
+
+			<bean id="orderTypeList" class="org.openmrs.web.controller.order.OrderTypeListController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>orderTypeList</value></property>
+				<property name="formView"><value>/admin/orders/orderTypeList</value></property>
+				<property name="successView"><value>orderType.list</value></property>
+			</bean>
 	
-				<bean id="orderTypeList" class="org.openmrs.web.controller.order.OrderTypeListController">
-					<property name="sessionForm"><value>true</value></property>
-					<property name="commandName"><value>orderTypeList</value></property>
-					<property name="formView"><value>/admin/orders/orderTypeList</value></property>
-					<property name="successView"><value>orderType.list</value></property>
-				</bean>
-		
-				<!--  Validator and Form Controller for the add/edit order types page -->
-				<bean id="orderTypeValidator" class="org.openmrs.web.controller.order.OrderTypeValidator"/>
-				<bean id="orderTypeForm" class="org.openmrs.web.controller.order.OrderTypeFormController">
-					<property name="sessionForm"><value>true</value></property>
-					<property name="commandName"><value>orderType</value></property>
-					<property name="validator"><ref bean="orderTypeValidator"/></property>
-					<property name="formView"><value>/admin/orders/orderTypeForm</value></property>
-					<property name="successView"><value>orderType.list</value></property>
-				</bean>
-			<!-- ** /Order Type ** -->
-		<!-- ====== /Order Sector ====== -->
+			<!--  Validator and Form Controller for the add/edit order types page -->
+			<bean id="orderTypeValidator" class="org.openmrs.web.controller.order.OrderTypeValidator"/>
+			<bean id="orderTypeForm" class="org.openmrs.web.controller.order.OrderTypeFormController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>orderType</value></property>
+				<property name="validator"><ref bean="orderTypeValidator"/></property>
+				<property name="formView"><value>/admin/orders/orderTypeForm</value></property>
+				<property name="successView"><value>orderType.list</value></property>
+			</bean>
+		<!-- ** /Order Type ** -->
+	<!-- ====== /Order Sector ====== -->
 
 		
-	    <!-- ========================== -->
-		<!-- ===== Patient Sector ===== -->
-	    <!-- ========================== -->
- 
-	    	<!-- ** Patient ** -->
-				<bean id="patientValidator" class="org.openmrs.web.controller.patient.PatientValidator"/>
-				<bean id="patientForm" class="org.openmrs.web.controller.patient.PatientFormController">
-					<property name="sessionForm"><value>true</value></property>
-					<property name="commandName"><value>patient</value></property>
-					<property name="validator"><ref bean="patientValidator"/></property>
-					<property name="formView"><value>/admin/patients/patientForm</value></property>
-					<property name="successView"><value>patient.form</value></property>
-				</bean>
-			<!-- ** /Patient ** -->
-			<!-- ** New (mini) Patient ** -->
-				<bean id="newPatientForm" class="org.openmrs.web.controller.patient.NewPatientFormController">
-					<property name="sessionForm"><value>true</value></property>
-					<property name="commandName"><value>patient</value></property>
-					<property name="commandClass"><value>org.openmrs.web.dwr.PatientListItem</value></property>
-					<property name="formView"><value>/admin/patients/newPatientForm</value></property>
-					<property name="successView"><value>/@WEBAPP.NAME@/formentry/patientSummary.form</value></property>
-				</bean>
-			<!-- ** /New Patient ** -->
-			
-			<!-- **  Tribe   ** -->
-				<bean id="tribeList" class="org.openmrs.web.controller.patient.TribeListController">
-					<property name="sessionForm"><value>true</value></property>
-					<property name="commandName"><value>tribeList</value></property>
-					<property name="formView"><value>/admin/patients/tribeList</value></property>
-					<property name="successView"><value>tribe.list</value></property>
-				</bean>
-				<bean id="tribeValidator" class="org.openmrs.web.controller.patient.TribeValidator"/>
-				<bean id="tribeForm" class="org.openmrs.web.controller.patient.TribeFormController">
-					<property name="sessionForm"><value>true</value></property>
-					<property name="commandName"><value>tribe</value></property>
-					<property name="validator"><ref bean="tribeValidator"/></property>
-					<property name="formView"><value>/admin/patients/tribeForm</value></property>
-					<property name="successView"><value>tribe.list</value></property>
-				</bean>
-				<bean id="tribeListTaskpane" class="org.openmrs.web.controller.TribeListController">
-					<property name="commandName"><value>tribes</value></property>
-					<property name="commandClass"><value>java.util.List</value></property>
-					<property name="formView"><value>/formentry/taskpane/tribe</value></property>
-					<property name="successView"><value>/formentry/taskpane/tribe</value></property>
-				</bean>	
-			<!-- ** /Tribe   ** -->
-			
-			<!-- **  Relationship   ** -->
-				<bean id="relationshipList" class="org.openmrs.web.controller.patient.RelationshipListController">
-					<property name="commandName"><value>relationshipList</value></property>
-					<property name="formView"><value>/admin/patients/relationshipList</value></property>
-					<property name="successView"><value>relationship.list</value></property>
-				</bean>
-				<bean id="relationshipForm" class="org.openmrs.web.controller.patient.RelationshipFormController">
-					<property name="commandName"><value>person</value></property>
-					<property name="formView"><value>/admin/patients/relationshipForm</value></property>
-					<property name="successView"><value>relationship.list</value></property>
-				</bean>
-			<!-- **  /Relationship ** -->
-			
-						
-			<!-- **  Patient Identifier Type   ** -->
-				<bean id="patientIdentifierTypeList" class="org.openmrs.web.controller.patient.PatientIdentifierTypeListController">
-					<property name="sessionForm"><value>true</value></property>
-					<property name="commandName"><value>patientIdentifierTypeList</value></property>
-					<property name="formView"><value>/admin/patients/patientIdentifierTypeList</value></property>
-					<property name="successView"><value>patientIdentifierType.list</value></property>
-				</bean>
-				<bean id="patientIdentifierTypeValidator" class="org.openmrs.web.controller.patient.PatientIdentifierTypeValidator"/>
-				<bean id="patientIdentifierTypeForm" class="org.openmrs.web.controller.patient.PatientIdentifierTypeFormController">
-					<property name="sessionForm"><value>true</value></property>
-					<property name="commandName"><value>patientIdentifierType</value></property>
-					<property name="validator"><ref bean="patientIdentifierTypeValidator"/></property>
-					<property name="formView"><value>/admin/patients/patientIdentifierTypeForm</value></property>
-					<property name="successView"><value>patientIdentifierType.list</value></property>
-				</bean>
-			<!-- ** /Patient Identifier Type   ** -->
-			
-			<!-- ** Merge Patient ** -->
-				<bean id="mergePatientsForm" class="org.openmrs.web.controller.patient.MergePatientsFormController">
-					<property name="sessionForm"><value>true</value></property>
-					<property name="commandName"><value>patient1</value></property>
-					<property name="formView"><value>/admin/patients/mergePatientsForm</value></property>
-					<property name="successView"><value>mergePatients.form</value></property>
-				</bean>
-			<!-- ** /Merge Patient ** -->		
-		
-		<!-- ====== /Patient Sector ====== -->
+    <!-- ========================== -->
+	<!-- ===== Patient Sector ===== -->
+    <!-- ========================== -->
 
-	    <!-- ========================== -->
-		<!-- ===== User Sector ===== -->
-	    <!-- ========================== -->
+    	<!-- ** Patient ** -->
+			<bean id="patientValidator" class="org.openmrs.web.controller.patient.PatientValidator"/>
+			<bean id="patientForm" class="org.openmrs.web.controller.patient.PatientFormController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>patient</value></property>
+				<property name="validator"><ref bean="patientValidator"/></property>
+				<property name="formView"><value>/admin/patients/patientForm</value></property>
+				<property name="successView"><value>patient.form</value></property>
+			</bean>
+		<!-- ** /Patient ** -->
+		<!-- ** New (mini) Patient ** -->
+			<bean id="newPatientForm" class="org.openmrs.web.controller.patient.NewPatientFormController" singleton="false">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>patient</value></property>
+				<property name="commandClass"><value>org.openmrs.web.dwr.PatientListItem</value></property>
+				<property name="formView"><value>/admin/patients/newPatientForm</value></property>
+				<property name="successView"><value>/@WEBAPP.NAME@/formentry/patientSummary.form</value></property>
+			</bean>
+		<!-- ** /New Patient ** -->
+		
+		<!-- **  Tribe   ** -->
+			<bean id="tribeList" class="org.openmrs.web.controller.patient.TribeListController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>tribeList</value></property>
+				<property name="formView"><value>/admin/patients/tribeList</value></property>
+				<property name="successView"><value>tribe.list</value></property>
+			</bean>
+			<bean id="tribeValidator" class="org.openmrs.web.controller.patient.TribeValidator"/>
+			<bean id="tribeForm" class="org.openmrs.web.controller.patient.TribeFormController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>tribe</value></property>
+				<property name="validator"><ref bean="tribeValidator"/></property>
+				<property name="formView"><value>/admin/patients/tribeForm</value></property>
+				<property name="successView"><value>tribe.list</value></property>
+			</bean>
+			<bean id="tribeListTaskpane" class="org.openmrs.web.controller.TribeListController">
+				<property name="commandName"><value>tribes</value></property>
+				<property name="commandClass"><value>java.util.List</value></property>
+				<property name="formView"><value>/formentry/taskpane/tribe</value></property>
+				<property name="successView"><value>/formentry/taskpane/tribe</value></property>
+			</bean>	
+		<!-- ** /Tribe   ** -->
+		
+		<!-- **  Relationship   ** -->
+			<bean id="relationshipList" class="org.openmrs.web.controller.patient.RelationshipListController">
+				<property name="commandName"><value>relationshipList</value></property>
+				<property name="formView"><value>/admin/patients/relationshipList</value></property>
+				<property name="successView"><value>relationship.list</value></property>
+			</bean>
+			<bean id="relationshipForm" class="org.openmrs.web.controller.patient.RelationshipFormController">
+				<property name="commandName"><value>person</value></property>
+				<property name="formView"><value>/admin/patients/relationshipForm</value></property>
+				<property name="successView"><value>relationship.list</value></property>
+			</bean>
+		<!-- **  /Relationship ** -->
+		
+					
+		<!-- **  Patient Identifier Type   ** -->
+			<bean id="patientIdentifierTypeList" class="org.openmrs.web.controller.patient.PatientIdentifierTypeListController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>patientIdentifierTypeList</value></property>
+				<property name="formView"><value>/admin/patients/patientIdentifierTypeList</value></property>
+				<property name="successView"><value>patientIdentifierType.list</value></property>
+			</bean>
+			<bean id="patientIdentifierTypeValidator" class="org.openmrs.web.controller.patient.PatientIdentifierTypeValidator"/>
+			<bean id="patientIdentifierTypeForm" class="org.openmrs.web.controller.patient.PatientIdentifierTypeFormController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>patientIdentifierType</value></property>
+				<property name="validator"><ref bean="patientIdentifierTypeValidator"/></property>
+				<property name="formView"><value>/admin/patients/patientIdentifierTypeForm</value></property>
+				<property name="successView"><value>patientIdentifierType.list</value></property>
+			</bean>
+		<!-- ** /Patient Identifier Type   ** -->
+		
+		<!-- ** Merge Patient ** -->
+			<bean id="mergePatientsForm" class="org.openmrs.web.controller.patient.MergePatientsFormController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>patient1</value></property>
+				<property name="formView"><value>/admin/patients/mergePatientsForm</value></property>
+				<property name="successView"><value>mergePatients.form</value></property>
+			</bean>
+		<!-- ** /Merge Patient ** -->		
+	
+	<!-- ====== /Patient Sector ====== -->
+
+    <!-- ========================== -->
+	<!-- ===== User Sector ===== -->
+    <!-- ========================== -->
+    
+    	<!-- ** User ** -->
+    		<bean id="userList" class="org.openmrs.web.controller.user.UserListController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>userList</value></property>
+				<property name="formView"><value>/admin/users/userList</value></property>
+				<property name="successView"><value>user.list</value></property>
+			</bean>
+			<bean id="userValidator" class="org.openmrs.web.controller.user.UserValidator"/>
+			<bean id="userForm" class="org.openmrs.web.controller.user.UserFormController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>user</value></property>
+				<property name="validator"><ref bean="userValidator"/></property>
+				<property name="formView"><value>/admin/users/userForm</value></property>
+				<property name="successView"><value>user.list</value></property>
+			</bean>
+		<!-- ** /User ** -->
+		<!-- ** Role  ** -->
+			<bean id="roleList" class="org.openmrs.web.controller.user.RoleListController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>roleList</value></property>
+				<property name="formView"><value>/admin/users/roleList</value></property>
+				<property name="successView"><value>role.list</value></property>
+			</bean>
+		
+			<!--  Validator and Form Controller for the add/edit role page -->
+			<bean id="roleValidator" class="org.openmrs.web.controller.user.RoleValidator"/>
+			<bean id="roleForm" class="org.openmrs.web.controller.user.RoleFormController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>role</value></property>
+				<property name="validator"><ref bean="roleValidator"/></property>
+				<property name="formView"><value>/admin/users/roleForm</value></property>
+				<property name="successView"><value>role.list</value></property>
+			</bean>
+		<!--  ** /Role ** -->
+		<!-- ** Privilege  ** -->
+			<bean id="privilegeList" class="org.openmrs.web.controller.user.PrivilegeListController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>privilegeList</value></property>
+				<property name="formView"><value>/admin/users/privilegeList</value></property>
+				<property name="successView"><value>privilege.list</value></property>
+			</bean>
+		
+			<!--  Validator and Form Controller for the add/edit privilege page -->
+			<bean id="privilegeValidator" class="org.openmrs.web.controller.user.PrivilegeValidator"/>
+			<bean id="privilegeForm" class="org.openmrs.web.controller.user.PrivilegeFormController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>privilege</value></property>
+				<property name="validator"><ref bean="privilegeValidator"/></property>
+				<property name="formView"><value>/admin/users/privilegeForm</value></property>
+				<property name="successView"><value>privilege.list</value></property>
+			</bean>
+		<!--  ** /Privilege ** -->
+		
+		<!-- ** Alert  ** -->
+			<bean id="alertList" class="org.openmrs.notification.web.controller.AlertListController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>alertList</value></property>
+				<property name="formView"><value>/admin/users/alertList</value></property>
+				<property name="successView"><value>alert.list</value></property>
+			</bean>
+		
+			<bean id="alertForm" class="org.openmrs.notification.web.controller.AlertFormController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>alert</value></property>
+				<property name="formView"><value>/admin/users/alertForm</value></property>
+				<property name="successView"><value>alert.list</value></property>
+			</bean>
+		<!--  ** /Alert ** -->
+		
+	<!-- ====== /User Sector ====== -->
+	
+    <!-- ============================ -->
+	<!-- ===== Encounter Sector ===== -->
+    <!-- ============================ -->
+		<!-- ** Encounter      ** -->
+    		<bean id="encounterForm" class="org.openmrs.web.controller.encounter.EncounterFormController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>encounter</value></property>
+				<property name="formView"><value>/admin/encounters/encounterForm</value></property>
+				<property name="successView"><value>encounter.form</value></property>
+			</bean>
+		<!-- ** /Encounter     ** -->
+			
+		<!-- ** Encounter Type ** -->
+			<bean id="encounterTypeList" class="org.openmrs.web.controller.encounter.EncounterTypeListController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>encounterTypeList</value></property>
+				<property name="formView"><value>/admin/encounters/encounterTypeList</value></property>
+				<property name="successView"><value>encounterType.list</value></property>
+			</bean>
+	
+			<!--  Validator and Form Controller for the add/edit encounter types page -->
+			<bean id="encounterTypeValidator" class="org.openmrs.web.controller.encounter.EncounterTypeValidator"/>
+			<bean id="encounterTypeForm" class="org.openmrs.web.controller.encounter.EncounterTypeFormController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>encounterType</value></property>
+				<property name="validator"><ref bean="encounterTypeValidator"/></property>
+				<property name="formView"><value>/admin/encounters/encounterTypeForm</value></property>
+				<property name="successView"><value>encounterType.list</value></property>
+			</bean>
+		<!-- ** /Encounter Type ** -->
+		<!-- ** Location ** -->
+			<bean id="locationList" class="org.openmrs.web.controller.encounter.LocationListController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>locationList</value></property>
+				<property name="formView"><value>/admin/encounters/locationList</value></property>
+				<property name="successView"><value>location.list</value></property>
+			</bean>
+	
+			<!--  Validator and Form Controller for the add/edit encounter types page -->
+			<bean id="locationValidator" class="org.openmrs.web.controller.encounter.LocationValidator"/>
+			<bean id="locationForm" class="org.openmrs.web.controller.encounter.LocationFormController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>location</value></property>
+				<property name="validator"><ref bean="locationValidator"/></property>
+				<property name="formView"><value>/admin/encounters/locationForm</value></property>
+				<property name="successView"><value>location.list</value></property>
+			</bean>
+		<!-- ** /Location ** -->
+    <!-- ============================ -->
+    			
+    <!-- ============================ -->
+	<!-- =====  Concept Sector  ===== -->
+    <!-- ============================ -->
+		<!-- ** Concept ** -->
+			<bean id="conceptValidator" class="org.openmrs.web.controller.ConceptFormValidator"/>
+	    	<bean id="conceptForm" class="org.openmrs.web.controller.ConceptFormController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>concept</value></property>
+				<property name="validator"><ref bean="conceptValidator"/></property>
+				<property name="formView"><value>/dictionary/conceptForm</value></property>
+				<property name="successView"><value>concept.form</value></property>
+			</bean>
+	    	<bean id="conceptView" class="org.openmrs.web.controller.ConceptFormController">
+				<property name="commandName"><value>concept</value></property>
+				<property name="formView"><value>/dictionary/concept</value></property>
+				<property name="successView"><value>concept.htm</value></property>
+			</bean>
+		<!-- ** /Concept ** -->
+		<!-- ** Concept Drug ** -->		
+			<bean id="conceptDrugList" class="org.openmrs.web.controller.concept.ConceptDrugListController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>conceptDrugList</value></property>
+				<property name="formView"><value>/admin/concepts/conceptDrugList</value></property>
+				<property name="successView"><value>conceptDrug.list</value></property>
+			</bean>
+	
+			<bean id="conceptDrugForm" class="org.openmrs.web.controller.concept.ConceptDrugFormController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>drug</value></property>
+				<property name="formView"><value>/admin/concepts/conceptDrugForm</value></property>
+				<property name="successView"><value>conceptDrug.list</value></property>
+			</bean>
+		<!--  ** /Concept Drug ** -->
+		<!-- ** Concept Class ** -->		
+			<bean id="conceptClassList" class="org.openmrs.web.controller.concept.ConceptClassListController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>conceptClassList</value></property>
+				<property name="formView"><value>/admin/concepts/conceptClassList</value></property>
+				<property name="successView"><value>conceptClass.list</value></property>
+			</bean>
+	
+			<!--  Validator and Form Controller for the add/edit concept types page -->
+			<bean id="conceptClassValidator" class="org.openmrs.web.controller.concept.ConceptClassValidator"/>
+			<bean id="conceptClassForm" class="org.openmrs.web.controller.concept.ConceptClassFormController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>conceptClass</value></property>
+				<property name="validator"><ref bean="conceptClassValidator"/></property>
+				<property name="formView"><value>/admin/concepts/conceptClassForm</value></property>
+				<property name="successView"><value>conceptClass.list</value></property>
+			</bean>
+		<!--  ** /Concept Class ** -->
+		<!--  ** Concept Datatype ** -->
+			<bean id="conceptDatatypeList" class="org.openmrs.web.controller.concept.ConceptDatatypeListController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>conceptDatatypeList</value></property>
+				<property name="formView"><value>/admin/concepts/conceptDatatypeList</value></property>
+				<property name="successView"><value>conceptDatatype.list</value></property>
+			</bean>
+	
+			<!--  Validator and Form Controller for the add/edit concept types page -->
+			<bean id="conceptDatatypeValidator" class="org.openmrs.web.controller.concept.ConceptDatatypeValidator"/>
+			<bean id="conceptDatatypeForm" class="org.openmrs.web.controller.concept.ConceptDatatypeFormController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>conceptDatatype</value></property>
+				<property name="validator"><ref bean="conceptDatatypeValidator"/></property>
+				<property name="formView"><value>/admin/concepts/conceptDatatypeForm</value></property>
+				<property name="successView"><value>conceptDatatype.list</value></property>
+			</bean>
+		<!--  ** /Concept Datatype ** -->
+		<!--  ** ConceptWord ** -->
+			<bean id="conceptWordForm" class="org.openmrs.web.controller.concept.ConceptWordFormController">
+				<property name="commandName"><value>conceptId</value></property>
+				<property name="commandClass"><value>java.lang.String</value></property>
+				<property name="formView"><value>/admin/concepts/conceptWordForm</value></property>
+				<property name="successView"><value>conceptWord.form</value></property>
+			</bean>
+		<!-- ** /Concept Word ** -->
+		<!-- ** Concept Set Derived ** -->
+			<bean id="conceptSetDerivedForm" class="org.openmrs.web.controller.concept.ConceptSetDerivedFormController">
+				<property name="commandName"><value>conceptId</value></property>
+				<property name="commandClass"><value>java.lang.String</value></property>
+				<property name="formView"><value>/admin/concepts/conceptSetDerivedForm</value></property>
+				<property name="successView"><value>conceptSetDerived.form</value></property>
+			</bean>
+		<!-- ** /Concept Set Derived ** -->
+		<!--  ** Concept Proposal ** -->
+			<bean id="conceptProposalList" class="org.openmrs.web.controller.concept.ConceptProposalListController">
+				<property name="commandName"><value>conceptProposalMap</value></property>
+				<property name="formView"><value>/admin/concepts/conceptProposalList</value></property>
+				<property name="successView"><value>conceptProposal.list</value></property>
+			</bean>
+	
+			<bean id="conceptProposalForm" class="org.openmrs.web.controller.concept.ConceptProposalFormController">
+				<property name="commandName"><value>conceptProposal</value></property>
+				<property name="formView"><value>/admin/concepts/conceptProposalForm</value></property>
+				<property name="successView"><value>conceptProposal.list</value></property>
+			</bean>
+			
+			<bean id="proposeConceptForm" class="org.openmrs.web.controller.concept.ProposeConceptFormController">
+				<property name="commandName"><value>conceptProposal</value></property>
+				<property name="formView"><value>/admin/concepts/proposeConceptForm</value></property>
+				<property name="successView"><value>conceptProposal.list</value></property>
+			</bean>
+		<!--  ** /Concept Proposal ** -->
+    <!-- ============================ -->
 	    
-	    	<!-- ** User ** -->
-	    		<bean id="userList" class="org.openmrs.web.controller.user.UserListController">
-					<property name="sessionForm"><value>true</value></property>
-					<property name="commandName"><value>userList</value></property>
-					<property name="formView"><value>/admin/users/userList</value></property>
-					<property name="successView"><value>user.list</value></property>
-				</bean>
-				<bean id="userValidator" class="org.openmrs.web.controller.user.UserValidator"/>
-				<bean id="userForm" class="org.openmrs.web.controller.user.UserFormController">
-					<property name="sessionForm"><value>true</value></property>
-					<property name="commandName"><value>user</value></property>
-					<property name="validator"><ref bean="userValidator"/></property>
-					<property name="formView"><value>/admin/users/userForm</value></property>
-					<property name="successView"><value>user.list</value></property>
-				</bean>
-			<!-- ** /User ** -->
-			<!-- ** Role  ** -->
-				<bean id="roleList" class="org.openmrs.web.controller.user.RoleListController">
-						<property name="sessionForm"><value>true</value></property>
-						<property name="commandName"><value>roleList</value></property>
-						<property name="formView"><value>/admin/users/roleList</value></property>
-						<property name="successView"><value>role.list</value></property>
-					</bean>
-			
-					<!--  Validator and Form Controller for the add/edit role page -->
-					<bean id="roleValidator" class="org.openmrs.web.controller.user.RoleValidator"/>
-					<bean id="roleForm" class="org.openmrs.web.controller.user.RoleFormController">
-						<property name="sessionForm"><value>true</value></property>
-						<property name="commandName"><value>role</value></property>
-						<property name="validator"><ref bean="roleValidator"/></property>
-						<property name="formView"><value>/admin/users/roleForm</value></property>
-						<property name="successView"><value>role.list</value></property>
-					</bean>
-			<!--  ** /Role ** -->
-			<!-- ** Privilege  ** -->
-				<bean id="privilegeList" class="org.openmrs.web.controller.user.PrivilegeListController">
-						<property name="sessionForm"><value>true</value></property>
-						<property name="commandName"><value>privilegeList</value></property>
-						<property name="formView"><value>/admin/users/privilegeList</value></property>
-						<property name="successView"><value>privilege.list</value></property>
-					</bean>
-			
-					<!--  Validator and Form Controller for the add/edit privilege page -->
-					<bean id="privilegeValidator" class="org.openmrs.web.controller.user.PrivilegeValidator"/>
-					<bean id="privilegeForm" class="org.openmrs.web.controller.user.PrivilegeFormController">
-						<property name="sessionForm"><value>true</value></property>
-						<property name="commandName"><value>privilege</value></property>
-						<property name="validator"><ref bean="privilegeValidator"/></property>
-						<property name="formView"><value>/admin/users/privilegeForm</value></property>
-						<property name="successView"><value>privilege.list</value></property>
-					</bean>
-			<!--  ** /Privilege ** -->
-			
-			<!-- ** Alert  ** -->
-				<bean id="alertList" class="org.openmrs.notification.web.controller.AlertListController">
-						<property name="sessionForm"><value>true</value></property>
-						<property name="commandName"><value>alertList</value></property>
-						<property name="formView"><value>/admin/users/alertList</value></property>
-						<property name="successView"><value>alert.list</value></property>
-					</bean>
-			
-					<bean id="alertForm" class="org.openmrs.notification.web.controller.AlertFormController">
-						<property name="sessionForm"><value>true</value></property>
-						<property name="commandName"><value>alert</value></property>
-						<property name="formView"><value>/admin/users/alertForm</value></property>
-						<property name="successView"><value>alert.list</value></property>
-					</bean>
-			<!--  ** /Alert ** -->
-			
-		<!-- ====== /User Sector ====== -->
-		
-	    <!-- ============================ -->
-		<!-- ===== Encounter Sector ===== -->
-	    <!-- ============================ -->
-	    		<!-- ** Encounter      ** -->
-	    		<bean id="encounterForm" class="org.openmrs.web.controller.encounter.EncounterFormController">
-					<property name="sessionForm"><value>true</value></property>
-					<property name="commandName"><value>encounter</value></property>
-					<property name="formView"><value>/admin/encounters/encounterForm</value></property>
-					<property name="successView"><value>encounter.form</value></property>
-				</bean>
-				<!-- ** /Encounter     ** -->
-				
-				<!-- ** Encounter Type ** -->
-				<bean id="encounterTypeList" class="org.openmrs.web.controller.encounter.EncounterTypeListController">
-					<property name="sessionForm"><value>true</value></property>
-					<property name="commandName"><value>encounterTypeList</value></property>
-					<property name="formView"><value>/admin/encounters/encounterTypeList</value></property>
-					<property name="successView"><value>encounterType.list</value></property>
-				</bean>
-		
-				<!--  Validator and Form Controller for the add/edit encounter types page -->
-				<bean id="encounterTypeValidator" class="org.openmrs.web.controller.encounter.EncounterTypeValidator"/>
-				<bean id="encounterTypeForm" class="org.openmrs.web.controller.encounter.EncounterTypeFormController">
-					<property name="sessionForm"><value>true</value></property>
-					<property name="commandName"><value>encounterType</value></property>
-					<property name="validator"><ref bean="encounterTypeValidator"/></property>
-					<property name="formView"><value>/admin/encounters/encounterTypeForm</value></property>
-					<property name="successView"><value>encounterType.list</value></property>
-				</bean>
-			<!-- ** /Encounter Type ** -->
-			<!-- ** Location ** -->
-				<bean id="locationList" class="org.openmrs.web.controller.encounter.LocationListController">
-					<property name="sessionForm"><value>true</value></property>
-					<property name="commandName"><value>locationList</value></property>
-					<property name="formView"><value>/admin/encounters/locationList</value></property>
-					<property name="successView"><value>location.list</value></property>
-				</bean>
-		
-				<!--  Validator and Form Controller for the add/edit encounter types page -->
-				<bean id="locationValidator" class="org.openmrs.web.controller.encounter.LocationValidator"/>
-				<bean id="locationForm" class="org.openmrs.web.controller.encounter.LocationFormController">
-					<property name="sessionForm"><value>true</value></property>
-					<property name="commandName"><value>location</value></property>
-					<property name="validator"><ref bean="locationValidator"/></property>
-					<property name="formView"><value>/admin/encounters/locationForm</value></property>
-					<property name="successView"><value>location.list</value></property>
-				</bean>
-			<!-- ** /Location ** -->
-	    <!-- ============================ -->
-	    			
-	    <!-- ============================ -->
-		<!-- =====  Concept Sector  ===== -->
-	    <!-- ============================ -->
-			<!-- ** Concept ** -->
-				<bean id="conceptValidator" class="org.openmrs.web.controller.ConceptFormValidator"/>
-		    	<bean id="conceptForm" class="org.openmrs.web.controller.ConceptFormController">
-					<property name="sessionForm"><value>true</value></property>
-					<property name="commandName"><value>concept</value></property>
-					<property name="validator"><ref bean="conceptValidator"/></property>
-					<property name="formView"><value>/dictionary/conceptForm</value></property>
-					<property name="successView"><value>concept.form</value></property>
-				</bean>
-		    	<bean id="conceptView" class="org.openmrs.web.controller.ConceptFormController">
-					<property name="commandName"><value>concept</value></property>
-					<property name="formView"><value>/dictionary/concept</value></property>
-					<property name="successView"><value>concept.htm</value></property>
-				</bean>
-			<!-- ** /Concept ** -->
-			<!-- ** Concept Class ** -->		
-				<bean id="conceptClassList" class="org.openmrs.web.controller.concept.ConceptClassListController">
-					<property name="sessionForm"><value>true</value></property>
-					<property name="commandName"><value>conceptClassList</value></property>
-					<property name="formView"><value>/admin/concepts/conceptClassList</value></property>
-					<property name="successView"><value>conceptClass.list</value></property>
-				</bean>
-		
-				<!--  Validator and Form Controller for the add/edit concept types page -->
-				<bean id="conceptClassValidator" class="org.openmrs.web.controller.concept.ConceptClassValidator"/>
-				<bean id="conceptClassForm" class="org.openmrs.web.controller.concept.ConceptClassFormController">
-					<property name="sessionForm"><value>true</value></property>
-					<property name="commandName"><value>conceptClass</value></property>
-					<property name="validator"><ref bean="conceptClassValidator"/></property>
-					<property name="formView"><value>/admin/concepts/conceptClassForm</value></property>
-					<property name="successView"><value>conceptClass.list</value></property>
-				</bean>
-			<!--  ** /Concept Class ** -->
-			<!--  ** Concept Datatype ** -->
-				<bean id="conceptDatatypeList" class="org.openmrs.web.controller.concept.ConceptDatatypeListController">
-					<property name="sessionForm"><value>true</value></property>
-					<property name="commandName"><value>conceptDatatypeList</value></property>
-					<property name="formView"><value>/admin/concepts/conceptDatatypeList</value></property>
-					<property name="successView"><value>conceptDatatype.list</value></property>
-				</bean>
-		
-				<!--  Validator and Form Controller for the add/edit concept types page -->
-				<bean id="conceptDatatypeValidator" class="org.openmrs.web.controller.concept.ConceptDatatypeValidator"/>
-				<bean id="conceptDatatypeForm" class="org.openmrs.web.controller.concept.ConceptDatatypeFormController">
-					<property name="sessionForm"><value>true</value></property>
-					<property name="commandName"><value>conceptDatatype</value></property>
-					<property name="validator"><ref bean="conceptDatatypeValidator"/></property>
-					<property name="formView"><value>/admin/concepts/conceptDatatypeForm</value></property>
-					<property name="successView"><value>conceptDatatype.list</value></property>
-				</bean>
-			<!--  ** /Concept Datatype ** -->
-			<!--  ** ConceptWord ** -->
-				<bean id="conceptWordForm" class="org.openmrs.web.controller.concept.ConceptWordFormController">
-					<property name="commandName"><value>conceptId</value></property>
-					<property name="commandClass"><value>java.lang.String</value></property>
-					<property name="formView"><value>/admin/concepts/conceptWordForm</value></property>
-					<property name="successView"><value>conceptWord.form</value></property>
-				</bean>
-			<!-- ** /Concept Word ** -->
-			<!-- ** Concept Set Derived ** -->
-				<bean id="conceptSetDerivedForm" class="org.openmrs.web.controller.concept.ConceptSetDerivedFormController">
-					<property name="commandName"><value>conceptId</value></property>
-					<property name="commandClass"><value>java.lang.String</value></property>
-					<property name="formView"><value>/admin/concepts/conceptSetDerivedForm</value></property>
-					<property name="successView"><value>conceptSetDerived.form</value></property>
-				</bean>
-			<!-- ** /Concept Set Derived ** -->
-			<!--  ** Concept Proposal ** -->
-				<bean id="conceptProposalList" class="org.openmrs.web.controller.concept.ConceptProposalListController">
-					<property name="commandName"><value>conceptProposalMap</value></property>
-					<property name="formView"><value>/admin/concepts/conceptProposalList</value></property>
-					<property name="successView"><value>conceptProposal.list</value></property>
-				</bean>
-		
-				<bean id="conceptProposalForm" class="org.openmrs.web.controller.concept.ConceptProposalFormController">
-					<property name="commandName"><value>conceptProposal</value></property>
-					<property name="formView"><value>/admin/concepts/conceptProposalForm</value></property>
-					<property name="successView"><value>conceptProposal.list</value></property>
-				</bean>
-				
-				<bean id="proposeConceptForm" class="org.openmrs.web.controller.concept.ProposeConceptFormController">
-					<property name="commandName"><value>conceptProposal</value></property>
-					<property name="formView"><value>/admin/concepts/proposeConceptForm</value></property>
-					<property name="successView"><value>conceptProposal.list</value></property>
-				</bean>
-			<!--  ** /Concept Proposal ** -->
-	    <!-- ============================ -->
-		    
-		    
-	    <!-- ============================ -->
-		<!-- ===== Report Sector ===== -->
-	    <!-- ============================ -->
-			<!-- ** Report ** -->
-				<bean id="reportList" class="org.openmrs.web.controller.report.ReportListController">
-					<property name="sessionForm"><value>true</value></property>
-					<property name="commandName"><value>reportList</value></property>
-					<property name="formView"><value>/admin/reports/reportList</value></property>
-					<property name="successView"><value>report.list</value></property>
-				</bean>
-		
-				<!--  Validator and Form Controller for the add/edit reports page -->
-				<bean id="reportValidator" class="org.openmrs.web.controller.report.ReportValidator"/>
-				<bean id="reportForm" class="org.openmrs.web.controller.report.ReportFormController">
-					<property name="sessionForm"><value>true</value></property>
-					<property name="commandName"><value>report</value></property>
-					<property name="validator"><ref bean="reportValidator"/></property>
-					<property name="formView"><value>/admin/reports/reportForm</value></property>
-					<property name="successView"><value>report.list</value></property>
-				</bean>
-			<!-- ** /Report ** -->
+	    
+    <!-- ============================ -->
+	<!-- ===== Report Sector ===== -->
+    <!-- ============================ -->
+		<!-- ** Report ** -->
+			<bean id="reportList" class="org.openmrs.web.controller.report.ReportListController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>reportList</value></property>
+				<property name="formView"><value>/admin/reports/reportList</value></property>
+				<property name="successView"><value>report.list</value></property>
+			</bean>
+	
+			<!--  Validator and Form Controller for the add/edit reports page -->
+			<bean id="reportValidator" class="org.openmrs.web.controller.report.ReportValidator"/>
+			<bean id="reportForm" class="org.openmrs.web.controller.report.ReportFormController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>report</value></property>
+				<property name="validator"><ref bean="reportValidator"/></property>
+				<property name="formView"><value>/admin/reports/reportForm</value></property>
+				<property name="successView"><value>report.list</value></property>
+			</bean>
+		<!-- ** /Report ** -->
 
 			<!-- ** ReportObject ** -->
-				<bean id="reportObjectList" class="org.openmrs.web.controller.report.ReportObjectListController">
-					<property name="sessionForm"><value>true</value></property>
-					<property name="commandName"><value>reportObjectList</value></property>
-					<property name="formView"><value>/admin/reports/reportObjectList</value></property>
-					<property name="successView"><value>reportObject.list</value></property>
-				</bean>
+			<bean id="reportObjectList" class="org.openmrs.web.controller.report.ReportObjectListController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>reportObjectList</value></property>
+				<property name="formView"><value>/admin/reports/reportObjectList</value></property>
+				<property name="successView"><value>reportObject.list</value></property>
+			</bean>
+	
+			<!--  Validator and Form Controller for the add/edit reports page -->
+			<bean id="reportObjectValidator" class="org.openmrs.web.controller.report.ReportObjectValidator"/>
+			<bean id="reportObjectForm" class="org.openmrs.web.controller.report.ReportObjectFormController">
+				<property name="sessionForm"><value>false</value></property>
+				<property name="commandName"><value>reportObject</value></property>
+				<property name="validator"><ref bean="reportObjectValidator"/></property>
+				<property name="formView"><value>/admin/reports/reportObjectForm</value></property>
+				<property name="successView"><value>reportObject.list</value></property>
+			</bean>
+		<!-- ** /Report ** -->
+		<!-- ** DataExport ** -->
+			<bean id="dataExportList" class="org.openmrs.web.controller.report.export.DataExportListController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>dataExportList</value></property>
+				<property name="formView"><value>/admin/reports/dataExportList</value></property>
+				<property name="successView"><value>dataExport.list</value></property>
+			</bean>
+	
+			<bean id="dataExportForm" class="org.openmrs.web.controller.report.export.DataExportFormController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>dataExport</value></property>
+				<property name="formView"><value>/admin/reports/dataExportForm</value></property>
+				<property name="successView"><value>dataExport.list</value></property>
+			</bean>
+		<!-- ** /DataExport ** -->
+    <!-- ============================ -->
+
+	    <!-- ============================ -->
+	<!-- ===== Analysis Sector ===== -->
+    <!-- ============================ -->
+		<!-- ** Analysis ** -->
+			<bean id="otfaController" class="org.openmrs.web.controller.analysis.OnTheFlyAnalysisController">
+				<property name="shortcuts">
+					<list>
+						<value>gender!both:*,male:@org.openmrs.reporting.PatientCharacteristicFilter(gender=m$String),female:@org.openmrs.reporting.PatientCharacteristicFilter(gender=f$String)</value>
+						<value>arv_tx_group!treatmentGroup:@org.openmrs.reporting.ArvTxGroupFilter(treatmentGroup$String)</value>						
+					</list>
+				</property>
+				<property name="links">
+					<list>
+						<value>nealreport.form:nealreport.ConsultReport.name:reportType=Consult Report</value>
+						<value>nealreport.form:nealreport.AlertReport.name:reportType=Alert Report</value>
+						<value>nealreport.form:nealreport.PmtctReport.name:reportType=PMTCT Report</value>
+						<value>nealreport.form:nealreport.PedReport.name:reportType=Ped Report</value>
+						<value>nealreport.form:nealreport.ConsultReport.name:reportType=Consult Report</value>
+					</list>
+				</property>
+			</bean>
+		    <bean id="otfaParamResolver" class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
+				<property name="paramName"><value>method</value></property>
+				<property name="defaultMethodName"><value>handleRequest</value></property>
+			</bean>
+		    <bean id="otfaActionController" class="org.springframework.web.servlet.mvc.multiaction.MultiActionController">
+				<property name="methodNameResolver"><ref bean="otfaParamResolver"/></property>
+				<property name="delegate"><ref bean="otfaController"/></property>
+			</bean>
+			<!-- ** /Analysis ** -->
+    <!-- ============================ -->
+	
+	<!-- ================================= -->
+	<!-- ===== Neal's Reports Sector ===== -->
+    <!-- ================================= -->
+			<bean id="nealReportController" class="org.openmrs.web.controller.nealreports.NealReportController"/>
+    <!-- ============================ -->
+
+	    <!-- ============================ -->
+	<!-- ===== Migration Sector ===== -->
+    <!-- ============================ -->
+		<!-- ** Migration ** -->
+			<bean id="migrationController" class="org.openmrs.web.controller.migration.MigrationController"/>
+		    <bean id="migrationParamResolver" class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
+				<property name="paramName"><value>method</value></property>
+				<property name="defaultMethodName"><value>handleRequest</value></property>
+			</bean>
+			<bean id="migrationActionController" class="org.springframework.web.servlet.mvc.multiaction.MultiActionController">
+				<property name="methodNameResolver"><ref bean="migrationParamResolver"/></property>
+				<property name="delegate"><ref bean="migrationController"/></property>
+			</bean>
+			<!-- ** /Migration ** -->
+    <!-- ============================ -->
+
+
+    <!-- ============================ -->
+	<!-- ===== Form Sector ===== -->
+    <!-- ============================ -->
+    
+		<!-- ** Form ** -->
+			<bean id="formList" class="org.openmrs.web.controller.form.FormListController">
+				<property name="commandName"><value>formList</value></property>
+				<property name="formView"><value>/admin/forms/formList</value></property>
+				<property name="successView"><value>form.list</value></property>
+			</bean>
 		
-				<!--  Validator and Form Controller for the add/edit reports page -->
-				<bean id="reportObjectValidator" class="org.openmrs.web.controller.report.ReportObjectValidator"/>
-				<bean id="reportObjectForm" class="org.openmrs.web.controller.report.ReportObjectFormController">
-					<property name="sessionForm"><value>false</value></property>
-					<property name="commandName"><value>reportObject</value></property>
-					<property name="validator"><ref bean="reportObjectValidator"/></property>
-					<property name="formView"><value>/admin/reports/reportObjectForm</value></property>
-					<property name="successView"><value>reportObject.list</value></property>
-				</bean>
-			<!-- ** /Report ** -->
-			<!-- ** DataExport ** -->
-				<bean id="dataExportList" class="org.openmrs.web.controller.report.export.DataExportListController">
-					<property name="sessionForm"><value>true</value></property>
-					<property name="commandName"><value>dataExportList</value></property>
-					<property name="formView"><value>/admin/reports/dataExportList</value></property>
-					<property name="successView"><value>dataExport.list</value></property>
-				</bean>
-		
-				<bean id="dataExportForm" class="org.openmrs.web.controller.report.export.DataExportFormController">
-					<property name="sessionForm"><value>true</value></property>
-					<property name="commandName"><value>dataExport</value></property>
-					<property name="formView"><value>/admin/reports/dataExportForm</value></property>
-					<property name="successView"><value>dataExport.list</value></property>
-				</bean>
-			<!-- ** /DataExport ** -->
-	    <!-- ============================ -->
+			<bean id="formSchemaDesignForm" class="org.openmrs.web.controller.form.FormFormController">
+				<property name="commandName"><value>form</value></property>
+				<property name="formView"><value>/admin/forms/formSchemaDesignForm</value></property>
+				<property name="successView"><value>form.list</value></property>
+			</bean>
 
-	    <!-- ============================ -->
-		<!-- ===== Analysis Sector ===== -->
-	    <!-- ============================ -->
-			<!-- ** Analysis ** -->
-				<bean id="otfaController" class="org.openmrs.web.controller.analysis.OnTheFlyAnalysisController">
-					<property name="shortcuts">
-						<value>
-							gender!both:*,male:@org.openmrs.reporting.PatientCharacteristicFilter(gender=m$String),female:@org.openmrs.reporting.PatientCharacteristicFilter(gender=f$String)
-							arv_tx_group!treatmentGroup:@org.openmrs.reporting.ArvTxGroupFilter(treatmentGroup$String)
-						</value>
-					</property>
-				</bean>
-			    <bean id="otfaParamResolver" class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
-					<property name="paramName"><value>method</value></property>
-					<property name="defaultMethodName"><value>handleRequest</value></property>
-				</bean>
-			    <bean id="otfaActionController" class="org.springframework.web.servlet.mvc.multiaction.MultiActionController">
-					<property name="methodNameResolver"><ref bean="otfaParamResolver"/></property>
-					<property name="delegate"><ref bean="otfaController"/></property>
-				</bean>
-				<!-- ** /Analysis ** -->
-	    <!-- ============================ -->
+			<bean id="formEditForm" class="org.openmrs.web.controller.form.FormFormController">
+				<property name="commandName"><value>form</value></property>
+				<property name="formView"><value>/admin/forms/formEditForm</value></property>
+				<property name="successView"><value>form.list</value></property>
+			</bean>
 
-	    <!-- ============================ -->
-		<!-- ===== Migration Sector ===== -->
-	    <!-- ============================ -->
-			<!-- ** Migration ** -->
-				<bean id="migrationController" class="org.openmrs.web.controller.migration.MigrationController"/>
-			    <bean id="migrationParamResolver" class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
-					<property name="paramName"><value>method</value></property>
-					<property name="defaultMethodName"><value>handleRequest</value></property>
-				</bean>
-				<bean id="migrationActionController" class="org.springframework.web.servlet.mvc.multiaction.MultiActionController">
-					<property name="methodNameResolver"><ref bean="migrationParamResolver"/></property>
-					<property name="delegate"><ref bean="migrationController"/></property>
-				</bean>
-				<!-- ** /Migration ** -->
-	    <!-- ============================ -->
+			<bean id="formViewXsltForm" class="org.openmrs.web.controller.form.FormFormController">
+				<property name="commandName"><value>form</value></property>
+				<property name="formView"><value>/admin/forms/formViewXsltForm</value></property>
+				<property name="successView"><value>form.list</value></property>
+			</bean>
+		<!-- ** /Form ** -->
 
+		<!-- ** Field  ** -->
+			<bean id="fieldList" class="org.openmrs.web.controller.form.FieldListController">
+				<property name="commandName"><value>fieldList</value></property>
+				<property name="formView"><value>/admin/forms/fieldList</value></property>
+				<property name="successView"><value>field.list</value></property>
+			</bean>
 
-	    <!-- ============================ -->
-		<!-- ===== Form Sector ===== -->
-	    <!-- ============================ -->
+			<bean id="fieldForm" class="org.openmrs.web.controller.form.FieldFormController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>field</value></property>
+				<property name="formView"><value>/admin/forms/fieldForm</value></property>
+				<property name="successView"><value>field.list</value></property>
+			</bean>
+		<!-- ** /Field  ** -->
+
 	    
-			<!-- ** Form ** -->
-				<bean id="formList" class="org.openmrs.web.controller.form.FormListController">
-					<property name="commandName"><value>formList</value></property>
-					<property name="formView"><value>/admin/forms/formList</value></property>
-					<property name="successView"><value>form.list</value></property>
-				</bean>
-		
-				<bean id="formDesignForm" class="org.openmrs.web.controller.form.FormFormController">
-					<property name="commandName"><value>form</value></property>
-					<property name="formView"><value>/admin/forms/formDesignForm</value></property>
-					<property name="successView"><value>form.list</value></property>
-				</bean>
-
-				<bean id="formEditForm" class="org.openmrs.web.controller.form.FormFormController">
-					<property name="commandName"><value>form</value></property>
-					<property name="formView"><value>/admin/forms/formEditForm</value></property>
-					<property name="successView"><value>form.list</value></property>
-				</bean>
-
-				<bean id="formViewXsltForm" class="org.openmrs.web.controller.form.FormFormController">
-					<property name="commandName"><value>form</value></property>
-					<property name="formView"><value>/admin/forms/formViewXsltForm</value></property>
-					<property name="successView"><value>form.list</value></property>
-				</bean>
-			<!-- ** /Form ** -->
-
-			<!-- ** Field  ** -->
-				<bean id="fieldList" class="org.openmrs.web.controller.form.FieldListController">
-					<property name="commandName"><value>fieldList</value></property>
-					<property name="formView"><value>/admin/forms/fieldList</value></property>
-					<property name="successView"><value>field.list</value></property>
-				</bean>
-
-				<bean id="fieldForm" class="org.openmrs.web.controller.form.FieldFormController">
-					<property name="sessionForm"><value>true</value></property>
-					<property name="commandName"><value>field</value></property>
-					<property name="formView"><value>/admin/forms/fieldForm</value></property>
-					<property name="successView"><value>field.list</value></property>
-				</bean>
-			<!-- ** /Field  ** -->
-
-	    
-			<!-- ** Field Type ** -->
-				<bean id="fieldTypeList" class="org.openmrs.web.controller.form.FieldTypeListController">
-					<property name="sessionForm"><value>true</value></property>
-					<property name="commandName"><value>fieldTypeList</value></property>
-					<property name="formView"><value>/admin/forms/fieldTypeList</value></property>
-					<property name="successView"><value>fieldType.list</value></property>
-				</bean>
-		
-				<!--  Validator and Form Controller for the add/edit forms page -->
-				<bean id="fieldTypeValidator" class="org.openmrs.web.controller.form.FieldTypeValidator"/>
-				<bean id="fieldTypeForm" class="org.openmrs.web.controller.form.FieldTypeFormController">
-					<property name="sessionForm"><value>true</value></property>
-					<property name="commandName"><value>fieldType</value></property>
-					<property name="validator"><ref bean="fieldTypeValidator"/></property>
-					<property name="formView"><value>/admin/forms/fieldTypeForm</value></property>
-					<property name="successView"><value>fieldType.list</value></property>
-				</bean>
-			<!-- ** /Field Type ** -->
-	    <!-- ============================ -->
-	    
-	    <!-- =========================== -->
-		<!-- =====    FormEntry    ===== -->
-	    <!-- =========================== -->
-	    
-			<!-- ** Form Entry Queue ** -->
-				<bean id="formEntryQueueList" class="org.openmrs.formentry.controller.FormEntryQueueListController">
-					<property name="commandName"><value>formEntryQueueList</value></property>
-					<property name="formView"><value>/admin/formentry/formEntryQueueList</value></property>
-					<property name="successView"><value>formEntryQueue.list</value></property>
-				</bean>
-		
-				<bean id="formEntryQueueForm" class="org.openmrs.formentry.controller.FormEntryQueueFormController">
-					<property name="commandName"><value>entry</value></property>
-					<property name="formView"><value>/admin/formentry/formEntryQueueForm</value></property>
-					<property name="successView"><value>formEntryQueue.list</value></property>
-				</bean>
-			<!-- ** /Form Entry Queue ** -->
+		<!-- ** Field Type ** -->
+			<bean id="fieldTypeList" class="org.openmrs.web.controller.form.FieldTypeListController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>fieldTypeList</value></property>
+				<property name="formView"><value>/admin/forms/fieldTypeList</value></property>
+				<property name="successView"><value>fieldType.list</value></property>
+			</bean>
+	
+			<!--  Validator and Form Controller for the add/edit forms page -->
+			<bean id="fieldTypeValidator" class="org.openmrs.web.controller.form.FieldTypeValidator"/>
+			<bean id="fieldTypeForm" class="org.openmrs.web.controller.form.FieldTypeFormController">
+				<property name="sessionForm"><value>true</value></property>
+				<property name="commandName"><value>fieldType</value></property>
+				<property name="validator"><ref bean="fieldTypeValidator"/></property>
+				<property name="formView"><value>/admin/forms/fieldTypeForm</value></property>
+				<property name="successView"><value>fieldType.list</value></property>
+			</bean>
+		<!-- ** /Field Type ** -->
+    <!-- ============================ -->
+    
+    <!-- =========================== -->
+	<!-- =====    FormEntry    ===== -->
+    <!-- =========================== -->
+    
+		<!-- ** Form Entry Queue ** -->
+			<bean id="formEntryQueueList" class="org.openmrs.formentry.controller.FormEntryQueueListController">
+				<property name="commandName"><value>formEntryQueueList</value></property>
+				<property name="formView"><value>/admin/formentry/formEntryQueueList</value></property>
+				<property name="successView"><value>formEntryQueue.list</value></property>
+			</bean>
+	
+			<bean id="formEntryQueueForm" class="org.openmrs.formentry.controller.FormEntryQueueFormController">
+				<property name="commandName"><value>entry</value></property>
+				<property name="formView"><value>/admin/formentry/formEntryQueueForm</value></property>
+				<property name="successView"><value>formEntryQueue.list</value></property>
+			</bean>
+		<!-- ** /Form Entry Queue ** -->
 			
 				<bean id="xsnUploadForm" class="org.openmrs.formentry.controller.XsnUploadFormController">
 					<property name="commandName"><value>formList</value></property>
@@ -784,351 +710,104 @@
 					<property name="successView"><value>xsnUpload.form</value></property>
 				</bean>
 
-	    <!-- =========================== -->
-		<!-- =====      Other      ===== -->
-	    <!-- =========================== -->
-			<bean id="optionsForm" class="org.openmrs.web.controller.OptionsFormController">
-				<property name="commandName"><value>opts</value></property>
-				<property name="commandClass"><value>org.openmrs.web.OptionsForm</value></property>
-				<property name="formView"><value>/optionsForm</value></property>
-				<property name="successView"><value>options.form</value></property>
-			</bean>
-			<bean id="patientSummaryForm" class="org.openmrs.web.controller.patient.PatientFormController">
-				<property name="commandName"><value>patient</value></property>
-				<property name="formView"><value>/formentry/patientSummaryForm</value></property>
-				<property name="successView"><value>patientSummary.form</value></property>
-			</bean>
-		
-      
-
-
-		<!-- =========================== -->
-		
-		<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
-			<property name="basename">
-				<value>messages</value>
-			</property>
+    <!-- =========================== -->
+	<!-- =====      Other      ===== -->
+    <!-- =========================== -->
+		<bean id="optionsForm" class="org.openmrs.web.controller.OptionsFormController">
+			<property name="commandName"><value>opts</value></property>
+			<property name="commandClass"><value>org.openmrs.web.OptionsForm</value></property>
+			<property name="formView"><value>/optionsForm</value></property>
+			<property name="successView"><value>options.form</value></property>
 		</bean>
-		
-		<bean id="localeResolver" class="org.openmrs.web.OpenmrsCookieLocaleResolver" />
-		
-		<bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
-      <property name="paramName"><value>lang</value></property>
+		<bean id="patientSummaryForm" class="org.openmrs.web.controller.patient.PatientFormController">
+			<property name="commandName"><value>patient</value></property>
+			<property name="formView"><value>/formentry/patientSummaryForm</value></property>
+			<property name="successView"><value>patientSummary.form</value></property>
 		</bean>
-		
-		<!--  **************************  REPORT OBJECT FACTORY CONFIGURATION  *************************  -->
+	
+	<!-- =========================== -->
+	
+	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basename">
+			<value>messages</value>
+		</property>
+	</bean>
+	
+	<bean id="localeResolver" class="org.openmrs.web.OpenmrsCookieLocaleResolver" />
+	
+	<bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+  		<property name="paramName"><value>lang</value></property>
+	</bean>
+	
+	<!--  **************************  REPORT OBJECT FACTORY CONFIGURATION  *************************  -->
 
 		<!-- Configuration for reporting module - sets up the report object factory and admin interface
-		     USAGE: To add/create a report object to use in the reporting system, you need to do 3 things:
-		     			1) Create the class for the report object - preferably put it in org.openmrs.api.reporting.*
-		     			2) Create a validator for the report object (one that is used whenever somebody tries to create a 
-		     				new object of that type, and populate it with initial values - these values should be validated).
-		     				Preferably put that in the same directory mentioned above.
-		     			3) Register it as a module to the ReportObjectFactory below and also be sure to make a bean def
-		     				for the module (CALLEN)
-		-->
-
-		<bean id="reportObjectFactory" class="org.openmrs.reporting.ReportObjectFactory">
-			<property name="defaultValidator"><value>org.openmrs.web.controller.report.ReportObjectValidator</value></property>
-			<property name="modules">
-				<list>
-					<ref bean="patientCharacteristicFilterModule"/>
-					<ref bean="numericObsPatientFilterModule"/>
-					<ref bean="shortDescriptionProducerModule"/>
-				</list>
-			</property>
-		</bean>
-
-		<bean id="patientCharacteristicFilterModule" class="org.openmrs.reporting.ReportObjectFactoryModule">
-			<property name="name"><value>PatientCharacteristicFilter</value></property>
-			<property name="displayName"><value>Patient Characteristic Filter</value></property>
-			<property name="className"><value>org.openmrs.reporting.PatientCharacteristicFilter</value></property>
-			<property name="type"><value>Patient Filter</value></property>
-			<property name="validatorClass"><value>org.openmrs.reporting.PatientCharacteristicFilterValidator</value></property>
-		</bean>
-		
-		<bean id="numericObsPatientFilterModule" class="org.openmrs.reporting.ReportObjectFactoryModule">
-			<property name="name"><value>NumericObsPatientFilter</value></property>
-			<property name="displayName"><value>Numeric Observation Patient Filter</value></property>
-			<property name="className"><value>org.openmrs.reporting.NumericObsPatientFilter</value></property>
-			<property name="type"><value>Patient Filter</value></property>
-			<property name="validatorClass"><value>org.openmrs.reporting.NumericObsPatientFilterValidator</value></property>
-		</bean>
-
-		<bean id="shortDescriptionProducerModule" class="org.openmrs.reporting.ReportObjectFactoryModule">
-			<property name="name"><value>ShortDescriptionProducer</value></property>
-			<property name="displayName"><value>Short Description Producer</value></property>
-			<property name="className"><value>org.openmrs.reporting.ShortDescriptionProducer</value></property>
-			<property name="type"><value>Patient Data Producer</value></property>
-			<property name="validatorClass"><value>org.openmrs.reporting.ShortDescriptionProducerValidator</value></property>
-		</bean>
-
-		<!--  **************************  FIELDGEN HANDLER FACTORY CONFIGURATION  *************************  -->
-
-		<!-- Configuration for fieldGen device
-		     USAGE: You can use the FieldGen tag library to automatically generate the html for various
-		     		fields in an object.  It uses reflection to figure out what class the field is, and
-		     		then uses the appropriate handler.  Thus, you need to register handlers that you create
-		     		below.
-		     EXAMPLE: For example, fieldGen taglib is used by report object/element admin interface.  All
-		     		report objects extend AbstractReportObject, but since it is extensible, we cannot know
-		     		what the form should look like (what fields ahead of time) - instead a form is generated
-		     		that has the fields contained within the abstract superclass, and then the view iterates
-		     		through the declared fields in the subclass, and uses the fieldGen tag to render the html
-		     		for those fields.(CALLEN)
-		-->
-
-		<bean id="fieldGenHandlerFactory" class="org.openmrs.web.taglib.fieldgen.FieldGenHandlerFactory">
-			<property name="handlers">
-				<props>
-					<prop key="org.openmrs.Patient">org.openmrs.web.taglib.fieldgen.PatientHandler</prop>
-					<prop key="org.openmrs.Concept">org.openmrs.web.taglib.fieldgen.ConceptHandler</prop>
-				</props>
-			</property>
-		</bean>
-
-	</beans>
-
-
-
-
-<!--<beans>-->
-
-	<!-- Hibernate SessionFactory -->
-	<!-- 
-	<bean id="sessionFactory"
-		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
-		<property name="configLocation" value="hibernate.cfg.xml" />
-	</bean>
+	     USAGE: To add/create a report object to use in the reporting system, you need to do 3 things:
+	     			1) Create the class for the report object - preferably put it in org.openmrs.api.reporting.*
+	     			2) Create a validator for the report object (one that is used whenever somebody tries to create a 
+	     				new object of that type, and populate it with initial values - these values should be validated).
+	     				Preferably put that in the same directory mentioned above.
+	     			3) Register it as a module to the ReportObjectFactory below and also be sure to make a bean def
+	     				for the module (CALLEN)
 	-->
 
-	<!-- Transaction manager for a single Hibernate SessionFactory (alternative to JTA) -->
-	<!-- 
-	<bean id="transactionManager"
-		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
-		<property name="sessionFactory" ref="sessionFactory" />
-	</bean>
-	-->
-
-	<!-- ### for ***EVERY*** domain object! Ouch!
-		<bean id="myProductDao" class="product.ProductDaoImpl">
-		<property name="sessionFactory">
-		<ref bean="mySessionFactory" />
-		</property>
-		<property name="exampleParam">
-		<value>someValue</value>
-		</property>
-		</bean>
-	-->
-	
-	<!--  Default context -->
-	<!-- 
-	<bean id="defaultContextTarget" class="org.openmrs.context.HibernateContext">
-		<property name="sessionFactory">
-			<ref bean="sessionFactory" />
-		</property>
-	</bean>
-	
-	<bean id="defaultContext"
-		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager" />
-		<property name="target" ref="defaultContextTarget" />
-		<property name="transactionAttributes">
-			<props>
-				<prop key="*">PROPAGATION_REQUIRED,readOnly</prop>
-			</props>
-		</property>
-	</bean>
-	-->
-	
-	
-	
-	<!--<bean id="defaultContext"
-		class="org.openmrs.context.IbatisContext" />-->
-	
-	
-		
-
-	<!--  User service -->
-	<!-- 
-	<bean id="userServiceTarget"
-		class="org.openmrs.api.hibernate.HibernateUserService">
-		<property name="sessionFactory">
-			<ref bean="sessionFactory" />
-		</property>
-	</bean>
-
-	<bean id="userService"
-		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager" />
-		<property name="target" ref="userServiceTarget" />
-		<property name="transactionAttributes">
-			<props>
-				<prop key="get*">PROPAGATION_REQUIRED,readOnly</prop>
-				<prop key="find*">PROPAGATION_REQUIRED,readOnly</prop>
-				<prop key="load*">PROPAGATION_REQUIRED,readOnly</prop>
-				<prop key="store*">PROPAGATION_REQUIRED</prop>
-			</props>
-		</property>
-	</bean>
-	-->
-
-	<!-- 
-	<bean id="patientServiceTarget"
-		class="org.openmrs.api.hibernate.HibernatePatientService">
-		<property name="sessionFactory"><ref bean="sessionFactory" /></property>
-	</bean>
-	
-	<bean id="patientService"
-		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager" />
-		<property name="target" ref="patientServiceTarget" />
-		<property name="transactionAttributes">
-			<props>
-				<prop key="get*">PROPAGATION_REQUIRED,readOnly</prop>
-				<prop key="find*">PROPAGATION_REQUIRED,readOnly</prop>
-				<prop key="load*">PROPAGATION_REQUIRED,readOnly</prop>
-				<prop key="store*">PROPAGATION_REQUIRED</prop>
-			</props>
-		</property>
-	</bean>
-	-->
-
-	<!--
-	<bean id="loginValidator" class="org.openmrs.web.LoginValidator" />
-	<bean id="loginForm" class="org.openmrs.web.LoginController">
-		<property name="commandName" value="credentials" />
-		<property name="commandClass" value="org.openmrs.web.Credentials" />
-		<property name="validator"><ref bean="loginValidator" /></property>
-		<property name="formView" value="login/login" />
-		<property name="successView" value="/formentry/welcome" />
-	</bean>
-
-	<bean id="patientSearchValidator"
-		class="org.openmrs.formentry.web.PatientSearchValidator" />
-	<bean id="patientSearchForm"
-		class="org.openmrs.formentry.web.PatientSearchFormController">
-		<property name="commandName" value="query" />
-		<property name="commandClass"
-			value="org.openmrs.formentry.web.SimpleQueryCommand" />
-		<property name="validator"><ref bean="patientSearchValidator" /></property>
-		<property name="formView" value="formentry/patientSearch" />
-		<property name="successView" value="formentry/selectPatient" />
-	</bean>
-
-	<bean id="selectPatientValidator"
-		class="org.openmrs.formentry.web.SelectPatientValidator" />
-	<bean id="selectPatientForm"
-		class="org.openmrs.formentry.web.SelectPatientFormController">
-		<property name="commandName" value="query" />
-		<property name="commandClass"
-			value="org.openmrs.formentry.web.SimpleQueryCommand" />
-		<property name="validator"><ref bean="selectPatientValidator" /></property>
-		<property name="formView" value="/formentry/selectPatient" />
-		<property name="successView" value="selectForm.form" />
-	</bean>
-
-	<bean id="urlMapping"
-		class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-		<property name="interceptors">
+	<bean id="reportObjectFactory" class="org.openmrs.reporting.ReportObjectFactory">
+		<property name="defaultValidator"><value>org.openmrs.web.controller.report.ReportObjectValidator</value></property>
+		<property name="modules">
 			<list>
-				<ref bean="openSessionInViewInterceptor" />
+				<ref bean="patientCharacteristicFilterModule"/>
+				<ref bean="numericObsPatientFilterModule"/>
+				<ref bean="shortDescriptionProducerModule"/>
 			</list>
 		</property>
-		<property name="mappings">
+	</bean>
+
+	<bean id="patientCharacteristicFilterModule" class="org.openmrs.reporting.ReportObjectFactoryModule">
+		<property name="name"><value>PatientCharacteristicFilter</value></property>
+		<property name="displayName"><value>Patient Characteristic Filter</value></property>
+		<property name="className"><value>org.openmrs.reporting.PatientCharacteristicFilter</value></property>
+		<property name="type"><value>Patient Filter</value></property>
+		<property name="validatorClass"><value>org.openmrs.reporting.PatientCharacteristicFilterValidator</value></property>
+	</bean>
+		
+	<bean id="numericObsPatientFilterModule" class="org.openmrs.reporting.ReportObjectFactoryModule">
+		<property name="name"><value>NumericObsPatientFilter</value></property>
+		<property name="displayName"><value>Numeric Observation Patient Filter</value></property>
+		<property name="className"><value>org.openmrs.reporting.NumericObsPatientFilter</value></property>
+		<property name="type"><value>Patient Filter</value></property>
+		<property name="validatorClass"><value>org.openmrs.reporting.NumericObsPatientFilterValidator</value></property>
+	</bean>
+
+	<bean id="shortDescriptionProducerModule" class="org.openmrs.reporting.ReportObjectFactoryModule">
+		<property name="name"><value>ShortDescriptionProducer</value></property>
+		<property name="displayName"><value>Short Description Producer</value></property>
+		<property name="className"><value>org.openmrs.reporting.ShortDescriptionProducer</value></property>
+		<property name="type"><value>Patient Data Producer</value></property>
+		<property name="validatorClass"><value>org.openmrs.reporting.ShortDescriptionProducerValidator</value></property>
+	</bean>
+
+	<!--  **************************  FIELDGEN HANDLER FACTORY CONFIGURATION  *************************  -->
+
+	<!-- Configuration for fieldGen device
+     USAGE: You can use the FieldGen tag library to automatically generate the html for various
+     		fields in an object.  It uses reflection to figure out what class the field is, and
+     		then uses the appropriate handler.  Thus, you need to register handlers that you create
+     		below.
+     EXAMPLE: For example, fieldGen taglib is used by report object/element admin interface.  All
+     		report objects extend AbstractReportObject, but since it is extensible, we cannot know
+     		what the form should look like (what fields ahead of time) - instead a form is generated
+     		that has the fields contained within the abstract superclass, and then the view iterates
+     		through the declared fields in the subclass, and uses the fieldGen tag to render the html
+     		for those fields.(CALLEN)
+-->
+
+	<bean id="fieldGenHandlerFactory" class="org.openmrs.web.taglib.fieldgen.FieldGenHandlerFactory">
+		<property name="handlers">
 			<props>
-				<prop key="/login.form">loginForm</prop>
-				<prop key="/formentry/patientSearch.form">patientSearchForm</prop>
-				<prop key="/formentry/selectPatient.form">selectPatientForm</prop>
+				<prop key="org.openmrs.Patient">org.openmrs.web.taglib.fieldgen.PatientHandler</prop>
+				<prop key="org.openmrs.Concept">org.openmrs.web.taglib.fieldgen.ConceptHandler</prop>
 			</props>
 		</property>
 	</bean>
 
-	<bean id="messageSource"
-		class="org.springframework.context.support.ResourceBundleMessageSource">
-		<property name="basename"><value>message</value></property>
-	</bean>
-
-	<bean id="viewResolver"
-		class="org.springframework.web.servlet.view.JstlView">
-		<property name="prefix" value="/WEB-INF/view/" />
-		<property name="suffix" value=".jsp" />
-	</bean>
-
-	<bean name="openSessionInViewInterceptor"
-		class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor">
-		<property name="sessionFactory"><ref bean="sessionFactory" /></property>
-	</bean>
-	-->
-
-	<!--
-		- This bean resolves specific types of exception to corresponding error views.
-		- The default behaviour of DispatcherServlet is to propagate all exceptions to the
-		- servlet container: This will happen here with all other types of exception.
-	-->
-	<!--
-	<bean id="exceptionResolver"
-		class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
-		<property name="exceptionMappings">
-			<props>
-				<prop key="org.springframework.dao.DataAccessException">
-					dataAccessFailure
-				</prop>
-				<prop key="org.springframework.transaction.TransactionException">
-					dataAccessFailure
-				</prop>
-			</props>
-		</property>
-	</bean>
-	-->
-	
-		<!--  **************************  JMS CONFIGURATION  *************************  -->
-
-<!--
-		<bean id="connectionFactory" class="org.springframework.jndi.JndiObjectFactoryBean">
-			<property name="jndiName"><value>java:comp/env/jms/ConnectionFactory</value></property>
-		</bean>
-		<bean id="someTopic" class="org.springframework.jndi.JndiObjectFactoryBean">
-		    <property name="jndiName"><value>java:comp/env/jms/someTopic</value></property>
-		</bean>
-		<bean id="someQueue" class="org.springframework.jndi.JndiObjectFactoryBean">
-		    <property name="jndiName"><value>java:comp/env/jms/someQueue</value></property>
-		</bean>
-		<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
-			<property name="connectionFactory"><ref local="connectionFactory"/></property>
-		</bean>
-		<bean id="sender" class="org.openmrs.jms.HelloWorldSender">
-			<property name="jmsTemplate"><ref local="jmsTemplate"/></property>
-			<property name="destination"><ref local="someQueue"/></property>
-		</bean>
--->
-
-		<!--  **************************  TIMER CONFIGURATION  **************************  -->
-
-<!--
-		<bean id="job" class="org.springframework.scheduling.quartz.JobDetailBean">
-			<property name="jobClass"><value>org.openmrs.scheduler.HelloWorldJob</value></property>
-		</bean>
-		<bean id="trigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-			<property name="jobDetail"><ref local="job"/></property>
-			<property name="startDelay"><value>10000</value></property>
-			<property name="repeatInterval"><value>30000</value></property>
-		</bean>
-		<bean id="dataSource" class="org.springframework.jdbc.datasource.SingleConnectionDataSource">
-			<property name="driverClassName"><value>com.mysql.jdbc.Driver</value></property>
-			<property name="url"><value>jdbc:mysql://localhost:3306/openmrs</value></property>
-			<property name="username"><value>openmrs</value></property>
-			<property name="password"><value>openmrs</value></property>
-		</bean>
-		<bean id="schedulerFactory" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
-			<property name="dataSource"><ref local="dataSource"/></property>
-			<property name="triggers">
-				<list>
-					<ref local="trigger"/>
-				</list>
-			</property>	
-		</bean>
--->
-	
-
-<!--</beans>-->
+</beans>

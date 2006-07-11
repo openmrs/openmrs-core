@@ -16,6 +16,7 @@
 		<convert converter="bean" match="org.openmrs.web.dwr.ObsListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.FormFieldListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.FieldListItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.LocationListItem"/>
 		<convert converter="bean" match="org.openmrs.PatientAddress"/>
 		<convert converter="bean" match="org.openmrs.Tribe"/>
 		<convert converter="bean" match="org.openmrs.notification.web.dwr.AlertListItem"/>
@@ -48,6 +49,8 @@
 			<param name="class" value="org.openmrs.web.dwr.DWREncounterService" />
 			<include method="findEncounters"/>
 			<include method="getEncounter"/>
+			<include method="findLocations"/>
+			<include method="getLocations"/>
 		</create>
 		
 		<create creator="new" javascript="DWRUserService">
@@ -67,6 +70,7 @@
 			<include method="getField"/>
 			<include method="getHTMLTree"/>
 			<include method="getOptionTree"/>
+			<include method="getJSTree"/>
 			<include method="findFields"/>
 			<include method="findFieldsAndConcepts"/>
 			<include method="saveFormField"/>

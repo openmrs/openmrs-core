@@ -1,12 +1,10 @@
 package org.openmrs.scheduler.db;
 
 import java.util.List;
-import java.util.Set;
 
 import org.openmrs.api.db.DAOException;
-import org.openmrs.scheduler.TaskConfig;
 import org.openmrs.scheduler.Schedule;
-import org.openmrs.api.APIException;
+import org.openmrs.scheduler.TaskConfig;
 
 /**
  * Scheduler-related database methods.

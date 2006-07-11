@@ -1,7 +1,9 @@
 package org.openmrs.reporting;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.openmrs.Patient;
 
@@ -113,7 +115,7 @@ public class PatientSet {
 		ret.patientIds.removeAll(other.patientIds);
 		return ret;
 	}
-		
+
 	public String toString() {
 		StringBuffer ret = new StringBuffer();
 		int soFar = 0; 
@@ -125,6 +127,25 @@ public class PatientSet {
 			}
 		}
 		return ret.toString();
+	}
+	
+	public static PatientSet parseCommaSeparatedPatientIds(String s) {
+		PatientSet ret = new PatientSet();
+		for (StringTokenizer st = new StringTokenizer(s, ","); st.hasMoreTokens(); ) {
+			ret.add(new Integer(st.nextToken()));
+		}
+		return ret;
+	}
+	
+	public String toCommaSeparatedPatientIds() {
+		StringBuilder sb = new StringBuilder();
+		for (Iterator<Integer> i = patientIds.iterator(); i.hasNext(); ) {
+			sb.append(i.next());
+			if (i.hasNext()) {
+				sb.append(",");
+			}
+		}
+		return sb.toString();
 	}
 	
 	public int size() {

@@ -11,7 +11,7 @@
 	</openmrs:hasPrivilege>
 	
 	<openmrs:hasPrivilege privilege="Analyze">
-		<a href="<%= request.getContextPath() %>/analysis.list">On-the-Fly Analysis</a><br />
+		<a href="<%= request.getContextPath() %>/analysis.list">Analysis</a><br />
 	</openmrs:hasPrivilege>
 	
 	<a href="<%= request.getContextPath() %>/options.form">Options</a><br />

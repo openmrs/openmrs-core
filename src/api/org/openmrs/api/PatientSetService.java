@@ -89,8 +89,16 @@ public class PatientSetService {
 		return getPatientSetDAO().getEncountersByType(patients, encType);
 	}
 	
-	public Map<Integer, Object> getPatientAttributes(PatientSet patients, String className, String property) {
-		return getPatientSetDAO().getPatientAttributes(patients, className, property);
+	public Map<Integer, Object> getPatientAttributes(PatientSet patients, String className, String property, boolean returnAll) {
+		return getPatientSetDAO().getPatientAttributes(patients, className, property, returnAll);
+	}
+	
+	public Map<Integer, Object> getPatientAttributes(PatientSet patients, String classNameDotProperty, boolean returnAll) {
+		String[] temp = classNameDotProperty.split("\\.");
+		if (temp.length != 2) {
+			throw new IllegalArgumentException(classNameDotProperty + " must be ClassName.property");
+		}
+		return getPatientAttributes(patients, temp[0], temp[1], returnAll);
 	}
 	
 	public Map<Integer, Map<String, Object>> getCharacteristics(PatientSet patients) {

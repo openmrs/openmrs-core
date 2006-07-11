@@ -1,11 +1,8 @@
 package org.openmrs.api.db;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Set;
-import org.openmrs.api.db.DAOException;
+
 import org.openmrs.notification.Note;
-import org.openmrs.Patient;
 
 
 /**

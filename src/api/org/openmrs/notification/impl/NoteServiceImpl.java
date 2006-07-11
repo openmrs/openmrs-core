@@ -1,19 +1,16 @@
 package org.openmrs.notification.impl;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.context.Context;
+import org.openmrs.User;
+import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOContext;
-import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.notification.Note;
 import org.openmrs.notification.NoteService;
-import org.openmrs.User;
-
-
-import java.util.Collection;
-import java.util.List;
 
 public class NoteServiceImpl implements NoteService, Serializable {    
 

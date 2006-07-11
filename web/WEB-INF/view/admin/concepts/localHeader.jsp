@@ -8,6 +8,8 @@
 				<spring:message code="Concept.manage"/>
 			</a>
 		</li>
+	</openmrs:hasPrivilege>
+	<openmrs:hasPrivilege privilege="Add Concepts,Edit Concepts">
 		<li <c:if test="<%= request.getRequestURI().contains("conceptDrug") %>">class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/concepts/conceptDrug.list">
 				<spring:message code="ConceptDrug.manage"/>

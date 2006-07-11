@@ -316,6 +316,9 @@ public class FormField implements java.io.Serializable, Comparable {
 	}
 	
 	public String toString() {
+		if (formFieldId == null)
+			return "null";
+		
 		return this.formFieldId.toString();
 	}
 

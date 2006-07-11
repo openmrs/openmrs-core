@@ -116,7 +116,7 @@
 
 
  #-----------------------------------
- # OpenMRS Datamodel version 1.015
+ # OpenMRS Datamodel version 1.0.15
  # Burke Mamlin  Apr 25 2006 5:47 AM
  # Added form.template
  #-----------------------------------
@@ -126,7 +126,7 @@
  
  
  #-----------------------------------
- # OpenMRS Datamodel version 1.016
+ # OpenMRS Datamodel version 1.0.16
  # Ben Wolfe    May 1 2006 9:15 AM
  # Added database indexes (Directed towards patient merging)
  #-----------------------------------
@@ -221,8 +221,51 @@
  ALTER TABLE `notification_alert_recipient` CHANGE COLUMN `date_read` `date_changed` timestamp NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP;
  ALTER TABLE `notification_alert_recipient` ADD INDEX `id_of_alert` (`alert_id`);
  ALTER TABLE `notification_alert_recipient` ADD CONSTRAINT `id_of_alert` FOREIGN KEY (`alert_id`) REFERENCES `notification_alert` (`alert_id`);
-
+ 
  UPDATE `notification_alert_recipient` SET alert_read = 1;
  
  UPDATE `global_property` SET property_value='1.0.18' WHERE property = 'database_version';
+
+
+ #-----------------------------------
+ # OpenMRS Datamodel version 1.0.21
+ # Ben Wolfe    May 25 2006 9:40 AM
+ # Added patient.dead
+ #-----------------------------------
+ 
+ ALTER TABLE `patient` ADD COLUMN `dead` int(1) NOT NULL default '0' AFTER `civil_status`;
+ 
+ UPDATE `patient` SET `dead` = 1 WHERE `death_date` IS NOT NULL;
+ UPDATE `patient` p SET `dead` = 1 WHERE `cause_of_death` IS NOT NULL AND `cause_of_death` <> '' AND NOT EXISTS (SELECT e.encounter_id FROM encounter e WHERE e.patient_id = p.patient_id);
+ UPDATE `global_property` SET property_value='1.0.21' WHERE property = 'database_version';
+
+
+ #-----------------------------------
+ # OpenMRS Datamodel version 1.0.22
+ # Ben Wolfe   May 26 2006 10:00 AM
+ # Moved concept_class.is_set to concept.is_set
+ #-----------------------------------
+ 
+ ALTER TABLE `concept` ADD COLUMN `is_set` tinyint(1) NOT NULL default '0' AFTER `class_id`;
+ UPDATE `concept` c, `concept_class` class SET c.`is_set` = class.`is_set` WHERE class.`concept_class_id` = c.`class_id`;
+ ALTER TABLE `concept_class` DROP COLUMN `is_set`;
+ 
+ UPDATE `global_property` SET property_value='1.0.22' WHERE property = 'database_version';
+
+
+ #-----------------------------------
+ # OpenMRS Datamodel version 1.0.23
+ # Ben Wolfe   June 19 2006 8:45 AM
+ # Make encounters voidable
+ #-----------------------------------
+ 
+ ALTER TABLE `encounter` ADD COLUMN `voided` tinyint(1) NOT NULL default '0';
+ ALTER TABLE `encounter` ADD COLUMN `voided_by` int(11) default NULL;
+ ALTER TABLE `encounter` ADD COLUMN `date_voided` datetime default NULL;
+ ALTER TABLE `encounter` ADD COLUMN `void_reason` varchar(255) default NULL;
+ ALTER TABLE `encounter` ADD INDEX `user_who_voided_encounter` (`voided_by`);
+ ALTER TABLE `encounter` ADD CONSTRAINT `user_who_voided_encounter` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`);
+ 
+ UPDATE `global_property` SET property_value='1.0.23' WHERE property = 'database_version';
+ 
 

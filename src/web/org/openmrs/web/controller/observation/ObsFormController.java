@@ -63,8 +63,8 @@ public class ObsFormController extends SimpleFormController {
 
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse reponse, Object obj, BindException errors) throws Exception {
 		
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		//HttpSession httpSession = request.getSession();
+		//Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		// sets the objects in case edit Reason is rejected
 		Obs obs = (Obs)obj;
@@ -74,6 +74,9 @@ public class ObsFormController extends SimpleFormController {
     	if (obs.getObsId() != null && (reason == null || reason.length() == 0))
     		errors.reject("editReason", "Obs.edit.reason.empty");
 
+    	if (obs.getConcept() == null)
+    		errors.rejectValue("concept", "error.null");
+    	
 		return super.processFormSubmission(request, reponse, obs, errors);
 	}
 
@@ -184,8 +187,6 @@ public class ObsFormController extends SimpleFormController {
 		String defaultVerbose = "false";
 		
 		if (context != null && context.isAuthenticated()) {
-			ObsService es = context.getObsService();
-			//map.put("obsTypes", es.getObsTypes());
 			map.put("forms", context.getFormService().getForms());
 			if (obs.getConcept() != null)
 				map.put("conceptName", obs.getConcept().getName(request.getLocale()));

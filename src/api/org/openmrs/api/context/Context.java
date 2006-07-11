@@ -294,6 +294,7 @@ public class Context implements ApplicationContextAware {
 			module.setValidatorClass("org.openmrs.reporting.ShortDescriptionProducerValidator");
 			modules.add(module);
 			ReportObjectFactory factory = new ReportObjectFactory();
+			factory.setDefaultValidator("org.openmrs.web.controller.report.ReportObjectValidator");
 			factory.setModules(modules);
 			
 			reportService = new ReportService(this, getDaoContext(), factory);

@@ -93,7 +93,7 @@ public class FormFormController extends SimpleFormController {
 						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR,
 								"Form.saved");
 					} catch (Exception e) {
-						log.error("Error while saving form", e);
+						log.error("Error while saving form " +  form.getFormId() , e);
 						errors.reject(e.getMessage());
 						httpSession.setAttribute(
 								WebConstants.OPENMRS_ERROR_ATTR,
@@ -106,7 +106,7 @@ public class FormFormController extends SimpleFormController {
 						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR,
 								"Form.deleted");
 					} catch (Exception e) {
-						log.error(e);
+						log.error("Error while deleting form " + form.getFormId(), e);
 						errors.reject(e.getMessage());
 						httpSession.setAttribute(
 								WebConstants.OPENMRS_ERROR_ATTR,
@@ -119,7 +119,7 @@ public class FormFormController extends SimpleFormController {
 						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR,
 								"Form.duplicated");
 					} catch (Exception e) {
-						log.error(e);
+						log.error("Error while duplicating form " + form.getFormId(), e);
 						errors.reject(e.getMessage());
 						httpSession.setAttribute(
 								WebConstants.OPENMRS_ERROR_ATTR,

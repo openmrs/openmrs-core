@@ -97,20 +97,50 @@
 		</td>
 	</tr>
 	<tr>
+		<td><spring:message code="Patient.dead"/></td>
+		<td>
+			<spring:bind path="patient.dead">
+				<input type="hidden" name="_${status.expression}"/>
+				<input type="checkbox" name="${status.expression}" 
+					   <c:if test="${status.value == true}">checked</c:if>
+					   onclick="patientDeadClicked(this)" id="patientDead"
+				/>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+			<script type="text/javascript">
+				function patientDeadClicked(input) {
+					if (input.checked) {
+						document.getElementById("deathInformation").style.display = "";
+					}
+					else {
+						document.getElementById("deathInformation").style.display = "none";
+						document.getElementById("deathDate").value = "";
+						document.getElementById("causeOfDeath").value = "";
+					}
+				}
+			</script>
+		</td>
+	</tr>
+	<tr id="deathInformation">
 		<td><spring:message code="Patient.deathDate"/></td>
 		<td>
 			<spring:bind path="patient.deathDate">
-			<input type="text" name="deathDate" size="10" 
-				   value="${status.value}" onClick="showCalendar(this)" />
-			(<spring:message code="general.format"/>: ${datePattern})
-			<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		&nbsp; &nbsp; 
-		<spring:message code="Patient.causeOfDeath"/>
-			<spring:bind path="patient.causeOfDeath">
-				<input type="text" name="causeOfDeath" value="${status.value}" />
+				<input type="text" name="deathDate" size="10" 
+					   value="${status.value}" onClick="showCalendar(this)" 
+					   id="deathDate" />
+				(<spring:message code="general.format"/>: ${datePattern})
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
+			&nbsp; &nbsp; 
+			<spring:message code="Patient.causeOfDeath"/>
+			<spring:bind path="patient.causeOfDeath">
+				<input type="text" name="causeOfDeath" value="${status.value}" id="causeOfDeath"/>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+			<script type="text/javascript">				
+				//set up death info fields
+				patientDeadClicked(document.getElementById("patientDead"));
+			</script>
 		</td>
 	</tr>
 	<tr>

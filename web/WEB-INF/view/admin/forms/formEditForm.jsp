@@ -21,7 +21,7 @@
 </c:if>
 
 <br/>
-<a href="formDesign.form?formId=${form.formId}"><spring:message code="Form.designSchema" /></a> |
+<a href="formSchemaDesign.form?formId=${form.formId}"><spring:message code="Form.designSchema" /></a> |
 <a href="${pageContext.request.contextPath}/formDownload?target=schema&formId=${form.formId}"><spring:message code="Form.downloadSchema" /></a> |
 <a href="${pageContext.request.contextPath}/formDownload?target=template&formId=${form.formId}"><spring:message code="Form.downloadTemplate" /></a> |
 <a href="${pageContext.request.contextPath}/formDownload?target=xsn&formId=${form.formId}"><spring:message code="Form.downloadXSN" /></a>

@@ -90,7 +90,7 @@ public class HibernateFormDAO implements
 			
 			try {
 				HibernateUtil.beginTransaction();
-				session.saveOrUpdate(form);
+				session.merge(form);
 				HibernateUtil.commitTransaction();
 			}
 			catch (Exception e) {
@@ -264,7 +264,7 @@ public class HibernateFormDAO implements
 		
 		try {
 			HibernateUtil.beginTransaction();
-			session.clear();
+			//session.clear();
 			session.save(field);
 			HibernateUtil.commitTransaction();
 		}
@@ -285,7 +285,7 @@ public class HibernateFormDAO implements
 			
 			try {
 				HibernateUtil.beginTransaction();
-				session.clear();
+				//session.clear();
 				session.merge(field);
 				HibernateUtil.commitTransaction();
 			}
@@ -323,7 +323,7 @@ public class HibernateFormDAO implements
 		
 		try {
 			HibernateUtil.beginTransaction();
-			session.clear();
+			//session.clear();
 			session.save(formField);
 			HibernateUtil.commitTransaction();
 		}
@@ -345,7 +345,7 @@ public class HibernateFormDAO implements
 			
 			try {
 				HibernateUtil.beginTransaction();
-				session.clear();
+				//session.clear();
 				session.merge(formField);	// save if needs saving
 				HibernateUtil.commitTransaction();
 			}
@@ -354,7 +354,7 @@ public class HibernateFormDAO implements
 				throw new DAOException(e);
 			}
 		}
-		session.evict(formField);
+		//session.evict(formField);
 		log.debug("formField cache mode: " + session.getCacheMode());
 	}
 
@@ -366,7 +366,7 @@ public class HibernateFormDAO implements
 		
 		try {
 			HibernateUtil.beginTransaction();
-			session.clear();
+			//session.clear();
 			session.delete(formField);
 			HibernateUtil.commitTransaction();
 		}
