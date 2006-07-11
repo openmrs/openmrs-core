@@ -267,13 +267,25 @@ public class HL7Service {
 		 * TODO: Properly handle assigning authority. If specified it's currently treated as PatientIdentifierType.name
 		 * TODO: Throw exceptions instead of returning null in some cases
 		 * TODO: Don't hydrate Patient objects unnecessarily
+		 * 
+		 ***TODO: Determine how to handle assigning authority and openmrs patient_id numbers***
+		 * 
 		 */
+		Integer patientId = null;
 		String hl7PatientId = pid.getComponent(3, 1);
 		String assigningAuthority = pid.getComponent(3, 4);
 		if ("".equals(assigningAuthority)) {
 			assigningAuthority = null;
 		}
-		if (assigningAuthority == null) {
+		
+		try {
+			patientId = Integer.parseInt(hl7PatientId);
+		} catch (NumberFormatException e) {
+			//throw new HL7Exception("Invalid patient ID '" + hl7PatientId + "'");
+			log.warn("Invalid patient ID '" + hl7PatientId + "'");
+		}
+		
+		if (assigningAuthority == null || patientId != null) {
 			try {
 				Integer ptId = new Integer(hl7PatientId);
 				Patient patient = context.getPatientService().getPatient(ptId);
