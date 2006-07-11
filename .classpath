@@ -49,5 +49,10 @@
 	<classpathentry kind="lib" path="lib/mail/mail.jar"/>
 	<classpathentry kind="lib" path="lib/saxon/saxon8.jar"/>
 	<classpathentry kind="lib" path="lib/saxon/saxon8-dom.jar"/>
+	<classpathentry kind="lib" path="lib/hl7api/hapi-0.5beta.jar"/>
+	<classpathentry kind="lib" path="lib/xerces/xercesImpl.jar"/>
+	<classpathentry kind="lib" path="lib/xerces/xml-apis.jar"/>
+	<classpathentry kind="lib" path="lib/neal-reporting/reports.jar"/>
+	<classpathentry kind="lib" path="lib/neal-reporting/support.jar"/>
 	<classpathentry kind="output" path="build/"/>
 </classpath>

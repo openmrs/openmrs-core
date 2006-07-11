@@ -1,5 +1,7 @@
 package org.openmrs.web.dwr;
 
+import java.util.Locale;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.FormField;
@@ -22,13 +24,13 @@ public class FormFieldListItem {
 	
 	public FormFieldListItem() { }
 		
-	public FormFieldListItem(FormField ff) {
+	public FormFieldListItem(FormField ff, Locale locale) {
 
 		if (ff != null) {
 			formFieldId = ff.getFormFieldId();
 			if (ff.getParent() != null)
 				parent = ff.getParent().getFormFieldId();
-			field = new FieldListItem(ff.getField());
+			field = new FieldListItem(ff.getField(), locale);
 			fieldNumber = ff.getFieldNumber();
 			fieldPart = ff.getFieldPart();
 			pageNumber = ff.getPageNumber();

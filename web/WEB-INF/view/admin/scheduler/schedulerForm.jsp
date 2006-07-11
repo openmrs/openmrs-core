@@ -5,16 +5,6 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<script src='<%= request.getContextPath() %>/dwr/engine.js'></script>
-<script src='<%= request.getContextPath() %>/dwr/util.js'></script>
-<script src='<%= request.getContextPath() %>/dwr/interface/DWRSchedulerService.js'></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/prototype.lite.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/moo.fx.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/moo.fx.pack.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/calendar/calendar.js"></script>
-
-
-
 <script type="text/javascript">
 
 window.onload = init;
@@ -113,38 +103,6 @@ function containsError(element) {
 		}
 	}
 	return false;
-}
-
-
-function scheduleTask() { 
-	alert("Schedule task");
-	var scheduleId = null;
-	if ($('scheduleId').value != 'undefined')
-		scheduleId = $('scheduleId').value;
-
-	var taskId = $('taskId').value;
-	var name = $('scheduleName').value;
-	var description = $('scheduleDescription').value;
-	var startDate = $('startDate').value;
-	var startTime = $('startTime').value;
-	var repeatInterval = $('repeatInterval').value;
-	
- 	alert('Schedule task: ' + taskId + ', ' + name + ', ' + description + ', ' + startDate + ', ' + startTime);
-	
-	DWRSchedulerService.scheduleTask(taskId, name, description, startDate, startTime);
-}
-
-function cancelTask(taskId, scheduleId) {
-	var answer = confirm("Are you sure you want to delete this schedule?");
-	if (answer == true) {
-		DWRSchedulerService.cancelTask(taskId, scheduleId);
-	}
-
-}
-
-function fillScheduleFields() { 
-
-
 }
 
 </script>

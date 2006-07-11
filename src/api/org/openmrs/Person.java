@@ -1,6 +1,5 @@
 package org.openmrs;
 
-import java.util.Date;
 
 /**
  * User

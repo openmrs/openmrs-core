@@ -1,29 +1,14 @@
 package org.openmrs.api.db.hibernate;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Criteria;
-import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.criterion.Expression;
-import org.hibernate.criterion.LogicalExpression;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.SimpleExpression;
-
-import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.db.TemplateDAO;
 import org.openmrs.api.db.DAOException;
-import org.openmrs.api.db.hibernate.HibernatePatientDAO;
+import org.openmrs.api.db.TemplateDAO;
 import org.openmrs.notification.Template;
 
 public class HibernateTemplateDAO implements TemplateDAO {

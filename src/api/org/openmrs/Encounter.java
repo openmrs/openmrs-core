@@ -27,6 +27,12 @@ public class Encounter implements java.io.Serializable {
 	private User provider;
 	private Set<Order> orders;
 	private Set<Obs> obs;
+	private Boolean voided = false;
+	private User voidedBy;
+	private Date dateVoided;
+	private String voidReason;
+	
+	
 	// Constructors
 
 	/** default constructor */
@@ -261,6 +267,73 @@ public class Encounter implements java.io.Serializable {
 	 */
 	public void setForm(Form form) {
 		this.form = form;
+	}
+	
+	/**
+	 * @return Returns the voided.
+	 */
+	public Boolean isVoided() {
+		return voided;
+	}
+
+	/**
+	 * @return Returns the voided.
+	 */
+	public Boolean getVoided() {
+		return voided;
+	}
+
+	/**
+	 * @param voided
+	 *            The voided status to set.
+	 */
+	public void setVoided(Boolean voided) {
+		this.voided = voided;
+	}
+
+	/**
+	 * @return Returns the voidedBy.
+	 */
+	public User getVoidedBy() {
+		return voidedBy;
+	}
+
+	/**
+	 * @param voidedBy
+	 *            The voidedBy to set.
+	 */
+	public void setVoidedBy(User voidedBy) {
+		this.voidedBy = voidedBy;
+	}
+
+	/**
+	 * @return Returns the voidReason.
+	 */
+	public String getVoidReason() {
+		return voidReason;
+	}
+
+	/**
+	 * @param voidReason
+	 *            The voidReason to set.
+	 */
+	public void setVoidReason(String voidReason) {
+		this.voidReason = voidReason;
+	}
+	
+	/**
+	 * @return Returns the dateVoided.
+	 */
+	public Date getDateVoided() {
+		return dateVoided;
+	}
+
+	/**
+	 * @param dateVoided
+	 *            The dateVoided to set.
+	 */
+	public void setDateVoided(Date dateVoided) {
+		this.dateVoided = dateVoided;
 	}
 	
 	@Override

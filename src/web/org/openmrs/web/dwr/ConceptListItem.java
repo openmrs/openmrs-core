@@ -55,6 +55,24 @@ public class ConceptListItem {
 		}
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof ConceptListItem) {
+			ConceptListItem c2 = (ConceptListItem)obj;
+			if (conceptId != null)
+				return conceptId.equals(c2.getConceptId());
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		if (conceptId != null)
+			return 31 * conceptId.hashCode();
+		else
+			return super.hashCode();
+	}
+	
 	public Integer getConceptId() {
 		return conceptId;
 	}

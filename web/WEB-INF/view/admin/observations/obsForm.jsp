@@ -410,9 +410,9 @@ function allowAutoListWithNumber() {
 						<div style="width:200px; float:left;" id="conceptName">${conceptName}</div>
 						<input type="hidden" id="concept" value="${status.value.conceptId}" name="conceptId" />
 						<input type="button" id="conceptButton" class="smallButton" value="<spring:message code="general.change"/>" onclick="showSearch(this, 'concept')" />
-						<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 					</c:otherwise>
 				</c:choose>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				<div class="description" style="clear: left;" id="conceptDescription">${conceptName.description}</div>
 			</spring:bind>
 		</td>

@@ -1,13 +1,15 @@
 package org.openmrs;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
 import junit.framework.TestCase;
 
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextFactory;
 import org.openmrs.api.db.hibernate.HibernateUtil;
-import java.util.*;
-import java.util.Locale;
-import java.util.Iterator;
 
 
 public class ObsTest extends TestCase {

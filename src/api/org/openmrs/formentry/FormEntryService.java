@@ -15,6 +15,7 @@ import org.openmrs.Tribe;
 import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
+import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOContext;
@@ -47,6 +48,11 @@ public class FormEntryService {
 	private PatientService getPatientService() {
 		checkPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY);
 		return context.getPatientService();
+	}
+	
+	private EncounterService getEncounterService() {
+		checkPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY);
+		return context.getEncounterService();
 	}
 
 	/**
@@ -232,6 +238,20 @@ public class FormEntryService {
 			context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		}
 		return t;
+	}
+	
+	/**
+	 * @see org.openmrs.api.EncounterService.findLocations()
+	 */
+	public List<Location> findLocations(String txt) throws APIException {
+		context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_ENCOUNTERS);
+		List<Location> locs;
+		try {
+			locs = getEncounterService().findLocations(txt);
+		} finally {
+			context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_ENCOUNTERS);
+		}
+		return locs;
 	}
 
 	/**

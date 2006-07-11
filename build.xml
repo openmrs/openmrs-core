@@ -228,6 +228,7 @@
 			<lib dir="${spring.dir}" includes="*.jar" />
 			<lib dir="${taglibs.dir}" includes="*.jar" />
 			<lib dir="${velocity.dir}" includes="*.jar" />
+			<lib dir="${neal-reporting.dir}" includes="*.jar" />
 			<!--<lib dir="${quartz.dir}" includes="*.jar" />-->
 			<lib dir="${mail.dir}" includes="*.jar" />
 			<!--<lib dir="${struts.dir}" includes="*.jar" /> -->
@@ -270,6 +271,7 @@
 			<zipfileset dir="${spring.dir}" includes="*.jar" />
 			<zipfileset dir="${taglibs.dir}" includes="*.jar" />
 			<zipfileset dir="${velocity.dir}" includes="*.jar" />
+			<zipfileset dir="${neal-reporting.dir}" includes="*.jar" />
 			<!--<zipfileset dir="${quartz.dir}" includes="*.jar" />-->
 			<zipfileset dir="${mail.dir}" includes="*.jar" />
 			<!--<zipfileset dir="${struts.dir}" includes="*.jar" /> -->
@@ -366,4 +368,5 @@
 			<arg value="${src.dir}/api/org/openmrs/arden/test"/>
 		</java>
 	</target>
+
 </project>

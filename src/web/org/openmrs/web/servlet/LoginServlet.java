@@ -139,6 +139,11 @@ public class LoginServlet extends HttpServlet {
 						redirect = request.getContextPath() + "/options.form#Change Login Info";
 					}
 					
+					// In case the user has no preferences, make sure that the context has some locale set
+					if (context.getLocale() == null) {
+							context.setLocale(OpenmrsConstants.GLOBAL_DEFAULT_LOCALE);
+					}
+					
 					response.sendRedirect(redirect);
 				
 					log.debug(request.getLocalAddr());

@@ -102,7 +102,7 @@
 	<small><em><spring:message code="general.search.hint"/></em></small>
 </form>
 
-<table border="0">
+<table border="0" cellpadding="2" cellspacing="0">
 	<tbody id="searchBody">
 	</tbody>
 </table>

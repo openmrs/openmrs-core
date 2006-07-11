@@ -1,6 +1,6 @@
 package org.openmrs;
 
-import java.util.*;
+import java.util.Date;
 
 /**
  * ConceptClass 
@@ -14,7 +14,6 @@ public class ConceptClass implements java.io.Serializable {
 	private Integer conceptClassId;
 	private String name;
 	private String description;
-	private Boolean set = false;
 	private User creator;
 	private Date dateCreated;
 
@@ -98,19 +97,5 @@ public class ConceptClass implements java.io.Serializable {
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
-
-	/**
-	 * 
-	 */
-	public boolean isSet() {
-		if (set == null)
-			return false;
-		return set;
-	}
-
-	public void setSet(boolean set) {
-		this.set = set;
-	}
-
 
 }

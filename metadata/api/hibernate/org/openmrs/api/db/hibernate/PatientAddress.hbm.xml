@@ -12,7 +12,7 @@
 			<generator class="native" />
 		</id>
 
-		<many-to-one name="patient" class="Patient" insert="false" update="false">
+		<many-to-one name="patient" class="Patient">
 			<column name="patient_id" />
 		</many-to-one>
 

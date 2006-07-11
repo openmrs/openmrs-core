@@ -140,8 +140,10 @@
 		showSearch();
 
 		// creates back button functionality
-		if (searchBox.value != "")
+		if (searchBox.value != "") {
 			search(searchBox, null, false, 0);
+			exitNumberMode(searchBox);
+		}
 			
 		changeClassProperty("description", "display", "none");
 	}

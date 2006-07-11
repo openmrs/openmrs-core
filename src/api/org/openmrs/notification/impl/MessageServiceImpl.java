@@ -1,24 +1,21 @@
 package org.openmrs.notification.impl;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.openmrs.User;
 import org.openmrs.Role;
+import org.openmrs.User;
 import org.openmrs.api.db.DAOContext;
 import org.openmrs.notification.Message;
 import org.openmrs.notification.MessageException;
+import org.openmrs.notification.MessagePreparator;
 import org.openmrs.notification.MessageSender;
 import org.openmrs.notification.MessageService;
-import org.openmrs.notification.MessagePreparator;
 import org.openmrs.notification.Template;
 import org.openmrs.util.OpenmrsConstants;
-
-import java.util.Collection;
-import java.util.Date;
 
 public class MessageServiceImpl implements MessageService { 
 		

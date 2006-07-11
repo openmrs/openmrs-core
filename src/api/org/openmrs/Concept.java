@@ -26,6 +26,7 @@ public class Concept implements java.io.Serializable {
 	private Boolean retired = false;
 	private ConceptDatatype datatype;
 	private ConceptClass conceptClass;
+	private Boolean set = false;
 	private String units;
 	private String icd10;
 	private String loinc;
@@ -94,7 +95,7 @@ public class Concept implements java.io.Serializable {
 	 * @return Returns the non-retired answers.
 	 */
 	public Collection<ConceptAnswer> getAnswers() {
-		Collection<ConceptAnswer> newAnswers = new Vector<ConceptAnswer>();
+		Collection<ConceptAnswer> newAnswers = new HashSet<ConceptAnswer>();
 		for (ConceptAnswer ca : answers) {
 			if (!ca.getAnswerConcept().isRetired())
 				newAnswers.add(ca);
@@ -181,6 +182,25 @@ public class Concept implements java.io.Serializable {
 	 */
 	public void setConceptClass(ConceptClass conceptClass) {
 		this.conceptClass = conceptClass;
+	}
+	
+
+	/**
+	 * whether or not this concept is a set
+	 */
+	public Boolean isSet() {
+		return set;
+	}
+
+	/**
+	 * @param set whether or not this concept is a set
+	 */
+	public void setSet(Boolean set) {
+		this.set = set;
+	}
+
+	public Boolean getSet() {
+		return isSet();
 	}
 
 	/**
@@ -318,7 +338,10 @@ public class Concept implements java.io.Serializable {
 		
 		//no name with the given locale was found.
 		// return null if exact match desired
-		if (exact) return null;
+		if (exact) {
+			log.warn("No concept name found for concept id " + conceptId + " for locale " + loc);
+			return null;
+		}
 		
 //		returning default name locale ("en") if exact match desired
 		return defaultName;
@@ -395,7 +418,7 @@ public class Concept implements java.io.Serializable {
 		Collection<ConceptSynonym> syns = new Vector<ConceptSynonym>();
 		for (ConceptSynonym syn : getSynonyms()) {
 			String lang = syn.getLocale();
-			if (lang == null) lang = "en"; //TODO temporary hack until db update
+			if (lang == null) lang = "en";
 			if (lang.equals(loc))
 				syns.add(syn);
 		}

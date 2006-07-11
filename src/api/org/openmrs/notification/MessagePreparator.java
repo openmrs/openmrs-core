@@ -1,8 +1,5 @@
 package org.openmrs.notification;
 
-import java.util.Map;
-import org.openmrs.notification.Message;
-import org.openmrs.notification.Template;
 
 /**
  * Interface that defines the message preparator's functionality.

@@ -1,23 +1,26 @@
 package org.openmrs;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.util.Locale;
+
 import junit.framework.TestCase;
-import java.io.*;
+
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextFactory;
 import org.openmrs.api.db.hibernate.HibernateUtil;
-import java.util.*;
-import java.util.Locale;
-import java.util.Iterator;
-
-import antlr.CommonAST;
-import antlr.collections.AST;
-import antlr.*;
 import org.openmrs.arden.ArdenBaseLexer;
 import org.openmrs.arden.ArdenBaseParser;
 import org.openmrs.arden.ArdenBaseTreeParser;
 import org.openmrs.arden.MLMObject;
-import org.openmrs.arden.HiRiskLeadScreen;
-import org.openmrs.api.*;
+import org.openmrs.arden.compiled.HiRiskLeadScreen;
+
+import antlr.BaseAST;
 
 
 public class ArdenTest extends TestCase {
@@ -209,15 +212,15 @@ public class ArdenTest extends TestCase {
 		HiRiskLeadScreen mlm = new HiRiskLeadScreen(context,1,locale);
 		mlm.run();
 	
-	  /*  Patient patient = new Patient();
+	/*    Patient patient = new Patient();
 		patient.setPatientId(1);
 		PatientName pn = new PatientName("Jenny", "M", "Patient");
 		patient.addName(pn);
 		
 		MLMObject ardObj = new MLMObject(context, locale, patient);
-		RunTest("test/arden test/HiRiskLeadScreen.mlm", ardObj ); //populates ardObj
+		//RunTest("test/arden test/HiRiskLeadScreen.mlm", ardObj ); //populates ardObj
+		RunTest("test/arden test/4.mlm", ardObj ); //populates ardObj
 	*/	
-		
 	//	ConceptService cs = context.getConceptService();
 	//	ObsService os = context.getObsService();
 		

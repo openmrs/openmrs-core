@@ -94,6 +94,10 @@ tokens {
 	LIBRARY="library";
 	FILENAME="filename";
 	MLMNAME="mlmname";
+	OF = "of";
+	TIME = "time";
+	WITHIN = "within";
+	
 	
 }
 
@@ -353,8 +357,8 @@ validation_code :
 // Wraps the ID token from the lexer, in order to provide
 // 'keyword as identifier' trickery.
 any_reserved_word
-	: AND | IS | ARE | WAS | WERE | COUNT | IN | LESS | THE | THAN | FROM | BEFORE |AFTER | AGO | AT
-	| WRITE | BE | LET | YEAR | YEARS | IF | IT | THEY | NOT | OR | THEN | MONTH | MONTHS
+	: AND | IS | ARE | WAS | WERE | COUNT | IN | LESS | THE | THAN | FROM | BEFORE |AFTER | AGO | AT | OF
+	| WRITE | BE | LET | YEAR | YEARS | IF | IT | THEY | NOT | OR | THEN | MONTH | MONTHS | TIME | TIMES | WITHIN
 	| READ | MINIMUM | MIN | MAXIMUM | MAX | LAST | FIRST | EARLIEST | LATEST | EVENT | WHERE | EXIST | EXISTS | PAST
 	| AVERAGE | AVG | SUM | MEDIAN | CONCLUDE | ELSE | ELSEIF | ENDIF | TRUE | FALSE | DATA | LOGIC | ACTION
 	;
@@ -494,7 +498,9 @@ type_code
 	;
 
 data_slot
-	: "data"^ COLON! (data_assignment SEMI!)* ENDBLOCK
+	: 
+	//"data"^ COLON! (data_assignment SEMI!)* ENDBLOCK
+	DATA^ COLON! (data_statement SEMI!)* ENDBLOCK
 	;
 
 /*
@@ -505,19 +511,36 @@ data_block
 	| data_comment
 	) 
 	;
-
+*/
 data_statement
 	: 
-     (data_assignment endassignment)* endassignment endblock
-	//(
-	//	(endassignment data_assignment)*
-//
-//	)
-//	| "IF" data_if_then_else2
+    ( (data_if_statement) 
+	| data_assignment
+	| data_elseif
+	)
 //	| "FOR" identifier "IN" expr "DO" data_block SEMI "ENDDO"
 //	| "WHILE" expr "DO" data_block SEMI "ENDDO"
 	;
-*/
+
+data_if_statement
+	:IF^ data_if_then_else2
+	;
+data_if_then_else2:
+     (
+     	expr
+     	| (LPAREN!) expr (RPAREN!) 
+     )
+     THEN data_statement
+    ;
+
+data_elseif
+	:
+	 ELSE^ 
+	 | ELSEIF^ data_if_then_else2
+	 | 	  (ENDIF^)
+
+	;
+	
 
 data_comment
 	:	
@@ -670,7 +693,7 @@ unary_comp_op :
 	| "NULL"
 	| "BOOLEAN"
 	| "NUMBER"
-	| "TIME"
+	| TIME
 	| "DURATION"
 	| "STRING"
 	| "LIST"
@@ -698,7 +721,8 @@ duration_op
  	;
 
 temporal_comp_op
-	: "within"! (the!)? PAST expr_string
+	: WITHIN! (the!)? PAST expr_string
+	| AFTER expr_string
 	;
 /************************************************************************************************/
 where
@@ -765,7 +789,7 @@ event_factor :
 /*
 evoke_time :
 	  evoke_duration "AFTER" evoke_time
-	| "TIME" event_any
+	| TIME event_any
 	| "TIME" "OF" event_any
 	| iso_date_time
 	| iso_date
@@ -869,6 +893,7 @@ conclude_statement
 logic_assignment
 :
 	 (ACTION_OP^)? identifier_or_object_ref (ACTION_OP)? (BECOMES! | EQUALS!) expr
+	 |  identifier_becomes expr
 	;
 		
 //	 identifier_becomes expr
@@ -917,7 +942,7 @@ expr_sort :
 */	;
 
 sort_option :
-	  "TIME"
+	  TIME
 	| "DATA"
 	;
 
@@ -1028,7 +1053,11 @@ expr_function
 //expr_duration
 	:
 	expr_factor
-    | (the)? from_of_func_op expr_factor //(is)? binary_comp_op (the)? (expr_factor | from_of_func_op expr_factor)
+    | (the)?
+     (
+    	from_of_func_op (OF)? expr_factor //(is)? binary_comp_op (the)? (expr_factor | from_of_func_op expr_factor)
+    	| of_func_op (OF)? expr_function
+     )
 	//	("as" as_func_op ) 
 	;
 
@@ -1038,11 +1067,15 @@ expr_factor
 
 expr_factor_atom
 	: ID
-	//| (LPAREN ID RPAREN)
+	| LPAREN! 
+		//	( ID | ( (LPAREN expr_factor_atom RPAREN) (COMMA (LPAREN ID RPAREN))*) ) 
+		expr		
+	  RPAREN!
 	| INTLIT
 	| time_value
 	| boolean_value
 	| STRING_LITERAL
+	
 	;
 
 as_func_op
@@ -1056,6 +1089,15 @@ boolean_value :
 	| ( FALSE^ )
 	;
 
+of_func_op:
+	of_read_func_op
+	| of_noread_func_op
+;
+
+
+of_noread_func_op:
+	TIME
+;
 /*************************************************************************************/
 class ArdenBaseTreeParser extends TreeParser;
 
@@ -1532,6 +1574,8 @@ INTLIT
 //  : 
 //  '\''! TEXT (WS)? (DOT)? (INTLIT)? (DOT)? (INTLIT)? (DOT)? (INTLIT)? '\''!
 //  ;
+
+
 
 // string literals
 STRING_LITERAL

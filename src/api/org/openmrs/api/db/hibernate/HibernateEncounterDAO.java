@@ -11,6 +11,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
@@ -99,7 +100,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 				.addOrder(Order.desc("encounterDatetime"));
 
 		if (!includeVoided)
-			crit.add(Expression.eq("p.voided", false));
+			crit.add(Expression.eq("voided", false));
 
 		return crit.list();
 	}
@@ -193,6 +194,20 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		return locations;
 
 	}
+	
+	/**
+	 * @see org.openmrs.api.db.EncounterService#findLocations(java.lang.String)
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Location> findLocations(String name) throws DAOException {
+		Session session = HibernateUtil.currentSession();
+		List result = session.createCriteria(Location.class)
+			.add(Expression.like("name", name, MatchMode.START))
+			.addOrder(Order.asc("name"))
+			.list();
+		
+		return result;
+	}
 
 	/**
 	 * @see org.openmrs.api.db.EncounterService#updateEncounter(org.openmrs.Encounter)
@@ -230,7 +245,8 @@ public class HibernateEncounterDAO implements EncounterDAO {
 
 		Criteria crit = session.createCriteria(Encounter.class).add(
 				Expression.eq("patient", who)).add(
-				Expression.between("encounterDatetime", fromDate, toDate));
+				Expression.between("encounterDatetime", fromDate, toDate)).add(
+				Expression.eq("voided", false));
 
 		Set<Encounter> encounters = new HashSet<Encounter>();
 		encounters.addAll(crit.list());
@@ -249,7 +265,8 @@ public class HibernateEncounterDAO implements EncounterDAO {
 
 		Criteria crit = session.createCriteria(Encounter.class).add(
 				Expression.eq("patient", who)).add(
-				Expression.eq("location", where));
+				Expression.eq("location", where)).add(
+				Expression.eq("voided", false));
 
 		Set<Encounter> encounters = new HashSet<Encounter>();
 		encounters.addAll(crit.list());
@@ -259,11 +276,11 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	}
 
 	/**
-	 * @see org.openmrs.api.db.EncounterService#getEncounters(org.openmrs.Patient)
+	 * @see org.openmrs.api.db.EncounterService#getEncounters(org.openmrs.Patient,boolean)
 	 */
-	public Set<Encounter> getEncounters(Patient who) {
+	public Set<Encounter> getEncounters(Patient who, boolean includeVoided) {
 		Set<Encounter> encounters = new HashSet<Encounter>();
-		encounters.addAll(getEncountersByPatientId(who.getPatientId(), true));
+		encounters.addAll(getEncountersByPatientId(who.getPatientId(), includeVoided));
 
 		return encounters;
 	}
@@ -276,7 +293,8 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		Session session = HibernateUtil.currentSession();
 
 		Criteria crit = session.createCriteria(Encounter.class).add(
-				Expression.between("encounterDatetime", fromDate, toDate))
+				Expression.between("encounterDatetime", fromDate, toDate)).add(
+				Expression.eq("voided", false))
 				.addOrder(Order.asc("location"))
 				.addOrder(Order.asc("encounterDatetime"));
 
@@ -292,7 +310,8 @@ public class HibernateEncounterDAO implements EncounterDAO {
 
 		Criteria crit = session.createCriteria(Encounter.class).add(
 				Expression.eq("location", loc)).add(
-				Expression.between("encounterDatetime", fromDate, toDate))
+				Expression.between("encounterDatetime", fromDate, toDate)).add(
+				Expression.eq("voided", false))
 				.addOrder(Order.asc("encounterDatetime"));
 
 		return crit.list();

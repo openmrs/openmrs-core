@@ -34,6 +34,7 @@ public class Patient implements java.io.Serializable {
 	private Tribe tribe;
 	private String mothersName;
 	private Concept civilStatus;
+	private Boolean dead = false;
 	private Date deathDate;
 	private String causeOfDeath;
 	private String healthDistrict;
@@ -241,6 +242,27 @@ public class Patient implements java.io.Serializable {
 	 */
 	public void setCivilStatus(Concept civilStatus) {
 		this.civilStatus = civilStatus;
+	}
+
+	/**
+	 * @return Returns the death status.
+	 */
+	public Boolean isDead() {
+		return dead;
+	}
+	
+	/**
+	 * @return Returns the death status.
+	 */
+	public Boolean getDead() {
+		return isDead();
+	}
+
+	/**
+	 * @param dead The dead to set.
+	 */
+	public void setDead(Boolean dead) {
+		this.dead = dead;
 	}
 
 	/**

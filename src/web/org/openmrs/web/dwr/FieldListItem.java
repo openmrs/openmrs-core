@@ -19,14 +19,15 @@ public class FieldListItem {
 	private String table = "";
 	private String attribute = "";
 	private String selectMultiple;
-	private String creator = "";
-	private String changedBy = "";
-	private FieldListItem field = null;
 	private Integer numForms = 0;
+	private String defaultValue = "";
+	
+	//private String creator = "";
+	//private String changedBy = "";
 	
 	public FieldListItem() { }
 		
-	public FieldListItem(Field field) {
+	public FieldListItem(Field field, Locale locale) {
 
 		if (field != null) {
 			fieldId = field.getFieldId();
@@ -37,18 +38,38 @@ public class FieldListItem {
 				fieldTypeId = field.getFieldType().getFieldTypeId();
 			}
 			if (field.getConcept() != null)
-				concept = new ConceptListItem(field.getConcept(), new Locale("en", "US"));  //TODO fix locale here
+				concept = new ConceptListItem(field.getConcept(), locale);
 			table = field.getTableName();
 			attribute = field.getAttributeName();
 			selectMultiple = field.isSelectMultiple() == true ? "yes" : "no";
-			if (field.getCreator() != null)
-				creator = field.getCreator().getFirstName() + " " + field.getCreator().getLastName();
-			if (field.getChangedBy() != null)
-				changedBy = field.getChangedBy().getFirstName() + " " + field.getChangedBy().getLastName();
+			//if (field.getCreator() != null)
+			//	creator = field.getCreator().getFirstName() + " " + field.getCreator().getLastName();
+			//if (field.getChangedBy() != null)
+			//	changedBy = field.getChangedBy().getFirstName() + " " + field.getChangedBy().getLastName();
 			numForms = field.getForms().size();
+			defaultValue = field.getDefaultValue();
 		}
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof FieldListItem) {
+			FieldListItem f2 = (FieldListItem)obj;
+			if (fieldId != null)
+				return fieldId.equals(f2.getFieldId());
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		if (fieldId != null)
+			return 57 * fieldId.hashCode();
+		else
+			return super.hashCode();
+	}
 
+	/*
 	public String getChangedBy() {
 		return changedBy;
 	}
@@ -64,14 +85,7 @@ public class FieldListItem {
 	public void setCreator(String c) {
 		this.creator = c;
 	}
-
-	public FieldListItem getField() {
-		return field;
-	}
-
-	public void setField(FieldListItem field) {
-		this.field = field;
-	}
+	*/
 
 	public Integer getFieldId() {
 		return fieldId;
@@ -151,6 +165,14 @@ public class FieldListItem {
 
 	public void setNumForms(Integer numForms) {
 		this.numForms = numForms;
+	}
+
+	public String getDefaultValue() {
+		return defaultValue;
+	}
+
+	public void setDefaultValue(String defaultValue) {
+		this.defaultValue = defaultValue;
 	}
 
 }

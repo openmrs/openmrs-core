@@ -2,7 +2,6 @@ package org.openmrs.arden.parser;
 import antlr.CommonAST;
 import antlr.Token;
 import antlr.collections.AST;
-import java.io.*;
 
 public abstract class ArdenAST extends CommonAST {
 	public abstract String value();

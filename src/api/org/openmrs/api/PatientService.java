@@ -110,8 +110,13 @@ public class PatientService {
 			throw new APIException("At least one Patient Identifier is required");
 		
 		// Check for duplicate identifiers
-		for (PatientIdentifier pi : patient.getIdentifiers()) {
+		for (Object obj : patient.getIdentifiers().toArray()) {
+			PatientIdentifier pi = (PatientIdentifier)obj;
 			if (!pi.isVoided()) {
+				if (pi.getIdentifier() == null || pi.getIdentifier().length() == 0) {
+					patient.removeIdentifier(pi);
+					continue;
+				}
 				List<PatientIdentifier> ids = getPatientIdentifiers(pi.getIdentifier(), pi.getIdentifierType());
 				for (PatientIdentifier id : ids) {
 					if (!id.getIdentifierType().hasCheckDigit() || id.getPatient().equals(patient))
@@ -339,6 +344,20 @@ public class PatientService {
 		return getPatientDAO().getPatientIdentifierType(patientIdentifierTypeId);
 	}
 
+	/**
+	 * Get patientIdentifierType by name
+	 * 
+	 * @param name
+	 * @return patientIdentifierType with given name
+	 * @throws APIException
+	 */
+	public PatientIdentifierType getPatientIdentifierType(String name) throws APIException {
+		if (!context.isAuthenticated())
+			throw new APIAuthenticationException("Authentication required");
+		
+		return getPatientDAO().getPatientIdentifierType(name);
+	}
+	
 	/**
 	 * Get tribe by internal tribe identifier
 	 * 

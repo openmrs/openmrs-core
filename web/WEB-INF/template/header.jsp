@@ -58,9 +58,13 @@
 		<div id="banner">
 			<%@ include file="/WEB-INF/template/banner.jsp" %>
 		</div>
-		<div id="gutter">
-			<%@ include file="/WEB-INF/template/gutter.jsp" %>
-		</div>
+		
+		<openmrs:hasPrivilege privilege="View Navigation Menu">
+			<div id="gutter">
+				<%@ include file="/WEB-INF/template/gutter.jsp" %>
+			</div>
+		</openmrs:hasPrivilege>
+		
 		<div id="content">
 
 			<c:if test="${!taskpane}">

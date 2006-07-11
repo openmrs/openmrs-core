@@ -28,7 +28,7 @@ public class DWRPatientService {
 	
 	public Vector findPatients(String searchValue, boolean includeVoided) {
 		
-		Vector patientList = new Vector();
+		Vector<Object> patientList = new Vector<Object>();
 
 		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
 		
@@ -42,14 +42,16 @@ public class DWRPatientService {
 		else {
 			try {
 				
-				Integer userId = context.getAuthenticatedUser().getUserId();
+				Integer userId = -1;
+				if (context.isAuthenticated())
+					userId = context.getAuthenticatedUser().getUserId();
 				log.info(userId + "|" + searchValue);
 				
 				FormEntryService ps = context.getFormEntryService();
 				List<Patient> patients;
 				
 				patients = ps.findPatients(searchValue, includeVoided);
-				patientList = new Vector(patients.size());
+				patientList = new Vector<Object>(patients.size());
 				for (Patient p : patients) {
 					patientList.add(new PatientListItem(p));
 				}
@@ -102,7 +104,7 @@ public class DWRPatientService {
 	}
 	
 	public Vector getSimilarPatients(String name, String birthyear, String age, String gender) {
-		Vector patientList = new Vector();
+		Vector<Object> patientList = new Vector<Object>();
 
 		Context context = (Context) WebContextFactory.get().getSession()
 				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
@@ -138,7 +140,7 @@ public class DWRPatientService {
 			
 			patients.addAll(ps.getSimilarPatients(name, d, gender));
 			
-			patientList = new Vector(patients.size());
+			patientList = new Vector<Object>(patients.size());
 			for (Patient p : patients) {
 				patientList.add(new PatientListItem(p));
 			}
@@ -152,7 +154,7 @@ public class DWRPatientService {
 		Context context = (Context) WebContextFactory.get().getSession()
 				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 
-		Vector tribeList = new Vector();
+		Vector<Object> tribeList = new Vector<Object>();
 		
 		if (context == null) {
 			tribeList.add("Your session has expired.");
@@ -171,6 +173,7 @@ public class DWRPatientService {
 			
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Vector<Tribe> getTribes() {
 		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
 		
@@ -207,7 +210,7 @@ public class DWRPatientService {
 		Context context = (Context) WebContextFactory.get().getSession()
 				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 
-		Vector patientList = new Vector();
+		Vector<Object> patientList = new Vector<Object>();
 		
 		if (context == null) {
 			patientList.add("Your session has expired.");

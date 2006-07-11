@@ -370,7 +370,7 @@ var rowCreator = function(row, i) {
 	else
 		tr.className = "oddRow";
 
-	if (row.voided == true || row.retired == true)
+	if (row != null && (row.voided == true || row.retired == true))
 		tr.className += " voided";
 	
 	if (typeof row != "string") {
@@ -400,9 +400,12 @@ function fillTable(objects, cells) {
     allObjectsFound = objects;
 	
 	updatePagingNumbers();
-
+	
+	// signal to the using script that we've cleared the rows
+	if (typeof onRemoveAllRows != "undefined")
+		onRemoveAllRows(objectHitsTableBody);
     DWRUtil.removeAllRows(objectHitsTableBody);	//clear out the current rows
-
+	
     var objs = objects.slice(firstItemDisplayed - 1, (firstItemDisplayed - 1) + numItemsDisplayed);
     
     var funcs = new Array();
@@ -510,6 +513,11 @@ function updatePagingNumbers() {
 		numItemsDisplayed = Math.round(numItemsDisplayed / 5) * 5;
 		if (numItemsDisplayed > idealNumItemsDisplayed) numItemsDisplayed += -5;
 	}
+	
+	// if last object would be the only item on the 'next page', add it back in
+	if (numItemsDisplayed + 1 == allObjectsFound.length) {
+		numItemsDisplayed = numItemsDisplayed + 1;
+	}
 }
 
 function updatePagingBars() {
@@ -521,9 +529,22 @@ function updatePagingBars() {
 	var pagingBar = document.getElementById("searchPagingBar");
 	
 	var total = allObjectsFound.length;
+	
+	// if the last object is a string (eg a link to Add New Patient), correct list size
+	if (typeof(allObjectsFound[total-1]) == "string")
+		total = total - 1;
+	
 	var lastItemDisplayed = (firstItemDisplayed + numItemsDisplayed) - 1;
+	
+	// if its a shortened page
 	if (lastItemDisplayed > total) {
 		lastItemDisplayed = total;
+	}
+	
+	// there may be strings mixed in the list, correct the list size here
+	if (lastItemDisplayed != objectsFound.length) {
+		total = total - (lastItemDisplayed - objectsFound.length);
+		lastItemDisplayed = objectsFound.length;
 	}
 	
 	if (lastPhraseSearched != null)
@@ -551,11 +572,11 @@ function updatePagingBars() {
 			// create previous text node
 			prev = document.createTextNode("Previous Results");
 		}
-		//infoBar.appendChild(prev.cloneNode(true));
+		
 		pagingBar.appendChild(prev);
 		var s = document.createElement("span");
 		s.innerHTML = " | ";
-		//infoBar.appendChild(s.cloneNode(true));	
+			
 		pagingBar.appendChild(s);
 	
 		var next;
@@ -570,7 +591,7 @@ function updatePagingBars() {
 		else {
 			next = document.createTextNode("Next Results");
 		}
-		//infoBar.appendChild(next.cloneNode(true));
+		
 		pagingBar.appendChild(next);
 	}
 }
@@ -673,16 +694,16 @@ function exitNumberMode(txtbox) {
 }
 
 function setPosition(btn, form, formWidth, formHeight) {
-	var left  = getElementLeft(btn) + btn.offsetWidth + 20;
-	var top   = getElementTop(btn)-50;
+	var left = parseInt(getElementLeft(btn) + btn.offsetWidth + 20);
+	var top  = parseInt(getElementTop(btn)-50);
 	
 	if (formWidth == null)
 		formWidth = getDimension(form.style.width);
 	if (formHeight == null)
 		formHeight = getDimension(form.style.height);
 	
-	var windowWidth = window.innerWidth + getScrollOffsetX();
-	var windowHeight = window.innerHeight + getScrollOffsetY();
+	var windowWidth = parseInt(window.innerWidth + getScrollOffsetX());
+	var windowHeight = parseInt(window.innerHeight + getScrollOffsetY());
 	
 	// if the box is popping off the right/bottom, move it back 
 	//  onto the screen
@@ -700,10 +721,13 @@ function setPosition(btn, form, formWidth, formHeight) {
 }
 
 function getDimension(style) {
+	var s = "0";
 	if (style.indexOf("px") == -1)
-		return style;
+		s = style;
 	else
-		return style.substring(0, style.indexOf("px"));
+		s = style.substring(0, style.indexOf("px"));
+		
+	return parseInt(s);
 }
 
 function getElementLeft(elm) {
@@ -726,10 +750,10 @@ function getElementTop(elm) {
 
 function getScrollOffsetY() {
 	if (window.innerHeight) {
-		return window.pageYOffset;
+		return parseInt(window.pageYOffset);
 	}
 	else {
-		return document.documentElement.scrollTop;
+		return parseInt(document.documentElement.scrollTop);
 	}
 }
 

@@ -7,13 +7,76 @@
 <script src="<%= request.getContextPath() %>/scripts/calendar/calendar.js"></script>
 
 <script type="text/javascript">
-	function addIdentifier() {
+	function addIdentifier(id, type, location, pref, oldIdentifier) {
 		var table = document.getElementById('identifiers');
-		var row = document.getElementById('newIdentifierRow');
+		var row = document.getElementById('identifierRow');
 		var newrow = row.cloneNode(true);
 		newrow.style.display = "";
 		newrow.id = table.childNodes.length;
 		table.appendChild(newrow);
+		var inputs = newrow.getElementsByTagName("input");
+		var selects = newrow.getElementsByTagName("select");
+		if (id) {
+			for (var i in inputs) {
+				if (inputs[i] && inputs[i].name == "identifier") {
+					inputs[i].value = id;
+					if (oldIdentifier) {
+						inputs[i].parentNode.appendChild(document.createTextNode(id));
+						inputs[i].parentNode.removeChild(inputs[i]);
+					}
+				}
+			}	
+		}
+		if (type) {
+			for (var i in selects)
+				if (selects[i] && selects[i].name == "identifierType") {
+					var selectedOpt;
+					for (o in selects[i].options) {
+						if (selects[i].options[o].value == type) {
+							selectedOpt = selects[i].options[o];
+							selectedOpt.selected = true;
+						}
+						else
+							selects[i].options[o].selected = false;
+					}
+					if (oldIdentifier) {
+						selects[i].parentNode.appendChild(document.createTextNode(selectedOpt.text));
+						selects[i].parentNode.removeChild(selects[i]);
+					}
+				}
+		}
+		if (location) {
+			for (var i in selects)
+				if (selects[i] && selects[i].name == "location") {
+					var selectedOpt;
+					for (o in selects[i].options) {
+						if (selects[i].options[o].value == location) {
+							selectedOpt = selects[i].options[o];
+							selectedOpt.selected = true;
+						}
+						else
+							selects[i].options[o].selected = false;
+					}
+					if (oldIdentifier) {
+						selects[i].parentNode.appendChild(document.createTextNode(selectedOpt.text));
+						selects[i].parentNode.removeChild(selects[i]);
+					}
+				}	
+		}
+		
+		for (var i in inputs)
+			if (inputs[i] && inputs[i].name == "preferred") {
+				inputs[i].checked = (pref == true);
+				inputs[i].value = id + type;
+			}
+		
+		if (oldIdentifier) {
+			for (var i in inputs) {
+				if(inputs[i] && inputs[i].name == "closeButton")
+					inputs[i].style.display = "none";
+			}
+		}
+
 	}
 	
 	function updateAge() {
@@ -47,7 +110,51 @@
 		}
 		return age;
 	}
-
+	
+	function removeIdentifier(btn) {
+		var parent = btn.parentNode;
+		while (parent.tagName.toLowerCase() != "tr")
+			parent = parent.parentNode;
+		
+		parent.style.display = "none";
+	}
+	
+	function removeHiddenRows() {
+		var rows = document.getElementsByTagName("TR");
+		var i = 0;
+		while (i < rows.length) {
+			if (rows[i].style.display == "none") {
+				rows[i].parentNode.removeChild(rows[i]);
+			}
+			else {
+				i = i + 1;
+			}
+		}
+	}
+	
+	function identifierOrTypeChanged(input) {
+		var parent = input.parentNode;
+		while (parent.tagName.toLowerCase() != "tr")
+			parent = parent.parentNode;
+		
+		var inputs = parent.getElementsByTagName("input");
+		var prefInput;
+		var idInput;
+		var typeInput;
+		for (var i in inputs) {
+			if (inputs[i] && inputs[i].name == "preferred")
+				prefInput = inputs[i];
+			else if (inputs[i] && inputs[i].name == "identifier")
+				idInput = inputs[i];
+		}
+		inputs = parent.getElementsByTagName("select");
+		for (var i in inputs)
+			if (inputs[i] && inputs[i].name == "identifierType")
+				typeInput = inputs[i];
+		
+		if (idInput && typeInput)
+			prefInput.value = idInput.value + typeInput.value;
+	}
 	
 </script>
 
@@ -55,21 +162,21 @@
 	th {
 		text-align: left;
 	}
-	#newIdentifierRow {
+	#identifierRow {
 		display: none;
 	}
 </style>
 
 <spring:hasBindErrors name="patient">
-	<div class="error">Please fix all errors</div>
+	<spring:message code="fix.error"/>
 	<div class="error">
 		<c:forEach items="${errors.allErrors}" var="error">
-			<spring:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
+			<spring:message code="${error.code}" text="${error.code}"/><br/><!-- ${fn:replace(error, '--', '\\-\\-')} -->
 		</c:forEach>
 	</div>
 </spring:hasBindErrors>
 
-<form method="post" action="newPatient.form">
+<form method="post" action="newPatient.form" onSubmit="removeHiddenRows()">
 	<c:if test="${patient.patientId == null}"><h2><spring:message code="Patient.create"/></h2></c:if>
 	<c:if test="${patient.patientId != null}"><h2><spring:message code="Patient.edit"/></h2></c:if>
 	
@@ -106,23 +213,15 @@
 			<th><spring:message code="PatientIdentifier.identifier"/></th>
 			<th><spring:message code="PatientIdentifier.identifierType"/></th>
 			<th><spring:message code="PatientIdentifier.location.identifier"/></th>
+			<th><spring:message code="general.preferred"/></th>
+			<th></th>
 		</tr>
-		<c:forEach items="${identifiers}" var="id">
-			<tr>
-				<td>${id.identifier}</td>
-				<td>${id.identifierType.name}</td>
-				<td>${id.location.name}</td>
-			</tr>
-		</c:forEach>
-		<tr id="newIdentifierRow">
+		<tr id="identifierRow">
 			<td valign="top">
-				<input type="text" size="30"
-						name="newIdentifier" 
-						value="" 
-						onBlur="return true; validateIdentifier(this, 'addButton', '<spring:message code="error.identifier"/>');"/>
+				<input type="text" size="30" name="identifier" onmouseup="identifierOrTypeChanged(this)" />
 			</td>
 			<td valign="top">
-				<select name="newIdentifierType">
+				<select name="identifierType" onclick="identifierOrTypeChanged(this)">
 					<openmrs:forEachRecord name="patientIdentifierType">
 						<option value="${record.patientIdentifierTypeId}">
 							${record.name}
@@ -131,7 +230,7 @@
 				</select>
 			</td>
 			<td valign="top">
-				<select name="newLocation">
+				<select name="location">
 					<openmrs:forEachRecord name="location">
 						<option value="${record.locationId}">
 							${record.name}
@@ -139,8 +238,18 @@
 					</openmrs:forEachRecord>
 				</select>
 			</td>
+			<td valign="middle" align="center">
+				<input type="radio" name="preferred" value="" onclick="identifierOrTypeChanged(this)" />
+			</td>
+			<td valign="middle" align="center">
+				<input type="button" name="closeButton" onClick="return removeIdentifier(this);" class="closeButton" value='<spring:message code="general.remove"/>'/>
 		</tr>
 	</table>
+	<script type="text/javascript">
+		<c:forEach items="${identifiers}" var="id">
+			addIdentifier("${id.identifier}", ${id.identifierType.patientIdentifierTypeId}, ${id.location.locationId}, ${id.preferred}, ${id.dateCreated != null});
+		</c:forEach>
+	</script>
 	<input type="button" class="smallButton" onclick="addIdentifier()" value="<spring:message code="PatientIdentifier.add" />" hidefocus />
 	<br/><br/>
 	<table>

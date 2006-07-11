@@ -1,8 +1,5 @@
 package org.openmrs.scheduler.tasks;
 
-import java.util.Map;
-import java.util.Collection;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;

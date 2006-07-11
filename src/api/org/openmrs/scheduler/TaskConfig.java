@@ -1,13 +1,12 @@
 package org.openmrs.scheduler;
 
-import org.openmrs.User;
-
-import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+
+import org.openmrs.User;
 
 
 /**

@@ -8,15 +8,13 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
-import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.api.APIException;
-import org.openmrs.api.db.DAOException;
 import org.openmrs.api.context.Context;
-import org.openmrs.scheduler.TaskConfig;
+import org.openmrs.api.db.DAOException;
+import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.scheduler.Schedule;
+import org.openmrs.scheduler.TaskConfig;
 import org.openmrs.scheduler.db.SchedulerDAO;
-import org.openmrs.util.Helper;
-import org.openmrs.util.Security;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
 /**

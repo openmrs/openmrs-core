@@ -173,6 +173,21 @@ public class EncounterService {
 	}
 	
 	/**
+	 * Search for locations by name.  Matches returned match the given string at 
+	 * the beginning of the name
+	 * 
+	 * @param name location's name
+	 * @return list of locations with similar name
+	 * @throws APIException
+	 */
+	public List<Location> findLocations(String name) throws APIException {
+		if (!context.isAuthenticated())
+			throw new APIAuthenticationException("Authentication required");
+		
+		return getEncounterDAO().findLocations(name);
+	}
+	
+	/**
 	 * Save changes to encounter.  
 	 * Automatically applys encounter.patient to all encounter.obs.patient
 	 * 
@@ -198,6 +213,9 @@ public class EncounterService {
 	/**
 	 * Delete encounter from database.
 	 * 
+	 * For super users only. If dereferencing encounters, use
+	 * <code>voidEncounter(org.openmrs.Encounter)</code>
+	 * 
 	 * @param encounter encounter object to be deleted 
 	 */
 	public void deleteEncounter(Encounter encounter) throws APIException {
@@ -207,15 +225,81 @@ public class EncounterService {
 	}
 	
 	/**
-	 * all encounters for a patient
+	 * Voiding a encounter essentially removes it from circulation
+	 * 
+	 * @param Encounter
+	 *            encounter
+	 * @param String
+	 *            reason
+	 */
+	public void voidEncounter(Encounter encounter, String reason) {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_ENCOUNTERS))
+			throw new APIAuthenticationException("Privilege required: "
+					+ OpenmrsConstants.PRIV_EDIT_ENCOUNTERS);
+
+		if (reason == null)
+			reason = "";
+		
+		ObsService os = context.getObsService();
+		for (Obs o : encounter.getObs()) {
+			if (!o.isVoided()) {
+				os.voidObs(o, reason);
+			}
+		}
+		
+		encounter.setVoided(true);
+		encounter.setVoidedBy(context.getAuthenticatedUser());
+		encounter.setDateVoided(new Date());
+		encounter.setVoidReason(reason);
+		updateEncounter(encounter);
+	}
+	
+	/**
+	 * Unvoid encounter record 
+	 * 
+	 * @param encounter encounter to be revived
+	 */
+	public void unvoidEncounter(Encounter encounter) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_ENCOUNTERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_ENCOUNTERS);
+		
+		String voidReason = encounter.getVoidReason();
+		if (voidReason == null)
+			voidReason = "";
+		
+		ObsService os = context.getObsService();
+		for (Obs o : encounter.getObs()) {
+			if (voidReason.equals(o.getVoidReason()))
+				os.unvoidObs(o);
+		}
+		
+		encounter.setVoided(false);
+		encounter.setVoidedBy(null);
+		encounter.setDateVoided(null);
+		encounter.setVoidReason(null);
+		updateEncounter(encounter);
+	}
+	
+	/**
+	 * All unvoided encounters for a patient
 	 * @param who
 	 * @return
 	 */
 	public Set<Encounter> getEncounters(Patient who) {
+		return getEncounters(who, false);
+	}
+	
+	/**
+	 * All encounters for a patient
+	 * @param who
+	 * @param includeVoided
+	 * @return
+	 */
+	public Set<Encounter> getEncounters(Patient who, boolean includeVoided) {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ENCOUNTERS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_ENCOUNTERS);
 		
-		return getEncounterDAO().getEncounters(who);
+		return getEncounterDAO().getEncounters(who, includeVoided);
 	}
 
 	/**

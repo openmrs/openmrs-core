@@ -4,12 +4,6 @@
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
     
 <hibernate-mapping>
-<!-- 
-    Created by the Middlegen Hibernate plugin 2.1
-
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
 
 <class 
     name="org.openmrs.ConceptClass" 
@@ -46,41 +40,12 @@
         not-null="true"
         length="19"
     />
-    <property
-        name="set"
-        type="java.lang.Boolean"
-        column="is_set"
-        length="1"
-        access="field"
-        not-null="true"
-    />
 
-    <!-- Associations -->
-  
-    <!-- bi-directional one-to-many association to Concept -->
-    <!--
-    <set
-        name="concepts"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
-        <key>
-            <column name="class_id" />
-        </key>
-        <one-to-many 
-            class="org.openmrs.Concept"
-        />
-    </set>
-    -->
-    <!-- bi-directional many-to-one association to User -->
     <many-to-one
         name="creator"
         class="org.openmrs.User"
         not-null="true"
-    >
-        <column name="creator" />
-    </many-to-one>
+    />
 
 </class>
 </hibernate-mapping>

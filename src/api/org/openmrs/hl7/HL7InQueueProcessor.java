@@ -243,54 +243,35 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	 * Extracts the data enterer from the ORC segment
 	 */
 	private User getEnterer(HL7Segment orc) throws HL7Exception {
-		String hl7EntererId = orc.getComponent(10, 1);
+		String[] entererComponents = orc.getComponents(10);
 		Integer entererId = null;
-		User enterer;
 		try {
-			entererId = Integer.parseInt(hl7EntererId);
-		} catch (NumberFormatException e) {
-			throw new HL7Exception("Invalid enterer ID '" + hl7EntererId + "'");
+			entererId = context.getHL7Service().resolveUserId(entererComponents);
+		} catch (HL7Exception ex) {
+			throw new HL7Exception("Error retrieving User from ORC.orderer");
 		}
-		if (entererId == null || entererId == 0)
-			throw new HL7Exception("Unable to parse enterer ID '"
-					+ hl7EntererId + "'");
-		try {
-			enterer = context.getUserService().getUser(entererId);
-		} catch (Exception e) {
-			throw new HL7Exception("Error retrieving enterer " + entererId, e);
+		if (entererId == null) {
+			throw new HL7Exception("Could not find enterer specified in ORC segment");
+		} else {
+			return context.getUserService().getUser(entererId);
 		}
-		if (enterer == null || enterer.getUserId() == null)
-			throw new HL7Exception("Could not find enterer (User) " + entererId);
-		return enterer;
 	}
 
 	/**
 	 * Extract the patient from the PID segment
 	 */
 	private Patient getPatient(HL7Segment pid) throws HL7Exception {
-		// TODO: assuming internal patient id is in first component (should be
-		// verifying that ID is the proper type, doing lookup-by-name if
-		// necessary, etc.)
-		String hl7PatientId = pid.getComponent(3, 1);
-		Integer patientId = null;
-		Patient patient = null;
+		Integer ptId;
 		try {
-			patientId = Integer.parseInt(hl7PatientId);
-		} catch (NumberFormatException e) {
-			throw new HL7Exception("Invalid patient ID '" + hl7PatientId + "'");
+			ptId = context.getHL7Service().resolvePatientId(pid);
+		} catch (HL7Exception ex) {
+			throw new HL7Exception("Error retrieving patient from PID segment", ex);
 		}
-		if (patientId == null || patientId == 0)
-			throw new HL7Exception("Unable to parse patient ID '"
-					+ hl7PatientId + "'");
-
-		try {
-			patient = context.getPatientService().getPatient(patientId);
-		} catch (Exception e) {
-			throw new HL7Exception("Error retrieving patient " + patientId, e);
+		if (ptId == null) {
+			throw new HL7Exception("Could not find patient specified in PID segment");
+		} else {
+			return context.getPatientService().getPatient(ptId);
 		}
-		if (patient == null || patient.getPatientId() == null)
-			throw new HL7Exception("Could not find patient " + patientId);
-		return patient;
 	}
 
 	/**
@@ -325,59 +306,36 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	 * Extracts the location of the visit from the PV1 segment
 	 */
 	private Location getLocation(HL7Segment pv1) throws HL7Exception {
-		// TODO: assuming internal location id is in first component (should be
-		// verifying that ID is the proper type, doing lookup-by-name if
-		// necessary, etc.)
-		String hl7LocationId = pv1.getComponent(3, 1);
+		String[] locationComponents = pv1.getComponents(3);
 		Integer locationId = null;
-		Location location;
 		try {
-			locationId = Integer.parseInt(pv1.getComponent(3, 1));
-		} catch (NumberFormatException e) {
-			throw new HL7Exception("Invalid location ID '" + hl7LocationId
-					+ "'");
+			locationId = context.getHL7Service().resolveLocationId(locationComponents);
+		} catch (HL7Exception ex) {
+			throw new HL7Exception("Error retrieving Location from PV1.'Assigned Patient Location'", ex);
 		}
-		if (locationId == null || locationId == 0)
-			throw new HL7Exception("Unable to parse location ID '"
-					+ hl7LocationId + "'");
-		try {
-			location = context.getEncounterService().getLocation(locationId);
-		} catch (Exception e) {
-			throw new HL7Exception("Error retrieving location " + locationId, e);
+		if (locationId == null) {
+			throw new HL7Exception("Could not find Assigned Patient Location specified in PV1 segment");
+		} else {
+			return context.getEncounterService().getLocation(locationId);
 		}
-		if (location == null || location.getLocationId() == null)
-			throw new HL7Exception("Could not find location " + locationId);
-		return location;
 	}
 
 	/**
 	 * Extracts the provider from the PV1 (visit) segment
 	 */
 	private User getProvider(HL7Segment pv1) throws HL7Exception {
-		// TODO: just assuming internal provider ID is in first component
-		// (should be veryfing that ID is the proper type, doing
-		// lookup-by-name if necessary, etc.)
-		String hl7ProviderId = pv1.getComponent(7, 1);
+		String[] providerComponents = pv1.getComponents(7);
 		Integer providerId = null;
-		User provider;
 		try {
-			providerId = Integer.parseInt(hl7ProviderId);
-		} catch (NumberFormatException e) {
-			throw new HL7Exception("Invalid provider ID '" + hl7ProviderId
-					+ "'");
+			providerId = context.getHL7Service().resolveUserId(providerComponents);
+		} catch (HL7Exception ex) {
+			throw new HL7Exception("Error retrieving User from ORC.orderer");
 		}
-		if (providerId == null || providerId == 0)
-			throw new HL7Exception("Unable to parse provider ID '"
-					+ hl7ProviderId + "'");
-		try {
-			provider = context.getUserService().getUser(providerId);
-		} catch (Exception e) {
-			throw new HL7Exception("Error retrieving provider " + providerId, e);
+		if (providerId == null) {
+			throw new HL7Exception("Could not find enterer specified in ORC segment");
+		} else {
+			return context.getUserService().getUser(providerId);
 		}
-		if (provider == null || provider.getUserId() == null)
-			throw new HL7Exception("Could not find provider (User) "
-					+ providerId);
-		return provider;
 	}
 
 	/**

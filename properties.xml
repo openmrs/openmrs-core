@@ -99,6 +99,8 @@
 		<fileset dir="${jstl.dir}" includes="*.jar" />
 		<fileset dir="${spring.dir}" includes="*.jar" />
 		<fileset dir="${velocity.dir}" includes="*.jar" />
+		<fileset dir="${taglibs.dir}" includes="*.jar" />
+		<fileset dir="${neal-reporting.dir}" includes="*.jar" />
     </path>
 
 </project>

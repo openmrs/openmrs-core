@@ -9,6 +9,7 @@ window.onload = function() {
 	myConceptSearchMod.hide();
 	changeClass(document.getElementById("conceptClass"));
 	changeDatatype(document.getElementById("datatype"));
+	changeSetStatus(document.getElementById('conceptSet'));
 };
 
 function removeItem(nameList, idList, delim)
@@ -132,9 +133,9 @@ function copyIds(from, to, delimiter)
 	input.value = remaining.join(delimiter);
 }
 
-function addSynonym() {
-	var obj = document.getElementById("addSyn");
-	var synonyms = document.getElementById("syns").options;
+function addSynonym(locale) {
+	var obj = document.getElementById("addSyn" + locale);
+	var synonyms = document.getElementById("syns" + locale).options;
 	var syn = obj.value.toUpperCase();
 	if (syn != "") {
 		var addable = true;
@@ -153,7 +154,7 @@ function addSynonym() {
 	}
 	obj.value = "";
 	obj.focus();
-	copyIds("syns", "newSynonyms", ",");
+	copyIds("syns" + locale, "newSynonyms" + locale, ",");
 	window.Event.keyCode = 0;  //disable enter key submitting form
 }
 
@@ -218,19 +219,19 @@ function removeHiddenRows() {
 }
 
 function changeClass(obj) {
-	var row = document.getElementById("setClassRow");
-	var isSet = false;
-	for (var i=0; i < setClasses.length; i++) {
-		if (obj[obj.selectedIndex].value == setClasses[i]) {
-			isSet = true;
-		}
-	}
-	if (isSet) {
+	var row = document.getElementById("conceptSetRow");
+	//if (isSet)
+	//	row.style.display = "";
+	//else
+	//	row.style.display = "none";
+}
+
+function changeSetStatus(obj) {
+	var row = document.getElementById("conceptSetRow");
+	if (obj.checked)
 		row.style.display = "";
-	}
-	else {
+	else
 		row.style.display = "none";
-	}
 }
 
 var customDatatypes = new Array();
@@ -255,13 +256,13 @@ function listKeyPress(from, to, delim, event) {
 	}
 }
 
-function synonymKeyPress(obj, event) {
+function synonymKeyPress(obj, event, locale) {
 	if (event.keyCode==13) {
-		addSynonym(); 
+		addSynonym(locale); 
 		return false;
 	}
 	else if (event.keyCode == 46 && obj.value == "") {
-		var selectedItem = removeItem('syns', 'newSynonyms', ',');
+		var selectedItem = removeItem('syns' + locale, 'newSynonyms' + locale, ',');
 		if (selectedItem != null)
 			selectedItem.selected = false;
 	}

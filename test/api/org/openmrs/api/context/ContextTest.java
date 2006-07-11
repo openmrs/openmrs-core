@@ -6,7 +6,6 @@ import junit.framework.TestSuite;
 
 import org.openmrs.User;
 import org.openmrs.api.UserService;
-import org.openmrs.api.context.ContextFactory;
 
 public class ContextTest extends TestCase {
 

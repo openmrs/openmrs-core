@@ -21,6 +21,7 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
 import org.openmrs.reporting.PatientSet;
+import org.openmrs.util.Helper;
 
 public class DataExportUtility {
 	
@@ -33,6 +34,8 @@ public class DataExportUtility {
 	private String separator = "	";
 	private DateFormat dateFormatLong = null; 
 	private DateFormat dateFormatShort = null; 
+	
+	public Date currentDate = new Date();
 	
 	// Map<EncounterType, Map<patientId, Encounter>>
 	private Map<String, Map<Integer, Encounter>> patientEncounterMap = new HashMap<String, Map<Integer, Encounter>>();
@@ -192,15 +195,39 @@ public class DataExportUtility {
 		return patientIdObsMap.get(patientId);
 	}
 	
+	/**
+	 * Retrieves properties on the patient like patient.patientName.familyName
+	 * 
+	 * @param className
+	 * @param property
+	 * @return
+	 */
 	public Object getPatientAttr(String className, String property) {
+		return getPatientAttr(className, property, false);
+	}
+	
+	/**
+	 * Retrieves properties on the patient like patient.patientName.familyName
+	 * If returnAll is set, returns an array of every matching property for 
+	 * the patient instead of just the preferred one
+	 * 
+	 * @param className
+	 * @param property
+	 * @param returnAll
+	 * @return
+	 */
+	public Object getPatientAttr(String className, String property, boolean returnAll) {
 		String key = className + "." + property;
+		
+		if (returnAll)
+			key += "--all";
 		
 		Map<Integer, Object> patientIdAttrMap;
 		if (attributeMap.containsKey(key)) {
 			patientIdAttrMap = attributeMap.get(key);
 		}
 		else {
-			patientIdAttrMap = context.getPatientSetService().getPatientAttributes(patientSet, className, property);
+			patientIdAttrMap = context.getPatientSetService().getPatientAttributes(patientSet, className, property, returnAll);
 			attributeMap.put(key, patientIdAttrMap);
 		}
 		return patientIdAttrMap.get(patientId);
@@ -341,6 +368,21 @@ public class DataExportUtility {
 		}
 		else
 			return dateFormatShort.format(d);
+	}
+	
+	/**
+	 * Check the given string against the check digit algorithm
+	 * @param id
+	 * @return true/false whether the string has a valid check digit
+	 */
+	public boolean isValidCheckDigit(String id) {
+		try {
+			return Helper.isValidCheckDigit(id);
+		}
+		catch (Exception e) {
+			log.error("Error evaluating identifier during report", e);
+			return false;
+		}
 	}
 
 }

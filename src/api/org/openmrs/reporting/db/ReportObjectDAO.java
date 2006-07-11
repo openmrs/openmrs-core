@@ -1,10 +1,9 @@
 package org.openmrs.reporting.db;
 
+import java.util.Set;
+
 import org.openmrs.api.db.DAOException;
 import org.openmrs.reporting.AbstractReportObject;
-import org.openmrs.reporting.ReportObject;
-
-import java.util.Set;
 
 public interface ReportObjectDAO {
 	Set<AbstractReportObject> getAllReportObjects();

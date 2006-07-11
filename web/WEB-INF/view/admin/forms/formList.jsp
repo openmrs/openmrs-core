@@ -49,7 +49,7 @@
 			<tr>
 				<td valign="top" style="white-space: nowrap">
 					<a href="formEdit.form?formId=${form.formId}"><spring:message code="Form.editProperties"/></a> | 
-					<a href="formDesign.form?formId=${form.formId}"><spring:message code="Form.designSchema"/></a>
+					<a href="formSchemaDesign.form?formId=${form.formId}"><spring:message code="Form.designSchema"/></a>
 				</td>
 				<td valign="top" style="white-space: nowrap">${form.name}</td>
 				<td valign="top">${form.version}</td>

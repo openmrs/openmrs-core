@@ -97,9 +97,9 @@ public class OpenmrsConstants {
 	public static final String PRIV_EDIT_REPORTS	= "Edit Reports";
 	public static final String PRIV_DELETE_REPORTS	= "Delete Reports";
 	
-	public static final String PRIV_VIEW_REPORT_OBJECTS	= "View Report Objects";
+	public static final String PRIV_VIEW_REPORT_OBJECTS		= "View Report Objects";
 	public static final String PRIV_ADD_REPORT_OBJECTS		= "Add Report Objects";
-	public static final String PRIV_EDIT_REPORT_OBJECTS	= "Edit Report Objects";
+	public static final String PRIV_EDIT_REPORT_OBJECTS		= "Edit Report Objects";
 	public static final String PRIV_DELETE_REPORT_OBJECTS	= "Delete Report Objects";
 
 	public static final String PRIV_MANAGE_TRIBES			= "Manage Tribes";
@@ -110,12 +110,13 @@ public class OpenmrsConstants {
 	public static final String PRIV_MANAGE_CONCEPT_CLASSES	= "Manage Concept Classes";
 	public static final String PRIV_MANAGE_CONCEPT_DATATYPES= "Manage Concept Datatypes";
 	public static final String PRIV_MANAGE_ENCOUNTER_TYPES	= "Manage Encounter Types";
-	public static final String PRIV_MANAGE_PRIVILEGES	= "Manage Privileges";
-	public static final String PRIV_MANAGE_ROLES		= "Manage Roles";
-	public static final String PRIV_MANAGE_FIELD_TYPES	= "Manage Field Types";
-	public static final String PRIV_MANAGE_ORDER_TYPES	= "Manage Order Types";
+	public static final String PRIV_MANAGE_PRIVILEGES		= "Manage Privileges";
+	public static final String PRIV_MANAGE_ROLES			= "Manage Roles";
+	public static final String PRIV_MANAGE_FIELD_TYPES		= "Manage Field Types";
+	public static final String PRIV_MANAGE_ORDER_TYPES		= "Manage Order Types";
 	public static final String PRIV_MANAGE_RELATIONSHIP_TYPES	= "Manage Relationship Types";
-
+	
+	public static final String PRIV_VIEW_NAVIGATION_MENU	= "View Navigation Menu";
 	public static final String PRIV_VIEW_ADMIN_FUNCTIONS	= "View Administration Functions";
 	
 	public static final String PRIV_FORM_ENTRY      = "Form Entry";
@@ -180,6 +181,7 @@ public class OpenmrsConstants {
 		privs.add(PRIV_MANAGE_ORDER_TYPES);
 		privs.add(PRIV_MANAGE_RELATIONSHIP_TYPES);
 		
+		privs.add(PRIV_VIEW_NAVIGATION_MENU);
 		privs.add(PRIV_VIEW_ADMIN_FUNCTIONS);
 		
 		return privs;
@@ -244,7 +246,20 @@ public class OpenmrsConstants {
 		languages.add(Locale.US);
 		languages.add(Locale.UK);
 		languages.add(Locale.FRENCH);
-		languages.add(Locale.GERMAN);
+		
+		return languages;
+	}
+	
+	public static final Locale GLOBAL_DEFAULT_LOCALE = Locale.US;
+
+	/**
+	 * @return Collection of locales that the concept dictionary should be aware of
+	 */
+	public static final Collection<Locale> OPENMRS_CONCEPT_LOCALES() {
+		List<Locale> languages = new Vector<Locale>();
+		
+		languages.add(Locale.ENGLISH);
+		languages.add(Locale.FRENCH);
 		
 		return languages;
 	}

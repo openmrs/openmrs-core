@@ -1,7 +1,6 @@
 package org.openmrs.web.controller;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -23,7 +22,6 @@ import org.openmrs.web.WebConstants;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.springframework.web.servlet.support.RequestContextUtils;
 import org.springframework.web.servlet.view.RedirectView;
 
 public class OptionsFormController extends SimpleFormController {
@@ -105,7 +103,7 @@ public class OptionsFormController extends SimpleFormController {
 			properties.put(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE, opts.getDefaultLocale());
 			properties.put(OpenmrsConstants.USER_PROPERTY_SHOW_RETIRED, opts.getShowRetiredMessage().toString());
 			properties.put(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE, opts.getVerbose().toString());
-			properties.put(OpenmrsConstants.USER_PROPERTY_NOTIFICATION, opts.getNotification().toString());
+			properties.put(OpenmrsConstants.USER_PROPERTY_NOTIFICATION, opts.getNotification() == null ? "" : opts.getNotification().toString());
 			properties.put(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS, opts.getNotificationAddress().toString());
 			
 			if (!opts.getOldPassword().equals("")) {
@@ -185,7 +183,6 @@ public class OptionsFormController extends SimpleFormController {
 		OptionsForm opts = new OptionsForm();
 		
 		if (context != null && context.isAuthenticated()) {
-			UserService us = context.getUserService();
 			User user = context.getAuthenticatedUser();
 
 			Map<String, String> props = user.getProperties();
@@ -214,7 +211,6 @@ public class OptionsFormController extends SimpleFormController {
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-		Locale locale = RequestContextUtils.getLocale(request);
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		if (context != null && context.isAuthenticated()) {

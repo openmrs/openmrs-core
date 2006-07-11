@@ -231,4 +231,41 @@
 	</attribute>
 </tag>
 
+<tag>
+	<name>portlet</name>
+	<tag-class>org.openmrs.web.taglib.PortletTag</tag-class>
+	<body-content>empty</body-content>
+	<description>
+		Includes the portlet from the given /WEB-INF/portlets/<code>url</code>
+	</description>
+	<attribute>
+		<name>url</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
+		<name>id</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
+		<name>size</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
+		<name>parameters</name>
+		<description>
+			A string in the form of "key=value|key2=value2".   
+			e.g. "size=compact|order=date"
+		</description>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+</tag>
+
 </taglib>
