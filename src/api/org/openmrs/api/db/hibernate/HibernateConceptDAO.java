@@ -513,9 +513,20 @@ public class HibernateConceptDAO implements
 	public ConceptNumeric getConceptNumeric(Integer i) {
 		Session session = HibernateUtil.currentSession();
 		
-		ConceptNumeric cn = new ConceptNumeric();
-		cn = (ConceptNumeric)session.get(ConceptNumeric.class, i);
-		
+		ConceptNumeric cn;
+		Object obj = session.get(ConceptNumeric.class, i);
+		// If Concept has already been read & cached, we may get back a Concept instead of
+		// ConceptNumeric.  If this happens, we need to clear the object from the cache
+		// and re-fetch it as a ConceptNumeric
+		if (obj != null && !obj.getClass().equals(ConceptNumeric.class)) {
+			session.evict(obj); // remove from cache
+			// session.get() did not work here, we need to perform a query to get a ConceptNumeric
+			Query query = session.createQuery("from ConceptNumeric where conceptId = :conceptId")
+				.setParameter("conceptId", i);
+			obj = query.uniqueResult();
+		}
+		cn = (ConceptNumeric)obj;
+
 		return cn;
 	}
 

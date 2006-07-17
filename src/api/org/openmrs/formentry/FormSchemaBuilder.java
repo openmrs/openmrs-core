@@ -134,7 +134,7 @@ public class FormSchemaBuilder {
 						FormEntryConstants.HL7_NUMERIC)) {
 					ConceptNumeric conceptNumeric = context.getConceptService()
 							.getConceptNumeric(concept.getConceptId());
-					s.append(FormSchemaFragment.numericConcept(token, concept,
+					s.append(FormSchemaFragment.numericConcept(token, conceptNumeric,
 							required, conceptNumeric.getLowAbsolute(),
 							conceptNumeric.getHiAbsolute(), conceptNumeric
 									.getPrecise(), context.getLocale()));
