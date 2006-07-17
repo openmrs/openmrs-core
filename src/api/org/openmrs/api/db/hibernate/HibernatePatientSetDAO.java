@@ -354,8 +354,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 						if (order.getOrderer() != null) {
 							orderNode.setAttribute("orderer", formatUser(order.getOrderer()));
 						}
-						if (order.isDiscontinued() != null) {
-							orderNode.setAttribute("discontinued", order.isDiscontinued().toString());
+						if (order.getDiscontinued() != null) {
+							orderNode.setAttribute("discontinued", order.getDiscontinued().toString());
 						}
 						if (order.getDiscontinuedDate() != null) {
 							orderNode.setAttribute("discontinued_date", df.format(order.getDiscontinuedDate()));
