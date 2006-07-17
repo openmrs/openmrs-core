@@ -14398,9 +14398,7 @@ insert  into privilege values
 ('Manage Patients', ''), 
 ('Manage Tribes', ''), 
 ('Manage Users', 'Can add & edit users/roles/privileges'), 
-('View Concepts', ''), 
-('View Dictionary', 'Ability to view concept details'), 
-('Write Order', 'Can write orders');
+('View Concepts', 'Ability to view concept details');
 #----------------------------
 # Records for table relationship
 #----------------------------
@@ -14421,8 +14419,8 @@ insert  into relationship_type values
 
 
 insert  into role values 
-('provider', 'Health care provider.'), 
-('superuser', 'System developers..');
+('Provider', 'General privileges held by all providers'), 
+('System Developer', 'Developers of the OpenMRS .. have additional access to change fundamental structure of the database model.');
 #----------------------------
 # Records for table role_privilege
 #----------------------------
@@ -14516,11 +14514,11 @@ insert  into tribe values
 
 
 insert  into user_role values 
-(1, 'provider'), 
-(1, 'superuser'), 
-(2, 'provider'), 
-(2, 'superuser'), 
-(3, 'provider');
+(1, 'Provider'), 
+(1, 'System Developer'), 
+(2, 'Provider'), 
+(2, 'System Developer'), 
+(3, 'Provider');
 #----------------------------
 # Records for table users
 #----------------------------
