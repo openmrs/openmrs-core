@@ -138,7 +138,7 @@ public class Order implements java.io.Serializable {
 	/**
 	 * @return Returns the discontinued status.
 	 */
-	public Boolean isDiscontinued() {
+	public Boolean getDiscontinued() {
 		return discontinued;
 	}
 

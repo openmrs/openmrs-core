@@ -110,10 +110,11 @@ public class OpenmrsConstants {
 	public static final String PRIV_MANAGE_CONCEPT_CLASSES	= "Manage Concept Classes";
 	public static final String PRIV_MANAGE_CONCEPT_DATATYPES= "Manage Concept Datatypes";
 	public static final String PRIV_MANAGE_ENCOUNTER_TYPES	= "Manage Encounter Types";
-	public static final String PRIV_MANAGE_PRIVILEGES		= "Manage Privileges";
-	public static final String PRIV_MANAGE_ROLES			= "Manage Roles";
-	public static final String PRIV_MANAGE_FIELD_TYPES		= "Manage Field Types";
-	public static final String PRIV_MANAGE_ORDER_TYPES		= "Manage Order Types";
+	public static final String PRIV_MANAGE_PRIVILEGES	= "Manage Privileges";
+	public static final String PRIV_MANAGE_ROLES		= "Manage Roles";
+	public static final String PRIV_MANAGE_FIELD_TYPES	= "Manage Field Types";
+	public static final String PRIV_MANAGE_ORDERS	= "Manage Orders";
+	public static final String PRIV_MANAGE_ORDER_TYPES	= "Manage Order Types";
 	public static final String PRIV_MANAGE_RELATIONSHIP_TYPES	= "Manage Relationship Types";
 	
 	public static final String PRIV_VIEW_NAVIGATION_MENU	= "View Navigation Menu";

@@ -31,6 +31,7 @@ import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
+import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
@@ -436,6 +437,60 @@ public class HibernateAdministrationDAO implements
 	}
 
 	
+	/**
+	 * @see org.openmrs.api.db.AdministrationService#createOrderType(org.openmrs.OrderType)
+	 */
+	public void createOrder(Order order) throws DAOException {
+		Session session = HibernateUtil.currentSession();
+		
+		order.setCreator(context.getAuthenticatedUser());
+		order.setDateCreated(new Date());
+		try {
+			HibernateUtil.beginTransaction();
+			session.save(order);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new DAOException(e);
+		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.AdministrationService#updateOrder(org.openmrs.Order)
+	 */
+	public void updateOrder(Order order) throws DAOException {
+		if (order.getOrderId() == null)
+			createOrder(order);
+		else {
+			try {
+				Session session = HibernateUtil.currentSession();
+				HibernateUtil.beginTransaction();
+				session.saveOrUpdate(order);
+				HibernateUtil.commitTransaction();
+			}
+			catch (Exception e) {
+				HibernateUtil.rollbackTransaction();
+				throw new DAOException(e);
+			}
+		}
+	}
+
+	/**
+	 * @see org.openmrs.api.db.AdministrationService#deleteOrder(org.openmrs.Order)
+	 */
+	public void deleteOrder(Order order) throws DAOException {
+		Session session = HibernateUtil.currentSession();
+		try {
+			HibernateUtil.beginTransaction();
+			session.delete(order);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new DAOException(e);
+		}
+	}
 	
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#createPatientIdentifierType(org.openmrs.PatientIdentifierType)
@@ -1025,7 +1080,7 @@ public class HibernateAdministrationDAO implements
 	
 	public void updateConceptWords() throws DAOException {
 		Set<Concept> concepts = new HashSet<Concept>();
-		concepts.addAll(context.getConceptService().getConceptsByName(""));
+		concepts.add(context.getConceptService().getConceptByName(""));
 		for (Concept concept : concepts) {
 			updateConceptWord(concept);
 		}

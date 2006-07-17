@@ -1,3 +1,4 @@
+
 package org.openmrs.web.taglib;
 
 import java.io.IOException;
@@ -36,6 +37,7 @@ public class FieldGenTag extends TagSupport {
 	private String trueLabel;
 	private String falseLabel;
 	private String unknownLabel;
+	private String emptySelectMessage;
 
 	public PageContext getPageContext() {
 		return this.pageContext;
@@ -67,6 +69,7 @@ public class FieldGenTag extends TagSupport {
 					startVal = startVal == null ? "" : startVal;
 					fieldLength = (fieldLength == null) ? DEFAULT_INPUT_DATE_LENGTH : fieldLength;
 					output = "<input id=\"" + formFieldName + "\" type=\"text\" name=\"" + formFieldName + "\" value=\"" + startVal + "\" onClick=\"javascript:showCalendar(this);\" /> ";
+					output += " (need a better widget than this - for now input Date as mm/dd/yyyy)";
 					//output += "<a href=\"javascript:showCalendar(document.getElementById('" + formFieldName + "'));\"><img src=\"/openmrs/images/lookup.gif\" border=\"0\" /></a>";
 					/*
 					String startDay = "";
@@ -328,6 +331,20 @@ public class FieldGenTag extends TagSupport {
 	 */
 	public void setUnknownLabel(String unknownLabel) {
 		this.unknownLabel = unknownLabel;
+	}
+
+	/**
+	 * @return Returns the emptySelectMessage.
+	 */
+	public String getEmptySelectMessage() {
+		return emptySelectMessage;
+	}
+
+	/**
+	 * @param emptySelectMessage The emptySelectMessage to set.
+	 */
+	public void setEmptySelectMessage(String emptySelectMessage) {
+		this.emptySelectMessage = emptySelectMessage;
 	}
 
 	public FieldGenHandler getHandlerByClassName(String className) {

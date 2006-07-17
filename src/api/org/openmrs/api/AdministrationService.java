@@ -17,6 +17,7 @@ import org.openmrs.FieldType;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.Obs;
+import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
@@ -341,6 +342,42 @@ public class AdministrationService {
 		getAdminDAO().deleteOrderType(orderType);
 	}
 	
+	/**
+	 * Create a new Order
+	 * @param Order to create
+	 * @throws APIException
+	 */
+	public void createOrder(Order order) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ORDERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ORDERS);
+
+		getAdminDAO().createOrder(order);
+	}
+
+	/**
+	 * Update Order
+	 * @param Order to update
+	 * @throws APIException
+	 */
+	public void updateOrder(Order order) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ORDERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ORDERS);
+
+		getAdminDAO().updateOrder(order);
+	}
+
+	/**
+	 * Delete Order
+	 * @param Order to delete
+	 * @throws APIException
+	 */
+	public void deleteOrder(Order order) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ORDERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ORDERS);
+
+		getAdminDAO().deleteOrder(order);
+	}
+
 	/**
 	 * Create a new FieldType
 	 * @param FieldType to create

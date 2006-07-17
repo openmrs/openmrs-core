@@ -14,6 +14,7 @@ public class WebConstants {
 
 	public static final String OPENMRS_LANGUAGE_COOKIE_NAME = "__openmrs_language";
 	
-	public static final String OPENMRS_WEBAPP_NAME = "@WEBAPP.NAME@";
+	public static final String OPENMRS_WEBAPP_NAME = "OPENMRS";
 	
+	public static final String OPENMRS_USER_OVERRIDE_PARAM = "__openmrs_user_over_id";
 }

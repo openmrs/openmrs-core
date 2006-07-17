@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.openmrs.Order;
 import org.openmrs.OrderType;
+import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOContext;
 import org.openmrs.api.db.OrderDAO;
@@ -54,6 +55,26 @@ public class OrderService {
 	 */
 	public Order getOrder(Integer orderId) throws APIException {
 		return getOrderDAO().getOrder(orderId);
+	}
+
+	/**
+	 * Get all orders
+	 * 
+	 * @return orders list
+	 * @throws APIException
+	 */
+	public List<Order> getOrders() throws APIException {
+		return getOrderDAO().getOrders();
+	}
+
+	/**
+	 * Get all orders by User
+	 * 
+	 * @return orders list
+	 * @throws APIException
+	 */
+	public List<Order> getOrdersByUser(User user) throws APIException {
+		return getOrderDAO().getOrdersByUser(user);
 	}
 
 	/**

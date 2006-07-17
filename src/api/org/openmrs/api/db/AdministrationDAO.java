@@ -10,6 +10,7 @@ import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
+import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
@@ -196,6 +197,27 @@ public interface AdministrationDAO {
 	 */
 	public void deleteOrderType(OrderType orderType) throws DAOException;
 	
+	/**
+	 * Create a new Order
+	 * @param Order to create
+	 * @throws DAOException
+	 */
+	public void createOrder(Order order) throws DAOException;
+
+	/**
+	 * Update Order
+	 * @param Order to update
+	 * @throws DAOException
+	 */
+	public void updateOrder(Order order) throws DAOException;
+
+	/**
+	 * Delete Order
+	 * @param Order to delete
+	 * @throws DAOException
+	 */
+	public void deleteOrder(Order order) throws DAOException;
+
 	/**
 	 * Create a new FieldType
 	 * @param FieldType to create

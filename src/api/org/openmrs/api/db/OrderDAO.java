@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.openmrs.Order;
 import org.openmrs.OrderType;
+import org.openmrs.User;
 
 /**
  * Order-related database functions
@@ -30,6 +31,22 @@ public interface OrderDAO {
 	 * @throws DAOException
 	 */
 	public Order getOrder(Integer orderId) throws DAOException;
+
+	/**
+	 * Get all orders
+	 * 
+	 * @return orders list
+	 * @throws DAOException
+	 */
+	public List<Order> getOrders() throws DAOException;
+
+	/**
+	 * Get all orders by a particular User
+	 * 
+	 * @return orders list
+	 * @throws DAOException
+	 */
+	public List<Order> getOrdersByUser(User user) throws DAOException;
 
 	/**
 	 * Update order 

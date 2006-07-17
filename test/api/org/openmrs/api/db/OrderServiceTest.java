@@ -127,7 +127,7 @@ public class OrderServiceTest extends TestCase {
 		assertTrue(order5.getDiscontinuedReason().equals("discontinue instruct"));
 		//System.out.println("order5.getDiscontinuedBy: " + order5.getDiscontinuedBy().getUsername());
 		assertTrue(order5.getDiscontinuedBy().equals(ContextFactory.getContext().getAuthenticatedUser()));
-		assertTrue(order5.isDiscontinued());
+		assertTrue(order5.getDiscontinued());
 		
 		orderService.undiscontinueOrder(order5);
 		orderService.unvoidOrder(order5);
@@ -249,7 +249,7 @@ public class OrderServiceTest extends TestCase {
 		assertTrue(drugorder5.getDiscontinuedReason().equals("discontinue instruct"));
 		//System.out.println("drugorder5.getDiscontinuedBy: " + drugorder5.getDiscontinuedBy().getUsername());
 		assertTrue(drugorder5.getDiscontinuedBy().equals(drugorder1.getDiscontinuedBy()));
-		assertTrue(drugorder5.isDiscontinued());
+		assertTrue(drugorder5.getDiscontinued());
 		
 		orderService.undiscontinueOrder(drugorder5);
 		orderService.unvoidOrder(drugorder5);

@@ -8,6 +8,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
+import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderDAO;
@@ -79,6 +80,32 @@ public class HibernateOrderDAO implements
 		order = (Order)session.get(Order.class, orderId);
 		
 		return order;
+	}
+
+	/**
+	 * @see org.openmrs.api.db.OrderService#getOrderTypes()
+	 */
+	public List<Order> getOrders() throws DAOException {
+		log.debug("getting all orders");
+
+		Session session = HibernateUtil.currentSession();
+		
+		List<Order> orders = session.createCriteria(Order.class).list();
+		
+		return orders;
+	}
+
+	/**
+	 * @see org.openmrs.api.db.OrderService#getOrderTypes()
+	 */
+	public List<Order> getOrdersByUser(User user) throws DAOException {
+		log.debug("getting all orders");
+
+		Session session = HibernateUtil.currentSession();
+		
+		List<Order> orders = session.createCriteria(Order.class).list();
+		
+		return orders;
 	}
 
 	/**
