@@ -6,7 +6,7 @@
 <%@ include file="localHeader.jsp" %>
 
 <script type="text/javascript">
-	var djConfig = {debugAtAllCosts: true };
+	var djConfig = {debugAtAllCosts: true, isDebug: false };
 </script>
 
 <script type="text/javascript" src="<%= request.getContextPath() %>/scripts/dojo/dojo.js"></script>
@@ -37,7 +37,7 @@
 	.disabled, .disabled * {
 		color: gray;
 		background-color: whitesmoke;
-	}
+		}
 		.disabled #formFieldTitle {
 			background-color: whitesmoke;
 		}
@@ -45,21 +45,20 @@
 	#editFormField {
 		position: absolute;
 		left: -1000px;
+		top: 0px;
 		background-color: white;
-		z-index: 9;
-		width: 100px;
-	}
+		z-index: 20;
+		width: 500px;
+		border: 2px solid lightgreen;
+		padding: 1px;
+		}
 		#editFormField.disabled {
 			border-color: grey;
 		}
 	
 	#formFieldTitle {
 		background-color: lightgreen;
-	}
-	
-	#editFormField, .editForm {
-		border: 2px solid lightgreen;
-		padding: 1px;
+		width: 100%;
 	}
 
 	.searchForm {
@@ -89,18 +88,25 @@
 		padding: 1px;
 		cursor: pointer;
 	}
-	#fieldWarning {
+	#fieldWarning, #fieldWarningIframe {
 		position: absolute;
 		margin-left: 5%;
-		margin-top: 5%;
+		margin-top: 7%;
 		width: 90%;
-		color: firebrick;
-		border: 2px solid firebrick;
-		text-align: center;
-		z-index: 999;
-		background-color: white;
 		padding: 3px;
-	}
+		}
+		#fieldWarning {
+			color: firebrick;
+			border: 2px solid firebrick;
+			text-align: center;
+			z-index: 999;
+			background-color: white;
+		}
+		#fieldWarningIframe {
+			padding: 2px;
+			z-index: 998;
+			height: 50px;
+		}
 	span.fieldConceptHit {
 		color: gray;
 	}
@@ -114,8 +120,6 @@
 </style>
 
 <script type="text/javascript">
-	dojo.require("dojo.lang.*");
-	dojo.require("dojo.fx.html");	// so can use toggle="fade"
 	dojo.require("dojo.widget.Tree");
 	dojo.require("dojo.widget.TreeBasicController");
 	dojo.require("dojo.widget.TreeSelector");
@@ -124,8 +128,6 @@
 
 	dojo.hostenv.writeIncludes();
 	
-	var editForm = null;
-	var formFieldTitle = null;
 	var mySearch = null;
 	var mySearchStatus = null;
 	var searchType = null;
@@ -142,8 +144,6 @@
 		mySearch = new fx.Resize("searchForm", {duration: 100});
 		mySearch.hide();
 		mySearchStatus = null;
-		editForm = $('editFormField');
-		formFieldTitle = $('formFieldTitle');
 		fieldResults = $('fieldResults');
 		
 		DWRUtil.useLoadingMessage();
@@ -209,6 +209,7 @@
 	});
 	
 	var domNodeCreated = function(val) {
+		dojo.debug("domNodeCreated: " + val);
 		this.value = val;
 		this.execute = function(msg) {
 			var child = msg.source;
@@ -339,7 +340,13 @@
 		var s = tree.editDiv.style;
 		s.left = dojo.style.getAbsoluteX(node.domNode, true) + "px";
 		s.top = dojo.style.getAbsoluteY(node.domNode, true) + "px";
-		s.width = dojo.style.getNumericStyle(tree.domNode, "width") + "px";
+		var w = dojo.style.getPixelValue(tree.domNode, "width");
+		if (!w) w = dojo.style.getPixelValue(tree.domNode, "offsetWidth");
+		if (!w) w = dojo.style.getBorderBoxWidth(tree.domNode);
+		if (!w) w = 500;
+		if (w != 0)
+			s.width = w + "px";
+		dojo.debug("s.width: " + s.width);
 		enableField();
 		
 		// add edit values fields here
@@ -371,14 +378,12 @@
 			}
 			
 			// formField info
-			tree.formFieldIdInput.value = data["formFieldId"];
-			tree.fieldNumberInput.value = data["fieldNumber"];
-			tree.fieldPartInput.value = "";
-			if (data["fieldPart"])
-				tree.fieldPartInput.value = data["fieldPart"];
-			tree.pageNumberInput.value = data["pageNumber"];
-			tree.minOccursInput.value = data["minOccurs"];
-			tree.maxOccursInput.value = data["maxOccurs"];
+			tree.formFieldIdInput.value = data["formFieldId"] || "";
+			tree.fieldNumberInput.value = data["fieldNumber"] || "";
+			tree.fieldPartInput.value = data["fieldPart"] || "";
+			tree.pageNumberInput.value = data["pageNumber"] || "";
+			tree.minOccursInput.value = data["minOccurs"] || "";
+			tree.maxOccursInput.value = data["maxOccurs"] || "";
 			tree.isRequiredCheckbox.checked = data["isRequired"];
 			if (data["numForms"] && parseInt(data["numForms"]) > 1)
 				disableField();
@@ -388,15 +393,22 @@
 		
 		s.display = "";
 		
-		tree.saveFieldButton.focus();
+		// focus on save if save button is shown (not hidden due to unpublished form)
+		if (tree.saveFieldButton)
+			tree.saveFieldButton.focus();
+		else
+			tree.cancelFieldButton.focus();
+		
 		tree.fieldNumberInput.focus();
 	}
 	
 	
 	function evalTreeJS(js) {
+		dojo.debug("evaluating js");
 		if (js.indexOf("DWR") == -1) {
 			eval(js);
 		}
+		dojo.debug("done evaluating js");
 	}
 	
 	function chooseFieldType(fieldTypeId) {
@@ -453,6 +465,7 @@
 		
 		$('field').className = "disabled";
 		$('fieldWarning').style.display = "";
+		$('fieldWarningIframe').style.display = "";
 	}
 	
 	function enableField() {
@@ -467,6 +480,7 @@
 		
 		$('field').className = "";
 		$('fieldWarning').style.display = "none";
+		$('fieldWarningIframe').style.display = "none";
 	}
 	
 	function editAllFields() {
@@ -821,7 +835,7 @@
 						
 		var parentNode = domNode;
 		
-		var miniTree = dojo.widget.fromScript("Tree", properties, parentNode, "last");
+		var miniTree = dojo.widget.createWidget("Tree", properties, parentNode, "last");
 		searchTreeNodes.push(miniTree);
 		
 		var node = addNode(miniTree, data, data.label);
@@ -966,7 +980,7 @@
 <div id="editFormField">
 	<div id="formFieldTitle"><spring:message code="FormField.edit"/>:</div>
 	
-	<form xonsubmit="save(selectedNode)">
+	<form xonsubmit="save(selectedNode)" style="padding: 0px; margin: 0px;">
 		<%@ include file="include/formFieldEdit.jsp" %>
 	
 		<c:if test="${form.published != true}">

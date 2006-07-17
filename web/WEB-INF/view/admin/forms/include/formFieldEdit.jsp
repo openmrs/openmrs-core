@@ -1,8 +1,9 @@
 
+<iframe id="fieldWarningIframe" src="javascript:false;" frameBorder="0" scrolling="no"></iframe>
 <div id="fieldWarning">
-		<spring:message code="Field.editWarning"/><br/>
-		<a target="newField" href="field.form?fieldId=" onclick="return editAllFields();"><spring:message code="Field.editWarning.allForms"/></a> | 
-		<a target="newField" href="#" onclick="return editFieldForThisForm();"><spring:message code="Field.editWarning.thisForm"/></a>
+	<spring:message code="Field.editWarning"/><br/>
+	<a target="newField" href="field.form?fieldId=" onclick="return editAllFields();"><spring:message code="Field.editWarning.allForms"/></a> | 
+	<a target="newField" href="#" onclick="return editFieldForThisForm();"><spring:message code="Field.editWarning.thisForm"/></a>
 </div>
 
 <table id="field" width="100%">
@@ -69,8 +70,8 @@
 	</tr>
 </table>
 
+<input type="hidden" id="formFieldId" value=""/>
 <table>
-	<input type="hidden" id="formFieldId" value=""/>
 	<tr>
 		<td align="center"><spring:message code="FormField.fieldNumber"/></td>
 		<td align="center"><spring:message code="FormField.fieldPart"/></td>
