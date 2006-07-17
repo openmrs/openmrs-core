@@ -266,6 +266,45 @@
 		<rtexprvalue>true</rtexprvalue>
 		<type>java.lang.String</type>
 	</attribute>
+	<attribute>
+		<name>patientId</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>encounterId</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>userId</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>patientIds</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
 </tag>
 
+<tag>
+	<name>patientWidget</name>
+	<tag-class>org.openmrs.web.taglib.PatientWidgetTag</tag-class>
+	<body-content>empty</body-content>
+	<description>
+		Displays a one-line description of this patient
+	</description>
+	<attribute>
+		<name>patientId</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+</tag>
+	
 </taglib>

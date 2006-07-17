@@ -148,6 +148,11 @@ public class PatientSet {
 		return sb.toString();
 	}
 	
+	// For bean-style calls
+	public String getCommaSeparatedPatientIds() {
+		return toCommaSeparatedPatientIds();
+	}
+	
 	public int size() {
 		return patientIds.size();
 	}

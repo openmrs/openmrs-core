@@ -291,7 +291,11 @@ public class Helper {
 				if (thisArg.length == 2) {
 					ret.put(thisArg[0], thisArg[1]);
 				} else {
-					throw new IllegalArgumentException("Misformed argument in dynamic page specification string: '" + s + "' is not 'key=value'.");
+					if (s.endsWith("=")) {
+						ret.put(thisArg[0], "");
+					} else {
+						throw new IllegalArgumentException("Misformed argument in dynamic page specification string: '" + s + "' is not 'key=value'.");
+					}
 				}
 			}
 		}

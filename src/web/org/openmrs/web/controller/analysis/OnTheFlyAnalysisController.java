@@ -147,32 +147,22 @@ public class OnTheFlyAnalysisController implements Controller {
 		PatientDataSet pds = new PatientDataSet();
 		ShortDescriptionProducer sdp = new ShortDescriptionProducer();
 		pds.putDataSeries("description", sdp.produceData(context, result));
-		
-		Object resultsToDisplay = pds;
-		Object xmlToDisplay = null;
-		
+
 		String viewMethod = request.getParameter("view");
+		if (viewMethod == null) {
+			viewMethod = "";
+		}
+		
+		/* TODO: Move this to patientSetList portlet
 		if ("cd4".equals(viewMethod)) {
 			log.debug("preparing cd4 view");
 			ObsListProducer olp = new ObsListProducer(context.getConceptService().getConcept(new Integer(5497)));
 			pds.putDataSeries("cd4s", olp.produceData(context, result));
 			PatientDataSetFormatter formatter = new ChronologicalObsFormatterHtml("cd4s");
 			resultsToDisplay = formatter.format(pds, locale);
-		} else if ("xml".equals(viewMethod)) {
-			Set<Integer> temp = result.getPatientIds();
-			if (temp.size() > 0) {
-				Integer ptId = temp.iterator().next();
-				log.debug("preparing xml view of patient " + ptId);
-				xmlToDisplay = patientSetService.exportXml(ptId).replaceAll(">", ">\n");
-			}
-		}
-		
-		/*
-		Collection<PatientFilter> filters = analysis.getPatientFilters().values();
-		if (filters == null) {
-			filters = new ArrayList<PatientFilter>();
 		}
 		*/
+		
 		Map<String, PatientFilter> filters = analysis.getPatientFilters();
 		
 		List availableFilters = new ArrayList<PatientFilter>(reportService.getAllPatientFilters());
@@ -188,18 +178,16 @@ public class OnTheFlyAnalysisController implements Controller {
 		}
 		*/
 		
-		Map myModel = new HashMap();
-		myModel.put("no_filters", new Boolean(filters.size() == 0));
+		Map<String, Object> myModel = new HashMap<String, Object>();
 		myModel.put("active_filters", filters);
 		myModel.put("suggested_filters", availableFilters);
 		//myModel.put("classifier", classifier);
 		//myModel.put("suggested_classifiers", availableClassifiers);
-		myModel.put("number_of_results", new Integer(result.size()));
-		myModel.put("analysis_results", resultsToDisplay);
-		myModel.put("xml_debug", xmlToDisplay);
 		myModel.put("shortcuts", shortcutList);
-		myModel.put("patient_set_for_links", result.toCommaSeparatedPatientIds());
 		myModel.put("links", linkList);
+		myModel.put("patient_set_for_links", result.toCommaSeparatedPatientIds());
+		myModel.put("result", result);
+		myModel.put("viewMethod", viewMethod);
 
 		return new ModelAndView("/analysis/on-the-fly-analysis", "model", myModel);
 	}

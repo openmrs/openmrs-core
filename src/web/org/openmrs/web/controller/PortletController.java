@@ -15,6 +15,7 @@ import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.reporting.PatientSet;
 import org.openmrs.web.WebConstants;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -74,7 +75,7 @@ public class PortletController implements Controller {
 				model.put("locale", context.getLocale());
 				
 				// if a patient id is available, put "patient" and "patientObs" in the request
-				Object o = request.getAttribute("patientId");
+				Object o = request.getAttribute("org.openmrs.portlet.patientId");
 				if (o != null && !"".equals(o)) {
 					Patient p = context.getPatientService().getPatient(Integer.valueOf((String)o));
 					model.put("patient", p);
@@ -82,7 +83,7 @@ public class PortletController implements Controller {
 				}
 				
 				// if an encounter id is available, put "encounter" and "encounterObs" in the request
-				o = request.getAttribute("encounterId");
+				o = request.getAttribute("org.openmrs.portlet.encounterId");
 				if (o != null && !"".equals(o)) {
 					Encounter e = context.getEncounterService().getEncounter(Integer.valueOf((String)o));
 					model.put("encounter", e);
@@ -90,10 +91,18 @@ public class PortletController implements Controller {
 				}
 				
 				// if a user id is available, put "user" in the model
-				o = request.getAttribute("userId");
+				o = request.getAttribute("org.openmrs.portlet.userId");
 				if (o != null && !"".equals(o)) {
 					User u = context.getUserService().getUser(Integer.valueOf((String) o));
 					model.put("user", u);
+				}
+				
+				// if a list of patient ids is available, make a patientset out of it
+				o = request.getAttribute("org.openmrs.portlet.patientIds");
+				if (o != null && !"".equals(o)) {
+					log.debug("Found patientIds attribute: " + o);
+					PatientSet ps = PatientSet.parseCommaSeparatedPatientIds(o.toString());
+					model.put("patientSet", ps);
 				}
 				
 			}

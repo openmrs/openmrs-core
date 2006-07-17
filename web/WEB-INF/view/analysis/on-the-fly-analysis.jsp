@@ -236,25 +236,28 @@
 			</ul>		
 		</div>
 	</span>
-	
 
 <div id="filterBox">
 	<div id="activeFilterBox">
 		<center><b><u><spring:message code="Analysis.activeFilters"/></u></b></center>
 		<p>
-		<c:if test="${model.no_filters}">
-			<spring:message code="Analysis.noFiltersSelected"/>
-		</c:if>
-		<table>
-		<c:forEach var="item" varStatus="stat" items="${model.active_filters}">
-			<tr><td>
-				<div class="activeFilter">
-					${item.value.description}
-					<a href="analysis.form?method=removeFilter&patient_filter_key=${item.key}">[X]</a>
-				</div>
-			</td></tr>
-		</c:forEach>
-		</table>
+		<c:choose>
+			<c:when test="${fn:length(model.active_filters) == 0}">
+				<spring:message code="Analysis.noFiltersSelected"/>
+			</c:when>
+			<c:otherwise>
+				<table>
+				<c:forEach var="item" varStatus="stat" items="${model.active_filters}">
+					<tr><td>
+						<div class="activeFilter">
+							${item.value.description}
+							<a href="analysis.form?method=removeFilter&patient_filter_key=${item.key}">[X]</a>
+						</div>
+					</td></tr>
+				</c:forEach>
+				</table>
+			</c:otherwise>
+		</c:choose>
 	</div>
 
 	<p>
@@ -274,16 +277,6 @@
 	</script>
 </div>
 
-<div id="patientSetBox">
-	<center><b><u><spring:message code="Analysis.currentPatientSet"/></u></b></center>
-	<p>
-	<i><spring:message code="Analysis.numPatients" arguments="${model.number_of_results}"/></i>
-	<p>
-	<c:if test="${!empty model.xml_debug}">
-		<pre><c:out value="${model.xml_debug}" escapeXml="true"/></pre>
-	</c:if>
-	
-	<pre>${model.analysis_results}</pre>
-</div>
+<openmrs:portlet url="patientSetList" id="patientSetBox" patientIds="${model.result.commaSeparatedPatientIds}" parameters="view=${model.viewMethod}"/>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %> 

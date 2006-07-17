@@ -20,6 +20,10 @@ public class PortletTag extends ImportSupport {
 	private String size = "";
 	private String id = "";
 	private String parameters = "";
+	private Integer patientId = null;
+	private Integer encounterId = null;
+	private Integer userId = null;
+	private String patientIds = "";
 	
 	public PageContext getPageContext() {
 		return this.pageContext;
@@ -44,7 +48,10 @@ public class PortletTag extends ImportSupport {
 				// add attrs to request so that the controller (and portlet) can see/use them
 				pageContext.getRequest().setAttribute("org.openmrs.portlet.size", size);
 				pageContext.getRequest().setAttribute("org.openmrs.portlet.parameters", Helper.parseParameterList(parameters));
-				
+				pageContext.getRequest().setAttribute("org.openmrs.portlet.patientId", patientId);
+				pageContext.getRequest().setAttribute("org.openmrs.portlet.encounterId", encounterId);
+				pageContext.getRequest().setAttribute("org.openmrs.portlet.userId", userId);
+				pageContext.getRequest().setAttribute("org.openmrs.portlet.patientIds", patientIds);				
 			}
 		}
 		catch (IOException e) {
@@ -71,6 +78,8 @@ public class PortletTag extends ImportSupport {
 	
 	private void resetValues() {
 		id = parameters = "";
+		patientId = encounterId = userId = null;
+		patientIds = "";
 	}
 
 	public void setUrl(String url) throws JspTagException {
@@ -99,6 +108,38 @@ public class PortletTag extends ImportSupport {
 
 	public void setSize(String size) {
 		this.size = size;
+	}
+	
+	public Integer getEncounterId() {
+		return encounterId;
+	}
+
+	public void setEncounterId(Integer encounterId) {
+		this.encounterId = encounterId;
+	}
+
+	public Integer getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(Integer patientId) {
+		this.patientId = patientId;
+	}
+
+	public String getPatientIds() {
+		return patientIds;
+	}
+
+	public void setPatientIds(String patientIds) {
+		this.patientIds = patientIds;
+	}
+
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
 	}
 	
 }
