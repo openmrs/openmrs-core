@@ -66,12 +66,15 @@
 		z-index: 10;
 		margin: 5px;
 		left: -1000px;
+		z-index: 1001;
+		overflow: auto;
 	}
 	.searchForm .wrapper {
 		padding: 2px;
 		background-color: whitesmoke;
 		border: 1px solid grey;
 		height: 370px;
+		z-index: 1001;
 	}
 	.searchResults {
 		height: 400px;
@@ -171,7 +174,7 @@
 <div id="editFormField">
 	<div id="formFieldTitle"><spring:message code="FormField.edit"/>:</div>
 	
-	<form xonsubmit="save(selectedNode)" style="padding: 0px; margin: 0px;">
+	<form xonsubmit="save(selectedNode)" style="padding: 0px; margin: 0px; overflow: auto">
 		<%@ include file="include/formFieldEdit.jsp" %>
 	
 		<c:if test="${form.published != true}">

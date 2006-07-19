@@ -185,14 +185,22 @@
 	}
 	
 	// process create operation 
-	function createClicked(selectedNode) {
-		if (selectedNode.actionIsDisabled(selectedNode.actions.ADDCHILD))
+	function createClicked(selNode) {
+		if (!selNode) {
+			if (treeSelector.selectedNode)
+				selNode = treeSelector.selectedNode;
+			else
+				selNode = tree;
+		}
+			
+		if (selNode.actionIsDisabled(selNode.actions.ADDCHILD))
 			return false;
 
 		//this.controller = dojo.widget.manager.getWidgetById(controllerId);
-		var newChild = controller.createChild(selectedNode, 0, { suggestedTitle: "New node" });
+		var newChild = controller.createChild(selNode, 0, { suggestedTitle: "New node" });
 		//selectedNode = newChild;
 		editClicked(newChild);
+		tree.fieldNameInput.focus();
 	}
 
 	function removeClicked(selectedNode, skipConfirm) {
@@ -454,7 +462,7 @@
 					data["description"] = tree.descriptionInput.value;
 					data["fieldType"] = tree.fieldTypeInput.value;
 					data["conceptId"] = data["conceptName"] = '';
-					data["tableName"] = data["atttributeName"] = '';
+					data["tableName"] = data["attributeName"] = '';
 					if ($('concept').style.display != "none") {
 						data["conceptId"] = tree.conceptIdInput.value;
 						data["conceptName"] = tree.conceptNameTag.innerHTML;
@@ -497,6 +505,8 @@
 					data.formFieldId, formId, data.parent, data.fieldNumber, data.fieldPart, data.pageNumber, data.minOccurs, data.maxOccurs, data.isRequired);
 				
 				target.titleNode.innerHTML = target.title = getFieldLabel(data);
+				if (!formPublished && selectedNode)
+					selectedNode.afterLabelNode.appendChild(getRemoveLink(data));
 				
 				target.unMarkSelected();
 			}
@@ -534,7 +544,7 @@
 			var ext = false;
 			if (!label) {
 				label = getFieldLabel(data);
-				if (formPublished)
+				if (!formPublished)
 					ext = getRemoveLink(data);
 			}
 			
@@ -545,9 +555,8 @@
 			var node = dojo.widget.createWidget("TreeNode", props, div);
 			node.data = data;
 			
-			if (ext) {
+			if (ext)
 				node.afterLabelNode.appendChild(ext);
-			}
 			
 			if (formPublished)
 				node.actionsDisabled = [node.actions.ADDCHILD, node.actions.REMOVE];
@@ -603,6 +612,9 @@
 	
 	function showSearchForm(btn) {
 		searchType = "concept";
+		resetForm();
+		DWRUtil.removeAllRows("searchBody");
+		$("searchText").value = '';
 		if (mySearchStatus == null) {
 			mySearch.toggle();
 			mySearchStatus = "1";
@@ -623,7 +635,7 @@
 	}
 	
 	var preFillFieldTable = function(objs) {
-		//objs.push('<a href="#newField" onclick="javascript:return showProposeConceptForm();"><spring:message code="ConceptProposal.propose.new"/></a>');
+		objs.push('<a href="#newField" onclick="createClicked(); return false;">Add New Field</a>');
 		fillTable(objs);
 	}
 	

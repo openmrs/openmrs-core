@@ -24,7 +24,7 @@
 	<tr>
 		<td><spring:message code="Field.type"/></td>
 		<td>
-			<select id="fieldType" onChange="chooseFieldType(this.value)">
+			<select id="fieldType" onChange="chooseFieldType(this.value)" onKeyUp="chooseFieldType(this.value)">
 				<c:forEach items="${fieldTypes}" var="ft">
 					<option value="${ft.fieldTypeId}">${ft.name}</option>
 				</c:forEach>
