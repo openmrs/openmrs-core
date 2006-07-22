@@ -4,7 +4,6 @@
     <!-- Environment properties -->
     <property environment="env"/>
     <property name="env.COMPUTERNAME" value="${env.HOSTNAME}"/>
-    <property name="tomcat.home" value="C:/Program Files/Apache Group/Tomcat"/>
 
 	<!-- Base definitions (cannot be overwritten by user property file) -->
 	<property file="build.properties" />
@@ -23,6 +22,7 @@
     <property file="${lib.dir}/lib.properties" />
 
 	<!-- Properties for running unit tests and webapp [un]deploy with tomcat -->
+	<property name="tomcat.home" value="C:/Program Files/Apache Group/Tomcat"/>
     <property name="tomcat.server" value="localhost" />
 	<property name="tomcat.port" value="8080" />
     <property name="tomcat.manager.url" value="http://${tomcat.server}:${tomcat.port}/manager" />
@@ -95,6 +95,8 @@
 		<fileset dir="${commons-io.dir}" includes="*.jar" />
 		<fileset dir="${commons-logging.dir}" includes="*.jar" />
 		<fileset dir="${commons-lang.dir}" includes="*.jar" />
+		<fileset dir="${commons-beanutils.dir}" includes="*.jar" />
+		<fileset dir="${commons-collections.dir}" includes="*.jar" />
 		<fileset dir="${hibernate.dir}" includes="*.jar" />
 		<fileset dir="${jstl.dir}" includes="*.jar" />
 		<fileset dir="${spring.dir}" includes="*.jar" />

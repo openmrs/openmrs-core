@@ -241,7 +241,7 @@
 	<tag-class>org.openmrs.web.taglib.PortletTag</tag-class>
 	<body-content>empty</body-content>
 	<description>
-		Includes the portlet from the given /WEB-INF/portlets/<code>url</code>
+		Includes the portlet from the given /WEB-INF/portlets/{url}
 	</description>
 	<attribute>
 		<name>url</name>
@@ -263,13 +263,13 @@
 	</attribute>
 	<attribute>
 		<name>parameters</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
 		<description>
 			A string in the form of "key=value|key2=value2".   
 			e.g. "size=compact|order=date"
 		</description>
-		<required>false</required>
-		<rtexprvalue>true</rtexprvalue>
-		<type>java.lang.String</type>
 	</attribute>
 	<attribute>
 		<name>patientId</name>
@@ -298,6 +298,86 @@
 </tag>
 
 <tag>
+	<name>concept</name>
+	<tag-class>org.openmrs.web.taglib.ConceptTag</tag-class>
+	<body-content>JSP</body-content>
+	<description>
+		Returns a Concept and ConceptName for the conceptId specified
+	</description>
+	<variable>
+		<name-from-attribute>var</name-from-attribute>
+		<variable-class>org.openmrs.Concept</variable-class>
+	</variable>
+	<variable>
+		<name-from-attribute>nameVar</name-from-attribute>
+		<variable-class>org.openmrs.ConceptName</variable-class>
+	</variable>
+	<attribute>
+		<name>conceptId</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>var</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
+		<name>nameVar</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
+		<name>locale</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+</tag>
+
+<tag>
+	<name>recentObs</name>
+	<tag-class>org.openmrs.web.taglib.RecentObsTag</tag-class>
+	<body-content>JSP</body-content>
+	<description>
+		This tag iterates through a collection of observations passed into it and renders it's body content.
+		It will return the most recent [num] observations, and if no [num] parameter is specified, it will return the 1 most recent.
+		It will limit the results by concept only if a [conceptId] parameter is passed in. Otherwise, it will return all concepts.
+	</description>
+	<variable>
+		<name-from-attribute>var</name-from-attribute>
+		<variable-class>org.openmrs.Obs</variable-class>
+	</variable>
+	<attribute>
+		<name>obs</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.util.Collection</type>
+	</attribute>
+	<attribute>
+		<name>conceptId</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>num</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>var</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+</tag>
+
+<tag>
 	<name>patientWidget</name>
 	<tag-class>org.openmrs.web.taglib.PatientWidgetTag</tag-class>
 	<body-content>empty</body-content>
@@ -311,5 +391,5 @@
 		<type>java.lang.Integer</type>
 	</attribute>
 </tag>
-	
+
 </taglib>
