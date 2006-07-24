@@ -86,28 +86,28 @@ public class PortletController implements Controller {
 				
 				// if a patient id is available, put "patient" and "patientObs" in the request
 				Object o = request.getAttribute("org.openmrs.portlet.patientId");
-				if (o != null && !"".equals(o)) {
-					Patient p = context.getPatientService().getPatient((Integer)o);
+				if (o != null) {
+					Patient p = context.getPatientService().getPatient((Integer) o);
 					model.put("patient", p);
 					model.put("patientObs", context.getObsService().getObservations(p));
-					model.put("patientId", Integer.valueOf((String) o));
+					model.put("patientId", (Integer) o);
 				}
 				
 				// if an encounter id is available, put "encounter" and "encounterObs" in the request
 				o = request.getAttribute("org.openmrs.portlet.encounterId");
-				if (o != null && !"".equals(o)) {
-					Encounter e = context.getEncounterService().getEncounter((Integer)o);
+				if (o != null) {
+					Encounter e = context.getEncounterService().getEncounter((Integer) o);
 					model.put("encounter", e);
 					model.put("encounterObs", context.getObsService().getObservations(e));
-					model.put("encounterId", Integer.valueOf((String) o));
+					model.put("encounterId", (Integer) o);
 				}
 				
 				// if a user id is available, put "user" in the model
 				o = request.getAttribute("org.openmrs.portlet.userId");
-				if (o != null && !"".equals(o)) {
-					User u = context.getUserService().getUser((Integer)o);
+				if (o != null) {
+					User u = context.getUserService().getUser((Integer) o);
 					model.put("user", u);
-					model.put("userId", Integer.valueOf((String) o));
+					model.put("userId", (Integer) o);
 				}
 				
 				// if a list of patient ids is available, make a patientset out of it
