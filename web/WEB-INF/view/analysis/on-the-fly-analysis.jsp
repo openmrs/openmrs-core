@@ -59,6 +59,7 @@
 		float: right;
 		border: 2px black solid;
 		padding: 4px;
+		background-color: #e0e0ff;
 	}
 	#activeFilterBox {
 		width: 95%;
@@ -91,6 +92,9 @@
 	}
 	#patientSetBox {
 		padding: 4px;
+		margin: 4px 20px 4px 0px;
+		border: 1px black dashed;
+		background-color: #f0f0f0;
 	}
 	#shortcutBox {
 		border: 1px solid black;
@@ -236,47 +240,11 @@
 			</ul>		
 		</div>
 	</span>
+	
+	<br/>
 
-<div id="filterBox">
-	<div id="activeFilterBox">
-		<center><b><u><spring:message code="Analysis.activeFilters"/></u></b></center>
-		<p>
-		<c:choose>
-			<c:when test="${fn:length(model.active_filters) == 0}">
-				<spring:message code="Analysis.noFiltersSelected"/>
-			</c:when>
-			<c:otherwise>
-				<table>
-				<c:forEach var="item" varStatus="stat" items="${model.active_filters}">
-					<tr><td>
-						<div class="activeFilter">
-							${item.value.description}
-							<a href="analysis.form?method=removeFilter&patient_filter_key=${item.key}">[X]</a>
-						</div>
-					</td></tr>
-				</c:forEach>
-				</table>
-			</c:otherwise>
-		</c:choose>
-	</div>
+	<openmrs:portlet url="activeFilters" id="filterBox" parameterMap="${model.filterPortletParams}" />
 
-	<p>
-	<a href="javascript:toggleLayer('suggestedFilterBox')"><spring:message code="Analysis.addFilter"/></a>
-	<div id="suggestedFilterBox">
-		<div style="float:right"><a href="javascript:toggleLayer('suggestedFilterBox')">[X]</a></div>
-		<c:forEach var="item" items="${model.suggested_filters}">
-			<div class="inactiveFilter">
-				<a href="analysis.form?method=addFilter&patient_filter_id=<c:out value="${item.reportObjectId}"/>">${item.description}</a>
-			</div>
-		</c:forEach>
-	</div>
-	<script language="JavaScript">
-	<!--
-		document.getElementById("suggestedFilterBox").style.display = "none";
-	-->
-	</script>
-</div>
-
-<openmrs:portlet url="patientSetList" id="patientSetBox" patientIds="${model.result.commaSeparatedPatientIds}" parameters="view=${model.viewMethod}"/>
+	<openmrs:portlet url="patientSetList" id="patientSetBox" patientIds="${model.result.commaSeparatedPatientIds}" parameters="view=${model.viewMethod}|limit=25"/>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %> 

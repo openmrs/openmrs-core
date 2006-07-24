@@ -7,19 +7,25 @@
 
 <p>
 <c:choose>
-	<c:when test="${limit != null}">
+	<c:when test="${model.limit != null}">
 		<c:forEach var="patientId" items="${model.patientSet.patientIds}" varStatus="status">
-			<c:if test="${status.count <= limit}">
-				<openmrs:patientWidget patientId="${patientId}" /> <br/>
-				<c:if test="${status.count == limit && !status.last}">
-					... <br/>
+			<c:if test="${status.count <= model.limit}">
+				<openmrs:patientWidget size="${model.size}" patientId="${patientId}" /> <br/>
+				<c:if test="${status.count == model.limit && !status.last}">
+					<spring:message code="general.nMore" arguments="${fn:length(model.patientSet.patientIds) - model.limit}"/>
+					<br/>
 				</c:if>
 			</c:if>
 		</c:forEach>
 	</c:when>
+	<c:when test="${model.patientSet.size > 100}">
+		<c:forEach var="patientId" items="${model.patientSet.patientIds}">
+			<openmrs:patientWidget size="compact" patientId="${patientId}" /> <br/>
+		</c:forEach>
+	</c:when>
 	<c:otherwise>
 		<c:forEach var="patientId" items="${model.patientSet.patientIds}">
-			<openmrs:patientWidget patientId="${patientId}" /> <br/>
+			<openmrs:patientWidget size="${model.size}" patientId="${patientId}" /> <br/>
 		</c:forEach>
 	</c:otherwise>
 </c:choose>

@@ -17,4 +17,9 @@ public class WebConstants {
 	public static final String OPENMRS_WEBAPP_NAME = "@WEBAPP.NAME@";
 	
 	public static final String OPENMRS_USER_OVERRIDE_PARAM = "__openmrs_user_over_id";
+	
+	public static final String OPENMRS_ANALYSIS_IN_PROGRESS_ATTR = "__openmrs_analysis_in_progress";
+	
+	public static final String OPENMRS_DYNAMIC_FORM_IN_PROGRESS_ATTR = "__openmrs_dynamic_form_in_progress";
+
 }

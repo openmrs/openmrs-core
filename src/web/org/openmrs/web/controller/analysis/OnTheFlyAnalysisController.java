@@ -8,7 +8,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.servlet.ServletException;
@@ -21,10 +20,8 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
 import org.openmrs.reporting.AbstractReportObject;
-import org.openmrs.reporting.ObsListProducer;
 import org.openmrs.reporting.PatientAnalysis;
 import org.openmrs.reporting.PatientDataSet;
-import org.openmrs.reporting.PatientDataSetFormatter;
 import org.openmrs.reporting.PatientFilter;
 import org.openmrs.reporting.PatientSet;
 import org.openmrs.reporting.ReportService;
@@ -36,7 +33,6 @@ import org.springframework.web.servlet.view.RedirectView;
 
 public class OnTheFlyAnalysisController implements Controller {
 	
-	final static String ON_THE_FLY_ANALYSIS_ATTR = "__openmrs_on_the_fly_analysis";
 	protected Log log = LogFactory.getLog(getClass());
 
 	private List<String> shortcuts;
@@ -110,7 +106,7 @@ public class OnTheFlyAnalysisController implements Controller {
 		ReportService reportService = context.getReportService();
 		PatientSetService patientSetService = context.getPatientSetService();
 		
-		PatientAnalysis analysis = (PatientAnalysis) httpSession.getAttribute(ON_THE_FLY_ANALYSIS_ATTR);
+		PatientAnalysis analysis = (PatientAnalysis) httpSession.getAttribute(WebConstants.OPENMRS_ANALYSIS_IN_PROGRESS_ATTR);
 		if (analysis == null) {
 			analysis = new PatientAnalysis();
 		}
@@ -178,9 +174,14 @@ public class OnTheFlyAnalysisController implements Controller {
 		}
 		*/
 		
+		Map<String, Object> filterPortletParams = new HashMap<String, Object>();
+		filterPortletParams.put("patientAnalysis", analysis);
+		filterPortletParams.put("suggestedFilters", availableFilters);
+		filterPortletParams.put("deleteURL", "analysis.form?method=removeFilter");
+		filterPortletParams.put("addURL", "analysis.form?method=addFilter");
+		
 		Map<String, Object> myModel = new HashMap<String, Object>();
 		myModel.put("active_filters", filters);
-		myModel.put("suggested_filters", availableFilters);
 		//myModel.put("classifier", classifier);
 		//myModel.put("suggested_classifiers", availableClassifiers);
 		myModel.put("shortcuts", shortcutList);
@@ -188,6 +189,7 @@ public class OnTheFlyAnalysisController implements Controller {
 		myModel.put("patient_set_for_links", result.toCommaSeparatedPatientIds());
 		myModel.put("result", result);
 		myModel.put("viewMethod", viewMethod);
+		myModel.put("filterPortletParams", filterPortletParams);
 
 		return new ModelAndView("/analysis/on-the-fly-analysis", "model", myModel);
 	}
@@ -212,10 +214,10 @@ public class OnTheFlyAnalysisController implements Controller {
 		
 		ReportService reportService = context.getReportService();
 		
-		PatientAnalysis analysis = (PatientAnalysis) httpSession.getAttribute(ON_THE_FLY_ANALYSIS_ATTR);
+		PatientAnalysis analysis = (PatientAnalysis) httpSession.getAttribute(WebConstants.OPENMRS_ANALYSIS_IN_PROGRESS_ATTR);
 		if (analysis == null) {
 			analysis = new PatientAnalysis();
-			httpSession.setAttribute(ON_THE_FLY_ANALYSIS_ATTR, analysis);
+			httpSession.setAttribute(WebConstants.OPENMRS_ANALYSIS_IN_PROGRESS_ATTR, analysis);
 		}
 		String idToSet = request.getParameter("patient_classifier_id");
 		if (idToSet == null || idToSet.length() == 0) {
@@ -243,11 +245,11 @@ public class OnTheFlyAnalysisController implements Controller {
 		
 		ReportService reportService = context.getReportService();
 		
-		PatientAnalysis analysis = (PatientAnalysis) httpSession.getAttribute(ON_THE_FLY_ANALYSIS_ATTR);
+		PatientAnalysis analysis = (PatientAnalysis) httpSession.getAttribute(WebConstants.OPENMRS_ANALYSIS_IN_PROGRESS_ATTR);
 		if (analysis == null) {
 			log.debug("creating new PatientAnalysis");
 			analysis = new PatientAnalysis();
-			httpSession.setAttribute(ON_THE_FLY_ANALYSIS_ATTR, analysis);
+			httpSession.setAttribute(WebConstants.OPENMRS_ANALYSIS_IN_PROGRESS_ATTR, analysis);
 		}
 		String[] idsToAdd = request.getParameterValues("patient_filter_id");
 		if (idsToAdd != null) {
@@ -311,7 +313,7 @@ public class OnTheFlyAnalysisController implements Controller {
 			return null;
 		}
 		
-		PatientAnalysis analysis = (PatientAnalysis) httpSession.getAttribute(ON_THE_FLY_ANALYSIS_ATTR);
+		PatientAnalysis analysis = (PatientAnalysis) httpSession.getAttribute(WebConstants.OPENMRS_ANALYSIS_IN_PROGRESS_ATTR);
 		if (analysis != null) {
 			String keyToRemove = request.getParameter("patient_filter_key");
 			log.debug("removing filter " + keyToRemove);
