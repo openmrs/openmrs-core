@@ -106,7 +106,7 @@ public class ConceptClassListController extends SimpleFormController {
 		//default empty Object
 		List<ConceptClass> conceptClassList = new Vector<ConceptClass>();
 		
-		//only fill the Object is the user has authenticated properly
+		//only fill the Object if the user has authenticated properly
 		if (context != null && context.isAuthenticated()) {
 			ConceptService cs = context.getConceptService();
 	    	conceptClassList = cs.getConceptClasses();
