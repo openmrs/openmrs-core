@@ -33,13 +33,19 @@ public class PortletController implements Controller {
 	 *         	(User) authenticatedUser
 	 *         	(Locale) locale
 	 *     (if the request has a patientId attribute)
+	 *     		(Integer) patientId
 	 *        	(Patient) patient
 	 *         	(Set<Obs>) patientObs
 	 *     (if the request has an encounterId attribute)
+	 *     		(Integer) encounterId
 	 *         	(Encounter) encounter
 	 *         	(Set<Obs>) encounterObs
 	 *     (if the request has a userId attribute)
+	 *     		(Integer) userId
 	 *         	(User) user
+	 *     (if the request has a patientIds attribute, which should be a (String) comma-separated list of patientIds)
+	 *     		(PatientSet) patientSet
+	 *     		(String) patientIds
 	 */
 	@SuppressWarnings("unchecked")
 	public ModelAndView handleRequest(HttpServletRequest request,
@@ -66,9 +72,13 @@ public class PortletController implements Controller {
 			
 			String size = (String)request.getAttribute("org.openmrs.portlet.size");
 			Map<String, Object> params = (Map<String, Object>)request.getAttribute("org.openmrs.portlet.parameters");
+			Map<String, Object> moreParams = (Map<String, Object>) request.getAttribute("org.openmrs.portlet.parameterMap");
 			
 			model.put("size", size);
 			model.putAll(params);
+			if (moreParams != null) {
+				model.putAll(moreParams);
+			}
 			
 			if (context != null) {
 				model.put("authenticatedUser", context.getAuthenticatedUser());
@@ -80,6 +90,7 @@ public class PortletController implements Controller {
 					Patient p = context.getPatientService().getPatient((Integer)o);
 					model.put("patient", p);
 					model.put("patientObs", context.getObsService().getObservations(p));
+					model.put("patientId", Integer.valueOf((String) o));
 				}
 				
 				// if an encounter id is available, put "encounter" and "encounterObs" in the request
@@ -88,6 +99,7 @@ public class PortletController implements Controller {
 					Encounter e = context.getEncounterService().getEncounter((Integer)o);
 					model.put("encounter", e);
 					model.put("encounterObs", context.getObsService().getObservations(e));
+					model.put("encounterId", Integer.valueOf((String) o));
 				}
 				
 				// if a user id is available, put "user" in the model
@@ -95,14 +107,16 @@ public class PortletController implements Controller {
 				if (o != null && !"".equals(o)) {
 					User u = context.getUserService().getUser((Integer)o);
 					model.put("user", u);
+					model.put("userId", Integer.valueOf((String) o));
 				}
 				
 				// if a list of patient ids is available, make a patientset out of it
 				o = request.getAttribute("org.openmrs.portlet.patientIds");
 				if (o != null && !"".equals(o)) {
 					log.debug("Found patientIds attribute: " + o);
-					PatientSet ps = PatientSet.parseCommaSeparatedPatientIds(o.toString());
+					PatientSet ps = PatientSet.parseCommaSeparatedPatientIds((String) o);
 					model.put("patientSet", ps);
+					model.put("patientIds", (String) o);
 				}
 				
 			}

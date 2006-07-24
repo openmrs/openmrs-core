@@ -1,6 +1,7 @@
 package org.openmrs.web.taglib;
 
 import java.io.IOException;
+import java.util.Map;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
@@ -12,7 +13,7 @@ import org.apache.taglibs.standard.tag.common.core.ImportSupport;
 import org.openmrs.util.Helper;
 
 public class PortletTag extends ImportSupport {
-
+	
 	public static final long serialVersionUID = 21L;
 	
 	private final Log log = LogFactory.getLog(getClass());
@@ -20,6 +21,7 @@ public class PortletTag extends ImportSupport {
 	private String size = "";
 	private String id = "";
 	private String parameters = "";
+	private Map<String, Object> parameterMap = null;
 	private Integer patientId = null;
 	private Integer encounterId = null;
 	private Integer userId = null;
@@ -51,13 +53,14 @@ public class PortletTag extends ImportSupport {
 				pageContext.getRequest().setAttribute("org.openmrs.portlet.patientId", patientId);
 				pageContext.getRequest().setAttribute("org.openmrs.portlet.encounterId", encounterId);
 				pageContext.getRequest().setAttribute("org.openmrs.portlet.userId", userId);
-				pageContext.getRequest().setAttribute("org.openmrs.portlet.patientIds", patientIds);				
+				pageContext.getRequest().setAttribute("org.openmrs.portlet.patientIds", patientIds);
+				pageContext.getRequest().setAttribute("org.openmrs.portlet.parameterMap", parameterMap);
 			}
 		}
 		catch (IOException e) {
 			log.error("Error while starting portlet tag", e);
 		}
-		
+
 		return super.doStartTag();
 	}
 
@@ -79,9 +82,9 @@ public class PortletTag extends ImportSupport {
 	}
 	
 	private void resetValues() {
-		id = parameters = "";
+		id = parameters = patientIds = "";
 		patientId = encounterId = userId = null;
-		patientIds = "";
+		parameterMap = null;
 	}
 
 	public void setUrl(String url) throws JspTagException {
@@ -143,5 +146,15 @@ public class PortletTag extends ImportSupport {
 	public void setUserId(Integer userId) {
 		this.userId = userId;
 	}
+
+	public Map<String, Object> getParameterMap() {
+		return parameterMap;
+	}
+
+	public void setParameterMap(Map<String, Object> parameterMap) {
+		this.parameterMap = parameterMap;
+	}
+	
+	
 	
 }

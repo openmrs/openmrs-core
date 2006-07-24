@@ -272,6 +272,15 @@
 		</description>
 	</attribute>
 	<attribute>
+		<name>parameterMap</name>
+		<description>
+			A Map(String,Object) of extra parameter values
+		</description>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.util.Map</type>
+	</attribute>
+	<attribute>
 		<name>patientId</name>
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
@@ -390,6 +399,12 @@
 		<rtexprvalue>true</rtexprvalue>
 		<type>java.lang.Integer</type>
 	</attribute>
+	<attribute>
+		<name>size</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
 </tag>
-
+	
 </taglib>
