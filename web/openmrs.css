@@ -129,6 +129,65 @@ h1, h2, h3, h4, h5 {
 #patientSummary .boxHeader { font-size: 1.55em;}
 #patientSummary { /*width: 700px;*/ }
 
+table.breadcrumbHeader {
+	width: 97%;
+	padding: 5px 2px 5px 2px;
+	text-align: left;
+}
+table.breadcrumbHeader th {
+	font-size: 1.2em;
+	font-weight: bold;
+	text-align: left;
+}
+table.breadcrumbHeader td {
+	font-size: 0.9em;
+	text-align: right;
+}
+
+#patientHeader {
+	font-size:0.8em;
+	text-align: left;
+}
+.patientName {
+	font-weight:bold;
+	font-size:1.5em;
+	margin-right:10px;
+}
+#patientTreatmentHeader {
+	font-size:0.8em;
+	text-align: left;
+	color:navy;
+}
+
+table.patientRecentObs {
+	border: none;
+	float: left;
+	margin-right: 20px;
+}
+table.patientRecentObs th {
+	border-bottom: 1px solid navy;
+	text-align: left;
+	font-weight: bold;
+	padding: 0.1em 0.5em;
+}
+table.patientRecentObs td {
+	padding: 0.1em 0.5em;
+}
+
+table.patientTreatmentPrograms {
+	border: none;
+	margin-right: 20px;
+}
+table.patientTreatmentPrograms th {
+	border-bottom: 1px solid navy;
+	text-align: left;
+	font-weight: bold;
+	padding: 0.1em 0.5em;
+}
+table.patientTreatmentPrograms td {
+	padding: 0.1em 0.5em;
+}
+
 .patientIdentifier {
 	width: 7em;
 }
@@ -137,10 +196,10 @@ h1, h2, h3, h4, h5 {
 	width: 97%;
 	padding: 5px 2px 5px 2px;
 	text-align: left;
-	}
-	.box>* {
-		font-size: .9em;
-	}
+}
+.box>* {
+	font-size: .9em;
+}
 .boxHeader {
 	background-color: navy;
 	color: white;

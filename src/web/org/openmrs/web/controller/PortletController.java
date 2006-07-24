@@ -77,7 +77,7 @@ public class PortletController implements Controller {
 				// if a patient id is available, put "patient" and "patientObs" in the request
 				Object o = request.getAttribute("org.openmrs.portlet.patientId");
 				if (o != null && !"".equals(o)) {
-					Patient p = context.getPatientService().getPatient(Integer.valueOf((String)o));
+					Patient p = context.getPatientService().getPatient((Integer)o);
 					model.put("patient", p);
 					model.put("patientObs", context.getObsService().getObservations(p));
 				}
@@ -85,7 +85,7 @@ public class PortletController implements Controller {
 				// if an encounter id is available, put "encounter" and "encounterObs" in the request
 				o = request.getAttribute("org.openmrs.portlet.encounterId");
 				if (o != null && !"".equals(o)) {
-					Encounter e = context.getEncounterService().getEncounter(Integer.valueOf((String)o));
+					Encounter e = context.getEncounterService().getEncounter((Integer)o);
 					model.put("encounter", e);
 					model.put("encounterObs", context.getObsService().getObservations(e));
 				}
@@ -93,7 +93,7 @@ public class PortletController implements Controller {
 				// if a user id is available, put "user" in the model
 				o = request.getAttribute("org.openmrs.portlet.userId");
 				if (o != null && !"".equals(o)) {
-					User u = context.getUserService().getUser(Integer.valueOf((String) o));
+					User u = context.getUserService().getUser((Integer)o);
 					model.put("user", u);
 				}
 				

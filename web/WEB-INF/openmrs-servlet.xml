@@ -95,7 +95,8 @@
 					<prop key="**/formEntryQueue.list">formEntryQueueList</prop>
 					<prop key="**/xsnUpload.form">xsnUploadForm</prop>
 					<prop key="**/options.form">optionsForm</prop>
-					<prop key="**/patientSummary.form">patientSummaryForm</prop>          
+					<prop key="**/patientSummary.form">patientSummaryForm</prop>  
+					<prop key="**/patientDashboard.form">patientDashboardForm</prop>         
 					<prop key="**/scheduler.list">schedulerListController</prop>
 					<prop key="**/scheduler.form">schedulerFormController</prop>
 					<prop key="**/*.portlet">portletController</prop>
@@ -761,6 +762,13 @@
 			<property name="commandName"><value>patient</value></property>
 			<property name="formView"><value>/formentry/patientSummaryForm</value></property>
 			<property name="successView"><value>patientSummary.form</value></property>
+		</bean>
+		<bean id="patientDashboardForm" class="org.openmrs.web.controller.patient.PatientFormController">
+			<property name="sessionForm"><value>true</value></property>
+			<property name="commandName"><value>patient</value></property>
+			<property name="validator"><ref bean="patientValidator"/></property>
+			<property name="formView"><value>/formentry/patientDashboardForm</value></property>
+			<property name="successView"><value>patientDashboard.form</value></property>
 		</bean>
 		
 	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
