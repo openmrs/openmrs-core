@@ -63,6 +63,8 @@ public class PortletTag extends ImportSupport {
 
 	public int doEndTag() throws JspException {
 		
+		int i = super.doEndTag();
+		
 		try {
 			// closing portlet tag
 			pageContext.getOut().print("</div>");
@@ -73,7 +75,7 @@ public class PortletTag extends ImportSupport {
 		
 		resetValues();
 		
-		return super.doEndTag();
+		return i;
 	}
 	
 	private void resetValues() {
