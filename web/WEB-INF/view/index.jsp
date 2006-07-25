@@ -4,10 +4,6 @@
 
 <openmrs:portlet url="welcome" parameters="showName=true" />
 
-<br/><br/>
-
-<openmrs:portlet url="findPatient" size="full" parameters="postURL=formentry/patientSummary.form" />
-
-<br /><br />
+<br/><br/><br />
 
 <%@ include file="/WEB-INF/template/footer.jsp" %> 

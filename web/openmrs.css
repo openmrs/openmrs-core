@@ -286,6 +286,11 @@ input[type="text"], input[type="password"] {
 	padding: 1px;
 	border: 1px solid cadetblue;
 }
+
+input, select {
+	font-size: 0.9em;
+}
+
 a.conceptHit {
 	text-decoration: none;
 	display: block;
