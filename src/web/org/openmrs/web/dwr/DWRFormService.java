@@ -162,7 +162,7 @@ public class DWRFormService {
 	}
 	
 	public Integer[] saveFormField(Integer fieldId, String name, String fieldDesc, Integer fieldTypeId, Integer conceptId, String table, String attr, 
-			String defaultValue, boolean multiple, Integer formFieldId, Integer formId, Integer parent, Integer number, String part, Integer page, Integer min, Integer max, boolean required) {
+			String defaultValue, boolean multiple, Integer formFieldId, Integer formId, Integer parent, Integer number, String part, Integer page, Integer min, Integer max, boolean required, float sortWeight) {
 		
 		Context context = (Context) WebContextFactory.get().getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
@@ -190,6 +190,7 @@ public class DWRFormService {
 			ff.setMinOccurs(min);
 			ff.setMaxOccurs(max);
 			ff.setRequired(required);
+			ff.setSortWeight(sortWeight);
 			
 			log.debug("fieldId: " + fieldId);
 			log.debug("formFieldId: " + formFieldId);
@@ -223,6 +224,11 @@ public class DWRFormService {
 			formFieldId = ff.getFormFieldId();
 			
 			context.endTransaction();
+		}
+		else {
+			log.error("User is unauthenticated for this");
+			Integer[] arr = {0};
+			return arr;
 		}
 		
 		Integer[] arr = {field.getFieldId(), ff.getFormFieldId()};
@@ -399,7 +405,8 @@ public class DWRFormService {
     					"pageNumber: " + ff.getPageNumber() + ", " + 
     					"minOccurs: " + ff.getMinOccurs() + ", " + 
     					"maxOccurs: " + ff.getMaxOccurs() + ", " + 
-    					"isRequired: " + ff.isRequired() + "});";
+    					"isRequired: " + ff.isRequired() + ", " + 
+    					"sortWeight: " + ff.getSortWeight() + "});";
     }
 
     private String generateFormFieldOption(FormField ff, Integer level) {

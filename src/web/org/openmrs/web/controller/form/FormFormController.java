@@ -3,6 +3,8 @@ package org.openmrs.web.controller.form;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
@@ -16,8 +18,10 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
 import org.openmrs.Form;
+import org.openmrs.FormField;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
+import org.openmrs.formentry.FormUtil;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.propertyeditor.EncounterTypeEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -113,6 +117,20 @@ public class FormFormController extends SimpleFormController {
 								"Form.cannot.delete");
 						return showForm(request, response, errors);
 					}
+				} else if (action.equals(msa.getMessage("Form.updateSortOrder"))) {
+					
+					FormService fs = context.getFormService();
+					
+					TreeMap<Integer, TreeSet<FormField>> treeMap = FormUtil.getFormStructure(context, form);
+					for (Integer parentFormFieldId : treeMap.keySet()) {
+						float sortWeight = 0;
+						for (FormField formField : treeMap.get(parentFormFieldId)) {
+							formField.setSortWeight(sortWeight);
+							fs.updateFormField(formField);
+							sortWeight += 50;
+						}
+					}
+					
 				} else {
 					try {
 						context.getFormService().duplicateForm(form);
@@ -134,7 +152,7 @@ public class FormFormController extends SimpleFormController {
 
 		return new ModelAndView(new RedirectView(view));
 	}
-
+	
 	/**
 	 * 
 	 * This is called prior to displaying a form for the first time. It tells

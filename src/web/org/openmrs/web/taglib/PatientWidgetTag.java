@@ -14,7 +14,7 @@ import org.openmrs.web.WebConstants;
 
 public class PatientWidgetTag extends TagSupport {
 
-	public static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 112341L;
 	private final Log log = LogFactory.getLog(getClass());
 	
 	private Integer patientId;

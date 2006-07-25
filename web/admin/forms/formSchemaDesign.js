@@ -130,12 +130,12 @@
 				
 				msg.oldTree.containerNode.style.display = "";
 				msg.newTree.containerNode.style.display = "";
-				// if we moved from another tree, open up the edit div
+				
 				if (msg.skipEdit) {
-					var formNotUsed = true;
-					save(msg.child, formNotUsed);
+					updateSortWeight(msg.child);
+					save(msg.child, /* formNotUsed */ true);
 				}
-				else {
+				else { // if we moved from another tree, open up the edit div
 					selectedNode = msg.child;
 					setTimeout("editClicked(selectedNode)", 0);
 				}
@@ -145,11 +145,18 @@
 				msg.child.unMarkSelected();
 			}
 			else if (msg.oldParent != msg.newParent) {
+				updateSortWeight(msg.child);
 				// save node's new parent 
 				save(msg.child, true);
 				if (msg.oldParent && msg.oldParent.updateExpandIcon)
 					msg.oldParent.updateExpandIcon();
 			}
+			else {
+				// changing the order of things
+				updateSortWeight(msg.child);
+				save(msg.child, true);
+			}
+			
 		};
 	}
 	
@@ -168,6 +175,9 @@
 				removeNode(node.children[child]);
 			}
 			DWRFormService.deleteFormField(node.data["formFieldId"]);
+			
+			if (node.parent && node.parent.updateExpandIcon)
+				node.parent.updateExpandIcon();
 		}
 	}
 	
@@ -455,6 +465,20 @@
 			if (changed) {
 			
 				if (!formNotUsed) {
+					if ($('concept').style.display != "none") {
+						if (!tree.conceptIdInput.value) {
+							// this check and fail must be done first so we can avoid 
+							// having to reset data.*
+							alert("You must select a concept");
+							return false;
+						}
+						data["conceptId"] = tree.conceptIdInput.value;
+						data["conceptName"] = tree.conceptNameTag.innerHTML;					}
+					else {
+						data["tableName"] = tree.tableNameInput.value;
+						data["attributeName"] = tree.attributeNameInput.value;
+					}
+					
 					data["fieldId"] = null;
 					if (tree.fieldIdInput.value != 'undefined' && tree.fieldIdInput.value != '')
 						data["fieldId"] = tree.fieldIdInput.value;
@@ -463,14 +487,6 @@
 					data["fieldType"] = tree.fieldTypeInput.value;
 					data["conceptId"] = data["conceptName"] = '';
 					data["tableName"] = data["attributeName"] = '';
-					if ($('concept').style.display != "none") {
-						data["conceptId"] = tree.conceptIdInput.value;
-						data["conceptName"] = tree.conceptNameTag.innerHTML;
-					}
-					else {
-						data["tableName"] = tree.tableNameInput.value;
-						data["attributeName"] = tree.attributeNameInput.value;
-					}
 					data["defaultValue"] = tree.defaultValueInput.value;
 					data["selectMultiple"] = tree.selectMultipleCheckbox.checked;
 					data["numForms"] = tree.numFormsTag.innerHTML;
@@ -491,31 +507,77 @@
 					if (data["maxOccurs"].length == 0)
 						data["maxOccurs"] = null;
 					data["isRequired"] = tree.isRequiredCheckbox.checked;
-				}
+				} // end "if (!formNotUsed)"
 				
 				data["parent"] = null;
 				if (target.parent && target.parent.data)
 					data["parent"] = target.parent.data["formFieldId"];
 				if (data["parent"] == 0)
-					data["parent"] = null;
+					data["parent"] = null;				
+				
+				if (!data.sortWeight) {
+					data["sortWeight"] = 0.0;
+					updateSortWeight(target);
+				}	
 				
 				selectedNode = target;
 				DWRFormService.saveFormField(cancelClicked, data.fieldId, data.fieldName, data.description, data.fieldType,
 					data.conceptId, data.tableName, data.attributeName, data.defaultValue, data.selectMultiple, 
-					data.formFieldId, formId, data.parent, data.fieldNumber, data.fieldPart, data.pageNumber, data.minOccurs, data.maxOccurs, data.isRequired);
+					data.formFieldId, formId, data.parent, data.fieldNumber, data.fieldPart, data.pageNumber, data.minOccurs, data.maxOccurs, data.isRequired, data.sortWeight);
 				
 				target.titleNode.innerHTML = target.title = getFieldLabel(data);
-				if (!formPublished && selectedNode)
+				if (!formPublished && selectedNode) {
+					dojo.dom.removeChildren(selectedNode.afterLabelNode);
 					selectedNode.afterLabelNode.appendChild(getRemoveLink(data));
+				}
 				
-				target.unMarkSelected();
+				//target.unMarkSelected();
 			}
 			else
 				tree.editDiv.style.display = "none";
 		}
 		return false;
 	}
-
+	
+	
+	function updateSortWeight(target) {
+		if (target && target.data && tree) {
+			var prev = target.getPreviousSibling();
+			var next = target.getNextSibling();
+			var sortWeight = 500.0;
+			if (prev && prev.data && next && next.data) {
+				// We're in the middle somewhere.
+				var prevWeight = prev.data.sortWeight;
+				var nextWeight = next.data.sortWeight;
+				if (!prevWeight || !nextWeight)
+					return sortWeightError();
+				dojo.debug("1 nextweight: " + nextWeight + " prevweight: " + prevWeight);
+				sortWeight = (nextWeight + prevWeight) / 2.0;
+			}
+			else if (prev && prev.data) {
+				// We're at the end.  Make the next weight much larger than the current last one
+				var prevWeight = prev.data.sortWeight || 0.0;
+				sortWeight = prevWeight + 50.0;
+			}
+			else if (next && next.data) {
+				// We're at the beginning.  Make the first weight low
+				nextWeight = next.data.sortWeight || 1000.0;
+				nextWeight = nextWeight - 50.0;
+			}
+			
+			if (!sortWeight)
+				sortWeight = 0.0
+			
+			// TODO if we error out, renumber all.
+			
+			target.data["sortWeight"] = sortWeight;
+		}
+	}
+	
+	function sortWeightError() {
+		alert("Error assigning sort weight. \n\nUpdate Element Sort Order according to field Number and Part using the link on this page\n\The current visual order of elements may not be correct.");
+		return null;
+	}
 	
 	function addNode(addToTree, data, label, attemptCount, insertNode) {
 		if (data) {
@@ -555,8 +617,10 @@
 			var node = dojo.widget.createWidget("TreeNode", props, div);
 			node.data = data;
 			
-			if (ext)
+			if (ext) {
+				dojo.dom.removeChildren(node.afterLabelNode);
 				node.afterLabelNode.appendChild(ext);
+			}
 			
 			if (formPublished)
 				node.actionsDisabled = [node.actions.ADDCHILD, node.actions.REMOVE];
@@ -566,10 +630,10 @@
 			else
 				parent.addChild(node);
 			
-			
 			return node;
 		}
 	}
+	
 	
 	function getRemoveLink(data) {
 		var ext = document.createElement("a");
@@ -593,19 +657,27 @@
 	}
 	
 	var cancelClicked = function(savedNodeIds) {
-		clearFormField();
-		closeBox();
-		searchType = "";
-		tree.editDiv.style.display = "none";
 		
 		if (savedNodeIds && selectedNode.data) {
-			selectedNode.data["formFieldId"] = savedNodeIds[1];
-			selectedNode.data["fieldId"] = savedNodeIds[0];
+			if (savedNodeIds[0] == 0) {
+				// remote call (dwr) returned an error
+				alert("There was an error while processing your request. Consult the error logs");
+			}
+			else {
+				// remote call went smoothly
+				selectedNode.data["fieldId"] = savedNodeIds[0];
+				selectedNode.data["formFieldId"] = savedNodeIds[1];
+			}
 		}
 			
 		// remove from main tree because they just dragged it over from the search
 		else if (!selectedNode.data || !selectedNode.data["formFieldId"])
 			removeClicked(selectedNode, true);
+		
+		clearFormField();
+		closeBox();
+		searchType = "";
+		tree.editDiv.style.display = "none";
 		
 		selectedNode = null;
 	}
@@ -745,7 +817,8 @@
 		
 		return domNode;
 	}
-	
+
+	// getting data from field object	
 	function getData(obj) {
 		var data = [];
 		data["selectMultiple"] = false;

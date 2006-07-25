@@ -171,6 +171,13 @@
 	</tr>
 </table>
 
+<c:if test="${form.published == false}">
+	<br/>
+	<form method="post">
+		<input type="submit" name="action" value='<spring:message code="Form.updateSortOrder" />' />
+	</form>
+</c:if>
+
 <div id="editFormField">
 	<div id="formFieldTitle"><spring:message code="FormField.edit"/>:</div>
 	

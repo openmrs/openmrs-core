@@ -89,17 +89,7 @@ insert into encounter_type values
 # Records for table location
 #----------------------------
 insert into location values 
-(1, 'Wishard Hospital', null, '1002 Wishard Blvd.', '', 'Indianapolis', 'IN', '46202', 'USA', null, null, 1, '2005-09-22 00:00:00'), 
-(2, 'Mosoriot Health Center', null, 'Moi University Campus', null, 'Eldoret', null, null, 'Kenya', null, null, 1, '2005-09-22 00:00:00');
-
-
-#----------------------------
-# Records for table order_type
-#----------------------------
-insert into order_type values 
-(1, 'Historical Drug', 'Drug information captured from patient historically', 1, '2005-08-08 07:06:12'), 
-(2, 'Drug', 'New drug order', 1, '2005-08-08 07:07:20'), 
-(3, 'Test', 'New test order', 1, '2005-08-08 07:07:53');
+(1, 'Unknown Location', null, '', '', '', '', '', '', null, null, 1, '2005-09-22 00:00:00');
 
 
 #----------------------------
@@ -15351,11 +15341,7 @@ insert  into form_field values
 # Records for table tribe
 #----------------------------
 insert into tribe values 
-(1, 0, 'Kalenjin / Nandi'), 
-(2, 0, 'Luo'), 
-(3, 0, 'Luhya'),
-(99, 0, 'Other');
-
+(1, 0, 'Unknown');
 
 #----------------------------
 # Records for table patient
@@ -15389,3 +15375,24 @@ insert into patient_identifier values
 insert into patient_name values 
 (1, 1, 1, 'Mr.', 'John', 'D', '', 'Patient', null, null, null, 1, '2005-09-22 00:00:00', 0, null, null, null, null, null), 
 (2, 1, 2, 'Mr.', 'Horatio', 'L', null, 'Hornblower', null, 'Esq.', null, 1, '2005-09-22 00:00:00', 0, null, null, null, null, null);
+
+
+#----------------------------
+# Records for table role
+#----------------------------
+insert into role values 
+('Anonymous', 'Privileges for non-authenticated users.');
+
+
+#----------------------------
+# Records for table privilege
+#----------------------------
+insert into privilege values 
+('View Navigation Menu', 'Ability to see the navigation menu');
+
+
+#----------------------------
+# Records for table role_privilege
+#----------------------------
+insert into role_privilege values 
+('Anonymous', 'View Navigation Menu');

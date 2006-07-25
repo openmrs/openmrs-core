@@ -269,3 +269,16 @@
  UPDATE `global_property` SET property_value='1.0.23' WHERE property = 'database_version';
  
 
+ #-----------------------------------
+ # OpenMRS Datamodel version 1.0.26
+ # Ben Wolfe   July 20 2006 8:45 PM
+ # Add form_field.sort_weight
+ #-----------------------------------
+ 
+ ALTER TABLE `form_field` ADD COLUMN `sort_weight` float(5,5) default NULL;
+ 
+ SET @new_weight=0;
+ UPDATE form_field SET sort_weight = (select @new_weight := @new_weight + 10 from dual) ORDER BY form_id, parent_form_field, field_number, field_part, (select name from field where field_id = form_field.field_id);
+ 
+ UPDATE `global_property` SET property_value='1.0.26' WHERE property = 'database_version';
+ 
