@@ -57,6 +57,7 @@
 			</spring:bind>
 		</td>
 	</tr>
+	<!--
 	<tr>
 		<td><spring:message code="Form.build"/></td>
 		<td>
@@ -66,6 +67,7 @@
 			</spring:bind>
 		</td>
 	</tr>
+	-->
 	<tr>
 		<td><spring:message code="Form.published"/></td>
 		<td>
@@ -91,6 +93,7 @@
 			</spring:bind>
 		</td>
 	</tr>
+	<!--
 	<tr>
 		<td><spring:message code="Form.schemaNamespace"/></td>
 		<td>
@@ -118,6 +121,7 @@
 			</spring:bind>
 		</td>
 	</tr>
+	-->
 	<tr>
 		<td><spring:message code="Form.xslt"/></td>
 		<td>

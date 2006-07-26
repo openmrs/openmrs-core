@@ -78,7 +78,9 @@
 	}
 	
 	function allowAutoJump() {
-		if ($('phrase').value == 'All')
+		// TODO, fix this;
+		return false;
+		if (phrase.value == 'All')
 			return false;
 		else
 			return true;

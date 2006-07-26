@@ -275,7 +275,7 @@
  # Add form_field.sort_weight
  #-----------------------------------
  
- ALTER TABLE `form_field` ADD COLUMN `sort_weight` float(5,5) default NULL;
+ ALTER TABLE `form_field` ADD COLUMN `sort_weight` float(11,5) default NULL;
  
  SET @new_weight=0;
  UPDATE form_field SET sort_weight = (select @new_weight := @new_weight + 10 from dual) ORDER BY form_id, parent_form_field, field_number, field_part, (select name from field where field_id = form_field.field_id);

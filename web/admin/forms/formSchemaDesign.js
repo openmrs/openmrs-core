@@ -472,6 +472,8 @@
 							alert("You must select a concept");
 							return false;
 						}
+						data["conceptId"] = data["conceptName"] = '';
+						data["tableName"] = data["attributeName"] = '';
 						data["conceptId"] = tree.conceptIdInput.value;
 						data["conceptName"] = tree.conceptNameTag.innerHTML;					}
 					else {
@@ -485,8 +487,6 @@
 					data["fieldName"] = tree.fieldNameInput.value;
 					data["description"] = tree.descriptionInput.value;
 					data["fieldType"] = tree.fieldTypeInput.value;
-					data["conceptId"] = data["conceptName"] = '';
-					data["tableName"] = data["attributeName"] = '';
 					data["defaultValue"] = tree.defaultValueInput.value;
 					data["selectMultiple"] = tree.selectMultipleCheckbox.checked;
 					data["numForms"] = tree.numFormsTag.innerHTML;
@@ -721,6 +721,9 @@
 			$('conceptId').value = obj.conceptId;
 			$('conceptName').innerHTML = obj.name;
 			closeBox();
+			DWRUtil.removeAllRows(fieldResults);
+			$('searchField').value = "";
+			fieldResults.style.display = "none";
 			return false;
 		}
 		

@@ -70,7 +70,7 @@ insert into concept_datatype values
 insert into field_type values 
 (1, 'Concept', '', 0, 1, '2005-02-22 12:43:00'), 
 (2, 'Database element', '', 0, 1, '2005-02-22 12:43:00'), 
-(3, 'Set of Terms', '', 1, 1, '2005-02-22 12:43:00'), 
+(3, 'Set of Concepts', '', 1, 1, '2005-02-22 12:43:00'), 
 (4, 'Miscellaneous Set', '', 1, 1, '2005-02-22 12:43:00'), 
 (5, 'Section', '', 1, 1, '2005-02-22 12:43:00');
 
@@ -15311,7 +15311,10 @@ insert  into `field` values
 (17, 'ENCOUNTER.ENCOUNTER_DATETIME', '', 2, null, 'encounter', 'encounter_datetime', '', 0, 1, '2006-07-18 11:23:06', null, null), 
 (18, 'ENCOUNTER.LOCATION_ID', '', 2, null, 'encounter', 'location_id', '', 0, 1, '2006-07-18 11:23:49', null, null), 
 (19, 'ENCOUNTER.PROVIDER_ID', '', 2, null, 'encounter', 'provider_id', '', 0, 1, '2006-07-18 11:24:11', null, null), 
-(20, 'WEIGHT (KG)', 'Patient\'s weight in kilograms.', 1, 5089, '', null, '', 0, 1, '2006-07-18 11:25:10', null, null);
+(20, 'WEIGHT (KG)', 'Patient\'s weight in kilograms.', 1, 5089, '', null, '', 0, 1, '2006-07-18 11:25:10', null, null), 
+(21, 'PROBLEM LIST', 'List of problems for a given patient visit.', 1, 1284, '', '', '', 0, 1, '2006-07-26 05:34:03', null, null), 
+(22, 'PROBLEM ADDED', 'Diagnosis or problem noted on a patient encounter.', 1, 6042, '', '', '', 0, 1, '2006-07-26 05:34:22', null, null), 
+(23, 'PROBLEM RESOLVED', 'Diagnosis or problem noted on a patient encounter as being resolved.', 1, 6097, '', '', '', 0, 1, '2006-07-26 05:34:25', null, null);
 
 
 #----------------------------
@@ -15335,7 +15338,11 @@ insert  into form_field values
 (17, 1, 17, null, '', null, 3, null, null, 1, 1, '2006-07-18 11:24:14', 1, '2006-07-18 11:23:06'), 
 (18, 1, 18, null, '', null, 3, null, null, 1, 1, '2006-07-18 11:23:49', 1, '2006-07-18 11:23:49'), 
 (19, 1, 19, null, '', null, 3, null, null, 1, 1, '2006-07-18 11:24:11', 1, '2006-07-18 11:24:11'), 
-(20, 1, 20, null, '', null, 5, null, null, 0, 1, '2006-07-18 11:25:14', 1, '2006-07-18 11:25:10');
+(20, 1, 20, null, '', null, 5, null, null, 0, 1, '2006-07-18 11:25:14', 1, '2006-07-18 11:25:10'), 
+(21, 1, 21, 4, '', null, null, null, null, 0, 1, '2006-07-26 05:34:13', 1, '2006-07-26 05:34:03'), 
+(22, 1, 22, null, '', null, 21, null, -1, 0, 1, '2006-07-26 05:35:27', 1, '2006-07-26 05:34:22'), 
+(23, 1, 23, null, '', null, 21, null, -1, 0, 1, '2006-07-26 05:39:24', 1, '2006-07-26 05:34:25');
+
 
 #----------------------------
 # Records for table tribe

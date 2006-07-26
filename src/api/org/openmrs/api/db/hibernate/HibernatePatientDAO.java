@@ -216,7 +216,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		Set<Patient> patients = new LinkedHashSet<Patient>();
 		
 		name = name.replaceAll("  ", " ");
-		name.replace(", ", " ");
+		name = name.replace(", ", " ");
 		String[] names = name.split(" ");
 		
 		

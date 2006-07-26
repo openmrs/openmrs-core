@@ -15,7 +15,7 @@
 	<property name="webapp.name" value="openmrs" />
 	<property name="webapp.version" value="${openmrs.version}" />
 	<property name="webapp.display.name" value="OpenMRS" />
-	<property name="webapp.description" value="Open-Source EMR for Developing Countries" />
+	<property name="webapp.description" value="An Open-Source EMR System" />
 
     <!-- Library versions and JARs -->
     <property name="lib.dir" location="lib" />

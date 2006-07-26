@@ -22,50 +22,6 @@
 <form method="post">
 	<table>
 		<tr>
-			<td><spring:message code="User.systemId"/></td>
-			<td>
-				<spring:bind path="user.systemId">
-					${status.value}
-				</spring:bind>
-			</td>
-		</tr>
-		<tr>
-			<td><spring:message code="User.username"/></td>
-			<td>
-				<spring:bind path="user.username">
-					<input type="text" 
-							name="${status.expression}" 
-							id="username"
-							value="${status.value}" />
-					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-				</spring:bind>
-			</td>
-		</tr>
-		<c:if test="${modifyPasswords == true}">
-			<tr>
-				<td><spring:message code="User.password" /></td>
-				<td><input type="password" name="password" /></td>
-	
-			</tr>
-			<tr>
-				<td><spring:message code="User.confirm" /></td>
-				<td><input type="password" name="confirm" /></td>
-			</tr>
-			<tr>
-				<td><spring:message code="User.secretQuestion" /></td>
-				<td><input type="text" name="secretQuestion" size="50" /></td>
-	
-			</tr>
-			<tr>
-				<td><spring:message code="User.secretAnswer" /></td>
-				<td><input type="password" name="secretAnswer" size="50" /></td>
-			</tr>
-			<tr>
-				<td><spring:message code="User.forceChange" /></td>
-				<td><input type="checkbox" name="${changePasswordName}" value="true" <c:if test="${changePassword == true}">checked</c:if> /></td>
-			</tr>
-		</c:if>
-		<tr>
 			<td><spring:message code="User.firstName" /></td>
 			<td>
 				<spring:bind path="user.firstName">
@@ -96,6 +52,55 @@
 
 		</tr>
 		<tr>
+			<td><spring:message code="User.systemId"/></td>
+			<td>
+				<spring:bind path="user.systemId">
+					${status.value}
+				</spring:bind>
+			</td>
+		</tr>
+		<tr>
+			<td><spring:message code="User.username"/></td>
+			<td>
+				<spring:bind path="user.username">
+					<input type="text" 
+							name="${status.expression}" 
+							id="username"
+							value="${status.value}" />
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				</spring:bind>
+			</td>
+		</tr>
+		<c:if test="${modifyPasswords == true}">
+			<tr>
+				<td><spring:message code="User.password" /></td>
+				<td><input type="password" name="password" /><i><spring:message code="User.password.description"/></i></td>
+	
+			</tr>
+			<tr>
+				<td><spring:message code="User.confirm" /></td>
+				<td><input type="password" name="confirm" /></td>
+			</tr>
+			<tr>
+				<td><spring:message code="User.secretQuestion" /></td>
+				<td><input type="text" name="secretQuestion" size="50" /><i><spring:message code="general.optional"/></i></td>
+			</tr>
+			<tr>
+				<td><spring:message code="User.secretAnswer" /></td>
+				<td><input type="password" name="secretAnswer" size="50" /><i><spring:message code="general.optional"/></i></td>
+			</tr>
+			<tr>
+				<td><spring:message code="User.forceChange" /></td>
+				<td>
+					<input type="checkbox" name="${changePasswordName}" value="true" <c:if test="${changePassword == true}">checked</c:if> />
+					<i>
+						<spring:message code="general.optional"/>.  
+						<spring:message code="User.forceChange.description"/> 
+					</i>
+				</td>
+			</tr>
+		</c:if>
+		<tr>
 			<td valign="top"><spring:message code="User.roles"/></td>
 			<td valign="top">
 				<openmrs:listPicker name="roles" allItems="${roles}" currentItems="${user.roles}" contextPath="${pageContext.request.contextPath}" />
@@ -125,14 +130,14 @@
 				<spring:bind path="user.voided">
 					<input type="hidden" name="_${status.expression}">
 					<input type="checkbox" name="${status.expression}" 
-						   id="${status.expression}" 
+						   id="voided" 
 						   <c:if test="${status.value == true}">checked</c:if> 
-						   onClick="voidedBoxClick(this)"
+						   onClick="document.getElementById('voidReasonRow').display = this.checked ? '' : 'none'"
 					/>
 				</spring:bind>
 			</td>
 		</tr>
-		<tr>
+		<tr id="voidReasonRow">
 			<td><spring:message code="general.voidReason"/></td>
 			<spring:bind path="user.voidReason">
 				<td>
@@ -156,6 +161,7 @@
 
 <script type="text/javascript">
  document.forms[0].elements[0].focus();
+ document.getElementById('voided').onClick();
 </script>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>
