@@ -387,6 +387,60 @@
 </tag>
 
 <tag>
+	<name>forEachEncounter</name>
+	<tag-class>org.openmrs.web.taglib.ForEachEncounterTag</tag-class>
+	<body-content>JSP</body-content>
+	<description>
+		This tag iterates through a collection of encounters passed into it and renders it's body content.
+		It will return all matching encounters by default, or [num] encounters if it is specified..
+		It will limit the results by encounterTypeId only if a [type] parameter is passed in.
+		It will sort by the property passed in - this property should match a public property of Encounter - i.e. "encounterDatetime"
+		If no sort property is specified, it will sort by encounterDatetime by default
+		It will sort ascending by default, descending if "descending=true" is specified.
+	</description>
+	<variable>
+		<name-from-attribute>var</name-from-attribute>
+		<variable-class>org.openmrs.Encounter</variable-class>
+	</variable>
+	<attribute>
+		<name>encounters</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.util.Collection</type>
+	</attribute>
+	<attribute>
+		<name>type</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>num</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>sortBy</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
+		<name>descending</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Boolean</type>
+	</attribute>
+	<attribute>
+		<name>var</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+</tag>
+
+<tag>
 	<name>patientWidget</name>
 	<tag-class>org.openmrs.web.taglib.PatientWidgetTag</tag-class>
 	<body-content>empty</body-content>
