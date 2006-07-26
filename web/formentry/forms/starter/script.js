@@ -25,3 +25,49 @@ function COMPLETED::OnClick(eventObj)
 	if (eventObj.ReturnStatus)
 		autoClose();
 }
+
+//=======
+// The following function handler is created by Microsoft Office InfoPath.
+// Do not modify the name of the function, or the name and number of arguments.
+//=======
+function DeleteNew::OnClick(eventObj)
+{
+	deleteNewProblem(eventObj);
+}
+
+//=======
+// The following function handler is created by Microsoft Office InfoPath.
+// Do not modify the name of the function, or the name and number of arguments.
+//=======
+function DeleteResolved::OnClick(eventObj)
+{
+	deleteResolvedProblem(eventObj);
+}
+
+//=======
+// The following function handler is created by Microsoft Office InfoPath.
+// Do not modify the name of the function, or the name and number of arguments.
+//=======
+function AddNewProblem::OnClick(eventObj)
+{
+	selectNewDiagnosis();
+}
+
+//=======
+// The following function handler is created by Microsoft Office InfoPath.
+// Do not modify the name of the function, or the name and number of arguments.
+//=======
+function RemoveProblemFromList::OnClick(eventObj)
+{
+	selectResolvedDiagnosis();
+}
+
+//=======
+// The following function handler is created by Microsoft Office InfoPath.
+// Do not modify the name of the function, or the name and number of arguments.
+//=======
+function SelectProvider::OnClick(eventObj)
+{
+	selectProvider();
+}
+
