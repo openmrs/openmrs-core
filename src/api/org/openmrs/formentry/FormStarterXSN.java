@@ -132,9 +132,7 @@ public class FormStarterXSN {
 		templateOutput.close();
 		
 		// replace defautls.xml with the xml template, including default scripts
-		File defaultsFile = FormEntryUtil.findFile(tempDir, defaultsFilename);
-		if (defaultsFile == null)
-			throw new IOException("Defaults: '" + defaultsFilename + "' cannot be null");
+		File defaultsFile = new File(tempDir, defaultsFilename);
 		FileWriter defaultsOutput = new FileWriter(defaultsFile, false);
 		defaultsOutput.write(templateWithDefaultScripts);
 		defaultsOutput.close();
