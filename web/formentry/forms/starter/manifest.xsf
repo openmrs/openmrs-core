@@ -3,14 +3,13 @@
 This file is automatically created and modified by Microsoft Office InfoPath.
 Changes made to the file outside of InfoPath might be lost if the form template is modified in InfoPath.
 -->
-<xsf:xDocumentClass trustSetting="automatic" trustLevel="restricted" solutionVersion="1.0.0.0" productVersion="11.0.6565" solutionFormatVersion="1.100.0.0" publishUrl="Template.xsn" name="urn:schemas-openmrs-org:formentry:formid:starter" xmlns:xsf="http://schemas.microsoft.com/office/infopath/2003/solutionDefinition" xmlns:msxsl="urn:schemas-microsoft-com:xslt" xmlns:xd="http://schemas.microsoft.com/office/infopath/2003" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xdUtil="http://schemas.microsoft.com/office/infopath/2003/xslt/Util" xmlns:xdXDocument="http://schemas.microsoft.com/office/infopath/2003/xslt/xDocument" xmlns:xdMath="http://schemas.microsoft.com/office/infopath/2003/xslt/Math" xmlns:xdDate="http://schemas.microsoft.com/office/infopath/2003/xslt/Date" xmlns:my="http://schemas.openmrs.org/2006/FormEntry">
+<xsf:xDocumentClass trustSetting="automatic" solutionVersion="1.0.0.3" productVersion="11.0.6565" solutionFormatVersion="1.100.0.0" publishUrl="C:\Documents and Settings\burke\Desktop\paulo\new_starter\manifest.xsf" name="urn:schemas-microsoft-com:office:infopath:new-starter:" xmlns:xsf="http://schemas.microsoft.com/office/infopath/2003/solutionDefinition" xmlns:msxsl="urn:schemas-microsoft-com:xslt" xmlns:xd="http://schemas.microsoft.com/office/infopath/2003" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xdUtil="http://schemas.microsoft.com/office/infopath/2003/xslt/Util" xmlns:xdXDocument="http://schemas.microsoft.com/office/infopath/2003/xslt/xDocument" xmlns:xdMath="http://schemas.microsoft.com/office/infopath/2003/xslt/Math" xmlns:xdDate="http://schemas.microsoft.com/office/infopath/2003/xslt/Date" xmlns:openmrs="http://schema.yoursite.org/FormEntry/1" xmlns:my="http://schemas.microsoft.com/office/infopath/2003/myXSD/2006-07-25T11:22:21">
 	<xsf:package>
 		<xsf:files>
 			<xsf:file name="FormEntry.xsd">
 				<xsf:fileProperties>
-					<xsf:property name="namespace" type="string" value="http://schemas.openmrs.org/2006/FormEntry"></xsf:property>
-					<xsf:property name="editability" type="string" value="full"></xsf:property>
-					<xsf:property name="rootElement" type="string" value="myFields"></xsf:property>
+					<xsf:property name="editability" type="string" value="none"></xsf:property>
+					<xsf:property name="rootElement" type="string" value="form"></xsf:property>
 					<xsf:property name="useOnDemandAlgorithm" type="string" value="yes"></xsf:property>
 				</xsf:fileProperties>
 			</xsf:file>
@@ -32,6 +31,7 @@ Changes made to the file outside of InfoPath might be lost if the form template 
 				</xsf:fileProperties>
 			</xsf:file>
 			<xsf:file name="openmrs-infopath.js"></xsf:file>
+			<xsf:file name="defaults.xml"></xsf:file>
 		</xsf:files>
 	</xsf:package>
 	<xsf:importParameters enabled="yes"></xsf:importParameters>
@@ -40,20 +40,20 @@ Changes made to the file outside of InfoPath might be lost if the form template 
 	</xsf:documentVersionUpgrade>
 	<xsf:views default="Page 1">
 		<xsf:view name="Page 1" caption="Page 1">
-			<xsf:mainpane transform="Page1.xsl"></xsf:mainpane>
 			<xsf:unboundControls>
 				<xsf:button name="COMPLETED"></xsf:button>
 			</xsf:unboundControls>
+			<xsf:mainpane transform="Page1.xsl"></xsf:mainpane>
 		</xsf:view>
 	</xsf:views>
 	<xsf:applicationParameters application="InfoPath Design Mode">
-		<xsf:solutionProperties lastOpenView="Page1.xsl" fullyEditableNamespace="http://schemas.openmrs.org/2006/FormEntry" scriptLanguage="jscript"></xsf:solutionProperties>
+		<xsf:solutionProperties fullyEditableNamespace="http://schemas.microsoft.com/office/infopath/2003/myXSD/2006-07-25T11:22:21" lastOpenView="Page1.xsl" scriptLanguage="jscript"></xsf:solutionProperties>
 	</xsf:applicationParameters>
 	<xsf:documentSchemas>
 		<xsf:documentSchema rootSchema="yes" location="FormEntry.xsd"></xsf:documentSchema>
 	</xsf:documentSchemas>
 	<xsf:fileNew>
-		<xsf:initialXmlDocument caption="Template" href="template.xml"></xsf:initialXmlDocument>
+		<xsf:initialXmlDocument caption="new_starter" href="template.xml"></xsf:initialXmlDocument>
 	</xsf:fileNew>
 	<xsf:scripts language="jscript" enforceScriptTimeout="yes">
 		<xsf:script src="script.js"></xsf:script>

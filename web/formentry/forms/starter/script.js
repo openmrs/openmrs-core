@@ -11,7 +11,7 @@
 // Any modification to the form files made outside of InfoPath
 // will not be automatically updated.
 //<namespacesDefinition>
-XDocument.DOM.setProperty("SelectionNamespaces", 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:my="http://schemas.openmrs.org/2006/FormEntry" xmlns:xd="http://schemas.microsoft.com/office/infopath/2003"');
+XDocument.DOM.setProperty("SelectionNamespaces", 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:openmrs="http://schema.yoursite.org/FormEntry/1" xmlns:my="http://schemas.microsoft.com/office/infopath/2003/myXSD/2006-07-25T11:22:21" xmlns:xd="http://schemas.microsoft.com/office/infopath/2003"');
 //</namespacesDefinition>
 
 
