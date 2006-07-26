@@ -41,7 +41,12 @@ Changes made to the file outside of InfoPath might be lost if the form template 
 	<xsf:views default="Page 1">
 		<xsf:view name="Page 1" caption="Page 1">
 			<xsf:unboundControls>
-				<xsf:button name="COMPLETED"></xsf:button>
+				<xsf:button name="SubmitButton"></xsf:button>
+				<xsf:button name="AddNewProblem"></xsf:button>
+				<xsf:button name="DeleteNewProblem"></xsf:button>
+				<xsf:button name="AddResolvedProblem"></xsf:button>
+				<xsf:button name="DeleteResolvedProblem"></xsf:button>
+				<xsf:button name="SelectProvider"></xsf:button>
 			</xsf:unboundControls>
 			<xsf:mainpane transform="Page1.xsl"></xsf:mainpane>
 		</xsf:view>
