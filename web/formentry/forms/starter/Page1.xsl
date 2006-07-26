@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet version="1.0" xmlns:ns1="http://schema.iukenya.org/2006/AMRS/FormEntry/15" xmlns:openmrs="http://schema.iukenya.org/openmrs/2006/formentry/15" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:my="http://schemas.microsoft.com/office/infopath/2003/myXSD/2005-08-09T23:09:27" xmlns:xd="http://schemas.microsoft.com/office/infopath/2003" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:msxsl="urn:schemas-microsoft-com:xslt" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:xdExtension="http://schemas.microsoft.com/office/infopath/2003/xslt/extension" xmlns:xdXDocument="http://schemas.microsoft.com/office/infopath/2003/xslt/xDocument" xmlns:xdSolution="http://schemas.microsoft.com/office/infopath/2003/xslt/solution" xmlns:xdFormatting="http://schemas.microsoft.com/office/infopath/2003/xslt/formatting" xmlns:xdImage="http://schemas.microsoft.com/office/infopath/2003/xslt/xImage" xmlns:xdUtil="http://schemas.microsoft.com/office/infopath/2003/xslt/Util" xmlns:xdMath="http://schemas.microsoft.com/office/infopath/2003/xslt/Math" xmlns:xdDate="http://schemas.microsoft.com/office/infopath/2003/xslt/Date" xmlns:sig="http://www.w3.org/2000/09/xmldsig#" xmlns:xdSignatureProperties="http://schemas.microsoft.com/office/infopath/2003/SignatureProperties">
+<xsl:stylesheet version="1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:openmrs="http://schema.yoursite.org/FormEntry/1" xmlns:my="http://schemas.microsoft.com/office/infopath/2003/myXSD/2006-07-25T11:22:21" xmlns:xd="http://schemas.microsoft.com/office/infopath/2003" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:msxsl="urn:schemas-microsoft-com:xslt" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:xdExtension="http://schemas.microsoft.com/office/infopath/2003/xslt/extension" xmlns:xdXDocument="http://schemas.microsoft.com/office/infopath/2003/xslt/xDocument" xmlns:xdSolution="http://schemas.microsoft.com/office/infopath/2003/xslt/solution" xmlns:xdFormatting="http://schemas.microsoft.com/office/infopath/2003/xslt/formatting" xmlns:xdImage="http://schemas.microsoft.com/office/infopath/2003/xslt/xImage" xmlns:xdUtil="http://schemas.microsoft.com/office/infopath/2003/xslt/Util" xmlns:xdMath="http://schemas.microsoft.com/office/infopath/2003/xslt/Math" xmlns:xdDate="http://schemas.microsoft.com/office/infopath/2003/xslt/Date" xmlns:sig="http://www.w3.org/2000/09/xmldsig#" xmlns:xdSignatureProperties="http://schemas.microsoft.com/office/infopath/2003/SignatureProperties">
 	<xsl:output method="html" indent="no"/>
 	<xsl:template match="form">
-		<html xmlns:openmrs="http://schema.iukenya.org/2006/AMRS/FormEntry/15" xmlns:my="http://schemas.microsoft.com/office/infopath/2003/myXSD/2005-08-07T13:39:21" xmlns:d="http://schemas.microsoft.com/office/infopath/2003/ado/dataFields" xmlns:dfs="http://schemas.microsoft.com/office/infopath/2003/dataFormSolution">
+		<html xmlns:ns1="http://schema.iukenya.org/2006/AMRS/FormEntry/15" xmlns:openmrs="http://schema.iukenya.org/2006/AMRS/FormEntry/15" xmlns:my="http://schemas.microsoft.com/office/infopath/2003/myXSD/2005-08-07T13:39:21" xmlns:d="http://schemas.microsoft.com/office/infopath/2003/ado/dataFields" xmlns:dfs="http://schemas.microsoft.com/office/infopath/2003/dataFormSolution">
 			<head>
 				<meta http-equiv="Content-Type" content="text/html"></meta>
 				<style controlStyle="controlStyle">@media screen 			{ 			BODY{margin-left:21px;background-position:21px 0px;} 			} 		BODY{color:windowtext;background-color:window;layout-grid:none;} 		.xdListItem {display:inline-block;width:100%;vertical-align:text-top;} 		.xdListBox,.xdComboBox{margin:1px;} 		.xdInlinePicture{margin:1px; BEHAVIOR: url(#default#urn::xdPicture) } 		.xdLinkedPicture{margin:1px; BEHAVIOR: url(#default#urn::xdPicture) url(#default#urn::controls/Binder) } 		.xdSection{border:1pt solid #FFFFFF;margin:6px 0px 6px 0px;padding:1px 1px 1px 5px;} 		.xdRepeatingSection{border:1pt solid #FFFFFF;margin:6px 0px 6px 0px;padding:1px 1px 1px 5px;} 		.xdBehavior_Formatting {BEHAVIOR: url(#default#urn::controls/Binder) url(#default#Formatting);} 	 .xdBehavior_FormattingNoBUI{BEHAVIOR: url(#default#CalPopup) url(#default#urn::controls/Binder) url(#default#Formatting);} 	.xdExpressionBox{margin: 1px;padding:1px;word-wrap: break-word;text-overflow: ellipsis;overflow-x:hidden;}.xdBehavior_GhostedText,.xdBehavior_GhostedTextNoBUI{BEHAVIOR: url(#default#urn::controls/Binder) url(#default#TextField) url(#default#GhostedText);}	.xdBehavior_GTFormatting{BEHAVIOR: url(#default#urn::controls/Binder) url(#default#Formatting) url(#default#GhostedText);}	.xdBehavior_GTFormattingNoBUI{BEHAVIOR: url(#default#CalPopup) url(#default#urn::controls/Binder) url(#default#Formatting) url(#default#GhostedText);}	.xdBehavior_Boolean{BEHAVIOR: url(#default#urn::controls/Binder) url(#default#BooleanHelper);}	.xdBehavior_Select{BEHAVIOR: url(#default#urn::controls/Binder) url(#default#SelectHelper);}	.xdRepeatingTable{BORDER-TOP-STYLE: none; BORDER-RIGHT-STYLE: none; BORDER-LEFT-STYLE: none; BORDER-BOTTOM-STYLE: none; BORDER-COLLAPSE: collapse; WORD-WRAP: break-word;}.xdScrollableRegion{BEHAVIOR: url(#default#ScrollableRegion);} 		.xdMaster{BEHAVIOR: url(#default#MasterHelper);} 		.xdActiveX{margin:1px; BEHAVIOR: url(#default#ActiveX);} 		.xdFileAttachment{display:inline-block;margin:1px;BEHAVIOR:url(#default#urn::xdFileAttachment);} 		.xdPageBreak{display: none;}BODY{margin-right:21px;} 		.xdTextBoxRTL{display:inline-block;white-space:nowrap;text-overflow:ellipsis;;padding:1px;margin:1px;border: 1pt solid #dcdcdc;color:windowtext;background-color:window;overflow:hidden;text-align:right;} 		.xdRichTextBoxRTL{display:inline-block;;padding:1px;margin:1px;border: 1pt solid #dcdcdc;color:windowtext;background-color:window;overflow-x:hidden;word-wrap:break-word;text-overflow:ellipsis;text-align:right;font-weight:normal;font-style:normal;text-decoration:none;vertical-align:baseline;} 		.xdDTTextRTL{height:100%;width:100%;margin-left:22px;overflow:hidden;padding:0px;white-space:nowrap;} 		.xdDTButtonRTL{margin-right:-21px;height:18px;width:20px;behavior: url(#default#DTPicker);}.xdTextBox{display:inline-block;white-space:nowrap;text-overflow:ellipsis;;padding:1px;margin:1px;border: 1pt solid #dcdcdc;color:windowtext;background-color:window;overflow:hidden;text-align:left;} 		.xdRichTextBox{display:inline-block;;padding:1px;margin:1px;border: 1pt solid #dcdcdc;color:windowtext;background-color:window;overflow-x:hidden;word-wrap:break-word;text-overflow:ellipsis;text-align:left;font-weight:normal;font-style:normal;text-decoration:none;vertical-align:baseline;} 		.xdDTPicker{;display:inline;margin:1px;margin-bottom: 2px;border: 1pt solid #dcdcdc;color:windowtext;background-color:window;overflow:hidden;} 		.xdDTText{height:100%;width:100%;margin-right:22px;overflow:hidden;padding:0px;white-space:nowrap;} 		.xdDTButton{margin-left:-21px;height:18px;width:20px;behavior: url(#default#DTPicker);} 		.xdRepeatingTable TD {VERTICAL-ALIGN: top;}</style>
@@ -255,115 +255,80 @@ SELECT {
 				</div>
 				<div align="left"> </div>
 				<div align="left">
-					<table class="xdLayout" style="BORDER-RIGHT: medium none; TABLE-LAYOUT: fixed; BORDER-TOP: medium none; BORDER-LEFT: medium none; WIDTH: 756px; BORDER-BOTTOM: medium none; BORDER-COLLAPSE: collapse; WORD-WRAP: break-word" borderColor="buttontext" width="undefined" border="1">
+					<table class="xdLayout" style="BORDER-RIGHT: medium none; TABLE-LAYOUT: fixed; BORDER-TOP: medium none; BORDER-LEFT: medium none; WIDTH: 743px; BORDER-BOTTOM: medium none; BORDER-COLLAPSE: collapse; WORD-WRAP: break-word" borderColor="buttontext" border="1">
 						<colgroup>
-							<col style="WIDTH: 756px"></col>
+							<col style="WIDTH: 375px"></col>
+							<col style="WIDTH: 368px"></col>
 						</colgroup>
 						<tbody vAlign="top">
-							<tr style="MIN-HEIGHT: 24px">
-								<td style="BORDER-RIGHT: #000000 1pt solid; PADDING-RIGHT: 1px; BORDER-TOP: #000000 1pt; PADDING-LEFT: 5px; PADDING-BOTTOM: 1px; VERTICAL-ALIGN: middle; BORDER-LEFT: #000000 1pt solid; PADDING-TOP: 1px; BORDER-BOTTOM: #000000 1pt solid; BACKGROUND-COLOR: #c0c0c0">
-									<div align="left">
-										<font face="Arial" size="2">
-											<strong>40.  Problem List (both HIV and non-HIV related problems)</strong>
-										</font>
-									</div>
-								</td>
-							</tr>
-							<tr style="MIN-HEIGHT: 20px">
-								<td style="BORDER-RIGHT: #000000 1pt solid; PADDING-RIGHT: 1px; BORDER-TOP: #000000 1pt solid; PADDING-LEFT: 5px; PADDING-BOTTOM: 1px; VERTICAL-ALIGN: middle; BORDER-LEFT: #000000 1pt solid; PADDING-TOP: 1px; BORDER-BOTTOM: #000000 1pt solid">
-									<div align="left">
-										<font face="Arial" size="2">
-											<em>* Tick "Add New Problem" to add a problem to summary sheet.  Tick "Remove" to delete problem from summary sheet. </em>
-										</font>
+							<tr>
+								<td>
+									<div align="center">
+										<em>
+											<font face="Arial"><input class="langFont" title="" style="FONT-FAMILY: Arial" type="button" value="Add New Problem" xd:CtrlId="AddNewProblem" xd:xctname="Button"/>
+											</font>
+										</em>
 									</div>
 									<div align="left">
-										<table class="xdLayout" style="BORDER-RIGHT: medium none; TABLE-LAYOUT: fixed; BORDER-TOP: medium none; BORDER-LEFT: medium none; WIDTH: 743px; BORDER-BOTTOM: medium none; BORDER-COLLAPSE: collapse; WORD-WRAP: break-word" borderColor="buttontext" border="1">
+										<table class="xdRepeatingTable msoUcTable" title="" style="TABLE-LAYOUT: fixed; WIDTH: 369px; BORDER-TOP-STYLE: none; BORDER-RIGHT-STYLE: none; BORDER-LEFT-STYLE: none; BORDER-COLLAPSE: collapse; WORD-WRAP: break-word; BORDER-BOTTOM-STYLE: none" border="1" xd:CtrlId="CTRL3">
 											<colgroup>
-												<col style="WIDTH: 375px"></col>
-												<col style="WIDTH: 368px"></col>
+												<col style="WIDTH: 369px"></col>
 											</colgroup>
-											<tbody vAlign="top">
-												<tr>
+											<tbody class="xdTableHeader">
+												<tr style="MIN-HEIGHT: 21px">
 													<td>
-														<div align="center">
-															<em>
-																<font face="Arial"><input class="langFont" title="" style="FONT-FAMILY: Arial" type="button" value="Add New Problem" xd:CtrlId="PROBADD" xd:xctname="Button"/>
-																</font>
-															</em>
-														</div>
-														<div align="left">
-															<table class="xdRepeatingTable msoUcTable" title="" style="TABLE-LAYOUT: fixed; WIDTH: 369px; BORDER-TOP-STYLE: none; BORDER-RIGHT-STYLE: none; BORDER-LEFT-STYLE: none; BORDER-COLLAPSE: collapse; WORD-WRAP: break-word; BORDER-BOTTOM-STYLE: none" border="1" xd:CtrlId="CTRL69">
-																<colgroup>
-																	<col style="WIDTH: 369px"></col>
-																</colgroup>
-																<tbody class="xdTableHeader">
-																	<tr style="MIN-HEIGHT: 21px">
-																		<td>
-																			<div>
-																				<strong>
-																					<font face="Arial" size="3">Problems Added:</font>
-																				</strong>
-																			</div>
-																		</td>
-																	</tr>
-																</tbody><tbody xd:xctname="RepeatingTable">
-																	<xsl:for-each select="problem_list/problem_added">
-																		<tr style="MIN-HEIGHT: 27px">
-																			<td><span class="xdExpressionBox xdDataBindingUI" title="" xd:CtrlId="CTRL77" xd:xctname="ExpressionBox" tabIndex="-1" xd:disableEditing="yes" style="FONT-WEIGHT: bold; FONT-SIZE: small; WIDTH: 24px; FONT-FAMILY: Arial; WHITE-SPACE: normal; TEXT-ALIGN: center">
-																					<xsl:value-of select="concat(position(), &quot;.&quot;)"/>
-																				</span><span class="xdExpressionBox xdDataBindingUI" title="" xd:CtrlId="CTRL82" xd:xctname="ExpressionBox" tabIndex="-1" xd:binding="substring-before(substring-after(., &quot;^&quot;), &quot;^&quot;)" xd:disableEditing="yes" style="OVERFLOW-Y: hidden; FONT-SIZE: small; WIDTH: 286px; FONT-FAMILY: Arial; WHITE-SPACE: nowrap; HEIGHT: 24px; WORD-WRAP: normal">
-																					<xsl:value-of select="substring-before(substring-after(., &quot;^&quot;), &quot;^&quot;)"/>
-																				</span><input class="langFont" title="" style="FONT-SIZE: xx-small; FONT-FAMILY: Arial" type="button" value="Delete" xd:CtrlId="DELETEADD" xd:xctname="Button"/>
-																			</td>
-																		</tr>
-																	</xsl:for-each>
-																</tbody>
-															</table>
+														<div>
+															<strong>
+																<font face="Arial" size="3">Problems Added:</font>
+															</strong>
 														</div>
 													</td>
+												</tr>
+											</tbody>
+											<tbody xd:xctname="RepeatingTable">
+												<tr style="MIN-HEIGHT: 27px">
 													<td>
-														<div align="center">
-															<em>
-																<font face="Arial" size="2"><input class="langFont" title="" style="FONT-FAMILY: Arial" type="button" value="Remove Problem From List" xd:CtrlId="PROBREM" xd:xctname="Button"/>
-																</font>
-															</em>
-														</div>
-														<div align="center">
-															<table class="xdRepeatingTable msoUcTable" title="" style="TABLE-LAYOUT: fixed; WIDTH: 349px; BORDER-TOP-STYLE: none; BORDER-RIGHT-STYLE: none; BORDER-LEFT-STYLE: none; BORDER-COLLAPSE: collapse; WORD-WRAP: break-word; BORDER-BOTTOM-STYLE: none" border="1" xd:CtrlId="CTRL139">
-																<colgroup>
-																	<col style="WIDTH: 349px"></col>
-																</colgroup>
-																<tbody class="xdTableHeader">
-																	<tr>
-																		<td>
-																			<div>
-																				<strong>
-																					<font face="Arial" size="3">Problems Removed:</font>
-																				</strong>
-																			</div>
-																		</td>
-																	</tr>
-																</tbody><tbody xd:xctname="RepeatingTable">
-																	<xsl:for-each select="problem_list/problem_resolved">
-																		<tr style="MIN-HEIGHT: 30px">
-																			<td><span class="xdExpressionBox xdDataBindingUI" title="" xd:CtrlId="CTRL66" xd:xctname="ExpressionBox" tabIndex="-1" xd:disableEditing="yes" style="FONT-WEIGHT: bold; FONT-SIZE: small; WIDTH: 24px; FONT-FAMILY: Arial; WHITE-SPACE: normal; TEXT-ALIGN: center">
-																					<xsl:value-of select="concat(position(), &quot;.&quot;)"/>
-																				</span><span class="xdExpressionBox xdDataBindingUI" title="" xd:CtrlId="CTRL83" xd:xctname="ExpressionBox" tabIndex="-1" xd:binding="substring-before(substring-after(., &quot;^&quot;), &quot;^&quot;)" xd:disableEditing="yes" style="OVERFLOW-Y: hidden; FONT-SIZE: small; WIDTH: 264px; FONT-FAMILY: Arial; WHITE-SPACE: nowrap; HEIGHT: 22px; WORD-WRAP: normal">
-																					<xsl:value-of select="substring-before(substring-after(., &quot;^&quot;), &quot;^&quot;)"/>
-																				</span><input class="langFont" title="" style="FONT-SIZE: xx-small; FONT-FAMILY: Arial" type="button" value="Delete" xd:CtrlId="DELETEMOV" xd:xctname="Button"/>
-																			</td>
-																		</tr>
-																	</xsl:for-each>
-																</tbody>
-															</table>
-														</div>
+														<span class="xdExpressionBox xdDataBindingUI" title="" style="FONT-WEIGHT: bold; FONT-SIZE: small; WIDTH: 24px; FONT-FAMILY: Arial; WHITE-SPACE: normal; TEXT-ALIGN: center" xd:CtrlId="CTRL77" xd:xctname="ExpressionBox">1.</span>
+														<span class="xdExpressionBox xdDataBindingUI" title="" style="OVERFLOW-Y: hidden; FONT-SIZE: small; WIDTH: 286px; FONT-FAMILY: Arial; WHITE-SPACE: nowrap; HEIGHT: 24px; WORD-WRAP: normal" xd:CtrlId="CTRL82" xd:xctname="ExpressionBox"></span><input class="langFont" title="" style="FONT-SIZE: xx-small; FONT-FAMILY: Arial" type="button" value="Delete" xd:CtrlId="DeleteNewProblem" xd:xctname="Button"/>
 													</td>
 												</tr>
 											</tbody>
 										</table>
 									</div>
-									<div align="left">
-										<font face="Arial"></font> </div>
+								</td>
+								<td>
+									<div align="center">
+										<em>
+											<font face="Arial" size="2"><input class="langFont" title="" style="FONT-FAMILY: Arial" type="button" value="Remove Problem From List" xd:CtrlId="AddResolvedProblem" xd:xctname="Button"/>
+											</font>
+										</em>
+									</div>
+									<div align="center">
+										<table class="xdRepeatingTable msoUcTable" title="" style="TABLE-LAYOUT: fixed; WIDTH: 349px; BORDER-TOP-STYLE: none; BORDER-RIGHT-STYLE: none; BORDER-LEFT-STYLE: none; BORDER-COLLAPSE: collapse; WORD-WRAP: break-word; BORDER-BOTTOM-STYLE: none" border="1" xd:CtrlId="CTRL8">
+											<colgroup>
+												<col style="WIDTH: 349px"></col>
+											</colgroup>
+											<tbody class="xdTableHeader">
+												<tr>
+													<td>
+														<div>
+															<strong>
+																<font face="Arial" size="3">Problems Removed:</font>
+															</strong>
+														</div>
+													</td>
+												</tr>
+											</tbody>
+											<tbody xd:xctname="RepeatingTable">
+												<tr style="MIN-HEIGHT: 30px">
+													<td>
+														<span class="xdExpressionBox xdDataBindingUI" title="" style="FONT-WEIGHT: bold; FONT-SIZE: small; WIDTH: 24px; FONT-FAMILY: Arial; WHITE-SPACE: normal; TEXT-ALIGN: center" xd:CtrlId="CTRL66" xd:xctname="ExpressionBox">1.</span>
+														<span class="xdExpressionBox xdDataBindingUI" title="" style="OVERFLOW-Y: hidden; FONT-SIZE: small; WIDTH: 264px; FONT-FAMILY: Arial; WHITE-SPACE: nowrap; HEIGHT: 22px; WORD-WRAP: normal" xd:CtrlId="CTRL83" xd:xctname="ExpressionBox"></span><input class="langFont" title="" style="FONT-SIZE: xx-small; FONT-FAMILY: Arial" type="button" value="Delete" xd:CtrlId="DeleteResolvedProblem" xd:xctname="Button"/>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
 								</td>
 							</tr>
 						</tbody>
@@ -387,7 +352,7 @@ SELECT {
 													</xsl:choose>
 												</xsl:attribute>
 												<xsl:value-of select="&quot;*&quot;"/>
-											</span><input class="langFont" title="" type="button" value="&lt;- Select Provider" xd:CtrlId="PROVIDER" xd:xctname="Button" tabIndex="0"/>
+											</span><input class="langFont" title="" type="button" value="&lt;- Select Provider" xd:CtrlId="SelectProvider" xd:xctname="Button" tabIndex="0"/>
 										</font>
 										<font face="Arial" size="2"></font>
 									</div>
@@ -397,7 +362,7 @@ SELECT {
 					</table>
 				</div>
 				<div align="left"> </div>
-				<div align="right"><input class="langFont" title="" style="FONT-SIZE: medium; WIDTH: 129px; FONT-FAMILY: Arial" type="button" size="1" value="Submit" xd:CtrlId="COMPLETE" xd:xctname="Button" tabIndex="0"/>
+				<div align="right"><input class="langFont" title="" style="FONT-SIZE: medium; WIDTH: 129px; FONT-FAMILY: Arial" type="button" size="1" value="Submit" xd:CtrlId="SubmitButton" xd:xctname="Button" tabIndex="0"/>
 				</div>
 			</body>
 		</html>

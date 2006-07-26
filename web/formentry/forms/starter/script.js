@@ -19,7 +19,7 @@ XDocument.DOM.setProperty("SelectionNamespaces", 'xmlns:xsi="http://www.w3.org/2
 // The following function handler is created by Microsoft Office InfoPath.
 // Do not modify the name of the function, or the name and number of arguments.
 //=======
-function COMPLETED::OnClick(eventObj)
+function SubmitButton::OnClick(eventObj)
 {
  	submitAndClose(eventObj);
 	if (eventObj.ReturnStatus)
@@ -30,7 +30,7 @@ function COMPLETED::OnClick(eventObj)
 // The following function handler is created by Microsoft Office InfoPath.
 // Do not modify the name of the function, or the name and number of arguments.
 //=======
-function DeleteNew::OnClick(eventObj)
+function DeleteNewProblem::OnClick(eventObj)
 {
 	deleteNewProblem(eventObj);
 }
@@ -39,7 +39,7 @@ function DeleteNew::OnClick(eventObj)
 // The following function handler is created by Microsoft Office InfoPath.
 // Do not modify the name of the function, or the name and number of arguments.
 //=======
-function DeleteResolved::OnClick(eventObj)
+function DeleteResolvedProblem::OnClick(eventObj)
 {
 	deleteResolvedProblem(eventObj);
 }
@@ -57,7 +57,7 @@ function AddNewProblem::OnClick(eventObj)
 // The following function handler is created by Microsoft Office InfoPath.
 // Do not modify the name of the function, or the name and number of arguments.
 //=======
-function RemoveProblemFromList::OnClick(eventObj)
+function AddResolvedProblem::OnClick(eventObj)
 {
 	selectResolvedDiagnosis();
 }
