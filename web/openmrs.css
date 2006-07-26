@@ -145,7 +145,7 @@ table.breadcrumbHeader td {
 }
 
 #patientHeader {
-	font-size:0.8em;
+	font-size:0.9em;
 	text-align: left;
 }
 .patientName {
@@ -154,7 +154,7 @@ table.breadcrumbHeader td {
 	margin-right:10px;
 }
 #patientTreatmentHeader {
-	font-size:0.8em;
+	font-size:0.9em;
 	text-align: left;
 	color:navy;
 }
@@ -168,10 +168,10 @@ table.patientRecentObs th {
 	border-bottom: 1px solid navy;
 	text-align: left;
 	font-weight: bold;
-	padding: 0.1em 0.5em;
+	padding: 0em 0.5em;
 }
 table.patientRecentObs td {
-	padding: 0.1em 0.5em;
+	padding: 0em 0.5em;
 }
 
 table.patientTreatmentPrograms {
@@ -182,10 +182,41 @@ table.patientTreatmentPrograms th {
 	border-bottom: 1px solid navy;
 	text-align: left;
 	font-weight: bold;
-	padding: 0.1em 0.5em;
+	padding: 0em 0.5em;
 }
 table.patientTreatmentPrograms td {
-	padding: 0.1em 0.5em;
+	padding: 0em 0.5em;
+}
+
+#patientTabs {
+	margin-bottom:0;
+	padding-top:5px;
+	padding-left:10px;
+	border-bottom:1px solid navy;
+	height:29px;
+	width:97%;
+}
+#patientTabs ul, #patientTabs li {
+	display:inline;
+	list-style-type:none;
+	padding:0;
+}
+
+#patientTabs a:link, #patientTabs a:visited {
+	border: 1px solid navy;
+	float:left;
+	font-size:small;
+	font-weight:bold;
+	margin-right:8px;
+	padding: 2px 10px 2px 10px;
+	text-decoration:none;
+}
+#patientTabs a:link.active, #patientTabs a:visited.active {
+	border-bottom: 1px solid #fff;
+}
+#patientTabs a:hover, #patientTabs a.current {
+	background:navy;
+	color:white;
 }
 
 .patientIdentifier {
