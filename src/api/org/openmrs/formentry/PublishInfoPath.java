@@ -33,7 +33,9 @@ import org.openmrs.api.context.Context;
 import org.openmrs.util.Helper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.ProcessingInstruction;
 import org.xml.sax.SAXException;
 
 /**
@@ -117,9 +119,13 @@ public class PublishInfoPath {
 			throw new IOException("Filename not found: '" + xsnFilePath + "'");
 
 		Form form = determineForm(tempDir, context);
+		String originalFormUri = FormEntryUtil.getFormUri(form);
+		form.setBuild(form.getBuild() + 1);
 
-		String outputFilename = form.getUri();
+		String outputFilename = FormEntryUtil.getFormUri(form);
 		String namespace = form.getSchemaNamespace();
+		String solutionVersion = FormEntryUtil.getSolutionVersion(form);
+		log.debug("solution version: " + solutionVersion);
 
 		String serverUrl = FormEntryConstants.FORMENTRY_INFOPATH_SERVER_URL; // "@FORMENTRY-INFOPATH-SERVER_URL@";
 		String publishUrl = FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_URL
@@ -131,10 +137,8 @@ public class PublishInfoPath {
 		String outputDir = FormEntryConstants.FORMENTRY_INFOPATH_OUTPUT_DIR; // System.getProperty("user.home");
 
 		// prepare manifest
-		String solutionVersion = prepareManifest(tempDir, publishUrl,
-				namespace, taskPaneCaption, taskPaneInitialUrl, submitUrl);
-
-		log.debug("\nsolution version: " + solutionVersion);
+		prepareManifest(tempDir, publishUrl, namespace, solutionVersion,
+				taskPaneCaption, taskPaneInitialUrl, submitUrl);
 
 		// set schema
 		File schema = FormEntryUtil.findFile(tempDir, schemaFilename);
@@ -144,19 +148,53 @@ public class PublishInfoPath {
 		String tag = "xs:schema";
 		setNamespace(schema, tag, namespace);
 
+		// Ensure that we have a template with default scripts
+		String templateWithDefaults;
+		File templateWithDefaultsFile = FormEntryUtil.findFile(tempDir,
+				FormEntryConstants.FORMENTRY_DEFAULT_DEFAULTS_NAME);
+		if (templateWithDefaultsFile == null) {
+			// if template containing defaults is missing, create one on the fly
+			templateWithDefaults = new FormXmlTemplateBuilder(context, form,
+					publishUrl).getXmlTemplate(true);
+			try {
+				FileWriter out = new FileWriter(templateWithDefaultsFile);
+				out.write(templateWithDefaults);
+				out.close();
+			} catch (IOException e) {
+				log.error("Could not write '"
+						+ FormEntryConstants.FORMENTRY_DEFAULT_DEFAULTS_NAME
+						+ "'", e);
+			}
+		} else {
+			prepareTemplate(tempDir,
+					FormEntryConstants.FORMENTRY_DEFAULT_DEFAULTS_NAME,
+					solutionVersion, publishUrl);
+			templateWithDefaults = readFile(templateWithDefaultsFile);
+		}
+
+		// update InfoPath solutionVersion within all XML template documents
+		prepareTemplate(tempDir,
+				FormEntryConstants.FORMENTRY_DEFAULT_TEMPLATE_NAME,
+				solutionVersion, publishUrl);
+		prepareTemplate(tempDir,
+				FormEntryConstants.FORMENTRY_DEFAULT_SAMPLEDATA_NAME,
+				solutionVersion, publishUrl);
+
 		// update server_url in openmrs-infopath.js
 		Map<String, String> vars = new HashMap<String, String>();
-		vars.put("SERVER_URL", serverUrl);
-		setVariables(tempDir, "openmrs-infopath.js", vars);
+		vars.put(FormEntryConstants.FORMENTRY_SERVER_URL_VARIABLE_NAME,
+				serverUrl);
+		setVariables(tempDir,
+				FormEntryConstants.FORMENTRY_DEFAULT_JSCRIPT_NAME, vars);
 
 		// create ddf
 		FormEntryUtil.createDdf(tempDir, outputDir, outputFilename);
 
 		// Copy XSN file to archive
 		String archiveDir = FormEntryConstants.FORMENTRY_INFOPATH_ARCHIVE_DIR;
-		if (archiveDir != null) {
-			File xsnFile = new File(xsnFilePath);
-			String xsnArchiveFilePath = form.getUri()
+		File originalFile = new File(outputDir, originalFormUri);
+		if (archiveDir != null && originalFile.exists()) {
+			String xsnArchiveFilePath = originalFormUri
 					+ "-"
 					+ form.getVersion()
 					+ "-"
@@ -166,7 +204,7 @@ public class PublishInfoPath {
 							FormEntryConstants.FORMENTRY_INFOPATH_ARCHIVE_DATE_FORMAT,
 							context.getLocale()).format(new Date()) + ".xsn";
 			File xsnArchiveFile = new File(archiveDir, xsnArchiveFilePath);
-			boolean success = copyFile(xsnFile, xsnArchiveFile);
+			boolean success = moveFile(originalFile, xsnArchiveFile);
 			if (!success) {
 				log.warn("Unable to archive XSN " + xsnFilePath + " to "
 						+ xsnArchiveFilePath);
@@ -179,15 +217,50 @@ public class PublishInfoPath {
 		// clean up
 		deleteDirectory(tempDir);
 
-		// update solution version and build number on server
-		form.setInfoPathSolutionVersion(solutionVersion);
-		form.setBuild(form.getBuild() + 1);
+		// update template, solution version, and build number on server
+		form.setTemplate(templateWithDefaults);
 		context.getFormService().updateForm(form);
+	}
+
+	// Prepare template file (update solutionVersion and href)
+	private static void prepareTemplate(File tempDir, String fileName,
+			String solutionVersion, String publishUrl) {
+		File file = new File(tempDir, fileName);
+		if (file == null) {
+			log.warn("Missing file: '" + fileName + "'");
+			return;
+		}
+		Document doc = null;
+		try {
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			DocumentBuilder db = dbf.newDocumentBuilder();
+			doc = db.parse(file);
+			Node root = doc.getDocumentElement().getParentNode();
+			NodeList children = root.getChildNodes();
+			for (int i = 0; i < children.getLength(); i++) {
+				Node node = children.item(i);
+				if (node.getNodeType() == Node.PROCESSING_INSTRUCTION_NODE
+						&& node.getNodeName().equals("mso-infoPathSolution")) {
+					ProcessingInstruction pi = (ProcessingInstruction) node;
+					String data = pi.getData();
+					data = data.replaceAll(
+							"(\\ssolutionVersion\\s*=\\s*\")[^\"]+\"", "$1"
+									+ solutionVersion + "\"");
+					data = data.replaceAll("(\\shref\\s*=\\s*\")[^\"]+\"", "$1"
+							+ publishUrl + "\"");
+					pi.setData(data);
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		writeXml(doc, file.getAbsolutePath());
 	}
 
 	// Convenience method for copying a file from one location to another
 	// @returns true if copy was successful
-	private static boolean copyFile(File from, File to) {
+	private static boolean moveFile(File from, File to) {
 		boolean success = false;
 		try {
 			// Create channel on the source
@@ -202,6 +275,8 @@ public class PublishInfoPath {
 			// Close the channels
 			srcChannel.close();
 			dstChannel.close();
+
+			from.delete();
 
 			// report successful copy
 			success = true;
@@ -244,16 +319,14 @@ public class PublishInfoPath {
 		return form;
 	}
 
-	private static String prepareManifest(File tempDir, String url,
-			String namespace, String taskPaneCaption,
+	private static void prepareManifest(File tempDir, String url,
+			String namespace, String solutionVersion, String taskPaneCaption,
 			String taskPaneInitialUrl, String submitUrl) {
 		File manifest = findManifest(tempDir);
 		if (manifest == null) {
 			log.warn("Missing manifest!");
-			return null;
+			return;
 		}
-
-		String solutionVersion = null;
 
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -264,9 +337,9 @@ public class PublishInfoPath {
 			if (elem == null) {
 				log
 						.warn("Could not locate xsf:xDocumentClass element in manifest!");
-				return null;
+				return;
 			}
-			solutionVersion = elem.getAttribute("solutionVersion");
+			elem.setAttribute("solutionVersion", solutionVersion);
 			if (elem.getAttribute("name") != null)
 				elem.removeAttribute("name");
 			elem.setAttribute("trustSetting", "manual");
@@ -276,13 +349,13 @@ public class PublishInfoPath {
 
 			// Find xsf:taskpane element
 			elem = getSingleElement(doc, "xsf:taskpane");
-			if (elem == null) {
+			if (elem != null) {
+				elem.setAttribute("caption", taskPaneCaption);
+				elem.setAttribute("href", taskPaneInitialUrl);
+			} else {
 				log
 						.warn("Could not locate xsf:taskpane element within manifest");
-				return null;
 			}
-			elem.setAttribute("caption", taskPaneCaption);
-			elem.setAttribute("href", taskPaneInitialUrl);
 
 			elem = getSingleElement(doc, "xsf:useHttpHandler");
 			if (elem != null) {
@@ -290,8 +363,7 @@ public class PublishInfoPath {
 			}
 
 			writeXml(doc, manifest.getPath());
-			// "c:\\documents and
-			// settings\\bwolfe.rii\\desktop\\java_xsn\\manifest.xsf");
+
 		} catch (ParserConfigurationException e) {
 			log.error("Error parsing form data", e);
 		} catch (SAXException e) {
@@ -300,7 +372,6 @@ public class PublishInfoPath {
 			log.error("Error parsing form data", e);
 		}
 
-		return solutionVersion;
 	}
 
 	private static void setNamespace(File file, String tag, String namespace) {
@@ -363,11 +434,7 @@ public class PublishInfoPath {
 	private static void setVariables(File dir, String filename,
 			Map<String, String> vars) throws IOException {
 		File file = FormEntryUtil.findFile(dir, filename);
-		FileInputStream inputStream = new FileInputStream(file);
-		byte[] b = new byte[inputStream.available()];
-		inputStream.read(b);
-		inputStream.close();
-		String fileContent = new String(b);
+		String fileContent = readFile(file);
 		for (String variableName : vars.keySet()) {
 			// \s = whitespace
 			String regexp = "var\\s" + variableName + "\\s=[^\n]*;";
@@ -383,6 +450,14 @@ public class PublishInfoPath {
 		} catch (IOException e) {
 			log.error("Could not write '" + filename + "'", e);
 		}
+	}
+
+	private static String readFile(File file) throws IOException {
+		FileInputStream inputStream = new FileInputStream(file);
+		byte[] b = new byte[inputStream.available()];
+		inputStream.read(b);
+		inputStream.close();
+		return new String(b);
 	}
 
 	private static Element getSingleElement(Document doc, String tagName) {

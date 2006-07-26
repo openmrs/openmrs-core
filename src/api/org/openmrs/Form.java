@@ -25,6 +25,7 @@ public class Form implements java.io.Serializable {
 	private String description;
 	private EncounterType encounterType;
 	private String schemaNamespace;
+	private String template;
 	private String infoPathSolutionVersion;
 	private String uri;
 	private String xslt;
@@ -194,6 +195,20 @@ public class Form implements java.io.Serializable {
 	 */
 	public void setSchemaNamespace(String schemaNamespace) {
 		this.schemaNamespace = schemaNamespace;
+	}
+	
+	/**
+	 * @return Returns the template.
+	 */
+	public String getTemplate() {
+		return template;
+	}
+
+	/**
+	 * @param template The template to set.
+	 */
+	public void setTemplate(String template) {
+		this.template = template;
 	}
 
 	/**

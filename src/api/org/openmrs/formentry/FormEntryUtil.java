@@ -9,6 +9,7 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Form;
 
 public class FormEntryUtil {
 
@@ -188,8 +189,8 @@ public class FormEntryUtil {
 				+ ".Set UniqueFiles=\"OFF\"\n" + ".Set Cabinet=on\n"
 				+ ".Set DiskDirectory1=\""
 				+ outputDir.replace("/", File.separator) // allow for either
-															// direction of
-															// slash
+				// direction of
+				// slash
 				+ "\"\n";
 
 		log.debug("ddf = " + ddf);
@@ -205,5 +206,41 @@ public class FormEntryUtil {
 		} catch (IOException e) {
 			log.error("Could not create DDF file to generate XSN archive", e);
 		}
+	}
+
+	public static String getFormUriWithoutExtension(Form form) {
+		return String.valueOf(form.getFormId());
+	}
+
+	public static String getFormUriExtension(Form form) {
+		return ".xsn";
+	}
+
+	public static String getFormUri(Form form) {
+		return getFormUriWithoutExtension(form) + getFormUriExtension(form);
+	}
+
+	public static String getFormAbsoluteUrl(Form form) {
+		// int endOfDomain = requestURL.indexOf('/', 8);
+		// String baseUrl = requestURL.substring(0, (endOfDomain > 8 ?
+		// endOfDomain : requestURL.length()));
+		String baseUrl = FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_URL;
+		return baseUrl + getFormUri(form);
+	}
+
+	public static String getSolutionVersion(Form form) {
+		String version = form.getVersion();
+		if (version == null || version.length() < 1 || version.length() > 4)
+			version = "1.0.0";
+		int numDots, i;
+		for (numDots = 0, i = 0; (i = version.indexOf('.', i + 1)) > 0; numDots++)
+			;
+		if (numDots < 2)
+			for (i = numDots; i < 2; i++)
+				version += ".0";
+		if (form.getBuild() < 1 || form.getBuild() > 9999)
+			form.setBuild(1);
+		version += "." + form.getBuild();
+		return version;
 	}
 }

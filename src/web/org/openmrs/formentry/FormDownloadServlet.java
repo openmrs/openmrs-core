@@ -5,6 +5,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -14,8 +17,11 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
 import org.openmrs.Form;
 import org.openmrs.Patient;
+import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.Helper;
 import org.openmrs.web.WebConstants;
@@ -54,24 +60,58 @@ public class FormDownloadServlet extends HttpServlet {
 
 		Patient patient = context.getFormEntryService().getPatient(patientId);
 		Form form = context.getFormEntryService().getForm(formId);
-		String url = FormUtil.getFormAbsoluteUrl(form);
+		String url = FormEntryUtil.getFormAbsoluteUrl(form);
 
-		String title = form.getName();
-		title += " (" + form.getVersion();
-		if (form.getBuild() != null)
-			title += "-" + form.getBuild();
-		title += ")";
+		String title = form.getName() + "(" + FormEntryUtil.getFormUriWithoutExtension(form) + ")";
 		title = title.replaceAll(" ", "_");
 
-		String xmldoc = new FormXmlTemplateBuilder(context, form, url)
-				.getXmlTemplate(patient);
+		// Set up a VelocityContext in which to evaluate the template's default values
+		try {
+			Velocity.init();
+		} catch (Exception e) {
+			log.error("Error initializing Velocity engine", e);
+		}
+		VelocityContext velocityContext = new VelocityContext();
+		velocityContext.put("form", form);
+		velocityContext.put("url", url);
+		User user = context.getAuthenticatedUser();
+		String enterer;
+		if (user != null)
+			enterer = user.getUserId() + "^" + user.getFirstName() + " "
+					+ user.getLastName();
+		else
+			enterer = "";
+		String dateEntered = FormUtil.dateToString(new Date());
+		velocityContext.put("enterer", enterer);
+		velocityContext.put("dateEntered", dateEntered);
+		velocityContext.put("patient", patient);
+		velocityContext.put("timestamp", new SimpleDateFormat(
+				"yyyyMMdd'T'HH:mm:ss.SSSZ"));
+		velocityContext.put("date", new SimpleDateFormat("yyyyMMdd"));
+		velocityContext.put("time", new SimpleDateFormat("HH:mm:ss"));
+		velocityContext.put("sessionId", httpSession.getId());
 
-		xmldoc = xmldoc.replaceAll("@SESSION@", httpSession.getId());
+		String template = form.getTemplate();
+		// just in case template has not been assigned, generate it on the fly
+		if (template == null)
+			template = new FormXmlTemplateBuilder(context, form, url)
+				.getXmlTemplate(true);
+		
+		String xmldoc = null;
+		try {
+			StringWriter w = new StringWriter();
+			Velocity.evaluate(velocityContext, w, this.getClass().getName(),
+					template);
+			xmldoc = w.toString();
+		} catch (Exception e) {
+			log.error("Error evaluating default values for form "
+					+ form.getName() + "[" + form.getFormId() + "]", e);
+		}
 
 		response.setHeader("Content-Type", "application/ms-infopath.xml");
 		response.setHeader("Content-Disposition", "attachment; filename="
 				+ title + ".infopathxml");
-		response.getOutputStream().print(xmldoc.toString());
+		response.getOutputStream().print(xmldoc);
 	}
 
 	protected void doGet(HttpServletRequest request,
@@ -107,7 +147,7 @@ public class FormDownloadServlet extends HttpServlet {
 
 			// Load form object and default form url
 			Form form = context.getFormEntryService().getForm(formId);
-			String url = FormUtil.getFormAbsoluteUrl(form);
+			String url = FormEntryUtil.getFormAbsoluteUrl(form);
 
 			// Payload to return if desired form is string conversion capable
 			String payload = null;
@@ -117,15 +157,15 @@ public class FormDownloadServlet extends HttpServlet {
 						FormEntryConstants.FORMENTRY_DEFAULT_SCHEMA_NAME);
 			} else if ("template".equalsIgnoreCase(target)) {
 				payload = new FormXmlTemplateBuilder(context, form, url)
-						.getXmlTemplate((Patient) null);
-				payload = payload.replaceAll("@SESSION@", "");
+						.getXmlTemplate(false);
+				// payload = payload.replaceAll("@SESSION@", "");
 				setFilename(response,
 						FormEntryConstants.FORMENTRY_DEFAULT_TEMPLATE_NAME);
 			} else if ("xsn".equalsIgnoreCase(target)) {
 				// Download full xsn for editing (if exists)
 
 				// Set the form filename in the response
-				String filename = form.getUri();
+				String filename = FormEntryUtil.getFormUri(form);
 				log.debug("Download of XSN for form #" + form.getFormId()
 						+ " (" + filename + ") requested");
 
@@ -139,7 +179,7 @@ public class FormDownloadServlet extends HttpServlet {
 					if (form.getBuild() != null)
 						filename += "-" + form.getBuild();
 
-					if (!filename.equals(""))
+					if (!filename.equals("") && !filename.toLowerCase().endsWith(".xsn"))
 						filename += ".xsn";
 					else
 						// the default download name
@@ -151,7 +191,7 @@ public class FormDownloadServlet extends HttpServlet {
 				String formDir = FormEntryConstants.FORMENTRY_INFOPATH_OUTPUT_DIR;
 				String formFilePath = formDir
 						+ (formDir.endsWith(File.separator) ? ""
-								: File.separator) + form.getUri();
+								: File.separator) + FormEntryUtil.getFormUri(form);
 
 				FileInputStream formStream = getCurrentXSN(context, form,
 						formFilePath);
@@ -191,27 +231,30 @@ public class FormDownloadServlet extends HttpServlet {
 			String formFilePath) throws IOException {
 		log.debug("Attempting to open xsn from: " + formFilePath);
 
-		try {
-			FileInputStream formStream = new FileInputStream(formFilePath);
-		} catch (FileNotFoundException e) {
-			log.warn(e);
+		if (!new File(formFilePath).exists())
 			return null;
-		}
+//		try {
+//			FileInputStream formStream = new FileInputStream(formFilePath);
+//		} catch (FileNotFoundException e) {
+//			log.warn(e);
+//			return null;
+//		}
 
 		// Get Constants
 		String schemaFilename = FormEntryConstants.FORMENTRY_DEFAULT_SCHEMA_NAME;
 		String templateFilename = FormEntryConstants.FORMENTRY_DEFAULT_TEMPLATE_NAME;
 		String sampleDataFilename = FormEntryConstants.FORMENTRY_DEFAULT_SAMPLEDATA_NAME;
-		String url = FormUtil.getFormAbsoluteUrl(form);
+		String defaultsFilename = FormEntryConstants.FORMENTRY_DEFAULT_DEFAULTS_NAME;
+		String url = FormEntryUtil.getFormAbsoluteUrl(form);
 
 		// Expand the xsn
 		File tmpXSN = FormEntryUtil.expandXsn(formFilePath);
 
 		// Generate the schema and template.xml
 		String schema = new FormSchemaBuilder(context, form).getSchema();
-		String template = new FormXmlTemplateBuilder(context, form, url)
-				.getXmlTemplate((Patient) null);
-		template = template.replaceAll("@SESSION@", "");
+		FormXmlTemplateBuilder fxtb = new FormXmlTemplateBuilder(context, form, url);
+		String template = fxtb.getXmlTemplate(false);
+		String templateWithDefaultScripts = fxtb.getXmlTemplate(true);
 
 		// Generate and overwrite the schema
 		File schemaFile = FormEntryUtil.findFile(tmpXSN, schemaFilename);
@@ -230,6 +273,14 @@ public class FormDownloadServlet extends HttpServlet {
 		FileWriter templateOutput = new FileWriter(templateFile, false);
 		templateOutput.write(template);
 		templateOutput.close();
+
+		// replace defautls.xml with the xml template, including default scripts
+		File defaultsFile = FormEntryUtil.findFile(tmpXSN, defaultsFilename);
+		if (defaultsFile == null)
+			throw new IOException("Defaults: '" + defaultsFilename + "' cannot be null");
+		FileWriter defaultsOutput = new FileWriter(defaultsFile, false);
+		defaultsOutput.write(templateWithDefaultScripts);
+		defaultsOutput.close();
 
 		// replace sampleData.xml with the generated xml
 		File sampleDataFile = FormEntryUtil

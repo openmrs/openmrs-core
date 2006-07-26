@@ -5,6 +5,7 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
@@ -19,10 +20,16 @@ public class HibernateFormEntryDAO implements FormEntryDAO {
 	protected final Log log = LogFactory.getLog(getClass());
 
 	private Context context;
-	/*	 *  Default public constructor	 */
-	public HibernateFormEntryDAO() {}
 
-	/*	 *  Single-arg Public constructor	 */
+	/*
+	 * Default public constructor
+	 */
+	public HibernateFormEntryDAO() {
+	}
+
+	/*
+	 * Single-arg Public constructor
+	 */
 	public HibernateFormEntryDAO(Context context) {
 		this.context = context;
 	}
@@ -71,10 +78,12 @@ public class HibernateFormEntryDAO implements FormEntryDAO {
 	public FormEntryQueue getNextFormEntryQueue() throws DAOException {
 		Session session = HibernateUtil.currentSession();
 
-		return (FormEntryQueue) session
-				.createQuery(
-						"from FormEntryQueue f1 where f1.formEntryQueueId = (select min(formEntryQueueId) from FormEntryQueue)")
-				.uniqueResult();
+		FormEntryQueue feq = null;
+		Query query = session
+				.createQuery("from FormEntryQueue f1 where f1.formEntryQueueId = (select min(formEntryQueueId) from FormEntryQueue)");
+		if (query != null)
+			feq = (FormEntryQueue) query.uniqueResult();
+		return feq;
 	}
 
 	/*
@@ -132,16 +141,18 @@ public class HibernateFormEntryDAO implements FormEntryDAO {
 			throw new DAOException(e);
 		}
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.openmrs.formentry.db.FormEntryDAO#getFormEntryQueueSize()
 	 */
 	public Integer getFormEntryQueueSize() throws DAOException {
 		Session session = HibernateUtil.currentSession();
-		
-		Integer size = (Integer) session.createQuery("select count(*) from FormEntryQueue" )
-			.uniqueResult();
-		
+
+		Integer size = (Integer) session.createQuery(
+				"select count(*) from FormEntryQueue").uniqueResult();
+
 		return size;
 	}
 
@@ -193,16 +204,18 @@ public class HibernateFormEntryDAO implements FormEntryDAO {
 			throw new DAOException(e);
 		}
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.openmrs.formentry.db.FormEntryDAO#getFormEntryArchiveSize()
 	 */
 	public Integer getFormEntryArchiveSize() throws DAOException {
 		Session session = HibernateUtil.currentSession();
-		
-		Integer size = (Integer) session.createQuery("select count(*) from FormEntryArchive" )
-			.uniqueResult();
-		
+
+		Integer size = (Integer) session.createQuery(
+				"select count(*) from FormEntryArchive").uniqueResult();
+
 		return size;
 	}
 
@@ -273,18 +286,20 @@ public class HibernateFormEntryDAO implements FormEntryDAO {
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.openmrs.formentry.db.FormEntryDAO#getFormEntryErrorSize()
 	 */
 	public Integer getFormEntryErrorSize() throws DAOException {
 		Session session = HibernateUtil.currentSession();
-		
-		Integer size = (Integer) session.createQuery("select count(*) from FormEntryError" )
-			.uniqueResult();
-		
+
+		Integer size = (Integer) session.createQuery(
+				"select count(*) from FormEntryError").uniqueResult();
+
 		return size;
 	}
-	
+
 	public void garbageCollect() {
 		HibernateUtil.clear();
 	}

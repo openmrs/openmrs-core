@@ -57,10 +57,6 @@ public class FormXmlTemplateBuilder {
 		this.form = form;
 		this.url = url;
 	}
-	
-	public synchronized String getXmlTemplate() {
-		return getXmlTemplate((Patient)null);
-	}
 
 	public synchronized String getXmlTemplate(Patient patient) {
 		if (xmlTemplate != null)
@@ -72,30 +68,61 @@ public class FormXmlTemplateBuilder {
 			log.error("Error initializing Velocity engine", e);
 		}
 		VelocityContext velocityContext = new VelocityContext();
-		
+
 		if (patient != null) {
+			velocityContext.put("form", form);
+			velocityContext.put("url", url);
+			User user = context.getAuthenticatedUser();
+			String enterer;
+			if (user != null)
+				enterer = user.getUserId() + "^" + user.getFirstName() + " "
+						+ user.getLastName();
+			else
+				enterer = "";
+
+			velocityContext.put("enterer", enterer);
 			velocityContext.put("patient", patient);
-			velocityContext.put("timestamp", new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss.SSSZ"));
+			velocityContext.put("timestamp", new SimpleDateFormat(
+					"yyyyMMdd'T'HH:mm:ss.SSSZ"));
 			velocityContext.put("date", new SimpleDateFormat("yyyyMMdd"));
 			velocityContext.put("time", new SimpleDateFormat("HH:mm:ss"));
 		}
-		
-		StringBuffer xml = new StringBuffer();
-		xml.append(FormXmlTemplateFragment.header(form.getName(), form.getInfoPathSolutionVersion(), url));
-		User user = null;
-		Date date = null;
-		if (patient != null) {
-			user = context.getAuthenticatedUser();
-			date = new Date();			
+
+		String template = null;
+		try {
+			StringWriter w = new StringWriter();
+			Velocity.evaluate(velocityContext, w, this.getClass().getName(),
+					form.getTemplate());
+			template = w.toString();
+		} catch (Exception e) {
+			log.error("Error evaluating default values for form "
+					+ form.getName() + "[" + form.getFormId() + "]", e);
 		}
+
+		return template;
+	}
+
+	/**
+	 * Returns the XML template for a form
+	 * 
+	 * @param includeDefaultScripts
+	 *            if true, field defaults are inserted into the template
+	 * @return XML template for a form
+	 */
+	public synchronized String getXmlTemplate(boolean includeDefaultScripts) {
+
+		StringBuffer xml = new StringBuffer();
+		// TODO: the following line should get solution version from FormEntryService
+		xml.append(FormXmlTemplateFragment.header(form.getName(), FormEntryUtil
+				.getSolutionVersion(form), url));
 		xml.append(FormXmlTemplateFragment.openForm(form.getFormId(), form
 				.getName(), form.getVersion(), form.getSchemaNamespace(),
-				user, date));
+				includeDefaultScripts));
 
 		TreeMap<Integer, TreeSet<FormField>> formStructure = FormUtil
 				.getFormStructure(context, form);
 
-		renderStructure(xml, formStructure, velocityContext, 0, 2);
+		renderStructure(xml, formStructure, includeDefaultScripts, 0, 2);
 
 		xml.append(FormXmlTemplateFragment.closeForm());
 
@@ -105,10 +132,13 @@ public class FormXmlTemplateBuilder {
 
 	public void renderStructure(StringBuffer xml,
 			TreeMap<Integer, TreeSet<FormField>> formStructure,
-			VelocityContext velocityContext, Integer sectionId, int indent) {
+			boolean includeDefaultScripts, Integer sectionId, int indent) {
 		if (!formStructure.containsKey(sectionId))
 			return;
-		for (FormField formField : formStructure.get(sectionId)) {
+		TreeSet<FormField> section = formStructure.get(sectionId);
+		if (section == null || section.size() < 1)
+			return;
+		for (FormField formField : section) {
 			String xmlTag = FormUtil.getNewTag(formField.getField().getName(),
 					tagList);
 			Integer subSectionId = formField.getFormFieldId();
@@ -126,13 +156,15 @@ public class FormXmlTemplateBuilder {
 				xml.append(formField.getField().getAttributeName());
 				if (formStructure.containsKey(formField.getFormFieldId())) {
 					xml.append("\">\n");
-					renderStructure(xml, formStructure, velocityContext,
-							subSectionId, indent + FormEntryConstants.INDENT_SIZE);
+					renderStructure(xml, formStructure, includeDefaultScripts,
+							subSectionId, indent
+									+ FormEntryConstants.INDENT_SIZE);
 					xml.append(indentation);
 				} else {
 					if (field.getDefaultValue() != null) {
 						xml.append("\">");
-						renderDefaultValue(xml, velocityContext, field);
+						if (includeDefaultScripts)
+							xml.append(field.getDefaultValue());
 					} else {
 						if (!formField.isRequired())
 							xml.append("\" xsi:nil=\"true");
@@ -142,7 +174,8 @@ public class FormXmlTemplateBuilder {
 				xml.append("</");
 				xml.append(xmlTag);
 				xml.append(">\n");
-			} else if (fieldTypeId.equals(FormEntryConstants.FIELD_TYPE_CONCEPT)) {
+			} else if (fieldTypeId
+					.equals(FormEntryConstants.FIELD_TYPE_CONCEPT)) {
 				Concept concept = field.getConcept();
 				xml.append(" openmrs_concept=\"");
 				xml.append(FormUtil.conceptToString(concept, context
@@ -152,8 +185,9 @@ public class FormXmlTemplateBuilder {
 				xml.append("\"");
 				if (formStructure.containsKey(formField.getFormFieldId())) {
 					xml.append(">\n");
-					renderStructure(xml, formStructure, velocityContext,
-							subSectionId, indent + FormEntryConstants.INDENT_SIZE);
+					renderStructure(xml, formStructure, includeDefaultScripts,
+							subSectionId, indent
+									+ FormEntryConstants.INDENT_SIZE);
 					xml.append(indentation);
 					xml.append("</");
 					xml.append(xmlTag);
@@ -178,11 +212,14 @@ public class FormXmlTemplateBuilder {
 					xml.append(indentation);
 					xml.append("<time xsi:nil=\"true\"></time>\n");
 					if ((concept.getDatatype().getHl7Abbreviation().equals(
-							FormEntryConstants.HL7_CODED) || concept.getDatatype()
-							.getHl7Abbreviation().equals(
+							FormEntryConstants.HL7_CODED) || concept
+							.getDatatype()
+							.getHl7Abbreviation()
+							.equals(
 									FormEntryConstants.HL7_CODED_WITH_EXCEPTIONS))
 							&& field.getSelectMultiple()) {
-						for (ConceptAnswer answer : concept.getAnswers()) {
+						for (ConceptAnswer answer : concept
+								.getSortedAnswers(context.getLocale())) {
 							xml.append(indentation);
 							xml.append(indentation);
 							xml.append("<");
@@ -212,8 +249,6 @@ public class FormXmlTemplateBuilder {
 										.getLocale()));
 								xml.append("^");
 								xml.append(FormUtil.drugToString(answerDrug));
-								// xml.append("\" openmrs_drug_id=\"");
-								// xml.append(FormUtil.drugToString(answerDrug));
 								xml.append("\">false</");
 								xml.append(answerTag);
 								xml.append(">\n");
@@ -235,7 +270,7 @@ public class FormXmlTemplateBuilder {
 				}
 			} else {
 				xml.append(">\n");
-				renderStructure(xml, formStructure, velocityContext,
+				renderStructure(xml, formStructure, includeDefaultScripts,
 						subSectionId, indent + FormEntryConstants.INDENT_SIZE);
 				xml.append(indentation);
 				xml.append("</");
@@ -245,24 +280,24 @@ public class FormXmlTemplateBuilder {
 		}
 	}
 
-	private void renderDefaultValue(StringBuffer xml,
-			VelocityContext velocityContext, Field field) {
-		try {
-			StringWriter w = new StringWriter();
-			Velocity.evaluate(velocityContext, w, this.getClass().getName(),
-					field.getDefaultValue());
-			xml.append(w.toString());
-		} catch (Exception e) {
-			log.warn("Error evaluating default value for " + field.getName()
-					+ "[" + field.getFieldId() + "]", e);
-		}
-	}
+//	private void renderDefaultValue(StringBuffer xml,
+//			VelocityContext velocityContext, Field field) {
+//		try {
+//			StringWriter w = new StringWriter();
+//			Velocity.evaluate(velocityContext, w, this.getClass().getName(),
+//					field.getDefaultValue());
+//			xml.append(w.toString());
+//		} catch (Exception e) {
+//			log.warn("Error evaluating default value for " + field.getName()
+//					+ "[" + field.getFieldId() + "]", e);
+//		}
+//	}
 
-	/***************************************************************
-	 * Generating XML template from previously parsed data.  A work
-	 * in progress. Not yet functional -Burke 4/5/2006 
-	 ***************************************************************/
-	
+	/***************************************************************************
+	 * Generating XML template from previously parsed data. A work in progress.
+	 * Not yet functional -Burke 4/5/2006
+	 **************************************************************************/
+
 	private void renderValue(StringBuffer xml, Encounter encounter,
 			Hashtable<Integer, Vector<Obs>> obsMap, Field field) {
 		xml.append("***VALUE SHOULD GO HERE***");
@@ -271,12 +306,12 @@ public class FormXmlTemplateBuilder {
 	public String getXmlTemplate(Encounter encounter) {
 		StringBuffer xml = new StringBuffer();
 
-		xml.append(FormXmlTemplateFragment.header(form.getName(), form.getInfoPathSolutionVersion(), url));
+		xml.append(FormXmlTemplateFragment.header(form.getName(), FormEntryUtil
+				.getSolutionVersion(form), url));
 		User user = encounter.getCreator();
 		Date date = encounter.getEncounterDatetime();
 		xml.append(FormXmlTemplateFragment.openForm(form.getFormId(), form
-				.getName(), form.getVersion(), form.getSchemaNamespace(),
-				user, date));
+				.getName(), form.getVersion(), form.getSchemaNamespace(), false));
 
 		TreeMap<Integer, TreeSet<FormField>> formStructure = FormUtil
 				.getFormStructure(context, form);
@@ -289,7 +324,8 @@ public class FormXmlTemplateBuilder {
 		return xml.toString();
 	}
 
-	private Hashtable<Integer, Vector<Obs>> getObsForEncounter(Encounter encounter) {
+	private Hashtable<Integer, Vector<Obs>> getObsForEncounter(
+			Encounter encounter) {
 		Hashtable<Integer, Vector<Obs>> obsMap = new Hashtable<Integer, Vector<Obs>>();
 		for (Obs obs : encounter.getObs()) {
 			Vector<Obs> entry = obsMap.get(obs.getObsId());
@@ -300,13 +336,14 @@ public class FormXmlTemplateBuilder {
 		}
 		return obsMap;
 	}
-	
+
 	private void renderStructure(StringBuffer xml,
 			TreeMap<Integer, TreeSet<FormField>> formStructure,
-			Encounter encounter, Hashtable<Integer, Vector<Obs>> obsMap, Integer sectionId, int indent) {
+			Encounter encounter, Hashtable<Integer, Vector<Obs>> obsMap,
+			Integer sectionId, int indent) {
 		if (!formStructure.containsKey(sectionId))
 			return;
-				
+
 		for (FormField formField : formStructure.get(sectionId)) {
 			String xmlTag = FormUtil.getNewTag(formField.getField().getName(),
 					tagList);
@@ -324,17 +361,18 @@ public class FormXmlTemplateBuilder {
 				xml.append("\" openmrs_attribute=\"");
 				xml.append(formField.getField().getAttributeName());
 				if (formStructure.containsKey(formField.getFormFieldId())) {
-					xml.append("\">\n");	
+					xml.append("\">\n");
 					renderStructure(xml, formStructure, encounter, obsMap,
-							subSectionId, indent + FormEntryConstants.INDENT_SIZE);
+							subSectionId, indent
+									+ FormEntryConstants.INDENT_SIZE);
 					xml.append(indentation);
 				} else {
 					if (field.getDefaultValue() != null) {
 						xml.append("\">");
 						renderValue(xml, encounter, obsMap, field);
 					} else {
-//						if (!formField.isRequired())
-//							xml.append("\" xsi:nil=\"true");
+						// if (!formField.isRequired())
+						// xml.append("\" xsi:nil=\"true");
 						xml.append("\">");
 						renderValue(xml, encounter, obsMap, field);
 					}
@@ -342,7 +380,8 @@ public class FormXmlTemplateBuilder {
 				xml.append("</");
 				xml.append(xmlTag);
 				xml.append(">\n");
-			} else if (fieldTypeId.equals(FormEntryConstants.FIELD_TYPE_CONCEPT)) {
+			} else if (fieldTypeId
+					.equals(FormEntryConstants.FIELD_TYPE_CONCEPT)) {
 				Concept concept = field.getConcept();
 				xml.append(" openmrs_concept=\"");
 				xml.append(FormUtil.conceptToString(concept, context
@@ -353,7 +392,8 @@ public class FormXmlTemplateBuilder {
 				if (formStructure.containsKey(formField.getFormFieldId())) {
 					xml.append(">\n");
 					renderStructure(xml, formStructure, encounter, obsMap,
-							subSectionId, indent + FormEntryConstants.INDENT_SIZE);
+							subSectionId, indent
+									+ FormEntryConstants.INDENT_SIZE);
 					xml.append(indentation);
 					xml.append("</");
 					xml.append(xmlTag);
@@ -378,11 +418,14 @@ public class FormXmlTemplateBuilder {
 					xml.append(indentation);
 					xml.append("<time xsi:nil=\"true\"></time>\n");
 					if ((concept.getDatatype().getHl7Abbreviation().equals(
-							FormEntryConstants.HL7_CODED) || concept.getDatatype()
-							.getHl7Abbreviation().equals(
+							FormEntryConstants.HL7_CODED) || concept
+							.getDatatype()
+							.getHl7Abbreviation()
+							.equals(
 									FormEntryConstants.HL7_CODED_WITH_EXCEPTIONS))
 							&& field.getSelectMultiple()) {
-						for (ConceptAnswer answer : concept.getAnswers()) {
+						for (ConceptAnswer answer : concept
+								.getSortedAnswers(context.getLocale())) {
 							xml.append(indentation);
 							xml.append(indentation);
 							xml.append("<");

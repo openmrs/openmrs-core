@@ -27,7 +27,6 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Form;
-import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.Helper;
 import org.w3c.dom.Document;
@@ -50,15 +49,17 @@ public class FormStarterXSN {
 	private String schema;
 
 	private String template;
+	
+	private String templateWithDefaultScripts;
 
 	private Form form;
 
 	public FormStarterXSN(Context context, Form form, String url) {
 		this.form = form;
 		schema = new FormSchemaBuilder(context, form).getSchema();
-		template = new FormXmlTemplateBuilder(context, form, url)
-				.getXmlTemplate((Patient)null);
-		template = template.replaceAll("@SESSION@", "");
+		FormXmlTemplateBuilder fxtb = new FormXmlTemplateBuilder(context, form, url);
+		template = fxtb.getXmlTemplate(false);
+		templateWithDefaultScripts = fxtb.getXmlTemplate(true);
 	}
 
 	public String getXSN() throws IOException {
@@ -103,18 +104,13 @@ public class FormStarterXSN {
 
 		String serverUrl = FormEntryConstants.FORMENTRY_INFOPATH_SERVER_URL;
 		String publishUrl = FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_URL + outputFilename;
-		String submitUrl = FormEntryConstants.FORMENTRY_INFOPATH_SUBMIT_URL; // "http://localhost:8080/amrs/formUpload";
 		String schemaFilename = FormEntryConstants.FORMENTRY_DEFAULT_SCHEMA_NAME; // "FormEntry.xsd";
 		String templateFilename = FormEntryConstants.FORMENTRY_DEFAULT_TEMPLATE_NAME;
 		String sampleDataFilename = FormEntryConstants.FORMENTRY_DEFAULT_SAMPLEDATA_NAME;
+		String defaultsFilename = FormEntryConstants.FORMENTRY_DEFAULT_DEFAULTS_NAME;
 
 		// prepare manifest
-		String solutionVersion = prepareManifest(tempDir, publishUrl, namespace);
-
-		if (solutionVersion == null)
-			log.warn("Solution Version is null");
-
-		log.debug("\nsolution version: " + solutionVersion);
+		prepareManifest(tempDir, publishUrl, namespace);
 
 		// replace FormEntry.xsd with the generated schema
 		File schemaFile = FormEntryUtil.findFile(tempDir, schemaFilename);
@@ -134,6 +130,14 @@ public class FormStarterXSN {
 		log.debug(template);
 		templateOutput.write(template);
 		templateOutput.close();
+		
+		// replace defautls.xml with the xml template, including default scripts
+		File defaultsFile = FormEntryUtil.findFile(tempDir, defaultsFilename);
+		if (defaultsFile == null)
+			throw new IOException("Defaults: '" + defaultsFilename + "' cannot be null");
+		FileWriter defaultsOutput = new FileWriter(defaultsFile, false);
+		defaultsOutput.write(templateWithDefaultScripts);
+		defaultsOutput.close();
 
 		// replace sampleData.xml with the generated xml
 		File sampleDataFile = FormEntryUtil.findFile(tempDir, sampleDataFilename);
@@ -146,8 +150,8 @@ public class FormStarterXSN {
 
 		// update server_url in openmrs-infopath.js
 		Map<String, String> vars = new HashMap<String, String>();
-		vars.put("SERVER_URL", serverUrl);
-		setVariables(tempDir, "openmrs-infopath.js", vars);
+		vars.put(FormEntryConstants.FORMENTRY_SERVER_URL_VARIABLE_NAME, serverUrl);
+		setVariables(tempDir, FormEntryConstants.FORMENTRY_DEFAULT_JSCRIPT_NAME, vars);
 
 		// create ddf
 		FormEntryUtil.createDdf(tempDir, outputDir, outputFilename);
@@ -158,14 +162,12 @@ public class FormStarterXSN {
 		return FormEntryUtil.findFile(tempDir, outputFilename);
 	}
 
-	private String prepareManifest(File tempDir, String url, String namespace) {
+	private void prepareManifest(File tempDir, String url, String namespace) {
 		File manifest = findManifest(tempDir);
 		if (manifest == null) {
 			log.warn("Missing manifest!");
-			return null;
+			return;
 		}
-
-		String solutionVersion = null;
 
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -176,9 +178,9 @@ public class FormStarterXSN {
 			if (elem == null) {
 				log
 						.warn("Could not locate xsf:xDocumentClass element in manifest!");
-				return null;
+				return;
 			}
-			solutionVersion = elem.getAttribute("solutionVersion");
+			elem.setAttribute("solutionVersion", FormEntryUtil.getSolutionVersion(form));
 			if (elem.getAttribute("name") != null)
 				elem.removeAttribute("name");
 			elem.setAttribute("trustSetting", "manual");
@@ -196,8 +198,6 @@ public class FormStarterXSN {
 		} catch (IOException e) {
 			log.error("Error parsing form data", e);
 		}
-
-		return solutionVersion;
 	}
 
 	private File copyFile(String xsnFolderPath) throws IOException {

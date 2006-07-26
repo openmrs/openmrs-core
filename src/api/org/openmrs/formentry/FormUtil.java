@@ -185,9 +185,8 @@ public class FormUtil {
 	}
 
 	public static String conceptToString(Concept concept, Locale locale) {
-		return concept.getConceptId() + "^"
-				+ concept.getName(locale).getName() + "^"
-				+ FormEntryConstants.HL7_LOCAL_CONCEPT;
+		return concept.getConceptId() + "^" + concept.getName(locale).getName()
+				+ "^" + FormEntryConstants.HL7_LOCAL_CONCEPT;
 	}
 
 	public static String drugToString(Drug drug) {
@@ -195,11 +194,8 @@ public class FormUtil {
 				+ FormEntryConstants.HL7_LOCAL_DRUG;
 	}
 
-	public static String getFormAbsoluteUrl(Form form) {
-		//int endOfDomain = requestURL.indexOf('/', 8);
-		//String baseUrl = requestURL.substring(0, (endOfDomain > 8 ? endOfDomain : requestURL.length()));
-		String baseUrl = FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_URL;
-		return baseUrl + form.getUri();
+	public static String getFormUriWithoutExtension(Form form) {
+		return form.getFormId() + "-" + form.getVersion() + "-"
+				+ form.getBuild();
 	}
-
 }

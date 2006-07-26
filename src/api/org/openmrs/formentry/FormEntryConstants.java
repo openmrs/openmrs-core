@@ -70,10 +70,13 @@ public class FormEntryConstants {
 	public static final int FORMENTRY_QUEUE_STATUS_PROCESSED = 2;
 	public static final int FORMENTRY_QUEUE_STATUS_ERROR = 3;
 
-	/* Default name for schema file */
+	/* Default name for InfoPath components */
 	public static final String FORMENTRY_DEFAULT_SCHEMA_NAME = "FormEntry.xsd";
 	public static final String FORMENTRY_DEFAULT_TEMPLATE_NAME = "template.xml";
 	public static final String FORMENTRY_DEFAULT_SAMPLEDATA_NAME = "sampledata.xml";
+	public static final String FORMENTRY_DEFAULT_DEFAULTS_NAME = "defaults.xml";
+	public static final String FORMENTRY_DEFAULT_JSCRIPT_NAME = "openmrs-infopath.js";
+	public static final String FORMENTRY_SERVER_URL_VARIABLE_NAME = "SERVER_URL";
 	
 	/* Default formentry properties */
 	public static String FORMENTRY_INFOPATH_SERVER_URL = "http://localhost:8080/";
