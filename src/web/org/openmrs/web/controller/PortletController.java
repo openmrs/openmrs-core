@@ -36,6 +36,7 @@ public class PortletController implements Controller {
 	 *     		(Integer) patientId
 	 *        	(Patient) patient
 	 *         	(Set<Obs>) patientObs
+	 *          (Set<Encounter>) patientEncounters
 	 *     (if the request has an encounterId attribute)
 	 *     		(Integer) encounterId
 	 *         	(Encounter) encounter
@@ -90,6 +91,7 @@ public class PortletController implements Controller {
 					Patient p = context.getPatientService().getPatient((Integer) o);
 					model.put("patient", p);
 					model.put("patientObs", context.getObsService().getObservations(p));
+					model.put("patientEncounters", context.getEncounterService().getEncounters(p));
 					model.put("patientId", (Integer) o);
 				}
 				
