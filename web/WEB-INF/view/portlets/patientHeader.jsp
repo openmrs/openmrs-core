@@ -16,7 +16,10 @@
 		<c:if test="${model.patient.age == 0}">< 1 <spring:message code="Patient.age.year"/></c:if>
 		<spring:bind path="patient.birthdate">(${status.value})</spring:bind>
 		&nbsp;|&nbsp;
-		<spring:message code="Patient.healthCenter"/>: TBD
+		<spring:message code="Patient.healthCenter"/>:
+		<openmrs:forEachEncounter encounters="${encounters}" num="1" sortBy="encounterDatetime" descending="true" var="enc">
+			${enc.location.name}
+		</openmrs:forEachEncounter>
 		&nbsp;|&nbsp;
 		Accompagnateur: TBD
 		&nbsp;|&nbsp;
@@ -37,7 +40,7 @@
 			</thead>
 			<tbody>
 				<tr>
-					<td><openmrs:concept conceptId="5497" var="c" nameVar="n">${n.name}:</openmrs:concept></td>
+					<td><openmrs:concept conceptId="5089" var="c" nameVar="n">${n.name}:</openmrs:concept></td>
 					<td>
 						<openmrs:recentObs obs="${model.patientObs}" conceptId="5089" var="o">
 							${o.valueNumeric} (<openmrs:formatDate date="${o.obsDatetime}" />)
@@ -45,7 +48,7 @@
 					</td>
 				</tr>
 				<tr>
-					<td><openmrs:concept conceptId="5089" var="c" nameVar="n">${n.name}:</openmrs:concept></td>
+					<td><openmrs:concept conceptId="5497" var="c" nameVar="n">${n.name}:</openmrs:concept></td>
 					<td>
 						<openmrs:recentObs obs="${model.patientObs}" conceptId="5497" var="cd4">
 							${cd4.valueNumeric} (<openmrs:formatDate date="${cd4.obsDatetime}" />)
@@ -58,7 +61,10 @@
 		<table class="patientTreatmentPrograms">
 			<thead>
 				<tr>
-					<th colspan="4">Treatment Programs</th>
+					<th>Treatment</th>
+					<th>Group</th>
+					<th>Regimen</th>
+					<th>Start Date</th>
 				</tr>
 			</thead>
 			<tbody>

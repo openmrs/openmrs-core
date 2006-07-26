@@ -19,7 +19,34 @@
 	function cancelTimeout() {
 		if (timeOut != null)
 			clearTimeout(timeOut);
-	}	
+	}
+	
+	function changeTab(selectedElement, tabType) {
+		if (!document.getElementById || !document.createTextNode) {return;}
+		var tabs = document.getElementById('patientTabs').getElementsByTagName('a');
+		for (var i=0; i<tabs.length; i++) {
+			if (tabs[i].className == 'current') {
+				tabs[i].className = '';
+			}
+		}
+		selectedElement.className = 'current';
+		
+		if (tabType == 'overview') {
+			document.getElementById('patientOverview').style.display = '';
+			document.getElementById('patientRegimen').style.display = 'none';
+			document.getElementById('patientDemographics').style.display = 'none';
+		}
+		else if (tabType == 'regimen') {
+			document.getElementById('patientRegimen').style.display = '';
+			document.getElementById('patientOverview').style.display = 'none';
+			document.getElementById('patientDemographics').style.display = 'none';
+		}
+		else if (tabType == 'demographics') {
+			document.getElementById('patientDemographics').style.display = '';
+			document.getElementById('patientRegimen').style.display = 'none';
+			document.getElementById('patientOverview').style.display = 'none';
+		}
+    }
 </script>
 
 <table class="breadcrumbHeader">
@@ -32,6 +59,27 @@
 		</td>
 	</tr>
 </table>
+
 <openmrs:portlet url="patientHeader" id="patientDashboardHeader" patientId="${patient.patientId}"/>
+<div id="patientTabs">
+	<ul>
+		<li><a href="#" onclick="changeTab(this, 'overview');" class="current">Overview</a></li>
+		<li><a href="#" onclick="changeTab(this, 'regimen');">Regimen</a></li>
+		<li><a href="#" onclick="changeTab(this, 'labs');">Lab Tests</a></li>
+		<li><a href="#" onclick="changeTab(this, 'encounters');">Encounters</a></li>
+		<li><a href="#" onclick="changeTab(this, 'demographics');">Demographics</a></li>
+	</ul>
+</div>
+<div id="patientSections">
+	<div id="patientOverview">
+		<openmrs:portlet url="patientOverview" id="patientOverviewPortlet" patientId="${patient.patientId}"/>
+	</div>
+	<div id="patientRegimen" style="display:none;">
+		<openmrs:portlet url="patientRegimen" id="patientRegimenPortlet" patientId="${patient.patientId}"/>
+	</div>
+	<div id="patientDemographics" style="display:none;">
+		<openmrs:portlet url="patientDemographics" id="patientDemographicsPortlet" patientId="${patient.patientId}"/>
+	</div>
+</div>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>
