@@ -1,10 +1,5 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<%@ include file="/WEB-INF/template/header.jsp" %>
-
-<openmrs:portlet url="login"/>
-
-<%--
 <%@ page import="org.openmrs.web.WebConstants" %>
 <%
 	pageContext.setAttribute("redirect", session.getAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR));
@@ -53,7 +48,3 @@
 <script type="text/javascript">
  document.getElementById('username').focus();
 </script>
-
---%>
-	
-<%@ include file="/WEB-INF/template/footer.jsp" %>

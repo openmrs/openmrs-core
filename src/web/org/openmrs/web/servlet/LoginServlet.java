@@ -48,6 +48,20 @@ public class LoginServlet extends HttpServlet {
 		if (redirect == null || redirect.equals(""))
 			redirect = request.getContextPath();
 		
+		// don't redirect back to the login page on success. (I assume the login page is {something}login.{something}
+		if (redirect != null) {
+			String s = redirect;
+			if (s.indexOf('/') >= 0) {
+				s = s.substring(s.lastIndexOf('/') + 1);
+			}
+			if (s.indexOf('.') >= 0) {
+				s = s.substring(0, s.indexOf('.'));
+			}
+			if (s.equals("login")) {
+				redirect = request.getContextPath();
+			}
+		}
+		
 		Context context = (Context)httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		if (context == null) {
 			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");

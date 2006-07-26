@@ -2,7 +2,7 @@
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
-<openmrs:portlet url="welcome" parameters="showName=true" />
+<openmrs:portlet url="welcome" parameters="showName=true|showLogin=true" />
 
 <br/><br/><br />
 
