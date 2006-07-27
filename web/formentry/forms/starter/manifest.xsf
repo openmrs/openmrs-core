@@ -3,7 +3,7 @@
 This file is automatically created and modified by Microsoft Office InfoPath.
 Changes made to the file outside of InfoPath might be lost if the form template is modified in InfoPath.
 -->
-<xsf:xDocumentClass trustSetting="automatic" solutionVersion="1.0.0.3" productVersion="11.0.6565" solutionFormatVersion="1.100.0.0" publishUrl="C:\Documents and Settings\burke\Desktop\paulo\new_starter\manifest.xsf" name="urn:schemas-microsoft-com:office:infopath:new-starter:" xmlns:xsf="http://schemas.microsoft.com/office/infopath/2003/solutionDefinition" xmlns:msxsl="urn:schemas-microsoft-com:xslt" xmlns:xd="http://schemas.microsoft.com/office/infopath/2003" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xdUtil="http://schemas.microsoft.com/office/infopath/2003/xslt/Util" xmlns:xdXDocument="http://schemas.microsoft.com/office/infopath/2003/xslt/xDocument" xmlns:xdMath="http://schemas.microsoft.com/office/infopath/2003/xslt/Math" xmlns:xdDate="http://schemas.microsoft.com/office/infopath/2003/xslt/Date" xmlns:openmrs="http://schema.yoursite.org/FormEntry/1" xmlns:my="http://schemas.microsoft.com/office/infopath/2003/myXSD/2006-07-25T11:22:21">
+<xsf:xDocumentClass trustSetting="automatic" solutionVersion="1.0.0.4" productVersion="11.0.6565" solutionFormatVersion="1.100.0.0" publishUrl="C:\Documents and Settings\burke\Desktop\paulo\fancy_starter\New Folder\manifest.xsf" name="urn:schemas-microsoft-com:office:infopath:new-starter:" xmlns:xsf="http://schemas.microsoft.com/office/infopath/2003/solutionDefinition" xmlns:msxsl="urn:schemas-microsoft-com:xslt" xmlns:xd="http://schemas.microsoft.com/office/infopath/2003" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xdUtil="http://schemas.microsoft.com/office/infopath/2003/xslt/Util" xmlns:xdXDocument="http://schemas.microsoft.com/office/infopath/2003/xslt/xDocument" xmlns:xdMath="http://schemas.microsoft.com/office/infopath/2003/xslt/Math" xmlns:xdDate="http://schemas.microsoft.com/office/infopath/2003/xslt/Date" xmlns:openmrs="http://schema.yoursite.org/FormEntry/1" xmlns:my="http://schemas.microsoft.com/office/infopath/2003/myXSD/2006-07-25T11:22:21">
 	<xsf:package>
 		<xsf:files>
 			<xsf:file name="FormEntry.xsd">
@@ -22,7 +22,9 @@ Changes made to the file outside of InfoPath might be lost if the form template 
 			<xsf:file name="Page1.xsl">
 				<xsf:fileProperties>
 					<xsf:property name="lang" type="string" value="1033"></xsf:property>
-					<xsf:property name="componentId" type="string" value="1"></xsf:property>
+					<xsf:property name="componentId" type="string" value="14"></xsf:property>
+					<xsf:property name="warning" type="string" value="yes"></xsf:property>
+					<xsf:property name="xmlToEditName" type="string" value="4"></xsf:property>
 				</xsf:fileProperties>
 			</xsf:file>
 			<xsf:file name="script.js">

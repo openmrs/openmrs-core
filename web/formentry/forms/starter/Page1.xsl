@@ -62,7 +62,7 @@ SELECT {
 										<font face="Verdana" size="2">
 											<font face="Arial"> <strong>Date:</strong>
 											</font>
-											<div class="xdDTPicker" title="Every form must have a date assigned to it!  Please enter one by clicking on the calendar to the right." style="FONT-SIZE: small; WIDTH: 97px; FONT-FAMILY: Arial; WHITE-SPACE: nowrap; TEXT-ALIGN: center" noWrap="1" xd:CtrlId="CTRL2" xd:xctname="DTPicker"><span class="xdDTText xdBehavior_GTFormattingNoBUI" hideFocus="1" contentEditable="true" xd:xctname="DTPicker_DTText" tabIndex="0" xd:innerCtrl="_DTText" xd:boundProp="xd:num" xd:datafmt="&quot;datetime&quot;,&quot;dateFormat:dd MMMM, yyyy;timeFormat:none;&quot;" xd:binding="encounter/encounter.encounter_datetime">
+											<div class="xdDTPicker" title="Every form must have a date assigned to it!  Please enter one by clicking on the calendar to the right." style="FONT-SIZE: small; WIDTH: 97px; FONT-FAMILY: Arial; WHITE-SPACE: nowrap; TEXT-ALIGN: center" noWrap="1" xd:xctname="DTPicker" xd:CtrlId="CTRL2"><span class="xdDTText xdBehavior_GTFormattingNoBUI" hideFocus="1" contentEditable="true" xd:xctname="DTPicker_DTText" tabIndex="0" xd:binding="encounter/encounter.encounter_datetime" xd:datafmt="&quot;datetime&quot;,&quot;dateFormat:dd MMMM, yyyy;timeFormat:none;&quot;" xd:boundProp="xd:num" xd:innerCtrl="_DTText">
 													<xsl:attribute name="xd:num">
 														<xsl:value-of select="encounter/encounter.encounter_datetime"/>
 													</xsl:attribute>
@@ -104,7 +104,7 @@ SELECT {
 													</td>
 													<td style="PADDING-RIGHT: 1px; PADDING-LEFT: 1px; PADDING-BOTTOM: 1px; VERTICAL-ALIGN: middle; PADDING-TOP: 1px">
 														<div>
-															<font face="Arial" size="2"><span class="xdTextBox" hideFocus="1" title="" xd:CtrlId="CTRL4" xd:xctname="PlainText" tabIndex="-1" xd:binding="patient/patient.family_name" xd:disableEditing="yes" style="FONT-WEIGHT: bold; FONT-SIZE: small; WIDTH: 100%; COLOR: #000000; FONT-STYLE: normal; FONT-FAMILY: Arial; WHITE-SPACE: nowrap; TEXT-DECORATION: none; WORD-WRAP: normal">
+															<font face="Arial" size="2"><span class="xdTextBox" hideFocus="1" title="" xd:xctname="PlainText" xd:CtrlId="CTRL4" tabIndex="-1" xd:binding="patient/patient.family_name" xd:disableEditing="yes" style="FONT-WEIGHT: bold; FONT-SIZE: small; WIDTH: 100%; COLOR: #000000; FONT-STYLE: normal; FONT-FAMILY: Arial; WHITE-SPACE: nowrap; TEXT-DECORATION: none; WORD-WRAP: normal">
 																	<xsl:value-of select="patient/patient.family_name"/>
 																</span>
 															</font>
@@ -120,7 +120,7 @@ SELECT {
 														</div>
 													</td>
 													<td style="PADDING-RIGHT: 1px; PADDING-LEFT: 1px; PADDING-BOTTOM: 1px; VERTICAL-ALIGN: middle; PADDING-TOP: 1px">
-														<div><span class="xdTextBox" hideFocus="1" title="" xd:CtrlId="CTRL5" xd:xctname="PlainText" tabIndex="-1" xd:binding="patient/patient.given_name" xd:disableEditing="yes" style="FONT-WEIGHT: bold; FONT-SIZE: small; WIDTH: 100%; COLOR: #000000; FONT-STYLE: normal; FONT-FAMILY: Arial; WHITE-SPACE: nowrap; TEXT-DECORATION: none; WORD-WRAP: normal">
+														<div><span class="xdTextBox" hideFocus="1" title="" xd:xctname="PlainText" xd:CtrlId="CTRL5" tabIndex="-1" xd:binding="patient/patient.given_name" xd:disableEditing="yes" style="FONT-WEIGHT: bold; FONT-SIZE: small; WIDTH: 100%; COLOR: #000000; FONT-STYLE: normal; FONT-FAMILY: Arial; WHITE-SPACE: nowrap; TEXT-DECORATION: none; WORD-WRAP: normal">
 																<xsl:value-of select="patient/patient.given_name"/>
 															</span>
 														</div>
@@ -136,7 +136,7 @@ SELECT {
 													</td>
 													<td style="PADDING-RIGHT: 1px; PADDING-LEFT: 1px; PADDING-BOTTOM: 1px; VERTICAL-ALIGN: middle; PADDING-TOP: 1px">
 														<div>
-															<font face="Arial" size="2"><span class="xdTextBox" hideFocus="1" title="" xd:CtrlId="CTRL6" xd:xctname="PlainText" tabIndex="-1" xd:binding="patient/patient.middle_name" xd:disableEditing="yes" style="FONT-WEIGHT: bold; FONT-SIZE: small; WIDTH: 100%; COLOR: #000000; FONT-STYLE: normal; FONT-FAMILY: Arial; WHITE-SPACE: nowrap; TEXT-DECORATION: none; WORD-WRAP: normal">
+															<font face="Arial" size="2"><span class="xdTextBox" hideFocus="1" title="" xd:xctname="PlainText" xd:CtrlId="CTRL6" tabIndex="-1" xd:binding="patient/patient.middle_name" xd:disableEditing="yes" style="FONT-WEIGHT: bold; FONT-SIZE: small; WIDTH: 100%; COLOR: #000000; FONT-STYLE: normal; FONT-FAMILY: Arial; WHITE-SPACE: nowrap; TEXT-DECORATION: none; WORD-WRAP: normal">
 																	<xsl:value-of select="patient/patient.middle_name"/>
 																</span>
 															</font>
@@ -153,7 +153,7 @@ SELECT {
 											<strong>Patient Identifier:</strong>
 										</font>
 									</div>
-									<div align="center"><span class="xdTextBox " hideFocus="1" title="" xd:CtrlId="CTRL7" xd:xctname="PlainText" tabIndex="-1" xd:binding="patient/patient.medical_record_number" xd:disableEditing="yes" style="FONT-WEIGHT: bold; FONT-SIZE: medium; WIDTH: 161px; COLOR: #000000; FONT-STYLE: normal; FONT-FAMILY: Arial; WHITE-SPACE: nowrap; TEXT-ALIGN: center; TEXT-DECORATION: none; WORD-WRAP: normal">
+									<div align="center"><span class="xdTextBox " hideFocus="1" title="" xd:xctname="PlainText" xd:CtrlId="CTRL7" tabIndex="-1" xd:binding="patient/patient.medical_record_number" xd:disableEditing="yes" style="FONT-WEIGHT: bold; FONT-SIZE: medium; WIDTH: 161px; COLOR: #000000; FONT-STYLE: normal; FONT-FAMILY: Arial; WHITE-SPACE: nowrap; TEXT-ALIGN: center; TEXT-DECORATION: none; WORD-WRAP: normal">
 											<xsl:value-of select="patient/patient.medical_record_number"/>
 										</span>
 									</div>
@@ -164,21 +164,23 @@ SELECT {
 					</table>
 				</div>
 				<div align="left">
-					<table class="xdLayout" style="BORDER-RIGHT: medium none; TABLE-LAYOUT: fixed; BORDER-TOP: medium none; BORDER-LEFT: medium none; WIDTH: 755px; BORDER-BOTTOM: medium none; BORDER-COLLAPSE: collapse; WORD-WRAP: break-word" borderColor="buttontext" border="1">
+					<table class="xdLayout" style="BORDER-RIGHT: medium none; TABLE-LAYOUT: fixed; BORDER-TOP: medium none; BORDER-LEFT: medium none; WIDTH: 753px; BORDER-BOTTOM: medium none; BORDER-COLLAPSE: collapse; WORD-WRAP: break-word" borderColor="buttontext" border="1">
 						<colgroup>
 							<col style="WIDTH: 244px"></col>
-							<col style="WIDTH: 511px"></col>
+							<col style="WIDTH: 65px"></col>
+							<col style="WIDTH: 222px"></col>
+							<col style="WIDTH: 222px"></col>
 						</colgroup>
 						<tbody vAlign="top">
-							<tr style="MIN-HEIGHT: 46px">
-								<td rowSpan="2" style="BORDER-RIGHT: #000000 1pt solid; PADDING-RIGHT: 5px; BORDER-TOP: #000000 1pt; PADDING-LEFT: 5px; PADDING-BOTTOM: 5px; BORDER-LEFT: #000000 1pt solid; PADDING-TOP: 5px; BORDER-BOTTOM: #000000 1pt solid">
+							<tr style="MIN-HEIGHT: 57px">
+								<td style="BORDER-RIGHT: #000000 1pt solid; PADDING-RIGHT: 5px; BORDER-TOP: #000000 1pt; PADDING-LEFT: 5px; PADDING-BOTTOM: 5px; BORDER-LEFT: #000000 1pt solid; PADDING-TOP: 5px; BORDER-BOTTOM: #000000 1pt solid">
 									<div>
 										<font size="2">
 											<font face="Arial">Date of Birth: </font>
 										</font>
 									</div>
 									<div>
-										<div class="xdDTPicker" title="" style="FONT-WEIGHT: bold; FONT-SIZE: small; WIDTH: 150px; FONT-FAMILY: Arial; WHITE-SPACE: nowrap; HEIGHT: 25px; TEXT-ALIGN: center" noWrap="1" xd:CtrlId="CTRL10" xd:xctname="DTPicker"><span class="xdDTText xdBehavior_FormattingNoBUI" hideFocus="1" contentEditable="true" xd:xctname="DTPicker_DTText" tabIndex="0" xd:innerCtrl="_DTText" xd:boundProp="xd:num" xd:datafmt="&quot;datetime&quot;,&quot;dateFormat:dd-MMM-yy;timeFormat:none;&quot;" xd:binding="patient/patient.birthdate">
+										<div class="xdDTPicker" title="" style="FONT-WEIGHT: bold; FONT-SIZE: small; WIDTH: 150px; FONT-FAMILY: Arial; WHITE-SPACE: nowrap; HEIGHT: 25px; TEXT-ALIGN: center" noWrap="1" xd:xctname="DTPicker" xd:CtrlId="CTRL10"><span class="xdDTText xdBehavior_FormattingNoBUI" hideFocus="1" contentEditable="true" xd:xctname="DTPicker_DTText" tabIndex="0" xd:binding="patient/patient.birthdate" xd:datafmt="&quot;datetime&quot;,&quot;dateFormat:dd-MMM-yy;timeFormat:none;&quot;" xd:boundProp="xd:num" xd:innerCtrl="_DTText">
 												<xsl:choose>
 													<xsl:when test="patient/patient.birthdate != &quot;&quot;">
 														<xsl:attribute name="contentEditable">false</xsl:attribute>
@@ -202,51 +204,52 @@ SELECT {
 										</div>
 									</div>
 								</td>
-								<td style="BORDER-RIGHT: #000000 1pt solid; PADDING-RIGHT: 5px; BORDER-TOP: #000000 1pt; PADDING-LEFT: 5px; PADDING-BOTTOM: 5px; BORDER-LEFT: #000000 1pt solid; PADDING-TOP: 5px; BORDER-BOTTOM: #000000 1pt solid">
+								<td rowSpan="2" style="BORDER-RIGHT: #000000 1pt; PADDING-RIGHT: 5px; BORDER-TOP: #000000 1pt solid; PADDING-LEFT: 5px; PADDING-BOTTOM: 5px; BORDER-LEFT: #000000 1pt solid; PADDING-TOP: 5px; BORDER-BOTTOM: #000000 1pt solid">
 									<div>
 										<font size="2">
-											<font face="Arial">Location: </font><span class="xdTextBox" hideFocus="1" title="" xd:CtrlId="CTRL46" xd:xctname="PlainText" tabIndex="-1" xd:binding="patient/patient_address.address1" xd:disableEditing="yes" style="FONT-WEIGHT: bold; FONT-SIZE: small; WIDTH: 173px; COLOR: #000000; FONT-STYLE: normal; FONT-FAMILY: Arial; WHITE-SPACE: nowrap; TEXT-ALIGN: center; TEXT-DECORATION: none; WORD-WRAP: normal">
-												<xsl:value-of select="patient/patient_address.address1"/>
-											</span>
+											<font face="Arial">Address: </font>
 										</font>
-										<font face="Arial"></font>
 									</div>
 								</td>
-							</tr>
-							<tr style="MIN-HEIGHT: 11px">
-								<td rowSpan="2" style="BORDER-RIGHT: #000000 1pt solid; PADDING-RIGHT: 5px; BORDER-TOP: #000000 1pt solid; PADDING-LEFT: 5px; PADDING-BOTTOM: 5px; BORDER-LEFT: #000000 1pt solid; PADDING-TOP: 5px; BORDER-BOTTOM: #000000 1pt solid">
-									<div>
-										<font size="2">
-											<font size="2">
-												<font face="Arial">Sublocation: <span class="xdTextBox" hideFocus="1" title="" xd:CtrlId="CTRL47" xd:xctname="PlainText" tabIndex="-1" xd:binding="patient/patient_address.address2" xd:disableEditing="yes" style="FONT-WEIGHT: bold; FONT-SIZE: small; WIDTH: 170px; COLOR: #000000; FONT-STYLE: normal; FONT-FAMILY: Arial; WHITE-SPACE: nowrap; TEXT-ALIGN: center; TEXT-DECORATION: none; WORD-WRAP: normal">
-														<xsl:value-of select="patient/patient_address.address2"/>
-													</span>
-												</font>
-											</font>
+								<td rowSpan="2" style="BORDER-RIGHT: #000000 1pt solid; PADDING-RIGHT: 5px; BORDER-TOP: #000000 1pt solid; PADDING-LEFT: 5px; PADDING-BOTTOM: 5px; BORDER-LEFT: #000000 1pt; PADDING-TOP: 5px; BORDER-BOTTOM: #000000 1pt solid">
+									<font size="2">
+										<font face="Arial">
+											<div><span class="xdTextBox" hideFocus="1" title="" xd:xctname="PlainText" xd:CtrlId="CTRL46" tabIndex="-1" xd:binding="patient/patient_address.address1" xd:disableEditing="yes" style="FONT-WEIGHT: bold; FONT-SIZE: small; WIDTH: 179px; COLOR: #000000; FONT-STYLE: normal; FONT-FAMILY: Arial; WHITE-SPACE: nowrap; TEXT-ALIGN: center; TEXT-DECORATION: none; WORD-WRAP: normal">
+													<xsl:value-of select="patient/patient_address.address1"/>
+												</span>
+											</div>
+											<div><span class="xdTextBox" hideFocus="1" title="" xd:xctname="PlainText" xd:CtrlId="CTRL47" tabIndex="-1" xd:binding="patient/patient_address.address2" xd:disableEditing="yes" style="FONT-WEIGHT: bold; FONT-SIZE: small; WIDTH: 179px; COLOR: #000000; FONT-STYLE: normal; FONT-FAMILY: Arial; WHITE-SPACE: nowrap; TEXT-ALIGN: center; TEXT-DECORATION: none; WORD-WRAP: normal">
+													<xsl:value-of select="patient/patient_address.address2"/>
+												</span>
+											</div>
 										</font>
-									</div>
+									</font>
+								</td>
+								<td rowSpan="2" style="BORDER-RIGHT: #000000 1pt solid; PADDING-RIGHT: 5px; BORDER-TOP: #000000 1pt solid; PADDING-LEFT: 5px; PADDING-BOTTOM: 5px; BORDER-LEFT: #000000 1pt; PADDING-TOP: 5px; BORDER-BOTTOM: #000000 1pt solid">
+									<font size="2">
+										<font face="Arial">
+											<div>Location: </div>
+											<div>
+												<div><input class="xdBehavior_Boolean" title="" type="radio" name="{generate-id(encounter/encounter.location_id)}" xd:xctname="OptionButton" xd:CtrlId="CTRL17" tabIndex="0" xd:binding="encounter/encounter.location_id" xd:boundProp="xd:value" xd:onValue="1^Unknown">
+														<xsl:attribute name="xd:value">
+															<xsl:value-of select="encounter/encounter.location_id"/>
+														</xsl:attribute>
+														<xsl:if test="encounter/encounter.location_id=&quot;1^Unknown&quot;">
+															<xsl:attribute name="CHECKED">CHECKED</xsl:attribute>
+														</xsl:if>
+													</input>Unknown</div>
+											</div>
+										</font>
+									</font>
 								</td>
 							</tr>
 							<tr style="MIN-HEIGHT: 36px">
 								<td style="BORDER-RIGHT: #000000 1pt solid; PADDING-RIGHT: 5px; BORDER-TOP: #000000 1pt solid; PADDING-LEFT: 5px; PADDING-BOTTOM: 5px; VERTICAL-ALIGN: middle; BORDER-LEFT: #000000 1pt solid; PADDING-TOP: 5px; BORDER-BOTTOM: #000000 1pt solid">
 									<div>
-										<font face="Arial" size="2">Gender:   </font><input class="xdBehavior_Boolean" title="" type="radio" name="{generate-id(patient/patient.sex)}" xd:CtrlId="CTRL22" xd:xctname="OptionButton" tabIndex="0" xd:boundProp="xd:value" xd:binding="patient/patient.sex" xd:onValue="M" style="FONT-FAMILY: Arial">
-											<xsl:attribute name="xd:value">
+										<font face="Arial" size="2">Gender:  <span class="xdExpressionBox xdDataBindingUI" title="" xd:xctname="ExpressionBox" xd:CtrlId="CTRL19" tabIndex="-1" xd:disableEditing="yes" style="FONT-WEIGHT: bold; WIDTH: 43px">
 												<xsl:value-of select="patient/patient.sex"/>
-											</xsl:attribute>
-											<xsl:if test="patient/patient.sex=&quot;M&quot;">
-												<xsl:attribute name="CHECKED">CHECKED</xsl:attribute>
-											</xsl:if>
-										</input>
-										<font face="Arial"> Male  </font><input class="xdBehavior_Boolean" title="" type="radio" name="{generate-id(patient/patient.sex)}" xd:CtrlId="CTRL23" xd:xctname="OptionButton" tabIndex="0" xd:boundProp="xd:value" xd:binding="patient/patient.sex" xd:onValue="F" style="FONT-FAMILY: Arial">
-											<xsl:attribute name="xd:value">
-												<xsl:value-of select="patient/patient.sex"/>
-											</xsl:attribute>
-											<xsl:if test="patient/patient.sex=&quot;F&quot;">
-												<xsl:attribute name="CHECKED">CHECKED</xsl:attribute>
-											</xsl:if>
-										</input>
-										<font face="Arial"> Female</font>
+											</span>
+										</font>
 									</div>
 								</td>
 							</tr>
@@ -255,27 +258,30 @@ SELECT {
 				</div>
 				<div align="left"> </div>
 				<div align="left">
-					<table class="xdLayout" style="BORDER-RIGHT: medium none; TABLE-LAYOUT: fixed; BORDER-TOP: medium none; BORDER-LEFT: medium none; WIDTH: 743px; BORDER-BOTTOM: medium none; BORDER-COLLAPSE: collapse; WORD-WRAP: break-word" borderColor="buttontext" border="1">
+					<table class="xdLayout" style="BORDER-RIGHT: medium none; TABLE-LAYOUT: fixed; BORDER-TOP: medium none; BORDER-LEFT: medium none; WIDTH: 752px; BORDER-BOTTOM: medium none; BORDER-COLLAPSE: collapse; WORD-WRAP: break-word" borderColor="buttontext" border="1">
 						<colgroup>
 							<col style="WIDTH: 375px"></col>
-							<col style="WIDTH: 368px"></col>
+							<col style="WIDTH: 377px"></col>
 						</colgroup>
 						<tbody vAlign="top">
 							<tr>
 								<td>
 									<div align="center">
 										<em>
-											<font face="Arial"><input class="langFont" title="" style="FONT-FAMILY: Arial" type="button" value="Add New Problem" xd:CtrlId="AddNewProblem" xd:xctname="Button"/>
+											<font face="Arial"><input class="langFont" title="" style="FONT-FAMILY: Arial" type="button" value="Add New Problem" xd:xctname="Button" xd:CtrlId="AddNewProblem"/>
 											</font>
 										</em>
 									</div>
-									<div align="left">
-										<table class="xdRepeatingTable msoUcTable" title="" style="TABLE-LAYOUT: fixed; WIDTH: 369px; BORDER-TOP-STYLE: none; BORDER-RIGHT-STYLE: none; BORDER-LEFT-STYLE: none; BORDER-COLLAPSE: collapse; WORD-WRAP: break-word; BORDER-BOTTOM-STYLE: none" border="1" xd:CtrlId="CTRL3">
+									<em>
+										<font face="Arial"></font>
+									</em>
+									<div align="center">
+										<table class="xdRepeatingTable msoUcTable" title="" style="TABLE-LAYOUT: fixed; WIDTH: 367px; BORDER-TOP-STYLE: none; BORDER-RIGHT-STYLE: none; BORDER-LEFT-STYLE: none; BORDER-COLLAPSE: collapse; WORD-WRAP: break-word; BORDER-BOTTOM-STYLE: none" border="1" xd:CtrlId="CTRL37">
 											<colgroup>
-												<col style="WIDTH: 369px"></col>
+												<col style="WIDTH: 367px"></col>
 											</colgroup>
 											<tbody class="xdTableHeader">
-												<tr style="MIN-HEIGHT: 21px">
+												<tr>
 													<td>
 														<div>
 															<strong>
@@ -284,14 +290,17 @@ SELECT {
 														</div>
 													</td>
 												</tr>
-											</tbody>
-											<tbody xd:xctname="RepeatingTable">
-												<tr style="MIN-HEIGHT: 27px">
-													<td>
-														<span class="xdExpressionBox xdDataBindingUI" title="" style="FONT-WEIGHT: bold; FONT-SIZE: small; WIDTH: 24px; FONT-FAMILY: Arial; WHITE-SPACE: normal; TEXT-ALIGN: center" xd:CtrlId="CTRL77" xd:xctname="ExpressionBox">1.</span>
-														<span class="xdExpressionBox xdDataBindingUI" title="" style="OVERFLOW-Y: hidden; FONT-SIZE: small; WIDTH: 286px; FONT-FAMILY: Arial; WHITE-SPACE: nowrap; HEIGHT: 24px; WORD-WRAP: normal" xd:CtrlId="CTRL82" xd:xctname="ExpressionBox"></span><input class="langFont" title="" style="FONT-SIZE: xx-small; FONT-FAMILY: Arial" type="button" value="Delete" xd:CtrlId="DeleteNewProblem" xd:xctname="Button"/>
-													</td>
-												</tr>
+											</tbody><tbody xd:xctname="RepeatingTable">
+												<xsl:for-each select="problem_list/problem_added">
+													<tr>
+														<td><span class="xdExpressionBox xdDataBindingUI" title="" xd:xctname="ExpressionBox" xd:CtrlId="CTRL44" xd:binding="concat(position(), &quot;.&quot;)" style="FONT-WEIGHT: bold; FONT-SIZE: small; WIDTH: 24px; FONT-FAMILY: Arial; WHITE-SPACE: normal; TEXT-ALIGN: center">
+																<xsl:value-of select="concat(position(), &quot;.&quot;)"/>
+															</span><span class="xdExpressionBox xdDataBindingUI" title="" xd:xctname="ExpressionBox" xd:CtrlId="CTRL45" xd:binding="substring-before(substring-after(., &quot;^&quot;), &quot;^&quot;)" style="OVERFLOW-Y: hidden; FONT-SIZE: small; WIDTH: 286px; FONT-FAMILY: Arial; WHITE-SPACE: nowrap; HEIGHT: 24px; WORD-WRAP: normal">
+																<xsl:value-of select="substring-before(substring-after(., &quot;^&quot;), &quot;^&quot;)"/>
+															</span><input class="langFont" title="" style="FONT-SIZE: xx-small; FONT-FAMILY: Arial" type="button" value="Delete" xd:xctname="Button" xd:CtrlId="DeleteNewProblem"/>
+														</td>
+													</tr>
+												</xsl:for-each>
 											</tbody>
 										</table>
 									</div>
@@ -299,14 +308,14 @@ SELECT {
 								<td>
 									<div align="center">
 										<em>
-											<font face="Arial" size="2"><input class="langFont" title="" style="FONT-FAMILY: Arial" type="button" value="Remove Problem From List" xd:CtrlId="AddResolvedProblem" xd:xctname="Button"/>
+											<font face="Arial" size="2"><input class="langFont" title="" style="FONT-FAMILY: Arial" type="button" value="Remove Problem From List" xd:xctname="Button" xd:CtrlId="AddResolvedProblem"/>
 											</font>
 										</em>
 									</div>
 									<div align="center">
-										<table class="xdRepeatingTable msoUcTable" title="" style="TABLE-LAYOUT: fixed; WIDTH: 349px; BORDER-TOP-STYLE: none; BORDER-RIGHT-STYLE: none; BORDER-LEFT-STYLE: none; BORDER-COLLAPSE: collapse; WORD-WRAP: break-word; BORDER-BOTTOM-STYLE: none" border="1" xd:CtrlId="CTRL8">
+										<table class="xdRepeatingTable msoUcTable" title="" style="TABLE-LAYOUT: fixed; WIDTH: 361px; BORDER-TOP-STYLE: none; BORDER-RIGHT-STYLE: none; BORDER-LEFT-STYLE: none; BORDER-COLLAPSE: collapse; WORD-WRAP: break-word; BORDER-BOTTOM-STYLE: none" border="1" xd:CtrlId="CTRL49">
 											<colgroup>
-												<col style="WIDTH: 349px"></col>
+												<col style="WIDTH: 361px"></col>
 											</colgroup>
 											<tbody class="xdTableHeader">
 												<tr>
@@ -318,14 +327,17 @@ SELECT {
 														</div>
 													</td>
 												</tr>
-											</tbody>
-											<tbody xd:xctname="RepeatingTable">
-												<tr style="MIN-HEIGHT: 30px">
-													<td>
-														<span class="xdExpressionBox xdDataBindingUI" title="" style="FONT-WEIGHT: bold; FONT-SIZE: small; WIDTH: 24px; FONT-FAMILY: Arial; WHITE-SPACE: normal; TEXT-ALIGN: center" xd:CtrlId="CTRL66" xd:xctname="ExpressionBox">1.</span>
-														<span class="xdExpressionBox xdDataBindingUI" title="" style="OVERFLOW-Y: hidden; FONT-SIZE: small; WIDTH: 264px; FONT-FAMILY: Arial; WHITE-SPACE: nowrap; HEIGHT: 22px; WORD-WRAP: normal" xd:CtrlId="CTRL83" xd:xctname="ExpressionBox"></span><input class="langFont" title="" style="FONT-SIZE: xx-small; FONT-FAMILY: Arial" type="button" value="Delete" xd:CtrlId="DeleteResolvedProblem" xd:xctname="Button"/>
-													</td>
-												</tr>
+											</tbody><tbody xd:xctname="RepeatingTable">
+												<xsl:for-each select="problem_list/problem_resolved">
+													<tr>
+														<td><span class="xdExpressionBox xdDataBindingUI" title="" xd:xctname="ExpressionBox" xd:CtrlId="CTRL56" xd:binding="concat(position(), &quot;.&quot;)" style="FONT-WEIGHT: bold; FONT-SIZE: small; WIDTH: 24px; FONT-FAMILY: Arial; WHITE-SPACE: normal; TEXT-ALIGN: center">
+																<xsl:value-of select="concat(position(), &quot;.&quot;)"/>
+															</span><span class="xdExpressionBox xdDataBindingUI" title="" xd:xctname="ExpressionBox" xd:CtrlId="CTRL57" xd:binding="substring-before(substring-after(., &quot;^&quot;), &quot;^&quot;)" style="OVERFLOW-Y: hidden; FONT-SIZE: small; WIDTH: 276px; FONT-FAMILY: Arial; WHITE-SPACE: nowrap; HEIGHT: 22px; WORD-WRAP: normal">
+																<xsl:value-of select="substring-before(substring-after(., &quot;^&quot;), &quot;^&quot;)"/>
+															</span><input class="langFont" title="" style="FONT-SIZE: xx-small; FONT-FAMILY: Arial" type="button" value="Delete" xd:xctname="Button" xd:CtrlId="DeleteResolvedProblem"/>
+														</td>
+													</tr>
+												</xsl:for-each>
 											</tbody>
 										</table>
 									</div>
@@ -344,15 +356,15 @@ SELECT {
 							<tr>
 								<td style="BORDER-RIGHT: #000000 1pt solid; PADDING-RIGHT: 5px; BORDER-TOP: #000000 1pt solid; PADDING-LEFT: 5px; PADDING-BOTTOM: 5px; VERTICAL-ALIGN: middle; BORDER-LEFT: #000000 1pt solid; PADDING-TOP: 5px; BORDER-BOTTOM: #000000 1pt solid">
 									<div>
-										<font face="Arial" size="2">Form completed today by: <span class="xdExpressionBox xdDataBindingUI" title="" xd:CtrlId="CTRL120" xd:xctname="ExpressionBox" tabIndex="-1" xd:binding="substring-after(encounter/encounter.provider_id, &quot;^&quot;)" xd:disableEditing="yes" style="FONT-WEIGHT: bold; FONT-SIZE: medium; WIDTH: 369px; FONT-FAMILY: Bradley Hand ITC">
+										<font face="Arial" size="2">Form completed today by: <span class="xdExpressionBox xdDataBindingUI" title="" xd:xctname="ExpressionBox" xd:CtrlId="CTRL120" tabIndex="-1" xd:binding="substring-after(encounter/encounter.provider_id, &quot;^&quot;)" xd:disableEditing="yes" style="FONT-WEIGHT: bold; FONT-SIZE: medium; WIDTH: 369px; FONT-FAMILY: Bradley Hand ITC">
 												<xsl:value-of select="substring-after(encounter/encounter.provider_id, &quot;^&quot;)"/>
-											</span>  <span class="xdExpressionBox xdDataBindingUI" title="" xd:CtrlId="CTRL121" xd:xctname="ExpressionBox" tabIndex="-1" xd:disableEditing="yes">
+											</span>  <span class="xdExpressionBox xdDataBindingUI" title="" xd:xctname="ExpressionBox" xd:CtrlId="CTRL121" tabIndex="-1" xd:disableEditing="yes">
 												<xsl:attribute name="style">FONT-WEIGHT: bold; FONT-SIZE: medium; WIDTH: 10px; COLOR: #ffffff;<xsl:choose>
 														<xsl:when test="encounter/encounter.provider_id = &quot;&quot;">COLOR: #ff0000</xsl:when>
 													</xsl:choose>
 												</xsl:attribute>
 												<xsl:value-of select="&quot;*&quot;"/>
-											</span><input class="langFont" title="" type="button" value="&lt;- Select Provider" xd:CtrlId="SelectProvider" xd:xctname="Button" tabIndex="0"/>
+											</span><input class="langFont" title="" type="button" value="&lt;- Select Provider" xd:xctname="Button" xd:CtrlId="SelectProvider" tabIndex="0"/>
 										</font>
 										<font face="Arial" size="2"></font>
 									</div>
@@ -362,7 +374,7 @@ SELECT {
 					</table>
 				</div>
 				<div align="left"> </div>
-				<div align="right"><input class="langFont" title="" style="FONT-SIZE: medium; WIDTH: 129px; FONT-FAMILY: Arial" type="button" size="1" value="Submit" xd:CtrlId="SubmitButton" xd:xctname="Button" tabIndex="0"/>
+				<div align="right"><input class="langFont" title="" style="FONT-SIZE: medium; WIDTH: 129px; FONT-FAMILY: Arial" type="button" size="1" value="Submit" xd:xctname="Button" xd:CtrlId="SubmitButton" tabIndex="0"/>
 				</div>
 			</body>
 		</html>

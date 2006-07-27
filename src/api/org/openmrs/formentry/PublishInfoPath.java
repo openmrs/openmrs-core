@@ -134,8 +134,15 @@ public class PublishInfoPath {
 		String taskPaneInitialUrl = FormEntryConstants.FORMENTRY_INFOPATH_TASKPANE_INITIAL_URL; // "http://localhost:8080/amrs/taskPane.htm";
 		String submitUrl = FormEntryConstants.FORMENTRY_INFOPATH_SUBMIT_URL; // "http://localhost:8080/amrs/formUpload";
 		String schemaFilename = FormEntryConstants.FORMENTRY_DEFAULT_SCHEMA_NAME; // "FormEntry.xsd";
-		String outputDir = FormEntryConstants.FORMENTRY_INFOPATH_OUTPUT_DIR; // System.getProperty("user.home");
-
+		String outputDirName = FormEntryConstants.FORMENTRY_INFOPATH_OUTPUT_DIR; // System.getProperty("user.home");
+		
+		// ensure that output directory exists
+		File outputDir = new File(outputDirName);
+		if (!outputDir.exists())
+			outputDir.mkdirs();
+		if (!outputDir.exists() || !outputDir.isDirectory())
+			throw new IOException("Could not create or find output directory for forms (" + outputDirName + ")");
+		
 		// prepare manifest
 		prepareManifest(tempDir, publishUrl, namespace, solutionVersion,
 				taskPaneCaption, taskPaneInitialUrl, submitUrl);
@@ -188,11 +195,11 @@ public class PublishInfoPath {
 				FormEntryConstants.FORMENTRY_DEFAULT_JSCRIPT_NAME, vars);
 
 		// create ddf
-		FormEntryUtil.createDdf(tempDir, outputDir, outputFilename);
+		FormEntryUtil.createDdf(tempDir, outputDirName, outputFilename);
 
 		// Copy XSN file to archive
 		String archiveDir = FormEntryConstants.FORMENTRY_INFOPATH_ARCHIVE_DIR;
-		File originalFile = new File(outputDir, originalFormUri);
+		File originalFile = new File(outputDirName, originalFormUri);
 		if (archiveDir != null && originalFile.exists()) {
 			String xsnArchiveFilePath = originalFormUri
 					+ "-"
@@ -484,5 +491,4 @@ public class PublishInfoPath {
 		}
 		return elem;
 	}
-
 }

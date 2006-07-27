@@ -1,26 +1,30 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<xs:schema elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:openmrs="http://schema.yoursite.org/FormEntry/1">
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:openmrs="http://schema.yoursite.org/FormEntry/1"
+           elementFormDefault="qualified"
+           attributeFormDefault="unqualified">
 
 <xs:element name="form">
   <xs:complexType>
     <xs:sequence>
-      <xs:element name="header" type="_header_type"/>
-      <xs:element name="patient" type="patient_type"/>
-      <xs:element name="encounter" type="encounter_type"/>
-      <xs:element name="obs" type="obs_type"/>
-      <xs:element name="other" type="_other_type"/>
+      <xs:element name="header" type="_header_type" />
+      <xs:element name="patient" type="patient_type" />
+      <xs:element name="encounter" type="encounter_type" />
+      <xs:element name="obs" type="obs_type" />
+      <xs:element name="problem_list" type="problem_list_type" />
+      <xs:element name="other" type="_other_type" />
     </xs:sequence>
-    <xs:attribute name="id" type="xs:positiveInteger" fixed="1" use="required"/>
-    <xs:attribute name="name" type="xs:string" fixed="Basic Form" use="required"/>
-    <xs:attribute name="version" type="xs:string" fixed="0.1" use="required"/>
+    <xs:attribute name="id" type="xs:positiveInteger" fixed="1" use="required" />
+    <xs:attribute name="name" type="xs:string" fixed="Basic Form" use="required" />
+    <xs:attribute name="version" type="xs:string" fixed="0.1" use="required" />
   </xs:complexType>
 </xs:element>
 
 <xs:complexType name="_header_type">
   <xs:sequence>
-    <xs:element name="enterer" type="xs:string"/>
-    <xs:element name="date_entered" type="xs:dateTime"/>
-    <xs:element name="session" type="xs:string"/>
+    <xs:element name="enterer" type="xs:string" />
+    <xs:element name="date_entered" type="xs:dateTime" />
+    <xs:element name="session" type="xs:string" />
   </xs:sequence>
 </xs:complexType>
 
@@ -32,14 +36,14 @@
 
 <xs:simpleType name="_requiredString">
   <xs:restriction base="xs:string">
-    <xs:minLength value="1"/>
+    <xs:minLength value="1" />
   </xs:restriction>
 </xs:simpleType>
 
 <xs:complexType name="_infopath_boolean">
   <xs:simpleContent>
     <xs:extension base="xs:boolean">
-      <xs:attribute name="infopath_boolean_hack" type="xs:positiveInteger" use="required" fixed="1"/>
+      <xs:attribute name="infopath_boolean_hack" type="xs:positiveInteger" use="required" fixed="1" />
     </xs:extension>
   </xs:simpleContent>
 </xs:complexType>
@@ -50,8 +54,8 @@
       <xs:complexType>
         <xs:simpleContent>
           <xs:extension base="xs:string">
-            <xs:attribute name="openmrs_table" type="xs:string" use="required" fixed="patient"/>
-            <xs:attribute name="openmrs_attribute" type="xs:string" use="required" fixed="birthdate"/>
+            <xs:attribute name="openmrs_table" type="xs:string" use="required" fixed="patient" />
+            <xs:attribute name="openmrs_attribute" type="xs:string" use="required" fixed="birthdate" />
           </xs:extension>
         </xs:simpleContent>
       </xs:complexType>
@@ -60,8 +64,8 @@
       <xs:complexType>
         <xs:simpleContent>
           <xs:extension base="xs:string">
-            <xs:attribute name="openmrs_table" type="xs:string" use="required" fixed="patient"/>
-            <xs:attribute name="openmrs_attribute" type="xs:string" use="required" fixed="birthdate_estimated"/>
+            <xs:attribute name="openmrs_table" type="xs:string" use="required" fixed="patient" />
+            <xs:attribute name="openmrs_attribute" type="xs:string" use="required" fixed="birthdate_estimated" />
           </xs:extension>
         </xs:simpleContent>
       </xs:complexType>
@@ -70,8 +74,8 @@
       <xs:complexType>
         <xs:simpleContent>
           <xs:extension base="xs:string">
-            <xs:attribute name="openmrs_table" type="xs:string" use="required" fixed="patient_name"/>
-            <xs:attribute name="openmrs_attribute" type="xs:string" use="required" fixed="family_name"/>
+            <xs:attribute name="openmrs_table" type="xs:string" use="required" fixed="patient_name" />
+            <xs:attribute name="openmrs_attribute" type="xs:string" use="required" fixed="family_name" />
           </xs:extension>
         </xs:simpleContent>
       </xs:complexType>
@@ -80,8 +84,8 @@
       <xs:complexType>
         <xs:simpleContent>
           <xs:extension base="xs:string">
-            <xs:attribute name="openmrs_table" type="xs:string" use="required" fixed="patient_name"/>
-            <xs:attribute name="openmrs_attribute" type="xs:string" use="required" fixed="given_name"/>
+            <xs:attribute name="openmrs_table" type="xs:string" use="required" fixed="patient_name" />
+            <xs:attribute name="openmrs_attribute" type="xs:string" use="required" fixed="given_name" />
           </xs:extension>
         </xs:simpleContent>
       </xs:complexType>
@@ -90,8 +94,8 @@
       <xs:complexType>
         <xs:simpleContent>
           <xs:extension base="xs:string">
-            <xs:attribute name="openmrs_table" type="xs:string" use="required" fixed="patient_identifier"/>
-            <xs:attribute name="openmrs_attribute" type="xs:string" use="required" fixed="identifier"/>
+            <xs:attribute name="openmrs_table" type="xs:string" use="required" fixed="patient_identifier" />
+            <xs:attribute name="openmrs_attribute" type="xs:string" use="required" fixed="identifier" />
           </xs:extension>
         </xs:simpleContent>
       </xs:complexType>
@@ -100,8 +104,8 @@
       <xs:complexType>
         <xs:simpleContent>
           <xs:extension base="xs:string">
-            <xs:attribute name="openmrs_table" type="xs:string" use="required" fixed="patient_name"/>
-            <xs:attribute name="openmrs_attribute" type="xs:string" use="required" fixed="middle_name"/>
+            <xs:attribute name="openmrs_table" type="xs:string" use="required" fixed="patient_name" />
+            <xs:attribute name="openmrs_attribute" type="xs:string" use="required" fixed="middle_name" />
           </xs:extension>
         </xs:simpleContent>
       </xs:complexType>
@@ -110,8 +114,8 @@
       <xs:complexType>
         <xs:simpleContent>
           <xs:extension base="_requiredString">
-            <xs:attribute name="openmrs_table" type="xs:string" use="required" fixed="patient"/>
-            <xs:attribute name="openmrs_attribute" type="xs:string" use="required" fixed="patient_id"/>
+            <xs:attribute name="openmrs_table" type="xs:string" use="required" fixed="patient" />
+            <xs:attribute name="openmrs_attribute" type="xs:string" use="required" fixed="patient_id" />
           </xs:extension>
         </xs:simpleContent>
       </xs:complexType>
@@ -120,8 +124,8 @@
       <xs:complexType>
         <xs:simpleContent>
           <xs:extension base="xs:string">
-            <xs:attribute name="openmrs_table" type="xs:string" use="required" fixed="patient"/>
-            <xs:attribute name="openmrs_attribute" type="xs:string" use="required" fixed="gender"/>
+            <xs:attribute name="openmrs_table" type="xs:string" use="required" fixed="patient" />
+            <xs:attribute name="openmrs_attribute" type="xs:string" use="required" fixed="gender" />
           </xs:extension>
         </xs:simpleContent>
       </xs:complexType>
@@ -130,8 +134,8 @@
       <xs:complexType>
         <xs:simpleContent>
           <xs:extension base="xs:string">
-            <xs:attribute name="openmrs_table" type="xs:string" use="required" fixed="patient"/>
-            <xs:attribute name="openmrs_attribute" type="xs:string" use="required" fixed="tribe"/>
+            <xs:attribute name="openmrs_table" type="xs:string" use="required" fixed="patient" />
+            <xs:attribute name="openmrs_attribute" type="xs:string" use="required" fixed="tribe" />
           </xs:extension>
         </xs:simpleContent>
       </xs:complexType>
@@ -140,8 +144,8 @@
       <xs:complexType>
         <xs:simpleContent>
           <xs:extension base="xs:string">
-            <xs:attribute name="openmrs_table" type="xs:string" use="required" fixed="patient_address"/>
-            <xs:attribute name="openmrs_attribute" type="xs:string" use="required" fixed="address1"/>
+            <xs:attribute name="openmrs_table" type="xs:string" use="required" fixed="patient_address" />
+            <xs:attribute name="openmrs_attribute" type="xs:string" use="required" fixed="address1" />
           </xs:extension>
         </xs:simpleContent>
       </xs:complexType>
@@ -150,8 +154,8 @@
       <xs:complexType>
         <xs:simpleContent>
           <xs:extension base="xs:string">
-            <xs:attribute name="openmrs_table" type="xs:string" use="required" fixed="patient_address"/>
-            <xs:attribute name="openmrs_attribute" type="xs:string" use="required" fixed="address2"/>
+            <xs:attribute name="openmrs_table" type="xs:string" use="required" fixed="patient_address" />
+            <xs:attribute name="openmrs_attribute" type="xs:string" use="required" fixed="address2" />
           </xs:extension>
         </xs:simpleContent>
       </xs:complexType>
@@ -165,8 +169,8 @@
       <xs:complexType>
         <xs:simpleContent>
           <xs:extension base="_requiredString">
-            <xs:attribute name="openmrs_table" type="xs:string" use="required" fixed="encounter"/>
-            <xs:attribute name="openmrs_attribute" type="xs:string" use="required" fixed="encounter_datetime"/>
+            <xs:attribute name="openmrs_table" type="xs:string" use="required" fixed="encounter" />
+            <xs:attribute name="openmrs_attribute" type="xs:string" use="required" fixed="encounter_datetime" />
           </xs:extension>
         </xs:simpleContent>
       </xs:complexType>
@@ -175,8 +179,8 @@
       <xs:complexType>
         <xs:simpleContent>
           <xs:extension base="_requiredString">
-            <xs:attribute name="openmrs_table" type="xs:string" use="required" fixed="encounter"/>
-            <xs:attribute name="openmrs_attribute" type="xs:string" use="required" fixed="location_id"/>
+            <xs:attribute name="openmrs_table" type="xs:string" use="required" fixed="encounter" />
+            <xs:attribute name="openmrs_attribute" type="xs:string" use="required" fixed="location_id" />
           </xs:extension>
         </xs:simpleContent>
       </xs:complexType>
@@ -185,8 +189,8 @@
       <xs:complexType>
         <xs:simpleContent>
           <xs:extension base="_requiredString">
-            <xs:attribute name="openmrs_table" type="xs:string" use="required" fixed="encounter"/>
-            <xs:attribute name="openmrs_attribute" type="xs:string" use="required" fixed="provider_id"/>
+            <xs:attribute name="openmrs_table" type="xs:string" use="required" fixed="encounter" />
+            <xs:attribute name="openmrs_attribute" type="xs:string" use="required" fixed="provider_id" />
           </xs:extension>
         </xs:simpleContent>
       </xs:complexType>
@@ -196,24 +200,67 @@
 
 <xs:complexType name="obs_type">
   <xs:sequence>
-    <xs:element name="weight_kg" type="weight_kg_type" nillable="1"/>
+    <xs:element name="weight_kg" type="weight_kg_type" nillable="1" />
   </xs:sequence>
+  <xs:attribute name="openmrs_concept" type="xs:string" use="required" fixed="1238^MEDICAL RECORD OBSERVATIONS^99DCT" />
+  <xs:attribute name="openmrs_datatype" type="xs:string" use="required" fixed="ZZ" />
+</xs:complexType>
+
+<xs:complexType name="problem_list_type">
+  <xs:sequence>
+    <xs:element name="problem_added" type="problem_added_type" maxOccurs="unbounded" nillable="1" />
+    <xs:element name="problem_resolved" type="problem_resolved_type" maxOccurs="unbounded" nillable="1" />
+  </xs:sequence>
+  <xs:attribute name="openmrs_concept" type="xs:string" use="required" fixed="1284^PROBLEM LIST^99DCT" />
+  <xs:attribute name="openmrs_datatype" type="xs:string" use="required" fixed="ZZ" />
 </xs:complexType>
 
 <xs:simpleType name="weight_kg_type_restricted_type">
   <xs:restriction base="xs:float">
-    <xs:minInclusive value="0.0"/>
-    <xs:maxInclusive value="250.0"/>
+    <xs:minInclusive value="0.0" />
+    <xs:maxInclusive value="250.0" />
   </xs:restriction>
 </xs:simpleType>
 <xs:complexType name="weight_kg_type">
   <xs:sequence>
-    <xs:element name="date" type="xs:date" nillable="true" minOccurs="0"/>
-    <xs:element name="time" type="xs:time" nillable="true" minOccurs="0"/>
-    <xs:element name="value" type="weight_kg_type_restricted_type" nillable="1"/>
+    <xs:element name="date" type="xs:date" nillable="true" minOccurs="0" />
+    <xs:element name="time" type="xs:time" nillable="true" minOccurs="0" />
+    <xs:element name="value" type="weight_kg_type_restricted_type" nillable="1" />
   </xs:sequence>
-  <xs:attribute name="openmrs_concept" type="xs:string" use="required" fixed="5089^WEIGHT (KG)^99DCT"/>
-  <xs:attribute name="openmrs_datatype" type="xs:string" use="required" fixed="NM"/>
+  <xs:attribute name="openmrs_concept" type="xs:string" use="required" fixed="5089^WEIGHT (KG)^99DCT" />
+  <xs:attribute name="openmrs_datatype" type="xs:string" use="required" fixed="NM" />
+</xs:complexType>
+
+<xs:complexType name="problem_resolved_type">
+  <xs:sequence>
+    <xs:element name="date" type="xs:date" nillable="true" minOccurs="0" />
+    <xs:element name="time" type="xs:time" nillable="true" minOccurs="0" />
+    <xs:element name="value" minOccurs="0" maxOccurs="1" nillable="1">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:element>
+  </xs:sequence>
+  <xs:attribute name="openmrs_concept" type="xs:string" use="required" fixed="6097^PROBLEM RESOLVED^99DCT" />
+  <xs:attribute name="openmrs_datatype" type="xs:string" use="required" fixed="CWE" />
+  <xs:attribute name="multiple" type="xs:integer" use="required" fixed="0" />
+</xs:complexType>
+
+<xs:complexType name="problem_added_type">
+  <xs:sequence>
+    <xs:element name="date" type="xs:date" nillable="true" minOccurs="0" />
+    <xs:element name="time" type="xs:time" nillable="true" minOccurs="0" />
+    <xs:element name="value" minOccurs="0" maxOccurs="1" nillable="1">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:element>
+  </xs:sequence>
+  <xs:attribute name="openmrs_concept" type="xs:string" use="required" fixed="6042^PROBLEM ADDED^99DCT" />
+  <xs:attribute name="openmrs_datatype" type="xs:string" use="required" fixed="CWE" />
+  <xs:attribute name="multiple" type="xs:integer" use="required" fixed="0" />
 </xs:complexType>
 
 </xs:schema>
