@@ -62,7 +62,7 @@ public class LoginServlet extends HttpServlet {
 			}
 			
 			// don't redirect to pages outside of openmrs
-			if (!redirect.startsWith("/openmrs")) {
+			if (!redirect.startsWith(request.getContextPath())) {
 				redirect = request.getContextPath();
 			}
 		}
