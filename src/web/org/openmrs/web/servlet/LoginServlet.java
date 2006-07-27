@@ -47,9 +47,9 @@ public class LoginServlet extends HttpServlet {
 		// third option for redirecting is the main page of the webapp
 		if (redirect == null || redirect.equals(""))
 			redirect = request.getContextPath();
-		
-		// don't redirect back to the login page on success. (I assume the login page is {something}login.{something}
+			
 		if (redirect != null) {
+			// don't redirect back to the login page on success. (I assume the login page is {something}login.{something}
 			String s = redirect;
 			if (s.indexOf('/') >= 0) {
 				s = s.substring(s.lastIndexOf('/') + 1);
@@ -60,8 +60,13 @@ public class LoginServlet extends HttpServlet {
 			if (s.equals("login")) {
 				redirect = request.getContextPath();
 			}
+			
+			// don't redirect to pages outside of openmrs
+			if (!redirect.startsWith("/openmrs")) {
+				redirect = request.getContextPath();
+			}
 		}
-		
+				
 		Context context = (Context)httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		if (context == null) {
 			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
