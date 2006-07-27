@@ -28,7 +28,7 @@ public class ForEachEncounterTag extends BodyTagSupport {
 	private Integer type;
 	private Integer num = null;
 	private String sortBy;
-	private Boolean descending;
+	private Boolean descending = Boolean.FALSE;
 	private String var;
 
 	public int doStartTag() {
@@ -36,8 +36,8 @@ public class ForEachEncounterTag extends BodyTagSupport {
 			log.error("ForEachEncounterTag skipping body due to encounters param = " + encounters);
 			return SKIP_BODY;
 		}
-		// First retrieve all observations matching the passed concept id, if provided.
-		// If not provided, return all Encounterervations
+		// First retrieve all encounters matching the passed concept id, if provided.
+		// If not provided, return all encounters
 		matchingEncs = new ArrayList<Encounter>();
 		for (Iterator<Encounter> i=encounters.iterator(); i.hasNext();) {
 			Encounter e = i.next();

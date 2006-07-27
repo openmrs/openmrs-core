@@ -273,12 +273,12 @@
 	</attribute>
 	<attribute>
 		<name>parameterMap</name>
-		<description>
-			A Map(String,Object) of extra parameter values
-		</description>
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
 		<type>java.util.Map</type>
+		<description>
+			A Map(String,Object) of extra parameter values
+		</description>
 	</attribute>
 	<attribute>
 		<name>patientId</name>
@@ -348,13 +348,16 @@
 </tag>
 
 <tag>
-	<name>recentObs</name>
-	<tag-class>org.openmrs.web.taglib.RecentObsTag</tag-class>
+	<name>forEachObs</name>
+	<tag-class>org.openmrs.web.taglib.ForEachObsTag</tag-class>
 	<body-content>JSP</body-content>
 	<description>
 		This tag iterates through a collection of observations passed into it and renders it's body content.
-		It will return the most recent [num] observations, and if no [num] parameter is specified, it will return the 1 most recent.
-		It will limit the results by concept only if a [conceptId] parameter is passed in. Otherwise, it will return all concepts.
+		It will return all matching observations by default, or [num] observations if it is specified..
+		It will limit the results by [conceptId] if passed in, otherwise it will return all observations.
+		It will sort by the property passed in - this property should match a public property of Obs - i.e. "obsDatetime"
+		If no sort property is specified, it will sort by obsDatetime by default
+		It will sort ascending by default, descending if "descending=true" is specified.
 	</description>
 	<variable>
 		<name-from-attribute>var</name-from-attribute>
@@ -379,13 +382,24 @@
 		<type>java.lang.Integer</type>
 	</attribute>
 	<attribute>
+		<name>sortBy</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
+		<name>descending</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Boolean</type>
+	</attribute>
+	<attribute>
 		<name>var</name>
 		<required>true</required>
 		<rtexprvalue>true</rtexprvalue>
 		<type>java.lang.String</type>
 	</attribute>
 </tag>
-
 <tag>
 	<name>forEachEncounter</name>
 	<tag-class>org.openmrs.web.taglib.ForEachEncounterTag</tag-class>

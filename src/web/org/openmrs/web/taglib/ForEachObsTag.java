@@ -15,7 +15,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Obs;
 
 
-public class RecentObsTag extends BodyTagSupport {
+public class ForEachObsTag extends BodyTagSupport {
 
 	public static final long serialVersionUID = 1L;
 	
@@ -26,12 +26,15 @@ public class RecentObsTag extends BodyTagSupport {
 	// Properties accessible through tag attributes
 	private Collection<Obs> obs;
 	private Integer conceptId;
-	private Integer num = new Integer(1);
+	private Integer num = null;
+	private String sortBy;
+	private Boolean descending = Boolean.FALSE;
 	private String var;
 
 	public int doStartTag() {
+		
 		if (obs == null || obs.isEmpty()) {
-			log.error("RecentObsTag skipping body due to obs param = " + obs);
+			log.error("ForEachObsTag skipping body due to obs param = " + obs);
 			return SKIP_BODY;
 		}
 		// First retrieve all observations matching the passed concept id, if provided.
@@ -39,16 +42,19 @@ public class RecentObsTag extends BodyTagSupport {
 		matchingObs = new ArrayList<Obs>();
 		for (Iterator<Obs> i=obs.iterator(); i.hasNext();) {
 			Obs o = i.next();
-			if (conceptId == null || o.getConcept().getConceptId().intValue() == conceptId.intValue()) {
+			if (conceptId == null || (o.getConcept() != null && o.getConcept().getConceptId().intValue() == conceptId.intValue())) {
 				matchingObs.add(o);
 			}
 		}
-		log.debug("RecentObsTag found " + matchingObs.size() + " observations matching conceptId = " + conceptId);
+		log.debug("ForEachObsTag found " + matchingObs.size() + " observations matching conceptId = " + conceptId);
 		
 		// Next, sort these observations
-		Comparator comp = new BeanComparator("obsDatetime", new ReverseComparator(new ComparableComparator()));
+		if (sortBy == null || sortBy.equals("")) {
+			sortBy = "obsDatetime";
+		}
+		Comparator comp = new BeanComparator(sortBy, (descending ? new ReverseComparator(new ComparableComparator()) : new ComparableComparator()));
 		Collections.sort(matchingObs, comp);
-		
+
 		// Return appropriate number of results
 		if (matchingObs.isEmpty()) {
 			return SKIP_BODY;
@@ -62,12 +68,12 @@ public class RecentObsTag extends BodyTagSupport {
 	 * @see javax.servlet.jsp.tagext.IterationTag#doAfterBody()
 	 */
 	public int doAfterBody() throws JspException {
-        if(matchingObs.size() > count && count < num.intValue()) {
+        if(matchingObs.size() > count && (num == null || count < num.intValue())) {
         	pageContext.setAttribute(var, matchingObs.get(count++));
             return EVAL_BODY_BUFFERED;
         } else {
             return SKIP_BODY;
-        }   
+        } 
 	}
 
 	/**
@@ -133,5 +139,33 @@ public class RecentObsTag extends BodyTagSupport {
 	 */
 	public void setVar(String var) {
 		this.var = var;
+	}
+
+	/**
+	 * @return the descending
+	 */
+	public Boolean getDescending() {
+		return descending;
+	}
+
+	/**
+	 * @param descending the descending to set
+	 */
+	public void setDescending(Boolean descending) {
+		this.descending = descending;
+	}
+
+	/**
+	 * @return the sortBy
+	 */
+	public String getSortBy() {
+		return sortBy;
+	}
+
+	/**
+	 * @param sortBy the sortBy to set
+	 */
+	public void setSortBy(String sortBy) {
+		this.sortBy = sortBy;
 	}
 }

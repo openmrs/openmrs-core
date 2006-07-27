@@ -9,59 +9,38 @@
 	<table>
 		<thead>
 			<tr>
-				<th>Patient attributes</th>
+				<th>Patient attribute</th>
 				<th>Current value</th>
-				<th>New value</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td><spring:message code="Patient.gender"/>:</td>
-				<td>
-					<c:if test="${model.patient.gender == 'M'}"><spring:message code="Patient.gender.male"/></c:if>
-					<c:if test="${model.patient.gender == 'F'}"><spring:message code="Patient.gender.female"/></c:if>
-				</td>
-				<td>Input field here</td>
-			</tr>
-			<tr>
 				<td><spring:message code="Patient.race"/>:</td>
 				<td>${model.patient.race}</td>
-				<td>Input field here</td>
-			</tr>
-			<tr>
-				<td><spring:message code="Patient.birthdate"/>:</td>
-				<td><openmrs:formatDate date="${model.patient.birthdate}" />, Estimated: ${model.patient.birthdateEstimated}</td>
-				<td>Input field here</td>
 			</tr>
 			<tr>
 				<td><spring:message code="Patient.birthplace"/>:</td>
 				<td>${model.patient.birthplace}</td>
-				<td>Input field here</td>
 			</tr>
 			<tr>
 				<td><spring:message code="Patient.mothersName"/>:</td>
 				<td>${model.patient.mothersName}</td>
-				<td>Input field here</td>
 			</tr>
 			<tr>
 				<td><spring:message code="Patient.civilStatus"/>:</td>
 				<td>${model.patient.civilStatus}</td>
-				<td>Input field here</td>
 			</tr>
 			<tr>
 				<td><spring:message code="Patient.dead"/>:</td>
 				<td>${model.patient.dead} (<openmrs:formatDate date="${model.patient.deathDate}" />) - ${model.patient.causeOfDeath}</td>
-				<td>Input field here</td>
 			</tr>
 			<tr>
 				<td><spring:message code="Patient.healthDistrict"/>:</td>
 				<td>${model.patient.healthDistrict}</td>
-				<td>Input field here</td>
 			</tr>
 			<tr>
 				<td><spring:message code="Patient.healthCenter"/>:</td>
 				<td>${model.patient.healthCenter}</td>
-				<td>Input field here</td>
 			</tr>
 		</tbody>
 	</table>

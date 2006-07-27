@@ -34,17 +34,26 @@
 		if (tabType == 'overview') {
 			document.getElementById('patientOverview').style.display = '';
 			document.getElementById('patientRegimen').style.display = 'none';
+			document.getElementById('patientEncounters').style.display = 'none';
 			document.getElementById('patientDemographics').style.display = 'none';
 		}
 		else if (tabType == 'regimen') {
-			document.getElementById('patientRegimen').style.display = '';
 			document.getElementById('patientOverview').style.display = 'none';
+			document.getElementById('patientRegimen').style.display = '';
+			document.getElementById('patientEncounters').style.display = 'none';
+			document.getElementById('patientDemographics').style.display = 'none';
+		}
+		else if (tabType == 'encounters') {
+			document.getElementById('patientOverview').style.display = 'none';
+			document.getElementById('patientRegimen').style.display = 'none';
+			document.getElementById('patientEncounters').style.display = '';
 			document.getElementById('patientDemographics').style.display = 'none';
 		}
 		else if (tabType == 'demographics') {
-			document.getElementById('patientDemographics').style.display = '';
-			document.getElementById('patientRegimen').style.display = 'none';
 			document.getElementById('patientOverview').style.display = 'none';
+			document.getElementById('patientRegimen').style.display = 'none';
+			document.getElementById('patientEncounters').style.display = 'none';
+			document.getElementById('patientDemographics').style.display = '';
 		}
     }
 </script>
@@ -64,8 +73,7 @@
 <div id="patientTabs">
 	<ul>
 		<li><a href="#" onclick="changeTab(this, 'overview');" class="current">Overview</a></li>
-		<li><a href="#" onclick="changeTab(this, 'regimen');">Regimen</a></li>
-		<li><a href="#" onclick="changeTab(this, 'labs');">Lab Tests</a></li>
+		<li><a href="#" onclick="changeTab(this, 'regimen');">Regimens</a></li>
 		<li><a href="#" onclick="changeTab(this, 'encounters');">Encounters</a></li>
 		<li><a href="#" onclick="changeTab(this, 'demographics');">Demographics</a></li>
 	</ul>
@@ -76,6 +84,9 @@
 	</div>
 	<div id="patientRegimen" style="display:none;">
 		<openmrs:portlet url="patientRegimen" id="patientRegimenPortlet" patientId="${patient.patientId}"/>
+	</div>
+	<div id="patientEncounters" style="display:none;">
+		<openmrs:portlet url="patientEncounters" id="patientEncountersPortlet" patientId="${patient.patientId}"/>
 	</div>
 	<div id="patientDemographics" style="display:none;">
 		<openmrs:portlet url="patientDemographics" id="patientDemographicsPortlet" patientId="${patient.patientId}"/>
