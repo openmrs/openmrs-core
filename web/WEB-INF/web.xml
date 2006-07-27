@@ -7,6 +7,17 @@
 	<display-name>@WEBAPP.DISPLAY.NAME@</display-name>
 	<display-name>@WEBAPP.DESCRIPTION@</display-name> 
 
+
+	<servlet>
+		<servlet-name>showGraphServlet</servlet-name>
+		<servlet-class>org.openmrs.web.servlet.ShowGraphServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>showGraphServlet</servlet-name>
+		<url-pattern>/showGraphServlet</url-pattern>
+	</servlet-mapping>
+	
+	
 	<servlet>
 		<servlet-name>loginServlet</servlet-name>
 		<servlet-class>org.openmrs.web.servlet.LoginServlet</servlet-class>

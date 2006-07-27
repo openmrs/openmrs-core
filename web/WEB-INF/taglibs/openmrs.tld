@@ -480,4 +480,37 @@
 	</attribute>
 </tag>
 	
+<tag>
+	<name>showGraph</name>
+	<tag-class>org.openmrs.web.taglib.ShowGraphTag</tag-class>
+	<body-content>JSP</body-content>
+	<description>
+		Displays a graph given the patient and concept
+	</description>
+	<attribute>
+		<name>patientId</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>conceptName</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
+		<name>height</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>width</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+</tag>	
+	
 </taglib>

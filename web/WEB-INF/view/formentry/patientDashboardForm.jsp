@@ -36,24 +36,35 @@
 			document.getElementById('patientRegimen').style.display = 'none';
 			document.getElementById('patientEncounters').style.display = 'none';
 			document.getElementById('patientDemographics').style.display = 'none';
+			document.getElementById('patientGraphs').style.display = 'none';
 		}
 		else if (tabType == 'regimen') {
 			document.getElementById('patientOverview').style.display = 'none';
 			document.getElementById('patientRegimen').style.display = '';
 			document.getElementById('patientEncounters').style.display = 'none';
 			document.getElementById('patientDemographics').style.display = 'none';
+			document.getElementById('patientGraphs').style.display = 'none';
 		}
 		else if (tabType == 'encounters') {
 			document.getElementById('patientOverview').style.display = 'none';
 			document.getElementById('patientRegimen').style.display = 'none';
 			document.getElementById('patientEncounters').style.display = '';
 			document.getElementById('patientDemographics').style.display = 'none';
+			document.getElementById('patientGraphs').style.display = 'none';
 		}
 		else if (tabType == 'demographics') {
 			document.getElementById('patientOverview').style.display = 'none';
 			document.getElementById('patientRegimen').style.display = 'none';
 			document.getElementById('patientEncounters').style.display = 'none';
 			document.getElementById('patientDemographics').style.display = '';
+			document.getElementById('patientGraphs').style.display = 'none';
+		}
+		else if (tabType == 'graphs') {
+			document.getElementById('patientOverview').style.display = 'none';
+			document.getElementById('patientRegimen').style.display = 'none';
+			document.getElementById('patientEncounters').style.display = 'none';
+			document.getElementById('patientDemographics').style.display = 'none';
+			document.getElementById('patientGraphs').style.display = '';
 		}
     }
 </script>
@@ -76,6 +87,7 @@
 		<li><a href="#" onclick="changeTab(this, 'regimen');">Regimens</a></li>
 		<li><a href="#" onclick="changeTab(this, 'encounters');">Encounters</a></li>
 		<li><a href="#" onclick="changeTab(this, 'demographics');">Demographics</a></li>
+		<li><a href="#" onclick="changeTab(this, 'graphs');">Graphs</a></li>
 	</ul>
 </div>
 <div id="patientSections">
@@ -90,6 +102,9 @@
 	</div>
 	<div id="patientDemographics" style="display:none;">
 		<openmrs:portlet url="patientDemographics" id="patientDemographicsPortlet" patientId="${patient.patientId}"/>
+	</div>
+	<div id="patientGraphs" style="display:none;">
+		<openmrs:portlet url="patientGraphs" id="patientGraphsPortlet" patientId="${patient.patientId}"/>
 	</div>
 </div>
 
