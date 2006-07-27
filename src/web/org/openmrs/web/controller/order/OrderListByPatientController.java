@@ -156,23 +156,16 @@ public class OrderListByPatientController extends SimpleFormController {
 			if ( patientId != null ) {
 				PatientService ps = context.getPatientService();
 				p = ps.getPatient(patientId);
-			} else {
-				System.err.println("\n\n\nCould not find patient ID, using 9475 instead (John Public)...\n\n\n");
-				patientId = new Integer(9475);
-				PatientService ps = context.getPatientService();
-				p = ps.getPatient(patientId);
-			}
-
-			
+				
+				Set<PatientName> patientNames = p.getNames();
+				Iterator i = patientNames.iterator();
+				PatientName pm = (PatientName)i.next();
+				
+				refData.put("patient", p);
+				refData.put("patientName", pm);
+			}			
 		}
-		
-		Set<PatientName> patientNames = p.getNames();
-		Iterator i = patientNames.iterator();
-		PatientName pm = (PatientName)i.next();
-		
-		refData.put("patient", p);
-		refData.put("patientName", pm);
-		
+				
 		return refData;
 	}
 }
