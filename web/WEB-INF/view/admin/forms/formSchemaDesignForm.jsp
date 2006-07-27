@@ -124,6 +124,7 @@
 <script type="text/javascript">
 	var formPublished = ${form.published};
 	var formId = <request:parameter name="formId"/>;
+	<c:if test="${form.formId == 1}"> formPublished = true; </c:if>
 </script>
 
 <h2>
@@ -171,12 +172,14 @@
 	</tr>
 </table>
 
+<!--
 <c:if test="${form.published == false}">
 	<br/>
 	<form method="post">
 		<input type="submit" name="action" value='<spring:message code="Form.updateSortOrder" />' />
 	</form>
 </c:if>
+-->
 
 <div id="editFormField">
 	<div id="formFieldTitle"><spring:message code="FormField.edit"/>:</div>

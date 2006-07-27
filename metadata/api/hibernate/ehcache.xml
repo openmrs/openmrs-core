@@ -75,6 +75,7 @@
 		is 120 seconds.
 	-->
 
+	<!-- 
 	<cache name="org.openmrs.Concept" maxElementsInMemory="1000"
 		eternal="true" overflowToDisk="true" />
 
@@ -91,6 +92,7 @@
         eternal="true"
         overflowToDisk="false"
     />
+    -->
 
 	<!-- Sample cache named sampleCache2
 		This cache has a maximum of 1000 elements in memory. There is no overflow to disk, so 1000

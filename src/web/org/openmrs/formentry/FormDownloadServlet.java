@@ -251,11 +251,11 @@ public class FormDownloadServlet extends HttpServlet {
 		File tmpXSN = FormEntryUtil.expandXsn(formFilePath);
 
 		// Generate the schema and template.xml
-		String schema = new FormSchemaBuilder(context, form).getSchema();
 		FormXmlTemplateBuilder fxtb = new FormXmlTemplateBuilder(context, form, url);
 		String template = fxtb.getXmlTemplate(false);
 		String templateWithDefaultScripts = fxtb.getXmlTemplate(true);
-
+		String schema = new FormSchemaBuilder(context, form).getSchema();
+		
 		// Generate and overwrite the schema
 		File schemaFile = FormEntryUtil.findFile(tmpXSN, schemaFilename);
 		if (schemaFile == null)

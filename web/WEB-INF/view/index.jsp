@@ -2,8 +2,14 @@
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
-<openmrs:portlet url="welcome" parameters="showName=true|showLogin=true" />
+<br/>
 
-<br/><br/><br />
+<center>
+	<img src="/openmrs/images/ribbon.jpg">
+	
+	<openmrs:portlet url="login" />
+</center>
+
+<br />
 
 <%@ include file="/WEB-INF/template/footer.jsp" %> 

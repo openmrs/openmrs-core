@@ -7,7 +7,7 @@
 
 	<class name="User" table="users">
 
-		<cache usage="read-write"/>
+		<!--  cache usage="read-write"/ -->
 
 		<id name="userId" type="int" column="user_id"
 			unsaved-value="0">

@@ -75,7 +75,7 @@
 				<input type="hidden" name="_${status.expression}">
 				<input type="checkbox" name="${status.expression}" 
 					   id="${status.expression}" 
-					   <c:if test="${status.value == true}">checked</c:if> 
+					   <c:if test="${status.value == true && empty param.duplicate}">checked</c:if> 
 				/>
 			</spring:bind>
 		</td>
@@ -139,12 +139,13 @@
 				<input type="hidden" name="_${status.expression}">
 				<input type="checkbox" name="${status.expression}" 
 					   id="${status.expression}" 
-					   <c:if test="${status.value == true}">checked</c:if> 
+					   <c:if test="${status.value == true}">checked</c:if>
+					   onchange="document.getElementById('retiredReasonRow').style.display = (this.checked == true) ? '' : 'none';"
 				/>
 			</spring:bind>
 		</td>
 	</tr>
-	<tr>
+	<tr id="retiredReasonRow">
 		<td><spring:message code="general.retiredReason"/></td>
 		<spring:bind path="form.retiredReason">
 			<td>
@@ -188,7 +189,7 @@
 <c:if test="${empty param.duplicate}">
 	<input type="submit" name="action" value="<spring:message code="Form.save"/>">
 	
-	<c:if test="${form.formId != null}">
+	<c:if test="${form.formId != null && form.formId != 1}">
 		<openmrs:hasPrivilege privilege="Delete Forms">
 			 &nbsp; &nbsp; &nbsp;
 			<input type="submit" name="action" value="<spring:message code="Form.delete"/>" onclick="return confirm('Are you sure you want to delete this entire form AND schema?')"/>
@@ -198,6 +199,8 @@
 
 </form>
 
-
+<script type="text/javascript">
+	document.getElementById('retiredReasonRow').style.display = document.getElementById('retired').checked ==true ? '' : 'none';
+</script>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

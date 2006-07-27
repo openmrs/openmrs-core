@@ -56,10 +56,10 @@ public class FormStarterXSN {
 
 	public FormStarterXSN(Context context, Form form, String url) {
 		this.form = form;
-		schema = new FormSchemaBuilder(context, form).getSchema();
 		FormXmlTemplateBuilder fxtb = new FormXmlTemplateBuilder(context, form, url);
 		template = fxtb.getXmlTemplate(false);
 		templateWithDefaultScripts = fxtb.getXmlTemplate(true);
+		schema = new FormSchemaBuilder(context, form).getSchema();
 	}
 
 	public String getXSN() throws IOException {

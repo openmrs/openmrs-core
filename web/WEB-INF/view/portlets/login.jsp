@@ -8,7 +8,7 @@
 
 <br/>
 
-<form method="post" action="loginServlet" class="box" style="padding:15px; width: 300px;">
+<form method="post" action="loginServlet" style="padding:15px; width: 300px;">
 	<table>
 		<tr>
 			<td><spring:message code="User.username"/>:</td>
@@ -36,13 +36,16 @@
 				<td align="left"><input type="password" name="secretAnswer" value="" id="secretAnswer" size="25"></td>
 			</tr>
 		</request:existsParameter>
+		<tr>
+			<td></td>
+			<td><input type="submit" value="<spring:message code="auth.login"/>" /></td>
+		</tr>
 	</table>
 	<br>
 	
 	<input type="hidden" name="redirect" value="${redirect}" />
 	<input type="hidden" name="referer" value='<request:header name="referer" />' />
 	
-	<input type="submit" value="<spring:message code="auth.login"/>" />
 </form>	
 
 <script type="text/javascript">
