@@ -41,6 +41,7 @@ public class ConceptHandler extends AbstractFieldGenHandler implements FieldGenH
 			} else startVal = "";
 			if ( fieldLength == null ) fieldLength = FieldGenTag.DEFAULT_CONCEPT_NAME_LENGTH;
 			String formFieldTextName = "_" + formFieldName + "_text";
+			
 			output = "<input id=\"" + formFieldTextName + "\" type=\"text\" isContentEditable=\"false\" name=\"" + formFieldTextName + "\" value=\"" + startVal + "\" size=\"" + fieldLength + "\" onFocus=\"javascript:this.blur();popWindow('/openmrs/dictionary/popup/','conceptSearch',660,400,200,200);\" /> ";
 			output += "<input id=\"" + formFieldName + "\" type=\"hidden\" name=\"" + formFieldName + "\" value=\"" + startId + "\" /> ";
 			output += "<a href=\"javascript:popWindow('/openmrs/dictionary/popup/','conceptSearch',660,400,200,200);\"><img src=\"/openmrs/images/lookup.gif\" border=\"0\" /></a>";

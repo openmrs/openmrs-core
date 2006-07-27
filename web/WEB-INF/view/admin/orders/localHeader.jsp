@@ -9,10 +9,17 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
+	<openmrs:hasPrivilege privilege="Manage Orders,Add Orders,Edit Orders,Delete Orders,View Orders">
+		<li <c:if test="<%= request.getRequestURI().contains("orderDrug.") %>">class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/orders/orderDrug.list">
+				<spring:message code="Order.drug.manage"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="Add Orders,Edit Orders,Delete Orders,View Orders">
 		<li <c:if test="<%= request.getRequestURI().contains("orderByUser.") %>">class="active"</c:if>>
-			<a href="${pageContext.request.contextPath}/admin/orders/orderByUser.list">
-				<spring:message code="Order.view.mine"/>
+			<a href="${pageContext.request.contextPath}/admin/orders/orderByPatient.list">
+				<spring:message code="Order.list.patient"/>
 			</a>
 		</li>
 	</openmrs:hasPrivilege>

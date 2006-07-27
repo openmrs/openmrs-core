@@ -24,18 +24,22 @@ public class OrderTypeHandler extends AbstractFieldGenHandler implements FieldGe
 			String startVal = this.fieldGenTag.getStartVal();
 			String formFieldName = this.fieldGenTag.getFormFieldName();
 			String emptySelectMessage = this.fieldGenTag.getEmptySelectMessage();
+			String showBlankOption = this.fieldGenTag.getArgs().get("showBlank");
+			String onChange = this.fieldGenTag.getArgs().get("onChange");
 			
-			String startId = startVal;
 			HttpSession session = this.fieldGenTag.getPageContext().getSession();
 			//HttpServletRequest request = (HttpServletRequest)this.fieldGenTag.getPageContext().getRequest();
 			Context context = (Context)session.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 
 			OrderService os = context.getOrderService();
-			List<OrderType> orderTypes = context.getOrderService().getOrderTypes();
+			List<OrderType> orderTypes = os.getOrderTypes();
 			if ( orderTypes == null ) orderTypes = new ArrayList<OrderType>();
 			
 			if ( orderTypes.size() > 0 ) {
-				output = "<select name=\"" + formFieldName + "\">";
+				output = "<select name=\"" + formFieldName + "\"";
+				if ( onChange != null ) if ( onChange.length() > 0 ) output += " onChange=\"" + onChange + ";\"";
+				output += ">";
+				if ( "true".equals(showBlankOption) ) output += "<option value=\"\"></option>";
 				for ( OrderType ot : orderTypes ) {
 					String currId = ot.getOrderTypeId().toString();
 					output += "<option value=\"" + currId + "\"";

@@ -3,7 +3,9 @@ package org.openmrs.web.controller.order;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -13,27 +15,23 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
-import org.openmrs.Encounter;
+import org.openmrs.DrugOrder;
 import org.openmrs.Order;
-import org.openmrs.OrderType;
-import org.openmrs.User;
+import org.openmrs.api.APIException;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
-import org.openmrs.web.propertyeditor.ConceptEditor;
-import org.openmrs.web.propertyeditor.EncounterEditor;
-import org.openmrs.web.propertyeditor.OrderTypeEditor;
-import org.openmrs.web.propertyeditor.UserEditor;
-import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
-import org.springframework.web.bind.RequestUtils;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
-public class OrderFormController extends SimpleFormController {
+public class OrderDrugListController extends SimpleFormController {
 	
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
@@ -47,28 +45,6 @@ public class OrderFormController extends SimpleFormController {
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-        binder.registerCustomEditor(OrderType.class, new OrderTypeEditor(context));
-        binder.registerCustomEditor(Boolean.class, new CustomBooleanEditor("t", "f", true));
-        binder.registerCustomEditor(Concept.class, new ConceptEditor(context));
-        binder.registerCustomEditor(Date.class, new CustomDateEditor(new SimpleDateFormat("dd/MM/yyyy"), true));
-        binder.registerCustomEditor(User.class, new UserEditor(context));
-        binder.registerCustomEditor(Encounter.class, new EncounterEditor(context));
-	}
-
-	/* (non-Javadoc)
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
-	 */
-	@Override
-	protected Map referenceData(HttpServletRequest request) throws Exception {
-		Map refData = new HashMap();
-
-		// just the text that we need for an empty orderType list
-		String emptyOrderTypeList = this.getMessageSourceAccessor().getMessage("OrderType.list.empty");
-		refData.put("emptyOrderTypeList", emptyOrderTypeList);
-		
-		return refData;
 	}
 
 	/**
@@ -83,16 +59,38 @@ public class OrderFormController extends SimpleFormController {
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		String view = getFormView();
-		
 		if (context != null && context.isAuthenticated()) {
-			Order order = (Order)obj;
-			if ( order.getDateCreated() == null ) order.setDateCreated(new Date());
-			if ( order.getVoided() == null ) order.setVoided(new Boolean(false));
-			context.getAdministrationService().updateOrder(order);
+			String[] orderList = request.getParameterValues("orderId");
+			AdministrationService as = context.getAdministrationService();
+			OrderService os = context.getOrderService();
+			
+			String success = "";
+			String error = "";
+
+			MessageSourceAccessor msa = getMessageSourceAccessor();
+			String deleted = msa.getMessage("general.deleted");
+			String notDeleted = msa.getMessage("general.cannot.delete");
+			String ord = msa.getMessage("Order.title");
+			for (String p : orderList) {
+				try {
+					as.deleteOrder(os.getOrder(Integer.valueOf(p)));
+					if (!success.equals("")) success += "<br>";
+					success += ord + " " + p + " " + deleted;
+				}
+				catch (APIException e) {
+					log.warn(e);
+					if (!error.equals("")) error += "<br>";
+					error += ord + " " + p + " " + notDeleted;
+				}
+			}
+			
 			view = getSuccessView();
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Order.saved");
+			if (!success.equals(""))
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
+			if (!error.equals(""))
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
 		}
-		
+			
 		return new ModelAndView(new RedirectView(view));
 	}
 
@@ -105,27 +103,39 @@ public class OrderFormController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-		HttpSession httpSession = request.getSession();
+    	HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		OrderService os = context.getOrderService();
 		
-		Order order = null;
+		//default empty Object
+		List<DrugOrder> orderList = new Vector<DrugOrder>();
 		
+		//only fill the Object is the user has authenticated properly
 		if (context != null && context.isAuthenticated()) {
-			Integer orderId = RequestUtils.getIntParameter(request, "orderId");
-	    	if (orderId != null) order = os.getOrder(orderId);	
-		}
-		
-		// if this is a new order, let's see if the user has picked a type yet
-		if (order == null) {
-			order = new Order();
-			Integer orderTypeId = RequestUtils.getIntParameter(request, "orderTypeId");
-			if ( orderTypeId != null ) {
-				OrderType ot = os.getOrderType(orderTypeId);
-				order.setOrderType(ot);
-			}
+			OrderService os = context.getOrderService();
+	    	orderList = os.getDrugOrders();
 		}
     	
-        return order;
-    }   
+        return orderList;
+    }
+
+	/* (non-Javadoc)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
+	 */
+	@Override
+	protected Map referenceData(HttpServletRequest request, Object obj, Errors err) throws Exception {
+		Map<Integer,String> conceptNames = new HashMap<Integer,String>();
+		
+		List<Order> orderList = (List<Order>)obj;
+		
+		for ( Order order : orderList ) {
+			Concept c = order.getConcept();
+			String cName = c.getName(request.getLocale()).getName();
+			conceptNames.put(c.getConceptId(), cName);
+		}
+		
+		Map<String,Object> refData = new HashMap<String,Object>();
+		refData.put("conceptNames", conceptNames);
+		
+		return refData;
+	}
 }

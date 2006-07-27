@@ -13,6 +13,8 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.Drug;
+import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
@@ -21,6 +23,7 @@ import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.propertyeditor.ConceptEditor;
+import org.openmrs.web.propertyeditor.DrugEditor;
 import org.openmrs.web.propertyeditor.EncounterEditor;
 import org.openmrs.web.propertyeditor.OrderTypeEditor;
 import org.openmrs.web.propertyeditor.UserEditor;
@@ -33,7 +36,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
-public class OrderFormController extends SimpleFormController {
+public class OrderDrugFormController extends SimpleFormController {
 	
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
@@ -55,6 +58,7 @@ public class OrderFormController extends SimpleFormController {
         binder.registerCustomEditor(Date.class, new CustomDateEditor(new SimpleDateFormat("dd/MM/yyyy"), true));
         binder.registerCustomEditor(User.class, new UserEditor(context));
         binder.registerCustomEditor(Encounter.class, new EncounterEditor(context));
+        binder.registerCustomEditor(Drug.class, new DrugEditor(context));
 	}
 
 	/* (non-Javadoc)
@@ -85,12 +89,12 @@ public class OrderFormController extends SimpleFormController {
 		String view = getFormView();
 		
 		if (context != null && context.isAuthenticated()) {
-			Order order = (Order)obj;
+			DrugOrder order = (DrugOrder)obj;
 			if ( order.getDateCreated() == null ) order.setDateCreated(new Date());
 			if ( order.getVoided() == null ) order.setVoided(new Boolean(false));
 			context.getAdministrationService().updateOrder(order);
 			view = getSuccessView();
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Order.saved");
+			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Order.drug.saved");
 		}
 		
 		return new ModelAndView(new RedirectView(view));
@@ -109,16 +113,16 @@ public class OrderFormController extends SimpleFormController {
 		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		OrderService os = context.getOrderService();
 		
-		Order order = null;
+		DrugOrder order = null;
 		
 		if (context != null && context.isAuthenticated()) {
 			Integer orderId = RequestUtils.getIntParameter(request, "orderId");
-	    	if (orderId != null) order = os.getOrder(orderId);	
+	    	if (orderId != null) order = (DrugOrder)os.getOrder(orderId);	
 		}
 		
 		// if this is a new order, let's see if the user has picked a type yet
 		if (order == null) {
-			order = new Order();
+			order = new DrugOrder();
 			Integer orderTypeId = RequestUtils.getIntParameter(request, "orderTypeId");
 			if ( orderTypeId != null ) {
 				OrderType ot = os.getOrderType(orderTypeId);

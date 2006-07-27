@@ -1,13 +1,13 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="Manage Orders" otherwise="/login.htm" redirect="/admin/orders/order.form" />
+<openmrs:require privilege="Manage Orders" otherwise="/login.htm" redirect="/admin/orders/orderDrug.form" />
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
 <script type="text/javascript" src="<%= request.getContextPath() %>/scripts/openmrsPopup.js"></script>
 
-<h2><spring:message code="Order.title"/></h2>
+<h2><spring:message code="Order.drug.title"/></h2>
 
 <spring:hasBindErrors name="order">
 	<spring:message code="fix.error"/>
@@ -101,6 +101,69 @@
 		<td valign="top">
 			<spring:bind path="order.discontinuedDate">
 				<openmrs:fieldGen type="java.util.Date" formFieldName="${status.expression}" startVal="${status.value}" />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<td valign="top"><spring:message code="DrugOrder.dose"/></td>
+		<td valign="top">
+			<spring:bind path="order.dose">
+				<openmrs:fieldGen type="java.lang.Integer" formFieldName="${status.expression}" startVal="${status.value}" />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<td valign="top"><spring:message code="DrugOrder.units"/></td>
+		<td valign="top">
+			<spring:bind path="order.units">
+				<openmrs:fieldGen type="java.lang.String" formFieldName="${status.expression}" startVal="${status.value}" />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<td valign="top"><spring:message code="DrugOrder.frequency"/></td>
+		<td valign="top">
+			<spring:bind path="order.frequency">
+				<openmrs:fieldGen type="java.lang.String" formFieldName="${status.expression}" startVal="${status.value}" />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<td valign="top"><spring:message code="DrugOrder.prn"/></td>
+		<td valign="top">
+			<spring:bind path="order.prn">
+				<openmrs:fieldGen type="java.lang.Boolean" formFieldName="${status.expression}" startVal="${status.value}" />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<td valign="top"><spring:message code="DrugOrder.complex"/></td>
+		<td valign="top">
+			<spring:bind path="order.complex">
+				<openmrs:fieldGen type="java.lang.Boolean" formFieldName="${status.expression}" startVal="${status.value}" />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<td valign="top"><spring:message code="DrugOrder.quantity"/></td>
+		<td valign="top">
+			<spring:bind path="order.quantity">
+				<openmrs:fieldGen type="java.lang.Integer" formFieldName="${status.expression}" startVal="${status.value}" />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<td valign="top"><spring:message code="DrugOrder.drug"/></td>
+		<td valign="top">
+			<spring:bind path="order.drug">
+				<openmrs:fieldGen type="java.lang.Integer" formFieldName="${status.expression}" startVal="${status.value}" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>

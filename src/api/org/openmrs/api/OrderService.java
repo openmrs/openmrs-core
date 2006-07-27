@@ -2,8 +2,10 @@ package org.openmrs.api;
 
 import java.util.List;
 
+import org.openmrs.DrugOrder;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
+import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOContext;
@@ -68,6 +70,16 @@ public class OrderService {
 	}
 
 	/**
+	 * Get all drug orders
+	 * 
+	 * @return drug orders list
+	 * @throws APIException
+	 */
+	public List<DrugOrder> getDrugOrders() throws APIException {
+		return getOrderDAO().getDrugOrders();
+	}
+
+	/**
 	 * Get all orders by User
 	 * 
 	 * @return orders list
@@ -75,6 +87,16 @@ public class OrderService {
 	 */
 	public List<Order> getOrdersByUser(User user) throws APIException {
 		return getOrderDAO().getOrdersByUser(user);
+	}
+
+	/**
+	 * Get all orders by Patient
+	 * 
+	 * @return orders list
+	 * @throws APIException
+	 */
+	public List<Order> getOrdersByPatient(Patient patient) throws APIException {
+		return getOrderDAO().getOrdersByPatient(patient);
 	}
 
 	/**
@@ -180,5 +202,14 @@ public class OrderService {
 	public OrderType getOrderType(Integer orderTypeId) throws APIException {
 		return getOrderDAO().getOrderType(orderTypeId);
 	}
-	
+
+	/**
+	 * Get all orders by Patient
+	 * 
+	 * @return orders list
+	 * @throws APIException
+	 */
+	public List<DrugOrder> getDrugOrdersByPatient(Patient patient) throws APIException {
+		return getOrderDAO().getDrugOrdersByPatient(patient);
+	}
 }

@@ -208,7 +208,7 @@ public class Order implements java.io.Serializable {
 	/**
 	 * @return Returns the voided.
 	 */
-	public Boolean isVoided() {
+	public Boolean getVoided() {
 		return voided;
 	}
 

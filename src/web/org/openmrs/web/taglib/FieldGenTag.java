@@ -3,6 +3,8 @@ package org.openmrs.web.taglib;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;
@@ -38,6 +40,8 @@ public class FieldGenTag extends TagSupport {
 	private String falseLabel;
 	private String unknownLabel;
 	private String emptySelectMessage;
+	private String additionalArgs;
+	private Map<String,String> args;
 
 	public PageContext getPageContext() {
 		return this.pageContext;
@@ -193,6 +197,9 @@ public class FieldGenTag extends TagSupport {
 		trueLabel = null;
 		falseLabel = null;
 		unknownLabel = null;
+		additionalArgs = null;
+		emptySelectMessage = null;
+		args = null;
 	}
 	
 	public String getType() {
@@ -381,5 +388,39 @@ public class FieldGenTag extends TagSupport {
 		} else {
 			return null;
 		}
+	}
+
+	/**
+	 * @return Returns the additionalArgs.
+	 */
+	public String getAdditionalArgs() {
+		return additionalArgs;
+	}
+
+	/**
+	 * @param additionalArgs The additionalArgs to set.
+	 */
+	public void setAdditionalArgs(String additionalArgs) {
+		this.additionalArgs = additionalArgs;
+		String delimiter = ";";
+		if ( additionalArgs.indexOf(delimiter) < 0 ) {
+			delimiter = ",";
+		}
+		String[] nvPairs = additionalArgs.split(delimiter);
+		for ( String nvPair : nvPairs ) {
+			String[] nameValue = nvPair.split("=");
+			String name = nameValue[0];
+			String val = nameValue[1];
+			
+			if ( this.args == null ) this.args = new HashMap<String,String>();
+			this.args.put(name, val);
+		}
+	}
+
+	/**
+	 * @return Returns the args.
+	 */
+	public Map<String, String> getArgs() {
+		return args;
 	}
 }

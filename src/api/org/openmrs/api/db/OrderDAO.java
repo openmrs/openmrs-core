@@ -2,8 +2,10 @@ package org.openmrs.api.db;
 
 import java.util.List;
 
+import org.openmrs.DrugOrder;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
+import org.openmrs.Patient;
 import org.openmrs.User;
 
 /**
@@ -47,6 +49,14 @@ public interface OrderDAO {
 	 * @throws DAOException
 	 */
 	public List<Order> getOrdersByUser(User user) throws DAOException;
+
+	/**
+	 * Get all orders for a particular Patient
+	 * 
+	 * @return orders list
+	 * @throws DAOException
+	 */
+	public List<Order> getOrdersByPatient(Patient patient) throws DAOException;
 
 	/**
 	 * Update order 
@@ -123,5 +133,21 @@ public interface OrderDAO {
 	 * @throws DAOException
 	 */
 	public OrderType getOrderType(Integer orderTypeId) throws DAOException;
-	
+
+	/**
+	 * Get all drug orders
+	 * 
+	 * @return drug orders list
+	 * @throws DAOException
+	 */
+	public List<DrugOrder> getDrugOrders() throws DAOException;
+
+	/**
+	 * Get all drug orders for a particular Patient
+	 * 
+	 * @return drug orders list
+	 * @throws DAOException
+	 */
+	public List<DrugOrder> getDrugOrdersByPatient(Patient patient) throws DAOException;
+
 }

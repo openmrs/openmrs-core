@@ -110,7 +110,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 * Returns true/false whether the drug is a "pro re nata" (as needed) drug
 	 * @return Boolean
 	 */
-	public Boolean isPrn() {
+	public Boolean getPrn() {
 		return this.prn;
 	}
 
@@ -126,7 +126,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 * Gets whether this drug is complex
 	 * @return Boolean
 	 */
-	public Boolean isComplex() {
+	public Boolean getComplex() {
 		return this.complex;
 	}
 
