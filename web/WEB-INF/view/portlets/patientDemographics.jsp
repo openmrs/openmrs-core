@@ -1,46 +1,63 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
-	<table>
+<div class="box">
+	<table class="patientAddress">
 		<thead>
-			<tr><th><spring:message code="Patient.addresses"/></th></tr>
+			<tr>
+				<th><spring:message code="Patient.names"/></th>
+				<th><spring:message code="Patient.mothersName"/></th>
+				<th><spring:message code="Patient.civilStatus"/></th>
+				<th><spring:message code="Patient.race"/></th>
+				<th><spring:message code="Patient.birthplace"/></th>
+			</tr>
 		</thead>
 		<tbody>
-			<c:forEach var="address" items="${model.patient.addresses}" varStatus="status">
-				<c:if test="${address.address1 != null}"><tr><td>${address.address1}</td></tr></c:if>
-				<c:if test="${address.address2 != null}"><tr><td>${address.address2}</td></tr></c:if>
-				<c:if test="${address.cityVillage != null}"><tr><td>${address.cityVillage}</td></tr></c:if>
-				<c:if test="${address.stateProvince != null}"><tr><td>${address.stateProvince}</td></tr></c:if>
-				<c:if test="${address.postalCode != null}"><tr><td>${address.postalCode}</td></tr></c:if>
-				<c:if test="${address.country != null}"><tr><td>${address.country}</td></tr></c:if>
-				<c:if test="${address.latitude != null}"><tr><td>${address.latitude}</td></tr></c:if>
-				<c:if test="${address.longitude != null}"><tr><td>${address.longitude}</td></tr></c:if>
-				<tr><td>&nbsp;</td></tr>
-			</c:forEach>
+			<tr>
+				<td>
+					<c:forEach var="name" items="${model.patient.names}" varStatus="status">
+						<c:if test="${name == model.patient.patientName}">*</c:if>
+						${name.givenName} ${name.middleName} ${name.familyName}<br/>
+					</c:forEach>
+				</td>
+				<td>${model.patient.mothersName}</td>
+				<td>${model.patient.civilStatus}</td>
+				<td>${model.patient.race}</td>
+				<td>${model.patient.birthplace}</td>
+			</tr>
 		</tbody>
 	</table>
-	<table>
-		<tr>
-			<td>Additional patient names:</td>
-			<td>
-				<c:forEach var="name" items="${model.patient.names}" varStatus="status">
-					<c:if test="${name != model.patient.patientName}">${name.givenName} ${name.middleName} ${name.familyName}</c:if>
+</div>
+<br/>
+<div class="box">
+	<table class="patientAddress">
+		<thead>
+			<tr><th colspan="9" class="tableTitle"><spring:message code="Patient.addresses"/></th><tr>
+			<tr>
+				<th><spring:message code="general.preferred"/></th>
+				<th><spring:message code="Location.address1"/></th>
+				<th><spring:message code="Location.address2"/></th>
+				<th><spring:message code="Location.cityVillage"/></th>
+				<th><spring:message code="Location.stateProvince"/></th>
+				<th><spring:message code="Location.postalCode"/></th>
+				<th><spring:message code="Location.country"/></th>
+				<th><spring:message code="Location.latitude"/></th>
+				<th><spring:message code="Location.longitude"/></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<c:forEach var="address" items="${model.patient.addresses}" varStatus="status">
+					<td><c:if test="${address.preferred}">*</c:if></td>
+					<td>${address.address1}</td>
+					<td>${address.address2}</td>
+					<td>${address.cityVillage}</td>
+					<td>${address.stateProvince}</td>
+					<td>${address.postalCode}</td>
+					<td>${address.country}</td>
+					<td>${address.latitude}</td>
+					<td>${address.longitude}</td>
 				</c:forEach>
-			</td>
-		</tr>
-		<tr>
-			<td><spring:message code="Patient.race"/>:</td>
-			<td>${model.patient.race}</td>
-		</tr>
-		<tr>
-			<td><spring:message code="Patient.birthplace"/>:</td>
-			<td>${model.patient.birthplace}</td>
-		</tr>
-		<tr>
-			<td><spring:message code="Patient.mothersName"/>:</td>
-			<td>${model.patient.mothersName}</td>
-		</tr>
-		<tr>
-			<td><spring:message code="Patient.civilStatus"/>:</td>
-			<td>${model.patient.civilStatus}</td>
-		</tr>
+			</tr>
+		</tbody>
 	</table>
-	
+</div>
+

@@ -219,6 +219,16 @@ table.patientTreatmentPrograms td {
 	color:white;
 }
 
+#patientDashboardDemographics table.patientAddress {
+	width: 95%;
+	padding: 5px 5px 5px 5px;
+	font-size: small; 
+}
+#patientDashboardDemographics table.patientAddress th {
+	text-align:left;
+	border-bottom: 1px solid black;
+}
+
 .patientIdentifier {
 	width: 7em;
 }

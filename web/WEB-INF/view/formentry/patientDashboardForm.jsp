@@ -90,18 +90,19 @@
 		<li><a href="#" onclick="changeTab(this, 'graphs');">Graphs</a></li>
 	</ul>
 </div>
+<br/>
 <div id="patientSections">
 	<div id="patientOverview">
-		<openmrs:portlet url="patientOverview" id="patientOverviewPortlet" patientId="${patient.patientId}"/>
+		<openmrs:portlet url="patientOverview" id="patientDashboardOverview" patientId="${patient.patientId}"/>
 	</div>
 	<div id="patientRegimen" style="display:none;">
-		<openmrs:portlet url="patientRegimen" id="patientRegimenPortlet" patientId="${patient.patientId}"/>
+		<openmrs:portlet url="patientRegimen" id="patientDashboardRegimen" patientId="${patient.patientId}"/>
 	</div>
 	<div id="patientEncounters" style="display:none;">
-		<openmrs:portlet url="patientEncounters" id="patientEncountersPortlet" patientId="${patient.patientId}"/>
+		<openmrs:portlet url="patientEncounters" id="patientDashboardEncounters" patientId="${patient.patientId}"/>
 	</div>
 	<div id="patientDemographics" style="display:none;">
-		<openmrs:portlet url="patientDemographics" id="patientDemographicsPortlet" patientId="${patient.patientId}"/>
+		<openmrs:portlet url="patientDemographics" id="patientDashboardDemographics" patientId="${patient.patientId}"/>
 	</div>
 	<div id="patientGraphs" style="display:none;">
 		<openmrs:portlet url="patientGraphs" id="patientGraphsPortlet" patientId="${patient.patientId}"/>
