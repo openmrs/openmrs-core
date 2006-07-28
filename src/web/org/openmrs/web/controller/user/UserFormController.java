@@ -93,7 +93,7 @@ public class UserFormController extends SimpleFormController {
 				}
 					
 			// add Roles to user (because spring can't handle lists as properties...)
-				String[] roles = request.getParameterValues("roles");
+				String[] roles = request.getParameterValues("roleStrings");
 				Set<Role> newRoles = new HashSet<Role>();
 				if (roles != null) {
 					for (String r : roles) {

@@ -303,7 +303,11 @@ public class PatientFormController extends SimpleFormController {
 		List<Encounter> encounters = new Vector<Encounter>();
 
 		if (context != null && context.isAuthenticated()) {
-			forms.addAll(context.getFormEntryService().getForms());
+			boolean onlyPublishedForms = true;
+			if (context.hasPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY_VIEW_UNPUBLISHED_FORMS))
+				onlyPublishedForms = false;
+			forms.addAll(context.getFormEntryService().getForms(onlyPublishedForms));
+			
 			Set<Encounter> encs = context.getEncounterService().getEncounters(patient);
 			if (encs != null && encs.size() > 0)
 				encounters.addAll(encs);

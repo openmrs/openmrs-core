@@ -52,6 +52,9 @@
 
 		</tr>
 		<tr>
+			<td><br/></td><td></td>
+		</tr>
+		<tr>
 			<td><spring:message code="User.systemId"/></td>
 			<td>
 				<spring:bind path="user.systemId">
@@ -74,7 +77,7 @@
 		<c:if test="${modifyPasswords == true}">
 			<tr>
 				<td><spring:message code="User.password" /></td>
-				<td><input type="password" name="password" /><i><spring:message code="User.password.description"/></i></td>
+				<td><input type="password" name="password" /> <i><spring:message code="User.password.description"/></i></td>
 	
 			</tr>
 			<tr>
@@ -83,11 +86,11 @@
 			</tr>
 			<tr>
 				<td><spring:message code="User.secretQuestion" /></td>
-				<td><input type="text" name="secretQuestion" size="50" /><i><spring:message code="general.optional"/></i></td>
+				<td><input type="text" name="secretQuestion" size="50" /> <i><spring:message code="general.optional"/></i></td>
 			</tr>
 			<tr>
 				<td><spring:message code="User.secretAnswer" /></td>
-				<td><input type="password" name="secretAnswer" size="50" /><i><spring:message code="general.optional"/></i></td>
+				<td><input type="password" name="secretAnswer" size="50" /> <i><spring:message code="general.optional"/></i></td>
 			</tr>
 			<tr>
 				<td><spring:message code="User.forceChange" /></td>
@@ -103,7 +106,7 @@
 		<tr>
 			<td valign="top"><spring:message code="User.roles"/></td>
 			<td valign="top">
-				<openmrs:listPicker name="roles" allItems="${roles}" currentItems="${user.roles}" contextPath="${pageContext.request.contextPath}" />
+				<openmrs:listPicker name="roleStrings" allItems="${roles}" currentItems="${user.roles}" contextPath="${pageContext.request.contextPath}" />
 			</td>
 		</tr>
 		<c:if test="${!(user.creator == null)}">

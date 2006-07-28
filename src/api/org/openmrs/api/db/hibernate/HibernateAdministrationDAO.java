@@ -795,7 +795,7 @@ public class HibernateAdministrationDAO implements
 			try {
 				Session session = HibernateUtil.currentSession();
 				HibernateUtil.beginTransaction();
-				session.saveOrUpdate(role);
+				session.merge(role);
 				HibernateUtil.commitTransaction();
 			}
 			catch (Exception e) {

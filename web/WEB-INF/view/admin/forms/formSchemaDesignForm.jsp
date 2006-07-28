@@ -160,7 +160,7 @@
 			</div>
 		</td>
 		<td valign="top" style="padding-left: 5px;" id="fieldSearch" width="40%">
-			<c:if test="${form.published != true}">
+			<c:if test="${form.published != true && form.formId != 1}">
 				<spring:message code="Field.find" /> <br/>
 				<input type="text" id="searchField" size="25" onFocus="searchType='field'" onKeyUp="searchBoxChange(fieldResults, this, event, false, 400)"/>
 				<table cellspacing="0" cellpadding="2" width="100%">
@@ -187,7 +187,7 @@
 	<form xonsubmit="save(selectedNode)" style="padding: 0px; margin: 0px; overflow: auto">
 		<%@ include file="include/formFieldEdit.jsp" %>
 	
-		<c:if test="${form.published != true}">
+		<c:if test="${form.published != true && form.formId != 1}">
 			<input type="submit" id="saveFormField" onclick="return save(selectedNode);" value="<spring:message code="general.save"/>" />
 		</c:if>
 		<input type="button" id="cancelFormField" onclick="cancelClicked()" value="<spring:message code="general.cancel"/>" />

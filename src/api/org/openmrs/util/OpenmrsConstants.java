@@ -120,12 +120,14 @@ public class OpenmrsConstants {
 	public static final String PRIV_VIEW_NAVIGATION_MENU	= "View Navigation Menu";
 	public static final String PRIV_VIEW_ADMIN_FUNCTIONS	= "View Administration Functions";
 	
-	public static final String PRIV_FORM_ENTRY      = "Form Entry";
+	public static final String PRIV_FORM_ENTRY = "Form Entry";
+	public static final String PRIV_FORM_ENTRY_VIEW_UNPUBLISHED_FORMS = "View Unpublished Forms";
 	
 	public static final Collection<String> CORE_PRIVILEGES() {
 		List<String> privs = new Vector<String>();
 		
 		privs.add(PRIV_FORM_ENTRY);
+		privs.add(PRIV_FORM_ENTRY_VIEW_UNPUBLISHED_FORMS);
 		
 		privs.add(PRIV_VIEW_CONCEPTS);
 		privs.add(PRIV_ADD_CONCEPTS);

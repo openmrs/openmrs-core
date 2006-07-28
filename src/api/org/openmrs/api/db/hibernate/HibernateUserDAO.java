@@ -182,7 +182,6 @@ public class HibernateUserDAO implements
 			try {
 				HibernateUtil.beginTransaction();
 				user = updateProperties(user);
-				session.merge(user);
 				try {
 					session.update(user);
 				}

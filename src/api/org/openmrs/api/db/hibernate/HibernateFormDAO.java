@@ -231,12 +231,14 @@ public class HibernateFormDAO implements
 	/**
 	 * @see org.openmrs.api.db.FormService#getForms(boolean)
 	 */
-	public List<Form> getForms(boolean published) throws DAOException {
+	public List<Form> getForms(boolean onlyPublished) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
 		Criteria crit = session.createCriteria(Form.class);
 		
-		crit.add(Expression.eq("published", published));
+		if (onlyPublished)
+			crit.add(Expression.eq("published", true));
+		
 		crit.addOrder(Order.asc("name"));
 		crit.addOrder(Order.asc("formId"));
 		

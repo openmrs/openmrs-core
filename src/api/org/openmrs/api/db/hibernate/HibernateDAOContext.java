@@ -85,7 +85,7 @@ public class HibernateDAOContext implements DAOContext {
 			throws ContextAuthenticationException {
 
 		user = null;
-		String errorMsg = "Invalid username and/or password";
+		String errorMsg = "Invalid username and/or password: " + login;
 
 		// Session session = getSession();
 		Session session = HibernateUtil.currentSession();

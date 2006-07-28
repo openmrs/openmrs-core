@@ -30,7 +30,7 @@
 		</set>
 
 		<!-- bi-directional many-to-many association to Privilege -->
-		<set name="privileges" cascade="merge" lazy="false"
+		<set name="privileges" cascade="" lazy="false"
 			table="role_privilege">
 			<key>
 				<column name="role" />
