@@ -63,7 +63,7 @@ h1, h2, h3, h4, h5 {
 
 #gutter {
 	float: left;
-	margin-left: -190px;
+	margin-left: -160px;
 	padding-right: 10px;
 	line-height: 22px;
 	text-align: right;
@@ -129,24 +129,23 @@ h1, h2, h3, h4, h5 {
 #patientSummary .boxHeader { font-size: 1.55em;}
 #patientSummary { /*width: 700px;*/ }
 
-table.breadcrumbHeader {
-	width: 97%;
-	padding: 5px 2px 5px 2px;
-	text-align: left;
-}
-table.breadcrumbHeader th {
+#breadcrumbHeader {
 	font-size: 1.2em;
 	font-weight: bold;
 	text-align: left;
+	padding:5px 5px 5px 5px;
 }
-table.breadcrumbHeader td {
-	font-size: 0.9em;
-	text-align: right;
+#breadcrumbHeader a {
+	text-decoration:none;
+}
+#breadcrumbHeader a:hover {
+	color:navy;
 }
 
 #patientHeader {
 	font-size:0.9em;
 	text-align: left;
+	display: block;
 }
 .patientName {
 	font-weight:bold;
@@ -157,12 +156,15 @@ table.breadcrumbHeader td {
 	font-size:0.9em;
 	text-align: left;
 	color:navy;
+	display:block;
+	border:1px solid navy;
 }
-
+#patientTreatmentHeader td {
+	vertical-align:top;
+}
 table.patientRecentObs {
-	border: none;
-	float: left;
 	margin-right: 20px;
+	border:none;
 }
 table.patientRecentObs th {
 	border-bottom: 1px solid navy;
@@ -175,8 +177,9 @@ table.patientRecentObs td {
 }
 
 table.patientTreatmentPrograms {
-	border: none;
+	border:none;
 	margin-right: 20px;
+	vertical-align:top;
 }
 table.patientTreatmentPrograms th {
 	border-bottom: 1px solid navy;
@@ -199,12 +202,11 @@ table.patientTreatmentPrograms td {
 #patientTabs ul, #patientTabs li {
 	display:inline;
 	list-style-type:none;
-	padding:0;
+	padding:0px 0px 0px 0px;
 }
 
 #patientTabs a:link, #patientTabs a:visited {
 	border: 1px solid navy;
-	float:left;
 	font-size:small;
 	font-weight:bold;
 	margin-right:8px;

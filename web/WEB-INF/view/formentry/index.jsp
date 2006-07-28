@@ -30,7 +30,7 @@
 	
 	function onSelect(arr) {
 		if (arr[0].patientId != null) {
-			document.location = "patientSummary.form?patientId=" + arr[0].patientId + "&phrase=" + savedText;
+			document.location = "patientDashboard.form?patientId=" + arr[0].patientId + "&phrase=" + savedText;
 		}
 		else if (arr[0].href != null) {
 			document.location = arr[0].href;

@@ -33,6 +33,7 @@
 				<script src="<%= request.getContextPath() %>/openmrs.js"></script>
 			</c:otherwise>
 		</c:choose>
+		<title><spring:message code="openmrs.title"/></title>
 	</head>
 
 <body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
