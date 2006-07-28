@@ -2,7 +2,9 @@ package org.openmrs.web.controller;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -11,6 +13,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.User;
@@ -37,6 +40,7 @@ public class PortletController implements Controller {
 	 *        	(Patient) patient
 	 *         	(Set<Obs>) patientObs
 	 *          (Set<Encounter>) patientEncounters
+	 *          (Set<DrugOrder>) patientDrugOrders
 	 *     (if the request has an encounterId attribute)
 	 *     		(Integer) encounterId
 	 *         	(Encounter) encounter
@@ -92,6 +96,9 @@ public class PortletController implements Controller {
 					model.put("patient", p);
 					model.put("patientObs", context.getObsService().getObservations(p));
 					model.put("patientEncounters", context.getEncounterService().getEncounters(p));
+					Set<DrugOrder> drugOrders = new HashSet<DrugOrder>();
+					drugOrders.addAll(context.getOrderService().getDrugOrdersByPatient(p));
+					model.put("patientDrugOrders", drugOrders);
 					model.put("patientId", (Integer) o);
 				}
 				
