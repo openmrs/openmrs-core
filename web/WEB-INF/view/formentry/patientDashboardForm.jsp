@@ -1,4 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
+<openmrs:require privilege="View Patients" otherwise="/login.htm" redirect="/formentry/index.htm" />
+
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
 <script type="text/javascript">

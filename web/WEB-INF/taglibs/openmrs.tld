@@ -559,5 +559,23 @@
 		<type>java.lang.Integer</type>
 	</attribute>
 </tag>	
+
+<function>
+	<name>sort</name>
+	<function-class>org.openmrs.web.taglib.functions.Sort</function-class>
+	<function-signature>java.util.List sort(java.util.Collection, java.lang.String, java.lang.Boolean)</function-signature>
+</function>
+
+<function>
+	<name>filterObsByConcept</name>
+	<function-class>org.openmrs.web.taglib.functions.Filter</function-class>
+	<function-signature>java.util.Set filterObsByConcept(java.util.Set, java.lang.Integer)</function-signature>
+</function>
+
+<function>
+	<name>filterEncountersByType</name>
+	<function-class>org.openmrs.web.taglib.functions.Filter</function-class>
+	<function-signature>java.util.Set filterEncountersByType(java.util.Set, java.lang.Integer)</function-signature>
+</function>	
 	
 </taglib>

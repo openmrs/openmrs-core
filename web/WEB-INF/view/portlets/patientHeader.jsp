@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<c:if test="${model.authenticatedUser != null}">
+<openmrs:require privilege="View Patients" otherwise="/login.htm" redirect="/formentry/index.htm" />
 
 	<%-- Header showing preferred name, id, and treatment status --%>
 	<div id="patientHeader" class="boxHeader">
@@ -99,5 +99,3 @@
 			</td>
 		</tr></table>
 	</div>
-
-</c:if>
