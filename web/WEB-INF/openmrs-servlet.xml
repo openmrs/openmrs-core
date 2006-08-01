@@ -20,6 +20,7 @@
 		</bean>
  
 	
+	
 	    <bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
 			<property name="interceptors">
 				<list>
