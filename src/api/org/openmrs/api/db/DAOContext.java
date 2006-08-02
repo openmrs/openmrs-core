@@ -88,7 +88,10 @@ public interface DAOContext {
 	public void setAlertDAO(AlertDAO dao);
 	
 	public SchedulerDAO getSchedulerDAO();
-	public void setSchedulerDAO(SchedulerDAO dao);	
+	public void setSchedulerDAO(SchedulerDAO dao);
+	
+	public ProgramWorkflowDAO getProgramWorkflowDAO();
+	public void setProgramWorkflowDAO(ProgramWorkflowDAO dao);
 
 	/**
 	 * Open session.

@@ -37,6 +37,9 @@ public class MigrationHelper {
 		if (s == null || s.length() == 0) {
 			return null;
 		} else {
+			if (s.length() == 10) {
+				s += " 00:00:00";
+			}
 			return df.parse(s);
 		}
 	}

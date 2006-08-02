@@ -102,6 +102,7 @@
 		<fileset dir="${spring.dir}" includes="*.jar" />
 		<fileset dir="${velocity.dir}" includes="*.jar" />
 		<fileset dir="${taglibs.dir}" includes="*.jar" />
+		<fileset dir="${jfreechart.dir}" includes="*.jar" />
 		<fileset dir="${neal-reporting.dir}" includes="*.jar" />
     </path>
 

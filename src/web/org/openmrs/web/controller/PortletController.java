@@ -1,6 +1,7 @@
 package org.openmrs.web.controller;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -99,6 +100,8 @@ public class PortletController implements Controller {
 					Set<DrugOrder> drugOrders = new HashSet<DrugOrder>();
 					drugOrders.addAll(context.getOrderService().getDrugOrdersByPatient(p));
 					model.put("patientDrugOrders", drugOrders);
+					model.put("patientPrograms", context.getProgramWorkflowService().getPatientPrograms(p));
+					model.put("patientCurrentPrograms", context.getProgramWorkflowService().getCurrentPrograms(p, null));
 					model.put("patientId", (Integer) o);
 				}
 				
@@ -129,9 +132,19 @@ public class PortletController implements Controller {
 				}
 				
 			}
+
+			populateModel(context, model);
 		}
 
 		return new ModelAndView(portletPath, "model", model);
 
 	}
+	
+	/**
+	 * Subclasses should override this to put more data into the model.
+	 * This will be called AFTER handleRequest has put mappings in the model as described in its javadoc.
+	 * Note that context could be null when this method is called.  
+	 */
+	protected void populateModel(Context context, Map model) { }
+	
 }

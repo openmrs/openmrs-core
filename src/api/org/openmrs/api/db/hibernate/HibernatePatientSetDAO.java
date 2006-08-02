@@ -446,10 +446,11 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		if (value != null && modifier != PatientSetService.Modifier.EXISTS) {
 			sb.append("and value_numeric " + modifier.getSqlRepresentation() + " :value ");
 			useVal = true;
-		} else {
-			sb.append("and value_numeric is not null ");
+		} else { // TODO: THIS IS A HACK SO THAT _EXISTS_ WORKS ON NON-NUMERIC CONCEPTS
+			sb.append("and (value_numeric is not null or value_coded is not null or value_boolean is not null or value_drug is not null or value_datetime is not null or value_boolean is not null or value_text is not null) ");
 		}
 		sb.append("group by patient_id ");
+		log.debug("query: " + sb);
 		query = session.createSQLQuery(sb.toString());
 		query.setInteger("concept_id", conceptId);
 		if (useVal) {
@@ -620,7 +621,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		log.debug("criteria: " + criteria);
 		List<Obs> temp = criteria.list();
 		for (Obs obs : temp) {
-			Integer ptId = obs.getPatient().getPatientId();
+			Integer ptId = obs.getPatientId();
 			List<Obs> forPatient = ret.get(ptId);
 			if (forPatient == null) {
 				forPatient = new ArrayList<Obs>();
@@ -628,7 +629,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			}
 			forPatient.add(obs);
 		}
-				
+						
 		HibernateUtil.commitTransaction();
 		
 		return ret;

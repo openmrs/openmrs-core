@@ -123,8 +123,16 @@ public class OpenmrsConstants {
 	public static final String PRIV_FORM_ENTRY = "Form Entry";
 	public static final String PRIV_FORM_ENTRY_VIEW_UNPUBLISHED_FORMS = "View Unpublished Forms";
 	
+	public static final String PRIV_VIEW_PROGRAMS = "View Programs";
+	public static final String PRIV_MANAGE_PROGRAMS = "Manage Programs";
+	public static final String PRIV_MANAGE_PATIENT_PROGRAMS = "Manage Patient Programs";
+	
 	public static final Collection<String> CORE_PRIVILEGES() {
 		List<String> privs = new Vector<String>();
+		
+		privs.add(PRIV_VIEW_PROGRAMS);
+		privs.add(PRIV_MANAGE_PROGRAMS);
+		privs.add(PRIV_MANAGE_PATIENT_PROGRAMS);
 		
 		privs.add(PRIV_FORM_ENTRY);
 		privs.add(PRIV_FORM_ENTRY_VIEW_UNPUBLISHED_FORMS);

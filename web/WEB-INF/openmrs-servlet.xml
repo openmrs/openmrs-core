@@ -102,6 +102,11 @@
 					<prop key="**/patientDashboard.form">patientDashboardForm</prop>         
 					<prop key="**/scheduler.list">schedulerListController</prop>
 					<prop key="**/scheduler.form">schedulerFormController</prop>
+					<prop key="**/dynamicForm.form">dynamicFormEntryController</prop>
+					<prop key="**/program.list">programList</prop>
+					<prop key="**/program.form">programForm</prop>
+					<prop key="**/patientProgram.form">patientProgramFormController</prop>
+					<prop key="**/patientPrograms.portlet">patientProgramsPortletController</prop>
 					<prop key="**/*.portlet">portletController</prop>
 					<prop key="**/*.htm">springController</prop>
 	            </props>
@@ -109,6 +114,7 @@
 	    </bean>
 
 		<bean id="portletController" class="org.openmrs.web.controller.PortletController"/>
+		<bean id="patientProgramsPortletController" class="org.openmrs.web.controller.PatientProgramsPortletController"/>
 		<bean id="springController" class="org.openmrs.web.controller.SpringController"/>
 
     <!-- =============================== -->
@@ -632,12 +638,14 @@
 				<property name="shortcuts">
 					<list>
 						<value>gender!both:*,male:@org.openmrs.reporting.PatientCharacteristicFilter(gender=m$String),female:@org.openmrs.reporting.PatientCharacteristicFilter(gender=f$String)</value>
-						<value>arv_tx_group!treatmentGroup:@org.openmrs.reporting.ArvTxGroupFilter(treatmentGroup$String)</value>						
+						<value>arv_tx_group!treatmentGroup:@org.openmrs.reporting.ArvTxGroupFilter(treatmentGroup$String)</value>
 					</list>
 				</property>
 				<property name="links">
 					<list>
-						<value>nealreport.form:nealreport.ConsultReport.name:reportType=Consult Report</value>
+						<value>nealreport.form:nealreport.DemoReport.name:reportType=Demo Report</value>
+						<value>nealreport.form:nealreport.DeclineReport.name:reportType=Decline Report</value>
+						<value>nealreport.form:nealreport.ShortReport.name:reportType=Short Report</value>
 						<value>nealreport.form:nealreport.AlertReport.name:reportType=Alert Report</value>
 						<value>nealreport.form:nealreport.PmtctReport.name:reportType=PMTCT Report</value>
 						<value>nealreport.form:nealreport.PedReport.name:reportType=Ped Report</value>
@@ -645,12 +653,12 @@
 					</list>
 				</property>
 			</bean>
-		    <bean id="otfaParamResolver" class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
+		    <bean id="defaultMethodParamResolver" class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
 				<property name="paramName"><value>method</value></property>
 				<property name="defaultMethodName"><value>handleRequest</value></property>
 			</bean>
 		    <bean id="otfaActionController" class="org.springframework.web.servlet.mvc.multiaction.MultiActionController">
-				<property name="methodNameResolver"><ref bean="otfaParamResolver"/></property>
+				<property name="methodNameResolver"><ref bean="defaultMethodParamResolver"/></property>
 				<property name="delegate"><ref bean="otfaController"/></property>
 			</bean>
 			<!-- ** /Analysis ** -->
@@ -768,6 +776,36 @@
 					<property name="formView"><value>/admin/formentry/xsnUploadForm</value></property>
 					<property name="successView"><value>xsnUpload.form</value></property>
 				</bean>
+	
+		<bean id="dynamicFormEntryController" class="org.openmrs.dynamicformentry.DynamicFormEntryController">
+			<property name="commandName"><value>formInProgress</value></property>
+			<property name="formView"><value>/dynamicformentry/enter</value></property>
+			<property name="successView"><value>patientSummary.form</value></property>
+		</bean>
+
+    <!-- ======================================== -->
+	<!-- =====    Programs and Workflows    ===== -->
+    <!-- ======================================== -->
+		<bean id="programList" class="org.openmrs.web.controller.program.ProgramListController">
+			<property name="sessionForm"><value>true</value></property>
+			<property name="commandName"><value>programList</value></property>
+			<property name="formView"><value>/admin/programs/programList</value></property>
+			<property name="successView"><value>program.list</value></property>
+		</bean>
+		<bean id="programForm" class="org.openmrs.web.controller.program.ProgramFormController">
+			<property name="sessionForm"><value>true</value></property>
+			<property name="commandName"><value>program</value></property>
+			<property name="formView"><value>/admin/programs/programForm</value></property>
+			<property name="successView"><value>program.list</value></property>
+		</bean>
+		<bean id="patientProgramFormController" class="org.springframework.web.servlet.mvc.multiaction.MultiActionController">
+			<property name="methodNameResolver"><ref bean="defaultMethodParamResolver"/></property>
+			<property name="delegate">
+				<bean class="org.openmrs.web.controller.program.PatientProgramFormController"/>
+			</property>
+		</bean>
+    <!-- ======================================== -->
+
 
     <!-- =========================== -->
 	<!-- =====      Other      ===== -->

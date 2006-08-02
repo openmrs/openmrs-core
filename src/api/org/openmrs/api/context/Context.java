@@ -23,6 +23,7 @@ import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
+import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.db.DAOContext;
 import org.openmrs.api.db.hibernate.HibernateDAOContext;
@@ -91,6 +92,7 @@ public class Context implements ApplicationContextAware {
 	private static SchedulerService schedulerService;
 	private static MessageService messageService;
 	private ArdenService ardenService;
+	private ProgramWorkflowService programWorkflowService;
 
 
 	/**
@@ -366,6 +368,15 @@ public class Context implements ApplicationContextAware {
 		if (ardenService == null)
 		  ardenService = new ArdenService(this, getDaoContext());
 		return ardenService;
+	}
+	
+	/**
+	 * @return program- and workflow-related services
+	 */
+	public ProgramWorkflowService getProgramWorkflowService() {
+		if (programWorkflowService == null)
+			programWorkflowService = new ProgramWorkflowService(this, getDaoContext());
+		return programWorkflowService;
 	}
 	
 	/**

@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+
+<class 
+    name="org.openmrs.PatientProgram" 
+    table="patient_program"
+>
+
+    <id
+        name="patientProgramId"
+        type="java.lang.Integer"
+        column="patient_program_id"
+    >
+        <generator class="native" />
+    </id>
+
+	<property
+        name="dateEnrolled"
+        type="java.util.Date"
+        column="date_enrolled"
+        not-null="false"
+        length="19"
+    />
+	
+    <property
+        name="dateCompleted"
+        type="java.util.Date"
+        column="date_completed"
+        not-null="false"
+        length="19"
+    />
+		
+    <property
+        name="dateCreated"
+        type="java.util.Date"
+        column="date_created"
+        not-null="true"
+        length="19"
+    />
+
+    <!-- Associations -->
+  
+    <!-- bi-directional many-to-one association to Program -->
+    <many-to-one
+        name="program"
+        class="org.openmrs.Program"
+        not-null="true"
+    >
+        <column name="program_id" />
+    </many-to-one>
+
+	<!-- bi-directional many-to-one association to Patient -->
+    <many-to-one
+        name="patient"
+        class="org.openmrs.Patient"
+        not-null="true"
+    >
+        <column name="patient_id" />
+    </many-to-one>
+		
+    <!-- bi-directional many-to-one association to User -->
+    <many-to-one
+        name="creator"
+        class="org.openmrs.User"
+        not-null="true"
+    >
+        <column name="creator" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

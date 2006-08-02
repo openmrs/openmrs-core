@@ -15,7 +15,7 @@
 	}
 	
 	function switchPatient() {
-		document.location='index.htm?phrase=john&autoJump=false';
+		document.location='index.htm?phrase=${param.phrase}&autoJump=false';
 	}
 	
 	function cancelTimeout() {

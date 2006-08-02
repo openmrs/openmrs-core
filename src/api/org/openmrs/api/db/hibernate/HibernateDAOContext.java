@@ -18,6 +18,7 @@ import org.openmrs.api.db.ObsDAO;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.api.db.PatientDAO;
 import org.openmrs.api.db.PatientSetDAO;
+import org.openmrs.api.db.ProgramWorkflowDAO;
 import org.openmrs.api.db.TemplateDAO;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.formentry.db.FormEntryDAO;
@@ -54,6 +55,7 @@ public class HibernateDAOContext implements DAOContext {
 	private HL7DAO hl7DAO;
 	private FormEntryDAO formEntryDAO;
 	private AlertDAO alertDAO;
+	private ProgramWorkflowDAO programWorkflowDAO;
 
 	// Report DAOs
 	private ReportDAO reportDAO;
@@ -329,6 +331,16 @@ public class HibernateDAOContext implements DAOContext {
 
 	public void setAlertDAO(AlertDAO dao) {
 		this.alertDAO = dao;
+	}
+	
+	public ProgramWorkflowDAO getProgramWorkflowDAO() {
+		if (programWorkflowDAO == null)
+			programWorkflowDAO = new HibernateProgramWorkflowDAO(context);
+		return programWorkflowDAO;
+	}
+	
+	public void setProgramWorkflowDAO(ProgramWorkflowDAO dao) {
+		this.programWorkflowDAO = dao;
 	}
 	
 	/**
