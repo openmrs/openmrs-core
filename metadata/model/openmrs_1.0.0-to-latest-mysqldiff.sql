@@ -282,3 +282,16 @@
  
  UPDATE `global_property` SET property_value='1.0.26' WHERE property = 'database_version';
  
+ 
+ #-----------------------------------
+ # OpenMRS Datamodel version 1.0.27
+ # Ben Wolfe     Aug 2 2006 9:55 AM
+ # Removed form.infopath_solution_version
+ #-----------------------------------
+ 
+ ALTER TABLE form DROP COLUMN infopath_solution_version;
+ 
+ UPDATE `global_property` SET property_value='1.0.27' WHERE property = 'database_version';
+ 
+ 
+ 

@@ -26,7 +26,6 @@ public class Form implements java.io.Serializable {
 	private EncounterType encounterType;
 	private String schemaNamespace;
 	private String template;
-	private String infoPathSolutionVersion;
 	private String uri;
 	private String xslt;
 	private User creator;
@@ -209,21 +208,6 @@ public class Form implements java.io.Serializable {
 	 */
 	public void setTemplate(String template) {
 		this.template = template;
-	}
-
-	/**
-	 * @return Returns the infoPathSolutionVersion.
-	 */
-	public String getInfoPathSolutionVersion() {
-		return infoPathSolutionVersion;
-	}
-
-	/**
-	 * @param infoPathSolutionVersion
-	 *            The infoPathSolutionVersion to set.
-	 */
-	public void setInfoPathSolutionVersion(String infoPathSolutionVersion) {
-		this.infoPathSolutionVersion = infoPathSolutionVersion;
 	}
 
 	/**

@@ -90,8 +90,8 @@ h1, h2, h3, h4, h5 {
 	margin: -1.5em auto 0 auto;
 	/*	IE footer stick 'fix'
 		width: 99.5%; */
-	}
 	z-index: 5;
+	}
 	#footer span {
 		color: gray;
 	}

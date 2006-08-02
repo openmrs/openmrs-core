@@ -33,9 +33,6 @@
 		<property name="schemaNamespace" type="java.lang.String" 
 			column="schema_namespace" length="255" />
 
-		<property name="infoPathSolutionVersion" type="java.lang.String"
-			column="infopath_solution_version" length="50" />
-
 		<property name="uri" type="java.lang.String" 
 			column="uri" length="255" />
 			

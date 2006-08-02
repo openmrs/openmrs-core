@@ -405,7 +405,6 @@ CREATE TABLE `form` (
   `encounter_type` int(11) default NULL,
   `schema_namespace` varchar(255) default NULL,
   `template` mediumtext default NULL,
-  `infopath_solution_version` varchar(50) default NULL,
   `uri` varchar(255) default NULL,
   `xslt` mediumtext,
   `creator` int(11) NOT NULL default '0',
