@@ -3,10 +3,11 @@ package org.openmrs.web.controller.analysis;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -101,8 +102,6 @@ public class OnTheFlyAnalysisController implements Controller {
 			return null;
 		}
 		
-		Locale locale = context.getLocale();
-		
 		ReportService reportService = context.getReportService();
 		PatientSetService patientSetService = context.getPatientSetService();
 		
@@ -165,6 +164,23 @@ public class OnTheFlyAnalysisController implements Controller {
 		for (PatientFilter pf : filters.values()) {
 			availableFilters.remove(pf);
 		}
+		Collections.sort(availableFilters, new Comparator() {
+				public int compare(Object a, Object b) {
+					AbstractReportObject left = (AbstractReportObject) a;
+					AbstractReportObject right = (AbstractReportObject) b;
+					int temp = left.getType().compareTo(right.getType());
+					if (temp == 0) {
+						temp = left.getSubType().compareTo(right.getSubType());
+					}
+					if (temp == 0) {
+						temp = left.getName().compareTo(right.getName());
+					}
+					if (temp == 0) {
+						temp = left.getDateCreated().compareTo(right.getDateCreated());
+					}
+					return temp;
+				}
+			});
 		
 		/*
 		PatientClassifier classifier = analysis.getPatientClassifier();
@@ -288,7 +304,7 @@ public class OnTheFlyAnalysisController implements Controller {
 					}
 					pf = filterInstance;
 				} catch (Exception ex) {
-					log.error(ex);
+					log.error("Exception trying to instantiate parametrized filter " + opt, ex);
 				}
 			} else {
 				pf = reportService.getPatientFilterByName(nameToAdd);

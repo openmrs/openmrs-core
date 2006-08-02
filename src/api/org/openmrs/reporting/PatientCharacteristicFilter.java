@@ -40,7 +40,7 @@ public class PatientCharacteristicFilter extends AbstractPatientFilter implement
 	public String getDescription() {
 		StringBuffer ret = new StringBuffer();
 		if (gender != null) {
-			if ("m".equals(gender) || "M".equals(gender)) {
+			if ("M".equals(gender)) {
 				ret.append("Male");
 			} else {
 				ret.append("Female");
@@ -77,7 +77,13 @@ public class PatientCharacteristicFilter extends AbstractPatientFilter implement
 	 * @param gender The gender to set.
 	 */
 	public void setGender(String gender) {
-		this.gender = gender;
+		this.gender = null;
+		if (gender != null) {
+			gender = gender.toUpperCase();
+			if ("M".equals(gender) || "F".equals(gender)) {
+				this.gender = gender;
+			}
+		}
 	}
 
 	/**

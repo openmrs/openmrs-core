@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+
+<class
+	name="org.openmrs.ProgramWorkflow"
+	table="program_workflow"
+>
+
+    <id
+		name="programWorkflowId"
+        type="java.lang.Integer"
+        column="program_workflow_id"
+    >
+        <generator class="native" />
+    </id>
+	
+	<many-to-one name="program" class="org.openmrs.Program">
+		<column name="program_id" />
+	</many-to-one>
+	
+	<many-to-one name="concept" class="org.openmrs.Concept" not-null="true">
+        <column name="concept_id" />
+    </many-to-one>
+	
+    <many-to-one name="creator" class="org.openmrs.User" not-null="true">
+        <column name="creator" />
+    </many-to-one>
+
+	<property
+        name="dateCreated"
+        type="java.util.Date"
+        column="date_created"
+        not-null="true"
+        length="19"
+    />
+
+</class>
+</hibernate-mapping>

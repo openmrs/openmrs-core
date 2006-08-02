@@ -1,5 +1,7 @@
 package org.openmrs.reporting;
 
+import java.util.Locale;
+
 import org.openmrs.Concept;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PatientSetService.Modifier;
@@ -61,7 +63,8 @@ public class NumericObsPatientFilter extends AbstractPatientFilter implements Pa
 
 	public String getDescription() {
 		StringBuffer ret = new StringBuffer();
-		ret.append("Patients with (concept #" + concept + ")");
+		//ret.append("Patients with (concept #" + concept + ")");
+		ret.append("Patients with " + (concept == null ? "CONCEPT" : concept.getName(Locale.US, false)));
 		if (value != null && modifier != PatientSetService.Modifier.EXISTS) {
 			ret.append(" " + modifier.getSqlRepresentation() + " " + value);
 		}

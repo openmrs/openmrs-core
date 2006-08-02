@@ -22,6 +22,8 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.Encounter;
+import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.PatientSetService;
@@ -74,10 +76,43 @@ public class NealReportController implements Controller {
 		attributeHelper(attributesToGet, attributeNamesForReportMaker, "Patient.patientId", General.ID);
 		attributeHelper(attributesToGet, attributeNamesForReportMaker, "PatientName.givenName", General.FIRST_NAME);
 		attributeHelper(attributesToGet, attributeNamesForReportMaker, "PatientName.familyName", General.LAST_NAME);
-		attributeHelper(attributesToGet, attributeNamesForReportMaker, "Patient.healthCenter", General.SITE);
 		attributeHelper(attributesToGet, attributeNamesForReportMaker, "Patient.birthdate", General.BIRTHDAY);
 		attributeHelper(attributesToGet, attributeNamesForReportMaker, "Patient.gender", General.SEX);
 		
+		// General.SITE
+		// General.HIV_POSITIVE_P
+		// General.TB_ACTIVE_P
+		// Hiv.TREATMENT_STATUS
+		// General.ADDRESS
+		// General.ENROLL_DATE
+		// General.USER_ID (this is actually patient identifier)
+		// General.DUE_DATE if pregnant
+		// Hiv.ACCOMP_FIRST_NAME
+		// Hiv.ACCOMP_LAST_NAME
+		// General.PREGNANT_P
+		// General.PMTCT (get meds for ptme? ask CA)
+		// General.FORMER_GROUP (previous ARV group)
+		
+		// --- for every arv drug, addDynamic() a holder with
+		// Hiv.OBS_TYPE == Hiv.ARV or "arv"
+		// General.DOSE_PER_DAY == total dose per day == ddd
+		// Hiv.OBS_DATE == start date of arvs
+		// Hiv.ARV == the name of the drug as 3-letter abbreviation, or whatever   
+		// "stop_date" == stop date for ARVS
+		// "ddd_quotient"  == number of times taken per day (i think) 
+		// "strength_unit" == unit for strength, e.g, "tab"
+		// "strength_dose" == amount given per time
+		
+		// --- for every tb drug, addDynamic() a holder with
+		// Hiv.OBS_TYPE == TB.TB_REGIMEN or "atb"
+		// TB.TB_REGIMEN == the name of the drug
+		// General.DOSE_PER_DAY == total dose per day == ddd
+		// Hiv.OBS_DATE == start date of arvs
+		// "stop_date" == stop date for ARVS
+		// "ddd_quotient"  == number of times taken per day (i think) 
+		// "strength_unit" == unit for strength, e.g, "tab"
+		// "strength_dose" == amount given per time
+				
 		List<Concept> conceptsToGet = new ArrayList<Concept>();
 		Map<Concept, String> namesForReportMaker = new HashMap<Concept, String>();
 		conceptHelper(cs, conceptsToGet, namesForReportMaker, "ANTIRETROVIRAL TREATMENT GROUP", Hiv.TREATMENT_GROUP);
@@ -87,11 +122,11 @@ public class NealReportController implements Controller {
 		List<Concept> dynamicConceptsToGet = new ArrayList<Concept>();
 		Map<Concept, String> obsTypesForDynamicConcepts = new HashMap<Concept, String>();
 		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "WEIGHT (KG)", "weight");
-		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "HEIGHT (CM)", "height");
-		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "CD4 COUNT", "cd4");
-		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "CD4%", "cd4_percent");
-		//dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "SPUTUM FOR ACID FAST BACILLI", "sputum");
+		//dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "HEIGHT (CM)", "height");
+		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "CD4 COUNT", Hiv.CD4COUNT);
+		//dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "CD4%", Hiv.CD4PERCENT);
 		
+		long l = System.currentTimeMillis();
 
 		for (String attr : attributesToGet) {
 			String nameToUse = attributeNamesForReportMaker.get(attr);
@@ -104,14 +139,26 @@ public class NealReportController implements Controller {
 					patientDataHolder.put(ptId, holder);
 				}
 				if (e.getValue() != null) {
-					holder.put(nameToUse, e.getValue().toString());
+					Object obj = e.getValue();
+					String valToUse = null;
+					if (obj instanceof Date) {
+						valToUse = formatDate((Date) obj);
+					} else {
+						valToUse = obj.toString();
+					}
+					holder.put(nameToUse, valToUse);
 				}
 			}
 		}
 		
+		log.debug("Pulled attributesToGet in " + (System.currentTimeMillis() - l) + " ms");
+		l = System.currentTimeMillis();
+		
 		for (Concept c : conceptsToGet) {
+			long l1 = System.currentTimeMillis();
 			String nameToUse = namesForReportMaker.get(c);
 			Map<Integer, List<Obs>> temp = pss.getObservations(ps, c);
+			long l2 = System.currentTimeMillis();
 			for (Map.Entry<Integer, List<Obs>> e : temp.entrySet()) {
 				Integer ptId = e.getKey();
 				Map<String, String> holder = (Map<String, String>) patientDataHolder.get(ptId);
@@ -121,11 +168,18 @@ public class NealReportController implements Controller {
 				}
 				holder.put(nameToUse, e.getValue().get(0).getValueAsString(locale));
 			}
+			long l3 = System.currentTimeMillis();
+			log.debug("\t" + nameToUse + " " + c + " step 1: " + (l2 - l1) + " ms. step 2: " + (l3 - l2) + " ms.");
 		}
 		
+		log.debug("Pulled conceptsToGet in " + (System.currentTimeMillis() - l) + " ms");
+		l = System.currentTimeMillis();
+		
 		for (Concept c : dynamicConceptsToGet) {
+			long l1 = System.currentTimeMillis();
 			String typeToUse = obsTypesForDynamicConcepts.get(c);
 			Map<Integer, List<Obs>> temp = pss.getObservations(ps, c);
+			long l2 = System.currentTimeMillis();
 			for (Map.Entry<Integer, List<Obs>> e : temp.entrySet()) {
 				Integer ptId = e.getKey();
 				List<Obs> obs = e.getValue();
@@ -138,16 +192,81 @@ public class NealReportController implements Controller {
 					maker.addDynamic(holder);
 				}
 			}
+			long l3 = System.currentTimeMillis();
+			log.debug("\t" + typeToUse + " " + c + " step 1: " + (l2 - l1) + " ms. step 2: " + (l3 - l2) + " ms.");
+		}
+		
+		log.debug("Pulled dynamicConceptsToGet in " + (System.currentTimeMillis() - l) + " ms");
+		l = System.currentTimeMillis();
+		
+		// hack for demo in capetown using Kenya data
+		{
+			// arv start date
+			Map<Integer, List<Obs>> observs = pss.getObservations(ps, context.getConceptService().getConcept(1255));
+			for (Map.Entry<Integer, List<Obs>> e : observs.entrySet()) {
+				Date date = null;
+				for (Obs observ : e.getValue()) {
+					if (observ.getValueCoded().getConceptId() == 1256) {
+						date = observ.getObsDatetime();
+						if (date == null) {
+							date = observ.getEncounter().getEncounterDatetime();
+						}
+						break;
+					}
+				}
+				if (date != null) {
+					patientDataHolder.get(e.getKey()).put(Hiv.FIRST_ARV_DATE, formatDate(date));
+				}
+			}
+			
+			// tb tx start date
+			observs = pss.getObservations(ps, context.getConceptService().getConcept(1268));
+			for (Map.Entry<Integer, List<Obs>> e : observs.entrySet()) {
+				Date date = null;
+				for (Obs observ : e.getValue()) {
+					if (observ.getValueCoded().getConceptId() == 1256) {
+						date = observ.getObsDatetime();
+						if (date == null) {
+							date = observ.getEncounter().getEncounterDatetime();
+						}
+						break;
+					}
+				}
+				if (date != null) {
+					patientDataHolder.get(e.getKey()).put(TB.FIRST_TB_REGIMEN_DATE, formatDate(date));
+				}
+			}
+
+			// location of most recent encounter
+			Map<Integer, Encounter> encs = pss.getEncountersByType(ps, null);
+			for (Map.Entry<Integer, Encounter> e : encs.entrySet()) {
+				String locName = null;
+				Location encLocation = e.getValue().getLocation();
+				if (encLocation != null) {
+					locName = encLocation.getName();
+				}
+				if (locName != null && locName.length() > 0) {
+					patientDataHolder.get(e.getKey()).put(General.SITE, locName);
+				}
+			}
 		}
 
+		int cnt = 0;
 		for (Map<String, String> patient : patientDataHolder.values()) {
-			patient.put("BIRTH_YEAR", "1978");
+			// patient.put("BIRTH_YEAR", "1978");
+			patient.put(General.HIV_POSITIVE_P, "t");
 			maker.addStatic(patient);
 		}
+		
+		log.debug("Loaded data into report-maker in " + (System.currentTimeMillis() - l) + " ms");
+		l = System.currentTimeMillis();
 	   
 	    File dir = new File("NEAL_REPORT_DIR");
 	    dir.mkdir();
 	    String filename = maker.generateReport(dir.getAbsolutePath() + "/");
+	    
+	    log.debug("ran maker.generateReport() in " + (System.currentTimeMillis() - l) + " ms");
+		l = System.currentTimeMillis();
 	    
 	    Map<String, Object> model = new HashMap<String, Object>();
 	    model.put("dir", dir);
