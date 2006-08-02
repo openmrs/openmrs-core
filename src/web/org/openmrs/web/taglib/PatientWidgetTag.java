@@ -45,6 +45,7 @@ public class PatientWidgetTag extends TagSupport {
 			log.error("WebApplicationContextUtils.getWebApplicationContext(pageContext.getServletContext()) returns null");
 		}
 		*/
+		boolean showNames = "full".equals(size);
 		boolean showPatientInfo = !"compact".equals(size);
 		Locale locale = context.getLocale();
 		Patient patient = null;
@@ -54,7 +55,11 @@ public class PatientWidgetTag extends TagSupport {
 		
 		try {
 			JspWriter w = pageContext.getOut();
-			w.print("patient_id " + patientId);
+			if (showNames && patient != null) {
+				w.print(patient.getNames().iterator().next());
+			} else {
+				w.print("patient_id " + patientId);
+			}
 			if (showPatientInfo) {
 				if (patient.getGender() != null) {
 					//String s = messageSource.getMessage("Patient.gender." + (patient.getGender().toLowerCase().startsWith("m") ? "male" : "female"), null, locale);

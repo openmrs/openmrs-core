@@ -3,6 +3,7 @@
 <b><u><spring:message code="Analysis.activeFilters"/></u></b>
 <c:choose>
 	<c:when test="${fn:length(model.patientAnalysis.patientFilters) == 0}">
+		<br/>
 		<spring:message code="Analysis.noFiltersSelected"/>
 	</c:when>
 	<c:otherwise>

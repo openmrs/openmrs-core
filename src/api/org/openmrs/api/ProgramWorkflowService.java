@@ -4,18 +4,13 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Concept;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
-import org.openmrs.PatientStatus;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
-import org.openmrs.ProgramWorkflowState;
-import org.openmrs.ProgramWorkflowTransition;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOContext;
 import org.openmrs.api.db.ProgramWorkflowDAO;
@@ -103,7 +98,7 @@ public class ProgramWorkflowService {
 	}
 	
 	// --- ProgramWorkflowState ---
-	
+	/*
 	public void createProgramWorkflowState(ProgramWorkflowState s) {
 	}
 	
@@ -113,9 +108,9 @@ public class ProgramWorkflowService {
 	
 	public void voidProgramWorkflowState(ProgramWorkflowState s, String reason) {
 	}
-	
+	*/
 	// --- ProgramWorkflowTransition ---
-	
+	/*
 	public void createProgramWorkflowTransition(ProgramWorkflowTransition t) {
 	}
 	
@@ -125,7 +120,7 @@ public class ProgramWorkflowService {
 	
 	public void voidProgramWorkflowTransition(ProgramWorkflowTransition t, String reason) {
 	}
-	
+	*/
 	// --- PatientProgram ---
 
 	public void createPatientProgram(PatientProgram p) {
@@ -179,7 +174,7 @@ public class ProgramWorkflowService {
 	}
 	
 	// --- PatientStatus ---
-	
+	/*
 	public void createPatientStatus(PatientStatus s) {
 	}
 	
@@ -189,9 +184,10 @@ public class ProgramWorkflowService {
 	
 	public void voidPatientStatus(PatientStatus s, String reason) {
 	}
-	
+	*/
+
 	// --- Actual useful methods ---
-	
+	/*
 	public Concept getPatientStatus(Patient patient, ProgramWorkflow workflow, Date onDate) {
 		return null;
 	}
@@ -206,7 +202,8 @@ public class ProgramWorkflowService {
 	
 	public void changeStatus(Patient patient, ProgramWorkflow workflow, Concept newStatus, Date onDate) throws APIException {	
 	}
-
+*/
+	
 	public Collection<Program> getCurrentPrograms(Patient patient, Date onDate) {
 		if (onDate == null) {
 			onDate = new Date();
@@ -223,5 +220,5 @@ public class ProgramWorkflowService {
 		}
 		return ret;
 	}
-	
+
 }

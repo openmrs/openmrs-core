@@ -1,55 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
 <style>
-<%--
-	* {
-		padding: 0;
-		margin: 0;
-	}
-
-	ul {
-		list-style: none;
-		width: 125px;
-	}
-
-	ul a {
-		color: #FFF;
-		text-decoration: none;
-		display: block;
-		padding: 5px 5px 5px 10px;
-		width: 125px;
-		background: #CCCCCC;
-	}
-	
-	ul a:hover {
-		color: #4BD8FF;
-		text-decoration: none;
-		background: #C3C3C3;
-	}
-	
-	ul li {
-		border-bottom: 1px solid #FFF;
-		float: left;
-		position: relative;
-		background: #CCCCCC;
-	}
-	
-	ul li ul {
-		list-style: none;
-		position: absolute;
-		left: 140px;
-		top: 0;
-		display: none;
-		width: 125px;
-		border-left: 1px solid #FFF;
-	}
-	
-	ul li:hover ul { display: block; }
-	
-	ul li:hover ul li ul { display: none; }
-	
-	ul li ul li:hover ul { display: block; }
---%>
 	#actionBox {
 		background-color: #e0e0e0;
 		padding: 4px;
@@ -258,6 +209,6 @@
 	
 <br/>
 
-<openmrs:portlet url="patientSetList" id="patientSetBox" patientIds="${model.result.commaSeparatedPatientIds}" parameters="view=${model.viewMethod}|limit=25"/>
+<openmrs:portlet url="patientSetList" id="patientSetBox" patientIds="${model.result.commaSeparatedPatientIds}" parameters="view=${model.viewMethod}|limit=25" size="full"/>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %> 

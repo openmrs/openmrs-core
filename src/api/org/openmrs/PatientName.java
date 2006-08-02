@@ -1,6 +1,11 @@
 package org.openmrs;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import org.openmrs.util.OpenmrsConstants;
 
@@ -420,5 +425,27 @@ public class PatientName implements java.io.Serializable, Cloneable {
 	 */
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
+	}
+	
+	public String toString() {
+		List<String> temp = new ArrayList<String>();
+		if (prefix != null) temp.add(prefix);
+		if (givenName != null) temp.add(givenName);
+		if (middleName != null) temp.add(middleName);
+		if (familyNamePrefix != null) temp.add(familyNamePrefix);
+		if (familyName != null) temp.add(familyName);
+		if (familyName2 != null) temp.add(familyName2);
+		if (familyNameSuffix != null) temp.add(familyNameSuffix);
+		if (degree != null) temp.add(degree);
+		
+		StringBuilder sb = new StringBuilder();
+		for (Iterator<String> i = temp.iterator(); i.hasNext(); ) {
+			sb.append(i.next());
+			if (i.hasNext()) {
+				sb.append(" ");
+			}
+		}
+		
+		return sb.toString();
 	}
 }
