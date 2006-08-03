@@ -334,3 +334,24 @@ CREATE TABLE `patient_program` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
  UPDATE `global_property` SET property_value='1.0.28' WHERE property = 'database_version';
+
+ #-----------------------------------
+ # OpenMRS Datamodel version 1.0.29
+ # Burke Mamlin     Aug 2 2006 11:07 AM
+ # Removed form.schema_namespace and form.uri
+ # and cleaned out artifacts from concept table
+ #-----------------------------------
+ 
+ ALTER TABLE form DROP COLUMN schema_namespace;
+ ALTER TABLE form DROP COLUMN uri;
+ 
+ ALTER TABLE concept DROP COLUMN name;
+ ALTER TABLE concept DROP COLUMN icd10;
+ ALTER TABLE concept DROP COLUMN loinc;
+ ALTER TABLE concept DROP COLUMN form_location;
+ ALTER TABLE concept DROP COLUMN units;
+ ALTER TABLE concept DROP COLUMN view_count;
+ 
+ UPDATE `global_property` SET property_value='1.0.29' WHERE property = 'database_version';
+ 
+ 

@@ -22,7 +22,7 @@
     <property file="${lib.dir}/lib.properties" />
 
 	<!-- Properties for running unit tests and webapp [un]deploy with tomcat -->
-	<property name="tomcat.home" value="C:/Program Files/Apache Group/Tomcat"/>
+    <property name="tomcat.home" value="C:/Program Files/Apache Group/Tomcat"/>
     <property name="tomcat.server" value="localhost" />
 	<property name="tomcat.port" value="8080" />
     <property name="tomcat.manager.url" value="http://${tomcat.server}:${tomcat.port}/manager" />
@@ -67,43 +67,45 @@
     
     <!-- API -->
     <path id="api.compile.classpath">
+		<!--<fileset dir="${activemq.dir}" includes="*.jar" />-->
+		<fileset dir="${antlr.dir}" includes="*.jar" />
 		<fileset dir="${commons-io.dir}" includes="*.jar" />
 		<fileset dir="${commons-logging.dir}" includes="*.jar" />
 		<fileset dir="${dom4j.dir}" includes="*.jar" />
 		<fileset dir="${hibernate.dir}" includes="*.jar" />
+    	<fileset dir="${hl7api.dir}" includes="*.jar" />
 		<fileset dir="${ibatis.dir}" includes="*.jar" />
+    	<fileset dir="${jfreechart.dir}" includes="*.jar" />
+		<fileset dir="${junit.dir}" includes="*.jar" />
 		<fileset dir="${log4j.dir}" includes="*.jar" />
 		<fileset dir="${mail.dir}" includes="*.jar" />
+		<!--<fileset dir="${quartz.dir}" includes="*.jar" />-->
 		<fileset dir="${spring.dir}" includes="*.jar" />
 		<fileset dir="${velocity.dir}" includes="*.jar" />
-		<fileset dir="${junit.dir}" includes="*.jar" />
-		<fileset dir="${antlr.dir}" includes="*.jar" />
-		<!--<fileset dir="${quartz.dir}" includes="*.jar" />-->
-		<!--<fileset dir="${activemq.dir}" includes="*.jar" />-->
     </path>
     <path id="api.test.classpath">
         <path refid="api.compile.classpath"/>
-		<fileset dir="${test.dir}/api" includes="**/*.java" />
 		<fileset dir="${junit.dir}" includes="*.jar" />
+		<fileset dir="${test.dir}/api" includes="**/*.java" />
     </path>
         
     <!-- Web -->
     <path id="web.compile.classpath">
 		<pathelement location="${dist.dir}/openmrs-api-${openmrs.version}.jar" />
-		<fileset dir="${tomcat.dir}" includes="*.jar" />
-		<fileset dir="${dwr.dir}" includes="*.jar" />
 		<fileset dir="${commons-io.dir}" includes="*.jar" />
 		<fileset dir="${commons-logging.dir}" includes="*.jar" />
 		<fileset dir="${commons-lang.dir}" includes="*.jar" />
 		<fileset dir="${commons-beanutils.dir}" includes="*.jar" />
 		<fileset dir="${commons-collections.dir}" includes="*.jar" />
+		<fileset dir="${dwr.dir}" includes="*.jar" />
 		<fileset dir="${hibernate.dir}" includes="*.jar" />
+    	<fileset dir="${jfreechart.dir}" includes="*.jar" />
 		<fileset dir="${jstl.dir}" includes="*.jar" />
-		<fileset dir="${spring.dir}" includes="*.jar" />
-		<fileset dir="${velocity.dir}" includes="*.jar" />
-		<fileset dir="${taglibs.dir}" includes="*.jar" />
-		<fileset dir="${jfreechart.dir}" includes="*.jar" />
 		<fileset dir="${neal-reporting.dir}" includes="*.jar" />
+		<fileset dir="${spring.dir}" includes="*.jar" />
+		<fileset dir="${taglibs.dir}" includes="*.jar" />
+		<fileset dir="${tomcat.dir}" includes="*.jar" />
+		<fileset dir="${velocity.dir}" includes="*.jar" />
     </path>
 
 </project>

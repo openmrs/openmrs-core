@@ -16,21 +16,14 @@
 
 		<property name="retired" type="java.lang.Boolean"
 			column="retired" length="1" not-null="true"/>
-		<property name="icd10" type="java.lang.String" column="icd10"
-			length="255" />
-		<property name="loinc" type="java.lang.String" column="loinc"
-			length="255" />
 		<property name="dateCreated" type="java.util.Date"
 			column="date_created" not-null="true" length="19" />
 		<property name="version" type="java.lang.String"
 			column="version" length="50" /> 
 		<property name="dateChanged" type="java.util.Date"
 			column="date_changed" length="19" />
-		<property name="units" type="java.lang.String" column="units"
-			length="50" />
 		<property name="set" type="java.lang.Boolean" column="is_set"
 			length="1" not-null="true" />
-		
 		
 		<!-- Associations -->
 

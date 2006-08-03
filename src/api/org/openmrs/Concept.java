@@ -27,9 +27,6 @@ public class Concept implements java.io.Serializable {
 	private ConceptDatatype datatype;
 	private ConceptClass conceptClass;
 	private Boolean set = false;
-	private String units;
-	private String icd10;
-	private String loinc;
 	private String version;
 	private User creator;
 	private Date dateCreated;
@@ -62,9 +59,6 @@ public class Concept implements java.io.Serializable {
 		retired = cn.isRetired();
 		datatype = cn.getDatatype();
 		conceptClass = cn.getConceptClass();
-		units = cn.getUnits();
-		icd10 = cn.getIcd10();
-		loinc = cn.getLoinc();
 		version = cn.getVersion();
 		creator = cn.getCreator();
 		dateCreated = cn.getDateCreated();
@@ -274,34 +268,6 @@ public class Concept implements java.io.Serializable {
 	}
 
 	/**
-	 * @return Returns the icd10.
-	 */
-	public String getIcd10() {
-		return icd10;
-	}
-
-	/**
-	 * @param icd10 The icd10 to set.
-	 */
-	public void setIcd10(String icd10) {
-		this.icd10 = icd10;
-	}
-
-	/**
-	 * @return Returns the loinc.
-	 */
-	public String getLoinc() {
-		return loinc;
-	}
-
-	/**
-	 * @param loinc The loinc to set.
-	 */
-	public void setLoinc(String loinc) {
-		this.loinc = loinc;
-	}
-
-	/**
 	 * Finds the name of the concept in the given locale.  Returns null if none found. 
 	 * 
 	 * @param locale
@@ -468,20 +434,6 @@ public class Concept implements java.io.Serializable {
 			synonyms.remove(conceptSynonym);
 	}
 	
-	/**
-	 * @return Returns the units.
-	 */
-	public String getUnits() {
-		return units;
-	}
-
-	/**
-	 * @param units The units to set.
-	 */
-	public void setUnits(String units) {
-		this.units = units;
-	}
-
 	/**
 	 * @return Returns the version.
 	 */

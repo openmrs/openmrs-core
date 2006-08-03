@@ -24,9 +24,7 @@ public class Form implements java.io.Serializable {
 	private Boolean published = false;
 	private String description;
 	private EncounterType encounterType;
-	private String schemaNamespace;
 	private String template;
-	private String uri;
 	private String xslt;
 	private User creator;
 	private Date dateCreated;
@@ -182,21 +180,6 @@ public class Form implements java.io.Serializable {
 	}
 
 	/**
-	 * @return Returns the schemaNamespace.
-	 */
-	public String getSchemaNamespace() {
-		return schemaNamespace;
-	}
-
-	/**
-	 * @param schemaNamespace
-	 *            The schemaNamespace to set.
-	 */
-	public void setSchemaNamespace(String schemaNamespace) {
-		this.schemaNamespace = schemaNamespace;
-	}
-	
-	/**
 	 * @return Returns the template.
 	 */
 	public String getTemplate() {
@@ -208,21 +191,6 @@ public class Form implements java.io.Serializable {
 	 */
 	public void setTemplate(String template) {
 		this.template = template;
-	}
-
-	/**
-	 * @return location of the actual form
-	 */
-	public String getUri() {
-		return uri;
-	}
-
-	/**
-	 * @param uri
-	 *            The location of the actual form
-	 */
-	public void setUri(String uri) {
-		this.uri = uri;
 	}
 
 	/**

@@ -100,7 +100,7 @@ public class FormStarterXSN {
 		String outputDir = tempDir.getAbsolutePath();
 		String outputFilename = "starter_template.xsn";
 
-		String namespace = form.getSchemaNamespace();
+		String namespace = FormEntryUtil.getFormSchemaNamespace(form);
 
 		String serverUrl = FormEntryConstants.FORMENTRY_INFOPATH_SERVER_URL;
 		String publishUrl = FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_URL + outputFilename;

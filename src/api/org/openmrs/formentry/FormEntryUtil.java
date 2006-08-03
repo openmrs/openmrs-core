@@ -227,6 +227,11 @@ public class FormEntryUtil {
 		String baseUrl = FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_URL;
 		return baseUrl + getFormUri(form);
 	}
+	
+	public static String getFormSchemaNamespace(Form form) {
+		String baseUrl = FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_URL;
+		return baseUrl + "schema/" + form.getFormId() + form.getBuild();
+	}
 
 	public static String getSolutionVersion(Form form) {
 		String version = form.getVersion();

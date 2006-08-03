@@ -16,6 +16,7 @@ to the DAO objects in the <code>org.openmrs.api.db</code> package.
 </p>
 <p>
 For example:
+</p>
 <pre>
   Context context = ContextFactory.getContext();
   PatientService ps = context.getPatientService();
@@ -23,7 +24,6 @@ For example:
   // fetch patient with identifier 3-4
   Patient patient = ps.getPatientByIdentifier("3-4");
 </pre>
-</p>
 
 </body>
 </html>

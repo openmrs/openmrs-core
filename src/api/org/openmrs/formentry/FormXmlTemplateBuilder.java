@@ -112,7 +112,7 @@ public class FormXmlTemplateBuilder {
 	public synchronized String getXmlTemplate(boolean includeDefaultScripts) {
 
 		StringBuffer xml = new StringBuffer();
-		// TODO: the following line should get solution version from FormEntryService
+
 		xml.append(FormXmlTemplateFragment.header(form.getName(), FormEntryUtil
 				.getSolutionVersion(form), url));
 		xml.append(FormXmlTemplateFragment.openForm(form.getFormId(), form
