@@ -90,7 +90,7 @@ public class FormSchemaBuilder {
 			return schema;
 
 		StringBuffer s = new StringBuffer();
-		s.append(FormSchemaFragment.header(form.getSchemaNamespace()));
+		s.append(FormSchemaFragment.header(FormEntryUtil.getFormSchemaNamespace(form)));
 		s.append(FormSchemaFragment.startForm());
 
 		formStructure = FormUtil.getFormStructure(context, form);

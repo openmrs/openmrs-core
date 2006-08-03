@@ -123,7 +123,7 @@ public class PublishInfoPath {
 		form.setBuild(form.getBuild() + 1);
 
 		String outputFilename = FormEntryUtil.getFormUri(form);
-		String namespace = form.getSchemaNamespace();
+		String namespace = FormEntryUtil.getFormSchemaNamespace(form);
 		String solutionVersion = FormEntryUtil.getSolutionVersion(form);
 		log.debug("solution version: " + solutionVersion);
 

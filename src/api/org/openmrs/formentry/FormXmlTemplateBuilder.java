@@ -116,7 +116,7 @@ public class FormXmlTemplateBuilder {
 		xml.append(FormXmlTemplateFragment.header(form.getName(), FormEntryUtil
 				.getSolutionVersion(form), url));
 		xml.append(FormXmlTemplateFragment.openForm(form.getFormId(), form
-				.getName(), form.getVersion(), form.getSchemaNamespace(),
+				.getName(), form.getVersion(), FormEntryUtil.getFormSchemaNamespace(form),
 				includeDefaultScripts));
 
 		TreeMap<Integer, TreeSet<FormField>> formStructure = FormUtil
@@ -311,7 +311,7 @@ public class FormXmlTemplateBuilder {
 		User user = encounter.getCreator();
 		Date date = encounter.getEncounterDatetime();
 		xml.append(FormXmlTemplateFragment.openForm(form.getFormId(), form
-				.getName(), form.getVersion(), form.getSchemaNamespace(), false));
+				.getName(), form.getVersion(), FormEntryUtil.getFormSchemaNamespace(form), false));
 
 		TreeMap<Integer, TreeSet<FormField>> formStructure = FormUtil
 				.getFormStructure(context, form);
