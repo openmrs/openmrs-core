@@ -91,7 +91,7 @@ public class HibernateUtil {
 			commitTransaction();
 		}
 		catch (Exception e) {
-			log.error(e);
+			log.error("Error while committing transaction", e);
 		}
 		finally {
 			//close session

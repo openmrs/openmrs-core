@@ -40,6 +40,11 @@ public class DWREncounterService {
 				EncounterService es = context.getEncounterService();
 				List<Encounter> encs = new Vector<Encounter>();
 				
+				if (phrase == null) {
+					objectList.add("Search phrase cannot be null");
+					return objectList;
+				}
+				
 				if (phrase.matches("\\d+")) {
 					// user searched on a number.  Insert concept with corresponding encounterId
 					Encounter e = es.getEncounter(Integer.valueOf(phrase));
@@ -66,7 +71,7 @@ public class DWREncounterService {
 					}
 				}
 			} catch (Exception e) {
-				log.error(e);
+				log.error("Error while searching for encounters", e);
 				objectList.add("Error while attempting to find encounter - " + e.getMessage());
 			}
 		}

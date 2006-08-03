@@ -58,7 +58,7 @@ public class OpenmrsFilter implements Filter {
 			chain.doFilter(request, response);
 		}
 		catch (Exception e) {
-			log.error(e.getMessage());
+			log.error("Error while performing filter chain", e);
 			throw new ServletException(e);
 		}
 		finally {
