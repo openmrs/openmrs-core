@@ -133,7 +133,7 @@ public class PortletController implements Controller {
 				
 			}
 
-			populateModel(context, model);
+			populateModel(request, context, model);
 		}
 
 		return new ModelAndView(portletPath, "model", model);
@@ -145,6 +145,6 @@ public class PortletController implements Controller {
 	 * This will be called AFTER handleRequest has put mappings in the model as described in its javadoc.
 	 * Note that context could be null when this method is called.  
 	 */
-	protected void populateModel(Context context, Map model) { }
+	protected void populateModel(HttpServletRequest request, Context context, Map model) { }
 	
 }

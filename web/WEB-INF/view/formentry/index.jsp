@@ -76,6 +76,8 @@
 	}
 </style>
 
+<openmrs:portlet url="patientSet" id="patientSetHeader" size="compact" parameters="linkUrl=patientDashboard.form"/>
+
 <h3><spring:message code="formentry.title"/></h3>
 
 <div id="findPatient">

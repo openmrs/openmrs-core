@@ -71,6 +71,8 @@
     }
 </script>
 
+<openmrs:portlet url="patientSet" id="patientSetHeader" size="compact" parameters="linkUrl=patientDashboard.form"/>
+
 <div id="breadcrumbHeader" class="breadcrumb">
 	<a href="/openmrs">Home</a> ->
 	<a href="#switch" onClick="switchPatient()">Find Patient</a> ->

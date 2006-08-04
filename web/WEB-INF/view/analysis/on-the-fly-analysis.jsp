@@ -1,5 +1,7 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
+<openmrs:require privilege="View Patient Sets" otherwise="/login.htm" redirect="analysis.list" />
+
 <style>
 	#actionBox {
 		background-color: #e0e0e0;
@@ -107,8 +109,6 @@
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
-<openmrs:require privilege="View Patient Sets" otherwise="/login.htm" redirect="analysis.list" />
-
 <h3 align="center"><spring:message code="Analysis.title"/></h3>
 
 <openmrs:portlet url="activeFilters" id="filterBox" parameterMap="${model.filterPortletParams}" />
@@ -206,7 +206,16 @@
 		</ul>		
 	</div>
 </span>
-	
+
+<span style="position: relative">
+	<form method="post" action="patientSet.form" id="goToFormEntry" style="display: inline">
+		<input type="hidden" name="method" value="setPatientSet"/>
+		<input type="hidden" name="patientIds" value="${model.patient_set_for_links}"/>
+		<input type="hidden" name="url" value="formentry"/>
+		<a class="shortcutBarButton" href="javascript:document.getElementById('goToFormEntry').submit()">FormEntry for this group</a>
+	</form>
+</span>
+
 <br/>
 
 <openmrs:portlet url="patientSetList" id="patientSetBox" patientIds="${model.result.commaSeparatedPatientIds}" parameters="view=${model.viewMethod}|limit=25" size="full"/>

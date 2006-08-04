@@ -106,7 +106,9 @@
 					<prop key="**/program.list">programList</prop>
 					<prop key="**/program.form">programForm</prop>
 					<prop key="**/patientProgram.form">patientProgramFormController</prop>
+					<prop key="**/patientSet.form">patientSetFormController</prop>
 					<prop key="**/patientPrograms.portlet">patientProgramsPortletController</prop>
+					<prop key="**/patientSet.portlet">patientSetPortletController</prop>
 					<prop key="**/*.portlet">portletController</prop>
 					<prop key="**/*.htm">springController</prop>
 	            </props>
@@ -115,6 +117,7 @@
 
 		<bean id="portletController" class="org.openmrs.web.controller.PortletController"/>
 		<bean id="patientProgramsPortletController" class="org.openmrs.web.controller.PatientProgramsPortletController"/>
+		<bean id="patientSetPortletController" class="org.openmrs.web.controller.PatientSetPortletController"/>
 		<bean id="springController" class="org.openmrs.web.controller.SpringController"/>
 
     <!-- =============================== -->
@@ -840,6 +843,13 @@
 	<bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
   		<property name="paramName"><value>lang</value></property>
 	</bean>
+	
+		<bean id="patientSetFormController" class="org.springframework.web.servlet.mvc.multiaction.MultiActionController">
+			<property name="methodNameResolver"><ref bean="defaultMethodParamResolver"/></property>
+			<property name="delegate">
+				<bean class="org.openmrs.web.controller.patientset.PatientSetController"/>
+			</property>
+		</bean>
 	
 	<!--  **************************  REPORT OBJECT FACTORY CONFIGURATION  *************************  -->
 

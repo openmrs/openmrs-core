@@ -78,10 +78,7 @@ public class ProgramFormController extends SimpleFormController {
 		
 		if (context != null && context.isAuthenticated()) {
 			Program p = (Program) obj;
-			if (p.getProgramId() != null) {
-				throw new IllegalArgumentException("You can't modify a Program after it's been created");
-			}
-			context.getProgramWorkflowService().createProgram(p);
+			context.getProgramWorkflowService().createOrUpdateProgram(p);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Program.saved");
 		}
