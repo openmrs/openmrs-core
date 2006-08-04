@@ -171,8 +171,8 @@ public class ReportObjectFormController extends SimpleFormController {
 		Map extendedObjectInfo = new HashMap();
 		for ( Field field : obj.getClass().getDeclaredFields() ) {
 			String fieldName = field.getName();
-			Method m = obj.getClass().getMethod("get" + fieldName.substring(0,1).toUpperCase() + fieldName.substring(1), null);
-			Object fieldObj = m.invoke(obj, null);
+			Method m = obj.getClass().getMethod("get" + fieldName.substring(0,1).toUpperCase() + fieldName.substring(1), (Class[])null);
+			Object fieldObj = m.invoke(obj, (Object[])null);
 			extendedObjectInfo.put(fieldName, fieldObj);
 		}
 		addedData.put("extendedObjectInfo", extendedObjectInfo);
