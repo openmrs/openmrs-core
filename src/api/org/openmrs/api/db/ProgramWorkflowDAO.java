@@ -15,13 +15,11 @@ import org.openmrs.ProgramWorkflow;
  */
 public interface ProgramWorkflowDAO {
 
-	public void createProgram(Program program) throws DAOException;
+	public void createOrUpdateProgram(Program program) throws DAOException;
 
 	public List<Program> getPrograms() throws DAOException;
 	
 	public Program getProgram(Integer id) throws DAOException;
-
-	public ProgramWorkflow getProgramWorkflowByConceptId(Integer id);
 
 	public void createPatientProgram(PatientProgram p);
 
@@ -30,5 +28,9 @@ public interface ProgramWorkflowDAO {
 	public PatientProgram getPatientProgram(Integer id);
 
 	public Collection<PatientProgram> getPatientPrograms(Patient patient);
+
+	public ProgramWorkflow findWorkflowByProgramAndConcept(Integer programId, Integer conceptId);
+	
+	public void createWorkflow(ProgramWorkflow w);
 	
 }

@@ -41,7 +41,7 @@ public class ProgramWorkflowService {
 		return getProgramWorkflowDAO().getPrograms();
 	}
 	
-	public void createProgram(Program p) {
+	public void createOrUpdateProgram(Program p) {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_PROGRAMS))
 			throw new APIAuthenticationException("Privilege required: "
 					+ OpenmrsConstants.PRIV_MANAGE_PROGRAMS);
@@ -52,10 +52,16 @@ public class ProgramWorkflowService {
 		}
 		
 		Date now = new Date();
-		if (p.getCreator() == null) {
-			p.setCreator(context.getAuthenticatedUser());
+		if (p.getProgramId() == null) {
+			if (p.getCreator() == null) {
+				p.setCreator(context.getAuthenticatedUser());
+			}
+			p.setDateCreated(now);
+		} else {
+			p.setChangedBy(context.getAuthenticatedUser());
+			p.setDateChanged(now);
 		}
-		p.setDateCreated(now);
+		
 		if (p.getWorkflows() != null) {
 			for (ProgramWorkflow w : p.getWorkflows()) {
 				if (w.getProgramWorkflowId() == null) {
@@ -66,32 +72,43 @@ public class ProgramWorkflowService {
 				}
 				if (w.getProgram() == null) {
 					w.setProgram(p);
-				} else if (w.getProgram() != p) {
+				} else if (!w.getProgram().getProgramId().equals(p.getProgramId())) {
 					throw new IllegalArgumentException("This Program contains a ProgramWorkflow whose parent Program is already assigned to " + w.getProgram());
 				}
 			}
 		}
-		getProgramWorkflowDAO().createProgram(p);
+		getProgramWorkflowDAO().createOrUpdateProgram(p);
 	}
 	
 	public Program getProgram(Integer id) {
 		return getProgramWorkflowDAO().getProgram(id);
 	}
 	
-	public void voidProgram(Program p, String reason) {
+	public void retireProgram(Program p) {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_PROGRAMS))
+			throw new APIAuthenticationException("Privilege required: "
+					+ OpenmrsConstants.PRIV_MANAGE_PROGRAMS);
+
+		p.setRetired(true);
+		createOrUpdateProgram(p);
 	}
 	
 	// --- ProgramWorkflow ---
 	
-	public void createProgramWorkflow(ProgramWorkflow w) {	
+	public void createWorkflow(ProgramWorkflow w) {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_PROGRAMS))
+			throw new APIAuthenticationException("Privilege required: "
+					+ OpenmrsConstants.PRIV_MANAGE_PROGRAMS);
+		
+		getProgramWorkflowDAO().createWorkflow(w);
 	}
 	
 	public ProgramWorkflow getProgramWorkflow(Integer id) {
 		return null;
 	}
 	
-	public ProgramWorkflow getProgramWorkflowByConceptId(Integer id) {
-		return getProgramWorkflowDAO().getProgramWorkflowByConceptId(id);
+	public ProgramWorkflow findWorkflowByProgramAndConcept(Integer programId, Integer conceptId) {
+		return getProgramWorkflowDAO().findWorkflowByProgramAndConcept(programId, conceptId);
 	}
 	
 	public void voidProgramWorkflow(ProgramWorkflow w, String reason) {

@@ -29,25 +29,20 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 		this.context = context;
 	}
 
-	public void createProgram(Program program) throws DAOException {
-		log.debug("Creating new program");
-		// log.debug("\twith " + program.getWorkflows().size() + " workflows: " + program.getWorkflows());
+	public void createOrUpdateProgram(Program program) throws DAOException {
+		log.debug("Creating new program " + program);
+		if (program.getWorkflows() != null) {
+			log.debug("\twith " + program.getWorkflows().size() + " workflows: " + program.getWorkflows());
+		}
 		Session session = HibernateUtil.currentSession();
 		
 		try {
 			HibernateUtil.beginTransaction();
-			/*
-			if (program.getWorkflows() != null) {
-				for (ProgramWorkflow w : program.getWorkflows()) {
-					session.save(w);
-				}
-			}
-			*/
-			session.save(program);
+			session.saveOrUpdate(program);
 			HibernateUtil.commitTransaction();
 		}
 		catch (Exception e) {
-			log.error("Failed to create program", e);
+			log.error("Failed to create or update program", e);
 			HibernateUtil.rollbackTransaction();
 		}
 	}
@@ -89,13 +84,14 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 		return programs;
 	}
 
-	public ProgramWorkflow getProgramWorkflowByConceptId(Integer id) throws DAOException {
+	public ProgramWorkflow findWorkflowByProgramAndConcept(Integer programId, Integer conceptId) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		ProgramWorkflow w = null;
 		try {
 			HibernateUtil.beginTransaction();
-			w = (ProgramWorkflow) session.createQuery("from ProgramWorkflow w where w.concept.conceptId = :id")
-				.setInteger("id", id)
+			w = (ProgramWorkflow) session.createQuery("from ProgramWorkflow w where w.program.programid = :programId and w.concept.conceptId = :conceptId")
+				.setInteger("programId", programId)
+				.setInteger("conceptId", conceptId)
 				.uniqueResult();
 			HibernateUtil.commitTransaction();
 		}
@@ -175,6 +171,23 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 		}
 		
 		return patientPrograms;
+	}
+
+	public void createWorkflow(ProgramWorkflow w) {
+		if (w.getProgram() == null || w.getProgram().getProgramId() == null) {
+			throw new DAOException("can't create a ProgramWorkflow without an already-persisted program");
+		}
+		Session session = HibernateUtil.currentSession();
+
+		try {
+			HibernateUtil.beginTransaction();
+			session.save(w);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			log.error("Failed to create ProgramWorkflow", e);
+			HibernateUtil.rollbackTransaction();
+		}
 	}
 	
 }
