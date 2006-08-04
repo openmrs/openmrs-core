@@ -196,6 +196,11 @@ public class OnTheFlyAnalysisController implements Controller {
 		filterPortletParams.put("deleteURL", "analysis.form?method=removeFilter");
 		filterPortletParams.put("addURL", "analysis.form?method=addFilter");
 		
+		Integer firstPatientId = null;
+		if (result.size() > 0) {
+			firstPatientId = result.getPatientIds().iterator().next();
+		}
+		
 		Map<String, Object> myModel = new HashMap<String, Object>();
 		myModel.put("active_filters", filters);
 		//myModel.put("classifier", classifier);
@@ -203,6 +208,7 @@ public class OnTheFlyAnalysisController implements Controller {
 		myModel.put("shortcuts", shortcutList);
 		myModel.put("links", linkList);
 		myModel.put("patient_set_for_links", result.toCommaSeparatedPatientIds());
+		myModel.put("firstPatientId", firstPatientId);
 		myModel.put("result", result);
 		myModel.put("viewMethod", viewMethod);
 		myModel.put("filterPortletParams", filterPortletParams);

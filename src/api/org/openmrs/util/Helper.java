@@ -287,16 +287,13 @@ public class Helper {
 		if (paramList != null && paramList.length() > 0) {
 			String[] args = paramList.split("\\|");
 			for (String s : args) {
-				String[] thisArg = s.split("=");
-				if (thisArg.length == 2) {
-					ret.put(thisArg[0], thisArg[1]);
-				} else {
-					if (s.endsWith("=")) {
-						ret.put(thisArg[0], "");
-					} else {
-						throw new IllegalArgumentException("Misformed argument in dynamic page specification string: '" + s + "' is not 'key=value'.");
-					}
+				int ind = s.indexOf('=');
+				if (ind <= 0) {
+					throw new IllegalArgumentException("Misformed argument in dynamic page specification string: '" + s + "' is not 'key=value'.");
 				}
+				String name = s.substring(0, ind);
+				String value = s.substring(ind + 1);
+				ret.put(name, value);
 			}
 		}
 		return ret;
