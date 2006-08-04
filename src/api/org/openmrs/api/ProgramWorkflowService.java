@@ -89,7 +89,7 @@ public class ProgramWorkflowService {
 			throw new APIAuthenticationException("Privilege required: "
 					+ OpenmrsConstants.PRIV_MANAGE_PROGRAMS);
 
-		p.setRetired(true);
+		p.setVoided(true);
 		createOrUpdateProgram(p);
 	}
 	

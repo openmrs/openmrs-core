@@ -57,17 +57,6 @@
 			</spring:bind>
 		</td>
 	</tr>
-	<!--
-	<tr>
-		<td><spring:message code="Form.build"/></td>
-		<td>
-			<spring:bind path="form.build">
-				<input type="text" name="${status.expression}" value="${status.value}" size="5" />
-				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if></c:if>
-			</spring:bind>
-		</td>
-	</tr>
-	-->
 	<tr>
 		<td><spring:message code="Form.published"/></td>
 		<td>
@@ -93,26 +82,6 @@
 			</spring:bind>
 		</td>
 	</tr>
-	<!--
-	<tr>
-		<td><spring:message code="Form.schemaNamespace"/></td>
-		<td>
-			<spring:bind path="form.schemaNamespace">
-				<input type="text" name="${status.expression}" value="${status.value}" size="55" />
-				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if></c:if>
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
-		<td><spring:message code="Form.uri"/></td>
-		<td>
-			<spring:bind path="form.uri">
-				<input type="text" name="${status.expression}" value="${status.value}" size="55" />
-				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if></c:if>
-			</spring:bind>
-		</td>
-	</tr>
-	-->
 	<tr>
 		<td><spring:message code="Form.xslt"/></td>
 		<td>

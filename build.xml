@@ -218,6 +218,7 @@
 			<lib dir="${dwr.dir}" includes="*.jar" />
 			<lib dir="${ehcache.dir}" includes="*.jar" />
 			<lib dir="${hibernate.dir}" includes="*.jar" />
+			<lib dir="${hl7api.dir}" includes="*.jar" />
 			<!--<lib dir="${ibatis.dir}" includes="*.jar" />-->
 			<lib dir="${log4j.dir}" includes="*.jar" />
 			<lib dir="${jstl.dir}" includes="*.jar" />
@@ -328,6 +329,19 @@
 		<list url="${tomcat.manager.url}" username="${tomcat.username}" password="${tomcat.password}" />
 	</target>
 
+	<target name="tomcat-start">
+         <java jar="${tomcat.home}/bin/bootstrap.jar" fork="true">
+             <jvmarg line='-Dcatalina.home="${tomcat.home}" -Xmx512m -Xms512m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:NewSize=128m'/>
+         </java>
+     </target>
+
+     <target name="tomcat-stop">
+         <java jar="${tomcat.home}/bin/bootstrap.jar" fork="true">
+             <jvmarg line='-Dcatalina.home="${tomcat.home}"'/>
+             <arg line="stop"/>
+         </java>
+     </target>
+	
 	<target name="schemaexport">
 		<taskdef name="schemaexport" classname="org.hibernate.tool.hbm2ddl.SchemaExportTask" classpathref="hibernate.classpath" />
 

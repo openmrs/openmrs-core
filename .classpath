@@ -16,7 +16,6 @@
 	<classpathentry kind="lib" path="lib/commons-pool/commons-pool-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/dom4j/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/ehcache/ehcache-1.1.jar"/>
-	<classpathentry kind="lib" path="lib/jakarta-log4j/log4j-1.2.9.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta-taglibs/taglibs-page-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/jstl/jstl-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/jta/jta.jar"/>
@@ -42,7 +41,6 @@
 	<classpathentry kind="lib" path="lib/tomcat/catalina-ant.jar"/>
 	<classpathentry kind="lib" path="lib/dwr/dwr.jar"/>
 	<classpathentry kind="lib" path="lib/spring-framework/spring-1.2.5.jar"/>
-	<classpathentry kind="lib" path="lib/c3p0/c3p0-0.9.0.2.jar"/>
 	<classpathentry kind="lib" path="lib/velocity/velocity-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/commons-io/commons-io-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/mail/activation.jar"/>
@@ -53,6 +51,9 @@
 	<classpathentry kind="lib" path="lib/xerces/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="lib/xerces/xml-apis.jar"/>
 	<classpathentry kind="lib" path="lib/neal-reporting/reports.jar"/>
-	<classpathentry kind="lib" path="lib/neal-reporting/support.jar"/>
+	<classpathentry kind="lib" path="lib/c3p0/c3p0-0.9.0.4.jar"/>
+	<classpathentry kind="lib" path="lib/jfreechart/jfreechart-1.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/jfreechart/jcommon-1.0.0.jar"/>
+	<classpathentry kind="lib" path="lib/jakarta-log4j/log4j-1.2.13.jar"/>
 	<classpathentry kind="output" path="build/"/>
 </classpath>

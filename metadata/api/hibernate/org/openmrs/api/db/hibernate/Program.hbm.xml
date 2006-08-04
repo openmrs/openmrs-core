@@ -2,55 +2,55 @@
 <!DOCTYPE hibernate-mapping PUBLIC
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
-    
-<hibernate-mapping>
 
-<class 
-    name="org.openmrs.Program" 
-    table="program"
->
+<hibernate-mapping package="org.openmrs">
 
-    <id
-        name="programId"
-        type="java.lang.Integer"
-        column="program_id"
-    >
-        <generator class="native" />
-    </id>
-    <property
-        name="dateCreated"
-        type="java.util.Date"
-        column="date_created"
-        not-null="true"
-        length="19"
-    />
+	<class name="Program" table="program">
 
-    <!-- Associations -->
-  
-    <!-- bi-directional many-to-one association to Concept -->
-    <many-to-one
-        name="concept"
-        class="org.openmrs.Concept"
-        not-null="true"
-    >
-        <column name="concept_id" />
-    </many-to-one>
-    <!-- bi-directional many-to-one association to User -->
-    <many-to-one
-        name="creator"
-        class="org.openmrs.User"
-        not-null="true"
-    >
-        <column name="creator" />
-    </many-to-one>
-	
-	<!-- bi-directional one-to-many association to ProgramWorkflow -->
-	<!--
-	<set name="workflows" lazy="false" inverse="true" cascade="all-delete-orphan" order-by="date_created asc">
-		<key column="program_id" not-null="true"/>
-		<one-to-many class="org.openmrs.ProgramWorkflow" />
-	</set>
-	-->
+		<id name="programId" type="java.lang.Integer" column="program_id">
+			<generator class="native" />
+		</id>
 
-</class>
+		<property name="dateCreated" type="java.util.Date"
+			column="date_created" not-null="true" length="19" />
+
+		<many-to-one name="changedBy" class="User">
+			<column name="changed_by" />
+		</many-to-one>
+
+		<property name="dateChanged" type="java.util.Date"
+			column="date_changed" length="19" />
+
+		<property name="voided" type="boolean" column="voided" not-null="true"/>
+
+		<many-to-one name="voidedBy" class="User">
+			<column name="voided_by" />
+		</many-to-one>
+		
+		<property name="dateVoided" type="java.util.Date"
+			column="date_voided" length="19" />
+
+		<property name="voidReason" type="java.lang.String"
+			column="void_reason" length="255" />
+
+		<!-- Associations -->
+
+		<!-- bi-directional many-to-one association to Concept -->
+		<many-to-one name="concept" class="Concept" not-null="true">
+			<column name="concept_id" />
+		</many-to-one>
+		<!-- bi-directional many-to-one association to User -->
+		<many-to-one name="creator" class="User" not-null="true">
+			<column name="creator" />
+		</many-to-one>
+
+		<!-- bi-directional one-to-many association to ProgramWorkflow -->
+		<!--
+			<set name="workflows" lazy="false" inverse="true" cascade="all-delete-orphan" order-by="date_created asc">
+			<key column="program_id" not-null="true"/>
+			<one-to-many class="org.openmrs.ProgramWorkflow" />
+			</set>
+		-->
+
+	</class>
 </hibernate-mapping>
