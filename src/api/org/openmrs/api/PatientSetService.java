@@ -1,6 +1,9 @@
 package org.openmrs.api;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +12,8 @@ import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Location;
 import org.openmrs.Obs;
+import org.openmrs.Patient;
+import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOContext;
 import org.openmrs.api.db.DAOException;
@@ -120,6 +125,51 @@ public class PatientSetService {
 		public String getSqlRepresentation() {
 			return sqlRep;
 		}
+	}
+	
+	public List<Patient> getPatients(Collection<Integer> patientIds) {
+		return getPatientSetDAO().getPatients(patientIds);		
+	}
+	
+	// these should go elsewhere
+	
+	private static Map<User, PatientSet> userPatientSets;
+	
+	public void setMyPatientSet(PatientSet ps) {
+		if (context != null) {
+			if (userPatientSets == null) {
+				userPatientSets = new HashMap<User, PatientSet>();
+			}
+			User u = context.getAuthenticatedUser();
+			userPatientSets.put(u, ps);
+		}
+	}
+	
+	public PatientSet getMyPatientSet() {
+		if (context == null) {
+			return null;
+		}
+		if (userPatientSets == null) {
+			userPatientSets = new HashMap<User, PatientSet>();
+		}
+		PatientSet mine = userPatientSets.get(context.getAuthenticatedUser()); 
+		if (mine == null) {
+			mine = new PatientSet();
+			userPatientSets.put(context.getAuthenticatedUser(), mine);
+		}
+		return mine;
+	}
+	
+	public void addToMyPatientSet(Integer ptId) {
+		getMyPatientSet().add(ptId);
+	}
+	
+	public void removeFromMyPatientSet(Integer ptId) {
+		getMyPatientSet().remove(ptId);
+	}
+	
+	public void clearMyPatientSet() {
+		setMyPatientSet(null);
 	}
 	
 }

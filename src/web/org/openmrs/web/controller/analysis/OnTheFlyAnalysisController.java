@@ -18,15 +18,11 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.PatientAnalysis;
-import org.openmrs.reporting.PatientDataSet;
 import org.openmrs.reporting.PatientFilter;
-import org.openmrs.reporting.PatientSet;
 import org.openmrs.reporting.ReportService;
-import org.openmrs.reporting.ShortDescriptionProducer;
 import org.openmrs.web.WebConstants;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -42,11 +38,6 @@ public class OnTheFlyAnalysisController implements Controller {
 	public List<String> getShortcuts() {
 		return shortcuts;
 	}
-
-	// Example: gender!both:*,male:male_only_filter,female:female_only_filter
-	public void setShortcuts(List<String> shortcuts) {
-		this.shortcuts = shortcuts;
-	}
 	
 	public List<String> getLinks() {
 		return links;
@@ -58,6 +49,11 @@ public class OnTheFlyAnalysisController implements Controller {
 	 */
 	public void setLinks(List<String> links) {
 		this.links = links;
+	}
+
+	// Example: gender!both:*,male:male_only_filter,female:female_only_filter
+	public void setShortcuts(List<String> shortcuts) {
+		this.shortcuts = shortcuts;
 	}
 
 	private List<ShortcutSpec> shortcutHelper() {
@@ -96,21 +92,19 @@ public class OnTheFlyAnalysisController implements Controller {
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-		if (context == null) {
+		if (context == null || !context.isAuthenticated()) {
 			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
 			response.sendRedirect(request.getContextPath() + "/logout");
 			return null;
 		}
 		
 		ReportService reportService = context.getReportService();
-		PatientSetService patientSetService = context.getPatientSetService();
 		
 		PatientAnalysis analysis = (PatientAnalysis) httpSession.getAttribute(WebConstants.OPENMRS_ANALYSIS_IN_PROGRESS_ATTR);
 		if (analysis == null) {
 			analysis = new PatientAnalysis();
+			httpSession.setAttribute(WebConstants.OPENMRS_ANALYSIS_IN_PROGRESS_ATTR, analysis);
 		}
-		
-		List<LinkSpec> linkList = linkHelper();
 		
 		List<ShortcutSpec> shortcutList = shortcutHelper();
 		if (reportService != null) {
@@ -136,19 +130,7 @@ public class OnTheFlyAnalysisController implements Controller {
 			}
 		}
 
-		PatientSet everyone = patientSetService.getPatientsByCharacteristics(null, null, null);
-		PatientSet result = analysis.runFilters(context, everyone);
-		
-		PatientDataSet pds = new PatientDataSet();
-		ShortDescriptionProducer sdp = new ShortDescriptionProducer();
-		pds.putDataSeries("description", sdp.produceData(context, result));
-
-		String viewMethod = request.getParameter("view");
-		if (viewMethod == null) {
-			viewMethod = "";
-		}
-		
-		/* TODO: Move this to patientSetList portlet
+		/* TODO: Move this to patientSet portlet
 		if ("cd4".equals(viewMethod)) {
 			log.debug("preparing cd4 view");
 			ObsListProducer olp = new ObsListProducer(context.getConceptService().getConcept(new Integer(5497)));
@@ -182,46 +164,22 @@ public class OnTheFlyAnalysisController implements Controller {
 				}
 			});
 		
-		/*
-		PatientClassifier classifier = analysis.getPatientClassifier();
-		List availableClassifiers = new ArrayList<PatientClassifier>(reportService.getAllPatientClassifiers());
-		if (classifier != null) {
-			availableClassifiers.remove(classifier);
-		}
-		*/
+		List<LinkSpec> linkList = linkHelper();
 		
 		Map<String, Object> filterPortletParams = new HashMap<String, Object>();
 		filterPortletParams.put("patientAnalysis", analysis);
 		filterPortletParams.put("suggestedFilters", availableFilters);
 		filterPortletParams.put("deleteURL", "analysis.form?method=removeFilter");
 		filterPortletParams.put("addURL", "analysis.form?method=addFilter");
-		
-		Integer firstPatientId = null;
-		if (result.size() > 0) {
-			firstPatientId = result.getPatientIds().iterator().next();
-		}
-		
+	
 		Map<String, Object> myModel = new HashMap<String, Object>();
 		myModel.put("active_filters", filters);
-		//myModel.put("classifier", classifier);
-		//myModel.put("suggested_classifiers", availableClassifiers);
 		myModel.put("shortcuts", shortcutList);
-		myModel.put("links", linkList);
-		myModel.put("patient_set_for_links", result.toCommaSeparatedPatientIds());
-		myModel.put("firstPatientId", firstPatientId);
-		myModel.put("result", result);
-		myModel.put("viewMethod", viewMethod);
 		myModel.put("filterPortletParams", filterPortletParams);
+		myModel.put("patientAnalysisAttributeName", WebConstants.OPENMRS_ANALYSIS_IN_PROGRESS_ATTR);
+		myModel.put("links", linkList);
 
 		return new ModelAndView("/analysis/on-the-fly-analysis", "model", myModel);
-	}
-
-    private List<LinkSpec> linkHelper() {
-    	List<LinkSpec> ret = new ArrayList<LinkSpec>();
-    	for (String spec : links) {
-    		ret.add(new LinkSpec(spec));
-    	}
-		return ret;
 	}
 
 	/*
@@ -505,6 +463,15 @@ public class OnTheFlyAnalysisController implements Controller {
 		}
 	}
 	
+    private List<LinkSpec> linkHelper() {
+    	List<LinkSpec> ret = new ArrayList<LinkSpec>();
+    	for (String spec : links) {
+    		ret.add(new LinkSpec(spec));
+    	}
+		return ret;
+	}
+
+    
 	public class LinkArg {
 		String name;
 		String value;
@@ -531,7 +498,7 @@ public class OnTheFlyAnalysisController implements Controller {
 			this.value = value;
 		}
 	}
-	
+    
 	public class LinkSpec {
 		String label;
 		String url;
@@ -554,5 +521,4 @@ public class OnTheFlyAnalysisController implements Controller {
 			return url;
 		}
 	}
-	
 }

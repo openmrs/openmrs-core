@@ -646,6 +646,7 @@
 				</property>
 				<property name="links">
 					<list>
+						<value>patientSet.form:Analysis.formEntryButton:method=setPatientSet:url=formEntry/patientDashboard.form:appendPatientId=true</value>
 						<value>nealreport.form:nealreport.DemoReport.name:reportType=Demo Report</value>
 						<value>nealreport.form:nealreport.DeclineReport.name:reportType=Decline Report</value>
 						<value>nealreport.form:nealreport.ShortReport.name:reportType=Short Report</value>

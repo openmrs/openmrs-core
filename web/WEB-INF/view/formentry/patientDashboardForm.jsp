@@ -71,7 +71,7 @@
     }
 </script>
 
-<openmrs:portlet url="patientSet" id="patientSetHeader" size="compact" parameters="linkUrl=patientDashboard.form|currentUrl=patientDashboard.form?patientId=${patient.patientId}|allowRemove=true|allowClear=true"/>
+<openmrs:portlet url="patientSet" id="patientSetHeader" size="compact" parameters="linkUrl=patientDashboard.form|allowRemove=true|allowClear=true|selectedPatientId=${patient.patientId}|mutable=true|droppable=true"/>
 
 <div id="breadcrumbHeader" class="breadcrumb">
 	<a href="/openmrs">Home</a> ->

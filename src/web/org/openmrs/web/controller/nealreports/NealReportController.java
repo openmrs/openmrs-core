@@ -61,7 +61,7 @@ public class NealReportController implements Controller {
 		ConceptService cs = context.getConceptService();
 		PatientSetService pss = context.getPatientSetService();
 		
-		String patientSetParameter = request.getParameter("patientSet");
+		String patientSetParameter = request.getParameter("patientIds");
 		PatientSet ps;
 		if (patientSetParameter != null && patientSetParameter.length() > 0) {
 			ps = PatientSet.parseCommaSeparatedPatientIds(patientSetParameter.trim());

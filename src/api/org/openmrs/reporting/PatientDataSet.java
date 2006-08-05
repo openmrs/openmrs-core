@@ -13,7 +13,7 @@ public class PatientDataSet {
 	
 	public PatientSet getPatientSet() {
 		PatientSet ps = new PatientSet();
-		ps.setPatientIds(map.keySet());
+		ps.copyPatientIds(map.keySet());
 		return ps;
 	}
 	

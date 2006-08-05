@@ -1,7 +1,6 @@
 package org.openmrs.web.controller;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -76,10 +75,12 @@ public class PortletController implements Controller {
 
 			log.debug("Loading portlet: " + portletPath);
 			
+			String id = (String) request.getAttribute("org.openmrs.portlet.id"); 
 			String size = (String)request.getAttribute("org.openmrs.portlet.size");
 			Map<String, Object> params = (Map<String, Object>)request.getAttribute("org.openmrs.portlet.parameters");
 			Map<String, Object> moreParams = (Map<String, Object>) request.getAttribute("org.openmrs.portlet.parameterMap");
 			
+			model.put("id", id);
 			model.put("size", size);
 			model.putAll(params);
 			if (moreParams != null) {
@@ -145,6 +146,6 @@ public class PortletController implements Controller {
 	 * This will be called AFTER handleRequest has put mappings in the model as described in its javadoc.
 	 * Note that context could be null when this method is called.  
 	 */
-	protected void populateModel(HttpServletRequest request, Context context, Map model) { }
+	protected void populateModel(HttpServletRequest request, Context context, Map<String, Object> model) { }
 	
 }

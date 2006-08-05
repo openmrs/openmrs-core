@@ -422,9 +422,9 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	@SuppressWarnings("unchecked")
 	public PatientSet getAllPatients() {
 		Session session = HibernateUtil.currentSession();
-		Query query = session.createQuery("select distinct patientId from Patient p where p.voided = 0");
+		Query query = session.createQuery("select distinct patientId from Patient p where p.voided = 0 order by patientId");
 		
-		Set<Integer> ids = new HashSet<Integer>();
+		List<Integer> ids = new ArrayList<Integer>();
 		ids.addAll(query.list());
 		
 		PatientSet patientSet = new PatientSet();
@@ -459,7 +459,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 
 		PatientSet ret = new PatientSet();
 		List patientIds = query.list();
-		ret.setPatientIds(new HashSet<Integer>(patientIds));
+		ret.setPatientIds(new ArrayList<Integer>(patientIds));
 
 		HibernateUtil.commitTransaction();
 		
@@ -512,7 +512,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		List<Integer> patientIds = query.list();
 		
 		PatientSet ret = new PatientSet();
-		ret.setPatientIds(new HashSet<Integer>(patientIds));
+		ret.setPatientIds(new ArrayList<Integer>(patientIds));
 
 		HibernateUtil.commitTransaction();
 		
@@ -528,7 +528,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		
 		Map<Integer, String> ret = new HashMap<Integer, String>();
 		
-		Set<Integer> ids = patients.getPatientIds();
+		Collection<Integer> ids = patients.getPatientIds();
 		Query query = session.createQuery("select patient.patientId, patient.gender, patient.birthdate from Patient patient");
 		
 		List<Object[]> temp = query.list();
@@ -561,7 +561,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 
 		Session session = HibernateUtil.currentSession();
 		HibernateUtil.beginTransaction();
-		Set<Integer> ids = patients.getPatientIds();
+		Collection<Integer> ids = patients.getPatientIds();
 		Query query = session.createQuery("select patient.patientId, patient.gender, patient.birthdate from Patient patient");
 		List<Object[]> temp = query.list();
 
@@ -591,7 +591,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		
 		Map<Integer, List<Obs>> ret = new HashMap<Integer, List<Obs>>();
 		
-		Set<Integer> ids = patients.getPatientIds();
+		Collection<Integer> ids = patients.getPatientIds();
 		
 		/*
 		Query query = session.createQuery("select obs, obs.patientId " +
@@ -641,7 +641,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		
 		Map<Integer, Encounter> ret = new HashMap<Integer, Encounter>();
 		
-		Set<Integer> ids = patients.getPatientIds();
+		Collection<Integer> ids = patients.getPatientIds();
 		
 		// default query
 		Criteria criteria = session.createCriteria(Encounter.class);
@@ -672,7 +672,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		
 		Map<Integer, Object> ret = new HashMap<Integer, Object>();
 		
-		Set<Integer> ids = patients.getPatientIds();
+		Collection<Integer> ids = patients.getPatientIds();
 		
 		className = "org.openmrs." + className;
 		
@@ -762,7 +762,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 
 		PatientSet ret = new PatientSet();
 		List patientIds = query.list();
-		ret.setPatientIds(new HashSet<Integer>(patientIds));
+		ret.setPatientIds(new ArrayList<Integer>(patientIds));
 
 		HibernateUtil.commitTransaction();
 		
@@ -783,9 +783,31 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 
 		PatientSet ret = new PatientSet();
 		List<Integer> patientIds = query.list();
-		ret.setPatientIds(new HashSet<Integer>(patientIds));
+		ret.setPatientIds(new ArrayList<Integer>(patientIds));
 
 		HibernateUtil.commitTransaction();
+		
+		return ret;
+	}
+
+	public List<Patient> getPatients(Collection<Integer> patientIds) throws DAOException {
+		List<Patient> ret = new ArrayList<Patient>();
+		
+		if (!patientIds.isEmpty()) {
+			Session session = HibernateUtil.currentSession();
+			HibernateUtil.beginTransaction();
+
+			Criteria criteria = session.createCriteria(Patient.class);
+			criteria.add(Restrictions.in("patientId", patientIds));
+			criteria.add(Restrictions.eq("voided", false));
+			log.debug("criteria: " + criteria);
+			List<Patient> temp = criteria.list();
+			for (Patient p : temp) {
+				ret.add(p);
+			}
+
+			HibernateUtil.commitTransaction();
+		}
 		
 		return ret;
 	}

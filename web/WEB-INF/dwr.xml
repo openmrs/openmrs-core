@@ -88,6 +88,19 @@
 			<include method="getAlerts"/>
 			<include method="markAlertRead"/>
 		</create>
+		
+		<create creator="new" javascript="DWRPatientSetService">
+			<param name="class" value="org.openmrs.web.dwr.DWRPatientSetService"/>
+			<include method="getPatients"/>
+			<include method="getMyPatientSet"/>
+			<include method="getMyPatientSetSize"/>
+			<include method="getFromMyPatientSet"/>
+			<include method="addToMyPatientSet"/>
+			<include method="removeFromMyPatientSet"/>
+			<include method="setMyPatientSet"/>
+			<include method="clearMyPatientSet"/>
+		</create>
+		
 	</allow>
 	
 	<signatures>

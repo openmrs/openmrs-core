@@ -48,6 +48,7 @@ public class PortletTag extends ImportSupport {
 				pageContext.getOut().print("<div class='portlet' id='" + id + "'>");
 				
 				// add attrs to request so that the controller (and portlet) can see/use them
+				pageContext.getRequest().setAttribute("org.openmrs.portlet.id", id);
 				pageContext.getRequest().setAttribute("org.openmrs.portlet.size", size);
 				pageContext.getRequest().setAttribute("org.openmrs.portlet.parameters", Helper.parseParameterList(parameters));
 				pageContext.getRequest().setAttribute("org.openmrs.portlet.patientId", patientId);

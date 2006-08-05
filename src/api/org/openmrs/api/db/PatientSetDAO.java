@@ -1,5 +1,6 @@
 package org.openmrs.api.db;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,7 @@ import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Obs;
+import org.openmrs.Patient;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.reporting.PatientSet;
 
@@ -36,5 +38,7 @@ public interface PatientSetDAO {
 	public Map<Integer, Object> getPatientAttributes(PatientSet patients, String className, String property, boolean returnAll);
 	
 	public Map<Integer, Map<String, Object>> getCharacteristics(PatientSet patients) throws DAOException;
+
+	public List<Patient> getPatients(Collection<Integer> patientIds) throws DAOException;
 	
 }

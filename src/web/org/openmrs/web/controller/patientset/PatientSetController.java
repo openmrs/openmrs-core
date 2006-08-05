@@ -1,6 +1,8 @@
 package org.openmrs.web.controller.patientset;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -23,11 +25,23 @@ public class PatientSetController implements Controller {
     public ModelAndView handleRequest(HttpServletRequest request,
     		HttpServletResponse response) throws ServletException, IOException {
     	
-    	return setPatientSet(request, response);
+    	HttpSession httpSession = request.getSession();
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		if (context == null) {
+			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
+			response.sendRedirect(request.getContextPath() + "/logout");
+			return null;
+		}
+    	
+		PatientSet ps = context.getPatientSetService().getMyPatientSet();
+		Map<String, Object> model = new HashMap<String, Object>();
+		model.put("patientSet", ps);
+
+    	return new ModelAndView("/analysis/patientSetTest", "model", model);
     }
     
     /**
-     * Sets the PatientSet in the user's session to be the comma-separated list of patientIds 
+     * Sets the user's PatientSet to be the comma-separated list of patientIds 
      */
     public ModelAndView setPatientSet(HttpServletRequest request,
     		HttpServletResponse response) throws ServletException, IOException {
@@ -47,8 +61,13 @@ public class PatientSetController implements Controller {
 		}
 		
 		PatientSet patientSet = PatientSet.parseCommaSeparatedPatientIds(ps);
-		httpSession.setAttribute(WebConstants.OPENMRS_PATIENT_SET_ATTR, patientSet);
-		log.debug("Set session PatientSet (" + patientSet.size() + " patients)");
+		context.getPatientSetService().setMyPatientSet(patientSet);
+		log.debug("Set user's PatientSet (" + patientSet.size() + " patients)");
+		
+		if (patientSet.size() > 0 && "true".equals(request.getParameter("appendPatientId"))) {
+			url += (url.indexOf('?') >= 0 ? "&" : "?") + "patientId=" + patientSet.getPatientIds().iterator().next();
+		}
+
 		return new ModelAndView(new RedirectView(url));
 	}
 
@@ -68,8 +87,8 @@ public class PatientSetController implements Controller {
 		
 		String url = request.getParameter("url");
 		
-		httpSession.setAttribute(WebConstants.OPENMRS_PATIENT_SET_ATTR, null);
-		log.debug("Cleared session PatientSet");
+		context.getPatientSetService().clearMyPatientSet();
+		log.debug("Cleared user's PatientSet");
 		return new ModelAndView(new RedirectView(url));
     }
     
@@ -92,11 +111,7 @@ public class PatientSetController implements Controller {
 		String id = request.getParameter("patientId");
 		String ids = request.getParameter("patientIds");
 		
-		PatientSet patientSet = (PatientSet) httpSession.getAttribute(WebConstants.OPENMRS_PATIENT_SET_ATTR);
-		if (patientSet == null) {
-			patientSet = new PatientSet();
-			httpSession.setAttribute(WebConstants.OPENMRS_PATIENT_SET_ATTR, patientSet);
-		}
+		PatientSet patientSet = context.getPatientSetService().getMyPatientSet();
 		
 		if (id != null) {
 			try {
@@ -110,6 +125,10 @@ public class PatientSetController implements Controller {
 					patientSet.add(Integer.valueOf(s.trim()));
 				} catch (NumberFormatException ex) { }
 			}
+		}
+		
+		if (patientSet.size() > 0 && "true".equals(request.getParameter("appendPatientId"))) {
+			url += (url.indexOf('?') >= 0 ? "&" : "?") + "patientId=" + (id != null ? id : patientSet.getPatientIds().iterator().next());
 		}
 
 		return new ModelAndView(new RedirectView(url));
@@ -135,11 +154,7 @@ public class PatientSetController implements Controller {
 		String id = request.getParameter("patientId");
 		String ids = request.getParameter("patientIds");
 		
-		PatientSet patientSet = (PatientSet) httpSession.getAttribute(WebConstants.OPENMRS_PATIENT_SET_ATTR);
-		if (patientSet == null) {
-			patientSet = new PatientSet();
-			httpSession.setAttribute(WebConstants.OPENMRS_PATIENT_SET_ATTR, patientSet);
-		}
+		PatientSet patientSet = context.getPatientSetService().getMyPatientSet();
 		
 		if (id != null) {
 			try {
@@ -153,6 +168,10 @@ public class PatientSetController implements Controller {
 					patientSet.remove(Integer.valueOf(s.trim()));
 				} catch (NumberFormatException ex) { }
 			}
+		}
+		
+		if (patientSet.size() > 0 && "true".equals(request.getParameter("appendPatientId"))) {
+			url += (url.indexOf('?') >= 0 ? "&" : "?") + "patientId=" + patientSet.getPatientIds().iterator().next();
 		}
 
 		return new ModelAndView(new RedirectView(url));

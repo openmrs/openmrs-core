@@ -4,6 +4,8 @@
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
+<openmrs:portlet url="patientSet" id="patientSetHeader" size="compact" parameters="linkUrl=patientSummary.form|allowRemove=true|allowClear=true|selectedPatientId=${patient.patientId}|mutable=true|droppable=true"/>
+
 <h3><spring:message code="formentry.title"/></h3>
 
 <script type="text/javascript">

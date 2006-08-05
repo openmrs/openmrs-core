@@ -2,6 +2,8 @@
 
 <openmrs:require privilege="View Patient Sets" otherwise="/login.htm" redirect="analysis.list" />
 
+<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/easyAjax.js"></script>
+
 <style>
 	#actionBox {
 		background-color: #e0e0e0;
@@ -24,7 +26,7 @@
 		width: 95%;
 		border: 1px black solid;
 		padding: 3px;
-		spacing: 3px;
+		margin: 3px;
 		background-color: #f0f0f0;
 	}
 	#suggestedFilterBox {
@@ -66,34 +68,16 @@
 		top: -10;
 		z-index: 2;
 	}
+	#analysisSetHeader {
+		background-color: #e0e0e0;
+	}
+	#analysisSetTable {
+		border-spacing: 0px;
+	}
 </style>
 
 <script language="JavaScript">
-<!--
-	function toggleLayer(whichLayer) {
-		if (document.getElementById) {
-            var style2 = document.getElementById(whichLayer).style;
-         	if (style2.display == "none") {
-                style2.display = "";
-            } else {
-                style2.display = "none";
-            }
-        } else {
-            window.alert("Your browser doesn't support document.getElementById");
-        }
-	}
-	
-	function showLayer(whichLayer) {
-        var style2 = document.getElementById(whichLayer).style;
-        style2.display = "";
-	}
-	
-	function hideLayer(whichLayer) {
-        var style2 = document.getElementById(whichLayer).style;
-        style2.display = "none";
-	}
-
-	var menuNames = [ "shortcutMenu", "linkMenu" ];
+	var menuNames = [ "_shortcutMenu", "_linkMenu" ];
 	function menuHelper(idClicked) {
 		for (var i = 0; i < menuNames.length; ++i) {
 	        if (menuNames[i] == idClicked) {
@@ -104,7 +88,6 @@
 			}
 		}
 	}
--->
 </script>
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
@@ -113,10 +96,9 @@
 
 <openmrs:portlet url="activeFilters" id="filterBox" parameterMap="${model.filterPortletParams}" />
 
-<span style="position: relative">
-	<a class="shortcutBarButton" href="javascript:menuHelper('shortcutMenu')"><spring:message code="Analysis.shortcutButton"/></a>
-	<div id="shortcutMenu" style="border: 1px solid black; background-color: #ffe0e0; position: absolute; left: 0px; z-index: 1; display: none">
-		<div align=right><a href="javascript:menuHelper()">[X]</a></div>
+<span style="position: relative" onMouseOver="javascript:showLayer('_shortcutMenu')" onMouseOut="javascript:hideLayer('_shortcutMenu')">
+	<a class="shortcutBarButton"><spring:message code="Analysis.shortcutButton"/></a>
+	<div id="_shortcutMenu" style="border: 1px solid black; background-color: #ffe0e0; position: absolute; left: 0px; top: 24px; z-index: 1; display: none">
 		<ul>
 		<c:forEach var="item" items="${model.shortcuts}">
 			<li>
@@ -149,7 +131,7 @@
 							</a>		
 						</c:when>
 						<c:otherwise>
-							<form method="post" action="analysis.form" id="form_${item.label}_${shortcutOption.key}">
+							<form method="post" action="analysis.form" id="form_${item.label}_${shortcutOption.key}" style="display: inline">
 								<input type="hidden" name="method" value="${method}"/>
 								<input type="hidden" name="patient_filter_key" value="${item.label}"/>
 								<input type="hidden" name="patient_filter_name" value="${shortcutOption.value.value}"/>
@@ -185,27 +167,40 @@
 	</div>
 </span>
 
-<span style="position: relative">
-	<a class="shortcutBarButton" href="javascript:menuHelper('linkMenu')"><spring:message code="Analysis.linkButton"/></a>
-	<div id="linkMenu" style="border: 1px solid black; background-color: #ffe0e0; position: absolute; left: 0px; width: 250px; z-index: 1; display: none">
-		<div align=right><a href="javascript:menuHelper()">[X]</a></div>
-		<ul>
-			<c:forEach var="item" items="${model.links}" varStatus="loopStatus">
-				<li>
-					<form method="post" action="${item.url}" id="link_${loopStatus.index}_form">
-						<input type="hidden" name="patientSet" value="${model.patient_set_for_links}"/>
-						<c:forEach var="arg" items="${item.arguments}">
-							<input type="hidden" name="${arg.name}" value="${arg.value}"/>
-						</c:forEach>
-						<a href="javascript:void(0)" onClick="menuHelper(); document.getElementById('link_${loopStatus.index}_form').submit()">
-							<spring:message code="${item.label}"/>
-						</a>
-					</form>
-				</li>
-			</c:forEach>
-		</ul>		
-	</div>
-</span>
+<script language="JavaScript">
+	var patientIds = null; // a comma-separated list of patientIds, set from the included portlet once it's loaded
+	function submitHelper(idPrefix) {
+		if (patientIds != null) {
+			document.getElementById(idPrefix + "_ptIds").value = patientIds;
+			document.getElementById(idPrefix + "_form").submit();
+		} else {
+			window.alert("<spring:message code="PatientSet.stillLoading"/>");
+		}
+	}
+</script>
+
+<c:if test="${fn:length(model.links) > 0}">
+	<span style="position: relative" onMouseOver="javascript:showLayer('_linkMenu')" onMouseOut="javascript:hideLayer('_linkMenu')">
+		<a class="shortcutBarButton"><spring:message code="Analysis.linkButton"/></a>
+		<div id="_linkMenu" style="border: 1px solid black; background-color: #ffe0e0; position: absolute; left: 0px; top: 24px; width: 250px; z-index: 1; display: none">
+			<ul>
+				<c:forEach var="item" items="${model.links}" varStatus="loopStatus">
+					<li>
+						<form method="post" action="${item.url}" id="link_${loopStatus.index}_form" style="display: inline" <c:if test="${model.linkTarget != null}">target="${model.linkTarget}"</c:if>>
+							<input type="hidden" name="patientIds" id="link_${loopStatus.index}_ptIds" value=""/>
+							<c:forEach var="arg" items="${item.arguments}">
+								<input type="hidden" name="${arg.name}" value="${arg.value}"/>
+							</c:forEach>
+							<a href="javascript:submitHelper('link_${loopStatus.index}')">
+								<spring:message code="${item.label}"/>
+							</a>
+						</form>
+					</li>
+				</c:forEach>
+			</ul>
+		</div>
+	</span>
+</c:if>
 
 <c:if test="${model.firstPatientId != null}">
 	<span style="position: relative">
@@ -220,6 +215,7 @@
 
 <br/>
 
-<openmrs:portlet url="patientSetList" id="patientSetBox" patientIds="${model.result.commaSeparatedPatientIds}" parameters="view=${model.viewMethod}|limit=25" size="full"/>
+<openmrs:portlet url="patientSet" id="patientSetBox" size="full" parameters="fromAttribute=${model.patientAnalysisAttributeName}|headId=analysisSetHeader|tableId=analysisSetTable|pageSize=20|varToSet=patientIds"/>
+
 
 <%@ include file="/WEB-INF/template/footer.jsp" %> 

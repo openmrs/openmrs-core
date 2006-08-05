@@ -1,7 +1,10 @@
 package org.openmrs.reporting;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -11,16 +14,19 @@ public class PatientSet {
 
 	private Integer patientSetId;
 	private String name;
-	private Set<Integer> patientIds;
+	private List<Integer> patientIds;
 	
 	public PatientSet() {
-		patientIds = new HashSet<Integer>();
+		patientIds = new ArrayList<Integer>();
 	}
 	
-	public PatientSet(Set<Patient> patients) {
-		patientIds = new HashSet<Integer>();
+	public PatientSet(Collection<Patient> patients) {
+		patientIds = new ArrayList<Integer>();
 		for (Patient patient : patients) {
-			patientIds.add(patient.getPatientId());
+			Integer ptId = patient.getPatientId();
+			if (!patientIds.contains(ptId)) {
+				patientIds.add(ptId);
+			}
 		}
 	}
 	
@@ -41,14 +47,14 @@ public class PatientSet {
 	/**
 	 * @return Returns the patientIds.
 	 */
-	public Set<Integer> getPatientIds() {
+	public List<Integer> getPatientIds() {
 		return patientIds;
 	}
 
 	/**
 	 * @param patientIds The patientIds to set.
 	 */
-	public void setPatientIds(Set<Integer> patientIds) {
+	public void setPatientIds(List<Integer> patientIds) {
 		this.patientIds = patientIds;
 	}
 
@@ -57,6 +63,10 @@ public class PatientSet {
 	 */
 	public Integer getPatientSetId() {
 		return patientSetId;
+	}
+	
+	public void copyPatientIds(Collection<Integer> patientIds) {
+		this.patientIds = new ArrayList<Integer>(patientIds);
 	}
 
 	/**
@@ -67,11 +77,15 @@ public class PatientSet {
 	}
 
 	public void add(Integer patientId) {
-		patientIds.add(patientId);
+		if (!patientIds.contains(patientId)) {
+			patientIds.add(patientId);
+		}
 	}
 	
 	public void add(Patient patient) {
-		patientIds.add(patient.getPatientId());
+		if (!patientIds.contains(patient.getPatientId())) {
+			patientIds.add(patient.getPatientId());
+		}
 	}
 	
 	public boolean remove(Integer patientId) {
