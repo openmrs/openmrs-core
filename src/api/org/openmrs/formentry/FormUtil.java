@@ -156,14 +156,15 @@ public class FormUtil {
 
 		for (FormField formField : form.getFormFields()) {
 			FormField parent = formField.getParent();
-			if (parent != null && parent.getFieldNumber() != null
-					&& parent.getFieldNumber() > 0) {
+			if (parent == null) {
+				// top-level branches should be added to the base
+				formStructure.get(base).add(formField);				
+			} else {
+				// child branches/leaves are added to their parent's branch
 				if (!formStructure.containsKey(parent.getFormFieldId()))
 					formStructure.put(parent.getFormFieldId(),
 							new TreeSet<FormField>());
 				formStructure.get(parent.getFormFieldId()).add(formField);
-			} else {
-				formStructure.get(base).add(formField);
 			}
 		}
 
