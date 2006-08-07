@@ -1,8 +1,12 @@
 package org.openmrs.web.servlet;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -43,12 +47,25 @@ public class ShowGraphServlet  extends HttpServlet {
 			Concept concept = context.getConceptService().getConcept(conceptId);
 			
 			if (concept != null && concept.isNumeric()) { 
-				Set<Obs> observations = context.getObsService().getObservations(patient, concept);
+				List<Obs> observations = new ArrayList<Obs>(context.getObsService().getObservations(patient, concept));
+				Collections.sort(observations, new Comparator<Obs>() {
+						public int compare(Obs left, Obs right) {
+							Date d1 = left.getObsDatetime();
+							Date d2 = right.getObsDatetime();
+							if (d1 == null) {
+								return -1;
+							} else if (d2 == null) {
+								return 1;
+							} else {
+								return d1.compareTo(d2);
+							}
+						}
+					});
 				DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 				Locale locale = request.getLocale();
 				ConceptName conceptName = concept.getName(locale);
 				for( Obs obs : observations ) { 
-					dataset.addValue(obs.getValueNumeric(), conceptName.getName(), obs.getObsDatetime());
+					dataset.addValue(obs.getValueNumeric(), conceptName.getName(), obs.getObsDatetime().toString().substring(0, 7));
 				}
 				JFreeChart chart = ChartFactory.createLineChart(
 					conceptName.getName(),

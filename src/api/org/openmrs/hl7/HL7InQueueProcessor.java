@@ -329,10 +329,10 @@ public class HL7InQueueProcessor /* implements Runnable */{
 		try {
 			providerId = context.getHL7Service().resolveUserId(providerComponents);
 		} catch (HL7Exception ex) {
-			throw new HL7Exception("Error retrieving User from ORC.orderer");
+			throw new HL7Exception("Error retrieving User from PV1.provider");
 		}
 		if (providerId == null) {
-			throw new HL7Exception("Could not find enterer specified in ORC segment");
+			throw new HL7Exception("Could not find provider specified in PV1 segment");
 		} else {
 			return context.getUserService().getUser(providerId);
 		}
@@ -349,7 +349,7 @@ public class HL7InQueueProcessor /* implements Runnable */{
 			String hl7Datatype = obx.getField(2);
 			Integer conceptId = Integer.parseInt(obx.getComponent(3, 1));
 			Concept concept = context.getConceptService().getConcept(conceptId);
-			// String subId = obx.getField(4);
+			String subId = obx.getField(4);
 			String value = obx.getField(5);
 			String[] valueComponents = obx.getComponents(5);
 			String dateTimeRaw = obx.getField(14);
@@ -369,6 +369,9 @@ public class HL7InQueueProcessor /* implements Runnable */{
 			obs.setObsDatetime(dateTime);
 			obs.setLocation(encounter.getLocation());
 			obs.setCreator(enterer);
+			if (!"".equals(subId)) {
+				obs.setObsGroupId(Integer.valueOf(subId));
+			}
 			if (encounter != null)
 				obs.setDateCreated(encounter.getDateCreated());
 			if (hl7Datatype.equals("NM"))

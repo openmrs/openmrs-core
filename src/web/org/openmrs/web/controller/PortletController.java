@@ -1,8 +1,10 @@
 package org.openmrs.web.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -16,6 +18,9 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
+import org.openmrs.Person;
+import org.openmrs.Relationship;
+import org.openmrs.RelationshipType;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.reporting.PatientSet;
@@ -41,6 +46,8 @@ public class PortletController implements Controller {
 	 *         	(Set<Obs>) patientObs
 	 *          (Set<Encounter>) patientEncounters
 	 *          (Set<DrugOrder>) patientDrugOrders
+	 *          (List<Relationship>) patientRelationships
+	 *          (Map<RelationshipType, List<Relationship>>) patientRelationshipsByType
 	 *     (if the request has an encounterId attribute)
 	 *     		(Integer) encounterId
 	 *         	(Encounter) encounter
@@ -103,6 +110,19 @@ public class PortletController implements Controller {
 					model.put("patientDrugOrders", drugOrders);
 					model.put("patientPrograms", context.getProgramWorkflowService().getPatientPrograms(p));
 					model.put("patientCurrentPrograms", context.getProgramWorkflowService().getCurrentPrograms(p, null));
+					List<Relationship> relationships = new ArrayList<Relationship>();
+					relationships.addAll(context.getPatientService().getRelationships(new Person(p)));
+					Map<RelationshipType, List<Relationship>> relationshipsByType = new HashMap<RelationshipType, List<Relationship>>();
+					for (Relationship rel : relationships) {
+						List<Relationship> list = relationshipsByType.get(rel.getRelationship());
+						if (list == null) {
+							list = new ArrayList<Relationship>();
+							relationshipsByType.put(rel.getRelationship(), list);
+						}
+						list.add(rel);
+					}
+					model.put("patientRelationships", relationships);
+					model.put("patientRelationshipsByType", relationshipsByType);
 					model.put("patientId", (Integer) o);
 				}
 				

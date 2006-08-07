@@ -13,7 +13,7 @@
 			<th> <spring:message code="Encounter.location"/> </th>
 			<th> <spring:message code="Encounter.enterer"/>  </th>
 		</tr>
-		<openmrs:forEachEncounter encounters="${model.patientEncounters}" sortBy="encounterDatetime" descending="false" var="enc">
+		<openmrs:forEachEncounter encounters="${model.patientEncounters}" sortBy="encounterDatetime" descending="true" var="enc">
 			<tr>
 				<td><openmrs:formatDate date="${enc.encounterDatetime}" type="small" /></td>
 			 	<td>${enc.encounterType.name}</td>

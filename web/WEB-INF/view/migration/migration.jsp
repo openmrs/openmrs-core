@@ -1,5 +1,7 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
+<openmrs:require privilege="Migrate Data" otherwise="/login.htm" redirect="migration.form"/>
+
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
 <div style="float: right">
@@ -51,6 +53,9 @@
 <h3><spring:message code="Migration.hl7Header"/></h3>
 <form method=post action="migration.form">
 	<input type=hidden name="method" value="runHl7"/>
+	<spring:message code="Migration.hl7Filename" text="Filename:"/>
+	<input type=text name="filename"/>
+	<br/>
 	<spring:message code="Migration.pasteHl7Here"/>
 	<br/>
 	<textarea name="hl7" rows="5" cols="72" wrap="soft"></textarea>

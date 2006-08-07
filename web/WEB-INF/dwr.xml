@@ -17,6 +17,7 @@
 		<convert converter="bean" match="org.openmrs.web.dwr.FormFieldListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.FieldListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.LocationListItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.ListItem"/>
 		<convert converter="bean" match="org.openmrs.PatientAddress"/>
 		<convert converter="bean" match="org.openmrs.Tribe"/>
 		<convert converter="bean" match="org.openmrs.notification.web.dwr.AlertListItem"/>
@@ -100,7 +101,13 @@
 			<include method="setMyPatientSet"/>
 			<include method="clearMyPatientSet"/>
 		</create>
-		
+
+		<create creator="new" javascript="DWRRelationshipService">
+			<param name="class" value="org.openmrs.web.dwr.DWRRelationshipService"/>
+			<include method="getRelationshipTypes"/>
+			<include method="createRelationship"/>
+		</create>
+				
 	</allow>
 	
 	<signatures>

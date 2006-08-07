@@ -27,6 +27,7 @@ import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.Role;
 import org.openmrs.Tribe;
+import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.api.db.DAOContext;
@@ -112,6 +113,13 @@ public class AdministrationService {
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS);
 
 		return getAdminDAO().getPerson(pat);
+	}
+	
+	public Person getPerson(User user) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS);
+
+		return getAdminDAO().getPerson(user);
 	}
 	
 	/**

@@ -187,14 +187,17 @@ public class HL7Service {
 		String familyName = null;
 		String givenName = null;
 		String assigningAuthority = null;
-		if (xcn.length >= 3) {
+		if (xcn.length >= 2) {
 			familyName = xcn[1];
+		}
+		if (xcn.length >= 3) {
 			givenName = xcn[2];
 		}
 		if (xcn.length >= 9) {
 			assigningAuthority = xcn[8];
 		}
-		if (idNumber != null) {
+		if (idNumber != null && idNumber.length() > 0) {
+			// log.debug("searching for user by id " + idNumber);
 			try {
 				Integer userId = new Integer(idNumber);
 				User u = context.getUserService().getUser(userId);
@@ -204,6 +207,7 @@ public class HL7Service {
 				return null;
 			}
 		} else {
+			// log.debug("searching for user by name");
 			try {
 				StringBuilder username = new StringBuilder();
 				if (familyName != null) {
@@ -216,6 +220,9 @@ public class HL7Service {
 				return u.getUserId();
 			} catch (Exception ex) {
 				log.error("Error handling family name '" + familyName + "' and given name '" + givenName + "' components of XCN.", ex);
+				for (int i = 0; i < xcn.length; ++i) {
+					log.error("xcn[" + i + "]\t" + xcn[i]);	
+				}
 				return null;
 			}
 		}
@@ -285,7 +292,7 @@ public class HL7Service {
 			log.warn("Invalid patient ID '" + hl7PatientId + "'");
 		}
 		
-		if (assigningAuthority == null || patientId != null) {
+		if (assigningAuthority == null) {
 			try {
 				Integer ptId = new Integer(hl7PatientId);
 				Patient patient = context.getPatientService().getPatient(ptId);
@@ -295,6 +302,7 @@ public class HL7Service {
 				return null;
 			}
 		} else {
+			// log.debug("assigning authority = " + assigningAuthority);
 			try {
 				PatientIdentifierType pit = context.getPatientService().getPatientIdentifierType(assigningAuthority);
 				if (pit == null) {
@@ -304,6 +312,7 @@ public class HL7Service {
 				if (ids.size() == 1) {
 					return ids.get(0).getPatient().getPatientId();
 				} else {
+					log.debug("found " + ids.size() + " matches with identifier of type " + pit + " and value " + hl7PatientId);
 					return null;
 				}
 			} catch (Exception ex) {

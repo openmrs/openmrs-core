@@ -20,6 +20,7 @@ import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.Role;
 import org.openmrs.Tribe;
+import org.openmrs.User;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.Report;
 
@@ -62,6 +63,8 @@ public interface AdministrationDAO {
 	public Person getPerson(Integer personId) throws DAOException;
 	
 	public Person getPerson(Patient pat) throws DAOException;
+	
+	public Person getPerson(User user) throws DAOException;
 	
 	/**
 	 * Create a new EncounterType
@@ -461,4 +464,5 @@ public interface AdministrationDAO {
 	public void mrnGeneratorLog(String site, Integer start, Integer count) throws DAOException;
 	
 	public Collection getMRNGeneratorLog() throws DAOException;
+
 }

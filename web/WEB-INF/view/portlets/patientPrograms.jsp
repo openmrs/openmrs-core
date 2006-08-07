@@ -47,7 +47,7 @@
 	</c:otherwise>
 </c:choose>
 
-<c:if test="${model.allowEdits == 'true'}">
+<c:if test="${model.allowEdits == 'true' && fn:length(model.programs) > 0}">
 	<openmrs:hasPrivilege privilege="Manage Patient Programs">
 		<div id="newProgramEnroll" style="border: 1px black dashed">
 		<form method="post" action="patientProgram.form">

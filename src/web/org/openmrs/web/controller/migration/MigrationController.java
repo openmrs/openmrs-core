@@ -1,8 +1,11 @@
 package org.openmrs.web.controller.migration;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -99,21 +102,63 @@ public class MigrationController implements Controller {
 			response.sendRedirect(request.getContextPath() + "/logout");
 			return null;
 		}
-		String hl7 = request.getParameter("hl7");
-		//log.debug("hl7 to run = " + hl7);
-		hl7 = hl7.replaceAll("\\n", "");
-		HL7InQueue hl7InQueue = new HL7InQueue();
-		hl7InQueue.setHL7Data(hl7);
-		HL7Service hs = context.getHL7Service();
-		if (hs.getHL7Sources().isEmpty()) {
-			HL7Source hl7Source = new HL7Source();
-			hl7Source.setName("MigrationTestTool");
-			hl7Source.setDescription("Testing migrating data, from MigrationController.");
-			hs.createHL7Source(hl7Source);
+		List<String> messages = new ArrayList<String>();
+		
+		String filename = request.getParameter("filename");
+		if (filename != null && filename.length() > 0) {
+			try {
+				BufferedReader r = new BufferedReader(new FileReader(filename));
+				StringBuilder thisMessage = new StringBuilder();
+				while (true) {
+					String line = r.readLine();
+					if (line == null || line.startsWith("MSH")) {
+						if (thisMessage.length() != 0) {
+							messages.add(thisMessage.toString());
+							log.debug("read message : " + thisMessage);
+							if (messages.size() % 100 == 0) {
+								log.debug("read " + messages.size() + " messages so far");
+							}
+							thisMessage = new StringBuilder();
+						}
+					}
+					if (line == null) {
+						break;
+					}
+					thisMessage.append(line).append('\r');
+				}
+			} catch (Exception ex) {
+				log.error("Failed to read hl7 input file " + filename, ex);
+				throw new RuntimeException(ex);
+			}
+		} else {
+			String hl7 = request.getParameter("hl7");
+			hl7 = hl7.replaceAll("\\n", "");
+			for (int index = hl7.indexOf("MSH"); index >= 0; index = hl7.indexOf("MSH", index + 1)) {
+				int endIndex = hl7.indexOf("MSH", index + 1);
+				String oneMessage = endIndex <= 0 ? hl7.substring(index) : hl7.substring(index, endIndex);
+				messages.add(oneMessage);
+				System.out.println("has slashR: " + (oneMessage.indexOf("\r") > 0) + " , has slashN: " + (oneMessage.indexOf("\n") > 0));
+			}
 		}
-		hl7InQueue.setHL7Source(context.getHL7Service().getHL7Source(1));
-		//hl7InQueue.setHL7SourceKey(String.valueOf(formEntryQueue.getFormEntryQueueId()));
-		context.getHL7Service().createHL7InQueue(hl7InQueue);
+		
+		log.debug("About to handle " + messages.size() + " messages");
+		
+		// split into messages
+		for (String oneMessage : messages) {
+			// Confusing terminology: an HL7InQueue is just one entry in the queue
+			HL7InQueue hl7InQueue = new HL7InQueue();
+			hl7InQueue.setHL7Data(oneMessage);
+			HL7Service hs = context.getHL7Service();
+			if (hs.getHL7Sources().isEmpty()) {
+				HL7Source hl7Source = new HL7Source();
+				hl7Source.setName("MigrationTestTool");
+				hl7Source.setDescription("Testing migrating data, from MigrationController.");
+				hs.createHL7Source(hl7Source);
+			}
+			hl7InQueue.setHL7Source(context.getHL7Service().getHL7Source(1));
+
+			context.getHL7Service().createHL7InQueue(hl7InQueue);
+		}
 
 		return new ModelAndView(new RedirectView("migration.form"));
 	}

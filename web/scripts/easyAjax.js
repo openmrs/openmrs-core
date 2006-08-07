@@ -44,3 +44,7 @@ function loadStateChanged(xmlHttpObj, layer) {
 		document.getElementById(layer).innerHTML = xmlHttpObj.responseText;
 	} 
 }
+
+function refreshPage() {
+	window.location.reload();
+}

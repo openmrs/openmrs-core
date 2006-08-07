@@ -41,6 +41,7 @@ import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.Role;
 import org.openmrs.Tribe;
+import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.api.db.DAOException;
@@ -127,6 +128,21 @@ public class HibernateAdministrationDAO implements
 		
 		Query query = session.createQuery("from Person p where p.patient.patientId = :patId");
 		query = query.setInteger("patId", pat.getPatientId());
+		Object o = query.uniqueResult();
+		
+		log.debug("o.class: " + o.getClass().toString());
+		
+		Person person = (Person)o;
+		
+		return person;
+	}
+	
+	
+	public Person getPerson(User user) throws DAOException {
+		Session session = HibernateUtil.currentSession();
+		
+		Query query = session.createQuery("from Person p where p.user.userId = :userId");
+		query = query.setInteger("userId", user.getUserId());
 		Object o = query.uniqueResult();
 		
 		log.debug("o.class: " + o.getClass().toString());
