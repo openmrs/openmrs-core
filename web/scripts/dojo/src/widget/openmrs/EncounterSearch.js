@@ -16,14 +16,19 @@ dojo.widget.defineWidget(
 	"dojo.widget.openmrs.EncounterSearch",
 	dojo.widget.openmrs.OpenmrsSearch,
 	{
-		initializer: function(){
-			dojo.debug("initializing encountersearch");
+		encounterId: "",
+		
+		postCreate: function(){
+			dojo.debug("postCreate in encountersearch");
+			
+			if (this.encounterId)
+				DWREncounterService.getEncounter(this.simpleClosure(this, "select"), this.encounterId);
 		},
 		
 		doFindObjects: function(text) {
 
 			// a javascript closure
-			var callback = function(ts) { return function(obj) {ts.fillTable(obj)}};
+			var callback = function(ts) { return function(obj) {ts.doObjectsFound(obj)}};
 			
 			var tmpIncludedVoided = (this.showIncludeVoided && this.includeVoided.checked);
 			DWREncounterService.findEncounters(callback(this), text, tmpIncludedVoided);

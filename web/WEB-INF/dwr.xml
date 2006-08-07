@@ -58,6 +58,7 @@
 			<param name="class" value="org.openmrs.web.dwr.DWRUserService" />
 			<include method="findUsers"/>
 			<include method="getAllUsers"/>
+			<include method="getUser"/>
 		</create>
 		
 		<create creator="new" javascript="DWRObsService">

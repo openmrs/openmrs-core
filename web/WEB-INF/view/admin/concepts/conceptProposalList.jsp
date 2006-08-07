@@ -54,19 +54,15 @@
 		<tr>
 			<th><spring:message code="ConceptProposal.sortOn"/></th>
 			<td>
-				<input type="radio" name="sortOn" id="sortText" value="text" <c:if test="${param.sortOn == 'text'}">checked</c:if> onclick="updateList()" />
-				<label for="sortText"><spring:message code="ConceptProposal.originalText"/></label>
-				<input type="radio" name="sortOn" id="sortOccurences" value="text" <c:if test="${param.sortOn == null || param.sortOn == 'occurences'}">checked</c:if> onclick="updateList()" />
-				<label for="sortOccurences"><spring:message code="ConceptProposal.occurences"/></label>
+				<input type="radio" name="sortOn" id="sortText" value="text" <c:if test="${param.sortOn == 'text'}">checked</c:if> onclick="updateList()" /><label for="sortText"><spring:message code="ConceptProposal.originalText"/></label>
+				<input type="radio" name="sortOn" id="sortOccurences" value="text" <c:if test="${param.sortOn == null || param.sortOn == 'occurences'}">checked</c:if> onclick="updateList()" /><label for="sortOccurences"><spring:message code="ConceptProposal.occurences"/></label>
 			</td>
 		</tr>
 		<tr>
 			<th><spring:message code="ConceptProposal.sortOrder"/></th>
 			<td>
-				<input type="radio" name="sortOrder" id="orderAsc" value="asc" <c:if test="${param.sortOrder == 'asc'}">checked</c:if> onclick="updateList()" />
-				<label for="orderAsc"><spring:message code="ConceptProposal.sortOrder.asc"/></label>
-				<input type="radio" name="sortOrder" id="orderDesc" value="desc" <c:if test="${param.sortOrder == null || param.sortOrder == 'desc'}">checked</c:if> onclick="updateList()" />
-				<label for="orderDesc"><spring:message code="ConceptProposal.sortOrder.desc"/></label>
+				<input type="radio" name="sortOrder" id="orderAsc" value="asc" <c:if test="${param.sortOrder == 'asc'}">checked</c:if> onclick="updateList()" /><label for="orderAsc"><spring:message code="ConceptProposal.sortOrder.asc"/></label>
+				<input type="radio" name="sortOrder" id="orderDesc" value="desc" <c:if test="${param.sortOrder == null || param.sortOrder == 'desc'}">checked</c:if> onclick="updateList()" /><label for="orderDesc"><spring:message code="ConceptProposal.sortOrder.desc"/></label>
 			</td>
 		</tr>
 	</table>

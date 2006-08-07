@@ -16,6 +16,7 @@ dojo.widget.defineWidget(
 		isContainer: true,
 
 		displayNode: null,
+		descriptionDisplayNode: null,
 
 		hiddenInputNode: null,
 		hiddenInputName: "",
@@ -24,6 +25,8 @@ dojo.widget.defineWidget(
 
 		searchWidget: "",
 		searchTitle: "",
+		
+		allowSearch: true,
 
 		initializer: function(){
 			dojo.debug("initializing OpenmrsPopup");
@@ -31,9 +34,12 @@ dojo.widget.defineWidget(
 		
 		fillInTemplate: function(args, frag){
 			dojo.event.connect(this.changeButton, "onmouseup", this, "onChangeButtonClick");
+			
+			if (!this.allowSearch)
+				this.changeButton.style.display = "none";
 		},
 		
-		templateString: '<div><span style="white-space: nowrap"><span dojoAttachPoint="displayNode"></span> <input type="hidden" value="" dojoAttachPoint="hiddenInputNode" /> <input type="button" value="Change" dojoAttachPoint="changeButton" class="smallButton" /> </span> </div>',
+		templateString: '<div><span style="white-space: nowrap"><span dojoAttachPoint="displayNode"></span> <input type="hidden" value="" dojoAttachPoint="hiddenInputNode" /> <input type="button" value="Change" dojoAttachPoint="changeButton" class="smallButton" /> </span> <div class="description" dojoAttachPoint="descriptionDisplayNode"></div> </div>',
 		templateCssPath: "",
 		
 		postCreate: function(){
@@ -74,11 +80,21 @@ dojo.widget.defineWidget(
 		
 		onChangeButtonClick: function() {
 			dojo.debug("Change button clicked");
-			this.searchWidget.domNode.style.left = dojo.style.totalOffsetLeft(this.changeButton) + dojo.style.getBorderBoxWidth(this.changeButton) + 10;
-			this.searchWidget.domNode.style.top = dojo.style.totalOffsetTop(this.changeButton);				
+			
 			this.searchWidget.clearSearch();
 			this.searchWidget.toggleShowing();
 			this.searchWidget.inputNode.select();
+			
+			var left = dojo.style.totalOffsetLeft(this.changeButton, false) + dojo.style.getBorderBoxWidth(this.changeButton) + 10;
+			if (left + dojo.style.getBorderBoxWidth(this.searchWidget.domNode) > dojo.html.getViewportWidth())
+				left = dojo.html.getViewportWidth() - dojo.style.getBorderBoxWidth(this.searchWidget.domNode) - 10 + dojo.html.getScrollLeft();
+			
+			var top = dojo.style.totalOffsetTop(this.changeButton, false);
+			if (top + dojo.style.getBorderBoxHeight(this.searchWidget.domNode) > dojo.html.getViewportHeight())
+				top = dojo.html.getViewportHeight() - dojo.style.getBorderBoxHeight(this.searchWidget.domNode) - 10 + dojo.html.getScrollTop();
+			
+			dojo.style.setPositivePixelValue(this.searchWidget.domNode, "left", left);
+			dojo.style.setPositivePixelValue(this.searchWidget.domNode, "top", top);
 		},
 		
 		closeSearch: function() {

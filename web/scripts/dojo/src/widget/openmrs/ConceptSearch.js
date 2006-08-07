@@ -16,8 +16,14 @@ dojo.widget.defineWidget(
 	"dojo.widget.openmrs.ConceptSearch",
 	dojo.widget.openmrs.OpenmrsSearch,
 	{
-		initializer: function(){
-			dojo.debug("initializing conceptsearch");
+		conceptId: "",
+		
+		postCreate: function(){
+			dojo.debug("postCreate in conceptsearch");
+			
+			var closure = function(thisObj, method) { return function(obj) { return thisObj[method]({"obj":obj}); }; };
+			if (this.conceptId)
+				DWRConceptService.getConcept(closure(this, "select"), this.conceptId);
 		},
 		
 		conceptClasses: [],
@@ -25,7 +31,7 @@ dojo.widget.defineWidget(
 		doFindObjects: function(text) {
 			
 			// a javascript closure
-			var callback = function(ts) { return function(obj) {ts.fillTable(obj)}};
+			var callback = function(ts) { return function(obj) {ts.doObjectsFound(obj)}};
 
 			var tmpIncludedRetired = (this.showIncludeRetired && this.includeRetired.checked);
 			DWRConceptService.findConcepts(callback(this), text, this.conceptClasses, tmpIncludedRetired);

@@ -6,120 +6,66 @@
 <%@ include file="localHeader.jsp" %>
 
 <script src="<%= request.getContextPath() %>/scripts/calendar/calendar.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/prototype.lite.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/moo.fx.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/moo.fx.pack.js"></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/engine.js'></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/util.js'></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/openmrsSearch.js"></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/interface/DWRPatientService.js'></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/interface/DWRUserService.js'></script>
+<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/dojo/dojo.js"></script>
 
 <script type="text/javascript">
-
-	var mySearch = null;
-	var findObjects = null;
-	var searchType = "";
-	var changeButton = null;
-	<request:existsParameter name="autoJump">
-		autoJump = <request:parameter name="autoJump"/>;
-	</request:existsParameter>
-	var display = new Array();
+	dojo.require("dojo.widget.openmrs.ConceptSearch");
+	dojo.require("dojo.widget.openmrs.PatientSearch");
+	dojo.require("dojo.widget.openmrs.UserSearch");
+	dojo.require("dojo.widget.openmrs.OpenmrsPopup");
 	
-	var init = function() {
-		mySearch = new fx.Resize("searchForm", {duration: 100});
-		mySearch.hide();
+	var uSearch;
+	var userPopup;
+	var pSearch;
+	var patPopup;
+	
+	dojo.addOnLoad( function() {
+		uSearch = dojo.widget.manager.getWidgetById("uSearch");
+		userPopup = dojo.widget.manager.getWidgetById("uSelection");
+		patPopup = dojo.widget.manager.getWidgetById("pSelection");
+		pSearch = dojo.widget.manager.getWidgetById("pSearch");
+		
+		dojo.event.topic.subscribe("uSearch/select", 
+			function(msg) {
+				if (msg) {
+					var user = msg.objs[0];
+					userPopup.displayNode.innerHTML = '<a id="providerName" href="#View Provider" onclick="return gotoUser(null, ' + user.userId + ')">' + (user.firstName ? user.firstName : '') + ' ' + (user.middleName ? user.middleName : '') + ' ' + (user.lastName ? user.lastName : '') + '</a>';
+					userPopup.hiddenInputNode.value = user.userId;
+				}
+			}
+		);
+		
+		pSearch.getCellFunctions = function() {
+			return [closure(pSearch, "getNumber"), 
+					closure(pSearch, "getId"), 
+					closure(pSearch, "getGiven"), 
+					closure(pSearch, "getMiddle"), 
+					closure(pSearch, "getFamily")
+					];
+		};
+		
+		dojo.event.topic.subscribe("pSearch/select", 
+			function(msg) {
+				if (msg) {
+					var patient = msg.objs[0];
+					patPopup.displayNode.innerHTML = '<a id="patientName" href="#View Patient" onclick="return gotoPatient(null, ' + patient.patientId + ')">' + patient.givenName + ' ' + patient.middleName + ' ' + patient.familyName + '</a>';
+					patPopup.hiddenInputNode.value = patient.patientId;
+				}
+			}
+		);
+		
 		toggle("div", "description");
 		toggleVoided();
 		voidedClicked(document.getElementById("voided"));
-	};
-	
-	var findObjects = function(txt) {
-		if (searchType == 'patient') {
-			DWRPatientService.findPatients(fillTable, txt, 0);
-		}
-		else if (searchType == 'user') {
-			DWRUserService.findUsers(fillTable, txt, ['Clinician'], false);
-		}
-		return false;
-	}
-	
-	var onSelect = function(objs) {
-		var obj = objs[0];
-		if (searchType == 'patient') {
-			$("patient").value = obj.patientId;
-			$("patientName").innerHTML = getName(obj);
-			changeButton.focus();
-		}
-		else if (searchType == 'user') {
-			$("provider").value = obj.userId;
-			$("providerName").innerHTML = getName(obj);
-			changeButton.focus();
-		}
-		mySearch.hide();
-		return false;
-	}
-	
-	function showSearch(btn) {
-		mySearch.hide();
-		setPosition(btn, $("searchForm"), 465, 350);
-		resetForm();
-		DWRUtil.removeAllRows("searchBody");
-		if (btn.id == "userButton") {
-			$('searchTitle').innerHTML = '<spring:message code="Encounter.provider.find"/>';
-			searchType = 'user';
-		}
-		else {
-			$('searchTitle').innerHTML = '<spring:message code="Patient.find"/>';
-			searchType = 'patient'
-		}
-		mySearch.toggle();
-		$("searchText").value = '';
-		$("searchText").select();
-		changeButton = btn;
-	}
-	
-	var getIdentifier = function(obj) {
-		if (typeof obj == 'string')  return obj;
-		if (searchType == 'patient') return obj.identifier;
-		return '';
-	}
-	
-	var getName = function(obj) {
-		if (typeof obj == 'string') return '';
-		str = '';
-		if (searchType == 'patient') {
-			str += obj.givenName;
-			str += ' ';
-			str += obj.middleName;
-			str += ' ';
-			str += obj.familyName;
-		}
-		else if (searchType == 'user') {
-			str += obj.firstName;
-			str += ' ';
-			str += obj.lastName;
-		}
-		return str;
-	}
-	
-	function closeBox() {
-		mySearch.toggle();
-		return false;
-	}
-	
-	var customCellFunctions = [getNumber, getIdentifier, getName];
-	
-	var oldonload = window.onload;
-	if (typeof window.onload != 'function') {
-		window.onload = init;
-	} else {
-		window.onload = function() {
-			oldonload();
-			init();
-		}
-	}
+	})
 
+</script>
+
+
+<script type="text/javascript">
+
+	var display = new Array();
+	
 	function mouseover(row, isDescription) {
 		if (row.className.indexOf("searchHighlight") == -1) {
 			row.className = "searchHighlight " + row.className;
@@ -166,7 +112,6 @@
 				voidedBy.style.display = "none";
 		}
 	}
-	
 	
 	function toggle(tagName, className) {
 		if (display[tagName] == "none")
@@ -231,25 +176,7 @@
 </script>
 
 <style>
-	.searchForm {
-		width: 450px;
-		position: absolute;
-		z-index: 10;
-		margin: 5px;
-	}
-	.searchForm .wrapper {
-		padding: 2px;
-		background-color: whitesmoke;
-		border: 1px solid grey;
-		height: 330px;
-	}
-	.searchResults {
-		height: 270px;
-		overflow: auto;
-	}
-	#table th {
-		text-align: left;
-	}
+	#table th { text-align: left; }
 </style>
 
 <h2><spring:message code="Encounter.manage.title"/></h2>
@@ -267,18 +194,10 @@
 			<th><spring:message code="Encounter.patient"/></th>
 			<td>
 				<spring:bind path="encounter.patient">
-					<table>
-						<tr>
-							<td><a id="patientName" href="#View Patient" onclick="return gotoPatient('patient')">${status.value.patientName.givenName} ${status.value.patientName.middleName} ${status.value.patientName.familyName}</a></td>
-							<td>
-								<input type="hidden" id="patient" value="${status.value.patientId}" name="patientId"/>
-								<c:if test="${encounter.encounterId == null}">
-									&nbsp; <input type="button" id="patientButton" class="smallButton" value='<spring:message code="general.change"/>' onclick="showSearch(this)" />
-								</c:if>
-								<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-							</td>
-						</tr>
-					</table>
+					<div dojoType="PatientSearch" widgetId="pSearch" patientId="${status.value.patientId}"></div>
+					<div dojoType="OpenmrsPopup" widgetId="pSelection" hiddenInputName="patientId" searchWidget="pSearch" searchTitle='<spring:message code="Patient.find"/>' <c:if test="${encounter.encounterId != null}">allowSearch="false"</c:if> ></div>
+					
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
 		</tr>
@@ -286,17 +205,9 @@
 			<th><spring:message code="Encounter.provider"/></th>
 			<td>
 				<spring:bind path="encounter.provider">
-					<table>
-						<tr>
-							<td><a id="providerName" href="#View Provider" onclick="return gotoUser('provider')">${status.value.firstName} ${status.value.lastName}</a></td>
-							<td>
-								&nbsp;
-								<input type="hidden" id="provider" value="${status.value.userId}" name="providerId" />
-								<input type="button" id="userButton" class="smallButton" value='<spring:message code="general.change"/>' onclick="showSearch(this)" />
-								<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-							</td>
-						</tr>
-					</table>
+					<div dojoType="UserSearch" widgetId="uSearch" userId="${status.value.userId}" roles="Clinician;"></div>
+					<div dojoType="OpenmrsPopup" widgetId="uSelection" hiddenInputName="providerId" searchWidget="uSearch" searchTitle='<spring:message code="Encounter.provider.find"/>'></div>
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
 		</tr>
@@ -455,25 +366,5 @@
 <br />
 <a href="obs.form?encounterId=${encounter.encounterId}"><spring:message code="Obs.add"/></a>
 <br />
-
-<div id="searchForm" class="searchForm">
-	<div class="wrapper">
-		<input type="button" onClick="return closeBox();" class="closeButton" value="X"/>
-		<form method="get" onSubmit="return searchBoxChange('searchBody', searchText, null, false, 0); return false;">
-			<h3 id="searchTitle"></h3>
-			<input type="text" id="searchText" size="35" onkeyup="return searchBoxChange('searchBody', this, event, false, 400);">
-		</form>
-		<div id="searchResults" class="searchResults">
-			<table cellpadding="2" cellspacing="0">
-				<tbody id="searchBody">
-					<tr>
-						<td></td>
-						<td></td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-	</div>
-</div>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

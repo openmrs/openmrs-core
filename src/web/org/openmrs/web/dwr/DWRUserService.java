@@ -21,6 +21,7 @@ public class DWRUserService {
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
+	@SuppressWarnings("unchecked")
 	public Collection<UserListItem> findUsers(String searchValue, List<String> roles, boolean includeVoided) {
 		
 		Vector userList = new Vector();
@@ -69,6 +70,7 @@ public class DWRUserService {
 	}
 
 	
+	@SuppressWarnings("unchecked")
 	public Collection<UserListItem> getAllUsers(List<String> roles, boolean includeVoided) {
 		
 		Vector userList = new Vector();
@@ -104,5 +106,25 @@ public class DWRUserService {
 			}
 		}
 		return userList;
+	}
+	
+	public UserListItem getUser(Integer userId) {
+		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
+		
+		Context context = (Context) request.getSession(false)
+				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+
+		UserListItem user = new UserListItem();
+		
+		if (context != null) {
+			try {
+				user = new UserListItem(context.getUserService().getUser(userId));
+			}
+			catch (Exception e) {
+				log.error("Error getting user", e);
+			}
+		}
+		
+		return user;
 	}
 }

@@ -14,6 +14,8 @@ dojo.widget.defineWidget(
 	"dojo.widget.openmrs.PatientSearch",
 	dojo.widget.openmrs.OpenmrsSearch,
 	{
+		patientId: "",
+		
 		initializer: function(){
 			dojo.debug("initializing patientsearch");
 			
@@ -23,7 +25,7 @@ dojo.widget.defineWidget(
 				}
 			);
 			
-			dojo.event.topic.subscribe(this.widgetId + "/fillTable", 
+			dojo.event.topic.subscribe(this.widgetId + "/objectsFound", 
 				function(msg) {
 					if (msg) {
 						patients = msg.objects;
@@ -60,13 +62,18 @@ dojo.widget.defineWidget(
 						}
 					}
 				});
-			
+		},
+		
+		postCreate: function() {
+			var closure = function(thisObj, method) { return function(obj) { return thisObj[method]({"obj":obj}); }; };
+			if (this.patientId != "")
+				DWRPatientService.getPatient(closure(this, "select"), this.patientId);
 		},
 		
 		doFindObjects: function(text) {
 
 			// a javascript closure
-			var callback = function(ts) { return function(obj) {ts.fillTable(obj)}};
+			var callback = function(ts) { return function(obj) {ts.doObjectsFound(obj)}};
 			
 			var tmpIncludedVoided = (this.showIncludeVoided && this.includeVoided.checked);
 			DWRPatientService.findPatients(callback(this), text, tmpIncludedVoided);

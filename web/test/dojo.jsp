@@ -1,12 +1,12 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<link href="/openmrs/openmrs.css" type="text/css" rel="stylesheet" />
+<link href="<%= request.getContextPath() %>/openmrs.css" type="text/css" rel="stylesheet" />
 
 <script type="text/javascript">
 	var djConfig = {debugAtAllCosts: true, isDebug: true};
 </script>
 
-<script type="text/javascript" src="/openmrs/scripts/dojo/dojo.js"></script>
+<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/dojo/dojo.js"></script>
 
 <script type="text/javascript">
 	dojo.require("dojo.widget.openmrs.EncounterSearch");
@@ -32,7 +32,7 @@
 			} 
 		);
 		
-		dojo.event.topic.subscribe("cSearch/fillTable", 
+		dojo.event.topic.subscribe("cSearch/objectsFound",
 			function (msg) {
 				if (msg)
 					msg.objects.push("<a href='concept.form'>Add New Concept</a>");

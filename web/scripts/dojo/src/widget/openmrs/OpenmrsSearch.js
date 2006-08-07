@@ -61,6 +61,7 @@ dojo.widget.defineWidget(
 	eventNamesDefault: {
 		select : "select",
 		findObjects: "findObjects",
+		objectsFound: "objectsFound",
 		fillTable: "fillTable",
 		destroy : "destroy",
 		inputChange : "inputChange"
@@ -311,7 +312,7 @@ dojo.widget.defineWidget(
 		else {
 			this.objectsFound = new Array();
 			this.objectsFound.push("You must have at least " + this.minSearchCharacters + " search characters");
-			fillTable(this.objectsFound);
+			this.doObjectsFound(this.objectsFound);
 		}
 		
 		return false;
@@ -328,6 +329,13 @@ dojo.widget.defineWidget(
 			//var callback = function(ts) { return function(obj) {ts.fillTable(obj)}};
 			//DWREncounterService.findEncounters(callback(this), text, this.includeVoided.checked);
 			
+	},
+	
+	doObjectsFound: function(objs) {
+	
+		dojo.event.topic.publish(this.eventNames.objectsFound, {"objects": objs});
+		
+		this.fillTable(objs);
 	},
 	
 	
@@ -783,6 +791,12 @@ dojo.widget.defineWidget(
 
 		// default implementation. Override this method.
 		
+	},
+	
+	simpleClosure: function(thisObj, method) { 
+		return function(arg1, arg2) {
+				  return thisObj[method](arg1, arg2); 
+				}; 
 	},
 	
 	
