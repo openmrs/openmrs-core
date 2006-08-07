@@ -325,6 +325,18 @@ tr.searchHighlight {
 	background-color: #F0E68C;
 }
 
+.popupSearchForm {
+	width: 500px;
+	height: 390px;
+	padding: 2px;
+	background-color: whitesmoke;
+	border: 1px solid grey;
+	position: absolute;
+	z-index: 10;
+	margin: 5px;
+	overflow-y: auto;
+}
+
 input[type="text"], input[type="password"] {
 	padding: 1px;
 	border: 1px solid cadetblue;

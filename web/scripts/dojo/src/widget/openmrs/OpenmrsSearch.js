@@ -45,6 +45,7 @@ dojo.widget.defineWidget(
 	pagingBar: null,
 	infoBar: null,
 	minSearchCharacters: 2,
+	tableHeight: 0,
 	
 	// check box options
 	showIncludeRetired: false,
@@ -60,6 +61,7 @@ dojo.widget.defineWidget(
 	eventNamesDefault: {
 		select : "select",
 		findObjects: "findObjects",
+		fillTable: "fillTable",
 		destroy : "destroy",
 		inputChange : "inputChange"
 	},
@@ -81,9 +83,16 @@ dojo.widget.defineWidget(
 		}
 		
 		this.hideHighlight();
-		this.eventNames = {};
 		
 		DWRUtil.useLoadingMessage();
+		
+		var handler = function(ex) {
+			window.status = "DWR warning/error: " + ex;
+			throw "DWR warning/error: " + ex;
+		};
+		
+		DWREngine.setErrorHandler(handler);
+		DWREngine.setWarningHandler(handler);
 	},
 	
 	
@@ -127,7 +136,7 @@ dojo.widget.defineWidget(
 	},
 
 
-	templateString: '<div><span style="white-space: nowrap"><input type="text" value="" dojoAttachPoint="inputNode" autocomplete="off" /> <input type="checkbox" style="display: none" dojoAttachPoint="includeRetired"/> <input type="checkbox" style="display: none" dojoAttachPoint="includeVoided"/> <input type="checkbox" style="display: none" dojoAttachPoint="verboseListing"/></span><table class="openmrsSearchTable" style="height: 100%"><tbody dojoAttachPoint="objHitsTableBody"></tbody></table></div>',
+	templateString: '<div><span style="white-space: nowrap"><input type="text" value="" dojoAttachPoint="inputNode" autocomplete="off" /> <input type="checkbox" style="display: none" dojoAttachPoint="includeRetired"/> <input type="checkbox" style="display: none" dojoAttachPoint="includeVoided"/> <input type="checkbox" style="display: none" dojoAttachPoint="verboseListing"/></span><table class="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><tbody dojoAttachPoint="objHitsTableBody" style="vertical-align: top"></tbody></table></div>',
 	templateCssPath: "",
 
 
@@ -207,14 +216,20 @@ dojo.widget.defineWidget(
 					onInputChange(null);
 					return false;
 				}
-			}
-			
+		}
+		
 		return false;
 		
 	},
 	
 	_enterKeyPressed: function() {
+	
+		// user hit enter on empty box
+		if (this.inputNode.value == "" && this.event.type == "keyup")
+			return false;
+		
 		dojo.debug('Enter key pressed, search: ' + this.text);
+		dojo.debug('lastPhraseSearched: ' + this.lastPhraseSearched);
 		this.hideHighlight();
 		// if the user hit the enter key then check for sequence of numbers
 		if (this.text.match(/^\s*\d+\s*(,\d+\s*)*$/)) {
@@ -241,22 +256,24 @@ dojo.widget.defineWidget(
 		this.inputNode.value = "";
 		dojo.debug('this.inputNode.value cleared');
 		
-		if (this.text != this.lastPhraseSearched || this.allowNewSearch()) {
+		if (this.text != this.lastPhraseSearched && this.allowNewSearch()) {
 			//this was a new search with the enter key pressed, call findObjects function 
 			dojo.debug('This was a new search');
 			if (this.text == "")
 				this.text = this.lastPhraseSearched;
 			this.findObjects(this.text);
-			dojo.debug('preFindObjects called for enter key');
+			this.showHighlight();
+			dojo.debug('findObjects called for enter key');
 		}
 		else if (this.objectsFound.length == 1 && this.allowAutoJump()) {
 			// this was a new redundant 'search' with enter key pressed and only one object
+			dojo.debug('This was a redundant search and auto jumping to single object returned');
 			this.selectObject(1);
 		}
 		else {
 			// this was a new redundant 'search' with enter key pressed
-			this.showHighlight();
 			dojo.debug('This was a redundant search');
+			this.showHighlight();
 		}
 	},
 	
@@ -280,16 +297,16 @@ dojo.widget.defineWidget(
 	findObjects: function(phrase) {
 		dojo.debug('findObjects initialized with search on: ' + phrase);
 		//must have at least x characters entered or that character be a number
-		if (this.text.length >= this.minSearchCharacters || (parseInt(this.text) >= 0 && parseInt(this.text) <= 99)) {
+		if (phrase.length >= this.minSearchCharacters || (parseInt(phrase) >= 0 && parseInt(phrase) <= 99)) {
 			clearTimeout(this.searchTimeout);	//stop any timeout that may have just occurred...fixes 'duplicate data' error
 			this.objectsFound = new Array();	//zero-out numbered object list
 			this.searchIndex = 0;				//our numbering is one-based, but the searchIndex is incremented prior to printing
 			this.firstItemDisplayed = 1;		//zero-out our paging index (but we have a one-based list, see line above)
-			this.lastPhraseSearched = this.text;
+			this.lastPhraseSearched = phrase;
 			
-			this.doFindObjects(phrase);
-	
 			dojo.event.topic.publish(this.eventNames.findObjects, phrase);
+			
+			this.doFindObjects(phrase);			
 		}
 		else {
 			this.objectsFound = new Array();
@@ -409,7 +426,7 @@ dojo.widget.defineWidget(
 		
 		var tr = document.createElement("tr");
 		
-		if (i % 2 == 0)
+		if (i % 2)
 			tr.className = "evenRow";
 		else
 			tr.className = "oddRow";
@@ -429,6 +446,10 @@ dojo.widget.defineWidget(
 
 
 	fillTable: function(objects, cells) {
+		
+		if (objects.length > 1 || typeof objects[0] != 'string')
+			dojo.event.topic.publish(this.eventNames.fillTable, {"objects": objects} );
+		
 		// If we get only one result and the enter key was pressed jump to that object
 		if (objects.length == 1 && 
 			(this.event.keyCode == dojo.event.browser.keys.KEY_ENTER)) { // || this.keyCode == null)) {
@@ -463,7 +484,8 @@ dojo.widget.defineWidget(
 	    	// objects are returned. Must be called with Timeout because 
 	    	// DWRUtil.addRows uses setTimeout
 	    	dojo.debug("showing highlight at end of fillTable() due to enterkey");
-	    	setTimeout("this.showHighlight()", 0);
+	    	var closure = function(ts) { return function() {ts.showHighlight()}};
+	    	setTimeout(closure(this), 0);
 	    }
 	    dojo.debug("ending fillTable(). Keycode was: " + this.event.keyCode);
 	    
@@ -471,14 +493,26 @@ dojo.widget.defineWidget(
 	},
 	
 	getRowOptions: function() {
-		var tmp = function(ths, method) { return function(obj) { return ths[method](obj); }; };
+		var tmp = function(ths, method) { return function(obj, obj2) { return ths[method](obj, obj2); }; };
 		var arr = { 'rowCreator': tmp(this, "rowCreator") };
 		return arr;
 	},
 	
 	getCellFunctions: function() {
-		var tmp = function(ths, method) { return function(obj) { return ths[method](obj); }; };
+		var tmp = function(ths, method) { return function(obj, obj2) { return ths[method](obj, obj2); }; };
 		return [ tmp(this, "getNumber"), tmp(this, "getCellContent") ];
+	},
+	
+	clearSearch: function() {
+		this.clearPagingBars();
+		// signal to the using script that we've cleared the rows
+		this.onRemoveAllRows(this.objHitsTableBody);
+	    DWRUtil.removeAllRows(this.objHitsTableBody);	//clear out the current rows
+		clearTimeout(this.searchTimeout);
+		this.searchIndex = 0;
+		this.objectsFound = new Array();
+		this.allObjectsFound = new Array();
+		this.inputNode.value = this.text = this.lastPhraseSearch = "";
 	},
 
 	onRemoveAllRows: function() { },
@@ -496,6 +530,7 @@ dojo.widget.defineWidget(
 		//if we're in 'number mode'
 		if (this.inputNode.value == "") 
 			this.showHighlight();
+			
 		return false;
 	},
 	
@@ -511,6 +546,7 @@ dojo.widget.defineWidget(
 		//if we're in 'number mode'
 		if (this.inputNode.value == "") 
 			this.showHighlight();
+		
 		return false;
 	},
 	
@@ -535,17 +571,11 @@ dojo.widget.defineWidget(
 			else
 				table.parentNode.insertBefore(this.pagingBar, table.nextSibling);
 		}
-	
-		// get top position of body element
-		//var top = this.getElementTop(this.objHitsTableBody);
 		
 		var height = this.getRowHeight(); //approx. row height
-		
-		// get approx room for tablebody
-		var remainder = dojo.style.getBorderBoxHeight(this.objHitsTableBody);
-		
 		dojo.debug("this.rowHeight(): " + height);
-		dojo.debug("top: " + top);
+		
+		var remainder = this.getTableBodySize();
 		
 		//numItemsDisplayed=Math.floor(remainder/(height + 6))-2;
 		//make this work in full page and popup mode
@@ -567,7 +597,17 @@ dojo.widget.defineWidget(
 			this.numItemsDisplayed = this.numItemsDisplayed + 1;
 		}
 	},
-
+	
+	getTableBodySize: function() {
+		if (this.tableHeight)
+			return this.tableHeight;
+		else {
+			// get approx room for tablebody according to the space left on the page
+			var top = dojo.style.getPixelValue(this.objHitsTableBody, "top");
+			dojo.debug("top: " + top);
+			return (dojo.html.getViewportHeight(this.objHitsTableBody) - top);
+		}
+	},
 	
 	updatePagingBars: function() {
 	
@@ -601,7 +641,7 @@ dojo.widget.defineWidget(
 		
 		this.pagingBar.innerHTML = "&nbsp;";
 	
-		var closure = function(ts, method) { return function(obj) {ts[method]();}}; //a javascript closure
+		var closure = function(ts, method) { return function(obj) { return ts[method]();}}; //a javascript closure
 		if (lastItemDisplayed != total || this.firstItemDisplayed > 1) {
 			// if need to show previous or next links	
 			var prev = document.createTextNode("Previous Results"); // default previous text node
@@ -665,30 +705,6 @@ dojo.widget.defineWidget(
 	},
 	
 	
-	getWindowHeight: function() {
-		var myWidth = 0, myHeight = 0;
-		if( typeof( window.innerWidth ) == 'number' ) {
-			//Non-IE
-			myWidth = window.innerWidth;
-			myHeight = window.innerHeight;
-			//alert("myHeight1: " + myHeight);
-		} else if( document.documentElement &&
-			( document.documentElement.clientWidth || document.documentElement.clientHeight ) ) {
-				//IE 6+ in 'standards compliant mode'
-				myWidth = document.documentElement.clientWidth;
-				myHeight = document.documentElement.clientHeight;
-				dojo.debug("myHeight2: " + myHeight);
-		} else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) {
-			//IE 4 compatible
-			myWidth = document.body.clientWidth;
-			myHeight = document.body.clientHeight;
-			dojo.debug("myHeight3 : " + myHeight);
-		}
-	
-		return parseInt(myHeight);
-	},
-	
-	
 	getRowHeight: function() {
 		var h = 0;
 		h = dojo.style.getStyle(this.inputNode, 'height');
@@ -713,16 +729,16 @@ dojo.widget.defineWidget(
 
 
 	setPosition: function(btn, form, formWidth, formHeight) {
-		var left = parseInt(getElementLeft(btn) + btn.offsetWidth + 20);
-		var top  = parseInt(getElementTop(btn)-50);
+		var left = dojo.style.getPixelValue(btn, "left") + btn.offsetWidth + 20;
+		var top  = dojo.style.getPixelValue(btn, "top")-50;
 		
 		if (formWidth == null)
-			formWidth = getDimension(form.style.width);
+			formWidth = dojo.style.getPixelValue(form, "width");
 		if (formHeight == null)
-			formHeight = getDimension(form.style.height);
+			formHeight = dojo.style.getPixelValue(form, "height");
 		
-		var windowWidth = parseInt(window.innerWidth + getScrollOffsetX());
-		var windowHeight = parseInt(window.innerHeight + getScrollOffsetY());
+		var windowWidth = dojo.html.getViewportWidth(true);
+		var windowHeight = dojo.html.getViewportHeight(true);
 		
 		// if the box is popping off the right/bottom, move it back 
 		//  onto the screen
@@ -739,79 +755,11 @@ dojo.widget.defineWidget(
 		form.style.top = top + "px";
 	},
 	
-	
-	getDimension: function(style) {
-		var s = "0";
-		if (style.indexOf("px") == -1)
-			s = style;
-		else
-			s = style.substring(0, style.indexOf("px"));
-			
-		return parseInt(s);
-	},
-	
-	
-	getElementLeft: function(elm) {
-		var x = 0;
-		while (elm != null) {
-			x+= elm.offsetLeft;
-			elm = elm.offsetParent;
-		}
-		return parseInt(x);
-	},
-	
-	
-	getElementTop: function(elm) {
-		var y = 0;
-		while (elm != null) {
-			y+= elm.offsetTop;
-			elm = elm.offsetParent;
-		}
-		return parseInt(y);
-	},
-	
-	
-	getScrollOffsetY: function() {
-		if (window.innerHeight) {
-			return parseInt(window.pageYOffset);
-		}
-		else {
-			return parseInt(document.documentElement.scrollTop);
-		}
-	},
-	
-	
-	getScrollOffsetX: function() {
-		if (window.innerWidth) {
-			return window.pageXOffset;
-		}
-		else {
-			return document.documentElement.scrollLeft;
-		}
-	},
-	
-
 	destroy: function() {
 		dojo.event.topic.publish(this.eventNames.destroy, { source: this } );
 
 		return dojo.widget.HtmlWidget.prototype.destroy.apply(this, arguments);
 	},
-
-
-/* something like this needed?
-
-	listenTree: function(tree) {
-		dojo.event.topic.subscribe(tree.eventNames.titleClick, this, "select");
-		dojo.event.topic.subscribe(tree.eventNames.iconClick, this, "select");
-		dojo.event.topic.subscribe(tree.eventNames.collapse, this, "onCollapse");
-		dojo.event.topic.subscribe(tree.eventNames.moveFrom, this, "onMoveFrom");
-		dojo.event.topic.subscribe(tree.eventNames.removeNode, this, "onRemoveNode");
-		dojo.event.topic.subscribe(tree.eventNames.treeDestroy, this, "onTreeDestroy");
-
-		// remember all my trees to deselect when element is movedFrom them
-		this.listenedTrees.push(tree);
-	},
-*/
 
 
 	// called when a user selects one of the list items
