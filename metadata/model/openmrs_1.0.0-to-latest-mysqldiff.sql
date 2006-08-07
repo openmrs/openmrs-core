@@ -296,7 +296,7 @@
  
  #-----------------------------------
  # OpenMRS Datamodel version 1.0.28
- # Darius Jazayeri August 02 2007 6:28 PM
+ # Darius Jazayeri August 02 2006 6:28 PM
  # Initial pass at Programs
  #-----------------------------------
  
@@ -353,5 +353,15 @@ CREATE TABLE `patient_program` (
  ALTER TABLE concept DROP COLUMN view_count;
  
  UPDATE `global_property` SET property_value='1.0.29' WHERE property = 'database_version';
+
+
+ #-----------------------------------
+ # OpenMRS Datamodel version 1.0.30
+ # Darius Jazayeri     Aug 7 2006 3:00 PM
+ # Populate person table
+ #-----------------------------------
+
+ INSERT INTO person (person_id, patient_id) (SELECT null, patient_id FROM patient);
+ INSERT INTO person (person_id, user_id) (SELECT null, user_id FROM users);
  
- 
+ UPDATE `global_property` SET property_value='1.0.30' WHERE property = 'database_version';

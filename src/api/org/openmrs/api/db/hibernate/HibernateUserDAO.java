@@ -14,6 +14,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+import org.openmrs.Person;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
@@ -57,10 +58,14 @@ public class HibernateUserDAO implements
 			user.setSystemId(systemId + "-" + checkDigit);
 			
 			user = updateProperties(user);
-			
 			session.save(user);
-			HibernateUtil.commitTransaction();
+
+			// create a Person for this user as well.
+			Person person = new Person();
+			person.setUser(user);
+			session.save(person);
 			
+			HibernateUtil.commitTransaction();
 			
 			//update the new user with the password
 			HibernateUtil.beginTransaction();

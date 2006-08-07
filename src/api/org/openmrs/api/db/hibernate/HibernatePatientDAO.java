@@ -65,6 +65,18 @@ public class HibernatePatientDAO implements PatientDAO {
 			setCollectionProperties(patient);
 			
 			session.saveOrUpdate(patient);
+			
+			// create a Person for this patient as well.
+			// The method name "createPatient" implies we should always do this, but since we're calling saveOrUpdate, we'll just do it conditionally.
+			Person person = (Person) session.createQuery("from Person p where p.patient.patientId = :patientId")
+				.setInteger("patientId", patient.getPatientId())
+				.uniqueResult();
+			if (person == null) {
+				person = new Person();
+				person.setPatient(patient);
+				session.save(person);
+			}
+			
 			HibernateUtil.commitTransaction();
 		}
 		catch (Exception e) {
