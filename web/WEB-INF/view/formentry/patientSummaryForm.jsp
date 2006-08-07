@@ -183,7 +183,7 @@
 		<c:forEach items="${forms}" var="form">
 			<a href="${pageContext.request.contextPath}/formDownload?target=formEntry&formId=${form.formId}&patientId=${patient.patientId}" onclick="startDownloading()" class="formLink">${form.name}</a>
 			(v.${form.version})
-			<c:if test="${form.published == true}"><i>(<spring:message code="formentry.unpublished"/>)</i></c:if>
+			<c:if test="${form.published == false}"><i>(<spring:message code="formentry.unpublished"/>)</i></c:if>
 			
 			<br />
 		</c:forEach>
