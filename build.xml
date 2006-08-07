@@ -221,6 +221,7 @@
 			<lib dir="${hl7api.dir}" includes="*.jar" />
 			<!--<lib dir="${ibatis.dir}" includes="*.jar" />-->
 			<lib dir="${log4j.dir}" includes="*.jar" />
+			<lib dir="${jfreechart.dir}" includes="*.jar" />
 			<lib dir="${jstl.dir}" includes="*.jar" />
 			<lib dir="${jta.dir}" includes="*.jar" />
 			<lib dir="${junit.dir}" includes="*.jar" />
@@ -264,6 +265,7 @@
 			<zipfileset dir="${hibernate.dir}" includes="*.jar" />
 			<!--<zipfileset dir="${ibatis.dir}" includes="*.jar" />-->
 			<zipfileset dir="${log4j.dir}" includes="*.jar" />
+			<zipfileset dir="${jfreechart.dir}" includes="*.jar" />
 			<zipfileset dir="${jstl.dir}" includes="*.jar" />
 			<zipfileset dir="${jta.dir}" includes="*.jar" />
 			<zipfileset dir="${junit.dir}" includes="*.jar" />
