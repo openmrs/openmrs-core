@@ -1,5 +1,4 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
-<%@ taglib prefix="openmrs_tag" tagdir="/WEB-INF/tags" %>
 <div class="box">
 	<table class="patientAddress">
 		<thead>

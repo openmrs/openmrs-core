@@ -1,5 +1,4 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
-<%@ taglib prefix="openmrs_tag" tagdir="/WEB-INF/tags" %>
 
 <script src="<%= request.getContextPath() %>/scripts/calendar/calendar.js"></script>
 
