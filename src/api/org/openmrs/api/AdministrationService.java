@@ -12,6 +12,7 @@ import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptSynonym;
+import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
 import org.openmrs.Location;
@@ -371,7 +372,39 @@ public class AdministrationService {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ORDERS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ORDERS);
 
+		// If this order has no encounter, check if the patient exi
+		
 		getAdminDAO().updateOrder(order);
+	}
+
+	/**
+	 * Update Order
+	 * @param Order to update
+	 * @param Patient for whom this order is for
+	 * @throws APIException
+	 */
+	public void updateOrder(Order order, Patient patient) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ORDERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ORDERS);
+
+		// If this order has no encounter, attempt to create a blank one for the patient (if it exists)
+		if ( patient != null && order != null ) { 
+			if ( order.getEncounter() == null ) {
+				Encounter e = new Encounter();
+				Location unknownLoc = new Location(new Integer(Location.LOCATION_UNKNOWN));
+				e.setLocation(unknownLoc);
+				e.setPatient(patient);
+				e.setProvider(order.getOrderer());
+				e.setEncounterDatetime(order.getStartDate());
+				e.setCreator(order.getCreator());
+				e.setDateCreated(order.getDateCreated());
+				e.setVoided(new Boolean(false));
+				context.getEncounterService().updateEncounter(e);
+				order.setEncounter(e);
+			}
+		}
+		
+		updateOrder(order);
 	}
 
 	/**

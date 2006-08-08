@@ -11,7 +11,8 @@ import java.util.Date;
 public class Location implements java.io.Serializable {
 
 	public static final long serialVersionUID = 455634L;
-
+	public static final int LOCATION_UNKNOWN = 1;
+	
 	// Fields
 
 	private Integer locationId;

@@ -7,7 +7,7 @@
 
 <h2><spring:message code="Order.list.patient.title" arguments="${patient.patientId},${patientName.familyName},${patientName.givenName},${patientName.middleName}" /></h2>
 
-<a href="orderPlace.form"><spring:message code="Order.drug.place.patient"/></a>
+<a href="orderPlace.form?patientId=${patient.patientId}"><spring:message code="Order.drug.place.patient"/></a>
 <br />
 
 <span class="boxHeader"><spring:message code="Order.drug.list.title"/></span>

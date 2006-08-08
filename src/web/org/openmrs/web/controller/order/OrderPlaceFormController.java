@@ -18,6 +18,7 @@ import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
+import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.OrderService;
@@ -69,6 +70,12 @@ public class OrderPlaceFormController extends SimpleFormController {
 	protected Map referenceData(HttpServletRequest request) throws Exception {
 		Map refData = new HashMap();
 
+		Integer patientId = RequestUtils.getIntParameter(request, "patientId");
+		if ( patientId != null ) {
+			refData.put("patientId", patientId);
+			System.out.println("\n\nPATIENTID IS " + patientId.toString() + "\n\n");
+		} else System.out.println("\n\nPATIENTID IS NULL \n\n");
+		
 		return refData;
 	}
 
@@ -99,11 +106,17 @@ public class OrderPlaceFormController extends SimpleFormController {
 			// TODO: for now, orderType will have to be hard-coded?
 			order.setOrderType(new OrderType(new Integer(2)));
 			
-			// TODO: we could also try to create a new encounter here, but would need a location, amoung other things
+			Patient thisPatient = null;
+			if ( order.getEncounter() == null ) {
+				Integer patientId = RequestUtils.getIntParameter(request, "patientId");
+				if ( patientId != null ) {
+					thisPatient = context.getPatientService().getPatient(patientId);
+				}
+			}
 			
 			if ( order.getDateCreated() == null ) order.setDateCreated(new Date());
 			if ( order.getVoided() == null ) order.setVoided(new Boolean(false));
-			context.getAdministrationService().updateOrder(order);
+			context.getAdministrationService().updateOrder(order, thisPatient);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Order.drug.saved");
 		}

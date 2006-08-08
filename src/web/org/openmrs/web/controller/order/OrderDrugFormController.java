@@ -18,6 +18,7 @@ import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
+import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
@@ -90,9 +91,16 @@ public class OrderDrugFormController extends SimpleFormController {
 		
 		if (context != null && context.isAuthenticated()) {
 			DrugOrder order = (DrugOrder)obj;
+			Patient thisPatient = null;
+			if ( order.getEncounter() == null ) {
+				Integer patientId = RequestUtils.getIntParameter(request, "patientId");
+				if ( patientId != null ) {
+					thisPatient = context.getPatientService().getPatient(patientId);
+				}
+			}
 			if ( order.getDateCreated() == null ) order.setDateCreated(new Date());
 			if ( order.getVoided() == null ) order.setVoided(new Boolean(false));
-			context.getAdministrationService().updateOrder(order);
+			context.getAdministrationService().updateOrder(order, thisPatient);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Order.drug.saved");
 		}
