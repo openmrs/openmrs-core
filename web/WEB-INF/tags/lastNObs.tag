@@ -6,5 +6,5 @@
 
 <c:forEach items="${openmrs:sort(openmrs:filterObsByConcept(observations, concept), 'obsDatetime', true)}" var="o" varStatus="s" end="${n-1}">
 	${o.valueNumeric} (<openmrs:formatDate date="${o.obsDatetime}" />)
-	<c:if test="${!s.last}">,</c:if>
+	<c:if test="${!s.last}">${separator}</c:if>
 </c:forEach>
