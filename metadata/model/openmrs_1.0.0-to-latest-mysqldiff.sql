@@ -365,3 +365,47 @@ CREATE TABLE `patient_program` (
  INSERT INTO person (person_id, user_id) (SELECT null, user_id FROM users);
  
  UPDATE `global_property` SET property_value='1.0.30' WHERE property = 'database_version';
+ 
+ 
+ #-----------------------------------
+ # OpenMRS Datamodel version 1.0.31
+ # Darius Jazayeri     Aug 8 2006 11:59 PM
+ # Major cleanup of drug and drug_order tables
+ #-----------------------------------
+ 
+ # This is destructive to the route and dosage_form columns, so ensure you're not using those before running this script
+ ALTER TABLE `drug` DROP COLUMN `dosage_form`;
+ ALTER TABLE `drug` ADD COLUMN `dosage_form` int(11) default NULL AFTER `combination`;
+ ALTER TABLE `drug` ADD INDEX `dosage_form_concept` (`dosage_form`);
+ ALTER TABLE `drug` ADD CONSTRAINT `dosage_form_concept` FOREIGN KEY (`dosage_form`) REFERENCES `concept` (`concept_id`);
+ ALTER TABLE `drug` DROP COLUMN `route`;
+ ALTER TABLE `drug` ADD COLUMN `route` int(11) default NULL AFTER `minimum_dose`;
+ ALTER TABLE `drug` ADD INDEX `route_concept` (`route`);
+ ALTER TABLE `drug` ADD CONSTRAINT `route_concept` FOREIGN KEY (`route`) REFERENCES `concept` (`concept_id`);
+ ALTER TABLE `drug` DROP COLUMN `therapy_class`;
+ ALTER TABLE `drug` DROP COLUMN `shelf_life`;
+ ALTER TABLE `drug` DROP COLUMN `inn`;
+ ALTER TABLE `drug` DROP COLUMN `daily_mg_per_kg`;
+ ALTER TABLE `drug` ADD COLUMN `maximum_daily_dose` double AFTER `maximum_dose`;
+ ALTER TABLE `drug` ADD COLUMN `minimum_daily_dose` double AFTER `minimum_dose`;
+ UPDATE `drug` SET maximum_daily_dose = maximum_dose;
+ UPDATE `drug` SET minimum_daily_dose = minimum_dose;
+ ALTER TABLE `drug` DROP COLUMN `maximum_dose`;
+ ALTER TABLE `drug` DROP COLUMN `minimum_dose`;
+ ALTER TABLE `drug` ADD COLUMN `voided` tinyint(1) NOT NULL default '0' AFTER `date_created`;
+ ALTER TABLE `drug` ADD COLUMN `voided_by` int(11) default NULL AFTER `voided`;
+ ALTER TABLE `drug` ADD INDEX `user_who_voided_drug` (`voided_by`);
+ ALTER TABLE `drug` ADD CONSTRAINT `user_who_voided_drug` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`);
+ ALTER TABLE `drug` ADD COLUMN `date_voided` datetime default NULL AFTER `voided_by`;
+ ALTER TABLE `drug` ADD COLUMN `void_reason` varchar(255) default NULL AFTER `date_voided`;
+
+ ALTER TABLE `drug_order` ADD COLUMN `dose_to_delete` int(11) default null AFTER `dose`;
+ UPDATE drug_order SET dose_to_delete = dose;
+ ALTER TABLE `drug_order` DROP COLUMN `dose`;
+ ALTER TABLE `drug_order` ADD COLUMN `dose` double default NULL AFTER `dose_to_delete`;
+ UPDATE drug_order SET dose = dose_to_delete;
+ ALTER TABLE `drug_order` DROP COLUMN `dose_to_delete`;
+ ALTER TABLE `drug_order` ADD COLUMN `equivalent_daily_dose` double default NULL AFTER `dose`;
+
+ UPDATE `global_property` SET property_value='1.0.31' WHERE property = 'database_version';
+ 

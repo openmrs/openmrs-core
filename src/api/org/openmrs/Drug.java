@@ -18,19 +18,19 @@ public class Drug implements java.io.Serializable {
 	private Integer drugId;
 	private String name;
 	private Boolean combination = false;
-	private Double dailyMgPerKg;
-	private String dosageForm;
+	private Concept dosageForm;
 	private Double doseStrength;
-	private String inn;
-	private Double maximumDose;
-	private Double minimumDose;
-	private String route;
-	private Integer shelfLife;
-	private Integer therapyClass;
+	private Double maximumDailyDose;
+	private Double minimumDailyDose;
+	private Concept route;
 	private String units;
 	private Date dateCreated;
 	private Concept concept;
 	private User creator;
+	private Boolean voided = false;
+	private User voidedBy;
+	private Date dateVoided;
+	private String voidReason;
 
 	// Constructors
 
@@ -130,38 +130,6 @@ public class Drug implements java.io.Serializable {
 	}
 
 	/**
-	 * Gets the daily milligrams per kilograms of body weight for this drug 
-	 * @return Double
-	 */
-	public Double getDailyMgPerKg() {
-		return this.dailyMgPerKg;
-	}
-
-	/**
-	 * Sets the daily milligrams per kilogram of body weight for this drug
-	 * @param dailyMgPerKg
-	 */
-	public void setDailyMgPerKg(Double dailyMgPerKg) {
-		this.dailyMgPerKg = dailyMgPerKg;
-	}
-
-	/**
-	 * Gets the form of the dosage
-	 * @return String
-	 */
-	public String getDosageForm() {
-		return this.dosageForm;
-	}
-
-	/**
-	 * Sets the dosage form
-	 * @param String dosage form
-	 */
-	public void setDosageForm(String dosageForm) {
-		this.dosageForm = dosageForm;
-	}
-
-	/**
 	 * Gets the dose strength of this drug
 	 * @return Double
 	 */
@@ -175,102 +143,6 @@ public class Drug implements java.io.Serializable {
 	 */
 	public void setDoseStrength(Double doseStrength) {
 		this.doseStrength = doseStrength;
-	}
-
-	/**
-	 * Gets the International Nonproprietary Name for this drug
-	 * @return String
-	 */
-	public String getInn() {
-		return this.inn;
-	}
-
-	/**
-	 * Sets the International Nonproprietary Name for this drug
-	 * @param String
-	 */
-	public void setInn(String inn) {
-		this.inn = inn;
-	}
-
-	/**
-	 * Gets the maximum dosage for this drug
-	 * @return Double
-	 */
-	public Double getMaximumDose() {
-		return this.maximumDose;
-	}
-
-	/**
-	 * Sets the maximum dosage for this drug
-	 * @param Double
-	 */
-	public void setMaximumDose(Double maximumDose) {
-		this.maximumDose = maximumDose;
-	}
-
-	/**
-	 * Gets the minimum dosage for this drug
-	 * @return Double
-	 */
-	public Double getMinimumDose() {
-		return this.minimumDose;
-	}
-
-	/**
-	 * Sets the minimum dosage for this drug
-	 * @param Double
-	 */
-	public void setMinimumDose(Double minimumDose) {
-		this.minimumDose = minimumDose;
-	}
-
-	/**
-	 * Gets the route
-	 * @return String
-	 */
-	public String getRoute() {
-		return this.route;
-	}
-
-	/**
-	 * Sets the route
-	 * @param String
-	 */
-	public void setRoute(String route) {
-		this.route = route;
-	}
-
-	/**
-	 * Gets the shelf life
-	 * @return Integer
-	 */
-	public Integer getShelfLife() {
-		return this.shelfLife;
-	}
-
-	/**
-	 * Sets the shelf life
-	 * @param Integer
-	 */
-	public void setShelfLife(Integer shelfLife) {
-		this.shelfLife = shelfLife;
-	}
-
-	/**
-	 * Gets the therapy class recs
-	 * @return Integer
-	 */
-	public Integer getTherapyClass() {
-		return this.therapyClass;
-	}
-
-	/**
-	 * Sets the therapy class recs
-	 * @param Integer
-	 */
-	public void setTherapyClass(Integer therapyClass) {
-		this.therapyClass = therapyClass;
 	}
 
 	/**
@@ -335,6 +207,70 @@ public class Drug implements java.io.Serializable {
 	 */
 	public void setCreator(User creator) {
 		this.creator = creator;
+	}
+
+	public Date getDateVoided() {
+		return dateVoided;
+	}
+
+	public void setDateVoided(Date dateVoided) {
+		this.dateVoided = dateVoided;
+	}
+
+	public Concept getDosageForm() {
+		return dosageForm;
+	}
+
+	public void setDosageForm(Concept dosageForm) {
+		this.dosageForm = dosageForm;
+	}
+
+	public Double getMaximumDailyDose() {
+		return maximumDailyDose;
+	}
+
+	public void setMaximumDailyDose(Double maximumDailyDose) {
+		this.maximumDailyDose = maximumDailyDose;
+	}
+
+	public Double getMinimumDailyDose() {
+		return minimumDailyDose;
+	}
+
+	public void setMinimumDailyDose(Double minimumDailyDose) {
+		this.minimumDailyDose = minimumDailyDose;
+	}
+
+	public Concept getRoute() {
+		return route;
+	}
+
+	public void setRoute(Concept route) {
+		this.route = route;
+	}
+
+	public Boolean getVoided() {
+		return voided;
+	}
+
+	public void setVoided(Boolean voided) {
+		this.voided = voided;
+	}
+
+	public User getVoidedBy() {
+		return voidedBy;
+	}
+
+	public void setVoidedBy(User voidedBy) {
+		this.voidedBy = voidedBy;
+	}
+
+	public String getVoidReason() {
+		return voidReason;
+	}
+
+	public void setVoidReason(String voidReason) {
+		this.voidReason = voidReason;
 	}
 
 }

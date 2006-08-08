@@ -428,8 +428,7 @@ public class HibernateConceptDAO implements
 		
 			Criteria searchCriteria = session.createCriteria(Drug.class, "drug");
 			if (includeRetired == false) {
-				searchCriteria.createAlias("concept", "concept");
-				searchCriteria.add(Expression.eq("concept.retired", false));
+				searchCriteria.add(Expression.eq("drug.voided", false));
 			}
 			Iterator<String> word = words.iterator();
 			searchCriteria.add(Expression.like("name", word.next(), MatchMode.ANYWHERE));

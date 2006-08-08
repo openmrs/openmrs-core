@@ -12,7 +12,8 @@ public class DrugOrder extends Order implements java.io.Serializable {
 
 	// Fields
 
-	private Integer dose;
+	private Double dose;
+	private Double equivalentDailyDose;
 	private String units;
 	private String frequency;
 	private Boolean prn = false;
@@ -57,22 +58,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	}
 	
 	// Property accessors
-
-	/**
-	 * Gets the dosage for this drug order
-	 * @return dose
-	 */
-	public Integer getDose() {
-		return this.dose;
-	}
-
-	/**
-	 * Sets the dosage for this drug order
-	 * @param dose
-	 */
-	public void setDose(Integer dose) {
-		this.dose = dose;
-	}
 
 	/**
 	 * Gets the units of this drug order
@@ -168,5 +153,21 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 */
 	public void setDrug(Drug drug) {
 		this.drug = drug;
+	}
+
+	public Double getEquivalentDailyDose() {
+		return equivalentDailyDose;
+	}
+
+	public void setEquivalentDailyDose(Double equivalentDailyDose) {
+		this.equivalentDailyDose = equivalentDailyDose;
+	}
+
+	public void setDose(Double dose) {
+		this.dose = dose;
+	}
+
+	public Double getDose() {
+		return dose;
 	}
 }

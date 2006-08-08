@@ -147,42 +147,12 @@
 		</td>
 	</tr>
 	<tr>
-		<th><spring:message code="ConceptDrug.inn"/></th>
-		<td>
-			<spring:bind path="drug.inn">			
-				<input type="text" name="${status.expression}" size="30" 
-					   value="${status.value}" />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
 		<th><spring:message code="ConceptDrug.combination"/></th>
 		<td>
 			<spring:bind path="drug.combination">	
 				<input type="hidden" name="_${status.expression}" value=""/>		
 				<input type="checkbox" name="${status.expression}" 
 					   <c:if test="${status.value == true}">checked</c:if> />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
-		<th><spring:message code="ConceptDrug.dailyMgPerKg"/></th>
-		<td>
-			<spring:bind path="drug.dailyMgPerKg">			
-				<input type="text" name="${status.expression}" size="10" 
-					   value="${status.value}" />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
-		<th><spring:message code="ConceptDrug.dosageForm"/></th>
-		<td>
-			<spring:bind path="drug.dosageForm">			
-				<input type="text" name="${status.expression}" size="10" 
-					   value="${status.value}" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
 			</spring:bind>
 		</td>
@@ -198,59 +168,29 @@
 		</td>
 	</tr>
 	<tr>
-		<th><spring:message code="ConceptDrug.minimumDose"/></th>
-		<td>
-			<spring:bind path="drug.minimumDose">			
-				<input type="text" name="${status.expression}" size="10" 
-					   value="${status.value}" />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
-		<th><spring:message code="ConceptDrug.maximumDose"/></th>
-		<td>
-			<spring:bind path="drug.maximumDose">			
-				<input type="text" name="${status.expression}" size="10" 
-					   value="${status.value}" />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
-		<th><spring:message code="ConceptDrug.route"/></th>
-		<td>
-			<spring:bind path="drug.route">			
-				<input type="text" name="${status.expression}" size="10" 
-					   value="${status.value}" />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
-		<th><spring:message code="ConceptDrug.shelfLife"/></th>
-		<td>
-			<spring:bind path="drug.shelfLife">			
-				<input type="text" name="${status.expression}" size="10" 
-					   value="${status.value}" />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
-		<th><spring:message code="ConceptDrug.therapyClass"/></th>
-		<td>
-			<spring:bind path="drug.therapyClass">			
-				<input type="text" name="${status.expression}" size="10" 
-					   value="${status.value}" />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
 		<th><spring:message code="ConceptDrug.units"/></th>
 		<td>
 			<spring:bind path="drug.units">			
+				<input type="text" name="${status.expression}" size="10" 
+					   value="${status.value}" />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<th><spring:message code="ConceptDrug.minimumDailyDose"/></th>
+		<td>
+			<spring:bind path="drug.minimumDailyDose">			
+				<input type="text" name="${status.expression}" size="10" 
+					   value="${status.value}" />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<th><spring:message code="ConceptDrug.maximumDailyDose"/></th>
+		<td>
+			<spring:bind path="drug.maximumDailyDose">
 				<input type="text" name="${status.expression}" size="10" 
 					   value="${status.value}" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 

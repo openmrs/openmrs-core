@@ -241,25 +241,27 @@ CREATE TABLE `concept_word` (
 CREATE TABLE `drug` (
   `drug_id` int(11) NOT NULL auto_increment,
   `concept_id` int(11) NOT NULL default '0',
-  `name` varchar(50) default NULL,
+  `name` varchar(255) default NULL,
   `combination` tinyint(1) NOT NULL default '0',
-  `daily_mg_per_kg` double default NULL,
-  `dosage_form` varchar(255) default NULL,
+  `dosage_form` int(11) default NULL,
   `dose_strength` double default NULL,
-  `inn` longtext,
-  `maximum_dose` double default NULL,
-  `minimum_dose` double default NULL,
-  `route` varchar(255) default NULL,
-  `shelf_life` int(11) default NULL,
-  `therapy_class` int(11) default NULL,
+  `maximum_daily_dose` double default NULL,
+  `minimum_daily_dose` double default NULL,
+  `route` int(11) default NULL,
   `units` varchar(50) default NULL,
   `creator` int(11) NOT NULL default '0',
   `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
-  PRIMARY KEY  (`drug_id`),
+  `voided` tinyint(1) NOT NULL default '0',
+  `voided_by` int(11) default NULL,
+  `date_voided` datetime default NULL,
+  `void_reason` varchar(255) default NULL,
+  PRIMARY KEY (`drug_id`),
   KEY `drug_creator` (`creator`),
   KEY `primary_drug_concept` (`concept_id`),
+  KEY `user_who_voided_drug` (`voided_by`),
   CONSTRAINT `drug_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
-  CONSTRAINT `primary_drug_concept` FOREIGN KEY (`concept_id`) REFERENCES `concept` (`concept_id`)
+  CONSTRAINT `primary_drug_concept` FOREIGN KEY (`concept_id`) REFERENCES `concept` (`concept_id`),
+  CONSTRAINT `user_who_voided_drug` FOREIGN KEY (`voided_by`) REERENCES `users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 #----------------------------
 # Table structure for drug_ingredient
@@ -278,7 +280,8 @@ CREATE TABLE `drug_ingredient` (
 CREATE TABLE `drug_order` (
   `order_id` int(11) NOT NULL default '0',
   `drug_inventory_id` int(11) default '0',
-  `dose` int(11) default NULL,
+  `dose` double default NULL,
+  `equivalent_daily_dose` double default NULL,
   `units` varchar(255) default NULL,
   `frequency` varchar(255) default NULL,
   `prn` tinyint(1) NOT NULL default '0',
@@ -1143,11 +1146,16 @@ CREATE TABLE `program` (
   `concept_id` int(11) NOT NULL default '0',
   `creator` int(11) NOT NULL default '0',
   `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
+  `changed_by` int(11) default NULL,
+  `date_changed` datetime default NULL,
+  `retired` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`program_id`),
   KEY `program_concept` (`concept_id`),
   KEY `program_creator` (`creator`),
+  KEY `user_who_changed_program` (`changed_by`),
   CONSTRAINT `program_concept` FOREIGN KEY (`concept_id`) REFERENCES `concept` (`concept_id`),
-  CONSTRAINT `program_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`)
+  CONSTRAINT `program_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
+  CONSTRAINT `user_who_changed_program` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 #--------------------------------------------------------
 # Table structure for patient_program
