@@ -18,8 +18,6 @@
 			        <value>100000</value>
 			    </property>
 		</bean>
- 
-	
 	
 	    <bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
 			<property name="interceptors">
@@ -110,11 +108,13 @@
 					<prop key="**/patientPrograms.portlet">patientProgramsPortletController</prop>
 					<prop key="**/patientSet.portlet">patientSetPortletController</prop>
 					<prop key="**/*.portlet">portletController</prop>
+					<prop key="**/*.field">fieldGenController</prop>
 					<prop key="**/*.htm">springController</prop>
 	            </props>
 	        </property>
 	    </bean>
 
+		<bean id="fieldGenController" class="org.openmrs.web.controller.FieldGenController"/>
 		<bean id="portletController" class="org.openmrs.web.controller.PortletController"/>
 		<bean id="patientProgramsPortletController" class="org.openmrs.web.controller.PatientProgramsPortletController"/>
 		<bean id="patientSetPortletController" class="org.openmrs.web.controller.PatientSetPortletController"/>
@@ -922,6 +922,8 @@
 				<prop key="org.openmrs.OrderType">org.openmrs.web.taglib.fieldgen.OrderTypeHandler</prop>
 				<prop key="org.openmrs.Encounter">org.openmrs.web.taglib.fieldgen.EncounterHandler</prop>
 				<prop key="org.openmrs.User">org.openmrs.web.taglib.fieldgen.UserHandler</prop>
+				<prop key="org.openmrs.Drug">org.openmrs.web.taglib.fieldgen.DrugHandler</prop>
+				<prop key="java.util.Date">org.openmrs.web.taglib.fieldgen.DateHandler</prop>
 			</props>
 		</property>
 	</bean>

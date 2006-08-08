@@ -160,52 +160,13 @@
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
-		<name>fieldLength</name>
-		<required>false</required>
+		<name>val</name>
+		<type>java.lang.Object</type>
+		<required>true</required>
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
-		<name>startVal</name>
-		<required>false</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-	<attribute>
-		<name>forceInputType</name>
-		<required>false</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-	<attribute>
-		<name>isNullable</name>
-		<required>false</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-	<attribute>
-		<name>hasLabelBefore</name>
-		<required>false</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-	<attribute>
-		<name>trueLabel</name>
-		<required>false</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-	<attribute>
-		<name>falseLabel</name>
-		<required>false</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-	<attribute>
-		<name>unknownLabel</name>
-		<required>false</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-	<attribute>
-		<name>emptySelectMessage</name>
-		<required>false</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-	<attribute>
-		<name>additionalArgs</name>
+		<name>parameters</name>
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
@@ -578,6 +539,27 @@
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
 		<type>java.lang.Integer</type>
+	</attribute>
+</tag>	
+
+<tag>
+	<name>htmlInclude</name>
+	<tag-class>org.openmrs.web.taglib.HtmlIncludeTag</tag-class>
+	<body-content>JSP</body-content>
+	<description>
+		Displays the HTML for including a javascript (.js) or stylesheet (.css) file in the HTML.
+		Keeps track of whether or not it has been output within the same request, and ensures only
+		a single include.
+	</description>
+	<attribute>
+		<name>file</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>type</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 </tag>	
 

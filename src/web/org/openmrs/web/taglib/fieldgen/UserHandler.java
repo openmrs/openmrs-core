@@ -3,7 +3,12 @@ package org.openmrs.web.taglib.fieldgen;
 
 public class UserHandler extends AbstractFieldGenHandler implements FieldGenHandler {
 
-	public String getOutput(String startingOutput) {
+	private String defaultUrl = "user.field";
+	
+	public void run() {
+		setUrl(defaultUrl);
+
+		/*
 		String output = startingOutput;
 		
 		if ( fieldGenTag != null ) {
@@ -15,5 +20,6 @@ public class UserHandler extends AbstractFieldGenHandler implements FieldGenHand
 		}
 		
 		return output;
+		*/
 	}
 }

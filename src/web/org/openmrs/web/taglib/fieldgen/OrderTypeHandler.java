@@ -17,9 +17,12 @@ import org.openmrs.web.taglib.FieldGenTag;
 
 public class OrderTypeHandler extends AbstractFieldGenHandler implements FieldGenHandler {
 
-	public String getOutput(String startingOutput) {
-		String output = startingOutput;
-		
+	private String defaultUrl = "orderType.field";
+	
+	public void run() {
+		setUrl(defaultUrl);
+
+		/*
 		if ( fieldGenTag != null ) {
 			String startVal = this.fieldGenTag.getStartVal();
 			String formFieldName = this.fieldGenTag.getFormFieldName();
@@ -53,5 +56,6 @@ public class OrderTypeHandler extends AbstractFieldGenHandler implements FieldGe
 		}
 		
 		return output;
+		*/
 	}
 }

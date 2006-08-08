@@ -79,12 +79,11 @@
 				<spring:bind path="reportObject.${field.name}">
 					<tr>
 						<td valign="top"><c:out value="${field.name}"/></td>
-<%--						<td valign="top" colspan="5"><openmrs:fieldGen type="${field.genericType}" formFieldName="${field.name}" startVal="${extendedObjectInfo[field.name]}" /></td>--%>
 						<c:if test="${!field.type.enum}">
-							<td valign="top" colspan="5"><openmrs:fieldGen type="${field.genericType}" formFieldName="${status.expression}" startVal="${status.value}" /></td>
+							<td valign="top" colspan="5"><openmrs:fieldGen type="${field.genericType}" formFieldName="${status.expression}" val="${status.editor.value}" /></td>
 						</c:if>
 						<c:if test="${field.type.enum}">
-							<td valign="top" colspan="5"><openmrs:fieldGen type="${field.genericType}" formFieldName="${status.expression}" startVal="${status.value}" /></td>
+							<td valign="top" colspan="5"><openmrs:fieldGen type="${field.genericType}" formFieldName="${status.expression}" val="${status.editor.value}" /></td>
 						</c:if>
 					</tr>
 				</spring:bind>	

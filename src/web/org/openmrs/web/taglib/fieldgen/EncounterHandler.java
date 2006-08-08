@@ -2,7 +2,11 @@ package org.openmrs.web.taglib.fieldgen;
 
 public class EncounterHandler extends AbstractFieldGenHandler implements FieldGenHandler {
 
-	public String getOutput(String startingOutput) {
+	private String defaultUrl = "encounter.field";
+	
+	public void run() {
+		setUrl(defaultUrl);
+		/*
 		String output = startingOutput;
 		
 		if ( fieldGenTag != null ) {
@@ -14,5 +18,6 @@ public class EncounterHandler extends AbstractFieldGenHandler implements FieldGe
 		}
 		
 		return output;
+		*/
 	}
 }
