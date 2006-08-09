@@ -11,91 +11,55 @@
 			&nbsp;|&nbsp;
 			<c:if test="${model.patient.age > 0}">${model.patient.age} <spring:message code="Patient.age.years"/></c:if>
 			<c:if test="${model.patient.age == 0}">< 1 <spring:message code="Patient.age.year"/></c:if>
-			<spring:bind path="patient.birthdate">(<c:if test="${model.patient.birthdateEstimated}">~</c:if>${status.value})</spring:bind>
+			(<c:if test="${model.patient.birthdateEstimated}">~</c:if><openmrs:formatDate date="${model.patient.birthdate}" type="medium" />)
 			&nbsp;|&nbsp;
-			<spring:message code="Patient.healthCenter"/>:
-			<openmrs:forEachEncounter encounters="${encounters}" num="1" sortBy="encounterDatetime" descending="true" var="enc">
-				${enc.location.name}
-			</openmrs:forEachEncounter>
-		</div>
-		<div>
 			<c:forEach var="identifier" items="${model.patient.identifiers}" varStatus="status">
 				${identifier.identifierType.name}: ${identifier.identifier}
 				<c:if test="${!status.last}">&nbsp;&nbsp;|&nbsp;&nbsp;</c:if>
 			</c:forEach>
 		</div>
 		<div>
-			Accompagnateur: TBD
-			&nbsp;|&nbsp;
-			Current Status: TBD
+			<c:forEach items="${model.patientCurrentPrograms}" var="p" varStatus="s">
+				<c:if test="${p.program.concept.conceptId == 0}">
+					<spring:message code="Program.hiv"/>
+					&nbsp;|&nbsp;
+					<spring:message code="Program.enrolled"/>: <openmrs:formatDate date="${p.dateEnrolled}" type="medium" />
+					&nbsp;|&nbsp;
+					<spring:message code="Program.group"/>: <openmrs_tag:mostRecentObs observations="${model.patientObs}" concept="1377" locale="${model.locale}" />
+					&nbsp;|&nbsp;
+					<spring:message code="Program.agent"/>: 
+				</c:if>
+			</c:forEach>
 		</div>
-	</div>
-	<div id="patientTreatmentHeader" class="box">
-		<table><tr>
-			<td>
-				<table class="patientRecentObs">
-					<thead>
-						<tr>
-							<th colspan="2"><spring:message code="Obs.list.title"/></th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td><openmrs:concept conceptId="5089" var="c" nameVar="n">${n.name}:</openmrs:concept></td>
-							<td>
-								<openmrs:forEachObs obs="${model.patientObs}" conceptId="5089" var="o" num="1" descending="true">
-									${o.valueNumeric} (<openmrs:formatDate date="${o.obsDatetime}" />)
-								</openmrs:forEachObs>
-							</td>
-						</tr>
-						<tr>
-							<td><openmrs:concept conceptId="5497" var="c" nameVar="n">${n.name}:</openmrs:concept></td>
-							<td>
-								<openmrs:forEachObs obs="${model.patientObs}" conceptId="5497" var="cd4" num="1" descending="true">
-									${cd4.valueNumeric} (<openmrs:formatDate date="${cd4.obsDatetime}" />)
-								</openmrs:forEachObs>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</td>
-			<td>
-				<table class="patientTreatmentPrograms">
-					<thead>
-						<tr>
-							<th colspan="2">Current Regimen</th>
-							<!-- 
-							<th>Treatment</th>
-							<th>Group</th>
-							<th>Regimen</th>
-							<th>Start Date</th>
-							 -->
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>ARV:</td>
-							<td>
-								<openmrs:forEachObs obs="${model.patientObs}" conceptId="1088" var="arv">
-									<openmrs:concept conceptId="${arv.valueCoded.conceptId}" var="c" nameVar="n">${n.name}, </openmrs:concept>
-								</openmrs:forEachObs>
-							</td>
-							<!-- 
-							<td>HIV+</td>
-							<td>Group 1</td>
-							<td>Triomune-30 (1 Co, 2/j)</td>
-							<td>10/09/2005</td> -->
-						</tr>
-						<!-- 
-						<tr>
-							<td>TB Active</td>
-							<td>Group 4</td>
-							<td>RHEZ (3 Co, 1/j)</td>
-							<td>07/11/2005</td>
-						</tr>
-						 -->
-					</tbody>
-				</table>
-			</td>
-		</tr></table>
+		<div>
+			<c:forEach items="${model.patientCurrentPrograms}" var="p" varStatus="s">
+				<c:if test="${p.program.concept.conceptId == 0}">
+					<spring:message code="Program.tb"/>
+					&nbsp;|&nbsp;
+					<spring:message code="Program.enrolled"/>: <openmrs:formatDate date="${p.dateEnrolled}" type="medium" />
+					&nbsp;|&nbsp;
+					<spring:message code="Program.group"/>: <openmrs_tag:mostRecentObs observations="${model.patientObs}" concept="1378" locale="${model.locale}" />
+				</c:if>
+			</c:forEach>
+		</div>
+		<div>
+			<spring:message code="Patient.weight"/>:
+			<openmrs_tag:mostRecentObs observations="${model.patientObs}" concept="5089" showUnits="true" locale="${model.locale}" showDate="true" />
+			&nbsp;|&nbsp;
+			<spring:message code="Patient.cd4"/>:
+			<openmrs_tag:mostRecentObs observations="${model.patientObs}" concept="5497" locale="${model.locale}" />
+			&nbsp;|&nbsp;
+			<spring:message code="Patient.regimen" />:
+			<c:forEach items='${openmrs:filterObsByConcept(model.patientObs, "1088")}' var="arv" varStatus="arvStatus">
+				<openmrs:concept conceptId="${arv.valueCoded.conceptId}" var="c" nameVar="n" numericVar="num">
+					${n.name}<c:if test="${!arvStatus.last}">, </c:if>
+				</openmrs:concept>
+			</c:forEach>
+		</div>
+		<div>
+			<spring:message code="Patient.lastEncounter"/>:
+			<c:forEach items='${openmrs:sort(encounters, "encounterDatetime", true)}' var="lastEncounter" varStatus="lastEncounterStatus" end="0">
+				${lastEncounter.encounterType.name} @ ${lastEncounter.location.name}, <openmrs:formatDate date="${lastEncounter.encounterDatetime}" type="medium" />
+			</c:forEach>
+		</div>
 	</div>

@@ -11,9 +11,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptNumeric;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
+
+import uk.ltd.getahead.dwr.WebContextFactory;
 
 public class ConceptTag extends BodyTagSupport {
 
@@ -26,6 +29,7 @@ public class ConceptTag extends BodyTagSupport {
 	private Integer conceptId;
 	private String var;
 	private String nameVar;
+	private String numericVar;
 	private String locale;
 
 	public int doStartTag() throws JspException {
@@ -58,6 +62,8 @@ public class ConceptTag extends BodyTagSupport {
 		ConceptName cName = c.getName(loc);
 		pageContext.setAttribute(nameVar, cName);
 		log.debug("Retrieved name " + cName.getName() + ", set to variable: " + nameVar);
+		
+		pageContext.setAttribute(numericVar, cs.getConceptNumeric(conceptId));
 
 		return EVAL_BODY_BUFFERED;
 	}
@@ -118,5 +124,19 @@ public class ConceptTag extends BodyTagSupport {
 	 */
 	public void setLocale(String locale) {
 		this.locale = locale;
+	}
+
+	/**
+	 * @return the numericVar
+	 */
+	public String getNumericVar() {
+		return numericVar;
+	}
+
+	/**
+	 * @param numericVar the numericVar to set
+	 */
+	public void setNumericVar(String numericVar) {
+		this.numericVar = numericVar;
 	}
 }

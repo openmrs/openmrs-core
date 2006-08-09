@@ -24,7 +24,7 @@
 			</tr>
 		</c:if>
 		<c:forEach var="program" items="${programList}">
-			<openmrs:concept conceptId="${program.concept.conceptId}" var="v" nameVar="n"/>
+			<openmrs:concept conceptId="${program.concept.conceptId}" var="v" nameVar="n" numericVar="num"/>
 			<tr> 
 				<td valign="top">${program.programId}</td>
 				<td valign="top">${n.name}</td>
@@ -32,7 +32,7 @@
 				<td>
 					${fn:length(program.workflows)}
 					<c:forEach var="workflow" items="${program.workflows}">
-						<openmrs:concept conceptId="${workflow.concept.conceptId}" var="v" nameVar="n">${n.name}</openmrs:concept> <br/>
+						<openmrs:concept conceptId="${workflow.concept.conceptId}" var="v" nameVar="n" numericVar="num">${n.name}</openmrs:concept> <br/>
 					</c:forEach>
 				</td>
 			</tr>

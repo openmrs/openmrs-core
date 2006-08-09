@@ -275,7 +275,7 @@
 				<property name="commandName"><value>patient</value></property>
 				<property name="commandClass"><value>org.openmrs.web.dwr.PatientListItem</value></property>
 				<property name="formView"><value>/admin/patients/newPatientForm</value></property>
-				<property name="successView"><value>/@WEBAPP.NAME@/formentry/patientSummary.form</value></property>
+				<property name="successView"><value>/@WEBAPP.NAME@/formentry/patientDashboard.form</value></property>
 			</bean>
 		<!-- ** /New Patient ** -->
 		
@@ -784,7 +784,7 @@
 		<bean id="dynamicFormEntryController" class="org.openmrs.dynamicformentry.DynamicFormEntryController">
 			<property name="commandName"><value>formInProgress</value></property>
 			<property name="formView"><value>/dynamicformentry/enter</value></property>
-			<property name="successView"><value>patientSummary.form</value></property>
+			<property name="successView"><value>patientDashboard.form</value></property>
 		</bean>
 
     <!-- ======================================== -->

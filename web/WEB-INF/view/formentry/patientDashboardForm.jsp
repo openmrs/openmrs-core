@@ -72,13 +72,6 @@
 </script>
 
 <openmrs:portlet url="patientSet" id="patientSetHeader" size="compact" parameters="linkUrl=patientDashboard.form|allowRemove=true|allowClear=true|selectedPatientId=${patient.patientId}|mutable=true|droppable=true"/>
-
-<div id="breadcrumbHeader" class="breadcrumb">
-	<a href="/openmrs">Home</a> ->
-	<a href="#switch" onClick="switchPatient()">Find Patient</a> ->
-	<spring:message code="Patient.dashboard.title"/>
-</div>
-
 <openmrs:portlet url="patientHeader" id="patientDashboardHeader" patientId="${patient.patientId}"/>
 
 <div id="patientTabs">
