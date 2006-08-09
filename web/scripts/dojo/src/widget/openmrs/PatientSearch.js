@@ -6,6 +6,7 @@
 dojo.provide("dojo.widget.openmrs.PatientSearch");
 dojo.require("dojo.widget.openmrs.OpenmrsSearch");
 
+var openmrsSearchBase = djConfig["baseScriptUri"].substring(0, djConfig["baseScriptUri"].indexOf("/", 1));
 document.write("<script type='text/javascript' src='" + openmrsSearchBase + "/dwr/interface/DWRPatientService.js'></script>");
 
 dojo.widget.tags.addParseTreeHandler("dojo:PatientSearch");
@@ -67,12 +68,12 @@ dojo.widget.defineWidget(
 		postCreate: function() {
 			if (this.patientId != "")
 				this.selectPatient(this.patientId);
+			else if (this.searchPhrase)
+				DWRPatientService.findPatients(this.simpleClosure(this, "doObjectsFound"), this.searchPhrase, false);
 		},
 		
-		
 		selectPatient: function(patientId) {
-			var closure = function(thisObj, method) { return function(obj) { return thisObj[method]({"obj":obj}); }; };
-			DWRPatientService.getPatient(closure(this, "select"), patientId);
+			DWRPatientService.getPatient(this.simpleClosure(this, "select"), patientId);
 		},
 		
 		doFindObjects: function(text) {
@@ -116,7 +117,7 @@ dojo.widget.defineWidget(
 		getFamily: function(p) { return p.familyName == null ? this.noCell() : p.familyName; },
 		getTribe : function(p) { return p.tribe == null ? this.noCell() : p.tribe; },
 		getGender: function(p) {
-				if (typeof p == 'string') return this.noCell();
+				if (p.gender == null) return this.noCell();
 				
 				var td = document.createElement("td");
 				td.className = "patientGender";

@@ -6,7 +6,9 @@
 dojo.provide("dojo.widget.openmrs.ConceptSearch");
 dojo.require("dojo.widget.openmrs.OpenmrsSearch");
 
+var openmrsSearchBase = djConfig["baseScriptUri"].substring(0, djConfig["baseScriptUri"].indexOf("/", 1));
 document.write("<script type='text/javascript' src='" + openmrsSearchBase + "/dwr/interface/DWRConceptService.js'></script>");
+
 
 dojo.debug("before parse");
 dojo.widget.tags.addParseTreeHandler("dojo:ConceptSearch");
@@ -21,15 +23,18 @@ dojo.widget.defineWidget(
 		postCreate: function() {
 			dojo.debug("postCreate in conceptsearch");
 			
-			var closure = function(thisObj, method) { return function(obj) { return thisObj[method]({"obj":obj}); }; };
 			if (this.conceptId)
-				DWRConceptService.getConcept(closure(this, "select"), this.conceptId);
+				DWRConceptService.getConcept(this.simpleClosure(this, "doObjectsFound"), this.conceptId);
+			
+			this.inputNode.value = this.searchPhrase
+			if (this.searchPhrase)
+				DWRConceptService.findConcepts(this.simpleClosure(this, "doObjectsFound"), this.searchPhrase, this.conceptClasses, false);
 		},
 		
 		conceptClasses: [],
+		searchPhrase: "",
 		
 		doFindObjects: function(text) {
-			
 			// a javascript closure
 			var callback = function(ts) { return function(obj) {ts.doObjectsFound(obj)}};
 

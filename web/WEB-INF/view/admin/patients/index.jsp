@@ -20,6 +20,7 @@
 			}
 		);
 		
+		searchWidget.inputNode.select();
 		changeClassProperty("description", "display", "none");
 	});
 	

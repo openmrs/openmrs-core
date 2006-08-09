@@ -6,6 +6,7 @@
 dojo.provide("dojo.widget.openmrs.UserSearch");
 dojo.require("dojo.widget.openmrs.OpenmrsSearch");
 
+var openmrsSearchBase = djConfig["baseScriptUri"].substring(0, djConfig["baseScriptUri"].indexOf("/", 1));
 document.write("<script type='text/javascript' src='" + openmrsSearchBase + "/dwr/interface/DWRUserService.js'></script>");
 
 dojo.widget.tags.addParseTreeHandler("dojo:UserSearch");
@@ -27,12 +28,8 @@ dojo.widget.defineWidget(
 		},
 		
 		doFindObjects: function(text) {
-
-			// a javascript closure
-			var callback = function(ts) { return function(obj) {ts.doObjectsFound(obj)}};
-			
 			var tmpIncludedVoided = (this.showIncludeVoided && this.includeVoided.checked);
-			DWRUserService.findUsers(callback(this), text, this.roles, tmpIncludedVoided);
+			DWRUserService.findUsers(this.simpleClosure(this, "doObjectsFound"), text, this.roles, tmpIncludedVoided);
 			
 			return false;
 		},
@@ -48,6 +45,10 @@ dojo.widget.defineWidget(
 					txt += (txt.length ? " " : "") + user.lastName;
 				
 				return txt;
+		},
+		
+		showAll: function() {
+			DWRUserService.getAllUsers(this.simpleClosure(this, "doObjectsFound"), this.roles, true);
 		},
 		
 		// TODO: internationalize

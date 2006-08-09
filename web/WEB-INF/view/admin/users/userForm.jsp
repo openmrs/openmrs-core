@@ -135,7 +135,7 @@
 					<input type="checkbox" name="${status.expression}" 
 						   id="voided" 
 						   <c:if test="${status.value == true}">checked</c:if> 
-						   onClick="document.getElementById('voidReasonRow').display = this.checked ? '' : 'none'"
+						   onClick="document.getElementById('voidReasonRow').style.display = (this.checked ? '' : 'none')"
 					/>
 				</spring:bind>
 			</td>
@@ -144,7 +144,7 @@
 			<td><spring:message code="general.voidReason"/></td>
 			<spring:bind path="user.voidReason">
 				<td>
-					<input type="text" name="${status.expression}" id="voidReason" value="${status.value}" />
+					<input type="text" name="${status.expression}" id="voidReason" value="${status.value}" size="50"/>
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</td>
 			</spring:bind>
@@ -164,7 +164,8 @@
 
 <script type="text/javascript">
  document.forms[0].elements[0].focus();
- document.getElementById('voided').onClick();
+ var voided = document.getElementById('voidReasonRow').checked;
+ document.getElementById('voidReasonRow').style.display = (voided ? '' : 'none');
 </script>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

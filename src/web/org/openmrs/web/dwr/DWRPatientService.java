@@ -87,6 +87,10 @@ public class DWRPatientService {
 				patientList.add("Error while attempting to find patient - " + e.getMessage());
 			}
 		}
+		
+		if (patientList.size() == 0)
+			patientList.add("No matches found for <b>" + searchValue + "</b>");
+		
 		return patientList;
 	}
 	

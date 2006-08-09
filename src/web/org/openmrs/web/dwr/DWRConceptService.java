@@ -128,6 +128,8 @@ public class DWRConceptService {
 						+ e.getMessage());
 			}
 		}
+		if (objectList.size() == 0)
+			objectList.add("No matches found for <b>" + phrase + "</b>");
 		return objectList;
 	}
 

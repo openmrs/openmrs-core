@@ -6,6 +6,7 @@
 dojo.provide("dojo.widget.openmrs.EncounterSearch");
 dojo.require("dojo.widget.openmrs.OpenmrsSearch");
 
+var openmrsSearchBase = djConfig["baseScriptUri"].substring(0, djConfig["baseScriptUri"].indexOf("/", 1));
 document.write("<script type='text/javascript' src='" + openmrsSearchBase + "/dwr/interface/DWREncounterService.js'></script>");
 
 dojo.debug("before parse");

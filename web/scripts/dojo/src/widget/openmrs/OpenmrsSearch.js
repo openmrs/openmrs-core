@@ -49,6 +49,7 @@ dojo.widget.defineWidget(
 	headerRow: null,
 	showHeaderRow: false,
 	allowAutoList: true,
+	useOnKeyDown: false,
 	
 	// check box options
 	showIncludeRetired: false,
@@ -98,8 +99,8 @@ dojo.widget.defineWidget(
 			
 		// move default DWR error handling to the status bar
 		var handler = function(ex) {
-			window.status = "DWR warning/error: " + ex;
-			throw "DWR warning/error: " + ex;
+			if (typeof ex == "string")
+				window.status = "DWR warning/error: " + ex;
 		};
 		DWREngine.setErrorHandler(handler);
 		DWREngine.setWarningHandler(handler);
@@ -139,18 +140,14 @@ dojo.widget.defineWidget(
 			}
 			
 			// create header row from defined column names
-			if (this.showHeaderRow && this.getHeaderCellContent()) {
-				var arr = this.getHeaderCellContent();
-				for( var i=0; i < arr.length; i++) {
-					var td = document.createElement("td");
-					td.innerHTML = arr[i];
-					this.headerRow.appendChild(td);
-				}
-			}
+			this.setHeaderCellContent(this.getHeaderCellContent());
 			this.hideHeaderRow();
 			
 			
-			dojo.event.connect(this.inputNode, "onkeyup", this, "onInputChange");
+			if (this.useOnKeyDown)
+				dojo.event.connect(this.inputNode, "onkeydown", this, "onInputChange");
+			else
+				dojo.event.connect(this.inputNode, "onkeyup", this, "onInputChange");
 			
 			dojo.event.connect(this.includeRetired, "onclick", this, "onCheckboxClick");
 			dojo.event.connect(this.includeVoided, "onclick", this, "onCheckboxClick");
@@ -162,6 +159,17 @@ dojo.widget.defineWidget(
 	templateCssPath: "",
 
 
+	setHeaderCellContent: function(arr) {
+		if (this.showHeaderRow && arr) {
+			this.headerRow.innerHTML = "";
+			for( var i=0; i < arr.length; i++) {
+				var td = document.createElement("td");
+				td.innerHTML = arr[i];
+				this.headerRow.appendChild(td);
+			}
+		}
+	},
+
 	search: function(evt, setupOnly) {
 		this.text = this.inputNode.value.toString();
 		this.text = this.text.replace(/^\s+/, '');
@@ -170,8 +178,6 @@ dojo.widget.defineWidget(
 		clearTimeout(this.searchTimeout);
 		
 		this.event = dojo.event.browser.fixEvent(evt); //save event for later testing in fillTable
-		
-		this.event.preventDefault();
 		
 		if (setupOnly != true)
 			this._enterKeyPressed();
@@ -192,25 +198,24 @@ dojo.widget.defineWidget(
 				key = 1;
 		}
 		
-		/*
 		// infopath hack since it doesn't let us use onkeyup or onkeypress	
-		if (onkeydownused == true) {
+		if (this.useOnKeyDown == true) {
 			// only add if the key is a letter and no modifier key was pressed
-			if (key >= 48 && key <= 90 && !event.altKey && !event.ctrlKey) {
+			if (key >= 48 && key <= 90 && !this.event.altKey && !this.event.ctrlKey) {
 				var newKey = String.fromCharCode(key).toLowerCase();
 				// IE interprets all char codes as upper case.  
 				// Only leave in uppercase if the previous char is uppercase (hack #2)
-				if (text.length > 0) {
-					var lastKey = text.substring(text.length - 1, text.length);
+				if (this.text.length > 0) {
+					var lastKey = this.text.substring(this.text.length - 1, this.text.length);
 					if (lastKey >= 'A' && lastKey <= 'Z')
 						newKey = newKey.toUpperCase();
 				}
-				text = text + newKey;
+				this.text = this.text + newKey;
 			}
-			if (key == 8 && text.length > 1) {//backspace
-				text = text.substring(0, text.length - 1);
+			if (key == 8 && this.text.length > 1) { //backspace
+				this.text = this.text.substring(0, this.text.length - 1);
 			}
-		}*/
+		}
 		
 		if (key == dojo.event.browser.keys["KEY_ESCAPE"]) {
 			this.exitNumberMode();
@@ -225,6 +230,7 @@ dojo.widget.defineWidget(
 		}
 		
 		else if (this.allowAutoList) {
+		
 			if (((key >= 48 && key <= 90) || (key >= 96 && key <= 111) ) ||
 				key == dojo.event.browser.keys.KEY_BACKSPACE || key == dojo.event.browser.keys.KEY_SPACE || 
 				key == dojo.event.browser.keys.KEY_DELETE || key == 1) {
@@ -234,6 +240,7 @@ dojo.widget.defineWidget(
 					//   delete key pressed or
 					//   mouse event)"
 					if (!this.text.match(/\d/) || this.allowAutoListWithNumber()) {
+					
 						// If there isn't a number in the search (force usage of enter key)
 						this.hideHighlight();
 						if (this.text.length > 1) {
@@ -254,7 +261,6 @@ dojo.widget.defineWidget(
 		}
 		
 		return false;
-		
 	},
 	
 	
@@ -364,6 +370,10 @@ dojo.widget.defineWidget(
 	},
 	
 	doObjectsFound: function(objs) {
+		
+		// convert objs from single obj into array (if needed)
+		if (!objs.length)
+			objs = [objs]
 		
 		dojo.event.topic.publish(this.eventNames.objectsFound, {"objs": objs});
 		
@@ -500,7 +510,7 @@ dojo.widget.defineWidget(
 			dojo.event.topic.publish(this.eventNames.fillTable, {"objects": objects} );
 		
 		// If we get only one result and the enter key was pressed jump to that object
-		if (objects.length == 1 && 
+		if (objects.length == 1 && this.event && 
 			(this.event.keyCode == dojo.event.browser.keys.KEY_ENTER)) { // || this.keyCode == null)) {
 				if (typeof objects[0] == 'string') {
 				// if only one string item returned, its a message
@@ -527,14 +537,15 @@ dojo.widget.defineWidget(
 	    
 	   	setTimeout(this.simpleClosure(this, "updatePagingBars"), 0);
 	    
-	    if (this.event.keyCode == dojo.event.browser.keys.KEY_ENTER) {
+	    if (this.event && this.event.keyCode == dojo.event.browser.keys.KEY_ENTER) {
 	    	// showHighlighting must be called here to assure it occurs after 
 	    	// objects are returned. Must be called with Timeout because 
 	    	// DWRUtil.addRows uses setTimeout
 	    	dojo.debug("showing highlight at end of fillTable() due to enterkey");
 	    	setTimeout(this.simpleClosure(this, "showHighlight"), 0);
 	    }
-	    dojo.debug("ending fillTable(). Keycode was: " + this.event.keyCode);
+	    if (this.event)
+		    dojo.debug("ending fillTable(). Keycode was: " + this.event.keyCode);
 	    
 	    this.postFillTable();
 	},
@@ -569,6 +580,7 @@ dojo.widget.defineWidget(
 	
 	clearSearch: function() {
 		this.clearPagingBars();
+		this.hideHeaderRow();
 		// signal to the using script that we've cleared the rows
 		this.onRemoveAllRows(this.objHitsTableBody);
 	    DWRUtil.removeAllRows(this.objHitsTableBody);	//clear out the current rows
@@ -830,6 +842,12 @@ dojo.widget.defineWidget(
 	// entering numbers and pushing enter
 	
 	select: function(message) {
+		if (!message.obj && !message.objs) {
+			var newObj = {};
+			newObj.obj = message;
+			message = newObj;
+		}
+		
 		// default the objs array to empty
 		if (message.objs == null) {
 			message.objs = new Array();
