@@ -2,6 +2,8 @@ package org.openmrs;
 
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.openmrs.util.Format;
 
@@ -537,6 +539,19 @@ public class Obs implements java.io.Serializable {
 			return getValueText();
 		
 		return "";
+	}
+	
+	/**
+	 * Convenience method for obtaining a Map of available locale 
+	 * to observation's value as a string
+	 */
+	public Map<Locale, String> getValueAsString() {
+		Map<Locale, String> ret = new HashMap<Locale, String>();
+		Locale[] locales = Locale.getAvailableLocales();
+		for (int i=0; i<locales.length; i++) {
+			ret.put(locales[i], getValueAsString(locales[i]));
+		}
+		return ret;
 	}
 	
 	public String toString() {
