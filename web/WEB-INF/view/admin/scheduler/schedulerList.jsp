@@ -25,27 +25,23 @@
 					<tr>
 						<th></th>
 						<th>Name</th>
-						<th>Description</th>
-						<th>Class</th>
-						<th>Schedule</th>
-						<th>Interval (ms)</th>
-						<th>Start On Startup</th>
-						<th>Started</th>
+						<th>Start Time</th>
+						<th>Interval (sec)</th>
+						<th>Start On Startup?</th>
+						<th>Running?</th>
 					</tr>
 				<c:forEach var="task" items="${taskList}">
 					<tr>
 						<td valign="top"><input type="checkbox" name="taskId" value="${task.id}"></td>				
 						<td valign="top"><a href="scheduler.form?taskId=${task.id}">${task.name}</a></td>
-						<td valign="top">${task.description}</td>
-						<td valign="top">${task.schedulableClass}</td>
 						<td valign="top">${task.startTime}</td>
-						<td valign="top">${task.repeatInterval}</td>
-						<td valign="top">${task.startOnStartup}</td>
-						<td valign="top">${task.started}</td>
+						<td valign="top" align="center">${task.repeatInterval}</td>
+						<td valign="top" align="center">${task.startOnStartup}</td>
+						<td valign="top" align="center">${task.started}</td>
 					</tr>
 				</c:forEach>
 				<tr>
-					<td colspan="5" align="center">
+					<td colspan="6" align="center">
 						<input type="submit" value="<spring:message code="Scheduler.taskList.start"/>" name="action">
 						<input type="submit" value="<spring:message code="Scheduler.taskList.stop"/>" name="action">
 						<input type="submit" value="<spring:message code="Scheduler.taskList.delete"/>" name="action">

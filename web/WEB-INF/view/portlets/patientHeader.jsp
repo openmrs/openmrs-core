@@ -18,6 +18,8 @@
 				<c:if test="${!status.last}">&nbsp;&nbsp;|&nbsp;&nbsp;</c:if>
 			</c:forEach>
 		</div>
+	</div>
+	<div class="box">
 		<div>
 			<c:forEach items="${model.patientCurrentPrograms}" var="p" varStatus="s">
 				<c:if test="${p.program.concept.conceptId == 0}">

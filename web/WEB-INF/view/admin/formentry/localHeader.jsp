@@ -9,11 +9,4 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
-	<openmrs:hasPrivilege privilege="Upload XSN">
-		<li <c:if test="<%= request.getRequestURI().contains("formentry/xsnUpload") %>">class="active"</c:if>>
-			<a href="${pageContext.request.contextPath}/admin/formentry/xsnUpload.form">
-				<spring:message code="FormEntry.xsn.manage"/>
-			</a>
-		</li>
-	</openmrs:hasPrivilege>
 </ul>

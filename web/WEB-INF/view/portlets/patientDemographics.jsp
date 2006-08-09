@@ -1,4 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
+
+<div class="boxHeader">Patient Names</div>
 <div class="box">
 	<table class="patientAddress">
 		<thead>
@@ -27,6 +29,7 @@
 	</table>
 </div>
 <br/>
+<div class="boxHeader">Addresses</div>
 <div class="box">
 	<table class="patientAddress">
 		<thead>

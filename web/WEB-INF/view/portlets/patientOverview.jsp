@@ -1,13 +1,13 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
 <script type="text/javascript" src="<%= request.getContextPath() %>/scripts/easyAjax.js"></script>
-
 <script type="text/javascript" src="<%= request.getContextPath() %>/dwr/interface/DWRRelationshipService.js"></script>
 <script type="text/javascript" src="<%= request.getContextPath() %>/dwr/engine.js"></script>
 <script type="text/javascript" src="<%= request.getContextPath() %>/dwr/util.js"></script>
 
-<div style="border: 1px black solid">
-	<u><b><spring:message code="Program.title"/></b></u>
+
+<div class="boxHeader"><spring:message code="Program.title"/></div>
+<div class="box">
 	<openmrs:portlet url="patientPrograms" id="patientPrograms" patientId="${patient.patientId}" parameters="allowEdits=true"/>
 </div>
 
@@ -37,9 +37,8 @@
 
 TEST: ${model.patient.person} <openmrs_tag:person person="${model.patient.person}"/>
 
-<div style="border: 1px black solid">
-	<b><u>Relationships:</u></b>
-	<br/>
+<div class="boxHeader">Relationships</div>
+<div class="box">
 	<c:forEach var="rel" items="${model.patientRelationships}">
 		<c:choose>
 			<c:when test="${rel.relative.patient.patientId == model.patientId}">
