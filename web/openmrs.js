@@ -39,3 +39,24 @@ function hasClass(obj, className) {
 	}
 	return false;
 }
+
+function changeClassProperty(sClassName,sProperty,sValue) {
+	sClassName="."+sClassName;
+	var sheets = document.styleSheets;
+	var rules;
+	var styleObj;
+	
+	for (var i=sheets.length-1; i >= 0; i--) {
+		rules=sheets[i].cssRules || sheets[1].rules;
+		
+		for (var j=0; j<rules.length; j++) {
+			if (rules[j].selectorText &&
+				rules[j].selectorText==sClassName) {
+					styleObj=rules[j].style;
+					break;
+			}
+		}
+	}
+	
+	styleObj[sProperty]=sValue;
+}

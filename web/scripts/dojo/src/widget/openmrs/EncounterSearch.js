@@ -90,6 +90,12 @@ dojo.widget.defineWidget(
 					];
 			
 		},
+			
+		// TODO: internationalize
+		showHeaderRow: true,
+		getHeaderCellContent: function() {
+			return ['', 'Patient Name', 'Encounter Type', 'Form', 'Provider', 'Location', 'Encounter Date'];
+		},
 		
 		autoJump: true,
 		allowAutoJump: function() {

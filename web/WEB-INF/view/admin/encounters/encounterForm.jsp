@@ -36,11 +36,11 @@
 		);
 		
 		pSearch.getCellFunctions = function() {
-			return [closure(pSearch, "getNumber"), 
-					closure(pSearch, "getId"), 
-					closure(pSearch, "getGiven"), 
-					closure(pSearch, "getMiddle"), 
-					closure(pSearch, "getFamily")
+			return [this.simpleClosure(pSearch, "getNumber"), 
+					this.simpleClosure(pSearch, "getId"), 
+					this.simpleClosure(pSearch, "getGiven"), 
+					this.simpleClosure(pSearch, "getMiddle"), 
+					this.simpleClosure(pSearch, "getFamily")
 					];
 		};
 		

@@ -18,7 +18,7 @@ dojo.widget.defineWidget(
 	{
 		conceptId: "",
 		
-		postCreate: function(){
+		postCreate: function() {
 			dojo.debug("postCreate in conceptsearch");
 			
 			var closure = function(thisObj, method) { return function(obj) { return thisObj[method]({"obj":obj}); }; };

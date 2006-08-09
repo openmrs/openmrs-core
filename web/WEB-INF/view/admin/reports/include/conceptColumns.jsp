@@ -15,11 +15,10 @@
 	</tr>
 	<tr>
 		<td><spring:message code="DataExport.columnValue"/></td>
-		<td>
-			<input type="text" name="conceptName" size="50"/>
-			<input type="button" name="conceptButton" class="smallButton" 
-				value="<spring:message code="general.change"/>" 
-				onclick="showSearch(this, 'concept')" />
+		<td id="conceptSearchCell">
+			<div id="conceptSearch">
+				<!-- dojo search widget/popup are added here via the addNew() function -->
+			</div>
 		</td>
 	</tr>
 	<tr>

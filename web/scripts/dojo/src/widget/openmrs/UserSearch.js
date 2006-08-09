@@ -48,6 +48,12 @@ dojo.widget.defineWidget(
 					txt += (txt.length ? " " : "") + user.lastName;
 				
 				return txt;
+		},
+		
+		// TODO: internationalize
+		showHeaderRow: true,
+		getHeaderCellContent: function() {
+			return ['', 'Name'];
 		}
 		
 	},

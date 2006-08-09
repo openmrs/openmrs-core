@@ -5,87 +5,77 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<script src='<%= request.getContextPath() %>/dwr/interface/DWRPatientService.js'></script>
-<script src='<%= request.getContextPath() %>/dwr/engine.js'></script>
-<script src='<%= request.getContextPath() %>/dwr/util.js'></script>
-<script src='<%= request.getContextPath() %>/scripts/openmrsSearch.js'></script>
-<script src='<%= request.getContextPath() %>/scripts/validation.js'></script>
-<script src='<%= request.getContextPath() %>/scripts/patientSearch.js'></script>
+<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/dojo/dojo.js"></script>
 
 <script type="text/javascript">
+	dojo.require("dojo.widget.openmrs.PatientSearch");
 
+	var searchWidget;
 	var patientName;
 	var birthyear;
 	var age;
 	var gender;
-	var form;
-	var noPatientsFound;
-	var patientsFound ;
-	var inputChanged = false;
+	var inputChanged = true;
 	
-	function findObjects(text) {
-		patientName = text;
-		birthyear = $("birthyear").value.toString();
-		age = $("age").value.toString();
-		gender = "";
-		var options = document.getElementsByTagName("input");
-		for (var i=0; i<options.length;i++) {
-			if (options[i].type == 'radio' && options[i].name=='gender' && options[i].checked == true)
-				gender = options[i].value.toString();
-		}
-		DWRPatientService.getSimilarPatients(preFillTable, text, birthyear, age, gender);
-		return false;
-	}
-	
-	function preFillTable(patients) {
-		$("patientTable").style.display = "";
+	dojo.addOnLoad( function() {
 		
-		if (patients.length < 1) {
-			if (patientName != "" && (birthyear != "" || age != "") && gender != "") {
-				document.location = getHref();
+		searchWidget = dojo.widget.manager.getWidgetById("pSearch");			
+		
+		dojo.event.topic.subscribe("pSearch/select", 
+			function(msg) {
+				document.location = "${pageContext.request.contextPath}/formentry/patientSummary.form?patientId=" + msg.objs[0].patientId;
 			}
-			else {
-				patients.push(noPatientsFound);
+		);
+		
+		dojo.event.topic.subscribe("pSearch/objectsFound", 
+			function(msg) {
+				var patients = msg.objs;
+				if (patients.length < 1) {
+					if (patientName != "" && (birthyear != "" || age != "") && gender != "")
+						document.location = getHref();
+					else
+						patients.push(noPatientsFound);
+				}
+				else {
+					patients.push(patientsFound);	//setup links for appending to the end
+				}
 			}
-		}
-		else {
-			patients.push(patientsFound);	//setup links for appending to the end
-		}
-		fillTable(patients);		//continue as normal
-	}
-	
-	function onSelect(patients) {
-		document.location = "${pageContext.request.contextPath}/formentry/patientSummary.form?patientId=" + patients[0].patientId;
-	}
+		);
+		
+		searchWidget.doFindObjects = function(phrase) {
+			patientName = phrase.toString();
+			birthyear = $("birthyear").value.toString();
+			age = $("age").value.toString();
+			gender = "";
+			var options = document.getElementsByTagName("input");
+			for (var i=0; i<options.length;i++) {
+				if (options[i].type == 'radio' && options[i].name=='gender' && options[i].checked == true)
+					gender = options[i].value.toString();
+			}
+			DWRPatientService.getSimilarPatients(this.simpleClosure(this, "doObjectsFound"), patientName, birthyear, age, gender);
+			return false;
+		};
+		
+		searchWidget.allowNewSearch = function() {
+			if (inputChanged == true) {
+				inputChanged = false;
+				if (this.text != "")
+					this.lastPhraseSearched = "";
+				return true;
+			}
+			return false;
+		};
+		
+		searchWidget.allowAutoJump = function() { return false; };
+		
+		$("patientName").focus();
+		noPatientsFound = "<a href='#' class='searchHit' onclick='document.location=getHref()'>No Patients Found.  Select to add a new Patient</a>";
+		patientsFound = "<a href='#' class='searchHit' onclick='document.location=getHref()'>Add New Patient</a>";
+		
+	});
 	
 	var getHref = function() {
 		return "newPatient.form?name=" + patientName + "&birthyear=" + birthyear + "&gender=" + gender + "&age=" + age;
-	}
-	
-	var init = function() {
-
-		form = $("patientForm");
-
-		noPatientsFound = "<a href='#' class='searchHit' onclick='document.location=getHref()'>No Patients Found.  Select to add a new Patient</a>";
-		patientsFound = "<a href='#' class='searchHit' onclick='document.location=getHref()'>Add New Patient</a>";
-		$("patientName").focus();
-		$("patientTable").style.display = "none";
-		
-		DWRUtil.useLoadingMessage();
-	};
-		
-	window.onload = init;
-	
-	var allowNewSearch = function() {
-		if (inputChanged = true) {
-			inputChanged = false;
-			return true;
-		}
-		return false;
-	}
-	
-	var allowAutoJump = function() {
-		return false;
 	}
 	
 	function cancel() {
@@ -98,6 +88,14 @@
 	tr th#patientGender, tr th#patientAge, .patientGender, .patientAge {
 		text-align: center;
 	}
+	
+	.openmrsSearchDiv {
+		position: absolute;
+		margin-top: 6em;
+		margin-left: -5em;
+		margin-right: 1em;
+		z-index: 100;
+	}
 </style>
 
 <h2><spring:message code="Patient.title"/></h2>
@@ -106,49 +104,34 @@
 	<table>
 		<tr>
 			<td><spring:message code="Patient.name"/></td>
-			<td><input type="text" name="patientName" id="patientName" value=""/></td>
+			<td>
+				<div dojoType="PatientSearch" widgetId="pSearch" inputId="patientName" inputName="patientName" tableHeight="600" allowAutoList="false"></div>
+			</td>
 		</tr>
 		<tr>
 			<td><spring:message code="Patient.birthyear"/></td>
 			<td>
-				<input type="text" name="birthyear" id="birthyear" size="5" value="" onChange="inputChanged=true;" onFocus="exitNumberMode(patientName)" />
+				<input type="text" name="birthyear" id="birthyear" size="5" value="" onChange="inputChanged=true;" onFocus="searchWidget.exitNumberMode()" />
 				<spring:message code="Patient.age.or"/>
-				<input type="text" name="age" id="age" size="5" value="" onChange="inputChanged=true;" onFocus="exitNumberMode(patientName)" />
+				<input type="text" name="age" id="age" size="5" value="" onChange="inputChanged=true;" onFocus="searchWidget.exitNumberMode()" />
 			</td>
 		</tr>
 		<tr>
 			<td><spring:message code="Patient.gender"/></td>
 			<td>
 				<openmrs:forEachRecord name="gender">
-					<input type="radio" name="gender" id="${record.key}" value="${record.key}" <c:if test="${record.key == status.value}">checked</c:if> onclick="inputChanged=true" onFocus="exitNumberMode(patientName)" /><label for="${record.key}"> <spring:message code="Patient.gender.${record.value}"/> </label>
+					<input type="radio" name="gender" id="${record.key}" value="${record.key}" <c:if test="${record.key == status.value}">checked</c:if> onclick="inputChanged=true" onFocus="searchWidget.exitNumberMode()" /><label for="${record.key}"> <spring:message code="Patient.gender.${record.value}"/> </label>
 				</openmrs:forEachRecord>
 			</td>
 		</tr>
 	</table>
 	
-	<input type="button" value="<spring:message code="general.continue"/>" onClick="return search(patientName, null, false, 0);"/> &nbsp; &nbsp; 
+	<input type="button" value="<spring:message code="general.continue"/>" onClick="searchWidget.search(event)"/> &nbsp; &nbsp; 
 	<input type="button" value="<spring:message code="general.cancel" />" name="action" id="cancelButton" onClick="return cancel()">
 	
-	<br /><br />
+	<br />
+	<br />
 	
-	<table cellspacing="0" cellpadding="1" id="patientTable">
-		<thead>
-			<tr>
-			 	<th class="searchIndex"> </th>
-			 	<th class="patientIdentifier"> <spring:message code="Patient.identifier"/> </th>
-			 	<th> <spring:message code="PatientName.givenName"/> </th>
-			 	<th> <spring:message code="PatientName.middleName"/> </th>
-			 	<th> <spring:message code="PatientName.familyName"/> </th>
-			 	<th id='patientAge'> <spring:message code="Patient.age"/> </th>
-			 	<th id='patientGender'> <spring:message code="Patient.gender"/> </th>
-			 	<th> <spring:message code="Patient.tribe"/> </th>
-			 	<th></th>
-			 	<th> <spring:message code="Patient.birthdate"/> </th>
-			 </tr>
-		</thead>
-		<tbody id="patientTableBody">
-		</tbody>
-	</table>
 </form>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

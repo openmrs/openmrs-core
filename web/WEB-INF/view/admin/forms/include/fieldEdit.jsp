@@ -57,11 +57,10 @@
 		</td>
 		<td>
 			<spring:bind path="field.concept">
-				<div id="conceptName">
-					${conceptName}
-				</div>
-				<input type="hidden" id="conceptId" value="${status.value.conceptId}" name="conceptId" />
-				<input type="button" id="conceptButton" class="smallButton" value='<spring:message code="general.change"/>' onclick="showConceptSearch(this)" />
+				
+				<div dojoType="ConceptSearch" widgetId="cSearch" conceptId="${status.value.conceptId}" showVerboseListing="true"></div>
+				<div dojoType="OpenmrsPopup" widgetId="conceptSelection" hiddenInputName="conceptId" searchWidget="cSearch" searchTitle='<spring:message code="Concept.find" />'></div>
+					
 				<c:if test="${status.errorMessage != ''}">
 					<span class="error">
 						${status.errorMessage}
@@ -159,21 +158,3 @@
 		</tr>
 	</c:if>
 </table>
-<div id="searchForm" class="searchForm">
-	<div class="wrapper">
-		<input type="button" onclick="return closeBox();" class="closeButton" value="X" />
-		<form method="get" onsubmit="return searchBoxChange('conceptSearchBody', searchText, null, false, 0); return false;" action="">
-			<h3>
-				<spring:message code="Concept.find" />
-			</h3>
-			<input type="text" id="searchText" size="35" onkeyup="return searchBoxChange('conceptSearchBody', this, event, false, 400);">
-			<input type="checkbox" id="verboseListing" value="true" <c:if test="${defaultVerbose == true}">checked</c:if> onclick="searchBoxChange('searchBody', searchText, event, false, 0); searchText.focus();"><label for="verboseListing"><spring:message code="dictionary.verboseListing"/></label>
-		</form>
-		<div id="conceptSearchResults" class="searchResults">
-			<table>
-				<tbody id="conceptSearchBody">
-				</tbody>
-			</table>
-		</div>
-	</div>
-</div>

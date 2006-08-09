@@ -57,7 +57,7 @@ dojo.widget.defineWidget(
 							fillTable([]);	//this call sets up the table/info bar
 						}
 						// if hits
-						else if (patients.length > 1 || this.isValidCheckDigit(savedText) == false) {
+						else if (patients.length > 1 || this.isValidCheckDigit(this.savedText) == false) {
 							patients.push(this.addPatientLink);	//setup links for appending to the end
 						}
 					}
@@ -65,18 +65,20 @@ dojo.widget.defineWidget(
 		},
 		
 		postCreate: function() {
-			var closure = function(thisObj, method) { return function(obj) { return thisObj[method]({"obj":obj}); }; };
 			if (this.patientId != "")
-				DWRPatientService.getPatient(closure(this, "select"), this.patientId);
+				this.selectPatient(this.patientId);
+		},
+		
+		
+		selectPatient: function(patientId) {
+			var closure = function(thisObj, method) { return function(obj) { return thisObj[method]({"obj":obj}); }; };
+			DWRPatientService.getPatient(closure(this, "select"), patientId);
 		},
 		
 		doFindObjects: function(text) {
 
-			// a javascript closure
-			var callback = function(ts) { return function(obj) {ts.doObjectsFound(obj)}};
-			
 			var tmpIncludedVoided = (this.showIncludeVoided && this.includeVoided.checked);
-			DWRPatientService.findPatients(callback(this), text, tmpIncludedVoided);
+			DWRPatientService.findPatients(this.simpleClosure(this, "doObjectsFound"), text, tmpIncludedVoided);
 			
 			return false;
 		},
@@ -100,7 +102,7 @@ dojo.widget.defineWidget(
 				td.appendChild(obj);
 				if (p.identifierCheckDigit)
 					if (this.isValidCheckDigit(p.identifier)==false) {
-						td.appendChild(getProblemImage());
+						td.appendChild(this.getProblemImage());
 					}
 				if (p.voided) {
 					td.className += " retired";
@@ -138,7 +140,7 @@ dojo.widget.defineWidget(
 		
 		getBirthday: function(p) { 
 				if (typeof p == 'string') return this.noCell();
-				str = getDateString(p.birthdate);
+				str = this.getDateString(p.birthdate);
 				return str;
 		},
 		
@@ -157,19 +159,24 @@ dojo.widget.defineWidget(
 		getMother: function(p) { return p.mothersName == null ? this.noCell() : p.mothersName; },
 		
 		getCellFunctions: function() {
-			var tmp = function(ths, method) { return function(obj) { return ths[method](obj); }; };
-			return [tmp(this, "getNumber"), 
-					tmp(this, "getId"), 
-					tmp(this, "getGiven"), 
-					tmp(this, "getMiddle"), 
-					tmp(this, "getFamily"),
-					tmp(this, "getAge"), 
-					tmp(this, "getGender"),
-					tmp(this, "getTribe"),
-					tmp(this, "getBirthdayEstimated"),
-					tmp(this, "getBirthday")
+			return [this.simpleClosure(this, "getNumber"), 
+					this.simpleClosure(this, "getId"), 
+					this.simpleClosure(this, "getGiven"), 
+					this.simpleClosure(this, "getMiddle"), 
+					this.simpleClosure(this, "getFamily"),
+					this.simpleClosure(this, "getAge"), 
+					this.simpleClosure(this, "getGender"),
+					this.simpleClosure(this, "getTribe"),
+					this.simpleClosure(this, "getBirthdayEstimated"),
+					this.simpleClosure(this, "getBirthday")
 					];
 			
+		},
+		
+		// TODO: internationalize
+		showHeaderRow: true,
+		getHeaderCellContent: function() {
+			return ['', 'Identifier', 'Given', 'Middle', 'Family Name', 'Age', 'Gender', 'Tribe', '', 'Birthday'];
 		},
 		
 		getProblemImage: function() {
@@ -186,7 +193,14 @@ dojo.widget.defineWidget(
 		rowMouseOver: function() {
 			if (this.className.indexOf("searchHighlight") == -1) {
 				this.className = "searchHighlight " + this.className;
-				var other = dojo.widget.openmrs.PatientSearch.getOtherRow(this);
+				
+				var other = this.nextSibling;
+				if (other == null || other.firstChild.id != this.firstChild.id) {
+					other = this.previousSibling;
+					if (other == null || other.firstChild.id != this.firstChild.id)
+						other = null;
+				}
+				
 				if (other != null)
 					other.className = "searchHighlight " + other.className;
 			}
@@ -195,23 +209,90 @@ dojo.widget.defineWidget(
 		rowMouseOut: function() {
 			var c = this.className;
 			this.className = c.substring(c.indexOf(" ") + 1, c.length);
-			var other = dojo.widget.openmrs.PatientSearch.getOtherRow(this);
+			
+			var other = this.nextSibling;
+			if (other == null || other.firstChild.id != this.firstChild.id) {
+				other = this.previousSibling;
+				if (other == null || other.firstChild.id != this.firstChild.id)
+					other = null;
+			}
+			
 			if (other != null) {
 				c = other.className;
 				other.className = c.substring(c.indexOf(" ") + 1, c.length);
 			}
 		},
 		
-		getOtherRow: function(row) {
-			var other = row.nextSibling;
-			if (other != null && other.firstChild.id == row.firstChild.id)
-				return other;
-			other = row.previousSibling;
-			if (other != null && other.firstChild.id == row.firstChild.id)
-				return other;
-			return null;
+		isValidCheckDigit: function(value) {
+			if (value == null) return false;
+			
+			if (value.length < 3 || value.indexOf('-') != value.length - 2)
+				return false;
+			
+			var checkDigit = value.charAt(value.length - 1).valueOf();
+			
+			var valueWithoutCheckDigit = value.substr(0, value.length - 2);
+			
+			return (checkDigit == this.getCheckDigit(valueWithoutCheckDigit));
 		},
 		
+		getCheckDigit: function(value) {
+		
+			// allowable characters within identifier
+			var validChars = "0123456789ABCDEFGHIJKLMNOPQRSTUVYWXZ_";
+			
+			if (this.stripCharsInBag(value, validChars) != "") {
+				//Invalid character in string
+			}
+			
+			// remove whitespace
+			value = value.replace([ 	], "");
+			// convert to uppercase
+			value = value.toUpperCase();
+			
+			// running total
+			var sum = 0;
+			
+			//alert("sum: " + sum + " ch: " + ch + " digit: " + digit + " weight: " + weight);
+			
+			// loop through digits from right to left
+			for (var i = 0; i < value.length; i++) {
+				//set ch to "current" character to be processed
+				var ch = value.charCodeAt(value.length - i - 1);
+				var digit = ch - 48;
+				var weight;
+				if (i % 2 == 0) {
+					// for alternating digits starting with the rightmost, we use our formula
+					// this is the same as multiplying x 2 and adding digits together for values
+					// 0 to 9.  Using the following formula allows us to gracefully calculate a
+					// weight for non-numeric "digits" as well (from their ASCII value - 48).
+					weight = (2 * digit) - Math.floor(digit / 5) * 9;
+				}
+				else {
+					// even-positioned digits just contribute their ascii value minus 48
+					weight = digit;
+				}
+				// keep a running total of weights
+				sum = sum + weight;
+			}	
+		 	// avoid sum less than 10 (if characters below "0" allowed, this could happen)
+		 	sum = Math.abs(sum) + 10;
+			// check digit is amount needed to reach next number divisible by ten 
+			return (10 - (sum % 10)) % 10;
+			
+		},
+		
+		stripCharsInBag: function(s, bag){
+			var i;
+		    var returnString = "";
+		    // Search through string's characters one by one.
+		    // If character is not in bag, append to returnString.
+		    for (i = 0; i < s.length; i++){   
+		        var c = s.charAt(i);
+		        if (bag.indexOf(c) == -1) returnString += c;
+		    }
+		    return returnString;
+		},
 		
 		autoJump: true,
 		allowAutoJump: function() {
@@ -219,7 +300,9 @@ dojo.widget.defineWidget(
 				this.autoJump = true;
 				return false;
 			}
-			return true;	
+			//	only allow the first item to be automatically selected if:
+			//		the entered text is a string or the entered text is a valid identifier
+			return (this.savedText.match(/\d/) == false || isValidCheckDigit(this.savedText));	
 		}
 		
 	},

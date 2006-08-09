@@ -46,6 +46,9 @@ dojo.widget.defineWidget(
 	infoBar: null,
 	minSearchCharacters: 2,
 	tableHeight: 0,
+	headerRow: null,
+	showHeaderRow: false,
+	allowAutoList: true,
 	
 	// check box options
 	showIncludeRetired: false,
@@ -72,7 +75,10 @@ dojo.widget.defineWidget(
 	inputId: "",
 	inputName: "",
 	
-		
+	searchLabel: "",
+	searchLabelNode: null,
+	
+	
 	initialize: function() {
 
 		dojo.debug("initializing openmrssearch");
@@ -83,15 +89,18 @@ dojo.widget.defineWidget(
 			}
 		}
 		
-		this.hideHighlight();
-		
+		// all search pages should use the loading message
 		DWRUtil.useLoadingMessage();
 		
+		// add search label
+		if (this.searchLabel)
+			this.searchLabelNode.innerHTML = this.searchLabel;
+			
+		// move default DWR error handling to the status bar
 		var handler = function(ex) {
 			window.status = "DWR warning/error: " + ex;
 			throw "DWR warning/error: " + ex;
 		};
-		
 		DWREngine.setErrorHandler(handler);
 		DWREngine.setWarningHandler(handler);
 	},
@@ -129,33 +138,56 @@ dojo.widget.defineWidget(
 				this.verboseListing.parentNode.insertBefore(lbl, this.verboseListing);
 			}
 			
-
+			// create header row from defined column names
+			if (this.showHeaderRow && this.getHeaderCellContent()) {
+				var arr = this.getHeaderCellContent();
+				for( var i=0; i < arr.length; i++) {
+					var td = document.createElement("td");
+					td.innerHTML = arr[i];
+					this.headerRow.appendChild(td);
+				}
+			}
+			this.hideHeaderRow();
+			
+			
 			dojo.event.connect(this.inputNode, "onkeyup", this, "onInputChange");
+			
 			dojo.event.connect(this.includeRetired, "onclick", this, "onCheckboxClick");
 			dojo.event.connect(this.includeVoided, "onclick", this, "onCheckboxClick");
 			dojo.event.connect(this.verboseListing, "onclick", this, "onCheckboxClick");
 	},
 
 
-	templateString: '<div><span style="white-space: nowrap"><input type="text" value="" dojoAttachPoint="inputNode" autocomplete="off" /> <input type="checkbox" style="display: none" dojoAttachPoint="includeRetired"/> <input type="checkbox" style="display: none" dojoAttachPoint="includeVoided"/> <input type="checkbox" style="display: none" dojoAttachPoint="verboseListing"/></span><table class="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><tbody dojoAttachPoint="objHitsTableBody" style="vertical-align: top"></tbody></table></div>',
+	templateString: '<span><span style="white-space: nowrap"><span dojoAttachPoint="searchLabelNode"></span> <input type="text" value="" dojoAttachPoint="inputNode" autocomplete="off" /> <input type="checkbox" style="display: none" dojoAttachPoint="includeRetired"/> <input type="checkbox" style="display: none" dojoAttachPoint="includeVoided"/> <input type="checkbox" style="display: none" dojoAttachPoint="verboseListing"/></span><span class="openmrsSearchDiv"><table class="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><thead><tr dojoAttachPoint="headerRow"></tr></thead><tbody dojoAttachPoint="objHitsTableBody" style="vertical-align: top"></tbody></table></span></span>',
 	templateCssPath: "",
 
 
-	onInputChange: function(evt) {
+	search: function(evt, setupOnly) {
 		this.text = this.inputNode.value.toString();
 		this.text = this.text.replace(/^\s+/, '');
 		this.text = this.text.replace(/\s+$/, '');
 		
 		clearTimeout(this.searchTimeout);
 		
+		this.event = dojo.event.browser.fixEvent(evt); //save event for later testing in fillTable
+		
+		this.event.preventDefault();
+		
+		if (setupOnly != true)
+			this._enterKeyPressed();
+	},
+
+
+	onInputChange: function(evt) {
+		this.search(evt, true);
+		
 		var key = 0;
-		this.event = event = dojo.event.browser.fixEvent(evt); //save event for later testing in fillTable
 		
 		// don't fire for things like alt-tab, ctrl-c -- but DO fire for cntrl-v  (86=v)
-		if (!event.altKey && (!event.ctrlKey || event.keyCode == 'v')) {
-			key = event.keyCode;
-			dojo.debug('event.type : ' + event.type);
-			if ((key==0 || key==null) && (event.type == "click" || event.type == "change" || event.type == "submit"))
+		if (!this.event.altKey && (!this.event.ctrlKey || this.event.keyCode == 'v')) {
+			key = this.event.keyCode;
+			dojo.debug('event.type : ' + this.event.type);
+			if ((key==0 || key==null) && (this.event.type == "click" || this.event.type == "change" || this.event.type == "submit"))
 				//if non-key event like clicking checkbox or changing dropdown list
 				key = 1;
 		}
@@ -191,37 +223,40 @@ dojo.widget.defineWidget(
 		else if (key == dojo.event.browser.keys.KEY_ENTER) {
 			this._enterKeyPressed();
 		}
-	
-		else if (((key >= 48 && key <= 90) || (key >= 96 && key <= 111) ) ||
-			key == dojo.event.browser.keys.KEY_BACKSPACE || key == dojo.event.browser.keys.KEY_SPACE || 
-			key == dojo.event.browser.keys.KEY_DELETE || key == 1) {
-				//	 (if alphanumeric key entered or 
-				//   backspace key pressed or
-				//   spacebar pressed or 
-				//   delete key pressed or
-				//   mouse event)"
-				if (!this.text.match(/\d/) || this.allowAutoListWithNumber()) {
-					// If there isn't a number in the search (force usage of enter key)
-					this.hideHighlight();
-					if (this.text.length > 1) {
-						this.clearPagingBars();
-						dojo.debug('setting preFindObjects timeout for other key: ' + key);
-						var tmp = function(ts, text) { return function() {ts.findObjects(text)}};
-						var callback = tmp(this, this.text);
-						this.searchTimeout = setTimeout(callback, this.searchDelay);
-						dojo.debug('findObjects timeout called for other key: ' + key);
+		
+		else if (this.allowAutoList) {
+			if (((key >= 48 && key <= 90) || (key >= 96 && key <= 111) ) ||
+				key == dojo.event.browser.keys.KEY_BACKSPACE || key == dojo.event.browser.keys.KEY_SPACE || 
+				key == dojo.event.browser.keys.KEY_DELETE || key == 1) {
+					//	 (if alphanumeric key entered or 
+					//   backspace key pressed or
+					//   spacebar pressed or 
+					//   delete key pressed or
+					//   mouse event)"
+					if (!this.text.match(/\d/) || this.allowAutoListWithNumber()) {
+						// If there isn't a number in the search (force usage of enter key)
+						this.hideHighlight();
+						if (this.text.length > 1) {
+							this.clearPagingBars();
+							dojo.debug('setting preFindObjects timeout for other key: ' + key);
+							var tmp = function(ts, text) { return function() {ts.findObjects(text)}};
+							var callback = tmp(this, this.text);
+							this.searchTimeout = setTimeout(callback, this.searchDelay);
+							dojo.debug('findObjects timeout called for other key: ' + key);
+						}
 					}
-				}
-				if (event.type == "submit") {
-					//infopath taskpane kludge to allow for no keyup and only onsubmit
-					onInputChange(null);
-					return false;
-				}
+					if (this.event.type == "submit") {
+						//infopath taskpane kludge to allow for no keyup and only onsubmit
+						this.onInputChange(null);
+						return false;
+					}
+			}
 		}
 		
 		return false;
 		
 	},
+	
 	
 	_enterKeyPressed: function() {
 	
@@ -257,7 +292,7 @@ dojo.widget.defineWidget(
 		this.inputNode.value = "";
 		dojo.debug('this.inputNode.value cleared');
 		
-		if (this.text != this.lastPhraseSearched && this.allowNewSearch()) {
+		if (this.allowNewSearch() && this.text != this.lastPhraseSearched) {
 			//this was a new search with the enter key pressed, call findObjects function 
 			dojo.debug('This was a new search');
 			if (this.text == "")
@@ -324,16 +359,22 @@ dojo.widget.defineWidget(
 		// override this method to make the necessary DWR calls 
 		
 		// e.g.:
-		
-			// a javascript closure
-			//var callback = function(ts) { return function(obj) {ts.fillTable(obj)}};
-			//DWREncounterService.findEncounters(callback(this), text, this.includeVoided.checked);
+		// DWREncounterService.findEncounters(this.simpleClosure(this, "doObjectsFound"), text, this.includeVoided.checked);
 			
 	},
 	
 	doObjectsFound: function(objs) {
-	
-		dojo.event.topic.publish(this.eventNames.objectsFound, {"objects": objs});
+		
+		dojo.event.topic.publish(this.eventNames.objectsFound, {"objs": objs});
+		
+		if (this.showHeaderRow == false || 
+			objs.length == 0 || 
+			(objs.length == 1 && (typeof objs[0] == "string"))) {
+				this.hideHeaderRow();
+		}
+		else {
+			this.displayHeaderRow();
+		}
 		
 		this.fillTable(objs);
 	},
@@ -378,10 +419,10 @@ dojo.widget.defineWidget(
 		td.style.display = "none";
 		return td;
 	},
+	
 	getNumber: function(searchHit) {
-		if (typeof searchHit == 'string') {
-    		return "";
-    	}
+		if (typeof searchHit == 'string') return "";
+    	
     	var td = document.createElement("td");
 		td.className = "searchIndex";
 		if (this.searchIndex >= this.objectsFound.length)
@@ -391,10 +432,10 @@ dojo.widget.defineWidget(
 		td.id = this.searchIndex;
 		return td;
 	},
-	getString: function(s) {
-		return s;
-	},
-	getCellContent: function() { return ''; },
+	
+	getString:		function(s)	{ return s;  },
+	
+	getCellContent:	function()	{ return ''; },
 	
 	getDateString: function(d) {
 		var str = '';
@@ -435,9 +476,9 @@ dojo.widget.defineWidget(
 		var tr = document.createElement("tr");
 		
 		if (i % 2)
-			tr.className = "evenRow";
-		else
 			tr.className = "oddRow";
+		else
+			tr.className = "evenRow";
 	
 		if (row != null && (row.voided == true || row.retired == true))
 			tr.className += " voided";
@@ -484,32 +525,47 @@ dojo.widget.defineWidget(
 	    
 	    DWRUtil.addRows(this.objHitsTableBody, objs, this.getCellFunctions(), this.getRowOptions());
 	    
-	    var pagingBarsCallback = function(ts) { return function() {ts.updatePagingBars()}}; //a javascript closure
-	   	setTimeout(pagingBarsCallback(this), 0);
+	   	setTimeout(this.simpleClosure(this, "updatePagingBars"), 0);
 	    
 	    if (this.event.keyCode == dojo.event.browser.keys.KEY_ENTER) {
 	    	// showHighlighting must be called here to assure it occurs after 
 	    	// objects are returned. Must be called with Timeout because 
 	    	// DWRUtil.addRows uses setTimeout
 	    	dojo.debug("showing highlight at end of fillTable() due to enterkey");
-	    	var closure = function(ts) { return function() {ts.showHighlight()}};
-	    	setTimeout(closure(this), 0);
+	    	setTimeout(this.simpleClosure(this, "showHighlight"), 0);
 	    }
 	    dojo.debug("ending fillTable(). Keycode was: " + this.event.keyCode);
 	    
 	    this.postFillTable();
 	},
 	
+	
 	getRowOptions: function() {
-		var tmp = function(ths, method) { return function(obj, obj2) { return ths[method](obj, obj2); }; };
-		var arr = { 'rowCreator': tmp(this, "rowCreator") };
+		var arr = { 'rowCreator': this.simpleClosure(this, "rowCreator") };
 		return arr;
 	},
 	
+	
 	getCellFunctions: function() {
-		var tmp = function(ths, method) { return function(obj, obj2) { return ths[method](obj, obj2); }; };
-		return [ tmp(this, "getNumber"), tmp(this, "getCellContent") ];
+		return [ this.simpleClosure(this, "getNumber"), this.simpleClosure(this, "getCellContent") ];
 	},
+	
+	
+	displayHeaderRow: function() {
+		this.headerRow.style.display="";
+	},
+	
+	
+	hideHeaderRow: function() {
+		this.headerRow.style.display="none";
+	},
+	
+	
+	getHeaderCellContent: function() {
+		return null;
+		// return ['Number', 'Cell Content'];
+	},
+	
 	
 	clearSearch: function() {
 		this.clearPagingBars();
@@ -611,9 +667,9 @@ dojo.widget.defineWidget(
 			return this.tableHeight;
 		else {
 			// get approx room for tablebody according to the space left on the page
-			var top = dojo.style.getPixelValue(this.objHitsTableBody, "top");
+			var top = dojo.style.totalOffsetTop(this.objHitsTableBody);
 			dojo.debug("top: " + top);
-			return (dojo.html.getViewportHeight(this.objHitsTableBody) - top);
+			return (dojo.html.getViewportHeight() - top);
 		}
 	},
 	
@@ -649,7 +705,6 @@ dojo.widget.defineWidget(
 		
 		this.pagingBar.innerHTML = "&nbsp;";
 	
-		var closure = function(ts, method) { return function(obj) { return ts[method]();}}; //a javascript closure
 		if (lastItemDisplayed != total || this.firstItemDisplayed > 1) {
 			// if need to show previous or next links	
 			var prev = document.createTextNode("Previous Results"); // default previous text node
@@ -659,7 +714,7 @@ dojo.widget.defineWidget(
 				prev.href = "#prev";
 				prev.className = "prevItems";
 				prev.innerHTML = "Previous " + (this.firstItemDisplayed-this.numItemsDisplayed < 1 ? this.firstItemDisplayed - 1: this.numItemsDisplayed) + " Result(s)";
-				prev.onclick = closure(this, "showPrevious");
+				prev.onclick = this.simpleClosure(this, "showPrevious");
 			}
 			
 			this.pagingBar.appendChild(prev);
@@ -675,7 +730,7 @@ dojo.widget.defineWidget(
 				next.href = "#next";
 				next.className = "nextItems";
 				next.innerHTML = "Next " + (lastItemDisplayed+this.numItemsDisplayed > total ? total - lastItemDisplayed: this.numItemsDisplayed ) + " Results";
-				next.onclick = closure(this, "showNext");
+				next.onclick = this.simpleClosure(this, "showNext");
 			}
 			
 			this.pagingBar.appendChild(next);
@@ -801,17 +856,11 @@ dojo.widget.defineWidget(
 	
 	
 	// whether or not a number entered triggers the search
-	allowAutoListWithNumber: function() {
-		return true;
-	},
+	allowAutoListWithNumber: function() { return true; },
 	
-	allowNewSearch: function() {
-		return true;
-	},
+	allowNewSearch: function() { return true; },
 	
-	allowAutoJump: function() {
-		return true;
-	}
+	allowAutoJump: function() { return true; }
 	
 	},
 	"html"

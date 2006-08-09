@@ -22,14 +22,28 @@ dojo.widget.defineWidget(
 		hiddenInputName: "",
 		
 		changeButton: null,
+		changeButtonValue: "",
 
 		searchWidget: "",
 		searchTitle: "",
 		
 		allowSearch: true,
-
+		
+		form: null,
+		
+		eventNames: {},
+		eventNamesDefault: {
+			select : "select"
+		},
+	
 		initializer: function(){
 			dojo.debug("initializing OpenmrsPopup");
+			
+			for(name in this.eventNamesDefault) {
+				if (dojo.lang.isUndefined(this.eventNames[name])) {
+					this.eventNames[name] = this.widgetId+"/"+this.eventNamesDefault[name];
+				}
+			}
 		},
 		
 		fillInTemplate: function(args, frag){
@@ -39,7 +53,7 @@ dojo.widget.defineWidget(
 				this.changeButton.style.display = "none";
 		},
 		
-		templateString: '<div><span style="white-space: nowrap"><span dojoAttachPoint="displayNode"></span> <input type="hidden" value="" dojoAttachPoint="hiddenInputNode" /> <input type="button" value="Change" dojoAttachPoint="changeButton" class="smallButton" /> </span> <div class="description" dojoAttachPoint="descriptionDisplayNode"></div> </div>',
+		templateString: '<span><span style="white-space: nowrap"><span dojoAttachPoint="displayNode"></span> <input type="hidden" value="" dojoAttachPoint="hiddenInputNode" /><input type="button" value="Change" dojoAttachPoint="changeButton" class="smallButton" /></span><div class="description" dojoAttachPoint="descriptionDisplayNode"></div> </span>',
 		templateCssPath: "",
 		
 		postCreate: function(){
@@ -68,7 +82,7 @@ dojo.widget.defineWidget(
 				this.searchWidget.domNode.insertBefore(closeButton, this.searchWidget.domNode.firstChild);
 				dojo.event.connect(closeButton, "onmouseup", this, "closeSearch");
 				
-				dojo.event.connect(this.searchWidget, "select", this, "closeSearch"); 
+				dojo.event.connect(this.searchWidget, "select", this, "doSelect"); 
 				
 				this.searchWidget.inputNode.style.width="190px";
 				
@@ -76,6 +90,15 @@ dojo.widget.defineWidget(
 			
 			if (this.hiddenInputName)
 				this.hiddenInputNode.name = this.hiddenInputName;	
+			
+			if (this.changeButtonValue)
+				this.changeButton.value = this.changeButtonValue;
+				
+			if (this.hiddenInputNode.form)
+				dojo.event.connect(this.hiddenInputNode.form, "onsubmit", function(e) {
+					e.preventDefault();
+				});
+			
 		},
 		
 		onChangeButtonClick: function() {
@@ -95,6 +118,11 @@ dojo.widget.defineWidget(
 			
 			dojo.style.setPositivePixelValue(this.searchWidget.domNode, "left", left);
 			dojo.style.setPositivePixelValue(this.searchWidget.domNode, "top", top);
+		},
+		
+		doSelect: function(objs) {
+			this.closeSearch();
+			dojo.event.topic.publish(this.eventNames.select, {"objs":objs});
 		},
 		
 		closeSearch: function() {
