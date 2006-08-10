@@ -8,7 +8,6 @@
 
 <script type="text/javascript">
 	dojo.require("dojo.widget.openmrs.ConceptSearch");
-	dojo.require("dojo.widget.openmrs.OpenmrsSearch");
 	
 	function miniObject(c) {
 		this.key = c.conceptId;
@@ -109,13 +108,15 @@
 			}
 		);
 		
-		searchWidget.inputNode.select();
 		
 		//Disable concept editing from within the taskpane 
 		//act like simple selection instead
 		searchWidget.editConcept = function(event, index) {
 			return selectObject(index);
 		}
+		
+		searchWidget.inputNode.focus();
+		searchWidget.inputNode.select();
 				
 	});
 
@@ -137,7 +138,7 @@
 
 <div id="searchForm">
 	<input name="mode" type="hidden" value='${request.mode}'>
-	<div dojoType="ConceptSearch" widgetId="cSearch" inputWidth="10em" showVerboseListing="true" conceptClasses='<request:parameters id="c" name="className"><request:parameterValues id="names"><jsp:getProperty name="names" property="value"/>;</request:parameterValues></request:parameters>' useOnKeyDown="true"></div>
+	<div dojoType="ConceptSearch" widgetId="cSearch" inputWidth="10em" showVerboseListing="true" conceptClasses='<request:existsParameter name="className"><request:parameters id="c" name="className"><request:parameterValues id="names"><jsp:getProperty name="names" property="value"/>;</request:parameterValues></request:parameters></request:existsParameter>' useOnKeyDown="true"></div>
 	<br />
 	<small>
 		<em>

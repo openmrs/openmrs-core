@@ -2,29 +2,19 @@
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
 
-<openmrs:require privilege="Edit Concepts" otherwise="/login.htm"
-	redirect="/dictionary/concept.form" />
+<openmrs:require privilege="Edit Concepts" otherwise="/login.htm" redirect="/dictionary/concept.form" />
 
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/prototype.lite.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/moo.fx.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/moo.fx.pack.js"></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/interface/DWRConceptService.js'></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/engine.js'></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/util.js'></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/openmrsSearch.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/conceptSearch.js"></script>
+<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/dojo/dojo.js"></script>
 <script type="text/javascript" src="conceptForm.js"></script>
+
 <script type="text/javascript">
 	function addName(anchor) {
 		if (anchor.href.lastIndexOf("=") == anchor.href.length - 1)
 			anchor.href += $("conceptName").value;
 	}
 	
-	function showConceptIds() {
-		return true;
-	}
-	
-		function selectTab(tab) {
+	// concept name tab functionality
+	function selectTab(tab) {
 		var displays = new Array();
 		
 		var tabs = tab.parentNode.getElementsByTagName("a");
@@ -54,30 +44,6 @@
 </script>
 
 <style>
-	.smallButton {
-		border: 1px solid lightgrey;
-		background-color: whitesmoke;
-		cursor: pointer;
-		width: 75px;
-		margin: 1px;
-	}
-	#conceptSearchForm {
-		width: 500px;
-		position: absolute;
-		z-index: 10;
-		margin: 5px;
-	}
-	#conceptSearchForm #wrapper {
-		padding: 2px;
-		background-color: whitesmoke;
-		border: 1px solid grey;
-		height: 360px;
-	}
-	#conceptSearchResults {
-		height: 275px;
-		overflow: auto;
-		width: 490px;
-	}
 	#newSearchForm {
 		padding: 0px;
 		margin: 0px;
@@ -135,7 +101,7 @@
 	<br />
 </spring:hasBindErrors>
 
-<form method="post" action="" onSubmit="removeHiddenRows()">
+<form method="post" action="">
 
 <table id="conceptTable" cellpadding="2" cellspacing="0">
 
@@ -273,7 +239,7 @@
 						</select>
 					</td>
 					<td valign="top" class="buttons">
-						&nbsp;<input type="button" value="<spring:message code="general.add"/>" class="smallButton" onClick="addConcept('conceptSetsNames', 'conceptSets', this);" /> <br/>
+						&nbsp;<span dojoType="ConceptSearch" widgetId="sSearch"></span><span dojoType="OpenmrsPopup" searchWidget="sSearch" searchTitle='<spring:message code="Concept.find"/>' changeButtonValue='<spring:message code="general.add"/>' showConceptIds="true"></span> <br/>
 						&nbsp;<input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('conceptSetsNames', 'conceptSets', ' ');" /> <br/>
 						&nbsp;<input type="button" value="<spring:message code="general.move_up"/>" class="smallButton" onClick="moveUp('conceptSetsNames', 'conceptSets');" /><br/>
 						&nbsp;<input type="button" value="<spring:message code="general.move_down"/>" class="smallButton" onClick="moveDown('conceptSetsNames', 'conceptSets');" /><br/>
@@ -312,8 +278,8 @@
 						</select>
 					</td>
 					<td valign="top" class="buttons">
-						&nbsp;<input type="button" value="<spring:message code="general.add"/>" class="smallButton" onClick="addConcept('answerNames', 'answerIds', this);"/><br/>
-						&nbsp;<input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('answerNames', 'answerIds', ' ');"/><br/>
+						&nbsp;<span dojoType="ConceptSearch" widgetId="aSearch"></span><span dojoType="OpenmrsPopup" searchWidget="aSearch" searchTitle='<spring:message code="Concept.find"/>' changeButtonValue='<spring:message code="general.add"/>' showConceptIds="true"></span> <br/>
+						&nbsp; <input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('answerNames', 'answerIds', ' ');"/><br/>
 					</td>
 				</tr>
 			</table>
@@ -451,7 +417,7 @@
 
 <br />
 
-<input type="submit" name="action" value="<spring:message code="Concept.save"/>" />
+<input type="submit" name="action" value="<spring:message code="Concept.save"/>" onMouseUp="removeHiddenRows()"/>
 
 <c:if test="${concept.conceptId != null}">
 	<openmrs:hasPrivilege privilege="Delete Concepts">
@@ -462,39 +428,8 @@
 
 </form>
 
-<div id="conceptSearchForm">
-	<div id="wrapper">
-		<input type="button" onClick="return closeConceptBox();" class="closeButton" value="X"/>
-		<form method="get" onSubmit="return searchBoxChange('conceptSearchBody', searchText, null, false, 0); return false;">
-			<h3><spring:message code="Concept.find"/></h3>
-			<input type="text" id="searchText" size="45" onkeyup="return searchBoxChange('conceptSearchBody', this, event, false, 400);"> &nbsp;
-			<input type="checkbox" id="verboseListing" value="true" <c:if test="${defaultVerbose == true}">checked</c:if> onclick="searchBoxChange('conceptSearchBody', searchText, event, false, 0); searchText.focus();"><label for="verboseListing"><spring:message code="dictionary.verboseListing"/></label>
-		</form>
-		<div id="conceptSearchResults">
-			<table>
-				<tbody id="conceptSearchBody">
-					<tr>
-						<td></td>
-						<td></td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-	</div>
-</div>
-
 <script type="text/javascript">
-	document.getElementById("searchPhrase").focus();
-	<request:existsParameter name="conceptName">
-		<!-- the user has a default concept name in the request -->
-		var text = document.getElementById('conceptName');
-		if (text.value.length == 0)
-			text.value = "<request:parameter name="conceptName"/>";
-	</request:existsParameter>
 	selectTab(document.getElementById("${locale}Tab"));
 </script>
-
-<div id="xdebugBox"></div>
-
 
 <%@ include file="/WEB-INF/template/footer.jsp"%>

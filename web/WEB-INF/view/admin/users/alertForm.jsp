@@ -19,21 +19,22 @@
 		
 		dojo.event.topic.subscribe("uSearch/select", 
 			function(msg) {
-				var obj = msg.objs[0];
-				var options = $("userNames").options;
-				
-				var isAddable = true;
-				for (x=0; x<options.length; x++)
-					if (options[x].value == obj.userId)
-						isAddable = false;
-				
-				if (isAddable) {
-					var opt = new Option(obj.firstName + " " + obj.lastName, obj.userId);
-					opt.selected = true;
-					options[options.length] = opt;
-					copyIds("userNames", "userIds", " ");
+				for (var i=0; i< msg.objs.length; i++) {
+					var obj = msg.objs[i];
+					var options = $("userNames").options;
+					
+					var isAddable = true;
+					for (x=0; x<options.length; x++)
+						if (options[x].value == obj.userId)
+							isAddable = false;
+					
+					if (isAddable) {
+						var opt = new Option(obj.firstName + " " + obj.lastName, obj.userId);
+						opt.selected = true;
+						options[options.length] = opt;
+						copyIds("userNames", "userIds", " ");
+					}
 				}
-				return false;
 			}
 		);
 	});

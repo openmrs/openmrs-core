@@ -1,16 +1,53 @@
+dojo.require("dojo.widget.openmrs.ConceptSearch");
+dojo.require("dojo.widget.openmrs.OpenmrsPopup");
+
 var nameListBox= null;
 var idListBox  = null;
 var addButton  = null;
-var myConceptSearchMod = null;
 var drugConcepts = new Array();
+var answerSearch;
+var setSearch;
 
-window.onload = function() {
-	myConceptSearchMod = new fx.Resize("conceptSearchForm", {duration: 100});
-	myConceptSearchMod.hide();
+dojo.addOnLoad( function() {
+		
+	answerSearch = dojo.widget.manager.getWidgetById("aSearch");
+	setSearch = dojo.widget.manager.getWidgetById("sSearch");
+	
+	dojo.event.topic.subscribe("aSearch/select", 
+		function(msg) {
+			selectConcept('answerNames', 'answerIds', msg.objs, answerSearch);
+		}
+	);
+	
+	dojo.event.topic.subscribe("sSearch/select", 
+		function(msg) {
+			selectConcept('conceptSetsNames', 'conceptSets', msg.objs, setSearch);
+		}
+	);
+	
 	changeClass(document.getElementById("conceptClass"));
 	changeDatatype(document.getElementById("datatype"));
 	changeSetStatus(document.getElementById('conceptSet'));
-};
+});
+
+function selectConcept(nameList, idList, conceptList, widget) {
+	var nameListBox = $(nameList);
+	var idListBox = $(idList);
+	
+	var options = nameListBox.options;
+	for (i=0; i<conceptList.length; i++) {
+		if (conceptList[i].className == "Drug")
+			drugConcepts.push(conceptList[i]);
+		else
+			addOption(conceptList[i], options);
+	}
+	copyIds(nameListBox.id, idListBox.id, ' ');
+	
+	if (drugConcepts.length > 0) {
+		doSelectDrugs(widget);
+	}
+}
+
 
 function removeItem(nameList, idList, delim)
 {
@@ -37,37 +74,6 @@ function removeItem(nameList, idList, delim)
 		return optList[lastIndex];
 	}
 	return null;
-}
-
-function addConcept(nameList, idList, obj)
-{
-	nameList = document.getElementById(nameList);
-	idList   = document.getElementById(idList);
-	if (idList != idListBox) {
-		//if user clicked on a new button
-		closeConceptBox();
-		nameListBox = nameList;	// used by onSelect()
-		idListBox   = idList;	// used by onSelect()
-	}
-	
-	var conceptSearchForm = document.getElementById("conceptSearchForm");
-	setPosition(obj, conceptSearchForm, 520, 290);
-	
-	DWRUtil.removeAllRows("conceptSearchBody");
-	
-	myConceptSearchMod.toggle();
-	if (addButton == null) {
-		var searchText = document.getElementById("searchText");
-		searchText.value = '';
-		searchText.select();
-		addButton = obj;
-		resetForm();
-		//searchText.focus();  //why does this cause the inner box to shift position?!?
-	}
-	else {
-		obj.focus();
-		addButton = null;
-	}
 }
 
 function closeConceptBox() {
@@ -158,29 +164,9 @@ function addSynonym(locale) {
 	window.Event.keyCode = 0;  //disable enter key submitting form
 }
 
-var onSelect = function(conceptList) {
-	var options = nameListBox.options;		//nameListBox var from addConcept(nameList, idList, obj)
-	for (i=0; i<conceptList.length; i++) {
-		if (conceptList[i].className == "Drug")
-			drugConcepts.push(conceptList[i]);
-		else
-			addOption(conceptList[i], options);
-	}
-	copyIds(nameListBox.id, idListBox.id, ' ');
-	
-	doSelectDrugs(drugConcepts);
-
-	return false;
-};
-
-var doSelectDrugs = function() {
-	if (drugConcepts.length > 0) {
-		resetForm();
-		DWRConceptService.getDrugs(fillTable, drugConcepts.pop().conceptId, true);
-	}
-	else {
-		closeConceptBox();
-	}
+var doSelectDrugs = function(widget) {
+	widget.clearSearch();
+	DWRConceptService.getDrugs(widget.simpleClosure(widget, "doObjectsFound"), drugConcepts.pop().conceptId, true);
 }
 
 function addOption(obj, options) {
@@ -209,12 +195,10 @@ function removeHiddenRows() {
 	var rows = document.getElementsByTagName("TR");
 	var i = 0;
 	while (i < rows.length) {
-		if (rows[i].style.display == "none") {
+		if (rows[i].style.display == "none")
 			rows[i].parentNode.removeChild(rows[i]);
-		}
-		else {
+		else
 			i = i + 1;
-		}
 	}
 }
 

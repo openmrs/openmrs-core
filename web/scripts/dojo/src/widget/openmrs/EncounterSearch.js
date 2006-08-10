@@ -9,9 +9,7 @@ dojo.require("dojo.widget.openmrs.OpenmrsSearch");
 var openmrsSearchBase = djConfig["baseScriptUri"].substring(0, djConfig["baseScriptUri"].indexOf("/", 1));
 document.write("<script type='text/javascript' src='" + openmrsSearchBase + "/dwr/interface/DWREncounterService.js'></script>");
 
-dojo.debug("before parse");
 dojo.widget.tags.addParseTreeHandler("dojo:EncounterSearch");
-dojo.debug("after parse");
 
 dojo.widget.defineWidget(
 	"dojo.widget.openmrs.EncounterSearch",
@@ -20,19 +18,17 @@ dojo.widget.defineWidget(
 		encounterId: "",
 		
 		postCreate: function(){
-			dojo.debug("postCreate in encountersearch");
+			dojo.debug("postCreate in encounterSearch");
 			
 			if (this.encounterId)
 				DWREncounterService.getEncounter(this.simpleClosure(this, "select"), this.encounterId);
 		},
 		
+		
 		doFindObjects: function(text) {
 
-			// a javascript closure
-			var callback = function(ts) { return function(obj) {ts.doObjectsFound(obj)}};
-			
 			var tmpIncludedVoided = (this.showIncludeVoided && this.includeVoided.checked);
-			DWREncounterService.findEncounters(callback(this), text, tmpIncludedVoided);
+			DWREncounterService.findEncounters(this.simpleClosure(this, "doObjectsFound"), text, tmpIncludedVoided);
 			
 			return false;
 		},
@@ -80,14 +76,13 @@ dojo.widget.defineWidget(
 		
 		
 		getCellFunctions: function() {
-			var tmp = function(ths, method) { return function(obj) { return ths[method](obj); }; };
-			return [tmp(this, "getNumber"), 
-					tmp(this, "getPatient"), 
-					tmp(this, "getType"), 
-					tmp(this, "getForm"), 
-					tmp(this, "getProvider"),
-					tmp(this, "getLocation"), 
-					tmp(this, "getDateTime")
+			return [this.simpleClosure(this, "getNumber"), 
+					this.simpleClosure(this, "getPatient"), 
+					this.simpleClosure(this, "getType"), 
+					this.simpleClosure(this, "getForm"), 
+					this.simpleClosure(this, "getProvider"),
+					this.simpleClosure(this, "getLocation"), 
+					this.simpleClosure(this, "getDateTime")
 					];
 			
 		},
@@ -104,7 +99,7 @@ dojo.widget.defineWidget(
 				this.autoJump = true;
 				return false;
 			}
-			return true;	
+			return true;
 		}
 		
 	},

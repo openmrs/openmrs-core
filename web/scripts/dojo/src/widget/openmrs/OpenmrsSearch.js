@@ -14,8 +14,8 @@ var openmrsSearchBase = djConfig["baseScriptUri"].substring(0, djConfig["baseScr
 document.write("<script type='text/javascript' src='" + openmrsSearchBase + "/dwr/engine.js'></script>");
 document.write("<script type='text/javascript' src='" + openmrsSearchBase + "/dwr/util.js'></script>");		
 
-// Add parse handler.  I don't think we'll need html tags for the generic search functions.
-//dojo.widget.tags.addParseTreeHandler("dojo:OpenmrsSearch");
+// Add parse handler.  
+dojo.widget.tags.addParseTreeHandler("dojo:OpenmrsSearch");
 
 
 dojo.widget.openmrs.OpenmrsSearch = function() {
@@ -147,7 +147,12 @@ dojo.widget.defineWidget(
 			if (this.useOnKeyDown)
 				dojo.event.connect(this.inputNode, "onkeydown", this, "onInputChange");
 			else
-				dojo.event.connect(this.inputNode, "onkeyup", this, "onInputChange");
+				dojo.event.connect("before", this.inputNode, "onkeyup", this, "onInputChange");
+			
+			dojo.event.connect("before", this.inputNode, "onkeypress", function(evt) {
+				if (evt.keyCode == dojo.event.browser.keys.KEY_ENTER)
+					dojo.event.browser.stopEvent(evt);
+			});
 			
 			dojo.event.connect(this.includeRetired, "onclick", this, "onCheckboxClick");
 			dojo.event.connect(this.includeVoided, "onclick", this, "onCheckboxClick");
@@ -161,7 +166,8 @@ dojo.widget.defineWidget(
 
 	setHeaderCellContent: function(arr) {
 		if (this.showHeaderRow && arr) {
-			this.headerRow.innerHTML = "";
+			while (this.headerRow.hasChildNodes())
+				this.headerRow.removeChild(this.headerRow.firstChild);
 			for( var i=0; i < arr.length; i++) {
 				var td = document.createElement("td");
 				td.innerHTML = arr[i];
@@ -317,6 +323,7 @@ dojo.widget.defineWidget(
 			dojo.debug('This was a redundant search');
 			this.showHighlight();
 		}
+		
 	},
 	
 	

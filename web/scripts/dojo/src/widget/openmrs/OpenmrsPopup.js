@@ -83,6 +83,7 @@ dojo.widget.defineWidget(
 				dojo.event.connect(closeButton, "onmouseup", this, "closeSearch");
 				
 				dojo.event.connect(this.searchWidget, "select", this, "doSelect"); 
+				dojo.event.connect(this.searchWidget, "doObjectsFound", this, "doObjectsFound"); 
 				
 				this.searchWidget.inputNode.style.width="190px";
 				
@@ -93,11 +94,6 @@ dojo.widget.defineWidget(
 			
 			if (this.changeButtonValue)
 				this.changeButton.value = this.changeButtonValue;
-				
-			if (this.hiddenInputNode.form)
-				dojo.event.connect(this.hiddenInputNode.form, "onsubmit", function(e) {
-					e.preventDefault();
-				});
 			
 		},
 		
@@ -118,6 +114,11 @@ dojo.widget.defineWidget(
 			
 			dojo.style.setPositivePixelValue(this.searchWidget.domNode, "left", left);
 			dojo.style.setPositivePixelValue(this.searchWidget.domNode, "top", top);
+		},
+		
+		doObjectsFound: function(objs) {
+			if (!this.searchWidget.isShowing())
+				this.searchWidget.toggleShowing();
 		},
 		
 		doSelect: function(objs) {

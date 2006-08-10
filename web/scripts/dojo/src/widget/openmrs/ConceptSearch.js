@@ -9,10 +9,7 @@ dojo.require("dojo.widget.openmrs.OpenmrsSearch");
 var openmrsSearchBase = djConfig["baseScriptUri"].substring(0, djConfig["baseScriptUri"].indexOf("/", 1));
 document.write("<script type='text/javascript' src='" + openmrsSearchBase + "/dwr/interface/DWRConceptService.js'></script>");
 
-
-dojo.debug("before parse");
 dojo.widget.tags.addParseTreeHandler("dojo:ConceptSearch");
-dojo.debug("after parse");
 
 dojo.widget.defineWidget(
 	"dojo.widget.openmrs.ConceptSearch",
