@@ -54,6 +54,29 @@ public class ObsService {
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_OBS);
 		getObsDAO().createObs(obs);
 	}
+	
+	/**
+	 * Create a grouping of observations (observations linked by obs.obs_group_id)
+	 * 
+	 * @param obs - array of observations to be grouped
+	 * @throws APIException
+	 */
+	public void createObsGroup(Obs[] obs) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_ADD_OBS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_OBS);
+		if (obs == null || obs.length < 1)
+			return; // silently tolerate calls with missing/empty parameter
+
+		// TODO - consider creating a DAO-level method for creating obs groups more efficiently
+		getObsDAO().createObs(obs[0]);
+		Integer obsGroupId = obs[0].getObsId();
+		obs[0].setObsGroupId(obsGroupId);
+		getObsDAO().updateObs(obs[0]);
+		for (int i=1; i<obs.length; i++) {
+			obs[i].setObsGroupId(obsGroupId);
+			getObsDAO().createObs(obs[i]);
+		}
+	}
 
 	/**
 	 * Get an observation

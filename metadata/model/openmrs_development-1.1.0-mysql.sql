@@ -494,7 +494,8 @@ CREATE TABLE `formentry_queue` (
 #----------------------------
 CREATE TABLE `global_property` (
   `property` varchar(255) default NULL,
-  `property_value` varchar(255) default NULL
+  `property_value` varchar(255) default NULL,
+  PRIMARY_KEY (`property`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 insert into `global_property` values ('database_version', '1.0.18');
