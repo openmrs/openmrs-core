@@ -129,17 +129,8 @@ h1, h2, h3, h4, h5 {
 #patientSummary .boxHeader { font-size: 1.55em;}
 #patientSummary { /*width: 700px;*/ }
 
-#breadcrumbHeader {
-	font-size: 1.2em;
-	font-weight: bold;
-	text-align: left;
-	padding:5px 5px 5px 5px;
-}
-#breadcrumbHeader a {
-	text-decoration:none;
-}
-#breadcrumbHeader a:hover {
-	color:navy;
+.obsDate {
+	font-size: 0.7em;
 }
 
 #patientHeader {
