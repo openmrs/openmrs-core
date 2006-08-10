@@ -26,10 +26,6 @@ public class HtmlIncludeTag extends TagSupport {
 	private String file;
 	private HashMap<String,String> hmIncludeMap;
 	
-	public PageContext getPageContext() {
-		return this.pageContext;
-	}
-	
 	public int doStartTag() throws JspException {
 
 		// see if this is a JS or CSS file
@@ -85,7 +81,7 @@ public class HtmlIncludeTag extends TagSupport {
 		
 		if ( fileName != null ) {
 			if ( this.hmIncludeMap == null ) {
-				hmIncludeMap = (HashMap<String, String>) pageContext.getAttribute("bobby");
+				hmIncludeMap = (HashMap<String, String>) pageContext.getAttribute("bobby", PageContext.REQUEST_SCOPE);
 				if ( hmIncludeMap == null ) {
 					hmIncludeMap = new HashMap<String,String>();
 				}
@@ -95,11 +91,11 @@ public class HtmlIncludeTag extends TagSupport {
 				isUsed = true;
 			} else {
 				hmIncludeMap.put(fileName,"true");
-				pageContext.setAttribute("bobby", hmIncludeMap);
+				pageContext.setAttribute("bobby", hmIncludeMap, PageContext.REQUEST_SCOPE);
 			}
 			
 		}
-
+		
 		return isUsed;
 	}
 
