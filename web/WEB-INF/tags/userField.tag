@@ -26,6 +26,6 @@
 	})
 </script>
 
-<span class="userSearchLabel">${searchLabel}</span>
-<div dojoType="UserSearch" widgetId="${formFieldName}_search" userId="${initialValue}" roles="${roles}" class="userSearchField"></div>
-<div dojoType="OpenmrsPopup" widgetId="${formFieldName}_selection" hiddenInputName="${formFieldName}" searchWidget="${formFieldName}_search" searchTitle="${searchLabel}" class="userSearchPopup"></div>
+<div class="userSearchLabel">${searchLabel}</div>
+<div dojoType="UserSearch" widgetId="${formFieldName}_search" userId="${initialValue}" roles="${roles}"></div>
+<div dojoType="OpenmrsPopup" widgetId="${formFieldName}_selection" hiddenInputName="${formFieldName}" searchWidget="${formFieldName}_search" searchTitle="${searchLabel}"></div>
