@@ -39,13 +39,13 @@ import org.openmrs.notification.impl.MessageServiceImpl;
 import org.openmrs.notification.mail.MailMessageSender;
 import org.openmrs.notification.mail.velocity.VelocityMessagePreparator;
 import org.openmrs.reporting.ReportObjectFactory;
-import org.openmrs.reporting.ReportObjectFactoryModule;
 import org.openmrs.reporting.ReportService;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.timer.TimerSchedulerService;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 /**
  * Represents an OpenMRS <code>Context</code>, which may be used to
@@ -271,35 +271,14 @@ public class Context implements ApplicationContextAware {
 		
 		//
 		// TODO This is a temporary solution until report info is moved out of openmrs-servlet.xml
+		//  In the meantime, this is very inefficient and should be replaced when we have a solution
 		//
 		if (reportService == null) {
-			List<ReportObjectFactoryModule> modules = new Vector<ReportObjectFactoryModule>();
-			ReportObjectFactoryModule module = new ReportObjectFactoryModule();
-			module.setName("PatientCharacteristicFilter");
-			module.setDisplayName("Patient Characteristic Filter");
-			module.setClassName("org.openmrs.reporting.PatientCharacteristicFilter");
-			module.setType("Patient Filter");
-			module.setValidatorClass("org.openmrs.reporting.PatientCharacteristicFilterValidator");
-			modules.add(module);
-			module = new ReportObjectFactoryModule();
-			module.setName("NumericObsPatientFilter");
-			module.setDisplayName("Numeric Observation Patient Filter");
-			module.setClassName("org.openmrs.reporting.NumericObsPatientFilter");
-			module.setType("Patient Filter");
-			module.setValidatorClass("org.openmrs.reporting.NumericObsPatientFilterValidator");
-			modules.add(module);
-			module = new ReportObjectFactoryModule();
-			module.setName("ShortDescriptionProducer");
-			module.setDisplayName("Short Description Producer");
-			module.setClassName("org.openmrs.reporting.ShortDescriptionProducer");
-			module.setType("Patient Data Producer");
-			module.setValidatorClass("org.openmrs.reporting.ShortDescriptionProducerValidator");
-			modules.add(module);
-			ReportObjectFactory factory = new ReportObjectFactory();
-			factory.setDefaultValidator("org.openmrs.web.controller.report.ReportObjectValidator");
-			factory.setModules(modules);
-			
-			reportService = new ReportService(this, getDaoContext(), factory);
+			ApplicationContext context = new FileSystemXmlApplicationContext("file:/**/WEB-INF/openmrs-servlet.xml");
+			if ( context != null ) {
+				ReportObjectFactory factory = (ReportObjectFactory)context.getBean("reportObjectFactory");
+				reportService = new ReportService(this, getDaoContext(), factory);
+			} else log.error("Could not get handle on BeanFactory while trying to get ReportObjectFactory");
 		}
 		return reportService;
 	}
