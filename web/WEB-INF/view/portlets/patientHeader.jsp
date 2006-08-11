@@ -52,10 +52,10 @@
 			<openmrs_tag:mostRecentObs observations="${model.patientObs}" concept="5497" locale="${model.locale}" />
 			&nbsp;|&nbsp;
 			<spring:message code="Patient.regimen" />:
-			<c:forEach items='${openmrs:filterObsByConcept(model.patientObs, "1088")}' var="arv" varStatus="arvStatus">
-				<openmrs:concept conceptId="${arv.valueCoded.conceptId}" var="c" nameVar="n" numericVar="num">
-					${n.name}<c:if test="${!arvStatus.last}">, </c:if>
-				</openmrs:concept>
+			<c:forEach items="${model.patientDrugOrders}" var="drugOrder" varStatus="drugOrderStatus">
+				<c:if test="${drugOrder.current}">
+					${drugOrder.drug.name}&nbsp;
+				</c:if>
 			</c:forEach>
 		</div>
 		<div>
