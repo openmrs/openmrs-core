@@ -22,6 +22,7 @@ import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.propertyeditor.ConceptEditor;
 import org.openmrs.web.propertyeditor.DrugEditor;
@@ -56,7 +57,7 @@ public class OrderDrugFormController extends SimpleFormController {
         binder.registerCustomEditor(OrderType.class, new OrderTypeEditor(context));
         binder.registerCustomEditor(Boolean.class, new CustomBooleanEditor("t", "f", true));
         binder.registerCustomEditor(Concept.class, new ConceptEditor(context));
-        binder.registerCustomEditor(Date.class, new CustomDateEditor(new SimpleDateFormat("dd/MM/yyyy"), true));
+        binder.registerCustomEditor(Date.class, new CustomDateEditor(new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(context.getLocale().toString().toLowerCase()), context.getLocale()), true));
         binder.registerCustomEditor(User.class, new UserEditor(context));
         binder.registerCustomEditor(Encounter.class, new EncounterEditor(context));
         binder.registerCustomEditor(Drug.class, new DrugEditor(context));
@@ -67,11 +68,18 @@ public class OrderDrugFormController extends SimpleFormController {
 	 */
 	@Override
 	protected Map referenceData(HttpServletRequest request) throws Exception {
-		Map refData = new HashMap();
-
+		
+		Map<String, Object> refData = new HashMap<String, Object>();
+		
+		HttpSession httpSession = request.getSession();
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		// just the text that we need for an empty orderType list
 		String emptyOrderTypeList = this.getMessageSourceAccessor().getMessage("OrderType.list.empty");
 		refData.put("emptyOrderTypeList", emptyOrderTypeList);
+		
+		// put the default dateformat for the locale
+		refData.put("datePattern", OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(context.getLocale().toString().toLowerCase()));
 		
 		return refData;
 	}
