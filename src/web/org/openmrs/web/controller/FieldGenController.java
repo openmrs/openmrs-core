@@ -55,18 +55,6 @@ public class FieldGenController implements Controller {
 			//String startVal = (String)request.getAttribute("org.openmrs.fieldGen.startVal");
 			Map<String, Object> params = (Map<String, Object>)request.getAttribute("org.openmrs.fieldGen.parameters");
 			Map<String, Object> moreParams = (Map<String, Object>) request.getAttribute("org.openmrs.fieldGen.parameterMap");
-			
-			System.out.println("PRINTING PARAMS (CONTROLLER)");
-			HashMap<String,Object> hmTest = (HashMap<String,Object>)params;
-			for ( String s : hmTest.keySet() ) {
-				System.out.println("Key is " + s + ", value is " + hmTest.get(s).toString());
-			}
-
-			System.out.println("PRINTING PARAMMAP (CONTROLLER)");
-			hmTest = (HashMap<String,Object>)moreParams;
-			for ( String s : hmTest.keySet() ) {
-				System.out.println("Key is " + s + ", value is " + hmTest.get(s).toString());
-			}
 
 			Object o = request.getAttribute("org.openmrs.fieldGen.object");
 			

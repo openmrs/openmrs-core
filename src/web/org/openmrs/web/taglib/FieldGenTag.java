@@ -261,18 +261,6 @@ public class FieldGenTag extends ImportSupport {
 		if ( this.parameterMap != null ) hmParamMap.putAll(this.parameterMap);
 		pageContext.getRequest().setAttribute("org.openmrs.fieldGen.parameterMap", hmParamMap);
 		
-		System.out.println("PRINTING PARAMS");
-		HashMap<String,Object> hmTest = (HashMap<String,Object>)pageContext.getRequest().getAttribute("org.openmrs.fieldGen.parameters");
-		for ( String s : hmTest.keySet() ) {
-			System.out.println("Key is " + s + ", value is " + hmTest.get(s).toString());
-		}
-
-		System.out.println("PRINTING PARAMMAP");
-		hmTest = (HashMap<String,Object>)pageContext.getRequest().getAttribute("org.openmrs.fieldGen.parameterMap");
-		for ( String s : hmTest.keySet() ) {
-			System.out.println("Key is " + s + ", value is " + hmTest.get(s).toString());
-		}
-
 		/*
 		if ( pageContext.getRequest().getAttribute("org.openmrs.fieldGen.object") == null ) {
 			if ( typeClass == null ) {
