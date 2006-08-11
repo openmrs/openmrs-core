@@ -1,8 +1,12 @@
 package org.openmrs.api;
 
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.openmrs.DrugOrder;
+import org.openmrs.Encounter;
+import org.openmrs.Location;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
@@ -46,6 +50,43 @@ public class OrderService {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_ADD_ORDERS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_ORDERS);
 		getOrderDAO().createOrder(order);
+	}
+	
+	/**
+	 * Creates a collection of orders and an encounter to hold them. orders[i].encounter will be set to the new encounter.
+	 * If there's an EncounterType with name "Regimen Change", then the newly-created encounter will have that type
+	 * @throws APIException if there is no User with username Unknown or no Location with name Unknown.
+	 */
+	public void createOrdersAndEncounter(Patient p, Collection<Order> orders) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_ADD_ORDERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_ORDERS);
+		User unknownUser = context.getUserService().getUserByUsername("Unknown");
+		Location unknownLocation = context.getEncounterService().getLocationByName("Unknown");
+		// TODO: fix this hack
+		if (unknownUser == null) {
+			unknownUser = context.getAuthenticatedUser();
+		}
+		if (unknownUser == null || unknownLocation == null) {
+			throw new APIException("Couldn't find a Location and a User named 'Unknown'.");
+		}
+		Encounter e = new Encounter();
+		e.setPatient(p);
+		e.setProvider(unknownUser);
+		e.setLocation(unknownLocation);
+		e.setEncounterDatetime(new Date());
+		// TODO: Remove hardcoded encounter type
+		e.setEncounterType(context.getEncounterService().getEncounterType("Regimen Change"));
+		for (Order order : orders) {
+			if (order.getCreator() == null) {
+				order.setCreator(context.getAuthenticatedUser());
+			}
+			if (order.getDateCreated() == null) {
+				order.setDateCreated(new Date());
+			}
+			e.addOrder(order);
+			order.setEncounter(e);
+		}
+		context.getEncounterService().createEncounter(e);
 	}
 
 	/**
