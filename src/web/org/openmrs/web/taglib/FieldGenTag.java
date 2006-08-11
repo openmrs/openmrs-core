@@ -406,10 +406,14 @@ public class FieldGenTag extends ImportSupport {
 
 			//ApplicationContext context = new FileSystemXmlApplicationContext("file:/**/WEB-INF/openmrs-servlet.xml");
 			//if ( context == null ) context = WebApplicationContextUtils.getWebApplicationContext(this.pageContext.getServletContext());
-			if ( context == null ) context = new FileSystemXmlApplicationContext("file:/**/WEB-INF/openmrs-servlet.xml");
+			//if ( context == null ) context = new FileSystemXmlApplicationContext("file:/**/WEB-INF/openmrs-servlet.xml");
+			/*
 			if ( context != null ) {
 				if ( factory == null ) factory = (FieldGenHandlerFactory)context.getBean("fieldGenHandlerFactory");
 			} else log.error("Could not get handle on BeanFactory from FieldGen module");
+			*/
+			factory = FieldGenHandlerFactory.getSingletonInstance();
+			
 		} catch (Exception e) {
 			factory = null;
 			e.printStackTrace(); 
