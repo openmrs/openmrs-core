@@ -14,10 +14,24 @@ import org.openmrs.api.context.Context;
 
 public class ReportObjectFactory {
 
+	private static ReportObjectFactory singleton;
+	
 	private static Log log = LogFactory.getLog(ReportObjectFactory.class);
 	
 	private String defaultValidator;
 	private List<ReportObjectFactoryModule> modules;
+	
+	public ReportObjectFactory() {
+		if (singleton == null)
+			singleton = this;
+	}
+	
+	public static ReportObjectFactory getInstance() {
+		if (singleton == null)
+			throw new RuntimeException("Not Yet Instantiated");
+		else
+			return singleton;
+	}
 	
 	public Set<String> getReportObjectTypes() {
 		if ( modules != null ) {

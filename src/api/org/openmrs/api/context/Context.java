@@ -268,17 +268,9 @@ public class Context implements ApplicationContextAware {
 			log.warn("unauthorized access to report service");
 			return null;
 		}
-		
-		//
-		// TODO This is a temporary solution until report info is moved out of openmrs-servlet.xml
-		//  In the meantime, this is very inefficient and should be replaced when we have a solution
-		//
+	
 		if (reportService == null) {
-			ApplicationContext context = new FileSystemXmlApplicationContext("file:/**/WEB-INF/openmrs-servlet.xml");
-			if ( context != null ) {
-				ReportObjectFactory factory = (ReportObjectFactory)context.getBean("reportObjectFactory");
-				reportService = new ReportService(this, getDaoContext(), factory);
-			} else log.error("Could not get handle on BeanFactory while trying to get ReportObjectFactory");
+			reportService = new ReportService(this, getDaoContext(), ReportObjectFactory.getInstance());
 		}
 		return reportService;
 	}
