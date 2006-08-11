@@ -381,9 +381,11 @@ public class DWRFormService {
 		Field field = ff.getField();
 		Concept concept = new Concept();
 		ConceptName conceptName = new ConceptName();
+		Boolean isSet = false;
 		if (field.getConcept() != null) {
 			concept = field.getConcept();
 			conceptName = concept.getName(locale);
+			isSet = concept.isSet();
 		}
 		
     	return "addNode(tree, {formFieldId: " + ff.getFormFieldId() + ", " + 
@@ -399,6 +401,7 @@ public class DWRFormService {
     					"defaultValue: \"" + WebUtil.escapeQuotes(field.getDefaultValue()) + "\", " + 
     					"selectMultiple: " + field.getSelectMultiple() + ", " + 
     					"numForms: " + field.getForms().size() + ", " + 
+    					"isSet: " + isSet + ", " +
     						
     					"fieldNumber: " + ff.getFieldNumber() + ", " + 
     					"fieldPart: \"" + (ff.getFieldPart() == null ? "" : WebUtil.escapeQuotes(ff.getFieldPart())) + "\", " + 

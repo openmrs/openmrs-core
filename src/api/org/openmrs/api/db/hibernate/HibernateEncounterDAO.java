@@ -280,7 +280,8 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	public Set<Encounter> getEncounters(Patient who, boolean includeVoided) {
 		Set<Encounter> encounters = new HashSet<Encounter>();
-		encounters.addAll(getEncountersByPatientId(who.getPatientId(), includeVoided));
+		if (who != null)
+			encounters.addAll(getEncountersByPatientId(who.getPatientId(), includeVoided));
 
 		return encounters;
 	}

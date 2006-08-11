@@ -12,6 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptNumeric;
+import org.openmrs.ConceptSet;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.User;
@@ -179,6 +180,26 @@ public class DWRConceptService {
 		return items;
 	}
 	
+	public List<ConceptListItem> getConceptSet(Integer conceptId) {
+			
+		Context context = (Context) WebContextFactory.get().getSession()
+				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+
+			Locale locale = context.getLocale();
+			ConceptService cs = context.getConceptService();
+			
+			Concept concept = cs.getConcept(conceptId);
+
+			List<ConceptListItem> returnList = new Vector<ConceptListItem>();
+			
+			if (concept.isSet()) {
+				for (ConceptSet set : concept.getConceptSets())
+					returnList.add(new ConceptListItem(set.getConcept(), locale));
+			}
+			
+			return returnList;
+	}
+	
 	public List<ConceptListItem> getQuestionsForAnswer(Integer conceptId) {
 		Context context = (Context) WebContextFactory.get().getSession()
 		.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
@@ -197,7 +218,7 @@ public class DWRConceptService {
 		
 		return items;
 	}
-
+	
 	public ConceptDrugListItem getDrug(Integer drugId) {
 		Context context = (Context) WebContextFactory.get().getSession()
 				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);

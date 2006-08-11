@@ -15354,7 +15354,7 @@ insert into tribe values
 # Records for table patient
 #----------------------------
 insert into patient values 
-(1, 'M', 'W', '1975-01-01', 0, 'Indianapolis, IN', 1, 'US', null, 0, null, null, null, null, 1, '2005-09-22 00:00:00', null, null, 0, null, null, null), 
+(1, 'M', 'W', '1975-01-01', 0, 'Indianapolis, IN', 1, 'US', null, null, null, null, null, null, 1, '2005-09-22 00:00:00', null, null, 0, null, null, null), 
 (2, 'M', 'B', '1941-05-01', 0, 'Berlin, Germany', 1, 'GE', null, 1, null, null, null, null, 1, '2005-09-22 00:00:00', null, null, 0, null, null, null);
 
 
@@ -15363,15 +15363,15 @@ insert into patient values
 #----------------------------
 insert into patient_address values 
 (1, 1, 1, '555 Johnson Rd.', 'Apt. 555', 'Indianapolis', 'IN', '46202', 'USA', '394700', '860900', 1, '2005-09-22 00:00:00', 0, null, null, null), 
-(2, 1, 0, '1050 Wishard Blvd.', 'RG5', 'Indianapolis', 'IN', '46202', 'USA', null, null, 1, '2005-09-22 00:00:00', 0, null, null, null);
+(2, 2, 0, '1050 Wishard Blvd.', 'RG5', 'Indianapolis', 'IN', '46202', 'USA', null, null, 1, '2005-09-22 00:00:00', 0, null, null, null);
 
 
 #----------------------------
 # Records for table patient_identifier
 #----------------------------
 insert into patient_identifier values 
-(1, '100-8', 1, 1, 2, 1, '2005-09-22 00:00:00', 0, null, null, null), 
-(1, '100', 2, 0, 2, 1, '2005-09-22 00:00:00', 0, null, null, null), 
+(1, '100-8', 1, 1, 1, 1, '2005-09-22 00:00:00', 0, null, null, null), 
+(1, '100', 2, 0, 1, 1, '2005-09-22 00:00:00', 0, null, null, null), 
 (2, '101-6', 1, 1, 1, 1, '2005-09-22 00:00:00', 0, null, null, null), 
 (2, '101', 2, 0, 1, 1, '2005-09-22 00:00:00', 0, null, null, null);
 

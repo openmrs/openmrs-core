@@ -131,18 +131,23 @@
 				msg.oldTree.containerNode.style.display = "";
 				msg.newTree.containerNode.style.display = "";
 				
+				if (msg.child.data.isSet)
+					DWRConceptService.getConceptSet(addConceptSet(msg.child), msg.child.data.conceptId);
+				
 				if (msg.skipEdit) {
 					updateSortWeight(msg.child);
 					save(msg.child, /* formNotUsed */ true);
 				}
 				else { // if we moved from another tree, open up the edit div
 					selectedNode = msg.child;
-					setTimeout("editClicked(selectedNode)", 0);
+					var closure = function(target) { return function() { editClicked(target); }; };
+					setTimeout(closure(msg.child), 0);
 				}
 				dojo.html.removeClass(msg.child.titleNode, "fieldConceptHit");
 				dojo.dom.removeChildren(msg.child.afterLabelNode);
 				msg.child.afterLabelNode.appendChild(getRemoveLink(msg.child.data));
 				msg.child.unMarkSelected();
+				
 			}
 			else if (msg.oldParent != msg.newParent) {
 				updateSortWeight(msg.child);
@@ -160,12 +165,22 @@
 		};
 	}
 	
+	var addConceptSet = function(newParent) {
+		return function(concepts) {
+			for (var i=0; i<concepts.length; i++) {
+				var data = getData(concepts[i]);
+				
+				var node = addNode(newParent, data);
+			}
+		}
+	}
+	
 	var nodeRemoved = function(val) {
 		this.value = val;
 		this.execute = function(msg) {
-			DWREngine.setAsync(true);
-			removeNode(msg.child);
 			DWREngine.setAsync(false);
+			removeNode(msg.child);
+			DWREngine.setAsync(true);
 		};
 	}
 	
@@ -176,7 +191,7 @@
 			}
 			DWRFormService.deleteFormField(node.data["formFieldId"]);
 			
-			if (node.parent && node.parent.updateExpandIcon)
+			if (node.parent && node.parent.updateExpandIcon && node.parent.tree)
 				node.parent.updateExpandIcon();
 		}
 	}
@@ -521,7 +536,7 @@
 				}	
 				
 				selectedNode = target;
-				DWRFormService.saveFormField(cancelClicked, data.fieldId, data.fieldName, data.description, data.fieldType,
+				DWRFormService.saveFormField(endSaveFormField(target), data.fieldId, data.fieldName, data.description, data.fieldType,
 					data.conceptId, data.tableName, data.attributeName, data.defaultValue, data.selectMultiple, 
 					data.formFieldId, formId, data.parent, data.fieldNumber, data.fieldPart, data.pageNumber, data.minOccurs, data.maxOccurs, data.isRequired, data.sortWeight);
 				
@@ -539,6 +554,20 @@
 		return false;
 	}
 	
+	function endSaveFormField(target) {
+		return function(savedFormFieldIds) {
+			// close edit box and set ids on parent
+			cancelClicked(savedFormFieldIds, target);
+	
+			// if the node just saved was a set, save the children as well
+			if (target.data.isSet) {
+				for (var i=0; i<target.children.length;i++) {
+					updateSortWeight(target.children[i])
+					save(target.children[i], /* formNotUsed */ true);
+				}
+			}
+		}
+	}
 	
 	function updateSortWeight(target) {
 		if (target && target.data && tree) {
@@ -549,7 +578,7 @@
 				// We're in the middle somewhere.
 				var prevWeight = prev.data.sortWeight;
 				var nextWeight = next.data.sortWeight;
-				if (!prevWeight || !nextWeight)
+				if (prevWeight==null || nextWeight==null)
 					return sortWeightError();
 				dojo.debug("1 nextweight: " + nextWeight + " prevweight: " + prevWeight);
 				sortWeight = (nextWeight + prevWeight) / 2.0;
@@ -656,23 +685,26 @@
 		}
 	}
 	
-	var cancelClicked = function(savedNodeIds) {
+	var cancelClicked = function(savedNodeIds, target) {
 		
-		if (savedNodeIds && selectedNode.data) {
+		if (target == null)
+			target = selectedNode;
+			
+		if (savedNodeIds && target.data) {
 			if (savedNodeIds[0] == 0) {
 				// remote call (dwr) returned an error
 				alert("There was an error while processing your request. Consult the error logs");
 			}
 			else {
 				// remote call went smoothly
-				selectedNode.data["fieldId"] = savedNodeIds[0];
-				selectedNode.data["formFieldId"] = savedNodeIds[1];
+				target.data["fieldId"] = savedNodeIds[0];
+				target.data["formFieldId"] = savedNodeIds[1];
 			}
 		}
 			
 		// remove from main tree because they just dragged it over from the search
-		else if (!selectedNode.data || !selectedNode.data["formFieldId"])
-			removeClicked(selectedNode, true);
+		else if (!target.data || !target.data["formFieldId"])
+			removeClicked(target, true);
 		
 		clearFormField();
 		closeBox();
@@ -827,6 +859,7 @@
 		data["selectMultiple"] = false;
 		data["fieldId"] = null;
 		data["defaultValue"] = "";
+		data["sortWeight"] = 0;
 		
 		// object is a conceptListItem
 		if (obj.conceptId != null) {
@@ -836,7 +869,7 @@
 			data["fieldType"] = 1;
 			data["label"] = "CONCEPT." + obj.name;
 			data.title = "Concept Id: " + obj.conceptId;
-			//obj.widgetId = data["widgetId"] = "concept" + obj.conceptId;
+			data.isSet = obj.isSet;
 		}
 		// or object is a fieldListItem
 		else if (obj.fieldId != null) {

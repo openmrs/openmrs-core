@@ -2,6 +2,7 @@ package org.openmrs.api.db.hibernate;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -243,15 +244,19 @@ public class HibernateOrderDAO implements
 	}
 
 	public List<DrugOrder> getDrugOrdersByPatient(Patient patient) throws DAOException {
-		log.debug("getting all orders by patient " + patient.getPatientId());
-
-		Session session = HibernateUtil.currentSession();
+		List<DrugOrder> orders = new Vector<DrugOrder>();
 		
-		Criteria c = session.createCriteria(DrugOrder.class);
-		Criteria c1 = c.createCriteria("encounter", "enc");
-		Criteria c2 = c1.add(Expression.eq("enc.patient", patient));
-		List<DrugOrder> orders = c2.list();
-				
+		if (patient != null) {
+			log.debug("getting all orders by patient " + patient.getPatientId());
+	
+			Session session = HibernateUtil.currentSession();
+			
+			Criteria c = session.createCriteria(DrugOrder.class);
+			Criteria c1 = c.createCriteria("encounter", "enc");
+			Criteria c2 = c1.add(Expression.eq("enc.patient", patient));
+			orders = c2.list();
+		}
+		
 		return orders;
 	}
 }

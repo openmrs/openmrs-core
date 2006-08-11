@@ -133,13 +133,15 @@
 </h2>
 
 <br/>
-<a href="formEdit.form?formId=${form.formId}"><spring:message code="Form.editProperties" /></a> |
-<a href="${pageContext.request.contextPath}/formDownload?target=schema&formId=${form.formId}"><spring:message code="Form.downloadSchema" /></a> |
-<a href="${pageContext.request.contextPath}/formDownload?target=template&formId=${form.formId}"><spring:message code="Form.downloadTemplate" /></a> |
-<a href="${pageContext.request.contextPath}/formDownload?target=xsn&formId=${form.formId}"><spring:message code="Form.downloadXSN" /></a>
-<openmrs:hasPrivilege privilege="Upload XSN">
-	| <a href="${pageContext.request.contextPath}/admin/formentry/xsnUpload.form"><spring:message code="FormEntry.xsn.manage"/></a>		
-</openmrs:hasPrivilege>
+<a href="formEdit.form?formId=${form.formId}"><spring:message code="Form.editProperties" /></a>
+<c:if test="${form.formId != 1}"> |
+	<a href="${pageContext.request.contextPath}/formDownload?target=schema&formId=${form.formId}"><spring:message code="Form.downloadSchema" /></a> |
+	<a href="${pageContext.request.contextPath}/formDownload?target=template&formId=${form.formId}"><spring:message code="Form.downloadTemplate" /></a> |
+	<a href="${pageContext.request.contextPath}/formDownload?target=xsn&formId=${form.formId}"><spring:message code="Form.downloadXSN" /></a>
+	<openmrs:hasPrivilege privilege="Upload XSN">
+		| <a href="${pageContext.request.contextPath}/admin/formentry/xsnUpload.form"><spring:message code="FormEntry.xsn.manage"/></a>		
+	</openmrs:hasPrivilege>
+</c:if>
 
 <br/><br/>
 

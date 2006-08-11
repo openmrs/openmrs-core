@@ -21,6 +21,7 @@ public class ConceptListItem {
 	private Boolean retired;
 	private String hl7Abbreviation;
 	private String className;
+	private Boolean isSet;
 
 	public ConceptListItem() { }
 	
@@ -52,6 +53,7 @@ public class ConceptListItem {
 			retired = concept.isRetired();
 			hl7Abbreviation = concept.getDatatype().getHl7Abbreviation();
 			className = concept.getConceptClass().getName();
+			isSet = concept.isSet();
 		}
 	}
 	
@@ -135,5 +137,9 @@ public class ConceptListItem {
 
 	public void setClassName(String className) {
 		this.className = className;
+	}
+	
+	public Boolean getIsSet() {
+		return isSet;
 	}
 }

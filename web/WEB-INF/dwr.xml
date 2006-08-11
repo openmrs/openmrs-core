@@ -37,6 +37,7 @@
 			<include method="findConcepts" />
 			<include method="findConceptAnswers" />
 			<include method="getQuestionsForAnswer" />
+			<include method="getConceptSet" />
 			<include method="getConcept" />
 			<include method="findProposedConcepts" />
 			<include method="isValidNumericValue" />
