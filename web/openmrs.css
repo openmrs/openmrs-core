@@ -133,6 +133,13 @@ h1, h2, h3, h4, h5 {
 	font-size: 0.7em;
 }
 
+#breadcrumbHeader {
+	font-size: 0.8em;
+	font-weight: bold;
+	text-align: left;
+	padding:5px 5px 5px 5px;
+}
+
 #patientHeader {
 	font-size:0.9em;
 	text-align: left;
