@@ -88,7 +88,7 @@ public class RelationshipFormController extends SimpleFormController {
 						// TODO change from a patient search to a person search
 						Patient patient = ps.getPatient(Integer.valueOf(patients[x+1]));
 						log.debug("patient: " + patient);
-						Person relative = patient.getPerson();
+						Person relative = null; //patient.getPerson();
 						log.debug("relative: " + relative);
 						if (relative == null)
 							relative = as.getPerson(patient);
@@ -149,10 +149,10 @@ public class RelationshipFormController extends SimpleFormController {
 	    		person = as.getPerson(Integer.valueOf(personId));
 	    	else if (patientId != null) {
 	    		Patient pat = ps.getPatient(Integer.valueOf(patientId));
-	    		if (pat.getPerson() == null)
-	    			person = new Person(pat);
-	    		else
-	    			person = pat.getPerson();
+	    		//if (pat.getPerson() == null)
+	    		//	person = new Person(pat);
+	    		//else
+	    		//	person = pat.getPerson();
 	    	}
 	    	else if (userId != null) {
 	    		User user = us.getUser(Integer.valueOf(userId));

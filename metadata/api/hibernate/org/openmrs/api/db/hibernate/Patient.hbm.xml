@@ -117,7 +117,7 @@
 			</composite-element>
 		</set>
 
-		<one-to-one name="person" property-ref="patient" />
+		<!--  <one-to-one name="person" property-ref="patient" /> -->
 
 	</class>
 

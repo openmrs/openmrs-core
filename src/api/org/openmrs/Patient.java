@@ -22,7 +22,7 @@ public class Patient implements java.io.Serializable {
 
 	// Fields
 	
-	private Person person;
+	//private Person person;
 
 	private Integer patientId;
 	private String gender;
@@ -496,16 +496,16 @@ public class Patient implements java.io.Serializable {
 	/**
 	 * @return Returns the person.
 	 */
-	public Person getPerson() {
-		return person;
-	}
+	//public Person getPerson() {
+	//	return person;
+	//}
 
 	/**
 	 * @param person The person to set.
 	 */
-	public void setPerson(Person person) {
-		this.person = person;
-	}
+	//public void setPerson(Person person) {
+	//	this.person = person;
+	//}
 
 	public User getChangedBy() {
 		return changedBy;

@@ -10,7 +10,7 @@
 <script type="text/javascript">
 	function addName(anchor) {
 		if (anchor.href.lastIndexOf("=") == anchor.href.length - 1)
-			anchor.href += $("conceptName").value;
+			anchor.href += $("conceptName_${locale}").value;
 	}
 	
 	// concept name tab functionality

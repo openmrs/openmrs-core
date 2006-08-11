@@ -109,25 +109,43 @@ public class PatientService {
 		if (patient.getIdentifiers().size() < 1 )
 			throw new APIException("At least one Patient Identifier is required");
 		
+		List<String> identifiersUsed = new Vector<String>();
+		
 		// Check for duplicate identifiers
-		for (Object obj : patient.getIdentifiers().toArray()) {
-			PatientIdentifier pi = (PatientIdentifier)obj;
-			if (!pi.isVoided()) {
-				if (pi.getIdentifier() == null || pi.getIdentifier().length() == 0) {
-					patient.removeIdentifier(pi);
-					continue;
-				}
-				List<PatientIdentifier> ids = getPatientIdentifiers(pi.getIdentifier(), pi.getIdentifierType());
-				for (PatientIdentifier id : ids) {
-					if (!id.getIdentifierType().hasCheckDigit() || id.getPatient().equals(patient))
-						continue;
-					log.debug("Patient: " + patient.getPatientId());
-					log.debug("Identifier: " + pi);
-					throw new APIException("Identifier " + pi.getIdentifier() + " in use by patient #" + id.getPatient().getPatientId());
-				}
+		for (PatientIdentifier pi : patient.getIdentifiers()) {
+			// skip voided identifiers
+			if (pi.isVoided()) continue;
+			
+			// skip and remove invalid/empty identifiers
+			if (pi.getIdentifier() == null || pi.getIdentifier().length() == 0) {
+				patient.removeIdentifier(pi);
+				continue;
 			}
+			
+			// check this patient for duplicate identifiers
+			if (pi.getIdentifierType().hasCheckDigit()) {
+				if (identifiersUsed.contains(pi.getIdentifier()))
+					throw new APIException("This patient has duplicate identifiers for: " + pi.getIdentifier());
+				else
+					identifiersUsed.add(pi.getIdentifier());
+			}
+				
+			// compare against other identifiers matching the id string and id type
+			Patient p = identifierInUse(pi.getIdentifier(), pi.getIdentifierType(), patient);
+			if (p != null)
+				throw new APIException("Identifier " + pi.getIdentifier() + " in use by patient #" + p.getPatientId());
 		}
 		
+	}
+	
+	public Patient identifierInUse(String identifier, PatientIdentifierType type, Patient ignorePatient) {
+		List<PatientIdentifier> ids = getPatientIdentifiers(identifier, type);
+		for (PatientIdentifier id : ids) {
+			if (id.getIdentifierType().hasCheckDigit() && (ignorePatient == null || !id.getPatient().equals(ignorePatient)) )
+				return id.getPatient();
+		}
+		
+		return null; 
 	}
 
 	/**
@@ -314,6 +332,10 @@ public class PatientService {
 	public void updatePatientIdentifier(PatientIdentifier pi) throws APIException {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_PATIENTS);
+		Patient p = identifierInUse(pi.getIdentifier(), pi.getIdentifierType(), pi.getPatient());
+		if (p != null)
+			throw new APIException("Identifier in use by patient #" + p.getPatientId());
+		
 		getPatientDAO().updatePatientIdentifier(pi);
 	}
 	

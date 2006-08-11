@@ -78,7 +78,7 @@
 			<element column="property_value" type="java.lang.String" length="255" />
 		</map>
 		
-		<one-to-one name="person" property-ref="user"/>
+		<!--  <one-to-one name="person" property-ref="user"/> -->
 
 	</class>
 

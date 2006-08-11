@@ -81,7 +81,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e);
+			throw new DAOException("Error while creating patient: " + e.getMessage(), e);
 		}
 	}
 
@@ -101,7 +101,7 @@ public class HibernatePatientDAO implements PatientDAO {
 			}
 			catch (Exception e) {
 				HibernateUtil.rollbackTransaction();
-				throw new DAOException(e);
+				throw new DAOException("Unable to save the patient " + e.getMessage(), e);
 			}
 		}
 	}
@@ -291,7 +291,7 @@ public class HibernatePatientDAO implements PatientDAO {
 			q += ") >= 5";
 		}
 		else
-			throw new DAOException("Too many names");
+			throw new DAOException("Too many names to compare effectively.");
 		
 		String birthdayMatch = "(year(p.birthdate) between " + (birthyear - 1) + " and " + (birthyear + 1) +
 								" or p.birthdate is null)";
@@ -342,7 +342,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e);
+			throw new DAOException("Error while deleting patient " + e.getMessage(), e);
 		}
 	}
 
@@ -395,7 +395,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e);
+			throw new DAOException("Error while updating patient identifier: " + e.getMessage(), e);
 		}
 	}
 	
