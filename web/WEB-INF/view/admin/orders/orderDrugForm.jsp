@@ -46,7 +46,7 @@
 		<td valign="top"><spring:message code="general.dateStart"/></td>
 		<td valign="top">
 			<spring:bind path="order.startDate">
-				<openmrs:fieldGen type="java.util.Date" formFieldName="${status.expression}" val="${status.editor.value}" />
+				<openmrs_tag:dateField formFieldName="${status.expression}" startValue="${status.editor.value}" datePattern="${datePattern}" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
@@ -55,7 +55,7 @@
 		<td valign="top"><spring:message code="general.dateAutoExpire"/></td>
 		<td valign="top">
 			<spring:bind path="order.autoExpireDate">
-				<openmrs:fieldGen type="java.util.Date" formFieldName="${status.expression}" val="${status.editor.value}" />
+				<openmrs_tag:dateField formFieldName="${status.expression}" startValue="${status.editor.value}" datePattern="${datePattern}" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
@@ -73,7 +73,7 @@
 		<td valign="top"><spring:message code="Order.orderer"/></td>
 		<td valign="top">
 			<spring:bind path="order.orderer">
-				<openmrs:fieldGen type="org.openmrs.User" formFieldName="${status.expression}" val="${status.editor.value}" />
+				<openmrs_tag:userField formFieldName="${status.expression}" roles="Clinician;" initialValue="${status.value}" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
@@ -91,7 +91,7 @@
 		<td valign="top"><spring:message code="general.discontinuedBy"/></td>
 		<td valign="top">
 			<spring:bind path="order.discontinuedBy">
-				<openmrs:fieldGen type="org.openmrs.User" formFieldName="${status.expression}" val="${status.editor.value}" />
+				<openmrs_tag:userField formFieldName="${status.expression}" roles="System Developer;" initialValue="${status.editor.value}" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
@@ -100,7 +100,7 @@
 		<td valign="top"><spring:message code="general.dateDiscontinued"/></td>
 		<td valign="top">
 			<spring:bind path="order.discontinuedDate">
-				<openmrs:fieldGen type="java.util.Date" formFieldName="${status.expression}" val="${status.editor.value}" />
+				<openmrs_tag:dateField formFieldName="${status.expression}" startValue="${status.editor.value}" datePattern="${datePattern}" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
