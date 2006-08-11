@@ -17,6 +17,8 @@
 				document.location = "field.form?fieldId=" + msg.objs[0].fieldId + "&phrase=" + search.savedText;
 			}
 		);
+		
+		dojo.widget.manager.getWidgetById("fSearch").inputNode.select();
 	});
 </script>
 

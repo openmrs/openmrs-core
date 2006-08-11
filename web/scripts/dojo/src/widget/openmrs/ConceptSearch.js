@@ -21,7 +21,7 @@ dojo.widget.defineWidget(
 			dojo.debug("postCreate in conceptsearch");
 			
 			if (this.conceptId)
-				DWRConceptService.getConcept(this.simpleClosure(this, "doObjectsFound"), this.conceptId);
+				DWRConceptService.getConcept(this.simpleClosure(this, "select"), this.conceptId);
 			
 			this.inputNode.value = this.searchPhrase
 			if (this.searchPhrase)

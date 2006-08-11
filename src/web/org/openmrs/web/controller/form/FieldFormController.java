@@ -31,15 +31,11 @@ public class FieldFormController extends SimpleFormController {
     
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-	    //NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
-        binder.registerCustomEditor(java.lang.Integer.class,
+	    binder.registerCustomEditor(java.lang.Integer.class,
                 new CustomNumberEditor(java.lang.Integer.class, true));
 	}
     
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse reponse, Object obj, BindException errors) throws Exception {
-		
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		Field field = (Field)obj;
 		
@@ -134,7 +130,7 @@ public class FieldFormController extends SimpleFormController {
 		if (context != null && context.isAuthenticated()) {
 			String conceptId = request.getParameter("conceptId");
 			if (conceptId != null && conceptId.length() > 0)
-				field.setConcept(context.getConceptService().getConcept(Integer.valueOf(request.getParameter("conceptId"))));
+				field.setConcept(context.getConceptService().getConcept(Integer.valueOf(conceptId)));
 			else
 				field.setConcept(null);
 			

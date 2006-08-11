@@ -309,7 +309,10 @@ public class Concept implements java.io.Serializable {
 			return null;
 		}
 		
-//		returning default name locale ("en") if exact match desired
+		// returning default name locale ("en") if exact match not desired
+		if (defaultName == null)
+			log.warn("No concept name found for default locale for concept id " + conceptId);
+		
 		return defaultName;
 	}
 	

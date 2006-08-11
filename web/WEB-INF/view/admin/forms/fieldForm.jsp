@@ -16,7 +16,7 @@
 		dojo.event.topic.subscribe("cSearch/select", 
 			function(msg) {
 				var popup = dojo.widget.manager.getWidgetById("conceptSelection");
-				popup.hiddenInputNode.innerHTML = msg.objs[0].conceptId;
+				popup.hiddenInputNode.value = msg.objs[0].conceptId;
 				popup.displayNode.innerHTML = msg.objs[0].name;
 			}
 		);

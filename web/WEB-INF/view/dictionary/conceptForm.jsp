@@ -278,7 +278,7 @@
 						</select>
 					</td>
 					<td valign="top" class="buttons">
-						&nbsp;<span dojoType="ConceptSearch" widgetId="aSearch"></span><span dojoType="OpenmrsPopup" searchWidget="aSearch" searchTitle='<spring:message code="Concept.find"/>' changeButtonValue='<spring:message code="general.add"/>' showConceptIds="true"></span> <br/>
+						&nbsp;<span dojoType="ConceptSearch" widgetId="aSearch"></span><span dojoType="OpenmrsPopup" searchWidget="aSearch" searchTitle='<spring:message code="Concept.find"/>' changeButtonValue='<spring:message code="general.add"/>' showConceptIds="true" showIfHiding="true"></span> <br/>
 						&nbsp; <input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('answerNames', 'answerIds', ' ');"/><br/>
 					</td>
 				</tr>

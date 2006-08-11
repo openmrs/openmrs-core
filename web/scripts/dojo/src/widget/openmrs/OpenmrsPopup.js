@@ -116,8 +116,9 @@ dojo.widget.defineWidget(
 			dojo.style.setPositivePixelValue(this.searchWidget.domNode, "top", top);
 		},
 		
+		showIfHiding: false,
 		doObjectsFound: function(objs) {
-			if (!this.searchWidget.isShowing())
+			if (!this.searchWidget.isShowing() && this.showIfHiding)
 				this.searchWidget.toggleShowing();
 		},
 		
