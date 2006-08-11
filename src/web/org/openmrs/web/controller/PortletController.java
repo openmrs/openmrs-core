@@ -48,6 +48,7 @@ public class PortletController implements Controller {
 	 *          (Set<DrugOrder>) patientDrugOrders
 	 *          (List<Relationship>) patientRelationships
 	 *          (Map<RelationshipType, List<Relationship>>) patientRelationshipsByType
+	 *          (Integer) personId
 	 *     (if the request has an encounterId attribute)
 	 *     		(Integer) encounterId
 	 *         	(Encounter) encounter
@@ -124,6 +125,7 @@ public class PortletController implements Controller {
 					model.put("patientRelationships", relationships);
 					model.put("patientRelationshipsByType", relationshipsByType);
 					model.put("patientId", (Integer) o);
+					model.put("personId", context.getAdministrationService().getPerson(p).getPersonId());
 				}
 				
 				// if an encounter id is available, put "encounter" and "encounterObs" in the request

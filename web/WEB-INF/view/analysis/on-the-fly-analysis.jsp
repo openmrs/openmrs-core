@@ -2,6 +2,8 @@
 
 <openmrs:require privilege="View Patient Sets" otherwise="/login.htm" redirect="analysis.list" />
 
+<%@ include file="/WEB-INF/template/header.jsp" %>
+
 <script type="text/javascript" src="<%= request.getContextPath() %>/scripts/easyAjax.js"></script>
 
 <style>
@@ -64,8 +66,8 @@
 		background-color: #e0e0ff;
 		padding: 4px 2px;
 		position: absolute;
-		left: 20;
-		top: -10;
+		left: 20px;
+		top: -10px;
 		z-index: 2;
 	}
 	#analysisSetHeader {
@@ -89,8 +91,6 @@
 		}
 	}
 </script>
-
-<%@ include file="/WEB-INF/template/header.jsp" %>
 
 <h3 align="center"><spring:message code="Analysis.title"/></h3>
 
@@ -215,7 +215,6 @@
 
 <br/>
 
-<openmrs:portlet url="patientSet" id="patientSetBox" size="full" parameters="fromAttribute=${model.patientAnalysisAttributeName}|headId=analysisSetHeader|tableId=analysisSetTable|pageSize=20|varToSet=patientIds"/>
-
+<openmrs:portlet url="patientSet" id="patientSetBox" size="full" parameters="fromAttribute=${model.patientAnalysisAttributeName}|headId=analysisSetHeader|tableId=analysisSetTable|pageSize=20|varToSet=patientIds|linkUrl=patientDashboard.form"/>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %> 

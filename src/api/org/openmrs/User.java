@@ -1,15 +1,18 @@
 package org.openmrs;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.OpenmrsConstants;
+import org.springframework.util.StringUtils;
 
 /**
  * User
@@ -388,7 +391,11 @@ public class User implements java.io.Serializable {
 	}
 
 	public String toString() {
-		return firstName + " " + lastName;
+		List<String> temp = new ArrayList<String>();
+		if (firstName != null) temp.add(firstName);
+		if (middleName != null) temp.add(middleName);
+		if (lastName != null) temp.add(lastName);
+		return StringUtils.collectionToDelimitedString(temp, " ");
 	}
 
 	/**
@@ -548,6 +555,5 @@ public class User implements java.io.Serializable {
 	public void setPerson(Person person) {
 		this.person = person;
 	}
-
 
 }

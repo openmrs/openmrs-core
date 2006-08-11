@@ -132,16 +132,20 @@
 			cell.innerHTML = "...";
 		}
 		var count = PS_fromIndex + 1;
-		// TODO: highlight the currently-selected patient
 		var cellFuncs = [
 			function(patient) { return count++ + "."; },
 			function(patient) {
+					var isSel = <c:choose><c:when test="${empty model.selectedPatientId}">false</c:when><c:otherwise>patient.patientId == ${model.selectedPatientId}</c:otherwise></c:choose> ;
 			<c:choose>
 				<c:when test="${model.linkUrl == null}">
-					return patient.givenName + " " + patient.middleName + " " + patient.familyName;
+					return (isSel ? "<b>" : "") + patient.givenName + " " + patient.middleName + " " + patient.familyName + (isSel ? "</b>" : "");
 				</c:when>
 				<c:otherwise>
-					return '<a href="${model.linkUrl}?patientId=' + patient.patientId + '">' + patient.givenName + ' ' + patient.middleName + ' ' + patient.familyName + '</a>';
+					if (isSel) {
+						return '<b>' + patient.givenName + " " + patient.middleName + " " + patient.familyName + '</b>';
+					} else {
+						return '<a href="${model.linkUrl}?patientId=' + patient.patientId + '">' + patient.givenName + ' ' + patient.middleName + ' ' + patient.familyName + '</a>';
+					}
 				</c:otherwise>
 			</c:choose>
 			},
@@ -162,7 +166,7 @@
 
 <c:if test="${model.size != 'full'}">
 <span onMouseOver="javascript:showLayer('_patientSetBox')">
-	<span style="border: 1px black dashed; background-color: yellow; display: block">
+	<span id="patientSetHeader">
 		<a href="javascript:toggleLayer('_patientSetBox')"><spring:message code="PatientSet.yours"/></a>
 		<c:if test="${model.droppable}">
 			<a href="javascript:clearThis()" style="color: red">

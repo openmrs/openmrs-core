@@ -257,6 +257,14 @@ public class ConceptService {
 	public Drug getDrug(Integer drugId) {
 		return getConceptDAO().getDrug(drugId);
 	}
+	
+	/**
+	 * Return the drug object corresponding to the given name
+	 * @return Drug
+	 */
+	public Drug getDrug(String drugName) {
+		return getConceptDAO().getDrug(drugName);
+	}
 
 	/**
 	 * Return a list of drugs currently in the database

@@ -574,5 +574,21 @@ public class Patient implements java.io.Serializable {
 	public void setVoidReason(String voidReason) {
 		this.voidReason = voidReason;
 	}
+	
+	/**
+	 * @returns the preferred patient name, if there is one, or a random one otherwise 
+	 */
+	public PatientName getAName() {
+		PatientName random = null;
+		for (PatientName pn : getNames()) {
+			if (pn.getPreferred()) {
+				return pn;
+			}
+			if (random == null) {
+				random = pn;
+			}
+		}
+		return random;
+	}
 
 }

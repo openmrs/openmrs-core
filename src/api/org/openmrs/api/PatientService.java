@@ -1,5 +1,6 @@
 package org.openmrs.api;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -461,6 +462,22 @@ public class PatientService {
 	}
 	
 	/**
+	 * Get list of relationships that have Person as relative_id, and the given type (which can be null)
+	 * @return Relationship list
+	 */
+	public List<Relationship> getRelationshipsTo(Person toPerson, RelationshipType relType) throws APIException {
+		List<Relationship> temp = getRelationships(toPerson);
+		List<Relationship> ret = new ArrayList<Relationship>();
+		for (Relationship rel : temp) {
+			if (rel.getRelative().equals(toPerson) &&
+					(relType == null || relType.equals(rel.getRelationship()))) {
+				ret.add(rel);
+			}
+		}
+		return ret;
+	}
+	
+	/**
 	 * Get all relationshipTypes
 	 * 
 	 * @return relationshipType list
@@ -486,6 +503,18 @@ public class PatientService {
 			throw new APIAuthenticationException("Authentication required");
 		
 		return getPatientDAO().getRelationshipType(relationshipTypeId);
+	}
+	
+	/**
+	 * Find relationshipType by name
+	 * @throws APIException
+	 */
+	public RelationshipType findRelationshipType(String relationshipTypeName) throws APIException {
+		// TODO use 'Authenticated User' option
+		if (!context.isAuthenticated())
+			throw new APIAuthenticationException("Authentication required");
+		
+		return getPatientDAO().findRelationshipType(relationshipTypeName);
 	}
 	
 	/**
@@ -708,4 +737,5 @@ public class PatientService {
 		updatePatient(preferred);
 		
 	}
+
 }

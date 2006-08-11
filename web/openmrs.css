@@ -511,6 +511,16 @@ fieldset {
 	font-size: .9em;
 	color: grey;
 }
+#patientSetHeaderBox {
+	position: absolute;
+	text-align: right;
+	margin-top: 25px;
+	margin-right: 10px;
+	width: 100%;
+	top: 0px;
+	left: 0px;
+}
 #patientSetHeader {
-	float: right;
+	border: 1px black solid;
+	background-color: yellow;
 }

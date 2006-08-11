@@ -760,6 +760,9 @@ public class HibernateAdministrationDAO implements
 	 */
 	public void unvoidRelationship(Relationship relationship) throws DAOException {
 		relationship.setVoided(false);
+		relationship.setVoidedBy(null);
+		relationship.setDateVoided(null);
+		relationship.setVoidReason(null);
 		updateRelationship(relationship);
 	}
 

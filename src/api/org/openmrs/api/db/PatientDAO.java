@@ -214,6 +214,13 @@ public interface PatientDAO {
 	public RelationshipType getRelationshipType(Integer relationshipTypeId) throws DAOException;
 	
 	/**
+	 * Get relationshipType by name
+	 * 
+	 * @throws DAOException
+	 */
+	public RelationshipType findRelationshipType(String relationshipTypeName) throws DAOException;
+	
+	/**
 	 * Get all locations
 	 * 
 	 * @return location list

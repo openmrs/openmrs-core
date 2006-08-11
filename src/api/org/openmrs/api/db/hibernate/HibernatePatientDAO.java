@@ -538,6 +538,16 @@ public class HibernatePatientDAO implements PatientDAO {
 		return relationshipType;
 
 	}
+	
+	public RelationshipType findRelationshipType(String relationshipTypeName) throws DAOException {
+		Session session = HibernateUtil.currentSession();
+		
+		RelationshipType ret = (RelationshipType) session.createQuery("from RelationshipType t where t.name = :name")
+					.setString("name", relationshipTypeName)
+					.uniqueResult();
+		
+		return ret;
+	}
 
 	/**
 	 * @see org.openmrs.api.db.PatientService#getRelationshipTypes()

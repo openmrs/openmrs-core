@@ -108,6 +108,12 @@ public interface ConceptDAO {
 	public Drug getDrug(Integer drugId);
 	
 	/**
+	 * Return drug object corresponding to the given name
+	 * @return Drug
+	 */
+	public Drug getDrug(String drugName);
+	
+	/**
 	 * Return a list of drugs currently in the database
 	 * @return List of Drugs
 	 */
@@ -232,4 +238,5 @@ public interface ConceptDAO {
 	public void proposeConcept(ConceptProposal cp);
 	
 	public Integer getNextAvailableId();
+
 }

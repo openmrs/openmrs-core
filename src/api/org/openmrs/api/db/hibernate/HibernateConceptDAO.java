@@ -400,6 +400,18 @@ public class HibernateConceptDAO implements
 	}
 	
 	/**
+	 * @see org.openmrs.api.db.ConceptService#getDrug(java.lang.String)
+	 */
+	public Drug getDrug(String drugName) {
+
+		Session session = HibernateUtil.currentSession();
+		
+		Drug drug = (Drug) session.createQuery("from Drug d where d.name = :name").setString("name", drugName).uniqueResult();
+		
+		return drug;
+	}
+	
+	/**
 	 * @see org.openmrs.api.db.ConceptService#getDrugs()
 	 */
 	@SuppressWarnings("unchecked")

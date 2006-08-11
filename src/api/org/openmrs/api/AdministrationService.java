@@ -300,6 +300,12 @@ public class AdministrationService {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS);
 
+		if (relationship.getVoided()) {
+			return;
+		}
+		if (relationship.getVoidedBy() == null) {
+			relationship.setVoidedBy(context.getAuthenticatedUser());
+		}
 		getAdminDAO().voidRelationship(relationship);
 	}
 

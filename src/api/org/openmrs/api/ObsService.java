@@ -134,7 +134,7 @@ public class ObsService {
 		obs.setVoided(false);
 		obs.setVoidReason(null);
 		obs.setVoidedBy(null);
-		obs.setDateVoided(new Date());
+		obs.setDateVoided(null);
 		getObsDAO().updateObs(obs);
 	}
 

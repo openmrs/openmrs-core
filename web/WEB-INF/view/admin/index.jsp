@@ -61,6 +61,11 @@
 					<%@ include file="scheduler/localHeader.jsp" %>
 			</openmrs:hasPrivilege>
 		
+			<openmrs:hasPrivilege privilege="Manage Programs">
+				<h4><spring:message code="Program.header"/></h4>
+					<%@ include file="programs/localHeader.jsp" %>
+			</openmrs:hasPrivilege>
+		
 		</td>
 		
 		<td valign="top">
