@@ -86,6 +86,9 @@
 </script>
 
 <openmrs:portlet url="patientSet" id="patientSetHeader" size="compact" parameters="linkUrl=patientDashboard.form|allowRemove=true|allowClear=true|selectedPatientId=${patient.patientId}|mutable=true|droppable=true"/>
+
+&nbsp;
+
 <div id="patientTabs">
 	<ul>
 		<li><a href="#" onclick="changeTab(this, 'overview');" class="current">Overview</a></li>
