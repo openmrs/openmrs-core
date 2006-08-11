@@ -3,8 +3,5 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
 <openmrs:portlet url="login"/>
-
-
-<openmrs:portlet url="login"/>
 		
 <%@ include file="/WEB-INF/template/footer.jsp" %>
