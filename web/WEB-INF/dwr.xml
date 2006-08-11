@@ -17,6 +17,7 @@
 		<convert converter="bean" match="org.openmrs.web.dwr.FormFieldListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.FieldListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.LocationListItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.RelationshipListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.ListItem"/>
 		<convert converter="bean" match="org.openmrs.PatientAddress"/>
 		<convert converter="bean" match="org.openmrs.Tribe"/>
@@ -107,7 +108,13 @@
 		<create creator="new" javascript="DWRRelationshipService">
 			<param name="class" value="org.openmrs.web.dwr.DWRRelationshipService"/>
 			<include method="getRelationshipTypes"/>
+			<include method="getRelationshipTypeId"/>
 			<include method="createRelationship"/>
+			<include method="voidRelationship"/>
+			<include method="setRelationshipTo"/>
+			<include method="getRelationships"/>
+			<include method="getRelationshipsToPerson"/>
+			<include method="getRelationshipsFromPerson"/>
 		</create>
 				
 	</allow>

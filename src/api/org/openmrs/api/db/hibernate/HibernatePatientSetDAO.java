@@ -5,8 +5,10 @@ import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -434,26 +436,47 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public PatientSet getPatientsHavingNumericObs(Integer conceptId, PatientSetService.Modifier modifier, Number value) {
+	public PatientSet getPatientsHavingNumericObs(Integer conceptId, PatientSetService.TimeModifier timeModifier, PatientSetService.Modifier modifier, Number value) {
 		Session session = HibernateUtil.currentSession();
 		HibernateUtil.beginTransaction();
 		
 		Query query;
 		StringBuffer sb = new StringBuffer();
-		sb.append("select patient_id from obs o " +
-				"where concept_id = :concept_id ");
-		boolean useVal = false;
-		if (value != null && modifier != PatientSetService.Modifier.EXISTS) {
-			sb.append("and value_numeric " + modifier.getSqlRepresentation() + " :value ");
-			useVal = true;
-		} else { // TODO: THIS IS A HACK SO THAT _EXISTS_ WORKS ON NON-NUMERIC CONCEPTS
-			sb.append("and (value_numeric is not null or value_coded is not null or value_boolean is not null or value_drug is not null or value_datetime is not null or value_boolean is not null or value_text is not null) ");
+		boolean useValue = false;
+		
+		if (value == null || modifier == PatientSetService.Modifier.EXISTS || timeModifier == null || timeModifier == PatientSetService.TimeModifier.ANY) {
+			// simple query
+			sb.append("select o.patient_id from obs o " +
+					"where concept_id = :concept_id ");
+			if (modifier != PatientSetService.Modifier.EXISTS && value != null) {
+				sb.append("and value_numeric " + modifier.getSqlRepresentation() + " :value ");
+				useValue = true;
+			} else { // TODO: this is a hack so that EXISTS will work on non-numeric concepts too
+				sb.append("and (value_numeric is not null or value_coded is not null or value_boolean is not null or value_drug is not null or value_datetime is not null or value_boolean is not null or value_text is not null) ");
+			}
+
+		} else if (timeModifier == PatientSetService.TimeModifier.FIRST || timeModifier == PatientSetService.TimeModifier.LAST) {
+			boolean isFirst = timeModifier == PatientSetService.TimeModifier.FIRST;
+			sb.append("select o.patient_id " +
+					"from obs o inner join (" +
+					"    select patient_id, " + (isFirst ? "min" : "max") + "(obs_datetime) as obs_datetime" +
+					"    from obs" +
+					"    where concept_id = :concept_id" +
+					"    group by patient_id" +
+					") subq on o.patient_id = subq.patient_id and o.obs_datetime = subq.obs_datetime " +
+					"where o.concept_id = :concept_id " +
+					"and value_numeric " + modifier.getSqlRepresentation() + " :value ");
+			useValue = true;
+
+		} else {
+			throw new IllegalArgumentException("Unknown timeModifier: " + timeModifier);
 		}
-		sb.append("group by patient_id ");
+		
+		sb.append("group by o.patient_id ");
 		log.debug("query: " + sb);
 		query = session.createSQLQuery(sb.toString());
 		query.setInteger("concept_id", conceptId);
-		if (useVal) {
+		if (useValue) {
 			query.setDouble("value", value.doubleValue());
 		}
 
@@ -467,7 +490,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public PatientSet getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate) throws DAOException {
+	public PatientSet getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate,
+			Integer minAge, Integer maxAge, Boolean aliveOnly, Boolean deadOnly) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		HibernateUtil.beginTransaction();
 		
@@ -488,6 +512,27 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		if (maxBirthdate != null) {
 			clauses.add("patient.birthdate <= :maxBirthdate");
 		}
+		if (aliveOnly != null && aliveOnly) {
+			clauses.add("patient.dead = false");
+		}
+		if (deadOnly != null && deadOnly) {
+			clauses.add("patient.dead = true");
+		}
+
+		Date maxBirthFromAge = null;
+		if (minAge != null) {
+			Calendar cal = new GregorianCalendar();
+			cal.add(Calendar.YEAR, -minAge);
+			maxBirthFromAge = cal.getTime();
+			clauses.add("patient.birthdate <= :maxBirthFromAge");
+		}
+		Date minBirthFromAge = null;
+		if (maxAge != null) {
+			Calendar cal = new GregorianCalendar();
+			cal.add(Calendar.YEAR, -(maxAge + 1));
+			minBirthFromAge = cal.getTime();
+			clauses.add("patient.birthdate > :minBirthFromAge");
+		}
 		
 		boolean first = true;
 		for (String clause : clauses) {
@@ -507,6 +552,12 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		}
 		if (maxBirthdate != null) {
 			query.setDate("maxBirthdate", maxBirthdate);
+		}
+		if (minAge != null) {
+			query.setDate("maxBirthFromAge", maxBirthFromAge);
+		}
+		if (maxAge != null) {
+			query.setDate("minBirthFromAge", minBirthFromAge);
 		}
 		
 		List<Integer> patientIds = query.list();
@@ -809,6 +860,46 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			HibernateUtil.commitTransaction();
 		}
 		
+		return ret;
+	}
+	
+	/**
+	 * Returns a Map from patientId to a Collection of drugIds for drugs active for the patients on that date
+	 * If patientIds is null then do this for all patients
+	 * @throws DAOException
+	 */
+	public Map<Integer, Collection<Integer>> getActiveDrugIds(Collection<Integer> patientIds, Date onDate) throws DAOException {
+		HashSet<Integer> idsLookup = patientIds == null ? null :
+			(patientIds instanceof HashSet ? (HashSet<Integer>) patientIds : new HashSet<Integer>(patientIds));
+		if (onDate == null) {
+			onDate = new Date();
+		}
+		Map<Integer, Collection<Integer>> ret = new HashMap<Integer, Collection<Integer>>();
+		
+		Session session = HibernateUtil.currentSession();
+		String sql = "select patient_id, drug_inventory_id " +
+				"from encounter e" +
+				"    inner join orders o on e.encounter_id = o.encounter_id " +
+				"    inner join drug_order d on o.order_id = d.order_id " +
+				"where o.start_date <= :onDate" +
+				"  and (o.auto_expire_date is null or o.auto_expire_date > :onDate) " +
+				"  and (o.discontinued_date is null or o.discontinued_date > :onDate) ";
+		log.debug("onDate=" + onDate + " sql= " + sql);
+		Query query = session.createSQLQuery(sql);
+		query.setDate("onDate", onDate);
+		List<Object[]> results = (List<Object[]>) query.list();
+		for (Object[] row : results) {
+			Integer patientId = (Integer) row[0];
+			if (idsLookup == null || idsLookup.contains(patientId)) {
+				Integer drugId = (Integer) row[1];
+				Collection<Integer> drugIds = ret.get(patientId);
+				if (drugIds == null) {
+					drugIds = new HashSet<Integer>();
+					ret.put(patientId, drugIds);
+				}
+				drugIds.add(drugId);
+			}
+		}
 		return ret;
 	}
 	

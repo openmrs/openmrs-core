@@ -3,9 +3,13 @@ package org.openmrs.web.controller.migration;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URLEncoder;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +22,14 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Drug;
+import org.openmrs.DrugOrder;
 import org.openmrs.Location;
+import org.openmrs.Order;
+import org.openmrs.OrderType;
+import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.User;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.UserService;
@@ -161,6 +172,103 @@ public class MigrationController implements Controller {
 		}
 
 		return new ModelAndView(new RedirectView("migration.form"));
+	}
+
+	// Hardcoded for PIH v1-v2 migration. Sorry about that.
+	public ModelAndView uploadRegimens(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ParseException {
+		HttpSession httpSession = request.getSession();
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		if (context == null) {
+			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
+			response.sendRedirect(request.getContextPath() + "/logout");
+			return null;
+		}
+		String csv = request.getParameter("regimen_csv");
+		int numAdded = importRegimens(context, csv);
+	
+		return new ModelAndView(new RedirectView("migration.form?message=" + URLEncoder.encode("Uploaded " + numAdded + " regimens", "UTF-8")));
+	}
+
+	/**
+	 * Takes CSV like:
+	 *   patientId,drugName,formulationName,startDate,autoExpireDate,discontinuedDate,discontinuedReason,doseStrength,doseUnit,dosesPerDay,daysPerWeek,prn
+	 * @return The number of regimens added
+	 */
+	public int importRegimens(Context context, String csv) throws IOException, ParseException {
+		PatientIdentifierType pihIdentifierType = context.getPatientService().getPatientIdentifierType("HIVEMR-V1");
+		OrderType orderType = context.getOrderService().getOrderType(1);
+		if (!orderType.getName().equals("Drug Order")) {
+			throw new RuntimeException("ERROR! ASSUMED THAT ORDER TYPE 1 IS DRUG ORDER, BUT IT'S NOT");
+		}
+		Map<Integer, List<Order>> patientRegimens = new HashMap<Integer, List<Order>>();
+		int numAdded = 0;
+		BufferedReader r = new BufferedReader(new StringReader(csv));
+		for (String s = r.readLine(); s != null; s = r.readLine()) {
+			String[] st = s.split(",");
+			Integer patientId = Integer.valueOf(st[0]);
+			String drugName = st[1]; // ignored for now
+			String formulationName = st[2];
+			Date startDate = parseDate(st[3]);
+			Date autoExpireDate = parseDate(st[4]);
+			Date discontinuedDate = parseDate(st[5]);
+			String discontinuedReason = st[6];
+			Double doseStrength = Double.parseDouble(st[7]);
+			String doseUnit = st[8];
+			Integer dosesPerDay = Integer.valueOf(st[9]);
+			Integer daysPerWeek = Integer.valueOf(st[10]);
+			Boolean prn = Boolean.valueOf(st[11]);
+			if (daysPerWeek != 7) {
+				throw new IllegalArgumentException("Can't handle days-per-week != 7");
+			}
+			if (dosesPerDay == null || dosesPerDay == 0) {
+				throw new IllegalArgumentException("Doses per day must be a positive integer");					
+			}
+			Drug drug = context.getConceptService().getDrug(formulationName);
+			
+			DrugOrder reg = new DrugOrder();
+			reg.setDrug(drug);
+			reg.setConcept(drug.getConcept());
+			reg.setStartDate(startDate);
+			reg.setAutoExpireDate(autoExpireDate);
+			reg.setDiscontinuedDate(discontinuedDate);
+			reg.setDiscontinuedReason(discontinuedReason);
+			reg.setDose(doseStrength);
+			reg.setEquivalentDailyDose(doseStrength);
+			reg.setUnits(doseUnit);
+			reg.setFrequency(dosesPerDay + "/day");
+			reg.setPrn(prn);
+			reg.setComplex(false);
+			reg.setOrderType(orderType);
+			List<Order> pat = patientRegimens.get(patientId);
+			if (pat == null) {
+				pat = new ArrayList<Order>();
+				patientRegimens.put(patientId, pat);
+			}
+			pat.add(reg);
+		}
+		for (Map.Entry<Integer, List<Order>> e : patientRegimens.entrySet()) {
+			List<PatientIdentifier> pil = context.getPatientService().getPatientIdentifiers(e.getKey().toString(), pihIdentifierType);
+			if (pil.size() != 1) {
+				throw new RuntimeException("Found " + pil.size() + " PatientIdentifiers for " + pihIdentifierType + " of " + e.getKey());
+			}
+			Patient p = pil.get(0).getPatient();
+			List<Order> list = e.getValue();
+			context.getOrderService().createOrdersAndEncounter(p, list);
+			numAdded += list.size();
+		}
+		return numAdded;
+	}
+	
+    static DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	public static Date parseDate(String s) throws ParseException {
+		if (s == null || s.length() == 0) {
+			return null;
+		} else {
+			if (s.length() == 10) {
+				s += " 00:00:00";
+			}
+			return df.parse(s);
+		}
 	}
 
 }

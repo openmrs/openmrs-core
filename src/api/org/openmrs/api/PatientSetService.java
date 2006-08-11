@@ -55,15 +55,24 @@ public class PatientSetService {
 	}
 	
 	public PatientSet getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate) throws DAOException {
-		return getPatientSetDAO().getPatientsByCharacteristics(gender, minBirthdate, maxBirthdate);
+		return getPatientsByCharacteristics(gender, minBirthdate, maxBirthdate, null, null, null, null);
+	}
+	
+	public PatientSet getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate,
+			Integer minAge, Integer maxAge, Boolean aliveOnly, Boolean deadOnly) throws DAOException {
+		return getPatientSetDAO().getPatientsByCharacteristics(gender, minBirthdate, maxBirthdate, minAge, maxAge, aliveOnly, deadOnly);
 	}
 	
 	public PatientSet getPatientsHavingNumericObs(Concept concept, PatientSetService.Modifier modifier, Number value) {
-		return getPatientsHavingNumericObs(concept.getConceptId(), modifier, value);
+		return getPatientsHavingNumericObs(concept.getConceptId(), null, modifier, value);
 	}
 	
 	public PatientSet getPatientsHavingNumericObs(Integer conceptId, PatientSetService.Modifier modifier, Number value) {
-		return getPatientSetDAO().getPatientsHavingNumericObs(conceptId, modifier, value);
+		return getPatientsHavingNumericObs(conceptId, null, modifier, value);
+	}
+	
+	public PatientSet getPatientsHavingNumericObs(Integer conceptId, TimeModifier timeModifier, PatientSetService.Modifier modifier, Number value) {
+		return getPatientSetDAO().getPatientsHavingNumericObs(conceptId, timeModifier, modifier, value);
 	}
 	
 	public PatientSet getPatientsHavingTextObs(Concept concept, String value) {
@@ -80,6 +89,41 @@ public class PatientSetService {
 	
 	public PatientSet getPatientsHavingLocation(Integer locationId) {
 		return getPatientSetDAO().getPatientsHavingLocation(locationId);
+	}
+
+	/**
+	 * Returns a PatientSet of patient who had drug orders for a set of drugs active on a certain date.
+	 * Can also be used to find patient with no drug orders on that date.
+	 * @param patientIds Collection of patientIds you're interested in. NULL means all patients.
+	 * @param takingAny Collection of drugIds the patient is taking. (Or the empty set to mean "any drug" or NULL to mean "no drugs")
+	 * @param onDate Which date to look at the patients' drug orders. (NULL defaults to now().)
+	 */
+	public PatientSet getPatientsHavingDrugOrder(Collection<Integer> patientIds, Collection<Integer> takingIds, Date onDate) {
+		Map<Integer, Collection<Integer>> activeDrugs = getPatientSetDAO().getActiveDrugIds(patientIds, onDate);
+		List<Integer> ret = new ArrayList<Integer>();
+		boolean takingAny = takingIds != null && takingIds.size() == 0;
+		boolean takingNone = takingIds == null;
+		if (takingAny) {
+			ret.addAll(activeDrugs.keySet());
+		} else if (takingNone) {
+			if (patientIds == null) {
+				patientIds = getAllPatients().getPatientIds();
+			}
+			patientIds.removeAll(activeDrugs.keySet());
+			ret.addAll(patientIds);
+		} else { // taking any of the drugs in takingIds
+			for (Map.Entry<Integer, Collection<Integer>> e : activeDrugs.entrySet()) {
+				for (Integer drugId : takingIds) {
+					if (e.getValue().contains(drugId)) {
+						ret.add(e.getKey());
+						break;
+					}
+				}
+			}
+		}
+		PatientSet ps = new PatientSet();
+		ps.setPatientIds(ret);
+		return ps;
 	}
 	
 	public Map<Integer, String> getShortPatientDescriptions(PatientSet patients) {
@@ -125,6 +169,12 @@ public class PatientSetService {
 		public String getSqlRepresentation() {
 			return sqlRep;
 		}
+	}
+	
+	public enum TimeModifier {
+		FIRST,
+		LAST,
+		ANY;
 	}
 	
 	public List<Patient> getPatients(Collection<Integer> patientIds) {

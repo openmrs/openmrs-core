@@ -63,5 +63,17 @@
 	<input type="submit" value="<spring:message code="Migration.uploadButton"/>" />
 </form>
 
+<hr />
+<h3>Regimens</h3>
+<form method=post action="migration.form">
+	<input type=hidden name="method" value="uploadRegimens"/>
+	<br/>
+	Paste CSV here, not including header. Columns should be
+	<pre>patientId,drugName,formulationName,startDate,autoExpireDate,discontinuedDate,discontinuedReason,doseStrength,doseUnit,dosesPerDay,daysPerWeek,prn</pre>
+	<br/>
+	<textarea name="regimen_csv" rows="5" cols="72" wrap="soft"></textarea>
+	<br/>
+	<input type="submit" value="<spring:message code="Migration.uploadButton"/>" />
+</form>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %> 

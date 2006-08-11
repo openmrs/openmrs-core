@@ -11,6 +11,7 @@ import org.openmrs.EncounterType;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.api.PatientSetService;
+import org.openmrs.api.PatientSetService.TimeModifier;
 import org.openmrs.reporting.PatientSet;
 
 public interface PatientSetDAO {
@@ -21,9 +22,9 @@ public interface PatientSetDAO {
 	
 	public PatientSet getAllPatients();
 	
-	public PatientSet getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate) throws DAOException;
+	public PatientSet getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate, Integer minAge, Integer maxAge, Boolean aliveOnly, Boolean deadOnly) throws DAOException;
 	
-	public PatientSet getPatientsHavingNumericObs(Integer conceptId, PatientSetService.Modifier modifier, Number value) throws DAOException;
+	public PatientSet getPatientsHavingNumericObs(Integer conceptId, TimeModifier timeModifier, PatientSetService.Modifier modifier, Number value) throws DAOException;
 	
 	public PatientSet getPatientsHavingTextObs(Integer conceptId, String value) throws DAOException;
 	
@@ -40,5 +41,7 @@ public interface PatientSetDAO {
 	public Map<Integer, Map<String, Object>> getCharacteristics(PatientSet patients) throws DAOException;
 
 	public List<Patient> getPatients(Collection<Integer> patientIds) throws DAOException;
+
+	public Map<Integer, Collection<Integer>> getActiveDrugIds(Collection<Integer> patientIds, Date onDate) throws DAOException;
 	
 }
