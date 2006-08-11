@@ -206,25 +206,35 @@ public class FieldGenTag extends ImportSupport {
 					// this could be an enum - if so, let's display it
 					//System.out.println("\n\n\nenum is " + startVal + "\n\n\n");
 					String className = type;
+					System.out.println("\n\nIS AN ENUM OF TYPE " + type + "\n\n");
+					
+					Class cls = null;
 					try {
-						Class cls = Class.forName(className);
+						cls = Class.forName(className);
+					} catch ( Throwable t ) {
+						cls = null;
+						//System.out.println(t.getStackTrace());
+					}
+
+					if ( cls != null ) {
 						if (cls.isEnum()) {
 							Object[] enumConstants = cls.getEnumConstants();
 							
-							if ( enumConstants.length > 0 ) {
-								String startVal = val.toString();
-								if ( startVal == null ) startVal = "";
-								output = "<select name=\"" + formFieldName + "\">";
-								for ( int i = 0; i < enumConstants.length; i++ ) {
-									output += "<option value=\"" + enumConstants[i].toString() + "\"" + (startVal.equals(enumConstants[i].toString()) ? " selected" : "") + ">";
-									output += enumConstants[i].toString();
-									output += "</option>";
+							if ( enumConstants != null ) {
+								if ( enumConstants.length > 0 ) {
+									String startVal = "";
+									if ( val != null ) startVal = val.toString();
+									if ( startVal == null ) startVal = "";
+									output = "<select name=\"" + formFieldName + "\">";
+									for ( int i = 0; i < enumConstants.length; i++ ) {
+										output += "<option value=\"" + enumConstants[i].toString() + "\"" + (startVal.equals(enumConstants[i].toString()) ? " selected" : "") + ">";
+										output += enumConstants[i].toString();
+										output += "</option>";
+									}
+									output += "</select> ";
 								}
-								output += "</select> ";
 							}
 						}
-					} catch ( Throwable t ) {
-						//System.out.println(t.getStackTrace());
 					}
 				} // end checking different built-in types
 				
