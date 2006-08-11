@@ -8,9 +8,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 
 public class ReportObjectFactory {
+
+	private static Log log = LogFactory.getLog(ReportObjectFactory.class);
+	
 	private String defaultValidator;
 	private List<ReportObjectFactoryModule> modules;
 	
@@ -132,7 +137,7 @@ public class ReportObjectFactory {
 				// attempt to populate setters with initialValues Map
 
 			} catch ( Throwable t ) {
-				//System.out.println("Could not create class: " + className + " when trying to get report object from the factory");
+				log.error("Could not create class: " + className + " when trying to get report object from the factory");
 			}
 		}
 		
@@ -148,7 +153,7 @@ public class ReportObjectFactory {
 				reportObj = (AbstractReportObject)ct.newInstance();
 				reportObj = ReportObjectFactory.initInstance(reportObj, initialValues);
 			} catch ( Throwable t ) {
-				//System.out.println("Could not instantiate class: " + reportObjectClass.getName() + " when trying to get report object from the factory");
+				log.error("Could not instantiate class: " + reportObjectClass.getName() + " when trying to get report object from the factory");
 			}
 		}
 		
