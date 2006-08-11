@@ -91,6 +91,10 @@ public class OrderDrugFormController extends SimpleFormController {
 		
 		if (context != null && context.isAuthenticated()) {
 			DrugOrder order = (DrugOrder)obj;
+			
+			// TODO: for now, orderType will have to be hard-coded?
+			order.setOrderType(new OrderType(new Integer(2)));
+
 			Patient thisPatient = null;
 			if ( order.getEncounter() == null ) {
 				Integer patientId = RequestUtils.getIntParameter(request, "patientId");
