@@ -330,6 +330,29 @@ public class Order implements java.io.Serializable {
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
-
-
+	
+	/**
+	 * Convenience method to determine if order is current
+	 * @param checkDate - the date on which to check order. if null, will use current date
+	 * @return boolean indicating whether the order was current on the input date
+	 */
+	public boolean isCurrent(Date checkDate) {
+		if (checkDate == null) {
+			checkDate = new Date();
+		}
+		if (startDate == null || checkDate.before(startDate)) {
+			return false;
+		}
+		if (discontinuedDate != null && discontinuedDate.before(checkDate)) {
+			return false;
+		}
+		if (autoExpireDate != null && autoExpireDate.before(checkDate)) {
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean isCurrent() {
+		return isCurrent(new Date());
+	}
 }
