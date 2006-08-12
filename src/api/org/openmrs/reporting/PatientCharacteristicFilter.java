@@ -11,6 +11,10 @@ public class PatientCharacteristicFilter extends AbstractPatientFilter implement
 	private String gender;
 	private Date minBirthdate;
 	private Date maxBirthdate;
+	private Integer minAge;
+	private Integer maxAge;
+	private Boolean aliveOnly;
+	private Boolean deadOnly;
 	
 	public PatientCharacteristicFilter() {
 		super.setType("Patient Filter");
@@ -31,7 +35,7 @@ public class PatientCharacteristicFilter extends AbstractPatientFilter implement
 		}
 		if (o instanceof PatientCharacteristicFilter) {
 			PatientCharacteristicFilter other = (PatientCharacteristicFilter) o;
-			return equals(gender, other.gender) && equals(minBirthdate, other.minBirthdate) && equals(maxBirthdate, other.maxBirthdate);
+			return equals(gender, other.gender) && equals(minBirthdate, other.minBirthdate) && equals(maxBirthdate, other.maxBirthdate) && equals(minAge, other.minAge) && equals(maxAge, other.maxAge) && equals(aliveOnly, other.aliveOnly) && equals(deadOnly, other.deadOnly);
 		} else {
 			return false;
 		}
@@ -62,6 +66,23 @@ public class PatientCharacteristicFilter extends AbstractPatientFilter implement
 			if (maxBirthdate != null) {
 				ret.append(" born before " + df.format(maxBirthdate));
 			}			
+		}
+		if (minAge != null) {
+			if (maxAge != null) {
+				ret.append(" between the ages of " + minAge + " and " + maxAge);
+			} else {
+				ret.append(" at least " + minAge + " years old");
+			}
+		} else {
+			if (maxAge != null) {
+				ret.append(" up to " + maxAge + " years old");
+			}
+		}
+		if (aliveOnly != null && aliveOnly) {
+			ret.append(" alive");
+		}
+		if (deadOnly != null && deadOnly) {
+			ret.append(" dead");
 		}
 		return ret.toString();
 	}
@@ -114,14 +135,46 @@ public class PatientCharacteristicFilter extends AbstractPatientFilter implement
 		this.minBirthdate = minBirthdate;
 	}
 	
+	public Boolean getAliveOnly() {
+		return aliveOnly;
+	}
+
+	public void setAliveOnly(Boolean aliveOnly) {
+		this.aliveOnly = aliveOnly;
+	}
+
+	public Boolean getDeadOnly() {
+		return deadOnly;
+	}
+
+	public void setDeadOnly(Boolean deadOnly) {
+		this.deadOnly = deadOnly;
+	}
+
+	public Integer getMaxAge() {
+		return maxAge;
+	}
+
+	public void setMaxAge(Integer maxAge) {
+		this.maxAge = maxAge;
+	}
+
+	public Integer getMinAge() {
+		return minAge;
+	}
+
+	public void setMinAge(Integer minAge) {
+		this.minAge = minAge;
+	}
+
 	public PatientSet filter(Context context, PatientSet input) {
 		PatientSetService service = context.getPatientSetService();
-		return input.intersect(service.getPatientsByCharacteristics(gender, minBirthdate, maxBirthdate));
+		return input.intersect(service.getPatientsByCharacteristics(gender, minBirthdate, maxBirthdate, minAge, maxAge, aliveOnly, deadOnly));
 	}
 
 	public PatientSet filterInverse(Context context, PatientSet input) {
 		PatientSetService service = context.getPatientSetService();
-		return input.subtract(service.getPatientsByCharacteristics(gender, minBirthdate, maxBirthdate));
+		return input.subtract(service.getPatientsByCharacteristics(gender, minBirthdate, maxBirthdate, minAge, maxAge, aliveOnly, deadOnly));
 	}
 	
 }

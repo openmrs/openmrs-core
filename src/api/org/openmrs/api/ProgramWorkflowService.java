@@ -11,6 +11,7 @@ import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
+import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOContext;
 import org.openmrs.api.db.ProgramWorkflowDAO;
@@ -62,6 +63,19 @@ public class ProgramWorkflowService {
 			p.setDateChanged(now);
 		}
 		
+		if (p.getVoided()) {
+			if (p.getDateVoided() == null) {
+				p.setDateVoided(now);
+			}
+			if (p.getVoidedBy() == null) {
+				p.setVoidedBy(context.getAuthenticatedUser());
+			}
+		} else {
+			p.setDateVoided(null);
+			p.setVoidedBy(null);
+			p.setVoidReason(null);
+		}
+		
 		if (p.getWorkflows() != null) {
 			for (ProgramWorkflow w : p.getWorkflows()) {
 				if (w.getProgramWorkflowId() == null) {
@@ -103,17 +117,49 @@ public class ProgramWorkflowService {
 		getProgramWorkflowDAO().createWorkflow(w);
 	}
 	
-	public ProgramWorkflow getProgramWorkflow(Integer id) {
-		return null;
+	public ProgramWorkflow getWorkflow(Integer id) {
+		return getProgramWorkflowDAO().getWorkflow(id);
 	}
+	
+	public void updateWorkflow(ProgramWorkflow w) {
+		if (w.getVoided()) {
+			if (w.getVoidedBy() == null) {
+				w.setVoidedBy(context.getAuthenticatedUser());
+			}
+			if (w.getDateVoided() == null) {
+				w.setDateVoided(new Date());
+			}
+		} else {
+			w.setVoidedBy(null);
+			w.setVoidReason(null);
+			w.setDateVoided(null);
+		}
+		for (ProgramWorkflowState s : w.getStates()) {
+			s.setProgramWorkflow(w);
+			if (s.getCreator() == null) {
+				s.setCreator(context.getAuthenticatedUser());
+			}
+			if (s.getDateCreated() == null) {
+				s.setDateCreated(new Date());
+			}
+		}
+		getProgramWorkflowDAO().updateWorkflow(w);
+	}
+	
+	public void voidWorkflow(ProgramWorkflow w, String reason) {
+		w.setVoided(true);
+		w.setVoidReason(reason);
+		w.setVoidedBy(context.getAuthenticatedUser());
+		w.setDateVoided(new Date());
+		getProgramWorkflowDAO().updateWorkflow(w);
+	}
+	
+	
 	
 	public ProgramWorkflow findWorkflowByProgramAndConcept(Integer programId, Integer conceptId) {
 		return getProgramWorkflowDAO().findWorkflowByProgramAndConcept(programId, conceptId);
 	}
-	
-	public void voidProgramWorkflow(ProgramWorkflow w, String reason) {
-	}
-	
+		
 	// --- ProgramWorkflowState ---
 	/*
 	public void createProgramWorkflowState(ProgramWorkflowState s) {

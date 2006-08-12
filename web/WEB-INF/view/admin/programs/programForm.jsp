@@ -3,164 +3,169 @@
 <openmrs:require privilege="Manage Programs" otherwise="/login.htm" redirect="/admin/programs/program.form" />
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
+<%@ include file="localHeader.jsp" %>
 
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/prototype.lite.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/moo.fx.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/moo.fx.pack.js"></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/interface/DWRConceptService.js'></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/engine.js'></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/util.js'></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/openmrsSearch.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/conceptSearch.js"></script>
+<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/dojo/dojo.js"></script>
+
 <script type="text/javascript">
-<!--
-	var idListBox  = null;
-	var myConceptSearchMod = null;
+	var idToNameMap = new Array();
 	
-	window.onload = function() {
-		myConceptSearchMod = new fx.Resize("conceptSearchForm", {duration: 100});
-		myConceptSearchMod.hide();
-	}
-	
-	function addConcept(nameList, idList, obj)
-	{
-		nameList = document.getElementById(nameList);
-		idList   = document.getElementById(idList);
-		if (idList != idListBox) {
-			//if user clicked on a new button
-			closeConceptBox();
-			nameListBox = nameList;	// used by onSelect()
-			idListBox   = idList;	// used by onSelect()
-		}
-		
-		var conceptSearchForm = document.getElementById("conceptSearchForm");
-		setPosition(obj, conceptSearchForm, 520, 290);
-		
-		DWRUtil.removeAllRows("conceptSearchBody");
-		
-		myConceptSearchMod.toggle();
-		if (addButton == null) {
-			var searchText = document.getElementById("searchText");
-			searchText.value = '';
-			searchText.select();
-			addButton = obj;
-			resetForm();
-			//searchText.focus();  //why does this cause the inner box to shift position?!?
-		}
-		else {
-			obj.focus();
-			addButton = null;
-		}
-	}
-	
-	function closeConceptBox() {
-		myConceptSearchMod.hide();
-		addButton = null;
-		drugConcepts = new Array();
-		return false;
-	}
-	
-	function moveUp(nameList, idList)
-	{
-		var input = document.getElementById(idList);
-		var sel = document.getElementById(nameList);
-		var optList = sel.options;
-		for (var i=1; i<optList.length; i++) {
-			// loop over and move up all selected items
-			if (optList[i].selected && !optList[i-1].selected) {
-				var id   = optList[i].value;
-				var name = optList[i].text;
-				optList[i].value = optList[i-1].value;
-				optList[i].text  = optList[i-1].text;
-				optList[i].selected = false;
-				optList[i-1].value = id;
-				optList[i-1].text  = name;
-				optList[i-1].selected = true;
-			}
-		}
-		copyIds(nameList, idList, ' ');
-	}
-	
-	function moveDown(nameList, idList)
-	{
-		var input = document.getElementById(idList);
-		var sel = document.getElementById(nameList);
-		var optList = sel.options;
-		for (var i=optList.length-2; i>=0; i--) {
-			if (optList[i].selected && !optList[i+1].selected) {
-				var id   = optList[i].value;
-				var name = optList[i].text;
-				optList[i].value = optList[i+1].value;
-				optList[i].text  = optList[i+1].text;
-				optList[i].selected = false;
-				optList[i+1].value = id;
-				optList[i+1].text  = name;
-				optList[i+1].selected = true;
-			}
-		}
-		copyIds(nameList, idList, ' ');
-	}
-	
-	function copyIds(from, to, delimiter)
-	{
-		var sel = document.getElementById(from);
-		var input = document.getElementById(to);
-		var optList = sel.options;
-		var remaining = new Array();
-		var i=0;
-		while (i < optList.length)
-		{
-			remaining.push(optList[i].value);
-			i++;
-		}
-		input.value = remaining.join(delimiter);
-	}
--->
-</script>
+	dojo.require("dojo.widget.openmrs.ConceptSearch");
+	dojo.require("dojo.widget.openmrs.OpenmrsPopup");
 
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/openmrsPopup.js"></script>
+	dojo.addOnLoad( function() {
+		dojo.event.topic.subscribe("cSearch/select", 
+			function(msg) {
+				var popup = dojo.widget.manager.getWidgetById("conceptSelection");
+				popup.hiddenInputNode.value = msg.objs[0].conceptId;
+				popup.displayNode.innerHTML = msg.objs[0].name;
+			}
+		);
+	});
+	dojo.addOnLoad( function() {
+		dojo.event.topic.subscribe("wfSearch/select", 
+			function(msg) {
+				idToNameMap[msg.objs[0].conceptId] = msg.objs[0].name;
+				addWorkflow(msg.objs[0].conceptId);
+			}
+		);	
+	});
+
+	function helper(value) {
+		var values = value.split(" ");
+		for (var i = 0; i < values.length; ++i) {
+			if (values[i] == '') {
+				values.splice(i, 1);
+				--i;
+			}
+		}
+		return values;
+	}
+	
+	function cleanupWorkflowsValue() {
+		var value = $('workflowsValue').value;
+		if (value == '' || value == 'null') value = ':';
+		$('workflowsValue').value = value;
+	}
+	
+	function addWorkflow(conceptId) {
+		$('workflowsValue').value = $('workflowsValue').value + ' ' + conceptId;
+		refreshWorkflowsDisplay();
+	}
+	
+	function removeWorkflow(conceptId) {
+		var value = $('workflowsValue').value;
+		if (value == '' || value == 'null') value = ':';
+		var progId = value.substring(0, value.indexOf(":"));
+		value = value.substring(value.indexOf(":") + 1);
+		var values = helper(value);
+		var ret = progId + ':';
+		for (var i = 0; i < values.length; ++i) {
+			if (values[i] != conceptId) {
+				ret += values[i] + ' ';
+			}
+		}
+		$('workflowsValue').value = ret;
+		refreshWorkflowsDisplay();
+	}
+	
+	function refreshWorkflowsDisplay() {
+		var tableId = 'workflowsDisplay';
+		var value = $('workflowsValue').value;
+		value = value.substring(value.indexOf(":") + 1);
+		values = helper(value);
+		DWRUtil.removeAllRows(tableId);
+		DWRUtil.addRows(tableId, values, [
+				function(id) { return idToNameMap[id]; },
+				function(id) { return '<a href="javascript:removeWorkflow(' + id + ')">[x]</a>';},
+			]);
+	}
+
+</script>
 
 <h2><spring:message code="Program.manage.title"/></h2>
 
-<form method="post">
+<spring:hasBindErrors name="program">
+	<spring:message code="fix.error"/>
+	<br />
+</spring:hasBindErrors>
+
+<form method="post" id="theForm">
 <table>
 	<tr>
-		<td><spring:message code="Program.concept"/></td>
+		<th><spring:message code="Program.concept"/></td>
 		<td>
 			<spring:bind path="program.concept">
-				<openmrs:fieldGen type="org.openmrs.Concept" formFieldName="${status.expression}" startVal="${status.value}" />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				<div dojoType="ConceptSearch" widgetId="cSearch" conceptId="${status.value}" showVerboseListing="false" conceptClasses="Program"></div>
+				<div dojoType="OpenmrsPopup" widgetId="conceptSelection" hiddenInputName="${status.expression}" searchWidget="cSearch" searchTitle='<spring:message code="Concept.find" />'></div>
+							
+				<c:if test="${status.errorMessage != ''}">
+					<span class="error">
+						${status.errorMessage}
+					</span>
+				</c:if>
 			</spring:bind>
 		</td>
 	</tr>
-</table>
-<table>
+	<tr>
+		<td colspan="2" align="right"><spring:message code="Program.conceptHint"/></td>
+	</tr>
+	<tr>
+		<th valign="top"><spring:message code="general.voided"/>?</th>
+		<td valign="top">
+			<spring:bind path="program.voided">
+				<select name="${status.expression}">
+					<option value="false" <c:if test="${status.value == false}">selected</c:if>><spring:message code="general.no"/></option>
+					<option value="true" <c:if test="${status.value == true}">selected</c:if>><spring:message code="general.yes"/></option>
+				</select>
+				<c:if test="${status.errorMessage != ''}">
+					<span class="error">${status.errorMessage}</span>
+				</c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<th valign="top"><spring:message code="general.voidReason"/></th>
+		<td valign="top">
+			<spring:bind path="program.voidReason">
+				<input type="text" size="60" name="${status.expression}" value="${status.value}"/>
+				<c:if test="${status.errorMessage != ''}">
+					<span class="error">${status.errorMessage}</span>
+				</c:if>
+			</spring:bind>
+		</td>
+	</tr>
 	<tr id="workflowSetRow">
 		<th valign="top"><spring:message code="Program.workflows" text="Workflows"/></th>
 		<td valign="top">
-			<input type="text" name="workflows" id="workflows" value='<c:forEach items="${program.workflows}" var="set">${set.value[0]} </c:forEach>' />
-			<table cellpadding="0" cellspacing="0">
-				<tr>
-					<td valign="top">
-						<select class="largeWidth" size="6" id="workflowsNames" multiple onkeyup="listKeyPress('workflowsNames', 'workflows', ' ', event);">
-							<c:forEach items="${program.workflows}" var="set">
-								<option value="${set.value[0]}">${set.value[1]} (${set.value[0]})</option>
-							</c:forEach>
-						</select>
-					</td>
-					<td valign="top" class="buttons">
-						&nbsp;<input type="button" value="<spring:message code="general.add"/>" class="smallButton" onClick="addConcept('workflowsNames', 'workflows', this);" /> <br/>
-						&nbsp;<input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('workflowsNames', 'workflows', ' ');" /> <br/>
-						&nbsp;<input type="button" value="<spring:message code="general.move_up"/>" class="smallButton" onClick="moveUp('workflowsNames', 'workflows');" /><br/>
-						&nbsp;<input type="button" value="<spring:message code="general.move_down"/>" class="smallButton" onClick="moveDown('workflowsNames', 'workflows');" /><br/>
-					</td>
-				</tr>
+			<spring:bind path="program.workflows">
+				<input type="hidden" name="${status.expression}" id="workflowsValue" value="${status.value}" />
+				<c:if test="${status.errorMessage != ''}">
+					<span class="error">
+						${status.errorMessage}
+					</span>
+				</c:if>
+			</spring:bind>
+			
+			<table id="workflowsDisplay">
 			</table>
+
+			<div dojoType="ConceptSearch" widgetId="wfSearch" showVerboseListing="false" conceptClasses="Workflow"></div>
+			<div dojoType="OpenmrsPopup" widgetId="conceptSelection2" hiddenInputName="notUsed" searchWidget="wfSearch" searchTitle='<spring:message code="Concept.find" />' changeButtonValue='<spring:message code="general.add"/>'></div>
+			
 		</td>
 	</tr>
 </table>
 <br />
-<input type="submit" value="<spring:message code="Program.save"/>">
+<input type="submit" value='<spring:message code="Program.save"/>' onClick="$('theForm').submit()" />
 </form>
+
+<script type="text/javascript">
+	cleanupWorkflowsValue();
+	<c:forEach var="workflow" items="${program.workflows}">
+		idToNameMap[${workflow.concept.conceptId}] = '<openmrs:concept conceptId="${workflow.concept.conceptId}" nameVar="n" var="v" numericVar="nv">${n.name}</openmrs:concept>';
+	</c:forEach>
+	refreshWorkflowsDisplay();
+</script>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

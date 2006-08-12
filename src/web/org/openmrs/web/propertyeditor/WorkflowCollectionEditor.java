@@ -1,17 +1,13 @@
 package org.openmrs.web.propertyeditor;
 
 import java.beans.PropertyEditorSupport;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.ProgramWorkflowService;
@@ -29,75 +25,84 @@ public class WorkflowCollectionEditor extends PropertyEditorSupport {
 	}
 	
 	/**
-	 * Note that this takes {programId}.{conceptId}, not programWorkflowIds!
+	 * Takes a "program_id:list"
+	 * where program_id is the id of the program that this collection is for (or not present, if it's a new program)
+	 * and list is a space-separated list of concept ids.
+	 * This class is a bit of a hack, because I don't know a better way to do this. -DJ
+	 * The purpose is to void and unvoid workflows where possible rather than deleting and creating them.  
 	 */
 	public void setAsText(String text) throws IllegalArgumentException {
 		if (context != null && StringUtils.hasText(text)) {
 			ConceptService cs = context.getConceptService();
 			ProgramWorkflowService pws = context.getProgramWorkflowService();
+			Program program = null;
+			try {
+				int ind = text.indexOf(":");
+				String progIdStr = text.substring(0, ind);
+				text = text.substring(ind + 1);
+				program = pws.getProgram(Integer.valueOf(progIdStr));
+			} catch (Exception ex) { }
+			
 			String[] conceptIds = text.split(" ");
-			List<String> uniqueEntries = new ArrayList<String>();
+			Set<ProgramWorkflow> oldSet = program == null ? new HashSet<ProgramWorkflow>() : program.getWorkflows();
+			Set<Integer> newConceptIds = new HashSet<Integer>();
+			
 			for (String id : conceptIds) {
-				id = id.trim();
-				if (id.equals("") || uniqueEntries.contains(id)) {
+				if (id.trim().length() == 0)
 					continue;
-				}
-				uniqueEntries.add(id);
+				log.debug("trying " + id);
+				newConceptIds.add(Integer.valueOf(id.trim()));
 			}
 			
-			// remove duplicates, keeping the one that already has a programId
-			Collections.sort(uniqueEntries, new Comparator<String>() {
-					public int compare(String left, String right) {
-						Integer l = left.startsWith(".") ? 1 : 0;
-						Integer r = right.startsWith(".") ? 1 : 0;
-						return l.compareTo(r);
-					}
-				});
-			Set<Integer> conceptIdsSoFar = new HashSet<Integer>();
-			for (Iterator<String> i = uniqueEntries.iterator(); i.hasNext(); ) {
-				String id = i.next();
-				Integer programId = null;
-				Integer conceptId = null;
-				if (id.startsWith(".")) {
-					conceptId = Integer.valueOf(id);
-				} else {
-					String[] temp = id.split("\\.");
-					programId = Integer.valueOf(temp[0]);
-					conceptId = Integer.valueOf(temp[1]);
+			// go through oldSet and see what we need to keep and what we need to unvoid
+			Set<Integer> alreadyDone = new HashSet<Integer>();
+			Set<ProgramWorkflow> newSet = new HashSet<ProgramWorkflow>();
+			for (ProgramWorkflow pw : oldSet) {
+				if (!newConceptIds.contains(pw.getConcept().getConceptId())) {
+					pw.setVoided(true);
+				} else if (pw.getVoided()) { // && newConceptIds.contains(pw...)
+					pw.setVoided(false);
 				}
-				if (conceptIdsSoFar.contains(conceptId)) {
-					i.remove();
-				} else {
-					conceptIdsSoFar.add(conceptId);
-				}
+				newSet.add(pw);
+				alreadyDone.add(pw.getConcept().getConceptId());
 			}
 			
-			Collection<ProgramWorkflow> newConceptList = new HashSet<ProgramWorkflow>();
-			for (String id : uniqueEntries) {
-				Integer programId = null;
-				Integer conceptId = null;
-				if (id.startsWith(".")) {
-					conceptId = Integer.valueOf(id);
-				} else {
-					String[] temp = id.split("\\.");
-					programId = Integer.valueOf(temp[0]);
-					conceptId = Integer.valueOf(temp[1]);
-				}
-				ProgramWorkflow workflow = null;
-				if (programId != null) {
-					workflow = pws.findWorkflowByProgramAndConcept(programId, conceptId);
-				}
-				if (workflow == null) {
-					workflow = new ProgramWorkflow();
-					workflow.setConcept(cs.getConcept(conceptId));
-				}
-				
-				newConceptList.add(workflow);
+			// now add any new ones
+			newConceptIds.removeAll(alreadyDone);
+			for (Integer conceptId : newConceptIds) {
+				ProgramWorkflow pw = new ProgramWorkflow();
+				pw.setProgram(program);
+				pw.setConcept(cs.getConcept(conceptId));
+				newSet.add(pw);
 			}
 
-			setValue(newConceptList);
+			setValue(newSet);
 		} else {
 			setValue(null);
+		}
+	}
+	
+	public String getAsText() {
+		Collection<ProgramWorkflow> pws = (Collection<ProgramWorkflow>) getValue();
+		if (pws == null || pws.size() == 0) {
+			return ":";
+		} else {
+			Integer progId = null;
+			for (ProgramWorkflow pw : pws) {
+				if (pw.getProgram() != null && pw.getProgram().getProgramId() != null) {
+					progId = pw.getProgram().getProgramId();
+					break;
+				}
+			}
+			StringBuilder ret = new StringBuilder();
+			if (progId != null) {
+				ret.append(progId);
+			}
+			ret.append(":");
+			for (ProgramWorkflow pw : pws) {
+				ret.append(pw.getConcept().getConceptId()).append(" ");
+			}
+			return ret.toString().trim();
 		}
 	}
 

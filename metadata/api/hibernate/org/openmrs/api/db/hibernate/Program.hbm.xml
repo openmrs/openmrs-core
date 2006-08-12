@@ -14,19 +14,11 @@
 		<property name="dateCreated" type="java.util.Date"
 			column="date_created" not-null="true" length="19" />
 
-		<many-to-one name="changedBy" class="User">
-			<column name="changed_by" />
-		</many-to-one>
-
 		<property name="dateChanged" type="java.util.Date"
 			column="date_changed" length="19" />
 
 		<property name="voided" type="boolean" column="voided" not-null="true"/>
 
-		<many-to-one name="voidedBy" class="User">
-			<column name="voided_by" />
-		</many-to-one>
-		
 		<property name="dateVoided" type="java.util.Date"
 			column="date_voided" length="19" />
 
@@ -39,18 +31,23 @@
 		<many-to-one name="concept" class="Concept" not-null="true">
 			<column name="concept_id" />
 		</many-to-one>
-		<!-- bi-directional many-to-one association to User -->
+
+		<!-- bi-directional many-to-one associations to User -->
 		<many-to-one name="creator" class="User" not-null="true">
 			<column name="creator" />
 		</many-to-one>
+		<many-to-one name="changedBy" class="User">
+			<column name="changed_by" />
+		</many-to-one>
+		<many-to-one name="voidedBy" class="User">
+			<column name="voided_by" />
+		</many-to-one>
 
 		<!-- bi-directional one-to-many association to ProgramWorkflow -->
-		<!--
-			<set name="workflows" lazy="false" inverse="true" cascade="all-delete-orphan" order-by="date_created asc">
+		<set name="workflows" inverse="true" lazy="false" cascade="all-delete-orphan" order-by="date_created asc">
 			<key column="program_id" not-null="true"/>
-			<one-to-many class="org.openmrs.ProgramWorkflow" />
-			</set>
-		-->
+			<one-to-many class="ProgramWorkflow" />
+		</set>
 
 	</class>
 </hibernate-mapping>

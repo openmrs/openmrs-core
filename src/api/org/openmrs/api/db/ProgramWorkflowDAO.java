@@ -31,6 +31,10 @@ public interface ProgramWorkflowDAO {
 
 	public ProgramWorkflow findWorkflowByProgramAndConcept(Integer programId, Integer conceptId);
 	
+	public ProgramWorkflow getWorkflow(Integer id);
+	
 	public void createWorkflow(ProgramWorkflow w);
+	
+	public void updateWorkflow(ProgramWorkflow w);
 	
 }

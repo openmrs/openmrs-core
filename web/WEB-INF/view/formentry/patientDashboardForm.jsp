@@ -1,5 +1,5 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
-<openmrs:require privilege="View Patients" otherwise="/login.htm" redirect="/formentry/patientDashboard.htm" />
+<openmrs:require privilege="View Patients" otherwise="/login.htm" redirect="/formentry/patientDashboard.form" />
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 

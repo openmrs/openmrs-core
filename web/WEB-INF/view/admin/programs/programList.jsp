@@ -3,6 +3,7 @@
 <openmrs:require privilege="Manage Programs" otherwise="/login.htm" redirect="/admin/programs/program.list" />
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
+<%@ include file="localHeader.jsp" %>
 
 <h2><spring:message code="Program.manage.title"/></h2>
 
@@ -12,32 +13,49 @@
 
 <b class="boxHeader"><spring:message code="Program.list.title"/></b>
 <div class="box">
-	<table>
+	<c:if test="${fn:length(programList) == 0}">
 		<tr>
-			<th> <spring:message code="general.id"/> </th>
-			<th> <spring:message code="general.name"/> </th>
-			<th> <spring:message code="general.description"/> </th>
+			<td colspan="5"><spring:message code="general.none"/></td>
 		</tr>
-		<c:if test="${fn:length(programList) == 0}">
+	</c:if>
+	<c:if test="${fn:length(programList) != 0}">
+		<table cellspacing="0" cellpadding="2" border="1">
 			<tr>
-				<td colspan=2><spring:message code="general.none"/></td>
+				<th> <spring:message code="general.id"/> </th>
+				<th> <spring:message code="general.name"/> </th>
+				<th> <spring:message code="general.description"/> </th>
+				<th> <spring:message code="Program.workflows"/> </th>
 			</tr>
-		</c:if>
-		<c:forEach var="program" items="${programList}">
-			<openmrs:concept conceptId="${program.concept.conceptId}" var="v" nameVar="n" numericVar="num"/>
-			<tr> 
-				<td valign="top">${program.programId}</td>
-				<td valign="top">${n.name}</td>
-				<td valign="top">${n.description}</td>
-				<td>
-					${fn:length(program.workflows)}
-					<c:forEach var="workflow" items="${program.workflows}">
-						<openmrs:concept conceptId="${workflow.concept.conceptId}" var="v" nameVar="n" numericVar="num">${n.name}</openmrs:concept> <br/>
-					</c:forEach>
-				</td>
-			</tr>
-		</c:forEach>
-	</table>
+			<c:forEach var="program" items="${programList}">
+				<tr> 
+					<td valign="top">
+						<c:if test="${program.voided}"><i><spring:message code="general.voided"/><strike></c:if>
+						${program.programId}
+						<c:if test="${program.voided}"></strike></c:if>
+					</td>
+					<openmrs:concept conceptId="${program.concept.conceptId}" var="v" nameVar="n" numericVar="num">
+						<td valign="top">
+							<c:if test="${program.voided}"><strike></c:if>
+							<a href="program.form?programId=${program.programId}">
+							${n.name}
+							</a>
+							<c:if test="${program.voided}"></strike></c:if>
+						</td>
+						<td valign="top">${n.description}</td>
+					</openmrs:concept>
+					<td>
+						<c:forEach var="workflow" items="${program.workflows}">
+							<a href="workflow.form?programWorkflowId=${workflow.programWorkflowId}">
+								<openmrs_tag:concept conceptId="${workflow.concept.conceptId}"/>
+								(${fn:length(workflow.states)})
+							</a>
+							<br/>
+						</c:forEach>
+					</td>
+				</tr>
+			</c:forEach>
+		</table>
+	</c:if>
 </div>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

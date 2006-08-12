@@ -11,6 +11,7 @@ public class NumericObsPatientFilter extends AbstractPatientFilter implements Pa
 
 	Concept concept;
 	PatientSetService.Modifier modifier;
+	PatientSetService.TimeModifier timeModifier;
 	// this used to be java.lang.Number, but changed to Double because difficult to make prop editors for abstract classes
 	Double value;
 	
@@ -35,6 +36,14 @@ public class NumericObsPatientFilter extends AbstractPatientFilter implements Pa
 		this.concept = concept;
 	}
 
+	public PatientSetService.TimeModifier getTimeModifier() {
+		return timeModifier;
+	}
+
+	public void setTimeModifier(PatientSetService.TimeModifier timeModifier) {
+		this.timeModifier = timeModifier;
+	}
+
 	public PatientSetService.Modifier getModifier() {
 		return modifier;
 	}
@@ -53,12 +62,12 @@ public class NumericObsPatientFilter extends AbstractPatientFilter implements Pa
 
 	public PatientSet filter(Context context, PatientSet input) {
 		PatientSetService service = context.getPatientSetService();
-		return input.intersect(service.getPatientsHavingNumericObs(concept, modifier, value));
+		return input.intersect(service.getPatientsHavingNumericObs(concept.getConceptId(), timeModifier, modifier, value));
 	}
 	
 	public PatientSet filterInverse(Context context, PatientSet input) {
 		PatientSetService service = context.getPatientSetService();
-		return input.subtract(service.getPatientsHavingNumericObs(concept, modifier, value));
+		return input.subtract(service.getPatientsHavingNumericObs(concept.getConceptId(), timeModifier, modifier, value));
 	}
 
 	public String getDescription() {
