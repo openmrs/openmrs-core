@@ -83,7 +83,7 @@
 		<td valign="top"><spring:message code="Order.orderer"/></td>
 		<td valign="top">
 			<spring:bind path="order.orderer">
-				<openmrs:fieldGen type="org.openmrs.User" formFieldName="${status.expression}" val="${status.editor.value}" />
+				<openmrs:fieldGen type="org.openmrs.User" formFieldName="${status.expression}" val="${status.editor.value}" parameters="roles=Clinician" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>

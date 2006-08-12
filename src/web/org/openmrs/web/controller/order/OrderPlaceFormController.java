@@ -73,8 +73,7 @@ public class OrderPlaceFormController extends SimpleFormController {
 		Integer patientId = RequestUtils.getIntParameter(request, "patientId");
 		if ( patientId != null ) {
 			refData.put("patientId", patientId);
-			System.out.println("\n\nPATIENTID IS " + patientId.toString() + "\n\n");
-		} else System.out.println("\n\nPATIENTID IS NULL \n\n");
+		}
 		
 		return refData;
 	}

@@ -83,7 +83,7 @@
 							<td valign="top" colspan="5"><openmrs:fieldGen type="${field.genericType}" formFieldName="${status.expression}" val="${status.editor.value}" /></td>
 						</c:if>
 						<c:if test="${field.type.enum}">
-							<td valign="top" colspan="5"><openmrs:fieldGen type="${field.genericType}" formFieldName="${status.expression}" val="${status.editor.value}" /></td>
+							<td valign="top" colspan="5"><openmrs:fieldGen type="${field.genericType}" formFieldName="${status.expression}" val="${status.value}" /></td>
 						</c:if>
 					</tr>
 				</spring:bind>	
