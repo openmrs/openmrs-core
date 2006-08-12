@@ -34,7 +34,7 @@ public final class Listener implements ServletContextListener {
 	 */
 	public void contextInitialized(ServletContextEvent event) {
 		Log log = LogFactory.getLog(this.getClass());
-
+		
 		try {
 			FileInputStream propertyStream = null;
 
@@ -81,27 +81,27 @@ public final class Listener implements ServletContextListener {
 				if (userOverridePath != null) {
 					String absolutePath = realPath + webappPath;
 					File file = new File(userOverridePath);
+
 					// if they got the path correct
-					if (file.exists()) {
+					// also, if file does not start with a "." (hidden files, like SVN files) 
+					if (file.exists() && !userOverridePath.startsWith(".")) {
 						log.debug("Overriding file: " + absolutePath);
 						log.debug("Overriding file with: " + userOverridePath);
 						if (file.isDirectory()) {
 							for (File f : file.listFiles()) {
 								userOverridePath = f.getAbsolutePath();
-								String tmpAbsolutePath = absolutePath + "/"
-										+ f.getName();
-								FileInputStream inputStream = new FileInputStream(
-										userOverridePath);
-								FileOutputStream outputStream = new FileOutputStream(
-										tmpAbsolutePath);
-								Helper.copyFile(inputStream, outputStream);
+								if ( !f.getName().startsWith(".") ) {
+									String tmpAbsolutePath = absolutePath + "/"
+									+ f.getName();
+									FileInputStream inputStream = new FileInputStream(userOverridePath);
+									FileOutputStream outputStream = new FileOutputStream(tmpAbsolutePath);
+									Helper.copyFile(inputStream, outputStream);
+								}
 							}
 						} else {
 							// file is not a directory
-							FileInputStream inputStream = new FileInputStream(
-									userOverridePath);
-							FileOutputStream outputStream = new FileOutputStream(
-									absolutePath);
+							FileInputStream inputStream = new FileInputStream(userOverridePath);
+							FileOutputStream outputStream = new FileOutputStream(absolutePath);
 							Helper.copyFile(inputStream, outputStream);
 						}
 					}
@@ -119,7 +119,6 @@ public final class Listener implements ServletContextListener {
 			FormEntryUtil.startup();
 			SchedulerUtil.startup();
 		}
-
 	}
 
 	public void contextDestroyed(ServletContextEvent event) {
