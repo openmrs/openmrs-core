@@ -23,13 +23,28 @@ public abstract class AbstractFieldGenHandler {
 			if ( hmParams == null ) hmParams = new HashMap<String,Object>();
 			hmParams.put(s, o);
 			this.fieldGenTag.setParameterMap(hmParams);
-			System.out.println("PUT VALUE [" + o + "] AT KEY " + s);
 		}
 	}
 	
 	protected void setUrl(String s) {
 		if ( this.fieldGenTag != null ) {
 			this.fieldGenTag.setUrl(s);
+		}
+	}
+	
+	protected void setVal(Object o) {
+		if ( this.fieldGenTag != null ) {
+			this.fieldGenTag.setVal(o);
+		}
+	}
+
+	protected void checkEmptyVal(Object o) {
+		if ( this.fieldGenTag.getVal() != null ) {
+			if ( this.fieldGenTag.getVal() instanceof String && !(o instanceof String)) {
+				if ( "".equals(this.fieldGenTag.getVal()) ) {
+					setVal(o);
+				}
+			}
 		}
 	}
 	

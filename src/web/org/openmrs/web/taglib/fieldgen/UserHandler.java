@@ -1,5 +1,7 @@
 package org.openmrs.web.taglib.fieldgen;
 
+import org.openmrs.User;
+
 
 public class UserHandler extends AbstractFieldGenHandler implements FieldGenHandler {
 
@@ -7,19 +9,13 @@ public class UserHandler extends AbstractFieldGenHandler implements FieldGenHand
 	
 	public void run() {
 		setUrl(defaultUrl);
-
-		/*
-		String output = startingOutput;
-		
-		if ( fieldGenTag != null ) {
-			String startVal = this.fieldGenTag.getStartVal();
-			String formFieldName = this.fieldGenTag.getFormFieldName();
-			
-			output = "<input type=\"text\" size=\"12\" name=\"" + formFieldName + "\" value=\"" + startVal + "\" />";
-			output += " (need a better widget than this - for now input User id number)";
+		checkEmptyVal((User)null);
+		String initialValue = "";
+		User u = (User)this.fieldGenTag.getVal();
+		if ( u != null ) {
+			Integer userId = u.getUserId();
+			initialValue = userId.toString();
 		}
-		
-		return output;
-		*/
+		setParameter("initialValue", initialValue);
 	}
 }

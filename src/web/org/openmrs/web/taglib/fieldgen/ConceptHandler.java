@@ -15,7 +15,7 @@ public class ConceptHandler extends AbstractFieldGenHandler implements FieldGenH
 			if ( c != null ) {
 				ConceptName cName = c.getName(this.fieldGenTag.getPageContext().getRequest().getLocale());
 				setParameter("startName", cName);
-			}
+			} else setParameter("startName", "");
 		}
 	}
 }

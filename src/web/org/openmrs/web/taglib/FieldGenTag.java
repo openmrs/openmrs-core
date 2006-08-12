@@ -3,11 +3,14 @@ package org.openmrs.web.taglib;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.ServletException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
+import javax.servlet.jsp.tagext.TagSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,7 +21,7 @@ import org.openmrs.web.taglib.fieldgen.FieldGenHandlerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
-public class FieldGenTag extends ImportSupport {
+public class FieldGenTag extends TagSupport {
 
 	public static final long serialVersionUID = 2L;
 	
@@ -32,7 +35,7 @@ public class FieldGenTag extends ImportSupport {
 	private String type;
 	private String formFieldName;
 	private Object val;
-	//private String startVal;
+	private String url;
 	private String parameters = "";
 	private Map<String, Object> parameterMap = null;
 	
@@ -57,18 +60,9 @@ public class FieldGenTag extends ImportSupport {
 	}
 	
 	public int doStartTag() throws JspException {
+				
 		if (type == null) type = "";
 		if (formFieldName == null) formFieldName = "";
-		if (val == null) {
-			//System.out.println("VAL IS NULL!!");
-		} else {
-			Class valClass = val.getClass();
-			if ( valClass == null ) {
-				//System.out.println("VALCLASS IS NULL!!");
-			} else {
-				//System.out.println("VAL IS " + val.getClass().getName());
-			}
-		}
 				
 		if ( formFieldName.length() > 0 ) {
 			FieldGenHandler handler = getHandlerByClassName(type);
@@ -98,51 +92,11 @@ public class FieldGenTag extends ImportSupport {
 					String fieldLength = this.parameterMap != null ? (String)this.parameterMap.get("fieldLength") : null;
 					fieldLength = (fieldLength == null) ? DEFAULT_INPUT_CHAR_LENGTH : fieldLength;
 					output = "<input type=\"text\" name=\"" + formFieldName + "\" value=\"" + startVal + "\" size=\"" + fieldLength + "\" maxlength=\"1\" />";
-				/*
-				} else if ( type.indexOf("java.util.Date") >= 0 ) {
-
-					startVal = startVal == null ? "" : startVal;
-					String fieldLength = this.parameterMap != null ? (String)this.parameterMap.get("fieldLength") : null;
-					fieldLength = (fieldLength == null) ? DEFAULT_INPUT_DATE_LENGTH : fieldLength;
-					output = "<input id=\"" + formFieldName + "\" type=\"text\" name=\"" + formFieldName + "\" value=\"" + startVal + "\" onClick=\"javascript:showCalendar(this);\" /> ";
-					output += " (need a better widget than this - for now input Date as mm/dd/yyyy)";
-					//output += "<a href=\"javascript:showCalendar(document.getElementById('" + formFieldName + "'));\"><img src=\"/openmrs/images/lookup.gif\" border=\"0\" /></a>";
-					/*
-					String startDay = "";
-					String startMonth = "";
-					String startYear = "";
-					if ( startVal != null ) {
-						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-					}
-					output = "<select name=\"" + formFieldName + "_day\">";
-					for (int i = 1; i <= 31; i++ ) {
-						output += "<option value=\"" + i + "\"" + (startDay.equals("" + i) ? " selected" : "") + ">";
-						output += "" + i;
-						output += "</option>";
-					}
-					output += "</select> ";
-					
-					output += "<select name=\"" + formFieldName + "_month\">";
-					for (int i = 1; i <= 12; i++ ) {
-						output += "<option value=\"" + i + "\"" + (startMonth.equals("" + i) ? " selected" : "") + ">";
-						output += "month_" + i;
-						output += "</option>";
-						//MessageTag mTag = new MessageTag();
-						//mTag.setCode("general.month." + i);
-	
-					}
-					output += "</select> " ;
-					
-					output += "<input type=\"text\" name=\"" + formFieldName + "_year\" value=\"" + startYear + "\" size=\"4\" />";
-					*/
 				} else if ( type.equals("int") || type.indexOf("java.lang.Integer") >= 0
 						|| type.equals("long") || type.indexOf("java.lang.Long") >= 0 ) {
 					String startVal = "";
 					if ( val != null ) {
 						startVal = val.toString();
-						System.out.println("\n\n\nval seems to be " + val + "\n\n\n");
-					} else {
-						System.out.println("\n\n\nval seems to be none!!\n\n\n");
 					}
 					startVal = (startVal == null) ? "" : startVal;
 					String fieldLength = this.parameterMap != null ? (String)this.parameterMap.get("fieldLength") : null;
@@ -204,16 +158,14 @@ public class FieldGenTag extends ImportSupport {
 					}
 				} else if (type.indexOf("$") >= 0) {
 					// this could be an enum - if so, let's display it
-					//System.out.println("\n\n\nenum is " + startVal + "\n\n\n");
 					String className = type;
-					System.out.println("\n\nIS AN ENUM OF TYPE " + type + "\n\n");
 					
 					Class cls = null;
 					try {
 						cls = Class.forName(className);
 					} catch ( Throwable t ) {
 						cls = null;
-						//System.out.println(t.getStackTrace());
+						log.error("Could not instantiate class for this enum of class name [" + className + "] in FieldGenTag");
 					}
 
 					if ( cls != null ) {
@@ -224,6 +176,8 @@ public class FieldGenTag extends ImportSupport {
 								if ( enumConstants.length > 0 ) {
 									String startVal = "";
 									if ( val != null ) startVal = val.toString();
+									log.debug("val is " + val);
+									log.debug("val.toString is " + startVal);
 									if ( startVal == null ) startVal = "";
 									output = "<select name=\"" + formFieldName + "\">";
 									for ( int i = 0; i < enumConstants.length; i++ ) {
@@ -253,14 +207,6 @@ public class FieldGenTag extends ImportSupport {
 		if (!url.endsWith("field"))
 			url += ".field";
 		url = "/fieldGen/" + url;
-
-		/*
-		try {
-			this.typeClass = Class.forName(this.type);
-		} catch (ClassNotFoundException e) {
-			this.typeClass = null;
-		}
-		*/
 		
 		// add attrs to request so that the controller (and field jsp) can see/use them
 		pageContext.getRequest().setAttribute("org.openmrs.fieldGen.type", type);
@@ -271,35 +217,19 @@ public class FieldGenTag extends ImportSupport {
 		if ( this.parameterMap != null ) hmParamMap.putAll(this.parameterMap);
 		pageContext.getRequest().setAttribute("org.openmrs.fieldGen.parameterMap", hmParamMap);
 		
-		/*
-		if ( pageContext.getRequest().getAttribute("org.openmrs.fieldGen.object") == null ) {
-			if ( typeClass == null ) {
-				pageContext.getRequest().setAttribute("org.openmrs.fieldGen.object", (String)val);
-			} else {
-				pageContext.getRequest().setAttribute("org.openmrs.fieldGen.object", typeClass.cast(val));
-			}
-		}
-		*/
 		pageContext.getRequest().setAttribute("org.openmrs.fieldGen.object", val);
 		
-		//System.out.println("\n\n\nURL is " + url + ", " + type + " \n\n\n");
-		
-		int doSuper = super.doStartTag();
-		
-		//System.out.println("\n\n\nURL is now " + url + ", " + type + " \n\n\n");
-
-		//resetValues();
-		
-		return doSuper;
-	}
-
-	public int doEndTag() throws JspException {
-		
-		int i = super.doEndTag();
+		try {
+			pageContext.include(this.url);
+		} catch (ServletException e) {
+			log.error("ServletException while trying to include a file in FieldGenTag");
+		} catch (IOException e) {
+			log.error("IOException while trying to include a file in FieldGenTag");
+		}
 
 		resetValues();
 		
-		return i;
+		return SKIP_BODY;
 	}
 
 	private void resetValues() {
@@ -381,9 +311,9 @@ public class FieldGenTag extends ImportSupport {
 	 */
 	public void setParameters(String parameters) {
 		this.parameters = parameters;
-		String delimiter = ";";
+		String delimiter = "|";
 		if ( parameters.indexOf(delimiter) < 0 ) {
-			delimiter = ",";
+			delimiter = ";";
 		}
 		String[] nvPairs = parameters.split(delimiter);
 		for ( String nvPair : nvPairs ) {
@@ -429,7 +359,7 @@ public class FieldGenTag extends ImportSupport {
 					FieldGenHandler handler = (FieldGenHandler)ct.newInstance();
 					return handler;
 				} catch (Exception e) {
-					//System.out.println("Unable to handle type [" + className + "] with handler [" + handlerClassName + "].");
+					log.error("Unable to handle type [" + className + "] with handler [" + handlerClassName + "].");
 					return null;
 				}
 			} else {

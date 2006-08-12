@@ -2,6 +2,7 @@
 package org.openmrs.web.taglib;
 
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +25,7 @@ public class HtmlIncludeTag extends TagSupport {
 		
 	private String type;
 	private String file;
+	private HttpServletRequest request;
 	private HashMap<String,String> hmIncludeMap;
 	
 	public int doStartTag() throws JspException {
@@ -46,13 +48,17 @@ public class HtmlIncludeTag extends TagSupport {
 			else if ( this.POSSIBLE_TYPES_JS.indexOf(fileExt) >= 0 ) isJs = true;
 		}
 
+		log.debug("\n\nHTMLINCLUDETAG HAS REQUEST NAMED" + pageContext.getRequest() + "\n");
+		for ( Enumeration e = pageContext.getRequest().getAttributeNames(); e.hasMoreElements(); ) { log.debug(e.nextElement() + ";"); }
+		log.debug("\n\n\n");
+		
 		if ( isJs || isCss ) {
 			if ( !isAlreadyUsed(file) ) {
 				String output = "";
 				String prefix = "";
 				try {
-					HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
-					prefix = request.getContextPath();
+					prefix = getRequest().getContextPath();
+					if ( file.startsWith(prefix) ) prefix = "";
 				} catch (ClassCastException cce) {
 					log.debug("Could not cast request to HttpServletRequest in HtmlIncludeTag");
 				}
@@ -60,28 +66,42 @@ public class HtmlIncludeTag extends TagSupport {
 				if ( isJs ) {
 					output = "<script src=\"" + prefix + file + "\" ></script>";
 				} else if ( isCss ) {
-					output = "<link rel=\"" + prefix + file + "\" />";
+					output = "<link href=\"" + prefix + file + "\" type=\"text/css\" rel=\"stylesheet\" />";
 				}
 				
 				try {
 					pageContext.getOut().print(output);
 				} catch (IOException e) {
-					log.equals("Could not produce output in HtmlIncludeTag.java");
+					log.error("Could not produce output in HtmlIncludeTag.java");
 				}
 			}
 		}
 		
+		log.debug("\n\nHTMLINCLUDETAG (AT THE END) HAS REQUEST NAMED" + pageContext.getRequest() + "\n");
+		for ( Enumeration e = pageContext.getRequest().getAttributeNames(); e.hasMoreElements(); ) { log.debug(e.nextElement() + ";"); }
+		log.debug("\n\n\n");
+
 		resetValues();
 		
 		return SKIP_BODY;
 	}
 
+	private HttpServletRequest getRequest() {
+		if ( this.request == null ) {
+			log.debug("\n\nRequest was not passed\n\n");
+			return (HttpServletRequest)this.pageContext.getRequest();
+		} else {
+			log.debug("\n\nRequest was passed and we are using it\n\n");
+			return this.request;
+		}
+	}
+	
 	private boolean isAlreadyUsed(String fileName) {
 		boolean isUsed = false;
 		
 		if ( fileName != null ) {
 			if ( this.hmIncludeMap == null ) {
-				hmIncludeMap = (HashMap<String, String>) pageContext.getAttribute("bobby", PageContext.REQUEST_SCOPE);
+				hmIncludeMap = (HashMap<String, String>) getRequest().getAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_KEY);
 				if ( hmIncludeMap == null ) {
 					hmIncludeMap = new HashMap<String,String>();
 				}
@@ -91,7 +111,7 @@ public class HtmlIncludeTag extends TagSupport {
 				isUsed = true;
 			} else {
 				hmIncludeMap.put(fileName,"true");
-				pageContext.setAttribute("bobby", hmIncludeMap, PageContext.REQUEST_SCOPE);
+				getRequest().setAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_KEY, hmIncludeMap);
 			}
 			
 		}
@@ -124,6 +144,13 @@ public class HtmlIncludeTag extends TagSupport {
 	 */
 	public void setFile(String file) {
 		this.file = file;
+	}
+
+	/**
+	 * @param request The request to set.
+	 */
+	public void setRequest(HttpServletRequest request) {
+		this.request = request;
 	}
 
 }

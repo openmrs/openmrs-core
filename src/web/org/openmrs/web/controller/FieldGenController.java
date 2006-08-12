@@ -1,6 +1,7 @@
 package org.openmrs.web.controller;
 
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -56,11 +57,10 @@ public class FieldGenController implements Controller {
 			Map<String, Object> params = (Map<String, Object>)request.getAttribute("org.openmrs.fieldGen.parameters");
 			Map<String, Object> moreParams = (Map<String, Object>) request.getAttribute("org.openmrs.fieldGen.parameterMap");
 
-			Object o = request.getAttribute("org.openmrs.fieldGen.object");
-			
 			model.put("type", type);
 			model.put("formFieldName", formFieldName);
 			model.put("obj", request.getAttribute("org.openmrs.fieldGen.object"));
+			model.put("request", request);
 			model.putAll(params);
 			if (moreParams != null) {
 				model.putAll(moreParams);
