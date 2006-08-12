@@ -80,7 +80,6 @@ public class HibernateReportObjectDAO implements
 		
 		try {
 			HibernateUtil.beginTransaction();
-			//System.out.println("\n\n\nABOUT TO DELETE REPORT OBJECT\n\n\n");
 			session.delete(wrappedReportObject);
 			HibernateUtil.commitTransaction();
 		}

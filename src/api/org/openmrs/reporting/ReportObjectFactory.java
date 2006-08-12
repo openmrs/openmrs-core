@@ -195,21 +195,18 @@ public class ReportObjectFactory {
 						m = reportObj.getClass().getMethod(methodName, setterParamSupers);
 					} catch ( Exception e ) {
 						m = null;
-						//System.out.println("Could not instantiate setter method [" + methodName + "()] for field [" + key + "] in class [" + reportObj.getClass().getName() + "] while initializing report object fields.");
-						//System.out.println(e.toString());
+						log.error("Could not instantiate setter method [" + methodName + "()] for field [" + key + "] in class [" + reportObj.getClass().getName() + "] while initializing report object fields.");
 					}
 				} catch ( Exception e ) {
 					m = null;
-					//System.out.println("Could not instantiate setter method [" + methodName + "()] for field [" + key + "] in class [" + reportObj.getClass().getName() + "] while initializing report object fields.");
-					//System.out.println(e.toString());
+					log.error("Could not instantiate setter method [" + methodName + "()] for field [" + key + "] in class [" + reportObj.getClass().getName() + "] while initializing report object fields.");
 				}
 
 				if ( m != null ) {
 					try {
 						Object fieldObj = m.invoke(reportObj, setterParams);
 					} catch ( Exception e ) {
-						//System.out.println("Could not invoke setter method [" + methodName + "()] for field [" + key + "] in class [" + reportObj.getClass().getName() + "] while initializing report object fields.");
-						//System.out.println(e.toString());
+						log.error("Could not invoke setter method [" + methodName + "()] for field [" + key + "] in class [" + reportObj.getClass().getName() + "] while initializing report object fields.");
 					}
 				}
 			}

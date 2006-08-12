@@ -118,7 +118,6 @@ public class ReportObjectListController extends SimpleFormController {
 			ReportService rs = context.getReportService();
 			//ReportService rs = new TestReportService();
 	    	reportObjects = rs.getAllReportObjects();
-	    	//System.out.println("ro size is " + reportObjects.size());
 		}
 		
 		ReportObjectList reportObjectList = new ReportObjectList(reportObjects);

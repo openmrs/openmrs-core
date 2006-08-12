@@ -29,8 +29,10 @@ import org.springframework.beans.propertyeditors.CharacterEditor;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.RequestUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -90,16 +92,35 @@ public class ReportObjectFormController extends SimpleFormController {
 		
 		return new ModelAndView(new RedirectView(view));
 	}
-			
-
 	
+	/* (non-Javadoc)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#processFormSubmission(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 */
+	@Override
+	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj, BindException be) throws Exception {
+		String submitted = RequestUtils.getStringParameter(request, "submitted", "");
+
+		if ( submitted.length() > 0 ) {
+			AbstractReportObject reportObject = (AbstractReportObject)obj;
+			
+			// no matter what, we want to do some minimal validation
+			if ( reportObject.getName() == null ) be.rejectValue("name", "error.name");
+			else if ( reportObject.getName().length() <= 0 ) be.rejectValue("name", "error.name");
+			
+			if ( reportObject.getType() == null ) be.rejectValue("type", "error.reportObject.type.required");
+
+			if ( reportObject.getSubType() == null ) be.rejectValue("subType", "error.reportObject.subType.required");
+		}
+
+		return super.processFormSubmission(request, response, obj, be);
+	}
+
 	/* (non-Javadoc)
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#onBind(javax.servlet.http.HttpServletRequest, java.lang.Object)
 	 */
 	@Override
-	protected void onBind(HttpServletRequest request, Object obj) throws Exception {
-		// TODO Auto-generated method stub
-		//super.onBind(arg0, arg1);
+	protected void onBind(HttpServletRequest request, Object obj, BindException be) throws Exception {
+
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		ReportService rs = (ReportService)context.getReportService();
@@ -112,8 +133,7 @@ public class ReportObjectFormController extends SimpleFormController {
 				((AbstractReportObject)obj).setSubType(null);
 			}
 		}
-		
-		
+
 		String currentClassName = this.getCommand(request).getClass().getName();
 		String correspondingValidatorName = rs.getReportObjectValidatorByClass(currentClassName);
 		Validator v = null;
@@ -124,7 +144,7 @@ public class ReportObjectFormController extends SimpleFormController {
 				v = (Validator)ct.newInstance();
 				this.setValidator(v);
 			} catch ( Throwable t ) {
-				//System.out.println("Could not instantiate validator \"" + correspondingValidatorName + "\" for ReportObject class " + currentClassName);
+				log.error("Could not instantiate validator \"" + correspondingValidatorName + "\" for ReportObject class " + currentClassName);
 			}
 		} else {
 			try {
@@ -161,8 +181,6 @@ public class ReportObjectFormController extends SimpleFormController {
 		
 		String selectedType = RequestUtils.getStringParameter(request, "type", "");
 
-		//System.out.println("\n\n\nclass is " + this.getCommandClass());
-
 		if ( selectedType.length() > 0 ) {
 			Set<String> availableSubTypes = rs.getReportObjectSubTypes(selectedType);
 			addedData.put("availableSubTypes", availableSubTypes.iterator());
@@ -185,7 +203,6 @@ public class ReportObjectFormController extends SimpleFormController {
 	 */
 	@Override
 	protected boolean isFormChangeRequest(HttpServletRequest request) {
-		//System.out.println("in isFormChangeRequest() - submit is " + RequestUtils.getStringParameter(request, "submit", ""));
 		String type = RequestUtils.getStringParameter(request, "type", "");
 		String subType = RequestUtils.getStringParameter(request, "subType", "");
 		String submitted = RequestUtils.getStringParameter(request, "submitted", "");
@@ -200,7 +217,6 @@ public class ReportObjectFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-    	//System.out.println("in formBackingObject");
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		AbstractReportObject reportObject = null;
@@ -232,13 +248,11 @@ public class ReportObjectFormController extends SimpleFormController {
 					reportObject.setType(presetType);
 					reportObject.setSubType(presetSubType);
 				} catch (Throwable e) {
-					//System.out.println("Unable to generate subtype class for ReportObject");
+					log.error("Unable to generate subtype class for ReportObject");
 				}
 			}
 		}
 		
-		//System.out.println("type is " + presetType + ", and subtype is " + presetSubType + ", and class is " + reportObject.getClass().getName());
-
 		return reportObject;
     }
     

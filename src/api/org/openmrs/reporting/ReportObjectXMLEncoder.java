@@ -25,13 +25,11 @@ public class ReportObjectXMLEncoder {
 		ByteArrayOutputStream arr = new ByteArrayOutputStream();
 	    XMLEncoder enc = new XMLEncoder(new BufferedOutputStream(arr));
 	    for ( Field f : this.objectToEncode.getClass().getDeclaredFields() ) {
-    		//System.out.println("\n\n\nABOUT TO CHECK ENUM: " + f.getName() + " is " + f.getType().getName() + "\n\n\n");
 	    	if ( f.getType().isEnum() ) {
-	    		//System.out.println("\n\n\nABOUT TO WRITE AN ENUM\n\n\n");
 	    		try {
 	    			enc.setPersistenceDelegate(f.getType(), new EnumDelegate());
 	    		} catch( Exception e ) {
-	    			//System.out.println("ReportObjectXMLEncoder failed to write enumeration " + f.getName());
+	    			log.error("ReportObjectXMLEncoder failed to write enumeration " + f.getName());
 	    		}
 	    	}
 	    }
