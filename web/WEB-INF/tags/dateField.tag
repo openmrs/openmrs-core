@@ -2,7 +2,6 @@
 <%@ attribute name="formFieldName" required="true" %>
 <%@ attribute name="startValue" required="true" type="java.util.Date" %>
 <%@ attribute name="datePattern" required="true" %>
-<%@ attribute name="needScript" required="false" %>
 
 <openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
 
