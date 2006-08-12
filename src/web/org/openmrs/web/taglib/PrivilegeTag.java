@@ -15,6 +15,7 @@ public class PrivilegeTag extends TagSupport {
 	private final Log log = LogFactory.getLog(getClass());
 
 	private String privilege;
+	private String inverse;
 
 	public int doStartTag() {
 
@@ -40,8 +41,12 @@ public class PrivilegeTag extends TagSupport {
 		else {
 			hasPrivilege = context.hasPrivilege(privilege);
 		}
-		
-		if (hasPrivilege) {
+
+		// allow inversing
+		boolean isInverted = false;
+		if ( inverse != null ) isInverted = "true".equals(inverse.toLowerCase());
+				
+		if ( (hasPrivilege && !isInverted) || (!hasPrivilege && isInverted)) {
 			pageContext.setAttribute("authenticatedUser", context.getAuthenticatedUser());
 			return EVAL_BODY_INCLUDE;
 		}
@@ -62,5 +67,19 @@ public class PrivilegeTag extends TagSupport {
 	 */
 	public void setPrivilege(String privilege) {
 		this.privilege = privilege;
+	}
+
+	/**
+	 * @return Returns the inverse.
+	 */
+	public String getInverse() {
+		return inverse;
+	}
+
+	/**
+	 * @param inverse The inverse to set.
+	 */
+	public void setInverse(String inverse) {
+		this.inverse = inverse;
 	}
 }

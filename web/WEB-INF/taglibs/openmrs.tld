@@ -64,6 +64,11 @@
 		<required>true</required>
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
+	<attribute>
+		<name>inverse</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
 </tag>
 
 <tag>
@@ -565,6 +570,12 @@
 		<name>file</name>
 		<required>true</required>
 		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>request</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>javax.servlet.http.HttpServletRequest</type>
 	</attribute>
 	<attribute>
 		<name>type</name>
