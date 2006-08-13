@@ -99,7 +99,6 @@ public class OrderPlaceFormController extends SimpleFormController {
 			// you can get the concept from the drug
 			Drug thisDrug = order.getDrug();
 			Concept thisConcept = thisDrug.getConcept();
-			System.err.println("Concept is " + thisConcept.toString());
 			order.setConcept(thisConcept);
 
 			// TODO: for now, orderType will have to be hard-coded?

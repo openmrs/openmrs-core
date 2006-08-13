@@ -29,7 +29,7 @@
 		<td valign="top"><spring:message code="DrugOrder.drug"/></td>
 		<td valign="top">
 			<spring:bind path="order.drug">
-				<openmrs:fieldGen type="java.lang.Integer" formFieldName="${status.expression}" val="${status.editor.value}" />
+				<openmrs:fieldGen type="org.openmrs.Drug" formFieldName="${status.expression}" val="${status.editor.value}" parameters="optionHeader=[blank]" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
