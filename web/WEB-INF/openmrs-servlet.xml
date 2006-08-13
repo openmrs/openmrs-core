@@ -103,6 +103,7 @@
 					<prop key="**/dynamicForm.form">dynamicFormEntryController</prop>
 					<prop key="**/program.list">programList</prop>
 					<prop key="**/program.form">programForm</prop>
+					<prop key="**/workflow.form">workflowFormController</prop>
 					<prop key="**/patientProgram.form">patientProgramFormController</prop>
 					<prop key="**/patientSet.form">patientSetFormController</prop>
 					<prop key="**/patientPrograms.portlet">patientProgramsPortletController</prop>
@@ -796,9 +797,11 @@
 			<property name="formView"><value>/admin/programs/programList</value></property>
 			<property name="successView"><value>program.list</value></property>
 		</bean>
+		<bean id="programValidator" class="org.openmrs.web.controller.program.ProgramValidator"/>
 		<bean id="programForm" class="org.openmrs.web.controller.program.ProgramFormController">
 			<property name="sessionForm"><value>true</value></property>
 			<property name="commandName"><value>program</value></property>
+			<property name="validator"><ref bean="programValidator"/></property>
 			<property name="formView"><value>/admin/programs/programForm</value></property>
 			<property name="successView"><value>program.list</value></property>
 		</bean>
@@ -808,6 +811,13 @@
 				<bean class="org.openmrs.web.controller.program.PatientProgramFormController"/>
 			</property>
 		</bean>
+		<bean id="workflowFormController" class="org.openmrs.web.controller.program.WorkflowFormController">
+			<property name="sessionForm"><value>true</value></property>
+			<property name="commandName"><value>workflow</value></property>
+			<property name="formView"><value>/admin/programs/workflowForm</value></property>
+			<property name="successView"><value>program.list</value></property>
+		</bean>
+
     <!-- ======================================== -->
 
 
@@ -869,6 +879,7 @@
 		<property name="modules">
 			<list>
 				<ref bean="patientCharacteristicFilterModule"/>
+				<ref bean="drugOrderFilterModule"/>
 				<ref bean="numericObsPatientFilterModule"/>
 				<ref bean="shortDescriptionProducerModule"/>
 			</list>
@@ -881,6 +892,14 @@
 		<property name="className"><value>org.openmrs.reporting.PatientCharacteristicFilter</value></property>
 		<property name="type"><value>Patient Filter</value></property>
 		<property name="validatorClass"><value>org.openmrs.reporting.PatientCharacteristicFilterValidator</value></property>
+	</bean>
+	
+	<bean id="drugOrderFilterModule" class="org.openmrs.reporting.ReportObjectFactoryModule">
+		<property name="name"><value>DrugOrderFilter</value></property>
+		<property name="displayName"><value>Regimen Filter</value></property>
+		<property name="className"><value>org.openmrs.reporting.DrugOrderPatientFilter</value></property>
+		<property name="type"><value>Patient Filter</value></property>
+		<property name="validatorClass"><value>org.openmrs.reporting.DrugOrderPatientFilterValidator</value></property>
 	</bean>
 		
 	<bean id="numericObsPatientFilterModule" class="org.openmrs.reporting.ReportObjectFactoryModule">
