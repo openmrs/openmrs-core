@@ -427,6 +427,38 @@ UPDATE `global_property` SET property_value='1.0.32' WHERE property = 'database_
 # Create program_workflow_state table
 #-----------------------------------
 
+ ALTER TABLE `program` ADD COLUMN `changed_by` int(11) default NULL;
+ ALTER TABLE `program` ADD COLUMN `date_changed` datetime default NULL;
+ ALTER TABLE `program` ADD COLUMN `voided` tinyint(1) NOT NULL default '0';
+ ALTER TABLE `program` ADD COLUMN `voided_by` int(11) default NULL;
+ ALTER TABLE `program` ADD COLUMN `date_voided` datetime default NULL;
+ ALTER TABLE `program` ADD COLUMN `void_reason` varchar(255) default NULL;
+ ALTER TABLE `program` ADD INDEX `user_who_changed_program` (`changed_by`);
+ ALTER TABLE `program` ADD INDEX `user_who_voided_program` (`voided_by`);
+ ALTER TABLE `program` ADD CONSTRAINT `user_who_changed_program` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`);
+ ALTER TABLE `program` ADD CONSTRAINT `user_who_voided_program` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`);
+ 
+CREATE TABLE `program_workflow` (
+  `program_workflow_id` int(11) NOT NULL auto_increment,
+  `program_id` int(11) NOT NULL default '0',
+  `concept_id` int(11) NOT NULL default '0',
+  `creator` int(11) NOT NULL default '0',
+  `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
+  `voided` tinyint(1) default NULL,
+  `voided_by` int(11) default NULL,
+  `date_voided` datetime default NULL,
+  `void_reason` varchar(255) default NULL,
+  PRIMARY KEY  (`program_workflow_id`),
+  KEY `program_for_workflow` (`program_id`),
+  KEY `workflow_concept` (`concept_id`),
+  KEY `workflow_creator` (`creator`),
+  KEY `workflow_voided_by` (`voided_by`),
+  CONSTRAINT `program_for_workflow` FOREIGN KEY (`program_id`) REFERENCES `program` (`program_id`),
+  CONSTRAINT `workflow_concept` FOREIGN KEY (`concept_id`) REFERENCES `concept` (`concept_id`),
+  CONSTRAINT `workflow_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
+  CONSTRAINT `workflow_voided_by` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE `program_workflow_state` (
   `program_workflow_state_id` int(11) NOT NULL auto_increment,
   `program_workflow_id` int(11) NOT NULL default '0',
