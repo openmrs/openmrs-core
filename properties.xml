@@ -99,6 +99,7 @@
 		<fileset dir="${commons-collections.dir}" includes="*.jar" />
 		<fileset dir="${dwr.dir}" includes="*.jar" />
 		<fileset dir="${hibernate.dir}" includes="*.jar" />
+    	<fileset dir="${hl7api.dir}" includes="*.jar" />
     	<fileset dir="${jfreechart.dir}" includes="*.jar" />
 		<fileset dir="${jstl.dir}" includes="*.jar" />
 		<fileset dir="${neal-reporting.dir}" includes="*.jar" />

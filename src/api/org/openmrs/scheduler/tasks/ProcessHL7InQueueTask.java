@@ -5,11 +5,12 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.context.ContextFactory;
-import org.openmrs.hl7.HL7Exception;
 import org.openmrs.hl7.HL7InQueueProcessor;
 import org.openmrs.scheduler.Schedulable;
 import org.openmrs.scheduler.SchedulerConstants;
 import org.openmrs.scheduler.TaskConfig;
+
+import ca.uhn.hl7v2.HL7Exception;
 
 /**
  * Implementation of a task that process all form entry queues.

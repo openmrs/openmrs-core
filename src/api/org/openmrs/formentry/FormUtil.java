@@ -112,8 +112,6 @@ public class FormUtil {
 	 *          duplicate any tag names already within <code>tagList</code>)
 	 */
 	public static String getNewTag(String s, Vector<String> tagList) {
-		if (tagList == null)
-			tagList = new Vector<String>();
 		String token = getXmlToken(s);
 		if (tagList.contains(token)) {
 			int i = 1;

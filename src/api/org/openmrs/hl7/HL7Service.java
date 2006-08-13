@@ -15,6 +15,14 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOContext;
 import org.openmrs.hl7.db.HL7DAO;
 
+import ca.uhn.hl7v2.HL7Exception;
+import ca.uhn.hl7v2.model.v25.datatype.CX;
+import ca.uhn.hl7v2.model.v25.datatype.PL;
+import ca.uhn.hl7v2.model.v25.datatype.TS;
+import ca.uhn.hl7v2.model.v25.datatype.XCN;
+import ca.uhn.hl7v2.model.v25.datatype.XPN;
+import ca.uhn.hl7v2.model.v25.segment.PID;
+
 /**
  * OpenMRS HL7 API
  * 
@@ -106,104 +114,100 @@ public class HL7Service {
 					"Insufficient privilege to delete an HL7 inbound queue entry");
 		dao().deleteHL7InQueue(hl7InQueue);
 	}
-	
+
 	public void createHL7InArchive(HL7InArchive hl7InArchive) {
 		if (!context.hasPrivilege(HL7Constants.PRIV_ADD_HL7_IN_ARCHIVE))
 			throw new APIAuthenticationException(
-					"Insufficient privilege to create an HL7 inbound archive entry");		
+					"Insufficient privilege to create an HL7 inbound archive entry");
 		dao().createHL7InArchive(hl7InArchive);
 	}
 
 	public HL7InArchive getHL7InArchive(Integer hl7InArchiveId) {
 		if (!context.hasPrivilege(HL7Constants.PRIV_VIEW_HL7_IN_ARCHIVE))
 			throw new APIAuthenticationException(
-					"Insufficient privilege to view an HL7 inbound archive entry");		
+					"Insufficient privilege to view an HL7 inbound archive entry");
 		return dao().getHL7InArchive(hl7InArchiveId);
 	}
-	
+
 	public Collection<HL7InArchive> getHL7InArchives() {
 		if (!context.hasPrivilege(HL7Constants.PRIV_VIEW_HL7_IN_ARCHIVE))
 			throw new APIAuthenticationException(
-					"Insufficient privilege to view an HL7 inbound archive entry");		
+					"Insufficient privilege to view an HL7 inbound archive entry");
 		return dao().getHL7InArchives();
 	}
-	
+
 	public void updateHL7InArchive(HL7InArchive hl7InArchive) {
 		if (!context.hasPrivilege(HL7Constants.PRIV_UPDATE_HL7_IN_ARCHIVE))
 			throw new APIAuthenticationException(
-					"Insufficient privilege to update an HL7 inbound archive entry");		
+					"Insufficient privilege to update an HL7 inbound archive entry");
 		dao().updateHL7InArchive(hl7InArchive);
 	}
-	
+
 	public void deleteHL7InArchive(HL7InArchive hl7InArchive) {
 		if (!context.hasPrivilege(HL7Constants.PRIV_DELETE_HL7_IN_ARCHIVE))
 			throw new APIAuthenticationException(
-					"Insufficient privilege to delete an HL7 inbound archive entry");		
+					"Insufficient privilege to delete an HL7 inbound archive entry");
 		dao().deleteHL7InArchive(hl7InArchive);
 	}
 
 	public void createHL7InError(HL7InError hl7InError) {
 		if (!context.hasPrivilege(HL7Constants.PRIV_ADD_HL7_IN_ARCHIVE))
 			throw new APIAuthenticationException(
-					"Insufficient privilege to create an HL7 inbound archive entry");		
+					"Insufficient privilege to create an HL7 inbound archive entry");
 		dao().createHL7InError(hl7InError);
 	}
 
 	public HL7InError getHL7InError(Integer hl7InErrorId) {
 		if (!context.hasPrivilege(HL7Constants.PRIV_VIEW_HL7_IN_ARCHIVE))
 			throw new APIAuthenticationException(
-					"Insufficient privilege to view an HL7 inbound archive entry");		
+					"Insufficient privilege to view an HL7 inbound archive entry");
 		return dao().getHL7InError(hl7InErrorId);
 	}
-	
+
 	public Collection<HL7InError> getHL7InErrors() {
 		if (!context.hasPrivilege(HL7Constants.PRIV_VIEW_HL7_IN_ARCHIVE))
 			throw new APIAuthenticationException(
-					"Insufficient privilege to view an HL7 inbound archive entry");		
+					"Insufficient privilege to view an HL7 inbound archive entry");
 		return dao().getHL7InErrors();
 	}
-	
+
 	public void updateHL7InError(HL7InError hl7InError) {
 		if (!context.hasPrivilege(HL7Constants.PRIV_UPDATE_HL7_IN_ARCHIVE))
 			throw new APIAuthenticationException(
-					"Insufficient privilege to update an HL7 inbound archive entry");		
+					"Insufficient privilege to update an HL7 inbound archive entry");
 		dao().updateHL7InError(hl7InError);
 	}
-	
+
 	public void deleteHL7InError(HL7InError hl7InError) {
 		if (!context.hasPrivilege(HL7Constants.PRIV_DELETE_HL7_IN_ARCHIVE))
 			throw new APIAuthenticationException(
-					"Insufficient privilege to delete an HL7 inbound archive entry");		
+					"Insufficient privilege to delete an HL7 inbound archive entry");
 		dao().deleteHL7InError(hl7InError);
 	}
-	
+
 	/**
-	 * @param xcn HL7 component of data type XCN (extended composite ID number and name for persons) (see HL7 2.5 manual Ch.2A.86) 
-	 * @return Internal ID # of the specified user, or null if that user can't be found or is ambiguous
+	 * @param xcn
+	 *            HL7 component of data type XCN (extended composite ID number
+	 *            and name for persons) (see HL7 2.5 manual Ch.2A.86)
+	 * @return Internal ID # of the specified user, or null if that user can't
+	 *         be found or is ambiguous
 	 */
-	public Integer resolveUserId(String[] xcn) throws HL7Exception {
-		// TODO: properly handle family and given names. For now I'm treating givenName+familyName as a username.
-		String idNumber = xcn[0];
-		String familyName = null;
-		String givenName = null;
-		String assigningAuthority = null;
-		if (xcn.length >= 2) {
-			familyName = xcn[1];
-		}
-		if (xcn.length >= 3) {
-			givenName = xcn[2];
-		}
-		if (xcn.length >= 9) {
-			assigningAuthority = xcn[8];
-		}
+	public Integer resolveUserId(XCN xcn) throws HL7Exception {
+		// TODO: properly handle family and given names. For now I'm treating
+		// givenName+familyName as a username.
+		String idNumber = xcn.getIDNumber().getValue();
+		String familyName = xcn.getFamilyName().getOwnSurname().getValue();
+		String givenName = xcn.getGivenName().getValue();
+		String assigningAuthority = xcn.getAssigningAuthority()
+				.getUniversalID().getValue();
 		if (idNumber != null && idNumber.length() > 0) {
 			// log.debug("searching for user by id " + idNumber);
 			try {
 				Integer userId = new Integer(idNumber);
-				User u = context.getUserService().getUser(userId);
-				return u.getUserId();
-			} catch (Exception ex) {
-				log.error("Error handling ID Number component '" + idNumber + "' of XCN.", ex);
+				User user = context.getUserService().getUser(userId);
+				return user.getUserId();
+			} catch (Exception e) {
+				log.error("Invalid user ID '" + idNumber + "'", e);
 				return null;
 			}
 		} else {
@@ -214,112 +218,150 @@ public class HL7Service {
 					username.append(familyName);
 				}
 				if (givenName != null) {
+					if (username.length() > 0)
+						username.append(" "); // separate names with a space
 					username.append(givenName);
 				}
-				User u = context.getUserService().getUserByUsername(username.toString());
-				return u.getUserId();
-			} catch (Exception ex) {
-				log.error("Error handling family name '" + familyName + "' and given name '" + givenName + "' components of XCN.", ex);
-				for (int i = 0; i < xcn.length; ++i) {
-					log.error("xcn[" + i + "]\t" + xcn[i]);	
-				}
+				User user = context.getUserService().getUserByUsername(
+						username.toString());
+				return user.getUserId();
+			} catch (Exception e) {
+				log.error("Error resolving user with family name '"
+						+ familyName + "' and given name '" + givenName + "'",
+						e);
 				return null;
 			}
 		}
 	}
-	
-	/**
-	 * @param pl HL7 component of data type PL (person location) (see Ch 2.A.53)
-	 * @return internal identifier of the specified location, or null if it is not found or ambiguous
-	 */
-	public Integer resolveLocationId(String[] pl) throws HL7Exception {
-		// TODO: Get rid of hack that allows first component to be an integer location.location_id
-		String pointOfCare = pl[0];
-		String facility = null;
-		if (pl.length >= 4) {
-			facility = pl[3];
-		}
 
-		// HACK: try to treat the first component (which should be "Point of Care" as an internal openmrs location_id 
+	/**
+	 * @param pl
+	 *            HL7 component of data type PL (person location) (see Ch
+	 *            2.A.53)
+	 * @return internal identifier of the specified location, or null if it is
+	 *         not found or ambiguous
+	 */
+	public Integer resolveLocationId(PL pl) throws HL7Exception {
+		// TODO: Get rid of hack that allows first component to be an integer
+		// location.location_id
+		String pointOfCare = pl.getPointOfCare().getValue();
+		String facility = pl.getFacility().getUniversalID().getValue();
+
+		// HACK: try to treat the first component (which should be "Point of
+		// Care" as an internal openmrs location_id
 		try {
 			Integer locationId = new Integer(pointOfCare);
 			Location l = context.getEncounterService().getLocation(locationId);
-			return l == null ? null : l.getLocationId(); 
+			return l == null ? null : l.getLocationId();
 		} catch (Exception ex) {
-			if (facility == null) { // we have no tricks left up our sleeve, so throw an exception
-				throw new HL7Exception("Error trying to treat PL.pointOfCare '" + pointOfCare + "' as a location.location_id", ex);
+			if (facility == null) { // we have no tricks left up our sleeve, so
+				// throw an exception
+				throw new HL7Exception("Error trying to treat PL.pointOfCare '"
+						+ pointOfCare + "' as a location.location_id", ex);
 			}
 		}
-		
+
 		// Treat the 4th component "Facility" as location.name
 		try {
-			Location l = context.getEncounterService().getLocationByName(facility);
+			Location l = context.getEncounterService().getLocationByName(
+					facility);
 			if (l == null) {
 				log.debug("Couldn't find a location named '" + facility + "'");
 			}
 			return l == null ? null : l.getLocationId();
 		} catch (Exception ex) {
-			log.error("Error trying to treat PL.facility '" + facility + "' as a location.name", ex);
+			log.error("Error trying to treat PL.facility '" + facility
+					+ "' as a location.name", ex);
 			return null;
 		}
 	}
-	
+
 	/**
-	 * @param pid A PID segment of an hl7 message
-	 * @return The internal id number of the Patient described by the PID segment, or null of the patient is not found, or if the PID segment is ambiguous 
+	 * @param pid
+	 *            A PID segment of an hl7 message
+	 * @return The internal id number of the Patient described by the PID
+	 *         segment, or null of the patient is not found, or if the PID
+	 *         segment is ambiguous
 	 * @throws HL7Exception
 	 */
-	public Integer resolvePatientId(HL7Segment pid) throws HL7Exception {
-		/*
-		 * TODO: Properly handle assigning authority. If specified it's currently treated as PatientIdentifierType.name
-		 * TODO: Throw exceptions instead of returning null in some cases
-		 * TODO: Don't hydrate Patient objects unnecessarily
-		 * 
-		 ***TODO: Determine how to handle assigning authority and openmrs patient_id numbers***
-		 * 
-		 */
+	public Integer resolvePatientId(PID pid) throws HL7Exception {
+		// TODO: Properly handle assigning authority. If specified it's
+		// currently treated as PatientIdentifierType.name
+		// TODO: Throw exceptions instead of returning null in some cases
+		// TODO: Don't hydrate Patient objects unnecessarily
+		// TODO: Determine how to handle assigning authority and openmrs
+		// patient_id numbers
+
 		Integer patientId = null;
-		String hl7PatientId = pid.getComponent(3, 1);
-		String assigningAuthority = pid.getComponent(3, 4);
-		if ("".equals(assigningAuthority)) {
-			assigningAuthority = null;
-		}
-		
-		try {
-			patientId = Integer.parseInt(hl7PatientId);
-		} catch (NumberFormatException e) {
-			//throw new HL7Exception("Invalid patient ID '" + hl7PatientId + "'");
-			log.warn("Invalid patient ID '" + hl7PatientId + "'");
-		}
-		
-		if (assigningAuthority == null) {
-			try {
-				Integer ptId = new Integer(hl7PatientId);
-				Patient patient = context.getPatientService().getPatient(ptId);
-				return patient.getPatientId();
-			} catch (Exception ex) {
-				log.error("Exception while treating PID.patient_id '" + hl7PatientId + "' as an internal identifier", ex);
-				return null;
-			}
-		} else {
-			// log.debug("assigning authority = " + assigningAuthority);
-			try {
-				PatientIdentifierType pit = context.getPatientService().getPatientIdentifierType(assigningAuthority);
-				if (pit == null) {
-					throw new HL7Exception("Can't find PatientIdentifierType named " + assigningAuthority);
+
+		CX[] patientIdentifierList = pid.getPatientIdentifierList();
+		if (patientIdentifierList.length < 1)
+			throw new HL7Exception("Missing patient identifier in PID segment");
+
+		// TODO other potential identifying characteristics in PID we could use
+		// to identify the patient
+		// XPN[] patientName = pid.getPatientName();
+		// String gender = pid.getAdministrativeSex().getValue();
+		// TS dateOfBirth = pid.getDateTimeOfBirth();
+
+		// Take the first uniquely matching identifier
+		for (CX identifier : patientIdentifierList) {
+			String hl7PatientId = identifier.getIDNumber().getValue();
+			// TODO if 1st component is blank, check 2nd and 3rd of assigning
+			// authority
+			String assigningAuthority = identifier.getAssigningAuthority()
+					.getNamespaceID().getValue();
+
+			if (assigningAuthority != null && assigningAuthority.length() > 0) {
+				// Assigning authority defined
+				try {
+					PatientIdentifierType pit = context.getPatientService()
+							.getPatientIdentifierType(assigningAuthority);
+					if (pit == null) {
+						log.debug("Can't find PatientIdentifierType named '"
+								+ assigningAuthority + "'");
+						continue; // skip identifiers with unknown type
+					}
+					List<PatientIdentifier> matchingIds = context
+							.getPatientService().getPatientIdentifiers(
+									hl7PatientId, pit);
+					if (matchingIds == null || matchingIds.size() < 1) {
+						// no matches
+						continue; // try next identifier
+					} else if (matchingIds.size() == 1) {
+						// unique match -- we're done
+						return matchingIds.get(0).getPatient().getPatientId();
+					} else {
+						// ambiguous identifier
+						log.debug("Ambiguous identifier in PID. "
+								+ matchingIds.size()
+								+ " matches for identifier '" + hl7PatientId
+								+ "' of type '" + pit + "'");
+						continue; // try next identifier
+					}
+				} catch (Exception e) {
+					log.error("Error resolving patient identifier '"
+							+ hl7PatientId + "' for assigning authority '"
+							+ assigningAuthority + "'", e);
+					continue;
 				}
-				List<PatientIdentifier> ids = context.getPatientService().getPatientIdentifiers(hl7PatientId, pit);
-				if (ids.size() == 1) {
-					return ids.get(0).getPatient().getPatientId();
-				} else {
-					log.debug("found " + ids.size() + " matches with identifier of type " + pit + " and value " + hl7PatientId);
-					return null;
+			} else {
+				try {
+					log
+							.debug("PID contains patient ID '"
+									+ hl7PatientId
+									+ "' without assigning authority -- assuming patient.patient_id");
+					patientId = Integer.parseInt(hl7PatientId);
+					return patientId;
+				} catch (NumberFormatException e) {
+					// throw new HL7Exception("Invalid patient ID '" +
+					// hl7PatientId + "'");
+					log.warn("Invalid patient ID '" + hl7PatientId + "'");
 				}
-			} catch (Exception ex) {
-				log.error("Exception while handling PID.patient_id '" + hl7PatientId + "' for assigning authority '" + assigningAuthority + "'", ex);
-				return null;
 			}
 		}
+
+		return null;
 	}
 
 	public void garbageCollect() {

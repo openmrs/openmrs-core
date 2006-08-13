@@ -5,6 +5,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import ca.uhn.hl7v2.HL7Exception;
+
 /**
  * HL7-related utilities
 

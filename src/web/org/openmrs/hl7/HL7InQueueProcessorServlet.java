@@ -12,6 +12,8 @@ import javax.servlet.http.HttpSession;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
 
+import ca.uhn.hl7v2.HL7Exception;
+
 public class HL7InQueueProcessorServlet extends HttpServlet {
 
 	private static final long serialVersionUID = -5108204671262339759L;

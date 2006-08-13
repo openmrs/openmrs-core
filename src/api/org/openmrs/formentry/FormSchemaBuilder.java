@@ -37,7 +37,7 @@ public class FormSchemaBuilder {
 	Form form;
 	TreeMap<Integer, TreeSet<FormField>> formStructure;
 	String schema = null;
-	Vector<String> tagList;
+	Vector<String> tagList = new Vector<String>();
 	Hashtable<ComplexType, String> complexTypes;
 
 	/**
@@ -90,7 +90,8 @@ public class FormSchemaBuilder {
 			return schema;
 
 		StringBuffer s = new StringBuffer();
-		s.append(FormSchemaFragment.header(FormEntryUtil.getFormSchemaNamespace(form)));
+		s.append(FormSchemaFragment.header(FormEntryUtil
+				.getFormSchemaNamespace(form)));
 		s.append(FormSchemaFragment.startForm());
 
 		formStructure = FormUtil.getFormStructure(context, form);
@@ -114,9 +115,7 @@ public class FormSchemaBuilder {
 			section = renderSection(section, s);
 		}
 
-		for (Enumeration<ComplexType> i = complexTypes.keys(); i
-				.hasMoreElements();) {
-			ComplexType complexType = i.nextElement();
+		for (ComplexType complexType : complexTypes.keySet()) {
 			String token = complexTypes.get(complexType);
 			Field field = complexType.field;
 			boolean required = complexType.required;
@@ -134,10 +133,8 @@ public class FormSchemaBuilder {
 						FormEntryConstants.HL7_NUMERIC)) {
 					ConceptNumeric conceptNumeric = context.getConceptService()
 							.getConceptNumeric(concept.getConceptId());
-					s.append(FormSchemaFragment.numericConcept(token, conceptNumeric,
-							required, conceptNumeric.getLowAbsolute(),
-							conceptNumeric.getHiAbsolute(), conceptNumeric
-									.getPrecise(), context.getLocale()));
+					s.append(FormSchemaFragment.numericConcept(token,
+							conceptNumeric, required, context.getLocale()));
 				} else if (datatype.getHl7Abbreviation().equals(
 						FormEntryConstants.HL7_CODED)
 						|| datatype.getHl7Abbreviation().equals(
@@ -282,8 +279,10 @@ public class FormSchemaBuilder {
 	}
 
 	/**
-	 * Returns a unique tag name for type definitions (simply adds "_type" to
-	 * the end and ensures that the tag name is unique and valid)
+	 * Returns a unique tag name for field type definitions (simply adds 
+	 * "_type" to the end of the tag name and ensures that the tag name 
+	 * is unique and valid).  Field is added to an array so that these
+	 * complex types definitions can be rendered later.  
 	 * 
 	 * @param f
 	 *            <code>FormField</code> from which to derive type

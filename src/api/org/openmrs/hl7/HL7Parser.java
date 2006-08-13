@@ -9,6 +9,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 
+import ca.uhn.hl7v2.HL7Exception;
+
 public class HL7Parser {
 	
 	private Log log = LogFactory.getLog(this.getClass());

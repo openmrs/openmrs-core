@@ -5,6 +5,7 @@ import java.util.Locale;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
+import org.openmrs.ConceptNumeric;
 import org.openmrs.Drug;
 
 /**
@@ -153,9 +154,11 @@ public class FormSchemaFragment {
 	 *            integers
 	 * @return XML fragment for a numeric concept element
 	 */
-	public static String numericConcept(String token, Concept concept,
-			boolean required, Double minInclusive, Double maxInclusive,
-			boolean precise, Locale locale) {
+	public static String numericConcept(String token, ConceptNumeric concept,
+			boolean required, Locale locale) {
+		Double minInclusive = concept.getLowAbsolute();
+		Double maxInclusive = concept.getHiAbsolute();
+		Boolean precise = concept.isPrecise();
 		boolean skipBounds = (minInclusive == null && maxInclusive == null);
 		String xml = "";
 		if (!skipBounds) {
