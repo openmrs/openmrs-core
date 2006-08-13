@@ -64,3 +64,8 @@
 	</table>
 </div>
 <br><br>
+<div id="patientDemographicsEdit">
+	<openmrs:hasPrivilege privilege="Edit Patients">
+		<a href="<%= request.getContextPath() %>/admin/patients/patient.form?patientId=${model.patient.patientId}"><spring:message code="Patient.edit"/></a><br />
+	</openmrs:hasPrivilege>
+</div>
