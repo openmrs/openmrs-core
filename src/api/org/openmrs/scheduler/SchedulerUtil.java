@@ -32,7 +32,7 @@ public class SchedulerUtil {
 	 * no way of stopping a user from creating their own SchedulerService.
 	 */
 	public static void startup() {
-		ContextFactory.getContext().getSchedulerService().startup();
+		ContextFactory.getContext().getSchedulerService(); // issues .startup() method
 	}
 	
 	/**
