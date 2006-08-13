@@ -60,11 +60,16 @@ public class HL7InQueueProcessor /* implements Runnable */{
 			context.getHL7Service().deleteHL7InQueue(hl7InQueue);
 		} catch (HL7Exception e) {
 			setFatalError(hl7InQueue, "Error parsing HL7 message", e);
+			return;
 		}
 
 		// clean up memory after processing each queue entry (otherwise, the
 		// memory-intensive process may crash or eat up all our memory)
-		context.getHL7Service().garbageCollect();
+		try {
+			context.getHL7Service().garbageCollect();
+		} catch (Exception e) {
+			log.error("Exception while performing garbagecollect in hl7 inbound processor", e);
+		}
 
 	}
 

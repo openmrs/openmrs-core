@@ -76,14 +76,15 @@ public class ORUR01Handler implements Application {
 	public Message processMessage(Message message) throws ApplicationException {
 
 		if (!(message instanceof ORU_R01))
-			throw new ApplicationException("Invalid message sent to ORU_R01 handler");
-		
+			throw new ApplicationException(
+					"Invalid message sent to ORU_R01 handler");
+
 		if (log.isDebugEnabled())
 			log.debug("Processing ORU_R01 message");
 
 		Message response;
 		try {
-			ORU_R01 oru = (ORU_R01)message;
+			ORU_R01 oru = (ORU_R01) message;
 			response = processORU_R01(oru);
 		} catch (ClassCastException e) {
 			log.error("Error casting " + message.getClass().getName()
@@ -124,7 +125,7 @@ public class ORUR01Handler implements Application {
 		for (int i = 0; i < numObr; i++) {
 			ORU_R01_ORDER_OBSERVATION orderObs = patientResult
 					.getORDER_OBSERVATION(i);
-			//OBR obr = orderObs.getOBR();
+			// OBR obr = orderObs.getOBR();
 			Hashtable<String, Vector<Obs>> obsGroups = null;
 			int numObs = orderObs.getOBSERVATIONReps();
 			for (int j = 0; j < numObs; j++) {
@@ -144,13 +145,14 @@ public class ORUR01Handler implements Application {
 					// Handle obs-level exceptions
 					HL7InError hl7InError = new HL7InError();
 					hl7InError.setError(e.getMessage());
-					hl7InError.setErrorDetails(PipeParser.encode(obx, new EncodingCharacters('|', "^~\\&")));
+					hl7InError.setErrorDetails(PipeParser.encode(obx,
+							new EncodingCharacters('|', "^~\\&")));
 					// hl7InError.setHL7Source()
 					hl7Service.createHL7InError(hl7InError);
 				}
 			}
 			if (obsGroups != null && obsGroups.size() > 0) {
-				for (Vector<Obs> group: obsGroups.values()) {
+				for (Vector<Obs> group : obsGroups.values()) {
 					Obs[] groupArray = new Obs[group.size()];
 					group.toArray(groupArray);
 					if (groupArray.length == 1)
@@ -270,14 +272,17 @@ public class ORUR01Handler implements Application {
 					Concept valueConcept = new Concept();
 					valueConcept.setConceptId(new Integer(valueIdentifier));
 					obs.setValueCoded(valueConcept);
-					if ("99RX".equals(value.getNameOfAlternateCodingSystem().getValue())) {
+					if ("99RX".equals(value.getNameOfAlternateCodingSystem()
+							.getValue())) {
 						Drug valueDrug = new Drug();
-						valueDrug.setDrugId(new Integer(value.getAlternateIdentifier().getValue()));
+						valueDrug.setDrugId(new Integer(value
+								.getAlternateIdentifier().getValue()));
 						obs.setValueDrug(valueDrug);
 					}
 				} catch (NumberFormatException e) {
-					throw new HL7Exception("Invalid concept ID '" + valueIdentifier
-							+ "' for OBX-5 value '" + valueName + "'");
+					throw new HL7Exception("Invalid concept ID '"
+							+ valueIdentifier + "' for OBX-5 value '"
+							+ valueName + "'");
 				}
 			}
 		} else if ("CE".equals(hl7Datatype)) {
@@ -292,8 +297,9 @@ public class ORUR01Handler implements Application {
 					valueCoded.setConceptId(new Integer(valueIdentifier));
 					obs.setValueCoded(valueCoded);
 				} catch (NumberFormatException e) {
-					throw new HL7Exception("Invalid concept ID '" + valueIdentifier
-							+ "' for OBX-5 value '" + valueName + "'");
+					throw new HL7Exception("Invalid concept ID '"
+							+ valueIdentifier + "' for OBX-5 value '"
+							+ valueName + "'");
 				}
 			}
 		} else if ("DT".equals(hl7Datatype)) {
@@ -319,7 +325,8 @@ public class ORUR01Handler implements Application {
 			// unsupported data type
 			// TODO: support RP (report), SN (structured numeric)
 			// do we need to support BIT just in case it slips thru?
-			throw new HL7Exception("Unsupported observation datatype '" + hl7Datatype + "'");
+			throw new HL7Exception("Unsupported observation datatype '"
+					+ hl7Datatype + "'");
 		}
 		return obs;
 	}

@@ -209,32 +209,33 @@
 			<lib dir="${commons-beanutils.dir}" includes="*.jar" />
 			<lib dir="${commons-collections.dir}" includes="*.jar" />
 			<!--<lib dir="${commons-dbcp.dir}" includes="*.jar" />-->
+			<!--<lib dir="${commons-digester.dir}" includes="*.jar" />  (for struts) -->
 			<lib dir="${commons-fileupload.dir}" includes="*.jar" />
 			<lib dir="${commons-io.dir}" includes="*.jar" />
 			<lib dir="${commons-lang.dir}" includes="*.jar" />
 			<lib dir="${commons-logging.dir}" includes="*.jar" />
 			<!--<lib dir="${commons-pool.dir}" includes="*.jar" />-->
+			<lib dir="${database.dir}" includes="*.jar" />
 			<lib dir="${dom4j.dir}" includes="*.jar" />
 			<lib dir="${dwr.dir}" includes="*.jar" />
 			<lib dir="${ehcache.dir}" includes="*.jar" />
 			<lib dir="${hibernate.dir}" includes="*.jar" />
 			<lib dir="${hl7api.dir}" includes="*.jar" />
 			<!--<lib dir="${ibatis.dir}" includes="*.jar" />-->
-			<lib dir="${log4j.dir}" includes="*.jar" />
 			<lib dir="${jfreechart.dir}" includes="*.jar" />
 			<lib dir="${jstl.dir}" includes="*.jar" />
 			<lib dir="${jta.dir}" includes="*.jar" />
 			<lib dir="${junit.dir}" includes="*.jar" />
-			<lib dir="${database.dir}" includes="*.jar" />
-			<lib dir="${saxon.dir}" includes="*.jar" />
-			<lib dir="${spring.dir}" includes="*.jar" />
-			<lib dir="${taglibs.dir}" includes="*.jar" />
-			<lib dir="${velocity.dir}" includes="*.jar" />
+			<lib dir="${log4j.dir}" includes="*.jar" />
+			<lib dir="${mail.dir}" includes="*.jar" />
 			<lib dir="${neal-reporting.dir}" includes="*.jar" />
 			<!--<lib dir="${quartz.dir}" includes="*.jar" />-->
-			<lib dir="${mail.dir}" includes="*.jar" />
+			<lib dir="${saxon.dir}" includes="*.jar" />
+			<lib dir="${spring.dir}" includes="*.jar" />
 			<!--<lib dir="${struts.dir}" includes="*.jar" /> -->
-			<!--<lib dir="${commons-digester.dir}" includes="*.jar" />  (for struts) -->
+			<lib dir="${taglibs.dir}" includes="*.jar" />
+			<lib dir="${velocity.dir}" includes="*.jar" />
+			<lib dir="${xerces.dir}" includes="*.jar" />
 		</war>
 	</target>
 	
@@ -254,31 +255,32 @@
 			<zipfileset dir="${commons-beanutils.dir}" includes="*.jar" />
 			<zipfileset dir="${commons-collections.dir}" includes="*.jar" />
 			<!--<zipfileset dir="${commons-dbcp.dir}" includes="*.jar" />-->
+			<!--<zipfileset dir="${commons-digester.dir}" includes="*.jar" />  (for struts) -->
 			<zipfileset dir="${commons-fileupload.dir}" includes="*.jar" />
 			<zipfileset dir="${commons-io.dir}" includes="*.jar" />
 			<zipfileset dir="${commons-lang.dir}" includes="*.jar" />
 			<zipfileset dir="${commons-logging.dir}" includes="*.jar" />
 			<!--<zipfileset dir="${commons-pool.dir}" includes="*.jar" />-->
+			<zipfileset dir="${database.dir}" includes="*.jar" />
 			<zipfileset dir="${dom4j.dir}" includes="*.jar" />
 			<zipfileset dir="${dwr.dir}" includes="*.jar" />
 			<zipfileset dir="${ehcache.dir}" includes="*.jar" />
 			<zipfileset dir="${hibernate.dir}" includes="*.jar" />
 			<!--<zipfileset dir="${ibatis.dir}" includes="*.jar" />-->
-			<zipfileset dir="${log4j.dir}" includes="*.jar" />
 			<zipfileset dir="${jfreechart.dir}" includes="*.jar" />
 			<zipfileset dir="${jstl.dir}" includes="*.jar" />
 			<zipfileset dir="${jta.dir}" includes="*.jar" />
 			<zipfileset dir="${junit.dir}" includes="*.jar" />
-			<zipfileset dir="${database.dir}" includes="*.jar" />
-			<zipfileset dir="${saxon.dir}" includes="*.jar" />
-			<zipfileset dir="${spring.dir}" includes="*.jar" />
-			<zipfileset dir="${taglibs.dir}" includes="*.jar" />
-			<zipfileset dir="${velocity.dir}" includes="*.jar" />
+			<zipfileset dir="${log4j.dir}" includes="*.jar" />
+			<zipfileset dir="${mail.dir}" includes="*.jar" />
 			<zipfileset dir="${neal-reporting.dir}" includes="*.jar" />
 			<!--<zipfileset dir="${quartz.dir}" includes="*.jar" />-->
-			<zipfileset dir="${mail.dir}" includes="*.jar" />
+			<zipfileset dir="${saxon.dir}" includes="*.jar" />
+			<zipfileset dir="${spring.dir}" includes="*.jar" />
 			<!--<zipfileset dir="${struts.dir}" includes="*.jar" /> -->
-			<!--<zipfileset dir="${commons-digester.dir}" includes="*.jar" />  (for struts) -->
+			<zipfileset dir="${taglibs.dir}" includes="*.jar" />
+			<zipfileset dir="${velocity.dir}" includes="*.jar" />
+			<zipefileset dir="${xerces.dir}" includes="*.jar" />
 		</zip>
 	</target>
 	
