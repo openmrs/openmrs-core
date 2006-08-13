@@ -35,22 +35,21 @@ public class FieldGenController implements Controller {
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-		// find the portlet that was identified in the openmrs:portlet taglib
-		Object uri = request.getAttribute("javax.servlet.include.servlet_path");
+		// find the field that was identified in the openmrs:fieldGen taglib
+		Object uri = request.getAttribute("javax.servlet.include.servlet_path.fieldGen");
+		if ( uri == null ) uri = request.getAttribute("javax.servlet.include.servlet_path");
 		String fieldGenPath = "";
 		Map<String, Object> model = new HashMap<String, Object>();
 		
 		if (uri != null) {
 			fieldGenPath = uri.toString();
 
-			// Allowable extensions are '' (no extension) and '.portlet'
+			// Allowable extensions are '' (no extension) and '.field'
 			if (fieldGenPath.endsWith("field"))
 				fieldGenPath = fieldGenPath.replace(".field", "");
 			else if (fieldGenPath.endsWith("jsp"))
 				throw new ServletException("Illegal extension used for fieldGen: '.jsp'. Allowable extensions are '' (no extension) and '.field'");
 
-			log.debug("Loading fieldGen: " + fieldGenPath);
-			
 			String type = (String)request.getAttribute("org.openmrs.fieldGen.type");
 			String formFieldName = (String)request.getAttribute("org.openmrs.fieldGen.formFieldName");
 			//String startVal = (String)request.getAttribute("org.openmrs.fieldGen.startVal");
@@ -60,7 +59,7 @@ public class FieldGenController implements Controller {
 			model.put("type", type);
 			model.put("formFieldName", formFieldName);
 			model.put("obj", request.getAttribute("org.openmrs.fieldGen.object"));
-			model.put("request", request);
+			model.put("request", request.getAttribute("org.openmrs.fieldGen.request"));
 			model.putAll(params);
 			if (moreParams != null) {
 				model.putAll(moreParams);
@@ -72,7 +71,7 @@ public class FieldGenController implements Controller {
 			request.removeAttribute("org.openmrs.fieldGen.parameters");
 			request.removeAttribute("org.openmrs.fieldGen.parameterMap");
 		}
-
+		
 		return new ModelAndView(fieldGenPath, "model", model);
 
 	}

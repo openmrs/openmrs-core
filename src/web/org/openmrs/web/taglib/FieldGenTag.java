@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;
@@ -16,6 +18,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.taglibs.standard.tag.common.core.ImportSupport;
 import org.openmrs.util.Helper;
+import org.openmrs.web.controller.FieldGenController;
 import org.openmrs.web.taglib.fieldgen.FieldGenHandler;
 import org.openmrs.web.taglib.fieldgen.FieldGenHandlerFactory;
 import org.springframework.context.ApplicationContext;
@@ -218,7 +221,8 @@ public class FieldGenTag extends TagSupport {
 		pageContext.getRequest().setAttribute("org.openmrs.fieldGen.parameterMap", hmParamMap);
 		
 		pageContext.getRequest().setAttribute("org.openmrs.fieldGen.object", val);
-		
+		pageContext.getRequest().setAttribute("org.openmrs.fieldGen.request", pageContext.getRequest());
+
 		try {
 			pageContext.include(this.url);
 		} catch (ServletException e) {
@@ -226,6 +230,20 @@ public class FieldGenTag extends TagSupport {
 		} catch (IOException e) {
 			log.error("IOException while trying to include a file in FieldGenTag");
 		}
+
+		/*
+		log.debug("FieldGenTag has reqest of " + pageContext.getRequest().toString());
+		pageContext.getRequest().setAttribute("javax.servlet.include.servlet_path.fieldGen", url);
+		FieldGenController fgc = new FieldGenController();
+		try {
+			fgc.handleRequest((HttpServletRequest)pageContext.getRequest(), (HttpServletResponse)pageContext.getResponse());
+		} catch (ServletException e) {
+			log.error("ServletException while attempting to pass control to FieldGenController in FieldGenTag");
+		} catch (IOException e) {
+			log.error("IOException while attempting to pass control to FieldGenController in FieldGenTag");
+		}
+		*/
+
 
 		resetValues();
 		
@@ -311,18 +329,26 @@ public class FieldGenTag extends TagSupport {
 	 */
 	public void setParameters(String parameters) {
 		this.parameters = parameters;
-		String delimiter = "|";
+		String delimiter = "\\|"; 	// pipe is a special char in regex, so need to escape it...	
+		/*
 		if ( parameters.indexOf(delimiter) < 0 ) {
 			delimiter = ";";
 		}
+		*/
 		String[] nvPairs = parameters.split(delimiter);
-		for ( String nvPair : nvPairs ) {
-			String[] nameValue = nvPair.split("=");
-			String name = nameValue[0];
-			String val = nameValue[1];
-			
-			if ( this.parameterMap == null ) this.parameterMap = new HashMap<String,Object>();
-			this.parameterMap.put(name, val);
+		try {
+			for ( String nvPair : nvPairs ) {
+				String[] nameValue = nvPair.split("=");
+				String name = "";
+				if ( nameValue.length > 0 ) name = nameValue[0];
+				String val = "";
+				if ( nameValue.length > 1 ) val = nameValue[1];
+				
+				if ( this.parameterMap == null ) this.parameterMap = new HashMap<String,Object>();
+				this.parameterMap.put(name, val);
+			}
+		} catch ( ArrayIndexOutOfBoundsException ae ) {
+			log.error("Out of bounds while trying to parse " + parameters + " with delimiter " + delimiter);
 		}
 	}
 

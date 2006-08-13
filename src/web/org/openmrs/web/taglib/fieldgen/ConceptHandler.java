@@ -9,6 +9,9 @@ public class ConceptHandler extends AbstractFieldGenHandler implements FieldGenH
 	
 	public void run() {
 		setUrl(defaultUrl);
+
+		htmlInclude("/scripts/dojoConfig.js");
+		htmlInclude("/scripts/dojoConfig.js");
 		
 		if ( fieldGenTag != null ) {
 			Concept c = (Concept)this.fieldGenTag.getVal();

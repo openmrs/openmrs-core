@@ -8,25 +8,27 @@ import javax.servlet.http.HttpSession;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
+import org.openmrs.Drug;
 import org.openmrs.OrderType;
+import org.openmrs.User;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.taglib.FieldGenTag;
 
-public class OrderTypeHandler extends AbstractFieldGenHandler implements FieldGenHandler {
+public class DrugHandler extends AbstractFieldGenHandler implements FieldGenHandler {
 
-	private String defaultUrl = "orderType.field";
+	private String defaultUrl = "drug.field";
 	
 	public void run() {
 		setUrl(defaultUrl);
 
 		if ( fieldGenTag != null ) {
 			String initialValue = "";
-			OrderType ot = (OrderType)this.fieldGenTag.getVal();
-			if ( ot != null ) if ( ot.getOrderTypeId() != null ) initialValue = ot.getOrderTypeId().toString();
-
+			checkEmptyVal((Drug)null);
+			Drug d = (Drug)this.fieldGenTag.getVal();
+			if ( d != null ) if ( d.getDrugId() != null ) initialValue = d.getDrugId().toString();
 			String optionHeader = "";
 			if ( this.fieldGenTag.getParameterMap() != null ) {
 				optionHeader = (String) this.fieldGenTag.getParameterMap().get("optionHeader");
@@ -37,13 +39,13 @@ public class OrderTypeHandler extends AbstractFieldGenHandler implements FieldGe
 			//HttpServletRequest request = (HttpServletRequest)this.fieldGenTag.getPageContext().getRequest();
 			Context context = (Context)session.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 
-			OrderService os = context.getOrderService();
-			List<OrderType> orderTypes = os.getOrderTypes();
-			if ( orderTypes == null ) orderTypes = new ArrayList<OrderType>();
+			ConceptService cs = context.getConceptService();
+			List<Drug> drugs = cs.getDrugs();
+			if ( drugs == null ) drugs = new ArrayList<Drug>();
 			
 			setParameter("initialValue", initialValue);
 			setParameter("optionHeader", optionHeader);
-			setParameter("orderTypes", orderTypes);
+			setParameter("drugs", drugs);
 		}
 	}
 }

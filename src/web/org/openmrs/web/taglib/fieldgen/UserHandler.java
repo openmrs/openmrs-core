@@ -8,6 +8,10 @@ public class UserHandler extends AbstractFieldGenHandler implements FieldGenHand
 	private String defaultUrl = "user.field";
 	
 	public void run() {
+		htmlInclude("/scripts/dojoConfig.js");
+		htmlInclude("/scripts/dojo/dojo.js");
+		htmlInclude("/scripts/dojoUserSearchIncludes.js");
+		
 		setUrl(defaultUrl);
 		checkEmptyVal((User)null);
 		String initialValue = "";

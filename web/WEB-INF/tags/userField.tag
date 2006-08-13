@@ -6,9 +6,9 @@
 <%@ attribute name="initialValue" required="false" %>
 <%@ attribute name="linkUrl" required="false" %>
 
-<openmrs:htmlInclude file="/scripts/dojoConfig.js"></openmrs:htmlInclude>
-<openmrs:htmlInclude file="/scripts/dojo/dojo.js"></openmrs:htmlInclude>
-<openmrs:htmlInclude file="/scripts/dojoUserSearchIncludes.js"></openmrs:htmlInclude>
+<openmrs:htmlInclude file="/scripts/dojoConfig.js" />
+<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
+<openmrs:htmlInclude file="/scripts/dojoUserSearchIncludes.js" />
 
 <script type="text/javascript">
 	

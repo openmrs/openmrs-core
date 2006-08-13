@@ -8,6 +8,8 @@ public class DateHandler extends AbstractFieldGenHandler implements FieldGenHand
 	
 	public void run() {
 		setUrl(defaultUrl);
+
+		htmlInclude("/scripts/calendar/calendar.js");
 		
 		String datePattern = OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(getContext().getLocale().toString().toLowerCase());
 		String needScript = "true";

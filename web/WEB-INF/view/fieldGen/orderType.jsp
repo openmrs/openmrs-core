@@ -1,3 +1,3 @@
-<!-- OrderType View for FieldGen module -->
-OrderType
-<!-- OrderType View for FieldGen module -->
+<%@ include file="/WEB-INF/template/include.jsp" %>
+
+<openmrs_tag:orderTypeField formFieldName="${model.formFieldName}" initialValue="${model.initialValue}" orderTypes="${model.orderTypes}" optionHeader="${model.optionHeader}" />

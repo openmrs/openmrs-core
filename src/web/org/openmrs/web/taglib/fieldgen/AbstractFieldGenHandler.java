@@ -4,12 +4,18 @@ import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.servlet.jsp.JspException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.taglib.FieldGenTag;
+import org.openmrs.web.taglib.HtmlIncludeTag;
 
 public abstract class AbstractFieldGenHandler {
+
+	protected final Log log = LogFactory.getLog(getClass());
 	protected FieldGenTag fieldGenTag;
 	
 	public void setFieldGenTag(FieldGenTag fieldGenTag) {
@@ -45,6 +51,17 @@ public abstract class AbstractFieldGenHandler {
 					setVal(o);
 				}
 			}
+		}
+	}
+	
+	protected void htmlInclude(String fileToInclude) {
+		HtmlIncludeTag hit = new HtmlIncludeTag();
+		hit.setPageContext(this.fieldGenTag.getPageContext());
+		hit.setFile(fileToInclude);
+		try {
+			@SuppressWarnings("unused") int i = hit.doStartTag();
+		} catch (JspException e) {
+			log.error("Unable to execute doStartTag() method of HtmlIncludeTag from FieldGenHandler");
 		}
 	}
 	
