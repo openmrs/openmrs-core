@@ -28,8 +28,6 @@
 	
 </script>
 
-<openmrs:portlet url="patientSet" id="patientSetHeaderBox" size="compact" parameters="linkUrl=patientDashboard.form|allowRemove=true|allowClear=true|mutable=true|droppable=true"/>
-
 <h3><spring:message code="formentry.title"/></h3>
 
 <div id="findPatient">

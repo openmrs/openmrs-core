@@ -511,16 +511,31 @@ fieldset {
 	font-size: .9em;
 	color: grey;
 }
-#patientSetHeaderBox {
-	position: absolute;
-	text-align: right;
-	margin-top: 25px;
-	margin-right: 10px;
-	width: 100%;
-	top: 0px;
-	left: 0px;
+#popupTray {
+	float: right;
+	width: 20px;
 }
-#patientSetHeader {
-	border: 1px black solid;
-	background-color: yellow;
+#patientSetTray {
+	display: block;
+	position: fixed;
+	z-index: 1;
+	border-width: 2px 0px 2px 2px;
+	border-color: black;
+	border-style: solid;
+	background: #ffffdd;
+}
+#patientSetBox {
+	border: 1px solid black;
+	background: #ffffbb;
+	position: absolute;
+	right: 15px;
+	top: -20px;
+	width: 400px;
+	z-index: 2;
+}
+#analysisPatientSetBox {
+	padding: 4px;
+	margin: 4px 20px 4px 0px;
+	border: 1px black dashed;
+	background-color: #f4f4f4;
 }

@@ -1,6 +1,7 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 <openmrs:require privilege="View Patients" otherwise="/login.htm" redirect="/formentry/patientDashboard.form" />
 
+<c:set var="OPENMRS_VIEWING_PATIENT_ID" scope="request" value="${patient.patientId}"/>
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
 <script type="text/javascript">
@@ -84,8 +85,6 @@
 
     }
 </script>
-
-<openmrs:portlet url="patientSet" id="patientSetHeaderBox" size="compact" parameters="linkUrl=patientDashboard.form|allowRemove=true|allowClear=true|selectedPatientId=${patient.patientId}|mutable=true|droppable=true"/>
 
 <div id="breadcrumbHeader" class="breadcrumb">
 	<a href="/openmrs">Home</a> ->

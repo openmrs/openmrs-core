@@ -83,10 +83,10 @@ public class PatientProgramItem {
 	
 	static DateFormat ymdDf = new SimpleDateFormat("yyyy-MM-dd");
 	public String getDateEnrolledAsYmd() {
-		return ymdDf.format(dateEnrolled);
+		return dateEnrolled == null ? null : ymdDf.format(dateEnrolled);
 	}
 	public String getDateCompletedAsYmd() {
-		return ymdDf.format(dateCompleted);
+		return dateCompleted == null ? null : ymdDf.format(dateCompleted);
 	}
 
 }

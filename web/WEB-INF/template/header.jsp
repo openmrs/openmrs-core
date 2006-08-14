@@ -60,6 +60,13 @@
 			<%@ include file="/WEB-INF/template/banner.jsp" %>
 		</div>
 		
+		<div id="popupTray">
+			&nbsp;
+			<c:if test="${empty OPENMRS_DO_NOT_SHOW_PATIENT_SET}">
+				<openmrs:portlet url="patientSet" id="patientSetPortlet" size="compact" parameters="selectedPatientId=|linkUrl=patientDashboard.form|allowRemove=true|allowClear=true|mutable=true|droppable=true"/>
+			</c:if>
+		</div>
+		
 		<openmrs:hasPrivilege privilege="View Navigation Menu">
 			<div id="gutter">
 				<%@ include file="/WEB-INF/template/gutter.jsp" %>

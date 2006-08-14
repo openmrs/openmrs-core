@@ -135,7 +135,7 @@
 		var cellFuncs = [
 			function(patient) { return count++ + "."; },
 			function(patient) {
-					var isSel = <c:choose><c:when test="${empty model.selectedPatientId}">false</c:when><c:otherwise>patient.patientId == ${model.selectedPatientId}</c:otherwise></c:choose> ;
+					var isSel = <c:choose><c:when test="${empty OPENMRS_VIEWING_PATIENT_ID}">false</c:when><c:otherwise>patient.patientId == ${OPENMRS_VIEWING_PATIENT_ID}</c:otherwise></c:choose> ;
 			<c:choose>
 				<c:when test="${model.linkUrl == null}">
 					return (isSel ? "<b>" : "") + patient.givenName + " " + patient.middleName + " " + patient.familyName + (isSel ? "</b>" : "");
@@ -165,57 +165,55 @@
 </script>
 
 <c:if test="${model.size != 'full'}">
-<span onMouseOver="javascript:showLayer('_patientSetBox')">
-	<span id="patientSetHeader">
-		<a href="javascript:toggleLayer('_patientSetBox')"><spring:message code="PatientSet.yours"/></a>
-		<c:if test="${model.droppable}">
-			<a href="javascript:clearThis()" style="color: red">
-				[<spring:message code="general.drop"/>]
-			</a>
-		</c:if>
-	</span>
-	<div id="_patientSetBox"
-		 style="border: 1px solid black;
-		 		background-color: #ffffaa;
-		 		position: absolute;
-		 		z-index: 1;
-		 		<c:if test="${model.size == 'compact'}">display: none;</c:if>
-		 		right: 0px;
-		 		width: 400px;">
+	<div id="patientSetTray" onMouseOver="javascript:showLayer('patientSetBox')">
+		<div id="patientSetBox">
+			<div style="text-align: right">
+				<a href="javascript:hideLayer('patientSetBox')">[<spring:message code="general.hide"/>]</a>
+			</div>
 </c:if>
-		
-		<table id="${model.tableId}">
-			<thead id="${model.headId}">
-				<tr>
-					<th colspan="5">
-						<a href="javascript:goToStart()">|&lt;</a>
-							&nbsp;&nbsp;&nbsp;
-						<a href="javascript:pageBackwards()">&lt;</a>
-							&nbsp;&nbsp;&nbsp;
-						<spring:message code="PatientSet.setOfN" arguments='<span id="PS_totalNumber">?</span>'/>
-							&nbsp;&nbsp;&nbsp;
-						<a href="javascript:pageForwards()">&gt;</a>
-							&nbsp;&nbsp;&nbsp;
-						<a href="javascript:goToEnd()">&gt;|</a>
-					</th>
-				</tr>
-				<tr>
-					<th>#</th>
-					<th><spring:message code="Patient.name"/></th>
-					<th><spring:message code="Patient.gender"/></th>
-					<th><spring:message code="Patient.age"/></th>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody id="${tableBodyId}">
-			</tbody>
-		</table>
-
-		<script language="JavaScript">
-			refreshList();
-		</script>
-
+			<table id="${model.tableId}">
+				<thead id="${model.headId}">
+					<tr>
+						<th colspan="5">
+							<a href="javascript:goToStart()">|&lt;</a>
+								&nbsp;&nbsp;&nbsp;
+							<a href="javascript:pageBackwards()">&lt;</a>
+								&nbsp;&nbsp;&nbsp;
+							<spring:message code="PatientSet.setOfN" arguments='<span id="PS_totalNumber">?</span>'/>
+								&nbsp;&nbsp;&nbsp;
+							<a href="javascript:pageForwards()">&gt;</a>
+								&nbsp;&nbsp;&nbsp;
+							<a href="javascript:goToEnd()">&gt;|</a>
+						</th>
+					</tr>
+					<tr>
+						<th>#</th>
+						<th><spring:message code="Patient.name"/></th>
+						<th><spring:message code="Patient.gender"/></th>
+						<th><spring:message code="Patient.age"/></th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody id="${tableBodyId}">
+				</tbody>
+			</table>
 <c:if test="${model.size != 'full'}">
+		</div>
+
+		<center>
+			<spring:message code="PatientSet.yours"/>
+			<c:if test="${model.droppable}">
+				<a href="javascript:clearThis()" style="color: red">
+					[<spring:message code="PatientSet.drop"/>]
+				</a>
+			</c:if>
+		</center>
 	</div>
-</span>
+	<script type="text/javascript">
+		hideLayer('patientSetBox');
+	</script>
 </c:if>
+
+<script type="text/javascript">
+	refreshList();
+</script>

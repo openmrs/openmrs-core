@@ -21,8 +21,6 @@ import org.openmrs.util.OpenmrsConstants;
 
 public class ProgramWorkflowService {
 	
-	// TODO: Check permissions on all methods in this class
-
 	private Log log = LogFactory.getLog(this.getClass());
 
 	private Context context;
@@ -43,13 +41,14 @@ public class ProgramWorkflowService {
 	// --- Program ---
 	
 	public List<Program> getPrograms() {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PROGRAMS);
 		return getProgramWorkflowDAO().getPrograms();
 	}
 	
 	public void createOrUpdateProgram(Program p) {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: "
-					+ OpenmrsConstants.PRIV_MANAGE_PROGRAMS);
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_PROGRAMS);
 		
 		log.debug("Creating new program");
 		if (p.getWorkflows() != null) {
@@ -99,6 +98,8 @@ public class ProgramWorkflowService {
 	}
 	
 	public Program getProgram(Integer id) {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PROGRAMS);
 		return getProgramWorkflowDAO().getProgram(id);
 	}
 	
@@ -122,10 +123,14 @@ public class ProgramWorkflowService {
 	}
 	
 	public ProgramWorkflow getWorkflow(Integer id) {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PROGRAMS);
 		return getProgramWorkflowDAO().getWorkflow(id);
 	}
 	
 	public void updateWorkflow(ProgramWorkflow w) {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_PROGRAMS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_PROGRAMS);
 		if (w.getVoided()) {
 			if (w.getVoidedBy() == null) {
 				w.setVoidedBy(context.getAuthenticatedUser());
@@ -151,43 +156,29 @@ public class ProgramWorkflowService {
 	}
 	
 	public void voidWorkflow(ProgramWorkflow w, String reason) {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_PROGRAMS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_PROGRAMS);
 		w.setVoided(true);
 		w.setVoidReason(reason);
 		w.setVoidedBy(context.getAuthenticatedUser());
 		w.setDateVoided(new Date());
 		getProgramWorkflowDAO().updateWorkflow(w);
 	}
-	
-	
-	
-	public ProgramWorkflow findWorkflowByProgramAndConcept(Integer programId, Integer conceptId) {
-		return getProgramWorkflowDAO().findWorkflowByProgramAndConcept(programId, conceptId);
-	}
+
 		
 	// --- ProgramWorkflowState ---
 		
 	public ProgramWorkflowState getState(Integer id) {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PROGRAMS);
 		return getProgramWorkflowDAO().getState(id);
 	}
 	
-	// --- ProgramWorkflowTransition ---
-	/*
-	public void createProgramWorkflowTransition(ProgramWorkflowTransition t) {
-	}
-	
-	public ProgramWorkflowTransition getProgramWorkflowTransition(Integer id) {
-		return null;
-	}
-	
-	public void voidProgramWorkflowTransition(ProgramWorkflowTransition t, String reason) {
-	}
-	*/
 	// --- PatientProgram ---
 
 	public void createPatientProgram(PatientProgram p) {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_PATIENT_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: "
-					+ OpenmrsConstants.PRIV_MANAGE_PATIENT_PROGRAMS);
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS);
 		
 		if (p.getCreator() == null) {
 			p.setCreator(context.getAuthenticatedUser());
@@ -198,9 +189,9 @@ public class ProgramWorkflowService {
 	}
 	
 	public void updatePatientProgram(PatientProgram p) {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_PATIENT_PROGRAMS))
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS))
 			throw new APIAuthenticationException("Privilege required: "
-					+ OpenmrsConstants.PRIV_MANAGE_PATIENT_PROGRAMS);
+					+ OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS);
 		
 		Date now = new Date();
 		p.setChangedBy(context.getAuthenticatedUser());
@@ -217,19 +208,19 @@ public class ProgramWorkflowService {
 	
 	public PatientProgram getPatientProgram(Integer id) {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: "
-					+ OpenmrsConstants.PRIV_VIEW_PROGRAMS);
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PROGRAMS);
 		return getProgramWorkflowDAO().getPatientProgram(id);
 	}
 	
 	public Collection<PatientProgram> getPatientPrograms(Patient patient) {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: "
-					+ OpenmrsConstants.PRIV_VIEW_PROGRAMS);
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PROGRAMS);
 		return getProgramWorkflowDAO().getPatientPrograms(patient);
 	}
 	
 	public void enrollPatientInProgram(Patient patient, Program program, Date enrollmentDate) {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS);
 		// TODO: check whether the patient is already in the program at that point
 		PatientProgram p = new PatientProgram();
 		p.setPatient(patient);
@@ -239,6 +230,8 @@ public class ProgramWorkflowService {
 	}
 	
 	public void voidPatientProgram(PatientProgram p, String reason) {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS);
 		if (!p.getVoided()) {
 			p.setVoided(true);
 			p.setDateVoided(new Date());
@@ -247,39 +240,12 @@ public class ProgramWorkflowService {
 			updatePatientProgram(p);
 		}
 	}
-	
-	// --- PatientStatus ---
-	/*
-	public void createPatientStatus(PatientStatus s) {
-	}
-	
-	public PatientStatus getPatientStatus(Integer id) {
-		return null;
-	}
-	
-	public void voidPatientStatus(PatientStatus s, String reason) {
-	}
-	*/
 
-	// --- Actual useful methods ---
-	/*
-	public Concept getPatientStatus(Patient patient, ProgramWorkflow workflow, Date onDate) {
-		return null;
-	}
-	
-	public Map<ProgramWorkflow, Concept> getProgramStatuses(Patient patient, Program program, Date onDate) {
-		return null;
-	}
-	
-	public Collection<Patient> getPatients(Program program, Concept status, Date fromDate, Date toDate) {
-		return null;
-	}
-	
-	public void changeStatus(Patient patient, ProgramWorkflow workflow, Concept newStatus, Date onDate) throws APIException {	
-	}
-*/
-	
+	// Utility methods
+
 	public Collection<Program> getCurrentPrograms(Patient patient, Date onDate) {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PROGRAMS);
 		if (onDate == null) {
 			onDate = new Date();
 		}
@@ -299,6 +265,8 @@ public class ProgramWorkflowService {
 	// TODO: move this into Patient (probably make this a lazily-loaded hibernate mapping).
 	// This is just a quick implementation without changing any hibernate mappings
 	public PatientState getLatestState(PatientProgram patientProgram, ProgramWorkflow workflow) {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PROGRAMS);
 		PatientState ret = null;
 		// treat null as the earliest date
 		for (PatientState state : patientProgram.getStates()) {
@@ -310,6 +278,8 @@ public class ProgramWorkflowService {
 	}
 
 	public List<ProgramWorkflowState> getPossibleNextStates(PatientProgram patientProgram, ProgramWorkflow workflow) {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PROGRAMS);
 		List<ProgramWorkflowState> ret = new ArrayList<ProgramWorkflowState>();
 		PatientState currentState = getLatestState(patientProgram, workflow);
 		for (ProgramWorkflowState st : workflow.getStates()) {
@@ -330,6 +300,8 @@ public class ProgramWorkflowService {
 	}
 
 	public void changeToState(PatientProgram patientProgram, ProgramWorkflow wf, ProgramWorkflowState st, Date onDate) {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS);
 		PatientState lastState = getLatestState(patientProgram, wf);
 		if (lastState != null && onDate == null) {
 			throw new IllegalArgumentException("You can't change from a non-null state without giving a change date");

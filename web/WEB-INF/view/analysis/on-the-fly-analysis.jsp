@@ -2,6 +2,7 @@
 
 <openmrs:require privilege="View Patient Sets" otherwise="/login.htm" redirect="analysis.list" />
 
+<c:set var="OPENMRS_DO_NOT_SHOW_PATIENT_SET" scope="request" value="true"/>
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
 <script type="text/javascript" src="<%= request.getContextPath() %>/scripts/easyAjax.js"></script>
@@ -10,12 +11,6 @@
 	#actionBox {
 		background-color: #e0e0e0;
 		padding: 4px;
-	}
-	#patientSetBox {
-		padding: 4px;
-		margin: 4px 20px 4px 0px;
-		border: 1px black dashed;
-		background-color: #f4f4f4;
 	}
 	#filterBox {
 		width: 33%;
@@ -215,6 +210,6 @@
 
 <br/>
 
-<openmrs:portlet url="patientSet" id="patientSetBox" size="full" parameters="fromAttribute=${model.patientAnalysisAttributeName}|headId=analysisSetHeader|tableId=analysisSetTable|pageSize=20|varToSet=patientIds|linkUrl=patientDashboard.form"/>
+<openmrs:portlet url="patientSet" id="analysisPatientSetBox" size="full" parameters="fromAttribute=${model.patientAnalysisAttributeName}|headId=analysisSetHeader|tableId=analysisSetTable|pageSize=20|varToSet=patientIds|linkUrl=patientDashboard.form"/>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %> 

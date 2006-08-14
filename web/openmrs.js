@@ -60,3 +60,26 @@ function changeClassProperty(sClassName,sProperty,sValue) {
 	
 	styleObj[sProperty]=sValue;
 }
+
+function toggleLayer(layerId) {
+    var style = document.getElementById(layerId).style;
+ 	if (style.display == "none") {
+        style.display = "";
+    } else {
+        style.display = "none";
+    }
+}
+
+function showLayer(layerId) {
+    var style = document.getElementById(layerId).style;
+    style.display = "";
+}
+
+function hideLayer(layerId) {
+    var style = document.getElementById(layerId).style;
+    style.display = "none";
+}
+
+function refreshPage() {
+	window.location.reload();
+}
