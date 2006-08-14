@@ -25,18 +25,16 @@ dojo.widget.defineWidget(
 			
 			this.inputNode.value = this.searchPhrase
 			if (this.searchPhrase)
-				DWRConceptService.findConcepts(this.simpleClosure(this, "doObjectsFound"), this.searchPhrase, this.conceptClasses, false);
+				DWRConceptService.findConcepts(this.simpleClosure(this, "doObjectsFound"), this.searchPhrase, this.conceptClasses, false, this.ignoreClasses);
 		},
 		
 		conceptClasses: [],
+		ignoreClasses: [],
 		searchPhrase: "",
 		
 		doFindObjects: function(text) {
-			// a javascript closure
-			var callback = function(ts) { return function(obj) {ts.doObjectsFound(obj)}};
-
 			var tmpIncludedRetired = (this.showIncludeRetired && this.includeRetired.checked);
-			DWRConceptService.findConcepts(callback(this), text, this.conceptClasses, tmpIncludedRetired);
+			DWRConceptService.findConcepts(this.simpleClosure(this, "doObjectsFound"), text, this.conceptClasses, tmpIncludedRetired, this.ignoreClasses);
 			
 			return false;
 		},

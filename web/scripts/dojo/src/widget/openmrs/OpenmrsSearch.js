@@ -379,7 +379,7 @@ dojo.widget.defineWidget(
 	doObjectsFound: function(objs) {
 		
 		// convert objs from single obj into array (if needed)
-		if (!objs.length)
+		if (objs.length == null)
 			objs = [objs]
 		
 		dojo.event.topic.publish(this.eventNames.objectsFound, {"objs": objs});

@@ -21,6 +21,7 @@ dojo.widget.defineWidget(
 		hiddenInputNode: null,
 		hiddenInputName: "",
 		
+		showChangeButton: true,
 		changeButton: null,
 		changeButtonValue: "",
 
@@ -53,11 +54,12 @@ dojo.widget.defineWidget(
 				this.changeButton.style.display = "none";
 		},
 		
-		templateString: '<span><span style="white-space: nowrap"><span dojoAttachPoint="displayNode"></span> <input type="hidden" value="" dojoAttachPoint="hiddenInputNode" /><input type="button" value="Change" dojoAttachPoint="changeButton" class="smallButton" /></span><div class="description" dojoAttachPoint="descriptionDisplayNode"></div> </span>',
+		templateString: '<span id="${this.widgetId}"><span style="white-space: nowrap"><span dojoAttachPoint="displayNode"></span> <input type="hidden" value="" dojoAttachPoint="hiddenInputNode" /><input type="button" value="Change" dojoAttachPoint="changeButton" class="smallButton" /></span><div class="description" dojoAttachPoint="descriptionDisplayNode"></div> </span>',
 		templateCssPath: "",
 		
 		postCreate: function(){
 			var widg = dojo.widget.manager.getWidgetById(this.searchWidget);
+			
 			if (widg) {
 				dojo.debug("Adding searchWidget: " + this.searchWidget);
 				this.searchWidget = widg;
@@ -88,12 +90,18 @@ dojo.widget.defineWidget(
 				this.searchWidget.inputNode.style.width="190px";
 				
 			}
+			else {
+				alert("searchWidget not found: '" + this.searchWidget + "'");
+			}
 			
 			if (this.hiddenInputName)
 				this.hiddenInputNode.name = this.hiddenInputName;	
 			
 			if (this.changeButtonValue)
 				this.changeButton.value = this.changeButtonValue;
+			
+			if (!this.showChangeButton)
+				this.changeButton.style.display = "none";
 			
 		},
 		
