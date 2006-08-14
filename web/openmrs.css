@@ -48,7 +48,7 @@ h1, h2, h3, h4, h5 {
 	background-color: whitesmoke;
 	border-bottom-width: 1px;
 	border-bottom-style: solid;
-	border-bottom-color: lightgrey;	margin: 0px;
+	border-bottom-color: lightgrey;
 	padding: 1px 3px 1px 1px;
 	margin: 0px;
 	}
@@ -56,7 +56,7 @@ h1, h2, h3, h4, h5 {
 #banner {
 	text-align: left;
 	padding: 15px 2px 2px 2px;
-	margin: 0;
+	margin: 0px;
 	float: left;
 	border: 1px none white;
 }
@@ -190,33 +190,32 @@ table.patientTreatmentPrograms td {
 }
 
 #patientTabs {
-	margin-bottom:0;
-	padding-top:5px;
-	padding-left:10px;
-	border-bottom:1px solid navy;
-	height:29px;
-	width:97%;
+	margin: 5px 0px 0px 0px;
+	padding-top: 5px;
+	padding-left: 10px;
+	border-bottom: 1px solid navy;
+	width: 97%;
 }
 #patientTabs ul, #patientTabs li {
-	display:inline;
-	list-style-type:none;
-	padding:0px 0px 0px 0px;
+	display: inline;
+	list-style-type: none;
+	padding: 0px 0px 0px 0px;
 }
 
 #patientTabs a:link, #patientTabs a:visited {
 	border: 1px solid navy;
-	font-size:small;
-	font-weight:bold;
-	margin-right:8px;
+	font-size: small;
+	font-weight: bold;
+	margin-right: 8px;
 	padding: 2px 10px 2px 10px;
-	text-decoration:none;
+	text-decoration: none;
 }
 #patientTabs a:link.active, #patientTabs a:visited.active {
 	border-bottom: 1px solid #fff;
 }
 #patientTabs a:hover, #patientTabs a.current {
-	background:navy;
-	color:white;
+	background: #8080a0;
+	color: white;
 }
 
 #patientDashboardDemographics table.patientAddress {
@@ -513,23 +512,23 @@ fieldset {
 }
 #popupTray {
 	float: right;
+	position: fixed;
+	right: 0px;
 	width: 20px;
 }
 #patientSetTray {
-	display: block;
-	position: fixed;
 	z-index: 1;
 	border-width: 2px 0px 2px 2px;
 	border-color: black;
 	border-style: solid;
-	background: #ffffdd;
+	background-color: whitesmoke;
 }
 #patientSetBox {
 	border: 1px solid black;
 	background: #ffffbb;
 	position: absolute;
 	right: 15px;
-	top: -20px;
+	top: 0px;
 	width: 400px;
 	z-index: 2;
 }

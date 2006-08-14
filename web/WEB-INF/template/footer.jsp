@@ -19,10 +19,14 @@
 			pageContext.setAttribute("context", session.getAttribute(org.openmrs.web.WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR));
 		%>
 
-		<c:forEach items="${locales}" var="loc" varStatus="status">		
+		<c:forEach items="${locales}" var="loc" varStatus="status">
+			<%
+				java.util.Locale locTmp = (java.util.Locale) pageContext.getAttribute("loc");
+				pageContext.setAttribute("locDisplayName", locTmp.getDisplayName(locTmp));
+			%>
 			<c:if test="${status.index != 0}">| </c:if>
-			<c:if test="${fn:toLowerCase(context.locale) == fn:toLowerCase(loc)}">${loc.displayName}</c:if>
-			<c:if test="${fn:toLowerCase(context.locale) != fn:toLowerCase(loc)}"><a href="?${qs}&lang=${loc}">${loc.displayName}</a></c:if> 
+			<c:if test="${fn:toLowerCase(context.locale) == fn:toLowerCase(loc)}">${locDisplayName}</c:if>
+			<c:if test="${fn:toLowerCase(context.locale) != fn:toLowerCase(loc)}"><a href="?${qs}&lang=${loc}">${locDisplayName}</a></c:if> 
 		</c:forEach>
 		&nbsp; &nbsp; &nbsp;
 

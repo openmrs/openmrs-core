@@ -218,10 +218,13 @@ public class ProgramWorkflowService {
 		return getProgramWorkflowDAO().getPatientPrograms(patient);
 	}
 	
-	public void enrollPatientInProgram(Patient patient, Program program, Date enrollmentDate) {
+	public void enrollPatientInProgram(Patient patient, Program program, Date enrollmentDate, Date completionDate) {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS);
-		// TODO: check whether the patient is already in the program at that point
+		// Should we add a boolean to the program title that says patients can be enrolled there twice simultaneously? 
+		if (isInProgram(patient, program, enrollmentDate, completionDate))
+			throw new IllegalArgumentException("patient is already in " + program +
+					" sometime between " + enrollmentDate + " and " + completionDate);
 		PatientProgram p = new PatientProgram();
 		p.setPatient(patient);
 		p.setProgram(program);
@@ -242,6 +245,15 @@ public class ProgramWorkflowService {
 	}
 
 	// Utility methods
+	
+	/**
+	 * @return patientIds of all patients who are enrolled in _program_ between _fromDate_ and _toDate_ 
+	 */
+	public Collection<Integer> patientsInProgram(Program program, Date fromDate, Date toDate) {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PROGRAMS);
+		return getProgramWorkflowDAO().patientsInProgram(program, fromDate, toDate);
+	}
 
 	public Collection<Program> getCurrentPrograms(Patient patient, Date onDate) {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
@@ -319,4 +331,41 @@ public class ProgramWorkflowService {
 		updatePatientProgram(patientProgram);
 	}
 	
+	/**
+	 * Voids the last unvoided state in the given workflow, and clears the endDate of the next-to-last unvoided state.  
+	 * @param patientProgram
+	 * @param wf
+	 * @param voidReason
+	 */
+	public void voidLastState(PatientProgram patientProgram, ProgramWorkflow wf, String voidReason) {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS);
+		List<PatientState> states = patientProgram.statesInWorkflow(wf, false);
+		PatientState last = null;
+		PatientState nextToLast = null;
+		if (states.size() > 0)
+			last = states.get(states.size() - 1);
+		if (states.size() > 1)
+			nextToLast = states.get(states.size() - 2);
+		if (last != null) {
+			last.setVoided(true);
+			last.setVoidReason(voidReason);
+		}
+		if (nextToLast != null && nextToLast.getEndDate() != null) {
+			nextToLast.setEndDate(null);
+			nextToLast.setDateChanged(new Date());
+			nextToLast.setChangedBy(context.getAuthenticatedUser());
+		}
+		updatePatientProgram(patientProgram);
+	}
+
+	/**
+	 * @return Returns true if _patient_ is enrolled in _program_ anytime between _fromDate_ and _toDate_. (null values for those dates mean beginning-of-time and end-of-time)
+	 */
+	public boolean isInProgram(Patient patient, Program program, Date fromDate, Date toDate) {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PROGRAMS);
+		return patientsInProgram(program, fromDate, toDate).contains(patient.getPatientId());
+	}
+
 }

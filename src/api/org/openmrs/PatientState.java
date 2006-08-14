@@ -1,6 +1,5 @@
 package org.openmrs;
 
-import java.sql.Timestamp;
 import java.util.Date;
 
 import org.openmrs.util.Helper;

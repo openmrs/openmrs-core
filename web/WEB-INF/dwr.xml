@@ -138,6 +138,7 @@
 			<include method="deletePatientProgram"/>
 			<include method="getPossibleNextStates"/>
 			<include method="changeToState"/>
+			<include method="voidLastState"/>
 		</create>
 				
 	</allow>

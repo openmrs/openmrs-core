@@ -5,7 +5,6 @@
 <script type="text/javascript" src="<%= request.getContextPath() %>/dwr/engine.js"></script>
 <script type="text/javascript" src="<%= request.getContextPath() %>/dwr/util.js"></script>
 
-
 <div class="boxHeader"><spring:message code="Program.title"/></div>
 <div class="box">
 	<openmrs:portlet url="patientPrograms" id="patientPrograms" patientId="${patient.patientId}" parameters="allowEdits=true"/>

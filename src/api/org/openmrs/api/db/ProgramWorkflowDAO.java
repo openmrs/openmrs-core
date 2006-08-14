@@ -1,6 +1,7 @@
 package org.openmrs.api.db;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.openmrs.Patient;
@@ -39,5 +40,7 @@ public interface ProgramWorkflowDAO {
 	public void updateWorkflow(ProgramWorkflow w);
 
 	public ProgramWorkflowState getState(Integer id);
+
+	public Collection<Integer> patientsInProgram(Program program, Date fromDate, Date toDate);
 	
 }

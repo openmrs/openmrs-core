@@ -95,7 +95,6 @@
 --%>
 
 <openmrs:portlet url="patientHeader" id="patientDashboardHeader" patientId="${patient.patientId}"/>
-<br/>
 
 <div id="patientTabs">
 	<ul>

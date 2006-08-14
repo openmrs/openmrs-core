@@ -2,11 +2,16 @@ package org.openmrs.api.db.hibernate;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Patient;
@@ -189,6 +194,31 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	public ProgramWorkflowState getState(Integer id) {
 		Session session = HibernateUtil.currentSession();
 		return (ProgramWorkflowState) session.get(ProgramWorkflowState.class, id);
+	}
+
+	public Collection<Integer> patientsInProgram(Program program, Date fromDate, Date toDate) {
+		Session session = HibernateUtil.currentSession();
+		String sql = "select patient_id " +
+				"from patient_program " +
+				"where voided = false " +
+				"  and program_id = :programId ";
+		if (toDate != null) {
+			sql += "and (date_enrolled is null or date_enrolled <= :toDate) ";
+		}
+		if (fromDate != null) {
+			sql += "and (date_completed is null or date_completed >= :fromDate) ";
+		}
+		Query q = session.createSQLQuery(sql);
+		q.setInteger("programId", program.getProgramId());
+		if (toDate != null)
+			q.setDate("toDate", toDate);
+		if (fromDate != null)
+			q.setDate("fromDate", fromDate);
+		Set<Integer> ret = new HashSet<Integer>();
+		for (Integer ptId : (List<Integer>) q.list()) {
+			ret.add(ptId);
+		}
+		return ret;
 	}
 	
 }

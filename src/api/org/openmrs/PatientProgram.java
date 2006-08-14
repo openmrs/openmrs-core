@@ -1,7 +1,13 @@
 package org.openmrs;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
+
+import org.openmrs.util.Helper;
 
 public class PatientProgram {
 
@@ -144,6 +150,20 @@ public class PatientProgram {
 	
 	public boolean getActive() {
 		return getActive(null);
+	}
+	
+	public List<PatientState> statesInWorkflow(ProgramWorkflow wf, boolean includeVoided) {
+		List<PatientState> ret = new ArrayList<PatientState>();
+		for (PatientState st : getStates()) {
+			if (st.getState().getProgramWorkflow().equals(wf) && (includeVoided || !st.getVoided()))
+				ret.add(st);
+		}
+		Collections.sort(ret, new Comparator<PatientState>() {
+				public int compare(PatientState left, PatientState right) {
+					return Helper.compareWithNullAsEarliest(left.getStartDate(), right.getStartDate());
+				}
+			});
+		return ret;
 	}
 	
 }

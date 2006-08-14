@@ -325,4 +325,29 @@ public class Helper {
 			d2 = new Date(((Timestamp) d2).getTime());
 		return d1.compareTo(d2);
 	}
+	
+	/**
+	 * Compares two Date/Timestamp objects, treating null as the earliest possible date.
+	 */
+	public static int compareWithNullAsEarliest(Date d1, Date d2) {
+		if (d1 == null)
+			return -1;
+		else if (d2 == null)
+			return 1;
+		else
+			return compare(d1, d2);
+	}
+	
+	/**
+	 * Compares two Date/Timestamp objects, treating null as the earliest possible date.
+	 */
+	public static int compareWithNullAsLatest(Date d1, Date d2) {
+		if (d1 == null)
+			return 1;
+		else if (d2 == null)
+			return -1;
+		else
+			return compare(d1, d2);
+	}
+
 }

@@ -101,6 +101,16 @@
 			});
 	}
 	
+	function handleVoidLastState() {
+		var patientProgramId = patientProgramForWorkflowEdited;
+		var programWorkflowId = currentWorkflowBeingEdited;
+		DWRProgramWorkflowService.voidLastState(patientProgramId, programWorkflowId, '', function() {
+				currentWorkflowBeingEdited = null;
+				patientProgramForWorkflowEdited = null;
+				refreshPage();
+			});
+	}
+	
 	function showEditWorkflowPopup(wfName, patientProgramId, programWorkflowId) {
 		hideLayer('editPatientProgramPopup');
 		currentWorkflowBeingEdited = programWorkflowId;
@@ -114,12 +124,17 @@
 		$('changeStateOnDate').value = '';
 		DWRProgramWorkflowService.getPatientStates(patientProgramId, programWorkflowId, function(states) {
 				DWRUtil.removeAllRows('workflowTable');
+				var count = 0;
+				var goUntil = states.length;
 				DWRUtil.addRows('workflowTable', states, [
 						function(state) { return state.stateName; },
 						function(state) {
+							++count;
 							var str = '';
 							if (!isEmpty(state.startDate)) str += ' <spring:message code="general.fromDate"/> ' + getDateString(state.startDate);
 							if (!isEmpty(state.endDate)) str += ' <spring:message code="general.toDate"/> ' + getDateString(state.endDate);
+							if (count == goUntil)
+								str += ' <a href="javascript:handleVoidLastState()" style="color: red">[x]</a>';
 							return str;
 						}
 					]);
@@ -174,20 +189,6 @@
 	</tr></table>
 </div>
 
-<div id="editWorkflowPopup" style="position: absolute; background-color: #e0e0e0; z-index: 5; border: 2px black solid; display: none">
-	<b><u><span id="workflowPopupTitle"></span></u></b>
-	<table id="workflowTable">
-	</table>
-	Change to
-		<select id="changeToState"><option value=""><spring:message code="general.loading"/></option></select>
-	on
-		<input type="text" id="changeStateOnDate" size="10" onClick="showCalendar(this)" />
-	&nbsp;&nbsp;&nbsp;
-	<input type="button" value="<spring:message code="general.change"/>" onClick="handleChangeWorkflowState()" />
-	<br/>
-	<input type="button" value="<spring:message code="general.cancel"/>" onClick="currentWorkflowBeingEdited = null; hideLayer('editWorkflowPopup')" />
-</div>
-
 <c:choose>
 	<c:when test="${fn:length(model.patientPrograms) == 0}">
 		<spring:message code="Program.notEnrolledInAny"/>
@@ -195,10 +196,25 @@
 	<c:otherwise>
 		<table>
 		<tr>
-			<th><spring:message code="Program.program"/></th>
-			<th><spring:message code="Program.dateEnrolled"/></th>
-			<th><spring:message code="Program.dateCompleted"/></th>
-			<th><spring:message code="Program.states"/></th>
+			<td><spring:message code="Program.program"/></td>
+			<td><spring:message code="Program.dateEnrolled"/></td>
+			<td><spring:message code="Program.dateCompleted"/></td>
+			<td>
+				<spring:message code="Program.states"/>
+				<div id="editWorkflowPopup" style="position: absolute; background-color: #e0e0e0; z-index: 5; border: 2px black solid; display: none">
+					<b><u><span id="workflowPopupTitle"></span></u></b>
+					<table id="workflowTable">
+					</table>
+					Change to
+						<select id="changeToState"><option value=""><spring:message code="general.loading"/></option></select>
+					on
+						<input type="text" id="changeStateOnDate" size="10" onClick="showCalendar(this)" />
+					&nbsp;&nbsp;&nbsp;
+					<input type="button" value="<spring:message code="general.change"/>" onClick="handleChangeWorkflowState()" />
+					<br/>
+					<input type="button" value="<spring:message code="general.close"/>" onClick="currentWorkflowBeingEdited = null; hideLayer('editWorkflowPopup')" />
+				</div>		
+			</td>
 		</tr>
 		<c:forEach var="program" items="${model.patientPrograms}">
 			<c:if test="${!program.voided}">
@@ -221,7 +237,7 @@
 						<c:forEach var="workflow" items="${program.program.workflows}">
 							<small><openmrs_tag:concept conceptId="${workflow.concept.conceptId}"/>:</small>
 							<c:forEach var="state" items="${program.states}">
-								<c:if test="${state.state.programWorkflow.programWorkflowId == workflow.programWorkflowId && state.active}">
+								<c:if test="${!state.voided && state.state.programWorkflow.programWorkflowId == workflow.programWorkflowId && state.active}">
 									<b><openmrs_tag:concept conceptId="${state.state.concept.conceptId}"/></b>
 								</c:if>
 							</c:forEach>

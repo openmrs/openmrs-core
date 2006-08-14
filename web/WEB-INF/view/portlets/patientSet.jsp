@@ -16,8 +16,6 @@
 </c:choose>
 
 <script language="JavaScript">
-	hideLayer('${model.id}');
-
 	var localList = null;
 
 	if (${model.patientSet != null}) {
@@ -200,6 +198,11 @@
 <c:if test="${model.size != 'full'}">
 		</div>
 
+<script type="text/javascript">
+	hideLayer('${model.id}');
+	hideLayer('patientSetBox');
+</script>
+
 		<center>
 			<spring:message code="PatientSet.yours"/>
 			<c:if test="${model.droppable}">
@@ -209,11 +212,20 @@
 			</c:if>
 		</center>
 	</div>
-	<script type="text/javascript">
-		hideLayer('patientSetBox');
-	</script>
 </c:if>
 
 <script type="text/javascript">
-	refreshList();
+	function patientSetInit() {
+		refreshList();
+	}
+
+	var oldonload = window.onload;
+	if (typeof window.onload != 'function') {
+		window.onload = patientSetInit;
+	} else {
+		window.onload = function() {
+			oldonload();
+			patientSetInit();
+		}
+	}
 </script>

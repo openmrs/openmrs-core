@@ -14,6 +14,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
 import org.openmrs.Program;
+import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
@@ -49,16 +50,24 @@ public class PatientProgramFormController implements Controller {
 		String patientIdStr = request.getParameter("patientId");
 		String programIdStr = request.getParameter("programId");
 		String enrollmentDateStr = request.getParameter("dateEnrolled");
+		String completionDateStr = request.getParameter("dateCompleted");
 		
 		log.debug("enroll " + patientIdStr + " in " + programIdStr + " on " + enrollmentDateStr);
+		
+		ProgramWorkflowService pws = context.getProgramWorkflowService();
 		
 		// make sure we parse dates the same was as if we were using the initBinder + property editor method 
 		CustomDateEditor cde = new CustomDateEditor(new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(context.getLocale().toString().toLowerCase()), context.getLocale()), true, 10);
 		cde.setAsText(enrollmentDateStr);
 		Date enrollmentDate = (Date) cde.getValue();
+		cde.setAsText(completionDateStr);
+		Date completionDate = (Date) cde.getValue();
 		Patient patient = context.getPatientService().getPatient(Integer.valueOf(patientIdStr));
-		Program program = context.getProgramWorkflowService().getProgram(Integer.valueOf(programIdStr));
-		context.getProgramWorkflowService().enrollPatientInProgram(patient, program, enrollmentDate);
+		Program program = pws.getProgram(Integer.valueOf(programIdStr));
+		if (pws.isInProgram(patient, program, enrollmentDate, completionDate))
+			request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Program.error.already");
+		else
+			context.getProgramWorkflowService().enrollPatientInProgram(patient, program, enrollmentDate, completionDate);
 
 		return new ModelAndView(new RedirectView(returnPage));
 	}

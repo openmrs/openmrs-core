@@ -42,38 +42,15 @@ public class DWRProgramWorkflowService {
 			.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		if (context != null) {
 			Vector<PatientStateItem> ret = new Vector<PatientStateItem>();
-			PatientProgram p = context.getProgramWorkflowService().getPatientProgram(patientProgramId);
-			List<PatientState> states = new ArrayList<PatientState>(p.getStates());
-			if (programWorkflowId != null) {
-				for (Iterator<PatientState> i = states.iterator(); i.hasNext(); ) {
-					PatientState st = i.next();
-					if (st.getVoided() || !programWorkflowId.equals(st.getState().getProgramWorkflow().getProgramWorkflowId()))
-						i.remove();
-				}
-			}
-			Collections.sort(states, new Comparator<PatientState>() {
-					public int compare(PatientState left, PatientState right) {
-						int temp = left.getState().getProgramWorkflow().getProgramWorkflowId().compareTo(right.getState().getProgramWorkflow().getProgramWorkflowId());
-						if (temp == 0) {
-							Date leftDate = left.getStartDate();
-							Date rightDate = right.getStartDate();
-							if (leftDate == null)
-								temp = -1;
-							else if (rightDate == null)
-								temp = 1;
-							else
-								temp = leftDate.compareTo(rightDate);
-						}
-						return temp;
-					}
-				});
-			for (PatientState s : states) {
-				ret.add(new PatientStateItem(context, s));
-			}
+			ProgramWorkflowService s = context.getProgramWorkflowService();
+			PatientProgram p = s.getPatientProgram(patientProgramId);
+			ProgramWorkflow wf = s.getWorkflow(programWorkflowId);
+			ret.addAll(p.statesInWorkflow(wf, false));
 			return ret;
 		}
 		return null;
 	}
+
 	
 	DateFormat ymdDf = new SimpleDateFormat("yyyy-MM-dd");
 	public void updatePatientProgram(Integer patientProgramId, String enrollmentDateYmd, String completionDateYmd) throws ParseException {
@@ -140,5 +117,15 @@ public class DWRProgramWorkflowService {
 			s.changeToState(pp, wf, st, onDate);
 		}
 	}
-			
+	
+	public void voidLastState(Integer patientProgramId, Integer programWorkflowId, String voidReason) {
+		Context context = (Context) WebContextFactory.get().getSession()
+			.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		if (context != null) {
+			ProgramWorkflowService s = context.getProgramWorkflowService();
+			PatientProgram pp = s.getPatientProgram(patientProgramId);
+			ProgramWorkflow wf = s.getWorkflow(programWorkflowId);
+			s.voidLastState(pp, wf, voidReason);
+		}
+	}
 }
