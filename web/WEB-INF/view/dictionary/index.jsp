@@ -32,7 +32,7 @@
 <a href="<%= request.getContextPath() %>/downloadDictionary.csv"><spring:message code="dictionary.download.link"/></a> <spring:message code="dictionary.download.description"/><br />
 <br />
 
-<div id="findPatient">
+<div id="findConcept">
 	<b class="boxHeader"><spring:message code="Concept.find"/></b>
 	<div class="box">
 		<div dojoType="ConceptSearch" widgetId="cSearch" searchLabel='<spring:message code="dictionary.searchBox"/>' searchPhrase='<request:parameter name="phrase"/>' showVerboseListing="true" showIncludeRetired="true"></div>
