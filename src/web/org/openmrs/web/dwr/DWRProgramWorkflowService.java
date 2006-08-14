@@ -45,7 +45,8 @@ public class DWRProgramWorkflowService {
 			ProgramWorkflowService s = context.getProgramWorkflowService();
 			PatientProgram p = s.getPatientProgram(patientProgramId);
 			ProgramWorkflow wf = s.getWorkflow(programWorkflowId);
-			ret.addAll(p.statesInWorkflow(wf, false));
+			for (PatientState st : p.statesInWorkflow(wf, false))
+				ret.add(new PatientStateItem(context, st));
 			return ret;
 		}
 		return null;
