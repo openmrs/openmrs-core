@@ -28,7 +28,7 @@
 	
 </script>
 
-<h3><spring:message code="formentry.title"/></h3>
+<h3><spring:message code="Patient.find"/></h3>
 
 <div id="findPatient">
 	<b class="boxHeader"><spring:message code="formentry.step1"/></b>
