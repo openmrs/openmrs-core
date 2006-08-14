@@ -169,7 +169,7 @@
 		return function(concepts) {
 			for (var i=0; i<concepts.length; i++) {
 				var data = getData(concepts[i]);
-				
+				data.sortWeight = i * 100.0;
 				var node = addNode(newParent, data);
 			}
 		}
@@ -452,6 +452,7 @@
 				fieldLabel += data["fieldName"];
 		
 		}
+		fieldLabel += "[" + data.sortWeight + "]";
 		return fieldLabel;
 	}
 	
@@ -562,7 +563,6 @@
 			// if the node just saved was a set, save the children as well
 			if (target.data.isSet) {
 				for (var i=0; i<target.children.length;i++) {
-					updateSortWeight(target.children[i])
 					save(target.children[i], /* formNotUsed */ true);
 				}
 			}
@@ -583,15 +583,15 @@
 				dojo.debug("1 nextweight: " + nextWeight + " prevweight: " + prevWeight);
 				sortWeight = (nextWeight + prevWeight) / 2.0;
 			}
-			else if (prev && prev.data) {
-				// We're at the end.  Make the next weight much larger than the current last one
-				var prevWeight = prev.data.sortWeight || 0.0;
-				sortWeight = prevWeight + 50.0;
-			}
 			else if (next && next.data) {
 				// We're at the beginning.  Make the first weight low
-				nextWeight = next.data.sortWeight || 1000.0;
-				nextWeight = nextWeight - 50.0;
+				nextWeight = next.data.sortWeight || 100.0;
+				sortWeight = nextWeight / 2.0;
+			}
+			else if (prev && prev.data) {
+				// We're at the end.  Make the next weight larger than the current last one
+				var prevWeight = prev.data.sortWeight || 1000.0;
+				sortWeight = prevWeight + 50.0;
 			}
 			
 			if (!sortWeight)
@@ -881,6 +881,7 @@
 			data["fieldType"] = obj.fieldTypeId;
 			data["conceptId"] = obj.concept ? obj.concept.conceptId : null;
 			data["conceptName"] = obj.concept ? obj.concept.name : null;
+			data["isSet"] = obj.concept ? obj.concept.isSet : false;
 			data["tableName"] = obj.table;
 			data["attributeName"] = obj.attribute;
 			data["defaultValue"] = obj.defaultValue;
