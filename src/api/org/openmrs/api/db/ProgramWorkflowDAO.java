@@ -7,6 +7,7 @@ import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
+import org.openmrs.ProgramWorkflowState;
 
 /**
  * Program- and Workflow-related database functions
@@ -36,5 +37,7 @@ public interface ProgramWorkflowDAO {
 	public void createWorkflow(ProgramWorkflow w);
 	
 	public void updateWorkflow(ProgramWorkflow w);
+
+	public ProgramWorkflowState getState(Integer id);
 	
 }

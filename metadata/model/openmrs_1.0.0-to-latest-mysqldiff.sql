@@ -483,3 +483,17 @@ CREATE TABLE `program_workflow_state` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 UPDATE `global_property` SET property_value='1.0.33' WHERE property = 'database_version';
+
+#-----------------------------------
+# OpenMRS Datamodel version 1.0.34
+# Darius Jazayeri     Aug 14 2006 12:09 AM
+# Added voided columns to patient_program
+#-----------------------------------
+ALTER TABLE `patient_program` ADD COLUMN `voided` tinyint(1) NOT NULL default '0';
+ALTER TABLE `patient_program` ADD COLUMN `voided_by` int(11) default NULL;
+ALTER TABLE `patient_program` ADD COLUMN `date_voided` datetime default NULL;
+ALTER TABLE `patient_program` ADD COLUMN `void_reason` varchar(255) default NULL;
+ALTER TABLE `patient_program` ADD INDEX `user_who_voided_patient_program` (`voided_by`);
+ALTER TABLE `patient_program` ADD CONSTRAINT `user_who_voided_patient_program` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`);
+
+UPDATE `global_property` SET property_value='1.0.34' WHERE property = 'database_version';

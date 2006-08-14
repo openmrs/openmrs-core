@@ -1,5 +1,6 @@
 package org.openmrs.api;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -9,6 +10,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
+import org.openmrs.PatientState;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
@@ -18,6 +20,8 @@ import org.openmrs.api.db.ProgramWorkflowDAO;
 import org.openmrs.util.OpenmrsConstants;
 
 public class ProgramWorkflowService {
+	
+	// TODO: Check permissions on all methods in this class
 
 	private Log log = LogFactory.getLog(this.getClass());
 
@@ -161,17 +165,11 @@ public class ProgramWorkflowService {
 	}
 		
 	// --- ProgramWorkflowState ---
-	/*
-	public void createProgramWorkflowState(ProgramWorkflowState s) {
+		
+	public ProgramWorkflowState getState(Integer id) {
+		return getProgramWorkflowDAO().getState(id);
 	}
 	
-	public ProgramWorkflowState getProgramWorkflowState(Integer id) {
-		return null;
-	}
-	
-	public void voidProgramWorkflowState(ProgramWorkflowState s, String reason) {
-	}
-	*/
 	// --- ProgramWorkflowTransition ---
 	/*
 	public void createProgramWorkflowTransition(ProgramWorkflowTransition t) {
@@ -204,8 +202,15 @@ public class ProgramWorkflowService {
 			throw new APIAuthenticationException("Privilege required: "
 					+ OpenmrsConstants.PRIV_MANAGE_PATIENT_PROGRAMS);
 		
+		Date now = new Date();
 		p.setChangedBy(context.getAuthenticatedUser());
-		p.setDateChanged(new Date());
+		p.setDateChanged(now);
+		for (PatientState state : p.getStates()) {
+			if (state.getDateCreated() == null)
+				state.setDateCreated(now);
+			if (state.getCreator() == null)
+				state.setCreator(context.getAuthenticatedUser());
+		}
 		
 		getProgramWorkflowDAO().updatePatientProgram(p);
 	}
@@ -234,6 +239,13 @@ public class ProgramWorkflowService {
 	}
 	
 	public void voidPatientProgram(PatientProgram p, String reason) {
+		if (!p.getVoided()) {
+			p.setVoided(true);
+			p.setDateVoided(new Date());
+			p.setVoidedBy(context.getAuthenticatedUser());
+			p.setVoidReason(reason);
+			updatePatientProgram(p);
+		}
 	}
 	
 	// --- PatientStatus ---
@@ -283,5 +295,56 @@ public class ProgramWorkflowService {
 		}
 		return ret;
 	}
+	
+	// TODO: move this into Patient (probably make this a lazily-loaded hibernate mapping).
+	// This is just a quick implementation without changing any hibernate mappings
+	public PatientState getLatestState(PatientProgram patientProgram, ProgramWorkflow workflow) {
+		PatientState ret = null;
+		// treat null as the earliest date
+		for (PatientState state : patientProgram.getStates()) {
+			if (state.getState().getProgramWorkflow().equals(workflow))
+				if (ret == null || ret.getStartDate() == null || (state.getStartDate() != null && state.getStartDate().compareTo(ret.getStartDate()) > 0))
+					ret = state;
+		}
+		return ret;
+	}
 
+	public List<ProgramWorkflowState> getPossibleNextStates(PatientProgram patientProgram, ProgramWorkflow workflow) {
+		List<ProgramWorkflowState> ret = new ArrayList<ProgramWorkflowState>();
+		PatientState currentState = getLatestState(patientProgram, workflow);
+		for (ProgramWorkflowState st : workflow.getStates()) {
+			if (isLegalTransition(currentState == null ? null : currentState.getState(), st))
+				ret.add(st);
+		}
+		return ret;
+	}
+	
+	// TODO: once we have a table of legal state transitions, then use that instead of this simple algorithm
+	public boolean isLegalTransition(ProgramWorkflowState fromState, ProgramWorkflowState toState) {
+		if (fromState == null)
+			return toState.getInitial();
+		else if (fromState.equals(toState))
+			return false;
+		else
+			return true;
+	}
+
+	public void changeToState(PatientProgram patientProgram, ProgramWorkflow wf, ProgramWorkflowState st, Date onDate) {
+		PatientState lastState = getLatestState(patientProgram, wf);
+		if (lastState != null && onDate == null) {
+			throw new IllegalArgumentException("You can't change from a non-null state without giving a change date");
+		}
+		if (lastState != null && lastState.getEndDate() != null) {
+			throw new IllegalArgumentException("You can't change out of a state that has an end date already");
+		}
+		if (lastState != null)
+			lastState.setEndDate(onDate);
+		PatientState newState = new PatientState();
+		newState.setPatientProgram(patientProgram);
+		newState.setState(st);
+		newState.setStartDate(onDate);
+		patientProgram.getStates().add(newState);
+		updatePatientProgram(patientProgram);
+	}
+	
 }

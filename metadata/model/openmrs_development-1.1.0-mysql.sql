@@ -1176,15 +1176,21 @@ CREATE TABLE `patient_program` (
   `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
   `changed_by` int(11) default NULL,
   `date_changed` datetime default NULL,
+  `voided` tinyint(1) NOT NULL default '0',
+  `voided_by` int(11) default NULL,
+  `date_voided` datetime default NULL,
+  `void_reason` varchar(255) default NULL,
   PRIMARY KEY (`patient_program_id`),
   KEY `patient_in_program` (`patient_id`),
   KEY `program_for_patient` (`program_id`),
   KEY `patient_program_creator` (`creator`),
   KEY `user_who_changed` (`changed_by`),
+  KEY `user_who_voided_patient_program` (`voided_by`),
   CONSTRAINT `patient_in_program` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`),
   CONSTRAINT `program_for_patient` FOREIGN KEY (`program_id`) REFERENCES `program` (`program_id`),
   CONSTRAINT `patient_program_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
-  CONSTRAINT `user_who_changed` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`)
+  CONSTRAINT `user_who_changed` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`),
+  CONSTRAINT `user_who_voided_patient_program` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 #--------------------------------------------------------
 # Table structure for program_workflow
@@ -1233,4 +1239,33 @@ CREATE TABLE `program_workflow_state` (
   CONSTRAINT `state_concept` FOREIGN KEY (`concept_id`) REFERENCES `concept` (`concept_id`),
   CONSTRAINT `state_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
   CONSTRAINT `state_voided_by` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+#--------------------------------------------------------
+# Table structure for patient_state
+#--------------------------------------------------------
+CREATE TABLE `patient_state` (
+  `patient_state_id` int(11) NOT NULL auto_increment,
+  `patient_program_id` int(11) NOT NULL default '0',
+  `state` int(11) NOT NULL default '0',
+  `start_date` date default NULL,
+  `end_date` date default NULL,
+  `creator` int(11) NOT NULL default '0',
+  `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
+  `changed_by` int(11) default NULL,
+  `date_changed` datetime default NULL,
+  `voided` tinyint(1) NOT NULL default '0',
+  `voided_by` int(11) default NULL,
+  `date_voided` datetime default NULL,
+  `void_reason` varchar(255) default NULL,
+  PRIMARY KEY  (`patient_state_id`),
+  KEY `state_for_patient` (`state`),
+  KEY `patient_program_for_state` (`patient_program_id`),
+  KEY `patient_state_creator` (`creator`),
+  KEY `patient_state_changer` (`changed_by`),
+  KEY `patient_state_voider` (`voided_by`),
+  CONSTRAINT `state_for_patient` FOREIGN KEY (`state`) REFERENCES `program_workflow_state` (`program_workflow_state_id`),
+  CONSTRAINT `patient_program_for_state` FOREIGN KEY (`patient_program_id`) REFERENCES `patient_program` (`patient_program_id`),
+  CONSTRAINT `patient_state_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
+  CONSTRAINT `patient_state_changer` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`),
+  CONSTRAINT `patient_state_voider` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

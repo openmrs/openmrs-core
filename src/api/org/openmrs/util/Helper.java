@@ -6,7 +6,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -297,5 +299,30 @@ public class Helper {
 			}
 		}
 		return ret;
+	}
+	
+	// TODO: rewrite this as a generics method so that both args must be the same type
+	public static boolean nullSafeEquals(Object d1, Object d2) {
+		if (d1 == null)
+			return d2 == null;
+		else if (d2 == null)
+			return false;
+		else
+			return d1.equals(d2);
+	}
+
+	/**
+	 * Compares two java.util.Date objects, but handles java.sql.Timestamp (which is not directly comparable to a date)
+	 * by dropping its nanosecond value.
+	 */
+	public static int compare(Date d1, Date d2) {
+		if (d1 instanceof Timestamp && d2 instanceof Timestamp) {
+			return d1.compareTo(d2);
+		}
+		if (d1 instanceof Timestamp)
+			d1 = new Date(((Timestamp) d1).getTime());
+		if (d2 instanceof Timestamp)
+			d2 = new Date(((Timestamp) d2).getTime());
+		return d1.compareTo(d2);
 	}
 }

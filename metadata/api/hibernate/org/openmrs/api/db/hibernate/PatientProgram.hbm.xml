@@ -5,16 +5,9 @@
     
 <hibernate-mapping>
 
-<class 
-    name="org.openmrs.PatientProgram" 
-    table="patient_program"
->
+<class name="org.openmrs.PatientProgram" table="patient_program">
 
-    <id
-        name="patientProgramId"
-        type="java.lang.Integer"
-        column="patient_program_id"
-    >
+    <id name="patientProgramId" type="java.lang.Integer" column="patient_program_id">
         <generator class="native" />
     </id>
 
@@ -41,6 +34,14 @@
         not-null="true"
         length="19"
     />
+	
+	<property name="voided" type="java.lang.Boolean" column="voided" length="1" not-null="true" />
+
+	<property name="dateVoided" type="java.util.Date" column="date_voided" length="19" />
+
+	<property name="voidReason" type="java.lang.String" column="void_reason" length="255" />
+
+	<many-to-one name="voidedBy" class="org.openmrs.User" column="voided_by" />
 
     <!-- Associations -->
   
@@ -71,5 +72,11 @@
         <column name="creator" />
     </many-to-one>
 
+	<!-- bi-directional one-to-many association to PatientProgram -->
+	<set name="states" inverse="true" lazy="false" cascade="all-delete-orphan">
+		<key column="patient_program_id" not-null="true"/>
+		<one-to-many class="org.openmrs.PatientState" />
+	</set>
+	
 </class>
 </hibernate-mapping>

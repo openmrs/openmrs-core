@@ -13,6 +13,7 @@ import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
+import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.ProgramWorkflowDAO;
@@ -183,6 +184,11 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 			log.error("Failed to update ProgramWorkflow", e);
 			HibernateUtil.rollbackTransaction();
 		}		
+	}
+
+	public ProgramWorkflowState getState(Integer id) {
+		Session session = HibernateUtil.currentSession();
+		return (ProgramWorkflowState) session.get(ProgramWorkflowState.class, id);
 	}
 	
 }

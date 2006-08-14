@@ -2,8 +2,13 @@ package org.openmrs;
 
 import java.util.Date;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 public class ProgramWorkflowState {
 
+	private Log log = LogFactory.getLog(this.getClass());
+	
 	private Integer programWorkflowStateId;
 	private ProgramWorkflow programWorkflow;
 	private Concept concept;
@@ -109,4 +114,13 @@ public class ProgramWorkflowState {
 	public String toString() {
 		return("State " + getConcept().getName(null, false) + " initial=" + getInitial() + " terminal=" + getTerminal());
 	}
+	
+	public boolean equals(Object o) {
+		if (o instanceof ProgramWorkflowState) {
+			ProgramWorkflowState other = (ProgramWorkflowState) o;
+			return getProgramWorkflowStateId() != null && other.getProgramWorkflowStateId() != null && getProgramWorkflowStateId().equals(other.getProgramWorkflowStateId());
+		}
+		return false;
+	}
+	
 }
