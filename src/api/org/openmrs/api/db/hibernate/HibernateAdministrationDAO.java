@@ -509,6 +509,27 @@ public class HibernateAdministrationDAO implements
 	}
 	
 	/**
+	 * @see org.openmrs.api.db.AdministrationService#deleteOrder(org.openmrs.Order)
+	 */
+	public void voidOrder(Order order, String voidReason) throws DAOException {
+		order.setVoided(new Boolean(true));
+		order.setVoidReason(voidReason);
+		order.setVoidedBy(context.getAuthenticatedUser());
+		order.setDateVoided(new Date());
+		updateOrder(order);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.AdministrationService#deleteOrder(org.openmrs.Order)
+	 */
+	public void discontinueOrder(Order order, String discontinueReason, Date discontinueDate) throws DAOException {
+		order.setDiscontinued(new Boolean(true));
+		order.setDiscontinuedReason(discontinueReason);
+		order.setDiscontinuedDate(discontinueDate);
+		order.setDiscontinuedBy(context.getAuthenticatedUser());
+		updateOrder(order);
+	}
+	/**
 	 * @see org.openmrs.api.db.AdministrationService#createPatientIdentifierType(org.openmrs.PatientIdentifierType)
 	 */
 	public void createPatientIdentifierType(PatientIdentifierType patientIdentifierType) throws DAOException {
@@ -1393,7 +1414,6 @@ public class HibernateAdministrationDAO implements
 		
 		try {
 			HibernateUtil.beginTransaction();
-			//System.out.println("\n\n\nGOING TO DELETE NOW: " + wrappedReportObject.getReportObjectId() + "\n\n\n");
 			session.delete(wrappedReportObject);
 			HibernateUtil.commitTransaction();
 		}

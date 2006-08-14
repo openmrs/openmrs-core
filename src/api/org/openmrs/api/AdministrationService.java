@@ -400,9 +400,15 @@ public class AdministrationService {
 				Location unknownLoc = new Location(new Integer(Location.LOCATION_UNKNOWN));
 				e.setLocation(unknownLoc);
 				e.setPatient(patient);
-				e.setProvider(order.getOrderer());
+				// TODO: this should one day not be required, and thus not require this hack
+				if ( order.getOrderer() == null ) {
+					User unknownUser = context.getUserService().getUserByUsername("Unknown");
+					e.setProvider(unknownUser);
+				} else {
+					e.setProvider(order.getOrderer());
+				}
 				e.setEncounterDatetime(order.getStartDate());
-				e.setCreator(order.getCreator());
+				e.setCreator(context.getAuthenticatedUser());
 				e.setDateCreated(order.getDateCreated());
 				e.setVoided(new Boolean(false));
 				context.getEncounterService().updateEncounter(e);
@@ -423,6 +429,32 @@ public class AdministrationService {
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ORDERS);
 
 		getAdminDAO().deleteOrder(order);
+	}
+
+	/**
+	 * Void Order
+	 * @param voidReason 
+	 * @param Order to void
+	 * @throws APIException
+	 */
+	public void voidOrder(Order order, String voidReason) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ORDERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ORDERS);
+
+		getAdminDAO().voidOrder(order, voidReason);
+	}
+	
+	/**
+	 * Void Order
+	 * @param voidReason 
+	 * @param Order to void
+	 * @throws APIException
+	 */
+	public void discontinueOrder(Order order, String discontinueReason, Date discontinueDate) throws APIException {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ORDERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ORDERS);
+
+		getAdminDAO().discontinueOrder(order, discontinueReason, discontinueDate);
 	}
 
 	/**

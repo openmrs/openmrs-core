@@ -1,6 +1,7 @@
 package org.openmrs.api.db;
 
 import java.util.Collection;
+import java.util.Date;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
@@ -220,6 +221,10 @@ public interface AdministrationDAO {
 	 * @throws DAOException
 	 */
 	public void deleteOrder(Order order) throws DAOException;
+
+	public void voidOrder(Order order, String voidReason) throws DAOException;
+
+	public void discontinueOrder(Order order, String discontinueReason, Date discontinueDate) throws DAOException;
 
 	/**
 	 * Create a new FieldType
