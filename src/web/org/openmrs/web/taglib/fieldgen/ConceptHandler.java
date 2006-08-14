@@ -2,23 +2,22 @@ package org.openmrs.web.taglib.fieldgen;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
+import org.openmrs.User;
 
 public class ConceptHandler extends AbstractFieldGenHandler implements FieldGenHandler {
 
 	private String defaultUrl = "concept.field";
 	
 	public void run() {
-		setUrl(defaultUrl);
-
 		htmlInclude("/scripts/dojoConfig.js");
-		htmlInclude("/scripts/dojoConfig.js");
+		htmlInclude("/scripts/dojo/dojo.js");
+		htmlInclude("/scripts/dojoUserSearchIncludes.js");
 		
-		if ( fieldGenTag != null ) {
-			Concept c = (Concept)this.fieldGenTag.getVal();
-			if ( c != null ) {
-				ConceptName cName = c.getName(this.fieldGenTag.getPageContext().getRequest().getLocale());
-				setParameter("startName", cName);
-			} else setParameter("startName", "");
+		setUrl(defaultUrl);
+		checkEmptyVal((User)null);
+		if (fieldGenTag != null) {
+			Object initialValue = this.fieldGenTag.getVal();
+			setParameter("initialValue", initialValue == null ? "" : initialValue.toString());
 		}
 	}
 }

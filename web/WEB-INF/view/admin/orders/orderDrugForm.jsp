@@ -28,7 +28,7 @@
 		<td valign="top"><spring:message code="Order.concept"/></td>
 		<td valign="top">
 			<spring:bind path="order.concept">
-				<openmrs:fieldGen type="org.openmrs.Concept" formFieldName="${status.expression}" val="${status.editor.value}" />
+				<openmrs:fieldGen type="org.openmrs.Concept" formFieldName="${status.expression}" val="${status.value}" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
@@ -73,7 +73,7 @@
 		<td valign="top"><spring:message code="Order.orderer"/></td>
 		<td valign="top">
 			<spring:bind path="order.orderer">
-				<openmrs:fieldGen type="org.openmrs.User" formFieldName="${status.expression}" val="${status.editor.value}" parameters="roles=Clinician" />
+				<openmrs:fieldGen type="org.openmrs.User" formFieldName="${status.expression}" val="${status.value}" parameters="roles=Clinician" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
@@ -91,7 +91,7 @@
 		<td valign="top"><spring:message code="general.discontinuedBy"/></td>
 		<td valign="top">
 			<spring:bind path="order.discontinuedBy">
-				<openmrs:fieldGen type="org.openmrs.User" formFieldName="${status.expression}" val="${status.editor.value}" parameters="roles=Clinician;System Developer;Data Assistant;Data Manager;Informatics Manager" />
+				<openmrs:fieldGen type="org.openmrs.User" formFieldName="${status.expression}" val="${status.value}" parameters="roles=Clinician;System Developer;Data Assistant;Data Manager;Informatics Manager" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
@@ -188,7 +188,7 @@
 			<td valign="top"><spring:message code="general.voidedBy"/></td>
 			<td valign="top">
 				<spring:bind path="order.voidedBy">
-				<openmrs:fieldGen type="org.openmrs.User" formFieldName="${status.expression}" val="${status.editor.value}" parameters="roles=Clinician;System Developer;Data Assistant;Data Manager;Informatics Manager" />
+				<openmrs:fieldGen type="org.openmrs.User" formFieldName="${status.expression}" val="${status.value}" parameters="roles=Clinician;System Developer;Data Assistant;Data Manager;Informatics Manager" />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>

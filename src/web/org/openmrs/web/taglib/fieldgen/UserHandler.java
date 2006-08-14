@@ -14,12 +14,9 @@ public class UserHandler extends AbstractFieldGenHandler implements FieldGenHand
 		
 		setUrl(defaultUrl);
 		checkEmptyVal((User)null);
-		String initialValue = "";
-		User u = (User)this.fieldGenTag.getVal();
-		if ( u != null ) {
-			Integer userId = u.getUserId();
-			initialValue = userId.toString();
+		if (fieldGenTag != null) {
+			Object initialValue = this.fieldGenTag.getVal();
+			setParameter("initialValue", initialValue == null ? "" : initialValue.toString());
 		}
-		setParameter("initialValue", initialValue);
 	}
 }
