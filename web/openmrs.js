@@ -83,3 +83,15 @@ function hideLayer(layerId) {
 function refreshPage() {
 	window.location.reload();
 }
+
+function addEvent(obj, eventType, fn) {
+	if (obj.addEventListener) {
+		obj.addEventListener(eventType, fn, true);
+		return true;
+	} else if (obj.attachEvent) {
+		var r = obj.attachEvent("on"+eventType, fn);
+		return r;
+	} else {
+		return false;
+	}
+}

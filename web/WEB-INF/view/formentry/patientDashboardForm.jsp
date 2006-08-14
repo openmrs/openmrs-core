@@ -6,25 +6,29 @@
 
 <script type="text/javascript">
 	var timeOut = null;
+	addEvent(window, 'load', initTabs);
 
-	function startDownloading() {
-		timeOut = setTimeout("goBack()", 30000);
+	function initTabs() {
+		var c = getTabCookie();
+		if (c == null) {
+			c = 'overview';
+		}
+		changeTab(c);
 	}
 	
-	function goBack() {
-		document.location='index.htm';
+	function setTabCookie(tabType) {
+		document.cookie = "dashboardTab="+escape(tabType);
 	}
 	
-	function switchPatient() {
-		document.location='index.htm?phrase=${param.phrase}&autoJump=false';
+	function getTabCookie() {
+		var cookies = document.cookie.match('dashboardTab=(.*?)(;|$)');
+		if (cookies) {
+			return unescape(cookies[1]);
+		}
+		return null;
 	}
 	
-	function cancelTimeout() {
-		if (timeOut != null)
-			clearTimeout(timeOut);
-	}
-	
-	function changeTab(selectedElement, tabType) {
+	function changeTab(tabType) {
 		if (!document.getElementById || !document.createTextNode) {return;}
 		var tabs = document.getElementById('patientTabs').getElementsByTagName('a');
 		for (var i=0; i<tabs.length; i++) {
@@ -32,7 +36,7 @@
 				tabs[i].className = '';
 			}
 		}
-		selectedElement.className = 'current';
+		addClass(document.getElementById(tabType+'Tab'), 'current');
 		
 		if (tabType == 'overview') {
 			document.getElementById('patientOverview').style.display = '';
@@ -82,7 +86,7 @@
 			document.getElementById('patientDemographics').style.display = 'none';
 			document.getElementById('patientGraphs').style.display = 'none';
 		}
-
+		setTabCookie(tabType);
     }
 </script>
 
@@ -98,12 +102,12 @@
 
 <div id="patientTabs">
 	<ul>
-		<li><a href="#" onclick="changeTab(this, 'overview');" class="current">Overview</a></li>
-		<li><a href="#" onclick="changeTab(this, 'regimen');">Regimens</a></li>
-		<li><a href="#" onclick="changeTab(this, 'forms');">Forms</a></li>
-		<li><a href="#" onclick="changeTab(this, 'encounters');">Encounters</a></li>
-		<li><a href="#" onclick="changeTab(this, 'demographics');">Demographics</a></li>
-		<li><a href="#" onclick="changeTab(this, 'graphs');">Graphs</a></li>
+		<li><a id="overviewTab" href="#" onclick="changeTab('overview');">Overview</a></li>
+		<li><a id="regimenTab" href="#" onclick="changeTab('regimen');">Regimens</a></li>
+		<li><a id="formsTab" href="#" onclick="changeTab('forms');">Forms</a></li>
+		<li><a id="encountersTab" href="#" onclick="changeTab('encounters');">Encounters</a></li>
+		<li><a id="demographicsTab" href="#" onclick="changeTab('demographics');">Demographics</a></li>
+		<li><a id="graphsTab" href="#" onclick="changeTab('graphs');">Graphs</a></li>
 	</ul>
 </div>
 
