@@ -84,7 +84,7 @@ public class FieldGenTag extends TagSupport {
 					startVal = (startVal == null) ? "" : startVal;
 					String fieldLength = this.parameterMap != null ? (String)this.parameterMap.get("fieldLength") : null;
 					fieldLength = (fieldLength == null) ? DEFAULT_INPUT_TEXT_LENGTH : fieldLength;
-					output = "<input type=\"text\" name=\"" + formFieldName + "\" value=\"" + startVal + "\" size=\"" + fieldLength + "\" />";
+					output = "<input type=\"text\" name=\"" + formFieldName + "\" id=\"" + formFieldName + "\" value=\"" + startVal + "\" size=\"" + fieldLength + "\" />";
 				} else if ( type.equals("char") || type.indexOf("java.lang.Character") >= 0 ) {
 					String startVal = "";
 					if ( val != null ) {
@@ -94,7 +94,7 @@ public class FieldGenTag extends TagSupport {
 					if ( startVal.length() > 1 ) startVal = startVal.substring(0, 1);
 					String fieldLength = this.parameterMap != null ? (String)this.parameterMap.get("fieldLength") : null;
 					fieldLength = (fieldLength == null) ? DEFAULT_INPUT_CHAR_LENGTH : fieldLength;
-					output = "<input type=\"text\" name=\"" + formFieldName + "\" value=\"" + startVal + "\" size=\"" + fieldLength + "\" maxlength=\"1\" />";
+					output = "<input type=\"text\" name=\"" + formFieldName + "\" id=\"" + formFieldName + "\" value=\"" + startVal + "\" size=\"" + fieldLength + "\" maxlength=\"1\" />";
 				} else if ( type.equals("int") || type.indexOf("java.lang.Integer") >= 0
 						|| type.equals("long") || type.indexOf("java.lang.Long") >= 0 ) {
 					String startVal = "";
@@ -104,7 +104,7 @@ public class FieldGenTag extends TagSupport {
 					startVal = (startVal == null) ? "" : startVal;
 					String fieldLength = this.parameterMap != null ? (String)this.parameterMap.get("fieldLength") : null;
 					fieldLength = (fieldLength == null) ? DEFAULT_INPUT_INT_LENGTH : fieldLength;
-					output = "<input type=\"text\" name=\"" + formFieldName + "\" value=\"" + startVal + "\" size=\"" + fieldLength + "\" />";
+					output = "<input type=\"text\" name=\"" + formFieldName + "\" id=\"" + formFieldName + "\" value=\"" + startVal + "\" size=\"" + fieldLength + "\" />";
 				} else if ( type.equals("float") || type.indexOf("java.lang.Float") >= 0
 						|| type.equals("double") || type.indexOf("java.lang.Double") >= 0
 						|| type.indexOf("java.lang.Number") >= 0 ) {
@@ -115,7 +115,7 @@ public class FieldGenTag extends TagSupport {
 					startVal = (startVal == null) ? "" : startVal;
 					String fieldLength = this.parameterMap != null ? (String)this.parameterMap.get("fieldLength") : null;
 					fieldLength = (fieldLength == null) ? DEFAULT_INPUT_FLOAT_LENGTH : fieldLength;
-					output = "<input type=\"text\" name=\"" + formFieldName + "\" value=\"" + startVal + "\" size=\"" + fieldLength + "\" />";				
+					output = "<input type=\"text\" name=\"" + formFieldName + "\" id=\"" + formFieldName + "\" value=\"" + startVal + "\" size=\"" + fieldLength + "\" />";				
 				} else if ( type.equals("boolean") || type.indexOf("java.lang.Boolean") >= 0 ) {
 					String startVal = "";
 					if ( val != null ) {
@@ -135,7 +135,7 @@ public class FieldGenTag extends TagSupport {
 					if ( forceInputType == null ) forceInputType = "";
 					
 					if ( "checkbox".equals(forceInputType) ) {
-						output = "<input type=\"checkbox\" name=\"" + formFieldName + "\" value=\"t\"" + ("t".equals(startVal) ? " checked" : "") + "/> ";				
+						output = "<input type=\"checkbox\" name=\"" + formFieldName + "\" id=\"" + formFieldName + "\" value=\"t\"" + ("t".equals(startVal) ? " checked" : "") + "/> ";				
 					} else {
 						if ( isNullable == null ) isNullable = "";
 						if ( trueLabel == null ) trueLabel = "true";
@@ -143,19 +143,19 @@ public class FieldGenTag extends TagSupport {
 						if ( unknownLabel == null ) unknownLabel = "unknown";
 						
 						if ( "false".equalsIgnoreCase(isNullable) || "f".equalsIgnoreCase(isNullable) || "0".equals(isNullable) ) {
-							output = "<input type=\"radio\" name=\"" + formFieldName + "\" value=\"f\"" + ("f".equals(startVal) ? " checked" : "") + "/> ";
+							output = "<input type=\"radio\" name=\"" + formFieldName + "\" id=\"" + formFieldName + "_f\" value=\"f\"" + ("f".equals(startVal) ? " checked" : "") + "/> ";
 							output += falseLabel;
 							output += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-							output += "<input type=\"radio\" name=\"" + formFieldName + "\" value=\"t\"" + ("t".equals(startVal) ? " checked" : "") + "/> ";
+							output += "<input type=\"radio\" name=\"" + formFieldName + "\" id=\"" + formFieldName + "_t\" =\"t\"" + ("t".equals(startVal) ? " checked" : "") + "/> ";
 							output += trueLabel;
 						} else {
-							output = "<input type=\"radio\" name=\"" + formFieldName + "\" value=\"f\"" + ("f".equals(startVal) ? " checked" : "") + "/> ";
+							output = "<input type=\"radio\" name=\"" + formFieldName + "\" id=\"" + formFieldName + "_f\" value=\"f\"" + ("f".equals(startVal) ? " checked" : "") + "/> ";
 							output += falseLabel;
 							output += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-							output += "<input type=\"radio\" name=\"" + formFieldName + "\" value=\"t\"" + ("t".equals(startVal) ? " checked" : "") + "/> ";
+							output += "<input type=\"radio\" name=\"" + formFieldName + "\" id=\"" + formFieldName + "_t\" value=\"t\"" + ("t".equals(startVal) ? " checked" : "") + "/> ";
 							output += trueLabel;
 							output += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-							output += "<input type=\"radio\" name=\"" + formFieldName + "\" value=\"u\"" + ("u".equals(startVal) ? " checked" : "") + "/> ";
+							output += "<input type=\"radio\" name=\"" + formFieldName + "\" id=\"" + formFieldName + "_u\" value=\"u\"" + ("u".equals(startVal) ? " checked" : "") + "/> ";
 							output += unknownLabel;
 						}
 					}
@@ -182,7 +182,7 @@ public class FieldGenTag extends TagSupport {
 									log.debug("val is " + val);
 									log.debug("val.toString is " + startVal);
 									if ( startVal == null ) startVal = "";
-									output = "<select name=\"" + formFieldName + "\">";
+									output = "<select name=\"" + formFieldName + "\" id=\"" + formFieldName + "\">";
 									for ( int i = 0; i < enumConstants.length; i++ ) {
 										output += "<option value=\"" + enumConstants[i].toString() + "\"" + (startVal.equals(enumConstants[i].toString()) ? " selected" : "") + ">";
 										output += enumConstants[i].toString();

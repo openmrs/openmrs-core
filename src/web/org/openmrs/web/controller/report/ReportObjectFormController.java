@@ -25,6 +25,7 @@ import org.openmrs.reporting.ReportService;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.propertyeditor.ConceptEditor;
 import org.openmrs.web.propertyeditor.UserEditor;
+import org.openmrs.web.taglib.HtmlIncludeTag;
 import org.springframework.beans.propertyeditors.CharacterEditor;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -110,6 +111,12 @@ public class ReportObjectFormController extends SimpleFormController {
 			if ( reportObject.getType() == null ) be.rejectValue("type", "error.reportObject.type.required");
 
 			if ( reportObject.getSubType() == null ) be.rejectValue("subType", "error.reportObject.subType.required");
+		}
+
+		// not adding data, but need to take out HtmlIncludeMap before we display this form, in case it is a re-showing of
+		if ( request.getAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_KEY) != null ) {
+			log.debug("\n\nREMOVING HTMLINCLUDEMAP FROM REQUEST\n\n");
+			request.removeAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_KEY);
 		}
 
 		return super.processFormSubmission(request, response, obj, be);
@@ -206,7 +213,10 @@ public class ReportObjectFormController extends SimpleFormController {
 		String type = RequestUtils.getStringParameter(request, "type", "");
 		String subType = RequestUtils.getStringParameter(request, "subType", "");
 		String submitted = RequestUtils.getStringParameter(request, "submitted", "");
-		return (type.length() == 0 || subType.length() == 0 || submitted.length() == 0 );
+		
+		boolean isChange = (type.length() == 0 || subType.length() == 0 || submitted.length() == 0 );
+		
+		return isChange;
 	}
 
 	/**
