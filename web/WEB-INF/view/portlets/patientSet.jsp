@@ -204,7 +204,7 @@
 			<spring:message code="PatientSet.yours"/>
 			<c:if test="${model.droppable}">
 				<a href="javascript:clearThis()" style="color: red">
-					[<spring:message code="PatientSet.drop"/>]
+					[<spring:message code="general.drop"/>]
 				</a>
 			</c:if>
 		</center>
