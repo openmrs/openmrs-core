@@ -152,10 +152,13 @@ public class FormStarterXSN {
 		setVariables(tempDir, FormEntryConstants.FORMENTRY_DEFAULT_JSCRIPT_NAME, vars);
 
 		// create ddf
-		FormEntryUtil.createDdf(tempDir, outputDir, outputFilename);
+		// TODO (jmiranda) Refactored ... now called within FormEntryUtil.makeCab() method since you'll never make 
+		// a cab without creating a DDF.
+		//FormEntryUtil.createDdf(tempDir, outputDir, outputFilename);
 
-		// make cab
-		FormEntryUtil.makeCab(tempDir);
+		// make cab 
+		// TODO (jmiranda) Added outputDir as param, make sure to test
+		FormEntryUtil.makeCab(tempDir, outputDir, outputFilename);
 
 		return FormEntryUtil.findFile(tempDir, outputFilename);
 	}

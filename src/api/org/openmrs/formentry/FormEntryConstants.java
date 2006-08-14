@@ -82,11 +82,18 @@ public class FormEntryConstants {
 	public static String FORMENTRY_INFOPATH_SERVER_URL = "http://localhost:8080/";
 	public static String FORMENTRY_INFOPATH_PUBLISH_URL = FORMENTRY_INFOPATH_SERVER_URL + "formentry/forms/";
 	public static String FORMENTRY_INFOPATH_TASKPANE_CAPTION = "Welcome!";
-	public static String FORMENTRY_INFOPATH_TASKPANE_INITIAL_URL = FORMENTRY_INFOPATH_SERVER_URL + "/taskPane.htm"; //"http://localhost:8080/openmrs/taskPane.htm";
+	public static String FORMENTRY_INFOPATH_TASKPANE_INITIAL_URL = FORMENTRY_INFOPATH_SERVER_URL + "/formTaskpane.htm"; //"http://localhost:8080/openmrs/formTaskpane.htm";
 	public static String FORMENTRY_INFOPATH_SUBMIT_URL = FORMENTRY_INFOPATH_SERVER_URL + "/formUpload"; // "http://localhost:8080/amrs/formUpload";
 	public static String FORMENTRY_INFOPATH_OUTPUT_DIR = "C:/openmrs"; // filesystem directory uploaded xsn is saved to
 	public static String FORMENTRY_STARTER_XSN_FOLDER_PATH = "C:/Program Files/Apache Group/Tomcat/webapps/openmrs/formentry/forms/starter";
 	public static String FORMENTRY_INFOPATH_ARCHIVE_DIR = null; // default is not to archive	
 	// filename format applies pattern from java.text.SimpleDateFormat to today's date
 	public static String FORMENTRY_INFOPATH_ARCHIVE_DATE_FORMAT = "dd-MMM-yyyy-HHmmss";
+
+	// Used for XSN upload/download (differences between windows/linux) 
+	public static String OPERATING_SYSTEM_KEY = "os.name";
+	public static String OPERATING_SYSTEM = System.getProperty(OPERATING_SYSTEM_KEY);
+	public static String OPERATING_SYSTEM_WINDOWS_XP = "Windows XP";
+	public static String OPERATING_SYSTEM_LINUX = "Linux";
+
 }

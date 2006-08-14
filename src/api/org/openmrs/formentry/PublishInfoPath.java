@@ -194,8 +194,11 @@ public class PublishInfoPath {
 		setVariables(tempDir,
 				FormEntryConstants.FORMENTRY_DEFAULT_JSCRIPT_NAME, vars);
 
-		// create ddf
-		FormEntryUtil.createDdf(tempDir, outputDirName, outputFilename);
+		
+		// make cab
+		// jmiranda - Added outputDirName (for linux) 
+		FormEntryUtil.makeCab(tempDir, outputDirName, outputFilename);
+			
 
 		// Copy XSN file to archive
 		String archiveDir = FormEntryConstants.FORMENTRY_INFOPATH_ARCHIVE_DIR;
@@ -213,14 +216,12 @@ public class PublishInfoPath {
 			File xsnArchiveFile = new File(archiveDir, xsnArchiveFilePath);
 			boolean success = moveFile(originalFile, xsnArchiveFile);
 			if (!success) {
-				log.warn("Unable to archive XSN " + xsnFilePath + " to "
-						+ xsnArchiveFilePath);
+				log.warn("Unable to archive XSN " + xsnFilePath + " to " + xsnArchiveFilePath);
 			}
 		}
 
-		// make cab
-		FormEntryUtil.makeCab(tempDir);
-
+		
+		
 		// clean up
 		deleteDirectory(tempDir);
 

@@ -38,7 +38,7 @@ public class FormXmlTemplateBuilder {
 	Form form;
 	String url;
 	String xmlTemplate = null;
-	Vector<String> tagList;
+	Vector<String> tagList = new Vector<String>();
 
 	/**
 	 * Construct an XML template builder for generating patient-based templates

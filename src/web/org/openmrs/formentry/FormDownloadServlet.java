@@ -2,7 +2,6 @@ package org.openmrs.formentry;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -293,8 +292,9 @@ public class FormDownloadServlet extends HttpServlet {
 		sampleDataOutput.close();
 
 		// File tmpOutputDir = FormEntryUtil.createTempDirectory("xsnoutput");
-		FormEntryUtil.createDdf(tmpXSN, tmpXSN.getAbsolutePath(), "new.xsn");
-		FormEntryUtil.makeCab(tmpXSN);
+		// TODO Refactored (jmiranda)
+		//FormEntryUtil.createDdf(tmpXSN, tmpXSN.getAbsolutePath(), "new.xsn");
+		FormEntryUtil.makeCab(tmpXSN, tmpXSN.getAbsolutePath(), "new.xsn");
 
 		File xsn = FormEntryUtil.findFile(tmpXSN, "new.xsn");
 		FileInputStream xsnInputStream = new FileInputStream(xsn);
