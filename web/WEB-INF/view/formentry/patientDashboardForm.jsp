@@ -86,11 +86,16 @@
     }
 </script>
 
+<%--
 <div id="breadcrumbHeader" class="breadcrumb">
 	<a href="/openmrs">Home</a> ->
 	<a href="#switch" onClick="switchPatient()">Find Patient</a> ->
 	<spring:message code="Patient.dashboard.title"/>
 </div>
+--%>
+
+<openmrs:portlet url="patientHeader" id="patientDashboardHeader" patientId="${patient.patientId}"/>
+<br/>
 
 <div id="patientTabs">
 	<ul>
@@ -103,8 +108,6 @@
 	</ul>
 </div>
 
-<openmrs:portlet url="patientHeader" id="patientDashboardHeader" patientId="${patient.patientId}"/>
-<br>
 <div id="patientSections">
 	<div id="patientOverview">
 		<openmrs:portlet url="patientOverview" id="patientDashboardOverview" patientId="${patient.patientId}"/>
