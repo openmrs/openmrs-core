@@ -54,7 +54,6 @@ public class FormEntryUtil {
 		val = p.getProperty("formentry.infopath_archive_date_format", null);
 		if (val != null)
 			FormEntryConstants.FORMENTRY_INFOPATH_ARCHIVE_DATE_FORMAT = val;
-
 	}
 
 	public static void startup() {
@@ -68,7 +67,7 @@ public class FormEntryUtil {
 	 * @return Directory in temp dir containing xsn contents
 	 * @throws IOException
 	 */
-	public static File expandXsn(String xsnFilePath) throws IOException {
+	public static File expandXsn(String xsnFilePath) throws IOException {		
 		File xsnFile = new File(xsnFilePath);
 		if (!xsnFile.exists())
 			return null;
@@ -77,37 +76,81 @@ public class FormEntryUtil {
 		if (tempDir == null)
 			throw new IOException("Failed to create temporary directory");
 
-		String cmd = "expand -F:* \"" + xsnFilePath + "\" \""
-				+ tempDir.getAbsolutePath() + "\"";
-		log.debug("executing command: " + cmd);
-		String output = execCmd(cmd);
-		log.debug("expandXsn output: " + output);
+		StringBuffer cmdBuffer = new StringBuffer();
+
+		if (FormEntryConstants.OPERATING_SYSTEM_LINUX.equalsIgnoreCase(FormEntryConstants.OPERATING_SYSTEM)) 
+		{ 
+			cmdBuffer.append("/usr/bin/cabextract -d ").append(tempDir.getAbsolutePath()).append(" ").append(xsnFilePath);
+			execCmd(cmdBuffer.toString(), tempDir);
+		} 
+		else  
+		{ 
+			cmdBuffer.append("expand -F:* \"").append(xsnFilePath).append("\" \"").append(tempDir.getAbsolutePath()).append("\"");
+			execCmd(cmdBuffer.toString(), null);
+		}				
 
 		return tempDir;
 	}
 
+
+
+	
 	/**
 	 * Make an xsn (aka CAB file) with the contents of <code>tempDir</code>
 	 * 
 	 * @param tempDir
 	 */
-	public static void makeCab(File tempDir) {
+	public static void makeCab(File tempDir, String outputDirName, String outputFilename) {
 		// """calls MakeCAB to make a CAB file from DDF in tempdir directory"""
 
-		String cmd = "makecab /F \"" + tempDir.getAbsolutePath()
-				+ "\\publish.ddf\"";
-		log.debug("executing command: " + cmd);
-		String output = execCmd(cmd);
-		log.debug("make cab output: " + output);
-	}
+		StringBuffer cmdBuffer = new StringBuffer();
+		
+		// Special case : Linux operating sytem uses lcab utility
+		if (FormEntryConstants.OPERATING_SYSTEM_LINUX.equalsIgnoreCase(FormEntryConstants.OPERATING_SYSTEM)) {
+			
+			cmdBuffer.append("/usr/local/bin/lcab -rn ").append(tempDir).append(" ").append(outputDirName).append("/").append(outputFilename);	
 
-	private static String execCmd(String cmd) {
+			// Execute command with working directory
+			execCmd(cmdBuffer.toString(), tempDir);
+		}
+		// Otherwise, assume windows 
+		else 
+		{ 
+			// create ddf
+			FormEntryUtil.createDdf(tempDir, outputDirName, outputFilename);
+			
+			// Create makecab command
+			cmdBuffer.append("makecab /F \"").append(tempDir.getAbsolutePath()).append("\\publish.ddf\"");
+
+			// Execute command without working directory
+			execCmd(cmdBuffer.toString(), null);
+
+		}
+				
+		
+		
+	}
+	
+	
+	/**
+	 * 
+	 * @param cmd	command to execute
+	 * @param wd	working directory
+	 * @return
+	 */
+	private static String execCmd(String cmd, File wd) { 
+		log.debug("executing command: " + cmd);
 		String out = "";
 		try {
 			String line;
-			Process p = Runtime.getRuntime().exec(cmd);
-			BufferedReader input = new BufferedReader(new InputStreamReader(p
-					.getInputStream()));
+			
+			// Needed to add support for working directory because of a linux file system permission issue.
+			// Could not create lcab.tmp file in default working directory (jmiranda).
+			Process p = (wd != null) 
+					? Runtime.getRuntime().exec(cmd, null, wd) 
+					: Runtime.getRuntime().exec(cmd);
+			
+			BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			while ((line = input.readLine()) != null) {
 				out += line;
 			}
@@ -115,8 +158,10 @@ public class FormEntryUtil {
 		} catch (Exception e) {
 			log.error("Error while executing command: '" + cmd + "'", e);
 		}
-		return out;
+		log.debug("execCmd output: " + out);
+		return out;		
 	}
+	
 
 	/**
 	 * Create a temporary directory with the given prefix and a random suffix
@@ -175,8 +220,7 @@ public class FormEntryUtil {
 	 * @param outputDir
 	 * @param outputFileName
 	 */
-	public static void createDdf(File xsnDir, String outputDir,
-			String outputFileName) {
+	public static void createDdf(File xsnDir, String outputDir, String outputFileName) {
 		String ddf = ";*** MakeCAB Directive file for "
 				+ outputFileName
 				+ "\n"
@@ -207,6 +251,10 @@ public class FormEntryUtil {
 			log.error("Could not create DDF file to generate XSN archive", e);
 		}
 	}
+	
+	
+	
+
 
 	public static String getFormUriWithoutExtension(Form form) {
 		return String.valueOf(form.getFormId());
