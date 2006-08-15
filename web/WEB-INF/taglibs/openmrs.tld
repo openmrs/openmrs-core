@@ -584,6 +584,20 @@
 	</attribute>
 </tag>	
 
+<tag>
+	<name>globalProperty</name>
+	<tag-class>org.openmrs.web.taglib.GlobalPropertyTag</tag-class>
+	<body-content>JSP</body-content>
+	<description>
+		Gets the value of the given global property.
+	</description>
+	<attribute>
+		<name>key</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+</tag>	
+
 <function>
 	<name>sort</name>
 	<function-class>org.openmrs.web.taglib.functions.Sort</function-class>

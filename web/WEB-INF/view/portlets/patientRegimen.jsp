@@ -29,7 +29,7 @@
 		</div>
 	</div>
 	<div id="regimenPortletAdd">
-		<div class="boxHeader"><a class="boxHeader" href="#" onClick="showRegimenPortletItem('regimenPortletAddForm');"><spring:message code="DrugOrder.regimens.add" /></a></div>
+		<div class="boxHeader"><a class="boxHeader" href="#" onClick="showHideDiv('regimenPortletAddForm');"><spring:message code="DrugOrder.regimens.add" /></a></div>
 		<div class="box" id="regimenPortletAddForm" style="display:none">
 			<form method="post" id="orderForm">
 			<input type="hidden" name="patientId" value="${model.patientId}" />
@@ -132,10 +132,14 @@
 			function(data) { return "" + data.discontinueReason; }
 		];
 
-		function showRegimenPortletItem(itemId) {
-			var addForm = document.getElementById(itemId);
-			if ( addForm ) {
-				addForm.style.display = "";
+		function showHideDiv(id) {
+			var div = document.getElementById(id);
+			if ( div ) {
+				if ( div.style.display != "none" ) {
+					div.style.display = "none";
+				} else { 
+					div.style.display = "";
+				}
 			}
 		}
 		
