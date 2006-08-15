@@ -34,7 +34,16 @@ public class OnTheFlyAnalysisController implements Controller {
 
 	private List<String> shortcuts;
 	private List<String> links;
+	private String formView;
 	
+	public String getFormView() {
+		return formView;
+	}
+
+	public void setFormView(String formView) {
+		this.formView = formView;
+	}
+
 	public List<String> getShortcuts() {
 		return shortcuts;
 	}
@@ -179,7 +188,7 @@ public class OnTheFlyAnalysisController implements Controller {
 		myModel.put("patientAnalysisAttributeName", WebConstants.OPENMRS_ANALYSIS_IN_PROGRESS_ATTR);
 		myModel.put("links", linkList);
 
-		return new ModelAndView("/analysis/on-the-fly-analysis", "model", myModel);
+		return new ModelAndView(formView, "model", myModel);
 	}
 
 	/*

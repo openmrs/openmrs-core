@@ -657,6 +657,7 @@
 						<value>nealreport.form:nealreport.ConsultReport.name:reportType=Consult Report</value>
 					</list>
 				</property>
+				<property name="formView"><value>/analysis/on-the-fly-analysis</value></property>
 			</bean>
 		    <bean id="defaultMethodParamResolver" class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
 				<property name="paramName"><value>method</value></property>
