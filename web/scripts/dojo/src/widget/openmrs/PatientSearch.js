@@ -46,12 +46,12 @@ dojo.widget.defineWidget(
 			if (patients == null) return;
 			// if no hits
 			if (patients.length < 1) {
-				if (this.lastPhraseSearched.match(/\d/)) {
-					if (this.isValidCheckDigit(this.lastPhraseSearched) == false) {
+				if (this.text.match(/\d/)) {
+					if (this.isValidCheckDigit(this.text) == false) {
 						//the user didn't input an identifier with a valid check digit
 						this.hideHeaderRow()
 						var img = this.getProblemImage();
-						var tmp = " <img src='" + img.src + "' title='" + img.title + "' /> " + this.invalidCheckDigitText + this.lastPhraseSearched;
+						var tmp = " <img src='" + img.src + "' title='" + img.title + "' /> " + this.invalidCheckDigitText + this.text;
 						patients.push(tmp);
 						patients.push(this.noPatientsFoundText);
 						patients.push(this.searchOnPatientNameText);
@@ -71,7 +71,7 @@ dojo.widget.defineWidget(
 				//fillTable([]);	//this call sets up the table/info bar
 			}
 			// if hits
-			else if (patients.length > 1 || this.isValidCheckDigit(this.lastPhraseSearched) == false) {
+			else if (patients.length > 1 || this.isValidCheckDigit(this.text) == false) {
 				patients.push(this.addPatientLink);	//setup links for appending to the end
 			}
 		},
@@ -294,7 +294,7 @@ dojo.widget.defineWidget(
 			}
 			//	only allow the first item to be automatically selected if:
 			//		the entered text is a string or the entered text is a valid identifier
-			return (this.lastPhraseSearched.match(/\d/) == false || this.isValidCheckDigit(this.lastPhraseSearched));	
+			return (this.text.match(/\d/) == false || this.isValidCheckDigit(this.text));	
 		}
 		
 	},

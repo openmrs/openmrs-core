@@ -193,22 +193,22 @@ dojo.widget.defineWidget(
 	onInputChange: function(evt) {
 		this.search(evt, true);
 		
-		var key = 0;
+		this.key = 0;
 		
 		// don't fire for things like alt-tab, ctrl-c -- but DO fire for cntrl-v  (86=v)
 		if (!this.event.altKey && (!this.event.ctrlKey || this.event.keyCode == 'v')) {
-			key = this.event.keyCode;
+			this.key = this.event.keyCode;
 			dojo.debug('event.type : ' + this.event.type);
-			if ((key==0 || key==null) && (this.event.type == "click" || this.event.type == "change" || this.event.type == "submit"))
+			if ((this.key==0 || this.key==null) && (this.event.type == "click" || this.event.type == "change" || this.event.type == "submit"))
 				//if non-key event like clicking checkbox or changing dropdown list
-				key = 1;
+				this.key = 1;
 		}
 		
 		// infopath hack since it doesn't let us use onkeyup or onkeypress	
 		if (this.useOnKeyDown == true) {
 			// only add if the key is a letter and no modifier key was pressed
-			if (key >= 48 && key <= 90 && !this.event.altKey && !this.event.ctrlKey) {
-				var newKey = String.fromCharCode(key).toLowerCase();
+			if (this.key >= 48 && this.key <= 90 && !this.event.altKey && !this.event.ctrlKey) {
+				var newKey = String.fromCharCode(this.key).toLowerCase();
 				// IE interprets all char codes as upper case.  
 				// Only leave in uppercase if the previous char is uppercase (hack #2)
 				if (this.text.length > 0) {
@@ -218,12 +218,12 @@ dojo.widget.defineWidget(
 				}
 				this.text = this.text + newKey;
 			}
-			if (key == 8 && this.text.length > 1) { //backspace
+			if (this.key == 8 && this.text.length > 1) { //backspace
 				this.text = this.text.substring(0, this.text.length - 1);
 			}
 		}
 		
-		if (key == dojo.event.browser.keys["KEY_ESCAPE"]) {
+		if (this.key == dojo.event.browser.keys["KEY_ESCAPE"]) {
 			this.exitNumberMode();
 			return false;
 		}
@@ -231,15 +231,15 @@ dojo.widget.defineWidget(
 			//searched on empty string (and didn't change retired status)
 			//return false;
 		//}
-		else if (key == dojo.event.browser.keys.KEY_ENTER) {
+		else if (this.key == dojo.event.browser.keys.KEY_ENTER) {
 			this._enterKeyPressed();
 		}
 		
 		else if (this.allowAutoList) {
 		
-			if (((key >= 48 && key <= 90) || (key >= 96 && key <= 111) ) ||
-				key == dojo.event.browser.keys.KEY_BACKSPACE || key == dojo.event.browser.keys.KEY_SPACE || 
-				key == dojo.event.browser.keys.KEY_DELETE || key == 1) {
+			if (((this.key >= 48 && this.key <= 90) || (this.key >= 96 && this.key <= 111) ) ||
+				this.key == dojo.event.browser.keys.KEY_BACKSPACE || this.key == dojo.event.browser.keys.KEY_SPACE || 
+				this.key == dojo.event.browser.keys.KEY_DELETE || this.key == 1) {
 					//	 (if alphanumeric key entered or 
 					//   backspace key pressed or
 					//   spacebar pressed or 
@@ -251,10 +251,10 @@ dojo.widget.defineWidget(
 						this.hideHighlight();
 						if (this.text.length > 1) {
 							this.clearPagingBars();
-							dojo.debug('setting preFindObjects timeout for other key: ' + key);
+							dojo.debug('setting preFindObjects timeout for other key: ' + this.key);
 							var callback = function(ts, text) { return function() {ts.findObjects(text)}};
 							this.searchTimeout = setTimeout(callback(this, this.text), this.searchDelay);
-							dojo.debug('findObjects timeout called for other key: ' + key);
+							dojo.debug('findObjects timeout called for other key: ' + this.key);
 						}
 					}
 					if (this.event.type == "submit") {
@@ -343,6 +343,7 @@ dojo.widget.defineWidget(
 
 
 	findObjects: function(phrase) {
+		
 		dojo.debug('findObjects initialized with search on: ' + phrase);
 		//must have at least x characters entered or that character be a number
 		if (phrase.length >= this.minSearchCharacters || (parseInt(phrase) >= 0 && parseInt(phrase) <= 99)) {
@@ -510,13 +511,12 @@ dojo.widget.defineWidget(
 
 
 	fillTable: function(objects, cells) {
-		
 		if (objects.length > 1 || typeof objects[0] != 'string')
 			dojo.event.topic.publish(this.eventNames.fillTable, {"objects": objects} );
 		
 		// If we get only one result and the enter key was pressed jump to that object
 		if (objects.length == 1 && this.event && 
-			(this.event.keyCode == dojo.event.browser.keys.KEY_ENTER)) { // || this.keyCode == null)) {
+			(this.key == dojo.event.browser.keys.KEY_ENTER)) { // || this.keyCode == null)) {
 				if (typeof objects[0] == 'string') {
 				// if only one string item returned, its a message
 					this.hideHighlight();
@@ -542,7 +542,7 @@ dojo.widget.defineWidget(
 	    
 	   	setTimeout(this.simpleClosure(this, "updatePagingBars"), 0);
 	    
-	    if (this.event && this.event.keyCode == dojo.event.browser.keys.KEY_ENTER) {
+	    if (this.event && this.key == dojo.event.browser.keys.KEY_ENTER) {
 	    	// showHighlighting must be called here to assure it occurs after 
 	    	// objects are returned. Must be called with Timeout because 
 	    	// DWRUtil.addRows uses setTimeout
@@ -550,7 +550,7 @@ dojo.widget.defineWidget(
 	    	setTimeout(this.simpleClosure(this, "showHighlight"), 0);
 	    }
 	    if (this.event)
-		    dojo.debug("ending fillTable(). Keycode was: " + this.event.keyCode);
+		    dojo.debug("ending fillTable(). Keycode was: " + this.key);
 	    
 	    this.postFillTable();
 	},
