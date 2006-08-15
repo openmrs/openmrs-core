@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<div class="boxHeader">Patient Names</div>
+<div class="boxHeader"><spring:message code="Patient.title"/></div>
 <div class="box">
 	<table class="patientAddress">
 		<thead>
@@ -29,11 +29,10 @@
 	</table>
 </div>
 <br/>
-<div class="boxHeader">Addresses</div>
+<div class="boxHeader"><spring:message code="Patient.addresses"/></div>
 <div class="box">
 	<table class="patientAddress">
 		<thead>
-			<tr><th colspan="9" class="tableTitle"><spring:message code="Patient.addresses"/></th><tr>
 			<tr>
 				<th><spring:message code="general.preferred"/></th>
 				<th><spring:message code="Location.address1"/></th>

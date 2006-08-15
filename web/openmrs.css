@@ -247,7 +247,7 @@ table.patientTreatmentPrograms td {
 }
 #patientDashboardDemographics table.patientAddress th {
 	text-align:left;
-	border-bottom: 1px solid black;
+	text-decoration:underline;
 }
 
 .dateDisplayField {
