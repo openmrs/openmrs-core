@@ -816,6 +816,57 @@ delimiter ;
 call diff_procedure('1.0.34');
 delimiter ;
 
+#--------------------------------------
+# OpenMRS Datamodel version 1.0.35
+# Darius Jazayeri     Aug 15 2006 2:00 PM
+# Create patient_state table
+#--------------------------------------
+
+delimiter //
+
+DROP PROCEDURE IF EXISTS diff_procedure;
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+	select CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' from dual;
+	
+	CREATE TABLE `patient_state` (
+	  `patient_state_id` int(11) NOT NULL auto_increment,
+	  `patient_program_id` int(11) NOT NULL default '0',
+	  `state` int(11) NOT NULL default '0',
+	  `start_date` date default NULL,
+	  `end_date` date default NULL,
+	  `creator` int(11) NOT NULL default '0',
+	  `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
+	  `changed_by` int(11) default NULL,
+	  `date_changed` datetime default NULL,
+	  `voided` tinyint(1) NOT NULL default '0',
+	  `voided_by` int(11) default NULL,
+	  `date_voided` datetime default NULL,
+	  `void_reason` varchar(255) default NULL,
+	  PRIMARY KEY  (`patient_state_id`),
+	  KEY `state_for_patient` (`state`),
+	  KEY `patient_program_for_state` (`patient_program_id`),
+	  KEY `patient_state_creator` (`creator`),
+	  KEY `patient_state_changer` (`changed_by`),
+	  KEY `patient_state_voider` (`voided_by`),
+	  CONSTRAINT `state_for_patient` FOREIGN KEY (`state`) REFERENCES `program_workflow_state` (`program_workflow_state_id`),
+	  CONSTRAINT `patient_program_for_state` FOREIGN KEY (`patient_program_id`) REFERENCES `patient_program` (`patient_program_id`),
+	  CONSTRAINT `patient_state_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
+	  CONSTRAINT `patient_state_changer` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`),
+	  CONSTRAINT `patient_state_voider` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;	
+
+	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+	
+	END IF;
+ END
+//
+
+delimiter ;
+call diff_procedure('1.0.35');
+delimiter ;
+
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script
 #-----------------------------------
