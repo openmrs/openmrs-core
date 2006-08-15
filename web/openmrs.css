@@ -129,6 +129,20 @@ h1, h2, h3, h4, h5 {
 #patientSummary .boxHeader { font-size: 1.55em;}
 #patientSummary { /*width: 700px;*/ }
 
+.patientSummaryLabel { font-size: small; text-align: right }
+.patientSummaryValue { color: #2222ff }
+.voidButton {
+	border: 1px solid gray;
+	background-color: lightpink;
+	font-size: .6em;
+	color: black;
+	margin: 2px;
+	padding: 1px;
+	cursor: pointer;
+}
+
+#headerAccompagnateur .patientSummaryValue { color: black; }
+
 .obsDate {
 	font-size: 0.7em;
 }
@@ -150,6 +164,12 @@ h1, h2, h3, h4, h5 {
 	font-size:1.5em;
 	margin-right:10px;
 }
+#patientDashboardHeader td {
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	vertical-align:bottom;
+}
+
 #patientTreatmentHeader {
 	font-size:0.9em;
 	text-align: left;
@@ -226,6 +246,13 @@ table.patientTreatmentPrograms td {
 #patientDashboardDemographics table.patientAddress th {
 	text-align:left;
 	border-bottom: 1px solid black;
+}
+
+.dateDisplayField {
+	border: 1px solid cadetblue;
+	padding: 1px;
+	width: 8em;
+	font-size: .9em;
 }
 
 .patientIdentifier {

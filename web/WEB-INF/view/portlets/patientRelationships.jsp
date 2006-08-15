@@ -23,17 +23,7 @@ refreshOnChange=*
 --%>
 
 <style>
-	.patientSummaryLabel { font-size: small; text-align: right }
-	.patientSummaryValue { color: #2222ff }
-	.voidButton {
-		border: 1px solid gray;
-		background-color: lightpink;
-		font-size: .6em;
-		color: black;
-		margin: 2px;
-		padding: 1px;
-		cursor: pointer;
-	}
+
 </style>
 
 <script type="text/javascript" src="<%= request.getContextPath() %>/scripts/easyAjax.js"></script>
