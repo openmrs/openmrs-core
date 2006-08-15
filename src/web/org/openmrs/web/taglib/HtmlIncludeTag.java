@@ -54,7 +54,7 @@ public class HtmlIncludeTag extends TagSupport {
 				String prefix = "";
 				try {
 					prefix = getRequest().getContextPath();
-					if ( file.startsWith(prefix) ) prefix = "";
+					if ( file.startsWith(prefix + "/") ) prefix = "";
 				} catch (ClassCastException cce) {
 					log.debug("Could not cast request to HttpServletRequest in HtmlIncludeTag");
 				}
