@@ -22,7 +22,7 @@
 	<div class="box">
 		<div>
 			<c:forEach items="${model.patientCurrentPrograms}" var="p" varStatus="s">
-				<c:if test="${p.concept.conceptId == 0}">
+				<c:if test="${p.program.concept.conceptId == 1466}">
 					<spring:message code="Program.hiv"/>
 					&nbsp;|&nbsp;
 					<spring:message code="Program.enrolled"/>: <openmrs:formatDate date="${p.dateEnrolled}" type="medium" />
@@ -35,7 +35,7 @@
 		</div>
 		<div>
 			<c:forEach items="${model.patientCurrentPrograms}" var="p" varStatus="s">
-				<c:if test="${p.concept.conceptId == 0}">
+				<c:if test="${p.program.concept.conceptId == 1467}">
 					<spring:message code="Program.tb"/>
 					&nbsp;|&nbsp;
 					<spring:message code="Program.enrolled"/>: <openmrs:formatDate date="${p.dateEnrolled}" type="medium" />

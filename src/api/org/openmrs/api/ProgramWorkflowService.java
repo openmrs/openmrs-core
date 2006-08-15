@@ -255,7 +255,7 @@ public class ProgramWorkflowService {
 		return getProgramWorkflowDAO().patientsInProgram(program, fromDate, toDate);
 	}
 
-	public Collection<Program> getCurrentPrograms(Patient patient, Date onDate) {
+	public Collection<PatientProgram> getCurrentPrograms(Patient patient, Date onDate) {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PROGRAMS);
 		if (onDate == null) {
@@ -264,11 +264,11 @@ public class ProgramWorkflowService {
 		// date enrolled and date completed are actually java.sql.Timestamp, which can't be compared directly to a java.util.Date
 		long atMs = onDate.getTime();
 		
-		Collection<Program> ret = new HashSet<Program>();
+		Collection<PatientProgram> ret = new HashSet<PatientProgram>();
 		for (PatientProgram pp : getPatientPrograms(patient)) {
 			if ( (pp.getDateEnrolled() == null || pp.getDateEnrolled().getTime() <= atMs)
 					&& (pp.getDateCompleted() == null || pp.getDateCompleted().getTime() >= atMs) ) {
-				ret.add(pp.getProgram());
+				ret.add(pp);
 			}
 		}
 		return ret;
