@@ -1,8 +1,6 @@
 package org.openmrs.formentry;
 
 import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -36,36 +34,10 @@ public class FormSchemaBuilder {
 	Context context;
 	Form form;
 	TreeMap<Integer, TreeSet<FormField>> formStructure;
-	String schema = null;
-	Vector<String> tagList = new Vector<String>();
-	Hashtable<ComplexType, String> complexTypes;
-
-	/**
-	 * Internal convenience class for collecting complex type definitions. We
-	 * implement the equals() and hashCode() methods so these objects can be
-	 * used as a Hashtable key without creating duplicates.
-	 */
-	private class ComplexType {
-		Field field;
-		boolean required;
-
-		ComplexType(Field field, boolean required) {
-			this.field = field;
-			this.required = required;
-		}
-
-		public boolean equals(Object obj) {
-			if (obj != null && obj instanceof ComplexType) {
-				ComplexType ct = (ComplexType) obj;
-				return (ct.field.equals(this.field) && ct.required == this.required);
-			}
-			return false;
-		}
-
-		public int hashCode() {
-			return this.field.getFieldId();
-		}
-	}
+	Vector<String> tagList;
+	Vector<ComplexType> schemaSections;
+	Vector<ComplexType> complexTypes;
+	StringBuffer schema;
 
 	/**
 	 * Construct a schema builder for a given form within a given context
@@ -76,64 +48,64 @@ public class FormSchemaBuilder {
 	public FormSchemaBuilder(Context context, Form form) {
 		this.context = context;
 		this.form = form;
-		complexTypes = new Hashtable<ComplexType, String>();
 	}
 
 	/**
-	 * Thread-safe schema generation. Once the schema is generated, subsequent
-	 * calls simply return the previously generated schema.
+	 * Generates an XML schema from an OpenMRS form definition.
 	 * 
 	 * @return schema for form
 	 */
 	public synchronized String getSchema() {
-		if (schema != null)
-			return schema;
 
-		StringBuffer s = new StringBuffer();
-		s.append(FormSchemaFragment.header(FormEntryUtil
-				.getFormSchemaNamespace(form)));
-		s.append(FormSchemaFragment.startForm());
+		init(); // initialize variables
 
+		// Start with form schema header
+		schema.append(FormSchemaFragment.header(form));
+
+		// define main form section (top level)
+		schema.append(FormSchemaFragment.startForm());
 		formStructure = FormUtil.getFormStructure(context, form);
 		for (FormField section : formStructure.get(0)) {
 			String sectionName = FormUtil.getXmlToken(section.getField()
 					.getName());
 			String sectionTag = FormUtil.getNewTag(sectionName, tagList);
-			String sectionTypeTag = FormUtil.getNewTag(sectionName + "_type",
-					tagList);
-			s.append("      <xs:element name=\"" + sectionTag + "\" type=\""
-					+ sectionTypeTag + "\" />\n");
+			ComplexType ct = ComplexType.getComplexType(formStructure,
+					schemaSections, section, sectionTag + "_section", tagList);
+			String sectionTypeTag = ct.getToken();
+			schema.append("      <xs:element name=\"" + sectionTag
+					+ "\" type=\"" + sectionTypeTag + "\" />\n");
 		}
+		schema
+				.append("      <xs:element name=\"other\" type=\"_other_section\" />\n");
+		schema.append(FormSchemaFragment.closeForm(form));
+		schema.append(FormSchemaFragment.predefinedTypes());
 
-		s.append("      <xs:element name=\"other\" type=\"_other_type\" />\n");
-		s.append(FormSchemaFragment.closeForm(form.getFormId(), form.getName(),
-				form.getVersion()));
-		s.append(FormSchemaFragment.predefinedTypes());
-
+		// render sections
 		TreeSet<FormField> section = formStructure.get(0);
 		while (section != null) {
-			section = renderSection(section, s);
+			section = renderSection(section);
 		}
 
-		for (ComplexType complexType : complexTypes.keySet()) {
-			String token = complexTypes.get(complexType);
-			Field field = complexType.field;
-			boolean required = complexType.required;
+		// render element definitions (types)
+		for (ComplexType complexType : complexTypes) {
+			String token = complexType.getToken();
+			Field field = complexType.getField();
+			boolean required = complexType.isRequired();
 			if (field.getFieldType().getFieldTypeId().equals(
 					FormEntryConstants.FIELD_TYPE_CONCEPT)) {
 				Concept concept = field.getConcept();
 				ConceptDatatype datatype = concept.getDatatype();
 				if (FormEntryConstants.simpleDatatypes.containsKey(datatype
 						.getHl7Abbreviation()))
-					s.append(FormSchemaFragment.simpleConcept(token, concept,
-							FormEntryConstants.simpleDatatypes.get(datatype
-									.getHl7Abbreviation()), required, context
-									.getLocale()));
+					schema.append(FormSchemaFragment.simpleConcept(token,
+							concept, FormEntryConstants.simpleDatatypes
+									.get(datatype.getHl7Abbreviation()),
+							required, context.getLocale()));
 				else if (datatype.getHl7Abbreviation().equals(
 						FormEntryConstants.HL7_NUMERIC)) {
 					ConceptNumeric conceptNumeric = context.getConceptService()
 							.getConceptNumeric(concept.getConceptId());
-					s.append(FormSchemaFragment.numericConcept(token,
+					schema.append(FormSchemaFragment.numericConcept(token,
 							conceptNumeric, required, context.getLocale()));
 				} else if (datatype.getHl7Abbreviation().equals(
 						FormEntryConstants.HL7_CODED)
@@ -142,21 +114,31 @@ public class FormSchemaBuilder {
 					Collection<ConceptAnswer> answers = field.getConcept()
 							.getAnswers();
 					if (field.getSelectMultiple())
-						s.append(FormSchemaFragment.selectMultiple(token,
+						schema.append(FormSchemaFragment.selectMultiple(token,
 								concept, answers, context.getLocale()));
 					else
-						s.append(FormSchemaFragment
+						schema.append(FormSchemaFragment
 								.selectSingle(token, concept, answers,
 										required, context.getLocale()));
 				}
 			}
 		}
 
-		s.append(FormSchemaFragment.footer());
+		// add footer to complete the schema
+		schema.append(FormSchemaFragment.footer());
 
-		schema = s.toString();
+		return schema.toString();
+	}
 
-		return schema;
+	/**
+	 * Initialize global variables
+	 */
+	private void init() {
+		tagList = new Vector<String>();
+		schemaSections = new Vector<ComplexType>();
+		complexTypes = new Vector<ComplexType>();
+		schema = new StringBuffer(); // build schema using StringBuffer for
+		// speed
 	}
 
 	/**
@@ -170,95 +152,105 @@ public class FormSchemaBuilder {
 	 *         that have children of their own (and, therefore, need subsequent
 	 *         processing); otherwise, <code>null</code>.
 	 */
-	private TreeSet<FormField> renderSection(TreeSet<FormField> section,
-			StringBuffer s) {
+	private TreeSet<FormField> renderSection(TreeSet<FormField> section) {
 		TreeSet<FormField> subSectionList = null;
 		for (FormField sectionFormField : section) {
-			String sectionName = FormUtil.getXmlToken(sectionFormField
-					.getField().getName());
-			if (sectionName.equals("other"))
+			ComplexType sectionType = ComplexType.getComplexType(formStructure,
+					schemaSections, sectionFormField, sectionFormField
+							.getField().getName()
+							+ "_section", tagList);
+			if (sectionType.isRendered())
 				continue;
+			sectionType.setRendered(true);
 			TreeSet<FormField> sectionFormFieldList = formStructure
 					.get(sectionFormField.getFormFieldId());
-			s.append("<xs:complexType name=\"" + sectionName + "_type\">\n");
-			s.append("  <xs:sequence>\n");
+			schema.append("<xs:complexType name=\"" + sectionType.getToken()
+					+ "\">\n");
+			schema.append("  <xs:sequence>\n");
 			if (sectionFormFieldList != null) {
+				Vector<String> subSectionTagList = new Vector<String>();
 				for (FormField subSectionFormField : sectionFormFieldList) {
-					String elemTag = FormUtil.getNewTag(FormUtil
-							.getXmlToken(subSectionFormField.getField()
-									.getName()), tagList);
-					String elemTypeTag = getNewTypeTag(subSectionFormField);
+					String elemTag = FormUtil.getNewTag(subSectionFormField
+							.getField().getName(), subSectionTagList);
+					String elemTypeTag;
 					if (formStructure.containsKey(subSectionFormField
 							.getFormFieldId())) {
 						if (subSectionList == null)
 							subSectionList = new TreeSet<FormField>();
 						subSectionList.add(subSectionFormField);
-					}
+						ComplexType ct = ComplexType.getComplexType(
+								formStructure, schemaSections,
+								subSectionFormField, elemTag + "_section",
+								tagList);
+						elemTypeTag = ct.getToken();
+					} else
+						elemTypeTag = getNewTypeTag(subSectionFormField);
 					if (subSectionFormField.getField().getFieldType()
 							.getFieldTypeId().equals(
 									FormEntryConstants.FIELD_TYPE_DATABASE)) {
-						s.append("    <xs:element name=\"" + elemTag + "\" ");
+						schema.append("    <xs:element name=\"" + elemTag
+								+ "\" ");
 						if (subSectionFormField.getMinOccurs() != null)
-							s.append("minOccurs=\""
+							schema.append("minOccurs=\""
 									+ subSectionFormField.getMinOccurs()
 									+ "\" ");
 						if (subSectionFormField.getMaxOccurs() != null)
-							s.append("maxOccurs=\""
+							schema.append("maxOccurs=\""
 									+ subSectionFormField.getMaxOccurs()
 									+ "\" ");
-						s
+						schema
 								.append("nillable=\""
 										+ (subSectionFormField.isRequired() ? "0"
 												: "1") + "\">\n");
-						s.append("      <xs:complexType>\n");
-						s.append("        <xs:simpleContent>\n");
-						s.append("          <xs:extension base=\""
+						schema.append("      <xs:complexType>\n");
+						schema.append("        <xs:simpleContent>\n");
+						schema.append("          <xs:extension base=\""
 								+ elemTypeTag + "\">\n");
-						s
+						schema
 								.append("            <xs:attribute name=\"openmrs_table\" type=\"xs:string\" use=\"required\" fixed=\""
 										+ subSectionFormField.getField()
 												.getTableName() + "\" />\n");
-						s
+						schema
 								.append("            <xs:attribute name=\"openmrs_attribute\" type=\"xs:string\" use=\"required\" fixed=\""
 										+ subSectionFormField.getField()
 												.getAttributeName() + "\" />\n");
-						s.append("          </xs:extension>\n");
-						s.append("        </xs:simpleContent>\n");
-						s.append("      </xs:complexType>\n");
-						s.append("    </xs:element>\n");
+						schema.append("          </xs:extension>\n");
+						schema.append("        </xs:simpleContent>\n");
+						schema.append("      </xs:complexType>\n");
+						schema.append("    </xs:element>\n");
 					} else {
-						s.append("    <xs:element name=\"" + elemTag
+						schema.append("    <xs:element name=\"" + elemTag
 								+ "\" type=\"" + elemTypeTag + "\" ");
 						if (subSectionFormField.getMinOccurs() != null)
-							s.append("minOccurs=\""
+							schema.append("minOccurs=\""
 									+ subSectionFormField.getMinOccurs()
 									+ "\" ");
 						if (subSectionFormField.getMaxOccurs() != null)
-							s.append("maxOccurs=\""
+							schema.append("maxOccurs=\""
 									+ maxOccursValue(subSectionFormField
 											.getMaxOccurs()) + "\" ");
-						s
+						schema
 								.append("nillable=\""
 										+ (subSectionFormField.isRequired() ? "0"
 												: "1") + "\" />\n");
 					}
 				}
 			}
-			s.append("  </xs:sequence>\n");
+			schema.append("  </xs:sequence>\n");
 			if (sectionFormField.getField().getFieldType().getFieldTypeId()
 					.equals(FormEntryConstants.FIELD_TYPE_CONCEPT)) {
 				Concept concept = sectionFormField.getField().getConcept();
 
-				s
+				schema
 						.append("  <xs:attribute name=\"openmrs_concept\" type=\"xs:string\" use=\"required\" fixed=\""
 								+ FormUtil.conceptToString(concept, context
 										.getLocale()) + "\" />\n");
-				s
+				schema
 						.append("  <xs:attribute name=\"openmrs_datatype\" type=\"xs:string\" use=\"required\" fixed=\""
 								+ concept.getDatatype().getHl7Abbreviation()
 								+ "\" />\n");
 			}
-			s.append("</xs:complexType>\n\n");
+			schema.append("</xs:complexType>\n\n");
 		}
 		return subSectionList;
 	}
@@ -279,10 +271,10 @@ public class FormSchemaBuilder {
 	}
 
 	/**
-	 * Returns a unique tag name for field type definitions (simply adds 
-	 * "_type" to the end of the tag name and ensures that the tag name 
-	 * is unique and valid).  Field is added to an array so that these
-	 * complex types definitions can be rendered later.  
+	 * Returns a unique tag name for field type definitions (simply adds "_type"
+	 * to the end of the tag name and ensures that the tag name is unique and
+	 * valid). Field is added to an array so that these complex types
+	 * definitions can be rendered later.
 	 * 
 	 * @param f
 	 *            <code>FormField</code> from which to derive type
@@ -291,12 +283,18 @@ public class FormSchemaBuilder {
 	private String getNewTypeTag(FormField f) {
 		if (f.getField().getFieldType().getFieldTypeId().equals(
 				FormEntryConstants.FIELD_TYPE_CONCEPT)) {
-			String typeTag = FormUtil.getNewTag(FormUtil.getXmlToken(f
-					.getField().getName()
-					+ "_type"), tagList);
-			ComplexType ct = new ComplexType(f.getField(), f.isRequired());
-			if (!complexTypes.contains(ct))
-				complexTypes.put(ct, typeTag);
+			ComplexType ct = new ComplexType(formStructure, f);
+			String typeTag;
+			int i = complexTypes.indexOf(ct);
+			if (i >= 0)
+				typeTag = complexTypes.get(i).token;
+			else {
+				typeTag = FormUtil.getNewTag(FormUtil.getXmlToken(f.getField()
+						.getName()
+						+ "_type"), tagList);
+				ct.token = typeTag;
+				complexTypes.add(ct);
+			}
 			return typeTag;
 		} else if (f.getField().getFieldType().getFieldTypeId().equals(
 				FormEntryConstants.FIELD_TYPE_DATABASE)) {
@@ -308,5 +306,4 @@ public class FormSchemaBuilder {
 		}
 		return null;
 	}
-
 }

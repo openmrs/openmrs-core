@@ -815,3 +815,9 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 delimiter ;
 call diff_procedure('1.0.34');
 delimiter ;
+
+#-----------------------------------
+# Clean up - Keep this section at the very bottom of diff script
+#-----------------------------------
+
+DROP PROCEDURE IF EXISTS diff_procedure;

@@ -135,14 +135,38 @@ public class PublishInfoPath {
 		String submitUrl = FormEntryConstants.FORMENTRY_INFOPATH_SUBMIT_URL; // "http://localhost:8080/amrs/formUpload";
 		String schemaFilename = FormEntryConstants.FORMENTRY_DEFAULT_SCHEMA_NAME; // "FormEntry.xsd";
 		String outputDirName = FormEntryConstants.FORMENTRY_INFOPATH_OUTPUT_DIR; // System.getProperty("user.home");
-		
+
 		// ensure that output directory exists
 		File outputDir = new File(outputDirName);
 		if (!outputDir.exists())
 			outputDir.mkdirs();
 		if (!outputDir.exists() || !outputDir.isDirectory())
-			throw new IOException("Could not create or find output directory for forms (" + outputDirName + ")");
-		
+			throw new IOException(
+					"Could not create or find output directory for forms ("
+							+ outputDirName + ")");
+
+		// Copy existing XSN file to archive
+		String archiveDir = FormEntryConstants.FORMENTRY_INFOPATH_ARCHIVE_DIR;
+		File originalFile = new File(outputDirName, originalFormUri);
+		if (archiveDir != null && originalFile.exists()) {
+			String xsnArchiveFilePath = originalFormUri
+					+ "-"
+					+ form.getVersion()
+					+ "-"
+					+ form.getBuild()
+					+ "-"
+					+ new SimpleDateFormat(
+							FormEntryConstants.FORMENTRY_INFOPATH_ARCHIVE_DATE_FORMAT,
+							context.getLocale()).format(new Date()) + ".xsn";
+			File xsnArchiveFile = new File(archiveDir, xsnArchiveFilePath);
+			boolean success = copyFile(originalFile, xsnArchiveFile);
+			if (!success) {
+				log.warn("Unable to archive XSN " + xsnFilePath + " to "
+						+ xsnArchiveFilePath);
+			}
+		}
+
+
 		// prepare manifest
 		prepareManifest(tempDir, publishUrl, namespace, solutionVersion,
 				taskPaneCaption, taskPaneInitialUrl, submitUrl);
@@ -164,6 +188,8 @@ public class PublishInfoPath {
 			templateWithDefaults = new FormXmlTemplateBuilder(context, form,
 					publishUrl).getXmlTemplate(true);
 			try {
+				log.debug("Writing new template with defaults to: "
+						+ templateWithDefaultsFile.getAbsolutePath());
 				FileWriter out = new FileWriter(templateWithDefaultsFile);
 				out.write(templateWithDefaults);
 				out.close();
@@ -194,36 +220,14 @@ public class PublishInfoPath {
 		setVariables(tempDir,
 				FormEntryConstants.FORMENTRY_DEFAULT_JSCRIPT_NAME, vars);
 
-		
 		// make cab
-		// jmiranda - Added outputDirName (for linux) 
+		// jmiranda - Added outputDirName (for linux)
 		FormEntryUtil.makeCab(tempDir, outputDirName, outputFilename);
-			
 
-		// Copy XSN file to archive
-		String archiveDir = FormEntryConstants.FORMENTRY_INFOPATH_ARCHIVE_DIR;
-		File originalFile = new File(outputDirName, originalFormUri);
-		if (archiveDir != null && originalFile.exists()) {
-			String xsnArchiveFilePath = originalFormUri
-					+ "-"
-					+ form.getVersion()
-					+ "-"
-					+ form.getBuild()
-					+ "-"
-					+ new SimpleDateFormat(
-							FormEntryConstants.FORMENTRY_INFOPATH_ARCHIVE_DATE_FORMAT,
-							context.getLocale()).format(new Date()) + ".xsn";
-			File xsnArchiveFile = new File(archiveDir, xsnArchiveFilePath);
-			boolean success = moveFile(originalFile, xsnArchiveFile);
-			if (!success) {
-				log.warn("Unable to archive XSN " + xsnFilePath + " to " + xsnArchiveFilePath);
-			}
-		}
-
-		
-		
 		// clean up
 		deleteDirectory(tempDir);
+		if (originalFormUri != null && !originalFormUri.equals(outputFilename))
+			originalFile.delete(); // if we didn't overwrite the original, remove it
 
 		// update template, solution version, and build number on server
 		form.setTemplate(templateWithDefaults);
@@ -238,6 +242,8 @@ public class PublishInfoPath {
 			log.warn("Missing file: '" + fileName + "'");
 			return;
 		}
+		if (log.isDebugEnabled())
+			log.debug("Preparing template: " + file.getAbsolutePath());
 		Document doc = null;
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -245,17 +251,22 @@ public class PublishInfoPath {
 			doc = db.parse(file);
 			Node root = doc.getDocumentElement().getParentNode();
 			NodeList children = root.getChildNodes();
+			log.debug("Scanning for processing instructions");
 			for (int i = 0; i < children.getLength(); i++) {
 				Node node = children.item(i);
 				if (node.getNodeType() == Node.PROCESSING_INSTRUCTION_NODE
 						&& node.getNodeName().equals("mso-infoPathSolution")) {
 					ProcessingInstruction pi = (ProcessingInstruction) node;
 					String data = pi.getData();
+					if (log.isDebugEnabled())
+						log.debug("  found: " + data);
 					data = data.replaceAll(
-							"(\\ssolutionVersion\\s*=\\s*\")[^\"]+\"", "$1"
+							"(\\bsolutionVersion\\s*=\\s*\")[^\"]+\"", "$1"
 									+ solutionVersion + "\"");
-					data = data.replaceAll("(\\shref\\s*=\\s*\")[^\"]+\"", "$1"
+					data = data.replaceAll("(\\bhref\\s*=\\s*\")[^\"]+\"", "$1"
 							+ publishUrl + "\"");
+					if (log.isDebugEnabled())
+						log.debug("  replacing with: " + data);
 					pi.setData(data);
 				}
 			}
@@ -268,7 +279,7 @@ public class PublishInfoPath {
 
 	// Convenience method for copying a file from one location to another
 	// @returns true if copy was successful
-	private static boolean moveFile(File from, File to) {
+	private static boolean copyFile(File from, File to) {
 		boolean success = false;
 		try {
 			// Create channel on the source
@@ -283,8 +294,6 @@ public class PublishInfoPath {
 			// Close the channels
 			srcChannel.close();
 			dstChannel.close();
-
-			from.delete();
 
 			// report successful copy
 			success = true;
@@ -422,6 +431,7 @@ public class PublishInfoPath {
 			Source source = new DOMSource(doc);
 			Result result = new StreamResult(new FileOutputStream(filename));
 			xformer.transform(source, result);
+
 		} catch (TransformerConfigurationException e) {
 		} catch (TransformerException e) {
 		} catch (FileNotFoundException e) {
@@ -432,11 +442,20 @@ public class PublishInfoPath {
 		if (!dir.exists() || !dir.isDirectory())
 			throw new IOException("Could not delete direcotry '"
 					+ dir.getAbsolutePath() + "' (not a directory)");
+		log.debug("Deleting directory " + dir.getAbsolutePath());
 		File[] fileList = dir.listFiles();
 		for (File f : fileList) {
-			f.delete();
+			boolean success = f.delete();
+			log.debug("   deleting " + f.getName() + " : "
+					+ (success ? "ok" : "failed"));
 		}
-		return dir.delete();
+		boolean success = dir.delete();
+		if (success)
+			log.debug("   ...and directory itself");
+		else
+			log.warn("   ...could not remove directory: "
+					+ dir.getAbsolutePath());
+		return success;
 	}
 
 	private static void setVariables(File dir, String filename,

@@ -1,8 +1,6 @@
 package org.openmrs.formentry;
 
-import java.util.Date;
-
-import org.openmrs.User;
+import org.openmrs.Form;
 
 /**
  * Convenience class for generating various fragments of an XML template for
@@ -14,23 +12,21 @@ import org.openmrs.User;
  */
 public class FormXmlTemplateFragment {
 
-	public static String header(String urn, String infoPathSolutionVersion,
-			String url) {
+	public static String header(Form form, String url) {
 		return "<?xml version=\"1.0\"?>\n"
 				+ "<?mso-infoPathSolution name=\""
-				+ urn
+				+ FormEntryUtil.getFormSchemaNamespace(form)
 				+ "\" href=\""
 				+ url
 				+ "\" solutionVersion=\""
-				+ infoPathSolutionVersion
+				+ FormEntryUtil.getSolutionVersion(form)
 				+ "\" productVersion=\"11.0.6357\" PIVersion=\"1.0.0.0\" ?>\n"
 				+ "<?mso-application progid=\"InfoPath.Document\"?>\n";
 	}
 
-	public static String openForm(Integer formId, String formName,
-			String formVersion, String namespace, boolean includeDefaultScripts) {
-		return "<form id=\"" + formId + "\" name=\"" + formName + "\" "
-				+ "version=\"" + formVersion + "\" "
+	public static String openForm(Form form, String namespace, boolean includeDefaultScripts) {
+		return "<form id=\"" + form.getFormId() + "\" name=\"" + form.getName() + "\" "
+				+ "version=\"" + form.getVersion() + "\" "
 				+ "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
 				+ "xmlns:openmrs=\"" + namespace + "\" "
 				+ "xmlns:xd=\"http://schemas.microsoft.com/office/infopath/2003\">\n"

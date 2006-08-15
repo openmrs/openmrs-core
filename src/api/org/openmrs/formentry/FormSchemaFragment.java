@@ -7,6 +7,7 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.Drug;
+import org.openmrs.Form;
 
 /**
  * Convenience class for generating various fragments of an XML Schema for
@@ -25,10 +26,11 @@ public class FormSchemaFragment {
 	 *            the namespace for this form
 	 * @return XML Schema header
 	 */
-	public static String header(String namespace) {
+	public static String header(Form form) {
 		return "<?xml version=\"1.0\"?>\n"
 				+ "<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"\n"
-				+ "           xmlns:openmrs=\"" + namespace + "\"\n"
+				+ "           xmlns:openmrs=\""
+				+ FormEntryUtil.getFormSchemaNamespace(form) + "\"\n"
 				+ "           elementFormDefault=\"qualified\"\n"
 				+ "           attributeFormDefault=\"unqualified\">\n\n";
 	}
@@ -42,7 +44,7 @@ public class FormSchemaFragment {
 		return "<xs:element name=\"form\">\n"
 				+ "  <xs:complexType>\n"
 				+ "    <xs:sequence>\n"
-				+ "      <xs:element name=\"header\" type=\"_header_type\" />\n";
+				+ "      <xs:element name=\"header\" type=\"_header_section\" />\n";
 	}
 
 	/**
@@ -56,17 +58,16 @@ public class FormSchemaFragment {
 	 *            version of form
 	 * @return XML fragment to close the declaration of an OpenMRS form
 	 */
-	public static String closeForm(int formId, String formName,
-			String formVersion) {
+	public static String closeForm(Form form) {
 		return "    </xs:sequence>\n"
 				+ "    <xs:attribute name=\"id\" type=\"xs:positiveInteger\" fixed=\""
-				+ formId
+				+ form.getFormId()
 				+ "\" use=\"required\" />\n"
 				+ "    <xs:attribute name=\"name\" type=\"xs:string\" fixed=\""
-				+ formName
+				+ form.getName()
 				+ "\" use=\"required\" />\n"
 				+ "    <xs:attribute name=\"version\" type=\"xs:string\" fixed=\""
-				+ formVersion + "\" use=\"required\" />\n"
+				+ form.getVersion() + "\" use=\"required\" />\n"
 				+ "  </xs:complexType>\n" + "</xs:element>\n\n";
 	}
 
@@ -74,14 +75,14 @@ public class FormSchemaFragment {
 	 * @return XML Schema fragment to define pre-defined datatypes
 	 */
 	public static String predefinedTypes() {
-		return "<xs:complexType name=\"_header_type\">\n"
+		return "<xs:complexType name=\"_header_section\">\n"
 				+ "  <xs:sequence>\n"
 				+ "    <xs:element name=\"enterer\" type=\"xs:string\" />\n"
 				+ "    <xs:element name=\"date_entered\" type=\"xs:dateTime\" />\n"
 				+ "    <xs:element name=\"session\" type=\"xs:string\" />\n"
 				+ "  </xs:sequence>\n"
 				+ "</xs:complexType>\n\n"
-				+ "<xs:complexType name=\"_other_type\">\n"
+				+ "<xs:complexType name=\"_other_section\">\n"
 				+ "  <xs:sequence>\n"
 				+ "    <xs:any namespace=\"##any\" minOccurs=\"0\" maxOccurs=\"unbounded\"/>\n"
 				+ "  </xs:sequence>\n"
@@ -324,8 +325,10 @@ public class FormSchemaFragment {
 						+ "          <xs:extension base=\"xs:boolean\">\n"
 						+ "            <xs:attribute name=\"openmrs_concept\" type=\"xs:string\" use=\"required\" fixed=\""
 						+ FormUtil.conceptToString(answer.getAnswerConcept(),
-								locale) + "^"
-						+ FormUtil.drugToString(answerDrug) + "\" />\n"
+								locale)
+						+ "^"
+						+ FormUtil.drugToString(answerDrug)
+						+ "\" />\n"
 						// + " <xs:attribute name=\"openmrs_drug\"
 						// type=\"xs:string\" use=\"required\" fixed=\""
 						// + FormUtil.drugToString(answer.getAnswerDrug())

@@ -29,6 +29,10 @@
 	<input type="button" value="<spring:message code="Form.duplicate"/>" onclick="return duplicate()" />
 </form>
 
+<openmrs:hasPrivilege privilege="Upload XSN">
+	| <a href="${pageContext.request.contextPath}/admin/formentry/xsnUpload.form"><spring:message code="FormEntry.xsn.manage"/></a>		
+</openmrs:hasPrivilege>
+
 <br /><br />
 
 <b class="boxHeader">

@@ -87,8 +87,8 @@ public class FormEntryUtil {
 		{ 
 			cmdBuffer.append("expand -F:* \"").append(xsnFilePath).append("\" \"").append(tempDir.getAbsolutePath()).append("\"");
 			execCmd(cmdBuffer.toString(), null);
-		}				
-
+		}	
+		
 		return tempDir;
 	}
 
@@ -152,7 +152,7 @@ public class FormEntryUtil {
 			
 			BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			while ((line = input.readLine()) != null) {
-				out += line;
+				out += line + "\n";
 			}
 			input.close();
 		} catch (Exception e) {
@@ -189,9 +189,11 @@ public class FormEntryUtil {
 			tempDir = new File(directory, filename);
 		} while (tempDir.exists());
 
-		if (!tempDir.mkdir())
+		if (!tempDir.mkdirs())
 			throw new IOException("Could not create temporary directory '"
 					+ tempDir.getAbsolutePath() + "'");
+		if (log.isDebugEnabled())
+			log.debug("Successfully created temporary directory: " + tempDir.getAbsolutePath());
 		return tempDir;
 	}
 
@@ -237,10 +239,10 @@ public class FormEntryUtil {
 				// slash
 				+ "\"\n";
 
-		log.debug("ddf = " + ddf);
-
 		for (File f : xsnDir.listFiles())
 			ddf += "\"" + f.getPath() + "\"\n";
+
+		log.debug("ddf = " + ddf);
 
 		File ddfFile = new File(xsnDir, "publish.ddf");
 		try {

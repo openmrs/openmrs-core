@@ -254,7 +254,7 @@ public class FormStarterXSN {
 
 	private boolean deleteDirectory(File dir) throws IOException {
 		if (!dir.exists() || !dir.isDirectory())
-			throw new IOException("Could not delete direcotry '"
+			throw new IOException("Could not delete directory '"
 					+ dir.getAbsolutePath() + "' (not a directory)");
 		File[] fileList = dir.listFiles();
 		for (File f : fileList) {
