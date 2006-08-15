@@ -236,7 +236,7 @@ table.patientTreatmentPrograms td {
 	border-bottom: 1px solid #fff;
 }
 #patientTabs a:hover, #patientTabs a.current {
-	background: #8080a0;
+	background: #CCCCFF;
 	color: white;
 }
 
