@@ -567,3 +567,16 @@ fieldset {
 	border: 1px black dashed;
 	background-color: #f4f4f4;
 }
+
+#stackTrace {
+	display: none;
+	font-size: 11px;
+	padding: 2px;
+	width: 585px;
+}
+
+#exceptionMessage {
+	background-color: white;
+	padding: 1px;
+	color: black;
+}

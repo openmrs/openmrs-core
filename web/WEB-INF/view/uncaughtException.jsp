@@ -10,20 +10,6 @@
 
 <h2>An Internal Error has Occured</h2>
 
-<style>
-	#stackTrace {
-		display: none;
-		font-size: 11px;
-		padding: 2px;
-		width: 585px;
-	}
-	#exceptionMessage {
-		background-color: white;
-		padding: 1px;
-		color: black;
-	}
-</style>
-
 <script>
 	function showOrHide() {
 		var link = document.getElementById("toggleLink");
