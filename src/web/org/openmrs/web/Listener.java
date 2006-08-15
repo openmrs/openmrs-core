@@ -71,6 +71,8 @@ public final class Listener implements ServletContextListener {
 			custom.put("custom.template.dir", "/WEB-INF/template");
 			custom.put("custom.style.css.file", "/style.css");
 			custom.put("custom.index.jsp.file", "/WEB-INF/view/index.jsp");
+			custom.put("custom.login.jsp.file", "/WEB-INF/view/login.jsp");
+			custom.put("custom.patientDashboardForm.jsp.file", "/WEB-INF/view/formentry/patientDashboardForm.jsp");
 			custom.put("custom.images.dir", "/images");
 
 			String realPath = event.getServletContext().getRealPath("");
