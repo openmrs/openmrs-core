@@ -228,10 +228,10 @@
 						</a>
 					</td>
 					<td align="center">
-						<openmrs:formatDate date="${program.dateEnrolled}"/>
+						<openmrs:formatDate date="${program.dateEnrolled}" type="medium" />
 					</td>
 					<td align="center">
-						<openmrs:formatDate date="${program.dateCompleted}"/>
+						<openmrs:formatDate date="${program.dateCompleted}" type="medium" />
 					</td>
 					<td>				
 						<c:forEach var="workflow" items="${program.program.workflows}">
