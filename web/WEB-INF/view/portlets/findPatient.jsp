@@ -38,10 +38,8 @@
 				
 			</script>
 			
-			<h3><spring:message code="Patient.find"/></h3>
-			
 			<div id="findPatient">
-				<b class="boxHeader"><spring:message code="formentry.step1"/></b>
+				<b class="boxHeader"><spring:message code="Patient.find"/></b>
 				<div class="box">
 					<div dojoType="PatientSearch" widgetId="pSearch" searchLabel='<spring:message code="formentry.searchBox"/>' showVerboseListing="true" patientId='<request:parameter name="patientId"/>' searchPhrase='<request:parameter name="phrase"/>'></div>
 				</div>

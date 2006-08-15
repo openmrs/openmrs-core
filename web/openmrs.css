@@ -580,3 +580,5 @@ fieldset {
 	padding: 1px;
 	color: black;
 }
+
+#regimenPortlet a.boxHeader { color: #ffffff; }
