@@ -27,7 +27,7 @@
 	</table>
 	<div id="patientSubheader" class="box">
 		<c:forEach items="${model.patientCurrentPrograms}" var="p" varStatus="s">
-			<c:if test="${p.program.concept.conceptId == 1466}">
+			<c:if test="${p.program.concept.conceptId == 0}">
 				<table><tr>
 					<td><spring:message code="Program.hiv"/></td>
 					<td>|</td>
@@ -40,7 +40,7 @@
 			</c:if>
 		</c:forEach>
 		<c:forEach items="${model.patientCurrentPrograms}" var="p" varStatus="s">
-			<c:if test="${p.program.concept.conceptId == 1467}">
+			<c:if test="${p.program.concept.conceptId == 0}">
 				<table><tr>
 					<td><spring:message code="Program.tb"/></td>
 					<td>|</td>
