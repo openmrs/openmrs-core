@@ -25,7 +25,6 @@ dojo.addOnLoad( function() {
 		}
 	);
 	
-	changeClass(document.getElementById("conceptClass"));
 	changeDatatype(document.getElementById("datatype"));
 	changeSetStatus(document.getElementById('conceptSet'));
 });
@@ -74,13 +73,6 @@ function removeItem(nameList, idList, delim)
 		return optList[lastIndex];
 	}
 	return null;
-}
-
-function closeConceptBox() {
-	myConceptSearchMod.hide();
-	addButton = null;
-	drugConcepts = new Array();
-	return false;
 }
 
 function moveUp(nameList, idList)
@@ -200,14 +192,6 @@ function removeHiddenRows() {
 		else
 			i = i + 1;
 	}
-}
-
-function changeClass(obj) {
-	var row = document.getElementById("conceptSetRow");
-	//if (isSet)
-	//	row.style.display = "";
-	//else
-	//	row.style.display = "none";
 }
 
 function changeSetStatus(obj) {

@@ -196,7 +196,7 @@ dojo.widget.defineWidget(
 		this.key = 0;
 		
 		// don't fire for things like alt-tab, ctrl-c -- but DO fire for cntrl-v  (86=v)
-		if (!this.event.altKey && (!this.event.ctrlKey || this.event.keyCode == 'v')) {
+		if (!this.event.altKey && (!this.event.ctrlKey || this.key == 'v')) {
 			this.key = this.event.keyCode;
 			dojo.debug('event.type : ' + this.event.type);
 			if ((this.key==0 || this.key==null) && (this.event.type == "click" || this.event.type == "change" || this.event.type == "submit"))

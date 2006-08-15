@@ -52,13 +52,12 @@ public class DWRPatientService {
 				
 				patients = ps.findPatients(searchValue, includeVoided);
 				patientList = new Vector<Object>(patients.size());
-				for (Patient p : patients) {
+				for (Patient p : patients)
 					patientList.add(new PatientListItem(p));
-				}
 				
-				// only 2 results found ( TODO change to "no results found")
+				// only 2 results found and a number was not in the search
 				// decapitated search
-				if (patientList.size() < 3) {
+				if (patientList.size() < 3 && !searchValue.matches(".*\\d+.*")) {
 					String[] names = searchValue.split(" ");
 					String newSearch = "";
 					for (String name : names) {
@@ -87,7 +86,7 @@ public class DWRPatientService {
 				patientList.add("Error while attempting to find patient - " + e.getMessage());
 			}
 		}
-		
+				
 		return patientList;
 	}
 	

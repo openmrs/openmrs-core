@@ -220,7 +220,7 @@
 		<th valign="top"><spring:message code="Concept.set"/></th>
 		<td>
 			<spring:bind path="concept.set">
-				<input type="checkbox" name="conceptSet" id="conceptSet" <c:if test="${status.value}">checked="checked"</c:if> onChange="changeSetStatus(this)"/>
+				<input type="checkbox" name="conceptSet" id="conceptSet" <c:if test="${status.value}">checked="checked"</c:if> onClick="changeSetStatus(this)" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
@@ -240,9 +240,9 @@
 					</td>
 					<td valign="top" class="buttons">
 						&nbsp;<span dojoType="ConceptSearch" widgetId="sSearch"></span><span dojoType="OpenmrsPopup" searchWidget="sSearch" searchTitle='<spring:message code="Concept.find"/>' changeButtonValue='<spring:message code="general.add"/>' showConceptIds="true"></span> <br/>
-						&nbsp;<input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('conceptSetsNames', 'conceptSets', ' ');" /> <br/>
-						&nbsp;<input type="button" value="<spring:message code="general.move_up"/>" class="smallButton" onClick="moveUp('conceptSetsNames', 'conceptSets');" /><br/>
-						&nbsp;<input type="button" value="<spring:message code="general.move_down"/>" class="smallButton" onClick="moveDown('conceptSetsNames', 'conceptSets');" /><br/>
+						&nbsp; <input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('conceptSetsNames', 'conceptSets', ' ');" /> <br/>
+						&nbsp; <input type="button" value="<spring:message code="general.move_up"/>" class="smallButton" onClick="moveUp('conceptSetsNames', 'conceptSets');" /><br/>
+						&nbsp; <input type="button" value="<spring:message code="general.move_down"/>" class="smallButton" onClick="moveDown('conceptSetsNames', 'conceptSets');" /><br/>
 					</td>
 				</tr>
 			</table>
@@ -415,16 +415,17 @@
 	</tr>
 </table>
 
-<br />
-
-<input type="submit" name="action" value="<spring:message code="Concept.save"/>" onMouseUp="removeHiddenRows()"/>
-
-<c:if test="${concept.conceptId != null}">
-	<openmrs:hasPrivilege privilege="Delete Concepts">
-		 &nbsp; &nbsp; &nbsp;
-		<input type="submit" name="action" value="<spring:message code="Concept.delete"/>" onclick="return confirm('Are you sure you want to delete this ENTIRE CONCEPT?')"/>
-	</openmrs:hasPrivilege>
-</c:if>
+<div id="saveDeleteButtons" style="margin-top: 15px">
+	
+	<input type="submit" name="action" value="<spring:message code="Concept.save"/>" onMouseUp="removeHiddenRows()"/>
+	
+	<c:if test="${concept.conceptId != null}">
+		<openmrs:hasPrivilege privilege="Delete Concepts">
+			 &nbsp; &nbsp; &nbsp;
+			<input type="submit" name="action" value="<spring:message code="Concept.delete"/>" onclick="return confirm('Are you sure you want to delete this ENTIRE CONCEPT?')"/>
+		</openmrs:hasPrivilege>
+	</c:if>
+</div>
 
 </form>
 
