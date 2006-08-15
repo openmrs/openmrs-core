@@ -3,28 +3,31 @@
 <openmrs:require privilege="View Patients" otherwise="/login.htm" redirect="/formentry/index.htm" />
 
 	<%-- Header showing preferred name, id, and treatment status --%>
-	<table id="patientHeader" class="boxHeader">
-		<tr>
-			<td class="patientName">${model.patient.patientName.givenName} ${model.patient.patientName.middleName} ${model.patient.patientName.familyName}&nbsp;&nbsp</td>
-			<td>
-				<c:if test="${model.patient.gender == 'M'}"><spring:message code="Patient.gender.male"/></c:if>
-				<c:if test="${model.patient.gender == 'F'}"><spring:message code="Patient.gender.female"/></c:if>
-			</td>
-			<td>|</td>
-			<td>
-				<c:if test="${model.patient.age > 0}">${model.patient.age} <spring:message code="Patient.age.years"/></c:if>
-				<c:if test="${model.patient.age == 0}">< 1 <spring:message code="Patient.age.year"/></c:if>
-				(<c:if test="${model.patient.birthdateEstimated}">~</c:if><openmrs:formatDate date="${model.patient.birthdate}" type="medium" />)
-			</td>
-			<td>|</td>
-			<td>
-				<c:forEach var="identifier" items="${model.patient.identifiers}" varStatus="status">
-					${identifier.identifierType.name}: ${identifier.identifier}
-					<c:if test="${!status.last}">&nbsp;&nbsp;|&nbsp;&nbsp;</c:if>
-				</c:forEach>
-			</td>
-		</tr>
-	</table>
+	<div id="patientHeader" class="boxHeader">
+		<table>
+			<tr>
+				<td class="patientName">${model.patient.patientName.givenName} ${model.patient.patientName.middleName} ${model.patient.patientName.familyName}&nbsp;&nbsp</td>
+				<td>
+					<c:if test="${model.patient.gender == 'M'}"><spring:message code="Patient.gender.male"/></c:if>
+					<c:if test="${model.patient.gender == 'F'}"><spring:message code="Patient.gender.female"/></c:if>
+				</td>
+				<td>|</td>
+				<td>
+					<c:if test="${model.patient.age > 0}">${model.patient.age} <spring:message code="Patient.age.years"/></c:if>
+					<c:if test="${model.patient.age == 0}">< 1 <spring:message code="Patient.age.year"/></c:if>
+					(<c:if test="${model.patient.birthdateEstimated}">~</c:if><openmrs:formatDate date="${model.patient.birthdate}" type="medium" />)
+				</td>
+				<td>|</td>
+				<td>
+					<c:forEach var="identifier" items="${model.patient.identifiers}" varStatus="status">
+						${identifier.identifierType.name}: ${identifier.identifier}
+						<c:if test="${!status.last}">&nbsp;&nbsp;|&nbsp;&nbsp;</c:if>
+					</c:forEach>
+				</td>
+				<td>&nbsp;</td>
+			</tr>
+		</table>
+	</div>
 	<div id="patientSubheader" class="box">
 		<c:forEach items="${model.patientCurrentPrograms}" var="p" varStatus="s">
 			<c:if test="${p.program.concept.conceptId == 0}">

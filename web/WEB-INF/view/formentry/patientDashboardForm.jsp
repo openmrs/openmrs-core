@@ -32,8 +32,8 @@
 		if (!document.getElementById || !document.createTextNode) {return;}
 		var tabs = document.getElementById('patientTabs').getElementsByTagName('a');
 		for (var i=0; i<tabs.length; i++) {
-			if (tabs[i].className == 'current') {
-				tabs[i].className = '';
+			if (tabs[i].className.indexOf('current') != -1) {
+				manipulateClass('remove', tabs[i], 'current');
 			}
 		}
 		addClass(document.getElementById(tabType+'Tab'), 'current');
@@ -110,9 +110,9 @@
 		<li><a id="graphsTab" href="#" onclick="changeTab('graphs');">Graphs</a></li>
 	</ul>
 </div>
-
+<br/>
 <div id="patientSections">
-	<div id="patientOverview">
+	<div id="patientOverview" style="display:none;">
 		<openmrs:portlet url="patientOverview" id="patientDashboardOverview" patientId="${patient.patientId}"/>
 	</div>
 	<div id="patientRegimen" style="display:none;">

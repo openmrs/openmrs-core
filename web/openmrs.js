@@ -40,6 +40,24 @@ function hasClass(obj, className) {
 	return false;
 }
 
+function manipulateClass(operation, obj, c1, c2) {
+	switch (operation){
+		case 'swap':
+			obj.className=!manipulateClass('check',obj,c1)?obj.className.replace(c2,c1): obj.className.replace(c1,c2);
+			break;
+		case 'add':
+			if(!manipulateClass('check',obj,c1)){obj.className+=obj.className?' '+c1:c1;}
+			break;
+		case 'remove':
+			var rep=obj.className.match(' '+c1)?' '+c1:c1;
+			obj.className=obj.className.replace(rep,'');
+			break;
+		case 'check':
+			return new RegExp('\\b'+c1+'\\b').test(obj.className)
+			break;
+	}
+}
+
 function changeClassProperty(sClassName,sProperty,sValue) {
 	sClassName="."+sClassName;
 	var sheets = document.styleSheets;
