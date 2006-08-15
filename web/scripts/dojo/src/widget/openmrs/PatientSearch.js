@@ -20,49 +20,7 @@ dojo.widget.defineWidget(
 		initializer: function(){
 			dojo.debug("initializing patientsearch");
 			
-			dojo.event.topic.subscribe(this.widgetId + "/findObjects",
-				function(phrase) {
-					this.savedText = phrase;
-				}
-			);
-			
-			dojo.event.topic.subscribe(this.widgetId + "/objectsFound", 
-				function(msg) {
-					if (msg) {
-						patients = msg.objects;
-						// if no hits
-						if (patients.length < 1) {
-							if (this.savedText.match(/\d/)) {
-								if (isValidCheckDigit(this.savedText) == false) {
-									//the user didn't input an identifier with a valid check digit
-									if (patientTableHead)
-										patientTableHead.style.display = "none";
-									var img = getProblemImage();
-									var tmp = " <img src='" + img.src + "' title='" + img.title + "' /> " + invalidCheckDigitText + this.savedText;
-									patients.push(tmp);
-									patients.push(this.noPatientsFoundText);
-									patients.push(this.searchOnPatientNameText);
-								}
-								else {
-									//the user did input a valid identifier, but we don't have it
-									patients.push(this.noPatientsFoundText);
-									patients.push(this.searchOnPatientNameText);
-									patients.push(this.addPatientLink);
-								}
-							}
-							else {
-								// the user put in a text search
-								patients.push(this.noPatientsFoundText);
-								patients.push(this.addPatientLink);
-							}
-							fillTable([]);	//this call sets up the table/info bar
-						}
-						// if hits
-						else if (patients.length > 1 || this.isValidCheckDigit(this.savedText) == false) {
-							patients.push(this.addPatientLink);	//setup links for appending to the end
-						}
-					}
-				});
+			dojo.event.connect("before", this, "fillTable", this, "preFillTable");
 		},
 		
 		postCreate: function() {
@@ -84,7 +42,40 @@ dojo.widget.defineWidget(
 			return false;
 		},
 		
-		savedText: "",
+		preFillTable: function(patients) {
+			if (patients == null) return;
+			// if no hits
+			if (patients.length < 1) {
+				if (this.lastPhraseSearched.match(/\d/)) {
+					if (this.isValidCheckDigit(this.lastPhraseSearched) == false) {
+						//the user didn't input an identifier with a valid check digit
+						this.hideHeaderRow()
+						var img = this.getProblemImage();
+						var tmp = " <img src='" + img.src + "' title='" + img.title + "' /> " + this.invalidCheckDigitText + this.lastPhraseSearched;
+						patients.push(tmp);
+						patients.push(this.noPatientsFoundText);
+						patients.push(this.searchOnPatientNameText);
+					}
+					else {
+						//the user did input a valid identifier, but we don't have it
+						patients.push(this.noPatientsFoundText);
+						patients.push(this.searchOnPatientNameText);
+						patients.push(this.addPatientLink);
+					}
+				}
+				else {
+					// the user put in a text search
+					patients.push(this.noPatientsFoundText);
+					patients.push(this.addPatientLink);
+				}
+				//fillTable([]);	//this call sets up the table/info bar
+			}
+			// if hits
+			else if (patients.length > 1 || this.isValidCheckDigit(this.lastPhraseSearched) == false) {
+				patients.push(this.addPatientLink);	//setup links for appending to the end
+			}
+		},
+		
 		invalidCheckDigitText: "Invalid check digit for MRN: ",
 		searchOnPatientNameText: "Please search on part of the patient's name. ",
 		noPatientsFoundText: "No patients found. <br/> ",
@@ -303,7 +294,7 @@ dojo.widget.defineWidget(
 			}
 			//	only allow the first item to be automatically selected if:
 			//		the entered text is a string or the entered text is a valid identifier
-			return (this.savedText.match(/\d/) == false || isValidCheckDigit(this.savedText));	
+			return (this.lastPhraseSearched.match(/\d/) == false || this.isValidCheckDigit(this.lastPhraseSearched));	
 		}
 		
 	},

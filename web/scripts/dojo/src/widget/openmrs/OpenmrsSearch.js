@@ -252,9 +252,8 @@ dojo.widget.defineWidget(
 						if (this.text.length > 1) {
 							this.clearPagingBars();
 							dojo.debug('setting preFindObjects timeout for other key: ' + key);
-							var tmp = function(ts, text) { return function() {ts.findObjects(text)}};
-							var callback = tmp(this, this.text);
-							this.searchTimeout = setTimeout(callback, this.searchDelay);
+							var callback = function(ts, text) { return function() {ts.findObjects(text)}};
+							this.searchTimeout = setTimeout(callback(this, this.text), this.searchDelay);
 							dojo.debug('findObjects timeout called for other key: ' + key);
 						}
 					}
@@ -307,7 +306,7 @@ dojo.widget.defineWidget(
 		if (this.allowNewSearch() && this.text != this.lastPhraseSearched) {
 			//this was a new search with the enter key pressed, call findObjects function 
 			dojo.debug('This was a new search');
-			if (this.text == "")
+			if (this.text == null || this.text == "")
 				this.text = this.lastPhraseSearched;
 			this.findObjects(this.text);
 			this.showHighlight();
@@ -354,8 +353,7 @@ dojo.widget.defineWidget(
 			this.lastPhraseSearched = phrase;
 			
 			dojo.event.topic.publish(this.eventNames.findObjects, phrase);
-			
-			this.doFindObjects(phrase);			
+			this.doFindObjects(phrase);
 		}
 		else {
 			this.objectsFound = new Array();
