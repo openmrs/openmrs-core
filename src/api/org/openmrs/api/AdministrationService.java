@@ -994,4 +994,10 @@ public class AdministrationService {
 		systemVariables.put("STOP_WORDS",OpenmrsConstants.STOP_WORDS().toString());
 		return systemVariables;
 	}
+	
+	
+	public Object getGlobalProperty(String propertyName) { 
+		return getAdminDAO().getGlobalProperty(propertyName);
+	}
+	
 }

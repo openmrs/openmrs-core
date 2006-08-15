@@ -240,22 +240,33 @@ public class HibernateUtil {
 	 * global_property.property = 'database_version'
 	 * 
 	 * Sets OpenmrsConstants.DATABASE_VERSION accordingly
-	 *
+	 * 
 	 */
 	private static void checkDatabaseVersion() {
-		String sql = "SELECT property_value FROM global_property WHERE property = 'database_version'";
+		OpenmrsConstants.DATABASE_VERSION = getGlobalProperty("database_version");
+	}
+	
+	/**
+	 * Gets value of a global property with the given name.
+	 *
+	 * @param propertyName		name of the global property
+	 */
+	public static String getGlobalProperty(String propertyName) {
+		String sql = "SELECT property_value FROM global_property WHERE property = '" + propertyName + "'";
+		String result = "";
 		try {
 			// Get the properties 
-			ResultSet result = currentSession().connection().prepareStatement(sql).executeQuery();
+			ResultSet resultSet = currentSession().connection().prepareStatement(sql).executeQuery();
 			
-			while (result.next()) {
-				// assumes only the property_value was selected
-				OpenmrsConstants.DATABASE_VERSION = result.getString(1);
+			// Return the first value found
+			if (resultSet.next()) {
+				result = resultSet.getString(1);
 			}
 		} catch (SQLException e) {
-			log.error("Error while getting database version", e);
+			log.error("Error while getting global property ", e);
 		}
-	}
+		return result;
+	}	
 	
 	private static void checkCoreDataSet() {
 		Connection conn = currentSession().connection();

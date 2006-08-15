@@ -469,5 +469,7 @@ public interface AdministrationDAO {
 	public void mrnGeneratorLog(String site, Integer start, Integer count) throws DAOException;
 	
 	public Collection getMRNGeneratorLog() throws DAOException;
+	
+	public Object getGlobalProperty(String propertyName) throws DAOException;
 
 }

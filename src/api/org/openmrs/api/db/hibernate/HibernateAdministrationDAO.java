@@ -1422,4 +1422,10 @@ public class HibernateAdministrationDAO implements
 			throw new DAOException(e);
 		}
 	}
+	
+	
+	public Object getGlobalProperty(String propertyName) throws DAOException { 
+		return HibernateUtil.getGlobalProperty(propertyName);
+	}
+	
 }
