@@ -9,7 +9,7 @@ public class DateHandler extends AbstractFieldGenHandler implements FieldGenHand
 	public void run() {
 		setUrl(defaultUrl);
 		
-		String datePattern = OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS_JS().get(getContext().getLocale().toString().toLowerCase());
+		String datePattern = OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(getContext().getLocale().toString().toLowerCase());
 		String needScript = "true";
 		
 		if ( getRequest().getAttribute("org.openmrs.widget.dateField.needScript") != null ) {
