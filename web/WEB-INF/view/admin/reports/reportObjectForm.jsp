@@ -5,8 +5,8 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/openmrsPopup.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/calendar/calendar.js"></script>
+<openmrs:htmlInclude file="/scripts/openmrsPopup.js" />
+<openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
 <h2><spring:message code="ReportObject.title"/></h2>
 
 <spring:hasBindErrors name="reportObject">

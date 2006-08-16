@@ -1,10 +1,9 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/easyAjax.js"></script>
-
-<script type="text/javascript" src="<%= request.getContextPath() %>/dwr/interface/DWRPatientSetService.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/dwr/engine.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/dwr/util.js"></script>
+<openmrs:htmlInclude file="/scripts/easyAjax.js" />
+<openmrs:htmlInclude file="/dwr/interface/DWRPatientSetService.js" />
+<openmrs:htmlInclude file="/dwr/engine.js" />
+<openmrs:htmlInclude file="/dwr/util.js" />
 
 <c:choose>
 	<c:when test="${model.bodyId != null}">

@@ -5,7 +5,7 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<script src="<%= request.getContextPath() %>/scripts/calendar/calendar.js"></script>
+<openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
 
 <script type="text/javascript" src="<%= request.getContextPath() %>/scripts/dojo/dojo.js"></script>
 

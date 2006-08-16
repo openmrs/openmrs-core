@@ -5,17 +5,17 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<script src="<%= request.getContextPath() %>/scripts/calendar/calendar.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/prototype.lite.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/moo.fx.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/moo.fx.pack.js"></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/engine.js'></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/util.js'></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/openmrsSearch.js"></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/interface/DWRPatientService.js'></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/interface/DWRConceptService.js'></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/interface/DWREncounterService.js'></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/conceptSearch.js"></script>
+<openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
+<openmrs:htmlInclude file="/scripts/prototype.lite.js" />
+<openmrs:htmlInclude file="/scripts/moo.fx.js" />
+<openmrs:htmlInclude file="/scripts/moo.fx.pack.js" />
+<openmrs:htmlInclude file="/dwr/engine.js" />
+<openmrs:htmlInclude file="/dwr/util.js" />
+<openmrs:htmlInclude file="/scripts/openmrsSearch.js" />
+<openmrs:htmlInclude file="/dwr/interface/DWRPatientService.js" />
+<openmrs:htmlInclude file="/dwr/interface/DWRConceptService.js" />
+<openmrs:htmlInclude file="/dwr/interface/DWREncounterService.js" />
+<openmrs:htmlInclude file="/scripts/conceptSearch.js" />
 
 <script type="text/javascript">
 

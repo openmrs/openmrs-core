@@ -6,9 +6,8 @@
 <%@ include file="localHeader.jsp" %>
 <% pageContext.setAttribute("linefeed", "\r\n"); %>
 
-<script src="<%= request.getContextPath() %>/scripts/calendar/calendar.js"></script>
-
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/dojo/dojo.js"></script>
+<openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
+<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 
 <script type="text/javascript">
 	dojo.require("dojo.widget.openmrs.PatientSearch");

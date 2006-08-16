@@ -1,12 +1,10 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<script src="<%= request.getContextPath() %>/scripts/calendar/calendar.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/easyAjax.js"></script>
-
-<script type="text/javascript" src="<%= request.getContextPath() %>/dwr/interface/DWRProgramWorkflowService.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/dwr/engine.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/dwr/util.js"></script>
-
+<openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
+<openmrs:htmlInclude file="/scripts/easyAjax.js" />
+<openmrs:htmlInclude file="/dwr/interface/DWRProgramWorkflowService.js" />
+<openmrs:htmlInclude file="/dwr/engine.js" />
+<openmrs:htmlInclude file="/dwr/util.js" />
 
 <script type="text/javascript">
 	function getDateString(d) {

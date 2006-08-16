@@ -4,7 +4,7 @@
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
-<script src="<%= request.getContextPath() %>/scripts/calendar/calendar.js"></script>
+<openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
 
 <script type="text/javascript">
 	function addIdentifier(id, type, location, pref, oldIdentifier) {

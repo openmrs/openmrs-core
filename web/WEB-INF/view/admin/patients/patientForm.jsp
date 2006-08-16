@@ -8,8 +8,8 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<script src="<%= request.getContextPath() %>/scripts/calendar/calendar.js"></script>
-<script src="<%= request.getContextPath() %>/scripts/validation.js"></script>
+<openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
+<openmrs:htmlInclude file="/scripts/validation.js" />
 
 <script>
 	// Saves the last tab clicked on (aka "current" or "selected" tab)

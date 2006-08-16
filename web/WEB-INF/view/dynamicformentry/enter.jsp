@@ -2,7 +2,7 @@
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/calendar/calendar.js"></script>
+<openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
 
 <div id="commandBox" style="border: 1px black dashed">
 	<c:forEach var="modelValue" items="${formInProgress}">
