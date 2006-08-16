@@ -9,7 +9,7 @@
 	var djConfig = {debugAtAllCosts: false, isDebug: false };
 </script>
 
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/dojo/dojo.js"></script>
+<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 
 <script type="text/javascript" src="<%= request.getContextPath() %>/dwr/interface/DWRConceptService.js"></script>
 <script type="text/javascript" src="<%= request.getContextPath() %>/dwr/interface/DWRFormService.js"></script>

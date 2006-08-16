@@ -4,7 +4,7 @@
 
 <openmrs:require privilege="Edit Concepts" otherwise="/login.htm" redirect="/dictionary/concept.form" />
 
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/dojo/dojo.js"></script>
+<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 <script type="text/javascript" src="conceptForm.js"></script>
 
 <script type="text/javascript">

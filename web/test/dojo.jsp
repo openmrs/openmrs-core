@@ -6,7 +6,7 @@
 	var djConfig = {debugAtAllCosts: true, isDebug: true};
 </script>
 
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/dojo/dojo.js"></script>
+<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 
 <script type="text/javascript">
 	dojo.require("dojo.widget.openmrs.EncounterSearch");

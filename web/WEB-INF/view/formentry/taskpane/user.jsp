@@ -6,7 +6,7 @@
 
 <h3><spring:message code="User.title"/></h3>
 
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/dojo/dojo.js"></script>
+<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 
 <script type="text/javascript">
 	dojo.require("dojo.widget.openmrs.UserSearch");
