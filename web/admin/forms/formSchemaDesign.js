@@ -452,7 +452,7 @@
 				fieldLabel += data["fieldName"];
 		
 		}
-		fieldLabel += "[" + data.sortWeight + "]";
+		
 		return fieldLabel;
 	}
 	

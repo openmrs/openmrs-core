@@ -156,7 +156,7 @@
 			DWRPatientService.getSimilarPatients(String name, Date birthdate, String age, String gender);
 			DWRPatientService.findDuplicatePatients(String[] searchOn);
 			DWRConceptService.findConcepts(String phrase, List<String> classNames, boolean includeRetired, List<String> ignoreClassNames);
-			DWRConceptService.findConceptAnswers(String phrase, ConceptListItem concept, boolean includeRetired);
+			DWRConceptService.findConceptAnswers(String phrase, Integer conceptId, boolean includeRetired);
 			DWRConceptService.isValidNumericValue(Float value, Integer conceptId);
 			DWRConceptService.getDrugs(Integer conceptId, boolean showConcept);
 			DWRConceptService.findDrugs(String phrase, boolean includeRetired);

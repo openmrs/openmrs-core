@@ -11,12 +11,15 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
+import org.openmrs.Field;
 import org.openmrs.User;
 import org.openmrs.api.ConceptService;
+import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.Helper;
 import org.openmrs.web.WebConstants;
@@ -159,7 +162,7 @@ public class DWRConceptService {
 	}
 
 	public List<ConceptListItem> findConceptAnswers(String text,
-			ConceptListItem conceptListItem, boolean includeVoided) {
+			Integer conceptId, boolean includeVoided) {
 
 		Context context = (Context) WebContextFactory.get().getSession()
 				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
@@ -167,7 +170,7 @@ public class DWRConceptService {
 		Locale locale = context.getLocale();
 		ConceptService cs = context.getConceptService();
 
-		Concept concept = cs.getConcept(conceptListItem.getConceptId());
+		Concept concept = cs.getConcept(conceptId);
 
 		List<ConceptWord> words = cs.findConceptAnswers(text, locale, concept,
 				includeVoided);
@@ -180,21 +183,34 @@ public class DWRConceptService {
 		return items;
 	}
 	
-	public List<ConceptListItem> getConceptSet(Integer conceptId) {
+	public List<Object> getConceptSet(Integer conceptId) {
 			
 		Context context = (Context) WebContextFactory.get().getSession()
 				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 
 			Locale locale = context.getLocale();
 			ConceptService cs = context.getConceptService();
+			FormService fs = context.getFormService();
 			
 			Concept concept = cs.getConcept(conceptId);
 
-			List<ConceptListItem> returnList = new Vector<ConceptListItem>();
+			List<Object> returnList = new Vector<Object>();
 			
 			if (concept.isSet()) {
-				for (ConceptSet set : concept.getConceptSets())
-					returnList.add(new ConceptListItem(set.getConcept(), locale));
+				for (ConceptSet set : concept.getConceptSets()) {
+					Field field = null;
+					for (Field f : fs.findFields(set.getConcept())) {
+						ConceptName cn = set.getConcept().getName(locale);
+						if (f.getName().equals(cn.getName()) &&
+							f.getDescription().equals(cn.getDescription()) &&
+							f.isSelectMultiple().equals(false))
+								field = f;
+					}
+					if (field == null)
+						returnList.add(new ConceptListItem(set.getConcept(), locale));
+					else
+						returnList.add(new FieldListItem(field, locale));
+				}
 			}
 			
 			return returnList;
