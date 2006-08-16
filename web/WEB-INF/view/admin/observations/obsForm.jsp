@@ -45,7 +45,7 @@
 		dojo.event.topic.subscribe("eSearch/select", 
 			function(msg) {
 				encounterSelection.hiddenInputNode.value = msg.objs[0].encounterId;
-				encounterSelection.displayNode.innerHTML = msg.objs[0].location.name + " - " + encounterSearch.getDateString(msg.objs[0].encounterDateTime);
+				encounterSelection.displayNode.innerHTML = msg.objs[0].location + " - " + encounterSearch.getDateString(msg.objs[0].encounterDateTime);
 			}
 		);
 		
@@ -61,22 +61,31 @@
 		dojo.event.connect(codedSelection, "onChangeButtonClick", 
 			function() {
 				var conceptId = conceptSelection.hiddenInputNode.value;
-				DWRConceptService.findConceptAnswers(codedSearch.simpleClosure(codedSearch, 'doObjectsFound'), '', conceptId, false);
+				DWRConceptService.findConceptAnswers(codedSearch.simpleClosure(codedSearch, 'doObjectsFound'), '', conceptId, false, true);
 			}
 		);
 		
 		dojo.event.topic.subscribe("codedSearch/select", 
 			function(msg) {
-				codedSelection.hiddenInputNode.value = msg.objs[0].conceptId;
-				codedSelection.displayNode.innerHTML = msg.objs[0].name;
-				codedSelection.descriptionDisplayNode.innerHTML = msg.objs[0].description;
-				//DWRConceptService.findDrugs(fillTable, txt);
+				var obj = msg.objs[0];
+				if (obj.drugId) {
+					codedSelection.displayNode.innerHTML = obj.fullName;
+					codedSelection.descriptionDisplayNode.innerHTML = "";
+					codedSelection.hiddenInputNode.value = obj.conceptId;
+					$('valueDrugId').value = obj.drugId;
+				}
+				else if (obj.conceptId) {
+					codedSelection.displayNode.innerHTML = obj.name;
+					codedSelection.descriptionDisplayNode.innerHTML = obj.description;
+					codedSelection.hiddenInputNode.value = obj.conceptId;
+				}
+				
 			}
 		);
 
 		codedSearch.doFindObjects = function(txt) {
 			var conceptId = conceptSelection.hiddenInputNode.value;
-			DWRConceptService.findConceptAnswers(codedSearch.simpleClosure(codedSearch, 'doObjectsFound'), txt, conceptId, 0);
+			DWRConceptService.findConceptAnswers(codedSearch.simpleClosure(codedSearch, 'doObjectsFound'), txt, conceptId, false, true);
 		}
 		
 		dojo.event.topic.subscribe("codedSearch/objectsFound", 
@@ -88,23 +97,6 @@
 		<c:if test="${obs.concept.conceptId == null}">
 			updateObsValues();
 		</c:if>
-		
-		<c:if test="${obs.valueCoded != null && obs.valueDrug == null}">
-		//	searchType = "valueCoded";
-		//	DWRConceptService.getConcept(onSelect, '${obs.valueCoded.conceptId}');
-		</c:if>
-		<c:if test="${obs.valueDrug != null}">
-		//	searchType = "valueDrug";
-		//	DWRConceptService.getDrug(onSelect, '${obs.valueDrug.drugId}');
-		</c:if>
-		
-		//else if (searchType == 'valueDrug') {
-		//	$("valueCodedId").value = obj.conceptId;
-		//	$("valueDrugId").value = obj.drugId;
-		//	$("valueCodedName").innerHTML = obj.fullName;
-		
-		// if (searchType == 'valueCoded' && obj.className == "Drug" && pageLoad == false)
-		// DWRConceptService.getDrugs(fillTable, obj.conceptId, true);
 		
 	});
 	
@@ -231,7 +223,7 @@
 		color: white;
 	}
 	#encounterSelection .popupSearchForm {
-		width: 650px;
+		width: 700px;
 	}
 </style>
 
@@ -373,7 +365,7 @@
 		<th><spring:message code="general.value"/></th>
 		<td>
 			<spring:bind path="obs.valueCoded">
-				<div dojoType="ConceptSearch" widgetId="codedSearch" conceptId="${status.value.conceptId}" showVerboseListing="true"></div>
+				<div dojoType="ConceptSearch" widgetId="codedSearch" conceptId="${status.value.conceptId}" drugId="${obs.valueDrug.drugId}" showVerboseListing="true" includeDrugConcepts="true"></div>
 				<div dojoType="OpenmrsPopup" widgetId="codedSelection" hiddenInputName="valueCodedId" searchWidget="codedSearch" searchTitle='<spring:message code="Concept.find" />'></div>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>

@@ -35,7 +35,7 @@
 		dojo.event.topic.subscribe("cSearch/objectsFound",
 			function (msg) {
 				if (msg)
-					msg.objects.push("<a href='concept.form'>Add New Concept</a>");
+					msg.objs.push("<a href='concept.form'>Add New Concept</a>");
 			} 
 		);
 		
@@ -77,7 +77,7 @@
 
 <div class="searchBox">
 	<b>Concept Selection</b>
-	<div dojoType="ConceptSearch" widgetId="c2Search" showVerboseListing="true"></div>
+	<div dojoType="ConceptSearch" widgetId="c2Search" showVerboseListing="true" excludeClasses="Diagnosis"></div>
 	<div dojoType="OpenmrsPopup" widgetId="cSelection" searchWidget="c2Search" searchTitle="Concept Search"></div>
 </div>
 

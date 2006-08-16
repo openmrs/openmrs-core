@@ -1,7 +1,5 @@
 package org.openmrs.web.dwr;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
@@ -11,6 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.ConceptAnswer;
+import org.openmrs.ConceptClass;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptSet;
@@ -22,6 +22,7 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.Helper;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 
 import uk.ltd.getahead.dwr.WebContextFactory;
@@ -30,8 +31,9 @@ public class DWRConceptService {
 
 	protected final Log log = LogFactory.getLog(getClass());
 
-	public Vector findConcepts(String phrase, List<String> classNames,
-			boolean includeRetired, List<String> ignoreClassNames) {
+	public Vector findConcepts(String phrase, boolean includeRetired,
+			List<String> includeClassNames, List<String> excludeClassNames,
+			boolean includeDrugConcepts) {
 
 		// List to return
 		// Object type gives ability to return error strings
@@ -55,13 +57,13 @@ public class DWRConceptService {
 			if (u != null)
 				userId = u.getUserId();
 
-			log.info(userId + "|" + phrase + "|" + classNames.toString());
+			log.info(userId + "|" + phrase + "|" + includeClassNames.toString());
 
 			Locale locale = context.getLocale();
-			if (classNames == null)
-				classNames = new Vector<String>();
-			if (ignoreClassNames == null)
-				ignoreClassNames = new Vector<String>();
+			if (includeClassNames == null)
+				includeClassNames = new Vector<String>();
+			if (excludeClassNames == null)
+				excludeClassNames = new Vector<String>();
 			try {
 				ConceptService cs = context.getConceptService();
 				List<ConceptWord> words = new Vector<ConceptWord>();
@@ -80,60 +82,61 @@ public class DWRConceptService {
 				if (phrase == null || phrase.equals("")) {
 					// TODO get all concepts for testing purposes?
 				} else {
-					words.addAll(cs
-							.findConcepts(phrase, locale, includeRetired));
+					// turn classnames into class objects
+					List<ConceptClass> includeClasses = new Vector<ConceptClass>();
+					if (includeClassNames.size() > 0) {
+						for (String name : includeClassNames)
+							includeClasses.add(cs.getConceptClassByName(name));
+					}
+
+					// turn classnames into class objects
+					List<ConceptClass> excludeClasses = new Vector<ConceptClass>();
+					if (excludeClassNames.size() > 0) {
+						for (String name : excludeClassNames)
+							excludeClasses.add(cs.getConceptClassByName(name));
+					}
+
+					// perform the search
+					words.addAll(cs.findConcepts(phrase, locale,
+							includeRetired, includeClasses, excludeClasses));
 				}
 
 				if (words.size() == 0) {
 					objectList
 							.add("No matches found for <b>" + phrase + "</b>");
 				} else {
-					// TODO speed up this 'search by class' option
 					objectList = new Vector<Object>(words.size());
 					int maxCount = 500;
 					int curCount = 0;
-					if (classNames.size() > 0) {
-						outer: for (ConceptWord word : words) {
-							inner: for (String o : classNames)
-								if (o.equals(word.getConcept()
-										.getConceptClass().getName())) {
-									if (++curCount > maxCount) {
-										break outer;
-									}
-									objectList.add(new ConceptListItem(word));
-								}
-						}
-					} else if (ignoreClassNames.size() > 0) {
-						outer: for (ConceptWord word : words) {
-							inner: for (String o : ignoreClassNames)
-								if (!o.equals(word.getConcept()
-										.getConceptClass().getName())) {
-									if (++curCount > maxCount) {
-										break outer;
-									}
-									objectList.add(new ConceptListItem(word));
-								}
-						}
-					} else {
-						for (ConceptWord word : words) {
-							if (++curCount > maxCount) {
-								break;
-							}
-							objectList.add(new ConceptListItem(word));
+
+					// turn words into concept list items
+					// if user wants drug concepts included, append those
+					for (ConceptWord word : words) {
+						if (++curCount > maxCount)
+							break;
+						objectList.add(new ConceptListItem(word));
+
+						// add drugs for concept if desired
+						if (includeDrugConcepts) {
+							Integer classId = word.getConcept().getConceptClass().getConceptClassId();
+							if (classId.equals(OpenmrsConstants.CONCEPT_CLASS_DRUG))
+								for (Drug d : cs.getDrugs(word.getConcept()))
+									objectList.add(new ConceptDrugListItem(d,
+											locale));
 						}
 					}
 				}
 			} catch (Exception e) {
-				StringWriter sw = new StringWriter();
-				PrintWriter pw = new PrintWriter(sw);
-				e.printStackTrace(pw);
-				log.error(e + " - " + sw.toString());
+				log.error("Error while finding concepts + "
+						+ e.getMessage(), e);
 				objectList.add("Error while attempting to find concepts - "
 						+ e.getMessage());
 			}
 		}
+
 		if (objectList.size() == 0)
 			objectList.add("No matches found for <b>" + phrase + "</b>");
+
 		return objectList;
 	}
 
@@ -161,8 +164,8 @@ public class DWRConceptService {
 		return cli;
 	}
 
-	public List<ConceptListItem> findConceptAnswers(String text,
-			Integer conceptId, boolean includeVoided) {
+	public List<Object> findConceptAnswers(String text,
+			Integer conceptId, boolean includeVoided, boolean includeDrugConcepts) {
 
 		Context context = (Context) WebContextFactory.get().getSession()
 				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
@@ -175,66 +178,82 @@ public class DWRConceptService {
 		List<ConceptWord> words = cs.findConceptAnswers(text, locale, concept,
 				includeVoided);
 
-		List<ConceptListItem> items = new Vector<ConceptListItem>();
+		List<Drug> drugAnswers = new Vector<Drug>();
+		for (ConceptAnswer conceptAnswer : concept.getAnswers()) {
+			if (conceptAnswer.getAnswerDrug() != null)
+				drugAnswers.add(conceptAnswer.getAnswerDrug());
+		}
+		
+		List<Object> items = new Vector<Object>();
 		for (ConceptWord word : words) {
 			items.add(new ConceptListItem(word));
+			// add drugs for concept if desired
+			if (includeDrugConcepts) {
+				Integer classId = word.getConcept().getConceptClass().getConceptClassId();
+				if (classId.equals(OpenmrsConstants.CONCEPT_CLASS_DRUG))
+					for (Drug d : cs.getDrugs(word.getConcept())) {
+						if (drugAnswers.contains(d))
+							items.add(new ConceptDrugListItem(d, locale));
+					}
+			}
 		}
 
 		return items;
 	}
-	
+
 	public List<Object> getConceptSet(Integer conceptId) {
-			
+
 		Context context = (Context) WebContextFactory.get().getSession()
 				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 
-			Locale locale = context.getLocale();
-			ConceptService cs = context.getConceptService();
-			FormService fs = context.getFormService();
-			
-			Concept concept = cs.getConcept(conceptId);
+		Locale locale = context.getLocale();
+		ConceptService cs = context.getConceptService();
+		FormService fs = context.getFormService();
 
-			List<Object> returnList = new Vector<Object>();
-			
-			if (concept.isSet()) {
-				for (ConceptSet set : concept.getConceptSets()) {
-					Field field = null;
-					for (Field f : fs.findFields(set.getConcept())) {
-						ConceptName cn = set.getConcept().getName(locale);
-						if (f.getName().equals(cn.getName()) &&
-							f.getDescription().equals(cn.getDescription()) &&
-							f.isSelectMultiple().equals(false))
-								field = f;
-					}
-					if (field == null)
-						returnList.add(new ConceptListItem(set.getConcept(), locale));
-					else
-						returnList.add(new FieldListItem(field, locale));
+		Concept concept = cs.getConcept(conceptId);
+
+		List<Object> returnList = new Vector<Object>();
+
+		if (concept.isSet()) {
+			for (ConceptSet set : concept.getConceptSets()) {
+				Field field = null;
+				for (Field f : fs.findFields(set.getConcept())) {
+					ConceptName cn = set.getConcept().getName(locale);
+					if (f.getName().equals(cn.getName())
+							&& f.getDescription().equals(cn.getDescription())
+							&& f.isSelectMultiple().equals(false))
+						field = f;
 				}
+				if (field == null)
+					returnList
+							.add(new ConceptListItem(set.getConcept(), locale));
+				else
+					returnList.add(new FieldListItem(field, locale));
 			}
-			
-			return returnList;
+		}
+
+		return returnList;
 	}
-	
+
 	public List<ConceptListItem> getQuestionsForAnswer(Integer conceptId) {
 		Context context = (Context) WebContextFactory.get().getSession()
-		.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 
 		Locale locale = context.getLocale();
 		ConceptService cs = context.getConceptService();
-		
+
 		Concept concept = cs.getConcept(conceptId);
-		
+
 		List<Concept> concepts = cs.getQuestionsForAnswer(concept);
-		
+
 		List<ConceptListItem> items = new Vector<ConceptListItem>();
 		for (Concept c : concepts) {
 			items.add(new ConceptListItem(c, locale));
 		}
-		
+
 		return items;
 	}
-	
+
 	public ConceptDrugListItem getDrug(Integer drugId) {
 		Context context = (Context) WebContextFactory.get().getSession()
 				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
@@ -265,7 +284,7 @@ public class DWRConceptService {
 		}
 
 		// find drugs for this concept
-		List<Drug> drugs = cs.getDrugs(concept);
+		List<Drug> drugs = null;
 
 		// if there are drugs to choose from, add some instructions
 		if (drugs.size() > 0 && showConcept == true)

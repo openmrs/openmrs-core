@@ -13,6 +13,8 @@ public class ConceptDrugListItem {
 	private Integer drugId;
 
 	private Integer conceptId;
+	
+	private ConceptListItem concept;
 
 	private String fullName;
 
@@ -26,6 +28,7 @@ public class ConceptDrugListItem {
 			drugId = drug.getDrugId();
 			if (drug.getConcept() != null) {
 				conceptId = drug.getConcept().getConceptId();
+				concept = new ConceptListItem(drug.getConcept(), locale);
 			}
 			name = drug.getName();
 			fullName = drug.getFullName(locale);
@@ -69,6 +72,14 @@ public class ConceptDrugListItem {
 
 	public void setFullName(String fullName) {
 		this.fullName = fullName;
+	}
+
+	public ConceptListItem getConcept() {
+		return concept;
+	}
+
+	public void setConcept(ConceptListItem concept) {
+		this.concept = concept;
 	}
 
 }

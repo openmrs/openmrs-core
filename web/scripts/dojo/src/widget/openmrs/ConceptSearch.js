@@ -15,31 +15,35 @@ dojo.widget.defineWidget(
 	"dojo.widget.openmrs.ConceptSearch",
 	dojo.widget.openmrs.OpenmrsSearch,
 	{
+		includeClasses: [],
+		excludeClasses: [],
+		includeDrugConcepts: false,
+		allowConceptEdit: true,
+		showConceptIds: false,
+		
+		searchPhrase: "",
 		conceptId: "",
+		drugId: "",
 		
 		postCreate: function() {
 			dojo.debug("postCreate in conceptsearch");
 			
-			if (this.conceptId)
+			if (this.drugId)
+				DWRConceptService.getDrug(this.simpleClosure(this, "select"), this.drugId);
+			else if (this.conceptId)
 				DWRConceptService.getConcept(this.simpleClosure(this, "select"), this.conceptId);
 			
 			this.inputNode.value = this.searchPhrase
 			if (this.searchPhrase)
-				DWRConceptService.findConcepts(this.simpleClosure(this, "doObjectsFound"), this.searchPhrase, this.conceptClasses, false, this.ignoreClasses);
+				DWRConceptService.findConcepts(this.simpleClosure(this, "doObjectsFound"), this.searchPhrase, false, this.includeClasses, this.excludeClasses, this.includeDrugConcepts);
 		},
-		
-		conceptClasses: [],
-		ignoreClasses: [],
-		searchPhrase: "",
 		
 		doFindObjects: function(text) {
 			var tmpIncludedRetired = (this.showIncludeRetired && this.includeRetired.checked);
-			DWRConceptService.findConcepts(this.simpleClosure(this, "doObjectsFound"), text, this.conceptClasses, tmpIncludedRetired, this.ignoreClasses);
+			DWRConceptService.findConcepts(this.simpleClosure(this, "doObjectsFound"), text, tmpIncludedRetired, this.includeClasses, this.excludeClasses, this.includeDrugConcepts);
 			
 			return false;
 		},
-		
-		allowConceptEdit: true,
 		
 		editConcept: function(conceptId) {
 			if (this.allowConceptEdit) {
@@ -59,8 +63,6 @@ dojo.widget.defineWidget(
 			}
 		},
 		
-		showConceptIds: false,
-		
 		getCellContent: function(conceptHit) {
 			if (typeof conceptHit == 'string') {
 	    		return conceptHit;
@@ -77,7 +79,10 @@ dojo.widget.defineWidget(
 	    		if (this.showConceptIds)
 					a.innerHTML += " (" + conceptHit.conceptId + ")";
 				
-				return a;
+				var span = document.createElement("span");
+				span.innerHTML = " &nbsp; ->";
+				span.appendChild(a);
+				return span;
 	    	}
 		    else {
 		    	var a = document.createElement("a");

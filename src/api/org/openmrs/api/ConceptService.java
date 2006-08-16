@@ -238,7 +238,7 @@ public class ConceptService {
 	public List<Concept> getConceptsByName(String name) {
 		return getConceptDAO().getConceptsByName(name);
 	}
-	
+
 	/**
 	 * Return a Concept that matches the name exactly
 	 * 
@@ -257,9 +257,10 @@ public class ConceptService {
 	public Drug getDrug(Integer drugId) {
 		return getConceptDAO().getDrug(drugId);
 	}
-	
+
 	/**
 	 * Return the drug object corresponding to the given name
+	 * 
 	 * @return Drug
 	 */
 	public Drug getDrug(String drugName) {
@@ -309,11 +310,23 @@ public class ConceptService {
 	/**
 	 * Return a Concept class matching the given identifier
 	 * 
+	 * @param i Integer
 	 * @return ConceptClass
 	 */
 	public ConceptClass getConceptClass(Integer i) {
 		return getConceptDAO().getConceptClass(i);
 	}
+	
+	/**
+	 * Return a Concept class matching the given name
+	 * 
+	 * @param name String
+	 * @return ConceptClass
+	 */
+	public ConceptClass getConceptClassByName(String name) {
+		return getConceptDAO().getConceptClassByName(name);
+	}
+	
 
 	/**
 	 * Return a list of concept datatypes currently in the database
@@ -364,8 +377,37 @@ public class ConceptService {
 	 */
 	public List<ConceptWord> findConcepts(String phrase, Locale locale,
 			boolean includeRetired) {
+		return findConcepts(phrase, locale, includeRetired, null, null);
+	}
+
+	/**
+	 * Searches on given phrase via the concept word table
+	 * 
+	 * @param phrase/search/words
+	 *            String
+	 * @param locale
+	 *            Locale
+	 * @param includeRetired
+	 *            boolean
+	 * @param requireClasses
+	 *            List<ConceptClass>
+	 * @param excludeClasses
+	 *            List<ConceptClass>
+	 * @return
+	 * 
+	 * @see ConceptService.findConcepts(String,Locale,boolean)
+	 */
+	public List<ConceptWord> findConcepts(String phrase, Locale locale,
+			boolean includeRetired, List<ConceptClass> requireClasses,
+			List<ConceptClass> excludeClasses) {
+		
+		if (requireClasses == null)
+			requireClasses = new Vector<ConceptClass>();
+		if (excludeClasses == null)
+			excludeClasses = new Vector<ConceptClass>();
+		
 		List<ConceptWord> conceptWords = getConceptDAO().findConcepts(phrase,
-				locale, includeRetired);
+				locale, includeRetired, requireClasses, excludeClasses);
 
 		return weightWords(phrase, locale, conceptWords);
 	}
@@ -400,11 +442,12 @@ public class ConceptService {
 		return weightWords(phrase, locale, conceptWords);
 
 	}
-	
+
 	/**
 	 * Get the questions that have this concept as a possible answer
 	 * 
-	 * @param concept Concept to get 
+	 * @param concept
+	 *            Concept to get
 	 * @return list of concepts
 	 */
 	public List<Concept> getQuestionsForAnswer(Concept concept) {
@@ -412,8 +455,6 @@ public class ConceptService {
 
 		return concepts;
 	}
-	
-	
 
 	/**
 	 * This will weight and sort the concepts we are assuming the hits are
@@ -476,16 +517,18 @@ public class ConceptService {
 			if (tmpWord != null) {
 				// default matched string
 				String matchedString = tmpWord.getSynonym();
-	
+
 				// if there isn't a synonym, it is matching on the name,
 				if (matchedString.length() == 0) {
 					// We weight name matches higher
 					tmpWord.increaseWeight(2.0);
-					matchedString = tmpWord.getConcept().getName(locale).getName();
+					matchedString = tmpWord.getConcept().getName(locale)
+							.getName();
 				}
-	
+
 				// increase the weight by a factor of the % of words matched
-				Double percentMatched = getPercentMatched(searchedWords, matchedString);
+				Double percentMatched = getPercentMatched(searchedWords,
+						matchedString);
 				tmpWord.increaseWeight(5.0 * percentMatched);
 			}
 		}
@@ -493,7 +536,7 @@ public class ConceptService {
 		conceptWords = new Vector<ConceptWord>();
 		conceptWords.addAll(uniqueConcepts.values());
 		Collections.sort(conceptWords);
-		
+
 		return conceptWords;
 	}
 
@@ -536,22 +579,27 @@ public class ConceptService {
 	}
 
 	public void proposeConcept(ConceptProposal conceptProposal) {
-		
+
 		// set the state of the proposal
 		if (conceptProposal.getState() == null)
-			conceptProposal.setState(OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED);
-		
+			conceptProposal
+					.setState(OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED);
+
 		// set the creator and date created
-		if (conceptProposal.getCreator() == null && conceptProposal.getEncounter() != null)
-			conceptProposal.setCreator(conceptProposal.getEncounter().getCreator());
+		if (conceptProposal.getCreator() == null
+				&& conceptProposal.getEncounter() != null)
+			conceptProposal.setCreator(conceptProposal.getEncounter()
+					.getCreator());
 		else
 			conceptProposal.setCreator(context.getAuthenticatedUser());
-		
-		if (conceptProposal.getDateCreated() == null && conceptProposal.getEncounter() != null)
-			conceptProposal.setDateCreated(conceptProposal.getEncounter().getDateCreated());
+
+		if (conceptProposal.getDateCreated() == null
+				&& conceptProposal.getEncounter() != null)
+			conceptProposal.setDateCreated(conceptProposal.getEncounter()
+					.getDateCreated());
 		else
 			conceptProposal.setDateCreated(new Date());
-		
+
 		getConceptDAO().proposeConcept(conceptProposal);
 	}
 
@@ -575,13 +623,15 @@ public class ConceptService {
 		}
 		return true;
 	}
-	
+
 	private double getPercentMatched(Collection<String> searchedWords,
 			String matchedString) {
 
 		List<String> subList = ConceptWord.getUniqueWords(matchedString);
-		double size = ConceptWord.splitPhrase(matchedString).length; // total # of words
-		
+		double size = ConceptWord.splitPhrase(matchedString).length; // total
+		// # of
+		// words
+
 		double matches = 0.0;
 		for (String s : subList) {
 			s = s.toUpperCase();
@@ -591,8 +641,8 @@ public class ConceptService {
 					matches += 1.0;
 			}
 		}
-		
+
 		return matches == 0 ? 0 : (matches / size);
 	}
-	
+
 }

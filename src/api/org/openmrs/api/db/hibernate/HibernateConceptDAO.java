@@ -481,6 +481,23 @@ public class HibernateConceptDAO implements
 		
 		return cc;
 	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptService#getConceptClassByName(java.lang.String)
+	 */
+	public ConceptClass getConceptClassByName(String name) {
+		Session session = HibernateUtil.currentSession();
+		
+		Criteria crit = session.createCriteria(ConceptClass.class)
+			.add(Expression.eq("name", name));
+		
+		if (crit.list().size() < 1) {
+			log.warn("No concept class found with name: " + name);
+			return null;
+		}
+		
+		return (ConceptClass)crit.list().get(0);
+	}
 
 	/**
 	 * @see org.openmrs.api.db.ConceptService#getConceptClasses()
@@ -561,7 +578,8 @@ public class HibernateConceptDAO implements
 	 * @see org.openmrs.api.db.ConceptService#findConcepts(java.lang.String,java.util.Locale,boolean)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<ConceptWord> findConcepts(String phrase, Locale loc, boolean includeRetired) {
+	public List<ConceptWord> findConcepts(String phrase, Locale loc, boolean includeRetired, List<ConceptClass> requireClasses,
+			List<ConceptClass> excludeClasses) {
 		Session session = HibernateUtil.currentSession();
 		
 		String locale = loc.getLanguage().substring(0, 2);		//only get language portion of locale
@@ -591,6 +609,13 @@ public class HibernateConceptDAO implements
 				junction.add(Subqueries.exists(crit));
 			}
 			searchCriteria.add(junction);
+			
+			if (requireClasses.size() > 0)
+				searchCriteria.add(Expression.in("concept.conceptClass", requireClasses));
+			
+			if (excludeClasses.size() > 0)
+				searchCriteria.add(Expression.not(Expression.in("concept.conceptClass", excludeClasses)));
+			
 			searchCriteria.addOrder(Order.asc("synonym"));
 			conceptWords = searchCriteria.list();
 		}

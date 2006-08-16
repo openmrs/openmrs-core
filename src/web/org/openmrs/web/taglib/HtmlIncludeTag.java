@@ -2,7 +2,6 @@
 package org.openmrs.web.taglib;
 
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,14 +37,14 @@ public class HtmlIncludeTag extends TagSupport {
 		
 		if ( this.type != null ) {
 			if ( this.type.length() > 0 ) {
-				if ( this.POSSIBLE_TYPES_CSS.indexOf(type) >= 0 ) isCss = true;
-				else if ( this.POSSIBLE_TYPES_JS.indexOf(type) >= 0 ) isJs = true;
+				if ( HtmlIncludeTag.POSSIBLE_TYPES_CSS.indexOf(type) >= 0 ) isCss = true;
+				else if ( HtmlIncludeTag.POSSIBLE_TYPES_JS.indexOf(type) >= 0 ) isJs = true;
 			}
 		}
 
 		if ( !isCss && !isJs && fileExt.length() > 0 ) {
-			if ( this.POSSIBLE_TYPES_CSS.indexOf(fileExt) >= 0 ) isCss = true;
-			else if ( this.POSSIBLE_TYPES_JS.indexOf(fileExt) >= 0 ) isJs = true;
+			if ( HtmlIncludeTag.POSSIBLE_TYPES_CSS.indexOf(fileExt) >= 0 ) isCss = true;
+			else if ( HtmlIncludeTag.POSSIBLE_TYPES_JS.indexOf(fileExt) >= 0 ) isJs = true;
 		}
 
 		if ( isJs || isCss ) {
@@ -88,6 +87,7 @@ public class HtmlIncludeTag extends TagSupport {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	private boolean isAlreadyUsed(String fileName) {
 		boolean isUsed = false;
 

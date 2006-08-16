@@ -4,7 +4,6 @@ dojo.require("dojo.widget.openmrs.OpenmrsPopup");
 var nameListBox= null;
 var idListBox  = null;
 var addButton  = null;
-var drugConcepts = new Array();
 var answerSearch;
 var setSearch;
 
@@ -34,17 +33,10 @@ function selectConcept(nameList, idList, conceptList, widget) {
 	var idListBox = $(idList);
 	
 	var options = nameListBox.options;
-	for (i=0; i<conceptList.length; i++) {
-		if (conceptList[i].className == "Drug")
-			drugConcepts.push(conceptList[i]);
-		else
-			addOption(conceptList[i], options);
-	}
+	for (i=0; i<conceptList.length; i++)
+		addOption(conceptList[i], options);
+		
 	copyIds(nameListBox.id, idListBox.id, ' ');
-	
-	if (drugConcepts.length > 0) {
-		doSelectDrugs(widget);
-	}
 }
 
 
@@ -154,11 +146,6 @@ function addSynonym(locale) {
 	obj.focus();
 	copyIds("syns" + locale, "newSynonyms" + locale, ",");
 	window.Event.keyCode = 0;  //disable enter key submitting form
-}
-
-var doSelectDrugs = function(widget) {
-	widget.clearSearch();
-	DWRConceptService.getDrugs(widget.simpleClosure(widget, "doObjectsFound"), drugConcepts.pop().conceptId, true);
 }
 
 function addOption(obj, options) {

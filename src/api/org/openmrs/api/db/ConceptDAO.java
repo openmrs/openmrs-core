@@ -143,9 +143,17 @@ public interface ConceptDAO {
 	
 	/**
 	 * Return a Concept class matching the given identifier
+	 * @param i Integer
 	 * @return ConceptClass
 	 */
 	public ConceptClass getConceptClass(Integer i);
+	
+	/**
+	 * Return a Concept class matching the given identifier
+	 * @param name String
+	 * @return ConceptClass
+	 */
+	public ConceptClass getConceptClassByName(String name);
 	
 	/**
 	 * Return a list of concept datatypes currently in the database
@@ -170,15 +178,18 @@ public interface ConceptDAO {
 	 * @return ConceptNumeric
 	 */
 	public ConceptNumeric getConceptNumeric(Integer conceptId);
-	
+
 	/**
 	 * Searches on given phrase via the concept word table
 	 * @param phrase/search/words String
 	 * @param locale Locale
 	 * @param includeRetired boolean
+	 * @param requireClasses List<ConceptClass>
+	 * @param excludeClasses List<ConceptClass>
 	 * @return
 	 */
-	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired);
+	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired, List<ConceptClass> requireClasses,
+			List<ConceptClass> excludeClasses);
 	
 	/**
 	 * Searches on given phrase via the concept word table
@@ -188,7 +199,7 @@ public interface ConceptDAO {
 	 * @param locale Locale
 	 * @param Concept
 	 * @param includeRetired boolean
-	 * @return
+	 * @return list of concept words
 	 */
 	public List<ConceptWord> findConceptAnswers(String phrase, Locale locale, Concept concept, boolean includeRetired);
 	
