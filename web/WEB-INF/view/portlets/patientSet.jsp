@@ -198,7 +198,6 @@
 		</div>
 
 <script type="text/javascript">
-	hideLayer('${model.id}');
 	hideLayer('patientSetBox');
 </script>
 

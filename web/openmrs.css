@@ -542,11 +542,13 @@ fieldset {
 #popupTray {
 	float: right;
 	position: fixed;
-	right: 0px;
+	right: 30px;
+	top: 60px;
 	width: 20px;
+	z-index: 7;
 }
 #patientSetTray {
-	z-index: 1;
+	z-index: 7;
 	border-width: 2px 0px 2px 2px;
 	border-color: black;
 	border-style: solid;
@@ -559,7 +561,7 @@ fieldset {
 	right: 15px;
 	top: 0px;
 	width: 400px;
-	z-index: 2;
+	z-index: 7;
 }
 #analysisPatientSetBox {
 	padding: 4px;
