@@ -16,18 +16,21 @@ dojo.widget.defineWidget(
 	dojo.widget.openmrs.OpenmrsSearch,
 	{
 		patientId: "",
+		showAddPatientLink: true,
 		
 		initializer: function(){
 			dojo.debug("initializing patientsearch");
 			
-			dojo.event.connect("before", this, "fillTable", this, "preFillTable");
+			dojo.event.connect("before", this, "doObjectsFound", this, "preDoObjectsFound");
 		},
 		
 		postCreate: function() {
-			if (this.patientId != "")
+			if (this.patientId != "") {
 				this.selectPatient(this.patientId);
-			else if (this.searchPhrase)
+			}
+			else if (this.searchPhrase) {
 				DWRPatientService.findPatients(this.simpleClosure(this, "doObjectsFound"), this.searchPhrase, false);
+			}
 		},
 		
 		selectPatient: function(patientId) {
@@ -42,14 +45,14 @@ dojo.widget.defineWidget(
 			return false;
 		},
 		
-		preFillTable: function(patients) {
-			if (patients == null) return;
+		preDoObjectsFound: function(patients) {
+			if (patients == null) { return; }
 			// if no hits
 			if (patients.length < 1) {
 				if (this.text.match(/\d/)) {
 					if (this.isValidCheckDigit(this.text) == false) {
 						//the user didn't input an identifier with a valid check digit
-						this.hideHeaderRow()
+						this.hideHeaderRow();
 						var img = this.getProblemImage();
 						var tmp = " <img src='" + img.src + "' title='" + img.title + "' /> " + this.invalidCheckDigitText + this.text;
 						patients.push(tmp);
@@ -60,19 +63,21 @@ dojo.widget.defineWidget(
 						//the user did input a valid identifier, but we don't have it
 						patients.push(this.noPatientsFoundText);
 						patients.push(this.searchOnPatientNameText);
-						patients.push(this.addPatientLink);
+						if (this.showAddPatientLink)
+							patients.push(this.addPatientLink);
 					}
 				}
 				else {
 					// the user put in a text search
 					patients.push(this.noPatientsFoundText);
-					patients.push(this.addPatientLink);
+					if (this.showAddPatientLink)
+						patients.push(this.addPatientLink);
 				}
-				//fillTable([]);	//this call sets up the table/info bar
 			}
 			// if hits
 			else if (patients.length > 1 || this.isValidCheckDigit(this.text) == false) {
-				patients.push(this.addPatientLink);	//setup links for appending to the end
+				if (this.showAddPatientLink)
+					patients.push(this.addPatientLink);	//setup links for appending to the end
 			}
 		},
 		
@@ -92,10 +97,11 @@ dojo.widget.defineWidget(
 				var obj = document.createElement("a");
 				obj.appendChild(document.createTextNode(p.identifier + " "));
 				td.appendChild(obj);
-				if (p.identifierCheckDigit)
-					if (this.isValidCheckDigit(p.identifier)==false) {
+				if (p.identifierCheckDigit) {
+					if (this.isValidCheckDigit(p.identifier) == false) {
 						td.appendChild(this.getProblemImage());
 					}
+				}
 				if (p.voided) {
 					td.className += " retired";
 				}
@@ -108,7 +114,7 @@ dojo.widget.defineWidget(
 		getFamily: function(p) { return p.familyName == null ? this.noCell() : p.familyName; },
 		getTribe : function(p) { return p.tribe == null ? this.noCell() : p.tribe; },
 		getGender: function(p) {
-				if (p.gender == null) return this.noCell();
+				if (p.gender == null) { return this.noCell(); }
 				
 				var td = document.createElement("td");
 				td.className = "patientGender";

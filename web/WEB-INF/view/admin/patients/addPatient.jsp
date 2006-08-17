@@ -91,8 +91,8 @@
 	
 	.openmrsSearchDiv {
 		position: absolute;
-		margin-top: 6em;
-		margin-left: -5em;
+		margin-top: 8em;
+		margin-left: -28em;
 		margin-right: 1em;
 		z-index: 100;
 	}
@@ -105,7 +105,7 @@
 		<tr>
 			<td><spring:message code="Patient.name"/></td>
 			<td>
-				<div dojoType="PatientSearch" widgetId="pSearch" inputId="patientName" inputName="patientName" tableHeight="600" allowAutoList="false"></div>
+				<div dojoType="PatientSearch" widgetId="pSearch" inputId="patientName" inputName="patientName" tableHeight="600" allowAutoList="false" showAddPatientLink="false"></div>
 			</td>
 		</tr>
 		<tr>
