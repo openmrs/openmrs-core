@@ -18,7 +18,11 @@
 	var localList = null;
 
 	if (${model.patientSet != null}) {
-		localList = "${model.patientSet.commaSeparatedPatientIds}".split(",");
+		var tmp = '${model.patientSet.commaSeparatedPatientIds}';
+		if (tmp != '')
+			localList = tmp.split(",");
+		else
+			localList = new Array();
 		<c:if test="${model.varToSet != null}">
 			<%-- TODO: refresh this variable on changes to localList --%>
 			${model.varToSet} = "${model.patientSet.commaSeparatedPatientIds}";
@@ -68,6 +72,8 @@
 	}
 
 	function pageForwards() {
+		if (PS_totalPatients > 0 && (PS_fromIndex + PS_pageSize) >= PS_totalPatients)
+			return;
 		PS_fromIndex += PS_pageSize;
 		if (localList != null && PS_fromIndex >= PS_totalPatients) {
 			PS_fromIndex -= PS_pageSize;
@@ -201,14 +207,15 @@
 	hideLayer('patientSetBox');
 </script>
 
-		<center>
-			<spring:message code="PatientSet.yours"/>
+		<div class="popupTrayTitle">
+			<spring:message code="PatientSet.yours" />
 			<c:if test="${model.droppable}">
+				&nbsp<br/>
 				<a href="javascript:clearThis()" style="color: red">
-					[<spring:message code="general.drop"/>]
+					[<spring:message code="PatientSet.drop" />]
 				</a>
 			</c:if>
-		</center>
+		</div>
 	</div>
 </c:if>
 

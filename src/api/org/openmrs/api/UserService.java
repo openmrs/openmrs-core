@@ -276,6 +276,19 @@ public class UserService {
 		return getUserDAO().findUsers(name, roles, includeVoided);
 	}
 	
+	/**
+	 * Find a user by exact first name and last name
+	 * @param firstName
+	 * @param lastName
+	 * @param includeVoided
+	 * @return
+	 */
+	public List<User> findUsers(String firstName, String lastName, boolean includeVoided) {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_USERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_USERS);
+		return getUserDAO().findUsers(firstName, lastName, includeVoided);
+	}
+	
 	public List<User> getAllUsers(List<String> roles, boolean includeVoided) {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_USERS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_USERS);

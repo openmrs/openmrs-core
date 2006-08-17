@@ -648,4 +648,19 @@ public class HibernateUserDAO implements
 		return user;
 		
 	}
+
+	public List<User> findUsers(String firstName, String lastName, boolean includeVoided) {
+		Session session = HibernateUtil.currentSession();
+		List<User> users = new Vector<User>();
+		String query = "from User u where u.firstName = :firstName and u.lastName = :lastName";
+		if (!includeVoided)
+			query += " and u.voided = false";
+		Query q = session.createQuery(query)
+				.setString("firstName", firstName)
+				.setString("lastName", lastName);
+		for (User u : (List<User>) q.list()) {
+			users.add(u);
+		}
+		return users;
+	}
 }

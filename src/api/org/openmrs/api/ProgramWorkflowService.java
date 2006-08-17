@@ -102,6 +102,15 @@ public class ProgramWorkflowService {
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PROGRAMS);
 		return getProgramWorkflowDAO().getProgram(id);
 	}
+
+	public Program getProgram(String name) {
+		// TODO: do this right
+		List<Program> progs = getPrograms();
+		for (Program p : getPrograms())
+			if (p.getConcept().getName(context.getLocale(), false).equals(name))
+				return p;
+		return null;
+	}
 	
 	public void retireProgram(Program p) {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_PROGRAMS))
@@ -126,6 +135,16 @@ public class ProgramWorkflowService {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PROGRAMS);
 		return getProgramWorkflowDAO().getWorkflow(id);
+	}
+	
+	public ProgramWorkflow getWorkflow(Program program, String name) {
+		// TODO: fix this
+		if (program.getWorkflows() == null)
+			return null;
+		for (ProgramWorkflow wf : program.getWorkflows())
+			if (wf.getConcept().getName(context.getLocale(), false).equals(name))
+				return wf;
+		return null;
 	}
 	
 	public void updateWorkflow(ProgramWorkflow w) {
@@ -174,16 +193,31 @@ public class ProgramWorkflowService {
 		return getProgramWorkflowDAO().getState(id);
 	}
 	
+	public ProgramWorkflowState getState(ProgramWorkflow wf, String name) {
+		// TODO: fix this
+		for (ProgramWorkflowState st : wf.getStates())
+			if (st.getConcept().getName(context.getLocale(), false).equals(name))
+				return st;
+		return null;
+	}
+	
 	// --- PatientProgram ---
 
 	public void createPatientProgram(PatientProgram p) {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS);
 		
+		Date now = new Date();
 		if (p.getCreator() == null) {
 			p.setCreator(context.getAuthenticatedUser());
 		}
-		p.setDateCreated(new Date());
+		p.setDateCreated(now);
+		for (PatientState s : p.getStates()) {
+			if (s.getCreator() == null)
+				s.setCreator(context.getAuthenticatedUser());
+			if (s.getDateCreated() == null)
+				s.setDateCreated(now);
+		}
 		
 		getProgramWorkflowDAO().createPatientProgram(p);
 	}

@@ -547,6 +547,11 @@ fieldset {
 	width: 20px;
 	z-index: 7;
 }
+.popupTrayTitle {
+	font-size: 1.2em;
+	font-weight: bold;
+	text-align: center;
+}
 #patientSetTray {
 	z-index: 7;
 	border-width: 2px 0px 2px 2px;
@@ -569,7 +574,20 @@ fieldset {
 	border: 1px black dashed;
 	background-color: #f4f4f4;
 }
-
+.analysisShortcutBarButton {
+	background-color: #f0f0a0;
+	padding: 0.2em;
+	text-decoration: none;
+}
+.analysisShortcutMenu {
+	border: 1px solid black;
+	background-color: #f0f0a0;
+	position: absolute;
+	left: 0px;
+	top: 1.4em;
+	width: 250px;
+	z-index: 1;
+}
 #stackTrace {
 	display: none;
 	font-size: 11px;

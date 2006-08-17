@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -28,7 +29,9 @@ public class PatientProgram {
 	private Date dateVoided;
 	private String voidReason;
 	
-	public PatientProgram() { }
+	public PatientProgram() {
+		states = new HashSet<PatientState>();
+	}
 
 	public User getCreator() {
 		return creator;

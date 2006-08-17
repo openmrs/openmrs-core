@@ -8,17 +8,35 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.Location;
+import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
+import org.openmrs.PatientIdentifierType;
+import org.openmrs.PatientProgram;
+import org.openmrs.PatientState;
+import org.openmrs.Person;
+import org.openmrs.Program;
+import org.openmrs.ProgramWorkflow;
+import org.openmrs.ProgramWorkflowState;
+import org.openmrs.Relationship;
+import org.openmrs.RelationshipType;
+import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.PatientService;
+import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.w3c.dom.Document;
@@ -29,7 +47,9 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 public class MigrationHelper {
-
+	
+	protected final static Log log = LogFactory.getLog(MigrationHelper.class);
+	
     static DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 	
     static DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -148,5 +168,168 @@ public class MigrationHelper {
 		}
 		return ret;
 	}
+	
+	/**
+	 * Takes a list of Strings of the format
+	 *   RELATIONSHIP:<user last name>,<user first name>,<relationship type name>,<patient identifier type name>,<identifier>
+	 * so if user hfraser if the cardiologist of the patient with patient_id 8039 in PIH's old emr, then:
+	 *   RELATIONSHIP:hfraser,Cardiologist,HIV-EMRV1,8039
+	 * (the "RELATIONSHIP:" is not actually necessary. Anything before and including the first : will be dropped
+	 * If autoCreateUsers is true, and no user exists with the given username, one will be created.
+	 * If autoAddRole is true, then whenever a user is auto-created, if a role exists with the same name as relationshipType.name, then the user will be added to that role
+	 */
+	public static int importRelationships(Context context, Collection<String> relationships, boolean autoCreateUsers, boolean autoAddRole) {
+		PatientService ps = context.getPatientService();
+		UserService us = context.getUserService();
+		AdministrationService as = context.getAdministrationService();
+		List<Relationship> relsToAdd = new ArrayList<Relationship>();
+		Random rand = new Random();
+		for (String s : relationships) {
+			if (s.indexOf(":") >= 0)
+				s = s.substring(s.indexOf(":") + 1);
+			String[] ss = s.split(",");
+			if (ss.length < 5)
+				throw new IllegalArgumentException("The line '" + s + "' is in the wrong format");
+			String userLastName = ss[0];
+			String userFirstName = ss[1];
+			String username = (userFirstName + userLastName).replaceAll(" ", "");
+			String relationshipType = ss[2];
+			String identifierType = ss[3];
+			String identifier = ss[4];
+			User user = null;
+			{ // first try looking for non-voided users
+				List<User> users = us.findUsers(userFirstName, userLastName, false);
+				if (users.size() == 1)
+					user = users.get(0);
+				else if (users.size() > 1) {
+					throw new IllegalArgumentException("Found " + users.size() + " users named '" + userLastName + ", " + userFirstName + "'");
+				}
+			}
+			if (user == null) {
+				// next try looking for voided users
+				List<User> users = us.findUsers(userFirstName, userLastName, false);
+				if (users.size() == 1)
+					user = users.get(0);
+				else if (users.size() > 1) {
+					throw new IllegalArgumentException("Found " + users.size() + " voided users named '" + userLastName + ", " + userFirstName + "'");
+				}				
+			}
+			if (user == null && autoCreateUsers) {
+				user = new User();
+				user.setFirstName(userFirstName);
+				user.setLastName(userLastName);
+				user.setUsername(username);
+				// Generate a temporary password: 8-12 random characters
+				String pass = null;
+				{
+					int length = rand.nextInt(4) + 8;
+					char[] password = new char[length];
+					for (int x = 0; x < length; x++) {
+						int randDecimalAsciiVal = rand.nextInt(93) + 33;
+						password[x] = (char) randDecimalAsciiVal;
+					}
+					pass = new String(password);
+				}
+				if (autoAddRole) {
+					Role role = us.getRole(relationshipType);
+					if (role != null)
+						user.addRole(role);
+				}
+				us.createUser(user, pass);					
+			}
+			if (user == null)
+				throw new IllegalArgumentException("Can't find user '" + userLastName + ", " + userFirstName + "'"); 
+			Person person = as.getPerson(user);			
+			
+			RelationshipType relationship = ps.findRelationshipType(relationshipType);
+			PatientIdentifierType pit = ps.getPatientIdentifierType(identifierType);
+			List<PatientIdentifier> found = ps.getPatientIdentifiers(identifier, pit);
+			if (found.size() != 1)
+				throw new IllegalArgumentException("Found " + found.size() + " patients with identifier '" + identifier + "' of type " + identifierType);
+			Person relative = as.getPerson(found.get(0).getPatient());
+			Relationship rel = new Relationship();
+			rel.setPerson(person);
+			rel.setRelationship(relationship);
+			rel.setRelative(relative);
+			relsToAdd.add(rel);
+		}
+		int addedSoFar = 0;
+		for (Relationship rel : relsToAdd) {
+			as.createRelationship(rel);
+			++addedSoFar;
+		}
+		return addedSoFar;
+	}
+
+	public static int importProgramsAndStatuses(Context context, List<String> programWorkflow) throws ParseException {
+		ProgramWorkflowService pws = context.getProgramWorkflowService();
+		PatientService ps = context.getPatientService();
+		List<PatientProgram> patientPrograms = new ArrayList<PatientProgram>();
+		List<PatientState> patientStates = new ArrayList<PatientState>();
+		Map<String, PatientProgram> knownPatientPrograms = new HashMap<String, PatientProgram>();
+		for (String s : programWorkflow) {
+			// ENROLLMENT:HIVEMR-V1,9266,IMB HIV PROGRAM,2005-08-25,
+			log.debug(s);
+			if (s.startsWith("ENROLLMENT:")) {
+				s = s.substring(s.indexOf(":") + 1);
+				String[] temp = s.split(",");
+				PatientIdentifierType pit = ps.getPatientIdentifierType(temp[0]);
+				String identifier = temp[1];
+				List<PatientIdentifier> pis = ps.getPatientIdentifiers(identifier, pit);
+				if (pis.size() != 1)
+					throw new IllegalArgumentException("Found " + pis.size() + " instances of identifier " + identifier + " of type " + pit);
+				Patient p = pis.get(0).getPatient();
+				//Program program = pws.getProgram(temp[2]);
+				//log.debug("program " + temp[2] + ": "  + program);
+				Program program = pws.getProgram(Integer.valueOf(temp[2]));
+				Date enrollmentDate = temp.length < 4 ? null : parseDate(temp[3]);
+				Date completionDate = temp.length < 5 ? null : parseDate(temp[4]);
+				PatientProgram pp = new PatientProgram();
+				pp.setPatient(p);
+				pp.setProgram(program);
+				pp.setDateEnrolled(enrollmentDate);
+				pp.setDateCompleted(completionDate);
+				patientPrograms.add(pp);
+				knownPatientPrograms.put(temp[0] + "," + temp[1] + "," + temp[2], pp); // "HIVEMR-V1,9266,IMB HIV PROGRAM"
+			} else if (s.startsWith("STATUS:")) {
+				// STATUS:HIVEMR-V1,9266,IMB HIV PROGRAM,TREATMENT STATUS,ACTIVE,2005-08-25,,
+				s = s.substring(s.indexOf(":") + 1);
+				String[] temp = s.split(",");
+				/*
+				PatientIdentifierType pit = ps.getPatientIdentifierType(temp[0]);
+				String identifier = temp[1];
+				List<PatientIdentifier> pis = ps.getPatientIdentifiers(identifier, pit);
+				if (pis.size() != 1)
+					throw new IllegalArgumentException("Found " + pis.size() + " instances of identifier " + identifier + " of type " + pit);
+				Patient p = pis.get(0).getPatient();
+				*/
+				//Program program = pws.getProgram(temp[2]);
+				//log.debug("program " + temp[2] + ": " + program);
+				Program program = pws.getProgram(Integer.valueOf(temp[2]));
+				//ProgramWorkflow wf = pws.getWorkflow(program, temp[3]);
+				ProgramWorkflow wf = pws.getWorkflow(Integer.valueOf(temp[3]));
+				log.debug("wf: " + wf);
+				//ProgramWorkflowState st = pws.getState(wf, temp[4]);
+				ProgramWorkflowState st = pws.getState(Integer.valueOf(temp[4]));
+				log.debug("st: " + st);
+				Date startDate = temp.length < 6 ? null : parseDate(temp[5]);
+				Date endDate = temp.length < 7 ? null : parseDate(temp[6]);
+				PatientState state = new PatientState();
+				PatientProgram pp = knownPatientPrograms.get(temp[0] + "," + temp[1] + "," + temp[2]);
+				state.setPatientProgram(pp);
+				state.setState(st);
+				state.setStartDate(startDate);
+				state.setEndDate(endDate);
+				pp.getStates().add(state);
+			}
+		}
+		int numAdded = 0;
+		for (PatientProgram pp : knownPatientPrograms.values()) {
+			pws.createPatientProgram(pp);
+			++ numAdded;
+		}
+		return numAdded;
+	}
+
 }
 	

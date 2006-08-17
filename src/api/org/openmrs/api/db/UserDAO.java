@@ -182,6 +182,8 @@ public interface UserDAO {
 	
 	public List<User> findUsers(String name, List<String> roles, boolean includeRetired) throws DAOException;
 	
+	public List<User> findUsers(String firstName, String lastName, boolean includeVoided);
+	
 	public List<User> getAllUsers(List<String> roles, boolean includeRetired) throws DAOException;
 	
 	/**
@@ -190,4 +192,5 @@ public interface UserDAO {
 	 * @return new system id
 	 */
 	public String generateSystemId() throws DAOException;
+
 }

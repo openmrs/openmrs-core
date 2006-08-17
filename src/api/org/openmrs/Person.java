@@ -93,7 +93,14 @@ public class Person implements java.io.Serializable {
 	}
 	
 	public String toString() {
-		return "person #" + personId.toString();
+		StringBuilder ret = new StringBuilder();
+		ret.append("Person(personId=" + personId);
+		if (patient != null)
+			ret.append(" patientId=" + patient.getPatientId());
+		if (user != null)
+			ret.append(" userId=" + user.getUserId());
+		ret.append(")");
+		return ret.toString();
 	}
 
 }

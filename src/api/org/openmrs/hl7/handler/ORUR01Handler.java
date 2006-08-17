@@ -143,6 +143,7 @@ public class ORUR01Handler implements Application {
 					e.printStackTrace();
 				} catch (HL7Exception e) {
 					// Handle obs-level exceptions
+					log.warn("HL7Exception", e);
 					HL7InError hl7InError = new HL7InError();
 					hl7InError.setError(e.getMessage());
 					hl7InError.setErrorDetails(PipeParser.encode(obx,

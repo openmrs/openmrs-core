@@ -194,6 +194,8 @@ public class Relationship implements java.io.Serializable {
 		this.voidReason = voidReason;
 	}
 
-
+	public String toString() {
+		return person + " is the " + relationship.getName() + " of " + relative;  
+	}
 
 }

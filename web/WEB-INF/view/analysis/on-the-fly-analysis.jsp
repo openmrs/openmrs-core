@@ -44,11 +44,7 @@
 		background-color: #e0e0ff;
 		padding: 4px 2px;		
 	}
-	.shortcutBarButton {
-		border: 1px black solid;
-		background-color: #e0e0e0;
-		padding: 2px;
-	}
+	
 	#shortcutBox {
 		border: 1px solid black;
 		margin-bottom: 15px;
@@ -92,8 +88,8 @@
 <openmrs:portlet url="activeFilters" id="filterBox" parameterMap="${model.filterPortletParams}" />
 
 <span style="position: relative" onMouseOver="javascript:showLayer('_shortcutMenu')" onMouseOut="javascript:hideLayer('_shortcutMenu')">
-	<a class="shortcutBarButton"><spring:message code="Analysis.shortcutButton"/></a>
-	<div id="_shortcutMenu" style="border: 1px solid black; background-color: #ffe0e0; position: absolute; left: 0px; top: 24px; z-index: 1; display: none">
+	<a class="analysisShortcutBarButton"><spring:message code="Analysis.shortcutButton"/></a>
+	<div id="_shortcutMenu" class="analysisShortcutMenu" style="display: none">
 		<ul>
 		<c:forEach var="item" items="${model.shortcuts}">
 			<li>
@@ -176,8 +172,8 @@
 
 <c:if test="${fn:length(model.links) > 0}">
 	<span style="position: relative" onMouseOver="javascript:showLayer('_linkMenu')" onMouseOut="javascript:hideLayer('_linkMenu')">
-		<a class="shortcutBarButton"><spring:message code="Analysis.linkButton"/></a>
-		<div id="_linkMenu" style="border: 1px solid black; background-color: #ffe0e0; position: absolute; left: 0px; top: 24px; width: 250px; z-index: 1; display: none">
+		<a class="analysisShortcutBarButton"><spring:message code="Analysis.linkButton"/></a>
+		<div id="_linkMenu" class="analysisShortcutMenu" style="display: none">
 			<ul>
 				<c:forEach var="item" items="${model.links}" varStatus="loopStatus">
 					<li>

@@ -148,14 +148,15 @@ public class MigrationController implements Controller {
 				int endIndex = hl7.indexOf("MSH", index + 1);
 				String oneMessage = endIndex <= 0 ? hl7.substring(index) : hl7.substring(index, endIndex);
 				messages.add(oneMessage);
-				System.out.println("has slashR: " + (oneMessage.indexOf("\r") > 0) + " , has slashN: " + (oneMessage.indexOf("\n") > 0));
+				// log.debug("has slashR: " + (oneMessage.indexOf("\r") > 0) + " , has slashN: " + (oneMessage.indexOf("\n") > 0));
 			}
 		}
 		
-		log.debug("About to handle " + messages.size() + " messages");
+		// log.debug("About to handle " + messages.size() + " messages");
 		
 		// split into messages
 		for (String oneMessage : messages) {
+			log.debug("oneMessage: " + oneMessage);
 			// Confusing terminology: an HL7InQueue is just one entry in the queue
 			HL7InQueue hl7InQueue = new HL7InQueue();
 			hl7InQueue.setHL7Data(oneMessage);
@@ -167,7 +168,7 @@ public class MigrationController implements Controller {
 				hs.createHL7Source(hl7Source);
 			}
 			hl7InQueue.setHL7Source(context.getHL7Service().getHL7Source(1));
-
+			log.debug("hl7InQueue.hl7Data: " + hl7InQueue.getHL7Data());
 			context.getHL7Service().createHL7InQueue(hl7InQueue);
 		}
 
@@ -187,6 +188,57 @@ public class MigrationController implements Controller {
 		int numAdded = importRegimens(context, csv);
 	
 		return new ModelAndView(new RedirectView("migration.form?message=" + URLEncoder.encode("Uploaded " + numAdded + " regimens", "UTF-8")));
+	}
+	
+	/**
+	 * TODO: DOCUMENT THIS
+	 */
+	public ModelAndView uploadMigrationFile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		HttpSession httpSession = request.getSession();
+		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		if (context == null) {
+			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
+			response.sendRedirect(request.getContextPath() + "/logout");
+			return null;
+		}
+		
+		String filename = request.getParameter("filename");
+		if (filename == null || filename.length() == 0)
+			throw new IllegalArgumentException("Must specify a 'filename' parameter");
+		
+		boolean autoCreateUsers = false;
+		boolean autoAddRole = false;
+		try {
+			autoCreateUsers = request.getParameter("auto_create_users").toLowerCase().startsWith("t");
+		} catch (Exception ex) { }
+		try {
+			autoAddRole = request.getParameter("add_role_when_creating_users").toLowerCase().startsWith("t");
+		} catch (Exception ex) { }
+		
+		List<String> relationships = new ArrayList<String>();
+		List<String> programWorkflow = new ArrayList<String>();
+		BufferedReader r = new BufferedReader(new FileReader(filename));
+		while (true) {
+			String s = r.readLine();
+			if (s == null)
+				break;
+			s = s.trim();
+			if (s.length() == 0)
+				continue;
+			if (s.startsWith("RELATIONSHIP:")) {
+				relationships.add(s);
+			} else if (s.startsWith("ENROLLMENT:") || s.startsWith("STATUS:")) {
+				programWorkflow.add(s);
+			} else {
+				throw new IllegalArgumentException("Don't know how to handle '" + s + "'");
+			}
+		}
+		int numRels = MigrationHelper.importRelationships(context, relationships, autoCreateUsers, autoAddRole);
+		String message = "";
+		message += "Uploaded " + numRels + " relationships<br/>";
+		int numProgram = MigrationHelper.importProgramsAndStatuses(context, programWorkflow);
+		message += "Uploaded " + numProgram + " programs and statuses<br/>";
+		return new ModelAndView(new RedirectView("migration.form?message=" + URLEncoder.encode(message, "UTF-8")));
 	}
 
 	/**
@@ -224,12 +276,15 @@ public class MigrationController implements Controller {
 				throw new IllegalArgumentException("Doses per day must be a positive integer");					
 			}
 			Drug drug = context.getConceptService().getDrug(formulationName);
+			if (drug == null)
+				throw new IllegalArgumentException("Can't find drug '" + formulationName + "'");
 			
 			DrugOrder reg = new DrugOrder();
 			reg.setDrug(drug);
 			reg.setConcept(drug.getConcept());
 			reg.setStartDate(startDate);
 			reg.setAutoExpireDate(autoExpireDate);
+			reg.setDiscontinued(discontinuedDate != null);
 			reg.setDiscontinuedDate(discontinuedDate);
 			reg.setDiscontinuedReason(discontinuedReason);
 			reg.setDose(doseStrength);
