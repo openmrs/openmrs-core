@@ -11,6 +11,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.web.OpenmrsFilter;
 
 public class HtmlIncludeTag extends TagSupport {
 
@@ -48,6 +49,11 @@ public class HtmlIncludeTag extends TagSupport {
 		}
 
 		if ( isJs || isCss ) {
+			HttpServletRequest request = getRequest();
+			HttpServletRequest pageRequest = (HttpServletRequest) pageContext.getRequest();
+			
+			//log.debug("\n\n[" + request.getRequestURI() + "/" + request.getRequestURL() + "] [" + pageRequest.getRequestURI() + "/" + pageRequest.getRequestURL() + "] [" + request + "], Object at " + HtmlIncludeTag.OPENMRS_HTML_INCLUDE_KEY + " is " + request.getAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_KEY) + "");
+
 			if ( !isAlreadyUsed(file) ) {
 				String output = "";
 				String prefix = "";
@@ -63,12 +69,16 @@ public class HtmlIncludeTag extends TagSupport {
 				} else if ( isCss ) {
 					output = "<link href=\"" + prefix + file + "\" type=\"text/css\" rel=\"stylesheet\" />";
 				}
-				
+
+				//log.debug("isAlreadyUsed() is FALSE - printing " + this.file + " to output.");
+
 				try {
 					pageContext.getOut().print(output);
 				} catch (IOException e) {
 					log.error("Could not produce output in HtmlIncludeTag.java");
 				}
+			} else {
+				//log.debug("isAlreadyUsed() is TRUE - suppressing file print for " + this.file + "");
 			}
 		}
 		
@@ -78,31 +88,31 @@ public class HtmlIncludeTag extends TagSupport {
 	}
 	
 	private HttpServletRequest getRequest() {
-		if ( this.request == null ) {
-			//log.debug("Using pageContext request of " + this.pageContext.getRequest().toString());
-			return (HttpServletRequest)this.pageContext.getRequest();
+		HttpServletRequest pageRequest = (HttpServletRequest)this.pageContext.getRequest();
+		if ( this.pageContext.getRequest().getAttribute(OpenmrsFilter.INIT_REQ_ATTR_NAME) != null ) {
+			HttpServletRequest request = (HttpServletRequest)this.pageContext.getRequest().getAttribute(OpenmrsFilter.INIT_REQ_ATTR_NAME);
+			return (HttpServletRequest)this.pageContext.getRequest().getAttribute(OpenmrsFilter.INIT_REQ_ATTR_NAME);
 		} else {
-			//log.debug("Using passed-in request of " + this.request.toString());
-			return this.request;
+			if ( this.request == null ) {
+				//log.debug("Using pageContext request of " + this.pageContext.getRequest().toString());
+				return (HttpServletRequest)this.pageContext.getRequest();
+			} else {
+				//log.debug("Using passed-in request of " + this.request.toString());
+				return this.request;
+			}
 		}
 	}
 	
 	@SuppressWarnings("unchecked")
-	private boolean isAlreadyUsed(String fileName) {
+	private synchronized boolean isAlreadyUsed(String fileName) {
 		boolean isUsed = false;
 
 		if ( fileName != null ) {
-			if ( this.hmIncludeMap == null ) {
-				
-				
-				hmIncludeMap = (HashMap<String, String>) getRequest().getAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_KEY);
-				if ( hmIncludeMap == null ) {
-					hmIncludeMap = (HashMap<String, String>)pageContext.getAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_KEY, PageContext.REQUEST_SCOPE);
-					if ( hmIncludeMap == null ) {
-						hmIncludeMap = new HashMap<String,String>();
-						//log.debug("Using blank Map");
-					} //else log.debug("Using map from pageContext");
-				} //else log.debug("Using map from getRequest()");
+			
+			HashMap<String,String> hmIncludeMap = (HashMap<String, String>) getRequest().getAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_KEY);
+
+			if ( hmIncludeMap == null ) {
+				hmIncludeMap = new HashMap<String,String>();
 			} //else log.debug("Using map from object");
 			
 			
@@ -116,10 +126,10 @@ public class HtmlIncludeTag extends TagSupport {
 				//log.debug("HTMLINCLUDETAG IS WRITING HTML TO INCLUDE FILE " + fileName);
 				//log.debug("HashCode for file is " + fileName.hashCode());
 				hmIncludeMap.put(fileName,"true");
-				getRequest().setAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_KEY, hmIncludeMap.clone());
-				pageContext.setAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_KEY, hmIncludeMap.clone(), PageContext.REQUEST_SCOPE);
+				getRequest().setAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_KEY, hmIncludeMap);
+				//pageContext.setAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_KEY, hmIncludeMap.clone(), PageContext.REQUEST_SCOPE);
+				//this.hmIncludeMap = hmIncludeMap;
 			}
-			
 		}
 		
 		return isUsed;

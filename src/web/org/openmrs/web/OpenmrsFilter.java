@@ -24,7 +24,7 @@ public class OpenmrsFilter implements Filter {
 		log.debug("Destroying filter");
 	}
 
-	private static String INIT_REQ_ATTR_NAME = "__INIT_REQ__";
+	public static String INIT_REQ_ATTR_NAME = "__INIT_REQ__";
 	
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 	
@@ -39,7 +39,7 @@ public class OpenmrsFilter implements Filter {
         initialRequest = ( val == null );
         
         //set/forward the request init attribute
-        httpRequest.setAttribute( INIT_REQ_ATTR_NAME, INIT_REQ_ATTR_NAME );
+        httpRequest.setAttribute( INIT_REQ_ATTR_NAME, httpRequest );
         
         context = (Context)httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
         
