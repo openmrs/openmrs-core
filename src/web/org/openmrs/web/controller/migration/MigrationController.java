@@ -193,7 +193,7 @@ public class MigrationController implements Controller {
 	/**
 	 * TODO: DOCUMENT THIS
 	 */
-	public ModelAndView uploadMigrationFile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	public ModelAndView uploadMigrationFile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ParseException {
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		if (context == null) {
