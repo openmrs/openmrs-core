@@ -26,40 +26,38 @@
 					</c:if>
 				</tbody>
 			</table>
-		</div>
-	</div>
-	<div id="regimenPortletAdd">
-		<div class="boxHeader"><a class="boxHeader" href="#" onClick="showHideDiv('regimenPortletAddForm');"><spring:message code="DrugOrder.regimens.add" /></a></div>
-		<div class="box" id="regimenPortletAddForm" style="display:none">
-			<form method="post" id="orderForm">
-			<input type="hidden" name="patientId" value="${model.patientId}" />
-			<table>
-				<tr>
-					<td><spring:message code="DrugOrder.drug"/></td>
-					<td>
-						<openmrs:fieldGen type="org.openmrs.Drug" formFieldName="drug" val="" parameters="noBind=true" />
-					</td>
-					<td><spring:message code="DrugOrder.dose"/></td>
-					<td>
-						<openmrs:fieldGen type="java.lang.Integer" formFieldName="dose" val="" parameters="noBind=true" />
-					</td>
-					<td><spring:message code="DrugOrder.units"/></td>
-					<td>
-						<openmrs:fieldGen type="java.lang.String" formFieldName="units" val="" parameters="noBind=true|fieldLength=12" />
-					</td>
-					<td><spring:message code="DrugOrder.frequency"/></td>
-					<td>
-						<openmrs:fieldGen type="java.lang.String" formFieldName="frequency" val="" parameters="noBind=true|fieldLength=8" />
-					</td>
-					<td><spring:message code="general.dateStart"/></td>
-					<td>
-						<openmrs:fieldGen type="java.util.Date" formFieldName="startDate" val="" parameters="noBind=true" />
-					</td>
-					<td><input type="button" value="<spring:message code="general.add"/>" onClick="handleAddDrugOrder('drug', 'dose', 'units', 'frequency', 'startDate')"></td>
-				</tr>
-			</table>
-			</form>
-		</div>
+			<a href="#" onClick="showHideDiv('regimenPortletAddForm');"><spring:message code="DrugOrder.regimens.add" /></a>
+			<div id="regimenPortletAddForm" style="display:none">
+				<form method="post" id="orderForm">
+				<input type="hidden" name="patientId" value="${model.patientId}" />
+				<table>
+					<tr>
+						<td><spring:message code="DrugOrder.drug"/></td>
+						<td>
+							<openmrs:fieldGen type="org.openmrs.Drug" formFieldName="drug" val="" parameters="noBind=true" />
+						</td>
+						<td><spring:message code="DrugOrder.dose"/></td>
+						<td>
+							<openmrs:fieldGen type="java.lang.Integer" formFieldName="dose" val="" parameters="noBind=true" />
+						</td>
+						<td><spring:message code="DrugOrder.units"/></td>
+						<td>
+							<openmrs:fieldGen type="java.lang.String" formFieldName="units" val="" parameters="noBind=true|fieldLength=12" />
+						</td>
+						<td><spring:message code="DrugOrder.frequency"/></td>
+						<td>
+							<openmrs:fieldGen type="java.lang.String" formFieldName="frequency" val="" parameters="noBind=true|fieldLength=8" />
+						</td>
+						<td><spring:message code="general.dateStart"/></td>
+						<td>
+							<openmrs:fieldGen type="java.util.Date" formFieldName="startDate" val="" parameters="noBind=true" />
+						</td>
+						<td><input type="button" value="<spring:message code="general.add"/>" onClick="handleAddDrugOrder('drug', 'dose', 'units', 'frequency', 'startDate')"></td>
+					</tr>
+				</table>
+				</form>
+			</div>
+		</div>			
 	</div>
 	<div id="regimenPortletCompleted">
 		<div class="boxHeader"><spring:message code="DrugOrder.regimens.completed" /></div>
