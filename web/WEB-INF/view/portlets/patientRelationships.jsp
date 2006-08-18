@@ -1,4 +1,13 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
+<%@ page import="org.openmrs.User" %>
+<%@ page import="org.openmrs.Person" %>
+<%@ page import="org.openmrs.Relationship" %>
+<%@ page import="org.openmrs.RelationshipType" %>
+<%@ page import="org.openmrs.api.context.Context" %>
+<%@ page import="org.openmrs.web.WebConstants" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="java.util.Enumeration" %>
 <%--
 showFrom=true:	show relationships where this patient is the *person*
 showTo=true:	show relationships where this patient is the *relative*
@@ -22,15 +31,10 @@ refreshOnChange=*
 	upon editing the specified relationship type (or any relationship type) reload the page. NOT YET IMPLEMENTED
 --%>
 
-<style>
-
-</style>
-
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/easyAjax.js"></script>
-
-<script type="text/javascript" src="<%= request.getContextPath() %>/dwr/interface/DWRRelationshipService.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/dwr/engine.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/dwr/util.js"></script>
+<openmrs:htmlInclude file="/scripts/easyAjax.js" />
+<openmrs:htmlInclude file="/dwr/interface/DWRRelationshipService.js" />
+<openmrs:htmlInclude file="/dwr/engine.js" />
+<openmrs:htmlInclude file="/dwr/util.js" />
 
 <script language="JavaScript">
 	var typesToShow = "${model.showTypes}".split(",");
@@ -43,14 +47,23 @@ refreshOnChange=*
 	function refreshShownTypes() {
 		for (var i = 0; i < typesToShow.length; ++i) {
 			var relType = typesToShow[i];
-			document.getElementById('boxForRelType_' + relType).innerHTML = '<spring:message code="general.none"/>';
+			//document.getElementById('boxForRelType_' + relType).innerHTML = '<spring:message code="general.none"/>';
 		}
+		
 		for (var i = 0; i < typesToShow.length; ++i) {
 			var relType = typesToShow[i];
+
+			//alert('calling grtp with [${model.personId}][' + relType + ']');
 			DWRRelationshipService.getRelationshipsToPerson(${model.personId}, relType, function(relationships) {
+
+					//alert('this many rels: ' + relationships.length);
+
 					for (var j = 0; j < relationships.length; ++j) {
-						var rel = relationships[j];
-						var tmp = $('boxForRelType_' + rel.relationshipType).innerHTML;
+
+						var rel = relationships[j];	
+						
+						var tmp = '';
+						//var tmp = $('boxForRelType_' + rel.relationshipType).innerHTML;
 						if (j == 0) {
 							tmp = '';
 						}
@@ -59,7 +72,13 @@ refreshOnChange=*
 						<c:if test="${model.allowVoid}">
 							tmp += ' <a href="javascript:handleVoidRelationship(' + rel.relationshipId + ')" class="voidButton">[x]</a>';
 						</c:if>
-						$('boxForRelType_' + rel.relationshipType).innerHTML = tmp;
+
+						var userPopup = dojo.widget.manager.getWidgetById("boxForRelType_" + rel.relationshipType + "_selection");
+						alert('about to try to set innerHTML for ' + userPopup);
+						userPopup.displayNode.innerHTML = rel.toName;
+						alert('done trying');
+
+						//$('boxForRelType_' + rel.relationshipType).innerHTML = tmp;
 					}
 				});
 		}
@@ -112,11 +131,19 @@ refreshOnChange=*
 		DWRRelationshipService.voidRelationship(relationshipId, refreshAllRelationships);
 	}
 	
+	function handleChangeRelationById(relType, fromPersonId) {
+		var toPersonId = ${model.personId};
+		DWRRelationshipService.setRelationshipTo("User." + fromPersonId, toPersonId, relType, finishedChangeRelation);
+	}
+	
+	function finishedChangeRelation() {
+		//alert('done');
+		// do nothing - dojo has already taken care of it
+	}
+
 	function handleChangeRelation(relType, fromBoxId) {
 		var fromPersonId = DWRUtil.getValue($(fromBoxId));
-		var toPersonId = ${model.personId};
-		$(fromBoxId).value = '';
-		DWRRelationshipService.setRelationshipTo(fromPersonId, toPersonId, relType, refreshAllRelationships);
+		handleChangeRelationById(relType, fromPersonId);
 	}
 	
 	function handleAddRelationship(fromBoxId, relTypeBoxId) {
@@ -151,41 +178,90 @@ refreshOnChange=*
 		}
 	}
 	
+	//refreshAllRelationships();
+
 </script>
 
 <c:if test="${model.showTypes != null || model.showOtherTypes == 'true'}">
-	<table>
-	<c:if test="${model.showTypes != null}">
-		<tbody>
-		<c:forTokens var="relType" items="${model.showTypes}" delims=",">
-			<tr valign="bottom">
-				<td class="patientSummaryLabel">${relType}:</td>
-				<td id="boxForRelType_${relType}" class="patientSummaryValue"></td>
-				<c:if test="${model.allowEditShownTypes == 'true'}">
-					<td>
-						&nbsp;&nbsp;&nbsp;&nbsp;
-						<span class="patientSummaryLabel">Change to:</span>
-						<input type="text" id="change_${relType}_to" />
-						<input type="button" value="Change" onClick="handleChangeRelation('${relType}', 'change_${relType}_to')" />
-					</td>
-				</c:if>
-			</tr>
-		</c:forTokens>
-		</tbody>
-	</c:if>
-	<c:if test="${model.showOtherTypes == 'true'}">
-		<tbody id="PR_otherRelationshipsBody"></tbody>
-	</c:if>
-	</table>
-	<c:if test="${model.showOtherTypes == 'true' && model.allowAddOtherTypes == 'true'}">
-		Add relationship:
-		<small>(personId or Patient.patientId or User.userId)</small> <input type="text" id="PR_otherAddRelFromPerson"/>
-		is the <select id="PR_otherAddRelType"></select>
-		<input type="button" value="<spring:message code="general.add"/>" onClick="handleAddRelationship('PR_otherAddRelFromPerson', 'PR_otherAddRelType')"/>
-	</c:if>
 
+<div id="patientRelationshipPortlet">
+	<div class="boxHeader"><spring:message code="Relationship.patient.providers" /></div>
+	<div class="box">
+		<table>
+		<c:if test="${model.showTypes != null}">
+			<tbody>
+			<c:forTokens var="relType" items="${model.showTypes}" delims=",">
+				<%
+					String relType = (String)pageContext.getAttribute("relType");
+					if ( relType != null ) {
+						HttpSession httpSession = request.getSession();
+						Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+			
+						List<RelationshipType> rtList = (List<RelationshipType>)context.getPatientService().getRelationshipTypes();
+						
+						if ( rtList != null ) {
+							RelationshipType rt = null;
+
+							for ( int i = 0; i < rtList.size(); i++ ) {
+								RelationshipType currType = rtList.get(i);
+								if ( currType != null ) {
+									if (currType.getName().equals(relType)) rt = currType;
+								}
+							}
+							
+							if ( rt != null ) {
+								Map<String, Object> model = (Map<String, Object>)request.getAttribute("model");
+								if ( model != null ) {
+									Map<RelationshipType, List<Relationship>> relationshipsByType = (Map<RelationshipType, List<Relationship>>)model.get("patientRelationshipsByType");
+									if ( relationshipsByType != null ) {
+										List<Relationship> relList = (List)relationshipsByType.get(rt);
+										if ( relList != null ) {
+											Relationship r = (Relationship)relList.get(0);
+											if ( r != null ) {
+												Person p = r.getPerson();
+												if ( p != null ) {
+													User u = p.getUser();
+													if ( u != null ) {
+														Integer userId = u.getUserId();
+														if ( userId != null ) {
+															pageContext.setAttribute("currUserId", userId.toString());
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				%>
+				<tr valign="bottom">
+					<td class="patientSummaryLabel">${relType}:</td>
+					<c:choose>
+						<c:when test="${model.allowEditShownTypes == 'true'}">
+							<td>
+								<openmrs_tag:userField formFieldName="boxForRelType_${relType}" roles="${relType}" initialValue="${currUserId}" /> 
+							</td>
+						</c:when>
+						<c:otherwise>
+							<td id="boxForRelType_${relType}" class="patientSummaryValue"></td>
+						</c:otherwise>
+					</c:choose>
+				</tr>
+			</c:forTokens>
+			</tbody>
+		</c:if>
+		<c:if test="${model.showOtherTypes == 'true'}">
+			<tbody id="PR_otherRelationshipsBody"></tbody>
+		</c:if>
+		</table>
+		<c:if test="${model.showOtherTypes == 'true' && model.allowAddOtherTypes == 'true'}">
+			Add relationship:
+			<small>(personId or Patient.patientId or User.userId)</small> <input type="text" id="PR_otherAddRelFromPerson"/>
+			is the <select id="PR_otherAddRelType"></select>
+			<input type="button" value="<spring:message code="general.add"/>" onClick="handleAddRelationship('PR_otherAddRelFromPerson', 'PR_otherAddRelType')"/>
+		</c:if>
+	</div>
+</div>
 </c:if>
-
-<script language="JavaScript">
-	refreshAllRelationships();
-</script>

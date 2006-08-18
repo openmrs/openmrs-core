@@ -194,7 +194,7 @@ public interface PatientDAO {
 	 * @return Relationship list
 	 * @throws DAOException
 	 */
-	public List<Relationship> getRelationships(Person p) throws DAOException;
+	public List<Relationship> getRelationships(Person p, boolean showVoided) throws DAOException;
 	
 	/**
 	 * Get all relationshipTypes

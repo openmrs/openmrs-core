@@ -447,20 +447,24 @@ public class PatientService {
 		
 		return getPatientDAO().getRelationships();
 	}
-	
+
 	/**
 	 * Get list of relationships that include Person in person_id or relative_id
 	 * 
 	 * @return Relationship list
 	 * @throws APIException
 	 */
-	public List<Relationship> getRelationships(Person p) throws APIException {
+	public List<Relationship> getRelationships(Person p, boolean showVoided) throws APIException {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS);
 		
-		return getPatientDAO().getRelationships(p);
+		return getPatientDAO().getRelationships(p, showVoided);
 	}
 	
+	public List<Relationship> getRelationships(Person p) throws APIException {
+		return getRelationships(p, true);
+	}
+
 	/**
 	 * Get list of relationships that have Person as relative_id, and the given type (which can be null)
 	 * @return Relationship list
@@ -489,6 +493,7 @@ public class PatientService {
 		
 		return getPatientDAO().getRelationshipTypes();
 	}
+	
 
 	/**
 	 * Get relationshipType by internal identifier

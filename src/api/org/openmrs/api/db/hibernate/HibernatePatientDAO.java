@@ -498,22 +498,24 @@ public class HibernatePatientDAO implements PatientDAO {
 	 * @see org.openmrs.api.db.PatientService#getRelationships(org.openmrs.Person)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Relationship> getRelationships(Person person) throws DAOException {
+	public List<Relationship> getRelationships(Person person, boolean showVoided) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
 		Query query = null;
 		List<Relationship> relationships = new Vector<Relationship>();
 		
+		String voided = showVoided ? "" : " and voided = 0 ";
+		
 		if (person.getPatient() != null) {
 			query = session.createQuery(
-				"from Relationship r where r.person.patient = :p1 or r.relative.patient = :p2 order by r.relationshipId asc "
+				"from Relationship r where r.person.patient = :p1 or r.relative.patient = :p2 " + voided + " order by r.relationshipId asc "
 			)
 			.setParameter("p1", person.getPatient())
 			.setParameter("p2", person.getPatient());
 		}
 		else if (person.getUser() != null) {
 			query = session.createQuery(
-					"from Relationship r where r.person.user = :p1 or r.relative.user = :p2 order by r.relationshipId asc "
+					"from Relationship r where r.person.user = :p1 or r.relative.user = :p2 " + voided + " order by r.relationshipId asc "
 				)
 				.setParameter("p1", person.getUser())
 				.setParameter("p2", person.getUser());
@@ -563,7 +565,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		return relationshipTypes;
 
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.PatientService#getLocation(java.lang.Integer)
 	 */

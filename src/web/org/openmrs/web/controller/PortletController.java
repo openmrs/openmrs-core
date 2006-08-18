@@ -66,7 +66,7 @@ public class PortletController implements Controller {
 
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
+
 		// find the portlet that was identified in the openmrs:portlet taglib
 		Object uri = request.getAttribute("javax.servlet.include.servlet_path");
 		String portletPath = "";
@@ -94,7 +94,7 @@ public class PortletController implements Controller {
 			if (moreParams != null) {
 				model.putAll(moreParams);
 			}
-			
+						
 			if (context != null) {
 				model.put("authenticatedUser", context.getAuthenticatedUser());
 				model.put("locale", context.getLocale());
@@ -112,7 +112,7 @@ public class PortletController implements Controller {
 					model.put("patientPrograms", context.getProgramWorkflowService().getPatientPrograms(p));
 					model.put("patientCurrentPrograms", context.getProgramWorkflowService().getCurrentPrograms(p, null));
 					List<Relationship> relationships = new ArrayList<Relationship>();
-					relationships.addAll(context.getPatientService().getRelationships(new Person(p)));
+					relationships.addAll(context.getPatientService().getRelationships(new Person(p), false));
 					Map<RelationshipType, List<Relationship>> relationshipsByType = new HashMap<RelationshipType, List<Relationship>>();
 					for (Relationship rel : relationships) {
 						List<Relationship> list = relationshipsByType.get(rel.getRelationship());
