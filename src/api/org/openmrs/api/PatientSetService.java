@@ -8,11 +8,18 @@ import java.util.List;
 import java.util.Map;
 
 import org.openmrs.Concept;
+import org.openmrs.ConceptSet;
+import org.openmrs.Drug;
+import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
+import org.openmrs.PatientProgram;
+import org.openmrs.PatientState;
+import org.openmrs.Program;
+import org.openmrs.ProgramWorkflow;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOContext;
@@ -22,7 +29,7 @@ import org.openmrs.reporting.PatientSet;
 import org.openmrs.util.OpenmrsConstants;
 
 public class PatientSetService {
-
+	
 	private Context context;
 	private DAOContext daoContext;
 	
@@ -131,7 +138,14 @@ public class PatientSetService {
 	}
 	
 	public Map<Integer, List<Obs>> getObservations(PatientSet patients, Concept concept) {
-		return getPatientSetDAO().getObservations(patients, concept);
+		return getPatientSetDAO().getObservations(patients, concept, null, null);
+	}
+	
+	/**
+	 * Date range is inclusive of both endpoints 
+	 */
+	public Map<Integer, List<Obs>> getObservations(PatientSet patients, Concept concept, Date fromDate, Date toDate) {
+		return getPatientSetDAO().getObservations(patients, concept, fromDate, toDate);
 	}
 
 	public Map<Integer, Encounter> getEncountersByType(PatientSet patients, EncounterType encType) {
@@ -220,6 +234,29 @@ public class PatientSetService {
 	
 	public void clearMyPatientSet() {
 		setMyPatientSet(null);
+	}
+
+	public Map<Integer, PatientState> getCurrentStates(PatientSet ps, ProgramWorkflow wf) {
+		return getPatientSetDAO().getCurrentStates(ps, wf);
+	}
+
+	public Map<Integer, PatientProgram> getCurrentPatientPrograms(PatientSet ps, Program program) {
+		return getPatientSetDAO().getCurrentPatientPrograms(ps, program);
+	}
+	
+	/**
+	 * @return all active drug orders whose drug concept is in the given set (or all drugs if that's null) 
+	 */
+	public Map<Integer, List<DrugOrder>> getCurrentDrugOrders(PatientSet ps, Concept drugSet) {
+		List<Concept> drugConcepts = null;
+		if (drugSet != null) {
+			List<ConceptSet> concepts = context.getConceptService().getConceptSets(drugSet);
+			drugConcepts = new ArrayList<Concept>();
+			for (ConceptSet cs : concepts) {
+				drugConcepts.add(cs.getConcept());
+			}
+		}
+		return getPatientSetDAO().getCurrentDrugOrders(ps, drugConcepts);		
 	}
 	
 }

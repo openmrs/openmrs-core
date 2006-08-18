@@ -22,9 +22,14 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
+import org.openmrs.PatientProgram;
+import org.openmrs.PatientState;
+import org.openmrs.Program;
+import org.openmrs.ProgramWorkflow;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
@@ -79,12 +84,8 @@ public class NealReportController implements Controller {
 		attributeHelper(attributesToGet, attributeNamesForReportMaker, "Patient.birthdate", General.BIRTHDAY);
 		attributeHelper(attributesToGet, attributeNamesForReportMaker, "Patient.gender", General.SEX);
 		
-		// General.SITE
-		// General.HIV_POSITIVE_P
-		// General.TB_ACTIVE_P
-		// Hiv.TREATMENT_STATUS
+		// General.SITE (currently using most recent encounter location)
 		// General.ADDRESS
-		// General.ENROLL_DATE
 		// General.USER_ID (this is actually patient identifier)
 		// General.DUE_DATE if pregnant
 		// Hiv.ACCOMP_FIRST_NAME
@@ -92,16 +93,6 @@ public class NealReportController implements Controller {
 		// General.PREGNANT_P
 		// General.PMTCT (get meds for ptme? ask CA)
 		// General.FORMER_GROUP (previous ARV group)
-		
-		// --- for every arv drug, addDynamic() a holder with
-		// Hiv.OBS_TYPE == Hiv.ARV or "arv"
-		// General.DOSE_PER_DAY == total dose per day == ddd
-		// Hiv.OBS_DATE == start date of arvs
-		// Hiv.ARV == the name of the drug as 3-letter abbreviation, or whatever   
-		// "stop_date" == stop date for ARVS
-		// "ddd_quotient"  == number of times taken per day (i think) 
-		// "strength_unit" == unit for strength, e.g, "tab"
-		// "strength_dose" == amount given per time
 		
 		// --- for every tb drug, addDynamic() a holder with
 		// Hiv.OBS_TYPE == TB.TB_REGIMEN or "atb"
@@ -174,6 +165,73 @@ public class NealReportController implements Controller {
 		
 		log.debug("Pulled conceptsToGet in " + (System.currentTimeMillis() - l) + " ms");
 		l = System.currentTimeMillis();
+
+		// General.ENROLL_DATE
+		// Hiv.TREATMENT_STATUS
+		// General.HIV_POSITIVE_P
+		// General.TB_ACTIVE_P 
+		Program hivProgram = context.getProgramWorkflowService().getProgram("IMB HIV PROGRAM");
+		if (hivProgram != null) {
+			Map<Integer, PatientProgram> progs = pss.getCurrentPatientPrograms(ps, hivProgram);
+			for (Map.Entry<Integer, PatientProgram> e : progs.entrySet()) {
+				patientDataHolder.get(e.getKey()).put(General.HIV_POSITIVE_P, "t");
+				patientDataHolder.get(e.getKey()).put(General.ENROLL_DATE, formatDate(e.getValue().getDateEnrolled()));
+				log.debug(e.getValue().getDateEnrolled());
+			}
+			ProgramWorkflow wf = context.getProgramWorkflowService().getWorkflow(hivProgram, "TREATMENT STATUS");
+			Map<Integer, PatientState> states = pss.getCurrentStates(ps, wf);
+			for (Map.Entry<Integer, PatientState> e : states.entrySet()) {
+				patientDataHolder.get(e.getKey()).put(Hiv.TREATMENT_STATUS, e.getValue().getState().getConcept().getName(locale, false).getName());
+			}
+		} else {
+			log.debug("Couldn't find IMB HIV PROGRAM");
+		}
+		
+		Program tbProgram = context.getProgramWorkflowService().getProgram("IMB TB PROGRAM");
+		if (tbProgram != null) {
+			Map<Integer, PatientProgram> progs = pss.getCurrentPatientPrograms(ps, tbProgram);
+			for (Integer ptId : progs.keySet()) {
+				patientDataHolder.get(ptId).put(General.TB_ACTIVE_P, "t");
+			}
+		}
+			
+		log.debug("Pulled enrollments and hiv treatment status in " + (System.currentTimeMillis() - l) + " ms");
+		l = System.currentTimeMillis();
+		
+		// --- for every arv drug, addDynamic() a holder with
+		// Hiv.OBS_TYPE == Hiv.ARV or "arv"
+		// General.DOSE_PER_DAY == total dose per day == ddd
+		// Hiv.OBS_DATE == start date of arvs
+		// Hiv.ARV == the name of the drug as 3-letter abbreviation, or whatever   
+		// "stop_date" == stop date for ARVS
+		// "ddd_quotient"  == number of times taken per day (i think) 
+		// "strength_unit" == unit for strength, e.g, "tab"
+		// "strength_dose" == amount given per time
+		Map<Integer, List<DrugOrder>> regimens = pss.getCurrentDrugOrders(ps, context.getConceptService().getConceptByName("ANTIRETROVIRAL DRUGS"));
+		for (Map.Entry<Integer, List<DrugOrder>> e : regimens.entrySet()) {
+			Date earliestStart = null;
+			for (DrugOrder reg : e.getValue()) {
+				if (earliestStart == null || (reg.getStartDate() != null && earliestStart.compareTo(reg.getStartDate()) > 0))
+					earliestStart = reg.getStartDate();
+				Map<String, String> holder = new HashMap<String, String>();
+				holder.put(General.ID, e.getKey().toString());
+				holder.put(Hiv.OBS_TYPE, Hiv.ARV);
+				holder.put(General.DOSE_PER_DAY, reg.getDose().toString());
+				holder.put(Hiv.OBS_DATE, formatDate(reg.getStartDate()));
+				holder.put(Hiv.ARV, reg.getDrug().getName());
+				holder.put("stop_date", formatDate(reg.getDiscontinued() ? reg.getDiscontinuedDate() : reg.getAutoExpireDate()));
+				holder.put("ddd_quotient", reg.getFrequency().substring(0, 1));
+				holder.put("strength_unit", reg.getUnits());
+				holder.put("strength_dose", reg.getDose().toString());
+				maker.addDynamic(holder);
+				log.debug(reg);
+			}
+			if (earliestStart != null)
+				patientDataHolder.get(e.getKey()).put(Hiv.FIRST_ARV_DATE, formatDate(earliestStart));
+		}
+		
+		log.debug("Pulled regimens in " + (System.currentTimeMillis() - l) + " ms");
+		l = System.currentTimeMillis();
 		
 		for (Concept c : dynamicConceptsToGet) {
 			long l1 = System.currentTimeMillis();
@@ -199,6 +257,7 @@ public class NealReportController implements Controller {
 		log.debug("Pulled dynamicConceptsToGet in " + (System.currentTimeMillis() - l) + " ms");
 		l = System.currentTimeMillis();
 		
+		/*
 		// hack for demo in capetown using Kenya data
 		{
 			// arv start date
@@ -236,25 +295,26 @@ public class NealReportController implements Controller {
 					patientDataHolder.get(e.getKey()).put(TB.FIRST_TB_REGIMEN_DATE, formatDate(date));
 				}
 			}
-
-			// location of most recent encounter
-			Map<Integer, Encounter> encs = pss.getEncountersByType(ps, null);
-			for (Map.Entry<Integer, Encounter> e : encs.entrySet()) {
-				String locName = null;
-				Location encLocation = e.getValue().getLocation();
-				if (encLocation != null) {
-					locName = encLocation.getName();
-				}
-				if (locName != null && locName.length() > 0) {
-					patientDataHolder.get(e.getKey()).put(General.SITE, locName);
-				}
+		}
+		*/
+		
+		// location of most recent encounter
+		Map<Integer, Encounter> encs = pss.getEncountersByType(ps, null);
+		for (Map.Entry<Integer, Encounter> e : encs.entrySet()) {
+			String locName = null;
+			Location encLocation = e.getValue().getLocation();
+			if (encLocation != null) {
+				locName = encLocation.getName();
+			}
+			if (locName != null && locName.length() > 0) {
+				patientDataHolder.get(e.getKey()).put(General.SITE, locName);
 			}
 		}
 
 		int cnt = 0;
 		for (Map<String, String> patient : patientDataHolder.values()) {
 			// patient.put("BIRTH_YEAR", "1978");
-			patient.put(General.HIV_POSITIVE_P, "t");
+			//patient.put(General.HIV_POSITIVE_P, "t");
 			maker.addStatic(patient);
 		}
 		

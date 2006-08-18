@@ -107,7 +107,7 @@ public class ProgramWorkflowService {
 		// TODO: do this right
 		List<Program> progs = getPrograms();
 		for (Program p : getPrograms())
-			if (p.getConcept().getName(context.getLocale(), false).equals(name))
+			if (p.getConcept().getName(context.getLocale(), false).getName().equals(name))
 				return p;
 		return null;
 	}

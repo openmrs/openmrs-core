@@ -6,10 +6,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.openmrs.Concept;
+import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
+import org.openmrs.PatientProgram;
+import org.openmrs.PatientState;
+import org.openmrs.Program;
+import org.openmrs.ProgramWorkflow;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PatientSetService.TimeModifier;
 import org.openmrs.reporting.PatientSet;
@@ -32,7 +37,7 @@ public interface PatientSetDAO {
 	
 	public Map<Integer, String> getShortPatientDescriptions(PatientSet patients) throws DAOException;
 	
-	public Map<Integer, List<Obs>> getObservations(PatientSet patients, Concept concept) throws DAOException;
+	public Map<Integer, List<Obs>> getObservations(PatientSet patients, Concept concept, Date fromDate, Date toDate) throws DAOException;
 	
 	public Map<Integer, Encounter> getEncountersByType(PatientSet patients, EncounterType encType);
 	
@@ -43,5 +48,11 @@ public interface PatientSetDAO {
 	public List<Patient> getPatients(Collection<Integer> patientIds) throws DAOException;
 
 	public Map<Integer, Collection<Integer>> getActiveDrugIds(Collection<Integer> patientIds, Date onDate) throws DAOException;
+
+	public Map<Integer, PatientState> getCurrentStates(PatientSet ps, ProgramWorkflow wf) throws DAOException;
+
+	public Map<Integer, PatientProgram> getCurrentPatientPrograms(PatientSet ps, Program program) throws DAOException;
+
+	public Map<Integer, List<DrugOrder>> getCurrentDrugOrders(PatientSet ps, List<Concept> drugConcepts) throws DAOException;
 	
 }

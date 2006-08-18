@@ -33,6 +33,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Concept;
+import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
@@ -41,6 +42,10 @@ import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.PatientName;
+import org.openmrs.PatientProgram;
+import org.openmrs.PatientState;
+import org.openmrs.Program;
+import org.openmrs.ProgramWorkflow;
 import org.openmrs.User;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
@@ -636,7 +641,11 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Map<Integer, List<Obs>> getObservations(PatientSet patients, Concept concept) throws DAOException {
+	/**
+	 * fromDate and toDate are both inclusive
+	 * TODO: finish this. 
+	 */
+	public Map<Integer, List<Obs>> getObservations(PatientSet patients, Concept concept, Date fromDate, Date toDate) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		HibernateUtil.beginTransaction();
 		
@@ -899,6 +908,87 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 				}
 				drugIds.add(drugId);
 			}
+		}
+		return ret;
+	}
+
+	public Map<Integer, PatientState> getCurrentStates(PatientSet ps, ProgramWorkflow wf) throws DAOException {
+		Map<Integer, PatientState> ret = new HashMap<Integer, PatientState>();
+		Collection<Integer> ids = ps.getPatientIds();
+		Session session = HibernateUtil.currentSession();
+		Date now = new Date();
+			
+		Criteria criteria = session.createCriteria(PatientState.class);
+		//criteria.add(Restrictions.in("patientProgram.patient.patientId", ids));
+		criteria.createCriteria("patientProgram").add(Restrictions.in("patient.patientId", ids));
+		//criteria.add(Restrictions.eq("state.programWorkflow", wf));
+		criteria.createCriteria("state").add(Restrictions.eq("programWorkflow", wf));
+		criteria.add(Restrictions.eq("voided", false));
+		criteria.add(Restrictions.or(Restrictions.isNull("startDate"), Restrictions.le("startDate", now)));
+		criteria.add(Restrictions.or(Restrictions.isNull("endDate"), Restrictions.ge("endDate", now)));
+		log.debug("criteria: " + criteria);
+		List<PatientState> temp = criteria.list();
+		for (PatientState state : temp) {
+			Integer ptId = state.getPatientProgram().getPatient().getPatientId();
+			ret.put(ptId, state);
+		}
+				
+		return ret;
+	}
+
+	/**
+	 * This method assumes the patient is not simultaneously enrolled in the program more than once
+	 */
+	public Map<Integer, PatientProgram> getCurrentPatientPrograms(PatientSet ps, Program program) throws DAOException {
+		Map<Integer, PatientProgram> ret = new HashMap<Integer, PatientProgram>();
+		Collection<Integer> ids = ps.getPatientIds();
+		Session session = HibernateUtil.currentSession();
+		Date now = new Date();
+			
+		Criteria criteria = session.createCriteria(PatientProgram.class);
+		criteria.add(Restrictions.in("patient.patientId", ids));
+		criteria.add(Restrictions.eq("program", program));
+		criteria.add(Restrictions.eq("voided", false));
+		criteria.add(Restrictions.or(Restrictions.isNull("dateEnrolled"), Restrictions.le("dateEnrolled", now)));
+		criteria.add(Restrictions.or(Restrictions.isNull("dateCompleted"), Restrictions.ge("dateCompleted", now)));
+		log.debug("criteria: " + criteria);
+		List<PatientProgram> temp = criteria.list();
+		for (PatientProgram prog : temp) {
+			Integer ptId = prog.getPatient().getPatientId(); 
+			ret.put(ptId, prog);
+		}
+				
+		return ret;
+	}
+
+	public Map<Integer, List<DrugOrder>> getCurrentDrugOrders(PatientSet ps, List<Concept> drugConcepts) throws DAOException {
+		Map<Integer, List<DrugOrder>> ret = new HashMap<Integer, List<DrugOrder>>();
+		Collection<Integer> ids = ps.getPatientIds();
+		Session session = HibernateUtil.currentSession();
+		Date now = new Date();
+
+		Criteria criteria = session.createCriteria(DrugOrder.class);
+		//criteria.add(Restrictions.in("encounter.patient.patientId", ids));
+		criteria.createCriteria("encounter").add(Restrictions.in("patient.patientId", ids));
+		if (drugConcepts != null)
+			criteria.add(Restrictions.in("concept", drugConcepts));
+		criteria.add(Restrictions.eq("voided", false));
+		criteria.add(Restrictions.le("startDate", now));
+		criteria.add(Restrictions.or(
+						Restrictions.and(Restrictions.eq("discontinued", false), Restrictions.or(Restrictions.isNull("autoExpireDate"), Restrictions.gt("autoExpireDate", now))),
+						Restrictions.and(Restrictions.eq("discontinued", true), Restrictions.gt("discontinuedDate", now))
+				));
+		criteria.addOrder(org.hibernate.criterion.Order.asc("startDate"));
+		log.debug("criteria: " + criteria);
+		List<DrugOrder> temp = criteria.list();
+		for (DrugOrder regimen : temp) {
+			Integer ptId = regimen.getEncounter().getPatient().getPatientId();
+			List<DrugOrder> list = ret.get(ptId);
+			if (list == null) {
+				list = new ArrayList<DrugOrder>();
+				ret.put(ptId, list);
+			}
+			list.add(regimen);
 		}
 		return ret;
 	}
