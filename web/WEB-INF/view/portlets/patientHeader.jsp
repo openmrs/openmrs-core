@@ -1,5 +1,8 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
+<c:set var="HIV_PROGRAM_CONCEPT_ID" value="1482" />
+<c:set var="TB_PROGRAM_CONCEPT_ID" value="1483" />
+
 <openmrs:require privilege="View Patients" otherwise="/login.htm" redirect="/formentry/index.htm" />
 
 	<%-- Header showing preferred name, id, and treatment status --%>
@@ -30,7 +33,7 @@
 	</div>
 	<div id="patientSubheader" class="box">
 		<c:forEach items="${model.patientCurrentPrograms}" var="p" varStatus="s">
-			<c:if test="${p.program.concept.conceptId == 0}">
+			<c:if test="${p.program.concept.conceptId == HIV_PROGRAM_CONCEPT_ID}">
 				<table><tr>
 					<td><spring:message code="Program.hiv"/></td>
 					<td>|</td>
@@ -38,12 +41,25 @@
 					<td>|</td>
 					<td><spring:message code="Program.group"/>: <openmrs_tag:mostRecentObs observations="${model.patientObs}" concept="1377" locale="${model.locale}" /></td>
 					<td>|</td>
-					<td><openmrs:portlet id="headerAccompagnateur" url="patientRelationships" size="normal" patientId="${patient.patientId}" parameters="allowEditShownTypes=false|allowAddShownTypes=false|allowAddOtherTypes=false|allowVoid=true|showFrom=false|showTo=true|showTypes=Accompagnateur|showOtherTypes=false"/></td>
+					<td><spring:message code="Program.agent"/>:
+						<c:forEach items="${model.patientRelationships}" var="r" varStatus="s">
+							<c:if test="${r.relationship.relationshipTypeId == 1}">
+								<c:if test="${accompFound}">, </c:if>
+								<c:if test="${r.person.patient != null}">
+									${r.person.patient.patientName.givenName} ${r.person.patient.patientName.middleName} ${r.person.patient.patientName.familyName}
+								</c:if>
+								<c:if test="${r.person.user != null}">
+									${r.person.user.firstName} ${r.person.user.lastName} 
+								</c:if>
+								<c:set var="accompFound" value="true"/>
+							</c:if>
+						</c:forEach>
+					</td>
 				</tr></table>
 			</c:if>
 		</c:forEach>
 		<c:forEach items="${model.patientCurrentPrograms}" var="p" varStatus="s">
-			<c:if test="${p.program.concept.conceptId == 0}">
+			<c:if test="${p.program.concept.conceptId == TB_PROGRAM_CONCEPT_ID}">
 				<table><tr>
 					<td><spring:message code="Program.tb"/></td>
 					<td>|</td>
