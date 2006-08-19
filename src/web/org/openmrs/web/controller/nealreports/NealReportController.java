@@ -83,6 +83,7 @@ public class NealReportController implements Controller {
 		attributeHelper(attributesToGet, attributeNamesForReportMaker, "PatientName.familyName", General.LAST_NAME);
 		attributeHelper(attributesToGet, attributeNamesForReportMaker, "Patient.birthdate", General.BIRTHDAY);
 		attributeHelper(attributesToGet, attributeNamesForReportMaker, "Patient.gender", General.SEX);
+		attributeHelper(attributesToGet, attributeNamesForReportMaker, "Patient.healthCenter", General.SITE);
 		
 		// General.SITE (currently using most recent encounter location)
 		// General.ADDRESS
@@ -176,7 +177,7 @@ public class NealReportController implements Controller {
 			for (Map.Entry<Integer, PatientProgram> e : progs.entrySet()) {
 				patientDataHolder.get(e.getKey()).put(General.HIV_POSITIVE_P, "t");
 				patientDataHolder.get(e.getKey()).put(General.ENROLL_DATE, formatDate(e.getValue().getDateEnrolled()));
-				log.debug(e.getValue().getDateEnrolled());
+				//log.debug(e.getValue().getDateEnrolled());
 			}
 			ProgramWorkflow wf = context.getProgramWorkflowService().getWorkflow(hivProgram, "TREATMENT STATUS");
 			Map<Integer, PatientState> states = pss.getCurrentStates(ps, wf);
@@ -224,7 +225,7 @@ public class NealReportController implements Controller {
 				holder.put("strength_unit", reg.getUnits());
 				holder.put("strength_dose", reg.getDose().toString());
 				maker.addDynamic(holder);
-				log.debug(reg);
+				// log.debug(reg);
 			}
 			if (earliestStart != null)
 				patientDataHolder.get(e.getKey()).put(Hiv.FIRST_ARV_DATE, formatDate(earliestStart));
@@ -298,6 +299,7 @@ public class NealReportController implements Controller {
 		}
 		*/
 		
+		/*
 		// location of most recent encounter
 		Map<Integer, Encounter> encs = pss.getEncountersByType(ps, null);
 		for (Map.Entry<Integer, Encounter> e : encs.entrySet()) {
@@ -310,6 +312,7 @@ public class NealReportController implements Controller {
 				patientDataHolder.get(e.getKey()).put(General.SITE, locName);
 			}
 		}
+		*/
 
 		int cnt = 0;
 		for (Map<String, String> patient : patientDataHolder.values()) {

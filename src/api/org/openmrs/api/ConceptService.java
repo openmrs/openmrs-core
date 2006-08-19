@@ -348,6 +348,9 @@ public class ConceptService {
 
 	/**
 	 * Return a list of the concept sets with concept_set matching concept
+	 * For example to find all concepts for ARVs, you would do
+	 *    getConceptSets(getConcept("ANTIRETROVIRAL MEDICATIONS"))
+	 * and then take the conceptIds from the resulting list.
 	 * 
 	 * @return List
 	 */

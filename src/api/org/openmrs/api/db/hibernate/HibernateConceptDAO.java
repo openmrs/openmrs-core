@@ -566,7 +566,7 @@ public class HibernateConceptDAO implements
 		Session session = HibernateUtil.currentSession();
 		
 		List<ConceptSet> sets = session.createCriteria(ConceptSet.class)
-						.add(Restrictions.eq("set", concept))
+						.add(Restrictions.eq("conceptSet", concept))
 						.addOrder(Order.asc("sortWeight"))
 						.list();
 		return sets;
