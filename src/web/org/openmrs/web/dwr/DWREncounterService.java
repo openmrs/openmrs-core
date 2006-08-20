@@ -78,14 +78,17 @@ public class DWREncounterService {
 		return objectList;
 	}
 	
-	public EncounterListItem getEncounter(Integer conceptId) {
+	public EncounterListItem getEncounter(Integer encounterId) {
 		Context context = (Context) WebContextFactory.get().getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		EncounterService es = context.getEncounterService();
-		Encounter e = es.getEncounter(conceptId);
+		Encounter e = es.getEncounter(encounterId);
 		
 		return e == null ? null : new EncounterListItem(e);
 	}
 
+	
+	
+	
 	@SuppressWarnings("unchecked")
 	public Vector findLocations(String searchValue) {
 		

@@ -17,24 +17,20 @@ public class ObsListItem {
  	private String conceptName = "";
  	private String order = "";
  	private String location = "";
+ 	private Date encounterDatetime;
  	private Date datetime;
  	private Boolean voided = false;
-
-	public Boolean getVoided() {
-		return voided;
-	}
-
-	public void setVoided(Boolean voided) {
-		this.voided = voided;
-	}
+ 	private String value = "";
 
 	public ObsListItem() { }
 		
 	public ObsListItem(Obs obs, Locale locale) {
 		if (obs != null) {
 			obsId = obs.getObsId();
-			if (obs.getEncounter() != null)
+			if (obs.getEncounter() != null) {
 				encounter = obs.getEncounter().getEncounterId().toString();
+				encounterDatetime = obs.getEncounter().getEncounterDatetime();
+			}
 			patientName = obs.getPatient().getPatientName().getFamilyName();
 			patientName += ", " + obs.getPatient().getPatientName().getGivenName();
 			conceptName = obs.getConcept().getName(locale).getName();
@@ -43,6 +39,7 @@ public class ObsListItem {
 			location = obs.getLocation().getName();
 			datetime = obs.getObsDatetime();
 			voided = obs.isVoided();
+			value = obs.getValueAsString(locale);
 		}
 	}
 
@@ -78,6 +75,14 @@ public class ObsListItem {
 		this.encounter = encounter;
 	}
 
+	public Date getEncounterDatetime() {
+		return encounterDatetime;
+	}
+
+	public void setEcounterDatetime(Date encounterDatetime) {
+		this.encounterDatetime = encounterDatetime;
+	}	
+	
 	public String getLocation() {
 		return location;
 	}
@@ -100,6 +105,22 @@ public class ObsListItem {
 
 	public void setPatientName(String patientName) {
 		this.patientName = patientName;
+	}
+
+	public Boolean getVoided() {
+		return voided;
+	}
+
+	public void setVoided(Boolean voided) {
+		this.voided = voided;
+	}
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
 	}
 
 	

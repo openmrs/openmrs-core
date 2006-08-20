@@ -136,7 +136,7 @@ public class ShowGraphServlet extends HttpServlet {
 			);
 			// Customize the plot (range and domain axes)
 	        XYPlot plot = (XYPlot) chart.getPlot();		        
-
+	        plot.setNoDataMessage("No Data Available");
 	        // Add filled data points
 			XYItemRenderer r = plot.getRenderer();
 			if (r instanceof XYLineAndShapeRenderer) {

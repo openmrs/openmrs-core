@@ -69,6 +69,8 @@
 		<create creator="new" javascript="DWRObsService">
 			<param name="class" value="org.openmrs.web.dwr.DWRObsService" />
 			<include method="findObs"/>
+			<include method="getObservations"/>
+			<include method="createObs"/>
 		</create>
 		
 		<create creator="new" javascript="DWRFormService">
@@ -164,6 +166,8 @@
 			DWRUserService.findUsers(String phrase, List<String> roles, boolean includeVoided);
 			DWRUserService.getAllUsers(List<String> roles, boolean includeVoided);
 			DWRObsService.findObs(String phrase, boolean includeVoided);
+			DWRObsService.getObservations(Integer encounterId);
+			DWRObsService.createObs(Integer patientId, Integer encounterId, Integer conceptId, String valueText, Date obsDate);
 			DWRMessageService.sendFeedback(String sender, String subject, String content);
 			DWRMessageService.sendMessage( String recipients, String sender, String subject, String content );
 		]]>

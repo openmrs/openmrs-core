@@ -181,6 +181,11 @@ h1, h2, h3, h4, h5 {
 #patientTreatmentHeader td {
 	vertical-align:top;
 }
+table.patientEncounters { 
+	width: 100%;
+	margin-right: 20px;
+	border:none;
+}
 table.patientRecentObs {
 	margin-right: 20px;
 	border:none;
@@ -601,4 +606,6 @@ fieldset {
 	color: black;
 }
 
-#regimenPortlet a.boxHeader { color: #ffffff; }
+#regimenPortlet a.boxHeader { 
+	color: #ffffff; 
+}
