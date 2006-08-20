@@ -6,7 +6,7 @@ import java.util.Date;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
 
-public class PatientCharacteristicFilter extends AbstractPatientFilter implements PatientFilter {
+public class PatientCharacteristicFilter extends AbstractPatientFilter implements PatientFilter, Comparable<PatientCharacteristicFilter> {
 
 	private String gender;
 	private Date minBirthdate;
@@ -24,9 +24,28 @@ public class PatientCharacteristicFilter extends AbstractPatientFilter implement
 	public PatientCharacteristicFilter(String gender, Date minBirthdate, Date maxBirthdate) {
 		super.setType("Patient Filter");
 		super.setSubType("Patient Characteristic Filter");
-		this.gender = gender;
+		this.gender = gender == null ? null : gender.toUpperCase();
 		this.minBirthdate = minBirthdate;
 		this.maxBirthdate = maxBirthdate;
+	}
+	
+	public int compareTo(PatientCharacteristicFilter o) {
+		return -compareHelper().compareTo(o.compareHelper());
+	}
+	
+	private Integer compareHelper() {
+		int ret = 0;
+		if (deadOnly != null)
+			ret += deadOnly ? 2 : 1;
+		if (aliveOnly != null)
+			ret += aliveOnly ? 20 : 10;
+		if (minAge != null)
+			ret += minAge * 100;
+		if (maxAge != null)
+			ret += maxAge * 1000;
+		if (gender != null)
+			ret += gender.equals("M") ? 1000000 : 2000000;
+		return ret;
 	}
 	
 	public boolean equals(Object o) {

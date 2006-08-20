@@ -109,11 +109,7 @@ public class OnTheFlyAnalysisController implements Controller {
 		
 		ReportService reportService = context.getReportService();
 		
-		PatientAnalysis analysis = (PatientAnalysis) httpSession.getAttribute(WebConstants.OPENMRS_ANALYSIS_IN_PROGRESS_ATTR);
-		if (analysis == null) {
-			analysis = new PatientAnalysis();
-			httpSession.setAttribute(WebConstants.OPENMRS_ANALYSIS_IN_PROGRESS_ATTR, analysis);
-		}
+		PatientAnalysis analysis = context.getPatientSetService().getMyPatientAnalysis();
 		
 		List<ShortcutSpec> shortcutList = shortcutHelper();
 		if (reportService != null) {
@@ -157,6 +153,8 @@ public class OnTheFlyAnalysisController implements Controller {
 		}
 		Collections.sort(availableFilters, new Comparator() {
 				public int compare(Object a, Object b) {
+					if (a.getClass().equals(b.getClass()) && a instanceof Comparable)
+						return ((Comparable) a).compareTo((Comparable) b);
 					AbstractReportObject left = (AbstractReportObject) a;
 					AbstractReportObject right = (AbstractReportObject) b;
 					int temp = left.getType().compareTo(right.getType());
@@ -185,8 +183,11 @@ public class OnTheFlyAnalysisController implements Controller {
 		myModel.put("active_filters", filters);
 		myModel.put("shortcuts", shortcutList);
 		myModel.put("filterPortletParams", filterPortletParams);
-		myModel.put("patientAnalysisAttributeName", WebConstants.OPENMRS_ANALYSIS_IN_PROGRESS_ATTR);
 		myModel.put("links", linkList);
+		
+		String viewMethod = request.getParameter("viewMethod");
+		if (viewMethod != null && viewMethod.length() > 0)
+			myModel.put("viewMethod", viewMethod);
 
 		return new ModelAndView(formView, "model", myModel);
 	}
@@ -234,12 +235,8 @@ public class OnTheFlyAnalysisController implements Controller {
 		
 		ReportService reportService = context.getReportService();
 		
-		PatientAnalysis analysis = (PatientAnalysis) httpSession.getAttribute(WebConstants.OPENMRS_ANALYSIS_IN_PROGRESS_ATTR);
-		if (analysis == null) {
-			log.debug("creating new PatientAnalysis");
-			analysis = new PatientAnalysis();
-			httpSession.setAttribute(WebConstants.OPENMRS_ANALYSIS_IN_PROGRESS_ATTR, analysis);
-		}
+		PatientAnalysis analysis = context.getPatientSetService().getMyPatientAnalysis();
+
 		String[] idsToAdd = request.getParameterValues("patient_filter_id");
 		if (idsToAdd != null) {
 			for (String patientFilterId : idsToAdd) {
@@ -302,7 +299,7 @@ public class OnTheFlyAnalysisController implements Controller {
 			return null;
 		}
 		
-		PatientAnalysis analysis = (PatientAnalysis) httpSession.getAttribute(WebConstants.OPENMRS_ANALYSIS_IN_PROGRESS_ATTR);
+		PatientAnalysis analysis = context.getPatientSetService().getMyPatientAnalysis();
 		if (analysis != null) {
 			String keyToRemove = request.getParameter("patient_filter_key");
 			log.debug("removing filter " + keyToRemove);

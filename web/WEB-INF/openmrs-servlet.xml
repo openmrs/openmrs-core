@@ -106,6 +106,7 @@
 					<prop key="**/workflow.form">workflowFormController</prop>
 					<prop key="**/patientProgram.form">patientProgramFormController</prop>
 					<prop key="**/patientSet.form">patientSetFormController</prop>
+					<prop key="**/cohortSummary.list">cohortSummaryController</prop>
 					<prop key="**/patientPrograms.portlet">patientProgramsPortletController</prop>
 					<prop key="**/patientSet.portlet">patientSetPortletController</prop>
 					<prop key="**/*.portlet">portletController</prop>
@@ -667,6 +668,7 @@
 				<property name="methodNameResolver"><ref bean="defaultMethodParamResolver"/></property>
 				<property name="delegate"><ref bean="otfaController"/></property>
 			</bean>
+			<bean id="cohortSummaryController" class="org.openmrs.web.controller.analysis.CohortSummaryController"/>
 			<!-- ** /Analysis ** -->
     <!-- ============================ -->
 	

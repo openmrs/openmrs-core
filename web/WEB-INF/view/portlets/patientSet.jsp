@@ -28,6 +28,13 @@
 			${model.varToSet} = "${model.patientSet.commaSeparatedPatientIds}";
 		</c:if>
 	}
+	
+	<c:if test="${model.droppable && model.patientSetSize == 0}">
+		if (localList == null) {
+			hideLayer('${model.id}');
+		}
+	</c:if>
+	
 
 	var PS_fromIndex = 0;
 	var PS_pageSize = 15;

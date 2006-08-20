@@ -1,5 +1,10 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
+<openmrs:htmlInclude file="/scripts/easyAjax.js" />
+<openmrs:htmlInclude file="/dwr/interface/DWRPatientSetService.js" />
+<openmrs:htmlInclude file="/dwr/engine.js" />
+<openmrs:htmlInclude file="/dwr/util.js" />
+
 <b><u><spring:message code="Analysis.activeFilters"/></u></b>
 <c:choose>
 	<c:when test="${fn:length(model.patientAnalysis.patientFilters) == 0}">
@@ -19,7 +24,7 @@
 							${item.value.description}
 						</c:otherwise>
 					</c:choose>
-					<a href="${model.deleteURL}<c:choose><c:when test="${fn:contains(model.deleteURL, '?')}">&</c:when><c:otherwise>?</c:otherwise></c:choose>patient_filter_key=${item.key}">[X]</a>
+					<a href="javascript:DWRPatientSetService.removeFilterFromMyAnalysis('${item.key}', refreshPage);">[X]</a>
 				</div>
 			</td></tr>
 		</c:forEach>
@@ -36,7 +41,7 @@
 		</c:if>
 		<c:forEach var="item" items="${model.suggestedFilters}">
 			<li>
-				<a href="${model.addURL}<c:choose><c:when test="${fn:contains(model.addURL, '?')}">&</c:when><c:otherwise>?</c:otherwise></c:choose>patient_filter_id=<c:out value="${item.reportObjectId}"/>">
+				<a href="javascript:DWRPatientSetService.addFilterToMyAnalysis(${item.reportObjectId}, refreshPage)">
 					${item.name}
 					<%-- <small><i>(${item.description})</i></small> --%>
 				</a>

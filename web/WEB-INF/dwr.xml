@@ -108,6 +108,8 @@
 			<include method="removeFromMyPatientSet"/>
 			<include method="setMyPatientSet"/>
 			<include method="clearMyPatientSet"/>
+			<include method="addFilterToMyAnalysis"/>
+			<include method="removeFilterFromMyAnalysis"/>
 		</create>
 
 		<create creator="new" javascript="DWRRelationshipService">

@@ -1,11 +1,11 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="View Patient Sets" otherwise="/login.htm" redirect="analysis.list" />
+<openmrs:require privilege="View Patient Sets" otherwise="/login.htm" redirect="/analysis.list" />
 
 <c:set var="OPENMRS_DO_NOT_SHOW_PATIENT_SET" scope="request" value="true"/>
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/easyAjax.js"></script>
+<openmrs:htmlInclude file="/scripts/easyAjax.js" />
 
 <style>
 	#actionBox {
@@ -70,7 +70,7 @@
 </style>
 
 <script language="JavaScript">
-	var menuNames = [ "_shortcutMenu", "_linkMenu" ];
+	var menuNames = [ "_shortcutMenu", "_linkMenu", "_viewMenu" ];
 	function menuHelper(idClicked) {
 		for (var i = 0; i < menuNames.length; ++i) {
 	        if (menuNames[i] == idClicked) {
@@ -164,6 +164,9 @@
 		if (patientIds != null) {
 			document.getElementById(idPrefix + "_ptIds").value = patientIds;
 			document.getElementById(idPrefix + "_form").submit();
+		} else if (document.getElementById("hiddenPatientIds")) {
+			document.getElementById(idPrefix + "_ptIds").value = document.getElementById("hiddenPatientIds").value;
+			document.getElementById(idPrefix + "_form").submit();
 		} else {
 			window.alert("<spring:message code="PatientSet.stillLoading"/>");
 		}
@@ -193,6 +196,32 @@
 	</span>
 </c:if>
 
+<span style="position: relative" onMouseOver="javascript:showLayer('_viewMenu')" onMouseOut="javascript:hideLayer('_viewMenu')">
+		<a class="analysisShortcutBarButton"><spring:message code="Analysis.viewButton"/></a>
+		<div id="_viewMenu" class="analysisShortcutMenu" style="display: none">
+			<ul>
+				<li>
+					<c:if test="${(not empty model.viewMethod) && (model.viewMethod != 'list')}">
+						<a href="?viewMethod=list">
+					</c:if>
+					<spring:message code="Analysis.listView"/>
+					<c:if test="${(not empty model.viewMethod) && (model.viewMethod != 'list')}">
+						</a>
+					</c:if>
+				</li>
+				<li>
+					<c:if test="${model.viewMethod != 'overview'}">
+						<a href="?viewMethod=overview">
+					</c:if>
+					<spring:message code="Analysis.overviewView"/>
+					<c:if test="${model.viewMethod != 'overview'}">
+						</a>
+					</c:if>
+				</li>
+			</ul>
+		</div>
+	</span>
+
 <c:if test="${model.firstPatientId != null}">
 	<span style="position: relative">
 		<form method="post" action="patientSet.form" id="goToFormEntry" style="display: inline">
@@ -206,6 +235,16 @@
 
 <br/>
 
-<openmrs:portlet url="patientSet" id="analysisPatientSetBox" size="full" parameters="fromAttribute=${model.patientAnalysisAttributeName}|headId=analysisSetHeader|tableId=analysisSetTable|pageSize=20|varToSet=patientIds|linkUrl=patientDashboard.form"/>
+<c:choose>
+	<c:when test="${model.viewMethod == 'overview'}">
+		<div id="analysisContentPane" class="box"></div>
+		<script ype="text/javascript">
+			loadInto("Loading...", "cohortSummary.list", "analysisContentPane");
+		</script>
+	</c:when>
+	<c:otherwise>
+		<openmrs:portlet url="patientSet" id="analysisPatientSetBox" size="full" parameters="myAnalysis=inProgress|headId=analysisSetHeader|tableId=analysisSetTable|pageSize=20|varToSet=patientIds|linkUrl=patientDashboard.form"/>
+	</c:otherwise>
+</c:choose>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %> 

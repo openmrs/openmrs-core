@@ -38,7 +38,7 @@ public class PatientAnalysis extends AbstractReportObject {
 	 * @param patientFilters The patientFilters to set.
 	 */
 	public void setPatientFilters(Map<String, PatientFilter> patientFilters) {
-		this.patientFilters = new LinkedHashMap(patientFilters);
+		this.patientFilters = new LinkedHashMap<String, PatientFilter>(patientFilters);
 	}
 
 	/**
@@ -99,6 +99,8 @@ public class PatientAnalysis extends AbstractReportObject {
 	}
 
 	public PatientSet runFilters(Context context, PatientSet input) {
+		if (input == null)
+			input = context.getPatientSetService().getAllPatients();
 		PatientSet ret = input;
 		for (PatientFilter pf : patientFilters.values()) {
 			ret = pf.filter(context, ret);

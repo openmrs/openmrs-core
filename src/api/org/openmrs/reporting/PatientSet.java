@@ -2,10 +2,8 @@ package org.openmrs.reporting;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.openmrs.Patient;
@@ -19,7 +17,7 @@ public class PatientSet {
 	public PatientSet() {
 		patientIds = new ArrayList<Integer>();
 	}
-	
+		
 	public PatientSet(Collection<Patient> patients) {
 		patientIds = new ArrayList<Integer>();
 		for (Patient patient : patients) {

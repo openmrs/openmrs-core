@@ -9,7 +9,6 @@ import java.util.Map;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptSet;
-import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
@@ -25,6 +24,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOContext;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PatientSetDAO;
+import org.openmrs.reporting.PatientAnalysis;
 import org.openmrs.reporting.PatientSet;
 import org.openmrs.util.OpenmrsConstants;
 
@@ -133,8 +133,8 @@ public class PatientSetService {
 		return ps;
 	}
 	
-	public Map<Integer, String> getShortPatientDescriptions(PatientSet patients) {
-		return getPatientSetDAO().getShortPatientDescriptions(patients);
+	public Map<Integer, String> getShortPatientDescriptions(Collection<Integer> patientIds) {
+		return getPatientSetDAO().getShortPatientDescriptions(patientIds);
 	}
 	
 	public Map<Integer, List<Obs>> getObservations(PatientSet patients, Concept concept) {
@@ -241,7 +241,11 @@ public class PatientSetService {
 	}
 
 	public Map<Integer, PatientProgram> getCurrentPatientPrograms(PatientSet ps, Program program) {
-		return getPatientSetDAO().getCurrentPatientPrograms(ps, program);
+		return getPatientSetDAO().getPatientPrograms(ps, program, false, false);
+	}
+	
+	public Map<Integer, PatientProgram> getPatientPrograms(PatientSet ps, Program program) {
+		return getPatientSetDAO().getPatientPrograms(ps, program, false, true);
 	}
 	
 	/**
@@ -257,6 +261,21 @@ public class PatientSetService {
 			}
 		}
 		return getPatientSetDAO().getCurrentDrugOrders(ps, drugConcepts);		
+	}
+
+	static Map<User, PatientAnalysis> userAnalyses = new HashMap<User, PatientAnalysis>();
+	
+	public void setMyPatientAnalysis(PatientAnalysis pa) {
+		userAnalyses.put(context.getAuthenticatedUser(), pa);
+	}
+	
+	public PatientAnalysis getMyPatientAnalysis() {
+		PatientAnalysis analysis = userAnalyses.get(context.getAuthenticatedUser());
+		if (analysis == null) {
+			analysis = new PatientAnalysis();
+			setMyPatientAnalysis(analysis);
+		}
+		return analysis;
 	}
 	
 }

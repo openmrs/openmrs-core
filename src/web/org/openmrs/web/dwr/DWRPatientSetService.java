@@ -8,6 +8,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
+import org.openmrs.reporting.PatientAnalysis;
+import org.openmrs.reporting.PatientFilter;
 import org.openmrs.reporting.PatientSet;
 import org.openmrs.web.WebConstants;
 
@@ -127,6 +129,25 @@ public class DWRPatientSetService {
 				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		if (context != null) {
 			context.getPatientSetService().removeFromMyPatientSet(ptId);
+		}
+	}
+	
+	public void addFilterToMyAnalysis(Integer patientFilterId) {
+		Context context = (Context) WebContextFactory.get().getSession()
+			.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		if (context != null) {
+			PatientAnalysis analysis = context.getPatientSetService().getMyPatientAnalysis();
+			PatientFilter pf = context.getReportService().getPatientFilterById(patientFilterId);
+			analysis.addFilter(null, pf);
+		}		
+	}
+	
+	public void removeFilterFromMyAnalysis(String patientFilterKey) {
+		Context context = (Context) WebContextFactory.get().getSession()
+			.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		if (context != null) {
+			PatientAnalysis analysis = context.getPatientSetService().getMyPatientAnalysis();
+			analysis.removeFilter(patientFilterKey);
 		}
 	}
 

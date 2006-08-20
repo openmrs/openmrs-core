@@ -7,8 +7,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -348,6 +350,47 @@ public class Helper {
 			return -1;
 		else
 			return compare(d1, d2);
+	}
+	
+	// TODO: give this the proper generic signatures
+	public static int compareWithNullAsLowest(Comparable c1, Comparable c2) {
+		if (c1 == null)
+			return -1;
+		else if (c2 == null)
+			return 1;
+		else
+			return c1.compareTo(c2);
+	}
+	
+	public static int comparewithNullAsGreatest(Comparable c1, Comparable c2) {
+		if (c1 == null)
+			return 1;
+		else if (c2 == null)
+			return -1;
+		else
+			return c1.compareTo(c2);
+	}
+
+	public static Integer ageFromBirthdate(Date birthdate) {
+		if (birthdate == null)
+			return null;
+		
+		Calendar today = Calendar.getInstance();
+		
+		Calendar bday = new GregorianCalendar();
+		bday.setTime(birthdate);
+		
+		int age = today.get(Calendar.YEAR) - bday.get(Calendar.YEAR);
+		
+		//tricky bit:
+		// set birthday calendar to this year
+		// if the current date is less that the new 'birthday', subtract a year
+		bday.set(Calendar.YEAR, today.get(Calendar.YEAR));
+		if (today.before(bday)) {
+				age = age -1;
+		}
+
+		return age;
 	}
 
 }

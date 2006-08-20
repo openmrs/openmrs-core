@@ -35,7 +35,7 @@ public interface PatientSetDAO {
 	
 	public PatientSet getPatientsHavingLocation(Integer locationId) throws DAOException;
 	
-	public Map<Integer, String> getShortPatientDescriptions(PatientSet patients) throws DAOException;
+	public Map<Integer, String> getShortPatientDescriptions(Collection<Integer> patientIds) throws DAOException;
 	
 	public Map<Integer, List<Obs>> getObservations(PatientSet patients, Concept concept, Date fromDate, Date toDate) throws DAOException;
 	
@@ -51,7 +51,7 @@ public interface PatientSetDAO {
 
 	public Map<Integer, PatientState> getCurrentStates(PatientSet ps, ProgramWorkflow wf) throws DAOException;
 
-	public Map<Integer, PatientProgram> getCurrentPatientPrograms(PatientSet ps, Program program) throws DAOException;
+	public Map<Integer, PatientProgram> getPatientPrograms(PatientSet ps, Program program, boolean includeVoided, boolean includePast) throws DAOException;
 
 	public Map<Integer, List<DrugOrder>> getCurrentDrugOrders(PatientSet ps, List<Concept> drugConcepts) throws DAOException;
 	

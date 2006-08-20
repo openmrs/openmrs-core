@@ -578,20 +578,19 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	private static final long MS_PER_YEAR = 365l * 24 * 60 * 60 * 1000l; 
 	
 	@SuppressWarnings("unchecked")
-	public Map<Integer, String> getShortPatientDescriptions(PatientSet patients) throws DAOException {
+	public Map<Integer, String> getShortPatientDescriptions(Collection<Integer> patientIds) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		HibernateUtil.beginTransaction();
 		
 		Map<Integer, String> ret = new HashMap<Integer, String>();
 		
-		Collection<Integer> ids = patients.getPatientIds();
 		Query query = session.createQuery("select patient.patientId, patient.gender, patient.birthdate from Patient patient");
 		
 		List<Object[]> temp = query.list();
 		
 		long now = System.currentTimeMillis();
 		for (Object[] results : temp) {
-			if (!ids.contains(results[0])) { continue; }
+			if (!patientIds.contains(results[0])) { continue; }
 			StringBuffer sb = new StringBuffer();
 			if ("M".equals(results[1])) {
 				sb.append("Male");
@@ -937,9 +936,13 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	}
 
 	/**
-	 * This method assumes the patient is not simultaneously enrolled in the program more than once
+	 * This method assumes the patient is not simultaneously enrolled in the program more than once.
+	 * if (includeVoided == true) then include voided programs
+	 * if (includePast == true) then include program which are already complete
+	 * In all cases this only returns the latest program enrollment for each patient.
 	 */
-	public Map<Integer, PatientProgram> getCurrentPatientPrograms(PatientSet ps, Program program) throws DAOException {
+	public Map<Integer, PatientProgram> getPatientPrograms(PatientSet ps, Program program,
+			boolean includeVoided, boolean includePast) throws DAOException {
 		Map<Integer, PatientProgram> ret = new HashMap<Integer, PatientProgram>();
 		Collection<Integer> ids = ps.getPatientIds();
 		Session session = HibernateUtil.currentSession();
@@ -948,9 +951,11 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		Criteria criteria = session.createCriteria(PatientProgram.class);
 		criteria.add(Restrictions.in("patient.patientId", ids));
 		criteria.add(Restrictions.eq("program", program));
-		criteria.add(Restrictions.eq("voided", false));
+		if (!includeVoided)
+			criteria.add(Restrictions.eq("voided", false));
 		criteria.add(Restrictions.or(Restrictions.isNull("dateEnrolled"), Restrictions.le("dateEnrolled", now)));
-		criteria.add(Restrictions.or(Restrictions.isNull("dateCompleted"), Restrictions.ge("dateCompleted", now)));
+		if (!includePast)
+			criteria.add(Restrictions.or(Restrictions.isNull("dateCompleted"), Restrictions.ge("dateCompleted", now)));
 		log.debug("criteria: " + criteria);
 		List<PatientProgram> temp = criteria.list();
 		for (PatientProgram prog : temp) {

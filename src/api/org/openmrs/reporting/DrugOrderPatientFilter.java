@@ -7,7 +7,7 @@ import java.util.Set;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
 
-public class DrugOrderPatientFilter extends AbstractPatientFilter implements PatientFilter {
+public class DrugOrderPatientFilter extends AbstractPatientFilter implements PatientFilter, Comparable<DrugOrderPatientFilter> {
 
 	public enum GroupMethod { ANY, NONE }
 
@@ -18,6 +18,17 @@ public class DrugOrderPatientFilter extends AbstractPatientFilter implements Pat
 	public DrugOrderPatientFilter() {
 		super.setType("Patient Filter");
 		super.setSubType("Drug Order Patient Filter");	
+	}
+	
+	public int compareTo(DrugOrderPatientFilter other) {
+		return compareHelper().compareTo(other.compareHelper());
+	}
+	
+	private Integer compareHelper() {
+		if (groupMethod == GroupMethod.NONE)
+			return -1;
+		else
+			return (drugId == null ? 0 : drugId) + (onDate == null ? 0 : (int) (System.currentTimeMillis() - onDate.getTime()));
 	}
 	
 	public GroupMethod getGroupMethod() {
