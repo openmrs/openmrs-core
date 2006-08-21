@@ -9,6 +9,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
+import org.jfree.chart.plot.PiePlot;
 
 import org.jfree.data.DefaultKeyedValues;
 import org.jfree.data.general.DefaultPieDataset;
@@ -62,6 +64,9 @@ public class PieChartServlet extends AbstractGraphServlet {
 		// Create graph
 		PieDataset pieSet = new DefaultPieDataset(keyValues);
 		JFreeChart chart = ChartFactory.createPieChart3D(chartTitle, pieSet, false, true, false);
+		
+		PiePlot plot = (PiePlot)chart.getPlot();
+		plot.setLabelGenerator(new StandardPieSectionLabelGenerator("{0} = {1} ({2})"));
 
 		return chart;
 	}
