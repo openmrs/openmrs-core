@@ -23,7 +23,7 @@
 				<td>${model.patient.mothersName}</td>
 				<td><openmrs:concept conceptId="${model.patient.civilStatus.conceptId}" nameVar="n" var="v" numericVar="nv">${n.name}</openmrs:concept></td>
 				<td>${model.patient.race}</td>
-				<td>${model.patient.birthplace}</td>
+				<td><c:if test='${model.patient.birthplace != "null"}'>${model.patient.birthplace}</c:if></td>
 			</tr>
 		</tbody>
 	</table>
