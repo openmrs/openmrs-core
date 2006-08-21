@@ -63,7 +63,7 @@ public class PieChartServlet extends AbstractGraphServlet {
 		
 		// Create graph
 		PieDataset pieSet = new DefaultPieDataset(keyValues);
-		JFreeChart chart = ChartFactory.createPieChart3D(chartTitle, pieSet, false, true, false);
+		JFreeChart chart = ChartFactory.createPieChart(chartTitle, pieSet, false, true, false);
 		
 		PiePlot plot = (PiePlot)chart.getPlot();
 		plot.setLabelGenerator(new StandardPieSectionLabelGenerator("{0} = {1} ({2})"));
