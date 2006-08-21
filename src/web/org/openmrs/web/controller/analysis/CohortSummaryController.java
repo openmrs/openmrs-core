@@ -71,6 +71,7 @@ public class CohortSummaryController implements Controller {
 		ageGenderGraph.addGroupAndAggregate(tga);
 		
 		DataTable ageGenderTable = ageGenderGraph.run(context, ps);
+		httpSession.setAttribute("ageGenderDataTable", ageGenderTable);
 		
 		ReportElement enrollmentGraph = new ReportElement();
 		
@@ -82,6 +83,7 @@ public class CohortSummaryController implements Controller {
 		enrollmentGraph.addGroupAndAggregate(tga);
 		DataTable enrollmentTable = enrollmentGraph.run(context, ps);
 		enrollmentTable.sortByColumn("hiv_enrollment_date");
+		httpSession.setAttribute("hivEnrollmentDataTable", enrollmentTable);
 		
 		Map<String, Object> model = new HashMap<String, Object>();
 		model.put("patientSet", ps);

@@ -51,6 +51,10 @@ public class DataTable {
 		this.rows.addAll(rows);
 	}
 	
+	public ArrayList<TableRow> getRows() {
+		return rows;
+	}
+	
 	public void sortByColumn(final String colName) {
 		Collections.sort(rows, new Comparator<TableRow>() {
 				public int compare(TableRow left, TableRow right) {
