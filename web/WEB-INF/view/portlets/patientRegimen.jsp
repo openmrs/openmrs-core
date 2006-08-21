@@ -98,7 +98,7 @@
 			function(data) { return "" + data.autoExpireDate; },
 			function(data) { return "" + data.instructions; },
 			function(data) {
-				var ret = "<input id=\"closebutton_" + data.orderId + "\" type=\"button\" value=\"<spring:message code="general.close" />\" onClick=\"showRegimenPortletItem('close_" + data.orderId + "');hideRegimenPortletItem('closebutton_" + data.orderId + "')\" />";
+				var ret = "<input id=\"closebutton_" + data.orderId + "\" type=\"button\" value=\"<spring:message code="general.close" />\" onClick=\"showLayer('close_" + data.orderId + "');hideLayer('closebutton_" + data.orderId + "')\" />";
 				ret += "<div id=\"close_" + data.orderId + "\" style=\"display:none\"><form>";
 				ret += "<spring:message code="DrugOrder.discontinuedDate" />: ";
 				ret += "<input type=\"text\" id=\"close_" + data.orderId + "_date\" size=\"10\" value=\"\" onFocus=\"showCalendar(this)\" />";
@@ -109,7 +109,7 @@
 				return ret;
 			},
 			function(data) {
-				var ret = "<input id=\"voidbutton_" + data.orderId + "\" type=\"button\" value=\"<spring:message code="general.void" />\" onClick=\"showRegimenPortletItem('void_" + data.orderId + "');hideRegimenPortletItem('voidbutton_" + data.orderId + "')\" />";
+				var ret = "<input id=\"voidbutton_" + data.orderId + "\" type=\"button\" value=\"<spring:message code="general.void" />\" onClick=\"showLayer('void_" + data.orderId + "');hideLayer('voidbutton_" + data.orderId + "')\" />";
 				ret += "<div id=\"void_" + data.orderId + "\" style=\"display:none\"><form>";
 				ret += "<spring:message code="general.reason" />: ";
 				ret += "<input type=\"text\" id=\"void_" + data.orderId + "_reason\" size=\"10\" value=\"\" />";
