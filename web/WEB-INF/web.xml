@@ -17,6 +17,23 @@
 		<url-pattern>/showGraphServlet</url-pattern>
 	</servlet-mapping>
 	
+	<servlet>
+		<servlet-name>timelineGraphServlet</servlet-name>
+		<servlet-class>org.openmrs.web.servlet.TimelineGraphServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>timelineGraphServlet</servlet-name>
+		<url-pattern>/timelineGraphServlet</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>pieChartServlet</servlet-name>
+		<servlet-class>org.openmrs.web.servlet.PieChartServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>pieChartServlet</servlet-name>
+		<url-pattern>/pieChartServlet</url-pattern>
+	</servlet-mapping>
 	
 	<servlet>
 		<servlet-name>loginServlet</servlet-name>
