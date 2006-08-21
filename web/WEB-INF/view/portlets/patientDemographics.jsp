@@ -21,7 +21,7 @@
 					</c:forEach>
 				</td>
 				<td>${model.patient.mothersName}</td>
-				<td>${model.patient.civilStatus}</td>
+				<td><openmrs:concept conceptId="${model.patient.civilStatus.conceptId}" nameVar="n" var="v" numericVar="nv">${n.name}</openmrs:concept></td>
 				<td>${model.patient.race}</td>
 				<td>${model.patient.birthplace}</td>
 			</tr>
