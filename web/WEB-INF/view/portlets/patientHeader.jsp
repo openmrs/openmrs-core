@@ -35,13 +35,16 @@
 		<c:forEach items="${model.patientCurrentPrograms}" var="p" varStatus="s">
 			<c:if test="${p.program.concept.conceptId == HIV_PROGRAM_CONCEPT_ID}">
 				<table><tr>
-					<td><spring:message code="Program.hiv"/></td>
+					<th><spring:message code="Program.hiv"/></th>
 					<td>|</td>
-					<td><spring:message code="Program.enrolled"/>: <openmrs:formatDate date="${p.dateEnrolled}" type="medium" /></td>
+					<td><spring:message code="Program.enrolled"/>:</td>
+					<th><openmrs:formatDate date="${p.dateEnrolled}" type="medium" /></th>
 					<td>|</td>
-					<td><spring:message code="Program.group"/>: <openmrs_tag:mostRecentObs observations="${model.patientObs}" concept="1377" locale="${model.locale}" /></td>
+					<td><spring:message code="Program.group"/>:</td>
+					<th><openmrs_tag:mostRecentObs observations="${model.patientObs}" concept="1377" locale="${model.locale}" /></th>
 					<td>|</td>
-					<td><spring:message code="Program.agent"/>:
+					<td><spring:message code="Program.agent"/>:</td>
+					<th>
 						<c:forEach items="${model.patientRelationships}" var="r" varStatus="s">
 							<c:if test="${r.relationship.relationshipTypeId == 1}">
 								<c:if test="${accompFound}">, </c:if>
@@ -54,47 +57,45 @@
 								<c:set var="accompFound" value="true"/>
 							</c:if>
 						</c:forEach>
-					</td>
+					</th>
 				</tr></table>
 			</c:if>
 		</c:forEach>
 		<c:forEach items="${model.patientCurrentPrograms}" var="p" varStatus="s">
 			<c:if test="${p.program.concept.conceptId == TB_PROGRAM_CONCEPT_ID}">
 				<table><tr>
-					<td><spring:message code="Program.tb"/></td>
+					<th><spring:message code="Program.tb"/></th>
 					<td>|</td>
-					<td><spring:message code="Program.enrolled"/>: <openmrs:formatDate date="${p.dateEnrolled}" type="medium" /></td>
+					<td><spring:message code="Program.enrolled"/>:</td>
+					<th><openmrs:formatDate date="${p.dateEnrolled}" type="medium" /></th>
 					<td>|</td>
-					<td><spring:message code="Program.group"/>: <openmrs_tag:mostRecentObs observations="${model.patientObs}" concept="1378" locale="${model.locale}" /></td>
+					<td><spring:message code="Program.group"/>:</td>
+					<th><openmrs_tag:mostRecentObs observations="${model.patientObs}" concept="1378" locale="${model.locale}" /></th>
 				</tr></table>
 			</c:if>
 		</c:forEach>
 		<table><tr>
-			<td>
-				<spring:message code="Patient.weight"/>:
-				<openmrs_tag:mostRecentObs observations="${model.patientObs}" concept="5089" showUnits="true" locale="${model.locale}" showDate="true" />
-			</td>
+			<td><spring:message code="Patient.weight"/>:</td>
+			<th><openmrs_tag:mostRecentObs observations="${model.patientObs}" concept="5089" showUnits="true" locale="${model.locale}" showDate="true" /></th>
 			<td>|</td>
-			<td>
-				<spring:message code="Patient.cd4"/>:
-				<openmrs_tag:mostRecentObs observations="${model.patientObs}" concept="5497" locale="${model.locale}" />
-			</td>
+			<td><spring:message code="Patient.cd4"/>:</td>
+			<th><openmrs_tag:mostRecentObs observations="${model.patientObs}" concept="5497" locale="${model.locale}" /></th>
 			<td>|</td>
-			<td>
-				<spring:message code="Patient.regimen" />:
+			<td><spring:message code="Patient.regimen" />:</td>
+			<th>
 				<c:forEach items="${model.patientDrugOrders}" var="drugOrder" varStatus="drugOrderStatus">
 					<c:if test="${drugOrder.current}">
 						${drugOrder.drug.name}
 					</c:if>
 				</c:forEach>
-			</td>
+			</th>
 		</tr></table>
 		<table><tr>
-			<td>
-				<spring:message code="Patient.lastEncounter"/>:
+			<td><spring:message code="Patient.lastEncounter"/>:</td>
+			<th>
 				<c:forEach items='${openmrs:sort(encounters, "encounterDatetime", true)}' var="lastEncounter" varStatus="lastEncounterStatus" end="0">
 					${lastEncounter.encounterType.name} @ ${lastEncounter.location.name}, <openmrs:formatDate date="${lastEncounter.encounterDatetime}" type="medium" />
 				</c:forEach>
-			</td>
+			</th>
 		</tr></table>
 	</div>
