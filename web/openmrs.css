@@ -242,7 +242,6 @@ table.patientTreatmentPrograms td {
 }
 #patientTabs a:hover, #patientTabs a.current {
 	background: #CCCCFF;
-	color: white;
 }
 
 #patientDashboardDemographics table.patientAddress {
