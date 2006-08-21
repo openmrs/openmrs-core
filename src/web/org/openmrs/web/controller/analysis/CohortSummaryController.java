@@ -58,11 +58,11 @@ public class CohortSummaryController implements Controller {
 			});
 		ageGenderGraph.addProducer("age", p);
 		
-		NumericRangeColumnClassifier ageClassifier = new NumericRangeColumnClassifier("age", "general.unknown");
-		ageClassifier.addCutoff(15, "child");
-		ageClassifier.addLastLabel("adult");
+		NumericRangeColumnClassifier ageClassifier = new NumericRangeColumnClassifier("age", "Unknown age");
+		ageClassifier.addCutoff(15, "Child");
+		ageClassifier.addLastLabel("Adult");
 		CompoundClassifier classifier = new CompoundClassifier(" + ");
-		classifier.addClassifiers(new SimpleColumnClassifier("gender", "general.unknown"), ageClassifier);
+		classifier.addClassifiers(new SimpleColumnClassifier("gender", "Unknown gender"), ageClassifier);
 		TableGroupAndAggregate tga = new TableGroupAndAggregate(
 				classifier,
 				new CountAggregator(),

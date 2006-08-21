@@ -11,14 +11,17 @@ import org.apache.commons.logging.LogFactory;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 
+import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 
+import org.jfree.chart.axis.DateTickMarkPosition;
 import org.jfree.chart.axis.NumberAxis;
 
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.data.time.Day;
+import org.jfree.data.time.Month;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.openmrs.reporting.DataTable;
@@ -34,6 +37,8 @@ import org.openmrs.reporting.TableRow;
  * domainAxisTitle: The x-axis title
  * minRange: The minimum value for y-axis values
  * maxRange: The maximum value for y-axis values
+ * startDate: The earliest date to display (yyyy-mm-dd)
+ * endDate: The latest date to display (yyyy-mm-dd)
  */
 public class TimelineGraphServlet extends AbstractGraphServlet {
 
@@ -47,9 +52,17 @@ public class TimelineGraphServlet extends AbstractGraphServlet {
 		String chartTitle = request.getParameter("chartTitle") == null ? "" : request.getParameter("chartTitle");
 		String rangeAxisTitle = request.getParameter("rangeAxisTitle") == null ? "" : request.getParameter("rangeAxisTitle");
 		String domainAxisTitle = request.getParameter("domainAxisTitle") == null ? "" : request.getParameter("domainAxisTitle");
+		Day startDate = null;
+		Day endDate = null;
+		try {
+			startDate = Day.parseDay(request.getParameter("startDate"));
+			endDate = Day.parseDay(request.getParameter("endDate"));
+		}
+		catch (Exception e) {
+		}
 		
 		// Create data set
-		TimeSeries series = new TimeSeries(rangeAxisTitle, Day.class);
+		TimeSeries series = new TimeSeries(rangeAxisTitle, Month.class);
 		TimeSeriesCollection dataset = new TimeSeriesCollection();
 
 		ArrayList<TableRow> hivEnrollmentRows = hivEnrollmentTable.getRows();
@@ -60,8 +73,8 @@ public class TimelineGraphServlet extends AbstractGraphServlet {
 				Day day = Day.parseDay("" + row.get("hiv_enrollment_date") + "-01");
 				Double dateCount = Double.valueOf("" + row.get("count"));
 				log.debug("Adding value: " + dateCount + " for " + day );
-				if (day != null) {
-					series.addOrUpdate(day, dateCount);
+				if (day != null && (startDate == null || startDate.compareTo(day) <=0) && (endDate == null || endDate.compareTo(day) >=0)) {
+					series.addOrUpdate(new Month(day.getMonth(), day.getYear()), dateCount);
 				}
 			} catch (Exception e) {
 				log.error(e);
@@ -71,22 +84,19 @@ public class TimelineGraphServlet extends AbstractGraphServlet {
 		// Add series to dataset
 		dataset.addSeries(series);
 		// Create graph
-		JFreeChart chart = ChartFactory.createTimeSeriesChart(chartTitle, domainAxisTitle, rangeAxisTitle, dataset, true, true, false);
-		
+        JFreeChart chart = ChartFactory.createXYBarChart(chartTitle, domainAxisTitle, true, rangeAxisTitle, dataset, PlotOrientation.VERTICAL, true, false, false);
+ 
 		// Customize the plot (range and domain axes)
-        XYPlot plot = (XYPlot) chart.getPlot();		        
-	        // Add filled data points
-		XYItemRenderer r = plot.getRenderer();
-		if (r instanceof XYLineAndShapeRenderer) {
-			XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) r;
-			renderer.setBaseShapesFilled(true);
-			renderer.setBaseShapesVisible(true);
-		}		
-        
+        XYPlot plot = chart.getXYPlot();	        
+   
         // Modify x-axis (datetime)
         DateAxis axis = (DateAxis) plot.getDomainAxis();
         axis.setDateFormatOverride(new SimpleDateFormat("MMM-yy"));
-	        // Set y-axis range (values)
+        axis.setTickMarkPosition(DateTickMarkPosition.MIDDLE);
+        axis.setLowerMargin(0.01);
+        axis.setUpperMargin(0.01);
+	    
+        // Set y-axis range (values)
         NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
         rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
         

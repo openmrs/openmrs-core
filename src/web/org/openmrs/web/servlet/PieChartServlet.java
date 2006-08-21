@@ -17,15 +17,11 @@ import org.openmrs.reporting.DataTable;
 import org.openmrs.reporting.TableRow;
 
 /**
- * Servlet for rendering a graph of values over time. Accepts the following request parameters:
+ * Servlet for rendering a 3D piechart of categories and values
  * width:  Width of the generated image
  * height: Height of the generated image
  * mimeType: Accepts either image/png or image/jpeg
  * chartTitle: The title of the graph
- * rangeAxisTitle: The y-axis title
- * domainAxisTitle: The x-axis title
- * minRange: The minimum value for y-axis values
- * maxRange: The maximum value for y-axis values
  */
 public class PieChartServlet extends AbstractGraphServlet {
 
@@ -46,7 +42,17 @@ public class PieChartServlet extends AbstractGraphServlet {
 			Integer count = (Integer) row.get("Cohort.count");
 			log.info("Adding value: " + count + " for " + category );
 			try {
-				keyValues.addValue(category, count);
+				String[] catSplit = category.split(" \\+ ");
+				String displayCategory = "";
+				if ("M".equals(catSplit[0])) {
+					displayCategory = "Male, ";
+				} else if ("F".equals(catSplit[0])) {
+					displayCategory = "Female, ";
+				}
+				else {
+					displayCategory = catSplit[0];
+				}
+				keyValues.addValue(displayCategory + catSplit[1], count);
 			}
 			catch (Exception e) {
 				log.error(e);
@@ -55,7 +61,7 @@ public class PieChartServlet extends AbstractGraphServlet {
 		
 		// Create graph
 		PieDataset pieSet = new DefaultPieDataset(keyValues);
-		JFreeChart chart = ChartFactory.createPieChart(chartTitle, pieSet, true, true, false);
+		JFreeChart chart = ChartFactory.createPieChart3D(chartTitle, pieSet, false, true, false);
 
 		return chart;
 	}
