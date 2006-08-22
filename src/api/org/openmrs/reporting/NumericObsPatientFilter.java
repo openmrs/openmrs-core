@@ -6,6 +6,7 @@ import org.openmrs.Concept;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PatientSetService.Modifier;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
 
 public class NumericObsPatientFilter extends AbstractPatientFilter implements PatientFilter {
 
@@ -71,9 +72,11 @@ public class NumericObsPatientFilter extends AbstractPatientFilter implements Pa
 	}
 
 	public String getDescription() {
+		// TODO: get the right locale
+		Locale locale = OpenmrsConstants.OPENMRS_LOCALES().iterator().next();
 		StringBuffer ret = new StringBuffer();
 		//ret.append("Patients with (concept #" + concept + ")");
-		ret.append("Patients with " + (concept == null ? "CONCEPT" : concept.getName(Locale.US, false)));
+		ret.append("Patients with " + (concept == null ? "CONCEPT" : concept.getName(locale, false)));
 		if (value != null && modifier != PatientSetService.Modifier.EXISTS) {
 			ret.append(" " + modifier.getSqlRepresentation() + " " + value);
 		}

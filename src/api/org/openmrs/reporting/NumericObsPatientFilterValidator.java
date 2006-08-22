@@ -6,7 +6,6 @@ import org.springframework.validation.Validator;
 public class NumericObsPatientFilterValidator implements Validator {
 
 	public boolean supports(Class cls) {
-		// TODO Auto-generated method stub
 		return (cls.equals(NumericObsPatientFilter.class));
 	}
 

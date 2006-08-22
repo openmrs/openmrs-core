@@ -18,12 +18,14 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Location;
 import org.openmrs.api.context.Context;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.PatientAnalysis;
 import org.openmrs.reporting.PatientFilter;
 import org.openmrs.reporting.ReportService;
 import org.openmrs.web.WebConstants;
+import org.openmrs.web.propertyeditor.LocationEditor;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.view.RedirectView;
@@ -178,6 +180,7 @@ public class OnTheFlyAnalysisController implements Controller {
 		filterPortletParams.put("suggestedFilters", availableFilters);
 		filterPortletParams.put("deleteURL", "analysis.form?method=removeFilter");
 		filterPortletParams.put("addURL", "analysis.form?method=addFilter");
+		filterPortletParams.put("shortcuts", shortcutList);
 	
 		Map<String, Object> myModel = new HashMap<String, Object>();
 		myModel.put("active_filters", filters);
@@ -267,9 +270,19 @@ public class OnTheFlyAnalysisController implements Controller {
 					PatientFilter filterInstance = (PatientFilter) filterClass.newInstance();
 					log.debug("result is " + filterInstance);
 					for (String argName : opt.getAllArgs()) {
-						String argVal = request.getParameter(argName);
+						Object argVal = request.getParameter(argName);
 						log.debug("about to set " + argName + " to " + argVal);
 						PropertyDescriptor pd = new PropertyDescriptor(argName, filterClass);
+						// TODO: fix this hack
+						if (pd.getPropertyType().equals(Location.class)) {
+							LocationEditor le = new LocationEditor(context);
+							le.setAsText((String) argVal);
+							argVal = le.getValue();
+						} else if (pd.getPropertyType().equals(Integer.class)) {
+							try {
+								argVal = Integer.valueOf((String) argVal);
+							} catch (Exception ex) { }
+						}
 						pd.getWriteMethod().invoke(filterInstance, argVal);
 					}
 					pf = filterInstance;
@@ -287,7 +300,7 @@ public class OnTheFlyAnalysisController implements Controller {
 			}
 		}
 		
-		return new ModelAndView(new RedirectView("analysis.list"));
+		return new ModelAndView(new RedirectView("analysis.list?viewMethod=" + request.getParameter("viewMethod")));
 	}
 	
 	public ModelAndView removeFilter(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -308,7 +321,7 @@ public class OnTheFlyAnalysisController implements Controller {
 				log.debug("returns " + pf);
 			}
 		}
-		return new ModelAndView(new RedirectView("analysis.list"));
+		return new ModelAndView(new RedirectView("analysis.list?viewMethod=" + request.getParameter("viewMethod")));
 	}
 	
 	
@@ -357,12 +370,34 @@ public class OnTheFlyAnalysisController implements Controller {
 		}
 	}
 	
+	public class ShortcutArg {
+		private String name;
+		private Class fieldClass;
+		public ShortcutArg() { }
+		public ShortcutArg(String name, Class fieldClass) {
+			this.name = name;
+			this.fieldClass = fieldClass;
+		}
+		public Class getFieldClass() {
+			return fieldClass;
+		}
+		public void setFieldClass(Class fieldClass) {
+			this.fieldClass = fieldClass;
+		}
+		public String getName() {
+			return name;
+		}
+		public void setName(String name) {
+			this.name = name;
+		}
+	}
+	
 	public class ShortcutOptionSpec {
 		private String value;
 		private boolean concrete;
 		private boolean remove;
 		private String className;
-		List<String> args;
+		List<ShortcutArg> args;
 		List<String> hiddenArgs;
 		List<String> hiddenArgNames;
 		
@@ -384,7 +419,7 @@ public class OnTheFlyAnalysisController implements Controller {
 				args = null;
 			} else {
 				try {
-					List<String> temp = new ArrayList<String>();
+					List<ShortcutArg> temp = new ArrayList<ShortcutArg>();
 					List<String> tempHidden = new ArrayList<String>();
 					List<String> tempHiddenNames = new ArrayList<String>();
 					className = value.substring(1, value.indexOf('('));
@@ -417,7 +452,14 @@ public class OnTheFlyAnalysisController implements Controller {
 							tempHiddenNames.add(v[0]);
 							log.debug("hidden arg " + v[0] + " -> " + v[1]);
 						} else {
-							temp.add(u[0]); // treat everything as a String for now
+							String name = u[0];
+							Class c;
+							try {
+								c = Class.forName(u[1]);
+							} catch (ClassNotFoundException ex) {
+								throw new IllegalArgumentException(ex);
+							}
+							temp.add(new ShortcutArg(name, c));
 						}
 					}
 					if (temp.size() > 0) {
@@ -442,7 +484,7 @@ public class OnTheFlyAnalysisController implements Controller {
 		public boolean isAnyArgs() {
 			return args != null || hiddenArgs != null;
 		}
-		public List<String> getArgs() {
+		public List<ShortcutArg> getArgs() {
 			return args;
 		}
 		public String getClassName() {
@@ -460,7 +502,8 @@ public class OnTheFlyAnalysisController implements Controller {
 		public List<String> getAllArgs() {
 			List<String> ret = new ArrayList<String>();
 			if (args != null) {
-				ret.addAll(args);
+				for (ShortcutArg arg : args)
+					ret.add(arg.getName());
 			}
 			if (hiddenArgNames != null) {
 				ret.addAll(hiddenArgNames);

@@ -63,8 +63,12 @@ public class PatientSet {
 		return patientSetId;
 	}
 	
-	public void copyPatientIds(Collection<Integer> patientIds) {
+	/**
+	 * @return the current PatientSet
+	 */
+	public PatientSet copyPatientIds(Collection<Integer> patientIds) {
 		this.patientIds = new ArrayList<Integer>(patientIds);
+		return this;
 	}
 
 	/**

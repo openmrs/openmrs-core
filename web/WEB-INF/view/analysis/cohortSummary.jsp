@@ -2,8 +2,6 @@
 
 <h3 align="center">Cohort Summary <i>(${model.patientSet.size} patients)</i></h3>
 
-<table width="100%"><tr valign="top"><td align="center">
-
 	<div class="boxHeader"><spring:message code="Cohort.ageAndGender"/></div>
 	<div class="box">
 		<img src="/openmrs/pieChartServlet?width=500&height=300&chartTitle=Age&nbsp;and&nbsp;Gender"/>
@@ -13,8 +11,6 @@
 	<div class="box">
 		<img src="/openmrs/timelineGraphServlet?width=900&height=300&startDate=2005-06-01&chartTitle=HIV&nbsp;Program&nbsp;Enrollments&rangeAxisTitle=Enrollments&domainAxisTitle=Month"/>
 	</div>
-
-</td></tr></table>
 
 <input type="hidden" id="hiddenPatientIds" value="${model.patientSet.commaSeparatedPatientIds}" />
 <script type="text/javascript">

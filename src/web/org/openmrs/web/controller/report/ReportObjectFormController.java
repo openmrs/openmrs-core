@@ -17,6 +17,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.Location;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.reporting.AbstractReportObject;
@@ -24,16 +25,15 @@ import org.openmrs.reporting.EmptyReportObject;
 import org.openmrs.reporting.ReportService;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.propertyeditor.ConceptEditor;
+import org.openmrs.web.propertyeditor.LocationEditor;
 import org.openmrs.web.propertyeditor.UserEditor;
 import org.openmrs.web.taglib.HtmlIncludeTag;
 import org.springframework.beans.propertyeditors.CharacterEditor;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
-import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.RequestUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -65,8 +65,10 @@ public class ReportObjectFormController extends SimpleFormController {
         binder.registerCustomEditor(Double.class, new CustomNumberEditor(Double.class, true));
         binder.registerCustomEditor(Boolean.class, new CustomBooleanEditor("t", "f", true));
         binder.registerCustomEditor(Character.class, new CharacterEditor(true));
+        // TODO: check this for dates in both locales
         binder.registerCustomEditor(Date.class, new CustomDateEditor(new SimpleDateFormat("dd/MM/yyyy"), true));
         binder.registerCustomEditor(Concept.class, new ConceptEditor(context));
+        binder.registerCustomEditor(Location.class, new LocationEditor(context));
         binder.registerCustomEditor(User.class, new UserEditor(context));
     }
 

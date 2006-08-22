@@ -12,26 +12,21 @@
 		background-color: #e0e0e0;
 		padding: 4px;
 	}
+	#titleBox {
+		text-align: center;
+		height: 30px;
+		margin-bottom: 10px;
+	}
 	#filterBox {
-		width: 33%;
-		float: right;
+		float: left;
+		width: 290px;
 		border: 2px black solid;
 		padding: 4px;
 		background-color: #e0e0ff;
 	}
-	#activeFilterBox {
-		width: 95%;
-		border: 1px black solid;
-		padding: 3px;
-		margin: 3px;
-		background-color: #f0f0f0;
-	}
-	#suggestedFilterBox {
-		border: 1px solid black;
-		margin-bottom: 15px;
-		background-color: #ffe0e0;
-		position: absolute;
-		z-index: 1;
+	#contentBox {
+		float: left;
+		margin-left: 10px;
 	}
 	.activeFilter {
 		border: 1px black solid;
@@ -44,23 +39,6 @@
 		background-color: #e0e0ff;
 		padding: 4px 2px;		
 	}
-	
-	#shortcutBox {
-		border: 1px solid black;
-		margin-bottom: 15px;
-		background-color: #ffe0e0;
-		position: absolute;
-		z-index: 1;
-	}
-	.oneShortcutBox {
-		border: 1px black solid;
-		background-color: #e0e0ff;
-		padding: 4px 2px;
-		position: absolute;
-		left: 20px;
-		top: -10px;
-		z-index: 2;
-	}
 	#analysisSetHeader {
 		background-color: #e0e0e0;
 	}
@@ -70,7 +48,7 @@
 </style>
 
 <script language="JavaScript">
-	var menuNames = [ "_shortcutMenu", "_linkMenu", "_viewMenu" ];
+	var menuNames = [ "_linkMenu", "_viewMenu" ];
 	function menuHelper(idClicked) {
 		for (var i = 0; i < menuNames.length; ++i) {
 	        if (menuNames[i] == idClicked) {
@@ -83,80 +61,7 @@
 	}
 </script>
 
-<h3 align="center"><spring:message code="Analysis.title"/></h3>
-
-<openmrs:portlet url="activeFilters" id="filterBox" parameterMap="${model.filterPortletParams}" />
-
-<span style="position: relative" onMouseOver="javascript:showLayer('_shortcutMenu')" onMouseOut="javascript:hideLayer('_shortcutMenu')">
-	<a class="analysisShortcutBarButton"><spring:message code="Analysis.shortcutButton"/></a>
-	<div id="_shortcutMenu" class="analysisShortcutMenu" style="display: none">
-		<ul>
-		<c:forEach var="item" items="${model.shortcuts}">
-			<li>
-			<c:if test="${!empty item.currentFilter}">
-				<b>
-			</c:if>
-			<spring:message code="Analysis.shortcut.${item.label}"/>
-			<c:if test="${!empty item.currentFilter}">
-				</b>
-			</c:if>
-			<ul>
-			<c:forEach var="shortcutOption" items="${item.list}"> <%-- The items are Map.Entry<String, ShortcutOptionSpec> --%>
-				<li>
-					<c:set var="method" value="addFilter"/>
-					<c:if test="${shortcutOption.value.remove}">
-						<c:set var="method" value="removeFilter"/>
-					</c:if>
-					<c:set var="isSelected" value="false"/>
-					<c:if test="${item.currentFilter == shortcutOption.value}">
-						<c:set var="isSelected" value="true"/>
-					</c:if>
-					
-					<c:if test="${isSelected == true}">
-						<b>
-					</c:if>
-					<c:choose>
-						<c:when test="${shortcutOption.value.concrete}">
-							<a href="analysis.form?method=${method}&patient_filter_name=<c:out value="${shortcutOption.value.value}"/>&patient_filter_key=${item.label}">
-								<spring:message code="Analysis.shortcut.${shortcutOption.key}"/>
-							</a>		
-						</c:when>
-						<c:otherwise>
-							<form method="post" action="analysis.form" id="form_${item.label}_${shortcutOption.key}" style="display: inline">
-								<input type="hidden" name="method" value="${method}"/>
-								<input type="hidden" name="patient_filter_key" value="${item.label}"/>
-								<input type="hidden" name="patient_filter_name" value="${shortcutOption.value.value}"/>
-								<c:forEach var="arg" items="${shortcutOption.value.hiddenArgs}">
-									${arg}
-								</c:forEach>
-								<c:choose>
-									<c:when test="${shortcutOption.value.promptArgs}">
-										<c:forEach var="arg" items="${shortcutOption.value.args}">
-											<spring:message code="Analysis.shortcut.${item.label}.${arg}"/>
-											<input type="text" name="${arg}"/>
-										</c:forEach>
-										<input type="submit" value="<spring:message code="Analysis.shortcut.go"/>"/>
-									</c:when>
-									<c:otherwise>
-										<a href="javascript:document.getElementById('form_${item.label}_${shortcutOption.key}').submit()">
-											<spring:message code="Analysis.shortcut.${shortcutOption.key}"/>
-										</a>
-									</c:otherwise>
-								</c:choose>
-							</form>
-						</c:otherwise>
-					</c:choose>
-					<c:if test="${isSelected == true}">
-						</b>
-					</c:if>
-				</li>
-			</c:forEach>
-			</ul>
-			</li>
-		</c:forEach>
-		</ul>
-	</div>
-</span>
+<openmrs:portlet url="activeFilters" id="filterBox" parameterMap="${model.filterPortletParams}" parameters="titleCode=Analysis.pickSet|viewMethod=${model.viewMethod}" />
 
 <script language="JavaScript">
 	var patientIds = null; // a comma-separated list of patientIds, set from the included portlet once it's loaded
@@ -172,6 +77,8 @@
 		}
 	}
 </script>
+
+<div id="contentBox">
 
 <c:if test="${fn:length(model.links) > 0}">
 	<span style="position: relative" onMouseOver="javascript:showLayer('_linkMenu')" onMouseOut="javascript:hideLayer('_linkMenu')">
@@ -237,7 +144,7 @@
 
 <c:choose>
 	<c:when test="${model.viewMethod == 'overview'}">
-		<div id="analysisContentPane" class="box"></div>
+		<div id="analysisContentPane"></div>
 		<script ype="text/javascript">
 			loadInto("Loading...", "cohortSummary.list", "analysisContentPane");
 		</script>
@@ -246,5 +153,7 @@
 		<openmrs:portlet url="patientSet" id="analysisPatientSetBox" size="full" parameters="myAnalysis=inProgress|headId=analysisSetHeader|tableId=analysisSetTable|pageSize=20|varToSet=patientIds|linkUrl=patientDashboard.form"/>
 	</c:otherwise>
 </c:choose>
+
+</div>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %> 
