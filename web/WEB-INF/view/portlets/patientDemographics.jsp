@@ -21,7 +21,11 @@
 					</c:forEach>
 				</td>
 				<td>${model.patient.mothersName}</td>
-				<td><openmrs:concept conceptId="${model.patient.civilStatus.conceptId}" nameVar="n" var="v" numericVar="nv">${n.name}</openmrs:concept></td>
+				<td>
+					<c:if test="${model.patient.civilStatus.conceptId != 0}">
+						<openmrs:concept conceptId="${model.patient.civilStatus.conceptId}" nameVar="n" var="v" numericVar="nv">${n.name}</openmrs:concept>
+					</c:if>
+				</td>
 				<td>${model.patient.race}</td>
 				<td><c:if test='${model.patient.birthplace != "null"}'>${model.patient.birthplace}</c:if></td>
 			</tr>
