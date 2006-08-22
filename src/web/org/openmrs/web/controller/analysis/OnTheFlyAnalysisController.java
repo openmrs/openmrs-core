@@ -123,7 +123,7 @@ public class OnTheFlyAnalysisController implements Controller {
 				log.debug("Looked at ShortcutSpec " + s + " to see if there's a currently-selected filter for label " + s.getLabel() + " (keyset = " + analysis.getPatientFilters().keySet() + "). Result: " + pf);
 				if (pf != null) {
 					log.debug("set current filter for " + s + " to " + pf.getName());
-					s.setCurrentFilter(((AbstractReportObject) pf).getName());
+					s.setCurrentFilter((PatientFilter) pf);
 				}
 			}
 		}
@@ -327,7 +327,7 @@ public class OnTheFlyAnalysisController implements Controller {
 	
 	public class ShortcutSpec {
 		private String label;
-		private String currentFilter;
+		private PatientFilter currentFilter;
 		public LinkedHashMap<String, ShortcutOptionSpec> options;
 		public ShortcutSpec() { }
 		public ShortcutSpec(String label) {
@@ -340,10 +340,10 @@ public class OnTheFlyAnalysisController implements Controller {
 		public void setLabel(String label) {
 			this.label = label;
 		}
-		public String getCurrentFilter() {
+		public PatientFilter getCurrentFilter() {
 			return currentFilter;
 		}
-		public void setCurrentFilter(String currentFilter) {
+		public void setCurrentFilter(PatientFilter currentFilter) {
 			this.currentFilter = currentFilter;
 		}
 		public List<Map.Entry<String, ShortcutOptionSpec>> getList() {

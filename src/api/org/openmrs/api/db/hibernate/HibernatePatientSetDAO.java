@@ -732,6 +732,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		Map<Integer, Object> ret = new HashMap<Integer, Object>();
 		
 		Collection<Integer> ids = patients.getPatientIds();
+		if (ids.size() == 0)
+			return ret;
 		
 		className = "org.openmrs." + className;
 		
@@ -764,6 +766,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		}
 		
 		criteria.addOrder(org.hibernate.criterion.Order.desc("dateCreated"));
+		log.debug("criteria: " + criteria);
 		List<Object[]> rows = criteria.list();
 		
 		// set up the return map
@@ -914,6 +917,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	public Map<Integer, PatientState> getCurrentStates(PatientSet ps, ProgramWorkflow wf) throws DAOException {
 		Map<Integer, PatientState> ret = new HashMap<Integer, PatientState>();
 		Collection<Integer> ids = ps.getPatientIds();
+		if (ids.size() == 0)
+			return ret;
 		Session session = HibernateUtil.currentSession();
 		Date now = new Date();
 			
@@ -945,6 +950,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			boolean includeVoided, boolean includePast) throws DAOException {
 		Map<Integer, PatientProgram> ret = new HashMap<Integer, PatientProgram>();
 		Collection<Integer> ids = ps.getPatientIds();
+		if (ids.size() == 0)
+			return ret;
 		Session session = HibernateUtil.currentSession();
 		Date now = new Date();
 			
@@ -969,6 +976,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	public Map<Integer, List<DrugOrder>> getCurrentDrugOrders(PatientSet ps, List<Concept> drugConcepts) throws DAOException {
 		Map<Integer, List<DrugOrder>> ret = new HashMap<Integer, List<DrugOrder>>();
 		Collection<Integer> ids = ps.getPatientIds();
+		if (ids.size() == 0)
+			return ret;
 		Session session = HibernateUtil.currentSession();
 		Date now = new Date();
 

@@ -9,7 +9,7 @@ function GetXmlHttpObject() {
 }
 
 function loadInto(loadingText, url, layer) {
-	document.getElementById(layer).innerHtml = loadingText;
+	document.getElementById(layer).innerHTML = loadingText;
 	var xmlHttp=GetXmlHttpObject()
 	xmlHttp.onreadystatechange=function() { loadStateChanged(xmlHttp, layer); }
 	xmlHttp.open("GET",url,true)
