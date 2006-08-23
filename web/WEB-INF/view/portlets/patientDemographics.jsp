@@ -22,12 +22,12 @@
 				</td>
 				<td>${model.patient.mothersName}</td>
 				<td>
-					<c:if test="${model.patient.civilStatus.conceptId != 0}">
+					<c:if test='${model.patient.civilStatus != null}'>
 						<openmrs:concept conceptId="${model.patient.civilStatus.conceptId}" nameVar="n" var="v" numericVar="nv">${n.name}</openmrs:concept>
 					</c:if>
 				</td>
 				<td>${model.patient.race}</td>
-				<td><c:if test='${model.patient.birthplace != "null"}'>${model.patient.birthplace}</c:if></td>
+				<td><c:if test='${model.patient.birthplace != null}'>${model.patient.birthplace}</c:if></td>
 			</tr>
 		</tbody>
 	</table>
