@@ -20,8 +20,6 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.ConceptNumeric;
-import org.openmrs.module.Module;
-import org.openmrs.module.ModuleUtil;
 
 public class OpenmrsUtil {
 
