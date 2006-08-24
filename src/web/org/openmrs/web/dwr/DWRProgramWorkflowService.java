@@ -3,11 +3,7 @@ package org.openmrs.web.dwr;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -19,7 +15,7 @@ import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.Helper;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 
 import uk.ltd.getahead.dwr.WebContextFactory;
@@ -65,8 +61,8 @@ public class DWRProgramWorkflowService {
 				dateEnrolled = ymdDf.parse(enrollmentDateYmd);
 			if (completionDateYmd != null && completionDateYmd.length() > 0)
 				dateCompleted = ymdDf.parse(completionDateYmd);
-			boolean anyChange = Helper.nullSafeEquals(dateEnrolled, pp.getDateEnrolled());
-			anyChange |= Helper.nullSafeEquals(dateCompleted, pp.getDateCompleted());
+			boolean anyChange = OpenmrsUtil.nullSafeEquals(dateEnrolled, pp.getDateEnrolled());
+			anyChange |= OpenmrsUtil.nullSafeEquals(dateCompleted, pp.getDateCompleted());
 			if (anyChange) {
 				pp.setDateEnrolled(dateEnrolled);
 				pp.setDateCompleted(dateCompleted);

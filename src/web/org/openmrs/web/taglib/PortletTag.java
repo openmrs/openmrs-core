@@ -10,7 +10,7 @@ import javax.servlet.jsp.PageContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.taglibs.standard.tag.common.core.ImportSupport;
-import org.openmrs.util.Helper;
+import org.openmrs.util.OpenmrsUtil;
 
 public class PortletTag extends ImportSupport {
 	
@@ -50,7 +50,7 @@ public class PortletTag extends ImportSupport {
 				// add attrs to request so that the controller (and portlet) can see/use them
 				pageContext.getRequest().setAttribute("org.openmrs.portlet.id", id);
 				pageContext.getRequest().setAttribute("org.openmrs.portlet.size", size);
-				pageContext.getRequest().setAttribute("org.openmrs.portlet.parameters", Helper.parseParameterList(parameters));
+				pageContext.getRequest().setAttribute("org.openmrs.portlet.parameters", OpenmrsUtil.parseParameterList(parameters));
 				pageContext.getRequest().setAttribute("org.openmrs.portlet.patientId", patientId);
 				pageContext.getRequest().setAttribute("org.openmrs.portlet.encounterId", encounterId);
 				pageContext.getRequest().setAttribute("org.openmrs.portlet.userId", userId);

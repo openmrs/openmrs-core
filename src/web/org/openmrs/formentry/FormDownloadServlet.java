@@ -22,7 +22,7 @@ import org.openmrs.Form;
 import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.Helper;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 
 /**
@@ -196,7 +196,7 @@ public class FormDownloadServlet extends HttpServlet {
 						formFilePath);
 
 				if (formStream != null)
-					Helper.copyFile(formStream, response.getOutputStream());
+					OpenmrsUtil.copyFile(formStream, response.getOutputStream());
 				else {
 					// the xsn wasn't on the disk. Return the starter xsn
 					log.debug("Xsn not found, returning starter xsn");

@@ -45,7 +45,6 @@ import org.openmrs.scheduler.timer.TimerSchedulerService;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 /**
  * Represents an OpenMRS <code>Context</code>, which may be used to

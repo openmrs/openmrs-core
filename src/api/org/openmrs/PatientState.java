@@ -2,7 +2,7 @@ package org.openmrs;
 
 import java.util.Date;
 
-import org.openmrs.util.Helper;
+import org.openmrs.util.OpenmrsUtil;
 
 public class PatientState {
 
@@ -136,7 +136,7 @@ public class PatientState {
 	public boolean getActive(Date onDate) {
 		if (onDate == null)
 			onDate = new Date();
-		return (startDate == null || Helper.compare(startDate, onDate) <= 0) && (endDate == null || Helper.compare(endDate, onDate) > 0);
+		return (startDate == null || OpenmrsUtil.compare(startDate, onDate) <= 0) && (endDate == null || OpenmrsUtil.compare(endDate, onDate) > 0);
 	}
 	
 }

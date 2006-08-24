@@ -196,7 +196,7 @@ public class HibernateUtil {
 			
 			// Create the sessionFactory
 			log.debug("Creating sessionFactory");
-			sessionFactory = cfg.buildSessionFactory();
+			sessionFactory = cfg.buildSessionFactory();			
 		} catch (Throwable ex) {
 			// Make sure you log the exception, as it might be swallowed
 			log.error("Initial sessionFactory creation failed.", ex);

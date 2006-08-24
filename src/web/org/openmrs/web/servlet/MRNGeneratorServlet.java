@@ -10,7 +10,7 @@ import javax.servlet.http.HttpSession;
 
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.Helper;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 
 public class MRNGeneratorServlet extends HttpServlet {
@@ -57,7 +57,7 @@ public class MRNGeneratorServlet extends HttpServlet {
 			String line = mrnFirst + site;
 			int checkdigit;
 			try {
-				checkdigit = Helper.getCheckDigit(line);
+				checkdigit = OpenmrsUtil.getCheckDigit(line);
 			}
 			catch (Exception e) {
 				throw new ServletException(e);

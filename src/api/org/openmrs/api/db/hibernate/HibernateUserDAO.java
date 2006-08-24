@@ -22,7 +22,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.UserDAO;
-import org.openmrs.util.Helper;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.Security;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
@@ -54,7 +54,7 @@ public class HibernateUserDAO implements
 			HibernateUtil.beginTransaction();
 			
 			String systemId = generateSystemId();
-			Integer checkDigit = Helper.getCheckDigit(systemId);
+			Integer checkDigit = OpenmrsUtil.getCheckDigit(systemId);
 			user.setSystemId(systemId + "-" + checkDigit);
 			
 			user = updateProperties(user);
@@ -126,7 +126,7 @@ public class HibernateUserDAO implements
 		
 		String usernameWithCheckDigit = username;
 		try {
-			Integer cd = Helper.getCheckDigit(username);
+			Integer cd = OpenmrsUtil.getCheckDigit(username);
 			usernameWithCheckDigit = usernameWithCheckDigit + "-" + cd;
 		}
 		catch (Exception e) {}

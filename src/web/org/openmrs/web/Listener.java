@@ -20,7 +20,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.formentry.FormEntryUtil;
 import org.openmrs.scheduler.SchedulerUtil;
-import org.openmrs.util.Helper;
+import org.openmrs.util.OpenmrsUtil;
 
 public final class Listener implements ServletContextListener {
 
@@ -61,9 +61,10 @@ public final class Listener implements ServletContextListener {
 
 			// Loop over each "module" and startup each with the custom
 			// properties
-			Helper.startup(props);
+			OpenmrsUtil.startup(props);
 			FormEntryUtil.startup(props);
 			SchedulerUtil.startup(props);
+			
 
 			// Copy the customization scripts over into the webapp
 			// TODO centralize map to OpenmrsConstants?
@@ -97,14 +98,14 @@ public final class Listener implements ServletContextListener {
 									+ f.getName();
 									FileInputStream inputStream = new FileInputStream(userOverridePath);
 									FileOutputStream outputStream = new FileOutputStream(tmpAbsolutePath);
-									Helper.copyFile(inputStream, outputStream);
+									OpenmrsUtil.copyFile(inputStream, outputStream);
 								}
 							}
 						} else {
 							// file is not a directory
 							FileInputStream inputStream = new FileInputStream(userOverridePath);
 							FileOutputStream outputStream = new FileOutputStream(absolutePath);
-							Helper.copyFile(inputStream, outputStream);
+							OpenmrsUtil.copyFile(inputStream, outputStream);
 						}
 					}
 				}

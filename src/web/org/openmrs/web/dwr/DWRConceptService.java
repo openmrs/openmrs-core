@@ -21,7 +21,7 @@ import org.openmrs.User;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.Helper;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 
@@ -325,7 +325,7 @@ public class DWRConceptService {
 		ConceptNumeric conceptNumeric = context.getConceptService()
 				.getConceptNumeric(conceptId);
 
-		return Helper.isValidNumericValue(value, conceptNumeric);
+		return OpenmrsUtil.isValidNumericValue(value, conceptNumeric);
 	}
 
 	public String getConceptNumericUnits(Integer conceptId) {

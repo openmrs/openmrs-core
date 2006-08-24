@@ -104,7 +104,7 @@ public class UserFormController extends SimpleFormController {
 				}
 				
 				/*  TODO check if user can delete privilege
-				Collection<Collection> lists = Helper.compareLists(user.getRoles(), set);
+				Collection<Collection> lists = OpenmrsUtil.compareLists(user.getRoles(), set);
 				
 				Collection toDel = (Collection)lists.toArray()[1];
 				for (Object o : toDel) {

@@ -21,7 +21,7 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
 import org.openmrs.reporting.PatientSet;
-import org.openmrs.util.Helper;
+import org.openmrs.util.OpenmrsUtil;
 
 public class DataExportUtility {
 	
@@ -377,7 +377,7 @@ public class DataExportUtility {
 	 */
 	public boolean isValidCheckDigit(String id) {
 		try {
-			return Helper.isValidCheckDigit(id);
+			return OpenmrsUtil.isValidCheckDigit(id);
 		}
 		catch (Exception e) {
 			log.error("Error evaluating identifier during report", e);

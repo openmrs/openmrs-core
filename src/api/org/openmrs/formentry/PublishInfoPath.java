@@ -30,7 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Form;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.Helper;
+import org.openmrs.util.OpenmrsUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -91,7 +91,7 @@ public class PublishInfoPath {
 		File filesystemXSN = File.createTempFile("upload", ".xsn", tempDir);
 
 		// copy the uploaded file over to the temp file system file
-		Helper.copyFile(inputStream, new FileOutputStream(filesystemXSN));
+		OpenmrsUtil.copyFile(inputStream, new FileOutputStream(filesystemXSN));
 
 		publishXSN(filesystemXSN.getAbsolutePath(), context);
 

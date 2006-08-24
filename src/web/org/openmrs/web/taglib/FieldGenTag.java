@@ -3,26 +3,20 @@ package org.openmrs.web.taglib;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.taglibs.standard.tag.common.core.ImportSupport;
-import org.openmrs.util.Helper;
-import org.openmrs.web.controller.FieldGenController;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.taglib.fieldgen.FieldGenHandler;
 import org.openmrs.web.taglib.fieldgen.FieldGenHandlerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 public class FieldGenTag extends TagSupport {
 
@@ -214,7 +208,7 @@ public class FieldGenTag extends TagSupport {
 		// add attrs to request so that the controller (and field jsp) can see/use them
 		pageContext.getRequest().setAttribute("org.openmrs.fieldGen.type", type);
 		pageContext.getRequest().setAttribute("org.openmrs.fieldGen.formFieldName", formFieldName);
-		pageContext.getRequest().setAttribute("org.openmrs.fieldGen.parameters", Helper.parseParameterList(parameters));
+		pageContext.getRequest().setAttribute("org.openmrs.fieldGen.parameters", OpenmrsUtil.parseParameterList(parameters));
 		HashMap<String,Object> hmParamMap = (HashMap<String, Object>) pageContext.getRequest().getAttribute("org.openmrs.fieldGen.parameterMap");
 		if ( hmParamMap == null ) hmParamMap = new HashMap<String,Object>();
 		if ( this.parameterMap != null ) hmParamMap.putAll(this.parameterMap);

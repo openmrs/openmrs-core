@@ -28,7 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Form;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.Helper;
+import org.openmrs.util.OpenmrsUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -67,7 +67,7 @@ public class FormStarterXSN {
 		File dir = xsnFile.getParentFile();
 		
 		// read the file into the return string
-		String xsn = Helper.getFileAsString(xsnFile);
+		String xsn = OpenmrsUtil.getFileAsString(xsnFile);
 
 		// clean up
 		deleteDirectory(dir);
@@ -82,7 +82,7 @@ public class FormStarterXSN {
 		FileInputStream formInputStream = new FileInputStream(xsnFile);
 
 		// copy xsn file to the response output
-		Helper.copyFile(formInputStream, outputStream);
+		OpenmrsUtil.copyFile(formInputStream, outputStream);
 		
 		// clean up
 		deleteDirectory(dir);

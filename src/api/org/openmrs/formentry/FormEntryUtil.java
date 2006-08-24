@@ -293,7 +293,7 @@ public class FormEntryUtil {
 		if (numDots < 2)
 			for (i = numDots; i < 2; i++)
 				version += ".0";
-		if (form.getBuild() < 1 || form.getBuild() > 9999)
+		if (form.getBuild() == null || form.getBuild() < 1 || form.getBuild() > 9999)
 			form.setBuild(1);
 		version += "." + form.getBuild();
 		return version;

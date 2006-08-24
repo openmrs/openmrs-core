@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.openmrs.util.Helper;
+import org.openmrs.util.OpenmrsUtil;
 
 public class PatientProgram {
 
@@ -163,7 +163,7 @@ public class PatientProgram {
 		}
 		Collections.sort(ret, new Comparator<PatientState>() {
 				public int compare(PatientState left, PatientState right) {
-					return Helper.compareWithNullAsEarliest(left.getStartDate(), right.getStartDate());
+					return OpenmrsUtil.compareWithNullAsEarliest(left.getStartDate(), right.getStartDate());
 				}
 			});
 		return ret;

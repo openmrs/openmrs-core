@@ -17,7 +17,7 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.Helper;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 
 public class AuditServlet extends HttpServlet {
@@ -58,7 +58,7 @@ public class AuditServlet extends HttpServlet {
 			for (PatientIdentifier identifier : identifiers) {
 				boolean updateNeeded = true;
 				try {
-					updateNeeded = !Helper.isValidCheckDigit(identifier.getIdentifier());
+					updateNeeded = !OpenmrsUtil.isValidCheckDigit(identifier.getIdentifier());
 				} catch (Exception e) {
 					log.error("Patient #" + identifier.getPatient().getPatientId() + " Bad identifier: '" + identifier.getIdentifier() + "'");
 				}

@@ -29,7 +29,7 @@ import org.openmrs.PatientName;
 import org.openmrs.Tribe;
 import org.openmrs.api.context.Context;
 import org.openmrs.formentry.FormEntryService;
-import org.openmrs.util.Helper;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.dwr.PatientListItem;
@@ -138,7 +138,7 @@ public class NewPatientFormController extends SimpleFormController {
 						log.debug("and location: " + locs[i]);
 					
 						try {
-							if (pit.hasCheckDigit() && !Helper.isValidCheckDigit(identifiers[i])) {
+							if (pit.hasCheckDigit() && !OpenmrsUtil.isValidCheckDigit(identifiers[i])) {
 									log.error("hasCheckDigit and is not valid: " + pit.getName() + " " + identifiers[i]);
 									errors.rejectValue("identifier", "error.checkdigits", args, "Invalid Checkdigit " + identifiers[i]);
 								}

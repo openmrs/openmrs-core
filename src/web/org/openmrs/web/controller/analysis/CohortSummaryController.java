@@ -24,7 +24,7 @@ import org.openmrs.reporting.PatientSet;
 import org.openmrs.reporting.ReportElement;
 import org.openmrs.reporting.SimpleColumnClassifier;
 import org.openmrs.reporting.TableGroupAndAggregate;
-import org.openmrs.util.Helper;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -53,7 +53,7 @@ public class CohortSummaryController implements Controller {
 		ageGenderGraph.addProducer("gender", p);
 		p = new PatientAttributeDataProducer("Patient", "birthdate", new DataTransformer() {
 				public Object transform(Object o) {
-					return Helper.ageFromBirthdate((Date) o);
+					return OpenmrsUtil.ageFromBirthdate((Date) o);
 				}
 			});
 		ageGenderGraph.addProducer("age", p);

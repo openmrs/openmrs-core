@@ -20,10 +20,12 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.ConceptNumeric;
+import org.openmrs.module.Module;
+import org.openmrs.module.ModuleUtil;
 
-public class Helper {
+public class OpenmrsUtil {
 
-	private static Log log = LogFactory.getLog(Helper.class);
+	private static Log log = LogFactory.getLog(OpenmrsUtil.class);
 
 	public static int getCheckDigit(String idWithoutCheckdigit)
 			throws Exception {
@@ -229,6 +231,7 @@ public class Helper {
 	
 	/**
 	 * Initialize global settings
+	 * Find and load modules
 	 * 
 	 * @param p properties from runtime configuration
 	 */
@@ -255,10 +258,11 @@ public class Helper {
 
 		// Override the default "openmrs" database name
 		val = p.getProperty("connection.database_name", null);
-		if (val == null)
+		if (val == null) {
 			// the database name wasn't supplied explicitly, guess it 
 			//   from the connection string
 			val = p.getProperty("connection.url", null);
+		
 			if (val != null) {
 				try {
 					int endIndex = val.lastIndexOf("?");
@@ -273,13 +277,25 @@ public class Helper {
 							"Either supply 'connection.database_name' or correct the url", e);
 				}
 			}
-			
+		}
+		
 		val = p.getProperty("connection.database_business_name", null);
 		if (val == null)
 			val = OpenmrsConstants.DATABASE_NAME;
 		OpenmrsConstants.DATABASE_BUSINESS_NAME = val;
 		
+		val = p.getProperty("module_repository_path", null);
+		if (val != null)
+			OpenmrsConstants.MODULE_REPOSITORY_PATH = val;
+		
+		// Load OpenMRS Modules
+		ModuleUtil.loadModules();
+		
+		for (Module mod : ModuleUtil.getModules()) {
+			mod.startup(p);
+		}
 	}
+	
 	
 	/**
 	 * Takes a String like "size=compact|order=date" and returns a Map<String,String> from the keys to the values.
@@ -303,8 +319,7 @@ public class Helper {
 		return ret;
 	}
 	
-	// TODO: rewrite this as a generics method so that both args must be the same type
-	public static boolean nullSafeEquals(Object d1, Object d2) {
+	public static <Arg1, Arg2 extends Arg1> boolean nullSafeEquals(Arg1 d1, Arg2 d2) {
 		if (d1 == null)
 			return d2 == null;
 		else if (d2 == null)
@@ -352,8 +367,7 @@ public class Helper {
 			return compare(d1, d2);
 	}
 	
-	// TODO: give this the proper generic signatures
-	public static int compareWithNullAsLowest(Comparable c1, Comparable c2) {
+	public static <E extends Comparable<E>> int compareWithNullAsLowest(E c1, E c2) {
 		if (c1 == null)
 			return -1;
 		else if (c2 == null)
@@ -362,7 +376,7 @@ public class Helper {
 			return c1.compareTo(c2);
 	}
 	
-	public static int comparewithNullAsGreatest(Comparable c1, Comparable c2) {
+	public static <E extends Comparable<E>> int comparewithNullAsGreatest(E c1, E c2) {
 		if (c1 == null)
 			return 1;
 		else if (c2 == null)

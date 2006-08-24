@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.openmrs.util.Helper;
+import org.openmrs.util.OpenmrsUtil;
 
 public class DataTable {
 
@@ -60,7 +60,7 @@ public class DataTable {
 				public int compare(TableRow left, TableRow right) {
 					Comparable l = (Comparable) left.get(colName);
 					Comparable r = (Comparable) right.get(colName);
-					return Helper.compareWithNullAsLowest(l, r);
+					return OpenmrsUtil.compareWithNullAsLowest(l, r);
 				}
 			});
 	}
