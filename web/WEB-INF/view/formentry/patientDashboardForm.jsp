@@ -116,7 +116,7 @@
 		<openmrs:portlet url="patientOverview" id="patientDashboardOverview" patientId="${patient.patientId}"/>
 	</div>
 	<div id="patientRegimen" style="display:none;">
-		<openmrs:portlet url="patientRegimen" id="patientDashboardRegimen" patientId="${patient.patientId}" />
+		<openmrs:portlet url="patientRegimen" id="patientDashboardRegimen" patientId="${patient.patientId}" parameters="displayDrugSetIds=1085,TUBERCULOSIS TREATMENT DRUGS" />
 	</div>
 	<!--
 	<div id="patientForms" style="display:none;">

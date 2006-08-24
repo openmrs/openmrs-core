@@ -11,6 +11,7 @@ public class DrugSetItem {
 	private Integer drugSetId;
 	private String name;
 	private Integer drugCount;
+	private String drugSetLabel;
 	
 	public DrugSetItem() { }
 	
@@ -30,6 +31,20 @@ public class DrugSetItem {
 	 */
 	public void setDrugCount(Integer drugCount) {
 		this.drugCount = drugCount;
+	}
+
+	/**
+	 * @return Returns the drugSetLabel.
+	 */
+	public String getDrugSetLabel() {
+		return drugSetLabel;
+	}
+
+	/**
+	 * @param drugSetLabel The drugSetLabel to set.
+	 */
+	public void setDrugSetLabel(String drugSetLabel) {
+		this.drugSetLabel = drugSetLabel;
 	}
 
 	/**

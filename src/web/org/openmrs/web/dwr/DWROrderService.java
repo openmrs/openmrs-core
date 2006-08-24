@@ -135,7 +135,7 @@ public class DWROrderService {
 		return ret; 
 	}
 	
-	public Vector<DrugSetItem> getDrugSet(Integer patientId, Integer drugSetId, int whatToShow) {
+	public Vector<DrugSetItem> getDrugSet(Integer patientId, String drugSetId, int whatToShow) {
 		log.debug("In getDrugSet() method");
 		Vector<DrugSetItem> dsiList = null;
 		
@@ -143,7 +143,20 @@ public class DWROrderService {
 				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		if (context != null) {
 			ConceptService cs = context.getConceptService();
-			Concept c = cs.getConcept(drugSetId);
+			Concept c = null;
+			Integer conceptId = null;
+			try {
+				conceptId = new Integer(drugSetId);
+			} catch (NumberFormatException nfe) {
+				// this is expected
+				conceptId = null;
+			}
+			if ( conceptId == null ) {
+				c = cs.getConceptByName(drugSetId);
+			} else {
+				c = cs.getConcept(conceptId);
+			}
+
 			if ( c != null && patientId != null && drugSetId != null ) {
 				Patient p = context.getPatientService().getPatient(patientId);
 				if ( p != null ) {
@@ -153,6 +166,7 @@ public class DWROrderService {
 					Map<Concept, List<DrugOrder>> orders = os.getDrugSetsByConcepts(os.getDrugOrdersByPatient(p, whatToShow), conceptList);
 					DrugSetItem dsi = new DrugSetItem();
 					dsi.setDrugSetId(c.getConceptId());
+					dsi.setDrugSetLabel(drugSetId.replace(" ", "_"));
 					dsi.setName(c.getName(context.getLocale()).getName());
 					if ( orders != null ) {
 						if ( orders.size() > 0 ) {
@@ -173,16 +187,16 @@ public class DWROrderService {
 		return dsiList;
 	}
 
-	public Vector<DrugSetItem> getCurrentDrugSet(Integer patientId, Integer drugSetId) {
+	public Vector<DrugSetItem> getCurrentDrugSet(Integer patientId, String drugSetId) {
 		return getDrugSet(patientId, drugSetId, OrderService.SHOW_CURRENT);
 	}
 
-	public Vector<DrugSetItem> getCompletedDrugSet(Integer patientId, Integer drugSetId) {
+	public Vector<DrugSetItem> getCompletedDrugSet(Integer patientId, String drugSetId) {
 		return getDrugSet(patientId, drugSetId, OrderService.SHOW_COMPLETE);
 	}
 
 	
-	public Vector<DrugOrderListItem> getDrugOrdersByPatientIdDrugSetId(Integer patientId, Integer drugSetId, int whatToShow) {
+	public Vector<DrugOrderListItem> getDrugOrdersByPatientIdDrugSetId(Integer patientId, String drugSetId, int whatToShow) {
 		log.debug("Entering getCurrentDrugOrdersByPatientIdDrugSetId method");
 		
 		Vector<DrugOrderListItem> ret = null;
@@ -191,7 +205,20 @@ public class DWROrderService {
 				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		if (context != null) {
 			ConceptService cs = context.getConceptService();
-			Concept c = cs.getConcept(drugSetId);
+			Concept c = null;
+			Integer conceptId = null;
+			try {
+				conceptId = new Integer(drugSetId);
+			} catch (NumberFormatException nfe) {
+				// this is expected
+				conceptId = null;
+			}
+			if ( conceptId == null ) {
+				c = cs.getConceptByName(drugSetId);
+			} else {
+				c = cs.getConcept(conceptId);
+			}
+
 			if ( c != null && patientId != null && drugSetId != null ) {
 				Patient p = context.getPatientService().getPatient(patientId);
 				if ( p != null ) {
@@ -207,7 +234,8 @@ public class DWROrderService {
 								for ( DrugOrder drugOrder : currList ) {
 									if ( ret == null ) ret = new Vector<DrugOrderListItem>();
 									DrugOrderListItem drugOrderItem = new DrugOrderListItem(drugOrder);
-									drugOrderItem.setDrugSetId(drugSetId);
+									drugOrderItem.setDrugSetId(c.getConceptId());
+									drugOrderItem.setDrugSetLabel(drugSetId.replace(" ", "_"));
 									ret.add(drugOrderItem);
 								}
 							} else log.debug("currList is null");
@@ -222,11 +250,11 @@ public class DWROrderService {
 		return ret;
 	}
 
-	public Vector<DrugOrderListItem> getCurrentDrugOrdersByPatientIdDrugSetId(Integer patientId, Integer drugSetId) {
+	public Vector<DrugOrderListItem> getCurrentDrugOrdersByPatientIdDrugSetId(Integer patientId, String drugSetId) {
 		return getDrugOrdersByPatientIdDrugSetId(patientId, drugSetId, OrderService.SHOW_CURRENT);
 	}
 
-	public Vector<DrugOrderListItem> getCompletedDrugOrdersByPatientIdDrugSetId(Integer patientId, Integer drugSetId) {
+	public Vector<DrugOrderListItem> getCompletedDrugOrdersByPatientIdDrugSetId(Integer patientId, String drugSetId) {
 		return getDrugOrdersByPatientIdDrugSetId(patientId, drugSetId, OrderService.SHOW_COMPLETE);
 	}
 

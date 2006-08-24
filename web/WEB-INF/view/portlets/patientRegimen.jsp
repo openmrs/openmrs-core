@@ -23,9 +23,9 @@
 <c:choose>
 	<c:when test="${not empty model.displayDrugSetIds}">
 		<c:forTokens var="drugSetId" items="${model.displayDrugSetIds}" delims=",">
-				<tbody id="regimenTableCurrent_header_${drugSetId}">
+				<tbody id="regimenTableCurrent_header_${fn:replace(drugSetId, " ", "_")}">
 				</tbody>
-				<tbody id="regimenTableCurrent_${drugSetId}">
+				<tbody id="regimenTableCurrent_${fn:replace(drugSetId, " ", "_")}">
 				</tbody>
 		</c:forTokens>
 	</c:when>
@@ -104,9 +104,9 @@
 <c:choose>
 	<c:when test="${not empty model.displayDrugSetIds}">
 		<c:forTokens var="drugSetId" items="${model.displayDrugSetIds}" delims=",">
-				<tbody id="regimenTableCompleted_header_${drugSetId}">
+				<tbody id="regimenTableCompleted_header_${fn:replace(drugSetId, " ", "_")}">
 				</tbody>
-				<tbody id="regimenTableCompleted_${drugSetId}">
+				<tbody id="regimenTableCompleted_${fn:replace(drugSetId, " ", "_")}">
 				</tbody>
 		</c:forTokens>
 	</c:when>
@@ -315,7 +315,7 @@
 			var firstSet = drugSet[0];
 			var drugSetId = '';
 			if ( firstSet ) {
-				drugSetId = firstSet.drugSetId;
+				drugSetId = firstSet.drugSetLabel;
 			}
 			DWRUtil.addRows('regimenTableCurrent_header_' + drugSetId, drugSet, currentRegimenTableHeaderCells, {
 				cellCreator:function(options) {
@@ -330,7 +330,7 @@
 			var firstSet = drugSet[0];
 			var drugSetId = '';
 			if ( firstSet ) {
-				drugSetId = firstSet.drugSetId;
+				drugSetId = firstSet.drugSetLabel;
 			}
 			DWRUtil.addRows('regimenTableCompleted_header_' + drugSetId, drugSet, completedRegimenTableHeaderCells, {
 				cellCreator:function(options) {
@@ -350,7 +350,7 @@
 					//	alert('firstOrder exists');
 					if ( firstOrder.drugSetId ) {
 						//alert('firstOrder dsId is ' + firstOrder.drugSetId);
-						tableName += "_" + firstOrder.drugSetId;	
+						tableName += "_" + firstOrder.drugSetLabel;	
 					}				
 				}
 				DWRUtil.addRows(tableName, drugOrders, currentRegimenTableCellFuncs, {
@@ -374,7 +374,7 @@
 					//	alert('firstOrder exists');
 					if ( firstOrder.drugSetId ) {
 						//alert('firstOrder dsId is ' + firstOrder.drugSetId);
-						tableName += "_" + firstOrder.drugSetId;	
+						tableName += "_" + firstOrder.drugSetLabel;	
 					}				
 				}
 				DWRUtil.addRows(tableName, drugOrders, completedRegimenTableCellFuncs, {
@@ -395,8 +395,12 @@
 				//alert('length gt 0');
 				var drugSetIds = displayDrugSetIds.split(",");
 				for ( var i = 0; i < drugSetIds.length; i++ ) {
-					DWRUtil.removeAllRows(tableName + '_header_' + drugSetIds[i]);
-					DWRUtil.removeAllRows(tableName + '_' + drugSetIds[i]);
+					var currDrugSet = drugSetIds[i];
+					if ( currDrugSet ) {
+						currDrugSet = currDrugSet.replace(/\s/g, "_");
+						DWRUtil.removeAllRows(tableName + '_header_' + currDrugSet);
+						DWRUtil.removeAllRows(tableName + '_' + currDrugSet);
+					}
 				}
 			} else {
 				//alert('length lt 0');

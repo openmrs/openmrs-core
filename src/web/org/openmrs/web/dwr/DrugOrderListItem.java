@@ -37,6 +37,7 @@ public class DrugOrderListItem {
 	private Integer creatorId;
 	private String createdDate;
 	private Integer drugSetId;
+	private String drugSetLabel;
 	
 	public DrugOrderListItem() { }
 	
@@ -452,6 +453,20 @@ public class DrugOrderListItem {
 	 */
 	public void setDrugSetId(Integer drugSetId) {
 		this.drugSetId = drugSetId;
+	}
+
+	/**
+	 * @return Returns the drugSetLabel.
+	 */
+	public String getDrugSetLabel() {
+		return drugSetLabel;
+	}
+
+	/**
+	 * @param drugSetLabel The drugSetLabel to set.
+	 */
+	public void setDrugSetLabel(String drugSetLabel) {
+		this.drugSetLabel = drugSetLabel;
 	}
 
 }
