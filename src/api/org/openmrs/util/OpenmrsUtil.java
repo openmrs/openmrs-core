@@ -289,11 +289,11 @@ public class OpenmrsUtil {
 			OpenmrsConstants.MODULE_REPOSITORY_PATH = val;
 		
 		// Load OpenMRS Modules
-		ModuleUtil.loadModules();
+		//ModuleUtil.loadModules();
 		
-		for (Module mod : ModuleUtil.getModules()) {
-			mod.startup(p);
-		}
+		//for (Module mod : ModuleUtil.getModules()) {
+		//	mod.startup(p);
+		//}
 	}
 	
 	
