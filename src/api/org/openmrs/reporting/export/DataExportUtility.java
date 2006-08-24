@@ -322,7 +322,7 @@ public class DataExportUtility {
 	}
 	
 	/**
-	 * Get all obs for the current patient that match this <code>obs.concept</code>=<code>concept>
+	 * Get all obs for the current patient that match this <code>obs.concept</code>=<code>concept</code>
 	 * and <code>obs.valueCoded</code>=<code>valueCoded</code> 
 	 * 
 	 * @param conceptName
