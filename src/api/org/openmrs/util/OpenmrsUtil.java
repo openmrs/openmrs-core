@@ -284,9 +284,9 @@ public class OpenmrsUtil {
 			val = OpenmrsConstants.DATABASE_NAME;
 		OpenmrsConstants.DATABASE_BUSINESS_NAME = val;
 		
-		val = p.getProperty("module_repository_path", null);
-		if (val != null)
-			OpenmrsConstants.MODULE_REPOSITORY_PATH = val;
+		//val = p.getProperty("module_repository_path", null);
+		//if (val != null)
+		//	OpenmrsConstants.MODULE_REPOSITORY_PATH = val;
 		
 		// Load OpenMRS Modules
 		//ModuleUtil.loadModules();
