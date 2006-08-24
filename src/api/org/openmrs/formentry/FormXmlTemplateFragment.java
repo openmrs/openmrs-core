@@ -1,5 +1,9 @@
 package org.openmrs.formentry;
 
+import java.io.UnsupportedEncodingException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.Form;
 
 /**
@@ -11,11 +15,13 @@ import org.openmrs.Form;
  * @see org.openmrs.formentry.FormXmlTemplateBuilder
  */
 public class FormXmlTemplateFragment {
+	
+	static Log log = LogFactory.getLog(FormXmlTemplateBuilder.class);
 
 	public static String header(Form form, String url) {
 		return "<?xml version=\"1.0\"?>\n"
 				+ "<?mso-infoPathSolution name=\""
-				+ FormEntryUtil.getFormSchemaNamespace(form)
+				+ encodeURL(form.getName())
 				+ "\" href=\""
 				+ url
 				+ "\" solutionVersion=\""
@@ -44,5 +50,15 @@ public class FormXmlTemplateFragment {
 
 	public static String closeForm() {
 		return "  <other></other>" + "</form>\n";
+	}
+	
+	private static String encodeURL(String s) {
+		String encodedString = s;
+		try {
+			java.net.URLEncoder.encode(s, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			log.error("Failed to recognize UTF-8 when encoding string: '" + s + "'");
+		}
+		return encodedString;
 	}
 }
