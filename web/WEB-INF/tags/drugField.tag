@@ -4,12 +4,13 @@
 <%@ attribute name="drugs" required="true" type="java.util.List" %>
 <%@ attribute name="initialValue" required="false" %>
 <%@ attribute name="optionHeader" required="false" %>
+<%@ attribute name="onChange" required="false" %>
 
 <c:if test="${empty drugs}">
 	<spring:message code="Drug.list.empty" />
 </c:if>
 <c:if test="${not empty drugs}">
-	<select name="${formFieldName}" id="${formFieldName}">
+	<select name="${formFieldName}" id="${formFieldName}"<c:if test="${not empty onChange}">onChange=${onChange}</c:if>>
 		<c:if test="${optionHeader != ''}">
 			<c:if test="${optionHeader == '[blank]'}">
 				<option value=""></option>

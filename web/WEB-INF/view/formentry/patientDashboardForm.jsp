@@ -92,8 +92,8 @@
 
 <%--
 <div id="breadcrumbHeader" class="breadcrumb">
-	<a href="/openmrs">Home</a> ->
-	<a href="#switch" onClick="switchPatient()">Find Patient</a> ->
+	<a href="/openmrs">Home</a> >
+	<a href="#switch" onClick="switchPatient()">Find Patient</a> >
 	<spring:message code="Patient.dashboard.title"/>
 </div>
 --%>
@@ -116,7 +116,7 @@
 		<openmrs:portlet url="patientOverview" id="patientDashboardOverview" patientId="${patient.patientId}"/>
 	</div>
 	<div id="patientRegimen" style="display:none;">
-		<openmrs:portlet url="patientRegimen" id="patientDashboardRegimen" patientId="${patient.patientId}"/>
+		<openmrs:portlet url="patientRegimen" id="patientDashboardRegimen" patientId="${patient.patientId}" />
 	</div>
 	<!--
 	<div id="patientForms" style="display:none;">

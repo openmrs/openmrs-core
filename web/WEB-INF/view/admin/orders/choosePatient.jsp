@@ -9,6 +9,15 @@
 
 <br />
 
-<openmrs:portlet id="choosePatient" url="findPatient" parameters="size=full|postURL=orderByPatient.list" />
+<openmrs:portlet id="choosePatient" url="findPatient" parameters="size=full|postURL=orderDrug.list" />
+
+<br />
+
+<center>
+	<form>
+		<input type="hidden" name="showAll" value="true" />
+		<input type="submit" value="<spring:message code="DrugOrder.list.showAll" />" />
+	</form>
+</center>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

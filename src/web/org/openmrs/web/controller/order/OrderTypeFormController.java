@@ -52,7 +52,7 @@ public class OrderTypeFormController extends SimpleFormController {
 		
 		if (context != null && context.isAuthenticated()) {
 			OrderType orderType = (OrderType)obj;
-			context.getAdministrationService().updateOrderType(orderType);
+			context.getOrderService().updateOrderType(orderType);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "OrderType.saved");
 		}

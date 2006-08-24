@@ -114,7 +114,7 @@ public class OrderPlaceFormController extends SimpleFormController {
 			
 			if ( order.getDateCreated() == null ) order.setDateCreated(new Date());
 			if ( order.getVoided() == null ) order.setVoided(new Boolean(false));
-			context.getAdministrationService().updateOrder(order, thisPatient);
+			context.getOrderService().updateOrder(order, thisPatient);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Order.drug.saved");
 		}

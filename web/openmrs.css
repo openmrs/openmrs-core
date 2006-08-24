@@ -551,7 +551,7 @@ fieldset {
 #popupTray {
 	float: right;
 	position: fixed;
-	right: 30px;
+	right: 0px;
 	top: 60px;
 	width: 20px;
 	z-index: 7;
@@ -577,6 +577,7 @@ fieldset {
 	width: 400px;
 	z-index: 7;
 }
+
 #analysisPatientSetBox {
 	padding: 4px;
 	margin: 4px 20px 4px 0px;
@@ -604,12 +605,21 @@ fieldset {
 	width: 585px;
 }
 
+#regimenPortlet a.boxHeader, a:link.boxHeader, a:visited.boxHeader, a:active.boxHeader, a:hover.boxHeader {
+	color: #ffffff; 
+}
+
+
 #exceptionMessage {
 	background-color: white;
 	padding: 1px;
 	color: black;
 }
 
-#regimenPortlet a.boxHeader { 
-	color: #ffffff; 
+#regimenPortlet a.boxHeader {
+	color: #ffffff;
+}
+
+span.noOrdersMessage {
+	text-variant: italics;
 }

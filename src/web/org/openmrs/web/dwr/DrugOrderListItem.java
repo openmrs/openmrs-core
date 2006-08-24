@@ -36,6 +36,7 @@ public class DrugOrderListItem {
 	private String voidReason;
 	private Integer creatorId;
 	private String createdDate;
+	private Integer drugSetId;
 	
 	public DrugOrderListItem() { }
 	
@@ -437,6 +438,20 @@ public class DrugOrderListItem {
 	 */
 	public void setVoidedDate(String voidedDate) {
 		this.voidedDate = voidedDate;
+	}
+
+	/**
+	 * @return Returns the drugSetId.
+	 */
+	public Integer getDrugSetId() {
+		return drugSetId;
+	}
+
+	/**
+	 * @param drugSetId The drugSetId to set.
+	 */
+	public void setDrugSetId(Integer drugSetId) {
+		this.drugSetId = drugSetId;
 	}
 
 }

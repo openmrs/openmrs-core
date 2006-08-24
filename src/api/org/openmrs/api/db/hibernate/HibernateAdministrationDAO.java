@@ -31,8 +31,6 @@ import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
-import org.openmrs.Order;
-import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
@@ -395,140 +393,7 @@ public class HibernateAdministrationDAO implements
 			throw new DAOException(e);
 		}
 	}
-
 	
-	/**
-	 * @see org.openmrs.api.db.AdministrationService#createOrderType(org.openmrs.OrderType)
-	 */
-	public void createOrderType(OrderType orderType) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		
-		orderType.setCreator(context.getAuthenticatedUser());
-		orderType.setDateCreated(new Date());
-		try {
-			HibernateUtil.beginTransaction();
-			session.save(orderType);
-			HibernateUtil.commitTransaction();
-		}
-		catch (Exception e) {
-			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e);
-		}
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.AdministrationService#updateOrderType(org.openmrs.OrderType)
-	 */
-	public void updateOrderType(OrderType orderType) throws DAOException {
-		if (orderType.getOrderTypeId() == null)
-			createOrderType(orderType);
-		else {
-			try {
-				Session session = HibernateUtil.currentSession();
-				HibernateUtil.beginTransaction();
-				session.saveOrUpdate(orderType);
-				HibernateUtil.commitTransaction();
-			}
-			catch (Exception e) {
-				HibernateUtil.rollbackTransaction();
-				throw new DAOException(e);
-			}
-		}
-	}
-
-	/**
-	 * @see org.openmrs.api.db.AdministrationService#deleteOrderType(org.openmrs.OrderType)
-	 */
-	public void deleteOrderType(OrderType orderType) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		try {
-			HibernateUtil.beginTransaction();
-			session.delete(orderType);
-			HibernateUtil.commitTransaction();
-		}
-		catch (Exception e) {
-			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e);
-		}
-	}
-
-	
-	/**
-	 * @see org.openmrs.api.db.AdministrationService#createOrderType(org.openmrs.OrderType)
-	 */
-	public void createOrder(Order order) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		
-		order.setCreator(context.getAuthenticatedUser());
-		order.setDateCreated(new Date());
-		try {
-			HibernateUtil.beginTransaction();
-			session.save(order);
-			HibernateUtil.commitTransaction();
-		}
-		catch (Exception e) {
-			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e);
-		}
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.AdministrationService#updateOrder(org.openmrs.Order)
-	 */
-	public void updateOrder(Order order) throws DAOException {
-		if (order.getOrderId() == null)
-			createOrder(order);
-		else {
-			try {
-				Session session = HibernateUtil.currentSession();
-				HibernateUtil.beginTransaction();
-				session.saveOrUpdate(order);
-				HibernateUtil.commitTransaction();
-			}
-			catch (Exception e) {
-				HibernateUtil.rollbackTransaction();
-				throw new DAOException(e);
-			}
-		}
-	}
-
-	/**
-	 * @see org.openmrs.api.db.AdministrationService#deleteOrder(org.openmrs.Order)
-	 */
-	public void deleteOrder(Order order) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		try {
-			HibernateUtil.beginTransaction();
-			session.delete(order);
-			HibernateUtil.commitTransaction();
-		}
-		catch (Exception e) {
-			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e);
-		}
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.AdministrationService#deleteOrder(org.openmrs.Order)
-	 */
-	public void voidOrder(Order order, String voidReason) throws DAOException {
-		order.setVoided(new Boolean(true));
-		order.setVoidReason(voidReason);
-		order.setVoidedBy(context.getAuthenticatedUser());
-		order.setDateVoided(new Date());
-		updateOrder(order);
-	}
-
-	/**
-	 * @see org.openmrs.api.db.AdministrationService#deleteOrder(org.openmrs.Order)
-	 */
-	public void discontinueOrder(Order order, String discontinueReason, Date discontinueDate) throws DAOException {
-		order.setDiscontinued(new Boolean(true));
-		order.setDiscontinuedReason(discontinueReason);
-		order.setDiscontinuedDate(discontinueDate);
-		order.setDiscontinuedBy(context.getAuthenticatedUser());
-		updateOrder(order);
-	}
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#createPatientIdentifierType(org.openmrs.PatientIdentifierType)
 	 */

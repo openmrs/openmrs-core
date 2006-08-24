@@ -93,6 +93,7 @@ public class OrderListByPatientController extends SimpleFormController {
 		//default empty Object
 		List<DrugOrder> orderList = new Vector<DrugOrder>();
 		Integer patientId = RequestUtils.getIntParameter(request, "patientId");
+		boolean showAll = RequestUtils.getBooleanParameter(request, "showAll", false);
 		System.err.println("pid is " + patientId);
 		
 		//only fill the Object is the user has authenticated properly
@@ -107,18 +108,17 @@ public class OrderListByPatientController extends SimpleFormController {
 					OrderService os = context.getOrderService();
 			    	orderList = os.getDrugOrdersByPatient(p);
 				} else {
+					log.error("Could not get a patient corresponding to patientId [" + patientId + "], thus could not get drug orders.");
 					throw new ServletException();
 				}
 			} else {
-				this.setFormView("/admin/orders/choosePatient");
-				/*
-				System.err.println("\n\n\nCould not find patient ID, using 9475 instead (John Public)...\n\n\n");
-				patientId = new Integer(9475);
-				PatientService ps = context.getPatientService();
-				Patient p = ps.getPatient(patientId);
-				OrderService os = context.getOrderService();
-		    	orderList = os.getOrdersByPatient(p);
-		    	*/
+				if ( showAll ) {
+					this.setFormView("/admin/orders/orderDrugList");
+					OrderService os = context.getOrderService();
+			    	orderList = os.getDrugOrders();
+				} else {
+					this.setFormView("/admin/orders/choosePatient");
+				}
 			}
 
 		}

@@ -88,7 +88,7 @@ public class OrderFormController extends SimpleFormController {
 			Order order = (Order)obj;
 			if ( order.getDateCreated() == null ) order.setDateCreated(new Date());
 			if ( order.getVoided() == null ) order.setVoided(new Boolean(false));
-			context.getAdministrationService().updateOrder(order);
+			context.getOrderService().updateOrder(order);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Order.saved");
 		}

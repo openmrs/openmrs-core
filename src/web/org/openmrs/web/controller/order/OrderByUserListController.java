@@ -67,7 +67,6 @@ public class OrderByUserListController extends SimpleFormController {
 		String view = getFormView();
 		if (context != null && context.isAuthenticated()) {
 			String[] orderList = request.getParameterValues("orderId");
-			AdministrationService as = context.getAdministrationService();
 			OrderService os = context.getOrderService();
 			
 			String success = "";
@@ -79,7 +78,7 @@ public class OrderByUserListController extends SimpleFormController {
 			String ord = msa.getMessage("Order.title");
 			for (String p : orderList) {
 				try {
-					as.deleteOrder(os.getOrder(Integer.valueOf(p)));
+					os.deleteOrder(os.getOrder(Integer.valueOf(p)));
 					if (!success.equals("")) success += "<br>";
 					success += ord + " " + p + " " + deleted;
 				}

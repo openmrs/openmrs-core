@@ -28,8 +28,7 @@
 	        <property name="mappings">
 	            <props>
 					<prop key="**/order.list">orderList</prop>
-					<prop key="**/orderDrug.list">orderDrugList</prop>
-					<prop key="**/orderByPatient.list">orderListByPatient</prop>
+					<prop key="**/orderDrug.list">orderListByPatient</prop>
 					<prop key="**/orderPlace.form">orderPlaceByPatient</prop>
 					<prop key="**/orderDrug.form">orderDrugForm</prop>
 					<prop key="**/order.form">orderForm</prop>

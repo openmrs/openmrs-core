@@ -20,6 +20,7 @@
 		<convert converter="bean" match="org.openmrs.web.dwr.RelationshipListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.ListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.DrugOrderListItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.DrugSetItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.PatientProgramItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.PatientStateItem"/>
 		<convert converter="bean" match="org.openmrs.PatientAddress"/>
@@ -132,6 +133,13 @@
 			<include method="getDrugOrdersByPatientId"/>
 			<include method="getCurrentDrugOrdersByPatientId"/>
 			<include method="getCompletedDrugOrdersByPatientId"/>
+			<include method="getUnitsByDrugId"/>
+			<include method="getCurrentDrugSet" />
+			<include method="getCurrentDrugOrdersByPatientIdDrugSetId" />
+			<include method="getCompletedDrugSet" />
+			<include method="getCompletedDrugOrdersByPatientIdDrugSetId" />
+			<include method="voidDrugSet" />
+			<include method="discontinueDrugSet" />
 		</create>
 		
 		<create creator="new" javascript="DWRProgramWorkflowService">

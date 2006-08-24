@@ -58,7 +58,6 @@ public class OrderTypeListController extends SimpleFormController {
 		String view = getFormView();
 		if (context != null && context.isAuthenticated()) {
 			String[] orderTypeList = request.getParameterValues("orderTypeId");
-			AdministrationService as = context.getAdministrationService();
 			OrderService os = context.getOrderService();
 			
 			String success = "";
@@ -68,9 +67,8 @@ public class OrderTypeListController extends SimpleFormController {
 			String deleted = msa.getMessage("general.deleted");
 			String notDeleted = msa.getMessage("general.cannot.delete");
 			for (String p : orderTypeList) {
-				//TODO convenience method deleteOrderType(Integer) ??
 				try {
-					as.deleteOrderType(os.getOrderType(Integer.valueOf(p)));
+					os.deleteOrderType(os.getOrderType(Integer.valueOf(p)));
 					if (!success.equals("")) success += "<br>";
 					success += p + " " + deleted;
 				}

@@ -12,14 +12,11 @@ import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptSynonym;
-import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.Obs;
-import org.openmrs.Order;
-import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
@@ -320,143 +317,7 @@ public class AdministrationService {
 
 		getAdminDAO().unvoidRelationship(relationship);
 	}
-	
-	/**
-	 * Create a new OrderType
-	 * @param OrderType to create
-	 * @throws APIException
-	 */
-	public void createOrderType(OrderType orderType) throws APIException {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ORDER_TYPES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ORDER_TYPES);
-
-		getAdminDAO().createOrderType(orderType);
-	}
-
-	/**
-	 * Update OrderType
-	 * @param OrderType to update
-	 * @throws APIException
-	 */
-	public void updateOrderType(OrderType orderType) throws APIException {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ORDER_TYPES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ORDER_TYPES);
-
-		getAdminDAO().updateOrderType(orderType);
-	}
-
-	/**
-	 * Delete OrderType
-	 * @param OrderType to delete
-	 * @throws APIException
-	 */
-	public void deleteOrderType(OrderType orderType) throws APIException {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ORDER_TYPES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ORDER_TYPES);
-
-		getAdminDAO().deleteOrderType(orderType);
-	}
-	
-	/**
-	 * Create a new Order
-	 * @param Order to create
-	 * @throws APIException
-	 */
-	public void createOrder(Order order) throws APIException {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ORDERS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ORDERS);
-
-		getAdminDAO().createOrder(order);
-	}
-
-	/**
-	 * Update Order
-	 * @param Order to update
-	 * @throws APIException
-	 */
-	public void updateOrder(Order order) throws APIException {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ORDERS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ORDERS);
-
-		// If this order has no encounter, check if the patient exi
 		
-		getAdminDAO().updateOrder(order);
-	}
-
-	/**
-	 * Update Order
-	 * @param Order to update
-	 * @param Patient for whom this order is for
-	 * @throws APIException
-	 */
-	public void updateOrder(Order order, Patient patient) throws APIException {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ORDERS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ORDERS);
-
-		// If this order has no encounter, attempt to create a blank one for the patient (if it exists)
-		if ( patient != null && order != null ) { 
-			if ( order.getEncounter() == null ) {
-				Encounter e = new Encounter();
-				Location unknownLoc = new Location(new Integer(Location.LOCATION_UNKNOWN));
-				e.setLocation(unknownLoc);
-				e.setPatient(patient);
-				// TODO: this should one day not be required, and thus not require this hack
-				if ( order.getOrderer() == null ) {
-					User unknownUser = context.getUserService().getUserByUsername("Unknown");
-					e.setProvider(unknownUser);
-				} else {
-					e.setProvider(order.getOrderer());
-				}
-				e.setEncounterDatetime(order.getStartDate());
-				e.setCreator(context.getAuthenticatedUser());
-				e.setDateCreated(order.getDateCreated());
-				e.setVoided(new Boolean(false));
-				context.getEncounterService().updateEncounter(e);
-				order.setEncounter(e);
-			}
-		}
-		
-		updateOrder(order);
-	}
-
-	/**
-	 * Delete Order
-	 * @param Order to delete
-	 * @throws APIException
-	 */
-	public void deleteOrder(Order order) throws APIException {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ORDERS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ORDERS);
-
-		getAdminDAO().deleteOrder(order);
-	}
-
-	/**
-	 * Void Order
-	 * @param voidReason 
-	 * @param Order to void
-	 * @throws APIException
-	 */
-	public void voidOrder(Order order, String voidReason) throws APIException {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ORDERS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ORDERS);
-
-		getAdminDAO().voidOrder(order, voidReason);
-	}
-	
-	/**
-	 * Void Order
-	 * @param voidReason 
-	 * @param Order to void
-	 * @throws APIException
-	 */
-	public void discontinueOrder(Order order, String discontinueReason, Date discontinueDate) throws APIException {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ORDERS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ORDERS);
-
-		getAdminDAO().discontinueOrder(order, discontinueReason, discontinueDate);
-	}
-
 	/**
 	 * Create a new FieldType
 	 * @param FieldType to create

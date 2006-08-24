@@ -1,7 +1,10 @@
 package org.openmrs.api.db;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
+import org.openmrs.ConceptSet;
 import org.openmrs.DrugOrder;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
@@ -17,6 +20,30 @@ import org.openmrs.User;
  */
 public interface OrderDAO {
 
+	/**
+	 * Create a new OrderType
+	 * @param OrderType to create
+	 * @throws DAOException
+	 */
+	public void createOrderType(OrderType orderType) throws DAOException;
+
+	/**
+	 * Update OrderType
+	 * @param OrderType to update
+	 * @throws DAOException
+	 */
+	public void updateOrderType(OrderType orderType) throws DAOException;
+
+	/**
+	 * Delete OrderType
+	 * @param OrderType to delete
+	 * @throws DAOException
+	 */
+	public void deleteOrderType(OrderType orderType) throws DAOException;
+	
+	public void discontinueOrder(Order order, String discontinueReason, Date discontinueDate) throws DAOException;
+	
+	
 	/**
 	 * Creates a new order record
 	 * 
@@ -41,14 +68,6 @@ public interface OrderDAO {
 	 * @throws DAOException
 	 */
 	public List<Order> getOrders() throws DAOException;
-
-	/**
-	 * Get all orders by a particular User
-	 * 
-	 * @return orders list
-	 * @throws DAOException
-	 */
-	public List<Order> getOrdersByUser(User user) throws DAOException;
 
 	/**
 	 * Get all orders for a particular Patient
@@ -150,4 +169,5 @@ public interface OrderDAO {
 	 */
 	public List<DrugOrder> getDrugOrdersByPatient(Patient patient) throws DAOException;
 
+	public Map<ConceptSet, List<DrugOrder>> getConceptSetsByDrugOrders(List<DrugOrder> drugOrders) throws DAOException;
 }

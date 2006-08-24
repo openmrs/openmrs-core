@@ -16,6 +16,7 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
+	<%-- // MARKFORDELETION: THIS IS NO LONGER NEEDED
 	<openmrs:hasPrivilege privilege="Add Orders,Edit Orders,Delete Orders,View Orders">
 		<li <c:if test="<%= request.getRequestURI().contains("orderByUser.") %>">class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/orders/orderByPatient.list">
@@ -23,6 +24,7 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
+	--%>
 	<openmrs:hasPrivilege privilege="Manage Order Types">
 		<li <c:if test="<%= request.getRequestURI().contains("orderType") %>">class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/orders/orderType.list">
