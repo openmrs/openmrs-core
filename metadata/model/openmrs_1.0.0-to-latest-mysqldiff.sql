@@ -9,9 +9,10 @@
 # Reporting table added
 #--------------------------------------
 
+DROP PROCEDURE IF EXISTS diff_procedure;
+
 delimiter //
 
-DROP PROCEDURE IF EXISTS diff_procedure;
 CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
  BEGIN
 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
@@ -44,12 +45,11 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 		update `global_property` set property_value=new_db_version where property = 'database_version';
 	
 	END IF;
- END
+ END;
 //
 
 delimiter ;
 call diff_procedure('1.0.10');
-delimiter ;
 
 #--------------------------------------
 # OpenMRS Datamodel version 1.0.11
@@ -57,9 +57,10 @@ delimiter ;
 # Alert Functionality added
 #--------------------------------------
 
+DROP PROCEDURE IF EXISTS diff_procedure;
+
 delimiter //
 
-DROP PROCEDURE IF EXISTS diff_procedure;
 CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
  BEGIN
 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
@@ -103,12 +104,11 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	update `global_property` set property_value=new_db_version where property = 'database_version';
 	
 	END IF;
- END
+ END;
 //
 
 delimiter ;
 call diff_procedure('1.0.11');
-delimiter ;
 	
 #--------------------------------------
 # OpenMRS Datamodel version 1.0.12
@@ -116,9 +116,10 @@ delimiter ;
 # Drug autoincrement added
 #--------------------------------------
 
+DROP PROCEDURE IF EXISTS diff_procedure;
+
 delimiter //
 
-DROP PROCEDURE IF EXISTS diff_procedure;
 CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
  BEGIN
 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
@@ -128,12 +129,11 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	update `global_property` set property_value=new_db_version where property = 'database_version';
 	
 	END IF;
- END
+ END;
 //
 
 delimiter ;
 call diff_procedure('1.0.12');
-delimiter ;
 	
 #--------------------------------------
 # OpenMRS Datamodel version 1.0.13
@@ -141,9 +141,10 @@ delimiter ;
 # report_object.type keyword resolution
 #--------------------------------------
 
+DROP PROCEDURE IF EXISTS diff_procedure;
+
 delimiter //
 
-DROP PROCEDURE IF EXISTS diff_procedure;
 CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
  BEGIN
 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
@@ -154,12 +155,11 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	update `global_property` set property_value=new_db_version where property = 'database_version';
 	
 	END IF;
- END
+ END;
 //
 
 delimiter ;
 call diff_procedure('1.0.13');
-delimiter ;
 	
 #--------------------------------------
 # OpenMRS Datamodel version 1.0.14
@@ -167,9 +167,10 @@ delimiter ;
 # Added obs.value_drug
 #--------------------------------------
 
+DROP PROCEDURE IF EXISTS diff_procedure;
+
 delimiter //
 
-DROP PROCEDURE IF EXISTS diff_procedure;
 CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
  BEGIN
 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
@@ -181,12 +182,11 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	update `global_property` set property_value=new_db_version where property = 'database_version';
 	
 	END IF;
- END
+ END;
 //
 
 delimiter ;
 call diff_procedure('1.0.14');
-delimiter ;
 	
 #--------------------------------------
 # OpenMRS Datamodel version 1.0.15
@@ -194,9 +194,10 @@ delimiter ;
 # Added form.template
 #--------------------------------------
 
+DROP PROCEDURE IF EXISTS diff_procedure;
+
 delimiter //
 
-DROP PROCEDURE IF EXISTS diff_procedure;
 CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
  BEGIN
 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
@@ -206,12 +207,11 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	update `global_property` set property_value=new_db_version where property = 'database_version';
 	
 	END IF;
- END
+ END;
 //
 
 delimiter ;
 call diff_procedure('1.0.15');
-delimiter ;
 	
 #--------------------------------------
 # OpenMRS Datamodel version 1.0.16
@@ -219,9 +219,9 @@ delimiter ;
 # Added database indexes (Directed towards patient merging)
 #--------------------------------------
 
-delimiter //
-
 DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
 CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
  BEGIN
 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
@@ -235,12 +235,11 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	update `global_property` set property_value=new_db_version where property = 'database_version';
 	
 	END IF;
- END
+ END;
 //
 
 delimiter ;
 call diff_procedure('1.0.16');
-delimiter ;
 	
 #--------------------------------------
 # OpenMRS Datamodel version 1.0.17
@@ -250,9 +249,10 @@ delimiter ;
 # and notification_template files.
 #--------------------------------------
 
+DROP PROCEDURE IF EXISTS diff_procedure;
+
 delimiter //
 
-DROP PROCEDURE IF EXISTS diff_procedure;
 CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
  BEGIN
 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
@@ -312,12 +312,11 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	update `global_property` set property_value=new_db_version where property = 'database_version';
 	
 	END IF;
- END
+ END;
 //
 
 delimiter ;
 call diff_procedure('1.0.17');
-delimiter ;
 	
 #--------------------------------------
 # OpenMRS Datamodel version 1.0.18
@@ -325,9 +324,10 @@ delimiter ;
 # Modified alert tables
 #--------------------------------------
 
+DROP PROCEDURE IF EXISTS diff_procedure;
+
 delimiter //
 
-DROP PROCEDURE IF EXISTS diff_procedure;
 CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
  BEGIN
 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
@@ -353,12 +353,11 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
 	
 	END IF;
- END
+ END;
 //
 
 delimiter ;
 call diff_procedure('1.0.18');
-delimiter ;
 	
 #--------------------------------------
 # OpenMRS Datamodel version 1.0.21
@@ -366,9 +365,10 @@ delimiter ;
 # Added patient.dead
 #--------------------------------------
 
+DROP PROCEDURE IF EXISTS diff_procedure;
+
 delimiter //
 
-DROP PROCEDURE IF EXISTS diff_procedure;
 CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
  BEGIN
 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
@@ -381,12 +381,11 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
 	
 	END IF;
- END
+ END;
 //
 
 delimiter ;
 call diff_procedure('1.0.21');
-delimiter ;
 	
 #--------------------------------------
 # OpenMRS Datamodel version 1.0.22
@@ -394,9 +393,10 @@ delimiter ;
 # Moved concept_class.is_set to concept.is_set
 #--------------------------------------
 
+DROP PROCEDURE IF EXISTS diff_procedure;
+
 delimiter //
 
-DROP PROCEDURE IF EXISTS diff_procedure;
 CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
  BEGIN
 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
@@ -409,12 +409,11 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
 	
 	END IF;
- END
+ END;
 //
 
 delimiter ;
 call diff_procedure('1.0.22');
-delimiter ;
 	
 #--------------------------------------
 # OpenMRS Datamodel version 1.0.23
@@ -422,9 +421,10 @@ delimiter ;
 # Make encounters voidable
 #--------------------------------------
 
+DROP PROCEDURE IF EXISTS diff_procedure;
+
 delimiter //
 
-DROP PROCEDURE IF EXISTS diff_procedure;
 CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
  BEGIN
 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
@@ -440,12 +440,11 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
 	
 	END IF;
- END
+ END;
 //
 
 delimiter ;
 call diff_procedure('1.0.23');
-delimiter ;
 	
 #--------------------------------------
 # OpenMRS Datamodel version 1.0.26
@@ -453,9 +452,10 @@ delimiter ;
 # Add form_field.sort_weight
 #--------------------------------------
 
+DROP PROCEDURE IF EXISTS diff_procedure;
+
 delimiter //
 
-DROP PROCEDURE IF EXISTS diff_procedure;
 CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
  BEGIN
 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
@@ -469,12 +469,11 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
 	
 	END IF;
- END
+ END;
 //
 
 delimiter ;
 call diff_procedure('1.0.26');
-delimiter ;
 	
 #--------------------------------------
 # OpenMRS Datamodel version 1.0.27
@@ -482,9 +481,10 @@ delimiter ;
 # Removed form.infopath_solution_version
 #--------------------------------------
 
+DROP PROCEDURE IF EXISTS diff_procedure;
+
 delimiter //
 
-DROP PROCEDURE IF EXISTS diff_procedure;
 CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
  BEGIN
 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
@@ -495,12 +495,11 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
 	
 	END IF;
- END
+ END;
 //
 
 delimiter ;
 call diff_procedure('1.0.27');
-delimiter ;
 	
 #--------------------------------------
 # OpenMRS Datamodel version 1.0.28
@@ -508,9 +507,10 @@ delimiter ;
 # Initial pass at Programs
 #--------------------------------------
 
+DROP PROCEDURE IF EXISTS diff_procedure;
+
 delimiter //
 
-DROP PROCEDURE IF EXISTS diff_procedure;
 CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
  BEGIN
 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
@@ -552,12 +552,11 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
 	
 	END IF;
- END
+ END;
 //
 
 delimiter ;
 call diff_procedure('1.0.28');
-delimiter ;
 	
 #--------------------------------------
 # OpenMRS Datamodel version 1.0.29
@@ -566,9 +565,10 @@ delimiter ;
 # and cleaned out artifacts from concept table
 #--------------------------------------
 
+DROP PROCEDURE IF EXISTS diff_procedure;
+
 delimiter //
 
-DROP PROCEDURE IF EXISTS diff_procedure;
 CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
  BEGIN
 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
@@ -587,18 +587,19 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
 	
 	END IF;
- END
+ END;
 //
 
 delimiter ;
 call diff_procedure('1.0.29');
-delimiter ;
 	
 #--------------------------------------
 # OpenMRS Datamodel version 1.0.30
 # Darius Jazayeri     Aug 7 2006 3:00 PM
 # Populate person table
 #--------------------------------------
+
+DROP PROCEDURE IF EXISTS diff_procedure;
 
 delimiter //
 
@@ -614,12 +615,11 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
 	
 	END IF;
- END
+ END;
 //
 
 delimiter ;
 call diff_procedure('1.0.30');
-delimiter ;
 	
 #--------------------------------------
 # OpenMRS Datamodel version 1.0.31
@@ -627,9 +627,10 @@ delimiter ;
 # Major cleanup of drug and drug_order tables
 #--------------------------------------
 
+DROP PROCEDURE IF EXISTS diff_procedure;
+
 delimiter //
 
-DROP PROCEDURE IF EXISTS diff_procedure;
 CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
  BEGIN
 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
@@ -672,12 +673,11 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
 	
 	END IF;
- END
+ END;
 //
 
 delimiter ;
 call diff_procedure('1.0.31');
-delimiter ;
 	
 #--------------------------------------
 # OpenMRS Datamodel version 1.0.32
@@ -685,9 +685,10 @@ delimiter ;
 # Fix to global_property and update of XSLT for starter form
 #--------------------------------------
 
+DROP PROCEDURE IF EXISTS diff_procedure;
+
 delimiter //
 
-DROP PROCEDURE IF EXISTS diff_procedure;
 CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
  BEGIN
 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
@@ -699,12 +700,11 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
 	
 	END IF;
- END
+ END;
 //
 
 delimiter ;
 call diff_procedure('1.0.32');
-delimiter ;
 	
 #--------------------------------------
 # OpenMRS Datamodel version 1.0.33
@@ -712,9 +712,10 @@ delimiter ;
 # Create program_workflow_state table
 #--------------------------------------
 
+DROP PROCEDURE IF EXISTS diff_procedure;
+
 delimiter //
 
-DROP PROCEDURE IF EXISTS diff_procedure;
 CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
  BEGIN
 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
@@ -778,12 +779,11 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
 	
 	END IF;
- END
+ END;
 //
 
 delimiter ;
 call diff_procedure('1.0.33');
-delimiter ;
 	
 #--------------------------------------
 # OpenMRS Datamodel version 1.0.34
@@ -791,9 +791,10 @@ delimiter ;
 # Added voided columns to patient_program
 #--------------------------------------
 
+DROP PROCEDURE IF EXISTS diff_procedure;
+
 delimiter //
 
-DROP PROCEDURE IF EXISTS diff_procedure;
 CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
  BEGIN
 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
@@ -809,12 +810,11 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
 	
 	END IF;
- END
+ END;
 //
 
 delimiter ;
 call diff_procedure('1.0.34');
-delimiter ;
 
 #--------------------------------------
 # OpenMRS Datamodel version 1.0.35
@@ -822,9 +822,10 @@ delimiter ;
 # Create patient_state table
 #--------------------------------------
 
+DROP PROCEDURE IF EXISTS diff_procedure;
+
 delimiter //
 
-DROP PROCEDURE IF EXISTS diff_procedure;
 CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
  BEGIN
 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
@@ -860,12 +861,11 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
 	
 	END IF;
- END
+ END;
 //
 
 delimiter ;
 call diff_procedure('1.0.35');
-delimiter ;
 
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script
