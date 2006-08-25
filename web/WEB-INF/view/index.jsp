@@ -5,7 +5,7 @@
 <br/>
 
 <center>
-	<img src="/openmrs/images/ribbon.jpg">
+	<img src="${pageContext.request.contextPath}/images/ribbon.jpg">
 	
 	<openmrs:portlet url="welcome" parameters="showName=true|showLogin=true" />
 </center>
