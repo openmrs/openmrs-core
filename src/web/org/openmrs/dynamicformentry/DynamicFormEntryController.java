@@ -150,7 +150,7 @@ public class DynamicFormEntryController extends SimpleFormController {
     			}
     		}
     	}
-		String view = "/openmrs/dynamicForm.form?formId=" + request.getParameter("formId");
+		String view = request.getContextPath()+"/dynamicForm.form?formId=" + request.getParameter("formId");
 		log.debug("redirecting to " + view);
     	return new ModelAndView(new RedirectView(view));
     }
