@@ -232,33 +232,33 @@ public class HibernatePatientDAO implements PatientDAO {
 		String[] names = name.split(" ");
 		
 		
-		String q = "select p from Patient p where";
+		String q = "select p from Patient p left join p.names as pname where";
 		
 		if (names.length == 1) {
-			q += " soundex(p.names.givenName) = soundex(:n1)";
-			q += " or soundex(p.names.middleName) = soundex(:n2)";
-			q += " or soundex(p.names.familyName) = soundex(:n3)";
+			q += " soundex(pname.givenName) = soundex(:n1)";
+			q += " or soundex(pname.middleName) = soundex(:n2)";
+			q += " or soundex(pname.familyName) = soundex(:n3)";
 		}
 		else if (names.length == 2) {
 			q += "(";
 			q += " case";
-			q += "  when p.names.givenName is null then 1";
-			q += "  when soundex(p.names.givenName) = soundex(:n1) then 2";
-			q += "  when soundex(p.names.givenName) = soundex(:n2) then 4";
+			q += "  when pname.givenName is null then 1";
+			q += "  when soundex(pname.givenName) = soundex(:n1) then 2";
+			q += "  when soundex(pname.givenName) = soundex(:n2) then 4";
 			q += "  else 0 ";
 			q += " end";
 			q += " + ";
 			q += " case";
-			q += "  when p.names.middleName is null then 1";
-			q += "  when soundex(p.names.middleName) = soundex(:n3) then 2";
-			q += "  when soundex(p.names.middleName) = soundex(:n4) then 4";
+			q += "  when pname.middleName is null then 1";
+			q += "  when soundex(pname.middleName) = soundex(:n3) then 2";
+			q += "  when soundex(pname.middleName) = soundex(:n4) then 4";
 			q += "  else 0 ";
 			q += " end";
 			q += " +";
 			q += " case";
-			q += "  when p.names.familyName is null then 1";
-			q += "  when soundex(p.names.familyName) = soundex(:n5) then 2";
-			q += "  when soundex(p.names.familyName) = soundex(:n6) then 4";
+			q += "  when pname.familyName is null then 1";
+			q += "  when soundex(pname.familyName) = soundex(:n5) then 2";
+			q += "  when soundex(pname.familyName) = soundex(:n6) then 4";
 			q += "  else 0 ";
 			q += " end";
 			q += ") between 6 and 7";
@@ -266,26 +266,26 @@ public class HibernatePatientDAO implements PatientDAO {
 		else if (names.length == 3) {
 			q += "(";
 			q += " case";
-			q += "  when p.names.givenName is null then 0";
-			q += "  when soundex(p.names.givenName) = soundex(:n1) then 3";
-			q += "  when soundex(p.names.givenName) = soundex(:n2) then 2";
-			q += "  when soundex(p.names.givenName) = soundex(:n3) then 1";
+			q += "  when pname.givenName is null then 0";
+			q += "  when soundex(pname.givenName) = soundex(:n1) then 3";
+			q += "  when soundex(pname.givenName) = soundex(:n2) then 2";
+			q += "  when soundex(pname.givenName) = soundex(:n3) then 1";
 			q += "  else 0 ";
 			q += " end";
 			q += " + ";
 			q += " case";
-			q += "  when p.names.middleName is null then 0";
-			q += "  when soundex(p.names.middleName) = soundex(:n4) then 2";
-			q += "  when soundex(p.names.middleName) = soundex(:n5) then 3";
-			q += "  when soundex(p.names.middleName) = soundex(:n6) then 1";
+			q += "  when pname.middleName is null then 0";
+			q += "  when soundex(pname.middleName) = soundex(:n4) then 2";
+			q += "  when soundex(pname.middleName) = soundex(:n5) then 3";
+			q += "  when soundex(pname.middleName) = soundex(:n6) then 1";
 			q += "  else 0";
 			q += " end";
 			q += " +";
 			q += " case";
-			q += "  when p.names.familyName is null then 0";
-			q += "  when soundex(p.names.familyName) = soundex(:n7) then 1";
-			q += "  when soundex(p.names.familyName) = soundex(:n8) then 2";
-			q += "  when soundex(p.names.familyName) = soundex(:n9) then 3";
+			q += "  when pname.familyName is null then 0";
+			q += "  when soundex(pname.familyName) = soundex(:n7) then 1";
+			q += "  when soundex(pname.familyName) = soundex(:n8) then 2";
+			q += "  when soundex(pname.familyName) = soundex(:n9) then 3";
 			q += "  else 0";
 			q += " end";
 			q += ") >= 5";
@@ -308,9 +308,9 @@ public class HibernatePatientDAO implements PatientDAO {
 			q += " and " + genderMatch;
 		}
 		
-		q += " order by p.names.givenName asc, ";
-		q += "p.names.middleName asc, ";
-		q += "p.names.familyName asc";
+		q += " order by pname.givenName asc, ";
+		q += "pname.middleName asc, ";
+		q += "pname.familyName asc";
 		
 		Query query = session.createQuery(q);
 		

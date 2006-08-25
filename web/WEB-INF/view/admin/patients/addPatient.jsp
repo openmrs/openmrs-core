@@ -57,7 +57,7 @@
 		};
 		
 		searchWidget.allowNewSearch = function() {
-			if (inputChanged == true) {
+			if (inputChanged == true || (this.text != "" && this.text != this.lastPhraseSearched)) {
 				inputChanged = false;
 				if (this.text != "")
 					this.lastPhraseSearched = "";
