@@ -34,6 +34,19 @@
 			</c:otherwise>
 		</c:choose>
 		<title><spring:message code="openmrs.title"/></title>
+		<!--[if lte IE 6]>
+			<style type="text/css">
+				html, body, #content {
+					height: 100%; overflow: auto;
+					width: expression((document.documentElement.clientWidth - 20) + 'px');
+				}
+				#footer {
+					position: absolute;
+					right: auto; bottom: auto;
+					top: expression( (- footer.offsetHeight + ( document.documentElement.clientHeight ? document.documentElement.clientHeight : document.body.clientHeight ) + ( ignoreMe = document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop ) ) + 'px' );
+	  			}
+	  		</style>
+		<![endif]-->
 	</head>
 
 <body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
@@ -41,19 +54,26 @@
 		<div id="userBar">
 			<openmrs:authentication>
 				<c:if test="${authenticatedUser != null}">
-					<spring:message code="header.logged.in"/> ${authenticatedUser.firstName} ${authenticatedUser.lastName} | 
-					<a href='<%= request.getContextPath() %>/logout'>
-						<spring:message code="header.logout" />
-					</a>
+					<span id="userLoggedInAs" class="firstChild">
+						<spring:message code="header.logged.in"/> ${authenticatedUser.firstName} ${authenticatedUser.lastName}
+					</span>
+					<span id="userLogout">
+						<a href='<%= request.getContextPath() %>/logout'><spring:message code="header.logout" /></a>
+					</span>
 				</c:if>
 				<c:if test="${authenticatedUser == null}">
-					<spring:message code="header.logged.out"/> | 
-					<a href='<%= request.getContextPath() %>/login.htm'>
-						<spring:message code="header.login"/>
-					</a>
+					<span id="userLoggedOut" class="firstChild">
+						<spring:message code="header.logged.out"/>
+					</span>
+					<span id="userLogIn">
+						<a href='<%= request.getContextPath() %>/login.htm'><spring:message code="header.login"/></a>
+					</span>
 				</c:if>
 			</openmrs:authentication>
-			| <a href='<%= request.getContextPath() %>/help.htm'><spring:message code="header.help"/></a>
+			
+			<span id="userHelp">
+				<a href='<%= request.getContextPath() %>/help.htm'><spring:message code="header.help"/></a>
+			</span>
 		</div>
 
 		<div id="banner">

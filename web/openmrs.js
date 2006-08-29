@@ -11,7 +11,7 @@ function markAlertRead(self, alertId) {
 		parent.style.display = "none";
 	}
 	else {
-		var unreadAlertSize = unreadAlertSize - 1;
+		unreadAlertSize = unreadAlertSize - 1;
 		unreadAlertSizeBox.innerHTML = unreadAlertSize;
 	}
 		

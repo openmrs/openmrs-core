@@ -1,24 +1,16 @@
-html {
-	height: 100%;
+html, body {
+	width: 100%;
 }
 
 * {
-	font-family: 'Trebuchet MS', 'Lucida Grande', Verdana, Arial, Sans-Serif;
+	font-family: Verdana, 'Lucida Grande', 'Trebuchet MS', Arial, Sans-Serif;
     -moz-box-sizing: border-box;  /* Use IE-like Border-Box model */
 }
 
 body {
 	padding: 0px;
-	height: 100%;
-}
-
-#pageBody {
-	position: relative;
-	min-height: 100%;
-}
-
-* html #pageBody {
-	  height: 100%; 
+	margin: 0px;
+	font-size: 12px;
 }
 
 h1, h2, h3, h4, h5 {
@@ -27,72 +19,130 @@ h1, h2, h3, h4, h5 {
 }
 
 #openmrs_msg {
-	background: url(/@WEBAPP.NAME@/images/info.gif) no-repeat center left;
+	background: url(/amrs/images/info.gif) no-repeat center left;
 }
 
 #openmrs_error {
-	background: url(/@WEBAPP.NAME@/images/error.gif) no-repeat center left;
+	background: url(/amrs/images/error.gif) no-repeat center left;
 }
 
 #openmrs_msg, #openmrs_error { 
+	margin-top: 3px;
+	margin-bottom: 5px;
 	border: 1px dashed lightgrey;
 	padding: 2px 2px 2px 18px;
-	margin: 2px;
-	width: 95%;
 	background-color: InfoBackground;
 }
 
 #userBar {
-	font-size: .7em;
+	position: absolute;
+	top: 0px;
+	left: 0px;
 	text-align: right;
-	background-color: whitesmoke;
-	border-bottom-width: 1px;
-	border-bottom-style: solid;
-	border-bottom-color: lightgrey;
-	padding: 1px 3px 1px 1px;
+	padding: 0px 3px 0px 3px;
 	margin: 0px;
+	z-index: 5;
+	width: 100%;
+	color: #333333;
+	line-height: 26px;
+	background-color: #ffffff;
+	}
+	#userBar a:link, #userBar a:active, #userBar a:visited, #userBar a:hover {
+		color: #ddaa22;
+	}
+	#userBar span {
+		border-left: 1px solid #333333;
+		padding: 0 5px 0 5px;
+	}
+	#userBar > span:first-child {
+		border-left-style: none;
+	}
+	#userBar span.firstChild {
+		/* IE hack to get around lack of first-child support */
+		border-left-style: none;
 	}
 
 #banner {
+	position: absolute;
+	top: 0px;
+	left: 0px;
 	text-align: left;
-	padding: 15px 2px 2px 2px;
-	margin: 0px;
-	float: left;
-	border: 1px none white;
+	z-index: 6;
+	padding-left: 3px;
 }
 
 #gutter {
-	float: left;
-	margin-left: -160px;
-	padding-right: 10px;
-	text-align: right;
-	width: 160px;
-	margin-top: 90px;
+	padding: 1px 0 1px 0;
+	position: absolute;
+	top: 26px;
+	width: 100%;
+	z-index: 5;
+	border-color: #8FABC7;
+	border-style: solid;
+	border-width: 1px 0 1px 0;
+	font-size: 1.05em;
+	background-color: #ffffff;
+	}
+	#navList {
+		padding: 2px 0 2px 0;
+		margin: 0px;
+		text-align: center;
+		color: #ffffff;
+		background-color: #8FABC7;
+		width: 100%;
+	}
+	#navList li {
+		padding: 0 15px 0 18px;
+		margin: auto 0 auto 0;
+		border-left: 2px solid white;
+		display: inline;
+		line-height: 1.1em;
+	}
+	#navList > li:first-child {
+		border-left-style: none;
+	}
+	#navList li.firstChild {
+		/* IE hack to get around lack of first-child support */
+		border-left-style: none;
+	}
+	#navList a:link, #navList a:active, #navList a:visited, #navList a:hover {
+		text-decoration: none;
+		font-size: 1.4em;
+		color: #ffffff;
 	}
 	
 #content {
-	margin-left: 175px;
-	border-left: 1px dashed lightgrey;
-	padding: 10px 5px 20px 20px;
-}
+	margin: 50px 0 0 0;
+	left: 0px;
+	width: 100%;
+	padding: 10px;
+	font-size: 1.2em;
+	background-color: #ffffff;
+	z-index: 8;
+	}
+	#content a, a:link, #content a:active, #content a:visited, #content a:hover {
+		color: #003366;
+	}	
 
 #footer {
-	clear: both;
-	padding: 1px 2px 1px 2px;
-	font-size: .7em;
-	border-top: 1px solid lightgrey;
+	width: 100%;
+	position: fixed;
+	top: expression(document.documentElement.clientHeight - 14);
+	bottom: 0px;
+	font-size: .8em;
 	text-align: left;
-	height: 1.5em;
-	background-color: whitesmoke;
-	/* see http://www.themaninblue.com/experiment/footerStickAlt/ for footer stick explanation */
-	position: relative;
-	margin: -1.5em auto 0 auto;
-	/*	IE footer stick 'fix'
-		width: 99.5%; */
-	z-index: 5;
+	z-index: 9;
+	height: 1.7em;
+	background-color: #eeeeee;
 	}
 	#footer span {
-		color: gray;
+		margin-right: 5px;
+	}
+	#buildDate, #codeVersion, #databaseVersion, #databaseVersionError {
+		color: #999999;
+	}
+	#footerInner {
+		border-top: 1px solid #bbbbbb;
 	}
 
 #menu {
@@ -270,8 +320,8 @@ table.patientTreatmentPrograms td {
 	width: 7em;
 }
 .box, .boxHeader {
-	border: 1px solid navy;
-	width: 97%;
+	border: 1px solid #8FABC7;
+	width: 90%;
 	padding: 5px 2px 5px 2px;
 	text-align: left;
 }
@@ -279,7 +329,7 @@ table.patientTreatmentPrograms td {
 	font-size: .9em;
 }
 .boxHeader {
-	background-color: navy;
+	background-color: #8FABC7;
 	color: white;
 	display: block;
 	padding: 2px;
@@ -324,15 +374,10 @@ table.patientTreatmentPrograms td {
 }
 a, a:link, a:hover, a:visited, a:active {
 	text-decoration: underline;
-}
-a, a:link {
-	color: #3366CC;
+	color: #8FABC7;
 }
 a:hover {
 	text-decoration: none;
-}
-a:visited {
-	color: #3366CC;
 }
 
 .retiredMessage {
@@ -422,7 +467,8 @@ a span.additionalHit {
 	text-align: center;
 }
 #disabledZone {
-	margin-top: 1.3em
+	position: fixed;
+	top: 100px;
 }
 fieldset {
 	margin: 0px;
@@ -490,7 +536,6 @@ fieldset {
 	border: 1px solid lightgrey;
 	border-top-width: 0px;
 	max-height: 6em;
-	width: 97%;
 }
 #alertInnerBox {
 	max-height: 4.3em;
@@ -506,6 +551,11 @@ fieldset {
 	.alert:first-child {
 		border-top-width: 0px;
 	}
+	.alert.firstChild {
+		/* IE hack to get around lack of first-child support */
+		border-top-width: 0px;
+	}
+	
 #alertBar {
 	border-top: 1px solid lightgrey;
 	font-size: .8em;
@@ -524,7 +574,7 @@ fieldset {
 	.markAlertRead img {
 		border-width: 0px;
 		height: 1em;
-		margin: 2px;
+		margin: 1px 1px 0 1px;
 	}
 .smallWidth {
 	width: 140px;
@@ -608,7 +658,6 @@ fieldset {
 #regimenPortlet a.boxHeader, a:link.boxHeader, a:visited.boxHeader, a:active.boxHeader, a:hover.boxHeader {
 	color: #ffffff; 
 }
-
 
 #exceptionMessage {
 	background-color: white;

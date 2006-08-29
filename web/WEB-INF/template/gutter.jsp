@@ -1,20 +1,32 @@
-	<a href="<%= request.getContextPath() %>/"><spring:message code="Navigation.home"/></a><br />
+<ul id="navList">
+	<li class="firstChild">
+		<a href="<%= request.getContextPath() %>/"><spring:message code="Navigation.home"/></a>
+	</li>
 	
-	<a href="<%= request.getContextPath() %>/formentry"><spring:message code="Navigation.findPatient"/></a><br />
+	<li>
+		<a href="<%= request.getContextPath() %>/formentry"><spring:message code="Navigation.findPatient"/></a>
+	</li>
 	
 	<openmrs:hasPrivilege privilege="View Concepts">
-		<a href="<%= request.getContextPath() %>/dictionary"><spring:message code="Navigation.dictionary"/></a><br />
+		<li>
+			<a href="<%= request.getContextPath() %>/dictionary"><spring:message code="Navigation.dictionary"/></a>
+		</li>
 	</openmrs:hasPrivilege>
 	
 	<openmrs:hasPrivilege privilege="View Administration Functions">
-		<a href="<%= request.getContextPath() %>/admin"><spring:message code="Navigation.administration"/></a><br />
+		<li>
+			<a href="<%= request.getContextPath() %>/admin"><spring:message code="Navigation.administration"/></a>
+		</li>
 	</openmrs:hasPrivilege>
 	
 	<openmrs:hasPrivilege privilege="Analyze">
-		<a href="<%= request.getContextPath() %>/analysis.list"><spring:message code="Navigation.analysis"/></a><br />
+		<li>
+			<a href="<%= request.getContextPath() %>/analysis.list"><spring:message code="Navigation.analysis"/></a>
+		</li>
 	</openmrs:hasPrivilege>
 	
-	<a href="<%= request.getContextPath() %>/options.form"><spring:message code="Navigation.options"/></a><br />
+	<li>
+		<a href="<%= request.getContextPath() %>/options.form"><spring:message code="Navigation.options"/></a>
+	</li>
 	
-	<br /><br />
-	<br /><br />
+</ul>
