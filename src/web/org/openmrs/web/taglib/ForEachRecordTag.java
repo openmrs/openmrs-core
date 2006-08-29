@@ -76,9 +76,10 @@ public class ForEachRecordTag extends BodyTagSupport {
 			log.error(name + " not found in ForEachRecord list");
 		}
 		
-		
-		if (records == null)
+		if (records == null || records.hasNext() == false) {
+			records = null;
 			return SKIP_BODY;
+		}
 		else
 			return EVAL_BODY_BUFFERED;
 		
@@ -99,7 +100,7 @@ public class ForEachRecordTag extends BodyTagSupport {
 	 */
 	public int doAfterBody() throws JspException {
         if(records.hasNext()) {
-			Object obj = records.next();
+        	Object obj = records.next();
 			iterate(obj);
             return EVAL_BODY_BUFFERED;
         }
@@ -107,17 +108,24 @@ public class ForEachRecordTag extends BodyTagSupport {
             return SKIP_BODY;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void iterate(Object obj) {
-		if (name.equals("gender")) {
-			Map.Entry<String, String> e = (Map.Entry<String, String>)obj;
-			e.setValue(e.getValue().toLowerCase());
-			obj = e;
+		if (obj != null) {
+			if (name.equals("gender")) {
+				Map.Entry<String, String> e = (Map.Entry<String, String>)obj;
+				e.setValue(e.getValue().toLowerCase());
+				obj = e;
+			}
+			pageContext.setAttribute("record", obj);
+			pageContext.setAttribute("selected", obj.equals(select) ? "selected" : "");
+			if (name.equals("civilStatus")) { //Kludge until this in the db and not a HashMap
+				String str = obj.toString();
+				pageContext.setAttribute("selected", str.equals(select) ? "selected" : "");
+			}
 		}
-		pageContext.setAttribute("record", obj);
-		pageContext.setAttribute("selected", obj.equals(select) ? "selected" : "");
-		if (name.equals("civilStatus")) { //Kludge until this in the db and not a HashMap
-			String str = obj.toString();
-			pageContext.setAttribute("selected", str.equals(select) ? "selected" : "");
+		else {
+			pageContext.removeAttribute("record");
+			pageContext.removeAttribute("selected");
 		}
 	}
 
@@ -127,8 +135,8 @@ public class ForEachRecordTag extends BodyTagSupport {
 	public int doEndTag() throws JspException {
 		try
         {
-            if(bodyContent != null)
-            	bodyContent.writeOut(bodyContent.getEnclosingWriter());
+			if(getBodyContent() != null && records != null)
+            	getBodyContent().writeOut(getBodyContent().getEnclosingWriter());
         }
         catch(java.io.IOException e)
         {

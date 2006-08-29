@@ -18,7 +18,7 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
 		select CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' from dual;
 	
-		CREATE TABLE IF NOT EXISTS `report_object` (
+		CREATE TABLE `report_object` (
 		  `report_object_id` int(11) NOT NULL auto_increment,
 		  `name` varchar(255) NOT NULL,
 		  `description` varchar(1000) default NULL,
@@ -66,7 +66,7 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
 	select CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' from dual;
 	
-	CREATE TABLE IF NOT EXISTS `alert` (
+	CREATE TABLE `alert` (
 	  `alert_id` int(11) NOT NULL auto_increment,
 	  `user_id` int(11) default NULL,
 	  `role` varchar(50) default NULL,
@@ -90,7 +90,7 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	  CONSTRAINT `user_who_changed_alert` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`)
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='';
 	
-	CREATE TABLE IF NOT EXISTS `alert_read` (
+	CREATE TABLE `alert_read` (
 	  `alert_id` int(11) NOT NULL,
 	  `user_id` int(11) NOT NULL,
 	  `date_read` timestamp NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
@@ -302,12 +302,12 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	
 	# Sample data (including the form entry and HL7 processor tasks)
-	insert into scheduler_task_config (task_config_id,name,description,schedulable_class,start_time,repeat_interval,start_on_startup,started,created_by,date_created,changed_by,date_changed) values (1,'Process Form Entry Queue','Processes form entry queue.','org.openmrs.scheduler.tasks.ProcessFormEntryQueueTask','2006-04-24 00:00:00',30,0,0,1,'2006-04-24 00:00:00',null,null);
-	insert into scheduler_task_config (task_config_id,name,description,schedulable_class,start_time,repeat_interval,start_on_startup,started,created_by,date_created,changed_by,date_changed) values (2,'Process HL7 Task','Processes HL7 messages.','org.openmrs.scheduler.tasks.ProcessHL7InQueueTask','2006-04-24 00:00:00',30,0,0,1,'2006-04-24 00:00:00',null,null);
-	insert into scheduler_task_config (task_config_id,name,description,schedulable_class,start_time,repeat_interval,start_on_startup,started,created_by,date_created,changed_by,date_changed) values (3,'Alert Reminder Task','Sends email to users who have not checked their alerts.  Set to run every ten minutes.','org.openmrs.scheduler.tasks.AlertReminderTask','2006-04-24 00:00:00',600,0,0,1,'2006-04-24 00:00:00',null,null);
-	insert into scheduler_task_config (task_config_id,name,description,schedulable_class,start_time,repeat_interval,start_on_startup,started,created_by,date_created,changed_by,date_changed) values (4,'Send Email Task','Doesn''t do anything yet.','org.openmrs.scheduler.tasks.SendEmailTask','2006-04-24 00:00:00',600,0,0,1,'2006-04-24 00:00:00',null,null);
-	insert into scheduler_task_config (task_config_id,name,description,schedulable_class,start_time,repeat_interval,start_on_startup,started,created_by,date_created,changed_by,date_changed) values (5,'Hello World Task','Writes ''hello world'' to log.  Demonstrates problem caused by spawning a thread from a timer task.','org.openmrs.scheduler.tasks.HelloWorldTask','2006-04-24 00:00:00',600,0,0,1,'2006-04-24 00:00:00',null,null);
-	insert into scheduler_task_config (task_config_id,name,description,schedulable_class,start_time,repeat_interval,start_on_startup,started,created_by,date_created,changed_by,date_changed) values (6,'Check Internet Connectivity Task','Checks the external internet connection every ten minutes.  This is a trivial task that checks the connection to Google over port 80.  If the connection fails, we assume the internet is done and raise an alert.','org.openmrs.scheduler.tasks.CheckInternetConnectivityTask','2006-04-24 00:00:00',60,0,0,1,'2006-04-24 00:00:00',null,null);
+	insert into scheduler_task_config (`task_config_id`,`name`,`description`,`schedulable_class`,`start_time`,`repeat_interval`,`start_on_startup`,`started`,`created_by`,`date_created`,`changed_by`,`date_changed`) values (1,'Process Form Entry Queue','Processes form entry queue.','org.openmrs.scheduler.tasks.ProcessFormEntryQueueTask','2006-04-24 00:00:00',30,0,0,1,'2006-04-24 00:00:00',null,null);
+	insert into scheduler_task_config (`task_config_id`,`name`,`description`,`schedulable_class`,`start_time`,`repeat_interval`,`start_on_startup`,`started`,`created_by`,`date_created`,`changed_by`,`date_changed`) values (2,'Process HL7 Task','Processes HL7 messages.','org.openmrs.scheduler.tasks.ProcessHL7InQueueTask','2006-04-24 00:00:00',30,0,0,1,'2006-04-24 00:00:00',null,null);
+	insert into scheduler_task_config (`task_config_id`,`name`,`description`,`schedulable_class`,`start_time`,`repeat_interval`,`start_on_startup`,`started`,`created_by`,`date_created`,`changed_by`,`date_changed`) values (3,'Alert Reminder Task','Sends email to users who have not checked their alerts.  Set to run every ten minutes.','org.openmrs.scheduler.tasks.AlertReminderTask','2006-04-24 00:00:00',600,0,0,1,'2006-04-24 00:00:00',null,null);
+	insert into scheduler_task_config (`task_config_id`,`name`,`description`,`schedulable_class`,`start_time`,`repeat_interval`,`start_on_startup`,`started`,`created_by`,`date_created`,`changed_by`,`date_changed`) values (4,'Send Email Task','Doesn''t do anything yet.','org.openmrs.scheduler.tasks.SendEmailTask','2006-04-24 00:00:00',600,0,0,1,'2006-04-24 00:00:00',null,null);
+	insert into scheduler_task_config (`task_config_id`,`name`,`description`,`schedulable_class`,`start_time`,`repeat_interval`,`start_on_startup`,`started`,`created_by`,`date_created`,`changed_by`,`date_changed`) values (5,'Hello World Task','Writes ''hello world'' to log.  Demonstrates problem caused by spawning a thread from a timer task.','org.openmrs.scheduler.tasks.HelloWorldTask','2006-04-24 00:00:00',600,0,0,1,'2006-04-24 00:00:00',null,null);
+	insert into scheduler_task_config (`task_config_id`,`name`,`description`,`schedulable_class`,`start_time`,`repeat_interval`,`start_on_startup`,`started`,`created_by`,`date_created`,`changed_by`,`date_changed`) values (6,'Check Internet Connectivity Task','Checks the external internet connection every ten minutes.  This is a trivial task that checks the connection to Google over port 80.  If the connection fails, we assume the internet is done and raise an alert.','org.openmrs.scheduler.tasks.CheckInternetConnectivityTask','2006-04-24 00:00:00',60,0,0,1,'2006-04-24 00:00:00',null,null);
 	
 	update `global_property` set property_value=new_db_version where property = 'database_version';
 	
