@@ -52,6 +52,7 @@
 						<option value="KP">KP - Kapenguria</option>
 						<option value="KT">KT - Kitale</option>
 						<option value="NT">NT - Naitiri</option>
+						<option value="PV">PV - Port Victoria</option>
 						<option value="TE">TE - Iten</option>
 						<option value="TS">TS - Teso</option>
 						<option value="WB">WB - Webuye</option>

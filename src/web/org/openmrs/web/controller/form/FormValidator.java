@@ -35,6 +35,11 @@ public class FormValidator implements Validator {
 		}
 		else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
+			
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "version", "error.null");
+			
+			if (form.getVersion() != null && !form.getVersion().matches("^\\d.*$"))
+				errors.rejectValue("version", "Form.version.invalid");
 		}
 	}
 

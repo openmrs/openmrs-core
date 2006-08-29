@@ -3,6 +3,7 @@ package org.openmrs.notification.impl;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -203,7 +204,10 @@ public class MessageServiceImpl implements MessageService {
 		log.debug("Dao Context == null : " + daoContext == null);
 		log.debug("User Dao : " + daoContext.getUserDAO());
 		
-		Collection<User> users = daoContext.getUserDAO().getUsersByRole( role );
+		List<Role> roles = new Vector<Role>();
+		roles.add(role);
+		
+		Collection<User> users = daoContext.getUserDAO().getAllUsers( roles, false );
 
 		log.debug("Sending message " + message + " to " + users);
 		send(message, users);

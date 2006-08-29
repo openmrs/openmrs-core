@@ -1,7 +1,9 @@
 package org.openmrs.api;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
+import java.util.Vector;
 
 import org.openmrs.Privilege;
 import org.openmrs.Role;
@@ -89,7 +91,11 @@ public class UserService {
 	public List<User> getUsersByRole(Role role) throws APIException {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_USERS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_USERS);
-		return getUserDAO().getUsersByRole(role);
+		
+		List<Role> roles = new Vector<Role>();
+		roles.add(role);
+		
+		return getAllUsers(roles, false);
 	}
 	
 	/**
@@ -113,7 +119,8 @@ public class UserService {
 	public void grantUserRole(User user, Role role) throws APIException {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USERS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_USERS);
-		getUserDAO().grantUserRole(user, role);
+		user.addRole(role);
+		updateUser(user);
 	}
 	
 	/**
@@ -125,7 +132,8 @@ public class UserService {
 	public void revokeUserRole(User user, Role role) throws APIException {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USERS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_USERS);
-		getUserDAO().revokeUserRole(user, role);
+		user.removeRole(role);
+		updateUser(user);
 	}
 
 	/** 
@@ -141,7 +149,11 @@ public class UserService {
 	public void voidUser(User user, String reason) throws APIException {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USERS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_USERS);
-		getUserDAO().voidUser(user, reason);
+		user.setVoided(true);
+		user.setVoidReason(reason);
+		user.setVoidedBy(context.getAuthenticatedUser());
+		user.setDateVoided(new Date());
+		updateUser(user);
 	}
 	
 	/**
@@ -154,7 +166,11 @@ public class UserService {
 	public void unvoidUser(User user) throws APIException {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USERS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_USERS);
-		getUserDAO().unvoidUser(user);
+		user.setVoided(false);
+		user.setVoidReason(null);
+		user.setVoidedBy(null);
+		user.setDateVoided(null);
+		updateUser(user);
 	}
 	
 	/**
@@ -289,9 +305,22 @@ public class UserService {
 		return getUserDAO().findUsers(firstName, lastName, includeVoided);
 	}
 	
-	public List<User> getAllUsers(List<String> roles, boolean includeVoided) {
+	/**
+	 * Get all users that have at least one of the roles in <code>roles</code>
+	 * 
+	 * @param roles
+	 * @param includeVoided
+	 * @return list of users
+	 */
+	public List<User> getAllUsers(List<Role> roles, boolean includeVoided) {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_USERS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_USERS);
+		
+		Role auth_role = getRole(OpenmrsConstants.AUTHENTICATED_ROLE);
+		
+		if (roles.contains(auth_role))
+			return getUserDAO().getAllUsers(getRoles(), includeVoided);
+		
 		return getUserDAO().getAllUsers(roles, includeVoided);
 	}
 	

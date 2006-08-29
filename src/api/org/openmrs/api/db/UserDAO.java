@@ -46,58 +46,13 @@ public interface UserDAO {
 	 * @throws DAOException
 	 */
 	public boolean hasDuplicateUsername(User user) throws DAOException;
-	
-	/**
-	 * Get users by role granted
-	 * @param Role role that the Users must have to be returned 
-	 * @return users with requested role
-	 * @throws DAOException
-	 */
-	public List<User> getUsersByRole(Role role) throws DAOException;
-	
+		
 	/**
 	 * Save changes to user
 	 * @param user
 	 * @throws DAOException
 	 */
 	public void updateUser(User user) throws DAOException;
-	
-	/**
-	 * Grant roles for user
-	 * @param user
-	 * @param role
-	 * @throws DAOException
-	 */
-	public void grantUserRole(User user, Role role) throws DAOException;
-	
-	/**
-	 * Revoke roles from user
-	 * @param user
-	 * @param role
-	 * @throws DAOException
-	 */
-	public void revokeUserRole(User user, Role role) throws DAOException;
-
-	/** 
-	 * Mark user as voided (effectively deleting user without removing
-	 * their data &mdash; since anything the user touched in the database
-	 * will still have their internal identifier and point to the voided
-	 * user for historical tracking purposes.
-	 * 
-	 * @param user
-	 * @param reason
-	 * @throws DAOException
-	 */
-	public void voidUser(User user, String reason) throws DAOException;
-	
-	/**
-	 * Clear voided flag for user (equivalent to an "undelete" or
-	 * Lazarus Effect for user)
-	 * 
-	 * @param user
-	 * @throws DAOException
-	 */
-	public void unvoidUser(User user) throws DAOException;
 	
 	/**
 	 * Delete user from database. This is included for troubleshooting and
@@ -184,7 +139,7 @@ public interface UserDAO {
 	
 	public List<User> findUsers(String firstName, String lastName, boolean includeVoided);
 	
-	public List<User> getAllUsers(List<String> roles, boolean includeRetired) throws DAOException;
+	public List<User> getAllUsers(List<Role> roles, boolean includeRetired) throws DAOException;
 	
 	/**
 	 * Get/generate/find the next system id to be doled out.  Assume check digit /not/ applied

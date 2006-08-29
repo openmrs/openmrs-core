@@ -133,14 +133,13 @@ public class AlertFormController extends SimpleFormController {
 				}
 			}
 			
-			if (alert.getRecipients() == null
-					|| alert.getRecipients().size() == 0) {
-				errors.rejectValue("user", "Alert.recipientRequired");
+			if ((alert.getRecipients() == null || alert.getRecipients().size() == 0)) {
+				errors.rejectValue("users", "Alert.recipientRequired");
 			}
 			
 		} 
 		catch (Exception e) {
-			log.error(e);
+			log.error("Error while processing alert form", e);
 			errors.reject(e.getMessage());
 		}
 		finally {

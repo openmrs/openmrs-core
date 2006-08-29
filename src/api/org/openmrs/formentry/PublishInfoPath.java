@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -120,7 +121,7 @@ public class PublishInfoPath {
 
 		Form form = determineForm(tempDir, context);
 		String originalFormUri = FormEntryUtil.getFormUri(form);
-		form.setBuild(form.getBuild() + 1);
+		form.setBuild(form.getBuild() == null ? 1 : form.getBuild() + 1);
 
 		String outputFilename = FormEntryUtil.getFormUri(form);
 		String namespace = FormEntryUtil.getFormSchemaNamespace(form);
@@ -165,7 +166,6 @@ public class PublishInfoPath {
 						+ xsnArchiveFilePath);
 			}
 		}
-
 
 		// prepare manifest
 		prepareManifest(tempDir, publishUrl, namespace, solutionVersion,
@@ -227,7 +227,8 @@ public class PublishInfoPath {
 		// clean up
 		deleteDirectory(tempDir);
 		if (originalFormUri != null && !originalFormUri.equals(outputFilename))
-			originalFile.delete(); // if we didn't overwrite the original, remove it
+			originalFile.delete(); // if we didn't overwrite the original,
+									// remove it
 
 		// update template, solution version, and build number on server
 		form.setTemplate(templateWithDefaults);
@@ -272,7 +273,8 @@ public class PublishInfoPath {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("Trouble with file: " + fileName + " " + solutionVersion
+					+ " " + publishUrl, e);
 		}
 		writeXml(doc, file.getAbsolutePath());
 	}
@@ -429,12 +431,16 @@ public class PublishInfoPath {
 
 			// Write the DOM document to a file
 			Source source = new DOMSource(doc);
-			Result result = new StreamResult(new FileOutputStream(filename));
+			OutputStream outputStream = new FileOutputStream(filename);
+			Result result = new StreamResult(outputStream);
 			xformer.transform(source, result);
+			outputStream.close();
 
 		} catch (TransformerConfigurationException e) {
 		} catch (TransformerException e) {
 		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
+			log.error("Error closing outputStream: '" + filename + "'", e);
 		}
 	}
 

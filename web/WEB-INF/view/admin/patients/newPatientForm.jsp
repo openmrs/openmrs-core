@@ -8,12 +8,12 @@
 
 <script type="text/javascript">
 	function addIdentifier(id, type, location, pref, oldIdentifier) {
-		var table = document.getElementById('identifiers');
+		var tbody = document.getElementById('identifiersTbody');
 		var row = document.getElementById('identifierRow');
 		var newrow = row.cloneNode(true);
 		newrow.style.display = "";
-		newrow.id = table.childNodes.length;
-		table.appendChild(newrow);
+		newrow.id = tbody.childNodes.length;
+		tbody.appendChild(newrow);
 		var inputs = newrow.getElementsByTagName("input");
 		var selects = newrow.getElementsByTagName("select");
 		if (id) {
@@ -162,9 +162,6 @@
 	th {
 		text-align: left;
 	}
-	#identifierRow {
-		display: none;
-	}
 </style>
 
 <spring:hasBindErrors name="patient">
@@ -216,34 +213,36 @@
 			<th><spring:message code="general.preferred"/></th>
 			<th></th>
 		</tr>
-		<tr id="identifierRow">
-			<td valign="top">
-				<input type="text" size="30" name="identifier" onmouseup="identifierOrTypeChanged(this)" />
-			</td>
-			<td valign="top">
-				<select name="identifierType" onclick="identifierOrTypeChanged(this)">
-					<openmrs:forEachRecord name="patientIdentifierType">
-						<option value="${record.patientIdentifierTypeId}">
-							${record.name}
-						</option>
-					</openmrs:forEachRecord>
-				</select>
-			</td>
-			<td valign="top">
-				<select name="location">
-					<openmrs:forEachRecord name="location">
-						<option value="${record.locationId}">
-							${record.name}
-						</option>
-					</openmrs:forEachRecord>
-				</select>
-			</td>
-			<td valign="middle" align="center">
-				<input type="radio" name="preferred" value="" onclick="identifierOrTypeChanged(this)" />
-			</td>
-			<td valign="middle" align="center">
-				<input type="button" name="closeButton" onClick="return removeIdentifier(this);" class="closeButton" value='<spring:message code="general.remove"/>'/>
-		</tr>
+		<tbody id="identifiersTbody">
+			<tr id="identifierRow">
+				<td valign="top">
+					<input type="text" size="30" name="identifier" onmouseup="identifierOrTypeChanged(this)" />
+				</td>
+				<td valign="top">
+					<select name="identifierType" onclick="identifierOrTypeChanged(this)">
+						<openmrs:forEachRecord name="patientIdentifierType">
+							<option value="${record.patientIdentifierTypeId}">
+								${record.name}
+							</option>
+						</openmrs:forEachRecord>
+					</select>
+				</td>
+				<td valign="top">
+					<select name="location">
+						<openmrs:forEachRecord name="location">
+							<option value="${record.locationId}">
+								${record.name}
+							</option>
+						</openmrs:forEachRecord>
+					</select>
+				</td>
+				<td valign="middle" align="center">
+					<input type="radio" name="preferred" value="" onclick="identifierOrTypeChanged(this)" />
+				</td>
+				<td valign="middle" align="center">
+					<input type="button" name="closeButton" onClick="return removeIdentifier(this);" class="closeButton" value='<spring:message code="general.remove"/>'/>
+			</tr>
+		</tbody>
 	</table>
 	<script type="text/javascript">
 		<c:forEach items="${identifiers}" var="id">
@@ -340,6 +339,7 @@
 
 <script type="text/javascript">
 	document.forms[0].elements[0].focus();
+	document.getElementById("identifierRow").style.display = "none";
 	addIdentifier();
 	updateAge();
 </script>

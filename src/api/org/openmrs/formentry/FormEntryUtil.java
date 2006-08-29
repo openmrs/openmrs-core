@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -150,11 +151,13 @@ public class FormEntryUtil {
 					? Runtime.getRuntime().exec(cmd, null, wd) 
 					: Runtime.getRuntime().exec(cmd);
 			
-			BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			Reader reader = new InputStreamReader(p.getInputStream());
+			BufferedReader input = new BufferedReader(reader);
 			while ((line = input.readLine()) != null) {
 				out += line + "\n";
 			}
 			input.close();
+			reader.close();
 		} catch (Exception e) {
 			log.error("Error while executing command: '" + cmd + "'", e);
 		}

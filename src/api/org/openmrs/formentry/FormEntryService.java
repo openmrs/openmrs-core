@@ -11,12 +11,14 @@ import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.Role;
 import org.openmrs.Tribe;
 import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOContext;
 import org.openmrs.formentry.db.FormEntryDAO;
@@ -343,21 +345,31 @@ public class FormEntryService {
 	/**
 	 * @see org.openmrs.api.UserService.getAllUsers(List<String>, boolean)
 	 */
-	public Collection<User> getAllUsers(List<String> roles,
+	public Collection<User> getAllUsers(List<String> strRoles,
 			boolean includeVoided) {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY))
 			throw new APIAuthenticationException("Privilege required: "
 					+ OpenmrsConstants.PRIV_FORM_ENTRY);
 		
+		// default return list
 		List<User> users = new Vector<User>();
+		
+		// all formentry users need this priv to read in users
 		context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+		
+		UserService us = context.getUserService();
 		try {
-			users = context.getUserService().getAllUsers(roles, includeVoided);
+			List<Role> roles = new Vector<Role>();
+			for (String r : strRoles)
+				roles.add(us.getRole(r));
+			
+			users = us.getAllUsers(roles, includeVoided);
 		} catch (Exception e) {
-			log.error(e);
+			log.error("Error while getting users by role", e);
 		} finally {
 			context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
 		}
+		
 		return users;
 	}
 	

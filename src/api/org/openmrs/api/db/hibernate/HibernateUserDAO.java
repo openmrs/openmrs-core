@@ -88,6 +88,7 @@ public class HibernateUserDAO implements
 	/**
 	 * @see org.openmrs.api.db.UserService#getUserByUsername(java.lang.String)
 	 */
+	@SuppressWarnings("unchecked")
 	public User getUserByUsername(String username) {
 		Session session = HibernateUtil.currentSession();
 
@@ -165,6 +166,7 @@ public class HibernateUserDAO implements
 	/**
 	 * @see org.openmrs.api.db.UserService#getUsers()
 	 */
+	@SuppressWarnings("unchecked")
 	public List<User> getUsers() throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		List<User> users = session.createQuery("from User u order by u.userId")
@@ -203,18 +205,6 @@ public class HibernateUserDAO implements
 	}
 
 	/**
-	 * @see org.openmrs.api.db.UserService#voidUser(org.openmrs.User,
-	 *      java.lang.String)
-	 */
-	public void voidUser(User user, String reason) {
-		user.setVoided(true);
-		user.setVoidReason(reason);
-		user.setVoidedBy(context.getAuthenticatedUser());
-		user.setDateVoided(new Date());
-		updateUser(user);
-	}
-
-	/**
 	 * @see org.openmrs.api.db.UserService#deleteUser(org.openmrs.User)
 	 */
 	public void deleteUser(User user) {
@@ -231,26 +221,9 @@ public class HibernateUserDAO implements
 	}
 
 	/**
-	 * @see org.openmrs.api.db.UserService#grantUserRole(org.openmrs.User,
-	 *      org.openmrs.Role)
-	 */
-	public void grantUserRole(User user, Role role) throws DAOException {
-		user.addRole(role);
-		updateUser(user);
-	}
-
-	/**
-	 * @see org.openmrs.api.db.UserService#revokeUserRole(org.openmrs.User,
-	 *      org.openmrs.Role)
-	 */
-	public void revokeUserRole(User user, Role role) throws DAOException {
-		user.removeRole(role);
-		updateUser(user);
-	}
-
-	/**
 	 * @see org.openmrs.api.db.UserService#getUserByRole(org.openmrs.Role)
 	 */
+	@SuppressWarnings("unchecked")
 	public List<User> getUsersByRole(Role role) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
@@ -265,19 +238,9 @@ public class HibernateUserDAO implements
 	}
 
 	/**
-	 * @see org.openmrs.api.db.UserService#unvoidUser(org.openmrs.User)
-	 */
-	public void unvoidUser(User user) throws DAOException {
-		user.setVoided(false);
-		user.setVoidReason(null);
-		user.setVoidedBy(null);
-		user.setDateVoided(null);
-		updateUser(user);
-	}
-
-	/**
 	 * @see org.openmrs.api.db.UserService#getPrivileges()
 	 */
+	@SuppressWarnings("unchecked")
 	public List<Privilege> getPrivileges() throws DAOException {
 		
 		Session session = HibernateUtil.currentSession();
@@ -290,6 +253,7 @@ public class HibernateUserDAO implements
 	/**
 	 * @see org.openmrs.api.db.UserService#getRoles()
 	 */
+	@SuppressWarnings("unchecked")
 	public List<Role> getRoles() throws DAOException {
 
 		Session session = HibernateUtil.currentSession();
@@ -302,6 +266,7 @@ public class HibernateUserDAO implements
 	/**
 	 * @see org.openmrs.api.db.UserService#getInheritingRoles(org.openmrs.Role)
 	 */
+	@SuppressWarnings("unchecked")
 	public List<Role> getInheritingRoles(Role role) throws DAOException {
 
 		Session session = HibernateUtil.currentSession();
@@ -486,11 +451,10 @@ public class HibernateUserDAO implements
 		
 	}
 	
+	@SuppressWarnings("unchecked")
 	public List<User> findUsers(String name, List<String> roles, boolean includeVoided) {
 		
 		Session session = HibernateUtil.currentSession();
-		
-		List<User> users = new Vector<User>();
 		
 		name = name.replace(", ", " ");
 		String[] names = name.split(" ");
@@ -550,23 +514,22 @@ public class HibernateUserDAO implements
 		return returnList;
 	}
 	
-	public List<User> getAllUsers(List<String> roles, boolean includeVoided) {
+	@SuppressWarnings("unchecked")
+	public List<User> getAllUsers(List<Role> roles, boolean includeVoided) {
 		
 		Session session = HibernateUtil.currentSession();
-		
-		List<User> users = new Vector<User>();
 		
 		Criteria criteria = session.createCriteria(User.class);
 		
 		if (includeVoided == false)
 			criteria.add(Expression.eq("voided", false));
 
-		List returnList = new Vector();
+		List<User> returnList = new Vector<User>();
 		if (roles != null && roles.size() > 0) {
 			for (Object o : criteria.list()) {
 				User u = (User)o;
-				for (String r : roles)
-					if (u.hasRole(r, true)) {
+				for (Role r : roles)
+					if (u.getRoles().contains(r)) {
 						returnList.add(u);
 						break;
 					}
@@ -578,44 +541,6 @@ public class HibernateUserDAO implements
 		return returnList;
 		
 		// TODO figure out how to get Hibernate to do the sql for us
-		
-		/*
-		String sql = "select user from User as user";
-		String order = " order by u.userId asc";
-		
-		Query query;
-			
-		if (roles != null && roles.size() > 0) {
-			sql += ", Role r, Group g";
-			sql += " where (r.userId = user.userId and r.role in (";
-			for (int i=0; i<roles.size(); i++) {
-				sql += "'" + roles.get(i) + "'";
-				if (i != roles.size() -1)
-					sql += ",";
-			}
-			sql += "))";
-			
-			sql += " or ( g.userId = user.userId and g.role in (";
-			for (int i=0; i<roles.size(); i++) {
-				sql += "'" + roles.get(i) + "'";
-				if (i != roles.size() -1)
-					sql += ",";
-			}
-			sql += "))";
-
-			if (includeVoided == false) {
-				sql += " and user.voided = 0";
-			}
-			
-		}
-		else {
-			if (includeVoided == false) {
-				sql += " user.voided = 0";
-			}
-		}
-		
-		return session.createQuery(sql).list();
-		*/
 	}
 	
 	/**
@@ -649,6 +574,7 @@ public class HibernateUserDAO implements
 		
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<User> findUsers(String firstName, String lastName, boolean includeVoided) {
 		Session session = HibernateUtil.currentSession();
 		List<User> users = new Vector<User>();

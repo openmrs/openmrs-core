@@ -121,7 +121,13 @@
 			synonyms = new Array();
 		var syn = obj.value;
 		if (syn != "") {
-			if (isAddable(syn, synonyms)) {
+			
+			var isAddable = true;
+			for (x=0; x<synonyms.length; x++)
+				if (synonyms[x].value == syn.userId)
+					isAddable = false;
+					
+			if (isAddable) {
 				var opt = new Option(syn, syn);
 				opt.selected = true;
 				synonyms[synonyms.length] = opt;
