@@ -276,7 +276,7 @@
 				<property name="commandName"><value>patient</value></property>
 				<property name="commandClass"><value>org.openmrs.web.dwr.PatientListItem</value></property>
 				<property name="formView"><value>/admin/patients/newPatientForm</value></property>
-				<property name="successView"><value>/@WEBAPP.NAME@/formentry/patientDashboard.form</value></property>
+				<property name="successView"><value>/@WEBAPP.NAME@/patientDashboard.form</value></property>
 			</bean>
 		<!-- ** /New Patient ** -->
 		
@@ -649,7 +649,7 @@
 				</property>
 				<property name="links">
 					<list>
-						<value>patientSet.form:Analysis.formEntryButton:method=setPatientSet:url=formEntry/patientDashboard.form:appendPatientId=true</value>
+						<value>patientSet.form:Analysis.formEntryButton:method=setPatientSet:url=patientDashboard.form:appendPatientId=true</value>
 						<value>nealreport.form:nealreport.DemoReport.name:reportType=Demo Report</value>
 						<value>nealreport.form:nealreport.DeclineReport.name:reportType=Decline Report</value>
 						<value>nealreport.form:nealreport.ShortReport.name:reportType=Short Report</value>
@@ -845,7 +845,7 @@
 			<property name="sessionForm"><value>true</value></property>
 			<property name="commandName"><value>patient</value></property>
 			<property name="validator"><ref bean="patientValidator"/></property>
-			<property name="formView"><value>/formentry/patientDashboardForm</value></property>
+			<property name="formView"><value>/patientDashboardForm</value></property>
 			<property name="successView"><value>patientDashboard.form</value></property>
 		</bean>
 		

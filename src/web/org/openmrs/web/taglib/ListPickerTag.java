@@ -76,15 +76,17 @@ public class ListPickerTag extends TagSupport {
 		
 		str += "<script type='text/javascript'>\n";
 
-		str += "  var oldonload = window.onload;\n";
-		str += "  if (typeof window.onload != 'function') {\n";
-		str += "  	window.onload = function() { init('" + name + "'); };\n";
-		str += "  } else {\n";
-		str += "  	window.onload = function() {\n";
-		str += "  		oldonload();\n";
-		str += "  		init('" + name + "');\n";
-		str += "  	}\n";
-		str += "  }\n";
+		str += "	if (!oldonload) {\n";
+		str += "		var oldonload = window.onload;\n";
+		str += "		if (typeof window.onload != 'function') {\n";
+		str += "			window.onload = function() { init('" + name + "'); };\n";
+		str += "		} else {\n";
+		str += "			window.onload = function() {\n";
+		str += "				oldonload();\n";
+		str += "				init('" + name + "');\n";
+		str += "			}\n";
+		str += "		}\n";
+		str += "	}\n";
 		
 		str += "</script>\n";
 		

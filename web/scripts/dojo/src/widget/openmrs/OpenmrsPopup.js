@@ -112,16 +112,16 @@ dojo.widget.defineWidget(
 			this.searchWidget.toggleShowing();
 			this.searchWidget.inputNode.select();
 			
-			var left = dojo.style.totalOffsetLeft(this.changeButton, false) + dojo.style.getBorderBoxWidth(this.changeButton) + 10;
+			var left = dojo.style.sumAncestorProperties(this.changeButton, false) + dojo.style.getBorderBoxWidth(this.changeButton) + 10;
 			if (left + dojo.style.getBorderBoxWidth(this.searchWidget.domNode) > dojo.html.getViewportWidth())
 				left = dojo.html.getViewportWidth() - dojo.style.getBorderBoxWidth(this.searchWidget.domNode) - 10 + dojo.html.getScrollLeft();
 			
-			var top = dojo.style.totalOffsetTop(this.changeButton, false);
-			if (top + dojo.style.getBorderBoxHeight(this.searchWidget.domNode) > dojo.html.getViewportHeight())
-				top = dojo.html.getViewportHeight() - dojo.style.getBorderBoxHeight(this.searchWidget.domNode) - 10 + dojo.html.getScrollTop();
+			//var top = pos.y;
+			//if (top + dojo.style.getBorderBoxHeight(this.searchWidget.domNode) > dojo.html.getViewportHeight())
+			//	top = dojo.html.getViewportHeight() - dojo.style.getBorderBoxHeight(this.searchWidget.domNode) - 10 + dojo.html.getScrollTop();
 			
 			dojo.style.setPositivePixelValue(this.searchWidget.domNode, "left", left);
-			dojo.style.setPositivePixelValue(this.searchWidget.domNode, "top", top);
+			//dojo.style.setPositivePixelValue(this.searchWidget.domNode, "top", top);
 		},
 		
 		showIfHiding: false,

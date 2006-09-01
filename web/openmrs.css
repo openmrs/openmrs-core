@@ -113,7 +113,6 @@ h1, h2, h3, h4, h5 {
 	
 #content {
 	margin: 50px 0 0 0;
-	left: 0px;
 	width: 100%;
 	padding: 10px;
 	font-size: 1.2em;
@@ -127,7 +126,6 @@ h1, h2, h3, h4, h5 {
 #footer {
 	width: 100%;
 	position: fixed;
-	top: expression(document.documentElement.clientHeight - 14);
 	bottom: 0px;
 	font-size: .8em;
 	text-align: left;
@@ -359,7 +357,7 @@ table.patientTreatmentPrograms td {
 	border: 1px solid lightgrey;
 	background-color: whitesmoke;
 	cursor: pointer;
-	width: 75px;
+	width: 80px;
 	margin: 1px;
 }
 .closeButton {
@@ -410,8 +408,9 @@ tr.searchHighlight {
 	height: 390px;
 	padding: 2px;
 	background-color: whitesmoke;
-	border: 1px solid grey;
+	border: 1px solid gray;
 	position: absolute;
+	display: block;
 	z-index: 10;
 	margin: 5px;
 	overflow-y: auto;

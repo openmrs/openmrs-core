@@ -78,8 +78,6 @@
 			<param name="class" value="org.openmrs.web.dwr.DWRFormService" />
 			<include method="getFormField"/>
 			<include method="getField"/>
-			<include method="getHTMLTree"/>
-			<include method="getOptionTree"/>
 			<include method="getJSTree"/>
 			<include method="findFields"/>
 			<include method="findFieldsAndConcepts"/>

@@ -4,7 +4,7 @@
 	</li>
 	
 	<li>
-		<a href="<%= request.getContextPath() %>/formentry"><spring:message code="Navigation.findPatient"/></a>
+		<a href="<%= request.getContextPath() %>/findPatient.htm"><spring:message code="Navigation.findPatient"/></a>
 	</li>
 	
 	<openmrs:hasPrivilege privilege="View Concepts">

@@ -134,7 +134,7 @@
 		<form method="post" action="patientSet.form" id="goToFormEntry" style="display: inline">
 			<input type="hidden" name="method" value="setPatientSet"/>
 			<input type="hidden" name="patientIds" value="${model.patient_set_for_links}"/>
-			<input type="hidden" name="url" value="formentry/patientDashboard.form?patientId=${model.firstPatientId}"/>
+			<input type="hidden" name="url" value="patientDashboard.form?patientId=${model.firstPatientId}"/>
 			<a class="shortcutBarButton" href="javascript:document.getElementById('goToFormEntry').submit()"><spring:message code="Analysis.formEntryButton"/></a>
 		</form>
 	</span>

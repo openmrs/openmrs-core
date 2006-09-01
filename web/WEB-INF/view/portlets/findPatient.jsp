@@ -11,7 +11,7 @@
 		</c:when>
 		<c:when test="${model.size == 'full'}">
 			
-			<openmrs:require privilege="Form Entry" otherwise="/login.htm" redirect="/formentry/index.htm" />
+			<openmrs:require privilege="Form Entry" otherwise="/login.htm" redirect="/index.htm" />
 
 			<openmrs:htmlInclude file="/scripts/dojoConfig.js"></openmrs:htmlInclude>
 			<openmrs:htmlInclude file="/scripts/dojo/dojo.js"></openmrs:htmlInclude>

@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Location;
-import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.User;
@@ -18,9 +17,7 @@ import org.openmrs.hl7.db.HL7DAO;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.v25.datatype.CX;
 import ca.uhn.hl7v2.model.v25.datatype.PL;
-import ca.uhn.hl7v2.model.v25.datatype.TS;
 import ca.uhn.hl7v2.model.v25.datatype.XCN;
-import ca.uhn.hl7v2.model.v25.datatype.XPN;
 import ca.uhn.hl7v2.model.v25.segment.PID;
 
 /**
@@ -198,8 +195,12 @@ public class HL7Service {
 		String idNumber = xcn.getIDNumber().getValue();
 		String familyName = xcn.getFamilyName().getSurname().getValue();
 		String givenName = xcn.getGivenName().getValue();
-		String assigningAuthority = xcn.getAssigningAuthority()
-				.getUniversalID().getValue();
+		
+		// unused
+		//String assigningAuthority = xcn.getAssigningAuthority()
+		//		.getUniversalID().getValue();
+		
+		
 		/*
 		if ("null".equals(familyName))
 			familyName = null;
@@ -327,7 +328,7 @@ public class HL7Service {
 					PatientIdentifierType pit = context.getPatientService()
 							.getPatientIdentifierType(assigningAuthority);
 					if (pit == null) {
-						log.debug("Can't find PatientIdentifierType named '"
+						log.warn("Can't find PatientIdentifierType named '"
 								+ assigningAuthority + "'");
 						continue; // skip identifiers with unknown type
 					}
@@ -336,6 +337,7 @@ public class HL7Service {
 									hl7PatientId, pit);
 					if (matchingIds == null || matchingIds.size() < 1) {
 						// no matches
+						log.warn("NO matches found for " + hl7PatientId);
 						continue; // try next identifier
 					} else if (matchingIds.size() == 1) {
 						// unique match -- we're done

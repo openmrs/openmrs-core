@@ -130,27 +130,6 @@ public class DWRFormService {
 		return objects;
 	}
 	
-	public String getHTMLTree(Integer formId) {
-		Context context = (Context) WebContextFactory.get().getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context != null) {
-			Form form = context.getFormService().getForm(formId);
-			TreeMap<Integer, TreeSet<FormField>> formFields = FormUtil.getFormStructure(context, form);
-			return generateHTMLTree(formFields, 0);
-		}
-		return "";
-	}
-	
-	public String getOptionTree(Integer formId) {
-		Context context = (Context) WebContextFactory.get().getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		String str = "";
-		if (context != null) {
-			Form form = context.getFormService().getForm(formId);
-			TreeMap<Integer, TreeSet<FormField>> formFields = FormUtil.getFormStructure(context, form);
-			str = generateOptionTree(formFields, 0, 0);
-		}
-		return "<option value=''><option>" + str;	
-	}
-	
 	public String getJSTree(Integer formId) {
 		Context context = (Context) WebContextFactory.get().getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		if (context != null) {
@@ -243,82 +222,6 @@ public class DWRFormService {
 			context.endTransaction();
 		}
 	}
-
-	private String generateOptionTree(TreeMap<Integer, TreeSet<FormField>> formFields, Integer current, Integer level) {
-		
-		String s = "";
-		
-		if (formFields.containsKey(current)) {
-			TreeSet<FormField> set = formFields.get(current);
-			for (FormField ff : set) {
-				s += generateFormFieldOption(ff, level);
-				if (formFields.containsKey(ff.getFormFieldId())) {			
-					s += generateOptionTree(formFields, ff.getFormFieldId(), level+1);
-				}
-			}
-		}
-		
-		return s;
-	}
-
-	
-	private String generateHTMLTree(TreeMap<Integer, TreeSet<FormField>> formFields, Integer current) {
-		
-		String s = "";
-		
-		if (formFields.containsKey(current)) {
-			TreeSet<FormField> set = formFields.get(current);
-			for (FormField ff : set) {
-				s += generateFormFieldHTML(ff);
-				if (formFields.containsKey(ff.getFormFieldId())) {
-					s += "<div class='indent'>";
-					s += generateHTMLTree(formFields, ff.getFormFieldId());
-					s += "</div>";
-				}
-			}
-		}
-		
-		return s;
-	}
-    
-	private String generateFormFieldHTML(FormField ff) {
-    	String s = "<div class='formField'>";
-    	
-    	if (ff.getFieldNumber() != null)
-    		s += ff.getFieldNumber() + ". ";
-    	if (ff.getFieldPart() != null)
-    		s += ff.getFieldPart() + ". ";
-    	if ((ff.getMinOccurs() != null && ff.getMinOccurs() > 0) || (ff.getMaxOccurs() != null && ff.getMaxOccurs() != 1)){
-    		s += " (";
-    		if (ff.getMinOccurs() == null)
-    			s += "0";
-    		else
-    			s += ff.getMinOccurs().toString();
-    		s += "..";
-    		if (ff.getMaxOccurs() == -1)
-    			s += "n";
-    		else {
-    			if (ff.getMaxOccurs() == null)
-    				s += "0";
-    			else
-    				s += ff.getMaxOccurs();
-    		}
-    		s += ") ";
-    	}
-		if (ff.isRequired())
-			s += "<span class='required'> * </span>";
-		s += "<a href='#" + ff.getFormFieldId() + "' onmouseover='hoverField(" + ff.getFormFieldId() + ", this)' onmouseout='unHoverField(this)' onclick='return selectField(" + ff.getFormFieldId() + ", this)' class='edit'>";
-		if (ff.getField().getConcept() != null)
-			s += ff.getField().getName() + " (" + ff.getField().getConcept().getConceptId() + ")";
-		else
-			s += ff.getField().getName();
-		s += "</a> ";
-		s += "<a href='#delete' onclick='return deleteField(" + ff.getFormFieldId() + ", this)' class='delete'> &nbsp; &nbsp; </a>";
-		
-		s += "</div>";
-    	
-    	return s;
-    }
     
     private String generateJSTree(TreeMap<Integer, TreeSet<FormField>> formFields, Integer current, Locale locale) {
 		
@@ -335,41 +238,6 @@ public class DWRFormService {
 		}
 		
 		return s;
-	}
-    
-    private String getLabel(FormField ff) {
-    	String fieldLabel = "";
-    	
-    	if (ff.getFieldNumber() != null)
-    		fieldLabel += ff.getFieldNumber() + ". ";
-    	if (ff.getFieldPart() != null)
-    		fieldLabel += ff.getFieldPart() + ". ";
-    	if ((ff.getMinOccurs() != null && ff.getMinOccurs() > 0) || (ff.getMaxOccurs() != null && ff.getMaxOccurs() != 1)){
-    		fieldLabel += " (";
-    		if (ff.getMinOccurs() == null)
-    			fieldLabel += "0";
-    		else
-    			fieldLabel += ff.getMinOccurs().toString();
-    		fieldLabel += "..";
-    		if (ff.getMaxOccurs() == -1)
-    			fieldLabel += "n";
-    		else {
-    			if (ff.getMaxOccurs() == null)
-    				fieldLabel += "0";
-    			else
-    				fieldLabel += ff.getMaxOccurs();
-    		}
-    		fieldLabel += ") ";
-    	}
-		if (ff.isRequired())
-			fieldLabel += "<span class=required> * </span>";
-		
-		if (ff.getField().getConcept() != null)
-			fieldLabel += ff.getField().getName() + " (" + ff.getField().getConcept().getConceptId() + ")";
-		else
-			fieldLabel += ff.getField().getName();
-		
-		return fieldLabel;
 	}
     
     private String generateFormFieldJavascript(FormField ff, Locale locale) {
@@ -410,36 +278,6 @@ public class DWRFormService {
     					"maxOccurs: " + ff.getMaxOccurs() + ", " + 
     					"isRequired: " + ff.isRequired() + ", " + 
     					"sortWeight: " + ff.getSortWeight() + "});";
-    }
-
-    private String generateFormFieldOption(FormField ff, Integer level) {
-    	
-    	String indent = "";
-		for (int i=0; i<level; i++) 
-			indent += "&nbsp; ";
-		
-    	String opt = indent;
-    	if (ff.getFieldNumber() != null)
-    		opt += ff.getFieldNumber() + ". ";
-    	if (ff.getFieldPart() != null)
-    		opt += ff.getFieldPart() + ". ";
-    	opt += ff.getField().getName();
-    	
-    	String s = "";
-    	
-    	if (opt.length() > 42) {
-    		s = "<option value='" + ff.getFormFieldId() + "' title='" + opt + "'>";
-    		opt = opt.substring(0, 42) + "...";
-    		s += opt;
-    		s += "</option>";
-    	}
-    	else {
-    		s = "<option value='" + ff.getFormFieldId() + "'>";
-    		s += opt;
-    		s += "</option>";
-    	}
-    	
-    	return s;
     }
     
     /**

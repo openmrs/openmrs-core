@@ -3,7 +3,7 @@
 <c:set var="HIV_PROGRAM_CONCEPT_ID" value="1482" />
 <c:set var="TB_PROGRAM_CONCEPT_ID" value="1483" />
 
-<openmrs:require privilege="View Patients" otherwise="/login.htm" redirect="/formentry/index.htm" />
+<openmrs:require privilege="View Patients" otherwise="/login.htm" redirect="/index.htm" />
 
 	<%-- Header showing preferred name, id, and treatment status --%>
 	<div id="patientHeader" class="boxHeader">

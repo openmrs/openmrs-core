@@ -130,6 +130,13 @@ public class OpenmrsConstants {
 	public static final String PRIV_MANAGE_PROGRAMS = "Manage Programs";
 	public static final String PRIV_EDIT_PATIENT_PROGRAMS = "Edit Patient Programs";
 	
+	public static final String PRIV_DASHBOARD_OVERVIEW = "Patient Dashboard - View Overview Section";
+	public static final String PRIV_DASHBOARD_REGIMEN = "Patient Dashboard - View Regimen Section";
+	public static final String PRIV_DASHBOARD_ENCOUNTERS = "Patient Dashboard - View Encounters Section";
+	public static final String PRIV_DASHBOARD_DEMOGRAPHICS = "Patient Dashboard - View Demographics Section";
+	public static final String PRIV_DASHBOARD_GRAPHS = "Patient Dashboard - View Graphs Section";
+	public static final String PRIV_DASHBOARD_FORMS = "Patient Dashboard - View Forms Section";
+	
 	public static final Collection<String> CORE_PRIVILEGES() {
 		List<String> privs = new Vector<String>();
 		
@@ -197,6 +204,13 @@ public class OpenmrsConstants {
 		
 		privs.add(PRIV_VIEW_NAVIGATION_MENU);
 		privs.add(PRIV_VIEW_ADMIN_FUNCTIONS);
+		
+		privs.add(PRIV_DASHBOARD_OVERVIEW);
+		privs.add(PRIV_DASHBOARD_REGIMEN);
+		privs.add(PRIV_DASHBOARD_ENCOUNTERS);
+		privs.add(PRIV_DASHBOARD_DEMOGRAPHICS);
+		privs.add(PRIV_DASHBOARD_GRAPHS);
+		privs.add(PRIV_DASHBOARD_FORMS);
 		
 		return privs;
 	}
@@ -349,5 +363,6 @@ public class OpenmrsConstants {
 		MAIL_PROPERTIES.setProperty(OpenmrsConstants.MAIL_SMTP_AUTH_PROPERTY, OpenmrsConstants.MAIL_SMTP_AUTH);
 	}	
 
+	public static String MODULE_REPOSITORY_PATH = "OpenMRS-Modules";
 	
 }

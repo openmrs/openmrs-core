@@ -36,8 +36,8 @@
 		<title><spring:message code="openmrs.title"/></title>
 		<!--[if lte IE 6]>
 			<style type="text/css">
-				html, body, #content {
-					height: 100%; overflow: auto;
+				html, body {
+					height: 100%;
 					width: expression((document.documentElement.clientWidth - 20) + 'px');
 				}
 				#footer {

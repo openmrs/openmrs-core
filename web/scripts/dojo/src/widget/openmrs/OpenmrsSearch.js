@@ -806,34 +806,7 @@ dojo.widget.defineWidget(
 	
 		return h;
 	},
-
-
-	setPosition: function(btn, form, formWidth, formHeight) {
-		var left = dojo.style.getPixelValue(btn, "left") + btn.offsetWidth + 20;
-		var top  = dojo.style.getPixelValue(btn, "top")-50;
-		
-		if (formWidth == null)
-			formWidth = dojo.style.getPixelValue(form, "width");
-		if (formHeight == null)
-			formHeight = dojo.style.getPixelValue(form, "height");
-		
-		var windowWidth = dojo.html.getViewportWidth(true);
-		var windowHeight = dojo.html.getViewportHeight(true);
-		
-		// if the box is popping off the right/bottom, move it back 
-		//  onto the screen
-		if (left + formWidth > windowWidth)
-			left = windowWidth - formWidth - 10;
-		if (top + formHeight > windowHeight)
-			top = windowHeight - formHeight - 10;
-			
-		// keep the box on the screen and off the edge
-		if (left < 2) left = 2;
-		if (top < 2) top = 2;
-		
-		form.style.left = left + "px";
-		form.style.top = top + "px";
-	},
+	
 	
 	destroy: function() {
 		dojo.event.topic.publish(this.eventNames.destroy, { source: this } );

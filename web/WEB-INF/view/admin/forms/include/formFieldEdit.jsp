@@ -34,9 +34,8 @@
 	<tr id="concept">
 		<td valign="top"><spring:message code="Field.concept"/></td>
 		<td valign="top">
-			<input type="hidden" id="conceptId" />
-			<span id="conceptName"></span>
-			<input type="button" id="conceptButton" class="smallButton" value='<spring:message code="general.change"/>' onclick="showSearchForm(this)" />
+			<div dojoType="ConceptSearch" widgetId="cSearch" showVerboseListing="true" ignoreClasses="N/A"></div>
+			<div dojoType="OpenmrsPopup" widgetId="cSelection" hiddenInputId="conceptId" searchWidget="cSearch" searchTitle='<spring:message code="Concept.find" />' ></div>
 		</td>
 	</tr>
 	<tr id="database">

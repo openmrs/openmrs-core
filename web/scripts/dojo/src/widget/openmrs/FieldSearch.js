@@ -16,6 +16,7 @@ dojo.widget.defineWidget(
 	dojo.widget.openmrs.OpenmrsSearch,
 	{
 		fieldId: "",
+		alsoSearchConcepts: false,
 		
 		postCreate: function(){
 			dojo.debug("postCreate in FieldSearch");
@@ -26,7 +27,11 @@ dojo.widget.defineWidget(
 		},
 		
 		doFindObjects: function(text) {
-			DWRFormService.findFields(this.simpleClosure(this, "doObjectsFound"), text);
+			if (this.alsoSearchConcepts == true)
+				DWRFormService.findFieldsAndConcepts(this.simpleClosure(this, "doObjectsFound"), text);
+			else
+				DWRFormService.findFields(this.simpleClosure(this, "doObjectsFound"), text);
+				
 			return false;
 		},
 		

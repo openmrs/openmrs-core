@@ -22,6 +22,7 @@
 			}
 		);
 		
+		searchWidget.inputNode.focus();
 		searchWidget.inputNode.select();
 	});
 
