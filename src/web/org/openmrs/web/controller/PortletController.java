@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,6 +48,7 @@ public class PortletController implements Controller {
 	 *         	(Set<Obs>) patientObs
 	 *          (Set<Encounter>) patientEncounters
 	 *          (Set<DrugOrder>) patientDrugOrders
+	 *          (Set<DrugOrder>) currentPatientDrugOrders
 	 *          (List<Relationship>) patientRelationships
 	 *          (Map<RelationshipType, List<Relationship>>) patientRelationshipsByType
 	 *          (Integer) personId
@@ -111,28 +113,11 @@ public class PortletController implements Controller {
 					List<DrugOrder> drugOrderList = context.getOrderService().getDrugOrdersByPatient(p);
 					drugOrders.addAll(drugOrderList);
 					model.put("patientDrugOrders", drugOrders);
-					if ( moreParams != null ) {
-						String drugSetIds = (String)moreParams.get("displayDrugSetIds");
-						if ( drugSetIds != null ) {
-							List<Concept> drugSetList = null;
-							String[] drugSets = drugSetIds.split(",");
-							for (String drugSet : drugSets) {
-								try {
-									Integer drugSetId = new Integer(drugSet);
-									Concept drugSetConcept = context.getConceptService().getConcept(drugSetId);
-									if ( drugSetConcept != null ) {
-										if ( drugSetList == null ) drugSetList = new ArrayList<Concept>();
-										drugSetList.add(drugSetConcept);
-									} else {
-										log.debug("DrugSet Concept with ID " + drugSetId.toString() + " was null");
-									}
-								} catch (NumberFormatException nfe) {
-									log.debug("Could not read ID number " + drugSet + " as an integer");
-								}
-							}
-							model.put("patientDrugOrderSets", context.getOrderService().getDrugSetsByConcepts(drugOrderList, drugSetList));
-						} // do nothing
-					} // do nothing
+					List<DrugOrder> currentDrugOrders = new ArrayList<DrugOrder>(drugOrders);
+					for (Iterator<DrugOrder> iter = currentDrugOrders.iterator(); iter.hasNext(); )
+						if (!iter.next().isCurrent())
+							iter.remove();
+					model.put("patientCurrentDrugOrders", currentDrugOrders);
 					model.put("patientPrograms", context.getProgramWorkflowService().getPatientPrograms(p));
 					model.put("patientCurrentPrograms", context.getProgramWorkflowService().getCurrentPrograms(p, null));
 					List<Relationship> relationships = new ArrayList<Relationship>();

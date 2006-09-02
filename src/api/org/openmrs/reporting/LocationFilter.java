@@ -23,6 +23,10 @@ public class LocationFilter extends AbstractPatientFilter implements PatientFilt
 		method = Method.PATIENT_TABLE;
 	}
 	
+	public boolean isReadyToRun() {
+		return getMethod() != null && getLocation() != null;
+	}
+	
 	public Location getLocation() {
 		return location;
 	}

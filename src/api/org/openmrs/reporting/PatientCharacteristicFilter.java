@@ -29,6 +29,10 @@ public class PatientCharacteristicFilter extends AbstractPatientFilter implement
 		this.maxBirthdate = maxBirthdate;
 	}
 	
+	public boolean isReadyToRun() {
+		return true;
+	}
+	
 	public int compareTo(PatientCharacteristicFilter o) {
 		return -compareHelper().compareTo(o.compareHelper());
 	}

@@ -21,12 +21,24 @@
 		<table>
 			<c:forEach var="field" items="${fields}">
 				<tr>
-					<td>${field.pageNumber}.</td>	
-					<td>#${field.fieldNumber}</td>
-					<td>${field.field.fieldType.name}</td>
-					<td>${field.field.name} :</td>
-					<td><input type=text name="data.${field.formFieldId}.value"/></td>
-					<td><input type=text name="data.${field.formFieldId}.date" size="10" onClick="showCalendar(this)"/></td>
+				<c:choose>
+					<c:when test="${field.field.fieldType.name == 'Section'}">
+						<th colspan="6">
+							${field.pageNumber}.${field.fieldNumber}
+							<u>${field.field.name}</u>
+						</th>
+					</c:when>
+					<c:otherwise>
+						<td>${field.pageNumber}.</td>	
+						<td>#${field.fieldNumber}</td>
+						<td>${field.field.fieldType.name}</td>
+						<td>${field.field.name} :</td>
+						<td><input type=text name="data.${field.formFieldId}.value"/></td>
+						<c:if test="${field.field.fieldType.name == 'Concept'}">
+							<td><input type=text name="data.${field.formFieldId}.date" size="10" onClick="showCalendar(this)"/></td>
+						</c:if>
+					</c:otherwise>
+				</c:choose>
 				</tr>
 			</c:forEach>
 		</table>

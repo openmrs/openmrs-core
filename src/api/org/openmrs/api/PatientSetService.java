@@ -69,17 +69,19 @@ public class PatientSetService {
 			Integer minAge, Integer maxAge, Boolean aliveOnly, Boolean deadOnly) throws DAOException {
 		return getPatientSetDAO().getPatientsByCharacteristics(gender, minBirthdate, maxBirthdate, minAge, maxAge, aliveOnly, deadOnly);
 	}
-	
+
+	/*
 	public PatientSet getPatientsHavingNumericObs(Concept concept, PatientSetService.Modifier modifier, Number value) {
-		return getPatientsHavingNumericObs(concept.getConceptId(), null, modifier, value);
+		return getPatientsHavingNumericObs(concept.getConceptId(), null, modifier, value, null, null);
 	}
 	
 	public PatientSet getPatientsHavingNumericObs(Integer conceptId, PatientSetService.Modifier modifier, Number value) {
-		return getPatientsHavingNumericObs(conceptId, null, modifier, value);
+		return getPatientsHavingNumericObs(conceptId, null, modifier, value, null, null);
 	}
+	*/
 	
-	public PatientSet getPatientsHavingNumericObs(Integer conceptId, TimeModifier timeModifier, PatientSetService.Modifier modifier, Number value) {
-		return getPatientSetDAO().getPatientsHavingNumericObs(conceptId, timeModifier, modifier, value);
+	public PatientSet getPatientsHavingNumericObs(Integer conceptId, TimeModifier timeModifier, PatientSetService.Modifier modifier, Number value, Date fromDate, Date toDate) {
+		return getPatientSetDAO().getPatientsHavingNumericObs(conceptId, timeModifier, modifier, value, fromDate, toDate);
 	}
 	
 	public PatientSet getPatientsHavingTextObs(Concept concept, String value) {
@@ -169,7 +171,6 @@ public class PatientSetService {
 	}
 	
 	public enum Modifier {
-		EXISTS (""),
 		LESS_THAN ("<"),
 		LESS_EQUAL ("<="),
 		EQUAL ("="),
@@ -186,9 +187,13 @@ public class PatientSetService {
 	}
 	
 	public enum TimeModifier {
+		ANY,
+		NO,
 		FIRST,
 		LAST,
-		ANY;
+		MIN,
+		MAX,
+		AVG;
 	}
 	
 	public List<Patient> getPatients(Collection<Integer> patientIds) {

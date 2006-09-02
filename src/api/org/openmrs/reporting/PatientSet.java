@@ -98,6 +98,10 @@ public class PatientSet {
 		return patientIds.remove(patient.getPatientId());
 	}
 	
+	public boolean removeAllIds(Collection<Integer> ptIds) {
+		return patientIds.removeAll(ptIds);
+	}
+	
 	public boolean contains(Integer patientId) {
 		return patientIds.contains(patientId);
 	}

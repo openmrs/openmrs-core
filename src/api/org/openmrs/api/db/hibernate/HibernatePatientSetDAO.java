@@ -51,6 +51,7 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
+import org.openmrs.api.PatientSetService.TimeModifier;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PatientSetDAO;
@@ -440,54 +441,90 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return patientSet;
 	}
 	
+	/*
+	 * 	EXISTS , LESS_THAN , LESS_EQUAL , EQUAL , GREATER_EQUAL , GREATER_THAN
+		ANY, FIRST, LAST, MIN, MAX, AVG
+	 */
+	
 	@SuppressWarnings("unchecked")
-	public PatientSet getPatientsHavingNumericObs(Integer conceptId, PatientSetService.TimeModifier timeModifier, PatientSetService.Modifier modifier, Number value) {
+	public PatientSet getPatientsHavingNumericObs(Integer conceptId, PatientSetService.TimeModifier timeModifier, PatientSetService.Modifier modifier, Number value, Date fromDate, Date toDate) {
 		Session session = HibernateUtil.currentSession();
 		HibernateUtil.beginTransaction();
+
+		Concept concept = context.getConceptService().getConcept(conceptId);
+		if (!concept.isNumeric()) {
+			// throw new IllegalArgumentException(concept + " is not numeric");
+		}
 		
 		Query query;
 		StringBuffer sb = new StringBuffer();
-		boolean useValue = false;
+		boolean useValue = modifier != null && value != null;
+		boolean doSqlAggregation = timeModifier == TimeModifier.MIN || timeModifier == TimeModifier.MAX || timeModifier == TimeModifier.AVG;
+		String valueSql = "o.value_numeric";
+		boolean doInvert = false;
 		
-		if (value == null || modifier == PatientSetService.Modifier.EXISTS || timeModifier == null || timeModifier == PatientSetService.TimeModifier.ANY) {
-			// simple query
+		String dateSql = "";
+		if (fromDate != null)
+			dateSql += " and o.obs_datetime >= :fromDate ";
+		if (toDate != null)
+			dateSql += " and o.obs_datetime <= :toDate ";
+		
+		if (timeModifier == TimeModifier.ANY || timeModifier == TimeModifier.NO) {
+			if (timeModifier == TimeModifier.NO)
+				doInvert = true;
 			sb.append("select o.patient_id from obs o " +
 					"where concept_id = :concept_id ");
-			if (modifier != PatientSetService.Modifier.EXISTS && value != null) {
-				sb.append("and value_numeric " + modifier.getSqlRepresentation() + " :value ");
-				useValue = true;
-			} else { // TODO: this is a hack so that EXISTS will work on non-numeric concepts too
-				sb.append("and (value_numeric is not null or value_coded is not null or value_boolean is not null or value_drug is not null or value_datetime is not null or value_boolean is not null or value_text is not null) ");
-			}
-
-		} else if (timeModifier == PatientSetService.TimeModifier.FIRST || timeModifier == PatientSetService.TimeModifier.LAST) {
+			sb.append(dateSql);
+		} else if (timeModifier == TimeModifier.FIRST || timeModifier == TimeModifier.LAST) {
 			boolean isFirst = timeModifier == PatientSetService.TimeModifier.FIRST;
 			sb.append("select o.patient_id " +
 					"from obs o inner join (" +
 					"    select patient_id, " + (isFirst ? "min" : "max") + "(obs_datetime) as obs_datetime" +
 					"    from obs" +
-					"    where concept_id = :concept_id" +
+					"    where concept_id = :concept_id " +
+					dateSql +
 					"    group by patient_id" +
 					") subq on o.patient_id = subq.patient_id and o.obs_datetime = subq.obs_datetime " +
-					"where o.concept_id = :concept_id " +
-					"and value_numeric " + modifier.getSqlRepresentation() + " :value ");
-			useValue = true;
-
+					"where o.concept_id = :concept_id ");		
+		} else if (doSqlAggregation) {
+			String sqlAggregator = timeModifier.toString();
+			valueSql = sqlAggregator + "(o.value_numeric)";
+			sb.append("select o.patient_id " +
+					"from obs o where concept_id = :concept_id " +
+					dateSql +
+					"group by o.patient_id ");
 		} else {
-			throw new IllegalArgumentException("Unknown timeModifier: " + timeModifier);
+			throw new IllegalArgumentException("TimeModifier '" + timeModifier + "' not recognized");
 		}
 		
-		sb.append("group by o.patient_id ");
+		if (useValue) {
+			sb.append(doSqlAggregation ? "having " : " and ");
+			sb.append(valueSql + " ");
+			sb.append(modifier.getSqlRepresentation() + " :value");
+		}
+		if (!doSqlAggregation)
+			sb.append(" group by o.patient_id ");
+		
 		log.debug("query: " + sb);
 		query = session.createSQLQuery(sb.toString());
 		query.setInteger("concept_id", conceptId);
 		if (useValue) {
 			query.setDouble("value", value.doubleValue());
 		}
+		if (fromDate != null)
+			query.setDate("fromDate", fromDate);
+		if (toDate != null)
+			query.setDate("toDate", fromDate);
 
-		PatientSet ret = new PatientSet();
-		List patientIds = query.list();
-		ret.setPatientIds(new ArrayList<Integer>(patientIds));
+		PatientSet ret;
+		if (doInvert) {
+			ret = getAllPatients();
+			ret.removeAllIds(query.list());
+		} else {
+			ret = new PatientSet();
+			List patientIds = query.list();
+			ret.setPatientIds(new ArrayList<Integer>(patientIds));
+		}
 
 		HibernateUtil.commitTransaction();
 		

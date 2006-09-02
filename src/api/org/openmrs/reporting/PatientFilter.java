@@ -20,4 +20,8 @@ public interface PatientFilter extends ReportObject {
 	 */
 	public PatientSet filterInverse(Context context, PatientSet input);
 
+	/**
+	 * @return Whether or not this filter has had enough parameters set to be run properly
+	 */
+	public boolean isReadyToRun();
 }

@@ -4,8 +4,8 @@
 	<c:choose>
 		<c:when test="${model.size == 'compact'}">
 			<form method=get action="${model.postURL}">
-				<spring:message code="Widget.findOnePatient.find" />
-				<input type="text" name="phrase" />
+				<spring:message code="Navigation.findPatient" />
+				<input type="text" name="phrase" value="<request:parameter name="phrase"/>"/>
 				<input type="submit" value="<spring:message code="general.searchButton" />" />
 			</form>
 		</c:when>

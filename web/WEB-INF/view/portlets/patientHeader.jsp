@@ -83,10 +83,9 @@
 			<td>|</td>
 			<td><spring:message code="Patient.regimen" />:</td>
 			<th>
-				<c:forEach items="${model.patientDrugOrders}" var="drugOrder" varStatus="drugOrderStatus">
-					<c:if test="${drugOrder.current}">
-						${drugOrder.drug.name}
-					</c:if>
+				<c:forEach items="${model.patientCurrentDrugOrders}" var="drugOrder" varStatus="drugOrderStatus">
+					${drugOrder.drug.name}
+					<c:if test="${!drugOrderStatus.last}">, </c:if>
 				</c:forEach>
 			</th>
 		</tr></table>

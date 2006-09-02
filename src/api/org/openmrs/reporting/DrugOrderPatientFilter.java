@@ -20,6 +20,10 @@ public class DrugOrderPatientFilter extends AbstractPatientFilter implements Pat
 		super.setSubType("Drug Order Patient Filter");	
 	}
 	
+	public boolean isReadyToRun() {
+		return true;
+	}
+	
 	public int compareTo(DrugOrderPatientFilter other) {
 		return compareHelper().compareTo(other.compareHelper());
 	}

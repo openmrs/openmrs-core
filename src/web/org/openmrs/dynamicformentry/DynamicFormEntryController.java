@@ -19,6 +19,7 @@ import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -78,6 +79,11 @@ public class DynamicFormEntryController extends SimpleFormController {
 								r = Integer.MAX_VALUE;
 							}
 							temp = l.compareTo(r);
+						}
+						if (temp == 0) {
+							Float lf = left.getSortWeight();
+							Float rf = right.getSortWeight();
+							temp = OpenmrsUtil.comparewithNullAsGreatest(lf, rf);
 						}
 						return temp;
 					}

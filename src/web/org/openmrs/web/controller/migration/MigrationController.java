@@ -264,8 +264,12 @@ public class MigrationController implements Controller {
 			Date autoExpireDate = parseDate(st[4]);
 			Date discontinuedDate = parseDate(st[5]);
 			String discontinuedReason = st[6];
+			if (discontinuedReason.trim().length() == 0)
+				discontinuedReason = null;
 			Double doseStrength = Double.parseDouble(st[7]);
 			String doseUnit = st[8];
+			if (doseUnit.trim().length() == 0)
+				doseUnit = null;
 			Integer dosesPerDay = Integer.valueOf(st[9]);
 			Integer daysPerWeek = Integer.valueOf(st[10]);
 			Boolean prn = Boolean.valueOf(st[11]);

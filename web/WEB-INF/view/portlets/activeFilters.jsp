@@ -72,7 +72,7 @@
 					</c:if>
 					<c:choose>
 						<c:when test="${shortcutOption.value.concrete}">
-							<a href="analysis.form?method=${method}&patient_filter_name=<c:out value="${shortcutOption.value.value}"/>&patient_filter_key=${item.label}">
+							<a href="analysis.form?method=${method}&patient_filter_name=<c:out value="${shortcutOption.value.value}"/><c:if test="${!item.allowMultiple}">&patient_filter_key=${item.label}</c:if>">
 								<spring:message code="Analysis.shortcut.${shortcutOption.key}"/>
 							</a>
 						</c:when>
@@ -80,7 +80,9 @@
 							<form method="post" action="analysis.form" id="form_${item.label}_${shortcutOption.key}" style="display: inline">
 								<input type="hidden" name="viewMethod" value="${model.viewMethod}"/>
 								<input type="hidden" name="method" value="${method}"/>
-								<input type="hidden" name="patient_filter_key" value="${item.label}"/>
+								<c:if test="${!item.allowMultiple}">
+									<input type="hidden" name="patient_filter_key" value="${item.label}"/>
+								</c:if>
 								<input type="hidden" name="patient_filter_name" value="${shortcutOption.value.value}"/>
 								<c:forEach var="arg" items="${shortcutOption.value.hiddenArgs}">
 									${arg}
@@ -88,9 +90,15 @@
 								<c:choose>
 									<c:when test="${shortcutOption.value.promptArgs}">
 										<c:forEach var="arg" items="${shortcutOption.value.args}">
-											<spring:message code="Analysis.shortcut.${item.label}.${arg.name}"/>
-											<%-- <input type="text" name="${arg}"/> --%>
-											<openmrs:fieldGen type="${arg.fieldClass}" formFieldName="${arg.name}" val="" parameters="optionHeader=[blank]|fieldLength=10" />
+											<c:choose>
+												<c:when test="${arg.label}">
+													<spring:message code="${arg.name}"/>
+												</c:when>
+												<c:otherwise>
+													<spring:message code="Analysis.shortcut.${item.label}.${arg.name}"/>
+													<openmrs:fieldGen type="${arg.fieldClass}" formFieldName="${arg.name}" val="" parameters="optionHeader=[blank]|fieldLength=10" />
+												</c:otherwise>
+											</c:choose>
 										</c:forEach>
 										<input type="submit" value="<spring:message code="general.add"/>"/>
 									</c:when>

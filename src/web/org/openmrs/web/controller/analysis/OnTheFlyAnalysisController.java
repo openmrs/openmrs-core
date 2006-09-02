@@ -3,6 +3,7 @@ package org.openmrs.web.controller.analysis;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.api.context.Context;
 import org.openmrs.reporting.AbstractReportObject;
@@ -25,6 +27,7 @@ import org.openmrs.reporting.PatientAnalysis;
 import org.openmrs.reporting.PatientFilter;
 import org.openmrs.reporting.ReportService;
 import org.openmrs.web.WebConstants;
+import org.openmrs.web.propertyeditor.ConceptEditor;
 import org.openmrs.web.propertyeditor.LocationEditor;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -73,8 +76,12 @@ public class OnTheFlyAnalysisController implements Controller {
 			for (String s : shortcuts) {
 				String[] temp = s.split("!");
 				String shortcutLabel = temp[0];
-				String[] opts = temp[1].split(",");
+				boolean allowMultiple = shortcutLabel.startsWith("+");
+				if (allowMultiple)
+					shortcutLabel = shortcutLabel.substring(1);
+				String[] opts = temp[1].split("\\|");
 				ShortcutSpec shortcut = new ShortcutSpec(shortcutLabel);
+				shortcut.setAllowMultiple(allowMultiple);
 				for (String opt : opts) {
 					temp = opt.split(":");
 					String optLabel = temp[0];
@@ -91,8 +98,7 @@ public class OnTheFlyAnalysisController implements Controller {
 			}
 			return ret;
 		} catch (Exception ex) {
-			log.warn("Exception trying to parse ShortcutSpec");
-			log.warn(ex);
+			log.warn("Exception trying to parse ShortcutSpec", ex);
 			throw new IllegalArgumentException("Bad shortcut spec string: " + shortcuts);
 		}
 	}
@@ -100,97 +106,87 @@ public class OnTheFlyAnalysisController implements Controller {
     public ModelAndView handleRequest(HttpServletRequest request,
     		HttpServletResponse response) throws ServletException, IOException {
 
+    	Map<String, Object> myModel = new HashMap<String, Object>();
+    	
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-		if (context == null || !context.isAuthenticated()) {
-			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
-			response.sendRedirect(request.getContextPath() + "/logout");
-			return null;
-		}
-		
-		ReportService reportService = context.getReportService();
-		
-		PatientAnalysis analysis = context.getPatientSetService().getMyPatientAnalysis();
-		
-		List<ShortcutSpec> shortcutList = shortcutHelper();
-		if (reportService != null) {
-			for (ShortcutSpec s : shortcutList) {
-				// make sure the filter exists
-				s.test(reportService);
-				// find which filter (if any) is currently selected for this shortcut
-				PatientFilter pf = analysis.getPatientFilters().get(s.getLabel());
-				log.debug("Looked at ShortcutSpec " + s + " to see if there's a currently-selected filter for label " + s.getLabel() + " (keyset = " + analysis.getPatientFilters().keySet() + "). Result: " + pf);
-				if (pf != null) {
-					log.debug("set current filter for " + s + " to " + pf.getName());
-					s.setCurrentFilter((PatientFilter) pf);
+		if (context != null && context.isAuthenticated()) {
+			ReportService reportService = context.getReportService();
+			
+			PatientAnalysis analysis = context.getPatientSetService().getMyPatientAnalysis();
+			if ("true".equals(request.getParameter("remove_all_filters"))) {
+				analysis.getPatientFilters().clear();
+			}
+			
+			List<ShortcutSpec> shortcutList = shortcutHelper();
+			if (reportService != null) {
+				for (ShortcutSpec s : shortcutList) {
+					// make sure the filter exists
+					s.test(reportService);
+					// find which filter (if any) is currently selected for this shortcut
+					PatientFilter pf = analysis.getPatientFilters().get(s.getLabel());
+					log.debug("Looked at ShortcutSpec " + s + " to see if there's a currently-selected filter for label " + s.getLabel() + " (keyset = " + analysis.getPatientFilters().keySet() + "). Result: " + pf);
+					if (pf != null) {
+						log.debug("set current filter for " + s + " to " + pf.getName());
+						s.setCurrentFilter((PatientFilter) pf);
+					}
 				}
 			}
-		}
-		
-		String[] filterIds = request.getParameterValues("patient_filter_id");
-		if (filterIds != null) {
-			for (String filterId : filterIds) {
-				try {
-					analysis.addFilter(null, reportService.getPatientFilterById(new Integer(filterId.trim())));
-				} catch (Exception ex) { }
-			}
-		}
-
-		/* TODO: Move this to patientSet portlet
-		if ("cd4".equals(viewMethod)) {
-			log.debug("preparing cd4 view");
-			ObsListProducer olp = new ObsListProducer(context.getConceptService().getConcept(new Integer(5497)));
-			pds.putDataSeries("cd4s", olp.produceData(context, result));
-			PatientDataSetFormatter formatter = new ChronologicalObsFormatterHtml("cd4s");
-			resultsToDisplay = formatter.format(pds, locale);
-		}
-		*/
-		
-		Map<String, PatientFilter> filters = analysis.getPatientFilters();
-		
-		List availableFilters = new ArrayList<PatientFilter>(reportService.getAllPatientFilters());
-		for (PatientFilter pf : filters.values()) {
-			availableFilters.remove(pf);
-		}
-		Collections.sort(availableFilters, new Comparator() {
-				public int compare(Object a, Object b) {
-					if (a.getClass().equals(b.getClass()) && a instanceof Comparable)
-						return ((Comparable) a).compareTo((Comparable) b);
-					AbstractReportObject left = (AbstractReportObject) a;
-					AbstractReportObject right = (AbstractReportObject) b;
-					int temp = left.getType().compareTo(right.getType());
-					if (temp == 0) {
-						temp = left.getSubType().compareTo(right.getSubType());
-					}
-					if (temp == 0) {
-						temp = left.getName().compareTo(right.getName());
-					}
-					if (temp == 0) {
-						temp = left.getDateCreated().compareTo(right.getDateCreated());
-					}
-					return temp;
+			
+			String[] filterIds = request.getParameterValues("patient_filter_id");
+			if (filterIds != null) {
+				for (String filterId : filterIds) {
+					try {
+						analysis.addFilter(null, reportService.getPatientFilterById(new Integer(filterId.trim())));
+					} catch (Exception ex) { }
 				}
-			});
+			}
+			
+			Map<String, PatientFilter> filters = analysis.getPatientFilters();
+			
+			List availableFilters = new ArrayList<PatientFilter>(reportService.getAllPatientFilters());
+			for (PatientFilter pf : filters.values()) {
+				availableFilters.remove(pf);
+			}
+			Collections.sort(availableFilters, new Comparator() {
+					public int compare(Object a, Object b) {
+						if (a.getClass().equals(b.getClass()) && a instanceof Comparable)
+							return ((Comparable) a).compareTo((Comparable) b);
+						AbstractReportObject left = (AbstractReportObject) a;
+						AbstractReportObject right = (AbstractReportObject) b;
+						int temp = left.getType().compareTo(right.getType());
+						if (temp == 0) {
+							temp = left.getSubType().compareTo(right.getSubType());
+						}
+						if (temp == 0) {
+							temp = left.getName().compareTo(right.getName());
+						}
+						if (temp == 0) {
+							temp = left.getDateCreated().compareTo(right.getDateCreated());
+						}
+						return temp;
+					}
+				});
+			
+			List<LinkSpec> linkList = linkHelper();
+			
+			Map<String, Object> filterPortletParams = new HashMap<String, Object>();
+			filterPortletParams.put("patientAnalysis", analysis);
+			filterPortletParams.put("suggestedFilters", availableFilters);
+			filterPortletParams.put("deleteURL", "analysis.form?method=removeFilter");
+			filterPortletParams.put("addURL", "analysis.form?method=addFilter");
+			filterPortletParams.put("shortcuts", shortcutList);
 		
-		List<LinkSpec> linkList = linkHelper();
-		
-		Map<String, Object> filterPortletParams = new HashMap<String, Object>();
-		filterPortletParams.put("patientAnalysis", analysis);
-		filterPortletParams.put("suggestedFilters", availableFilters);
-		filterPortletParams.put("deleteURL", "analysis.form?method=removeFilter");
-		filterPortletParams.put("addURL", "analysis.form?method=addFilter");
-		filterPortletParams.put("shortcuts", shortcutList);
-	
-		Map<String, Object> myModel = new HashMap<String, Object>();
-		myModel.put("active_filters", filters);
-		myModel.put("shortcuts", shortcutList);
-		myModel.put("filterPortletParams", filterPortletParams);
-		myModel.put("links", linkList);
-		
-		String viewMethod = request.getParameter("viewMethod");
-		if (viewMethod != null && viewMethod.length() > 0)
-			myModel.put("viewMethod", viewMethod);
+			myModel.put("active_filters", filters);
+			myModel.put("shortcuts", shortcutList);
+			myModel.put("filterPortletParams", filterPortletParams);
+			myModel.put("links", linkList);
+			
+			String viewMethod = request.getParameter("viewMethod");
+			if (viewMethod != null && viewMethod.length() > 0)
+				myModel.put("viewMethod", viewMethod);
+		}
 
 		return new ModelAndView(formView, "model", myModel);
 	}
@@ -239,6 +235,10 @@ public class OnTheFlyAnalysisController implements Controller {
 		ReportService reportService = context.getReportService();
 		
 		PatientAnalysis analysis = context.getPatientSetService().getMyPatientAnalysis();
+		
+		if ("true".equals(request.getParameter("remove_all_filters"))) {
+			analysis.getPatientFilters().clear();
+		}
 
 		String[] idsToAdd = request.getParameterValues("patient_filter_id");
 		if (idsToAdd != null) {
@@ -271,10 +271,11 @@ public class OnTheFlyAnalysisController implements Controller {
 					log.debug("result is " + filterInstance);
 					for (String argName : opt.getAllArgs()) {
 						Object argVal = request.getParameter(argName);
-						log.debug("about to set " + argName + " to " + argVal);
 						PropertyDescriptor pd = new PropertyDescriptor(argName, filterClass);
 						// TODO: fix this hack
-						if (pd.getPropertyType().equals(Location.class)) {
+						if (argVal != null && ((String) argVal).trim().length() == 0) {
+							argVal = null;
+						} else if (pd.getPropertyType().equals(Location.class)) {
 							LocationEditor le = new LocationEditor(context);
 							le.setAsText((String) argVal);
 							argVal = le.getValue();
@@ -282,8 +283,31 @@ public class OnTheFlyAnalysisController implements Controller {
 							try {
 								argVal = Integer.valueOf((String) argVal);
 							} catch (Exception ex) { }
+						} else if (pd.getPropertyType().equals(Double.class)) {
+							try {
+								argVal = Double.valueOf((String) argVal);
+							} catch (Exception ex) { }
+						} else if (pd.getPropertyType().equals(Concept.class)) {
+							ConceptEditor ce = new ConceptEditor(context);
+							ce.setAsText((String) argVal);
+							Concept concept = (Concept) ce.getValue();
+							// force a lazy-load of this concept's name
+							if (concept != null)
+								concept.getName(context.getLocale());
+							argVal = concept;
+						} else if (pd.getPropertyType().isEnum()) {
+							List<Enum> constants = Arrays.asList((Enum[]) pd.getPropertyType().getEnumConstants());
+							for (Enum e : constants) {
+								if (e.toString().equals(argVal)) {
+									argVal = e;
+									break;
+								}
+							}
 						}
-						pd.getWriteMethod().invoke(filterInstance, argVal);
+						if (argVal != null) {
+							log.debug("about to set " + argName + " to " + argVal);
+							pd.getWriteMethod().invoke(filterInstance, argVal);
+						}
 					}
 					pf = filterInstance;
 				} catch (Exception ex) {
@@ -294,7 +318,10 @@ public class OnTheFlyAnalysisController implements Controller {
 			}
 			if (pf != null) {
 				log.debug("adding filter " + pf + " to analysis");
-				analysis.addFilter(addAsKey, pf);
+				if (pf.isReadyToRun())
+					analysis.addFilter(addAsKey, pf);
+				else
+					log.debug("skipping...not ready to run yet...");
 			} else {
 				log.warn("Can't find filter by that name: " + nameToAdd);
 			}
@@ -314,6 +341,9 @@ public class OnTheFlyAnalysisController implements Controller {
 		
 		PatientAnalysis analysis = context.getPatientSetService().getMyPatientAnalysis();
 		if (analysis != null) {
+			if ("true".equals(request.getParameter("remove_all_filters"))) {
+				analysis.getPatientFilters().clear();
+			}
 			String keyToRemove = request.getParameter("patient_filter_key");
 			log.debug("removing filter " + keyToRemove);
 			if (keyToRemove != null) {
@@ -327,12 +357,19 @@ public class OnTheFlyAnalysisController implements Controller {
 	
 	public class ShortcutSpec {
 		private String label;
+		private boolean allowMultiple = false;
 		private PatientFilter currentFilter;
 		public LinkedHashMap<String, ShortcutOptionSpec> options;
 		public ShortcutSpec() { }
 		public ShortcutSpec(String label) {
 			this.label = label;
 			options = new LinkedHashMap<String, ShortcutOptionSpec>();
+		}
+		public boolean isAllowMultiple() {
+			return allowMultiple;
+		}
+		public void setAllowMultiple(boolean allowMultiple) {
+			this.allowMultiple = allowMultiple;
 		}
 		public String getLabel() {
 			return label;
@@ -390,6 +427,15 @@ public class OnTheFlyAnalysisController implements Controller {
 		public void setName(String name) {
 			this.name = name;
 		}
+		public boolean isLabel() {
+			return fieldClass == null;
+		}
+		public String toString() {
+			if (isLabel())
+				return name;
+			else
+				return name + "#" + fieldClass;
+		}
 	}
 	
 	public class ShortcutOptionSpec {
@@ -409,8 +455,8 @@ public class OnTheFlyAnalysisController implements Controller {
 			return value;
 		}
 		// could be "child_only_filter"
-		// could be "@org.openmrs.reporting.ArvTreatmentGroupFilter(group$String)"
-		// could be "@org.openmrs.reporting.PatientCharacteristicFilter(gender=m$String)"
+		// could be "@org.openmrs.reporting.ArvTreatmentGroupFilter(group#java.lang.String)"
+		// could be "@org.openmrs.reporting.PatientCharacteristicFilter(gender=m#java.lang.String)"
 		public void setValue(String value) {
 			this.value = value;
 			concrete = value == null || !value.startsWith("@");
@@ -423,43 +469,50 @@ public class OnTheFlyAnalysisController implements Controller {
 					List<String> tempHidden = new ArrayList<String>();
 					List<String> tempHiddenNames = new ArrayList<String>();
 					className = value.substring(1, value.indexOf('('));
+					log.debug("looking at " + value);
 					String s = value.substring(value.indexOf('(') + 1, value.lastIndexOf(')'));
+					log.debug("Looking at: " + s);
 					String[] t = s.split(",");
 					for (String arg : t) {
-						String[] u = arg.split("\\$");
-						if (u.length != 2) {
-							StringBuilder msg = new StringBuilder();
-							msg.append(arg);
-							msg.append(" -> ");
-							for (String str : u) {
-								msg.append(str).append(" , ");
-							}
-							throw new IllegalArgumentException("shortcut option arguments must be label$Type. " + msg);
-						}
-						if (u[0].indexOf('=') > 0) {
-							String[] v = u[0].split("=");
-							if (v.length != 2) {
+						log.debug("looking at: " + arg);
+						if (arg.startsWith("\'") && arg.endsWith("\'")) {
+							temp.add(new ShortcutArg(arg.substring(1, arg.length() - 1), null));
+						} else {
+							String[] u = arg.split("#");
+							if (u.length != 2) {
 								StringBuilder msg = new StringBuilder();
 								msg.append(arg);
 								msg.append(" -> ");
 								for (String str : u) {
 									msg.append(str).append(" , ");
 								}
-								throw new IllegalArgumentException("shortcut option arguments has an incorrect equal sign. " + msg);
+								throw new IllegalArgumentException("shortcut option arguments must be label$Type. " + msg);
 							}
-							String hidden = "<input type=hidden name=\"" + v[0] + "\" value=\"" + v[1] + "\"/>";
-							tempHidden.add(hidden);
-							tempHiddenNames.add(v[0]);
-							log.debug("hidden arg " + v[0] + " -> " + v[1]);
-						} else {
-							String name = u[0];
-							Class c;
-							try {
-								c = Class.forName(u[1]);
-							} catch (ClassNotFoundException ex) {
-								throw new IllegalArgumentException(ex);
+							if (u[0].indexOf('=') > 0) {
+								String[] v = u[0].split("=");
+								if (v.length != 2) {
+									StringBuilder msg = new StringBuilder();
+									msg.append(arg);
+									msg.append(" -> ");
+									for (String str : u) {
+										msg.append(str).append(" , ");
+									}
+									throw new IllegalArgumentException("shortcut option arguments has an incorrect equal sign. " + msg);
+								}
+								String hidden = "<input type=hidden name=\"" + v[0] + "\" value=\"" + v[1] + "\"/>";
+								tempHidden.add(hidden);
+								tempHiddenNames.add(v[0]);
+								log.debug("hidden arg " + v[0] + " -> " + v[1]);
+							} else {
+								String name = u[0];
+								Class c;
+								try {
+									c = Class.forName(u[1]);
+								} catch (ClassNotFoundException ex) {
+									throw new IllegalArgumentException(ex);
+								}
+								temp.add(new ShortcutArg(name, c));
 							}
-							temp.add(new ShortcutArg(name, c));
 						}
 					}
 					if (temp.size() > 0) {
@@ -470,8 +523,7 @@ public class OnTheFlyAnalysisController implements Controller {
 						hiddenArgNames = tempHiddenNames;
 					}
 				} catch (IndexOutOfBoundsException ex) {
-					log.warn("Error parsing arguments list in " + value);
-					log.warn(ex);
+					log.warn("Error parsing arguments list in " + value, ex);
 				}
 			}
 		}
@@ -503,7 +555,8 @@ public class OnTheFlyAnalysisController implements Controller {
 			List<String> ret = new ArrayList<String>();
 			if (args != null) {
 				for (ShortcutArg arg : args)
-					ret.add(arg.getName());
+					if (!arg.isLabel())
+						ret.add(arg.getName());
 			}
 			if (hiddenArgNames != null) {
 				ret.addAll(hiddenArgNames);

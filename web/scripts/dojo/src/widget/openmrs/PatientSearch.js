@@ -17,6 +17,7 @@ dojo.widget.defineWidget(
 	{
 		patientId: "",
 		showAddPatientLink: true,
+		searchPhrase: "",
 		
 		initializer: function(){
 			dojo.debug("initializing patientsearch");

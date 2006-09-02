@@ -11,7 +11,7 @@ public class TextObsPatientFilter extends AbstractReportObject implements Patien
 
 	Concept concept;
 	String value;
-	Boolean suggestFromDatabase = false;
+	Boolean suggestFromDatabase = false; // not yet implemented: should we suggest with a (dropdown?) of known values from the database?
 	
 	public TextObsPatientFilter(Concept concept, String value) {
 		this.concept = concept;
@@ -19,6 +19,24 @@ public class TextObsPatientFilter extends AbstractReportObject implements Patien
 	}
 
 	public TextObsPatientFilter() { }
+	
+	public boolean isReadyToRun() {
+		return getConcept() != null && getValue() != null;
+	}
+	
+	public boolean equals(Object o) {
+		if (o == null)
+			return false;
+		if (o instanceof TextObsPatientFilter) {
+			TextObsPatientFilter other = (TextObsPatientFilter) o;
+			if (getReportObjectId() != null && getReportObjectId().equals(other.getReportObjectId()))
+				return true;
+			return equals(getConcept(), other.getConcept())
+					&& equals(getValue(), other.getValue());
+		} else {
+			return false;
+		}
+	}
 	
 	public Concept getConcept() {
 		return concept;

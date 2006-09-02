@@ -29,7 +29,7 @@ public interface PatientSetDAO {
 	
 	public PatientSet getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate, Integer minAge, Integer maxAge, Boolean aliveOnly, Boolean deadOnly) throws DAOException;
 	
-	public PatientSet getPatientsHavingNumericObs(Integer conceptId, TimeModifier timeModifier, PatientSetService.Modifier modifier, Number value) throws DAOException;
+	public PatientSet getPatientsHavingNumericObs(Integer conceptId, TimeModifier timeModifier, PatientSetService.Modifier modifier, Number value, Date fromDate, Date toDate) throws DAOException;
 	
 	public PatientSet getPatientsHavingTextObs(Integer conceptId, String value) throws DAOException;
 	

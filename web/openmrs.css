@@ -671,3 +671,7 @@ fieldset {
 span.noOrdersMessage {
 	text-variant: italics;
 }
+
+.encounterFormTable tr {
+	background-color: lightgray;
+}

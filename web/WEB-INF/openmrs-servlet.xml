@@ -106,8 +106,10 @@
 					<prop key="**/patientProgram.form">patientProgramFormController</prop>
 					<prop key="**/patientSet.form">patientSetFormController</prop>
 					<prop key="**/cohortSummary.list">cohortSummaryController</prop>
+					<prop key="**/encounterDisplay.list">encounterDisplayController</prop>
 					<prop key="**/patientPrograms.portlet">patientProgramsPortletController</prop>
 					<prop key="**/patientSet.portlet">patientSetPortletController</prop>
+					<prop key="**/patientRegimens.portlet">patientRegimenPortletController</prop>
 					<prop key="**/*.portlet">portletController</prop>
 					<prop key="**/*.field">fieldGenController</prop>
 					<prop key="**/*.htm">springController</prop>
@@ -119,6 +121,7 @@
 		<bean id="portletController" class="org.openmrs.web.controller.PortletController"/>
 		<bean id="patientProgramsPortletController" class="org.openmrs.web.controller.PatientProgramsPortletController"/>
 		<bean id="patientSetPortletController" class="org.openmrs.web.controller.PatientSetPortletController"/>
+		<bean id="patientRegimenPortletController" class="org.openmrs.web.controller.RegimenPortletController"/>
 		<bean id="springController" class="org.openmrs.web.controller.SpringController"/>
 
     <!-- =============================== -->
@@ -641,10 +644,11 @@
 			<bean id="otfaController" class="org.openmrs.web.controller.analysis.OnTheFlyAnalysisController">
 				<property name="shortcuts">
 					<list>
-						<value>gender!both:*,male:@org.openmrs.reporting.PatientCharacteristicFilter(gender=m$java.lang.String),female:@org.openmrs.reporting.PatientCharacteristicFilter(gender=f$java.lang.String)</value>
-						<value>age!all:*,child:@org.openmrs.reporting.PatientCharacteristicFilter(maxAge=14$java.lang.Integer),adult:@org.openmrs.reporting.PatientCharacteristicFilter(minAge=15$java.lang.Integer)</value>
-						<value>arv_tx_group!all:*,treatmentGroup:@org.openmrs.reporting.ArvTxGroupFilter(treatmentGroup$java.lang.String)</value>
-						<value>location!all:*,location:@org.openmrs.reporting.LocationFilter(location$org.openmrs.Location)</value>
+						<value>gender!both:*|male:@org.openmrs.reporting.PatientCharacteristicFilter(gender=m#java.lang.String)|female:@org.openmrs.reporting.PatientCharacteristicFilter(gender=f#java.lang.String)</value>
+						<value>age!all:*|child:@org.openmrs.reporting.PatientCharacteristicFilter(maxAge=14#java.lang.Integer)|adult:@org.openmrs.reporting.PatientCharacteristicFilter(minAge=15#java.lang.Integer)</value>
+						<value>arv_tx_group!all:*|treatmentGroup:@org.openmrs.reporting.ArvTxGroupFilter(treatmentGroup#java.lang.String)</value>
+						<value>location!all:*|location:@org.openmrs.reporting.LocationFilter(location#org.openmrs.Location)</value>
+						<value>+conceptNumeric!conceptNumeric:@org.openmrs.reporting.NumericObsPatientFilter(timeModifier#org.openmrs.api.PatientSetService$TimeModifier,concept#org.openmrs.Concept,modifier#org.openmrs.api.PatientSetService$Modifier,value#java.lang.Double,'in last',withinLastMonths#java.lang.Integer,'months')</value>
 					</list>
 				</property>
 				<property name="links">
@@ -793,6 +797,8 @@
 			<property name="formView"><value>/dynamicformentry/enter</value></property>
 			<property name="successView"><value>patientDashboard.form</value></property>
 		</bean>
+	
+		<bean id="encounterDisplayController" class="org.openmrs.web.controller.encounter.EncounterDisplayController"/>
 
     <!-- ======================================== -->
 	<!-- =====    Programs and Workflows    ===== -->

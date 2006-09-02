@@ -1,6 +1,12 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
+<openmrs:htmlInclude file="/scripts/easyAjax.js" />
+
 <div id="encounterPortlet">
 
+	<div id="viewAnEncounter" style="position: absolute; z-index: 5; border: 2px black solid; background-color: silver; width: 100%;">
+		<div align="right"><a href="javascript:hideLayer('viewAnEncounter')">[X]</a></div>
+		<div id="viewEncounterContent"></div>
+	</div>
 	<openmrs:hasPrivilege privilege="Add Forms">
 		<div id="encounterForms">
 			<div class="boxHeader">Forms</div>
@@ -136,6 +142,8 @@
 		function handleGetObservations(encounterId) { 
 			DWRObsService.getObservations(encounterId, handleRefreshObsData);
 			document.getElementById("encounterId").value = encounterId;
+			showLayer('viewAnEncounter');
+			loadInto('<spring:message code="general.loading"/>', 'encounterDisplay.list?encounterId=' + encounterId, "viewEncounterContent")
 		}
 
 		function handleRefreshObsData(data) {
