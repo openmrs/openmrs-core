@@ -22,4 +22,24 @@ public class WebUtil {
 		
 		return s;
 	}
+	
+	public static String escapeNewlines(String s) {
+		if (s == null)
+			return "";
+		
+		s = s.replace("\n", "\\n");
+		
+		return s;
+	}
+
+	public static String escapeQuotesAndNewlines(String s) {
+		if (s == null)
+			return "";
+		
+		s = s.replace("\"", "\\\"");
+		s = s.replace("\n", "\\n");
+		
+		return s;
+	}
+	
 }

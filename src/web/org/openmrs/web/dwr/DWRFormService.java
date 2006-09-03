@@ -224,7 +224,6 @@ public class DWRFormService {
 	}
     
     private String generateJSTree(TreeMap<Integer, TreeSet<FormField>> formFields, Integer current, Locale locale) {
-		
 		String s = "";
 		
 		if (formFields.containsKey(current)) {
@@ -259,20 +258,20 @@ public class DWRFormService {
     	return "addNode(tree, {formFieldId: " + ff.getFormFieldId() + ", " + 
     					"parent: " + parent + ", " + 
     					"fieldId: " + field.getFieldId() + ", " + 
-    					"fieldName: \"" + WebUtil.escapeQuotes(field.getName()) + "\", " + 
-    					"description: \"" + WebUtil.escapeQuotes(field.getDescription()) + "\", " +
+    					"fieldName: \"" + WebUtil.escapeQuotesAndNewlines(field.getName()) + "\", " + 
+    					"description: \"" + WebUtil.escapeQuotesAndNewlines(field.getDescription()) + "\", " +
     					"fieldType: " + field.getFieldType().getFieldTypeId() + ", " + 
     					"conceptId: " + concept.getConceptId() + ", " + 
-						"conceptName: \"" + WebUtil.escapeQuotes(conceptName.getName()) + "\", " + 
+						"conceptName: \"" + WebUtil.escapeQuotesAndNewlines(conceptName.getName()) + "\", " + 
     					"tableName: \"" + field.getTableName() + "\", " + 
     					"attributeName: \"" + field.getAttributeName() + "\", " + 
-    					"defaultValue: \"" + WebUtil.escapeQuotes(field.getDefaultValue()) + "\", " + 
+    					"defaultValue: \"" + WebUtil.escapeQuotesAndNewlines(field.getDefaultValue()) + "\", " + 
     					"selectMultiple: " + field.getSelectMultiple() + ", " + 
     					"numForms: " + field.getForms().size() + ", " + 
     					"isSet: " + isSet + ", " +
     						
     					"fieldNumber: " + ff.getFieldNumber() + ", " + 
-    					"fieldPart: \"" + (ff.getFieldPart() == null ? "" : WebUtil.escapeQuotes(ff.getFieldPart())) + "\", " + 
+    					"fieldPart: \"" + (ff.getFieldPart() == null ? "" : WebUtil.escapeQuotesAndNewlines(ff.getFieldPart())) + "\", " + 
     					"pageNumber: " + ff.getPageNumber() + ", " + 
     					"minOccurs: " + ff.getMinOccurs() + ", " + 
     					"maxOccurs: " + ff.getMaxOccurs() + ", " + 
