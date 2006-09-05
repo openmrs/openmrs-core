@@ -669,13 +669,43 @@ fieldset {
 }
 
 span.noOrdersMessage {
-	text-variant: italics;
+	font-style: italic;
 }
 
 .encounterFormTable tr {
-	background-color: lightgray;
+	background-color: lightgrey;
 }
 
 #eventCalendarPortlet {
 	font-size: 0.8em;
 }
+
+.listItemBox {
+	width: 435px;
+	padding: 2px;
+	border: 1px solid lightgray;
+	float: left;
+	background-color: #EFEFEF;
+	}
+	.listItem {
+		padding: 2px;
+		float: left;
+		margin: 2px;
+		width: 210px;
+		font-size: .9em;
+		border: 1px solid lightgrey;
+		background-color: white;
+	}
+	.listItem input {
+		float: left;
+		vertical-align: middle;
+		margin: 2px 2px 0px 2px;
+	}
+	.listItem label {
+		float: left;
+		width: 187px;
+	}
+	.listItemChecked { 
+		background-color: #8FABC7;
+		color: white;
+	}

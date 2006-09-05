@@ -106,7 +106,7 @@
 		<tr>
 			<td valign="top"><spring:message code="User.roles"/></td>
 			<td valign="top">
-				<openmrs:listPicker name="roleStrings" allItems="${roles}" currentItems="${user.roles}" contextPath="${pageContext.request.contextPath}" />
+				<openmrs:listPicker name="roleStrings" allItems="${roles}" currentItems="${user.roles}" />
 			</td>
 		</tr>
 		<c:if test="${!(user.creator == null)}">
