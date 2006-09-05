@@ -6,9 +6,11 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.io.FileDescriptor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOContext;
 
@@ -90,7 +92,7 @@ public class ArdenService {
 		
 		 try {
 		      int index  = fn.indexOf(".mlm");
-		      String cfn = fn.substring(0,index); 
+		      String cfn; // = fn.substring(0,index); 
 		    
 		      MLMObject ardObj = new MLMObject(context, context.getLocale(), null);
 		      
@@ -103,15 +105,23 @@ public class ArdenService {
 		      // start parsing at the compilationUnit rule
 		      parser.startRule();
 		      BaseAST t = (BaseAST) parser.getAST();
-		      OutputStream os = new FileOutputStream("src/api/org/openmrs/arden/compiled/" + cfn+".java");
-		      Writer w = new OutputStreamWriter(os);
-		      log.info("Writing to file - " + cfn+".java");
+		  //    OutputStream os = new FileOutputStream("src/api/org/openmrs/arden/compiled/" + cfn+".java");
+		  //    Writer w = new OutputStreamWriter(os);
+		  //    log.info("Writing to file - " + cfn+".java");
 		      	      
 		      log.debug(t.toStringTree());     // prints maintenance
 		     
 		      ArdenBaseTreeParser treeParser = new ArdenBaseTreeParser();
 		      
 		     String maintenance =  treeParser.maintenance(t, ardObj);
+	
+		     cfn = ardObj.getClassName();
+		     OutputStream os = new FileOutputStream("src/api/org/openmrs/arden/compiled/" + cfn+".java");
+		  //   int fd = 2;
+		  //   OutputStream os = new FileOutputStream(FileDescriptor.out);
+		     Writer w = new OutputStreamWriter(os);
+		     log.info("Writing to file - " + cfn+".java");
+	
 		 	 w.write("/********************************************************************" + "\n");
 		 	 w.write(maintenance);
 		 	
@@ -123,22 +133,25 @@ public class ArdenService {
 		     w.write("import java.util.Iterator;\nimport java.util.Locale;\nimport java.util.Set;\n");
 		     w.write("import java.util.HashMap;\n");
 		     w.write("import org.openmrs.Concept;\nimport org.openmrs.Obs;\nimport org.openmrs.Patient;\n");
-		     w.write("import org.openmrs.api.context.Context;\n\n");
+		     w.write("import org.openmrs.api.context.Context;\n");
+		     w.write("import org.openmrs.arden.*;\n\n");
 		     
 		     String classname = ardObj.getClassName();
-		     w.write("public class " + classname + "{\n"); // Start of class
+		     w.write("public class " + classname + " implements ArdenRule{\n"); // Start of class
 		     w.write("private Context context;\nprivate Patient patient;\nprivate Locale locale;\nprivate String firstname;\n");
+		     w.write("private ArdenDataSource dataSource;\n");
 		     w.write("private HashMap<String, String> userVarMap;\n");
 		     w.write("\n\n//Constructor\n");
-		     w.write("public " + classname + "(Context c, Integer pid, Locale l){\n");
-		     w.write("\tcontext = c;\n\tlocale = l;\n\tpatient = c.getPatientService().getPatient(pid);\n");
+		     w.write("public " + classname + "(Context c, Patient p, ArdenDataSource d){\n");
+		     w.write("\tcontext = c;\n\tlocale = c.getLocale();\n\tpatient = p;\n\tdataSource = d;\n");
 		     w.write("\tuserVarMap = new HashMap <String, String>();\n");
 		     w.write("\tfirstname = patient.getPatientName().getGivenName();\n");
 		     w.write("\tuserVarMap.put(\"firstname\", firstname);\n");
-		     w.write("\tinitAction();");		     
+		     w.write("\tinitAction();\n\t");		     
 		     w.write("}\n\n\n"); // End of constructor
 		     
-		     w.write("public Obs getObsForConceptForPatient(Concept concept, Locale locale, Patient patient) {\n");
+		     w.write("public ArdenRule getChildren() {\n\t\tArdenRule retVal = null;\n\t\treturn retVal;\n}\n\n");
+	/*	     w.write("public Obs getObsForConceptForPatient(Concept concept, Locale locale, Patient patient) {\n");
 		     w.write("\tSet <Obs> MyObs;\n");
 		     w.write("\tObs obs = new Obs();\n\t{");
 		     w.write("\t\tMyObs = context.getObsService().getObservations(patient, concept);\n");
@@ -164,15 +177,18 @@ public class ArdenService {
 		     w.write("\t}\n");
 		     w.write("\treturn retVal;\n");
 		     w.write("}\n\n");	// End of this function
+*/
 		     w.flush();
 		     		     
 		     log.debug(t.getNextSibling().getNextSibling().toStringTree()); // Print data
-		  	 		      
+		     System.out.println(t.getNextSibling().getNextSibling().toStringTree()); // Print data
+		     
 		   	 treeParser.data(t.getNextSibling().getNextSibling(),ardObj);
 		   	 log.debug(t.getNextSibling().getNextSibling().getNextSibling().toStringTree()); // Print logic
 		   	 System.out.println(t.getNextSibling().getNextSibling().getNextSibling().toStringTree()); // Print logic
 		     String logicstr = treeParser.logic(t.getNextSibling().getNextSibling().getNextSibling(), ardObj);
 		    
+		     ardObj.PrintEvaluateList();   // To Debug
 		     ardObj.WriteEvaluate(w);
 		     String actionstr = treeParser.action(t.getNextSibling().getNextSibling().getNextSibling().getNextSibling(), ardObj);
 		     ardObj.WriteAction(actionstr, w);

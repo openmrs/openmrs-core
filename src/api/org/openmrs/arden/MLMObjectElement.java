@@ -130,10 +130,18 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 
    public String getConcept(){
 	   String  cn;
+	   int len;
 		int index;
 		
 		index = conceptName.indexOf("from");	// First substring
-		cn = conceptName.substring(1,index);
+		if(index != -1) {
+			cn = conceptName.substring(1,index);
+		}
+		else {
+//			len = conceptName.length();
+//			cn = conceptName.substring(1,len-1);
+			cn = conceptName;
+		}	
 		return cn;
    }
   
@@ -195,7 +203,7 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
    
    public boolean writeAction(String key, Writer w) throws Exception {
 	   boolean retVal = false;
-		if(!hasConclude) {	// no conclude
+		/*if(!hasConclude)*/ {	// no conclude
 				String var = "", val = "";
 			    Iterator iter = iterator();
 				while(iter.hasNext()) {
@@ -206,11 +214,12 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 				//	w.append("\t\t\telse {\n");
 				//	w.append("\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n");
 				//	w.append("\t\t\t}");
-					w.append("\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");");
+					w.append("\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n");
 				}
 				retVal = true;
 			}
-			else { // has conclude
+			/* else */
+			if(hasConclude)	{ // has conclude
 				if(concludeVal == true) {
 					w.append("\t\tretVal = true;\n");
 				}
@@ -230,150 +239,31 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
   
    public boolean writeEvaluate(String key, Writer w) throws Exception{
 	   boolean retVal = false;
-	   if(dbAccessRequired){
+	   if(!key.startsWith("Conclude") &&  !key.startsWith("ELSE") &&  !key.startsWith("ENDIF")
+			   && !key.equals("AND")){
 		   String cn = getConcept();
 		   
-		   w.append("public boolean evaluate_" + key + "(){\n");
+		   w.append("private Obs " + key + "(){\n");
+		  		
+		   if(dbAccessRequired){
 		   w.append("\tConcept concept;\n");
-	       w.append("\tboolean retVal = false;\n");
 	       w.append("\tObs obs;\n\n");
 		   
 		   w.append("\tconcept = context.getConceptService().getConceptByName(\"" + cn.trim() + "\");\n");
-		   w.append("\tobs = getObsForConceptForPatient(concept,locale, patient);\n");
-		   w.append("\tif(obs != null) {\n");
-		   
-		   if (compOp != null){
-			   switch(compOp) {
-			   		case EQUALS:
-			   		{switch(compOpType){
-		  			case 3: // boolean
-		  				w.append("\t\tboolean " + key + " = obs.getValueAsBoolean();\n");
-		  				w.append("\t\tif (" + key + " == " + Boolean.toString(answerBool) + ") {\n");
-		  			/*	if(!hasConclude) {	// no conclude
-			  				String var = "", val = "";
-			  			    Iterator iter = iterator();
-			  				while(iter.hasNext()) {
-			  					var = (String) iter.next();
-			  					val = getUserVarVal(var);
-			  					w.append("\t\t\t//"+var+ " = \"" + val +"\";\n"); // write as comment
-			  				//	w.append("\t\t\tif(!userVarMap.containsKey("+ var + ")) {\n\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n\t\t\t}\n");
-			  				//	w.append("\t\t\telse {\n");
-			  				//	w.append("\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n");
-			  				//	w.append("\t\t\t}");
-			  					w.append("\n\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");");
-			  				}
-		  				}
-		  				else { // has conclude
-		  					w.append("\t\t\tretVal = true;\n");
-		  					w.append("\t\t\treturn retVal;\n");
-		  				}
-		  			*/	
-		  				w.append("\t\tretVal = true;");
-		  				w.append("\n\t\t}\n");
-		  				break;
-		  			case 2: // integer
-		  				w.append("\t\tdouble " + key + " = obs.getValueNumeric();\n");
-		  				w.append("\t\tif (" + key + " = " + Integer.toString(answerInt) + ") {\n");
-		  			/*	if(!hasConclude) {	
-			  				String var = "", val = "";
-			  			    Iterator iter = iterator();
-			  				while(iter.hasNext()) {
-			  					var = (String) iter.next();
-			  					val = getUserVarVal(var);
-			  				//	w.append("\t\t\t//"+var+ " = \"" + val +"\";\n"); // write as comment
-			  				//	w.append("\t\t\tif(!userVarMap.containsKey("+ var + ")) {\n\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n\t\t\t}\n");
-			  				//	w.append("\t\t\telse {\n");
-			  				//	w.append("\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n");
-			  				//	w.append("\t\t\t}");
-			  					w.append("\n\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");");
-			  				}
-		  				}
-		  				else { // has conclude
-		  					w.append("\t\t\tretVal = true;\n");
-		  					w.append("\t\t\treturn retVal;\n");
-		  				}
-		  				*/
-		  				w.append("\t\tretVal = true;");
-		  				w.append("\n\t\t}\n");
-		  				break;
-		  			case 1: // String
-		  				w.append("\t\tString " + key + " = obs.getValueText();\n");
-		  				w.append("\t\tif (" + key + ".equals(\"" + answerStr + "\")) {\n");
-		  		/*		if(!hasConclude) {	
-			  				String var = "", val = "";
-			  			    Iterator iter = iterator();
-			  				while(iter.hasNext()) {
-			  					var = (String) iter.next();
-			  					val = getUserVarVal(var);
-			  				//	w.append("\t\t\t//"+var+ " = \"" + val +"\";\n"); // write as comment
-			  				//	w.append("\t\t\tif(!userVarMap.containsKey("+ var + ")) {\n\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n\t\t\t}\n");
-			  				//	w.append("\t\t\telse {\n");
-			  				//	w.append("\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n");
-			  				//	w.append("\t\t\t}");
-			  					w.append("\n\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");");
-			  				}
-		  				}
-		  				else { // has conclude
-		  					w.append("\t\t\tretVal = true;\n");
-		  					w.append("\t\t\treturn retVal;\n");
-		  				}
-		  			*/
-		  				w.append("\t\tretVal = true;");
-		  				w.append("\n\t\t}\n");
-		  				break;
-				   }
-			   			
-			   		}
-			   		break;
-			   		case GTE:
-			   		{switch(compOpType){
-		  			case 3: // boolean
-		  				
-		  				break;
-		  			case 2: // integer
-		  				w.append("\t\tdouble " + key + " = obs.getValueNumeric();\n");
-		  				w.append("\t\tif (" + key + " >= " + Integer.toString(answerInt) + ") {\n");
-		  				
-		  			/*	if(!hasConclude) {
-			  				String var = "", val = "";
-			  			    Iterator iter = iterator();
-			  				while(iter.hasNext()) {
-			  					var = (String) iter.next();
-			  					val = getUserVarVal(var);
-			  				//	w.append("\t\t\t//"+var+ " = \"" + val +"\";\n");   // write as comment
-			  				//	w.append("\t\t\tif(!userVarMap.containsKey("+ var + ")) {\n\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n\t\t\t}\n");
-			  				//	w.append("\t\t\telse {\n");
-			  				//	w.append("\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n");
-			  				//	w.append("\t\t\t}");
-			  					w.append("\n\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");");
-			  				}
-		  				}
-		  			*/
-		  				w.append("\t\tretVal = true;");
-		  				w.append("\n\t\t}\n");
-		  				break;
-		  			case 1: // String
-		  				
-		  				break;
-				   }
-		   			
-			   		}
-			   		break;
-			   		default:
-			   			break;
-			   	}
-			   
-			   }  
-			
-		   
-		   w.append("\t}\n\n");
-		   w.append("\treturn retVal;\n");
+		   w.append("\tobs = dataSource.getPatientObsForConcept(context, concept, patient);\n\n");
+		   w.append("\treturn obs;\n");
 		   w.append("}\n\n");
 		   
-	   }  // end of DB access required
-	   else {  // No DB access, simply conclude or else conclude
-	   
-	   }
+		   
+		   }  // end of DB access required
+		   else {  // No DB access, simply conclude or else conclude
+			   	w.write("\t\tString val = userVarMap.get( \"" + key + "\");\n");
+			   	w.write("\t\tif(val == \"false\") {retVal = false;}\n");
+			   	w.write("\t\tif(val == \"true\") {retVal = true;}\n");
+			   	
+		   }
+		 
+	   }	   
 	   return retVal;
    }
    
@@ -520,5 +410,52 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 	
 	public boolean getDBAccessRequired(){
 		return dbAccessRequired;
+	}
+	
+	
+	/*****************************************/
+	public String getCompOpCode(String key) throws Exception {
+		String retStr = "";
+		if (compOp != null){
+			   switch(compOp) {
+			   		case EQUALS:
+			   		{switch(compOpType){
+		  			case 3: // boolean
+		  				retStr += "\tif (obs.getValueAsBoolean() == " + Boolean.toString(answerBool) ;
+		  				break;
+		  			case 2: // integer
+		  				retStr += "\tif (obs.getValueNumeric() == " + Integer.toString(answerInt) ;
+		  				break;
+		  			case 1: // String
+		  				retStr += "\tif (obs.getValueText().equals(\"" + answerStr + "\")";
+		  				break;
+				   }
+			   			
+			   		}
+			   		break;
+			   		case GTE:
+			   		{switch(compOpType){
+		  			case 3: // boolean
+		  				
+		  				break;
+		  			case 2: // integer
+		  				retStr += "\tif (obs.getValueNumeric() >= " + Integer.toString(answerInt) ;
+		  				break;
+		  			case 1: // String
+		  				
+		  				break;
+				   }
+		   			
+			   		}
+			   		break;
+			   		default:
+			   			break;
+			   	}
+			   
+			   }  
+			
+		   
+		  
+		   return retStr;
 	}
 }

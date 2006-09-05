@@ -16,6 +16,7 @@ public class MLMObject {
 	private HashMap<String, MLMObjectElement> conceptMap ;
 	private String ConceptVar;
 	private boolean IsVarAdded;
+	private int InNestedIf ;       // counting semaphore
 	private Context context;
 	private Locale locale;
 	private Patient patient;
@@ -30,6 +31,7 @@ public class MLMObject {
 	public MLMObject(){
 		conceptMap = new HashMap <String, MLMObjectElement>();
 		IsVarAdded = false;
+		InNestedIf = 0;
 		userVarMapFinal = new HashMap <String, String>();
 	}
 	
@@ -59,12 +61,67 @@ public class MLMObject {
 
 	public void AddConcept(String s)
 	{
+		int index = 0, nindex = 0, endindex = 0, startindex = 0, index2=0, nindex2=0, endindex2 = 0, startindex2 = 0;
+		String tempstr, variable, varVal;
+		String inStr = ConceptVar;
+
+		tempstr = inStr;
+
+		index = tempstr.indexOf(",", nindex);
+		index2 = s.indexOf(",", nindex);
+		if(index != -1 && index2 != -1) {
+			while(index > 0 && index2 > 0){
+				if(nindex == 0 && nindex2 == 0){ // Are we starting now
+					startindex = nindex;
+					endindex = index;
+					startindex2 = nindex2;
+					endindex2 = index2;
+					variable = tempstr.substring(startindex, endindex);
+					varVal = s.substring(startindex2, endindex2);
+					ConceptVar = variable;
+					IsVarAdded = true; // so that the following statement completes
+					CreateElement(varVal);
+				}
+				else {
+					startindex = nindex + 1;
+					startindex2 = nindex2 + 1;
+					endindex = index;
+					endindex2 = index2;
+					variable = tempstr.substring(startindex, endindex);
+					varVal = s.substring(startindex2, endindex2);
+					ConceptVar = variable;
+					IsVarAdded = true; // so that the following statement completes
+					CreateElement(varVal);
+				}
+				nindex = index;
+				nindex2 = index2;
+				index = tempstr.indexOf(",", nindex+1);
+				index2 = s.indexOf(",", nindex2+1);
+			}
+			
+		}
+		else {
+			CreateElement(s);
+		}
+		
+	}
+	
+	private void CreateElement (String s){
 		if(IsVarAdded == true && !conceptMap.containsKey(ConceptVar)) {
-			conceptMap.put(ConceptVar, new MLMObjectElement(s, "", ""));
+			if(s == "false" || s == "true") {
+				MLMObjectElement  mObjElem = new MLMObjectElement("", "", "");
+				conceptMap.put(ConceptVar, mObjElem);
+				mObjElem.addUserVarVal(ConceptVar,s);
+				
+			}
+			else {
+				conceptMap.put(ConceptVar, new MLMObjectElement(s, "", ""));
+			}
 			IsVarAdded = false;    // for next time
 			ConceptVar = "";
 		}
 	}
+	
 	
 	public void SetConceptVar(String s)
 	{
@@ -170,7 +227,7 @@ public class MLMObject {
 		     w.write("\t\t\tnindex = tempstr.indexOf(\"||\", index+1);\n");
 		     w.write("\t\t\tstartindex = index + 2;\n");
 		     w.write("\t\t\tendindex = nindex;\n");
-		     w.write("\t\t\tvariable = inStr.substring(startindex, endindex);\n");
+		     w.write("\t\t\tvariable = inStr.substring(startindex, endindex).trim();\n");
 		     w.write("\t\t\toutStr += userVarMap.get(variable);\n");
 		     w.write("\t\t\tindex = tempstr.indexOf(\"||\", nindex+2);\n");
 		     w.write("\t\t}\n");
@@ -192,7 +249,7 @@ public class MLMObject {
 		     w.write("\t\t\tnindex = tempstr.indexOf(\"||\", index+2);\n");
 		     w.write("\t\t\tstartindex = index + 2;\n");
 		     w.write("\t\t\tendindex = nindex;\n");
-		     w.write("\t\t\tvariable = inStr.substring(startindex, endindex);\n");
+		     w.write("\t\t\tvariable = inStr.substring(startindex, endindex).trim();\n");
 		     w.write("\t\t\toutStr += userVarMap.get(variable);\n");
 		     w.write("\t\t\tindex = tempstr.indexOf(\"||\", nindex+2);\n");
 		     w.write("\t\t}\n");
@@ -219,58 +276,128 @@ public class MLMObject {
 		String key;
 		ListIterator<MLMEvaluateElement> thisList;
 		thisList = evaluateList.listIterator(0);
-
+		
+		
 		while (thisList.hasNext()){		// Writes individual evaluate functions
-			Iterator iter = thisList.next().iterator();
-			while (iter.hasNext()) {
-			    key = (String) iter.next();	// else if
+			Iterator iter1 = thisList.next().iterator();
+			while (iter1.hasNext()) {
+			    key = (String) iter1.next();	// else if
 			    writeEvaluateConcept(key, w);
 			}
 		}
 		
 		 w.append("\n");
 	     w.append("public boolean evaluate() {\n");
-	     w.append("\tConcept concept;\n");
+
 	     w.append("\tboolean retVal = false;\n");
 	     w.append("\tObs obs;\n\n");
-	     
-	    thisList = evaluateList.listIterator(0); 
-		while (thisList.hasNext()){		// Now write the big evaluate function
-			Iterator iter = thisList.next().iterator();
+	 
+	     thisList = evaluateList.listIterator(0);   // Start the Big Evaluate()
+	     while (thisList.hasNext()){
+	    	 Iterator iter = thisList.next().iterator();
+	    	 WriteLogic(iter, w);
+	    	 w.flush();
+	     }
+	 //   w.append("\t\treturn retVal;\n");
+	 	w.append("\n\t}");
+	 	w.append("\n");
+	}
+	catch (Exception e) {
+	      System.err.println("Write Evaluate: "+e);
+	      e.printStackTrace();   // so we can get stack trace		
+	    }
+    }
+	
+/*	
+	private void WriteIf (Iterator iter, Writer w) {
+	  
+		try {
+		
+		String key = "", nextKey = "", tmpStr = "";
+		
+		boolean startIterFlag = false;
+		boolean boolFlag = false;
+		
+				
 			if(iter.hasNext()) {		// IF 
-				key = (String) iter.next();
-				if(key.equals("tmp_conclude")){
-			    	w.append("\n //conclude here\n");
-			    }
-			    else if(key.equals("tmp_01")){
-			    	w.append("\n\telse {");
-			    }
-			    else {
-			    	w.append("\n\tif(evaluate_" + key + "()) {\n");
-			    }
-				writeActionConcept(key, w);
-				w.append("\n\t}");
+					key = (String) iter.next();
+					if(key.equals("tmp_conclude")){
+				    	w.append("\n //conclude here\n");
+				    	writeActionConcept(key, w);
+					//	w.append("\n\t}");
+				    }
+				    else if(key.equals("ELSE")){
+				    	w.append("\n\telse {\n");
+				    	writeActionConcept(key, w);
+						w.append("\n\t}");
+				    }
+				    else if(key.equals("IF")){ 
+				    	//tmpStr = "\n\tif(evaluate_" + key + "()";
+				    	if(iter.hasNext()) {
+				    		startIterFlag = true;
+				           	while(iter.hasNext()) {		// IF  followed by else if, else, etc
+								nextKey = (String) iter.next();
+								if(nextKey.equals("THEN")) {
+									tmpStr += " ) {\n\t\t";
+									w.append(tmpStr);
+									InNestedIf++;
+									WriteIf(iter, w);   // recurse, because If then if ...
+									// reset the following as starting fresh
+									InNestedIf--;
+									startIterFlag = false; 
+									boolFlag = false;
+									tmpStr = "";
+							    }
+								else if(nextKey.equals("AND")){
+									tmpStr += " && ";
+									boolFlag = true;
+									
+								}
+								else if(boolFlag) {
+									tmpStr += complexBool(nextKey);
+									boolFlag = false;
+								}
+								else if(startIterFlag && !boolFlag){
+									tmpStr += " ) {\n";
+									w.append(tmpStr);
+									startIterFlag = false;
+									writeActionConcept(key, w);
+									w.append("\n\t}");
+									tmpStr = complexIf(nextKey);
+									key = nextKey;					// store the previous key
+									nextKey = "";
+									w.append(tmpStr);
+								}
+								else {
+									writeActionConcept(key, w);
+									if(InNestedIf == 0) {
+										w.append("\n\t}");
+									}
+									tmpStr = complexIf(nextKey);
+									key = nextKey;					// store the previous key
+									nextKey = "";
+									w.append(tmpStr);
+								}
+								
+					       	}
+				           	if(nextKey.equals("") && !key.equals("")) {       // end of loop
+				           		writeActionConcept(key, w);
+				           		w.append("\n\t}");
+				           	}
+					    }	
+					    else {      // If we do not have a complex if
+					       	tmpStr += " ) {\n";
+						    w.append(tmpStr);
+							writeActionConcept(key, w);
+							w.append("\n\t}");
+					    }
+				    }
 			}
 			
-			while (iter.hasNext()) {
-			    key = (String) iter.next();	// else if
-			    if(key.equals("tmp_conclude")){
-			    	w.append("\n\t//conclude here");
-			    }
-			    else if(key.equals("tmp_01")){
-			    	w.append("\n\telse {\n");
-			    }
-			    else {
-			    	w.append("\n\telse if(evaluate_" + key + "()) {\n");
-			    }
-				writeActionConcept(key, w);
-				w.append("\n\t}");
-			}
-		}
 		
 		
 		
-	//w.append("}\n");	// End of this function
+   //	w.append("}\n");	// End of this function
 		w.append("\n");
 		}
 		catch (Exception e) {
@@ -278,6 +405,168 @@ public class MLMObject {
 		      e.printStackTrace();   // so we can get stack trace		
 		    }
 	}
+*/	
+	
+	private void WriteLogic (Iterator iter, Writer w) {
+		  
+		try {
+		
+		String key = "", nextKey = "", tmpStr = "";
+		
+		boolean startIterFlag = false;
+		boolean boolFlag = false;
+		
+				
+			if(iter.hasNext()) {		// IF 
+			key = (String) iter.next();
+			if(key.equals("IF")){ 
+		    	tmpStr = complexIf(key,null);
+		    	w.append (tmpStr);
+		    	
+		    	       	while(iter.hasNext()) {		// IF  followed by else if, else, etc
+		    	       	w.flush();
+		    	       	tmpStr = "";
+		           		nextKey = (String) iter.next();
+		           		if(nextKey.equals("THEN")) {
+							tmpStr += " ) {\n\t";
+							w.append(tmpStr);
+							
+							
+		           		}
+		           		else if (nextKey.equals("IF")) {
+							InNestedIf++;
+							WriteLogic(iter, w);   // recurse, because If then if ...
+							// reset the following as starting fresh
+							InNestedIf--;
+							startIterFlag = false; 
+							boolFlag = false;
+							tmpStr = "";
+					    }
+						else if(nextKey.equals("AND")){
+							tmpStr += " && ";
+							boolFlag = true;
+							
+						}
+						else if(boolFlag) {
+							tmpStr += complexBool(nextKey);
+							boolFlag = false;
+						}
+						else if(startIterFlag && !boolFlag){
+							tmpStr += complexIf(nextKey, null);
+							w.append(tmpStr);
+							startIterFlag = false;
+							writeActionConcept(key, w);
+							key = nextKey;					// store the previous key
+							nextKey = "";
+							
+						}
+						else if (nextKey.equals("Logic_Assignment")) {
+							writeActionConcept(key, w);
+							if(InNestedIf == 0) {
+								w.append("\n\t}\n\t}\n");
+							}
+							
+							nextKey = "";
+						}
+						else if (nextKey.equals("Conclude")){
+							w.append("\n\t //conclude here\n");
+					    	writeActionConcept(key, w);
+					    	if(InNestedIf == 0) {
+					    		if(key.startsWith("ELSE_")) {
+					    			w.append("\n\t}\n");
+					    		}
+					    		else {
+					    			w.append("\n\t}\n\t}\n");
+					    		}
+							}
+							
+							nextKey = "";
+						}
+						else {
+							MLMObjectElement mObjElem = GetMLMObjectElement(nextKey);
+							tmpStr += complexIf(nextKey, mObjElem);
+							w.append(tmpStr);
+							key = nextKey;  // store the current key
+						}
+						
+			       	}
+		         
+			    }
+			else if(key.startsWith("Conclude")) {
+				w.append("\n\t //conclude here\n");
+		    	writeActionConcept(key, w);
+		   	  }
+			    
+		    }
+			w.append("\n");
+		}
+		catch (Exception e) {
+		      System.err.println("Write Evaluate: "+e);
+		      e.printStackTrace();   // so we can get stack trace		
+		    }
+		
+	}	
+	
+	private String complexIf(String nextKey, MLMObjectElement mObjElem) {
+		String tmpStr = "";
+	
+   try{
+	   if(nextKey.equals("ELSE") || nextKey.startsWith("ELSE_")){
+	    	if(InNestedIf > 0) {
+				tmpStr = "\n\t}\n\telse {\n";
+			}
+	    	else {
+	    		tmpStr = "\n\telse {\n";
+	    	}
+	    }
+	    else if(nextKey.equals("ELSEIF")){
+	    	if(InNestedIf > 0) {
+				tmpStr = "\n\t}\n\telse if (";
+			}
+	    	else {
+	    		tmpStr = "\n\telse if (";
+	    	}
+	        
+	    }
+	    else if(nextKey.equals("IF")){
+	    	if(InNestedIf > 0) {
+				tmpStr = "\n\t}\n\tif (";
+			}
+	    	else {
+	    		tmpStr = "\n\tif (";
+	    	}
+	        
+	    }
+	    else if(!nextKey.equals("ENDIF")){
+			tmpStr = " (obs = " + nextKey + "()) != null ) {\n\t";
+			if(mObjElem != null ){
+				tmpStr += mObjElem.getCompOpCode(nextKey);
+				
+			}
+			 
+		}
+   	} catch (Exception e){
+	      System.err.println("ComplexIf: "+e);
+	      e.printStackTrace();   // so we can get stack trace		
+	    }
+		return tmpStr;
+	}
+	
+	private String complexBool(String nextKey) {
+		String tmpStr = "";
+		
+		if(nextKey.equals("tmp_conclude")){
+	    	//TODO error
+	    }
+	    else if(nextKey.equals("tmp_01")){
+	    	//TODO error
+	    }
+		else {
+			tmpStr = "evaluate_" + nextKey + "() ";
+		}
+		return tmpStr;
+	}
+	
 	
 	public int GetSize(){
 		return conceptMap.size();
@@ -315,8 +604,25 @@ public class MLMObject {
 	}
 	public void InitEvaluateList() {
 	//	ResetConceptVar();
-		MLMEvaluateElement mEvalElem = new MLMEvaluateElement();
-		evaluateList.add(mEvalElem);
+		if(!evaluateList.isEmpty()){
+			MLMEvaluateElement mEvalElem = evaluateList.getLast();
+			if(mEvalElem != null && mEvalElem.getLast().equals("ELSEIF")){
+				// Nested if
+				return;
+			}
+			else if (mEvalElem != null && mEvalElem.getLast().equals("ELSE")){
+				// Nested if
+				return;
+			} 
+			else {
+				MLMEvaluateElement mEvalElemNew = new MLMEvaluateElement();
+				evaluateList.add(mEvalElemNew);
+			}
+		}
+		else {
+			MLMEvaluateElement mEvalElemNew = new MLMEvaluateElement();
+			evaluateList.add(mEvalElemNew);
+		}
 		
 	}
 	public boolean RetrieveConcept(String key) {
@@ -382,6 +688,7 @@ public class MLMObject {
 	}
 	
 	public void AddToEvaluateList(String key){
+
 		MLMEvaluateElement mEvalElem = evaluateList.getLast();
 		if(mEvalElem != null){
 			mEvalElem.add(key);
@@ -421,6 +728,15 @@ public class MLMObject {
 		if(mObjElem != null){
 			mObjElem.setConcludeVal(val);
 		}
+//		 remove it as no nested IFs anymore
+//		if(!evaluateList.isEmpty()){
+//			MLMEvaluateElement mEvalElem = evaluateList.getLast();
+//			if(mEvalElem != null && mEvalElem.getLast().equals("THEN")){
+//				// Nested if
+//				mEvalElem.removeThen();
+//			}
+//		}
+		
 	}
 		
 	public void SetUserVarVal (String var, String val, String key) {
@@ -428,10 +744,24 @@ public class MLMObject {
 		if(mObjElem != null){
 			mObjElem.addUserVarVal(var, val);
 		}
+		// remove it as no nested IFs anymore
+//		if(!evaluateList.isEmpty()){
+//			MLMEvaluateElement mEvalElem = evaluateList.getLast();
+//			if(mEvalElem != null && mEvalElem.getLast().equals("THEN")){
+//				// Nested if
+//				mEvalElem.removeThen();
+//			}
+//		}
 	}
 	
 	public void SetDBAccess(boolean val, String key ) {
-		MLMObjectElement mObjElem = GetMLMObjectElement(key);
+		MLMObjectElement mObjElem;
+		if(key.equals("")) {
+				mObjElem = GetMLMObjectElement(ConceptVar);
+		}
+		else {	
+				mObjElem = GetMLMObjectElement(key);
+		}
 		if(mObjElem != null){
 			mObjElem.setDBAccessRequired(val);
 		}
@@ -494,9 +824,9 @@ public class MLMObject {
 	}
 	
 	public void setClassName(String name) {
-		className = name;
+		className = name.trim();
 	}
 	public String getClassName() {
-		return className;
+		return className.trim();
 	}
 }
