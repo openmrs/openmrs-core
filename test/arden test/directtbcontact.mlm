@@ -1,0 +1,50 @@
+Maintenance:
+	Title:		Direct Tuberculosis Contact;;
+	Filename:	directtbcontact /*.mlm*/;;
+	Version:	0.1;;
+	Institution:	Indiana University School of Medicine;;
+	Author:		Paul Biondich;;
+	Specialist:	Pediatrics;;
+	Date:		07/23/06 2:10:00 /*PM*/;;
+	Validation:	;;
+Library:
+	Purpose:	PSF screening question that assesses direct exposure to someone with tuberculosis, which is a risk factor for TB exposure.;;
+	Explanation:  Uses new EXIST modifier.. need to discuss with group.;;
+	Keywords:	PSF, TB, tuberculosis, exposure;;
+	Citations:	/* 2004 */ Pediatric Tuberculosis Collaborative Group Report /*- AAP*/;;
+	Links:	;;
+Knowledge:
+	Type:	data_driven;;
+/*	Priority:	256;;
+	Evoke:	;;
+	Urgency:	;;
+*/
+Data:
+Pos_Risk := read EXIST {TB_Risk_Positive from CHICA} Where it Occurred Within Past 1 Year;
+Neg_Risk := read EXIST /*(Direct_Contact)*/ {TB_Risk_Negative from CHICA} Where it Occurred Within Past 1 Year;
+PPD := read Exist {PPD_Result from CHICA} Where it Occurred Within Past 1 Year;
+;;
+
+Priority:	256;;
+	Evoke:	;;
+	
+	
+Logic:
+If (Pos_Risk = True) then conclude False;
+If (Neg_Risk = True) then conclude False;
+If (PPD = True) then conclude False;
+conclude True;
+;;
+Action:
+write ("Has || firstname || been exposed to anyone with tuberculosis (TB) disease?");
+// needs to be re-translated write("") At Spanish;
+;;
+/*CHICA:
+Minimum Age: 6 months;
+Maximum Age: 7 years;
+CHICA Priority: 262;
+JIT Filename: ;
+If  (Box1) then TB_Risk_Positive = Direct_Contact;;
+If  (Box2) then TB_Risk_Negative = Direct_Contact;;
+*/
+end:
