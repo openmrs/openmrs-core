@@ -469,4 +469,28 @@ public class DrugOrderListItem {
 		this.drugSetLabel = drugSetLabel;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object other) {
+		boolean isSame = false;
+		
+		if ( other instanceof DrugOrderListItem ) {
+			DrugOrderListItem otherItem = (DrugOrderListItem)other;
+			if ( otherItem != null ) {
+				if ( otherItem.getOrderId().equals(this.orderId) ) isSame = true;
+			}
+		}
+		
+		return isSame;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return this.orderId;
+	}	
 }

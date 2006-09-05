@@ -16,7 +16,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
@@ -25,6 +24,7 @@ import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.order.RegimenSuggestion;
 import org.openmrs.reporting.PatientSet;
 import org.openmrs.web.WebConstants;
 import org.springframework.web.servlet.ModelAndView;
@@ -118,6 +118,9 @@ public class PortletController implements Controller {
 						if (!iter.next().isCurrent())
 							iter.remove();
 					model.put("patientCurrentDrugOrders", currentDrugOrders);
+					List<RegimenSuggestion> standardRegimens = context.getOrderService().getStandardRegimens();
+					if ( standardRegimens != null )
+						model.put("standardRegimens", standardRegimens);
 					model.put("patientPrograms", context.getProgramWorkflowService().getPatientPrograms(p));
 					model.put("patientCurrentPrograms", context.getProgramWorkflowService().getCurrentPrograms(p, null));
 					List<Relationship> relationships = new ArrayList<Relationship>();

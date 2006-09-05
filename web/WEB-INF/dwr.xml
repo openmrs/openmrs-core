@@ -138,6 +138,10 @@
 			<include method="getCompletedDrugOrdersByPatientIdDrugSetId" />
 			<include method="voidDrugSet" />
 			<include method="discontinueDrugSet" />
+			<include method="getCurrentOtherDrugSet" />
+			<include method="getCurrentOtherDrugOrdersByPatientIdDrugSetId" />
+			<include method="getCompletedOtherDrugSet" />
+			<include method="getCompletedOtherDrugOrdersByPatientIdDrugSetId" />
 		</create>
 		
 		<create creator="new" javascript="DWRProgramWorkflowService">

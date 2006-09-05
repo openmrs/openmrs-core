@@ -675,3 +675,7 @@ span.noOrdersMessage {
 .encounterFormTable tr {
 	background-color: lightgray;
 }
+
+#eventCalendarPortlet {
+	font-size: 0.8em;
+}

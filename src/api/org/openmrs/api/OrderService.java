@@ -25,7 +25,10 @@ import org.openmrs.ConceptSet;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOContext;
 import org.openmrs.api.db.OrderDAO;
+import org.openmrs.order.DrugOrderSupport;
+import org.openmrs.order.RegimenSuggestion;
 import org.openmrs.util.OpenmrsConstants;
+import org.springframework.context.ApplicationContext;
 
 /**
  * Order-related services
@@ -462,5 +465,24 @@ public class OrderService {
 		} else log.debug("drugSets is null");
 		
 		return hmRet;
+	}
+
+	public List<RegimenSuggestion> getStandardRegimens () {
+		DrugOrderSupport dos = null;
+		List<RegimenSuggestion> standardRegimens = null;
+		
+		try {
+			dos = DrugOrderSupport.getInstance();
+		} catch ( Exception e ) {
+			log.error("Error getting instance of DrugOrderSupport object");
+		}
+		
+		if ( dos != null ) {
+			standardRegimens = dos.getStandardRegimens();
+		} else {
+			log.error("DrugOrderSupport object is null after new instance");
+		}
+		
+		return standardRegimens;
 	}
 }

@@ -23,10 +23,18 @@
 <c:choose>
 	<c:when test="${not empty model.displayDrugSetIds}">
 		<c:forTokens var="drugSetId" items="${model.displayDrugSetIds}" delims=",">
+			<c:if test="${drugSetId == '*'}" >
+				<tbody id="regimenTableCurrent_header___other__">
+				</tbody>
+				<tbody id="regimenTableCurrent___other__">
+				</tbody>
+			</c:if>
+			<c:if test="${drugSetId != '*'}" >
 				<tbody id="regimenTableCurrent_header_${fn:replace(drugSetId, " ", "_")}">
 				</tbody>
 				<tbody id="regimenTableCurrent_${fn:replace(drugSetId, " ", "_")}">
 				</tbody>
+			</c:if>
 		</c:forTokens>
 	</c:when>
 	<c:otherwise>
@@ -35,9 +43,42 @@
 	</c:otherwise>
 </c:choose>
 			</table>
-			<span><a href="#" onClick="showHideDiv('regimenPortletAddForm');">(+) <spring:message code="DrugOrder.regimens.add" /></a></span>
+			<span><a href="javascript:void();" onClick="showHideDiv('regimenPortletAddForm');">(+) <spring:message code="DrugOrder.regimens.addOrChange" /></a></span>
 			<div id="regimenPortletAddForm" style="display:none">
-				<form method="post" id="orderForm">
+				<c:if test="${not empty model.standardRegimens}">
+					<table>
+						<c:forEach var="standardRegimen" items="${model.standardRegimens}">
+							<tr id="row${standardRegimen.codeName}">
+								<form onSubmit="addStandard${standardRegimen.codeName}();">
+									<td><a href="javascript:void();" onClick="selectStandard('${standardRegimen.codeName}')">${standardRegimen.displayName}</a></td>
+									<td><div id="stDtLabel${standardRegimen.codeName}" style="display:none"><spring:message code="general.dateStart"/></div></td>
+									<td><div id="stDt${standardRegimen.codeName}" style="display:none"><openmrs:fieldGen type="java.util.Date" formFieldName="startDate${standardRegimen.codeName}" val="" parameters="noBind=true" /></div></td>
+									<c:choose>
+										<c:when test="${not empty standardRegimen.canReplace}">
+											<td><div id="action${standardRegimen.codeName}" style="display:none">
+												<select id="actionSelect${standardRegimen.codeName}" onChange="handleStandardActionChange('${standardRegimen.codeName}');">
+													<option value=""><spring:message code="DrugOrder.regimen.action.choose" /></option>
+													<option value="add"><spring:message code="DrugOrder.regimen.action.addToCurrent" /></option>
+													<option value="discontinue"><spring:message code="DrugOrder.regimen.action.discontinue" arguments="${standardRegimen.canReplace}" /></option>
+													<option value="void"><spring:message code="DrugOrder.regimen.action.void" arguments="${standardRegimen.canReplace}" /></option>
+												</select>
+											</td>
+											<td><div id="reas${standardRegimen.codeName}" style="display:none">
+												<spring:message code="general.reason" />: <input id="reason${standardRegimen.codeName}" name="reason${standardRegimen.codeName}" size="14" value="" />
+											</div></td>
+											<td><div id="replace${standardRegimen.codeName}" style="display:none"><input type="button" value="<spring:message code="DrugOrder.regimen.addAndReplace" />" onClick="addStandard${standardRegimen.codeName}(true);"></div></td>
+											<td><div id="add${standardRegimen.codeName}" style="display:none"><input type="button" value="<spring:message code="general.add" />" onClick="addStandard${standardRegimen.codeName}(true);"></div></td>
+										</c:when>
+										<c:otherwise>
+											<td><div id="submit${standardRegimen.codeName}" style="display:none"><input type="button" value="<spring:message code="general.add" />" onClick="addStandard${standardRegimen.codeName}(false);"></div></td>
+										</c:otherwise>
+									</c:choose>
+								</form>
+							</tr>
+						</c:forEach>
+					</table>
+				</c:if>
+				<form method="post" id="orderForm" onSubmit="handleAddDrugOrder('drug', 'dose', 'units', 'frequencyDay', 'frequencyWeek', 'startDate')">
 				<input type="hidden" name="patientId" value="${model.patientId}" />
 				<table>
 					<tr>
@@ -104,10 +145,18 @@
 <c:choose>
 	<c:when test="${not empty model.displayDrugSetIds}">
 		<c:forTokens var="drugSetId" items="${model.displayDrugSetIds}" delims=",">
+			<c:if test="${drugSetId == '*'}" >
+				<tbody id="regimenTableCompleted_header___other__">
+				</tbody>
+				<tbody id="regimenTableCompleted___other__">
+				</tbody>
+			</c:if>
+			<c:if test="${drugSetId != '*'}" >
 				<tbody id="regimenTableCompleted_header_${fn:replace(drugSetId, " ", "_")}">
 				</tbody>
 				<tbody id="regimenTableCompleted_${fn:replace(drugSetId, " ", "_")}">
 				</tbody>
+			</c:if>
 		</c:forTokens>
 	</c:when>
 	<c:otherwise>
@@ -125,6 +174,7 @@
 		<!-- // begin
 		
 		var displayDrugSetIds = "${model.displayDrugSetIds}";
+		var alreadyDisplayed = "";
 		
 		var currentRegimenTableCellFuncs = [
 			function(data) { return "&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"orderDrug.form?orderId=" + data.orderId + "\">" + data.drugName + "</a>"; },
@@ -179,8 +229,10 @@
 
 		var currentRegimenTableHeaderCells = [
 			function(data) { 
-				var ret = "<table><tr><td style=\"padding:7px 5px 2px 5px\">" + data.name + "";
-				if ( data.drugCount > 0 ) {
+				var headerName = data.name;
+				if ( headerName == '*' ) headerName = '<spring:message code="DrugOrder.header.otherRegimens" />';
+				var ret = "<table><tr><td style=\"padding:7px 5px 2px 5px\">" + headerName + "";
+				if ( data.drugCount > 0 && data.drugSetLabel != '__other__') {
 					ret += "</td><td style=\"padding:7px 5px 0px 5px\"><input id=\"closegpbutton_" + data.drugSetId + "\" type=\"button\" value=\"<spring:message code="general.closeGroup" />\" onClick=\"showHideDiv('closegp_" + data.drugSetId + "');showHideDiv('closegpbutton_" + data.drugSetId + "')\" />";
 					ret += "<div id=\"closegp_" + data.drugSetId + "\" style=\"display:none\"><form>";
 					ret += "<spring:message code="DrugOrder.discontinuedDate" />: ";
@@ -196,19 +248,23 @@
 					ret += "<input type=\"text\" id=\"voidgp_" + data.drugSetId + "_reason\" size=\"10\" value=\"\" />";
 					ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<spring:message code="general.save" />\" onClick=\"handleVoidDrugSet(" + data.drugSetId+ ", 'voidgp_" + data.drugSetId + "_reason')\" />";
 					ret += "</form></div></td></tr></table>";
-					return ret;
 				} else {
-					ret += "</td><td style=\"padding:7px 5px 2px 5px\"><span class=\"noOrdersMessage\">(<spring:message code="DrugOrder.list.noOrders" />)</span></td></tr></table>";
-					return ret;
+					if ( data.drugCount == 0 ) {
+						ret += "</td></tr><tr><td style=\"padding:1px 3px 1px 3px\">&nbsp;&nbsp;&nbsp;&nbsp;<span class=\"noOrdersMessage\">(<spring:message code="DrugOrder.list.noOrders" />)</span></td></tr></table>";
+					}
 				}
+
+				return ret;
 			}
 		];
 
 		var completedRegimenTableHeaderCells = [
 			function(data) { 
-				var ret = "<table><tr><td style=\"padding:7px 5px 2px 5px\">" + data.name + "";
+				var headerName = data.name;
+				if ( headerName == '*' ) headerName = '<spring:message code="DrugOrder.header.otherRegimens" />';
+				var ret = "<table><tr><td style=\"padding:7px 5px 2px 5px\">" + headerName + "";
 				if ( data.drugCount == 0 ) {
-					ret += "</td><td style=\"padding:7px 5px 2px 5px\"><span class=\"noOrdersMessage\">(<spring:message code="DrugOrder.list.noOrders" />)</span></td></tr></table>";
+					ret += "</td></tr><tr><td style=\"padding:1px 3px 1px 3px\">&nbsp;&nbsp;&nbsp;&nbsp;<span class=\"noOrdersMessage\">(<spring:message code="DrugOrder.list.noOrders" />)</span></td></tr></table>";
 				} else {
 					ret += "</td></tr></table>";
 				}
@@ -220,13 +276,15 @@
 
 		function handleVoidDrugSet(drugSetId, voidReasonField) {
 			var voidReason = DWRUtil.getValue($(voidReasonField));
-			DWROrderService.voidDrugSet(${model.patientId}, drugSetId, voidReason, refreshRegimenTables);
+			var drugSetIdParam = '' + drugSetId;
+			DWROrderService.voidDrugSet(${model.patientId}, drugSetIdParam, voidReason, refreshRegimenTables);
 		}
 
 		function handleDiscontinueDrugSet(drugSetId, discDateField, discReasonField) {
 			var discDate = DWRUtil.getValue($(discDateField));
 			var discReason = DWRUtil.getValue($(discReasonField));
-			DWROrderService.discontinueDrugSet(${model.patientId}, drugSetId, discReason, discDate, refreshRegimenTables);
+			var drugSetIdParam = '' + drugSetId;
+			DWROrderService.discontinueDrugSet(${model.patientId}, drugSetIdParam, discReason, discDate, refreshRegimenTables);
 		}
 
 		function updateAddFields(drugFieldId, unitsFieldId, frequencyDayFieldId, frequencyWeekFieldId) {
@@ -243,12 +301,13 @@
 		function showHideDiv(id) {
 			var div = document.getElementById(id);
 			if ( div ) {
+				alert('found id: ' + id);
 				if ( div.style.display != "none" ) {
 					div.style.display = "none";
 				} else { 
 					div.style.display = "";
 				}
-			}
+			} else alert('could not find id: ' + id);
 		}
 		
 		function handleAddDrugOrder(drugField, doseField, unitsField, frequencyDayField, frequencyWeekField, startDateField) {
@@ -258,13 +317,14 @@
 			var frequency = DWRUtil.getValue($(frequencyDayField)) + " x " + DWRUtil.getValue($(frequencyWeekField));
 			var startDate = DWRUtil.getValue($(startDateField));
 			var patientId = ${model.patientId};
+			var instructions = "";
 			DWRUtil.setValue($(drugField),"");
 			DWRUtil.setValue($(doseField),"");
 			DWRUtil.setValue($(unitsField),"");
 			DWRUtil.setValue($(frequencyDayField),"");
 			DWRUtil.setValue($(frequencyWeekField),"");
 			DWRUtil.setValue($(startDateField),"");
-			DWROrderService.createDrugOrder(patientId, drugId, dose, units, frequency, startDate, refreshRegimenTables);
+			DWROrderService.createDrugOrder(patientId, drugId, dose, units, frequency, startDate, instructions, refreshRegimenTables);
 		}
 		
 		function handleVoidDrugOrder(orderId, voidReasonField) {
@@ -288,9 +348,13 @@
 				var drugSetIds = displayDrugSetIds.split(",");
 				removeDrugOrders('regimenTableCurrent');
 				for ( var i = 0; i < drugSetIds.length; i++ ) {
-					DWROrderService.getCurrentDrugSet(${model.patientId}, drugSetIds[i], addCurrentDrugSetHeader);
-					//alert('added header, now adding rows...');
-					DWROrderService.getCurrentDrugOrdersByPatientIdDrugSetId(${model.patientId}, drugSetIds[i], addCurrentDrugOrders);
+					if ( drugSetIds[i] == '*' ) {
+						DWROrderService.getCurrentOtherDrugSet(${model.patientId}, displayDrugSetIds, addCurrentDrugSetHeader);
+						DWROrderService.getCurrentOtherDrugOrdersByPatientIdDrugSetId(${model.patientId}, displayDrugSetIds, addCurrentDrugOrders);
+					} else {
+						DWROrderService.getCurrentDrugSet(${model.patientId}, drugSetIds[i], addCurrentDrugSetHeader);
+						DWROrderService.getCurrentDrugOrdersByPatientIdDrugSetId(${model.patientId}, drugSetIds[i], addCurrentDrugOrders);
+					}
 				}
 			} else {
 				DWROrderService.getCurrentDrugOrdersByPatientId(${model.patientId}, handleRefreshCurrentRegimenTable);
@@ -302,9 +366,13 @@
 				var drugSetIds = displayDrugSetIds.split(",");
 				removeDrugOrders('regimenTableCompleted');
 				for ( var i = 0; i < drugSetIds.length; i++ ) {
-					DWROrderService.getCompletedDrugSet(${model.patientId}, drugSetIds[i], addCompletedDrugSetHeader);
-					//alert('added header, now adding rows...');
-					DWROrderService.getCompletedDrugOrdersByPatientIdDrugSetId(${model.patientId}, drugSetIds[i], addCompletedDrugOrders);
+					if ( drugSetIds[i] == '*' ) {
+						DWROrderService.getCompletedOtherDrugSet(${model.patientId}, displayDrugSetIds, addCompletedDrugSetHeader);
+						DWROrderService.getCompletedOtherDrugOrdersByPatientIdDrugSetId(${model.patientId}, displayDrugSetIds, addCompletedDrugOrders);
+					} else {
+						DWROrderService.getCompletedDrugSet(${model.patientId}, drugSetIds[i], addCompletedDrugSetHeader);
+						DWROrderService.getCompletedDrugOrdersByPatientIdDrugSetId(${model.patientId}, drugSetIds[i], addCompletedDrugOrders);
+					}
 				}
 			} else {
 				DWROrderService.getCompletedDrugOrdersByPatientId(${model.patientId}, handleRefreshCompletedRegimenTable);
@@ -348,15 +416,16 @@
 				var firstOrder = drugOrders[0];
 				if ( firstOrder ) { 
 					//	alert('firstOrder exists');
-					if ( firstOrder.drugSetId ) {
+					if ( firstOrder.drugSetLabel ) {
 						//alert('firstOrder dsId is ' + firstOrder.drugSetId);
 						tableName += "_" + firstOrder.drugSetLabel;	
-					}				
-				}
+					} else alert('no label');			
+				} else alert('no first order');
 				DWRUtil.addRows(tableName, drugOrders, currentRegimenTableCellFuncs, {
 					cellCreator:function(options) {
 						//alert("Begin cellCreator");
 					    var td = document.createElement("td");
+					    td.setAttribute("style", "1px 3px 1px 3px;");
 						//alert("End cellCreator");
 					    return td;
 					}
@@ -372,7 +441,7 @@
 				var firstOrder = drugOrders[0];
 				if ( firstOrder ) { 
 					//	alert('firstOrder exists');
-					if ( firstOrder.drugSetId ) {
+					if ( firstOrder.drugSetLabel ) {
 						//alert('firstOrder dsId is ' + firstOrder.drugSetId);
 						tableName += "_" + firstOrder.drugSetLabel;	
 					}				
@@ -381,6 +450,7 @@
 					cellCreator:function(options) {
 						//alert("Begin cellCreator");
 					    var td = document.createElement("td");
+					    td.setAttribute("style", "1px 3px 1px 3px;");
 						//alert("End cellCreator");
 					    return td;
 					}
@@ -397,6 +467,7 @@
 				for ( var i = 0; i < drugSetIds.length; i++ ) {
 					var currDrugSet = drugSetIds[i];
 					if ( currDrugSet ) {
+						if ( currDrugSet == '*' ) currDrugSet = '__other__';
 						currDrugSet = currDrugSet.replace(/\s/g, "_");
 						DWRUtil.removeAllRows(tableName + '_header_' + currDrugSet);
 						DWRUtil.removeAllRows(tableName + '_' + currDrugSet);
@@ -420,6 +491,80 @@
 
 		refreshCurrentRegimenTable();
 		refreshCompletedRegimenTable();
+
+		<c:if test="${not empty model.standardRegimens}">
+
+			function selectStandard(codeName) {
+				hideOtherStandards(codeName);
+				showFullStandard(codeName);
+			}
+			
+			function hideOtherStandards(codeName) {
+				<c:forEach var="standardRegimen" items="${model.standardRegimens}">
+					if ( codeName != '${standardRegimen.codeName}' ) showHideDiv('row${standardRegimen.codeName}');
+				</c:forEach>
+			}
+
+			function showFullStandard(codeName) {
+				showHideDiv('stDtLabel' + codeName);
+				showHideDiv('stDt' + codeName);
+				showHideDiv('submit' + codeName);
+				showHideDiv('action' + codeName);
+			}
+
+			<c:forEach var="standardRegimen" items="${model.standardRegimens}">
+
+				function addStandard${standardRegimen.codeName}(canReplace) {
+					var startDate = DWRUtil.getValue('startDate${standardRegimen.codeName}');
+					DWRUtil.setValue('startDate${standardRegimen.codeName}', '');
+					if ( canReplace ) {
+						var action = DWRUtil.getValue('actionSelect${standardRegimen.codeName}');
+						var reason = DWRUtil.getValue('reason${standardRegimen.codeName}');
+						DWRUtil.setValue('actionSelect${standardRegimen.codeName}', '');
+						DWRUtil.setValue('reason${standardRegimen.codeName}', '');
+						if ( action == 'void' ) {
+							//alert('voiding with [${model.patientId}] [${standardRegimen.canReplace}] [' + reason + ']');
+							DWROrderService.voidDrugSet(${model.patientId}, '${standardRegimen.canReplace}', reason, doNothing);
+							showHideDiv('reas${standardRegimen.codeName}');
+							showHideDiv('replace${standardRegimen.codeName}');
+						} else if ( action == 'discontinue' ) {
+							//alert('discontinuing with [${model.patientId}] [${standardRegimen.canReplace}] [' + reason + ']');
+							DWROrderService.discontinueDrugSet(${model.patientId}, '${standardRegimen.canReplace}', reason, startDate, doNothing);
+							showHideDiv('reas${standardRegimen.codeName}');
+							showHideDiv('replace${standardRegimen.codeName}');
+						} else if ( action == 'add') {
+							showHideDiv('add${standardRegimen.codeName}');
+						}
+					}
+					//alert('here');
+					<c:forEach var="drugComponent" items="${standardRegimen.drugComponents}">
+						addStandardDrug(${drugComponent.drugId}, '${drugComponent.dose}', '${drugComponent.units}', '${drugComponent.frequency}', '${drugComponent.instructions}', startDate);
+					</c:forEach>
+					//alert('and now here');
+					refreshRegimenTables();
+					selectStandard('${standardRegimen.codeName}');
+				}
+			</c:forEach>
+
+			function addStandardDrug(drugId, dose, units, frequency, instructions, startDate) {
+				DWROrderService.createDrugOrder(${model.patientId}, drugId, dose, units, frequency, startDate, instructions, doNothing);
+			}
+
+			function doNothing() {
+				// dummy method
+			}
+
+			function handleStandardActionChange(codeName) {
+				var action = DWRUtil.getValue('actionSelect' + codeName);
+				if ( action == 'void' || action == 'discontinue' ) {
+					showHideDiv('reas' + codeName);
+					showHideDiv('replace' + codeName);
+				} else if ( action == 'add' ) {
+					showHideDiv('add' + codeName);
+				}
+			}
+
+		</c:if>
 
 		// end -->
 		
