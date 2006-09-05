@@ -209,8 +209,8 @@ public class ArdenTest extends TestCase {
 		context.authenticate("vibha", "chicachica");
 		Locale locale = context.getLocale();
 		
-		HiRiskLeadScreen mlm = new HiRiskLeadScreen(context,1,locale);
-		mlm.run();
+	//	HiRiskLeadScreen mlm = new HiRiskLeadScreen(context,1,locale);
+	//	mlm.run();
 	
 	/*    Patient patient = new Patient();
 		patient.setPatientId(1);
