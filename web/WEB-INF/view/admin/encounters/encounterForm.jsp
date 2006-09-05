@@ -205,7 +205,7 @@
 			<th><spring:message code="Encounter.provider"/></th>
 			<td>
 				<spring:bind path="encounter.provider">
-					<div dojoType="UserSearch" widgetId="uSearch" userId="${status.value.userId}" roles="Clinician;"></div>
+					<div dojoType="UserSearch" widgetId="uSearch" userId="${status.value.userId}" roles="Provider;"></div>
 					<div dojoType="OpenmrsPopup" widgetId="uSelection" hiddenInputName="providerId" searchWidget="uSearch" searchTitle='<spring:message code="Encounter.provider.find"/>'></div>
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>

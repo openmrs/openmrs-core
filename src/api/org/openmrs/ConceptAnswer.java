@@ -14,11 +14,10 @@ public class ConceptAnswer implements java.io.Serializable {
 	public Log log = LogFactory.getLog(this.getClass());
 
 	// Fields
-
 	private Integer conceptAnswerId;
-	private Concept concept;
-	private Concept answerConcept;
-	private Drug answerDrug;
+	private Concept concept;		// concept to answer
+	private Concept answerConcept;	// answer for <code>concept</code>
+	private Drug answerDrug;		// answer in drug form for <code>concept</code>
 	private User creator;
 	private Date dateCreated;
 
@@ -160,5 +159,5 @@ public class ConceptAnswer implements java.io.Serializable {
 	 */
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
-	}	
+	}
 }

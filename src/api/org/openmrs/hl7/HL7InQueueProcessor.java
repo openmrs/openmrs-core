@@ -129,11 +129,14 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	public synchronized void processHL7InQueue() throws HL7Exception {
 		log.debug("Start processing hl7 in queue");
 		try {
+			context.startTransaction();
 			while (processNextHL7InQueue()) {
 				// loop until queue is empty
 			}
 		} catch (Exception e) {
 			log.error("Error while processing HL7Queue", e);
+		} finally {
+			context.endTransaction();
 		}
 		log.debug("Done processing hl7 in queue");
 	}

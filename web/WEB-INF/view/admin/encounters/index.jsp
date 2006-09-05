@@ -26,6 +26,8 @@
 			searchBox.value = '<request:parameter name="phrase" />';
 		</request:existsParameter>
 	
+		eSearch.inputNode.focus();
+		eSearch.inputNode.select();
 	});
 		
 </script>

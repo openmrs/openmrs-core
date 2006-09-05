@@ -236,11 +236,14 @@ public class FormEntryQueueProcessor /* implements Runnable */ {
 	 */
 	public synchronized void processFormEntryQueue() throws APIException {
 		try {
+			context.startTransaction();
 			while (transformNextFormEntryQueue()) {
 				// loop until queue is empty
 			}
 		} catch (Exception e) {
 			log.error("Error while processing FormEntryQueue", e);
+		} finally {
+			context.endTransaction();
 		}
 	}
 

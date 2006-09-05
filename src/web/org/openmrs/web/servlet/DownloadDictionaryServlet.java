@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.openmrs.Concept;
+import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptSynonym;
 import org.openmrs.api.ConceptService;
@@ -46,9 +47,12 @@ public class DownloadDictionaryServlet extends HttpServlet {
 		response.setHeader("Content-Type", "text/csv");
 		response.setHeader("Content-Disposition", "attachment; filename=conceptDictionary" + s + ".csv");
 		
+		String line = "Concept Id,Name,Description,Synonyms,Answers,Class,Datatype,Creator,Changed By,Retired";
+		response.getOutputStream().println(line);
+		
 		for (Concept c : cs.getConcepts("conceptId", "asc")){
 			
-			String line = c.getConceptId()+ ",";
+			line = c.getConceptId()+ ",";
 			String name, description;
 			ConceptName cn = c.getName(locale);
 			if (cn == null)	
@@ -57,7 +61,7 @@ public class DownloadDictionaryServlet extends HttpServlet {
 				name = cn.getName();
 				description = cn.getDescription();
 			}
-			line = line + '"' + name.replace("\"", "\"\"") + "\",";
+			line += '"' + name.replace("\"", "\"\"") + "\",";
 			
 			if (description == null) description = "";
 			line = line + '"' + description.replace("\"", "\"\"") + "\",";
@@ -66,9 +70,39 @@ public class DownloadDictionaryServlet extends HttpServlet {
 			for (ConceptSynonym syn : c.getSynonyms()) {
 				tmp += syn + "\n";
 			}
-			line = line + '"' + tmp.trim() + "\",";
+			line += '"' + tmp.trim() + "\",";
 			
-			line = line + c.getRetired().toString();
+			tmp = "";
+			for (ConceptAnswer answer : c.getAnswers()) {
+				if (answer.getAnswerConcept() != null)
+					tmp += answer.getAnswerConcept().toString() + "\n";
+				else if (answer.getAnswerDrug() != null)
+					tmp += answer.getAnswerDrug().toString() + "\n";
+			}
+			line += '"' + tmp.trim() + "\",";
+			
+			
+			line += '"';
+			if (c.getConceptClass() != null)
+				line += c.getConceptClass().getName();
+			line += "\",";
+			
+			line += '"';
+			if (c.getDatatype() != null)
+				line += c.getDatatype().getName();
+			line += "\",";
+			
+			line += '"';
+			if (c.getChangedBy() != null)
+				line += c.getChangedBy().getFirstName() + " " + c.getChangedBy().getLastName();
+			line += "\",";
+			
+			line += '"';
+			if (c.getCreator() != null)
+				line += c.getCreator().getFirstName() + " " + c.getCreator().getLastName();
+			line += "\",";
+			
+			line += c.getRetired() ? '1' : '0';
 			
 			response.getOutputStream().println(line);
 		}
