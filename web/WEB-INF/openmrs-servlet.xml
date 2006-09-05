@@ -107,11 +107,11 @@
 					<prop key="**/patientSet.form">patientSetFormController</prop>
 					<prop key="**/cohortSummary.list">cohortSummaryController</prop>
 					<prop key="**/encounterDisplay.list">encounterDisplayController</prop>
-					<prop key="**/calendar.list">calendarController</prop>
+					<!--<prop key="**/calendar.list">calendarController</prop>-->
 					<prop key="**/patientPrograms.portlet">patientProgramsPortletController</prop>
 					<prop key="**/patientSet.portlet">patientSetPortletController</prop>
 					<prop key="**/patientRegimens.portlet">patientRegimenPortletController</prop>
-					<prop key="**/calendar.portlet">calendarPortletController</prop>
+					<!--<prop key="**/calendar.portlet">calendarPortletController</prop>-->
 					<prop key="**/*.portlet">portletController</prop>
 					<prop key="**/*.field">fieldGenController</prop>
 					<prop key="**/*.htm">springController</prop>
@@ -124,7 +124,7 @@
 		<bean id="patientProgramsPortletController" class="org.openmrs.web.controller.PatientProgramsPortletController"/>
 		<bean id="patientSetPortletController" class="org.openmrs.web.controller.PatientSetPortletController"/>
 		<bean id="patientRegimenPortletController" class="org.openmrs.web.controller.RegimenPortletController"/>
-		<bean id="calendarPortletController" class="org.openmrs.web.controller.CalendarPortletController"/>
+		<!--<bean id="calendarPortletController" class="org.openmrs.web.controller.CalendarPortletController"/>-->
 		<bean id="springController" class="org.openmrs.web.controller.SpringController"/>
 
     <!-- =============================== -->
@@ -839,12 +839,15 @@
 	<!-- =====      Calendar/Scheduling      ===== -->
     <!-- ========================================= -->
 
+		<!--
 			<bean id="calendarController" class="org.openmrs.web.controller.calendar.CalendarController">
 				<property name="sessionForm"><value>true</value></property>
 				<property name="commandName"><value>eventList</value></property>
 				<property name="formView"><value>/calendar/calendar</value></property>
 				<property name="successView"><value>calendar.list</value></property>
 			</bean>
+		-->
+
 
     <!-- ======================================== -->
 
@@ -1145,8 +1148,7 @@
 
 <!-- CALENDAR SECTION -->
 
-		<!-- 
-
+<!--
 	    <bean id="calendarSupport" class="org.openmrs.web.controller.calendar.CalendarSupport">
 			<property name="defaultConceptIdsToShow">
 				<list>
@@ -1155,7 +1157,5 @@
 				</list>
 			</property>
 	    </bean>
-
-		-->
-
+-->
 </beans>
