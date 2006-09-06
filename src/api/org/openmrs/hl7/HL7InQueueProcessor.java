@@ -53,14 +53,16 @@ public class HL7InQueueProcessor /* implements Runnable */{
 			// Send the inbound HL7 message to our receiver routine for
 			// processing
 			receiver.processMessage(hl7Message);
-
+			
 			// Move HL7 inbound queue entry into the archive before exiting
 			HL7InArchive hl7InArchive = new HL7InArchive(hl7InQueue);
 			context.getHL7Service().createHL7InArchive(hl7InArchive);
 			context.getHL7Service().deleteHL7InQueue(hl7InQueue);
 		} catch (HL7Exception e) {
-			setFatalError(hl7InQueue, "Error parsing HL7 message", e);
+			setFatalError(hl7InQueue, "Trouble parsing HL7 message", e);
 			return;
+		} catch (Exception e) {
+			setFatalError(hl7InQueue, "Exception while attempting to process HL7 In Queue", e);
 		}
 
 		// clean up memory after processing each queue entry (otherwise, the

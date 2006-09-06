@@ -131,7 +131,7 @@
 
 <div id="searchForm">
 	<input name="mode" type="hidden" value='${request.mode}'>
-	<div dojoType="ConceptSearch" widgetId="cSearch" inputWidth="10em" showVerboseListing="true" includeClasses='<request:existsParameter name="className"><request:parameters id="c" name="className"><request:parameterValues id="names"><jsp:getProperty name="names" property="value"/>;</request:parameterValues></request:parameters></request:existsParameter>' useOnKeyDown="true" allowConceptEdit="false"></div>
+	<div dojoType="ConceptSearch" widgetId="cSearch" inputWidth="9em" showVerboseListing="true" includeClasses='<request:existsParameter name="className"><request:parameters id="c" name="className"><request:parameterValues id="names"><jsp:getProperty name="names" property="value"/>;</request:parameterValues></request:parameters></request:existsParameter>' useOnKeyDown="true" allowConceptEdit="false"></div>
 	<br />
 	<small>
 		<em>

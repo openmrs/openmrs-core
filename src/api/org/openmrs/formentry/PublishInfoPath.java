@@ -63,12 +63,17 @@ public class PublishInfoPath {
 	 * @param form
 	 *            the OpenMRS form with which the given XSN is to be associated
 	 */
-	public static void publishXSN(File file, Context context)
+	public static Form publishXSN(File file, Context context)
 			throws IOException {
+		
+		Form form = null;
+		
 		if (file.exists())
-			publishXSN(file.getAbsolutePath(), context);
+			form = publishXSN(file.getAbsolutePath(), context);
 		else
-			publishXSN(new FileInputStream(file), context);
+			form = publishXSN(new FileInputStream(file), context);
+		
+		return form;
 	}
 
 	/**
@@ -82,7 +87,7 @@ public class PublishInfoPath {
 	 * @param form
 	 *            the OpenMRS form with which the given XSN is to be associated
 	 */
-	public static void publishXSN(InputStream inputStream, Context context)
+	public static Form publishXSN(InputStream inputStream, Context context)
 			throws IOException {
 		File tempDir = FormEntryUtil.createTempDirectory("UPLOADEDXSN");
 
@@ -94,9 +99,11 @@ public class PublishInfoPath {
 		// copy the uploaded file over to the temp file system file
 		OpenmrsUtil.copyFile(inputStream, new FileOutputStream(filesystemXSN));
 
-		publishXSN(filesystemXSN.getAbsolutePath(), context);
+		Form form = publishXSN(filesystemXSN.getAbsolutePath(), context);
 
 		deleteDirectory(tempDir);
+		
+		return form;
 	}
 
 	/**
@@ -110,7 +117,7 @@ public class PublishInfoPath {
 	 * @param form
 	 *            the OpenMRS form with which the given XSN is to be associated
 	 */
-	public static void publishXSN(String xsnFilePath, Context context)
+	public static Form publishXSN(String xsnFilePath, Context context)
 			throws IOException {
 
 		log.debug("publishing xsn at: " + xsnFilePath);
@@ -233,6 +240,8 @@ public class PublishInfoPath {
 		// update template, solution version, and build number on server
 		form.setTemplate(templateWithDefaults);
 		context.getFormService().updateForm(form);
+		
+		return form;
 	}
 
 	// Prepare template file (update solutionVersion and href)

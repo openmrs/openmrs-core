@@ -49,8 +49,9 @@ public class XsnUploadFormController extends SimpleFormController {
 					MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
 					MultipartFile xsnFile = multipartRequest.getFile("xsnFile");
 					if (xsnFile != null && !xsnFile.isEmpty()) {
-						PublishInfoPath.publishXSN(xsnFile.getInputStream(), context);
-						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "FormEntry.xsn.saved");
+						Form form = PublishInfoPath.publishXSN(xsnFile.getInputStream(), context);
+						String msg = getMessageSourceAccessor().getMessage("FormEntry.xsn.saved", new String[] {form.getName()});
+						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, msg);
 					}
 				}
 			}
