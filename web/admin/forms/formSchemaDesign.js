@@ -99,7 +99,10 @@ dojo.addOnLoad( function(){
 		
 	dojo.event.topic.subscribe("fieldSearch/objectsFound", 
 			function(msg) {
-				msg.objs.push('<a href="#newField" onclick="createClicked(); return false;">Add New Field</a>'); //setup links for appending to the end
+				var link = '<a href="#newField" onclick="createClicked(); return false;">Add New Field</a>';
+				link += ' or ';
+				link += '<a href="../../dictionary/concept.form">Add New Concept</a>';
+				msg.objs.push(link); //setup links for appending to the end
 			}
 		);
 	
@@ -118,7 +121,7 @@ dojo.addOnLoad( function(){
 					newParent = treeSelector.selectedNode;
 				
 				// create a new node for this item so that it mimicks the "move" functionality
-				var node = addNode(newParent, child.data);
+				var node = addNode(newParent, copyObject(child.data));
 				
 				// newParent.doAddChild(child, newParent.children.length);
 				
@@ -245,12 +248,14 @@ var nodeMoved = function() {
 			if (msg.child.data.fieldId)
 				isFieldNode = true;
 			// add node back into search tree
-			var node = addNode(msg.oldTree, msg.child.data, msg.child.title, 0, isFieldNode);
+			var node = addNode(msg.oldTree, copyObject(msg.child.data), msg.child.title, 0, isFieldNode);
 			
-			if (isFieldNode)
-				node.afterLabelNode.appendChild(document.createTextNode(" -"));
-			else
-				dojo.html.addClass(node.titleNode, "fieldConceptHit");
+			if (msg.oldTree.children.length > 1) {
+				if (isFieldNode)
+					node.afterLabelNode.appendChild(document.createTextNode(" -"));
+				else
+					dojo.html.addClass(node.titleNode, "fieldConceptHit");
+			}
 			
 			msg.oldTree.containerNode.style.display = "";
 			msg.newTree.containerNode.style.display = "";
@@ -403,13 +408,14 @@ function editClicked(node) {
 			tree.tableNameInput.value = data["tableName"];
 			tree.attributeNameInput.value = data["attributeName"];
 			tree.defaultValueInput.value = data["defaultValue"];
-			tree.selectMultipleCheckbox.checked = data["selectMultiple"];
+			tree.selectMultipleCheckbox.checked = data["selectMultiple"] ? true : false;
 			tree.numFormsTag.innerHTML = data["numForms"];
 		}
 		else {
 			tree.fieldIdInput.value = tree.tableNameInput.value = "";
 			tree.attributeNameInput.value = tree.defaultValueInput.value = "";
-			tree.selectMultipleCheckbox.checked = tree.numFormsTag.innerHTML = "";
+			tree.selectMultipleCheckbox.checked = false;
+			tree.numFormsTag.innerHTML = "";
 		}
 		
 		// formField info
@@ -619,19 +625,43 @@ function save(target, formNotUsed) {
 				
 				data["formFieldId"] = (tree.formFieldIdInput.value) ? tree.formFieldIdInput.value : null;
 				
-				data["fieldNumber"] = tree.fieldNumberInput.value;
-				if (data["fieldNumber"].length == 0)
+				if (tree.fieldNumberInput.value && parseInt(tree.fieldNumberInput.value)) {
+					data["fieldNumber"] = tree.fieldNumberInput.value;
+					if (data["fieldNumber"].length == 0)
 					data["fieldNumber"] = null;
+				}
+				else if (tree.fieldNumberInput.value) {
+					alert("Invalid input: '" + tree.fieldNumberInput.value + "'.  Field number must be an integer.");
+					return false;
+				}
+				
 				data["fieldPart"] = tree.fieldPartInput.value;
 				data["pageNumber"] = tree.pageNumberInput.value;
 				if (data["pageNumber"].length == 0)
 					data["pageNumber"] = null;
-				data["minOccurs"] = tree.minOccursInput.value;
-				if (data["minOccurs"].length == 0)
+				
+				// min occurances 
+				if (tree.minOccursInput.value && parseInt(tree.minOccursInput.value)) {
+					data["minOccurs"] = tree.minOccursInput.value;
+					if (data["minOccurs"].length == 0)
 					data["minOccurs"] = null;
-				data["maxOccurs"] = tree.maxOccursInput.value;
-				if (data["maxOccurs"].length == 0)
+				}
+				else if (tree.minOccursInput.value) {
+					alert("Invalid input: '" + tree.minOccursInput.value + "'. Min occurances must be an integer");
+					return false;
+				}
+				
+				// max occurances
+				if (tree.maxOccursInput.value && parseInt(tree.maxOccursInput.value)) {
+					data["maxOccurs"] = tree.maxOccursInput.value;
+					if (data["maxOccurs"].length == 0)
 					data["maxOccurs"] = null;
+				}
+				else if (tree.maxOccursInput.value) {
+					alert("Invalid input: '" + tree.maxOccursInput.value + "'. Max occurances must be an integer");
+					return false;
+				}
+				
 				data["isRequired"] = tree.isRequiredCheckbox.checked;
 			} // end "if (!formNotUsed)"
 			
@@ -661,6 +691,7 @@ function save(target, formNotUsed) {
 		}
 		else
 			tree.editDiv.style.display = "none";
+
 	}
 	return false;
 }
@@ -825,7 +856,7 @@ var cancelClicked = function(savedNodeIds, target) {
 
 // getting data from field object	
 function getData(obj) {
-	var data = [];
+	var data = new Object();
 	data["selectMultiple"] = false;
 	data["fieldId"] = null;
 	data["defaultValue"] = "";
@@ -871,4 +902,15 @@ function getData(obj) {
 	data["isRequired"] = false;
 	
 	return data;
+}
+
+function copyObject(src)
+{
+	var dest = new Object();
+	var i;
+	
+	for (i in src)
+	dest[i] = src[i];
+	
+	return dest;
 }

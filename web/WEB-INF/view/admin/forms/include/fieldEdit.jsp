@@ -20,7 +20,7 @@
 		</td>
 		<td>
 			<spring:bind path="field.description">
-				<textarea name="${status.expression}" id="${status.expression}" rows="2" cols="40">${status.value}</textarea>
+				<textarea name="${status.expression}" id="${status.expression}" rows="2" cols="40" type="_moz">${status.value}</textarea>
 				<c:if test="${status.errorMessage != ''}">
 					<span class="error">
 						${status.errorMessage}
@@ -126,7 +126,7 @@
 		<td>
 			<spring:bind path="field.selectMultiple">
 				<input type="checkbox" name="${status.expression}" id="${status.expression}" value="on" 
-					<c:if test="${status.value == true}">selected</c:if> />
+					<c:if test="${status.value == true}">checked</c:if> />
 				<c:if test="${status.errorMessage != ''}">
 					<span class="error">
 						${status.errorMessage}

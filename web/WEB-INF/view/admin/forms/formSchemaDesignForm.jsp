@@ -6,7 +6,7 @@
 <%@ include file="localHeader.jsp" %>
 
 <script type="text/javascript">
-	var djConfig = {debugAtAllCosts: false, isDebug: false };
+	var djConfig = {debugAtAllCosts: true, isDebug: true };
 </script>
 
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
