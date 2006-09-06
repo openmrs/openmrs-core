@@ -29,7 +29,7 @@ public class RelationshipListItem {
 		Person p = r.getPerson();
 		if (p.getPatient() != null) {
 			Patient patient = p.getPatient();
-			PatientName pn = patient.getAName();
+			PatientName pn = patient.getPatientName();
 			fromName = pn.toString();
 			fromPatientId = patient.getPatientId();
 		} else {
@@ -40,7 +40,7 @@ public class RelationshipListItem {
 		p = r.getRelative();
 		if (p.getPatient() != null) {
 			Patient patient = p.getPatient();
-			PatientName pn = patient.getAName();
+			PatientName pn = patient.getPatientName();
 			toName = pn.toString();
 			toPatientId = patient.getPatientId();
 		} else {

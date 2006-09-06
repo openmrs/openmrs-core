@@ -829,7 +829,7 @@ delimiter //
 CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
  BEGIN
 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
-	select CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' from dual;
+	SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
 	
 	CREATE TABLE `patient_state` (
 	  `patient_state_id` int(11) NOT NULL auto_increment,
@@ -880,7 +880,7 @@ delimiter //
 CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
  BEGIN
 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
-	select CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' from dual;
+	SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
 	
 	IF (SELECT count(*) < 1 from hl7_source) THEN
 		INSERT INTO `hl7_source` VALUES ('1', 'LOCAL', '', '1', '2006-09-01 09:00:00');
@@ -896,7 +896,32 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 delimiter ;
 call diff_procedure('1.0.36');
 
+#--------------------------------------
+# OpenMRS Datamodel version 1.0.39
+# Ben Wolfe    Sept 6 2006 8:07 AM
+# Fixing default address velocity script
+#--------------------------------------
 
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+	SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+	
+	UPDATE field SET default_value = '$!{patient.getPatientAddress().getAddress1()}' WHERE default_value = '$!{patient.getAddresses().iterator().next().getAddress1()}';
+	UPDATE field SET default_value = '$!{patient.getPatientAddress().getAddress2()}' WHERE default_value = '$!{patient.getAddresses().iterator().next().getAddress2()}';
+	
+	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+	
+	END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.0.39');
 
 
 #-----------------------------------

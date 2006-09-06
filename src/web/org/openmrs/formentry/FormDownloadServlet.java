@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -137,11 +138,26 @@ public class FormDownloadServlet extends HttpServlet {
 		}
 
 		if (target.equals("formEntry")) {
+		
 			// Download from /openmrs/formentry/patientSummary.form (most
 			// likely)
 			doFormEntryGet(request, response, context, httpSession);
+		
+		} else if (target.equals("rebuild")) {
+			
+			// Download the XSN and Upload it again
+			Form form = context.getFormEntryService().getForm(formId);
+			InputStream formStream = getCurrentXSN(context, form);
+			if (formStream == null) {
+				String url = FormEntryUtil.getFormAbsoluteUrl(form);
+				formStream = new FormStarterXSN(context, form, url).getInputStream();
+			}
+			PublishInfoPath.publishXSN(formStream, context);
+			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.rebuildXSN.success");
+			response.sendRedirect(request.getHeader("referer"));
+			
 		} else {
-			// Downloading from /openmrs/admin/forms/form.form (most likely)
+			// Downloading from /openmrs/admin/forms/form(Edit|SchemaDesign).form (most likely)
 			response.setHeader("Content-Type", "application/ms-infopath.xml");
 
 			// Load form object and default form url
@@ -186,14 +202,7 @@ public class FormDownloadServlet extends HttpServlet {
 				}
 				setFilename(response, filename);
 
-				// Find the form file data
-				String formDir = FormEntryConstants.FORMENTRY_INFOPATH_OUTPUT_DIR;
-				String formFilePath = formDir
-						+ (formDir.endsWith(File.separator) ? ""
-								: File.separator) + FormEntryUtil.getFormUri(form);
-
-				FileInputStream formStream = getCurrentXSN(context, form,
-						formFilePath);
+				FileInputStream formStream = getCurrentXSN(context, form);
 
 				if (formStream != null)
 					OpenmrsUtil.copyFile(formStream, response.getOutputStream());
@@ -226,18 +235,17 @@ public class FormDownloadServlet extends HttpServlet {
 				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 	}
 
-	private FileInputStream getCurrentXSN(Context context, Form form,
-			String formFilePath) throws IOException {
-		log.debug("Attempting to open xsn from: " + formFilePath);
+	private FileInputStream getCurrentXSN(Context context, Form form) throws IOException {
+		// Find the form file data
+		String formDir = FormEntryConstants.FORMENTRY_INFOPATH_OUTPUT_DIR;
+		String formFilePath = formDir
+				+ (formDir.endsWith(File.separator) ? ""
+						: File.separator) + FormEntryUtil.getFormUri(form);
 
+		log.debug("Attempting to open xsn from: " + formFilePath);
+		
 		if (!new File(formFilePath).exists())
 			return null;
-//		try {
-//			FileInputStream formStream = new FileInputStream(formFilePath);
-//		} catch (FileNotFoundException e) {
-//			log.warn(e);
-//			return null;
-//		}
 
 		// Get Constants
 		String schemaFilename = FormEntryConstants.FORMENTRY_DEFAULT_SCHEMA_NAME;

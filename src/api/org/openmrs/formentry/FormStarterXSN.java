@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.FileChannel;
 import java.util.HashMap;
@@ -73,6 +74,11 @@ public class FormStarterXSN {
 		deleteDirectory(dir);
 
 		return xsn;
+	}
+	
+	public InputStream getInputStream() throws IOException {
+		File xsnFile = getXSNFile();
+		return new FileInputStream(xsnFile);
 	}
 	
 	public void copyXSNToStream(OutputStream outputStream) throws IOException {

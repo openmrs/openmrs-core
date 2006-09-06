@@ -450,6 +450,19 @@ public class Patient implements java.io.Serializable {
 		}
 	}
 	
+	/**
+	 * Convenience method to get the "preferred" address for patient.
+	 * 
+	 * @return Returns the "preferred" patient address.
+	 */
+	public PatientAddress getPatientAddress() {
+		if (addresses != null && addresses.size() > 0) {
+			return (PatientAddress) addresses.toArray()[0];
+		} else {
+			return null;
+		}
+	}
+	
 	public PatientIdentifier getPatientIdentifier(Integer identifierTypeId) {
 		if (identifiers != null && identifiers.size() > 0) {
 			PatientIdentifier found = null;
@@ -574,21 +587,4 @@ public class Patient implements java.io.Serializable {
 	public void setVoidReason(String voidReason) {
 		this.voidReason = voidReason;
 	}
-	
-	/**
-	 * @returns the preferred patient name, if there is one, or a random one otherwise 
-	 */
-	public PatientName getAName() {
-		PatientName random = null;
-		for (PatientName pn : getNames()) {
-			if (pn.getPreferred()) {
-				return pn;
-			}
-			if (random == null) {
-				random = pn;
-			}
-		}
-		return random;
-	}
-
 }

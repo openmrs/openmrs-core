@@ -20,6 +20,7 @@ dojo.widget.defineWidget(
 
 		hiddenInputNode: null,
 		hiddenInputName: "",
+		hiddenInputId: "",
 		
 		showChangeButton: true,
 		changeButton: null,
@@ -96,6 +97,9 @@ dojo.widget.defineWidget(
 			
 			if (this.hiddenInputName)
 				this.hiddenInputNode.name = this.hiddenInputName;	
+			
+			if (this.hiddenInputId)
+				this.hiddenInputNode.id = this.hiddenInputId;	
 			
 			if (this.changeButtonValue)
 				this.changeButton.value = this.changeButtonValue;
