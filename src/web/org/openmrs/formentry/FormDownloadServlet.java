@@ -106,6 +106,7 @@ public class FormDownloadServlet extends HttpServlet {
 		} catch (Exception e) {
 			log.error("Error evaluating default values for form "
 					+ form.getName() + "[" + form.getFormId() + "]", e);
+			throw new ServletException("Error while evaluating velocity defaults", e);
 		}
 
 		response.setHeader("Content-Type", "application/ms-infopath.xml");
