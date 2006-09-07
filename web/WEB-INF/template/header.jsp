@@ -34,19 +34,6 @@
 			</c:otherwise>
 		</c:choose>
 		<title><spring:message code="openmrs.title"/></title>
-		<!--[if lte IE 6]>
-			<style type="text/css">
-				html, body {
-					height: 100%;
-					width: expression((document.documentElement.clientWidth - 20) + 'px');
-				}
-				#footer {
-					position: absolute;
-					right: auto; bottom: auto;
-					top: expression( (- footer.offsetHeight + ( document.documentElement.clientHeight ? document.documentElement.clientHeight : document.body.clientHeight ) + ( ignoreMe = document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop ) ) + 'px' );
-	  			}
-	  		</style>
-		<![endif]-->
 	</head>
 
 <body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
