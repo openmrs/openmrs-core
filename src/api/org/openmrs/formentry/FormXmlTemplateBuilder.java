@@ -215,8 +215,8 @@ public class FormXmlTemplateBuilder {
 											context.getLocale()).getName();
 							Drug answerDrug = answer.getAnswerDrug();
 							if (answerDrug == null) {
-								String answerTag = FormUtil.getNewTag(
-										answerConceptName, tagList);
+								String answerTag = FormUtil.getXmlToken(
+										answerConceptName);
 								xml.append(answerTag);
 								xml.append(" openmrs_concept=\"");
 								xml.append(FormUtil.conceptToString(answer
@@ -227,8 +227,8 @@ public class FormXmlTemplateBuilder {
 								xml.append(">\n");
 							} else {
 								String answerDrugName = answerDrug.getName();
-								String answerTag = FormUtil.getNewTag(
-										answerDrugName, tagList);
+								String answerTag = FormUtil.getXmlToken(
+										answerDrugName);
 								xml.append(answerTag);
 								xml.append(" openmrs_concept=\"");
 								xml.append(FormUtil.conceptToString(answer
