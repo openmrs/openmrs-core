@@ -1,16 +1,28 @@
-html, body {
+html {
+	height: 100%;
 	width: 100%;
+}
+
+body {
+	height: 100%;
+	width: 100%;
+	padding: 0px;
+	margin: 0px;
+	font-size: 12px;
+}
+
+#pageBody {
+	position: relative;
+	min-height: 100%;
+}
+
+* html #pageBody {
+	height: 100%;
 }
 
 * {
 	font-family: Verdana, 'Lucida Grande', 'Trebuchet MS', Arial, Sans-Serif;
     -moz-box-sizing: border-box;  /* Use IE-like Border-Box model */
-}
-
-body {
-	padding: 0px;
-	margin: 0px;
-	font-size: 12px;
 }
 
 h1, h2, h3, h4, h5 {
@@ -46,7 +58,7 @@ h1, h2, h3, h4, h5 {
 	color: #333333;
 	line-height: 26px;
 	background-color: #ffffff;
-	}
+}
 	#userBar a:link, #userBar a:active, #userBar a:visited, #userBar a:hover {
 		color: #ddaa22;
 	}
@@ -112,36 +124,39 @@ h1, h2, h3, h4, h5 {
 	}
 	
 #content {
-	margin: 50px 0 0 0;
+	margin: 0px 0 0 0;
 	width: 100%;
-	padding: 10px;
+	padding: 50px 10px 10px 10px;
 	font-size: 1.2em;
 	background-color: #ffffff;
 	z-index: 8;
-	}
+}
 	#content a, a:link, #content a:active, #content a:visited, #content a:hover {
 		color: #003366;
 	}	
 
 #footer {
+	position: relative;
+	margin-top: -1.6em;
 	width: 100%;
-	position: fixed;
-	bottom: 0px;
 	font-size: .8em;
 	text-align: left;
 	z-index: 9;
 	height: 1.7em;
 	background-color: #eeeeee;
-	}
-	#footer span {
-		margin-right: 5px;
-	}
-	#buildDate, #codeVersion, #databaseVersion, #databaseVersionError {
-		color: #999999;
-	}
-	#footerInner {
-		border-top: 1px solid #bbbbbb;
-	}
+}
+
+#footer span {
+	margin-right: 5px;
+}
+
+#buildDate, #codeVersion, #databaseVersion, #databaseVersionError {
+	color: #999999;
+}
+
+#footerInner {
+	border-top: 1px solid #bbbbbb;
+}
 
 #menu {
 	padding-left: 2px;
@@ -709,3 +724,11 @@ span.noOrdersMessage {
 		background-color: #8FABC7;
 		color: white;
 	}
+	
+.instructions {
+	font-size: 0.8em;
+}
+
+.addLink {
+	font-size: 0.9em;
+}
