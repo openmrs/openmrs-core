@@ -78,51 +78,53 @@
 						</c:forEach>
 					</table>
 				</c:if>
-				<form method="post" id="orderForm" onSubmit="handleAddDrugOrder('drug', 'dose', 'units', 'frequencyDay', 'frequencyWeek', 'startDate')">
-				<input type="hidden" name="patientId" value="${model.patientId}" />
-				<table>
-					<tr>
-						<td><spring:message code="DrugOrder.drug"/></td>
-						<td>
-							<openmrs:fieldGen type="org.openmrs.Drug" formFieldName="drug" val="" parameters="noBind=true|optionHeader=[blank]|onChange=updateAddFields('drug','units','frequency')" />
-						</td>
-						<td><spring:message code="DrugOrder.dose"/></td>
-						<td>
-							<openmrs:fieldGen type="java.lang.Integer" formFieldName="dose" val="" parameters="noBind=true" />
-						</td>
-						<td>
-							<span id="unitsSpan"></span>
-							<input type="hidden" id="units" name="units" value="" />
-							<%--<openmrs:fieldGen type="java.lang.String" formFieldName="units" val="" parameters="noBind=true|fieldLength=12" />--%>
-						</td>
-						<td><spring:message code="DrugOrder.frequency"/></td>
-						<td>
-							<%--<openmrs:fieldGen type="java.lang.String" formFieldName="frequency" val="" parameters="noBind=true|fieldLength=8" />--%>
-							<select name="frequencyDay" id="frequencyDay">
-								<% for ( int i = 1; i <= 10; i++ ) { %>
-									<option value="<%= i %>/<spring:message code="DrugOrder.frequency.day" />"><%= i %>/<spring:message code="DrugOrder.frequency.day" /></option>
-								<% } %>
-							</select>
-						</td>
-						<td>
-							<span> x </span>
-						</td>
-						<td>
-							<select name="frequencyWeek" id="frequencyWeek">
-								<option value="<spring:message code="DrugOrder.frequency.everyDay" />"><spring:message code="DrugOrder.frequency.everyDay" /></option>
-								<% for ( int i = 1; i <= 6; i++ ) { %>
-									<option value="<%= i %> <spring:message code="DrugOrder.frequency.days" />/<spring:message code="DrugOrder.frequency.week" />"><%= i %> <spring:message code="DrugOrder.frequency.days" />/<spring:message code="DrugOrder.frequency.week" /></option>
-								<% } %>
-							</select>
-						</td>
-						<td><spring:message code="general.dateStart"/></td>
-						<td>
-							<openmrs:fieldGen type="java.util.Date" formFieldName="startDate" val="" parameters="noBind=true" />
-						</td>
-						<td><input type="button" value="<spring:message code="general.add"/>" onClick="handleAddDrugOrder('drug', 'dose', 'units', 'frequencyDay', 'frequencyWeek', 'startDate')"></td>
-					</tr>
-				</table>
-				</form>
+				<div id="regimenPortletAddFlexible">
+					<form method="post" id="orderForm" onSubmit="handleAddDrugOrder('drug', 'dose', 'units', 'frequencyDay', 'frequencyWeek', 'startDate')">
+					<input type="hidden" name="patientId" value="${model.patientId}" />
+					<table>
+						<tr>
+							<td><spring:message code="DrugOrder.drug"/></td>
+							<td>
+								<openmrs:fieldGen type="org.openmrs.Drug" formFieldName="drug" val="" parameters="noBind=true|optionHeader=[blank]|onChange=updateAddFields('drug','units','frequency')" />
+							</td>
+							<td><spring:message code="DrugOrder.dose"/></td>
+							<td>
+								<openmrs:fieldGen type="java.lang.Integer" formFieldName="dose" val="" parameters="noBind=true" />
+							</td>
+							<td>
+								<span id="unitsSpan"></span>
+								<input type="hidden" id="units" name="units" value="" />
+								<%--<openmrs:fieldGen type="java.lang.String" formFieldName="units" val="" parameters="noBind=true|fieldLength=12" />--%>
+							</td>
+							<td><spring:message code="DrugOrder.frequency"/></td>
+							<td>
+								<%--<openmrs:fieldGen type="java.lang.String" formFieldName="frequency" val="" parameters="noBind=true|fieldLength=8" />--%>
+								<select name="frequencyDay" id="frequencyDay">
+									<% for ( int i = 1; i <= 10; i++ ) { %>
+										<option value="<%= i %>/<spring:message code="DrugOrder.frequency.day" />"><%= i %>/<spring:message code="DrugOrder.frequency.day" /></option>
+									<% } %>
+								</select>
+							</td>
+							<td>
+								<span> x </span>
+							</td>
+							<td>
+								<select name="frequencyWeek" id="frequencyWeek">
+									<option value="<spring:message code="DrugOrder.frequency.everyDay" />"><spring:message code="DrugOrder.frequency.everyDay" /></option>
+									<% for ( int i = 1; i <= 6; i++ ) { %>
+										<option value="<%= i %> <spring:message code="DrugOrder.frequency.days" />/<spring:message code="DrugOrder.frequency.week" />"><%= i %> <spring:message code="DrugOrder.frequency.days" />/<spring:message code="DrugOrder.frequency.week" /></option>
+									<% } %>
+								</select>
+							</td>
+							<td><spring:message code="general.dateStart"/></td>
+							<td>
+								<openmrs:fieldGen type="java.util.Date" formFieldName="startDate" val="" parameters="noBind=true" />
+							</td>
+							<td><input type="button" value="<spring:message code="general.add"/>" onClick="handleAddDrugOrder('drug', 'dose', 'units', 'frequencyDay', 'frequencyWeek', 'startDate')"></td>
+						</tr>
+					</table>
+					</form>
+				</div>
 			</div>
 		</div>			
 	</div>
@@ -506,6 +508,7 @@
 			}
 
 			function showFullStandard(codeName) {
+				showHideDiv('regimenPortletAddFlexible');
 				showHideDiv('stDtLabel' + codeName);
 				showHideDiv('stDt' + codeName);
 				showHideDiv('submit' + codeName);
