@@ -31,11 +31,11 @@ h1, h2, h3, h4, h5 {
 }
 
 #openmrs_msg {
-	background: url(/amrs/images/info.gif) no-repeat center left;
+	background: url(/@WEBAPP.NAME@/images/info.gif) no-repeat center left;
 }
 
 #openmrs_error {
-	background: url(/amrs/images/error.gif) no-repeat center left;
+	background: url(/@WEBAPP.NAME@/images/error.gif) no-repeat center left;
 }
 
 #openmrs_msg, #openmrs_error { 

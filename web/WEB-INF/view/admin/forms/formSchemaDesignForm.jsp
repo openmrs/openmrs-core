@@ -6,7 +6,7 @@
 <%@ include file="localHeader.jsp" %>
 
 <script type="text/javascript">
-	var djConfig = {debugAtAllCosts: true, isDebug: true };
+	var djConfig = {debugAtAllCosts: false, isDebug: false };
 </script>
 
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
@@ -75,8 +75,13 @@
 	span.treeNodeRow div.dojoTree div.dojoTreeNode {
 		display: inline;
 	}
-	#fieldResults tr td div {
+	.openmrsSearchTable tr td div {
 		overflow: hidden;
+	}
+	#fieldSearchDiv {
+		position: fixed;
+		z-index: 10;
+		background-color: white;
 	}
 	
 </style>
@@ -126,9 +131,11 @@
 			</div>
 		</td>
 		<td valign="top" style="padding-left: 5px;" id="fieldSearch" width="40%">
-			<c:if test="${form.published != true && form.formId != 1}">
-				<div dojoType="FieldSearch" widgetId="fieldSearch" searchLabel='<spring:message code="Field.find" />' showHeaderRow="false" alsoSearchConcepts="true"></div>
-			</c:if>
+			<div id="fieldSearchDiv">
+				<c:if test="${form.published != true && form.formId != 1}">
+					<div dojoType="FieldSearch" widgetId="fieldSearch" searchLabel='<spring:message code="Field.find" />' showHeaderRow="false" alsoSearchConcepts="true"></div>
+				</c:if>
+			</div>
 		</td>
 	</tr>
 </table>

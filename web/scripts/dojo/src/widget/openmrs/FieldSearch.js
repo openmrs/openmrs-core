@@ -65,7 +65,7 @@ dojo.widget.defineWidget(
 		showHeaderRow: true,
 		getHeaderCellContent: function() {
 			return ['', 'Name', 'Field Type', 'Description'];
-		},
+		}
 		
 	},
 	"html"

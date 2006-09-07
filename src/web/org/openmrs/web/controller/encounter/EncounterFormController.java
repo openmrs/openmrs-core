@@ -2,6 +2,7 @@ package org.openmrs.web.controller.encounter;
 
 import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -226,7 +227,7 @@ public class EncounterFormController extends SimpleFormController {
 				}
 				
 				// sort the temp list according the the FormFields.compare() method
-				Collections.sort(formFields);
+				Collections.sort(formFields, new FormFieldComparator());
 				
 				// loop over the sorted formFields to add the corresponding
 				//  obs to the returned obs list
@@ -271,6 +272,51 @@ public class EncounterFormController extends SimpleFormController {
 		}
 		
 		return null;
+	}
+	
+	/**
+	 * Internal class used to sort FormField first according to the parent FormFieldId
+	 * then by FormField.compare()
+	 */
+	private class FormFieldComparator implements Comparator<FormField> {
+		public int compare(FormField ff1, FormField ff2) {
+			if (ff1.getParent() == ff2.getParent()) {
+				return ff1.compareTo(ff2);
+			}
+			else if (ff1.getParent() == null && ff2.getParent() == null)
+				return 0;
+			else {
+				// search upwards until we have siblings
+				// this algorithm is O(depth squared) -- if we end up having 
+				// deep trees, might want to change it 
+				
+				// get arrays of ancestors
+				List<FormField> ff1Parents = new Vector<FormField>();
+				while (ff1 != null) {
+					ff1Parents.add(ff1);
+					ff1 = ff1.getParent();
+				}
+				
+				List<FormField> ff2Parents = new Vector<FormField>();
+				while (ff2 != null) {
+					ff2Parents.add(ff2);
+					ff2 = ff2.getParent();
+				}
+				
+				for (int i = 1; i < ff1Parents.size(); i++) {
+					FormField ff1Parent = ff1Parents.get(i); 
+					for (int j = 1; j < ff2Parents.size(); j++) {
+						if (ff1Parent.equals(ff2Parents.get(j))) {
+							return ff1Parents.get(i-1).compareTo(ff2Parents.get(j-1));
+						}
+					}
+				}
+				
+				log.warn("couldn't find similar parents: " + ff1.getFormFieldId() + ", " + ff2.getFormFieldId());
+
+				return 0;
+			}
+		}
 	}
 	
 }

@@ -332,13 +332,26 @@ public class UserService {
 		Collection<Role> roles = user.getAllRoles();
 		User authUser = context.getAuthenticatedUser();
 		
+		List<String> requiredPrivs = new Vector<String>();
+		
 		for (Role r : roles) {
 			if (r.getRole().equals(OpenmrsConstants.SUPERUSER_ROLE) &&
 				!authUser.hasRole(OpenmrsConstants.SUPERUSER_ROLE))
-					throw new APIAuthenticationException("Role required: " + OpenmrsConstants.SUPERUSER_ROLE);
+					throw new APIException("You must have the role '" + OpenmrsConstants.SUPERUSER_ROLE + "' in order to assign it.");
 			for (Privilege p : r.getPrivileges())
 				if (!authUser.hasPrivilege(p.getPrivilege()))
-					throw new APIAuthenticationException("Privilege required: " + p);
+					requiredPrivs.add(p.getPrivilege());
+		}
+		
+		if (requiredPrivs.size() == 1) {
+			throw new APIException("You must have privilege '" + requiredPrivs.get(0) + "' in order to assign it.");
+		} 
+		else if (requiredPrivs.size() > 1) {
+			String txt = "You must have the following privileges in order to assign them: ";
+			for (String s : requiredPrivs) 
+				txt += s + ", ";
+			txt = txt.substring(0, txt.length() - 2);
+			throw new APIException(txt);
 		}
 	}
 	

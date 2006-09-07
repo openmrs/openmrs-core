@@ -125,6 +125,7 @@
 		</td>
 		<td>
 			<spring:bind path="field.selectMultiple">
+				<input type="hidden" name="_${status.expression}">
 				<input type="checkbox" name="${status.expression}" id="${status.expression}" value="on" 
 					<c:if test="${status.value == true}">checked</c:if> />
 				<c:if test="${status.errorMessage != ''}">

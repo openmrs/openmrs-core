@@ -403,11 +403,12 @@ public class ORUR01Handler implements Application {
 		} catch (Exception e) {
 			throw new HL7Exception("Error parsing form id from message", e);
 		}
+
+		// must get entire form object in order to get its metadata (encounterType) later
 		Form form = null;
-		if (formId != null) {
-			form = new Form();
-			form.setFormId(formId);
-		}
+		if (formId != null)
+			form = context.getFormService().getForm(formId);
+
 		return form;
 	}
 

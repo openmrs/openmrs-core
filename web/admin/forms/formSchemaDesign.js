@@ -625,7 +625,7 @@ function save(target, formNotUsed) {
 				
 				data["formFieldId"] = (tree.formFieldIdInput.value) ? tree.formFieldIdInput.value : null;
 				
-				if (tree.fieldNumberInput.value && parseInt(tree.fieldNumberInput.value)) {
+				if (tree.fieldNumberInput.value && parseInt(tree.fieldNumberInput.value).toString().length == tree.fieldNumberInput.value.length) {
 					data["fieldNumber"] = tree.fieldNumberInput.value;
 					if (data["fieldNumber"].length == 0)
 					data["fieldNumber"] = null;
@@ -641,7 +641,7 @@ function save(target, formNotUsed) {
 					data["pageNumber"] = null;
 				
 				// min occurances 
-				if (tree.minOccursInput.value && parseInt(tree.minOccursInput.value)) {
+				if (tree.minOccursInput.value && parseInt(tree.minOccursInput.value).toString().length == tree.minOccursInput.value.length) {
 					data["minOccurs"] = tree.minOccursInput.value;
 					if (data["minOccurs"].length == 0)
 					data["minOccurs"] = null;
@@ -652,7 +652,7 @@ function save(target, formNotUsed) {
 				}
 				
 				// max occurances
-				if (tree.maxOccursInput.value && parseInt(tree.maxOccursInput.value)) {
+				if (tree.maxOccursInput.value && parseInt(tree.maxOccursInput.value).toString().length == tree.maxOccursInput.value.length) {
 					data["maxOccurs"] = tree.maxOccursInput.value;
 					if (data["maxOccurs"].length == 0)
 					data["maxOccurs"] = null;
@@ -886,7 +886,7 @@ function getData(obj) {
 		data["tableName"] = obj.table;
 		data["attributeName"] = obj.attribute;
 		data["defaultValue"] = obj.defaultValue;
-		data["selectMultiple"] = obj.selectMultiple;
+		data["selectMultiple"] = obj.selectMultiple == true || obj.selectMultiple == 'yes' || obj.selectMultiple == 1 ? true : false;
 		
 		data["label"] = obj.name + " (" + obj.numForms + " forms)";
 		data.title = "";
