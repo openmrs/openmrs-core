@@ -20,6 +20,7 @@ public class GlobalPropertyTag extends TagSupport {
 	
 	private String key="";
 	private String defaultValue="";
+	private String var=null;
 	
 	public int doStartTag() {
 
@@ -31,8 +32,11 @@ public class GlobalPropertyTag extends TagSupport {
 			value = (String) context.getAdministrationService().getGlobalProperty(key);
 		}
 		
-		try { 
-			pageContext.getOut().write(value);
+		try {
+			if (var != null)
+				pageContext.setAttribute(var, value);
+			else
+				pageContext.getOut().write(value);
 
 		} catch (Exception e) { 
 			log.error("error getting global property", e);
@@ -55,6 +59,14 @@ public class GlobalPropertyTag extends TagSupport {
 	
 	public void setDefaultValue(String defaultValue) { 
 		this.defaultValue = defaultValue;
+	}
+
+	public String getVar() {
+		return var;
+	}
+
+	public void setVar(String var) {
+		this.var = var;
 	}
 	
 }

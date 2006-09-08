@@ -580,6 +580,7 @@
 <tag>
 	<description>
 		Gets the value of the given global property.
+		If the var attribute is specified, then the value of the global property is 
 	</description>
 	<name>globalProperty</name>
 	<tag-class>org.openmrs.web.taglib.GlobalPropertyTag</tag-class>
@@ -588,6 +589,16 @@
 		<name>key</name>
 		<required>true</required>
 		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>defaultValue</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>var</name>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
 	</attribute>
 </tag>	
 

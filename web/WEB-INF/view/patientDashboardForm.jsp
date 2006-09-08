@@ -110,7 +110,7 @@
 	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="Patient Dashboard - View Forms Section">
 		<div id="patientForms" style="display:none;">
-			<openmrs:portlet url="patientForms" id="patientDashboardForms" patientId="${patient.patientId}"/>
+			<openmrs:portlet url="patientForms" id="patientDashboardForms" patientId="${patient.patientId}" parameters="goBackOnEntry=true|showUnpublishedForms=true" />
 		</div>
 	</openmrs:hasPrivilege>
 

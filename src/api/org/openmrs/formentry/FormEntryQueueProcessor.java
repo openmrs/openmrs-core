@@ -119,10 +119,10 @@ public class FormEntryQueueProcessor /* implements Runnable */ {
 			out = outWriter.toString();
 		} catch (TransformerConfigurationException e) {
 			errorDetails = e.getMessage();
-			log.error(e);
+			log.error(errorDetails, e);
 		} catch (TransformerException e) {
 			errorDetails = e.getMessage();
-			log.error(e);
+			log.error(errorDetails, e);
 		}
 
 		// If the transform failed, move the queue entry into the error bin

@@ -29,10 +29,13 @@
 		<td><spring:message code="Patient.birthplace"/></td>
 		<td>${patient.birthplace}</td>
 	</tr>
-	<tr>
-		<td><spring:message code="Patient.tribe"/></td>
-		<td>${patient.tribe.name}</td>
-	</tr>
+	<openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" var="showTribe"/>
+	<c:if test="${showTribe == 'true'}">
+		<tr>
+			<td><spring:message code="Patient.tribe"/></td>
+			<td>${patient.tribe.name}</td>
+		</tr>
+	</c:if>
 	<tr>
 		<td><spring:message code="Patient.citizenship"/></td>
 		<td>${patient.citizenship}</td>

@@ -63,7 +63,10 @@
 				 	<th><spring:message code="PatientName.familyName"/></th>
 				 	<th id='patientAge'> <spring:message code="Patient.age"/> </th>
 				 	<th id='patientGender'> <spring:message code="Patient.gender"/> </th>
-				 	<th><spring:message code="Patient.tribe"/></th>
+					<openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" var="showTribe"/>
+					<c:if test="${showTribe == 'true'}">
+					 	<th><spring:message code="Patient.tribe"/></th>
+					</c:if>
 				 	<th></th>
 				 	<th><spring:message code="Patient.birthdate"/></th>
 				 </tr>

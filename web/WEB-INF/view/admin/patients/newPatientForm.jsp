@@ -285,22 +285,25 @@
 				</spring:bind>
 			</td>
 		</tr>
-		<tr>
-			<th><spring:message code="Patient.tribe"/></th>
-			<td>
-				<spring:bind path="patient.tribe">
-					<select name="tribe">
-						<option value=""></option>
-						<openmrs:forEachRecord name="tribe">
-							<option value="${record.tribeId}" <c:catch><c:if test="${record.name == status.value || status.value == record.tribeId}">selected</c:if></c:catch>>
-								${record.name}
-							</option>
-						</openmrs:forEachRecord>
-					</select>
-					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-				</spring:bind>
-			</td>
-		</tr>
+		<openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" var="showTribe"/>
+		<c:if test="${showTribe == 'true'}">
+			<tr>
+				<th><spring:message code="Patient.tribe"/></th>
+				<td>
+					<spring:bind path="patient.tribe">
+						<select name="tribe">
+							<option value=""></option>
+							<openmrs:forEachRecord name="tribe">
+								<option value="${record.tribeId}" <c:catch><c:if test="${record.name == status.value || status.value == record.tribeId}">selected</c:if></c:catch>>
+									${record.name}
+								</option>
+							</openmrs:forEachRecord>
+						</select>
+						<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+					</spring:bind>
+				</td>
+			</tr>
+		</c:if>
 		<tr>
 			<th><spring:message code="PatientAddress.address1"/></th>
 			<td>

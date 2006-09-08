@@ -1,3 +1,5 @@
+<openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" var="showTribe"/>
+
 <br />
 <table>
 	<tr>
@@ -37,7 +39,9 @@
 				<option value="$!{fn.formatDate('short', $fn.getPatientAttr('Patient', 'birthdate'))}">&nbsp; <spring:message code="Patient.birthdate" /></option>
 				<option value="$!{fn.getPatientAttr('Patient', 'birthdateEstimated')}">&nbsp; <spring:message code="Patient.birthdateEstimated" /></option>
 				<option value="$!{fn.getPatientAttr('Patient', 'race')}">&nbsp; <spring:message code="Patient.race" /></option>
-				<option value="$!{fn.getPatientAttr('Patient', 'tribe').getName()}">&nbsp; <spring:message code="Tribe.name" /></option>
+				<c:if test="${showTribe == 'true'}">
+					<option value="$!{fn.getPatientAttr('Patient', 'tribe').getName()}">&nbsp; <spring:message code="Tribe.name" /></option>
+				</c:if>
 				<option value="$!{fn.formatDate('short', $fn.getPatientAttr('Patient', 'deathDate'))}">&nbsp; <spring:message code="Patient.deathDate" /></option>
 				<option value="$!{fn.getPatientAttr('Patient', 'causeOfDeath')}">&nbsp; <spring:message code="Patient.causeOfDeath" /></option>
 				<option value=""> </option>

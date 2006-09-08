@@ -479,6 +479,22 @@ public class Patient implements java.io.Serializable {
 		}
 	}
 	
+	public PatientIdentifier getPatientIdentifier(String identifierTypeName) {
+		if (identifiers != null && identifiers.size() > 0) {
+			PatientIdentifier found = null;
+			for (PatientIdentifier id : identifiers) {
+				if (id.getIdentifierType().getName().equals(identifierTypeName)) {
+					found = id;
+					if (found.isPreferred())
+						return found;
+				}
+			}
+			return found;
+		} else {
+			return null;
+		}		
+	}
+	
 	public Integer getAge() {
 		
 		if (birthdate == null)

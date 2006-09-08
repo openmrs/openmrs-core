@@ -1,3 +1,6 @@
+<%@ include file="/WEB-INF/template/include.jsp" %>
+<openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" var="showTribe"/>
+
 /*
 	Copyright (c) 2006, The OpenMRS Cooperative
 	All Rights Reserved.
@@ -113,7 +116,9 @@ dojo.widget.defineWidget(
 		getGiven : function(p) { return p.givenName == null ? this.noCell() : p.givenName;  },
 		getMiddle: function(p) { return p.middleName == null ? this.noCell() : p.middleName; },
 		getFamily: function(p) { return p.familyName == null ? this.noCell() : p.familyName; },
-		getTribe : function(p) { return p.tribe == null ? this.noCell() : p.tribe; },
+		<c:if test="${showTribe == 'true'}">
+			getTribe : function(p) { return p.tribe == null ? this.noCell() : p.tribe; },
+		</c:if>
 		getGender: function(p) {
 				if (p.gender == null) { return this.noCell(); }
 				
@@ -165,7 +170,9 @@ dojo.widget.defineWidget(
 					this.simpleClosure(this, "getFamily"),
 					this.simpleClosure(this, "getAge"), 
 					this.simpleClosure(this, "getGender"),
-					this.simpleClosure(this, "getTribe"),
+					<c:if test="${showTribe == 'true'}">
+						this.simpleClosure(this, "getTribe"),
+					</c:if>
 					this.simpleClosure(this, "getBirthdayEstimated"),
 					this.simpleClosure(this, "getBirthday")
 					];
@@ -175,7 +182,7 @@ dojo.widget.defineWidget(
 		// TODO: internationalize
 		showHeaderRow: true,
 		getHeaderCellContent: function() {
-			return ['', 'Identifier', 'Given', 'Middle', 'Family Name', 'Age', 'Gender', 'Tribe', '', 'Birthday'];
+			return ['', 'Identifier', 'Given', 'Middle', 'Family Name', 'Age', 'Gender', <c:if test="${showTribe == 'true'}">'Tribe',</c:if> '', 'Birthday'];
 		},
 		
 		getProblemImage: function() {

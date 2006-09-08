@@ -260,6 +260,10 @@
 	 		<url-pattern>/openmrs/*.jsp</url-pattern>
 		</servlet-mapping>
 		-->
+		<servlet-mapping>
+			<servlet-name>jsp</servlet-name>
+			<url-pattern>*.js</url-pattern>
+		</servlet-mapping>
 	
 		<servlet-mapping>
 	 		<servlet-name>@WEBAPP.NAME@</servlet-name>

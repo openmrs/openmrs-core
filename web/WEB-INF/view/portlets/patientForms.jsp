@@ -1,4 +1,9 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
+<%--
+Parameters
+	model.showUnpublishedForms == 'true' means allow users to enter forms that haven't been published yet
+	model.goBackOnEntry == 'true' means have the browser go back to the find patient page after starting to enter a form
+--%>
 
 <openmrs:hasPrivilege privilege="Form Entry">
 
@@ -6,7 +11,9 @@
 		var timeOut = null;
 	
 		function startDownloading() {
-			timeOut = setTimeout("goBack()", 30000);	
+			<c:if test="${model.goBackOnEntry == 'true'}">
+				timeOut = setTimeout("goBack()", 30000);
+			</c:if>
 		}
 		
 		function goBack() {
@@ -28,11 +35,13 @@
 		<form id="selectFormForm" method="post" action="<%= request.getContextPath() %>/formDownload">
 			<c:forEach items="${forms}" var="form">
 				<c:if test="${form.formId != 1}">
-					<a href="${pageContext.request.contextPath}/formDownload?target=formEntry&formId=${form.formId}&patientId=${patient.patientId}" onclick="startDownloading()" class="formLink">${form.name}
-					(v.${form.version})
-					<c:if test="${form.published == false}"><i>(<spring:message code="formentry.unpublished"/>)</i></c:if>
-					</a>			
-					<br />
+					<c:if test="${form.published == true || model.showUnpublishedForms == 'true'}">
+						<a href="${pageContext.request.contextPath}/formDownload?target=formEntry&formId=${form.formId}&patientId=${patient.patientId}" onclick="startDownloading()" class="formLink">${form.name}
+						(v.${form.version})
+						<c:if test="${form.published == false}"><i>(<spring:message code="formentry.unpublished"/>)</i></c:if>
+						</a>			
+						<br />
+					</c:if>
 				</c:if>
 			</c:forEach>
 		</form>

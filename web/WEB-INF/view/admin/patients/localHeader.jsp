@@ -18,13 +18,16 @@
 			</li>
 		</openmrs:hasPrivilege>
 	</c:if>
-	<openmrs:hasPrivilege privilege="Manage Tribes">
-		<li <c:if test="<%= request.getRequestURI().contains("tribe") %>">class="active"</c:if>>
-			<a href="${pageContext.request.contextPath}/admin/patients/tribe.list">
-				<spring:message code="Tribe.manage"/>
-			</a>
-		</li>
-	</openmrs:hasPrivilege>
+	<openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" var="showTribe"/>
+	<c:if test="${showTribe == 'true'}">
+		<openmrs:hasPrivilege privilege="Manage Tribes">
+			<li <c:if test="<%= request.getRequestURI().contains("tribe") %>">class="active"</c:if>>
+				<a href="${pageContext.request.contextPath}/admin/patients/tribe.list">
+					<spring:message code="Tribe.manage"/>
+				</a>
+			</li>
+		</openmrs:hasPrivilege>
+	</c:if>
 	<openmrs:hasPrivilege privilege="Manage Identifier Types">
 		<li <c:if test="<%= request.getRequestURI().contains("patientIdentifierType") %>">class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/patients/patientIdentifierType.list">
