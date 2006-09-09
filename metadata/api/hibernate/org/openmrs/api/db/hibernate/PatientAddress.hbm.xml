@@ -40,6 +40,12 @@
 		<property name="longitude" type="java.lang.String"
 			column="longitude" length="50" />
 
+		<property name="countyDistrict" type="java.lang.String"
+			column="county_district" length="50" />
+
+		<property name="neighborhoodCell" type="java.lang.String"
+			column="neighborhood_cell" length="50" />
+
 		<many-to-one name="creator" class="User">
 			<column name="creator" />
 		</many-to-one>

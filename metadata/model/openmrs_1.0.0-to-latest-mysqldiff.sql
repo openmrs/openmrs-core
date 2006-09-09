@@ -924,6 +924,37 @@ delimiter ;
 call diff_procedure('1.0.39');
 
 
+#--------------------------------------
+# OpenMRS Datamodel version 1.0.40
+# Christian Allen 	Sept 8 2006 10:27 AM
+# Adding county_district and neighborhood_cell attributes
+#  to patient_address table
+#--------------------------------------
+
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+	SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+	
+	ALTER TABLE `patient_address` ADD COLUMN `county_district` varchar(50) default NULL;
+	ALTER TABLE `patient_address` ADD COLUMN `neighborhood_cell` varchar(50) default NULL;
+	
+	ALTER TABLE `location` ADD COLUMN `county_district` varchar(50) default NULL;
+	ALTER TABLE `location` ADD COLUMN `neighborhood_cell` varchar(50) default NULL;
+
+	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+	
+	END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.0.40');
+
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script
 #-----------------------------------

@@ -31,70 +31,9 @@
 			</spring:bind>
 		</td>
 	</tr>
-	<tr>
-		<td><spring:message code="Location.address1"/></td>
-		<td>
-			<spring:bind path="location.address1">
-				<input type="text" name="${status.expression}" id="address1" value="${status.value}"/>
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
-		<td><spring:message code="Location.address2"/></td>
-		<td>
-			<spring:bind path="location.address2">
-				<input type="text" name="${status.expression}" id="address2" value="${status.value}" />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
-		<td><spring:message code="Location.cityVillage"/></td>
-			<spring:bind path="location.cityVillage">
-				<td>
-					<input type="text" name="${status.expression}" id="cityVillage" value="${status.value}" onKeyUp="modifyTab(this, this.value, 0);"/>
-				</td>
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		<td><spring:message code="Location.stateProvince"/></td>
-			<spring:bind path="location.stateProvince">
-				<td>
-					<input type="text" name="${status.expression}" id="stateProvince" size="10" value="${status.value}" />
-				</td>
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		<td><spring:message code="Location.country"/></td>
-			<spring:bind path="location.country">
-				<td>
-					<input type="text" name="${status.expression}" id="country" size="15" value="${status.value}" />
-				</td>
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		<td><spring:message code="Location.postalCode"/></td>
-			<spring:bind path="location.postalCode">
-				<td>
-					<input type="text" name="${status.expression}" id="postalCode" size="5" value="${status.value}" />
-				</td>
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-	</tr>
-	<tr>
-		<td><spring:message code="Location.latitude"/></td>
-			<spring:bind path="location.latitude">
-				<td>
-					<input type="text" name="${status.expression}" id="latitude" value="${status.value}" />
-				</td>
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		<td>Longitude</td>
-			<spring:bind path="location.longitude">
-				<td>
-					<input type="text" name="${status.expression}" id="longitude" value="${status.value}" />
-				</td>
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-	</tr>
+	<spring:nestedPath path="location">
+		<openmrs:portlet url="address" id="addressPortlet" size="full" parameters="addressShowTable=false|addressShowExtended=false|addresShowErrors=false" />
+	</spring:nestedPath>
 	<c:if test="${!(location.creator == null)}">
 		<tr>
 			<td><spring:message code="general.createdBy" /></td>

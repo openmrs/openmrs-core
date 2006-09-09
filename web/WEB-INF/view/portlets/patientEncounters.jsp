@@ -103,8 +103,8 @@
 								<spring:message code="Obs.concept"/>
 								<%--<openmrs:fieldGen type="org.openmrs.Concept" formFieldName="conceptId" val="" parameters="noBind=true|fieldLength=12" />--%>
 								<select id="conceptId" name="conceptId">
-									<option value="<openmrs:globalProperty key="concept.weight"/>"><spring:message code="Patient.weight"/></option>
-									<option value="<openmrs:globalProperty key="concept.cd4_count"/>"><spring:message code="Patient.cd4"/></option>
+									<option value="<openmrs:globalProperty key="concept.weight" defaultValue="" />"><spring:message code="Patient.weight"/></option>
+									<option value="<openmrs:globalProperty key="concept.cd4_count" defaultValue="" />"><spring:message code="Patient.cd4"/></option>
 								</select>
 							</td>
 							<td>

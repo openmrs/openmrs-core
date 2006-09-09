@@ -20,6 +20,8 @@ public class PatientAddress implements java.io.Serializable, Cloneable {
 	private String cityVillage;
 	private String stateProvince;
 	private String country;
+	private String countyDistrict;
+	private String neighborhoodCell;
 	private String postalCode;
 	private String latitude;
 	private String longitude;
@@ -328,5 +330,33 @@ public class PatientAddress implements java.io.Serializable, Cloneable {
 	 */
 	public void setVoidReason(String voidReason) {
 		this.voidReason = voidReason;
+	}
+
+	/**
+	 * @return Returns the countyDistrict.
+	 */
+	public String getCountyDistrict() {
+		return countyDistrict;
+	}
+
+	/**
+	 * @param countyDistrict The countyDistrict to set.
+	 */
+	public void setCountyDistrict(String countyDistrict) {
+		this.countyDistrict = countyDistrict;
+	}
+
+	/**
+	 * @return Returns the neighborhoodCell.
+	 */
+	public String getNeighborhoodCell() {
+		return neighborhoodCell;
+	}
+
+	/**
+	 * @param neighborhoodCell The neighborhoodCell to set.
+	 */
+	public void setNeighborhoodCell(String neighborhoodCell) {
+		this.neighborhoodCell = neighborhoodCell;
 	}
 }

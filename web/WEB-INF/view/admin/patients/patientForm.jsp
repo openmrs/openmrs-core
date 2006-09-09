@@ -302,14 +302,15 @@
 				<c:forEach var="address" items="${patient.addresses}" varStatus="status">
 					<spring:nestedPath path="patient.addresses[${status.index}]">
 						<div id="address${status.index}Data" class="tabBox">
-							<%@ include file="include/editPatientAddress.jsp" %>
+							<openmrs:portlet url="address" id="addressPortlet" size="full" parameters="addressShowTable=true|addressShowExtended=true" />
+							<%-- @ include file="include/editPatientAddress.jsp" --%>
 							<!-- <input type="button" onClick="return removeTab(this, 'name');" class="removeTab" value="Remove this address"/><br/> --> <br/>
 						</div>
 					</spring:nestedPath>
 				</c:forEach>
 				<div id="addressData" class="tabBox">
 					<spring:nestedPath path="emptyAddress">
-						<%@ include file="include/editPatientAddress.jsp" %>
+						<openmrs:portlet url="address" id="addressPortlet" size="full" parameters="addressShowTable=true|addressShowExtended=true" />
 						<!-- <input type="button" onClick="return removeTab(this, 'name');" class="removeTab" value="Remove this address"/><br/> --> <br/>
 					</spring:nestedPath>
 				</div>

@@ -26,6 +26,8 @@ public class Location implements java.io.Serializable {
 	private String postalCode;
 	private String latitude;
 	private String longitude;
+	private String countyDistrict;
+	private String neighborhoodCell;
 	private User creator;
 	private Date dateCreated;
 
@@ -258,6 +260,34 @@ public class Location implements java.io.Serializable {
 	
 	public String toString() {
 		return name;
+	}
+
+	/**
+	 * @return Returns the countyDistrict.
+	 */
+	public String getCountyDistrict() {
+		return countyDistrict;
+	}
+
+	/**
+	 * @param countyDistrict The countyDistrict to set.
+	 */
+	public void setCountyDistrict(String countyDistrict) {
+		this.countyDistrict = countyDistrict;
+	}
+
+	/**
+	 * @return Returns the neighborhoodCell.
+	 */
+	public String getNeighborhoodCell() {
+		return neighborhoodCell;
+	}
+
+	/**
+	 * @param neighborhoodCell The neighborhoodCell to set.
+	 */
+	public void setNeighborhoodCell(String neighborhoodCell) {
+		this.neighborhoodCell = neighborhoodCell;
 	}
 	
 }

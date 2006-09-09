@@ -57,6 +57,9 @@
 			<filter token="MAIL.USER" value="${mail.user}" />
 			<filter token="MAIL.PASSWORD" value="${mail.password}" />
 			<filter token="MAIL.FORMAT" value="${mail.format}" />
+			
+			<!-- Address properties -->
+			<filter token="ADDRESS.FORMAT" value="${address.format}" />
 		</filterset>
 
 	</target>

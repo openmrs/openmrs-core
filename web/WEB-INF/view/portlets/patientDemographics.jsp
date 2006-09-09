@@ -37,32 +37,15 @@
 <div class="box">
 	<table class="patientAddress">
 		<thead>
-			<tr>
-				<th><spring:message code="general.preferred"/></th>
-				<th><spring:message code="Location.address1"/></th>
-				<th><spring:message code="Location.address2"/></th>
-				<th><spring:message code="Location.cityVillage"/></th>
-				<th><spring:message code="Location.stateProvince"/></th>
-				<th><spring:message code="Location.postalCode"/></th>
-				<th><spring:message code="Location.country"/></th>
-				<th><spring:message code="Location.latitude"/></th>
-				<th><spring:message code="Location.longitude"/></th>
-			</tr>
+			<openmrs:portlet url="address" id="addressPortlet" size="columnHeaders" parameters="addressShowTable=false|addressShowExtended=true" />
 		</thead>
 		<tbody>
-			<tr>
-				<c:forEach var="address" items="${model.patient.addresses}" varStatus="status">
-					<td><c:if test="${address.preferred}">*</c:if></td>
-					<td>${address.address1}</td>
-					<td>${address.address2}</td>
-					<td>${address.cityVillage}</td>
-					<td>${address.stateProvince}</td>
-					<td>${address.postalCode}</td>
-					<td>${address.country}</td>
-					<td>${address.latitude}</td>
-					<td>${address.longitude}</td>
-				</c:forEach>
-			</tr>
+			<c:forEach var="address" items="${model.patient.addresses}" varStatus="status">
+				<% request.setAttribute("address", pageContext.getAttribute("address")); %>
+				<spring:nestedPath path="address">
+					<openmrs:portlet url="address" id="addressPortlet" size="inOneRow" parameters="addressShowTable=false|addressShowExtended=true" />
+				</spring:nestedPath>
+			</c:forEach>
 		</tbody>
 	</table>
 </div>

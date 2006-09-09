@@ -46,6 +46,8 @@
 	<property name="mail.password" value="test" />
 	<property name="mail.format" value="text/plain" /> 
     
+    <!-- Address settings -->
+	<property name="address.format" value="Kenya" /> 
         
     <!-- =================================================================== -->
     <!-- Classpaths                                                          -->
