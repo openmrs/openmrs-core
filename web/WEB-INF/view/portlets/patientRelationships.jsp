@@ -241,7 +241,7 @@ refreshOnChange=*
 					<c:choose>
 						<c:when test="${model.allowEditShownTypes == 'true'}">
 							<td>
-								<openmrs_tag:userField formFieldName="boxForRelType_${relType}" roles="${relType}" initialValue="${currUserId}" /> 
+								<openmrs_tag:userField formFieldName="boxForRelType_${relType}" roles="${relType}" initialValue="${currUserId}" searchLabel="" searchLabelCode="Relationship.instructions.select.accompagnateur" /> 
 							</td>
 						</c:when>
 						<c:otherwise>

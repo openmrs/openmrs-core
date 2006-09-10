@@ -28,6 +28,8 @@ import org.openmrs.order.RegimenSuggestion;
 import org.openmrs.reporting.PatientSet;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
+import org.springframework.context.MessageSource;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
@@ -151,6 +153,7 @@ public class PortletController implements Controller {
 								}
 								list.add(rel);
 							}
+							
 							model.put("patientRelationships", relationships);
 							model.put("patientRelationshipsByType", relationshipsByType);
 							model.put("patientId", (Integer) o);

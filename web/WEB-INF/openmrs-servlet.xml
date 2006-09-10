@@ -842,12 +842,14 @@
     <!-- ========================================= -->
 
 	<!--
+
 			<bean id="calendarController" class="org.openmrs.web.controller.calendar.CalendarController">
 				<property name="sessionForm"><value>true</value></property>
 				<property name="commandName"><value>eventList</value></property>
 				<property name="formView"><value>/calendar/calendar</value></property>
 				<property name="successView"><value>calendar.list</value></property>
 			</bean>
+
 	-->
 
     <!-- ======================================== -->
@@ -1291,7 +1293,7 @@
 <!-- CALENDAR SECTION -->
 	
 	<!--
-
+	
 	    <bean id="calendarSupport" class="org.openmrs.web.controller.calendar.CalendarSupport">
 			<property name="defaultConceptIdsToShow">
 				<list>

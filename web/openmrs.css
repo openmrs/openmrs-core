@@ -141,7 +141,7 @@ h1, h2, h3, h4, h5 {
 	width: 100%;
 	font-size: .8em;
 	text-align: left;
-	z-index: 9;
+	z-index: 0;
 	height: 1.7em;
 	background-color: #eeeeee;
 }

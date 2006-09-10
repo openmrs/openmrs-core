@@ -2,6 +2,7 @@
 
 <%@ attribute name="formFieldName" required="true" %>
 <%@ attribute name="searchLabel" required="false" %>
+<%@ attribute name="searchLabelCode" required="false" %>
 <%@ attribute name="roles" required="false" %>
 <%@ attribute name="initialValue" required="false" %>
 <%@ attribute name="linkUrl" required="false" %>
@@ -36,4 +37,9 @@
 
 <div class="userSearchLabel">${searchLabel}</div>
 <div dojoType="UserSearch" widgetId="${formFieldName}_search" userId="${initialValue}" roles="${roles}"></div>
-<div dojoType="OpenmrsPopup" widgetId="${formFieldName}_selection" hiddenInputName="${formFieldName}" searchWidget="${formFieldName}_search" searchTitle="${searchLabel}"></div>
+<c:if test="${not empty searchLabelCode}">
+	<div dojoType="OpenmrsPopup" widgetId="${formFieldName}_selection" hiddenInputName="${formFieldName}" searchWidget="${formFieldName}_search" searchTitle="<spring:message code="${searchLabelCode}" />"></div>
+</c:if> 
+<c:if test="${empty searchLabelCode}">
+	<div dojoType="OpenmrsPopup" widgetId="${formFieldName}_selection" hiddenInputName="${formFieldName}" searchWidget="${formFieldName}_search" searchTitle="${searchLabel}"></div>
+</c:if> 

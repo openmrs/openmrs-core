@@ -130,10 +130,33 @@ public class PatientFormController extends SimpleFormController {
 					String [] countries = RequestUtils.getStringParameters(request, "country");
 					String [] lats = RequestUtils.getStringParameters(request, "latitude");
 					String [] longs = RequestUtils.getStringParameters(request, "longitude");
+					String [] pCodes = RequestUtils.getStringParameters(request, "postalCode");
+					String [] counties = RequestUtils.getStringParameters(request, "countyDistrict");
+					String [] cells = RequestUtils.getStringParameters(request, "neighborhoodCell");
 					
-					if (add1s != null) {
-						for (int i = 0; i < add1s.length; i++) {
-							if (add1s[i] != "") { //skips invalid and blank address data box
+					if (add1s != null || add2s != null || cities != null || states != null || countries != null
+							|| lats != null || longs != null || pCodes != null || counties != null || cells != null ) {
+						int maxAddrs = 0;
+
+						if ( add1s != null ) if ( add1s.length > maxAddrs ) maxAddrs = add1s.length;
+						if ( add2s != null ) if ( add2s.length > maxAddrs ) maxAddrs = add2s.length;
+						if ( cities != null ) if ( cities.length > maxAddrs ) maxAddrs = cities.length;
+						if ( states != null ) if ( states.length > maxAddrs ) maxAddrs = states.length;
+						if ( countries != null ) if ( countries.length > maxAddrs ) maxAddrs = countries.length;
+						if ( lats != null ) if ( lats.length > maxAddrs ) maxAddrs = lats.length;
+						if ( longs != null ) if ( longs.length > maxAddrs ) maxAddrs = longs.length;
+						if ( pCodes != null ) if ( pCodes.length > maxAddrs ) maxAddrs = pCodes.length;
+						if ( counties != null ) if ( counties.length > maxAddrs ) maxAddrs = counties.length;
+						if ( cells != null ) if ( cells.length > maxAddrs ) maxAddrs = cells.length;
+						
+						log.debug("There appears to be " + maxAddrs + " addresses that need to be saved");
+						
+						for (int i = 0; i < maxAddrs; i++) {
+/*
+							if ( add1s[i] != null || add2s[i] != null || cities[i] != null || states[i] != null 
+									|| countries[i] != null || lats[i] != null || longs[i] != null
+									|| pCodes[i] != null || counties[i] != null || cells[i] != null ) {
+*/							
 								PatientAddress pa = new PatientAddress();
 								if (add1s.length >= i+1)
 									pa.setAddress1(add1s[i]);
@@ -149,8 +172,14 @@ public class PatientFormController extends SimpleFormController {
 									pa.setLatitude(lats[i]);
 								if (longs.length >= i+1)
 									pa.setLongitude(longs[i]);
+								if (pCodes.length >= i+1)
+									pa.setPostalCode(pCodes[i]);
+								if (counties.length >= i+1)
+									pa.setCountyDistrict(counties[i]);
+								if (cells.length >= i+1)
+									pa.setNeighborhoodCell(cells[i]);
 								patient.addAddress(pa);
-							}
+//							}
 						}
 					}
 						
