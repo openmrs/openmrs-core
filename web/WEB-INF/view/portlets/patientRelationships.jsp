@@ -185,7 +185,6 @@ refreshOnChange=*
 <c:if test="${model.showTypes != null || model.showOtherTypes == 'true'}">
 
 <div id="patientRelationshipPortlet">
-	<div class="boxHeader"><spring:message code="Relationship.patient.providers" /></div>
 	<div class="box">
 		<table>
 		<c:if test="${model.showTypes != null}">

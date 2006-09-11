@@ -46,17 +46,20 @@
 					<th>${fieldHolder.label}</th>
 					<td>
 						<table>
-						<c:forEach var="obs" items="${fieldHolder.observations}">
+						<c:forEach var="obsEntry" items="${fieldHolder.observations}">
 							<tr>
-								<td><small><openmrs_tag:concept conceptId="${obs.concept.conceptId}"/>:</small></td>
-								<td><b>${obs.valueAsString[model.locale]}</b></td>
+								<td><small><openmrs_tag:concept conceptId="${obsEntry.key.conceptId}"/>:</small></td>
 								<td>
-									<c:if test="${not empty obs.obsDatetime && obs.obsDatetime != model.encounter.encounterDatetime}">
-										<small>
-											<spring:message code="general.onDate"/>
-											<openmrs:formatDate date="${obs.obsDatetime}"/>
-										</small>
-									</c:if>
+									<c:forEach var="obs" items="${obsEntry.value}">
+										<b>${obs.valueAsString[model.locale]}</b>
+										<c:if test="${not empty obs.obsDatetime && obs.obsDatetime != model.encounter.encounterDatetime}">
+											<small>
+												<spring:message code="general.onDate"/>
+												<openmrs:formatDate date="${obs.obsDatetime}"/>
+											</small>
+										</c:if>
+										<br/>
+									</c:forEach>
 								</td>
 							</tr>
 						</c:forEach>

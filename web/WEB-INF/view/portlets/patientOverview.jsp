@@ -12,4 +12,5 @@
 
 <p>
 
+<div class="boxHeader"><spring:message code="Relationship.patient.providers" /></div>
 <openmrs:portlet url="patientRelationships" size="normal" patientId="${patient.patientId}" parameters="allowEditShownTypes=true|allowAddShownTypes=false|allowAddOtherTypes=true|allowVoid=true|showFrom=false|showTo=true|showTypes=Accompagnateur|showOtherTypes=false"/>

@@ -3,6 +3,7 @@ package org.openmrs.web.controller.encounter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -37,21 +38,30 @@ public class EncounterDisplayController implements Controller {
 		private Integer pageNumber = 999;
 		private Integer fieldNumber;
 		private String fieldPart;
+		private Float sortWeight;
+		
 		public FieldLabel() { }
 		public FieldLabel(FormField ff) {
 			setPageNumber(ff.getPageNumber());
 			fieldNumber = ff.getFieldNumber();
 			fieldPart = ff.getFieldPart();
+			sortWeight = ff.getSortWeight();
 		}
 		public int compareTo(FieldLabel other) {
 			int temp = OpenmrsUtil.comparewithNullAsGreatest(pageNumber, other.pageNumber);
-			if (temp == 0) {
+			if (temp == 0)
 				temp = OpenmrsUtil.comparewithNullAsGreatest(fieldNumber, other.fieldNumber);
-			}
-			if (temp == 0) {
+			if (temp == 0)
 				temp = OpenmrsUtil.comparewithNullAsGreatest(fieldPart, other.fieldPart);
-			}
+			if (temp == 0)
+				temp = OpenmrsUtil.comparewithNullAsGreatest(sortWeight, other.sortWeight);
 			return temp;
+		}
+		public Float getSortWeight() {
+			return sortWeight;
+		}
+		public void setSortWeight(Float sortWeight) {
+			this.sortWeight = sortWeight;
 		}
 		public Integer getFieldNumber() {
 			return fieldNumber;
@@ -112,11 +122,11 @@ public class EncounterDisplayController implements Controller {
 	
 	public class FieldHolder {
 		private FieldLabel label;
-		private Collection<Obs> observations;
+		private Map<Concept, List<Obs>> observations;
 		private Map<Integer, ObsGroupHolder> obsGroups;
 		private LinkedHashSet<Concept> obsGroupConcepts;
 		public FieldHolder() {
-			observations = new ArrayList<Obs>();
+			observations = new LinkedHashMap<Concept, List<Obs>>();
 			obsGroups = new TreeMap<Integer, ObsGroupHolder>();
 			obsGroupConcepts = new LinkedHashSet<Concept>();
 		}
@@ -126,10 +136,10 @@ public class EncounterDisplayController implements Controller {
 		public void setLabel(FieldLabel label) {
 			this.label = label;
 		}
-		public Collection<Obs> getObservations() {
+		public Map<Concept, List<Obs>> getObservations() {
 			return observations;
 		}
-		public void setObservations(Collection<Obs> observations) {
+		public void setObservations(Map<Concept, List<Obs>> observations) {
 			this.observations = observations;
 		}
 		public Map<Integer, ObsGroupHolder> getObsGroups() {
@@ -151,7 +161,12 @@ public class EncounterDisplayController implements Controller {
 			Integer obsGroupId = o.getObsGroupId();
 			boolean obsGroupAnyway = obsGroupId == null && obsGroupConcepts.contains(o.getConcept()); 
 			if (obsGroupId == null && !obsGroupAnyway) {
-				observations.add(o);
+				List<Obs> obsForConcept = observations.get(o.getConcept());
+				if (obsForConcept == null) {
+					obsForConcept = new ArrayList<Obs>();
+					observations.put(o.getConcept(), obsForConcept);
+				}
+				obsForConcept.add(o);
 			} else {
 				if (obsGroupAnyway)
 					obsGroupId = o.getObsId(); // TODO: this relies on the convention that obsGroupId equals the obsId of one of the obs in that group. It would be nice to drop this requirement 
@@ -186,13 +201,13 @@ public class EncounterDisplayController implements Controller {
 			Form form = encounter.getForm();
 			List<FormField> fields = new ArrayList<FormField>();
 			
-			// this is new
 			// build up a Map<(fieldNumber + '.' + fieldPart), FieldHolder>. Later we'll take the FieldHolders and sort them as a list
 			SortedMap<FieldLabel, FieldHolder> data = new TreeMap<FieldLabel, FieldHolder>();
 			// find out which fieldLabel each concept maps to 
 			Map<Concept, FieldLabel> conceptToFieldLabel = new HashMap<Concept, FieldLabel>();
 			// some obs might not actually belong to a field
 			List<Obs> otherObs = new ArrayList<Obs>();
+
 			if (form != null) {
 				fields = new ArrayList<FormField>(form.getFormFields());
 				for (FormField ff : fields) {
@@ -232,10 +247,10 @@ public class EncounterDisplayController implements Controller {
 				label.setFieldNumber(999);
 				FieldHolder holder = new FieldHolder();
 				holder.setLabel(label);
-				holder.getObservations().addAll(otherObs);
+				for (Obs obs : otherObs)
+					holder.addObservation(obs);
 				data.put(label, holder);
 			}
-			// /this is new
 	
 			SortedSet<Integer> pageNumbers = new TreeSet<Integer>();
 			for (FieldLabel fl : data.keySet()) {

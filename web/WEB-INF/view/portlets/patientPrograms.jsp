@@ -116,9 +116,9 @@
 		showLayer('editWorkflowPopup');
 		$('workflowPopupTitle').innerHTML = wfName;
 		DWRUtil.removeAllRows('workflowTable');
-		DWRUtil.addRows('workflowTable', ['<spring:message code="general.loading"/>'], [ function(s) { return s; } ]);
+		DWRUtil.addRows('workflowTable', ['<spring:message code="general.loading" javaScriptEscape="true"/>'], [ function(s) { return s; } ]);
 		DWRUtil.removeAllOptions('changeToState');
-		DWRUtil.addOptions('changeToState', ['<spring:message code="general.loading"/>']);
+		DWRUtil.addOptions('changeToState', ['<spring:message code="general.loading" javaScriptEscape="true"/>']);
 		$('changeStateOnDate').value = '';
 		DWRProgramWorkflowService.getPatientStates(patientProgramId, programWorkflowId, function(states) {
 				DWRUtil.removeAllRows('workflowTable');
@@ -129,8 +129,8 @@
 						function(state) {
 							++count;
 							var str = '';
-							if (!isEmpty(state.startDate)) str += ' <spring:message code="general.fromDate"/> ' + getDateString(state.startDate);
-							if (!isEmpty(state.endDate)) str += ' <spring:message code="general.toDate"/> ' + getDateString(state.endDate);
+							if (!isEmpty(state.startDate)) str += ' <spring:message code="general.fromDate" javaScriptEscape="true"/> ' + getDateString(state.startDate);
+							if (!isEmpty(state.endDate)) str += ' <spring:message code="general.toDate" javaScriptEscape="true" /> ' + getDateString(state.endDate);
 							if (count == goUntil)
 								str += ' <a href="javascript:handleVoidLastState()" style="color: red">[x]</a>';
 							return str;
@@ -139,7 +139,7 @@
 			});
 		DWRProgramWorkflowService.getPossibleNextStates(patientProgramId, programWorkflowId, function(items) {
 				DWRUtil.removeAllOptions('changeToState');
-				DWRUtil.addOptions('changeToState', {'': '<spring:message code="State.select"/>' });
+				DWRUtil.addOptions('changeToState', {'': '<spring:message code="State.select" javaScriptEscape="true"/>' });
 				DWRUtil.addOptions('changeToState', items, 'id', 'name');
 			});
 	}
@@ -147,7 +147,7 @@
 	function showEditPatientProgramPopup(patientProgramId) {
 		hideLayer('editWorkflowPopup');
 		currentProgramBeingEdited = patientProgramId;
-		$('programNameElement').innerHTML = '<spring:message code="general.loading"/>';
+		$('programNameElement').innerHTML = '<spring:message code="general.loading" javaScriptEscape="true"/>';
 		$('enrollmentDateElement').value = '';
 		$('completionDateElement').value = '';
 		showLayer('editPatientProgramPopup');
