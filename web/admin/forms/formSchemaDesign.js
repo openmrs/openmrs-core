@@ -152,65 +152,67 @@ dojo.addOnLoad( function(){
 			return false;
 		}
 	);
-		
-	fieldSearch.inputNode.select();
 	
-	fieldSearch.allowAutoJump = function() { return false; };
-	
-	// remove the nodes that were added in the search
-	fieldSearch.onRemoveAllRows = function onRemoveAllRows(tbody) {
-			while(searchTreeNodes.length) {
-				searchTreeNodes[0].destroy();
-				searchTreeNodes.splice(0,1);
-			}
-		};
-	
-	fieldSearch.getCellFunctions =  function() {
-			return [this.simpleClosure(this, "getNumber"), 
-					this.simpleClosure(this, "getFieldContent")
-					];
-		};
+	if (fieldSearch) {
+		fieldSearch.inputNode.select();
 		
-	fieldSearch.getFieldContent = function(obj) {
-		if (typeof obj == 'string') return obj;
+		fieldSearch.allowAutoJump = function() { return false; };
 		
-		var domNode = document.createElement("span");
+		// remove the nodes that were added in the search
+		fieldSearch.onRemoveAllRows = function onRemoveAllRows(tbody) {
+				while(searchTreeNodes.length) {
+					searchTreeNodes[0].destroy();
+					searchTreeNodes.splice(0,1);
+				}
+			};
 		
-		var data = getData(obj);
-		domNode.title = data.title;
-		
-		// create a mini tree
-		var properties = { //id: "miniTree", 
-						DNDMode: "between", 
-						showRootGrid: false,
-						DNDAcceptTypes: ["*"],
-						selector: "searchTreeSelector"};
-						
-		var parentNode = domNode;
-		
-		var miniTree = dojo.widget.createWidget("Tree", properties, parentNode, "last");
-		searchTreeNodes.push(miniTree);
-		
-		var node = addNode(miniTree, data, data.label);
-		
-		obj.widgetId = node.widgetId;
-		
-		miniTree.actionIsDisabled = function(action) {
-				if (!action || action.toUpperCase() == "MOVE")
-					return false;
-				return true;
+		fieldSearch.getCellFunctions =  function() {
+				return [this.simpleClosure(this, "getNumber"), 
+						this.simpleClosure(this, "getFieldContent")
+						];
 			};
 			
-		if (obj.fieldId && obj.concept) {
-			var d2 = getData(obj.concept);
-			var n2 = addNode(miniTree, d2, d2["label"]);
-			dojo.html.addClass(n2.titleNode, "fieldConceptHit");
-			node.afterLabelNode.appendChild(document.createTextNode(" -"));
-			domNode.className = "treeNodeRow";
-		}
-		
-		return domNode;
-	};
+		fieldSearch.getFieldContent = function(obj) {
+			if (typeof obj == 'string') return obj;
+			
+			var domNode = document.createElement("span");
+			
+			var data = getData(obj);
+			domNode.title = data.title;
+			
+			// create a mini tree
+			var properties = { //id: "miniTree", 
+							DNDMode: "between", 
+							showRootGrid: false,
+							DNDAcceptTypes: ["*"],
+							selector: "searchTreeSelector"};
+							
+			var parentNode = domNode;
+			
+			var miniTree = dojo.widget.createWidget("Tree", properties, parentNode, "last");
+			searchTreeNodes.push(miniTree);
+			
+			var node = addNode(miniTree, data, data.label);
+			
+			obj.widgetId = node.widgetId;
+			
+			miniTree.actionIsDisabled = function(action) {
+					if (!action || action.toUpperCase() == "MOVE")
+						return false;
+					return true;
+				};
+				
+			if (obj.fieldId && obj.concept) {
+				var d2 = getData(obj.concept);
+				var n2 = addNode(miniTree, d2, d2["label"]);
+				dojo.html.addClass(n2.titleNode, "fieldConceptHit");
+				node.afterLabelNode.appendChild(document.createTextNode(" -"));
+				domNode.className = "treeNodeRow";
+			}
+			
+			return domNode;
+		};
+	}
 });
 
 var domNodeCreated = function(val) {
@@ -736,7 +738,7 @@ function updateSortWeight(target) {
 		}
 		
 		if (!sortWeight)
-			sortWeight = 0.0
+			sortWeight = 0.0;
 		
 		// TODO if we error out, renumber all.
 		
