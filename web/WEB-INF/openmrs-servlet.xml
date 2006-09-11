@@ -660,6 +660,7 @@
 					<list>
 						<value>patientSet.form:Analysis.formEntryButton:method=setPatientSet:url=patientDashboard.form:appendPatientId=true</value>
 						<value>nealreport.form:nealreport.DemoReport.name:reportType=Demo Report</value>
+						<value>nealreport.form:nealreport.IncentiveReport.name:reportType=Incentive Report</value>
 						<value>nealreport.form:nealreport.DeclineReport.name:reportType=Decline Report</value>
 						<value>nealreport.form:nealreport.ShortReport.name:reportType=Short Report</value>
 						<value>nealreport.form:nealreport.AlertReport.name:reportType=Alert Report</value>

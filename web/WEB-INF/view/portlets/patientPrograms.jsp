@@ -260,7 +260,7 @@
 			<input type="hidden" name="returnPage" value="patientDashboard.form?patientId=${model.patientId}"/>
 			
 			<spring:message code="Program.enrollIn"/>
-			<select name="programId">
+			<select name="programId" onChange="document.getElementById('enrollSubmitButton').disabled = (this.selectedIndex == 0)">
 				<option value=""><spring:message code="Program.choose"/></option>
 				<c:forEach var="program" items="${model.programs}">
 					<option value="${program.programId}"><openmrs_tag:concept conceptId="${program.concept.conceptId}"/></option>
@@ -269,7 +269,7 @@
 			<spring:message code="general.onDate"/>
 			<input type="text" id="programDateEnrolled" name="dateEnrolled" size="10" onClick="showCalendar(this)" />
 		
-			<input type="submit" value="<spring:message code="Program.enrollButton"/>"/>
+			<input id="enrollSubmitButton" type="submit" value="<spring:message code="Program.enrollButton"/>" disabled="true"/>
 		</form>
 		</div>
 	</openmrs:hasPrivilege>

@@ -688,7 +688,7 @@ span.noOrdersMessage {
 }
 
 .encounterFormTable tr {
-	background-color: lightgrey;
+	background-color: #f0f0f0;
 }
 
 #eventCalendarPortlet {

@@ -2,18 +2,21 @@ package org.openmrs.web.controller.encounter;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Form;
@@ -27,7 +30,143 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
 public class EncounterDisplayController implements Controller {
-
+	
+	protected final Log log = LogFactory.getLog(getClass());
+	
+	public class FieldLabel implements Comparable<FieldLabel> {
+		private Integer pageNumber = 999;
+		private Integer fieldNumber;
+		private String fieldPart;
+		public FieldLabel() { }
+		public FieldLabel(FormField ff) {
+			setPageNumber(ff.getPageNumber());
+			fieldNumber = ff.getFieldNumber();
+			fieldPart = ff.getFieldPart();
+		}
+		public int compareTo(FieldLabel other) {
+			int temp = OpenmrsUtil.comparewithNullAsGreatest(pageNumber, other.pageNumber);
+			if (temp == 0) {
+				temp = OpenmrsUtil.comparewithNullAsGreatest(fieldNumber, other.fieldNumber);
+			}
+			if (temp == 0) {
+				temp = OpenmrsUtil.comparewithNullAsGreatest(fieldPart, other.fieldPart);
+			}
+			return temp;
+		}
+		public Integer getFieldNumber() {
+			return fieldNumber;
+		}
+		public void setFieldNumber(Integer fieldNumber) {
+			this.fieldNumber = fieldNumber;
+		}
+		public String getFieldPart() {
+			return fieldPart;
+		}
+		public void setFieldPart(String fieldPart) {
+			this.fieldPart = fieldPart;
+		}
+		public Integer getPageNumber() {
+			return pageNumber;
+		}
+		public void setPageNumber(Integer pageNumber) {
+			this.pageNumber = pageNumber == null ? 999 : pageNumber;
+		}
+		public String toString() {
+			return (fieldNumber == null ? "" : fieldNumber) + ". " + (fieldPart == null ? "" : fieldPart);
+		}
+	}
+	
+	public class ObsGroupHolder {
+		private FieldHolder parent;
+		private Collection<Obs> observations;
+		public ObsGroupHolder() {
+			observations = new ArrayList<Obs>();
+		}
+		public void addObs(Obs o) {
+			observations.add(o);
+		}
+		public Collection<Obs> getObservations() {
+			return observations;
+		}
+		public void setObservations(Collection<Obs> observations) {
+			this.observations = observations;
+		}
+		public FieldHolder getParent() {
+			return parent;
+		}
+		public void setParent(FieldHolder parent) {
+			this.parent = parent;
+		}
+		public List<List<Obs>> getObservationsByConcepts() {
+			List<List<Obs>> ret = new ArrayList<List<Obs>>();
+			for (Concept c : parent.getObsGroupConcepts()) {
+				List<Obs> list = new ArrayList<Obs>();
+				for (Obs o : observations)
+					if (o.getConcept().equals(c))
+						list.add(o);
+				ret.add(list);
+			}
+			return ret;
+		}
+	}
+	
+	public class FieldHolder {
+		private FieldLabel label;
+		private Collection<Obs> observations;
+		private Map<Integer, ObsGroupHolder> obsGroups;
+		private LinkedHashSet<Concept> obsGroupConcepts;
+		public FieldHolder() {
+			observations = new ArrayList<Obs>();
+			obsGroups = new TreeMap<Integer, ObsGroupHolder>();
+			obsGroupConcepts = new LinkedHashSet<Concept>();
+		}
+		public FieldLabel getLabel() {
+			return label;
+		}
+		public void setLabel(FieldLabel label) {
+			this.label = label;
+		}
+		public Collection<Obs> getObservations() {
+			return observations;
+		}
+		public void setObservations(Collection<Obs> observations) {
+			this.observations = observations;
+		}
+		public Map<Integer, ObsGroupHolder> getObsGroups() {
+			return obsGroups;
+		}
+		public void setObsGroups(Map<Integer, ObsGroupHolder> obsGroups) {
+			this.obsGroups = obsGroups;
+		}
+		public LinkedHashSet<Concept> getObsGroupConcepts() {
+			return obsGroupConcepts;
+		}
+		public void setObsGroupConcepts(LinkedHashSet<Concept> obsGroupConcepts) {
+			this.obsGroupConcepts = obsGroupConcepts;
+		}
+		public void addConceptInConstruct(Concept c) {
+			obsGroupConcepts.add(c);
+		}
+		public void addObservation(Obs o) {
+			Integer obsGroupId = o.getObsGroupId();
+			boolean obsGroupAnyway = obsGroupId == null && obsGroupConcepts.contains(o.getConcept()); 
+			if (obsGroupId == null && !obsGroupAnyway) {
+				observations.add(o);
+			} else {
+				if (obsGroupAnyway)
+					obsGroupId = o.getObsId(); // TODO: this relies on the convention that obsGroupId equals the obsId of one of the obs in that group. It would be nice to drop this requirement 
+				ObsGroupHolder group = obsGroups.get(obsGroupId); 
+				if (group == null) {
+					group = new ObsGroupHolder();
+					group.setParent(this);
+					obsGroups.put(obsGroupId, group);
+				}
+				group.getObservations().add(o);
+				obsGroupConcepts.add(o.getConcept());
+			}
+		}
+	}
+	
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
@@ -46,74 +185,69 @@ public class EncounterDisplayController implements Controller {
 	    	
 			Form form = encounter.getForm();
 			List<FormField> fields = new ArrayList<FormField>();
-					
+			
+			// this is new
+			// build up a Map<(fieldNumber + '.' + fieldPart), FieldHolder>. Later we'll take the FieldHolders and sort them as a list
+			SortedMap<FieldLabel, FieldHolder> data = new TreeMap<FieldLabel, FieldHolder>();
+			// find out which fieldLabel each concept maps to 
+			Map<Concept, FieldLabel> conceptToFieldLabel = new HashMap<Concept, FieldLabel>();
+			// some obs might not actually belong to a field
+			List<Obs> otherObs = new ArrayList<Obs>();
 			if (form != null) {
 				fields = new ArrayList<FormField>(form.getFormFields());
-				Collections.sort(fields, new Comparator<FormField>() {
-						public int compare(FormField left, FormField right) {
-							Integer l = left.getPageNumber();
-							if (l == null) {
-								l = Integer.MAX_VALUE;
-							}
-							Integer r = right.getPageNumber();
-							if (r == null) {
-								r = Integer.MAX_VALUE;
-							}
-							int temp = l.compareTo(r);
-							if (temp == 0) {
-								l = left.getFieldNumber();
-								if (l == null) {
-									l = Integer.MAX_VALUE;
-								}
-								r = right.getFieldNumber();
-								if (r == null) {
-									r = Integer.MAX_VALUE;
-								}
-								temp = l.compareTo(r);
-							}
-							if (temp == 0) {
-								Float lf = left.getSortWeight();
-								Float rf = right.getSortWeight();
-								temp = OpenmrsUtil.comparewithNullAsGreatest(lf, rf);
-							}
-							return temp;
+				for (FormField ff : fields) {
+					Concept c = ff.getField().getConcept();
+					if (c != null) {
+						Concept conceptInConstruct = null;
+						if (ff.getParent() != null && ff.getParent().getParent() != null && ff.getParent().getField().getConcept() != null)
+							conceptInConstruct = c;
+						
+						while (ff.getFieldNumber() == null && ff.getParent() != null) {
+							ff = ff.getParent();
 						}
-					});
-			}
-	
-			Map<FormField, List<Obs>> obsByField = new LinkedHashMap<FormField, List<Obs>>();
-			List<Obs> otherObs = new ArrayList<Obs>();
-			Map<Concept, FormField> fieldByConcept = new HashMap<Concept, FormField>();
-	
-			Collection<Object> pageNumbers = new TreeSet<Object>();
-			if (form != null) {
-				for (FormField f : fields) {
-					obsByField.put(f, new ArrayList<Obs>());
-					if (f.getField().getConcept() != null)
-						fieldByConcept.put(f.getField().getConcept(), f);
-					pageNumbers.add(f.getPageNumber() == null ? 0 : f.getPageNumber());
+						FieldLabel label = new FieldLabel(ff);
+						conceptToFieldLabel.put(c, label);
+						FieldHolder fh = data.get(label);
+						if (fh == null) {
+							fh = new FieldHolder();
+							fh.setLabel(label);
+							data.put(label, fh);
+						}
+						if (conceptInConstruct != null)
+							fh.addConceptInConstruct(conceptInConstruct);
+					}
 				}
 			}
-			
 			for (Obs o : encounter.getObs()) {
-				FormField f = fieldByConcept.get(o.getConcept());
-				if (f == null) {
+				FieldLabel label = conceptToFieldLabel.get(o.getConcept());
+				if (label == null || !data.containsKey(label)) {
 					otherObs.add(o);
 				} else {
-					obsByField.get(f).add(o);
+					data.get(label).addObservation(o);
 				}
 			}
-			
-			if(otherObs.size() > 0)
-				pageNumbers.add(0);
+			if (otherObs.size() > 0) {
+				FieldLabel label = new FieldLabel();
+				label.setPageNumber(999);
+				label.setFieldNumber(999);
+				FieldHolder holder = new FieldHolder();
+				holder.setLabel(label);
+				holder.getObservations().addAll(otherObs);
+				data.put(label, holder);
+			}
+			// /this is new
+	
+			SortedSet<Integer> pageNumbers = new TreeSet<Integer>();
+			for (FieldLabel fl : data.keySet()) {
+				pageNumbers.add(fl.getPageNumber());
+			}		
 			
 			List<Order> orders = new ArrayList<Order>(encounter.getOrders());
 					
 			model.put("showBlankFields", "true".equals(request.getParameter("showBlankFields")));
 			model.put("pageNumbers", pageNumbers);
 			model.put("form", form);
-			model.put("fields", fields);
-			model.put("obsByField", obsByField);
+			model.put("data", data.values());
 			model.put("otherObs", otherObs);
 			model.put("orders", orders);
 			model.put("locale", context.getLocale());
