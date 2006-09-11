@@ -17,8 +17,8 @@
     <patient.patient_id openmrs_table="patient" openmrs_attribute="patient_id">$!{patient.getPatientId()}</patient.patient_id>
     <patient.sex openmrs_table="patient" openmrs_attribute="gender">$!{patient.getGender()}</patient.sex>
     <patient.tribe openmrs_table="patient" openmrs_attribute="tribe">$!{patient.getTribe().getTribeId()}^$!{patient.getTribe().getName()}</patient.tribe>
-    <patient_address.address1 openmrs_table="patient_address" openmrs_attribute="address1">$!{patient.getAddresses().iterator().next().getAddress1()}</patient_address.address1>
-    <patient_address.address2 openmrs_table="patient_address" openmrs_attribute="address2">$!{patient.getAddresses().iterator().next().getAddress2()}</patient_address.address2>
+    <patient_address.address1 openmrs_table="patient_address" openmrs_attribute="address1">$!{patient.getPatientAddress().getAddress1()}</patient_address.address1>
+    <patient_address.address2 openmrs_table="patient_address" openmrs_attribute="address2">$!{patient.getPatientAddress().getAddress2()}</patient_address.address2>
   </patient>
   <encounter>
     <encounter.encounter_datetime openmrs_table="encounter" openmrs_attribute="encounter_datetime"></encounter.encounter_datetime>
