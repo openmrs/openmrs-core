@@ -3,7 +3,7 @@
 <openmrs:require privilege="Form Entry" otherwise="/login.htm" redirect="/admin/patients/addPatient.htm"/>
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
-<%@ include file="localHeader.jsp" %>
+<%-- @ include file="localHeader.jsp" --%>
 
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 
@@ -98,8 +98,9 @@
 	}
 </style>
 
-<h2><spring:message code="Patient.title"/></h2>
-
+<h2><spring:message code="Patient.findOrCreate"/></h2>
+<span class="instructions"><spring:message code="Patient.search.instructions" /></span>
+<br /><br />
 <form method="get" action="" onSubmit="return search(patientName, null, false, 0);" id="patientForm">
 	<table>
 		<tr>
@@ -126,6 +127,8 @@
 		</tr>
 	</table>
 	
+	<br />
+
 	<input type="button" value="<spring:message code="general.continue"/>" onClick="searchWidget.search(event)"/> &nbsp; &nbsp; 
 	<input type="button" value="<spring:message code="general.cancel" />" name="action" id="cancelButton" onClick="return cancel()">
 	
