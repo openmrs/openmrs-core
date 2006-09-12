@@ -41,6 +41,8 @@ public interface PatientSetDAO {
 	
 	public Map<Integer, Encounter> getEncountersByType(PatientSet patients, EncounterType encType);
 	
+	public Map<Integer, Encounter> getFirstEncountersByType(PatientSet patients, EncounterType encType);
+	
 	public Map<Integer, Object> getPatientAttributes(PatientSet patients, String className, String property, boolean returnAll);
 	
 	public Map<Integer, Map<String, Object>> getCharacteristics(PatientSet patients) throws DAOException;

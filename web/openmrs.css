@@ -436,7 +436,7 @@ input[type="text"], input[type="password"] {
 	border: 1px solid cadetblue;
 }
 
-input, select {
+input, select, textarea {
 	font-size: 0.9em;
 }
 

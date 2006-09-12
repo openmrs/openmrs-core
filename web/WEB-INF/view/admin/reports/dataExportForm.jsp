@@ -258,6 +258,7 @@
 			ext.name += suffix;
 			ext = getChildByName(obj, "conceptExtra");
 		}
+		getChildByName(obj, "conceptModifierNum").name += suffix;
 		getChildByName(obj, "calculatedName").name += suffix;
 		getChildByName(obj, "calculatedValue").name += suffix;
 		getChildByName(obj, "calculatedPatient").name += suffix;
@@ -279,8 +280,8 @@
 	var cSelect = function(p) { return {
 			popup: p,
 			select: function(msg) {
-				this.popup.displayNode.innerHTML = msg.objs[0].name;
-				this.popup.hiddenInputNode.value = msg.objs[0].conceptId;
+				//this.popup.displayNode.innerHTML = msg.objs[0].name;
+				this.popup.hiddenInputNode.value = msg.objs[0].name;
 				}
 			}
 		};
@@ -412,7 +413,7 @@
 		<th valign="top"><spring:message code="general.description"/></th>
 		<td valign="top" colspan="5">
 			<spring:bind path="dataExport.description">
-				<textarea name="description" rows="2" cols="40">${status.value}</textarea>
+				<textarea name="description" rows="2" cols="40" type="_moz">${status.value}</textarea>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
@@ -536,6 +537,7 @@
 				<c:if test="${column.columnType == 'concept'}">
 					selectTab(getChildById(obj, 'conceptTab'));
 					getChildByName(obj, "conceptColumnName_" + count).value = "${column.columnName}";
+					getChildByName(obj, "conceptModifierNum_" + count).value = "${column.modifierNum}";
 					var extras = new Array();
 					<c:forEach items="${column.extras}" var="ext">
 						extras["${ext}"] = 1;

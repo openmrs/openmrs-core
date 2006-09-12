@@ -154,6 +154,10 @@ public class PatientSetService {
 		return getPatientSetDAO().getEncountersByType(patients, encType);
 	}
 	
+	public Map<Integer, Encounter> getFirstEncountersByType(PatientSet patients, EncounterType encType) {
+		return getPatientSetDAO().getEncountersByType(patients, encType);
+	}
+	
 	public Map<Integer, Object> getPatientAttributes(PatientSet patients, String className, String property, boolean returnAll) {
 		return getPatientSetDAO().getPatientAttributes(patients, className, property, returnAll);
 	}

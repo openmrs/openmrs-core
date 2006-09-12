@@ -40,6 +40,9 @@ public class DataExportUtility {
 	// Map<EncounterType, Map<patientId, Encounter>>
 	private Map<String, Map<Integer, Encounter>> patientEncounterMap = new HashMap<String, Map<Integer, Encounter>>();
 	
+	// Map<EncounterType, Map<patientId, Encounter>>
+	private Map<String, Map<Integer, Encounter>> patientFirstEncounterMap = new HashMap<String, Map<Integer, Encounter>>();
+	
 	private Map<String, Concept> conceptNameMap = new HashMap<String, Concept>();
 	
 	private Map<Concept, Map<Integer, List<Obs>>> conceptObsMap = new HashMap<Concept, Map<Integer, List<Obs>>>();
@@ -157,7 +160,25 @@ public class DataExportUtility {
 		
 		return encounterMap.get(getPatientId());
 	}
-	
+
+	/**
+	 * @return Encounter first encounter of type <code>encounterType</code>
+	 * @param encounterType
+	 */
+	public Encounter getFirstEncounter(String encounterType) {
+		if (patientFirstEncounterMap.containsKey(encounterType))
+			return patientFirstEncounterMap.get(encounterType).get(getPatientId());
+		
+		EncounterType type = null;
+		if (!encounterType.equals(""))
+			type = context.getEncounterService().getEncounterType(encounterType);
+		
+		Map<Integer, Encounter> encounterMap = patientSetService.getFirstEncountersByType(getPatientSet(), type);
+		
+		patientFirstEncounterMap.put(encounterType, encounterMap);
+		
+		return encounterMap.get(getPatientId());
+	}
 	
 	
 	

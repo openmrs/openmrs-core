@@ -51,6 +51,10 @@
 				<option value="$!{fn.getLastEncounter('').getLocation().getName()}">&nbsp; <spring:message code="Encounter.location" /></option>
 				<option value="$!{fn.getLastEncounter('').getForm().getName()}">&nbsp; <spring:message code="Encounter.form" /></option>
 				<option value="$!{fn.formatDate('short', $fn.getLastEncounter('').getEncounterDatetime())}">&nbsp; <spring:message code="Encounter.datetime" /></option>
+				<option value=""> </option>
+				<option disabled><spring:message code="DataExport.simpleFirstEncounter"/></option>
+				<option value="$!{fn.getFirstEncounter('').getEncounterType().getName()}">&nbsp; <spring:message code="Encounter.type" /></option>
+				<option value="$!{fn.getFirstEncounter('').getProvider().getFirstName()} $!{fn.getFirstEncounter('').getProvider().getLastName()}">&nbsp; <spring:message code="Encounter.provider" /></option>
 			</select>
 			
 		</td>

@@ -763,6 +763,37 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	}
 
 	@SuppressWarnings("unchecked")
+	public Map<Integer, Encounter> getFirstEncountersByType(PatientSet patients, EncounterType encType) {
+		Session session = HibernateUtil.currentSession();
+		
+		Map<Integer, Encounter> ret = new HashMap<Integer, Encounter>();
+		
+		Collection<Integer> ids = patients.getPatientIds();
+		
+		// default query
+		Criteria criteria = session.createCriteria(Encounter.class);
+		criteria.add(Restrictions.in("patient.patientId", ids));
+		criteria.add(Restrictions.eq("voided", false));
+		
+		if (encType != null)
+			criteria.add(Restrictions.eq("encounterType", encType));
+		
+		criteria.addOrder(org.hibernate.criterion.Order.desc("patient.patientId"));
+		criteria.addOrder(org.hibernate.criterion.Order.asc("encounterDatetime"));
+		
+		List<Encounter> encounters = criteria.list();
+		
+		// set up the return map
+		for (Encounter enc : encounters) {
+			Integer ptId = enc.getPatient().getPatientId();
+			if (!ret.containsKey(ptId))
+				ret.put(ptId, enc);
+		}
+		
+		return ret;
+	}
+	
+	@SuppressWarnings("unchecked")
 	public Map<Integer, Object> getPatientAttributes(PatientSet patients, String className, String property, boolean returnAll) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		

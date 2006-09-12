@@ -9,15 +9,16 @@ public class ConceptColumn implements ExportColumn, Serializable {
 	private String columnType = "concept";
 	private String columnName = "";
 	private String modifier = "";
-	private int modifierNum = 5;
+	private Integer modifierNum = null;
 	private String conceptName = "";
 	private String[] extras = null;
 	
 	public ConceptColumn() { }
 	
-	public ConceptColumn(String columnName, String modifier, String conceptName, String[] extras) {
+	public ConceptColumn(String columnName, String modifier, Integer modifierNum, String conceptName, String[] extras) {
 		this.columnName = columnName;
 		this.modifier = modifier;
+		this.modifierNum = modifierNum;
 		this.conceptName = conceptName;
 		this.extras = extras;
 	}
@@ -41,7 +42,8 @@ public class ConceptColumn implements ExportColumn, Serializable {
 			s += extrasToTemplateString();
 		}
 		else if (DataExportReportObject.MODIFIER_LAST_NUM.equals(modifier)) {
-			s += "#set($obs = $fn.getLastNObs(" + modifierNum + ", '" + conceptName + "'))";
+			Integer num = modifierNum == null ? 1 : modifierNum;
+			s += "#set($obs = $fn.getLastNObs(" + num + ", '" + conceptName + "'))";
 			s += "#foreach($o in $obs)";
 			s += "#if($velocityCount > 1)";
 			s += "$!{fn.getSeparator()}";
@@ -92,7 +94,8 @@ public class ConceptColumn implements ExportColumn, Serializable {
 		s += getExtrasTemplateColumnNames(false);
 		
 		if (DataExportReportObject.MODIFIER_LAST_NUM.equals(modifier)) {
-			s += "#foreach($o in [1.." + (modifierNum - 1) +"]) ";
+			Integer num = modifierNum == null ? 1 : modifierNum;
+			s += "#foreach($o in [1.." + (num - 1) +"]) ";
 			s += "$!{fn.getSeparator()}";
 			s += columnName + "_($velocityCount)";
 			s += getExtrasTemplateColumnNames(true);
@@ -142,5 +145,15 @@ public class ConceptColumn implements ExportColumn, Serializable {
 	public void setExtras(String[] extras) {
 		this.extras = extras;
 	}
+
+	public Integer getModifierNum() {
+		return modifierNum;
+	}
+
+	public void setModifierNum(Integer modifierNum) {
+		this.modifierNum = modifierNum;
+	}
+	
+	
 	
 }

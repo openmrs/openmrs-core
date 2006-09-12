@@ -1,19 +1,19 @@
 function GetXmlHttpObject() { 
 	var objXMLHttp = null;
 	if (window.XMLHttpRequest) {
-		objXMLHttp=new XMLHttpRequest()
+		objXMLHttp=new XMLHttpRequest();
 	} else if (window.ActiveXObject) {
-		objXMLHttp=new ActiveXObject("Microsoft.XMLHTTP")
+		objXMLHttp=new ActiveXObject("Microsoft.XMLHTTP");
 	}
-	return objXMLHttp
+	return objXMLHttp;
 }
 
 function loadInto(loadingText, url, layer) {
 	document.getElementById(layer).innerHTML = loadingText;
-	var xmlHttp=GetXmlHttpObject()
+	var xmlHttp=GetXmlHttpObject();
 	xmlHttp.onreadystatechange=function() { loadStateChanged(xmlHttp, layer); }
-	xmlHttp.open("GET",url,true)
-	xmlHttp.send(null)
+	xmlHttp.open("GET",url,true);
+	xmlHttp.send(null);
 }
 
 function loadStateChanged(xmlHttpObj, layer) {
