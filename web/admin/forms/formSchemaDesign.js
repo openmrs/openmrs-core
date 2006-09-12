@@ -802,6 +802,8 @@ function addNode(addToTree, data, label, attemptCount, insertNode) {
 		else
 			parent.addChild(node);
 		
+		node.titleNode.innerHTML = props.title;
+		
 		return node;
 	}
 }
