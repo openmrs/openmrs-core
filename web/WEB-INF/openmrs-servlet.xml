@@ -107,6 +107,7 @@
 					<prop key="**/patientSet.form">patientSetFormController</prop>
 					<prop key="**/cohortSummary.list">cohortSummaryController</prop>
 					<prop key="**/encounterDisplay.list">encounterDisplayController</prop>
+					<prop key="**/globalProps.form">globalPropertyController</prop>
 					<!--<prop key="**/calendar.list">calendarController</prop>-->
 					<prop key="**/address.portlet">addressPortletController</prop>
 					<prop key="**/patientPrograms.portlet">patientProgramsPortletController</prop>
@@ -876,6 +877,11 @@
 			<property name="formView"><value>/patientDashboardForm</value></property>
 			<property name="successView"><value>patientDashboard.form</value></property>
 		</bean>
+		<bean id="globalPropertyController" class="org.openmrs.web.controller.maintenance.GlobalPropertyController">
+			<property name="commandName"><value>globalProps</value></property>
+			<property name="formView"><value>/admin/maintenance/globalPropsForm</value></property>
+			<property name="successView"><value>globalProps.form</value></property>
+		</bean>
 		
 	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
 		<property name="basename"><value>messages</value></property>
@@ -978,6 +984,7 @@
 	<bean id="fieldGenHandlerFactory" class="org.openmrs.web.taglib.fieldgen.FieldGenHandlerFactory">
 		<property name="handlers">
 			<props>
+				<prop key="java.lang.String">org.openmrs.web.taglib.fieldgen.StringHandler</prop>
 				<prop key="org.openmrs.Patient">org.openmrs.web.taglib.fieldgen.PatientHandler</prop>
 				<prop key="org.openmrs.Concept">org.openmrs.web.taglib.fieldgen.ConceptHandler</prop>
 				<prop key="org.openmrs.OrderType">org.openmrs.web.taglib.fieldgen.OrderTypeHandler</prop>

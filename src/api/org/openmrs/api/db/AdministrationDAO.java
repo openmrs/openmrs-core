@@ -2,6 +2,7 @@ package org.openmrs.api.db;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
@@ -9,6 +10,7 @@ import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptProposal;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.Patient;
@@ -422,5 +424,13 @@ public interface AdministrationDAO {
 	public Collection getMRNGeneratorLog() throws DAOException;
 	
 	public Object getGlobalProperty(String propertyName) throws DAOException;
+
+	public List<GlobalProperty> getGlobalProperties() throws DAOException;
+
+	public void deleteGlobalProperty(String propertyName) throws DAOException;
+
+	public void setGlobalProperty(String propertyName, String propertyValue) throws DAOException;
+
+	public void addGlobalProperty(String propertyName, String propertyValue) throws DAOException;
 
 }

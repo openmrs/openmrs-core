@@ -29,8 +29,11 @@ import org.openmrs.ConceptSetDerived;
 import org.openmrs.ConceptWord;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
+import org.openmrs.Order;
+import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
@@ -1293,4 +1296,66 @@ public class HibernateAdministrationDAO implements
 		return HibernateUtil.getGlobalProperty(propertyName);
 	}
 	
+	public List<GlobalProperty> getGlobalProperties() throws DAOException {
+		log.debug("getting all global properties");
+
+		Session session = HibernateUtil.currentSession();
+		List<GlobalProperty> globalProps = session.createCriteria(GlobalProperty.class).list();
+		
+		return globalProps;
+	}
+
+	public void deleteGlobalProperty(String propertyName) throws DAOException { 
+		Session session = HibernateUtil.currentSession();
+
+		try {
+			HibernateUtil.beginTransaction();
+			session.createQuery("delete from GlobalProperty where property = :p")
+					.setParameter("p", propertyName)
+					.executeUpdate();
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new DAOException(e);
+		}
+	}
+	
+	public void setGlobalProperty(String propertyName, String propertyValue) throws DAOException {
+		Session session = HibernateUtil.currentSession();
+		//GlobalProperty prop = new GlobalProperty();
+		//prop.setProperty(propertyName);
+		//prop.setPropertyValue(propertyValue);
+
+		try {
+			HibernateUtil.beginTransaction();
+			//session.saveOrUpdate(prop);
+			session.createQuery("update GlobalProperty set propertyValue = :v where property = :n")
+					.setParameter("v", propertyValue)
+					.setParameter("n", propertyName)
+					.executeUpdate();
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new DAOException(e);
+		}
+	}
+
+	public void addGlobalProperty(String propertyName, String propertyValue) throws DAOException {
+		Session session = HibernateUtil.currentSession();
+		GlobalProperty prop = new GlobalProperty();
+		prop.setProperty(propertyName);
+		prop.setPropertyValue(propertyValue);
+
+		try {
+			HibernateUtil.beginTransaction();
+			session.save(prop);
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new DAOException(e);
+		}
+	}
 }

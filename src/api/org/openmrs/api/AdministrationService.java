@@ -2,6 +2,7 @@ package org.openmrs.api;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -14,6 +15,7 @@ import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptSynonym;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.Obs;
@@ -861,4 +863,19 @@ public class AdministrationService {
 		return getAdminDAO().getGlobalProperty(propertyName);
 	}
 	
+	public List<GlobalProperty> getGlobalProperties() {
+		return getAdminDAO().getGlobalProperties();
+	}
+
+	public void deleteGlobalProperty(String propertyName) {
+		getAdminDAO().deleteGlobalProperty(propertyName);
+	}
+
+	public void setGlobalProperty(String propertyName, String propertyValue) {
+		getAdminDAO().setGlobalProperty(propertyName, propertyValue);
+	}
+
+	public void addGlobalProperty(String propertyName, String propertyValue) {
+		getAdminDAO().addGlobalProperty(propertyName, propertyValue);
+	}
 }
