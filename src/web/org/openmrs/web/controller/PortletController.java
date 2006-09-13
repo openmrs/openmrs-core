@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
+import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.Relationship;
@@ -195,6 +197,37 @@ public class PortletController implements Controller {
 				
 			}
 
+			if (context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS)) {
+				//String arvGroups =  (String)context.getAdministrationService().getGlobalProperty("arv_groups");
+				List<Obs> treatmentGroupObs = context.getObsService().getObservations(context.getConceptService().getConceptByName("ANTIRETROVIRAL TREATMENT GROUP"), null);
+				if ( treatmentGroupObs != null ) {
+					TreeSet<String> treatmentGroupSet = new TreeSet<String>();
+					log.debug("tgo is size " + treatmentGroupObs.size());
+					for ( Obs o : treatmentGroupObs ) {
+						String group = o.getValueText();
+						if ( group != null ) {
+							if ( group.length() > 0 ) {
+								// hack to order items properly
+								if ( group.length() == 1 ) group = "0" + group;
+								treatmentGroupSet.add(group);
+							}
+						}
+					}
+
+					String arvGroups = "";
+
+					for ( String s : treatmentGroupSet ) {
+						if ( arvGroups.length() > 0 ) arvGroups += ",";
+						if ( s.startsWith("0")) s = s.substring(1);
+						arvGroups += s;
+					}
+
+					model.put("arvGroups", arvGroups);
+				} else {
+					log.debug("tgo is null");
+				}
+			}
+			
 			populateModel(request, context, model);
 		}
 

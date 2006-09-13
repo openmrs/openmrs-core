@@ -303,13 +303,12 @@
 		function showHideDiv(id) {
 			var div = document.getElementById(id);
 			if ( div ) {
-				alert('found id: ' + id);
 				if ( div.style.display != "none" ) {
 					div.style.display = "none";
 				} else { 
 					div.style.display = "";
 				}
-			} else alert('could not find id: ' + id);
+			}
 		}
 		
 		function handleAddDrugOrder(drugField, doseField, unitsField, frequencyDayField, frequencyWeekField, startDateField) {

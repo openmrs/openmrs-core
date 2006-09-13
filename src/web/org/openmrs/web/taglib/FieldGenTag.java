@@ -70,16 +70,7 @@ public class FieldGenTag extends TagSupport {
 				String output = "Cannot handle type [" + type + "]. Please add a module to handle this type.";
 
 				
-				if ( type.indexOf("java.lang.String") >= 0 ) {
-					String startVal = "";
-					if ( val != null ) {
-						startVal = val.toString();
-					}
-					startVal = (startVal == null) ? "" : startVal;
-					String fieldLength = this.parameterMap != null ? (String)this.parameterMap.get("fieldLength") : null;
-					fieldLength = (fieldLength == null) ? DEFAULT_INPUT_TEXT_LENGTH : fieldLength;
-					output = "<input type=\"text\" name=\"" + formFieldName + "\" id=\"" + formFieldName + "\" value=\"" + startVal + "\" size=\"" + fieldLength + "\" />";
-				} else if ( type.equals("char") || type.indexOf("java.lang.Character") >= 0 ) {
+				if ( type.equals("char") || type.indexOf("java.lang.Character") >= 0 ) {
 					String startVal = "";
 					if ( val != null ) {
 						startVal = val.toString();

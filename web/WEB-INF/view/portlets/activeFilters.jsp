@@ -96,7 +96,12 @@
 												</c:when>
 												<c:otherwise>
 													<spring:message code="Analysis.shortcut.${item.label}.${arg.name}"/>
-													<openmrs:fieldGen type="${arg.fieldClass}" formFieldName="${arg.name}" val="" parameters="optionHeader=[blank]|fieldLength=10" />
+													<c:if test="${arg.name == 'treatmentGroup'}">
+														<openmrs:fieldGen type="${arg.fieldClass}" formFieldName="${arg.name}" val="" parameters="optionHeader=[blank]|fieldLength=10|answerSet=${model.arvGroups}" />
+													</c:if>
+													<c:if test="${arg.name != 'treatmentGroup'}">
+														<openmrs:fieldGen type="${arg.fieldClass}" formFieldName="${arg.name}" val="" parameters="optionHeader=[blank]|fieldLength=10" />
+													</c:if>
 												</c:otherwise>
 											</c:choose>
 										</c:forEach>
