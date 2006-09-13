@@ -1,9 +1,8 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
-
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/easyAjax.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/dwr/interface/DWRRelationshipService.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/dwr/engine.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/dwr/util.js"></script>
+<openmrs:htmlInclude file="${pageContext.request.contextPath}/scripts/easyAjax.js" />
+<openmrs:htmlInclude file="${pageContext.request.contextPath}/dwr/interface/DWRRelationshipService.js" />
+<openmrs:htmlInclude file="${pageContext.request.contextPath}/dwr/engine.js" />
+<openmrs:htmlInclude file="${pageContext.request.contextPath}/dwr/util.js" />
 
 <div class="boxHeader"><spring:message code="Program.title"/></div>
 <div class="box">

@@ -191,6 +191,7 @@
 				<include name="**/*.jsp"/>
 				<include name="**/*.css"/>
 				<include name="**/*.js"/>
+				<include name="**/*.withjstl"/>
 			</fileset>			
 		</copy>
 	</target>

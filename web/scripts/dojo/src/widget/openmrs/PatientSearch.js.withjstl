@@ -1,4 +1,5 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
+<%@ page isELIgnored="true" %>
 <openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" var="showTribe"/>
 
 /*
@@ -85,10 +86,10 @@ dojo.widget.defineWidget(
 			}
 		},
 		
-		invalidCheckDigitText: "Invalid check digit for MRN: ",
-		searchOnPatientNameText: "Please search on part of the patient's name. ",
-		noPatientsFoundText: "No patients found. <br/> ",
-		addPatientLink: "<a href='/@WEBAPP.NAME@/admin/patients/addPatient.htm'>Add a new patient</a>",
+		invalidCheckDigitText: "<spring:message javaScriptEscape="true" code="error.checkdigits"/>: ",
+		searchOnPatientNameText: "<spring:message javaScriptEscape="true" code="PatientSearch.searchOnName"/>",
+		noPatientsFoundText: "<spring:message javaScriptEscape="true" code="PatientSearch.noneFound"/> <br/> ",
+		addPatientLink: "<a href='/@WEBAPP.NAME@/admin/patients/addPatient.htm'><spring:message javaScriptEscape="true" code="Patient.add.new"/></a>",
 		
 		getId: function(p) {
 			var td = document.createElement("td");
@@ -179,16 +180,15 @@ dojo.widget.defineWidget(
 			
 		},
 		
-		// TODO: internationalize
 		showHeaderRow: true,
 		getHeaderCellContent: function() {
-			return ['', 'Identifier', 'Given', 'Middle', 'Family Name', 'Age', 'Gender', <c:if test="${showTribe == 'true'}">'Tribe',</c:if> '', 'Birthday'];
+			return ['', '<spring:message code="Patient.identifier" javaScriptEscape="true"/>', '<spring:message code="PatientName.givenName" javaScriptEscape="true"/>', '<spring:message code="PatientName.middleName" javaScriptEscape="true"/>', '<spring:message code="PatientName.familyName" javaScriptEscape="true"/>', '<spring:message code="Patient.age" javaScriptEscape="true"/>', '<spring:message code="Patient.gender" javaScriptEscape="true"/>', <c:if test="${showTribe == 'true'}">'<spring:message code="Patient.tribe" javaScriptEscape="true"/>',</c:if> '', '<spring:message code="Patient.birthdate" javaScriptEscape="true"/>'];
 		},
 		
 		getProblemImage: function() {
 			var img = document.createElement("img");
 			img.src = "/@WEBAPP.NAME@/images/problem.gif";
-			img.title="The check digit on this identifier is invalid.  Please double check this patient";
+			img.title="<spring:message javaScriptEscape="true" code="error.checkdigits.verbose"/>";
 			return img;
 		},
 		
