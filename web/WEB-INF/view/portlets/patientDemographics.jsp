@@ -1,5 +1,7 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
+<openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" var="showTribe"/>
+
 <div class="boxHeader"><spring:message code="Patient.title"/></div>
 <div class="box">
 	<table class="patientAddress">
@@ -9,6 +11,9 @@
 				<th><spring:message code="Patient.mothersName"/></th>
 				<th><spring:message code="Patient.civilStatus"/></th>
 				<th><spring:message code="Patient.race"/></th>
+				<c:if test="${showTribe == 'true'}">
+					<th><spring:message code="Patient.tribe"/></th>
+				</c:if>
 				<th><spring:message code="Patient.birthplace"/></th>
 			</tr>
 		</thead>
@@ -27,12 +32,17 @@
 					</c:if>
 				</td>
 				<td>${model.patient.race}</td>
+				<c:if test="${showTribe == 'true'}">
+					<td>${model.patient.tribe.name}</td>
+				</c:if>
 				<td><c:if test='${model.patient.birthplace != null}'>${model.patient.birthplace}</c:if></td>
 			</tr>
 		</tbody>
 	</table>
 </div>
+
 <br/>
+
 <div class="boxHeader"><spring:message code="Patient.addresses"/></div>
 <div class="box">
 	<table class="patientAddress">
@@ -49,7 +59,10 @@
 		</tbody>
 	</table>
 </div>
-<br><br>
+
+<br/>
+<br/>
+
 <div id="patientDemographicsEdit">
 	<openmrs:hasPrivilege privilege="Edit Patients">
 		<a href="<%= request.getContextPath() %>/admin/patients/patient.form?patientId=${model.patient.patientId}"><spring:message code="Patient.edit"/></a><br />
@@ -59,5 +72,4 @@
 			<a href="<%= request.getContextPath() %>/admin/patients/newPatient.form?pId=${model.patient.patientId}"><spring:message code="Patient.edit"/></a><br />
 		</openmrs:hasPrivilege>
 	</openmrs:hasPrivilege>
-
 </div>

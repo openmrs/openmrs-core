@@ -529,9 +529,11 @@ public class HibernateUserDAO implements
 			for (Object o : criteria.list()) {
 				User u = (User)o;
 				for (Role r : roles)
-					if (u.getRoles().contains(r)) {
-						returnList.add(u);
-						break;
+					if (r != null) {
+						if (u.hasRole(r.getRole(), true)) {
+							returnList.add(u);
+							break;
+						}
 					}
 			}
 		}

@@ -109,6 +109,7 @@ h1, h2, h3, h4, h5 {
 		border-left: 2px solid white;
 		display: inline;
 		line-height: 1.1em;
+		white-space: nowrap;
 	}
 	#navList > li:first-child {
 		border-left-style: none;

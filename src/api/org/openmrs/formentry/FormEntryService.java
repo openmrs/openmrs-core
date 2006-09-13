@@ -360,8 +360,11 @@ public class FormEntryService {
 		UserService us = context.getUserService();
 		try {
 			List<Role> roles = new Vector<Role>();
-			for (String r : strRoles)
-				roles.add(us.getRole(r));
+			for (String r : strRoles) {
+				Role role = us.getRole(r);
+				if (role != null)
+					roles.add(role);
+			}
 			
 			users = us.getAllUsers(roles, includeVoided);
 		} catch (Exception e) {

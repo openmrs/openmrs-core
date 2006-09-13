@@ -23,7 +23,7 @@
 		
 		dojo.event.topic.subscribe("pSearch/select", 
 			function(msg) {
-				document.location = "${pageContext.request.contextPath}/formentry/patientSummary.form?patientId=" + msg.objs[0].patientId;
+				document.location = "${pageContext.request.contextPath}/patientDashboard.form?patientId=" + msg.objs[0].patientId;
 			}
 		);
 		

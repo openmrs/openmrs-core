@@ -7,7 +7,9 @@
 
 <h2><spring:message code="ConceptDatatype.manage.title"/></h2>
 
-<a href="conceptDatatype.form"><spring:message code="ConceptDatatype.add"/></a>
+<%--  <a href="conceptDatatype.form"><spring:message code="ConceptDatatype.add"/></a> --%>
+
+(<spring:message code="general.readonly"/>)
 
 <br /><br />
 
@@ -15,13 +17,13 @@
 <form method="post" class="box">
 	<table>
 		<tr>
-			<th> </th>
+			<%-- <th> </th> --%>
 			<th> <spring:message code="general.name"/> </th>
 			<th> <spring:message code="general.description"/> </th>
 		</tr>
 		<c:forEach var="conceptDatatype" items="${conceptDatatypeList}">
 			<tr> 
-				<td valign="top"><input type="checkbox" name="conceptDatatypeId" value="${conceptDatatype.conceptDatatypeId}"></td>
+				<%-- <td valign="top"><input type="checkbox" name="conceptDatatypeId" value="${conceptDatatype.conceptDatatypeId}"></td> --%>
 				<td valign="top"><a href="conceptDatatype.form?conceptDatatypeId=${conceptDatatype.conceptDatatypeId}">
 					   ${conceptDatatype.name}
 					</a>
@@ -30,7 +32,7 @@
 			</tr>
 		</c:forEach>
 	</table>
-	<input type="submit" value="<spring:message code="ConceptDatatype.delete"/>" name="action">
+	<%--  <input type="submit" value="<spring:message code="ConceptDatatype.delete"/>" name="action"> --%>
 </form>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

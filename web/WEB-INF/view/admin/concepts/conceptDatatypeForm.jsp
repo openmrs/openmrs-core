@@ -7,7 +7,7 @@
 
 <h2><spring:message code="ConceptDatatype.title"/></h2>
 
-<form method="post">
+<%--  <form method="post"> --%>
 <table>
 	<tr>
 		<td><spring:message code="general.name"/></td>
@@ -22,7 +22,7 @@
 		<td valign="top"><spring:message code="general.description"/></td>
 		<td>
 			<spring:bind path="conceptDatatype.description">
-				<textarea name="description" rows="3" cols="40">${status.value}</textarea>
+				<textarea name="description" rows="3" cols="40" type="_moz">${status.value}</textarea>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
@@ -38,7 +38,10 @@
 	</c:if>
 </table>
 <br />
-<input type="submit" value="<spring:message code="ConceptDatatype.save"/>">
-</form>
+<%-- <input type="submit" value="<spring:message code="ConceptDatatype.save"/>">
+</form> --%>
+
+(<spring:message code="general.readonly"/>)
+
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

@@ -235,9 +235,11 @@ public class HibernatePatientDAO implements PatientDAO {
 		String q = "select p from Patient p left join p.names as pname where";
 		
 		if (names.length == 1) {
+			q += "(";
 			q += " soundex(pname.givenName) = soundex(:n1)";
 			q += " or soundex(pname.middleName) = soundex(:n2)";
-			q += " or soundex(pname.familyName) = soundex(:n3)";
+			q += " or soundex(pname.familyName) = soundex(:n3) ";
+			q += ")";
 		}
 		else if (names.length == 2) {
 			q += "(";
@@ -293,13 +295,13 @@ public class HibernatePatientDAO implements PatientDAO {
 		else
 			throw new DAOException("Too many names to compare effectively.");
 		
-		String birthdayMatch = "(year(p.birthdate) between " + (birthyear - 1) + " and " + (birthyear + 1) +
-								" or p.birthdate is null)";
+		String birthdayMatch = " (year(p.birthdate) between " + (birthyear - 1) + " and " + (birthyear + 1) +
+								" or p.birthdate is null) ";
 		
-		String genderMatch = "p.gender = :gender";
+		String genderMatch = " p.gender = :gender ";
 		
 		if (birthyear != 0 && gender != null) {
-			q += " and (" + birthdayMatch + "and " + genderMatch + ")"; 
+			q += " and (" + birthdayMatch + "and " + genderMatch + ") "; 
 		}
 		else if (birthyear != 0) {
 			q += " and " + birthdayMatch;

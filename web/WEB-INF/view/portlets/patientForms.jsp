@@ -37,9 +37,7 @@ Parameters
 				<c:if test="${form.formId != 1}">
 					<c:if test="${form.published == true || model.showUnpublishedForms == 'true'}">
 						<a href="${pageContext.request.contextPath}/formDownload?target=formEntry&formId=${form.formId}&patientId=${patient.patientId}" onclick="startDownloading()" class="formLink">${form.name}
-						(v.${form.version})
-						<c:if test="${form.published == false}"><i>(<spring:message code="formentry.unpublished"/>)</i></c:if>
-						</a>			
+						(v.${form.version})<c:if test="${form.published == false}"><i>(<spring:message code="formentry.unpublished"/>)</i></c:if></a>
 						<br />
 					</c:if>
 				</c:if>
