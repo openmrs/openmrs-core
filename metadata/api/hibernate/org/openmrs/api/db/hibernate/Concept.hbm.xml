@@ -121,6 +121,15 @@
 			<property name="precise" type="java.lang.Boolean" column="precise" length="1" not-null="true"/>
 		</joined-subclass>
 		
+		<joined-subclass name="org.openmrs.ConceptDerived" table="concept_derived" extends="org.openmrs.Concept" lazy="false">
+			<key column="concept_id" not-null="true" on-delete="cascade" />
+			<property name="rule" type="java.lang.String" column="rule" length="1000000" />
+			<property name="compileDate" type="java.util.Date" column="compile_date" />
+			<property name="compileStatus" type="java.lang.String" column="compile_status" length="255" />
+			<property name="className" type="java.lang.String" column="class_name" length="1024" />
+		</joined-subclass>
+		
+		
 	</class>
 
 </hibernate-mapping>

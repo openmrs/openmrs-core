@@ -955,6 +955,42 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 delimiter ;
 call diff_procedure('1.0.40');
 
+#--------------------------------------
+# OpenMRS Datamodel version 1.0.41
+# Burke Mamlin 	Sept 10, 2006 8:10 PM
+# Adding concept_derived
+#--------------------------------------
+
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+	SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+
+	CREATE TABLE `concept_derived` (
+	  `concept_id` int(11) NOT NULL DEFAULT '0',
+	  `rule` mediumtext DEFAULT NULL,
+	  `compile_date` datetime DEFAULT NULL,
+	  `compile_status` varchar(255) DEFAULT NULL,
+	  `class_name` varchar(1024) DEFAULT NULL,
+	  PRIMARY KEY  (`concept_id`),
+	  CONSTRAINT `derived_attributes` FOREIGN KEY (`concept_id`) REFERENCES `concept` (`concept_id`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+	INSERT INTO `concept_datatype` (`concept_datatype_id`, `name`, `hl7_abbreviation`, `description`, `creator`, `date_created`) values (11, 'Rule', 'ZZ', 'Value derived from other data', 1, '2006-09-11 13:22:00');
+
+	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+	
+	END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.0.41');
+
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script
 #-----------------------------------

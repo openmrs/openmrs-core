@@ -86,6 +86,18 @@ CREATE TABLE `concept_datatype` (
   CONSTRAINT `concept_datatype_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 #----------------------------
+# Table structure for concept_derived
+#----------------------------
+CREATE TABLE `concept_derived` (
+  `concept_id` int(11) NOT NULL DEFAULT '0',
+  `rule` mediumtext DEFAULT NULL,
+  `compile_date` datetime DEFAULT NULL,
+  `compile_status` varchar(255) DEFAULT NULL,
+  `class_name` varchar(1024) DEFAULT NULL,
+  PRIMARY KEY  (`concept_id`),
+  CONSTRAINT `derived_attributes` FOREIGN KEY (`concept_id`) REFERENCES `concept` (`concept_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+#----------------------------
 # Table structure for concept_map
 #----------------------------
 CREATE TABLE `concept_map` (
