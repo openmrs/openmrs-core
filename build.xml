@@ -215,8 +215,9 @@
 				<include name="**/*.xsn" />
 			</fileset>
 		</copy>
-		<!-- Rename spring servlet to name of webapp -->
+		<!-- Rename spring servlet(s) to name of webapp -->
 		<move file="${dist.dir}/web/WEB-INF/openmrs-servlet.xml" tofile="${dist.dir}/web/WEB-INF/${webapp.name}-servlet.xml" preservelastmodified="true" overwrite="true" />
+		<move file="${dist.dir}/web/WEB-INF/openmrs_static_content-servlet.xml" tofile="${dist.dir}/web/WEB-INF/${webapp.name}_static_content-servlet.xml" preservelastmodified="true" overwrite="true" />
 	</target>
 	
 	<target name="package-web" depends="package-web-init" description="create webapp war file">
