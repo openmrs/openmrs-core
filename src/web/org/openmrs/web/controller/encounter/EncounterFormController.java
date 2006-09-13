@@ -280,7 +280,7 @@ public class EncounterFormController extends SimpleFormController {
 	 */
 	private class FormFieldComparator implements Comparator<FormField> {
 		public int compare(FormField ff1, FormField ff2) {
-			if (ff1.getParent() == ff2.getParent()) {
+			if (ff1.getParent().equals(ff2.getParent())) {
 				return ff1.compareTo(ff2);
 			}
 			else if (ff1.getParent() == null && ff2.getParent() == null)
@@ -312,9 +312,7 @@ public class EncounterFormController extends SimpleFormController {
 					}
 				}
 				
-				log.warn("couldn't find similar parents: " + ff1.getFormFieldId() + ", " + ff2.getFormFieldId());
-
-				return 0;
+				return ff1Parents.get(ff1Parents.size()-1).compareTo(ff2Parents.get(ff2Parents.size()-1)); 
 			}
 		}
 	}

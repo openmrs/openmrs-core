@@ -357,13 +357,13 @@
 		<list url="${tomcat.manager.url}" username="${tomcat.username}" password="${tomcat.password}" />
 	</target>
 
-	<target name="tomcat-start">
+	<target name="tomcat-start" description="Start Tomcat">
          <java jar="${tomcat.home}/bin/bootstrap.jar" fork="true">
              <jvmarg line='-Dcatalina.home="${tomcat.home}" -Xmx512m -Xms512m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:NewSize=128m'/>
          </java>
      </target>
 
-     <target name="tomcat-stop">
+     <target name="tomcat-stop" description="Stop Tomcat">
          <java jar="${tomcat.home}/bin/bootstrap.jar" fork="true">
              <jvmarg line='-Dcatalina.home="${tomcat.home}"'/>
              <arg line="stop"/>

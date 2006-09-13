@@ -1025,3 +1025,100 @@ CREATE TABLE `users` (
   CONSTRAINT `user_who_voided_user` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SET FOREIGN_KEY_CHECKS=1;
+
+##############################
+#   OpenMRS Core Dataset     #
+##############################
+
+#----------------------------
+# Records for table users
+#----------------------------
+insert into users values 
+(1, 'admin', '', 'Super', '', 'User', '4a1750c8607dfa237de36c6305715c223415189', 'c788c6ad82a157b712392ca695dfcf2eed193d7f', null, null, 1, '2005-01-01 00:00:00', null, null, 0, null, null, null);
+
+
+#----------------------------
+# Records for table role
+#----------------------------
+insert into role values 
+('System Developer', 'Developers of the OpenMRS .. have additional access to change fundamental structure of the database model.');
+
+
+#----------------------------
+# Records for table user_role
+#----------------------------
+insert into user_role values 
+(1, 'System Developer');
+
+
+#----------------------------
+# Records for table concept_class
+#----------------------------
+insert into concept_class values 
+(1, 'Test', 'Acq. during patient encounter (vitals, labs, etc.)', 1, '2004-02-02 00:00:00', 0), 
+(2, 'Procedure', 'Describes a clinical procedure', 1, '2004-03-02 00:00:00', 0), 
+(3, 'Drug', 'Drug', 1, '2004-02-02 00:00:00', 0), 
+(4, 'Diagnosis', 'Conclusion drawn through findings', 1, '2004-02-02 00:00:00', 0), 
+(5, 'Finding', 'Practitioner observation/finding', 1, '2004-03-02 00:00:00', 0), 
+(6, 'Anatomy', 'Anatomic sites / descriptors', 1, '2004-03-02 00:00:00', 0), 
+(7, 'Question', 'Question (eg, patient history, SF36 items)', 1, '2004-03-02 00:00:00', 0), 
+(8, 'LabSet', 'Term to describe laboratory sets', 1, '2004-03-02 00:00:00', 1), 
+(9, 'MedSet', 'Term to describe medication sets', 1, '2004-02-02 00:00:00', 1), 
+(10, 'ConvSet', 'Term to describe convenience sets', 1, '2004-03-02 00:00:00', 1), 
+(11, 'Misc', 'Terms which don\'t fit other categories', 1, '2004-03-02 00:00:00', 0), 
+(12, 'Symptom', 'Patient-reported observation', 1, '2004-10-04 00:00:00', 0), 
+(13, 'Symptom/Finding', 'Observation that can be reported from patient or found on exam', 1, '2004-10-04 00:00:00', 0), 
+(14, 'Specimen', 'Body or fluid specimen', 1, '2004-12-02 00:00:00', 0), 
+(15, 'Misc Order', 'Orderable items which aren\'t tests or drugs', 1, '2005-02-17 00:00:00', 0);
+
+
+#----------------------------
+# Records for table concept_datatype
+#----------------------------
+insert into concept_datatype values 
+(1, 'Numeric', 'NM', 'Numeric value, including integer or float (e.g., creatinine, weight)', 1, '2004-02-02 00:00:00'), 
+(2, 'Coded', 'CWE', 'Value determined by term dictionary lookup (i.e., term identifier)', 1, '2004-02-02 00:00:00'), 
+(3, 'Text', 'ST', 'Free text', 1, '2004-02-02 00:00:00'), 
+(4, 'N/A', 'ZZ', 'Not associated with a datatype (e.g., term answers, sets)', 1, '2004-02-02 00:00:00'), 
+(5, 'Document', 'RP', 'Pointer to a binary or text-based document (e.g., clinical document, RTF, XML, EKG, image, etc.) stored in complex_obs table', 1, '2004-04-15 00:00:00'), 
+(6, 'Date', 'DT', 'Absolute date', 1, '2004-07-22 00:00:00'), 
+(7, 'Time', 'TM', 'Absolute time of day', 1, '2004-07-22 00:00:00'), 
+(8, 'Datetime', 'TS', 'Absolute date and time', 1, '2004-07-22 00:00:00'), 
+(10, 'Boolean', 'BIT', 'Boolean value (yes/no, true/false)', 1, '2004-08-26 00:00:00'), 
+(12, 'Structured Numeric', 'SN', 'Complex numeric values possible (ie, <5, 1-10, etc.)', 1, '2005-08-06 00:00:00');
+
+
+#----------------------------
+# Records for table field_type
+#----------------------------
+insert into field_type values 
+(1, 'Concept', '', 0, 1, '2005-02-22 12:43:00'), 
+(2, 'Database element', '', 0, 1, '2005-02-22 12:43:00'), 
+(3, 'Set of Concepts', '', 1, 1, '2005-02-22 12:43:00'), 
+(4, 'Miscellaneous Set', '', 1, 1, '2005-02-22 12:43:00'), 
+(5, 'Section', '', 1, 1, '2005-02-22 12:43:00');
+
+
+#----------------------------
+# Records for table encounter_type
+#----------------------------
+insert into encounter_type values 
+(1, 'ADULTINITIAL', 'Outpatient Adult Initial Visit', 1, '2005-02-24 00:00:00'), 
+(2, 'ADULTRETURN', 'Outpatient Adult Return Visit', 1, '2005-02-24 00:00:00'), 
+(3, 'PEDSINITIAL', 'Outpatient Pediatric Initial Visit', 1, '2005-02-24 00:00:00'), 
+(4, 'PEDSRETURN', 'Outpatient Pediatric Return Visit', 1, '2005-02-24 00:00:00');
+
+
+#----------------------------
+# Records for table location
+#----------------------------
+insert into location values 
+(1, 'Unknown Location', null, '', '', '', '', '', '', null, null, 1, '2005-09-22 00:00:00');
+
+
+#----------------------------
+# Records for table patient_identifier_type
+#----------------------------
+insert into patient_identifier_type values 
+(1, 'OpenMRS Identification Number', 'Unique number used in OpenMRS', '', 1, 1, '2005-09-22 00:00:00'), 
+(2, 'Old Identification Number', 'Number given out prior to the OpenMRS system (No check digit)', '', 0, 1, '2005-09-22 00:00:00');
