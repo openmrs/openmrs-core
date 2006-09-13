@@ -26,10 +26,7 @@ public class PseudoStaticContentController implements Controller {
 	}
 
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		log.debug("servletPath is " + request.getServletPath());
-		log.debug("pathInfo is " + request.getPathInfo());
 		String path = request.getServletPath() + request.getPathInfo();
-		log.debug("returning " + path);
 		if (interpretJstl)
 			path += ".withjstl";
 		return new ModelAndView(path);
