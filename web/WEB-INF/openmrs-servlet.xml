@@ -883,9 +883,15 @@
 			<property name="successView"><value>globalProps.form</value></property>
 		</bean>
 		
-	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
-		<property name="basename"><value>messages</value></property>
+	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>/WEB-INF/custom_messages</value>
+				<value>/WEB-INF/messages</value>
+			</list>
+		</property>
 		<property name="useCodeAsDefaultMessage"><value>true</value></property>
+		<property name="cacheSeconds" value="1"/>
 	</bean>
 	
 	<bean id="localeResolver" class="org.openmrs.web.OpenmrsCookieLocaleResolver" />

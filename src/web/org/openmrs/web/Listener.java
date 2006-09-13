@@ -70,11 +70,15 @@ public final class Listener implements ServletContextListener {
 			// TODO centralize map to OpenmrsConstants?
 			Map<String, String> custom = new HashMap<String, String>();
 			custom.put("custom.template.dir", "/WEB-INF/template");
-			custom.put("custom.style.css.file", "/style.css");
 			custom.put("custom.index.jsp.file", "/WEB-INF/view/index.jsp");
 			custom.put("custom.login.jsp.file", "/WEB-INF/view/login.jsp");
 			custom.put("custom.patientDashboardForm.jsp.file", "/WEB-INF/view/patientDashboardForm.jsp");
 			custom.put("custom.images.dir", "/images");
+			custom.put("custom.style.css.file", "/style.css");
+			custom.put("custom.messages", "/WEB-INF/custom_messages.properties");
+			custom.put("custom.messages_fr", "/WEB-INF/custom_messages_fr.properties");
+			custom.put("custom.messages_es", "/WEB-INF/custom_messages_es.properties");
+			custom.put("custom.messages_de", "/WEB-INF/custom_messages_de.properties");
 
 			String realPath = event.getServletContext().getRealPath("");
 			for (String prop : custom.keySet()) {

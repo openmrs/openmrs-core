@@ -77,20 +77,20 @@
 		<c:if test="${modifyPasswords == true}">
 			<tr>
 				<td><spring:message code="User.password" /></td>
-				<td><input type="password" name="password" /> <i><spring:message code="User.password.description"/></i></td>
+				<td><input type="password" name="password" value="XXXXXXXXXXXXXXX" /> <i><spring:message code="User.password.description"/></i></td>
 	
 			</tr>
 			<tr>
 				<td><spring:message code="User.confirm" /></td>
-				<td><input type="password" name="confirm" /></td>
+				<td><input type="password" name="confirm" value="XXXXXXXXXXXXXXX" /></td>
 			</tr>
 			<tr>
 				<td><spring:message code="User.secretQuestion" /></td>
-				<td><input type="text" name="secretQuestion" size="50" /> <i><spring:message code="general.optional"/></i></td>
+				<td><input type="text" name="secretQuestion" size="50" value="${user.secretQuestion}" /> <i><spring:message code="general.optional"/></i></td>
 			</tr>
 			<tr>
 				<td><spring:message code="User.secretAnswer" /></td>
-				<td><input type="password" name="secretAnswer" size="50" /> <i><spring:message code="general.optional"/></i></td>
+				<td><input type="password" name="secretAnswer" size="50" value="XXXXXXXXXXXXXXX"/> <i><spring:message code="general.optional"/></i></td>
 			</tr>
 			<tr>
 				<td><spring:message code="User.forceChange" /></td>

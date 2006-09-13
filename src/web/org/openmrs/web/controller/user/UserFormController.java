@@ -72,9 +72,9 @@ public class UserFormController extends SimpleFormController {
 				
 			// check if password and password confirm are identical
 				String password = request.getParameter("password");
-				if (password == null) password = "";
+				if (password == null || password.equals("XXXXXXXXXXXXXXX")) password = "";
 				String confirm = request.getParameter("confirm");
-				if (confirm == null) confirm = "";
+				if (confirm == null || confirm.equals("XXXXXXXXXXXXXXX")) confirm = "";
 				
 				if (!password.equals(confirm))
 					errors.reject("error.password.match");
@@ -147,6 +147,7 @@ public class UserFormController extends SimpleFormController {
 			UserService us = context.getUserService();
 
 			String password = request.getParameter("password");
+			if (password == null || password.equals("XXXXXXXXXXXXXXX")) password = "";
 			
 			Map<String, String> properties = user.getProperties();
 			if (properties == null)
@@ -167,7 +168,7 @@ public class UserFormController extends SimpleFormController {
 			
 			user.setProperties(properties);
 			
-			if ((context.getAuthenticatedUser().isSuperUser() && password != null) && !password.equals("")) {
+			if (context.getAuthenticatedUser().isSuperUser() && !password.equals("")) {
 				log.debug("calling changePassword");
 				us.changePassword(user, password);
 			}
