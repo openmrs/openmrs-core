@@ -991,6 +991,40 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 delimiter ;
 call diff_procedure('1.0.41');
 
+
+#--------------------------------------
+# OpenMRS Datamodel version 42
+# Ben Wolfe		Sept 13, 2006 9:25 AM
+# Changing database versioning system
+#--------------------------------------
+
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+ 	#
+ 	#
+ 	# DO NOT COPY THIS PROCEDURE'S CODE. THE 'IF STATEMENT' IS NOT FORMATTED CORRECTLY.
+	#               COPY/PASTE THE PREVIOUS DATABASE UPDATE PROCEDURE.
+	#
+	# DO CHANGE THE VERSIONING NUMBER FROM 1.0.xx TO JUST xx
+	#
+	#
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(CONCAT('1.0.', new_db_version), '.', '0') FROM global_property WHERE property = 'database_version') THEN
+	SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+
+	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+	
+	END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('42');
+
+
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script
 #-----------------------------------

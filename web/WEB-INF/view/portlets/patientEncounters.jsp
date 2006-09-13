@@ -171,7 +171,7 @@
 			var conceptId = DWRUtil.getValue($(conceptField));
 			var valueText = DWRUtil.getValue($(valueTextField));
 			var obsDate = DWRUtil.getValue($(obsDateField));
-			var patientId = ${model.patientId};			
+			var patientId = ${model.patient.patientId};			
 			//alert("Adding obs for encounter (" + encounterId + "): " + conceptId + " = " + valueText + " " + obsDate);  
 			DWRObsService.createObs(patientId, encounterId, conceptId, valueText, obsDate);
 			handleGetObservations(encounterId);

@@ -126,7 +126,7 @@ h1, h2, h3, h4, h5 {
 #content {
 	margin: 0px 0 0 0;
 	width: 100%;
-	padding: 50px 10px 10px 10px;
+	padding: 60px 10px 10px 10px;
 	font-size: 1.2em;
 	background-color: #ffffff;
 	z-index: 8;
@@ -221,11 +221,49 @@ h1, h2, h3, h4, h5 {
 	text-align: left;
 	display: block;
 }
-.patientName {
+
+tr td#patientHeaderPatientName {
 	font-weight:bold;
 	font-size:1.5em;
 	margin-right:10px;
+	vertical-align: middle;
+	text-align: center;
 }
+tr td#patientHeaderPatientGender, tr td#patientHeaderPatientAge, tr td#patientHeaderPatientIdentifiers {
+	text-align: center;
+	vertical-align: middle;
+	margin-right: 5px;
+	margin-left: 5px;
+	padding-right: 5px;
+	padding-left: 5px;
+}
+tr td#patientHeaderPatientGender, tr td#patientHeaderPatientAge {
+	border-right: 1px solid white;
+}
+#patientHeaderPatientBirthdate {
+	white-space: nowrap;
+}
+
+.patientHeaderPatientIdentifier {
+	white-space: nowrap;
+}
+
+table#PatientHeaderObs td {
+	border-right: 1px solid black;
+	vertical-align: middle;
+	margin-right: 5px;
+	margin-left: 5px;
+	padding-right: 5px;
+	padding-left: 5px;
+}
+tr td#PatientHeaderObsWeight{
+	margin-left: 0px;
+	padding-left: 0px;	
+}
+tr td#PatientHeaderObsRegimen{
+	border-right: 0px solid white;	
+}
+
 
 #patientDashboardHeader td {
 	padding: 0px 0px 0px 0px;
@@ -289,7 +327,7 @@ table.patientTreatmentPrograms td {
 	padding-left: 5px;
 	padding-bottom: 2px;
 	border-bottom: 1px solid navy;
-	width: 97%;
+	width: 90%;
 }
 #patientTabs ul, #patientTabs li {
 	display: inline;

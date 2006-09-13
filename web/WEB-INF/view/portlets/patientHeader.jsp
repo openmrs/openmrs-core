@@ -7,27 +7,24 @@
 
 	<%-- Header showing preferred name, id, and treatment status --%>
 	<div id="patientHeader" class="boxHeader">
-		<table>
+		<table id="patientHeaderGeneralTable">
 			<tr>
-				<td class="patientName">${model.patient.patientName.givenName} ${model.patient.patientName.middleName} ${model.patient.patientName.familyName}&nbsp;&nbsp</td>
-				<td>
+				<td id="patientHeaderPatientName">${model.patient.patientName.givenName} ${model.patient.patientName.middleName} ${model.patient.patientName.familyName}&nbsp;&nbsp</td>
+				<td id="patientHeaderPatientGender">
 					<c:if test="${model.patient.gender == 'M'}"><spring:message code="Patient.gender.male"/></c:if>
 					<c:if test="${model.patient.gender == 'F'}"><spring:message code="Patient.gender.female"/></c:if>
 				</td>
-				<td>|</td>
-				<td>
+				<td id="patientHeaderPatientAge">
 					<c:if test="${model.patient.age > 0}">${model.patient.age} <spring:message code="Patient.age.years"/></c:if>
 					<c:if test="${model.patient.age == 0}">< 1 <spring:message code="Patient.age.year"/></c:if>
-					(<c:if test="${model.patient.birthdateEstimated}">~</c:if><openmrs:formatDate date="${model.patient.birthdate}" type="medium" />)
+					<span id="patientHeaderPatientBirthdate">(<c:if test="${model.patient.birthdateEstimated}">~</c:if><openmrs:formatDate date="${model.patient.birthdate}" type="medium" />)</span>
 				</td>
-				<td>|</td>
-				<td>
+				<td id="patientHeaderPatientIdentifiers">
 					<c:forEach var="identifier" items="${model.patient.identifiers}" varStatus="status">
-						${identifier.identifierType.name}: ${identifier.identifier}
+						<span class="patientHeaderPatientIdentifier">${identifier.identifierType.name}: ${identifier.identifier}</span>
 						<c:if test="${!status.last}">&nbsp;&nbsp;|&nbsp;&nbsp;</c:if>
 					</c:forEach>
 				</td>
-				<td>&nbsp;</td>
 			</tr>
 		</table>
 	</div>
@@ -74,27 +71,34 @@
 				</tr></table>
 			</c:if>
 		</c:forEach>
-		<table><tr>
-			<td><spring:message code="Patient.weight"/>:</td>
-			<th><openmrs_tag:mostRecentObs observations="${model.patientObs}" concept="5089" showUnits="true" locale="${model.locale}" showDate="true" /></th>
-			<td>|</td>
-			<td><spring:message code="Patient.cd4"/>:</td>
-			<th><openmrs_tag:mostRecentObs observations="${model.patientObs}" concept="5497" locale="${model.locale}" /></th>
-			<td>|</td>
-			<td><spring:message code="Patient.regimen" />:</td>
-			<th>
-				<c:forEach items="${model.patientCurrentDrugOrders}" var="drugOrder" varStatus="drugOrderStatus">
-					${drugOrder.drug.name}
-					<c:if test="${!drugOrderStatus.last}">, </c:if>
-				</c:forEach>
-			</th>
-		</tr></table>
+		<table id="PatientHeaderObs">
+			<tr>
+				<td id="PatientHeaderObsWeight">
+					<spring:message code="Patient.weight"/>:
+					<openmrs_tag:mostRecentObs observations="${model.patientObs}" concept="5089" showUnits="true" locale="${model.locale}" showDate="true" />
+				</td>
+				<td id="PatientHeaderObsCD4">
+					<spring:message code="Patient.cd4"/>:
+					<openmrs_tag:mostRecentObs observations="${model.patientObs}" concept="5497" locale="${model.locale}" />
+				</td>
+				<td id="PatientHeaderObsRegimen">
+					<spring:message code="Patient.regimen" />:
+					<c:forEach items="${model.patientCurrentDrugOrders}" var="drugOrder" varStatus="drugOrderStatus">
+						${drugOrder.drug.name}
+						<c:if test="${!drugOrderStatus.last}">, </c:if>
+					</c:forEach>
+				</td>
+			</tr>
+		</table>
 		<table><tr>
 			<td><spring:message code="Patient.lastEncounter"/>:</td>
 			<th>
 				<c:forEach items='${openmrs:sort(encounters, "encounterDatetime", true)}' var="lastEncounter" varStatus="lastEncounterStatus" end="0">
 					${lastEncounter.encounterType.name} @ ${lastEncounter.location.name}, <openmrs:formatDate date="${lastEncounter.encounterDatetime}" type="medium" />
 				</c:forEach>
+				<c:if test="${fn:length(encounters) == 0}">
+					<spring:message code="FormEntry.no.last.encounters"/>
+				</c:if>	
 			</th>
 		</tr></table>
 	</div>

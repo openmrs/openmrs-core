@@ -38,21 +38,23 @@
 		</taskdef>
 		
 		<!-- Discover code and database versions via regular expressions -->
+		<loadfile srcfile="${openmrs.database.version.expected.filename}" property="diffFileInput" />
+		<propertyregex property="openmrs.database.version.expected"
+			input="${diffFileInput}"
+			regexp="${openmrs.database.version.expected.regexp}"
+			select="\1"
+			defaultValue="0.0.0" 
+			casesensitive="false" />
+		
 		<loadfile srcfile="${openmrs.version.revision.filename}" property="repositoryFileInput" />
 		<propertyregex property="openmrs.version.revision"
 			input="${repositoryFileInput}"
 			regexp="${openmrs.version.revision.regexp}"
 			select="\1"
 			defaultValue="Error with code revision regexp" />
-		<property name="openmrs.version" value="${openmrs.version.major}.${openmrs.version.minor}.${openmrs.version.revision}"/>
-		
-		<loadfile srcfile="${openmrs.database.version.expected.filename}" property="diffFileInput" />
-		<propertyregex property="openmrs.database.version.expected"
-			input="${diffFileInput}"
-			regexp="${openmrs.database.version.expected.regexp}"
-			select="\1"
-			defaultValue="Error with db version regexp" 
-			casesensitive="false" />
+		<property 
+			name="openmrs.version" 
+			value="${openmrs.version.major}.${openmrs.version.minor}.${openmrs.database.version.expected} Build ${openmrs.version.revision}"/>
 		
 		<!-- These variables are replaced in the code prior to compilation -->
 		<filterset id="variables.to.replace">

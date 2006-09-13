@@ -229,7 +229,7 @@ public class NewPatientFormController extends SimpleFormController {
 			patient.setBirthdateEstimated(p.getBirthdateEstimated());
 			patient.setGender(p.getGender());
 			patient.setMothersName(p.getMothersName());
-			if (p.getTribe() == "")
+			if (p.getTribe() == "" || p.getTribe() == null)
 				patient.setTribe(null);
 			else {
 				Tribe t = ps.getTribe(Integer.valueOf(p.getTribe()));

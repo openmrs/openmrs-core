@@ -54,6 +54,7 @@
 			
 			setTabCookie(tabObj.id);
 		}
+		return false;
     }
 </script>
 
@@ -62,22 +63,22 @@
 <div id="patientTabs">
 	<ul>
 		<openmrs:hasPrivilege privilege="Patient Dashboard - View Overview Section">
-			<li><a id="patientOverviewTab" href="#" onclick="changeTab(this);" hidefocus><spring:message code="patientDashboard.overview"/></a></li>
+			<li><a id="patientOverviewTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.overview"/></a></li>
 		</openmrs:hasPrivilege>
 		<openmrs:hasPrivilege privilege="Patient Dashboard - View Regimen Section">
-			<li><a id="patientRegimenTab" href="#" onclick="changeTab(this);" hidefocus><spring:message code="patientDashboard.regimens"/></a></li>
+			<li><a id="patientRegimenTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.regimens"/></a></li>
 		</openmrs:hasPrivilege>
 		<openmrs:hasPrivilege privilege="Patient Dashboard - View Encounters Section">
-			<li><a id="patientEncountersTab" href="#" onclick="changeTab(this);" hidefocus><spring:message code="patientDashboard.encounters"/></a></li>
+			<li><a id="patientEncountersTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.encounters"/></a></li>
 		</openmrs:hasPrivilege>
 		<openmrs:hasPrivilege privilege="Patient Dashboard - View Demographics Section">
-			<li><a id="patientDemographicsTab" href="#" onclick="changeTab(this);" hidefocus><spring:message code="patientDashboard.demographics"/></a></li>
+			<li><a id="patientDemographicsTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.demographics"/></a></li>
 		</openmrs:hasPrivilege>
 		<openmrs:hasPrivilege privilege="Patient Dashboard - View Graphs Section">
-			<li><a id="patientGraphsTab" href="#" onclick="changeTab(this);" hidefocus><spring:message code="patientDashboard.graphs"/></a></li>
+			<li><a id="patientGraphsTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.graphs"/></a></li>
 		</openmrs:hasPrivilege>
 		<openmrs:hasPrivilege privilege="Patient Dashboard - View Forms Section">
-			<li><a id="patientFormsTab" href="#" onclick="changeTab(this);" hidefocus><spring:message code="patientDashboard.forms"/></a></li>
+			<li><a id="patientFormsTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.forms"/></a></li>
 		</openmrs:hasPrivilege>
 	</ul>
 </div>

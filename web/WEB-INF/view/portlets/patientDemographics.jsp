@@ -54,4 +54,10 @@
 	<openmrs:hasPrivilege privilege="Edit Patients">
 		<a href="<%= request.getContextPath() %>/admin/patients/patient.form?patientId=${model.patient.patientId}"><spring:message code="Patient.edit"/></a><br />
 	</openmrs:hasPrivilege>
+	<openmrs:hasPrivilege privilege="Edit Patients" inverse="true">
+		<openmrs:hasPrivilege privilege="Add Patients">
+			<a href="<%= request.getContextPath() %>/admin/patients/newPatient.form?pId=${model.patient.patientId}"><spring:message code="Patient.edit"/></a><br />
+		</openmrs:hasPrivilege>
+	</openmrs:hasPrivilege>
+
 </div>
