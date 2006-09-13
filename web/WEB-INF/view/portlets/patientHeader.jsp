@@ -71,17 +71,17 @@
 				</tr></table>
 			</c:if>
 		</c:forEach>
-		<table id="PatientHeaderObs">
+		<table id="patientHeaderObs">
 			<tr>
-				<td id="PatientHeaderObsWeight">
+				<td id="patientHeaderObsWeight">
 					<spring:message code="Patient.weight"/>:
 					<openmrs_tag:mostRecentObs observations="${model.patientObs}" concept="5089" showUnits="true" locale="${model.locale}" showDate="true" />
 				</td>
-				<td id="PatientHeaderObsCD4">
+				<td id="patientHeaderObsCD4">
 					<spring:message code="Patient.cd4"/>:
 					<openmrs_tag:mostRecentObs observations="${model.patientObs}" concept="5497" locale="${model.locale}" />
 				</td>
-				<td id="PatientHeaderObsRegimen">
+				<td id="patientHeaderObsRegimen">
 					<spring:message code="Patient.regimen" />:
 					<c:forEach items="${model.patientCurrentDrugOrders}" var="drugOrder" varStatus="drugOrderStatus">
 						${drugOrder.drug.name}

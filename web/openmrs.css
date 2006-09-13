@@ -248,7 +248,7 @@ tr td#patientHeaderPatientGender, tr td#patientHeaderPatientAge {
 	white-space: nowrap;
 }
 
-table#PatientHeaderObs td {
+table#patientHeaderObs td {
 	border-right: 1px solid black;
 	vertical-align: middle;
 	margin-right: 5px;
@@ -256,11 +256,11 @@ table#PatientHeaderObs td {
 	padding-right: 5px;
 	padding-left: 5px;
 }
-tr td#PatientHeaderObsWeight{
+tr td#patientHeaderObsWeight{
 	margin-left: 0px;
 	padding-left: 0px;	
 }
-tr td#PatientHeaderObsRegimen{
+tr td#patientHeaderObsRegimen{
 	border-right: 0px solid white;	
 }
 
