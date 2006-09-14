@@ -8,6 +8,14 @@ function GetXmlHttpObject() {
 	return objXMLHttp;
 }
 
+function loadInto(loadingText, url, layer, delay) {
+	if (delay > 0) {
+		setTimeout("loadInto('" + loadingText + "', '" + url + "', ':" + layer + "')", delay);
+	} else {
+		loadInto(loadingText, url, layer);
+	}
+}
+
 function loadInto(loadingText, url, layer) {
 	document.getElementById(layer).innerHTML = loadingText;
 	var xmlHttp=GetXmlHttpObject();

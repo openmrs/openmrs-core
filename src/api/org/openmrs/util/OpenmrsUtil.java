@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
@@ -403,6 +404,22 @@ public class OpenmrsUtil {
 		}
 
 		return age;
+	}
+	
+	/**
+	 * Converts a collection to a String with a specified separator between all elements
+	 * @param c Collection to be joined
+	 * @param separator string to put between all elements
+	 * @return a String representing the toString() of all elements in c, separated by separator
+	 */
+	public static <E extends Object> String join(Collection<E> c, String separator) {
+		StringBuilder ret = new StringBuilder();
+		for (Iterator i = c.iterator(); i.hasNext(); ) {
+			ret.append(i.next());
+			if (i.hasNext())
+				ret.append(separator);
+		}
+		return ret.toString();
 	}
 
 }

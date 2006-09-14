@@ -1,8 +1,12 @@
 package org.openmrs.api;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -297,4 +301,18 @@ public class ObsService {
     	
     	return obs;
     }
+    
+    
+    public List<String> getDistinctObservationValues(Concept question) {
+    	// todo: make this efficient, and add a sort option
+    	
+    	Locale l = context.getLocale();
+    	List<Obs> obs = getObservations(question, null);
+    	SortedSet<String> set = new TreeSet<String>();
+    	for (Obs o : obs) {
+    		set.add(o.getValueAsString(l));
+    	}
+    	return new ArrayList<String>(set);
+    }
+    
 }

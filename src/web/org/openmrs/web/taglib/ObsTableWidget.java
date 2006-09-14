@@ -1,0 +1,230 @@
+package org.openmrs.web.taglib;
+
+import java.io.IOException;
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.StringTokenizer;
+import java.util.TreeSet;
+
+import javax.servlet.jsp.JspWriter;
+import javax.servlet.jsp.tagext.TagSupport;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
+import org.openmrs.ConceptName;
+import org.openmrs.Obs;
+import org.openmrs.api.ConceptService;
+import org.openmrs.api.context.Context;
+import org.openmrs.web.WebConstants;
+
+public class ObsTableWidget extends TagSupport {
+
+	private final Log log = LogFactory.getLog(getClass());
+	
+	/*
+	 * pipe-separated list that could be:
+	 *   a concept id (e.g. "5089")
+	 *   a concept name (e.g. "name:CD4 COUNT")
+	 *   a concept set, by id or name (e.g. "set:5089" or "set.en:LAB TESTS")
+	 */
+	private String concepts;
+	private Collection<Obs> observations;
+	private boolean sortDescending = true;
+	private boolean orientVertical = true;
+	private Boolean showEmptyConcepts = true;
+	private String id;
+	private String cssClass;
+	//private String combineBy = "day";
+	
+	public ObsTableWidget() { }
+	
+	public String getConcepts() {
+		return concepts;
+	}
+	public void setConcepts(String concepts) {
+		this.concepts = concepts;
+	}
+	public String getCssClass() {
+		return cssClass;
+	}
+	public void setCssClass(String cssClass) {
+		this.cssClass = cssClass;
+	}
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public Boolean getShowEmptyConcepts() {
+		return showEmptyConcepts;
+	}
+	public void setShowEmptyConcepts(Boolean showEmptyConcepts) {
+		this.showEmptyConcepts= showEmptyConcepts;
+	}
+	public String getSort() {
+		return sortDescending ? "desc" : "asc";
+	}
+	public void setSort(String sort) {
+		sortDescending = !sort.equals("asc");
+	}
+	public String getOrientation() {
+		return orientVertical ? "vertical" : "horizontal";
+	}
+	public void setOrientation(String orientation) {
+		orientVertical = !orientation.equals("horizontal");
+	}
+	public Collection<Obs> getObservations() {
+		return observations;
+	}
+	public void setObservations(Collection<Obs> observations) {
+		this.observations = observations;
+	}
+	
+	public int doStartTag() {
+		Context context = (Context) pageContext.getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Locale loc = context.getLocale();
+		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, loc);
+		
+		// determine which concepts we care about
+		List<Concept> conceptList = new ArrayList<Concept>();
+		Set<Integer> conceptIds = new HashSet<Integer>();
+		ConceptService cs = context.getConceptService();
+		for (StringTokenizer st = new StringTokenizer(concepts, "|"); st.hasMoreTokens(); ) {
+			String s = st.nextToken().trim();
+			log.debug("looking at " + s);
+			boolean isSet = s.startsWith("set:");
+			if (isSet)
+				s = s.substring(4).trim();
+			Concept c = null;
+			if (s.startsWith("name:")) {
+				String name = s.substring(5).trim();
+				c = cs.getConceptByName(name);
+			} else {
+				try {
+					c = cs.getConcept(Integer.valueOf(s.trim()));
+				} catch (Exception ex) { }
+			}
+			if (c != null) {
+				if (isSet) {
+					List<Concept> inSet = cs.getConceptsInSet(c);
+					for (Concept con : inSet) {
+						if (!conceptIds.contains(con.getConceptId())) {
+							conceptList.add(con);
+							conceptIds.add(con.getConceptId());
+						}
+					}
+				} else {
+					if (!conceptIds.contains(c.getConceptId())) {
+						conceptList.add(c);
+						conceptIds.add(c.getConceptId());
+					}
+				}
+			}
+			log.debug("conceptList == " + conceptList);
+		}
+		
+		// organize obs of those concepts by Date and Concept
+		Set<Integer> conceptsWithObs = new HashSet<Integer>();
+		SortedSet<Date> dates = new TreeSet<Date>();
+		Map<String, List<Obs>> groupedObs = new HashMap<String, List<Obs>>(); // key is conceptId + "." + date 
+		for (Obs o : observations) {
+			Integer conceptId = o.getConcept().getConceptId();
+			if (conceptIds.contains(conceptId)) {
+				Date thisDate = o.getObsDatetime();
+				// TODO: allow grouping by day/week/month/etc
+				dates.add(thisDate);
+				String key = conceptId + "." + thisDate;
+				List<Obs> group = groupedObs.get(key);
+				if (group == null) {
+					group = new ArrayList<Obs>();
+					groupedObs.put(key, group);
+				}
+				group.add(o);
+				conceptsWithObs.add(conceptId);
+			}
+		}
+		
+		if (!showEmptyConcepts) {
+			for (Iterator<Concept> i = conceptList.iterator(); i.hasNext(); ) {
+				if (!conceptsWithObs.contains(i.next().getConceptId()))
+					i.remove();
+			}
+		}
+		
+		if (!orientVertical)
+			throw new RuntimeException("horizontal orientation not yet implemented");
+		
+		List<Date> dateOrder = new ArrayList<Date>(dates);
+		if (sortDescending)
+			Collections.reverse(dateOrder);
+		
+		StringBuilder ret = new StringBuilder();
+		ret.append("<table");
+		if (id != null)
+			ret.append(" id=\"" + id + "\"");
+		if (cssClass != null)
+			ret.append(" class=\"" + cssClass + "\"");
+		ret.append(">");
+		ret.append("<tr>");
+		ret.append("<th></th>");
+		for (Concept c : conceptList) {
+			ConceptName cn = c.getName(loc, false); 
+			String name = cn.getShortName();
+			if (name == null || name.length() == 0)
+				name = cn.getName();
+			ret.append("<th>" + name + "</th>");
+		}
+		ret.append("</tr>");
+		for (Date date : dateOrder) {
+			ret.append("<tr>");
+			ret.append("<th>" + df.format(date) + "</th>");
+			for (Concept c : conceptList) {
+				ret.append("<td>");
+				String key = c.getConceptId() + "." + date;
+				List<Obs> list = groupedObs.get(key);
+				if (list != null) {
+					for (Obs obs : list) {
+						ret.append(obs.getValueAsString(loc));
+						ret.append("<br/>");
+					}
+				}
+				ret.append("</td>");
+			}
+			ret.append("</tr>");
+		}	
+		ret.append("</table>");
+
+		try {
+			JspWriter w = pageContext.getOut();
+			w.println(ret);
+		} catch (IOException ex) {
+			log.error("Error while starting ObsTableWidget tag", ex);
+		}
+		return SKIP_BODY;
+	}
+
+	public int doEndTag() {
+		concepts = null;
+		observations = null;
+		sortDescending = true;
+		orientVertical = true;
+		id = null;
+		cssClass = null;
+		showEmptyConcepts = true;
+		return EVAL_PAGE;
+	}
+	
+}

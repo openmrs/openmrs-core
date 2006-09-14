@@ -41,7 +41,7 @@
 			<div id="findPatient">
 				<b class="boxHeader"><spring:message code="Patient.find"/></b>
 				<div class="box">
-					<div dojoType="PatientSearch" widgetId="pSearch" searchLabel='<spring:message code="formentry.searchBox" javaScriptEscape="true"/>' showVerboseListing="true" patientId='<request:parameter name="patientId"/>' searchPhrase='<request:parameter name="phrase"/>' showAddPatientLink='false'></div>
+					<div dojoType="PatientSearch" widgetId="pSearch" searchLabel="<spring:message code="formentry.searchBox" htmlEscape="true"/>" showVerboseListing="true" patientId='<request:parameter name="patientId"/>' searchPhrase='<request:parameter name="phrase"/>' showAddPatientLink='false'></div>
 				</div>
 			</div>
 			

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -252,78 +253,96 @@ public class OnTheFlyAnalysisController implements Controller {
 			}
 		}
 		
-		String nameToAdd = request.getParameter("patient_filter_name");
-		if (nameToAdd != null) {
-			String addAsKey = request.getParameter("patient_filter_key");
-			ShortcutOptionSpec opt = new ShortcutOptionSpec();
-			if (request.getParameter("filter_spec") != null) {
-				opt.setValue(request.getParameter("filter_spec"));
-			} else {
-				opt.setValue(nameToAdd);
+		/*
+		 * to allow multiple complex filters to be added at once, we're going to look for any parameters
+		 * starting with "patient_filter_name", and then treat parameter groups with the same suffix as a group.
+		 * E.g. patient_filter_name.1, patient_filter_key.1, filter_spec.1.
+		 */
+		List<String> suffixesToUse = new ArrayList<String>();
+		{
+			Enumeration en = request.getParameterNames();
+			while (en.hasMoreElements()) {
+				String s = (String) en.nextElement();
+				if (s.startsWith("patient_filter_name")) {
+					suffixesToUse.add(s.substring("patient_filter_name".length()));
+				}
 			}
-			log.debug("trying to add filter " + opt + " as key " + addAsKey);
-			PatientFilter pf = null;
-			if (!opt.isConcrete()) {
-				try {
-					Class filterClass = Class.forName(opt.getClassName());
-					log.debug("about to call newInstance on " + filterClass);
-					PatientFilter filterInstance = (PatientFilter) filterClass.newInstance();
-					log.debug("result is " + filterInstance);
-					for (String argName : opt.getAllArgs()) {
-						Object argVal = request.getParameter(argName);
-						PropertyDescriptor pd = new PropertyDescriptor(argName, filterClass);
-						// TODO: fix this hack
-						if (argVal != null && ((String) argVal).trim().length() == 0) {
-							argVal = null;
-						} else if (pd.getPropertyType().equals(Location.class)) {
-							LocationEditor le = new LocationEditor(context);
-							le.setAsText((String) argVal);
-							argVal = le.getValue();
-						} else if (pd.getPropertyType().equals(Integer.class)) {
-							try {
-								argVal = Integer.valueOf((String) argVal);
-							} catch (Exception ex) { }
-						} else if (pd.getPropertyType().equals(Double.class)) {
-							try {
-								argVal = Double.valueOf((String) argVal);
-							} catch (Exception ex) { }
-						} else if (pd.getPropertyType().equals(Concept.class)) {
-							ConceptEditor ce = new ConceptEditor(context);
-							ce.setAsText((String) argVal);
-							Concept concept = (Concept) ce.getValue();
-							// force a lazy-load of this concept's name
-							if (concept != null)
-								concept.getName(context.getLocale());
-							argVal = concept;
-						} else if (pd.getPropertyType().isEnum()) {
-							List<Enum> constants = Arrays.asList((Enum[]) pd.getPropertyType().getEnumConstants());
-							for (Enum e : constants) {
-								if (e.toString().equals(argVal)) {
-									argVal = e;
-									break;
+		}
+		
+		for (String suffix : suffixesToUse) {
+			String nameToAdd = request.getParameter("patient_filter_name" + suffix);
+			log.debug(suffix + " -> " + nameToAdd);
+			if (nameToAdd != null) {
+				String addAsKey = request.getParameter("patient_filter_key" + suffix);
+				ShortcutOptionSpec opt = new ShortcutOptionSpec();
+				if (request.getParameter("filter_spec" + suffix) != null) {
+					opt.setValue(request.getParameter("filter_spec" + suffix));
+				} else {
+					opt.setValue(nameToAdd);
+				}
+				PatientFilter pf = null;
+				if (!opt.isConcrete()) {
+					try {
+						Class filterClass = Class.forName(opt.getClassName());
+						log.debug("about to call newInstance on " + filterClass);
+						PatientFilter filterInstance = (PatientFilter) filterClass.newInstance();
+						log.debug("result is " + filterInstance);
+						for (String argName : opt.getAllArgs()) {
+							Object argVal = request.getParameter(argName);
+							PropertyDescriptor pd = new PropertyDescriptor(argName, filterClass);
+							// TODO: fix this hack
+							if (argVal != null && ((String) argVal).trim().length() == 0) {
+								argVal = null;
+							} else if (pd.getPropertyType().equals(Location.class)) {
+								LocationEditor le = new LocationEditor(context);
+								le.setAsText((String) argVal);
+								argVal = le.getValue();
+							} else if (pd.getPropertyType().equals(Integer.class)) {
+								try {
+									argVal = Integer.valueOf((String) argVal);
+								} catch (Exception ex) { }
+							} else if (pd.getPropertyType().equals(Double.class)) {
+								try {
+									argVal = Double.valueOf((String) argVal);
+								} catch (Exception ex) { }
+							} else if (pd.getPropertyType().equals(Concept.class)) {
+								ConceptEditor ce = new ConceptEditor(context);
+								ce.setAsText((String) argVal);
+								Concept concept = (Concept) ce.getValue();
+								// force a lazy-load of this concept's name
+								if (concept != null)
+									concept.getName(context.getLocale());
+								argVal = concept;
+							} else if (pd.getPropertyType().isEnum()) {
+								List<Enum> constants = Arrays.asList((Enum[]) pd.getPropertyType().getEnumConstants());
+								for (Enum e : constants) {
+									if (e.toString().equals(argVal)) {
+										argVal = e;
+										break;
+									}
 								}
 							}
+							if (argVal != null) {
+								log.debug("about to set " + argName + " to " + argVal);
+								pd.getWriteMethod().invoke(filterInstance, argVal);
+							}
 						}
-						if (argVal != null) {
-							log.debug("about to set " + argName + " to " + argVal);
-							pd.getWriteMethod().invoke(filterInstance, argVal);
-						}
+						pf = filterInstance;
+					} catch (Exception ex) {
+						log.error("Exception trying to instantiate parametrized filter " + opt, ex);
 					}
-					pf = filterInstance;
-				} catch (Exception ex) {
-					log.error("Exception trying to instantiate parametrized filter " + opt, ex);
+				} else {
+					pf = reportService.getPatientFilterByName(nameToAdd);
 				}
-			} else {
-				pf = reportService.getPatientFilterByName(nameToAdd);
-			}
-			if (pf != null) {
-				log.debug("adding filter " + pf + " to analysis");
-				if (pf.isReadyToRun())
-					analysis.addFilter(addAsKey, pf);
-				else
-					log.debug("skipping...not ready to run yet...");
-			} else {
-				log.warn("Can't find filter by that name: " + nameToAdd);
+				if (pf != null) {
+					log.debug("adding filter " + pf + " to analysis");
+					if (pf.isReadyToRun())
+						analysis.addFilter(addAsKey, pf);
+					else
+						log.debug("skipping...not ready to run yet...");
+				} else {
+					log.warn("Can't find filter by that name: " + nameToAdd);
+				}
 			}
 		}
 		

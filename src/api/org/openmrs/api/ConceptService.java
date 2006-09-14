@@ -1,12 +1,15 @@
 package org.openmrs.api;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -248,7 +251,7 @@ public class ConceptService {
 	public Concept getConceptByName(String name) {
 		return getConceptDAO().getConceptByName(name);
 	}
-
+	
 	/**
 	 * Return the drug object corresponding to the given id
 	 * 
@@ -356,6 +359,28 @@ public class ConceptService {
 	 */
 	public List<ConceptSet> getConceptSets(Concept c) {
 		return getConceptDAO().getConceptSets(c);
+	}
+	
+	public List<Concept> getConceptsInSet(Concept c) {
+		Set<Integer> alreadySeen = new HashSet<Integer>();
+		List<Concept> ret = new ArrayList<Concept>();
+		explodeConceptSetHelper(c, ret, alreadySeen);
+		return ret;
+	}
+	
+	public void explodeConceptSetHelper(Concept concept, Collection<Concept> ret, Collection<Integer> alreadySeen) {
+		if (alreadySeen.contains(concept.getConceptId()))
+			return;
+		alreadySeen.add(concept.getConceptId());
+		List<ConceptSet> cs = getConceptSets(concept);
+		for (ConceptSet set : cs) {
+			Concept c = set.getConcept();
+			if (c.isSet()) {
+				explodeConceptSetHelper(c, ret, alreadySeen);
+			} else {
+				ret.add(c);
+			}
+		}
 	}
 
 	/**

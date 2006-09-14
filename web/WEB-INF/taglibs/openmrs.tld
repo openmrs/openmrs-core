@@ -600,7 +600,51 @@
 		<required>false</required>
 		<rtexprvalue>false</rtexprvalue>
 	</attribute>
-</tag>	
+</tag>
+	
+<tag>
+	<description>
+		Makes an html table of obs that belong to specified concepts/concept-sets
+	</description>
+	<name>obsTable</name>
+	<tag-class>org.openmrs.web.taglib.ObsTableWidget</tag-class>
+	<body-content>empty</body-content>
+	<attribute>
+		<name>observations</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>concepts</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>id</name>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>cssClass</name>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>showEmptyConcepts</name>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>sort</name>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>orientation</name>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+</tag>
 
 <function>
 	<name>sort</name>
