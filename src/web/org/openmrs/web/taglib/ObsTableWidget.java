@@ -44,8 +44,13 @@ public class ObsTableWidget extends TagSupport {
 	private boolean sortDescending = true;
 	private boolean orientVertical = true;
 	private Boolean showEmptyConcepts = true;
+	private Boolean showConceptHeader = true;
+	private Boolean showDateHeader = true;
 	private String id;
 	private String cssClass;
+	private Date fromDate;
+	private Date toDate;
+	private Integer limit = 0;
 	//private String combineBy = "day";
 	
 	public ObsTableWidget() { }
@@ -74,6 +79,18 @@ public class ObsTableWidget extends TagSupport {
 	public void setShowEmptyConcepts(Boolean showEmptyConcepts) {
 		this.showEmptyConcepts= showEmptyConcepts;
 	}
+	public Boolean getShowConceptHeader() {
+		return showConceptHeader;
+	}
+	public void setShowConceptHeader(Boolean showHeader) {
+		this.showConceptHeader = showHeader;
+	}
+	public Boolean getShowDateHeader() {
+		return showDateHeader;
+	}
+	public void setShowDateHeader(Boolean showDateHeader) {
+		this.showDateHeader = showDateHeader;
+	}
 	public String getSort() {
 		return sortDescending ? "desc" : "asc";
 	}
@@ -92,7 +109,25 @@ public class ObsTableWidget extends TagSupport {
 	public void setObservations(Collection<Obs> observations) {
 		this.observations = observations;
 	}
-	
+	public Date getFromDate() {
+		return fromDate;
+	}
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
+	}
+	public Date getToDate() {
+		return toDate;
+	}
+	public void setToDate(Date toDate) {
+		this.toDate = toDate;
+	}
+	public Integer getLimit() {
+		return limit;
+	}
+	public void setLimit(Integer limit) {
+		this.limit = limit;
+	}
+
 	public int doStartTag() {
 		Context context = (Context) pageContext.getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		Locale loc = context.getLocale();
@@ -145,6 +180,9 @@ public class ObsTableWidget extends TagSupport {
 			if (conceptIds.contains(conceptId)) {
 				Date thisDate = o.getObsDatetime();
 				// TODO: allow grouping by day/week/month/etc
+				if ( (fromDate != null && thisDate.compareTo(fromDate) < 0) || (toDate != null && thisDate.compareTo(toDate) > 0) ) {
+					continue;
+				}
 				dates.add(thisDate);
 				String key = conceptId + "." + thisDate;
 				List<Obs> group = groupedObs.get(key);
@@ -163,13 +201,14 @@ public class ObsTableWidget extends TagSupport {
 					i.remove();
 			}
 		}
-		
-		if (!orientVertical)
-			throw new RuntimeException("horizontal orientation not yet implemented");
-		
+			
 		List<Date> dateOrder = new ArrayList<Date>(dates);
 		if (sortDescending)
 			Collections.reverse(dateOrder);
+		
+		if ( limit > 0 && limit < dateOrder.size() ) {
+			dateOrder = dateOrder.subList(0, limit);
+		}
 		
 		StringBuilder ret = new StringBuilder();
 		ret.append("<table");
@@ -178,33 +217,71 @@ public class ObsTableWidget extends TagSupport {
 		if (cssClass != null)
 			ret.append(" class=\"" + cssClass + "\"");
 		ret.append(">");
-		ret.append("<tr>");
-		ret.append("<th></th>");
-		for (Concept c : conceptList) {
-			ConceptName cn = c.getName(loc, false); 
-			String name = cn.getShortName();
-			if (name == null || name.length() == 0)
-				name = cn.getName();
-			ret.append("<th>" + name + "</th>");
-		}
-		ret.append("</tr>");
-		for (Date date : dateOrder) {
-			ret.append("<tr>");
-			ret.append("<th>" + df.format(date) + "</th>");
-			for (Concept c : conceptList) {
-				ret.append("<td>");
-				String key = c.getConceptId() + "." + date;
-				List<Obs> list = groupedObs.get(key);
-				if (list != null) {
-					for (Obs obs : list) {
-						ret.append(obs.getValueAsString(loc));
-						ret.append("<br/>");
-					}
+
+		if (orientVertical) {
+			if (showConceptHeader) {
+				ret.append("<tr>");
+				ret.append("<th></th>");
+				for (Concept c : conceptList) {
+					ConceptName cn = c.getName(loc, false); 
+					String name = cn.getShortName();
+					if (name == null || name.length() == 0)
+						name = cn.getName();
+					ret.append("<th>" + name + "</th>");
 				}
-				ret.append("</td>");
+				ret.append("</tr>");
 			}
-			ret.append("</tr>");
-		}	
+			for (Date date : dateOrder) {
+				ret.append("<tr>");
+				if (showDateHeader)
+					ret.append("<th>" + df.format(date) + "</th>");
+				for (Concept c : conceptList) {
+					ret.append("<td>");
+					String key = c.getConceptId() + "." + date;
+					List<Obs> list = groupedObs.get(key);
+					if (list != null) {
+						for (Obs obs : list) {
+							ret.append(obs.getValueAsString(loc));
+							ret.append("<br/>");
+						}
+					}
+					ret.append("</td>");
+				}
+				ret.append("</tr>");
+			}
+
+		} else { // horizontal
+			if (showDateHeader) {
+				ret.append("<tr>");
+				ret.append("<th></th>");
+				for (Date date : dateOrder) {
+					ret.append("<th>" + df.format(date) + "</th>");
+				}
+			}
+			for (Concept c : conceptList) {
+				ret.append("<tr>");
+				if (showConceptHeader) {
+					ConceptName cn = c.getName(loc, false); 
+					String name = cn.getShortName();
+					if (name == null || name.length() == 0)
+						name = cn.getName();
+					ret.append("<th>" + name + "</th>");
+				}
+				for (Date date : dateOrder) {
+					ret.append("<td>");
+					String key = c.getConceptId() + "." + date;
+					List<Obs> list = groupedObs.get(key);
+					if (list != null) {
+						for (Obs obs : list) {
+							ret.append(obs.getValueAsString(loc));
+							ret.append("<br/>");
+						}
+					}
+					ret.append("</td>");
+				}
+				ret.append("</tr>");
+			}
+		}
 		ret.append("</table>");
 
 		try {
@@ -224,6 +301,10 @@ public class ObsTableWidget extends TagSupport {
 		id = null;
 		cssClass = null;
 		showEmptyConcepts = true;
+		showConceptHeader = true;
+		fromDate = null;
+		toDate = null;
+		limit = 0;
 		return EVAL_PAGE;
 	}
 	

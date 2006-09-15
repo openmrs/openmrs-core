@@ -25,7 +25,17 @@ table#labTestTable th {
 		<table width="100%">
 			<tr>
 				<td align="center">
-					<openmrs:obsTable observations="${model.patientObs}" concepts="name:CD4 COUNT|name:WEIGHT (KG)|set:name:LABORATORY EXAMINATIONS CONSTRUCT" id="labTestTable" showEmptyConcepts="false" />
+					<openmrs:obsTable
+						observations="${model.patientObs}"
+						concepts="name:CD4 COUNT|name:WEIGHT (KG)|set:name:LABORATORY EXAMINATIONS CONSTRUCT"
+						id="labTestTable"
+						showEmptyConcepts="false"
+						showConceptHeader="true"
+						showDateHeader="true"
+						orientation="vertical"
+						sort="desc"
+						limit="-1"
+					/>
 				</td>
 			</tr>
 			<tr>
