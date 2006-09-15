@@ -79,8 +79,8 @@ public class FormEntryConstants {
 	public static final String FORMENTRY_SERVER_URL_VARIABLE_NAME = "SERVER_URL";
 	
 	/* Default formentry properties */
-	public static String FORMENTRY_INFOPATH_SERVER_URL = "http://localhost:8080/";
-	public static String FORMENTRY_INFOPATH_PUBLISH_URL = FORMENTRY_INFOPATH_SERVER_URL + "formentry/forms/";
+	public static String FORMENTRY_INFOPATH_SERVER_URL = "http://localhost:8080/openmrs";
+	public static final String FORMENTRY_INFOPATH_PUBLISH_PATH = "/formentry/forms/";
 	public static String FORMENTRY_INFOPATH_TASKPANE_CAPTION = "Welcome!";
 	public static String FORMENTRY_INFOPATH_TASKPANE_INITIAL_URL = FORMENTRY_INFOPATH_SERVER_URL + "/formTaskpane.htm"; //"http://localhost:8080/openmrs/formTaskpane.htm";
 	public static String FORMENTRY_INFOPATH_SUBMIT_URL = FORMENTRY_INFOPATH_SERVER_URL + "/formUpload"; // "http://localhost:8080/amrs/formUpload";

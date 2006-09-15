@@ -3,6 +3,8 @@ package org.openmrs.formentry;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -376,6 +378,24 @@ public class FormEntryService {
 		return users;
 	}
 	
+	public SortedMap<String,String> getSystemVariables() {
+		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ADMIN_FUNCTIONS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_ADMIN_FUNCTIONS);
+		
+		TreeMap<String,String> systemVariables = new TreeMap<String,String>();
+		systemVariables.put("FORMENTRY_INFOPATH_SERVER_URL", String.valueOf(FormEntryConstants.FORMENTRY_INFOPATH_SERVER_URL));
+		systemVariables.put("FORMENTRY_INFOPATH_PUBLISH_PATH", String.valueOf(FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_PATH));
+		systemVariables.put("FORMENTRY_INFOPATH_TASKPANE_CAPTION", String.valueOf(FormEntryConstants.FORMENTRY_INFOPATH_TASKPANE_CAPTION));
+		systemVariables.put("FORMENTRY_INFOPATH_TASKPANE_INITIAL_URL", String.valueOf(FormEntryConstants.FORMENTRY_INFOPATH_TASKPANE_INITIAL_URL));
+		systemVariables.put("FORMENTRY_INFOPATH_SUBMIT_URL", String.valueOf(FormEntryConstants.FORMENTRY_INFOPATH_SUBMIT_URL));
+		systemVariables.put("FORMENTRY_INFOPATH_OUTPUT_DIR", String.valueOf(FormEntryConstants.FORMENTRY_INFOPATH_OUTPUT_DIR));
+		systemVariables.put("FORMENTRY_STARTER_XSN_FOLDER_PATH", String.valueOf(FormEntryConstants.FORMENTRY_STARTER_XSN_FOLDER_PATH));
+		systemVariables.put("FORMENTRY_INFOPATH_ARCHIVE_DIR", String.valueOf(FormEntryConstants.FORMENTRY_INFOPATH_ARCHIVE_DIR));
+		systemVariables.put("FORMENTRY_INFOPATH_ARCHIVE_DATE_FORMAT", String.valueOf(FormEntryConstants.FORMENTRY_INFOPATH_ARCHIVE_DATE_FORMAT));
+		
+		return systemVariables;
+	}
+	
 	private void checkPrivilege(String privilege) {
 		if (!context.hasPrivilege(privilege))
 			throw new APIAuthenticationException("Privilege required: " + privilege);		
@@ -390,7 +410,7 @@ public class FormEntryService {
 			else
 				throw new APIAuthenticationException("Privilege required: " + privilegeB);
 		}
-	}	
+	}
 
 	/***************************************************************************
 	 * FormEntryQueue Service Methods

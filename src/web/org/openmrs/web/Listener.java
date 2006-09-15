@@ -45,11 +45,40 @@ public final class Listener implements ServletContextListener {
 			
 			String filepath = System.getenv(env);
 
-			if (filepath == null)
-				throw new IOException("Env " + env + " not found");
+			if (filepath != null) {
+				log.debug("Loading runtime properties from: " + filepath);
+				try {
+					propertyStream = new FileInputStream(filepath);
+				}
+				catch (IOException e) { }
+			}
+
+			// env is the name of the file to look for in the directories
+			String filename = webapp + "-runtime.properties";
 			
-			log.debug("Loading runtime properties from: " + filepath);
-			propertyStream = new FileInputStream(filepath);
+			// look in user's home directory next
+			if (propertyStream == null) {
+				filepath = System.getProperty("user.home") + File.separator + filename;
+				log.warn("Looking for property file in user home directory: " + filepath);
+				try {
+					propertyStream = new FileInputStream(filepath);
+				}
+				catch (IOException e) { }
+			}
+			
+			// look in java's home directory next
+			if (propertyStream == null) {
+				filepath = filename;
+				log.warn("Looking for property file in directory: " + filepath);
+				try {
+					propertyStream = new FileInputStream(filepath);
+				}
+				catch (IOException e) { }
+			}
+			
+			if (propertyStream == null)
+				throw new IOException("Could not open '" + filename + "' in user or local directory.");
+			
 
 			Properties props = new Properties();
 			props.load(propertyStream);
@@ -116,7 +145,7 @@ public final class Listener implements ServletContextListener {
 			}
 
 		} catch (IOException e) {
-			log.warn("Unable to load properties file", e);
+			log.warn("Unable to load properties file. Starting with default properties.", e);
 
 			// TODO generify this call once we have an application context
 			// I'd prefer this not be a Hibernate-specific call.

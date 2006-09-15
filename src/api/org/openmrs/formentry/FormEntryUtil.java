@@ -24,9 +24,9 @@ public class FormEntryUtil {
 		if (val != null)
 			FormEntryConstants.FORMENTRY_INFOPATH_SERVER_URL = val;
 
-		val = p.getProperty("formentry.infopath.publish_url", null);
-		if (val != null)
-			FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_URL = val;
+		//val = p.getProperty("formentry.infopath.publish_url", null);
+		//if (val != null)
+		//	FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_URL = val;
 
 		val = p.getProperty("formentry.infopath.taskpane_caption", null);
 		if (val != null)
@@ -277,12 +277,12 @@ public class FormEntryUtil {
 		// int endOfDomain = requestURL.indexOf('/', 8);
 		// String baseUrl = requestURL.substring(0, (endOfDomain > 8 ?
 		// endOfDomain : requestURL.length()));
-		String baseUrl = FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_URL;
+		String baseUrl = FormEntryConstants.FORMENTRY_INFOPATH_SERVER_URL + FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_PATH;
 		return baseUrl + getFormUri(form);
 	}
 	
 	public static String getFormSchemaNamespace(Form form) {
-		String baseUrl = FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_URL;
+		String baseUrl = FormEntryConstants.FORMENTRY_INFOPATH_SERVER_URL + FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_PATH;
 		return baseUrl + "schema/" + form.getFormId() + form.getBuild();
 	}
 

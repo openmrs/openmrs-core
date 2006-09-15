@@ -96,6 +96,7 @@ public class FormStarterXSN {
 	
 	private File getXSNFile() throws IOException {
 
+		// try ServletContext.getResourceAsStream() instead of a property
 		String xsnFolderPath = FormEntryConstants.FORMENTRY_STARTER_XSN_FOLDER_PATH;
 		log.debug("Getting starter XSN contents: " + xsnFolderPath);
 
@@ -109,7 +110,7 @@ public class FormStarterXSN {
 		String namespace = FormEntryUtil.getFormSchemaNamespace(form);
 
 		String serverUrl = FormEntryConstants.FORMENTRY_INFOPATH_SERVER_URL;
-		String publishUrl = FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_URL + outputFilename;
+		String publishUrl = FormEntryConstants.FORMENTRY_INFOPATH_SERVER_URL + FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_PATH + outputFilename;
 		String schemaFilename = FormEntryConstants.FORMENTRY_DEFAULT_SCHEMA_NAME; // "FormEntry.xsd";
 		String templateFilename = FormEntryConstants.FORMENTRY_DEFAULT_TEMPLATE_NAME;
 		String sampleDataFilename = FormEntryConstants.FORMENTRY_DEFAULT_SAMPLEDATA_NAME;

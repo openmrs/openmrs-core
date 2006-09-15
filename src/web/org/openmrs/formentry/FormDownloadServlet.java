@@ -2,6 +2,7 @@ package org.openmrs.formentry;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,9 +42,8 @@ public class FormDownloadServlet extends HttpServlet {
 
 	private Log log = LogFactory.getLog(this.getClass());
 
-	protected void doFormEntryGet(HttpServletRequest request,
-			HttpServletResponse response, Context context,
-			HttpSession httpSession) throws ServletException, IOException {
+	protected void doFormEntryGet(HttpServletRequest request, HttpServletResponse response,
+	    Context context, HttpSession httpSession) throws ServletException, IOException {
 
 		Integer formId = null;
 		Integer patientId = null;
@@ -51,10 +51,11 @@ public class FormDownloadServlet extends HttpServlet {
 		try {
 			formId = Integer.parseInt(request.getParameter("formId"));
 			patientId = Integer.parseInt(request.getParameter("patientId"));
-		} catch (NumberFormatException e) {
+		}
+		catch (NumberFormatException e) {
 			log.warn("Invalid formId or patientId parameter: formId: \""
-					+ request.getParameter("formId") + "\" patientId: "
-					+ request.getParameter("patientId") + "\"", e);
+			    + request.getParameter("formId") + "\" patientId: "
+			    + request.getParameter("patientId") + "\"", e);
 			return;
 		}
 
@@ -65,10 +66,12 @@ public class FormDownloadServlet extends HttpServlet {
 		String title = form.getName() + "(" + FormEntryUtil.getFormUriWithoutExtension(form) + ")";
 		title = title.replaceAll(" ", "_");
 
-		// Set up a VelocityContext in which to evaluate the template's default values
+		// Set up a VelocityContext in which to evaluate the template's default
+		// values
 		try {
 			Velocity.init();
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			log.error("Error initializing Velocity engine", e);
 		}
 		VelocityContext velocityContext = new VelocityContext();
@@ -77,16 +80,14 @@ public class FormDownloadServlet extends HttpServlet {
 		User user = context.getAuthenticatedUser();
 		String enterer;
 		if (user != null)
-			enterer = user.getUserId() + "^" + user.getFirstName() + " "
-					+ user.getLastName();
+			enterer = user.getUserId() + "^" + user.getFirstName() + " " + user.getLastName();
 		else
 			enterer = "";
 		String dateEntered = FormUtil.dateToString(new Date());
 		velocityContext.put("enterer", enterer);
 		velocityContext.put("dateEntered", dateEntered);
 		velocityContext.put("patient", patient);
-		velocityContext.put("timestamp", new SimpleDateFormat(
-				"yyyyMMdd'T'HH:mm:ss.SSSZ"));
+		velocityContext.put("timestamp", new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss.SSSZ"));
 		velocityContext.put("date", new SimpleDateFormat("yyyyMMdd"));
 		velocityContext.put("time", new SimpleDateFormat("HH:mm:ss"));
 		velocityContext.put("sessionId", httpSession.getId());
@@ -94,29 +95,27 @@ public class FormDownloadServlet extends HttpServlet {
 		String template = form.getTemplate();
 		// just in case template has not been assigned, generate it on the fly
 		if (template == null)
-			template = new FormXmlTemplateBuilder(context, form, url)
-				.getXmlTemplate(true);
-		
+			template = new FormXmlTemplateBuilder(context, form, url).getXmlTemplate(true);
+
 		String xmldoc = null;
 		try {
 			StringWriter w = new StringWriter();
-			Velocity.evaluate(velocityContext, w, this.getClass().getName(),
-					template);
+			Velocity.evaluate(velocityContext, w, this.getClass().getName(), template);
 			xmldoc = w.toString();
-		} catch (Exception e) {
-			log.error("Error evaluating default values for form "
-					+ form.getName() + "[" + form.getFormId() + "]", e);
+		}
+		catch (Exception e) {
+			log.error("Error evaluating default values for form " + form.getName() + "["
+			    + form.getFormId() + "]", e);
 			throw new ServletException("Error while evaluating velocity defaults", e);
 		}
 
 		response.setHeader("Content-Type", "application/ms-infopath.xml");
-		response.setHeader("Content-Disposition", "attachment; filename="
-				+ title + ".infopathxml");
+		response.setHeader("Content-Disposition", "attachment; filename=" + title + ".infopathxml");
 		response.getOutputStream().print(xmldoc);
 	}
 
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+	    throws ServletException, IOException {
 
 		Integer formId = null;
 		String target = request.getParameter("target");
@@ -124,28 +123,28 @@ public class FormDownloadServlet extends HttpServlet {
 
 		Context context = getContext(httpSession);
 		if (context == null) {
-			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
-					"auth.session.expired");
+			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
 			response.sendRedirect(request.getContextPath() + "/logout");
 			return;
 		}
-
+		
 		try {
 			formId = Integer.parseInt(request.getParameter("formId"));
-		} catch (NumberFormatException e) {
-			log.warn("Invalid formId parameter: \""
-					+ request.getParameter("formId") + "\"", e);
+		}
+		catch (NumberFormatException e) {
+			log.warn("Invalid formId parameter: \"" + request.getParameter("formId") + "\"", e);
 			return;
 		}
 
-		if (target.equals("formEntry")) {
-		
+		if ("formEntry".equals(target)) {
+
 			// Download from /openmrs/formentry/patientSummary.form (most
 			// likely)
 			doFormEntryGet(request, response, context, httpSession);
-		
-		} else if (target.equals("rebuild")) {
-			
+
+		}
+		else if ("rebuild".equals(target)) {
+
 			// Download the XSN and Upload it again
 			Form form = context.getFormEntryService().getForm(formId);
 			InputStream formStream = getCurrentXSN(context, form);
@@ -156,9 +155,10 @@ public class FormDownloadServlet extends HttpServlet {
 			PublishInfoPath.publishXSN(formStream, context);
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.rebuildXSN.success");
 			response.sendRedirect(request.getHeader("referer"));
-			
-		} else {
-			// Downloading from /openmrs/admin/forms/form(Edit|SchemaDesign).form (most likely)
+
+		}
+		else {
+			// Downloading from openmrs/admin/forms/form(Edit|SchemaDesign).form
 			response.setHeader("Content-Type", "application/ms-infopath.xml");
 
 			// Load form object and default form url
@@ -169,38 +169,25 @@ public class FormDownloadServlet extends HttpServlet {
 			String payload = null;
 			if ("schema".equalsIgnoreCase(target)) {
 				payload = new FormSchemaBuilder(context, form).getSchema();
-				setFilename(response,
-						FormEntryConstants.FORMENTRY_DEFAULT_SCHEMA_NAME);
-			} else if ("template".equalsIgnoreCase(target)) {
-				payload = new FormXmlTemplateBuilder(context, form, url)
-						.getXmlTemplate(false);
-				// payload = payload.replaceAll("@SESSION@", "");
-				setFilename(response,
-						FormEntryConstants.FORMENTRY_DEFAULT_TEMPLATE_NAME);
-			} else if ("xsn".equalsIgnoreCase(target)) {
-				// Download full xsn for editing (if exists)
+				setFilename(response, FormEntryConstants.FORMENTRY_DEFAULT_SCHEMA_NAME);
+			}
+			else if ("template".equalsIgnoreCase(target)) {
+				payload = new FormXmlTemplateBuilder(context, form, url).getXmlTemplate(false);
+				setFilename(response, FormEntryConstants.FORMENTRY_DEFAULT_TEMPLATE_NAME);
+			}
+			else if ("xsn".equalsIgnoreCase(target)) {
+				// Download full xsn for editing (if exists) Otherwise, get
+				// starter XSN. Inserts new template and schema
 
 				// Set the form filename in the response
 				String filename = FormEntryUtil.getFormUri(form);
-				log.debug("Download of XSN for form #" + form.getFormId()
-						+ " (" + filename + ") requested");
+				log.debug("Download of XSN for form #" + form.getFormId() + " (" + filename
+				    + ") requested");
 
 				// generate the filename if they haven't defined a URI
-				if (filename == null || filename.equals("")) {
-					filename = "";
-					if (form.getEncounterType() != null)
-						filename = form.getEncounterType().getName() + "-";
-					if (form.getVersion() != null)
-						filename += form.getVersion();
-					if (form.getBuild() != null)
-						filename += "-" + form.getBuild();
+				if (filename == null || filename.equals(""))
+					filename = "starter_template.xsn";
 
-					if (!filename.equals("") && !filename.toLowerCase().endsWith(".xsn"))
-						filename += ".xsn";
-					else
-						// the default download name
-						filename = "starter_template.xsn";
-				}
 				setFilename(response, filename);
 
 				FileInputStream formStream = getCurrentXSN(context, form);
@@ -210,12 +197,29 @@ public class FormDownloadServlet extends HttpServlet {
 				else {
 					// the xsn wasn't on the disk. Return the starter xsn
 					log.debug("Xsn not found, returning starter xsn");
-					FormStarterXSN starter = new FormStarterXSN(context, form,
-							url);
+					FormStarterXSN starter = new FormStarterXSN(context, form, url);
 					starter.copyXSNToStream(response.getOutputStream());
 				}
 
-			} else {
+			}
+			else if (target == null) {
+				// Download full xsn for formentry (if exists)
+				// Does not alter the xsn at all
+				try {
+					FileInputStream formStream = new FileInputStream(url);
+					OpenmrsUtil.copyFile(formStream, response.getOutputStream());
+				}
+				catch (FileNotFoundException e) {
+					log
+					    .error(
+					    	"The XSN for form '"
+					            + form.getFormId()
+					            + "' cannot be found.  More than likely the XSN has not been uploaded (via Upload XSN in form administration).",
+					        e);
+				}
+
+			}
+			else {
 				log.warn("Invalid target parameter: \"" + target + "\"");
 				return;
 			}
@@ -227,24 +231,21 @@ public class FormDownloadServlet extends HttpServlet {
 	}
 
 	private void setFilename(HttpServletResponse response, String filename) {
-		response.setHeader("Content-Disposition", "attachment; filename="
-				+ filename);
+		response.setHeader("Content-Disposition", "attachment; filename=" + filename);
 	}
 
 	private Context getContext(HttpSession httpSession) {
-		return (Context) httpSession
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		return (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 	}
 
 	private FileInputStream getCurrentXSN(Context context, Form form) throws IOException {
 		// Find the form file data
 		String formDir = FormEntryConstants.FORMENTRY_INFOPATH_OUTPUT_DIR;
-		String formFilePath = formDir
-				+ (formDir.endsWith(File.separator) ? ""
-						: File.separator) + FormEntryUtil.getFormUri(form);
+		String formFilePath = formDir + (formDir.endsWith(File.separator) ? "" : File.separator)
+		    + FormEntryUtil.getFormUri(form);
 
 		log.debug("Attempting to open xsn from: " + formFilePath);
-		
+
 		if (!new File(formFilePath).exists())
 			return null;
 
@@ -263,12 +264,11 @@ public class FormDownloadServlet extends HttpServlet {
 		String template = fxtb.getXmlTemplate(false);
 		String templateWithDefaultScripts = fxtb.getXmlTemplate(true);
 		String schema = new FormSchemaBuilder(context, form).getSchema();
-		
+
 		// Generate and overwrite the schema
 		File schemaFile = FormEntryUtil.findFile(tmpXSN, schemaFilename);
 		if (schemaFile == null)
-			throw new IOException("Schema: '" + schemaFilename
-					+ "' cannot be null");
+			throw new IOException("Schema: '" + schemaFilename + "' cannot be null");
 		FileWriter schemaOutput = new FileWriter(schemaFile, false);
 		schemaOutput.write(schema);
 		schemaOutput.close();
@@ -276,8 +276,7 @@ public class FormDownloadServlet extends HttpServlet {
 		// replace template.xml with the generated xml
 		File templateFile = FormEntryUtil.findFile(tmpXSN, templateFilename);
 		if (templateFile == null)
-			throw new IOException("Template: '" + templateFilename
-					+ "' cannot be null");
+			throw new IOException("Template: '" + templateFilename + "' cannot be null");
 		FileWriter templateOutput = new FileWriter(templateFile, false);
 		templateOutput.write(template);
 		templateOutput.close();
@@ -291,18 +290,16 @@ public class FormDownloadServlet extends HttpServlet {
 		defaultsOutput.close();
 
 		// replace sampleData.xml with the generated xml
-		File sampleDataFile = FormEntryUtil
-				.findFile(tmpXSN, sampleDataFilename);
+		File sampleDataFile = FormEntryUtil.findFile(tmpXSN, sampleDataFilename);
 		if (sampleDataFile == null)
-			throw new IOException("Template: '" + sampleDataFilename
-					+ "' cannot be null");
+			throw new IOException("Template: '" + sampleDataFilename + "' cannot be null");
 		FileWriter sampleDataOutput = new FileWriter(sampleDataFile, false);
 		sampleDataOutput.write(template);
 		sampleDataOutput.close();
 
 		// File tmpOutputDir = FormEntryUtil.createTempDirectory("xsnoutput");
 		// TODO Refactored (jmiranda)
-		//FormEntryUtil.createDdf(tmpXSN, tmpXSN.getAbsolutePath(), "new.xsn");
+		// FormEntryUtil.createDdf(tmpXSN, tmpXSN.getAbsolutePath(), "new.xsn");
 		FormEntryUtil.makeCab(tmpXSN, tmpXSN.getAbsolutePath(), "new.xsn");
 
 		File xsn = FormEntryUtil.findFile(tmpXSN, "new.xsn");
