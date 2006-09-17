@@ -47,19 +47,18 @@ public class XsnDownloadServlet extends HttpServlet {
 
 		response.setHeader("Content-Type", "application/ms-infopath.xml");
 
-		// servletPath() returns everything matched by servlet-mapping in
-		// web.xml
-		// with mapping of "*.xsn" and request of ...org/amrs/asdf/bob.xsn will
-		// return /asdf/bob.xsn
-		String filename = request.getServletPath();
+		// since we've got a "/formentry/form/*" servlet-mapping,
+		// getServletPath() will only return /formentry/form.
+		String filename = request.getRequestURI();
 		// get only the file name out of path
-		filename = filename.substring(filename.lastIndexOf("/"));
-
+		filename = filename.substring(filename.lastIndexOf("/") + 1);
+		
 		// append xsn storage location for file look up
 		String url = FormEntryConstants.FORMENTRY_INFOPATH_OUTPUT_DIR;
 		if (!url.endsWith(File.separator))
 			url += File.separator;
 		url = url + filename;
+		log.debug("url = " + url);
 
 		try {
 			FileInputStream formStream = new FileInputStream(url);
