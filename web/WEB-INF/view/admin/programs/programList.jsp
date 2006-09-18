@@ -31,7 +31,7 @@
 					<td valign="top">
 						<c:if test="${program.voided}"><i><spring:message code="general.voided"/><strike></c:if>
 						${program.programId}
-						<c:if test="${program.voided}"></strike></c:if>
+						<c:if test="${program.voided}"></strike></i></c:if>
 					</td>
 					<openmrs:concept conceptId="${program.concept.conceptId}" var="v" nameVar="n" numericVar="num">
 						<td valign="top">

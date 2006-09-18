@@ -90,7 +90,6 @@ try {
 	ex.printStackTrace(new java.io.PrintWriter(out));
 }
 %>
-		</div> <!-- close stack trace box -->
-	</div> <!-- close box -->
+	</div> <!-- close stack trace box -->
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

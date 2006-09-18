@@ -1,25 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="properties">
 
-    <!-- Environment properties -->
-    <property environment="env"/>
-    <property name="env.COMPUTERNAME" value="${env.HOSTNAME}"/>
-
-	<!-- Base definitions (cannot be overwritten by user property file) -->
-	<property file="build.properties" />
-	
-    <!-- Load user overrides -->
-    <property file="${env.OPENMRS_BUILD_PROPERTIES_FILE}"/>
-
-	<!--  Webapp properties -->
+   	<!--  Webapp properties -->
 	<property name="webapp.name" value="openmrs" />
 	<property name="webapp.version" value="${openmrs.version}" />
 	<property name="webapp.display.name" value="OpenMRS" />
 	<property name="webapp.description" value="An Open-Source EMR System" />
-
-    <!-- Library versions and JARs -->
-    <property name="lib.dir" location="lib" />
-    <property file="${lib.dir}/lib.properties" />
 
 	<!-- Properties for running unit tests and webapp [un]deploy with tomcat -->
     <property name="tomcat.home" value="C:/Program Files/Apache Group/Tomcat"/>

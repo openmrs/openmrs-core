@@ -63,14 +63,15 @@ public class XsnDownloadServlet extends HttpServlet {
 		try {
 			FileInputStream formStream = new FileInputStream(url);
 			OpenmrsUtil.copyFile(formStream, response.getOutputStream());
-		}
+		} 
 		catch (FileNotFoundException e) {
 			log
 			    .error(
 			        "The request for '"
-			        	+ request.getServletPath()
+			        	+ url
 			            + "' cannot be found.  More than likely the XSN has not been uploaded (via Upload XSN in form administration).",
 			        e);
+			response.sendError(404);
 		}
 	}
 

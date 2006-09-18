@@ -11,6 +11,7 @@ import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Form;
+import org.openmrs.util.OpenmrsConstants;
 
 public class FormEntryUtil {
 
@@ -79,13 +80,11 @@ public class FormEntryUtil {
 
 		StringBuffer cmdBuffer = new StringBuffer();
 
-		if (FormEntryConstants.OPERATING_SYSTEM_LINUX.equalsIgnoreCase(FormEntryConstants.OPERATING_SYSTEM)) 
-		{ 
+		if (OpenmrsConstants.OPERATING_SYSTEM_LINUX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM)) { 
 			cmdBuffer.append("/usr/bin/cabextract -d ").append(tempDir.getAbsolutePath()).append(" ").append(xsnFilePath);
 			execCmd(cmdBuffer.toString(), tempDir);
 		} 
-		else  
-		{ 
+		else { 
 			cmdBuffer.append("expand -F:* \"").append(xsnFilePath).append("\" \"").append(tempDir.getAbsolutePath()).append("\"");
 			execCmd(cmdBuffer.toString(), null);
 		}	
@@ -107,7 +106,7 @@ public class FormEntryUtil {
 		StringBuffer cmdBuffer = new StringBuffer();
 		
 		// Special case : Linux operating sytem uses lcab utility
-		if (FormEntryConstants.OPERATING_SYSTEM_LINUX.equalsIgnoreCase(FormEntryConstants.OPERATING_SYSTEM)) {
+		if (OpenmrsConstants.OPERATING_SYSTEM_LINUX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM)) {
 			
 			cmdBuffer.append("/usr/local/bin/lcab -rn ").append(tempDir).append(" ").append(outputDirName).append("/").append(outputFilename);	
 

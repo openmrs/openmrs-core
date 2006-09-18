@@ -93,7 +93,7 @@
 <form method="post" id="theForm">
 <table>
 	<tr>
-		<th><spring:message code="Program.concept"/></td>
+		<th><spring:message code="Program.concept"/></th>
 		<td>
 			<spring:bind path="program.concept">
 				<div dojoType="ConceptSearch" widgetId="cSearch" conceptId="${status.value}" showVerboseListing="false" conceptClasses="Program"></div>

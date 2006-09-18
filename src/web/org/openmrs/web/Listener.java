@@ -20,6 +20,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.formentry.FormEntryUtil;
 import org.openmrs.scheduler.SchedulerUtil;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
 public final class Listener implements ServletContextListener {
@@ -56,17 +57,23 @@ public final class Listener implements ServletContextListener {
 			// env is the name of the file to look for in the directories
 			String filename = webapp + "-runtime.properties";
 			
-			// look in user's home directory next
 			if (propertyStream == null) {
-				filepath = System.getProperty("user.home") + File.separator + filename;
-				log.warn("Looking for property file in user home directory: " + filepath);
+				if (OpenmrsConstants.OPERATING_SYSTEM_LINUX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM))
+					filepath = System.getProperty("user.home") + File.separator + "." + filename;
+				else
+					filepath = System.getProperty("user.home") + File.separator + 
+							"Application Data" + File.separator + 
+							"OpenMRS" + File.separator + filename;
+						
+				filepath = filepath + File.separator + filename;
+				log.warn("Looking for property file in directory: " + filepath);
 				try {
 					propertyStream = new FileInputStream(filepath);
 				}
-				catch (IOException e) { }
+				catch (IOException e) { }	
 			}
 			
-			// look in java's home directory next
+			// look in current directory last
 			if (propertyStream == null) {
 				filepath = filename;
 				log.warn("Looking for property file in directory: " + filepath);

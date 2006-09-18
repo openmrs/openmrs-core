@@ -39,7 +39,7 @@
 <div id="findConceptDrug">
 	<b class="boxHeader"><spring:message code="ConceptDrug.find"/></b>
 	<div class="box">
-		<div dojoType="ConceptSearch" widgetId="dSearch" drugId="<request:existsParameter name="conceptDrugId">request.getAttribute("conceptDrugId")</request:existsParameter>" showIncludeRetired="true" searchTitle="<spring:message code="ConceptDrug.search"/>" searchPhrase="<request:existsParameter name="phrase"><request:parameter name="phrase" /></request:existsParameter>"></div>
+		<div dojoType="ConceptSearch" widgetId="dSearch" drugId='<request:existsParameter name="conceptDrugId">request.getAttribute("conceptDrugId")</request:existsParameter>' showIncludeRetired="true" searchTitle="<spring:message code="ConceptDrug.search"/>" searchPhrase='<request:existsParameter name="phrase"><request:parameter name="phrase" /></request:existsParameter>'></div>
 	</div>
 </div>
 

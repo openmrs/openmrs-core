@@ -369,4 +369,12 @@ public class OpenmrsConstants {
 
 	public static String MODULE_REPOSITORY_PATH = "OpenMRS-Modules";
 	
+	// Used for FormEntry XSN upload/download (differences between windows/linux)
+	// Used for determining where to find runtime properties
+	public static String OPERATING_SYSTEM_KEY = "os.name";
+	public static String OPERATING_SYSTEM = System.getProperty(OPERATING_SYSTEM_KEY);
+	public static String OPERATING_SYSTEM_WINDOWS_XP = "Windows XP";
+	public static String OPERATING_SYSTEM_LINUX = "Linux";
+
+	
 }
