@@ -113,6 +113,10 @@
 					<prop key="**/patientPrograms.portlet">patientProgramsPortletController</prop>
 					<prop key="**/patientSet.portlet">patientSetPortletController</prop>
 					<prop key="**/patientRegimens.portlet">patientRegimenPortletController</prop>
+					<prop key="**/patientRegimenCurrent.portlet">patientRegimenPortletController</prop>
+					<prop key="**/patientRegimenCompleted.portlet">patientRegimenPortletController</prop>
+					<prop key="**/patientRegimenAdd.portlet">patientRegimenPortletController</prop>
+					<prop key="**/patientRegimenDiscontinued.portlet">patientRegimenPortletController</prop>
 					<!--<prop key="**/calendar.portlet">calendarPortletController</prop>-->
 					<prop key="**/*.portlet">portletController</prop>
 					<prop key="**/*.field">fieldGenController</prop>

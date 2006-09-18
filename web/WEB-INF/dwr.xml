@@ -136,7 +136,8 @@
 			<include method="getCurrentDrugOrdersByPatientIdDrugSetId" />
 			<include method="getCompletedDrugSet" />
 			<include method="getCompletedDrugOrdersByPatientIdDrugSetId" />
-			<include method="voidDrugSet" />
+			<include method="voidCurrentDrugSet" />
+			<include method="voidCompletedDrugSet" />
 			<include method="discontinueDrugSet" />
 			<include method="getCurrentOtherDrugSet" />
 			<include method="getCurrentOtherDrugOrdersByPatientIdDrugSetId" />

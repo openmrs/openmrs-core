@@ -22,6 +22,7 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 
 import uk.ltd.getahead.dwr.WebContextFactory;
@@ -95,8 +96,7 @@ public class DWROrderService {
 	}
 
 	public Vector<DrugOrderListItem> getDrugOrdersByPatientId(Integer patientId, int whatToShow) {
-		Context context = (Context) WebContextFactory.get().getSession()
-			.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context context = getContext();
 		if (context != null) {
 			Patient p = context.getPatientService().getPatient(patientId);
 			Vector<DrugOrderListItem> ret = new Vector<DrugOrderListItem>();
@@ -137,65 +137,54 @@ public class DWROrderService {
 		
 		return ret; 
 	}
-	
+		
+	public Vector<DrugSetItem> getCurrentDrugSet(Integer patientId, String drugSetId) {
+		return getDrugSet(patientId, drugSetId, OrderService.SHOW_CURRENT);
+	}
+
+	public Vector<DrugSetItem> getCompletedDrugSet(Integer patientId, String drugSetId) {
+		return getDrugSet(patientId, drugSetId, OrderService.SHOW_COMPLETE);
+	}
+
 	public Vector<DrugSetItem> getDrugSet(Integer patientId, String drugSetId, int whatToShow) {
 		log.debug("In getDrugSet() method");
+		
 		Vector<DrugSetItem> dsiList = null;
 		
-		Context context = (Context) WebContextFactory.get().getSession()
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context != null) {
-			ConceptService cs = context.getConceptService();
-			Concept c = null;
-			Integer conceptId = null;
-			try {
-				conceptId = new Integer(drugSetId);
-			} catch (NumberFormatException nfe) {
-				// this is expected
-				conceptId = null;
+		Map<String, List<DrugOrder>> orders = this.getOrdersByDrugSet(patientId, drugSetId, ",", whatToShow);
+		DrugSetItem dsi = new DrugSetItem();
+		Concept c = OpenmrsUtil.getConceptByIdOrName(drugSetId, getContext());
+		dsi.setDrugSetId(c.getConceptId());
+		dsi.setDrugSetLabel(drugSetId.replace(" ", "_"));
+		dsi.setName(c.getName(getContext().getLocale()).getName());
+		if ( orders != null ) {
+			List<DrugOrder> currList = orders.get(drugSetId);
+			if ( currList != null ) {
+				dsi.setDrugCount(currList.size());
+			} else { 
+				dsi.setDrugCount(0);
 			}
-			if ( conceptId == null ) {
-				c = cs.getConceptByName(drugSetId);
-			} else {
-				c = cs.getConcept(conceptId);
-			}
+		} else dsi.setDrugCount(0);
+		dsiList = new Vector<DrugSetItem>();
+		dsiList.add(dsi);
 
-			if ( c != null && patientId != null && drugSetId != null ) {
-				Patient p = context.getPatientService().getPatient(patientId);
-				if ( p != null ) {
-					OrderService os = context.getOrderService();
-					List<Concept> conceptList = new ArrayList<Concept>();
-					conceptList.add(c);
-					Map<Concept, List<DrugOrder>> orders = os.getDrugSetsByConcepts(os.getDrugOrdersByPatient(p, whatToShow), conceptList);
-					DrugSetItem dsi = new DrugSetItem();
-					dsi.setDrugSetId(c.getConceptId());
-					dsi.setDrugSetLabel(drugSetId.replace(" ", "_"));
-					dsi.setName(c.getName(context.getLocale()).getName());
-					if ( orders != null ) {
-						if ( orders.size() > 0 ) {
-							List<DrugOrder> currList = (List<DrugOrder>)orders.get(orders.keySet().iterator().next());
-							if ( currList != null ) {
-								dsi.setDrugCount(currList.size());
-							} else { 
-								dsi.setDrugCount(0);
-							}
-						} else dsi.setDrugCount(0);
-					} else dsi.setDrugCount(0);
-					dsiList = new Vector<DrugSetItem>();
-					dsiList.add(dsi);
-				}
-			}
-		}
-		
 		return dsiList;
 	}
 
 	public Vector<DrugSetItem> getCurrentOtherDrugSet(Integer patientId, String displayDrugSetIds) {
+		return getOtherDrugSet(patientId, displayDrugSetIds, OrderService.SHOW_CURRENT);
+	}
+	
+	public Vector<DrugSetItem> getCompletedOtherDrugSet(Integer patientId, String displayDrugSetIds) {
+		return getOtherDrugSet(patientId, displayDrugSetIds, OrderService.SHOW_COMPLETE);
+	}
+
+	public Vector<DrugSetItem> getOtherDrugSet(Integer patientId, String displayDrugSetIds, int whatToShow) {
 		DrugSetItem dsi = new DrugSetItem();
 
 		dsi.setDrugSetLabel("__other__");
 		dsi.setName("*");
-		Vector<DrugOrderListItem> otherItems = getCurrentOtherDrugOrdersByPatientIdDrugSetId(patientId, displayDrugSetIds);
+		Vector<DrugOrderListItem> otherItems = getOtherDrugOrdersByPatientIdDrugSetId(patientId, displayDrugSetIds, whatToShow);
 		if ( otherItems != null ) {
 			dsi.setDrugCount(otherItems.size());
 		} else dsi.setDrugCount(0);
@@ -207,150 +196,57 @@ public class DWROrderService {
 	}
 
 	public Vector<DrugOrderListItem> getCurrentOtherDrugOrdersByPatientIdDrugSetId(Integer patientId, String displayDrugSetIds) {
-		Set<DrugOrderListItem> specifiedItems = new HashSet<DrugOrderListItem>();
-		
-		specifiedItems.addAll(this.getCurrentDrugOrdersByPatientId(patientId));
-		log.debug("specifiedItems is size " + specifiedItems.size());
-		
-		if ( displayDrugSetIds != null ) {
-			String[] drugSets = displayDrugSetIds.split(",");
-			for ( int i = 0; i < drugSets.length; i++ ) {
-				log.debug("calling gcdobpids with patientId [" + patientId + "] and drugSet [" + drugSets[i] + "]");
-				Vector<DrugOrderListItem> currItems = getCurrentDrugOrdersByPatientIdDrugSetId(patientId, drugSets[i]);
-				if ( currItems != null ) {
-					specifiedItems.removeAll(currItems);
-					log.debug("removed " + currItems.size() + " from specifiedItems, size is now " + specifiedItems.size());
-				} else log.debug("currItems was null");
-			}
-		}
+		log.debug("in getCurrentOtherDrugOrdersBy...() method");
 
-		Vector<DrugOrderListItem> ret = null;
-		
-		if ( specifiedItems != null ) {
-			if ( specifiedItems.size() > 0 ) {
-				ret = new Vector<DrugOrderListItem>();
-				ret.addAll(specifiedItems);
-
-				// hack to make sure first drugOrder contains the correct information about the drugSet
-				DrugOrderListItem firstOrder = ret.firstElement();
-				if ( firstOrder != null ) {
-					ret.firstElement().setDrugSetLabel("__other__");
-				}
-			}
-		}
-
-		return ret;
-	}
-	
-	public Vector<DrugSetItem> getCompletedOtherDrugSet(Integer patientId, String displayDrugSetIds) {
-		DrugSetItem dsi = new DrugSetItem();
-
-		dsi.setDrugSetLabel("__other__");
-		dsi.setName("*");
-		Vector<DrugOrderListItem> otherItems = getCompletedOtherDrugOrdersByPatientIdDrugSetId(patientId, displayDrugSetIds);
-		if ( otherItems != null ) {
-			dsi.setDrugCount(otherItems.size());
-		} else dsi.setDrugCount(0);
-		
-		Vector<DrugSetItem> dsiList = new Vector<DrugSetItem>();
-		dsiList.add(dsi);
-		
-		return dsiList;
+		return this.getOtherDrugOrdersByPatientIdDrugSetId(patientId, displayDrugSetIds, OrderService.SHOW_CURRENT);
 	}
 
 	public Vector<DrugOrderListItem> getCompletedOtherDrugOrdersByPatientIdDrugSetId(Integer patientId, String displayDrugSetIds) {
-		Set<DrugOrderListItem> specifiedItems = new HashSet<DrugOrderListItem>();
-		
-		specifiedItems.addAll(this.getCompletedDrugOrdersByPatientId(patientId));
-		
-		if ( displayDrugSetIds != null ) {
-			String[] drugSets = displayDrugSetIds.split(",");
-			for ( int i = 0; i < drugSets.length; i++ ) {
-				Vector<DrugOrderListItem> currItems = getCompletedDrugOrdersByPatientIdDrugSetId(patientId, drugSets[i]);
-				if ( currItems != null ) {
-					specifiedItems.removeAll(currItems);
-				}
-			}
-		}
+		log.debug("in getCompletedOtherDrugOrdersBy...() method");
 
+		return this.getOtherDrugOrdersByPatientIdDrugSetId(patientId, displayDrugSetIds, OrderService.SHOW_COMPLETE);
+	}
+	
+	public Vector<DrugOrderListItem> getOtherDrugOrdersByPatientIdDrugSetId(Integer patientId, String displayDrugSetIds, int whatToShow) {
+		log.debug("in getOtherDrugOrdersBy...() method");
+		
 		Vector<DrugOrderListItem> ret = null;
 		
-		if ( specifiedItems != null ) {
-			if ( specifiedItems.size() > 0 ) {
-				ret = new Vector<DrugOrderListItem>();
-				ret.addAll(specifiedItems);
-
-				// hack to make sure first drugOrder contains the correct information about the drugSet
-				DrugOrderListItem firstOrder = ret.firstElement();
-				if ( firstOrder != null ) {
-					ret.firstElement().setDrugSetLabel("__other__");
+		Map<String, List<DrugOrder>> ordersBySetId = this.getOrdersByDrugSet(patientId, displayDrugSetIds, ",", whatToShow);
+		if ( ordersBySetId != null ) {
+			List<DrugOrder> orders = ordersBySetId.get("*");
+			if ( orders != null ) {
+				for (DrugOrder order : orders) {
+					if ( ret == null ) ret = new Vector<DrugOrderListItem>();
+					DrugOrderListItem drugOrderItem = new DrugOrderListItem(order);
+					drugOrderItem.setDrugSetLabel("__other__");
+					ret.add(drugOrderItem);
 				}
 			}
 		}
 		
 		return ret;
 	}
-
-	public Vector<DrugSetItem> getCurrentDrugSet(Integer patientId, String drugSetId) {
-		return getDrugSet(patientId, drugSetId, OrderService.SHOW_CURRENT);
-	}
-
-	public Vector<DrugSetItem> getCompletedDrugSet(Integer patientId, String drugSetId) {
-		return getDrugSet(patientId, drugSetId, OrderService.SHOW_COMPLETE);
-	}
-
 	
 	public Vector<DrugOrderListItem> getDrugOrdersByPatientIdDrugSetId(Integer patientId, String drugSetId, int whatToShow) {
 		log.debug("Entering getCurrentDrugOrdersByPatientIdDrugSetId method with drugSetId: " + drugSetId);
 		
 		Vector<DrugOrderListItem> ret = null;
 		
-		Context context = (Context) WebContextFactory.get().getSession()
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context != null) {
-			ConceptService cs = context.getConceptService();
-			Concept c = null;
-			Integer conceptId = null;
-			try {
-				conceptId = new Integer(drugSetId);
-			} catch (NumberFormatException nfe) {
-				// this is expected
-				conceptId = null;
-			}
-			if ( conceptId == null ) {
-				c = cs.getConceptByName(drugSetId);
-			} else {
-				c = cs.getConcept(conceptId);
-			}
-
-			if ( c != null && patientId != null && drugSetId != null ) {
-				Patient p = context.getPatientService().getPatient(patientId);
-				if ( p != null ) {
-					OrderService os = context.getOrderService();
-					List<Concept> conceptList = new ArrayList<Concept>();
-					conceptList.add(c);
-					log.debug("About to get order with pid [" + patientId + "] is " + p + " and cid [" + drugSetId + "] is " + c);
-					Map<Concept, List<DrugOrder>> orders = os.getDrugSetsByConcepts(os.getDrugOrdersByPatient(p, whatToShow), conceptList);
-					if ( orders != null ) {
-						if ( orders.size() > 0 ) {
-							List<DrugOrder> currList = (List<DrugOrder>)(orders.get(orders.keySet().iterator().next()));
-							if ( currList != null ) {
-								for ( DrugOrder drugOrder : currList ) {
-									if ( ret == null ) ret = new Vector<DrugOrderListItem>();
-									DrugOrderListItem drugOrderItem = new DrugOrderListItem(drugOrder);
-									drugOrderItem.setDrugSetId(c.getConceptId());
-									drugOrderItem.setDrugSetLabel(drugSetId.replace(" ", "_"));
-									ret.add(drugOrderItem);
-								}
-							} else log.debug("currList is null");
-						} else log.debug("keySet is null");
-					} else {
-						log.debug("orders is null");
-					}
+		Map<String, List<DrugOrder>> ordersBySetId = this.getOrdersByDrugSet(patientId, drugSetId, ",", whatToShow);
+		if ( ordersBySetId != null ) {
+			List<DrugOrder> orders = ordersBySetId.get(drugSetId);
+			if ( orders != null ) {
+				for (DrugOrder order : orders) {
+					if ( ret == null ) ret = new Vector<DrugOrderListItem>();
+					DrugOrderListItem drugOrderItem = new DrugOrderListItem(order);
+					drugOrderItem.setDrugSetId(OpenmrsUtil.getConceptByIdOrName(drugSetId, this.getContext()).getConceptId());
+					drugOrderItem.setDrugSetLabel(drugSetId.replace(" ", "_"));
+					ret.add(drugOrderItem);
 				}
 			}
 		}
-
+		
 		return ret;
 	}
 
@@ -363,87 +259,66 @@ public class DWROrderService {
 	}
 
 	
-	public void voidDrugSet(Integer patientId, String drugSetId, String voidReason) {
-		Context context = (Context) WebContextFactory.get().getSession()
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context != null) {
-			ConceptService cs = context.getConceptService();
-			Integer drugSetIdNum = null;
-			try {
-				drugSetIdNum = new Integer(drugSetId);
-			} catch ( NumberFormatException nfe) {
-				drugSetIdNum = null;
-			}
-			Concept c = null;
-			if ( drugSetIdNum != null ) {
-				c = cs.getConcept(drugSetIdNum);
-			} else {
-				c = cs.getConceptByName(drugSetId);
-			}
-			if ( c != null && patientId != null && drugSetId != null ) {
-				Patient p = context.getPatientService().getPatient(patientId);
-				if ( p != null ) {
-					OrderService os = context.getOrderService();
-					List<Concept> conceptList = new ArrayList<Concept>();
-					conceptList.add(c);
-					log.debug("About to get order with pid [" + patientId + "] is " + p + " and cid [" + drugSetId + "] is " + c);
-					Map<Concept, List<DrugOrder>> orders = os.getDrugSetsByConcepts(os.getDrugOrdersByPatient(p, OrderService.SHOW_CURRENT), conceptList);
-					if ( orders != null ) {
-						if ( orders.size() > 0 ) {
-							List<DrugOrder> currList = (List<DrugOrder>)orders.get(orders.keySet().iterator().next());
-							if ( currList != null ) {
-								for ( DrugOrder drugOrder : currList ) {
-									this.voidOrder(drugOrder.getOrderId(), voidReason);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	
-	public void discontinueDrugSet(Integer patientId, String drugSetId, String discontinueReason, String discontinueDate) {
-		Context context = (Context) WebContextFactory.get().getSession()
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context != null) {
-			ConceptService cs = context.getConceptService();
-			Integer drugSetIdNum = null;
-			try {
-				drugSetIdNum = new Integer(drugSetId);
-			} catch ( NumberFormatException nfe) {
-				drugSetIdNum = null;
-			}
-			Concept c = null;
-			if ( drugSetIdNum != null ) {
-				c = cs.getConcept(drugSetIdNum);
-			} else {
-				c = cs.getConceptByName(drugSetId);
-			}
-			if ( c != null && patientId != null && drugSetId != null ) {
-				Patient p = context.getPatientService().getPatient(patientId);
-				if ( p != null ) {
-					OrderService os = context.getOrderService();
-					List<Concept> conceptList = new ArrayList<Concept>();
-					conceptList.add(c);
-					log.debug("About to get order with pid [" + patientId + "] is " + p + " and cid [" + drugSetId + "] is " + c);
-					Map<Concept, List<DrugOrder>> orders = os.getDrugSetsByConcepts(os.getDrugOrdersByPatient(p, OrderService.SHOW_CURRENT), conceptList);
-					if ( orders != null ) {
-						if ( orders.size() > 0 ) {
-							List<DrugOrder> currList = (List<DrugOrder>)orders.get(orders.keySet().iterator().next());
-							if ( currList != null ) {
-								for ( DrugOrder drugOrder : currList ) {
-									this.discontinueOrder(drugOrder.getOrderId(), discontinueReason, discontinueDate);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+	public void voidCurrentDrugSet(Integer patientId, String drugSetId, String voidReason) {
+		log.debug("in voidDrugSet() method");
+
+		Context context = this.getContext();
+		Patient p = context.getPatientService().getPatient(patientId);
+
+		context.getOrderService().voidDrugSet(p, drugSetId, voidReason, OrderService.SHOW_CURRENT);
 	}
 
+	public void voidCompletedDrugSet(Integer patientId, String drugSetId, String voidReason) {
+		log.debug("in voidDrugSet() method");
+
+		Context context = this.getContext();
+		Patient p = context.getPatientService().getPatient(patientId);
+
+		context.getOrderService().voidDrugSet(p, drugSetId, voidReason, OrderService.SHOW_COMPLETE);
+	}
+
+	
+	public void discontinueDrugSet(Integer patientId, String drugSetId, String discontinueReason, String discontinueDate) {
+		log.debug("in discontinueDrugSet() method");
+
+		Context context = getContext();
+		Patient p = context.getPatientService().getPatient(patientId);
+
+		Date discDate = null;
+		if ( discontinueDate != null ) {
+			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+			try {
+				discDate = sdf.parse(discontinueDate);
+			} catch (ParseException e) {
+				discDate = null;
+			}
+		}
+	
+		context.getOrderService().discontinueDrugSet(p, drugSetId, discontinueReason, discDate);
+	}
+
+	private Map<String, List<DrugOrder>> getOrdersByDrugSet(Integer patientId, String drugSetIds, String delimiter, int whatToShow) {
+		Map<String, List<DrugOrder>> ret = null;
+		
+		if ( patientId != null && drugSetIds != null ) {
+			Context context = getContext();
+			if ( context != null ) {
+				Patient p = context.getPatientService().getPatient(patientId);
+				if ( p != null ) {
+					List<DrugOrder> ordersToWorkWith = context.getOrderService().getDrugOrdersByPatient(p, whatToShow);
+					ret = context.getOrderService().getDrugSetsByDrugSetIdList(ordersToWorkWith, drugSetIds, delimiter);
+				}
+			}
+		}
+		
+		return ret;
+	}
+
+	private Context getContext() {
+		return (Context) WebContextFactory.get().getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+	}
 }
+
 
 
 

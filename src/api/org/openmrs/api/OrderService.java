@@ -9,10 +9,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
@@ -28,7 +28,7 @@ import org.openmrs.api.db.OrderDAO;
 import org.openmrs.order.DrugOrderSupport;
 import org.openmrs.order.RegimenSuggestion;
 import org.openmrs.util.OpenmrsConstants;
-import org.springframework.context.ApplicationContext;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Order-related services
@@ -287,35 +287,23 @@ public class OrderService {
 	}
 
 	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, int whatToShow) {
-		if (context != null) {
-			List<DrugOrder> ret = new ArrayList<DrugOrder>();
+		List<DrugOrder> ret = new ArrayList<DrugOrder>();
+		
+		if (patient != null) {
 			List<DrugOrder> drugOrders = getDrugOrdersByPatient(patient);
-			for (DrugOrder drugOrder : drugOrders) {
-				boolean shouldAdd = false;
-
-				if ( whatToShow == OrderService.SHOW_COMPLETE ) {
-					if ( !drugOrder.getVoided() && drugOrder.getAutoExpireDate() != null ) {
-						if ( drugOrder.getAutoExpireDate().before(new Date())) shouldAdd = true;
-					} else if ( !drugOrder.getVoided() && drugOrder.getDiscontinued() ) shouldAdd = true;
+			if ( drugOrders != null ) {
+				for (DrugOrder drugOrder : drugOrders) {
+					if ( whatToShow == OrderService.SHOW_COMPLETE && drugOrder.isDiscontinued() ) ret.add(drugOrder);
+					if ( whatToShow == OrderService.SHOW_CURRENT && drugOrder.isCurrent() ) ret.add(drugOrder);
+					if ( whatToShow == OrderService.SHOW_NOTVOIDED && !drugOrder.getVoided() ) ret.add(drugOrder);
+					if ( whatToShow == OrderService.SHOW_ALL ) ret.add(drugOrder);
 				}
-					
-				if ( whatToShow == OrderService.SHOW_CURRENT ) {
-					if ( !drugOrder.getVoided() && !drugOrder.getDiscontinued() && drugOrder.getAutoExpireDate() != null ) {
-						if ( !drugOrder.getAutoExpireDate().before(new Date())) shouldAdd = true;
-					} else if ( !drugOrder.getVoided() && !drugOrder.getDiscontinued() ) shouldAdd = true;
-				}
-				if ( whatToShow == OrderService.SHOW_NOTVOIDED && !drugOrder.getVoided() ) shouldAdd = true;
-				if ( whatToShow == OrderService.SHOW_ALL ) shouldAdd = true;
-
-				if ( shouldAdd ) ret.add(drugOrder);
 			}
-			return ret;
-		} else {
-			return null;
 		}
+		
+		return ret;
 	}
-	
-	
+		
 	/**
 	 * Undiscontinue order record
 	 * 
@@ -370,96 +358,40 @@ public class OrderService {
 		return getOrderDAO().getDrugOrdersByPatient(patient);
 	}
 
-	public Map<ConceptSet,List<DrugOrder>> getDrugSetsByConceptSets(List<DrugOrder> drugOrders, List<ConceptSet> conceptSets) throws APIException {
-		log.debug("In getDrugSetsByConceptSets method");
+	public Map<Concept,List<DrugOrder>> getDrugSetsByConcepts(List<DrugOrder> drugOrders, List<Concept> drugSets) throws APIException {
+		log.debug("In getDrugSetsByConcepts method");
+
+		Map<Concept, List<DrugOrder>> hmRet = null;
 		
-		HashMap<ConceptSet,List<DrugOrder>> hmRet = null;
-		
-		if ( drugOrders != null && conceptSets != null ) {
-			log.debug("drugOrders is size " + drugOrders.size() + " and conceptSet is size " + conceptSets.size());
-			hmRet = new HashMap<ConceptSet,List<DrugOrder>>();
-			
-			for ( ConceptSet cSet : conceptSets ) {
-				if ( cSet != null ) {
-					//log.debug("cSet is " + cSet.getConcept().getName(context.getLocale()));
-					Concept cSetConcept = cSet.getConcept();
-					for ( DrugOrder drugOrder : drugOrders ) {
-						if ( drugOrder != null ) {
-							//log.debug("drugOrder is " + drugOrder.getConcept().getName(context.getLocale()));
-							Concept drugConcept = drugOrder.getConcept();
-							if ( drugConcept != null ) {
-								if ( drugConcept.equals(cSetConcept) ) {
-									log.debug("cSet [" + cSet.getConcept().getName(context.getLocale())
-											+ "] IS EQUAL TO drugOrder [" + drugOrder.getConcept().getName(context.getLocale()));
-									if ( hmRet == null ) {
-										hmRet = new HashMap<ConceptSet,List<DrugOrder>>();
-									}
-									List<DrugOrder> drugOrdersAlready = hmRet.get(cSet);
-									if ( drugOrdersAlready == null ) {
-										drugOrdersAlready = new ArrayList<DrugOrder>();
-									}
-									drugOrdersAlready.add(drugOrder);
-									hmRet.put(cSet, drugOrdersAlready);
-									log.debug("drugOrder [" + drugOrder.getConcept().getName(context.getLocale()) + "] added to drugOrders, now size " + drugOrdersAlready.size() + " for cSet [" + cSet.getConcept().getName(context.getLocale()) + "], Map is now size " + hmRet.size());
-								} else {
-									log.debug("cSet [" + cSet.getConcept().getName(context.getLocale())
-											+ "] NOT SAME AS drugOrder [" + drugOrder.getConcept().getName(context.getLocale()));
+		if ( drugSets != null && drugOrders != null ) {
+			log.debug("drugSets is size " + drugSets.size());
+			for ( Concept c : drugSets ) {
+				List<DrugOrder> ordersForConcept = new ArrayList<DrugOrder>();
+				
+				Collection<ConceptSet> relatedConcepts = c.getConceptSets();
+				log.debug("Concept is " + c.getName(context.getLocale()) + " and has " + relatedConcepts.size() + " related concepts");
+
+				// now we have as a list, let's iterate
+				if ( relatedConcepts != null ) {
+					for ( ConceptSet cs : relatedConcepts ) {
+						Concept csConcept = cs.getConcept();
+						for ( DrugOrder currOrder : drugOrders ) {
+							Drug currDrug = currOrder.getDrug();
+							if ( currDrug != null ) {
+								Concept currConcept = currDrug.getConcept();  // must not be null - ordained by data model
+								if ( currConcept.equals(csConcept)) {
+									ordersForConcept.add(currOrder);
+									log.debug("just added an order for " + currDrug.getName() + " to list of " + c.getName(context.getLocale()));
 								}
 							}
 						}
 					}
 				}
-			}
-		} else {
-			if ( drugOrders == null ) {
-				throw new APIException("List of drugOrders is null in OrderService.getConceptSetsByDrugOrders()");
-			} else {
-				throw new APIException("List of conceptSets is null in OrderService.getConceptSetsByDrugOrders()");
-			}
-		}
-
-		return hmRet;
-	}
-
-	public Map<Concept,List<DrugOrder>> getDrugSetsByConcepts(List<DrugOrder> drugOrders, List<Concept> drugSets) throws APIException {
-		log.debug("In getDrugSetsByConcepts method");
-
-		Set<ConceptSet> conceptSets = null;
-		Map<Concept, List<DrugOrder>> hmRet = null;
-		
-		if ( drugSets != null ) {
-			log.debug("drugSets is size " + drugSets.size());
-			for ( Concept c : drugSets ) {
-				log.debug("Concept c is " + c.getName(context.getLocale()));
-				List<ConceptSet> cSet = new ArrayList<ConceptSet>();
-				Collection<ConceptSet> relatedConcepts = c.getConceptSets();
-				log.debug("related concepts is size" + relatedConcepts.size());
-				cSet.addAll(relatedConcepts);
-				if ( conceptSets == null ) conceptSets = new HashSet<ConceptSet>();
-				conceptSets.addAll(cSet);
-
-				// now we have as a list, let's iterate
-				List<ConceptSet> cSetList = null;
-				if ( conceptSets != null ) {
-					cSetList = new ArrayList<ConceptSet>();
-					cSetList.addAll(conceptSets);
-					Map<ConceptSet,List<DrugOrder>> ordersBySet = getDrugSetsByConceptSets(drugOrders, cSetList);
-					if ( ordersBySet != null ) {
-						for (Iterator i = ordersBySet.keySet().iterator(); i.hasNext(); ) {
-							if ( hmRet == null ) hmRet = new HashMap<Concept, List<DrugOrder>>(); 
-							List<DrugOrder> ordersAlready = hmRet.get(c);
-							if ( ordersAlready == null ) ordersAlready = new ArrayList<DrugOrder>();
-
-							// let's make sure there is only one copy of each DrugOrder in this list
-							Set<DrugOrder> currSet = new HashSet<DrugOrder>();
-							currSet.addAll((List<DrugOrder>)ordersBySet.get(i.next()));
-							currSet.addAll(ordersAlready);
-							ordersAlready = null;
-							ordersAlready = new ArrayList<DrugOrder>();
-							ordersAlready.addAll(currSet);
-							hmRet.put(c, ordersAlready);
-						}
-					}
+				
+				if ( ordersForConcept.size() > 0 ) {
+					if ( hmRet == null ) hmRet = new HashMap<Concept, List<DrugOrder>>();
+					hmRet.put(c, ordersForConcept);
+					log.debug("Concept " + c.getName(context.getLocale()) + " was put to the map with a list of size " + ordersForConcept.size());
 				}
 			}
 		} else log.debug("drugSets is null");
@@ -485,4 +417,119 @@ public class OrderService {
 		
 		return standardRegimens;
 	}
+
+	public Map<String, List<DrugOrder>> getDrugSetsByDrugSetIdList(List<DrugOrder> orderList, String drugSetIdList, String delimiter) {
+		if ( delimiter == null ) delimiter = ",";
+		
+		Map<String, List<DrugOrder>> ret = null;
+		
+		if ( drugSetIdList != null && orderList != null ) {
+			List<Concept> drugSetConcepts = new ArrayList<Concept>();
+			boolean addOthers = false;
+			Map<Concept, String> idToConceptMappings = new HashMap<Concept, String>();
+			
+			String[] drugSetIds = drugSetIdList.split(delimiter);
+			log.debug("starting with " + drugSetIds.length + " items in comma-delimited list, and " + orderList.size() + " orders that are " + orderList);
+			for ( String drugSetId : drugSetIds ) {
+				// go through and get all concepts for these drugSetIds - then we can call another method to get Map
+				
+				if ( "*".equals(drugSetId)) {
+					// add "other"
+					addOthers = true;
+				} else {
+					Concept drugSetConcept = OpenmrsUtil.getConceptByIdOrName(drugSetId, context); 
+						
+					if ( drugSetConcept != null ) {
+						drugSetConcepts.add(drugSetConcept);
+						idToConceptMappings.put(drugSetConcept, drugSetId);
+						log.debug("added concept " + drugSetConcept.getName(context.getLocale()) + ", and mapping to id " + drugSetId);
+					}
+				}
+			}
+
+			// now we know what drugSet concepts to separate the orderList into
+			
+			// first, let's create a list of "others", starting with a full list that we remove from
+			List<DrugOrder> otherOrders = null;
+			if ( addOthers ) otherOrders = orderList;
+			
+			
+			Map<Concept, List<DrugOrder>> ordersByConcepts = getDrugSetsByConcepts(orderList, drugSetConcepts);
+			if ( ordersByConcepts != null ) {
+				log.debug("obc is size " + ordersByConcepts.size());
+				for ( Map.Entry<Concept, List<DrugOrder>> e : ordersByConcepts.entrySet() ) {
+					Concept c = e.getKey();
+					List<DrugOrder> orders = e.getValue();
+					log.debug("found concept " + c.getName(context.getLocale()) + ", and list is size " + orders.size() + " and list is " + orders);
+					if ( addOthers && otherOrders != null ) {
+						otherOrders.removeAll(orders);
+					}
+					if ( ret == null ) ret = new HashMap<String, List<DrugOrder>>();
+					log.debug("putting list of size " + orders.size() + " in string " + idToConceptMappings.get(c));
+					ret.put(idToConceptMappings.get(c), orders);
+				}
+			}
+			
+			// add the "others" list to the Map
+			if ( addOthers && otherOrders != null ) {
+				if ( ret == null ) ret = new HashMap<String, List<DrugOrder>>();
+				ret.put("*", otherOrders);
+			}
+		}
+		
+		return ret;
+	}
+
+	public Map<String, String> getDrugSetHeadersByDrugSetIdList(String drugSetIds) {
+		Map<String, String> ret = null;
+		
+		if ( drugSetIds != null ) {
+			Map<String, Concept> concepts = OpenmrsUtil.delimitedStringToConceptMap(drugSetIds, ",", context);
+			if ( concepts != null ) {
+				for ( Map.Entry<String, Concept> e : concepts.entrySet() ) {
+					String id = e.getKey();
+					Concept concept = e.getValue();
+					if ( ret == null ) ret = new HashMap<String, String>();
+					ret.put(id, concept.getName(context.getLocale()).getName());
+				}
+			}
+		}
+		
+		return ret;
+	}
+
+	public void discontinueDrugSet(Patient patient, String drugSetId, String discontinueReason, Date discontinueDate) {
+		log.debug("in discontinueDrugSet() method with " + drugSetId);
+		if (context != null && patient != null && drugSetId != null && discontinueDate != null ) {
+			List<DrugOrder> currentOrders = this.getDrugOrdersByPatient(patient, OrderService.SHOW_CURRENT);
+			Map<String, List<DrugOrder>> ordersBySetId = this.getDrugSetsByDrugSetIdList(currentOrders, drugSetId, ",");
+			if ( ordersBySetId != null ) {
+				List<DrugOrder> ordersToDiscontinue = ordersBySetId.get(drugSetId);
+				if ( ordersToDiscontinue != null ) {
+					for ( DrugOrder order : ordersToDiscontinue ) {
+						this.discontinueOrder(order, discontinueReason, discontinueDate);
+					}
+				} else log.debug("no orders to discontinue");
+			} else log.debug("no ordersBySetId returned for " + drugSetId);
+		}
+		
+		
+	}
+
+	public void voidDrugSet(Patient patient, String drugSetId, String voidReason, int whatToVoid) {
+		log.debug("in voidDrugSet() method");
+		if (context != null && patient != null && drugSetId != null ) {
+			List<DrugOrder> currentOrders = this.getDrugOrdersByPatient(patient, whatToVoid);
+			Map<String, List<DrugOrder>> ordersBySetId = this.getDrugSetsByDrugSetIdList(currentOrders, drugSetId, ",");
+			if ( ordersBySetId != null ) {
+				List<DrugOrder> ordersToVoid = ordersBySetId.get(drugSetId);
+				if ( ordersToVoid != null ) {
+					for ( DrugOrder order : ordersToVoid ) {
+						this.voidOrder(order, voidReason);
+					}
+				}
+			}
+		}		
+	}
 }
+

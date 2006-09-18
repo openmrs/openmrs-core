@@ -62,9 +62,6 @@
 
 <div id="patientTabs">
 	<ul>
-		<openmrs:hasPrivilege privilege="Patient Dashboard - View Summary Section">
-			<li><a id="patientPrintableSummaryTab" href="#" onclick="changeTab(this);" hidefocus><spring:message code="patientDashboard.summary"/></a></li>
-		</openmrs:hasPrivilege>
 		<openmrs:hasPrivilege privilege="Patient Dashboard - View Overview Section">
 			<li><a id="patientOverviewTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.overview"/></a></li>
 		</openmrs:hasPrivilege>
@@ -87,11 +84,6 @@
 </div>
 <br/>
 <div id="patientSections">
-	<openmrs:hasPrivilege privilege="Patient Dashboard - View Overview Section">
-		<div id="patientPrintableSummary" style="display:none;">
-			<openmrs:portlet url="patientSummary" id="patientDashboardSummary" patientId="${patient.patientId}"/>
-		</div>
-	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="Patient Dashboard - View Overview Section">
 		<div id="patientOverview" style="display:none;">
 			<openmrs:portlet url="patientOverview" id="patientDashboardOverview" patientId="${patient.patientId}"/>

@@ -773,3 +773,7 @@ span.noOrdersMessage {
 .addLink {
 	font-size: 0.9em;
 }
+
+#patientPrintableSummary {
+	font-size: 1.0em; 
+}

@@ -349,10 +349,41 @@ public class Order implements java.io.Serializable {
 		if (autoExpireDate != null && autoExpireDate.before(checkDate)) {
 			return false;
 		}
+		if (this.voided || this.discontinued) {
+			return false;
+		}
 		return true;
 	}
 	
 	public boolean isCurrent() {
 		return isCurrent(new Date());
+	}
+
+	/**
+	 * Convenience method to determine if order is discontinued
+	 * @param checkDate - the date on which to check order. if null, will use current date
+	 * @return boolean indicating whether the order was discontinued on the input date
+	 */
+	public boolean isDiscontinued(Date checkDate) {
+		if (checkDate == null) {
+			checkDate = new Date();
+		}
+		if (startDate == null || checkDate.before(startDate)) {
+			return false;
+		}
+		if (discontinuedDate != null && discontinuedDate.after(checkDate)) {
+			return false;
+		}
+		if (discontinuedDate == null) {
+			return false;
+		}
+		if (this.voided || !this.discontinued) {
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean isDiscontinued() {
+		return isDiscontinued(new Date());
 	}
 }

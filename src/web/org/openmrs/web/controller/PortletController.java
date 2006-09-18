@@ -123,15 +123,17 @@ public class PortletController implements Controller {
 							model.put("patientObs", context.getObsService().getObservations(p));
 						
 						if (context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ORDERS)) {
-							Set<DrugOrder> drugOrders = new HashSet<DrugOrder>();
 							List<DrugOrder> drugOrderList = context.getOrderService().getDrugOrdersByPatient(p);
-							drugOrders.addAll(drugOrderList);
-							model.put("patientDrugOrders", drugOrders);
-							List<DrugOrder> currentDrugOrders = new ArrayList<DrugOrder>(drugOrders);
-							for (Iterator<DrugOrder> iter = currentDrugOrders.iterator(); iter.hasNext(); )
-								if (!iter.next().isCurrent())
-									iter.remove();
-							model.put("patientCurrentDrugOrders", currentDrugOrders);
+							model.put("patientDrugOrders", drugOrderList);
+							List<DrugOrder> currentDrugOrders = new ArrayList<DrugOrder>();
+							List<DrugOrder> discontinuedDrugOrders = new ArrayList<DrugOrder>();
+							for (Iterator<DrugOrder> iter = drugOrderList.iterator(); iter.hasNext(); ) {
+								DrugOrder next = iter.next();
+								if (next.isCurrent()) currentDrugOrders.add(next);
+								if (next.isDiscontinued()) discontinuedDrugOrders.add(next); 
+							}
+							model.put("currentDrugOrders", currentDrugOrders);
+							model.put("completedDrugOrders", discontinuedDrugOrders);
 					
 							List<RegimenSuggestion> standardRegimens = context.getOrderService().getStandardRegimens();
 							if ( standardRegimens != null )

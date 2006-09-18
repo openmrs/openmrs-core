@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -14,13 +15,16 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
 import org.openmrs.ConceptNumeric;
+import org.openmrs.api.context.Context;
 
 public class OpenmrsUtil {
 
@@ -422,4 +426,72 @@ public class OpenmrsUtil {
 		return ret.toString();
 	}
 
+	public static List<Concept> delimitedStringToConceptList( String delimitedString, String delimiter, Context context ) {
+		List<Concept> ret = null;
+		
+		if ( delimitedString != null && context != null ) {
+			String[] tokens = delimitedString.split(delimiter);
+			for ( String token : tokens ) {
+				Integer conceptId = null;
+				
+				try {
+					conceptId = new Integer(token);
+				} catch (NumberFormatException nfe) {
+					conceptId = null;
+				}
+				
+				Concept c = null;
+				
+				if ( conceptId != null ) {
+					c = context.getConceptService().getConcept(conceptId);
+				} else {
+					c = context.getConceptService().getConceptByName(token);
+				}
+				
+				if ( c != null ) {
+					if ( ret == null ) ret = new ArrayList<Concept>();
+					ret.add(c);
+				}
+			}
+		}
+		
+		return ret;
+	}
+
+	public static Map<String, Concept> delimitedStringToConceptMap( String delimitedString, String delimiter, Context context ) {
+		Map<String,Concept> ret = null;
+		
+		if ( delimitedString != null && context != null ) {
+			String[] tokens = delimitedString.split(delimiter);
+			for ( String token : tokens ) {
+				Concept c = OpenmrsUtil.getConceptByIdOrName(token, context);
+				
+				if ( c != null ) {
+					if ( ret == null ) ret = new HashMap<String, Concept>();
+					ret.put(token, c);
+				}
+			}
+		}
+		
+		return ret;
+	}
+
+	public static Concept getConceptByIdOrName(String idOrName, Context context) {
+		Concept c = null;
+		Integer conceptId = null;
+		
+		try {
+			conceptId = new Integer(idOrName);
+		} catch (NumberFormatException nfe) {
+			conceptId = null;
+		}
+		
+		if ( conceptId != null ) {
+			c = context.getConceptService().getConcept(conceptId);
+		} else {
+			c = context.getConceptService().getConceptByName(idOrName);
+		}
+
+		return c;
+	}
 }
