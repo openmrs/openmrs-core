@@ -59,11 +59,11 @@ public final class Listener implements ServletContextListener {
 			
 			if (propertyStream == null) {
 				if (OpenmrsConstants.OPERATING_SYSTEM_LINUX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM))
-					filepath = System.getProperty("user.home") + File.separator + "." + filename;
+					filepath = System.getProperty("user.home") + File.separator + ".OpenMRS";
 				else
 					filepath = System.getProperty("user.home") + File.separator + 
 							"Application Data" + File.separator + 
-							"OpenMRS" + File.separator + filename;
+							"OpenMRS";
 						
 				filepath = filepath + File.separator + filename;
 				log.warn("Looking for property file in directory: " + filepath);

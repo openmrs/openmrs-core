@@ -1,6 +1,7 @@
 package org.openmrs.scheduler;
 
 import java.util.Collection;
+import java.util.SortedMap;
 
 import org.openmrs.api.db.DAOContext;
 
@@ -124,4 +125,9 @@ public interface SchedulerService {
 	 */
 	public void createTask(TaskConfig task);
 
+	/**
+	 * Return SchedularConstants
+	 * @return
+	 */
+	public SortedMap<String,String> getSystemVariables();
 }

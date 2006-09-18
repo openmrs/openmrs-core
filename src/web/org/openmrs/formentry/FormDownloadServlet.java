@@ -1,9 +1,7 @@
 package org.openmrs.formentry;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -147,11 +145,10 @@ public class FormDownloadServlet extends HttpServlet {
 
 			// Download the XSN and Upload it again
 			Form form = context.getFormEntryService().getForm(formId);
-			InputStream formStream = getCurrentXSN(context, form);
-			if (formStream == null) {
-				String url = FormEntryUtil.getFormAbsoluteUrl(form);
-				formStream = new FormStarterXSN(context, form, url).getInputStream();
-			}
+			InputStream formStream = FormEntryUtil.getCurrentXSN(context, form);
+			if (formStream == null)
+				response.sendError(500);
+			
 			PublishInfoPath.publishXSN(formStream, context);
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.rebuildXSN.success");
 			response.sendRedirect(request.getHeader("referer"));
@@ -190,15 +187,13 @@ public class FormDownloadServlet extends HttpServlet {
 
 				setFilename(response, filename);
 
-				FileInputStream formStream = getCurrentXSN(context, form);
+				FileInputStream formStream = FormEntryUtil.getCurrentXSN(context, form);
 
 				if (formStream != null)
 					OpenmrsUtil.copyFile(formStream, response.getOutputStream());
 				else {
-					// the xsn wasn't on the disk. Return the starter xsn
-					log.debug("Xsn not found, returning starter xsn");
-					FormStarterXSN starter = new FormStarterXSN(context, form, url);
-					starter.copyXSNToStream(response.getOutputStream());
+					log.error("Could not return an xsn");
+					response.sendError(500);
 				}
 
 			}
@@ -236,76 +231,6 @@ public class FormDownloadServlet extends HttpServlet {
 
 	private Context getContext(HttpSession httpSession) {
 		return (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-	}
-
-	private FileInputStream getCurrentXSN(Context context, Form form) throws IOException {
-		// Find the form file data
-		String formDir = FormEntryConstants.FORMENTRY_INFOPATH_OUTPUT_DIR;
-		String formFilePath = formDir + (formDir.endsWith(File.separator) ? "" : File.separator)
-		    + FormEntryUtil.getFormUri(form);
-
-		log.debug("Attempting to open xsn from: " + formFilePath);
-
-		if (!new File(formFilePath).exists())
-			return null;
-
-		// Get Constants
-		String schemaFilename = FormEntryConstants.FORMENTRY_DEFAULT_SCHEMA_NAME;
-		String templateFilename = FormEntryConstants.FORMENTRY_DEFAULT_TEMPLATE_NAME;
-		String sampleDataFilename = FormEntryConstants.FORMENTRY_DEFAULT_SAMPLEDATA_NAME;
-		String defaultsFilename = FormEntryConstants.FORMENTRY_DEFAULT_DEFAULTS_NAME;
-		String url = FormEntryUtil.getFormAbsoluteUrl(form);
-
-		// Expand the xsn
-		File tmpXSN = FormEntryUtil.expandXsn(formFilePath);
-
-		// Generate the schema and template.xml
-		FormXmlTemplateBuilder fxtb = new FormXmlTemplateBuilder(context, form, url);
-		String template = fxtb.getXmlTemplate(false);
-		String templateWithDefaultScripts = fxtb.getXmlTemplate(true);
-		String schema = new FormSchemaBuilder(context, form).getSchema();
-
-		// Generate and overwrite the schema
-		File schemaFile = FormEntryUtil.findFile(tmpXSN, schemaFilename);
-		if (schemaFile == null)
-			throw new IOException("Schema: '" + schemaFilename + "' cannot be null");
-		FileWriter schemaOutput = new FileWriter(schemaFile, false);
-		schemaOutput.write(schema);
-		schemaOutput.close();
-
-		// replace template.xml with the generated xml
-		File templateFile = FormEntryUtil.findFile(tmpXSN, templateFilename);
-		if (templateFile == null)
-			throw new IOException("Template: '" + templateFilename + "' cannot be null");
-		FileWriter templateOutput = new FileWriter(templateFile, false);
-		templateOutput.write(template);
-		templateOutput.close();
-
-		// replace defautls.xml with the xml template, including default scripts
-		File defaultsFile = FormEntryUtil.findFile(tmpXSN, defaultsFilename);
-		if (defaultsFile == null)
-			throw new IOException("Defaults: '" + defaultsFilename + "' cannot be null");
-		FileWriter defaultsOutput = new FileWriter(defaultsFile, false);
-		defaultsOutput.write(templateWithDefaultScripts);
-		defaultsOutput.close();
-
-		// replace sampleData.xml with the generated xml
-		File sampleDataFile = FormEntryUtil.findFile(tmpXSN, sampleDataFilename);
-		if (sampleDataFile == null)
-			throw new IOException("Template: '" + sampleDataFilename + "' cannot be null");
-		FileWriter sampleDataOutput = new FileWriter(sampleDataFile, false);
-		sampleDataOutput.write(template);
-		sampleDataOutput.close();
-
-		// File tmpOutputDir = FormEntryUtil.createTempDirectory("xsnoutput");
-		// TODO Refactored (jmiranda)
-		// FormEntryUtil.createDdf(tmpXSN, tmpXSN.getAbsolutePath(), "new.xsn");
-		FormEntryUtil.makeCab(tmpXSN, tmpXSN.getAbsolutePath(), "new.xsn");
-
-		File xsn = FormEntryUtil.findFile(tmpXSN, "new.xsn");
-		FileInputStream xsnInputStream = new FileInputStream(xsn);
-
-		return xsnInputStream;
 	}
 
 }

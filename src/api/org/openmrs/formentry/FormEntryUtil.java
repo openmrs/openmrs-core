@@ -2,15 +2,19 @@ package org.openmrs.formentry;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.channels.FileChannel;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Form;
+import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 
 public class FormEntryUtil {
@@ -91,9 +95,153 @@ public class FormEntryUtil {
 		
 		return tempDir;
 	}
+	
+	/**
+	 * Generates an expanded 'starter XSN'. This starter is essentially a blank XSN template
+	 * to play with in Infopath.  Should be used similar to 
+	 * <code>org.openmrs.formentry.FormEntryUtil.expandXsn(java.lang.String)</code>
+	 * @return File directory holding blank xsn contents
+	 * @throws IOException
+	 */
+	public static File getExpandedStarterXSN() throws IOException {
+		
+		String xsnFolderPath = FormEntryConstants.FORMENTRY_STARTER_XSN_FOLDER_PATH;
+		log.debug("Getting starter XSN contents: " + xsnFolderPath);
 
+		File xsnFolder = new File(xsnFolderPath);
+		if (!xsnFolder.exists()) {
+			log.error("Could not open starter xsn folder directory: " + xsnFolderPath);
+			log.error("Be sure to set runtime property: formentry.starter_xsn_folder_path");
+			return null;
+		}
 
+		// temp directory to hold the new xsn contents
+		File tempDir = FormEntryUtil.createTempDirectory("XSN");
+		if (tempDir == null)
+			throw new IOException("Failed to create temporary directory");
 
+		// iterate over and copy each file in the given folder
+		for (File f : xsnFolder.listFiles()) {
+			File newFile = new File(tempDir, f.getName());
+			FileChannel in = null, out = null;
+			try {
+				in = new FileInputStream(f).getChannel();
+				out = new FileOutputStream(newFile).getChannel();
+				in.transferTo(0, in.size(), out);
+			} finally {
+				if (in != null)
+					in.close();
+				if (out != null)
+					out.close();
+			}
+		}
+		return tempDir;
+	}
+
+	
+	/**
+	 * Gets the current xsn file for a form.  If the xsn is not found, the starter
+	 * xsn is returned instead
+	 * @param context
+	 * @param form
+	 * @return form's xsn file or starter xsn if none
+	 * @throws IOException
+	 */
+	public static FileInputStream getCurrentXSN(Context context, Form form) throws IOException {
+		// Find the form file data
+		String formDir = FormEntryConstants.FORMENTRY_INFOPATH_OUTPUT_DIR;
+		String formFilePath = formDir + (formDir.endsWith(File.separator) ? "" : File.separator)
+		    + FormEntryUtil.getFormUri(form);
+
+		log.debug("Attempting to open xsn from: " + formFilePath);
+
+		// The expanded the xsn
+		File tmpXSN = null;
+
+		if (new File(formFilePath).exists())
+			tmpXSN = FormEntryUtil.expandXsn(formFilePath);
+		else {
+			// use starter xsn as the
+			log.debug("Using starter xsn");
+			tmpXSN = FormEntryUtil.getExpandedStarterXSN();
+		}
+		
+		return compileXSN(context, form, tmpXSN);
+	}
+	
+	/**
+	 * Returns a .xsn file compiled from the starter data set 
+	 * @param context
+	 * @param form
+	 * @return .xsn file
+	 * @throws IOException
+	 */
+	public static FileInputStream getStarterXSN(Context context, Form form) throws IOException {
+		File tmpXSN = FormEntryUtil.getExpandedStarterXSN();
+		return compileXSN(context, form, tmpXSN);
+	}
+	
+	/**
+	 * Modifies schema, template.xml, and sample data, defaults, urls in <code>tmpXSN</code> 
+	 * @param context 
+	 * @param form 
+	 * @param tmpXSN directory containing xsn files.
+	 * @return
+	 * @throws IOException
+	 */
+	private static FileInputStream compileXSN(Context context, Form form, File tmpXSN) throws IOException {
+		// Get Constants
+		String schemaFilename = FormEntryConstants.FORMENTRY_DEFAULT_SCHEMA_NAME;
+		String templateFilename = FormEntryConstants.FORMENTRY_DEFAULT_TEMPLATE_NAME;
+		String sampleDataFilename = FormEntryConstants.FORMENTRY_DEFAULT_SAMPLEDATA_NAME;
+		String defaultsFilename = FormEntryConstants.FORMENTRY_DEFAULT_DEFAULTS_NAME;
+		String url = getFormAbsoluteUrl(form);
+
+		// Generate the schema and template.xml
+		FormXmlTemplateBuilder fxtb = new FormXmlTemplateBuilder(context, form, url);
+		String template = fxtb.getXmlTemplate(false);
+		String templateWithDefaultScripts = fxtb.getXmlTemplate(true);
+		String schema = new FormSchemaBuilder(context, form).getSchema();
+
+		// Generate and overwrite the schema
+		File schemaFile = findFile(tmpXSN, schemaFilename);
+		if (schemaFile == null)
+			throw new IOException("Schema: '" + schemaFilename + "' cannot be null");
+		FileWriter schemaOutput = new FileWriter(schemaFile, false);
+		schemaOutput.write(schema);
+		schemaOutput.close();
+
+		// replace template.xml with the generated xml
+		File templateFile = findFile(tmpXSN, templateFilename);
+		if (templateFile == null)
+			throw new IOException("Template: '" + templateFilename + "' cannot be null");
+		FileWriter templateOutput = new FileWriter(templateFile, false);
+		templateOutput.write(template);
+		templateOutput.close();
+
+		// replace defautls.xml with the xml template, including default scripts
+		File defaultsFile = findFile(tmpXSN, defaultsFilename);
+		if (defaultsFile == null)
+			throw new IOException("Defaults: '" + defaultsFilename + "' cannot be null");
+		FileWriter defaultsOutput = new FileWriter(defaultsFile, false);
+		defaultsOutput.write(templateWithDefaultScripts);
+		defaultsOutput.close();
+
+		// replace sampleData.xml with the generated xml
+		File sampleDataFile = findFile(tmpXSN, sampleDataFilename);
+		if (sampleDataFile == null)
+			throw new IOException("Template: '" + sampleDataFilename + "' cannot be null");
+		FileWriter sampleDataOutput = new FileWriter(sampleDataFile, false);
+		sampleDataOutput.write(template);
+		sampleDataOutput.close();
+
+		FormEntryUtil.makeCab(tmpXSN, tmpXSN.getAbsolutePath(), "new.xsn");
+
+		File xsn = findFile(tmpXSN, "new.xsn");
+		FileInputStream xsnInputStream = new FileInputStream(xsn);
+		
+		return xsnInputStream;
+	}
 	
 	/**
 	 * Make an xsn (aka CAB file) with the contents of <code>tempDir</code>
@@ -126,8 +274,6 @@ public class FormEntryUtil {
 			execCmd(cmdBuffer.toString(), null);
 
 		}
-				
-		
 		
 	}
 	
@@ -196,6 +342,8 @@ public class FormEntryUtil {
 					+ tempDir.getAbsolutePath() + "'");
 		if (log.isDebugEnabled())
 			log.debug("Successfully created temporary directory: " + tempDir.getAbsolutePath());
+		
+		tempDir.deleteOnExit();
 		return tempDir;
 	}
 
@@ -282,7 +430,7 @@ public class FormEntryUtil {
 	
 	public static String getFormSchemaNamespace(Form form) {
 		String baseUrl = FormEntryConstants.FORMENTRY_INFOPATH_SERVER_URL + FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_PATH;
-		return baseUrl + "schema/" + form.getFormId() + form.getBuild();
+		return baseUrl + "schema/" + form.getFormId() + "-" + form.getBuild();
 	}
 
 	public static String getSolutionVersion(Form form) {

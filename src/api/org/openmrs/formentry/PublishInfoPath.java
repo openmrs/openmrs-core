@@ -200,15 +200,15 @@ public class PublishInfoPath {
 		}
 		else {
 			prepareTemplate(tempDir, FormEntryConstants.FORMENTRY_DEFAULT_DEFAULTS_NAME,
-			    solutionVersion, publishUrl);
+			    solutionVersion, publishUrl, namespace);
 			templateWithDefaults = readFile(templateWithDefaultsFile);
 		}
 
 		// update InfoPath solutionVersion within all XML template documents
 		prepareTemplate(tempDir, FormEntryConstants.FORMENTRY_DEFAULT_TEMPLATE_NAME, solutionVersion,
-		    publishUrl);
+		    publishUrl, namespace);
 		prepareTemplate(tempDir, FormEntryConstants.FORMENTRY_DEFAULT_SAMPLEDATA_NAME,
-		    solutionVersion, publishUrl);
+		    solutionVersion, publishUrl, namespace);
 
 		// update server_url in openmrs-infopath.js
 		Map<String, String> vars = new HashMap<String, String>();
@@ -234,7 +234,7 @@ public class PublishInfoPath {
 
 	// Prepare template file (update solutionVersion and href)
 	private static void prepareTemplate(File tempDir, String fileName, String solutionVersion,
-	    String publishUrl) {
+	    String publishUrl, String namespace) {
 		File file = new File(tempDir, fileName);
 		if (file == null) {
 			log.warn("Missing file: '" + fileName + "'");
@@ -247,6 +247,16 @@ public class PublishInfoPath {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			doc = db.parse(file);
+			
+			// set namespace
+			String tag = "form";
+			Element elem = getSingleElement(doc, tag);
+			if (elem == null) {
+				log.warn("Could not locate " + tag + " element in " + file.getName());
+				return;
+			}
+			elem.setAttribute("xmlns:openmrs", namespace);
+			
 			Node root = doc.getDocumentElement().getParentNode();
 			NodeList children = root.getChildNodes();
 			log.debug("Scanning for processing instructions");

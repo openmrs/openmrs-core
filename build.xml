@@ -42,7 +42,7 @@
 	
 	<available file="${env.OPENMRS_BUILD_PROPERTIES_FILE}" property="env.file.exists"/>
 	<available file="${user.home}/Application Data/OpenMRS/OPENMRS-build.properties" property="appdata.file.exists"/>
-	<available file="${user.home}/.OPENMRS-build.properties" property="unix.file.exists"/>
+	<available file="${user.home}/.OpenMRS/OPENMRS-build.properties" property="unix.file.exists"/>
 	<if>
 		<equals arg1="${env.file.exists}" arg2="true" />
 		<then>

@@ -10,6 +10,7 @@
 	Context context = (Context)session.getAttribute(org.openmrs.web.WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 	pageContext.setAttribute("vars", context.getAdministrationService().getSystemVariables());
 	pageContext.setAttribute("formEntryVars", context.getFormEntryService().getSystemVariables());
+	pageContext.setAttribute("schedVars", context.getSchedulerService().getSystemVariables());
 %>
 	
 <br />
@@ -45,5 +46,20 @@
 </table>
 
 <br/><br/>
+<h3><spring:message code="Scheduler.header"/></h3>
+<table cellpadding="4" cellspacing="0">
+	<tr>
+		<th><spring:message code="SystemInfo.name"/></th>
+		<th><spring:message code="SystemInfo.value"/></th>
+	</tr>
+	<c:forEach items="${schedVars}" var="var" varStatus="status">
+		<tr class="<c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">
+			<td>${var.key}</td>
+			<td>${var.value}</td>
+		</tr>
+	</c:forEach>
+</table>
 
+
+<br/><br/>
 <%@ include file="/WEB-INF/template/footer.jsp" %>

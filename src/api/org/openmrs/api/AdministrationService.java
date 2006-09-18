@@ -846,15 +846,22 @@ public class AdministrationService {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ADMIN_FUNCTIONS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_ADMIN_FUNCTIONS);
 		TreeMap<String,String> systemVariables = new TreeMap<String,String>();
+		systemVariables.put("OPENMRS_VERSION", String.valueOf(OpenmrsConstants.OPENMRS_VERSION));
+		systemVariables.put("DATABASE_VERSION_EXPECTED", String.valueOf(OpenmrsConstants.DATABASE_VERSION_EXPECTED));
+		systemVariables.put("DATABASE_VERSION", String.valueOf(OpenmrsConstants.DATABASE_VERSION));
+		systemVariables.put("DATABASE_NAME",OpenmrsConstants.DATABASE_NAME);
+		systemVariables.put("DATABASE_BUSINESS_NAME",OpenmrsConstants.DATABASE_BUSINESS_NAME);
 		systemVariables.put("OBSCURE_PATIENTS", String.valueOf(OpenmrsConstants.OBSCURE_PATIENTS));
 		systemVariables.put("OBSCURE_PATIENTS_FAMILY_NAME",OpenmrsConstants.OBSCURE_PATIENTS_FAMILY_NAME);
 		systemVariables.put("OBSCURE_PATIENTS_GIVEN_NAME",OpenmrsConstants.OBSCURE_PATIENTS_GIVEN_NAME);
 		systemVariables.put("OBSCURE_PATIENTS_MIDDLE_NAME",OpenmrsConstants.OBSCURE_PATIENTS_MIDDLE_NAME);
-		systemVariables.put("DATABASE_NAME",OpenmrsConstants.DATABASE_NAME);
-		systemVariables.put("DATABASE_BUSINESS_NAME",OpenmrsConstants.DATABASE_BUSINESS_NAME);
-		systemVariables.put("DATABASE_VERSION",OpenmrsConstants.DATABASE_VERSION);
-		systemVariables.put("DATABASE_VERSION_EXPECTED",OpenmrsConstants.DATABASE_VERSION_EXPECTED);
 		systemVariables.put("STOP_WORDS",OpenmrsConstants.STOP_WORDS().toString());
+		systemVariables.put("MODULE_REPOSITORY_PATH", String.valueOf(OpenmrsConstants.MODULE_REPOSITORY_PATH));
+		systemVariables.put("OPERATING_SYSTEM_KEY", String.valueOf(OpenmrsConstants.OPERATING_SYSTEM_KEY));
+		systemVariables.put("OPERATING_SYSTEM", String.valueOf(OpenmrsConstants.OPERATING_SYSTEM));
+		systemVariables.put("OPERATING_SYSTEM_WINDOWS_XP", String.valueOf(OpenmrsConstants.OPERATING_SYSTEM_WINDOWS_XP));
+		systemVariables.put("OPERATING_SYSTEM_LINUX", String.valueOf(OpenmrsConstants.OPERATING_SYSTEM_LINUX));
+		
 		return systemVariables;
 	}
 	

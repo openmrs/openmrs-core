@@ -6,10 +6,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.Timer;
+import java.util.TreeMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOContext;
 import org.openmrs.scheduler.Schedulable;
@@ -18,6 +21,7 @@ import org.openmrs.scheduler.SchedulerConstants;
 import org.openmrs.scheduler.SchedulerException;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.TaskConfig;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  *  Simple scheduler service that uses JDK timer to trigger and execute scheduled tasks.
@@ -40,7 +44,7 @@ public class TimerSchedulerService implements SchedulerService {
 	 *  TODO I think this should actually be the instance of the specific DAO that is needed by the service (SchedulerDAO).
 	 */
 	private DAOContext daoContext;
-	
+
 	/**
 	 * Scheduled Task Map
 	 */
@@ -339,6 +343,14 @@ public class TimerSchedulerService implements SchedulerService {
 	public void setChangedMetadata(TaskConfig task) {
 		task.setChangedBy(context.getAuthenticatedUser());
 		task.setDateChanged(new Date());
+	}
+	
+	public SortedMap<String,String> getSystemVariables() {
+		TreeMap<String,String> systemVariables = new TreeMap<String,String>();
+		systemVariables.put("SCHEDULER_USERNAME", String.valueOf(SchedulerConstants.SCHEDULER_USERNAME));
+		systemVariables.put("SCHEDULER_PASSWORD", String.valueOf(SchedulerConstants.SCHEDULER_PASSWORD.replaceAll(".", "*")));
+		systemVariables.put("SCHEDULER_MILLIS_PER_SECOND", String.valueOf(SchedulerConstants.SCHEDULER_MILLIS_PER_SECOND));
+		return systemVariables;
 	}
 	
   //*******************************************************************************************
