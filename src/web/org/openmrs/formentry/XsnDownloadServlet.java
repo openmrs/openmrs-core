@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -45,7 +46,8 @@ public class XsnDownloadServlet extends HttpServlet {
 			return;
 		}
 
-		response.setHeader("Content-Type", "application/ms-infopath.xml");
+		response.setHeader("Content-Type", "text/plain");
+		
 
 		// since we've got a "/formentry/form/*" servlet-mapping,
 		// getServletPath() will only return /formentry/form.
@@ -61,7 +63,9 @@ public class XsnDownloadServlet extends HttpServlet {
 		log.debug("url = " + url);
 
 		try {
-			FileInputStream formStream = new FileInputStream(url);
+			File file = new File(url);
+			response.setHeader("Last-Modified", new Date(file.lastModified()).toString());
+			FileInputStream formStream = new FileInputStream(file);
 			OpenmrsUtil.copyFile(formStream, response.getOutputStream());
 		} 
 		catch (FileNotFoundException e) {
