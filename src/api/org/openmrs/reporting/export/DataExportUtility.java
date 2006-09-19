@@ -17,6 +17,7 @@ import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
+import org.openmrs.api.APIException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
@@ -101,10 +102,20 @@ public class DataExportUtility {
 	}
 	
 	public void setPatientId(Integer patientId) {
-		long t = new Date().getTime();
+		// remove last patient from maps to allow for garbage collection
+		if (this.patientId != null) {
+			for (Map<Integer, Encounter> map : patientEncounterMap.values())
+				map.remove(this.patientId);
+			for (Map<Integer, Encounter> map : patientFirstEncounterMap.values())
+				map.remove(this.patientId);
+			for (Map<Integer, List<Obs>> map : conceptObsMap.values())
+				map.remove(this.patientId);
+			for (Map<Integer, Object> map : attributeMap.values())
+				map.remove(this.patientId);
+		}
+		
 		setPatient(null);
 		this.patientId = patientId;
-		log.debug("execution time: " + (new Date().getTime() - t));
 	}
 	
 	/**
@@ -150,6 +161,8 @@ public class DataExportUtility {
 		if (patientEncounterMap.containsKey(encounterType))
 			return patientEncounterMap.get(encounterType).get(getPatientId());
 		
+		log.debug("getting first encounters for type: " + encounterType);
+		
 		EncounterType type = null;
 		if (!encounterType.equals(""))
 			type = context.getEncounterService().getEncounterType(encounterType);
@@ -169,6 +182,8 @@ public class DataExportUtility {
 		if (patientFirstEncounterMap.containsKey(encounterType))
 			return patientFirstEncounterMap.get(encounterType).get(getPatientId());
 		
+		log.debug("getting first encounters for type: " + encounterType);
+		
 		EncounterType type = null;
 		if (!encounterType.equals(""))
 			type = context.getEncounterService().getEncounterType(encounterType);
@@ -185,22 +200,19 @@ public class DataExportUtility {
 	// methods
 	
 	public Concept getConcept(String conceptName) throws Exception {
-		long t = new Date().getTime();
 		if (conceptName == null)
 			throw new Exception("conceptName cannot be null");
 		
-		if (conceptNameMap.containsKey(conceptName)) {
-			Concept c = conceptNameMap.get(conceptName);
-			log.debug("execution time: " + (new Date().getTime() - t));
-			return c;
-		}
+		if (conceptNameMap.containsKey(conceptName))
+			return conceptNameMap.get(conceptName);
+		
+		log.debug("getting concept object for name: " + conceptName);
 		
 		Concept c = context.getConceptService().getConceptByName(conceptName);
 		if (c == null)
-			throw new Exception("A Concept with name '" + conceptName + "' was not found");
+			throw new APIException("A Concept with name '" + conceptName + "' was not found");
 		
 		conceptNameMap.put(conceptName, c);
-		log.debug("execution time: " + (new Date().getTime() - t));
 		return c;
 	}
 	
@@ -210,7 +222,8 @@ public class DataExportUtility {
 			patientIdObsMap = conceptObsMap.get(c);
 		}
 		else {
-			patientIdObsMap = context.getPatientSetService().getObservations(patientSet, c);
+			log.debug("getting obs list for concept: " + c);
+			patientIdObsMap = context.getPatientSetService().getObservations(getPatientSet(), c);
 			conceptObsMap.put(c, patientIdObsMap);
 		}
 		return patientIdObsMap.get(patientId);
@@ -248,6 +261,7 @@ public class DataExportUtility {
 			patientIdAttrMap = attributeMap.get(key);
 		}
 		else {
+			log.debug("getting patient attrs: " + key);
 			patientIdAttrMap = context.getPatientSetService().getPatientAttributes(patientSet, className, property, returnAll);
 			attributeMap.put(key, patientIdAttrMap);
 		}
@@ -273,10 +287,9 @@ public class DataExportUtility {
 	 * @throws Exception
 	 */
 	public List<Obs> getLastNObs(Integer n, Concept concept) throws Exception {
-		long t = new Date().getTime();
-		
 		List<Obs> returnList = getObs(concept);
 		
+		//log.debug("Got obs list. size: " + returnList.size());
 		if (returnList == null)
 			returnList = new Vector<Obs>();
 		
@@ -285,7 +298,7 @@ public class DataExportUtility {
 			returnList.add(new Obs());
 		
 		List<Obs> rList = returnList.subList(0, n);
-		log.debug("execution time: " + (new Date().getTime() - t));
+
 		return rList;
 	}
 	
@@ -356,7 +369,7 @@ public class DataExportUtility {
 	}
 	
 	/**
-	 * Get all obs for the current patient that match this <code>obs.concept</code>=<code>concept>
+	 * Get all obs for the current patient that match this <code>obs.concept</code>=<code>concept</code>
 	 * and <code>obs.valueCoded</code>=<code>valueCoded</code> 
 	 * 
 	 * @param concept

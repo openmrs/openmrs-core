@@ -66,7 +66,7 @@ public final class Listener implements ServletContextListener {
 							"OpenMRS";
 						
 				filepath = filepath + File.separator + filename;
-				log.warn("Looking for property file in directory: " + filepath);
+				log.warn("Looking for property file: " + filepath);
 				try {
 					propertyStream = new FileInputStream(filepath);
 				}

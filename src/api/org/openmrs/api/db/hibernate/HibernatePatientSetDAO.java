@@ -754,7 +754,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		
 		// set up the return map
 		for (Encounter enc : encounters) {
-			Integer ptId = enc.getPatient().getPatientId();
+			Integer ptId = enc.getPatientId();
 			if (!ret.containsKey(ptId))
 				ret.put(ptId, enc);
 		}
@@ -785,7 +785,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		
 		// set up the return map
 		for (Encounter enc : encounters) {
-			Integer ptId = enc.getPatient().getPatientId();
+			Integer ptId = enc.getPatientId();
 			if (!ret.containsKey(ptId))
 				ret.put(ptId, enc);
 		}
@@ -1064,7 +1064,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		log.debug("criteria: " + criteria);
 		List<DrugOrder> temp = criteria.list();
 		for (DrugOrder regimen : temp) {
-			Integer ptId = regimen.getEncounter().getPatient().getPatientId();
+			Integer ptId = regimen.getEncounter().getPatientId();
 			List<DrugOrder> list = ret.get(ptId);
 			if (list == null) {
 				list = new ArrayList<DrugOrder>();

@@ -226,8 +226,13 @@ public class EncounterFormController extends SimpleFormController {
 					obsMapTemp.put(o, ff);
 				}
 				
-				// sort the temp list according the the FormFields.compare() method
-				Collections.sort(formFields, new FormFieldComparator());
+				try {
+					// sort the temp list according the the FormFields.compare() method
+					Collections.sort(formFields, new FormFieldComparator());
+				}
+				catch (Exception e) {
+					log.error("Error while sorting obs for encounter: " + encounter, e);
+				}
 				
 				// loop over the sorted formFields to add the corresponding
 				//  obs to the returned obs list

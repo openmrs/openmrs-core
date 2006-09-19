@@ -20,6 +20,7 @@ public class Encounter implements java.io.Serializable {
 	private Date encounterDatetime;
 	private Date dateCreated;
 	private Patient patient;
+	private Integer patientId;
 	private Location location;
 	private Form form;
 	private EncounterType encounterType;
@@ -240,6 +241,20 @@ public class Encounter implements java.io.Serializable {
 	public void setPatient(Patient patient) {
 		this.patient = patient;
 	}
+	
+	/**
+     * @return the patientId
+     */
+    public Integer getPatientId() {
+    	return patientId;
+    }
+
+	/**
+     * @param patientId the patientId to set
+     */
+    public void setPatientId(Integer patientId) {
+    	this.patientId = patientId;
+    }
 
 	/**
 	 * @return Returns the provider.

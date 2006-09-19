@@ -107,7 +107,7 @@ public class FormDownloadServlet extends HttpServlet {
 			throw new ServletException("Error while evaluating velocity defaults", e);
 		}
 
-		response.setHeader("Content-Type", "application/ms-infopath.xml");
+		response.setHeader("Content-Type", "application/ms-infopath.xml; charset=utf-8");
 		response.setHeader("Content-Disposition", "attachment; filename=" + title + ".infopathxml");
 		response.getOutputStream().print(xmldoc);
 	}
@@ -156,7 +156,7 @@ public class FormDownloadServlet extends HttpServlet {
 		}
 		else {
 			// Downloading from openmrs/admin/forms/form(Edit|SchemaDesign).form
-			response.setHeader("Content-Type", "application/ms-infopath.xml; charset=utf-8");
+			response.setHeader("Content-Type", "application/octect-stream; charset=utf-8");
 
 			// Load form object and default form url
 			Form form = context.getFormEntryService().getForm(formId);

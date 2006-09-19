@@ -118,10 +118,10 @@ dojo.addOnLoad( function(){
 				var newParent = tree;
 				
 				if (treeSelector.selectedNode)
-					newParent = treeSelector.selectedNode;
+					newParent = treeSelector.selectedNode.parent;
 				
 				// create a new node for this item so that it mimicks the "move" functionality
-				var node = addNode(newParent, copyObject(child.data));
+				var node = addNode(newParent, copyObject(child.data), null, null, null, treeSelector.selectedNode);
 				
 				// newParent.doAddChild(child, newParent.children.length);
 				
@@ -332,10 +332,25 @@ var nodeSelected = function(val) {
 	this.execute = function(msg) {
 		// mimic drag and drop "move" action
 		if (msg.node) {
-			var node = tree;
-			if (treeSelector.selectedNode)
-				node = treeSelector.selectedNode;
-			tree.controller.move(msg.node, node, node.children.length);
+			if (treeSelector.selectedNode) {
+				var node = treeSelector.selectedNode;
+				var parent = treeSelector.selectedNode.parent;
+				if (parent == null)
+					parent = tree;
+				var insertIndex = parent.children.length;
+				var children = parent.children;
+				if (children != null) {
+					for (var i=0; i < children.length; i++) {
+						if (children[i] == node) {
+							insertIndex = i + 1;
+							break;
+						}
+					}
+				}
+				tree.controller.move(msg.node, parent, insertIndex);
+			}
+			else
+				tree.controller.move(msg.node, tree, tree.children.length);
 		}
 	};
 }
@@ -751,7 +766,7 @@ function sortWeightError() {
 	return null;
 }
 
-function addNode(addToTree, data, label, attemptCount, insertNode) {
+function addNode(addToTree, data, label, attemptCount, insertNode, insertAfterNode) {
 	if (data) {
 		var parent;
 		if (data.parent && typeof data.parent != "object")
@@ -797,8 +812,24 @@ function addNode(addToTree, data, label, attemptCount, insertNode) {
 		if (formPublished)
 			node.actionsDisabled = [node.actions.ADDCHILD, node.actions.REMOVE];
 		
+		var insertIndex = null;
+		
 		if (insertNode)
-			parent.addChild(node, 0);
+			insertIndex = 0;
+		else if (insertAfterNode) {
+			var children = parent.children;
+			if (children != null) {
+				for (var i=0; i < children.length; i++) {
+					if (children[i] == insertAfterNode) {
+						insertIndex = i + 1;
+						break;
+					}
+				}
+			}
+		}
+		
+		if (insertIndex != null)
+			parent.addChild(node, insertIndex);
 		else
 			parent.addChild(node);
 		

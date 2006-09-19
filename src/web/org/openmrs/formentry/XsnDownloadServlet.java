@@ -46,7 +46,7 @@ public class XsnDownloadServlet extends HttpServlet {
 			return;
 		}
 
-		response.setHeader("Content-Type", "text/plain");
+		response.setHeader("Content-Type", "text/plain; charset=utf-8");
 		
 
 		// since we've got a "/formentry/form/*" servlet-mapping,
