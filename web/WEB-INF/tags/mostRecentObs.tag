@@ -5,7 +5,9 @@
 <%@ attribute name="label" required="false" type="java.lang.String" %>
 <%@ attribute name="showUnits" required="false" type="java.lang.Boolean" %>
 <%@ attribute name="showDate" required="false" type="java.lang.Boolean" %>
+<%@ attribute name="labelIfNone" required="false" type="java.lang.String" %>
 
+<c:set var="mostRecentObs_foundAny" value="false" />
 <c:forEach items="${openmrs:sort(openmrs:filterObsByConcept(observations, concept), 'obsDatetime', true)}" var="o" end="0">
 	<c:if test="${label != null}">
 		<span class="obsLabel"><spring:message code="${label}" />:</span>
@@ -19,4 +21,9 @@
 		</openmrs:concept>
 	</c:if>
 	<span class="obsDate"><c:if test="${showDate}">(<openmrs:formatDate date="${o.obsDatetime}" type="medium" />)</c:if></span>
+	<c:set var="mostRecentObs_foundAny" value="true" />
 </c:forEach>
+
+<c:if test="${labelIfNone != null && mostRecentObs_foundAny == 'false'}">
+	<spring:message code="${labelIfNone}"/>
+</c:if>

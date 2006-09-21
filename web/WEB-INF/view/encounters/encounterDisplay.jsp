@@ -23,28 +23,52 @@
 </script>
 
 <div class="boxHeader">
-	Encounter: <b>${model.encounter.encounterType.name}<b>
-		on <b>${model.encounter.encounterDatetime}</b>
-		at <b>${model.encounter.location}</b>
+	<spring:message code="Encounter.title"/>: <b>${model.encounter.encounterType.name}<b>
+		<spring:message code="general.onDate"/> <b><openmrs:formatDate date="${model.encounter.encounterDatetime}"/></b>
+		<spring:message code="general.atLocation"/> <b>${model.encounter.location}</b>
 	<br/>
-	Form: <b>${model.form.name}</b>
+	<spring:message code="Encounter.form"/>: <b>${model.form.name}</b>
 	<br/>
+	<spring:message code="FormField.pageNumber"/>
 	<c:forEach var="pn" items="${model.pageNumbers}">
-		<a href="javascript:showPage(${pn})">${pn}</a>
+		<%-- TODO: get rid of
+			style="color: white"
+		--%>
+		&nbsp;&nbsp;
+		<a style="color: white" href="javascript:showPage(${pn})">${pn}</a>
+		&nbsp;&nbsp;
 	</c:forEach>
 </div>
 
 <c:forEach var="pageNumber" items="${model.pageNumbers}">
-
 	<div id="page_${pageNumber}">
-		<h4><u>Page ${pageNumber}</u></h4>
-
 		<table class="encounterFormTable">
+			<tr><td align="center" colspan="2" style="background-color: black; color: white;">Page ${pageNumber}</td></tr>
 		<c:forEach var="fieldHolder" items="${model.data}">
 			<c:if test="${fieldHolder.label.pageNumber == pageNumber && (model.showBlankFields || not empty fieldHolder.observations)}">
 				<tr valign="top">
 					<th>${fieldHolder.label}</th>
 					<td>
+						<c:if test="${not empty fieldHolder.obsGroups}">
+							<table class="borderedTable">
+								<tr>
+									<c:forEach var="conc" items="${fieldHolder.obsGroupConcepts}">
+										<th class="smallHeader"><openmrs_tag:concept conceptId="${conc.conceptId}"/></th>
+									</c:forEach>
+								</tr>
+								<c:forEach var="groupEntry" items="${fieldHolder.obsGroups}">
+								<tr>
+									<c:forEach var="obsList" items="${groupEntry.value.observationsByConcepts}">
+										<td>
+										<c:forEach var="obs" items="${obsList}">
+											<b>${obs.valueAsString[model.locale]}</b>
+										</c:forEach>
+										</td>
+									</c:forEach>
+								</tr>
+								</c:forEach>
+							</table>
+						</c:if>
 						<table>
 						<c:forEach var="obsEntry" items="${fieldHolder.observations}">
 							<tr>
@@ -64,26 +88,6 @@
 							</tr>
 						</c:forEach>
 						</table>
-						<c:if test="${not empty fieldHolder.obsGroups}">
-							<table border="1">
-								<tr>
-									<c:forEach var="conc" items="${fieldHolder.obsGroupConcepts}">
-										<td><small><openmrs_tag:concept conceptId="${conc.conceptId}"/></small></td>
-									</c:forEach>
-								</tr>
-								<c:forEach var="groupEntry" items="${fieldHolder.obsGroups}">
-								<tr>
-									<c:forEach var="obsList" items="${groupEntry.value.observationsByConcepts}">
-										<td>
-										<c:forEach var="obs" items="${obsList}">
-											<b>${obs.valueAsString[model.locale]}</b>
-										</c:forEach>
-										</td>
-									</c:forEach>
-								</tr>
-								</c:forEach>
-							</table>
-						</c:if>
 					</td>
 				</tr>
 			</c:if>

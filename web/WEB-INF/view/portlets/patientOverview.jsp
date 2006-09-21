@@ -4,6 +4,12 @@
 <openmrs:htmlInclude file="${pageContext.request.contextPath}/dwr/engine.js" />
 <openmrs:htmlInclude file="${pageContext.request.contextPath}/dwr/util.js" />
 
+<div class="box">
+	<openmrs:portlet url="customMostRecentObs" size="normal" parameters="globalPropertyKey=dashboard.overview.showConcepts" />
+</div>
+
+<p>
+
 <div class="boxHeader"><spring:message code="Program.title"/></div>
 <div class="box">
 	<openmrs:portlet url="patientPrograms" id="patientPrograms" patientId="${patient.patientId}" parameters="allowEdits=true"/>

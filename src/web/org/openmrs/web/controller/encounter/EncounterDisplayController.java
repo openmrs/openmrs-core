@@ -53,9 +53,19 @@ public class EncounterDisplayController implements Controller {
 				temp = OpenmrsUtil.comparewithNullAsGreatest(fieldNumber, other.fieldNumber);
 			if (temp == 0)
 				temp = OpenmrsUtil.comparewithNullAsGreatest(fieldPart, other.fieldPart);
-			if (temp == 0)
+			if (temp == 0 && pageNumber == null && fieldNumber == null && fieldPart == null)
 				temp = OpenmrsUtil.comparewithNullAsGreatest(sortWeight, other.sortWeight);
 			return temp;
+		}
+		public int hashCode() {
+			int ret = 0;
+			if (pageNumber != null)
+				ret += pageNumber * 100000;
+			if (fieldNumber != null)
+				ret += fieldNumber;
+			if (fieldPart != null)
+				ret += fieldPart.hashCode();
+			return ret;
 		}
 		public Float getSortWeight() {
 			return sortWeight;

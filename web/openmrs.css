@@ -729,7 +729,11 @@ span.noOrdersMessage {
 }
 
 .encounterFormTable tr {
-	background-color: #f0f0f0;
+	font-size: 0.9em;
+}
+
+.encounterFormTable th {
+	background-color: whitesmoke;
 }
 
 #eventCalendarPortlet {
@@ -772,6 +776,29 @@ span.noOrdersMessage {
 
 .addLink {
 	font-size: 0.9em;
+}
+
+table.borderedTable {
+	border: 2px solid black;
+	border-spacing: 0px;
+	border-collapse: collapse;
+	margin: 2px;
+}
+
+table.borderedTable th {
+	background-color: whitesmoke;
+	border: 2px solid black;
+	padding: 3px;
+}
+
+table.borderedTable td {
+	border: 1px solid black;
+	padding: 3px;
+}
+
+th.smallHeader {
+	font-weight: normal;
+	font-size: smaller;
 }
 
 #patientPrintableSummary {

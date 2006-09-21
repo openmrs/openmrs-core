@@ -51,6 +51,7 @@
 		</div>
 	</openmrs:hasPrivilege>
 	
+	<%--
 	<openmrs:hasPrivilege privilege="View Observations">
 		<div id="encounterListObs" >
 			<div class="boxHeader"><spring:message code="Obs" /></div>		
@@ -71,7 +72,9 @@
 			</div>
 		</div>
 	</openmrs:hasPrivilege>
-	
+	--%>
+
+	<%--
 	<openmrs:hasPrivilege privilege="Add Observations,Edit Observations">
 		<div id="encounterAddObs" >
 			<div class="boxHeader"><spring:message code="Obs.add" /></div>		
@@ -97,7 +100,7 @@
 							</td>
 							<td>
 								<spring:message code="Obs.concept"/>
-								<%--<openmrs:fieldGen type="org.openmrs.Concept" formFieldName="conceptId" val="" parameters="noBind=true|fieldLength=12" />--%>
+								<% -- <openmrs:fieldGen type="org.openmrs.Concept" formFieldName="conceptId" val="" parameters="noBind=true|fieldLength=12" /> -- %>
 								<select id="conceptId" name="conceptId">
 									<option value="<openmrs:globalProperty key="concept.weight" defaultValue="" />"><spring:message code="Patient.weight"/></option>
 									<option value="<openmrs:globalProperty key="concept.cd4_count" defaultValue="" />"><spring:message code="Patient.cd4"/></option>
@@ -118,6 +121,7 @@
 			</div>
 		</div>
 	</openmrs:hasPrivilege>
+	--%>
 	
 	<script type="text/javascript" src="<%= request.getContextPath() %>/dwr/interface/DWRObsService.js"></script>
 	<script type="text/javascript" src="<%= request.getContextPath() %>/dwr/interface/DWRPatientService.js"></script>
@@ -126,24 +130,29 @@
 	<script>
 		<!-- // begin
 
-
+		<%--
 		var obsTableCellFunctions = [
 			function(data) { return "" + data.encounter; },
 			function(data) { return "" + data.conceptName; },
 			function(data) { return "" + data.value; },
 			function(data) { return "" + data.datetime; }
 		];
+		--%>
 
 
 		function handleGetObservations(encounterId) { 
+			<%--
 			DWRObsService.getObservations(encounterId, handleRefreshObsData);
 			document.getElementById("encounterId").value = encounterId;
-			window.open('encounterDisplay.list?encounterId=' + encounterId, 'formWindow', 'toolbar=no,width=800,height=600,resizable=yes,scrollbars=yes');
+			--%>
+			window.open('encounterDisplay.list?encounterId=' + encounterId, 'formWindow', 'toolbar=no,width=800,height=600,resizable=yes,scrollbars=yes,showBlankFields=true');
 		}
 
+		<%--
 		function handleRefreshObsData(data) {
   			handleRefreshTable('obsTable', data, obsTableCellFunctions);
 		}
+		--%>
 
 		function handleRefreshTable(id, data, func) {
 			DWRUtil.removeAllRows(id);
