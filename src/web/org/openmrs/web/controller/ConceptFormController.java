@@ -44,7 +44,6 @@ import org.springframework.web.bind.RequestUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.springframework.web.servlet.support.RequestContextUtils;
 import org.springframework.web.servlet.view.RedirectView;
 
 public class ConceptFormController extends SimpleFormController {
@@ -91,7 +90,6 @@ public class ConceptFormController extends SimpleFormController {
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		Concept concept = (Concept)object;
-		Locale locale = RequestContextUtils.getLocale(request);
 		
 		if (context != null && context.isAuthenticated()) {
 			
@@ -343,6 +341,8 @@ public class ConceptFormController extends SimpleFormController {
 			Map<Double, Object[]> conceptSets = new TreeMap<Double, Object[]>();
 			Map<String, String> conceptAnswers = new TreeMap<String, String>();
 			Collection<Form> forms = new Vector<Form>();
+			Map<Integer, String> questionsAnswered = new TreeMap<Integer, String>();
+			
 			boolean isNew = true;
 			
 			if (conceptId != null) {
@@ -400,6 +400,13 @@ public class ConceptFormController extends SimpleFormController {
 			    	map.put("previousConcept", cs.getPrevConcept(concept));
 			    	map.put("nextConcept", cs.getNextConcept(concept));
 			    	forms = context.getFormService().getForms(concept);
+			    	for (Concept c : context.getConceptService().getQuestionsForAnswer(concept)) {
+			    		ConceptName cn = c.getName(locale);
+			    		if (cn == null)
+			    			questionsAnswered.put(c.getConceptId(), "No Name Defined");
+			    		else
+			    			questionsAnswered.put(c.getConceptId(), cn.getName());
+			    	}
 				}
 				
 				if (context.isAuthenticated())
@@ -427,6 +434,7 @@ public class ConceptFormController extends SimpleFormController {
 	    	map.put("conceptSets", conceptSets);
 	    	map.put("conceptAnswers", conceptAnswers);
 	    	map.put("formsInUse", forms);
+	    	map.put("questionsAnswered", questionsAnswered);
 			
 	    	//get complete class and datatype lists 
 			map.put("classes", cs.getConceptClasses());

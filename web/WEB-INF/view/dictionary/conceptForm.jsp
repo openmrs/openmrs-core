@@ -394,6 +394,33 @@
 		</tr>
 	</cif>
 	-->
+	
+	<tr><td colspan="2"><br/></td></tr>
+	
+	<c:if test="${fn:length(questionsAnswered) > 0}">
+		<tr>
+			<th valign="top"><spring:message code="dictionary.questionsAnswered" /></th>
+			<td>
+				<c:forEach items="${questionsAnswered}" var="question">
+					<a href="concept.htm?conceptId=${question.key}">${question.value}<br/>
+				</c:forEach>
+			</td>
+		</tr>
+	</c:if>
+	
+	<c:if test="${fn:length(formsInUse) > 0}">
+		<tr>
+			<th valign="top"><spring:message code="dictionary.forms" /></th>
+			<td>
+				<c:forEach items="${formsInUse}" var="form">
+					<a href="${pageContext.request.contextPath}/admin/forms/formSchemaDesign.form?formId=${form.formId}">${form.name}<br/>
+				</c:forEach>
+			</td>
+		</tr>
+	</c:if>
+	
+	<tr><td colspan="2"><br/></td></tr>
+	
 	<tr>	
 		<td valign="top">
 			<b><spring:message code="Concept.resources" /></b>

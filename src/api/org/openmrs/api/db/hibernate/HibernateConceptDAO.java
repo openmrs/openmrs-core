@@ -697,9 +697,9 @@ public class HibernateConceptDAO implements
 		
 		Session session = HibernateUtil.currentSession();
 		// TODO broken until Hibernate fixes component and HQL code
-		String q = "select c from Concept c where c.answers.answerConcept.conceptId = :answerId";
+		String q = "select c from Concept c join c.answers ca where ca.answerConcept = :answer";
 		Query query = session.createQuery(q);
-		query.setParameter("answerId", concept.getConceptId());
+		query.setParameter("answer", concept);
 		
 		return query.list();
 	}

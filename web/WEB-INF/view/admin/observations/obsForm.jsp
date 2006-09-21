@@ -127,8 +127,14 @@
 				$('valueNumeric').style.display = "";
 				DWRConceptService.getConceptNumericUnits(fillNumericUnits, tmpConcept.conceptId);
 			}
-			else if (datatype == 'CWE')
+			else if (datatype == 'CWE') {
 				$('valueCoded').style.display = "";
+				// clear any old values:
+				var codedSelection = dojo.widget.manager.getWidgetById("codedSelection");
+				codedSelection.displayNode.innerHTML = "";
+				codedSelection.descriptionDisplayNode.innerHTML = "";
+				codedSelection.hiddenInputNode.value = "";
+			}
 			else if (datatype == 'ST')
 				$('valueText').style.display = "";
 			else if (datatype == 'DT' || datatype == 'TS' || datatype == 'TM')
@@ -136,7 +142,7 @@
 			// TODO move datatype 'TM' to own time box.  How to have them select?
 			else {
 				$('valueInvalid').style.display = "";
-				//DWRConceptService.getQuestionsForAnswer(fillValueInvalidPossible, tmpConcept.conceptId);
+				DWRConceptService.getQuestionsForAnswer(fillValueInvalidPossible(tmpConcept), tmpConcept.conceptId);
 			}
 		}
 	}
@@ -171,29 +177,40 @@
 		}
 	}
 	
-	function fillValueInvalidPossible(questions) {
-		var div = $('valueInvalidPossibleConcepts');
-		var txt = documentCreateTextNode('<spring:message code="Obs.valueInvalid.didYouMean"/> ');
-		for (var i=0; i<questions.length && i < 5; i++) {
-			if (i == 0)
-				div.appendChild(txt);
-			var concept = questions[i];
-			var link = document.createElement("a");
-			link.href = "#selectAsQuestion";
-			link.onclick = function() { selectNewQuestion(concept.conceptId); return false; };
-			link.title = concept.description;
-			link.innerHTML = concept.name;
-			if (i == (questions.length - 1))
-				link.innerHTML += "?";
-			else
-				link.innerHTML += ", ";
-			div.appendChild(link);
+	var fillValueInvalidPossible = function(invalidConcept) {
+		return function(questions) {
+			var div = $('valueInvalidPossibleConcepts');
+			div.innerHTML = "";
+			var txt = document.createTextNode('<spring:message code="Obs.valueInvalid.didYouMean"/> ');
+			for (var i=0; i<questions.length && i < 10; i++) {
+				if (i == 0)
+					div.appendChild(txt);
+				var concept = questions[i];
+				var link = document.createElement("a");
+				link.href = "#selectAsQuestion";
+				link.onclick = selectNewQuestion(concept, invalidConcept);
+				link.title = concept.description;
+				link.innerHTML = concept.name;
+				if (i == (questions.length - 1) || i == 9)
+					link.innerHTML += "?";
+				else
+					link.innerHTML += ", ";
+				div.appendChild(link);
+			}
 		}
 	}
 	
-	function selectNewQuestion(conceptId) {
-		searchType = "concept";
-		DWRConceptService.getConcept(onSelect, conceptId);
+	var selectNewQuestion = function (question, answer) {
+		return function() {
+				var conceptSearch = dojo.widget.manager.getWidgetById("cSearch");
+				var codedSearch = dojo.widget.manager.getWidgetById("codedSearch");
+				var msg = new Object();
+				msg.objs = [question];
+				dojo.event.topic.publish(conceptSearch.eventNames.select, msg);
+				msg.objs = [answer];
+				dojo.event.topic.publish(codedSearch.eventNames.select, msg);
+				return false;
+		};
 	}
 	
 </script>
@@ -362,7 +379,7 @@
 		</spring:bind>
 	</tr>
 	<tr id="valueCoded">
-		<th><spring:message code="general.value"/></th>
+		<th valign="top"><spring:message code="general.value"/></th>
 		<td>
 			<spring:bind path="obs.valueCoded">
 				<div dojoType="ConceptSearch" widgetId="codedSearch" conceptId="${status.value.conceptId}" drugId="${obs.valueDrug.drugId}" showVerboseListing="true" includeDrugConcepts="true"></div>

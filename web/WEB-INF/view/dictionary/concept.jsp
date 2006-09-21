@@ -106,7 +106,7 @@
 <table id="conceptTable" cellpadding="2" cellspacing="0">
 	<tr>
 		<th><spring:message code="general.id"/></th>
-		<td colspan="${fn:length(locales)}">${concept.conceptId}</td>
+		<td>${concept.conceptId}</td>
 	</tr>
 	
 	<tr>
@@ -167,14 +167,14 @@
 		<th  title="<spring:message code="Concept.conceptClass.help"/>">
 			<spring:message code="Concept.conceptClass" />
 		</th>
-		<td valign="top" colspan="${fn:length(locales)}">
+		<td valign="top">
 			${concept.conceptClass.name}
 		</td>
 	</tr>
 	<c:if test="${concept.set}">
 		<tr id="setOptions">
 			<th valign="top"><spring:message code="Concept.conceptSets"/></th>
-			<td valign="top" colspan="${fn:length(locales)}">
+			<td valign="top">
 				<c:if test="${fn:length(conceptSets) == 0}"><spring:message code="Concept.conceptSets.empty"/></c:if>
 				<c:forEach items="${conceptSets}" var="set">
 					<a href="concept.htm?conceptId=${set.value[0]}">${set.value[1]} (${set.value[0]})</a><br/>
@@ -186,14 +186,14 @@
 		<th title="<spring:message code="Concept.datatype.help"/>">
 			<spring:message code="Concept.datatype" />
 		</th>
-		<td valign="top" colspan="${fn:length(locales)}">
+		<td valign="top">
 			${concept.datatype.name}
 		</td>
 	</tr>
 	<c:if test="${concept.datatype != null && concept.datatype.name == 'Coded'}">
 		<tr>
 			<th valign="top"><spring:message code="Concept.answers"/></th>
-			<td colspan="${fn:length(locales)}">
+			<td>
 				<c:forEach items="${conceptAnswers}" var="answer">
 					<a href="concept.htm?conceptId=${fn:substring(answer.key, 0, fn:indexOf(answer.key, '^'))}">${answer.value} (${fn:substring(answer.key, 0, fn:indexOf(answer.key, '^'))})</a><br/>
 				</c:forEach>
@@ -203,7 +203,7 @@
 	<c:if test="${concept.numeric}">
 		<tr>
 			<th valign="top"><spring:message code="ConceptNumeric.name"/></th>
-			<td colspan="${fn:length(locales)}">
+			<td>
 				<table border="0">
 					<tr>
 						<th></th>
@@ -248,7 +248,7 @@
 	</c:if>
 	<tr>
 		<th><spring:message code="Concept.version" /></th>
-		<td colspan="${fn:length(locales)}">
+		<td>
 			<spring:bind path="concept.version">
 				${status.value}
 			</spring:bind>
@@ -256,7 +256,7 @@
 	</tr>
 	<tr>
 		<th><spring:message code="general.retired" /></th>
-		<td colspan="${fn:length(locales)}">
+		<td>
 			<spring:bind path="concept.retired">
 				${status.value}
 			</spring:bind>
@@ -265,7 +265,7 @@
 	<c:if test="${!(concept.creator == null)}">
 		<tr>
 			<th><spring:message code="general.createdBy" /></th>
-			<td colspan="${fn:length(locales)}">
+			<td>
 				${concept.creator.firstName} ${concept.creator.lastName} -
 				<openmrs:formatDate date="${concept.dateCreated}" type="long" />
 			</td>
@@ -274,27 +274,54 @@
 	<c:if test="${!(concept.changedBy == null)}">
 		<tr>
 			<th><spring:message code="general.changedBy" /></th>
-			<td colspan="${fn:length(locales)}">
+			<td>
 				${concept.changedBy.firstName} ${concept.changedBy.lastName} -
 				<openmrs:formatDate date="${concept.dateChanged}" type="long" />
 			</td>
 		</tr>
 	</c:if>
+	
+	<tr><td colspan="2"><br/></td></tr>
+	
+	<c:if test="${fn:length(questionsAnswered) > 0}">
+		<tr>
+			<th valign="top"><spring:message code="dictionary.questionsAnswered" /></th>
+			<td>
+				<c:forEach items="${questionsAnswered}" var="question">
+					<a href="concept.htm?conceptId=${question.key}">${question.value}<br/>
+				</c:forEach>
+			</td>
+		</tr>
+	</c:if>
+	
+	<c:if test="${fn:length(formsInUse) > 0}">
+		<tr>
+			<th valign="top"><spring:message code="dictionary.forms" /></th>
+			<td>
+				<c:forEach items="${formsInUse}" var="form">
+					<a href="${pageContext.request.contextPath}/admin/forms/formSchemaDesign.form?formId=${form.formId}">${form.name}<br/>
+				</c:forEach>
+			</td>
+		</tr>
+	</c:if>
+	
+	<tr><td colspan="2"><br/></td></tr>
+	
 	<tr>
-		<th valign="top">Resources</th>
-		<td colspan="${fn:length(locales)}">
+		<th valign="top"><spring:message code="dictionary.resources" /></th>
+		<td>
 			<a href="index.htm?phrase=${conceptName.name}"
-			       target="_similar_terms">Similar Concepts</a><br/>
+			       target="_similar_terms"><spring:message code="dictionary.similarConcepts" /></a><br/>
 			<a href="http://www2.merriam-webster.com/cgi-bin/mwmednlm?book=Medical&va=${conceptName.name}"
-			       target="_blank">Merriam Webster&reg;</a><br/>
+			       target="_blank"><spring:message code="dictionary.merriam" />&reg;</a><br/>
 			<a href="http://www.google.com/search?q=${conceptName.name}"
-			       target="_blank">Google&trade;</a><br/>
+			       target="_blank"><spring:message code="dictionary.google" />&trade;</a><br/>
 			<a href="http://www.utdol.com/application/vocab.asp?search=${conceptName.name}&submit=Go"
-			       target="_blank">UpToDate&reg;</a><br/>
+			       target="_blank"><spring:message code="dictionary.upToDate" />&reg;</a><br/>
 			<a href="http://dictionary.reference.com/search?q=${conceptName.name}&submit=Go"
-			       target="_blank">Dictionary.com&reg;</a><br/>
+			       target="_blank"><spring:message code="dictionary.dictionaryCom" />&reg;</a><br/>
 			<a href="http://search.atomz.com/search/?sp-q=${conceptName.name}&sp-a=sp1001878c"
-			       target="_blank">Lab Tests Online</a>
+			       target="_blank"><spring:message code="dictionary.testsOnline" /></a>
 		</td>
 	</tr>
 </table>

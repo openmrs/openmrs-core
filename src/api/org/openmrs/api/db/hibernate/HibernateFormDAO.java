@@ -251,7 +251,8 @@ public class HibernateFormDAO implements
 	public List<Form> getForms(Concept c) throws DAOException {
 		Session session = HibernateUtil.currentSession();
 		
-		Query query = session.createQuery("from Form as form inner join form.formFields as ff inner join ff.field as f where f.concept = :concept");
+		String q = "select field.forms from Field field where field.concept = :concept";
+		Query query = session.createQuery(q);
 		query.setEntity("concept", c);
 		
 		return query.list();

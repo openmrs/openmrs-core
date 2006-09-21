@@ -3,6 +3,7 @@ package org.openmrs.formentry;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -110,9 +111,10 @@ public class FormEntryUtil {
 
 		File xsnFolder = new File(xsnFolderPath);
 		if (!xsnFolder.exists()) {
-			log.error("Could not open starter xsn folder directory: " + xsnFolderPath);
-			log.error("Be sure to set runtime property: formentry.starter_xsn_folder_path");
-			return null;
+			String err = "Could not open starter xsn folder directory: " + xsnFolderPath;
+			err += " -- Be sure to set runtime property: formentry.starter_xsn_folder_path";
+			log.error(err);
+			throw new FileNotFoundException(err);
 		}
 
 		// temp directory to hold the new xsn contents
