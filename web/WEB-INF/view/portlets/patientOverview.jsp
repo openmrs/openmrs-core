@@ -4,11 +4,14 @@
 <openmrs:htmlInclude file="${pageContext.request.contextPath}/dwr/engine.js" />
 <openmrs:htmlInclude file="${pageContext.request.contextPath}/dwr/util.js" />
 
-<div class="box">
-	<openmrs:portlet url="customMostRecentObs" size="normal" parameters="globalPropertyKey=dashboard.overview.showConcepts" />
-</div>
-
-<p>
+<openmrs:globalProperty var="conceptIdsToUse" key="dashboard.overview.showConcepts" />
+<c:if test="${not empty conceptIdsToUse}">
+	<div class="box">
+		<openmrs:portlet url="customMostRecentObs" size="normal" parameters="conceptIds=${conceptIdsToUse}" />
+	</div>
+	
+	<p>
+</c:if>
 
 <div class="boxHeader"><spring:message code="Program.title"/></div>
 <div class="box">
