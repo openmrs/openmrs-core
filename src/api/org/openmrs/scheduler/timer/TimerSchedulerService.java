@@ -347,8 +347,7 @@ public class TimerSchedulerService implements SchedulerService {
 	
 	public SortedMap<String,String> getSystemVariables() {
 		TreeMap<String,String> systemVariables = new TreeMap<String,String>();
-		systemVariables.put("SCHEDULER_USERNAME", String.valueOf(SchedulerConstants.SCHEDULER_USERNAME));
-		systemVariables.put("SCHEDULER_PASSWORD", String.valueOf(SchedulerConstants.SCHEDULER_PASSWORD.replaceAll(".", "*")));
+		// scheduler username and password can be found in the global properties
 		systemVariables.put("SCHEDULER_MILLIS_PER_SECOND", String.valueOf(SchedulerConstants.SCHEDULER_MILLIS_PER_SECOND));
 		return systemVariables;
 	}

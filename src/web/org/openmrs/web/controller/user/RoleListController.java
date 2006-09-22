@@ -114,7 +114,7 @@ public class RoleListController extends SimpleFormController {
 		if (context != null && context.isAuthenticated()) {
 			UserService us = context.getUserService();
 	    	for (Role r : us.getRoles()) {
-	    		if (OpenmrsConstants.CORE_ROLES().contains(r.getRole()))
+	    		if (OpenmrsConstants.CORE_ROLES().keySet().contains(r.getRole()))
 	    			roleList.put(r, true);
 	    		else
 	    			roleList.put(r, false);

@@ -2,10 +2,13 @@ package org.openmrs.scheduler;
 
 import java.util.Properties;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.ContextFactory;
 
 public class SchedulerUtil {
 
+	private static Log log = LogFactory.getLog(SchedulerUtil.class);
 	/**
 	 * Start the scheduler given the following start up properties.
 	 * @param p  properties used to start the service
@@ -15,12 +18,16 @@ public class SchedulerUtil {
 		// Override the Scheduler constants if specified by the user
 
 		String val = p.getProperty("scheduler.username", null);
-		if (val != null)
+		if (val != null) {
 			SchedulerConstants.SCHEDULER_USERNAME = val;
+			log.warn("Deprecated runtime property: scheduler.username. Value set in global_property in database now.");
+		}
 
 		val = p.getProperty("scheduler.password", null);
-		if (val != null)
+		if (val != null) {
 			SchedulerConstants.SCHEDULER_PASSWORD = val;
+			log.warn("Deprecated runtime property: scheduler.username. Value set in global_property in database now.");
+		}
 
 		startup();
 	}

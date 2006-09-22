@@ -278,11 +278,6 @@ public class Context implements ApplicationContextAware {
 	 * @return admin-related services
 	 */
 	public AdministrationService getAdministrationService() {
-		// TODO Add authentication on a per function level
-		if (!isAuthenticated()) {
-			log.warn("unauthorized access to administration service");
-			return null;
-		}
 		if (administrationService == null)
 			administrationService = new AdministrationService(this,
 					getDaoContext());
@@ -405,18 +400,26 @@ public class Context implements ApplicationContextAware {
 	/**
 	 * Gets the mail session required by the mail message service.
 	 * 
-	 * TODO I gave up trying to get this working within the Spring context.  
+	 * This function forces authentication via the getAdministrationService() method call
 	 * 
 	 * @return a java mail session
 	 */
 	private javax.mail.Session getMailSession() { 
 		if ( mailSession == null ) { 
 			
-			Properties props = OpenmrsConstants.MAIL_PROPERTIES;
+			AdministrationService adminService = getAdministrationService();
+			
+			Properties props = new Properties();
+			props.setProperty("mail.transport.protocol", adminService.getGlobalProperty("mail.transport_protocol"));
+			props.setProperty("mail.smtp.host", adminService.getGlobalProperty("mail.smtp_host"));
+			props.setProperty("mail.smtp.port", adminService.getGlobalProperty("mail.smtp_port"));
+			props.setProperty("mail.from", adminService.getGlobalProperty("mail.from"));
+			props.setProperty("mail.debug", adminService.getGlobalProperty("mail.debug"));
+			props.setProperty("mail.smtp.auth", adminService.getGlobalProperty("mail.smtp_auth"));
 
 			Authenticator auth = new Authenticator() { 
 				public PasswordAuthentication getPasswordAuthentication() { 
-					return new PasswordAuthentication(OpenmrsConstants.MAIL_USER, OpenmrsConstants.MAIL_PASSWORD);				
+					return new PasswordAuthentication(getAdministrationService().getGlobalProperty("mail.user"), getAdministrationService().getGlobalProperty("mail.password"));				
 				}
 			};
 			

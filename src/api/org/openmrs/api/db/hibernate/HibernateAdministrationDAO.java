@@ -16,6 +16,7 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
 import org.hibernate.NonUniqueObjectException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -32,8 +33,6 @@ import org.openmrs.FieldType;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
-import org.openmrs.Order;
-import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
@@ -968,7 +967,8 @@ public class HibernateAdministrationDAO implements
 		}
 	}
 
-	public void deleteConceptWord(Concept concept) throws DAOException {
+	@SuppressWarnings("unchecked")
+    public void deleteConceptWord(Concept concept) throws DAOException {
 		
 		Session session = HibernateUtil.currentSession();
 		
@@ -1076,7 +1076,8 @@ public class HibernateAdministrationDAO implements
 	}
 	
 	
-	private List<Concept> getParents(Concept current) {
+	@SuppressWarnings("unchecked")
+    private List<Concept> getParents(Concept current) {
 		Session session = HibernateUtil.currentSession();
 		List<Concept> parents = new Vector<Concept>();
 		
@@ -1204,7 +1205,7 @@ public class HibernateAdministrationDAO implements
 	 * @see org.openmrs.api.db.AdministrationService#getMRNGeneratorLog()
 	 */
 	public Collection getMRNGeneratorLog() {
-		Collection log = new Vector<Map>();
+		Collection<Map<String, Object>> log = new Vector<Map<String, Object>>();
 		
 		try {
 			Session session = HibernateUtil.currentSession();
@@ -1292,17 +1293,52 @@ public class HibernateAdministrationDAO implements
 	}
 	
 	
-	public Object getGlobalProperty(String propertyName) throws DAOException { 
+	public String getGlobalProperty(String propertyName) throws DAOException { 
 		return HibernateUtil.getGlobalProperty(propertyName);
 	}
 	
-	public List<GlobalProperty> getGlobalProperties() throws DAOException {
+	@SuppressWarnings("unchecked")
+    public List<GlobalProperty> getGlobalProperties() throws DAOException {
 		log.debug("getting all global properties");
 
 		Session session = HibernateUtil.currentSession();
 		List<GlobalProperty> globalProps = session.createCriteria(GlobalProperty.class).list();
 		
 		return globalProps;
+	}
+	
+	@SuppressWarnings("unchecked")
+    public void setGlobalProperties(List<GlobalProperty> props) throws DAOException {
+		log.debug("setting all global properties");
+		Session session = HibernateUtil.currentSession();
+		try {
+			HibernateUtil.beginTransaction();
+			
+			
+			// add all of the new properties
+			for (GlobalProperty prop : props) {
+				if (prop.getProperty() != null && prop.getProperty().length() > 0) {
+					try {
+						session.saveOrUpdate(prop);
+					}
+					catch (HibernateException e) {
+						session.merge(prop);
+					}
+				}
+			}
+			
+			// delete all properties not in this new list
+			for (GlobalProperty gp : getGlobalProperties()) {
+				if (!props.contains(gp))
+					deleteGlobalProperty(gp.getProperty());
+			}
+			
+			HibernateUtil.commitTransaction();
+		}
+		catch (Exception e) {
+			HibernateUtil.rollbackTransaction();
+			throw new DAOException(e);
+		}
 	}
 
 	public void deleteGlobalProperty(String propertyName) throws DAOException { 
@@ -1323,18 +1359,16 @@ public class HibernateAdministrationDAO implements
 	
 	public void setGlobalProperty(String propertyName, String propertyValue) throws DAOException {
 		Session session = HibernateUtil.currentSession();
-		//GlobalProperty prop = new GlobalProperty();
-		//prop.setProperty(propertyName);
-		//prop.setPropertyValue(propertyValue);
-
+		
 		try {
 			HibernateUtil.beginTransaction();
-			//session.saveOrUpdate(prop);
-			session.createQuery("update GlobalProperty set propertyValue = :v where property = :n")
-					.setParameter("v", propertyValue)
-					.setParameter("n", propertyName)
-					.executeUpdate();
-			HibernateUtil.commitTransaction();
+			if (propertyName != null && propertyName != "") {
+				session.createQuery("update GlobalProperty set propertyValue = :v where property = :n")
+						.setParameter("v", propertyValue)
+						.setParameter("n", propertyName)
+						.executeUpdate();
+				HibernateUtil.commitTransaction();
+			}
 		}
 		catch (Exception e) {
 			HibernateUtil.rollbackTransaction();
@@ -1344,9 +1378,7 @@ public class HibernateAdministrationDAO implements
 
 	public void addGlobalProperty(String propertyName, String propertyValue) throws DAOException {
 		Session session = HibernateUtil.currentSession();
-		GlobalProperty prop = new GlobalProperty();
-		prop.setProperty(propertyName);
-		prop.setPropertyValue(propertyValue);
+		GlobalProperty prop = new GlobalProperty(propertyName, propertyValue);
 
 		try {
 			HibernateUtil.beginTransaction();

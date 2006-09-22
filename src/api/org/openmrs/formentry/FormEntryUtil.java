@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URL;
 import java.nio.channels.FileChannel;
 import java.util.Properties;
 
@@ -26,41 +27,50 @@ public class FormEntryUtil {
 
 		// Override the FormEntry constants if specified by the user
 
+		// These runtime property settings can be removed once
+		//  everyone has migrated away and are only using global properties
+		
 		String val = p.getProperty("formentry.infopath.server_url", null);
-		if (val != null)
+		if (val != null) {
 			FormEntryConstants.FORMENTRY_INFOPATH_SERVER_URL = val;
-
-		//val = p.getProperty("formentry.infopath.publish_url", null);
-		//if (val != null)
-		//	FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_URL = val;
+			log.warn("Deprecated runtime property: formentry.infopath.server_url. Set value in global_property table in database now.");
+		}
 
 		val = p.getProperty("formentry.infopath.taskpane_caption", null);
-		if (val != null)
+		if (val != null) {
 			FormEntryConstants.FORMENTRY_INFOPATH_TASKPANE_CAPTION = val;
-
-		val = p.getProperty("formentry.infopath.initial_url", null);
-		if (val != null)
-			FormEntryConstants.FORMENTRY_INFOPATH_TASKPANE_INITIAL_URL = val;
-
-		val = p.getProperty("formentry.infopath.submit_url", null);
-		if (val != null)
-			FormEntryConstants.FORMENTRY_INFOPATH_SUBMIT_URL = val;
-
+			log.warn("Deprecated runtime property: formentry.infopath.taskpane_caption.  Set value in global_property table in database now.");
+		}
+		
 		val = p.getProperty("formentry.infopath.output_dir", null);
-		if (val != null)
+		if (val != null) {
 			FormEntryConstants.FORMENTRY_INFOPATH_OUTPUT_DIR = val;
-
-		val = p.getProperty("formentry.starter_xsn_folder_path", null);
-		if (val != null)
-			FormEntryConstants.FORMENTRY_STARTER_XSN_FOLDER_PATH = val;
-
+			log.warn("Deprecated runtime property: formentry.infopath.output_dir.  Set value in global_property table in database now.");
+		}
+		
 		val = p.getProperty("formentry.infopath.archive_dir", null);
-		if (val != null)
+		if (val != null) {
 			FormEntryConstants.FORMENTRY_INFOPATH_ARCHIVE_DIR = val;
+			log.warn("Deprecated runtime property: formentry.infopath.archive_dir.  Set value in global_property table in database now.");
+		}
 
 		val = p.getProperty("formentry.infopath_archive_date_format", null);
-		if (val != null)
+		if (val != null) {
 			FormEntryConstants.FORMENTRY_INFOPATH_ARCHIVE_DATE_FORMAT = val;
+			log.warn("Deprecated runtime property: formentry.infopath_archive_date_format.  Set value in global_property table in database now.");
+		}
+		
+		String[] deprecated = {"formentry.starter_xsn_folder_path", 
+			"formentry.infopath.publish_url",
+			"formentry.infopath.publish_path",
+			"formentry.infopath.submit_url",
+			"formentry.infopath.initial_url" };
+		
+		for (String s : deprecated) {
+			val = p.getProperty(s, null);
+			if (val != null)
+				log.warn("Deprecated runtime property: " + s + ".  This property is no longer read in at runtime and can be deleted.");
+		}
 	}
 
 	public static void startup() {
@@ -109,10 +119,21 @@ public class FormEntryUtil {
 		String xsnFolderPath = FormEntryConstants.FORMENTRY_STARTER_XSN_FOLDER_PATH;
 		log.debug("Getting starter XSN contents: " + xsnFolderPath);
 
-		File xsnFolder = new File(xsnFolderPath);
+		Class c = FormEntryUtil.class;
+		URL url = c.getResource(xsnFolderPath);
+		File xsnFolder = null;
+		try {
+			xsnFolder = new File(url.getFile().replaceAll("%20", " "));
+		}
+		catch (Exception e) {
+			String err = "Unable to open starter xsn: " + xsnFolderPath + " : " + url;
+			log.error(err, e);
+			throw new IOException(err);
+		}
+		
 		if (!xsnFolder.exists()) {
 			String err = "Could not open starter xsn folder directory: " + xsnFolderPath;
-			err += " -- Be sure to set runtime property: formentry.starter_xsn_folder_path";
+			err += ". Absolute path: " + xsnFolder.getAbsolutePath();
 			log.error(err);
 			throw new FileNotFoundException(err);
 		}
@@ -151,7 +172,7 @@ public class FormEntryUtil {
 	 */
 	public static FileInputStream getCurrentXSN(Context context, Form form) throws IOException {
 		// Find the form file data
-		String formDir = FormEntryConstants.FORMENTRY_INFOPATH_OUTPUT_DIR;
+		String formDir = context.getAdministrationService().getGlobalProperty("formentry.infopath_output_dir");
 		String formFilePath = formDir + (formDir.endsWith(File.separator) ? "" : File.separator)
 		    + FormEntryUtil.getFormUri(form);
 

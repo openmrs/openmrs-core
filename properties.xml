@@ -20,18 +20,7 @@
     <property name="doc.bottom" value="&lt;em&gt;&lt;small&gt;Generated ${timestamp}. NOTE - these libraries are in active development and subject to change&lt;/small&gt;&lt;/em&gt;" />
     <property name="doc.header" value="&lt;a href=&quot;http://www.openmrs.org&quot; target=_top&gt;&lt;img src=&quot;./openmrs-logo-small.gif&quot; border=0/&gt;&lt;/a&gt;" />
     <property name="doc.footer" value="&lt;a href=&quot;http://www.openmrs.org&quot; target=_top&gt;${ant.project.name}&lt;/a&gt;" />
-    
-    <!-- Default mail properties -->
-	<property name="mail.transport.protocol" value="smtp" />
-	<property name="mail.smtp.host" value="localhost" />
-	<property name="mail.smtp.port" value="25" />
-	<property name="mail.debug" value="true" />
-	<property name="mail.from" value="info@openmrs.org" />
-	<property name="mail.smtp.auth" value="false" />
-	<property name="mail.user" value="test" />
-	<property name="mail.password" value="test" />
-	<property name="mail.format" value="text/plain" /> 
-    
+        
     <!-- Address settings -->
 	<property name="address.format" value="Kenya" /> 
         

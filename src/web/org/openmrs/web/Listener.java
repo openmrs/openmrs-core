@@ -101,6 +101,7 @@ public final class Listener implements ServletContextListener {
 			FormEntryUtil.startup(props);
 			SchedulerUtil.startup(props);
 			
+			HibernateUtil.checkCoreDataSet();
 
 			// Copy the customization scripts over into the webapp
 			// TODO centralize map to OpenmrsConstants?

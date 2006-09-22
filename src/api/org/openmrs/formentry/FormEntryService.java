@@ -383,15 +383,11 @@ public class FormEntryService {
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_ADMIN_FUNCTIONS);
 		
 		TreeMap<String,String> systemVariables = new TreeMap<String,String>();
-		systemVariables.put("FORMENTRY_INFOPATH_SERVER_URL", String.valueOf(FormEntryConstants.FORMENTRY_INFOPATH_SERVER_URL));
 		systemVariables.put("FORMENTRY_INFOPATH_PUBLISH_PATH", String.valueOf(FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_PATH));
-		systemVariables.put("FORMENTRY_INFOPATH_TASKPANE_CAPTION", String.valueOf(FormEntryConstants.FORMENTRY_INFOPATH_TASKPANE_CAPTION));
-		systemVariables.put("FORMENTRY_INFOPATH_TASKPANE_INITIAL_URL", String.valueOf(FormEntryConstants.FORMENTRY_INFOPATH_TASKPANE_INITIAL_URL));
-		systemVariables.put("FORMENTRY_INFOPATH_SUBMIT_URL", String.valueOf(FormEntryConstants.FORMENTRY_INFOPATH_SUBMIT_URL));
-		systemVariables.put("FORMENTRY_INFOPATH_OUTPUT_DIR", String.valueOf(FormEntryConstants.FORMENTRY_INFOPATH_OUTPUT_DIR));
-		systemVariables.put("FORMENTRY_STARTER_XSN_FOLDER_PATH", String.valueOf(FormEntryConstants.FORMENTRY_STARTER_XSN_FOLDER_PATH));
-		systemVariables.put("FORMENTRY_INFOPATH_ARCHIVE_DIR", String.valueOf(FormEntryConstants.FORMENTRY_INFOPATH_ARCHIVE_DIR));
-		systemVariables.put("FORMENTRY_INFOPATH_ARCHIVE_DATE_FORMAT", String.valueOf(FormEntryConstants.FORMENTRY_INFOPATH_ARCHIVE_DATE_FORMAT));
+		systemVariables.put("FORMENTRY_INFOPATH_TASKPANE_INITIAL_PATH", String.valueOf(FormEntryConstants.FORMENTRY_INFOPATH_TASKPANE_INITIAL_PATH));
+		systemVariables.put("FORMENTRY_INFOPATH_SUBMIT_PATH", String.valueOf(FormEntryConstants.FORMENTRY_INFOPATH_SUBMIT_PATH));
+		
+		// the other formentry system variables (the editable ones) are located in global properties
 		
 		return systemVariables;
 	}

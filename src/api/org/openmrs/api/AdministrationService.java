@@ -56,6 +56,9 @@ public class AdministrationService {
 	}
 	
 	private AdministrationDAO getAdminDAO() {
+		if (!context.isAuthenticated())
+			throw new APIAuthenticationException("unauthorized access to administration service");
+		
 		return daoContext.getAdministrationDAO();
 	}
 
@@ -505,7 +508,7 @@ public class AdministrationService {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ROLES))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ROLES);
 
-		if (OpenmrsConstants.CORE_ROLES().contains(role.getRole()))
+		if (OpenmrsConstants.CORE_ROLES().keySet().contains(role.getRole()))
 			throw new APIException("Cannot delete a core role");
 		getAdminDAO().deleteRole(role);
 	}
@@ -543,7 +546,7 @@ public class AdministrationService {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_PRIVILEGES))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_PRIVILEGES);
 
-		if (OpenmrsConstants.CORE_PRIVILEGES().contains(privilege.getPrivilege()))
+		if (OpenmrsConstants.CORE_PRIVILEGES().keySet().contains(privilege.getPrivilege()))
 			throw new APIException("Cannot delete a core privilege");
 			getAdminDAO().deletePrivilege(privilege);
 	}
@@ -866,14 +869,26 @@ public class AdministrationService {
 	}
 	
 	
-	public Object getGlobalProperty(String propertyName) { 
-		return getAdminDAO().getGlobalProperty(propertyName);
+	public String getGlobalProperty(String propertyName) {
+		// doesn't use getAdminDAO() so that isAuthenticated check isn't done
+		return daoContext.getAdministrationDAO().getGlobalProperty(propertyName);
+	}
+	
+	public String getGlobalProperty(String propertyName, String defaultValue) { 
+		String s = getGlobalProperty(propertyName);
+		if (s == null)
+			return defaultValue;
+		return s;
 	}
 	
 	public List<GlobalProperty> getGlobalProperties() {
 		return getAdminDAO().getGlobalProperties();
 	}
-
+	
+	public void setGlobalProperties(List<GlobalProperty> props) {
+		getAdminDAO().setGlobalProperties(props);
+	}
+	
 	public void deleteGlobalProperty(String propertyName) {
 		getAdminDAO().deleteGlobalProperty(propertyName);
 	}

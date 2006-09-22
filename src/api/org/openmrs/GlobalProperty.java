@@ -1,8 +1,25 @@
 package org.openmrs;
 
 public class GlobalProperty {
-	private String property;
-	private String propertyValue;
+	private String property = "";
+	private String propertyValue = "";
+	
+	
+	/**
+	 * Default empty constructor
+	 *
+	 */
+	public GlobalProperty() {	}
+	
+	/**
+	 * 
+	 * @param property
+	 * @param value
+	 */
+	public GlobalProperty(String property, String value) {
+		this.property = property;
+		this.propertyValue = value;
+	}
 	
 	/**
 	 * @return Returns the property.
@@ -27,5 +44,23 @@ public class GlobalProperty {
 	 */
 	public void setPropertyValue(String propertyValue) {
 		this.propertyValue = propertyValue;
+	}
+	
+	public boolean equals(Object o) {
+		if (o instanceof GlobalProperty) {
+			GlobalProperty gp = (GlobalProperty)o;
+			if (property != null && property.equals(gp.getProperty()))
+				return true;
+		}
+		
+		return false;
+	}
+	
+	public int hashCode() {
+		if (this.property == null) return super.hashCode();
+		
+		int hash = 5 * this.property.hashCode();
+		
+		return hash; 
 	}
 }

@@ -30,6 +30,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Form;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
 import org.w3c.dom.Document;
@@ -132,13 +133,15 @@ public class PublishInfoPath {
 		String solutionVersion = FormEntryUtil.getSolutionVersion(form);
 		log.debug("solution version: " + solutionVersion);
 
-		String serverUrl = FormEntryConstants.FORMENTRY_INFOPATH_SERVER_URL; // "@FORMENTRY-INFOPATH-SERVER_URL@";
-		String publishUrl = FormEntryConstants.FORMENTRY_INFOPATH_SERVER_URL + FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_PATH + outputFilename;
-		String taskPaneCaption = FormEntryConstants.FORMENTRY_INFOPATH_TASKPANE_CAPTION; // "Welcome!";
-		String taskPaneInitialUrl = FormEntryConstants.FORMENTRY_INFOPATH_TASKPANE_INITIAL_URL; // "http://localhost:8080/amrs/taskPane.htm";
-		String submitUrl = FormEntryConstants.FORMENTRY_INFOPATH_SUBMIT_URL; // "http://localhost:8080/amrs/formUpload";
+		AdministrationService adminService = context.getAdministrationService();
+		
+		String serverUrl = adminService.getGlobalProperty("formentry.infopath_server_url");
+		String publishUrl = serverUrl + FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_PATH + outputFilename;
+		String taskPaneCaption = adminService.getGlobalProperty("formentry.infopath_taskpane_caption"); // "Welcome!";
+		String taskPaneInitialUrl = serverUrl + FormEntryConstants.FORMENTRY_INFOPATH_TASKPANE_INITIAL_PATH; // "http://localhost:8080/amrs/taskPane.htm";
+		String submitUrl = serverUrl + FormEntryConstants.FORMENTRY_INFOPATH_SUBMIT_PATH; // "http://localhost:8080/amrs/formUpload";
 		String schemaFilename = FormEntryConstants.FORMENTRY_DEFAULT_SCHEMA_NAME; // "FormEntry.xsd";
-		String outputDirName = FormEntryConstants.FORMENTRY_INFOPATH_OUTPUT_DIR; // System.getProperty("user.home");
+		String outputDirName = adminService.getGlobalProperty("formentry.infopath_output_dir");
 
 		// ensure that output directory exists
 		File outputDir = new File(outputDirName);
@@ -149,7 +152,7 @@ public class PublishInfoPath {
 			    + outputDirName + ")");
 
 		// Copy existing XSN file to archive
-		String archiveDir = FormEntryConstants.FORMENTRY_INFOPATH_ARCHIVE_DIR;
+		String archiveDir = adminService.getGlobalProperty("formentry.infopath_archive_dir");
 		File originalFile = new File(outputDirName, originalFormUri);
 		if (archiveDir != null && originalFile.exists()) {
 			String xsnArchiveFilePath = originalFormUri
@@ -158,7 +161,7 @@ public class PublishInfoPath {
 			    + "-"
 			    + form.getBuild()
 			    + "-"
-			    + new SimpleDateFormat(FormEntryConstants.FORMENTRY_INFOPATH_ARCHIVE_DATE_FORMAT,
+			    + new SimpleDateFormat(adminService.getGlobalProperty("formentry.infopath_archive_date_format"),
 			        context.getLocale()).format(new Date()) + ".xsn";
 			File xsnArchiveFile = new File(archiveDir, xsnArchiveFilePath);
 			boolean success = copyFile(originalFile, xsnArchiveFile);

@@ -1,7 +1,6 @@
 package org.openmrs.api.db;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import org.openmrs.Concept;
@@ -423,10 +422,12 @@ public interface AdministrationDAO {
 	
 	public Collection getMRNGeneratorLog() throws DAOException;
 	
-	public Object getGlobalProperty(String propertyName) throws DAOException;
+	public String getGlobalProperty(String propertyName) throws DAOException;
 
 	public List<GlobalProperty> getGlobalProperties() throws DAOException;
 
+	public void setGlobalProperties(List<GlobalProperty> props) throws DAOException;
+	
 	public void deleteGlobalProperty(String propertyName) throws DAOException;
 
 	public void setGlobalProperty(String propertyName, String propertyValue) throws DAOException;

@@ -9,105 +9,76 @@
 <h2><spring:message code="GlobalProperty.manage.title"/></h2>	
 
 <b class="boxHeader"><spring:message code="GlobalProperty.list.title"/></b>
-<form method="post" class="box">
+<form method="post" class="box" onsubmit="removeHiddenRows()">
 	<table>
 		<thead>
 			<tr>
-				<th> <spring:message code="GlobalProperty.remove" /> </th>
 				<th> <spring:message code="general.name" /> </th>
 				<th> <spring:message code="general.value" /> </th>
+				<th> </th>
 			</tr>
 		</thead>
 		<tbody id="globalPropsList">
 			<c:forEach var="globalProp" items="${globalProps}">
 				<tr>
-					<td valign="top"><input type="checkbox" name="propDelete" value="${globalProp.property}"></td>
-					<td valign="top">${globalProp.property}</td>
-					<td valign="top"><input type="text" name="global.${globalProp.property}" id="global.${globalProp.property}" value="${globalProp.propertyValue}" size="30" maxlength="250" /></td>
+					<td valign="top"><input type="text" name="property" value="${globalProp.property}" size="50" maxlength="250" /></td>
+					<td valign="top"><input type="text" name="value" value="${globalProp.propertyValue}" size="30" maxlength="250" /></td>
+					<td><input type="button" value='<spring:message code="general.remove" />' class="closeButton" onclick="remove(this)" /></td>
 				</tr>
 			</c:forEach>
+			<tr id="newProperty">
+				<td valign="top"><input type="text" name="property" size="50" maxlength="250" /></td>
+				<td valign="top"><input type="text" name="value" size="30" maxlength="250" /></td>
+				<td><input type="button" value='<spring:message code="general.remove" />' class="closeButton" onclick="remove(this)" /></td>
+			</tr>
 		</tbody>
 	</table>
-	<openmrs:htmlInclude file="/dwr/util.js" />
-	<script>
+	
+	<input type="button" onclick="addProperty()" class="smallButton" value='<spring:message code="GlobalProperty.add" />' />
+	
+	<br /><br />
+	
+	<script type="text/javascript">
 		<!-- // begin
-		
-		var propertyCellFuncs = [
-			function(data) { return "<input type=\"checkbox\" name=\"propDelete\" value=\"" + data.propName + "\">"; },
-			function(data) { return data.propName; },
-			function(data) { return "<input type=\"text\" name=\"global_new." + data.propName + "\" id=\"global_new." + data.propName + "\" value=\"" + data.propValue + "\" size=\"30\" maxlength=\"250\" />"; }
-		];
-
-		function GlobalProperty(propName, propValue) {
-			this.propName = propName;
-			this.propValue = propValue;
-		}
-		
-		function addProp() {
-			var propName = document.getElementById("global_add_name");
-			var propVal = document.getElementById("global_add_value");
-			if ( propName && propVal ) {
-				if ( propName.value.length > 0 ) {
-					var newProp = new GlobalProperty(propName.value, propVal.value);
-					
-					//alert("new prop is " + newProp.propName + ", " + newProp.propValue);
-					var newProps = [newProp];
-
-					//alert("prop array is length " + newProps.length);
-					
-					DWRUtil.addRows("globalPropsList", newProps, propertyCellFuncs, {
-						cellCreator:function(options) {
-						    var td = document.createElement("td");
-						    return td;
-						}
-					});
-
-					DWRUtil.setValue("global_add_name", "");
-					DWRUtil.setValue("global_add_value", "");
-					//showAddForm();
-
-				} else {
-					alert("<spring:message code="GlobalProperty.error.name.required" />");
+		function removeHiddenRows() {
+			var rows = document.getElementsByTagName("TR");
+			var i = 0;
+			while (i < rows.length) {
+				if (rows[i].style.display == "none") {
+					rows[i].parentNode.removeChild(rows[i]);
+				}
+				else {
+					i = i + 1;
 				}
 			}
 		}
-
-		function showAddForm() {
-			showHideDiv("addLink");
-			showHideDiv("addProperty");
+		
+		function remove(btn) {
+			var parent = btn.parentNode;
+			while (parent.tagName.toLowerCase() != "tr")
+				parent = parent.parentNode;
+			
+			parent.style.display = "none";
 		}
 		
-		function showHideDiv(id) {
-			var div = document.getElementById(id);
-			if ( div ) {
-				if ( div.style.display != "none" ) {
-					div.style.display = "none";
-				} else { 
-					div.style.display = "";
-				}
-			}
+		function addProperty() {
+			var tbody = document.getElementById("globalPropsList");
+			var tmp = document.getElementById("newProperty");
+			var newProp = tmp.cloneNode(true);
+			
+			var inputs = newProp.getElementsByTagName("input");
+			for (var i=0; i< inputs.length; i++) 
+				if (inputs[i].type == "text")
+					inputs[i].value = "";
+				
+			tbody.appendChild(newProp);
 		}
-
+		
 		// end -->
-		
 	</script>
-	<table>
-		<tr>
-			<td><div id="addLink"><a href="javascript:void();" onClick="showAddForm();"><spring:message code="GlobalProperty.add" /></a></div></td>
-			<td>
-				<div id="addProperty" style="display:none;">
-					<spring:message code="general.name" />:
-					<input type="text" name="global_add_name" id="global_add_name" value="" size="30" />
-					&nbsp;&nbsp;&nbsp;&nbsp;
-					<spring:message code="general.value" />:
-					<input type="text" name="global_add_value" id="global_add_value" value="" size="30" />
-					&nbsp;&nbsp;&nbsp;&nbsp;
-					<input type="button" name="add" value="<spring:message code="general.add" />" onClick="addProp();"/>
-				</div>
-			</td>
-		</tr>
-	</table>
-	<input type="submit" value="<spring:message code="general.save"/>" name="action">
+	
+	<input type="submit" name="action" value='<spring:message code="general.save"/>' />
+	<input type="submit" name="action" value='<spring:message code="general.cancel"/>' />
 </form>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

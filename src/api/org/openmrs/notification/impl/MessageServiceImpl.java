@@ -21,21 +21,12 @@ import org.openmrs.util.OpenmrsConstants;
 public class MessageServiceImpl implements MessageService { 
 		
 	private static final Log log = LogFactory.getLog( MessageServiceImpl.class );
-	
-	/**
-	 * Data access context
-	 */
-	private DAOContext daoContext;
 
-	/**
-	 * Delivers message 
-	 */
-	private MessageSender messageSender;
+	private DAOContext daoContext; //Data access context
+
+	private MessageSender messageSender; // Delivers message 
 	
-	/**
-	 * Prepares message for delivery 
-	 */
-	private MessagePreparator messagePreparator;
+	private MessagePreparator messagePreparator; // Prepares message for delivery 
 	
 
 	/**

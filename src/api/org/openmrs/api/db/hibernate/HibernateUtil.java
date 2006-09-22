@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -205,7 +206,6 @@ public class HibernateUtil {
 		
 		// TODO generify and/or move these to business type layer
 		checkDatabaseVersion();
-		checkCoreDataSet();
 	}
 	
 	public static void shutdown() throws HibernateException {
@@ -268,30 +268,49 @@ public class HibernateUtil {
 		return result;
 	}	
 	
-	private static void checkCoreDataSet() {
-		Connection conn = currentSession().connection();
+	public static void checkCoreDataSet() {
+		PreparedStatement psSelect;
+		PreparedStatement psInsert;
+		Map<String, String> map;
 		
+		// setting core roles
 		try {
-			PreparedStatement psSelect = conn.prepareStatement("SELECT * FROM role WHERE UPPER(role) = UPPER(?)");  
-			PreparedStatement psInsert = conn.prepareStatement("INSERT INTO role VALUES (?, 'Core Role')");
+			Connection conn = currentSession().connection();
 			
-			for (String role : OpenmrsConstants.CORE_ROLES()) {
+			psSelect = conn.prepareStatement("SELECT * FROM role WHERE UPPER(role) = UPPER(?)");  
+			psInsert = conn.prepareStatement("INSERT INTO role VALUES (?, ?)");
+			
+			map = OpenmrsConstants.CORE_ROLES();
+			for (String role : map.keySet()) {
 				psSelect.setString(1, role);
 				ResultSet result = psSelect.executeQuery();
 				if (!result.next()) {
 					psInsert.setString(1, role);
+					psInsert.setString(2, map.get(role));
 					psInsert.execute();
 				}
 			}
 			
-			psSelect = conn.prepareStatement("SELECT * FROM privilege WHERE UPPER(privilege) = UPPER(?)");  
-			psInsert = conn.prepareStatement("INSERT INTO privilege VALUES (?, 'Core Privilege')");
+			conn.commit();
+		} 
+		catch (Exception e) {
+			log.error("Error while setting core roles for openmrs system", e); 
+		}
+		
+		// setting core privileges
+		try {
+			Connection conn = currentSession().connection();
 			
-			for (String priv : OpenmrsConstants.CORE_PRIVILEGES()) {
+			psSelect = conn.prepareStatement("SELECT * FROM privilege WHERE UPPER(privilege) = UPPER(?)");  
+			psInsert = conn.prepareStatement("INSERT INTO privilege VALUES (?, ?)");
+			
+			map = OpenmrsConstants.CORE_PRIVILEGES();
+			for (String priv : map.keySet()) {
 				psSelect.setString(1, priv);
 				ResultSet result = psSelect.executeQuery();
 				if (!result.next()) {
 					psInsert.setString(1, priv);
+					psInsert.setString(2, map.get(priv));
 					psInsert.execute();
 				}
 			}
@@ -299,8 +318,33 @@ public class HibernateUtil {
 			conn.commit();
 		}
 		catch (SQLException e) {
-			log.error("Error while setting core dataset", e);
+			log.error("Error while setting core privileges", e);
 		}
+		
+		// setting core global properties
+		try {
+			Connection conn = currentSession().connection();
+			
+			psSelect = conn.prepareStatement("SELECT * FROM global_property WHERE UPPER(property) = UPPER(?)");  
+			psInsert = conn.prepareStatement("INSERT INTO global_property VALUES (?, ?)");
+			
+			map = OpenmrsConstants.CORE_GLOBAL_PROPERTIES();
+			for (String prop : map.keySet()) {
+				psSelect.setString(1, prop);
+				ResultSet result = psSelect.executeQuery();
+				if (!result.next()) {
+					psInsert.setString(1, prop);
+					psInsert.setString(2, map.get(prop));
+					psInsert.execute();
+				}
+			}
+			
+			conn.commit();
+		}
+		catch (SQLException e) {
+			log.error("Error while setting core global properties", e);
+		}
+		
 	}
 	
 	private static void showUsageStatistics() {

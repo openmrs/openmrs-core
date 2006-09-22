@@ -11,6 +11,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.context.ContextFactory;
@@ -44,8 +45,9 @@ public class CheckInternetConnectivityTask implements Schedulable {
 	public CheckInternetConnectivityTask() { 
 		this.context = ContextFactory.getContext();
 		try {
-			context.authenticate(SchedulerConstants.SCHEDULER_USERNAME,
-					SchedulerConstants.SCHEDULER_PASSWORD);
+			AdministrationService adminService = context.getAdministrationService();
+			context.authenticate(adminService.getGlobalProperty("scheduler.username"),
+				adminService.getGlobalProperty("scheduler.password"));
 		} catch (ContextAuthenticationException e) {
 			log.error("Error authenticating user", e);
 		}

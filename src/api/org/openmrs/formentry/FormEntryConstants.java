@@ -79,15 +79,19 @@ public class FormEntryConstants {
 	public static final String FORMENTRY_SERVER_URL_VARIABLE_NAME = "SERVER_URL";
 	
 	/* Default formentry properties */
+	// TODO These properties are left for compatibility with people setting these with runtime properties to 
 	public static String FORMENTRY_INFOPATH_SERVER_URL = "http://localhost:8080/openmrs";
-	public static final String FORMENTRY_INFOPATH_PUBLISH_PATH = "/formentry/forms/";
 	public static String FORMENTRY_INFOPATH_TASKPANE_CAPTION = "Welcome!";
-	public static String FORMENTRY_INFOPATH_TASKPANE_INITIAL_URL = FORMENTRY_INFOPATH_SERVER_URL + "/formTaskpane.htm"; //"http://localhost:8080/openmrs/formTaskpane.htm";
-	public static String FORMENTRY_INFOPATH_SUBMIT_URL = FORMENTRY_INFOPATH_SERVER_URL + "/formUpload"; // "http://localhost:8080/amrs/formUpload";
 	public static String FORMENTRY_INFOPATH_OUTPUT_DIR = "C:/openmrs"; // filesystem directory uploaded xsn is saved to
-	public static String FORMENTRY_STARTER_XSN_FOLDER_PATH = "C:/Program Files/Apache Group/Tomcat/webapps/openmrs/formentry/forms/starter";
 	public static String FORMENTRY_INFOPATH_ARCHIVE_DIR = null; // default is not to archive	
 	// filename format applies pattern from java.text.SimpleDateFormat to today's date
 	public static String FORMENTRY_INFOPATH_ARCHIVE_DATE_FORMAT = "dd-MMM-yyyy-HHmmss";
 
+	// These variables used to be non-final and editable by runtime properties.
+	// Users should not need to modify these settings.
+	public static final String FORMENTRY_INFOPATH_PUBLISH_PATH = "/formentry/forms/";
+	public static final String FORMENTRY_INFOPATH_SUBMIT_PATH = "/formUpload";
+	public static final String FORMENTRY_INFOPATH_TASKPANE_INITIAL_PATH = "/formTaskpane.htm";
+	public static final String FORMENTRY_STARTER_XSN_FOLDER_PATH = "/org/openmrs/formentry/forms/starter/";
+	
 }

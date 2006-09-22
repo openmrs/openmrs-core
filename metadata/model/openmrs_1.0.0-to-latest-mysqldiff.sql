@@ -1025,6 +1025,39 @@ delimiter ;
 call diff_procedure('42');
 
 
+#--------------------------------------
+# OpenMRS Datamodel version 1.0.43
+# Ben Wolfe 	Sept 22, 2006 12:00 PM
+# Reverting database versioning system 
+#--------------------------------------
+
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+ 	#
+ 	#
+ 	# DO NOT COPY THIS PROCEDURE'S CODE. THE 'IF STATEMENT' IS NOT FORMATTED CORRECTLY.
+	#               COPY/PASTE THE '1.0.41' DATABASE UPDATE PROCEDURE.
+	#
+	# VERSIONING IS REVERTING BACK TO x.x.xx (instead of the newly created xx)
+	#
+	#
+	IF (SELECT property_value = '42' FROM global_property WHERE property = 'database_version') THEN
+	SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+
+	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+	
+	END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.0.43');
+
+
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script
 #-----------------------------------

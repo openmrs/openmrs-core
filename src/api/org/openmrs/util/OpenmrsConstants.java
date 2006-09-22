@@ -6,8 +6,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Vector;
+
+import org.openmrs.formentry.FormEntryConstants;
+import org.openmrs.scheduler.SchedulerConstants;
 
 public class OpenmrsConstants {
 	
@@ -139,82 +141,82 @@ public class OpenmrsConstants {
 	
 	public static final String PRIV_MANAGE_GLOBAL_PROPERTIES = "Manage Global Properties";
 	
-	public static final Collection<String> CORE_PRIVILEGES() {
-		List<String> privs = new Vector<String>();
+	public static final Map<String, String> CORE_PRIVILEGES() {
+		Map<String, String> privs = new HashMap<String, String>();
 		
-		privs.add(PRIV_VIEW_PROGRAMS);
-		privs.add(PRIV_MANAGE_PROGRAMS);
-		privs.add(PRIV_EDIT_PATIENT_PROGRAMS);
+		privs.put(PRIV_VIEW_PROGRAMS, "Able to view patient programs");
+		privs.put(PRIV_MANAGE_PROGRAMS, "Able to add/view/delete patient programs");
+		privs.put(PRIV_EDIT_PATIENT_PROGRAMS, "Able to edit patient programs");
 		
-		privs.add(PRIV_FORM_ENTRY);
-		privs.add(PRIV_FORM_ENTRY_VIEW_UNPUBLISHED_FORMS);
+		privs.put(PRIV_FORM_ENTRY, "Able preform all functions related to form entry");
+		privs.put(PRIV_FORM_ENTRY_VIEW_UNPUBLISHED_FORMS, "Able to view and fill out unpublished forms");
 		
-		privs.add(PRIV_VIEW_CONCEPTS);
-		privs.add(PRIV_ADD_CONCEPTS);
-		privs.add(PRIV_EDIT_CONCEPTS);
-		privs.add(PRIV_DELETE_CONCEPTS);
+		privs.put(PRIV_VIEW_CONCEPTS, "Able to view concept entries");
+		privs.put(PRIV_ADD_CONCEPTS, "Able to add concepts to the dictionary");
+		privs.put(PRIV_EDIT_CONCEPTS, "Able to edit concepts in the dictionary");
+		privs.put(PRIV_DELETE_CONCEPTS, "Able to delete concepts from the dictionary");
 		
-		privs.add(PRIV_VIEW_USERS);
-		privs.add(PRIV_ADD_USERS);
-		privs.add(PRIV_EDIT_USERS);
-		privs.add(PRIV_DELETE_USERS);
+		privs.put(PRIV_VIEW_USERS, "Able to view users in OpenMRS");
+		privs.put(PRIV_ADD_USERS, "Able to add users to OpenMRS");
+		privs.put(PRIV_EDIT_USERS, "Able to edit users in OpenMRS");
+		privs.put(PRIV_DELETE_USERS, "Able to delete users in OpenMRS");
 		
-		privs.add(PRIV_VIEW_ENCOUNTERS);
-		privs.add(PRIV_ADD_ENCOUNTERS);
-		privs.add(PRIV_EDIT_ENCOUNTERS);
-		privs.add(PRIV_DELETE_ENCOUNTERS);
+		privs.put(PRIV_VIEW_ENCOUNTERS, "Able to view patient encounters");
+		privs.put(PRIV_ADD_ENCOUNTERS, "Able to add patient encounters");
+		privs.put(PRIV_EDIT_ENCOUNTERS, "Able to edit patient encounters");
+		privs.put(PRIV_DELETE_ENCOUNTERS, "Able to delete patient encounters");
 		
-		privs.add(PRIV_VIEW_OBS);
-		privs.add(PRIV_ADD_OBS);
-		privs.add(PRIV_EDIT_OBS);
-		privs.add(PRIV_DELETE_OBS);
+		privs.put(PRIV_VIEW_OBS, "Able to view patient observations");
+		privs.put(PRIV_ADD_OBS, "Able to add patient observations");
+		privs.put(PRIV_EDIT_OBS, "Able to edit patient observations");
+		privs.put(PRIV_DELETE_OBS, "Able to delete patient observations");
 		
-		privs.add(PRIV_VIEW_PATIENTS);
-		privs.add(PRIV_ADD_PATIENTS);
-		privs.add(PRIV_EDIT_PATIENTS);
-		privs.add(PRIV_DELETE_PATIENTS);
+		privs.put(PRIV_VIEW_PATIENTS, "Able to view patients");
+		privs.put(PRIV_ADD_PATIENTS, "Able to add patients");
+		privs.put(PRIV_EDIT_PATIENTS, "Able to edit patients");
+		privs.put(PRIV_DELETE_PATIENTS, "Able to delete patients");
 		
-		privs.add(PRIV_VIEW_PATIENT_SETS);
+		privs.put(PRIV_VIEW_PATIENT_SETS, "Able to view patient sets");
 		
-		privs.add(PRIV_VIEW_ORDERS);
-		privs.add(PRIV_ADD_ORDERS);
-		privs.add(PRIV_EDIT_ORDERS);
-		privs.add(PRIV_DELETE_ORDERS);
+		privs.put(PRIV_VIEW_ORDERS, "Able to view orders");
+		privs.put(PRIV_ADD_ORDERS, "Able to add orders");
+		privs.put(PRIV_EDIT_ORDERS, "Able to edit orders");
+		privs.put(PRIV_DELETE_ORDERS, "Able to delete orders");
 		
-		privs.add(PRIV_VIEW_FORMS);
-		privs.add(PRIV_ADD_FORMS);
-		privs.add(PRIV_EDIT_FORMS);
-		privs.add(PRIV_DELETE_FORMS);
+		privs.put(PRIV_VIEW_FORMS, "Able to view forms");
+		privs.put(PRIV_ADD_FORMS, "Able to add forms");
+		privs.put(PRIV_EDIT_FORMS, "Able to edit forms");
+		privs.put(PRIV_DELETE_FORMS, "Able to delete forms");
 		
-		privs.add(PRIV_VIEW_REPORTS);
-		privs.add(PRIV_ADD_REPORTS);
-		privs.add(PRIV_EDIT_REPORTS);
-		privs.add(PRIV_DELETE_REPORTS);
+		privs.put(PRIV_VIEW_REPORTS, "Able to view reports");
+		privs.put(PRIV_ADD_REPORTS, "Able to add reports");
+		privs.put(PRIV_EDIT_REPORTS, "Able to edit reports");
+		privs.put(PRIV_DELETE_REPORTS, "Able to delete reports");
 		
-		privs.add(PRIV_MANAGE_TRIBES);
-		privs.add(PRIV_MANAGE_RELATIONSHIPS);
-		privs.add(PRIV_MANAGE_IDENTIFIER_TYPES);
-		privs.add(PRIV_MANAGE_LOCATIONS);
-		privs.add(PRIV_MANAGE_MIME_TYPES);
-		privs.add(PRIV_MANAGE_CONCEPT_CLASSES);
-		privs.add(PRIV_MANAGE_CONCEPT_DATATYPES);
-		privs.add(PRIV_MANAGE_ENCOUNTER_TYPES);
-		privs.add(PRIV_MANAGE_PRIVILEGES);
-		privs.add(PRIV_MANAGE_FIELD_TYPES);
-		privs.add(PRIV_MANAGE_ORDER_TYPES);
-		privs.add(PRIV_MANAGE_RELATIONSHIP_TYPES);
+		privs.put(PRIV_MANAGE_TRIBES, "Able to add/edit/delete tribes");
+		privs.put(PRIV_MANAGE_RELATIONSHIPS, "Able to add/edit/delete relationships");
+		privs.put(PRIV_MANAGE_IDENTIFIER_TYPES, "Able to add/edit/delete patient identifier types");
+		privs.put(PRIV_MANAGE_LOCATIONS, "Able to add/edit/delete locations");
+		privs.put(PRIV_MANAGE_MIME_TYPES, "Able to add/edit/delete obs mime types");
+		privs.put(PRIV_MANAGE_CONCEPT_CLASSES, "Able to add/edit/delete concept classes");
+		privs.put(PRIV_MANAGE_CONCEPT_DATATYPES, "Able to add/edit/delete concept datatypes");
+		privs.put(PRIV_MANAGE_ENCOUNTER_TYPES, "Able to add/edit/delete encounter types");
+		privs.put(PRIV_MANAGE_PRIVILEGES, "Able to add/edit/delete privileges");
+		privs.put(PRIV_MANAGE_FIELD_TYPES, "Able to add/edit/delete field types");
+		privs.put(PRIV_MANAGE_ORDER_TYPES, "Able to add/edit/delete order types");
+		privs.put(PRIV_MANAGE_RELATIONSHIP_TYPES, "Able to add/edit/delete relationship types");
 		
-		privs.add(PRIV_VIEW_NAVIGATION_MENU);
-		privs.add(PRIV_VIEW_ADMIN_FUNCTIONS);
+		privs.put(PRIV_VIEW_NAVIGATION_MENU, "Able to view the navigations menu (Home, View Patients, Dictionary, Administration, My Profile)");
+		privs.put(PRIV_VIEW_ADMIN_FUNCTIONS, "Able to view the 'Administration' link in the navigation bar");
 		
-		privs.add(PRIV_DASHBOARD_OVERVIEW);
-		privs.add(PRIV_DASHBOARD_REGIMEN);
-		privs.add(PRIV_DASHBOARD_ENCOUNTERS);
-		privs.add(PRIV_DASHBOARD_DEMOGRAPHICS);
-		privs.add(PRIV_DASHBOARD_GRAPHS);
-		privs.add(PRIV_DASHBOARD_FORMS);
+		privs.put(PRIV_DASHBOARD_OVERVIEW, "Able to view the 'Overview' tab on the patient dashboard");
+		privs.put(PRIV_DASHBOARD_REGIMEN, "Able to view the 'Regimen' tab on the patient dashboard");
+		privs.put(PRIV_DASHBOARD_ENCOUNTERS, "Able to view the 'Encounters' tab on the patient dashboard");
+		privs.put(PRIV_DASHBOARD_DEMOGRAPHICS, "Able to view the 'Demographics' tab on the patient dashboard");
+		privs.put(PRIV_DASHBOARD_GRAPHS, "Able to view the 'Graphs' tab on the patient dashboard");
+		privs.put(PRIV_DASHBOARD_FORMS, "Able to view the 'Forms' tab on the patient dashboard");
 		
-		privs.add(PRIV_MANAGE_GLOBAL_PROPERTIES);
+		privs.put(PRIV_MANAGE_GLOBAL_PROPERTIES, "Able to add/edit/delete global properties");
 		
 		return privs;
 	}
@@ -224,12 +226,12 @@ public class OpenmrsConstants {
 	public static final String ANONYMOUS_ROLE = "Anonymous";
 	public static final String AUTHENTICATED_ROLE = "Authenticated";
 	
-	public static final Collection<String> CORE_ROLES() {
-		List<String> roles = new Vector<String>();
+	public static final Map<String, String> CORE_ROLES() {
+		Map<String, String> roles = new HashMap<String, String>();
 		
-		roles.add(SUPERUSER_ROLE);
-		roles.add(ANONYMOUS_ROLE);
-		roles.add(AUTHENTICATED_ROLE);
+		roles.put(SUPERUSER_ROLE, "Assigned to developers of OpenMRS. Gives additional access to change fundamental structure of the database model.");
+		roles.put(ANONYMOUS_ROLE, "Privileges for non-authenticated users.");
+		roles.put(AUTHENTICATED_ROLE, "Privileges gained once authentication has been established.");
 		
 		return roles;
 	}
@@ -242,6 +244,40 @@ public class OpenmrsConstants {
 		roles.add(AUTHENTICATED_ROLE);
 		
 		return roles;
+	}
+	
+	// These properties (and default values) are set if not found in the database on startup
+	public static final Map<String, String> CORE_GLOBAL_PROPERTIES() {
+		Map<String, String> props = new HashMap<String, String>();
+		
+		props.put("use_patient_attribute.tribe", "true");
+		props.put("dashboard.overview.showConcepts", "");
+		
+		props.put("concept.weight", "5089");
+		props.put("concept.cd4_count", "5497");
+		
+		props.put("mail.transport_protocol", "smtp");
+		props.put("mail.smtp_host", "localhost");
+		props.put("mail.smtp_port", "25");
+		props.put("mail.from", "info@openmrs.org");
+		props.put("mail.debug", "false");
+		props.put("mail.smtp_auth", "false");
+		props.put("mail.user", "test");
+		props.put("mail.password", "test");
+		props.put("mail.default_content_type", "text/plain");
+		
+		// TODO should be changed to text defaults and constants should be removed
+		props.put("scheduler.username", SchedulerConstants.SCHEDULER_USERNAME);
+		props.put("scheduler.password", SchedulerConstants.SCHEDULER_PASSWORD);
+		
+		// TODO should be changed to text defaults and constants should be removed
+		props.put("formentry.infopath_output_dir", FormEntryConstants.FORMENTRY_INFOPATH_OUTPUT_DIR);
+		props.put("formentry.infopath_server_url", FormEntryConstants.FORMENTRY_INFOPATH_SERVER_URL);
+		props.put("formentry.infopath_taskpane_caption", FormEntryConstants.FORMENTRY_INFOPATH_TASKPANE_CAPTION);
+		props.put("formentry.infopath_archive_date_format", FormEntryConstants.FORMENTRY_INFOPATH_ARCHIVE_DATE_FORMAT);
+		props.put("formentry.infopath_archive_dir", FormEntryConstants.FORMENTRY_INFOPATH_ARCHIVE_DIR);
+		
+		return props;
 	}
 	
 	// ConceptProposal proposed concept identifier keyword
@@ -331,43 +367,10 @@ public class OpenmrsConstants {
 	 */
 	public static final String REPORT_OBJECT_TYPE_PATIENTFILTER 		= "Patient Filter";
 	public static final String REPORT_OBJECT_TYPE_PATIENTDATAPRODUCER 	= "Patient Data Producer";
-
-
-	/*
-	 * Mail session properties -- moved from context.xml because we want to avoid using JNDI.   
-	 */
-
-	// Mail property names
-	public static final String MAIL_TRANSPORT_PROTOCOL_PROPERTY = "mail.transport.protocol";
-	public static final String MAIL_SMTP_HOST_PROPERTY 			= "mail.smtp.host";
-	public static final String MAIL_SMTP_PORT_PROPERTY 			= "mail.smtp.port";
-	public static final String MAIL_FROM_PROPERTY 				= "mail.from";
-	public static final String MAIL_DEBUG_PROPERTY 				= "mail.debug";
-	public static final String MAIL_SMTP_AUTH_PROPERTY 			= "mail.smtp.auth";
-	// Mail property values
-	public static final String MAIL_TRANSPORT_PROTOCOL 	= "@MAIL.TRANSPORT.PROTOCOL@";
-	public static final String MAIL_SMTP_HOST			= "@MAIL.SMTP.HOST@";
-	public static final String MAIL_SMTP_PORT 			= "@MAIL.SMTP.PORT@";
-	public static final String MAIL_FROM 				= "@MAIL.FROM@";
-	public static final String MAIL_DEBUG 				= "@MAIL.DEBUG@";
-	public static final String MAIL_SMTP_AUTH 			= "@MAIL.SMTP.AUTH@";
-	public static final String MAIL_USER 				= "@MAIL.USER@";
-	public static final String MAIL_PASSWORD	 		= "@MAIL.PASSWORD@";
-	public static final String DEFAULT_CONTENT_TYPE 	= "@MAIL.FORMAT@";
 	
 	
-	public static Properties MAIL_PROPERTIES = new Properties();
-	
-	static { 
-		MAIL_PROPERTIES.setProperty(OpenmrsConstants.MAIL_TRANSPORT_PROTOCOL_PROPERTY, OpenmrsConstants.MAIL_TRANSPORT_PROTOCOL);
-		MAIL_PROPERTIES.setProperty(OpenmrsConstants.MAIL_SMTP_HOST_PROPERTY, OpenmrsConstants.MAIL_SMTP_HOST);
-		MAIL_PROPERTIES.setProperty(OpenmrsConstants.MAIL_SMTP_PORT_PROPERTY, OpenmrsConstants.MAIL_SMTP_PORT);
-		MAIL_PROPERTIES.setProperty(OpenmrsConstants.MAIL_FROM_PROPERTY, OpenmrsConstants.MAIL_FROM);
-		MAIL_PROPERTIES.setProperty(OpenmrsConstants.MAIL_DEBUG_PROPERTY, OpenmrsConstants.MAIL_DEBUG);
-		MAIL_PROPERTIES.setProperty(OpenmrsConstants.MAIL_SMTP_AUTH_PROPERTY, OpenmrsConstants.MAIL_SMTP_AUTH);
-	}	
-
 	public static String MODULE_REPOSITORY_PATH = "OpenMRS-Modules";
+	
 	
 	// Used for FormEntry XSN upload/download (differences between windows/linux)
 	// Used for determining where to find runtime properties

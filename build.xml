@@ -81,12 +81,17 @@
 		
 		<!-- Discover code and database versions via regular expressions -->
 		<loadfile srcfile="${openmrs.database.version.expected.filename}" property="diffFileInput" />
-		<propertyregex property="openmrs.database.version.expected"
+		<propertyregex property="openmrs.database.version.expected.tmp"
 			input="${diffFileInput}"
 			regexp="${openmrs.database.version.expected.regexp}"
 			select="\1"
-			defaultValue="0.0.0" 
+			defaultValue="${openmrs.version.major}.${openmrs.version.minor}.0" 
 			casesensitive="false" />
+		<propertyregex property="openmrs.database.version.expected"
+			input="${openmrs.database.version.expected.tmp}"
+			regexp="${openmrs.version.major}\.${openmrs.version.minor}\.([0-9]+)"
+			select="\1"
+			defaultValue="Error" />
 		
 		<loadfile srcfile="${openmrs.version.revision.filename}" property="repositoryFileInput" />
 		<propertyregex property="openmrs.version.revision"
@@ -97,6 +102,7 @@
 		<property 
 			name="openmrs.version" 
 			value="${openmrs.version.major}.${openmrs.version.minor}.${openmrs.database.version.expected} Build ${openmrs.version.revision}"/>
+		<echo message="version: ${openmrs.version}"/>
 		
 		<!-- These variables are replaced in the code prior to compilation -->
 		<filterset id="variables.to.replace">
@@ -107,17 +113,6 @@
 			<filter token="TIMESTAMP" value="${timestamp}" />
 			<filter token="OPENMRS.VERSION" value="${openmrs.version}" />
 			<filter token="DATABASE.VERSION.EXPECTED" value="${openmrs.database.version.expected}" />
-
-			<!-- Mail properties -->
-			<filter token="MAIL.TRANSPORT.PROTOCOL" value="${mail.transport.protocol}" />
-			<filter token="MAIL.SMTP.HOST" value="${mail.smtp.host}" />
-			<filter token="MAIL.SMTP.PORT" value="${mail.smtp.port}" />
-			<filter token="MAIL.DEBUG" value="${mail.debug}" />
-			<filter token="MAIL.FROM" value="${mail.from}" />
-			<filter token="MAIL.SMTP.AUTH" value="${mail.smtp.auth}" />
-			<filter token="MAIL.USER" value="${mail.user}" />
-			<filter token="MAIL.PASSWORD" value="${mail.password}" />
-			<filter token="MAIL.FORMAT" value="${mail.format}" />
 			
 			<!-- Address properties -->
 			<filter token="ADDRESS.FORMAT" value="${address.format}" />

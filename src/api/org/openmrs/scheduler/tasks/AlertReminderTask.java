@@ -6,6 +6,7 @@ import java.util.HashSet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.context.ContextFactory;
@@ -13,7 +14,6 @@ import org.openmrs.notification.Alert;
 import org.openmrs.notification.AlertRecipient;
 import org.openmrs.notification.Message;
 import org.openmrs.scheduler.Schedulable;
-import org.openmrs.scheduler.SchedulerConstants;
 import org.openmrs.scheduler.TaskConfig;
 
 /**
@@ -38,8 +38,10 @@ public class AlertReminderTask implements Schedulable {
 	public AlertReminderTask() { 
 		this.context = ContextFactory.getContext();
 		try {
-			context.authenticate(SchedulerConstants.SCHEDULER_USERNAME,
-					SchedulerConstants.SCHEDULER_PASSWORD);
+			AdministrationService adminService = context.getAdministrationService();
+			context.authenticate(adminService.getGlobalProperty("scheduler.username"),
+				adminService.getGlobalProperty("scheduler.password"));
+			
 		} catch (ContextAuthenticationException e) {
 			log.error("Error authenticating user", e);
 		}		

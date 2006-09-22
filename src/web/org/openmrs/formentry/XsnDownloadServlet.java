@@ -56,7 +56,7 @@ public class XsnDownloadServlet extends HttpServlet {
 		filename = filename.substring(filename.lastIndexOf("/") + 1);
 		
 		// append xsn storage location for file look up
-		String url = FormEntryConstants.FORMENTRY_INFOPATH_OUTPUT_DIR;
+		String url = context.getAdministrationService().getGlobalProperty("formentry.infopath_output_dir");
 		if (!url.endsWith(File.separator))
 			url += File.separator;
 		url = url + filename;

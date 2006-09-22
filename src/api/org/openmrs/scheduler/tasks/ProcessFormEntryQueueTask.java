@@ -3,6 +3,7 @@ package org.openmrs.scheduler.tasks;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.context.ContextFactory;
@@ -39,8 +40,9 @@ public class ProcessFormEntryQueueTask implements Schedulable {
 	public ProcessFormEntryQueueTask() {
 		context = ContextFactory.getContext();
 		try {
-			context.authenticate(SchedulerConstants.SCHEDULER_USERNAME,
-					SchedulerConstants.SCHEDULER_PASSWORD);
+			AdministrationService adminService = context.getAdministrationService();
+			context.authenticate(adminService.getGlobalProperty("scheduler.username"),
+				adminService.getGlobalProperty("scheduler.password"));
 		} catch (ContextAuthenticationException e) {
 			log.error("Error authenticating user", e);
 		}
