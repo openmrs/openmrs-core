@@ -81,14 +81,14 @@
 		
 		<!-- Discover code and database versions via regular expressions -->
 		<loadfile srcfile="${openmrs.database.version.expected.filename}" property="diffFileInput" />
-		<propertyregex property="openmrs.database.version.expected.tmp"
+		<propertyregex property="openmrs.database.version.expected"
 			input="${diffFileInput}"
 			regexp="${openmrs.database.version.expected.regexp}"
 			select="\1"
 			defaultValue="${openmrs.version.major}.${openmrs.version.minor}.0" 
 			casesensitive="false" />
-		<propertyregex property="openmrs.database.version.expected"
-			input="${openmrs.database.version.expected.tmp}"
+		<propertyregex property="openmrs.database.version.expected.short"
+			input="${openmrs.database.version.expected}"
 			regexp="${openmrs.version.major}\.${openmrs.version.minor}\.([0-9]+)"
 			select="\1"
 			defaultValue="Error" />
@@ -101,7 +101,7 @@
 			defaultValue="Error with code revision regexp" />
 		<property 
 			name="openmrs.version" 
-			value="${openmrs.version.major}.${openmrs.version.minor}.${openmrs.database.version.expected} Build ${openmrs.version.revision}"/>
+			value="${openmrs.version.major}.${openmrs.version.minor}.${openmrs.database.version.expected.short} Build ${openmrs.version.revision}"/>
 		<echo message="version: ${openmrs.version}"/>
 		
 		<!-- These variables are replaced in the code prior to compilation -->
