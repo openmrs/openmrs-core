@@ -2,12 +2,11 @@ package org.openmrs.web.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeSet;
 
 import javax.servlet.ServletException;
@@ -30,8 +29,6 @@ import org.openmrs.order.RegimenSuggestion;
 import org.openmrs.reporting.PatientSet;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
-import org.springframework.context.MessageSource;
-import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
@@ -42,6 +39,7 @@ public class PortletController implements Controller {
 	/**
 	 * This method produces a model containing the following mappings:
 	 * 	   (always)
+	 * 			(java.util.Date) now
 	 *     		(String) size
 	 *     		(other parameters)
 	 *     (if there's currently an authenticated user)
@@ -96,6 +94,7 @@ public class PortletController implements Controller {
 			Map<String, Object> params = (Map<String, Object>)request.getAttribute("org.openmrs.portlet.parameters");
 			Map<String, Object> moreParams = (Map<String, Object>) request.getAttribute("org.openmrs.portlet.parameterMap");
 			
+			model.put("now", new Date());
 			model.put("id", id);
 			model.put("size", size);
 			model.putAll(params);

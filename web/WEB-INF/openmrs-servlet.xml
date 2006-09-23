@@ -15,7 +15,7 @@
 		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 		<!-- one of the properties available; the maximum file size in bytes -->
 			    <property name="maxUploadSize">
-			        <value>100000</value>
+			        <value>2000000</value>
 			    </property>
 		</bean>
 	
@@ -117,6 +117,7 @@
 					<prop key="**/patientRegimenCompleted.portlet">patientRegimenPortletController</prop>
 					<prop key="**/patientRegimenAdd.portlet">patientRegimenPortletController</prop>
 					<prop key="**/patientRegimenDiscontinued.portlet">patientRegimenPortletController</prop>
+					<prop key="**/patientSummary.portlet">patientSummaryPortletController</prop>
 					<!--<prop key="**/calendar.portlet">calendarPortletController</prop>-->
 					<prop key="**/*.portlet">portletController</prop>
 					<prop key="**/*.field">fieldGenController</prop>
@@ -130,6 +131,7 @@
 		<bean id="patientProgramsPortletController" class="org.openmrs.web.controller.PatientProgramsPortletController"/>
 		<bean id="patientSetPortletController" class="org.openmrs.web.controller.PatientSetPortletController"/>
 		<bean id="patientRegimenPortletController" class="org.openmrs.web.controller.RegimenPortletController"/>
+		<bean id="patientSummaryPortletController" class="org.openmrs.web.controller.PatientSummaryPortletController"/>
 		<bean id="addressPortletController" class="org.openmrs.web.controller.AddressPortletController"/>
 		<!--<bean id="calendarPortletController" class="org.openmrs.web.controller.CalendarPortletController"/>-->
 		<bean id="springController" class="org.openmrs.web.controller.SpringController"/>
@@ -1176,6 +1178,7 @@
 					<ref bean="addressTemplateRwanda" />
 					<ref bean="addressTemplateUS" />
 					<ref bean="addressTemplateKenya" />
+					<ref bean="addressTemplateLesotho" />
 				</list>
 			</property>
 			<property name="specialTokens">
@@ -1307,6 +1310,132 @@
 	    		</list>
 	    	</property>
 	    </bean>
+	
+	    <bean id="addressTemplateLesotho" class="org.openmrs.address.AddressTemplate">
+	    	<property name="displayName"><value>Lesotho Address Format</value></property>
+	    	<property name="codeName"><value>ls</value></property>
+	    	<property name="country"><value>Lesotho</value></property>
+	    	<property name="nameMappings">
+				<props>
+					<prop key="countyDistrict">Location.district</prop>
+					<prop key="cityVillage">Location.village</prop>
+	    		</props>
+	    	</property>
+	    	<property name="sizeMappings">
+				<props>
+					<prop key="countyDistrict">40</prop>
+					<prop key="cityVillage">40</prop>
+	    		</props>
+	    	</property>
+	    	<property name="elementDefaults">
+				<props>
+					<prop key="country">Lesotho</prop>
+	    		</props>
+	    	</property>
+	    	<property name="lineByLineFormat">
+	    		<list>
+	    			<value>countyDistrict</value>
+	    			<value>cityVillage</value>
+	    		</list>
+	    	</property>
+	    </bean>
+
+	<!-- SUMMARY SPEC -->
+	<bean id="patientSummarySpecification" class="org.openmrs.summary.PatientSummarySpecification">
+		<property name="specification">
+			<list>
+				<props>
+					<prop key="type">activeList</prop>
+					<prop key="headingCode">summary.problemList</prop>
+					<prop key="addConcept">name:PREVIOUS DIAGNOSIS</prop>
+					<prop key="otherGroupedConcepts">name:PREVIOUS DIAGNOSIS DATE|name:PREVIOUS DIAGNOSIS COMMENTS</prop>
+					<prop key="showDate">false</prop>
+					<prop key="displayStyle">table</prop>
+				</props>
+				<!-- This would be a problem list using the concepts from the basic form (I think)
+				<props>
+					<prop key="type">activeList</prop>
+					<prop key="headingCode">summary.activeProblems</prop>
+					<prop key="addConcept">name:PROBLEM ADDED|name:PROBLEM LIST</prop>
+					<prop key="removeConcept">name:PROBLEM REMOVED</prop>
+					<prop key="showDate">true</prop>
+					<prop key="displayStyle">ol</prop>
+				</props>
+				-->
+				<props>
+					<prop key="type">newlines</prop>
+					<prop key="count">2</prop>
+				</props>
+				<props>
+					<prop key="type">activeList</prop>
+					<prop key="headingCode">summary.allergies</prop>
+					<prop key="addConcept">set:name:ALLERGY TO DRUG</prop>
+					<prop key="showDate">false</prop>
+					<prop key="displayStyle">ul</prop>
+				</props>			
+				<props>
+					<prop key="type">NEWCOLUMN</prop>
+				</props>
+				<props>
+					<prop key="type">currentDrugOrders</prop>
+					<prop key="headingCode">summary.currentDrugOrders</prop>
+					<prop key="whichSets">ANTIRETROVIRAL DRUGS,TUBERCULOSIS TREATMENT DRUGS,*</prop>
+				</props>
+				<!-- Indiana, you might do something like this instead to display the current regimen
+				<props>
+					<prop key="type">obsTable</prop>
+					<prop key="headingCode">summary.currentDrugOrders</prop>
+					<prop key="concepts">name:CURRENT ANTIRETROVIRAL DRUGS USED FOR TREATMENT</prop>
+					<prop key="cssClass">borderedTable</prop>
+					<prop key="showEmptyConcepts">false</prop>
+					<prop key="showConceptHeader">true</prop>
+					<prop key="showDateHeader">true</prop>
+					<prop key="orientation">vertical</prop>
+					<prop key="sort">desc</prop>
+					<prop key="limit">1</prop>
+				</props>
+				-->
+				<props>
+					<prop key="type">newlines</prop>
+					<prop key="count">2</prop>
+				</props>
+				<props>
+					<prop key="type">heading</prop>
+					<prop key="code">summary.pastDrugOrders</prop>
+				</props>
+				<props>
+					<prop key="type">NEWROW</prop>
+				</props>
+				<props>
+					<prop key="type">obsTable</prop>
+					<prop key="headingCode">summary.labResults</prop>
+					<prop key="concepts">name:CD4 COUNT|name:WEIGHT (KG)|set:name:LABORATORY EXAMINATIONS CONSTRUCT</prop>
+					<prop key="cssClass">borderedTable</prop>
+					<prop key="showEmptyConcepts">false</prop>
+					<prop key="showConceptHeader">true</prop>
+					<prop key="showDateHeader">true</prop>
+					<prop key="orientation">vertical</prop>
+					<prop key="sort">desc</prop>
+					<prop key="limit">-1</prop>
+				</props>
+				<props>
+					<prop key="type">NEWCOLUMN</prop>
+				</props>
+				<props>
+					<prop key="type">obsTable</prop>
+					<prop key="headingCode">summary.vitalSigns</prop>
+					<prop key="concepts">set:name:VITAL SIGNS CONSTRUCT|set:name:VITAL SIGNS</prop>
+					<prop key="cssClass">borderedTable</prop>
+					<prop key="showEmptyConcepts">false</prop>
+					<prop key="showConceptHeader">true</prop>
+					<prop key="showDateHeader">true</prop>
+					<prop key="orientation">vertical</prop>
+					<prop key="sort">desc</prop>
+					<prop key="limit">1</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
 
 <!-- CALENDAR SECTION -->
 	

@@ -13,17 +13,21 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptNumeric;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 
 public class OpenmrsUtil {
@@ -425,6 +429,38 @@ public class OpenmrsUtil {
 		}
 		return ret.toString();
 	}
+	
+	public static Set<Concept> conceptSetHelper(Context context, String descriptor) {
+		Set<Concept> ret = new HashSet<Concept>();
+		if (descriptor == null || descriptor.length() == 0)
+			return ret;
+		ConceptService cs = context.getConceptService();
+		
+		for (StringTokenizer st = new StringTokenizer(descriptor, "|"); st.hasMoreTokens(); ) {
+			String s = st.nextToken().trim();
+			boolean isSet = s.startsWith("set:");
+			if (isSet)
+				s = s.substring(4).trim();
+			Concept c = null;
+			if (s.startsWith("name:")) {
+				String name = s.substring(5).trim();
+				c = cs.getConceptByName(name);
+			} else {
+				try {
+					c = cs.getConcept(Integer.valueOf(s.trim()));
+				} catch (Exception ex) { }
+			}
+			if (c != null) {
+				if (isSet) {
+					List<Concept> inSet = cs.getConceptsInSet(c);
+					ret.addAll(inSet);
+				} else {
+					ret.add(c);
+				}
+			}
+		}
+		return ret;
+	}
 
 	public static List<Concept> delimitedStringToConceptList( String delimitedString, String delimiter, Context context ) {
 		List<Concept> ret = null;
@@ -494,4 +530,37 @@ public class OpenmrsUtil {
 
 		return c;
 	}
+	// TODO: properly handle duplicates
+	public static List<Concept> conceptListHelper(Context context, String descriptor) {
+		List<Concept> ret = new ArrayList<Concept>();
+		if (descriptor == null || descriptor.length() == 0)
+			return ret;
+		ConceptService cs = context.getConceptService();
+		
+		for (StringTokenizer st = new StringTokenizer(descriptor, "|"); st.hasMoreTokens(); ) {
+			String s = st.nextToken().trim();
+			boolean isSet = s.startsWith("set:");
+			if (isSet)
+				s = s.substring(4).trim();
+			Concept c = null;
+			if (s.startsWith("name:")) {
+				String name = s.substring(5).trim();
+				c = cs.getConceptByName(name);
+			} else {
+				try {
+					c = cs.getConcept(Integer.valueOf(s.trim()));
+				} catch (Exception ex) { }
+			}
+			if (c != null) {
+				if (isSet) {
+					List<Concept> inSet = cs.getConceptsInSet(c);
+					ret.addAll(inSet);
+				} else {
+					ret.add(c);
+				}
+			}
+		}
+		return ret;
+	}
+
 }

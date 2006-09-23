@@ -622,27 +622,27 @@
 	<attribute>
 		<name>id</name>
 		<required>false</required>
-		<rtexprvalue>false</rtexprvalue>
+		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
 		<name>cssClass</name>
 		<required>false</required>
-		<rtexprvalue>false</rtexprvalue>
+		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
 		<name>showEmptyConcepts</name>
 		<required>false</required>
-		<rtexprvalue>false</rtexprvalue>
+		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
 		<name>showConceptHeader</name>
 		<required>false</required>
-		<rtexprvalue>false</rtexprvalue>
+		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
 		<name>showDateHeader</name>
 		<required>false</required>
-		<rtexprvalue>false</rtexprvalue>
+		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
 		<name>fromDate</name>
@@ -657,20 +657,93 @@
 	<attribute>
 		<name>limit</name>
 		<required>false</required>
-		<rtexprvalue>false</rtexprvalue>
+		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
 		<name>sort</name>
 		<required>false</required>
-		<rtexprvalue>false</rtexprvalue>
+		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
 		<name>orientation</name>
 		<required>false</required>
-		<rtexprvalue>false</rtexprvalue>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+</tag>
+	
+<tag>
+	<description>
+		Generate an 'active list' from obs of a start concept and a stop concept
+	</description>
+	<name>activeList</name>
+	<tag-class>org.openmrs.web.taglib.ActiveListWidget</tag-class>
+	<body-content>empty</body-content>
+	<attribute>
+		<name>observations</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>onDate</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>addConcept</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>removeConcept</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>otherGroupedConcepts</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>showDate</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>displayStyle</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 </tag>
 
+<tag>
+	<description>
+		Generate a table displaying an obs group
+	</description>
+	<name>obsGroupTable</name>
+	<tag-class>org.openmrs.web.taglib.ObsGroupTableWidget</tag-class>
+	<body-content>empty</body-content>
+	<attribute>
+		<name>observations</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>primaryConcepts</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>otherConcepts</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>orientation</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+</tag>
+	
 <function>
 	<name>sort</name>
 	<function-class>org.openmrs.web.taglib.functions.Sort</function-class>

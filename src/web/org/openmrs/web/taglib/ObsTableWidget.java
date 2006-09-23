@@ -59,48 +59,56 @@ public class ObsTableWidget extends TagSupport {
 		return concepts;
 	}
 	public void setConcepts(String concepts) {
+		if (concepts == null || concepts.length() == 0) return;
 		this.concepts = concepts;
 	}
 	public String getCssClass() {
 		return cssClass;
 	}
 	public void setCssClass(String cssClass) {
+		if (cssClass == null || cssClass.length() == 0) return;
 		this.cssClass = cssClass;
 	}
 	public String getId() {
 		return id;
 	}
 	public void setId(String id) {
+		if (id == null || id.length() == 0) return;
 		this.id = id;
 	}
 	public Boolean getShowEmptyConcepts() {
 		return showEmptyConcepts;
 	}
 	public void setShowEmptyConcepts(Boolean showEmptyConcepts) {
+		if (showEmptyConcepts == null) return;
 		this.showEmptyConcepts= showEmptyConcepts;
 	}
 	public Boolean getShowConceptHeader() {
 		return showConceptHeader;
 	}
 	public void setShowConceptHeader(Boolean showHeader) {
+		if (showHeader == null) return;
 		this.showConceptHeader = showHeader;
 	}
 	public Boolean getShowDateHeader() {
 		return showDateHeader;
 	}
 	public void setShowDateHeader(Boolean showDateHeader) {
+		if (showDateHeader == null) return;
 		this.showDateHeader = showDateHeader;
 	}
 	public String getSort() {
 		return sortDescending ? "desc" : "asc";
 	}
 	public void setSort(String sort) {
+		if (sort == null || sort.length() == 0) return;
 		sortDescending = !sort.equals("asc");
 	}
 	public String getOrientation() {
 		return orientVertical ? "vertical" : "horizontal";
 	}
 	public void setOrientation(String orientation) {
+		if (orientation == null || orientation.length() == 0) return;
 		orientVertical = !orientation.equals("horizontal");
 	}
 	public Collection<Obs> getObservations() {
@@ -113,18 +121,21 @@ public class ObsTableWidget extends TagSupport {
 		return fromDate;
 	}
 	public void setFromDate(Date fromDate) {
+		if (fromDate == null) return;
 		this.fromDate = fromDate;
 	}
 	public Date getToDate() {
 		return toDate;
 	}
 	public void setToDate(Date toDate) {
+		if (toDate == null) return;
 		this.toDate = toDate;
 	}
 	public Integer getLimit() {
 		return limit;
 	}
 	public void setLimit(Integer limit) {
+		if (limit == null) return;
 		this.limit = limit;
 	}
 
