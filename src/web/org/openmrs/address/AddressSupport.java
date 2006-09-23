@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.context.ContextFactory;
 
 public class AddressSupport {
 
@@ -46,7 +47,7 @@ public class AddressSupport {
 	 * @return Returns the defaultAddressTemplate.
 	 */
 	public AddressTemplate getDefaultAddressTemplate() {
-		return getAddressTemplateByName(this.defaultAddressFormat);
+		return getAddressTemplateByName(getDefaultAddressFormat());
 	}
 
 	public AddressTemplate getAddressTemplateByName(String templateName) {
@@ -149,7 +150,8 @@ public class AddressSupport {
 	 * @return Returns the defaultAddressFormat.
 	 */
 	public String getDefaultAddressFormat() {
-		return defaultAddressFormat;
+		String ret = ContextFactory.getAnonymousContext().getAdministrationService().getGlobalProperty("address.format");
+		return (ret != null && ret.length() > 0) ? ret : defaultAddressFormat;
 	}
 
 	/**

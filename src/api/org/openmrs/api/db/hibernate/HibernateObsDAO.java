@@ -12,6 +12,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Restrictions;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
@@ -310,5 +311,12 @@ public class HibernateObsDAO implements ObsDAO {
 				.createQuery("from Obs obs where obs.voided = true order by obs.dateVoided desc");
 
 		return query.list();
+	}
+
+	public List<Obs> findObsByGroupId(Integer obsGroupId) throws DAOException {
+		Session session = HibernateUtil.currentSession();
+		Criteria criteria = session.createCriteria(Obs.class);
+		criteria.add(Restrictions.eq("obsGroupId", obsGroupId));
+		return criteria.list();
 	}
 }

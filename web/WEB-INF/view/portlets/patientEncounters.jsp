@@ -145,7 +145,8 @@
 			DWRObsService.getObservations(encounterId, handleRefreshObsData);
 			document.getElementById("encounterId").value = encounterId;
 			--%>
-			window.open('encounterDisplay.list?encounterId=' + encounterId, 'formWindow', 'toolbar=no,width=800,height=600,resizable=yes,scrollbars=yes,showBlankFields=true');
+			var formWindow = window.open('encounterDisplay.list?encounterId=' + encounterId, 'formWindow', 'toolbar=no,width=800,height=600,resizable=yes,scrollbars=yes,showBlankFields=true');
+			formWindow.focus();
 		}
 
 		<%--

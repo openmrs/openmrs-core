@@ -315,4 +315,12 @@ public class ObsService {
     	return new ArrayList<String>(set);
     }
     
+    /**
+     * @param obsGroupId
+     * @return All obs that share obsGroupId
+     */
+    public List<Obs> findObsByGroupId(Integer obsGroupId) {
+    	return getObsDAO().findObsByGroupId(obsGroupId);
+    }
+    
 }

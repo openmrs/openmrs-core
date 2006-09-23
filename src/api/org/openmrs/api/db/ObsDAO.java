@@ -155,4 +155,7 @@ public interface ObsDAO {
      * @return list of matched observations
      */
     public List<Obs> findObservations(Integer id, boolean includeVoided) throws DAOException;
+
+	public List<Obs> findObsByGroupId(Integer obsGroupId) throws DAOException;
+	
 }

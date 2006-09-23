@@ -138,6 +138,7 @@ public class OpenmrsConstants {
 	public static final String PRIV_DASHBOARD_DEMOGRAPHICS = "Patient Dashboard - View Demographics Section";
 	public static final String PRIV_DASHBOARD_GRAPHS = "Patient Dashboard - View Graphs Section";
 	public static final String PRIV_DASHBOARD_FORMS = "Patient Dashboard - View Forms Section";
+	public static final String PRIV_DASHBOARD_SUMMARY = "Patient Dashboard - View Patient Summary";
 	
 	public static final String PRIV_MANAGE_GLOBAL_PROPERTIES = "Manage Global Properties";
 	
@@ -215,6 +216,7 @@ public class OpenmrsConstants {
 		privs.put(PRIV_DASHBOARD_DEMOGRAPHICS, "Able to view the 'Demographics' tab on the patient dashboard");
 		privs.put(PRIV_DASHBOARD_GRAPHS, "Able to view the 'Graphs' tab on the patient dashboard");
 		privs.put(PRIV_DASHBOARD_FORMS, "Able to view the 'Forms' tab on the patient dashboard");
+		privs.put(PRIV_DASHBOARD_SUMMARY, "Able to view the 'Summary' tab on the patient dashboard");
 		
 		privs.put(PRIV_MANAGE_GLOBAL_PROPERTIES, "Able to add/edit/delete global properties");
 		
@@ -265,6 +267,8 @@ public class OpenmrsConstants {
 		props.put("mail.user", "test");
 		props.put("mail.password", "test");
 		props.put("mail.default_content_type", "text/plain");
+		
+		props.put("address.format", "kenya");
 		
 		// TODO should be changed to text defaults and constants should be removed
 		props.put("scheduler.username", SchedulerConstants.SCHEDULER_USERNAME);

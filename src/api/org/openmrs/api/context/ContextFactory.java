@@ -1,5 +1,7 @@
 package org.openmrs.api.context;
 
+import org.openmrs.User;
+
 /**
  * Factory for obtaining an OpenMRS <code>context</code>.
  * 
@@ -9,6 +11,13 @@ package org.openmrs.api.context;
  * @version 1.0
  */
 public class ContextFactory {
+	
+	// a context that can never be authenticated
+	private final static Context singletonAnonymousContext = new Context() {
+			public void authenticate(String username, String password) { }
+			public User getAuthenticatedUser() { return null; }
+			public boolean isAuthenticated() { return false; }
+		};
 
 	public static Context getContext() {
 		return createContext();
@@ -21,4 +30,9 @@ public class ContextFactory {
 		// context = (Context) factory.getBean("defaultContext");
 		return new Context();
 	}
+		
+	public static Context getAnonymousContext() {
+		return singletonAnonymousContext;
+	}
+	
 }
