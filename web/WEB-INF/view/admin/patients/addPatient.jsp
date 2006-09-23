@@ -70,7 +70,7 @@
 		
 		$("patientName").focus();
 		noPatientsFound = "<a href='#' class='searchHit' onclick='document.location=getHref()'>No Patients Found.  Select to add a new Patient</a>";
-		patientsFound = "<a href='#' class='searchHit' onclick='document.location=getHref()'>Add New Patient</a>";
+		patientsFound = "<br/><br/><h3><spring:message code="Patient.search.notFoundInstructions" javaScriptEscape="true" /></h3><a href='#' class='searchHit' onclick='document.location=getHref()'>Add New Patient</a>";
 		
 	});
 	
@@ -91,6 +91,7 @@
 	
 	.openmrsSearchDiv {
 		position: absolute;
+		top: 150px;
 		margin-top: 8em;
 		margin-left: -28em;
 		margin-right: 1em;
