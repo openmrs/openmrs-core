@@ -63,81 +63,89 @@
 	<table width="100%">
 	<tr valign="top"><td>
 		<c:forEach var="specElement" items="${model.patientSummarySpecification.specification}">
-			<c:if test="${not empty specElement.headingCode}">
-				<b><u><spring:message code="${specElement.headingCode}" /></u></b>
-				<br/>
+			<openmrs:summaryTest var="toShow" observations="${model.patientObs}" encounters="${model.patientEncounters}"
+				ifTrue="${specElement.showIfTrue}"
+				ifFalse="${specElement.showIfFalse}"
+			/>
+			<c:if test="${toShow}">
+			
+				<c:if test="${not empty specElement.headingCode}">
+					<b><u><spring:message code="${specElement.headingCode}" /></u></b>
+					<br/>
+				</c:if>
+				<c:if test="${not empty specElement.headingText}">
+					<b><u>${specElement.headingText}</u></b>
+					<br/>
+				</c:if>
+				<c:choose>
+					<c:when test="${specElement.type == 'NEWCOLUMN'}">
+						</td><td>
+					</c:when>
+					<c:when test="${specElement.type == 'NEWROW'}">
+						</td></tr><tr valign="top"><td>
+					</c:when>
+					<c:when test="${specElement.type == 'NEWTABLE'}">
+						</td></tr></table>
+						<table width="100%"><tr valign="top"><td>
+					</c:when>
+					<c:when test="${specElement.type == 'newlines'}">
+						<c:forEach begin="0" end="${specElement.count}"><br/></c:forEach>
+					</c:when>
+					<c:when test="${specElement.type == 'heading'}">
+						<b><u><spring:message code="${specElement.code}"/></u></b><br/>
+					</c:when>
+					<c:when test="${specElement.type == 'label'}">
+						<spring:message code="${specElement.code}"/>
+					</c:when>
+					<c:when test="${specElement.type == 'output'}">
+						${specElement.output}
+					</c:when>
+					<c:when test="${specElement.type == 'activeList'}">
+						<openmrs:activeList observations="${model.patientObs}"
+							onDate="${specElement.onDate}"
+							addConcept="${specElement.addConcept}"
+							removeConcept="${specElement.removeConcept}"
+							otherGroupedConcepts="${specElement.otherGroupedConcepts}"
+							showDate="${specElement.showDate}"
+							displayStyle="${specElement.displayStyle}"
+						/>
+					</c:when>
+					<c:when test="${specElement.type == 'obsTable'}">
+						<openmrs:obsTable observations="${model.patientObs}"
+							concepts="${specElement.concepts}"
+							id="${specElement.id}"
+							cssClass="${specElement.cssClass}"
+							showEmptyConcepts="${specElement.showEmptyConcepts}"
+							showConceptHeader="${specElement.showConceptHeader}"
+							showDateHeader="${specElement.showDateHeader}"
+							fromDate="${specElement.fromDate}"
+							toDate="${specElement.toDate}"
+							limit="${specElement.limit}"
+							sort="${specElement.sort}"
+							orientation="${specElement.orientation}"
+						/>
+					</c:when>
+					<c:when test="${specElement.type == 'currentDrugOrders'}">
+						<openmrs:portlet url="patientRegimenCurrent" id="patientRegimenCurrent" patientId="${patient.patientId}"
+							parameters="displayDrugSetIds=${specElement.whichSets}|currentRegimenMode=view" />
+					</c:when>
+					<%--
+					<c:when test="${}">
+					</c:when>
+					<c:when test="${specElement.type == 'obsGroupTable'}">
+						<openmrs:obsTable observations="${model.patientObs}"
+							primaryConcepts="${specElement.primaryConcepts}"
+							otherConcepts="${specElement.otherConcepts}"
+							orientation="${specElement.orientation}"
+						/>
+					</c:when>
+					--%>
+					<c:otherwise>
+						DON'T KNOW HOW TO HANDLE: ${specElement}
+					</c:otherwise>
+				</c:choose>
+				
 			</c:if>
-			<c:if test="${not empty specElement.headingText}">
-				<b><u>${specElement.headingText}</u></b>
-				<br/>
-			</c:if>
-			<c:choose>
-				<c:when test="${specElement.type == 'NEWCOLUMN'}">
-					</td><td>
-				</c:when>
-				<c:when test="${specElement.type == 'NEWROW'}">
-					</td></tr><tr valign="top"><td>
-				</c:when>
-				<c:when test="${specElement.type == 'NEWTABLE'}">
-					</td></tr></table>
-					<table width="100%"><tr valign="top"><td>
-				</c:when>
-				<c:when test="${specElement.type == 'newlines'}">
-					<c:forEach begin="0" end="${specElement.count}"><br/></c:forEach>
-				</c:when>
-				<c:when test="${specElement.type == 'heading'}">
-					<b><u><spring:message code="${specElement.code}"/></u></b>
-				</c:when>
-				<c:when test="${specElement.type == 'label'}">
-					<spring:message code="${specElement.code}"/>
-				</c:when>
-				<c:when test="${specElement.type == 'output'}">
-					${specElement.output}
-				</c:when>
-				<c:when test="${specElement.type == 'activeList'}">
-					<openmrs:activeList observations="${model.patientObs}"
-						onDate="${specElement.onDate}"
-						addConcept="${specElement.addConcept}"
-						removeConcept="${specElement.removeConcept}"
-						otherGroupedConcepts="${specElement.otherGroupedConcepts}"
-						showDate="${specElement.showDate}"
-						displayStyle="${specElement.displayStyle}"
-					/>
-				</c:when>
-				<c:when test="${specElement.type == 'obsTable'}">
-					<openmrs:obsTable observations="${model.patientObs}"
-						concepts="${specElement.concepts}"
-						id="${specElement.id}"
-						cssClass="${specElement.cssClass}"
-						showEmptyConcepts="${specElement.showEmptyConcepts}"
-						showConceptHeader="${specElement.showConceptHeader}"
-						showDateHeader="${specElement.showDateHeader}"
-						fromDate="${specElement.fromDate}"
-						toDate="${specElement.toDate}"
-						limit="${specElement.limit}"
-						sort="${specElement.sort}"
-						orientation="${specElement.orientation}"
-					/>
-				</c:when>
-				<c:when test="${specElement.type == 'currentDrugOrders'}">
-					<openmrs:portlet url="patientRegimenCurrent" id="patientRegimenCurrent" patientId="${patient.patientId}"
-						parameters="displayDrugSetIds=${specElement.whichSets}|currentRegimenMode=view" />
-				</c:when>
-				<c:when test="${}">
-				</c:when>
-				<%--
-				<c:when test="${specElement.type == 'obsGroupTable'}">
-					<openmrs:obsTable observations="${model.patientObs}"
-						primaryConcepts="${specElement.primaryConcepts}"
-						otherConcepts="${specElement.otherConcepts}"
-						orientation="${specElement.orientation}"
-					/>
-				</c:when>
-				--%>
-				<c:otherwise>
-					DON'T KNOW HOW TO HANDLE: ${specElement}
-				</c:otherwise>
-			</c:choose>
 		</c:forEach>
 	</td></tr></table>
 	

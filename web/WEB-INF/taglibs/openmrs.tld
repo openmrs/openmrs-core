@@ -744,6 +744,42 @@
 	</attribute>
 </tag>
 	
+<tag>
+	<description>
+		Temporary helper tag for doing decision support tests in the patient summary.
+		This is a hack. Expect it to disappear.
+		Sets 'var' to ' evaluate(ifTrue)==true || evaluate(ifFalse)==false '
+	</description>
+	<name>summaryTest</name>
+	<tag-class>org.openmrs.web.taglib.SummaryTest</tag-class>
+	<body-content>none</body-content>
+	<attribute>
+		<name>observations</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>encounters</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>var</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>ifTrue</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>ifFalse</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+</tag>
+	
 <function>
 	<name>sort</name>
 	<function-class>org.openmrs.web.taglib.functions.Sort</function-class>

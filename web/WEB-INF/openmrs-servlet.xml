@@ -1032,7 +1032,7 @@
 
 	    <bean id="standardTri30" class="org.openmrs.order.RegimenSuggestion">
 			<property name="codeName"><value>standardTri30</value></property>
-			<property name="displayName"><value>Triomune-30</value></property>
+			<property name="displayName"><value>3TC + d4T(30) + NVP (Triomune-30)</value></property>
 			<property name="canReplace"><value>ANTIRETROVIRAL DRUGS</value></property>
 	    	<property name="drugComponents">
 				<list>
@@ -1043,7 +1043,7 @@
 
 	    <bean id="standardTri40" class="org.openmrs.order.RegimenSuggestion">
 			<property name="codeName"><value>standardTri40</value></property>
-			<property name="displayName"><value>Triomune-40</value></property>
+			<property name="displayName"><value>3TC + d4T(40) + NVP (Triomune-40)</value></property>
 			<property name="canReplace"><value>ANTIRETROVIRAL DRUGS</value></property>
 	    	<property name="drugComponents">
 				<list>
@@ -1397,11 +1397,12 @@
 				-->
 				<props>
 					<prop key="type">newlines</prop>
-					<prop key="count">2</prop>
+					<prop key="count">1</prop>
 				</props>
 				<props>
-					<prop key="type">heading</prop>
-					<prop key="code">summary.pastDrugOrders</prop>
+					<prop key="type">label</prop>
+					<prop key="headingCode">summary.pastDrugOrders</prop>
+					<prop key="code">general.notYetImplemented</prop>
 				</props>
 				<props>
 					<prop key="type">NEWROW</prop>
@@ -1432,6 +1433,23 @@
 					<prop key="orientation">vertical</prop>
 					<prop key="sort">desc</prop>
 					<prop key="limit">1</prop>
+				</props>
+				<props>
+					<prop key="type">NEWTABLE</prop>
+				</props>
+				<props>
+					<prop key="type">heading</prop>
+					<prop key="code">summary.alerts</prop>
+				</props>
+				<props>
+					<prop key="type">label</prop>
+					<prop key="code">summary.alert.noCd4In6Months</prop>
+					<prop key="showIfTrue">
+						obsCheck
+							test:NO
+							concept:CD4 COUNT
+							timespan:last 7 months
+					</prop>
 				</props>
 			</list>
 		</property>
