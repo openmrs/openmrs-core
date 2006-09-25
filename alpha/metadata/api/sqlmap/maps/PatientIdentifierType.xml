@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="org.openmrs.PatientIdentifierType">
+
+<!-- ************************************************************ -->
+<!-- ** Creation                                               ** -->
+<!-- ************************************************************ -->
+
+<insert id="createPatientIdentifierType" parameterClass="org.openmrs.PatientIdentifierType">
+	INSERT INTO patient_identifier_type
+		(
+		name,
+		description,
+		creator,
+		date_created
+		)
+	VALUES
+		(
+		#name#,
+		#description#,
+		#creator.userId#,
+		NOW()
+		);
+	<selectKey keyProperty="patientIdentifierTypeId">
+		SELECT LAST_INSERT_ID() AS patientIdentifierTypeId
+	</selectKey>
+</insert>
+
+<!-- ************************************************************ -->
+<!-- ** Read                                                   ** -->
+<!-- ************************************************************ -->
+
+<resultMap id="patientIdentifierTypeResult" class="org.openmrs.PatientIdentifierType">
+	<result property="patientIdentifierTypeId" column="patient_identifier_type_id" />
+	<result property="name" column="name" />
+	<result property="description" column="description" />
+	<result property="creator" column="creator" select="getUser" />
+	<result property="dateCreated" column="date_created" />
+</resultMap>
+
+<select id="getPatientIdentifierType" parameterClass="int"
+        resultMap="patientIdentifierTypeResult">
+	SELECT * FROM patient_identifier_type WHERE patient_identifier_type_id = #value#
+</select>
+
+<select id="getAllPatientIdentifierTypes" resultMap="patientIdentifierTypeResult">
+	SELECT * FROM patient_identifier_type
+</select>
+
+<!-- ************************************************************ -->
+<!-- ** Update                                                 ** -->
+<!-- ************************************************************ -->
+
+<update id="updatePatientIdentifierType" parameterClass="org.openmrs.PatientIdentifierType">
+	UPDATE
+		patient_identifier_type
+	SET
+		name = #name#,
+		description = #description#
+	WHERE
+		patient_identifier_type_id = #patientIdentifierTypeId#
+</update>
+
+<!-- ************************************************************ -->
+<!-- ** Deletion                                               ** -->
+<!-- ************************************************************ -->
+
+<delete id="deletePatientIdentifierType" parameterClass="int">
+	DELETE FROM patient_identifier_type WHERE patient_identifier_type_id = #value#
+</delete>
+
+</sqlMap>

@@ -1,0 +1,86 @@
+package org.openmrs.reporting;
+
+import java.util.Locale;
+
+import org.openmrs.Concept;
+import org.openmrs.api.PatientSetService;
+import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
+
+public class TextObsPatientFilter extends AbstractReportObject implements PatientFilter {
+
+	Concept concept;
+	String value;
+	Boolean suggestFromDatabase = false; // not yet implemented: should we suggest with a (dropdown?) of known values from the database?
+	
+	public TextObsPatientFilter(Concept concept, String value) {
+		this.concept = concept;
+		this.value = value;
+	}
+
+	public TextObsPatientFilter() { }
+	
+	public boolean isReadyToRun() {
+		return getConcept() != null && getValue() != null;
+	}
+	
+	public boolean equals(Object o) {
+		if (o == null)
+			return false;
+		if (o instanceof TextObsPatientFilter) {
+			TextObsPatientFilter other = (TextObsPatientFilter) o;
+			if (getReportObjectId() != null && getReportObjectId().equals(other.getReportObjectId()))
+				return true;
+			return equals(getConcept(), other.getConcept())
+					&& equals(getValue(), other.getValue());
+		} else {
+			return false;
+		}
+	}
+	
+	public Concept getConcept() {
+		return concept;
+	}
+
+	public void setConcept(Concept concept) {
+		this.concept = concept;
+	}
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
+
+	public Boolean getSuggestFromDatabase() {
+		return suggestFromDatabase;
+	}
+
+	public void setSuggestFromDatabase(Boolean suggestFromDatabase) {
+		this.suggestFromDatabase = suggestFromDatabase;
+	}
+
+	public PatientSet filter(Context context, PatientSet input) {
+		PatientSetService service = context.getPatientSetService();
+		return input.intersect(service.getPatientsHavingTextObs(concept, value));
+	}
+	
+	public PatientSet filterInverse(Context context, PatientSet input) {
+		PatientSetService service = context.getPatientSetService();
+		return input.subtract(service.getPatientsHavingTextObs(concept, value));
+	}
+
+	public String getDescription() {
+		// TODO: get the right locale
+		StringBuffer ret = new StringBuffer();
+		Locale locale = OpenmrsConstants.OPENMRS_LOCALES().iterator().next();
+		ret.append("Patients with " + concept.getName(locale, false)); 
+		if (value != null) {
+			ret.append(" of " + value);
+		}
+		return ret.toString();
+	}
+
+}

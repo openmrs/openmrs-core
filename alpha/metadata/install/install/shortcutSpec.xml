@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<shortcuts>
+	<skipIfNotSupported />
+	<programGroup defaultName="OpenMRS" location="applications" />
+
+
+	<shortcut 
+		name="Uninstall" 
+		programGroup="yes" 
+		desktop="no"
+		applications="no" 
+		startMenu="yes" 
+		startup="no"
+		target="$INSTALL_PATH\uninstall.bat" 
+		workingDirectory="$INSTALL_PATH"
+		commandLine="" 
+		initialState="maximized"
+		iconFile="$INSTALL_PATH\cLogo.ico" 
+		iconIndex="0" type="Application"
+		encoding="UTF-8" 
+		description="Uninstall">
+		<createForPack name="OpenMRS" />
+	</shortcut>
+
+
+
+	<shortcut 
+		name="Documentation" 
+		programGroup="yes" 
+		desktop="yes"
+		applications="no" 
+		startMenu="yes" 
+		startup="no" 
+		target="acroread"
+		workingDirectory=""
+		commandLine="$INSTALL_PATH/doc/izpack/pdf/izpack-doc.pdf"
+		initialState="noShow" 
+		iconFile="$INSTALL_PATH\cLogo.ico" 
+		iconIndex="0"
+		url="$INSTALL_PATH/doc/izpack/pdf/izpack-doc.pdf" 
+		type="Application"
+		encoding="UTF-8"
+		description="IzPack user documentation (PDF format)">
+		<createForPack name="Documentation" />
+	</shortcut>
+	
+	<shortcut 
+		name="Uninstall" 
+		programGroup="yes" 
+		desktop="no"
+		applications="no" 
+		startMenu="yes" 
+		startup="no"
+		target="$INSTALL_PATH\uninstall.bat" 
+		workingDirectory="$INSTALL_PATH"
+		commandLine="" 
+		initialState="maximized"
+		iconFile="$INSTALL_PATH\cLogo.ico" 
+		iconIndex="0" 
+		type="Application"
+		encoding="UTF-8" 
+		description="Uninstall">
+		<createForPack name="OpenMRS" />
+	</shortcut>
+
+
+</shortcuts>

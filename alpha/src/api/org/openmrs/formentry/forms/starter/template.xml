@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<?mso-infoPathSolution name="Basic Form" href="http://localhost:8080/formentry/forms/1.xsn" solutionVersion="0.1.0.3" productVersion="11.0.6357" PIVersion="1.0.0.0" ?>
+<?mso-application progid="InfoPath.Document"?>
+<form id="1" name="Basic Form" version="0.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:openmrs="http://schema.yoursite.org/FormEntry/1" xmlns:xd="http://schemas.microsoft.com/office/infopath/2003">
+  <header>
+    <enterer></enterer>
+    <date_entered></date_entered>
+    <session></session>
+  </header>
+  <patient>
+    <patient.birthdate openmrs_table="patient" openmrs_attribute="birthdate"></patient.birthdate>
+    <patient.birthdate_estimated openmrs_table="patient" openmrs_attribute="birthdate_estimated"></patient.birthdate_estimated>
+    <patient.family_name openmrs_table="patient_name" openmrs_attribute="family_name"></patient.family_name>
+    <patient.given_name openmrs_table="patient_name" openmrs_attribute="given_name"></patient.given_name>
+    <patient.medical_record_number openmrs_table="patient_identifier" openmrs_attribute="identifier"></patient.medical_record_number>
+    <patient.middle_name openmrs_table="patient_name" openmrs_attribute="middle_name"></patient.middle_name>
+    <patient.patient_id openmrs_table="patient" openmrs_attribute="patient_id"></patient.patient_id>
+    <patient.sex openmrs_table="patient" openmrs_attribute="gender"></patient.sex>
+    <patient.tribe openmrs_table="patient" openmrs_attribute="tribe"></patient.tribe>
+    <patient_address.address1 openmrs_table="patient_address" openmrs_attribute="address1"></patient_address.address1>
+    <patient_address.address2 openmrs_table="patient_address" openmrs_attribute="address2"></patient_address.address2>
+  </patient>
+  <encounter>
+    <encounter.encounter_datetime openmrs_table="encounter" openmrs_attribute="encounter_datetime"></encounter.encounter_datetime>
+    <encounter.location_id openmrs_table="encounter" openmrs_attribute="location_id"></encounter.location_id>
+    <encounter.provider_id openmrs_table="encounter" openmrs_attribute="provider_id"></encounter.provider_id>
+  </encounter>
+  <obs openmrs_concept="1238^MEDICAL RECORD OBSERVATIONS^99DCT" openmrs_datatype="ZZ">
+    <weight_kg openmrs_concept="5089^WEIGHT (KG)^99DCT" openmrs_datatype="NM">
+        <date xsi:nil="true"></date>
+        <time xsi:nil="true"></time>
+        <value xsi:nil="true"></value>
+    </weight_kg>
+  </obs>
+  <problem_list openmrs_concept="1284^PROBLEM LIST^99DCT" openmrs_datatype="ZZ">
+    <problem_added openmrs_concept="6042^PROBLEM ADDED^99DCT" openmrs_datatype="CWE" multiple="0">
+        <date xsi:nil="true"></date>
+        <time xsi:nil="true"></time>
+        <value xsi:nil="true"></value>
+    </problem_added>
+    <problem_resolved openmrs_concept="6097^PROBLEM RESOLVED^99DCT" openmrs_datatype="CWE" multiple="0">
+        <date xsi:nil="true"></date>
+        <time xsi:nil="true"></time>
+        <value xsi:nil="true"></value>
+    </problem_resolved>
+  </problem_list>
+  <other></other></form>

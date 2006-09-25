@@ -1,0 +1,16 @@
+
+To Create the final Windows files, the following applications are required:
+
+	* ANT (http://ant.apache.org)
+	* 7-Zip (http://www.7-zip.org)
+	* Izpack (http://www.izforge.com/izpack/)
+	
+------------------------------------------------------------------------------
+
+* You must install 7-Zip(http://www.7-zip.org) on the PC to enable the setup.exe creation
+
+* 7-Zip directory must be in the PATH System Environment Variable
+
+* Before the final setup can be created, please copy the Tomcat and Mysql installers into the ext-files directory and modify the ext-files.properties file to set the filenames of the installs.
+
+* The final output files are stored in the target directory

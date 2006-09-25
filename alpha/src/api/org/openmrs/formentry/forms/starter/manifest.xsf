@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+This file is automatically created and modified by Microsoft Office InfoPath.
+Changes made to the file outside of InfoPath might be lost if the form template is modified in InfoPath.
+-->
+<xsf:xDocumentClass trustSetting="automatic" solutionVersion="1.0.0.4" productVersion="11.0.6565" solutionFormatVersion="1.100.0.0" publishUrl="C:\Documents and Settings\burke\Desktop\paulo\fancy_starter\New Folder\manifest.xsf" name="urn:schemas-microsoft-com:office:infopath:new-starter:" xmlns:xsf="http://schemas.microsoft.com/office/infopath/2003/solutionDefinition" xmlns:msxsl="urn:schemas-microsoft-com:xslt" xmlns:xd="http://schemas.microsoft.com/office/infopath/2003" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xdUtil="http://schemas.microsoft.com/office/infopath/2003/xslt/Util" xmlns:xdXDocument="http://schemas.microsoft.com/office/infopath/2003/xslt/xDocument" xmlns:xdMath="http://schemas.microsoft.com/office/infopath/2003/xslt/Math" xmlns:xdDate="http://schemas.microsoft.com/office/infopath/2003/xslt/Date" xmlns:openmrs="http://schema.yoursite.org/FormEntry/1" xmlns:my="http://schemas.microsoft.com/office/infopath/2003/myXSD/2006-07-25T11:22:21">
+	<xsf:package>
+		<xsf:files>
+			<xsf:file name="FormEntry.xsd">
+				<xsf:fileProperties>
+					<xsf:property name="editability" type="string" value="none"></xsf:property>
+					<xsf:property name="rootElement" type="string" value="form"></xsf:property>
+					<xsf:property name="useOnDemandAlgorithm" type="string" value="yes"></xsf:property>
+				</xsf:fileProperties>
+			</xsf:file>
+			<xsf:file name="template.xml"></xsf:file>
+			<xsf:file name="sampledata.xml">
+				<xsf:fileProperties>
+					<xsf:property name="fileType" type="string" value="sampleData"></xsf:property>
+				</xsf:fileProperties>
+			</xsf:file>
+			<xsf:file name="Page1.xsl">
+				<xsf:fileProperties>
+					<xsf:property name="lang" type="string" value="1033"></xsf:property>
+					<xsf:property name="componentId" type="string" value="14"></xsf:property>
+					<xsf:property name="warning" type="string" value="yes"></xsf:property>
+					<xsf:property name="xmlToEditName" type="string" value="4"></xsf:property>
+				</xsf:fileProperties>
+			</xsf:file>
+			<xsf:file name="script.js">
+				<xsf:fileProperties>
+					<xsf:property name="scriptType" type="string" value="userEvents"></xsf:property>
+				</xsf:fileProperties>
+			</xsf:file>
+			<xsf:file name="openmrs-infopath.js"></xsf:file>
+			<xsf:file name="defaults.xml"></xsf:file>
+		</xsf:files>
+	</xsf:package>
+	<xsf:importParameters enabled="yes"></xsf:importParameters>
+	<xsf:documentVersionUpgrade>
+		<xsf:useTransform transform="" minVersionToUpgrade="0.0.0.0"></xsf:useTransform>
+	</xsf:documentVersionUpgrade>
+	<xsf:views default="Page 1">
+		<xsf:view name="Page 1" caption="Page 1">
+			<xsf:unboundControls>
+				<xsf:button name="SubmitButton"></xsf:button>
+				<xsf:button name="AddNewProblem"></xsf:button>
+				<xsf:button name="DeleteNewProblem"></xsf:button>
+				<xsf:button name="AddResolvedProblem"></xsf:button>
+				<xsf:button name="DeleteResolvedProblem"></xsf:button>
+				<xsf:button name="SelectProvider"></xsf:button>
+			</xsf:unboundControls>
+			<xsf:mainpane transform="Page1.xsl"></xsf:mainpane>
+		</xsf:view>
+	</xsf:views>
+	<xsf:applicationParameters application="InfoPath Design Mode">
+		<xsf:solutionProperties fullyEditableNamespace="http://schemas.microsoft.com/office/infopath/2003/myXSD/2006-07-25T11:22:21" lastOpenView="Page1.xsl" scriptLanguage="jscript"></xsf:solutionProperties>
+	</xsf:applicationParameters>
+	<xsf:documentSchemas>
+		<xsf:documentSchema rootSchema="yes" location="FormEntry.xsd"></xsf:documentSchema>
+	</xsf:documentSchemas>
+	<xsf:fileNew>
+		<xsf:initialXmlDocument caption="new_starter" href="template.xml"></xsf:initialXmlDocument>
+	</xsf:fileNew>
+	<xsf:scripts language="jscript" enforceScriptTimeout="yes">
+		<xsf:script src="script.js"></xsf:script>
+		<xsf:script src="openmrs-infopath.js"></xsf:script>
+	</xsf:scripts>
+	<xsf:taskpane caption="Welcome!" href="https://eldoret.iukenya.org/amrs/formTaskpane.htm"></xsf:taskpane>
+</xsf:xDocumentClass>

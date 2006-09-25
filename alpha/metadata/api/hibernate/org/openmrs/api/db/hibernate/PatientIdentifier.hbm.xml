@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+    <!--  
+    
+    
+    	*********NOTICE********
+    	
+    	PatientIdentifier is defined within Patient as a composite-element
+    	
+    	********/NOTICE********
+    	
+    
+    -->
+    
+    <!--
+     
+     
+    	This class simply allows Hibernate to recognize PatientIdentifer as an entity in HQL
+    
+    
+    -->
+
+
+<hibernate-mapping>
+
+<class 
+    name="org.openmrs.PatientIdentifier" 
+    table="patient_identifier"
+>
+
+	<composite-id>
+		<key-many-to-one name="patient" column="patient_id"	class="org.openmrs.Patient" />
+		<key-property name="identifier" type="java.lang.String" length="50" />
+		<key-many-to-one name="identifierType" class="org.openmrs.PatientIdentifierType" column="identifier_type" />
+	</composite-id>
+    
+    <many-to-one name="location" class="org.openmrs.Location" column="location_id" />
+	<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" />
+	<property name="dateVoided" type="java.util.Date" column="date_voided"/>
+	<property name="preferred" type="boolean" not-null="true" />
+	<property name="voided" type="boolean" not-null="true" />
+	<property name="voidReason" type="java.lang.String" column="void_reason" length="255"/>
+	<many-to-one name="creator" class="org.openmrs.User" column="creator" not-null="true"/>
+	<many-to-one name="voidedBy" class="org.openmrs.User" column="voided_by" />
+	
+</class>
+</hibernate-mapping>

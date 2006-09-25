@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="org.openmrs.FieldType" 
+    table="field_type"
+>
+
+    <id
+        name="fieldTypeId"
+        type="int"
+        column="field_type_id"
+        unsaved-value="0"
+    >
+        <generator class="native" />
+    </id>
+
+    <property
+        name="name"
+        type="java.lang.String"
+        column="name"
+        length="50"
+    />
+    <property
+        name="description"
+        type="java.lang.String"
+        column="description"
+        length="2147483647"
+    />
+    <property
+        name="isSet"
+        type="boolean"
+        column="is_set"
+        length="1"
+        not-null="true"
+    />
+    <property
+        name="dateCreated"
+        type="java.util.Date"
+        column="date_created"
+        not-null="true"
+        length="19"
+    />
+
+    <!-- Associations -->
+  
+    <!-- bi-directional one-to-many association to Field -->
+    <!--
+    <set
+        name="fields"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="field_type" />
+        </key>
+        <one-to-many 
+            class="org.openmrs.Field"
+        />
+    </set>
+    -->
+    
+    <!-- bi-directional many-to-one association to User -->
+    <many-to-one
+        name="creator"
+        class="org.openmrs.User"
+        not-null="true"
+    >
+        <column name="creator" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

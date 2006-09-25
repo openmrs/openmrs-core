@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs">
+
+	<class name="Obs" table="obs">
+
+		<id name="obsId" type="int" column="obs_id">
+			<generator class="native" />
+		</id>
+
+		<property name="patientId" type="java.lang.Integer" length="11" 
+			column="patient_id" not-null="true" insert="false" update="false" />
+			
+		<property name="obsDatetime" type="java.util.Date"
+			column="obs_datetime" not-null="true" length="19" />
+		<property name="obsGroupId" type="java.lang.Integer"
+			column="obs_group_id" length="11" />
+			
+		<property name="valueGroupId" type="java.lang.Integer"
+			column="value_group_id" length="11" />
+		<property name="valueDatetime" type="java.util.Date"
+			column="value_datetime" length="19" />
+		<property name="valueNumeric" type="double"
+			column="value_numeric" length="22" />
+		<property name="valueModifier" type="java.lang.String"
+			column="value_modifier" length="2" />
+		<property name="valueText" type="java.lang.String"
+			column="value_text" length="50" />
+			
+		<property name="comment" type="java.lang.String"
+			column="comments" length="255" />
+		<property name="accessionNumber" type="java.lang.String"
+			column="accession_number" length="255" />
+			
+		<property name="dateStarted" type="java.util.Date"
+			column="date_started" length="19" />
+		<property name="dateStopped" type="java.util.Date"
+			column="date_stopped" length="19" />
+			
+		<property name="dateCreated" type="java.util.Date"
+			column="date_created" not-null="true" length="19" />
+		<property name="voided" type="java.lang.Boolean" column="voided"
+			length="1" not-null="true" />
+		<property name="dateVoided" type="java.util.Date"
+			column="date_voided" length="19" />
+		<property name="voidReason" type="java.lang.String"
+			column="void_reason" length="255" />
+
+		<!-- Associations -->
+
+		<!-- bi-directional many-to-one association to Patient -->
+		<many-to-one name="patient" class="Patient" not-null="true">
+			<column name="patient_id" />
+		</many-to-one>
+		<!-- bi-directional many-to-one association to Concept -->
+		<many-to-one name="concept" class="Concept" not-null="true">
+			<column name="concept_id" />
+		</many-to-one>
+		<!-- bi-directional many-to-one association to Concept -->
+		<many-to-one name="valueCoded" class="Concept">
+			<column name="value_coded" />
+		</many-to-one>
+		<!-- bi-directional many-to-one association to Drug -->
+		<many-to-one name="valueDrug" class="Drug">
+			<column name="value_drug" />
+		</many-to-one>
+		<!-- bi-directional many-to-one association to Order -->
+		<many-to-one name="order" class="Order">
+			<column name="order_id" />
+		</many-to-one>
+		<!-- bi-directional many-to-one association to Location -->
+		<many-to-one name="location" class="Location" not-null="true">
+			<column name="location_id" />
+		</many-to-one>
+		<!-- bi-directional many-to-one association to Encounter -->
+		<many-to-one name="encounter" class="Encounter">
+			<column name="encounter_id" />
+		</many-to-one>
+		<!-- bi-directional many-to-one association to User -->
+		<many-to-one name="creator" class="User" not-null="true">
+			<column name="creator" />
+		</many-to-one>
+		<!-- bi-directional many-to-one association to User -->
+		<many-to-one name="voidedBy" class="User">
+			<column name="voided_by" />
+		</many-to-one>
+		
+		
+		<!-- Complex Obs Joined Subclass -->
+		<joined-subclass name="ComplexObs" table="complex_obs">
+		
+			<key column="obs_id" />
+
+			<property name="urn" type="java.lang.String" column="urn" length="65535" />
+			
+			<property name="complexValue" type="java.lang.String"
+				column="complex_value" length="2147483647" />
+	
+			<!-- Association -->
+		    <!-- bi-directional many-to-one association to MimeType -->
+		    <many-to-one
+		        name="mimeType"
+		        class="org.openmrs.MimeType"
+		        not-null="true"
+		   	>
+		        <column name="mime_type_id" />
+		    </many-to-one>
+		
+		</joined-subclass>
+
+	</class>
+	
+</hibernate-mapping>

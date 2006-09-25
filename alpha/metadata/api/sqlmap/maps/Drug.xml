@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="org.openmrs.Drug">
+
+<!-- ************************************************************ -->
+<!-- ** Creation                                               ** -->
+<!-- ************************************************************ -->
+
+<insert id="createDrug" parameterClass="org.openmrs.Drug">
+	INSERT INTO drug
+		(
+		concept_id,
+		name,
+		combination,
+		daily_mg_per_kg,
+		dosage_form,
+		dose_strength,
+		inn,
+		maximum_dose,
+		minimum_dose,
+		route,
+		shelf_life,
+		therapy_class,
+		creator,
+		date_created
+		)
+	VALUES
+		(
+		#concept.conceptId#,
+		#name#,
+		#combination#,
+		#dailyMgPerKg#,
+		#dosageForm#,
+		#doseStrength#,
+		#inn#,
+		#maximumDose#,
+		#minimumDose#,
+		#route#,
+		#shelfLife#,
+		#therapyClass#,
+		#creator.userId#,
+		NOW()
+		);
+</insert>
+
+<!-- ************************************************************ -->
+<!-- ** Read                                                   ** -->
+<!-- ************************************************************ -->
+
+<resultMap id="drugResult" class="org.openmrs.Drug">
+	<result property="concept" column="concept_id" select="getConcept" />
+	<result property="name" column="name" />
+	<result property="combination" column="combination" />
+	<result property="dailyMgPerKg" column="daily_mg_per_kg" />
+	<result property="dosageForm" column="dosage_form" />
+	<result property="doseStrength" column="dose_strength" />
+	<result property="inn" column="inn" />
+	<result property="maximumDose" column="maximum_dose" />
+	<result property="minimumDose" column="minimum_dose" />
+	<result property="route" column="route" />
+	<result property="shelfLife" column="shelf_life" />
+	<result property="therapyClass" column="therapy_class" />
+	<result property="units" column="units" />
+	<result property="creator" column="creator" select="getUser" />
+	<result property="dateCreated" column="date_created" />
+</resultMap>
+
+<select id="getDrug" parameterClass="int" resultMap="drugResult">
+	SELECT * FROM drug WHERE drug_id = #value#
+</select>
+
+<!-- ************************************************************ -->
+<!-- ** Update                                                 ** -->
+<!-- ************************************************************ -->
+
+<update id="updateDrug" parameterClass="org.openmrs.Drug">
+	UPDATE
+		drug
+	SET
+		concept_id = #concept.conceptId#,
+		name = #name#,
+		combination = #combination#,
+		daily_mg_per_kg = #dailyMgPerKg#,
+		dosage_form = #dosageForm#,
+		dose_strength = #doseStrength#,
+		inn = #inn#,
+		maximum_dose = #maximumDose#,
+		minimum_dose = #minimumDose#,
+		route = #route#,
+		shelf_life = #shelfLife#,
+		therapy_class = #therapyClass#
+	WHERE
+		drug_id = #drugId#
+
+</update>
+
+<!-- ************************************************************ -->
+<!-- ** Deletion                                               ** -->
+<!-- ************************************************************ -->
+
+<delete id="deleteDrug" parameterClass="org.openmrs.Drug">
+	DELETE FROM drug WHERE drug_id = #drugId#
+</delete>
+
+</sqlMap>

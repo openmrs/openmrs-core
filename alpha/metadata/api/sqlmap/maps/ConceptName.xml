@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="org.openmrs.ConceptName">
+
+<!-- ************************************************************ -->
+<!-- ** Creation                                               ** -->
+<!-- ************************************************************ -->
+
+<insert id="createConceptName" parameterClass="org.openmrs.ConceptName">
+	INSERT INTO concept_name
+		(
+		concept_id,
+		name,
+		short_name,
+		locale,
+		creator,
+		date_created
+		)
+	VALUES
+		(
+		#concept.conceptId#,
+		#name#,
+		#shortName#,
+		#locale#,
+		#creator.userId#,
+		NOW()
+		);
+</insert>
+
+<!-- ************************************************************ -->
+<!-- ** Read                                                   ** -->
+<!-- ************************************************************ -->
+
+<resultMap id="conceptNameResult" class="org.openmrs.ConceptName">
+	<result property="concept" column="concept_id" select="getConcept" />
+	<result property="name" column="name" />
+	<result property="shortName" column="short_name" />
+	<result property="locale" column="locale" />
+	<result property="creator" column="creator" select="getUser" />
+	<result property="dateCreated" column="date_created" />
+</resultMap>
+
+<select id="getConceptName" parameterClass="org.openmrs.ConceptName"
+        resultMap="conceptNameResult">
+	SELECT * FROM concept_name
+	WHERE
+		concept_id = #concept.conceptId# AND
+		name = #name# AND
+		locale = #locale#
+</select>
+
+<select id="getConceptNameByConceptId" parameterClass="int"
+        resultMap="conceptNameResult">
+	SELECT * FROM concept_name WHERE concept_id = #value#
+</select>
+
+<!-- ************************************************************ -->
+<!-- ** Update                                                 ** -->
+<!-- ************************************************************ -->
+
+<update id="updateConceptName" parameterClass="org.openmrs.ConceptName">
+	UPDATE
+		concept_name
+	SET
+		short_name = #shortName#
+	WHERE
+		concept_id = #concept.conceptId# AND
+		name = #name# AND
+		locale = #locale#		
+</update>
+
+<!-- ************************************************************ -->
+<!-- ** Deletion                                               ** -->
+<!-- ************************************************************ -->
+
+<delete id="deleteConceptName" parameterClass="org.openmrs.ConceptName">
+	DELETE FROM concept_name
+	WHERE
+		concept_id = #concept.conceptId# AND
+		name = #name# AND
+		locale = #locale#		
+</delete>
+
+</sqlMap>

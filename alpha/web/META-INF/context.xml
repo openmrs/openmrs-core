@@ -1,0 +1,53 @@
+<Context path="/@WEBAPP.NAME@" docBase="@WEBAPP.NAME@" antiJARLocking="true" reloadable="false">
+	<!--<Resource name="jdbc/openmrs"
+			auth="Container"
+			type="javax.sql.DataSource"
+			factory="org.apache.commons.dbcp.BasicDataSourceFactory"
+			validationQuery="SELECT * FROM users"
+			url="jdbc:mysql://localhost:3306/openmrs"
+			driverClassName="com.mysql.jdbc.Driver"
+			username="openmrs"
+			password="openmrs"
+			maxWait="3000"
+			maxIdle="100"
+			maxActive="10" />
+	-->
+<!--	
+	<Resource 
+		name="mail/OpenmrsMailSession" 
+		auth="Container" 
+		type="javax.mail.Session" 
+		mail.smtp.host="localhost"
+        mail.smtp.port="25"
+        mail.transport.protocol="smtp"
+        mail.smtp.auth="true"
+        mail.smtp.user="openmrs"
+        password="openmrs"/>
+	
+	<Resource 
+		name="jms/ConnectionFactory" 
+		auth="Container" 
+		type="org.activemq.ActiveMQConnectionFactory" 
+		description="JMS Connection Factory"
+        factory="org.activemq.jndi.JNDIReferenceFactory" 
+        brokerURL="vm://localhost:61626" 
+        brokerName="LocalActiveMQBroker"/>
+
+	<Resource 
+		name="jms/someTopic" 
+		auth="Container" 
+		type="org.activemq.message.ActiveMQTopic" 
+		description="my Topic"
+        factory="org.activemq.jndi.JNDIReferenceFactory" 
+        physicalName="FOO.BAR"/>
+
+  	<Resource 
+  		name="jms/someQueue" 
+  		auth="Container" 
+  		type="org.activemq.message.ActiveMQQueue" 
+  		description="my Queue"
+        factory="org.activemq.jndi.JNDIReferenceFactory" 
+        physicalName="FOO.BAR"/>
+-->	
+	
+</Context>
