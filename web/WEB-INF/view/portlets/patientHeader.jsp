@@ -25,6 +25,10 @@
 						<c:if test="${!status.last}">&nbsp;&nbsp;|&nbsp;&nbsp;</c:if>
 					</c:forEach>
 				</td>
+				<td style="vertical-align: middle">
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<a style="color: yellow" href="javascript:window.open('patientSummary.htm?patientId=${model.patientId}', 'summaryWindow', 'toolbar=no,width=800,height=600,resizable=yes,scrollbars=yes').focus()">Summary</a>
+				</td>
 			</tr>
 		</table>
 	</div>
@@ -93,7 +97,7 @@
 		<table><tr>
 			<td><spring:message code="Patient.lastEncounter"/>:</td>
 			<th>
-				<c:forEach items='${openmrs:sort(encounters, "encounterDatetime", true)}' var="lastEncounter" varStatus="lastEncounterStatus" end="0">
+				<c:forEach items='${openmrs:sort(model.patientEncounters, "encounterDatetime", true)}' var="lastEncounter" varStatus="lastEncounterStatus" end="0">
 					${lastEncounter.encounterType.name} @ ${lastEncounter.location.name}, <openmrs:formatDate date="${lastEncounter.encounterDatetime}" type="medium" />
 				</c:forEach>
 				<c:if test="${fn:length(encounters) == 0}">

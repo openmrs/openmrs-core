@@ -136,6 +136,18 @@ h1, h2, h3, h4, h5 {
 		color: #003366;
 	}	
 
+#contentMinimal {
+	margin: 0px 0 0 0;
+	width: 100%;
+	padding: 3px;
+	font-size: 1.2em;
+	background-color: #ffffff;
+	z-index: 8;
+}
+	#contentMinimal a, a:link, #contentMinimal a:active, #contentMinimal a:visited, #contentMinimal a:hover {
+		color: #003366;
+	}
+
 #footer {
 	position: relative;
 	margin-top: -1.7em;

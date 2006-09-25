@@ -80,9 +80,6 @@
 		<openmrs:hasPrivilege privilege="Patient Dashboard - View Forms Section">
 			<li><a id="patientFormsTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.forms"/></a></li>
 		</openmrs:hasPrivilege>
-		<openmrs:hasPrivilege privilege="Patient Dashboard - View Patient Summary">
-			<li><a id="patientSummaryTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.summary"/></a></li>
-		</openmrs:hasPrivilege>
 	</ul>
 </div>
 <br/>
@@ -115,11 +112,6 @@
 	<openmrs:hasPrivilege privilege="Patient Dashboard - View Forms Section">
 		<div id="patientForms" style="display:none;">
 			<openmrs:portlet url="patientForms" id="patientDashboardForms" patientId="${patient.patientId}" parameters="goBackOnEntry=false|showUnpublishedForms=true" />
-		</div>
-	</openmrs:hasPrivilege>
-	<openmrs:hasPrivilege privilege="Patient Dashboard - View Patient Summary">
-		<div id="patientSummary" style="display:none;">
-			<openmrs:portlet url="patientSummary" id="patientDashboardSummary" patientId="${patient.patientId}" />
 		</div>
 	</openmrs:hasPrivilege>
 </div>

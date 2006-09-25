@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<div style="border: 1px black solid; width: 100%;">
+<div style="width: 100%;">
 
 	<div id="pihHeader" align="center">
 		<hr/>
@@ -36,7 +36,7 @@
 		<tr>
 			<td>
 				<spring:message code="Patient.lastEncounter"/>:
-				<c:forEach items='${openmrs:sort(encounters, "encounterDatetime", true)}' var="lastEncounter" varStatus="lastEncounterStatus" end="0">
+				<c:forEach items='${openmrs:sort(model.patientEncounters, "encounterDatetime", true)}' var="lastEncounter" varStatus="lastEncounterStatus" end="0">
 					${lastEncounter.encounterType.name}
 					<spring:message code="general.atLocation"/> ${lastEncounter.location.name}
 					<spring:message code="general.onDate"/> <openmrs:formatDate date="${lastEncounter.encounterDatetime}" type="medium" />
@@ -44,7 +44,7 @@
 						<spring:message code="general.byPerson"/> ${lastEncounter.provider}
 					</c:if>
 				</c:forEach>
-				<c:if test="${fn:length(encounters) == 0}">
+				<c:if test="${fn:length(model.patientEncounters) == 0}">
 					<spring:message code="FormEntry.no.last.encounters"/>
 				</c:if>
 			</td>
@@ -126,7 +126,7 @@
 						/>
 					</c:when>
 					<c:when test="${specElement.type == 'currentDrugOrders'}">
-						<openmrs:portlet url="patientRegimenCurrent" id="patientRegimenCurrent" patientId="${patient.patientId}"
+						<openmrs:portlet url="patientRegimenCurrent" id="patientRegimenCurrent" patientId="${model.patientId}"
 							parameters="displayDrugSetIds=${specElement.whichSets}|currentRegimenMode=view" />
 					</c:when>
 					<%--

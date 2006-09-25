@@ -1352,16 +1352,15 @@
 					<prop key="showDate">false</prop>
 					<prop key="displayStyle">table</prop>
 				</props>
-				<!-- This would be a problem list using the concepts from the basic form (I think)
+				<!-- I assume this would show the list of active problems, but I'm not sure since PIH doesn't use those -->
 				<props>
 					<prop key="type">activeList</prop>
-					<prop key="headingCode">summary.activeProblems</prop>
+					<!-- <prop key="headingCode">summary.activeProblems</prop> -->
 					<prop key="addConcept">name:PROBLEM ADDED|name:PROBLEM LIST</prop>
 					<prop key="removeConcept">name:PROBLEM REMOVED</prop>
 					<prop key="showDate">true</prop>
 					<prop key="displayStyle">ol</prop>
 				</props>
-				-->
 				<props>
 					<prop key="type">newlines</prop>
 					<prop key="count">2</prop>
@@ -1420,6 +1419,22 @@
 					<prop key="limit">-1</prop>
 				</props>
 				<props>
+					<prop key="type">newlines</prop>
+					<prop key="count">1</prop>
+				</props>
+				<props>
+					<prop key="type">obsTable</prop>
+					<prop key="headingCode">summary.cxrFindings</prop>
+					<prop key="concepts">name:X-RAY, CHEST|name:CHEST XRAY COMMENTS</prop>
+					<!-- <prop key="cssClass">borderedTable</prop> -->
+					<prop key="showEmptyConcepts">false</prop>
+					<prop key="showConceptHeader">false</prop>
+					<prop key="showDateHeader">true</prop>
+					<prop key="orientation">vertical</prop>
+					<prop key="sort">desc</prop>
+					<prop key="limit">-1</prop>
+				</props>
+				<props>
 					<prop key="type">NEWCOLUMN</prop>
 				</props>
 				<props>
@@ -1438,6 +1453,10 @@
 					<prop key="type">NEWTABLE</prop>
 				</props>
 				<props>
+					<prop key="type">newlines</prop>
+					<prop key="count">1</prop>
+				</props>
+				<props>
 					<prop key="type">heading</prop>
 					<prop key="code">summary.alerts</prop>
 				</props>
@@ -1445,10 +1464,30 @@
 					<prop key="type">label</prop>
 					<prop key="code">summary.alert.noCd4In6Months</prop>
 					<prop key="showIfTrue">
-						obsCheck
+						!obsCheck
 							test:NO
 							concept:CD4 COUNT
 							timespan:last 7 months
+					</prop>
+				</props>
+				<props>
+					<prop key="type">label</prop>
+					<prop key="code">summary.alert.noCxr</prop>
+					<!-- We could define a set 'CHEST XRAY FINDINGS' that contains all concept-questions for chest xray findings
+					<prop key="showIfTrue">
+						!obsCheck
+							test:NO
+							concept:set:CHEST XRAY FINDINGS
+					</prop>
+					-->
+					<prop key="showIfTrue">
+						!and
+						!obsCheck
+							test:NO
+							concept:X-RAY, CHEST
+						!obsCheck
+							test:NO
+							concept:CHEST XRAY COMMENTS
 					</prop>
 				</props>
 			</list>

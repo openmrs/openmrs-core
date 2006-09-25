@@ -6,8 +6,11 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 import javax.servlet.jsp.tagext.TagSupport;
 
@@ -16,6 +19,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Obs;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
@@ -59,12 +63,47 @@ public class SummaryTest extends TagSupport {
 	private boolean evaluate(String expr) {
 		expr = expr.trim();
 		log.debug("evaluate " + expr);
-		if (expr.toUpperCase().startsWith("OBSCHECK")) {
-			expr = expr.substring("OBSCHECK".length());
-			return handleObsCheck(expr);
-		} else {
-			throw new RuntimeException("Don't know how to handle expression: " + expr);
+		List<String> commands = new ArrayList<String>();
+		{
+			StringBuilder command = new StringBuilder();
+			String[] lines = expr.split("\n");
+			for (String line : lines) {
+				if (line.trim().startsWith("!")) {
+					if (command.length() > 0) {
+						commands.add(command.toString());
+						command = new StringBuilder();
+					}
+				}
+				command.append(line.trim());
+				command.append("\n");
+			}
+			if (command.length() > 0)
+				commands.add(command.toString());
 		}
+		boolean andMode = true;
+		List<Boolean> commandResults = new ArrayList<Boolean>();
+		for (String s : commands) {
+			String command = (new StringTokenizer(s.toUpperCase())).nextToken();
+			if (command.equals("!AND")) {
+				andMode = true;
+			} else if (command.equals("!OR")) {
+				andMode = false;
+			} else if (command.equals("!OBSCHECK")) {
+				s = s.substring("!OBSCHECK".length()).trim();
+				commandResults.add(handleObsCheck(s));
+			} else {
+				throw new RuntimeException("Don't know how to handle command " + command + "\n" + s); 
+			}
+		}
+		
+		boolean ret = andMode ? true : false;
+		for (Boolean b : commandResults) {
+			if (andMode)
+				ret &= b;
+			else
+				ret |= b;
+		}
+		return ret;
 	}
 	
 	private boolean handleObsCheck(String expr) {
@@ -86,7 +125,7 @@ public class SummaryTest extends TagSupport {
 		}
 		
 		PatientSetService.TimeModifier test = PatientSetService.TimeModifier.ANY;
-		Concept concept = null;
+		Set<Concept> conceptsOfInterest = new HashSet<Concept>();
 		Date fromDate = null;
 		Date toDate = null;
 		if (args.containsKey("test"))
@@ -94,7 +133,22 @@ public class SummaryTest extends TagSupport {
 		String conceptName = args.get("concept");
 		if (conceptName == null)
 			throw new IllegalArgumentException("You must specify a concept");
-		concept = context.getConceptService().getConceptByName(conceptName);
+		{
+			ConceptService cs = context.getConceptService();
+			boolean isSet = conceptName.startsWith("set:");
+			if (isSet)
+				conceptName = conceptName.substring("set:".length());
+			Concept c = cs.getConceptByName(conceptName);
+			if (c == null) {
+				log.warn("Can't find concept " + conceptName);
+			} else {
+				if (isSet)
+					conceptsOfInterest.addAll(cs.getConceptsInSet(c));
+				else
+					conceptsOfInterest.add(c);
+			}
+		}
+
 		if (args.containsKey("timespan")) {
 			// [last|next defaults to last] [# defaults to 1] [m|d|y defaults to m]
 			boolean inPast = true;
@@ -126,20 +180,16 @@ public class SummaryTest extends TagSupport {
 		}
 		
 		log.debug("test:" + test);
-		log.debug("concept:" + concept);
+		log.debug("concepts of interest:" + conceptsOfInterest);
 		log.debug("fromDate:" + fromDate);
 		log.debug("toDate:" + toDate);
 		
 		List<Obs> obsThatMatter = new ArrayList<Obs>();
 		for (Obs o : observations) {
-			// for some reason o.getConcept().equals(concept) returns false, even when they're the same. So I'm comparing conceptIds directly.
-			// Possibly this is because these are hibernate org.openmrs.Concept$$EnhancerByCGLIB objects, but I thought .equals() should still work
-			if (o != null && o.getConcept() != null && concept != null) {
-				if ( o.getConcept().getConceptId().equals(concept.getConceptId()) &&
-						(fromDate == null || OpenmrsUtil.compare(fromDate, o.getObsDatetime()) <= 0) &&
-						(toDate == null || OpenmrsUtil.compare(o.getObsDatetime(), toDate) <= 0) ) {
-					obsThatMatter.add(o);
-				}
+			if ( conceptsOfInterest.contains(o.getConcept()) &&
+					(fromDate == null || OpenmrsUtil.compare(fromDate, o.getObsDatetime()) <= 0) &&
+					(toDate == null || OpenmrsUtil.compare(o.getObsDatetime(), toDate) <= 0) ) {
+				obsThatMatter.add(o);
 			}
 		}
 		log.debug("obsThatMatter (" + obsThatMatter.size() + "): " + obsThatMatter);
