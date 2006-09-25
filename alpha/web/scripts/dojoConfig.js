@@ -1,1 +1,0 @@
-var djConfig = {isDebug: false};
