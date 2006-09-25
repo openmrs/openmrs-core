@@ -136,7 +136,7 @@
 		<copy todir="${build.dir}/api">
 			<fileset dir="${metadata.dir}/api/hibernate" includes="**/*" />
 			<fileset dir="${src.dir}/api">
-				<include name="**/*.java" />
+				<include name="**/*" />
 				<exclude name="**/ibatis/*" />
 				<exclude name="**/Ibatis*" />
 			</fileset>
