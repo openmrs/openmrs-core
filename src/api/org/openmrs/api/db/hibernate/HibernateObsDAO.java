@@ -269,7 +269,7 @@ public class HibernateObsDAO implements ObsDAO {
 				.createQuery("from Obs obs where obs.patient = :p and obs.concept = :c order by obs.obsDatetime desc");
 		query.setParameter("p", who);
 		query.setParameter("c", question);
-		query.setFetchSize(n);
+		query.setMaxResults(n);
 		
 		return query.list();
 	}
