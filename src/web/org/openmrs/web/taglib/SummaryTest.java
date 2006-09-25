@@ -23,6 +23,8 @@ import org.openmrs.web.WebConstants;
 
 public class SummaryTest extends TagSupport {
 	
+	private static final long serialVersionUID = 102731753333L;
+	
 	private final Log log = LogFactory.getLog(getClass());
 	
 	private Collection<Obs> observations;
@@ -132,10 +134,12 @@ public class SummaryTest extends TagSupport {
 		for (Obs o : observations) {
 			// for some reason o.getConcept().equals(concept) returns false, even when they're the same. So I'm comparing conceptIds directly.
 			// Possibly this is because these are hibernate org.openmrs.Concept$$EnhancerByCGLIB objects, but I thought .equals() should still work
-			if ( o.getConcept().getConceptId().equals(concept.getConceptId()) &&
-					(fromDate == null || OpenmrsUtil.compare(fromDate, o.getObsDatetime()) <= 0) &&
-					(toDate == null || OpenmrsUtil.compare(o.getObsDatetime(), toDate) <= 0) ) {
-				obsThatMatter.add(o);
+			if (o != null && o.getConcept() != null && concept != null) {
+				if ( o.getConcept().getConceptId().equals(concept.getConceptId()) &&
+						(fromDate == null || OpenmrsUtil.compare(fromDate, o.getObsDatetime()) <= 0) &&
+						(toDate == null || OpenmrsUtil.compare(o.getObsDatetime(), toDate) <= 0) ) {
+					obsThatMatter.add(o);
+				}
 			}
 		}
 		log.debug("obsThatMatter (" + obsThatMatter.size() + "): " + obsThatMatter);
