@@ -2,6 +2,8 @@ package org.openmrs.web.controller.patient;
 
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -233,6 +235,20 @@ public class PatientFormController extends SimpleFormController {
 						ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
 					if (patient.isDead() && (patient.getCauseOfDeath() == null || patient.getCauseOfDeath().equals("")))
 						errors.rejectValue("causeOfDeath", "Patient.dead.causeOfDeathNull");
+					
+				// check patients birthdate against future dates and really old dates
+					if (patient.getBirthdate() != null) {
+						if (patient.getBirthdate().after(new Date()))
+							errors.rejectValue("birthdate", "error.date.future");
+						else {
+							Calendar c = Calendar.getInstance();
+							c.setTime(new Date());
+							c.add(Calendar.YEAR, -120); // patient cannot be older than 120 years old 
+							if (patient.getBirthdate().before(c.getTime())){
+								errors.rejectValue("birthdate", "error.date.nonsensical");
+							}
+						}
+					}
 			}
 		}		
 		
@@ -271,7 +287,7 @@ public class PatientFormController extends SimpleFormController {
 				}
 			}
 			else {
-				boolean isNew = (patient.getPatientId() == null);
+				//boolean isNew = (patient.getPatientId() == null);
 				
 				context.getFormEntryService().updatePatient(patient);
 				

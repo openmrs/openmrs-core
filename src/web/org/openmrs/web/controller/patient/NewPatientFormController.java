@@ -157,6 +157,20 @@ public class NewPatientFormController extends SimpleFormController {
 				}
 			
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "gender", "error.null");
+			
+			// check patients birthdate against future dates and really old dates
+			if (pli.getBirthdate() != null) {
+				if (pli.getBirthdate().after(new Date()))
+					errors.rejectValue("birthdate", "error.date.future");
+				else {
+					Calendar c = Calendar.getInstance();
+					c.setTime(new Date());
+					c.add(Calendar.YEAR, -120); // patient cannot be older than 120 years old 
+					if (pli.getBirthdate().before(c.getTime())){
+						errors.rejectValue("birthdate", "error.date.nonsensical");
+					}
+				}
+			}
 		}
 			
 		return super.processFormSubmission(request, response, pli, errors);
