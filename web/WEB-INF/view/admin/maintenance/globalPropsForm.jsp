@@ -21,14 +21,14 @@
 		<tbody id="globalPropsList">
 			<c:forEach var="globalProp" items="${globalProps}">
 				<tr>
-					<td valign="top"><input type="text" name="property" value="${globalProp.property}" size="50" maxlength="250" /></td>
-					<td valign="top"><input type="text" name="value" value="${globalProp.propertyValue}" size="30" maxlength="250" /></td>
-					<td><input type="button" value='<spring:message code="general.remove" />' class="closeButton" onclick="remove(this)" /></td>
+					<td valign="top"><input type="text" name="property" value="${globalProp.property}" size="50" maxlength="250" onchange="edited()" /></td>
+					<td valign="top"><input type="text" name="value" value="${globalProp.propertyValue}" size="30" maxlength="250" onchange="edited()" /></td>
+					<td><input type="button" value='<spring:message code="general.remove" />' class="closeButton" onclick="edited(); remove(this)" /></td>
 				</tr>
 			</c:forEach>
 			<tr id="newProperty">
-				<td valign="top"><input type="text" name="property" size="50" maxlength="250" /></td>
-				<td valign="top"><input type="text" name="value" size="30" maxlength="250" /></td>
+				<td valign="top"><input type="text" name="property" size="50" maxlength="250" onchange="edited()" /></td>
+				<td valign="top"><input type="text" name="value" size="30" maxlength="250" onchange="edited()" /></td>
 				<td><input type="button" value='<spring:message code="general.remove" />' class="closeButton" onclick="remove(this)" /></td>
 			</tr>
 		</tbody>
@@ -40,6 +40,17 @@
 	
 	<script type="text/javascript">
 		<!-- // begin
+		document.getElementById('newProperty').style.display = 'none';
+		addProperty();
+		
+		var anyEdits = false;
+		function edited() {
+			if (!anyEdits) {
+				document.getElementById('buttonsAtBottom').style.backgroundColor = 'yellow';
+			}
+			anyEdits = true;
+		}
+		
 		function removeHiddenRows() {
 			var rows = document.getElementsByTagName("TR");
 			var i = 0;
@@ -65,6 +76,7 @@
 			var tbody = document.getElementById("globalPropsList");
 			var tmp = document.getElementById("newProperty");
 			var newProp = tmp.cloneNode(true);
+			newProp.style.display = '';
 			
 			var inputs = newProp.getElementsByTagName("input");
 			for (var i=0; i< inputs.length; i++) 
@@ -76,9 +88,14 @@
 		
 		// end -->
 	</script>
-	
-	<input type="submit" name="action" value='<spring:message code="general.save"/>' />
-	<input type="submit" name="action" value='<spring:message code="general.cancel"/>' />
+
+	<table id="buttonsAtBottom"><tr><td>
+		&nbsp;&nbsp;&nbsp;&nbsp;
+		<input type="submit" name="action" value='<spring:message code="general.save"/>' />
+		&nbsp;&nbsp;&nbsp;&nbsp;
+		<input type="submit" name="action" value='<spring:message code="general.cancel"/>' />
+		&nbsp;&nbsp;&nbsp;&nbsp;
+	</td></tr></table>
 </form>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>
