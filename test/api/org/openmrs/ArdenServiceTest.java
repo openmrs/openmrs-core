@@ -10,44 +10,47 @@ import org.openmrs.arden.compiled.*;
 import org.openmrs.arden.*;
 
 public class ArdenServiceTest extends TestCase {
-
+	int MAX_MLM = 1;
+	
 	public void testClass() throws Exception {
 
 		Integer pid = 1;
 		Patient patient;
 		ArdenDataSource dataSource;
+		DSSObject dssObj;
+		int all = MAX_MLM;
 		
 		HibernateUtil.startup();
 		Context context = ContextFactory.getContext();
 		context.authenticate("vibha", "chicachica");
 		
-		context.getArdenService().compileFile("test/arden test/6.mlm"); 
+	//	context.getArdenService().compileFile("test/arden test/6.mlm"); 
 	//	context.getArdenService().compileFile("test/arden test/directexphiriskcountry.mlm"); 
 	//	context.getArdenService().compileFile("test/arden test/directtbcontact.mlm");
 		
-	//	context.getArdenService().compileFile("test/arden test/HiRiskLeadScreen.mlm");
+		context.getArdenService().compileFile("test/arden test/HiRiskLeadScreen.mlm");
 		
 		
 				
-/*
+
  		patient = context.getPatientService().getPatient(pid);
 		dataSource = new DefaultArdenDataSource(); 
-*/
-		
-/*		HiRiskLeadScreen mlm = new HiRiskLeadScreen(context,patient ,dataSource);
-		if(mlm.evaluate()) {
-			String str = mlm.action();
-			System.out.println(str);
-		}
-*/	
-		
-/*		directtbcontact mlm1 = new directtbcontact(context,patient, dataSource);
-		if(mlm1.evaluate()) {
-				String str = mlm1.action();
-				System.out.println(str);
+			
+		ArdenRule [] mlms = {
+				 new HiRiskLeadScreen(context,patient ,dataSource)
+		};
+		for (int i = 0; i < all; i++){
+			
+			ArdenRule mlm = mlms[0].getInstance();
+			if(mlm != null) {
+				dssObj = mlm.evaluate();
+				if(dssObj.getConcludeVal()) {
+					System.out.println(dssObj.getPrintString());
+				}
+				dssObj.PrintObsMap();
+				
 			}
-		
-*/		
+		}
 		HibernateUtil.shutdown();
 	}
 	
