@@ -32,6 +32,7 @@ private Locale locale;
 private String firstname;
 private ArdenDataSource dataSource;
 private HashMap<String, String> userVarMap;
+private DSSObject dssObj;
 
 
 //Constructor
@@ -48,8 +49,16 @@ public HiRiskLeadScreen(Context c, Patient p, ArdenDataSource d){
 
 
 public ArdenRule getChildren() {
-		ArdenRule retVal = null;
-		return retVal;
+	ArdenRule rule = null;
+	return rule;
+}
+
+public ArdenRule getInstance() {
+	ArdenRule rule = null;
+	if (this != null){
+		rule = this;
+	}
+		return rule;
 }
 
 private Obs Last_Pb(){
@@ -57,7 +66,7 @@ private Obs Last_Pb(){
 	Obs obs;
 
 	concept = context.getConceptService().getConceptByName("BLOOD LEAD LEVEL");
-	obs = dataSource.getPatientObsForConcept(context, concept, patient);
+	obs = dataSource.getLastPatientObsForConcept(context, concept, patient, 1);
 
 	return obs;
 }
@@ -67,7 +76,7 @@ private Obs Qual_Pb(){
 	Obs obs;
 
 	concept = context.getConceptService().getConceptByName("Qualitative_Blood_Lead");
-	obs = dataSource.getPatientObsForConcept(context, concept, patient);
+	obs = dataSource.getLastPatientObsForConcept(context, concept, patient, 1);
 
 	return obs;
 }
@@ -77,7 +86,7 @@ private Obs HousePre50(){
 	Obs obs;
 
 	concept = context.getConceptService().getConceptByName("HouseBltPre1950");
-	obs = dataSource.getPatientObsForConcept(context, concept, patient);
+	obs = dataSource.getLastPatientObsForConcept(context, concept, patient, 1);
 
 	return obs;
 }
@@ -87,7 +96,7 @@ private Obs RenovatedPre78(){
 	Obs obs;
 
 	concept = context.getConceptService().getConceptByName("RenovatedPre78");
-	obs = dataSource.getPatientObsForConcept(context, concept, patient);
+	obs = dataSource.getLastPatientObsForConcept(context, concept, patient, 1);
 
 	return obs;
 }
@@ -97,21 +106,34 @@ private Obs HiPbSibFriend(){
 	Obs obs;
 
 	concept = context.getConceptService().getConceptByName("HiPbSibFriend");
-	obs = dataSource.getPatientObsForConcept(context, concept, patient);
+	obs = dataSource.getLastPatientObsForConcept(context, concept, patient, 1);
 
 	return obs;
 }
 
 
-public boolean evaluate() {
+public DSSObject evaluate() {
+	if(evaluate_logic()) {
+			dssObj.setPrintString(action());
+			return dssObj;
+	}
+	else {
+			return null;
+	}
+
+}
+
+private boolean evaluate_logic() {
 	boolean retVal = false;
 	Obs obs;
+	dssObj = new DSSObject(context,locale, patient);
 
 
 	if ( (obs = Last_Pb()) != null ) {
 		if (obs.getValueNumeric() >= 14 ) {
 			//LeadRisk = "has lead level greater than 14 mg/dcl"
 		userVarMap.put("LeadRisk", "has lead level greater than 14 mg/dcl");
+		dssObj.addObs("BLOOD LEAD LEVEL", obs);
 
 	}
 	}
@@ -122,6 +144,8 @@ public boolean evaluate() {
 	
 	 //conclude here
 		retVal = false;
+		dssObj.setConcludeVal(false);
+		dssObj.addObs("Qualitative_Blood_Lead", obs);
 		return retVal;
 
 	}
@@ -132,6 +156,7 @@ public boolean evaluate() {
 		if (obs.getValueText().equals("YES") ) {
 			//LeadRisk = "lives in a house built before 1950"
 		userVarMap.put("LeadRisk", "lives in a house built before 1950");
+		dssObj.addObs("HouseBltPre1950", obs);
 
 	}
 	}
@@ -140,6 +165,7 @@ public boolean evaluate() {
 		if (obs.getValueText().equals("YES") ) {
 			//LeadRisk = "lives in a pre-1978 house undergoing renovation"
 		userVarMap.put("LeadRisk", "lives in a pre-1978 house undergoing renovation");
+		dssObj.addObs("RenovatedPre78", obs);
 
 	}
 	}
@@ -148,6 +174,7 @@ public boolean evaluate() {
 		if (obs.getValueText().equals("YES") ) {
 			//LeadRisk = "has a friend or sibling with elevated blood lead"
 		userVarMap.put("LeadRisk", "has a friend or sibling with elevated blood lead");
+		dssObj.addObs("HiPbSibFriend", obs);
 
 	}
 	}
@@ -156,22 +183,19 @@ public boolean evaluate() {
 
 	 //conclude here
 		retVal = true;
+		dssObj.setConcludeVal(true);
 		return retVal;
 
 	}
 
-
-	 //conclude here
-		retVal = true;
 		return retVal;
-
 
 	}
 public void initAction() {
 		userVarMap.put("ActionStr", "||firstname|| reportedly ||LeadRisk||.  Drawing a blood lead level is recommended annually:");
 }
 
-public String action() {
+private String action() {
 	int index = 0, nindex = 0, endindex = 0, startindex = 0;
 	String tempstr, variable, outStr = "";
 	String inStr = userVarMap.get("ActionStr");
