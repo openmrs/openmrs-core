@@ -64,7 +64,16 @@ public class XsnDownloadServlet extends HttpServlet {
 
 		try {
 			File file = new File(url);
-			response.setHeader("Last-Modified", new Date(file.lastModified()).toString());
+			Date modified = new Date(file.lastModified());
+			
+			log.debug("testing modified date: " + modified.toString());
+			log.debug("testing etag: " + modified.getTime());
+			
+			// InfoPath checks one or both of these values to determine if it needs to 
+			// update its internal/local cache
+			response.setHeader("Last-Modified", modified.toString());
+			response.setHeader("ETag", "" + modified.getTime());
+			
 			FileInputStream formStream = new FileInputStream(file);
 			OpenmrsUtil.copyFile(formStream, response.getOutputStream());
 		} 
