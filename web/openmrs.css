@@ -355,12 +355,20 @@ table.patientTreatmentPrograms td {
 	margin-right: 8px;
 	padding: 2px 10px 2px 10px;
 	text-decoration: none;
+	color: navy;
+	background: #E0E0E0;
 }
 #patientTabs a:link.active, #patientTabs a:visited.active {
 	border-bottom: 1px solid #fff;
 }
-#patientTabs a:hover, #patientTabs a.current {
-	background: #CCCCFF;
+#patientTabs a.current:hover, #patientTabs a.current {
+	background: #FFF;
+	border-bottom: 1px solid #FFF;
+	color: navy;
+	text-decoration: none;
+}
+#patientTabs a:hover {
+	text-decoration: underline;
 }
 
 #patientDashboardDemographics table.patientAddress {
