@@ -13,6 +13,7 @@ import java.lang.Integer;
 }
 
 
+
 // @@parser
 //-----------------------------------------------------------------------------
 // Define a Parser, calling it ArdenRecognizer
@@ -558,7 +559,7 @@ data_assignment
 		(READ^) 
 			( 
 			 //read_phrase
-			   ((of_read_func_op) | (from_of_func_op (INTLIT FROM)?))?  
+			   ((of_read_func_op) | (from_of_func_op (INTLIT /*FROM*/)?))?  
 			     (
 			      //read_where
 				     mapping_factor ( (where it! occur!)?  (temporal_comp_op  | NOT temporal_comp_op ) )? // | range_comp_op | NOT range_comp_op)
@@ -1152,7 +1153,7 @@ where_it_occurredAST [MLMObject obj] returns [String s=""]
 
 
 readAST [MLMObject obj, String instr] returns [String s=""]
-{String a,b, ret_val="";}
+{String a="",b="", ret_val="";}
 : (
   #(READ  a=readAST[obj, instr] b=readAST[obj, instr]) {s += ret_val;}
 
@@ -1162,17 +1163,25 @@ readAST [MLMObject obj, String instr] returns [String s=""]
   
    
 	 // Following are from_of_func_op
-	  | ((LAST | LATEST) (k:INTLIT FROM)? b=readAST[obj, instr]) {s+=b;if(k != null) {
+	  | ((LAST | LATEST) (k:INTLIT /*FROM*/)? 
+	  {s+=b;obj.setReadType("last"); obj.setHowMany("1");
+	  							if(k != null) {
+	   								obj.setHowMany(k.getText());
 	   								System.err.println("ReadType = Last " + "How many? " + k.getText());
-	  								}
+	  							}
 	  							 else {
 		  							 System.err.println("ReadType = Last " + "How many? 1" );	
 	  							 }
 	  							 
 	  							}
 	  
-	  | ((FIRST | EARLIEST) (x:INTLIT FROM)? b=readAST[obj, instr]) {s+=b;if(x != null) {
-	   								System.err.println("ReadType = First " + "How many? " + x.getText());
+	  
+	   b=readAST[obj, instr]) 
+	  
+	  | ((FIRST | EARLIEST) (x:INTLIT FROM)? b=readAST[obj, instr]) {s+=b;obj.setReadType("first"); obj.setHowMany("1");
+	  								if(x != null) {
+	   									obj.setHowMany(x.getText());
+	   									System.err.println("ReadType = First " + "How many? " + x.getText());
 	  								}
 	  							 else {
 		  							 System.err.println("ReadType = First " + "How many? 1" );	
@@ -1181,8 +1190,10 @@ readAST [MLMObject obj, String instr] returns [String s=""]
 	  							}
 	  							
 	  				
-	  | ((MAXIMUM | MAX)( (y:INTLIT FROM)? b=readAST[obj, instr]) {s+=b;if(y != null) {
-	   								System.err.println("ReadType = Maximum " + "How many? " + y.getText());
+	  | ((MAXIMUM | MAX)( (y:INTLIT FROM)? b=readAST[obj, instr]) {s+=b;obj.setReadType("max"); obj.setHowMany("1");
+	  							if(y != null) {
+	   									obj.setHowMany(y.getText());
+	   									System.err.println("ReadType = Maximum " + "How many? " + y.getText());
 	  								}
 	  							 else {
 		  							 System.err.println("ReadType = Maximum " + "How many? 1" );	
@@ -1193,8 +1204,10 @@ readAST [MLMObject obj, String instr] returns [String s=""]
 	  					 ((intlit:INTLIT dop:duration_op) {System.err.println("Duration Clause - " + intlit.getText() + " " + dop.getText());})
 	  					)
 	  							
-	  | ((MINIMUM | MIN) (z:INTLIT FROM)? b=readAST[obj, instr]) {s+=b;if(z != null) {
-	   								System.err.println("ReadType = Minimum " + "How many? " + z.getText());
+	  | ((MINIMUM | MIN) (z:INTLIT FROM)? b=readAST[obj, instr]) {s+=b;obj.setReadType("min"); obj.setHowMany("1");
+	  							if(z != null) {
+		   								obj.setHowMany(z.getText());
+		   								System.err.println("ReadType = Minimum " + "How many? " + z.getText());
 	  								}
 	  							 else {
 		  							 System.err.println("ReadType = Min " + "How many? 1" );	
@@ -1220,7 +1233,9 @@ readAST [MLMObject obj, String instr] returns [String s=""]
 	 	 	  
   |(
 		(j:ARDEN_CURLY_BRACKETS /*b=readAST*/) {/*s=b;*/System.err.println("Fetch this data - " + j.getText());
-		  	 										s = j.getText(); obj.AddConcept(s);}
+		  	 										s = j.getText(); 
+		  	 										obj.AddConcept(s);
+		  	 									}
 		
 		   	      (WHERE where_it_occurredAST[obj] {System.err.println("Where=TRUE");})?
 	  	 

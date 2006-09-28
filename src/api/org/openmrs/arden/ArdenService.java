@@ -141,6 +141,7 @@ public class ArdenService {
 		     w.write("private Context context;\nprivate Patient patient;\nprivate Locale locale;\nprivate String firstname;\n");
 		     w.write("private ArdenDataSource dataSource;\n");
 		     w.write("private HashMap<String, String> userVarMap;\n");
+		     w.write("private DSSObject dssObj;\n");
 		     w.write("\n\n//Constructor\n");
 		     w.write("public " + classname + "(Context c, Patient p, ArdenDataSource d){\n");
 		     w.write("\tcontext = c;\n\tlocale = c.getLocale();\n\tpatient = p;\n\tdataSource = d;\n");
@@ -150,34 +151,8 @@ public class ArdenService {
 		     w.write("\tinitAction();\n\t");		     
 		     w.write("}\n\n\n"); // End of constructor
 		     
-		     w.write("public ArdenRule getChildren() {\n\t\tArdenRule retVal = null;\n\t\treturn retVal;\n}\n\n");
-	/*	     w.write("public Obs getObsForConceptForPatient(Concept concept, Locale locale, Patient patient) {\n");
-		     w.write("\tSet <Obs> MyObs;\n");
-		     w.write("\tObs obs = new Obs();\n\t{");
-		     w.write("\t\tMyObs = context.getObsService().getObservations(patient, concept);\n");
-		     w.write("\t\tIterator iter = MyObs.iterator();\n");
-		     w.write("\t\tif(iter.hasNext()) {\n");
-		     w.write("\t\t\twhile(iter.hasNext())	{\n");
-		     w.write("\t\t\t\tobs = (Obs) iter.next();\n");
-		     w.write("\t\t\t\tSystem.out.println(obs.getValueAsString(locale));\n");
-		     w.write("\t\t\t}\n");
-		     w.write("\t\t\t\treturn obs;\n");
-		     w.write("\t\t}\n");
-		     w.write("\t\telse {\n");
-		     w.write("\t\t\treturn null;\n");
-		     w.write("\t\t}\n");
-		     w.write("\t}\n");
-		     w.write("}\n\n");  // End of this function
-		     
-		     w.write("public boolean run() {\n");
-		     w.write("\tboolean retVal = false;\n");
-		     w.write("\tif(evaluate()) {\n");
-		     w.write("\t\tString str = action();\n");
-		     w.write("\t\tSystem.out.println(str);\n");
-		     w.write("\t}\n");
-		     w.write("\treturn retVal;\n");
-		     w.write("}\n\n");	// End of this function
-*/
+		     w.write("public ArdenRule getChildren() {\n\tArdenRule rule = null;\n\treturn rule;\n}\n\n");
+		     w.write("public ArdenRule getInstance() {\n\tArdenRule rule = null;\n\tif (this != null){\n\t\trule = this;\n\t}\n\t\treturn rule;\n}\n\n");
 		     w.flush();
 		     		     
 		     log.debug(t.getNextSibling().getNextSibling().toStringTree()); // Print data

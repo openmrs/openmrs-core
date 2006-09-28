@@ -22,7 +22,8 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 
 	private boolean dbAccessRequired;
 	private String conceptName;
-	private String type;    // Exist, Last, First etc
+	private String readType;    // Exist, Last, First etc
+	private int howMany;	// how many to read
 	private String duration; // TODO
 	private Concept conceptObj;	
 	private Obs obsObj;
@@ -40,10 +41,11 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 	private boolean concludeVal;
 	private HashMap<String, String> userVarMap ;
 	
-	public MLMObjectElement(String s, String t, String d) {
+	public MLMObjectElement(String s, String t, int n,  String d) {
 		conceptName = s;
 		isObsAvailable = false;
-		type = t;
+		readType = t;
+		howMany = n;
 		duration = d;
 		evaluated = false;
 		isEvaluated = false;
@@ -215,6 +217,7 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 				//	w.append("\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n");
 				//	w.append("\t\t\t}");
 					w.append("\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n");
+					w.append("\t\tdssObj.addObs(\"" + getConcept().trim() + "\", obs);\n");
 				}
 				retVal = true;
 			}
@@ -222,9 +225,20 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 			if(hasConclude)	{ // has conclude
 				if(concludeVal == true) {
 					w.append("\t\tretVal = true;\n");
+					w.append("\t\tdssObj.setConcludeVal(true);\n");
+					if(!key.startsWith("Conclude") &&  !key.startsWith("ELSE") &&  !key.startsWith("ENDIF")
+							   && !key.equals("AND")){
+						w.append("\t\tdssObj.addObs(\"" + getConcept().trim() + "\", obs);\n");
+					}
 				}
 				else if(concludeVal == false){
 					w.append("\t\tretVal = false;\n");
+					w.append("\t\tdssObj.setConcludeVal(false);\n");
+					if(!key.startsWith("Conclude") &&  !key.startsWith("ELSE") &&  !key.startsWith("ENDIF")
+							   && !key.equals("AND")){
+						w.append("\t\tdssObj.addObs(\"" + getConcept().trim() + "\", obs);\n");
+					}
+				
 				}
 				else {	// TODO error
 					
@@ -250,7 +264,12 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 	       w.append("\tObs obs;\n\n");
 		   
 		   w.append("\tconcept = context.getConceptService().getConceptByName(\"" + cn.trim() + "\");\n");
-		   w.append("\tobs = dataSource.getPatientObsForConcept(context, concept, patient);\n\n");
+		   if(readType.equals("last")){
+			   w.append("\tobs = dataSource.getLastPatientObsForConcept(context, concept, patient, " +  howMany + ");\n\n");
+		   }
+		   else { 
+			   w.append("\tobs = dataSource.getPatientObsForConcept(context, concept, patient);\n\n");
+		   }
 		   w.append("\treturn obs;\n");
 		   w.append("}\n\n");
 		   

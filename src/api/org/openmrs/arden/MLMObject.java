@@ -14,7 +14,10 @@ import org.openmrs.api.context.Context;
 public class MLMObject {
 	
 	private HashMap<String, MLMObjectElement> conceptMap ;
-	private String ConceptVar;
+	private String ConceptVar;   // These 3 variables are used when parsing
+	private String readType;
+	private int howMany;
+	
 	private boolean IsVarAdded;
 	private int InNestedIf ;       // counting semaphore
 	private Context context;
@@ -80,7 +83,7 @@ public class MLMObject {
 					varVal = s.substring(startindex2, endindex2);
 					ConceptVar = variable;
 					IsVarAdded = true; // so that the following statement completes
-					CreateElement(varVal);
+					CreateElement(varVal, readType, howMany);
 				}
 				else {
 					startindex = nindex + 1;
@@ -91,7 +94,7 @@ public class MLMObject {
 					varVal = s.substring(startindex2, endindex2);
 					ConceptVar = variable;
 					IsVarAdded = true; // so that the following statement completes
-					CreateElement(varVal);
+					CreateElement(varVal, readType, howMany);
 				}
 				nindex = index;
 				nindex2 = index2;
@@ -101,21 +104,27 @@ public class MLMObject {
 			
 		}
 		else {
-			CreateElement(s);
+			CreateElement(s, readType, howMany);
 		}
 		
 	}
 	
-	private void CreateElement (String s){
+	private void CreateElement (String s, String readType, Integer howMany){
+		int n = 1;
+		
 		if(IsVarAdded == true && !conceptMap.containsKey(ConceptVar)) {
 			if(s == "false" || s == "true") {
-				MLMObjectElement  mObjElem = new MLMObjectElement("", "", "");
+				MLMObjectElement  mObjElem = new MLMObjectElement("", readType, n, "");
 				conceptMap.put(ConceptVar, mObjElem);
 				mObjElem.addUserVarVal(ConceptVar,s);
 				
 			}
 			else {
-				conceptMap.put(ConceptVar, new MLMObjectElement(s, "", ""));
+				if(howMany != null){
+					n = howMany.intValue(); 
+				}
+				
+				conceptMap.put(ConceptVar, new MLMObjectElement(s, readType, n, ""));
 			}
 			IsVarAdded = false;    // for next time
 			ConceptVar = "";
@@ -132,7 +141,17 @@ public class MLMObject {
 	public void ResetConceptVar()
 	{
 		ConceptVar = "";
+		howMany = 0;
+		readType = "";
 		IsVarAdded = false;
+	}
+	
+	public void setReadType(String s){
+		readType = s;
+	}
+	
+	public void setHowMany(String s){
+		howMany = Integer.valueOf(s).intValue();
 	}
 	
 	public void PrintConcept(String key)
@@ -216,7 +235,7 @@ public class MLMObject {
 		     w.write("}\n\n");	// End of this function
 		     w.flush();
 		
-			 w.write("public String action() {\n");
+			 w.write("private String action() {\n");
 		     w.write("\tint index = 0, nindex = 0, endindex = 0, startindex = 0;\n");
 		     w.write("\tString tempstr, variable, outStr = \"\";\n");
 		     w.write("\tString inStr = userVarMap.get(\"ActionStr\");\n\n");
@@ -286,19 +305,27 @@ public class MLMObject {
 			}
 		}
 		
+		 w.append("\npublic DSSObject evaluate() {\n");
+		 w.append("\tif(evaluate_logic()) {\n");
+		 w.append("\t\t\tdssObj.setPrintString(action());\n");
+		 w.append("\t\t\treturn dssObj;\n\t}\n");
+		 w.append("\telse {\n");
+		 w.append("\t\t\treturn null;\n\t}\n\n}\n");
+		
 		 w.append("\n");
-	     w.append("public boolean evaluate() {\n");
+	     w.append("private boolean evaluate_logic() {\n");
 
 	     w.append("\tboolean retVal = false;\n");
-	     w.append("\tObs obs;\n\n");
+	     w.append("\tObs obs;\n");
 	 
+	     w.append("\tdssObj = new DSSObject(context,locale, patient);\n\n");
 	     thisList = evaluateList.listIterator(0);   // Start the Big Evaluate()
 	     while (thisList.hasNext()){
 	    	 Iterator iter = thisList.next().iterator();
 	    	 WriteLogic(iter, w);
 	    	 w.flush();
 	     }
-	 //   w.append("\t\treturn retVal;\n");
+	    w.append("\t\treturn retVal;\n");
 	 	w.append("\n\t}");
 	 	w.append("\n");
 	}

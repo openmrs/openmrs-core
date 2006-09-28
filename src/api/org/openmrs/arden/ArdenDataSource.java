@@ -12,4 +12,5 @@ import org.openmrs.api.context.*;
 public interface ArdenDataSource {
 
 	public Obs getPatientObsForConcept(Context context, Concept concept, Patient patient);
+	public Obs getLastPatientObsForConcept(Context context, Concept concept, Patient patient, int howMany);
 }
