@@ -824,3 +824,7 @@ th.smallHeader {
 #patientPrintableSummary {
 	font-size: 1.0em; 
 }
+
+.highlighted {
+	background-color: yellow;
+}

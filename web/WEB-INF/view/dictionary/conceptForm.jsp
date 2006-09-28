@@ -101,6 +101,18 @@
 	<br />
 </spring:hasBindErrors>
 
+<%--
+	Display a warning if you have
+		class==Question && datatype==N/A
+		class!=Question && datatype!=N/A
+--%>
+<c:if test="${(concept.conceptClass.name == 'Question' && concept.datatype.name == 'N/A') || (concept.conceptClass.name != 'Question' && concept.datatype.name != 'N/A')}">
+	<div class="highlighted">
+		<spring:message code="Concept.checkClassAndDatatype"/>
+	</div>
+	<br/>
+</c:if>
+
 <form method="post" action="">
 
 <table id="conceptTable" cellpadding="2" cellspacing="0">

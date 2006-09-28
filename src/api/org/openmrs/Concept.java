@@ -73,7 +73,7 @@ public class Concept implements java.io.Serializable {
 	public boolean equals(Object obj) {
 		if (obj instanceof Concept) {
 			Concept c = (Concept)obj;
-			return (this.conceptId.equals(c.getConceptId()));
+			return (this.getConceptId().equals(c.getConceptId()));
 		}
 		return false;
 	}
@@ -314,6 +314,17 @@ public class Concept implements java.io.Serializable {
 			log.warn("No concept name found for default locale for concept id " + conceptId);
 		
 		return defaultName;
+	}
+	
+	/**
+	 * @param name A name
+	 * @return whether this concept has the given name in any locale
+	 */
+	public boolean isNamed(String name) {
+		for (ConceptName cn : getNames())
+			if (name.equals(cn.getName()))
+				return true;
+		return false;
 	}
 	
 	/**

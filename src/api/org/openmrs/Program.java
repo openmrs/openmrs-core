@@ -3,6 +3,8 @@ package org.openmrs;
 import java.util.Date;
 import java.util.Set;
 
+import org.openmrs.util.OpenmrsConstants;
+
 public class Program {
 
 	private Integer programId;
@@ -18,6 +20,18 @@ public class Program {
 	private Set<ProgramWorkflow> workflows;
 	
 	public Program() { }
+	
+	/**
+	 * Convenience method to get a workflow by name.
+	 * @param name the workflow's name, in any locale
+	 * @return a workflow which has that name in any locale
+	 */
+	public ProgramWorkflow getWorkflowByName(String name) {
+		for (ProgramWorkflow pw : workflows)
+			if (pw.getConcept().isNamed(name))
+				return pw;
+		return null;
+	}
 
 	public Concept getConcept() {
 		return concept;

@@ -171,7 +171,7 @@ public class NealReportController implements Controller {
 		// Hiv.TREATMENT_STATUS
 		// General.HIV_POSITIVE_P
 		// General.TB_ACTIVE_P 
-		Program hivProgram = context.getProgramWorkflowService().getProgram("IMB HIV PROGRAM");
+		Program hivProgram = context.getProgramWorkflowService().getProgram("HIV PROGRAM");
 		if (hivProgram != null) {
 			Map<Integer, PatientProgram> progs = pss.getCurrentPatientPrograms(ps, hivProgram);
 			for (Map.Entry<Integer, PatientProgram> e : progs.entrySet()) {
@@ -185,10 +185,10 @@ public class NealReportController implements Controller {
 				patientDataHolder.get(e.getKey()).put(Hiv.TREATMENT_STATUS, e.getValue().getState().getConcept().getName(locale, false).getName());
 			}
 		} else {
-			log.debug("Couldn't find IMB HIV PROGRAM");
+			log.warn("Couldn't find HIV PROGRAM");
 		}
 		
-		Program tbProgram = context.getProgramWorkflowService().getProgram("IMB TB PROGRAM");
+		Program tbProgram = context.getProgramWorkflowService().getProgram("TUBERCULOSIS PROGRAM");
 		if (tbProgram != null) {
 			Map<Integer, PatientProgram> progs = pss.getCurrentPatientPrograms(ps, tbProgram);
 			for (Integer ptId : progs.keySet()) {

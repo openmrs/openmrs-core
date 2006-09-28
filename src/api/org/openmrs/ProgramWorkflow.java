@@ -18,6 +18,16 @@ public class ProgramWorkflow {
 
 	public ProgramWorkflow() { }
 	
+	/**
+	 * @return A state that has the given name in any locale, or null if none does
+	 */
+	public ProgramWorkflowState getStateByName(String name) {
+		for (ProgramWorkflowState state : getStates())
+			if (state.getConcept().isNamed(name))
+				return state;
+		return null;
+	}
+	
 	public Date getDateVoided() {
 		return dateVoided;
 	}

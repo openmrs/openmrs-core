@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
@@ -262,11 +263,16 @@ public class MigrationHelper {
 	}
 
 	public static int importProgramsAndStatuses(Context context, List<String> programWorkflow) throws ParseException {
+		Locale locale = context.getLocale();
 		ProgramWorkflowService pws = context.getProgramWorkflowService();
 		PatientService ps = context.getPatientService();
 		List<PatientProgram> patientPrograms = new ArrayList<PatientProgram>();
 		List<PatientState> patientStates = new ArrayList<PatientState>();
 		Map<String, PatientProgram> knownPatientPrograms = new HashMap<String, PatientProgram>();
+		Map<String, Program> programsByName = new HashMap<String, Program>();
+		for (Program program : pws.getPrograms()) {
+			programsByName.put(program.getConcept().getName(locale, false).getName(), program);
+		}
 		for (String s : programWorkflow) {
 			// ENROLLMENT:HIVEMR-V1,9266,IMB HIV PROGRAM,2005-08-25,
 			log.debug(s);
@@ -279,9 +285,9 @@ public class MigrationHelper {
 				if (pis.size() != 1)
 					throw new IllegalArgumentException("Found " + pis.size() + " instances of identifier " + identifier + " of type " + pit);
 				Patient p = pis.get(0).getPatient();
-				//Program program = pws.getProgram(temp[2]);
-				//log.debug("program " + temp[2] + ": "  + program);
-				Program program = pws.getProgram(Integer.valueOf(temp[2]));
+				Program program = programsByName.get(temp[2]);
+				if (program == null)
+					throw new RuntimeException("Couldn't find program \"" + temp[2] + "\" in " + programsByName);
 				Date enrollmentDate = temp.length < 4 ? null : parseDate(temp[3]);
 				Date completionDate = temp.length < 5 ? null : parseDate(temp[4]);
 				PatientProgram pp = new PatientProgram();
@@ -295,7 +301,7 @@ public class MigrationHelper {
 				// STATUS:HIVEMR-V1,9266,IMB HIV PROGRAM,TREATMENT STATUS,ACTIVE,2005-08-25,,
 				s = s.substring(s.indexOf(":") + 1);
 				String[] temp = s.split(",");
-				/*
+				/* We're using a cache of 'knownPatientPrograms' instead of the following commented code
 				PatientIdentifierType pit = ps.getPatientIdentifierType(temp[0]);
 				String identifier = temp[1];
 				List<PatientIdentifier> pis = ps.getPatientIdentifiers(identifier, pit);
@@ -303,15 +309,17 @@ public class MigrationHelper {
 					throw new IllegalArgumentException("Found " + pis.size() + " instances of identifier " + identifier + " of type " + pit);
 				Patient p = pis.get(0).getPatient();
 				*/
-				//Program program = pws.getProgram(temp[2]);
-				//log.debug("program " + temp[2] + ": " + program);
-				Program program = pws.getProgram(Integer.valueOf(temp[2]));
+				Program program = programsByName.get(temp[2]);
+				if (program == null)
+					throw new RuntimeException("Couldn't find program \"" + temp[2] + "\" in " + programsByName);
 				//ProgramWorkflow wf = pws.getWorkflow(program, temp[3]);
-				ProgramWorkflow wf = pws.getWorkflow(Integer.valueOf(temp[3]));
-				log.debug("wf: " + wf);
+				ProgramWorkflow wf = program.getWorkflowByName(temp[3]);
+				if (wf == null)
+					throw new RuntimeException("Couldn't find workflow \"" + temp[3] + "\" for program " + program + " (in " + program.getWorkflows() + ")");
 				//ProgramWorkflowState st = pws.getState(wf, temp[4]);
-				ProgramWorkflowState st = pws.getState(Integer.valueOf(temp[4]));
-				log.debug("st: " + st);
+				ProgramWorkflowState st = wf.getStateByName(temp[4]);
+				if (st == null)
+					throw new RuntimeException("Couldn't find state \"" + temp[4] + "\" for workflow " + wf + " (in " + wf.getStates() + ")");
 				Date startDate = temp.length < 6 ? null : parseDate(temp[5]);
 				Date endDate = temp.length < 7 ? null : parseDate(temp[6]);
 				PatientState state = new PatientState();
@@ -324,6 +332,7 @@ public class MigrationHelper {
 			}
 		}
 		int numAdded = 0;
+
 		for (PatientProgram pp : knownPatientPrograms.values()) {
 			pws.createPatientProgram(pp);
 			++ numAdded;

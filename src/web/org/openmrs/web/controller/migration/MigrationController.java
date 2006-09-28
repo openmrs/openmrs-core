@@ -53,26 +53,23 @@ public class MigrationController implements Controller {
 		HttpSession httpSession = request.getSession();
 		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-		if (context == null) {
-			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
-			response.sendRedirect(request.getContextPath() + "/logout");
-			return null;
-		}
-		
-		String message = request.getParameter("message");
-		if (message == null || message.length() == 0) {
-			message = "Paste some xml";
-		}
-		
-		EncounterService es = context.getEncounterService();
-		List<Location> locations = es.getLocations();
-		UserService us = context.getUserService();
-		List<User> users = us.getUsers();
-		
 		Map myModel = new HashMap();
-		myModel.put("message", message);
-		myModel.put("locations", locations);
-		myModel.put("users", users);
+		if (context != null) {	
+			String message = request.getParameter("message");
+			if (message == null || message.length() == 0) {
+				message = "Paste some xml";
+			}
+			
+			EncounterService es = context.getEncounterService();
+			List<Location> locations = es.getLocations();
+			UserService us = context.getUserService();
+			List<User> users = us.getUsers();
+			
+			
+			myModel.put("message", message);
+			myModel.put("locations", locations);
+			myModel.put("users", users);
+		}
 		
 		return new ModelAndView("/migration/migration", "model", myModel);
 	}
@@ -240,6 +237,16 @@ public class MigrationController implements Controller {
 		message += "Uploaded " + numProgram + " programs and statuses<br/>";
 		return new ModelAndView(new RedirectView("migration.form?message=" + URLEncoder.encode(message, "UTF-8")));
 	}
+	
+	// takes something like "^glokawera@pih.org" and returns a user with that username (after the ^)
+	private User userHelper(Context context, String username) {
+		if (username == null)
+			return null;
+		int ind = username.indexOf('^');
+		if (ind >= 0)
+			username = username.substring(ind + 1);
+		return context.getUserService().getUserByUsername(username);
+	}
 
 	/**
 	 * Takes CSV like:
@@ -273,9 +280,10 @@ public class MigrationController implements Controller {
 			Integer dosesPerDay = Integer.valueOf(st[9]);
 			Integer daysPerWeek = Integer.valueOf(st[10]);
 			Boolean prn = Boolean.valueOf(st[11]);
-			if (daysPerWeek != 7) {
-				throw new IllegalArgumentException("Can't handle days-per-week != 7");
-			}
+			String creator = st[12];
+			Date dateCreated = parseDate(st[13]);
+			String discontinuedBy = st.length > 14 ? st[14] : null;
+			
 			if (dosesPerDay == null || dosesPerDay == 0) {
 				throw new IllegalArgumentException("Doses per day must be a positive integer");					
 			}
@@ -294,10 +302,13 @@ public class MigrationController implements Controller {
 			reg.setDose(doseStrength);
 			reg.setEquivalentDailyDose(doseStrength);
 			reg.setUnits(doseUnit);
-			reg.setFrequency(dosesPerDay + "/day");
+			reg.setFrequency(dosesPerDay + "/day x " + daysPerWeek + " days/week");
 			reg.setPrn(prn);
 			reg.setComplex(false);
 			reg.setOrderType(orderType);
+			reg.setCreator(userHelper(context, creator));
+			reg.setDateCreated(dateCreated);
+			reg.setDiscontinuedBy(userHelper(context, discontinuedBy));
 			List<Order> pat = patientRegimens.get(patientId);
 			if (pat == null) {
 				pat = new ArrayList<Order>();

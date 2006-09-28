@@ -45,7 +45,7 @@
 		<table class="encounterFormTable">
 			<tr><td align="center" colspan="2" style="background-color: black; color: white;">Page ${pageNumber}</td></tr>
 		<c:forEach var="fieldHolder" items="${model.data}">
-			<c:if test="${fieldHolder.label.pageNumber == pageNumber && (model.showBlankFields || not empty fieldHolder.observations)}">
+			<c:if test="${fieldHolder.label.pageNumber == pageNumber && (model.showBlankFields || not empty fieldHolder.observations || not empty fieldHolder.obsGroups)}">
 				<tr valign="top">
 					<th>${fieldHolder.label}</th>
 					<td>

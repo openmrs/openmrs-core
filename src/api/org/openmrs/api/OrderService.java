@@ -4,24 +4,22 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
+import org.openmrs.ConceptSet;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
+import org.openmrs.EncounterType;
 import org.openmrs.Location;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.User;
-import org.openmrs.Concept;
-import org.openmrs.ConceptSet;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOContext;
 import org.openmrs.api.db.OrderDAO;
@@ -197,16 +195,18 @@ public class OrderService {
 		getOrderDAO().deleteOrderType(orderType);
 	}
 
-		/**
+	/**
 	 * Creates a collection of orders and an encounter to hold them. orders[i].encounter will be set to the new encounter.
 	 * If there's an EncounterType with name "Regimen Change", then the newly-created encounter will have that type
-	 * @throws APIException if there is no User with username Unknown or no Location with name Unknown.
+	 * @throws APIException if there is no User with username Unknown or no Location with name Unknown or Unknown Location, or if there's no encounter type with name 'Regimen Change'
 	 */
 	public void createOrdersAndEncounter(Patient p, Collection<Order> orders) throws APIException {
 		if (!context.hasPrivilege(OpenmrsConstants.PRIV_ADD_ORDERS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_ORDERS);
 		User unknownUser = context.getUserService().getUserByUsername("Unknown");
-		Location unknownLocation = context.getEncounterService().getLocationByName("Unknown");
+		Location unknownLocation = context.getEncounterService().getLocationByName("Unknown Location");
+		if (unknownLocation == null)
+			unknownLocation = context.getEncounterService().getLocationByName("Unknown");
 		// TODO: fix this hack
 		if (unknownUser == null) {
 			unknownUser = context.getAuthenticatedUser();
@@ -214,13 +214,17 @@ public class OrderService {
 		if (unknownUser == null || unknownLocation == null) {
 			throw new APIException("Couldn't find a Location and a User named 'Unknown'.");
 		}
+		EncounterType encounterType = context.getEncounterService().getEncounterType("Regimen Change");
+		if (encounterType == null)
+			throw new APIException("Couldn't find an encounter type 'Regimen Change'");
+		
 		Encounter e = new Encounter();
 		e.setPatient(p);
 		e.setProvider(unknownUser);
 		e.setLocation(unknownLocation);
 		e.setEncounterDatetime(new Date());
-		// TODO: Remove hardcoded encounter type
-		e.setEncounterType(context.getEncounterService().getEncounterType("Regimen Change"));
+		e.setEncounterType(encounterType);
+		
 		for (Order order : orders) {
 			if (order.getCreator() == null) {
 				order.setCreator(context.getAuthenticatedUser());

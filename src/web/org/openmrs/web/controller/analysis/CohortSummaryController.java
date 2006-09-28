@@ -75,7 +75,7 @@ public class CohortSummaryController implements Controller {
 		
 		ReportElement enrollmentGraph = new ReportElement();
 		
-		Program program = context.getProgramWorkflowService().getProgram("IMB HIV PROGRAM");
+		Program program = context.getProgramWorkflowService().getProgram("HIV PROGRAM");
 		p = new PatientProgramDataProducer(program, PatientProgramDataProducer.WhichField.ENROLLMENT_DATE);
 		enrollmentGraph.addProducer("hiv_enrollment_date", p);
 		DateColumnClassifier dateClassifier = new DateColumnClassifier("hiv_enrollment_date", DateColumnClassifier.CombineMethod.MONTH, "unknown hiv enrollment date");
