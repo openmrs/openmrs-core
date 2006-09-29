@@ -2,8 +2,6 @@ package org.openmrs.reporting;
 
 import java.util.Map;
 
-import org.openmrs.api.context.Context;
-
 public interface PatientClassifier {
 
 	/**
@@ -12,7 +10,7 @@ public interface PatientClassifier {
 	 * @param input
 	 * @return A map of label -> subset 
 	 */
-	public Map<String, PatientSet> partition(Context context, PatientSet input);
+	public Map<String, PatientSet> partition(PatientSet input);
 
 	public String getDescription();
 	

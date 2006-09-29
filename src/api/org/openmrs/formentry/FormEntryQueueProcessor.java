@@ -38,7 +38,6 @@ public class FormEntryQueueProcessor /* implements Runnable */ {
 
 	private static Log log = LogFactory.getLog( FormEntryQueueProcessor.class );
 
-	private Context context;
 	private DocumentBuilderFactory documentBuilderFactory;
 	private XPathFactory xPathFactory;
 	private TransformerFactory transformerFactory;
@@ -48,16 +47,6 @@ public class FormEntryQueueProcessor /* implements Runnable */ {
 	 * made)
 	 */
 	public FormEntryQueueProcessor() {
-	}
-
-	/**
-	 * Constructs a FormEntryQueueProcessor
-	 * 
-	 * @param context
-	 *            OpenMRS context for accessing the database API
-	 */
-	public FormEntryQueueProcessor(Context context) {
-		this.context = context;
 	}
 
 	/**
@@ -75,7 +64,7 @@ public class FormEntryQueueProcessor /* implements Runnable */ {
 	 */
 	public void transformFormEntryQueue(FormEntryQueue formEntryQueue) {		log.debug("Transforming form entry queue");
 		String formData = formEntryQueue.getFormData();
-		FormService formService = context.getFormService();
+		FormService formService = Context.getFormService();
 		Integer formId = null;
 		String errorDetails = null;
 
@@ -138,17 +127,17 @@ public class FormEntryQueueProcessor /* implements Runnable */ {
 		// current FormEntry queue item into the archive.
 		HL7InQueue hl7InQueue = new HL7InQueue();
 		hl7InQueue.setHL7Data(out.toString());
-		hl7InQueue.setHL7Source(context.getHL7Service().getHL7Source(1));
+		hl7InQueue.setHL7Source(Context.getHL7Service().getHL7Source(1));
 		hl7InQueue.setHL7SourceKey(String.valueOf(formEntryQueue
 				.getFormEntryQueueId()));
-		context.getHL7Service().createHL7InQueue(hl7InQueue);
+		Context.getHL7Service().createHL7InQueue(hl7InQueue);
 
 		FormEntryArchive formEntryArchive = new FormEntryArchive(formEntryQueue);
-		context.getFormEntryService().createFormEntryArchive(formEntryArchive);
-		context.getFormEntryService().deleteFormEntryQueue(formEntryQueue);
+		Context.getFormEntryService().createFormEntryArchive(formEntryArchive);
+		Context.getFormEntryService().deleteFormEntryQueue(formEntryQueue);
 
 		// clean up memory
-		context.getFormEntryService().garbageCollect();
+		Context.getFormEntryService().garbageCollect();
 	}
 
 	/**
@@ -159,7 +148,7 @@ public class FormEntryQueueProcessor /* implements Runnable */ {
 	 */
 	public boolean transformNextFormEntryQueue() {
 		boolean transformOccurred = false;
-		FormEntryService fes = context.getFormEntryService();
+		FormEntryService fes = Context.getFormEntryService();
 		FormEntryQueue feq;
 		if ((feq = fes.getNextFormEntryQueue()) != null) {
 			transformFormEntryQueue(feq);
@@ -212,38 +201,16 @@ public class FormEntryQueueProcessor /* implements Runnable */ {
 		formEntryError.setFormData(formEntryQueue.getFormData());
 		formEntryError.setError(error);
 		formEntryError.setErrorDetails(errorDetails);
-		context.getFormEntryService().createFormEntryError(formEntryError);
-		context.getFormEntryService().deleteFormEntryQueue(formEntryQueue);
+		Context.getFormEntryService().createFormEntryError(formEntryError);
+		Context.getFormEntryService().deleteFormEntryQueue(formEntryQueue);
 	}
-
-	/**
-	 * Convenience method to allow for dependency injection
-	 * 
-	 * @param context
-	 *            OpenMRS context to be used by the processor
-	 */
-	public void setContext(Context context) {
-		this.context = context;
-	}
-
 
 	/**
 	 * Starts up a thread to process all existing FormEntryQueue entries
-	 * 
-	 * @param context
-	 *            context from which process should start (required for
-	 *            authentication)
 	 */
 	public synchronized void processFormEntryQueue() throws APIException {
-		try {
-			context.startTransaction();
-			while (transformNextFormEntryQueue()) {
-				// loop until queue is empty
-			}
-		} catch (Exception e) {
-			log.error("Error while processing FormEntryQueue", e);
-		} finally {
-			context.endTransaction();
+		while (transformNextFormEntryQueue()) {
+			// loop until queue is empty
 		}
 	}
 

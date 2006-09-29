@@ -6,10 +6,8 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
-import org.openmrs.api.context.ContextFactory;
 import org.openmrs.formentry.FormEntryQueueProcessor;
 import org.openmrs.scheduler.Schedulable;
-import org.openmrs.scheduler.SchedulerConstants;
 import org.openmrs.scheduler.TaskConfig;
 
 /**
@@ -26,11 +24,11 @@ public class ProcessFormEntryQueueTask implements Schedulable {
 	// Logger
 	private static Log log = LogFactory.getLog(ProcessFormEntryQueueTask.class);
 
-	// Instance of context used during task execution
-	private static Context context;
-
+	// Task configuration 
+	private TaskConfig taskConfig;
+	
 	// Instance of form processor
-	private static FormEntryQueueProcessor processor;
+	private FormEntryQueueProcessor processor;
 	
 	/**
 	 * Default Constructor (Uses SchedulerConstants.username and
@@ -38,31 +36,7 @@ public class ProcessFormEntryQueueTask implements Schedulable {
 	 * 
 	 */
 	public ProcessFormEntryQueueTask() {
-		context = ContextFactory.getContext();
-		try {
-			AdministrationService adminService = context.getAdministrationService();
-			context.authenticate(adminService.getGlobalProperty("scheduler.username"),
-				adminService.getGlobalProperty("scheduler.password"));
-		} catch (ContextAuthenticationException e) {
-			log.error("Error authenticating user", e);
-		}
-		processor = new FormEntryQueueProcessor(context);
-	}
-
-	
-	
-	
-	/**
-	 * Public constructor
-	 */
-	public ProcessFormEntryQueueTask(String username, String password) {
-		context = ContextFactory.getContext();
-		try {
-			context.authenticate(username, password);
-		} catch (ContextAuthenticationException e) {
-			log.error("Error authenticating user", e);
-		}
-		processor = new FormEntryQueueProcessor(context);
+		processor = new FormEntryQueueProcessor();
 	}
 
 	/**
@@ -72,14 +46,33 @@ public class ProcessFormEntryQueueTask implements Schedulable {
 	public void run() {
 		log.debug("Processing form entry queue ... ");
 		try {
+			if (Context.isAuthenticated() == false)
+				authenticate();
 			processor.processFormEntryQueue();
 		} catch (APIException e) {
-			log.error(e);
-		}		
+			log.error("Error running form entry queue task", e);
+			throw e;
+		}
 	}
 	
-	public void initialize(TaskConfig taskConfig) { 
-		return;
+	/**
+	 * Initialize task.
+	 * 
+	 * @param config
+	 */
+	public void initialize(TaskConfig config) { 
+		this.taskConfig = config;
+	}
+	
+	private void authenticate() {
+		try {
+			AdministrationService adminService = Context.getAdministrationService();
+			Context.authenticate(adminService.getGlobalProperty("scheduler.username"),
+				adminService.getGlobalProperty("scheduler.password"));
+			
+		} catch (ContextAuthenticationException e) {
+			log.error("Error authenticating user", e);
+		}
 	}
 
 }

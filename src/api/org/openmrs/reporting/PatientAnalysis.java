@@ -98,24 +98,24 @@ public class PatientAnalysis extends AbstractReportObject {
 		return patientDataProducers.remove(o);
 	}
 
-	public PatientSet runFilters(Context context, PatientSet input) {
+	public PatientSet runFilters(PatientSet input) {
 		if (input == null)
-			input = context.getPatientSetService().getAllPatients();
+			input = Context.getPatientSetService().getAllPatients();
 		PatientSet ret = input;
 		for (PatientFilter pf : patientFilters.values()) {
-			ret = pf.filter(context, ret);
+			ret = pf.filter(ret);
 		}
 		return ret;
 	}
 	
-	public Map<String, PatientSet> runFiltersAndClassifier(Context context, PatientSet input) {
-		input = runFilters(context, input);
+	public Map<String, PatientSet> runFiltersAndClassifier(PatientSet input) {
+		input = runFilters(input);
 		if (patientClassifier == null) {
 			Map<String, PatientSet> ret = new HashMap<String, PatientSet>();
 			ret.put("", input);
 			return ret;
 		} else {
-			return patientClassifier.partition(context, input);
+			return patientClassifier.partition(input);
 		}
 	}
 	

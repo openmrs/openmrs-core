@@ -34,6 +34,8 @@ public class SampleFlowsheetServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 
+		log.debug("Getting sample flowsheet");
+		
 		response.setContentType("text/html");
 		HttpSession session = request.getSession();
 
@@ -43,11 +45,9 @@ public class SampleFlowsheetServlet extends HttpServlet {
 			return;
 		}
 
-		Context context = (Context) session
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context == null
-				|| !context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS)
-				|| !context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_OBS)) {
+		if (Context.isAuthenticated() == false
+				|| !Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS)
+				|| !Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_OBS)) {
 			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
 					"Privileges required: "
 							+ OpenmrsConstants.PRIV_VIEW_PATIENTS + " and "
@@ -62,8 +62,8 @@ public class SampleFlowsheetServlet extends HttpServlet {
 		ServletOutputStream out = response.getOutputStream();
 
 		Integer patientId = Integer.parseInt(pid);
-		Patient patient = context.getPatientService().getPatient(patientId);
-		Set<Obs> obsList = context.getObsService().getObservations(patient);
+		Patient patient = Context.getPatientService().getPatient(patientId);
+		Set<Obs> obsList = Context.getObsService().getObservations(patient);
 
 		if (obsList == null || obsList.size() < 1) {
 			out.print("No observations found");
@@ -79,7 +79,7 @@ public class SampleFlowsheetServlet extends HttpServlet {
 				.println(".value { font-family:Arial; text-align:left; vertical-align:top; }");
 		out.println("</style>");
 		out.println("<table cellspacing=0 cellpadding=3>");
-		Locale locale = context.getLocale();
+		Locale locale = Context.getLocale();
 		Calendar date = new GregorianCalendar(1900, Calendar.JANUARY, 1);
 		Calendar obsDate = new GregorianCalendar();
 		for (Obs obs : obsList) {

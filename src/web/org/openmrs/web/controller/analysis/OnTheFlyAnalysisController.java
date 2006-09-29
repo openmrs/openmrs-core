@@ -104,18 +104,16 @@ public class OnTheFlyAnalysisController implements Controller {
 		}
 	}
 	
-    public ModelAndView handleRequest(HttpServletRequest request,
+    @SuppressWarnings("unchecked")
+	public ModelAndView handleRequest(HttpServletRequest request,
     		HttpServletResponse response) throws ServletException, IOException {
 
     	Map<String, Object> myModel = new HashMap<String, Object>();
     	
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
-		if (context != null && context.isAuthenticated()) {
-			ReportService reportService = context.getReportService();
+		if (Context.isAuthenticated()) {
+			ReportService reportService = Context.getReportService();
 			
-			PatientAnalysis analysis = context.getPatientSetService().getMyPatientAnalysis();
+			PatientAnalysis analysis = Context.getPatientSetService().getMyPatientAnalysis();
 			if ("true".equals(request.getParameter("remove_all_filters"))) {
 				analysis.getPatientFilters().clear();
 			}
@@ -195,14 +193,14 @@ public class OnTheFlyAnalysisController implements Controller {
 	/*
 	public ModelAndView setClassifier(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		if (context == null) {
 			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
 			response.sendRedirect(request.getContextPath() + "/logout");
 			return null;
 		}
 		
-		ReportService reportService = context.getReportService();
+		ReportService reportService = Context.getReportService();
 		
 		PatientAnalysis analysis = (PatientAnalysis) httpSession.getAttribute(WebConstants.OPENMRS_ANALYSIS_IN_PROGRESS_ATTR);
 		if (analysis == null) {
@@ -224,18 +222,11 @@ public class OnTheFlyAnalysisController implements Controller {
 	*/
 
 	public ModelAndView addFilter(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context == null) {
-			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
-			response.sendRedirect(request.getContextPath() + "/logout");
-			return null;
-		}
 		log.debug("Entering addFilter()...");
 		
-		ReportService reportService = context.getReportService();
+		ReportService reportService = Context.getReportService();
 		
-		PatientAnalysis analysis = context.getPatientSetService().getMyPatientAnalysis();
+		PatientAnalysis analysis = Context.getPatientSetService().getMyPatientAnalysis();
 		
 		if ("true".equals(request.getParameter("remove_all_filters"))) {
 			analysis.getPatientFilters().clear();
@@ -294,7 +285,7 @@ public class OnTheFlyAnalysisController implements Controller {
 							if (argVal != null && ((String) argVal).trim().length() == 0) {
 								argVal = null;
 							} else if (pd.getPropertyType().equals(Location.class)) {
-								LocationEditor le = new LocationEditor(context);
+								LocationEditor le = new LocationEditor();
 								le.setAsText((String) argVal);
 								argVal = le.getValue();
 							} else if (pd.getPropertyType().equals(Integer.class)) {
@@ -306,12 +297,12 @@ public class OnTheFlyAnalysisController implements Controller {
 									argVal = Double.valueOf((String) argVal);
 								} catch (Exception ex) { }
 							} else if (pd.getPropertyType().equals(Concept.class)) {
-								ConceptEditor ce = new ConceptEditor(context);
+								ConceptEditor ce = new ConceptEditor();
 								ce.setAsText((String) argVal);
 								Concept concept = (Concept) ce.getValue();
 								// force a lazy-load of this concept's name
 								if (concept != null)
-									concept.getName(context.getLocale());
+									concept.getName(Context.getLocale());
 								argVal = concept;
 							} else if (pd.getPropertyType().isEnum()) {
 								List<Enum> constants = Arrays.asList((Enum[]) pd.getPropertyType().getEnumConstants());
@@ -351,14 +342,14 @@ public class OnTheFlyAnalysisController implements Controller {
 	
 	public ModelAndView removeFilter(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context == null) {
+		
+		if (!Context.isAuthenticated()) {
 			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
 			response.sendRedirect(request.getContextPath() + "/logout");
 			return null;
 		}
 		
-		PatientAnalysis analysis = context.getPatientSetService().getMyPatientAnalysis();
+		PatientAnalysis analysis = Context.getPatientSetService().getMyPatientAnalysis();
 		if (analysis != null) {
 			if ("true".equals(request.getParameter("remove_all_filters"))) {
 				analysis.getPatientFilters().clear();

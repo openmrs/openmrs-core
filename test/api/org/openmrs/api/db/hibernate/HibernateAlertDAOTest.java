@@ -6,7 +6,6 @@ import java.util.Properties;
 import junit.framework.TestCase;
 
 import org.openmrs.api.context.Context;
-import org.openmrs.api.context.ContextFactory;
 import org.openmrs.notification.AlertService;
 
 public class HibernateAlertDAOTest extends TestCase {
@@ -22,18 +21,17 @@ public class HibernateAlertDAOTest extends TestCase {
 		propertyStream.close();
 		
 		// TODO Generify
-		HibernateUtil.startup(props);
-
-		Context context = ContextFactory.getContext();
+		Context.startup(props);
 		
-		context.authenticate("ben", "");
+		
+		Context.authenticate("ben", "");
 
 		try {
-			AlertService as = context.getAlertService();
+			AlertService as = Context.getAlertService();
 
 			System.out.println(as.getAlerts());
 		}  finally {
-			HibernateUtil.shutdown();
+			Context.shutdown();
 		}
 		
 	}

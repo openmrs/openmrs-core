@@ -65,26 +65,24 @@ public class NewPatientFormController extends SimpleFormController {
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-		Context context = (Context) request.getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-		dateFormat = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(context.getLocale().toString().toLowerCase()), context.getLocale());
 		
-        NumberFormat nf = NumberFormat.getInstance(context.getLocale());
+		dateFormat = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase()), Context.getLocale());
+		
+        NumberFormat nf = NumberFormat.getInstance(Context.getLocale());
         binder.registerCustomEditor(java.lang.Integer.class,
                 new CustomNumberEditor(java.lang.Integer.class, nf, true));
         binder.registerCustomEditor(java.util.Date.class, 
         		new CustomDateEditor(dateFormat, true, 10));
-        binder.registerCustomEditor(Tribe.class, new TribeEditor(context));
+        binder.registerCustomEditor(Tribe.class, new TribeEditor());
 	}
 
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 	
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		PatientListItem pli = (PatientListItem)obj;
 		
-		if (context != null && context.isAuthenticated()) {
-			FormEntryService ps = context.getFormEntryService();
+		if (Context.isAuthenticated()) {
+			FormEntryService ps = Context.getFormEntryService();
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			
 			if (request.getParameter("action") == null || request.getParameter("action").equals(msa.getMessage("general.save"))) {
@@ -186,10 +184,10 @@ public class NewPatientFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-		if (context != null && context.isAuthenticated()) {
-			FormEntryService ps = context.getFormEntryService();
+		
+		if (Context.isAuthenticated()) {
+			FormEntryService ps = Context.getFormEntryService();
 			PatientListItem p = (PatientListItem)obj;
 			String view = getSuccessView();
 			
@@ -267,17 +265,11 @@ public class NewPatientFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		Patient p = null;
 		
-		if (context == null || !context.isAuthenticated()) {
-			
-		}
-		else {
-			FormEntryService ps = context.getFormEntryService();
+		if (Context.isAuthenticated()) {
+			FormEntryService ps = Context.getFormEntryService();
 			String patientId = request.getParameter("pId");
 	    	if (patientId != null && !patientId.equals("")) {
 	    		p = ps.getPatient(Integer.valueOf(patientId));
@@ -355,17 +347,14 @@ public class NewPatientFormController extends SimpleFormController {
 	 */
 	protected Map referenceData(HttpServletRequest request) throws Exception {
 		
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		Map<String, Object> map = new HashMap<String, Object>();
 
 		List<PatientIdentifier> identifiers = new Vector<PatientIdentifier>();
 		
 		Patient patient = null;
 		
-		if (context != null && context.isAuthenticated()) {
-			FormEntryService ps = context.getFormEntryService();
+		if (Context.isAuthenticated()) {
+			FormEntryService ps = Context.getFormEntryService();
 			String patientId = request.getParameter("pId");
 	    	if (patientId != null && !patientId.equals("")) {
 	    		patient = ps.getPatient(Integer.valueOf(patientId));

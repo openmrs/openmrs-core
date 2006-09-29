@@ -14,7 +14,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
@@ -30,15 +29,14 @@ public class AuditServlet extends HttpServlet {
 		
 		String audit = request.getParameter("audit");
 		HttpSession session = request.getSession();
-		Context context = (Context)session.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-		if (audit == null || context == null || audit.length()==0 ) {
+		
+		if (audit == null || audit.length()==0 ) {
 			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.null");
 			return;
 		}
 		
-		AdministrationService as = context.getAdministrationService();
-		PatientService ps = context.getPatientService();
+		PatientService ps = Context.getPatientService();
 		
 		if (audit.equals("patientIdentifiers")) {
 			

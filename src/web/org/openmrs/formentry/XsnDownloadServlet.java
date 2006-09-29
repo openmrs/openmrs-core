@@ -10,13 +10,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
-import org.openmrs.web.WebConstants;
 
 /**
  * Provides a servlet through which an XSN is downloaded. This class differs
@@ -36,18 +34,7 @@ public class XsnDownloadServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
 
-		HttpSession httpSession = request.getSession();
-
-		Context context = (Context) httpSession
-		    .getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context == null) {
-			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
-			response.sendRedirect(request.getContextPath() + "/logout");
-			return;
-		}
-
 		response.setHeader("Content-Type", "text/plain; charset=utf-8");
-		
 
 		// since we've got a "/formentry/form/*" servlet-mapping,
 		// getServletPath() will only return /formentry/form.
@@ -56,7 +43,7 @@ public class XsnDownloadServlet extends HttpServlet {
 		filename = filename.substring(filename.lastIndexOf("/") + 1);
 		
 		// append xsn storage location for file look up
-		String url = context.getAdministrationService().getGlobalProperty("formentry.infopath_output_dir");
+		String url = Context.getAdministrationService().getGlobalProperty("formentry.infopath_output_dir");
 		if (!url.endsWith(File.separator))
 			url += File.separator;
 		url = url + filename;

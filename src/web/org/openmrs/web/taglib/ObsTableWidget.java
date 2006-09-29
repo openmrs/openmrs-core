@@ -27,7 +27,6 @@ import org.openmrs.ConceptName;
 import org.openmrs.Obs;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
-import org.openmrs.web.WebConstants;
 
 public class ObsTableWidget extends TagSupport {
 
@@ -140,14 +139,13 @@ public class ObsTableWidget extends TagSupport {
 	}
 
 	public int doStartTag() {
-		Context context = (Context) pageContext.getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		Locale loc = context.getLocale();
+		Locale loc = Context.getLocale();
 		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, loc);
 		
 		// determine which concepts we care about
 		List<Concept> conceptList = new ArrayList<Concept>();
 		Set<Integer> conceptIds = new HashSet<Integer>();
-		ConceptService cs = context.getConceptService();
+		ConceptService cs = Context.getConceptService();
 		for (StringTokenizer st = new StringTokenizer(concepts, "|"); st.hasMoreTokens(); ) {
 			String s = st.nextToken().trim();
 			log.debug("looking at " + s);

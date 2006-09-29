@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.context.ContextFactory;
+import org.openmrs.api.context.Context;
 
 public class AddressSupport {
 
@@ -150,7 +150,7 @@ public class AddressSupport {
 	 * @return Returns the defaultAddressFormat.
 	 */
 	public String getDefaultAddressFormat() {
-		String ret = ContextFactory.getAnonymousContext().getAdministrationService().getGlobalProperty("address.format");
+		String ret = Context.getAdministrationService().getGlobalProperty("address.format");
 		return (ret != null && ret.length() > 0) ? ret : defaultAddressFormat;
 	}
 

@@ -36,12 +36,11 @@ public class FormListController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 
 		String view = getFormView();
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			String[] formList = request.getParameterValues("formId");
-			FormService fs = context.getFormService();
+			FormService fs = Context.getFormService();
 			//FormService rs = new TestFormService();
 			
 			String success = "";
@@ -88,15 +87,12 @@ public class FormListController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-    	HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		//default empty Object
 		List<Form> formList = new Vector<Form>();
 		
 		//only fill the Object is the user has authenticated properly
-		if (context != null && context.isAuthenticated()) {
-			FormService fs = context.getFormService();
+		if (Context.isAuthenticated()) {
+			FormService fs = Context.getFormService();
 			//FormService rs = new TestFormService();
 	    	formList = fs.getForms();
 		}

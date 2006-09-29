@@ -48,11 +48,11 @@ public class TribeFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		String view = getFormView();
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			Tribe tribe = (Tribe)obj;
-			context.getAdministrationService().updateTribe(tribe);
+			Context.getAdministrationService().updateTribe(tribe);
 			view = getSuccessView();
 
 			MessageSourceAccessor msa = getMessageSourceAccessor();
@@ -71,13 +71,10 @@ public class TribeFormController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		Tribe tribe = null;
 		
-		if (context != null && context.isAuthenticated()) {
-			PatientService ps = context.getPatientService();
+		if (Context.isAuthenticated()) {
+			PatientService ps = Context.getPatientService();
 			String tribeId = request.getParameter("tribeId");
 	    	if (tribeId != null)
 	    		tribe = ps.getTribe(Integer.valueOf(tribeId));	

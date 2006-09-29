@@ -12,14 +12,15 @@ import org.openmrs.util.OpenmrsUtil;
 
 public class RegimenPortletController extends PortletController {
 	
-	protected void populateModel(HttpServletRequest request, Context context, Map<String, Object> model) {
+	@SuppressWarnings("unchecked")
+	protected void populateModel(HttpServletRequest request, Map<String, Object> model) {
 		String drugSetIds = (String) model.get("displayDrugSetIds");
 		if ( drugSetIds != null && drugSetIds.length() > 0 ) {
-			Map<String, List<DrugOrder>> patientDrugOrderSets = context.getOrderService().getDrugSetsByDrugSetIdList((List<DrugOrder>)model.get("patientDrugOrders"), drugSetIds, ",");
-			Map<String, List<DrugOrder>> currentDrugOrderSets = context.getOrderService().getDrugSetsByDrugSetIdList((List<DrugOrder>)model.get("currentDrugOrders"), drugSetIds, ",");
-			Map<String, List<DrugOrder>> completedDrugOrderSets = context.getOrderService().getDrugSetsByDrugSetIdList((List<DrugOrder>)model.get("completedDrugOrders"), drugSetIds, ",");
+			Map<String, List<DrugOrder>> patientDrugOrderSets = Context.getOrderService().getDrugSetsByDrugSetIdList((List<DrugOrder>)model.get("patientDrugOrders"), drugSetIds, ",");
+			Map<String, List<DrugOrder>> currentDrugOrderSets = Context.getOrderService().getDrugSetsByDrugSetIdList((List<DrugOrder>)model.get("currentDrugOrders"), drugSetIds, ",");
+			Map<String, List<DrugOrder>> completedDrugOrderSets = Context.getOrderService().getDrugSetsByDrugSetIdList((List<DrugOrder>)model.get("completedDrugOrders"), drugSetIds, ",");
 			
-			Map<String, Concept> drugOrderHeaders = OpenmrsUtil.delimitedStringToConceptMap(drugSetIds, ",", context);
+			Map<String, Concept> drugOrderHeaders = OpenmrsUtil.delimitedStringToConceptMap(drugSetIds, ",");
 			
 			model.put("patientDrugOrderSets", patientDrugOrderSets);
 			model.put("currentDrugOrderSets", currentDrugOrderSets);

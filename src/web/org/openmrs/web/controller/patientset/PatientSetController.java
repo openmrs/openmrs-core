@@ -7,13 +7,11 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.reporting.PatientSet;
-import org.openmrs.web.WebConstants;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.view.RedirectView;
@@ -25,15 +23,7 @@ public class PatientSetController implements Controller {
     public ModelAndView handleRequest(HttpServletRequest request,
     		HttpServletResponse response) throws ServletException, IOException {
     	
-    	HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context == null) {
-			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
-			response.sendRedirect(request.getContextPath() + "/logout");
-			return null;
-		}
-    	
-		PatientSet ps = context.getPatientSetService().getMyPatientSet();
+		PatientSet ps = Context.getPatientSetService().getMyPatientSet();
 		Map<String, Object> model = new HashMap<String, Object>();
 		model.put("patientSet", ps);
 
@@ -46,14 +36,6 @@ public class PatientSetController implements Controller {
     public ModelAndView setPatientSet(HttpServletRequest request,
     		HttpServletResponse response) throws ServletException, IOException {
 
-    	HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context == null) {
-			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
-			response.sendRedirect(request.getContextPath() + "/logout");
-			return null;
-		}
-		
 		String url = request.getParameter("url");
 		String ps = request.getParameter("patientIds");
 		if (ps == null) {
@@ -61,7 +43,7 @@ public class PatientSetController implements Controller {
 		}
 		
 		PatientSet patientSet = PatientSet.parseCommaSeparatedPatientIds(ps);
-		context.getPatientSetService().setMyPatientSet(patientSet);
+		Context.getPatientSetService().setMyPatientSet(patientSet);
 		log.debug("Set user's PatientSet (" + patientSet.size() + " patients)");
 		
 		if (patientSet.size() > 0 && "true".equals(request.getParameter("appendPatientId"))) {
@@ -77,17 +59,9 @@ public class PatientSetController implements Controller {
     public ModelAndView clearPatientSet(HttpServletRequest request,
     		HttpServletResponse response) throws ServletException, IOException {
 
-    	HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context == null) {
-			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
-			response.sendRedirect(request.getContextPath() + "/logout");
-			return null;
-		}
-		
 		String url = request.getParameter("url");
 		
-		context.getPatientSetService().clearMyPatientSet();
+		Context.getPatientSetService().clearMyPatientSet();
 		log.debug("Cleared user's PatientSet");
 		return new ModelAndView(new RedirectView(url));
     }
@@ -99,19 +73,11 @@ public class PatientSetController implements Controller {
     public ModelAndView addToSet(HttpServletRequest request,
     		HttpServletResponse response) throws ServletException, IOException {
 
-    	HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context == null) {
-			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
-			response.sendRedirect(request.getContextPath() + "/logout");
-			return null;
-		}
-		
 		String url = request.getParameter("url");
 		String id = request.getParameter("patientId");
 		String ids = request.getParameter("patientIds");
 		
-		PatientSet patientSet = context.getPatientSetService().getMyPatientSet();
+		PatientSet patientSet = Context.getPatientSetService().getMyPatientSet();
 		
 		if (id != null) {
 			try {
@@ -142,19 +108,11 @@ public class PatientSetController implements Controller {
     public ModelAndView removeFromSet(HttpServletRequest request,
     		HttpServletResponse response) throws ServletException, IOException {
 
-    	HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context == null) {
-			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
-			response.sendRedirect(request.getContextPath() + "/logout");
-			return null;
-		}
-		
 		String url = request.getParameter("url");
 		String id = request.getParameter("patientId");
 		String ids = request.getParameter("patientIds");
 		
-		PatientSet patientSet = context.getPatientSetService().getMyPatientSet();
+		PatientSet patientSet = Context.getPatientSetService().getMyPatientSet();
 		
 		if (id != null) {
 			try {

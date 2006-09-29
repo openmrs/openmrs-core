@@ -9,7 +9,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Role;
 import org.openmrs.User;
-import org.openmrs.api.db.DAOContext;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.db.TemplateDAO;
 import org.openmrs.notification.Message;
 import org.openmrs.notification.MessageException;
 import org.openmrs.notification.MessagePreparator;
@@ -22,13 +23,17 @@ public class MessageServiceImpl implements MessageService {
 		
 	private static final Log log = LogFactory.getLog( MessageServiceImpl.class );
 
-	private DAOContext daoContext; //Data access context
+	private TemplateDAO templateDAO;
 
 	private MessageSender messageSender; // Delivers message 
 	
 	private MessagePreparator messagePreparator; // Prepares message for delivery 
 	
 
+	public void setTemplateDAO(TemplateDAO dao) {
+		this.templateDAO = dao;
+	}
+	
 	/**
 	 *  Public constructor
 	 *  
@@ -36,22 +41,7 @@ public class MessageServiceImpl implements MessageService {
 	 *  DAO Context in order to work properly.  Please set the DAO context
 	 */
 	public MessageServiceImpl() { }	
-	
-	/**
-	 *  Public constructor
-	 */
-	public MessageServiceImpl(DAOContext daoContext) { 
-		this.daoContext = daoContext;
-	}	
-	
-	/**
-	 *  Set the context.
-	 *  
-	 *  @param context
-	 */
-	public void setDaoContext(DAOContext daoContext) { 
-		this.daoContext = daoContext;
-	}
+
 		
 	/**
 	 *  Set the message preparator.
@@ -145,7 +135,7 @@ public class MessageServiceImpl implements MessageService {
 	 */
 	public void send(Message message, Integer recipientId) throws MessageException { 
 		log.debug("Sending message to user with user id " + recipientId);
-		User user = daoContext.getUserDAO().getUser( recipientId );
+		User user = Context.getUserService().getUser( recipientId );
 		message.addRecipient( user.getProperty( OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS ) );
 		// message.setFormat( user( OpenmrsConstants.USER_PROPERTY_NOTIFICATION_FORMAT ) );
 		send(message);
@@ -183,7 +173,7 @@ public class MessageServiceImpl implements MessageService {
 	 */
 	public void send(Message message, String roleName) throws MessageException { 
 		log.debug("Sending message to role with name " + roleName);
-		Role role = daoContext.getUserDAO().getRole( roleName );
+		Role role = Context.getUserService().getRole( roleName );
 		send(message, role);
 	}
 	
@@ -192,13 +182,12 @@ public class MessageServiceImpl implements MessageService {
 	 */
 	public void send(Message message, Role role ) throws MessageException {
 		log.debug("Sending message to role " + role);
-		log.debug("Dao Context == null : " + daoContext == null);
-		log.debug("User Dao : " + daoContext.getUserDAO());
+		log.debug("User Service : " + Context.getUserService());
 		
 		List<Role> roles = new Vector<Role>();
 		roles.add(role);
 		
-		Collection<User> users = daoContext.getUserDAO().getAllUsers( roles, false );
+		Collection<User> users = Context.getUserService().getAllUsers( roles, false );
 
 		log.debug("Sending message " + message + " to " + users);
 		send(message, users);
@@ -240,7 +229,7 @@ public class MessageServiceImpl implements MessageService {
 	 *  @return  list of Templates
 	 */
 	public List getAllTemplates() throws MessageException { 
-		return daoContext.getTemplateDAO().getTemplates();
+		return templateDAO.getTemplates();
 	}
 	
 	/**
@@ -250,7 +239,7 @@ public class MessageServiceImpl implements MessageService {
 	 *  @return	Template 	
 	 */
 	public Template getTemplate(Integer id) throws MessageException { 
-		return daoContext.getTemplateDAO().getTemplate( id );
+		return templateDAO.getTemplate( id );
 	}
 	
 	/**
@@ -260,7 +249,7 @@ public class MessageServiceImpl implements MessageService {
 	 *  @return  list of Templates
 	 */
 	public List getTemplatesByName(String name) throws MessageException { 
-		return daoContext.getTemplateDAO().getTemplatesByName( name );
+		return templateDAO.getTemplatesByName( name );
 	}
 
 }

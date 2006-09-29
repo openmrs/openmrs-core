@@ -2,7 +2,6 @@ package org.openmrs.web.controller.order;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Vector;
 
@@ -15,39 +14,21 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.Order;
-import org.openmrs.OrderType;
 import org.openmrs.api.APIException;
-import org.openmrs.api.AdministrationService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
-import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.view.RedirectView;
 
 public class OrderListController extends SimpleFormController {
 	
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
-    
-	/**
-	 * 
-	 * Allows for Integers to be used as values in input tags.
-	 *   Normally, only strings and lists are expected 
-	 * 
-	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest, org.springframework.web.bind.ServletRequestDataBinder)
-	 */
-	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-		super.initBinder(request, binder);
-		BindStatus b = null;
-        //binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
-	}
 
 	/**
 	 * 
@@ -59,12 +40,11 @@ public class OrderListController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		Locale locale = request.getLocale();
+		
 		String view = getFormView();
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			String[] orderList = request.getParameterValues("orderId");
-			OrderService os = context.getOrderService();
+			OrderService os = Context.getOrderService();
 			
 			String success = "";
 			String error = "";
@@ -105,15 +85,12 @@ public class OrderListController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-    	HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		//default empty Object
 		List<Order> orderList = new Vector<Order>();
 		
 		//only fill the Object is the user has authenticated properly
-		if (context != null && context.isAuthenticated()) {
-			OrderService os = context.getOrderService();
+		if (Context.isAuthenticated()) {
+			OrderService os = Context.getOrderService();
 	    	orderList = os.getOrders();
 		}
     	
@@ -123,6 +100,7 @@ public class OrderListController extends SimpleFormController {
 	/* (non-Javadoc)
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	protected Map referenceData(HttpServletRequest request, Object obj, Errors err) throws Exception {
 		Map<Integer,String> conceptNames = new HashMap<Integer,String>();

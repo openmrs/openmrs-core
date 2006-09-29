@@ -15,7 +15,6 @@ import org.openmrs.Concept;
 import org.openmrs.Drug;
 import org.openmrs.Form;
 import org.openmrs.FormField;
-import org.openmrs.api.context.Context;
 
 /**
  * OpenMRS form module utilities.
@@ -138,16 +137,13 @@ public class FormUtil {
 	 * <code>FormField</code>s (as defined by the <em>.equals()</em> and
 	 * <em>.compareTo()</em> methods).
 	 * 
-	 * @param context
-	 *            current authenticated context
 	 * @param form
 	 *            form for which structure is requested
 	 * @return sorted map of <code>FormField</code>s, where the top-level
 	 *         fields are under the key zero and all other leaves are stored
 	 *         under their parent <code>FormField</code>'s id.
 	 */
-	public static TreeMap<Integer, TreeSet<FormField>> getFormStructure(
-			Context context, Form form) {
+	public static TreeMap<Integer, TreeSet<FormField>> getFormStructure(Form form) {
 		TreeMap<Integer, TreeSet<FormField>> formStructure = new TreeMap<Integer, TreeSet<FormField>>();
 		Integer base = Integer.valueOf(0);
 		formStructure.put(base, new TreeSet<FormField>());

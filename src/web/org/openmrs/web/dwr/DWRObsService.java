@@ -17,7 +17,6 @@ import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
-import org.openmrs.web.WebConstants;
 
 import uk.ltd.getahead.dwr.WebContextFactory;
 
@@ -31,30 +30,23 @@ public class DWRObsService {
 		log.info("Get observations for encounter " + encounterId);
 		Vector<Object> obsList = new Vector<Object>();
 
-		Context context = (Context) WebContextFactory.get().getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-
 		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
-	
-		if (context == null) {
-			obsList.add("Your session has expired.");
-			obsList.add("Please <a href='" + request.getContextPath() + "/logout'>log in</a> again.");
+
+		try {
+			Encounter encounter = Context.getEncounterService().getEncounter(encounterId);
+			
+			Set<Obs> observations = Context.getObsService().getObservations(encounter);
+			for (Obs obs : observations) {
+				obsList.add(new ObsListItem(obs,request.getLocale()));
+			}		
+			
+			
+			
+		} catch (Exception e) {
+			log.error(e);
+			obsList.add("Error while attempting to find obs - " + e.getMessage());
 		}
-		else {
-			try {
-				Encounter encounter = context.getEncounterService().getEncounter(encounterId);
-				
-				Set<Obs> observations = context.getObsService().getObservations(encounter);
-				for (Obs obs : observations) {
-					obsList.add(new ObsListItem(obs,request.getLocale()));
-				}		
-				
-				
-				
-			} catch (Exception e) {
-				log.error(e);
-				obsList.add("Error while attempting to find obs - " + e.getMessage());
-			}
-		}
+
 		return obsList;
 	}
 	
@@ -62,51 +54,48 @@ public class DWRObsService {
 	public void createObs(Integer patientId, Integer encounterId, Integer conceptId, String valueText, String obsDateStr) { 
 		
 		log.info("Create new observation ");
-		Context context = (Context) WebContextFactory.get().getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 	
-		if (context != null) {
-			try {
-				
-				Date obsDate = null;
-				if ( obsDateStr != null ) {
-					// TODO Standardize date input 
-					SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
-					try {
-						obsDate = sdf.parse(obsDateStr);
-					} catch (ParseException e) {
-						log.error("Error parsing date ... " + obsDate);
-						obsDate = new Date();
-					}
-				}				
-				
-				Patient patient = context.getPatientService().getPatient(patientId);
-				Concept concept = context.getConceptService().getConcept(conceptId);
-				Encounter encounter = context.getEncounterService().getEncounter(encounterId);
-				
-				Obs obs = new Obs();
-				obs.setPatient(patient);
-				obs.setConcept(concept);
-				obs.setEncounter(encounter);
-				obs.setObsDatetime(obsDate);
-				obs.setLocation(encounter.getLocation());
-				obs.setCreator(context.getAuthenticatedUser());
-				obs.setDateCreated(new Date());
-				
-				// TODO Currently only handles numeric and text values ... need to expand to support all others
-				String hl7DataType = concept.getDatatype().getHl7Abbreviation();
-				if ("NM".equals(hl7DataType)) { 
-					obs.setValueNumeric(Double.valueOf(valueText));
-				} 
-				else { 
-					obs.setValueText(valueText);
+		try {
+			
+			Date obsDate = null;
+			if ( obsDateStr != null ) {
+				// TODO Standardize date input 
+				SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+				try {
+					obsDate = sdf.parse(obsDateStr);
+				} catch (ParseException e) {
+					log.error("Error parsing date ... " + obsDate);
+					obsDate = new Date();
 				}
-				
-				// Create the observation
-				context.getObsService().createObs(obs);
-				
-			} catch (Exception e) {
-				log.error(e);
+			}				
+			
+			Patient patient = Context.getPatientService().getPatient(patientId);
+			Concept concept = Context.getConceptService().getConcept(conceptId);
+			Encounter encounter = Context.getEncounterService().getEncounter(encounterId);
+			
+			Obs obs = new Obs();
+			obs.setPatient(patient);
+			obs.setConcept(concept);
+			obs.setEncounter(encounter);
+			obs.setObsDatetime(obsDate);
+			obs.setLocation(encounter.getLocation());
+			obs.setCreator(Context.getAuthenticatedUser());
+			obs.setDateCreated(new Date());
+			
+			// TODO Currently only handles numeric and text values ... need to expand to support all others
+			String hl7DataType = concept.getDatatype().getHl7Abbreviation();
+			if ("NM".equals(hl7DataType)) { 
+				obs.setValueNumeric(Double.valueOf(valueText));
+			} 
+			else { 
+				obs.setValueText(valueText);
 			}
+			
+			// Create the observation
+			Context.getObsService().createObs(obs);
+			
+		} catch (Exception e) {
+			log.error(e);
 		}
 	}
 	
@@ -118,51 +107,41 @@ public class DWRObsService {
 		// Object type gives ability to return error strings
 		Vector<Object> objectList = new Vector<Object>();	
 
-		Context context = (Context) WebContextFactory.get().getSession()
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
-		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
-		
-		if (context == null) {
-			objectList.add("Your session has expired.");
-			objectList.add("Please <a href='" + request.getContextPath() + "/logout'>log in</a> again.");
-		}
-		else {
-			try {
-				EncounterService es = context.getEncounterService();
-				Set<Encounter> encs = new HashSet<Encounter>();
-				
-				/*
-				if (phrase.matches("\\d+")) {
-					// user searched on a number.  Insert obs with corresponding obsId
-					Obs e = os.getObs(Integer.valueOf(phrase));
-					if (e != null) {
-						encs.add(e);
-					}
+		try {
+			EncounterService es = Context.getEncounterService();
+			Set<Encounter> encs = new HashSet<Encounter>();
+			
+			/*
+			if (phrase.matches("\\d+")) {
+				// user searched on a number.  Insert obs with corresponding obsId
+				Obs e = os.getObs(Integer.valueOf(phrase));
+				if (e != null) {
+					encs.add(e);
 				}
-				*/
-				
-				if (phrase == null || phrase.equals("")) {
-					//TODO get all concepts for testing purposes?
-				}
-				else {
-					encs.addAll(es.getEncountersByPatientIdentifier(phrase, includeVoided));
-				}
-
-				if (encs.size() == 0) {
-					objectList.add("No matches found for <b>" + phrase + "</b>");
-				}
-				else {
-					objectList = new Vector<Object>(encs.size());
-					for (Encounter e : encs) {
-						objectList.add(new EncounterListItem(e));
-					}
-				}
-			} catch (Exception e) {
-				log.error(e);
-				objectList.add("Error while attempting to find obs - " + e.getMessage());
 			}
+			*/
+			
+			if (phrase == null || phrase.equals("")) {
+				//TODO get all concepts for testing purposes?
+			}
+			else {
+				encs.addAll(es.getEncountersByPatientIdentifier(phrase, includeVoided));
+			}
+
+			if (encs.size() == 0) {
+				objectList.add("No matches found for <b>" + phrase + "</b>");
+			}
+			else {
+				objectList = new Vector<Object>(encs.size());
+				for (Encounter e : encs) {
+					objectList.add(new EncounterListItem(e));
+				}
+			}
+		} catch (Exception e) {
+			log.error(e);
+			objectList.add("Error while attempting to find obs - " + e.getMessage());
 		}
+
 		return objectList;
 	}
 

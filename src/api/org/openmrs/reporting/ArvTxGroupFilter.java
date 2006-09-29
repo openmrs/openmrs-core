@@ -1,7 +1,7 @@
 package org.openmrs.reporting;
 
 import org.openmrs.Concept;
-import org.openmrs.api.context.ContextFactory;
+import org.openmrs.api.context.Context;
 
 public class ArvTxGroupFilter extends TextObsPatientFilter {
 	
@@ -9,7 +9,7 @@ public class ArvTxGroupFilter extends TextObsPatientFilter {
 		super();
 		super.setType("Patient Filter");
 		super.setSubType("ARV Treatment Group Filter");
-		Concept temp = ContextFactory.getContext().getConceptService().getConceptByName("ANTIRETROVIRAL TREATMENT GROUP");
+		Concept temp = Context.getConceptService().getConceptByName("ANTIRETROVIRAL TREATMENT GROUP");
 		if (temp != null) {
 			super.setConcept(temp);
 		} else {

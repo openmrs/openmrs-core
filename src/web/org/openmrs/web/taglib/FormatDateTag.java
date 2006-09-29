@@ -5,13 +5,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
-import org.openmrs.web.WebConstants;
 
 public class FormatDateTag extends TagSupport {
 
@@ -24,8 +22,6 @@ public class FormatDateTag extends TagSupport {
 	private String format;
 
 	public int doStartTag() {
-		HttpSession session = pageContext.getSession();
-		Context context = (Context)session.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		DateFormat dateFormat = null;
 		
@@ -39,37 +35,19 @@ public class FormatDateTag extends TagSupport {
 			dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
 		}
 		else {
-			if (context == null) {
-				log.debug("context is null");
-				if (type.equals("long")) {
-					dateFormat = new SimpleDateFormat("MMMMM dd, yyyy h:mm a");
-				}
-				else if (type.equals("medium")) {
-					dateFormat = new SimpleDateFormat("MM-dd-yyyy h:mm a");
-				}
-				else if (type.equals("textbox")) {
-					dateFormat = new SimpleDateFormat("MM-dd-yyyy");
-				}
-				else {
-					dateFormat = new SimpleDateFormat("MM-dd-yyyy");
-				}
+			log.debug("context locale: " + Context.getLocale());
+			
+			if (type.equals("long")) {
+				dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, Context.getLocale());
+			}
+			else if (type.equals("medium")) {
+				dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM, Context.getLocale());
+			}
+			else if (type.equals("textbox")) {
+				dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, Context.getLocale());
 			}
 			else {
-				log.debug("context found");
-				log.debug("context locale: " + context.getLocale());
-				
-				if (type.equals("long")) {
-					dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, context.getLocale());
-				}
-				else if (type.equals("medium")) {
-					dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM, context.getLocale());
-				}
-				else if (type.equals("textbox")) {
-					dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, context.getLocale());
-				}
-				else {
-					dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, context.getLocale());
-				}
+				dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, Context.getLocale());
 			}
 		}
 		

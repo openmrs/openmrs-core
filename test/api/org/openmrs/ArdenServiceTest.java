@@ -1,13 +1,15 @@
 package org.openmrs;
 
+import java.util.Properties;
+
 import junit.framework.TestCase;
 
 import org.openmrs.api.context.Context;
-import org.openmrs.api.context.ContextFactory;
-import org.openmrs.api.db.hibernate.HibernateUtil;
-import org.openmrs.Patient;
-import org.openmrs.arden.compiled.*;
-import org.openmrs.arden.*;
+import org.openmrs.arden.ArdenDataSource;
+import org.openmrs.arden.ArdenRule;
+import org.openmrs.arden.DSSObject;
+import org.openmrs.arden.DefaultArdenDataSource;
+import org.openmrs.arden.compiled.HiRiskLeadScreen;
 
 public class ArdenServiceTest extends TestCase {
 	int MAX_MLM = 1;
@@ -20,24 +22,23 @@ public class ArdenServiceTest extends TestCase {
 		DSSObject dssObj;
 		int all = MAX_MLM;
 		
-		HibernateUtil.startup();
-		Context context = ContextFactory.getContext();
-		context.authenticate("vibha", "chicachica");
+		Context.startup(new Properties());
+		Context.authenticate("vibha", "chicachica");
 		
-	//	context.getArdenService().compileFile("test/arden test/6.mlm"); 
-	//	context.getArdenService().compileFile("test/arden test/directexphiriskcountry.mlm"); 
-	//	context.getArdenService().compileFile("test/arden test/directtbcontact.mlm");
+	//	Context.getArdenService().compileFile("test/arden test/6.mlm"); 
+	//	Context.getArdenService().compileFile("test/arden test/directexphiriskcountry.mlm"); 
+	//	Context.getArdenService().compileFile("test/arden test/directtbcontact.mlm");
 		
-		context.getArdenService().compileFile("test/arden test/HiRiskLeadScreen.mlm");
+		Context.getArdenService().compileFile("test/arden test/HiRiskLeadScreen.mlm");
 		
 		
 				
 
- 		patient = context.getPatientService().getPatient(pid);
+ 		patient = Context.getPatientService().getPatient(pid);
 		dataSource = new DefaultArdenDataSource(); 
 			
 		ArdenRule [] mlms = {
-				 new HiRiskLeadScreen(context,patient ,dataSource)
+				 new HiRiskLeadScreen(patient ,dataSource)
 		};
 		for (int i = 0; i < all; i++){
 			
@@ -51,7 +52,7 @@ public class ArdenServiceTest extends TestCase {
 				
 			}
 		}
-		HibernateUtil.shutdown();
+		Context.shutdown();
 	}
 	
 	

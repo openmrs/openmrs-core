@@ -47,19 +47,18 @@ public class OrderFormController extends SimpleFormController {
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-        binder.registerCustomEditor(OrderType.class, new OrderTypeEditor(context));
+        binder.registerCustomEditor(OrderType.class, new OrderTypeEditor());
         binder.registerCustomEditor(Boolean.class, new CustomBooleanEditor("t", "f", true));
-        binder.registerCustomEditor(Concept.class, new ConceptEditor(context));
+        binder.registerCustomEditor(Concept.class, new ConceptEditor());
         binder.registerCustomEditor(Date.class, new CustomDateEditor(new SimpleDateFormat("dd/MM/yyyy"), true));
-        binder.registerCustomEditor(User.class, new UserEditor(context));
-        binder.registerCustomEditor(Encounter.class, new EncounterEditor(context));
+        binder.registerCustomEditor(User.class, new UserEditor());
+        binder.registerCustomEditor(Encounter.class, new EncounterEditor());
 	}
 
 	/* (non-Javadoc)
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	protected Map referenceData(HttpServletRequest request) throws Exception {
 		Map refData = new HashMap();
@@ -81,14 +80,14 @@ public class OrderFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		String view = getFormView();
 		
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			Order order = (Order)obj;
 			if ( order.getDateCreated() == null ) order.setDateCreated(new Date());
 			if ( order.getVoided() == null ) order.setVoided(new Boolean(false));
-			context.getOrderService().updateOrder(order);
+			Context.getOrderService().updateOrder(order);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Order.saved");
 		}
@@ -105,13 +104,11 @@ public class OrderFormController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		OrderService os = context.getOrderService();
+		OrderService os = Context.getOrderService();
 		
 		Order order = null;
 		
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			Integer orderId = RequestUtils.getIntParameter(request, "orderId");
 	    	if (orderId != null) order = os.getOrder(orderId);	
 		}

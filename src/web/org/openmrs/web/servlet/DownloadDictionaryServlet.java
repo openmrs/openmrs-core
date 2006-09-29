@@ -9,7 +9,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
@@ -17,7 +16,6 @@ import org.openmrs.ConceptName;
 import org.openmrs.ConceptSynonym;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
-import org.openmrs.web.WebConstants;
 
 public class DownloadDictionaryServlet extends HttpServlet {
 
@@ -31,17 +29,9 @@ public class DownloadDictionaryServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 
-		HttpSession httpSession = request.getSession();
-		Context context = (Context)httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context == null) {
-			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
-			response.sendRedirect(request.getContextPath() + "/logout");
-			return;
-		}
+		Locale locale = Context.getLocale();
 		
-		Locale locale = context.getLocale();
-		
-		ConceptService cs = context.getConceptService();
+		ConceptService cs = Context.getConceptService();
 		String s = new SimpleDateFormat("dMy_Hm").format(new Date());
 
 		response.setHeader("Content-Type", "text/csv");

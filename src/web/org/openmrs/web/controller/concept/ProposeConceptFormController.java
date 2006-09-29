@@ -38,24 +38,20 @@ public class ProposeConceptFormController extends SimpleFormController {
 	@Override
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		ConceptProposal cp = (ConceptProposal)obj;
 		
-		if (context != null) {
-			Concept c = cp.getObsConcept();
-			String id = RequestUtils.getStringParameter(request, "conceptId", null);
-			if (c == null && id != null) {
-				c = context.getConceptService().getConcept(Integer.valueOf(id));
-				cp.setObsConcept(c);
-			}
-			
-			Encounter e = cp.getEncounter();
-			id = RequestUtils.getStringParameter(request, "encounterId", null);
-			if (e == null && id != null) {
-				e = context.getEncounterService().getEncounter(Integer.valueOf(id));
-				cp.setEncounter(e);
-			}
+		Concept c = cp.getObsConcept();
+		String id = RequestUtils.getStringParameter(request, "conceptId", null);
+		if (c == null && id != null) {
+			c = Context.getConceptService().getConcept(Integer.valueOf(id));
+			cp.setObsConcept(c);
+		}
+		
+		Encounter e = cp.getEncounter();
+		id = RequestUtils.getStringParameter(request, "encounterId", null);
+		if (e == null && id != null) {
+			e = Context.getEncounterService().getEncounter(Integer.valueOf(id));
+			cp.setEncounter(e);
 		}
 		
 		if (cp.getOriginalText().equals(""))
@@ -74,17 +70,17 @@ public class ProposeConceptFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		String view = getFormView();
 		
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			// this concept proposal
 			ConceptProposal cp = (ConceptProposal)obj;
 			
 			// this proposal's final text
-			ConceptService cs = context.getConceptService();
+			ConceptService cs = Context.getConceptService();
 			
-			cp.setCreator(context.getAuthenticatedUser());
+			cp.setCreator(Context.getAuthenticatedUser());
 			cp.setDateCreated(new Date());
 			
 			cs.proposeConcept(cp);
@@ -105,14 +101,11 @@ public class ProposeConceptFormController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		ConceptProposal cp = new ConceptProposal();
 		
-		if (context != null && context.isAuthenticated()) {
-			ConceptService cs = context.getConceptService();
-			EncounterService es = context.getEncounterService();
+		if (Context.isAuthenticated()) {
+			ConceptService cs = Context.getConceptService();
+			EncounterService es = Context.getEncounterService();
 			String id = RequestUtils.getStringParameter(request, "encounterId");
 	    	if (id != null)
 	    		cp.setEncounter(es.getEncounter(Integer.valueOf(id)));
@@ -127,18 +120,15 @@ public class ProposeConceptFormController extends SimpleFormController {
     }
     
 	protected Map referenceData(HttpServletRequest request, Object object, Errors errors) throws Exception {
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		ConceptProposal cp = (ConceptProposal)object;
-		Locale locale = context.getLocale();
+		Locale locale = Context.getLocale();
 		
 		String defaultVerbose = "false";
-		if (context != null && context.isAuthenticated()){
+		if (Context.isAuthenticated()){
 			// optional user property for default verbose display in concept search
-			defaultVerbose = context.getAuthenticatedUser().getProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
+			defaultVerbose = Context.getAuthenticatedUser().getProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
 			
 			// preemptively get the obs concept name
 			if (cp.getObsConcept() != null)

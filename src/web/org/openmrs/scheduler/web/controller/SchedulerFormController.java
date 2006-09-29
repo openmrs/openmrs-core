@@ -10,7 +10,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.context.Context;
+import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.TaskConfig;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -57,22 +57,19 @@ public class SchedulerFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		//
 		String view = getFormView();
 
-		if (context != null && context.isAuthenticated()) {
-			TaskConfig task = (TaskConfig) command;
-			task.setStartTimePattern(DEFAULT_DATE_PATTERN);
-			log.info("task started? " + task.getStarted());
-			context.getSchedulerService().updateTask(task);
-			view = getSuccessView();
-			
-			Object [] args = new Object[] { task.getId() };
-			String success = getMessageSourceAccessor().getMessage("Scheduler.taskForm.saved", args);
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
-
-		}
+		TaskConfig task = (TaskConfig) command;
+		task.setStartTimePattern(DEFAULT_DATE_PATTERN);
+		log.info("task started? " + task.getStarted());
+		getSchedulerService().updateTask(task);
+		view = getSuccessView();
 		
+		Object [] args = new Object[] { task.getId() };
+		String success = getMessageSourceAccessor().getMessage("Scheduler.taskForm.saved", args);
+		httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
+	
 		return new ModelAndView(new RedirectView(view));
 	}
 
@@ -85,19 +82,13 @@ public class SchedulerFormController extends SimpleFormController {
 	 */
 	  protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		TaskConfig task = new TaskConfig();
 		
-		if (context != null && context.isAuthenticated()) {
-			
-			String taskId = request.getParameter("taskId");
-	    	if (taskId != null) {
-	    		task = context.getSchedulerService().getTask(Integer.valueOf(taskId));	
-	    	}
-		}
-
+		String taskId = request.getParameter("taskId");
+    	if (taskId != null) {
+    		task = getSchedulerService().getTask(Integer.valueOf(taskId));	
+    	}
+	
 		// Date format pattern for new and existing (currently disabled, but visible)
 		if ( task.getStartTimePattern() == null ) 
 			task.setStartTimePattern(DEFAULT_DATE_PATTERN);
@@ -105,4 +96,11 @@ public class SchedulerFormController extends SimpleFormController {
 		return task;
 	  }
 	  
+	/**
+	 * Get the scheduler service from the application context.
+	 */
+	  private SchedulerService getSchedulerService() {
+		  return (SchedulerService) getApplicationContext().getBean("schedulerService");
+	  }
+
 }

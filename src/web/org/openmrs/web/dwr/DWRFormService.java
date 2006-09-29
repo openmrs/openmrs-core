@@ -22,193 +22,162 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.formentry.FormUtil;
-import org.openmrs.web.WebConstants;
 import org.openmrs.web.WebUtil;
 
-import uk.ltd.getahead.dwr.WebContextFactory;
 
 public class DWRFormService {
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	public Field getField(Integer fieldId) {
-		Context context = (Context) WebContextFactory.get().getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		Field f = new Field();
-		if (context != null) {
-			FormService fs = context.getFormService();
-			f = fs.getField(fieldId);
-		}
+		FormService fs = Context.getFormService();
+		f = fs.getField(fieldId);
 		return f;
 	}
 	
 	public FormFieldListItem getFormField(Integer formFieldId) {
-		Context context = (Context) WebContextFactory.get().getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		FormField f = new FormField();
-		if (context != null) {
-			FormService fs = context.getFormService();
-			f = fs.getFormField(formFieldId);
-		}
-		return new FormFieldListItem(f, context.getLocale());
+		FormService fs = Context.getFormService();
+		f = fs.getFormField(formFieldId);
+		return new FormFieldListItem(f, Context.getLocale());
 	}
 
 	public List<FieldListItem> findFields(String txt) {
-		Context context = (Context) WebContextFactory.get().getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		List<FieldListItem> fields = new Vector<FieldListItem>();
 		
-		if (context != null) {
-			for(Field field : context.getFormService().findFields(txt))
-				fields.add(new FieldListItem(field, context.getLocale()));
-		}
+		for(Field field : Context.getFormService().findFields(txt))
+			fields.add(new FieldListItem(field, Context.getLocale()));
 		
 		return fields;
 	}
 	
 	public List<Object> findFieldsAndConcepts(String txt) {
-		Context context = (Context) WebContextFactory.get().getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
-		Locale locale = context.getLocale();
+		Locale locale = Context.getLocale();
 		
 		// return list will contain ConceptListItems and FieldListItems.
 		List<Object> objects = new Vector<Object>();
 		
-		if (context != null) {
-
-			Concept concept = null;
-			try {
-				Integer i = Integer.valueOf(txt);
-				concept = context.getConceptService().getConcept(i);
+		Concept concept = null;
+		try {
+			Integer i = Integer.valueOf(txt);
+			concept = Context.getConceptService().getConcept(i);
+		}
+		catch (NumberFormatException e) {}
+		
+		Map<Integer, Boolean> fieldForConceptAdded = new HashMap<Integer, Boolean>();
+		
+		if (concept != null) {
+			for (Field field : Context.getFormService().findFields(concept)) {
+				FieldListItem fli = new FieldListItem(field, locale); 
+				if (!objects.contains(fli))
+					objects.add(fli);
+				fieldForConceptAdded.put(concept.getConceptId(), true);
 			}
-			catch (NumberFormatException e) {}
-			
-			Map<Integer, Boolean> fieldForConceptAdded = new HashMap<Integer, Boolean>();
-			
-			if (concept != null) {
-				for (Field field : context.getFormService().findFields(concept)) {
-					FieldListItem fli = new FieldListItem(field, locale); 
-					if (!objects.contains(fli))
-						objects.add(fli);
-					fieldForConceptAdded.put(concept.getConceptId(), true);
-				}
-				if (!fieldForConceptAdded.containsKey((concept.getConceptId()))) {
-					objects.add(new ConceptListItem(concept, locale));
-					fieldForConceptAdded.put(concept.getConceptId(), true);
-				}
-				
+			if (!fieldForConceptAdded.containsKey((concept.getConceptId()))) {
+				objects.add(new ConceptListItem(concept, locale));
+				fieldForConceptAdded.put(concept.getConceptId(), true);
 			}
-			
-			for(Field field : context.getFormService().findFields(txt)) {
-				FieldListItem fi = new FieldListItem(field, locale);
-				if (!objects.contains(fi)) {
-					objects.add(fi);
-					concept = field.getConcept();
-					if (concept != null)
-						fieldForConceptAdded.put(concept.getConceptId(), true);
-				}
-				
-			}
-			
-			List<ConceptWord> conceptWords = context.getConceptService().findConcepts(txt, locale, false);
-			for (ConceptWord word : conceptWords) {
-				concept = word.getConcept();
-				for (Field field : context.getFormService().findFields(concept)) {
-					FieldListItem fli = new FieldListItem(field, locale);
-					if (!objects.contains(fli))
-						objects.add(fli);
-					fieldForConceptAdded.put(concept.getConceptId(), true);
-				}
-				if (!fieldForConceptAdded.containsKey((concept.getConceptId()))) {
-					objects.add(new ConceptListItem(word));
-					fieldForConceptAdded.put(concept.getConceptId(), true);
-				}
-			}
-
-			Collections.sort(objects, new FieldConceptSort<Object>(locale));
 			
 		}
+		
+		for(Field field : Context.getFormService().findFields(txt)) {
+			FieldListItem fi = new FieldListItem(field, locale);
+			if (!objects.contains(fi)) {
+				objects.add(fi);
+				concept = field.getConcept();
+				if (concept != null)
+					fieldForConceptAdded.put(concept.getConceptId(), true);
+			}
+			
+		}
+		
+		List<ConceptWord> conceptWords = Context.getConceptService().findConcepts(txt, locale, false);
+		for (ConceptWord word : conceptWords) {
+			concept = word.getConcept();
+			for (Field field : Context.getFormService().findFields(concept)) {
+				FieldListItem fli = new FieldListItem(field, locale);
+				if (!objects.contains(fli))
+					objects.add(fli);
+				fieldForConceptAdded.put(concept.getConceptId(), true);
+			}
+			if (!fieldForConceptAdded.containsKey((concept.getConceptId()))) {
+				objects.add(new ConceptListItem(word));
+				fieldForConceptAdded.put(concept.getConceptId(), true);
+			}
+		}
+
+		Collections.sort(objects, new FieldConceptSort<Object>(locale));
 		
 		return objects;
 	}
 	
 	public String getJSTree(Integer formId) {
-		Context context = (Context) WebContextFactory.get().getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context != null) {
-			Form form = context.getFormService().getForm(formId);
-			TreeMap<Integer, TreeSet<FormField>> formFields = FormUtil.getFormStructure(context, form);
-			return generateJSTree(formFields, 0, context.getLocale());
-		}
-		return "";
+		Form form = Context.getFormService().getForm(formId);
+		TreeMap<Integer, TreeSet<FormField>> formFields = FormUtil.getFormStructure(form);
+		return generateJSTree(formFields, 0, Context.getLocale());
 	}
 	
 	public Integer[] saveFormField(Integer fieldId, String name, String fieldDesc, Integer fieldTypeId, Integer conceptId, String table, String attr, 
 			String defaultValue, boolean multiple, Integer formFieldId, Integer formId, Integer parent, Integer number, String part, Integer page, Integer min, Integer max, boolean required, float sortWeight) {
 		
-		Context context = (Context) WebContextFactory.get().getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		FormField ff = null;
 		Field field = null;
 		
-		if (context != null && context.isAuthenticated()) {
-			FormService fs = context.getFormService();
-			ConceptService cs = context.getConceptService();
-			
-			
-			if (formFieldId != null && formFieldId != 0)
-				ff = fs.getFormField(formFieldId);
-			else
-				ff = new FormField(formFieldId);
-			
-			ff.setForm(fs.getForm(formId));
-			if (parent == null)
-				ff.setParent(null);
-			else if (!parent.equals(ff.getFormFieldId()))
-				ff.setParent(fs.getFormField(parent));
-			ff.setFieldNumber(number);
-			ff.setFieldPart(part);
-			ff.setPageNumber(page);
-			ff.setMinOccurs(min);
-			ff.setMaxOccurs(max);
-			ff.setRequired(required);
-			ff.setSortWeight(sortWeight);
-			
-			log.debug("fieldId: " + fieldId);
-			log.debug("formFieldId: " + formFieldId);
-			log.debug("parentId: "+ parent);
-			log.debug("parent: " + ff.getParent());
-			
-			if (fieldId != null && fieldId != 0)
-				field = fs.getField(fieldId);
-			else
-				field = new Field(fieldId);
-			
-			if (field == null) {
-				log.error("Field is null. Field Id: " + fieldId);
-			}
-			
-			field.setName(name);
-			field.setDescription(fieldDesc);
-			field.setFieldType(fs.getFieldType(fieldTypeId));
-			if (conceptId != null && conceptId != 0)
-				field.setConcept(cs.getConcept(conceptId));
-			else
-				field.setConcept(null);
-			field.setTableName(table);
-			field.setAttributeName(attr);
-			field.setDefaultValue(defaultValue);
-			field.setSelectMultiple(multiple);
+		FormService fs = Context.getFormService();
+		ConceptService cs = Context.getConceptService();
 		
-			ff.setField(field);
-			
-			fs.updateFormField(ff);
-			formFieldId = ff.getFormFieldId();
-			
-			context.endTransaction();
+		
+		if (formFieldId != null && formFieldId != 0)
+			ff = fs.getFormField(formFieldId);
+		else
+			ff = new FormField(formFieldId);
+		
+		ff.setForm(fs.getForm(formId));
+		if (parent == null)
+			ff.setParent(null);
+		else if (!parent.equals(ff.getFormFieldId()))
+			ff.setParent(fs.getFormField(parent));
+		ff.setFieldNumber(number);
+		ff.setFieldPart(part);
+		ff.setPageNumber(page);
+		ff.setMinOccurs(min);
+		ff.setMaxOccurs(max);
+		ff.setRequired(required);
+		ff.setSortWeight(sortWeight);
+		
+		log.debug("fieldId: " + fieldId);
+		log.debug("formFieldId: " + formFieldId);
+		log.debug("parentId: "+ parent);
+		log.debug("parent: " + ff.getParent());
+		
+		if (fieldId != null && fieldId != 0)
+			field = fs.getField(fieldId);
+		else
+			field = new Field(fieldId);
+		
+		if (field == null) {
+			log.error("Field is null. Field Id: " + fieldId);
 		}
-		else {
-			log.error("User is unauthenticated for this");
-			Integer[] arr = {0};
-			return arr;
-		}
+		
+		field.setName(name);
+		field.setDescription(fieldDesc);
+		field.setFieldType(fs.getFieldType(fieldTypeId));
+		if (conceptId != null && conceptId != 0)
+			field.setConcept(cs.getConcept(conceptId));
+		else
+			field.setConcept(null);
+		field.setTableName(table);
+		field.setAttributeName(attr);
+		field.setDefaultValue(defaultValue);
+		field.setSelectMultiple(multiple);
+	
+		ff.setField(field);
+		
+		fs.updateFormField(ff);
+		formFieldId = ff.getFormFieldId();
+		
+		//Context.closeSession();
 		
 		Integer[] arr = {field.getFieldId(), ff.getFormFieldId()};
 		
@@ -216,10 +185,9 @@ public class DWRFormService {
 	}
 	
 	public void deleteFormField(Integer id) {
-		Context context = (Context) WebContextFactory.get().getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context != null && context.isAuthenticated()) {
-			context.getFormService().deleteFormField(context.getFormService().getFormField(id));
-			context.endTransaction();
+		if (Context.isAuthenticated()) {
+			Context.getFormService().deleteFormField(Context.getFormService().getFormField(id));
+			//Context.closeSession();
 		}
 	}
     

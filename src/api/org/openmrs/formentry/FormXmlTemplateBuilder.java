@@ -30,7 +30,6 @@ public class FormXmlTemplateBuilder {
 
 	protected final Log log = LogFactory.getLog(getClass());
 
-	Context context;
 	Form form;
 	String url;
 
@@ -46,8 +45,7 @@ public class FormXmlTemplateBuilder {
 	 *            absolute (full, including "http://" and ending with ".xsn")
 	 *            url location of InfoPath form (.xsn file)
 	 */
-	public FormXmlTemplateBuilder(Context context, Form form, String url) {
-		this.context = context;
+	public FormXmlTemplateBuilder(Form form, String url) {
 		this.form = form;
 		this.url = url;
 	}
@@ -63,7 +61,7 @@ public class FormXmlTemplateBuilder {
 		if (patient != null) {
 			velocityContext.put("form", form);
 			velocityContext.put("url", url);
-			User user = context.getAuthenticatedUser();
+			User user = Context.getAuthenticatedUser();
 			String enterer;
 			if (user != null)
 				enterer = user.getUserId() + "^" + user.getFirstName() + " "
@@ -107,7 +105,7 @@ public class FormXmlTemplateBuilder {
 				.getFormSchemaNamespace(form), includeDefaultScripts));
 
 		TreeMap<Integer, TreeSet<FormField>> formStructure = FormUtil
-				.getFormStructure(context, form);
+				.getFormStructure(form);
 
 		renderStructure(xml, formStructure, includeDefaultScripts, 0, 2);
 
@@ -165,7 +163,7 @@ public class FormXmlTemplateBuilder {
 					.equals(FormEntryConstants.FIELD_TYPE_CONCEPT)) {
 				Concept concept = field.getConcept();
 				xml.append(" openmrs_concept=\"");
-				xml.append(FormUtil.conceptToString(concept, context
+				xml.append(FormUtil.conceptToString(concept, Context
 						.getLocale()));
 				xml.append("\" openmrs_datatype=\"");
 				xml.append(concept.getDatatype().getHl7Abbreviation());
@@ -206,13 +204,13 @@ public class FormXmlTemplateBuilder {
 									FormEntryConstants.HL7_CODED_WITH_EXCEPTIONS))
 							&& field.getSelectMultiple()) {
 						for (ConceptAnswer answer : concept
-								.getSortedAnswers(context.getLocale())) {
+								.getSortedAnswers(Context.getLocale())) {
 							xml.append(indentation);
 							xml.append(indentation);
 							xml.append("<");
 							String answerConceptName = answer
 									.getAnswerConcept().getName(
-											context.getLocale()).getName();
+											Context.getLocale()).getName();
 							Drug answerDrug = answer.getAnswerDrug();
 							if (answerDrug == null) {
 								String answerTag = FormUtil.getXmlToken(
@@ -220,7 +218,7 @@ public class FormXmlTemplateBuilder {
 								xml.append(answerTag);
 								xml.append(" openmrs_concept=\"");
 								xml.append(FormUtil.conceptToString(answer
-										.getAnswerConcept(), context
+										.getAnswerConcept(), Context
 										.getLocale()));
 								xml.append("\">false</");
 								xml.append(answerTag);
@@ -232,7 +230,7 @@ public class FormXmlTemplateBuilder {
 								xml.append(answerTag);
 								xml.append(" openmrs_concept=\"");
 								xml.append(FormUtil.conceptToString(answer
-										.getAnswerConcept(), context
+										.getAnswerConcept(), Context
 										.getLocale()));
 								xml.append("^");
 								xml.append(FormUtil.drugToString(answerDrug));

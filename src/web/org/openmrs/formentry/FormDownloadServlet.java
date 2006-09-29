@@ -40,8 +40,8 @@ public class FormDownloadServlet extends HttpServlet {
 
 	private Log log = LogFactory.getLog(this.getClass());
 
-	protected void doFormEntryGet(HttpServletRequest request, HttpServletResponse response,
-	    Context context, HttpSession httpSession) throws ServletException, IOException {
+	protected void doFormEntryGet(HttpServletRequest request, HttpServletResponse response, 
+			HttpSession httpSession) throws ServletException, IOException {
 
 		Integer formId = null;
 		Integer patientId = null;
@@ -57,8 +57,8 @@ public class FormDownloadServlet extends HttpServlet {
 			return;
 		}
 
-		Patient patient = context.getFormEntryService().getPatient(patientId);
-		Form form = context.getFormEntryService().getForm(formId);
+		Patient patient = Context.getFormEntryService().getPatient(patientId);
+		Form form = Context.getFormEntryService().getForm(formId);
 		String url = FormEntryUtil.getFormAbsoluteUrl(form);
 
 		String title = form.getName() + "(" + FormEntryUtil.getFormUriWithoutExtension(form) + ")";
@@ -75,7 +75,7 @@ public class FormDownloadServlet extends HttpServlet {
 		VelocityContext velocityContext = new VelocityContext();
 		velocityContext.put("form", form);
 		velocityContext.put("url", url);
-		User user = context.getAuthenticatedUser();
+		User user = Context.getAuthenticatedUser();
 		String enterer;
 		if (user != null)
 			enterer = user.getUserId() + "^" + user.getFirstName() + " " + user.getLastName();
@@ -93,7 +93,7 @@ public class FormDownloadServlet extends HttpServlet {
 		String template = form.getTemplate();
 		// just in case template has not been assigned, generate it on the fly
 		if (template == null)
-			template = new FormXmlTemplateBuilder(context, form, url).getXmlTemplate(true);
+			template = new FormXmlTemplateBuilder(form, url).getXmlTemplate(true);
 
 		String xmldoc = null;
 		try {
@@ -119,8 +119,7 @@ public class FormDownloadServlet extends HttpServlet {
 		String target = request.getParameter("target");
 		HttpSession httpSession = request.getSession();
 
-		Context context = getContext(httpSession);
-		if (context == null) {
+		if (Context.isAuthenticated() == false) {
 			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
 			response.sendRedirect(request.getContextPath() + "/logout");
 			return;
@@ -138,18 +137,18 @@ public class FormDownloadServlet extends HttpServlet {
 
 			// Download from /openmrs/formentry/patientSummary.form (most
 			// likely)
-			doFormEntryGet(request, response, context, httpSession);
+			doFormEntryGet(request, response, httpSession);
 
 		}
 		else if ("rebuild".equals(target)) {
 
 			// Download the XSN and Upload it again
-			Form form = context.getFormEntryService().getForm(formId);
-			InputStream formStream = FormEntryUtil.getCurrentXSN(context, form);
+			Form form = Context.getFormEntryService().getForm(formId);
+			InputStream formStream = FormEntryUtil.getCurrentXSN(form);
 			if (formStream == null)
 				response.sendError(500);
 			
-			PublishInfoPath.publishXSN(formStream, context);
+			PublishInfoPath.publishXSN(formStream);
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.rebuildXSN.success");
 			response.sendRedirect(request.getHeader("referer"));
 
@@ -159,17 +158,17 @@ public class FormDownloadServlet extends HttpServlet {
 			response.setHeader("Content-Type", "application/octect-stream; charset=utf-8");
 
 			// Load form object and default form url
-			Form form = context.getFormEntryService().getForm(formId);
+			Form form = Context.getFormEntryService().getForm(formId);
 			String url = FormEntryUtil.getFormAbsoluteUrl(form);
 
 			// Payload to return if desired form is string conversion capable
 			String payload = null;
 			if ("schema".equalsIgnoreCase(target)) {
-				payload = new FormSchemaBuilder(context, form).getSchema();
+				payload = new FormSchemaBuilder(form).getSchema();
 				setFilename(response, FormEntryConstants.FORMENTRY_DEFAULT_SCHEMA_NAME);
 			}
 			else if ("template".equalsIgnoreCase(target)) {
-				payload = new FormXmlTemplateBuilder(context, form, url).getXmlTemplate(false);
+				payload = new FormXmlTemplateBuilder(form, url).getXmlTemplate(false);
 				setFilename(response, FormEntryConstants.FORMENTRY_DEFAULT_TEMPLATE_NAME);
 			}
 			else if ("xsn".equalsIgnoreCase(target)) {
@@ -187,7 +186,7 @@ public class FormDownloadServlet extends HttpServlet {
 
 				setFilename(response, filename);
 
-				FileInputStream formStream = FormEntryUtil.getCurrentXSN(context, form);
+				FileInputStream formStream = FormEntryUtil.getCurrentXSN(form);
 
 				if (formStream != null)
 					OpenmrsUtil.copyFile(formStream, response.getOutputStream());
@@ -227,10 +226,6 @@ public class FormDownloadServlet extends HttpServlet {
 
 	private void setFilename(HttpServletResponse response, String filename) {
 		response.setHeader("Content-Disposition", "attachment; filename=" + filename);
-	}
-
-	private Context getContext(HttpSession httpSession) {
-		return (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 	}
 
 }

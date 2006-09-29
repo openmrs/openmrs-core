@@ -57,6 +57,7 @@ public class DataTable {
 	
 	public void sortByColumn(final String colName) {
 		Collections.sort(rows, new Comparator<TableRow>() {
+				@SuppressWarnings("unchecked")
 				public int compare(TableRow left, TableRow right) {
 					Comparable l = (Comparable) left.get(colName);
 					Comparable r = (Comparable) right.get(colName);

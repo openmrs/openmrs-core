@@ -9,7 +9,7 @@ import org.apache.commons.logging.LogFactory;
 
 public class Sort {
 	
-	public static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 1333333L;
 	private final Log log = LogFactory.getLog(getClass());
 	
 	/**

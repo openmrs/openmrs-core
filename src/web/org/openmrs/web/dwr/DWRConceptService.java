@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -21,11 +19,8 @@ import org.openmrs.User;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.web.WebConstants;
-
-import uk.ltd.getahead.dwr.WebContextFactory;
+import org.openmrs.util.OpenmrsUtil;
 
 public class DWRConceptService {
 
@@ -39,99 +34,87 @@ public class DWRConceptService {
 		// Object type gives ability to return error strings
 		Vector<Object> objectList = new Vector<Object>();
 
-		Context context = (Context) WebContextFactory.get().getSession()
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-
-		HttpServletRequest request = WebContextFactory.get()
-				.getHttpServletRequest();
-
 		// TODO add localization for messages
 
-		if (context == null) {
-			objectList.add("Your session has expired.");
-			objectList.add("Please <a href='" + request.getContextPath()
-					+ "/logout'>log in</a> again.");
-		} else {
-			Integer userId = -1;
-			User u = context.getAuthenticatedUser();
-			if (u != null)
-				userId = u.getUserId();
+		Integer userId = -1;
+		User u = Context.getAuthenticatedUser();
+		if (u != null)
+			userId = u.getUserId();
 
-			log.info(userId + "|" + phrase + "|" + includeClassNames.toString());
+		log.info(userId + "|" + phrase + "|" + includeClassNames.toString());
 
-			Locale locale = context.getLocale();
-			if (includeClassNames == null)
-				includeClassNames = new Vector<String>();
-			if (excludeClassNames == null)
-				excludeClassNames = new Vector<String>();
-			try {
-				ConceptService cs = context.getConceptService();
-				List<ConceptWord> words = new Vector<ConceptWord>();
+		Locale locale = Context.getLocale();
+		if (includeClassNames == null)
+			includeClassNames = new Vector<String>();
+		if (excludeClassNames == null)
+			excludeClassNames = new Vector<String>();
+		try {
+			ConceptService cs = Context.getConceptService();
+			List<ConceptWord> words = new Vector<ConceptWord>();
 
-				if (phrase.matches("\\d+")) {
-					// user searched on a number. Insert concept with
-					// corresponding conceptId
-					Concept c = cs.getConcept(Integer.valueOf(phrase));
-					if (c != null) {
-						ConceptWord word = new ConceptWord(phrase, c, locale
-								.getLanguage(), "Concept Id #" + phrase);
-						words.add(word);
-					}
+			if (phrase.matches("\\d+")) {
+				// user searched on a number. Insert concept with
+				// corresponding conceptId
+				Concept c = cs.getConcept(Integer.valueOf(phrase));
+				if (c != null) {
+					ConceptWord word = new ConceptWord(phrase, c, locale
+							.getLanguage(), "Concept Id #" + phrase);
+					words.add(word);
 				}
-
-				if (phrase == null || phrase.equals("")) {
-					// TODO get all concepts for testing purposes?
-				} else {
-					// turn classnames into class objects
-					List<ConceptClass> includeClasses = new Vector<ConceptClass>();
-					if (includeClassNames.size() > 0) {
-						for (String name : includeClassNames)
-							includeClasses.add(cs.getConceptClassByName(name));
-					}
-
-					// turn classnames into class objects
-					List<ConceptClass> excludeClasses = new Vector<ConceptClass>();
-					if (excludeClassNames.size() > 0) {
-						for (String name : excludeClassNames)
-							excludeClasses.add(cs.getConceptClassByName(name));
-					}
-
-					// perform the search
-					words.addAll(cs.findConcepts(phrase, locale,
-							includeRetired, includeClasses, excludeClasses));
-				}
-
-				if (words.size() == 0) {
-					objectList
-							.add("No matches found for <b>" + phrase + "</b>");
-				} else {
-					objectList = new Vector<Object>(words.size());
-					int maxCount = 500;
-					int curCount = 0;
-
-					// turn words into concept list items
-					// if user wants drug concepts included, append those
-					for (ConceptWord word : words) {
-						if (++curCount > maxCount)
-							break;
-						objectList.add(new ConceptListItem(word));
-
-						// add drugs for concept if desired
-						if (includeDrugConcepts) {
-							Integer classId = word.getConcept().getConceptClass().getConceptClassId();
-							if (classId.equals(OpenmrsConstants.CONCEPT_CLASS_DRUG))
-								for (Drug d : cs.getDrugs(word.getConcept()))
-									objectList.add(new ConceptDrugListItem(d,
-											locale));
-						}
-					}
-				}
-			} catch (Exception e) {
-				log.error("Error while finding concepts + "
-						+ e.getMessage(), e);
-				objectList.add("Error while attempting to find concepts - "
-						+ e.getMessage());
 			}
+
+			if (phrase == null || phrase.equals("")) {
+				// TODO get all concepts for testing purposes?
+			} else {
+				// turn classnames into class objects
+				List<ConceptClass> includeClasses = new Vector<ConceptClass>();
+				if (includeClassNames.size() > 0) {
+					for (String name : includeClassNames)
+						includeClasses.add(cs.getConceptClassByName(name));
+				}
+
+				// turn classnames into class objects
+				List<ConceptClass> excludeClasses = new Vector<ConceptClass>();
+				if (excludeClassNames.size() > 0) {
+					for (String name : excludeClassNames)
+						excludeClasses.add(cs.getConceptClassByName(name));
+				}
+
+				// perform the search
+				words.addAll(cs.findConcepts(phrase, locale,
+						includeRetired, includeClasses, excludeClasses));
+			}
+
+			if (words.size() == 0) {
+				objectList
+						.add("No matches found for <b>" + phrase + "</b>");
+			} else {
+				objectList = new Vector<Object>(words.size());
+				int maxCount = 500;
+				int curCount = 0;
+
+				// turn words into concept list items
+				// if user wants drug concepts included, append those
+				for (ConceptWord word : words) {
+					if (++curCount > maxCount)
+						break;
+					objectList.add(new ConceptListItem(word));
+
+					// add drugs for concept if desired
+					if (includeDrugConcepts) {
+						Integer classId = word.getConcept().getConceptClass().getConceptClassId();
+						if (classId.equals(OpenmrsConstants.CONCEPT_CLASS_DRUG))
+							for (Drug d : cs.getDrugs(word.getConcept()))
+								objectList.add(new ConceptDrugListItem(d,
+										locale));
+					}
+				}
+			}
+		} catch (Exception e) {
+			log.error("Error while finding concepts + "
+					+ e.getMessage(), e);
+			objectList.add("Error while attempting to find concepts - "
+					+ e.getMessage());
 		}
 
 		if (objectList.size() == 0)
@@ -141,20 +124,16 @@ public class DWRConceptService {
 	}
 
 	public ConceptListItem getConcept(Integer conceptId) {
-		Context context = (Context) WebContextFactory.get().getSession()
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		Locale locale = context.getLocale();
-		ConceptService cs = context.getConceptService();
+		Locale locale = Context.getLocale();
+		ConceptService cs = Context.getConceptService();
 		Concept c = cs.getConcept(conceptId);
 
 		return c == null ? null : new ConceptListItem(c, locale);
 	}
 
 	public List<ConceptListItem> findProposedConcepts(String text) {
-		Context context = (Context) WebContextFactory.get().getSession()
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		Locale locale = context.getLocale();
-		ConceptService cs = context.getConceptService();
+		Locale locale = Context.getLocale();
+		ConceptService cs = Context.getConceptService();
 
 		List<Concept> concepts = cs.findProposedConcepts(text);
 		List<ConceptListItem> cli = new Vector<ConceptListItem>();
@@ -167,11 +146,8 @@ public class DWRConceptService {
 	public List<Object> findConceptAnswers(String text,
 			Integer conceptId, boolean includeVoided, boolean includeDrugConcepts) {
 
-		Context context = (Context) WebContextFactory.get().getSession()
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-
-		Locale locale = context.getLocale();
-		ConceptService cs = context.getConceptService();
+		Locale locale = Context.getLocale();
+		ConceptService cs = Context.getConceptService();
 
 		Concept concept = cs.getConcept(conceptId);
 
@@ -202,13 +178,9 @@ public class DWRConceptService {
 	}
 
 	public List<Object> getConceptSet(Integer conceptId) {
-
-		Context context = (Context) WebContextFactory.get().getSession()
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-
-		Locale locale = context.getLocale();
-		ConceptService cs = context.getConceptService();
-		FormService fs = context.getFormService();
+		Locale locale = Context.getLocale();
+		ConceptService cs = Context.getConceptService();
+		FormService fs = Context.getFormService();
 
 		Concept concept = cs.getConcept(conceptId);
 
@@ -236,11 +208,8 @@ public class DWRConceptService {
 	}
 
 	public List<ConceptListItem> getQuestionsForAnswer(Integer conceptId) {
-		Context context = (Context) WebContextFactory.get().getSession()
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-
-		Locale locale = context.getLocale();
-		ConceptService cs = context.getConceptService();
+		Locale locale = Context.getLocale();
+		ConceptService cs = Context.getConceptService();
 
 		Concept concept = cs.getConcept(conceptId);
 
@@ -255,20 +224,16 @@ public class DWRConceptService {
 	}
 
 	public ConceptDrugListItem getDrug(Integer drugId) {
-		Context context = (Context) WebContextFactory.get().getSession()
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		Locale locale = context.getLocale();
-		ConceptService cs = context.getConceptService();
+		Locale locale = Context.getLocale();
+		ConceptService cs = Context.getConceptService();
 		Drug d = cs.getDrug(drugId);
 
 		return d == null ? null : new ConceptDrugListItem(d, locale);
 	}
 
 	public List getDrugs(Integer conceptId, boolean showConcept) {
-		Context context = (Context) WebContextFactory.get().getSession()
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		Locale locale = context.getLocale();
-		ConceptService cs = context.getConceptService();
+		Locale locale = Context.getLocale();
+		ConceptService cs = Context.getConceptService();
 		Concept concept = cs.getConcept(conceptId);
 
 		List<Object> items = new Vector<Object>();
@@ -300,10 +265,8 @@ public class DWRConceptService {
 	}
 
 	public List findDrugs(String phrase, boolean includeRetired) {
-		Context context = (Context) WebContextFactory.get().getSession()
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		Locale locale = context.getLocale();
-		ConceptService cs = context.getConceptService();
+		Locale locale = Context.getLocale();
+		ConceptService cs = Context.getConceptService();
 
 		List<Object> items = new Vector<Object>();
 
@@ -319,20 +282,14 @@ public class DWRConceptService {
 	}
 
 	public boolean isValidNumericValue(Float value, Integer conceptId) {
-		Context context = (Context) WebContextFactory.get().getSession()
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-
-		ConceptNumeric conceptNumeric = context.getConceptService()
+		ConceptNumeric conceptNumeric = Context.getConceptService()
 				.getConceptNumeric(conceptId);
 
 		return OpenmrsUtil.isValidNumericValue(value, conceptNumeric);
 	}
 
 	public String getConceptNumericUnits(Integer conceptId) {
-		Context context = (Context) WebContextFactory.get().getSession()
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-
-		ConceptNumeric conceptNumeric = context.getConceptService()
+		ConceptNumeric conceptNumeric = Context.getConceptService()
 				.getConceptNumeric(conceptId);
 
 		return conceptNumeric.getUnits();

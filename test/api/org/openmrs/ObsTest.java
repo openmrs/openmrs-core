@@ -18,20 +18,20 @@ public class ObsTest extends TestCase {
 	public void testClass() throws Exception {
 		
 		HibernateUtil.startup();
-		Context context = ContextFactory.getContext();
-		context.authenticate("vibha", "chicachica");
-		Locale locale = context.getLocale();
+		
+		Context.authenticate("vibha", "chicachica");
+		Locale locale = Context.getLocale();
 		
 		Patient patient = new Patient();
 		Set <Obs> MyObs ;
 		patient.setPatientId(1);
 		
 		List <ConceptWord>  conceptsWords;
-		conceptsWords = context.getConceptService().findConcepts("BLOOD LEAD LEVEL", locale, false);
+		conceptsWords = Context.getConceptService().findConcepts("BLOOD LEAD LEVEL", locale, false);
 		if (!conceptsWords.isEmpty()) {
 			    ConceptWord conceptWord = conceptsWords.get(0);
 			    Concept c = conceptWord.getConcept(); 
-				MyObs = context.getObsService().getObservations(patient, c);
+				MyObs = Context.getObsService().getObservations(patient, c);
 				Iterator iter = MyObs.iterator();
 				while(iter.hasNext())
 			{

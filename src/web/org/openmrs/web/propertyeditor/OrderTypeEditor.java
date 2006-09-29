@@ -13,27 +13,21 @@ public class OrderTypeEditor extends PropertyEditorSupport {
 
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	Context context;
-	
-	public OrderTypeEditor(Context c) {
-		this.context = c;
-	}
+	public OrderTypeEditor() {	}
 	
 	public void setAsText(String text) throws IllegalArgumentException {
-		if (context != null) {
-			OrderService os = context.getOrderService(); 
-			if (StringUtils.hasText(text)) {
-				try {
-					setValue(os.getOrderType(Integer.valueOf(text)));
-				}
-				catch (Exception ex) {
-					log.error(ex);
-					throw new IllegalArgumentException("Order type not found: " + ex.getMessage());
-				}
+		OrderService os = Context.getOrderService(); 
+		if (StringUtils.hasText(text)) {
+			try {
+				setValue(os.getOrderType(Integer.valueOf(text)));
 			}
-			else {
-				setValue(null);
+			catch (Exception ex) {
+				log.error("Error setting text: " + text, ex);
+				throw new IllegalArgumentException("Order type not found: " + ex.getMessage());
 			}
+		}
+		else {
+			setValue(null);
 		}
 	}
 

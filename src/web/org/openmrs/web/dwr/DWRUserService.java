@@ -13,7 +13,6 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.formentry.FormEntryService;
-import org.openmrs.web.WebConstants;
 
 import uk.ltd.getahead.dwr.WebContextFactory;
 
@@ -26,47 +25,39 @@ public class DWRUserService {
 		
 		Vector userList = new Vector();
 
-		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
-		Context context = (Context) request.getSession()
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-
-		if (context == null) {
-			userList.add("Your session has expired.");
-			userList.add("Please <a href='" + request.getContextPath() + "/logout'>log in</a> again.");
-		}
-		else {
-			try {
-				String userId = "Anonymous";
-				if (context.isAuthenticated()) {
-					User us = context.getAuthenticatedUser();
-					userId = us.getUserId().toString();
-				}
-				
-				log.info(userId + "|" + searchValue + "|" + roles.toString());
-				
-				FormEntryService fs = context.getFormEntryService();
-				Set<User> users = new HashSet<User>();
-				
-				if (roles == null) 
-					roles = new Vector<String>();
-				
-				users.addAll(fs.findUsers(searchValue, roles, includeVoided));
-				
-				userList = new Vector(users.size());
-				
-				for (User u : users) {
-					userList.add(new UserListItem(u));
-				}
-			} catch (Exception e) {
-				log.error(e);
-				userList.add("Error while attempting to find users - " + e.getMessage());
+		try {
+			String userId = "Anonymous";
+			if (Context.isAuthenticated()) {
+				User us = Context.getAuthenticatedUser();
+				userId = us.getUserId().toString();
 			}
 			
-			if (userList.size() == 0) {
-				userList.add("No users found. Please search again.");
+			log.info(userId + "|" + searchValue + "|" + roles.toString());
+			
+			FormEntryService fs = Context.getFormEntryService();
+			Set<User> users = new HashSet<User>();
+			
+			if (roles == null) 
+				roles = new Vector<String>();
+			
+			users.addAll(fs.findUsers(searchValue, roles, includeVoided));
+			
+			userList = new Vector(users.size());
+			
+			for (User u : users) {
+				userList.add(new UserListItem(u));
 			}
+		} catch (Exception e) {
+			log.error(e);
+			userList.add("Error while attempting to find users - " + e.getMessage());
 		}
+		
+		if (userList.size() == 0) {
+			userList.add("No users found. Please search again.");
+		}
+		
 		return userList;
+
 	}
 
 	
@@ -77,16 +68,13 @@ public class DWRUserService {
 
 		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
 		
-		Context context = (Context) request.getSession(false)
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-
-		if (context == null) {
+		if (!Context.isAuthenticated()) {
 			userList.add("Your session has expired.");
 			userList.add("Please <a href='" + request.getContextPath() + "/logout'>log in</a> again.");
 		}
 		else {
 			try {
-				FormEntryService fs = context.getFormEntryService();
+				FormEntryService fs = Context.getFormEntryService();
 				Set<User> users = new HashSet<User>();
 				
 				if (roles == null) 
@@ -109,16 +97,11 @@ public class DWRUserService {
 	}
 	
 	public UserListItem getUser(Integer userId) {
-		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
-		
-		Context context = (Context) request.getSession(false)
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-
 		UserListItem user = new UserListItem();
 		
-		if (context != null) {
+		if (Context.isAuthenticated()) {
 			try {
-				user = new UserListItem(context.getUserService().getUser(userId));
+				user = new UserListItem(Context.getUserService().getUser(userId));
 			}
 			catch (Exception e) {
 				log.error("Error getting user", e);

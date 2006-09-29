@@ -48,12 +48,11 @@ public class DynamicFormEntryController extends SimpleFormController {
     	if (formId == null || formId.length() == 0) {
     		throw new IllegalArgumentException("formId is a required parameter");
     	}
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-    	Map ret = new HashMap<String, Object>();
+		
+    	Map<String, Object> ret = new HashMap<String, Object>();
     	ret.put("formId", Integer.valueOf(formId));
-		if (context != null) {
-			Form form = context.getFormService().getForm(Integer.valueOf(formId));
+		if (!Context.isAuthenticated()) {
+			Form form = Context.getFormService().getForm(Integer.valueOf(formId));
 			if (form == null) {
 				throw new IllegalArgumentException("Can't find a form with formId " + formId);
 			}
@@ -105,9 +104,9 @@ public class DynamicFormEntryController extends SimpleFormController {
     	}
     	Form form = null;
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		if (context != null) {
-			form = context.getFormService().getForm(formId);
+			form = Context.getFormService().getForm(formId);
 		}
 		return form;
     }
@@ -120,11 +119,11 @@ public class DynamicFormEntryController extends SimpleFormController {
     	log.debug("command is " + command);
     	// String view = getFormView();
     	
-		Context context = (Context) request.getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context == null) {
+		
+		if (!Context.isAuthenticated()) {
 			return new ModelAndView(new RedirectView("login.htm"));
 		}
-		FormService fs = context.getFormService();
+		FormService fs = Context.getFormService();
     	
 		for (Enumeration e = request.getParameterNames(); e.hasMoreElements(); ) {
 			String paramName = (String) e.nextElement();
@@ -164,7 +163,7 @@ public class DynamicFormEntryController extends SimpleFormController {
     /*
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		if (context == null) {
 			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
 			response.sendRedirect(request.getContextPath() + "/logout");

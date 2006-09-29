@@ -23,10 +23,12 @@ import org.openmrs.ConceptName;
 import org.openmrs.Obs;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.UserContext;
 import org.openmrs.util.OpenmrsUtil;
-import org.openmrs.web.WebConstants;
 
 public class ActiveListWidget extends TagSupport {
+
+	private static final long serialVersionUID = 14352322222L;
 
 	private final Log log = LogFactory.getLog(getClass());
 	
@@ -44,13 +46,14 @@ public class ActiveListWidget extends TagSupport {
 	public ActiveListWidget() { }
 
 	public int doStartTag() {
-		Context context = (Context) pageContext.getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		Locale loc = context.getLocale();
+		UserContext userContext = Context.getUserContext();
+		
+		Locale loc = userContext.getLocale();
 		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, loc);
 
-		Set<Concept> addConceptList = OpenmrsUtil.conceptSetHelper(context, addConcept);
-		Set<Concept> removeConceptList = OpenmrsUtil.conceptSetHelper(context, removeConcept);
-		List<Concept> otherConceptList = OpenmrsUtil.conceptListHelper(context, otherGroupedConcepts);
+		Set<Concept> addConceptList = OpenmrsUtil.conceptSetHelper(addConcept);
+		Set<Concept> removeConceptList = OpenmrsUtil.conceptSetHelper(removeConcept);
+		List<Concept> otherConceptList = OpenmrsUtil.conceptListHelper(otherGroupedConcepts);
 		
 		boolean doObsGroups = otherConceptList.size() > 0;
 
@@ -86,7 +89,7 @@ public class ActiveListWidget extends TagSupport {
 		
 		Map<Obs, Collection<Obs>> obsGroups = new HashMap<Obs, Collection<Obs>>();
 		if (doObsGroups) {
-			ObsService os = context.getObsService();
+			ObsService os = Context.getObsService();
 			for (Obs o : activeList.values())
 				if (o.getObsGroupId() != null)
 					obsGroups.put(o, os.findObsByGroupId(o.getObsGroupId()));

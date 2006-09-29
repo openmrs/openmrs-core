@@ -140,7 +140,7 @@ public class ReportObjectFactory {
 	}
 	
 	public static AbstractReportObject getInstance(String reportObjectName, Map<String, Object> initialValues, Context context) {
-		ReportObjectFactory rof = context.getReportService().getReportObjectFactory();
+		ReportObjectFactory rof = ReportObjectFactory.singleton;
 		String className = rof.getReportObjectClassByName(reportObjectName);
 		AbstractReportObject reportObj = null;
 		

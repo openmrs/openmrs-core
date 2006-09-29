@@ -25,12 +25,12 @@ public class FormDownloadTest extends TestCase {
 		// TODO Generify
 		HibernateUtil.startup(props);
 
-		Context context = ContextFactory.getContext();
 		
-		context.authenticate("ben", "");
+		
+		Context.authenticate("ben", "");
 
 		try {
-			AlertService as = context.getAlertService();
+			AlertService as = Context.getAlertService();
 
 			System.out.println(as.getAlerts());
 		}  finally {

@@ -36,7 +36,7 @@ public class HelloWorldTask implements Schedulable {
 	 */
 	public void initialize(TaskConfig config) { 
 		this.taskConfig = config;
-	}	
+	}	 
 	
 
 	/**

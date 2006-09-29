@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -14,7 +15,9 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.context.ContextFactory;
+import org.openmrs.api.context.UserContext;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 public class OpenmrsFilter implements Filter {
 
@@ -30,7 +33,7 @@ public class OpenmrsFilter implements Filter {
 	
 		HttpServletRequest httpRequest = (HttpServletRequest)request;
 		HttpSession httpSession = httpRequest.getSession();
-		Context context = null;		
+		UserContext userContext = null;
 		boolean initialRequest = false;
 		
 		Object val = httpRequest.getAttribute( INIT_REQ_ATTR_NAME );
@@ -41,33 +44,30 @@ public class OpenmrsFilter implements Filter {
         //set/forward the request init attribute
         httpRequest.setAttribute( INIT_REQ_ATTR_NAME, httpRequest );
         
-        context = (Context)httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+        //context = (Context)httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+        //context = (Context)httpRequest.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
         
         if (initialRequest == true) {
-        	if (context == null) {
-	        	log.debug("setting context in httpSession");
-	        	//set the context if it needs one
-	       		context = ContextFactory.getContext();
-	       		httpSession.setAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR, context);
-        	}
-        	
+        	// User context is created if it doesn't already exist and added to the session
+			userContext = (UserContext) httpSession.getAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR);
+			if (userContext == null) { 
+				userContext = new UserContext();
+				httpSession.setAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR, userContext);
+			}
+        	log.info("Set user context " + userContext + " as attribute on session");
         }
+        // Add the user context to the current thread 
+		Context.setUserContext(userContext);
 
 		log.debug("before doFilter");
-		try {
-			chain.doFilter(request, response);
-		}
-		catch (Exception e) {
-			log.error("Error while performing filter chain", e);
-			throw new ServletException(e);
-		}
-		finally {
-			//only close the transaction if this was the initial request
-			if (initialRequest == true) {
-				log.debug("ending transaction - file: " + httpRequest.getRequestURI());
-				context.endTransaction();
-			}
-		}
+		
+		chain.doFilter(request, response);
+		
+		httpSession.setAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR, userContext);
+
+		// Clears the context so there's no user information left on the thread
+		Context.clearUserContext();
+	
 		log.debug("after doFilter");
 		
 	}
@@ -75,5 +75,16 @@ public class OpenmrsFilter implements Filter {
 	public void init(FilterConfig filterConfig) throws ServletException {
 		log.debug("Initializating filter");
 	}
+	
+	/**
+	 * Get the application context.
+	 * 
+	 * @param httpRequest
+	 * @return
+	 */
+	public ApplicationContext getApplicationContext(HttpServletRequest httpRequest) { 
+		ServletContext servletContext = httpRequest.getSession().getServletContext();
+		return WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
+	}	
 
 }

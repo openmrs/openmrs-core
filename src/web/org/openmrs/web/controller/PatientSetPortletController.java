@@ -12,7 +12,7 @@ import org.openmrs.reporting.PatientSet;
 public class PatientSetPortletController extends PortletController {
 
 	@SuppressWarnings("unchecked")
-	protected void populateModel(HttpServletRequest request, Context context, Map<String, Object> model) {
+	protected void populateModel(HttpServletRequest request, Map<String, Object> model) {
 		String myAnalysis = (String) model.get("myAnalysis");
 		String attrToUse = (String) model.get("fromAttribute");
 		log.debug("model.fromAttribute = " + model.get("fromAttribute"));
@@ -21,7 +21,7 @@ public class PatientSetPortletController extends PortletController {
 			PatientSet patientSet = null;
 			
 			if (myAnalysis != null) {
-				patientSet = context.getPatientSetService().getMyPatientAnalysis().runFilters(context, null);
+				patientSet = Context.getPatientSetService().getMyPatientAnalysis().runFilters(null);
 			} else if (attrToUse != null) {
 				Object o = httpSession.getAttribute(attrToUse);
 				if (model.get("mutable") != null) {
@@ -37,8 +37,8 @@ public class PatientSetPortletController extends PortletController {
 				
 				if (o instanceof PatientSet) {
 					patientSet = (PatientSet) o;
-				} else if (o instanceof PatientAnalysis && context != null) {
-					patientSet = ((PatientAnalysis) o).runFilters(context, null);
+				} else if (o instanceof PatientAnalysis) {
+					patientSet = ((PatientAnalysis) o).runFilters(null);
 				} else if (o == null) {
 					log.debug("attribute " + attrToUse + " is null");
 				} else {
@@ -46,7 +46,7 @@ public class PatientSetPortletController extends PortletController {
 				}
 			} else {
 				// use PatientSetService.
-				model.put("patientSetSize", context.getPatientSetService().getMyPatientSet().size());
+				model.put("patientSetSize", Context.getPatientSetService().getMyPatientSet().size());
 			}
 			model.put("patientSet", patientSet);
 		}

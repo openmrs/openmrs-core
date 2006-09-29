@@ -12,67 +12,62 @@ import java.util.TreeMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.db.DAOContext;
 import org.openmrs.scheduler.Schedulable;
 import org.openmrs.scheduler.SchedulableFactory;
 import org.openmrs.scheduler.SchedulerConstants;
 import org.openmrs.scheduler.SchedulerException;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.TaskConfig;
-import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.scheduler.db.SchedulerDAO;
 
 /**
  *  Simple scheduler service that uses JDK timer to trigger and execute scheduled tasks.
  */
 public class TimerSchedulerService implements SchedulerService { 
 	
-	/**
-	 *  Logger
-	 */ 
 	private static Log log = LogFactory.getLog( TimerSchedulerService.class );
-
-	/**
-	 * Reference to the context.
-	 */
-	private Context context;
-	
-	/**
-	 *  Global data access object context
-	 *  
-	 *  TODO I think this should actually be the instance of the specific DAO that is needed by the service (SchedulerDAO).
-	 */
-	private DAOContext daoContext;
 
 	/**
 	 * Scheduled Task Map
 	 */
 	private Map<Integer, Timer> scheduledTaskMap;
-  
+
+	/**
+	 *  Global data access object context
+	 */
+	private SchedulerDAO schedulerDAO;
+	
 	/**
 	 *  Default public constructor
 	 */
-	public TimerSchedulerService(Context context) {
-		this.context = context;
+	public TimerSchedulerService() {
+		//this.context = context;  // Spring should be setting the context
 		this.scheduledTaskMap = new HashMap<Integer, Timer>();
 	}
 	
 	/**
-	 * Sets the DAO context for this service.
+	 * Gets the scheduler data access object.
+	 * @return
 	 */
-	public void setDaoContext(DAOContext daoContext) {
-		log.info("Setting DAO Context to " + daoContext);
-		this.daoContext = daoContext;
+	public SchedulerDAO getSchedulerDAO() { 
+		return this.schedulerDAO;
 	}
-		
+	
+	/**
+	 * Sets the scheduler data access object.
+	 */
+	public void setSchedulerDAO(SchedulerDAO dao) {
+		this.schedulerDAO = dao;
+	}
+	
 	/**
 	 * Start up hook for the scheduler and all of its scheduled tasks.
 	 */
 	public void startup() {
 		log.debug("Starting scheduler service ...");
 		// TODO go through all tasks and start them if their startOnStartup flag is true
-		Collection <TaskConfig> tasks = daoContext.getSchedulerDAO().getTasks();
+		Collection <TaskConfig> tasks = getSchedulerDAO().getTasks();
 		startTasks( tasks );
 	}
 	
@@ -85,7 +80,6 @@ public class TimerSchedulerService implements SchedulerService {
 		stop();
 	
 		// Clean up 
-		daoContext = null;
 		scheduledTaskMap = null;
 	}
 	
@@ -283,7 +277,7 @@ public class TimerSchedulerService implements SchedulerService {
 	 * @return	a collection of tasks
 	 */
 	public Collection<TaskConfig> getTasks() { 
-		return daoContext.getSchedulerDAO().getTasks();
+		return getSchedulerDAO().getTasks();
 	}
 
 	/**
@@ -293,7 +287,7 @@ public class TimerSchedulerService implements SchedulerService {
 	 */
 	public TaskConfig getTask(Integer id) { 
 		log.debug("get task " + id);
-		return daoContext.getSchedulerDAO().getTask(id);
+		return getSchedulerDAO().getTask(id);
 	}
 
 	/**
@@ -303,7 +297,7 @@ public class TimerSchedulerService implements SchedulerService {
 	 */
 	public void createTask(TaskConfig task) { 
 		setCreatedMetadata(task);
-		daoContext.getSchedulerDAO().createTask( task );
+		getSchedulerDAO().createTask( task );
 	}
 	
 	/**
@@ -313,7 +307,7 @@ public class TimerSchedulerService implements SchedulerService {
 	 */
 	public void updateTask(TaskConfig task) { 
 		setChangedMetadata(task);
-		daoContext.getSchedulerDAO().updateTask(task);
+		getSchedulerDAO().updateTask(task);
 	}
 	
 	/**
@@ -322,7 +316,7 @@ public class TimerSchedulerService implements SchedulerService {
 	 * @param	id	the identifier of the task
 	 */
 	public void deleteTask(Integer id) { 
-		daoContext.getSchedulerDAO().deleteTask(id);
+		getSchedulerDAO().deleteTask(id);
 	}
 
 	
@@ -331,7 +325,7 @@ public class TimerSchedulerService implements SchedulerService {
 	 * @param task
 	 */
 	public void setCreatedMetadata(TaskConfig task) { 		
-		if (task.getCreatedBy() == null) task.setCreatedBy(context.getAuthenticatedUser());
+		if (task.getCreatedBy() == null) task.setCreatedBy(Context.getAuthenticatedUser());
 		if (task.getDateCreated() == null) task.setDateCreated(new Date());
 		setChangedMetadata(task);
 	}
@@ -341,7 +335,7 @@ public class TimerSchedulerService implements SchedulerService {
 	 * @param task
 	 */
 	public void setChangedMetadata(TaskConfig task) {
-		task.setChangedBy(context.getAuthenticatedUser());
+		task.setChangedBy(Context.getAuthenticatedUser());
 		task.setDateChanged(new Date());
 	}
 	

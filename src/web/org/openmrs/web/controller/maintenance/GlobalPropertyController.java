@@ -41,11 +41,11 @@ public class GlobalPropertyController extends SimpleFormController {
 		
 		if (action.equals(getMessageSourceAccessor().getMessage("general.save"))) {
 			HttpSession httpSession = request.getSession();
-			Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 			
-			if (context != null && context.isAuthenticated()) {
+			
+			if (Context.isAuthenticated()) {
 				
-				AdministrationService as = context.getAdministrationService();
+				AdministrationService as = Context.getAdministrationService();
 				List<GlobalProperty> globalPropList = new ArrayList<GlobalProperty>();
 				
 				String[] keys = request.getParameterValues(PROP_NAME);
@@ -85,15 +85,12 @@ public class GlobalPropertyController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-    	HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		//default empty Object
 		List<GlobalProperty> globalPropList = new ArrayList<GlobalProperty>();
 		
 		//only fill the Object is the user has authenticated properly
-		if (context != null && context.isAuthenticated()) {
-			AdministrationService as = context.getAdministrationService();
+		if (Context.isAuthenticated()) {
+			AdministrationService as = Context.getAdministrationService();
 			globalPropList = as.getGlobalProperties();
 		}
     	

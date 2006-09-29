@@ -1,21 +1,6 @@
 package org.openmrs.web.taglib.fieldgen;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import org.openmrs.Concept;
-import org.openmrs.ConceptName;
 import org.openmrs.Location;
-import org.openmrs.OrderType;
-import org.openmrs.User;
-import org.openmrs.api.ConceptService;
-import org.openmrs.api.OrderService;
-import org.openmrs.api.context.Context;
-import org.openmrs.web.WebConstants;
-import org.openmrs.web.taglib.FieldGenTag;
 
 public class LocationHandler extends AbstractFieldGenHandler implements FieldGenHandler {
 

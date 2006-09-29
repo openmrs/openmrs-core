@@ -14,7 +14,6 @@ import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,7 +25,6 @@ import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
-import org.openmrs.web.WebConstants;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
@@ -193,11 +191,9 @@ public class EncounterDisplayController implements Controller {
 	}
 	
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		Map model = new HashMap<String, Object>();
+		Map<String, Object> model = new HashMap<String, Object>();
 		
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 		
 	    	String encounterId = request.getParameter("encounterId");
 	    	if (encounterId == null || encounterId.length() == 0)
@@ -205,7 +201,7 @@ public class EncounterDisplayController implements Controller {
 	    	
 	    	model.put("encounterId", Integer.valueOf(encounterId));
 	    	
-	    	Encounter encounter = context.getEncounterService().getEncounter(Integer.valueOf(encounterId));
+	    	Encounter encounter = Context.getEncounterService().getEncounter(Integer.valueOf(encounterId));
 	    	model.put("encounter", encounter);
 	    	
 			Form form = encounter.getForm();
@@ -275,7 +271,7 @@ public class EncounterDisplayController implements Controller {
 			model.put("data", data.values());
 			model.put("otherObs", otherObs);
 			model.put("orders", orders);
-			model.put("locale", context.getLocale());
+			model.put("locale", Context.getLocale());
 		}
 		return new ModelAndView("/encounters/encounterDisplay", "model", model);
 	}

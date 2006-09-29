@@ -2,7 +2,6 @@ package org.openmrs.hl7;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.context.Context;
 import org.openmrs.hl7.handler.ORUR01Handler;
 
 import ca.uhn.hl7v2.HL7Exception;
@@ -22,16 +21,14 @@ public class HL7Receiver {
 	
 	Log log = LogFactory.getLog(HL7Receiver.class);
 	
-	private Context context;
 	private GenericParser parser;
 	private MessageTypeRouter router;
 
-	public HL7Receiver(Context context) {
-		this.context = context;
+	public HL7Receiver() {
 		parser = new GenericParser();
 		// TODO draw registered applications from database or configuration file
 		router = new MessageTypeRouter();
-		router.registerApplication("ORU", "R01", new ORUR01Handler(context));
+		router.registerApplication("ORU", "R01", new ORUR01Handler());
 	}
 	
 	public Message processMessage(String hl7) throws HL7Exception {

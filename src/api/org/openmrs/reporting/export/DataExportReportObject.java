@@ -131,11 +131,10 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 	
 	/**
 	 * Generate the patientSet according to this report's characteristics
-	 * @param context
 	 * @return patientSet to be used with report template
 	 */
-	public PatientSet generatePatientSet(Context context) {
-		PatientSetService pss = context.getPatientSetService();
+	public PatientSet generatePatientSet() {
+		PatientSetService pss = Context.getPatientSetService();
 		PatientSet patientSet = new PatientSet();
 		
 		for (Integer p : patientIds)
@@ -145,7 +144,7 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 			patientSet = pss.getPatientsHavingLocation(getLocation());
 		else if (patientIds.size() == 0) {
 			// Add all patients
-			patientSet = context.getPatientSetService().getAllPatients();
+			patientSet = Context.getPatientSetService().getAllPatients();
 		}
 		
 		return patientSet;

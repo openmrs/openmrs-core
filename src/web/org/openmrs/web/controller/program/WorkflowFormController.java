@@ -42,13 +42,11 @@ public class WorkflowFormController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
     	log.debug("called formBackingObject");
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		ProgramWorkflow wf = null;
 		
-		if (context != null && context.isAuthenticated()) {
-			ProgramWorkflowService ps = context.getProgramWorkflowService();
+		if (Context.isAuthenticated()) {
+			ProgramWorkflowService ps = Context.getProgramWorkflowService();
 			String programWorkflowId = request.getParameter("programWorkflowId");
 	    	if (programWorkflowId != null)
 	    		wf = ps.getWorkflow(Integer.valueOf(programWorkflowId));
@@ -74,10 +72,10 @@ public class WorkflowFormController extends SimpleFormController {
 		log.debug("about to save " + obj);
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		String view = getFormView();
 		
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			ProgramWorkflow wf = (ProgramWorkflow) obj;
 
 			// get list of states, and update the command object
@@ -98,7 +96,7 @@ public class WorkflowFormController extends SimpleFormController {
 				}
 				if (pws == null) {
 					pws = new ProgramWorkflowState();
-					pws.setConcept(context.getConceptService().getConcept(conceptId));
+					pws.setConcept(Context.getConceptService().getConcept(conceptId));
 					wf.addState(pws);
 				} else {
 					// unvoid if necessary
@@ -117,7 +115,7 @@ public class WorkflowFormController extends SimpleFormController {
 				}
 			}
 			
-			context.getProgramWorkflowService().updateWorkflow(wf);
+			Context.getProgramWorkflowService().updateWorkflow(wf);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Workflow.saved");
 		}

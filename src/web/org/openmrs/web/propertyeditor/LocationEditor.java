@@ -13,26 +13,21 @@ public class LocationEditor extends PropertyEditorSupport {
 
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	Context context;
-	
-	public LocationEditor(Context c) {
-		this.context = c;
-	}
+	public LocationEditor() {	}
 	
 	public void setAsText(String text) throws IllegalArgumentException {
-		if (context != null) {
-			PatientService ps = context.getPatientService(); 
-			if (StringUtils.hasText(text)) {
-				try {
-					setValue(ps.getLocation(Integer.valueOf(text)));
-				}
-				catch (Exception ex) {
-					throw new IllegalArgumentException("Location not found: " + ex.getMessage());
-				}
+		PatientService ps = Context.getPatientService(); 
+		if (StringUtils.hasText(text)) {
+			try {
+				setValue(ps.getLocation(Integer.valueOf(text)));
 			}
-			else {
-				setValue(null);
+			catch (Exception ex) {
+				log.error("Error setting text: " + text, ex);
+				throw new IllegalArgumentException("Location not found: " + ex.getMessage());
 			}
+		}
+		else {
+			setValue(null);
 		}
 	}
 

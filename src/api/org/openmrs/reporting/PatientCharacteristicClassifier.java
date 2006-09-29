@@ -34,10 +34,10 @@ public class PatientCharacteristicClassifier extends AbstractReportObject
 		this.partitionByGender = partitionByGender;
 	}
 
-	public Map<String, PatientSet> partition(Context context, PatientSet input) {
+	public Map<String, PatientSet> partition(PatientSet input) {
 		Map<String, PatientSet> ret = new HashMap<String, PatientSet>();
 		
-		Map<Integer, Map<String, Object>> characteristics = context.getPatientSetService().getCharacteristics(input);
+		Map<Integer, Map<String, Object>> characteristics = Context.getPatientSetService().getCharacteristics(input);
 		for (Map.Entry<Integer, Map<String, Object>> e : characteristics.entrySet()) {
 			Map<String, Object> holder = e.getValue();
 			String key = "";

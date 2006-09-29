@@ -29,9 +29,9 @@ public class MRNGeneratorServlet extends HttpServlet {
 		String first = request.getParameter("mrn_first");
 		String count = request.getParameter("mrn_count");
 		HttpSession session = request.getSession();
-		Context context = (Context)session.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-		if (site == null || first == null || count == null || context == null ||
+		
+		if (site == null || first == null || count == null || 
 				site.length()==0 || first.length()==0 || count.length()==0) {
 			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "MRNGenerator.all.required");
 			response.sendRedirect("admin/maintenance/mrnGenerator.htm");
@@ -41,7 +41,7 @@ public class MRNGeneratorServlet extends HttpServlet {
 		Integer mrnFirst = Integer.valueOf(first);
 		Integer mrnCount = Integer.valueOf(count);
 		
-		AdministrationService as = context.getAdministrationService();
+		AdministrationService as = Context.getAdministrationService();
 		
 		// log who generated this list
 		as.mrnGeneratorLog(site, mrnFirst, mrnCount);

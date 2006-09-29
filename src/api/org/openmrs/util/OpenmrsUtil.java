@@ -430,11 +430,11 @@ public class OpenmrsUtil {
 		return ret.toString();
 	}
 	
-	public static Set<Concept> conceptSetHelper(Context context, String descriptor) {
+	public static Set<Concept> conceptSetHelper(String descriptor) {
 		Set<Concept> ret = new HashSet<Concept>();
 		if (descriptor == null || descriptor.length() == 0)
 			return ret;
-		ConceptService cs = context.getConceptService();
+		ConceptService cs = Context.getConceptService();
 		
 		for (StringTokenizer st = new StringTokenizer(descriptor, "|"); st.hasMoreTokens(); ) {
 			String s = st.nextToken().trim();
@@ -479,9 +479,9 @@ public class OpenmrsUtil {
 				Concept c = null;
 				
 				if ( conceptId != null ) {
-					c = context.getConceptService().getConcept(conceptId);
+					c = Context.getConceptService().getConcept(conceptId);
 				} else {
-					c = context.getConceptService().getConceptByName(token);
+					c = Context.getConceptService().getConceptByName(token);
 				}
 				
 				if ( c != null ) {
@@ -494,13 +494,13 @@ public class OpenmrsUtil {
 		return ret;
 	}
 
-	public static Map<String, Concept> delimitedStringToConceptMap( String delimitedString, String delimiter, Context context ) {
+	public static Map<String, Concept> delimitedStringToConceptMap( String delimitedString, String delimiter) {
 		Map<String,Concept> ret = null;
 		
-		if ( delimitedString != null && context != null ) {
+		if ( delimitedString != null) {
 			String[] tokens = delimitedString.split(delimiter);
 			for ( String token : tokens ) {
-				Concept c = OpenmrsUtil.getConceptByIdOrName(token, context);
+				Concept c = OpenmrsUtil.getConceptByIdOrName(token);
 				
 				if ( c != null ) {
 					if ( ret == null ) ret = new HashMap<String, Concept>();
@@ -512,7 +512,7 @@ public class OpenmrsUtil {
 		return ret;
 	}
 
-	public static Concept getConceptByIdOrName(String idOrName, Context context) {
+	public static Concept getConceptByIdOrName(String idOrName) {
 		Concept c = null;
 		Integer conceptId = null;
 		
@@ -523,19 +523,19 @@ public class OpenmrsUtil {
 		}
 		
 		if ( conceptId != null ) {
-			c = context.getConceptService().getConcept(conceptId);
+			c = Context.getConceptService().getConcept(conceptId);
 		} else {
-			c = context.getConceptService().getConceptByName(idOrName);
+			c = Context.getConceptService().getConceptByName(idOrName);
 		}
 
 		return c;
 	}
 	// TODO: properly handle duplicates
-	public static List<Concept> conceptListHelper(Context context, String descriptor) {
+	public static List<Concept> conceptListHelper(String descriptor) {
 		List<Concept> ret = new ArrayList<Concept>();
 		if (descriptor == null || descriptor.length() == 0)
 			return ret;
-		ConceptService cs = context.getConceptService();
+		ConceptService cs = Context.getConceptService();
 		
 		for (StringTokenizer st = new StringTokenizer(descriptor, "|"); st.hasMoreTokens(); ) {
 			String s = st.nextToken().trim();

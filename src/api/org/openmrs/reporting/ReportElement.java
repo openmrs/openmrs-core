@@ -5,8 +5,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.openmrs.api.context.Context;
-
 public class ReportElement {
 
 	private Map<String, PatientDataProducer> producers;
@@ -25,11 +23,11 @@ public class ReportElement {
 		groupAndAggregate.add(tga);
 	}
 	
-	public DataTable run(Context context, PatientSet ps) {
+	public DataTable run(PatientSet ps) {
 		PatientDataTable patientTable = new PatientDataTable(ps);
 		List<Integer> patientIds = new ArrayList<Integer>(patientTable.keySet());
 		for (Map.Entry<String, PatientDataProducer> e : producers.entrySet()) {
-			patientTable.addColumn(e.getKey(), e.getValue().produceData(context, patientIds));
+			patientTable.addColumn(e.getKey(), e.getValue().produceData(patientIds));
 		}
 		DataTable table = patientTable.toDataTable();
 		

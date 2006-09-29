@@ -29,14 +29,14 @@ public class PatientServiceTest extends TestCase {
 	protected Patient createdPatient;
 	
 	public void setUp() throws Exception{
-		Context context = ContextFactory.getContext();
+		
 		
 		//TODO when do we force authentication ? each Service level call?
-		context.authenticate("USER-1", "test");
+		Context.authenticate("USER-1", "test");
 		
-		ps = context.getPatientService();
-		adminService = context.getAdministrationService();
-		encounterService = context.getEncounterService();
+		ps = Context.getPatientService();
+		adminService = Context.getAdministrationService();
+		encounterService = Context.getEncounterService();
 		assertNotNull(adminService);
 		assertNotNull(encounterService);
 		

@@ -53,13 +53,13 @@ public class MimeTypeListController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		Locale locale = request.getLocale();
 		String view = getFormView();
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			String[] mimeTypeList = request.getParameterValues("mimeTypeId");
-			AdministrationService as = context.getAdministrationService();
-			ObsService os = context.getObsService();
+			AdministrationService as = Context.getAdministrationService();
+			ObsService os = Context.getObsService();
 			
 			String success = "";
 			String error = "";
@@ -100,14 +100,14 @@ public class MimeTypeListController extends SimpleFormController {
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
     	HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		
 		//default empty Object
 		List<MimeType> mimeTypeList = new Vector<MimeType>();
 		
 		//only fill the Object is the user has authenticated properly
-		if (context != null && context.isAuthenticated()) {
-			ObsService os = context.getObsService();
+		if (Context.isAuthenticated()) {
+			ObsService os = Context.getObsService();
 	    	mimeTypeList = os.getMimeTypes();
 		}
     	

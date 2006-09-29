@@ -4,10 +4,8 @@
 <%@ page import="org.openmrs.Relationship" %>
 <%@ page import="org.openmrs.RelationshipType" %>
 <%@ page import="org.openmrs.api.context.Context" %>
-<%@ page import="org.openmrs.web.WebConstants" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
-<%@ page import="java.util.Enumeration" %>
 <%--
 showFrom=true:	show relationships where this patient is the *person*
 showTo=true:	show relationships where this patient is the *relative*
@@ -47,10 +45,7 @@ refreshOnChange=*
 				<%
 					String relType = (String)pageContext.getAttribute("relType");
 					if ( relType != null ) {
-						HttpSession httpSession = request.getSession();
-						Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-			
-						List<RelationshipType> rtList = (List<RelationshipType>)context.getPatientService().getRelationshipTypes();
+						List<RelationshipType> rtList = (List<RelationshipType>)Context.getPatientService().getRelationshipTypes();
 						
 						if ( rtList != null ) {
 							RelationshipType rt = null;

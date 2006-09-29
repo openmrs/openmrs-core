@@ -4,23 +4,21 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Set;
 
-import javax.servlet.http.HttpSession;
-import javax.servlet.jsp.tagext.BodyTagSupport;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Concept;
-import org.openmrs.Obs;
-import org.openmrs.Patient;
-import org.openmrs.api.context.Context;
-import org.openmrs.web.WebConstants;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.openmrs.Concept;
+import org.openmrs.Obs;
+import org.openmrs.Patient;
+import org.openmrs.api.context.Context;
   
 
 public class ShowGraphTag extends BodyTagSupport {
@@ -50,12 +48,11 @@ public class ShowGraphTag extends BodyTagSupport {
 	 */
 	public int doStartTag() throws JspException {
 
-		Context context = getContext();
-		Patient patient = context.getPatientService().getPatient(patientId);
-		Concept concept = context.getConceptService().getConceptByName(conceptName);
+		Patient patient = Context.getPatientService().getPatient(patientId);
+		Concept concept = Context.getConceptService().getConceptByName(conceptName);
 		
 		if (concept != null && concept.isNumeric()) { 
-			Set<Obs> observations = context.getObsService().getObservations(patient, concept);
+			Set<Obs> observations = Context.getObsService().getObservations(patient, concept);
 			DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 			for( Obs obs : observations ) { 
 				dataset.addValue(obs.getValueNumeric(), conceptName, obs.getObsDatetime());
@@ -101,22 +98,6 @@ public class ShowGraphTag extends BodyTagSupport {
         }
         return EVAL_PAGE;
 	}
-
-	
-	/**
-	 * Convenience method to get context from session.  
-	 * 
-	 * TODO Should probably be added to some helper class since it is used all of the time. 
-	 */
-	public Context getContext() throws JspException { 
-		HttpSession session = pageContext.getSession();
-		Context context = (Context)session.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context == null) {
-			throw new JspException("Requires a valid context");
-		}	
-		return context;
-	}
-
 	
 	/**
 	 * @return the patient primary key

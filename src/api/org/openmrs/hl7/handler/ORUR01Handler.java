@@ -53,12 +53,6 @@ public class ORUR01Handler implements Application {
 
 	private Log log = LogFactory.getLog(ORUR01Handler.class);
 
-	private Context context;
-
-	public ORUR01Handler(Context context) {
-		this.context = context;
-	}
-
 	/**
 	 * Always returns true, assuming that the router calling this handler will
 	 * only call this handler with ORU_R01 messages.
@@ -113,7 +107,7 @@ public class ORUR01Handler implements Application {
 		ORC orc = getORC(oru); // we're using the ORC assoc with first OBR to
 		// hold data enterer and date entered for now
 
-		HL7Service hl7Service = context.getHL7Service();
+		HL7Service hl7Service = Context.getHL7Service();
 
 		// create the encounter
 		Encounter encounter = createEncounter(msh, pid, pv1, orc);
@@ -137,7 +131,7 @@ public class ORUR01Handler implements Application {
 							obsGroups = new Hashtable<String, Vector<Obs>>();
 						addToObsGroup(obsGroups, subId, obs);
 					} else
-						context.getObsService().createObs(obs);
+						Context.getObsService().createObs(obs);
 				} catch (ClassCastException e) {
 					e.printStackTrace();
 				} catch (HL7Exception e) {
@@ -156,9 +150,9 @@ public class ORUR01Handler implements Application {
 					Obs[] groupArray = new Obs[group.size()];
 					group.toArray(groupArray);
 					if (groupArray.length == 1)
-						context.getObsService().createObs(groupArray[0]);
+						Context.getObsService().createObs(groupArray[0]);
 					else if (groupArray.length > 1) {
-						context.getObsService().createObsGroup(groupArray);
+						Context.getObsService().createObsGroup(groupArray);
 					}
 				}
 			}
@@ -231,7 +225,7 @@ public class ORUR01Handler implements Application {
 		encounter.setEncounterType(encounterType);
 		encounter.setCreator(enterer);
 		encounter.setDateCreated(dateEntered);
-		context.getEncounterService().createEncounter(encounter);
+		Context.getEncounterService().createEncounter(encounter);
 
 		if (encounter == null || encounter.getEncounterId() == null
 				|| encounter.getEncounterId() == 0) {
@@ -367,7 +361,7 @@ public class ORUR01Handler implements Application {
 
 	private User getProvider(PV1 pv1) throws HL7Exception {
 		XCN hl7Provider = pv1.getAttendingDoctor(0);
-		Integer providerId = context.getHL7Service().resolveUserId(hl7Provider);
+		Integer providerId = Context.getHL7Service().resolveUserId(hl7Provider);
 		if (providerId == null)
 			throw new HL7Exception("Could not resolve provider");
 		User provider = new User();
@@ -376,7 +370,7 @@ public class ORUR01Handler implements Application {
 	}
 
 	private Patient getPatient(PID pid) throws HL7Exception {
-		Integer patientId = context.getHL7Service().resolvePatientId(pid);
+		Integer patientId = Context.getHL7Service().resolvePatientId(pid);
 		if (patientId == null)
 			throw new HL7Exception("Could not resolve patient");
 		Patient patient = new Patient();
@@ -386,7 +380,7 @@ public class ORUR01Handler implements Application {
 
 	private Location getLocation(PV1 pv1) throws HL7Exception {
 		PL hl7Location = pv1.getAssignedPatientLocation();
-		Integer locationId = context.getHL7Service().resolveLocationId(
+		Integer locationId = Context.getHL7Service().resolveLocationId(
 				hl7Location);
 		if (locationId == null)
 			throw new HL7Exception("Could not resolve location");
@@ -407,7 +401,7 @@ public class ORUR01Handler implements Application {
 		// must get entire form object in order to get its metadata (encounterType) later
 		Form form = null;
 		if (formId != null)
-			form = context.getFormService().getForm(formId);
+			form = Context.getFormService().getForm(formId);
 
 		return form;
 	}
@@ -421,7 +415,7 @@ public class ORUR01Handler implements Application {
 
 	private User getEnterer(ORC orc) throws HL7Exception {
 		XCN hl7Enterer = orc.getEnteredBy(0);
-		Integer entererId = context.getHL7Service().resolveUserId(hl7Enterer);
+		Integer entererId = Context.getHL7Service().resolveUserId(hl7Enterer);
 		if (entererId == null)
 			throw new HL7Exception("Could not resolve enterer");
 		User enterer = new User();
@@ -471,7 +465,7 @@ public class ORUR01Handler implements Application {
 		conceptProposal.setState(OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED);
 		conceptProposal.setEncounter(encounter);
 		conceptProposal.setObsConcept(concept);
-		context.getConceptService().proposeConcept(conceptProposal);
+		Context.getConceptService().proposeConcept(conceptProposal);
 	}
 
 }

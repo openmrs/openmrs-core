@@ -3,9 +3,7 @@ package org.openmrs.web.controller.order;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Order;
-import org.openmrs.OrderType;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 public class OrderValidator implements Validator {

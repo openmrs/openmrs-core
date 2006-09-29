@@ -37,11 +37,11 @@ public class HibernateTest extends TestCase {
 		
 	public void testGetName() throws Exception {
 		
-		Context context = ContextFactory.getContext();
 		
-		context.authenticate("USER-1", "test");
 		
-		UserService us = context.getUserService();
+		Context.authenticate("USER-1", "test");
+		
+		UserService us = Context.getUserService();
 		
 		User u = us.getUserByUsername("USER-1");
 		

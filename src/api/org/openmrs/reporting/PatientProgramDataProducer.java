@@ -42,10 +42,10 @@ public class PatientProgramDataProducer implements PatientDataProducer {
 		this.field = field;
 	}
 	
-	public Map<Integer, Object> produceData(Context context, Collection<Integer> patientIds) {
+	public Map<Integer, Object> produceData(Collection<Integer> patientIds) {
 		PatientSet ps = new PatientSet();
 		ps.copyPatientIds(patientIds);
-		Map<Integer, PatientProgram> programs = context.getPatientSetService().getPatientPrograms(ps, program);
+		Map<Integer, PatientProgram> programs = Context.getPatientSetService().getPatientPrograms(ps, program);
 		Map<Integer, Object> ret = new HashMap<Integer, Object>();
 		DataTransformer trans = field.getTransformer();
 		for (Map.Entry<Integer, PatientProgram> e : programs.entrySet()) {

@@ -13,7 +13,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.OrderType;
 import org.openmrs.api.APIException;
-import org.openmrs.api.AdministrationService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
@@ -53,12 +52,12 @@ public class OrderTypeListController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		Locale locale = request.getLocale();
 		String view = getFormView();
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			String[] orderTypeList = request.getParameterValues("orderTypeId");
-			OrderService os = context.getOrderService();
+			OrderService os = Context.getOrderService();
 			
 			String success = "";
 			String error = "";
@@ -99,14 +98,14 @@ public class OrderTypeListController extends SimpleFormController {
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
     	HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		
 		//default empty Object
 		List<OrderType> orderTypeList = new Vector<OrderType>();
 		
 		//only fill the Object is the user has authenticated properly
-		if (context != null && context.isAuthenticated()) {
-			OrderService os = context.getOrderService();
+		if (Context.isAuthenticated()) {
+			OrderService os = Context.getOrderService();
 	    	orderTypeList = os.getOrderTypes();
 		}
     	

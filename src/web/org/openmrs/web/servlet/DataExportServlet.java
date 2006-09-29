@@ -36,13 +36,13 @@ public class DataExportServlet extends HttpServlet {
 		String reportId = request.getParameter("dataExportId");
 		String[] patientIds = request.getParameterValues("patientId");
 		HttpSession session = request.getSession();
-		Context context = (Context)session.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		
 		if (reportId == null || reportId.length()==0 ) {
 			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.null");
 			return;
 		}
-		if (context == null || !context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS)) {
+		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS)) {
 			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Privilege required: " + OpenmrsConstants.PRIV_VIEW_PATIENTS);
 			session.setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR, request.getRequestURI() + "?" + request.getQueryString());
 			response.sendRedirect(request.getContextPath() + "/login.htm");
@@ -55,7 +55,7 @@ public class DataExportServlet extends HttpServlet {
 			log.error("Error initializing Velocity engine", e);
 		}
 		
-		ReportService rs = context.getReportService();
+		ReportService rs = Context.getReportService();
 		DataExportReportObject dataExport = (DataExportReportObject)rs.getReportObject(Integer.valueOf(reportId));
 		
 		response.setContentType("application/vnd.ms-excel");
@@ -68,11 +68,11 @@ public class DataExportServlet extends HttpServlet {
 		Writer report = new StringWriter();
 		
 		// Set up velocity utils
-		Locale locale = context.getLocale();
+		Locale locale = Context.getLocale();
 		velocityContext.put("locale", locale);
 		
 		// Set up functions used in the report ( $!{fn:...} )
-		DataExportUtility functions = new DataExportUtility(context);
+		DataExportUtility functions = new DataExportUtility();
 		velocityContext.put("fn", functions);
 		
 		report.append("Report: " + dataExport.getName() + "\n\n");
@@ -80,7 +80,7 @@ public class DataExportServlet extends HttpServlet {
 		// Set up list of patients
 		PatientSet patientSet = new PatientSet();
 		if (patientIds == null || patientIds.length == 0)
-			patientSet = dataExport.generatePatientSet(context);
+			patientSet = dataExport.generatePatientSet();
 		else {
 			// list of patient ids was passed through the request
 			for (String id : patientIds)
@@ -105,7 +105,7 @@ public class DataExportServlet extends HttpServlet {
 			response.getWriter().print("\n\nError: \n" + e.toString());
 		}
 		finally {
-			context.endTransaction();
+			Context.closeSession();
 			//.write(report.toString());
 		}
 	}

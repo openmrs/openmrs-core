@@ -2,54 +2,33 @@ package org.openmrs.web.servlet;
 
 
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
 import java.util.Set;
-import java.text.DecimalFormat;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
-
+import org.jfree.chart.axis.DateAxis;
+import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.chart.labels.StandardXYToolTipGenerator;
-
-import org.jfree.chart.axis.Axis;
-import org.jfree.chart.axis.NumberAxis;
-
-import org.jfree.chart.axis.DateAxis;
-import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.data.xy.XYDataset;
 import org.jfree.data.time.Day;
-import org.jfree.data.time.Hour;
-import org.jfree.data.time.Month;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.openmrs.Concept;
-import org.openmrs.ConceptName;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
-import org.openmrs.web.WebConstants;
 
 public class ShowGraphServlet extends HttpServlet {
 
@@ -77,15 +56,14 @@ public class ShowGraphServlet extends HttpServlet {
 			double maxRange = request.getParameter("maxRange")!=null?Double.parseDouble(request.getParameter("maxRange")):0.0;  
 			double minRange = request.getParameter("minRange")!=null?Double.parseDouble(request.getParameter("minRange")):0.0;
 			
-			Context context = getContext(request);
-			Patient patient = context.getPatientService().getPatient(patientId);
-			Concept concept = context.getConceptService().getConcept(conceptId);
+			Patient patient = Context.getPatientService().getPatient(patientId);
+			Concept concept = Context.getConceptService().getConcept(conceptId);
 			
 			Set<Obs> observations = new HashSet<Obs>();
 			String chartTitle, rangeAxisTitle, domainAxisTitle = "";
 			if (concept != null ) { 
 				// Get observations
-				observations = context.getObsService().getObservations(patient, concept);				
+				observations = Context.getObsService().getObservations(patient, concept);				
 				chartTitle = concept.getName(request.getLocale()).getName();
 				rangeAxisTitle = chartTitle;
 			}
@@ -209,21 +187,6 @@ public class ShowGraphServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {	
 		doGet(request,response);		
-	}
-	
-	
-	/**
-	 * Convenience method to get context from session.  
-	 * 
-	 * TODO Should probably be added to some helper class since it is used all of the time. 
-	 */
-	public Context getContext(HttpServletRequest request) throws ServletException { 
-		HttpSession session = request.getSession();
-		Context context = (Context)session.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context == null) {
-			throw new ServletException("Requires a valid context");
-		}	
-		return context;
 	}
 
 }

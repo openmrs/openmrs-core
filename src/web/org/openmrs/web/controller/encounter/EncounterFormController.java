@@ -55,41 +55,37 @@ public class EncounterFormController extends SimpleFormController {
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-		Context context = (Context) request.getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 
-		dateFormat = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(context.getLocale().toString().toLowerCase()), context.getLocale());
+		dateFormat = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase()), Context.getLocale());
 		
         binder.registerCustomEditor(java.lang.Integer.class,
                 new CustomNumberEditor(java.lang.Integer.class, true));
         binder.registerCustomEditor(java.util.Date.class, 
         		new CustomDateEditor(dateFormat, true));
-        binder.registerCustomEditor(EncounterType.class, new EncounterTypeEditor(context));
-        binder.registerCustomEditor(Location.class, new LocationEditor(context));
-        binder.registerCustomEditor(Form.class, new FormEditor(context));
+        binder.registerCustomEditor(EncounterType.class, new EncounterTypeEditor());
+        binder.registerCustomEditor(Location.class, new LocationEditor());
+        binder.registerCustomEditor(Form.class, new FormEditor());
 	}
 
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse reponse, Object obj, BindException errors) throws Exception {
 		
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		Encounter encounter = (Encounter)obj;
 		
-		context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
-		context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
+		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		try {
-			if (context != null && context.isAuthenticated()) {
+			if (Context.isAuthenticated()) {
 				if (request.getParameter("patientId") != null)
-					encounter.setPatient(context.getPatientService().getPatient(Integer.valueOf(request.getParameter("patientId"))));
+					encounter.setPatient(Context.getPatientService().getPatient(Integer.valueOf(request.getParameter("patientId"))));
 				if (request.getParameter("providerId") != null)
-					encounter.setProvider(context.getUserService().getUser(Integer.valueOf(request.getParameter("providerId"))));
+					encounter.setProvider(Context.getUserService().getUser(Integer.valueOf(request.getParameter("providerId"))));
 				if (encounter.isVoided())
 					ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
 				
 			}
 		} finally {
-			context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
-			context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
+			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		}
 		
 		return super.processFormSubmission(request, reponse, encounter, errors);
@@ -105,30 +101,30 @@ public class EncounterFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		String view = getFormView();
 
-		context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
-		context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
+		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		try {
-			if (context != null && context.isAuthenticated()) {
+			if (Context.isAuthenticated()) {
 				Encounter encounter = (Encounter)obj;
 				
 				// if this is a new encounter, they can specify a patient.  add it
 				if (request.getParameter("patientId") != null)
-					encounter.setPatient(context.getPatientService().getPatient(Integer.valueOf(request.getParameter("patientId"))));
+					encounter.setPatient(Context.getPatientService().getPatient(Integer.valueOf(request.getParameter("patientId"))));
 				
 				// set the provider if they changed it
-				encounter.setProvider(context.getUserService().getUser(Integer.valueOf(request.getParameter("providerId"))));
+				encounter.setProvider(Context.getUserService().getUser(Integer.valueOf(request.getParameter("providerId"))));
 				
 				if (encounter.isVoided() && encounter.getVoidedBy() == null)
 					// if this is a "new" voiding, call voidEncounter to set appropriate attributes
-					context.getEncounterService().voidEncounter(encounter, encounter.getVoidReason());
+					Context.getEncounterService().voidEncounter(encounter, encounter.getVoidReason());
 				else if (!encounter.isVoided() && encounter.getVoidedBy() != null)
 					// if this was just unvoided, call unvoidEncounter to unset appropriate attributes
-					context.getEncounterService().unvoidEncounter(encounter);
+					Context.getEncounterService().unvoidEncounter(encounter);
 				else
-					context.getEncounterService().updateEncounter(encounter);
+					Context.getEncounterService().updateEncounter(encounter);
 				
 				view = getSuccessView();
 				view = view + "?encounterId=" + encounter.getEncounterId();
@@ -136,8 +132,8 @@ public class EncounterFormController extends SimpleFormController {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Encounter.saved");
 			}
 		} finally {
-			context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
-			context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
+			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		}
 		
 		return new ModelAndView(new RedirectView(view));
@@ -152,13 +148,10 @@ public class EncounterFormController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		Encounter encounter = null;
 		
-		if (context != null && context.isAuthenticated()) {
-			EncounterService es = context.getEncounterService();
+		if (Context.isAuthenticated()) {
+			EncounterService es = Context.getEncounterService();
 			String encounterId = request.getParameter("encounterId");
 	    	if (encounterId != null) {
 	    		encounter = es.getEncounter(Integer.valueOf(encounterId));
@@ -174,8 +167,6 @@ public class EncounterFormController extends SimpleFormController {
 
 	protected Map referenceData(HttpServletRequest request, Object obj, Errors error) throws Exception {
 		
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		Encounter encounter = (Encounter)obj;
 		
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -193,12 +184,12 @@ public class EncounterFormController extends SimpleFormController {
 		
 		Form form = encounter.getForm();
 		
-		if (context != null && context.isAuthenticated()) {
-			EncounterService es = context.getEncounterService();
-			FormService fs = context.getFormService();
+		if (Context.isAuthenticated()) {
+			EncounterService es = Context.getEncounterService();
+			FormService fs = Context.getFormService();
 			
 			map.put("encounterTypes", es.getEncounterTypes());
-			map.put("forms", context.getFormService().getForms());
+			map.put("forms", Context.getFormService().getForms());
 			// loop over the encounter's observations to find the edited obs
 			String reason = "";
 			if (encounter.getObs() != null && !encounter.getObs().isEmpty()) {
@@ -251,8 +242,8 @@ public class EncounterFormController extends SimpleFormController {
 		log.debug("setting datePattern in page context");
 		map.put("datePattern", dateFormat.toLocalizedPattern().toLowerCase());
 		
-		log.debug("setting locale in page context: " + context.getLocale());
-		map.put("locale", context.getLocale());
+		log.debug("setting locale in page context: " + Context.getLocale());
+		map.put("locale", Context.getLocale());
 		
 		log.debug("setting edited obs in page context: " + editedObs);
 		map.put("editedObs", editedObs);

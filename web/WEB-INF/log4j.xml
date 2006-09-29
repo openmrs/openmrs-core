@@ -62,11 +62,11 @@
 	</logger>
 
 	<logger name="org.openmrs">
-		<level value="WARN" />
+		<level value="ERROR" />
 	</logger>
 
 	<logger name="org.openmrs.analysis">
-		<level value="DEBUG" />
+		<level value="WARN" />
 	</logger>
 
 	<logger name="org.openmrs.api.ConceptService">
@@ -86,11 +86,11 @@
 	</logger>
 
 	<logger name="org.openmrs.formentry">
-		<level value="WARN" />
+		<level value="ERROR" />
 	</logger>
 
 	<logger name="org.openmrs.web.controller.analysis">
-		<level value="DEBUG" />
+		<level value="WARN" />
 	</logger>
 
 	<logger name="org.openmrs.web.dwr">

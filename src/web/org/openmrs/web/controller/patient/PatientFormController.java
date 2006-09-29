@@ -65,19 +65,19 @@ public class PatientFormController extends SimpleFormController {
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-		Context context = (Context) request.getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-		dateFormat = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(context.getLocale().toString().toLowerCase()), context.getLocale());
 		
-        NumberFormat nf = NumberFormat.getInstance(context.getLocale());
+		dateFormat = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase()), Context.getLocale());
+		
+        NumberFormat nf = NumberFormat.getInstance(Context.getLocale());
         binder.registerCustomEditor(java.lang.Integer.class,
                 new CustomNumberEditor(java.lang.Integer.class, nf, true));
         binder.registerCustomEditor(java.util.Date.class, 
         		new CustomDateEditor(dateFormat, true, 10));
-        binder.registerCustomEditor(Tribe.class, new TribeEditor(context));
-        binder.registerCustomEditor(PatientIdentifierType.class, new PatientIdentifierTypeEditor(context));
-        binder.registerCustomEditor(Location.class, new LocationEditor(context));
-        binder.registerCustomEditor(Concept.class, "civilStatus", new ConceptEditor(context));
+        binder.registerCustomEditor(Tribe.class, new TribeEditor());
+        binder.registerCustomEditor(PatientIdentifierType.class, new PatientIdentifierTypeEditor());
+        binder.registerCustomEditor(Location.class, new LocationEditor());
+        binder.registerCustomEditor(Concept.class, "civilStatus", new ConceptEditor());
 	}
 
 	/**
@@ -85,13 +85,11 @@ public class PatientFormController extends SimpleFormController {
 	 */
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object object, BindException errors) throws Exception {
 	
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		Patient patient = (Patient)object;
 		
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			
-			FormEntryService ps = context.getFormEntryService();
+			FormEntryService ps = Context.getFormEntryService();
 			Object[] objs = null;
 			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
@@ -265,14 +263,14 @@ public class PatientFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		Patient patient = (Patient)obj;
 				
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			String action = request.getParameter("action");
-			PatientService ps = context.getPatientService();
+			PatientService ps = Context.getPatientService();
 						
 			if (action.equals(msa.getMessage("Patient.delete"))) {
 				try {
@@ -289,7 +287,7 @@ public class PatientFormController extends SimpleFormController {
 			else {
 				//boolean isNew = (patient.getPatientId() == null);
 				
-				context.getFormEntryService().updatePatient(patient);
+				Context.getFormEntryService().updatePatient(patient);
 				
 				String view = getSuccessView();
 							
@@ -311,13 +309,10 @@ public class PatientFormController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		Patient patient = null;
 		
-		if (context != null && context.isAuthenticated()) {
-			FormEntryService ps = context.getFormEntryService();
+		if (Context.isAuthenticated()) {
+			FormEntryService ps = Context.getFormEntryService();
 			String patientId = request.getParameter("patientId");
 	    	if (patientId != null) {
 	    		patient = ps.getPatient(Integer.valueOf(patientId));
@@ -339,21 +334,18 @@ public class PatientFormController extends SimpleFormController {
 	 */
 	protected Map referenceData(HttpServletRequest request, Object obj, Errors err) throws Exception {
 		
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		Patient patient = (Patient)obj;
 		List<Form> forms = new Vector<Form>();
 		Map<String, Object> map = new HashMap<String, Object>();
 		List<Encounter> encounters = new Vector<Encounter>();
 
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			boolean onlyPublishedForms = true;
-			if (context.hasPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY_VIEW_UNPUBLISHED_FORMS))
+			if (Context.hasPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY_VIEW_UNPUBLISHED_FORMS))
 				onlyPublishedForms = false;
-			forms.addAll(context.getFormEntryService().getForms(onlyPublishedForms));
+			forms.addAll(Context.getFormEntryService().getForms(onlyPublishedForms));
 			
-			Set<Encounter> encs = context.getEncounterService().getEncounters(patient);
+			Set<Encounter> encs = Context.getEncounterService().getEncounters(patient);
 			if (encs != null && encs.size() > 0)
 				encounters.addAll(encs);
 		}

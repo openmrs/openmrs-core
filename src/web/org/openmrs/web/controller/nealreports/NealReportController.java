@@ -17,14 +17,11 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
-import org.openmrs.Encounter;
-import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
@@ -34,7 +31,6 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
 import org.openmrs.reporting.PatientSet;
-import org.openmrs.web.WebConstants;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.view.AbstractView;
@@ -49,22 +45,14 @@ public class NealReportController implements Controller {
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
-		if (context == null) {
-			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
-			response.sendRedirect(request.getContextPath() + "/logout");
-		}
-
 		String reportType = request.getParameter("reportType");
 		
 		ReportMaker maker = new ReportMaker();
 		maker.setParameter("report_type", reportType);
 		
-		Locale locale = context.getLocale();
-		ConceptService cs = context.getConceptService();
-		PatientSetService pss = context.getPatientSetService();
+		Locale locale = Context.getLocale();
+		ConceptService cs = Context.getConceptService();
+		PatientSetService pss = Context.getPatientSetService();
 		
 		String patientSetParameter = request.getParameter("patientIds");
 		PatientSet ps;
@@ -171,7 +159,7 @@ public class NealReportController implements Controller {
 		// Hiv.TREATMENT_STATUS
 		// General.HIV_POSITIVE_P
 		// General.TB_ACTIVE_P 
-		Program hivProgram = context.getProgramWorkflowService().getProgram("HIV PROGRAM");
+		Program hivProgram = Context.getProgramWorkflowService().getProgram("HIV PROGRAM");
 		if (hivProgram != null) {
 			Map<Integer, PatientProgram> progs = pss.getCurrentPatientPrograms(ps, hivProgram);
 			for (Map.Entry<Integer, PatientProgram> e : progs.entrySet()) {
@@ -179,16 +167,16 @@ public class NealReportController implements Controller {
 				patientDataHolder.get(e.getKey()).put(General.ENROLL_DATE, formatDate(e.getValue().getDateEnrolled()));
 				//log.debug(e.getValue().getDateEnrolled());
 			}
-			ProgramWorkflow wf = context.getProgramWorkflowService().getWorkflow(hivProgram, "TREATMENT STATUS");
+			ProgramWorkflow wf = Context.getProgramWorkflowService().getWorkflow(hivProgram, "TREATMENT STATUS");
 			Map<Integer, PatientState> states = pss.getCurrentStates(ps, wf);
 			for (Map.Entry<Integer, PatientState> e : states.entrySet()) {
 				patientDataHolder.get(e.getKey()).put(Hiv.TREATMENT_STATUS, e.getValue().getState().getConcept().getName(locale, false).getName());
 			}
 		} else {
-			log.warn("Couldn't find HIV PROGRAM");
+			log.debug("Couldn't find HIV PROGRAM");
 		}
 		
-		Program tbProgram = context.getProgramWorkflowService().getProgram("TUBERCULOSIS PROGRAM");
+		Program tbProgram = Context.getProgramWorkflowService().getProgram("TUBERCULOSIS PROGRAM");
 		if (tbProgram != null) {
 			Map<Integer, PatientProgram> progs = pss.getCurrentPatientPrograms(ps, tbProgram);
 			for (Integer ptId : progs.keySet()) {
@@ -208,7 +196,7 @@ public class NealReportController implements Controller {
 		// "ddd_quotient"  == number of times taken per day (i think) 
 		// "strength_unit" == unit for strength, e.g, "tab"
 		// "strength_dose" == amount given per time
-		Map<Integer, List<DrugOrder>> regimens = pss.getCurrentDrugOrders(ps, context.getConceptService().getConceptByName("ANTIRETROVIRAL DRUGS"));
+		Map<Integer, List<DrugOrder>> regimens = pss.getCurrentDrugOrders(ps, Context.getConceptService().getConceptByName("ANTIRETROVIRAL DRUGS"));
 		for (Map.Entry<Integer, List<DrugOrder>> e : regimens.entrySet()) {
 			Date earliestStart = null;
 			for (DrugOrder reg : e.getValue()) {
@@ -262,7 +250,7 @@ public class NealReportController implements Controller {
 		// hack for demo in capetown using Kenya data
 		{
 			// arv start date
-			Map<Integer, List<Obs>> observs = pss.getObservations(ps, context.getConceptService().getConcept(1255));
+			Map<Integer, List<Obs>> observs = pss.getObservations(ps, Context.getConceptService().getConcept(1255));
 			for (Map.Entry<Integer, List<Obs>> e : observs.entrySet()) {
 				Date date = null;
 				for (Obs observ : e.getValue()) {
@@ -280,7 +268,7 @@ public class NealReportController implements Controller {
 			}
 			
 			// tb tx start date
-			observs = pss.getObservations(ps, context.getConceptService().getConcept(1268));
+			observs = pss.getObservations(ps, Context.getConceptService().getConcept(1268));
 			for (Map.Entry<Integer, List<Obs>> e : observs.entrySet()) {
 				Date date = null;
 				for (Obs observ : e.getValue()) {
@@ -314,7 +302,6 @@ public class NealReportController implements Controller {
 		}
 		*/
 
-		int cnt = 0;
 		for (Map<String, String> patient : patientDataHolder.values()) {
 			// patient.put("BIRTH_YEAR", "1978");
 			//patient.put(General.HIV_POSITIVE_P, "t");

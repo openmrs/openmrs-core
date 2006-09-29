@@ -108,6 +108,9 @@
 			}
 		);
 		
+		var label = searchWidget.verboseListing.previousSibling;
+		label.parentNode.insertBefore(document.createElement('br'), label);
+		
 		searchWidget.inputNode.focus();
 		searchWidget.inputNode.select();
 				

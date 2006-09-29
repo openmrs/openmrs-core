@@ -21,15 +21,15 @@ public class PatientProgramItem {
 
 	public PatientProgramItem() { }
 	
-	public PatientProgramItem(Context context, PatientProgram p) {
+	public PatientProgramItem(PatientProgram p) {
 		patientProgramId = p.getPatientProgramId();
 		patientId = p.getPatient().getPatientId();
 		dateEnrolled = p.getDateEnrolled();
 		dateCompleted = p.getDateCompleted();
-		name = p.getProgram().getConcept().getName(context.getLocale(), false).getName();
+		name = p.getProgram().getConcept().getName(Context.getLocale(), false).getName();
 		workflows = new HashMap<String, Integer>();
 		for (ProgramWorkflow wf : p.getProgram().getWorkflows()) {
-			workflows.put(wf.getConcept().getName(context.getLocale(), false).getName(), wf.getProgramWorkflowId());
+			workflows.put(wf.getConcept().getName(Context.getLocale(), false).getName(), wf.getProgramWorkflowId());
 		}
 	}
 

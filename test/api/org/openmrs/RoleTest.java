@@ -12,10 +12,10 @@ public class RoleTest extends TestCase {
 	public void testClass() throws Exception {
 		
 		HibernateUtil.startup();
-		Context context = ContextFactory.getContext();
-		context.authenticate("ben", "");
 		
-		Role r = context.getUserService().getRole("Lab Technician");
+		Context.authenticate("ben", "");
+		
+		Role r = Context.getUserService().getRole("Lab Technician");
 		System.out.println(r);
 		System.out.println("all roles: " + r.getAllParentRoles());
 		assertFalse(r.getAllParentRoles().contains(r));

@@ -3,8 +3,6 @@ package org.openmrs;
 import java.util.Date;
 import java.util.Set;
 
-import org.openmrs.util.OpenmrsConstants;
-
 public class Program {
 
 	private Integer programId;

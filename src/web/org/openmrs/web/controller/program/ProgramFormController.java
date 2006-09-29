@@ -28,12 +28,9 @@ public class ProgramFormController extends SimpleFormController {
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
     	super.initBinder(request, binder);
     	
-    	Context context = (Context) request.getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-    	if (context != null) {
-    		binder.registerCustomEditor(Concept.class, new ConceptEditor(context));
-            binder.registerCustomEditor(java.util.Collection.class, "workflows", 
-            		new WorkflowCollectionEditor(context));
-    	}
+		binder.registerCustomEditor(Concept.class, new ConceptEditor());
+        binder.registerCustomEditor(java.util.Collection.class, "workflows", 
+        		new WorkflowCollectionEditor());
     }
     
 	/**
@@ -45,13 +42,11 @@ public class ProgramFormController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
     	log.debug("called formBackingObject");
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		Program program = null;
 		
-		if (context != null && context.isAuthenticated()) {
-			ProgramWorkflowService ps = context.getProgramWorkflowService();
+		if (Context.isAuthenticated()) {
+			ProgramWorkflowService ps = Context.getProgramWorkflowService();
 			String programId = request.getParameter("programId");
 	    	if (programId != null)
 	    		program = ps.getProgram(Integer.valueOf(programId));	
@@ -74,12 +69,12 @@ public class ProgramFormController extends SimpleFormController {
 		log.debug("about to save " + obj);
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		String view = getFormView();
 		
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			Program p = (Program) obj;
-			context.getProgramWorkflowService().createOrUpdateProgram(p);
+			Context.getProgramWorkflowService().createOrUpdateProgram(p);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Program.saved");
 		}

@@ -5,11 +5,8 @@
 <%@ taglib prefix="response" uri="/WEB-INF/taglibs/response.tld" %>
 <%@ taglib prefix="spring" uri="/WEB-INF/taglibs/spring.tld" %>
 
-<%@page import="org.openmrs.api.context.ContextFactory" %>
 <%@page import="org.openmrs.notification.Message" %>
 <%@page import="java.util.Date" %>
-<%@page import="java.util.List" %>
-<%@page import="java.util.ArrayList" %>
 <html>
 
 <head>

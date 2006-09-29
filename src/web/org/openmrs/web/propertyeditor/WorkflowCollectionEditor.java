@@ -18,11 +18,7 @@ public class WorkflowCollectionEditor extends PropertyEditorSupport {
 	
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	private Context context;
-	
-	public WorkflowCollectionEditor(Context c) {
-		this.context = c;
-	}
+	public WorkflowCollectionEditor() {	}
 	
 	/**
 	 * Takes a "program_id:list"
@@ -32,9 +28,9 @@ public class WorkflowCollectionEditor extends PropertyEditorSupport {
 	 * The purpose is to void and unvoid workflows where possible rather than deleting and creating them.  
 	 */
 	public void setAsText(String text) throws IllegalArgumentException {
-		if (context != null && StringUtils.hasText(text)) {
-			ConceptService cs = context.getConceptService();
-			ProgramWorkflowService pws = context.getProgramWorkflowService();
+		if (StringUtils.hasText(text)) {
+			ConceptService cs = Context.getConceptService();
+			ProgramWorkflowService pws = Context.getProgramWorkflowService();
 			Program program = null;
 			try {
 				int ind = text.indexOf(":");

@@ -1,7 +1,5 @@
 package org.openmrs.web.controller.order;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,11 +16,9 @@ import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
 import org.openmrs.Order;
 import org.openmrs.api.APIException;
-import org.openmrs.api.AdministrationService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -57,11 +53,11 @@ public class OrderDrugListController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		String view = getFormView();
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			String[] orderList = request.getParameterValues("orderId");
-			OrderService os = context.getOrderService();
+			OrderService os = Context.getOrderService();
 			
 			String success = "";
 			String error = "";
@@ -102,15 +98,12 @@ public class OrderDrugListController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-    	HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		//default empty Object
 		List<DrugOrder> orderList = new Vector<DrugOrder>();
 		
 		//only fill the Object is the user has authenticated properly
-		if (context != null && context.isAuthenticated()) {
-			OrderService os = context.getOrderService();
+		if (Context.isAuthenticated()) {
+			OrderService os = Context.getOrderService();
 	    	orderList = os.getDrugOrders();
 		}
     	
@@ -120,6 +113,7 @@ public class OrderDrugListController extends SimpleFormController {
 	/* (non-Javadoc)
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	protected Map referenceData(HttpServletRequest request, Object obj, Errors err) throws Exception {
 		Map<Integer,String> conceptNames = new HashMap<Integer,String>();

@@ -14,32 +14,29 @@ import org.openmrs.User;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
-import org.openmrs.api.context.ContextFactory;
 
 public class UserServiceTest extends TestCase {
 	
 	protected UserService us;
-	protected Context context;
 	
 	public void setUp(){
 		System.out.println("##start setup");
 		
-		context = ContextFactory.getContext();
-		context.startTransaction();
+		Context.openSession();
 		
 		try {
-			context.authenticate("USER-1", "test");
+			Context.authenticate("USER-1", "test");
 		} catch (ContextAuthenticationException e) {
 			
 		}
 		
-		us = context.getUserService();
+		us = Context.getUserService();
 	}
 
 	public void testUpdateUser() {
 		System.out.println("##start method");
 		
-		assertTrue(context.isAuthenticated());
+		assertTrue(Context.isAuthenticated());
 		User u = us.getUserByUsername("USER-1");
 		
 		if (u == null)
@@ -105,7 +102,7 @@ public class UserServiceTest extends TestCase {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		
-		context.endTransaction();
+		Context.closeSession();
 		
 	}
 

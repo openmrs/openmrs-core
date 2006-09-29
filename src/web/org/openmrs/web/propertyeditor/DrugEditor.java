@@ -2,35 +2,32 @@ package org.openmrs.web.propertyeditor;
 
 import java.beans.PropertyEditorSupport;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.Drug;
-import org.openmrs.Encounter;
 import org.openmrs.api.ConceptService;
-import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 
 public class DrugEditor extends PropertyEditorSupport {
 
-	Context context;
+	private Log log = LogFactory.getLog(this.getClass());
 	
-	public DrugEditor(Context c) {
-		this.context = c;
-	}
+	public DrugEditor() {	}
 	
 	public void setAsText(String text) throws IllegalArgumentException {
-		if (context != null) {
-			ConceptService es = context.getConceptService(); 
-			if (StringUtils.hasText(text)) {
-				try {
-					setValue(es.getDrug(Integer.valueOf(text)));
-				}
-				catch (Exception ex) {
-					throw new IllegalArgumentException("Drug not found: " + ex.getMessage());
-				}
+		ConceptService es = Context.getConceptService(); 
+		if (StringUtils.hasText(text)) {
+			try {
+				setValue(es.getDrug(Integer.valueOf(text)));
 			}
-			else {
-				setValue(null);
+			catch (Exception ex) {
+				log.error("Error setting text: " + text, ex);
+				throw new IllegalArgumentException("Drug not found: " + ex.getMessage());
 			}
+		}
+		else {
+			setValue(null);
 		}
 	}
 

@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
+<!--
+  - Application context definition for "springDispatcher" DispatcherServlet.
+  -->
+  
 <beans>
 	
 	<!--  **************************  VIEW RESOLVER / CONTROLLERS  *************************  -->
@@ -23,6 +27,7 @@
 			<property name="interceptors">
 				<list>
 					<ref bean="localeChangeInterceptor"/>
+					<!-- <ref bean="openSessionInViewInterceptor"/> -->
 				</list>
 			</property>
 	        <property name="mappings">
@@ -906,12 +911,18 @@
   		<property name="paramName"><value>lang</value></property>
 	</bean>
 	
-		<bean id="patientSetFormController" class="org.springframework.web.servlet.mvc.multiaction.MultiActionController">
-			<property name="methodNameResolver"><ref bean="defaultMethodParamResolver"/></property>
-			<property name="delegate">
-				<bean class="org.openmrs.web.controller.patientset.PatientSetController"/>
-			</property>
-		</bean>
+	<!-- 
+	<bean name="openSessionInViewInterceptor" class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+	</bean>
+	-->
+	
+	<bean id="patientSetFormController" class="org.springframework.web.servlet.mvc.multiaction.MultiActionController">
+		<property name="methodNameResolver"><ref bean="defaultMethodParamResolver"/></property>
+		<property name="delegate">
+			<bean class="org.openmrs.web.controller.patientset.PatientSetController"/>
+		</property>
+	</bean>
 	
 	<!--  **************************  REPORT OBJECT FACTORY CONFIGURATION  *************************  -->
 

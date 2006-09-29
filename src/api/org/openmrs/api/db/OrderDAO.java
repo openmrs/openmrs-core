@@ -9,7 +9,6 @@ import org.openmrs.DrugOrder;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
-import org.openmrs.User;
 
 /**
  * Order-related database functions

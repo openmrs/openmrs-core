@@ -3,17 +3,9 @@ package org.openmrs.web.taglib.fieldgen;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import org.openmrs.Concept;
-import org.openmrs.ConceptName;
 import org.openmrs.OrderType;
-import org.openmrs.api.ConceptService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
-import org.openmrs.web.WebConstants;
-import org.openmrs.web.taglib.FieldGenTag;
 
 public class OrderTypeHandler extends AbstractFieldGenHandler implements FieldGenHandler {
 
@@ -33,11 +25,10 @@ public class OrderTypeHandler extends AbstractFieldGenHandler implements FieldGe
 			}
 			if ( optionHeader == null ) optionHeader = "";
 			
-			HttpSession session = this.fieldGenTag.getPageContext().getSession();
 			//HttpServletRequest request = (HttpServletRequest)this.fieldGenTag.getPageContext().getRequest();
-			Context context = (Context)session.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+			
 
-			OrderService os = context.getOrderService();
+			OrderService os = Context.getOrderService();
 			List<OrderType> orderTypes = os.getOrderTypes();
 			if ( orderTypes == null ) orderTypes = new ArrayList<OrderType>();
 			

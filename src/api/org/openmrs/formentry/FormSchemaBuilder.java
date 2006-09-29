@@ -20,10 +20,9 @@ import org.openmrs.api.context.Context;
  * Usage:
  * 
  * <pre>
- * Context context = ContextFactory.getContext();
- * context.authenticate(username, password);
- * Form myForm = context.getFormService().getForm(myFormId);
- * String schema = new FormSchemaBuilder(context, myForm).getSchema();
+ * Context.authenticate(username, password);
+ * Form myForm = Context.getFormService().getForm(myFormId);
+ * String schema = new FormSchemaBuilder(Context, myForm).getSchema();
  * </pre>
  * 
  * @author Burke Mamlin
@@ -31,7 +30,6 @@ import org.openmrs.api.context.Context;
  */
 public class FormSchemaBuilder {
 
-	Context context;
 	Form form;
 	TreeMap<Integer, TreeSet<FormField>> formStructure;
 	Vector<String> tagList;
@@ -40,13 +38,12 @@ public class FormSchemaBuilder {
 	StringBuffer schema;
 
 	/**
-	 * Construct a schema builder for a given form within a given context
+	 * Construct a schema builder for a given form within a given Context
 	 * 
-	 * @param context
+	 * @param Context
 	 * @param form
 	 */
-	public FormSchemaBuilder(Context context, Form form) {
-		this.context = context;
+	public FormSchemaBuilder(Form form) {
 		this.form = form;
 	}
 
@@ -64,7 +61,7 @@ public class FormSchemaBuilder {
 
 		// define main form section (top level)
 		schema.append(FormSchemaFragment.startForm());
-		formStructure = FormUtil.getFormStructure(context, form);
+		formStructure = FormUtil.getFormStructure(form);
 		for (FormField section : formStructure.get(0)) {
 			String sectionName = FormUtil.getXmlToken(section.getField()
 					.getName());
@@ -100,13 +97,13 @@ public class FormSchemaBuilder {
 					schema.append(FormSchemaFragment.simpleConcept(token,
 							concept, FormEntryConstants.simpleDatatypes
 									.get(datatype.getHl7Abbreviation()),
-							required, context.getLocale()));
+							required, Context.getLocale()));
 				else if (datatype.getHl7Abbreviation().equals(
 						FormEntryConstants.HL7_NUMERIC)) {
-					ConceptNumeric conceptNumeric = context.getConceptService()
+					ConceptNumeric conceptNumeric = Context.getConceptService()
 							.getConceptNumeric(concept.getConceptId());
 					schema.append(FormSchemaFragment.numericConcept(token,
-							conceptNumeric, required, context.getLocale()));
+							conceptNumeric, required, Context.getLocale()));
 				} else if (datatype.getHl7Abbreviation().equals(
 						FormEntryConstants.HL7_CODED)
 						|| datatype.getHl7Abbreviation().equals(
@@ -115,11 +112,11 @@ public class FormSchemaBuilder {
 							.getAnswers();
 					if (field.getSelectMultiple())
 						schema.append(FormSchemaFragment.selectMultiple(token,
-								concept, answers, context.getLocale()));
+								concept, answers, Context.getLocale()));
 					else
 						schema.append(FormSchemaFragment
 								.selectSingle(token, concept, answers,
-										required, context.getLocale()));
+										required, Context.getLocale()));
 				}
 			}
 		}
@@ -243,7 +240,7 @@ public class FormSchemaBuilder {
 
 				schema
 						.append("  <xs:attribute name=\"openmrs_concept\" type=\"xs:string\" use=\"required\" fixed=\""
-								+ FormUtil.conceptToString(concept, context
+								+ FormUtil.conceptToString(concept, Context
 										.getLocale()) + "\" />\n");
 				schema
 						.append("  <xs:attribute name=\"openmrs_datatype\" type=\"xs:string\" use=\"required\" fixed=\""

@@ -1,19 +1,19 @@
 package org.openmrs.web.controller;
 
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.address.AddressSupport;
 import org.openmrs.address.AddressTemplate;
-import org.openmrs.api.context.Context;
 
 public class AddressPortletController extends PortletController {
 	
 	private static Log log = LogFactory.getLog(AddressPortletController.class);
 
-	protected void populateModel(HttpServletRequest request, Context context, Map<String, Object> model) {
+	protected void populateModel(HttpServletRequest request, Map<String, Object> model) {
 
 		AddressSupport as = AddressSupport.getInstance();
 		

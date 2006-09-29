@@ -16,11 +16,11 @@ public class PatientStateItem {
 	
 	public PatientStateItem() { }
 	
-	public PatientStateItem(Context context, PatientState s) {
+	public PatientStateItem(PatientState s) {
 		patientStateId = s.getPatientStateId();
 		programWorkflowId = s.getState().getProgramWorkflow().getProgramWorkflowId();
-		stateName = s.getState().getConcept().getName(context.getLocale(), false).getName();
-		workflowName = s.getState().getProgramWorkflow().getConcept().getName(context.getLocale(), false).getName();
+		stateName = s.getState().getConcept().getName(Context.getLocale(), false).getName();
+		workflowName = s.getState().getProgramWorkflow().getConcept().getName(Context.getLocale(), false).getName();
 		startDate = s.getStartDate();
 		endDate = s.getEndDate();
 	}

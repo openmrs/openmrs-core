@@ -36,16 +36,15 @@ public class CohortSummaryController implements Controller {
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-		if (context == null || !context.isAuthenticated()) {
+		if (!Context.isAuthenticated()) {
 			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
 			return null;
 		}
 		
-		PatientAnalysis analysis = context.getPatientSetService().getMyPatientAnalysis();
+		PatientAnalysis analysis = Context.getPatientSetService().getMyPatientAnalysis();
 		
-		PatientSet ps = analysis.runFilters(context, context.getPatientSetService().getAllPatients());
+		PatientSet ps = analysis.runFilters(Context.getPatientSetService().getAllPatients());
 
 		ReportElement ageGenderGraph = new ReportElement();
 		
@@ -70,18 +69,18 @@ public class CohortSummaryController implements Controller {
 				"Cohort.count");
 		ageGenderGraph.addGroupAndAggregate(tga);
 		
-		DataTable ageGenderTable = ageGenderGraph.run(context, ps);
+		DataTable ageGenderTable = ageGenderGraph.run(ps);
 		httpSession.setAttribute("ageGenderDataTable", ageGenderTable);
 		
 		ReportElement enrollmentGraph = new ReportElement();
 		
-		Program program = context.getProgramWorkflowService().getProgram("HIV PROGRAM");
+		Program program = Context.getProgramWorkflowService().getProgram("HIV PROGRAM");
 		p = new PatientProgramDataProducer(program, PatientProgramDataProducer.WhichField.ENROLLMENT_DATE);
 		enrollmentGraph.addProducer("hiv_enrollment_date", p);
 		DateColumnClassifier dateClassifier = new DateColumnClassifier("hiv_enrollment_date", DateColumnClassifier.CombineMethod.MONTH, "unknown hiv enrollment date");
 		tga = new TableGroupAndAggregate(dateClassifier, new CountAggregator(), "hiv_enrollment_date", "count");
 		enrollmentGraph.addGroupAndAggregate(tga);
-		DataTable enrollmentTable = enrollmentGraph.run(context, ps);
+		DataTable enrollmentTable = enrollmentGraph.run(ps);
 		enrollmentTable.sortByColumn("hiv_enrollment_date");
 		httpSession.setAttribute("hivEnrollmentDataTable", enrollmentTable);
 		

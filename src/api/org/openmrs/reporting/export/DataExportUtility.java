@@ -51,27 +51,25 @@ public class DataExportUtility {
 	// Map<tablename+columnname, Map<patientId, columnvalue>>
 	private Map<String, Map<Integer, Object>> attributeMap = new HashMap<String, Map<Integer, Object>>();
 	
-	private Context context;
 	private PatientSetService patientSetService;
 	private PatientService patientService;
 	
 	// Constructors
 	
-	public DataExportUtility(Context c, Patient p) {
-		this(c, p.getPatientId());
+	public DataExportUtility(Patient p) {
+		this(p.getPatientId());
 	}
 
-	public DataExportUtility(Context c, Integer patientId) {
-		this(c);
+	public DataExportUtility(Integer patientId) {
+		this();
 		setPatientId(patientId);
 	}
 	
-	public DataExportUtility(Context c) {
-		this.context = c;
-		this.patientSetService = context.getPatientSetService();
-		this.patientService = context.getPatientService();
+	public DataExportUtility() {
+		this.patientSetService = Context.getPatientSetService();
+		this.patientService = Context.getPatientService();
 		
-		Locale locale = context.getLocale();
+		Locale locale = Context.getLocale();
 		dateFormatLong = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
 		dateFormatShort = DateFormat.getDateInstance(DateFormat.SHORT, locale);
 		
@@ -145,13 +143,6 @@ public class DataExportUtility {
 	public void setSeparator(String separator) {
 		this.separator = separator;
 	}
-
-	/**
-	 * @return Returns the context.
-	 */
-	public Context getContext() {
-		return context;
-	}
 	
 	/**
 	 * @return Encounter last encounter of type <code>encounterType</code>
@@ -165,7 +156,7 @@ public class DataExportUtility {
 		
 		EncounterType type = null;
 		if (!encounterType.equals(""))
-			type = context.getEncounterService().getEncounterType(encounterType);
+			type = Context.getEncounterService().getEncounterType(encounterType);
 		
 		Map<Integer, Encounter> encounterMap = patientSetService.getEncountersByType(getPatientSet(), type);
 		
@@ -186,7 +177,7 @@ public class DataExportUtility {
 		
 		EncounterType type = null;
 		if (!encounterType.equals(""))
-			type = context.getEncounterService().getEncounterType(encounterType);
+			type = Context.getEncounterService().getEncounterType(encounterType);
 		
 		Map<Integer, Encounter> encounterMap = patientSetService.getFirstEncountersByType(getPatientSet(), type);
 		
@@ -208,7 +199,7 @@ public class DataExportUtility {
 		
 		log.debug("getting concept object for name: " + conceptName);
 		
-		Concept c = context.getConceptService().getConceptByName(conceptName);
+		Concept c = Context.getConceptService().getConceptByName(conceptName);
 		if (c == null)
 			throw new APIException("A Concept with name '" + conceptName + "' was not found");
 		
@@ -223,7 +214,7 @@ public class DataExportUtility {
 		}
 		else {
 			log.debug("getting obs list for concept: " + c);
-			patientIdObsMap = context.getPatientSetService().getObservations(getPatientSet(), c);
+			patientIdObsMap = Context.getPatientSetService().getObservations(getPatientSet(), c);
 			conceptObsMap.put(c, patientIdObsMap);
 		}
 		return patientIdObsMap.get(patientId);
@@ -262,7 +253,7 @@ public class DataExportUtility {
 		}
 		else {
 			log.debug("getting patient attrs: " + key);
-			patientIdAttrMap = context.getPatientSetService().getPatientAttributes(patientSet, className, property, returnAll);
+			patientIdAttrMap = Context.getPatientSetService().getPatientAttributes(patientSet, className, property, returnAll);
 			attributeMap.put(key, patientIdAttrMap);
 		}
 		return patientIdAttrMap.get(patientId);

@@ -26,8 +26,7 @@ public class HL7InQueueProcessorServlet extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 		HttpSession httpSession = request.getSession();
 
-		Context context = getContext(httpSession);
-		if (context == null) {
+		if (!Context.isAuthenticated()) {
 			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
 					"auth.session.expired");
 			response.sendRedirect(request.getContextPath() + "/logout");
@@ -37,7 +36,7 @@ public class HL7InQueueProcessorServlet extends HttpServlet {
 		ServletOutputStream out = response.getOutputStream();
 
 		try {
-			getHL7InQueueProcessor(context).processHL7InQueue();
+			getHL7InQueueProcessor().processHL7InQueue();
 			out.print("HL7 inbound queue processor has started");
 		} catch (HL7Exception e) {
 			out
@@ -46,19 +45,14 @@ public class HL7InQueueProcessorServlet extends HttpServlet {
 
 	}
 
-	private Context getContext(HttpSession httpSession) {
-		return (Context) httpSession
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-	}
-
 	/**
 	 * Get the HL7 In queue queue processor.
 	 * 
 	 * @return an instance of the HL7 In queue processor
 	 */
-	private HL7InQueueProcessor getHL7InQueueProcessor(Context context) {
+	private HL7InQueueProcessor getHL7InQueueProcessor() {
 		if (processor == null) {
-			processor = new HL7InQueueProcessor(context);
+			processor = new HL7InQueueProcessor();
 		}
 		return processor;
 	}

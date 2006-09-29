@@ -8,17 +8,15 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Locale;
+import java.util.Properties;
 
 import junit.framework.TestCase;
 
 import org.openmrs.api.context.Context;
-import org.openmrs.api.context.ContextFactory;
-import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.arden.ArdenBaseLexer;
 import org.openmrs.arden.ArdenBaseParser;
 import org.openmrs.arden.ArdenBaseTreeParser;
 import org.openmrs.arden.MLMObject;
-import org.openmrs.arden.compiled.HiRiskLeadScreen;
 
 import antlr.BaseAST;
 
@@ -111,21 +109,20 @@ public class ArdenTest extends TestCase {
 	     w.write("import java.util.Iterator;\nimport java.util.Locale;\nimport java.util.Set;\n");
 	     w.write("import java.util.HashMap;\n");
 	     w.write("import org.openmrs.Concept;\nimport org.openmrs.Obs;\nimport org.openmrs.Patient;\n");
-	     w.write("import org.openmrs.api.context.Context;\n\n");
 	     
 	     String classname = ardObj.getClassName();
 	     w.write("public class " + classname + "{\n"); // Start of class
-	     w.write("private Context context;\nprivate Patient patient;\nprivate Locale locale;\nprivate String firstname;\n");
+	     w.write("private Patient patient;\nprivate Locale locale;\nprivate String firstname;\n");
 	     w.write("private HashMap<String, String> userVarMap;\n");
 	     w.write("\n\n//Constructor\n");
 	     w.write("public " + classname + "(Context c, Integer pid, Locale l){\n");
-	     w.write("\tcontext = c;\n\tlocale = l;\n\tpatient = c.getPatientService().getPatient(pid);\n");
+	     w.write("\n\tlocale = l;\n\tpatient = c.getPatientService().getPatient(pid);\n");
 	     w.write("\tuserVarMap = new HashMap <String, String>();\n");
 	     w.write("\tfirstname = patient.getPatientName().getGivenName();\n}\n\n\n");
 	     w.write("public Obs getObsForConceptForPatient(Concept concept, Locale locale, Patient patient) {\n");
 	     w.write("\tSet <Obs> MyObs;\n");
 	     w.write("\tObs obs = new Obs();\n\t{");
-	     w.write("\t\tMyObs = context.getObsService().getObservations(patient, concept);\n");
+	     w.write("\t\tMyObs = Context.getObsService().getObservations(patient, concept);\n");
 	     w.write("\t\tIterator iter = MyObs.iterator();\n");
 	     w.write("\t\tif(iter.hasNext()) {\n");
 	     w.write("\t\t\twhile(iter.hasNext())	{\n");
@@ -204,10 +201,10 @@ public class ArdenTest extends TestCase {
 	
 	public void testClass() throws Exception {
 		
-		HibernateUtil.startup();
-		Context context = ContextFactory.getContext();
-		context.authenticate("vibha", "chicachica");
-		Locale locale = context.getLocale();
+		Context.startup(new Properties());
+		
+		Context.authenticate("vibha", "chicachica");
+		Locale locale = Context.getLocale();
 		
 	//	HiRiskLeadScreen mlm = new HiRiskLeadScreen(context,1,locale);
 	//	mlm.run();
@@ -221,8 +218,8 @@ public class ArdenTest extends TestCase {
 		//RunTest("test/arden test/HiRiskLeadScreen.mlm", ardObj ); //populates ardObj
 		RunTest("test/arden test/4.mlm", ardObj ); //populates ardObj
 	*/	
-	//	ConceptService cs = context.getConceptService();
-	//	ObsService os = context.getObsService();
+	//	ConceptService cs = Context.getConceptService();
+	//	ObsService os = Context.getObsService();
 		
 	
 	//	Set <Obs> MyObs ;
@@ -261,7 +258,7 @@ public class ArdenTest extends TestCase {
 	//		}
 	//	}
 		
-		HibernateUtil.shutdown();
+		Context.shutdown();
 	}
 	
 	

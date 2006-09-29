@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
@@ -99,10 +98,10 @@ public class MigrationHelper {
 	 * </something> 
 	 * Returns the number of users added
 	 */
-	public static int importUsers(Context context, Document document) throws ParseException {
+	public static int importUsers(Document document) throws ParseException {
 		int ret = 0;
 		Random rand = new Random();
-		UserService us = context.getUserService();
+		UserService us = Context.getUserService();
 		
 		List<Node> toAdd = new ArrayList<Node>();
 		findNodesNamed(document, "user", toAdd);
@@ -146,10 +145,10 @@ public class MigrationHelper {
 	 * </something> 
 	 * returns the number of locations added
 	 */
-	public static int importLocations(Context context, Document document) {
+	public static int importLocations(Document document) {
 		int ret = 0;
-		EncounterService es = context.getEncounterService();
-		AdministrationService as = context.getAdministrationService();
+		EncounterService es = Context.getEncounterService();
+		AdministrationService as = Context.getAdministrationService();
 		List<Node> toAdd = new ArrayList<Node>();
 		findNodesNamed(document, "location", toAdd);
 		for (Node node : toAdd) {
@@ -179,10 +178,10 @@ public class MigrationHelper {
 	 * If autoCreateUsers is true, and no user exists with the given username, one will be created.
 	 * If autoAddRole is true, then whenever a user is auto-created, if a role exists with the same name as relationshipType.name, then the user will be added to that role
 	 */
-	public static int importRelationships(Context context, Collection<String> relationships, boolean autoCreateUsers, boolean autoAddRole) {
-		PatientService ps = context.getPatientService();
-		UserService us = context.getUserService();
-		AdministrationService as = context.getAdministrationService();
+	public static int importRelationships(Collection<String> relationships, boolean autoCreateUsers, boolean autoAddRole) {
+		PatientService ps = Context.getPatientService();
+		UserService us = Context.getUserService();
+		AdministrationService as = Context.getAdministrationService();
 		List<Relationship> relsToAdd = new ArrayList<Relationship>();
 		Random rand = new Random();
 		for (String s : relationships) {
@@ -262,16 +261,15 @@ public class MigrationHelper {
 		return addedSoFar;
 	}
 
-	public static int importProgramsAndStatuses(Context context, List<String> programWorkflow) throws ParseException {
-		Locale locale = context.getLocale();
-		ProgramWorkflowService pws = context.getProgramWorkflowService();
-		PatientService ps = context.getPatientService();
+	public static int importProgramsAndStatuses(List<String> programWorkflow) throws ParseException {
+		ProgramWorkflowService pws = Context.getProgramWorkflowService();
+		PatientService ps = Context.getPatientService();
 		List<PatientProgram> patientPrograms = new ArrayList<PatientProgram>();
-		List<PatientState> patientStates = new ArrayList<PatientState>();
+		//List<PatientState> patientStates = new ArrayList<PatientState>();
 		Map<String, PatientProgram> knownPatientPrograms = new HashMap<String, PatientProgram>();
 		Map<String, Program> programsByName = new HashMap<String, Program>();
 		for (Program program : pws.getPrograms()) {
-			programsByName.put(program.getConcept().getName(locale, false).getName(), program);
+			programsByName.put(program.getConcept().getName(Context.getLocale(), false).getName(), program);
 		}
 		for (String s : programWorkflow) {
 			// ENROLLMENT:HIVEMR-V1,9266,IMB HIV PROGRAM,2005-08-25,

@@ -18,7 +18,6 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.web.WebConstants;
 
 
 public class ForEachRecordTag extends BodyTagSupport {
@@ -35,23 +34,22 @@ public class ForEachRecordTag extends BodyTagSupport {
 		
 		records = null;
 		
-		Context context = (Context)pageContext.getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		Locale locale = context.getLocale();
+		Locale locale = Context.getLocale();
 		
 		if (name.equals("patientIdentifierType")) {
-			PatientService ps = context.getPatientService();
+			PatientService ps = Context.getPatientService();
 			records = ps.getPatientIdentifierTypes().iterator();
 		}
 		else if (name.equals("location")) {
-			EncounterService es = context.getEncounterService();
+			EncounterService es = Context.getEncounterService();
 			records = es.getLocations().iterator();
 		}
 		else if (name.equals("tribe")) {
-			PatientService ps = context.getPatientService();
+			PatientService ps = Context.getPatientService();
 			records = ps.getTribes().iterator();
 		}
 		else if (name.equals("civilStatus")) {
-			ConceptService cs = context.getConceptService();
+			ConceptService cs = Context.getConceptService();
 			Concept civilStatus = cs.getConcept(OpenmrsConstants.CIVIL_STATUS_CONCEPT_ID);
 			if (civilStatus == null)
 				log.error("OpenmrsConstants.CIVIL_STATUS_CONCEPT_ID is defined incorrectly.");

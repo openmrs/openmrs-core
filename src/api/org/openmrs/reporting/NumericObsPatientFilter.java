@@ -100,13 +100,13 @@ public class NumericObsPatientFilter extends AbstractPatientFilter implements Pa
 		return ret;
 	}
 
-	public PatientSet filter(Context context, PatientSet input) {
-		PatientSetService service = context.getPatientSetService();
+	public PatientSet filter(PatientSet input) {
+		PatientSetService service = Context.getPatientSetService();
 		return input.intersect(service.getPatientsHavingNumericObs(concept.getConceptId(), timeModifier, modifier, value, fromDateHelper(), null));
 	}
 	
-	public PatientSet filterInverse(Context context, PatientSet input) {
-		PatientSetService service = context.getPatientSetService();
+	public PatientSet filterInverse(PatientSet input) {
+		PatientSetService service = Context.getPatientSetService();
 		return input.subtract(service.getPatientsHavingNumericObs(concept.getConceptId(), timeModifier, modifier, value, fromDateHelper(), null));
 	}
 

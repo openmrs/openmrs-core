@@ -14,7 +14,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
-import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
@@ -36,52 +36,45 @@ import org.openmrs.util.OpenmrsConstants;
 public class HibernatePatientDAO implements PatientDAO {
 
 	protected final Log log = LogFactory.getLog(getClass());
-	
-	private Context context;
+
+	/**
+	 * Hibernate session factory
+	 */
+	private SessionFactory sessionFactory;
 	
 	public HibernatePatientDAO() { }
-
-	public HibernatePatientDAO(Context c) {
-		this.context = c;
+	
+	/**
+	 * Set session factory
+	 * 
+	 * @param sessionFactory
+	 */
+	public void setSessionFactory(SessionFactory sessionFactory) { 
+		this.sessionFactory = sessionFactory;
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.PatientService#getPatient(java.lang.Long)
 	 */
 	public Patient getPatient(Integer patientId) {
-		Session session = HibernateUtil.currentSession();
-		HibernateUtil.beginTransaction();
-		Patient patient = (Patient) session.get(Patient.class, patientId);
-		HibernateUtil.commitTransaction();
-		return patient;
+		return (Patient) sessionFactory.getCurrentSession().get(Patient.class, patientId);
 	}
 	
 
 	public void createPatient(Patient patient) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		try {
-			HibernateUtil.beginTransaction();
-
-			setCollectionProperties(patient);
-			
-			session.saveOrUpdate(patient);
-			
-			// create a Person for this patient as well.
-			// The method name "createPatient" implies we should always do this, but since we're calling saveOrUpdate, we'll just do it conditionally.
-			Person person = (Person) session.createQuery("from Person p where p.patient.patientId = :patientId")
-				.setInteger("patientId", patient.getPatientId())
-				.uniqueResult();
-			if (person == null) {
-				person = new Person();
-				person.setPatient(patient);
-				session.save(person);
-			}
-			
-			HibernateUtil.commitTransaction();
-		}
-		catch (Exception e) {
-			HibernateUtil.rollbackTransaction();
-			throw new DAOException("Error while creating patient: " + e.getMessage(), e);
+		setCollectionProperties(patient);
+		
+		sessionFactory.getCurrentSession().saveOrUpdate(patient);
+		
+		// create a Person for this patient as well.
+		// The method name "createPatient" implies we should always do this, but since we're calling saveOrUpdate, we'll just do it conditionally.
+		Person person = (Person) sessionFactory.getCurrentSession().createQuery("from Person p where p.patient.patientId = :patientId")
+			.setInteger("patientId", patient.getPatientId())
+			.uniqueResult();
+		if (person == null) {
+			person = new Person();
+			person.setPatient(patient);
+			sessionFactory.getCurrentSession().save(person);
 		}
 	}
 
@@ -90,37 +83,25 @@ public class HibernatePatientDAO implements PatientDAO {
 		if (patient.getPatientId() == null)
 			createPatient(patient);
 		else {
-			Session session = HibernateUtil.currentSession();
-			try {
-				HibernateUtil.beginTransaction();
-				setCollectionProperties(patient);
-				patient = (Patient)session.merge(patient);
-				session.saveOrUpdate(patient);
-				HibernateUtil.commitTransaction();
-				
-			}
-			catch (Exception e) {
-				HibernateUtil.rollbackTransaction();
-				throw new DAOException("Unable to save the patient " + e.getMessage(), e);
-			}
+			setCollectionProperties(patient);
+			patient = (Patient)sessionFactory.getCurrentSession().merge(patient);
+			sessionFactory.getCurrentSession().saveOrUpdate(patient);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	public Set<Patient> getPatientsByIdentifier(String identifier, boolean includeVoided) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		
 		Query query;
 		
 		String sql = "select patient from Patient patient, PatientName name where patient.identifiers.identifier = :id and patient = name.patient";
 		String order = " order by name.givenName asc, name.middleName asc, name.familyName asc";
 		
 		if (includeVoided) {
-			query = session.createQuery(sql + order);
+			query = sessionFactory.getCurrentSession().createQuery(sql + order);
 			query.setString("id", identifier);
 		}
 		else {
-			query = session.createQuery(sql + " and patient.voided = :void" + order);
+			query = sessionFactory.getCurrentSession().createQuery(sql + " and patient.voided = :void" + order);
 			query.setString("id", identifier);
 			query.setBoolean("void", includeVoided);
 		}
@@ -140,8 +121,6 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public Set<Patient> getPatientsByIdentifierPattern(String identifier, boolean includeVoided) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		
 		SQLQuery query;
 		
 		String regex = OpenmrsConstants.PATIENT_IDENTIFIER_REGEX;
@@ -153,11 +132,11 @@ public class HibernatePatientDAO implements PatientDAO {
 		//String sql = "select {ident.*} from patient_identifier ident where {ident.identifier} regexp :regex";
 		
 		if (includeVoided) {
-			query = session.createSQLQuery(sql + order);
+			query = sessionFactory.getCurrentSession().createSQLQuery(sql + order);
 			query.setString("regex", regex);
 		}
 		else {
-			query = session.createSQLQuery(sql + " and {pat}.voided = :void" + order);
+			query = sessionFactory.getCurrentSession().createSQLQuery(sql + " and {pat}.voided = :void" + order);
 			query.setString("regex", regex);
 			query.setBoolean("void", includeVoided);
 		}
@@ -174,8 +153,6 @@ public class HibernatePatientDAO implements PatientDAO {
 
 	@SuppressWarnings("unchecked")
 	public Set<Patient> getPatientsByName(String name, boolean includeVoided) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		
 		//TODO simple name search to start testing, will need to make "real" name search
 		//		i.e. split on whitespace, guess at first/last name, etc
 		// TODO return the matched name instead of the primary name
@@ -189,7 +166,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		
 		log.debug("name: " + name);
 		
-		Criteria criteria = session.createCriteria(Patient.class).createAlias("names", "name");
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class).createAlias("names", "name");
 		for (String n : names) {
 			if (n != null && n.length() > 0) {
 				criteria.add(Expression.or(
@@ -217,8 +194,6 @@ public class HibernatePatientDAO implements PatientDAO {
 
 	@SuppressWarnings("unchecked")
 	public Set<Patient> getSimilarPatients(String name, Integer birthyear, String gender) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		
 		if (birthyear == null)
 			birthyear = 0;
 		
@@ -314,7 +289,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		q += "pname.middleName asc, ";
 		q += "pname.familyName asc";
 		
-		Query query = session.createQuery(q);
+		Query query = sessionFactory.getCurrentSession().createQuery(q);
 		
 		int count = 1;
 		for (int i = 0; i < 3; i++) {
@@ -336,16 +311,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 * @see org.openmrs.api.db.PatientService#deletePatient(org.openmrs.Patient)
 	 */
 	public void deletePatient(Patient patient) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		try {
-			HibernateUtil.beginTransaction();
-			session.delete(patient);
-			HibernateUtil.commitTransaction();
-		}
-		catch (Exception e) {
-			HibernateUtil.rollbackTransaction();
-			throw new DAOException("Error while deleting patient " + e.getMessage(), e);
-		}
+		sessionFactory.getCurrentSession().delete(patient);
 	}
 
 	/**
@@ -353,8 +319,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<PatientIdentifier> getPatientIdentifiers(PatientIdentifierType pit) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		List<PatientIdentifier> patientIdentifiers = session.createQuery("from PatientIdentifier p where p.identifierType = :pit and p.voided = false")
+		List<PatientIdentifier> patientIdentifiers = sessionFactory.getCurrentSession().createQuery("from PatientIdentifier p where p.identifierType = :pit and p.voided = false")
 				.setParameter("pit", pit)
 				.list();
 		
@@ -366,9 +331,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<PatientIdentifier> getPatientIdentifiers(String identifier, PatientIdentifierType pit) throws DAOException {
-		Session session = HibernateUtil.currentSession();
 		List<PatientIdentifier> ids;
-		ids = session.createQuery("from PatientIdentifier p where p.identifierType = :pit and p.identifier = :id and p.voided = false")
+		ids = sessionFactory.getCurrentSession().createQuery("from PatientIdentifier p where p.identifierType = :pit and p.identifier = :id and p.voided = false")
 				.setParameter("pit", pit)
 				.setString("id", identifier)
 				.list();
@@ -383,30 +347,20 @@ public class HibernatePatientDAO implements PatientDAO {
 	 * @see org.openmrs.api.db.PatientService#updatePatientIdentifier(org.openmrs.PatientIdentifier)
 	 */
 	public void updatePatientIdentifier(PatientIdentifier pi) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		try {
-			HibernateUtil.beginTransaction();
-			log.debug("type: " + pi.getIdentifierType().getName());
-			session.createQuery("update PatientIdentifier p set p.identifierType = :pit where p.patient = :pat and p.identifier = :id and p.location = :loc")
-				.setParameter("pit", pi.getIdentifierType())
-				.setParameter("pat", pi.getPatient())
-				.setParameter("id", pi.getIdentifier())
-				.setParameter("loc", pi.getLocation())
-				.executeUpdate();
-			HibernateUtil.commitTransaction();
-		}
-		catch (Exception e) {
-			HibernateUtil.rollbackTransaction();
-			throw new DAOException("Error while updating patient identifier: " + e.getMessage(), e);
-		}
+		log.debug("type: " + pi.getIdentifierType().getName());
+		sessionFactory.getCurrentSession().createQuery("update PatientIdentifier p set p.identifierType = :pit where p.patient = :pat and p.identifier = :id and p.location = :loc")
+			.setParameter("pit", pi.getIdentifierType())
+			.setParameter("pat", pi.getPatient())
+			.setParameter("id", pi.getIdentifier())
+			.setParameter("loc", pi.getLocation())
+			.executeUpdate();
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.PatientService#getPatientIdentifierType(java.lang.Integer)
 	 */
 	public PatientIdentifierType getPatientIdentifierType(Integer patientIdentifierTypeId) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		PatientIdentifierType patientIdentifierType = (PatientIdentifierType) session.get(PatientIdentifierType.class, patientIdentifierTypeId);
+		PatientIdentifierType patientIdentifierType = (PatientIdentifierType) sessionFactory.getCurrentSession().get(PatientIdentifierType.class, patientIdentifierTypeId);
 		
 		return patientIdentifierType;
 	}
@@ -415,11 +369,9 @@ public class HibernatePatientDAO implements PatientDAO {
 	 * @see org.openmrs.api.db.PatientService#getPatientIdentifierType(java.lang.String)
 	 */
 	public PatientIdentifierType getPatientIdentifierType(String name) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-
-		PatientIdentifierType ret = (PatientIdentifierType) session.createQuery("from PatientIdentifierType t where t.name = :name")
-		.setString("name", name)
-		.uniqueResult();
+		PatientIdentifierType ret = (PatientIdentifierType) sessionFactory.getCurrentSession().createQuery("from PatientIdentifierType t where t.name = :name")
+			.setString("name", name)
+			.uniqueResult();
 
 		return ret;
 	}	
@@ -429,9 +381,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<PatientIdentifierType> getPatientIdentifierTypes() throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		
-		List<PatientIdentifierType> patientIdentifierTypes = session.createQuery("from PatientIdentifierType p order by p.name").list();
+		List<PatientIdentifierType> patientIdentifierTypes = sessionFactory.getCurrentSession().createQuery("from PatientIdentifierType p order by p.name").list();
 		
 		return patientIdentifierTypes;
 	}
@@ -440,9 +390,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 * @see org.openmrs.api.db.PatientService#getTribe()
 	 */
 	public Tribe getTribe(Integer tribeId) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		
-		Tribe tribe = (Tribe)session.get(Tribe.class, tribeId);
+		Tribe tribe = (Tribe)sessionFactory.getCurrentSession().get(Tribe.class, tribeId);
 		
 		return tribe;
 	}
@@ -452,9 +400,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Tribe> getTribes() throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		
-		List<Tribe> tribes = session.createQuery("from Tribe t order by t.name asc").list();
+		List<Tribe> tribes = sessionFactory.getCurrentSession().createQuery("from Tribe t order by t.name asc").list();
 		
 		return tribes;
 	}
@@ -464,9 +410,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Tribe> findTribes(String s) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		
-		Criteria crit = session.createCriteria(Tribe.class);
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Tribe.class);
 		crit.add(Expression.like("name", s, MatchMode.START));
 		crit.addOrder(Order.asc("name"));
 		
@@ -477,9 +421,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 * @see org.openmrs.api.db.PatientService#getRelationship()
 	 */
 	public Relationship getRelationship(Integer relationshipId) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		
-		Relationship relationship = (Relationship)session.get(Relationship.class, relationshipId);
+		Relationship relationship = (Relationship)sessionFactory.getCurrentSession().get(Relationship.class, relationshipId);
 		
 		return relationship;
 	}
@@ -489,9 +431,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Relationship> getRelationships() throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		
-		List<Relationship> relationships = session.createQuery("from Relationship r order by r.relationshipId asc").list();
+		List<Relationship> relationships = sessionFactory.getCurrentSession().createQuery("from Relationship r order by r.relationshipId asc").list();
 		
 		return relationships;
 	}
@@ -501,22 +441,20 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Relationship> getRelationships(Person person, boolean showVoided) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		
 		Query query = null;
 		List<Relationship> relationships = new Vector<Relationship>();
 		
 		String voided = showVoided ? "" : " and voided = 0 ";
 		
 		if (person.getPatient() != null) {
-			query = session.createQuery(
+			query = sessionFactory.getCurrentSession().createQuery(
 				"from Relationship r where r.person.patient = :p1 or r.relative.patient = :p2 " + voided + " order by r.relationshipId asc "
 			)
 			.setParameter("p1", person.getPatient())
 			.setParameter("p2", person.getPatient());
 		}
 		else if (person.getUser() != null) {
-			query = session.createQuery(
+			query = sessionFactory.getCurrentSession().createQuery(
 					"from Relationship r where r.person.user = :p1 or r.relative.user = :p2 " + voided + " order by r.relationshipId asc "
 				)
 				.setParameter("p1", person.getUser())
@@ -533,20 +471,15 @@ public class HibernatePatientDAO implements PatientDAO {
 	 * @see org.openmrs.api.db.PatientService#getRelationshipType(java.lang.Integer)
 	 */
 	public RelationshipType getRelationshipType(Integer relationshipTypeId) throws DAOException {
-
-		Session session = HibernateUtil.currentSession();
-		
 		RelationshipType relationshipType = new RelationshipType();
-		relationshipType = (RelationshipType)session.get(RelationshipType.class, relationshipTypeId);
+		relationshipType = (RelationshipType)sessionFactory.getCurrentSession().get(RelationshipType.class, relationshipTypeId);
 		
 		return relationshipType;
 
 	}
 	
 	public RelationshipType findRelationshipType(String relationshipTypeName) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		
-		RelationshipType ret = (RelationshipType) session.createQuery("from RelationshipType t where t.name = :name")
+		RelationshipType ret = (RelationshipType) sessionFactory.getCurrentSession().createQuery("from RelationshipType t where t.name = :name")
 					.setString("name", relationshipTypeName)
 					.uniqueResult();
 		
@@ -558,11 +491,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<RelationshipType> getRelationshipTypes() throws DAOException {
-
-		Session session = HibernateUtil.currentSession();
-		
 		List<RelationshipType> relationshipTypes;
-		relationshipTypes = session.createQuery("from RelationshipType r order by r.name").list();
+		relationshipTypes = sessionFactory.getCurrentSession().createQuery("from RelationshipType r order by r.name").list();
 		
 		return relationshipTypes;
 
@@ -572,11 +502,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	 * @see org.openmrs.api.db.PatientService#getLocation(java.lang.Integer)
 	 */
 	public Location getLocation(Integer locationId) throws DAOException {
-
-		Session session = HibernateUtil.currentSession();
-		
 		Location location = new Location();
-		location = (Location)session.get(Location.class, locationId);
+		location = (Location)sessionFactory.getCurrentSession().get(Location.class, locationId);
 		
 		return location;
 
@@ -586,8 +513,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 * @see org.openmrs.api.db.PatientService#getLocationByName(java.lang.String)
 	 */
 	public Location getLocationByName(String name) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		List result = session.createQuery("from Location l where l.name = :name").setString("name", name).list();
+		List result = sessionFactory.getCurrentSession().createQuery("from Location l where l.name = :name").setString("name", name).list();
 		if (result.size() == 0) {
 			return null;
 		} else {
@@ -600,11 +526,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Location> getLocations() throws DAOException {
-
-		Session session = HibernateUtil.currentSession();
-		
 		List<Location> locations;
-		locations = session.createQuery("from Location l order by l.name").list();
+		locations = sessionFactory.getCurrentSession().createQuery("from Location l order by l.name").list();
 		
 		return locations;
 
@@ -613,8 +536,6 @@ public class HibernatePatientDAO implements PatientDAO {
 	/** @see org.openmrs.api.db.PatientService#findDuplicatePatients(java.util.Set<String>) */
 	@SuppressWarnings("unchecked")
 	public List<Patient> findDuplicatePatients(Set<String> attributes) {
-		Session session = HibernateUtil.currentSession();
-		
 		List<Patient> patients = new Vector<Patient>();
 		
 		if (attributes.size() > 0) {
@@ -676,7 +597,7 @@ public class HibernatePatientDAO implements PatientDAO {
 			
 			select = select + where + orderBy;
 			
-			Query query = session.createQuery(select);
+			Query query = sessionFactory.getCurrentSession().createQuery(select);
 		
 			patients = query.list();
 		}
@@ -751,17 +672,17 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
 	private void setCollectionProperties(Patient patient) {
 		if (patient.getCreator() == null) {
-			patient.setCreator(context.getAuthenticatedUser());
+			patient.setCreator(Context.getAuthenticatedUser());
 			patient.setDateCreated(new Date());
 		}
-		patient.setChangedBy(context.getAuthenticatedUser());
+		patient.setChangedBy(Context.getAuthenticatedUser());
 		patient.setDateChanged(new Date());
 		if (patient.getAddresses() != null)
 			for (Iterator<PatientAddress> i = patient.getAddresses().iterator(); i.hasNext();) {
 				PatientAddress pAddress = i.next();
 				if (pAddress.getDateCreated() == null) {
 					pAddress.setDateCreated(new Date());
-					pAddress.setCreator(context.getAuthenticatedUser());
+					pAddress.setCreator(Context.getAuthenticatedUser());
 					pAddress.setPatient(patient);
 				}
 			}
@@ -770,7 +691,7 @@ public class HibernatePatientDAO implements PatientDAO {
 				PatientName pName = i.next();
 				if (pName.getDateCreated() == null) {
 					pName.setDateCreated(new Date());
-					pName.setCreator(context.getAuthenticatedUser());
+					pName.setCreator(Context.getAuthenticatedUser());
 					pName.setPatient(patient);
 				}
 			}
@@ -779,7 +700,7 @@ public class HibernatePatientDAO implements PatientDAO {
 				PatientIdentifier pIdentifier = i.next();
 				if (pIdentifier.getDateCreated() == null) {
 					pIdentifier.setDateCreated(new Date());
-					pIdentifier.setCreator(context.getAuthenticatedUser());
+					pIdentifier.setCreator(Context.getAuthenticatedUser());
 					pIdentifier.setPatient(patient);
 				}
 			}

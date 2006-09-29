@@ -6,13 +6,11 @@ import java.util.Locale;
 
 import org.openmrs.Obs;
 import org.openmrs.Patient;
-import org.openmrs.api.context.Context;
 
 public class DSSObject {
 	private HashMap<String, Obs> obsMap ;
 	private boolean concludeVal;
 	private String printStr;
-	private Context context;
 	private Locale locale;
 	private Patient patient;
 	
@@ -23,10 +21,9 @@ public class DSSObject {
 		
 	}
 	
-	public DSSObject(Context c, Locale l, Patient p)
+	public DSSObject(Locale l, Patient p)
 	{
 		obsMap = new HashMap <String, Obs>();
-		context = c;
 		locale = l;
 		patient = p;
 	}
@@ -66,13 +63,6 @@ public class DSSObject {
 	 */
 	public Locale getLocale() {
 		return locale;
-	}
-	
-	/**
-	 * @return Returns the context.
-	 */
-	public Context getContext() {
-		return context;
 	}
 	
 	public Patient getPatient() {

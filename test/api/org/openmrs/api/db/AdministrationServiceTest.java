@@ -36,25 +36,25 @@ public class AdministrationServiceTest extends TestCase {
 	protected PatientService patientService;
 	
 	public void setUp() throws Exception{
-		Context context = ContextFactory.getContext();
 		
-		context.authenticate("USER-1", "test");
 		
-		encounterService = context.getEncounterService();
+		Context.authenticate("USER-1", "test");
+		
+		encounterService = Context.getEncounterService();
 		assertNotNull(encounterService);
-		ps = context.getPatientService();
+		ps = Context.getPatientService();
 		assertNotNull(ps);
-		us = context.getUserService();
+		us = Context.getUserService();
 		assertNotNull(us);
-		as = context.getAdministrationService();
+		as = Context.getAdministrationService();
 		assertNotNull(as);
-		obsService = context.getObsService();
+		obsService = Context.getObsService();
 		assertNotNull(obsService);
-		orderService = context.getOrderService();
+		orderService = Context.getOrderService();
 		assertNotNull(orderService);
-		formService = context.getFormService();
+		formService = Context.getFormService();
 		assertNotNull(formService);
-		patientService = context.getPatientService();
+		patientService = Context.getPatientService();
 		assertNotNull(patientService);
 		
 	}
@@ -135,8 +135,6 @@ public class AdministrationServiceTest extends TestCase {
 		orderType.setName("testing");
 		orderType.setDescription("desc");
 		
-		as.createOrderType(orderType);
-		
 		OrderType newOrderType = orderService.getOrderType(orderType.getOrderTypeId());
 		assertNotNull(newOrderType);
 		
@@ -162,14 +160,14 @@ public class AdministrationServiceTest extends TestCase {
 		
 		//check updation
 		newOrderType.setName("another test");
-		as.updateOrderType(newOrderType);
+		//orderService.updateOrderType(newOrderType);
 		
 		OrderType newerOrderType = orderService.getOrderType(newOrderType.getOrderTypeId());
 		assertTrue(newerOrderType.getName().equals(newOrderType.getName()));
 		
 		
 		//check deletion
-		as.deleteOrderType(newOrderType);
+		//as.deleteOrderType(newOrderType);
 		assertNull(orderService.getOrderType(newOrderType.getOrderTypeId()));
 
 	}

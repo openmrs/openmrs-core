@@ -1,7 +1,4 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
-<%@ page import="org.openmrs.PatientName" %>
-<%@ page import="org.openmrs.PatientIdentifier" %>
-<%@ page import="org.openmrs.PatientAddress" %>
 
 <openmrs:require privilege="Edit Patients" otherwise="/login.htm" redirect="/admin/patients/patient.form"/>
 

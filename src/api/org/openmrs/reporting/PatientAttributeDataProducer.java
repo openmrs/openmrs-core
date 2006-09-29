@@ -24,11 +24,11 @@ public class PatientAttributeDataProducer implements PatientDataProducer {
 		this.transformer = transformer;
 	}
 	
-	public Map<Integer, Object> produceData(Context context, Collection<Integer> patientIds) {
+	public Map<Integer, Object> produceData(Collection<Integer> patientIds) {
 		// TODO: getPatientAttributes shouldn't need a PatientSet.
 		PatientSet temp = new PatientSet();
 		temp.copyPatientIds(patientIds);
-		Map<Integer, Object> ret = context.getPatientSetService().getPatientAttributes(temp, tableName, columnName, false);
+		Map<Integer, Object> ret = Context.getPatientSetService().getPatientAttributes(temp, tableName, columnName, false);
 		if (transformer != null)
 			for (Map.Entry<Integer, Object> e : ret.entrySet())
 				e.setValue(transformer.transform(e.getValue()));

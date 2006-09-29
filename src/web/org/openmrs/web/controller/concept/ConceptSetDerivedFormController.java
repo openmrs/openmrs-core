@@ -29,18 +29,18 @@ public class ConceptSetDerivedFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		String view = getFormView();
 		
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			String s = request.getParameter("conceptId");
 			if (s != null && !s.equals("")) {
-				Concept c = context.getConceptService().getConcept(Integer.valueOf(s));
+				Concept c = Context.getConceptService().getConcept(Integer.valueOf(s));
 				if (c != null)
-					context.getAdministrationService().updateConceptSetDerived(c);
+					Context.getAdministrationService().updateConceptSetDerived(c);
 			}
 			else {
-				context.getAdministrationService().updateConceptSetDerived();
+				Context.getAdministrationService().updateConceptSetDerived();
 			}
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptSetDerived.updated");

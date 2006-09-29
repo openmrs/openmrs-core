@@ -15,18 +15,18 @@
 ********************************************************************/
 package org.openmrs.arden.compiled;
 
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Set;
 import java.util.HashMap;
+import java.util.Locale;
+
 import org.openmrs.Concept;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
-import org.openmrs.arden.*;
+import org.openmrs.arden.ArdenDataSource;
+import org.openmrs.arden.ArdenRule;
+import org.openmrs.arden.DSSObject;
 
 public class HiRiskLeadScreen implements ArdenRule{
-private Context context;
 private Patient patient;
 private Locale locale;
 private String firstname;
@@ -36,9 +36,8 @@ private DSSObject dssObj;
 
 
 //Constructor
-public HiRiskLeadScreen(Context c, Patient p, ArdenDataSource d){
-	context = c;
-	locale = c.getLocale();
+public HiRiskLeadScreen(Patient p, ArdenDataSource d){
+	locale = Context.getLocale();
 	patient = p;
 	dataSource = d;
 	userVarMap = new HashMap <String, String>();
@@ -65,8 +64,8 @@ private Obs Last_Pb(){
 	Concept concept;
 	Obs obs;
 
-	concept = context.getConceptService().getConceptByName("BLOOD LEAD LEVEL");
-	obs = dataSource.getLastPatientObsForConcept(context, concept, patient, 1);
+	concept = Context.getConceptService().getConceptByName("BLOOD LEAD LEVEL");
+	obs = dataSource.getLastPatientObsForConcept(concept, patient, 1);
 
 	return obs;
 }
@@ -75,8 +74,8 @@ private Obs Qual_Pb(){
 	Concept concept;
 	Obs obs;
 
-	concept = context.getConceptService().getConceptByName("Qualitative_Blood_Lead");
-	obs = dataSource.getLastPatientObsForConcept(context, concept, patient, 1);
+	concept = Context.getConceptService().getConceptByName("Qualitative_Blood_Lead");
+	obs = dataSource.getLastPatientObsForConcept(concept, patient, 1);
 
 	return obs;
 }
@@ -85,8 +84,8 @@ private Obs HousePre50(){
 	Concept concept;
 	Obs obs;
 
-	concept = context.getConceptService().getConceptByName("HouseBltPre1950");
-	obs = dataSource.getLastPatientObsForConcept(context, concept, patient, 1);
+	concept = Context.getConceptService().getConceptByName("HouseBltPre1950");
+	obs = dataSource.getLastPatientObsForConcept(concept, patient, 1);
 
 	return obs;
 }
@@ -95,8 +94,8 @@ private Obs RenovatedPre78(){
 	Concept concept;
 	Obs obs;
 
-	concept = context.getConceptService().getConceptByName("RenovatedPre78");
-	obs = dataSource.getLastPatientObsForConcept(context, concept, patient, 1);
+	concept = Context.getConceptService().getConceptByName("RenovatedPre78");
+	obs = dataSource.getLastPatientObsForConcept(concept, patient, 1);
 
 	return obs;
 }
@@ -105,8 +104,8 @@ private Obs HiPbSibFriend(){
 	Concept concept;
 	Obs obs;
 
-	concept = context.getConceptService().getConceptByName("HiPbSibFriend");
-	obs = dataSource.getLastPatientObsForConcept(context, concept, patient, 1);
+	concept = Context.getConceptService().getConceptByName("HiPbSibFriend");
+	obs = dataSource.getLastPatientObsForConcept(concept, patient, 1);
 
 	return obs;
 }
@@ -126,7 +125,7 @@ public DSSObject evaluate() {
 private boolean evaluate_logic() {
 	boolean retVal = false;
 	Obs obs;
-	dssObj = new DSSObject(context,locale, patient);
+	dssObj = new DSSObject(locale, patient);
 
 
 	if ( (obs = Last_Pb()) != null ) {

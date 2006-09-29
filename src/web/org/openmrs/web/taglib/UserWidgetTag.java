@@ -1,17 +1,14 @@
 package org.openmrs.web.taglib;
 
 import java.io.IOException;
-import java.util.Locale;
 
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
-import org.openmrs.web.WebConstants;
 
 public class UserWidgetTag extends TagSupport {
 
@@ -32,8 +29,7 @@ public class UserWidgetTag extends TagSupport {
 	}
 	
 	public int doStartTag() {
-		Context context = (Context) pageContext.getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		User user = context.getUserService().getUser(userId);
+		User user = Context.getUserService().getUser(userId);
 		
 		try {
 			JspWriter w = pageContext.getOut();

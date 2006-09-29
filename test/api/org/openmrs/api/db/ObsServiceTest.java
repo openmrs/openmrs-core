@@ -33,23 +33,23 @@ public class ObsServiceTest extends TestCase {
 	protected ConceptService conceptService;
 	
 	public void setUp() throws Exception{
-		Context context = ContextFactory.getContext();
 		
-		context.authenticate("USER-1", "test");
 		
-		es = context.getEncounterService();
+		Context.authenticate("USER-1", "test");
+		
+		es = Context.getEncounterService();
 		assertNotNull(es);
-		ps = context.getPatientService();
+		ps = Context.getPatientService();
 		assertNotNull(ps);
-		us = context.getUserService();
+		us = Context.getUserService();
 		assertNotNull(us);
-		obsService = context.getObsService();
+		obsService = Context.getObsService();
 		assertNotNull(obsService);
-		conceptService = context.getConceptService();
+		conceptService = Context.getConceptService();
 		assertNotNull(conceptService);
-		//orderService = context.getOrderService();
+		//orderService = Context.getOrderService();
 		//assertNotNull(orderService);
-		//conceptService = context.getConceptService();
+		//conceptService = Context.getConceptService();
 		//assertNotNull(conceptService);
 		
 	}

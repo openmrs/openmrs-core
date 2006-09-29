@@ -34,41 +34,36 @@ public class OptionsFormController extends SimpleFormController {
 	 */
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object object, BindException errors) throws Exception {
 	
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		OptionsForm opts = (OptionsForm)object;
 		
-		if (context != null) {
-			if (opts.getUsername().length() > 0) {
-				if (opts.getUsername().length() < 3) {
-					errors.rejectValue("username", "error.username.weak");
-				}
-				if (opts.getUsername().charAt(0) < 'A' || opts.getUsername().charAt(0) > 'z') {
-					errors.rejectValue("username", "error.username.invalid");
-				}
-				
+		if (opts.getUsername().length() > 0) {
+			if (opts.getUsername().length() < 3) {
+				errors.rejectValue("username", "error.username.weak");
 			}
-			if (opts.getUsername().length() > 0)
-			
-			if (!opts.getOldPassword().equals("")) {
-				if (opts.getNewPassword().equals(""))
-					errors.rejectValue("newPassword", "error.password.weak");
-				else if (!opts.getNewPassword().equals(opts.getConfirmPassword())) {
-					errors.rejectValue("newPassword", "error.password.match");
-					errors.rejectValue("confirmPassword", "error.password.match");
-				}
-			}
-	
-			if (!opts.getSecretQuestionPassword().equals("")) {
-				if (!opts.getSecretAnswerConfirm().equals(opts.getSecretAnswerNew())) {
-					errors.rejectValue("secretAnswerNew", "error.options.secretAnswer.match");
-					errors.rejectValue("secretAnswerConfirm", "error.options.secretAnswer.match");
-				}
+			if (opts.getUsername().charAt(0) < 'A' || opts.getUsername().charAt(0) > 'z') {
+				errors.rejectValue("username", "error.username.invalid");
 			}
 			
-			// TODO catch errors
 		}
+		if (opts.getUsername().length() > 0)
+		
+		if (!opts.getOldPassword().equals("")) {
+			if (opts.getNewPassword().equals(""))
+				errors.rejectValue("newPassword", "error.password.weak");
+			else if (!opts.getNewPassword().equals(opts.getConfirmPassword())) {
+				errors.rejectValue("newPassword", "error.password.match");
+				errors.rejectValue("confirmPassword", "error.password.match");
+			}
+		}
+
+		if (!opts.getSecretQuestionPassword().equals("")) {
+			if (!opts.getSecretAnswerConfirm().equals(opts.getSecretAnswerNew())) {
+				errors.rejectValue("secretAnswerNew", "error.options.secretAnswer.match");
+				errors.rejectValue("secretAnswerConfirm", "error.options.secretAnswer.match");
+			}
+		}
+		
+		// TODO catch errors
 		
 		return super.processFormSubmission(request, response, object, errors); 
 	}
@@ -83,18 +78,12 @@ public class OptionsFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 
 		String view = getFormView();
 		
-		if (context == null || !context.isAuthenticated()) {
-			errors.reject("auth.session.expired");
-			return super.processFormSubmission(request, response, obj, errors);
-		}
-
 		if (!errors.hasErrors()) {
-			User user = context.getAuthenticatedUser();
-			UserService us = context.getUserService();
+			User user = Context.getAuthenticatedUser();
+			UserService us = Context.getUserService();
 			OptionsForm opts = (OptionsForm)obj;
 			
 			Map<String, String> properties = user.getProperties();
@@ -144,7 +133,7 @@ public class OptionsFormController extends SimpleFormController {
 			}
 			
 			if (opts.getUsername().length() > 0 && !errors.hasErrors()) {
-				context.addProxyPrivilege("View Users");
+				Context.addProxyPrivilege("View Users");
 				if (us.hasDuplicateUsername(user)) {
 					errors.rejectValue("username", "error.username.taken");
 				}
@@ -154,9 +143,9 @@ public class OptionsFormController extends SimpleFormController {
 				user.setUsername(opts.getUsername());
 				user.setProperties(properties);
 				
-				context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+				Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
 				us.updateUser(user);
-				context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+				Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
 				
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "options.saved");
 			}
@@ -176,14 +165,11 @@ public class OptionsFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		OptionsForm opts = new OptionsForm();
 		
-		if (context != null && context.isAuthenticated()) {
-			User user = context.getAuthenticatedUser();
+		if (Context.isAuthenticated()) {
+			User user = Context.getAuthenticatedUser();
 
 			Map<String, String> props = user.getProperties();
 			opts.setDefaultLocation(props.get(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION));
@@ -209,13 +195,13 @@ public class OptionsFormController extends SimpleFormController {
 	protected Map referenceData(HttpServletRequest request) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			
-			PatientService ps = context.getPatientService();
+			PatientService ps = Context.getPatientService();
 			
 			// set location options
 			map.put("locations", ps.getLocations());

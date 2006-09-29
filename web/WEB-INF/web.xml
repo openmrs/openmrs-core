@@ -7,6 +7,13 @@
 	<display-name>@WEBAPP.DISPLAY.NAME@</display-name>
 	<display-name>@WEBAPP.DESCRIPTION@</display-name> 
 
+	<context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>
+        	/WEB-INF/@WEBAPP.NAME@-servlet.xml
+        	/WEB-INF/applicationContext-service.xml
+        </param-value>
+    </context-param>
 
 	<servlet>
 		<servlet-name>showGraphServlet</servlet-name>
@@ -166,12 +173,12 @@
 		
 	<listener>
 		<listener-class>org.openmrs.web.Listener</listener-class>
+		<!--  extends ContextLoaderListener -->
 	</listener>
 	
 	<listener>
 		<listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
 	</listener>
-
 	
 	<servlet>
 		<servlet-name>dwr-invoker</servlet-name>
@@ -198,13 +205,23 @@
 		<servlet-name>infopath</servlet-name>
 		<url-pattern>/formentry/submit</url-pattern>
 	</servlet-mapping>
-
+	<!--  /FormEntry -->
+	
 	<filter>
 		<filter-name>OpenmrsFilter</filter-name> 
 		<filter-class>org.openmrs.web.OpenmrsFilter</filter-class> 
 	</filter>
 	<filter-mapping>
 		<filter-name>OpenmrsFilter</filter-name> 
+		<url-pattern>/*</url-pattern> 
+	</filter-mapping>
+	
+	<filter>
+        <filter-name>HibernateFilter</filter-name>
+        <filter-class>org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
+    </filter>
+	<filter-mapping>
+		<filter-name>HibernateFilter</filter-name> 
 		<url-pattern>/*</url-pattern> 
 	</filter-mapping>
 	
@@ -229,15 +246,6 @@
 		<exception-type>java.lang.Exception</exception-type>
 		<location>/WEB-INF/view/uncaughtException.jsp</location>
 	</error-page>
-	
-	<!--
-	<resource-ref>
-		<description>Connection to database as defined in META-INF/context.xml</description>
-		<res-ref-name>jdbc/openmrs</res-ref-name>
-		<res-type>javax.sql.DataSource</res-type>
-		<res-auth>Container</res-auth>
-	</resource-ref>
-	-->
 
 	
 	<!-- ==Struts Configuration===============

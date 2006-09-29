@@ -3,17 +3,19 @@ package org.openmrs.scheduler;
 import java.util.Collection;
 import java.util.SortedMap;
 
-import org.openmrs.api.db.DAOContext;
+import org.openmrs.annotation.Authorized;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
 *  Defines methods required to schedule a task.  
 */
+@Transactional
 public interface SchedulerService { 
 
 	/**
 	 * Set the data access context.
 	 */
-	public void setDaoContext(DAOContext daoContext);
+	//public void setDaoContext(DAOContext daoContext);
 	
 	/**
 	 * Start all tasks that should be running
@@ -73,6 +75,7 @@ public interface SchedulerService {
 	 *  
 	 * @return 	all scheduled tasks
 	 */
+	@Transactional(readOnly=true)
 	public Collection<TaskConfig> getScheduledTasks();
 
 	/**
@@ -81,6 +84,7 @@ public interface SchedulerService {
 	 * 
 	 * @return	all available tasks
 	 */
+	@Transactional(readOnly=true)
 	public Collection<TaskConfig> getAvailableTasks();
 
 	/**
@@ -95,6 +99,8 @@ public interface SchedulerService {
 	 *  
 	 * @param	tasks 	the tasks that should be scheduled
 	 */
+	@Authorized({"Manage Tasks"})
+	@Transactional(readOnly=true)
 	public Collection<TaskConfig> getTasks();
 
 	/**
@@ -102,6 +108,8 @@ public interface SchedulerService {
 	 *  
 	 * @param	id 		the identifier of the task
 	 */
+	@Authorized({"Manage Tasks"})
+	@Transactional(readOnly=true)
 	public TaskConfig getTask(Integer id);
 
 	/**
@@ -109,6 +117,7 @@ public interface SchedulerService {
 	 *  
 	 * @param	id 		the identifier of the task
 	 */
+	@Authorized({"Manage Tasks"})
 	public void deleteTask(Integer id);
 
 	/**
@@ -116,6 +125,7 @@ public interface SchedulerService {
 	 *  
 	 * @param	task 		the task to be updated
 	 */
+	@Authorized({"Manage Tasks"})
 	public void updateTask(TaskConfig task);
 
 	/**
@@ -123,11 +133,13 @@ public interface SchedulerService {
 	 *  
 	 * @param	task 		the task to be created
 	 */
+	@Authorized({"Manage Tasks"})
 	public void createTask(TaskConfig task);
 
 	/**
 	 * Return SchedularConstants
 	 * @return
 	 */
+	@Transactional(readOnly=true)
 	public SortedMap<String,String> getSystemVariables();
 }

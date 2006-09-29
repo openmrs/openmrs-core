@@ -25,16 +25,16 @@ public class EncounterServiceTest extends TestCase {
 	protected Encounter enc;
 	
 	public void setUp() throws Exception{
-		Context context = ContextFactory.getContext();
+		
 		
 		//TODO are we throwing errors for bad authentication?
-		context.authenticate("USER-1", "test");
+		Context.authenticate("USER-1", "test");
 		
-		es = context.getEncounterService();
+		es = Context.getEncounterService();
 		assertNotNull(es);
-		ps = context.getPatientService();
+		ps = Context.getPatientService();
 		assertNotNull(ps);
-		us = context.getUserService();
+		us = Context.getUserService();
 		assertNotNull(us);
 		
 		enc = new Encounter();

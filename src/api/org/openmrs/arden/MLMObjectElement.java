@@ -263,12 +263,12 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 		   w.append("\tConcept concept;\n");
 	       w.append("\tObs obs;\n\n");
 		   
-		   w.append("\tconcept = context.getConceptService().getConceptByName(\"" + cn.trim() + "\");\n");
+		   w.append("\tconcept = Context.getConceptService().getConceptByName(\"" + cn.trim() + "\");\n");
 		   if(readType.equals("last")){
-			   w.append("\tobs = dataSource.getLastPatientObsForConcept(context, concept, patient, " +  howMany + ");\n\n");
+			   w.append("\tobs = dataSource.getLastPatientObsForConcept(concept, patient, " +  howMany + ");\n\n");
 		   }
 		   else { 
-			   w.append("\tobs = dataSource.getPatientObsForConcept(context, concept, patient);\n\n");
+			   w.append("\tobs = dataSource.getPatientObsForConcept(concept, patient);\n\n");
 		   }
 		   w.append("\treturn obs;\n");
 		   w.append("}\n\n");

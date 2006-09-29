@@ -10,7 +10,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.NonUniqueObjectException;
 import org.hibernate.Query;
-import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
@@ -31,58 +31,61 @@ public class HibernateUserDAO implements
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
-	private Context context;
+	/**
+	 * Hibernate session factory
+	 */
+	private SessionFactory sessionFactory;
 	
 	public HibernateUserDAO() { }
 
-	
-	public HibernateUserDAO(Context c) {
-		this.context = c;
+	/**
+	 * Set session factory
+	 * 
+	 * @param sessionFactory
+	 */
+	public void setSessionFactory(SessionFactory sessionFactory) { 
+		this.sessionFactory = sessionFactory;
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.db.UserService#createUser(org.openmrs.User)
 	 */
 	public void createUser(User user, String password) {
-		Session session = HibernateUtil.currentSession();
-
 		if (hasDuplicateUsername(user))
 			throw new DAOException("Username currently in use by '" + user.getFirstName() + " " + user.getLastName() + "'");
 		
+			
+		String systemId = generateSystemId();
+		Integer checkDigit;
 		try {
-			//add all data minus the password as a new user
-			HibernateUtil.beginTransaction();
-			
-			String systemId = generateSystemId();
-			Integer checkDigit = OpenmrsUtil.getCheckDigit(systemId);
-			user.setSystemId(systemId + "-" + checkDigit);
-			
-			user = updateProperties(user);
-			session.save(user);
-
-			// create a Person for this user as well.
-			Person person = new Person();
-			person.setUser(user);
-			session.save(person);
-			
-			HibernateUtil.commitTransaction();
-			
-			//update the new user with the password
-			HibernateUtil.beginTransaction();
-			String salt = Security.getRandomToken();
-			String hashedPassword = Security.encodeString(password + salt);
-			session.createQuery("update User set password = :pw, salt = :salt where user_id = :username")
-				.setParameter("pw", hashedPassword)
-				.setParameter("salt", salt)
-				.setParameter("username", user.getUserId())
-				.executeUpdate();
-			HibernateUtil.commitTransaction();
-			
+			checkDigit = OpenmrsUtil.getCheckDigit(systemId);
 		}
-		catch (Exception e) {
-			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e);
-		}	
+		catch ( Exception e ) {
+			log.error("error getting check digit", e);
+			return;
+		}
+		user.setSystemId(systemId + "-" + checkDigit);
+		
+		user = updateProperties(user);
+		sessionFactory.getCurrentSession().save(user);
+
+		// create a Person for this user as well.
+		Person person = new Person();
+		person.setUser(user);
+		sessionFactory.getCurrentSession().save(person);
+		
+		//Context.closeSession();
+		
+		//update the new user with the password
+		//Context.openSession();
+		String salt = Security.getRandomToken();
+		String hashedPassword = Security.encodeString(password + salt);
+		sessionFactory.getCurrentSession().createQuery("update User set password = :pw, salt = :salt where user_id = :username")
+			.setParameter("pw", hashedPassword)
+			.setParameter("salt", salt)
+			.setParameter("username", user.getUserId())
+			.executeUpdate();
+			
 	}
 
 	/**
@@ -90,9 +93,7 @@ public class HibernateUserDAO implements
 	 */
 	@SuppressWarnings("unchecked")
 	public User getUserByUsername(String username) {
-		Session session = HibernateUtil.currentSession();
-
-		List<User> users = session
+		List<User> users = sessionFactory.getCurrentSession()
 				.createQuery(
 						"from User u where u.voided = 0 and (u.username = ? or u.systemId = ?)")
 				.setString(0, username)
@@ -112,8 +113,6 @@ public class HibernateUserDAO implements
 	 * @see org.openmrs.api.db.UserService#hasDuplicateUsername(org.openmrs.User)
 	 */
 	public boolean hasDuplicateUsername(User user) {
-		Session session = HibernateUtil.currentSession();
-
 		String username = user.getUsername();
 		if (username == null || username.length() == 0)
 			username = "-";
@@ -132,7 +131,7 @@ public class HibernateUserDAO implements
 		}
 		catch (Exception e) {}
 		
-		Integer count = (Integer) session.createQuery(
+		Integer count = (Integer) sessionFactory.getCurrentSession().createQuery(
 				"select count(*) from User u where (u.username = :uname1 or u.systemId = :uname2 or u.username = :sysid1 or u.systemId = :sysid2 or u.systemId = :uname3) and u.userId <> :uid")
 				.setString("uname1", username)
 				.setString("uname2", username)
@@ -153,8 +152,7 @@ public class HibernateUserDAO implements
 	 * @see org.openmrs.api.db.UserService#getUser(java.lang.Long)
 	 */
 	public User getUser(Integer userId) {
-		Session session = HibernateUtil.currentSession();
-		User user = (User) session.get(User.class, userId);
+		User user = (User) sessionFactory.getCurrentSession().get(User.class, userId);
 		
 		if (user == null) {
 			log.warn("request or user '" + userId + "' not found");
@@ -168,11 +166,8 @@ public class HibernateUserDAO implements
 	 */
 	@SuppressWarnings("unchecked")
 	public List<User> getUsers() throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		List<User> users = session.createQuery("from User u order by u.userId")
+		return sessionFactory.getCurrentSession().createQuery("from User u order by u.userId")
 								.list();
-		
-		return users;
 	}
 
 	/**
@@ -185,21 +180,12 @@ public class HibernateUserDAO implements
 			if (log.isDebugEnabled()) {
 				log.debug("update user id: " + user.getUserId());
 			}
-			Session session = HibernateUtil.currentSession();
+			user = updateProperties(user);
 			try {
-				HibernateUtil.beginTransaction();
-				user = updateProperties(user);
-				try {
-					session.update(user);
-				}
-				catch (NonUniqueObjectException e) {
-					session.merge(user);
-				}
-				HibernateUtil.commitTransaction();
+				sessionFactory.getCurrentSession().update(user);
 			}
-			catch (Exception e) {
-				HibernateUtil.rollbackTransaction();
-				throw new DAOException(e);
+			catch (NonUniqueObjectException e) {
+				sessionFactory.getCurrentSession().merge(user);
 			}
 		}
 	}
@@ -208,16 +194,7 @@ public class HibernateUserDAO implements
 	 * @see org.openmrs.api.db.UserService#deleteUser(org.openmrs.User)
 	 */
 	public void deleteUser(User user) {
-		Session session = HibernateUtil.currentSession();
-		try {
-			HibernateUtil.beginTransaction();
-			session.delete(user);
-			HibernateUtil.commitTransaction();
-		}
-		catch (Exception e) {
-			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e);
-		}
+		sessionFactory.getCurrentSession().delete(user);
 	}
 
 	/**
@@ -225,9 +202,7 @@ public class HibernateUserDAO implements
 	 */
 	@SuppressWarnings("unchecked")
 	public List<User> getUsersByRole(Role role) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		
-		List<User> users = session.createCriteria(User.class, "u")
+		List<User> users = sessionFactory.getCurrentSession().createCriteria(User.class, "u")
 						.createCriteria("roles", "r")
 						.add(Expression.like("r.role", role.getRole()))
 						.addOrder(Order.asc("u.username"))
@@ -242,12 +217,7 @@ public class HibernateUserDAO implements
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Privilege> getPrivileges() throws DAOException {
-		
-		Session session = HibernateUtil.currentSession();
-		
-		List<Privilege> privileges = session.createQuery("from Privilege p order by p.privilege").list();
-		
-		return privileges;
+		return sessionFactory.getCurrentSession().createQuery("from Privilege p order by p.privilege").list();
 	}
 
 	/**
@@ -255,12 +225,7 @@ public class HibernateUserDAO implements
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Role> getRoles() throws DAOException {
-
-		Session session = HibernateUtil.currentSession();
-		
-		List<Role> roles = session.createQuery("from Role r order by r.role").list();
-		
-		return roles;
+		return sessionFactory.getCurrentSession().createQuery("from Role r order by r.role").list();
 	}
 	
 	/**
@@ -268,9 +233,6 @@ public class HibernateUserDAO implements
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Role> getInheritingRoles(Role role) throws DAOException {
-
-		Session session = HibernateUtil.currentSession();
-		
 		/*
 		Criteria crit = session.createCriteria(Role.class, "r")
 			.add(Expression.in("r.inheritedRoles", role))
@@ -278,129 +240,93 @@ public class HibernateUserDAO implements
 		return crit.list();
 		*/
 		
-		List<Role> roles = session.createQuery("from Role r where :role in inheritedRoles order by r.role")
+		return sessionFactory.getCurrentSession().createQuery("from Role r where :role in inheritedRoles order by r.role")
 				.setParameter("role", role)
 				.list();
-		
-		return roles;
-		
-		}
+	}
 
 	/**
 	 * @see org.openmrs.api.db.UserService#getPrivilege()
 	 */
 	public Privilege getPrivilege(String p) throws DAOException {
-		
-		Session session = HibernateUtil.currentSession();
-		Privilege privilege = (Privilege)session.get(Privilege.class, p);
-		
-		return privilege;
+		return (Privilege)sessionFactory.getCurrentSession().get(Privilege.class, p);
 	}
 
 	/**
 	 * @see org.openmrs.api.db.UserService#getRole()
 	 */
 	public Role getRole(String r) throws DAOException {
-
-		Session session = HibernateUtil.currentSession();
-		Role role = (Role)session.get(Role.class, r);
-		
-		return role;
+		return (Role)sessionFactory.getCurrentSession().get(Role.class, r);
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.UserDAO#changePassword(org.openmrs.User, java.lang.String)
 	 */
 	public void changePassword(User u, String pw) throws DAOException {
-		
-		Session session = HibernateUtil.currentSession();
-		
-		User authUser = context.getAuthenticatedUser();
+		User authUser = Context.getAuthenticatedUser();
 		
 		if (authUser == null)
 			authUser = u;
 		
-		try {
-			log.debug("udpating password");
-			//update the user with the new password
-			HibernateUtil.beginTransaction();
-			String salt = Security.getRandomToken();
-			String newPassword = Security.encodeString(pw + salt);
-			session.createQuery("update User set password = :pw, salt = :salt, changed_by = :changed, date_changed = :date where user_id = :userid")
-				.setParameter("pw", newPassword)
-				.setParameter("salt", salt)
-				.setParameter("userid", u.getUserId())
-				.setParameter("changed", authUser.getUserId())
-				.setParameter("date", new Date())
-				.executeUpdate();
-			HibernateUtil.commitTransaction();
-		}
-		catch (APIException e) {
-			log.error(e);
-			throw new DAOException(e);
-		}
+		log.debug("udpating password");
+		//update the user with the new password
+		String salt = Security.getRandomToken();
+		String newPassword = Security.encodeString(pw + salt);
+		sessionFactory.getCurrentSession().createQuery("update User set password = :pw, salt = :salt, changed_by = :changed, date_changed = :date where user_id = :userid")
+			.setParameter("pw", newPassword)
+			.setParameter("salt", salt)
+			.setParameter("userid", u.getUserId())
+			.setParameter("changed", authUser.getUserId())
+			.setParameter("date", new Date())
+			.executeUpdate();
 	}
 
 	/**
 	 * @see org.openmrs.api.db.UserDAO#changePassword(java.lang.String, java.lang.String)
 	 */
 	public void changePassword(String pw, String pw2) throws DAOException {
+		User u = Context.getAuthenticatedUser();
 		
-		Session session = HibernateUtil.currentSession();
-		
-		User u = context.getAuthenticatedUser();
-		
-		String passwordOnRecord = (String) session.createSQLQuery(
+		String passwordOnRecord = (String) sessionFactory.getCurrentSession().createSQLQuery(
 			"select password from users where user_id = ?")
 			.addScalar("password", Hibernate.STRING)
 			.setInteger(0, u.getUserId())
 			.uniqueResult();
 		
-		String saltOnRecord = (String) session.createSQLQuery(
+		String saltOnRecord = (String) sessionFactory.getCurrentSession().createSQLQuery(
 			"select salt from users where user_id = ?")
 			.addScalar("salt", Hibernate.STRING)
 			.setInteger(0, u.getUserId())
 			.uniqueResult();
 
-		try {
-			String hashedPassword = Security.encodeString(pw + saltOnRecord);
-			
-			if (!passwordOnRecord.equals(hashedPassword)) {
-				log.error("Passwords don't match");
-				throw new DAOException("Passwords don't match");
-			}
-			
-			log.debug("udpating password");
-			//update the user with the new password
-			HibernateUtil.beginTransaction();
-			String salt = Security.getRandomToken();
-			String newPassword = Security.encodeString(pw2 + salt);
-			session.createQuery("update User set password = :pw, salt = :salt where user_id = :userid")
-				.setParameter("pw", newPassword)
-				.setParameter("salt", salt)
-				.setParameter("userid", u.getUserId())
-				.executeUpdate();
-			HibernateUtil.commitTransaction();
+		String hashedPassword = Security.encodeString(pw + saltOnRecord);
+		
+		if (!passwordOnRecord.equals(hashedPassword)) {
+			log.error("Passwords don't match");
+			throw new DAOException("Passwords don't match");
 		}
-		catch (APIException e) {
-			log.error(e);
-			throw new DAOException(e);
-		}
+		
+		log.debug("udpating password");
+		//update the user with the new password
+		String salt = Security.getRandomToken();
+		String newPassword = Security.encodeString(pw2 + salt);
+		sessionFactory.getCurrentSession().createQuery("update User set password = :pw, salt = :salt where user_id = :userid")
+			.setParameter("pw", newPassword)
+			.setParameter("salt", salt)
+			.setParameter("userid", u.getUserId())
+			.executeUpdate();
 	}
 	
 	public void changeQuestionAnswer(String pw, String question, String answer) throws DAOException {
+		User u = Context.getAuthenticatedUser();
 		
-		Session session = HibernateUtil.currentSession();
-		
-		User u = context.getAuthenticatedUser();
-		
-		String passwordOnRecord = (String) session.createSQLQuery(
+		String passwordOnRecord = (String) sessionFactory.getCurrentSession().createSQLQuery(
 		"select password from users where user_id = ?")
 		.addScalar("password", Hibernate.STRING)
 		.setInteger(0, u.getUserId())
 		.uniqueResult();
 		
-		String saltOnRecord = (String) session.createSQLQuery(
+		String saltOnRecord = (String) sessionFactory.getCurrentSession().createSQLQuery(
 		"select salt from users where user_id = ?")
 		.addScalar("salt", Hibernate.STRING)
 		.setInteger(0, u.getUserId())
@@ -418,13 +344,11 @@ public class HibernateUserDAO implements
 			throw new DAOException(e);
 		}
 		
-		HibernateUtil.beginTransaction();
-		session.createQuery("update User set secret_question = :q, secret_answer = :a where user_id = :userid")
+		sessionFactory.getCurrentSession().createQuery("update User set secret_question = :q, secret_answer = :a where user_id = :userid")
 			.setParameter("q", question)
 			.setParameter("a", answer)
 			.setParameter("userid", u.getUserId())
 			.executeUpdate();
-		HibernateUtil.commitTransaction();
 	}
 	
 	public boolean isSecretAnswer(User u, String answer) throws DAOException {
@@ -432,11 +356,10 @@ public class HibernateUserDAO implements
 		if (answer == null || answer.equals(""))
 			return false;
 		
-		Session session = HibernateUtil.currentSession();
 		String answerOnRecord = "";
 		
 		try {
-			answerOnRecord = (String) session.createSQLQuery(
+			answerOnRecord = (String) sessionFactory.getCurrentSession().createSQLQuery(
 			"select secret_answer from users where user_id = ?")
 			.addScalar("secret_answer", Hibernate.STRING)
 			.setInteger(0, u.getUserId())
@@ -453,15 +376,12 @@ public class HibernateUserDAO implements
 	
 	@SuppressWarnings("unchecked")
 	public List<User> findUsers(String name, List<String> roles, boolean includeVoided) {
-		
-		Session session = HibernateUtil.currentSession();
-		
 		name = name.replace(", ", " ");
 		String[] names = name.split(" ");
 		
 		log.debug("name: " + name);
 		
-		Criteria criteria = session.createCriteria(User.class);
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(User.class);
 		//criteria.setProjection(Projections.distinct(Projections.property("user")));
 		for (String n : names) {
 			if (n != null && n.length() > 0) {
@@ -516,10 +436,7 @@ public class HibernateUserDAO implements
 	
 	@SuppressWarnings("unchecked")
 	public List<User> getAllUsers(List<Role> roles, boolean includeVoided) {
-		
-		Session session = HibernateUtil.currentSession();
-		
-		Criteria criteria = session.createCriteria(User.class);
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(User.class);
 		
 		if (includeVoided == false)
 			criteria.add(Expression.eq("voided", false));
@@ -551,11 +468,9 @@ public class HibernateUserDAO implements
 	 * @return new system id
 	 */
 	public String generateSystemId() {
-		Session session = HibernateUtil.currentSession();
-		
 		String sql = "select max(user_id) as user_id from users";
 		
-		Query query = session.createSQLQuery(sql);
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql);
 		
 		Integer id = ((Integer)query.uniqueResult()).intValue() + 1;
 		
@@ -566,10 +481,10 @@ public class HibernateUserDAO implements
 		
 		if (user.getCreator() == null) {
 			user.setDateCreated(new Date());
-			user.setCreator(context.getAuthenticatedUser());
+			user.setCreator(Context.getAuthenticatedUser());
 		}
 		
-		user.setChangedBy(context.getAuthenticatedUser());
+		user.setChangedBy(Context.getAuthenticatedUser());
 		user.setDateChanged(new Date());
 		
 		return user;
@@ -578,12 +493,11 @@ public class HibernateUserDAO implements
 
 	@SuppressWarnings("unchecked")
 	public List<User> findUsers(String firstName, String lastName, boolean includeVoided) {
-		Session session = HibernateUtil.currentSession();
 		List<User> users = new Vector<User>();
 		String query = "from User u where u.firstName = :firstName and u.lastName = :lastName";
 		if (!includeVoided)
 			query += " and u.voided = false";
-		Query q = session.createQuery(query)
+		Query q = sessionFactory.getCurrentSession().createQuery(query)
 				.setString("firstName", firstName)
 				.setString("lastName", lastName);
 		for (User u : (List<User>) q.list()) {

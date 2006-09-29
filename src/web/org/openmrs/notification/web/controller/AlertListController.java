@@ -54,11 +54,11 @@ public class AlertListController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		Locale locale = context.getLocale();
 		
-		if (context != null && context.isAuthenticated()) {
-			AlertService as = context.getAlertService();
+		Locale locale = Context.getLocale();
+		
+		if (Context.isAuthenticated()) {
+			AlertService as = Context.getAlertService();
 			
 			// expire the selected alerts
 			String[] alertIds = request.getParameterValues("alertId");
@@ -90,14 +90,14 @@ public class AlertListController extends SimpleFormController {
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
 
     	HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		
 		//map containing the privilege and true/false whether the privilege is core or not
 		List<Alert> alertList = new Vector<Alert>();
 		
 		//only fill the list if the user has authenticated properly
-		if (context != null && context.isAuthenticated()) {
-			AlertService as = context.getAlertService();
+		if (Context.isAuthenticated()) {
+			AlertService as = Context.getAlertService();
 			boolean b = new Boolean(request.getParameter("includeExpired"));
 	    	alertList = as.getAllAlerts(b);
 		}

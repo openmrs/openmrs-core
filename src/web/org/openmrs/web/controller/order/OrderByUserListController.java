@@ -2,7 +2,6 @@ package org.openmrs.web.controller.order;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Vector;
 
@@ -15,16 +14,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.Order;
-import org.openmrs.OrderType;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
-import org.openmrs.api.AdministrationService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
-import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
@@ -62,12 +57,11 @@ public class OrderByUserListController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		Locale locale = request.getLocale();
+		
 		String view = getFormView();
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			String[] orderList = request.getParameterValues("orderId");
-			OrderService os = context.getOrderService();
+			OrderService os = Context.getOrderService();
 			
 			String success = "";
 			String error = "";
@@ -108,25 +102,22 @@ public class OrderByUserListController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-    	HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		//default empty Object
 		List<Order> orderList = new Vector<Order>();
 		
 		String userOverride = RequestUtils.getStringParameter(request, WebConstants.OPENMRS_USER_OVERRIDE_PARAM, "");
 		
 		//only fill the Object is the user has authenticated properly
-		if ( StringUtils.hasText(userOverride) && context != null && context.isAuthenticated() ) {
-			UserService us = context.getUserService();
+		if ( StringUtils.hasText(userOverride) && Context.isAuthenticated() ) {
+			UserService us = Context.getUserService();
 			User user = us.getUser(Integer.valueOf(userOverride));
 			if ( user != null ) {
-				OrderService os = context.getOrderService();
+				OrderService os = Context.getOrderService();
 		    	orderList = os.getOrdersByUser(user);
 			}
-		} else if (context != null && context.getAuthenticatedUser() != null ) {
-			OrderService os = context.getOrderService();
-	    	orderList = os.getOrdersByUser(context.getAuthenticatedUser());
+		} else if (Context.getAuthenticatedUser() != null ) {
+			OrderService os = Context.getOrderService();
+	    	orderList = os.getOrdersByUser(Context.getAuthenticatedUser());
 		}
     	
         return orderList;
@@ -135,6 +126,7 @@ public class OrderByUserListController extends SimpleFormController {
 	/* (non-Javadoc)
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	protected Map referenceData(HttpServletRequest request, Object obj, Errors err) throws Exception {
 		Map<Integer,String> conceptNames = new HashMap<Integer,String>();

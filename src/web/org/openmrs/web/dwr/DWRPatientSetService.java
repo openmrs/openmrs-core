@@ -11,80 +11,51 @@ import org.openmrs.api.context.Context;
 import org.openmrs.reporting.PatientAnalysis;
 import org.openmrs.reporting.PatientFilter;
 import org.openmrs.reporting.PatientSet;
-import org.openmrs.web.WebConstants;
-
-import uk.ltd.getahead.dwr.WebContextFactory;
 
 public class DWRPatientSetService {
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	public void clearMyPatientSet() {
-		Context context = (Context) WebContextFactory.get().getSession()
-			.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context != null) {
-			context.getPatientSetService().clearMyPatientSet();
-		}		
+		Context.getPatientSetService().clearMyPatientSet();
 	}
 	
 	public void setMyPatientSet(String patientIds) {
-		Context context = (Context) WebContextFactory.get().getSession()
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context != null) {
-			context.getPatientSetService().setMyPatientSet(PatientSet.parseCommaSeparatedPatientIds(patientIds));
-		}
+		Context.getPatientSetService().setMyPatientSet(PatientSet.parseCommaSeparatedPatientIds(patientIds));
 	}
 	
 	public String getMyPatientSet() {
-		Context context = (Context) WebContextFactory.get().getSession()
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context != null) {
-			return context.getPatientSetService().getMyPatientSet().toCommaSeparatedPatientIds();
-		} else {
-			return null;
-		}
+		return Context.getPatientSetService().getMyPatientSet().toCommaSeparatedPatientIds();
 	}
 	
 	public Integer getMyPatientSetSize() {
-		Context context = (Context) WebContextFactory.get().getSession()
-			.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context != null) {
-			return context.getPatientSetService().getMyPatientSet().size();
-		} else {
-			return null;
-		}		
+		return Context.getPatientSetService().getMyPatientSet().size();
 	}
 	
 	public Vector<PatientListItem> getFromMyPatientSet(Integer fromIndex, Integer pageSize) {
-		Context context = (Context) WebContextFactory.get().getSession()
-			.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context != null) {
-			Vector<PatientListItem> ret = new Vector<PatientListItem>();
-			List<Integer> temp = new ArrayList<Integer>(context.getPatientSetService().getMyPatientSet().getPatientIds());
-			if (fromIndex >= temp.size()) {
-				return ret;
-			}
-			if (fromIndex < 0) {
-				fromIndex = 0;
-			}
-			int toIndex = Math.min(fromIndex + pageSize, temp.size());
-			List<Patient> patients = context.getPatientSetService().getPatients(temp.subList(fromIndex, toIndex));
-			for (Patient patient : patients) {
-				ret.add(new PatientListItem(patient));
-			}
+		Vector<PatientListItem> ret = new Vector<PatientListItem>();
+		List<Integer> temp = new ArrayList<Integer>(Context.getPatientSetService().getMyPatientSet().getPatientIds());
+		if (fromIndex >= temp.size()) {
 			return ret;
-		} else {
-			return null;
-		}		
+		}
+		if (fromIndex < 0) {
+			fromIndex = 0;
+		}
+		int toIndex = Math.min(fromIndex + pageSize, temp.size());
+		List<Patient> patients = Context.getPatientSetService().getPatients(temp.subList(fromIndex, toIndex));
+		for (Patient patient : patients) {
+			ret.add(new PatientListItem(patient));
+		}
+		return ret;
 	}
 	
 	/* Not sure if you can make this call from DWR--argument is a collection
 	public Vector<PatientListItem> getPatients(Collection<Integer> patientIds) {
-		Context context = (Context) WebContextFactory.get().getSession()
+		Context Context = (Context) WebContextFactory.get().getSession()
 			.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context != null) {
+		if (Context != null) {
 			Vector<PatientListItem> ret = new Vector<PatientListItem>();
-			List<Patient> patients = context.getPatientSetService().getPatients(patientIds);
+			List<Patient> patients = Context.getPatientSetService().getPatients(patientIds);
 			for (Patient patient : patients) {
 				ret.add(new PatientListItem(patient));
 			}
@@ -96,59 +67,37 @@ public class DWRPatientSetService {
 	*/
 	
 	public Vector<PatientListItem> getPatients(String patientIds) {
-		Context context = (Context) WebContextFactory.get().getSession()
-			.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context != null) {
-			Vector<PatientListItem> ret = new Vector<PatientListItem>();
-			List<Integer> ptIds = new ArrayList<Integer>();
-			for (String s : patientIds.split(",")) {
-				try {
-					ptIds.add(Integer.valueOf(s));
-				} catch (Exception ex) { }
-			}
-			List<Patient> patients = context.getPatientSetService().getPatients(ptIds);
-			for (Patient patient : patients) {
-				ret.add(new PatientListItem(patient));
-			}
-			return ret;
-		} else {
-			return null;
+		Vector<PatientListItem> ret = new Vector<PatientListItem>();
+		List<Integer> ptIds = new ArrayList<Integer>();
+		for (String s : patientIds.split(",")) {
+			try {
+				ptIds.add(Integer.valueOf(s));
+			} catch (Exception ex) { }
 		}
+		List<Patient> patients = Context.getPatientSetService().getPatients(ptIds);
+		for (Patient patient : patients) {
+			ret.add(new PatientListItem(patient));
+		}
+		return ret;
 	}
 		
 	public void addToMyPatientSet(Integer ptId) {
-		Context context = (Context) WebContextFactory.get().getSession()
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context != null) {
-			context.getPatientSetService().addToMyPatientSet(ptId);
-		}
+		Context.getPatientSetService().addToMyPatientSet(ptId);
 	}
 
 	public void removeFromMyPatientSet(Integer ptId) {
-		Context context = (Context) WebContextFactory.get().getSession()
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context != null) {
-			context.getPatientSetService().removeFromMyPatientSet(ptId);
-		}
+		Context.getPatientSetService().removeFromMyPatientSet(ptId);
 	}
 	
 	public void addFilterToMyAnalysis(Integer patientFilterId) {
-		Context context = (Context) WebContextFactory.get().getSession()
-			.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context != null) {
-			PatientAnalysis analysis = context.getPatientSetService().getMyPatientAnalysis();
-			PatientFilter pf = context.getReportService().getPatientFilterById(patientFilterId);
-			analysis.addFilter(null, pf);
-		}		
+		PatientAnalysis analysis = Context.getPatientSetService().getMyPatientAnalysis();
+		PatientFilter pf = Context.getReportService().getPatientFilterById(patientFilterId);
+		analysis.addFilter(null, pf);
 	}
 	
 	public void removeFilterFromMyAnalysis(String patientFilterKey) {
-		Context context = (Context) WebContextFactory.get().getSession()
-			.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context != null) {
-			PatientAnalysis analysis = context.getPatientSetService().getMyPatientAnalysis();
-			analysis.removeFilter(patientFilterKey);
-		}
+		PatientAnalysis analysis = Context.getPatientSetService().getMyPatientAnalysis();
+		analysis.removeFilter(patientFilterKey);
 	}
 
 }

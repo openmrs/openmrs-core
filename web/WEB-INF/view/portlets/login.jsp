@@ -44,7 +44,7 @@
 	<br>
 	
 	<input type="hidden" name="redirect" value="${redirect}" />
-	<input type="hidden" name="referer" value='<request:header name="referer" />' />
+	<input type="hidden" name="refererURL" value='<request:header name="referer" />' />
 	
 </form>	
 

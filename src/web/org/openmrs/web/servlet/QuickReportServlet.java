@@ -44,13 +44,12 @@ public class QuickReportServlet extends HttpServlet {
 		
 		String reportType = request.getParameter("reportType");
 		HttpSession session = request.getSession();
-		Context context = (Context)session.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		if (reportType == null || reportType.length()==0 ) {
 			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.null");
 			return;
 		}
-		if (context == null || !context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS)) {
+		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS)) {
 			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Privilege required: " + OpenmrsConstants.PRIV_VIEW_PATIENTS);
 			session.setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR, request.getRequestURI() + "?" + request.getQueryString());
 			response.sendRedirect(request.getContextPath() + "/login.htm");
@@ -68,13 +67,13 @@ public class QuickReportServlet extends HttpServlet {
 		report.append("Report: " + reportType + "<br/><br/>\n\n");
 		
 		if (reportType.equals("RETURN VISIT DATE THIS WEEK")) {
-			doReturnVisitDate(context, velocityContext, report, request);
+			doReturnVisitDate(velocityContext, report, request);
 		}
 		if (reportType.equals("ATTENDED CLINIC THIS WEEK")) {
-			doAttendedClinic(context, velocityContext, report, request);
+			doAttendedClinic(velocityContext, report, request);
 		}
 		else if (reportType.equals("VOIDED OBS")) {
-			doVoidedObs(context, velocityContext, report, request);
+			doVoidedObs(velocityContext, report, request);
 		}
 		
 		try {
@@ -86,10 +85,10 @@ public class QuickReportServlet extends HttpServlet {
 		
 	}
 	
-	private void doReturnVisitDate(Context context, VelocityContext velocityContext, PrintWriter report, HttpServletRequest request) throws ServletException {
-		ObsService os = context.getObsService();
-		ConceptService cs = context.getConceptService();
-		Locale locale = context.getLocale();
+	private void doReturnVisitDate(VelocityContext velocityContext, PrintWriter report, HttpServletRequest request) throws ServletException {
+		ObsService os = Context.getObsService();
+		ConceptService cs = Context.getConceptService();
+		Locale locale = Context.getLocale();
 		
 		DateFormat dateFormat = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(locale.toString().toLowerCase()), locale);
 		velocityContext.put("date", dateFormat);
@@ -163,9 +162,9 @@ public class QuickReportServlet extends HttpServlet {
 
 	}
 	
-	private void doAttendedClinic(Context context, VelocityContext velocityContext, PrintWriter report, HttpServletRequest request) throws ServletException {
-		EncounterService es = context.getEncounterService();
-		Locale locale = context.getLocale();
+	private void doAttendedClinic(VelocityContext velocityContext, PrintWriter report, HttpServletRequest request) throws ServletException {
+		EncounterService es = Context.getEncounterService();
+		Locale locale = Context.getLocale();
 		
 		DateFormat dateFormat = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(locale.toString().toLowerCase()), locale);
 		velocityContext.put("date", dateFormat);
@@ -228,9 +227,9 @@ public class QuickReportServlet extends HttpServlet {
 		}
 	}
 	
-	private void doVoidedObs(Context context, VelocityContext velocityContext, PrintWriter report, HttpServletRequest request) throws ServletException {
-		ObsService os = context.getObsService();
-		Locale locale = context.getLocale();
+	private void doVoidedObs(VelocityContext velocityContext, PrintWriter report, HttpServletRequest request) throws ServletException {
+		ObsService os = Context.getObsService();
+		Locale locale = Context.getLocale();
 		
 		DateFormat dateFormat = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(locale.toString().toLowerCase()), locale);
 		velocityContext.put("date", dateFormat);

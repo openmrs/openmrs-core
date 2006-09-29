@@ -60,11 +60,11 @@ public class MergePatientsFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-		if (context != null && context.isAuthenticated()) {
+		
+		if (Context.isAuthenticated()) {
 			String view = getSuccessView();
-			PatientService ps = context.getPatientService();
+			PatientService ps = Context.getPatientService();
 			
 			String patient1Id = RequestUtils.getRequiredStringParameter(request, "patient1");
 			String patient2Id = RequestUtils.getRequiredStringParameter(request, "patient2");
@@ -103,17 +103,14 @@ public class MergePatientsFormController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		Patient p1 = new Patient();
 		
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			String[] patientIds = request.getParameterValues("patientId");
 			if (patientIds != null && patientIds.length > 0) {
 				String patientId = patientIds[0];
 				Integer pId = Integer.valueOf(patientId);
-				p1 = context.getPatientService().getPatient(pId);
+				p1 = Context.getPatientService().getPatient(pId);
 			}
 		}
 		
@@ -129,9 +126,6 @@ public class MergePatientsFormController extends SimpleFormController {
 	 */
 	protected Map referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
 		
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		Map<String, Object> map = new HashMap<String, Object>();
 
 		Patient p1 = (Patient)obj;
@@ -139,15 +133,15 @@ public class MergePatientsFormController extends SimpleFormController {
 		Collection<Encounter> patient1Encounters = new Vector<Encounter>();
 		Collection<Encounter> patient2Encounters = new Vector<Encounter>();
 		
-		if (context != null && context.isAuthenticated()) {
-			EncounterService es = context.getEncounterService();
+		if (Context.isAuthenticated()) {
+			EncounterService es = Context.getEncounterService();
 			patient1Encounters = es.getEncounters(p1);
 			
 			String[] patientIds = request.getParameterValues("patientId");
 			if (patientIds != null && patientIds.length > 1 && !patientIds[0].equals(patientIds[1])) {
 				String patientId = patientIds[1];
 				Integer pId = Integer.valueOf(patientId);
-				p2 = context.getPatientService().getPatient(pId);
+				p2 = Context.getPatientService().getPatient(pId);
 				patient2Encounters = es.getEncounters(p2); 
 			}
 		}

@@ -16,21 +16,21 @@
 
 <html>
 	<head>
-		<link href="<%= request.getContextPath() %>/openmrs.css" type="text/css" rel="stylesheet" />
-		<link href="<%= request.getContextPath() %>/style.css" type="text/css" rel="stylesheet" />
+		<openmrs:htmlInclude file="/openmrs.css" />
+		<openmrs:htmlInclude file="/style.css" />
 		
 		<c:choose>
 			<c:when test="${taskpane}">
-				<link href="<%= request.getContextPath() %>/formentry/taskpane/taskpane.css" type="text/css" rel="stylesheet" />
-				<script src="<%= request.getContextPath() %>/formentry/taskpane/taskpane.js"></script>
+				<openmrs:htmlInclude file="/formentry/taskpane/taskpane.css" />
+				<openmrs:htmlInclude file="/formentry/taskpane/taskpane.js" />
 				<meta http-equiv="msthemecompatible" content="yes" />
 				<meta http-equiv="pragma" content="no-cache" />
 				<meta http-equiv="expires" content="-1" />
 			</c:when>
 			<c:otherwise>
-				<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/engine.js'></script>
-				<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/interface/DWRAlertService.js'></script>
-				<script src="<%= request.getContextPath() %>/openmrs.js"></script>
+				<openmrs:htmlInclude file="/dwr/engine.js" />
+				<openmrs:htmlInclude file="/dwr/interface/DWRAlertService.js" />
+				<openmrs:htmlInclude file="/openmrs.js" />
 			</c:otherwise>
 		</c:choose>
 		<title><spring:message code="openmrs.title"/></title>

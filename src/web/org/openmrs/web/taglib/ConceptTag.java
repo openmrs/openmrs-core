@@ -2,25 +2,20 @@ package org.openmrs.web.taglib;
 
 import java.util.Locale;
 
-import javax.servlet.http.HttpSession;
-import javax.servlet.jsp.tagext.BodyTagSupport;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
-import org.openmrs.ConceptNumeric;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
-import org.openmrs.web.WebConstants;
-
-import uk.ltd.getahead.dwr.WebContextFactory;
 
 public class ConceptTag extends BodyTagSupport {
 
-	public static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 1234324234333L;
 	
 	private final Log log = LogFactory.getLog(getClass());
 	private Concept c = null;
@@ -33,12 +28,7 @@ public class ConceptTag extends BodyTagSupport {
 	private String locale;
 
 	public int doStartTag() throws JspException {
-		HttpSession session = pageContext.getSession();
-		Context context = (Context)session.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context == null) {
-			throw new JspException("ConceptNameTag requires a valid context");
-		}
-		ConceptService cs = context.getConceptService();
+		ConceptService cs = Context.getConceptService();
 		
 		// Search for a concept by id
 		c = cs.getConcept(conceptId);
@@ -49,7 +39,7 @@ public class ConceptTag extends BodyTagSupport {
 		log.debug("Found concept with id " + conceptId + ", set to variable: " + var);
 		
 		// If user specifies a locale in the tag, try to find a matching locale. Otherwise, use the user's default locale
-		Locale loc = context.getLocale();
+		Locale loc = Context.getLocale();
 		if (locale != null && !locale.equals("")) {
 			Locale[] locales = Locale.getAvailableLocales();
 			for (int i=0; i<locales.length; i++) {

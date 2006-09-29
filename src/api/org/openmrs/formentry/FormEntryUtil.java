@@ -72,10 +72,8 @@ public class FormEntryUtil {
 				log.warn("Deprecated runtime property: " + s + ".  This property is no longer read in at runtime and can be deleted.");
 		}
 	}
-
-	public static void startup() {
-
-	}
+	
+	public static void shutdown() { }
 
 	/**
 	 * Expand the xsn at <code>xsnFilePath</code> into a temp dir
@@ -165,14 +163,13 @@ public class FormEntryUtil {
 	/**
 	 * Gets the current xsn file for a form.  If the xsn is not found, the starter
 	 * xsn is returned instead
-	 * @param context
 	 * @param form
 	 * @return form's xsn file or starter xsn if none
 	 * @throws IOException
 	 */
-	public static FileInputStream getCurrentXSN(Context context, Form form) throws IOException {
+	public static FileInputStream getCurrentXSN(Form form) throws IOException {
 		// Find the form file data
-		String formDir = context.getAdministrationService().getGlobalProperty("formentry.infopath_output_dir");
+		String formDir = Context.getAdministrationService().getGlobalProperty("formentry.infopath_output_dir");
 		String formFilePath = formDir + (formDir.endsWith(File.separator) ? "" : File.separator)
 		    + FormEntryUtil.getFormUri(form);
 
@@ -189,30 +186,28 @@ public class FormEntryUtil {
 			tmpXSN = FormEntryUtil.getExpandedStarterXSN();
 		}
 		
-		return compileXSN(context, form, tmpXSN);
+		return compileXSN(form, tmpXSN);
 	}
 	
 	/**
-	 * Returns a .xsn file compiled from the starter data set 
-	 * @param context
+	 * Returns a .xsn file compiled from the starter data set
 	 * @param form
 	 * @return .xsn file
 	 * @throws IOException
 	 */
-	public static FileInputStream getStarterXSN(Context context, Form form) throws IOException {
+	public static FileInputStream getStarterXSN(Form form) throws IOException {
 		File tmpXSN = FormEntryUtil.getExpandedStarterXSN();
-		return compileXSN(context, form, tmpXSN);
+		return compileXSN(form, tmpXSN);
 	}
 	
 	/**
 	 * Modifies schema, template.xml, and sample data, defaults, urls in <code>tmpXSN</code> 
-	 * @param context 
 	 * @param form 
 	 * @param tmpXSN directory containing xsn files.
 	 * @return
 	 * @throws IOException
 	 */
-	private static FileInputStream compileXSN(Context context, Form form, File tmpXSN) throws IOException {
+	private static FileInputStream compileXSN(Form form, File tmpXSN) throws IOException {
 		// Get Constants
 		String schemaFilename = FormEntryConstants.FORMENTRY_DEFAULT_SCHEMA_NAME;
 		String templateFilename = FormEntryConstants.FORMENTRY_DEFAULT_TEMPLATE_NAME;
@@ -221,10 +216,10 @@ public class FormEntryUtil {
 		String url = getFormAbsoluteUrl(form);
 
 		// Generate the schema and template.xml
-		FormXmlTemplateBuilder fxtb = new FormXmlTemplateBuilder(context, form, url);
+		FormXmlTemplateBuilder fxtb = new FormXmlTemplateBuilder(form, url);
 		String template = fxtb.getXmlTemplate(false);
 		String templateWithDefaultScripts = fxtb.getXmlTemplate(true);
-		String schema = new FormSchemaBuilder(context, form).getSchema();
+		String schema = new FormSchemaBuilder(form).getSchema();
 
 		// Generate and overwrite the schema
 		File schemaFile = findFile(tmpXSN, schemaFilename);

@@ -16,11 +16,10 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.taglib.fieldgen.FieldGenHandler;
 import org.openmrs.web.taglib.fieldgen.FieldGenHandlerFactory;
-import org.springframework.context.ApplicationContext;
 
 public class FieldGenTag extends TagSupport {
 
-	public static final long serialVersionUID = 2L;
+	public static final long serialVersionUID = 21132L;
 	
 	private final Log log = LogFactory.getLog(getClass());
 
@@ -37,7 +36,6 @@ public class FieldGenTag extends TagSupport {
 	private Map<String, Object> parameterMap = null;
 	
 	// should not be reset each time
-	private ApplicationContext context = null;
 	private FieldGenHandlerFactory factory = null;
 
 	//private String fieldLength;
@@ -56,6 +54,7 @@ public class FieldGenTag extends TagSupport {
 		return this.pageContext;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public int doStartTag() throws JspException {
 				
 		if (type == null) type = "";
@@ -350,7 +349,7 @@ public class FieldGenTag extends TagSupport {
 			//if ( context == null ) context = new FileSystemXmlApplicationContext("file:/**/WEB-INF/openmrs-servlet.xml");
 			/*
 			if ( context != null ) {
-				if ( factory == null ) factory = (FieldGenHandlerFactory)context.getBean("fieldGenHandlerFactory");
+				if ( factory == null ) factory = (FieldGenHandlerFactory)Context.getBean("fieldGenHandlerFactory");
 			} else log.error("Could not get handle on BeanFactory from FieldGen module");
 			*/
 			factory = FieldGenHandlerFactory.getSingletonInstance();

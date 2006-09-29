@@ -3,7 +3,6 @@ package org.openmrs.web.controller.order;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
@@ -20,16 +19,11 @@ import org.openmrs.DrugOrder;
 import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.PatientName;
-import org.openmrs.User;
-import org.openmrs.api.APIException;
-import org.openmrs.api.AdministrationService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
-import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
 import org.springframework.context.support.MessageSourceAccessor;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.RequestUtils;
@@ -65,9 +59,9 @@ public class OrderListByPatientController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		String view = getFormView();
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			String success = msa.getMessage("Order.list.saved");
 			view = getSuccessView();
@@ -87,9 +81,6 @@ public class OrderListByPatientController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-    	HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		//default empty Object
 		List<DrugOrder> orderList = new Vector<DrugOrder>();
 		Integer patientId = RequestUtils.getIntParameter(request, "patientId");
@@ -97,15 +88,15 @@ public class OrderListByPatientController extends SimpleFormController {
 		System.err.println("pid is " + patientId);
 		
 		//only fill the Object is the user has authenticated properly
-		if ( context != null && context.isAuthenticated() ) {
+		if ( Context.isAuthenticated() ) {
 			if ( patientId != null ) {
 				// this is the default
 				this.setFormView("/admin/orders/orderListByPatient");
-				PatientService ps = context.getPatientService();
+				PatientService ps = Context.getPatientService();
 				Patient p = ps.getPatient(patientId);
 				
 				if ( p != null ) {
-					OrderService os = context.getOrderService();
+					OrderService os = Context.getOrderService();
 			    	orderList = os.getDrugOrdersByPatient(p);
 				} else {
 					log.error("Could not get a patient corresponding to patientId [" + patientId + "], thus could not get drug orders.");
@@ -114,7 +105,7 @@ public class OrderListByPatientController extends SimpleFormController {
 			} else {
 				if ( showAll ) {
 					this.setFormView("/admin/orders/orderDrugList");
-					OrderService os = context.getOrderService();
+					OrderService os = Context.getOrderService();
 			    	orderList = os.getDrugOrders();
 				} else {
 					this.setFormView("/admin/orders/choosePatient");
@@ -129,10 +120,10 @@ public class OrderListByPatientController extends SimpleFormController {
 	/* (non-Javadoc)
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	protected Map referenceData(HttpServletRequest request, Object obj, Errors err) throws Exception {
-    	HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		Map<String,Object> refData = new HashMap<String,Object>();
 
 		// Load international concept names so we can show the correct drug name
@@ -152,9 +143,9 @@ public class OrderListByPatientController extends SimpleFormController {
 		Integer patientId = RequestUtils.getIntParameter(request, "patientId");
 		Patient p = null;
 		
-		if ( context != null && context.isAuthenticated() ) {
+		if ( Context.isAuthenticated() ) {
 			if ( patientId != null ) {
-				PatientService ps = context.getPatientService();
+				PatientService ps = Context.getPatientService();
 				p = ps.getPatient(patientId);
 				
 				Set<PatientName> patientNames = p.getNames();

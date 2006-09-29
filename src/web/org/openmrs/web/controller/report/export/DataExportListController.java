@@ -53,11 +53,11 @@ public class DataExportListController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		String view = getFormView();
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			String[] reportList = request.getParameterValues("dataExportId");
-			AdministrationService as = context.getAdministrationService();
+			AdministrationService as = Context.getAdministrationService();
 			
 			String success = "";
 			String error = "";
@@ -103,15 +103,12 @@ public class DataExportListController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-    	HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		//default empty Object
 		Set<AbstractReportObject> reportList = new HashSet<AbstractReportObject>();
 		
 		//only fill the Object is the user has authenticated properly
-		if (context != null && context.isAuthenticated()) {
-			ReportService rs = context.getReportService();
+		if (Context.isAuthenticated()) {
+			ReportService rs = Context.getReportService();
 			//ReportService rs = new TestReportService();
 	    	reportList = rs.getReportObjectsByType(DataExportReportObject.TYPE_NAME);
 		}

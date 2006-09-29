@@ -15,7 +15,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
-import org.openmrs.web.WebConstants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -58,8 +57,7 @@ public class FormUploadServlet extends HttpServlet {
 
 		FormEntryQueue formEntryQueue = new FormEntryQueue();
 		formEntryQueue.setFormData(xml);
-		Context context = (Context)request.getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		FormEntryService formEntryService = context.getFormEntryService();
+		FormEntryService formEntryService = Context.getFormEntryService();
 		formEntryService.createFormEntryQueue(formEntryQueue);
 		
 		ServletOutputStream out = response.getOutputStream();

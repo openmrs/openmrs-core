@@ -94,10 +94,8 @@
 			<th><spring:message code="MRNGenerator.first"/></th>
 			<th><spring:message code="MRNGenerator.count"/></th>
 		</tr>
-		<%@ page import="org.openmrs.api.context.Context" %>
 		<%
-			Context context = (Context)session.getAttribute(org.openmrs.web.WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-			pageContext.setAttribute("rows", context.getAdministrationService().getMRNGeneratorLog());
+			pageContext.setAttribute("rows", org.openmrs.api.context.Context.getAdministrationService().getMRNGeneratorLog());
 		%>
 		<c:forEach items="${rows}" var="row" varStatus="status">
 			<tr class="<c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">

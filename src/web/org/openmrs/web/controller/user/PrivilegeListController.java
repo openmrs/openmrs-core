@@ -54,13 +54,13 @@ public class PrivilegeListController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		Locale locale = request.getLocale();
 		String view = getFormView();
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			String[] privilegeList = request.getParameterValues("privilegeId");
-			AdministrationService as = context.getAdministrationService();
-			UserService us = context.getUserService();
+			AdministrationService as = Context.getAdministrationService();
+			UserService us = Context.getUserService();
 			String success = "";
 			String error = "";
 
@@ -101,14 +101,14 @@ public class PrivilegeListController extends SimpleFormController {
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
     	HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		
 		//map containing the privilege and true/false whether the privilege is core or not
 		Map<Privilege, Boolean> privilegeList = new LinkedHashMap<Privilege, Boolean>();
 		
 		//only fill the Object is the user has authenticated properly
-		if (context != null && context.isAuthenticated()) {
-			UserService us = context.getUserService();
+		if (Context.isAuthenticated()) {
+			UserService us = Context.getUserService();
 	    	for (Privilege p : us.getPrivileges()) {
 	    		if (OpenmrsConstants.CORE_PRIVILEGES().keySet().contains(p.getPrivilege()))
 	    			privilegeList.put(p, true);

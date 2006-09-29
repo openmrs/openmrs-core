@@ -47,12 +47,12 @@ public class ConceptClassFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		String view = getFormView();
 		
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			ConceptClass cc = (ConceptClass)obj;
-			context.getAdministrationService().updateConceptClass(cc);
+			Context.getAdministrationService().updateConceptClass(cc);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptClass.saved");
 		}
@@ -69,13 +69,10 @@ public class ConceptClassFormController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		ConceptClass identifierType = null;
 		
-		if (context != null && context.isAuthenticated()) {
-			ConceptService cs = context.getConceptService();
+		if (Context.isAuthenticated()) {
+			ConceptService cs = Context.getConceptService();
 			String identifierTypeId = request.getParameter("conceptClassId");
 	    	if (identifierTypeId != null)
 	    		identifierType = cs.getConceptClass(Integer.valueOf(identifierTypeId));	

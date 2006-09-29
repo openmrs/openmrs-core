@@ -17,7 +17,6 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.logging.Log;
@@ -38,7 +37,6 @@ import org.openmrs.hl7.HL7InQueue;
 import org.openmrs.hl7.HL7Service;
 import org.openmrs.hl7.HL7Source;
 import org.openmrs.migration.MigrationHelper;
-import org.openmrs.web.WebConstants;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.view.RedirectView;
@@ -50,19 +48,16 @@ public class MigrationController implements Controller {
 	public ModelAndView handleRequest(HttpServletRequest request,
     		HttpServletResponse response) throws ServletException, IOException {
 
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
-		Map myModel = new HashMap();
-		if (context != null) {	
+		Map<String, Object> myModel = new HashMap<String, Object>();
+		if (Context.isAuthenticated()) {	
 			String message = request.getParameter("message");
 			if (message == null || message.length() == 0) {
 				message = "Paste some xml";
 			}
 			
-			EncounterService es = context.getEncounterService();
+			EncounterService es = Context.getEncounterService();
 			List<Location> locations = es.getLocations();
-			UserService us = context.getUserService();
+			UserService us = Context.getUserService();
 			List<User> users = us.getUsers();
 			
 			
@@ -75,41 +70,20 @@ public class MigrationController implements Controller {
 	}
 	
 	public ModelAndView uploadUsers(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ParserConfigurationException, ParseException {
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context == null) {
-			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
-			response.sendRedirect(request.getContextPath() + "/logout");
-			return null;
-		}
 		String xml = request.getParameter("user_xml");
 		log.debug("xml to upload = " + xml);
-		int numAdded = MigrationHelper.importUsers(context, MigrationHelper.parseXml(xml));
+		int numAdded = MigrationHelper.importUsers(MigrationHelper.parseXml(xml));
 		return new ModelAndView(new RedirectView("migration.form?message=" + URLEncoder.encode("Added " + numAdded + " users", "UTF-8")));
 	}
 	
 	public ModelAndView uploadLocations(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ParserConfigurationException {
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context == null) {
-			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
-			response.sendRedirect(request.getContextPath() + "/logout");
-			return null;
-		}
 		String xml = request.getParameter("location_xml");
 		log.debug("xml to upload = " + xml);
-		int numAdded = MigrationHelper.importLocations(context, MigrationHelper.parseXml(xml));	
+		int numAdded = MigrationHelper.importLocations(MigrationHelper.parseXml(xml));	
 		return new ModelAndView(new RedirectView("migration.form?message=" + URLEncoder.encode("Uploaded " + numAdded + " locations", "UTF-8")));
 	}
 	
 	public ModelAndView runHl7(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context == null) {
-			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
-			response.sendRedirect(request.getContextPath() + "/logout");
-			return null;
-		}
 		List<String> messages = new ArrayList<String>();
 		
 		String filename = request.getParameter("filename");
@@ -157,16 +131,16 @@ public class MigrationController implements Controller {
 			// Confusing terminology: an HL7InQueue is just one entry in the queue
 			HL7InQueue hl7InQueue = new HL7InQueue();
 			hl7InQueue.setHL7Data(oneMessage);
-			HL7Service hs = context.getHL7Service();
+			HL7Service hs = Context.getHL7Service();
 			if (hs.getHL7Sources().isEmpty()) {
 				HL7Source hl7Source = new HL7Source();
 				hl7Source.setName("MigrationTestTool");
 				hl7Source.setDescription("Testing migrating data, from MigrationController.");
 				hs.createHL7Source(hl7Source);
 			}
-			hl7InQueue.setHL7Source(context.getHL7Service().getHL7Source(1));
+			hl7InQueue.setHL7Source(Context.getHL7Service().getHL7Source(1));
 			log.debug("hl7InQueue.hl7Data: " + hl7InQueue.getHL7Data());
-			context.getHL7Service().createHL7InQueue(hl7InQueue);
+			Context.getHL7Service().createHL7InQueue(hl7InQueue);
 		}
 
 		return new ModelAndView(new RedirectView("migration.form"));
@@ -174,15 +148,8 @@ public class MigrationController implements Controller {
 
 	// Hardcoded for PIH v1-v2 migration. Sorry about that.
 	public ModelAndView uploadRegimens(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ParseException {
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context == null) {
-			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
-			response.sendRedirect(request.getContextPath() + "/logout");
-			return null;
-		}
 		String csv = request.getParameter("regimen_csv");
-		int numAdded = importRegimens(context, csv);
+		int numAdded = importRegimens(csv);
 	
 		return new ModelAndView(new RedirectView("migration.form?message=" + URLEncoder.encode("Uploaded " + numAdded + " regimens", "UTF-8")));
 	}
@@ -191,14 +158,6 @@ public class MigrationController implements Controller {
 	 * TODO: DOCUMENT THIS
 	 */
 	public ModelAndView uploadMigrationFile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ParseException {
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context == null) {
-			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
-			response.sendRedirect(request.getContextPath() + "/logout");
-			return null;
-		}
-		
 		String filename = request.getParameter("filename");
 		if (filename == null || filename.length() == 0)
 			throw new IllegalArgumentException("Must specify a 'filename' parameter");
@@ -230,22 +189,22 @@ public class MigrationController implements Controller {
 				throw new IllegalArgumentException("Don't know how to handle '" + s + "'");
 			}
 		}
-		int numRels = MigrationHelper.importRelationships(context, relationships, autoCreateUsers, autoAddRole);
+		int numRels = MigrationHelper.importRelationships(relationships, autoCreateUsers, autoAddRole);
 		String message = "";
 		message += "Uploaded " + numRels + " relationships<br/>";
-		int numProgram = MigrationHelper.importProgramsAndStatuses(context, programWorkflow);
+		int numProgram = MigrationHelper.importProgramsAndStatuses(programWorkflow);
 		message += "Uploaded " + numProgram + " programs and statuses<br/>";
 		return new ModelAndView(new RedirectView("migration.form?message=" + URLEncoder.encode(message, "UTF-8")));
 	}
 	
 	// takes something like "^glokawera@pih.org" and returns a user with that username (after the ^)
-	private User userHelper(Context context, String username) {
+	private User userHelper(String username) {
 		if (username == null)
 			return null;
 		int ind = username.indexOf('^');
 		if (ind >= 0)
 			username = username.substring(ind + 1);
-		return context.getUserService().getUserByUsername(username);
+		return Context.getUserService().getUserByUsername(username);
 	}
 
 	/**
@@ -253,9 +212,9 @@ public class MigrationController implements Controller {
 	 *   patientId,drugName,formulationName,startDate,autoExpireDate,discontinuedDate,discontinuedReason,doseStrength,doseUnit,dosesPerDay,daysPerWeek,prn
 	 * @return The number of regimens added
 	 */
-	public int importRegimens(Context context, String csv) throws IOException, ParseException {
-		PatientIdentifierType pihIdentifierType = context.getPatientService().getPatientIdentifierType("HIVEMR-V1");
-		OrderType orderType = context.getOrderService().getOrderType(1);
+	public int importRegimens(String csv) throws IOException, ParseException {
+		PatientIdentifierType pihIdentifierType = Context.getPatientService().getPatientIdentifierType("HIVEMR-V1");
+		OrderType orderType = Context.getOrderService().getOrderType(1);
 		if (!orderType.getName().equals("Drug Order")) {
 			throw new RuntimeException("ERROR! ASSUMED THAT ORDER TYPE 1 IS DRUG ORDER, BUT IT'S NOT");
 		}
@@ -287,7 +246,7 @@ public class MigrationController implements Controller {
 			if (dosesPerDay == null || dosesPerDay == 0) {
 				throw new IllegalArgumentException("Doses per day must be a positive integer");					
 			}
-			Drug drug = context.getConceptService().getDrug(formulationName);
+			Drug drug = Context.getConceptService().getDrug(formulationName);
 			if (drug == null)
 				throw new IllegalArgumentException("Can't find drug '" + formulationName + "'");
 			
@@ -306,9 +265,9 @@ public class MigrationController implements Controller {
 			reg.setPrn(prn);
 			reg.setComplex(false);
 			reg.setOrderType(orderType);
-			reg.setCreator(userHelper(context, creator));
+			reg.setCreator(userHelper(creator));
 			reg.setDateCreated(dateCreated);
-			reg.setDiscontinuedBy(userHelper(context, discontinuedBy));
+			reg.setDiscontinuedBy(userHelper(discontinuedBy));
 			List<Order> pat = patientRegimens.get(patientId);
 			if (pat == null) {
 				pat = new ArrayList<Order>();
@@ -317,13 +276,13 @@ public class MigrationController implements Controller {
 			pat.add(reg);
 		}
 		for (Map.Entry<Integer, List<Order>> e : patientRegimens.entrySet()) {
-			List<PatientIdentifier> pil = context.getPatientService().getPatientIdentifiers(e.getKey().toString(), pihIdentifierType);
+			List<PatientIdentifier> pil = Context.getPatientService().getPatientIdentifiers(e.getKey().toString(), pihIdentifierType);
 			if (pil.size() != 1) {
 				throw new RuntimeException("Found " + pil.size() + " PatientIdentifiers for " + pihIdentifierType + " of " + e.getKey());
 			}
 			Patient p = pil.get(0).getPatient();
 			List<Order> list = e.getValue();
-			context.getOrderService().createOrdersAndEncounter(p, list);
+			Context.getOrderService().createOrdersAndEncounter(p, list);
 			numAdded += list.size();
 		}
 		return numAdded;

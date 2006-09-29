@@ -31,8 +31,7 @@ public class FormEntryQueueProcessorServlet extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 		HttpSession httpSession = request.getSession();
 
-		Context context = getContext(httpSession);
-		if (context == null) {
+		if (!Context.isAuthenticated()) {
 			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
 					"auth.session.expired");
 			response.sendRedirect(request.getContextPath() + "/logout");
@@ -42,7 +41,7 @@ public class FormEntryQueueProcessorServlet extends HttpServlet {
 		ServletOutputStream out = response.getOutputStream();
 
 		try {
-			getFormEntryQueueProcessor(context).processFormEntryQueue();
+			getFormEntryQueueProcessor().processFormEntryQueue();
 			out.print("FormEntry queue processor has started");
 		} catch (APIException e) {
 			out
@@ -57,23 +56,13 @@ public class FormEntryQueueProcessorServlet extends HttpServlet {
    *
    *  @return   an instance of the form entry queue processor
    */
-  private FormEntryQueueProcessor getFormEntryQueueProcessor(Context context) { 
+  private FormEntryQueueProcessor getFormEntryQueueProcessor() { 
     synchronized (processor) { 
       if ( processor == null ) { 
-        processor = new FormEntryQueueProcessor(context);
+        processor = new FormEntryQueueProcessor();
       }
     }
     return processor;
   }
-
-  /**
-   *  Get the user's context.
-   *
-   *  @return   an instance of the form entry queue processor
-   */
-	private Context getContext(HttpSession httpSession) {
-		return (Context) httpSession
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-	}
 
 }

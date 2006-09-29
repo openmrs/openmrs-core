@@ -16,11 +16,9 @@ import org.openmrs.Concept;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
-import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.User;
-import org.openmrs.api.ConceptService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
@@ -52,20 +50,20 @@ public class OrderPlaceFormController extends SimpleFormController {
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-        binder.registerCustomEditor(OrderType.class, new OrderTypeEditor(context));
+		
+        binder.registerCustomEditor(OrderType.class, new OrderTypeEditor());
         binder.registerCustomEditor(Boolean.class, new CustomBooleanEditor("t", "f", true));
-        binder.registerCustomEditor(Concept.class, new ConceptEditor(context));
+        binder.registerCustomEditor(Concept.class, new ConceptEditor());
         binder.registerCustomEditor(Date.class, new CustomDateEditor(new SimpleDateFormat("dd/MM/yyyy"), true));
-        binder.registerCustomEditor(User.class, new UserEditor(context));
-        binder.registerCustomEditor(Encounter.class, new EncounterEditor(context));
-        binder.registerCustomEditor(Drug.class, new DrugEditor(context));
+        binder.registerCustomEditor(User.class, new UserEditor());
+        binder.registerCustomEditor(Encounter.class, new EncounterEditor());
+        binder.registerCustomEditor(Drug.class, new DrugEditor());
 	}
 
 	/* (non-Javadoc)
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	protected Map referenceData(HttpServletRequest request) throws Exception {
 		Map refData = new HashMap();
@@ -88,10 +86,10 @@ public class OrderPlaceFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		String view = getFormView();
 		
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			DrugOrder order = (DrugOrder)obj;
 
 			// need to do a lot more to this drug order
@@ -108,13 +106,13 @@ public class OrderPlaceFormController extends SimpleFormController {
 			if ( order.getEncounter() == null ) {
 				Integer patientId = RequestUtils.getIntParameter(request, "patientId");
 				if ( patientId != null ) {
-					thisPatient = context.getPatientService().getPatient(patientId);
+					thisPatient = Context.getPatientService().getPatient(patientId);
 				}
 			}
 			
 			if ( order.getDateCreated() == null ) order.setDateCreated(new Date());
 			if ( order.getVoided() == null ) order.setVoided(new Boolean(false));
-			context.getOrderService().updateOrder(order, thisPatient);
+			Context.getOrderService().updateOrder(order, thisPatient);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Order.drug.saved");
 		}
@@ -131,13 +129,11 @@ public class OrderPlaceFormController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		OrderService os = context.getOrderService();
+		OrderService os = Context.getOrderService();
 		
 		DrugOrder order = null;
 		
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			Integer orderId = RequestUtils.getIntParameter(request, "orderId");
 	    	if (orderId != null) order = (DrugOrder)os.getOrder(orderId);	
 		}

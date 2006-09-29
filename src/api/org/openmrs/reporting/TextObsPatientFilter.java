@@ -62,13 +62,13 @@ public class TextObsPatientFilter extends AbstractReportObject implements Patien
 		this.suggestFromDatabase = suggestFromDatabase;
 	}
 
-	public PatientSet filter(Context context, PatientSet input) {
-		PatientSetService service = context.getPatientSetService();
+	public PatientSet filter(PatientSet input) {
+		PatientSetService service = Context.getPatientSetService();
 		return input.intersect(service.getPatientsHavingTextObs(concept, value));
 	}
 	
-	public PatientSet filterInverse(Context context, PatientSet input) {
-		PatientSetService service = context.getPatientSetService();
+	public PatientSet filterInverse(PatientSet input) {
+		PatientSetService service = Context.getPatientSetService();
 		return input.subtract(service.getPatientsHavingTextObs(concept, value));
 	}
 

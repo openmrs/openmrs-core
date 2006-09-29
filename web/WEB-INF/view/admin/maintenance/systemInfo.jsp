@@ -7,10 +7,9 @@
 
 <%@ page import="org.openmrs.api.context.Context" %>
 <%
-	Context context = (Context)session.getAttribute(org.openmrs.web.WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-	pageContext.setAttribute("vars", context.getAdministrationService().getSystemVariables());
-	pageContext.setAttribute("formEntryVars", context.getFormEntryService().getSystemVariables());
-	pageContext.setAttribute("schedVars", context.getSchedulerService().getSystemVariables());
+	pageContext.setAttribute("vars", Context.getAdministrationService().getSystemVariables());
+	pageContext.setAttribute("formEntryVars", Context.getFormEntryService().getSystemVariables());
+	pageContext.setAttribute("schedVars", Context.getSchedulerService().getSystemVariables());
 %>
 	
 <br />

@@ -43,15 +43,15 @@ public class LocationFilter extends AbstractPatientFilter implements PatientFilt
 		this.method = method;
 	}
 	
-	private PatientSet filterHelper(Context context, PatientSet input) {
-		PatientSetService service = context.getPatientSetService();
+	private PatientSet filterHelper(PatientSet input) {
+		PatientSetService service = Context.getPatientSetService();
 		if (method == Method.PATIENT_TABLE) {
 			List<Integer> ret = new ArrayList<Integer>();
 			Map<Integer, Object> temp = service.getPatientAttributes(input, "Patient.healthCenter", false);
 			for (Map.Entry<Integer, Object> e : temp.entrySet()) {
 				if (e.getValue() == null)
 					continue;
-				Location l = context.getPatientService().getLocation((Integer) e.getValue());
+				Location l = Context.getPatientService().getLocation((Integer) e.getValue());
 				if (location.equals(l))
 					ret.add(e.getKey());
 			}
@@ -62,12 +62,12 @@ public class LocationFilter extends AbstractPatientFilter implements PatientFilt
 		
 	}
 
-	public PatientSet filter(Context context, PatientSet input) {
-		return input.intersect(filterHelper(context, input));
+	public PatientSet filter(PatientSet input) {
+		return input.intersect(filterHelper(input));
 	}
 
-	public PatientSet filterInverse(Context context, PatientSet input) {
-		return input.subtract(filterHelper(context, input));
+	public PatientSet filterInverse(PatientSet input) {
+		return input.subtract(filterHelper(input));
 	}
 
 	public String getDescription() {

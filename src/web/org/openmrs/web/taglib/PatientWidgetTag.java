@@ -1,7 +1,6 @@
 package org.openmrs.web.taglib;
 
 import java.io.IOException;
-import java.util.Locale;
 
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
@@ -10,7 +9,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
-import org.openmrs.web.WebConstants;
 
 public class PatientWidgetTag extends TagSupport {
 
@@ -37,7 +35,7 @@ public class PatientWidgetTag extends TagSupport {
 	}
 
 	public int doStartTag() {
-		Context context = (Context)pageContext.getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		/*
 		WebApplicationContext messageSource = WebApplicationContextUtils.getWebApplicationContext(pageContext.getServletContext());
 		if (messageSource == null) {
@@ -47,10 +45,9 @@ public class PatientWidgetTag extends TagSupport {
 		*/
 		boolean showNames = "full".equals(size);
 		boolean showPatientInfo = !"compact".equals(size);
-		Locale locale = context.getLocale();
 		Patient patient = null;
 		if (showPatientInfo) {
-			patient = context.getPatientService().getPatient(patientId);
+			patient = Context.getPatientService().getPatient(patientId);
 		}
 		
 		try {

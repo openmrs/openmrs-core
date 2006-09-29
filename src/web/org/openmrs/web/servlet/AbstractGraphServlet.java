@@ -6,15 +6,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
-
-import org.openmrs.api.context.Context;
-import org.openmrs.web.WebConstants;
 
 public abstract class AbstractGraphServlet extends HttpServlet {
 
@@ -90,20 +86,6 @@ public abstract class AbstractGraphServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {	
 		doGet(request,response);		
-	}
-	
-	/**
-	 * Convenience method to get context from session.  
-	 * 
-	 * TODO Should probably be added to some helper class since it is used all of the time. 
-	 */
-	public Context getContext(HttpServletRequest request) throws ServletException { 
-		HttpSession session = request.getSession();
-		Context context = (Context)session.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context == null) {
-			throw new ServletException("Requires a valid context");
-		}	
-		return context;
 	}
 
 }

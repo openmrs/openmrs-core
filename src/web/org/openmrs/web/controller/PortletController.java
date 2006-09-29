@@ -12,7 +12,6 @@ import java.util.TreeSet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,10 +24,10 @@ import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.UserContext;
 import org.openmrs.order.RegimenSuggestion;
 import org.openmrs.reporting.PatientSet;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.web.WebConstants;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
@@ -70,8 +69,8 @@ public class PortletController implements Controller {
 	public ModelAndView handleRequest(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		//HttpSession httpSession = request.getSession();
+		//
 
 		// find the portlet that was identified in the openmrs:portlet taglib
 		Object uri = request.getAttribute("javax.servlet.include.servlet_path");
@@ -101,111 +100,110 @@ public class PortletController implements Controller {
 			if (moreParams != null) {
 				model.putAll(moreParams);
 			}
-						
-			if (context != null) {
-				model.put("authenticatedUser", context.getAuthenticatedUser());
-				model.put("locale", context.getLocale());
-				
-				// if a patient id is available, put "patient" and "patientObs" in the request
-				Object o = request.getAttribute("org.openmrs.portlet.patientId");
-				if (o != null) {
-					// we can't continue if the user can't view patients
-					if (context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS)) {
-						Patient p = context.getPatientService().getPatient((Integer) o);
-						model.put("patient", p);
-						
-						// add encounters if this user can view them
-						if (context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ENCOUNTERS))
-							model.put("patientEncounters", context.getEncounterService().getEncounters(p));
-						
-						if (context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_OBS))
-							model.put("patientObs", context.getObsService().getObservations(p));
-						
-						if (context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ORDERS)) {
-							List<DrugOrder> drugOrderList = context.getOrderService().getDrugOrdersByPatient(p);
-							model.put("patientDrugOrders", drugOrderList);
-							List<DrugOrder> currentDrugOrders = new ArrayList<DrugOrder>();
-							List<DrugOrder> discontinuedDrugOrders = new ArrayList<DrugOrder>();
-							for (Iterator<DrugOrder> iter = drugOrderList.iterator(); iter.hasNext(); ) {
-								DrugOrder next = iter.next();
-								if (next.isCurrent()) currentDrugOrders.add(next);
-								if (next.isDiscontinued()) discontinuedDrugOrders.add(next); 
-							}
-							model.put("currentDrugOrders", currentDrugOrders);
-							model.put("completedDrugOrders", discontinuedDrugOrders);
+			
+			UserContext userContext = Context.getUserContext();
+			
+			model.put("authenticatedUser", Context.getAuthenticatedUser());
+			model.put("locale", userContext.getLocale());
+			
+			// if a patient id is available, put "patient" and "patientObs" in the request
+			Object o = request.getAttribute("org.openmrs.portlet.patientId");
+			if (o != null) {
+				// we can't continue if the user can't view patients
+				if (userContext.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS)) {
+					Patient p = Context.getPatientService().getPatient((Integer) o);
+					model.put("patient", p);
 					
-							List<RegimenSuggestion> standardRegimens = context.getOrderService().getStandardRegimens();
-							if ( standardRegimens != null )
-								model.put("standardRegimens", standardRegimens);
+					// add encounters if this user can view them
+					if (userContext.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ENCOUNTERS))
+						model.put("patientEncounters", Context.getEncounterService().getEncounters(p));
+					
+					if (userContext.hasPrivilege(OpenmrsConstants.PRIV_VIEW_OBS))
+						model.put("patientObs", Context.getObsService().getObservations(p));
+					
+					if (userContext.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ORDERS)) {
+						List<DrugOrder> drugOrderList = Context.getOrderService().getDrugOrdersByPatient(p);
+						model.put("patientDrugOrders", drugOrderList);
+						List<DrugOrder> currentDrugOrders = new ArrayList<DrugOrder>();
+						List<DrugOrder> discontinuedDrugOrders = new ArrayList<DrugOrder>();
+						for (Iterator<DrugOrder> iter = drugOrderList.iterator(); iter.hasNext(); ) {
+							DrugOrder next = iter.next();
+							if (next.isCurrent()) currentDrugOrders.add(next);
+							if (next.isDiscontinued()) discontinuedDrugOrders.add(next); 
 						}
-						
-						if (context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS)) {
-							model.put("patientPrograms", context.getProgramWorkflowService().getPatientPrograms(p));
-							model.put("patientCurrentPrograms", context.getProgramWorkflowService().getCurrentPrograms(p, null));
-						}
-						
-						if (context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS)) {
-							List<Relationship> relationships = new ArrayList<Relationship>();
-							relationships.addAll(context.getPatientService().getRelationships(new Person(p), false));
-							Map<RelationshipType, List<Relationship>> relationshipsByType = new HashMap<RelationshipType, List<Relationship>>();
-							for (Relationship rel : relationships) {
-								List<Relationship> list = relationshipsByType.get(rel.getRelationship());
-								if (list == null) {
-									list = new ArrayList<Relationship>();
-									relationshipsByType.put(rel.getRelationship(), list);
-								}
-								list.add(rel);
+						model.put("currentDrugOrders", currentDrugOrders);
+						model.put("completedDrugOrders", discontinuedDrugOrders);
+				
+						List<RegimenSuggestion> standardRegimens = Context.getOrderService().getStandardRegimens();
+						if ( standardRegimens != null )
+							model.put("standardRegimens", standardRegimens);
+					}
+					
+					if (userContext.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS)) {
+						model.put("patientPrograms", Context.getProgramWorkflowService().getPatientPrograms(p));
+						model.put("patientCurrentPrograms", Context.getProgramWorkflowService().getCurrentPrograms(p, null));
+					}
+					
+					if (userContext.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS)) {
+						List<Relationship> relationships = new ArrayList<Relationship>();
+						relationships.addAll(Context.getPatientService().getRelationships(new Person(p), false));
+						Map<RelationshipType, List<Relationship>> relationshipsByType = new HashMap<RelationshipType, List<Relationship>>();
+						for (Relationship rel : relationships) {
+							List<Relationship> list = relationshipsByType.get(rel.getRelationship());
+							if (list == null) {
+								list = new ArrayList<Relationship>();
+								relationshipsByType.put(rel.getRelationship(), list);
 							}
-							
-							model.put("patientRelationships", relationships);
-							model.put("patientRelationshipsByType", relationshipsByType);
-							model.put("patientId", (Integer) o);
-							model.put("personId", context.getAdministrationService().getPerson(p).getPersonId());
+							list.add(rel);
 						}
+						
+						model.put("patientRelationships", relationships);
+						model.put("patientRelationshipsByType", relationshipsByType);
+						model.put("patientId", (Integer) o);
+						model.put("personId", Context.getAdministrationService().getPerson(p).getPersonId());
 					}
 				}
-				
-				// if an encounter id is available, put "encounter" and "encounterObs" in the request
-				o = request.getAttribute("org.openmrs.portlet.encounterId");
-				if (o != null) {
-					if (context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ENCOUNTERS)) {
-						Encounter e = context.getEncounterService().getEncounter((Integer) o);
-						model.put("encounter", e);
-						if (context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_OBS))
-							model.put("encounterObs", context.getObsService().getObservations(e));
-					}
-					model.put("encounterId", (Integer) o);
+			}
+			
+			// if an encounter id is available, put "encounter" and "encounterObs" in the request
+			o = request.getAttribute("org.openmrs.portlet.encounterId");
+			if (o != null) {
+				if (userContext.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ENCOUNTERS)) {
+					Encounter e = Context.getEncounterService().getEncounter((Integer) o);
+					model.put("encounter", e);
+					if (userContext.hasPrivilege(OpenmrsConstants.PRIV_VIEW_OBS))
+						model.put("encounterObs", Context.getObsService().getObservations(e));
 				}
-				
-				// if a user id is available, put "user" in the model
-				o = request.getAttribute("org.openmrs.portlet.userId");
-				if (o != null) {
-					if (context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_USERS)) {
-						User u = context.getUserService().getUser((Integer) o);
-						model.put("user", u);
-					}
-					model.put("userId", (Integer) o);
+				model.put("encounterId", (Integer) o);
+			}
+			
+			// if a user id is available, put "user" in the model
+			o = request.getAttribute("org.openmrs.portlet.userId");
+			if (o != null) {
+				if (userContext.hasPrivilege(OpenmrsConstants.PRIV_VIEW_USERS)) {
+					User u = Context.getUserService().getUser((Integer) o);
+					model.put("user", u);
 				}
-				
-				// if a list of patient ids is available, make a patientset out of it
-				o = request.getAttribute("org.openmrs.portlet.patientIds");
-				if (o != null && !"".equals(o)) {
-					log.debug("Found patientIds attribute: " + o);
-					PatientSet ps = PatientSet.parseCommaSeparatedPatientIds((String) o);
-					model.put("patientSet", ps);
-					model.put("patientIds", (String) o);
-				}
-				
+				model.put("userId", (Integer) o);
+			}
+			
+			// if a list of patient ids is available, make a patientset out of it
+			o = request.getAttribute("org.openmrs.portlet.patientIds");
+			if (o != null && !"".equals(o)) {
+				log.debug("Found patientIds attribute: " + o);
+				PatientSet ps = PatientSet.parseCommaSeparatedPatientIds((String) o);
+				model.put("patientSet", ps);
+				model.put("patientIds", (String) o);
 			}
 
-			if (context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS)) {
-				//String arvGroups =  (String)context.getAdministrationService().getGlobalProperty("arv_groups");
-				List<Obs> treatmentGroupObs = context.getObsService().getObservations(context.getConceptService().getConceptByName("ANTIRETROVIRAL TREATMENT GROUP"), null);
+			if (userContext.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS)) {
+				//String arvGroups =  (String)Context.getAdministrationService().getGlobalProperty("arv_groups");
+				List<Obs> treatmentGroupObs = Context.getObsService().getObservations(Context.getConceptService().getConceptByName("ANTIRETROVIRAL TREATMENT GROUP"), null);
 				if ( treatmentGroupObs != null ) {
 					TreeSet<String> treatmentGroupSet = new TreeSet<String>();
 					log.debug("tgo is size " + treatmentGroupObs.size());
-					for ( Obs o : treatmentGroupObs ) {
-						String group = o.getValueText();
+					for ( Obs ob : treatmentGroupObs ) {
+						String group = ob.getValueText();
 						if ( group != null ) {
 							if ( group.length() > 0 ) {
 								// hack to order items properly
@@ -229,7 +227,7 @@ public class PortletController implements Controller {
 				}
 			}
 			
-			populateModel(request, context, model);
+			populateModel(request, model);
 		}
 
 		return new ModelAndView(portletPath, "model", model);
@@ -241,6 +239,6 @@ public class PortletController implements Controller {
 	 * This will be called AFTER handleRequest has put mappings in the model as described in its javadoc.
 	 * Note that context could be null when this method is called.  
 	 */
-	protected void populateModel(HttpServletRequest request, Context context, Map<String, Object> model) { }
+	protected void populateModel(HttpServletRequest request, Map<String, Object> model) { }
 	
 }

@@ -11,8 +11,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.StaleObjectStateException;
+import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Expression;
@@ -44,94 +43,61 @@ public class HibernateConceptDAO implements
 		ConceptDAO {
 
 	protected final Log log = LogFactory.getLog(getClass());
-	
-	private Context context;
+
+	/**
+	 * Hibernate session factory
+	 */
+	private SessionFactory sessionFactory;
 	
 	public HibernateConceptDAO() { }
 	
-	public HibernateConceptDAO(Context c) {
-		this.context = c;
+	/**
+	 * Set session factory
+	 * 
+	 * @param sessionFactory
+	 */
+	public void setSessionFactory(SessionFactory sessionFactory) { 
+		this.sessionFactory = sessionFactory;
 	}
 
 	/**
 	 * @see org.openmrs.api.db.ConceptService#createConcept(org.openmrs.Concept)
 	 */
 	public void createConcept(Concept concept) throws DAOException {
-		
-		Session session = HibernateUtil.currentSession();
-
 		modifyCollections(concept);
 
-		try {
-			HibernateUtil.beginTransaction();
-			session.save(concept);
-			HibernateUtil.commitTransaction();
-		}
-		catch (Exception e) {
-			HibernateUtil.rollbackTransaction();
-			throw new APIException(e);
-		}
-		context.getAdministrationService().updateConceptWord(concept);
+		sessionFactory.getCurrentSession().save(concept);
 		
+		Context.getAdministrationService().updateConceptWord(concept);
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.ConceptService#createConcept(org.openmrs.ConceptNumeric)
 	 */
 	public void createConcept(ConceptNumeric concept) throws DAOException {
-		
-		Session session = HibernateUtil.currentSession();
-
 		modifyCollections(concept);
 		
-		try {
-			HibernateUtil.beginTransaction();
-			session.save(concept);
-			HibernateUtil.commitTransaction();
-		}
-		catch (Exception e) {
-			HibernateUtil.rollbackTransaction();
-			throw new APIException(e);
-		}
-		context.getAdministrationService().updateConceptWord(concept);
+		sessionFactory.getCurrentSession().save(concept);
 		
+		Context.getAdministrationService().updateConceptWord(concept);
 	}
 
 	/**
 	 * @see org.openmrs.api.db.ConceptService#deleteConcept(org.openmrs.Concept)
 	 */
 	public void deleteConcept(Concept concept) throws APIException {
-		
-		Session session = HibernateUtil.currentSession();
-		
-		try {
-			HibernateUtil.beginTransaction();
-			
-			session.createQuery("delete from ConceptWord where concept_id = :c")
+		sessionFactory.getCurrentSession().createQuery("delete from ConceptWord where concept_id = :c")
 					.setInteger("c", concept.getConceptId())
 					.executeUpdate();
 			
-			session.delete(concept);
-			HibernateUtil.commitTransaction();
-		}
-		catch (Exception e) {
-			HibernateUtil.rollbackTransaction();
-			throw new APIException(e);
-		}
-		
+		sessionFactory.getCurrentSession().delete(concept);
 	}
 
 	/**
 	 * @see org.openmrs.api.db.ConceptService#getConcept(java.lang.Integer)
 	 */
 	public Concept getConcept(Integer conceptId) throws APIException {
-		
-		Session session = HibernateUtil.currentSession();
-		
-		Concept concept = new Concept();
-		concept = (Concept)session.get(Concept.class, conceptId);
-		
-		return concept;
+		return (Concept)sessionFactory.getCurrentSession().get(Concept.class, conceptId);
 	}
 
 	/**
@@ -139,9 +105,6 @@ public class HibernateConceptDAO implements
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Concept> getConcepts(String sort, String dir) throws APIException {
-		
-		Session session = HibernateUtil.currentSession();
-		
 		String sql = "from Concept concept";
 		
 		try {
@@ -163,11 +126,9 @@ public class HibernateConceptDAO implements
 		else
 			sql += " asc";
 		
-		Query query = session.createQuery(sql);
+		Query query = sessionFactory.getCurrentSession().createQuery(sql);
 		 
-		List<Concept> concepts = query.list();
-		
-		return concepts;
+		return query.list();
 	}
 	
 	/**
@@ -178,20 +139,9 @@ public class HibernateConceptDAO implements
 		if (concept.getConceptId() == null)
 			createConcept(concept);
 		else {
-			Session session = HibernateUtil.currentSession();
-			
-			try {
-				HibernateUtil.beginTransaction();
-				modifyCollections(concept);
-				session.merge(concept);
-				//session.saveOrUpdate(concept);
-				HibernateUtil.commitTransaction();
-			}
-			catch (Exception e) {
-				HibernateUtil.rollbackTransaction();
-				throw new APIException(e); 
-			}
-			context.getAdministrationService().updateConceptWord(concept);
+			modifyCollections(concept);
+			sessionFactory.getCurrentSession().merge(concept);
+			Context.getAdministrationService().updateConceptWord(concept);
 		}
 	}
 	
@@ -203,27 +153,18 @@ public class HibernateConceptDAO implements
 		if (concept.getConceptId() == null)
 			createConcept(concept);
 		else {
-			Session session = HibernateUtil.currentSession();
-			
-			try {
-				HibernateUtil.beginTransaction();
 				modifyCollections(concept);
-				session.update(concept);
-				HibernateUtil.commitTransaction();
-			}
-			catch (StaleObjectStateException sose) {
+				sessionFactory.getCurrentSession().update(concept);
+			/*
+				catch (StaleObjectStateException sose) {
 				HibernateUtil.beginTransaction();
 				Query query = session.createQuery("insert into ConceptNumeric (conceptId) select c.conceptId from Concept c where c.conceptId = :id)");
 					query.setInteger("id", concept.getConceptId());
 					query.executeUpdate();
 				session.update(concept);
-				HibernateUtil.commitTransaction();
-			}
-			catch (Exception e) {
-				HibernateUtil.rollbackTransaction();
-				throw new APIException(e); 
-			}
-			context.getAdministrationService().updateConceptWord(concept);
+				}
+				*/
+			Context.getAdministrationService().updateConceptWord(concept);
 		}
 	}
 	
@@ -232,58 +173,33 @@ public class HibernateConceptDAO implements
 	 * @see org.openmrs.api.db.DrugService#createDrug(org.openmrs.Drug)
 	 */
 	public void createDrug(Drug drug) throws DAOException {
-		
-		Session session = HibernateUtil.currentSession();
-		
 		if (drug.getCreator() == null)
-			drug.setCreator(context.getAuthenticatedUser());
+			drug.setCreator(Context.getAuthenticatedUser());
 		if (drug.getDateCreated() == null)
 			drug.setDateCreated(new Date());
 		
-		try {
-			HibernateUtil.beginTransaction();
-			session.save(drug);
-			HibernateUtil.commitTransaction();
-		}
-		catch (Exception e) {
-			HibernateUtil.rollbackTransaction();
-			throw new APIException(e);
-		}
-		
+		sessionFactory.getCurrentSession().save(drug);
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.DrugService#updateDrug(org.openmrs.Drug)
 	 */
 	public void updateDrug(Drug drug) throws DAOException {
-		
-		Session session = HibernateUtil.currentSession();
-
 		if (drug.getDrugId() == null)
 			createDrug(drug);
 		else {
-		
 			if (drug.getCreator() == null)
-				drug.setCreator(context.getAuthenticatedUser());
+				drug.setCreator(Context.getAuthenticatedUser());
 			if (drug.getDateCreated() == null)
 				drug.setDateCreated(new Date());
 			
-			try {
-				HibernateUtil.beginTransaction();
-				session.update(drug);
-				HibernateUtil.commitTransaction();
-			}
-			catch (Exception e) {
-				HibernateUtil.rollbackTransaction();
-				throw new APIException(e);
-			}
-		}
-		
+			sessionFactory.getCurrentSession().update(drug);
+		}	
 	}
 	
 	protected void modifyCollections(Concept c) {
 		
-		User authUser = context.getAuthenticatedUser();
+		User authUser = Context.getAuthenticatedUser();
 		Date timestamp = new Date();
 		
 		if (c.getCreator() == null) {
@@ -355,10 +271,7 @@ public class HibernateConceptDAO implements
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Concept> getConceptsByName(String name) {
-		
-		Session session = HibernateUtil.currentSession();
-		
-		Query query = session.createQuery("select concept from Concept concept where concept.names.name like '%' || ? || '%'");
+		Query query = sessionFactory.getCurrentSession().createQuery("select concept from Concept concept where concept.names.name like '%' || ? || '%'");
 		query.setString(0, name);
 		List<Concept> concepts = query.list();
 		
@@ -370,10 +283,7 @@ public class HibernateConceptDAO implements
 	 */
 	@SuppressWarnings("unchecked")
 	public Concept getConceptByName(String name) {
-		
-		Session session = HibernateUtil.currentSession();
-		
-		Query query = session.createQuery("select concept from Concept concept where concept.names.name = ?");
+		Query query = sessionFactory.getCurrentSession().createQuery("select concept from Concept concept where concept.names.name = ?");
 		query.setString(0, name);
 		List<Concept> concepts = query.list();
 		
@@ -391,24 +301,14 @@ public class HibernateConceptDAO implements
 	 * @see org.openmrs.api.db.ConceptService#getDrug(java.lang.Integer)
 	 */
 	public Drug getDrug(Integer drugId) {
-
-		Session session = HibernateUtil.currentSession();
-		
-		Drug drug = (Drug)session.get(Drug.class, drugId);
-		
-		return drug;
+		return (Drug)sessionFactory.getCurrentSession().get(Drug.class, drugId);
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.ConceptService#getDrug(java.lang.String)
 	 */
 	public Drug getDrug(String drugName) {
-
-		Session session = HibernateUtil.currentSession();
-		
-		Drug drug = (Drug) session.createQuery("from Drug d where d.name = :name").setString("name", drugName).uniqueResult();
-		
-		return drug;
+		return (Drug) sessionFactory.getCurrentSession().createQuery("from Drug d where d.name = :name").setString("name", drugName).uniqueResult();
 	}
 	
 	/**
@@ -416,12 +316,7 @@ public class HibernateConceptDAO implements
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Drug> getDrugs() {
-
-		Session session = HibernateUtil.currentSession();
-		
-		List<Drug> drugs = session.createQuery("from Drug").list();
-		
-		return drugs;
+		return sessionFactory.getCurrentSession().createQuery("from Drug").list();
 	}
 	
 	
@@ -430,15 +325,13 @@ public class HibernateConceptDAO implements
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Drug> findDrugs(String phrase, boolean includeRetired) {
-		Session session = HibernateUtil.currentSession();
-		
 		List<String> words = ConceptWord.getUniqueWords(phrase); //assumes getUniqueWords() removes quote(') characters.  (otherwise we would have a security leak)
 		
 		List<Drug> conceptDrugs = new Vector<Drug>();
 		
 		if (words.size() > 0) {
 		
-			Criteria searchCriteria = session.createCriteria(Drug.class, "drug");
+			Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class, "drug");
 			if (includeRetired == false) {
 				searchCriteria.add(Expression.eq("drug.voided", false));
 			}
@@ -461,34 +354,22 @@ public class HibernateConceptDAO implements
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Drug> getDrugs(Concept concept) {
-
-		Session session = HibernateUtil.currentSession();
-		
-		Criteria crit = session.createCriteria(Drug.class)
-			.add(Expression.eq("concept", concept));
-		
-		return crit.list();
+		return sessionFactory.getCurrentSession().createCriteria(Drug.class)
+			.add(Expression.eq("concept", concept)).list();
 	}
 
 	/**
 	 * @see org.openmrs.api.db.ConceptService#getConceptClass(java.lang.Integer)
 	 */
 	public ConceptClass getConceptClass(Integer i) {
-		Session session = HibernateUtil.currentSession();
-		
-		ConceptClass cc = new ConceptClass();
-		cc = (ConceptClass)session.get(ConceptClass.class, i);
-		
-		return cc;
+		return (ConceptClass)sessionFactory.getCurrentSession().get(ConceptClass.class, i);
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.ConceptService#getConceptClassByName(java.lang.String)
 	 */
 	public ConceptClass getConceptClassByName(String name) {
-		Session session = HibernateUtil.currentSession();
-		
-		Criteria crit = session.createCriteria(ConceptClass.class)
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptClass.class)
 			.add(Expression.eq("name", name));
 		
 		if (crit.list().size() < 1) {
@@ -504,23 +385,14 @@ public class HibernateConceptDAO implements
 	 */
 	@SuppressWarnings("unchecked")
 	public List<ConceptClass> getConceptClasses() {
-		Session session = HibernateUtil.currentSession();
-		
-		List<ConceptClass> drugs = session.createQuery("from ConceptClass cc order by cc.name").list();
-		
-		return drugs;
+		return sessionFactory.getCurrentSession().createQuery("from ConceptClass cc order by cc.name").list();
 	}
 
 	/**
 	 * @see org.openmrs.api.db.ConceptService#getConceptDatatype(java.lang.Integer)
 	 */
 	public ConceptDatatype getConceptDatatype(Integer i) {
-		Session session = HibernateUtil.currentSession();
-		
-		ConceptDatatype cd = new ConceptDatatype();
-		cd = (ConceptDatatype)session.get(ConceptDatatype.class, i);
-		
-		return cd;
+		return (ConceptDatatype)sessionFactory.getCurrentSession().get(ConceptDatatype.class, i);
 	}
 
 	/**
@@ -528,28 +400,22 @@ public class HibernateConceptDAO implements
 	 */
 	@SuppressWarnings("unchecked")
 	public List<ConceptDatatype> getConceptDatatypes() {
-		Session session = HibernateUtil.currentSession();
-		
-		List<ConceptDatatype> cds = session.createQuery("from ConceptDatatype cd order by cd.name").list();
-		
-		return cds;
+		return sessionFactory.getCurrentSession().createQuery("from ConceptDatatype cd order by cd.name").list();
 	}
 
 	/**
 	 * @see org.openmrs.api.db.ConceptService#getConceptNumeric(java.lang.Integer)
 	 */
 	public ConceptNumeric getConceptNumeric(Integer i) {
-		Session session = HibernateUtil.currentSession();
-		
 		ConceptNumeric cn;
-		Object obj = session.get(ConceptNumeric.class, i);
+		Object obj = sessionFactory.getCurrentSession().get(ConceptNumeric.class, i);
 		// If Concept has already been read & cached, we may get back a Concept instead of
 		// ConceptNumeric.  If this happens, we need to clear the object from the cache
 		// and re-fetch it as a ConceptNumeric
 		if (obj != null && !obj.getClass().equals(ConceptNumeric.class)) {
-			session.evict(obj); // remove from cache
+			sessionFactory.getCurrentSession().evict(obj); // remove from cache
 			// session.get() did not work here, we need to perform a query to get a ConceptNumeric
-			Query query = session.createQuery("from ConceptNumeric where conceptId = :conceptId")
+			Query query = sessionFactory.getCurrentSession().createQuery("from ConceptNumeric where conceptId = :conceptId")
 				.setParameter("conceptId", i);
 			obj = query.uniqueResult();
 		}
@@ -563,13 +429,10 @@ public class HibernateConceptDAO implements
 	 */
 	@SuppressWarnings("unchecked")
 	public List<ConceptSet> getConceptSets(Concept concept) {
-		Session session = HibernateUtil.currentSession();
-		
-		List<ConceptSet> sets = session.createCriteria(ConceptSet.class)
+		return sessionFactory.getCurrentSession().createCriteria(ConceptSet.class)
 						.add(Restrictions.eq("conceptSet", concept))
 						.addOrder(Order.asc("sortWeight"))
 						.list();
-		return sets;
 	}
 
 	// TODO below are functions worthy of a second tier
@@ -580,8 +443,6 @@ public class HibernateConceptDAO implements
 	@SuppressWarnings("unchecked")
 	public List<ConceptWord> findConcepts(String phrase, Locale loc, boolean includeRetired, List<ConceptClass> requireClasses,
 			List<ConceptClass> excludeClasses) {
-		Session session = HibernateUtil.currentSession();
-		
 		String locale = loc.getLanguage().substring(0, 2);		//only get language portion of locale
 		List<String> words = ConceptWord.getUniqueWords(phrase); //assumes getUniqueWords() removes quote(') characters.  (otherwise we would have a security leak)
 		
@@ -589,7 +450,7 @@ public class HibernateConceptDAO implements
 		
 		if (words.size() > 0) {
 		
-			Criteria searchCriteria = session.createCriteria(ConceptWord.class, "cw1");
+			Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(ConceptWord.class, "cw1");
 			searchCriteria.add(Restrictions.eq("locale", locale));
 			if (includeRetired == false) {
 				searchCriteria.createAlias("concept", "concept");
@@ -633,8 +494,6 @@ public class HibernateConceptDAO implements
 	 */
 	@SuppressWarnings("unchecked")
 	public List<ConceptWord> findConceptAnswers(String phrase, Locale loc, Concept concept, boolean includeRetired) {
-		Session session = HibernateUtil.currentSession();
-		
 		String locale = loc.getLanguage().substring(0, 2);		//only get language portion of locale
 		List<String> words = ConceptWord.getUniqueWords(phrase); //assumes getUniqueWords() removes quote(') characters.  (otherwise we would have a security leak)
 		
@@ -652,7 +511,7 @@ public class HibernateConceptDAO implements
 		// by default, we will return all of the concept's answers
 		// however, if there are no answers, return nothing by default
 		if (words.size() > 0 || !answers.isEmpty()) {
-			Criteria searchCriteria = session.createCriteria(ConceptWord.class, "cw1");
+			Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(ConceptWord.class, "cw1");
 			searchCriteria.add(Restrictions.eq("locale", locale));
 			if (includeRetired == false) {
 				searchCriteria.createAlias("concept", "concept");
@@ -694,11 +553,9 @@ public class HibernateConceptDAO implements
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Concept> getQuestionsForAnswer(Concept concept) {
-		
-		Session session = HibernateUtil.currentSession();
 		// TODO broken until Hibernate fixes component and HQL code
 		String q = "select c from Concept c join c.answers ca where ca.answerConcept = :answer";
-		Query query = session.createQuery(q);
+		Query query = sessionFactory.getCurrentSession().createQuery(q);
 		query.setParameter("answer", concept);
 		
 		return query.list();
@@ -709,11 +566,9 @@ public class HibernateConceptDAO implements
 	 */
 	@SuppressWarnings("unchecked")
 	public Concept getPrevConcept(Concept c) {
-		Session session = HibernateUtil.currentSession();
-		
 		Integer i = c.getConceptId();
 		
-		List<Concept> concepts = session.createCriteria(Concept.class)
+		List<Concept> concepts = sessionFactory.getCurrentSession().createCriteria(Concept.class)
 				.add(Expression.lt("conceptId", i))
 				.addOrder(Order.desc("conceptId"))
 				.setFetchSize(1)
@@ -729,11 +584,9 @@ public class HibernateConceptDAO implements
 	 */
 	@SuppressWarnings("unchecked")
 	public Concept getNextConcept(Concept c) {
-		Session session = HibernateUtil.currentSession();
-		
 		Integer i = c.getConceptId();
 		
-		List<Concept> concepts = session.createCriteria(Concept.class)
+		List<Concept> concepts = sessionFactory.getCurrentSession().createCriteria(Concept.class)
 				.add(Expression.gt("conceptId", i))
 				.addOrder(Order.asc("conceptId"))
 				.setFetchSize(1)
@@ -749,10 +602,7 @@ public class HibernateConceptDAO implements
 	 */
 	@SuppressWarnings("unchecked")
 	public List<ConceptProposal> getConceptProposals(boolean includeCompleted) throws APIException {
-		
-		Session session = HibernateUtil.currentSession();
-		
-		Criteria crit = session.createCriteria(ConceptProposal.class);
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptProposal.class);
 		
 		if (includeCompleted == false) {
 			crit.add(Expression.eq("state", OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED));
@@ -767,13 +617,7 @@ public class HibernateConceptDAO implements
 	 * @see org.openmrs.api.db.ConceptService#getConceptProposal(java.lang.Integer)
 	 */
 	public ConceptProposal getConceptProposal(Integer conceptProposalId) throws APIException {
-		
-		Session session = HibernateUtil.currentSession();
-		
-		ConceptProposal c = new ConceptProposal();
-		c = (ConceptProposal)session.get(ConceptProposal.class, conceptProposalId);
-		
-		return c;
+		return (ConceptProposal)sessionFactory.getCurrentSession().get(ConceptProposal.class, conceptProposalId);
 	}
 	
 	/**
@@ -781,9 +625,7 @@ public class HibernateConceptDAO implements
 	 */
 	@SuppressWarnings("unchecked")
 	public List<ConceptProposal> findMatchingConceptProposals(String text) throws APIException {
-		Session session = HibernateUtil.currentSession();
-		
-		Criteria crit = session.createCriteria(ConceptProposal.class);
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptProposal.class);
 		crit.add(Expression.eq("state", OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED));
 		crit.add(Expression.eq("originalText", text));
 		
@@ -795,10 +637,7 @@ public class HibernateConceptDAO implements
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Concept> findProposedConcepts(String text) throws APIException {
-		
-		Session session = HibernateUtil.currentSession();
-		
-		Criteria crit = session.createCriteria(ConceptProposal.class);
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptProposal.class);
 		crit.add(Expression.ne("state", OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED));
 		crit.add(Expression.eq("originalText", text));
 		crit.add(Expression.isNotNull("mappedConcept"));
@@ -808,25 +647,13 @@ public class HibernateConceptDAO implements
 	}
 	
 	public void proposeConcept(ConceptProposal conceptProposal) throws APIException {
-		Session session = HibernateUtil.currentSession();
-
-		try {
-			HibernateUtil.beginTransaction();
-			session.save(conceptProposal);
-			HibernateUtil.commitTransaction();
-		}
-		catch (Exception e) {
-			HibernateUtil.rollbackTransaction();
-			throw new APIException(e);
-		}
+		sessionFactory.getCurrentSession().save(conceptProposal);
 	}
 	
 	public Integer getNextAvailableId() {
-		Session session = HibernateUtil.currentSession();
-		
 		String sql = "select min(concept_id+1) as concept_id from concept where (concept_id+1) not in (select concept_id from concept)";
 		
-		Query query = session.createSQLQuery(sql);
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql);
 		
 		BigInteger big = (BigInteger)query.uniqueResult();
 		

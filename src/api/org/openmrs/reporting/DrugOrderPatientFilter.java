@@ -59,7 +59,7 @@ public class DrugOrderPatientFilter extends AbstractPatientFilter implements Pat
 		this.drugId = drugId;
 	}
 
-	public PatientSet filter(Context context, PatientSet input) {
+	public PatientSet filter(PatientSet input) {
 		Set<Integer> drugIds = new HashSet<Integer>();
 		if (groupMethod != null && groupMethod == GroupMethod.NONE) {
 			drugIds = null;
@@ -67,11 +67,11 @@ public class DrugOrderPatientFilter extends AbstractPatientFilter implements Pat
 			if (drugId != null)
 				drugIds.add(drugId);
 		}
-		PatientSetService service = context.getPatientSetService();
+		PatientSetService service = Context.getPatientSetService();
 		return service.getPatientsHavingDrugOrder(input.getPatientIds(), drugIds, onDate);
 	}
 
-	public PatientSet filterInverse(Context context, PatientSet input) {
+	public PatientSet filterInverse(PatientSet input) {
 		Set<Integer> drugIds = new HashSet<Integer>();
 		if (groupMethod != null && groupMethod == GroupMethod.NONE) {
 			drugIds = null;
@@ -79,7 +79,7 @@ public class DrugOrderPatientFilter extends AbstractPatientFilter implements Pat
 			if (drugId != null)
 				drugIds.add(drugId);
 		}
-		PatientSetService service = context.getPatientSetService();
+		PatientSetService service = Context.getPatientSetService();
 		PatientSet temp = service.getPatientsHavingDrugOrder(input.getPatientIds(), drugIds, onDate);
 		return input.subtract(temp);
 	}

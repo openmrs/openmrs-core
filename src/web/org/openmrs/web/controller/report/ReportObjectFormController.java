@@ -22,6 +22,7 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.EmptyReportObject;
+import org.openmrs.reporting.ReportObjectFactory;
 import org.openmrs.reporting.ReportService;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.propertyeditor.ConceptEditor;
@@ -56,9 +57,7 @@ public class ReportObjectFormController extends SimpleFormController {
 
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-        //NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
         binder.registerCustomEditor(Integer.class, new CustomNumberEditor(Integer.class, true));
         binder.registerCustomEditor(Long.class, new CustomNumberEditor(Long.class, true));
         binder.registerCustomEditor(Float.class, new CustomNumberEditor(Float.class, true));
@@ -67,9 +66,9 @@ public class ReportObjectFormController extends SimpleFormController {
         binder.registerCustomEditor(Character.class, new CharacterEditor(true));
         // TODO: check this for dates in both locales
         binder.registerCustomEditor(Date.class, new CustomDateEditor(new SimpleDateFormat("dd/MM/yyyy"), true));
-        binder.registerCustomEditor(Concept.class, new ConceptEditor(context));
-        binder.registerCustomEditor(Location.class, new LocationEditor(context));
-        binder.registerCustomEditor(User.class, new UserEditor(context));
+        binder.registerCustomEditor(Concept.class, new ConceptEditor());
+        binder.registerCustomEditor(Location.class, new LocationEditor());
+        binder.registerCustomEditor(User.class, new UserEditor());
     }
 
 	/** 
@@ -82,13 +81,12 @@ public class ReportObjectFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		String view = getFormView();
 		
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			AbstractReportObject reportObject = (AbstractReportObject)obj;
 
-			context.getAdministrationService().updateReportObject(reportObject);
+			Context.getAdministrationService().updateReportObject(reportObject);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ReportObject.saved");
 		}
@@ -130,15 +128,13 @@ public class ReportObjectFormController extends SimpleFormController {
 	@Override
 	protected void onBind(HttpServletRequest request, Object obj, BindException be) throws Exception {
 
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		ReportService rs = (ReportService)context.getReportService();
+		ReportService rs = (ReportService)Context.getReportService();
 
 		AbstractReportObject reportObject = (AbstractReportObject)obj;
 		String setType = reportObject.getType();
 		String setSubType = reportObject.getSubType();
 		if ( setType != null && setSubType != null ) {
-			if ( !rs.getReportObjectFactory().isSubTypeOfType(setType, setSubType) ) {
+			if ( !ReportObjectFactory.getInstance().isSubTypeOfType(setType, setSubType) ) {
 				((AbstractReportObject)obj).setSubType(null);
 			}
 		}
@@ -181,9 +177,7 @@ public class ReportObjectFormController extends SimpleFormController {
 	protected Map referenceData(HttpServletRequest request, Object obj, Errors err) throws Exception {
 		Map addedData = new HashMap();
 		
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		ReportService rs = context.getReportService();
+		ReportService rs = Context.getReportService();
 
 		Set<String> availableTypes = rs.getReportObjectTypes();
 		addedData.put("availableTypes", availableTypes.iterator());
@@ -229,14 +223,12 @@ public class ReportObjectFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		AbstractReportObject reportObject = null;
-		ReportService rs = context.getReportService();
+		ReportService rs = Context.getReportService();
 
-		//context.getClass().getDeclaredField("some").getGenericType().
+		//Context.getClass().getDeclaredField("some").getGenericType().
 		
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			int reportObjectId = RequestUtils.getIntParameter(request, "reportObjectId", 0);
 	    	if (reportObjectId > 0) 
 	    		reportObject = rs.getReportObject(Integer.valueOf(reportObjectId));	
@@ -249,7 +241,7 @@ public class ReportObjectFormController extends SimpleFormController {
 		if ( presetType.length() > 0 ) reportObject.setType(presetType);
     	
 		String presetSubType = RequestUtils.getStringParameter(request, "subType", "");
-		if ( presetSubType.length() > 0 && rs.getReportObjectFactory().isSubTypeOfType(presetType, presetSubType) ) {
+		if ( presetSubType.length() > 0 && ReportObjectFactory.getInstance().isSubTypeOfType(presetType, presetSubType) ) {
 			reportObject.setSubType(presetSubType);
 			String className = rs.getReportObjectClassBySubType(presetSubType);
 			if ( className.length() > 0 ) {

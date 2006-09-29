@@ -11,11 +11,9 @@ import org.openmrs.api.context.Context;
 public class PatientProgramsPortletController extends PortletController {
 
 	@SuppressWarnings("unchecked")
-	protected void populateModel(HttpServletRequest request, Context context, Map model) {
-		if (context != null) {
-			List<Program> programs = context.getProgramWorkflowService().getPrograms();
-			model.put("programs", programs);
-		}
+	protected void populateModel(HttpServletRequest request, Map model) {
+		List<Program> programs = Context.getProgramWorkflowService().getPrograms();
+		model.put("programs", programs);
 	}
 
 }

@@ -12,6 +12,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.UserContext;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 
@@ -34,23 +35,24 @@ public class RequireTag extends TagSupport {
 		String request_ip_addr = request.getLocalAddr();
 		String session_ip_addr = (String)httpSession.getAttribute(WebConstants.OPENMRS_CLIENT_IP_HTTPSESSION_ATTR);
 		
-		Context context = (Context)httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context == null && privilege != null) {
-			log.error("openmrs_context_httpsession_attr is null. Did this pass through a filter?");
-			httpSession.removeAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		UserContext userContext = Context.getUserContext();
+		
+		if (userContext == null && privilege != null) {
+			log.error("userContext is null. Did this pass through a filter?");
+			//httpSession.removeAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 			//TODO find correct error to throw 
 			throw new APIException("The context is currently null.  Please try reloading the site.");
 		}
 		
-		if (!context.hasPrivilege(privilege)) {
+		if (!userContext.hasPrivilege(privilege)) {
 			errorOccurred = true;
-			if (context.isAuthenticated())
+			if (userContext.isAuthenticated())
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "require.unauthorized");
 			else
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "require.login");
 		}
-		else if (context.hasPrivilege(privilege) && context.isAuthenticated()) {
-			User user = context.getAuthenticatedUser();
+		else if (userContext.hasPrivilege(privilege) && userContext.isAuthenticated()) {
+			User user = userContext.getAuthenticatedUser();
 			Boolean forcePasswordChange = new Boolean(user.getProperties().get(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD));
 			log.debug(redirect);
 			if (forcePasswordChange && !redirect.contains("options.form")) {

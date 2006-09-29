@@ -38,8 +38,7 @@ public class FormEntryQueueDownloadServlet extends HttpServlet {
 		String queueType = "";
 		HttpSession httpSession = request.getSession();
 
-		Context context = getContext(httpSession);
-		if (context == null) {
+		if (Context.isAuthenticated() == false) {
 			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
 					"auth.session.expired");
 			response.sendRedirect(request.getContextPath() + "/logout");
@@ -62,7 +61,7 @@ public class FormEntryQueueDownloadServlet extends HttpServlet {
 		//ByteArrayOutputStream baos  = new ByteArrayOutputStream();
 		//GZIPOutputStream gzos        = new GZIPOutputStream(baos);
 		ZipOutputStream zos			= new ZipOutputStream(response.getOutputStream());
-		FormEntryService fs			= context.getFormEntryService();
+		FormEntryService fs			= Context.getFormEntryService();
 		ZipEntry zipEntry			= null;
 
 		while (startId <= endId) {
@@ -105,12 +104,7 @@ public class FormEntryQueueDownloadServlet extends HttpServlet {
 	}
 		
 		zos.close();
-		
-		//response.getOutputStream().print(zos);
+
 	}
 
-	private Context getContext(HttpSession httpSession) {
-		return (Context) httpSession
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-	}
 }

@@ -64,14 +64,14 @@ public class PublishInfoPath {
 	 * @param form
 	 *            the OpenMRS form with which the given XSN is to be associated
 	 */
-	public static Form publishXSN(File file, Context context) throws IOException {
+	public static Form publishXSN(File file) throws IOException {
 
 		Form form = null;
 
 		if (file.exists())
-			form = publishXSN(file.getAbsolutePath(), context);
+			form = publishXSN(file.getAbsolutePath());
 		else
-			form = publishXSN(new FileInputStream(file), context);
+			form = publishXSN(new FileInputStream(file));
 
 		return form;
 	}
@@ -87,7 +87,7 @@ public class PublishInfoPath {
 	 * @param form
 	 *            the OpenMRS form with which the given XSN is to be associated
 	 */
-	public static Form publishXSN(InputStream inputStream, Context context) throws IOException {
+	public static Form publishXSN(InputStream inputStream) throws IOException {
 		File tempDir = FormEntryUtil.createTempDirectory("UPLOADEDXSN");
 
 		log.debug("Temp publish dir: " + tempDir.getAbsolutePath());
@@ -98,7 +98,7 @@ public class PublishInfoPath {
 		// copy the uploaded file over to the temp file system file
 		OpenmrsUtil.copyFile(inputStream, new FileOutputStream(filesystemXSN));
 
-		Form form = publishXSN(filesystemXSN.getAbsolutePath(), context);
+		Form form = publishXSN(filesystemXSN.getAbsolutePath());
 
 		deleteDirectory(tempDir);
 
@@ -116,7 +116,7 @@ public class PublishInfoPath {
 	 * @param form
 	 *            the OpenMRS form with which the given XSN is to be associated
 	 */
-	public static Form publishXSN(String xsnFilePath, Context context) throws IOException {
+	public static Form publishXSN(String xsnFilePath) throws IOException {
 
 		log.debug("publishing xsn at: " + xsnFilePath);
 
@@ -124,7 +124,7 @@ public class PublishInfoPath {
 		if (tempDir == null)
 			throw new IOException("Filename not found: '" + xsnFilePath + "'");
 
-		Form form = determineForm(tempDir, context);
+		Form form = determineForm(tempDir);
 		String originalFormUri = FormEntryUtil.getFormUri(form);
 		form.setBuild(form.getBuild() == null ? 1 : form.getBuild() + 1);
 
@@ -133,7 +133,7 @@ public class PublishInfoPath {
 		String solutionVersion = FormEntryUtil.getSolutionVersion(form);
 		log.debug("solution version: " + solutionVersion);
 
-		AdministrationService adminService = context.getAdministrationService();
+		AdministrationService adminService = Context.getAdministrationService();
 		
 		String serverUrl = adminService.getGlobalProperty("formentry.infopath_server_url");
 		String publishUrl = serverUrl + FormEntryConstants.FORMENTRY_INFOPATH_PUBLISH_PATH + outputFilename;
@@ -162,7 +162,7 @@ public class PublishInfoPath {
 			    + form.getBuild()
 			    + "-"
 			    + new SimpleDateFormat(adminService.getGlobalProperty("formentry.infopath_archive_date_format"),
-			        context.getLocale()).format(new Date()) + ".xsn";
+			        Context.getLocale()).format(new Date()) + ".xsn";
 			File xsnArchiveFile = new File(archiveDir, xsnArchiveFilePath);
 			boolean success = copyFile(originalFile, xsnArchiveFile);
 			if (!success) {
@@ -187,7 +187,7 @@ public class PublishInfoPath {
 		    FormEntryConstants.FORMENTRY_DEFAULT_DEFAULTS_NAME);
 		if (templateWithDefaultsFile == null) {
 			// if template containing defaults is missing, create one on the fly
-			templateWithDefaults = new FormXmlTemplateBuilder(context, form, publishUrl)
+			templateWithDefaults = new FormXmlTemplateBuilder(form, publishUrl)
 			    .getXmlTemplate(true);
 			try {
 				log.debug("Writing new template with defaults to: "
@@ -230,7 +230,7 @@ public class PublishInfoPath {
 
 		// update template, solution version, and build number on server
 		form.setTemplate(templateWithDefaults);
-		context.getFormService().updateForm(form);
+		Context.getFormService().updateForm(form);
 
 		return form;
 	}
@@ -313,7 +313,7 @@ public class PublishInfoPath {
 		return success;
 	}
 
-	private static Form determineForm(File tempDir, Context context) {
+	private static Form determineForm(File tempDir) {
 		File xsd = FormEntryUtil.findFile(tempDir, "FormEntry.xsd");
 		Form form = null;
 		try {
@@ -332,7 +332,7 @@ public class PublishInfoPath {
 			}
 
 			Integer formId = Integer.valueOf(elem.getAttribute("fixed"));
-			form = context.getFormEntryService().getForm(formId);
+			form = Context.getFormEntryService().getForm(formId);
 
 		}
 		catch (ParserConfigurationException e) {

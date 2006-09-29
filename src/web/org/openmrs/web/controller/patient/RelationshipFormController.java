@@ -57,12 +57,12 @@ public class RelationshipFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		String view = getFormView();
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			Person person = (Person)obj;
-			PatientService ps = context.getPatientService();
-			AdministrationService as = context.getAdministrationService();
+			PatientService ps = Context.getPatientService();
+			AdministrationService as = Context.getAdministrationService();
 			
 			String action = request.getParameter("action");
 			if (action == null)
@@ -104,7 +104,7 @@ public class RelationshipFormController extends SimpleFormController {
 				}
 			}
 			else if (action.equals(msa.getMessage("Relationship.void"))) {
-				String[] relIds = request.getParameterValues("relationshipId");
+				//String[] relIds = request.getParameterValues("relationshipId");
 				
 			}
 			else if (action.equals(msa.getMessage("Relationship.unvoid"))) {
@@ -132,15 +132,11 @@ public class RelationshipFormController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		Person person = null;
 		
-		if (context != null && context.isAuthenticated()) {
-			PatientService ps = context.getPatientService();
-			AdministrationService as = context.getAdministrationService();
-			UserService us = context.getUserService();
+		if (Context.isAuthenticated()) {
+			AdministrationService as = Context.getAdministrationService();
+			UserService us = Context.getUserService();
 			
 			String personId = request.getParameter("personId");
 			String patientId = request.getParameter("patientId");
@@ -148,7 +144,7 @@ public class RelationshipFormController extends SimpleFormController {
 	    	if (personId != null)
 	    		person = as.getPerson(Integer.valueOf(personId));
 	    	else if (patientId != null) {
-	    		Patient pat = ps.getPatient(Integer.valueOf(patientId));
+	    		//Patient pat = ps.getPatient(Integer.valueOf(patientId));
 	    		//if (pat.getPerson() == null)
 	    		//	person = new Person(pat);
 	    		//else
@@ -171,16 +167,13 @@ public class RelationshipFormController extends SimpleFormController {
 
 	protected Map referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
 		
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		Person person = (Person)obj;
 		
-		if (context != null && context.isAuthenticated()) {
-			//AdministrationService as = context.getAdministrationService();
-			PatientService ps = context.getPatientService();
+		if (Context.isAuthenticated()) {
+			//AdministrationService as = Context.getAdministrationService();
+			PatientService ps = Context.getPatientService();
 			map.put("relationships", ps.getRelationships(person));
 			map.put("relationshipTypes", ps.getRelationshipTypes());
 		}

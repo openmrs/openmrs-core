@@ -46,12 +46,12 @@ public class UserFormController extends SimpleFormController {
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		
-		Context context = (Context) request.getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		
 		binder.registerCustomEditor(java.lang.Integer.class, 
 				new CustomNumberEditor(java.lang.Integer.class, true));
         binder.registerCustomEditor(java.util.Date.class, 
-        		new CustomDateEditor(SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT, context.getLocale()), true));
+        		new CustomDateEditor(SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT, Context.getLocale()), true));
 	}
 
 	/**
@@ -60,11 +60,11 @@ public class UserFormController extends SimpleFormController {
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		User user = (User)obj;
-		UserService us = context.getUserService();
 		
-		if (context != null && context.isAuthenticated()) {
+		User user = (User)obj;
+		UserService us = Context.getUserService();
+		
+		if (Context.isAuthenticated()) {
 			// check if username is already in the database
 				if (us.hasDuplicateUsername(user)) {
 					errors.rejectValue("username", "error.username.taken");
@@ -138,13 +138,13 @@ public class UserFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		User user = (User)obj;
 		String view = getFormView();
 		
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			
-			UserService us = context.getUserService();
+			UserService us = Context.getUserService();
 
 			String password = request.getParameter("password");
 			if (password == null || password.equals("XXXXXXXXXXXXXXX")) password = "";
@@ -168,7 +168,7 @@ public class UserFormController extends SimpleFormController {
 			
 			user.setProperties(properties);
 			
-			if (context.getAuthenticatedUser().isSuperUser() && !password.equals("")) {
+			if (Context.getAuthenticatedUser().isSuperUser() && !password.equals("")) {
 				log.debug("calling changePassword");
 				us.changePassword(user, password);
 			}
@@ -195,12 +195,12 @@ public class UserFormController extends SimpleFormController {
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		
 		User user = null;
 		
-		if (context != null && context.isAuthenticated()) {
-			UserService us = context.getUserService();
+		if (Context.isAuthenticated()) {
+			UserService us = Context.getUserService();
 			String userId = request.getParameter("userId");
 	    	if (userId != null)
 	    		user = us.getUser(Integer.valueOf(userId));
@@ -215,12 +215,12 @@ public class UserFormController extends SimpleFormController {
     protected Map referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		User user = (User)obj;
 		
-		List<Role> roles = context.getUserService().getRoles();
+		List<Role> roles = Context.getUserService().getRoles();
 		if (roles == null)
 			roles = new Vector<Role>();
 		
@@ -229,9 +229,9 @@ public class UserFormController extends SimpleFormController {
 			roles.remove(r);
 		}
 		
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			map.put("roles", roles);
-			if (user.getUserId() == null || context.hasPrivilege("Edit Passwords")) 
+			if (user.getUserId() == null || Context.hasPrivilege("Edit Passwords")) 
 				map.put("modifyPasswords", true);
 			map.put("changePasswordName", OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD);
 			String s = "";

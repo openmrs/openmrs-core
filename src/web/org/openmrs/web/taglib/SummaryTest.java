@@ -23,7 +23,6 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
-import org.openmrs.web.WebConstants;
 
 public class SummaryTest extends TagSupport {
 	
@@ -112,7 +111,6 @@ public class SummaryTest extends TagSupport {
 		if (expr.length() == 0)
 			return true;
 		
-		Context context = (Context) pageContext.getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		Map<String, String> args = new HashMap<String, String>();
 		String[] lines = expr.split("\n");
 		for (String s : lines) {
@@ -134,7 +132,7 @@ public class SummaryTest extends TagSupport {
 		if (conceptName == null)
 			throw new IllegalArgumentException("You must specify a concept");
 		{
-			ConceptService cs = context.getConceptService();
+			ConceptService cs = Context.getConceptService();
 			boolean isSet = conceptName.startsWith("set:");
 			if (isSet)
 				conceptName = conceptName.substring("set:".length());

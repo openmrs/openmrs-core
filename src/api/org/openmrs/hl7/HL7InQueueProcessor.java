@@ -17,8 +17,7 @@ public class HL7InQueueProcessor /* implements Runnable */{
 
 	private Log log = LogFactory.getLog(this.getClass());
 
-	private Context context;
-	private HL7Receiver receiver;
+	private HL7Receiver receiver = new HL7Receiver();
 
 	/**
 	 * Empty constructor (requires context to be set using
@@ -28,16 +27,6 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	public HL7InQueueProcessor() {
 	}
 
-	/**
-	 * Default constructor
-	 * 
-	 * @param context
-	 *            OpenMRS context
-	 */
-	public HL7InQueueProcessor(Context context) {
-		this.context = context;
-		receiver = new HL7Receiver(context);
-	}
 
 	/**
 	 * Process a single queue entry from the inbound HL7 queue
@@ -56,8 +45,8 @@ public class HL7InQueueProcessor /* implements Runnable */{
 			
 			// Move HL7 inbound queue entry into the archive before exiting
 			HL7InArchive hl7InArchive = new HL7InArchive(hl7InQueue);
-			context.getHL7Service().createHL7InArchive(hl7InArchive);
-			context.getHL7Service().deleteHL7InQueue(hl7InQueue);
+			Context.getHL7Service().createHL7InArchive(hl7InArchive);
+			Context.getHL7Service().deleteHL7InQueue(hl7InQueue);
 		} catch (HL7Exception e) {
 			setFatalError(hl7InQueue, "Trouble parsing HL7 message", e);
 			return;
@@ -68,7 +57,7 @@ public class HL7InQueueProcessor /* implements Runnable */{
 		// clean up memory after processing each queue entry (otherwise, the
 		// memory-intensive process may crash or eat up all our memory)
 		try {
-			context.getHL7Service().garbageCollect();
+			Context.getHL7Service().garbageCollect();
 		} catch (Exception e) {
 			log.error("Exception while performing garbagecollect in hl7 inbound processor", e);
 		}
@@ -83,7 +72,7 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	 */
 	public boolean processNextHL7InQueue() {
 		boolean entryProcessed = false;
-		HL7Service hl7Service = context.getHL7Service();
+		HL7Service hl7Service = Context.getHL7Service();
 		HL7InQueue hl7InQueue;
 		if ((hl7InQueue = hl7Service.getNextHL7InQueue()) != null) {
 			processHL7InQueue(hl7InQueue);
@@ -101,20 +90,9 @@ public class HL7InQueueProcessor /* implements Runnable */{
 		HL7InError hl7InError = new HL7InError(hl7InQueue);
 		hl7InError.setError(error);
 		hl7InError.setErrorDetails(cause == null ? "" : cause.getMessage());
-		context.getHL7Service().createHL7InError(hl7InError);
-		context.getHL7Service().deleteHL7InQueue(hl7InQueue);
+		Context.getHL7Service().createHL7InError(hl7InError);
+		Context.getHL7Service().deleteHL7InQueue(hl7InQueue);
 		log.error(error, cause);
-	}
-
-	/**
-	 * Convenience method to allow for dependency injection
-	 * 
-	 * @param context
-	 *            OpenMRS context to be used by the processor
-	 */
-	public void setContext(Context context) {
-		this.context = context;
-		receiver = new HL7Receiver(context);
 	}
 
 	/*
@@ -130,16 +108,11 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	 */
 	public synchronized void processHL7InQueue() throws HL7Exception {
 		log.debug("Start processing hl7 in queue");
-		try {
-			context.startTransaction();
-			while (processNextHL7InQueue()) {
-				// loop until queue is empty
-			}
-		} catch (Exception e) {
-			log.error("Error while processing HL7Queue", e);
-		} finally {
-			context.endTransaction();
+		
+		while (processNextHL7InQueue()) {
+			// loop until queue is empty
 		}
+	
 		log.debug("Done processing hl7 in queue");
 	}
 
@@ -190,7 +163,7 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	// }
 	//
 	// // clean up memory after processing each queue entry
-	// context.getHL7Service().garbageCollect();
+	// Context.getHL7Service().garbageCollect();
 	// }
 	//
 	// /**
@@ -201,7 +174,7 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	// */
 	// public boolean processNextHL7InQueue() {
 	// boolean entryProcessed = false;
-	// HL7Service hl7Service = context.getHL7Service();
+	// HL7Service hl7Service = Context.getHL7Service();
 	// HL7InQueue hl7InQueue;
 	// if ((hl7InQueue = hl7Service.getNextHL7InQueue()) != null) {
 	// processHL7InQueue(hl7InQueue);
@@ -313,8 +286,8 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	//
 	// // Move HL7 inbound queue entry into the archive before exiting
 	// HL7InArchive hl7InArchive = new HL7InArchive(hl7InQueue);
-	// context.getHL7Service().createHL7InArchive(hl7InArchive);
-	// context.getHL7Service().deleteHL7InQueue(hl7InQueue);
+	// Context.getHL7Service().createHL7InArchive(hl7InArchive);
+	// Context.getHL7Service().deleteHL7InQueue(hl7InQueue);
 	// }
 	//
 	// /**
@@ -340,7 +313,7 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	// encounter.setProvider(provider);
 	// encounter.setCreator(enterer);
 	// encounter.setDateCreated(dateEntered);
-	// context.getEncounterService().createEncounter(encounter);
+	// Context.getEncounterService().createEncounter(encounter);
 	//
 	// if (encounter == null || encounter.getEncounterId() == null
 	// || encounter.getEncounterId() == 0) {
@@ -356,7 +329,7 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	// String[] entererComponents = orc.getComponents(10);
 	// Integer entererId = null;
 	// try {
-	// entererId = context.getHL7Service().resolveUserId(entererComponents);
+	// entererId = Context.getHL7Service().resolveUserId(entererComponents);
 	// } catch (HL7Exception ex) {
 	// throw new HL7Exception("Error retrieving User from ORC.orderer");
 	// }
@@ -364,7 +337,7 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	// throw new HL7Exception("Could not find enterer specified in ORC
 	// segment");
 	// } else {
-	// return context.getUserService().getUser(entererId);
+	// return Context.getUserService().getUser(entererId);
 	// }
 	// }
 	//
@@ -374,7 +347,7 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	// private Patient getPatient(HL7Segment pid) throws HL7Exception {
 	// Integer ptId;
 	// try {
-	// ptId = context.getHL7Service().resolvePatientId(pid);
+	// ptId = Context.getHL7Service().resolvePatientId(pid);
 	// } catch (HL7Exception ex) {
 	// throw new HL7Exception("Error retrieving patient from PID segment", ex);
 	// }
@@ -382,7 +355,7 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	// throw new HL7Exception("Could not find patient specified in PID
 	// segment");
 	// } else {
-	// return context.getPatientService().getPatient(ptId);
+	// return Context.getPatientService().getPatient(ptId);
 	// }
 	// }
 	//
@@ -405,7 +378,7 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	// + hl7FormId + "'");
 	// }
 	// try {
-	// form = context.getFormService().getForm(formId);
+	// form = Context.getFormService().getForm(formId);
 	// } catch (Exception e) {
 	// throw new HL7Exception("Error retrieving OpenMRS form " + formId, e);
 	// }
@@ -422,7 +395,7 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	// Integer locationId = null;
 	// try {
 	// locationId =
-	// context.getHL7Service().resolveLocationId(locationComponents);
+	// Context.getHL7Service().resolveLocationId(locationComponents);
 	// } catch (HL7Exception ex) {
 	// throw new HL7Exception("Error retrieving Location from PV1.'Assigned
 	// Patient Location'", ex);
@@ -431,7 +404,7 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	// throw new HL7Exception("Could not find Assigned Patient Location
 	// specified in PV1 segment");
 	// } else {
-	// return context.getEncounterService().getLocation(locationId);
+	// return Context.getEncounterService().getLocation(locationId);
 	// }
 	// }
 	//
@@ -442,7 +415,7 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	// String[] providerComponents = pv1.getComponents(7);
 	// Integer providerId = null;
 	// try {
-	// providerId = context.getHL7Service().resolveUserId(providerComponents);
+	// providerId = Context.getHL7Service().resolveUserId(providerComponents);
 	// } catch (HL7Exception ex) {
 	// throw new HL7Exception("Error retrieving User from PV1.provider");
 	// }
@@ -450,7 +423,7 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	// throw new HL7Exception("Could not find provider specified in PV1
 	// segment");
 	// } else {
-	// return context.getUserService().getUser(providerId);
+	// return Context.getUserService().getUser(providerId);
 	// }
 	// }
 	//
@@ -465,7 +438,7 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	// try {
 	// String hl7Datatype = obx.getField(2);
 	// Integer conceptId = Integer.parseInt(obx.getComponent(3, 1));
-	// Concept concept = context.getConceptService().getConcept(conceptId);
+	// Concept concept = Context.getConceptService().getConcept(conceptId);
 	// String subId = obx.getField(4);
 	// String value = obx.getField(5);
 	// String[] valueComponents = obx.getComponents(5);
@@ -502,7 +475,7 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	// } else {
 	// Integer valueConceptId = Integer
 	// .parseInt(valueComponents[0]);
-	// Concept valueConcept = context.getConceptService()
+	// Concept valueConcept = Context.getConceptService()
 	// .getConcept(valueConceptId);
 	// obs.setValueCoded(valueConcept);
 	// }
@@ -522,7 +495,7 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	// // TODO: support RP (report), SN (structured numeric)
 	// // do we need to support BIT just in case it slips thru?
 	// }
-	// context.getObsService().createObs(obs);
+	// Context.getObsService().createObs(obs);
 	//
 	// } catch (Exception e) {
 	// throw new HL7Exception(e);
@@ -544,7 +517,7 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	// conceptProposal.setState(OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED);
 	// conceptProposal.setEncounter(encounter);
 	// conceptProposal.setObsConcept(concept);
-	// context.getConceptService().proposeConcept(conceptProposal);
+	// Context.getConceptService().proposeConcept(conceptProposal);
 	// }
 	//
 	// /**
@@ -556,8 +529,8 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	// HL7InError hl7InError = new HL7InError(hl7InQueue);
 	// hl7InError.setError(error);
 	// hl7InError.setErrorDetails(cause == null ? "" : cause.getMessage());
-	// context.getHL7Service().createHL7InError(hl7InError);
-	// context.getHL7Service().deleteHL7InQueue(hl7InQueue);
+	// Context.getHL7Service().createHL7InError(hl7InError);
+	// Context.getHL7Service().deleteHL7InQueue(hl7InQueue);
 	// log.error(error, cause);
 	// }
 	//
@@ -588,7 +561,7 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	// hl7InError.setHL7Data(hl7Data);
 	// hl7InError.setError(error);
 	// hl7InError.setErrorDetails(errorDetails);
-	// context.getHL7Service().createHL7InError(hl7InError);
+	// Context.getHL7Service().createHL7InError(hl7InError);
 	// }
 	//
 	// /**

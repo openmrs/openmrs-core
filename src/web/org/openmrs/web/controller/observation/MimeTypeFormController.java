@@ -47,12 +47,12 @@ public class MimeTypeFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		String view = getFormView();
 		
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			MimeType mimeType = (MimeType)obj;
-			context.getAdministrationService().updateMimeType(mimeType);
+			Context.getAdministrationService().updateMimeType(mimeType);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "MimeType.saved");
 		}
@@ -70,12 +70,12 @@ public class MimeTypeFormController extends SimpleFormController {
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		
 		MimeType mimeType = null;
 		
-		if (context != null && context.isAuthenticated()) {
-			ObsService os = context.getObsService();
+		if (Context.isAuthenticated()) {
+			ObsService os = Context.getObsService();
 			String mimeTypeId = request.getParameter("mimeTypeId");
 	    	if (mimeTypeId != null)
 	    		mimeType = os.getMimeType(Integer.valueOf(mimeTypeId));	

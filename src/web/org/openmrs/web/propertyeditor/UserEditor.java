@@ -2,6 +2,8 @@ package org.openmrs.web.propertyeditor;
 
 import java.beans.PropertyEditorSupport;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
@@ -9,26 +11,23 @@ import org.springframework.util.StringUtils;
 
 public class UserEditor extends PropertyEditorSupport {
 
-	Context context;
+	private Log log = LogFactory.getLog(this.getClass());
 	
-	public UserEditor(Context c) {
-		this.context = c;
-	}
+	public UserEditor() {	}
 	
 	public void setAsText(String text) throws IllegalArgumentException {
-		if (context != null) {
-			UserService ps = context.getUserService(); 
-			if (StringUtils.hasText(text)) {
-				try {
-					setValue(ps.getUser(Integer.valueOf(text)));
-				}
-				catch (Exception ex) {
-					throw new IllegalArgumentException("User not found: " + ex.getMessage());
-				}
+		UserService ps = Context.getUserService(); 
+		if (StringUtils.hasText(text)) {
+			try {
+				setValue(ps.getUser(Integer.valueOf(text)));
 			}
-			else {
-				setValue(null);
+			catch (Exception ex) {
+				log.error("Error setting text: " + text, ex);
+				throw new IllegalArgumentException("User not found: " + ex.getMessage());
 			}
+		}
+		else {
+			setValue(null);
 		}
 	}
 

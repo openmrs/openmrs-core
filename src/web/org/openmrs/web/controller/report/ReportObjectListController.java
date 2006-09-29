@@ -53,12 +53,12 @@ public class ReportObjectListController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		String view = getFormView();
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			String[] reportObjectList = request.getParameterValues("reportObjectId");
-			AdministrationService as = context.getAdministrationService();
-			//ReportService rs = context.getReportService();
+			AdministrationService as = Context.getAdministrationService();
+			//ReportService rs = Context.getReportService();
 			//ReportService rs = new TestReportService();
 			
 			String success = "";
@@ -106,16 +106,13 @@ public class ReportObjectListController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-
-    	HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		//default empty Object
 		Set<AbstractReportObject> reportObjects = new HashSet<AbstractReportObject>();
 		
 		//only fill the Object is the user has authenticated properly
-		if (context != null && context.isAuthenticated()) {
-			ReportService rs = context.getReportService();
+		if (Context.isAuthenticated()) {
+			ReportService rs = Context.getReportService();
 			//ReportService rs = new TestReportService();
 	    	reportObjects = rs.getAllReportObjects();
 		}

@@ -8,7 +8,7 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
-import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.openmrs.ConceptSet;
 import org.openmrs.DrugOrder;
@@ -24,31 +24,29 @@ public class HibernateOrderDAO implements
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
-	private Context context;
+	/**
+	 * Hibernate session factory
+	 */
+	private SessionFactory sessionFactory;
 	
 	public HibernateOrderDAO() { }
-	
-	public HibernateOrderDAO(Context c) {
-		this.context = c;
-	}
 
+	/**
+	 * Set session factory
+	 * 
+	 * @param sessionFactory
+	 */
+	public void setSessionFactory(SessionFactory sessionFactory) { 
+		this.sessionFactory = sessionFactory;
+	}
+	
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#createOrderType(org.openmrs.OrderType)
 	 */
 	public void createOrderType(OrderType orderType) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		
-		orderType.setCreator(context.getAuthenticatedUser());
+		orderType.setCreator(Context.getAuthenticatedUser());
 		orderType.setDateCreated(new Date());
-		try {
-			HibernateUtil.beginTransaction();
-			session.save(orderType);
-			HibernateUtil.commitTransaction();
-		}
-		catch (Exception e) {
-			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e);
-		}
+		sessionFactory.getCurrentSession().save(orderType);
 	}
 	
 	/**
@@ -57,69 +55,31 @@ public class HibernateOrderDAO implements
 	public void updateOrderType(OrderType orderType) throws DAOException {
 		if (orderType.getOrderTypeId() == null)
 			createOrderType(orderType);
-		else {
-			try {
-				Session session = HibernateUtil.currentSession();
-				HibernateUtil.beginTransaction();
-				session.saveOrUpdate(orderType);
-				HibernateUtil.commitTransaction();
-			}
-			catch (Exception e) {
-				HibernateUtil.rollbackTransaction();
-				throw new DAOException(e);
-			}
-		}
+		else
+			sessionFactory.getCurrentSession().saveOrUpdate(orderType);
 	}
 
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#deleteOrderType(org.openmrs.OrderType)
 	 */
 	public void deleteOrderType(OrderType orderType) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		try {
-			HibernateUtil.beginTransaction();
-			session.delete(orderType);
-			HibernateUtil.commitTransaction();
-		}
-		catch (Exception e) {
-			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e);
-		}
+		sessionFactory.getCurrentSession().delete(orderType);
 	}
 
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#createOrderType(org.openmrs.OrderType)
 	 */
 	public void createOrder(Order order) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		
-		order.setCreator(context.getAuthenticatedUser());
+		order.setCreator(Context.getAuthenticatedUser());
 		order.setDateCreated(new Date());
-		try {
-			HibernateUtil.beginTransaction();
-			session.save(order);
-			HibernateUtil.commitTransaction();
-		}
-		catch (Exception e) {
-			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e);
-		}
+		sessionFactory.getCurrentSession().save(order);
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#deleteOrder(org.openmrs.Order)
 	 */
 	public void deleteOrder(Order order) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		try {
-			HibernateUtil.beginTransaction();
-			session.delete(order);
-			HibernateUtil.commitTransaction();
-		}
-		catch (Exception e) {
-			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e);
-		}
+		sessionFactory.getCurrentSession().delete(order);
 	}
 	
 	/**
@@ -128,7 +88,7 @@ public class HibernateOrderDAO implements
 	public void voidOrder(Order order, String voidReason) throws DAOException {
 		order.setVoided(new Boolean(true));
 		order.setVoidReason(voidReason);
-		order.setVoidedBy(context.getAuthenticatedUser());
+		order.setVoidedBy(Context.getAuthenticatedUser());
 		order.setDateVoided(new Date());
 		updateOrder(order);
 	}
@@ -139,27 +99,19 @@ public class HibernateOrderDAO implements
 	public Order getOrder(Integer orderId) throws DAOException {
 		log.debug("getting order #" + orderId);
 		
-		Session session = HibernateUtil.currentSession();
-		
-		Order order = new Order();
-		order = (Order)session.get(Order.class, orderId);
-		
-		return order;
+		return (Order)sessionFactory.getCurrentSession().get(Order.class, orderId);
 	}
 
 	/**
 	 * @see org.openmrs.api.db.OrderService#getOrderTypes()
 	 */
+	@SuppressWarnings("unchecked")
 	public List<Order> getOrders(boolean showVoided) throws DAOException {
 		log.debug("getting all orders, showVoided is " + showVoided);
 
 		String voided = showVoided ? "" : "where voided = 0 ";
-		
-		Session session = HibernateUtil.currentSession();
 				
-		List<Order> orders = session.createQuery("from Orders " + voided).list();
-		
-		return orders;
+		return sessionFactory.getCurrentSession().createQuery("from Orders " + voided).list();
 	}
 
 	public List<Order> getOrders() throws DAOException {
@@ -170,20 +122,17 @@ public class HibernateOrderDAO implements
 	/**
 	 * @see org.openmrs.api.db.OrderService#getOrdersByPatient()
 	 */
+	@SuppressWarnings("unchecked")
 	public List<Order> getOrdersByPatient(Patient patient, boolean showVoided) throws DAOException {
 		log.debug("getting all orders by patient " + patient.getPatientId());
 
-		String voided = showVoided ? "" : "where voided = 0 ";
+		//String voided = showVoided ? "" : "where voided = 0 ";
 		
-		Session session = HibernateUtil.currentSession();
-		
-		Criteria c = session.createCriteria(Order.class);
+		Criteria c = sessionFactory.getCurrentSession().createCriteria(Order.class);
 		Criteria c1 = c.createCriteria("encounter", "enc");
 		Criteria c2 = c1.add(Expression.eq("enc.patient", patient));
 
-		List<Order> orders = c2.list();
-				
-		return orders;
+		return c2.list();
 	}
 
 	public List<Order> getOrdersByPatient(Patient patient) throws DAOException {
@@ -197,18 +146,8 @@ public class HibernateOrderDAO implements
 	public void updateOrder(Order order) throws DAOException {
 		if (order.getOrderId() == null)
 			createOrder(order);
-		else {
-			try {
-				Session session = HibernateUtil.currentSession();
-				HibernateUtil.beginTransaction();
-				session.saveOrUpdate(order);
-				HibernateUtil.commitTransaction();
-			}
-			catch (Exception e) {
-				HibernateUtil.rollbackTransaction();
-				throw new DAOException(e);
-			}
-		}
+		else
+			sessionFactory.getCurrentSession().saveOrUpdate(order);
 	}
 	
 	/**
@@ -227,7 +166,7 @@ public class HibernateOrderDAO implements
 		order.setDiscontinued(new Boolean(true));
 		order.setDiscontinuedReason(discontinueReason);
 		order.setDiscontinuedDate(discontinueDate);
-		order.setDiscontinuedBy(context.getAuthenticatedUser());
+		order.setDiscontinuedBy(Context.getAuthenticatedUser());
 		updateOrder(order);
 	}
 
@@ -238,24 +177,17 @@ public class HibernateOrderDAO implements
 	public OrderType getOrderType(Integer orderTypeId) throws DAOException {
 		log.debug("getting orderType #" + orderTypeId);
 
-		Session session = HibernateUtil.currentSession();
-		
-		OrderType orderType = (OrderType)session.get(OrderType.class, orderTypeId);
-		
-		return orderType;
+		return (OrderType)sessionFactory.getCurrentSession().get(OrderType.class, orderTypeId);
 	}
 
 	/**
 	 * @see org.openmrs.api.db.OrderService#getOrderTypes()
 	 */
+	@SuppressWarnings("unchecked")
 	public List<OrderType> getOrderTypes() throws DAOException {
 		log.debug("getting all order types");
-
-		Session session = HibernateUtil.currentSession();
 		
-		List<OrderType> orderTypes = session.createCriteria(OrderType.class).list();
-		
-		return orderTypes;
+		return sessionFactory.getCurrentSession().createCriteria(OrderType.class).list();
 	}
 
 	/**
@@ -287,14 +219,11 @@ public class HibernateOrderDAO implements
 	/**
 	 * @see org.openmrs.api.db.OrderService#getOrderTypes()
 	 */
+	@SuppressWarnings("unchecked")
 	public List<DrugOrder> getDrugOrders(boolean showVoided) throws DAOException {
 		log.debug("getting all drug orders");
 
-		Session session = HibernateUtil.currentSession();
-		
-		List<DrugOrder> drugOrders = session.createCriteria(DrugOrder.class).list();
-		
-		return drugOrders;
+		return sessionFactory.getCurrentSession().createCriteria(DrugOrder.class).list();
 	}
 
 	public List<DrugOrder> getDrugOrders() throws DAOException {
@@ -302,15 +231,14 @@ public class HibernateOrderDAO implements
 	}
 
 	
+	@SuppressWarnings("unchecked")
 	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, boolean showVoided) throws DAOException {
 		List<DrugOrder> orders = new Vector<DrugOrder>();
 		
 		if (patient != null) {
 			log.debug("getting all orders by patient " + patient.getPatientId());
-	
-			Session session = HibernateUtil.currentSession();
 			
-			Criteria c = session.createCriteria(DrugOrder.class);
+			Criteria c = sessionFactory.getCurrentSession().createCriteria(DrugOrder.class);
 			Criteria c1 = c.createCriteria("encounter", "enc");
 			Criteria c2 = c1.add(Expression.eq("enc.patient", patient));
 			orders = c2.list();

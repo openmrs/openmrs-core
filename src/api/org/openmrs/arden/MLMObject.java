@@ -20,7 +20,6 @@ public class MLMObject {
 	
 	private boolean IsVarAdded;
 	private int InNestedIf ;       // counting semaphore
-	private Context context;
 	private Locale locale;
 	private Patient patient;
 	//private LinkedList<String> evaluateList;
@@ -38,20 +37,15 @@ public class MLMObject {
 		userVarMapFinal = new HashMap <String, String>();
 	}
 	
-	public MLMObject(Context c, Locale l, Patient p)
+	public MLMObject(Locale l, Patient p)
 	{
 		conceptMap = new HashMap <String, MLMObjectElement>();
 		IsVarAdded = false;
-		context = c;
 		locale = l;
 		patient = p;
 	//	evaluateList = new LinkedList <String>();
 		evaluateList = new LinkedList <MLMEvaluateElement>();
 		userVarMapFinal = new HashMap <String, String>();
-	}
-
-	public void SetContext(Context c) {
-		context = c;
 	}
 
 	public void SetLocale(Locale l) {
@@ -318,7 +312,7 @@ public class MLMObject {
 	     w.append("\tboolean retVal = false;\n");
 	     w.append("\tObs obs;\n");
 	 
-	     w.append("\tdssObj = new DSSObject(context,locale, patient);\n\n");
+	     w.append("\tdssObj = new DSSObject(locale, patient);\n\n");
 	     thisList = evaluateList.listIterator(0);   // Start the Big Evaluate()
 	     while (thisList.hasNext()){
 	    	 Iterator iter = thisList.next().iterator();
@@ -658,7 +652,7 @@ public class MLMObject {
 		boolean retVal = false;
 		MLMObjectElement mObjElem = GetMLMObjectElement(key);
 		if(mObjElem != null ){
-			mObjElem.setServicesContext(context.getConceptService(), context.getObsService());
+			mObjElem.setServicesContext(Context.getConceptService(), Context.getObsService());
 			if(mObjElem.getDBAccessRequired()){
 				retVal = mObjElem.getConceptForPatient(locale, patient);
 			}
