@@ -3,6 +3,44 @@
 	<skipIfNotSupported />
 	<programGroup defaultName="OpenMRS" location="applications" />
 
+	<shortcut 
+		name="Start OpenMRS" 
+		programGroup="yes" 
+		desktop="no"
+		applications="no" 
+		startMenu="yes" 
+		startup="no"
+		target="$INSTALL_PATH\startTomcat.cmd" 
+		workingDirectory="$INSTALL_PATH"
+		commandLine="" 
+		initialState="noShow"
+		iconFile="$INSTALL_PATH\go.ico" 
+		iconIndex="0" type="Application"
+		encoding="UTF-8" 
+		description="Start OpenMRS running on Apache Tomcat">
+		<createForPack name="OpenMRS" />
+	</shortcut>
+
+	<shortcut 
+		name="Stop OpenMRS" 
+		programGroup="yes" 
+		desktop="no"
+		applications="no" 
+		startMenu="yes" 
+		startup="no"
+		target="$INSTALL_PATH\stopTomcat.cmd" 
+		workingDirectory="$INSTALL_PATH"
+		commandLine="" 
+		initialState="noShow"
+		iconFile="$INSTALL_PATH\stop.ico" 
+		iconIndex="0" type="Application"
+		encoding="UTF-8" 
+		description="Stop OpenMRS running on Apache Tomcat">
+		<createForPack name="OpenMRS" />
+	</shortcut>
+
+
+
 
 	<shortcut 
 		name="Uninstall" 
@@ -11,11 +49,11 @@
 		applications="no" 
 		startMenu="yes" 
 		startup="no"
-		target="$INSTALL_PATH\uninstall.bat" 
+		target="$INSTALL_PATH\uninstall.cmd" 
 		workingDirectory="$INSTALL_PATH"
 		commandLine="" 
-		initialState="maximized"
-		iconFile="$INSTALL_PATH\cLogo.ico" 
+		initialState="noShow"
+		iconFile="$INSTALL_PATH\remove.ico" 
 		iconIndex="0" type="Application"
 		encoding="UTF-8" 
 		description="Uninstall">
@@ -23,7 +61,7 @@
 	</shortcut>
 
 
-
+<!-- 
 	<shortcut 
 		name="Documentation" 
 		programGroup="yes" 
@@ -42,26 +80,6 @@
 		encoding="UTF-8"
 		description="IzPack user documentation (PDF format)">
 		<createForPack name="Documentation" />
-	</shortcut>
-	
-	<shortcut 
-		name="Uninstall" 
-		programGroup="yes" 
-		desktop="no"
-		applications="no" 
-		startMenu="yes" 
-		startup="no"
-		target="$INSTALL_PATH\uninstall.bat" 
-		workingDirectory="$INSTALL_PATH"
-		commandLine="" 
-		initialState="maximized"
-		iconFile="$INSTALL_PATH\cLogo.ico" 
-		iconIndex="0" 
-		type="Application"
-		encoding="UTF-8" 
-		description="Uninstall">
-		<createForPack name="OpenMRS" />
-	</shortcut>
-
+	</shortcut>-->
 
 </shortcuts>

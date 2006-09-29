@@ -40,15 +40,14 @@
 	<target name="Generate OpenMRS Installer" depends="Generate Izpack Jar" description="--> Installer for the OpenMRS System">
 		<mkdir dir="target" />
 		<move file="openMRS-install-${ver}-${rel}.jar" todir="target" />
-		<copy file="windowsSetup/launcher.ini" todir="target" />
 		<copy todir="target">
 
 			<fileset dir="windowsSetup">
 				<include name="**/*.*" />
 			</fileset>
 		</copy>
-		<replace file="${TARGET.DIR}/launcher.ini" token="FILENAME" value="openMRS-install-${ver}-${rel}.jar">
-		</replace>
+		<replace file="${TARGET.DIR}/launcher.ini" token="FILENAME" value="openMRS-install-${ver}-${rel}.jar" />
+		<replace file="${TARGET.DIR}/launcher.ini" token="JRE-INSTALL" value="${JRE-INSTALL}" />
 	</target>
 
 
@@ -61,6 +60,8 @@
 				<include name="**/*.*" />
 			</fileset>
 		</copy>
+		
+		
 		<!-- Replace Files for 7-Zip-->
 		<replace file="${TARGET.DIR}/7zip.cmd" token="ARCHIVE_NAME" value="files.7z" />
 		<replace file="${TARGET.DIR}/7zip.cmd" token="FILELIST" value="${FILES}" />
@@ -77,7 +78,8 @@
 	<!-- ================================= 
           target: Create Single Setup File              
          ================================= -->
-	<target name="Create Single Setup File " depends="Compress All Files with 7-Zip" description="--> Creates a single executable EXE">
+	<target name="Create Single Setup File " depends="Check for External File Dependancies, Compress All Files with 7-Zip" description="--> Creates a single executable EXE">
+
 
 		<delete>
 			<fileset dir="${TARGET.DIR}">
@@ -107,10 +109,12 @@
 	<!-- *****************************************************************-->
 
 	<target name="Generate Izpack Jar" description="Generate Installer using izPack">
-	<copy file="install/install.xml" todir="${TARGET.DIR}" />
-		
-		<replace replacefilterfile="ext-files.properties" file="${TARGET.DIR}/install.xml"></replace>
-		<replace replacefilterfile="build.properties" file="${TARGET.DIR}/install.xml"></replace>		
+		<copy file="install/install.xml" todir="${TARGET.DIR}" />
+
+		<replace replacefilterfile="ext-files.properties" file="${TARGET.DIR}/install.xml">
+		</replace>
+		<replace replacefilterfile="build.properties" file="${TARGET.DIR}/install.xml">
+		</replace>
 		<taskdef name="izpack" classpathref="Large.ClassPath" classname="com.izforge.izpack.ant.IzPackTask" />
 
 		<izpack input="${TARGET.DIR}/install.xml" output="openMRS-install-${ver}-${rel}.jar" installerType="standard" basedir="." izPackDir="${izpack.dir}/" />
@@ -128,4 +132,37 @@
 		</delete>
 		<delete dir="${TARGET.DIR}" />
 	</target>
+
+
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: Check for External File Dependancies                  
+         - - - - - - - - - - - - - - - - - -->
+	<target name="Check for External File Dependancies">
+
+		<available file="${EXTERNAL-FILES-DIRECTORY}/${TOMCAT-INSTALL}" type="file" property="external.files.tomcat.present" />
+		<available file="${EXTERNAL-FILES-DIRECTORY}/${MYSQL-INSTALL}" type="file" property="external.files.mysql.present" />
+		<available file="${EXTERNAL-FILES-DIRECTORY}/${JRE-INSTALL}" type="file" property="external.files.jre.present" />
+
+		<echo>Tomcat Install File: ${TOMCAT-INSTALL} exists: ${external.files.tomcat.present}</echo>
+		<echo>Mysql Install File: ${MYSQL-INSTALL} exits: ${external.files.mysql.present}</echo>
+		<echo>JRE Install File: ${JRE-INSTALL} exits: ${external.files.jre.present}</echo>
+
+		<fail message="Can not complete installation as external files are missing">
+			<condition>
+				<not>
+					<and>
+						<isset property="external.files.tomcat.present" />
+						<isset property="external.files.mysql.present" />
+						<isset property="external.files.jre.present" />
+					</and>
+				</not>
+			</condition>
+		</fail>
+
+
+	</target>
+
+
+
 </project>
+

@@ -8,7 +8,7 @@ Assumptions:
 	* OpenMRS Jar,War files Are up to Date
 	
 Features:
-	* Installs Tomcat, Mysql, OpenMRS, OpenMRS Database Scripts
+	* Installs JRE, Tomcat, Mysql, OpenMRS, OpenMRS Database Scripts
 
 ------------------------------------------------------------------------------
 

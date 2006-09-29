@@ -5,7 +5,8 @@
 		<appname>OpenMRS</appname>
 		<appversion>0.9</appversion>
 		<authors>
-			<author name="Christian Allen" email="christian@openmrs.org" />
+			<author name="Christian Allen"
+				email="christian@openmrs.org" />
 			<author name="Paul Biondich" email="paul@openmrs.org" />
 			<author name="Hamish Fraser" email="hamish@openmrs.org" />
 			<author name="Darius Jazayeri" email="darius@openmrs.org" />
@@ -18,7 +19,7 @@
 	</info>
 
 	<guiprefs height="600" resizable="yes" width="800">
- 		<laf name="metouia">
+		<laf name="metouia">
 			<os family="unix" />
 		</laf>
 		<laf name="looks">
@@ -29,7 +30,7 @@
 				<param name="variant" value="plastic" />
 				<param name="variant" value="extwin" />
 			-->
-	 	</laf>
+		</laf>
 
 	</guiprefs>
 
@@ -57,7 +58,7 @@
 		<panel classname="TargetPanel" />
 		<panel classname="ShortcutPanel" os="Windows" />
 		<panel classname="InstallPanel" />
-		<panel classname="ProcessPanel" />		
+		<panel classname="ProcessPanel" />
 		<panel classname="SimpleFinishPanel" />
 	</panels>
 
@@ -95,31 +96,57 @@
 			</pack>
 		-->
 
-
-
 		<pack name="OpenMRS" required="yes">
 			<description>Open MRS Web Archive</description>
 			<fileset dir="OPENMRS.BIN" targetdir="$INSTALL_PATH">
-				<include name="**/*.*" />
+				<include name="**/*.war" />
+				<!--<include name="**/*.jar" />-->
 			</fileset>
-			
+
+			<fileset dir="install" targetdir="$INSTALL_PATH">
+				<include name="**/*.cmd" />
+				<include name="*.ico" />
+			</fileset>
+
 			<parsable targetfile="$INSTALL_PATH/installDB.cmd"
-			type="plain" os="windows" />
+				type="plain" os="windows" />
+			<parsable targetfile="$INSTALL_PATH/uninstall.cmd"
+				type="plain" os="windows" />
 		</pack>
 
+		<pack name="OpenMRS Database Install Scripts" required="yes">
+			<description>
+				Database scripts required for Open MRS. These will be
+				installed from this installer
+			</description>
+			<fileset dir="OPENMRS.SQL"
+				targetdir="$INSTALL_PATH/model">
+				<include name="**/*.sql" />
+			</fileset>
+
+			<fileset dir="OPENMRS.INSTALL.CLASS"
+				targetdir="$INSTALL_PATH/bin">
+				<include name="**/*.class" />
+			</fileset>
+
+			<parsable targetfile="$INSTALL_PATH/installDB.cmd"
+				type="plain" os="windows" />
+		</pack>
 
 
 
 		<pack name="Source" required="no">
 			<description>OpenMRS source files.</description>
-			<fileset dir="OPENMRS.SOURCE.DIR" targetdir="$INSTALL_PATH">
+			<fileset dir="OPENMRS.SOURCE.DIR"
+				targetdir="$INSTALL_PATH">
 				<include name="**/*.*" />
 			</fileset>
 		</pack>
 
 		<pack name="Documentation" required="no">
 			<description>OpenMRS Documentation.</description>
-			<fileset dir="OPENMRS.DOCUMENTATION.DIR" targetdir="$INSTALL_PATH">
+			<fileset dir="OPENMRS.DOCUMENTATION.DIR"
+				targetdir="$INSTALL_PATH">
 				<include name="**/*.*" />
 			</fileset>
 		</pack>

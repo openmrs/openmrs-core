@@ -4,13 +4,21 @@ To Create the final Windows files, the following applications are required:
 	* ANT (http://ant.apache.org)
 	* 7-Zip (http://www.7-zip.org)
 	* Izpack (http://www.izforge.com/izpack/)
-	
+
+The following external files are also required to be put in the ext-files directory and their names set in the ext-files.properties file.
+	* JRE Install
+	* Apache Tomcat Install
+	* Mysql Install
+
 ------------------------------------------------------------------------------
 
-* You must install 7-Zip(http://www.7-zip.org) on the PC to enable the setup.exe creation
+* Please run the main OpenMRS alpha branch "package-web" ant task before runnning this installer.
+
+* OpenMRS Icons are required
 
 * 7-Zip directory must be in the PATH System Environment Variable
 
-* Before the final setup can be created, please copy the Tomcat and Mysql installers into the ext-files directory and modify the ext-files.properties file to set the filenames of the installs.
-
 * The final output files are stored in the target directory
+
+* The OpenMRS SQL files only use the 1.0.0 datamodel as the Data does not get added if the latest model is used.
+
