@@ -5,35 +5,23 @@ import java.util.Iterator;
 import java.util.Set;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.openmrs.BaseTest;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.context.ContextAuthenticationException;
 
-public class UserServiceTest extends TestCase {
+public class UserServiceTest extends BaseTest {
 	
-	protected UserService us;
-	
-	public void setUp(){
-		System.out.println("##start setup");
-		
-		Context.openSession();
-		
-		try {
-			Context.authenticate("USER-1", "test");
-		} catch (ContextAuthenticationException e) {
-			
-		}
-		
-		us = Context.getUserService();
-	}
+	protected UserService us = Context.getUserService();
 
-	public void testUpdateUser() {
+	public void testUpdateUser() throws Exception {
+		
+		Context.authenticate("USER-1", "test");
+		
 		System.out.println("##start method");
 		
 		assertTrue(Context.isAuthenticated());
@@ -96,14 +84,7 @@ public class UserServiceTest extends TestCase {
 			}
 		}
 		
-	}
-
-	
-	protected void tearDown() throws Exception {
-		super.tearDown();
-		
-		Context.closeSession();
-		
+		shutdown();
 	}
 
 	public static Test suite() {

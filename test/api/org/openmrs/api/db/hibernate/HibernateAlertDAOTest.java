@@ -1,27 +1,13 @@
 package org.openmrs.api.db.hibernate;
 
-import java.io.FileInputStream;
-import java.util.Properties;
-
-import junit.framework.TestCase;
-
+import org.openmrs.BaseTest;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.AlertService;
 
-public class HibernateAlertDAOTest extends TestCase {
+public class HibernateAlertDAOTest extends BaseTest {
 
 	public void testClass() throws Exception {
-		String filepath = System.getenv("OPENMRS_RUNTIME_PROPERTIES_FILE");
-		
-		FileInputStream propertyStream = new FileInputStream(filepath);
-		
-		Properties props = new Properties();
-		props.load(propertyStream);
-
-		propertyStream.close();
-		
-		// TODO Generify
-		Context.startup(props);
+		startup();
 		
 		
 		Context.authenticate("ben", "");
@@ -31,7 +17,7 @@ public class HibernateAlertDAOTest extends TestCase {
 
 			System.out.println(as.getAlerts());
 		}  finally {
-			Context.shutdown();
+			shutdown();
 		}
 		
 	}

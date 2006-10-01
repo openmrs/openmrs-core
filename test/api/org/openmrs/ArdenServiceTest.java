@@ -1,9 +1,5 @@
 package org.openmrs;
 
-import java.util.Properties;
-
-import junit.framework.TestCase;
-
 import org.openmrs.api.context.Context;
 import org.openmrs.arden.ArdenDataSource;
 import org.openmrs.arden.ArdenRule;
@@ -11,7 +7,7 @@ import org.openmrs.arden.DSSObject;
 import org.openmrs.arden.DefaultArdenDataSource;
 import org.openmrs.arden.compiled.HiRiskLeadScreen;
 
-public class ArdenServiceTest extends TestCase {
+public class ArdenServiceTest extends BaseTest {
 	int MAX_MLM = 1;
 	
 	public void testClass() throws Exception {
@@ -22,7 +18,7 @@ public class ArdenServiceTest extends TestCase {
 		DSSObject dssObj;
 		int all = MAX_MLM;
 		
-		Context.startup(new Properties());
+		startup();
 		Context.authenticate("vibha", "chicachica");
 		
 	//	Context.getArdenService().compileFile("test/arden test/6.mlm"); 
@@ -30,9 +26,6 @@ public class ArdenServiceTest extends TestCase {
 	//	Context.getArdenService().compileFile("test/arden test/directtbcontact.mlm");
 		
 		Context.getArdenService().compileFile("test/arden test/HiRiskLeadScreen.mlm");
-		
-		
-				
 
  		patient = Context.getPatientService().getPatient(pid);
 		dataSource = new DefaultArdenDataSource(); 
@@ -52,7 +45,7 @@ public class ArdenServiceTest extends TestCase {
 				
 			}
 		}
-		Context.shutdown();
+		shutdown();
 	}
 	
 	

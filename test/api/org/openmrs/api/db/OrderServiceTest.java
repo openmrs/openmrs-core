@@ -3,9 +3,9 @@ package org.openmrs.api.db;
 import java.util.Date;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.openmrs.BaseTest;
 import org.openmrs.Concept;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
@@ -20,38 +20,19 @@ import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.context.ContextFactory;
 
-public class OrderServiceTest extends TestCase {
+public class OrderServiceTest extends BaseTest {
 	
-	protected EncounterService es;
-	protected PatientService ps;
-	protected UserService us;
-	protected ObsService obsService;
-	protected OrderService orderService;
-	protected ConceptService conceptService;
+	protected EncounterService es = Context.getEncounterService();
+	protected PatientService ps = Context.getPatientService();
+	protected UserService us = Context.getUserService();
+	protected ObsService obsService = Context.getObsService();
+	protected OrderService orderService = Context.getOrderService();
+	protected ConceptService conceptService = Context.getConceptService();
 	
-	public void setUp() throws Exception{
-		
-		
-		Context.authenticate("USER-1", "test");
-		
-		es = Context.getEncounterService();
-		assertNotNull(es);
-		ps = Context.getPatientService();
-		assertNotNull(ps);
-		us = Context.getUserService();
-		assertNotNull(us);
-		obsService = Context.getObsService();
-		assertNotNull(obsService);
-		orderService = Context.getOrderService();
-		assertNotNull(orderService);
-		conceptService = Context.getConceptService();
-		assertNotNull(conceptService);
-		
-	}
-
 	public void testOrderCreateUpdateDelete() throws Exception {
+
+		Context.authenticate("USER-1", "test");
 		
 		Order order1 = new Order();
 		
@@ -121,12 +102,12 @@ public class OrderServiceTest extends TestCase {
 		assertTrue(order4.getVoidedBy().equals(order3.getVoidedBy()));
 		//assertTrue(order4.isVoided());
 		
-		orderService.discontinueOrder(order4, "discontinue instruct");
+		//orderService.discontinueOrder(order4, "discontinue instruct");
 		
 		Order order5 = orderService.getOrder(order4.getOrderId());
 		assertTrue(order5.getDiscontinuedReason().equals("discontinue instruct"));
 		//System.out.println("order5.getDiscontinuedBy: " + order5.getDiscontinuedBy().getUsername());
-		assertTrue(order5.getDiscontinuedBy().equals(ContextFactory.getContext().getAuthenticatedUser()));
+		assertTrue(order5.getDiscontinuedBy().equals(Context.getAuthenticatedUser()));
 		assertTrue(order5.getDiscontinued());
 		
 		orderService.undiscontinueOrder(order5);
@@ -142,6 +123,8 @@ public class OrderServiceTest extends TestCase {
 	}	
 	
 	public void testDrugOrderCreateUpdateDelete() throws Exception {
+		
+		Context.authenticate("USER-1", "test");
 		
 		DrugOrder drugorder1 = new DrugOrder();
 		
@@ -243,7 +226,7 @@ public class OrderServiceTest extends TestCase {
 		assertTrue(drugorder4.getVoidedBy().equals(drugorder3.getVoidedBy()));
 		//assertTrue(drugorder4.isVoided());
 		
-		orderService.discontinueOrder(drugorder4, "discontinue instruct");
+		//orderService.discontinueOrder(drugorder4, "discontinue instruct");
 		
 		DrugOrder drugorder5 = (DrugOrder)orderService.getOrder(drugorder4.getOrderId());
 		assertTrue(drugorder5.getDiscontinuedReason().equals("discontinue instruct"));

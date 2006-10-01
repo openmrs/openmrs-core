@@ -1,18 +1,16 @@
 package org.openmrs.formentry.db.hibernate;
 
-import junit.framework.TestCase;
-
+import org.openmrs.BaseTest;
 import org.openmrs.Form;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.formentry.FormSchemaBuilder;
 
-public class FormSchemaBuilderTest extends TestCase {
+public class FormSchemaBuilderTest extends BaseTest {
 
 	
 	public void testClass() throws Exception {
 		
-		HibernateUtil.startup();
+		startup();
 		
 		Context.authenticate("admin", "test");
 		
@@ -21,7 +19,7 @@ public class FormSchemaBuilderTest extends TestCase {
 		
 		System.out.println(payload);
 		
-		HibernateUtil.shutdown();
+		shutdown();
 	}
 	
 }

@@ -3,9 +3,9 @@ package org.openmrs.api.db;
 import java.util.Date;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.openmrs.BaseTest;
 import org.openmrs.ComplexObs;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
@@ -21,40 +21,19 @@ import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.context.ContextFactory;
 
-public class ObsServiceTest extends TestCase {
+public class ObsServiceTest extends BaseTest {
 	
-	protected EncounterService es;
-	protected PatientService ps;
-	protected UserService us;
-	protected ObsService obsService;
-	protected OrderService orderService;
-	protected ConceptService conceptService;
-	
-	public void setUp() throws Exception{
-		
-		
-		Context.authenticate("USER-1", "test");
-		
-		es = Context.getEncounterService();
-		assertNotNull(es);
-		ps = Context.getPatientService();
-		assertNotNull(ps);
-		us = Context.getUserService();
-		assertNotNull(us);
-		obsService = Context.getObsService();
-		assertNotNull(obsService);
-		conceptService = Context.getConceptService();
-		assertNotNull(conceptService);
-		//orderService = Context.getOrderService();
-		//assertNotNull(orderService);
-		//conceptService = Context.getConceptService();
-		//assertNotNull(conceptService);
-		
-	}
+	protected EncounterService es = Context.getEncounterService();
+	protected PatientService ps = Context.getPatientService();
+	protected UserService us = Context.getUserService();
+	protected ObsService obsService = Context.getObsService();
+	protected OrderService orderService = Context.getOrderService();
+	protected ConceptService conceptService = Context.getConceptService();
 
 	public void testObsCreateUpdateDelete() throws Exception {
+		
+		Context.authenticate("USER-1", "test");
 		
 		Obs o = new Obs();
 		
@@ -175,6 +154,8 @@ public class ObsServiceTest extends TestCase {
 	}	
 	
 	public void testComplexObsCreateUpdateDelete() throws Exception {
+		
+		Context.authenticate("USER-1", "test");
 		
 		ComplexObs o = new ComplexObs();
 		

@@ -111,7 +111,7 @@ public final class Listener extends ContextLoaderListener implements ServletCont
 
 	public void contextDestroyed(ServletContextEvent event) {
 
-		Context.shutdown();
+		shutdown();
 		
 		// DriverManager cleanup code taken from
 		// http://opensource2.atlassian.com/confluence/spring/pages/viewpage.action?pageId=2669

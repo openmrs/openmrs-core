@@ -113,7 +113,7 @@
 			<filter token="TIMESTAMP" value="${timestamp}" />
 			<filter token="OPENMRS.VERSION" value="${openmrs.version}" />
 			<filter token="DATABASE.VERSION.EXPECTED" value="${openmrs.database.version.expected}" />
-			
+			<filter token="MAPPING.JAR.LOCATIONS" value="WEB-INF/lib/openmrs-api-@OPENMRS.VERSION@.jar" />
 			<!-- Address properties -->
 			<filter token="ADDRESS.FORMAT" value="${address.format}" />
 		</filterset>
@@ -176,8 +176,17 @@
 		<zip destfile="${doc.dir}/api.zip" basedir="${doc.dir}" includes="api/**" />
 	</target>
 
-	<target name="compile-api-tests" description="compile api tests">
+	<target name="compile-api-tests" depends="package-api" description="compile api tests">
 		<mkdir dir="${build.dir}/test/api" />
+		<copy todir="${build.dir}/test/api">
+			<fileset dir="web/WEB-INF/" >
+				<include name="applicationContext-service.xml" />
+			</fileset>
+			<filterset>
+				<filter token="MAPPING.JAR.LOCATIONS" value="file:dist/openmrs-api-${openmrs.version}.jar" />
+			</filterset>
+		</copy>
+		
 		<javac srcdir="${test.dir}/api" destdir="${build.dir}/test/api" debug="${javac.debug}" deprecation="${compile.deprecation}" optimize="${compile.optimize}" classpathref="api.test.classpath" />
 	</target>
 

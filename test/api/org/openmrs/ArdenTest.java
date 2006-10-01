@@ -8,9 +8,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Locale;
-import java.util.Properties;
-
-import junit.framework.TestCase;
 
 import org.openmrs.api.context.Context;
 import org.openmrs.arden.ArdenBaseLexer;
@@ -21,7 +18,7 @@ import org.openmrs.arden.MLMObject;
 import antlr.BaseAST;
 
 
-public class ArdenTest extends TestCase {
+public class ArdenTest extends BaseTest {
 
 	public static void RunTest(String file, MLMObject ardObj) {
 	    // Use a try/catch block for parser exceptions
@@ -201,7 +198,7 @@ public class ArdenTest extends TestCase {
 	
 	public void testClass() throws Exception {
 		
-		Context.startup(new Properties());
+		startup();
 		
 		Context.authenticate("vibha", "chicachica");
 		Locale locale = Context.getLocale();
@@ -258,7 +255,7 @@ public class ArdenTest extends TestCase {
 	//		}
 	//	}
 		
-		Context.shutdown();
+		shutdown();
 	}
 	
 	

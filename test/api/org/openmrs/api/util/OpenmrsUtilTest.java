@@ -1,12 +1,12 @@
 package org.openmrs.api.util;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
+import org.openmrs.BaseTest;
 import junit.framework.TestSuite;
 
 import org.openmrs.util.OpenmrsUtil;
 
-public class OpenmrsUtilTest extends TestCase {
+public class OpenmrsUtilTest extends BaseTest {
 	
 	public void testGetCheckDigit() throws Exception {
 		

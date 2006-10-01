@@ -5,21 +5,20 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import junit.framework.TestCase;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.context.ContextFactory;
-import org.openmrs.api.db.hibernate.HibernateUtil;
 
 
-public class ObsTest extends TestCase {
-
+public class ObsTest extends BaseTest {
 	
+	private Log log = LogFactory.getLog(this.getClass());
+
 	public void testClass() throws Exception {
 		
-		HibernateUtil.startup();
+		startup();
 		
-		Context.authenticate("vibha", "chicachica");
+		Context.authenticate("admin", "test");
 		Locale locale = Context.getLocale();
 		
 		Patient patient = new Patient();
@@ -27,7 +26,7 @@ public class ObsTest extends TestCase {
 		patient.setPatientId(1);
 		
 		List <ConceptWord>  conceptsWords;
-		conceptsWords = Context.getConceptService().findConcepts("BLOOD LEAD LEVEL", locale, false);
+		conceptsWords = Context.getConceptService().findConcepts("CD4 COUNT", locale, false);
 		if (!conceptsWords.isEmpty()) {
 			    ConceptWord conceptWord = conceptsWords.get(0);
 			    Concept c = conceptWord.getConcept(); 
@@ -37,12 +36,15 @@ public class ObsTest extends TestCase {
 			{
 				Obs o =(Obs) iter.next();
 				
-			    System.out.println(o.getValueAsString(locale));
+			    log.error(o.getValueAsString(locale));
 			 //   iter.remove();
 			}
-			System.out.println("Total Obs: " + MyObs.size());
+			log.error("Total Obs: " + MyObs.size());
 		}
-		HibernateUtil.shutdown();
+		else
+			log.error("Couldn't find a concept named 'CD4 COUNT'");
+		
+		shutdown();
 	}
 	
 }

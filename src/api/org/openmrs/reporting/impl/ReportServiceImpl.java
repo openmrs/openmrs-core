@@ -32,6 +32,7 @@ public class ReportServiceImpl implements ReportService {
 	private ReportObjectFactory reportObjectFactory;
 	
 	public ReportServiceImpl() {
+		new ReportObjectFactory(); // instantiate reportObjectFactory
 		this.reportObjectFactory = ReportObjectFactory.getInstance();
 	}
 	

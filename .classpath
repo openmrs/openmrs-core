@@ -37,10 +37,11 @@
 	<classpathentry kind="lib" path="lib/ibatis/ibatis-sqlmap-2.jar"/>
 	<classpathentry kind="lib" path="lib/tomcat/jsp-api.jar"/>
 	<classpathentry kind="lib" path="lib/tomcat/servlet-api.jar"/>
-	<classpathentry kind="lib" path="metadata/api/sqlmap"/>
+	<!--  <classpathentry kind="lib" path="metadata/api/sqlmap"/> -->
 	<classpathentry kind="lib" path="lib/tomcat/catalina-ant.jar"/>
 	<classpathentry kind="lib" path="lib/dwr/dwr.jar"/>
 	<classpathentry kind="lib" path="lib/spring-framework/spring-1.2.5.jar"/>
+	<classpathentry kind="lib" path="lib/spring-framework/spring-mock.jar"/>
 	<classpathentry kind="lib" path="lib/velocity/velocity-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/commons-io/commons-io-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/mail/activation.jar"/>

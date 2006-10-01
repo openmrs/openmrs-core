@@ -1,7 +1,7 @@
 package org.openmrs;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
+import org.openmrs.BaseTest;
 import junit.framework.TestSuite;
 
 import org.openmrs.api.db.AdministrationServiceTest;
@@ -14,7 +14,7 @@ import org.openmrs.api.db.UserServiceTest;
 import org.openmrs.api.db.hibernate.HibernateTest;
 //import org.openmrs.api.context.ContextTest;
 
-public class AllTests extends TestCase {
+public class AllTests extends BaseTest {
 
 	public static Test suite() {
 		TestSuite suite = new TestSuite();

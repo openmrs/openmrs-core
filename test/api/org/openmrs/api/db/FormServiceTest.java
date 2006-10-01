@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
+import org.openmrs.BaseTest;
 import junit.framework.TestSuite;
 
 import org.openmrs.Concept;
@@ -21,38 +21,19 @@ import org.openmrs.api.ObsService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.context.ContextFactory;
 
-public class FormServiceTest extends TestCase {
+public class FormServiceTest extends BaseTest {
 	
-	protected EncounterService es;
-	protected PatientService ps;
-	protected UserService us;
-	protected ObsService obsService;
-	protected FormService formService;
-	protected ConceptService conceptService;
+	protected EncounterService es = Context.getEncounterService();
+	protected PatientService ps = Context.getPatientService();
+	protected UserService us = Context.getUserService();
+	protected ObsService obsService = Context.getObsService();
+	protected FormService formService = Context.getFormService();
+	protected ConceptService conceptService = Context.getConceptService();
 	
-	public void setUp() throws Exception{
-		
+	public void testFormCreateUpdateDelete() throws Exception {
 		
 		Context.authenticate("USER-1", "test");
-		
-		es = Context.getEncounterService();
-		assertNotNull(es);
-		ps = Context.getPatientService();
-		assertNotNull(ps);
-		us = Context.getUserService();
-		assertNotNull(us);
-		obsService = Context.getObsService();
-		assertNotNull(obsService);
-		formService = Context.getFormService();
-		assertNotNull(formService);
-		conceptService = Context.getConceptService();
-		assertNotNull(conceptService);
-		
-	}
-
-	public void testFormCreateUpdateDelete() throws Exception {
 		
 		//testing Form creation
 		
@@ -61,14 +42,10 @@ public class FormServiceTest extends TestCase {
 		String name1 = "form name1";
 		String version1 = "version1";
 		String descript1 = "descript1";
-		String schema_namespace1 = "schema1";
-		String def1 = "def1";
 		
 		form1.setName(name1);
 		form1.setVersion(version1);
 		form1.setDescription(descript1);
-		form1.setSchemaNamespace(schema_namespace1);
-		form1.setDefinition(def1);
 		
 		formService.createForm(form1);
 		
@@ -79,14 +56,10 @@ public class FormServiceTest extends TestCase {
 		String name2 = "form name2";
 		String version2 = "version2";
 		String descript2 = "descript2";
-		String schema_namespace2 = "schema2";
-		String def2 = "def2";
 		
 		form2.setName(name2);
 		form2.setVersion(version2);
 		form2.setDescription(descript2);
-		form2.setSchemaNamespace(schema_namespace2);
-		form2.setDefinition(def2);
 		
 		formService.updateForm(form2);
 		
@@ -99,8 +72,6 @@ public class FormServiceTest extends TestCase {
 		assertTrue(form3.getName().equals(name2));
 		assertTrue(form3.getVersion().equals(version2));
 		assertTrue(form3.getDescription().equals(descript2));
-		assertTrue(form3.getSchemaNamespace().equals(schema_namespace2));
-		assertTrue(form3.getDefinition().equals(def2));
 		
 		//testing (un)retiration
 		
@@ -119,6 +90,8 @@ public class FormServiceTest extends TestCase {
 	}
 	
 	public void xtestFormFieldCreateUpdateDelete() throws Exception {
+		
+		Context.authenticate("USER-1", "test");
 		
 		//testing creation
 		

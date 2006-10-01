@@ -3,7 +3,7 @@ package org.openmrs.api.db;
 import java.util.Date;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
+import org.openmrs.BaseTest;
 import junit.framework.TestSuite;
 
 import org.openmrs.Encounter;
@@ -15,30 +15,13 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.context.ContextFactory;
 
-public class EncounterServiceTest extends TestCase {
+public class EncounterServiceTest extends BaseTest {
 	
-	protected EncounterService es;
-	protected PatientService ps;
-	protected UserService us;
-	protected Encounter enc;
-	
-	public void setUp() throws Exception{
-		
-		
-		//TODO are we throwing errors for bad authentication?
-		Context.authenticate("USER-1", "test");
-		
-		es = Context.getEncounterService();
-		assertNotNull(es);
-		ps = Context.getPatientService();
-		assertNotNull(ps);
-		us = Context.getUserService();
-		assertNotNull(us);
-		
-		enc = new Encounter();
-	}
+	protected EncounterService es = Context.getEncounterService();
+	protected PatientService ps = Context.getPatientService();
+	protected UserService us = Context.getUserService();
+	protected Encounter enc = new Encounter();
 
 	public void testEncounterCreateUpdateDelete() throws Exception {
 		
@@ -51,7 +34,7 @@ public class EncounterServiceTest extends TestCase {
 		Date d1 = new Date();
 		Patient pat1 = ps.getPatient(1);
 		assertNotNull(pat1);
-		User pro1 = ContextFactory.getContext().getAuthenticatedUser();
+		User pro1 = Context.getAuthenticatedUser();
 		
 		enc.setLocation(loc1);
 		enc.setEncounterType(encType1);

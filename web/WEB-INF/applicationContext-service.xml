@@ -427,7 +427,7 @@
 	<bean id="sessionFactory" class="org.openmrs.api.db.hibernate.HibernateSessionFactoryBean">
 		<property name="mappingJarLocations">
 			<list>
-				<value>WEB-INF/lib/openmrs-api-@OPENMRS.VERSION@.jar</value>
+				<value>@MAPPING.JAR.LOCATIONS@</value>
 			</list>
 		</property>
 		<!--  default properties must be set in the hibernate.default.properties -->
@@ -516,29 +516,6 @@
 		<property name="validatorClass"><value>org.openmrs.reporting.ShortDescriptionProducerValidator</value></property>
 	</bean>
 
-	<!--  **************************  FIELDGEN HANDLER FACTORY CONFIGURATION  *************************  -->
-
-	<!-- Configuration for fieldGen device
-	     USAGE: You can use the FieldGen tag library to automatically generate the html for various
-	     		fields in an object.  It uses reflection to figure out what class the field is, and
-	     		then uses the appropriate handler.  Thus, you need to register handlers that you create
-	     		below.
-	     EXAMPLE: For example, fieldGen taglib is used by report object/element admin interface.  All
-	     		report objects extend AbstractReportObject, but since it is extensible, we cannot know
-	     		what the form should look like (what fields ahead of time) - instead a form is generated
-	     		that has the fields contained within the abstract superclass, and then the view iterates
-	     		through the declared fields in the subclass, and uses the fieldGen tag to render the html
-	     		for those fields.(CALLEN)
-	-->
-
-	<bean id="fieldGenHandlerFactory" class="org.openmrs.web.taglib.fieldgen.FieldGenHandlerFactory">
-		<property name="handlers">
-			<props>
-				<prop key="org.openmrs.Patient">org.openmrs.web.taglib.fieldgen.PatientHandler</prop>
-				<prop key="org.openmrs.Concept">org.openmrs.web.taglib.fieldgen.ConceptHandler</prop>
-			</props>
-		</property>
-	</bean>
 </beans>
 	
 	

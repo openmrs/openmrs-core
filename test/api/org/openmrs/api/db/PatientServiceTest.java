@@ -6,44 +6,30 @@ import java.util.List;
 import java.util.Set;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.openmrs.BaseTest;
 import org.openmrs.Patient;
 import org.openmrs.PatientAddress;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientName;
-import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.context.ContextFactory;
 
-public class PatientServiceTest extends TestCase {
+public class PatientServiceTest extends BaseTest {
 	
-	protected PatientService ps;
-	protected AdministrationService adminService;
-	protected EncounterService encounterService;
+	protected PatientService ps = Context.getPatientService();
+	protected AdministrationService adminService = Context.getAdministrationService();
+	protected EncounterService encounterService = Context.getEncounterService();
 	protected Patient createdPatient;
 	
-	public void setUp() throws Exception{
-		
-		
-		//TODO when do we force authentication ? each Service level call?
+	public void testGetPatient() throws Exception {
+
 		Context.authenticate("USER-1", "test");
 		
-		ps = Context.getPatientService();
-		adminService = Context.getAdministrationService();
-		encounterService = Context.getEncounterService();
-		assertNotNull(adminService);
-		assertNotNull(encounterService);
-		
-		
-	}
-	public void testGetPatient() throws APIException {
-
 		this.createPatient();
 		
 		Set patientList;
@@ -80,7 +66,9 @@ public class PatientServiceTest extends TestCase {
 		
 	}
 	
-	public void createPatient() throws APIException {
+	public void createPatient() throws Exception {
+		
+		Context.authenticate("USER-1", "test");
 		
 		Patient patient = new Patient();
 		

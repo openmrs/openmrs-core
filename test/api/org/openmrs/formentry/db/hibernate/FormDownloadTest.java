@@ -1,41 +1,20 @@
 package org.openmrs.formentry.db.hibernate;
 
-import java.io.FileInputStream;
-import java.util.Properties;
-
-import junit.framework.TestCase;
-
+import org.openmrs.BaseTest;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.context.ContextFactory;
-import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.notification.AlertService;
 
-public class FormDownloadTest extends TestCase {
+public class FormDownloadTest extends BaseTest {
 
 	public void testClass() throws Exception {
-		String filepath = System.getenv("OPENMRS_RUNTIME_PROPERTIES_FILE");
 		
-		FileInputStream propertyStream = new FileInputStream(filepath);
-		
-		Properties props = new Properties();
-		props.load(propertyStream);
-
-		propertyStream.close();
-		
-		// TODO Generify
-		HibernateUtil.startup(props);
-
-		
+		startup();
 		
 		Context.authenticate("ben", "");
+		
+		AlertService as = Context.getAlertService();
 
-		try {
-			AlertService as = Context.getAlertService();
-
-			System.out.println(as.getAlerts());
-		}  finally {
-			HibernateUtil.shutdown();
-		}
+		shutdown();
 		
 	}
 

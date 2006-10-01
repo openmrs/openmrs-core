@@ -63,6 +63,7 @@
     </path>
     <path id="api.test.classpath">
         <path refid="api.compile.classpath"/>
+        <fileset dir="${dist.dir}" includes="*.jar" />
 		<fileset dir="${junit.dir}" includes="*.jar" />
 		<fileset dir="${test.dir}/api" includes="**/*.java" />
     </path>

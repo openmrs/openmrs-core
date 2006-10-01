@@ -5,9 +5,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.openmrs.BaseTest;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
 import org.openmrs.Location;
@@ -22,43 +22,17 @@ import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.context.ContextFactory;
 
-public class AdministrationServiceTest extends TestCase {
+public class AdministrationServiceTest extends BaseTest {
 	
-	protected PatientService ps;
-	protected UserService us;
-	protected AdministrationService as;
-	protected ObsService obsService;
-	protected OrderService orderService;
-	protected FormService formService;
-	protected EncounterService encounterService;
-	protected PatientService patientService;
+	protected PatientService ps = Context.getPatientService();
+	protected UserService us = Context.getUserService();
+	protected AdministrationService as = Context.getAdministrationService();
+	protected ObsService obsService = Context.getObsService();
+	protected OrderService orderService = Context.getOrderService();
+	protected FormService formService = Context.getFormService();
+	protected EncounterService encounterService = Context.getEncounterService();
 	
-	public void setUp() throws Exception{
-		
-		
-		Context.authenticate("USER-1", "test");
-		
-		encounterService = Context.getEncounterService();
-		assertNotNull(encounterService);
-		ps = Context.getPatientService();
-		assertNotNull(ps);
-		us = Context.getUserService();
-		assertNotNull(us);
-		as = Context.getAdministrationService();
-		assertNotNull(as);
-		obsService = Context.getObsService();
-		assertNotNull(obsService);
-		orderService = Context.getOrderService();
-		assertNotNull(orderService);
-		formService = Context.getFormService();
-		assertNotNull(formService);
-		patientService = Context.getPatientService();
-		assertNotNull(patientService);
-		
-	}
-
 	public void testMimeType() throws Exception {
 		
 		//testing equals()/hashset() for mimetype /////////// 
@@ -232,10 +206,10 @@ public class AdministrationServiceTest extends TestCase {
 		
 		as.createPatientIdentifierType(patientIdentifierType);
 		
-		PatientIdentifierType newPatientIdentifierType = patientService.getPatientIdentifierType(patientIdentifierType.getPatientIdentifierTypeId());
+		PatientIdentifierType newPatientIdentifierType = ps.getPatientIdentifierType(patientIdentifierType.getPatientIdentifierTypeId());
 		assertNotNull(newPatientIdentifierType);
 		
-		List<PatientIdentifierType> patientIdentifierTypes = patientService.getPatientIdentifierTypes();
+		List<PatientIdentifierType> patientIdentifierTypes = ps.getPatientIdentifierTypes();
 		
 		//make sure we get a list
 		assertNotNull(patientIdentifierTypes);
@@ -259,13 +233,13 @@ public class AdministrationServiceTest extends TestCase {
 		newPatientIdentifierType.setName("another test");
 		as.updatePatientIdentifierType(newPatientIdentifierType);
 		
-		PatientIdentifierType newerPatientIdentifierType = patientService.getPatientIdentifierType(newPatientIdentifierType.getPatientIdentifierTypeId());
+		PatientIdentifierType newerPatientIdentifierType = ps.getPatientIdentifierType(newPatientIdentifierType.getPatientIdentifierTypeId());
 		assertTrue(newerPatientIdentifierType.getPatientIdentifierTypeId().equals(newPatientIdentifierType.getPatientIdentifierTypeId()));
 		
 		
 		//check deletion
 		as.deletePatientIdentifierType(newPatientIdentifierType);
-		assertNull(patientService.getPatientIdentifierType(newPatientIdentifierType.getPatientIdentifierTypeId()));
+		assertNull(ps.getPatientIdentifierType(newPatientIdentifierType.getPatientIdentifierTypeId()));
 
 	}
 	
