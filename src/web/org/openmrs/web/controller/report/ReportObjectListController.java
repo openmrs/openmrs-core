@@ -1,7 +1,7 @@
 package org.openmrs.web.controller.report;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
+import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -108,7 +108,7 @@ public class ReportObjectListController extends SimpleFormController {
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		
 		//default empty Object
-		Set<AbstractReportObject> reportObjects = new HashSet<AbstractReportObject>();
+		List<AbstractReportObject> reportObjects = new Vector<AbstractReportObject>();
 		
 		//only fill the Object is the user has authenticated properly
 		if (Context.isAuthenticated()) {

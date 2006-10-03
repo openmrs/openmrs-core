@@ -2,8 +2,8 @@ package org.openmrs.reporting.db.hibernate;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
+import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,9 +36,9 @@ public class HibernateReportObjectDAO implements
 		this.sessionFactory = sessionFactory;
 	}
 	
-	public Set<AbstractReportObject> getAllReportObjects() {
-		Set<AbstractReportObject> reportObjects = new HashSet<AbstractReportObject>();
-		Set<ReportObjectWrapper> wrappedObjects = new HashSet<ReportObjectWrapper>();
+	public List<AbstractReportObject> getAllReportObjects() {
+		List<AbstractReportObject> reportObjects = new Vector<AbstractReportObject>();
+		List<ReportObjectWrapper> wrappedObjects = new Vector<ReportObjectWrapper>();
 		wrappedObjects.addAll((ArrayList<ReportObjectWrapper>)sessionFactory.getCurrentSession().createQuery("from ReportObjectWrapper order by date_created, name").list());
 		for ( ReportObjectWrapper wrappedObject : wrappedObjects ) {
 			AbstractReportObject reportObject = (AbstractReportObject)wrappedObject.getReportObject();
@@ -85,9 +85,9 @@ public class HibernateReportObjectDAO implements
 		}
 	}
 
-	public Set<AbstractReportObject> getReportObjectsByType(String reportObjectType) throws DAOException {
-		Set<AbstractReportObject> reportObjects = new HashSet<AbstractReportObject>();
-		Set<ReportObjectWrapper> wrappedObjects = new HashSet<ReportObjectWrapper>();
+	public List<AbstractReportObject> getReportObjectsByType(String reportObjectType) throws DAOException {
+		List<AbstractReportObject> reportObjects = new Vector<AbstractReportObject>();
+		List<ReportObjectWrapper> wrappedObjects = new Vector<ReportObjectWrapper>();
 		Query query = sessionFactory.getCurrentSession().createQuery("from ReportObjectWrapper ro where ro.type=:type order by date_created, name");
 		query.setString("type", reportObjectType);
 		wrappedObjects.addAll((ArrayList<ReportObjectWrapper>)query.list());

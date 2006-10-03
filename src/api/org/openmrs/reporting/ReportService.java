@@ -1,6 +1,7 @@
 package org.openmrs.reporting;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import org.openmrs.api.APIException;
@@ -28,14 +29,14 @@ public interface ReportService {
 	public void updateReport(Report report) throws APIException;
 
 	@Transactional(readOnly=true)
-	public Set<AbstractReportObject> getAllReportObjects();
+	public List<AbstractReportObject> getAllReportObjects();
 
 	@Transactional(readOnly=true)
 	public AbstractReportObject getReportObject(Integer reportObjectId)
 			throws APIException;
 
 	@Transactional(readOnly=true)
-	public Set<AbstractReportObject> getReportObjectsByType(
+	public List<AbstractReportObject> getReportObjectsByType(
 			String reportObjectType) throws APIException;
 
 	@Transactional(readOnly=true)

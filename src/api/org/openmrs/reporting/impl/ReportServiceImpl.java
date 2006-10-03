@@ -2,6 +2,7 @@ package org.openmrs.reporting.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -72,7 +73,7 @@ public class ReportServiceImpl implements ReportService {
 		getReportDAO().updateReport(report);
 	}
 
-	public Set<AbstractReportObject> getAllReportObjects() {
+	public List<AbstractReportObject> getAllReportObjects() {
 		return getReportObjectDAO().getAllReportObjects();
 	}
 		
@@ -80,7 +81,7 @@ public class ReportServiceImpl implements ReportService {
 		return getReportObjectDAO().getReportObject(reportObjectId);
 	}
 	
-	public Set<AbstractReportObject> getReportObjectsByType(String reportObjectType) throws APIException {
+	public List<AbstractReportObject> getReportObjectsByType(String reportObjectType) throws APIException {
 		return getReportObjectDAO().getReportObjectsByType(reportObjectType);
 	}
 
@@ -101,7 +102,7 @@ public class ReportServiceImpl implements ReportService {
 	
 	public ArrayList<PatientFilter> getAllPatientFilters() throws APIException {
 		ArrayList<PatientFilter> allPatientFilters = new ArrayList<PatientFilter>();
-		Set<AbstractReportObject> allMatchingObjects = getReportObjectsByType(OpenmrsConstants.REPORT_OBJECT_TYPE_PATIENTFILTER);
+		List<AbstractReportObject> allMatchingObjects = getReportObjectsByType(OpenmrsConstants.REPORT_OBJECT_TYPE_PATIENTFILTER);
 		if ( allMatchingObjects != null ) {
 			for ( AbstractReportObject aro : allMatchingObjects ) {
 				allPatientFilters.add((PatientFilter)aro);

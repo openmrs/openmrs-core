@@ -345,6 +345,12 @@
 		cursor: pointer;
 	}
 	
+	.tabBar {
+		margin-left: auto;
+		margin-right: auto;
+		width: 98%;
+	}
+	
 	.tabBar .tab:visited, .tabBar .tab:link {
 		background-color: white;
 		text-decoration: none;
@@ -511,8 +517,10 @@
 	
 </div>
 
-<br />
-<input type="checkbox" id="saveAsNew" name="saveAsNew" value="1" /><label for="saveAsNew"><spring:message code="DataExport.saveAs"/></label>
+<c:if test="${dataExport.reportObjectId != null}">
+	<br />
+	<input type="checkbox" id="saveAsNew" name="saveAsNew" value="1" /><label for="saveAsNew"><spring:message code="DataExport.saveAs"/></label>
+</c:if>
 <br />
 <input type="submit" name="action" value='<spring:message code="DataExport.save"/>'>
 <!-- <input type="submit" name="action" value='<spring:message code="DataExport.saveGenerate"/>' onclick="redirectPage('dataExport.list')"> -->
