@@ -409,7 +409,7 @@ public class ConceptServiceImpl implements ConceptService {
 	 */
 	public List<ConceptWord> findConcepts(String phrase, Locale locale,
 			boolean includeRetired) {
-		return findConcepts(phrase, locale, includeRetired);
+		return findConcepts(phrase, locale, includeRetired, null, null, null, null);
 	}
 
 	/**
