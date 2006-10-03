@@ -348,6 +348,10 @@ public class ConceptServiceImpl implements ConceptService {
 	public ConceptDatatype getConceptDatatype(Integer i) {
 		return getConceptDAO().getConceptDatatype(i);
 	}
+	
+	public ConceptDatatype getConceptDatatypeByName(String name) {
+		return getConceptDAO().getConceptDatatypeByName(name);
+	}
 
 	/**
 	 * Return a list of the concept sets with concept_set matching concept
@@ -405,7 +409,7 @@ public class ConceptServiceImpl implements ConceptService {
 	 */
 	public List<ConceptWord> findConcepts(String phrase, Locale locale,
 			boolean includeRetired) {
-		return findConcepts(phrase, locale, includeRetired, null, null);
+		return findConcepts(phrase, locale, includeRetired);
 	}
 
 	/**
@@ -421,21 +425,29 @@ public class ConceptServiceImpl implements ConceptService {
 	 *            List<ConceptClass>
 	 * @param excludeClasses
 	 *            List<ConceptClass>
+	 * @param requireDatatypes
+	 *            List<ConceptDatatype>
+	 * @param excludeDatatypes
+	 *            List<ConceptDatatype>
 	 * @return
 	 * 
 	 * @see ConceptService.findConcepts(String,Locale,boolean)
 	 */
-	public List<ConceptWord> findConcepts(String phrase, Locale locale,
-			boolean includeRetired, List<ConceptClass> requireClasses,
-			List<ConceptClass> excludeClasses) {
+	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired, 
+			List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, 
+			List<ConceptDatatype> requireDatatypes, List<ConceptDatatype> excludeDatatypes) {
 		
 		if (requireClasses == null)
 			requireClasses = new Vector<ConceptClass>();
 		if (excludeClasses == null)
 			excludeClasses = new Vector<ConceptClass>();
+		if (requireDatatypes == null)
+			requireDatatypes = new Vector<ConceptDatatype>();
+		if (excludeDatatypes == null)
+			excludeDatatypes = new Vector<ConceptDatatype>();
 		
 		List<ConceptWord> conceptWords = getConceptDAO().findConcepts(phrase,
-				locale, includeRetired, requireClasses, excludeClasses);
+				locale, includeRetired, requireClasses, excludeClasses, requireDatatypes, excludeDatatypes);
 
 		return weightWords(phrase, locale, conceptWords);
 	}

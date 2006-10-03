@@ -160,7 +160,7 @@ dojo.widget.defineWidget(
 	},
 
 
-	templateString: '<span><span style="white-space: nowrap"><span dojoAttachPoint="searchLabelNode"></span> <input type="text" value="" dojoAttachPoint="inputNode" autocomplete="off" /> <input type="checkbox" style="display: none" dojoAttachPoint="includeRetired"/> <input type="checkbox" style="display: none" dojoAttachPoint="includeVoided"/> <input type="checkbox" style="display: none" dojoAttachPoint="verboseListing"/></span><span class="openmrsSearchDiv"><table class="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><thead><tr dojoAttachPoint="headerRow"></tr></thead><tbody dojoAttachPoint="objHitsTableBody" style="vertical-align: top"><tr><td class="searchIndex"></td><td></td></tbody></table></span></span>',
+	templateString: '<span><span style="white-space: nowrap"><span dojoAttachPoint="searchLabelNode"></span> <input type="text" value="" dojoAttachPoint="inputNode" autocomplete="off" /> <input type="checkbox" style="display: none" dojoAttachPoint="includeRetired"/> <input type="checkbox" style="display: none" dojoAttachPoint="includeVoided"/> <input type="checkbox" style="display: none" dojoAttachPoint="verboseListing"/></span><span class="openmrsSearchDiv"><table class="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><thead><tr dojoAttachPoint="headerRow"></tr></thead><tbody dojoAttachPoint="objHitsTableBody" style="vertical-align: top"><tr><td class="searchIndex"></td><td></td></tr></tbody></table></span></span>',
 	templateCssPath: "",
 
 
@@ -269,11 +269,17 @@ dojo.widget.defineWidget(
 	},
 	
 	
-	_enterKeyPressed: function() {
-	
+	_enterKeyPressed: function(mouseClicked) {
+		dojo.debug('Enter key pressed1');
 		// user hit enter on empty box
-		if (this.inputNode.value == "" && this.event.type == "keyup")
-			return false;
+		
+		try {
+			if (this.inputNode.value == "" && 
+				this.event && this.event.type == "keyup")
+					return false;
+		} catch (Exception) {
+			// catching error when calling this.event.type on mouse click
+		}
 		
 		dojo.debug('Enter key pressed, search: ' + this.text);
 		dojo.debug('lastPhraseSearched: ' + this.lastPhraseSearched);
@@ -303,7 +309,7 @@ dojo.widget.defineWidget(
 		this.inputNode.value = "";
 		dojo.debug('this.inputNode.value cleared');
 		
-		if (this.allowNewSearch() && this.text != this.lastPhraseSearched) {
+		if (this.allowNewSearch() && (this.text != this.lastPhraseSearched || mouseClicked)) {
 			//this was a new search with the enter key pressed, call findObjects function 
 			dojo.debug('This was a new search');
 			if (this.text == null || this.text == "")
@@ -332,8 +338,10 @@ dojo.widget.defineWidget(
 		//reset textbox for mouse events
 		if (this.text == "" && this.lastPhraseSearched != null)
 			this.text = this.lastPhraseSearched;
-
-		this._enterKeyPressed();
+		
+		dojo.debug("'pressing' entry key");
+		
+		this._enterKeyPressed(/* mouse clicked = */ true);
 	},
 
 	

@@ -413,6 +413,14 @@ public class User implements java.io.Serializable {
 	}
 	
 	/**
+	 * 
+	 */
+	public void setProperty(String prop, String value) {
+		if (properties != null)
+			properties.put(prop, value);
+	}
+	
+	/**
 	 * Get prop property from this user's properties.
 	 * If prop is not found in properties, return empty string
 	 * @param prop

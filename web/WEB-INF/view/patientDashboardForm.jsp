@@ -82,7 +82,7 @@
 		</openmrs:hasPrivilege>
 	</ul>
 </div>
-<br/>
+
 <div id="patientSections">
 	<openmrs:hasPrivilege privilege="Patient Dashboard - View Overview Section">
 		<div id="patientOverview" style="display:none;">

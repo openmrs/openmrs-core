@@ -162,6 +162,13 @@ public interface ConceptDAO {
 	public List<ConceptDatatype> getConceptDatatypes();
 	
 	/**
+	 * Return concept datatype with given name
+	 * @param name
+	 * @return
+	 */
+	public ConceptDatatype getConceptDatatypeByName(String name);
+	
+	/**
 	 * Return a ConceptDatatype matching the given identifier
 	 * @return ConceptDatatype
 	 */
@@ -186,10 +193,13 @@ public interface ConceptDAO {
 	 * @param includeRetired boolean
 	 * @param requireClasses List<ConceptClass>
 	 * @param excludeClasses List<ConceptClass>
+	 * @param requireDatatypes List<ConceptDatatype>
+	 * @param excludeDatatypes List<ConceptDatatype>
 	 * @return
 	 */
-	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired, List<ConceptClass> requireClasses,
-			List<ConceptClass> excludeClasses);
+	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired, 
+			List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
+			List<ConceptDatatype> requireDatatypes, List<ConceptDatatype> excludeDatatypes);
 	
 	/**
 	 * Searches on given phrase via the concept word table

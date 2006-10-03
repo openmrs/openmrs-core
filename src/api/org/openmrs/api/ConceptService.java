@@ -204,7 +204,16 @@ public interface ConceptService {
 	 */
 	@Transactional(readOnly=true)
 	public ConceptDatatype getConceptDatatype(Integer i);
-
+	
+	/**
+	 * Return a Concept datatype matching the given name
+	 * 
+	 * @param name String
+	 * @return ConceptDatatype
+	 */
+	@Transactional(readOnly=true)
+	public ConceptDatatype getConceptDatatypeByName(String name);
+	
 	/**
 	 * Return a list of the concept sets with concept_set matching concept
 	 * For example to find all concepts for ARVs, you would do
@@ -258,14 +267,18 @@ public interface ConceptService {
 	 *            List<ConceptClass>
 	 * @param excludeClasses
 	 *            List<ConceptClass>
+	 * @param requireDatatypes
+	 *            List<ConceptDatatype>
+	 * @param excludeDatatypes
+	 *            List<ConceptDatatype>
 	 * @return
 	 * 
 	 * @see ConceptService.findConcepts(String,Locale,boolean)
 	 */
 	@Transactional(readOnly=true)
-	public List<ConceptWord> findConcepts(String phrase, Locale locale,
-			boolean includeRetired, List<ConceptClass> requireClasses,
-			List<ConceptClass> excludeClasses);
+	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired, 
+			List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
+			List<ConceptDatatype> requireDatatypes,List<ConceptDatatype> excludeDatatypes);
 
 	/**
 	 * 

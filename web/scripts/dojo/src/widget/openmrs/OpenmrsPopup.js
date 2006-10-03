@@ -50,6 +50,7 @@ dojo.widget.defineWidget(
 		
 		fillInTemplate: function(args, frag){
 			dojo.event.connect(this.changeButton, "onmouseup", this, "onChangeButtonClick");
+			dojo.event.connect(this.changeButton, "onkeyup", this, "onChangeButtonKeyup");
 			
 			if (!this.allowSearch)
 				this.changeButton.style.display = "none";
@@ -114,7 +115,6 @@ dojo.widget.defineWidget(
 			
 			this.searchWidget.clearSearch();
 			this.searchWidget.toggleShowing();
-			this.searchWidget.inputNode.select();
 			
 			var left = dojo.style.sumAncestorProperties(this.changeButton, false) + dojo.style.getBorderBoxWidth(this.changeButton) + 10;
 			if (left + dojo.style.getBorderBoxWidth(this.searchWidget.domNode) > dojo.html.getViewportWidth())
@@ -126,6 +126,17 @@ dojo.widget.defineWidget(
 			
 			dojo.style.setPositivePixelValue(this.searchWidget.domNode, "left", left);
 			//dojo.style.setPositivePixelValue(this.searchWidget.domNode, "top", top);
+			
+			this.searchWidget.inputNode.select();
+			if (this.searchWidget.domNode.scrollIntoView)
+				this.searchWidget.domNode.scrollIntoView();
+			
+		},
+		
+		onChangeButtonKeyup: function(evt) {
+			if (evt.keyCode == dojo.event.browser.keys.KEY_SPACE || 
+				evt.keyCode == dojo.event.browser.keys.KEY_ENTER)
+					this.onChangeButtonClick();
 		},
 		
 		showIfHiding: false,
@@ -141,6 +152,7 @@ dojo.widget.defineWidget(
 		
 		closeSearch: function() {
 			this.searchWidget.hide();
+			this.changeButton.focus();
 		}
 
 	},

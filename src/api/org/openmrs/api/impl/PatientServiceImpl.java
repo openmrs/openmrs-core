@@ -58,15 +58,14 @@ public class PatientServiceImpl implements PatientService {
 	 */
 	public void createPatient(Patient patient) throws APIException {
 		if (log.isDebugEnabled()) {
-			String s = patient.getPatientId().toString();
+			String s = "" + patient.getPatientId();
 			if (patient.getIdentifiers() != null)
 				s += "|" + patient.getIdentifiers();
 			
 			log.debug(s);
 		}
 		
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_ADD_PATIENTS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_PATIENTS);
+		setCollectionProperties(patient);
 		
 		checkPatientIdentifiers(patient);
 		
@@ -81,8 +80,6 @@ public class PatientServiceImpl implements PatientService {
 	 * @throws APIException
 	 */
 	public Patient getPatient(Integer patientId) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		return getPatientDAO().getPatient(patientId);
 	}
 
@@ -95,6 +92,8 @@ public class PatientServiceImpl implements PatientService {
 	public void updatePatient(Patient patient) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_PATIENTS);
+		
+		setCollectionProperties(patient);
 		
 		checkPatientIdentifiers(patient);
 		
@@ -744,6 +743,43 @@ public class PatientServiceImpl implements PatientService {
 		//  a "Duplicate Identifier" error doesn't pop up.
 		updatePatient(preferred);
 		
+	}
+	
+	/**
+	 * Iterates over Names/Addresses/Identifiers to set dateCreated and creator properties if needed
+	 * @param patient
+	 */
+	private void setCollectionProperties(Patient patient) {
+		if (patient.getCreator() == null) {
+			patient.setCreator(Context.getAuthenticatedUser());
+			patient.setDateCreated(new Date());
+		}
+		patient.setChangedBy(Context.getAuthenticatedUser());
+		patient.setDateChanged(new Date());
+		if (patient.getAddresses() != null)
+			for (PatientAddress pAddress : patient.getAddresses()) {
+				if (pAddress.getDateCreated() == null) {
+					pAddress.setDateCreated(new Date());
+					pAddress.setCreator(Context.getAuthenticatedUser());
+					pAddress.setPatient(patient);
+				}
+			}
+		if (patient.getNames() != null)
+			for (PatientName pName : patient.getNames()) {
+				if (pName.getDateCreated() == null) {
+					pName.setDateCreated(new Date());
+					pName.setCreator(Context.getAuthenticatedUser());
+					pName.setPatient(patient);
+				}
+			}
+		if (patient.getIdentifiers() != null)
+			for (PatientIdentifier pIdentifier : patient.getIdentifiers()) {
+				if (pIdentifier.getDateCreated() == null) {
+					pIdentifier.setDateCreated(new Date());
+					pIdentifier.setCreator(Context.getAuthenticatedUser());
+					pIdentifier.setPatient(patient);
+				}
+			}
 	}
 
 }

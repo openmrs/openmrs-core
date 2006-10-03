@@ -170,7 +170,7 @@
 			import java.util.List;
 			DWRPatientService.getSimilarPatients(String name, Date birthdate, String age, String gender);
 			DWRPatientService.findDuplicatePatients(String[] searchOn);
-			DWRConceptService.findConcepts(String phrase, boolean includeRetired, List<String> includeClassNames, List<String> excludeClassNames, boolean includeDrugConcepts);
+			DWRConceptService.findConcepts(String phrase, boolean includeRetired, List<String> includeClassNames, List<String> excludeClassNames, List<String> includeDatatypes, List<String> excludeDatatypes, boolean includeDrugConcepts);
 			DWRConceptService.findConceptAnswers(String phrase, Integer conceptId, boolean includeRetired, boolean includeDrugConcepts);
 			DWRConceptService.isValidNumericValue(Float value, Integer conceptId);
 			DWRConceptService.getDrugs(Integer conceptId, boolean showConcept);

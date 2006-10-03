@@ -1,9 +1,7 @@
 package org.openmrs.api.db.hibernate;
 
 import java.lang.reflect.Field;
-import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,7 +18,6 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.openmrs.Location;
 import org.openmrs.Patient;
-import org.openmrs.PatientAddress;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientName;
@@ -28,7 +25,6 @@ import org.openmrs.Person;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.Tribe;
-import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PatientDAO;
 import org.openmrs.util.OpenmrsConstants;
@@ -62,8 +58,6 @@ public class HibernatePatientDAO implements PatientDAO {
 	
 
 	public void createPatient(Patient patient) throws DAOException {
-		setCollectionProperties(patient);
-		
 		sessionFactory.getCurrentSession().saveOrUpdate(patient);
 		
 		// create a Person for this patient as well.
@@ -83,7 +77,6 @@ public class HibernatePatientDAO implements PatientDAO {
 		if (patient.getPatientId() == null)
 			createPatient(patient);
 		else {
-			setCollectionProperties(patient);
 			patient = (Patient)sessionFactory.getCurrentSession().merge(patient);
 			sessionFactory.getCurrentSession().saveOrUpdate(patient);
 		}
@@ -666,43 +659,4 @@ public class HibernatePatientDAO implements PatientDAO {
 		return patients;
 	}
 	
-	/**
-	 * Iterates over Names/Addresses/Identifiers to set dateCreated and creator properties if needed
-	 * @param patient
-	 */
-	private void setCollectionProperties(Patient patient) {
-		if (patient.getCreator() == null) {
-			patient.setCreator(Context.getAuthenticatedUser());
-			patient.setDateCreated(new Date());
-		}
-		patient.setChangedBy(Context.getAuthenticatedUser());
-		patient.setDateChanged(new Date());
-		if (patient.getAddresses() != null)
-			for (Iterator<PatientAddress> i = patient.getAddresses().iterator(); i.hasNext();) {
-				PatientAddress pAddress = i.next();
-				if (pAddress.getDateCreated() == null) {
-					pAddress.setDateCreated(new Date());
-					pAddress.setCreator(Context.getAuthenticatedUser());
-					pAddress.setPatient(patient);
-				}
-			}
-		if (patient.getNames() != null)
-			for (Iterator<PatientName> i = patient.getNames().iterator(); i.hasNext();) {
-				PatientName pName = i.next();
-				if (pName.getDateCreated() == null) {
-					pName.setDateCreated(new Date());
-					pName.setCreator(Context.getAuthenticatedUser());
-					pName.setPatient(patient);
-				}
-			}
-		if (patient.getIdentifiers() != null)
-			for (Iterator<PatientIdentifier> i = patient.getIdentifiers().iterator(); i.hasNext();) {
-				PatientIdentifier pIdentifier = i.next();
-				if (pIdentifier.getDateCreated() == null) {
-					pIdentifier.setDateCreated(new Date());
-					pIdentifier.setCreator(Context.getAuthenticatedUser());
-					pIdentifier.setPatient(patient);
-				}
-			}
-	}
 }

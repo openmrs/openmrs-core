@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -120,6 +121,8 @@ public class PortletController implements Controller {
 					
 					if (userContext.hasPrivilege(OpenmrsConstants.PRIV_VIEW_OBS))
 						model.put("patientObs", Context.getObsService().getObservations(p));
+					else
+						model.put("patientObs", new HashSet<Obs>());
 					
 					if (userContext.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ORDERS)) {
 						List<DrugOrder> drugOrderList = Context.getOrderService().getDrugOrdersByPatient(p);

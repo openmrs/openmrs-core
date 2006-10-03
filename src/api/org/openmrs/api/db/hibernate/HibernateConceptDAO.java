@@ -394,6 +394,21 @@ public class HibernateConceptDAO implements
 	public ConceptDatatype getConceptDatatype(Integer i) {
 		return (ConceptDatatype)sessionFactory.getCurrentSession().get(ConceptDatatype.class, i);
 	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptService#getConceptDatatypeByName(java.lang.String)
+	 */
+	public ConceptDatatype getConceptDatatypeByName(String name) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptDatatype.class)
+			.add(Expression.eq("name", name));
+		
+		if (crit.list().size() < 1) {
+			log.warn("No concept datatype found with name: " + name);
+			return null;
+		}
+		
+		return (ConceptDatatype)crit.list().get(0);
+	}
 
 	/**
 	 * @see org.openmrs.api.db.ConceptService#getConceptDatatypes()
@@ -441,8 +456,10 @@ public class HibernateConceptDAO implements
 	 * @see org.openmrs.api.db.ConceptService#findConcepts(java.lang.String,java.util.Locale,boolean)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<ConceptWord> findConcepts(String phrase, Locale loc, boolean includeRetired, List<ConceptClass> requireClasses,
-			List<ConceptClass> excludeClasses) {
+	public List<ConceptWord> findConcepts(String phrase, Locale loc, boolean includeRetired, 
+			List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
+			List<ConceptDatatype> requireDatatypes, List<ConceptDatatype> excludeDatatypes) 
+			{
 		String locale = loc.getLanguage().substring(0, 2);		//only get language portion of locale
 		List<String> words = ConceptWord.getUniqueWords(phrase); //assumes getUniqueWords() removes quote(') characters.  (otherwise we would have a security leak)
 		
@@ -476,6 +493,13 @@ public class HibernateConceptDAO implements
 			
 			if (excludeClasses.size() > 0)
 				searchCriteria.add(Expression.not(Expression.in("concept.conceptClass", excludeClasses)));
+			
+			if (requireDatatypes.size() > 0)
+				searchCriteria.add(Expression.in("concept.datatype", requireDatatypes));
+			
+			if (excludeDatatypes.size() > 0)
+				searchCriteria.add(Expression.not(Expression.in("concept.datatype", excludeDatatypes)));
+			
 			
 			searchCriteria.addOrder(Order.asc("synonym"));
 			conceptWords = searchCriteria.list();

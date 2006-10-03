@@ -17,6 +17,8 @@ dojo.widget.defineWidget(
 	{
 		includeClasses: [],
 		excludeClasses: [],
+		includeDatatypes: [],
+		excludeDatatypes: [],
 		includeDrugConcepts: false,
 		allowConceptEdit: true,
 		showConceptIds: false,
@@ -35,12 +37,12 @@ dojo.widget.defineWidget(
 			
 			this.inputNode.value = this.searchPhrase
 			if (this.searchPhrase)
-				DWRConceptService.findConcepts(this.simpleClosure(this, "doObjectsFound"), this.searchPhrase, false, this.includeClasses, this.excludeClasses, this.includeDrugConcepts);
+				DWRConceptService.findConcepts(this.simpleClosure(this, "doObjectsFound"), this.searchPhrase, false, this.includeClasses, this.excludeClasses, this.includeDatatypes, this.excludeDatatypes, this.includeDrugConcepts);
 		},
 		
 		doFindObjects: function(text) {
 			var tmpIncludedRetired = (this.showIncludeRetired && this.includeRetired.checked);
-			DWRConceptService.findConcepts(this.simpleClosure(this, "doObjectsFound"), text, tmpIncludedRetired, this.includeClasses, this.excludeClasses, this.includeDrugConcepts);
+			DWRConceptService.findConcepts(this.simpleClosure(this, "doObjectsFound"), text, tmpIncludedRetired, this.includeClasses, this.excludeClasses, this.includeDatatypes, this.excludeDatatypes, this.includeDrugConcepts);
 			
 			return false;
 		},

@@ -11,6 +11,7 @@ import org.openmrs.Person;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.Tribe;
+import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.PatientDAO;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,7 @@ public interface PatientService {
 	 * @param patient to be created
 	 * @throws APIException
 	 */
+	@Authorized({"Add Patients"})
 	public void createPatient(Patient patient) throws APIException;
 
 	/**
@@ -34,6 +36,7 @@ public interface PatientService {
 	 * @return patient with given internal identifier
 	 * @throws APIException
 	 */
+	@Authorized({"View Patients"})
 	@Transactional(readOnly=true)
 	public Patient getPatient(Integer patientId) throws APIException;
 

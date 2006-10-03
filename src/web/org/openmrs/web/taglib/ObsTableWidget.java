@@ -30,6 +30,8 @@ import org.openmrs.api.context.Context;
 
 public class ObsTableWidget extends TagSupport {
 
+	private static final long serialVersionUID = 14352344444L;
+
 	private final Log log = LogFactory.getLog(getClass());
 	
 	/*
@@ -183,7 +185,7 @@ public class ObsTableWidget extends TagSupport {
 		// organize obs of those concepts by Date and Concept
 		Set<Integer> conceptsWithObs = new HashSet<Integer>();
 		SortedSet<Date> dates = new TreeSet<Date>();
-		Map<String, List<Obs>> groupedObs = new HashMap<String, List<Obs>>(); // key is conceptId + "." + date 
+		Map<String, List<Obs>> groupedObs = new HashMap<String, List<Obs>>(); // key is conceptId + "." + date
 		for (Obs o : observations) {
 			Integer conceptId = o.getConcept().getConceptId();
 			if (conceptIds.contains(conceptId)) {

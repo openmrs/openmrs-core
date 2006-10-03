@@ -37,64 +37,66 @@ public class DownloadDictionaryServlet extends HttpServlet {
 		response.setHeader("Content-Type", "text/csv");
 		response.setHeader("Content-Disposition", "attachment; filename=conceptDictionary" + s + ".csv");
 		
-		String line = "Concept Id,Name,Description,Synonyms,Answers,Class,Datatype,Creator,Changed By,Retired";
+		String line = "Concept Id,Name,Description,Synonyms,Answers,Class,Datatype,Creator,Changed By";
 		response.getOutputStream().println(line);
 		
 		for (Concept c : cs.getConcepts("conceptId", "asc")){
 			
-			line = c.getConceptId()+ ",";
-			String name, description;
-			ConceptName cn = c.getName(locale);
-			if (cn == null)	
-				name = description = "";
-			else {
-				name = cn.getName();
-				description = cn.getDescription();
+			if (c.isRetired() == false) {
+			
+				line = c.getConceptId()+ ",";
+				String name, description;
+				ConceptName cn = c.getName(locale);
+				if (cn == null)	
+					name = description = "";
+				else {
+					name = cn.getName();
+					description = cn.getDescription();
+				}
+				line += '"' + name.replace("\"", "\"\"") + "\",";
+				
+				if (description == null) description = "";
+				line = line + '"' + description.replace("\"", "\"\"") + "\",";
+				
+				String tmp = "";
+				for (ConceptSynonym syn : c.getSynonyms()) {
+					tmp += syn + "\n";
+				}
+				line += '"' + tmp.trim() + "\",";
+				
+				tmp = "";
+				for (ConceptAnswer answer : c.getAnswers()) {
+					if (answer.getAnswerConcept() != null)
+						tmp += answer.getAnswerConcept().toString() + "\n";
+					else if (answer.getAnswerDrug() != null)
+						tmp += answer.getAnswerDrug().toString() + "\n";
+				}
+				line += '"' + tmp.trim() + "\",";
+				
+				
+				line += '"';
+				if (c.getConceptClass() != null)
+					line += c.getConceptClass().getName();
+				line += "\",";
+				
+				line += '"';
+				if (c.getDatatype() != null)
+					line += c.getDatatype().getName();
+				line += "\",";
+				
+				line += '"';
+				if (c.getChangedBy() != null)
+					line += c.getChangedBy().getFirstName() + " " + c.getChangedBy().getLastName();
+				line += "\",";
+				
+				line += '"';
+				if (c.getCreator() != null)
+					line += c.getCreator().getFirstName() + " " + c.getCreator().getLastName();
+				line += "\"";
+			
+				response.getOutputStream().println(line);
+				
 			}
-			line += '"' + name.replace("\"", "\"\"") + "\",";
-			
-			if (description == null) description = "";
-			line = line + '"' + description.replace("\"", "\"\"") + "\",";
-			
-			String tmp = "";
-			for (ConceptSynonym syn : c.getSynonyms()) {
-				tmp += syn + "\n";
-			}
-			line += '"' + tmp.trim() + "\",";
-			
-			tmp = "";
-			for (ConceptAnswer answer : c.getAnswers()) {
-				if (answer.getAnswerConcept() != null)
-					tmp += answer.getAnswerConcept().toString() + "\n";
-				else if (answer.getAnswerDrug() != null)
-					tmp += answer.getAnswerDrug().toString() + "\n";
-			}
-			line += '"' + tmp.trim() + "\",";
-			
-			
-			line += '"';
-			if (c.getConceptClass() != null)
-				line += c.getConceptClass().getName();
-			line += "\",";
-			
-			line += '"';
-			if (c.getDatatype() != null)
-				line += c.getDatatype().getName();
-			line += "\",";
-			
-			line += '"';
-			if (c.getChangedBy() != null)
-				line += c.getChangedBy().getFirstName() + " " + c.getChangedBy().getLastName();
-			line += "\",";
-			
-			line += '"';
-			if (c.getCreator() != null)
-				line += c.getCreator().getFirstName() + " " + c.getCreator().getLastName();
-			line += "\",";
-			
-			line += c.getRetired() ? '1' : '0';
-			
-			response.getOutputStream().println(line);
 		}
 	}
 	
