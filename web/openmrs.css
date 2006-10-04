@@ -357,7 +357,7 @@ table.patientTreatmentPrograms td {
 	padding: 2px 10px 2px 10px;
 	text-decoration: none;
 	color: navy;
-	background: #E0E0E0;
+	background: #E0E0F0;
 }
 #patientTabs a:link.active, #patientTabs a:visited.active {
 	border-bottom: 1px solid #fff;
