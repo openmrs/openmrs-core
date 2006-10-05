@@ -32,7 +32,7 @@
 						</tr>
 						<openmrs:forEachEncounter encounters="${model.patientEncounters}" sortBy="encounterDatetime" descending="true" var="enc">
 							<tr>
-								<td><a href="#" onClick="handleGetObservations('${enc.encounterId}');"><openmrs:formatDate date="${enc.encounterDatetime}" type="small" /></a></td>
+								<td><a href="#encounterId=${enc.encounterId}" onClick="handleGetObservations('${enc.encounterId}'); return false;"><openmrs:formatDate date="${enc.encounterDatetime}" type="small" /></a></td>
 							 	<td>${enc.encounterType.name}</td>
 							 	<td>${enc.provider.firstName} ${enc.provider.lastName}</td>
 							 	<td>${enc.form.name}</td>
@@ -123,10 +123,10 @@
 	</openmrs:hasPrivilege>
 	--%>
 	
-	<script type="text/javascript" src="<%= request.getContextPath() %>/dwr/interface/DWRObsService.js"></script>
-	<script type="text/javascript" src="<%= request.getContextPath() %>/dwr/interface/DWRPatientService.js"></script>
-	<script type="text/javascript" src="<%= request.getContextPath() %>/dwr/engine.js"></script>
-	<script type="text/javascript" src="<%= request.getContextPath() %>/dwr/util.js"></script>
+	<openmrs:htmlInclude file="/dwr/interface/DWRObsService.js" />
+	<openmrs:htmlInclude file="/dwr/interface/DWRPatientService.js" />
+	<openmrs:htmlInclude file="/dwr/engine.js" />
+	<openmrs:htmlInclude file="/dwr/util.js" />
 	<script>
 		<!-- // begin
 

@@ -90,6 +90,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 			@SuppressWarnings("unused")
 			Connection db_connection = DriverManager.getConnection(url, user, pw);
 			log.debug("Successful database connection");
+			db_connection.close();
 		}
 		catch (Exception e) {
 			log.error("Error while starting up.  Unable to connection using ", e);

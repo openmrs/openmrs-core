@@ -4,7 +4,14 @@
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
-<h3><spring:message code="User.title"/></h3>
+<c:choose>
+	<c:when test="${empty param.title}">
+		<h3><spring:message code="User.title"/></h3>
+	</c:when>
+	<c:otherwise>
+		<h3><spring:message code="${param.title}"/></h3>
+	</c:otherwise>
+</c:choose>
 
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 

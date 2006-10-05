@@ -254,6 +254,7 @@ public class OpenmrsConstants {
 		
 		props.put("use_patient_attribute.tribe", "true");
 		props.put("dashboard.overview.showConcepts", "");
+		props.put("patientForms.goBackOnEntry", "false");
 		
 		props.put("concept.weight", "5089");
 		props.put("concept.cd4_count", "5497");

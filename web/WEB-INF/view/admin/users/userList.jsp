@@ -73,6 +73,8 @@
 		);
 		
 		searchWidget.showAll();
+		searchWidget.inputNode.focus();
+		searchWidget.inputNode.select();
 		
 	});
 	

@@ -111,7 +111,10 @@
 	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="Patient Dashboard - View Forms Section">
 		<div id="patientForms" style="display:none;">
-			<openmrs:portlet url="patientForms" id="patientDashboardForms" patientId="${patient.patientId}" parameters="goBackOnEntry=false|showUnpublishedForms=true" />
+			<c:set var="showUnpub" value="false" />
+			<openmrs:hasPrivilege privilege="View Unpublished Forms"><c:set var="showUnpub" value="true" /></openmrs:hasPrivilege>
+			<openmrs:globalProperty key="patientForms.goBackOnEntry" var="goBackOnEntry" defaultValue="false"/>
+			<openmrs:portlet url="patientForms" id="patientDashboardForms" patientId="${patient.patientId}" parameters="goBackOnEntry=${goBackOnEntry}|showUnpublishedForms=${showUnpub}" />
 		</div>
 	</openmrs:hasPrivilege>
 </div>

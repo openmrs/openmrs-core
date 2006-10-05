@@ -1,9 +1,11 @@
 package org.openmrs.web.dwr;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
@@ -48,7 +50,7 @@ public class DWRUserService {
 				userList.add(new UserListItem(u));
 			}
 		} catch (Exception e) {
-			log.error(e);
+			log.error("Error while searching for users", e);
 			userList.add("Error while attempting to find users - " + e.getMessage());
 		}
 		
@@ -75,7 +77,7 @@ public class DWRUserService {
 		else {
 			try {
 				FormEntryService fs = Context.getFormEntryService();
-				Set<User> users = new HashSet<User>();
+				Set<User> users = new TreeSet<User>(new UserComparator());
 				
 				if (roles == null) 
 					roles = new Vector<String>();
@@ -89,7 +91,7 @@ public class DWRUserService {
 				}
 				
 			} catch (Exception e) {
-				log.error(e);
+				log.error("Error while getting all users", e);
 				userList.add("Error while attempting to get users - " + e.getMessage());
 			}
 		}
@@ -104,10 +106,20 @@ public class DWRUserService {
 				user = new UserListItem(Context.getUserService().getUser(userId));
 			}
 			catch (Exception e) {
-				log.error("Error getting user", e);
+				log.error("Error while getting user", e);
 			}
 		}
 		
 		return user;
+	}
+	
+	private class UserComparator implements Comparator<User> {
+
+		public int compare(User user1, User user2) {
+			String name1 = "" + user1.getLastName() + user1.getFirstName() + user1.getMiddleName();
+			String name2 = "" + user2.getLastName() + user2.getFirstName() + user2.getMiddleName();
+			return name1.compareTo(name2);
+		}
+		
 	}
 }
