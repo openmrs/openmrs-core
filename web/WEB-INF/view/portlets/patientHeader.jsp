@@ -11,8 +11,8 @@
 			<tr>
 				<td id="patientHeaderPatientName">${model.patient.patientName.givenName} ${model.patient.patientName.middleName} ${model.patient.patientName.familyName}&nbsp;&nbsp</td>
 				<td id="patientHeaderPatientGender">
-					<c:if test="${model.patient.gender == 'M'}"><spring:message code="Patient.gender.male"/></c:if>
-					<c:if test="${model.patient.gender == 'F'}"><spring:message code="Patient.gender.female"/></c:if>
+					<c:if test="${model.patient.gender == 'M'}"><img src="${pageContext.request.contextPath}/images/male.gif" alt='<spring:message code="Patient.gender.male"/>'/></c:if>
+					<c:if test="${model.patient.gender == 'F'}"><img src="${pageContext.request.contextPath}/images/female.gif" alt='<spring:message code="Patient.gender.female"/>'/></c:if>
 				</td>
 				<td id="patientHeaderPatientAge">
 					<c:if test="${model.patient.age > 0}">${model.patient.age} <spring:message code="Patient.age.years"/></c:if>

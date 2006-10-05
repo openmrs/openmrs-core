@@ -251,7 +251,7 @@ tr td#patientHeaderPatientGender, tr td#patientHeaderPatientAge, tr td#patientHe
 	padding-right: 5px;
 	padding-left: 5px;
 }
-tr td#patientHeaderPatientGender, tr td#patientHeaderPatientAge {
+tr td#patientHeaderPatientGenderXX, tr td#patientHeaderPatientAge {
 	border-right: 1px solid white;
 }
 #patientHeaderPatientBirthdate {

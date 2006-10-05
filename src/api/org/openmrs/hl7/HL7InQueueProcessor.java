@@ -3,6 +3,7 @@ package org.openmrs.hl7;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
+import org.springframework.transaction.annotation.Transactional;
 
 import ca.uhn.hl7v2.HL7Exception;
 
@@ -13,9 +14,10 @@ import ca.uhn.hl7v2.HL7Exception;
  * @author Burke Mamlin
  * @version 1.0
  */
+@Transactional
 public class HL7InQueueProcessor /* implements Runnable */{
 
-	private Log log = LogFactory.getLog(this.getClass());
+	private final Log log = LogFactory.getLog(this.getClass());
 
 	private HL7Receiver receiver = new HL7Receiver();
 

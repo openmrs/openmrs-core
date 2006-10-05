@@ -83,6 +83,16 @@
 		<div id="content">
 
 			<c:if test="${!taskpane}">
+				<script type="text/javascript">
+					//// prevents users getting popup alerts when viewing pages
+					var handler = function(ex) {
+						if (typeof ex == "string")
+							window.status = "DWR warning/error: " + ex;
+					};
+					DWREngine.setErrorHandler(handler);
+					DWREngine.setWarningHandler(handler);
+				</script>
+									
 				<openmrs:forEachAlert>
 					<c:if test="${varStatus.first}"><div id="alertOuterBox"><div id="alertInnerBox"></c:if>
 						<div class="alert">

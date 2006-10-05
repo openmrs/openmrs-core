@@ -101,8 +101,8 @@ public class ConceptFormController extends SimpleFormController {
 					concept.setSet(false);
 				else
 					concept.setSet(true);
-				log.error("isSet: '" + isSet + "' ");
-				log.error("concept.set: '" + concept.isSet() + "'");
+				log.debug("isSet: '" + isSet + "' ");
+				log.debug("concept.set: '" + concept.isSet() + "'");
 				
 				// ==== Concept Synonyms ====
 					Collection<ConceptSynonym> originalSyns = concept.getSynonyms();

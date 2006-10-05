@@ -106,8 +106,7 @@ public class ObsFormController extends SimpleFormController {
 					//save the current obsId so we can void this obs after creating the new one
 					Integer oldObsId = obs.getObsId();
 	
-					Context.closeSession();
-					Context.openSession();
+					Context.clearSession();
 					
 					//and recreate the obs as this editor
 					obs.setObsId(null);
@@ -116,8 +115,7 @@ public class ObsFormController extends SimpleFormController {
 					os.updateObs(obs);
 					Integer newObsId = obs.getObsId();
 					
-					Context.closeSession();
-					Context.openSession();
+					Context.clearSession();
 					
 					Obs oldObs = os.getObs(oldObsId);
 					os.voidObs(oldObs, request.getParameter("editReason") + " (new obsId: " + newObsId + ")");

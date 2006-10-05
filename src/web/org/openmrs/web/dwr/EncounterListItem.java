@@ -6,6 +6,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
 import org.openmrs.PatientName;
+import org.openmrs.api.context.Context;
+import org.openmrs.util.Format;
 
 public class EncounterListItem {
 	
@@ -18,6 +20,7 @@ public class EncounterListItem {
 	private String providerName;
 	private String formName;
 	private Date encounterDateTime;
+	private String encounterDateString;
 	private boolean voided = false;
 
 
@@ -28,6 +31,7 @@ public class EncounterListItem {
 		if (encounter != null) {
 			encounterId = encounter.getEncounterId();
 			encounterDateTime = encounter.getEncounterDatetime();
+			encounterDateString = Format.format(encounter.getEncounterDatetime(), Context.getLocale());
 			PatientName pn = encounter.getPatient().getPatientName();
 			if (pn != null) {
 				patientName = "";
@@ -66,6 +70,15 @@ public class EncounterListItem {
 		this.encounterDateTime = encounterDateTime;
 	}
 
+	public String getEncounterDateString() {
+		return encounterDateString;
+	}
+
+	public void setEncounterDateString(String encounterDateString) {
+		this.encounterDateString = encounterDateString;
+	}
+
+	
 	public String getEncounterType() {
 		return encounterType;
 	}

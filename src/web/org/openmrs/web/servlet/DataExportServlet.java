@@ -105,7 +105,7 @@ public class DataExportServlet extends HttpServlet {
 			response.getWriter().print("\n\nError: \n" + e.toString());
 		}
 		finally {
-			Context.closeSession();
+			//Context.closeSession();
 			//.write(report.toString());
 		}
 	}

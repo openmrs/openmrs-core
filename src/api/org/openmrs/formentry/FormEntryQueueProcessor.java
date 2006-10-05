@@ -22,6 +22,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.hl7.HL7InQueue;
+import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
 
 /**
@@ -34,9 +35,10 @@ import org.w3c.dom.Document;
  * @author Burke Mamlin
  * @version 1.0
  */
+@Transactional
 public class FormEntryQueueProcessor /* implements Runnable */ {
 
-	private static Log log = LogFactory.getLog( FormEntryQueueProcessor.class );
+	private static final Log log = LogFactory.getLog( FormEntryQueueProcessor.class );
 
 	private DocumentBuilderFactory documentBuilderFactory;
 	private XPathFactory xPathFactory;

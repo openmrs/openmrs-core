@@ -71,7 +71,8 @@ dojo.widget.defineWidget(
 		
 		getDateTime: function(enc) {
 			if (typeof p == 'string') return this.noCell();
-			return this.getDateString(enc.encounterDateTime);
+			return enc.encounterDateString;
+			//this.getDateString(enc.encounterDateTime);
 		},
 		
 		
