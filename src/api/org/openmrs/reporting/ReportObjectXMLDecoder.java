@@ -1,11 +1,14 @@
 package org.openmrs.reporting;
 
+import java.beans.ExceptionListener;
 import java.beans.XMLDecoder;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 
 public class ReportObjectXMLDecoder {
 
+	//private Log log = LogFactory.getLog(this.getClass());
+	
 	private String xmlToDecode;
 	
 	public ReportObjectXMLDecoder ( String xmlToDecode ) {
@@ -13,8 +16,11 @@ public class ReportObjectXMLDecoder {
 	}
 	
 	public AbstractReportObject toAbstractReportObject() {
-		XMLDecoder dec = new XMLDecoder(new BufferedInputStream(new ByteArrayInputStream(xmlToDecode.getBytes())));
-	    return (AbstractReportObject)dec.readObject();
+		ExceptionListener exListener = new ReportObjectWrapperExceptionListener();
+		XMLDecoder dec = new XMLDecoder(new BufferedInputStream(new ByteArrayInputStream(xmlToDecode.getBytes())), null, exListener);
+		AbstractReportObject o = (AbstractReportObject)dec.readObject();
+	    dec.close();
+	    return o;
 	}
 
 	/**

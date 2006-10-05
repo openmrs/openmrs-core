@@ -252,7 +252,7 @@ public class ReportObjectFormController extends SimpleFormController {
 					reportObject.setType(presetType);
 					reportObject.setSubType(presetSubType);
 				} catch (Throwable e) {
-					log.error("Unable to generate subtype class for ReportObject");
+					log.error("Unable to generate subtype class for ReportObject", e);
 				}
 			}
 		}

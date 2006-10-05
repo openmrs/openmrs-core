@@ -81,7 +81,7 @@ public class FormEntryQueueProcessor /* implements Runnable */ {
 			formId = Integer.parseInt(xp.evaluate("/form/@id", doc));
 		} catch (Exception e) {
 			errorDetails = e.getMessage();
-			log.error(e);
+			log.error("Error while parsing formentry", e);
 		}
 
 		// If we failed to obtain the formId, move the queue entry into the

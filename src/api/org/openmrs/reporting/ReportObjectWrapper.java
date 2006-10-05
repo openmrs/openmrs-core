@@ -246,9 +246,8 @@ public class ReportObjectWrapper {
 	public AbstractReportObject getReportObject() {
 		if ( xml != null ) {
 			ReportObjectXMLDecoder roxd = new ReportObjectXMLDecoder(this.xml);
-	        AbstractReportObject reportObj = (AbstractReportObject)roxd.toAbstractReportObject();
+	        AbstractReportObject reportObj = roxd.toAbstractReportObject();
 	        
-	        //dec.close();
 			return reportObj;
 		} else {
 			return null;

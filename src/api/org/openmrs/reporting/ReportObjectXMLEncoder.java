@@ -29,11 +29,11 @@ public class ReportObjectXMLEncoder {
 	    		try {
 	    			enc.setPersistenceDelegate(f.getType(), new EnumDelegate());
 	    		} catch( Exception e ) {
-	    			log.error("ReportObjectXMLEncoder failed to write enumeration " + f.getName());
+	    			log.error("ReportObjectXMLEncoder failed to write enumeration " + f.getName(), e);
 	    		}
 	    	}
 	    }
-	    log.error("objectToEncode.type: " + objectToEncode.getClass());
+	    log.debug("objectToEncode.type: " + objectToEncode.getClass());
 	    enc.writeObject(this.objectToEncode);
 	    enc.close();
 	    
