@@ -99,7 +99,8 @@ tokens {
 	OF = "of";
 	TIME = "time";
 	WITHIN = "within";
-	
+	CALL = "call";
+	WITH = "with";
 	
 }
 
@@ -362,7 +363,7 @@ any_reserved_word
 	: AND | IS | ARE | WAS | WERE | COUNT | IN | LESS | THE | THAN | FROM | BEFORE |AFTER | AGO | AT | OF
 	| WRITE | BE | LET | YEAR | YEARS | IF | IT | THEY | NOT | OR | THEN | MONTH | MONTHS | TIME | TIMES | WITHIN
 	| READ | MINIMUM | MIN | MAXIMUM | MAX | LAST | FIRST | EARLIEST | LATEST | EVENT | WHERE | EXIST | EXISTS | PAST
-	| AVERAGE | AVG | SUM | MEDIAN | CONCLUDE | ELSE | ELSEIF | ENDIF | TRUE | FALSE | DATA | LOGIC | ACTION
+	| AVERAGE | AVG | SUM | MEDIAN | CONCLUDE | ELSE | ELSEIF | ENDIF | TRUE | FALSE | DATA | LOGIC | ACTION | CALL | WITH
 	;
 
 text
@@ -891,11 +892,15 @@ conclude_statement
 	:
 	 (CONCLUDE^) boolean_value
 	;
- 	
+ 
+ call_phrase
+	: ID (WITH expr)?
+	;
+
 logic_assignment
 :
-	 (ACTION_OP^)? identifier_or_object_ref (ACTION_OP)? (BECOMES | EQUALS!) expr
-	 |  identifier_becomes expr
+	 (ACTION_OP^)? identifier_or_object_ref (ACTION_OP)? (BECOMES! | EQUALS!) (expr | (CALL^) call_phrase)
+//	 |  identifier_becomes (expr | (CALL^) call_phrase)
 	;
 		
 //	 identifier_becomes expr
@@ -1178,7 +1183,8 @@ readAST [MLMObject obj, String instr] returns [String s=""]
 	  
 	   b=readAST[obj, instr]) 
 	  
-	  | ((FIRST | EARLIEST) (x:INTLIT FROM)? b=readAST[obj, instr]) {s+=b;obj.setReadType("first"); obj.setHowMany("1");
+	  | ((FIRST | EARLIEST) (x:INTLIT /*FROM*/)?
+	  {s+=b;obj.setReadType("first"); obj.setHowMany("1");
 	  								if(x != null) {
 	   									obj.setHowMany(x.getText());
 	   									System.err.println("ReadType = First " + "How many? " + x.getText());
@@ -1188,9 +1194,13 @@ readAST [MLMObject obj, String instr] returns [String s=""]
 	  							 }
 	  							 
 	  							}
+	  
+	  
+	  b=readAST[obj, instr]) 
 	  							
 	  				
-	  | ((MAXIMUM | MAX)( (y:INTLIT FROM)? b=readAST[obj, instr]) {s+=b;obj.setReadType("max"); obj.setHowMany("1");
+	  | ((MAXIMUM | MAX)( (y:INTLIT /*FROM*/)? 
+	  {s+=b;obj.setReadType("max"); obj.setHowMany("1");
 	  							if(y != null) {
 	   									obj.setHowMany(y.getText());
 	   									System.err.println("ReadType = Maximum " + "How many? " + y.getText());
@@ -1200,11 +1210,13 @@ readAST [MLMObject obj, String instr] returns [String s=""]
 	  							 }
 	  							 
 	  							}
+	  b=readAST[obj, instr]) 
 	  					 |
 	  					 ((intlit:INTLIT dop:duration_op) {System.err.println("Duration Clause - " + intlit.getText() + " " + dop.getText());})
 	  					)
 	  							
-	  | ((MINIMUM | MIN) (z:INTLIT FROM)? b=readAST[obj, instr]) {s+=b;obj.setReadType("min"); obj.setHowMany("1");
+	  | ((MINIMUM | MIN) (z:INTLIT /*FROM*/)?
+	  {s+=b;obj.setReadType("min"); obj.setHowMany("1");
 	  							if(z != null) {
 		   								obj.setHowMany(z.getText());
 		   								System.err.println("ReadType = Minimum " + "How many? " + z.getText());
@@ -1215,19 +1227,22 @@ readAST [MLMObject obj, String instr] returns [String s=""]
 	  							 
 	  							}
 	  							
-		// end of from_of_func_op
+	
+	   b=readAST[obj, instr]) 	// end of from_of_func_op
 		
   
 	  	
 	  // Following are of_read_func_op
 	  			
 	  
-	  | ((EXIST | EXISTS) b=readAST[obj, instr]) {s+=b;System.err.println("ReadType = Exist");}
+	  | ((EXIST | EXISTS)
+	  {s+=b;obj.setReadType("last"); obj.setHowMany("1");System.err.println("ReadType = Exist");}
+	   b=readAST[obj, instr]) 
 	  
-	  | ((AVERAGE | AVG) b=readAST[obj, instr]) {s+=b;System.err.println("ReadType = Average");}
-	  | (COUNT b=readAST[obj, instr]) {s+=b;System.err.println("ReadType = Count");}
-	  | (SUM b=readAST[obj, instr]) {s+=b;System.err.println("ReadType = Sum");}
-	  | (MEDIAN b=readAST[obj, instr]) {s+=b;System.err.println("ReadType = Median");}
+	  | ((AVERAGE | AVG) b=readAST[obj, instr]) {s+=b;System.err.println("ReadType = Average");}        //To DO
+	  | (COUNT b=readAST[obj, instr]) {s+=b;System.err.println("ReadType = Count");}					//To DO
+	  | (SUM b=readAST[obj, instr]) {s+=b;System.err.println("ReadType = Sum");}						// To DO
+	  | (MEDIAN b=readAST[obj, instr]) {s+=b;System.err.println("ReadType = Median");}					// To DO
 	  
 	  // End of of_read_func_op
 	 	 	  
@@ -1366,11 +1381,21 @@ logic [MLMObject obj] returns [String s=""]
 	  | #(ENDIF {System.err.println("ENDIF FOUND");a = "ENDIF"; obj.AddToEvaluateList(a);obj.SetConceptVar(a);} )
 	         
 	  | {System.err.println("-----------Starting CONCLUDE -------");obj.InitEvaluateList(); a = "Conclude_" + Integer.toString(i);} concludeAST[obj, a]  {System.err.println("\n");System.err.println("-----------End CONCLUDE -------");}
+	  | {System.err.println("-----------Starting CALL -------");obj.InitEvaluateList(); a = "" ;} callAST[obj, a]  {System.err.println("\n");System.err.println("-----------End CALL -------");}
 
 	{i++;} )* 
  	
   (ENDBLOCK){System.err.println("\n");System.err.println("-----------End LOGIC -------");})
 ;
+
+callAST [MLMObject obj, String key] returns [String s=""]
+{String a,b;}
+: (
+    #(CALL b=exprStringAST[obj, key] {obj.SetConceptVar(b);} a = exprStringAST [obj, b] {obj.setReadType("call"); obj.AddConcept(a);obj.SetDBAccess(false,b); }
+      
+     ) 
+  )
+	;
 
 ifAST [MLMObject obj] returns [String s=""]
 {String a,b;}
@@ -1435,7 +1460,7 @@ exprStringAST [MLMObject obj, String instr] returns [String s=""]
 :
 (
  	#(ift:ID 
-			      { a = ift.getText(); System.err.println("IF text = " + a); 
+			      { a = ift.getText(); System.err.println("text = " + a); 
 			        if(instr.equals("")) {
 			        		obj.AddToEvaluateList(a); obj.SetConceptVar(a);
 				      //  	obj.RetrieveConcept(a); 
