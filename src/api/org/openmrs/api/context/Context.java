@@ -65,7 +65,7 @@ public class Context implements ApplicationContextAware {
 	private static ApplicationContext applicationContext;
 	private static Session mailSession;
 	
-	private static ThreadLocal<UserContext> userContextHolder = new ThreadLocal<UserContext>();
+	private static final ThreadLocal<UserContext> userContextHolder = new ThreadLocal<UserContext>();
 	private static ServiceContext serviceContext;
 	private static Properties runtimeProperties = new Properties();
 
