@@ -51,7 +51,8 @@ public class LocationFilter extends AbstractPatientFilter implements PatientFilt
 			for (Map.Entry<Integer, Object> e : temp.entrySet()) {
 				if (e.getValue() == null)
 					continue;
-				Location l = Context.getPatientService().getLocation((Integer) e.getValue());
+				//Location l = Context.getPatientService().getLocation((Integer) e.getValue());
+				Location l = (Location) e.getValue();
 				if (location.equals(l))
 					ret.add(e.getKey());
 			}

@@ -29,10 +29,10 @@ import org.openmrs.PatientName;
 import org.openmrs.Tribe;
 import org.openmrs.api.context.Context;
 import org.openmrs.formentry.FormEntryService;
-import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
-import org.openmrs.web.dwr.PatientListItem;
+import org.openmrs.web.propertyeditor.LocationEditor;
 import org.openmrs.web.propertyeditor.TribeEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -75,11 +75,12 @@ public class NewPatientFormController extends SimpleFormController {
         binder.registerCustomEditor(java.util.Date.class, 
         		new CustomDateEditor(dateFormat, true, 10));
         binder.registerCustomEditor(Tribe.class, new TribeEditor());
+        binder.registerCustomEditor(Location.class, new LocationEditor());
 	}
 
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 	
-		PatientListItem pli = (PatientListItem)obj;
+		ShortPatientModel pli = (ShortPatientModel)obj;
 		
 		if (Context.isAuthenticated()) {
 			FormEntryService ps = Context.getFormEntryService();
@@ -188,7 +189,7 @@ public class NewPatientFormController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 			FormEntryService ps = Context.getFormEntryService();
-			PatientListItem p = (PatientListItem)obj;
+			ShortPatientModel p = (ShortPatientModel)obj;
 			String view = getSuccessView();
 			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
@@ -211,19 +212,19 @@ public class NewPatientFormController extends SimpleFormController {
 			if (!duplicate)
 				patient.addName(new PatientName(p.getGivenName(), p.getMiddleName(), p.getFamilyName()));
 			
-			if (p.getAddress1() != "" && p.getAddress2() != "") {
+			log.debug("address: " + p.getAddress());
+			if (p.getAddress() != null && !p.getAddress().isBlank()) {
 				duplicate = false;
 				for (PatientAddress pa : patient.getAddresses()) {
-					if (pa.getAddress1() == p.getAddress1() && pa.getAddress2() == p.getAddress2())
+					if (pa.equals(p.getAddress()))
 						duplicate = true;
 				}
+				log.debug("duplicate:  " + duplicate);
 				if (!duplicate) {
-					PatientAddress pa = new PatientAddress();
-					pa.setAddress1(p.getAddress1());
-					pa.setAddress2(p.getAddress2());
-					patient.addAddress(pa);
-				}			
+					patient.addAddress(p.getAddress());
+				}
 			}
+			log.debug("patient addresses: " + patient.getAddresses());
 			
 			// set or unset the preferred bit for the old identifiers if needed
 			if (patient.getIdentifiers() == null)
@@ -276,7 +277,7 @@ public class NewPatientFormController extends SimpleFormController {
 	    	}
 		}
 		
-		PatientListItem patient = new PatientListItem(p);
+		ShortPatientModel patient = new ShortPatientModel(p);
 		
 		String name = request.getParameter("name");
 		if (p == null && name != null) {
@@ -315,11 +316,13 @@ public class NewPatientFormController extends SimpleFormController {
 			
 			patient.setGender(request.getParameter("gender"));
 			Date birthdate = null;
+			boolean birthdateEstimated = false;
 			String date = request.getParameter("birthyear");
 			String age = request.getParameter("age");
 			if (date != null && !date.equals("")) {
 				try {
 					birthdate = DateFormat.getDateInstance(DateFormat.SHORT).parse("01/01/" + date);
+					birthdateEstimated = true;
 				} catch (ParseException e) { log.debug(e); }
 			}
 			else if (age != null && !age.equals("")) {
@@ -329,10 +332,18 @@ public class NewPatientFormController extends SimpleFormController {
 				d = d - Integer.parseInt(age);
 				try {
 					birthdate = DateFormat.getDateInstance(DateFormat.SHORT).parse("01/01/" + d);
+					birthdateEstimated = true;
 				} catch (ParseException e) { log.debug(e); }
 			}
 			if (birthdate != null)
 				patient.setBirthdate(birthdate);
+			patient.setBirthdateEstimated(birthdateEstimated);
+		}
+		
+		if (patient.getAddress() == null) {
+			PatientAddress pa = new PatientAddress();
+			pa.setPreferred(true);
+			patient.setAddress(pa);
 		}
 		
         return patient;

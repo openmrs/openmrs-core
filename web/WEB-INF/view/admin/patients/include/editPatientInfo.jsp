@@ -10,15 +10,18 @@
 			</spring:bind>
 		</td>
 	</tr>
-	<tr>
-		<td><spring:message code="Patient.race"/></td>
-		<td>
-			<spring:bind path="patient.race">
-				<input type="text" name="race" size="10" value="${status.value}" />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		</td>
-	</tr>
+	<openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" var="showTribe"/>
+	<c:if test="${showTribe == 'true'}">
+		<tr>
+			<td><spring:message code="Patient.race"/></td>
+			<td>
+				<spring:bind path="patient.race">
+					<input type="text" name="race" size="10" value="${status.value}" />
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				</spring:bind>
+			</td>
+		</tr>
+	</c:if>
 	<tr>
 		<td><spring:message code="Patient.birthdate"/></td>
 		<td colspan="3">
@@ -47,7 +50,6 @@
 		</td>
 	</tr>
 
-	<openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" var="showTribe"/>
 	<c:if test="${showTribe == 'true'}">
 		<tr>
 			<td><spring:message code="Patient.tribe"/></td>
@@ -160,9 +162,8 @@
 	<tr>
 		<td><spring:message code="Patient.healthCenter"/></td>
 		<td>
-			<!-- TODO make this list of locations> -->
 			<spring:bind path="patient.healthCenter">
-				<input type="text" name="healthCenter" value="${status.value}" />
+				<openmrs:fieldGen type="org.openmrs.Location" formFieldName="healthCenter" val="${status.editor.value}" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>

@@ -38,7 +38,7 @@ public class Patient implements java.io.Serializable {
 	private Date deathDate;
 	private String causeOfDeath;
 	private String healthDistrict;
-	private Integer healthCenter;
+	private Location healthCenter;
 	private Set<PatientAddress> addresses;
 	private Set<PatientName> names;
 	private Set<PatientIdentifier> identifiers;
@@ -313,7 +313,7 @@ public class Patient implements java.io.Serializable {
 	/**
 	 * @return patient's health center
 	 */
-	public Integer getHealthCenter() {
+	public Location getHealthCenter() {
 		return this.healthCenter;
 	}
 
@@ -321,7 +321,7 @@ public class Patient implements java.io.Serializable {
 	 * @param healthCenter
 	 *            patient's health center
 	 */
-	public void setHealthCenter(Integer healthCenter) {
+	public void setHealthCenter(Location healthCenter) {
 		this.healthCenter = healthCenter;
 	}
 

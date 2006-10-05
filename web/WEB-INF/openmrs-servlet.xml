@@ -294,7 +294,7 @@
 			<bean id="newPatientForm" class="org.openmrs.web.controller.patient.NewPatientFormController" singleton="false">
 				<property name="sessionForm"><value>true</value></property>
 				<property name="commandName"><value>patient</value></property>
-				<property name="commandClass"><value>org.openmrs.web.dwr.PatientListItem</value></property>
+				<property name="commandClass"><value>org.openmrs.web.controller.patient.ShortPatientModel</value></property>
 				<property name="formView"><value>/admin/patients/newPatientForm</value></property>
 				<property name="successView"><value>/@WEBAPP.NAME@/patientDashboard.form</value></property>
 			</bean>
@@ -671,7 +671,6 @@
 				<property name="links">
 					<list>
 						<value>patientSet.form:Analysis.formEntryButton:method=setPatientSet:url=patientDashboard.form:appendPatientId=true</value>
-						<value>nealreport.form:nealreport.DemoReport.name:reportType=Demo Report</value>
 						<value>nealreport.form:nealreport.IncentiveReport.name:reportType=Incentive Report</value>
 						<value>nealreport.form:nealreport.DeclineReport.name:reportType=Decline Report</value>
 						<value>nealreport.form:nealreport.ShortReport.name:reportType=Short Report</value>
@@ -1065,7 +1064,7 @@
 
 	    <bean id="standardD4t30Efv" class="org.openmrs.order.RegimenSuggestion">
 			<property name="codeName"><value>standardD4t30Efv</value></property>
-			<property name="displayName"><value>d4T(30) + 3TC + EFV</value></property>
+			<property name="displayName"><value>d4T(30) + 3TC + EFV(600)</value></property>
 			<property name="canReplace"><value>ANTIRETROVIRAL DRUGS</value></property>
 	    	<property name="drugComponents">
 				<list>
@@ -1078,7 +1077,7 @@
 
 	    <bean id="standardD4t40Efv" class="org.openmrs.order.RegimenSuggestion">
 			<property name="codeName"><value>standardD4t40Efv</value></property>
-			<property name="displayName"><value>d4T(40) + 3TC + EFV</value></property>
+			<property name="displayName"><value>d4T(40) + 3TC + EFV(600)</value></property>
 			<property name="canReplace"><value>ANTIRETROVIRAL DRUGS</value></property>
 	    	<property name="drugComponents">
 				<list>
@@ -1103,7 +1102,7 @@
 
 	    <bean id="standardAztEfv" class="org.openmrs.order.RegimenSuggestion">
 			<property name="codeName"><value>standardAztEfv</value></property>
-			<property name="displayName"><value>AZT + 3TC + EFV</value></property>
+			<property name="displayName"><value>AZT + 3TC + EFV(600)</value></property>
 			<property name="canReplace"><value>ANTIRETROVIRAL DRUGS</value></property>
 	    	<property name="drugComponents">
 				<list>
@@ -1117,26 +1116,26 @@
 		<!-- REGIMEN COMPONENTS (INDIVIDUAL DRUGS) -->
 
 	    <bean id="drugTri30" class="org.openmrs.order.DrugSuggestion">
-			<property name="drugId"><value>13</value></property>	    
-			<property name="dose"><value>2</value></property>	    
+			<property name="drugId"><value>2</value></property>	    
+			<property name="dose"><value>1</value></property>	    
 			<property name="units"><value>tablet(s)</value></property>	    
-			<property name="frequency"><value>2/day x Every day</value></property>	    
+			<property name="frequency"><value>2/day x 7 days/week</value></property>	    
 			<property name="instructions"><value></value></property>	    
 	    </bean>
 
 	    <bean id="drugTri40" class="org.openmrs.order.DrugSuggestion">
-			<property name="drugId"><value>12</value></property>	    
-			<property name="dose"><value>2</value></property>	    
+			<property name="drugId"><value>3</value></property>	    
+			<property name="dose"><value>1</value></property>	    
 			<property name="units"><value>tablet(s)</value></property>	    
-			<property name="frequency"><value>2/day x Every day</value></property>	    
+			<property name="frequency"><value>2/day x 7 days/week</value></property>	    
 			<property name="instructions"><value></value></property>	    
 	    </bean>
 
 	    <bean id="drugAzt3tc" class="org.openmrs.order.DrugSuggestion">
 			<property name="drugId"><value>39</value></property>	    
-			<property name="dose"><value>2</value></property>	    
+			<property name="dose"><value>1</value></property>	    
 			<property name="units"><value>tablet(s)</value></property>	    
-			<property name="frequency"><value>2/day x Every day</value></property>	    
+			<property name="frequency"><value>2/day x 7 days/week</value></property>	    
 			<property name="instructions"><value></value></property>	    
 	    </bean>
 
@@ -1144,7 +1143,7 @@
 			<property name="drugId"><value>22</value></property>	    
 			<property name="dose"><value>200</value></property>	    
 			<property name="units"><value>mg</value></property>	    
-			<property name="frequency"><value>2/day x Every day</value></property>	    
+			<property name="frequency"><value>2/day x 7 days/week</value></property>	    
 			<property name="instructions"><value></value></property>	    
 	    </bean>
 
@@ -1152,7 +1151,7 @@
 			<property name="drugId"><value>11</value></property>	    
 			<property name="dose"><value>600</value></property>	    
 			<property name="units"><value>mg</value></property>	    
-			<property name="frequency"><value>2/day x Every day</value></property>	    
+			<property name="frequency"><value>1/day x 7 days/week</value></property>	    
 			<property name="instructions"><value></value></property>	    
 	    </bean>
 
@@ -1160,7 +1159,7 @@
 			<property name="drugId"><value>5</value></property>	    
 			<property name="dose"><value>30</value></property>	    
 			<property name="units"><value>mg</value></property>	    
-			<property name="frequency"><value>2/day x Every day</value></property>	    
+			<property name="frequency"><value>2/day x 7 days/week</value></property>	    
 			<property name="instructions"><value></value></property>	    
 	    </bean>
 
@@ -1168,7 +1167,7 @@
 			<property name="drugId"><value>6</value></property>	    
 			<property name="dose"><value>40</value></property>	    
 			<property name="units"><value>mg</value></property>	    
-			<property name="frequency"><value>2/day x Every day</value></property>	    
+			<property name="frequency"><value>2/day x 7 days/week</value></property>	    
 			<property name="instructions"><value></value></property>	    
 	    </bean>
 
@@ -1176,7 +1175,7 @@
 			<property name="drugId"><value>42</value></property>	    
 			<property name="dose"><value>150</value></property>	    
 			<property name="units"><value>mg</value></property>	    
-			<property name="frequency"><value>2/day x Every day</value></property>	    
+			<property name="frequency"><value>2/day x 7 days/week</value></property>	    
 			<property name="instructions"><value></value></property>	    
 	    </bean>
 

@@ -97,7 +97,7 @@ public class PatientServiceTest extends BaseTest {
 		patient.setDeathDate(new Date());
 		patient.setCauseOfDeath("air");
 		patient.setHealthDistrict("health dist");
-		patient.setHealthCenter(0);
+		patient.setHealthCenter(null);
 		patient.setBirthdate(new Date());
 		patient.setBirthdateEstimated(true);
 		patient.setBirthplace("Little town outside of nowhere");

@@ -46,6 +46,8 @@ import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
+import org.openmrs.Relationship;
+import org.openmrs.RelationshipType;
 import org.openmrs.User;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
@@ -293,8 +295,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 				patientNode.setAttribute("health_district", p.getHealthDistrict());
 			}
 			if (p.getHealthCenter() != null) {
-				patientNode.setAttribute("health_center", encounterService.getLocation(p.getHealthCenter()).getName());
-				patientNode.setAttribute("health_center_id", p.getHealthCenter().toString());
+				patientNode.setAttribute("health_center", p.getHealthCenter().getName());
+				patientNode.setAttribute("health_center_id", p.getHealthCenter().getLocationId().toString());
 			}
 			
 			for (Encounter e : encounters) {
@@ -1044,6 +1046,33 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 				ret.put(ptId, list);
 			}
 			list.add(regimen);
+		}
+		return ret;
+	}
+	
+	// TODO: Reimplement this method if we revise the meanings/names of the relationship fields
+	public Map<Integer, List<Relationship>> getRelationships(PatientSet ps, RelationshipType relType) {
+		Map<Integer, List<Relationship>> ret = new HashMap<Integer, List<Relationship>>();
+		Collection<Integer> ids = ps.getPatientIds();
+		if (ids.size() == 0)
+			return ret;
+		
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Relationship.class);
+		if (relType != null)
+			criteria.add(Restrictions.eq("relationship", relType));
+		//criteria.add(Restrictions.in("relative.patient.patientId", ids));
+		criteria.createCriteria("relative").add(Restrictions.in("patient.patientId", ids));
+		criteria.add(Restrictions.eq("voided", false));
+		log.debug("criteria: " + criteria);
+		List<Relationship> temp = criteria.list();
+		for (Relationship rel : temp) {
+			Integer ptId = rel.getRelative().getPatient().getPatientId();
+			List<Relationship> rels = ret.get(ptId);
+			if (rels == null) {
+				rels = new ArrayList<Relationship>();
+				ret.put(ptId, rels);
+			}
+			rels.add(rel);
 		}
 		return ret;
 	}

@@ -54,7 +54,7 @@
 								<td>${drugOrder.discontinuedReason}</td>
 								<c:if test="${model.completedRegimenMode != 'view'}">
 									<td>
-										<input id="voidbutton_${drugOrder.orderId}" type="button" value="<spring:message code="general.void" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
+										<input id="voidbutton_${drugOrder.orderId}" type="button" value="<spring:message code="DrugOrder.void" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
 										<div id="void_${drugOrder.orderId}" style="display:none">
 											<form>
 												<spring:message code="general.reason" />: 
@@ -115,7 +115,7 @@
 								<td>${drugOrder.discontinuedReason}</td>
 								<c:if test="${model.completedRegimenMode != 'view'}">
 									<td>
-										<input id="voidbutton_${drugOrder.orderId}" type="button" value="<spring:message code="general.void" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
+										<input id="voidbutton_${drugOrder.orderId}" type="button" value="<spring:message code="DrugOrder.void" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
 										<div id="void_${drugOrder.orderId}" style="display:none">
 											<form>
 												<spring:message code="general.reason" />: 
@@ -160,7 +160,7 @@
 								<td>${drugOrder.discontinuedReason}</td>
 								<c:if test="${model.completedRegimenMode != 'view'}">
 									<td>
-										<input id="voidbutton_${drugOrder.orderId}" type="button" value="<spring:message code="general.void" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
+										<input id="voidbutton_${drugOrder.orderId}" type="button" value="<spring:message code="DrugOrder.void" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
 										<div id="void_${drugOrder.orderId}" style="display:none">
 											<form>
 												<spring:message code="general.reason" />: 

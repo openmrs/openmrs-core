@@ -1,4 +1,5 @@
 <openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" var="showTribe"/>
+<openmrs:globalProperty key="use_patient_attribute.healthCenter" defaultValue="false" var="showHealthCenter"/>
 
 <br />
 <table>
@@ -38,8 +39,11 @@
 				<option value="$!{fn.getPatientAttr('Patient', 'gender')}">&nbsp; <spring:message code="Patient.gender" /></option>
 				<option value="$!{fn.formatDate('short', $fn.getPatientAttr('Patient', 'birthdate'))}">&nbsp; <spring:message code="Patient.birthdate" /></option>
 				<option value="$!{fn.getPatientAttr('Patient', 'birthdateEstimated')}">&nbsp; <spring:message code="Patient.birthdateEstimated" /></option>
-				<option value="$!{fn.getPatientAttr('Patient', 'race')}">&nbsp; <spring:message code="Patient.race" /></option>
+				<c:if test="${showHealthCenter == 'true'}">
+					<option value="$!{fn.getPatientAttr('Patient', 'healthCenter').getName()}">&nbsp; <spring:message code="Patient.healthCenter" /></option>
+				</c:if>
 				<c:if test="${showTribe == 'true'}">
+					<option value="$!{fn.getPatientAttr('Patient', 'race')}">&nbsp; <spring:message code="Patient.race" /></option>
 					<option value="$!{fn.getPatientAttr('Patient', 'tribe').getName()}">&nbsp; <spring:message code="Tribe.name" /></option>
 				</c:if>
 				<option value="$!{fn.formatDate('short', $fn.getPatientAttr('Patient', 'deathDate'))}">&nbsp; <spring:message code="Patient.deathDate" /></option>
@@ -55,6 +59,13 @@
 				<option disabled><spring:message code="DataExport.simpleFirstEncounter"/></option>
 				<option value="$!{fn.getFirstEncounter('').getEncounterType().getName()}">&nbsp; <spring:message code="Encounter.type" /></option>
 				<option value="$!{fn.getFirstEncounter('').getProvider().getFirstName()} $!{fn.getFirstEncounter('').getProvider().getLastName()}">&nbsp; <spring:message code="Encounter.provider" /></option>
+				<option value=""> </option>
+				<option value="$!{fn.getRelationshipPersonsAsString('')}">&nbsp; <spring:message code="All Relationships" /></option>
+				<option value="$!{fn.getRelationshipNames('Accompagnateur')}">&nbsp; <spring:message code="Accompagnateur" /></option>
+				<option value="$!{fn.getRelationshipIds('Accompagnateur')}">&nbsp; <spring:message code="Accompagnateur ID" /></option>
+				<option value=""> </option>
+				<option value="$!{fn.formatDate('short', $fn.getProgram('HIV PROGRAM').getDateEnrolled())}">&nbsp; <spring:message code="HIV Program enrollment date" /></option>
+				<option value="$!{fn.formatDate('short', $fn.getProgram('TUBERCULOSIS PROGRAM').getDateEnrolled())}">&nbsp; <spring:message code="TB Program enrollment date" /></option>
 			</select>
 			
 		</td>

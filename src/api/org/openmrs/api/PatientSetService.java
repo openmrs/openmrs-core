@@ -16,6 +16,8 @@ import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
+import org.openmrs.Relationship;
+import org.openmrs.RelationshipType;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PatientSetDAO;
 import org.openmrs.reporting.PatientAnalysis;
@@ -139,6 +141,9 @@ public interface PatientSetService {
 	@Transactional(readOnly=true)
 	public Map<Integer, PatientProgram> getPatientPrograms(PatientSet ps,
 			Program program);
+	
+	@Transactional(readOnly=true)
+	public Map<Integer, List<Relationship>> getRelationships(PatientSet ps, RelationshipType relType);
 
 	/**
 	 * @return all active drug orders whose drug concept is in the given set (or all drugs if that's null) 

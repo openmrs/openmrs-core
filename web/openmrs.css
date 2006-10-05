@@ -831,3 +831,8 @@ th.smallHeader {
 .highlighted {
 	background-color: yellow;
 }
+
+.dashedAndHighlighted {
+	border: 1px black dashed;
+	background-color: yellow;
+}

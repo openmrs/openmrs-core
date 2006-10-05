@@ -19,6 +19,8 @@ import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
+import org.openmrs.Relationship;
+import org.openmrs.RelationshipType;
 import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.PatientSetService;
@@ -177,6 +179,10 @@ public class PatientSetServiceImpl implements PatientSetService {
 	
 	public List<Patient> getPatients(Collection<Integer> patientIds) {
 		return getPatientSetDAO().getPatients(patientIds);		
+	}
+	
+	public Map<Integer, List<Relationship>> getRelationships(PatientSet ps, RelationshipType relType) {
+		return getPatientSetDAO().getRelationships(ps, relType);
 	}
 	
 	// these should go elsewhere

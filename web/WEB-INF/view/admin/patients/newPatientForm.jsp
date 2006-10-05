@@ -164,6 +164,10 @@
 	}
 </style>
 
+<openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" var="showTribe"/>
+<openmrs:globalProperty key="use_patient_attribute.mothersName" defaultValue="false" var="showMothersName"/>
+<openmrs:globalProperty key="use_patient_attribute.healthCenter" defaultValue="false" var="showHealthCenter"/>
+
 <spring:hasBindErrors name="patient">
 	<spring:message code="fix.error"/>
 	<div class="error">
@@ -176,6 +180,13 @@
 <form method="post" action="newPatient.form" onSubmit="removeHiddenRows()">
 	<c:if test="${patient.patientId == null}"><h2><spring:message code="Patient.create"/></h2></c:if>
 	<c:if test="${patient.patientId != null}"><h2><spring:message code="Patient.edit"/></h2></c:if>
+
+	<c:if test="${patient.patientId != null}">
+		<a href="${pageContext.request.contextPath}/patientDashboard.form?patientId=${patient.patientId}">
+			<spring:message code="patientDashboard.viewDashboard"/>
+		</a>
+		<p/>
+	</c:if>
 	
 	<table cellspacing="2">
 			<tr>
@@ -229,6 +240,7 @@
 				</td>
 				<td valign="top">
 					<select name="location">
+						<option value=""></option>
 						<openmrs:forEachRecord name="location">
 							<option value="${record.locationId}">
 								${record.name}
@@ -285,7 +297,6 @@
 				</spring:bind>
 			</td>
 		</tr>
-		<openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" var="showTribe"/>
 		<c:if test="${showTribe == 'true'}">
 			<tr>
 				<th><spring:message code="Patient.tribe"/></th>
@@ -304,33 +315,36 @@
 				</td>
 			</tr>
 		</c:if>
-		<tr>
-			<th><spring:message code="PatientAddress.address1"/></th>
+		<tr valign="top">
+			<th><spring:message code="Patient.address"/></th>
 			<td>
-				<spring:bind path="patient.address1">
-					<input type="text" name="${status.expression}" value="${status.value}" size="45" />
-					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-				</spring:bind>
+				<spring:nestedPath path="patient.address">
+					<openmrs:portlet url="address" id="addressPortlet" size="full" parameters="addressShowTable=true|addressShowExtended=false" />
+				</spring:nestedPath>
 			</td>
 		</tr>
-		<tr>
-			<th><spring:message code="PatientAddress.address2"/></th>
-			<td>
-				<spring:bind path="patient.address2">
-					<input type="text" name="${status.expression}" value="${status.value}" size="45" />
-					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-				</spring:bind>
-			</td>
-		</tr>
-		<tr>
-			<th><spring:message code="Patient.mothersName"/></th>
-			<td>
-				<spring:bind path="patient.mothersName">
-					<input type="text" name="mothersName" value="${status.value}" size="45" />
-					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-				</spring:bind>
-			</td>
-		</tr>
+		<c:if test="${showHealthCenter == 'true'}">
+			<tr>
+				<th><spring:message code="Patient.healthCenter"/></th>
+				<td>
+					<spring:bind path="patient.healthCenter">
+						<openmrs:fieldGen type="org.openmrs.Location" formFieldName="healthCenter" val="${status.editor.value}" />
+						<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+					</spring:bind>
+				</td>
+			</tr>
+		</c:if>
+		<c:if test="${showMothersName == 'true'}">
+			<tr>
+				<th><spring:message code="Patient.mothersName"/></th>
+				<td>
+					<spring:bind path="patient.mothersName">
+						<input type="text" name="mothersName" value="${status.value}" size="45" />
+						<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+					</spring:bind>
+				</td>
+			</tr>
+		</c:if>
 	</table>
 	
 	<input type="hidden" name="pId" value="${param.pId}" />

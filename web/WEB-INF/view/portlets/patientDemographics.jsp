@@ -10,8 +10,8 @@
 				<th><spring:message code="Patient.names"/></th>
 				<th><spring:message code="Patient.mothersName"/></th>
 				<th><spring:message code="Patient.civilStatus"/></th>
-				<th><spring:message code="Patient.race"/></th>
 				<c:if test="${showTribe == 'true'}">
+					<th><spring:message code="Patient.race"/></th>
 					<th><spring:message code="Patient.tribe"/></th>
 				</c:if>
 				<th><spring:message code="Patient.birthplace"/></th>
@@ -31,8 +31,8 @@
 						<openmrs:concept conceptId="${model.patient.civilStatus.conceptId}" nameVar="n" var="v" numericVar="nv">${n.name}</openmrs:concept>
 					</c:if>
 				</td>
-				<td>${model.patient.race}</td>
 				<c:if test="${showTribe == 'true'}">
+					<td>${model.patient.race}</td>
 					<td>${model.patient.tribe.name}</td>
 				</c:if>
 				<td><c:if test='${model.patient.birthplace != null}'>${model.patient.birthplace}</c:if></td>

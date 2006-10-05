@@ -45,6 +45,14 @@ public class PatientAddress implements java.io.Serializable, Cloneable {
 		this.patientAddressId = patientAddressId;
 	}
 
+	public String toString() {
+		return "a1:" + getAddress1() + ", a2:" + getAddress2() + ", cv:" +
+			getCityVillage() + ", sp:" + getStateProvince() + ", c:" +
+			getCountry() + ", cd:" + getCountyDistrict() + ", nc:" +
+			getNeighborhoodCell() + ", pc:" + getPostalCode() + ", lat:" +
+			getLatitude() + ", long:" + getLongitude();   
+	}
+	
 	/** 
 	 * Compares two objects for similarity
 	 * 
@@ -358,5 +366,17 @@ public class PatientAddress implements java.io.Serializable, Cloneable {
 	 */
 	public void setNeighborhoodCell(String neighborhoodCell) {
 		this.neighborhoodCell = neighborhoodCell;
+	}
+
+	/**
+	 * Convenience method to test whether any of the fields in this address are set
+	 * @return whether any of the address fields (address1, address2, cityVillage, stateProvince, country, countyDistrict, neighborhoodCell, postalCode, latitute, logitude) are non-null
+	 */
+	public boolean isBlank() {
+		return getAddress1() == null && getAddress2() == null &&
+			getCityVillage() == null && getStateProvince() == null &&
+			getCountry() == null && getCountyDistrict() == null && 
+			getNeighborhoodCell() == null && getPostalCode() == null && 
+			getLatitude() == null && getLongitude() == null ;
 	}
 }

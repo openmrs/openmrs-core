@@ -204,7 +204,13 @@
 
 <h2><spring:message code="Patient.title"/></h2>
 
+<c:if test="${patient.voided}">
+	<h3 class="highlighted"><spring:message code="Patient.voidedMessage"/></h3>
+</c:if>
+
 <c:if test="${patient.patientId != null}">
+	<a href="${pageContext.request.contextPath}/patientDashboard.form?patientId=${patient.patientId}"><spring:message code="patientDashboard.viewDashboard"/></a>
+	|
 	<a href="${pageContext.request.contextPath}/admin/patients/mergePatients.form?patientId=${patient.patientId}"><spring:message code="Patient.mergeThis"/></a><br/><br/>
 </c:if>
 

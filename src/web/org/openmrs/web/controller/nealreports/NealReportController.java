@@ -25,8 +25,12 @@ import org.openmrs.DrugOrder;
 import org.openmrs.Obs;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
+import org.openmrs.Person;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
+import org.openmrs.Relationship;
+import org.openmrs.RelationshipType;
+import org.openmrs.User;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
@@ -185,6 +189,23 @@ public class NealReportController implements Controller {
 		}
 			
 		log.debug("Pulled enrollments and hiv treatment status in " + (System.currentTimeMillis() - l) + " ms");
+		l = System.currentTimeMillis();
+		
+		{
+			RelationshipType relType = Context.getPatientService().findRelationshipType("Accompagnateur");
+			if (relType != null) {
+				Map<Integer, List<Relationship>> chws = pss.getRelationships(ps, relType);
+				for (Map.Entry<Integer, List<Relationship>> e : chws.entrySet()) {
+					Person chw = e.getValue().get(0).getPerson();
+					User chwUser = chw.getUser();
+					if (chwUser != null) {
+						patientDataHolder.get(e.getKey()).put(Hiv.ACCOMP_FIRST_NAME, chwUser.getFirstName());
+						patientDataHolder.get(e.getKey()).put(Hiv.ACCOMP_LAST_NAME, chwUser.getLastName());
+					}
+				}
+			}
+		}
+		log.debug("Pulled accompagnateurs in " + (System.currentTimeMillis() - l) + " ms");
 		l = System.currentTimeMillis();
 		
 		// --- for every arv drug, addDynamic() a holder with

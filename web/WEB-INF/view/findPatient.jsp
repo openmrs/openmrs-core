@@ -9,7 +9,7 @@
 <br />
 <br />
 
-<openmrs:portlet id="findPatient" url="findPatient" parameters="size=full|postURL=patientDashboard.form" />
+<openmrs:portlet id="findPatient" url="findPatient" parameters="size=full|postURL=patientDashboard.form|showIncludeVoided=false" />
 
 <span class="addLink"><a href="<%= request.getContextPath() %>/admin/patients/addPatient.htm">+ <spring:message code="Patient.add.new" /></a></span>
 

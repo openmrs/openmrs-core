@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -17,6 +18,10 @@ import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
+import org.openmrs.PatientProgram;
+import org.openmrs.Program;
+import org.openmrs.Relationship;
+import org.openmrs.RelationshipType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
@@ -47,6 +52,12 @@ public class DataExportUtility {
 	private Map<String, Concept> conceptNameMap = new HashMap<String, Concept>();
 	
 	private Map<Concept, Map<Integer, List<Obs>>> conceptObsMap = new HashMap<Concept, Map<Integer, List<Obs>>>();
+	
+	// Map<RelationshipType, Map<patientId, List<Relationship>>>
+	private Map<String, Map<Integer, List<Relationship>>> relationshipMap = new HashMap<String, Map<Integer, List<Relationship>>>();
+	
+	// Map<Program.name, Map<patientId, PatientProgram>>
+	private Map<String, Map<Integer, PatientProgram>> programMap = new HashMap<String, Map<Integer, PatientProgram>>();
 	
 	// Map<tablename+columnname, Map<patientId, columnvalue>>
 	private Map<String, Map<Integer, Object>> attributeMap = new HashMap<String, Map<Integer, Object>>();
@@ -218,6 +229,73 @@ public class DataExportUtility {
 			conceptObsMap.put(c, patientIdObsMap);
 		}
 		return patientIdObsMap.get(patientId);
+	}
+	
+	public PatientProgram getProgram(String programName) {
+		Map<Integer, PatientProgram> patientIdProgramMap;
+		if (programMap.containsKey(programName)) {
+			patientIdProgramMap = programMap.get(programName);
+		} else {
+			Program program = Context.getProgramWorkflowService().getProgram(programName);
+			patientIdProgramMap = Context.getPatientSetService().getPatientPrograms(getPatientSet(), program);
+			programMap.put(programName, patientIdProgramMap);
+		}
+		return patientIdProgramMap.get(patientId);		
+	}
+	
+	public List<Relationship> getRelationships(String relationshipTypeName) {
+		Map<Integer, List<Relationship>> patientIdRelationshipMap;
+		if (relationshipMap.containsKey(relationshipTypeName)) {
+			patientIdRelationshipMap = relationshipMap.get(relationshipTypeName);
+		} else {
+			log.debug("getting relationship list for type: " + relationshipTypeName);
+			RelationshipType relType = Context.getPatientService().findRelationshipType(relationshipTypeName);
+			patientIdRelationshipMap = Context.getPatientSetService().getRelationships(getPatientSet(), relType);
+			relationshipMap.put(relationshipTypeName, patientIdRelationshipMap);
+		}
+		return patientIdRelationshipMap.get(patientId);
+	}
+	
+	// TODO: revisit this if we change our terminology for relationships
+	public String getRelationshipNames(String relationshipTypeName) {
+		List<Relationship> rels = getRelationships(relationshipTypeName);
+		if (rels == null || rels.size() == 0) {
+			return "";
+		} else {
+			StringBuilder sb = new StringBuilder();
+			for (Iterator<Relationship> i = rels.iterator(); i.hasNext(); ) {
+				Relationship r = i.next();
+				if (r.getPerson().getUser() != null) {
+					sb.append(r.getPerson().getUser().toString());
+				} else {
+					sb.append(r.getPerson().getPatient().getPatientName());
+				}
+				if (i.hasNext())
+					sb.append(" ");
+			}
+			return sb.toString();
+		}
+	}
+	
+	// TODO: revisit this if we change our terminology for relationships
+	public String getRelationshipIds(String relationshipTypeName) {
+		List<Relationship> rels = getRelationships(relationshipTypeName);
+		if (rels == null || rels.size() == 0) {
+			return "";
+		} else {
+			StringBuilder sb = new StringBuilder();
+			for (Iterator<Relationship> i = rels.iterator(); i.hasNext(); ) {
+				Relationship r = i.next();
+				if (r.getPerson().getUser() != null) {
+					sb.append("User " + r.getPerson().getUser().getUserId());
+				} else {
+					sb.append("Patient " + r.getPerson().getPatient().getPatientId());
+				}
+				if (i.hasNext())
+					sb.append(" ");
+			}
+			return sb.toString();
+		}
 	}
 	
 	/**

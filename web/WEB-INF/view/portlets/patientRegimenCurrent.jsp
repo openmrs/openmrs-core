@@ -46,12 +46,12 @@
 								<td>&nbsp;&nbsp;&nbsp;&nbsp;${drugOrder.drug.name}</td>
 								<td>${drugOrder.dose}</td>
 								<td>${drugOrder.frequency}</td>
-								<td><openmrs:formatDate date="${drugOrder.startDate}" /></td>
-								<td><openmrs:formatDate date="${drugOrder.autoExpireDate}" /></td>
+								<td><openmrs:formatDate date="${drugOrder.startDate}" type="medium" /></td>
+								<td><openmrs:formatDate date="${drugOrder.autoExpireDate}" type="medium" /></td>
 								<td>${drugOrder.instructions}</td>
 								<c:if test="${model.currentRegimenMode != 'view'}">
 									<td>
-										<input id="closebutton_${drugOrder.orderId}" type="button" value="<spring:message code="general.close" />" onClick="showHideDiv('close_${drugOrder.orderId}');showHideDiv('closebutton_${drugOrder.orderId}')" />
+										<input id="closebutton_${drugOrder.orderId}" type="button" value="<spring:message code="DrugOrder.discontinue" />" onClick="showHideDiv('close_${drugOrder.orderId}');showHideDiv('closebutton_${drugOrder.orderId}')" />
 										<div id="close_${drugOrder.orderId}" style="display:none">
 											<form>
 												<spring:message code="DrugOrder.discontinuedDate" />:
@@ -65,7 +65,7 @@
 										</div>
 									</td>
 									<td>
-										<input id="voidbutton_${drugOrder.orderId}" type="button" value="<spring:message code="general.void" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
+										<input id="voidbutton_${drugOrder.orderId}" type="button" value="<spring:message code="DrugOrder.void" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
 										<div id="void_${drugOrder.orderId}" style="display:none">
 											<form>
 												<spring:message code="general.reason" />: 
@@ -109,8 +109,8 @@
 									<td><openmrs_tag:concept conceptId="${model.drugOrderHeaders[drugSetId].conceptId}" /></td>
 									<c:if test="${(model.currentRegimenMode != 'view') && (not empty model.currentDrugOrderSets[drugSetId])}">
 										<td>
-											<input id="closegpbutton_${fn:replace(drugSetId, " ", "_")}" type="button" value="<spring:message code="general.closeGroup" />" onClick="showHideDiv('closegp_${fn:replace(drugSetId, " ", "_")}');showHideDiv('closegpbutton_${fn:replace(drugSetId, " ", "_")}')" />
-											<div id="closegp_${fn:replace(drugSetId, " ", "_")}" style="display:none">
+											<input id="closegpbutton_${fn:replace(drugSetId, " ", "_")}" type="button" value="<spring:message code="DrugOrder.discontinueGroup" />" onClick="showHideDiv('closegp_${fn:replace(drugSetId, " ", "_")}');showHideDiv('closegpbutton_${fn:replace(drugSetId, " ", "_")}')" />
+											<div id="closegp_${fn:replace(drugSetId, " ", "_")}" style="display:none;" class="dashedAndHighlighted" >
 												<form>
 													<spring:message code="DrugOrder.discontinuedDate" />:
 													<input type="text" id="closegp_${fn:replace(drugSetId, " ", "_")}_date" size="10" value="" onFocus="showCalendar(this)" />
@@ -119,17 +119,19 @@
 													<input type="text" id="closegp_${fn:replace(drugSetId, " ", "_")}_reason" size="10" value="" />
 													&nbsp;&nbsp;
 													<input type="button" value="<spring:message code="general.save" />" onClick="handleDiscontinueDrugSet('${drugSetId}', 'closegp_${fn:replace(drugSetId, " ", "_")}_date', 'closegp_${fn:replace(drugSetId, " ", "_")}_reason')" />
+													<input type="button" value="<spring:message code="general.cancel" />" onClick="showHideDiv('closegp_${fn:replace(drugSetId, " ", "_")}');showHideDiv('closegpbutton_${fn:replace(drugSetId, " ", "_")}');" />
 												</form>
 											</div>
 										</td>
 										<td>
-											<input id="voidgpbutton_${fn:replace(drugSetId, " ", "_")}" type="button" value="<spring:message code="general.voidGroup" />" onClick="showHideDiv('voidgp_${fn:replace(drugSetId, " ", "_")}');showHideDiv('voidgpbutton_${fn:replace(drugSetId, " ", "_")}')" />
-											<div id="voidgp_${fn:replace(drugSetId, " ", "_")}" style="display:none">
+											<input id="voidgpbutton_${fn:replace(drugSetId, " ", "_")}" type="button" value="<spring:message code="DrugOrder.voidGroup" />" onClick="showHideDiv('voidgp_${fn:replace(drugSetId, " ", "_")}');showHideDiv('voidgpbutton_${fn:replace(drugSetId, " ", "_")}')" />
+											<div id="voidgp_${fn:replace(drugSetId, " ", "_")}" style="display:none" class="dashedAndHighlighted" >
 												<form>
 													<spring:message code="general.reason" />:
 													<input type="text" id="voidgp_${fn:replace(drugSetId, " ", "_")}_reason" size="10" value="" />
 													&nbsp;&nbsp;
 													<input type="button" value="<spring:message code="general.save" />" onClick="handleVoidCurrentDrugSet('${drugSetId}', 'voidgp_${fn:replace(drugSetId, " ", "_")}_reason')" />
+													<input type="button" value="<spring:message code="general.cancel" />" onClick="showHideDiv('voidgp_${fn:replace(drugSetId, " ", "_")}');showHideDiv('voidgpbutton_${fn:replace(drugSetId, " ", "_")}')" />
 												</form>
 											</div>
 										</td>
@@ -146,13 +148,13 @@
 								<td>&nbsp;&nbsp;&nbsp;&nbsp;${drugOrder.drug.name}</td>
 								<td>${drugOrder.dose}</td>
 								<td>${drugOrder.frequency}</td>
-								<td><openmrs:formatDate date="${drugOrder.startDate}" /></td>
-								<td><openmrs:formatDate date="${drugOrder.autoExpireDate}" /></td>
+								<td><openmrs:formatDate date="${drugOrder.startDate}" type="medium" /></td>
+								<td><openmrs:formatDate date="${drugOrder.autoExpireDate}" type="medium" /></td>
 								<td>${drugOrder.instructions}</td>
 								<c:if test="${model.currentRegimenMode != 'view'}">
 									<td>
-										<input id="closebutton_${drugOrder.orderId}" type="button" value="<spring:message code="general.close" />" onClick="showHideDiv('close_${drugOrder.orderId}');showHideDiv('closebutton_${drugOrder.orderId}')" />
-										<div id="close_${drugOrder.orderId}" style="display:none">
+										<input id="closebutton_${drugOrder.orderId}" type="button" value="<spring:message code="DrugOrder.discontinue" />" onClick="showHideDiv('close_${drugOrder.orderId}');showHideDiv('closebutton_${drugOrder.orderId}')" />
+										<div id="close_${drugOrder.orderId}" style="display:none" class="dashedAndHighlighted" >
 											<form>
 												<spring:message code="DrugOrder.discontinuedDate" />:
 												<input type="text" id="close_${drugOrder.orderId}_date" size="10" value="" onFocus="showCalendar(this)" />
@@ -161,17 +163,19 @@
 												<input type="text" id="close_${drugOrder.orderId}_reason" size="10" value="" />
 												&nbsp;&nbsp;
 												<input type="button" value="<spring:message code="general.save" />" onClick="handleDiscontinueDrugOrder('${drugOrder.orderId}', 'close_${drugOrder.orderId}_date', 'close_${drugOrder.orderId}_reason')" />
+												<input type="button" value="<spring:message code="general.cancel" />" onClick="showHideDiv('close_${drugOrder.orderId}');showHideDiv('closebutton_${drugOrder.orderId}')" />
 											</form>
 										</div>
 									</td>
 									<td>
-										<input id="voidbutton_${drugOrder.orderId}" type="button" value="<spring:message code="general.void" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
-										<div id="void_${drugOrder.orderId}" style="display:none">
+										<input id="voidbutton_${drugOrder.orderId}" type="button" value="<spring:message code="DrugOrder.void" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
+										<div id="void_${drugOrder.orderId}" style="display:none" class="dashedAndHighlighted" >
 											<form>
 												<spring:message code="general.reason" />: 
 												<input type="text" id="void_${drugOrder.orderId}_reason" size="10" value="" />
 												&nbsp;&nbsp;
 												<input type="button" value="<spring:message code="general.save" />" onClick="handleVoidDrugOrder('${drugOrder.orderId}', 'void_${drugOrder.orderId}_reason')" />
+												<input type="button" value="<spring:message code="general.cancel" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
 											</form>
 										</div>
 									</td>
@@ -203,13 +207,13 @@
 								<td>${drugOrder.drug.name}</td>
 								<td>${drugOrder.dose}</td>
 								<td>${drugOrder.frequency}</td>
-								<td><openmrs:formatDate date="${drugOrder.startDate}" /></td>
-								<td><openmrs:formatDate date="${drugOrder.autoExpireDate}" /></td>
+								<td><openmrs:formatDate date="${drugOrder.startDate}" type="medium" /></td>
+								<td><openmrs:formatDate date="${drugOrder.autoExpireDate}" type="medium" /></td>
 								<td>${drugOrder.instructions}</td>
 								<c:if test="${model.currentRegimenMode != 'view'}">
 									<td>
-										<input id="closebutton_${drugOrder.orderId}" type="button" value="<spring:message code="general.close" />" onClick="showHideDiv('close_${drugOrder.orderId}');showHideDiv('closebutton_${drugOrder.orderId}')" />
-										<div id="close_${drugOrder.orderId}" style="display:none">
+										<input id="closebutton_${drugOrder.orderId}" type="button" value="<spring:message code="DrugOrder.discontinue" />" onClick="showHideDiv('close_${drugOrder.orderId}');showHideDiv('closebutton_${drugOrder.orderId}')" />
+										<div id="close_${drugOrder.orderId}" style="display:none" class="dashedAndHighlighted" >
 											<form>
 												<spring:message code="DrugOrder.discontinuedDate" />:
 												<input type="text" id="close_${drugOrder.orderId}_date" size="10" value="" onFocus="showCalendar(this)" />
@@ -218,17 +222,19 @@
 												<input type="text" id="close_${drugOrder.orderId}_reason" size="10" value="" />
 												&nbsp;&nbsp;
 												<input type="button" value="<spring:message code="general.save" />" onClick="handleDiscontinueDrugOrder('${drugOrder.orderId}', 'close_${drugOrder.orderId}_date', 'close_${drugOrder.orderId}_reason')" />
+												<input type="button" value="<spring:message code="general.cancel" />" onClick="showHideDiv('close_${drugOrder.orderId}');showHideDiv('closebutton_${drugOrder.orderId}')" />
 											</form>
 										</div>
 									</td>
 									<td>
-										<input id="voidbutton_${drugOrder.orderId}" type="button" value="<spring:message code="general.void" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
-										<div id="void_${drugOrder.orderId}" style="display:none">
+										<input id="voidbutton_${drugOrder.orderId}" type="button" value="<spring:message code="DrugOrder.void" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
+										<div id="void_${drugOrder.orderId}" style="display:none" class="dashedAndHighlighted" >
 											<form>
 												<spring:message code="general.reason" />: 
 												<input type="text" id="void_${drugOrder.orderId}_reason" size="10" value="" />
 												&nbsp;&nbsp;
 												<input type="button" value="<spring:message code="general.save" />" onClick="handleVoidDrugOrder('${drugOrder.orderId}', 'void_${drugOrder.orderId}_reason')" />
+												<input type="button" value="<spring:message code="general.cancel" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
 											</form>
 										</div>
 									</td>

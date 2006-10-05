@@ -15,6 +15,8 @@ import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
+import org.openmrs.Relationship;
+import org.openmrs.RelationshipType;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PatientSetService.TimeModifier;
 import org.openmrs.reporting.PatientSet;
@@ -56,5 +58,7 @@ public interface PatientSetDAO {
 	public Map<Integer, PatientProgram> getPatientPrograms(PatientSet ps, Program program, boolean includeVoided, boolean includePast) throws DAOException;
 
 	public Map<Integer, List<DrugOrder>> getCurrentDrugOrders(PatientSet ps, List<Concept> drugConcepts) throws DAOException;
+	
+	public Map<Integer, List<Relationship>> getRelationships(PatientSet ps, RelationshipType relType) throws DAOException;
 	
 }

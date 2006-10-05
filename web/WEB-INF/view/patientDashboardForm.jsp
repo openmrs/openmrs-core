@@ -58,6 +58,10 @@
     }
 </script>
 
+<c:if test="${patient.voided}">
+	<h3 class="highlighted"><spring:message code="Patient.voidedMessage"/></h3>
+</c:if>
+
 <openmrs:portlet url="patientHeader" id="patientDashboardHeader" patientId="${patient.patientId}"/>
 
 <div id="patientTabs">
