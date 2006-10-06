@@ -67,7 +67,7 @@ private Obs Pos_Risk(){
 	Obs obs;
 
 	concept = context.getConceptService().getConceptByName("TB_Risk_Positive");
-	obs = dataSource.getLastPatientObsForConcept(context, concept, patient, 1);
+	obs = dataSource.getLastPatientObsForConcept(concept, patient, 1);
 
 	return obs;
 }
@@ -77,7 +77,7 @@ private Obs Neg_Risk(){
 	Obs obs;
 
 	concept = context.getConceptService().getConceptByName("TB_Risk_Negative");
-	obs = dataSource.getLastPatientObsForConcept(context, concept, patient, 1);
+	obs = dataSource.getLastPatientObsForConcept(concept, patient, 1);
 
 	return obs;
 }
@@ -87,7 +87,7 @@ private Obs PPD(){
 	Obs obs;
 
 	concept = context.getConceptService().getConceptByName("CHICA REPORTED PPD");
-	obs = dataSource.getLastPatientObsForConcept(context, concept, patient, 1);
+	obs = dataSource.getLastPatientObsForConcept(concept, patient, 1);
 
 	return obs;
 }
@@ -107,7 +107,7 @@ public DSSObject evaluate() {
 private boolean evaluate_logic() {
 	boolean retVal = false;
 	Obs obs;
-	dssObj = new DSSObject(context,locale, patient);
+	dssObj = new DSSObject(locale, patient);
 
 
 	if ( (obs = Pos_Risk()) != null ) {
