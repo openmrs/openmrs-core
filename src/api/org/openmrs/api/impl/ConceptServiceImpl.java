@@ -270,6 +270,22 @@ public class ConceptServiceImpl implements ConceptService {
 		return getConceptDAO().getDrug(drugName);
 	}
 
+	public Drug getDrugByNameOrId(String drug) {
+		Integer drugId = null;
+		
+		try {
+			drugId = new Integer(drug);
+		} catch ( NumberFormatException nfe ) {
+			drugId = null;
+		}
+		
+		if ( drugId != null ) {
+			return getDrug(drugId);
+		} else {
+			return getDrug(drug);
+		}
+	}
+
 	/**
 	 * Return a list of drugs currently in the database
 	 * 

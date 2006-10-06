@@ -1,7 +1,7 @@
 package org.openmrs.order;
 
 public class DrugSuggestion {
-	private Integer drugId;
+	private String drugId;
 	private String dose;
 	private String units;
 	private String frequency;
@@ -22,13 +22,13 @@ public class DrugSuggestion {
 	/**
 	 * @return Returns the drugId.
 	 */
-	public Integer getDrugId() {
+	public String getDrugId() {
 		return drugId;
 	}
 	/**
 	 * @param drugId The drugId to set.
 	 */
-	public void setDrugId(Integer drugId) {
+	public void setDrugId(String drugId) {
 		this.drugId = drugId;
 	}
 	/**

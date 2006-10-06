@@ -26,10 +26,10 @@ public class DWROrderService {
 		
 	/**
 	 */
-	public void createDrugOrder(Integer patientId, Integer drugId, Double dose, String units, String frequency, String startDate, String instructions) {
+	public void createDrugOrder(Integer patientId, String drugId, Double dose, String units, String frequency, String startDate, String instructions) {
 		DrugOrder drugOrder = new DrugOrder();
 		Patient patient = Context.getPatientService().getPatient(patientId);
-		Drug drug = Context.getConceptService().getDrug(drugId);
+		Drug drug = Context.getConceptService().getDrugByNameOrId(drugId);
 		drugOrder.setDrug(drug);
 		Concept concept = drug.getConcept();
 		drugOrder.setConcept(concept);

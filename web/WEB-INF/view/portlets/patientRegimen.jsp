@@ -155,7 +155,7 @@
 					}
 					//alert('here');
 					<c:forEach var="drugComponent" items="${standardRegimen.drugComponents}">
-						addStandardDrug(${drugComponent.drugId}, '${drugComponent.dose}', '${drugComponent.units}', '${drugComponent.frequency}', '${drugComponent.instructions}', startDate);
+						addStandardDrug('${drugComponent.drugId}', '${drugComponent.dose}', '${drugComponent.units}', '${drugComponent.frequency}', '${drugComponent.instructions}', startDate);
 					</c:forEach>
 					//alert('and now here');
 					refreshRegimenTables();

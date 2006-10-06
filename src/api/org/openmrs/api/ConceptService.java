@@ -135,6 +135,10 @@ public interface ConceptService {
 	@Transactional(readOnly=true)
 	public Drug getDrug(String drugName);
 
+	@Transactional(readOnly=true)
+	public Drug getDrugByNameOrId(String drugId);
+
+
 	/**
 	 * Return a list of drugs currently in the database
 	 * 
