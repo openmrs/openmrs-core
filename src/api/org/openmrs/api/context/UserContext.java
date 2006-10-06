@@ -50,6 +50,9 @@ public class UserContext {
 	 */
 	private ContextDAO contextDAO;
 	
+	private Role authenticatedRole = null;
+	private Role anonymousRole = null;
+	
 	
 	/**
 	 * Default public constructor
@@ -179,23 +182,12 @@ public class UserContext {
 		Set<Role> roles = new HashSet<Role>();
 		
 		// add the Anonymous Role
-		Role role = Context.getUserService().getRole(OpenmrsConstants.ANONYMOUS_ROLE);
-		if (role == null) {
-			throw new RuntimeException("Database out of sync with code: "
-					+ OpenmrsConstants.ANONYMOUS_ROLE + " role does not exist");
-		}
-		roles.add(role);
+		roles.add(getAnonymousRole());
 		
 		// add the Authenticated role
 		if (getAuthenticatedUser() != null && getAuthenticatedUser().equals(user)) {
 			roles.addAll(user.getAllRoles());
-			Role authRole = Context.getUserService().getRole(
-					OpenmrsConstants.AUTHENTICATED_ROLE);
-			if (authRole == null) {
-				throw new RuntimeException("Database out of sync with code: "
-						+ OpenmrsConstants.AUTHENTICATED_ROLE + " role does not exist");
-			}
-			roles.add(authRole);
+			roles.add(getAuthenticatedRole());
 		}
 		
 		return roles;
@@ -217,13 +209,7 @@ public class UserContext {
 			if (getAuthenticatedUser().hasPrivilege(privilege))
 				return true;
 
-			Role authRole = Context.getUserService().getRole(
-					OpenmrsConstants.AUTHENTICATED_ROLE);
-			if (authRole == null) {
-				throw new RuntimeException("Database out of sync with code: "
-						+ OpenmrsConstants.AUTHENTICATED_ROLE + " role does not exist");
-			}
-			if (authRole.hasPrivilege(privilege))
+			if (getAuthenticatedRole().hasPrivilege(privilege))
 				return true;
 		}
 
@@ -233,17 +219,38 @@ public class UserContext {
 			if (s.equals(privilege))
 				return true;
 		
-		// check anonymous privileges
-		Role role = Context.getUserService().getRole(OpenmrsConstants.ANONYMOUS_ROLE);
-		if (role == null) {
-			throw new RuntimeException("Database out of sync with code: "
-					+ OpenmrsConstants.ANONYMOUS_ROLE + " role does not exist");
-		}
-		if (role.hasPrivilege(privilege))
+		if (getAnonymousRole().hasPrivilege(privilege))
 			return true;
 
 		// default return value
 		return false;
+	}
+
+
+	private Role getAnonymousRole() {
+		if (anonymousRole != null)
+			return anonymousRole;
+		
+		anonymousRole = Context.getUserService().getRole(OpenmrsConstants.ANONYMOUS_ROLE);
+		if (anonymousRole == null) {
+			throw new RuntimeException("Database out of sync with code: "
+					+ OpenmrsConstants.ANONYMOUS_ROLE + " role does not exist");
+		}
+		
+		return anonymousRole;
+	}
+
+	private Role getAuthenticatedRole() {
+		if (authenticatedRole != null)
+			return authenticatedRole;
+		
+		authenticatedRole = Context.getUserService().getRole(OpenmrsConstants.AUTHENTICATED_ROLE);
+		if (authenticatedRole == null) {
+			throw new RuntimeException("Database out of sync with code: "
+					+ OpenmrsConstants.AUTHENTICATED_ROLE + " role does not exist");
+		}
+		
+		return authenticatedRole;
 	}
 
 }

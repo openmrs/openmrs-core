@@ -41,6 +41,11 @@ public class OpenmrsFilter implements Filter {
 		//the request will not have the value if this is the initial request
         initialRequest = ( val == null );
         
+        log.debug("initial Request? " + initialRequest);
+        log.debug("requestURI" + httpRequest.getRequestURI());
+        log.debug("requestURL" + httpRequest.getRequestURL());
+        log.debug("request path info" + httpRequest.getPathInfo());
+        
         //set/forward the request init attribute
         httpRequest.setAttribute( INIT_REQ_ATTR_NAME, httpRequest );
         
@@ -55,18 +60,21 @@ public class OpenmrsFilter implements Filter {
 				httpSession.setAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR, userContext);
 			}
         	log.info("Set user context " + userContext + " as attribute on session");
+        	
+        	// Add the user context to the current thread 
+        	Context.setUserContext(userContext);
         }
-        // Add the user context to the current thread 
-		Context.setUserContext(userContext);
-
+        
 		log.debug("before doFilter");
 		
 		chain.doFilter(request, response);
 		
 		httpSession.setAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR, userContext);
 
-		// Clears the context so there's no user information left on the thread
-		Context.clearUserContext();
+		if (initialRequest == true) {
+			// Clears the context so there's no user information left on the thread
+			Context.clearUserContext();
+		}
 	
 		log.debug("after doFilter");
 		

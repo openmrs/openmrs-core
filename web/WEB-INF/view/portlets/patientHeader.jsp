@@ -25,7 +25,7 @@
 						<c:if test="${!status.last}">&nbsp;&nbsp;|&nbsp;&nbsp;</c:if>
 					</c:forEach>
 				</td>
-				<td style="vertical-align: middle">
+				<td style="vertical-align: middle" id="patientHeaderPatientSummary">
 					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 					<a class="offColor" href="javascript:window.open('patientSummary.htm?patientId=${model.patientId}', 'summaryWindow', 'toolbar=no,width=800,height=600,resizable=yes,scrollbars=yes').focus()">Summary</a>
 				</td>

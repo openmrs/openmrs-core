@@ -16,7 +16,7 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 
 	public final static long serialVersionUID = 1231231343212L;
 	
-	private Log log = LogFactory.getLog(this.getClass());
+	private static Log log = LogFactory.getLog(DataExportReportObject.class);
 	
 	List<Integer> patientIds = new Vector<Integer>();
 	Location location;

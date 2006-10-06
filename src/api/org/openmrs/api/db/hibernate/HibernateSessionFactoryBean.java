@@ -18,7 +18,7 @@ import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
 
 public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 	
-	private Log log = LogFactory.getLog(this.getClass());
+	private static Log log = LogFactory.getLog(HibernateSessionFactoryBean.class);
 	
 	public SessionFactory newSessionFactory(Configuration config) throws HibernateException {
 		log.debug("Configuring hibernate sessionFactory properties");

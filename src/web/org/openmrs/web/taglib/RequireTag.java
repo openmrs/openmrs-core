@@ -74,9 +74,11 @@ public class RequireTag extends TagSupport {
 		
 		if (session_ip_addr != null && !session_ip_addr.equals(request_ip_addr)) {
 			errorOccurred = true;
-			log.warn("Invalid ip addr: expected " + session_ip_addr + ", but found: " + request_ip_addr);
-			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "require.ip_addr");
-			//TODO test this security
+			// stops warning message in IE when refreshing repeatedly
+			if ("0.0.0.0".equals(request_ip_addr) == false) {
+				log.warn("Invalid ip addr: expected " + session_ip_addr + ", but found: " + request_ip_addr);
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "require.ip_addr");
+			}
 		}
 	
 		log.debug("session ip addr: " + session_ip_addr);

@@ -15,6 +15,7 @@ import org.openmrs.Drug;
 import org.openmrs.api.db.ConceptDAO;
 import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 public interface ConceptService {
 
 	public void setConceptDAO(ConceptDAO dao);

@@ -206,6 +206,17 @@
 		<url-pattern>/formentry/submit</url-pattern>
 	</servlet-mapping>
 	<!--  /FormEntry -->
+
+	<!--  Should be the first filter -->
+	<filter>
+        <filter-name>HibernateFilter</filter-name>
+        <filter-class>org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
+    </filter>
+    <!--  End first filter -->
+	<filter-mapping>
+		<filter-name>HibernateFilter</filter-name> 
+		<url-pattern>/*</url-pattern> 
+	</filter-mapping>
 	
 	<filter>
 		<filter-name>OpenmrsFilter</filter-name> 
@@ -213,15 +224,6 @@
 	</filter>
 	<filter-mapping>
 		<filter-name>OpenmrsFilter</filter-name> 
-		<url-pattern>/*</url-pattern> 
-	</filter-mapping>
-	
-	<filter>
-        <filter-name>HibernateFilter</filter-name>
-        <filter-class>org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
-    </filter>
-	<filter-mapping>
-		<filter-name>HibernateFilter</filter-name> 
 		<url-pattern>/*</url-pattern> 
 	</filter-mapping>
 	

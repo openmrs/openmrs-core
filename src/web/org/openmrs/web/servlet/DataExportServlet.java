@@ -28,7 +28,7 @@ import org.openmrs.web.WebConstants;
 public class DataExportServlet extends HttpServlet {
 
 	public static final long serialVersionUID = 1231222L;
-	private Log log = LogFactory.getLog(this.getClass());
+	private static Log log = LogFactory.getLog(DataExportServlet.class);
 	
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
@@ -96,8 +96,6 @@ public class DataExportServlet extends HttpServlet {
 		
 		try {
 			Velocity.evaluate(velocityContext, response.getWriter(), this.getClass().getName(), template);
-			patientSet = null;
-			functions = null;
 		}
 		catch (Exception e) {
 			log.error("Error evaluating data export " + dataExport.getReportObjectId(), e);
@@ -105,6 +103,10 @@ public class DataExportServlet extends HttpServlet {
 			response.getWriter().print("\n\nError: \n" + e.toString());
 		}
 		finally {
+			patientSet = null;
+			functions = null;
+			velocityContext = null;
+			Context.clearSession();
 			//Context.closeSession();
 			//.write(report.toString());
 		}
