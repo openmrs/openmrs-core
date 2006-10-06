@@ -159,13 +159,12 @@
 			}
 		}
 		
-		function handleAddDrugOrder(drugField, doseField, unitsField, frequencyDayField, frequencyWeekField, startDateField) {
+		function handleAddDrugOrder( patientId, drugField, doseField, unitsField, frequencyDayField, frequencyWeekField, startDateField) {
 			var drugId = DWRUtil.getValue($(drugField));
 			var dose = DWRUtil.getValue($(doseField));
 			var units = DWRUtil.getValue($(unitsField));
 			var frequency = DWRUtil.getValue($(frequencyDayField)) + " x " + DWRUtil.getValue($(frequencyWeekField));
 			var startDate = DWRUtil.getValue($(startDateField));
-			var patientId = patientId;
 			var instructions = "";
 			DWRUtil.setValue($(drugField),"");
 			DWRUtil.setValue($(doseField),"");

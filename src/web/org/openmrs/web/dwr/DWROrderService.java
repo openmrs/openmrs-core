@@ -27,6 +27,8 @@ public class DWROrderService {
 	/**
 	 */
 	public void createDrugOrder(Integer patientId, String drugId, Double dose, String units, String frequency, String startDate, String instructions) {
+		log.debug("PatientId is " + patientId + " and drugId is " + drugId );
+		
 		DrugOrder drugOrder = new DrugOrder();
 		Patient patient = Context.getPatientService().getPatient(patientId);
 		Drug drug = Context.getConceptService().getDrugByNameOrId(drugId);

@@ -45,8 +45,7 @@
 					</table>
 				</c:if>
 				<div id="regimenPortletAddFlexible">
-					<form method="post" id="orderForm" onSubmit="handleAddDrugOrder('drug', 'dose', 'units', 'frequencyDay', 'frequencyWeek', 'startDate')">
-					<input type="hidden" name="patientId" value="${model.patientId}" />
+					<form method="post" id="orderForm" onSubmit="handleAddDrugOrder(${model.patientId}, 'drug', 'dose', 'units', 'frequencyDay', 'frequencyWeek', 'startDate')">
 					<table>
 						<tr>
 							<td><spring:message code="DrugOrder.drug"/></td>
@@ -76,8 +75,8 @@
 							</td>
 							<td>
 								<select name="frequencyWeek" id="frequencyWeek">
-									<option value="<spring:message code="DrugOrder.frequency.everyDay" />"><spring:message code="DrugOrder.frequency.everyDay" /></option>
-									<% for ( int i = 1; i <= 6; i++ ) { %>
+									<%--<option value="<spring:message code="DrugOrder.frequency.everyDay" />"><spring:message code="DrugOrder.frequency.everyDay" /></option>--%>
+									<% for ( int i = 7; i >= 1; i-- ) { %>
 										<option value="<%= i %> <spring:message code="DrugOrder.frequency.days" />/<spring:message code="DrugOrder.frequency.week" />"><%= i %> <spring:message code="DrugOrder.frequency.days" />/<spring:message code="DrugOrder.frequency.week" /></option>
 									<% } %>
 								</select>
@@ -86,7 +85,7 @@
 							<td>
 								<openmrs:fieldGen type="java.util.Date" formFieldName="startDate" val="" parameters="noBind=true" />
 							</td>
-							<td><input type="button" value="<spring:message code="general.add"/>" onClick="handleAddDrugOrder('drug', 'dose', 'units', 'frequencyDay', 'frequencyWeek', 'startDate')"></td>
+							<td><input type="button" value="<spring:message code="general.add"/>" onClick="handleAddDrugOrder(${model.patientId}, 'drug', 'dose', 'units', 'frequencyDay', 'frequencyWeek', 'startDate')"></td>
 						</tr>
 					</table>
 					</form>
