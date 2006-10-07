@@ -82,7 +82,7 @@ public class DynamicFormEntryController extends SimpleFormController {
 						if (temp == 0) {
 							Float lf = left.getSortWeight();
 							Float rf = right.getSortWeight();
-							temp = OpenmrsUtil.comparewithNullAsGreatest(lf, rf);
+							temp = OpenmrsUtil.compareWithNullAsGreatest(lf, rf);
 						}
 						return temp;
 					}

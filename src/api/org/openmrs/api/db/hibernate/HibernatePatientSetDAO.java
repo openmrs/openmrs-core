@@ -1050,6 +1050,36 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public Map<Integer, List<DrugOrder>> getDrugOrders(PatientSet ps, List<Concept> drugConcepts) throws DAOException {
+		Map<Integer, List<DrugOrder>> ret = new HashMap<Integer, List<DrugOrder>>();
+		Collection<Integer> ids = ps.getPatientIds();
+		if (ids.size() == 0)
+			return ret;
+		
+		Date now = new Date();
+
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(DrugOrder.class);
+		//criteria.add(Restrictions.in("encounter.patient.patientId", ids));
+		criteria.createCriteria("encounter").add(Restrictions.in("patient.patientId", ids));
+		if (drugConcepts != null)
+			criteria.add(Restrictions.in("concept", drugConcepts));
+		criteria.add(Restrictions.eq("voided", false));
+		criteria.addOrder(org.hibernate.criterion.Order.asc("startDate"));
+		log.debug("criteria: " + criteria);
+		List<DrugOrder> temp = criteria.list();
+		for (DrugOrder regimen : temp) {
+			Integer ptId = regimen.getEncounter().getPatientId();
+			List<DrugOrder> list = ret.get(ptId);
+			if (list == null) {
+				list = new ArrayList<DrugOrder>();
+				ret.put(ptId, list);
+			}
+			list.add(regimen);
+		}
+		return ret;
+	}
+	
 	// TODO: Reimplement this method if we revise the meanings/names of the relationship fields
 	public Map<Integer, List<Relationship>> getRelationships(PatientSet ps, RelationshipType relType) {
 		Map<Integer, List<Relationship>> ret = new HashMap<Integer, List<Relationship>>();

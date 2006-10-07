@@ -253,7 +253,11 @@ public class OpenmrsConstants {
 		Map<String, String> props = new HashMap<String, String>();
 		
 		props.put("use_patient_attribute.tribe", "true");
+		props.put("use_patient_attribute.healthCenter", "false");
 		props.put("dashboard.overview.showConcepts", "");
+		props.put("dashboard.encounters.viewWhere", "newWindow"); // known values: 'sameWindow', 'newWindow', 'oneNewWindow'
+		props.put("dashboard.encounters.showEmptyFields", "true");
+		props.put("dashboard.encounters.usePages", "smart"); // known values: 'true', 'false', 'smart'
 		props.put("patientForms.goBackOnEntry", "false");
 		
 		props.put("concept.weight", "5089");

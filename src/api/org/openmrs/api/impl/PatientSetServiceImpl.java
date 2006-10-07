@@ -251,6 +251,21 @@ public class PatientSetServiceImpl implements PatientSetService {
 		return getPatientSetDAO().getCurrentDrugOrders(ps, drugConcepts);		
 	}
 
+	/**
+	 * @return all active drug orders whose drug concept is in the given set (or all drugs if that's null) 
+	 */
+	public Map<Integer, List<DrugOrder>> getDrugOrders(PatientSet ps, Concept drugSet) {
+		List<Concept> drugConcepts = null;
+		if (drugSet != null) {
+			List<ConceptSet> concepts = Context.getConceptService().getConceptSets(drugSet);
+			drugConcepts = new ArrayList<Concept>();
+			for (ConceptSet cs : concepts) {
+				drugConcepts.add(cs.getConcept());
+			}
+		}
+		return getPatientSetDAO().getDrugOrders(ps, drugConcepts);		
+	}
+
 	static Map<User, PatientAnalysis> userAnalyses = new HashMap<User, PatientAnalysis>();
 	
 	public void setMyPatientAnalysis(PatientAnalysis pa) {

@@ -3,6 +3,8 @@
 
 <div id="encounterPortlet">
 
+	<openmrs:globalProperty var="viewEncounterWhere" key="dashboard.encounters.viewWhere" defaultValue="newWindow"/>
+
 	<openmrs:hasPrivilege privilege="Add Forms">
 		<div id="encounterForms">
 			<div class="boxHeader">Forms</div>
@@ -32,7 +34,16 @@
 						</tr>
 						<openmrs:forEachEncounter encounters="${model.patientEncounters}" sortBy="encounterDatetime" descending="true" var="enc">
 							<tr>
-								<td><a href="#encounterId=${enc.encounterId}" onClick="handleGetObservations('${enc.encounterId}'); return false;"><openmrs:formatDate date="${enc.encounterDatetime}" type="small" /></a></td>
+								<c:set var="showLink" value="${fn:length(enc.obs) > 0}"/>
+								<td>
+									<c:if test="${showLink}">
+										<a href="#encounterId=${enc.encounterId}" onClick="handleGetObservations('${enc.encounterId}'); return false;">
+									</c:if>
+										<openmrs:formatDate date="${enc.encounterDatetime}" type="small" />
+									<c:if test="${showLink}">
+										</a>
+									</c:if>
+								</td>
 							 	<td>${enc.encounterType.name}</td>
 							 	<td>${enc.provider.firstName} ${enc.provider.lastName}</td>
 							 	<td>${enc.form.name}</td>
@@ -145,8 +156,19 @@
 			DWRObsService.getObservations(encounterId, handleRefreshObsData);
 			document.getElementById("encounterId").value = encounterId;
 			--%>
-			var formWindow = window.open('encounterDisplay.list?showBlankFields=true&encounterId=' + encounterId, 'formWindow', 'toolbar=no,width=800,height=600,resizable=yes,scrollbars=yes');
-			formWindow.focus();
+			<c:choose>
+				<c:when test="${viewEncounterWhere == 'newWindow'}">
+					var formWindow = window.open('encounterDisplay.list?encounterId=' + encounterId, '${enc.encounterId}', 'toolbar=no,width=800,height=600,resizable=yes,scrollbars=yes');
+					formWindow.focus();
+				</c:when>
+				<c:when test="${viewEncounterWhere == 'oneNewWindow'}">
+					var formWindow = window.open('encounterDisplay.list?encounterId=' + encounterId, 'formWindow', 'toolbar=no,width=800,height=600,resizable=yes,scrollbars=yes');
+					formWindow.focus();
+				</c:when>
+				<c:otherwise>
+					window.location = 'encounterDisplay.list?encounterId=' + encounterId;
+				</c:otherwise>
+			</c:choose>
 		}
 
 		<%--

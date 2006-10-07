@@ -152,6 +152,13 @@ public interface PatientSetService {
 	public Map<Integer, List<DrugOrder>> getCurrentDrugOrders(PatientSet ps,
 			Concept drugSet);
 
+	/**
+	 * @return all active or finished drug orders whose drug concept is in the given set (or all drugs if that's null) 
+	 */
+	@Transactional(readOnly=true)
+	public Map<Integer, List<DrugOrder>> getDrugOrders(PatientSet ps,
+			Concept drugSet);
+	
 	public void setMyPatientAnalysis(PatientAnalysis pa);
 
 	@Transactional(readOnly=true)

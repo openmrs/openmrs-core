@@ -1,6 +1,7 @@
 package org.openmrs.reporting.export;
 
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -14,6 +15,7 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Obs;
@@ -39,7 +41,8 @@ public class DataExportUtility {
 	
 	private String separator = "	";
 	private DateFormat dateFormatLong = null; 
-	private DateFormat dateFormatShort = null; 
+	private DateFormat dateFormatShort = null;
+	private DateFormat dateFormatYmd = null;
 	
 	public Date currentDate = new Date();
 	
@@ -58,6 +61,12 @@ public class DataExportUtility {
 	
 	// Map<Program.name, Map<patientId, PatientProgram>>
 	private Map<String, Map<Integer, PatientProgram>> programMap = new HashMap<String, Map<Integer, PatientProgram>>();
+	
+	// Map<name of drug set, Map<patientId, List<DrugOrder>>>
+	private Map<String, Map<Integer, List<DrugOrder>>> drugOrderMap = new HashMap<String, Map<Integer, List<DrugOrder>>>();
+
+	// Map<name of drug set, Map<patientId, List<DrugOrder>>>
+	private Map<String, Map<Integer, List<DrugOrder>>> currentDrugOrderMap = new HashMap<String, Map<Integer, List<DrugOrder>>>();
 	
 	// Map<tablename+columnname, Map<patientId, columnvalue>>
 	private Map<String, Map<Integer, Object>> attributeMap = new HashMap<String, Map<Integer, Object>>();
@@ -83,7 +92,7 @@ public class DataExportUtility {
 		Locale locale = Context.getLocale();
 		dateFormatLong = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
 		dateFormatShort = DateFormat.getDateInstance(DateFormat.SHORT, locale);
-		
+		dateFormatYmd = new SimpleDateFormat("yyyy-MM-dd", locale);
 	}
 
 	
@@ -241,6 +250,56 @@ public class DataExportUtility {
 			programMap.put(programName, patientIdProgramMap);
 		}
 		return patientIdProgramMap.get(patientId);		
+	}
+	
+	public List<DrugOrder> getCurrentDrugOrders(String drugSetName) {
+		Map<Integer, List<DrugOrder>> patientIdDrugOrderMap;
+		if (currentDrugOrderMap.containsKey(drugSetName)) {
+			patientIdDrugOrderMap = currentDrugOrderMap.get(drugSetName);
+		} else {
+			Concept drugSet = Context.getConceptService().getConceptByName(drugSetName);
+			patientIdDrugOrderMap = Context.getPatientSetService().getCurrentDrugOrders(getPatientSet(), drugSet);
+			currentDrugOrderMap.put(drugSetName, patientIdDrugOrderMap);
+		}
+		return patientIdDrugOrderMap.get(patientId);
+	}
+	
+	public String getCurrentDrugNames(String drugSetName) {
+		List<DrugOrder> patientOrders = getCurrentDrugOrders(drugSetName);
+		if (patientOrders == null)
+			return "";
+		StringBuilder ret = new StringBuilder();
+		for (Iterator<DrugOrder> i = patientOrders.iterator(); i.hasNext(); ) {
+			DrugOrder o = i.next();
+			ret.append(o.getDrug().getName());
+			if (i.hasNext())
+				ret.append(" ");
+		}
+		return ret.toString();
+	}
+	
+	public List<DrugOrder> getDrugOrders(String drugSetName) {
+		Map<Integer, List<DrugOrder>> patientIdDrugOrderMap;
+		if (drugOrderMap.containsKey(drugSetName)) {
+			patientIdDrugOrderMap = drugOrderMap.get(drugSetName);
+		} else {
+			Concept drugSet = Context.getConceptService().getConceptByName(drugSetName);
+			patientIdDrugOrderMap = Context.getPatientSetService().getCurrentDrugOrders(getPatientSet(), drugSet);
+			drugOrderMap.put(drugSetName, patientIdDrugOrderMap);
+		}
+		return patientIdDrugOrderMap.get(patientId);
+	}
+	
+	public Date getEarliestDrugStart(String drugSetName) {
+		List<DrugOrder> patientOrders = getDrugOrders(drugSetName);
+		if (patientOrders == null)
+			return null;
+		Date earliest = null;
+		for (DrugOrder o : patientOrders) {
+			if (earliest == null || OpenmrsUtil.compareWithNullAsLatest(o.getStartDate(), earliest) < 0)
+				earliest = o.getStartDate();
+		}
+		return earliest;
 	}
 	
 	public List<Relationship> getRelationships(String relationshipTypeName) {
@@ -457,7 +516,7 @@ public class DataExportUtility {
 	}
 	
 	/**
-	 * Format the given date according to the type ('short', 'long')
+	 * Format the given date according to the type ('short', 'long', 'ymd')
 	 * @param type
 	 * @param d
 	 * @return
@@ -469,6 +528,8 @@ public class DataExportUtility {
 		if ("long".equals(type)) {
 			return dateFormatLong.format(d);
 		}
+		else if ("ymd".equals(type))
+			return dateFormatYmd.format(d);
 		else
 			return dateFormatShort.format(d);
 	}

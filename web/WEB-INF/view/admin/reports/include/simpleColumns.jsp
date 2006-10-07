@@ -64,8 +64,13 @@
 				<option value="$!{fn.getRelationshipNames('Accompagnateur')}">&nbsp; <spring:message code="Accompagnateur" /></option>
 				<option value="$!{fn.getRelationshipIds('Accompagnateur')}">&nbsp; <spring:message code="Accompagnateur ID" /></option>
 				<option value=""> </option>
-				<option value="$!{fn.formatDate('short', $fn.getProgram('HIV PROGRAM').getDateEnrolled())}">&nbsp; <spring:message code="HIV Program enrollment date" /></option>
-				<option value="$!{fn.formatDate('short', $fn.getProgram('TUBERCULOSIS PROGRAM').getDateEnrolled())}">&nbsp; <spring:message code="TB Program enrollment date" /></option>
+				<option value="$!{fn.formatDate('ymd', $fn.getProgram('HIV PROGRAM').getDateEnrolled())}">&nbsp; <spring:message code="HIV Program enrollment date" /></option>
+				<option value="$!{fn.formatDate('ymd', $fn.getProgram('TUBERCULOSIS PROGRAM').getDateEnrolled())}">&nbsp; <spring:message code="TB Program enrollment date" /></option>
+				<option value=""> </option>
+				<option value="$!{fn.getCurrentDrugNames('ANTIRETROVIRAL DRUGS')}">&nbsp; <spring:message code="Current ARVs" /></option>
+				<option value="$!{fn.getCurrentDrugNames('TUBERCULOSIS TREATMENT DRUGS')}">&nbsp; <spring:message code="Current TB meds" /></option>
+				<option value="$!{fn.formatDate('ymd', $fn.getEarliestDrugStart('ANTIRETROVIRAL DRUGS'))}">&nbsp; <spring:message code="Earliest ARV start" /></option>
+				<option value="$!{fn.formatDate('ymd', $fn.getEarliestDrugStart('TUBERCULOSIS TREATMENT DRUGS'))}">&nbsp; <spring:message code="Earliest TB med start" /></option>
 			</select>
 			
 		</td>

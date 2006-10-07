@@ -383,7 +383,7 @@ public class OpenmrsUtil {
 			return c1.compareTo(c2);
 	}
 	
-	public static <E extends Comparable<E>> int comparewithNullAsGreatest(E c1, E c2) {
+	public static <E extends Comparable<E>> int compareWithNullAsGreatest(E c1, E c2) {
 		if (c1 == null)
 			return 1;
 		else if (c2 == null)
