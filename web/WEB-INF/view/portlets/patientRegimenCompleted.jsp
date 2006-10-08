@@ -28,7 +28,7 @@
 	<c:when test="${not empty model.displayDrugSetIds}">
 		<c:forTokens var="drugSetId" items="${model.displayDrugSetIds}" delims=",">
 			<c:if test="${drugSetId == '*'}" >
-				<tbody id="regimenTableCompleted_header___other__">
+				<tbody id="regimenTableCompleted_header___other__"
 					<tr>
 						<c:choose>
 							<c:when test="${model.completedRegimenMode == 'view'}">
@@ -55,12 +55,18 @@
 								<c:if test="${model.completedRegimenMode != 'view'}">
 									<td>
 										<input id="voidbutton_${drugOrder.orderId}" type="button" value="<spring:message code="DrugOrder.void" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
-										<div id="void_${drugOrder.orderId}" style="display:none">
+										<div id="void_${drugOrder.orderId}" style="display:none" class="dashedAndHighlighted">
 											<form>
 												<spring:message code="general.reason" />: 
-												<input type="text" id="void_${drugOrder.orderId}_reason" size="10" value="" />
+													<select name="void_${drugOrder.orderId}_reason" id="void_${drugOrder.orderId}_reason">
+														<option value=""></option>
+														<option value="DrugOrder.void.reason.dateError"><spring:message code="DrugOrder.void.reason.dateError" /></option>
+														<option value="DrugOrder.void.reason.error"><spring:message code="DrugOrder.void.reason.error" /></option>
+														<option value="DrugOrder.void.reason.other"><spring:message code="DrugOrder.void.reason.other" /></option>
+													</select>
 												&nbsp;&nbsp;
-												<input type="button" value="<spring:message code="general.save" />" onClick="handleVoidDrugOrder('${drugOrder.orderId}', 'void_${drugOrder.orderId}_reason')" />
+												<input type="button" value="<spring:message code="DrugOrder.void" />" onClick="handleVoidDrugOrder('${drugOrder.orderId}', 'void_${drugOrder.orderId}_reason')" />
+												<input type="button" value="<spring:message code="general.cancel" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
 											</form>
 										</div>
 									</td>
@@ -116,12 +122,18 @@
 								<c:if test="${model.completedRegimenMode != 'view'}">
 									<td>
 										<input id="voidbutton_${drugOrder.orderId}" type="button" value="<spring:message code="DrugOrder.void" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
-										<div id="void_${drugOrder.orderId}" style="display:none">
+										<div id="void_${drugOrder.orderId}" style="display:none" class="dashedAndHighlighted">
 											<form>
 												<spring:message code="general.reason" />: 
-												<input type="text" id="void_${drugOrder.orderId}_reason" size="10" value="" />
+													<select name="void_${drugOrder.orderId}_reason" id="void_${drugOrder.orderId}_reason">
+														<option value=""></option>
+														<option value="DrugOrder.void.reason.dateError"><spring:message code="DrugOrder.void.reason.dateError" /></option>
+														<option value="DrugOrder.void.reason.error"><spring:message code="DrugOrder.void.reason.error" /></option>
+														<option value="DrugOrder.void.reason.other"><spring:message code="DrugOrder.void.reason.other" /></option>
+													</select>
 												&nbsp;&nbsp;
-												<input type="button" value="<spring:message code="general.save" />" onClick="handleVoidDrugOrder('${drugOrder.orderId}', 'void_${drugOrder.orderId}_reason')" />
+												<input type="button" value="<spring:message code="DrugOrder.void" />" onClick="handleVoidDrugOrder('${drugOrder.orderId}', 'void_${drugOrder.orderId}_reason')" />
+												<input type="button" value="<spring:message code="general.cancel" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
 											</form>
 										</div>
 									</td>
@@ -161,12 +173,18 @@
 								<c:if test="${model.completedRegimenMode != 'view'}">
 									<td>
 										<input id="voidbutton_${drugOrder.orderId}" type="button" value="<spring:message code="DrugOrder.void" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
-										<div id="void_${drugOrder.orderId}" style="display:none">
+										<div id="void_${drugOrder.orderId}" style="display:none" class="dashedAndHighlighted">
 											<form>
 												<spring:message code="general.reason" />: 
-												<input type="text" id="void_${drugOrder.orderId}_reason" size="10" value="" />
+													<select name="void_${drugOrder.orderId}_reason" id="void_${drugOrder.orderId}_reason">
+														<option value=""></option>
+														<option value="DrugOrder.void.reason.dateError"><spring:message code="DrugOrder.void.reason.dateError" /></option>
+														<option value="DrugOrder.void.reason.error"><spring:message code="DrugOrder.void.reason.error" /></option>
+														<option value="DrugOrder.void.reason.other"><spring:message code="DrugOrder.void.reason.other" /></option>
+													</select>
 												&nbsp;&nbsp;
-												<input type="button" value="<spring:message code="general.save" />" onClick="handleVoidDrugOrder('${drugOrder.orderId}', 'void_${drugOrder.orderId}_reason')" />
+												<input type="button" value="<spring:message code="DrugOrder.void" />" onClick="handleVoidDrugOrder('${drugOrder.orderId}', 'void_${drugOrder.orderId}_reason')" />
+												<input type="button" value="<spring:message code="general.cancel" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
 											</form>
 										</div>
 									</td>

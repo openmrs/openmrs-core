@@ -52,7 +52,7 @@
 								<c:if test="${model.currentRegimenMode != 'view'}">
 									<td>
 										<input id="closebutton_${drugOrder.orderId}" type="button" value="<spring:message code="DrugOrder.discontinue" />" onClick="showHideDiv('close_${drugOrder.orderId}');showHideDiv('closebutton_${drugOrder.orderId}')" />
-										<div id="close_${drugOrder.orderId}" style="display:none">
+										<div id="close_${drugOrder.orderId}" style="display:none" class="dashedAndHighlighted">
 											<form>
 												<spring:message code="DrugOrder.discontinuedDate" />:
 												<input type="text" id="close_${drugOrder.orderId}_date" size="10" value="" onFocus="showCalendar(this)" />
@@ -80,7 +80,7 @@
 									</td>
 									<td>
 										<input id="voidbutton_${drugOrder.orderId}" type="button" value="<spring:message code="DrugOrder.void" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
-										<div id="void_${drugOrder.orderId}" style="display:none">
+										<div id="void_${drugOrder.orderId}" style="display:none" class="dashedAndHighlighted">
 											<form>
 												<spring:message code="general.reason" />: 
 													<select name="void_${drugOrder.orderId}_reason" id="void_${drugOrder.orderId}_reason">
@@ -131,7 +131,7 @@
 									<c:if test="${(model.currentRegimenMode != 'view') && (not empty model.currentDrugOrderSets[drugSetId])}">
 										<td>
 											<input id="closegpbutton_${fn:replace(drugSetId, " ", "_")}" type="button" value="<spring:message code="DrugOrder.discontinueGroup" />" onClick="showHideDiv('closegp_${fn:replace(drugSetId, " ", "_")}');showHideDiv('closegpbutton_${fn:replace(drugSetId, " ", "_")}')" />
-											<div id="closegp_${fn:replace(drugSetId, " ", "_")}" style="display:none;" class="dashedAndHighlighted" >
+											<div id="closegp_${fn:replace(drugSetId, " ", "_")}" style="display:none;" class="dashedAndHighlighted">
 												<form>
 													<spring:message code="DrugOrder.discontinuedDate" />:
 													<input type="text" id="closegp_${fn:replace(drugSetId, " ", "_")}_date" size="10" value="" onFocus="showCalendar(this)" />
