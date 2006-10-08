@@ -1014,6 +1014,7 @@
 				<prop key="org.openmrs.User">org.openmrs.web.taglib.fieldgen.UserHandler</prop>
 				<prop key="org.openmrs.Drug">org.openmrs.web.taglib.fieldgen.DrugHandler</prop>
 				<prop key="org.openmrs.Location">org.openmrs.web.taglib.fieldgen.LocationHandler</prop>
+				<prop key="org.openmrs.DrugOrder.discontinuedReason">org.openmrs.web.taglib.fieldgen.DrugOrderDiscontinuedReasonHandler</prop>
 				<prop key="java.util.Date">org.openmrs.web.taglib.fieldgen.DateHandler</prop>
 			</props>
 		</property>
