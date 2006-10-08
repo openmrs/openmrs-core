@@ -548,5 +548,14 @@ public class DataExportUtility {
 			return false;
 		}
 	}
-
+	
+	/**
+	 * @return results of o.hashCode()
+	 */
+	public Integer hashCode(Object o) {
+		if (o == null)
+			return null;
+		return o.hashCode();
+	}
+	
 }

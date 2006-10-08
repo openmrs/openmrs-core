@@ -86,16 +86,6 @@ public class NealReportController implements Controller {
 		// General.PREGNANT_P
 		// General.PMTCT (get meds for ptme? ask CA)
 		// General.FORMER_GROUP (previous ARV group)
-		
-		// --- for every tb drug, addDynamic() a holder with
-		// Hiv.OBS_TYPE == TB.TB_REGIMEN or "atb"
-		// TB.TB_REGIMEN == the name of the drug
-		// General.DOSE_PER_DAY == total dose per day == ddd
-		// Hiv.OBS_DATE == start date of arvs
-		// "stop_date" == stop date for ARVS
-		// "ddd_quotient"  == number of times taken per day (i think) 
-		// "strength_unit" == unit for strength, e.g, "tab"
-		// "strength_dose" == amount given per time
 				
 		List<Concept> conceptsToGet = new ArrayList<Concept>();
 		Map<Concept, String> namesForReportMaker = new HashMap<Concept, String>();
@@ -217,27 +207,63 @@ public class NealReportController implements Controller {
 		// "ddd_quotient"  == number of times taken per day (i think) 
 		// "strength_unit" == unit for strength, e.g, "tab"
 		// "strength_dose" == amount given per time
-		Map<Integer, List<DrugOrder>> regimens = pss.getCurrentDrugOrders(ps, Context.getConceptService().getConceptByName("ANTIRETROVIRAL DRUGS"));
-		for (Map.Entry<Integer, List<DrugOrder>> e : regimens.entrySet()) {
-			Date earliestStart = null;
-			for (DrugOrder reg : e.getValue()) {
-				if (earliestStart == null || (reg.getStartDate() != null && earliestStart.compareTo(reg.getStartDate()) > 0))
-					earliestStart = reg.getStartDate();
-				Map<String, String> holder = new HashMap<String, String>();
-				holder.put(General.ID, e.getKey().toString());
-				holder.put(Hiv.OBS_TYPE, Hiv.ARV);
-				holder.put(General.DOSE_PER_DAY, reg.getDose().toString());
-				holder.put(Hiv.OBS_DATE, formatDate(reg.getStartDate()));
-				holder.put(Hiv.ARV, reg.getDrug().getName());
-				holder.put("stop_date", formatDate(reg.getDiscontinued() ? reg.getDiscontinuedDate() : reg.getAutoExpireDate()));
-				holder.put("ddd_quotient", reg.getFrequency().substring(0, 1));
-				holder.put("strength_unit", reg.getUnits());
-				holder.put("strength_dose", reg.getDose().toString());
-				maker.addDynamic(holder);
-				// log.debug(reg);
+		{
+			Map<Integer, List<DrugOrder>> regimens = pss.getCurrentDrugOrders(ps, Context.getConceptService().getConceptByName("ANTIRETROVIRAL DRUGS"));
+			for (Map.Entry<Integer, List<DrugOrder>> e : regimens.entrySet()) {
+				Date earliestStart = null;
+				for (DrugOrder reg : e.getValue()) {
+					if (earliestStart == null || (reg.getStartDate() != null && earliestStart.compareTo(reg.getStartDate()) > 0))
+						earliestStart = reg.getStartDate();
+					Map<String, String> holder = new HashMap<String, String>();
+					holder.put(General.ID, e.getKey().toString());
+					holder.put(Hiv.OBS_TYPE, Hiv.ARV);
+					holder.put(General.DOSE_PER_DAY, reg.getDose().toString());
+					holder.put(Hiv.OBS_DATE, formatDate(reg.getStartDate()));
+					holder.put(Hiv.ARV, reg.getDrug().getName());
+					holder.put("stop_date", formatDate(reg.getDiscontinued() ? reg.getDiscontinuedDate() : reg.getAutoExpireDate()));
+					holder.put("ddd_quotient", reg.getFrequency().substring(0, 1));
+					holder.put("strength_unit", reg.getUnits());
+					holder.put("strength_dose", reg.getDose().toString());
+					maker.addDynamic(holder);
+					log.debug("HIV added " + holder);
+				}
+				if (earliestStart != null)
+					patientDataHolder.get(e.getKey()).put(Hiv.FIRST_ARV_DATE, formatDate(earliestStart));
 			}
-			if (earliestStart != null)
-				patientDataHolder.get(e.getKey()).put(Hiv.FIRST_ARV_DATE, formatDate(earliestStart));
+		}
+		
+		// --- for every tb drug, addDynamic() a holder with
+		// Hiv.OBS_TYPE == TB.TB_REGIMEN or "atb"
+		// TB.TB_REGIMEN == the name of the drug
+		// General.DOSE_PER_DAY == total dose per day == ddd
+		// Hiv.OBS_DATE == start date of arvs
+		// "stop_date" == stop date for ARVS
+		// "ddd_quotient"  == number of times taken per day (i think) 
+		// "strength_unit" == unit for strength, e.g, "tab"
+		// "strength_dose" == amount given per time
+		{
+			Map<Integer, List<DrugOrder>> regimens = pss.getCurrentDrugOrders(ps, Context.getConceptService().getConceptByName("TUBERCULOSIS TREATMENT DRUGS"));
+			for (Map.Entry<Integer, List<DrugOrder>> e : regimens.entrySet()) {
+				Date earliestStart = null;
+				for (DrugOrder reg : e.getValue()) {
+					if (earliestStart == null || (reg.getStartDate() != null && earliestStart.compareTo(reg.getStartDate()) > 0))
+						earliestStart = reg.getStartDate();
+					Map<String, String> holder = new HashMap<String, String>();
+					holder.put(General.ID, e.getKey().toString());
+					holder.put(Hiv.OBS_TYPE, TB.TB_REGIMEN);
+					holder.put(General.DOSE_PER_DAY, reg.getDose().toString());
+					holder.put(Hiv.OBS_DATE, formatDate(reg.getStartDate()));
+					holder.put(TB.TB_REGIMEN, reg.getDrug().getName());
+					holder.put("stop_date", formatDate(reg.getDiscontinued() ? reg.getDiscontinuedDate() : reg.getAutoExpireDate()));
+					holder.put("ddd_quotient", reg.getFrequency().substring(0, 1));
+					holder.put("strength_unit", reg.getUnits());
+					holder.put("strength_dose", reg.getDose().toString());
+					maker.addDynamic(holder);
+					log.debug("TB added " + holder);
+				}
+				if (earliestStart != null)
+					patientDataHolder.get(e.getKey()).put(TB.FIRST_TB_REGIMEN_DATE, formatDate(earliestStart));
+			}
 		}
 		
 		log.debug("Pulled regimens in " + (System.currentTimeMillis() - l) + " ms");

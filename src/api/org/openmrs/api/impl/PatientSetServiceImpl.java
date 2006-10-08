@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptSet;
 import org.openmrs.DrugOrder;
@@ -32,6 +34,8 @@ import org.openmrs.reporting.PatientSet;
 import org.openmrs.util.OpenmrsConstants;
 
 public class PatientSetServiceImpl implements PatientSetService {
+	
+	public final Log log = LogFactory.getLog(this.getClass());
 	
 	private PatientSetDAO dao;
 	
@@ -248,6 +252,8 @@ public class PatientSetServiceImpl implements PatientSetService {
 				drugConcepts.add(cs.getConcept());
 			}
 		}
+		log.debug("drugSet: " + drugSet);
+		log.debug("drugConcepts: " + drugConcepts);
 		return getPatientSetDAO().getCurrentDrugOrders(ps, drugConcepts);		
 	}
 
