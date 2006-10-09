@@ -18,7 +18,7 @@
 	<head>
 		<openmrs:htmlInclude file="/openmrs.css" />
 		<openmrs:htmlInclude file="/style.css" />
-		
+		<openmrs:htmlInclude file="/openmrs.js" />
 		<c:choose>
 			<c:when test="${taskpane}">
 				<openmrs:htmlInclude file="/formentry/taskpane/taskpane.css" />
@@ -30,7 +30,6 @@
 			<c:otherwise>
 				<openmrs:htmlInclude file="/dwr/engine.js" />
 				<openmrs:htmlInclude file="/dwr/interface/DWRAlertService.js" />
-				<openmrs:htmlInclude file="/openmrs.js" />
 			</c:otherwise>
 		</c:choose>
 		<title><spring:message code="openmrs.title"/></title>
