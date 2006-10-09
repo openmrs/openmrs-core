@@ -12,6 +12,8 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.reporting.ReportService;
 import org.openmrs.reporting.export.DataExportReportObject;
@@ -104,14 +106,24 @@ public class DataExportFormController extends SimpleFormController {
 						columnName = request.getParameter("conceptColumnName_" + columnId);
 						if (columnName != null) {
 							// concept column
-							String conceptName = request.getParameter("conceptName_" + columnId);
+							String conceptId = request.getParameter("conceptId_" + columnId);
+							try {
+								Integer.valueOf(conceptId);
+							}
+							catch (NumberFormatException e) {
+								// for backwards compatibility to pre 1.0.43
+								Concept c = Context.getConceptService().getConceptByName(conceptId);
+								if (c == null)
+									throw new APIException("Concept name : + '" + conceptId + "' could not be found in the dictionary");
+								conceptId = c.getConceptId().toString();
+							}
 							String[] extras = request.getParameterValues("conceptExtra_" + columnId);
 							String modifier = request.getParameter("conceptModifier_" + columnId);
 							String modifierNumStr = request.getParameter("conceptModifierNum_" + columnId);
 							Integer modifierNum = null;
 							if (modifierNumStr.length() > 0)
 								modifierNum = Integer.valueOf(modifierNumStr);
-							report.addConceptColumn(columnName, modifier, modifierNum, conceptName, extras);
+							report.addConceptColumn(columnName, modifier, modifierNum, conceptId, extras);
 						}
 						else {
 							columnName = request.getParameter("calculatedName_" + columnId);

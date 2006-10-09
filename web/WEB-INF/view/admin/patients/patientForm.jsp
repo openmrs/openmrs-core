@@ -165,7 +165,7 @@
 	.tabBar {
 		float: left;
 		font-size: 11px;
-		width: 150px;
+		width: 158px;
 	}
 		.tabBar a {
 			display: block;
@@ -185,7 +185,7 @@
 			border-color: navy;
 		}
 	.tabBoxes {
-		margin-left: 148px;
+		margin-left: 156px;
 		border: 2px solid navy;
 		padding: 3px;
 		min-height: 150px;

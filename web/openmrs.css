@@ -360,11 +360,11 @@ table.patientTreatmentPrograms td {
 	background: #E0E0F0;
 }
 #patientTabs a:link.active, #patientTabs a:visited.active {
-	border-bottom: 1px solid #fff;
+	border-bottom: 1px solid #FFFFFF;
 }
-#patientTabs a.current:hover, #patientTabs a.current {
-	background: #FFF;
-	border-bottom: 1px solid #FFF;
+#patientTabs a.current, #patientTabs a:link.current, #patientTabs a:visited.current, #patientTabs a.current:hover {
+	background: #FFFFFF;
+	border-bottom: 1px solid #FFFFFF;
 	color: navy;
 	text-decoration: none;
 }

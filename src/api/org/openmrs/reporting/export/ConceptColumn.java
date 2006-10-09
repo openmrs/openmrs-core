@@ -10,16 +10,22 @@ public class ConceptColumn implements ExportColumn, Serializable {
 	private String columnName = "";
 	private String modifier = "";
 	private Integer modifierNum = null;
+	private Integer conceptId = null;
 	private String conceptName = "";
 	private String[] extras = null;
 	
 	public ConceptColumn() { }
 	
-	public ConceptColumn(String columnName, String modifier, Integer modifierNum, String conceptName, String[] extras) {
+	public ConceptColumn(String columnName, String modifier, Integer modifierNum, String conceptId, String[] extras) {
 		this.columnName = columnName;
 		this.modifier = modifier;
 		this.modifierNum = modifierNum;
-		this.conceptName = conceptName;
+		try {
+			this.conceptId = Integer.valueOf(conceptId);
+		}
+		catch (NumberFormatException e) {
+			this.conceptName = conceptId; // for backwards compatibility to pre 1.0.43
+		}
 		this.extras = extras;
 	}
 	
@@ -27,23 +33,23 @@ public class ConceptColumn implements ExportColumn, Serializable {
 		String s = "";
 		
 		if (DataExportReportObject.MODIFIER_ANY.equals(modifier)) {
-			s += "#set($o = $fn.getLastObs('" + conceptName + "')) ";
+			s += "#set($o = $fn.getLastObs('" + getConceptIdOrName() + "')) ";
 			s += "$!{o.getValueAsString($locale)}";
 			s += extrasToTemplateString();
 		}
 		else if (DataExportReportObject.MODIFIER_FIRST.equals(modifier)) {
-			s += "#set($o = $fn.getLastObs('" + conceptName + "')) ";
+			s += "#set($o = $fn.getLastObs('" + getConceptIdOrName() + "')) ";
 			s += "$!{o.getValueAsString($locale)}";
 			s += extrasToTemplateString();
 		}
 		else if (DataExportReportObject.MODIFIER_LAST.equals(modifier)) {
-			s += "#set($o = $fn.getLastObs('" + conceptName + "')) ";
+			s += "#set($o = $fn.getLastObs('" + getConceptIdOrName() + "')) ";
 			s += "$!{o.getValueAsString($locale)}";
 			s += extrasToTemplateString();
 		}
 		else if (DataExportReportObject.MODIFIER_LAST_NUM.equals(modifier)) {
 			Integer num = modifierNum == null ? 1 : modifierNum;
-			s += "#set($obs = $fn.getLastNObs(" + num + ", '" + conceptName + "'))";
+			s += "#set($obs = $fn.getLastNObs(" + num + ", '" + getConceptIdOrName() + "'))";
 			s += "#foreach($o in $obs)";
 			s += "#if($velocityCount > 1)";
 			s += "$!{fn.getSeparator()}";
@@ -118,12 +124,22 @@ public class ConceptColumn implements ExportColumn, Serializable {
 		return s;
 	}
 
+	//// left for backwards compatibility to pre 1.0.43
 	public void setColumnName(String columnName) {
 		this.columnName = columnName;
 	}
 
 	public String getConceptName() {
 		return conceptName;
+	}
+	///////
+
+	public Integer getConceptId() {
+		return conceptId;
+	}
+
+	public void setConceptId(Integer conceptId) {
+		this.conceptId = conceptId;
 	}
 
 	public void setConceptName(String conceptName) {
@@ -154,6 +170,13 @@ public class ConceptColumn implements ExportColumn, Serializable {
 		this.modifierNum = modifierNum;
 	}
 	
-	
+	// returns conceptId if not null, conceptName otherwise
+	// convenience method for backwards compatibility to pre 1.0.43
+	public String getConceptIdOrName() {
+		if (conceptId != null)
+			return conceptId.toString();
+		else
+			return conceptName;
+	}
 	
 }

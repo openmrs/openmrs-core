@@ -67,10 +67,12 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 	 * Append a concept based column
 	 * @param columnName
 	 * @param modifier
-	 * @param columnValue
+	 * @param modifierNum
+	 * @param conceptId
+	 * @param extras String[]
 	 */
-	public void addConceptColumn(String columnName, String modifier, Integer modifierNum, String columnValue, String[] extras) {
-		columns.add(new ConceptColumn(columnName, modifier, modifierNum, columnValue, extras));
+	public void addConceptColumn(String columnName, String modifier, Integer modifierNum, String conceptId, String[] extras) {
+		columns.add(new ConceptColumn(columnName, modifier, modifierNum, conceptId, extras));
 	}
 	
 	/**

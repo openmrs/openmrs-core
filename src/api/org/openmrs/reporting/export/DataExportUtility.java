@@ -219,9 +219,17 @@ public class DataExportUtility {
 		
 		log.debug("getting concept object for name: " + conceptName);
 		
-		Concept c = Context.getConceptService().getConceptByName(conceptName);
+		Concept c;
+		try {
+			Integer conceptId = Integer.valueOf(conceptName);
+			c = Context.getConceptService().getConcept(conceptId);
+		}
+		catch (NumberFormatException e) {
+			c = Context.getConceptService().getConceptByName(conceptName);
+		}
+		
 		if (c == null)
-			throw new APIException("A Concept with name '" + conceptName + "' was not found");
+			throw new APIException("A Concept with name or id '" + conceptName + "' was not found");
 		
 		conceptNameMap.put(conceptName, c);
 		return c;

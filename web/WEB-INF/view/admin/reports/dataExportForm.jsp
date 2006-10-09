@@ -199,12 +199,10 @@
 			// create concept popup
 			props.widgetId = "cSelection" + "_" + count;
 			props.searchWidget = cSearch.widgetId;
-			props.hiddenInputName = "conceptName";
+			props.hiddenInputName = "conceptId";
 			props.searchTitle='<spring:message code="general.search"/>';
 			obj = cSearch.domNode.parentNode;
 			var cSelection = dojo.widget.createWidget("OpenmrsPopup", props, obj);
-			cSelection.hiddenInputNode.type = "text";
-			cSelection.hiddenInputNode.size = "50";
 			dojo.event.connect(cSearch, "doSelect", cSelect(cSelection), "select");
 			
 			renameColumnInputs(newObj, count);
@@ -280,16 +278,22 @@
 	var cSelect = function(p) { return {
 			popup: p,
 			select: function(msg) {
-				//this.popup.displayNode.innerHTML = msg.objs[0].name;
-				this.popup.hiddenInputNode.value = msg.objs[0].name;
+				var obj = msg;
+				if (msg.objs)
+					obj = msg.objs[0];
+				var id = this.popup.hiddenInputNode.name.substr(this.popup.hiddenInputNode.name.indexOf("_")+1, 3);
+				var name = getChildByName(this.popup.domNode.parentNode.parentNode, "conceptColumnName_" + id);
+				if (name && name.value == "")
+					name.value = obj.name;
+				
+				this.popup.displayNode.innerHTML = obj.name;
+				this.popup.hiddenInputNode.value = obj.conceptId;
 				}
 			}
 		};
 	
 	dojo.addOnLoad( function() {
-			
 		propertySetup();
-		
 	});
 
 	var onSelect = function(objs) {
@@ -558,7 +562,16 @@
 							children[i].checked = (extras[children[i].value] == 1);
 					}
 					var widget = dojo.widget.manager.getWidgetById("cSelection_" + count);
-					widget.hiddenInputNode.value = "${column.conceptName}";
+					if ("${column.conceptId}" != "") {
+						widget.hiddenInputNode.value = "${column.conceptId}";
+						DWRConceptService.getConcept(widget.searchWidget.simpleClosure(new cSelect(widget), "select"), "${column.conceptId}");
+					}
+					else { 
+						// left for backwards compatibility to pre 1.0.43
+						widget.hiddenInputNode.value = "${column.conceptName}";
+						widget.displayNode.innerHTML = "${column.conceptName}";
+					}
+					
 				</c:if>
 				<c:if test="${column.columnType == 'calculated'}">
 					selectTab(getChildById(obj, 'calcTab'));
