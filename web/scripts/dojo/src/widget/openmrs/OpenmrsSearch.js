@@ -91,7 +91,7 @@ dojo.widget.defineWidget(
 		}
 		
 		// all search pages should use the loading message
-		DWRUtil.useLoadingMessage();
+		useLoadingMessage();
 		
 		// add search label
 		if (this.searchLabel)

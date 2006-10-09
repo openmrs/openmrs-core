@@ -23,7 +23,7 @@ var searchTreeNodes = [];	// saves tree nodes created during search (in order to
 
 dojo.addOnLoad( function(){
 
-	DWRUtil.useLoadingMessage();
+	useLoadingMessage();
 
 	dojo.event.topic.subscribe('treeContextMenuEdit/engage',
 		function (menuItem) { editClicked( menuItem.getTreeNode()); }

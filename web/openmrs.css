@@ -544,9 +544,13 @@ a span.additionalHit {
 }
 #disabledZone {
 	position: fixed;
-	padding:10px;
+	top: 0px;
+	right: 0px;
+	padding:4px;
 	margin-top: 3em;
 	font-size: 1.4em;
+	background-color: red;
+	color: white;
 }
 fieldset {
 	margin: 0px;

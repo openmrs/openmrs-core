@@ -7,7 +7,6 @@
 <h2><spring:message code="Patient.search"/></h2>	
 
 <br />
-<br />
 
 <openmrs:portlet id="findPatient" url="findPatient" parameters="size=full|postURL=patientDashboard.form|showIncludeVoided=false" />
 

@@ -113,3 +113,31 @@ function addEvent(obj, eventType, fn) {
 		return false;
 	}
 }
+
+useLoadingMessage = function(message) {
+	var loadingMessage;
+	if (message) loadingMessage = message;
+	else loadingMessage = "Loading";
+
+	DWREngine.setPreHook(function() {
+		var disabledZone = $('disabledZone');
+		if (!disabledZone) {
+			disabledZone = document.createElement('div');
+			disabledZone.setAttribute('id', 'disabledZone');
+			document.body.appendChild(disabledZone);
+			var messageZone = document.createElement('div');
+			messageZone.setAttribute('id', 'messageZone');
+			disabledZone.appendChild(messageZone);
+			var text = document.createTextNode(loadingMessage);
+			messageZone.appendChild(text);
+		}
+		else {
+			$('messageZone').innerHTML = loadingMessage;
+			disabledZone.style.display = '';
+		}
+	});
+
+	DWREngine.setPostHook(function() {
+		$('disabledZone').style.display = 'none';
+	});
+}
