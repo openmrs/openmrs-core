@@ -34,8 +34,13 @@
 						</tr>
 						<openmrs:forEachEncounter encounters="${model.patientEncounters}" sortBy="encounterDatetime" descending="true" var="enc">
 							<tr>
-								<c:set var="showLink" value="${fn:length(enc.obs) > 0}"/>
+								<c:set var="showLink" value="${fn:length(enc.obs) > 0}"/>	
 								<td>
+									<openmrs:hasPrivilege privilege="Edit Encounters">
+										<a href="${pageContext.request.contextPath}/admin/encounters/encounter.form?encounterId=${enc.encounterId}">
+											<img src="${pageContext.request.contextPath}/images/edit.gif" title="<spring:message code="general.edit"/>" border="0" align="top" />
+										</a>
+									</openmrs:hasPrivilege>
 									<c:if test="${showLink}">
 										<a href="#encounterId=${enc.encounterId}" onClick="handleGetObservations('${enc.encounterId}'); return false;">
 									</c:if>
