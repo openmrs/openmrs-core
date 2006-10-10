@@ -258,6 +258,8 @@ public class OpenmrsConstants {
 		props.put("dashboard.encounters.viewWhere", "newWindow"); // known values: 'sameWindow', 'newWindow', 'oneNewWindow'
 		props.put("dashboard.encounters.showEmptyFields", "true");
 		props.put("dashboard.encounters.usePages", "smart"); // known values: 'true', 'false', 'smart'
+		props.put("dashboard.encounters.showViewLink", "true");
+		props.put("dashboard.encounters.showEditLink", "true");
 		props.put("patientForms.goBackOnEntry", "false");
 		
 		props.put("concept.weight", "5089");

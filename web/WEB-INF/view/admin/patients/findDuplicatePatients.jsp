@@ -7,7 +7,7 @@
 
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 
-<openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" var="showTribe"/>
+<openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false1" var="showTribe"/>
 
 <script type="text/javascript">
 	dojo.require("dojo.widget.openmrs.PatientSearch");
@@ -75,25 +75,6 @@
 		var td = document.createElement("td");
 		td.innerHTML = "Patient Id";
 		row.insertBefore(td, row.firstChild.nextSibling);
-		
-		searchWidget.getHeaderCellContent = function() {
-			return ["", 
-					"",
-					"Patient Id",
-					"Identifier",
-					"Given",
-					"Middle",
-					"Family Name",
-					"Age",
-					"Gender",
-						
-				<c:if test="${showTribe == 'true'}">
-					"Tribe",
-				</c:if>
-					"",
-					"Birthday"
-					];
-		};
 		
 		searchWidget.getCellFunctions = function() {
 			return [searchWidget.simpleClosure(searchWidget, "getNumber"), 

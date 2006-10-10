@@ -1,8 +1,8 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
-<openmrs:htmlInclude file="${pageContext.request.contextPath}/scripts/easyAjax.js" />
-<openmrs:htmlInclude file="${pageContext.request.contextPath}/dwr/interface/DWRRelationshipService.js" />
-<openmrs:htmlInclude file="${pageContext.request.contextPath}/dwr/engine.js" />
-<openmrs:htmlInclude file="${pageContext.request.contextPath}/dwr/util.js" />
+<openmrs:htmlInclude file="/scripts/easyAjax.js" />
+<openmrs:htmlInclude file="/dwr/interface/DWRRelationshipService.js" />
+<openmrs:htmlInclude file="/dwr/engine.js" />
+<openmrs:htmlInclude file="/dwr/util.js" />
 
 <openmrs:globalProperty var="conceptIdsToUse" key="dashboard.overview.showConcepts" />
 <c:if test="${not empty conceptIdsToUse}">
@@ -10,7 +10,7 @@
 		<openmrs:portlet url="customMostRecentObs" size="normal" parameters="conceptIds=${conceptIdsToUse}" />
 	</div>
 	
-	<p>
+	<br/>
 </c:if>
 
 <div class="boxHeader"><spring:message code="Program.title"/></div>
@@ -18,7 +18,7 @@
 	<openmrs:portlet url="patientPrograms" id="patientPrograms" patientId="${patient.patientId}" parameters="allowEdits=true"/>
 </div>
 
-<p>
+<br/>
 
 <div class="boxHeader"><spring:message code="Relationship.patient.providers" /></div>
 <openmrs:portlet url="patientRelationships" size="normal" patientId="${patient.patientId}" parameters="allowEditShownTypes=true|allowAddShownTypes=false|allowAddOtherTypes=true|allowVoid=true|showFrom=false|showTo=true|showTypes=Accompagnateur|showOtherTypes=false"/>

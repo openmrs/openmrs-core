@@ -33,7 +33,7 @@ public class DWRAlertService {
 			}
 
 		} catch (Exception e) {
-			log.error(e);
+			log.error("Error getting alerts", e);
 		}
 		return alerts;
 	}
@@ -52,7 +52,7 @@ public class DWRAlertService {
 			// Mark the alert as read
 			as.markAlertRead(alert);
 		} catch (Exception e) {
-			log.error(e);
+			log.error("Error while marking alert '" + alertId + "' as read", e);
 		}
 	}
 }

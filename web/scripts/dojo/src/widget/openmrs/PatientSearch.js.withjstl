@@ -1,6 +1,7 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 <%@ page isELIgnored="true" %>
-<openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" var="showTribe"/>
+
+var showTribe = '<openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" />';
 
 /*
 	Copyright (c) 2006, The OpenMRS Cooperative
@@ -117,9 +118,7 @@ dojo.widget.defineWidget(
 		getGiven : function(p) { return p.givenName == null ? this.noCell() : p.givenName;  },
 		getMiddle: function(p) { return p.middleName == null ? this.noCell() : p.middleName; },
 		getFamily: function(p) { return p.familyName == null ? this.noCell() : p.familyName; },
-		<c:if test="${showTribe == 'true'}">
-			getTribe : function(p) { return p.tribe == null ? this.noCell() : p.tribe; },
-		</c:if>
+		getTribe : function(p) { return p.tribe == null ? this.noCell() : p.tribe; },
 		getGender: function(p) {
 				if (p.gender == null) { return this.noCell(); }
 				
@@ -164,25 +163,38 @@ dojo.widget.defineWidget(
 		getMother: function(p) { return p.mothersName == null ? this.noCell() : p.mothersName; },
 		
 		getCellFunctions: function() {
-			return [this.simpleClosure(this, "getNumber"), 
-					this.simpleClosure(this, "getId"), 
-					this.simpleClosure(this, "getGiven"), 
-					this.simpleClosure(this, "getMiddle"), 
-					this.simpleClosure(this, "getFamily"),
-					this.simpleClosure(this, "getAge"), 
-					this.simpleClosure(this, "getGender"),
-					<c:if test="${showTribe == 'true'}">
-						this.simpleClosure(this, "getTribe"),
-					</c:if>
-					this.simpleClosure(this, "getBirthdayEstimated"),
-					this.simpleClosure(this, "getBirthday")
-					];
+			var arr = new Array();
+			arr.push(this.simpleClosure(this, "getNumber"));
+			arr.push(this.simpleClosure(this, "getId"));
+			arr.push(this.simpleClosure(this, "getGiven"));
+			arr.push(this.simpleClosure(this, "getMiddle"));
+			arr.push(this.simpleClosure(this, "getFamily"));
+			arr.push(this.simpleClosure(this, "getAge"));
+			arr.push(this.simpleClosure(this, "getGender"));
+			if (showTribe == 'true')
+				arr.push(this.simpleClosure(this, "getTribe"));
+			arr.push(this.simpleClosure(this, "getBirthdayEstimated"));
+			arr.push(this.simpleClosure(this, "getBirthday"));
 			
+			return arr;
 		},
 		
 		showHeaderRow: true,
 		getHeaderCellContent: function() {
-			return ['', '<spring:message code="Patient.identifier" javaScriptEscape="true"/>', '<spring:message code="PatientName.givenName" javaScriptEscape="true"/>', '<spring:message code="PatientName.middleName" javaScriptEscape="true"/>', '<spring:message code="PatientName.familyName" javaScriptEscape="true"/>', '<spring:message code="Patient.age" javaScriptEscape="true"/>', '<spring:message code="Patient.gender" javaScriptEscape="true"/>', <c:if test="${showTribe == 'true'}">'<spring:message code="Patient.tribe" javaScriptEscape="true"/>',</c:if> '', '<spring:message code="Patient.birthdate" javaScriptEscape="true"/>'];
+			var arr = new Array();
+			arr.push('');
+			arr.push('<spring:message code="Patient.identifier" javaScriptEscape="true"/>');
+			arr.push('<spring:message code="PatientName.givenName" javaScriptEscape="true"/>');
+			arr.push('<spring:message code="PatientName.middleName" javaScriptEscape="true"/>');
+			arr.push('<spring:message code="PatientName.familyName" javaScriptEscape="true"/>');
+			arr.push('<spring:message code="Patient.age" javaScriptEscape="true"/>');
+			arr.push('<spring:message code="Patient.gender" javaScriptEscape="true"/>');
+			if (showTribe == 'true')
+				arr.push('<spring:message code="Patient.tribe" javaScriptEscape="true"/>');
+			arr.push('');
+			arr.push('<spring:message code="Patient.birthdate" javaScriptEscape="true"/>');
+			
+			return arr;
 		},
 		
 		getProblemImage: function() {

@@ -122,7 +122,7 @@ refreshOnChange=*
 </div>
 </c:if>
 
-<script language="JavaScript">
+<script type="text/javascript">
 	var typesToShow = "${model.showTypes}".split(",");
 	var typesToRefresh = "${model.refreshOnChange}".split(",");
 	

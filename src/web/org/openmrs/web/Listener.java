@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.sql.Driver;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -143,10 +142,10 @@ public final class Listener extends ContextLoaderListener {
 		 */
 	}
 
-	private boolean doesClassLoaderMatch(Driver o) {
-		return o.getClass().getClassLoader() == this.getClass()
-				.getClassLoader();
-	}
+	//private boolean doesClassLoaderMatch(Driver o) {
+	//	return o.getClass().getClassLoader() == this.getClass()
+	//			.getClassLoader();
+	//}
 	
 	/**
 	 * Looks for and loads in the runtime properties.

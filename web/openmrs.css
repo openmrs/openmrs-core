@@ -410,6 +410,14 @@ table.patientTreatmentPrograms td {
 	padding: 2px;
 }
 
+#selectFormForm {
+	padding: 2px;
+	}
+	#selectFormForm div {
+		margin-bottom: 7px;
+		font-size: 1.03em;
+	}
+
 .retired, .voided, .retired *, .voided * {
 	text-decoration: line-through;
 }

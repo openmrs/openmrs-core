@@ -10,6 +10,9 @@
 				<spring:message code="welcome" />
 			</c:otherwise>
 		</c:choose>
+		<c:if test="${model.customText != ''}">
+			${model.customText}
+		</c:if>
 	</c:when>
 	<c:otherwise>
 		<spring:message code="welcome" />

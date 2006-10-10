@@ -36,11 +36,10 @@ Parameters
 			<c:forEach items="${forms}" var="form">
 				<c:if test="${form.formId != 1}">
 					<c:if test="${form.published == true || model.showUnpublishedForms == 'true'}">
-						<span class="form_name_${fn:replace(fn:replace(fn:replace(fn:replace(form.name, '.', ''), ' ', ''), '/', ''), '#', '')}">
+						<div class="form_name_${fn:replace(fn:replace(fn:replace(fn:replace(form.name, '.', ''), ' ', ''), '/', ''), '#', '')}">
 							<a id="form_id_${form.formId}" href="${pageContext.request.contextPath}/formDownload?target=formEntry&formId=${form.formId}&patientId=${patient.patientId}" onclick="startDownloading()" class="formLink">${form.name}
 							(v.${form.version})<c:if test="${form.published == false}"><i>(<spring:message code="formentry.unpublished"/>)</i></c:if></a>
-						</span>
-						<br />
+						</div>
 					</c:if>
 				</c:if>
 			</c:forEach>

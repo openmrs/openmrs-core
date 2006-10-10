@@ -153,7 +153,9 @@
 		</copy>
 		<copy todir="${build.dir}/api">
 			<fileset dir="${metadata.dir}/api" includes="*.xml" />
-			<filterset refid="variables.to.replace" />
+			<filterset>
+				<filter token="MAPPING.JAR.LOCATIONS" value="classpath:${openmrs.api.name}" />
+			</filterset>
 		</copy>
 		<javac destdir="${build.dir}/api" debug="${javac.debug}" deprecation="${compile.deprecation}" optimize="${compile.optimize}" classpathref="api.compile.classpath">
 			<src path="${build.dir}/api" />

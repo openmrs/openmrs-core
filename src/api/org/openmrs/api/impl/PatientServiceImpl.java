@@ -628,10 +628,19 @@ public class PatientServiceImpl implements PatientService {
 		for (PatientIdentifier pi : notPreferred.getIdentifiers()) {
 			PatientIdentifier tmpIdentifier = new PatientIdentifier();
 			tmpIdentifier.setIdentifier(pi.getIdentifier());
-			tmpIdentifier.setIdentifierType(pi.getIdentifierType());
+			tmpIdentifier.setIdentifierType(null); // don't compare identifier types.
 			tmpIdentifier.setLocation(pi.getLocation());
 			tmpIdentifier.setPatient(preferred);
-			if (!preferred.getIdentifiers().contains(tmpIdentifier)) {
+			boolean found = false;
+			for (PatientIdentifier preferredIdentifier : preferred.getIdentifiers()) {
+				if (preferredIdentifier.getIdentifier() != null &&
+					preferredIdentifier.getIdentifier().equals(tmpIdentifier.getIdentifier()) &&
+					preferredIdentifier.getPatient() != null &&
+					preferredIdentifier.getPatient().equals(tmpIdentifier.getPatient()))
+						found = true;
+			}
+			if (!found) {
+				tmpIdentifier.setIdentifierType(pi.getIdentifierType());
 				tmpIdentifier.setCreator(Context.getAuthenticatedUser());
 				tmpIdentifier.setDateCreated(new Date());
 				tmpIdentifier.setVoided(false);

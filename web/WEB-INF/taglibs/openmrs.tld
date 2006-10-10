@@ -779,7 +779,7 @@
 	</description>
 	<name>summaryTest</name>
 	<tag-class>org.openmrs.web.taglib.SummaryTest</tag-class>
-	<body-content>none</body-content>
+	<body-content>empty</body-content>
 	<attribute>
 		<name>observations</name>
 		<required>true</required>

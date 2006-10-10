@@ -18,6 +18,8 @@
 	--%>
 	
 	<openmrs:hasPrivilege privilege="View Encounters">
+		<openmrs:globalProperty key="dashboard.encounters.showViewLink" var="showViewLink" defaultValue="false"/>
+		<openmrs:globalProperty key="dashboard.encounters.showEditLink" var="showEditLink" defaultValue="false"/>
 		<div id="encounters">
 			<div class="boxHeader">Encounters</div>
 			<div class="box">
@@ -36,13 +38,15 @@
 						</tr>
 						<openmrs:forEachEncounter encounters="${model.patientEncounters}" sortBy="encounterDatetime" descending="true" var="enc">
 							<tr>
-								<c:set var="showLink" value="${fn:length(enc.obs) > 0}"/>	
+								<c:set var="showLink" value="${fn:length(enc.obs) > 0 && showViewLink == 'true'}"/>	
 								<td>
-									<openmrs:hasPrivilege privilege="Edit Encounters">
-										<a href="${pageContext.request.contextPath}/admin/encounters/encounter.form?encounterId=${enc.encounterId}">
-											<img src="${pageContext.request.contextPath}/images/edit.gif" title="<spring:message code="general.edit"/>" border="0" align="top" />
-										</a>
-									</openmrs:hasPrivilege>
+									<c:if test="${showEditLink == 'true'}">
+										<openmrs:hasPrivilege privilege="Edit Encounters">
+											<a href="${pageContext.request.contextPath}/admin/encounters/encounter.form?encounterId=${enc.encounterId}">
+												<img src="${pageContext.request.contextPath}/images/edit.gif" title="<spring:message code="general.edit"/>" border="0" align="top" />
+											</a>
+										</openmrs:hasPrivilege>
+									</c:if>
 									<c:if test="${showLink}">
 										<a href="#encounterId=${enc.encounterId}" onClick="handleGetObservations('${enc.encounterId}'); return false;">
 									</c:if>
@@ -145,7 +149,7 @@
 	<openmrs:htmlInclude file="/dwr/interface/DWRPatientService.js" />
 	<openmrs:htmlInclude file="/dwr/engine.js" />
 	<openmrs:htmlInclude file="/dwr/util.js" />
-	<script>
+	<script type="text/javascript">
 		<!-- // begin
 
 		<%--
