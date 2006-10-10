@@ -195,7 +195,7 @@ dojo.widget.defineWidget(
 		
 		this.key = 0;
 		
-		// don't fire for things like alt-tab, ctrl-c -- but DO fire for cntrl-v  (86=v)
+		// don't fire for things like alt-tab, ctrl-c -- but DO fire for cntrl-v
 		if (!this.event.altKey && (!this.event.ctrlKey || this.key == 'v')) {
 			this.key = this.event.keyCode;
 			dojo.debug('event.type : ' + this.event.type);
@@ -249,7 +249,8 @@ dojo.widget.defineWidget(
 					
 						// If there isn't a number in the search (force usage of enter key)
 						this.hideHighlight();
-						if (this.text.length > 1) {
+						if (this.text.length > 1 && 
+								(this.text.length != 2 || !this.text.match(/\d/) || this.objectsFound == null || this.objectsFound.length < this.text)) {
 							this.clearPagingBars();
 							dojo.debug('setting preFindObjects timeout for other key: ' + this.key);
 							var callback = function(ts, text) { return function() {ts.findObjects(text)}};

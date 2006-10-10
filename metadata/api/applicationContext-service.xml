@@ -36,11 +36,7 @@
 	
 	<!--  **************************  SERVICE CONTEXT CONFIGURATION  *************************  -->
 
-	<!-- Single application context (our own context, not Spring's ApplicationContext
-	     NOTE:  There will be 100's of Context objects in memory.  This is just a general
-	            one that should be used by the services layer.  I would like to refactor
-	            this class so that it is used separately from the user context. (JMIRANDA)
-	-->
+	<!-- Single application context (our own context, not Spring's ApplicationContext -->
 	<bean id="serviceContext" class="org.openmrs.api.context.ServiceContext">
         <property name="patientService"><ref bean="patientService"/></property>
         <property name="conceptService"><ref bean="conceptService"/></property>
@@ -466,31 +462,8 @@
 	-->		
 
 
-
-
-
 	<!--  **************************  REPORT OBJECT FACTORY CONFIGURATION  *************************  -->
-
-	<!-- Configuration for reporting module - sets up the report object factory and admin interface
-	     USAGE: To add/create a report object to use in the reporting system, you need to do 3 things:
-	     			1) Create the class for the report object - preferably put it in org.openmrs.api.reporting.*
-	     			2) Create a validator for the report object (one that is used whenever somebody tries to create a 
-	     				new object of that type, and populate it with initial values - these values should be validated).
-	     				Preferably put that in the same directory mentioned above.
-	     			3) Register it as a module to the ReportObjectFactory below and also be sure to make a bean def
-	     				for the module (CALLEN)
-	-->
-
-	<bean id="reportObjectFactory" class="org.openmrs.reporting.ReportObjectFactory">
-		<property name="defaultValidator"><value>org.openmrs.web.controller.report.ReportObjectValidator</value></property>
-		<property name="modules">
-			<list>
-				<ref bean="patientCharacteristicFilterModule"/>
-				<ref bean="numericObsPatientFilterModule"/>
-				<ref bean="shortDescriptionProducerModule"/>
-			</list>
-		</property>
-	</bean>
+	<!-- Configuration for reporting module - sets up the report object factory and admin interface -->
 
 	<bean id="patientCharacteristicFilterModule" class="org.openmrs.reporting.ReportObjectFactoryModule">
 		<property name="name"><value>PatientCharacteristicFilter</value></property>
@@ -517,5 +490,3 @@
 	</bean>
 
 </beans>
-	
-	

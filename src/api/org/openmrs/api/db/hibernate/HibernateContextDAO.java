@@ -13,7 +13,6 @@ import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 import org.hibernate.stat.QueryStatistics;
 import org.hibernate.stat.Statistics;
 import org.openmrs.User;
@@ -142,23 +141,7 @@ public class HibernateContextDAO implements ContextDAO {
 	 * @see org.openmrs.api.context.Context#startup(Properties)
 	 */
 	public void startup(Properties properties) {
-		log.debug("Loading override properties into hibernate configuration");
-		// load the default configuration from (hibernate.cfg.xml)
-		Configuration cfg = new Configuration();
 		
-		log.debug("Setting properties");
-		
-		// loop over properties and override each in the configuration
-		for (Object key : properties.keySet()) {
-			String prop = (String)key;
-			String value = (String)properties.get(key);
-			log.debug("Setting property: " + prop + ":" + value);
-			cfg.setProperty(prop, value);
-			if (!prop.startsWith("hibernate"))
-				cfg.setProperty("hibernate." + prop, value);
-		}
-		
-		//startupWithConfig(cfg);
 	}
 	
 	/**

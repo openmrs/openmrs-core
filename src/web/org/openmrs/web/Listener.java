@@ -5,15 +5,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Driver;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
 import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,7 +18,7 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.web.context.ContextLoaderListener;
 
-public final class Listener extends ContextLoaderListener implements ServletContextListener {
+public final class Listener extends ContextLoaderListener {
 
 	private Log log = LogFactory.getLog(this.getClass());
 	
@@ -113,6 +109,7 @@ public final class Listener extends ContextLoaderListener implements ServletCont
 
 		Context.shutdown();
 		
+		/*
 		// DriverManager cleanup code taken from
 		// http://opensource2.atlassian.com/confluence/spring/pages/viewpage.action?pageId=2669
 		try {
@@ -141,7 +138,9 @@ public final class Listener extends ContextLoaderListener implements ServletCont
 
 		// log.debug("undeploying application : LogFactory() being destroyed");
 		// LogFactory.release(Thread.currentThread().getContextClassLoader());
-		//LogFactory.releaseAll();
+		LogFactory.releaseAll();
+		  
+		 */
 	}
 
 	private boolean doesClassLoaderMatch(Driver o) {

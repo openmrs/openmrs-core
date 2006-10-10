@@ -5,6 +5,7 @@
 
 	<openmrs:globalProperty var="viewEncounterWhere" key="dashboard.encounters.viewWhere" defaultValue="newWindow"/>
 
+	<%--
 	<openmrs:hasPrivilege privilege="Add Forms">
 		<div id="encounterForms">
 			<div class="boxHeader">Forms</div>
@@ -14,7 +15,8 @@
 			</div>
 		</div>
 	</openmrs:hasPrivilege>
-
+	--%>
+	
 	<openmrs:hasPrivilege privilege="View Encounters">
 		<div id="encounters">
 			<div class="boxHeader">Encounters</div>

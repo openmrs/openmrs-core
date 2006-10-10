@@ -16,7 +16,7 @@ public class OpenmrsConstants {
 	public static final int ORDERTYPE_DRUG = 2;
 	public static final int CONCEPT_CLASS_DRUG = 3;
 	
-	public static final String OPENMRS_VERSION = "@OPENMRS.VERSION@";
+	public static final String OPENMRS_VERSION = "@OPENMRS.VERSION.LONG@";
 	public static final String DATABASE_VERSION_EXPECTED = "@DATABASE.VERSION.EXPECTED@";
 	public static String DATABASE_VERSION = "";	// loaded from (Hibernate)Util.checkDatabaseVersion
 	public static String DATABASE_NAME = "openmrs";

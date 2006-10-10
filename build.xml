@@ -100,9 +100,16 @@
 			select="\1"
 			defaultValue="Error with code revision regexp" />
 		<property 
-			name="openmrs.version" 
+			name="openmrs.version.long" 
 			value="${openmrs.version.major}.${openmrs.version.minor}.${openmrs.database.version.expected.short} Build ${openmrs.version.revision}"/>
-		<echo message="version: ${openmrs.version}"/>
+		<property 
+			name="openmrs.version.short" 
+			value="${openmrs.version.major}.${openmrs.version.minor}.${openmrs.database.version.expected.short}.${openmrs.version.revision}"/>
+		<echo message="version: ${openmrs.version.long}"/>
+		<property 
+			name="openmrs.api.name" 
+			value="openmrs-api-${openmrs.version.short}.jar"/>
+		
 		
 		<!-- These variables are replaced in the code prior to compilation -->
 		<filterset id="variables.to.replace">
@@ -111,9 +118,11 @@
 			<filter token="WEBAPP.DESCRIPTION" value="${webapp.description}" />
 			<filter token="WEBAPP.LOG" value="${webapp.log}" />
 			<filter token="TIMESTAMP" value="${timestamp}" />
-			<filter token="OPENMRS.VERSION" value="${openmrs.version}" />
+			<filter token="OPENMRS.VERSION.SHORT" value="${openmrs.version.short}" />
+			<filter token="OPENMRS.VERSION.LONG" value="${openmrs.version.long}" />
 			<filter token="DATABASE.VERSION.EXPECTED" value="${openmrs.database.version.expected}" />
-			<filter token="MAPPING.JAR.LOCATIONS" value="WEB-INF/lib/openmrs-api-@OPENMRS.VERSION@.jar" />
+			<filter token="API.NAME" value="${openmrs.api.name}" />
+			<filter token="MAPPING.JAR.LOCATIONS" value="WEB-INF/lib/${openmrs.api.name}" />
 			<!-- Address properties -->
 			<filter token="ADDRESS.FORMAT" value="${address.format}" />
 		</filterset>
@@ -142,6 +151,10 @@
 			</fileset>
 			<filterset refid="variables.to.replace" />
 		</copy>
+		<copy todir="${build.dir}/api">
+			<fileset dir="${metadata.dir}/api" includes="*.xml" />
+			<filterset refid="variables.to.replace" />
+		</copy>
 		<javac destdir="${build.dir}/api" debug="${javac.debug}" deprecation="${compile.deprecation}" optimize="${compile.optimize}" classpathref="api.compile.classpath">
 			<src path="${build.dir}/api" />
 			<include name="**/*.java" />
@@ -150,9 +163,9 @@
 
 	<target name="package-api" depends="compile-api" description="create api jar">
 		<mkdir dir="${dist.dir}" />
-		<jar destfile="${dist.dir}/openmrs-api-${openmrs.version}.jar">
+		<jar destfile="${dist.dir}/${openmrs.api.name}">
 			<manifest>
-				<attribute name="Class-Path" value="openmrs-api-${openmrs.version}.jar" />
+				<attribute name="Class-Path" value="${openmrs.api.name}" />
 			</manifest>
 			<fileset dir="${build.dir}/api" includes="**/*" />
 		</jar>
@@ -179,11 +192,9 @@
 	<target name="compile-api-tests" depends="package-api" description="compile api tests">
 		<mkdir dir="${build.dir}/test/api" />
 		<copy todir="${build.dir}/test/api">
-			<fileset dir="web/WEB-INF/" >
-				<include name="applicationContext-service.xml" />
-			</fileset>
+			<fileset dir="${metadata.dir}/api" includes="*.xml" />
 			<filterset>
-				<filter token="MAPPING.JAR.LOCATIONS" value="file:dist/openmrs-api-${openmrs.version}.jar" />
+				<filter token="MAPPING.JAR.LOCATIONS" value="file:dist/${openmrs.api.name}" />
 			</filterset>
 		</copy>
 		
@@ -192,9 +203,9 @@
 
 	<target name="package-api-tests" depends="compile-api-tests" description="create api-tests jar">
 		<mkdir dir="${dist.dir}" />
-		<jar destfile="${dist.dir}/openmrs-api-tests-${openmrs.version}.jar">
+		<jar destfile="${dist.dir}/tests-${openmrs.api.name}">
 			<manifest>
-				<attribute name="Class-Path" value="openmrs-api-tests-${openmrs.version}.jar" />
+				<attribute name="Class-Path" value="tests-${openmrs.api.name}" />
 			</manifest>
 			<fileset dir="${build.dir}/test/api" />
 		</jar>
@@ -209,7 +220,7 @@
 		<javac srcdir="${build.dir}/web" destdir="${build.dir}/web" debug="${javac.debug}" deprecation="${compile.deprecation}" optimize="${compile.optimize}">
 			<classpath>
 				<path refid="web.compile.classpath" />
-				<path location="${dist.dir}/openmrs-api-${openmrs.version}.jar" />
+				<path location="${dist.dir}/${openmrs.api.name}" />
 			</classpath>
 		</javac>
 		<copy todir="${build.dir}/web">
@@ -263,6 +274,10 @@
 				<include name="**/*.xsn" />
 			</fileset>
 		</copy>
+		<copy todir="${dist.dir}/web/WEB-INF" preservelastmodified="true" overwrite="true">
+			<fileset dir="${metadata.dir}/api" includes="*.xml" />
+			<filterset refid="variables.to.replace" />
+		</copy>
 		<!-- Rename spring servlet(s) to name of webapp -->
 		<move file="${dist.dir}/web/WEB-INF/openmrs-servlet.xml" tofile="${dist.dir}/web/WEB-INF/${webapp.name}-servlet.xml" preservelastmodified="true" overwrite="true" />
 		<move file="${dist.dir}/web/WEB-INF/openmrs_static_content-servlet.xml" tofile="${dist.dir}/web/WEB-INF/${webapp.name}_static_content-servlet.xml" preservelastmodified="true" overwrite="true" />
@@ -271,7 +286,7 @@
 	<target name="package-web" depends="package-web-init" description="create webapp war file">
 		<war destfile="${dist.dir}/${webapp.name}.war" basedir="${dist.dir}/web" excludes="**/web.xml" webxml="${dist.dir}/web/WEB-INF/web.xml" duplicate="add">
 			<classes dir="${build.dir}/web" />
-			<lib file="${dist.dir}/openmrs-api-${openmrs.version}.jar" />
+			<lib file="${dist.dir}/${openmrs.api.name}" />
 			<lib dir="${antlr.dir}" includes="*.jar" />
 			<lib dir="${asm.dir}" includes="*.jar" />
 			<lib dir="${c3p0.dir}" includes="*.jar" />
@@ -312,7 +327,7 @@
 	<target name="package-web-without-libs" depends="package-web-init" description="create webapp war file without libs">
 		<war destfile="${dist.dir}/${webapp.name}.war" basedir="${dist.dir}/web" excludes="**/web.xml" webxml="${dist.dir}/web/WEB-INF/web.xml" duplicate="add">
 			<classes dir="${build.dir}/web" />
-			<lib file="${dist.dir}/openmrs-api-${openmrs.version}.jar" />
+			<lib file="${dist.dir}/${openmrs.api.name}" />
 		</war>
 	</target>
 
