@@ -8,6 +8,8 @@
 	var timeOut = null;
 	addEvent(window, 'load', initTabs);
 
+	<openmrs:authentication>var userId = "${authenticatedUser.userId}";</openmrs:authentication>
+
 	function initTabs() {
 		var c = getTabCookie();
 		if (c == null) {
@@ -19,11 +21,11 @@
 	}
 	
 	function setTabCookie(tabType) {
-		document.cookie = "dashboardTab="+escape(tabType);
+		document.cookie = "dashboardTab-" + userId + "="+escape(tabType);
 	}
 	
 	function getTabCookie() {
-		var cookies = document.cookie.match('dashboardTab=(.*?)(;|$)');
+		var cookies = document.cookie.match('dashboardTab-' + userId + '=(.*?)(;|$)');
 		if (cookies) {
 			return unescape(cookies[1]);
 		}
