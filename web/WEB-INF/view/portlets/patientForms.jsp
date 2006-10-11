@@ -6,7 +6,7 @@ Parameters
 --%>
 
 <openmrs:hasPrivilege privilege="View Encounters">
-	<openmrs:portlet url="patientEncounters" id="patientDashboardEncounters" patientId="${patient.patientId}" parameters="num=3|hideHeader=true" />
+	<openmrs:portlet url="patientEncounters" id="patientDashboardEncounters" patientId="${patient.patientId}" parameters="num=3|hideHeader=true|title=FormEntry.last.encounters" />
 	<br/>
 </openmrs:hasPrivilege>
 

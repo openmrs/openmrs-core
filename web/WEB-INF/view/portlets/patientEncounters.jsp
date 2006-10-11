@@ -27,7 +27,7 @@ Parameters
 		<openmrs:globalProperty key="dashboard.encounters.showViewLink" var="showViewLink" defaultValue="false"/>
 		<openmrs:globalProperty key="dashboard.encounters.showEditLink" var="showEditLink" defaultValue="false"/>
 		<div id="encounters">
-			<div class="boxHeader">Encounters</div>
+			<div class="boxHeader"><c:choose><c:when test="${empty model.title}"><spring:message code="Encounter.header"/></c:when><c:otherwise><spring:message code="${model.title}"/></c:otherwise></c:choose></div>
 			<div class="box">
 				<table cellspacing="0" cellpadding="2" class="patientEncounters">
 					<c:if test="${fn:length(model.patientEncounters) > 0}">

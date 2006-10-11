@@ -19,6 +19,12 @@
 					<c:if test="${model.patient.age == 0}">< 1 <spring:message code="Patient.age.year"/></c:if>
 					<span id="patientHeaderPatientBirthdate">(<c:if test="${model.patient.birthdateEstimated}">~</c:if><openmrs:formatDate date="${model.patient.birthdate}" type="medium" />)</span>
 				</td>
+				<openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" var="showTribe"/>
+				<c:if test="${showTribe}">
+					<td id="patientHeaderPatientTribe">
+						${model.patient.tribe.name}
+					</td>
+				</c:if>
 				<td id="patientHeaderPatientIdentifiers">
 					<c:forEach var="identifier" items="${model.patient.identifiers}" varStatus="status">
 						<span class="patientHeaderPatientIdentifier">${identifier.identifierType.name}: ${identifier.identifier}</span>
