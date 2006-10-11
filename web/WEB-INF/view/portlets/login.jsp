@@ -44,11 +44,11 @@
 	<br>
 	
 	<c:choose>
+		<c:when test="${not empty model.redirect}">
+			<input type="hidden" name="redirect" value="${model.redirect}" />
+		</c:when>
 		<c:when test="${redirect != ''}">
 			<input type="hidden" name="redirect" value="${redirect}" />
-		</c:when>
-		<c:when test="${model.redirect != ''}">
-			<input type="hidden" name="redirect" value="${model.redirect}" />
 		</c:when>
 		<c:otherwise>
 			<input type="hidden" name="redirect" value="" />
