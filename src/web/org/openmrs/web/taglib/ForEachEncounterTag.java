@@ -68,6 +68,7 @@ public class ForEachEncounterTag extends BodyTagSupport {
 	 */
 	public int doAfterBody() throws JspException {
         if(matchingEncs.size() > count && (num == null || count < num.intValue())) {
+        	pageContext.setAttribute("count", count);
         	pageContext.setAttribute(var, matchingEncs.get(count++));
             return EVAL_BODY_BUFFERED;
         } else {
@@ -130,7 +131,8 @@ public class ForEachEncounterTag extends BodyTagSupport {
 	 * @param num the num to set
 	 */
 	public void setNum(Integer num) {
-		this.num = num;
+		if (num != 0)
+			this.num = num;
 	}
 
 	/**

@@ -1,6 +1,12 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 <openmrs:htmlInclude file="/scripts/easyAjax.js" />
 
+<%--
+Parameters
+	model.num == \d  limits the number of encounters shown to the value given
+	model.hideHeader == 'true' hides the 'All Encounter' header above the table listing
+--%>
+
 <div id="encounterPortlet">
 
 	<openmrs:globalProperty var="viewEncounterWhere" key="dashboard.encounters.viewWhere" defaultValue="newWindow"/>
@@ -25,10 +31,18 @@
 			<div class="box">
 				<table cellspacing="0" cellpadding="2" class="patientEncounters">
 					<c:if test="${fn:length(model.patientEncounters) > 0}">
+						<c:if test="${empty model.hideHeader}">
+							<tr>
+								<th colspan="8" class="tableTitle">All Encounters</th>
+							</tr>
+						</c:if>
 						<tr>
-							<th colspan="6" class="tableTitle">All Encounters</th>
-						</tr>
-						<tr>
+							<th align="center"><c:if test="${showEditLink == 'true'}">
+								<spring:message code="general.edit"/>
+							</c:if></th>
+							<th align="center"><c:if test="${showViewLink == 'true'}">
+								 <spring:message code="general.view"/>
+							</c:if></th>
 							<th> <spring:message code="Encounter.datetime"/> </th>
 							<th> <spring:message code="Encounter.type"/>     </th>
 							<th> <spring:message code="Encounter.provider"/> </th>
@@ -36,10 +50,10 @@
 							<th> <spring:message code="Encounter.location"/> </th>
 							<th> <spring:message code="Encounter.enterer"/>  </th>
 						</tr>
-						<openmrs:forEachEncounter encounters="${model.patientEncounters}" sortBy="encounterDatetime" descending="true" var="enc">
-							<tr>
+						<openmrs:forEachEncounter encounters="${model.patientEncounters}" sortBy="encounterDatetime" descending="true" var="enc" num="${model.num}">
+							<tr class="<c:choose><c:when test="${count % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">
 								<c:set var="showLink" value="${fn:length(enc.obs) > 0 && showViewLink == 'true'}"/>	
-								<td>
+								<td align="center">
 									<c:if test="${showEditLink == 'true'}">
 										<openmrs:hasPrivilege privilege="Edit Encounters">
 											<a href="${pageContext.request.contextPath}/admin/encounters/encounter.form?encounterId=${enc.encounterId}">
@@ -47,13 +61,16 @@
 											</a>
 										</openmrs:hasPrivilege>
 									</c:if>
+								</td>
+								<td align="center">
 									<c:if test="${showLink}">
 										<a href="#encounterId=${enc.encounterId}" onClick="handleGetObservations('${enc.encounterId}'); return false;">
-									</c:if>
-										<openmrs:formatDate date="${enc.encounterDatetime}" type="small" />
-									<c:if test="${showLink}">
+											<img src="${pageContext.request.contextPath}/images/file.gif" title="<spring:message code="general.view"/>" border="0" align="top" />
 										</a>
 									</c:if>
+								</td>
+								<td>
+									<openmrs:formatDate date="${enc.encounterDatetime}" type="small" />
 								</td>
 							 	<td>${enc.encounterType.name}</td>
 							 	<td>${enc.provider.firstName} ${enc.provider.lastName}</td>

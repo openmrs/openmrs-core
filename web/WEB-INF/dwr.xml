@@ -16,6 +16,7 @@
 		<convert converter="bean" match="org.openmrs.web.dwr.ObsListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.FormFieldListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.FieldListItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.FormListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.LocationListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.RelationshipListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.ListItem"/>
@@ -78,6 +79,7 @@
 			<param name="class" value="org.openmrs.web.dwr.DWRFormService" />
 			<include method="getFormField"/>
 			<include method="getField"/>
+			<include method="getForms"/>
 			<include method="getJSTree"/>
 			<include method="findFields"/>
 			<include method="findFieldsAndConcepts"/>

@@ -29,6 +29,17 @@ public class DWRFormService {
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
+	public List<FormListItem> getForms(boolean includeUnpublished) {
+		List<FormListItem> forms = new Vector<FormListItem>();
+		
+		for(Form form : Context.getFormService().getForms()) {
+			if (form.getPublished() == true || includeUnpublished == true)
+				forms.add(new FormListItem(form));
+		}
+		
+		return forms;
+	}
+	
 	public Field getField(Integer fieldId) {
 		Field f = new Field();
 		FormService fs = Context.getFormService();

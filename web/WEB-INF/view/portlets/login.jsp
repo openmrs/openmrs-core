@@ -43,7 +43,18 @@
 	</table>
 	<br>
 	
-	<input type="hidden" name="redirect" value="${redirect}" />
+	<c:choose>
+		<c:when test="${redirect != ''}">
+			<input type="hidden" name="redirect" value="${redirect}" />
+		</c:when>
+		<c:when test="${model.redirect != ''}">
+			<input type="hidden" name="redirect" value="${model.redirect}" />
+		</c:when>
+		<c:otherwise>
+			<input type="hidden" name="redirect" value="" />
+		</c:otherwise>
+	</c:choose>
+	
 	<input type="hidden" name="refererURL" value='<request:header name="referer" />' />
 	
 </form>	

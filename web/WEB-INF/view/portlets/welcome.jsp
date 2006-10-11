@@ -18,7 +18,7 @@
 		<spring:message code="welcome" />
 		<c:if test="${model.showLogin == 'true'}">
 			<br/>
-			<openmrs:portlet url="login"/>
+			<openmrs:portlet url="login" parameters="redirect=${model.redirect}" />
 		</c:if>
 	</c:otherwise>
 </c:choose>

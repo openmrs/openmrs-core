@@ -342,7 +342,7 @@
 		</tr>
 		<c:forEach items="${observations}" var="obs" varStatus="status">
 			<% pageContext.setAttribute("field", ((java.util.Map)request.getAttribute("obsMap")).get(pageContext.getAttribute("obs"))); %>
-			<tr class="<c:if test="${obs.voided}">voided </c:if><c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>" onmouseover="mouseover(this)" onmouseout="mouseout(this)" onclick="click('${obs.obsId}')">
+			<tr class="<c:if test="${obs.voided}">voided </c:if><c:choose><c:when test="${count % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>" onmouseover="mouseover(this)" onmouseout="mouseout(this)" onclick="click('${obs.obsId}')">
 				<td>${field.fieldNumber}<c:if test="${field.fieldPart != null && field.fieldPart != ''}">.${field.fieldPart}</c:if></td>
 				<td><a href="obs.form?obsId=${obs.obsId}" onclick="return click('${obs.obsId}')"><%= ((org.openmrs.Obs)pageContext.getAttribute("obs")).getConcept().getName((java.util.Locale)request.getAttribute("locale")) %></a></td>
 				<td><%= ((org.openmrs.Obs)pageContext.getAttribute("obs")).getValueAsString((java.util.Locale)request.getAttribute("locale")) %></td>
