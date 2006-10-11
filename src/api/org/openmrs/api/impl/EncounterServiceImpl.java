@@ -12,7 +12,9 @@ import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Location;
 import org.openmrs.Obs;
+import org.openmrs.Order;
 import org.openmrs.Patient;
+import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
@@ -52,6 +54,29 @@ public class EncounterServiceImpl implements EncounterService {
 	public void createEncounter(Encounter encounter) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_ADD_ENCOUNTERS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_ENCOUNTERS);
+		Date now = new Date();
+		User me = Context.getAuthenticatedUser();
+		if (encounter.getDateCreated() == null)
+			encounter.setDateCreated(now);
+		if (encounter.getCreator() == null)
+			encounter.setCreator(me);
+		if (encounter.getObs() != null) {
+			for (Obs o : encounter.getObs()) {
+				if (o.getDateCreated() == null)
+					o.setDateCreated(now);
+				if (o.getCreator() == null)
+					o.setCreator(me);
+			}
+		}
+		if (encounter.getOrders() != null) {
+			for (Order o : encounter.getOrders()) {
+				if (o.getDateCreated() == null)
+					o.setDateCreated(now);
+				if (o.getCreator() == null)
+					o.setCreator(me);
+			}
+		}
+		
 		getEncounterDAO().createEncounter(encounter);
 	}
 

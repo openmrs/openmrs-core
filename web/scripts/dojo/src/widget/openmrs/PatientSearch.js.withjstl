@@ -2,6 +2,7 @@
 <%@ page isELIgnored="true" %>
 
 var showTribe = '<openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" />';
+var showHealthCenter = '<openmrs:globalProperty key="use_patient_attribute.healthCenter" defaultValue="false" />';
 
 /*
 	Copyright (c) 2006, The OpenMRS Cooperative
@@ -119,6 +120,7 @@ dojo.widget.defineWidget(
 		getMiddle: function(p) { return p.middleName == null ? this.noCell() : p.middleName; },
 		getFamily: function(p) { return p.familyName == null ? this.noCell() : p.familyName; },
 		getTribe : function(p) { return p.tribe == null ? this.noCell() : p.tribe; },
+		getHealthCenter : function(p) { return p.healthCenter == null ? this.noCell() : p.healthCenter; },
 		getGender: function(p) {
 				if (p.gender == null) { return this.noCell(); }
 				
@@ -173,6 +175,8 @@ dojo.widget.defineWidget(
 			arr.push(this.simpleClosure(this, "getGender"));
 			if (showTribe == 'true')
 				arr.push(this.simpleClosure(this, "getTribe"));
+			if (showHealthCenter == 'true')
+				arr.push(this.simpleClosure(this, "getHealthCenter"));
 			arr.push(this.simpleClosure(this, "getBirthdayEstimated"));
 			arr.push(this.simpleClosure(this, "getBirthday"));
 			
@@ -191,6 +195,8 @@ dojo.widget.defineWidget(
 			arr.push('<spring:message code="Patient.gender" javaScriptEscape="true"/>');
 			if (showTribe == 'true')
 				arr.push('<spring:message code="Patient.tribe" javaScriptEscape="true"/>');
+			if (showHealthCenter == 'true')
+				arr.push('<spring:message code="Patient.healthCenter" javaScriptEscape="true"/>');
 			arr.push('');
 			arr.push('<spring:message code="Patient.birthdate" javaScriptEscape="true"/>');
 			

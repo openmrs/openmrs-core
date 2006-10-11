@@ -44,7 +44,7 @@
 						<c:forEach items="${model.currentDrugOrderSets['*']}" var="drugOrder">
 							<tr>
 								<td>&nbsp;&nbsp;&nbsp;&nbsp;${drugOrder.drug.name}</td>
-								<td>${drugOrder.dose}</td>
+								<td>${drugOrder.dose} ${drugOrder.units}</td>
 								<td>${drugOrder.frequency}</td>
 								<td><openmrs:formatDate date="${drugOrder.startDate}" type="medium" /></td>
 								<td><openmrs:formatDate date="${drugOrder.autoExpireDate}" type="medium" /></td>
@@ -184,7 +184,7 @@
 						<c:forEach items="${model.currentDrugOrderSets[drugSetId]}" var="drugOrder">
 							<tr>
 								<td>&nbsp;&nbsp;&nbsp;&nbsp;${drugOrder.drug.name}</td>
-								<td>${drugOrder.dose}</td>
+								<td>${drugOrder.dose} ${drugOrder.units}</td>
 								<td>${drugOrder.frequency}</td>
 								<td><openmrs:formatDate date="${drugOrder.startDate}" type="medium" /></td>
 								<td><openmrs:formatDate date="${drugOrder.autoExpireDate}" type="medium" /></td>
@@ -262,7 +262,7 @@
 						<c:forEach items="${model.currentDrugOrders}" var="drugOrder">
 							<tr>
 								<td>${drugOrder.drug.name}</td>
-								<td>${drugOrder.dose}</td>
+								<td>${drugOrder.dose} ${drugOrder.units}</td>
 								<td>${drugOrder.frequency}</td>
 								<td><openmrs:formatDate date="${drugOrder.startDate}" type="medium" /></td>
 								<td><openmrs:formatDate date="${drugOrder.autoExpireDate}" type="medium" /></td>

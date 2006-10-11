@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Obs;
@@ -24,6 +25,7 @@ import org.openmrs.Person;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.User;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.UserContext;
 import org.openmrs.order.RegimenSuggestion;
@@ -51,7 +53,8 @@ public class PortletController implements Controller {
 	 *         	(Set<Obs>) patientObs
 	 *          (Set<Encounter>) patientEncounters
 	 *          (Set<DrugOrder>) patientDrugOrders
-	 *          (Set<DrugOrder>) currentPatientDrugOrders
+	 *          (Set<DrugOrder>) currentDrugOrders
+	 *          (Set<DrugOrder>) completedDrugOrders
 	 *          (List<Relationship>) patientRelationships
 	 *          (Map<RelationshipType, List<Relationship>>) patientRelationshipsByType
 	 *          (Integer) personId
@@ -65,6 +68,9 @@ public class PortletController implements Controller {
 	 *     (if the request has a patientIds attribute, which should be a (String) comma-separated list of patientIds)
 	 *     		(PatientSet) patientSet
 	 *     		(String) patientIds
+	 *     (if the request has a conceptIds attribute, which should be a (String) commas-separated list of conceptIds)
+	 *     		(Map<Integer, Concept>) conceptMap
+	 *     		(Map<String, Concept>) conceptMapByStringIds
 	 */
 	@SuppressWarnings("unchecked")
 	public ModelAndView handleRequest(HttpServletRequest request,
@@ -110,9 +116,10 @@ public class PortletController implements Controller {
 			// if a patient id is available, put "patient" and "patientObs" in the request
 			Object o = request.getAttribute("org.openmrs.portlet.patientId");
 			if (o != null) {
+				Integer patientId = (Integer) o;
 				// we can't continue if the user can't view patients
 				if (userContext.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS)) {
-					Patient p = Context.getPatientService().getPatient((Integer) o);
+					Patient p = Context.getPatientService().getPatient(patientId);
 					model.put("patient", p);
 					
 					// add encounters if this user can view them
@@ -162,8 +169,9 @@ public class PortletController implements Controller {
 						
 						model.put("patientRelationships", relationships);
 						model.put("patientRelationshipsByType", relationshipsByType);
-						model.put("patientId", (Integer) o);
-						model.put("personId", Context.getAdministrationService().getPerson(p).getPersonId());
+						model.put("patientId", patientId);
+						if (p != null)
+							model.put("personId", Context.getAdministrationService().getPerson(p).getPersonId());
 					}
 				}
 			}
@@ -197,6 +205,26 @@ public class PortletController implements Controller {
 				PatientSet ps = PatientSet.parseCommaSeparatedPatientIds((String) o);
 				model.put("patientSet", ps);
 				model.put("patientIds", (String) o);
+			}
+			
+			o = model.get("conceptIds");
+			if (o != null && !"".equals(o)) {
+				log.debug("Found conceptIds parameter: " + o);
+				Map<Integer, Concept> concepts = new HashMap<Integer, Concept>();
+				Map<String, Concept> conceptsByStringIds = new HashMap<String, Concept>();
+				String conceptIds = (String) o;
+				ConceptService cs = Context.getConceptService();
+				String[] ids = conceptIds.split(",");
+				for (String cId : ids) {
+					try {
+						Integer i = Integer.valueOf(cId);
+						Concept c = cs.getConcept(i);
+						concepts.put(i, c);
+						conceptsByStringIds.put(i.toString(), c);
+					} catch (Exception ex) { }
+				}
+				model.put("conceptMap", concepts);
+				model.put("conceptMapByStringIds", conceptsByStringIds);
 			}
 
 			if (userContext.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS)) {

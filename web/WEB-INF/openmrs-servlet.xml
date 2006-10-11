@@ -105,6 +105,7 @@
 					<prop key="**/scheduler.list">schedulerListController</prop>
 					<prop key="**/scheduler.form">schedulerFormController</prop>
 					<prop key="**/dynamicForm.form">dynamicFormEntryController</prop>
+					<prop key="**/patientForm.form">patientFormEntryController</prop>
 					<prop key="**/program.list">programList</prop>
 					<prop key="**/program.form">programForm</prop>
 					<prop key="**/workflow.form">workflowFormController</prop>
@@ -123,6 +124,7 @@
 					<prop key="**/patientRegimenAdd.portlet">patientRegimenPortletController</prop>
 					<prop key="**/patientRegimenDiscontinued.portlet">patientRegimenPortletController</prop>
 					<prop key="**/patientSummary.portlet">patientSummaryPortletController</prop>
+					<prop key="**/patientIdentifiers.portlet">patientIdentifiersPortletController</prop>
 					<!--<prop key="**/calendar.portlet">calendarPortletController</prop>-->
 					<prop key="**/*.portlet">portletController</prop>
 					<prop key="**/*.field">fieldGenController</prop>
@@ -137,6 +139,7 @@
 		<bean id="patientSetPortletController" class="org.openmrs.web.controller.PatientSetPortletController"/>
 		<bean id="patientRegimenPortletController" class="org.openmrs.web.controller.RegimenPortletController"/>
 		<bean id="patientSummaryPortletController" class="org.openmrs.web.controller.PatientSummaryPortletController"/>
+		<bean id="patientIdentifiersPortletController" class="org.openmrs.web.controller.PatientIdentifiersPortletController"/>
 		<bean id="addressPortletController" class="org.openmrs.web.controller.AddressPortletController"/>
 		<!--<bean id="calendarPortletController" class="org.openmrs.web.controller.CalendarPortletController"/>-->
 		<bean id="springController" class="org.openmrs.web.controller.SpringController"/>
@@ -671,13 +674,16 @@
 				<property name="links">
 					<list>
 						<value>patientSet.form:Analysis.formEntryButton:method=setPatientSet:url=patientDashboard.form:appendPatientId=true</value>
+						<value>nealreport.form:nealreport.ConsultReport.name:reportType=Consult Report</value>
 						<value>nealreport.form:nealreport.IncentiveReport.name:reportType=Incentive Report</value>
-						<value>nealreport.form:nealreport.DeclineReport.name:reportType=Decline Report</value>
 						<value>nealreport.form:nealreport.ShortReport.name:reportType=Short Report</value>
+						<value>nealreport.form:nealreport.TbReport.name:reportType=TB Report</value>
+						<value>nealreport.form:nealreport.Cd4Report.name:reportType=CD4 Report</value>
+						<value>nealreport.form:nealreport.DeclineReport.name:reportType=Decline Report</value>
+						<value>nealreport.form:nealreport.Month6Report.name:reportType=Month6 Report</value>
 						<value>nealreport.form:nealreport.AlertReport.name:reportType=Alert Report</value>
 						<value>nealreport.form:nealreport.PmtctReport.name:reportType=PMTCT Report</value>
 						<value>nealreport.form:nealreport.PedReport.name:reportType=Ped Report</value>
-						<value>nealreport.form:nealreport.ConsultReport.name:reportType=Consult Report</value>
 					</list>
 				</property>
 				<property name="formView"><value>/analysis/on-the-fly-analysis</value></property>
@@ -814,7 +820,17 @@
 			<property name="formView"><value>/dynamicformentry/enter</value></property>
 			<property name="successView"><value>patientDashboard.form</value></property>
 		</bean>
-	
+
+		<bean id="patientFormEntryModelValidator" class="org.openmrs.dynamicformentry.PatientFormEntryModelValidator"/>
+		<bean id="patientFormEntryController" class="org.openmrs.dynamicformentry.PatientFormEntryController">
+			<property name="sessionForm"><value>true</value></property>
+			<property name="commandName"><value>formData</value></property>
+			<property name="commandClass"><value>org.openmrs.dynamicformentry.PatientFormEntryModel</value></property>
+			<property name="validator"><ref bean="patientFormEntryModelValidator"/></property>
+			<property name="formView"><value>/dynamicformentry/patientForm</value></property>
+			<property name="successView"><value>patientDashboard.form</value></property>
+		</bean>
+
 		<bean id="encounterDisplayController" class="org.openmrs.web.controller.encounter.EncounterDisplayController"/>
 
     <!-- ======================================== -->

@@ -16,7 +16,7 @@ public class UserHandler extends AbstractFieldGenHandler implements FieldGenHand
 		checkEmptyVal((User)null);
 		if (fieldGenTag != null) {
 			Object initialValue = this.fieldGenTag.getVal();
-			setParameter("initialValue", initialValue == null ? "" : initialValue.toString());
+			setParameter("initialValue", initialValue == null ? "" : initialValue);
 		}
 	}
 }

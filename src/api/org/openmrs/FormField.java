@@ -269,6 +269,13 @@ public class FormField implements java.io.Serializable, Comparable {
 	public Boolean isRequired() {
 		return (required == null ? false : required);
 	}
+	
+	/**
+	 * @return same as isRequired()
+	 */
+	public Boolean getRequired() {
+		return isRequired();
+	}
 
 	/**
 	 * @param required

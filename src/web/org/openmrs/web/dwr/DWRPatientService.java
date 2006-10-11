@@ -9,9 +9,13 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientAddress;
+import org.openmrs.PatientIdentifier;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.Tribe;
+import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.formentry.FormEntryService;
 
@@ -166,4 +170,21 @@ public class DWRPatientService {
 		return patientList;
 	}
 
+	
+	public void addIdentifier(Integer patientId, String identifierType, String identifier, Integer identifierLocationId) {
+		if (identifier == null || identifier.length() == 0)
+			return;
+		PatientService ps = Context.getPatientService();
+		PatientIdentifierType idType = ps.getPatientIdentifierType(identifierType);
+		Location location = ps.getLocation(identifierLocationId);
+		log.debug("idType=" + identifierType + "->" + idType + " , location=" + identifierLocationId + "->" + location + " identifier=" + identifier);
+		Patient p = ps.getPatient(patientId);
+		PatientIdentifier id = new PatientIdentifier();
+		id.setIdentifierType(idType);
+		id.setIdentifier(identifier);
+		id.setLocation(location);
+		p.addIdentifier(id);
+		ps.updatePatient(p);
+	}
+	
 }

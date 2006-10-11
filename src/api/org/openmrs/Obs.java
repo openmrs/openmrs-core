@@ -1,10 +1,15 @@
 package org.openmrs;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.HashMap;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.Format;
 
 /**
@@ -15,6 +20,7 @@ import org.openmrs.util.Format;
  */
 public class Obs implements java.io.Serializable {
 
+	protected final Log log = LogFactory.getLog(getClass());
 	public static final long serialVersionUID = 112342333L;
 
 	// Fields
@@ -539,6 +545,29 @@ public class Obs implements java.io.Serializable {
 			return getValueText();
 		
 		return "";
+	}
+	
+	private static DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+	public void setValueAsString(String s) throws ParseException {
+		log.debug("getConcept() == " + getConcept());
+		if (getConcept() != null) {
+			String abbrev = getConcept().getDatatype().getHl7Abbreviation();
+			if (abbrev.equals("BIT")) {
+				setValueNumeric(Boolean.valueOf(s) ? 1.0 : 0.0);
+			} else if (abbrev.equals("CWE")) {
+				throw new RuntimeException("Not Yet Implemented");
+			} else if (abbrev.equals("NM") || abbrev.equals("SN")) {
+				setValueNumeric(Double.valueOf(s));
+			} else if (abbrev.equals("DT") || abbrev.equals("TM") || abbrev.equals("TS")) {
+				setValueDatetime(df.parse(s));
+			} else if (abbrev.equals("ST")) {
+				setValueText(s);
+			} else {
+				throw new RuntimeException("Don't know how to handle " + abbrev);
+			}
+		} else {
+			throw new RuntimeException("concept is null for " + this);
+		}
 	}
 	
 	/**

@@ -4,13 +4,13 @@
 <%@ attribute name="searchLabel" required="false" %>
 <%@ attribute name="searchLabelCode" required="false" %>
 <%@ attribute name="roles" required="false" %>
-<%@ attribute name="initialValue" required="false" %>
+<%@ attribute name="initialValue" required="false" %> <%-- This should be a userId --%>
 <%@ attribute name="linkUrl" required="false" %>
+<%@ attribute name="callback" required="false" %>
 
 <openmrs:htmlInclude file="/scripts/dojoConfig.js" />
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 <openmrs:htmlInclude file="/scripts/dojoUserSearchIncludes.js" />
-
 <script type="text/javascript">
 	
 	dojo.addOnLoad( function() {
@@ -21,14 +21,14 @@
 					var userPopup = dojo.widget.manager.getWidgetById("${formFieldName}_selection");
 					userPopup.displayNode.innerHTML = '<a id="${formFieldName}_name" href="#View" <c:if test="${not empty linkUrl}">onclick="return gotoUrl("${linkUrl}", ' + user.userId + ')"</c:if>>' + (user.firstName ? user.firstName : '') + ' ' + (user.middleName ? user.middleName : '') + ' ' + (user.lastName ? user.lastName : '') + '</a>';
 					userPopup.hiddenInputNode.value = user.userId;
-					if ( handleChangeRelationById ) {
+					<c:if test="${not empty callback}">
 						var relPrefix = "boxForRelType_";
 						var relType = "${formFieldName}";
 						if ( relType.indexOf(relPrefix) >= 0 ) {
 							relType = relType.substring(relPrefix.length);
 						}
-						handleChangeRelationById(relType, user.userId);
-					}
+						${callback}(relType, user.userId);
+					</c:if>
 				}
 			}
 		);

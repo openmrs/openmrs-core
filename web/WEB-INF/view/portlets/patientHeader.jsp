@@ -28,8 +28,12 @@
 				<td id="patientHeaderPatientIdentifiers">
 					<c:forEach var="identifier" items="${model.patient.identifiers}" varStatus="status">
 						<span class="patientHeaderPatientIdentifier">${identifier.identifierType.name}: ${identifier.identifier}</span>
-						<c:if test="${!status.last}">&nbsp;&nbsp;|&nbsp;&nbsp;</c:if>
+						<c:if test="${!status.last}">&nbsp;|&nbsp;</c:if>
 					</c:forEach>
+				</td>
+				<td id="patientHeaderHealthCenter">
+					<spring:message code="Patient.healthCenter"/>:
+					${model.patient.healthCenter.name}
 				</td>
 				<td style="vertical-align: middle" id="patientHeaderPatientSummary">
 					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -93,10 +97,12 @@
 				</td>
 				<td id="patientHeaderObsRegimen">
 					<spring:message code="Patient.regimen" />:
-					<c:forEach items="${model.patientCurrentDrugOrders}" var="drugOrder" varStatus="drugOrderStatus">
-						${drugOrder.drug.name}
-						<c:if test="${!drugOrderStatus.last}">, </c:if>
-					</c:forEach>
+					<span id="patientHeaderRegimen">
+						<c:forEach items="${model.currentDrugOrders}" var="drugOrder" varStatus="drugOrderStatus">
+							${drugOrder.drug.name}
+							<c:if test="${!drugOrderStatus.last}">, </c:if>
+						</c:forEach>
+					</span>
 				</td>
 			</tr>
 		</table>

@@ -4,10 +4,20 @@
 <openmrs:htmlInclude file="/dwr/engine.js" />
 <openmrs:htmlInclude file="/dwr/util.js" />
 
+<openmrs:globalProperty var="importantIdentifiers" key="patient_identifier.importantTypes" />
+
+<c:if test="${not empty importantIdentifiers}">
+	<div class="boxHeader"><spring:message code="Patient.identifiers" /></div>
+	<div class="box">
+		<openmrs:portlet url="patientIdentifiers" size="normal" patientId="${model.patientId}" parameters="showIfSet=true|showIfMissing=true|highlightIfMissing=false" />
+	</div>
+	<p>
+</c:if>
+
 <openmrs:globalProperty var="conceptIdsToUse" key="dashboard.overview.showConcepts" />
 <c:if test="${not empty conceptIdsToUse}">
 	<div class="box">
-		<openmrs:portlet url="customMostRecentObs" size="normal" parameters="conceptIds=${conceptIdsToUse}" />
+		<openmrs:portlet url="customMostRecentObs" size="normal" patientId="${patient.patientId}" parameters="conceptIds=${conceptIdsToUse}|allowNew=true" />
 	</div>
 	
 	<br/>

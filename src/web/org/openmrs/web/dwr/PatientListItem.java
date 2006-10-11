@@ -24,6 +24,7 @@ public class PatientListItem {
 	private String otherNames = "";
 	private String gender;
 	private String tribe = "";
+	private String healthCenter = "";
 	private Date birthdate;
 	private Boolean birthdateEstimated = false;
 	private String mothersName;
@@ -71,6 +72,9 @@ public class PatientListItem {
 			gender = patient.getGender();
 			if (patient.getTribe() != null)
 				tribe = patient.getTribe().getName();
+			
+			if (patient.getHealthCenter() != null)
+				healthCenter = patient.getHealthCenter().getName();
 			
 			birthdate = patient.getBirthdate();
 			birthdateEstimated = patient.isBirthdateEstimated();
@@ -186,6 +190,14 @@ public class PatientListItem {
 
 	public void setTribe(String tribe) {
 		this.tribe = tribe;
+	}
+
+	public String getHealthCenter() {
+		return healthCenter;
+	}
+
+	public void setHealthCenter(String healthCenter) {
+		this.healthCenter = healthCenter;
 	}
 
 	public String getAddress1() {

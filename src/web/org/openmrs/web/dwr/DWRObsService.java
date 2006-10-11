@@ -13,6 +13,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
+import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.api.EncounterService;
@@ -55,48 +56,50 @@ public class DWRObsService {
 		
 		log.info("Create new observation ");
 	
-		try {
-			
-			Date obsDate = null;
-			if ( obsDateStr != null ) {
-				// TODO Standardize date input 
-				SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
-				try {
-					obsDate = sdf.parse(obsDateStr);
-				} catch (ParseException e) {
-					log.error("Error parsing date ... " + obsDate);
-					obsDate = new Date();
-				}
-			}				
-			
-			Patient patient = Context.getPatientService().getPatient(patientId);
-			Concept concept = Context.getConceptService().getConcept(conceptId);
-			Encounter encounter = Context.getEncounterService().getEncounter(encounterId);
-			
-			Obs obs = new Obs();
-			obs.setPatient(patient);
-			obs.setConcept(concept);
-			obs.setEncounter(encounter);
-			obs.setObsDatetime(obsDate);
-			obs.setLocation(encounter.getLocation());
-			obs.setCreator(Context.getAuthenticatedUser());
-			obs.setDateCreated(new Date());
-			
-			// TODO Currently only handles numeric and text values ... need to expand to support all others
-			String hl7DataType = concept.getDatatype().getHl7Abbreviation();
-			if ("NM".equals(hl7DataType)) { 
-				obs.setValueNumeric(Double.valueOf(valueText));
-			} 
-			else { 
-				obs.setValueText(valueText);
+		Date obsDate = null;
+		if ( obsDateStr != null ) {
+			// TODO Standardize date input 
+			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+			try {
+				obsDate = sdf.parse(obsDateStr);
+			} catch (ParseException e) {
+				log.error("Error parsing date ... " + obsDate);
+				obsDate = new Date();
 			}
-			
-			// Create the observation
-			Context.getObsService().createObs(obs);
-			
-		} catch (Exception e) {
-			log.error(e);
+		}				
+		
+		Patient patient = Context.getPatientService().getPatient(patientId);
+		Concept concept = Context.getConceptService().getConcept(conceptId);
+		Encounter encounter = encounterId == null ? null : Context.getEncounterService().getEncounter(encounterId);
+		
+		Obs obs = new Obs();
+		obs.setPatient(patient);
+		obs.setConcept(concept);
+		obs.setObsDatetime(obsDate);
+		if (encounter != null) {
+			obs.setEncounter(encounter);
+			obs.setLocation(encounter.getLocation());
+		} else {
+			Location unknown = Context.getEncounterService().getLocationByName("Unknown Location");
+			if (unknown == null)
+				unknown = Context.getEncounterService().getLocationByName("Unknown");
+			obs.setLocation(unknown);
 		}
+		obs.setCreator(Context.getAuthenticatedUser());
+		obs.setDateCreated(new Date());
+		
+		// TODO Currently only handles numeric and text values ... need to expand to support all others
+		String hl7DataType = concept.getDatatype().getHl7Abbreviation();
+		if ("NM".equals(hl7DataType)) { 
+			obs.setValueNumeric(Double.valueOf(valueText));
+		} 
+		else { 
+			obs.setValueText(valueText);
+		}
+		
+		// Create the observation
+		Context.getObsService().createObs(obs);
+
 	}
 	
 	

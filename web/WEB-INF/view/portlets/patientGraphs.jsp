@@ -57,7 +57,8 @@ table#labTestTable th {
 		}
 		org.openmrs.api.context.Context.getAuthenticatedUser().setProperty("patientGraphConcepts", userConcepts);
 		pageContext.setAttribute("userConcepts", userConcepts);
-		org.openmrs.api.context.Context.getUserService().updateUser(org.openmrs.api.context.Context.getAuthenticatedUser());
+		// TODO: make non-superusers be able to update their own properties
+		// org.openmrs.api.context.Context.getUserService().updateUser(org.openmrs.api.context.Context.getAuthenticatedUser());
 	}
 %>
 
