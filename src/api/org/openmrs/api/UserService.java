@@ -18,7 +18,7 @@ public interface UserService {
 	 * @throws APIException
 	 */
 	@Authorized({"Add Users"})
-	void createUser(User user, String password) throws APIException;
+	public void createUser(User user, String password) throws APIException;
 
 	/**
 	 * Get user by internal user identifier
@@ -28,7 +28,7 @@ public interface UserService {
 	 */
 	@Transactional(readOnly=true)
 	@Authorized({"View Users"})
-	User getUser(Integer userId) throws APIException;
+	public User getUser(Integer userId) throws APIException;
 
 	/**
 	 * Get user by username (user's login identifier)
@@ -38,7 +38,7 @@ public interface UserService {
 	 */
 	@Transactional(readOnly=true)
 	@Authorized({"View Users"})
-	User getUserByUsername(String username) throws APIException;
+	public User getUserByUsername(String username) throws APIException;
 
 	/**
 	 * true/false if username or systemId is already in db in username or system_id columns
@@ -47,7 +47,7 @@ public interface UserService {
 	 * @throws APIException
 	 */
 	@Authorized({"View Users"})
-	boolean hasDuplicateUsername(User user) throws APIException;
+	public boolean hasDuplicateUsername(User user) throws APIException;
 
 	/**
 	 * Get users by role granted
@@ -57,7 +57,7 @@ public interface UserService {
 	 */
 	@Transactional(readOnly=true)
 	@Authorized({"View Users"})
-	List<User> getUsersByRole(Role role) throws APIException;
+	public List<User> getUsersByRole(Role role) throws APIException;
 
 	/**
 	 * Save changes to user
@@ -65,7 +65,7 @@ public interface UserService {
 	 * @throws APIException
 	 */
 	@Authorized({"Edit Users"})
-	void updateUser(User user) throws APIException;
+	public void updateUser(User user) throws APIException;
 
 	/**
 	 * Grant roles for user
@@ -74,7 +74,7 @@ public interface UserService {
 	 * @throws APIException
 	 */
 	@Authorized({"Edit Users"})
-	void grantUserRole(User user, Role role) throws APIException;
+	public void grantUserRole(User user, Role role) throws APIException;
 
 	/**
 	 * Revoke roles from user
@@ -83,7 +83,7 @@ public interface UserService {
 	 * @throws APIException
 	 */
 	@Authorized({"Edit Users"})
-	void revokeUserRole(User user, Role role) throws APIException;
+	public void revokeUserRole(User user, Role role) throws APIException;
 
 	/** 
 	 * Mark user as voided (effectively deleting user without removing
@@ -96,7 +96,7 @@ public interface UserService {
 	 * @throws APIException
 	 */
 	@Authorized({"Edit Users"})
-	void voidUser(User user, String reason) throws APIException;
+	public void voidUser(User user, String reason) throws APIException;
 
 	/**
 	 * Clear voided flag for user (equivalent to an "undelete" or
@@ -106,7 +106,7 @@ public interface UserService {
 	 * @throws APIException
 	 */
 	@Authorized({"Edit Users"})
-	void unvoidUser(User user) throws APIException;
+	public void unvoidUser(User user) throws APIException;
 
 	/**
 	 * Delete user from database. This is included for troubleshooting and
@@ -126,7 +126,7 @@ public interface UserService {
 	 * @see #voidUser(User, String)
 	 */
 	@Authorized({"Delete Users"})
-	void deleteUser(User user) throws APIException;
+	public void deleteUser(User user) throws APIException;
 
 	/**
 	 * Returns all privileges currently possible for any User
@@ -134,7 +134,7 @@ public interface UserService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly=true)
-	List<Privilege> getPrivileges() throws APIException;
+	public List<Privilege> getPrivileges() throws APIException;
 
 	/**
 	 * Returns all roles currently possible for any User
@@ -142,7 +142,7 @@ public interface UserService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly=true)
-	List<Role> getRoles() throws APIException;
+	public List<Role> getRoles() throws APIException;
 
 	/**
 	 * Returns roles that inherit from this role
@@ -150,7 +150,7 @@ public interface UserService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly=true)
-	List<Role> getInheritingRoles(Role role) throws APIException;
+	public List<Role> getInheritingRoles(Role role) throws APIException;
 
 	/**
 	 * Returns all users in the system
@@ -159,7 +159,7 @@ public interface UserService {
 	 */
 	@Transactional(readOnly=true)
 	@Authorized({"View Users"})
-	List<User> getUsers() throws APIException;
+	public List<User> getUsers() throws APIException;
 
 	/**
 	 * Returns role object with given string role
@@ -167,7 +167,7 @@ public interface UserService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly=true)
-	Role getRole(String r) throws APIException;
+	public Role getRole(String r) throws APIException;
 
 	/**
 	 * Returns Privilege in the system with given String privilege
@@ -175,7 +175,7 @@ public interface UserService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly=true)
-	Privilege getPrivilege(String p) throws APIException;
+	public Privilege getPrivilege(String p) throws APIException;
 
 	/**
 	 * Changes the <code>user<code>'s password
@@ -185,7 +185,7 @@ public interface UserService {
 	 * @throws APIException
 	 */
 	@Authorized({"Edit Users"})
-	void changePassword(User u, String pw) throws APIException;
+	public void changePassword(User u, String pw) throws APIException;
 
 	/**
 	 * Changes the current user's password
@@ -193,7 +193,7 @@ public interface UserService {
 	 * @param pw2 new password
 	 * @throws APIException
 	 */
-	void changePassword(String pw, String pw2) throws APIException;
+	public void changePassword(String pw, String pw2) throws APIException;
 
 	/**
 	 * Changes the current user's secret question and answer
@@ -202,7 +202,7 @@ public interface UserService {
 	 * @param answer
 	 * @throws APIException
 	 */
-	void changeQuestionAnswer(String pw, String q, String a);
+	public void changeQuestionAnswer(String pw, String q, String a);
 
 	/**
 	 * Compares <code>answer</code> against the <code>user</code>'s secret answer
@@ -211,7 +211,7 @@ public interface UserService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly=true)
-	boolean isSecretAnswer(User u, String answer);
+	public boolean isSecretAnswer(User u, String answer);
 
 	/**
 	 * Return a user if any part of the search matches first/last/system id and the user
@@ -223,7 +223,7 @@ public interface UserService {
 	 */
 	@Transactional(readOnly=true)
 	@Authorized({"View Users"})
-	List<User> findUsers(String name, List<String> roles, boolean includeVoided);
+	public List<User> findUsers(String name, List<String> roles, boolean includeVoided);
 
 	/**
 	 * Find a user by exact first name and last name
@@ -244,8 +244,33 @@ public interface UserService {
 	 */
 	@Transactional(readOnly=true)
 	@Authorized({"View Users"})
-	List<User> getAllUsers(List<Role> roles, boolean includeVoided);
+	public List<User> getAllUsers(List<Role> roles, boolean includeVoided);
 
+	
+	/**
+	 * Adds the <code>key</code>/<code>value</code> pair to the 
+	 * given <code>user</code> 
+	 * 
+	 * <b>Implementations of this method should handle privileges</b>
+	 * 
+	 * @param user
+	 * @param key
+	 * @param value
+	 */
+	public void setUserProperty(User user, String key, String value);
+	
+	/**
+	 * Removes the property denoted by <code>key</code> from the 
+	 * <code>user</code>'s properties 
+	 * 
+	 * <b>Implementations of this method should handle privileges</b>
+	 * 
+	 * @param user
+	 * @param key
+	 */
+	public void removeUserProperty(User user, String key);
+	
+	
 	/**
 	 * Get/generate/find the next system id to be doled out.  Assume check digit /not/ applied
 	 * in this method

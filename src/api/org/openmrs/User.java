@@ -413,11 +413,19 @@ public class User implements java.io.Serializable {
 	}
 	
 	/**
-	 * 
+	 * Convenience method. Adds the given property to the user's properties
 	 */
 	public void setProperty(String prop, String value) {
 		if (properties != null)
 			properties.put(prop, value);
+	}
+	
+	/**
+	 * Convenience method. Removes the given property from the user's properties
+	 */
+	public void removeProperty(String prop) {
+		if (properties != null && properties.containsKey(prop))
+			properties.remove(prop);
 	}
 	
 	/**

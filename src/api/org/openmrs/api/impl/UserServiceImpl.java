@@ -321,6 +321,40 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 	
+	
+	
+	/**
+	 * @see org.openmrs.api.UserService#addUserProperty(org.openmrs.User, java.lang.String, java.lang.String)
+	 */
+	public void setUserProperty(User user, String key, String value) {
+		if (user != null) {
+			if (!user.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USERS) &&
+					!user.equals(Context.getAuthenticatedUser()))
+					throw new APIException("You are not authorized to change " + user.getUserId() + "'s properties");
+
+			Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+			user.setProperty(key, value);
+			updateUser(user);
+			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+		}
+	}
+
+	/**
+	 * @see org.openmrs.api.UserService#removeUserProperty(org.openmrs.User, java.lang.String)
+	 */
+	public void removeUserProperty(User user, String key) {
+		if (user != null) {
+			if (!user.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USERS) &&
+					!user.equals(Context.getAuthenticatedUser()))
+					throw new APIException("You are not authorized to change " + user.getUserId() + "'s properties");
+
+			Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+			user.removeProperty(key);
+			updateUser(user);
+			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+		}
+	}
+
 	/**
 	 * Get/generate/find the next system id to be doled out.  Assume check digit /not/ applied
 	 * in this method

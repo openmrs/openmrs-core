@@ -55,10 +55,8 @@ table#labTestTable th {
 			if (!userConcepts.contains(request.getParameter("patientGraphConcept")))
 				userConcepts += "-" + request.getParameter("patientGraphConcept");
 		}
-		org.openmrs.api.context.Context.getAuthenticatedUser().setProperty("patientGraphConcepts", userConcepts);
 		pageContext.setAttribute("userConcepts", userConcepts);
-		// TODO: make non-superusers be able to update their own properties
-		// org.openmrs.api.context.Context.getUserService().updateUser(org.openmrs.api.context.Context.getAuthenticatedUser());
+		org.openmrs.api.context.Context.getUserService().setUserProperty(org.openmrs.api.context.Context.getAuthenticatedUser(), "patientGraphConcepts", userConcepts);
 	}
 %>
 
