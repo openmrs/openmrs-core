@@ -126,20 +126,25 @@ public class ArdenServiceImpl implements ArdenService {
 		     w.write("\n********************************************************************/\n");
 		     w.write("package org.openmrs.arden.compiled;\n\n");
 		     w.write("import java.util.Iterator;\nimport java.util.Locale;\nimport java.util.Set;\n");
-		     w.write("import java.util.HashMap;\nimport org.openmrs.api.context.Context;");
+		     w.write("import java.util.HashMap;\nimport org.openmrs.api.context.Context;\n");
 		     w.write("import org.openmrs.Concept;\nimport org.openmrs.Obs;\nimport org.openmrs.Patient;\n");
-		     w.write("import org.openmrs.arden.*;\nimport org.openmrs.arden.compiled.*;\n\n");
+		     w.write("import org.openmrs.arden.*;\nimport org.openmrs.arden.compiled.*;\n");
+		     w.write("import java.util.Map;\n\n");
 		     
 		     String classname = ardObj.getClassName();
 		     w.write("public class " + classname + " implements ArdenRule{\n"); // Start of class
 		     w.write("private Patient patient;\nprivate Locale locale;\nprivate String firstname;\n");
 		     w.write("private ArdenDataSource dataSource;\n");
 		     w.write("private HashMap<String, String> userVarMap;\n");
-		     w.write("private ArdenValue dssObj;\n");
+		     w.write("private HashMap<String, ArdenValue> valueMap;\n");
+		     w.write("private ArdenClause ardenClause;\n");
+		     
 		     w.write("\n\n//Constructor\n");
 		     w.write("public " + classname + "(Patient p, ArdenDataSource d){\n");
 		     w.write("\n\tlocale = Context.getLocale();\n\tpatient = p;\n\tdataSource = d;\n");
+		     w.write("\tardenClause = new ArdenClause();\n");
 		     w.write("\tuserVarMap = new HashMap <String, String>();\n");
+		     w.write("\tvalueMap = new HashMap <String, ArdenValue>();\n");
 		     w.write("\tfirstname = patient.getPatientName().getGivenName();\n");
 		     w.write("\tuserVarMap.put(\"firstname\", firstname);\n");
 		     w.write("\tinitAction();\n\t");		     
