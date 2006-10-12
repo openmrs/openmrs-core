@@ -15,21 +15,33 @@
 	<c:otherwise>
 		
 		<openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" var="showTribe"/>
+		<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 		
 		<script type="text/javascript">
-			function rowMouseOver(tr) {
-				if (tr.className.indexOf("searchHighlight") == -1)
-					tr.className = "searchHighlight " + tr.className;
-			};
+			dojo.require("dojo.widget.openmrs.PatientSearch");
 			
-			function rowMouseOut(tr) { 
-				var c = tr.className;
-				tr.className = c.substring(c.indexOf(" ") + 1, c.length);
-			};
-			
-			function onMouseClick(patientId) {
-				document.location = "${pageContext.request.contextPath}/patientDashboard.form?patientId=" + patientId;
-			}
+			dojo.addOnLoad( function() {
+		
+				searchWidget = dojo.widget.manager.getWidgetById("pSearch");			
+				
+				dojo.event.topic.subscribe("pSearch/select", 
+					function(msg) {
+						document.location = "${pageContext.request.contextPath}/patientDashboard.form?patientId=" + msg.objs[0].patientId;
+					}
+				);
+				
+				searchWidget.allowNewSearch = function() {
+					return false;
+				};
+				
+				var patientName = "${param.name}";
+				var birthyear = "${param.birthyear}";
+				var age = "${param.age}";
+				var gender = "${param.gender}";
+				DWRPatientService.getSimilarPatients(searchWidget.simpleClosure(searchWidget, "doObjectsFound"), patientName, birthyear, age, gender);
+				
+				searchWidget.allowAutoJump = function() { return false; };
+			});
 			
 			function onContinueClick() {
 				var href = "newPatient.form?name=${param.name}&birthyear=${param.birthyear}&gender=${param.gender}&age=${param.age}";
@@ -41,55 +53,23 @@
 			#openmrsSearchTable th {
 				text-align: left;
 			}
+			#pSearchInput {
+				display: none;
+			}
 		</style>
 		
-		<h2><spring:message code="Patient.search.similarPatient"/></h2>
+		<h2><spring:message code="Patient.search.similarPatients"/></h2>
 		<b id="similarPatientsIinstructions"><spring:message code="Patient.search.similarPatients.instructions"/></b>
 		
 		<br/><br/>
 		
-		<table class="openmrsSearchTable" style="width: 100%;" cellpadding="2" cellspacing="0">
-			<thead>
-				<tr>
-					<th><spring:message code="PatientIdentifier.identifier"/></th>
-					<th><spring:message code="PatientName.givenName"/></th>
-					<th><spring:message code="PatientName.middleName"/></th>
-					<th><spring:message code="PatientName.familyName"/></th>
-					<th><spring:message code="Patient.age"/></th>
-					<th><spring:message code="Patient.gender"/></th>
-					<c:if test="${showTribe == 'true'}">
-						<th><spring:message code="Patient.tribe"/></th>
-					</c:if>
-					<th></th>
-					<th><spring:message code="Patient.birthdate"/></th>
-				</tr>
-			</thead>
-			<tbody>
-				<c:forEach var="patient" items="${patients}" varStatus="status">
-					<tr onMouseOver="rowMouseOver(this)" onMouseOut="rowMouseOut(this)" onClick="onMouseClick(${patient.patientId});" class="<c:choose><c:when test="${status.count % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">
-						<td class="patientIdentifier"><a>${patient.identifier} </a></td>
-						<td>${patient.givenName} </td>
-						<td>${patient.middleName} </td>
-						<td>${patient.familyName} </td>
-						<td class="patientAge">${patient.age} </td>
-						<td class="patientGender"><img src="/amrs/images/<c:if test="${patient.gender == 'F'}">fe</c:if>male.gif"></td>
-						<c:if test="${showTribe}">
-							<td>${patient.tribe}</td>
-						</c:if>
-						<td><c:if test="${patient.birthdateEstimated}">~</c:if></td>
-						<td><openmrs:formatDate date="${patient.birthdate}" type="textbox"/></td>
-					</tr>
-				</c:forEach>
-			</tbody>
-		</table>
+		<div dojoType="PatientSearch" widgetId="pSearch" inputId="pSearchInput" showAddPatientLink='false'></div>
 		
 		<br/>
-		<b id="similarPatientsNotFound"><spring:message code="Patient.search.similarPatients.notFound"/></b>
-		<br/><br/>
 		
-		<input type="button" value='<spring:message code="general.continue"/>' onClick="return onContinueClick()" />
+		<input type="button" value='<spring:message code="Patient.search.similarPatients.notOnList"/>' onClick="return onContinueClick()" />
 		&nbsp;
-		<input type="button" value='<spring:message code="general.cancel"/>' onClick="history.go(-1)" />
+		<input type="button" value='<spring:message code="general.back"/>' onClick="history.go(-1)" />
 		
 		<br/><br/>
 		

@@ -351,7 +351,7 @@
 	
 	<br />
 	<input type="submit" value="<spring:message code="general.save" />" name="action" id="addButton"> &nbsp; &nbsp; 
-	<input type="button" value="<spring:message code="general.cancel" />" onclick="history.go(-1);">
+	<input type="button" value="<spring:message code="general.back" />" onclick="history.go(-1);">
 </form>
 
 <script type="text/javascript">
