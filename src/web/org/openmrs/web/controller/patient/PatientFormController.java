@@ -32,6 +32,7 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.formentry.FormEntryService;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.propertyeditor.ConceptEditor;
 import org.openmrs.web.propertyeditor.LocationEditor;
@@ -225,7 +226,7 @@ public class PatientFormController extends SimpleFormController {
 					}
 					
 					if (patient.getNames().size() < 1)
-						errors.rejectValue("patient.names", "Patient.names.length");
+						errors.rejectValue("names", "Patient.names.length");
 					
 				// Patient Info 
 					//ValidationUtils.rejectIfEmptyOrWhitespace(errors, "birthdate", "error.null");
@@ -245,6 +246,31 @@ public class PatientFormController extends SimpleFormController {
 							if (patient.getBirthdate().before(c.getTime())){
 								errors.rejectValue("birthdate", "error.date.nonsensical");
 							}
+						}
+					}
+				
+				// check patient identifier checkdigits
+					for (PatientIdentifier pi : patient.getIdentifiers()) {
+						PatientIdentifierType pit = pi.getIdentifierType();
+						String identifier = pi.getIdentifier();
+						String[] args = {identifier};
+						try {
+							if (pit.hasCheckDigit() && !OpenmrsUtil.isValidCheckDigit(identifier)) {
+								log.error("hasCheckDigit and is not valid: " + pit.getName() + " " + identifier);
+								String msg = getMessageSourceAccessor().getMessage("error.checkdigits.verbose", args);
+								errors.rejectValue("identifiers", msg);
+							}
+							else if (pit.hasCheckDigit() == false && identifier.contains("-")) {
+								log.error("hasn't CheckDigit and contains '-': " + pit.getName() + " " + identifier);
+								String[] args2 = {"-", identifier}; 
+								String msg = getMessageSourceAccessor().getMessage("error.character.invalid", args2);
+								errors.rejectValue("identifiers", msg);
+							}
+						} catch (Exception e) {
+							log.error("exception thrown with: " + pit.getName() + " " + identifier);
+							log.error("Error while adding patient identifiers to savedIdentifier list", e);
+							String msg = getMessageSourceAccessor().getMessage("error.checkdigits", args);
+							errors.rejectValue("identifiers", msg);
 						}
 					}
 			}

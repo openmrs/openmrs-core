@@ -163,7 +163,7 @@
 		<td><spring:message code="Patient.healthCenter"/></td>
 		<td>
 			<spring:bind path="patient.healthCenter">
-				<openmrs:fieldGen type="org.openmrs.Location" formFieldName="healthCenter" val="${status.editor.value}" />
+				<openmrs:fieldGen type="org.openmrs.Location" formFieldName="healthCenter" val="${status.editor.value}" parameters="optionHeader=[blank]" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>

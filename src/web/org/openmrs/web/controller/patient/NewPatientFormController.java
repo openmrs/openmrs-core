@@ -117,14 +117,18 @@ public class NewPatientFormController extends SimpleFormController {
 						
 						// set up the actual identifier java object
 						PatientIdentifierType pit = null;
-						if (types[i] == null || types[i].equals(""))
-							errors.reject("Identifier.identifierType.null", args, "Identifier type for '" + identifiers[i] + "' cannot be null");
+						if (types[i] == null || types[i].equals("")) {
+							String msg = getMessageSourceAccessor().getMessage("PatientIdentifier.identifierType.null", args);
+							errors.reject(msg);
+						}
 						else
 							pit = ps.getPatientIdentifierType(Integer.valueOf(types[i]));
 						
 						Location loc = null;
-						if (locs[i] == null || locs[i].equals(""))
-							errors.reject("Identifier.location.null", args, "Location for '" + identifiers[i] + "' cannot be null");
+						if (locs[i] == null || locs[i].equals("")) {
+							String msg = getMessageSourceAccessor().getMessage("PatientIdentifier.location.null", args);
+							errors.reject(msg);
+						}
 						else
 							loc = ps.getLocation(Integer.valueOf(locs[i]));
 						
@@ -138,22 +142,25 @@ public class NewPatientFormController extends SimpleFormController {
 					
 						try {
 							if (pit.hasCheckDigit() && !OpenmrsUtil.isValidCheckDigit(identifiers[i])) {
-									log.error("hasCheckDigit and is not valid: " + pit.getName() + " " + identifiers[i]);
-									errors.rejectValue("identifier", "error.checkdigits", args, "Invalid Checkdigit " + identifiers[i]);
-								}
-								else if (pit.hasCheckDigit() == false && identifiers[i].contains("-")) {
-									log.error("hasn't CheckDigit and contains '-': " + pit.getName() + " " + identifiers[i]);
-									String[] args2 = {"-", identifiers[i]}; 
-									errors.rejectValue("identifier", "error.character.invalid", args2, "Invalid character '-' in " + identifiers[i]);
-								}
-							} catch (Exception e) {
-								log.error("exception thrown with: " + pit.getName() + " " + identifiers[i]);
-								log.error("Error while adding patient identifiers to savedIdentifier list", e);
-								errors.rejectValue("identifier", "error.checkdigits", args, "Invalid Checkdigit " + identifiers[i]);
+								log.error("hasCheckDigit and is not valid: " + pit.getName() + " " + identifiers[i]);
+								String msg = getMessageSourceAccessor().getMessage("error.checkdigits.verbose", args);
+								errors.rejectValue("identifier", msg);
 							}
+							else if (pit.hasCheckDigit() == false && identifiers[i].contains("-")) {
+								log.error("hasn't CheckDigit and contains '-': " + pit.getName() + " " + identifiers[i]);
+								String[] args2 = {"-", identifiers[i]}; 
+								String msg = getMessageSourceAccessor().getMessage("error.character.invalid", args2);
+								errors.rejectValue("identifier", msg);
+							}
+						} catch (Exception e) {
+							log.error("exception thrown with: " + pit.getName() + " " + identifiers[i]);
+							log.error("Error while adding patient identifiers to savedIdentifier list", e);
+							String msg = getMessageSourceAccessor().getMessage("error.checkdigits", args);
+							errors.rejectValue("identifier", msg);
 						}
 					}
 				}
+			}
 			
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "gender", "error.null");
 			
@@ -314,7 +321,7 @@ public class NewPatientFormController extends SimpleFormController {
 			patient.setMiddleName(middleName);
 			patient.setFamilyName(lastName);
 			
-			patient.setGender(request.getParameter("gender"));
+			patient.setGender(request.getParameter("gndr"));
 			Date birthdate = null;
 			boolean birthdateEstimated = false;
 			String date = request.getParameter("birthyear");

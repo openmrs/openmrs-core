@@ -28,7 +28,7 @@
 
 <h2><spring:message code="Patient.title"/></h2>
 
-<a href="${pageContext.request.contextPath}/admin/patients/addPatient.htm"><spring:message code="Patient.create"/></a> | 
+<a href="${pageContext.request.contextPath}/admin/patients/addPatient.htm?postURL=patient.form"><spring:message code="Patient.create"/></a> | 
 
 <a href="${pageContext.request.contextPath}/admin/patients/findDuplicatePatients.htm"><spring:message code="Patient.merge.find"/></a><br/><br/>
 

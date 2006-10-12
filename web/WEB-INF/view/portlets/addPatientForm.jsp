@@ -31,7 +31,7 @@
 						<td><spring:message code="Patient.gender"/></td>
 						<td>
 							<openmrs:forEachRecord name="gender">
-								<input type="radio" name="gender" id="gender-${record.key}" value="${record.key}"  onClick="clearError('gender')" /><label for="gender-${record.key}"> <spring:message code="Patient.gender.${record.value}"/> </label>
+								<input type="radio" name="gndr" id="gender-${record.key}" value="${record.key}"  onClick="clearError('gender')" /><label for="gender-${record.key}"> <spring:message code="Patient.gender.${record.value}"/> </label>
 							</openmrs:forEachRecord>
 							<span class="error" id="genderError"><spring:message code="Patient.gender.required"/></span>
 						</td>

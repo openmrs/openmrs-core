@@ -8,9 +8,10 @@
 	<c:when test="${empty param.name}">
 		
 		<h2><spring:message code="Patient.find"/></h2>
-		<span class="instructions"><spring:message code="Patient.search.instructions" /></span>
-		<openmrs:portlet id="createPatient" url="addPatientForm" parameters="postURL=" />
-		
+		<openmrs:portlet id="createPatient" url="addPatientForm" parameters="postURL=${param.postURL}" />
+		<script type="text/javascript">
+			document.getElementById("patientName").focus();
+		</script>
 	</c:when>
 	<c:otherwise>
 		
@@ -37,14 +38,14 @@
 				var patientName = "${param.name}";
 				var birthyear = "${param.birthyear}";
 				var age = "${param.age}";
-				var gender = "${param.gender}";
+				var gender = "${param.gndr}";
 				DWRPatientService.getSimilarPatients(searchWidget.simpleClosure(searchWidget, "doObjectsFound"), patientName, birthyear, age, gender);
 				
 				searchWidget.allowAutoJump = function() { return false; };
 			});
 			
 			function onContinueClick() {
-				var href = "newPatient.form?name=${param.name}&birthyear=${param.birthyear}&gender=${param.gender}&age=${param.age}";
+				var href = "newPatient.form?name=${param.name}&birthyear=${param.birthyear}&gndr=${param.gndr}&age=${param.age}";
 				document.location = href;
 			}
 		</script>

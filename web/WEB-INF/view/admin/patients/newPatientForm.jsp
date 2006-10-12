@@ -258,7 +258,7 @@
 	</table>
 	<script type="text/javascript">
 		<c:forEach items="${identifiers}" var="id">
-			addIdentifier("${id.identifier}", ${id.identifierType.patientIdentifierTypeId}, ${id.location.locationId}, ${id.preferred}, ${id.dateCreated != null});
+			addIdentifier("${id.identifier}", "${id.identifierType.patientIdentifierTypeId}", "${id.location.locationId}", ${id.preferred}, ${id.dateCreated != null});
 		</c:forEach>
 	</script>
 	<input type="button" class="smallButton" onclick="addIdentifier()" value="<spring:message code="PatientIdentifier.add" />" hidefocus />

@@ -33,12 +33,13 @@
 						<b>${model.patient.tribe.name}</b>
 					</td>
 				</c:if>
-				<td id="patientHeaderHealthCenter">
-					<c:if test="${model.patient.healthCenter.name}">
+				<openmrs:globalProperty key="use_patient_attribute.healthCenter" defaultValue="false" var="showHealthCenter"/>
+				<c:if test="${showHealthCenter && not empty model.patient.healthCenter}">
+					<td id="patientHeaderHealthCenter">
 						<spring:message code="Patient.healthCenter"/>:
 						<b>${model.patient.healthCenter.name}</b>
-					</c:if>
-				</td>
+					</td>
+				</c:if>
 				<td id="patientHeaderPatientSummary">
 					<a class="offColor" href="javascript:window.open('patientSummary.htm?patientId=${model.patientId}', 'summaryWindow', 'toolbar=no,width=800,height=600,resizable=yes,scrollbars=yes').focus()">Summary</a>
 				</td>
@@ -57,8 +58,8 @@
 					</c:if>
 				</td>
 				<c:if test="${fn:length(model.patient.identifiers) > 2}">
-					<td width="40">
-						<a id="patientHeaderShowMoreIdentifiers" onclick="return showMoreIdentifiers()" title='<spring:message code="patientDashboard.showMoreIdentifers"/>'><spring:message code="general.nMore" arguments="${fn:length(model.patient.identifiers) - 2}"/><span id="patientHeaderMoreIdentifiersArrow">&dArr;</span></a>
+					<td width="32">
+						<small><a id="patientHeaderShowMoreIdentifiers" onclick="return showMoreIdentifiers()" title='<spring:message code="patientDashboard.showMoreIdentifers"/>'><spring:message code="general.nMore" arguments="${fn:length(model.patient.identifiers) - 2}"/> <span id="patientHeaderMoreIdentifiersArrow">&dArr;</span></a></small>
 					</td>
 				</c:if>
 			</tr>
@@ -155,7 +156,8 @@
 		
 		var identifierElement = document.getElementById("patientHeaderMoreIdentifiers");
 		var identifierArrow = document.getElementById("patientHeaderMoreIdentifiersArrow");
-		identifierElement.style.display = "none";
+		if (identifierElement)
+			identifierElement.style.display = "none";
 		
 	</script>
 	
