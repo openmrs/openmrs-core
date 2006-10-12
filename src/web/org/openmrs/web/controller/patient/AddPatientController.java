@@ -47,7 +47,7 @@ public class AddPatientController extends SimpleFormController {
 			String name = RequestUtils.getStringParameter(request, "name", "");
 			String birthyear = RequestUtils.getStringParameter(request, "birthyear", "");
 			String age = RequestUtils.getStringParameter(request, "age", "");
-			String gender = RequestUtils.getStringParameter(request, "gender", "");
+			String gender = RequestUtils.getStringParameter(request, "gndr", "");
 			
 			if (!name.equals("") || !birthyear.equals("") || !age.equals("") || !gender.equals("")) {
 					
@@ -97,11 +97,11 @@ public class AddPatientController extends SimpleFormController {
     		String name = RequestUtils.getStringParameter(request, "name", "");
 			String birthyear = RequestUtils.getStringParameter(request, "birthyear", "");
 			String age = RequestUtils.getStringParameter(request, "age", "");
-			String gender = RequestUtils.getStringParameter(request, "gender", "");
+			String gender = RequestUtils.getStringParameter(request, "gndr", "");
 			
 			if (!name.equals("") || !birthyear.equals("") || !age.equals("") || !gender.equals("")) {
 				mav.clear();
-				mav.setView(new RedirectView("newPatient.form?name=" + name + "&birthyear=" + birthyear + "&age=" + age + "&gender=" + gender));
+				mav.setView(new RedirectView("newPatient.form?name=" + name + "&birthyear=" + birthyear + "&age=" + age + "&gndr=" + gender));
 			}
     	}
     	
