@@ -126,18 +126,19 @@ public class ArdenServiceImpl implements ArdenService {
 		     w.write("\n********************************************************************/\n");
 		     w.write("package org.openmrs.arden.compiled;\n\n");
 		     w.write("import java.util.Iterator;\nimport java.util.Locale;\nimport java.util.Set;\n");
-		     w.write("import java.util.HashMap;\n");
+		     w.write("import java.util.HashMap;\nimport org.openmrs.api.context.Context;");
 		     w.write("import org.openmrs.Concept;\nimport org.openmrs.Obs;\nimport org.openmrs.Patient;\n");
-		     w.write("import org.openmrs.arden.*;\n\n");
+		     w.write("import org.openmrs.arden.*;\nimport org.openmrs.arden.compiled.*;\n\n");
 		     
 		     String classname = ardObj.getClassName();
 		     w.write("public class " + classname + " implements ArdenRule{\n"); // Start of class
 		     w.write("private Patient patient;\nprivate Locale locale;\nprivate String firstname;\n");
 		     w.write("private ArdenDataSource dataSource;\n");
 		     w.write("private HashMap<String, String> userVarMap;\n");
+		     w.write("private ArdenValue dssObj;\n");
 		     w.write("\n\n//Constructor\n");
 		     w.write("public " + classname + "(Patient p, ArdenDataSource d){\n");
-		     w.write("\n\tlocale = c.getLocale();\n\tpatient = p;\n\tdataSource = d;\n");
+		     w.write("\n\tlocale = Context.getLocale();\n\tpatient = p;\n\tdataSource = d;\n");
 		     w.write("\tuserVarMap = new HashMap <String, String>();\n");
 		     w.write("\tfirstname = patient.getPatientName().getGivenName();\n");
 		     w.write("\tuserVarMap.put(\"firstname\", firstname);\n");
@@ -155,8 +156,9 @@ public class ArdenServiceImpl implements ArdenService {
 		   	 treeParser.data(t.getNextSibling().getNextSibling(),ardObj);
 		   	 log.debug(t.getNextSibling().getNextSibling().getNextSibling().toStringTree()); // Print logic
 		   	 System.out.println(t.getNextSibling().getNextSibling().getNextSibling().toStringTree()); // Print logic
-		     //String logicstr = treeParser.logic(t.getNextSibling().getNextSibling().getNextSibling(), ardObj);
+		     String logicstr = treeParser.logic(t.getNextSibling().getNextSibling().getNextSibling(), ardObj);
 		    
+		     ardObj.PrintConceptMap();	   // To Debug
 		     ardObj.PrintEvaluateList();   // To Debug
 		     ardObj.WriteEvaluate(w);
 		     String actionstr = treeParser.action(t.getNextSibling().getNextSibling().getNextSibling().getNextSibling(), ardObj);

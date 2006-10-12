@@ -222,7 +222,7 @@ public class MLMObject {
 	}
 	
 	public void WriteAction(String str, Writer w) throws Exception {
-		
+		boolean retVal;
 		try{
 			 w.write("public void initAction() {\n");
 		     w.append("\t\tuserVarMap.put(\"ActionStr\", \"" +  str + "\");\n");
@@ -284,7 +284,7 @@ public class MLMObject {
 		    }
 	}
 	public void WriteEvaluate(Writer w) throws Exception {
-	
+	boolean retVal = false;
 	try{
 		String key;
 		ListIterator<MLMEvaluateElement> thisList;
@@ -299,7 +299,7 @@ public class MLMObject {
 			}
 		}
 		
-		 w.append("\npublic DSSObject evaluate() {\n");
+		 w.append("\npublic ArdenValue evaluate() {\n");
 		 w.append("\tif(evaluate_logic()) {\n");
 		 w.append("\t\t\tdssObj.setPrintString(action());\n");
 		 w.append("\t\t\treturn dssObj;\n\t}\n");
@@ -312,15 +312,17 @@ public class MLMObject {
 	     w.append("\tboolean retVal = false;\n");
 	     w.append("\tObs obs;\n");
 	 
-	     w.append("\tdssObj = new DSSObject(locale, patient);\n\n");
+	     w.append("\tdssObj = new ArdenValue(locale, patient);\n\n");
 	     thisList = evaluateList.listIterator(0);   // Start the Big Evaluate()
 	     while (thisList.hasNext()){
 	    	 Iterator iter = thisList.next().iterator();
-	    	 WriteLogic(iter, w);
+	    	 retVal = WriteLogic(iter, w);
 	    	 w.flush();
 	     }
-	    w.append("\t\treturn retVal;\n");
-	 	w.append("\n\t}");
+	    if(retVal){				// The WriteLogic function did not find a standalone conclude
+	    	w.append("\t\treturn retVal;\n");
+	    }
+	    w.append("\n\t}");
 	 	w.append("\n");
 	}
 	catch (Exception e) {
@@ -428,8 +430,8 @@ public class MLMObject {
 	}
 */	
 	
-	private void WriteLogic (Iterator iter, Writer w) {
-		  
+	private boolean WriteLogic (Iterator iter, Writer w) {
+		boolean retVal = true;   // Have the calling function add the statement - return retVal;  
 		try {
 		
 		String key = "", nextKey = "", tmpStr = "";
@@ -513,9 +515,10 @@ public class MLMObject {
 			       	}
 		         
 			    }
-			else if(key.startsWith("Conclude")) {
+			else if(key.startsWith("Conclude")) { // Conclude by itself
 				w.append("\n\t //conclude here\n");
 		    	writeActionConcept(key, w);
+		    	retVal = false;	// Since we are conclude unconditionally, we do not want calling function to add the return statement
 		   	  }
 			    
 		    }
@@ -525,7 +528,7 @@ public class MLMObject {
 		      System.err.println("Write Evaluate: "+e);
 		      e.printStackTrace();   // so we can get stack trace		
 		    }
-		
+		return retVal;
 	}	
 	
 	private String complexIf(String nextKey, MLMObjectElement mObjElem) {
