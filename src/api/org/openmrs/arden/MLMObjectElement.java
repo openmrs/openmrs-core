@@ -230,7 +230,7 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 				//	w.append("\t\t\t}");
 					w.append("\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n");
 				//	w.append("\t\tdssObj.addObs(\"" + getConcept().trim() + "\", obs);\n");	// changed to have the key such as last_pb than BLOOD_LEAD_LEVEL as the key to the obsMap see below
-					w.append("\t\tdssObj.addObs(\"" + key + "\", obs);\n");
+					w.append("\t\tvalueMap.put(\"" + key + "\", val);\n");
 				}
 				retVal = true;
 			}
@@ -238,20 +238,20 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 			if(hasConclude)	{ // has conclude
 				if(concludeVal == true) {
 					w.append("\t\tretVal = true;\n");
-					w.append("\t\tdssObj.setConcludeVal(true);\n");
+					
 					if(!key.startsWith("Conclude") &&  !key.startsWith("ELSE") &&  !key.startsWith("ENDIF")
 							   && !key.equals("AND")){
 						//w.append("\t\tdssObj.addObs(\"" + getConcept().trim() + "\", obs);\n"); // changed to have the key such as last_pb than BLOOD_LEAD_LEVEL as the key to the obsMap see below
-						w.append("\t\tdssObj.addObs(\"" + key + "\", obs);\n");
+						w.append("\t\tvalueMap.put(\"" + key + "\", val);\n");
 					}
 				}
 				else if(concludeVal == false){
 					w.append("\t\tretVal = false;\n");
-					w.append("\t\tdssObj.setConcludeVal(false);\n");
+					
 					if(!key.startsWith("Conclude") &&  !key.startsWith("ELSE") &&  !key.startsWith("ENDIF")
 							   && !key.equals("AND")){
 						//w.append("\t\tdssObj.addObs(\"" + getConcept().trim() + "\", obs);\n"); // changed to have the key such as last_pb than BLOOD_LEAD_LEVEL as the key to the obsMap see below
-						w.append("\t\tdssObj.addObs(\"" + key + "\", obs);\n");
+						w.append("\t\tvalueMap.put(\"" + key + "\", val);\n");
 					}
 				
 				}
@@ -274,29 +274,27 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 		   String cn = getConcept();
 		   
 		   if(dbAccessRequired){
-			   w.append("private Obs " + key + "(){\n");
+			   w.append("private ArdenValue " + key + "(){\n");
 			   w.append("\tConcept concept;\n");
-		       w.append("\tObs obs;\n\n");
-			   
+		       
 			   w.append("\tconcept = Context.getConceptService().getConceptByName(\"" + cn.trim() + "\");\n");
 			   if(readType.equals("last")){
-			   w.append("\tobs = dataSource.getLastPatientObsForConcept(concept, patient, " +  howMany + ");\n\n");
+			   	  w.append("\treturn dataSource.eval(patient, ardenClause.concept(concept).latest(" + howMany + "));\n");
 			   }
 			   else { 
-				   w.append("\tobs = dataSource.getPatientObsForConcept(concept, patient);\n\n");
+				   w.append("\treturn dataSource.eval(patient, ardenClause.concept(concept));\n");
 			   }
-			   w.append("\treturn obs;\n");
 			   w.append("}\n\n");
 			   
 		   }  // end of DB access required
 		   else {  // No DB access, simply conclude or else conclude
 			   if(readType.equals("call")) {
-				   w.append("private DSSObject " + "call_" +cn + "(){\n");
-				   w.append("\tDSSObject dssObj;\n");
+				   w.append("private ArdenValue " + "call_" +cn + "(){\n");
+				   w.append("\tArdenValue ardenValue;\n");
 			       w.append("\tArdenRule mlm;\n\n");
 				   
 			       w.append("mlm = new " + cn + "(patient, dataSource);\n");
-			       w.append("if(mlm != null) {\n\t\tdssObj = mlm.evaluate();\n\t\t return dssObj;\n}\nelse {return null;}");
+			       w.append("if(mlm != null) {\n\t\tardenValue = mlm.evaluate();\n\t\t return ardenValue;\n}\nelse {return null;}");
 			   }
 			   else {  
 			   	w.append("\t\tString val = userVarMap.get( \"" + key + "\");\n");
@@ -499,13 +497,13 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 			   		case EQUALS:
 			   		{switch(compOpType){
 		  			case 3: // boolean
-		  				retStr += "\tif (obs.getValueAsBoolean() == " + Boolean.toString(answerBool) ;
+		  				retStr += "\tif (val.getValueAsBoolean() == " + Boolean.toString(answerBool) ;
 		  				break;
 		  			case 2: // integer
-		  				retStr += "\tif (obs.getValueNumeric() == " + Integer.toString(answerInt) ;
+		  				retStr += "\tif (val.getValueNumeric() == " + Integer.toString(answerInt) ;
 		  				break;
 		  			case 1: // String
-		  				retStr += "\tif (obs.getValueText().equals(\"" + answerStr + "\")";
+		  				retStr += "\tif (val.getValueText() != null && val.getValueText().equals(\"" + answerStr + "\")";
 		  				break;
 				   }
 			   			
@@ -517,7 +515,7 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 		  				
 		  				break;
 		  			case 2: // integer
-		  				retStr += "\tif (obs.getValueNumeric() >= " + Integer.toString(answerInt) ;
+		  				retStr += "\tif (val.getValueNumeric() >= " + Integer.toString(answerInt) ;
 		  				break;
 		  			case 1: // String
 		  				

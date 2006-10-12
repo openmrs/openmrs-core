@@ -229,7 +229,7 @@ public class MLMObject {
 		     w.write("}\n\n");	// End of this function
 		     w.flush();
 		
-			 w.write("private String action() {\n");
+			 w.write("public String doAction() {\n");
 		     w.write("\tint index = 0, nindex = 0, endindex = 0, startindex = 0;\n");
 		     w.write("\tString tempstr, variable, outStr = \"\";\n");
 		     w.write("\tString inStr = userVarMap.get(\"ActionStr\");\n\n");
@@ -276,6 +276,16 @@ public class MLMObject {
 		     w.write("\treturn outStr;\n");
 		     w.write("}\n");
 		     
+		     w.write("public void printDebug(){\n");
+		     w.write("\tfor (Map.Entry<String,ArdenValue> entry : valueMap.entrySet()) {\n");
+		     w.write("\t\tSystem.out.println(\"__________________________________\");\n");	
+		     w.write("\t\tSystem.out.println (entry.getKey () + \": \");\n");
+		     w.write("\t\tArdenValue val = entry.getValue ();\n");
+		     w.write("\t\tval.PrintObsMap();\n");
+		     w.write("\t\tSystem.out.println(\"__________________________________\");\n");	
+		     w.write("\t\t}\n");
+		     w.write("\t}\n"); 	
+		     
 		     w.flush();
 		}
 		catch (Exception e) {
@@ -299,20 +309,15 @@ public class MLMObject {
 			}
 		}
 		
-		 w.append("\npublic ArdenValue evaluate() {\n");
-		 w.append("\tif(evaluate_logic()) {\n");
-		 w.append("\t\t\tdssObj.setPrintString(action());\n");
-		 w.append("\t\t\treturn dssObj;\n\t}\n");
-		 w.append("\telse {\n");
-		 w.append("\t\t\treturn null;\n\t}\n\n}\n");
+		 w.append("\npublic boolean evaluate() {\n");
+		 w.append("\t\t\treturn evaluate_logic();\n}\n");
 		
 		 w.append("\n");
 	     w.append("private boolean evaluate_logic() {\n");
 
 	     w.append("\tboolean retVal = false;\n");
-	     w.append("\tObs obs;\n");
+	     w.append("\tArdenValue val;\n");
 	 
-	     w.append("\tdssObj = new ArdenValue(locale, patient);\n\n");
 	     thisList = evaluateList.listIterator(0);   // Start the Big Evaluate()
 	     while (thisList.hasNext()){
 	    	 Iterator iter = thisList.next().iterator();
@@ -562,7 +567,7 @@ public class MLMObject {
 	        
 	    }
 	    else if(!nextKey.equals("ENDIF")){
-			tmpStr = " (obs = " + nextKey + "()) != null ) {\n\t";
+			tmpStr = " (val = " + nextKey + "()) != null ) {\n\t";
 			if(mObjElem != null ){
 				tmpStr += mObjElem.getCompOpCode(nextKey);
 				

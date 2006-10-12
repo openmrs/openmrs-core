@@ -19,7 +19,8 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Set;
 import java.util.HashMap;
-import org.openmrs.api.context.Context;import org.openmrs.Concept;
+import org.openmrs.api.context.Context;
+import org.openmrs.Concept;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.arden.*;
@@ -32,8 +33,9 @@ private Locale locale;
 private String firstname;
 private ArdenDataSource dataSource;
 private HashMap<String, String> userVarMap;
-private HashMap<String, ArdenValue> valueMap; 
+private HashMap<String, ArdenValue> valueMap;
 private ArdenClause ardenClause;
+
 
 //Constructor
 public HiRiskLeadScreen(Patient p, ArdenDataSource d){
@@ -65,58 +67,43 @@ public ArdenRule getInstance() {
 
 private ArdenValue Last_Pb(){
 	Concept concept;
-	
 	concept = Context.getConceptService().getConceptByName("BLOOD LEAD LEVEL");
-	return dataSource.eval(patient,ardenClause.concept(concept).latest(1));
-		
-
+	return dataSource.eval(patient, ardenClause.concept(concept).latest(1));
 }
 
 private ArdenValue Qual_Pb(){
 	Concept concept;
-	
-
 	concept = Context.getConceptService().getConceptByName("Qualitative_Blood_Lead");
-	return dataSource.eval(patient,ardenClause.concept(concept).latest(1));
-
-	
+	return dataSource.eval(patient, ardenClause.concept(concept).latest(1));
 }
 
 private ArdenValue HousePre50(){
 	Concept concept;
-	
-
 	concept = Context.getConceptService().getConceptByName("HouseBltPre1950");
-	return dataSource.eval(patient,ardenClause.concept(concept).latest(1));
-
-	
+	return dataSource.eval(patient, ardenClause.concept(concept).latest(1));
 }
 
 private ArdenValue RenovatedPre78(){
 	Concept concept;
-
 	concept = Context.getConceptService().getConceptByName("RenovatedPre78");
-	return dataSource.eval(patient,ardenClause.concept(concept).latest(1));
-	
+	return dataSource.eval(patient, ardenClause.concept(concept).latest(1));
 }
 
 private ArdenValue HiPbSibFriend(){
 	Concept concept;
-	
 	concept = Context.getConceptService().getConceptByName("HiPbSibFriend");
-	return dataSource.eval(patient,ardenClause.concept(concept).latest(1));
-	
+	return dataSource.eval(patient, ardenClause.concept(concept).latest(1));
 }
 
 
 public boolean evaluate() {
-	return(evaluate_logic());
+			return evaluate_logic();
 }
 
 private boolean evaluate_logic() {
 	boolean retVal = false;
 	ArdenValue val;
-	
+
 	if ( (val = Last_Pb()) != null ) {
 		if (val.getValueNumeric() >= 14 ) {
 			//LeadRisk = "has lead level greater than 14 mg/dcl"
@@ -173,8 +160,12 @@ private boolean evaluate_logic() {
 		return retVal;
 
 	}
+
+
+	 //conclude here
 		retVal = true;
 		return retVal;
+
 
 	}
 public void initAction() {
@@ -223,15 +214,13 @@ public String doAction() {
 	}
 	return outStr;
 }
-
 public void printDebug(){
-	 
-	 for (Map.Entry<String,ArdenValue> entry : valueMap.entrySet()) {
-		 	System.out.println("__________________________________");	
-		    System.out.println (entry.getKey () + ": ");
-		    ArdenValue val = entry.getValue ();
-		    val.PrintObsMap();
-		    System.out.println("__________________________________");	
-		  }
+	for (Map.Entry<String,ArdenValue> entry : valueMap.entrySet()) {
+		System.out.println("__________________________________");
+		System.out.println (entry.getKey () + ": ");
+		ArdenValue val = entry.getValue ();
+		val.PrintObsMap();
+		System.out.println("__________________________________");
+		}
 	}
 }
