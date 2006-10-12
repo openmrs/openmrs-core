@@ -231,35 +231,55 @@ h1, h2, h3, h4, h5 {
 }
 
 #patientHeader {
-	font-size:0.9em;
 	text-align: left;
 	display: block;
 }
 
-tr td#patientHeaderPatientName {
+#patientHeaderPatientName, #patientHeaderPreferredIdentifier {
 	font-weight:bold;
-	font-size:1.5em;
+	font-size:1.6em;
 	margin-right:10px;
 	vertical-align: middle;
-	text-align: center;
+	text-align: left;
+	float: left;
 }
-tr td#patientHeaderPatientGender, tr td#patientHeaderPatientAge, tr td#patientHeaderPatientTribe, tr td#patientHeaderPatientIdentifiers, tr td#patientHeaderHealthCenter {
-	text-align: center;
-	vertical-align: middle;
-	margin-right: 5px;
-	margin-left: 5px;
-	padding-right: 5px;
-	padding-left: 5px;
+#patientHeaderPreferredIdentifier {
+	float: right;
+	text-align: right;
 }
-tr td#patientHeaderPatientGenderXX, tr td#patientHeaderPatientAge, tr td#patientHeaderPatientTribe, tr td#patientHeaderPatientIdentifiers {
-	border-right: 1px solid white;
+
+#patientHeaderPatientIdentifierType {
+	vertical-align: top;
+	font-weight: normal;
+	font-size: .65em;
+	line-height: 1.85em;
 }
-#patientHeaderPatientBirthdate, #patientHeaderPatientTribe {
+
+table#patientHeaderGeneralInfo {
+	clear: both;
+	width: 100%;
+	}
+	table#patientHeaderGeneralInfo td {
+		text-align: left;
+		vertical-align: top;
+		padding-right: 8px;
+		padding-left: 8px;
+	}
+	
+#patientHeaderPatientBirthdate, #patientHeaderPatientTribe, .patientHeaderPatientIdentifier {
 	white-space: nowrap;
 }
 
-.patientHeaderPatientIdentifier {
+table td#patientHeaderOtherIdentifiers {
+	text-align: right;
+	xfloat: right;
+	xwidth: 100%;
+}
+
+#patientHeaderShowMoreIdentifiers {
+	cursor: pointer;
 	white-space: nowrap;
+	-moz-user-select: none;
 }
 
 table#patientHeaderObs td {

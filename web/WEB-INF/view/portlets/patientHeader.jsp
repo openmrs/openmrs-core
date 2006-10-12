@@ -7,9 +7,16 @@
 
 	<%-- Header showing preferred name, id, and treatment status --%>
 	<div id="patientHeader" class="boxHeader">
-		<table id="patientHeaderGeneralTable">
+		<div id="patientHeaderPatientName">${model.patient.patientName.givenName} ${model.patient.patientName.middleName} ${model.patient.patientName.familyName}</div>
+		<div id="patientHeaderPreferredIdentifier">
+			<c:if test="${fn:length(model.patient.identifiers) > 0}">
+				<c:forEach var="identifier" items="${model.patient.identifiers}" begin="0" end="0">
+					<span class="patientHeaderPatientIdentifier"><span id="patientHeaderPatientIdentifierType">${identifier.identifierType.name}:</span> ${identifier.identifier}</span>
+				</c:forEach>
+			</c:if>
+		</div>
+		<table id="patientHeaderGeneralInfo">
 			<tr>
-				<td id="patientHeaderPatientName">${model.patient.patientName.givenName} ${model.patient.patientName.middleName} ${model.patient.patientName.familyName}&nbsp;&nbsp</td>
 				<td id="patientHeaderPatientGender">
 					<c:if test="${model.patient.gender == 'M'}"><img src="${pageContext.request.contextPath}/images/male.gif" alt='<spring:message code="Patient.gender.male"/>'/></c:if>
 					<c:if test="${model.patient.gender == 'F'}"><img src="${pageContext.request.contextPath}/images/female.gif" alt='<spring:message code="Patient.gender.female"/>'/></c:if>
@@ -17,28 +24,43 @@
 				<td id="patientHeaderPatientAge">
 					<c:if test="${model.patient.age > 0}">${model.patient.age} <spring:message code="Patient.age.years"/></c:if>
 					<c:if test="${model.patient.age == 0}">< 1 <spring:message code="Patient.age.year"/></c:if>
-					<span id="patientHeaderPatientBirthdate">(<c:if test="${model.patient.birthdateEstimated}">~</c:if><openmrs:formatDate date="${model.patient.birthdate}" type="medium" />)</span>
+					<span id="patientHeaderPatientBirthdate"><c:if test="${not empty model.patient.birthdate}">(<c:if test="${model.patient.birthdateEstimated}">~</c:if><openmrs:formatDate date="${model.patient.birthdate}" type="medium" />)</c:if><c:if test="${empty model.patient.birthdate}"><spring:message code="general.unknown"/></c:if></span>
 				</td>
 				<openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" var="showTribe"/>
 				<c:if test="${showTribe}">
 					<td id="patientHeaderPatientTribe">
-						${model.patient.tribe.name}
+						<spring:message code="Patient.tribe"/>:
+						<b>${model.patient.tribe.name}</b>
 					</td>
 				</c:if>
-				<td id="patientHeaderPatientIdentifiers">
-					<c:forEach var="identifier" items="${model.patient.identifiers}" varStatus="status">
-						<span class="patientHeaderPatientIdentifier">${identifier.identifierType.name}: ${identifier.identifier}</span>
-						<c:if test="${!status.last}">&nbsp;|&nbsp;</c:if>
-					</c:forEach>
-				</td>
 				<td id="patientHeaderHealthCenter">
-					<spring:message code="Patient.healthCenter"/>:
-					${model.patient.healthCenter.name}
+					<c:if test="${model.patient.healthCenter.name}">
+						<spring:message code="Patient.healthCenter"/>:
+						<b>${model.patient.healthCenter.name}</b>
+					</c:if>
 				</td>
-				<td style="vertical-align: middle" id="patientHeaderPatientSummary">
-					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<td id="patientHeaderPatientSummary">
 					<a class="offColor" href="javascript:window.open('patientSummary.htm?patientId=${model.patientId}', 'summaryWindow', 'toolbar=no,width=800,height=600,resizable=yes,scrollbars=yes').focus()">Summary</a>
 				</td>
+				<td id="patientHeaderOtherIdentifiers">
+					<c:if test="${fn:length(model.patient.identifiers) > 1}">
+						<c:forEach var="identifier" items="${model.patient.identifiers}" begin="1" end="1">
+							<span class="patientHeaderPatientIdentifier">${identifier.identifierType.name}: ${identifier.identifier}</span>
+						</c:forEach>
+					</c:if>
+					<c:if test="${fn:length(model.patient.identifiers) > 2}">
+						<div id="patientHeaderMoreIdentifiers">
+							<c:forEach var="identifier" items="${model.patient.identifiers}" begin="2">
+								<span class="patientHeaderPatientIdentifier">${identifier.identifierType.name}: ${identifier.identifier}</span>
+							</c:forEach>
+						</div>
+					</c:if>
+				</td>
+				<c:if test="${fn:length(model.patient.identifiers) > 2}">
+					<td width="40">
+						<a id="patientHeaderShowMoreIdentifiers" onclick="return showMoreIdentifiers()" title='<spring:message code="patientDashboard.showMoreIdentifers"/>'><spring:message code="general.nMore" arguments="${fn:length(model.patient.identifiers) - 2}"/><span id="patientHeaderMoreIdentifiersArrow">&dArr;</span></a>
+					</td>
+				</c:if>
 			</tr>
 		</table>
 	</div>
@@ -118,3 +140,22 @@
 			</th>
 		</tr></table>
 	</div>
+	
+	<script type="text/javascript">
+		function showMoreIdentifiers() {
+			if (identifierElement.style.display == '') {
+				identifierArrow.innerHTML = "&dArr";
+				identifierElement.style.display = "none";
+			}
+			else {
+				identifierArrow.innerHTML = "&uArr";
+				identifierElement.style.display = "";
+			}
+		}
+		
+		var identifierElement = document.getElementById("patientHeaderMoreIdentifiers");
+		var identifierArrow = document.getElementById("patientHeaderMoreIdentifiersArrow");
+		identifierElement.style.display = "none";
+		
+	</script>
+	

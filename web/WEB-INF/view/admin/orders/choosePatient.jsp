@@ -9,7 +9,7 @@
 
 <br />
 
-<openmrs:portlet id="choosePatient" url="findPatient" parameters="size=full|postURL=orderDrug.list" />
+<openmrs:portlet id="choosePatient" url="findPatient" parameters="size=full|postURL=orderDrug.list|hideAddNewPatient=true" />
 
 <br />
 

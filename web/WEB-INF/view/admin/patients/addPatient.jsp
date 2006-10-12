@@ -3,139 +3,97 @@
 <openmrs:require privilege="Form Entry" otherwise="/login.htm" redirect="/admin/patients/addPatient.htm"/>
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
-<%-- @ include file="localHeader.jsp" --%>
 
-<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
-
-<script type="text/javascript">
-	dojo.require("dojo.widget.openmrs.PatientSearch");
-
-	var searchWidget;
-	var patientName;
-	var birthyear;
-	var age;
-	var gender;
-	var inputChanged = true;
-	
-	dojo.addOnLoad( function() {
+<c:choose>
+	<c:when test="${empty param.name}">
 		
-		searchWidget = dojo.widget.manager.getWidgetById("pSearch");			
+		<h2><spring:message code="Patient.find"/></h2>
+		<span class="instructions"><spring:message code="Patient.search.instructions" /></span>
+		<openmrs:portlet id="createPatient" url="addPatientForm" parameters="postURL=" />
 		
-		dojo.event.topic.subscribe("pSearch/select", 
-			function(msg) {
-				document.location = "${pageContext.request.contextPath}/patientDashboard.form?patientId=" + msg.objs[0].patientId;
+	</c:when>
+	<c:otherwise>
+		
+		<openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" var="showTribe"/>
+		
+		<script type="text/javascript">
+			function rowMouseOver(tr) {
+				if (tr.className.indexOf("searchHighlight") == -1)
+					tr.className = "searchHighlight " + tr.className;
+			};
+			
+			function rowMouseOut(tr) { 
+				var c = tr.className;
+				tr.className = c.substring(c.indexOf(" ") + 1, c.length);
+			};
+			
+			function onMouseClick(patientId) {
+				document.location = "${pageContext.request.contextPath}/patientDashboard.form?patientId=" + patientId;
 			}
-		);
-		
-		dojo.event.topic.subscribe("pSearch/objectsFound", 
-			function(msg) {
-				var patients = msg.objs;
-				if (patients.length < 1) {
-					if (patientName != "" && (birthyear != "" || age != "") && gender != "")
-						document.location = getHref();
-					else
-						patients.push(noPatientsFound);
-				}
-				else {
-					patients.push(patientsFound);	//setup links for appending to the end
-				}
+			
+			function onContinueClick() {
+				var href = "newPatient.form?name=${param.name}&birthyear=${param.birthyear}&gender=${param.gender}&age=${param.age}";
+				document.location = href;
 			}
-		);
+		</script>
 		
-		searchWidget.doFindObjects = function(phrase) {
-			patientName = phrase.toString();
-			birthyear = $("birthyear").value.toString();
-			age = $("age").value.toString();
-			gender = "";
-			var options = document.getElementsByTagName("input");
-			for (var i=0; i<options.length;i++) {
-				if (options[i].type == 'radio' && options[i].name=='gender' && options[i].checked == true)
-					gender = options[i].value.toString();
+		<style type="text/css">
+			#openmrsSearchTable th {
+				text-align: left;
 			}
-			DWRPatientService.getSimilarPatients(this.simpleClosure(this, "doObjectsFound"), patientName, birthyear, age, gender);
-			return false;
-		};
+		</style>
 		
-		searchWidget.allowNewSearch = function() {
-			if (inputChanged == true || (this.text != "" && this.text != this.lastPhraseSearched)) {
-				inputChanged = false;
-				if (this.text != "")
-					this.lastPhraseSearched = "";
-				return true;
-			}
-			return false;
-		};
+		<h2><spring:message code="Patient.search.similarPatient"/></h2>
+		<b id="similarPatientsIinstructions"><spring:message code="Patient.search.similarPatients.instructions"/></b>
 		
-		searchWidget.allowAutoJump = function() { return false; };
+		<br/><br/>
 		
-		$("patientName").focus();
-		noPatientsFound = "<a href='#' class='searchHit' onclick='document.location=getHref()'>No Patients Found.  Select to add a new Patient</a>";
-		patientsFound = "<br/><br/><h3><spring:message code="Patient.search.notFoundInstructions" javaScriptEscape="true" /></h3><a href='#' class='searchHit' onclick='document.location=getHref()'>Add New Patient</a>";
+		<table class="openmrsSearchTable" style="width: 100%;" cellpadding="2" cellspacing="0">
+			<thead>
+				<tr>
+					<th><spring:message code="PatientIdentifier.identifier"/></th>
+					<th><spring:message code="PatientName.givenName"/></th>
+					<th><spring:message code="PatientName.middleName"/></th>
+					<th><spring:message code="PatientName.familyName"/></th>
+					<th><spring:message code="Patient.age"/></th>
+					<th><spring:message code="Patient.gender"/></th>
+					<c:if test="${showTribe == 'true'}">
+						<th><spring:message code="Patient.tribe"/></th>
+					</c:if>
+					<th></th>
+					<th><spring:message code="Patient.birthdate"/></th>
+				</tr>
+			</thead>
+			<tbody>
+				<c:forEach var="patient" items="${patients}" varStatus="status">
+					<tr onMouseOver="rowMouseOver(this)" onMouseOut="rowMouseOut(this)" onClick="onMouseClick(${patient.patientId});" class="<c:choose><c:when test="${status.count % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">
+						<td class="patientIdentifier"><a>${patient.identifier} </a></td>
+						<td>${patient.givenName} </td>
+						<td>${patient.middleName} </td>
+						<td>${patient.familyName} </td>
+						<td class="patientAge">${patient.age} </td>
+						<td class="patientGender"><img src="/amrs/images/<c:if test="${patient.gender == 'F'}">fe</c:if>male.gif"></td>
+						<c:if test="${showTribe}">
+							<td>${patient.tribe}</td>
+						</c:if>
+						<td><c:if test="${patient.birthdateEstimated}">~</c:if></td>
+						<td><openmrs:formatDate date="${patient.birthdate}" type="textbox"/></td>
+					</tr>
+				</c:forEach>
+			</tbody>
+		</table>
 		
-	});
-	
-	var getHref = function() {
-		return "newPatient.form?name=" + patientName + "&birthyear=" + birthyear + "&gender=" + gender + "&age=" + age;
-	}
-	
-	function cancel() {
-		window.location = "${pageContext.request.contextPath}/formentry";
-	}
-	
-</script>
-
-<style>
-	tr th#patientGender, tr th#patientAge, .patientGender, .patientAge {
-		text-align: center;
-	}
-	
-	.openmrsSearchDiv {
-		position: absolute;
-		top: 150px;
-		margin-top: 8em;
-		margin-left: -28em;
-		margin-right: 1em;
-		z-index: 100;
-	}
-</style>
-
-<h2><spring:message code="Patient.findOrCreate"/></h2>
-<span class="instructions"><spring:message code="Patient.search.instructions" /></span>
-<br /><br />
-<form method="get" action="" onSubmit="return search(patientName, null, false, 0);" id="patientForm">
-	<table>
-		<tr>
-			<td><spring:message code="Patient.name"/></td>
-			<td>
-				<div dojoType="PatientSearch" widgetId="pSearch" inputId="patientName" inputName="patientName" tableHeight="600" allowAutoList="false" showAddPatientLink="false"></div>
-			</td>
-		</tr>
-		<tr>
-			<td><spring:message code="Patient.birthyear"/></td>
-			<td>
-				<input type="text" name="birthyear" id="birthyear" size="5" value="" onChange="inputChanged=true;" onFocus="searchWidget.exitNumberMode()" />
-				<spring:message code="Patient.age.or"/>
-				<input type="text" name="age" id="age" size="5" value="" onChange="inputChanged=true;" onFocus="searchWidget.exitNumberMode()" />
-			</td>
-		</tr>
-		<tr>
-			<td><spring:message code="Patient.gender"/></td>
-			<td>
-				<openmrs:forEachRecord name="gender">
-					<input type="radio" name="gender" id="${record.key}" value="${record.key}" <c:if test="${record.key == status.value}">checked</c:if> onclick="inputChanged=true" onFocus="searchWidget.exitNumberMode()" /><label for="${record.key}"> <spring:message code="Patient.gender.${record.value}"/> </label>
-				</openmrs:forEachRecord>
-			</td>
-		</tr>
-	</table>
-	
-	<br />
-
-	<input type="button" value="<spring:message code="general.continue"/>" onClick="searchWidget.search(event)"/> &nbsp; &nbsp; 
-	<input type="button" value="<spring:message code="general.cancel" />" name="action" id="cancelButton" onClick="return cancel()">
-	
-	<br />
-	<br />
-	
-</form>
+		<br/>
+		<b id="similarPatientsNotFound"><spring:message code="Patient.search.similarPatients.notFound"/></b>
+		<br/><br/>
+		
+		<input type="button" value='<spring:message code="general.continue"/>' onClick="return onContinueClick()" />
+		&nbsp;
+		<input type="button" value='<spring:message code="general.cancel"/>' onClick="history.go(-1)" />
+		
+		<br/><br/>
+		
+	</c:otherwise>
+</c:choose>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

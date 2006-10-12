@@ -26,14 +26,16 @@ Parameters
 			searchWidget = dojo.widget.manager.getWidgetById("fSearch");			
 			
 			searchWidget.doFindObjects = function() {
-				return false;
+				this.doObjectsFound(this.allObjectsFound);
 			};
 			
 			searchWidget.getCellContent = function(form) {
-				var s = form.name + " (v." + form.version + ")";
+				var s = '<span onMouseOver="window.status=\'formId=' + form.formId + '\'">';
+				s += form.name + " (v." + form.version + ")";
 				if (form.published == false)
 					s += ' <i>(<spring:message code="formentry.unpublished"/>)</i>';
 					
+				s += "</span>";
 				return s;
 			};
 			

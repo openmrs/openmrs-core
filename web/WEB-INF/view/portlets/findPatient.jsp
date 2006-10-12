@@ -32,6 +32,9 @@
 						}
 					);
 					
+					<c:if test="${empty hideAddNewPatient}">
+						searchWidget.addPatientLink = '<a href="#" onClick="return jumpToAddNew()"><spring:message javaScriptEscape="true" code="Patient.add.new"/> &dArr;</a>';
+					</c:if>
 					searchWidget.inputNode.select();
 					changeClassProperty("description", "display", "none");
 				});
@@ -41,9 +44,25 @@
 			<div id="findPatient">
 				<b class="boxHeader"><spring:message code="Patient.find"/></b>
 				<div class="box">
-					<div dojoType="PatientSearch" widgetId="pSearch" <c:if test="${model.showIncludeVoided == 'true'}">showIncludeVoided="true"</c:if> searchLabel="<spring:message code="formentry.searchBox" htmlEscape="true"/>" showVerboseListing="true" patientId='<request:parameter name="patientId"/>' searchPhrase='<request:parameter name="phrase"/>' showAddPatientLink='false'></div>
+					<div dojoType="PatientSearch" widgetId="pSearch" <c:if test="${model.showIncludeVoided == 'true'}">showIncludeVoided="true"</c:if> searchLabel="<spring:message code="formentry.searchBox" htmlEscape="true"/>" showVerboseListing="true" patientId='<request:parameter name="patientId"/>' searchPhrase='<request:parameter name="phrase"/>' <c:if test="${not empty hideAddNewPatient}">showAddPatientLink='false'</c:if></div>
 				</div>
 			</div>
+			
+			<c:if test="${empty hideAddNewPatient}">
+				<openmrs:hasPrivilege privilege="Add Patients">
+					<br/> &nbsp; <spring:message code="general.or"/><br/><br/>
+					<openmrs:portlet id="addPatient" url="addPatientForm" parameters="postURL=admin/patients/addPatient.htm" />
+				</openmrs:hasPrivilege>
+				
+				<script type="text/javascript">
+					function jumpToAddNew() {
+						var searchWidget = dojo.widget.manager.getWidgetById("pSearch");
+						searchWidget.clearSearch();
+						document.getElementById("patientName").focus();
+						return false;
+					}
+				</script>
+			</c:if>
 			
 		</c:when>
 		<c:otherwise>

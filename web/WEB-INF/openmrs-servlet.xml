@@ -40,6 +40,7 @@
 					<prop key="**/orderType.list">orderTypeList</prop>
 					<prop key="**/orderType.form">orderTypeForm</prop>
 					<prop key="**/patient.form">patientForm</prop>
+					<prop key="**/addPatient.htm">addPatient</prop>
 					<prop key="**/newPatient.form">newPatientForm</prop>
 					<prop key="**/mergePatients.form">mergePatientsForm</prop>
 					<prop key="**/tribe.list">tribeList</prop>
@@ -293,6 +294,16 @@
 				<property name="successView"><value>patient.form</value></property>
 			</bean>
 		<!-- ** /Patient ** -->
+		
+		<!-- ** Add Patient ** -->
+			<!--  Used for finding duplicate patients -->
+			<bean id="addPatient" class="org.openmrs.web.controller.patient.AddPatientController">
+				<property name="commandName"><value>patients</value></property>
+				<property name="formView"><value>/admin/patients/addPatient</value></property>
+				<property name="successView"><value>/@WEBAPP.NAME@/admin/patients/newPatient.form</value></property>
+			</bean>
+		<!-- ** /Add Patient ** -->
+		
 		<!-- ** New (mini) Patient ** -->
 			<bean id="newPatientForm" class="org.openmrs.web.controller.patient.NewPatientFormController" singleton="false">
 				<property name="sessionForm"><value>true</value></property>
