@@ -13,7 +13,10 @@
 		 <property name="mappings">
 			 <props>
 				 <prop key="**/PatientSearch.js">jstlContentController</prop>
+				 <prop key="**/ObsSearch.js">jstlContentController</prop>
 				 <prop key="**/drugOrder.js">jstlContentController</prop>
+				 <prop key="**/OpenmrsPopup.js">jstlContentController</prop>
+				 <prop key="**/obs.js">jstlContentController</prop>
 				 <prop key="**/*.js">staticContentController</prop>
 				 <prop key="**/*">staticContentController</prop>
 			 </props>

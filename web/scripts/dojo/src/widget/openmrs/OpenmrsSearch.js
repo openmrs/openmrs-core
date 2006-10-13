@@ -105,8 +105,7 @@ dojo.widget.defineWidget(
 		DWREngine.setErrorHandler(handler);
 		DWREngine.setWarningHandler(handler);
 	},
-	
-	
+		
 	fillInTemplate: function(args, frag){
 			var source = this.getFragNodeRef(frag);
 			
@@ -159,10 +158,8 @@ dojo.widget.defineWidget(
 			dojo.event.connect(this.verboseListing, "onclick", this, "onCheckboxClick");
 	},
 
-
 	templateString: '<span><span style="white-space: nowrap"><span dojoAttachPoint="searchLabelNode"></span> <input type="text" value="" dojoAttachPoint="inputNode" autocomplete="off" /> <input type="checkbox" style="display: none" dojoAttachPoint="includeRetired"/> <input type="checkbox" style="display: none" dojoAttachPoint="includeVoided"/> <input type="checkbox" style="display: none" dojoAttachPoint="verboseListing"/></span><span class="openmrsSearchDiv"><table class="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><thead><tr dojoAttachPoint="headerRow"></tr></thead><tbody dojoAttachPoint="objHitsTableBody" style="vertical-align: top"><tr><td class="searchIndex"></td><td></td></tr></tbody></table></span></span>',
 	templateCssPath: "",
-
 
 	setHeaderCellContent: function(arr) {
 		if (this.showHeaderRow && arr) {
@@ -373,8 +370,7 @@ dojo.widget.defineWidget(
 		
 		return false;
 	},
-	
-	
+		
 	doFindObjects: function(phrase) {
 		
 		// override this method to make the necessary DWR calls 

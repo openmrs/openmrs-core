@@ -6,6 +6,7 @@ import java.util.Locale;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Obs;
+import org.openmrs.util.Format;
 
 public class ObsListItem {
 	
@@ -13,12 +14,15 @@ public class ObsListItem {
 
 	private Integer obsId;
  	private String encounter = "";
+ 	private String encounterName = "";
  	private String patientName = "";
  	private String conceptName = "";
  	private String order = "";
  	private String location = "";
  	private Date encounterDatetime;
  	private Date datetime;
+ 	private String encounterDate = "";
+ 	private String obsDate = "";
  	private Boolean voided = false;
  	private String value = "";
 
@@ -30,6 +34,8 @@ public class ObsListItem {
 			if (obs.getEncounter() != null) {
 				encounter = obs.getEncounter().getEncounterId().toString();
 				encounterDatetime = obs.getEncounter().getEncounterDatetime();
+				encounterDate = encounterDatetime == null ? "" : Format.format(encounterDatetime, locale);
+				encounterName = obs.getEncounter().getForm() == null ? "" : obs.getEncounter().getForm().getName();
 			}
 			patientName = obs.getPatient().getPatientName().getFamilyName();
 			patientName += ", " + obs.getPatient().getPatientName().getGivenName();
@@ -38,6 +44,7 @@ public class ObsListItem {
 				order = obs.getOrder().getOrderId().toString();
 			location = obs.getLocation().getName();
 			datetime = obs.getObsDatetime();
+			obsDate = datetime == null ? "" : Format.format(datetime, locale);
 			voided = obs.isVoided();
 			value = obs.getValueAsString(locale);
 		}
@@ -121,6 +128,55 @@ public class ObsListItem {
 
 	public void setValue(String value) {
 		this.value = value;
+	}
+
+	/**
+	 * @return Returns the encounterDate.
+	 */
+	public String getEncounterDate() {
+		return encounterDate;
+	}
+
+	/**
+	 * @param encounterDate The encounterDate to set.
+	 */
+	public void setEncounterDate(String encounterDate) {
+		this.encounterDate = encounterDate;
+	}
+
+	/**
+	 * @return Returns the encounterName.
+	 */
+	public String getEncounterName() {
+		return encounterName;
+	}
+
+	/**
+	 * @param encounterName The encounterName to set.
+	 */
+	public void setEncounterName(String encounterName) {
+		this.encounterName = encounterName;
+	}
+
+	/**
+	 * @return Returns the obsDate.
+	 */
+	public String getObsDate() {
+		return obsDate;
+	}
+
+	/**
+	 * @param obsDate The obsDate to set.
+	 */
+	public void setObsDate(String obsDate) {
+		this.obsDate = obsDate;
+	}
+
+	/**
+	 * @param encounterDatetime The encounterDatetime to set.
+	 */
+	public void setEncounterDatetime(Date encounterDatetime) {
+		this.encounterDatetime = encounterDatetime;
 	}
 
 	

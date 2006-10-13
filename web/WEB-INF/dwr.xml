@@ -75,6 +75,8 @@
 			<include method="findObs"/>
 			<include method="getObservations"/>
 			<include method="createObs"/>
+			<include method="getObsByPatientConceptEncounter"/>
+			<include method="getObs"/>
 		</create>
 		
 		<create creator="new" javascript="DWRFormService">

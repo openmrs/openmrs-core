@@ -27,6 +27,5 @@
 	})
 </script>
 
-<div class="conceptSearchLabel">${searchLabel}</div>
 <div dojoType="ConceptSearch" widgetId="${formFieldName}_search" conceptId="${initialValue}" showVerboseListing="true"></div>
 <div dojoType="OpenmrsPopup" widgetId="${formFieldName}_selection" hiddenInputName="${formFieldName}" searchWidget="${formFieldName}_search" searchTitle="${searchLabel}"></div>

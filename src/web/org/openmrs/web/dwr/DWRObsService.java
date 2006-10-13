@@ -18,6 +18,7 @@ import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsUtil;
 
 import uk.ltd.getahead.dwr.WebContextFactory;
 
@@ -148,4 +149,69 @@ public class DWRObsService {
 		return objectList;
 	}
 
+	public Vector<ObsListItem> getObsByPatientConceptEncounter(String patientId, String conceptId, String encounterId) {
+		log.debug("Started with: [" + patientId + "] [" + conceptId + "] [" + encounterId + "]");
+		
+		Vector<ObsListItem> ret = new Vector<ObsListItem>();
+		
+		Integer pId = null;
+		try {
+			pId = new Integer(patientId);
+		} catch ( NumberFormatException nfe ) {
+			pId = null;
+		}
+		
+		Integer eId = null;
+		try {
+			eId = new Integer(encounterId);
+		} catch ( NumberFormatException nfe ) {
+			eId = null;
+		}
+		
+		Patient p = null;
+		Concept c = null;
+		Encounter e = null;
+		
+		if ( pId != null ) p = Context.getPatientService().getPatient(pId);
+		if ( conceptId != null ) c = OpenmrsUtil.getConceptByIdOrName(conceptId);
+		if ( eId != null ) e = Context.getEncounterService().getEncounter(eId);
+		
+		Set<Obs> obss = null;
+		
+		if ( p != null && c != null ) {
+			log.debug("Getting obss with patient and concept");
+			obss = Context.getObsService().getObservations(p, c);
+		} else if ( e != null ) {
+			log.debug("Getting obss with encounter");
+			obss = Context.getObsService().getObservations(e);
+		} else if ( p != null ) {
+			log.debug("Getting obss with just patient");
+			obss = Context.getObsService().getObservations(p);
+		}
+
+		if ( obss != null ) {
+			for ( Obs obs : obss ) {
+				ObsListItem newItem = new ObsListItem(obs, Context.getLocale());
+				ret.add(newItem);
+			}
+			log.debug("obss was size " + obss.size());
+		}
+		
+		return ret;
+	}
+	
+	public ObsListItem getObs(Integer obsId) {
+		Obs o = null;
+		if ( obsId != null ) {
+			o = Context.getObsService().getObs(obsId);
+		}
+		
+		ObsListItem oItem = null;
+		
+		if ( o != null ) {
+			oItem = new ObsListItem(o, Context.getLocale());
+		}
+		
+		return oItem;
+	}
 }

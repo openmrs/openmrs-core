@@ -1,5 +1,4 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
-<%@ page isELIgnored="true" %>
 
 var showTribe = '<openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" />';
 var showHealthCenter = '<openmrs:globalProperty key="use_patient_attribute.healthCenter" defaultValue="false" />';

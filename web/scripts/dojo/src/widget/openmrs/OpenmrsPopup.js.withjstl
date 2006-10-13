@@ -1,3 +1,5 @@
+<%@ include file="/WEB-INF/template/include.jsp" %>
+
 /*
 	Copyright (c) 2006, The OpenMRS Cooperative
 	All Rights Reserved.
@@ -51,12 +53,12 @@ dojo.widget.defineWidget(
 		fillInTemplate: function(args, frag){
 			dojo.event.connect(this.changeButton, "onmouseup", this, "onChangeButtonClick");
 			dojo.event.connect(this.changeButton, "onkeyup", this, "onChangeButtonKeyup");
-			
+
 			if (!this.allowSearch)
 				this.changeButton.style.display = "none";
 		},
 		
-		templateString: '<span id="${this.widgetId}"><span style="white-space: nowrap"><span dojoAttachPoint="displayNode"></span> <input type="hidden" value="" dojoAttachPoint="hiddenInputNode" /><input type="button" value="Change" dojoAttachPoint="changeButton" class="smallButton" /></span><div class="description" dojoAttachPoint="descriptionDisplayNode"></div> </span>',
+		templateString: '<span id="${this.widgetId}"><span style="white-space: nowrap"><span dojoAttachPoint="displayNode"></span> <input type="hidden" value="" dojoAttachPoint="hiddenInputNode" /><input type="button" value="<spring:message code="general.change" />" dojoAttachPoint="changeButton" class="smallButton" /></span><div class="description" dojoAttachPoint="descriptionDisplayNode"></div> </span>',
 		templateCssPath: "",
 		
 		postCreate: function(){
@@ -102,8 +104,11 @@ dojo.widget.defineWidget(
 			if (this.hiddenInputId)
 				this.hiddenInputNode.id = this.hiddenInputId;	
 			
-			if (this.changeButtonValue)
+			if (this.changeButtonValue) {
 				this.changeButton.value = this.changeButtonValue;
+			} else {
+				this.setChangeButtonValue();			
+			}
 			
 			if (!this.showChangeButton)
 				this.changeButton.style.display = "none";
@@ -155,9 +160,16 @@ dojo.widget.defineWidget(
 		
 		closeSearch: function() {
 			this.searchWidget.hide();
+			this.setChangeButtonValue();
 			this.changeButton.focus();
+		},
+		
+		setChangeButtonValue: function() {
+			if ( !this.changeButtonValue ) {
+				if ( this.hiddenInputNode.value == "" ) this.changeButton.value = "<spring:message code="general.select" />";
+				else this.changeButton.value="<spring:message code="general.change" />";
+			}
 		}
-
 	},
 	"html"
 );
