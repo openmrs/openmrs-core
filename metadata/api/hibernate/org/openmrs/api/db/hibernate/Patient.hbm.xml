@@ -97,7 +97,7 @@
 		
 		<!-- bi-directional one-to-many association to PatientIdentifier -->
 		<set name="identifiers" lazy="true" cascade="all-delete-orphan" 
-			table="patient_identifier" order-by="voided desc,preferred desc,identifier_type desc,date_created desc">
+			table="patient_identifier" order-by="voided asc,preferred desc,identifier_type desc,date_created desc">
 			<key not-null="true">
 				<column name="patient_id" />
 			</key>

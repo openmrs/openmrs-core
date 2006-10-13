@@ -4,7 +4,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -463,6 +465,12 @@ public class Patient implements java.io.Serializable {
 		}
 	}
 	
+	/**
+	 * Return's the first (preferred) patient identifier matching <code>identifierTypeId</code>
+	 * 
+	 * @param identifierTypeId
+	 * @return preferred patient identifier
+	 */
 	public PatientIdentifier getPatientIdentifier(Integer identifierTypeId) {
 		if (identifiers != null && identifiers.size() > 0) {
 			PatientIdentifier found = null;
@@ -479,6 +487,12 @@ public class Patient implements java.io.Serializable {
 		}
 	}
 	
+	/**
+	 * Return's the first (preferred) patient identifier matching <code>identifierTypeName</code>
+	 * 
+	 * @param identifierTypeName
+	 * @return preferred patient identifier
+	 */
 	public PatientIdentifier getPatientIdentifier(String identifierTypeName) {
 		if (identifiers != null && identifiers.size() > 0) {
 			PatientIdentifier found = null;
@@ -495,6 +509,27 @@ public class Patient implements java.io.Serializable {
 		}		
 	}
 	
+	/**
+	 * Returns only the non-voided identifiers for this patient
+	 * 
+	 * @return list identifiers
+	 */
+	public List<PatientIdentifier> getActiveIdentifiers() {
+		List<PatientIdentifier> ids = new Vector<PatientIdentifier>();
+		if (identifiers != null && identifiers.size() > 0) {
+			for (PatientIdentifier pi : identifiers) {
+				if (pi.isVoided() == false)
+					ids.add(pi);
+			}
+		}
+		return ids;
+	}
+	
+	/**
+	 * Convenience method.  Calculates age based on the birthdate
+	 * 
+	 * @return integer age
+	 */
 	public Integer getAge() {
 		
 		if (birthdate == null)

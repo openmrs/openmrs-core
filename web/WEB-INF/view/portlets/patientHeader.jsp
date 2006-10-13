@@ -9,8 +9,8 @@
 	<div id="patientHeader" class="boxHeader">
 		<div id="patientHeaderPatientName">${model.patient.patientName.givenName} ${model.patient.patientName.middleName} ${model.patient.patientName.familyName}</div>
 		<div id="patientHeaderPreferredIdentifier">
-			<c:if test="${fn:length(model.patient.identifiers) > 0}">
-				<c:forEach var="identifier" items="${model.patient.identifiers}" begin="0" end="0">
+			<c:if test="${fn:length(model.patient.activeIdentifiers) > 0}">
+				<c:forEach var="identifier" items="${model.patient.activeIdentifiers}" begin="0" end="0">
 					<span class="patientHeaderPatientIdentifier"><span id="patientHeaderPatientIdentifierType">${identifier.identifierType.name}:</span> ${identifier.identifier}</span>
 				</c:forEach>
 			</c:if>
@@ -44,22 +44,22 @@
 					<a class="offColor" href="javascript:window.open('patientSummary.htm?patientId=${model.patientId}', 'summaryWindow', 'toolbar=no,width=800,height=600,resizable=yes,scrollbars=yes').focus()">Summary</a>
 				</td>
 				<td id="patientHeaderOtherIdentifiers">
-					<c:if test="${fn:length(model.patient.identifiers) > 1}">
-						<c:forEach var="identifier" items="${model.patient.identifiers}" begin="1" end="1">
+					<c:if test="${fn:length(model.patient.activeIdentifiers) > 1}">
+						<c:forEach var="identifier" items="${model.patient.activeIdentifiers}" begin="1" end="1">
 							<span class="patientHeaderPatientIdentifier">${identifier.identifierType.name}: ${identifier.identifier}</span>
 						</c:forEach>
 					</c:if>
-					<c:if test="${fn:length(model.patient.identifiers) > 2}">
+					<c:if test="${fn:length(model.patient.activeIdentifiers) > 2}">
 						<div id="patientHeaderMoreIdentifiers">
-							<c:forEach var="identifier" items="${model.patient.identifiers}" begin="2">
+							<c:forEach var="identifier" items="${model.patient.activeIdentifiers}" begin="2">
 								<span class="patientHeaderPatientIdentifier">${identifier.identifierType.name}: ${identifier.identifier}</span>
 							</c:forEach>
 						</div>
 					</c:if>
 				</td>
-				<c:if test="${fn:length(model.patient.identifiers) > 2}">
+				<c:if test="${fn:length(model.patient.activeIdentifiers) > 2}">
 					<td width="32">
-						<small><a id="patientHeaderShowMoreIdentifiers" onclick="return showMoreIdentifiers()" title='<spring:message code="patientDashboard.showMoreIdentifers"/>'><spring:message code="general.nMore" arguments="${fn:length(model.patient.identifiers) - 2}"/> <span id="patientHeaderMoreIdentifiersArrow">&dArr;</span></a></small>
+						<small><a id="patientHeaderShowMoreIdentifiers" onclick="return showMoreIdentifiers()" title='<spring:message code="patientDashboard.showMoreIdentifers"/>'><spring:message code="general.nMore" arguments="${fn:length(model.patient.activeIdentifiers) - 2}"/> <span id="patientHeaderMoreIdentifiersArrow">&dArr;</span></a></small>
 					</td>
 				</c:if>
 			</tr>
