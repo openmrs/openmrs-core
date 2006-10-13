@@ -109,7 +109,12 @@
 											<td><spring:message code="${token.displayText}" /></td>
 											<td>
 												<spring:bind path="${token.codeName}">
-													<input type="text" name="${status.expression}" value="${status.value}" size="${token.displaySize}" />
+													<c:if test="${status.value == null}">
+														<input type="text" name="${status.expression}" value="${model.addressTemplate.elementDefaults[token.codeName]}" size="${token.displaySize}" />
+													</c:if>
+													<c:if test="${status.value != null}">
+														<input type="text" name="${status.expression}" value="${status.value}" size="${token.displaySize}" />
+													</c:if>
 													<c:if test="${model.addresShowErrors != 'false'}">
 														<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 													</c:if>
