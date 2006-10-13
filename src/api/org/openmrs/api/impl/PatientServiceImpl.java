@@ -26,6 +26,7 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.PatientDAO;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Patient-related services
@@ -137,6 +138,23 @@ public class PatientServiceImpl implements PatientService {
 			Patient p = identifierInUse(pi.getIdentifier(), pi.getIdentifierType(), patient);
 			if (p != null)
 				throw new APIException("Identifier " + pi.getIdentifier() + " in use by patient #" + p.getPatientId());
+			
+			PatientIdentifierType pit = pi.getIdentifierType();
+			String identifier = pi.getIdentifier();
+			try {
+				if (pit.hasCheckDigit() && !OpenmrsUtil.isValidCheckDigit(identifier)) {
+					log.error("hasCheckDigit and is not valid: " + pit.getName() + " " + identifier);
+					throw new APIException("Invalid check digit for identifier " + identifier);
+				}
+				else if (pit.hasCheckDigit() == false && identifier.contains("-")) {
+					log.error("hasn't CheckDigit and contains '-': " + pit.getName() + " " + identifier);
+					throw new APIException("Invalid character for non-checkdigit identifier " + identifier);
+				}
+			} catch (Exception e) {
+				log.error("exception thrown with: " + pit.getName() + " " + identifier);
+				log.error("Error while adding patient identifiers to savedIdentifier list", e);
+				throw new APIException("Invalid identifier " + identifier);
+			}
 		}
 		
 	}

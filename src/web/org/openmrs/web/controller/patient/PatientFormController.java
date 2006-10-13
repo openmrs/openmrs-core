@@ -251,6 +251,8 @@ public class PatientFormController extends SimpleFormController {
 				
 				// check patient identifier checkdigits
 					for (PatientIdentifier pi : patient.getIdentifiers()) {
+						// skip voided identifiers
+						if (pi.isVoided()) continue;
 						PatientIdentifierType pit = pi.getIdentifierType();
 						String identifier = pi.getIdentifier();
 						String[] args = {identifier};

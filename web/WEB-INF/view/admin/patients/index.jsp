@@ -22,6 +22,9 @@
 		
 		searchWidget.inputNode.select();
 		changeClassProperty("description", "display", "none");
+		
+		searchWidget.addPatientLink =  "<a href='/@WEBAPP.NAME@/admin/patients/addPatient.htm?postURL=patient.form'><spring:message javaScriptEscape="true" code="Patient.add.new"/></a>";
+		
 	});
 	
 </script>
