@@ -1,15 +1,19 @@
 package org.openmrs.web.taglib;
 
-import java.util.*;
-
-import org.apache.commons.beanutils.BeanComparator;
-import org.apache.commons.collections.comparators.ComparableComparator;
-import org.apache.commons.collections.comparators.ReverseComparator;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
+import org.apache.commons.beanutils.BeanComparator;
+import org.apache.commons.collections.comparators.ComparableComparator;
+import org.apache.commons.collections.comparators.ReverseComparator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
@@ -85,6 +89,7 @@ public class ForEachEncounterTag extends BodyTagSupport {
 				count = 0;
 				bodyContent.writeOut(bodyContent.getEnclosingWriter());
 			}
+			num = null;
         }
         catch(java.io.IOException e) {
             throw new JspTagException("IO Error: " + e.getMessage());
@@ -133,6 +138,8 @@ public class ForEachEncounterTag extends BodyTagSupport {
 	public void setNum(Integer num) {
 		if (num != 0)
 			this.num = num;
+		else
+			num = null;
 	}
 
 	/**
