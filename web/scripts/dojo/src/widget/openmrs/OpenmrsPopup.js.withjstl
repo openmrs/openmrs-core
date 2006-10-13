@@ -137,8 +137,6 @@ dojo.widget.defineWidget(
 			dojo.style.setPositivePixelValue(this.searchWidget.domNode, "top", top);
 			
 			this.searchWidget.inputNode.select();
-			if (this.searchWidget.domNode.scrollIntoView)
-				this.searchWidget.domNode.scrollIntoView();
 			
 		},
 		
