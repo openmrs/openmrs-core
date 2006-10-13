@@ -26,7 +26,8 @@
 				<meta http-equiv="msthemecompatible" content="yes" />
 				<meta http-equiv="pragma" content="no-cache" />
 				<meta http-equiv="expires" content="-1" />
-			</c:when>
+				<%@ include file="/WEB-INF/view/formentry/taskpane/keepalive.jsp" %>
+				</c:when>
 			<c:otherwise>
 				<openmrs:htmlInclude file="/dwr/engine.js" />
 				<openmrs:htmlInclude file="/dwr/interface/DWRAlertService.js" />

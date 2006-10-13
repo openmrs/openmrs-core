@@ -1,10 +1,15 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
 <html>
-<body bgcolor="#DDECFE" topmargin="0" leftmargin="0">
-
- <!-- Default page for Infopath taskpane -->
- <!-- Point Infopath starter page to ${pageContext.request.contextPath}/formTaskpane.htm for session stealing mechanism -->
-
-</body>
+	<head>
+		<%@ include file="keepalive.jsp" %>
+	</head>
+	<body bgcolor="#DDECFE" topmargin="0" leftmargin="0">
+	
+	 <!-- Default page for Infopath taskpane -->
+	 <!-- Point Infopath starter page to ${pageContext.request.contextPath}/formTaskpane.htm for session stealing mechanism -->
+	 <!-- This page loaded at this time: <%= rightNow %> --> 
+	 <!-- Page will reload every <openmrs:globalProperty key="formentry.infopath_taskpane_refresh_sec" /> second(s) until: <%= finalVisit %> --> 
+	
+	</body>
 </html>

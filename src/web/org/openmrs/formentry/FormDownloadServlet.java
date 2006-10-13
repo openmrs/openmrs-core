@@ -42,7 +42,7 @@ public class FormDownloadServlet extends HttpServlet {
 
 	protected void doFormEntryGet(HttpServletRequest request, HttpServletResponse response, 
 			HttpSession httpSession) throws ServletException, IOException {
-
+		
 		Integer formId = null;
 		Integer patientId = null;
 
@@ -107,6 +107,15 @@ public class FormDownloadServlet extends HttpServlet {
 			throw new ServletException("Error while evaluating velocity defaults", e);
 		}
 
+		// set up keepalive for formentry 
+		// first remove a pre-existing keepalive
+		// it's ok if they are working with multiple forms, too
+		if ( httpSession.getAttribute(WebConstants.OPENMRS_DYNAMIC_FORM_KEEPALIVE) != null ) {
+			httpSession.removeAttribute(WebConstants.OPENMRS_DYNAMIC_FORM_KEEPALIVE);
+		}
+		
+		httpSession.setAttribute(WebConstants.OPENMRS_DYNAMIC_FORM_KEEPALIVE, new Date());
+		
 		response.setHeader("Content-Type", "application/ms-infopath.xml; charset=utf-8");
 		response.setHeader("Content-Disposition", "attachment; filename=" + title + ".infopathxml");
 		response.getOutputStream().print(xmldoc);
@@ -227,5 +236,4 @@ public class FormDownloadServlet extends HttpServlet {
 	private void setFilename(HttpServletResponse response, String filename) {
 		response.setHeader("Content-Disposition", "attachment; filename=" + filename);
 	}
-
 }
