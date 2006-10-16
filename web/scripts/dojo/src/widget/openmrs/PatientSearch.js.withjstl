@@ -1,4 +1,5 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
+<%@ page isELIgnored="true" %>
 
 var showTribe = '<openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" />';
 var showHealthCenter = '<openmrs:globalProperty key="use_patient_attribute.healthCenter" defaultValue="false" />';
@@ -87,7 +88,7 @@ dojo.widget.defineWidget(
 			}
 		},
 		
-		invalidCheckDigitText: "<spring:message javaScriptEscape="true" code="error.checkdigits"/>: ",
+		invalidCheckDigitText: "<spring:message javaScriptEscape="true" code="error.checkdigit"/>: ",
 		searchOnPatientNameText: "<spring:message javaScriptEscape="true" code="PatientSearch.searchOnName"/>",
 		noPatientsFoundText: "<spring:message javaScriptEscape="true" code="PatientSearch.noneFound"/> <br/> ",
 		addPatientLink: "<a href='/@WEBAPP.NAME@/admin/patients/addPatient.htm'><spring:message javaScriptEscape="true" code="Patient.add.new"/></a>",

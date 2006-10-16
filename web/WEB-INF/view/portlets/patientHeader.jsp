@@ -59,7 +59,7 @@
 				</td>
 				<c:if test="${fn:length(model.patient.activeIdentifiers) > 2}">
 					<td width="32">
-						<small><a id="patientHeaderShowMoreIdentifiers" onclick="return showMoreIdentifiers()" title='<spring:message code="patientDashboard.showMoreIdentifers"/>'><spring:message code="general.nMore" arguments="${fn:length(model.patient.activeIdentifiers) - 2}"/> <span id="patientHeaderMoreIdentifiersArrow">&dArr;</span></a></small>
+						<small><a id="patientHeaderShowMoreIdentifiers" onclick="return showMoreIdentifiers()" title='<spring:message code="patientDashboard.showMoreIdentifers"/>'><spring:message code="general.nMore" arguments="${fn:length(model.patient.activeIdentifiers) - 2}"/></a></small>
 					</td>
 				</c:if>
 			</tr>
@@ -145,17 +145,17 @@
 	<script type="text/javascript">
 		function showMoreIdentifiers() {
 			if (identifierElement.style.display == '') {
-				identifierArrow.innerHTML = "&dArr";
+				linkElement.innerHTML = '<spring:message code="general.nMore" arguments="${fn:length(model.patient.activeIdentifiers) - 2}"/>';
 				identifierElement.style.display = "none";
 			}
 			else {
-				identifierArrow.innerHTML = "&uArr";
+				linkElement.innerHTML = '<spring:message code="general.nLess" arguments="${fn:length(model.patient.activeIdentifiers) - 2}"/>';
 				identifierElement.style.display = "";
 			}
 		}
 		
 		var identifierElement = document.getElementById("patientHeaderMoreIdentifiers");
-		var identifierArrow = document.getElementById("patientHeaderMoreIdentifiersArrow");
+		var linkElement = document.getElementById("patientHeaderShowMoreIdentifiers");
 		if (identifierElement)
 			identifierElement.style.display = "none";
 		

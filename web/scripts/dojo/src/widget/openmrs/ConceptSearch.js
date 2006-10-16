@@ -30,14 +30,17 @@ dojo.widget.defineWidget(
 		postCreate: function() {
 			dojo.debug("postCreate in conceptsearch");
 			
-			if (this.drugId)
+			if (this.drugId) {
 				DWRConceptService.getDrug(this.simpleClosure(this, "select"), this.drugId);
-			else if (this.conceptId)
+			}
+			else if (this.conceptId) {
 				DWRConceptService.getConcept(this.simpleClosure(this, "select"), this.conceptId);
+			}
 			
-			this.inputNode.value = this.searchPhrase
-			if (this.searchPhrase)
+			this.inputNode.value = this.searchPhrase;
+			if (this.searchPhrase) {
 				DWRConceptService.findConcepts(this.simpleClosure(this, "doObjectsFound"), this.searchPhrase, false, this.includeClasses, this.excludeClasses, this.includeDatatypes, this.excludeDatatypes, this.includeDrugConcepts);
+			}
 		},
 		
 		doFindObjects: function(text) {
@@ -70,7 +73,7 @@ dojo.widget.defineWidget(
 	    		return conceptHit;
 	    	}
 	    	
-	    	var closure = function(ts, method, conceptId) { return function(obj) {ts[method](conceptId);}}; //a javascript closure
+	    	var closure = function(ts, method, conceptId) { return function(obj) {ts[method](conceptId);};}; //a javascript closure
 	    	if (conceptHit.drugId != null) {
 	    		var a = document.createElement("a");
 	    		a.href = "#selectDrug";

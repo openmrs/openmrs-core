@@ -111,7 +111,7 @@ table#labTestTable th {
 			<c:forEach items="${fn:split(graphConceptString, '-')}" var="conceptId">
 				<c:if test="${conceptId != ''}">
 					<openmrs:concept conceptId="${conceptId}" var="concept" nameVar="name" numericVar="num">
-						document.getElementById('conceptBox-${conceptId}').innerHTML = '<img src="${pageContext.request.contextPath}/showGraphServlet?patientId=${patient.patientId}&conceptId=${conceptId}&width=500&height=300&minRange=<c:out value="${num.lowAbsolute}" default="0.0"/>&maxRange=<c:out value="${num.hiAbsolute}" default="200.0"/>';
+						document.getElementById('conceptBox-${conceptId}').innerHTML = '<img src="${pageContext.request.contextPath}/showGraphServlet?patientId=${patient.patientId}&conceptId=${conceptId}&width=500&height=300&minRange=<c:out value="${num.lowAbsolute}" default="0.0"/>&maxRange=<c:out value="${num.hiAbsolute}" default="200.0"/>" />';
 					</openmrs:concept>
 				</c:if>
 			</c:forEach>

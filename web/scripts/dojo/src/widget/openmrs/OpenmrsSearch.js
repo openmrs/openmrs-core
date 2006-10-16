@@ -830,7 +830,6 @@ dojo.widget.defineWidget(
 			newObj.obj = message;
 			message = newObj;
 		}
-		
 		// default the objs array to empty
 		if (message.objs == null) {
 			message.objs = new Array();
@@ -839,7 +838,13 @@ dojo.widget.defineWidget(
 		
 		this.doSelect(message);
 
-		dojo.event.topic.publish(this.eventNames.select, message);
+		// this timeout is used for the publish function so that in IE
+		// I can guarantee that it is executed after the addOnLoad 
+		// function on a page
+		var f = function(ths, msg) {
+			return function() {dojo.event.topic.publish(ths.eventNames.select, msg)};
+		}
+		setTimeout(new f(this, message), 10);
 	},
 
 

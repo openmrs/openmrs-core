@@ -246,13 +246,14 @@ h1, h2, h3, h4, h5 {
 #patientHeaderPreferredIdentifier {
 	float: right;
 	text-align: right;
+	xborder: 1px solid red;
 }
 
 #patientHeaderPatientIdentifierType {
-	vertical-align: top;
+	vertical-align: middle;
 	font-weight: normal;
 	font-size: .65em;
-	line-height: 1.85em;
+	padding-bottom: .45em;
 }
 
 table#patientHeaderGeneralInfo {
@@ -272,12 +273,12 @@ table td#patientHeaderPatientGender {
 }
 
 #patientHeaderPatientAge, #patientHeaderPatientTribe, #patientHeaderHealthCenter, #patientHeaderPatientSummary, #patientHeaderShowMoreIdentifiers {
-	width: 1em;
+	width: 1%;
 	white-space: nowrap;
 	line-height: 25px;
 }
 	
-#patientHeaderPatientBirthdate, #patientHeaderPatientTribe, .patientHeaderPatientIdentifier {
+#patientHeaderPatientBirthdate, .patientHeaderPatientIdentifier {
 	white-space: nowrap;
 }
 

@@ -23,17 +23,18 @@
 	var codedSelection;
 	
 	dojo.addOnLoad( function() {
-		var patientSelection = dojo.widget.manager.getWidgetById("patientSelection");
-		var encounterSelection = dojo.widget.manager.getWidgetById("encounterSelection");
-		var encounterSearch = dojo.widget.manager.getWidgetById("eSearch");
-		var conceptSelection = dojo.widget.manager.getWidgetById("conceptSelection");
-		var conceptSearch = dojo.widget.manager.getWidgetById("cSearch");
-		var codedSelection = dojo.widget.manager.getWidgetById("codedSelection");
-		var codedSearch = dojo.widget.manager.getWidgetById("codedSearch");
+		patientSelection = dojo.widget.manager.getWidgetById("patientSelection");
+		encounterSelection = dojo.widget.manager.getWidgetById("encounterSelection");
+		encounterSearch = dojo.widget.manager.getWidgetById("eSearch");
+		conceptSelection = dojo.widget.manager.getWidgetById("conceptSelection");
+		conceptSearch = dojo.widget.manager.getWidgetById("cSearch");
+		codedSelection = dojo.widget.manager.getWidgetById("codedSelection");
+		codedSearch = dojo.widget.manager.getWidgetById("codedSearch");
 		
 		dojo.event.topic.subscribe("pSearch/select", 
 			function(msg) {
 				var patient = msg.objs[0];
+				var patientSelection = dojo.widget.manager.getWidgetById("patientSelection");
 				patientSelection.hiddenInputNode.value = patient.patientId;
 				patientSelection.displayNode.innerHTML = "";
 				if (patient.givenName) patientSelection.displayNode.innerHTML += patient.givenName;
@@ -44,6 +45,7 @@
 		
 		dojo.event.topic.subscribe("eSearch/select", 
 			function(msg) {
+				var encounterSearch = dojo.widget.manager.getWidgetById("eSearch");
 				encounterSelection.hiddenInputNode.value = msg.objs[0].encounterId;
 				encounterSelection.displayNode.innerHTML = msg.objs[0].location + " - " + encounterSearch.getDateString(msg.objs[0].encounterDateTime);
 			}
@@ -51,6 +53,7 @@
 		
 		dojo.event.topic.subscribe("cSearch/select", 
 			function(msg) {
+				var conceptSelection = dojo.widget.manager.getWidgetById("conceptSelection");
 				conceptSelection.hiddenInputNode.value = msg.objs[0].conceptId;
 				conceptSelection.displayNode.innerHTML = msg.objs[0].name;
 				conceptSelection.descriptionDisplayNode.innerHTML = msg.objs[0].description;
@@ -60,6 +63,7 @@
 		
 		dojo.event.connect(codedSelection, "onChangeButtonClick", 
 			function() {
+				var codedSearch = dojo.widget.manager.getWidgetById("codedSearch");
 				var conceptId = conceptSelection.hiddenInputNode.value;
 				DWRConceptService.findConceptAnswers(codedSearch.simpleClosure(codedSearch, 'doObjectsFound'), '', conceptId, false, true);
 			}
@@ -68,6 +72,7 @@
 		dojo.event.topic.subscribe("codedSearch/select", 
 			function(msg) {
 				var obj = msg.objs[0];
+				var codedSelection = dojo.widget.manager.getWidgetById("codedSelection");
 				if (obj.drugId) {
 					codedSelection.displayNode.innerHTML = obj.fullName;
 					codedSelection.descriptionDisplayNode.innerHTML = "";
@@ -85,6 +90,7 @@
 
 		codedSearch.doFindObjects = function(txt) {
 			var conceptId = conceptSelection.hiddenInputNode.value;
+			var codedSearch = dojo.widget.manager.getWidgetById("codedSearch");
 			DWRConceptService.findConceptAnswers(codedSearch.simpleClosure(codedSearch, 'doObjectsFound'), txt, conceptId, false, true);
 		}
 		
@@ -112,38 +118,49 @@
 	}
 	
 	function updateObsValues(tmpConcept) {
-		var values = ['valueBoolean', 'valueCoded', 'valueDatetime', 'valueModifier', 'valueText', 'valueNumeric', 'valueInvalid'];
-		for (var i=0; i<values.length; i++)
+		var values = ['valueBooleanRow', 'valueCodedRow', 'valueDatetimeRow', 'valueModifierRow', 'valueTextRow', 'valueNumericRow', 'valueInvalidRow'];
+		for (var i=0; i<values.length; i++) {
 			$(values[i]).style.display = "none";
+		}
 		
 		if (tmpConcept != null) {
 			var datatype = tmpConcept.hl7Abbreviation;
 			if (typeof datatype != 'string')
 				datatype = tmpConcept.datatype.hl7Abbreviation;
-				
-			if (datatype == 'BIT')
-				$('valueBoolean').style.display = "";
+			
+			if (datatype == 'BIT') {
+				$('valueBooleanRow').style.display = "";
+				$('valueBooleanRow').style.visibility = "visible";
+			}
 			else if (datatype == 'NM' || datatype == 'SN') {
-				$('valueNumeric').style.display = "";
+				$('valueNumericRow').style.display = "";
+				$('valueNumericRow').style.visibility = "visible";
 				DWRConceptService.getConceptNumericUnits(fillNumericUnits, tmpConcept.conceptId);
 			}
 			else if (datatype == 'CWE') {
-				$('valueCoded').style.display = "";
+				$('valueCodedRow').style.display = "";
+				$('valueCodedRow').style.visibility = "visible";
 				// clear any old values:
 				var codedSelection = dojo.widget.manager.getWidgetById("codedSelection");
 				codedSelection.displayNode.innerHTML = "";
 				codedSelection.descriptionDisplayNode.innerHTML = "";
 				codedSelection.hiddenInputNode.value = "";
 			}
-			else if (datatype == 'ST')
-				$('valueText').style.display = "";
-			else if (datatype == 'DT' || datatype == 'TS' || datatype == 'TM')
-				$('valueDatetime').style.display = "";
+			else if (datatype == 'ST') {
+				$('valueTextRow').style.display = "";
+				$('valueTextRow').style.visibility = "visible";
+			}
+			else if (datatype == 'DT' || datatype == 'TS' || datatype == 'TM') {
+				$('valueDatetimeRow').style.display = "";
+				$('valueDatetimeRow').style.visibility = "visible";
+			}
 			// TODO move datatype 'TM' to own time box.  How to have them select?
 			else {
-				$('valueInvalid').style.display = "";
+				$('valueInvalidRow').style.display = "";
+				$('valueInvalidRow').style.visibility = "visible";
 				DWRConceptService.getQuestionsForAnswer(fillValueInvalidPossible(tmpConcept), tmpConcept.conceptId);
 			}
+			$('obsTable').style.visibility = 'visible';
 		}
 	}
 	
@@ -219,6 +236,9 @@
 	th {
 		text-align: left;
 	}
+	*>#numericRangeError, *>.obsValue {
+		visibility: hidden;
+	}
 	#numericRangeError {
 		font-weight: bold;
 		padding: 2px 4px 2px 4px;
@@ -256,7 +276,7 @@
 	<br/>
 </spring:hasBindErrors>
 <form method="post" onSubmit="removeHiddenRows()">
-<table>
+<table id="obsTable">
 	<c:if test="${obs.obsId != null}">
 		<tr>
 			<th><spring:message code="general.id"/></th>
@@ -270,6 +290,7 @@
 	<tr>
 		<th><spring:message code="Obs.patient"/></th>
 		<td>
+			<script type="text/javascript">$('obsTable').style.visibility = 'hidden';</script>
 			<spring:bind path="obs.patient">
 				<c:choose>
 					<c:when test="${obs.obsId != null}">
@@ -365,11 +386,11 @@
 			</spring:bind>
 		</tr>
 	</c:if>
-	<tr id="valueBoolean">
+	<tr id="valueBooleanRow" class="obsValue">
 		<th><spring:message code="general.value"/></th>
 		<spring:bind path="obs.valueNumeric">
 			<td>
-				<select name="${status.expression}">
+				<select name="${status.expression}" id="valueBooleanSelect">
 					<option value="" <c:if test="${status.value == null}">selected</c:if>></option>
 					<option value="1" <c:if test="${status.value != 0}">selected</c:if>><spring:message code="general.true"/></option>
 					<option value="0" <c:if test="${status.value == 0}">selected</c:if>><spring:message code="general.false"/></option>
@@ -378,7 +399,7 @@
 			</td>
 		</spring:bind>
 	</tr>
-	<tr id="valueCoded">
+	<tr id="valueCodedRow" class="obsValue">
 		<th valign="top"><spring:message code="general.value"/></th>
 		<td>
 			<spring:bind path="obs.valueCoded">
@@ -392,7 +413,7 @@
 			</spring:bind>
 		</td>
 	</tr>
-	<tr id="valueDatetime">
+	<tr id="valueDatetimeRow">
 		<th><spring:message code="general.value"/></th>
 		<td>
 			<spring:bind path="obs.valueDatetime">			
@@ -403,7 +424,7 @@
 			</spring:bind>
 		</td>
 	</tr>
-	<tr id="valueNumeric">
+	<tr id="valueNumericRow" class="obsValue">
 		<th><spring:message code="general.value"/></th>
 		<spring:bind path="obs.valueNumeric">
 			<td>
@@ -414,16 +435,16 @@
 			</td>
 		</spring:bind>
 	</tr>
-	<tr id="valueModifier">
+	<tr id="valueModifierRow" class="obsValue">
 		<th><spring:message code="Obs.valueModifier"/></th>
 		<spring:bind path="obs.valueModifier">
 			<td>
-				<input type="text" name="${status.expression}" id="valueModifier" value="${status.value}" size="3" maxlength="2"/>
+				<input type="text" name="${status.expression}" id="valueModifierInput" value="${status.value}" size="3" maxlength="2"/>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</td>
 		</spring:bind>
 	</tr>
-	<tr id="valueText">
+	<tr id="valueTextRow" class="obsValue">
 		<th><spring:message code="general.value"/></th>
 		<spring:bind path="obs.valueText">
 			<td>
@@ -432,7 +453,7 @@
 			</td>
 		</spring:bind>
 	</tr>
-	<tr id="valueInvalid">
+	<tr id="valueInvalidRow" class="obsValue">
 		<th><spring:message code="general.value"/></th>
 		<td>
 			<div class="error"><spring:message code="Obs.valueInvalid.description"/></div>

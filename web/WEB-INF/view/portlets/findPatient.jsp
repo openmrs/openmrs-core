@@ -33,7 +33,7 @@
 					);
 					
 					<c:if test="${empty hideAddNewPatient}">
-						searchWidget.addPatientLink = '<a href="#" onClick="return jumpToAddNew()"><spring:message javaScriptEscape="true" code="Patient.add.new"/> &dArr;</a>';
+						searchWidget.addPatientLink = '<a href="#" onClick="return jumpToAddNew()"><spring:message javaScriptEscape="true" code="Patient.add.new"/></a>';
 					</c:if>
 					searchWidget.inputNode.select();
 					changeClassProperty("description", "display", "none");

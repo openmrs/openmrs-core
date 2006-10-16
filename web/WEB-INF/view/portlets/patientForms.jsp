@@ -81,7 +81,12 @@ Parameters
 	<script type="text/javascript">	
 		addEvent(window, 'load', function() {
 			var widget = dojo.widget.manager.getWidgetById("fSearch");
-			widget.inputNode.focus();
+			try {
+				// IE throws an error if the forms table isn't on top
+				widget.inputNode.focus();
+			} catch(err) {
+				//
+			}
 		});
 	</script>
 	
