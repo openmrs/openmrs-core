@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:htmlInclude file="/scripts/dojo.js"/>
+<openmrs:htmlInclude file="/scripts/dojo/dojo.js"/>
 
 <script type="text/javascript">	
 	dojo.require("dojo.widget.openmrs.ConceptSearch");

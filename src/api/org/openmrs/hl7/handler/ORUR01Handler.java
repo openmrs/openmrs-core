@@ -25,6 +25,7 @@ import org.openmrs.util.OpenmrsConstants;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.app.Application;
 import ca.uhn.hl7v2.app.ApplicationException;
+import ca.uhn.hl7v2.model.DataTypeException;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.Type;
 import ca.uhn.hl7v2.model.Varies;
@@ -332,7 +333,8 @@ public class ORUR01Handler implements Application {
 	private Date getDate(int year, int month, int day, int hour, int minute,
 			int second) {
 		Calendar cal = Calendar.getInstance();
-		cal.set(year, month, day, hour, minute, second);
+		// Calendar.set(MONTH, int) is zero-based, Hl7 is not
+		cal.set(year, month-1, day, hour, minute, second);
 		return cal.getTime();
 	}
 
@@ -350,8 +352,17 @@ public class ORUR01Handler implements Application {
 		}
 	}
 
-	private Date getDatetime(OBX obx) {
+	private Date getDatetime(OBX obx) throws HL7Exception {
 		Date datetime = null;
+		TS ts = obx.getDateTimeOfTheObservation();
+		DTM value = ts.getTime();
+		try {
+			datetime = getDate(value.getYear(), value.getMonth(), value
+				.getDay(), value.getHour(), value.getMinute(), value
+				.getSecond());
+		} catch (DataTypeException e) {
+			
+		}
 		return datetime;
 	}
 

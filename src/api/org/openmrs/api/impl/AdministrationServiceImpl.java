@@ -148,8 +148,11 @@ public class AdministrationServiceImpl implements AdministrationService {
 	public void updateEncounterType(EncounterType encounterType) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ENCOUNTER_TYPES))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ENCOUNTER_TYPES);
-
-		getAdministrationDAO().updateEncounterType(encounterType);
+		
+		if (encounterType.getEncounterTypeId() == null)
+			createEncounterType(encounterType);
+		else
+			getAdministrationDAO().updateEncounterType(encounterType);
 	}
 
 	/**
