@@ -30,7 +30,8 @@
 												</select>
 											</td>
 											<td><div id="reas${standardRegimen.codeName}" style="display:none">
-												<spring:message code="general.reason" />: <input id="reason${standardRegimen.codeName}" name="reason${standardRegimen.codeName}" size="14" value="" />
+												<spring:message code="general.reason" />: 
+													<select name="reason${standardRegimen.codeName}" id="reason${standardRegimen.codeName}"></select>
 											</div></td>
 											<td><div id="replace${standardRegimen.codeName}" style="display:none"><input type="button" value="<spring:message code="DrugOrder.regimen.addAndReplace" />" onClick="addStandard${standardRegimen.codeName}(true);"></div></td>
 											<td><div id="add${standardRegimen.codeName}" style="display:none"><input type="button" value="<spring:message code="general.add" />" onClick="addStandard${standardRegimen.codeName}(true);"></div></td>
@@ -126,6 +127,10 @@
 				showHideDiv('stDt' + codeName);
 				showHideDiv('submit' + codeName);
 				showHideDiv('action' + codeName);
+				DWRUtil.setValue('actionSelect' + codeName, '');
+				hideDiv('reas' + codeName);
+				hideDiv('replace' + codeName);
+				hideDiv('add' + codeName);
 			}
 
 			<c:forEach var="standardRegimen" items="${model.standardRegimens}">
@@ -173,9 +178,19 @@
 			function handleStandardActionChange(codeName) {
 				var action = DWRUtil.getValue('actionSelect' + codeName);
 				if ( action == 'void' || action == 'discontinue' ) {
-					showHideDiv('reas' + codeName);
-					showHideDiv('replace' + codeName);
+					showDiv('reas' + codeName);
+					showDiv('replace' + codeName);
+					hideDiv('add' + codeName);
+					if ( action == 'void' ) {
+						DWRUtil.removeAllOptions('reason' + codeName);
+						DWRUtil.addOptions('reason' + codeName, voidReasons, 'val', 'display');
+					} else if ( action == 'discontinue') {
+						DWRUtil.removeAllOptions('reason' + codeName);
+						DWRUtil.addOptions('reason' + codeName, discReasons, 'val', 'display');
+					}
 				} else if ( action == 'add' ) {
+					hideDiv('reas' + codeName);
+					hideDiv('replace' + codeName);
 					showHideDiv('add' + codeName);
 				}
 			}

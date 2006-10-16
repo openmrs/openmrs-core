@@ -3,7 +3,18 @@
 		var displayDrugSetIds = "";
 		var patientId = "";
 		var regimenMode = "edit";
-		
+
+		// create a js variable called discReasons that is an array of reasons to discontinue a drug - this will become the select field via DWRUtil.addOptions();...
+		<openmrs:fieldGen type="org.openmrs.DrugOrder.discontinuedReason" formFieldName="discReasons" val="" parameters="optionHeader=[blank]|jsVar=discReasons" />
+		//alert("discReasons is " + discReasons);
+				
+		// create a js variable called voidReasons that is an array of reasons to void a drug - this will become a select field via DWRUtil.addOptions()
+		var voidReasons = new Array();
+		voidReasons.push({ val: 'DrugOrder.void.reason.dateError', display: '<spring:message code="DrugOrder.void.reason.dateError" />'});
+		voidReasons.push({ val: 'DrugOrder.void.reason.error', display: '<spring:message code="DrugOrder.void.reason.error" />'});
+		voidReasons.push({ val: 'DrugOrder.void.reason.other', display: '<spring:message code="DrugOrder.void.reason.other" />'});
+		//alert("voidReasons is " + voidReasons);
+
 		var currentRegimenTableCellFuncs = regimenMode != "view" ? [
 			function(data) { return "&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"orderDrug.form?orderId=" + data.orderId + "\">" + data.drugName + "</a>"; },
 			function(data) { return data.dose + " " + data.units; },
@@ -17,7 +28,7 @@
 				ret += "<spring:message code="DrugOrder.discontinuedDate" />: ";
 				ret += "<input type=\"text\" id=\"close_" + data.orderId + "_date\" size=\"10\" value=\"\" onFocus=\"showCalendar(this)\" />";
 				ret += "&nbsp;&nbsp;&nbsp;&nbsp;<spring:message code="general.reason" />: ";
-				ret += "<input type=\"text\" id=\"close_" + data.orderId + "_reason\" size=\"10\" value=\"\" />";
+				ret += "<select name=\"close_" + data.orderId + "_reason\" id=\"close_" + data.orderId + "_reason\"></select>";
 				ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<spring:message code="DrugOrder.discontinue" />\" onClick=\"handleDiscontinueDrugOrder(" + data.orderId + ", 'close_" + data.orderId + "_date', 'close_" + data.orderId + "_reason')\" />";
 				ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<spring:message code="general.cancel" />\" onClick=\"showHideDiv('close_" + data.orderId + "');showHideDiv('closebutton_" + data.orderId + "')\" />";
 				ret += "</form></div>";
@@ -27,7 +38,7 @@
 				var ret = "<input id=\"voidbutton_" + data.orderId + "\" type=\"button\" value=\"<spring:message code="DrugOrder.void" />\" onClick=\"showHideDiv('void_" + data.orderId + "');showHideDiv('voidbutton_" + data.orderId + "')\" />";
 				ret += "<div id=\"void_" + data.orderId + "\" style=\"display:none\" class=\"dashedAndHighlighted\"><form>";
 				ret += "<spring:message code="general.reason" />: ";
-				ret += "<input type=\"text\" id=\"void_" + data.orderId + "_reason\" size=\"10\" value=\"\" />";
+				ret += "<select name=\"void_" + data.orderId + "_reason\" id=\"void_" + data.orderId + "_reason\"></select>";
 				ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<spring:message code="DrugOrder.void" />\" onClick=\"handleVoidDrugOrder(" + data.orderId + ", 'void_" + data.orderId + "_reason')\" />";
 				ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<spring:message code="general.cancel" />\" onClick=\"showHideDiv('void_" + data.orderId + "');showHideDiv('voidbutton_" + data.orderId + "')\" />";
 				ret += "</form></div>";
@@ -50,12 +61,12 @@
 			function(data) { return "" + data.autoExpireDate; },
 			function(data) { return "" + data.discontinuedDate; },
 			function(data) { return "" + data.instructions; },
-			function(data) { return "" + data.discontinueReason; },
+			function(data) { return "" + getReason(data.discontinueReason); },
 			function(data) {
 				var ret = "<input id=\"voidcpbutton_" + data.orderId + "\" type=\"button\" value=\"<spring:message code="DrugOrder.void" />\" onClick=\"showHideDiv('voidcp_" + data.orderId + "');showHideDiv('voidcpbutton_" + data.orderId + "')\" />";
 				ret += "<div id=\"voidcp_" + data.orderId + "\" style=\"display:none\" class=\"dashedAndHighlighted\"><form>";
 				ret += "<spring:message code="general.reason" />: ";
-				ret += "<input type=\"text\" id=\"voidcp_" + data.orderId + "_reason\" size=\"10\" value=\"\" />";
+				ret += "<select name=\"voidcp_" + data.orderId + "_reason\" id=\"voidcp_" + data.orderId + "_reason\"></select>";
 				ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<spring:message code="DrugOrder.void" />\" onClick=\"handleVoidDrugOrder(" + data.orderId + ", 'voidcp_" + data.orderId + "_reason')\" />";
 				ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<spring:message code="general.cancel" />\" onClick=\"showHideDiv('voidcp_" + data.orderId + "');showHideDiv('voidcpbutton_" + data.orderId + "')\" />";
 				ret += "</form></div>";
@@ -84,7 +95,7 @@
 					ret += "<spring:message code="DrugOrder.discontinuedDate" />: ";
 					ret += "<input type=\"text\" id=\"closegp_" + data.drugSetId + "_date\" size=\"10\" value=\"\" onFocus=\"showCalendar(this)\" />";
 					ret += "&nbsp;&nbsp;&nbsp;&nbsp;<spring:message code="general.reason" />: ";
-					ret += "<input type=\"text\" id=\"closegp_" + data.drugSetId + "_reason\" size=\"10\" value=\"\" />";
+					ret += "<select name=\"closegp_" + data.drugSetId + "_reason\" id=\"closegp_" + data.drugSetId + "_reason\"></select>";
 					ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<spring:message code="DrugOrder.discontinueGroup" />\" onClick=\"handleDiscontinueDrugSet(" + data.drugSetId + ", 'closegp_" + data.drugSetId + "_date', 'closegp_" + data.drugSetId + "_reason')\" />";
 					ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<spring:message code="general.cancel" />\" onClick=\"showHideDiv('closegp_" + data.drugSetId + "');showHideDiv('closegpbutton_" + data.drugSetId + "')\" />";
 					ret += "</form></div>";
@@ -92,7 +103,7 @@
 					ret += "</td><td style=\"padding:7px 5px 0px 5px\"><input id=\"voidgpbutton_" + data.drugSetId + "\" type=\"button\" value=\"<spring:message code="DrugOrder.voidGroup" />\" onClick=\"showHideDiv('voidgp_" + data.drugSetId + "');showHideDiv('voidgpbutton_" + data.drugSetId + "')\" />";
 					ret += "<div id=\"voidgp_" + data.drugSetId + "\" style=\"display:none\" class=\"dashedAndHighlighted\"><form>";
 					ret += "<spring:message code="general.reason" />: ";
-					ret += "<input type=\"text\" id=\"voidgp_" + data.drugSetId + "_reason\" size=\"10\" value=\"\" />";
+					ret += "<select name=\"voidgp_" + data.drugSetId + "_reason\" id=\"voidgp_" + data.drugSetId + "_reason\"></select>";
 					ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<spring:message code="DrugOrder.voidGroup" />\" onClick=\"handleVoidDrugSet(" + data.drugSetId+ ", 'voidgp_" + data.drugSetId + "_reason')\" />";
 					ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<spring:message code="general.cancel" />\" onClick=\"showHideDiv('voidgp_" + data.drugSetId + "');showHideDiv('voidgpbutton_" + data.drugSetId + "')\" />";
 					ret += "</form></div></td></tr></table>";
@@ -161,6 +172,20 @@
 				} else { 
 					div.style.display = "";
 				}
+			}
+		}
+
+		function showDiv(id) {
+			var div = document.getElementById(id);
+			if ( div ) {
+				div.style.display = "";
+			}
+		}
+
+		function hideDiv(id) {
+			var div = document.getElementById(id);
+			if ( div ) {
+				div.style.display = "none";
 			}
 		}
 		
@@ -249,12 +274,14 @@
 
 		function addCurrentDrugSetHeader(drugSet) {
 			var firstSet = drugSet[0];
+			var drugSetLabel = '';
 			var drugSetId = '';
 			if ( firstSet ) {
-				drugSetId = firstSet.drugSetLabel;
+				drugSetLabel = firstSet.drugSetLabel;
+				drugSetId = firstSet.drugSetId;
 			}
 			
-			var tableId = 'regimenTableCurrent_header_' + drugSetId;
+			var tableId = 'regimenTableCurrent_header_' + drugSetLabel;
 			
 			if ( document.getElementById(tableId) ) {
 				DWRUtil.addRows(tableId, drugSet, currentRegimenTableHeaderCells, {
@@ -265,6 +292,11 @@
 					    return td;
 					}
 				});
+				//alert("about to try to populate " + "closegp_" + drugSetId + "_reason");
+				if ( document.getElementById("closegp_" + drugSetId + "_reason") ) 
+					DWRUtil.addOptions("closegp_" + drugSetId + "_reason", discReasons, "val", "display");
+				if ( document.getElementById("voidgp_" + drugSetId + "_reason") ) 
+					DWRUtil.addOptions("voidgp_" + drugSetId + "_reason", voidReasons, "val", "display");
 			}
 		}
 
@@ -309,6 +341,13 @@
 						    return td;
 						}
 					});
+					for ( var i = 0; i < drugOrders.length; i++ ) {
+						var orderId = drugOrders[i].orderId;
+						if ( document.getElementById("close_" + orderId + "_reason") ) 
+							DWRUtil.addOptions("close_" + orderId + "_reason", discReasons, "val", "display");
+						if ( document.getElementById("void_" + orderId + "_reason") ) 
+							DWRUtil.addOptions("void_" + orderId + "_reason", voidReasons, "val", "display");
+					}
 				}
 			}
 			//alert('out acdo');
@@ -335,6 +374,11 @@
 						    return td;
 						}
 					});
+					for ( var i = 0; i < drugOrders.length; i++ ) {
+						var orderId = drugOrders[i].orderId;
+						if ( document.getElementById("voidcp_" + orderId + "_reason") ) 
+							DWRUtil.addOptions("voidcp_" + orderId + "_reason", voidReasons, "val", "display");
+					}
 				}
 			}
 			//alert('out acdo');

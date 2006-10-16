@@ -51,7 +51,7 @@
 								<td><openmrs:formatDate date="${drugOrder.autoExpireDate}" /></td>
 								<td><openmrs:formatDate date="${drugOrder.discontinuedDate}" /></td>
 								<td>${drugOrder.instructions}</td>
-								<td>${drugOrder.discontinuedReason}</td>
+								<td><spring:message code="${drugOrder.discontinuedReason}" /></td>
 								<c:if test="${model.completedRegimenMode != 'view'}">
 									<td>
 										<input id="voidbutton_${drugOrder.orderId}" type="button" value="<spring:message code="DrugOrder.void" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
@@ -118,7 +118,7 @@
 								<td><openmrs:formatDate date="${drugOrder.autoExpireDate}" /></td>
 								<td><openmrs:formatDate date="${drugOrder.discontinuedDate}" /></td>
 								<td>${drugOrder.instructions}</td>
-								<td>${drugOrder.discontinuedReason}</td>
+								<td><spring:message code="${drugOrder.discontinuedReason}" /></td>
 								<c:if test="${model.completedRegimenMode != 'view'}">
 									<td>
 										<input id="voidbutton_${drugOrder.orderId}" type="button" value="<spring:message code="DrugOrder.void" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
@@ -169,7 +169,7 @@
 								<td><openmrs:formatDate date="${drugOrder.autoExpireDate}" /></td>
 								<td><openmrs:formatDate date="${drugOrder.discontinuedDate}" /></td>
 								<td>${drugOrder.instructions}</td>
-								<td>${drugOrder.discontinuedReason}</td>
+								<td><spring:message code="${drugOrder.discontinuedReason}" /></td>
 								<c:if test="${model.completedRegimenMode != 'view'}">
 									<td>
 										<input id="voidbutton_${drugOrder.orderId}" type="button" value="<spring:message code="DrugOrder.void" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
