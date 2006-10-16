@@ -70,7 +70,7 @@
 		<div id="popupTray">
 			&nbsp;
 			<c:if test="${!taskpane && empty OPENMRS_DO_NOT_SHOW_PATIENT_SET}">
-				<openmrs:portlet url="patientSet" id="patientSetPortlet" size="compact" parameters="selectedPatientId=|linkUrl=patientDashboard.form|allowRemove=true|allowClear=true|mutable=true|droppable=true"/>
+				<openmrs:portlet url="patientSet" id="patientSetPortlet" size="compact" parameters="selectedPatientId=|linkUrl=patientDashboard.form|allowRemove=true|allowClear=true|mutable=true|droppable=true|allowBatchEntry=true"/>
 			</c:if>
 		</div>
 		

@@ -26,7 +26,8 @@
 	}
 	
 	function handleSave() {
-		checkValues();
+		if (!checkValues())
+			return;
 		
 		var fieldIds = new Array();
 		var fieldValues = new Array();
@@ -88,7 +89,7 @@
 				tmp = DWRUtil.getValue('encounterFieldValue_${iter.index}');
 				if (tmp == null || tmp == '') {
 					window.alert('Missing ${formField.field.name}');
-					return;
+					return false;
 				}
 			</c:if>
 		</c:forEach>
@@ -97,10 +98,11 @@
 				tmp = DWRUtil.getValue('obsFieldValue_${iter.index}');
 				if (tmp == null || tmp == '') {
 					window.alert('Missing ${formField.field.name}');
-					return;
+					return false;
 				}
 			</c:if>
 		</c:forEach>
+		return true;
 	}
 </script>
 

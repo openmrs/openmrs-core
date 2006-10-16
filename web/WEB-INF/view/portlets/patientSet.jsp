@@ -207,11 +207,35 @@
 				<tbody id="${tableBodyId}">
 				</tbody>
 			</table>
+
+			<c:if test="${model.allowBatchEntry == 'true' && fn:length(model.batchEntryForms) > 0}">
+				<span id="batchEntryLink">
+					<p/>
+					<b>
+						<spring:message code="general.action"/>:
+						<a href="javascript:showLayer('patientSetBatchEntryBox'); hideLayer('batchEntryLink')">
+							<spring:message code="BatchEntry.title"/>
+						</a>
+					</b>
+				</span>
+
+				<div id="patientSetBatchEntryBox" style="display: none">
+					<p/>
+					<b><spring:message code="BatchEntry.title"/>:</b>
+					<ul>
+						<c:forEach var="form" items="${model.batchEntryForms}">
+							<li><a href="batchForm.form?formId=${form.formId}">${form.name}</a></li>
+						</c:forEach>
+					</ul>
+				</div>
+			</c:if>
 <c:if test="${model.size != 'full'}">
 		</div>
 
 <script type="text/javascript">
-	hideLayer('patientSetBox');
+	<request:equalsParameter name="showPatientSet" match="true" ignoreCase="true" value="false">
+		hideLayer('patientSetBox');
+	</request:equalsParameter>
 </script>
 
 		<div class="popupTrayTitle">

@@ -106,6 +106,7 @@
 					<prop key="**/scheduler.list">schedulerListController</prop>
 					<prop key="**/scheduler.form">schedulerFormController</prop>
 					<prop key="**/dynamicForm.form">dynamicFormEntryController</prop>
+					<prop key="**/batchForm.form">batchFormEntryController</prop>
 					<prop key="**/patientForm.form">patientFormEntryController</prop>
 					<prop key="**/program.list">programList</prop>
 					<prop key="**/program.form">programForm</prop>
@@ -682,7 +683,7 @@
 				</property>
 				<property name="links">
 					<list>
-						<value>patientSet.form:Analysis.formEntryButton:method=setPatientSet:url=patientDashboard.form:appendPatientId=true</value>
+						<value>patientSet.form:Analysis.formEntryButton:method=setPatientSet:url=patientDashboard.form:appendPatientId=true:showPatientSet=true</value>
 						<value>nealreport.form:nealreport.ConsultReport.name:reportType=Consult Report</value>
 						<value>nealreport.form:nealreport.IncentiveReport.name:reportType=Incentive Report</value>
 						<value>nealreport.form:nealreport.ShortReport.name:reportType=Short Report</value>
@@ -827,6 +828,14 @@
 		<bean id="dynamicFormEntryController" class="org.openmrs.dynamicformentry.DynamicFormEntryController">
 			<property name="commandName"><value>formInProgress</value></property>
 			<property name="formView"><value>/dynamicformentry/enter</value></property>
+			<property name="successView"><value>patientDashboard.form</value></property>
+		</bean>
+	
+		<bean id="batchFormEntryController" class="org.openmrs.dynamicformentry.BatchFormEntryController">
+			<property name="sessionForm"><value>true</value></property>
+			<property name="commandName"><value>formData</value></property>
+			<property name="commandClass"><value>org.openmrs.dynamicformentry.BatchFormEntryModel</value></property>
+			<property name="formView"><value>/dynamicformentry/batch</value></property>
 			<property name="successView"><value>patientDashboard.form</value></property>
 		</bean>
 

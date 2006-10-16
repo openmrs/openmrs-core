@@ -848,6 +848,23 @@ span.noOrdersMessage {
 	font-size: 0.9em;
 }
 
+table.thinBorder {
+	border: 1px black solid;
+	border-spacing: 0px;
+	border-collapse: collapse;
+	margin: 2px;
+}
+
+table.thinBorder td {
+	border: 1px black solid;
+	padding: 3px;
+}
+
+table.thinBorder th {
+	border: 1px black solid;
+	padding: 3px;
+}
+
 table.borderedTable {
 	border: 2px solid black;
 	border-spacing: 0px;
@@ -882,4 +899,30 @@ th.smallHeader {
 .dashedAndHighlighted {
 	border: 1px black dashed;
 	background-color: yellow;
+}
+
+.datePatternHint {
+	font-size: 0.7em;
+}
+
+#patientSetBatchEntryBox {
+	border: 1px black solid;
+	background-color: white;
+	margin: 4px;
+	padding: 4px;
+}
+
+#batchEntryStepOne {
+	border: 1px black solid;
+	background: #eaeae0;
+	margin: 4px;
+	padding: 4px;
+}
+
+#batchEntryStepTwo {
+	margin: 4px;
+}
+
+.batchEntrySavedMessage {
+	color: green;
 }

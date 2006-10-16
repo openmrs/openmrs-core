@@ -46,8 +46,11 @@ public class PatientSetController implements Controller {
 		Context.getPatientSetService().setMyPatientSet(patientSet);
 		log.debug("Set user's PatientSet (" + patientSet.size() + " patients)");
 		
-		if (patientSet.size() > 0 && "true".equals(request.getParameter("appendPatientId"))) {
-			url += (url.indexOf('?') >= 0 ? "&" : "?") + "patientId=" + patientSet.getPatientIds().iterator().next();
+		if (patientSet.size() > 0) {
+			if ("true".equals(request.getParameter("appendPatientId")))
+				url += (url.indexOf('?') >= 0 ? "&" : "?") + "patientId=" + patientSet.getPatientIds().iterator().next();
+			if ("true".equals(request.getParameter("showPatientSet")))
+				url += (url.indexOf('?') >= 0 ? "&" : "?") + "showPatientSet=true";
 		}
 
 		return new ModelAndView(new RedirectView(url));
@@ -93,8 +96,11 @@ public class PatientSetController implements Controller {
 			}
 		}
 		
-		if (patientSet.size() > 0 && "true".equals(request.getParameter("appendPatientId"))) {
-			url += (url.indexOf('?') >= 0 ? "&" : "?") + "patientId=" + (id != null ? id : patientSet.getPatientIds().iterator().next());
+		if (patientSet.size() > 0) {
+			if ("true".equals(request.getParameter("appendPatientId")))
+				url += (url.indexOf('?') >= 0 ? "&" : "?") + "patientId=" + (id != null ? id : patientSet.getPatientIds().iterator().next());
+			if ("true".equals(request.getParameter("showPatientSet")))
+				url += (url.indexOf('?') >= 0 ? "&" : "?") + "showPatientSet=true";
 		}
 
 		return new ModelAndView(new RedirectView(url));
@@ -128,8 +134,11 @@ public class PatientSetController implements Controller {
 			}
 		}
 		
-		if (patientSet.size() > 0 && "true".equals(request.getParameter("appendPatientId"))) {
-			url += (url.indexOf('?') >= 0 ? "&" : "?") + "patientId=" + patientSet.getPatientIds().iterator().next();
+		if (patientSet.size() > 0) {
+			if ("true".equals(request.getParameter("appendPatientId")))
+				url += (url.indexOf('?') >= 0 ? "&" : "?") + "patientId=" + patientSet.getPatientIds().iterator().next();
+			if ("true".equals(request.getParameter("showPatientSet")))
+				url += (url.indexOf('?') >= 0 ? "&" : "?") + "showPatientSet=true";
 		}
 
 		return new ModelAndView(new RedirectView(url));

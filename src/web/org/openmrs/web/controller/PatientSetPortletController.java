@@ -1,10 +1,14 @@
 package org.openmrs.web.controller;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.openmrs.Form;
 import org.openmrs.api.context.Context;
 import org.openmrs.reporting.PatientAnalysis;
 import org.openmrs.reporting.PatientSet;
@@ -49,6 +53,17 @@ public class PatientSetPortletController extends PortletController {
 				model.put("patientSetSize", Context.getPatientSetService().getMyPatientSet().size());
 			}
 			model.put("patientSet", patientSet);
+			
+			if (Context.isAuthenticated()) {
+				if ("true".equals(model.get("allowBatchEntry"))) {
+					Collection<Form> forms = Context.getFormEntryService().getForms();
+					List<Form> shortForms = new ArrayList<Form>();
+					for (Form form : forms)
+						if (form.getFormFields().size() < 25 && !form.isRetired() && form.getPublished())
+							shortForms.add(form);
+					model.put("batchEntryForms", shortForms);
+				}
+			}
 		}
 	}
 

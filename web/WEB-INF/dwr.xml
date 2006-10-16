@@ -82,6 +82,7 @@
 		<create creator="new" javascript="DWRFormService">
 			<param name="class" value="org.openmrs.web.dwr.DWRFormService" />
 			<include method="getFormField"/>
+			<include method="getFormFields"/>
 			<include method="getField"/>
 			<include method="getForms"/>
 			<include method="getJSTree"/>

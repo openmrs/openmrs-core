@@ -2,11 +2,14 @@ package org.openmrs.reporting;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
 import org.openmrs.Patient;
+import org.openmrs.api.context.Context;
 
 public class PatientSet {
 
@@ -179,5 +182,19 @@ public class PatientSet {
 	
 	public int getSize() {
 		return patientIds.size();
+	}
+	
+	/**
+	 * This method can be resource-intensive for large patient sets
+	 * @return An alphabetically-sorted list of the patients in this set
+	 */
+	public List<Patient> getPatients() {
+		List<Patient> ret = Context.getPatientSetService().getPatients(getPatientIds());
+		Collections.sort(ret, new Comparator<Patient>() {
+				public int compare(Patient left, Patient right) {
+					return left.getPatientName().compareTo(right.getPatientName());
+				}
+			});
+		return ret;
 	}
 }

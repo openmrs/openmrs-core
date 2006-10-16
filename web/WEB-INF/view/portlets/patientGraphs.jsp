@@ -74,8 +74,8 @@ table#labTestTable th {
 						showEmptyConcepts="false"
 						showConceptHeader="true"
 						showDateHeader="true"
-						orientation="vertical"
-						sort="desc"
+						orientation="horizontal"
+						sort="asc"
 						limit="-1"
 					/>
 				</td>

@@ -53,6 +53,14 @@ public class DWRFormService {
 		f = fs.getFormField(formFieldId);
 		return new FormFieldListItem(f, Context.getLocale());
 	}
+	
+	public List<FormFieldListItem> getFormFields(Integer formId) {
+		List<FormFieldListItem> formFields = new Vector<FormFieldListItem>();
+		Form form = Context.getFormService().getForm(formId);
+		for (FormField ff : form.getFormFields())
+			formFields.add(new FormFieldListItem(ff, Context.getLocale()));
+		return formFields;
+	}
 
 	public List<FieldListItem> findFields(String txt) {
 		List<FieldListItem> fields = new Vector<FieldListItem>();

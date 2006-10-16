@@ -6,11 +6,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
  * PatientName
  */
-public class PatientName implements java.io.Serializable, Cloneable {
+public class PatientName implements java.io.Serializable, Cloneable, Comparable<PatientName> {
 
 	public static final long serialVersionUID = 4353L;
 
@@ -445,5 +446,21 @@ public class PatientName implements java.io.Serializable, Cloneable {
 		}
 		
 		return sb.toString();
+	}
+	
+	// TODO: the behavior of this method needs to be controlled by some sort of global property 
+	public int compareTo(PatientName other) {
+		int ret = OpenmrsUtil.compareWithNullAsGreatest(getFamilyName(), other.getFamilyName());
+		if (ret == 0)
+			ret = OpenmrsUtil.compareWithNullAsGreatest(getFamilyName2(), other.getFamilyName2());
+		if (ret == 0)
+			ret = OpenmrsUtil.compareWithNullAsGreatest(getGivenName(), other.getGivenName());
+		if (ret == 0)
+			ret = OpenmrsUtil.compareWithNullAsGreatest(getMiddleName(), other.getMiddleName());
+		if (ret == 0)
+			ret = OpenmrsUtil.compareWithNullAsGreatest(getFamilyNamePrefix(), other.getFamilyNamePrefix());
+		if (ret == 0)
+			ret = OpenmrsUtil.compareWithNullAsGreatest(getFamilyNameSuffix(), other.getFamilyNameSuffix());
+		return ret;
 	}
 }
