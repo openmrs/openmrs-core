@@ -30,6 +30,14 @@ h1, h2, h3, h4, h5 {
 	margin-bottom: 7px;
 }
 
+a, a:link, a:hover, a:visited, a:active {
+	text-decoration: underline;
+	color: #8FABC7;
+}
+a:hover {
+	text-decoration: none;
+}
+
 #openmrs_msg {
 	background: url(/@WEBAPP.NAME@/images/info.gif) no-repeat center left;
 }
@@ -443,8 +451,11 @@ table.patientTreatmentPrograms td {
 	color: white;
 	display: block;
 	padding: 2px;
-}
-
+	}
+	#content .boxHeader a:link {
+		color: white;
+	}
+	
 #selectFormForm {
 	padding: 2px;
 	}
@@ -489,13 +500,6 @@ table.patientTreatmentPrograms td {
 	margin: 2px;
 	padding: 1px;
 	cursor: pointer;
-}
-a, a:link, a:hover, a:visited, a:active {
-	text-decoration: underline;
-	color: #8FABC7;
-}
-a:hover {
-	text-decoration: none;
 }
 
 .retiredMessage {

@@ -37,7 +37,7 @@ dojo.widget.defineWidget(
 	allObjectsFound: new Array(),
 	objHitsTableBody: null,
 	text: null,
-	lastPhraseSearched: null,
+	lastPhraseSearched: "",
 	numItemsDisplayed: 0,
 	firstItemDisplayed: 1,
 	previousHit: null,

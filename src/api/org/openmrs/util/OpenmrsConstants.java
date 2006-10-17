@@ -254,6 +254,7 @@ public class OpenmrsConstants {
 		
 		props.put("use_patient_attribute.tribe", "true");
 		props.put("use_patient_attribute.healthCenter", "false");
+		props.put("use_patient_attribute.mothersName", "false");
 		props.put("dashboard.overview.showConcepts", "");
 		props.put("dashboard.encounters.viewWhere", "newWindow"); // known values: 'sameWindow', 'newWindow', 'oneNewWindow'
 		props.put("dashboard.encounters.showEmptyFields", "true");
@@ -380,7 +381,7 @@ public class OpenmrsConstants {
 	public static final String REPORT_OBJECT_TYPE_PATIENTDATAPRODUCER 	= "Patient Data Producer";
 	
 	
-	public static String MODULE_REPOSITORY_PATH = "OpenMRS-Modules";
+	public static String MODULE_REPOSITORY_PATH = "modules";
 	
 	
 	// Used for FormEntry XSN upload/download (differences between windows/linux)

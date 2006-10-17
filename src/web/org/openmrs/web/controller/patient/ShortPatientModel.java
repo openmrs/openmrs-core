@@ -25,7 +25,18 @@ public class ShortPatientModel {
 	private String mothersName;
 	private PatientAddress address;
 	private Boolean voided = false;
+	private Boolean dead = false;
+	private String causeOfDeath = "";
+	private Date deathDate = null;
 	
+	public Boolean getDead() {
+		return dead;
+	}
+
+	public void setDead(Boolean dead) {
+		this.dead = dead;
+	}
+
 	public ShortPatientModel() { }
 	
 	public ShortPatientModel(Patient patient) {
@@ -72,6 +83,9 @@ public class ShortPatientModel {
 			mothersName = patient.getMothersName();
 			healthCenter = patient.getHealthCenter();
 			voided = patient.isVoided();
+			dead = patient.isDead();
+			causeOfDeath = patient.getCauseOfDeath();
+			deathDate = patient.getDeathDate();
 						
 			address = patient.getPatientAddress();
 		}
@@ -203,6 +217,22 @@ public class ShortPatientModel {
 
 	public void setHealthCenter(Location healthCenter) {
 		this.healthCenter = healthCenter;
+	}
+
+	public String getCauseOfDeath() {
+		return causeOfDeath;
+	}
+
+	public void setCauseOfDeath(String causeOfDeath) {
+		this.causeOfDeath = causeOfDeath;
+	}
+
+	public Date getDeathDate() {
+		return deathDate;
+	}
+
+	public void setDeathDate(Date deathDate) {
+		this.deathDate = deathDate;
 	}
 	
 }

@@ -100,6 +100,12 @@
 		}
 	}
 	
+	function updateEstimated() {
+		var input = document.getElementById("birthdateEstimatedInput");
+		if (input)
+			input.checked = false;
+	}
+	
 	// age function borrowed from http://anotherdan.com/2006/02/simple-javascript-age-function/
 	function getAge(d, now) {
 		var age = -1;
@@ -272,14 +278,14 @@
 			<td colspan="3" valign="top">
 				<spring:bind path="patient.birthdate">			
 					<input type="text" id="birthdate" name="birthdate" size="10" value="${status.value}" 
-							onClick="showCalendar(this)" onChange="updateAge()" />
+							onClick="showCalendar(this);" onChange="updateAge(); updateEstimated();" />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
 				</spring:bind>
 				<span id="age"></span> &nbsp; 
 				<spring:bind path="patient.birthdateEstimated">
-					<spring:message code="Patient.birthdateEstimated"/>
+					<label for="birthdateEstimatedInput"><spring:message code="Patient.birthdateEstimated"/></label>
 					<input type="hidden" name="_birthdateEstimated">
-					<input type="checkbox" name="birthdateEstimated" value="true" 
+					<input type="checkbox" name="birthdateEstimated" value="true" id="birthdateEstimatedInput"
 						   <c:if test="${status.value == true}">checked</c:if> />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
@@ -345,6 +351,53 @@
 				</td>
 			</tr>
 		</c:if>
+		<tr>
+			<th><spring:message code="Patient.dead"/></th>
+			<td>
+				<spring:bind path="patient.dead">
+					<input type="hidden" name="_${status.expression}"/>
+					<input type="checkbox" name="${status.expression}" 
+						   <c:if test="${status.value == true}">checked</c:if>
+						   onclick="patientDeadClicked(this)" id="patientDead"
+					/>
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				</spring:bind>
+				<script type="text/javascript">
+					function patientDeadClicked(input) {
+						if (input.checked) {
+							document.getElementById("deathInformation").style.display = "";
+						}
+						else {
+							document.getElementById("deathInformation").style.display = "none";
+							document.getElementById("deathDate").value = "";
+							document.getElementById("causeOfDeath").value = "";
+						}
+					}
+				</script>
+			</td>
+		</tr>
+		<tr id="deathInformation">
+			<th><spring:message code="Patient.deathDate"/></th>
+			<td>
+				<spring:bind path="patient.deathDate">
+					<input type="text" name="deathDate" size="10" 
+						   value="${status.value}" onClick="showCalendar(this)" 
+						   id="deathDate" />
+					(<spring:message code="general.format"/>: ${datePattern})
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				</spring:bind>
+				&nbsp; &nbsp; 
+				<spring:message code="Patient.causeOfDeath"/>
+				<spring:bind path="patient.causeOfDeath">
+					<input type="text" name="causeOfDeath" value="${status.value}" id="causeOfDeath"/>
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				</spring:bind>
+				<script type="text/javascript">				
+					//set up death info fields
+					patientDeadClicked(document.getElementById("patientDead"));
+				</script>
+			</td>
+		</tr>
 	</table>
 	
 	<input type="hidden" name="pId" value="${param.pId}" />

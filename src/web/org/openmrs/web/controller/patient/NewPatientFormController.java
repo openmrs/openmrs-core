@@ -248,12 +248,23 @@ public class NewPatientFormController extends SimpleFormController {
 			patient.setBirthdate(p.getBirthdate());
 			patient.setBirthdateEstimated(p.getBirthdateEstimated());
 			patient.setGender(p.getGender());
+			patient.setHealthCenter(p.getHealthCenter());
 			patient.setMothersName(p.getMothersName());
 			if (p.getTribe() == "" || p.getTribe() == null)
 				patient.setTribe(null);
 			else {
 				Tribe t = ps.getTribe(Integer.valueOf(p.getTribe()));
 				patient.setTribe(t);
+			}
+			
+			patient.setDead(p.getDead());
+			if (patient.isDead()) {
+				patient.setDeathDate(p.getDeathDate());
+				patient.setCauseOfDeath(p.getCauseOfDeath());
+			}
+			else {
+				patient.setDeathDate(null);
+				patient.setCauseOfDeath(null);
 			}
 			
 			ps.updatePatient(patient);

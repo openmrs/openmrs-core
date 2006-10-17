@@ -31,6 +31,8 @@
 			<c:if test="${refreshSec != ''}">
 				<meta http-equiv="refresh" content="<openmrs:globalProperty key="formentry.infopath_taskpane_refresh_sec" />;">
 			</c:if>
+			 <!-- This page loaded at this time: <%= rightNow %> --> 
+	 <!-- Page will reload every <openmrs:globalProperty key="formentry.infopath_taskpane_refresh_sec" /> second(s) until: <%= finalVisit %> --> 
 <%
 		}
 	}
