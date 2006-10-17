@@ -1,5 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
+<openmrs:htmlInclude file="/scripts/dojoConfig.js"/>
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js"/>
 
 <script type="text/javascript">	
@@ -103,6 +104,8 @@ table#labTestTable th {
 						<span dojoType="OpenmrsPopup" searchWidget="cSearch" searchTitle='<spring:message code="Concept.find"/>' changeButtonValue='<spring:message code="general.choose"/>'></span> 
 						<br/>
 					</form>
+				</td>
+			</tr>
 		</table>
 	</div>
 	

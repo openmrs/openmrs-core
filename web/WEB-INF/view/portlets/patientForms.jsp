@@ -11,15 +11,16 @@ Parameters
 </openmrs:hasPrivilege>
 
 <openmrs:hasPrivilege privilege="Form Entry">
-	<openmrs:htmlInclude file="/scripts/dojoConfig.js"></openmrs:htmlInclude>
-	<openmrs:htmlInclude file="/scripts/dojo/dojo.js"></openmrs:htmlInclude>
-	<openmrs:htmlInclude file="/dwr/interface/DWRFormService.js"></openmrs:htmlInclude>
+	<openmrs:htmlInclude file="/scripts/dojoConfig.js"/>
+	<openmrs:htmlInclude file="/scripts/dojo/dojo.js"/>
+	<openmrs:htmlInclude file="/dwr/interface/DWRFormService.js"/>
 	
 	<script type="text/javascript">
 	
 		dojo.require("dojo.widget.openmrs.OpenmrsSearch");
 		
 		var searchWidget;
+		
 		
 		dojo.addOnLoad( function() {
 			

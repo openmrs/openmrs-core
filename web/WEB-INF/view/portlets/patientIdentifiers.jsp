@@ -8,10 +8,10 @@ highlightMissing=true/false (defaults to true)
 	Whether or not to highlight missing important ids
 --%>
 
-<openmrs:htmlInclude file="${pageContext.request.contextPath}/scripts/easyAjax.js" />
-<openmrs:htmlInclude file="${pageContext.request.contextPath}/dwr/interface/DWRPatientService.js" />
-<openmrs:htmlInclude file="${pageContext.request.contextPath}/dwr/engine.js" />
-<openmrs:htmlInclude file="${pageContext.request.contextPath}/dwr/util.js" />
+<openmrs:htmlInclude file="/scripts/easyAjax.js" />
+<openmrs:htmlInclude file="/dwr/interface/DWRPatientService.js" />
+<openmrs:htmlInclude file="/dwr/engine.js" />
+<openmrs:htmlInclude file="/dwr/util.js" />
 
 <c:set var="showIfSet" value="${empty model.showIfSet || model.showIfSet == 'true'}"/>
 <c:set var="showIfMissing" value="${empty model.showIfMissing || model.showIfMissing == 'true'}"/>
