@@ -18,6 +18,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.context.UserContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.openmrs.web.taglib.HtmlIncludeTag;
 
 public class OpenmrsFilter implements Filter {
 
@@ -47,7 +48,14 @@ public class OpenmrsFilter implements Filter {
         log.debug("request path info" + httpRequest.getPathInfo());
         
         //set/forward the request init attribute
-        httpRequest.setAttribute( INIT_REQ_ATTR_NAME, httpRequest );
+        if (initialRequest) {
+        	httpRequest.setAttribute( INIT_REQ_ATTR_NAME, httpRequest );
+        	log.debug("httpRequest.get htmlIncludeMap: " + httpRequest.getAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_KEY));
+        }
+        else {
+        	httpRequest.setAttribute( INIT_REQ_ATTR_NAME, val );
+        	log.debug("val.get htmlIncludeMap: " + ((HttpServletRequest)val).getAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_KEY));
+        }
         
         //context = (Context)httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
         //context = (Context)httpRequest.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);

@@ -1,4 +1,3 @@
-// TODO: This class is not fully working right now...  stupid bug...
 package org.openmrs.web.taglib;
 
 import java.io.IOException;
@@ -6,6 +5,7 @@ import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import org.apache.commons.logging.Log;
@@ -14,21 +14,21 @@ import org.openmrs.web.OpenmrsFilter;
 
 public class HtmlIncludeTag extends TagSupport {
 
-	public static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 13472382822L;
 	
 	private final Log log = LogFactory.getLog(getClass());
 
 	private static final String POSSIBLE_TYPES_JS = ".js,javascript,jscript";
 	private static final String POSSIBLE_TYPES_CSS = ".css,style,stylesheet";
+	public static final String OPENMRS_HTML_INCLUDE_PAGE_NAME_KEY = "org.openmrs.htmlInclude.pageName";
 	public static final String OPENMRS_HTML_INCLUDE_KEY = "org.openmrs.htmlInclude.includeMap";
 		
 	private String type;
 	private String file;
-	private HttpServletRequest request;
-	private HashMap<String,String> hmIncludeMap;
 	
 	public int doStartTag() throws JspException {
-
+		log.debug("\n\n");
+		
 		// see if this is a JS or CSS file
 		boolean isJs = false;
 		boolean isCss = false;
@@ -48,16 +48,18 @@ public class HtmlIncludeTag extends TagSupport {
 		}
 
 		if ( isJs || isCss ) {
-			HttpServletRequest request = getRequest();
-			HttpServletRequest pageRequest = (HttpServletRequest) pageContext.getRequest();
+			HttpServletRequest initialRequest = getInitialRequest();
 			
-			//log.debug("\n\n[" + request.getRequestURI() + "/" + request.getRequestURL() + "] [" + pageRequest.getRequestURI() + "/" + pageRequest.getRequestURL() + "] [" + request + "], Object at " + HtmlIncludeTag.OPENMRS_HTML_INCLUDE_KEY + " is " + request.getAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_KEY) + "");
-
-			if ( !isAlreadyUsed(file) ) {
+			log.debug("initialRequest uri: [" + initialRequest.getRequestURI() + "]");
+			log.debug("initialRequest(): [" + initialRequest + "]");
+			log.debug("Object at " + HtmlIncludeTag.OPENMRS_HTML_INCLUDE_KEY + " is " + 
+					initialRequest.getAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_KEY) + "");
+			
+			if ( !isAlreadyUsed(file, initialRequest) ) {
 				String output = "";
 				String prefix = "";
 				try {
-					prefix = getRequest().getContextPath();
+					prefix = initialRequest.getContextPath();
 					if ( file.startsWith(prefix + "/") ) prefix = "";
 				} catch (ClassCastException cce) {
 					log.debug("Could not cast request to HttpServletRequest in HtmlIncludeTag");
@@ -69,15 +71,15 @@ public class HtmlIncludeTag extends TagSupport {
 					output = "<link href=\"" + prefix + file + "\" type=\"text/css\" rel=\"stylesheet\" />";
 				}
 
-				//log.debug("isAlreadyUsed() is FALSE - printing " + this.file + " to output.");
+				log.debug("isAlreadyUsed() is FALSE - printing " + this.file + " to output.");
 
 				try {
 					pageContext.getOut().print(output);
 				} catch (IOException e) {
-					log.error("Could not produce output in HtmlIncludeTag.java");
+					log.debug("Could not produce output in HtmlIncludeTag.java");
 				}
 			} else {
-				//log.debug("isAlreadyUsed() is TRUE - suppressing file print for " + this.file + "");
+				log.debug("isAlreadyUsed() is TRUE - suppressing file print for " + this.file + "");
 			}
 		}
 		
@@ -86,48 +88,56 @@ public class HtmlIncludeTag extends TagSupport {
 		return SKIP_BODY;
 	}
 	
-	private HttpServletRequest getRequest() {
+	private HttpServletRequest getInitialRequest() {
 		HttpServletRequest pageRequest = (HttpServletRequest)this.pageContext.getRequest();
-		if ( this.pageContext.getRequest().getAttribute(OpenmrsFilter.INIT_REQ_ATTR_NAME) != null ) {
-			HttpServletRequest request = (HttpServletRequest)this.pageContext.getRequest().getAttribute(OpenmrsFilter.INIT_REQ_ATTR_NAME);
-			return (HttpServletRequest)this.pageContext.getRequest().getAttribute(OpenmrsFilter.INIT_REQ_ATTR_NAME);
+		if ( pageRequest.getAttribute(OpenmrsFilter.INIT_REQ_ATTR_NAME) != null ) {
+			HttpServletRequest initRequest = (HttpServletRequest)pageRequest.getAttribute(OpenmrsFilter.INIT_REQ_ATTR_NAME);
+			log.debug("Returning initial request: " + initRequest.toString());
+			return initRequest;
 		} else {
-			if ( this.request == null ) {
-				//log.debug("Using pageContext request of " + this.pageContext.getRequest().toString());
-				return (HttpServletRequest)this.pageContext.getRequest();
-			} else {
-				//log.debug("Using passed-in request of " + this.request.toString());
-				return this.request;
-			}
+			log.debug("Using pageContext request of " + pageRequest.toString());
+			return pageRequest;
 		}
 	}
 	
 	@SuppressWarnings("unchecked")
-	private synchronized boolean isAlreadyUsed(String fileName) {
+	private boolean isAlreadyUsed(String fileName, HttpServletRequest initialRequest) {
 		boolean isUsed = false;
 
 		if ( fileName != null ) {
 			
-			HashMap<String,String> hmIncludeMap = (HashMap<String, String>) getRequest().getAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_KEY);
+			// retrieve the current page name from the initial request
+			String initialPageName = initialRequest.getRequestURI();
+			
+			// retrieve the page name that the last mapping was added for
+			String lastPageUsed = (String)pageContext.getAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_PAGE_NAME_KEY, PageContext.SESSION_SCOPE);
+			
+			// retrieve the htmlinclude map from the page request
+			//HashMap<String,String> hmIncludeMap = (HashMap<String, String>) initialRequest.getAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_KEY);
+			HashMap<String,String> hmIncludeMap = (HashMap<String, String>) pageContext.getAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_KEY, PageContext.SESSION_SCOPE);
 
-			if ( hmIncludeMap == null ) {
+			// reset the hmIncludeMap if not found or if not on the initial request anymore
+			if ( hmIncludeMap == null || !initialPageName.equals(lastPageUsed)) {
+				log.debug("Creating new hmIncludeMap");
 				hmIncludeMap = new HashMap<String,String>();
-			} //else log.debug("Using map from object");
-			
-			
-			//log.debug("HtmlIncludeTag has request of " + getRequest().toString());
-			//log.debug("HtmlIncludeTag has default request of " + pageContext.getRequest().toString());
+			} 
+			else 
+				log.debug("Using hmIncludeMap from object");
 			
 			if ( hmIncludeMap.containsKey(fileName) ) {
-				//log.debug("HTMLINCLUDETAG HAS ALREADY INCLUDED FILE " + fileName);
+				log.debug("HTMLINCLUDETAG HAS ALREADY INCLUDED FILE " + fileName);
 				isUsed = true;
 			} else {
-				//log.debug("HTMLINCLUDETAG IS WRITING HTML TO INCLUDE FILE " + fileName);
-				//log.debug("HashCode for file is " + fileName.hashCode());
+				log.debug("HTMLINCLUDETAG IS WRITING HTML TO INCLUDE FILE " + fileName);
+				log.debug("HashCode for file is " + fileName.hashCode());
+				
 				hmIncludeMap.put(fileName,"true");
-				getRequest().setAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_KEY, hmIncludeMap);
-				//pageContext.setAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_KEY, hmIncludeMap.clone(), PageContext.REQUEST_SCOPE);
-				//this.hmIncludeMap = hmIncludeMap;
+				
+				// save the hmIncludeMap to the  
+				pageContext.setAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_KEY, hmIncludeMap, PageContext.SESSION_SCOPE);
+				
+				// save the name of the initial page 
+				pageContext.setAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_PAGE_NAME_KEY, initialPageName, PageContext.SESSION_SCOPE);
 			}
 		}
 		
@@ -135,9 +145,9 @@ public class HtmlIncludeTag extends TagSupport {
 	}
 
 	private void resetValues() {
+		log.debug("resetting values");
 		this.type = null;
 		this.file = null;
-		this.hmIncludeMap = null;
 	}
 	
 	public String getType() {
@@ -161,13 +171,6 @@ public class HtmlIncludeTag extends TagSupport {
 	public void setFile(String file) {
 		this.file = file;
 		if ( file != null ) this.file = file.trim();
-	}
-
-	/**
-	 * @param request The request to set.
-	 */
-	public void setRequest(HttpServletRequest request) {
-		this.request = request;
 	}
 
 }
