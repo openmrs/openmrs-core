@@ -104,6 +104,8 @@
 			updateObsValues();
 		</c:if>
 		
+		$('obsTable').style.visibility = 'visible';
+		
 	});
 	
 	function showProposeConceptForm() {
@@ -160,7 +162,6 @@
 				$('valueInvalidRow').style.visibility = "visible";
 				DWRConceptService.getQuestionsForAnswer(fillValueInvalidPossible(tmpConcept), tmpConcept.conceptId);
 			}
-			$('obsTable').style.visibility = 'visible';
 		}
 	}
 	
