@@ -562,5 +562,19 @@ public class OpenmrsUtil {
 		}
 		return ret;
 	}
+	
+	public static Date lastSecondOfDay(Date date) {
+		if (date == null)
+			return null;
+		Calendar c = new GregorianCalendar();
+		c.setTime(date);
+		// TODO: figure out the right way to do this (or at least set milliseconds to zero)
+		c.set(Calendar.HOUR_OF_DAY, 0);
+		c.set(Calendar.MINUTE, 0);
+		c.set(Calendar.SECOND, 0);
+		c.add(Calendar.DAY_OF_MONTH, 1);
+		c.add(Calendar.SECOND, -1);
+		return c.getTime();
+	}
 
 }

@@ -1,0 +1,91 @@
+package org.openmrs.web.controller.maintenance;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openmrs.DataEntryStatistic;
+import org.openmrs.api.context.Context;
+import org.openmrs.reporting.DataTable;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.validation.BindException;
+import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.SimpleFormController;
+
+public class DataEntryStatisticsController extends SimpleFormController {
+
+	protected final Log log = LogFactory.getLog(getClass());
+
+	public class StatisticsCommand {
+		private Date fromDate;
+		private Date toDate;
+		private DataTable table;
+		public StatisticsCommand() { }
+		public Date getFromDate() {
+			return fromDate;
+		}
+		public void setFromDate(Date fromDate) {
+			this.fromDate = fromDate;
+		}
+		public DataTable getTable() {
+			return table;
+		}
+		public void setTable(DataTable table) {
+			this.table = table;
+		}
+		public Date getToDate() {
+			return toDate;
+		}
+		public void setToDate(Date toDate) {
+			this.toDate = toDate;
+		}
+	}
+	
+    SimpleDateFormat dateFormat;
+	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
+		super.initBinder(request, binder);
+		
+		dateFormat = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase()), Context.getLocale());
+        binder.registerCustomEditor(java.util.Date.class, 
+        		new CustomDateEditor(dateFormat, true, 10));
+	}
+
+	
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException { 
+		StatisticsCommand ret = new StatisticsCommand();
+		Calendar c = new GregorianCalendar();
+		c.set(Calendar.HOUR_OF_DAY, 0);
+		c.set(Calendar.MINUTE, 0);
+		c.set(Calendar.SECOND, 0);
+		ret.setFromDate(c.getTime());
+		ret.setToDate(null);
+		
+		Date toDateToUse = OpenmrsUtil.lastSecondOfDay(ret.getToDate());
+		List<DataEntryStatistic> stats = Context.getAdministrationService().getDataEntryStatistics(ret.getFromDate(), toDateToUse);
+		DataTable table = DataEntryStatistic.tableByUserAndType(stats);
+		ret.setTable(table);
+		
+		return ret;
+	}
+	
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object commandObj, BindException errors) throws Exception {
+		StatisticsCommand command = (StatisticsCommand) commandObj;
+		Date toDateToUse = OpenmrsUtil.lastSecondOfDay(command.getToDate());
+		List<DataEntryStatistic> stats = Context.getAdministrationService().getDataEntryStatistics(command.getFromDate(), toDateToUse);
+		DataTable table = DataEntryStatistic.tableByUserAndType(stats);
+		command.setTable(table);
+		return showForm(request, response, errors);
+	}
+
+}

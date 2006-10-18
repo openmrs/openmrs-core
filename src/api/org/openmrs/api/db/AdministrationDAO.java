@@ -1,12 +1,14 @@
 package org.openmrs.api.db;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptProposal;
+import org.openmrs.DataEntryStatistic;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
 import org.openmrs.GlobalProperty;
@@ -433,5 +435,7 @@ public interface AdministrationDAO {
 	public void setGlobalProperty(String propertyName, String propertyValue) throws DAOException;
 
 	public void addGlobalProperty(String propertyName, String propertyValue) throws DAOException;
+
+	public List<DataEntryStatistic> getDataEntryStatistics(Date fromDate, Date toDate) throws DAOException;
 
 }

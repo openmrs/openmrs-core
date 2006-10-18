@@ -117,6 +117,7 @@
 					<prop key="**/encounterDisplay.list">encounterDisplayController</prop>
 					<prop key="**/globalProps.form">globalPropertyController</prop>
 					<!--<prop key="**/calendar.list">calendarController</prop>-->
+					<prop key="**/dataEntryStats.list">dataEntryStatsController</prop>
 					<prop key="**/address.portlet">addressPortletController</prop>
 					<prop key="**/patientPrograms.portlet">patientProgramsPortletController</prop>
 					<prop key="**/patientSet.portlet">patientSetPortletController</prop>
@@ -924,6 +925,12 @@
 			<property name="commandName"><value>globalProps</value></property>
 			<property name="formView"><value>/admin/maintenance/globalPropsForm</value></property>
 			<property name="successView"><value>globalProps.form</value></property>
+		</bean>
+		<bean id="dataEntryStatsController" class="org.openmrs.web.controller.maintenance.DataEntryStatisticsController">
+			<property name="sessionForm"><value>true</value></property>
+			<property name="commandName"><value>command</value></property>
+			<property name="formView"><value>/admin/maintenance/dataEntryStatistics</value></property>
+			<property name="successView"><value>dataEntryStats.list</value></property>
 		</bean>
 		
 	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">

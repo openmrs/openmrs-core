@@ -1,6 +1,7 @@
 package org.openmrs.api;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.SortedMap;
 
@@ -8,6 +9,7 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptProposal;
+import org.openmrs.DataEntryStatistic;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
 import org.openmrs.GlobalProperty;
@@ -464,4 +466,6 @@ public interface AdministrationService {
 
 	public void addGlobalProperty(String propertyName, String propertyValue);
 
+	public List<DataEntryStatistic> getDataEntryStatistics(Date fromDate, Date toDate);
+	
 }

@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -28,6 +29,7 @@ import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSetDerived;
 import org.openmrs.ConceptWord;
+import org.openmrs.DataEntryStatistic;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
 import org.openmrs.GlobalProperty;
@@ -840,5 +842,70 @@ public class HibernateAdministrationDAO implements
 	public void addGlobalProperty(String propertyName, String propertyValue) throws DAOException {
 		GlobalProperty prop = new GlobalProperty(propertyName, propertyValue);
 		sessionFactory.getCurrentSession().save(prop);
+	}
+
+	public List<DataEntryStatistic> getDataEntryStatistics(Date fromDate, Date toDate) throws DAOException {
+		// for all encounters, find user, form name, and number of entries
+		String hql = "select enc.creator, enc.form.name, count(*) " +
+				"from Encounter enc ";
+		if (fromDate != null || toDate != null) {
+			String s = "where ";
+			if (fromDate != null)
+				s += "enc.dateCreated >= :fromDate ";
+			if (toDate != null) {
+				if (fromDate != null)
+					s += "and ";
+				s += "enc.dateCreated <= :toDate ";
+			}
+			hql += s;
+		}
+		hql += "group by enc.creator, enc.form.name ";
+		log.debug("hql: " + hql);
+		Query q = sessionFactory.getCurrentSession().createQuery(hql);
+		if (fromDate != null)
+			q.setParameter("fromDate", fromDate);
+		if (toDate != null)
+			q.setParameter("toDate", toDate);
+
+		List<Object[]> l = q.list();
+		List<DataEntryStatistic> ret = new ArrayList<DataEntryStatistic>();
+		for (Object[] holder : l) {
+			DataEntryStatistic s = new DataEntryStatistic();
+			s.setUser((User) holder[0]);
+			s.setEntryType((String) holder[1]);
+			s.setNumberOfEntries((Integer) holder[2]);
+			ret.add(s);
+		}
+		
+		// for orders, count how many were created. (should eventually count something with voided/changed)
+		hql = "select o.creator, o.orderType.name, count(*) " +
+				"from Order o ";
+		if (fromDate != null || toDate != null) {
+			String s = "where ";
+			if (fromDate != null)
+				s += "o.dateCreated >= :fromDate ";
+			if (toDate != null) {
+				if (fromDate != null)
+					s += "and ";
+				s += "o.dateCreated <= :toDate ";
+			}
+			hql += s;
+		}
+		hql += "group by o.creator, o.orderType.name ";
+		q = sessionFactory.getCurrentSession().createQuery(hql);
+		if (fromDate != null)
+			q.setParameter("fromDate", fromDate);
+		if (toDate != null)
+			q.setParameter("toDate", toDate);
+		l = q.list();
+		for (Object[] holder : l) {
+			DataEntryStatistic s = new DataEntryStatistic();
+			s.setUser((User) holder[0]);
+			s.setEntryType((String) holder[1]);
+			s.setNumberOfEntries((Integer) holder[2]);
+			ret.add(s);
+		}
+		
+		return ret;
 	}
 }
