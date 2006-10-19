@@ -65,7 +65,7 @@ public class HtmlIncludeTag extends TagSupport {
 				}
 					
 				if ( isJs ) {
-					output = "<script src=\"" + prefix + file + "\" type="text/javascript" ></script>";
+					output = "<script src=\"" + prefix + file + "\" type=\"text/javascript\" ></script>";
 				} else if ( isCss ) {
 					output = "<link href=\"" + prefix + file + "\" type=\"text/css\" rel=\"stylesheet\" />";
 				}
