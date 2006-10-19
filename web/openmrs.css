@@ -254,7 +254,6 @@ a:hover {
 #patientHeaderPreferredIdentifier {
 	float: right;
 	text-align: right;
-	xborder: 1px solid red;
 }
 
 #patientHeaderPatientIdentifierType {

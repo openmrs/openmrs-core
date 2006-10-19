@@ -2,7 +2,7 @@ package org.openmrs.web;
 
 public class WebConstants {
 	
-	public static final String INIT_REQ_ATTR_NAME = "__INIT_REQ__";
+	public static final String INIT_REQ_UNIQUE_ID = "__INIT_REQ_UNIQUE_ID__";
 
 	public static final String OPENMRS_CONTEXT_HTTPSESSION_ATTR = "__openmrs_context";
 	

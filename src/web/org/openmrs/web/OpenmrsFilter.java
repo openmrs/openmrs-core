@@ -1,6 +1,7 @@
 package org.openmrs.web;
 
 import java.io.IOException;
+import java.util.Date;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -18,7 +19,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.context.UserContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.openmrs.web.taglib.HtmlIncludeTag;
 
 public class OpenmrsFilter implements Filter {
 
@@ -28,8 +28,6 @@ public class OpenmrsFilter implements Filter {
 		log.debug("Destroying filter");
 	}
 
-	public static String INIT_REQ_ATTR_NAME = "__INIT_REQ__";
-	
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 	
 		HttpServletRequest httpRequest = (HttpServletRequest)request;
@@ -37,7 +35,7 @@ public class OpenmrsFilter implements Filter {
 		UserContext userContext = null;
 		boolean initialRequest = false;
 		
-		Object val = httpRequest.getAttribute( INIT_REQ_ATTR_NAME );
+		Object val = httpRequest.getAttribute( WebConstants.INIT_REQ_UNIQUE_ID );
 		
 		//the request will not have the value if this is the initial request
         initialRequest = ( val == null );
@@ -48,14 +46,8 @@ public class OpenmrsFilter implements Filter {
         log.debug("request path info" + httpRequest.getPathInfo());
         
         //set/forward the request init attribute
-        if (initialRequest) {
-        	httpRequest.setAttribute( INIT_REQ_ATTR_NAME, httpRequest );
-        	log.debug("httpRequest.get htmlIncludeMap: " + httpRequest.getAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_KEY));
-        }
-        else {
-        	httpRequest.setAttribute( INIT_REQ_ATTR_NAME, val );
-        	log.debug("val.get htmlIncludeMap: " + ((HttpServletRequest)val).getAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_KEY));
-        }
+        if (initialRequest)
+        	httpRequest.setAttribute( WebConstants.INIT_REQ_UNIQUE_ID, String.valueOf(new Date().getTime()) );
         
         //context = (Context)httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
         //context = (Context)httpRequest.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);

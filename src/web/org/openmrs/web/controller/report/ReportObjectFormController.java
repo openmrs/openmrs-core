@@ -113,10 +113,14 @@ public class ReportObjectFormController extends SimpleFormController {
 			if ( reportObject.getSubType() == null ) be.rejectValue("subType", "error.reportObject.subType.required");
 		}
 
+		
+		// TODO: This is NOT the place to be clearing out hte mapping of html included files.  
+		// Is this even needed?? In what situations?
+		
 		// not adding data, but need to take out HtmlIncludeMap before we display this form, in case it is a re-showing of
-		if ( request.getAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_KEY) != null ) {
+		if ( request.getAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_MAP_KEY) != null ) {
 			log.debug("\n\nREMOVING HTMLINCLUDEMAP FROM REQUEST\n\n");
-			request.removeAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_KEY);
+			request.removeAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_MAP_KEY);
 		}
 
 		return super.processFormSubmission(request, response, obj, be);

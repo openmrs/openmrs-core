@@ -10,7 +10,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.web.OpenmrsFilter;
+import org.openmrs.web.WebConstants;
 
 public class HtmlIncludeTag extends TagSupport {
 
@@ -20,8 +20,8 @@ public class HtmlIncludeTag extends TagSupport {
 
 	private static final String POSSIBLE_TYPES_JS = ".js,javascript,jscript";
 	private static final String POSSIBLE_TYPES_CSS = ".css,style,stylesheet";
-	public static final String OPENMRS_HTML_INCLUDE_PAGE_NAME_KEY = "org.openmrs.htmlInclude.pageName";
-	public static final String OPENMRS_HTML_INCLUDE_KEY = "org.openmrs.htmlInclude.includeMap";
+	public static final String OPENMRS_HTML_INCLUDE_REQUEST_ID_KEY = "org.openmrs.htmlInclude.pageName";
+	public static final String OPENMRS_HTML_INCLUDE_MAP_KEY = "org.openmrs.htmlInclude.includeMap";
 		
 	private String type;
 	private String file;
@@ -48,18 +48,17 @@ public class HtmlIncludeTag extends TagSupport {
 		}
 
 		if ( isJs || isCss ) {
-			HttpServletRequest initialRequest = getInitialRequest();
+			String initialRequestId = getInitialRequestUniqueId();
+			HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
+			log.debug("initialRequest id: [" + initialRequestId + "]");
+			log.debug("Object at pageContext." + HtmlIncludeTag.OPENMRS_HTML_INCLUDE_MAP_KEY + " is " + 
+					pageContext.getAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_MAP_KEY, PageContext.SESSION_SCOPE) + "");
 			
-			log.debug("initialRequest uri: [" + initialRequest.getRequestURI() + "]");
-			log.debug("initialRequest(): [" + initialRequest + "]");
-			log.debug("Object at " + HtmlIncludeTag.OPENMRS_HTML_INCLUDE_KEY + " is " + 
-					initialRequest.getAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_KEY) + "");
-			
-			if ( !isAlreadyUsed(file, initialRequest) ) {
+			if ( !isAlreadyUsed(file, initialRequestId) ) {
 				String output = "";
 				String prefix = "";
 				try {
-					prefix = initialRequest.getContextPath();
+					prefix = request.getContextPath();
 					if ( file.startsWith(prefix + "/") ) prefix = "";
 				} catch (ClassCastException cce) {
 					log.debug("Could not cast request to HttpServletRequest in HtmlIncludeTag");
@@ -88,36 +87,35 @@ public class HtmlIncludeTag extends TagSupport {
 		return SKIP_BODY;
 	}
 	
-	private HttpServletRequest getInitialRequest() {
+	private String getInitialRequestUniqueId() {
 		HttpServletRequest pageRequest = (HttpServletRequest)this.pageContext.getRequest();
-		if ( pageRequest.getAttribute(OpenmrsFilter.INIT_REQ_ATTR_NAME) != null ) {
-			HttpServletRequest initRequest = (HttpServletRequest)pageRequest.getAttribute(OpenmrsFilter.INIT_REQ_ATTR_NAME);
-			log.debug("Returning initial request: " + initRequest.toString());
-			return initRequest;
+		Object attr = pageRequest.getAttribute(WebConstants.INIT_REQ_UNIQUE_ID);
+		if ( attr != null ) {
+			String uniqueId = (String)attr;
+			log.debug("Returning initial request: " + uniqueId);
+			return uniqueId;
 		} else {
-			log.debug("Using pageContext request of " + pageRequest.toString());
-			return pageRequest;
+			log.error("Could not find value for " + WebConstants.INIT_REQ_UNIQUE_ID + " in pageContext");
+			return "";
 		}
 	}
 	
 	@SuppressWarnings("unchecked")
-	private boolean isAlreadyUsed(String fileName, HttpServletRequest initialRequest) {
+	private boolean isAlreadyUsed(String fileName, String initialRequestId) {
 		boolean isUsed = false;
 
 		if ( fileName != null ) {
+			log.debug("initialRequestId: " + initialRequestId);
 			
-			// retrieve the current page name from the initial request
-			String initialPageName = initialRequest.getRequestURI();
-			
-			// retrieve the page name that the last mapping was added for
-			String lastPageUsed = (String)pageContext.getAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_PAGE_NAME_KEY, PageContext.SESSION_SCOPE);
+			// retrieve the request id that the last mapping was added for
+			String lastRequestId = (String)pageContext.getAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_REQUEST_ID_KEY, PageContext.SESSION_SCOPE);
 			
 			// retrieve the htmlinclude map from the page request
 			//HashMap<String,String> hmIncludeMap = (HashMap<String, String>) initialRequest.getAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_KEY);
-			HashMap<String,String> hmIncludeMap = (HashMap<String, String>) pageContext.getAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_KEY, PageContext.SESSION_SCOPE);
+			HashMap<String,String> hmIncludeMap = (HashMap<String, String>) pageContext.getAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_MAP_KEY, PageContext.SESSION_SCOPE);
 
 			// reset the hmIncludeMap if not found or if not on the initial request anymore
-			if ( hmIncludeMap == null || !initialPageName.equals(lastPageUsed)) {
+			if ( hmIncludeMap == null || !initialRequestId.equals(lastRequestId)) {
 				log.debug("Creating new hmIncludeMap");
 				hmIncludeMap = new HashMap<String,String>();
 			} 
@@ -134,10 +132,10 @@ public class HtmlIncludeTag extends TagSupport {
 				hmIncludeMap.put(fileName,"true");
 				
 				// save the hmIncludeMap to the  
-				pageContext.setAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_KEY, hmIncludeMap, PageContext.SESSION_SCOPE);
+				pageContext.setAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_MAP_KEY, hmIncludeMap, PageContext.SESSION_SCOPE);
 				
 				// save the name of the initial page 
-				pageContext.setAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_PAGE_NAME_KEY, initialPageName, PageContext.SESSION_SCOPE);
+				pageContext.setAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_REQUEST_ID_KEY, initialRequestId, PageContext.SESSION_SCOPE);
 			}
 		}
 		
