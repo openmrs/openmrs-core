@@ -3,6 +3,7 @@
 		var displayDrugSetIds = "";
 		var patientId = "";
 		var regimenMode = "edit";
+		var numCurrentOrders = 0;
 
 		// create a js variable called discReasons that is an array of reasons to discontinue a drug - this will become the select field via DWRUtil.addOptions();...
 		<openmrs:fieldGen type="org.openmrs.DrugOrder.discontinuedReason" formFieldName="discReasons" val="" parameters="optionHeader=[blank]|jsVar=discReasons" />
@@ -10,6 +11,7 @@
 				
 		// create a js variable called voidReasons that is an array of reasons to void a drug - this will become a select field via DWRUtil.addOptions()
 		var voidReasons = new Array();
+		voidReasons.push({ val: '', display: ''});
 		voidReasons.push({ val: 'DrugOrder.void.reason.dateError', display: '<spring:message code="DrugOrder.void.reason.dateError" />'});
 		voidReasons.push({ val: 'DrugOrder.void.reason.error', display: '<spring:message code="DrugOrder.void.reason.error" />'});
 		voidReasons.push({ val: 'DrugOrder.void.reason.other', display: '<spring:message code="DrugOrder.void.reason.other" />'});
@@ -39,7 +41,7 @@
 				ret += "<div id=\"void_" + data.orderId + "\" style=\"display:none\" class=\"dashedAndHighlighted\"><form>";
 				ret += "<spring:message code="general.reason" />: ";
 				ret += "<select name=\"void_" + data.orderId + "_reason\" id=\"void_" + data.orderId + "_reason\"></select>";
-				ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<spring:message code="DrugOrder.void" />\" onClick=\"handleVoidDrugOrder(" + data.orderId + ", 'void_" + data.orderId + "_reason')\" />";
+				ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<spring:message code="DrugOrder.void" />\" onClick=\"handleVoidCurrentDrugOrder(" + data.orderId + ", 'void_" + data.orderId + "_reason')\" />";
 				ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<spring:message code="general.cancel" />\" onClick=\"showHideDiv('void_" + data.orderId + "');showHideDiv('voidbutton_" + data.orderId + "')\" />";
 				ret += "</form></div>";
 				return ret;
@@ -67,7 +69,7 @@
 				ret += "<div id=\"voidcp_" + data.orderId + "\" style=\"display:none\" class=\"dashedAndHighlighted\"><form>";
 				ret += "<spring:message code="general.reason" />: ";
 				ret += "<select name=\"voidcp_" + data.orderId + "_reason\" id=\"voidcp_" + data.orderId + "_reason\"></select>";
-				ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<spring:message code="DrugOrder.void" />\" onClick=\"handleVoidDrugOrder(" + data.orderId + ", 'voidcp_" + data.orderId + "_reason')\" />";
+				ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<spring:message code="DrugOrder.void" />\" onClick=\"handleVoidCompletedDrugOrder(" + data.orderId + ", 'voidcp_" + data.orderId + "_reason')\" />";
 				ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<spring:message code="general.cancel" />\" onClick=\"showHideDiv('voidcp_" + data.orderId + "');showHideDiv('voidcpbutton_" + data.orderId + "')\" />";
 				ret += "</form></div>";
 				return ret;
@@ -104,7 +106,7 @@
 					ret += "<div id=\"voidgp_" + data.drugSetId + "\" style=\"display:none\" class=\"dashedAndHighlighted\"><form>";
 					ret += "<spring:message code="general.reason" />: ";
 					ret += "<select name=\"voidgp_" + data.drugSetId + "_reason\" id=\"voidgp_" + data.drugSetId + "_reason\"></select>";
-					ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<spring:message code="DrugOrder.voidGroup" />\" onClick=\"handleVoidDrugSet(" + data.drugSetId+ ", 'voidgp_" + data.drugSetId + "_reason')\" />";
+					ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<spring:message code="DrugOrder.voidGroup" />\" onClick=\"handleVoidCurrentDrugSet(" + data.drugSetId+ ", 'voidgp_" + data.drugSetId + "_reason')\" />";
 					ret += "&nbsp;&nbsp;<input type=\"button\" value=\"<spring:message code="general.cancel" />\" onClick=\"showHideDiv('voidgp_" + data.drugSetId + "');showHideDiv('voidgpbutton_" + data.drugSetId + "')\" />";
 					ret += "</form></div></td></tr></table>";
 				} else {
@@ -136,32 +138,24 @@
 		function handleVoidCurrentDrugSet(drugSetId, voidReasonField) {
 			var voidReason = DWRUtil.getValue($(voidReasonField));
 			var drugSetIdParam = '' + drugSetId;
-			DWROrderService.voidCurrentDrugSet(patientId, drugSetIdParam, voidReason, refreshRegimenTables);
+			DWROrderService.voidCurrentDrugSet(patientId, drugSetIdParam, voidReason, refreshCurrentRegimenTable);
 		}
 
 		function handleVoidCompletedDrugSet(drugSetId, voidReasonField) {
 			var voidReason = DWRUtil.getValue($(voidReasonField));
 			var drugSetIdParam = '' + drugSetId;
-			DWROrderService.voidCompletedDrugSet(patientId, drugSetIdParam, voidReason, refreshRegimenTables);
+			DWROrderService.voidCompletedDrugSet(patientId, drugSetIdParam, voidReason, refreshCompletedRegimenTable);
 		}
 
 		function handleDiscontinueDrugSet(drugSetId, discDateField, discReasonField) {
 			var discDate = DWRUtil.getValue($(discDateField));
 			var discReason = DWRUtil.getValue($(discReasonField));
 			var drugSetIdParam = '' + drugSetId;
-			//alert('about to discontinue with ' + discDate + ', and ' + discReason + ', and ' + drugSetId + ', and ' + patientId);
-			DWROrderService.discontinueDrugSet(patientId, drugSetIdParam, discReason, discDate, refreshRegimenTables);
-		}
-
-		function updateAddFields(drugFieldId, unitsFieldId, frequencyDayFieldId, frequencyWeekFieldId) {
-			var drugId = DWRUtil.getValue(drugFieldId);
-			gUnitsFieldId = unitsFieldId;
-			DWROrderService.getUnitsByDrugId(drugId, setUnitsField);
-		}
-		
-		function setUnitsField(unitsText) {
-			DWRUtil.setValue(gUnitsFieldId + "Span", unitsText);
-			DWRUtil.setValue(gUnitsFieldId, unitsText);
+			if ( discDate == null || discDate == '' ) {
+				alert("<spring:message code="DrugOrder.drugSet.discontinue.error.noDate" />");
+			} else {
+				DWROrderService.discontinueDrugSet(patientId, drugSetIdParam, discReason, discDate, refreshRegimenTables);
+			}
 		}
 
 		function showHideDiv(id) {
@@ -196,24 +190,45 @@
 			var frequency = DWRUtil.getValue($(frequencyDayField)) + " x " + DWRUtil.getValue($(frequencyWeekField));
 			var startDate = DWRUtil.getValue($(startDateField));
 			var instructions = "";
-			DWRUtil.setValue($(drugField),"");
-			DWRUtil.setValue($(doseField),"");
-			DWRUtil.setValue($(unitsField),"");
-			DWRUtil.setValue($(frequencyDayField),"");
-			DWRUtil.setValue($(frequencyWeekField),"");
-			DWRUtil.setValue($(startDateField),"");
-			DWROrderService.createDrugOrder(patientId, drugId, dose, units, frequency, startDate, instructions, refreshRegimenTables);
+			if ( drugId != '' && dose != '' && units != '' && frequency != '' && startDate != '' ) {
+				blankAddNewOrder(drugField, doseField, unitsField, frequencyDayField, frequencyWeekField, startDateField);
+				DWROrderService.createDrugOrder(patientId, drugId, dose, units, frequency, startDate, instructions, waitToRefreshRegimenTables);
+			} else {
+				if ( drugId == '' ) alert("<spring:message code="DrugOrder.add.error.missingDrug" />");
+				else if ( dose == '' ) alert("<spring:message code="DrugOrder.add.error.missingDose" />");
+				else if ( units == '' ) alert("<spring:message code="DrugOrder.add.error.missingUnits" />");
+				else if ( frequency == '' ) alert("<spring:message code="DrugOrder.add.error.missingFrequency" />");
+				else if ( startDate == '' ) alert("<spring:message code="DrugOrder.add.error.missingStartDate" />");
+			}
+		}
+
+		function blankAddNewOrder(drugField, doseField, unitsField, frequencyDayField, frequencyWeekField, startDateField) {
+				DWRUtil.setValue($(drugField),"");
+				DWRUtil.setValue($(doseField),"");
+				DWRUtil.setValue($(unitsField),"");
+				DWRUtil.setValue($(frequencyDayField),"");
+				DWRUtil.setValue($(frequencyWeekField),"");
+				DWRUtil.setValue($(startDateField),"");
 		}
 		
-		function handleVoidDrugOrder(orderId, voidReasonField) {
+		function handleVoidCurrentDrugOrder(orderId, voidReasonField) {
 			var voidReason = DWRUtil.getValue($(voidReasonField));
-			DWROrderService.voidOrder(orderId, voidReason, refreshRegimenTables);
+			DWROrderService.voidOrder(orderId, voidReason, refreshCurrentRegimenTable);
+		}
+
+		function handleVoidCompletedDrugOrder(orderId, voidReasonField) {
+			var voidReason = DWRUtil.getValue($(voidReasonField));
+			DWROrderService.voidOrder(orderId, voidReason, refreshCompletedRegimenTable);
 		}
 
 		function handleDiscontinueDrugOrder(orderId, discDateField, discReasonField) {
 			var discDate = DWRUtil.getValue($(discDateField));
 			var discReason = DWRUtil.getValue($(discReasonField));
-			DWROrderService.discontinueOrder(orderId, discReason, discDate, refreshRegimenTables);
+			if ( discDate && discDate != '' ) {
+				DWROrderService.discontinueOrder(orderId, discReason, discDate, refreshRegimenTables);
+			} else {
+				alert("<spring:message code="DrugOrder.drugSet.discontinue.error.noDate" />");
+			}
 		}
 
 		function refreshRegimenTables() {
@@ -222,6 +237,7 @@
 		}
 		
 		function refreshCurrentRegimenTable() {
+			setHasOrders(0);
 			//alert('in refreshcurrentregtable');
 			if ( displayDrugSetIds.length > 0 ) {
 				var drugSetIds = displayDrugSetIds.split(",");
@@ -321,23 +337,19 @@
 		}
 		
 		function addCurrentDrugOrders(drugOrders) {
-			//alert('in acdo');
+			if ( drugOrders.length > 0 ) setHasOrders(1);
 			var tableName = 'regimenTableCurrent';
 			if ( drugOrders ) {
 				var firstOrder = drugOrders[0];
 				if ( firstOrder ) { 
-					//	alert('firstOrder exists');
 					if ( firstOrder.drugSetLabel ) {
-						//alert('firstOrder dsId is ' + firstOrder.drugSetId);
 						tableName += "_" + firstOrder.drugSetLabel;	
-					} //else alert('no label');			
-				} //else alert('no first order');
+					}
+				}
 				if ( document.getElementById(tableName) ) {
 					DWRUtil.addRows(tableName, drugOrders, currentRegimenTableCellFuncs, {
 						cellCreator:function(options) {
-							//alert("Begin cellCreator");
 						    var td = document.createElement("td");
-							//alert("End cellCreator");
 						    return td;
 						}
 					});
@@ -350,7 +362,6 @@
 					}
 				}
 			}
-			//alert('out acdo');
 		}
 
 		function addCompletedDrugOrders(drugOrders) {
@@ -358,9 +369,7 @@
 			if ( drugOrders ) {
 				var firstOrder = drugOrders[0];
 				if ( firstOrder ) { 
-					//	alert('firstOrder exists');
 					if ( firstOrder.drugSetLabel ) {
-						//alert('firstOrder dsId is ' + firstOrder.drugSetId);
 						tableName += "_" + firstOrder.drugSetLabel;	
 					}				
 				}
@@ -368,9 +377,7 @@
 				if ( document.getElementById(tableName) ) {
 					DWRUtil.addRows(tableName, drugOrders, completedRegimenTableCellFuncs, {
 						cellCreator:function(options) {
-							//alert("Begin cellCreator");
 						    var td = document.createElement("td");
-							//alert("End cellCreator");
 						    return td;
 						}
 					});
@@ -381,12 +388,10 @@
 					}
 				}
 			}
-			//alert('out acdo');
 		}
 
 		function removeDrugOrders(tableName) {
 			if ( displayDrugSetIds.length > 0 ) {
-				//alert('length gt 0');
 				var drugSetIds = displayDrugSetIds.split(",");
 				for ( var i = 0; i < drugSetIds.length; i++ ) {
 					var currDrugSet = drugSetIds[i];
@@ -428,4 +433,31 @@
 		function setRegimenMode(mode) {
 			regimenMode = mode;
 		}
-			
+
+		var addStack = new Array();
+		var maxLoop = 0;
+		
+		function dwrOrderNotifyComplete(notUsed) {
+			var popped = addStack.pop();
+		}
+		
+		function waitToRefreshRegimenTables() {
+			if ( maxLoop > 120 ) {
+				maxLoop = 0;
+				while ( addStack.length > 0 ) var x = addStack.pop();
+				//alert("Process timed out - please contact an administrator to fix this problem");
+				refreshRegimenTables();
+			} else {
+				if ( addStack.length > 0 ) {
+					maxLoop++;
+					setTimeout("waitToRefreshRegimenTables()", 500);
+				} else {
+					maxLoop = 0;
+					refreshRegimenTables();
+				}
+			}
+		}
+		
+		function setHasOrders(val) {
+			hasOrders = val;
+		}

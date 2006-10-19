@@ -76,9 +76,8 @@
 														<option value="DrugOrder.void.reason.error"><spring:message code="DrugOrder.void.reason.error" /></option>
 														<option value="DrugOrder.void.reason.other"><spring:message code="DrugOrder.void.reason.other" /></option>
 													</select>
-												<%--<input type="text" id="void_${drugOrder.orderId}_reason" size="10" value="" />--%>
 												&nbsp;&nbsp;
-												<input type="button" value="<spring:message code="DrugOrder.void" />" onClick="handleVoidDrugOrder('${drugOrder.orderId}', 'void_${drugOrder.orderId}_reason')" />
+												<input type="button" value="<spring:message code="DrugOrder.void" />" onClick="handleVoidCurrentDrugOrder('${drugOrder.orderId}', 'void_${drugOrder.orderId}_reason')" />
 												<input type="button" value="<spring:message code="general.cancel" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
 											</form>
 										</div>
@@ -124,17 +123,8 @@
 													<input type="text" id="closegp_${fn:replace(drugSetId, " ", "_")}_date" size="10" value="" onFocus="showCalendar(this)" />
 													&nbsp;&nbsp;&nbsp;&nbsp;
 													<spring:message code="general.reason" />:
-														<select name="closegp_${fn:replace(drugSetId, " ", "_")}_reason" id="closegp_${fn:replace(drugSetId, " ", "_")}_reason">
-															<option value=""></option>
-															<option value=""><spring:message code="DrugOrder.discontinue.reason.toxicity" /></option>
-															<option value=""><spring:message code="DrugOrder.discontinue.reason.failure" /></option>
-															<option value=""><spring:message code="DrugOrder.discontinue.reason.pregnancy" /></option>
-															<option value=""><spring:message code="DrugOrder.discontinue.reason.interactionTB" /></option>
-															<option value=""><spring:message code="DrugOrder.discontinue.reason.outOfStock" /></option>
-															<option value=""><spring:message code="DrugOrder.discontinue.reason.patientRefusal" /></option>
-															<option value=""><spring:message code="DrugOrder.discontinue.reason.other" /></option>
-														</select>
-													<%--<input type="text" id="closegp_${fn:replace(drugSetId, " ", "_")}_reason" size="10" value="" />--%>
+														<% if ( pageContext.getAttribute("drugSetId") != null ) pageContext.setAttribute("drugSetReplaced", ((String)pageContext.getAttribute("drugSetId")).replace(" ", "_")); %>
+														<openmrs:fieldGen type="org.openmrs.DrugOrder.discontinuedReason" formFieldName="closegp_${drugSetReplaced}_reason" val="" parameters="optionHeader=[blank]" />
 													&nbsp;&nbsp;
 													<input type="button" value="<spring:message code="DrugOrder.discontinueGroup" />" onClick="handleDiscontinueDrugSet('${drugSetId}', 'closegp_${fn:replace(drugSetId, " ", "_")}_date', 'closegp_${fn:replace(drugSetId, " ", "_")}_reason')" />
 													<input type="button" value="<spring:message code="general.cancel" />" onClick="showHideDiv('closegp_${fn:replace(drugSetId, " ", "_")}');showHideDiv('closegpbutton_${fn:replace(drugSetId, " ", "_")}');" />
@@ -152,8 +142,6 @@
 															<option value="DrugOrder.void.reason.error"><spring:message code="DrugOrder.void.reason.error" /></option>
 															<option value="DrugOrder.void.reason.other"><spring:message code="DrugOrder.void.reason.other" /></option>
 														</select>
-													<%--<input type="text" id="void_${drugOrder.orderId}_reason" size="10" value="" />--%>
-													<input type="text" id="voidgp_${fn:replace(drugSetId, " ", "_")}_reason" size="10" value="" />
 													&nbsp;&nbsp;
 													<input type="button" value="<spring:message code="DrugOrder.voidGroup" />" onClick="handleVoidCurrentDrugSet('${drugSetId}', 'voidgp_${fn:replace(drugSetId, " ", "_")}_reason')" />
 													<input type="button" value="<spring:message code="general.cancel" />" onClick="showHideDiv('voidgp_${fn:replace(drugSetId, " ", "_")}');showHideDiv('voidgpbutton_${fn:replace(drugSetId, " ", "_")}')" />
@@ -186,19 +174,6 @@
 												&nbsp;&nbsp;&nbsp;&nbsp;
 												<spring:message code="general.reason" />:
 													<openmrs:fieldGen type="org.openmrs.DrugOrder.discontinuedReason" formFieldName="close_${drugOrder.orderId}_reason" val="" parameters="optionHeader=[blank]" />
-												<%--	
-													<select name="close_${drugOrder.orderId}_reason" id="close_${drugOrder.orderId}_reason">
-														<option value=""></option>
-														<option value=""><spring:message code="DrugOrder.discontinue.reason.toxicity" /></option>
-														<option value=""><spring:message code="DrugOrder.discontinue.reason.failure" /></option>
-														<option value=""><spring:message code="DrugOrder.discontinue.reason.pregnancy" /></option>
-														<option value=""><spring:message code="DrugOrder.discontinue.reason.interactionTB" /></option>
-														<option value=""><spring:message code="DrugOrder.discontinue.reason.outOfStock" /></option>
-														<option value=""><spring:message code="DrugOrder.discontinue.reason.patientRefusal" /></option>
-														<option value=""><spring:message code="DrugOrder.discontinue.reason.other" /></option>
-													</select>
-												--%>
-												<%--<input type="text" id="close_${drugOrder.orderId}_reason" size="10" value="" />--%>
 												&nbsp;&nbsp;
 												<input type="button" value="<spring:message code="DrugOrder.discontinue" />" onClick="handleDiscontinueDrugOrder('${drugOrder.orderId}', 'close_${drugOrder.orderId}_date', 'close_${drugOrder.orderId}_reason')" />
 												<input type="button" value="<spring:message code="general.cancel" />" onClick="showHideDiv('close_${drugOrder.orderId}');showHideDiv('closebutton_${drugOrder.orderId}')" />
@@ -216,9 +191,8 @@
 														<option value="DrugOrder.void.reason.error"><spring:message code="DrugOrder.void.reason.error" /></option>
 														<option value="DrugOrder.void.reason.other"><spring:message code="DrugOrder.void.reason.other" /></option>
 													</select>
-												<%--<input type="text" id="void_${drugOrder.orderId}_reason" size="10" value="" />--%>
 												&nbsp;&nbsp;
-												<input type="button" value="<spring:message code="DrugOrder.void" />" onClick="handleVoidDrugOrder('${drugOrder.orderId}', 'void_${drugOrder.orderId}_reason')" />
+												<input type="button" value="<spring:message code="DrugOrder.void" />" onClick="handleVoidCurrentDrugOrder('${drugOrder.orderId}', 'void_${drugOrder.orderId}_reason')" />
 												<input type="button" value="<spring:message code="general.cancel" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
 											</form>
 										</div>
@@ -264,19 +238,6 @@
 												&nbsp;&nbsp;&nbsp;&nbsp;
 												<spring:message code="general.reason" />:
 													<openmrs:fieldGen type="org.openmrs.DrugOrder.discontinuedReason" formFieldName="close_${drugOrder.orderId}_reason" val="" parameters="optionHeader=[blank]" />
-												<%--	
-													<select name="close_${drugOrder.orderId}_reason" id="close_${drugOrder.orderId}_reason">
-														<option value=""></option>
-														<option value=""><spring:message code="DrugOrder.discontinue.reason.toxicity" /></option>
-														<option value=""><spring:message code="DrugOrder.discontinue.reason.failure" /></option>
-														<option value=""><spring:message code="DrugOrder.discontinue.reason.pregnancy" /></option>
-														<option value=""><spring:message code="DrugOrder.discontinue.reason.interactionTB" /></option>
-														<option value=""><spring:message code="DrugOrder.discontinue.reason.outOfStock" /></option>
-														<option value=""><spring:message code="DrugOrder.discontinue.reason.patientRefusal" /></option>
-														<option value=""><spring:message code="DrugOrder.discontinue.reason.other" /></option>
-													</select>
-												--%>
-												<%--<input type="text" id="close_${drugOrder.orderId}_reason" size="10" value="" />--%>
 												&nbsp;&nbsp;
 												<input type="button" value="<spring:message code="DrugOrder.discontinue" />" onClick="handleDiscontinueDrugOrder('${drugOrder.orderId}', 'close_${drugOrder.orderId}_date', 'close_${drugOrder.orderId}_reason')" />
 												<input type="button" value="<spring:message code="general.cancel" />" onClick="showHideDiv('close_${drugOrder.orderId}');showHideDiv('closebutton_${drugOrder.orderId}')" />
@@ -294,9 +255,8 @@
 														<option value="DrugOrder.void.reason.error"><spring:message code="DrugOrder.void.reason.error" /></option>
 														<option value="DrugOrder.void.reason.other"><spring:message code="DrugOrder.void.reason.other" /></option>
 													</select>
-												<%--<input type="text" id="void_${drugOrder.orderId}_reason" size="10" value="" />--%>
 												&nbsp;&nbsp;
-												<input type="button" value="<spring:message code="DrugOrder.void" />" onClick="handleVoidDrugOrder('${drugOrder.orderId}', 'void_${drugOrder.orderId}_reason')" />
+												<input type="button" value="<spring:message code="DrugOrder.void" />" onClick="handleVoidCurrentDrugOrder('${drugOrder.orderId}', 'void_${drugOrder.orderId}_reason')" />
 												<input type="button" value="<spring:message code="general.cancel" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
 											</form>
 										</div>

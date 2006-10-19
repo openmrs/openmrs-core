@@ -24,10 +24,14 @@ public class DWROrderService {
 
 	protected final Log log = LogFactory.getLog(getClass());
 		
+	
 	/**
+	 * This method would normally be return type void, but DWR requires a callback, so we know when to refresh view
 	 */
-	public void createDrugOrder(Integer patientId, String drugId, Double dose, String units, String frequency, String startDate, String instructions) {
+	public boolean createDrugOrder(Integer patientId, String drugId, Double dose, String units, String frequency, String startDate, String instructions) {
 		log.debug("PatientId is " + patientId + " and drugId is " + drugId );
+		
+		boolean ret = true;
 		
 		DrugOrder drugOrder = new DrugOrder();
 		Patient patient = Context.getPatientService().getPatient(patientId);
@@ -56,6 +60,8 @@ public class DWROrderService {
 		drugOrder.setDateCreated(new Date());
 		drugOrder.setVoided(new Boolean(false));
 		Context.getOrderService().updateOrder(drugOrder, patient);
+		
+		return ret;
 	}
 	
 	public void voidOrder(Integer orderId, String voidReason) {
@@ -268,6 +274,54 @@ public class DWROrderService {
 		Context.getOrderService().discontinueDrugSet(p, drugSetId, discontinueReason, discDate);
 	}
 
+	/*
+	 * This method would normally have a return type of void, but DWR requires a callback 
+	 */
+	public boolean voidCurrentDrugOrders(Integer patientId, String voidReason) {
+		log.debug("beginning method");
+		
+		boolean ret = true;
+
+		Patient p = Context.getPatientService().getPatient(patientId);
+		
+		List<DrugOrder> currentOrders = Context.getOrderService().getDrugOrdersByPatient(p, OrderService.SHOW_CURRENT);
+		
+		for ( DrugOrder o : currentOrders ) {
+			Context.getOrderService().voidOrder(o, voidReason);
+		}
+		
+		return ret;
+	}
+	
+	/*
+	 * This method would normally have a return type of void, but DWR requires a callback 
+	 */
+	public boolean discontinueCurrentDrugOrders(Integer patientId, String discontinueReason, String discontinueDate ) {
+		log.debug("beginning method");
+		
+		boolean ret = true;
+		
+		Date discDate = null;
+		if ( discontinueDate != null ) {
+			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+			try {
+				discDate = sdf.parse(discontinueDate);
+			} catch (ParseException e) {
+				discDate = null;
+			}
+		}
+
+		Patient p = Context.getPatientService().getPatient(patientId);
+		
+		List<DrugOrder> currentOrders = Context.getOrderService().getDrugOrdersByPatient(p, OrderService.SHOW_CURRENT);
+		
+		for ( DrugOrder o : currentOrders ) {
+			Context.getOrderService().discontinueOrder(o, discontinueReason, discDate);
+		}
+		
+		return ret;
+	}
+	
 	private Map<String, List<DrugOrder>> getOrdersByDrugSet(Integer patientId, String drugSetIds, String delimiter, int whatToShow) {
 		Map<String, List<DrugOrder>> ret = null;
 		
@@ -283,7 +337,3 @@ public class DWROrderService {
 	}
 
 }
-
-
-
-

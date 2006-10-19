@@ -65,7 +65,7 @@
 														<option value="DrugOrder.void.reason.other"><spring:message code="DrugOrder.void.reason.other" /></option>
 													</select>
 												&nbsp;&nbsp;
-												<input type="button" value="<spring:message code="DrugOrder.void" />" onClick="handleVoidDrugOrder('${drugOrder.orderId}', 'void_${drugOrder.orderId}_reason')" />
+												<input type="button" value="<spring:message code="DrugOrder.void" />" onClick="handleVoidCompletedDrugOrder('${drugOrder.orderId}', 'void_${drugOrder.orderId}_reason')" />
 												<input type="button" value="<spring:message code="general.cancel" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
 											</form>
 										</div>
@@ -132,7 +132,7 @@
 														<option value="DrugOrder.void.reason.other"><spring:message code="DrugOrder.void.reason.other" /></option>
 													</select>
 												&nbsp;&nbsp;
-												<input type="button" value="<spring:message code="DrugOrder.void" />" onClick="handleVoidDrugOrder('${drugOrder.orderId}', 'void_${drugOrder.orderId}_reason')" />
+												<input type="button" value="<spring:message code="DrugOrder.void" />" onClick="handleVoidCompletedDrugOrder('${drugOrder.orderId}', 'void_${drugOrder.orderId}_reason')" />
 												<input type="button" value="<spring:message code="general.cancel" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
 											</form>
 										</div>
@@ -183,7 +183,7 @@
 														<option value="DrugOrder.void.reason.other"><spring:message code="DrugOrder.void.reason.other" /></option>
 													</select>
 												&nbsp;&nbsp;
-												<input type="button" value="<spring:message code="DrugOrder.void" />" onClick="handleVoidDrugOrder('${drugOrder.orderId}', 'void_${drugOrder.orderId}_reason')" />
+												<input type="button" value="<spring:message code="DrugOrder.void" />" onClick="handleVoidCompletedDrugOrder('${drugOrder.orderId}', 'void_${drugOrder.orderId}_reason')" />
 												<input type="button" value="<spring:message code="general.cancel" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
 											</form>
 										</div>
