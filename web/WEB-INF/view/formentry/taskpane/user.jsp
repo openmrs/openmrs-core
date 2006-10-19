@@ -13,6 +13,7 @@
 	</c:otherwise>
 </c:choose>
 
+<openmrs:htmlInclude file="/scripts/dojoConfig.js" />
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 
 <script type="text/javascript">
@@ -52,6 +53,10 @@
 			return str;
 		}
 		
+		searchWidget.allowAutoJump = function() {
+			return false;
+		}
+
 		searchWidget.inputNode.focus();
 		searchWidget.inputNode.select();
 		

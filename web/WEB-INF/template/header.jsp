@@ -16,9 +16,10 @@
 
 <html>
 	<head>
+		<openmrs:htmlInclude file="/openmrs.js" />
 		<openmrs:htmlInclude file="/openmrs.css" />
 		<openmrs:htmlInclude file="/style.css" />
-		<openmrs:htmlInclude file="/openmrs.js" />
+		
 		<c:choose>
 			<c:when test="${taskpane}">
 				<openmrs:htmlInclude file="/formentry/taskpane/taskpane.css" />
