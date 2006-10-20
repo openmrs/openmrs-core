@@ -25,15 +25,15 @@ public class ArdenServiceTest extends BaseTest {
 	//	Context.getArdenService().compileFile("test/arden test/directexphiriskcountry.mlm"); 
 	//	Context.getArdenService().compileFile("test/arden test/directtbcontact.mlm");
 		
-	//	Context.getArdenService().compileFile("test/arden test/HiRiskLeadScreen.mlm");
+		Context.getArdenService().compileFile("test/arden test/HiRiskLeadScreen.mlm");
 
  		patient = Context.getPatientService().getPatient(pid);
 		dataSource = new DefaultArdenDataSource(); 
 
- ///*		
+ /*		
 		ArdenRule [] mlms = {
 				 new HiRiskLeadScreen(patient ,dataSource)
-	//			,new directtbcontact(patient, dataSource)
+//				,new directtbcontact(patient, dataSource)
 					
 		};
 		for (int i = 0; i < mlms.length; i++){
@@ -47,7 +47,7 @@ public class ArdenServiceTest extends BaseTest {
 				
 			}
 		}
-//*/	
+*/	
 		shutdown();
 	}
 	
