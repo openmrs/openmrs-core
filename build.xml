@@ -450,10 +450,10 @@
 			    <include name="**/*.class"/>
 			    <include name="**/*.java"/>
 			</fileset>
-			<fileset dir="${build.dir}/api/org/openmrs/arden/parser">
+			<!--fileset dir="${build.dir}/api/org/openmrs/arden/parser">
 			    <include name="**/*.class"/>
 			    <include name="**/*.java"/>
-			</fileset>
+			</fileset>-->
 			<fileset dir="${src.dir}/api/org/openmrs/arden">
 			    <include name="**/ArdenBase*.java"/>
 			    <include name="**/*.txt"/>
