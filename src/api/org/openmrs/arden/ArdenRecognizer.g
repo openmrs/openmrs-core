@@ -2,11 +2,9 @@ header {
 package org.openmrs.arden;
 
 import java.io.*;
-//import org.Syntax.Parser.ArdenToken;
 import antlr.CommonAST;
 import antlr.collections.AST;
 import antlr.*;
-//import org.openmrs.arden.parser.*;
 import org.openmrs.arden.MLMObject;
 import org.openmrs.arden.MLMObjectElement;
 import java.lang.Integer;
@@ -101,9 +99,10 @@ tokens {
 	WITHIN = "within";
 	CALL = "call";
 	WITH = "with";
+	TO = "to";
 	
 }
-
+/*
 // Define some methods and variables to use in the generated parser.
 {
   // Define a main
@@ -213,7 +212,7 @@ tokens {
     }
   
 }
-
+*/
 
 // the following tag is used to find the start of the rules section for
 //   automated chunk-grabbing when displaying the page
@@ -364,15 +363,16 @@ any_reserved_word
 	| WRITE | BE | LET | YEAR | YEARS | IF | IT | THEY | NOT | OR | THEN | MONTH | MONTHS | TIME | TIMES | WITHIN
 	| READ | MINIMUM | MIN | MAXIMUM | MAX | LAST | FIRST | EARLIEST | LATEST | EVENT | WHERE | EXIST | EXISTS | PAST
 	| AVERAGE | AVG | SUM | MEDIAN | CONCLUDE | ELSE | ELSEIF | ENDIF | TRUE | FALSE | DATA | LOGIC | ACTION | CALL | WITH
+	| TO
 	;
 
 text
     : ID | (any_reserved_word) | INTLIT | (LPAREN (ID| INTLIT| (any_reserved_word))* RPAREN)  
-    exception
-    catch [RecognitionException ex]
-    {
-       text_AST = handleIdentifierError(LT(1),ex);
-    }
+//    exception
+//    catch [RecognitionException ex]
+//    {
+//       text_AST = handleIdentifierError(LT(1),ex);
+//    }
     ;
 
 //iso_date : 				/* no spaces are permitted between elements */
@@ -724,7 +724,7 @@ duration_op
  	;
 
 temporal_comp_op
-	: WITHIN! (the!)? PAST expr_string
+	: WITHIN (the!)? PAST expr_string
 	| AFTER expr_string
 	;
 /************************************************************************************************/
@@ -1149,10 +1149,13 @@ data_elseifAST [MLMObject obj] returns [String s=""]
    )
 ;
 
-where_it_occurredAST [MLMObject obj] returns [String s=""]
+where_it_occurredAST [MLMObject obj, String key] returns [String s=""]
 {String a,b, ret_val="";}
 :
-	(PAST) (m:INTLIT n:duration_op) {System.err.println("Duration Clause - " + m.getText() + " " + n.getText());} 
+	(WITHIN {obj.setWhere("within", key);}
+	    (PAST) (m:INTLIT n:duration_op) {obj.setDuration("past",m.getText(),n.getText(),key); System.err.println("Duration Clause - " + m.getText() + " " + n.getText());} 
+		| a = exprAST[obj] TO b = exprAST[obj]
+	)
 	|(AFTER) (i:ID){System.err.println("Variable = " + i.getText());}
 ;
 
@@ -1160,7 +1163,7 @@ where_it_occurredAST [MLMObject obj] returns [String s=""]
 readAST [MLMObject obj, String instr] returns [String s=""]
 {String a="",b="", ret_val="";}
 : (
-  #(READ  a=readAST[obj, instr] b=readAST[obj, instr]) {s += ret_val;}
+  #(READ  a=readAST[obj, instr] b=readAST[obj, a]) {s += ret_val;}
 
   //  ( of_read_func_opAST [obj] 
   //   | from_of_func_opAST [obj] 
@@ -1252,7 +1255,7 @@ readAST [MLMObject obj, String instr] returns [String s=""]
 		  	 										obj.AddConcept(s);
 		  	 									}
 		
-		   	      (WHERE where_it_occurredAST[obj] {System.err.println("Where=TRUE");})?
+		   	      (WHERE {System.err.println("Where=TRUE");} where_it_occurredAST[obj, instr] )?
 	  	 
 	  
 	  | i:ID {System.err.println("Variable = " + i.getText()); a= i.getText(); s=a; obj.SetConceptVar(a);}
@@ -1684,6 +1687,7 @@ writeAST [MLMObject obj] returns [String s=""]
   )
 ;
 
+/*
 actionExprAST [MLMObject obj] returns [String s=""]
 {String a,b;}
 : (
@@ -1696,6 +1700,7 @@ actionExprAST [MLMObject obj] returns [String s=""]
   )
  
 ;
+*/
 
 maintenance [MLMObject obj] returns [String s=""]
 {String a="",b = "";}
@@ -1757,10 +1762,10 @@ options {
   }
 
 // -- Declarations --
-{
+//{
     // NOTE: The real implementations are in the subclass.
-    protected void setPossibleID(boolean possibleID) {}
-}
+//    protected void setPossibleID(boolean possibleID) {}
+//}
 
 
 // @@startrules
@@ -1895,9 +1900,9 @@ ID
       ('a'..'z'|'A'..'Z') ('a'..'z'|'A'..'Z'|'0'..'9' |MINUS | COMMA| DOT | DIV | UNDERSCORE|AT)*
   //  | ( LPAREN ('a'..'z'|'A'..'Z'|'0'..'9'| MINUS | COMMA| DOT | AT | DIV)* RPAREN )
     )
-  	{
-  		setPossibleID(true);
-  	}
+ // 	{
+ // 		setPossibleID(true);
+ // 	}
 	;
 
 //protected LETTER

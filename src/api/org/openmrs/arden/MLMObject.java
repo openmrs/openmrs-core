@@ -10,24 +10,22 @@ import java.util.Locale;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 
+/*
+ *  This class represents the complete mlm sections
+ */
 
 public class MLMObject {
 	
 	private HashMap<String, MLMObjectElement> conceptMap ;
-	private String ConceptVar;   // These 3 variables are used when parsing
+	private String ConceptVar;   // These 3 variables are used when parsing. Cache to keep the concept name.
 	private String readType;
 	private int howMany;
 	
 	private boolean IsVarAdded;
 	private int InNestedIf ;       // counting semaphore
-	private Locale locale;
-	private Patient patient;
-	//private LinkedList<String> evaluateList;
 	private LinkedList<MLMEvaluateElement> evaluateList;
 	private HashMap<String, String> userVarMapFinal ;
 	private String className;
-
-//	private Iterator<String> iter; 
 	
 	// default constructor
 	public MLMObject(){
@@ -41,19 +39,8 @@ public class MLMObject {
 	{
 		conceptMap = new HashMap <String, MLMObjectElement>();
 		IsVarAdded = false;
-		locale = l;
-		patient = p;
-	//	evaluateList = new LinkedList <String>();
 		evaluateList = new LinkedList <MLMEvaluateElement>();
 		userVarMapFinal = new HashMap <String, String>();
-	}
-
-	public void SetLocale(Locale l) {
-		locale = l;
-	}
-
-	public void SetPatient(Patient p) {
-		patient = p;
 	}
 
 	public void AddConcept(String s)
@@ -148,42 +135,18 @@ public class MLMObject {
 		howMany = Integer.valueOf(s).intValue();
 	}
 	
-	public void PrintConcept(String key)
-	{
-		System.out.println("__________________________________");
-	     MLMObjectElement mo = conceptMap.get(key);
-	     {
-	       System.out.println(mo.getConceptName() + " = " + mo.getObsVal(locale) + 
-	    		   "\n Answer = " + mo.getAnswer() + 
-	    		   //"\n Operator = " + mo.getCompOp() +
-	    		   "\n Conclude Val = " + mo.getConcludeVal() +
-	    		   "\n User Vars = " + mo.getUserVarVal()
-	       	);
-	    System.out.println("__________________________________");
-		    
-	       
-	     }
-	}
-	
 	public void PrintConceptMap()
 	{
-	//	System.out.println("Concepts are - ");
-	//	Set<String> keys = conceptMap.keySet();
-	//	for(String key : keys) {
-	//	     System.out.println(key);
-	//	}
 		System.out.println("__________________________________");
 	     Collection<MLMObjectElement> collection = conceptMap.values();
 	     for(MLMObjectElement mo : collection) {
-	       System.out.println(mo.getConceptName() + " = " + mo.getObsVal(locale) + 
+	       System.out.println(mo.getConceptName()  + 
 	    		   "\n Answer = " + mo.getAnswer() + 
 	    		   //"\n Operator = " + mo.getCompOp() +
 	    		   "\n Conclude Val = " + mo.getConcludeVal() +
 	    		   "\n User Vars = " + mo.getUserVarVal()
 	    		   );
 	    System.out.println("__________________________________");
-		    
-	       
 	     }
 	}
 	
@@ -195,7 +158,7 @@ public class MLMObject {
 		}
 	}
 	
-	public boolean Evaluate(){
+/*	public boolean Evaluate(){
 		boolean retVal = false;
 		String key;
 		ListIterator<MLMEvaluateElement> thisList = evaluateList.listIterator(0);
@@ -220,9 +183,8 @@ public class MLMObject {
 		}
 		return retVal;
 	}
-	
+*/	
 	public void WriteAction(String str, Writer w) throws Exception {
-		boolean retVal;
 		try{
 			 w.write("public void initAction() {\n");
 		     w.append("\t\tuserVarMap.put(\"ActionStr\", \"" +  str + "\");\n");
@@ -654,7 +616,7 @@ public class MLMObject {
 		}
 		
 	}
-	public boolean RetrieveConcept(String key) {
+/*	public boolean RetrieveConcept(String key) {
 		
 		//TODO check to see if user authenticated
 		boolean retVal = false;
@@ -680,7 +642,7 @@ public class MLMObject {
 		}
 		return retVal;
 	}
-	
+*/	
 	public boolean writeEvaluateConcept(String key, Writer w) throws Exception{
 		boolean retVal = false;
 		MLMObjectElement mObjElem = GetMLMObjectElement(key);
@@ -702,7 +664,7 @@ public class MLMObject {
 	}
 	
 	
-	public boolean Evaluated(String key){
+/*	public boolean Evaluated(String key){
 		boolean retVal = false;
 		MLMObjectElement mObjElem = GetMLMObjectElement(key);
 		if(mObjElem != null){
@@ -715,7 +677,7 @@ public class MLMObject {
 		Iterator iter;
 		return iter = conceptMap.keySet().iterator();
 	}
-	
+*/	
 	public void AddToEvaluateList(String key){
 
 		MLMEvaluateElement mEvalElem = evaluateList.getLast();
@@ -773,14 +735,7 @@ public class MLMObject {
 		if(mObjElem != null){
 			mObjElem.addUserVarVal(var, val);
 		}
-		// remove it as no nested IFs anymore
-//		if(!evaluateList.isEmpty()){
-//			MLMEvaluateElement mEvalElem = evaluateList.getLast();
-//			if(mEvalElem != null && mEvalElem.getLast().equals("THEN")){
-//				// Nested if
-//				mEvalElem.removeThen();
-//			}
-//		}
+	
 	}
 	
 	public void SetDBAccess(boolean val, String key ) {
@@ -841,7 +796,8 @@ public class MLMObject {
 		return retVal;
 	}
 	
-	public String getUserVarVal(String key) {
+	
+/*	public String getUserVarVal(String key) {
 		String retVal = "";
 		if(userVarMapFinal.containsKey(key)) {
 			retVal = userVarMapFinal.get(key);
@@ -850,6 +806,20 @@ public class MLMObject {
 			retVal = patient.getPatientName().getGivenName();
 		}
 		return retVal;
+	}
+*/	
+	public void setWhere(String type, String key) {
+		MLMObjectElement mObjElem = GetMLMObjectElement(key);
+		if(mObjElem != null){
+			mObjElem.setWhere(type);
+		}
+	}
+	
+	public void setDuration(String type, String val, String op, String key) {
+		MLMObjectElement mObjElem = GetMLMObjectElement(key);
+		if(mObjElem != null){
+			mObjElem.setDuration(type, val,op);
+		}
 	}
 	
 	public void setClassName(String name) {

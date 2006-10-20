@@ -4,18 +4,13 @@ package org.openmrs.arden;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Locale;
 import java.util.Set;
 
-import org.openmrs.Concept;
-import org.openmrs.Obs;
-import org.openmrs.Patient;
-import org.openmrs.api.ConceptService;
-import org.openmrs.api.ObsService;
 
 
-
-
+/*
+ * @@ This class represents a statement in Data slot - read 
+ */
 
 
 public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
@@ -24,14 +19,11 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 	private String conceptName;
 	private String readType;    // Exist, Last, First etc
 	private int howMany;	// how many to read
-	private String duration; // TODO
-	private Concept conceptObj;	
-	private Obs obsObj;
-	private boolean isObsAvailable;
-	private ConceptService cs;
-	private ObsService os;
-	private boolean evaluated;
-	private boolean isEvaluated;
+	private boolean hasWhere;
+	private String whereType;
+	private String durationType;
+	private String durationVal;
+	private String durationOp; // TODO
 	private String answerStr;
 	private Integer answerInt;
 	private boolean answerBool;
@@ -43,28 +35,13 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 	
 	public MLMObjectElement(String s, String t, int n,  String d) {
 		conceptName = s;
-		isObsAvailable = false;
 		readType = t;
 		howMany = n;
-		duration = d;
-		evaluated = false;
-		isEvaluated = false;
+		durationOp = d;
+//		evaluated = false;
+//		isEvaluated = false;
 		userVarMap = new HashMap <String, String>();
 		dbAccessRequired = true;  // by default assume that we have to make an API call to get data
-	}
-	
-	private void setObs(Obs o) {
-		obsObj = o;
-		isObsAvailable = true;
-	}
-	
-	public void setServicesContext(ConceptService conceptService, ObsService obsService){
-		cs = conceptService;
-		os = obsService;	
-	}
-	
-	private void setConcept(Concept c){
-		conceptObj = c;
 	}
 	
 	public void setAnswer (String s){
@@ -86,6 +63,20 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 		hasConclude = true;
 		concludeVal = val;
 	}
+	public void setWhere (String type){
+		hasWhere = true;
+		whereType = type;
+	}
+	
+	public void setDuration (String type, String val, String op){
+		durationType = type;
+		durationVal = val;
+		durationOp = op;
+	}
+	
+	public void setWhere(boolean val){
+		hasWhere = val;
+	}
 	
 	public void addUserVarVal(String var, String val) {
 		if(!userVarMap.containsKey(var)) {
@@ -97,48 +88,7 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 		}
 		
 	}
-	
-	public boolean getConceptForPatient(Locale locale, Patient patient ) {
-		
-		boolean retVal = false;
-		String  cn;
-		int index, len;
-		Concept concept;
-		Set <Obs> MyObs ;
-		Obs obs;
-		
-		
-		
-//		 TODO: Need a better method to find a concept
-		
-		index = conceptName.indexOf("from");	// First substring
-		if(index != -1) {
-			cn = conceptName.substring(1,index);
-		}
-		else {
-//			cn = conceptName;
-			len = conceptName.length();
-			cn = conceptName.substring(1,len-1);
-
-		}
-		concept = cs.getConceptByName(cn);  
-		//TODO: Check if concept populated
-		{
-			    setConcept(concept);
-			    // Now get observations
-			    MyObs = os.getObservations(patient, conceptObj);
-				Iterator iter = MyObs.iterator();
-				while(iter.hasNext())	{ // For now get the first
-				  obs = (Obs) iter.next();
-			 	  setObs(obs);		      
-			      System.out.println(obsObj.getValueAsString(locale));
-			      retVal = true;
-				}
-		}		
-		return retVal;
-	}
-
-	 public String getConcept(){
+	public String getConcept(){
 		   String  cn;
 		   int len;
 			int index;
@@ -159,62 +109,6 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 			return cn;
 	   }
   
-   public String getObsVal(Locale locale){
-	   String val = null;
-	   if(isObsAvailable){
-		   val = obsObj.getValueAsString(locale);
-	   }
-	   return val;
-   }
-   
-   public boolean evaluate(){
-	   boolean retVal = false;
-	   if (isEvaluated){
-	      retVal = evaluated;
-	   }
-	   else if(hasConclude) {
-		   retVal = concludeVal;
-	   }
-	   else if (compOp != null){
-	   switch(compOp) {
-	   		case EQUALS:
-	   		{switch(compOpType){
-	   			case 3: // boolean
-	   				retVal = evaluateEquals(answerBool);
-	   				break;
-	   			case 2: // integer
-	   				retVal = evaluateEquals(answerInt);
-	   				break;
-	   			case 1: // String
-	   				retVal = evaluateEquals(answerStr);
-	   				break;
-	   		}
-	   			
-	   		}
-	   		break;
-	   		case GTE:
-	   		{switch(compOpType){
-	   			case 3: // boolean
-	   				retVal = evaluateEquals(answerBool); //TODO ERROR
-	   				break;
-	   			case 2: // integer
-	   				retVal = evaluateGTE(answerInt);
-	   				break;
-	   			case 1: // String
-	   				retVal = evaluateEquals(answerStr); //TODO 
-	   				break;
-		   	}
-   			
-	   		}
-	   		break;
-	   		default:
-	   			break;
-	   	}
-	   
-	   }
-	  return retVal;
-   }
-   
    public boolean writeAction(String key, Writer w) throws Exception {
 	   boolean retVal = false;
 		/*if(!hasConclude)*/ {	// no conclude
@@ -279,7 +173,12 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 		       
 			   w.append("\tconcept = Context.getConceptService().getConceptByName(\"" + cn.trim() + "\");\n");
 			   if(readType.equals("last")){
-			   	  w.append("\treturn dataSource.eval(patient, ardenClause.concept(concept).latest(" + howMany + "));\n");
+				   if(hasWhere){
+					   w.append("\treturn dataSource.eval(patient, ardenClause.concept(concept).last(" + howMany + ")." + whereType + "()." + durationType + "()." + durationOp + "(" + durationVal + "));\n");
+				    }
+				   else {
+					   w.append("\treturn dataSource.eval(patient, ardenClause.concept(concept).last(" + howMany + "));\n");
+				   }
 			   }
 			   else { 
 				   w.append("\treturn dataSource.eval(patient, ardenClause.concept(concept));\n");
@@ -307,113 +206,11 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 	   }	   
 	   return retVal;
    }
-   /*
-   public boolean writeEvaluate(String key, Writer w) throws Exception{
-	   boolean retVal = false;
-	   if(!key.startsWith("Conclude") &&  !key.startsWith("ELSE") &&  !key.startsWith("ENDIF")
-			   && !key.equals("AND")){
-		   String cn = getConcept();
-		   
-		   w.append("private Obs " + key + "(){\n");
-		  		
-		   if(dbAccessRequired){
-		   w.append("\tConcept concept;\n");
-	       w.append("\tObs obs;\n\n");
-		   
-		   w.append("\tconcept = Context.getConceptService().getConceptByName(\"" + cn.trim() + "\");\n");
-		   if(readType.equals("last")){
-			   w.append("\tobs = dataSource.getLastPatientObsForConcept(concept, patient, " +  howMany + ");\n\n");
-		   }
-		   else { 
-			   w.append("\tobs = dataSource.getPatientObsForConcept(concept, patient);\n\n");
-		   }
-		   w.append("\treturn obs;\n");
-		   w.append("}\n\n");
-		   
-		   
-		   }  // end of DB access required
-		   else {  // No DB access, simply conclude or else conclude
-			   	w.write("\t\tString val = userVarMap.get( \"" + key + "\");\n");
-			   	w.write("\t\tif(val == \"false\") {retVal = false;}\n");
-			   	w.write("\t\tif(val == \"true\") {retVal = true;}\n");
-			   	
-		   }
-		 
-	   }	   
-	   return retVal;
-   }
-   */
-   public boolean evaluateEquals(boolean RHS) {
-	   boolean retVal = false;
-	   
-	   if(isObsAvailable && RHS == true){
-		   retVal = true;
-	   }
-	   else if (isObsAvailable && RHS == false) {
-	   	   retVal = true;
-	   }
-	   evaluated = retVal;
-	   isEvaluated = true;
-	   return retVal;
-   }
-   
-   public boolean evaluateEquals(String RHS) {
-	   boolean retVal = false;
-	   
-	   if(isObsAvailable){
-		   String val = obsObj.getValueText();
-		   if(val.equals(RHS)){
-			   retVal = true;  
-		   }
-	   }
-	   else {
-	   	   retVal = false;
-	   }
-	   evaluated = retVal;
-	   isEvaluated = true;
-	   return retVal;
-   }
-	
-   public boolean evaluateEquals(Integer RHS) {
-	   boolean retVal = false;
-	   
-	   if(isObsAvailable){
-		   double val = obsObj.getValueNumeric();
-		   if(val == RHS){
-			   retVal = true;  
-		   }
-	   }
-	   else {
-	   	   retVal = false;
-	   }
-	   evaluated = retVal;
-	   isEvaluated = true;
-	   return retVal;
-   }
-   
-   public boolean evaluateGTE(Integer RHS) {
-	   boolean retVal = false;
-	   
-	   if(isObsAvailable){
-		   double val = obsObj.getValueNumeric();
-		   if(val >= RHS){
-			   retVal = true;  
-		   }
-	   }
-	   else {
-	   	   retVal = false;
-	   }
-	   evaluated = retVal;
-	   isEvaluated = true;
-	   return retVal;
-   }
-   public boolean getEvaluated(){
-	      return evaluated;
-   }
 
-   public boolean isElementEvaluated(){
-	   return isEvaluated;
-   }
+	public Iterator <String> iterator(){
+		return userVarMap.keySet().iterator();
+	}
+	
 	public String getConceptName(){
 		
 		return conceptName;
@@ -473,11 +270,6 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 			val = userVarMap.get(var);
 		}
 		return val;
-	}
-	
-	public Iterator <String> iterator(){
-		Iterator iter;
-		return iter = userVarMap.keySet().iterator();
 	}
 	
 	public void setDBAccessRequired(boolean val){

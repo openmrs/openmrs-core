@@ -69,7 +69,7 @@ public class DefaultArdenDataSource implements ArdenDataSource {
 				/*
 		 *  To something with the clause now...
 		 */
-		if(c.getPredicate()== ArdenClause.Predicate.latest) {
+		if(c.getPredicate()== ArdenClause.Predicate.last) {
 			obs = getLastPatientObsForConcept(p,c.getConcept(),1);
 			retVal.addObs(obs);
 		}

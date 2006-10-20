@@ -19,7 +19,7 @@ public class ArdenClause {
 	private ArdenRule rule;
 	private Concept concept;
 	private ArdenClause clause;
-	public static enum Predicate {latest,earliest,max, min,avg,
+	public static enum Predicate {last,first,max, min,avg,
 									greaterThan,lessThan, greaterThanEqual, lessThanEqual
 									};
 	private Predicate predicate;
@@ -57,22 +57,22 @@ public Predicate getPredicate() {
 	
 }
 
-public ArdenClause latest(){
-	predicate = Predicate.latest;
+public ArdenClause last(){
+	predicate = Predicate.last;
 	return this;
 }
-public ArdenClause latest(double val){
-	predicate = Predicate.latest;
+public ArdenClause last(double val){
+	predicate = Predicate.last;
 	predicateVal = val;
 	return this;
 }
 
-public ArdenClause earliest(){
-	predicate = Predicate.earliest;
+public ArdenClause first(){
+	predicate = Predicate.first;
 	return this;
 }
-public ArdenClause earliest(double val){
-	predicate = Predicate.earliest;
+public ArdenClause first(double val){
+	predicate = Predicate.first;
 	predicateVal = val;
 	return this;
 }
@@ -89,6 +89,7 @@ public ArdenClause min(){
 public ArdenClause avg(){
 	predicate = Predicate.avg;
 	return this;
+
 }
 
 public ArdenClause greaterThan(double val){
@@ -115,4 +116,44 @@ public ArdenClause lessThanEqual(double val){
 	predicateVal = val;
 	return this;
 }
+
+/*
+ * Temporal operations
+ */
+public ArdenClause within(){
+	return this;
+}
+
+public ArdenClause within(String str1, String str2){
+	return this;
+}
+
+public ArdenClause past(){
+	return this;
+}
+
+public ArdenClause after(String str){
+	return this;
+}
+
+public ArdenClause before(String str){
+	return this;
+}
+
+public ArdenClause at(String str){
+	return this;
+}
+
+public ArdenClause equal(String str){
+	return this;
+}
+
+public ArdenClause Days(int val){
+	return this;
+}
+
+public ArdenClause Years(int val){
+	return this;
+}
+
 }
