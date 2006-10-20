@@ -20,7 +20,7 @@ Knowledge:
 	Urgency:	;;
 */
 Data:
-Last_Pb := read Last 1 {BLOOD LEAD LEVEL from RMRS} Where it Occurred Within Past 330 Days;
+Last_Pb := read Last 2 {BLOOD LEAD LEVEL from RMRS} Where it Occurred Within Past 330 Days;
 Qual_Pb := read Exist {Qualitative_Blood_Lead from CHICA} Where it Occurred Within Past 330 Days;
 HousePre50 := read Last {HouseBltPre1950 from CHICA} Where it Occurred Within Past 2 Years;
 RenovatedPre78 := read Last {RenovatedPre78 from CHICA} Where it Occurred Within Past 365 Days;
@@ -36,7 +36,7 @@ if (HousePre50 = YES) then || LeadRisk || = "lives in a house built before 1950"
 elseif (RenovatedPre78 = YES) then || LeadRisk || = "lives in a pre-1978 house undergoing renovation";
 elseif (HiPbSibFriend = YES) then || LeadRisk || = "has a friend or sibling with elevated blood lead";
 else conclude True;
-//conclude True;
+conclude True;     // For testing purposes
 ;;
 Action:
 write (|| firstname || " reportedly " || LeadRisk ||".  Drawing a blood lead level is recommended annually:");
