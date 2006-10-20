@@ -2,10 +2,25 @@
 
 package org.openmrs.arden;
 
-import antlr.NoViableAltException;
-import antlr.RecognitionException;
+import java.io.*;
+import antlr.CommonAST;
 import antlr.collections.AST;
+import antlr.*;
+import org.openmrs.arden.MLMObject;
+import org.openmrs.arden.MLMObjectElement;
+import java.lang.Integer;
+
+import antlr.TreeParser;
+import antlr.Token;
+import antlr.collections.AST;
+import antlr.RecognitionException;
+import antlr.ANTLRException;
+import antlr.NoViableAltException;
+import antlr.MismatchedTokenException;
+import antlr.SemanticException;
 import antlr.collections.impl.BitSet;
+import antlr.ASTPair;
+import antlr.collections.impl.ASTArray;
 
 
 /*************************************************************************************/
@@ -24,31 +39,52 @@ public ArdenBaseTreeParser() {
 		String a,b;
 		
 		try {      // for error handling
-			AST __t322 = _t;
+			AST __t326 = _t;
 			AST tmp1_AST_in = (AST)_t;
 			match(_t,DATA);
 			_t = _t.getFirstChild();
 			System.err.println("\n"); System.err.println("-------Starting Data--------");
 			{
-			_loop324:
+			_loop328:
 			do {
 				if (_t==null) _t=ASTNULL;
-				if ((_tokenSet_0.member(_t.getType()))) {
-					System.err.println("-----------Starting Read -------");
-					s=readAST(_t,obj);
+				switch ( _t.getType()) {
+				case IF:
+				{
+					System.err.println("----------------Starting Data If-------");
+					dataIfAST(_t,obj);
 					_t = _retTree;
-					System.err.println("\n");System.err.println("-----------End Read -------");
+					System.err.println("\n");System.err.println("-----------End Data If -------");
+					break;
 				}
-				else if ((_t.getType()==EVENT||_t.getType()==ID)) {
-					System.err.println("----------------Starting Event-------");
-					eventAST(_t);
+				case ELSE:
+				case ELSEIF:
+				case ENDIF:
+				{
+					System.err.println("----------------Starting Data Else If-------");
+					data_elseifAST(_t,obj);
 					_t = _retTree;
-					System.err.println("\n");System.err.println("-----------End Event -------");
+					System.err.println("\n");System.err.println("-----------End Data Else If -------");
+					break;
 				}
+				default:
+					if (_t==null) _t=ASTNULL;
+					if ((_tokenSet_0.member(_t.getType()))) {
+						System.err.println("-----------Starting Read -------");
+						s=readAST(_t,obj, s);
+						_t = _retTree;
+						System.err.println("\n");System.err.println("-----------End Read -------");
+					}
+					else if ((_t.getType()==EVENT||_t.getType()==ID)) {
+						System.err.println("----------------Starting Event-------");
+						eventAST(_t);
+						_t = _retTree;
+						System.err.println("\n");System.err.println("-----------End Event -------");
+					}
 				else {
-					break _loop324;
+					break _loop328;
 				}
-				
+				}
 			} while (true);
 			}
 			{
@@ -57,7 +93,7 @@ public ArdenBaseTreeParser() {
 			_t = _t.getNextSibling();
 			}
 			System.err.println("\n");System.err.println("-----------End Data -------");
-			_t = __t322;
+			_t = __t326;
 			_t = _t.getNextSibling();
 		}
 		catch (RecognitionException ex) {
@@ -69,7 +105,7 @@ public ArdenBaseTreeParser() {
 	}
 	
 	public final String  readAST(AST _t,
-		MLMObject obj
+		MLMObject obj, String instr
 	) throws RecognitionException {
 		String s="";
 		
@@ -77,12 +113,14 @@ public ArdenBaseTreeParser() {
 		AST k = null;
 		AST x = null;
 		AST y = null;
+		AST intlit = null;
+		AST dop = null;
 		AST z = null;
 		AST j = null;
-		AST m = null;
-		AST n = null;
 		AST i = null;
-		String a,b, ret_val="";
+		AST t = null;
+		AST f = null;
+		String a="",b="", ret_val="";
 		
 		try {      // for error handling
 			{
@@ -90,15 +128,15 @@ public ArdenBaseTreeParser() {
 			switch ( _t.getType()) {
 			case READ:
 			{
-				AST __t328 = _t;
+				AST __t347 = _t;
 				AST tmp3_AST_in = (AST)_t;
 				match(_t,READ);
 				_t = _t.getFirstChild();
-				a=readAST(_t,obj);
+				a=readAST(_t,obj, instr);
 				_t = _retTree;
-				b=readAST(_t,obj);
+				b=readAST(_t,obj, a);
 				_t = _retTree;
-				_t = __t328;
+				_t = __t347;
 				_t = _t.getNextSibling();
 				s += ret_val;
 				break;
@@ -132,55 +170,31 @@ public ArdenBaseTreeParser() {
 				}
 				{
 				if (_t==null) _t=ASTNULL;
-				switch ( _t.getType()) {
-				case INTLIT:
-				{
+				if ((_t.getType()==INTLIT)) {
 					k = (AST)_t;
 					match(_t,INTLIT);
 					_t = _t.getNextSibling();
-					AST tmp6_AST_in = (AST)_t;
-					match(_t,FROM);
-					_t = _t.getNextSibling();
-					break;
 				}
-				case COUNT:
-				case READ:
-				case MINIMUM:
-				case MIN:
-				case MAXIMUM:
-				case MAX:
-				case LAST:
-				case FIRST:
-				case EARLIEST:
-				case LATEST:
-				case EXIST:
-				case EXISTS:
-				case AVG:
-				case AVERAGE:
-				case SUM:
-				case MEDIAN:
-				case ID:
-				case ARDEN_CURLY_BRACKETS:
-				{
-					break;
+				else if ((_tokenSet_0.member(_t.getType()))) {
 				}
-				default:
-				{
+				else {
 					throw new NoViableAltException(_t);
 				}
+				
 				}
-				}
-				b=readAST(_t,obj);
+				s+=b;obj.setReadType("last"); obj.setHowMany("1");
+					  							if(k != null) {
+					   								obj.setHowMany(k.getText());
+					   								System.err.println("ReadType = Last " + "How many? " + k.getText());
+					  							}
+					  							 else {
+						  							 System.err.println("ReadType = Last " + "How many? 1" );	
+					  							 }
+					  							 
+					  							
+				b=readAST(_t,obj, instr);
 				_t = _retTree;
 				}
-				s+=b;if(k != null) {
-												System.err.println("ReadType = Last " + "How many? " + k.getText());
-												}
-											 else {
-					  							 System.err.println("ReadType = Last " + "How many? 1" );	
-											 }
-											 
-											
 				break;
 			}
 			case FIRST:
@@ -192,14 +206,14 @@ public ArdenBaseTreeParser() {
 				switch ( _t.getType()) {
 				case FIRST:
 				{
-					AST tmp7_AST_in = (AST)_t;
+					AST tmp6_AST_in = (AST)_t;
 					match(_t,FIRST);
 					_t = _t.getNextSibling();
 					break;
 				}
 				case EARLIEST:
 				{
-					AST tmp8_AST_in = (AST)_t;
+					AST tmp7_AST_in = (AST)_t;
 					match(_t,EARLIEST);
 					_t = _t.getNextSibling();
 					break;
@@ -212,116 +226,109 @@ public ArdenBaseTreeParser() {
 				}
 				{
 				if (_t==null) _t=ASTNULL;
-				switch ( _t.getType()) {
-				case INTLIT:
-				{
+				if ((_t.getType()==INTLIT)) {
 					x = (AST)_t;
 					match(_t,INTLIT);
 					_t = _t.getNextSibling();
-					AST tmp9_AST_in = (AST)_t;
-					match(_t,FROM);
-					_t = _t.getNextSibling();
-					break;
 				}
-				case COUNT:
-				case READ:
-				case MINIMUM:
-				case MIN:
-				case MAXIMUM:
-				case MAX:
-				case LAST:
-				case FIRST:
-				case EARLIEST:
-				case LATEST:
-				case EXIST:
-				case EXISTS:
-				case AVG:
-				case AVERAGE:
-				case SUM:
-				case MEDIAN:
-				case ID:
-				case ARDEN_CURLY_BRACKETS:
-				{
-					break;
+				else if ((_tokenSet_0.member(_t.getType()))) {
 				}
-				default:
-				{
+				else {
 					throw new NoViableAltException(_t);
 				}
+				
 				}
-				}
-				b=readAST(_t,obj);
+				s+=b;obj.setReadType("first"); obj.setHowMany("1");
+					  								if(x != null) {
+					   									obj.setHowMany(x.getText());
+					   									System.err.println("ReadType = First " + "How many? " + x.getText());
+					  								}
+					  							 else {
+						  							 System.err.println("ReadType = First " + "How many? 1" );	
+					  							 }
+					  							 
+					  							
+				b=readAST(_t,obj, instr);
 				_t = _retTree;
 				}
-				s+=b;if(x != null) {
-												System.err.println("ReadType = First " + "How many? " + x.getText());
-												}
-											 else {
-					  							 System.err.println("ReadType = First " + "How many? 1" );	
-											 }
-											 
-											
 				break;
 			}
 			case MAXIMUM:
 			case MAX:
+			case INTLIT:
 			{
 				{
-				{
 				if (_t==null) _t=ASTNULL;
 				switch ( _t.getType()) {
 				case MAXIMUM:
-				{
-					AST tmp10_AST_in = (AST)_t;
-					match(_t,MAXIMUM);
-					_t = _t.getNextSibling();
-					break;
-				}
 				case MAX:
 				{
-					AST tmp11_AST_in = (AST)_t;
-					match(_t,MAX);
-					_t = _t.getNextSibling();
+					{
+					if (_t==null) _t=ASTNULL;
+					switch ( _t.getType()) {
+					case MAXIMUM:
+					{
+						AST tmp8_AST_in = (AST)_t;
+						match(_t,MAXIMUM);
+						_t = _t.getNextSibling();
+						break;
+					}
+					case MAX:
+					{
+						AST tmp9_AST_in = (AST)_t;
+						match(_t,MAX);
+						_t = _t.getNextSibling();
+						break;
+					}
+					default:
+					{
+						throw new NoViableAltException(_t);
+					}
+					}
+					}
+					{
+					{
+					if (_t==null) _t=ASTNULL;
+					if ((_t.getType()==INTLIT)) {
+						y = (AST)_t;
+						match(_t,INTLIT);
+						_t = _t.getNextSibling();
+					}
+					else if ((_tokenSet_0.member(_t.getType()))) {
+					}
+					else {
+						throw new NoViableAltException(_t);
+					}
+					
+					}
+					s+=b;obj.setReadType("max"); obj.setHowMany("1");
+						  							if(y != null) {
+						   									obj.setHowMany(y.getText());
+						   									System.err.println("ReadType = Maximum " + "How many? " + y.getText());
+						  								}
+						  							 else {
+							  							 System.err.println("ReadType = Maximum " + "How many? 1" );	
+						  							 }
+						  							 
+						  							
+					b=readAST(_t,obj, instr);
+					_t = _retTree;
+					}
 					break;
 				}
-				default:
-				{
-					throw new NoViableAltException(_t);
-				}
-				}
-				}
-				{
-				if (_t==null) _t=ASTNULL;
-				switch ( _t.getType()) {
 				case INTLIT:
 				{
-					y = (AST)_t;
+					{
+					{
+					intlit = (AST)_t;
 					match(_t,INTLIT);
 					_t = _t.getNextSibling();
-					AST tmp12_AST_in = (AST)_t;
-					match(_t,FROM);
-					_t = _t.getNextSibling();
-					break;
-				}
-				case COUNT:
-				case READ:
-				case MINIMUM:
-				case MIN:
-				case MAXIMUM:
-				case MAX:
-				case LAST:
-				case FIRST:
-				case EARLIEST:
-				case LATEST:
-				case EXIST:
-				case EXISTS:
-				case AVG:
-				case AVERAGE:
-				case SUM:
-				case MEDIAN:
-				case ID:
-				case ARDEN_CURLY_BRACKETS:
-				{
+					dop = _t==ASTNULL ? null : (AST)_t;
+					duration_op(_t);
+					_t = _retTree;
+					}
+					System.err.println("Duration Clause - " + intlit.getText() + " " + dop.getText());
+					}
 					break;
 				}
 				default:
@@ -330,17 +337,6 @@ public ArdenBaseTreeParser() {
 				}
 				}
 				}
-				b=readAST(_t,obj);
-				_t = _retTree;
-				}
-				s+=b;if(y != null) {
-												System.err.println("ReadType = Maximum " + "How many? " + y.getText());
-												}
-											 else {
-					  							 System.err.println("ReadType = Maximum " + "How many? 1" );	
-											 }
-											 
-											
 				break;
 			}
 			case MINIMUM:
@@ -352,14 +348,14 @@ public ArdenBaseTreeParser() {
 				switch ( _t.getType()) {
 				case MINIMUM:
 				{
-					AST tmp13_AST_in = (AST)_t;
+					AST tmp10_AST_in = (AST)_t;
 					match(_t,MINIMUM);
 					_t = _t.getNextSibling();
 					break;
 				}
 				case MIN:
 				{
-					AST tmp14_AST_in = (AST)_t;
+					AST tmp11_AST_in = (AST)_t;
 					match(_t,MIN);
 					_t = _t.getNextSibling();
 					break;
@@ -372,55 +368,31 @@ public ArdenBaseTreeParser() {
 				}
 				{
 				if (_t==null) _t=ASTNULL;
-				switch ( _t.getType()) {
-				case INTLIT:
-				{
+				if ((_t.getType()==INTLIT)) {
 					z = (AST)_t;
 					match(_t,INTLIT);
 					_t = _t.getNextSibling();
-					AST tmp15_AST_in = (AST)_t;
-					match(_t,FROM);
-					_t = _t.getNextSibling();
-					break;
 				}
-				case COUNT:
-				case READ:
-				case MINIMUM:
-				case MIN:
-				case MAXIMUM:
-				case MAX:
-				case LAST:
-				case FIRST:
-				case EARLIEST:
-				case LATEST:
-				case EXIST:
-				case EXISTS:
-				case AVG:
-				case AVERAGE:
-				case SUM:
-				case MEDIAN:
-				case ID:
-				case ARDEN_CURLY_BRACKETS:
-				{
-					break;
+				else if ((_tokenSet_0.member(_t.getType()))) {
 				}
-				default:
-				{
+				else {
 					throw new NoViableAltException(_t);
 				}
+				
 				}
-				}
-				b=readAST(_t,obj);
+				s+=b;obj.setReadType("min"); obj.setHowMany("1");
+					  							if(z != null) {
+						   								obj.setHowMany(z.getText());
+						   								System.err.println("ReadType = Minimum " + "How many? " + z.getText());
+					  								}
+					  							 else {
+						  							 System.err.println("ReadType = Min " + "How many? 1" );	
+					  							 }
+					  							 
+					  							
+				b=readAST(_t,obj, instr);
 				_t = _retTree;
 				}
-				s+=b;if(z != null) {
-												System.err.println("ReadType = Minimum " + "How many? " + z.getText());
-												}
-											 else {
-					  							 System.err.println("ReadType = Min " + "How many? 1" );	
-											 }
-											 
-											
 				break;
 			}
 			case EXIST:
@@ -432,14 +404,14 @@ public ArdenBaseTreeParser() {
 				switch ( _t.getType()) {
 				case EXIST:
 				{
-					AST tmp16_AST_in = (AST)_t;
+					AST tmp12_AST_in = (AST)_t;
 					match(_t,EXIST);
 					_t = _t.getNextSibling();
 					break;
 				}
 				case EXISTS:
 				{
-					AST tmp17_AST_in = (AST)_t;
+					AST tmp13_AST_in = (AST)_t;
 					match(_t,EXISTS);
 					_t = _t.getNextSibling();
 					break;
@@ -450,10 +422,10 @@ public ArdenBaseTreeParser() {
 				}
 				}
 				}
-				b=readAST(_t,obj);
+				s+=b;obj.setReadType("last"); obj.setHowMany("1");System.err.println("ReadType = Exist");
+				b=readAST(_t,obj, instr);
 				_t = _retTree;
 				}
-				s+=b;System.err.println("ReadType = Exist");
 				break;
 			}
 			case AVG:
@@ -465,14 +437,14 @@ public ArdenBaseTreeParser() {
 				switch ( _t.getType()) {
 				case AVERAGE:
 				{
-					AST tmp18_AST_in = (AST)_t;
+					AST tmp14_AST_in = (AST)_t;
 					match(_t,AVERAGE);
 					_t = _t.getNextSibling();
 					break;
 				}
 				case AVG:
 				{
-					AST tmp19_AST_in = (AST)_t;
+					AST tmp15_AST_in = (AST)_t;
 					match(_t,AVG);
 					_t = _t.getNextSibling();
 					break;
@@ -483,7 +455,7 @@ public ArdenBaseTreeParser() {
 				}
 				}
 				}
-				b=readAST(_t,obj);
+				b=readAST(_t,obj, instr);
 				_t = _retTree;
 				}
 				s+=b;System.err.println("ReadType = Average");
@@ -492,10 +464,10 @@ public ArdenBaseTreeParser() {
 			case COUNT:
 			{
 				{
-				AST tmp20_AST_in = (AST)_t;
+				AST tmp16_AST_in = (AST)_t;
 				match(_t,COUNT);
 				_t = _t.getNextSibling();
-				b=readAST(_t,obj);
+				b=readAST(_t,obj, instr);
 				_t = _retTree;
 				}
 				s+=b;System.err.println("ReadType = Count");
@@ -504,10 +476,10 @@ public ArdenBaseTreeParser() {
 			case SUM:
 			{
 				{
-				AST tmp21_AST_in = (AST)_t;
+				AST tmp17_AST_in = (AST)_t;
 				match(_t,SUM);
 				_t = _t.getNextSibling();
-				b=readAST(_t,obj);
+				b=readAST(_t,obj, instr);
 				_t = _retTree;
 				}
 				s+=b;System.err.println("ReadType = Sum");
@@ -516,72 +488,112 @@ public ArdenBaseTreeParser() {
 			case MEDIAN:
 			{
 				{
-				AST tmp22_AST_in = (AST)_t;
+				AST tmp18_AST_in = (AST)_t;
 				match(_t,MEDIAN);
 				_t = _t.getNextSibling();
-				b=readAST(_t,obj);
+				b=readAST(_t,obj, instr);
 				_t = _retTree;
 				}
 				s+=b;System.err.println("ReadType = Median");
 				break;
 			}
+			case TRUE:
+			case FALSE:
+			case ID:
 			case ARDEN_CURLY_BRACKETS:
 			{
 				{
-				{
-				j = (AST)_t;
-				match(_t,ARDEN_CURLY_BRACKETS);
-				_t = _t.getNextSibling();
-				}
-				/*s=b;*/System.err.println("Fetch this data - " + j.getText());
-					 										s = j.getText(); obj.AddConcept(s);
-				{
 				if (_t==null) _t=ASTNULL;
 				switch ( _t.getType()) {
-				case WHERE:
-				{
-					{
-					AST tmp23_AST_in = (AST)_t;
-					match(_t,WHERE);
-					_t = _t.getNextSibling();
-					AST tmp24_AST_in = (AST)_t;
-					match(_t,PAST);
-					_t = _t.getNextSibling();
-					}
-					System.err.println("Where=TRUE");
-					{
-					m = (AST)_t;
-					match(_t,INTLIT);
-					_t = _t.getNextSibling();
-					n = _t==ASTNULL ? null : (AST)_t;
-					duration_op(_t);
-					_t = _retTree;
-					}
-					System.err.println("Duration Clause - " + m.getText() + " " + n.getText());
-					break;
-				}
-				case 3:
-				case COUNT:
-				case READ:
-				case MINIMUM:
-				case MIN:
-				case MAXIMUM:
-				case MAX:
-				case LAST:
-				case FIRST:
-				case EARLIEST:
-				case LATEST:
-				case EVENT:
-				case EXIST:
-				case EXISTS:
-				case AVG:
-				case AVERAGE:
-				case SUM:
-				case MEDIAN:
-				case ENDBLOCK:
-				case ID:
 				case ARDEN_CURLY_BRACKETS:
 				{
+					{
+					j = (AST)_t;
+					match(_t,ARDEN_CURLY_BRACKETS);
+					_t = _t.getNextSibling();
+					}
+					/*s=b;*/System.err.println("Fetch this data - " + j.getText());
+							  	 										s = j.getText(); 
+							  	 										obj.AddConcept(s);
+							  	 									
+					{
+					if (_t==null) _t=ASTNULL;
+					switch ( _t.getType()) {
+					case WHERE:
+					{
+						AST tmp19_AST_in = (AST)_t;
+						match(_t,WHERE);
+						_t = _t.getNextSibling();
+						System.err.println("Where=TRUE");
+						where_it_occurredAST(_t,obj, instr);
+						_t = _retTree;
+						break;
+					}
+					case 3:
+					case COUNT:
+					case IF:
+					case READ:
+					case MINIMUM:
+					case MIN:
+					case MAXIMUM:
+					case MAX:
+					case LAST:
+					case FIRST:
+					case EARLIEST:
+					case LATEST:
+					case EVENT:
+					case EXIST:
+					case EXISTS:
+					case AVG:
+					case AVERAGE:
+					case SUM:
+					case MEDIAN:
+					case ELSE:
+					case ELSEIF:
+					case ENDIF:
+					case TRUE:
+					case FALSE:
+					case ENDBLOCK:
+					case INTLIT:
+					case ID:
+					case ARDEN_CURLY_BRACKETS:
+					{
+						break;
+					}
+					default:
+					{
+						throw new NoViableAltException(_t);
+					}
+					}
+					}
+					break;
+				}
+				case ID:
+				{
+					i = (AST)_t;
+					match(_t,ID);
+					_t = _t.getNextSibling();
+					System.err.println("Variable = " + i.getText()); a= i.getText(); s=a; obj.SetConceptVar(a);
+					break;
+				}
+				case TRUE:
+				{
+					t = (AST)_t;
+					match(_t,TRUE);
+					_t = _t.getNextSibling();
+					s="true";
+						            obj.AddConcept(s);obj.SetDBAccess(false,instr);
+						
+					break;
+				}
+				case FALSE:
+				{
+					f = (AST)_t;
+					match(_t,FALSE);
+					_t = _t.getNextSibling();
+					s="false";
+						 			 obj.AddConcept(s);obj.SetDBAccess(false,instr);
+						 			
 					break;
 				}
 				default:
@@ -590,15 +602,6 @@ public ArdenBaseTreeParser() {
 				}
 				}
 				}
-				}
-				break;
-			}
-			case ID:
-			{
-				i = (AST)_t;
-				match(_t,ID);
-				_t = _t.getNextSibling();
-				System.err.println("Variable = " + i.getText()); a= i.getText(); obj.SetConceptVar(a);
 				break;
 			}
 			default:
@@ -629,13 +632,13 @@ public ArdenBaseTreeParser() {
 			switch ( _t.getType()) {
 			case EVENT:
 			{
-				AST __t356 = _t;
-				AST tmp25_AST_in = (AST)_t;
+				AST __t399 = _t;
+				AST tmp20_AST_in = (AST)_t;
 				match(_t,EVENT);
 				_t = _t.getFirstChild();
 				b=eventAST(_t);
 				_t = _retTree;
-				_t = __t356;
+				_t = __t399;
 				_t = _t.getNextSibling();
 				break;
 			}
@@ -662,275 +665,27 @@ public ArdenBaseTreeParser() {
 		return s;
 	}
 	
-	public final void duration_op(AST _t) throws RecognitionException {
-		
-		AST duration_op_AST_in = (_t == ASTNULL) ? null : (AST)_t;
-		
-		try {      // for error handling
-			if (_t==null) _t=ASTNULL;
-			switch ( _t.getType()) {
-			case YEAR:
-			{
-				AST tmp26_AST_in = (AST)_t;
-				match(_t,YEAR);
-				_t = _t.getNextSibling();
-				break;
-			}
-			case YEARS:
-			{
-				AST tmp27_AST_in = (AST)_t;
-				match(_t,YEARS);
-				_t = _t.getNextSibling();
-				break;
-			}
-			case MONTH:
-			{
-				AST tmp28_AST_in = (AST)_t;
-				match(_t,MONTH);
-				_t = _t.getNextSibling();
-				break;
-			}
-			case MONTHS:
-			{
-				AST tmp29_AST_in = (AST)_t;
-				match(_t,MONTHS);
-				_t = _t.getNextSibling();
-				break;
-			}
-			case WEEK:
-			{
-				AST tmp30_AST_in = (AST)_t;
-				match(_t,WEEK);
-				_t = _t.getNextSibling();
-				break;
-			}
-			case WEEKS:
-			{
-				AST tmp31_AST_in = (AST)_t;
-				match(_t,WEEKS);
-				_t = _t.getNextSibling();
-				break;
-			}
-			case DAY:
-			{
-				AST tmp32_AST_in = (AST)_t;
-				match(_t,DAY);
-				_t = _t.getNextSibling();
-				break;
-			}
-			case DAYS:
-			{
-				AST tmp33_AST_in = (AST)_t;
-				match(_t,DAYS);
-				_t = _t.getNextSibling();
-				break;
-			}
-			case LITERAL_hour:
-			{
-				AST tmp34_AST_in = (AST)_t;
-				match(_t,LITERAL_hour);
-				_t = _t.getNextSibling();
-				break;
-			}
-			case LITERAL_hours:
-			{
-				AST tmp35_AST_in = (AST)_t;
-				match(_t,LITERAL_hours);
-				_t = _t.getNextSibling();
-				break;
-			}
-			case LITERAL_minute:
-			{
-				AST tmp36_AST_in = (AST)_t;
-				match(_t,LITERAL_minute);
-				_t = _t.getNextSibling();
-				break;
-			}
-			case LITERAL_minutes:
-			{
-				AST tmp37_AST_in = (AST)_t;
-				match(_t,LITERAL_minutes);
-				_t = _t.getNextSibling();
-				break;
-			}
-			case LITERAL_second:
-			{
-				AST tmp38_AST_in = (AST)_t;
-				match(_t,LITERAL_second);
-				_t = _t.getNextSibling();
-				break;
-			}
-			case LITERAL_seconds:
-			{
-				AST tmp39_AST_in = (AST)_t;
-				match(_t,LITERAL_seconds);
-				_t = _t.getNextSibling();
-				break;
-			}
-			default:
-			{
-				throw new NoViableAltException(_t);
-			}
-			}
-		}
-		catch (RecognitionException ex) {
-			reportError(ex);
-			if (_t!=null) {_t = _t.getNextSibling();}
-		}
-		_retTree = _t;
-	}
-	
-/********************LOGIC***********************************/
-	public final String  logic(AST _t,
+	public final String  dataIfAST(AST _t,
 		MLMObject obj
 	) throws RecognitionException {
 		String s="";
 		
-		AST logic_AST_in = (_t == ASTNULL) ? null : (AST)_t;
-		String a,b;
-		
-		try {      // for error handling
-			AST __t358 = _t;
-			AST tmp40_AST_in = (AST)_t;
-			match(_t,LOGIC);
-			_t = _t.getFirstChild();
-			System.err.println("\n"); System.err.println("-------Starting LOGIC--------");
-			{
-			_loop364:
-			do {
-				if (_t==null) _t=ASTNULL;
-				switch ( _t.getType()) {
-				case IF:
-				{
-					System.err.println("-----------Starting IF -------");
-					a=ifAST(_t,obj);
-					_t = _retTree;
-					{
-					if (_t==null) _t=ASTNULL;
-					if ((_tokenSet_1.member(_t.getType()))) {
-						System.err.println("-----------Starting CONCLUDE -------");
-						{
-						if (_t==null) _t=ASTNULL;
-						if ((_t.getType()==CONCLUDE)) {
-							concludeAST(_t,obj, a);
-							_t = _retTree;
-						}
-						else if ((_tokenSet_1.member(_t.getType()))) {
-						}
-						else {
-							throw new NoViableAltException(_t);
-						}
-						
-						}
-						System.err.println("\n");System.err.println("-----------End CONCLUDE -------");
-					}
-					else if ((_tokenSet_2.member(_t.getType()))) {
-						System.err.println("-----------Starting Logic Assignment -------");
-						logicAssignmentAST(_t,obj, a);
-						_t = _retTree;
-						System.err.println("\n");System.err.println("-----------End logic assignment -------");
-					}
-					else {
-						throw new NoViableAltException(_t);
-					}
-					
-					}
-					System.err.println("\n");System.err.println("-----------End IF -------");
-					break;
-				}
-				case ELSE:
-				case ELSEIF:
-				case ENDIF:
-				{
-					System.err.println("-----------Starting ELSE - ELSEIF -------");
-					a=logic_elseifAST(_t,obj);
-					_t = _retTree;
-					{
-					if (_t==null) _t=ASTNULL;
-					if ((_tokenSet_1.member(_t.getType()))) {
-						System.err.println("-----------Starting CONCLUDE -------");
-						{
-						if (_t==null) _t=ASTNULL;
-						if ((_t.getType()==CONCLUDE)) {
-							concludeAST(_t,obj, a);
-							_t = _retTree;
-						}
-						else if ((_tokenSet_1.member(_t.getType()))) {
-						}
-						else {
-							throw new NoViableAltException(_t);
-						}
-						
-						}
-						System.err.println("\n");System.err.println("-----------End CONCLUDE -------");
-					}
-					else if ((_tokenSet_2.member(_t.getType()))) {
-						System.err.println("-----------Starting Logic Assignment -------");
-						logicAssignmentAST(_t,obj, a);
-						_t = _retTree;
-						System.err.println("\n");System.err.println("-----------End logic assignment -------");
-					}
-					else {
-						throw new NoViableAltException(_t);
-					}
-					
-					}
-					System.err.println("\n");System.err.println("-----------End ELSE- ELSEIF -------");
-					break;
-				}
-				case CONCLUDE:
-				{
-					System.err.println("-----------Starting CONCLUDE -------");obj.InitEvaluateList();
-					concludeAST(_t,obj, "");
-					_t = _retTree;
-					System.err.println("\n");System.err.println("-----------End CONCLUDE -------");
-					break;
-				}
-				default:
-				{
-					break _loop364;
-				}
-				}
-			} while (true);
-			}
-			{
-			AST tmp41_AST_in = (AST)_t;
-			match(_t,ENDBLOCK);
-			_t = _t.getNextSibling();
-			}
-			System.err.println("\n");System.err.println("-----------End Action -------");
-			_t = __t358;
-			_t = _t.getNextSibling();
-		}
-		catch (RecognitionException ex) {
-			reportError(ex);
-			if (_t!=null) {_t = _t.getNextSibling();}
-		}
-		_retTree = _t;
-		return s;
-	}
-	
-	public final String  ifAST(AST _t,
-		MLMObject obj
-	) throws RecognitionException {
-		String s="";
-		
-		AST ifAST_AST_in = (_t == ASTNULL) ? null : (AST)_t;
-		String a,b;
+		AST dataIfAST_AST_in = (_t == ASTNULL) ? null : (AST)_t;
+		String a, b;
 		
 		try {      // for error handling
 			{
-			AST __t368 = _t;
-			AST tmp42_AST_in = (AST)_t;
+			AST __t332 = _t;
+			AST tmp21_AST_in = (AST)_t;
 			match(_t,IF);
 			_t = _t.getFirstChild();
 			obj.ResetConceptVar(); obj.InitEvaluateList();
 			s=exprAST(_t,obj);
 			_t = _retTree;
-			AST tmp43_AST_in = (AST)_t;
+			AST tmp22_AST_in = (AST)_t;
 			match(_t,THEN);
 			_t = _t.getNextSibling();
-			_t = __t368;
+			_t = __t332;
 			_t = _t.getNextSibling();
 			}
 		}
@@ -942,94 +697,12 @@ public ArdenBaseTreeParser() {
 		return s;
 	}
 	
-	public final String  concludeAST(AST _t,
-		MLMObject obj, String key
-	) throws RecognitionException {
-		String s="";
-		
-		AST concludeAST_AST_in = (_t == ASTNULL) ? null : (AST)_t;
-		String a,b;
-		
-		try {      // for error handling
-			{
-			AST __t391 = _t;
-			AST tmp44_AST_in = (AST)_t;
-			match(_t,CONCLUDE);
-			_t = _t.getFirstChild();
-			if(key == "") {
-						a = "tmp_conclude";
-						key = a;
-						obj.SetConceptVar(a);
-						obj.AddConcept(key);
-						obj.AddToEvaluateList(a); obj.SetConceptVar(a);
-						obj.SetDBAccess(false,a);
-						} 
-					
-			{
-			if (_t==null) _t=ASTNULL;
-			switch ( _t.getType()) {
-			case FALSE:
-			{
-				AST tmp45_AST_in = (AST)_t;
-				match(_t,FALSE);
-				_t = _t.getNextSibling();
-				System.err.println("***CONCLUDE FALSE " );
-								obj.SetConcludeVal(false, key);
-				break;
-			}
-			case TRUE:
-			{
-				AST tmp46_AST_in = (AST)_t;
-				match(_t,TRUE);
-				_t = _t.getNextSibling();
-				System.err.println("***CONCLUDE TRUE " );
-					    			obj.SetConcludeVal(true, key);
-				break;
-			}
-			default:
-			{
-				throw new NoViableAltException(_t);
-			}
-			}
-			}
-			_t = __t391;
-			_t = _t.getNextSibling();
-			}
-		}
-		catch (RecognitionException ex) {
-			reportError(ex);
-			if (_t!=null) {_t = _t.getNextSibling();}
-		}
-		_retTree = _t;
-		return s;
-	}
-	
-	public final String  logicAssignmentAST(AST _t,
-		MLMObject obj, String key
-	) throws RecognitionException {
-		String s="";
-		
-		AST logicAssignmentAST_AST_in = (_t == ASTNULL) ? null : (AST)_t;
-		String a,b;
-		
-		try {      // for error handling
-			exprStringAST(_t,obj, key);
-			_t = _retTree;
-		}
-		catch (RecognitionException ex) {
-			reportError(ex);
-			if (_t!=null) {_t = _t.getNextSibling();}
-		}
-		_retTree = _t;
-		return s;
-	}
-	
-	public final String  logic_elseifAST(AST _t,
+	public final String  data_elseifAST(AST _t,
 		MLMObject obj
 	) throws RecognitionException {
 		String s="";
 		
-		AST logic_elseifAST_AST_in = (_t == ASTNULL) ? null : (AST)_t;
+		AST data_elseifAST_AST_in = (_t == ASTNULL) ? null : (AST)_t;
 		String a,b;
 		
 		try {      // for error handling
@@ -1039,42 +712,42 @@ public ArdenBaseTreeParser() {
 			switch ( _t.getType()) {
 			case ELSEIF:
 			{
-				AST __t396 = _t;
-				AST tmp47_AST_in = (AST)_t;
+				AST __t336 = _t;
+				AST tmp23_AST_in = (AST)_t;
 				match(_t,ELSEIF);
 				_t = _t.getFirstChild();
 				obj.ResetConceptVar();
 				s=exprAST(_t,obj);
 				_t = _retTree;
-				AST tmp48_AST_in = (AST)_t;
+				AST tmp24_AST_in = (AST)_t;
 				match(_t,THEN);
 				_t = _t.getNextSibling();
-				_t = __t396;
+				_t = __t336;
 				_t = _t.getNextSibling();
 				break;
 			}
 			case ELSE:
 			{
-				AST __t397 = _t;
-				AST tmp49_AST_in = (AST)_t;
+				AST __t337 = _t;
+				AST tmp25_AST_in = (AST)_t;
 				match(_t,ELSE);
 				_t = _t.getFirstChild();
 				obj.ResetConceptVar();
 				s=exprAST(_t,obj);
 				_t = _retTree;
 				obj.AddConcept(s);obj.SetDBAccess(false,s);
-				_t = __t397;
+				_t = __t337;
 				_t = _t.getNextSibling();
 				break;
 			}
 			case ENDIF:
 			{
-				AST __t398 = _t;
-				AST tmp50_AST_in = (AST)_t;
+				AST __t338 = _t;
+				AST tmp26_AST_in = (AST)_t;
 				match(_t,ENDIF);
 				_t = _t.getFirstChild();
 				System.err.println("ENDIF FOUND");
-				_t = __t398;
+				_t = __t338;
 				_t = _t.getNextSibling();
 				break;
 			}
@@ -1104,26 +777,1091 @@ public ArdenBaseTreeParser() {
 		
 		try {      // for error handling
 			{
-			a=exprStringAST(_t,obj, "");
-			_t = _retTree;
-			s=a;
+			if (_t==null) _t=ASTNULL;
+			if ((_tokenSet_1.member(_t.getType()))) {
+				{
+				a=exprStringAST(_t,obj, "");
+				_t = _retTree;
+				s=a;
+				{
+				if (_t==null) _t=ASTNULL;
+				switch ( _t.getType()) {
+				case IN:
+				case LESS:
+				case GREATER:
+				case EQUALS:
+				case LT:
+				case GT:
+				case LTE:
+				case GTE:
+				{
+					{
+					if (_t==null) _t=ASTNULL;
+					if ((_tokenSet_2.member(_t.getType()))) {
+						simple_comp_opAST(_t,obj, a);
+						_t = _retTree;
+					}
+					else if ((_tokenSet_3.member(_t.getType()))) {
+						binary_comp_opAST(_t,obj, a);
+						_t = _retTree;
+					}
+					else {
+						throw new NoViableAltException(_t);
+					}
+					
+					}
+					b=exprStringAST(_t,obj, a);
+					_t = _retTree;
+					/*obj.SetAnswer(b, a);*/
+					break;
+				}
+				case 3:
+				case AND:
+				case COUNT:
+				case IF:
+				case NOT:
+				case OR:
+				case THEN:
+				case READ:
+				case MINIMUM:
+				case MIN:
+				case MAXIMUM:
+				case MAX:
+				case LAST:
+				case FIRST:
+				case EARLIEST:
+				case LATEST:
+				case EVENT:
+				case EXIST:
+				case EXISTS:
+				case AVG:
+				case AVERAGE:
+				case SUM:
+				case MEDIAN:
+				case ELSE:
+				case ELSEIF:
+				case ENDIF:
+				case TRUE:
+				case FALSE:
+				case TO:
+				case ENDBLOCK:
+				case INTLIT:
+				case ID:
+				case ARDEN_CURLY_BRACKETS:
+				{
+					break;
+				}
+				default:
+				{
+					throw new NoViableAltException(_t);
+				}
+				}
+				}
+				}
+			}
+			else if ((_tokenSet_4.member(_t.getType()))) {
+				expr_functionAST(_t,obj);
+				_t = _retTree;
+				{
+				a=exprStringAST(_t,obj, "");
+				_t = _retTree;
+				s=a;
+				{
+				if (_t==null) _t=ASTNULL;
+				switch ( _t.getType()) {
+				case IN:
+				case LESS:
+				case GREATER:
+				case EQUALS:
+				case LT:
+				case GT:
+				case LTE:
+				case GTE:
+				{
+					{
+					if (_t==null) _t=ASTNULL;
+					if ((_tokenSet_2.member(_t.getType()))) {
+						simple_comp_opAST(_t,obj, a);
+						_t = _retTree;
+					}
+					else if ((_tokenSet_3.member(_t.getType()))) {
+						binary_comp_opAST(_t,obj, a);
+						_t = _retTree;
+					}
+					else {
+						throw new NoViableAltException(_t);
+					}
+					
+					}
+					b=exprStringAST(_t,obj, a);
+					_t = _retTree;
+					/*obj.SetAnswer(b, a);*/
+					break;
+				}
+				case 3:
+				case AND:
+				case COUNT:
+				case IF:
+				case NOT:
+				case OR:
+				case THEN:
+				case READ:
+				case MINIMUM:
+				case MIN:
+				case MAXIMUM:
+				case MAX:
+				case LAST:
+				case FIRST:
+				case EARLIEST:
+				case LATEST:
+				case EVENT:
+				case EXIST:
+				case EXISTS:
+				case AVG:
+				case AVERAGE:
+				case SUM:
+				case MEDIAN:
+				case ELSE:
+				case ELSEIF:
+				case ENDIF:
+				case TRUE:
+				case FALSE:
+				case TO:
+				case ENDBLOCK:
+				case INTLIT:
+				case ID:
+				case ARDEN_CURLY_BRACKETS:
+				{
+					break;
+				}
+				default:
+				{
+					throw new NoViableAltException(_t);
+				}
+				}
+				}
+				}
+			}
+			else {
+				throw new NoViableAltException(_t);
+			}
+			
+			}
+		}
+		catch (RecognitionException ex) {
+			reportError(ex);
+			if (_t!=null) {_t = _t.getNextSibling();}
+		}
+		_retTree = _t;
+		return s;
+	}
+	
+	public final String  where_it_occurredAST(AST _t,
+		MLMObject obj, String key
+	) throws RecognitionException {
+		String s="";
+		
+		AST where_it_occurredAST_AST_in = (_t == ASTNULL) ? null : (AST)_t;
+		AST m = null;
+		AST n = null;
+		AST i = null;
+		String a,b, ret_val="";
+		
+		try {      // for error handling
+			if (_t==null) _t=ASTNULL;
+			switch ( _t.getType()) {
+			case COUNT:
+			case MINIMUM:
+			case MIN:
+			case MAXIMUM:
+			case MAX:
+			case LAST:
+			case FIRST:
+			case EARLIEST:
+			case LATEST:
+			case EXIST:
+			case EXISTS:
+			case AVG:
+			case AVERAGE:
+			case SUM:
+			case MEDIAN:
+			case TRUE:
+			case FALSE:
+			case OF:
+			case WITHIN:
+			case INTLIT:
+			case ID:
+			case ACTION_OP:
+			case STRING_LITERAL:
+			{
+				{
+				if (_t==null) _t=ASTNULL;
+				switch ( _t.getType()) {
+				case WITHIN:
+				{
+					AST tmp27_AST_in = (AST)_t;
+					match(_t,WITHIN);
+					_t = _t.getNextSibling();
+					obj.setWhere("within", key);
+					{
+					AST tmp28_AST_in = (AST)_t;
+					match(_t,PAST);
+					_t = _t.getNextSibling();
+					}
+					{
+					m = (AST)_t;
+					match(_t,INTLIT);
+					_t = _t.getNextSibling();
+					n = _t==ASTNULL ? null : (AST)_t;
+					duration_op(_t);
+					_t = _retTree;
+					}
+					obj.setDuration("past",m.getText(),n.getText(),key); System.err.println("Duration Clause - " + m.getText() + " " + n.getText());
+					break;
+				}
+				case COUNT:
+				case MINIMUM:
+				case MIN:
+				case MAXIMUM:
+				case MAX:
+				case LAST:
+				case FIRST:
+				case EARLIEST:
+				case LATEST:
+				case EXIST:
+				case EXISTS:
+				case AVG:
+				case AVERAGE:
+				case SUM:
+				case MEDIAN:
+				case TRUE:
+				case FALSE:
+				case OF:
+				case INTLIT:
+				case ID:
+				case ACTION_OP:
+				case STRING_LITERAL:
+				{
+					a=exprAST(_t,obj);
+					_t = _retTree;
+					AST tmp29_AST_in = (AST)_t;
+					match(_t,TO);
+					_t = _t.getNextSibling();
+					b=exprAST(_t,obj);
+					_t = _retTree;
+					break;
+				}
+				default:
+				{
+					throw new NoViableAltException(_t);
+				}
+				}
+				}
+				break;
+			}
+			case AFTER:
+			{
+				{
+				AST tmp30_AST_in = (AST)_t;
+				match(_t,AFTER);
+				_t = _t.getNextSibling();
+				}
+				{
+				i = (AST)_t;
+				match(_t,ID);
+				_t = _t.getNextSibling();
+				}
+				System.err.println("Variable = " + i.getText());
+				break;
+			}
+			default:
+			{
+				throw new NoViableAltException(_t);
+			}
+			}
+		}
+		catch (RecognitionException ex) {
+			reportError(ex);
+			if (_t!=null) {_t = _t.getNextSibling();}
+		}
+		_retTree = _t;
+		return s;
+	}
+	
+	public final void duration_op(AST _t) throws RecognitionException {
+		
+		AST duration_op_AST_in = (_t == ASTNULL) ? null : (AST)_t;
+		
+		try {      // for error handling
+			if (_t==null) _t=ASTNULL;
+			switch ( _t.getType()) {
+			case YEAR:
+			{
+				AST tmp31_AST_in = (AST)_t;
+				match(_t,YEAR);
+				_t = _t.getNextSibling();
+				break;
+			}
+			case YEARS:
+			{
+				AST tmp32_AST_in = (AST)_t;
+				match(_t,YEARS);
+				_t = _t.getNextSibling();
+				break;
+			}
+			case MONTH:
+			{
+				AST tmp33_AST_in = (AST)_t;
+				match(_t,MONTH);
+				_t = _t.getNextSibling();
+				break;
+			}
+			case MONTHS:
+			{
+				AST tmp34_AST_in = (AST)_t;
+				match(_t,MONTHS);
+				_t = _t.getNextSibling();
+				break;
+			}
+			case WEEK:
+			{
+				AST tmp35_AST_in = (AST)_t;
+				match(_t,WEEK);
+				_t = _t.getNextSibling();
+				break;
+			}
+			case WEEKS:
+			{
+				AST tmp36_AST_in = (AST)_t;
+				match(_t,WEEKS);
+				_t = _t.getNextSibling();
+				break;
+			}
+			case DAY:
+			{
+				AST tmp37_AST_in = (AST)_t;
+				match(_t,DAY);
+				_t = _t.getNextSibling();
+				break;
+			}
+			case DAYS:
+			{
+				AST tmp38_AST_in = (AST)_t;
+				match(_t,DAYS);
+				_t = _t.getNextSibling();
+				break;
+			}
+			case LITERAL_hour:
+			{
+				AST tmp39_AST_in = (AST)_t;
+				match(_t,LITERAL_hour);
+				_t = _t.getNextSibling();
+				break;
+			}
+			case LITERAL_hours:
+			{
+				AST tmp40_AST_in = (AST)_t;
+				match(_t,LITERAL_hours);
+				_t = _t.getNextSibling();
+				break;
+			}
+			case LITERAL_minute:
+			{
+				AST tmp41_AST_in = (AST)_t;
+				match(_t,LITERAL_minute);
+				_t = _t.getNextSibling();
+				break;
+			}
+			case LITERAL_minutes:
+			{
+				AST tmp42_AST_in = (AST)_t;
+				match(_t,LITERAL_minutes);
+				_t = _t.getNextSibling();
+				break;
+			}
+			case LITERAL_second:
+			{
+				AST tmp43_AST_in = (AST)_t;
+				match(_t,LITERAL_second);
+				_t = _t.getNextSibling();
+				break;
+			}
+			case LITERAL_seconds:
+			{
+				AST tmp44_AST_in = (AST)_t;
+				match(_t,LITERAL_seconds);
+				_t = _t.getNextSibling();
+				break;
+			}
+			default:
+			{
+				throw new NoViableAltException(_t);
+			}
+			}
+		}
+		catch (RecognitionException ex) {
+			reportError(ex);
+			if (_t!=null) {_t = _t.getNextSibling();}
+		}
+		_retTree = _t;
+	}
+	
+	public final String  from_of_func_opAST(AST _t,
+		MLMObject obj
+	) throws RecognitionException {
+		String s="";
+		
+		AST from_of_func_opAST_AST_in = (_t == ASTNULL) ? null : (AST)_t;
+		AST k = null;
+		AST x = null;
+		AST y = null;
+		AST z = null;
+		String a,b, ret_val="";
+		
+		try {      // for error handling
 			{
 			if (_t==null) _t=ASTNULL;
 			switch ( _t.getType()) {
-			case EQUALS:
-			case LT:
-			case GT:
-			case LTE:
-			case GTE:
+			case TRUE:
+			case FALSE:
+			case OF:
+			case INTLIT:
+			case ID:
+			case ACTION_OP:
+			case STRING_LITERAL:
 			{
-				simple_comp_opAST(_t,obj, a);
-				_t = _retTree;
-				b=exprStringAST(_t,obj, a);
-				_t = _retTree;
-				/*obj.SetAnswer(b, a);*/
 				break;
 			}
-			case 3:
+			case LAST:
+			case LATEST:
+			{
+				{
+				{
+				if (_t==null) _t=ASTNULL;
+				switch ( _t.getType()) {
+				case LAST:
+				{
+					AST tmp45_AST_in = (AST)_t;
+					match(_t,LAST);
+					_t = _t.getNextSibling();
+					break;
+				}
+				case LATEST:
+				{
+					AST tmp46_AST_in = (AST)_t;
+					match(_t,LATEST);
+					_t = _t.getNextSibling();
+					break;
+				}
+				default:
+				{
+					throw new NoViableAltException(_t);
+				}
+				}
+				}
+				{
+				if (_t==null) _t=ASTNULL;
+				if ((_t.getType()==INTLIT)) {
+					k = (AST)_t;
+					match(_t,INTLIT);
+					_t = _t.getNextSibling();
+					AST tmp47_AST_in = (AST)_t;
+					match(_t,FROM);
+					_t = _t.getNextSibling();
+				}
+				else if ((_tokenSet_5.member(_t.getType()))) {
+				}
+				else {
+					throw new NoViableAltException(_t);
+				}
+				
+				}
+				}
+				if(k != null) {
+												System.err.println("ReadType = Last " + "How many? " + k.getText());
+												}
+											 else {
+					  							 System.err.println("ReadType = Last " + "How many? 1" );	
+											 }
+											 
+											
+				break;
+			}
+			case FIRST:
+			case EARLIEST:
+			{
+				{
+				{
+				if (_t==null) _t=ASTNULL;
+				switch ( _t.getType()) {
+				case FIRST:
+				{
+					AST tmp48_AST_in = (AST)_t;
+					match(_t,FIRST);
+					_t = _t.getNextSibling();
+					break;
+				}
+				case EARLIEST:
+				{
+					AST tmp49_AST_in = (AST)_t;
+					match(_t,EARLIEST);
+					_t = _t.getNextSibling();
+					break;
+				}
+				default:
+				{
+					throw new NoViableAltException(_t);
+				}
+				}
+				}
+				{
+				if (_t==null) _t=ASTNULL;
+				if ((_t.getType()==INTLIT)) {
+					x = (AST)_t;
+					match(_t,INTLIT);
+					_t = _t.getNextSibling();
+					AST tmp50_AST_in = (AST)_t;
+					match(_t,FROM);
+					_t = _t.getNextSibling();
+				}
+				else if ((_tokenSet_5.member(_t.getType()))) {
+				}
+				else {
+					throw new NoViableAltException(_t);
+				}
+				
+				}
+				}
+				if(x != null) {
+												System.err.println("ReadType = First " + "How many? " + x.getText());
+												}
+											 else {
+					  							 System.err.println("ReadType = First " + "How many? 1" );	
+											 }
+											 
+											
+				break;
+			}
+			case MAXIMUM:
+			case MAX:
+			{
+				{
+				{
+				if (_t==null) _t=ASTNULL;
+				switch ( _t.getType()) {
+				case MAXIMUM:
+				{
+					AST tmp51_AST_in = (AST)_t;
+					match(_t,MAXIMUM);
+					_t = _t.getNextSibling();
+					break;
+				}
+				case MAX:
+				{
+					AST tmp52_AST_in = (AST)_t;
+					match(_t,MAX);
+					_t = _t.getNextSibling();
+					break;
+				}
+				default:
+				{
+					throw new NoViableAltException(_t);
+				}
+				}
+				}
+				{
+				if (_t==null) _t=ASTNULL;
+				if ((_t.getType()==INTLIT)) {
+					y = (AST)_t;
+					match(_t,INTLIT);
+					_t = _t.getNextSibling();
+					AST tmp53_AST_in = (AST)_t;
+					match(_t,FROM);
+					_t = _t.getNextSibling();
+				}
+				else if ((_tokenSet_5.member(_t.getType()))) {
+				}
+				else {
+					throw new NoViableAltException(_t);
+				}
+				
+				}
+				}
+				if(y != null) {
+												System.err.println("ReadType = Maximum " + "How many? " + y.getText());
+												}
+											 else {
+					  							 System.err.println("ReadType = Maximum " + "How many? 1" );	
+											 }
+											 
+											
+				break;
+			}
+			case MINIMUM:
+			case MIN:
+			{
+				{
+				{
+				if (_t==null) _t=ASTNULL;
+				switch ( _t.getType()) {
+				case MINIMUM:
+				{
+					AST tmp54_AST_in = (AST)_t;
+					match(_t,MINIMUM);
+					_t = _t.getNextSibling();
+					break;
+				}
+				case MIN:
+				{
+					AST tmp55_AST_in = (AST)_t;
+					match(_t,MIN);
+					_t = _t.getNextSibling();
+					break;
+				}
+				default:
+				{
+					throw new NoViableAltException(_t);
+				}
+				}
+				}
+				{
+				if (_t==null) _t=ASTNULL;
+				if ((_t.getType()==INTLIT)) {
+					z = (AST)_t;
+					match(_t,INTLIT);
+					_t = _t.getNextSibling();
+					AST tmp56_AST_in = (AST)_t;
+					match(_t,FROM);
+					_t = _t.getNextSibling();
+				}
+				else if ((_tokenSet_5.member(_t.getType()))) {
+				}
+				else {
+					throw new NoViableAltException(_t);
+				}
+				
+				}
+				}
+				if(z != null) {
+												System.err.println("ReadType = Minimum " + "How many? " + z.getText());
+												}
+											 else {
+					  							 System.err.println("ReadType = Min " + "How many? 1" );	
+											 }
+											 
+											
+				break;
+			}
+			default:
+			{
+				throw new NoViableAltException(_t);
+			}
+			}
+			}
+		}
+		catch (RecognitionException ex) {
+			reportError(ex);
+			if (_t!=null) {_t = _t.getNextSibling();}
+		}
+		_retTree = _t;
+		return s;
+	}
+	
+	public final String  of_read_func_opAST(AST _t,
+		MLMObject obj
+	) throws RecognitionException {
+		String s="";
+		
+		AST of_read_func_opAST_AST_in = (_t == ASTNULL) ? null : (AST)_t;
+		String a,b, ret_val="";
+		
+		try {      // for error handling
+			{
+			if (_t==null) _t=ASTNULL;
+			switch ( _t.getType()) {
+			case TRUE:
+			case FALSE:
+			case OF:
+			case INTLIT:
+			case ID:
+			case ACTION_OP:
+			case STRING_LITERAL:
+			{
+				break;
+			}
+			case EXIST:
+			case EXISTS:
+			{
+				{
+				{
+				if (_t==null) _t=ASTNULL;
+				switch ( _t.getType()) {
+				case EXIST:
+				{
+					AST tmp57_AST_in = (AST)_t;
+					match(_t,EXIST);
+					_t = _t.getNextSibling();
+					break;
+				}
+				case EXISTS:
+				{
+					AST tmp58_AST_in = (AST)_t;
+					match(_t,EXISTS);
+					_t = _t.getNextSibling();
+					break;
+				}
+				default:
+				{
+					throw new NoViableAltException(_t);
+				}
+				}
+				}
+				}
+				System.err.println("ReadType = Exist");
+				break;
+			}
+			case AVG:
+			case AVERAGE:
+			{
+				{
+				{
+				if (_t==null) _t=ASTNULL;
+				switch ( _t.getType()) {
+				case AVERAGE:
+				{
+					AST tmp59_AST_in = (AST)_t;
+					match(_t,AVERAGE);
+					_t = _t.getNextSibling();
+					break;
+				}
+				case AVG:
+				{
+					AST tmp60_AST_in = (AST)_t;
+					match(_t,AVG);
+					_t = _t.getNextSibling();
+					break;
+				}
+				default:
+				{
+					throw new NoViableAltException(_t);
+				}
+				}
+				}
+				}
+				System.err.println("ReadType = Average");
+				break;
+			}
+			case COUNT:
+			{
+				{
+				AST tmp61_AST_in = (AST)_t;
+				match(_t,COUNT);
+				_t = _t.getNextSibling();
+				}
+				System.err.println("ReadType = Count");
+				break;
+			}
+			case SUM:
+			{
+				{
+				AST tmp62_AST_in = (AST)_t;
+				match(_t,SUM);
+				_t = _t.getNextSibling();
+				}
+				System.err.println("ReadType = Sum");
+				break;
+			}
+			case MEDIAN:
+			{
+				{
+				AST tmp63_AST_in = (AST)_t;
+				match(_t,MEDIAN);
+				_t = _t.getNextSibling();
+				}
+				System.err.println("ReadType = Median");
+				break;
+			}
+			default:
+			{
+				throw new NoViableAltException(_t);
+			}
+			}
+			}
+		}
+		catch (RecognitionException ex) {
+			reportError(ex);
+			if (_t!=null) {_t = _t.getNextSibling();}
+		}
+		_retTree = _t;
+		return s;
+	}
+	
+/********************LOGIC***********************************/
+	public final String  logic(AST _t,
+		MLMObject obj
+	) throws RecognitionException {
+		String s="";
+		
+		AST logic_AST_in = (_t == ASTNULL) ? null : (AST)_t;
+		String a,b; Integer i = 1;
+		
+		try {      // for error handling
+			AST __t401 = _t;
+			AST tmp64_AST_in = (AST)_t;
+			match(_t,LOGIC);
+			_t = _t.getFirstChild();
+			System.err.println("\n"); System.err.println("-------Starting LOGIC--------");
+			{
+			_loop410:
+			do {
+				if (_t==null) _t=ASTNULL;
+				switch ( _t.getType()) {
+				case IF:
+				{
+					System.err.println("-----------Starting IF -------");
+					a=ifAST(_t,obj);
+					_t = _retTree;
+					{
+					if (_t==null) _t=ASTNULL;
+					switch ( _t.getType()) {
+					case TRUE:
+					case FALSE:
+					case INTLIT:
+					case ID:
+					case ACTION_OP:
+					case STRING_LITERAL:
+					{
+						System.err.println("-----------Starting Logic Assignment -------");
+						logicAssignmentAST(_t,obj, a);
+						_t = _retTree;
+						System.err.println("\n");System.err.println("-----------End logic assignment -------");
+						break;
+					}
+					case IF:
+					case CONCLUDE:
+					case ELSE:
+					case ELSEIF:
+					case ENDIF:
+					case CALL:
+					case ENDBLOCK:
+					{
+						break;
+					}
+					default:
+					{
+						throw new NoViableAltException(_t);
+					}
+					}
+					}
+					{
+					if (_t==null) _t=ASTNULL;
+					if ((_tokenSet_6.member(_t.getType()))) {
+						System.err.println("-----------Starting CONCLUDE -------");
+						{
+						if (_t==null) _t=ASTNULL;
+						if ((_t.getType()==CONCLUDE)) {
+							concludeAST(_t,obj, a);
+							_t = _retTree;
+						}
+						else if ((_tokenSet_6.member(_t.getType()))) {
+						}
+						else {
+							throw new NoViableAltException(_t);
+						}
+						
+						}
+						System.err.println("\n");System.err.println("-----------End CONCLUDE -------");
+					}
+					else if ((_tokenSet_6.member(_t.getType()))) {
+					}
+					else {
+						throw new NoViableAltException(_t);
+					}
+					
+					}
+					System.err.println("\n");System.err.println("-----------End IF -------");
+					break;
+				}
+				case ELSE:
+				case ELSEIF:
+				{
+					System.err.println("-----------Starting ELSE - ELSEIF -------");
+					a=logic_elseifAST(_t,obj, i);
+					_t = _retTree;
+					{
+					if (_t==null) _t=ASTNULL;
+					switch ( _t.getType()) {
+					case TRUE:
+					case FALSE:
+					case INTLIT:
+					case ID:
+					case ACTION_OP:
+					case STRING_LITERAL:
+					{
+						System.err.println("-----------Starting Logic Assignment -------");
+						logicAssignmentAST(_t,obj, a);
+						_t = _retTree;
+						System.err.println("\n");System.err.println("-----------End logic assignment -------");
+						break;
+					}
+					case IF:
+					case CONCLUDE:
+					case ELSE:
+					case ELSEIF:
+					case ENDIF:
+					case CALL:
+					case ENDBLOCK:
+					{
+						break;
+					}
+					default:
+					{
+						throw new NoViableAltException(_t);
+					}
+					}
+					}
+					{
+					if (_t==null) _t=ASTNULL;
+					if ((_tokenSet_6.member(_t.getType()))) {
+						System.err.println("-----------Starting CONCLUDE -------");
+						{
+						if (_t==null) _t=ASTNULL;
+						if ((_t.getType()==CONCLUDE)) {
+							concludeAST(_t,obj, a);
+							_t = _retTree;
+						}
+						else if ((_tokenSet_6.member(_t.getType()))) {
+						}
+						else {
+							throw new NoViableAltException(_t);
+						}
+						
+						}
+						System.err.println("\n");System.err.println("-----------End CONCLUDE -------");
+					}
+					else if ((_tokenSet_6.member(_t.getType()))) {
+					}
+					else {
+						throw new NoViableAltException(_t);
+					}
+					
+					}
+					System.err.println("\n");System.err.println("-----------End ELSE- ELSEIF -------");
+					break;
+				}
+				case ENDIF:
+				{
+					AST __t409 = _t;
+					AST tmp65_AST_in = (AST)_t;
+					match(_t,ENDIF);
+					_t = _t.getFirstChild();
+					System.err.println("ENDIF FOUND");a = "ENDIF"; obj.AddToEvaluateList(a);obj.SetConceptVar(a);
+					_t = __t409;
+					_t = _t.getNextSibling();
+					break;
+				}
+				case CONCLUDE:
+				{
+					System.err.println("-----------Starting CONCLUDE -------");obj.InitEvaluateList(); a = "Conclude_" + Integer.toString(i);
+					concludeAST(_t,obj, a);
+					_t = _retTree;
+					System.err.println("\n");System.err.println("-----------End CONCLUDE -------");
+					break;
+				}
+				case CALL:
+				{
+					System.err.println("-----------Starting CALL -------");obj.InitEvaluateList(); a = "" ;
+					callAST(_t,obj, a);
+					_t = _retTree;
+					System.err.println("\n");System.err.println("-----------End CALL -------");
+					i++;
+					break;
+				}
+				default:
+				{
+					break _loop410;
+				}
+				}
+			} while (true);
+			}
+			{
+			AST tmp66_AST_in = (AST)_t;
+			match(_t,ENDBLOCK);
+			_t = _t.getNextSibling();
+			}
+			System.err.println("\n");System.err.println("-----------End LOGIC -------");
+			_t = __t401;
+			_t = _t.getNextSibling();
+		}
+		catch (RecognitionException ex) {
+			reportError(ex);
+			if (_t!=null) {_t = _t.getNextSibling();}
+		}
+		_retTree = _t;
+		return s;
+	}
+	
+	public final String  ifAST(AST _t,
+		MLMObject obj
+	) throws RecognitionException {
+		String s="";
+		
+		AST ifAST_AST_in = (_t == ASTNULL) ? null : (AST)_t;
+		String a,b;
+		
+		try {      // for error handling
+			{
+			AST __t417 = _t;
+			AST tmp67_AST_in = (AST)_t;
+			match(_t,IF);
+			_t = _t.getFirstChild();
+			obj.ResetConceptVar(); obj.InitEvaluateList(); obj.AddToEvaluateList("IF");
+			s=exprAST(_t,obj);
+			_t = _retTree;
+			{
+			if (_t==null) _t=ASTNULL;
+			switch ( _t.getType()) {
+			case AND:
+			case NOT:
+			case OR:
+			{
+				{
+				if (_t==null) _t=ASTNULL;
+				switch ( _t.getType()) {
+				case OR:
+				{
+					AST tmp68_AST_in = (AST)_t;
+					match(_t,OR);
+					_t = _t.getNextSibling();
+					obj.AddToEvaluateList("OR");
+					break;
+				}
+				case AND:
+				{
+					AST tmp69_AST_in = (AST)_t;
+					match(_t,AND);
+					_t = _t.getNextSibling();
+					obj.AddToEvaluateList("AND");
+					break;
+				}
+				case NOT:
+				{
+					AST tmp70_AST_in = (AST)_t;
+					match(_t,NOT);
+					_t = _t.getNextSibling();
+					obj.AddToEvaluateList("NOT");
+					break;
+				}
+				default:
+				{
+					throw new NoViableAltException(_t);
+				}
+				}
+				}
+				s=exprAST(_t,obj);
+				_t = _retTree;
+				break;
+			}
 			case THEN:
 			{
 				break;
@@ -1134,6 +1872,248 @@ public ArdenBaseTreeParser() {
 			}
 			}
 			}
+			AST tmp71_AST_in = (AST)_t;
+			match(_t,THEN);
+			_t = _t.getNextSibling();
+			obj.AddToEvaluateList("THEN");
+			_t = __t417;
+			_t = _t.getNextSibling();
+			}
+		}
+		catch (RecognitionException ex) {
+			reportError(ex);
+			if (_t!=null) {_t = _t.getNextSibling();}
+		}
+		_retTree = _t;
+		return s;
+	}
+	
+	public final String  logicAssignmentAST(AST _t,
+		MLMObject obj, String key
+	) throws RecognitionException {
+		String s="";
+		
+		AST logicAssignmentAST_AST_in = (_t == ASTNULL) ? null : (AST)_t;
+		AST thisstrlit = null;
+		AST str1 = null;
+		String a="",b="";
+		
+		try {      // for error handling
+			a=exprStringAST(_t,obj, key);
+			_t = _retTree;
+			obj.AddToEvaluateList("Logic_Assignment");
+			{
+			if (_t==null) _t=ASTNULL;
+			switch ( _t.getType()) {
+			case STRING_LITERAL:
+			{
+				thisstrlit = (AST)_t;
+				match(_t,STRING_LITERAL);
+				_t = _t.getNextSibling();
+				b += thisstrlit.getText();
+				{
+				_loop423:
+				do {
+					if (_t==null) _t=ASTNULL;
+					if ((_t.getType()==ACTION_OP)) {
+						AST tmp72_AST_in = (AST)_t;
+						match(_t,ACTION_OP);
+						_t = _t.getNextSibling();
+						str1 = (AST)_t;
+						match(_t,STRING_LITERAL);
+						_t = _t.getNextSibling();
+						b += str1.getText();
+					}
+					else {
+						break _loop423;
+					}
+					
+				} while (true);
+				}
+				obj.SetUserVarVal(a, b, key);
+				break;
+			}
+			case IF:
+			case CONCLUDE:
+			case ELSE:
+			case ELSEIF:
+			case ENDIF:
+			case CALL:
+			case ENDBLOCK:
+			{
+				break;
+			}
+			default:
+			{
+				throw new NoViableAltException(_t);
+			}
+			}
+			}
+		}
+		catch (RecognitionException ex) {
+			reportError(ex);
+			if (_t!=null) {_t = _t.getNextSibling();}
+		}
+		_retTree = _t;
+		return s;
+	}
+	
+	public final String  concludeAST(AST _t,
+		MLMObject obj, String key
+	) throws RecognitionException {
+		String s="";
+		
+		AST concludeAST_AST_in = (_t == ASTNULL) ? null : (AST)_t;
+		String a,b;
+		
+		try {      // for error handling
+			{
+			AST __t460 = _t;
+			AST tmp73_AST_in = (AST)_t;
+			match(_t,CONCLUDE);
+			_t = _t.getFirstChild();
+			//if(key == "")
+						{
+				    			a = "Conclude";
+				    		//	key = a;
+				    			obj.SetConceptVar(key);
+				    			obj.AddConcept(key);
+				    			if(key.startsWith("Conclude_")) { // Simply Conclude
+				    				obj.AddToEvaluateList(key); 
+				    			}
+				    			else {  // Associate with the Else before
+				    				obj.AddToEvaluateList(a); 
+				    			}
+				    			if(key == "") {obj.SetDBAccess(false,key);}
+				    		}
+						
+					
+			{
+			if (_t==null) _t=ASTNULL;
+			switch ( _t.getType()) {
+			case FALSE:
+			{
+				AST tmp74_AST_in = (AST)_t;
+				match(_t,FALSE);
+				_t = _t.getNextSibling();
+				System.err.println("***CONCLUDE FALSE " );
+								obj.SetConcludeVal(false, key);
+				break;
+			}
+			case TRUE:
+			{
+				AST tmp75_AST_in = (AST)_t;
+				match(_t,TRUE);
+				_t = _t.getNextSibling();
+				System.err.println("***CONCLUDE TRUE " );
+					    			obj.SetConcludeVal(true, key);
+				break;
+			}
+			default:
+			{
+				throw new NoViableAltException(_t);
+			}
+			}
+			}
+			_t = __t460;
+			_t = _t.getNextSibling();
+			}
+		}
+		catch (RecognitionException ex) {
+			reportError(ex);
+			if (_t!=null) {_t = _t.getNextSibling();}
+		}
+		_retTree = _t;
+		return s;
+	}
+	
+	public final String  logic_elseifAST(AST _t,
+		MLMObject obj, Integer i
+	) throws RecognitionException {
+		String s="";
+		
+		AST logic_elseifAST_AST_in = (_t == ASTNULL) ? null : (AST)_t;
+		String a,b;
+		
+		try {      // for error handling
+			{
+			{
+			if (_t==null) _t=ASTNULL;
+			switch ( _t.getType()) {
+			case ELSEIF:
+			{
+				AST __t465 = _t;
+				AST tmp76_AST_in = (AST)_t;
+				match(_t,ELSEIF);
+				_t = _t.getFirstChild();
+				obj.ResetConceptVar();
+				a = "ELSEIF"; System.err.println("ELSEIF" ); 
+									        	 obj.AddToEvaluateList(a);
+									        	 obj.SetConceptVar(a);
+						
+				s=exprAST(_t,obj);
+				_t = _retTree;
+				AST tmp77_AST_in = (AST)_t;
+				match(_t,THEN);
+				_t = _t.getNextSibling();
+				obj.AddToEvaluateList("THEN");
+				_t = __t465;
+				_t = _t.getNextSibling();
+				break;
+			}
+			case ELSE:
+			{
+				AST __t466 = _t;
+				AST tmp78_AST_in = (AST)_t;
+				match(_t,ELSE);
+				_t = _t.getFirstChild();
+				obj.ResetConceptVar();
+				a = "ELSE_"; s= a+ Integer.toString(i); System.err.println("ELSE" ); 
+									        	 obj.AddToEvaluateList(s);
+									        	 obj.SetConceptVar(s);
+						
+				_t = __t466;
+				_t = _t.getNextSibling();
+				break;
+			}
+			default:
+			{
+				throw new NoViableAltException(_t);
+			}
+			}
+			}
+			}
+		}
+		catch (RecognitionException ex) {
+			reportError(ex);
+			if (_t!=null) {_t = _t.getNextSibling();}
+		}
+		_retTree = _t;
+		return s;
+	}
+	
+	public final String  callAST(AST _t,
+		MLMObject obj, String key
+	) throws RecognitionException {
+		String s="";
+		
+		AST callAST_AST_in = (_t == ASTNULL) ? null : (AST)_t;
+		String a,b;
+		
+		try {      // for error handling
+			{
+			AST __t414 = _t;
+			AST tmp79_AST_in = (AST)_t;
+			match(_t,CALL);
+			_t = _t.getFirstChild();
+			b=exprStringAST(_t,obj, key);
+			_t = _retTree;
+			obj.SetConceptVar(b);
+			a=exprStringAST(_t,obj, b);
+			_t = _retTree;
+			obj.setReadType("call"); obj.AddConcept(a);obj.SetDBAccess(false,b);
+			_t = __t414;
+			_t = _t.getNextSibling();
 			}
 		}
 		catch (RecognitionException ex) {
@@ -1155,7 +2135,7 @@ public ArdenBaseTreeParser() {
 		AST strlit = null;
 		AST id = null;
 		AST str = null;
-		String a,b;
+		String a="",b="";
 		
 		try {      // for error handling
 			{
@@ -1163,11 +2143,11 @@ public ArdenBaseTreeParser() {
 			switch ( _t.getType()) {
 			case ID:
 			{
-				AST __t375 = _t;
+				AST __t438 = _t;
 				ift = _t==ASTNULL ? null :(AST)_t;
 				match(_t,ID);
 				_t = _t.getFirstChild();
-				a = ift.getText(); System.err.println("IF text = " + a); 
+				a = ift.getText(); System.err.println("text = " + a); 
 							        if(instr.equals("")) {
 							        		obj.AddToEvaluateList(a); obj.SetConceptVar(a);
 								      //  	obj.RetrieveConcept(a); 
@@ -1177,7 +2157,7 @@ public ArdenBaseTreeParser() {
 							        }
 							        s= a;
 							
-				_t = __t375;
+				_t = __t438;
 				_t = _t.getNextSibling();
 				break;
 			}
@@ -1189,23 +2169,23 @@ public ArdenBaseTreeParser() {
 				switch ( _t.getType()) {
 				case TRUE:
 				{
-					AST __t377 = _t;
-					AST tmp51_AST_in = (AST)_t;
+					AST __t440 = _t;
+					AST tmp80_AST_in = (AST)_t;
 					match(_t,TRUE);
 					_t = _t.getFirstChild();
 					obj.SetAnswer(true, instr);
-					_t = __t377;
+					_t = __t440;
 					_t = _t.getNextSibling();
 					break;
 				}
 				case FALSE:
 				{
-					AST __t378 = _t;
-					AST tmp52_AST_in = (AST)_t;
+					AST __t441 = _t;
+					AST tmp81_AST_in = (AST)_t;
 					match(_t,FALSE);
 					_t = _t.getFirstChild();
 					obj.SetAnswer(false, instr);
-					_t = __t378;
+					_t = __t441;
 					_t = _t.getNextSibling();
 					break;
 				}
@@ -1247,15 +2227,15 @@ public ArdenBaseTreeParser() {
 			}
 			case ACTION_OP:
 			{
-				AST __t381 = _t;
-				AST tmp53_AST_in = (AST)_t;
+				AST __t444 = _t;
+				AST tmp82_AST_in = (AST)_t;
 				match(_t,ACTION_OP);
 				_t = _t.getFirstChild();
 				id = (AST)_t;
 				match(_t,ID);
 				_t = _t.getNextSibling();
 				a = id.getText();
-				AST tmp54_AST_in = (AST)_t;
+				AST tmp83_AST_in = (AST)_t;
 				match(_t,ACTION_OP);
 				_t = _t.getNextSibling();
 				str = (AST)_t;
@@ -1263,33 +2243,8 @@ public ArdenBaseTreeParser() {
 				_t = _t.getNextSibling();
 				b = str.getText(); 
 								obj.SetUserVarVal(a, b, instr);
-				_t = __t381;
+				_t = __t444;
 				_t = _t.getNextSibling();
-				break;
-			}
-			case 3:
-			case IF:
-			case THEN:
-			case CONCLUDE:
-			case ELSE:
-			case ELSEIF:
-			case ENDIF:
-			case ENDBLOCK:
-			case EQUALS:
-			case LT:
-			case GT:
-			case LTE:
-			case GTE:
-			{
-				{
-				a = "tmp_01"; System.err.println("IF text = " + a); 
-							        if(instr.equals(""))
-							        	obj.AddToEvaluateList(a); obj.SetConceptVar(a);
-							        	
-							      //  	obj.RetrieveConcept(a); 
-							        s= a;
-				
-				}
 				break;
 			}
 			default:
@@ -1320,71 +2275,71 @@ public ArdenBaseTreeParser() {
 			switch ( _t.getType()) {
 			case EQUALS:
 			{
-				AST __t384 = _t;
-				AST tmp55_AST_in = (AST)_t;
+				AST __t446 = _t;
+				AST tmp84_AST_in = (AST)_t;
 				match(_t,EQUALS);
 				_t = _t.getFirstChild();
 				
 								System.err.println("Found = ");
 								 obj.SetCompOperator(EQUALS, key);
 							
-				_t = __t384;
+				_t = __t446;
 				_t = _t.getNextSibling();
 				break;
 			}
 			case GTE:
 			{
-				AST __t385 = _t;
-				AST tmp56_AST_in = (AST)_t;
+				AST __t447 = _t;
+				AST tmp85_AST_in = (AST)_t;
 				match(_t,GTE);
 				_t = _t.getFirstChild();
 				
 								System.err.println("Found >= ");
 								 obj.SetCompOperator(GTE, key);
 							
-				_t = __t385;
+				_t = __t447;
 				_t = _t.getNextSibling();
 				break;
 			}
 			case GT:
 			{
-				AST __t386 = _t;
-				AST tmp57_AST_in = (AST)_t;
+				AST __t448 = _t;
+				AST tmp86_AST_in = (AST)_t;
 				match(_t,GT);
 				_t = _t.getFirstChild();
 				
 								System.err.println("Found > ");
 								 obj.SetCompOperator(GT, key);
 							
-				_t = __t386;
+				_t = __t448;
 				_t = _t.getNextSibling();
 				break;
 			}
 			case LT:
 			{
-				AST __t387 = _t;
-				AST tmp58_AST_in = (AST)_t;
+				AST __t449 = _t;
+				AST tmp87_AST_in = (AST)_t;
 				match(_t,LT);
 				_t = _t.getFirstChild();
 				
 								System.err.println("Found < ");
 								 obj.SetCompOperator(LT, key);
 							
-				_t = __t387;
+				_t = __t449;
 				_t = _t.getNextSibling();
 				break;
 			}
 			case LTE:
 			{
-				AST __t388 = _t;
-				AST tmp59_AST_in = (AST)_t;
+				AST __t450 = _t;
+				AST tmp88_AST_in = (AST)_t;
 				match(_t,LTE);
 				_t = _t.getFirstChild();
 				
 								System.err.println("Found <= ");
 								 obj.SetCompOperator(LTE, key);
 							
-				_t = __t388;
+				_t = __t450;
 				_t = _t.getNextSibling();
 				break;
 			}
@@ -1392,6 +2347,222 @@ public ArdenBaseTreeParser() {
 			{
 				throw new NoViableAltException(_t);
 			}
+			}
+		}
+		catch (RecognitionException ex) {
+			reportError(ex);
+			if (_t!=null) {_t = _t.getNextSibling();}
+		}
+		_retTree = _t;
+		return s;
+	}
+	
+	public final String  binary_comp_opAST(AST _t,
+		MLMObject obj, String key
+	) throws RecognitionException {
+		String s="";
+		
+		AST binary_comp_opAST_AST_in = (_t == ASTNULL) ? null : (AST)_t;
+		String a,b;
+		
+		try {      // for error handling
+			if (_t==null) _t=ASTNULL;
+			switch ( _t.getType()) {
+			case EQUALS:
+			{
+				AST __t452 = _t;
+				AST tmp89_AST_in = (AST)_t;
+				match(_t,EQUALS);
+				_t = _t.getFirstChild();
+				
+								System.err.println("Found = ");
+								 obj.SetCompOperator(EQUALS, key);
+							
+				_t = __t452;
+				_t = _t.getNextSibling();
+				break;
+			}
+			case GREATER:
+			{
+				AST __t453 = _t;
+				AST tmp90_AST_in = (AST)_t;
+				match(_t,GREATER);
+				_t = _t.getFirstChild();
+				AST tmp91_AST_in = (AST)_t;
+				match(_t,THAN);
+				_t = _t.getNextSibling();
+				
+								System.err.println("Found > ");
+								 obj.SetCompOperator(GT, key);
+							
+				{
+				if (_t==null) _t=ASTNULL;
+				switch ( _t.getType()) {
+				case OR:
+				{
+					AST tmp92_AST_in = (AST)_t;
+					match(_t,OR);
+					_t = _t.getNextSibling();
+					AST tmp93_AST_in = (AST)_t;
+					match(_t,EQUAL);
+					_t = _t.getNextSibling();
+					break;
+				}
+				case 3:
+				{
+					break;
+				}
+				default:
+				{
+					throw new NoViableAltException(_t);
+				}
+				}
+				}
+				
+							    System.err.println("Found >= ");
+								 obj.SetCompOperator(GTE, key);
+							
+				_t = __t453;
+				_t = _t.getNextSibling();
+				break;
+			}
+			case IN:
+			{
+				AST __t457 = _t;
+				AST tmp94_AST_in = (AST)_t;
+				match(_t,IN);
+				_t = _t.getFirstChild();
+				
+								System.err.println("Found IN ");
+								 obj.SetCompOperator(IN, key);
+							
+				_t = __t457;
+				_t = _t.getNextSibling();
+				break;
+			}
+			default:
+				if (_t==null) _t=ASTNULL;
+				if ((_t.getType()==LESS)) {
+					AST __t455 = _t;
+					AST tmp95_AST_in = (AST)_t;
+					match(_t,LESS);
+					_t = _t.getFirstChild();
+					AST tmp96_AST_in = (AST)_t;
+					match(_t,THAN);
+					_t = _t.getNextSibling();
+					
+									System.err.println("Found < ");
+									 obj.SetCompOperator(LT, key);
+								
+					_t = __t455;
+					_t = _t.getNextSibling();
+				}
+				else if ((_t.getType()==LESS)) {
+					AST __t456 = _t;
+					AST tmp97_AST_in = (AST)_t;
+					match(_t,LESS);
+					_t = _t.getFirstChild();
+					AST tmp98_AST_in = (AST)_t;
+					match(_t,THAN);
+					_t = _t.getNextSibling();
+					AST tmp99_AST_in = (AST)_t;
+					match(_t,OR);
+					_t = _t.getNextSibling();
+					AST tmp100_AST_in = (AST)_t;
+					match(_t,EQUAL);
+					_t = _t.getNextSibling();
+					
+									System.err.println("Found <= ");
+									 obj.SetCompOperator(LTE, key);
+								
+					_t = __t456;
+					_t = _t.getNextSibling();
+				}
+			else {
+				throw new NoViableAltException(_t);
+			}
+			}
+		}
+		catch (RecognitionException ex) {
+			reportError(ex);
+			if (_t!=null) {_t = _t.getNextSibling();}
+		}
+		_retTree = _t;
+		return s;
+	}
+	
+	public final String  expr_functionAST(AST _t,
+		MLMObject obj
+	) throws RecognitionException {
+		String s="";
+		
+		AST expr_functionAST_AST_in = (_t == ASTNULL) ? null : (AST)_t;
+		
+		try {      // for error handling
+			{
+			if (_t==null) _t=ASTNULL;
+			if ((_tokenSet_7.member(_t.getType()))) {
+				from_of_func_opAST(_t,obj);
+				_t = _retTree;
+				{
+				if (_t==null) _t=ASTNULL;
+				switch ( _t.getType()) {
+				case OF:
+				{
+					AST tmp101_AST_in = (AST)_t;
+					match(_t,OF);
+					_t = _t.getNextSibling();
+					break;
+				}
+				case TRUE:
+				case FALSE:
+				case INTLIT:
+				case ID:
+				case ACTION_OP:
+				case STRING_LITERAL:
+				{
+					break;
+				}
+				default:
+				{
+					throw new NoViableAltException(_t);
+				}
+				}
+				}
+			}
+			else if ((_tokenSet_8.member(_t.getType()))) {
+				of_read_func_opAST(_t,obj);
+				_t = _retTree;
+				{
+				if (_t==null) _t=ASTNULL;
+				switch ( _t.getType()) {
+				case OF:
+				{
+					AST tmp102_AST_in = (AST)_t;
+					match(_t,OF);
+					_t = _t.getNextSibling();
+					break;
+				}
+				case TRUE:
+				case FALSE:
+				case INTLIT:
+				case ID:
+				case ACTION_OP:
+				case STRING_LITERAL:
+				{
+					break;
+				}
+				default:
+				{
+					throw new NoViableAltException(_t);
+				}
+				}
+				}
+			}
+			else {
+				throw new NoViableAltException(_t);
+			}
+			
 			}
 		}
 		catch (RecognitionException ex) {
@@ -1412,13 +2583,13 @@ public ArdenBaseTreeParser() {
 		String a,b;
 		
 		try {      // for error handling
-			AST __t400 = _t;
-			AST tmp60_AST_in = (AST)_t;
+			AST __t468 = _t;
+			AST tmp103_AST_in = (AST)_t;
 			match(_t,ACTION);
 			_t = _t.getFirstChild();
 			System.err.println("\n"); System.err.println("-------Starting Action--------");
 			{
-			_loop402:
+			_loop470:
 			do {
 				if (_t==null) _t=ASTNULL;
 				if ((_t.getType()==WRITE)) {
@@ -1428,18 +2599,18 @@ public ArdenBaseTreeParser() {
 					System.err.println("\n");System.err.println("-----------End Write -------");
 				}
 				else {
-					break _loop402;
+					break _loop470;
 				}
 				
 			} while (true);
 			}
 			{
-			AST tmp61_AST_in = (AST)_t;
+			AST tmp104_AST_in = (AST)_t;
 			match(_t,ENDBLOCK);
 			_t = _t.getNextSibling();
 			}
 			System.err.println("\n");System.err.println("-----------End Action -------");
-			_t = __t400;
+			_t = __t468;
 			_t = _t.getNextSibling();
 		}
 		catch (RecognitionException ex) {
@@ -1462,19 +2633,19 @@ public ArdenBaseTreeParser() {
 		
 		try {      // for error handling
 			{
-			AST __t406 = _t;
-			AST tmp62_AST_in = (AST)_t;
+			AST __t474 = _t;
+			AST tmp105_AST_in = (AST)_t;
 			match(_t,WRITE);
 			_t = _t.getFirstChild();
 			{
-			_loop410:
+			_loop478:
 			do {
 				if (_t==null) _t=ASTNULL;
 				switch ( _t.getType()) {
 				case ACTION_OP:
 				{
 					{
-					AST tmp63_AST_in = (AST)_t;
+					AST tmp106_AST_in = (AST)_t;
 					match(_t,ACTION_OP);
 					_t = _t.getNextSibling();
 					id = (AST)_t;
@@ -1484,7 +2655,7 @@ public ArdenBaseTreeParser() {
 												//b= obj.getUserVarVal(a);
 												b = "||" + a + "||";
 												s += b;
-					AST tmp64_AST_in = (AST)_t;
+					AST tmp107_AST_in = (AST)_t;
 					match(_t,ACTION_OP);
 					_t = _t.getNextSibling();
 					}
@@ -1502,40 +2673,13 @@ public ArdenBaseTreeParser() {
 				}
 				default:
 				{
-					break _loop410;
+					break _loop478;
 				}
 				}
 			} while (true);
 			}
-			_t = __t406;
+			_t = __t474;
 			_t = _t.getNextSibling();
-			}
-		}
-		catch (RecognitionException ex) {
-			reportError(ex);
-			if (_t!=null) {_t = _t.getNextSibling();}
-		}
-		_retTree = _t;
-		return s;
-	}
-	
-	public final String  actionExprAST(AST _t,
-		MLMObject obj
-	) throws RecognitionException {
-		String s="";
-		
-		AST actionExprAST_AST_in = (_t == ASTNULL) ? null : (AST)_t;
-		AST id = null;
-		String a,b;
-		
-		try {      // for error handling
-			{
-			{
-			id = (AST)_t;
-			match(_t,ID);
-			_t = _t.getNextSibling();
-			a = id.getText(); s= obj.getUserVarVal(a);
-			}
 			}
 		}
 		catch (RecognitionException ex) {
@@ -1556,52 +2700,52 @@ public ArdenBaseTreeParser() {
 		
 		try {      // for error handling
 			{
-			AST __t416 = _t;
-			AST tmp65_AST_in = (AST)_t;
+			AST __t481 = _t;
+			AST tmp108_AST_in = (AST)_t;
 			match(_t,MAINTENANCE);
 			_t = _t.getFirstChild();
 			{
-			_loop421:
+			_loop486:
 			do {
 				if (_t==null) _t=ASTNULL;
 				if (((_t.getType() >= AND && _t.getType() <= STRING_LITERAL))) {
 					{
 					if (_t==null) _t=ASTNULL;
 					if ((_t.getType()==FILENAME)) {
-						AST __t419 = _t;
-						AST tmp66_AST_in = (AST)_t;
+						AST __t484 = _t;
+						AST tmp109_AST_in = (AST)_t;
 						match(_t,FILENAME);
 						_t = _t.getFirstChild();
-						AST tmp67_AST_in = (AST)_t;
+						AST tmp110_AST_in = (AST)_t;
 						match(_t,COLON);
 						_t = _t.getNextSibling();
 						s += " Filename: ";
 						b=textAST(_t,obj);
 						_t = _retTree;
 						obj.setClassName(b); s += b; s += "\n";
-						_t = __t419;
+						_t = __t484;
 						_t = _t.getNextSibling();
 					}
 					else if ((_t.getType()==MLMNAME)) {
-						AST __t420 = _t;
-						AST tmp68_AST_in = (AST)_t;
+						AST __t485 = _t;
+						AST tmp111_AST_in = (AST)_t;
 						match(_t,MLMNAME);
 						_t = _t.getFirstChild();
-						AST tmp69_AST_in = (AST)_t;
+						AST tmp112_AST_in = (AST)_t;
 						match(_t,COLON);
 						_t = _t.getNextSibling();
 						s += " Filename: ";
 						b=textAST(_t,obj);
 						_t = _retTree;
 						obj.setClassName(b); s += b; s += "\n";
-						_t = __t420;
+						_t = __t485;
 						_t = _t.getNextSibling();
 					}
 					else if (((_t.getType() >= AND && _t.getType() <= STRING_LITERAL))) {
 						a=textAST(_t,obj);
 						_t = _retTree;
 						s += a;
-						AST tmp70_AST_in = (AST)_t;
+						AST tmp113_AST_in = (AST)_t;
 						match(_t,ENDBLOCK);
 						_t = _t.getNextSibling();
 						s += "\n";
@@ -1613,12 +2757,12 @@ public ArdenBaseTreeParser() {
 					}
 				}
 				else {
-					break _loop421;
+					break _loop486;
 				}
 				
 			} while (true);
 			}
-			_t = __t416;
+			_t = __t481;
 			_t = _t.getNextSibling();
 			}
 		}
@@ -1643,19 +2787,19 @@ public ArdenBaseTreeParser() {
 			{
 			{
 			{
-			_loop427:
+			_loop492:
 			do {
 				if (_t==null) _t=ASTNULL;
-				if ((_tokenSet_3.member(_t.getType()))) {
+				if ((_tokenSet_9.member(_t.getType()))) {
 					{
 					str = (AST)_t;
-					match(_t,_tokenSet_3);
+					match(_t,_tokenSet_9);
 					_t = _t.getNextSibling();
 					}
 					a = " " + str.getText();s += a; /*System.err.println(s);*/
 				}
 				else {
-					break _loop427;
+					break _loop492;
 				}
 				
 			} while (true);
@@ -1681,30 +2825,30 @@ public ArdenBaseTreeParser() {
 		
 		try {      // for error handling
 			{
-			AST __t430 = _t;
-			AST tmp71_AST_in = (AST)_t;
+			AST __t495 = _t;
+			AST tmp114_AST_in = (AST)_t;
 			match(_t,LIBRARY);
 			_t = _t.getFirstChild();
 			{
-			_loop432:
+			_loop497:
 			do {
 				if (_t==null) _t=ASTNULL;
 				if (((_t.getType() >= AND && _t.getType() <= STRING_LITERAL))) {
 					a=textAST(_t,obj);
 					_t = _retTree;
 					s += a;
-					AST tmp72_AST_in = (AST)_t;
+					AST tmp115_AST_in = (AST)_t;
 					match(_t,ENDBLOCK);
 					_t = _t.getNextSibling();
 					s += "\n";
 				}
 				else {
-					break _loop432;
+					break _loop497;
 				}
 				
 			} while (true);
 			}
-			_t = __t430;
+			_t = __t495;
 			_t = _t.getNextSibling();
 			}
 		}
@@ -1731,6 +2875,7 @@ public ArdenBaseTreeParser() {
 		"\"count\"",
 		"\"in\"",
 		"\"less\"",
+		"\"greater\"",
 		"\"the\"",
 		"\"than\"",
 		"\"from\"",
@@ -1790,6 +2935,9 @@ public ArdenBaseTreeParser() {
 		"\"of\"",
 		"\"time\"",
 		"\"within\"",
+		"\"call\"",
+		"\"with\"",
+		"\"to\"",
 		"\"end\"",
 		"COLON",
 		"\"knowledge\"",
@@ -1851,8 +2999,7 @@ public ArdenBaseTreeParser() {
 		"\"STRING\"",
 		"\"LIST\"",
 		"\"OBJECT\"",
-		"\"GREATER\"",
-		"\"EQUAL\"",
+		"EQUAL",
 		"\"hour\"",
 		"\"hours\"",
 		"\"minute\"",
@@ -1895,27 +3042,57 @@ public ArdenBaseTreeParser() {
 	};
 	
 	private static final long[] mk_tokenSet_0() {
-		long[] data = { 67582577417913344L, 1152921508901814272L, 0L, 0L};
+		long[] data = { 7052694182476907520L, 68723671040L, 1L, 0L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_0 = new BitSet(mk_tokenSet_0());
 	private static final long[] mk_tokenSet_1() {
-		long[] data = { 1080863910636027904L, 4096L, 0L, 0L};
+		long[] data = { 6917529027641081856L, 68723671040L, 282574488338432L, 0L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_1 = new BitSet(mk_tokenSet_1());
 	private static final long[] mk_tokenSet_2() {
-		long[] data = { 4539628424456568832L, 4295233536L, 35321811042304L, 0L, 0L, 0L};
+		long[] data = { 0L, 0L, 91536490496L, 0L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_2 = new BitSet(mk_tokenSet_2());
 	private static final long[] mk_tokenSet_3() {
-		long[] data = new long[8];
-		data[0]=-16L;
-		data[1]=-4097L;
-		data[2]=70368744177663L;
+		long[] data = { 14336L, 0L, 268435456L, 0L, 0L, 0L};
 		return data;
 	}
 	public static final BitSet _tokenSet_3 = new BitSet(mk_tokenSet_3());
+	private static final long[] mk_tokenSet_4() {
+		long[] data = { 7052694173886972928L, 68723671104L, 282574488338432L, 0L, 0L, 0L};
+		return data;
+	}
+	public static final BitSet _tokenSet_4 = new BitSet(mk_tokenSet_4());
+	private static final long[] mk_tokenSet_5() {
+		long[] data = { 6917529027641081856L, 68723671104L, 282574488338432L, 0L, 0L, 0L};
+		return data;
+	}
+	public static final BitSet _tokenSet_5 = new BitSet(mk_tokenSet_5());
+	private static final long[] mk_tokenSet_6() {
+		long[] data = { 2161727821272055808L, 66048L, 0L, 0L};
+		return data;
+	}
+	public static final BitSet _tokenSet_6 = new BitSet(mk_tokenSet_6());
+	private static final long[] mk_tokenSet_7() {
+		long[] data = { 6917533408507723776L, 68723671104L, 282574488338432L, 0L, 0L, 0L};
+		return data;
+	}
+	public static final BitSet _tokenSet_7 = new BitSet(mk_tokenSet_7());
+	private static final long[] mk_tokenSet_8() {
+		long[] data = { 7052689793020331008L, 68723671104L, 282574488338432L, 0L, 0L, 0L};
+		return data;
+	}
+	public static final BitSet _tokenSet_8 = new BitSet(mk_tokenSet_8());
+	private static final long[] mk_tokenSet_9() {
+		long[] data = new long[8];
+		data[0]=-16L;
+		data[1]=-65537L;
+		data[2]=562949953421311L;
+		return data;
+	}
+	public static final BitSet _tokenSet_9 = new BitSet(mk_tokenSet_9());
 	}
 	
