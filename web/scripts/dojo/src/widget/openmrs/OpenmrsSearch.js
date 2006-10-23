@@ -166,7 +166,7 @@ dojo.widget.defineWidget(
 			while (this.headerRow.hasChildNodes())
 				this.headerRow.removeChild(this.headerRow.firstChild);
 			for( var i=0; i < arr.length; i++) {
-				var td = document.createElement("td");
+				var td = document.createElement("th");
 				td.innerHTML = arr[i];
 				this.headerRow.appendChild(td);
 			}
@@ -236,11 +236,13 @@ dojo.widget.defineWidget(
 		
 			if (((this.key >= 48 && this.key <= 90) || (this.key >= 96 && this.key <= 111) ) ||
 				this.key == dojo.event.browser.keys.KEY_BACKSPACE || this.key == dojo.event.browser.keys.KEY_SPACE || 
+				this.key == 189 || 
 				this.key == dojo.event.browser.keys.KEY_DELETE || this.key == 1) {
 					//	 (if alphanumeric key entered or 
 					//   backspace key pressed or
 					//   spacebar pressed or 
 					//   delete key pressed or
+					//   hyphen key pressed or
 					//   mouse event)"
 					if (!this.text.match(/\d/) || this.allowAutoListWithNumber()) {
 					

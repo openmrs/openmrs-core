@@ -10,6 +10,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
+import org.apache.velocity.app.event.EventCartridge;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.Drug;
@@ -76,6 +77,11 @@ public class FormXmlTemplateBuilder {
 			velocityContext.put("date", new SimpleDateFormat("yyyyMMdd"));
 			velocityContext.put("time", new SimpleDateFormat("HH:mm:ss"));
 		}
+		
+		// adding the error handler for velocity
+		EventCartridge ec = new EventCartridge();
+		ec.addEventHandler(new VelocityExceptionHandler());
+		velocityContext.attachEventCartridge(ec);
 
 		String template = null;
 		try {

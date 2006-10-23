@@ -205,8 +205,9 @@ a:hover {
 	width: 100%;
 }
 
-#patientTable thead th {
+thead th {
 	text-align: left;
+	font-weight: bold;
 }
 
 #patientSummary { font-size: 1.1em; }

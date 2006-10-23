@@ -18,6 +18,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
+import org.apache.velocity.app.event.EventCartridge;
 import org.openmrs.Form;
 import org.openmrs.Patient;
 import org.openmrs.User;
@@ -89,6 +90,11 @@ public class FormDownloadServlet extends HttpServlet {
 		velocityContext.put("date", new SimpleDateFormat("yyyyMMdd"));
 		velocityContext.put("time", new SimpleDateFormat("HH:mm:ss"));
 		velocityContext.put("sessionId", httpSession.getId());
+		
+		// add the error handler
+		EventCartridge ec = new EventCartridge();
+		ec.addEventHandler(new VelocityExceptionHandler());
+		velocityContext.attachEventCartridge(ec);
 
 		String template = form.getTemplate();
 		// just in case template has not been assigned, generate it on the fly
