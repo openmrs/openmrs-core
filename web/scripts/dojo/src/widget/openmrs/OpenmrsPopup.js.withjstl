@@ -59,7 +59,7 @@ dojo.widget.defineWidget(
 				this.changeButton.style.display = "none";
 		},
 		
-		templateString: '<span id="${this.widgetId}"><span style="white-space: nowrap"><span dojoAttachPoint="displayNode"></span> <input type="hidden" value="" dojoAttachPoint="hiddenInputNode" /><input type="button" value="<spring:message code="general.change" />" dojoAttachPoint="changeButton" class="smallButton" /></span><div class="description" dojoAttachPoint="descriptionDisplayNode"></div> </span>',
+		templateString: '<span id="${this.widgetId}"><span style="white-space: nowrap"><span dojoAttachPoint="displayNode"></span> <input type="hidden" value="" dojoAttachPoint="hiddenInputNode" /><input type="button" value="<spring:message code="general.select" />" dojoAttachPoint="changeButton" class="smallButton" /></span><div class="description" dojoAttachPoint="descriptionDisplayNode"></div> </span>',
 		templateCssPath: "",
 		
 		postCreate: function(){
@@ -91,6 +91,7 @@ dojo.widget.defineWidget(
 				
 				dojo.event.connect(this.searchWidget, "select", this, "doSelect"); 
 				dojo.event.connect(this.searchWidget, "doObjectsFound", this, "doObjectsFound"); 
+				dojo.event.connect(this.searchWidget, "select", this, "setChangeButtonValue"); 
 				
 				this.searchWidget.inputNode.style.width="190px";
 				
@@ -105,10 +106,8 @@ dojo.widget.defineWidget(
 			if (this.hiddenInputId)
 				this.hiddenInputNode.id = this.hiddenInputId;	
 			
-			if (this.changeButtonValue) {
+			if (this.changeButtonValue != '') {
 				this.changeButton.value = this.changeButtonValue;
-			} else {
-				this.setChangeButtonValue();			
 			}
 			
 			if (!this.showChangeButton)
@@ -159,14 +158,14 @@ dojo.widget.defineWidget(
 		
 		closeSearch: function() {
 			this.searchWidget.hide();
-			this.setChangeButtonValue();
 			this.changeButton.focus();
 		},
 		
-		setChangeButtonValue: function() {
-			if ( !this.changeButtonValue ) {
-				if ( this.hiddenInputNode.value == "" ) this.changeButton.value = "<spring:message code="general.select" />";
-				else this.changeButton.value="<spring:message code="general.change" />";
+		setChangeButtonValue: function(objs) {
+			if ( this.changeButtonValue == '' ) {
+				//if ( this.hiddenInputNode.value == "" ) this.changeButton.value = "<spring:message code="general.select" />";
+				//else this.changeButton.value="<spring:message code="general.change" />";
+				this.changeButton.value="<spring:message code="general.change" />";
 			}
 		}
 	},
