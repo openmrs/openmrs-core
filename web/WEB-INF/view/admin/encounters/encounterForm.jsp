@@ -18,12 +18,14 @@
 	var userPopup;
 	var pSearch;
 	var patPopup;
+	var saveEncounterButton;
 	
 	dojo.addOnLoad( function() {
 		uSearch = dojo.widget.manager.getWidgetById("uSearch");
 		userPopup = dojo.widget.manager.getWidgetById("uSelection");
 		patPopup = dojo.widget.manager.getWidgetById("pSelection");
 		pSearch = dojo.widget.manager.getWidgetById("pSearch");
+		saveEncounterButton = document.getElementById("saveEncounterButton");
 		
 		dojo.event.topic.subscribe("uSearch/select", 
 			function(msg) {
@@ -31,9 +33,13 @@
 					var user = msg.objs[0];
 					userPopup.displayNode.innerHTML = '<a id="providerName" href="#View Provider" onclick="return gotoUser(null, ' + user.userId + ')">' + (user.firstName ? user.firstName : '') + ' ' + (user.middleName ? user.middleName : '') + ' ' + (user.lastName ? user.lastName : '') + '</a>';
 					userPopup.hiddenInputNode.value = user.userId;
+					if (patPopup.hiddenInputNode.value != "")
+						saveEncounterButton.disabled = false;
 				}
 			}
 		);
+		
+		pSearch.showHeaderRow = false;
 		
 		pSearch.getCellFunctions = function() {
 			return [this.simpleClosure(pSearch, "getNumber"), 
@@ -50,6 +56,8 @@
 					var patient = msg.objs[0];
 					patPopup.displayNode.innerHTML = '<a id="patientName" href="#View Patient" onclick="return gotoPatient(null, ' + patient.patientId + ')">' + patient.givenName + ' ' + patient.middleName + ' ' + patient.familyName + '</a>';
 					patPopup.hiddenInputNode.value = patient.patientId;
+					if (userPopup.hiddenInputNode.value != "")
+						saveEncounterButton.disabled = false;
 				}
 			}
 		);
@@ -316,7 +324,7 @@
 	</table>
 	
 	<input type="hidden" name="phrase" value='<request:parameter name="phrase" />'/>
-	<input type="submit" value='<spring:message code="Encounter.save"/>'>
+	<input type="submit" id="saveEncounterButton" value='<spring:message code="Encounter.save"/>' disabled>
 	&nbsp;
 	<input type="button" value='<spring:message code="general.cancel"/>' onclick="history.go(-1); return; document.location='index.htm?autoJump=false&phrase=<request:parameter name="phrase"/>'">
 	</form>
