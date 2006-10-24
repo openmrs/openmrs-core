@@ -4,7 +4,7 @@
 <%@ page import="org.openmrs.api.APIAuthenticationException" %>
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<%@ include file="/WEB-INF/template/header.jsp" %>
+<%@ include file="/WEB-INF/template/headerMinimal.jsp" %>
 
 &nbsp;<br />
 
@@ -92,4 +92,4 @@ try {
 %>
 	</div> <!-- close stack trace box -->
 
-<%@ include file="/WEB-INF/template/footer.jsp" %>
+<%@ include file="/WEB-INF/template/footerMinimal.jsp" %>

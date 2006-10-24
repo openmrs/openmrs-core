@@ -12,6 +12,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.StaleObjectStateException;
 import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Expression;
@@ -153,17 +154,23 @@ public class HibernateConceptDAO implements
 		if (concept.getConceptId() == null)
 			createConcept(concept);
 		else {
-				modifyCollections(concept);
+			modifyCollections(concept);
+			try {
 				sessionFactory.getCurrentSession().update(concept);
-			/*
-				catch (StaleObjectStateException sose) {
-				HibernateUtil.beginTransaction();
-				Query query = session.createQuery("insert into ConceptNumeric (conceptId) select c.conceptId from Concept c where c.conceptId = :id)");
+				// force saving the concept now (not at end of session)
+				sessionFactory.getCurrentSession().flush();
+				log.error("after updating concept");
+			}
+			catch (StaleObjectStateException sose) {
+				log.error("after error");
+				sessionFactory.getCurrentSession().clear();
+				Query query = sessionFactory.getCurrentSession().createQuery("insert into ConceptNumeric (conceptId) select c.conceptId from Concept c where c.conceptId = :id)");
 					query.setInteger("id", concept.getConceptId());
 					query.executeUpdate();
-				session.update(concept);
-				}
-				*/
+				sessionFactory.getCurrentSession().merge(concept);
+				log.error("after error after updating concept");
+			}
+			
 			Context.getAdministrationService().updateConceptWord(concept);
 		}
 	}
