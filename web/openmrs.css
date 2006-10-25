@@ -930,3 +930,8 @@ th.smallHeader {
 .batchEntrySavedMessage {
 	color: green;
 }
+
+.patientRegimenDrugName {
+	font-weight: bold;
+	font-size: 1.1em;
+}

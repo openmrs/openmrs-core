@@ -22,6 +22,7 @@ dojo.widget.defineWidget(
 		includeDrugConcepts: false,
 		allowConceptEdit: true,
 		showConceptIds: false,
+		showAnswers: "",
 		
 		searchPhrase: "",
 		conceptId: "",
@@ -39,13 +40,23 @@ dojo.widget.defineWidget(
 			
 			this.inputNode.value = this.searchPhrase;
 			if (this.searchPhrase) {
-				DWRConceptService.findConcepts(this.simpleClosure(this, "doObjectsFound"), this.searchPhrase, false, this.includeClasses, this.excludeClasses, this.includeDatatypes, this.excludeDatatypes, this.includeDrugConcepts);
+				if ( this.showAnswers != "" ) {
+					DWRConceptService.findConceptAnswers(this.simpleClosure(this, "doObjectsFound"), this.searchPhrase, this.showAnswers, false, this.includeDrugConcepts);
+				} else {
+					DWRConceptService.findConcepts(this.simpleClosure(this, "doObjectsFound"), this.searchPhrase, false, this.includeClasses, this.excludeClasses, this.includeDatatypes, this.excludeDatatypes, this.includeDrugConcepts);
+				}
 			}
 		},
 		
 		doFindObjects: function(text) {
 			var tmpIncludedRetired = (this.showIncludeRetired && this.includeRetired.checked);
-			DWRConceptService.findConcepts(this.simpleClosure(this, "doObjectsFound"), text, tmpIncludedRetired, this.includeClasses, this.excludeClasses, this.includeDatatypes, this.excludeDatatypes, this.includeDrugConcepts);
+				if ( this.showAnswers != "" ) {
+					DWRConceptService.findConceptAnswers(this.simpleClosure(this, "doObjectsFound"), this.searchPhrase, this.showAnswers, false, this.includeDrugConcepts);
+				} else {
+					DWRConceptService.findConcepts(this.simpleClosure(this, "doObjectsFound"), this.searchPhrase, false, this.includeClasses, this.excludeClasses, this.includeDatatypes, this.excludeDatatypes, this.includeDrugConcepts);
+				}
+			
+			//DWRConceptService.findConcepts(this.simpleClosure(this, "doObjectsFound"), text, tmpIncludedRetired, this.includeClasses, this.excludeClasses, this.includeDatatypes, this.excludeDatatypes, this.includeDrugConcepts);
 			
 			return false;
 		},

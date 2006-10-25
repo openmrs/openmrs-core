@@ -1058,6 +1058,379 @@ delimiter ;
 call diff_procedure('1.0.43');
 
 
+#--------------------------------------
+# OpenMRS Datamodel version 1.0.44
+# Christian Allen 	Oct 22, 2006 12:00 PM
+# Changing patient table - cause_of_death now foreign keys to a concept
+#--------------------------------------
+
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+	DECLARE _cause_id int(11);
+	DECLARE _none_id int(11);
+	DECLARE _other_id int(11);
+	DECLARE _user_id int(11);
+	DECLARE _location_id int(11);
+
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+	SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+
+#-- START YOUR QUERY(IES) HERE --#
+
+	SET _cause_id = 0;
+	SET _none_id = 0;
+	SET _other_id = 0;
+	SET _user_id = 0;
+	SET _location_id = 1;
+
+	# get a user for us to make inserts with
+	SET _user_id = (SELECT user_id FROM users LIMIT 1);
+
+	# try to get unknown location - otherwise stick with 1
+	IF ( SELECT count(*) > 0 FROM location WHERE lower(name) LIKE '%unknown%' ) THEN
+		SET _location_id = (SELECT location_id FROM location WHERE lower(name) LIKE '%unknown%' LIMIT 1);
+	END IF;
+
+	# get concept_id for CAUSE_OF_DEATH - if it's not here, then create it
+	IF( SELECT count(*) > 0 FROM concept_name WHERE lower(name) = 'cause of death' ) THEN
+		SET _cause_id = (SELECT concept_id FROM concept_name WHERE lower(name) = 'cause of death' LIMIT 1);
+	ELSE
+		INSERT INTO concept(retired, short_name, description, form_text, datatype_id, class_id, is_set, creator, date_created, default_charge, version, changed_by, date_changed)
+			VALUES(0, '', '', null, 2, 7, 0, _user_id, now(), null, '', _user_id, now());
+		SET _cause_id = LAST_INSERT_ID();
+		INSERT INTO concept_name(concept_id, name, short_name, description, locale, creator, date_created)
+			VALUES(_cause_id, 'CAUSE OF DEATH', '', 'Describes a cause of death for a patient.  Coded answer.', 'en', _user_id, now());
+		INSERT INTO concept_word(concept_id, word, synonym, locale) VALUES(_cause_id, 'CAUSE', '', 'en');
+		INSERT INTO concept_word(concept_id, word, synonym, locale) VALUES(_cause_id, 'DEATH', '', 'en');
+	END IF;
+	
+	# get concept_id for coded answer OTHER NON-CODED - if it's not here, then create it
+	IF( SELECT count(*) > 0 FROM concept_name WHERE lower(name) = 'other non-coded' ) THEN
+		SET _other_id = (SELECT concept_id FROM concept_name WHERE lower(name) = 'other non-coded' LIMIT 1);
+	ELSE
+		INSERT INTO concept(retired, short_name, description, form_text, datatype_id, class_id, is_set, creator, date_created, default_charge, version, changed_by, date_changed)
+			VALUES(0, '', '', null, 4, 11, 0, _user_id, now(), null, '', _user_id, now());
+		SET _other_id = LAST_INSERT_ID();
+		INSERT INTO concept_name(concept_id, name, short_name, description, locale, creator, date_created)
+			VALUES(_other_id, 'OTHER NON-CODED', '', 'Non-coded answer to a coded question - allows other as a coded answer.', 'en', _user_id, now());
+		INSERT INTO concept_word(concept_id, word, synonym, locale) VALUES(_other_id, 'AUTRES', '', 'fr');
+		INSERT INTO concept_word(concept_id, word, synonym, locale) VALUES(_other_id, 'AUTRE', '', 'fr');
+		INSERT INTO concept_word(concept_id, word, synonym, locale) VALUES(_other_id, 'OTHER', '', 'en');
+		INSERT INTO concept_word(concept_id, word, synonym, locale) VALUES(_other_id, 'CODED', '', 'en');
+		INSERT INTO concept_word(concept_id, word, synonym, locale) VALUES(_other_id, 'NON', '', 'en');
+	END IF;
+
+	# get concept_id for NONE - if it's not here, then create it
+	IF( SELECT count(*) > 0 FROM concept_name WHERE lower(name) = 'none' ) THEN
+		SET _none_id = (SELECT concept_id FROM concept_name WHERE lower(name) = 'none' LIMIT 1);
+	ELSE
+		INSERT INTO concept(retired, short_name, description, form_text, datatype_id, class_id, is_set, creator, date_created, default_charge, version, changed_by, date_changed)
+			VALUES(0, '', '', null, 4, 11, 0, _user_id, now(), null, '', _user_id, now());
+		SET _none_id = LAST_INSERT_ID();
+		INSERT INTO concept_name(concept_id, name, short_name, description, locale, creator, date_created)
+			VALUES(_none_id, 'NONE', '', 'Generic descriptive answer.', 'en', _user_id, now());
+		INSERT INTO concept_word(concept_id, word, synonym, locale) VALUES(_none_id, 'AUCUN', '', 'fr');
+		INSERT INTO concept_word(concept_id, word, synonym, locale) VALUES(_none_id, 'AUCUN', 'AUCUN', 'en');
+		INSERT INTO concept_word(concept_id, word, synonym, locale) VALUES(_none_id, 'OTHER', '', 'en');
+	END IF;
+
+	# (for debugging) SELECT _cause_id AS 'cause_id', _none_id AS 'none_id', _other_id AS 'other_id', _user_id AS 'user_id', _location_id AS 'location_id';
+			
+	# make sure that OTHER NON-CODE and NONE are answers to CAUSE OF DEATH
+	IF( SELECT count(*) = 0 FROM concept_answer WHERE concept_id = _cause_id and answer_concept = _other_id ) THEN
+		INSERT INTO concept_answer(concept_id, answer_concept, answer_drug, creator, date_created)
+			VALUES(_cause_id, _other_id, null, _user_id, now());
+	END IF;
+	
+	IF( SELECT count(*) = 0 FROM concept_answer WHERE concept_id = _cause_id and answer_concept = _none_id ) THEN
+		INSERT INTO concept_answer(concept_id, answer_concept, answer_drug, creator, date_created)
+			VALUES(_cause_id, _none_id, null, _user_id, now());
+	END IF;
+
+	# ensure that patients who are alive have cause_of_death set to NULL
+	UPDATE patient SET cause_of_death = null WHERE dead = 0;
+
+	# create a table to hold patient_id, encounter_id, and encounter_datetime for the last encounter of each patient with a non-null cause_of_death
+	# warning: assumes that every patient with a non-null cause_of_death has at least one encounter.  if not, encounter_id will be 0
+	DROP TABLE IF EXISTS last_encounters_temp;
+
+	CREATE TABLE `last_encounters_temp` (
+		`patient_id` int(11) DEFAULT '0',
+		`encounter_id` int(11) DEFAULT '0',
+		`encounter_datetime` datetime,
+		`cause_of_death` varchar(255) DEFAULT ''
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+	INSERT INTO last_encounters_temp (patient_id, encounter_datetime)
+	SELECT e.patient_id, max(e.encounter_datetime)
+	FROM encounter e
+	INNER JOIN patient p
+	ON e.patient_id = p.patient_id
+	WHERE p.dead = 1
+	GROUP BY e.patient_id;
+	
+	UPDATE last_encounters_temp t, encounter e
+	SET t.encounter_id = e.encounter_id
+	WHERE t.patient_id = e.patient_id
+	AND t.encounter_datetime = e.encounter_datetime;
+
+	INSERT INTO last_encounters_temp (patient_id, encounter_id)
+	SELECT patient_id, 0
+	FROM patient
+	WHERE dead = 1
+	AND patient_id NOT IN (SELECT patient_id FROM last_encounters_temp);
+
+	UPDATE last_encounters_temp t, patient p
+	SET t.cause_of_death = p.cause_of_death
+	WHERE t.patient_id = p.patient_id;
+
+	# create an observation for each of the above patients on their last encounter, with value_coded as NONE if cause_of_death was empty string, OTHER if not
+	INSERT INTO obs(patient_id, concept_id, encounter_id, order_id, obs_datetime, location_id, obs_group_id, accession_number, value_group_id, value_boolean,
+			value_coded, value_drug, value_datetime, value_numeric, value_modifier, value_text, date_started, date_stopped, comments, creator, date_created,
+			voided, voided_by, date_voided, void_reason)
+	SELECT t.patient_id, _cause_id, t.encounter_id, null, IF(p.death_date IS NOT NULL, p.death_date, t.encounter_datetime), _location_id, null, null, null, null,
+			IF(p.cause_of_death IS NOT NULL AND LENGTH(p.cause_of_death) > 0, _other_id, _none_id), null, null, null, null, IF(p.cause_of_death IS NOT NULL AND LENGTH(p.cause_of_death) > 0, p.cause_of_death, null), null, null, null, _user_id, now(),
+			0, null, null, null
+	FROM last_encounters_temp t
+	INNER JOIN patient p
+	ON t.patient_id = p.patient_id
+	WHERE t.encounter_id > 0;
+
+	# create an observation for each of the above patients on their last encounter, with value_coded as NONE if cause_of_death was empty string, OTHER if not
+	INSERT INTO obs(patient_id, concept_id, encounter_id, order_id, obs_datetime, location_id, obs_group_id, accession_number, value_group_id, value_boolean,
+			value_coded, value_drug, value_datetime, value_numeric, value_modifier, value_text, date_started, date_stopped, comments, creator, date_created,
+			voided, voided_by, date_voided, void_reason)
+	SELECT t.patient_id, _cause_id, null, null, IF(p.death_date IS NOT NULL, p.death_date, now()), _location_id, null, null, null, null,
+			IF(p.cause_of_death IS NOT NULL AND LENGTH(p.cause_of_death) > 0, _other_id, _none_id), null, null, null, null, IF(p.cause_of_death IS NOT NULL AND LENGTH(p.cause_of_death) > 0, p.cause_of_death, null), null, null, null, _user_id, now(),
+			0, null, null, null
+	FROM last_encounters_temp t
+	INNER JOIN patient p
+	ON t.patient_id = p.patient_id
+	WHERE t.encounter_id = 0;
+
+	# alter tables so that they now accept an int(11) instead of varchar(255)
+	UPDATE patient SET cause_of_death = null;
+
+	ALTER TABLE `patient` MODIFY COLUMN `cause_of_death` int(11) default null;
+	ALTER TABLE `patient` ADD CONSTRAINT `died_because` FOREIGN KEY (`cause_of_death`) REFERENCES `concept` (`concept_id`);
+	
+	# use info from last_encounters_temp table to fill in the corrent concept_id in the patient.cause_of_death field
+	UPDATE patient p, last_encounters_temp t
+	SET p.cause_of_death = _other_id
+	WHERE p.patient_id = t.patient_id
+	AND t.cause_of_death IS NOT NULL
+	AND LENGTH(t.cause_of_death) > 0;
+
+	UPDATE patient p, last_encounters_temp t
+	SET p.cause_of_death = _none_id
+	WHERE p.patient_id = t.patient_id
+	AND p.cause_of_death IS NULL;
+
+	# insert a global property to indicate cause_of_death concept (if it doesn't exist already)
+	IF( SELECT count(*) = 0 FROM global_property WHERE lower(property) = 'concept.causeofdeath' ) THEN
+		INSERT INTO global_property(property, property_value) VALUES ('concept.causeOfDeath', CONCAT(_cause_id));
+	END IF;
+
+	# cleanup
+	DROP TABLE last_encounters_temp;
+
+#-- END YOUR QUERY(IES) HERE --#
+
+	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+	
+	END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.0.44');
+
+
+#--------------------------------------
+# OpenMRS Datamodel version 1.0.45
+# Christian Allen 	Oct 24, 2006 10:00 PM
+# Changing orders table - discontinued_reason now foriegn keys to a concept
+#
+# ALTERNATE TOOL FOR REPLACING ORDERS - if you already have orders with discontinued_reason in varchar format, the following script will at least copy those
+#		to a separate table so that you can later resolve what concept they should be (uncomment and execute in SQL client tool).  If your data set is small,
+#		and you want to control which concepts each variation of these fields is transitioned to, you might want to do something like this instead of running
+#		the script below.
+#
+#	CREATE TABLE `orders_discontinued_reason_temp` (
+#		`order_id` int(11) NOT NULL DEFAULT '0',
+#	  	`discontinued_reason` varchar(255) default NULL
+#	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+#
+#	INSERT INTO orders_discontinued_reason_temp
+#	SELECT order_id, discontinued_reason
+#	FROM orders
+#	WHERE discontinued = 1;
+#
+#	UPDATE orders set discontinued_reason = null;
+#	 
+#--------------------------------------
+
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+	DECLARE _reason_id int(11);
+	DECLARE _none_id int(11);
+	DECLARE _other_id int(11);
+	DECLARE _user_id int(11);
+	DECLARE _location_id int(11);
+
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+	SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+
+#-- START YOUR QUERY(IES) HERE --#
+
+	SET _reason_id = 0;
+	SET _none_id = 0;
+	SET _other_id = 0;
+	SET _user_id = 0;
+	SET _location_id = 1;
+
+	# get a user for us to make inserts with
+	SET _user_id = (SELECT user_id FROM users LIMIT 1);
+
+	# try to get unknown location - otherwise stick with 1
+	IF ( SELECT count(*) > 0 FROM location WHERE lower(name) LIKE '%unknown%' ) THEN
+		SET _location_id = (SELECT location_id FROM location WHERE lower(name) LIKE '%unknown%' LIMIT 1);
+	END IF;
+
+	# get concept_id for REASON ORDER STOPPED - if it's not here, then create it
+	IF( SELECT count(*) > 0 FROM concept_name WHERE lower(name) = 'reason order stopped' ) THEN
+		SET _reason_id = (SELECT concept_id FROM concept_name WHERE lower(name) = 'reason order stopped' LIMIT 1);
+	ELSE
+		INSERT INTO concept(retired, short_name, description, form_text, datatype_id, class_id, is_set, creator, date_created, default_charge, version, changed_by, date_changed)
+			VALUES(0, '', '', null, 2, 7, 0, _user_id, now(), null, '', _user_id, now());
+		SET _reason_id = LAST_INSERT_ID();
+		INSERT INTO concept_name(concept_id, name, short_name, description, locale, creator, date_created)
+			VALUES(_reason_id, 'REASON ORDER STOPPED', '', 'Describes a reason for stopping an order.  Coded answer.', 'en', _user_id, now());
+		INSERT INTO concept_word(concept_id, word, synonym, locale) VALUES(_reason_id, 'REASON', '', 'en');
+		INSERT INTO concept_word(concept_id, word, synonym, locale) VALUES(_reason_id, 'STOP', '', 'en');
+		INSERT INTO concept_word(concept_id, word, synonym, locale) VALUES(_reason_id, 'STOPPED', '', 'en');
+		INSERT INTO concept_word(concept_id, word, synonym, locale) VALUES(_reason_id, 'DRUG', '', 'en');
+		INSERT INTO concept_word(concept_id, word, synonym, locale) VALUES(_reason_id, 'DISCONTINUE', '', 'en');
+		INSERT INTO concept_word(concept_id, word, synonym, locale) VALUES(_reason_id, 'DISCONTINUED', '', 'en');
+		INSERT INTO concept_word(concept_id, word, synonym, locale) VALUES(_reason_id, 'ORDER', '', 'en');
+	END IF;
+	
+	# get concept_id for coded answer OTHER NON-CODED - if it's not here, then create it
+	IF( SELECT count(*) > 0 FROM concept_name WHERE lower(name) = 'other non-coded' ) THEN
+		SET _other_id = (SELECT concept_id FROM concept_name WHERE lower(name) = 'other non-coded' LIMIT 1);
+	ELSE
+		INSERT INTO concept(retired, short_name, description, form_text, datatype_id, class_id, is_set, creator, date_created, default_charge, version, changed_by, date_changed)
+			VALUES(0, '', '', null, 4, 11, 0, _user_id, now(), null, '', _user_id, now());
+		SET _other_id = LAST_INSERT_ID();
+		INSERT INTO concept_name(concept_id, name, short_name, description, locale, creator, date_created)
+			VALUES(_other_id, 'OTHER NON-CODED', '', 'Non-coded answer to a coded question - allows other as a coded answer.', 'en', _user_id, now());
+		INSERT INTO concept_word(concept_id, word, synonym, locale) VALUES(_other_id, 'AUTRES', '', 'fr');
+		INSERT INTO concept_word(concept_id, word, synonym, locale) VALUES(_other_id, 'AUTRE', '', 'fr');
+		INSERT INTO concept_word(concept_id, word, synonym, locale) VALUES(_other_id, 'OTHER', '', 'en');
+		INSERT INTO concept_word(concept_id, word, synonym, locale) VALUES(_other_id, 'CODED', '', 'en');
+		INSERT INTO concept_word(concept_id, word, synonym, locale) VALUES(_other_id, 'NON', '', 'en');
+	END IF;
+
+	# get concept_id for NONE - if it's not here, then create it
+	IF( SELECT count(*) > 0 FROM concept_name WHERE lower(name) = 'none' ) THEN
+		SET _none_id = (SELECT concept_id FROM concept_name WHERE lower(name) = 'none' LIMIT 1);
+	ELSE
+		INSERT INTO concept(retired, short_name, description, form_text, datatype_id, class_id, is_set, creator, date_created, default_charge, version, changed_by, date_changed)
+			VALUES(0, '', '', null, 4, 11, 0, _user_id, now(), null, '', _user_id, now());
+		SET _none_id = LAST_INSERT_ID();
+		INSERT INTO concept_name(concept_id, name, short_name, description, locale, creator, date_created)
+			VALUES(_none_id, 'NONE', '', 'Generic descriptive answer.', 'en', _user_id, now());
+		INSERT INTO concept_word(concept_id, word, synonym, locale) VALUES(_none_id, 'AUCUN', '', 'fr');
+		INSERT INTO concept_word(concept_id, word, synonym, locale) VALUES(_none_id, 'AUCUN', 'AUCUN', 'en');
+		INSERT INTO concept_word(concept_id, word, synonym, locale) VALUES(_none_id, 'OTHER', '', 'en');
+	END IF;
+
+	# (for debugging) SELECT _reason_id AS 'cause_id', _none_id AS 'none_id', _other_id AS 'other_id', _user_id AS 'user_id', _location_id AS 'location_id';
+			
+	# make sure that OTHER NON-CODE and NONE are answers to CAUSE OF DEATH
+	IF( SELECT count(*) = 0 FROM concept_answer WHERE concept_id = _reason_id and answer_concept = _other_id ) THEN
+		INSERT INTO concept_answer(concept_id, answer_concept, answer_drug, creator, date_created)
+			VALUES(_reason_id, _other_id, null, _user_id, now());
+	END IF;
+	
+	IF( SELECT count(*) = 0 FROM concept_answer WHERE concept_id = _reason_id and answer_concept = _none_id ) THEN
+		INSERT INTO concept_answer(concept_id, answer_concept, answer_drug, creator, date_created)
+			VALUES(_reason_id, _none_id, null, _user_id, now());
+	END IF;
+
+	# ensure that patients who are alive have cause_of_death set to NULL
+	UPDATE orders SET discontinued_reason = null WHERE discontinued = 0;
+
+	# create temp table to store reasons so we can later put the right concepts into place in the orders table
+	DROP TABLE IF EXISTS `orders_discontinued_reasons_temp`;
+	CREATE TABLE `orders_discontinued_reasons_temp` (
+		`order_id` int(11) NOT NULL DEFAULT '0',
+	  	`discontinued_reason` varchar(255) default NULL
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+	INSERT INTO orders_discontinued_reasons_temp
+	SELECT order_id, discontinued_reason
+	FROM orders
+	WHERE discontinued = 1;
+
+	# create an observation for each of the above orders, with value_coded as NONE if discontinued_reason was empty string, OTHER if not
+	INSERT INTO obs(patient_id, concept_id, encounter_id, order_id, obs_datetime, location_id, obs_group_id, accession_number, value_group_id, value_boolean,
+			value_coded, value_drug, value_datetime, value_numeric, value_modifier, value_text, date_started, date_stopped, comments, creator, date_created,
+			voided, voided_by, date_voided, void_reason)
+	SELECT e.patient_id, _reason_id, null, null, IF(o.discontinued_date IS NOT NULL, o.discontinued_date, now()), _location_id, null, null, null, null,
+			IF(o.discontinued_reason IS NOT NULL AND LENGTH(o.discontinued_reason) > 0, _other_id, _none_id), null, null, null, null, IF(o.discontinued_reason IS NOT NULL AND LENGTH(o.discontinued_reason) > 0, o.discontinued_reason, null), null, null, null, _user_id, now(),
+			0, null, null, null
+	FROM orders o
+	INNER JOIN encounter e
+	ON o.encounter_id = e.encounter_id
+	WHERE o.discontinued = 1;
+
+	# alter tables so that they now accept an int(11) instead of varchar(255)
+	UPDATE orders set discontinued_reason = null;
+
+	ALTER TABLE `orders` MODIFY COLUMN `discontinued_reason` int(11) default null;
+	ALTER TABLE `orders` ADD CONSTRAINT `discontinued_because` FOREIGN KEY (`discontinued_reason`) REFERENCES `concept` (`concept_id`);
+	
+	# use info from temp table to fill in the correct concept_id in the orders.discontinued_reason field
+	UPDATE orders o, orders_discontinued_reasons_temp t
+	SET o.discontinued_reason = _other_id
+	WHERE o.order_id = t.order_id
+	AND t.discontinued_reason IS NOT NULL
+	AND LENGTH(t.discontinued_reason) > 0;
+
+	UPDATE orders o, orders_discontinued_reasons_temp t
+	SET o.discontinued_reason = _none_id
+	WHERE o.order_id = t.order_id
+	AND o.discontinued_reason IS NULL;
+
+	# insert a global property to indicate reason_order_stopped concept (if it doesn't exist already)
+	IF( SELECT count(*) = 0 FROM global_property WHERE lower(property) = 'concept.reasonorderstopped' ) THEN
+		INSERT INTO global_property(property, property_value) VALUES ('concept.reasonOrderStopped', CONCAT(_reason_id));
+	END IF;
+
+	# cleanup
+	DROP TABLE orders_discontinued_reasons_temp;
+
+#-- END YOUR QUERY(IES) HERE --#
+
+	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+	
+	END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.0.45');
+
+
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script
 #-----------------------------------

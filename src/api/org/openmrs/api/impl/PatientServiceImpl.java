@@ -1,5 +1,6 @@
 package org.openmrs.api.impl;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Patient;
@@ -15,7 +17,11 @@ import org.openmrs.PatientAddress;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientName;
+import org.openmrs.PatientProgram;
+import org.openmrs.PatientState;
 import org.openmrs.Person;
+import org.openmrs.ProgramWorkflow;
+import org.openmrs.ProgramWorkflowState;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.Tribe;
@@ -23,8 +29,10 @@ import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.PatientDAO;
+import org.openmrs.programWorkflow.PatientProgramSupport;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -807,6 +815,82 @@ public class PatientServiceImpl implements PatientService {
 					pIdentifier.setPatient(patient);
 				}
 			}
+	}
+
+	/**
+	 * This is the way to establish that a patient has left the care center.  This API call is responsible for:
+	 * 1) Closing workflow statuses
+	 * 2) Terminating programs
+	 * 3) Discontinuing orders
+	 * 4) Flagging patient table (if applicable)
+	 * 5) Creating any relevant observations about the patient
+	 * @param patient - the patient who has exited care
+	 * @param dateExited - the declared date/time of the patient's exit
+	 * @param reasonForExit - the concept that corresponds with why the patient has been declared as exited
+	 * @throws APIException
+	 */
+	public void exitFromCare(Patient patient, Date dateExited, Concept reasonForExit) {
+		if ( patient != null && dateExited != null && reasonForExit != null ) {
+
+			// need to add a new (terminal) state to patient workflows
+			List<PatientProgram> programs = (List<PatientProgram>)Context.getProgramWorkflowService().getPatientPrograms(patient);
+			PatientProgramSupport support = PatientProgramSupport.getInstance();
+			Set<Concept> resultingStates = support.getStatesByReason(reasonForExit);
+			
+			if ( programs != null && resultingStates != null ) {
+				for ( PatientProgram program : programs ) {
+					for ( ProgramWorkflow workflow : program.getProgram().getWorkflows() ) {
+						Set<ProgramWorkflowState> wfStates = workflow.getStates();
+						for ( ProgramWorkflowState wfState : wfStates ) {
+							if ( resultingStates.contains(wfState.getConcept()) ) {
+								Context.getProgramWorkflowService().changeToState(program, workflow, wfState, dateExited );
+							}
+						}
+					}
+				}
+			} else {
+				log.debug("Patient has no programs");
+			}
+			
+			// need to discontinue any open orders for this patient
+			Context.getOrderService().discontinueAllOrders(patient, reasonForExit, dateExited);
+		} else {
+			if ( patient == null )
+					throw new APIException("Attempting to set an invalid patient's status to 'dead'");
+			if ( dateExited == null ) 
+					throw new APIException("Must supply a valid dateDied when indicating that a patient has died");
+			if ( reasonForExit == null ) 
+					throw new APIException("Must supply a valid causeOfDeath (even if 'Unknown') when indicating that a patient has died");
+		}
+	}
+
+	/**
+	 * This is the way to establish that a patient has died.  In addition to exiting the patient from care (see above),
+	 * this method will also set the appropriate patient characteristics to indicate that they have died, when they died, etc.
+	 * @param patient - the patient who has died
+	 * @param dateDied - the declared date/time of the patient's death
+	 * @param causeOfDeath - the concept that corresponds with the reason the patient died
+	 * @throws APIException
+	 */
+	public void processDeath(Patient patient, Date dateDied, Concept causeOfDeath) {
+		if ( patient != null && dateDied != null && causeOfDeath != null ) {
+			// set appropriate patient characteristics
+			patient.setDead(true);
+			patient.setDeathDate(dateDied);
+			// TODO: cause of death should be a concept
+			patient.setCauseOfDeath(causeOfDeath);
+			updatePatient(patient);
+			
+			// exit from program
+			exitFromCare(patient, dateDied, new Concept());
+		} else {
+			if ( patient == null )
+					throw new APIException("Attempting to set an invalid patient's status to 'dead'");
+			if ( dateDied == null ) 
+					throw new APIException("Must supply a valid dateDied when indicating that a patient has died");
+			if ( causeOfDeath == null ) 
+					throw new APIException("Must supply a valid causeOfDeath (even if 'Unknown') when indicating that a patient has died");
+		}
 	}
 
 }

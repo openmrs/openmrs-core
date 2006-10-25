@@ -46,8 +46,9 @@
 		<property name="deathDate" type="java.util.Date"
 			column="death_date" length="19" />
 
-		<property name="causeOfDeath" type="java.lang.String"
-			column="cause_of_death" length="255" />
+		<many-to-one name="causeOfDeath" class="Concept" not-null="false">
+			<column name="cause_of_death" />
+		</many-to-one>
 
 		<property name="healthDistrict" type="java.lang.String"
 			column="health_district" length="255" />

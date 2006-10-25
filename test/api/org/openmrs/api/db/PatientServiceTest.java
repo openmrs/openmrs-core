@@ -95,7 +95,7 @@ public class PatientServiceTest extends BaseTest {
 		patient.setMothersName("Mom's name");
 		//patient.setCivilStatus(1);
 		patient.setDeathDate(new Date());
-		patient.setCauseOfDeath("air");
+		//patient.setCauseOfDeath("air");
 		patient.setHealthDistrict("health dist");
 		patient.setHealthCenter(null);
 		patient.setBirthdate(new Date());

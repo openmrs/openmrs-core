@@ -695,6 +695,8 @@
 						<value>nealreport.form:nealreport.AlertReport.name:reportType=Alert Report</value>
 						<value>nealreport.form:nealreport.PmtctReport.name:reportType=PMTCT Report</value>
 						<value>nealreport.form:nealreport.PedReport.name:reportType=Ped Report</value>
+						<value>nealreport.form:nealreport.LongReport.name:reportType=Long Report</value>
+						<value>nealreport.form:nealreport.DataDumpReport.name:reportType=Data Dump</value>
 					</list>
 				</property>
 				<property name="formView"><value>/analysis/on-the-fly-analysis</value></property>
@@ -1544,6 +1546,39 @@
 			</list>
 		</property>
 	</bean>
+
+<!-- PROGRAM WORKFLOW CONFIGURATION -->
+
+	<!--
+		The exitReasonToStateMappings help us map terminal program states to a cause for exit.  This way,
+		when we have to indicate that a patient has left care, the system can automatically know what
+		terminal states to apply to the various programs a patient was in.
+		
+		NOTE: for both the keys of the map (the reason for exit), and the various states in the corresponding
+		list, you can use either the Name or Id of the Concept.
+	-->
+
+    <bean id="patientProgramSupport" class="org.openmrs.programWorkflow.PatientProgramSupport">
+		<property name="exitReasonToStateMappings">
+			<map>
+				<entry><key><value>DIED</value></key>
+					<list>
+						<value>DIED IN TREATMENT</value>
+					</list>
+				</entry>
+				<entry><key><value>TRANSFERRED OUT</value></key>
+					<list>
+						<value>TRANSFERRED OUT</value>
+					</list>
+				</entry>
+				<entry><key><value>DEFAULTED</value></key>
+					<list>
+						<value>DEFAULTED</value>
+					</list>
+				</entry>
+			</map>
+		</property>
+    </bean>
 
 <!-- CALENDAR SECTION -->
 	

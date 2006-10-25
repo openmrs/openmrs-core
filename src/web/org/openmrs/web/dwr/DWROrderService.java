@@ -81,7 +81,7 @@ public class DWROrderService {
 		}
 		
 		Order o = Context.getOrderService().getOrder(orderId);
-		Context.getOrderService().discontinueOrder(o, discontinueReason, dDiscDate);
+		Context.getOrderService().discontinueOrder(o, Context.getConceptService().getConceptByIdOrName(discontinueReason), dDiscDate);
 	}
 
 	public Vector<DrugOrderListItem> getDrugOrdersByPatientId(Integer patientId, int whatToShow) {
@@ -271,7 +271,7 @@ public class DWROrderService {
 			}
 		}
 	
-		Context.getOrderService().discontinueDrugSet(p, drugSetId, discontinueReason, discDate);
+		Context.getOrderService().discontinueDrugSet(p, drugSetId, Context.getConceptService().getConceptByIdOrName(discontinueReason), discDate);
 	}
 
 	/*
@@ -316,7 +316,7 @@ public class DWROrderService {
 		List<DrugOrder> currentOrders = Context.getOrderService().getDrugOrdersByPatient(p, OrderService.SHOW_CURRENT);
 		
 		for ( DrugOrder o : currentOrders ) {
-			Context.getOrderService().discontinueOrder(o, discontinueReason, discDate);
+			Context.getOrderService().discontinueOrder(o, Context.getConceptService().getConceptByIdOrName(discontinueReason), discDate);
 		}
 		
 		return ret;

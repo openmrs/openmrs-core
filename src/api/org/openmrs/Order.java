@@ -27,7 +27,7 @@ public class Order implements java.io.Serializable {
 	private Boolean discontinued = false;
 	private User discontinuedBy;
 	private Date discontinuedDate;
-	private String discontinuedReason;
+	private Concept discontinuedReason;
 	private Boolean voided = false;
 	private User voidedBy;
 	private Date dateVoided;
@@ -180,14 +180,14 @@ public class Order implements java.io.Serializable {
 	/**
 	 * @return Returns the discontinuedReason.
 	 */
-	public String getDiscontinuedReason() {
+	public Concept getDiscontinuedReason() {
 		return discontinuedReason;
 	}
 
 	/**
 	 * @param discontinuedReason The discontinuedReason to set.
 	 */
-	public void setDiscontinuedReason(String discontinuedReason) {
+	public void setDiscontinuedReason(Concept discontinuedReason) {
 		this.discontinuedReason = discontinuedReason;
 	}
 

@@ -18,7 +18,7 @@
 		//alert("voidReasons is " + voidReasons);
 
 		var currentRegimenTableCellFuncs = regimenMode != "view" ? [
-			function(data) { return "&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"orderDrug.form?orderId=" + data.orderId + "\">" + data.drugName + "</a>"; },
+			function(data) { return "&nbsp;&nbsp;&nbsp;&nbsp;<a class=\"patientRegimenDrugName\" href=\"orderDrug.form?orderId=" + data.orderId + "\">" + data.drugName + "</a>"; },
 			function(data) { return data.dose + " " + data.units; },
 			function(data) { return "" + data.frequency; },
 			function(data) { return "" + data.startDate; },
@@ -56,14 +56,14 @@
 		];
 
 		var completedRegimenTableCellFuncs = regimenMode != "view" ? [
-			function(data) { return "&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"orderDrug.form?orderId=" + data.orderId + "\">" + data.drugName + "</a>"; },
+			function(data) { return "&nbsp;&nbsp;&nbsp;&nbsp;<a class=\"patientRegimenDrugName\" href=\"orderDrug.form?orderId=" + data.orderId + "\">" + data.drugName + "</a>"; },
 			function(data) { return data.dose + " " + data.units; },
 			function(data) { return "" + data.frequency; },
 			function(data) { return "" + data.startDate; },
 			function(data) { return "" + data.autoExpireDate; },
 			function(data) { return "" + data.discontinuedDate; },
 			function(data) { return "" + data.instructions; },
-			function(data) { return "" + getReason(data.discontinueReason); },
+			function(data) { if ( data.discontinueReason ) return "" + getReason(data.discontinueReason); else return ""; },
 			function(data) {
 				var ret = "<input id=\"voidcpbutton_" + data.orderId + "\" type=\"button\" value=\"<spring:message code="DrugOrder.void" />\" onClick=\"showHideDiv('voidcp_" + data.orderId + "');showHideDiv('voidcpbutton_" + data.orderId + "')\" />";
 				ret += "<div id=\"voidcp_" + data.orderId + "\" style=\"display:none\" class=\"dashedAndHighlighted\"><form>";
@@ -82,7 +82,7 @@
 			function(data) { return "" + data.autoExpireDate; },
 			function(data) { return "" + data.discontinuedDate; },
 			function(data) { return "" + data.instructions; },
-			function(data) { return "" + data.discontinueReason; }
+			function(data) { if ( data.discontinueReason ) return "" + getReason(data.discontinueReason); else return ""; },
 		];
 
 		var currentRegimenTableHeaderCells = [

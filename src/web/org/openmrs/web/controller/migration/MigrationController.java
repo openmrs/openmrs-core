@@ -257,7 +257,7 @@ public class MigrationController implements Controller {
 			reg.setAutoExpireDate(autoExpireDate);
 			reg.setDiscontinued(discontinuedDate != null);
 			reg.setDiscontinuedDate(discontinuedDate);
-			reg.setDiscontinuedReason(discontinuedReason);
+			//reg.setDiscontinuedReason(discontinuedReason);
 			reg.setDose(doseStrength);
 			reg.setEquivalentDailyDose(doseStrength);
 			reg.setUnits(doseUnit);

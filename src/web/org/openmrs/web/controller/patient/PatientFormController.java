@@ -79,6 +79,7 @@ public class PatientFormController extends SimpleFormController {
         binder.registerCustomEditor(PatientIdentifierType.class, new PatientIdentifierTypeEditor());
         binder.registerCustomEditor(Location.class, new LocationEditor());
         binder.registerCustomEditor(Concept.class, "civilStatus", new ConceptEditor());
+        binder.registerCustomEditor(Concept.class, "causeOfDeath", new ConceptEditor());
 	}
 
 	/**
@@ -232,7 +233,7 @@ public class PatientFormController extends SimpleFormController {
 					//ValidationUtils.rejectIfEmptyOrWhitespace(errors, "birthdate", "error.null");
 					if (patient.isVoided())
 						ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
-					if (patient.isDead() && (patient.getCauseOfDeath() == null || patient.getCauseOfDeath().equals("")))
+					if (patient.isDead() && (patient.getCauseOfDeath() == null))
 						errors.rejectValue("causeOfDeath", "Patient.dead.causeOfDeathNull");
 					
 				// check patients birthdate against future dates and really old dates

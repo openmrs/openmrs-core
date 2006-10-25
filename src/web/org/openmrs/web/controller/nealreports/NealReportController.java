@@ -209,7 +209,7 @@ public class NealReportController implements Controller {
 		// "strength_unit" == unit for strength, e.g, "tab"
 		// "strength_dose" == amount given per time
 		{
-			Map<Integer, List<DrugOrder>> regimens = pss.getCurrentDrugOrders(ps, Context.getConceptService().getConceptByName("ANTIRETROVIRAL DRUGS"));
+			Map<Integer, List<DrugOrder>> regimens = pss.getDrugOrders(ps, Context.getConceptService().getConceptByName("ANTIRETROVIRAL DRUGS"));
 			for (Map.Entry<Integer, List<DrugOrder>> e : regimens.entrySet()) {
 				Date earliestStart = null;
 				for (DrugOrder reg : e.getValue()) {
@@ -249,7 +249,7 @@ public class NealReportController implements Controller {
 		// "strength_unit" == unit for strength, e.g, "tab"
 		// "strength_dose" == amount given per time
 		{
-			Map<Integer, List<DrugOrder>> regimens = pss.getCurrentDrugOrders(ps, Context.getConceptService().getConceptByName("TUBERCULOSIS TREATMENT DRUGS"));
+			Map<Integer, List<DrugOrder>> regimens = pss.getDrugOrders(ps, Context.getConceptService().getConceptByName("TUBERCULOSIS TREATMENT DRUGS"));
 			for (Map.Entry<Integer, List<DrugOrder>> e : regimens.entrySet()) {
 				Date earliestStart = null;
 				for (DrugOrder reg : e.getValue()) {

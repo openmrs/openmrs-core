@@ -44,14 +44,18 @@
 					<c:if test="${not empty model.completedDrugOrderSets['*']}">
 						<c:forEach items="${model.completedDrugOrderSets['*']}" var="drugOrder">
 							<tr>
-								<td>${drugOrder.drug.name}</td>
+								<td><span class="patientRegimenDrugName">${drugOrder.drug.name}</span></td>
 								<td>${drugOrder.dose} ${drugOrder.units}</td>
 								<td>${drugOrder.frequency}</td>
 								<td><openmrs:formatDate date="${drugOrder.startDate}" /></td>
 								<td><openmrs:formatDate date="${drugOrder.autoExpireDate}" /></td>
 								<td><openmrs:formatDate date="${drugOrder.discontinuedDate}" /></td>
 								<td>${drugOrder.instructions}</td>
-								<td><spring:message code="${drugOrder.discontinuedReason}" /></td>
+								<td>
+									<c:if test="${not empty drugOrder.discontinuedReason}">
+										<openmrs_tag:concept conceptId="${drugOrder.discontinuedReason.conceptId}" />
+									</c:if>
+								</td>
 								<c:if test="${model.completedRegimenMode != 'view'}">
 									<td>
 										<input id="voidbutton_${drugOrder.orderId}" type="button" value="<spring:message code="DrugOrder.void" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
@@ -111,14 +115,18 @@
 					<c:if test="${not empty model.completedDrugOrderSets[drugSetId]}">
 						<c:forEach items="${model.completedDrugOrderSets[drugSetId]}" var="drugOrder">
 							<tr>
-								<td>${drugOrder.drug.name}</td>
+								<td><span class="patientRegimenDrugName">${drugOrder.drug.name}</span></td>
 								<td>${drugOrder.dose} ${drugOrder.units}</td>
 								<td>${drugOrder.frequency}</td>
 								<td><openmrs:formatDate date="${drugOrder.startDate}" /></td>
 								<td><openmrs:formatDate date="${drugOrder.autoExpireDate}" /></td>
 								<td><openmrs:formatDate date="${drugOrder.discontinuedDate}" /></td>
 								<td>${drugOrder.instructions}</td>
-								<td><spring:message code="${drugOrder.discontinuedReason}" /></td>
+								<td>
+									<c:if test="${not empty drugOrder.discontinuedReason}">
+										<openmrs_tag:concept conceptId="${drugOrder.discontinuedReason.conceptId}" />
+									</c:if>
+								</td>
 								<c:if test="${model.completedRegimenMode != 'view'}">
 									<td>
 										<input id="voidbutton_${drugOrder.orderId}" type="button" value="<spring:message code="DrugOrder.void" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />
@@ -162,14 +170,18 @@
 					<c:if test="${not empty model.completedDrugOrders}">
 						<c:forEach items="${model.completedDrugOrders}" var="drugOrder">
 							<tr>
-								<td>${drugOrder.drug.name}</td>
+								<td><span class="patientRegimenDrugName">${drugOrder.drug.name}</span></td>
 								<td>${drugOrder.dose} ${drugOrder.units}</td>
 								<td>${drugOrder.frequency}</td>
 								<td><openmrs:formatDate date="${drugOrder.startDate}" /></td>
 								<td><openmrs:formatDate date="${drugOrder.autoExpireDate}" /></td>
 								<td><openmrs:formatDate date="${drugOrder.discontinuedDate}" /></td>
 								<td>${drugOrder.instructions}</td>
-								<td><spring:message code="${drugOrder.discontinuedReason}" /></td>
+								<td>
+									<c:if test="${not empty drugOrder.discontinuedReason}">
+										<openmrs_tag:concept conceptId="${drugOrder.discontinuedReason.conceptId}" />
+									</c:if>
+								</td>
 								<c:if test="${model.completedRegimenMode != 'view'}">
 									<td>
 										<input id="voidbutton_${drugOrder.orderId}" type="button" value="<spring:message code="DrugOrder.void" />" onClick="showHideDiv('void_${drugOrder.orderId}');showHideDiv('voidbutton_${drugOrder.orderId}')" />

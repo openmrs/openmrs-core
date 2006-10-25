@@ -30,6 +30,7 @@ import org.openmrs.web.propertyeditor.OrderTypeEditor;
 import org.openmrs.web.propertyeditor.UserEditor;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.RequestUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -59,6 +60,8 @@ public class OrderDrugFormController extends SimpleFormController {
         binder.registerCustomEditor(User.class, new UserEditor());
         binder.registerCustomEditor(Encounter.class, new EncounterEditor());
         binder.registerCustomEditor(Drug.class, new DrugEditor());
+        binder.registerCustomEditor(Integer.class, new CustomNumberEditor(Integer.class, true));
+        binder.registerCustomEditor(Double.class, new CustomNumberEditor(Double.class, true));
 	}
 
 	/* (non-Javadoc)

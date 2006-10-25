@@ -21,7 +21,7 @@ public class DrugOrderListItem {
 	private Boolean discontinued;
 	private Integer discontinuerId;
 	private String discontinuedDate;
-	private String discontinueReason;
+	private Integer discontinueReason;
 	private Integer drugId;
 	private String drugName;
 	private Double dose;
@@ -56,7 +56,7 @@ public class DrugOrderListItem {
 		discontinued = drugOrder.getDiscontinued();
 		if ( drugOrder.getDiscontinuedBy() != null ) discontinuerId = drugOrder.getDiscontinuedBy().getUserId();
 		if ( drugOrder.getDiscontinuedDate() != null ) discontinuedDate = sdf.format(drugOrder.getDiscontinuedDate());
-		discontinueReason = drugOrder.getDiscontinuedReason();
+		if ( drugOrder.getDiscontinuedReason() != null ) discontinueReason = drugOrder.getDiscontinuedReason().getConceptId();
 		if ( drugOrder.getDrug() != null ) drugId = drugOrder.getDrug().getDrugId();
 		if ( drugOrder.getDrug() != null ) drugName = drugOrder.getDrug().getName();
 		dose = drugOrder.getDose();
@@ -132,15 +132,14 @@ public class DrugOrderListItem {
 	/**
 	 * @return Returns the discontinueReason.
 	 */
-	public String getDiscontinueReason() {
-		if ( discontinueReason == null ) return "";
-		else return discontinueReason;
+	public Integer getDiscontinueReason() {
+		return discontinueReason;
 	}
 
 	/**
 	 * @param discontinueReason The discontinueReason to set.
 	 */
-	public void setDiscontinueReason(String discontinueReason) {
+	public void setDiscontinueReason(Integer discontinueReason) {
 		this.discontinueReason = discontinueReason;
 	}
 

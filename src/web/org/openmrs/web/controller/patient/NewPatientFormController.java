@@ -20,6 +20,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientAddress;
@@ -32,6 +33,7 @@ import org.openmrs.formentry.FormEntryService;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
+import org.openmrs.web.propertyeditor.ConceptEditor;
 import org.openmrs.web.propertyeditor.LocationEditor;
 import org.openmrs.web.propertyeditor.TribeEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -76,6 +78,7 @@ public class NewPatientFormController extends SimpleFormController {
         		new CustomDateEditor(dateFormat, true, 10));
         binder.registerCustomEditor(Tribe.class, new TribeEditor());
         binder.registerCustomEditor(Location.class, new LocationEditor());
+        binder.registerCustomEditor(Concept.class, "causeOfDeath", new ConceptEditor());
 	}
 
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {

@@ -2,6 +2,7 @@ package org.openmrs.web.controller.patient;
 
 import java.util.Date;
 
+import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientAddress;
@@ -26,7 +27,7 @@ public class ShortPatientModel {
 	private PatientAddress address;
 	private Boolean voided = false;
 	private Boolean dead = false;
-	private String causeOfDeath = "";
+	private Concept causeOfDeath = null;
 	private Date deathDate = null;
 	
 	public Boolean getDead() {
@@ -219,11 +220,11 @@ public class ShortPatientModel {
 		this.healthCenter = healthCenter;
 	}
 
-	public String getCauseOfDeath() {
+	public Concept getCauseOfDeath() {
 		return causeOfDeath;
 	}
 
-	public void setCauseOfDeath(String causeOfDeath) {
+	public void setCauseOfDeath(Concept causeOfDeath) {
 		this.causeOfDeath = causeOfDeath;
 	}
 

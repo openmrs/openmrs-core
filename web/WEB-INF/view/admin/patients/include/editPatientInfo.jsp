@@ -141,7 +141,9 @@
 			&nbsp; &nbsp; 
 			<spring:message code="Patient.causeOfDeath"/>
 			<spring:bind path="patient.causeOfDeath">
-				<input type="text" name="causeOfDeath" value="${status.value}" id="causeOfDeath"/>
+				<openmrs:globalProperty key="concept.causeOfDeath" var="conceptCauseOfDeath" />
+				<openmrs:fieldGen type="org.openmrs.Concept" formFieldName="causeOfDeath" val="${status.value}" parameters="showAnswers=${conceptCauseOfDeath}" />
+				<%--<input type="text" name="causeOfDeath" value="${status.value}" id="causeOfDeath"/>--%>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 			<script type="text/javascript">				

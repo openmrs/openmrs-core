@@ -472,4 +472,7 @@ public class ProgramWorkflowServiceImpl implements ProgramWorkflowService {
 		return patientsInProgram(program, fromDate, toDate).contains(patient.getPatientId());
 	}
 
+	public void terminatePatientProgram(PatientProgram patProg, ProgramWorkflowState finalState, Date terminatedOn) {
+		this.changeToState(patProg, finalState.getProgramWorkflow(), finalState, terminatedOn);
+	}
 }

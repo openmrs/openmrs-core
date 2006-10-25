@@ -71,7 +71,7 @@ public interface OrderService {
 	 * @param Order to void
 	 * @throws APIException
 	 */
-	public void discontinueOrder(Order order, String discontinueReason,
+	public void discontinueOrder(Order order, Concept discontinueReason,
 			Date discontinueDate) throws APIException;
 
 	/**
@@ -213,9 +213,10 @@ public interface OrderService {
 			String drugSetIds);
 
 	public void discontinueDrugSet(Patient patient, String drugSetId,
-			String discontinueReason, Date discontinueDate);
+			Concept discontinueReason, Date discontinueDate);
 
 	public void voidDrugSet(Patient patient, String drugSetId,
 			String voidReason, int whatToVoid);
 
+	public void discontinueAllOrders(Patient patient, Concept discontinueReason, Date discontinueDate) throws APIException;
 }

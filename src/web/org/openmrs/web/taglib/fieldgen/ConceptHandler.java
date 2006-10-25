@@ -1,5 +1,6 @@
 package org.openmrs.web.taglib.fieldgen;
 
+import org.openmrs.Concept;
 import org.openmrs.User;
 
 public class ConceptHandler extends AbstractFieldGenHandler implements FieldGenHandler {
@@ -9,13 +10,13 @@ public class ConceptHandler extends AbstractFieldGenHandler implements FieldGenH
 	public void run() {
 		htmlInclude("/scripts/dojoConfig.js");
 		htmlInclude("/scripts/dojo/dojo.js");
-		htmlInclude("/scripts/dojoUserSearchIncludes.js");
 		
 		setUrl(defaultUrl);
-		checkEmptyVal((User)null);
+		checkEmptyVal((Concept)null);
 		if (fieldGenTag != null) {
 			Object initialValue = this.fieldGenTag.getVal();
 			setParameter("initialValue", initialValue == null ? "" : initialValue.toString());
+			
 		}
 	}
 }

@@ -12,6 +12,7 @@ import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptDAO;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -350,5 +351,8 @@ public interface ConceptService {
 
 	@Transactional(readOnly=true)
 	public Integer getNextAvailableId();
+
+	@Transactional(readOnly=true)
+	public Concept getConceptByIdOrName(String idOrName);
 
 }

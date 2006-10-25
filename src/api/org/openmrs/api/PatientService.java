@@ -1,8 +1,10 @@
 package org.openmrs.api;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
@@ -337,4 +339,30 @@ public interface PatientService {
 	public void mergePatients(Patient preferred, Patient notPreferred)
 			throws APIException;
 
+	
+	/**
+	 * This is the way to establish that a patient has left the care center.  This API call is responsible for:
+	 * 1) Closing workflow statuses
+	 * 2) Terminating programs
+	 * 3) Discontinuing orders
+	 * 4) Flagging patient table (if applicable)
+	 * 5) Creating any relevant observations about the patient
+	 * @param patient - the patient who has exited care
+	 * @param dateExited - the declared date/time of the patient's exit
+	 * @param reasonForExit - the concept that corresponds with why the patient has been declared as exited
+	 * @throws APIException
+	 */
+	public void exitFromCare(Patient patient, Date dateExited, Concept reasonForExit)
+			throws APIException;
+
+	/**
+	 * This is the way to establish that a patient has died.  In addition to exiting the patient from care (see above),
+	 * this method will also set the appropriate patient characteristics to indicate that they have died, when they died, etc.
+	 * @param patient - the patient who has died
+	 * @param dateDied - the declared date/time of the patient's death
+	 * @param causeOfDeath - the concept that corresponds with the reason the patient died
+	 * @throws APIException
+	 */
+	public void processDeath(Patient patient, Date dateDied, Concept causeOfDeath)
+			throws APIException;
 }

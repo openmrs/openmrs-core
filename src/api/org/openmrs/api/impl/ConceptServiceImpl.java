@@ -701,4 +701,22 @@ public class ConceptServiceImpl implements ConceptService {
 		return matches == 0 ? 0 : (matches / size);
 	}
 
+	public Concept getConceptByIdOrName(String idOrName) {
+		Concept c = null;
+		Integer conceptId = null;
+		
+		try {
+			conceptId = new Integer(idOrName);
+		} catch (NumberFormatException nfe) {
+			conceptId = null;
+		}
+		
+		if ( conceptId != null ) {
+			c = getConcept(conceptId);
+		} else {
+			c = getConceptByName(idOrName);
+		}
+
+		return c;
+	}
 }

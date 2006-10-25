@@ -155,6 +155,31 @@ public class PatientProgram {
 		return getActive(null);
 	}
 	
+	public PatientState getCurrentState() {
+		PatientState ret = null;
+		
+		Set<PatientState> states = this.getStates();
+		if ( states != null ) {
+			for ( PatientState state : states ) {
+				Date now = new Date();
+				
+				boolean isEnded = (state.getEndDate() != null);
+				if (isEnded) isEnded = state.getEndDate().before(now); 
+				
+				if ( state.getActive() && !state.getVoided() && state.getStartDate().before(now) && !isEnded ) {
+					ret = state;
+				}
+			}
+		}
+
+		return ret;
+	}
+	
+	
+//	<c:forEach var="state" items="${program.states}">
+	//<c:if test="${!state.voided && state.state.programWorkflow.programWorkflowId == workflow.programWorkflowId && state.active}">
+
+	
 	public List<PatientState> statesInWorkflow(ProgramWorkflow wf, boolean includeVoided) {
 		List<PatientState> ret = new ArrayList<PatientState>();
 		for (PatientState st : getStates()) {

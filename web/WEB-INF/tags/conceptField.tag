@@ -3,6 +3,7 @@
 <%@ attribute name="formFieldName" required="true" %>
 <%@ attribute name="searchLabel" required="false" %>
 <%@ attribute name="initialValue" required="false" %>
+<%@ attribute name="showAnswers" required="false" %>
 
 <openmrs:htmlInclude file="/scripts/dojoConfig.js"></openmrs:htmlInclude>
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js"></openmrs:htmlInclude>
@@ -27,5 +28,12 @@
 	})
 </script>
 
-<div dojoType="ConceptSearch" widgetId="${formFieldName}_search" conceptId="${initialValue}" showVerboseListing="true"></div>
+<c:choose>
+	<c:when test="${not empty showAnswers}">
+		<div dojoType="ConceptSearch" widgetId="${formFieldName}_search" conceptId="${initialValue}" showVerboseListing="true" showAnswers="${showAnswers}"></div>
+	</c:when>
+	<c:otherwise>
+		<div dojoType="ConceptSearch" widgetId="${formFieldName}_search" conceptId="${initialValue}" showVerboseListing="true"></div>
+	</c:otherwise>
+</c:choose>
 <div dojoType="OpenmrsPopup" widgetId="${formFieldName}_selection" hiddenInputName="${formFieldName}" searchWidget="${formFieldName}_search" searchTitle="${searchLabel}"></div>

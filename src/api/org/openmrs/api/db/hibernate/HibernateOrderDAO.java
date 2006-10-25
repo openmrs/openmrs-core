@@ -10,6 +10,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
+import org.openmrs.Concept;
 import org.openmrs.ConceptSet;
 import org.openmrs.DrugOrder;
 import org.openmrs.Order;
@@ -153,14 +154,14 @@ public class HibernateOrderDAO implements
 	/**
 	 * @see org.openmrs.api.db.OrderService#discontinueOrder(org.openmrs.Order, java.lang.String)
 	 */
-	public void discontinueOrder(Order order, String reason) throws DAOException {
+	public void discontinueOrder(Order order, Concept reason) throws DAOException {
 		discontinueOrder(order, reason, new Date());
 	}
 
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#deleteOrder(org.openmrs.Order)
 	 */
-	public void discontinueOrder(Order order, String discontinueReason, Date discontinueDate) throws DAOException {
+	public void discontinueOrder(Order order, Concept discontinueReason, Date discontinueDate) throws DAOException {
 		log.debug("discontinuing order #" + order.getOrderId());
 
 		order.setDiscontinued(new Boolean(true));
@@ -199,7 +200,7 @@ public class HibernateOrderDAO implements
 		order.setDiscontinued(false);
 		order.setDiscontinuedBy(null);
 		order.setDiscontinuedDate(null);
-		order.setDiscontinuedReason("");
+		order.setDiscontinuedReason(null);
 		updateOrder(order);
 	}
 

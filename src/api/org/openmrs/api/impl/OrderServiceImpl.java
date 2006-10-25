@@ -149,7 +149,7 @@ public class OrderServiceImpl implements OrderService {
 	 * @param Order to void
 	 * @throws APIException
 	 */
-	public void discontinueOrder(Order order, String discontinueReason, Date discontinueDate) throws APIException {
+	public void discontinueOrder(Order order, Concept discontinueReason, Date discontinueDate) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ORDERS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ORDERS);
 
@@ -502,7 +502,7 @@ public class OrderServiceImpl implements OrderService {
 		return ret;
 	}
 
-	public void discontinueDrugSet(Patient patient, String drugSetId, String discontinueReason, Date discontinueDate) {
+	public void discontinueDrugSet(Patient patient, String drugSetId, Concept discontinueReason, Date discontinueDate) {
 		log.debug("in discontinueDrugSet() method with " + drugSetId);
 		if (Context.isAuthenticated() && patient != null && drugSetId != null && discontinueDate != null ) {
 			List<DrugOrder> currentOrders = this.getDrugOrdersByPatient(patient, OrderService.SHOW_CURRENT);
@@ -534,6 +534,10 @@ public class OrderServiceImpl implements OrderService {
 				}
 			}
 		}		
+	}
+	
+	public void discontinueAllOrders(Patient patient, Concept discontinueReason, Date discontinueDate) {
+		List<DrugOrder> drugOrders = this.getDrugOrdersByPatient(patient, OrderService.SHOW_CURRENT);
 	}
 }
 

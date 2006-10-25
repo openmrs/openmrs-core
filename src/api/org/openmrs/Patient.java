@@ -38,7 +38,7 @@ public class Patient implements java.io.Serializable {
 	private Concept civilStatus;
 	private Boolean dead = false;
 	private Date deathDate;
-	private String causeOfDeath;
+	private Concept causeOfDeath;
 	private String healthDistrict;
 	private Location healthCenter;
 	private Set<PatientAddress> addresses;
@@ -285,7 +285,7 @@ public class Patient implements java.io.Serializable {
 	/**
 	 * @return cause of patient's death
 	 */
-	public String getCauseOfDeath() {
+	public Concept getCauseOfDeath() {
 		return this.causeOfDeath;
 	}
 
@@ -293,7 +293,7 @@ public class Patient implements java.io.Serializable {
 	 * @param causeOfDeath
 	 *            cause of patient's death
 	 */
-	public void setCauseOfDeath(String causeOfDeath) {
+	public void setCauseOfDeath(Concept causeOfDeath) {
 		this.causeOfDeath = causeOfDeath;
 	}
 

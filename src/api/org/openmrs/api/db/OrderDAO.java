@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.openmrs.Concept;
 import org.openmrs.ConceptSet;
 import org.openmrs.DrugOrder;
 import org.openmrs.Order;
@@ -40,7 +41,7 @@ public interface OrderDAO {
 	 */
 	public void deleteOrderType(OrderType orderType) throws DAOException;
 	
-	public void discontinueOrder(Order order, String discontinueReason, Date discontinueDate) throws DAOException;
+	public void discontinueOrder(Order order, Concept discontinueReason, Date discontinueDate) throws DAOException;
 	
 	
 	/**
@@ -99,7 +100,7 @@ public interface OrderDAO {
 	 * @param order order to be discontinued
 	 * @param reason reason for discontinuing order
 	 */
-	public void discontinueOrder(Order order, String reason) throws DAOException;
+	public void discontinueOrder(Order order, Concept reason) throws DAOException;
 
 	/**
 	 * Undiscontinue order record

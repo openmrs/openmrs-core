@@ -289,7 +289,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 				patientNode.setAttribute("death_date", df.format(p.getDeathDate()));
 			}
 			if (p.getCauseOfDeath() != null) {
-				patientNode.setAttribute("cause_of_death", p.getCauseOfDeath());
+				patientNode.setAttribute("cause_of_death", p.getCauseOfDeath().getName(locale, false).getName());
 			}
 			if (p.getHealthDistrict() != null) {
 				patientNode.setAttribute("health_district", p.getHealthDistrict());
@@ -379,7 +379,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 							orderNode.setAttribute("discontinued_date", df.format(order.getDiscontinuedDate()));
 						}
 						if (order.getDiscontinuedReason() != null) {
-							orderNode.setAttribute("discontinued_reason", order.getDiscontinuedReason());
+							orderNode.setAttribute("discontinued_reason", order.getDiscontinuedReason().getName(locale, false).getName());
 						}
 
 						ordersNode.appendChild(orderNode);
