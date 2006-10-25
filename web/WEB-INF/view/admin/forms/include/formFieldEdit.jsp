@@ -35,7 +35,7 @@
 		<td valign="top"><spring:message code="Field.concept"/></td>
 		<td valign="top">
 			<div dojoType="ConceptSearch" widgetId="cSearch" showVerboseListing="true" ignoreClasses="N/A"></div>
-			<div dojoType="OpenmrsPopup" widgetId="cSelection" hiddenInputId="conceptId" searchWidget="cSearch" searchTitle='<spring:message code="Concept.find" />' ></div>
+			<div dojoType="OpenmrsPopup" widgetId="cSelection" hiddenInputId="conceptId" searchWidget="cSearch" searchTitle='<spring:message code="Concept.find" />' setPositionTop="false"></div>
 		</td>
 	</tr>
 	<tr id="database">
