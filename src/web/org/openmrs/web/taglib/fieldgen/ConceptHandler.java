@@ -1,7 +1,6 @@
 package org.openmrs.web.taglib.fieldgen;
 
 import org.openmrs.Concept;
-import org.openmrs.User;
 
 public class ConceptHandler extends AbstractFieldGenHandler implements FieldGenHandler {
 

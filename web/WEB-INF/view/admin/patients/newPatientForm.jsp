@@ -388,8 +388,10 @@
 				</spring:bind>
 				&nbsp; &nbsp; 
 				<spring:message code="Patient.causeOfDeath"/>
+				<openmrs:globalProperty key="concept.causeOfDeath" var="conceptCauseOfDeath" />
+				<openmrs:globalProperty key="concept.otherNonCoded" var="conceptOther" />
 				<spring:bind path="patient.causeOfDeath">
-					<openmrs:fieldGen type="org.openmrs.Concept" formFieldName="causeOfDeath" val="${status.value}" />
+					<openmrs:fieldGen type="org.openmrs.Concept" formFieldName="causeOfDeath" val="${status.value}" parameters="showAnswers=${conceptCauseOfDeath}|showOther=${conceptOther}|otherValue=${causeOfDeathOther}" />
 					<%--<input type="text" name="causeOfDeath" value="${status.value}" id="causeOfDeath"/>--%>
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>

@@ -21,6 +21,7 @@ import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Form;
 import org.openmrs.Location;
+import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PatientAddress;
 import org.openmrs.PatientIdentifier;
@@ -317,7 +318,88 @@ public class PatientFormController extends SimpleFormController {
 				//boolean isNew = (patient.getPatientId() == null);
 				
 				Context.getFormEntryService().updatePatient(patient);
-				
+
+				if ( patient.getDead() ) {
+					log.debug("Patient is dead, so let's make sure there's an Obs for it");
+					// need to make sure there is an Obs that represents the patient's cause of death, if applicable
+
+					String codProp = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
+					Concept causeOfDeath = Context.getConceptService().getConceptByIdOrName(codProp);
+
+					if ( causeOfDeath != null ) {
+						Set<Obs> obssDeath = Context.getObsService().getObservations(patient, causeOfDeath);
+						if ( obssDeath != null ) {
+							if ( obssDeath.size() > 1 ) {
+								log.error("Multiple causes of death (" + obssDeath.size() + ")?  Shouldn't be...");
+							} else {
+								Obs obsDeath = null;
+								if ( obssDeath.size() == 1 ) {
+									// already has a cause of death - let's edit it.
+									log.debug("Already has a cause of death, so changing it");
+									
+									obsDeath = obssDeath.iterator().next();
+									
+								} else {
+									// no cause of death obs yet, so let's make one
+									log.debug("No cause of death yet, let's create one.");
+									
+									obsDeath = new Obs();
+									obsDeath.setPatient(patient);
+									obsDeath.setConcept(causeOfDeath);
+									Location loc = Context.getPatientService().getLocationByName("Unknown Location");
+									if ( loc == null ) loc = Context.getPatientService().getLocation(new Integer(1));
+									if ( loc == null ) loc = patient.getHealthCenter();
+									if ( loc != null ) obsDeath.setLocation(loc);
+									else log.error("Could not find a suitable location for which to create this new Obs");
+								}
+								
+								// put the right concept and (maybe) text in this obs
+								Concept currCause = patient.getCauseOfDeath();
+								if ( currCause == null ) {
+									// set to NONE
+									log.debug("Current cause is null, attempting to set to NONE");
+									String noneConcept = Context.getAdministrationService().getGlobalProperty("concept.none");
+									currCause = Context.getConceptService().getConceptByIdOrName(noneConcept);
+								}
+								
+								if ( currCause != null ) {
+									log.debug("Current cause is not null, setting to value_coded");
+									obsDeath.setValueCoded(currCause);
+									
+									Date dateDeath = patient.getDeathDate();
+									if ( dateDeath == null ) dateDeath = new Date();
+									obsDeath.setObsDatetime(dateDeath);
+
+									// check if this is an "other" concept - if so, then we need to add value_text
+									String otherConcept = Context.getAdministrationService().getGlobalProperty("concept.otherNonCoded");
+									Concept conceptOther = Context.getConceptService().getConceptByIdOrName(otherConcept);
+									if ( conceptOther != null ) {
+										if ( conceptOther.equals(currCause) ) {
+											// seems like this is an other concept - let's try to get the "other" field info
+											String otherInfo = RequestUtils.getStringParameter(request, "causeOfDeath_other", "");
+											log.debug("Setting value_text as " + otherInfo);
+											obsDeath.setValueText(otherInfo);
+										} else {
+											log.debug("New concept is NOT the OTHER concept, so setting to blank");
+											obsDeath.setValueText("");
+										}
+									} else {
+										log.debug("Don't seem to know about an OTHER concept, so deleting value_text");
+										obsDeath.setValueText("");
+									}
+									
+									Context.getObsService().updateObs(obsDeath);
+								} else {
+									log.debug("Current cause is still null - aborting mission");
+								}
+							}
+						}
+					} else {
+						log.debug("Cause of death is null - should not have gotten here without throwing an error on the form.");
+					}
+					
+				}
+								
 				String view = getSuccessView();
 							
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.saved");
@@ -367,6 +449,7 @@ public class PatientFormController extends SimpleFormController {
 		List<Form> forms = new Vector<Form>();
 		Map<String, Object> map = new HashMap<String, Object>();
 		List<Encounter> encounters = new Vector<Encounter>();
+		String causeOfDeathOther = "";
 
 		if (Context.isAuthenticated()) {
 			boolean onlyPublishedForms = true;
@@ -377,6 +460,27 @@ public class PatientFormController extends SimpleFormController {
 			Set<Encounter> encs = Context.getEncounterService().getEncounters(patient);
 			if (encs != null && encs.size() > 0)
 				encounters.addAll(encs);
+			
+			String propCause = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
+			Concept conceptCause = Context.getConceptService().getConceptByIdOrName(propCause);
+			
+			if ( conceptCause != null ) {
+				Set<Obs> obssDeath = Context.getObsService().getObservations(patient, conceptCause);
+				if ( obssDeath.size() == 1 ) {
+					Obs obsDeath = obssDeath.iterator().next();
+					causeOfDeathOther = obsDeath.getValueText();
+					if ( causeOfDeathOther == null ) {
+						log.debug("cod is null, so setting to empty string");
+						causeOfDeathOther = "";
+					} else {
+						log.debug("cod is valid: " + causeOfDeathOther);
+					}
+				} else {
+					log.debug("obssDeath is wrong size: " + obssDeath.size());
+				}
+			} else {
+				log.debug("No concept causee found");
+			}
 		}
 			
 		map.put("forms", forms);
@@ -387,6 +491,7 @@ public class PatientFormController extends SimpleFormController {
 		map.put("emptyAddress", new PatientAddress());
 		map.put("encounters", encounters);
 		map.put("datePattern", dateFormat.toLocalizedPattern().toLowerCase());
+		map.put("causeOfDeathOther", causeOfDeathOther);
 		
 		return map;
 	}    

@@ -362,6 +362,7 @@ dojo.widget.defineWidget(
 			this.lastPhraseSearched = phrase;
 			
 			dojo.event.topic.publish(this.eventNames.findObjects, phrase);
+			dojo.debug("Calling doFindObjects with " + phrase);
 			this.doFindObjects(phrase);
 		}
 		else {
