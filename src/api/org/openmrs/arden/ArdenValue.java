@@ -65,6 +65,14 @@ public class ArdenValue {
 		else
 			return null;
 	}
+	
+	public Integer getValueCoded() {
+		if(!obs.isEmpty())
+			return obs.lastElement().getValueCoded().getConceptId();
+		else
+			return null;
+	}
+	
 	public Patient getPatient() {
 		return patient;
 	}

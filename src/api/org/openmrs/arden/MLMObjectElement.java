@@ -3,8 +3,13 @@ package org.openmrs.arden;
 
 import java.io.Writer;
 import java.util.HashMap;
+import java.util.ListIterator;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.LinkedList;
+
+import org.openmrs.Concept;
+import org.openmrs.api.context.Context;
 
 
 
@@ -17,6 +22,8 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 
 	private boolean dbAccessRequired;
 	private String conceptName;
+	private Concept concept;
+	private Concept answerConcept;
 	private String readType;    // Exist, Last, First etc
 	private int howMany;	// how many to read
 	private boolean hasWhere;
@@ -24,14 +31,20 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 	private String durationType;
 	private String durationVal;
 	private String durationOp; // TODO
-	private String answerStr;
-	private Integer answerInt;
+	
+	private LinkedList<String> answerStr;
+	private ListIterator<String> iterAnswerStr;
+	
+	private LinkedList<Integer> answerInt;
+	private ListIterator<Integer> iterAnswerInt;
+	
 	private boolean answerBool;
-	private Integer compOpType; // 0 = none, 1= Str, 2= Integer, 3 = Boolean
 	private Integer compOp;
 	private boolean hasConclude;
 	private boolean concludeVal;
 	private HashMap<String, String> userVarMap ;
+	private String error;
+	private boolean conceptEvalWritten;    // if the compiler has written a method as XYZ() already for this concept XYZ
 	
 	public MLMObjectElement(String s, String t, int n,  String d) {
 		conceptName = s;
@@ -42,19 +55,21 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 //		isEvaluated = false;
 		userVarMap = new HashMap <String, String>();
 		dbAccessRequired = true;  // by default assume that we have to make an API call to get data
+		conceptEvalWritten = false;
+		answerStr = new LinkedList<String> ();
+		answerInt = new LinkedList<Integer> ();
+		iterAnswerStr = answerStr.listIterator(0);
+		iterAnswerInt = answerInt.listIterator(0);
 	}
 	
 	public void setAnswer (String s){
-		answerStr = s;
-		compOpType = 1;  //TODO define a better RHS object
+		answerStr.add(s);
 	}
 	public void setAnswer (Integer i){
-		answerInt = i;
-		compOpType = 2;
+		answerInt.add(i);
 	}
 	public void setAnswer (boolean b){
 		answerBool = b;
-		compOpType = 3;
 	}
 	public void setCompOp (Integer op){
 		compOp = op;
@@ -88,7 +103,7 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 		}
 		
 	}
-	public String getConcept(){
+	private String getConcept(){
 		   String  cn;
 		   int len;
 			int index;
@@ -109,6 +124,19 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 			return cn;
 	   }
   
+	private String getReadType() {
+		String retVal = "";
+		if (!readType.equals("") ) {
+			retVal = "." + readType + "(";
+			if(howMany > 0){
+				retVal += howMany;
+			}
+			retVal += ")";
+		}
+		
+		return retVal;
+	}
+	
    public boolean writeAction(String key, Writer w) throws Exception {
 	   boolean retVal = false;
 		/*if(!hasConclude)*/ {	// no conclude
@@ -117,12 +145,12 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 				while(iter.hasNext()) {
 					var = (String) iter.next();
 					val = getUserVarVal(var);
-					w.append("\t\t//"+var+ " = \"" + val +"\"\n"); // write as comment
+					w.append("\t\t//"+var+ " = " + val + "\n"); // write as comment
 				//	w.append("\t\t\tif(!userVarMap.containsKey("+ var + ")) {\n\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n\t\t\t}\n");
 				//	w.append("\t\t\telse {\n");
 				//	w.append("\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n");
 				//	w.append("\t\t\t}");
-					w.append("\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n");
+					w.append("\t\tuserVarMap.put(\"" + var + "\", " + val + ");\n");
 				//	w.append("\t\tdssObj.addObs(\"" + getConcept().trim() + "\", obs);\n");	// changed to have the key such as last_pb than BLOOD_LEAD_LEVEL as the key to the obsMap see below
 					w.append("\t\tvalueMap.put(\"" + key + "\", val);\n");
 				}
@@ -161,29 +189,50 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
    }
   
    
-   public boolean writeEvaluate(String key, Writer w) throws Exception{
-	   boolean retVal = false;
+public boolean writeEvaluate(String key, Writer w) throws Exception{
+	   boolean retVal = true;
+	 
+	   if(conceptEvalWritten){
+		   return true;         // we have a function that reads this concept as per READ statement
+	   }
+	   
 	   if(!key.startsWith("Conclude") &&  !key.startsWith("ELSE") &&  !key.startsWith("ENDIF")
 			   && !key.equals("AND")){
 		   String cn = getConcept();
+		   concept = Context.getConceptService().getConceptByName(cn);
 		   
 		   if(dbAccessRequired){
+			   if(concept != null){
 			   w.append("private ArdenValue " + key + "(){\n");
-			   w.append("\tConcept concept;\n");
+			   w.append("\tConcept c = new Concept();\n");
+			   w.append("\tc.setConceptId(" + Integer.toString(concept.getConceptId()) + "); // " + cn + "\n");
 		       
-			   w.append("\tconcept = Context.getConceptService().getConceptByName(\"" + cn.trim() + "\");\n");
-			   if(readType.equals("last")){
+			   //w.append("\tconcept = Context.getConceptService().getConceptByName(\"" + cn.trim() + "\");\n");
+			   w.append("\t //return dataSource.eval(patient, Aggregation" +  getReadType() + ", c, DateCriteria." + whereType 
+					   + "(Duration." + durationType + "("  +  durationOp + "(" +  durationVal + "))) );\n");
+			   
+			   if(!readType.equals("")){
 				   if(hasWhere){
-					   w.append("\treturn dataSource.eval(patient, ardenClause.concept(concept).last(" + howMany + ")." + whereType + "()." + durationType + "()." + durationOp + "(" + durationVal + "));\n");
+					   w.append("\treturn dataSource.eval(patient, ardenClause.concept(c)." + readType + "(" + howMany + ")." + whereType + "()." + durationType + "()." + durationOp + "(" + durationVal + "));\n");
 				    }
 				   else {
-					   w.append("\treturn dataSource.eval(patient, ardenClause.concept(concept).last(" + howMany + "));\n");
+					   w.append("\treturn dataSource.eval(patient, ardenClause.concept(c)." + readType+ "(" + howMany + "));\n");
 				   }
 			   }
 			   else { 
-				   w.append("\treturn dataSource.eval(patient, ardenClause.concept(concept));\n");
+				   w.append("\treturn dataSource.eval(patient, ardenClause.concept(c));\n");
 			   }
 			   w.append("}\n\n");
+			   }
+			   else {
+				 System.out.println("Compiler error - No concept found in the dictionary: " + cn );
+				 error = "Compiler error - No concept found in the dictionary: " + cn;
+				 retVal = false;
+				// w.append("private ArdenValue " + key + "(){\n");
+				// w.append("\treturn null;\n");
+				// w.append("}\n\n");  
+			   }
+			   conceptEvalWritten = true;		// Finished writing
 			   
 		   }  // end of DB access required
 		   else {  // No DB access, simply conclude or else conclude
@@ -202,8 +251,8 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 			   }
 			   	
 		   }
-		 
-	   }	   
+		} 
+       
 	   return retVal;
    }
 
@@ -216,15 +265,27 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 		return conceptName;
 	}
 	
-	public String getAnswer() {
-		String retVal = "";
-		if(answerInt != null)
-			retVal = Integer.toString(answerInt);
-		else
-			retVal = answerStr;
-		return retVal;
+	private String getAnswerStr() {
+		String retVal;
+		if(iterAnswerStr.hasNext()) {
+			retVal =  answerStr.remove();
+			return retVal;
+		}
+		else {
+			return null;
+		}
 	}
 	
+	private Integer getAnswerInt() {
+		Integer intVal;
+		if(iterAnswerInt.hasNext()) {
+		   intVal =  answerInt.remove();
+		   return intVal;
+		}
+		else {
+			return null;
+		}
+	}
 	public String getCompOp(){
 		String s =  Integer.toString(compOp);
 		System.err.println(s);
@@ -243,6 +304,14 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 			retVal = "unknown";
 		}
 		return retVal;
+	}
+	public boolean hasError() {
+		if(error.equals("")){
+			return false;
+		}
+		else {
+			return true;
+		}
 	}
 	
 	public boolean isConclude() {
@@ -284,10 +353,11 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 	/*****************************************/
 	public String getCompOpCode(String key) throws Exception {
 		String retStr = "";
+		String answer;
 		if (compOp != null){
 			   switch(compOp) {
 			   		case EQUALS:
-			   		{switch(compOpType){
+			 /*  		{switch(compOpType){
 		  			case 3: // boolean
 		  				retStr += "\tif (val.getValueAsBoolean() == " + Boolean.toString(answerBool) ;
 		  				break;
@@ -298,11 +368,27 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 		  				retStr += "\tif (val.getValueText() != null && val.getValueText().equals(\"" + answerStr + "\")";
 		  				break;
 				   }
-			   			
+			   	*/
+			   		if(concept != null) {	
+			   			if (concept.isNumeric()) {
+			   				retStr += "\tif (val.getValueNumeric() == " + getAnswerInt() ;
+		   				}
+			   			else if (concept.getDatatype().getName().equals("Coded")) {
+			   				answer = getAnswerStr();
+			   				answerConcept = Context.getConceptService().getConceptByName(answer);   
+			   				if(answerConcept != null){
+			   					retStr += "\n\t //" + answer + "\n\tif (val.getValueCoded() == " + Integer.toString(answerConcept.getConceptId()) ;
+			   				}
+		   				}	
 			   		}
 			   		break;
 			   		case GTE:
-			   		{switch(compOpType){
+			   			if (concept != null && concept.isNumeric()) {
+			   				retStr += "\tif (val.getValueNumeric() >= " + getAnswerInt() ;
+		   				}
+		   					
+			   		
+			   	/*	{switch(compOpType){
 		  			case 3: // boolean
 		  				
 		  				break;
@@ -315,7 +401,7 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 				   }
 		   			
 			   		}
-			   		break;
+			   	*/	break;
 			   		default:
 			   			break;
 			   	}

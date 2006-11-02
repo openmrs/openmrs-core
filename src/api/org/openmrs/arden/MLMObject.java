@@ -141,7 +141,7 @@ public class MLMObject {
 	     Collection<MLMObjectElement> collection = conceptMap.values();
 	     for(MLMObjectElement mo : collection) {
 	       System.out.println(mo.getConceptName()  + 
-	    		   "\n Answer = " + mo.getAnswer() + 
+	    		  // "\n Answer = " + mo.getAnswer() + 
 	    		   //"\n Operator = " + mo.getCompOp() +
 	    		   "\n Conclude Val = " + mo.getConcludeVal() +
 	    		   "\n User Vars = " + mo.getUserVarVal()
@@ -188,6 +188,7 @@ public class MLMObject {
 		try{
 			 w.write("public void initAction() {\n");
 		     w.append("\t\tuserVarMap.put(\"ActionStr\", \"" +  str + "\");\n");
+				   
 		     w.write("}\n\n");	// End of this function
 		     w.flush();
 		
@@ -255,8 +256,8 @@ public class MLMObject {
 		      e.printStackTrace();   // so we can get stack trace		
 		    }
 	}
-	public void WriteEvaluate(Writer w) throws Exception {
-	boolean retVal = false;
+	public boolean WriteEvaluate(Writer w) throws Exception {
+	boolean retValEval = true, retVal = true;
 	try{
 		String key;
 		ListIterator<MLMEvaluateElement> thisList;
@@ -267,10 +268,16 @@ public class MLMObject {
 			Iterator iter1 = thisList.next().iterator();
 			while (iter1.hasNext()) {
 			    key = (String) iter1.next();	// else if
-			    writeEvaluateConcept(key, w);
+			    retVal = writeEvaluateConcept(key, w);
+			    if(retVal == false){
+			    	retValEval = false;	   // Atleast 1 error
+			    }
 			}
 		}
-		
+		if(retValEval == false) {
+			return false;
+		}
+			
 		 w.append("\npublic boolean evaluate() {\n");
 		 w.append("\t\t\treturn evaluate_logic();\n}\n");
 		
@@ -296,6 +303,7 @@ public class MLMObject {
 	      System.err.println("Write Evaluate: "+e);
 	      e.printStackTrace();   // so we can get stack trace		
 	    }
+	return retValEval;
     }
 	
 /*	
@@ -644,7 +652,7 @@ public class MLMObject {
 	}
 */	
 	public boolean writeEvaluateConcept(String key, Writer w) throws Exception{
-		boolean retVal = false;
+		boolean retVal = true;
 		MLMObjectElement mObjElem = GetMLMObjectElement(key);
 		if(mObjElem != null ){
 			retVal = mObjElem.writeEvaluate(key, w);
@@ -697,7 +705,7 @@ public class MLMObject {
 	public void SetAnswer (String val, String key) {
 		MLMObjectElement mObjElem = GetMLMObjectElement(key);
 		if(mObjElem != null){
-			mObjElem.setAnswer(val);
+			mObjElem.setAnswer(val.substring(1,val.length()-1));
 		}
 	}
 	

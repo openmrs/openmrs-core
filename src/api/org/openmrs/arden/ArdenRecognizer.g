@@ -1073,7 +1073,8 @@ expr_factor
 	;
 
 expr_factor_atom
-	: ID
+	: ID 
+	
 	| LPAREN! 
 		//	( ID | ( (LPAREN expr_factor_atom RPAREN) (COMMA (LPAREN ID RPAREN))*) ) 
 		expr		
@@ -1490,7 +1491,7 @@ exprStringAST [MLMObject obj, String instr] returns [String s=""]
 	  )
 	| (strlit: STRING_LITERAL
 		{
-			b = val.getText();
+			b = strlit.getText();
 			obj.SetAnswer(b,instr);					
 			
 		}
@@ -1675,7 +1676,7 @@ writeAST [MLMObject obj] returns [String s=""]
        							b = "||" + a + "||";
        							s += b;}
        		ACTION_OP) 
-           | (i:STRING_LITERAL {s += i.getText();} ) 
+           | (i:STRING_LITERAL {a = i.getText(); s += a.substring(1, a.length()-1); } )  /* get rid of "" sorrounding each string literal */
        )*
        		
        		
@@ -1838,11 +1839,11 @@ INTLIT
 
 // string literals
 STRING_LITERAL
-  : '"'!
-    ( '"' '"'!
+  : '"'
+    ( '"' '"'
     | ~('"'|'\n'|'\r')
     )*
-    ( '"'!
+    ( '"'
     | // nothing -- write error message
     )
 	;

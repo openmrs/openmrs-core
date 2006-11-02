@@ -56,7 +56,7 @@ public class ArdenServiceImpl implements ArdenService {
 	 * @param f - parse a file or a directory
 	 */
 	private void doFile(File f) throws Exception {
-	
+	boolean retVal = true;
 	try {
 		// If this is a directory, walk each file/dir in that directory
 	    if (f.isDirectory()) {
@@ -69,7 +69,10 @@ public class ArdenServiceImpl implements ArdenService {
 	    // otherwise, if this is a mlm file, parse it!
 	    else if (f.getName().substring(f.getName().length()-4).equals(".mlm")) {
 	      log.info("Parsing file name:" + f.getName());
-	      parseFile(new FileInputStream(f), f.getName()/*f.getAbsolutePath()*/);
+	      retVal = parseFile(new FileInputStream(f), f.getName()/*f.getAbsolutePath()*/);
+	      if(!retVal) {
+	    	  System.out.println("Please correct the compiler error!");
+	       }
 	    }
 	 }
 	 catch(Exception e) {
@@ -83,8 +86,8 @@ public class ArdenServiceImpl implements ArdenService {
 	 * @param s
 	 * @param fn
 	 */
-	private void parseFile(FileInputStream s, String fn) throws Exception {
-		
+	private boolean parseFile(FileInputStream s, String fn) throws Exception {
+		boolean retVal = true;
 		 try {
 		      //int index  = fn.indexOf(".mlm");
 		      String cfn; // = fn.substring(0,index); 
@@ -164,18 +167,29 @@ public class ArdenServiceImpl implements ArdenService {
 		    
 		     ardObj.PrintConceptMap();	   // To Debug
 		     ardObj.PrintEvaluateList();   // To Debug
-		     ardObj.WriteEvaluate(w);
-		     String actionstr = treeParser.action(t.getNextSibling().getNextSibling().getNextSibling().getNextSibling(), ardObj);
-		     ardObj.WriteAction(actionstr, w);
-			 
-		     w.append("}");	// end class
-			 w.flush();
-			 w.close();
-		      
+		     retVal = ardObj.WriteEvaluate(w);
+		     if(retVal) {
+			     String actionstr = treeParser.action(t.getNextSibling().getNextSibling().getNextSibling().getNextSibling(), ardObj);
+			     ardObj.WriteAction(actionstr, w);
+			     w.append("}");	// end class
+				 w.flush();
+				 w.close();
+			 }
+		     else {   //delete the compiled file so far
+		    	 w.flush();
+				 w.close();
+		 /*   	 boolean success = (new File("src/api/org/openmrs/arden/compiled/" + cfn + ".java")).delete();
+		    	    if (!success) {
+		    	        System.out.println("Incomplete compiled file " + cfn + ".java cannot be deleted!");
+		    	    }
+          */
+		     }
+		   		      
 		    }
 		    catch (Exception e) {
 		      log.error(e.getStackTrace());
 		    }
+		    return retVal;
 	}
 	
 	
