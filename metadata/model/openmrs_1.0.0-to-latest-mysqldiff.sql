@@ -1231,7 +1231,7 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	AND p.cause_of_death IS NULL;
 
 	# insert a global property to indicate cause_of_death concept (if it doesn't exist already)
-	IF( SELECT count(*) = 0 FROM global_property WHERE lower(property) = 'concept.causeofdeath' ) THEN
+	IF ( SELECT count(*) = 0 FROM global_property WHERE lower(property) = 'concept.causeofdeath' ) THEN
 		INSERT INTO global_property(property, property_value) VALUES ('concept.causeOfDeath', CONCAT(_cause_id));
 	END IF;
 
@@ -1429,6 +1429,39 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 
 delimiter ;
 call diff_procedure('1.0.45');
+
+
+#--------------------------------------
+# OpenMRS Datamodel version 1.0.46
+# Ben Wolfe  Nov 11, 2006 11:15 AM
+# Fixing obs section in basic form
+#--------------------------------------
+
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+	SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+	
+	IF (SELECT concept_id = 1238 FROM field WHERE field_id = 4) THEN
+		IF (SELECT `name` = 'OBS' FROM field WHERE field_id = 5) THEN
+			IF (SELECT field_id = 5 FROM form_field WHERE form_field_id = 5) THEN
+				UPDATE `form_field` SET field_id = 4 WHERE form_field_id = 5;
+			END IF;
+		END IF;
+	END IF;
+	
+	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+	
+	END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.0.46');
 
 
 #-----------------------------------
