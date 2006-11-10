@@ -1081,6 +1081,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	}
 	
 	// TODO: Reimplement this method if we revise the meanings/names of the relationship fields
+	@SuppressWarnings("unchecked")
 	public Map<Integer, List<Relationship>> getRelationships(PatientSet ps, RelationshipType relType) {
 		Map<Integer, List<Relationship>> ret = new HashMap<Integer, List<Relationship>>();
 		Collection<Integer> ids = ps.getPatientIds();

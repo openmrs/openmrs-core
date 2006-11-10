@@ -844,6 +844,7 @@ public class HibernateAdministrationDAO implements
 		sessionFactory.getCurrentSession().save(prop);
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<DataEntryStatistic> getDataEntryStatistics(Date fromDate, Date toDate) throws DAOException {
 		// for all encounters, find user, form name, and number of entries
 		String hql = "select enc.creator, enc.form.name, count(*) " +
