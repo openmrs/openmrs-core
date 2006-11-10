@@ -94,11 +94,25 @@
 			defaultValue="Error" />
 		
 		<loadfile srcfile="${openmrs.version.revision.filename}" property="repositoryFileInput" />
-		<propertyregex property="openmrs.version.revision"
-			input="${repositoryFileInput}"
-			regexp="${openmrs.version.revision.regexp}"
-			select="\1"
-			defaultValue="Error with code revision regexp" />
+		<if>
+			<contains string="${repositoryFileInput}" substring="&lt;?xml" casesensitive="false" />
+			<then>
+				<!-- SVN pre-1.4 uses XML format -->
+				<propertyregex property="openmrs.version.revision"
+					input="${repositoryFileInput}"
+					regexp="${openmrs.version.revision.regexp}"
+					select="\1"
+					defaultValue="? (error with pre-1.4 revision regexp)" />
+			</then>
+			<else>
+				<!-- SVN 1.4+ does not use XML format, just grab 4th line -->
+				<propertyregex property="openmrs.version.revision"
+					input="${repositoryFileInput}"
+					regexp="^(.*)\n(.*)\n(.*)\n(.*)"
+					select="\4"
+					defaultValue="? (error in post-1.4 revision regexp)" />				
+			</else>
+		</if>
 		<property 
 			name="openmrs.version.long" 
 			value="${openmrs.version.major}.${openmrs.version.minor}.${openmrs.database.version.expected.short} Build ${openmrs.version.revision}"/>
