@@ -172,6 +172,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	}
 	
 	public String toString() {
-		return "DrugOrder(" + getDose() + getUnits() + " of " + getDrug().getName() + " from " + getStartDate() + " to " + (getDiscontinued() ? getDiscontinuedDate() : getAutoExpireDate()) + ")";
+		return "DrugOrder(" + getDose() + getUnits() + " of " + (getDrug() != null ? getDrug().getName() : "[no drug]") + " from " + getStartDate() + " to " + (getDiscontinued() ? getDiscontinuedDate() : getAutoExpireDate()) + ")";
 	}
 }

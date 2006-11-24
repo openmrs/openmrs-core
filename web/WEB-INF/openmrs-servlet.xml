@@ -1161,7 +1161,7 @@
 	    <bean id="drugTri30" class="org.openmrs.order.DrugSuggestion">
 			<property name="drugId"><value>2</value></property>	    
 			<property name="dose"><value>1</value></property>	    
-			<property name="units"><value>tablet(s)</value></property>	    
+			<property name="units"><value>tab(s)</value></property>	    
 			<property name="frequency"><value>2/day x 7 days/week</value></property>	    
 			<property name="instructions"><value></value></property>	    
 	    </bean>
@@ -1169,7 +1169,7 @@
 	    <bean id="drugTri40" class="org.openmrs.order.DrugSuggestion">
 			<property name="drugId"><value>3</value></property>	    
 			<property name="dose"><value>1</value></property>	    
-			<property name="units"><value>tablet(s)</value></property>	    
+			<property name="units"><value>tab(s)</value></property>	    
 			<property name="frequency"><value>2/day x 7 days/week</value></property>	    
 			<property name="instructions"><value></value></property>	    
 	    </bean>
@@ -1177,7 +1177,7 @@
 	    <bean id="drugAzt3tc" class="org.openmrs.order.DrugSuggestion">
 			<property name="drugId"><value>39</value></property>	    
 			<property name="dose"><value>1</value></property>	    
-			<property name="units"><value>tablet(s)</value></property>	    
+			<property name="units"><value>tab(s)</value></property>	    
 			<property name="frequency"><value>2/day x 7 days/week</value></property>	    
 			<property name="instructions"><value></value></property>	    
 	    </bean>

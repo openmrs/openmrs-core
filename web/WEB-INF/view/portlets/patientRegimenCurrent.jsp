@@ -43,9 +43,6 @@
 					<c:if test="${not empty model.currentDrugOrderSets['*']}">
 						<c:forEach items="${model.currentDrugOrderSets['*']}" var="drugOrder">
 							<tr>
-							
-							function(data) { return "&nbsp;&nbsp;&nbsp;&nbsp;<a class=\"patientRegimenDrugName\" href=\"orderDrug.form?orderId=" + data.orderId + "\">" + data.drugName + "</a>"; },
-
 								<td>&nbsp;&nbsp;&nbsp;&nbsp;<a class="patientRegimenDrugName" href="orderDrug.form?orderId=${drugOrder.orderId}">${drugOrder.drug.name}</a></td>
 								<td>${drugOrder.dose} ${drugOrder.units}</td>
 								<td>${drugOrder.frequency}</td>
