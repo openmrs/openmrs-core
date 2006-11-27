@@ -13,7 +13,7 @@
 		<td><spring:message code="general.name"/></td>
 		<td>
 			<spring:bind path="conceptDatatype.name">
-				<input type="text" name="name" value="${status.value}" size="35" />
+				<input type="text" name="name" value="${status.value}" size="35" readonly="1"/>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
@@ -22,7 +22,16 @@
 		<td valign="top"><spring:message code="general.description"/></td>
 		<td>
 			<spring:bind path="conceptDatatype.description">
-				<textarea name="description" rows="3" cols="40" type="_moz">${status.value}</textarea>
+				<textarea name="description" rows="3" cols="40" type="_moz" readonly="1">${status.value}</textarea>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<td><spring:message code="ConceptDatatype.hl7Abbreviation"/></td>
+		<td>
+			<spring:bind path="conceptDatatype.hl7Abbreviation">
+				<input type="text" name="hl7Abbreviation" value="${status.value}" size="5" readonly="1"/>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
