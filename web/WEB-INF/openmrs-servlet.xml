@@ -1524,6 +1524,10 @@
 					</prop>
 				</props>
 				<props>
+					<prop key="type">newlines</prop>
+					<prop key="count">1</prop>
+				</props>
+				<props>
 					<prop key="type">label</prop>
 					<prop key="code">summary.alert.noCxr</prop>
 					<!-- We could define a set 'CHEST XRAY FINDINGS' that contains all concept-questions for chest xray findings

@@ -131,7 +131,7 @@
 					</c:when>
 					<c:when test="${specElement.type == 'pastDrugOrders'}">
 						<openmrs:portlet url="patientRegimenCompleted" id="patientRegimenCompleted" patientId="${model.patientId}"
-							parameters="displayDrugSetIds=${specElement.whichSets}|currentRegimenMode=view" />
+							parameters="displayDrugSetIds=${specElement.whichSets}|completedRegimenMode=view" />
 					</c:when>
 					<%--
 					<c:when test="${}">
