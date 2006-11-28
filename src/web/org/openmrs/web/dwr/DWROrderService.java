@@ -29,7 +29,8 @@ public class DWROrderService {
 	 * This method would normally be return type void, but DWR requires a callback, so we know when to refresh view
 	 */
 	public boolean createDrugOrder(Integer patientId, String drugId, Double dose, String units, String frequency, String startDate, String instructions) {
-		log.debug("PatientId is " + patientId + " and drugId is " + drugId );
+		log.debug("PatientId is " + patientId + " and drugId is " + drugId + " and dose is " + dose + " and units are " + units
+				+ " and frequency is " + frequency + " and startDate is " + startDate + " and instructions are " + instructions);
 		
 		boolean ret = true;
 		
@@ -48,7 +49,8 @@ public class DWROrderService {
 		
 		Date dStartDate = null;
 		if ( startDate != null ) {
-			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+			String datePattern = OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase());
+			SimpleDateFormat sdf = new SimpleDateFormat(datePattern);
 			try {
 				dStartDate = sdf.parse(startDate);
 			} catch (ParseException e) {
@@ -61,6 +63,7 @@ public class DWROrderService {
 		drugOrder.setVoided(new Boolean(false));
 		Context.getOrderService().updateOrder(drugOrder, patient);
 		
+		log.debug("Finished creating new drug order");
 		return ret;
 	}
 	
@@ -72,7 +75,8 @@ public class DWROrderService {
 	public void discontinueOrder(Integer orderId, String discontinueReason, String discontinueDate) {
 		Date dDiscDate = null;
 		if ( discontinueDate != null ) {
-			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+			String datePattern = OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase());
+			SimpleDateFormat sdf = new SimpleDateFormat(datePattern);
 			try {
 				dDiscDate = sdf.parse(discontinueDate);
 			} catch (ParseException e) {
@@ -263,7 +267,8 @@ public class DWROrderService {
 
 		Date discDate = null;
 		if ( discontinueDate != null ) {
-			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+			String datePattern = OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase());
+			SimpleDateFormat sdf = new SimpleDateFormat(datePattern);
 			try {
 				discDate = sdf.parse(discontinueDate);
 			} catch (ParseException e) {
@@ -303,7 +308,8 @@ public class DWROrderService {
 		
 		Date discDate = null;
 		if ( discontinueDate != null ) {
-			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+			String datePattern = OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase());
+			SimpleDateFormat sdf = new SimpleDateFormat(datePattern);
 			try {
 				discDate = sdf.parse(discontinueDate);
 			} catch (ParseException e) {

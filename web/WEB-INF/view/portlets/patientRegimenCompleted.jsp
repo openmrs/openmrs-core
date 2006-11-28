@@ -44,12 +44,12 @@
 					<c:if test="${not empty model.completedDrugOrderSets['*']}">
 						<c:forEach items="${model.completedDrugOrderSets['*']}" var="drugOrder">
 							<tr>
-								<td><span class="patientRegimenDrugName">${drugOrder.drug.name}</span></td>
+								<td>&nbsp;&nbsp;&nbsp;&nbsp;<a class="patientRegimenDrugName" href="orderDrug.form?orderId=${drugOrder.orderId}">${drugOrder.drug.name}</a></td>
 								<td>${drugOrder.dose} ${drugOrder.units}</td>
 								<td>${drugOrder.frequency}</td>
-								<td><openmrs:formatDate date="${drugOrder.startDate}" /></td>
-								<td><openmrs:formatDate date="${drugOrder.autoExpireDate}" /></td>
-								<td><openmrs:formatDate date="${drugOrder.discontinuedDate}" /></td>
+								<td><openmrs:formatDate date="${drugOrder.startDate}" type="short" format="${model.drugOrderDatePattern}" /></td>
+								<td><openmrs:formatDate date="${drugOrder.autoExpireDate}" type="short" format="${model.drugOrderDatePattern}" /></td>
+								<td><openmrs:formatDate date="${drugOrder.discontinuedDate}" type="short" format="${model.drugOrderDatePattern}" /></td>
 								<td>${drugOrder.instructions}</td>
 								<td>
 									<c:if test="${not empty drugOrder.discontinuedReason}">
@@ -115,12 +115,12 @@
 					<c:if test="${not empty model.completedDrugOrderSets[drugSetId]}">
 						<c:forEach items="${model.completedDrugOrderSets[drugSetId]}" var="drugOrder">
 							<tr>
-								<td><span class="patientRegimenDrugName">${drugOrder.drug.name}</span></td>
+								<td>&nbsp;&nbsp;&nbsp;&nbsp;<a class="patientRegimenDrugName" href="orderDrug.form?orderId=${drugOrder.orderId}">${drugOrder.drug.name}</a></td>
 								<td>${drugOrder.dose} ${drugOrder.units}</td>
 								<td>${drugOrder.frequency}</td>
-								<td><openmrs:formatDate date="${drugOrder.startDate}" /></td>
-								<td><openmrs:formatDate date="${drugOrder.autoExpireDate}" /></td>
-								<td><openmrs:formatDate date="${drugOrder.discontinuedDate}" /></td>
+								<td><openmrs:formatDate date="${drugOrder.startDate}" type="short" format="${model.drugOrderDatePattern}" /></td>
+								<td><openmrs:formatDate date="${drugOrder.autoExpireDate}" type="short" format="${model.drugOrderDatePattern}" /></td>
+								<td><openmrs:formatDate date="${drugOrder.discontinuedDate}" type="short" format="${model.drugOrderDatePattern}" /></td>
 								<td>${drugOrder.instructions}</td>
 								<td>
 									<c:if test="${not empty drugOrder.discontinuedReason}">
@@ -173,9 +173,9 @@
 								<td><span class="patientRegimenDrugName">${drugOrder.drug.name}</span></td>
 								<td>${drugOrder.dose} ${drugOrder.units}</td>
 								<td>${drugOrder.frequency}</td>
-								<td><openmrs:formatDate date="${drugOrder.startDate}" /></td>
-								<td><openmrs:formatDate date="${drugOrder.autoExpireDate}" /></td>
-								<td><openmrs:formatDate date="${drugOrder.discontinuedDate}" /></td>
+								<td><openmrs:formatDate date="${drugOrder.startDate}" type="short" format="${model.drugOrderDatePattern}" /></td>
+								<td><openmrs:formatDate date="${drugOrder.autoExpireDate}" type="short" format="${model.drugOrderDatePattern}" /></td>
+								<td><openmrs:formatDate date="${drugOrder.discontinuedDate}" type="short" format="${model.drugOrderDatePattern}" /></td>
 								<td>${drugOrder.instructions}</td>
 								<td>
 									<c:if test="${not empty drugOrder.discontinuedReason}">

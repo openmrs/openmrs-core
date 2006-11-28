@@ -71,9 +71,11 @@ public class HibernateOrderDAO implements
 	 * @see org.openmrs.api.db.AdministrationService#createOrderType(org.openmrs.OrderType)
 	 */
 	public void createOrder(Order order) throws DAOException {
+		log.debug("In createOrder method");
 		order.setCreator(Context.getAuthenticatedUser());
 		order.setDateCreated(new Date());
 		sessionFactory.getCurrentSession().save(order);
+		log.debug("Ending createOrder method");
 	}
 	
 	/**
@@ -147,8 +149,9 @@ public class HibernateOrderDAO implements
 	public void updateOrder(Order order) throws DAOException {
 		if (order.getOrderId() == null)
 			createOrder(order);
-		else
-			sessionFactory.getCurrentSession().saveOrUpdate(order);
+		else {
+			sessionFactory.getCurrentSession().saveOrUpdate(order);			
+		}
 	}
 	
 	/**
@@ -162,13 +165,15 @@ public class HibernateOrderDAO implements
 	 * @see org.openmrs.api.db.AdministrationService#deleteOrder(org.openmrs.Order)
 	 */
 	public void discontinueOrder(Order order, Concept discontinueReason, Date discontinueDate) throws DAOException {
-		log.debug("discontinuing order #" + order.getOrderId());
+		log.debug("discontinuing order #" + order.getOrderId() + ", date is " + discontinueDate);
 
 		order.setDiscontinued(new Boolean(true));
 		order.setDiscontinuedReason(discontinueReason);
 		order.setDiscontinuedDate(discontinueDate);
 		order.setDiscontinuedBy(Context.getAuthenticatedUser());
-		updateOrder(order);
+		
+		log.debug("discontinued is " + order.getDiscontinued());
+		sessionFactory.getCurrentSession().update(order);			
 	}
 
 

@@ -2,6 +2,9 @@ package org.openmrs;
 
 import java.util.Date;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Order 
  * 
@@ -10,6 +13,7 @@ import java.util.Date;
  */
 public class Order implements java.io.Serializable {
 
+	protected final Log log = LogFactory.getLog(getClass());
 	public static final long serialVersionUID = 4334343L;
 
 	// Fields
@@ -359,6 +363,26 @@ public class Order implements java.io.Serializable {
 		return isCurrent(new Date());
 	}
 
+	public boolean isFuture(Date checkDate) {
+		log.debug("Check if this is in the future");
+		if ( checkDate == null ) {
+			checkDate = new Date();
+		}
+		
+		if ( startDate != null && checkDate.before(startDate) && !voided && !discontinued){
+			log.debug("Looks like this order IS in the future");
+			return true;
+		}
+		
+		log.debug("Looks like this order is not in the future");
+		return false;
+	}
+
+	public boolean isFuture() {
+		return isFuture(new Date());
+	}
+
+	
 	/**
 	 * Convenience method to determine if order is discontinued
 	 * @param checkDate - the date on which to check order. if null, will use current date

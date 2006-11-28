@@ -7,7 +7,7 @@
 		<div class="boxHeader"><spring:message code="DrugOrder.regimens.current" /></div>
 		<div class="box">
 
-			<openmrs:portlet url="patientRegimenCurrent" id="patientRegimenCurrent" patientId="${patient.patientId}" parameters="displayDrugSetIds=ANTIRETROVIRAL DRUGS,TUBERCULOSIS TREATMENT DRUGS,*" />
+			<openmrs:portlet url="patientRegimenCurrent" id="patientRegimenCurrent" patientId="${patient.patientId}" parameters="displayDrugSetIds=ANTIRETROVIRAL DRUGS,TUBERCULOSIS TREATMENT DRUGS,*|displayFutureRegimens=true" />
 			
 			<span><a href="javascript:showHideDiv('regimenPortletAddForm');">(+) <spring:message code="DrugOrder.regimens.addOrChange" /></a></span>
 			<div id="regimenPortletAddForm" style="display:none">
