@@ -10,6 +10,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.annotation.Authorized;
+import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.db.ContextDAO;
 import org.openmrs.util.OpenmrsConstants;
 
@@ -88,6 +90,27 @@ public class UserContext {
 	public User authenticate(String username, String password) throws ContextAuthenticationException {
 		this.user = getContextDAO().authenticate(username, password);
 		return this.user;
+	}
+	
+	/**
+	 * Change current authentication to become another user.
+	 * (You can only do this if you're already authenticated as a superuser.)
+	 * @param username
+	 * @return The new user that this context has been set to. (null means no change was made)
+	 * @throws ContextAuthenticationException
+	 */
+	public User becomeUser(String username) throws ContextAuthenticationException {
+		if (!Context.getAuthenticatedUser().isSuperUser())
+			throw new APIAuthenticationException("You must be a superuser to assume another user's identity");
+		User u = Context.getUserService().getUserByUsername(username);
+		u.getAllRoles().size();
+		u.getProperties().size();
+		u.getPrivileges().size();
+		if (u == null)
+			throw new ContextAuthenticationException("Username not found: " + username);
+		else
+			this.user = u;
+		return u;
 	}
 
 	/**

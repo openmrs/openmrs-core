@@ -428,14 +428,14 @@ public class PatientName implements java.io.Serializable, Cloneable, Comparable<
 	
 	public String toString() {
 		List<String> temp = new ArrayList<String>();
-		if (prefix != null) temp.add(prefix);
-		if (givenName != null) temp.add(givenName);
-		if (middleName != null) temp.add(middleName);
-		if (familyNamePrefix != null) temp.add(familyNamePrefix);
-		if (familyName != null) temp.add(familyName);
-		if (familyName2 != null) temp.add(familyName2);
-		if (familyNameSuffix != null) temp.add(familyNameSuffix);
-		if (degree != null) temp.add(degree);
+		if (getPrefix() != null) temp.add(getPrefix());
+		if (getGivenName() != null) temp.add(getGivenName());
+		if (getMiddleName() != null) temp.add(getMiddleName());
+		if (getFamilyNamePrefix() != null) temp.add(getFamilyNamePrefix());
+		if (getFamilyName() != null) temp.add(getFamilyName());
+		if (getFamilyName2() != null) temp.add(getFamilyName2());
+		if (getFamilyNameSuffix() != null) temp.add(getFamilyNameSuffix());
+		if (getDegree() != null) temp.add(getDegree());
 		
 		StringBuilder sb = new StringBuilder();
 		for (Iterator<String> i = temp.iterator(); i.hasNext(); ) {

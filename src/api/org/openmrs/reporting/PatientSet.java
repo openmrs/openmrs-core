@@ -181,7 +181,7 @@ public class PatientSet {
 	}
 	
 	public int getSize() {
-		return patientIds.size();
+		return size();
 	}
 	
 	/**

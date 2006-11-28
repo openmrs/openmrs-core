@@ -129,6 +129,10 @@
 						<openmrs:portlet url="patientRegimenCurrent" id="patientRegimenCurrent" patientId="${model.patientId}"
 							parameters="displayDrugSetIds=${specElement.whichSets}|currentRegimenMode=view" />
 					</c:when>
+					<c:when test="${specElement.type == 'pastDrugOrders'}">
+						<openmrs:portlet url="patientRegimenCompleted" id="patientRegimenCompleted" patientId="${model.patientId}"
+							parameters="displayDrugSetIds=${specElement.whichSets}|currentRegimenMode=view" />
+					</c:when>
 					<%--
 					<c:when test="${}">
 					</c:when>

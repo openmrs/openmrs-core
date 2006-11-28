@@ -80,6 +80,7 @@ public class HibernateContextDAO implements ContextDAO {
 		}
 
 		if (candidateUser == null) {
+			// TODO: Show the user whether it was username or password that they entered incorrectly
 			throw new ContextAuthenticationException("User not found: " + login);
 		}
 

@@ -1,5 +1,6 @@
 package org.openmrs.api.context;
 
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
@@ -68,6 +69,10 @@ public class Context implements ApplicationContextAware {
 	private static final ThreadLocal<UserContext> userContextHolder = new ThreadLocal<UserContext>();
 	private static ServiceContext serviceContext;
 	private static Properties runtimeProperties = new Properties();
+	
+	// A place to store data that will persiste longer than a session, but won't persist beyond application restart
+	// TODO: put an optional expiry date on these items
+	private static Map<User, Map<String, Object>> volatileUserData = new HashMap<User, Map<String, Object>>();
 
 	/**
 	 * Default public constructor
@@ -179,6 +184,16 @@ public class Context implements ApplicationContextAware {
 	public static void authenticate(String username, String password) throws ContextAuthenticationException {
 		log.debug("username: " + username);
 		getUserContext().authenticate(username, password);
+	}
+	
+	/**
+	 * Become a different user. (You should only be able to do this as a superuser.)
+	 * @param username
+	 * @throws ContextAuthenticationException
+	 */
+	public static void becomeUser(String username) throws ContextAuthenticationException {
+		log.debug("username: " + username);
+		getUserContext().becomeUser(username);
 	}
 	
 	public static Properties getRuntimeProperties() {
@@ -584,5 +599,28 @@ public class Context implements ApplicationContextAware {
 	 */
 	private static void checkDatabaseVersion() {
 		OpenmrsConstants.DATABASE_VERSION = getAdministrationService().getGlobalProperty("database_version");
+	}
+	
+	public static Object getVolatileUserData(String key) {
+		User u = getAuthenticatedUser();
+		if (u == null)
+			return null;
+		Map<String, Object> myData = volatileUserData.get(u);
+		if (myData == null)
+			return null;
+		else
+			return myData.get(key);
+	}
+	
+	public static void setVolatileUserData(String key, Object value) {
+		User u = getAuthenticatedUser();
+		if (u == null) // TODO: throw something here
+			return;
+		Map<String, Object> myData = volatileUserData.get(u);
+		if (myData == null) {
+			myData = new HashMap<String, Object>();
+			volatileUserData.put(u, myData);
+		}
+		myData.put(key, value);
 	}
 }

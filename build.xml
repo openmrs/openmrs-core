@@ -270,6 +270,7 @@
 				<include name="**/*.css"/>
 				<include name="**/*.js"/>
 				<include name="**/*.withjstl"/>
+				<include name="**/*.tag"/>
 			</fileset>			
 		</copy>
 	</target>

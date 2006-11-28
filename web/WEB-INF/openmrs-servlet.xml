@@ -87,6 +87,8 @@
 					<prop key="**/reportObject.form">reportObjectForm</prop>
 					<prop key="**/analysis.list">otfaController</prop>
 					<prop key="**/analysis.form">otfaActionController</prop>
+					<prop key="**/cohortBuilder.list">cohortBuilderController</prop>
+					<prop key="**/cohortBuilder.form">cohortBuilderActionController</prop>
 					<prop key="**/migration.form">migrationActionController</prop>
 					<prop key="**/formSchemaDesign.form">formSchemaDesignForm</prop>
 					<prop key="**/nealreport.form">nealReportController</prop>
@@ -1452,9 +1454,9 @@
 					<prop key="count">1</prop>
 				</props>
 				<props>
-					<prop key="type">label</prop>
+					<prop key="type">pastDrugOrders</prop>
 					<prop key="headingCode">summary.pastDrugOrders</prop>
-					<prop key="code">general.notYetImplemented</prop>
+					<prop key="whichSets">ANTIRETROVIRAL DRUGS,TUBERCULOSIS TREATMENT DRUGS,*</prop>
 				</props>
 				<props>
 					<prop key="type">NEWROW</prop>

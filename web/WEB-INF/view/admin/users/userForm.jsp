@@ -19,7 +19,7 @@
 	<br />
 </spring:hasBindErrors>
 
-<form method="post">
+<form id="thisUserForm" method="post">
 	<table>
 		<tr>
 			<td><spring:message code="User.firstName" /></td>
@@ -159,7 +159,16 @@
 			</tr>
 		</c:if>
 	</table>
-	<input type="submit" id="saveButton" value="<spring:message code="User.save"/>" />
+	
+	<input id="becomeUserField" type="hidden" name="BecomeUser" value="false"/>
+	
+	<input type="button" id="saveButton" value="<spring:message code="User.save"/>" onClick="document.getElementById('becomeUserField').value = 'false'; document.getElementById('thisUserForm').submit()" />
+
+	<openmrs:hasPrivilege privilege="Become User (Actually you need to be a superuser)">
+		&nbsp;&nbsp;&nbsp;&nbsp;
+		<input type="button" value="<spring:message code="User.assumeIdentity" />" onClick="document.getElementById('becomeUserField').value = 'true'; document.getElementById('thisUserForm').submit()" />
+	</openmrs:hasPrivilege>
+	
 </form>
 
 <script type="text/javascript">

@@ -213,26 +213,31 @@ public class NealReportController implements Controller {
 			for (Map.Entry<Integer, List<DrugOrder>> e : regimens.entrySet()) {
 				Date earliestStart = null;
 				for (DrugOrder reg : e.getValue()) {
-					if (earliestStart == null || (reg.getStartDate() != null && earliestStart.compareTo(reg.getStartDate()) > 0))
-						earliestStart = reg.getStartDate();
-					Double ddd = reg.getDose() * Integer.parseInt(reg.getFrequency().substring(0, 1));
-					if (!reg.getUnits().equals(reg.getDrug().getUnits()))
-						throw new RuntimeException("Units mismatch: " + reg.getUnits() + " vs " + reg.getDrug().getUnits());
-					ddd /= reg.getDrug().getDoseStrength();
-					Map<String, String> holder = new HashMap<String, String>();
-					holder.put(General.ID, e.getKey().toString());
-					holder.put(Hiv.OBS_TYPE, Hiv.ARV);
-					holder.put(General.DOSE_PER_DAY, ddd.toString());
-					holder.put(Hiv.OBS_DATE, formatDate(reg.getStartDate()));
-					holder.put(Hiv.ARV, reg.getDrug().getName());
-					holder.put("stop_date", formatDate(reg.getDiscontinued() ? reg.getDiscontinuedDate() : reg.getAutoExpireDate()));
-					holder.put("ddd_quotient", reg.getFrequency().substring(0, 1));
-					//holder.put("strength_unit", reg.getUnits());
-					//holder.put("strength_dose", reg.getDose().toString());
-					holder.put("strength_unit", "");
-					holder.put("strength_dose", "");
-					maker.addDynamic(holder);
-					log.debug("HIV added " + holder);
+					try {
+						if (earliestStart == null || (reg.getStartDate() != null && earliestStart.compareTo(reg.getStartDate()) > 0))
+							earliestStart = reg.getStartDate();
+						Double ddd = reg.getDose() * Integer.parseInt(reg.getFrequency().substring(0, 1));
+						if (!reg.getUnits().equals(reg.getDrug().getUnits()))
+							throw new RuntimeException("Units mismatch: " + reg.getUnits() + " vs " + reg.getDrug().getUnits());
+						ddd /= reg.getDrug().getDoseStrength();
+						Map<String, String> holder = new HashMap<String, String>();
+						holder.put(General.ID, e.getKey().toString());
+						holder.put(Hiv.OBS_TYPE, Hiv.ARV);
+						holder.put(General.DOSE_PER_DAY, ddd.toString());
+						holder.put(Hiv.OBS_DATE, formatDate(reg.getStartDate()));
+						holder.put(Hiv.ARV, reg.getDrug().getName());
+						holder.put("stop_date", formatDate(reg.getDiscontinued() ? reg.getDiscontinuedDate() : reg.getAutoExpireDate()));
+						holder.put("ddd_quotient", reg.getFrequency().substring(0, 1));
+						//holder.put("strength_unit", reg.getUnits());
+						//holder.put("strength_dose", reg.getDose().toString());
+						holder.put("strength_unit", "");
+						holder.put("strength_dose", "");
+						maker.addDynamic(holder);
+						log.debug("HIV added " + holder);
+					} catch (Exception ex) {
+						log.warn("Exception with a drug order: " + reg);
+						log.warn(ex);
+					}
 				}
 				if (earliestStart != null)
 					patientDataHolder.get(e.getKey()).put(Hiv.FIRST_ARV_DATE, formatDate(earliestStart));

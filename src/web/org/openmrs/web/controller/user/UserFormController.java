@@ -20,6 +20,7 @@ import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.UserContext;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -143,6 +144,11 @@ public class UserFormController extends SimpleFormController {
 		String view = getFormView();
 		
 		if (Context.isAuthenticated()) {
+			
+			if ("true".equals(request.getParameter("BecomeUser"))) {
+				Context.becomeUser(user.getUsername());
+				return new ModelAndView(new RedirectView(request.getContextPath() + "/index.htm"));
+			}
 			
 			UserService us = Context.getUserService();
 
