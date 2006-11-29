@@ -804,11 +804,68 @@ span.noOrdersMessage {
 
 .encounterFormTable tr {
 	font-size: 0.9em;
-}
-
-.encounterFormTable th {
-	background-color: whitesmoke;
-}
+	}
+	.encounterFormTable th {
+		background-color: whitesmoke;
+	}
+	.encounterFormTable .encounterViewLabel {
+		text-align: left;
+	}
+	.encounterFormTable .encounterViewObsGroup {
+		font-weight: bold;
+	}
+	.encounterFormTable .encounterViewObsConcept {
+		font-size: .9em;
+	}
+	.encounterFormTable .encounterViewObsValue {
+		font-weight: bold;
+	}
+	.encounterFormTable .encounterViewObsDatetime {
+		font-size: .9em;
+	}
+	.encounterFormTable .evenRow {
+		background-color: white;
+	}
+	.encounterFormTable .oddRow {
+		background-color: white;
+	}
+	
+	/*
+	.encounterFormTable {
+		width: 100%;
+	}
+	.encounterFormInnerTable {
+		width: 100%;
+	}
+	.encounterFormTable .encounterViewLabel {
+		text-decoration: italic;
+		font-weight: normal;
+	}
+	.encounterFormTable .encounterViewObsGroup {
+		font-weight: normal;
+		font-size: .9em;
+	}
+	.encounterFormTable .encounterViewObsConcept {
+		xfont-weight: bold;
+		font-size: 1.05em;
+		width: 45%;
+	}
+	.encounterFormTable .encounterViewObsValue {
+		font-weight: normal;
+	}
+	.encounterFormTable .encounterViewObsAnswer {
+		padding-left: 1px;
+	}
+	.encounterFormTable .encounterViewObsDatetime {
+		xfont-size: 1.05em;
+	}
+	.encounterFormTable .evenRow {
+		background-color: white;
+	}
+	.encounterFormTable .oddRow {
+		background-color: whitesmoke;
+	}
+	*/
 
 #eventCalendarPortlet {
 	font-size: 0.8em;

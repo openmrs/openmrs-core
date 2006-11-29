@@ -36,15 +36,17 @@ public class EncounterDisplayController implements Controller {
 	
 	public class FieldLabel implements Comparable<FieldLabel> {
 		private Integer pageNumber = 999;
-		private Integer fieldNumber;
-		private String fieldPart;
-		private Float sortWeight;
+		private Integer fieldNumber = null;
+		private String fieldPart = "";
+		private Float sortWeight = null;
 		
 		public FieldLabel() { }
 		public FieldLabel(FormField ff) {
 			setPageNumber(ff.getPageNumber());
 			fieldNumber = ff.getFieldNumber();
 			fieldPart = ff.getFieldPart();
+			if (fieldPart == null)
+				fieldPart = "";
 			sortWeight = ff.getSortWeight();
 		}
 		public int compareTo(FieldLabel other) {
@@ -57,12 +59,27 @@ public class EncounterDisplayController implements Controller {
 				temp = OpenmrsUtil.compareWithNullAsGreatest(sortWeight, other.sortWeight);
 			return temp;
 		}
+		/*
+		public boolean equals(Object o) {
+			if (!(o instanceof FieldLabel)) return false;
+			FieldLabel other = (FieldLabel)o;
+			boolean equalObject = false;
+			if (pageNumber != null)
+				equalObject = equalObject && pageNumber.equals(other.getPageNumber());
+			if (fieldNumber != null)
+				equalObject = equalObject && fieldNumber.equals(other.getFieldNumber());
+			if (fieldPart != null)
+				equalObject = equalObject && pageNumber.equals(other.getFieldPart());
+			
+			return equalObject;
+		}
+		*/
 		public int hashCode() {
 			int ret = 0;
 			if (pageNumber != null)
 				ret += pageNumber * 100000;
 			if (fieldNumber != null)
-				ret += fieldNumber;
+				ret += fieldNumber.hashCode() * 11;
 			if (fieldPart != null)
 				ret += fieldPart.hashCode();
 			return ret;
@@ -92,7 +109,11 @@ public class EncounterDisplayController implements Controller {
 			this.pageNumber = pageNumber == null ? 999 : pageNumber;
 		}
 		public String toString() {
-			return (fieldNumber == null ? "" : fieldNumber) + ". " + (fieldPart == null ? "" : fieldPart);
+			String s = (fieldNumber == null ? "" : fieldNumber + ".") + (fieldPart == null ? "" : fieldPart);
+			return s.equals("") ? "--" : s; 
+		}
+		public String uid() {
+			return super.toString();
 		}
 	}
 	
@@ -182,8 +203,10 @@ public class EncounterDisplayController implements Controller {
 		}
 		public void addObservation(Obs o) {
 			Integer obsGroupId = o.getObsGroupId();
-			boolean obsGroupAnyway = obsGroupId == null && obsGroupConcepts.contains(o.getConcept()); 
-			if (obsGroupId == null && !obsGroupAnyway) {
+			
+			// just because a field has a parent that is a set doesn't mean its a construct (comment #234)
+			//boolean obsGroupAnyway = obsGroupId == null && obsGroupConcepts.contains(o.getConcept()); 
+			if (obsGroupId == null) { //{ && !obsGroupAnyway) {
 				List<Obs> obsForConcept = observations.get(o.getConcept());
 				if (obsForConcept == null) {
 					obsForConcept = new ArrayList<Obs>();
@@ -191,8 +214,9 @@ public class EncounterDisplayController implements Controller {
 				}
 				obsForConcept.add(o);
 			} else {
-				if (obsGroupAnyway)
-					obsGroupId = o.getObsId(); // TODO: this relies on the convention that obsGroupId equals the obsId of one of the obs in that group. It would be nice to drop this requirement 
+				// commenting out these two lines per comment #234
+				//if (obsGroupAnyway)
+				//	obsGroupId = o.getObsId(); // TODO: this relies on the convention that obsGroupId equals the obsId of one of the obs in that group. It would be nice to drop this requirement 
 				ObsGroupHolder group = obsGroups.get(obsGroupId); 
 				if (group == null) {
 					group = new ObsGroupHolder();
@@ -235,17 +259,24 @@ public class EncounterDisplayController implements Controller {
 					Concept c = ff.getField().getConcept();
 					if (c != null) {
 						Concept conceptInConstruct = null;
-						if (ff.getParent() != null && ff.getParent().getParent() != null && ff.getParent().getField().getConcept() != null)
-							conceptInConstruct = c;
-						
-						while (ff.getFieldNumber() == null && ff.getParent() != null) {
-							ff = ff.getParent();
+						FormField parent;
+						if ((parent = ff.getParent()) != null) {
+							Concept fieldConcept;
+							if (parent.getParent() != null 
+								&& (fieldConcept = parent.getField().getConcept()) != null
+								&& fieldConcept.isSet())
+									conceptInConstruct = c;
 						}
+						
+						//while (ff.getFieldNumber() == null && ff.getParent() != null) {
+						//	ff = ff.getParent();
+						//}
 						FieldLabel label = new FieldLabel(ff);
 						conceptToFieldLabel.put(c, label);
 						FieldHolder fh = data.get(label);
 						if (fh == null) {
 							fh = new FieldHolder();
+							log.debug("label: " + label + " uid: " + label.uid());
 							fh.setLabel(label);
 							data.put(label, fh);
 						}
@@ -254,19 +285,24 @@ public class EncounterDisplayController implements Controller {
 					}
 				}
 			}
+			
 			for (Obs o : encounter.getObs()) {
 				FieldLabel label = conceptToFieldLabel.get(o.getConcept());
+				// if the label exists and has a form field
 				if (label == null || !data.containsKey(label)) {
+					log.debug("obsGroupId: " + o.getObsGroupId());
 					otherObs.add(o);
 				} else {
 					data.get(label).addObservation(o);
 				}
 			}
+			
 			if (otherObs.size() > 0) {
 				FieldLabel label = new FieldLabel();
 				label.setPageNumber(999);
-				label.setFieldNumber(999);
+				label.setFieldNumber(null);
 				FieldHolder holder = new FieldHolder();
+				log.debug("other obs label: " + label);
 				holder.setLabel(label);
 				for (Obs obs : otherObs)
 					holder.addObservation(obs);
