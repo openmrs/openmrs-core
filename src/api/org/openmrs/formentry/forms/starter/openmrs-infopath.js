@@ -8,9 +8,11 @@
  * author:  Burke Mamlin, MD
  * created: February 1, 2006
  * version: 1.2
+ *
+ * 2006-11-29 (Burke) Added selectLocation() method
  */
 
-var SERVER_URL = "http://localhost:8080/amrs";
+var SERVER_URL = "http://localhost:8080/openmrs";
 var TASKPANE_URL = SERVER_URL + "/formentry/taskpane";
 var SUBMIT_URL = SERVER_URL + "/formUpload";
 var PROBLEM_ADDED_ELEM = "problem_added";
@@ -100,6 +102,12 @@ function selectTribe() {
 	taskPaneNavigateTo('/tribe.htm');
 }
 
+//===============================================================
+// Select a location
+//===============================================================
+function selectLocation() {
+	taskPaneNavigateTo('/location.htm');
+}
 
 //===============================================================
 // Submit form to server and close (if successful)
