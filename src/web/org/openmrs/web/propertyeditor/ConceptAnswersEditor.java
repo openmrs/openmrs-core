@@ -50,9 +50,12 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 				for (String conceptId : requestConceptIds) {
 					Integer id = getConceptId(conceptId);
 					Integer drugId = getDrugId(conceptId);
+					Drug answerDrug = origConceptAnswer.getAnswerDrug();
 					if (id.equals(origConceptAnswer.getAnswerConcept().getConceptId())) {
-						if ((drugId == null && origConceptAnswer.getAnswerDrug() == null) ||
-								drugId.equals(origConceptAnswer.getAnswerDrug().getDrugId()))
+						if (drugId == null && answerDrug == null)
+							answerDeleted = false;
+						else if ((drugId != null && answerDrug != null) &&
+							drugId.equals(origConceptAnswer.getAnswerDrug().getDrugId()))
 							answerDeleted = false;
 					}
 				}
@@ -71,9 +74,12 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 				Integer drugId = getDrugId(conceptId);
 				boolean newAnswerConcept = true;
 				for (ConceptAnswer origConceptAnswer : originalConceptAnswers) {
+					Drug answerDrug = origConceptAnswer.getAnswerDrug();
 					if (id.equals(origConceptAnswer.getAnswerConcept().getConceptId())) {
-						if ((drugId == null && origConceptAnswer.getAnswerDrug() == null) ||
-								drugId.equals(origConceptAnswer.getAnswerDrug().getDrugId()))
+						if (drugId == null && answerDrug == null)
+							newAnswerConcept = false;
+						else if ((drugId != null && answerDrug != null) &&
+							drugId.equals(origConceptAnswer.getAnswerDrug().getDrugId()))
 							newAnswerConcept = false;
 					}
 				}
