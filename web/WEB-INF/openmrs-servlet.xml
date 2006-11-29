@@ -87,6 +87,8 @@
 					<prop key="**/reportObject.form">reportObjectForm</prop>
 					<prop key="**/analysis.list">otfaController</prop>
 					<prop key="**/analysis.form">otfaActionController</prop>
+					<prop key="**/cohortBuilder.list">cohortBuilderController</prop>
+					<prop key="**/cohortBuilder.form">cohortBuilderActionController</prop>
 					<prop key="**/migration.form">migrationActionController</prop>
 					<prop key="**/formSchemaDesign.form">formSchemaDesignForm</prop>
 					<prop key="**/nealreport.form">nealReportController</prop>
@@ -101,7 +103,8 @@
 					<prop key="**/formEntryQueue.list">formEntryQueueList</prop>
 					<prop key="**/xsnUpload.form">xsnUploadForm</prop>
 					<prop key="**/options.form">optionsForm</prop>
-					<prop key="**/patientSummary.form">patientSummaryForm</prop>  
+					<prop key="**/patientSummary.form">patientSummaryForm</prop>
+					<prop key="**/patientSummaries.form">multiplePatientSummariesList</prop>
 					<prop key="**/patientDashboard.form">patientDashboardForm</prop>         
 					<prop key="**/scheduler.list">schedulerListController</prop>
 					<prop key="**/scheduler.form">schedulerFormController</prop>
@@ -671,6 +674,15 @@
 	    <!-- ============================ -->
 	<!-- ===== Analysis Sector ===== -->
     <!-- ============================ -->
+		<!-- ** Cohort Builder, will replace on-the-fly-analysis ** -->
+		<bean id="cohortBuilderController" class="org.openmrs.web.controller.analysis.CohortBuilderController">
+			<property name="formView"><value>/analysis/cohortBuilder</value></property>
+			<property name="successView"><value>cohortBuilder.list</value></property>
+		</bean>
+	    <bean id="cohortBuilderActionController" class="org.springframework.web.servlet.mvc.multiaction.MultiActionController">
+			<property name="methodNameResolver"><ref bean="defaultMethodParamResolver"/></property>
+			<property name="delegate"><ref bean="cohortBuilderController"/></property>
+		</bean>
 		<!-- ** Analysis ** -->
 			<bean id="otfaController" class="org.openmrs.web.controller.analysis.OnTheFlyAnalysisController">
 				<property name="shortcuts">
@@ -916,6 +928,11 @@
 			<property name="commandName"><value>patient</value></property>
 			<property name="formView"><value>/formentry/patientSummaryForm</value></property>
 			<property name="successView"><value>patientSummary.form</value></property>
+		</bean>
+		<bean id="multiplePatientSummariesList" class="org.openmrs.web.controller.patientset.MultipleSummariesController">
+			<property name="commandName"><value>patientSet</value></property>
+			<property name="formView"><value>/patientSummary</value></property>
+			<property name="successView"><value>patientSummaryies.form</value></property>
 		</bean>
 		<bean id="patientDashboardForm" class="org.openmrs.web.controller.patient.PatientFormController">
 			<property name="sessionForm"><value>true</value></property>
@@ -1429,7 +1446,7 @@
 					<prop key="type">NEWCOLUMN</prop>
 				</props>
 				<props>
-					<prop key="type">currentDrugOrders</prop>
+					<prop key="headingCode">summary.currentDrugOrders</prop>
 					<prop key="headingCode">summary.currentDrugOrders</prop>
 					<prop key="whichSets">ANTIRETROVIRAL DRUGS,TUBERCULOSIS TREATMENT DRUGS,*</prop>
 				</props>

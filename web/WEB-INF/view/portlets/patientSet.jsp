@@ -208,27 +208,35 @@
 				</tbody>
 			</table>
 
-			<c:if test="${model.allowBatchEntry == 'true' && fn:length(model.batchEntryForms) > 0}">
-				<span id="batchEntryLink">
-					<p/>
-					<b>
-						<spring:message code="general.action"/>:
+			<div id="actionLinks">
+				<p/>
+				<b>
+					<spring:message code="general.action"/>:
+				</b>
+				<span id="summariesLink">
+					<a href="patientSummaries.form?source=myPatientSet">
+						<spring:message code="summary.generateSummaries"/>
+					</a>
+				</span>
+				<c:if test="${model.allowBatchEntry == 'true' && fn:length(model.batchEntryForms) > 0}">
+					<span id="batchEntryLink">
+						|
 						<a href="javascript:showLayer('patientSetBatchEntryBox'); hideLayer('batchEntryLink')">
 							<spring:message code="BatchEntry.title"/>
 						</a>
-					</b>
-				</span>
-
-				<div id="patientSetBatchEntryBox" style="display: none">
-					<p/>
-					<b><spring:message code="BatchEntry.title"/>:</b>
-					<ul>
-						<c:forEach var="form" items="${model.batchEntryForms}">
-							<li><a href="batchForm.form?formId=${form.formId}">${form.name}</a></li>
-						</c:forEach>
-					</ul>
-				</div>
-			</c:if>
+					</span>
+	
+					<div id="patientSetBatchEntryBox" style="display: none">
+						<p/>
+						<b><spring:message code="BatchEntry.title"/>:</b>
+						<ul>
+							<c:forEach var="form" items="${model.batchEntryForms}">
+								<li><a href="batchForm.form?formId=${form.formId}">${form.name}</a></li>
+							</c:forEach>
+						</ul>
+					</div>
+				</c:if>
+			</div>
 <c:if test="${model.size != 'full'}">
 		</div>
 

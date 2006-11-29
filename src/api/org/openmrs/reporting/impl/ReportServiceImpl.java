@@ -1,19 +1,14 @@
 package org.openmrs.reporting.impl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
-import org.openmrs.api.PatientSetService;
-import org.openmrs.api.context.Context;
+import org.openmrs.cohort.CohortSearchHistory;
 import org.openmrs.reporting.AbstractReportObject;
-import org.openmrs.reporting.NumericObsPatientFilter;
-import org.openmrs.reporting.PatientCharacteristicFilter;
 import org.openmrs.reporting.PatientFilter;
 import org.openmrs.reporting.Report;
 import org.openmrs.reporting.ReportObjectFactory;
@@ -156,61 +151,25 @@ public class ReportServiceImpl implements ReportService {
 		String defaultValidator = this.reportObjectFactory.getDefaultValidator();
 		return defaultValidator;
 	}
-
-	/*
-	 * placeholders for testing -DJ
-	 */
-	static Map<Integer, PatientFilter> tempFilters;
-	private void fillTempFilters() {
-		if (tempFilters != null) {
-			return;
-		}
-		tempFilters = new HashMap<Integer, PatientFilter>();
-		{
-			PatientCharacteristicFilter temp;
-			temp = new PatientCharacteristicFilter("M", null, null);
-			temp.setReportObjectId(1);
-			tempFilters.put(new Integer(1), temp);
-			temp = new PatientCharacteristicFilter("F", null, null);
-			temp.setReportObjectId(2);
-			tempFilters.put(new Integer(2), temp);
-			//temp = new PatientCharacteristicFilter(null, new Date(78, 3, 11), null);
-			temp.setReportObjectId(3);
-			tempFilters.put(new Integer(3), temp);	
-		}
-		{
-			NumericObsPatientFilter temp;
-			temp = new NumericObsPatientFilter(
-					Context.getConceptService().getConcept(new Integer(5497)),
-					PatientSetService.Modifier.LESS_THAN,
-					new Double(350));
-			temp.setReportObjectId(4);
-			tempFilters.put(new Integer(4), temp);
-			temp = new NumericObsPatientFilter(
-					Context.getConceptService().getConcept(new Integer(5497)),
-					PatientSetService.Modifier.LESS_EQUAL,
-					new Double(350));
-			temp.setReportObjectId(5);
-			tempFilters.put(new Integer(5), temp);
-			temp = new NumericObsPatientFilter(
-					Context.getConceptService().getConcept(new Integer(5497)),
-					PatientSetService.Modifier.LESS_THAN,
-					new Double(200));
-			temp.setReportObjectId(6);
-			tempFilters.put(new Integer(6), temp);
-		}
+	
+	public void createSearchHistory(CohortSearchHistory history) {
+		createReportObject(history);
 	}
 	
-	/*
-	public PatientFilter getPatientFilterById(Integer filterId) throws APIException {
-		fillTempFilters();
-		return tempFilters.get(filterId);
+	public void deleteSearchHistory(CohortSearchHistory history) {
+		deleteReport(history); // TODO: check if this is right, and if so rename it to deleteReportObject
 	}
 	
-	public Collection<PatientFilter> getAllPatientFilters() throws APIException {
-		fillTempFilters();
-		return Collections.unmodifiableCollection(tempFilters.values());
+	public CohortSearchHistory getSearchHistory(Integer reportObjectId) {
+		return (CohortSearchHistory) getReportObject(reportObjectId);
 	}
-	*/
+	
+	public List<CohortSearchHistory> getSearchHistories() {
+		List<AbstractReportObject> temp = getReportObjectsByType("org.openmrs.cohort.CohortSearchHistory");
+		List<CohortSearchHistory> ret = new ArrayList<CohortSearchHistory>();
+		for (AbstractReportObject o : temp)
+			ret.add((CohortSearchHistory) o);
+		return ret;
+	}
 
 }

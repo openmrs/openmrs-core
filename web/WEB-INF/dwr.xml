@@ -28,6 +28,7 @@
 		<convert converter="bean" match="org.openmrs.Tribe"/>
 		<convert converter="bean" match="org.openmrs.notification.web.dwr.AlertListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.EnteredField"/>
+		<convert converter="bean" match="org.openmrs.reporting.PatientSet"/>
 	
 		<create creator="new" javascript="DWRPatientService">
 			<param name="class" value="org.openmrs.web.dwr.DWRPatientService" />
@@ -168,6 +169,19 @@
 		<create creator="new" javascript="DWRFormEntryService">
 			<param name="class" value="org.openmrs.web.dwr.DWRFormEntryService"/>
 			<include method="enterForm"/>
+		</create>
+		
+		<create creator="new" javascript="DWRCohortBuilderService">
+			<param name="class" value="org.openmrs.web.dwr.DWRCohortBuilderService" />
+			<include method="getResultCountForFilterId"/>
+			<include method="getResultCountForSearch"/>
+			<include method="getResultForSearch"/>
+			<include method="getResultCombineWithAnd"/>
+			<include method="getResultCombineWithOr"/>
+			<include method="getLastResult"/>
+			<include method="getSearchHistories"/>
+			<include method="saveSearchHistory"/>
+			<include method="loadSearchHistory"/>
 		</create>
 				
 	</allow>

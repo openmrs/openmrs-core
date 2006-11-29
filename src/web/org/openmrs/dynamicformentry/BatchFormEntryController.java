@@ -62,7 +62,7 @@ public class BatchFormEntryController extends SimpleFormController {
     		User u = Context.getUserService().getUser(providerId);
     		batchForm.setProvider(u);
     	} else {
-    		User u = Context.getUserService().getUserByUsername("Unknown");
+    		User u = Context.getFormEntryService().getUserByUsername("Unknown");
     		batchForm.setProvider(u);
     	}
     	

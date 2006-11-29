@@ -327,6 +327,23 @@ public class FormEntryServiceImpl implements FormEntryService {
 		}
 		return forms;
 	}
+	
+	public User getUserByUsername(String username) {
+		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY))
+			throw new APIAuthenticationException("Privilege required: "
+					+ OpenmrsConstants.PRIV_FORM_ENTRY);
+		
+		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+		User ret = null;
+		try {
+			ret = Context.getUserService().getUserByUsername(username);
+		} catch (Exception e) {
+			log.error(e);
+		} finally {
+			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+		}
+		return ret;
+	}
 
 	/**
 	 * @see org.openmrs.api.UserService.findUsers(String, List<String>, boolean)

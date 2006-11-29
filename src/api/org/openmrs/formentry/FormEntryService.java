@@ -135,6 +135,12 @@ public interface FormEntryService {
 	public Collection<Form> getForms(boolean onlyPublished);
 
 	/**
+	 * @see org.openmrs.api.UserService.getUserByUsername(String)
+	 */
+	@Transactional(readOnly=true)
+	public User getUserByUsername(String username);
+	
+	/**
 	 * @see org.openmrs.api.UserService.findUsers(String, List<String>, boolean)
 	 */
 	@Transactional(readOnly=true)

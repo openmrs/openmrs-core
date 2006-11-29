@@ -17,6 +17,7 @@ import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.formentry.FormEntryConstants;
 import org.openmrs.reporting.PatientSet;
 
 public class BatchFormEntryModel {
@@ -190,12 +191,14 @@ public class BatchFormEntryModel {
 		if (ff.getField().getConcept() != null) {
 			Concept c = ff.getField().getConcept();
 			log.debug("concept, datatype: " + c.getDatatype().getName());
-			if (c.getDatatype().getName().equals("Numeric")) {
+			if (c.getDatatype().getHl7Abbreviation().equals(FormEntryConstants.HL7_NUMERIC)) {
 				c = Context.getConceptService().getConceptNumeric(c.getConceptId());
 				if ( ((ConceptNumeric) c).isPrecise() )
 					return Double.class;
 				else
 					return Integer.class;
+			} else if (c.getDatatype().getHl7Abbreviation().equals(FormEntryConstants.HL7_DATE) || c.getDatatype().getHl7Abbreviation().equals(FormEntryConstants.HL7_DATETIME)) {
+				return Date.class; 
 			}
 			return String.class; 
 		}

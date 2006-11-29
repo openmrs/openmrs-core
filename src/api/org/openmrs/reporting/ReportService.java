@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.openmrs.api.APIException;
+import org.openmrs.cohort.CohortSearchHistory;
 import org.openmrs.reporting.db.ReportDAO;
 import org.openmrs.reporting.db.ReportObjectDAO;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,5 +79,17 @@ public interface ReportService {
 
 	@Transactional(readOnly=true)
 	public String getDefaultReportObjectValidator();
+	
+	public void createSearchHistory(CohortSearchHistory history);
+	
+	public void deleteSearchHistory(CohortSearchHistory history);
+	
+	// public void updateSearchHistory(CohortSearchHistory history);
+	
+	@Transactional(readOnly=true)
+	public CohortSearchHistory getSearchHistory(Integer id);
+	
+	@Transactional(readOnly=true)
+	public List<CohortSearchHistory> getSearchHistories();
 
 }
