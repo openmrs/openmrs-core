@@ -15194,7 +15194,7 @@ insert  into `field` values
 (2, 'PATIENT', 'Patient section of form', 5, null, '', '', '', 0, 1, '2006-07-18 11:04:36', null, null), 
 (3, 'ENCOUNTER', 'Encounter section of form', 5, null, '', '', '', 0, 1, '2006-07-18 11:06:52', null, null), 
 (4, 'MEDICAL RECORD OBSERVATIONS', 'General description for clinical observations entered into the system.', 1, 1238, '', null, '', 0, 1, '2006-07-18 11:07:13', null, null), 
-(5, 'OBS', 'Obs section of form', 5, null, '', '', '', 0, 1, '2006-07-18 11:13:57', null, null), 
+(5, 'OBS', 'Obs section of form', 1, 1238, '', '', '', 0, 1, '2006-07-18 11:13:57', null, null), 
 (6, 'PATIENT.BIRTHDATE', '', 2, null, 'patient', 'birthdate', '$!{date.format($patient.getBirthdate())}', 0, 1, '2006-07-18 11:15:18', null, null), 
 (7, 'PATIENT.BIRTHDATE_ESTIMATED', '', 2, null, 'patient', 'birthdate_estimated', '$!{patient.getBirthDateEstimated()}', 0, 1, '2006-07-18 11:15:58', null, null), 
 (8, 'PATIENT.FAMILY_NAME', '', 2, null, 'patient_name', 'family_name', '$!{patient.getPatientName().getFamilyName()}', 0, 1, '2006-07-18 11:16:50', null, null), 
@@ -15221,7 +15221,7 @@ insert  into `field` values
 insert  into form_field values 
 (2, 1, 2, 1, '', null, null, null, null, 0, 1, '2006-07-18 11:11:53', 1, '2006-07-18 11:04:36'), 
 (3, 1, 3, 2, '', null, null, null, null, 0, 1, '2006-07-18 11:12:05', 1, '2006-07-18 11:06:52'), 
-(5, 1, 4, 3, '', null, null, null, null, 0, 1, '2006-07-18 11:13:59', 1, '2006-07-18 11:13:57'), 
+(5, 1, 5, 3, '', null, null, null, null, 0, 1, '2006-07-18 11:13:59', 1, '2006-07-18 11:13:57'), 
 (6, 1, 6, null, '', null, 2, null, null, 0, 1, '2006-07-18 11:15:18', 1, '2006-07-18 11:15:18'), 
 (7, 1, 7, null, '', null, 2, null, null, 0, 1, '2006-07-18 11:15:58', 1, '2006-07-18 11:15:58'), 
 (8, 1, 8, null, '', null, 2, null, null, 0, 1, '2006-07-18 11:16:50', 1, '2006-07-18 11:16:50'), 

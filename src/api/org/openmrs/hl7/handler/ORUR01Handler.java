@@ -126,15 +126,15 @@ public class ORUR01Handler implements Application {
 				OBX obx = orderObs.getOBSERVATION(j).getOBX();
 				try {
 					Obs obs = parseObs(encounter, obx);
-					String subId = obx.getObservationSubID().getValue();
-					if (subId != null && subId.length() > 0) {
-						if (obsGroups == null)
-							obsGroups = new Hashtable<String, Vector<Obs>>();
-						addToObsGroup(obsGroups, subId, obs);
-					} else
-						Context.getObsService().createObs(obs);
-				} catch (ClassCastException e) {
-					e.printStackTrace();
+					if (obs != null) {
+						String subId = obx.getObservationSubID().getValue();
+						if (subId != null && subId.length() > 0) {
+							if (obsGroups == null)
+								obsGroups = new Hashtable<String, Vector<Obs>>();
+							addToObsGroup(obsGroups, subId, obs);
+						} else
+							Context.getObsService().createObs(obs);
+					}
 				} catch (HL7Exception e) {
 					// Handle obs-level exceptions
 					log.warn("HL7Exception", e);
@@ -238,6 +238,8 @@ public class ORUR01Handler implements Application {
 	private Obs parseObs(Encounter encounter, OBX obx) throws HL7Exception {
 
 		Varies[] values = obx.getObservationValue();
+		if (values == null || values.length < 1)
+			return null;
 		String hl7Datatype = values[0].getName();
 		Concept concept = getConcept(obx);
 		Date datetime = getDatetime(obx);

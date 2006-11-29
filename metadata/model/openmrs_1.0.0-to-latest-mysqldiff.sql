@@ -1464,6 +1464,38 @@ delimiter ;
 call diff_procedure('1.0.46');
 
 
+#--------------------------------------
+# OpenMRS Datamodel version 1.0.47
+# Burke Mamlin  Nov 29, 2006 2:53 AM
+# Fixing fix to obs section in basic form
+#--------------------------------------
+
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+	SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+	
+	IF (SELECT `name` = 'OBS' FROM field WHERE field_id = 5) THEN
+		IF (SELECT field_id = 4 FROM form_field WHERE form_field_id = 5) THEN
+			UPDATE `form_field` SET field_id = 5 WHERE form_field_id = 5;
+			UPDATE `field` SET field_type = 1, concept_id = 1238 WHERE field_id = 5;
+		END IF;
+	END IF;
+	
+	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+	
+	END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.0.47');
+
+
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script
 #-----------------------------------
