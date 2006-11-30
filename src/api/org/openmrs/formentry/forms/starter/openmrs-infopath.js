@@ -113,7 +113,7 @@ function selectLocation() {
 // Select a generic answer
 //===============================================================
 function selectAnswer(path) {
-	taskPaneNavigateTo('/answer.htm?node=' + path);
+	taskPaneNavigateTo('/conceptAnswer.htm?nodeName=' + path);
 }
 
 //===============================================================
