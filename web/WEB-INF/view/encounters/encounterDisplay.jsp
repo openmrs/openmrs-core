@@ -103,17 +103,17 @@
 										<th class="smallHeader"><openmrs_tag:concept conceptId="${conc.conceptId}"/></th>
 									</c:forEach>
 								</tr>
-								<tr>
-									<c:forEach var="groupEntry" items="${fieldHolder.obsGroups}">
-										<td>
-											<c:forEach var="obsList" items="${groupEntry.value.observationsByConcepts}">
+								<c:forEach var="groupEntry" items="${fieldHolder.obsGroups}">
+									<tr>
+										<c:forEach var="obsList" items="${groupEntry.value.observationsByConcepts}">
+											<td>
 												<c:forEach var="obs" items="${obsList}">
 													<span class="encounterViewObsGroup">${obs.valueAsString[model.locale]}</span>
 												</c:forEach>
-											</c:forEach>
-										</td>
-									</c:forEach>
-								</tr>
+											</td>
+										</c:forEach>
+									</tr>
+								</c:forEach>
 							</table>
 						</c:if>
 						<table class="encounterFormInnerTable" cellspacing="0" cellpadding="4">

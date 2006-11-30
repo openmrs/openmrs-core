@@ -268,9 +268,13 @@ public class EncounterDisplayController implements Controller {
 									conceptInConstruct = c;
 						}
 						
-						//while (ff.getFieldNumber() == null && ff.getParent() != null) {
-						//	ff = ff.getParent();
-						//}
+						// only get parent's form field if this concept is in a construct
+						if (conceptInConstruct != null) {
+							while (ff.getFieldNumber() == null && ff.getParent() != null) {
+								ff = ff.getParent();
+							}
+						}
+						
 						FieldLabel label = new FieldLabel(ff);
 						conceptToFieldLabel.put(c, label);
 						FieldHolder fh = data.get(label);
