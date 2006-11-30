@@ -54,7 +54,7 @@
 		}
 		
 		searchWidget.allowAutoJump = function() {
-			return false;
+			return this.text && this.text.length > 1;
 		}
 
 		searchWidget.inputNode.focus();

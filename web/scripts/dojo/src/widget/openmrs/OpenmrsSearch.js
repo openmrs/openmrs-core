@@ -204,16 +204,20 @@ dojo.widget.defineWidget(
 		// infopath hack since it doesn't let us use onkeyup or onkeypress	
 		if (this.useOnKeyDown == true) {
 			// only add if the key is a letter and no modifier key was pressed
-			if (this.key >= 48 && this.key <= 90 && !this.event.altKey && !this.event.ctrlKey) {
+			if (((this.key >= 48 && this.key <= 105) || this.key == 189) && !this.event.altKey && !this.event.ctrlKey) {
 				var newKey = String.fromCharCode(this.key).toLowerCase();
-				// IE interprets all char codes as upper case.  
-				// Only leave in uppercase if the previous char is uppercase (hack #2)
-				if (this.text.length > 0) {
+				if (this.key == 189) 
+					newKey = "-"; // if key is a dash, make char a dash
+				else if (this.text.length > 0) {
+					// IE interprets all char codes as upper case.  
+					// Only leave in uppercase if the previous char is uppercase (hack #2)
 					var lastKey = this.text.substring(this.text.length - 1, this.text.length);
 					if (lastKey >= 'A' && lastKey <= 'Z')
 						newKey = newKey.toUpperCase();
 				}
+				
 				this.text = this.text + newKey;
+				//this.lastPhraseSearched = this.text;
 			}
 			if (this.key == 8 && this.text.length > 1) { //backspace
 				this.text = this.text.substring(0, this.text.length - 1);
@@ -234,9 +238,10 @@ dojo.widget.defineWidget(
 		
 		else if (this.allowAutoList) {
 		
-			if (((this.key >= 48 && this.key <= 90) || (this.key >= 96 && this.key <= 111) ) ||
+			if ((((this.key >= 48 && this.key <= 90) || (this.key >= 96 || this.key <= 105)) || 
+				(this.key >= 96 && this.key <= 111) ) ||
 				this.key == dojo.event.browser.keys.KEY_BACKSPACE || this.key == dojo.event.browser.keys.KEY_SPACE || 
-				this.key == 189 || 
+				this.key == 189 || this.key == 109 ||
 				this.key == dojo.event.browser.keys.KEY_DELETE || this.key == 1) {
 					//	 (if alphanumeric key entered or 
 					//   backspace key pressed or
@@ -309,7 +314,9 @@ dojo.widget.defineWidget(
 		this.inputNode.value = "";
 		dojo.debug('this.inputNode.value cleared');
 		
+		//alert("text: " + this.text + " lastPhrase: " + this.lastPhraseSearched);
 		if (this.allowNewSearch() && (this.text != this.lastPhraseSearched || mouseClicked)) {
+			
 			//this was a new search with the enter key pressed, call findObjects function 
 			dojo.debug('This was a new search');
 			if (this.text == null || this.text == "")
@@ -359,6 +366,7 @@ dojo.widget.defineWidget(
 			this.objectsFound = new Array();	//zero-out numbered object list
 			this.searchIndex = 0;				//our numbering is one-based, but the searchIndex is incremented prior to printing
 			this.firstItemDisplayed = 1;		//zero-out our paging index (but we have a one-based list, see line above)
+			//alert("phrase: " + phrase);
 			this.lastPhraseSearched = phrase;
 			
 			dojo.event.topic.publish(this.eventNames.findObjects, phrase);
