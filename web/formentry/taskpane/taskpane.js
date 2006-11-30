@@ -87,6 +87,8 @@ function pickConcept(nodeName, concept) {
 	var valueNode = refNode.selectSingleNode("value");
 	clearNil(valueNode);
 	valueNode.text = getConceptNodeValue(concept);
+	
+	closeTaskPane();
 }
 
 //	hide taskpane

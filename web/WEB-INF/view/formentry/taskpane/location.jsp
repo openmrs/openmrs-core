@@ -9,6 +9,16 @@
 <openmrs:htmlInclude file="/scripts/dojoConfig.js" />
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 
+
+<c:choose>
+	<c:when test="${not empty param.nodePath}">
+		<c:set var="nodePath" value="${param.nodePath}"/>
+	</c:when>
+	<c:otherwise>
+		<c:set var="nodePath" value="//encounter.location_id"/>
+	</c:otherwise>
+</c:choose>
+
 <script type="text/javascript">
 	dojo.require("dojo.widget.openmrs.OpenmrsSearch");
 	dojo.require("dojo.widget.openmrs.EncounterSearch");
@@ -26,7 +36,7 @@
 		
 		dojo.event.topic.subscribe("eSearch/select", 
 			function(msg) {
-				setObj('//encounter.location_id', new miniObject(msg.objs[0]));
+				setObj('${nodePath}', new miniObject(msg.objs[0]));
 			}
 		);
 		

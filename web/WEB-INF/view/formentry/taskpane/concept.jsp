@@ -4,6 +4,15 @@
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
 
+<c:choose>
+	<c:when test="${not empty param.nodePath}">
+		<c:set var="nodePath" value="${param.nodePath}"/>
+	</c:when>
+	<c:otherwise>
+		<c:set var="nodePath" value="//problem_list"/>
+	</c:otherwise>
+</c:choose>
+
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 
 <script type="text/javascript">
@@ -96,7 +105,7 @@
 		dojo.event.topic.subscribe("cSearch/select", 
 			function(msg) {
 				for (i=0; i<msg.objs.length; i++) {
-					pickProblem('<%= request.getParameter("mode") %>', '//problem_list', new miniObject(msg.objs[i]));
+					pickProblem('<%= request.getParameter("mode") %>', '${nodePath}', new miniObject(msg.objs[i]));
 				}
 			}
 		);
