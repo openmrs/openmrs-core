@@ -84,7 +84,7 @@ function pickProblem(mode, nodeName, obj) {
 function pickConcept(nodeName, concept) {
 	var node = oDOM.selectSingleNode(nodeName);
 	clearNil(node);
-	var valueNode = refNode.selectSingleNode("value");
+	var valueNode = node.selectSingleNode("value");
 	clearNil(valueNode);
 	valueNode.text = getConceptNodeValue(concept);
 	
