@@ -110,6 +110,13 @@ function selectLocation() {
 }
 
 //===============================================================
+// Select a generic answer
+//===============================================================
+function selectAnswer(path) {
+	taskPaneNavigateTo('/answer.htm?node=' + path);
+}
+
+//===============================================================
 // Submit form to server and close (if successful)
 //===============================================================
 // usage:
