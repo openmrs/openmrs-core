@@ -1446,7 +1446,7 @@
 					<prop key="type">NEWCOLUMN</prop>
 				</props>
 				<props>
-					<prop key="headingCode">summary.currentDrugOrders</prop>
+					<prop key="type">currentDrugOrders</prop>
 					<prop key="headingCode">summary.currentDrugOrders</prop>
 					<prop key="whichSets">ANTIRETROVIRAL DRUGS,TUBERCULOSIS TREATMENT DRUGS,*</prop>
 				</props>
