@@ -112,8 +112,12 @@ function selectLocation() {
 //===============================================================
 // Select a generic answer
 //===============================================================
-function selectAnswer(path) {
-	taskPaneNavigateTo('/conceptAnswer.htm?nodeName=' + path);
+function selectAnswer(nodePath) {
+	var question = XDocument.DOM.selectSingleNode(nodePath);
+    var questionConcept = question.getAttribute("openmrs_concept");
+    var conceptId = questionConcept.split("^")[0];
+	taskPaneNavigateTo('/conceptAnswer.htm?conceptId=' + conceptId
+		+ "&nodePath=" + nodePath);
 }
 
 //===============================================================
