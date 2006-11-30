@@ -204,9 +204,9 @@ dojo.widget.defineWidget(
 		// infopath hack since it doesn't let us use onkeyup or onkeypress	
 		if (this.useOnKeyDown == true) {
 			// only add if the key is a letter and no modifier key was pressed
-			if (((this.key >= 48 && this.key <= 105) || this.key == 189) && !this.event.altKey && !this.event.ctrlKey) {
+			if ((this.isAlphaNumeric(this.key) || this.isDash(this.key)) && !this.event.altKey && !this.event.ctrlKey) {
 				var newKey = String.fromCharCode(this.key).toLowerCase();
-				if (this.key == 189) 
+				if (this.isDash(this.key)) 
 					newKey = "-"; // if key is a dash, make char a dash
 				else if (this.text.length > 0) {
 					// IE interprets all char codes as upper case.  
@@ -238,10 +238,9 @@ dojo.widget.defineWidget(
 		
 		else if (this.allowAutoList) {
 		
-			if ((((this.key >= 48 && this.key <= 90) || (this.key >= 96 || this.key <= 105)) || 
-				(this.key >= 96 && this.key <= 111) ) ||
+			if (this.isAlphaNumeric(this.key) ||
 				this.key == dojo.event.browser.keys.KEY_BACKSPACE || this.key == dojo.event.browser.keys.KEY_SPACE || 
-				this.key == 189 || this.key == 109 ||
+				this.isDash(this.key) ||
 				this.key == dojo.event.browser.keys.KEY_DELETE || this.key == 1) {
 					//	 (if alphanumeric key entered or 
 					//   backspace key pressed or
@@ -877,7 +876,15 @@ dojo.widget.defineWidget(
 	
 	allowNewSearch: function() { return true; },
 	
-	allowAutoJump: function() { return true; }
+	allowAutoJump: function() { return true; },
+	
+	isAlphaNumeric: function(key) {
+		 return key >= 48 && this.key <= 105;
+	},
+	
+	isDash : function(key) {
+		return key == 189 || key == 109;
+	}
 	
 	},
 	"html"
