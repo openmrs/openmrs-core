@@ -466,6 +466,21 @@ public interface AdministrationService {
 
 	public void addGlobalProperty(String propertyName, String propertyValue);
 
-	public List<DataEntryStatistic> getDataEntryStatistics(Date fromDate, Date toDate);
+	/**
+	 * Creates a list of data entry stats from <code>fromDate</code> to <code>toDate</code>
+	 * 
+	 * EncounterUserColumn is a column in the encounter table like <code>creator</code>, <code>provider</code>, etc
+	 * (defaults to creator)
+	 * 
+	 * EncounterUserColumn is a column in the encounter table like <code>creator</code>, <code>orderer</code>, etc
+	 * (defaults to orderer)
+	 * 
+	 * @param fromDate
+	 * @param toDate
+	 * @param encounterUserColumn
+	 * @param orderUserColumn
+	 * @return
+	 */
+	public List<DataEntryStatistic> getDataEntryStatistics(Date fromDate, Date toDate, String encounterUserColumn, String orderUserColumn);
 	
 }

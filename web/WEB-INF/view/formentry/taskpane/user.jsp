@@ -5,6 +5,15 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
 <c:choose>
+	<c:when test="${not empty param.nodePath}">
+		<c:set var="nodePath" value="${param.nodePath}"/>
+	</c:when>
+	<c:otherwise>
+		<c:set var="nodePath" value="//encounter.provider_id"/>
+	</c:otherwise>
+</c:choose>
+
+<c:choose>
 	<c:when test="${empty param.title}">
 		<h3><spring:message code="User.title"/></h3>
 	</c:when>
@@ -33,7 +42,7 @@
 		
 		dojo.event.topic.subscribe("uSearch/select", 
 			function(msg) {
-				setObj('//encounter.provider_id', new miniObject(msg.objs[0]));
+				setObj('${nodePath}', new miniObject(msg.objs[0]));
 			}
 		);
 		

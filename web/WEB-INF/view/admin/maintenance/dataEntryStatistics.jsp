@@ -13,23 +13,56 @@
 <h2><spring:message code="DataEntryStatistics.title"/></h2>
 
 <form method="post">
-<spring:message code="general.fromDate"/>:
-	<spring:bind path="command.fromDate">			
-		<input type="text" name="${status.expression}" size="10" 
-			   value="${status.value}" onClick="showCalendar(this)" />
-		<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
-	</spring:bind>
 
-<br/>
-<spring:message code="general.toDate"/>:
-	<spring:bind path="command.toDate">			
-		<input type="text" name="${status.expression}" size="10" 
-			   value="${status.value}" onClick="showCalendar(this)" />
-		<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
-	</spring:bind>
-
-<br/>
-<input type="submit" value="<spring:message code="general.view"/>" />
+<table>
+	<tr>
+		<td><spring:message code="DataEntryStatistics.encounterUser"/>:</td>
+		<td>
+			<spring:bind path="command.encUserColumn">			
+				<select name="${status.expression}" width="10">
+					<option value="creator" <c:if test="${command.encUserColumn=='creator'}">selected</c:if>><spring:message code="DataEntryStatistics.encounterCreator"/></option>
+					<option value="provider" <c:if test="${command.encUserColumn=='provider'}">selected</c:if>><spring:message code="DataEntryStatistics.encounterProvider"/></option>
+				</select>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<td><spring:message code="DataEntryStatistics.orderUser"/>:</td>
+		<td>
+			<spring:bind path="command.orderUserColumn">			
+				<select name="${status.expression}" width="10">
+					<option value="creator" <c:if test="${command.orderUserColumn=='creator'}">selected</c:if>><spring:message code="DataEntryStatistics.orderCreator"/></option>
+					<option value="orderer" <c:if test="${command.orderUserColumn=='orderer'}">selected</c:if>><spring:message code="DataEntryStatistics.orderOrderer"/></option>
+				</select>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<td><spring:message code="general.fromDate"/>:</td>
+		<td>
+			<spring:bind path="command.fromDate">			
+				<input type="text" name="${status.expression}" size="10" 
+					   value="${status.value}" onClick="showCalendar(this)" />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<td><spring:message code="general.toDate"/>:</td>
+		<td>
+			<spring:bind path="command.toDate">			
+				<input type="text" name="${status.expression}" size="10" 
+					   value="${status.value}" onClick="showCalendar(this)" />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td><input type="submit" value="<spring:message code="general.view"/>" /></td>
+	</tr>
 </form>
 
 <p/>

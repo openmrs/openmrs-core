@@ -845,9 +845,15 @@ public class HibernateAdministrationDAO implements
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<DataEntryStatistic> getDataEntryStatistics(Date fromDate, Date toDate) throws DAOException {
+	public List<DataEntryStatistic> getDataEntryStatistics(Date fromDate, Date toDate, String encounterColumn, String orderColumn) throws DAOException {
 		// for all encounters, find user, form name, and number of entries
-		String hql = "select enc.creator, enc.form.name, count(*) " +
+		
+		// default userColumn to creator
+		if (encounterColumn == null)
+			encounterColumn = "creator";
+		encounterColumn = encounterColumn.toLowerCase();
+		
+		String hql = "select enc." + encounterColumn + ", enc.form.name, count(*) " +
 				"from Encounter enc ";
 		if (fromDate != null || toDate != null) {
 			String s = "where ";
@@ -860,7 +866,7 @@ public class HibernateAdministrationDAO implements
 			}
 			hql += s;
 		}
-		hql += "group by enc.creator, enc.form.name ";
+		hql += "group by enc." + encounterColumn + ", enc.form.name ";
 		log.debug("hql: " + hql);
 		Query q = sessionFactory.getCurrentSession().createQuery(hql);
 		if (fromDate != null)
@@ -878,8 +884,14 @@ public class HibernateAdministrationDAO implements
 			ret.add(s);
 		}
 		
+		// default userColumn to creator
+		if (orderColumn == null)
+			orderColumn = "creator";
+		orderColumn = orderColumn.toLowerCase();
+		
+		
 		// for orders, count how many were created. (should eventually count something with voided/changed)
-		hql = "select o.creator, o.orderType.name, count(*) " +
+		hql = "select o." + orderColumn + ", o.orderType.name, count(*) " +
 				"from Order o ";
 		if (fromDate != null || toDate != null) {
 			String s = "where ";
@@ -892,7 +904,7 @@ public class HibernateAdministrationDAO implements
 			}
 			hql += s;
 		}
-		hql += "group by o.creator, o.orderType.name ";
+		hql += "group by o." + orderColumn + ", o.orderType.name ";
 		q = sessionFactory.getCurrentSession().createQuery(hql);
 		if (fromDate != null)
 			q.setParameter("fromDate", fromDate);

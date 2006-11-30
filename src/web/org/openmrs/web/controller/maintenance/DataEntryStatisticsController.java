@@ -31,6 +31,9 @@ public class DataEntryStatisticsController extends SimpleFormController {
 		private Date fromDate;
 		private Date toDate;
 		private DataTable table;
+		private String encUserColumn;
+		private String orderUserColumn;
+		
 		public StatisticsCommand() { }
 		public Date getFromDate() {
 			return fromDate;
@@ -49,6 +52,18 @@ public class DataEntryStatisticsController extends SimpleFormController {
 		}
 		public void setToDate(Date toDate) {
 			this.toDate = toDate;
+		}
+		public String getEncUserColumn() {
+			return encUserColumn;
+		}
+		public void setEncUserColumn(String encUserColumn) {
+			this.encUserColumn = encUserColumn;
+		}
+		public String getOrderUserColumn() {
+			return orderUserColumn;
+		}
+		public void setOrderUserColumn(String orderUserColumn) {
+			this.orderUserColumn = orderUserColumn;
 		}
 	}
 	
@@ -72,7 +87,9 @@ public class DataEntryStatisticsController extends SimpleFormController {
 		ret.setToDate(null);
 		
 		Date toDateToUse = OpenmrsUtil.lastSecondOfDay(ret.getToDate());
-		List<DataEntryStatistic> stats = Context.getAdministrationService().getDataEntryStatistics(ret.getFromDate(), toDateToUse);
+		String encUserColumn = ret.getEncUserColumn();
+		String orderUserColumn = ret.getOrderUserColumn();
+		List<DataEntryStatistic> stats = Context.getAdministrationService().getDataEntryStatistics(ret.getFromDate(), toDateToUse, encUserColumn, orderUserColumn);
 		DataTable table = DataEntryStatistic.tableByUserAndType(stats);
 		ret.setTable(table);
 		
@@ -82,7 +99,9 @@ public class DataEntryStatisticsController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object commandObj, BindException errors) throws Exception {
 		StatisticsCommand command = (StatisticsCommand) commandObj;
 		Date toDateToUse = OpenmrsUtil.lastSecondOfDay(command.getToDate());
-		List<DataEntryStatistic> stats = Context.getAdministrationService().getDataEntryStatistics(command.getFromDate(), toDateToUse);
+		String encUserColumn = command.getEncUserColumn();
+		String orderUserColumn = command.getOrderUserColumn();
+		List<DataEntryStatistic> stats = Context.getAdministrationService().getDataEntryStatistics(command.getFromDate(), toDateToUse, encUserColumn, orderUserColumn);
 		DataTable table = DataEntryStatistic.tableByUserAndType(stats);
 		command.setTable(table);
 		return showForm(request, response, errors);

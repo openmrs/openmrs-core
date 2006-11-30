@@ -908,7 +908,7 @@ public class AdministrationServiceImpl implements AdministrationService {
 		getAdministrationDAO().addGlobalProperty(propertyName, propertyValue);
 	}
 	
-	public List<DataEntryStatistic> getDataEntryStatistics(Date fromDate, Date toDate) {
-		return getAdministrationDAO().getDataEntryStatistics(fromDate, toDate);
+	public List<DataEntryStatistic> getDataEntryStatistics(Date fromDate, Date toDate, String encounterUserColumn, String orderUserColumn) {
+		return getAdministrationDAO().getDataEntryStatistics(fromDate, toDate, encounterUserColumn, orderUserColumn);
 	}
 }
