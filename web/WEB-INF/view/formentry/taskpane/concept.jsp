@@ -124,7 +124,14 @@
 	.alert { color: red; }
 </style>
 
-<h3><spring:message code="diagnosis.title" /></h3>
+<c:choose>
+	<c:when test="${empty param.title}">
+		<h3><spring:message code="diagnosis.title"/></h3>
+	</c:when>
+	<c:otherwise>
+		<h3><spring:message code="${param.title}"/></h3>
+	</c:otherwise>
+</c:choose>
 
 <div id="preProposedAlert" class="alert">
 	<br>

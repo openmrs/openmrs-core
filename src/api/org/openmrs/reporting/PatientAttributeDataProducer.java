@@ -43,4 +43,13 @@ public class PatientAttributeDataProducer implements PatientDataProducer {
 		this.name = name;
 	}
 
+	public Integer getReportObjectId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setReportObjectId(Integer id) {
+		// TODO Auto-generated method stub
+		
+	}
 }

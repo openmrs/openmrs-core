@@ -34,7 +34,7 @@ function setObj(nodeName, obj) {
 }
 
 // returns HL7 version of problem for inserting into form
-function getProblemValue(obj) {
+function getConceptNodeValue(obj) {
 	return obj.key + "^" + obj.value.toUpperCase() + "^99DCT";
 }
 
@@ -58,7 +58,7 @@ function pickProblem(mode, nodeName, obj) {
 	var valueNode = refNode.selectSingleNode("value");
 	if (valueNode.text == "") {
 		clearNil(valueNode);
-		valueNode.text = getProblemValue(obj);
+		valueNode.text = getConceptNodeValue(obj);
 	} else {
 		// create new elem as clone with proper value
 		var newElem = refNode.cloneNode(true);
@@ -74,10 +74,19 @@ function pickProblem(mode, nodeName, obj) {
 		}
 
 		// value must be set *after* inserting node; otherwise it gets munged
-		newElemValue.text = getProblemValue(obj);
+		newElemValue.text = getConceptNodeValue(obj);
 	}
 
 	closeTaskPane();
+}
+
+// add this concept as an answer to the given node
+function pickConcept(nodeName, concept) {
+	var node = oDOM.selectSingleNode(nodeName);
+	clearNil(node);
+	var valueNode = refNode.selectSingleNode("value");
+	clearNil(valueNode);
+	valueNode.text = getConceptNodeValue(concept);
 }
 
 //	hide taskpane

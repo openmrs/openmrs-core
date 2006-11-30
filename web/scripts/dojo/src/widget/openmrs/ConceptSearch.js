@@ -27,6 +27,7 @@ dojo.widget.defineWidget(
 		searchPhrase: "",
 		conceptId: "",
 		drugId: "",
+		performInitialSearch: false,
 		
 		postCreate: function() {
 			dojo.debug("postCreate in conceptsearch");
@@ -39,13 +40,12 @@ dojo.widget.defineWidget(
 			}
 			
 			this.inputNode.value = this.searchPhrase;
-			dojo.debug("searchPhrase, before insserting to inputNodde is " + this.searchPhrase);
-			if (this.searchPhrase) {
-				if ( this.showAnswers ) {
-					DWRConceptService.findConceptAnswers(this.simpleClosure(this, "doObjectsFound"), this.searchPhrase, this.showAnswers, false, this.includeDrugConcepts);
-				} else {
-					DWRConceptService.findConcepts(this.simpleClosure(this, "doObjectsFound"), this.searchPhrase, false, this.includeClasses, this.excludeClasses, this.includeDatatypes, this.excludeDatatypes, this.includeDrugConcepts);
-				}
+			dojo.debug("searchPhrase, before inserting to inputNode is " + this.searchPhrase);
+			
+			if ( this.showAnswers && (this.searchPhrase || this.performInitialSearch) ) {
+				DWRConceptService.findConceptAnswers(this.simpleClosure(this, "doObjectsFound"), this.searchPhrase, this.showAnswers, false, this.includeDrugConcepts);
+			} else if (this.searchPhrase){
+				DWRConceptService.findConcepts(this.simpleClosure(this, "doObjectsFound"), this.searchPhrase, false, this.includeClasses, this.excludeClasses, this.includeDatatypes, this.excludeDatatypes, this.includeDrugConcepts);
 			}
 		},
 		
