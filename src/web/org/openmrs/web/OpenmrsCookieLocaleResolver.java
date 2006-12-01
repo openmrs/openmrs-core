@@ -4,6 +4,7 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.openmrs.api.context.Context;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
@@ -30,6 +31,13 @@ public class OpenmrsCookieLocaleResolver extends CookieLocaleResolver {
 		
 		//still set the cookie for later possible use.
 		super.setLocale(request, response, locale);
+		
+		HttpSession session = (HttpSession)request.getSession();
+		
+		// if a user clicks on the locale change links and their current default locale is null
+		if (request.getParameter("lang") != null)
+			if (Context.isAuthenticated())
+				session.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.localeChangeHint");
 	}
 
 	public String getCookieName() {

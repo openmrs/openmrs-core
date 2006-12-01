@@ -115,12 +115,13 @@ public class OpenmrsConstants {
 	public static final String PRIV_MANAGE_CONCEPT_CLASSES	= "Manage Concept Classes";
 	public static final String PRIV_MANAGE_CONCEPT_DATATYPES= "Manage Concept Datatypes";
 	public static final String PRIV_MANAGE_ENCOUNTER_TYPES	= "Manage Encounter Types";
-	public static final String PRIV_MANAGE_PRIVILEGES	= "Manage Privileges";
-	public static final String PRIV_MANAGE_ROLES		= "Manage Roles";
-	public static final String PRIV_MANAGE_FIELD_TYPES	= "Manage Field Types";
-	public static final String PRIV_MANAGE_ORDERS	= "Manage Orders";
-	public static final String PRIV_MANAGE_ORDER_TYPES	= "Manage Order Types";
+	public static final String PRIV_MANAGE_PRIVILEGES		= "Manage Privileges";
+	public static final String PRIV_MANAGE_ROLES			= "Manage Roles";
+	public static final String PRIV_MANAGE_FIELD_TYPES		= "Manage Field Types";
+	public static final String PRIV_MANAGE_ORDERS			= "Manage Orders";
+	public static final String PRIV_MANAGE_ORDER_TYPES		= "Manage Order Types";
 	public static final String PRIV_MANAGE_RELATIONSHIP_TYPES	= "Manage Relationship Types";
+	public static final String PRIV_MANAGE_ALERTS 				= "Manage Alerts";
 	
 	public static final String PRIV_VIEW_NAVIGATION_MENU	= "View Navigation Menu";
 	public static final String PRIV_VIEW_ADMIN_FUNCTIONS	= "View Administration Functions";
@@ -206,6 +207,7 @@ public class OpenmrsConstants {
 		privs.put(PRIV_MANAGE_FIELD_TYPES, "Able to add/edit/delete field types");
 		privs.put(PRIV_MANAGE_ORDER_TYPES, "Able to add/edit/delete order types");
 		privs.put(PRIV_MANAGE_RELATIONSHIP_TYPES, "Able to add/edit/delete relationship types");
+		privs.put(PRIV_MANAGE_ALERTS, "Able to add/edit/delete user alerts");
 		
 		privs.put(PRIV_VIEW_NAVIGATION_MENU, "Able to view the navigations menu (Home, View Patients, Dictionary, Administration, My Profile)");
 		privs.put(PRIV_VIEW_ADMIN_FUNCTIONS, "Able to view the 'Administration' link in the navigation bar");
