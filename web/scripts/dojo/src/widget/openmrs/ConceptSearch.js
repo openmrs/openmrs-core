@@ -170,6 +170,11 @@ dojo.widget.defineWidget(
 				return false;
 			}
 			return true;	
+		},
+		
+		searchCleared: function() {
+			if ( this.showAnswers )
+				DWRConceptService.findConceptAnswers(this.simpleClosure(this, "doObjectsFound"), "", this.showAnswers, false, this.includeDrugConcepts);
 		}
 		
 	},

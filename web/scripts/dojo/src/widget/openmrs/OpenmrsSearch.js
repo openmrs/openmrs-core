@@ -260,6 +260,10 @@ dojo.widget.defineWidget(
 							this.searchTimeout = setTimeout(callback(this, this.text), this.searchDelay);
 							dojo.debug('findObjects timeout called for other key: ' + this.key);
 						}
+						else if (this.text.length == 0 && this.key == dojo.event.browser.keys.KEY_BACKSPACE) {
+							this.resetSearch();
+							this.searchCleared();
+						}
 					}
 					if (this.event.type == "submit") {
 						//infopath taskpane kludge to allow for no keyup and only onsubmit
@@ -361,13 +365,7 @@ dojo.widget.defineWidget(
 		dojo.debug('findObjects initialized with search on: ' + phrase);
 		//must have at least x characters entered or that character be a number
 		if (phrase.length >= this.minSearchCharacters || (parseInt(phrase) >= 0 && parseInt(phrase) <= 99)) {
-			clearTimeout(this.searchTimeout);	//stop any timeout that may have just occurred...fixes 'duplicate data' error
-			this.objectsFound = new Array();	//zero-out numbered object list
-			this.searchIndex = 0;				//our numbering is one-based, but the searchIndex is incremented prior to printing
-			this.firstItemDisplayed = 1;		//zero-out our paging index (but we have a one-based list, see line above)
-			//alert("phrase: " + phrase);
-			this.lastPhraseSearched = phrase;
-			
+			this.resetSearch(phrase);
 			dojo.event.topic.publish(this.eventNames.findObjects, phrase);
 			dojo.debug("Calling doFindObjects with " + phrase);
 			this.doFindObjects(phrase);
@@ -884,6 +882,20 @@ dojo.widget.defineWidget(
 	
 	isDash : function(key) {
 		return key == 189 || key == 109;
+	},
+	
+	searchCleared : function() {
+		return;
+	},
+	
+	resetSearch : function(phrase) {
+		clearTimeout(this.searchTimeout);	//stop any timeout that may have just occured...fixes 'duplicate data' error
+		this.objectsFound = new Array();	//zero-out numbered object list
+		this.searchIndex = 0;				//our numbering is one-based, but the searchIndex is incremented prior to printing
+		this.firstItemDisplayed = 1;		//zero-out our paging index (but we have a one-based list, see line above)
+		//alert("phrase: " + phrase);
+		this.lastPhraseSearched = phrase;
+			
 	}
 	
 	},
