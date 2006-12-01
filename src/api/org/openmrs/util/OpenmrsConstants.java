@@ -258,6 +258,7 @@ public class OpenmrsConstants {
 		props.put("use_patient_attribute.tribe", "true");
 		props.put("use_patient_attribute.healthCenter", "false");
 		props.put("use_patient_attribute.mothersName", "false");
+		props.put("new_patient_form.showRelationships", "false");
 		props.put("dashboard.overview.showConcepts", "");
 		props.put("dashboard.encounters.viewWhere", "newWindow"); // known values: 'sameWindow', 'newWindow', 'oneNewWindow'
 		props.put("dashboard.encounters.showEmptyFields", "true");

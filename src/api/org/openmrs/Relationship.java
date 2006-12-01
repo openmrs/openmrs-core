@@ -32,7 +32,13 @@ public class Relationship implements java.io.Serializable {
 	public Relationship(Integer relationshipId) {
 		this.relationshipId = relationshipId;
 	}
-
+	
+	public Relationship(Person person, Person relative, RelationshipType type) {
+		this.person = person;
+		this.relative = relative;
+		this.relationship = type;
+	}
+	
 	/** 
 	 * Compares two objects for similarity
 	 * 

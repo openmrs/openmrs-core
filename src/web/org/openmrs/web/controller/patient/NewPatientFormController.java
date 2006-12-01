@@ -28,6 +28,9 @@ import org.openmrs.PatientAddress;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientName;
+import org.openmrs.Person;
+import org.openmrs.Relationship;
+import org.openmrs.RelationshipType;
 import org.openmrs.Tribe;
 import org.openmrs.api.context.Context;
 import org.openmrs.formentry.FormEntryService;
@@ -101,16 +104,18 @@ public class NewPatientFormController extends SimpleFormController {
 				if (pref == null)
 					pref = "";
 				
-				log.debug("identifiers: " + identifiers);
-				for (String s : identifiers)
-					log.debug(s);
-				log.debug("types: " + types);
-				for (String s : types)
-					log.debug(s);
-				log.debug("locations: " + locs);
-				for (String s : locs)
-					log.debug(s);
-				log.debug("preferred: " + pref);
+				if (log.isDebugEnabled()) {
+					log.debug("identifiers: " + identifiers);
+					for (String s : identifiers)
+						log.debug(s);
+					log.debug("types: " + types);
+					for (String s : types)
+						log.debug(s);
+					log.debug("locations: " + locs);
+					for (String s : locs)
+						log.debug(s);
+					log.debug("preferred: " + pref);
+				}
 				
 				// loop over the identifiers to create the patient.identifiers set
 				for (int i=0; i<identifiers.length;i++) {
@@ -246,6 +251,8 @@ public class NewPatientFormController extends SimpleFormController {
 				pi.setPreferred(pref.equals(pi.getIdentifier()+pi.getIdentifierType().getPatientIdentifierTypeId()));
 			}
 			
+			
+			
 			// add the new identifiers
 			patient.getIdentifiers().addAll(newIdentifiers);
 			
@@ -273,6 +280,40 @@ public class NewPatientFormController extends SimpleFormController {
 			}
 			
 			ps.updatePatient(patient);
+			
+			
+			// update patient's relationships
+			
+			String[] relatives = request.getParameterValues("relative");
+			String[] types = request.getParameterValues("relationshipType");
+			Person person = Context.getAdministrationService().getPerson(patient);
+			List<Relationship> relationships = Context.getPatientService().getRelationships(person);
+			
+			for (int x = 0 ; x < relatives.length; x++ ) {
+				String relativeString = relatives[x];
+				String typeString = types[x];
+				
+				Patient relativePatient = ps.getPatient(Integer.valueOf(relativeString));
+				RelationshipType type = ps.getRelationshipType(Integer.valueOf(typeString));
+				
+				Person relative = Context.getAdministrationService().getPerson(relativePatient);
+				
+				boolean found = false;
+				// TODO this assumes that a relative can only be related in one way
+				for (Relationship rel : relationships) {
+					if (rel.getRelative().equals(relative)) {
+						rel.setRelationship(type);
+						found = true;
+					}
+				}
+				if (!found) {
+					Relationship r = new Relationship(person, relative, type);
+					relationships.add(r);
+				}
+			}
+			for (Relationship rel : relationships)
+				Context.getAdministrationService().updateRelationship(rel);
+			
 			
 			if ( patient.getDead() ) {
 				log.debug("Patient is dead, so let's make sure there's an Obs for it");
@@ -450,6 +491,9 @@ public class NewPatientFormController extends SimpleFormController {
 			pa.setPreferred(true);
 			patient.setAddress(pa);
 		}
+		
+		Person person = Context.getAdministrationService().getPerson(p);
+		patient.setRelationships(Context.getPatientService().getRelationships(person));
 		
         return patient;
     }

@@ -40,6 +40,10 @@ public class ForEachRecordTag extends BodyTagSupport {
 			PatientService ps = Context.getPatientService();
 			records = ps.getPatientIdentifierTypes().iterator();
 		}
+		else if (name.equals("relationshipType")) {
+			PatientService ps = Context.getPatientService();
+			records = ps.getRelationshipTypes().iterator();
+		}
 		else if (name.equals("location")) {
 			EncounterService es = Context.getEncounterService();
 			records = es.getLocations().iterator();

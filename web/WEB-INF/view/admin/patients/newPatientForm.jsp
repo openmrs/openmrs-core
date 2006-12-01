@@ -117,7 +117,7 @@
 		return age;
 	}
 	
-	function removeIdentifier(btn) {
+	function removeRow(btn) {
 		var parent = btn.parentNode;
 		while (parent.tagName.toLowerCase() != "tr")
 			parent = parent.parentNode;
@@ -173,6 +173,7 @@
 <openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" var="showTribe"/>
 <openmrs:globalProperty key="use_patient_attribute.mothersName" defaultValue="false" var="showMothersName"/>
 <openmrs:globalProperty key="use_patient_attribute.healthCenter" defaultValue="false" var="showHealthCenter"/>
+<openmrs:globalProperty key="new_patient_form.showRelationships" defaultValue="false" var="showRelationships"/>
 
 <spring:hasBindErrors name="patient">
 	<spring:message code="fix.error"/>
@@ -258,7 +259,8 @@
 					<input type="radio" name="preferred" value="" onclick="identifierOrTypeChanged(this)" />
 				</td>
 				<td valign="middle" align="center">
-					<input type="button" name="closeButton" onClick="return removeIdentifier(this);" class="closeButton" value='<spring:message code="general.remove"/>'/>
+					<input type="button" name="closeButton" onClick="return removeRow(this);" class="closeButton" value='<spring:message code="general.remove"/>'/>
+				</td>
 			</tr>
 		</tbody>
 	</table>
@@ -268,7 +270,37 @@
 		</c:forEach>
 	</script>
 	<input type="button" class="smallButton" onclick="addIdentifier()" value="<spring:message code="PatientIdentifier.add" />" hidefocus />
+	
+	<c:if test="${showMothersName == 'true'}">
+		<br/><br/><br />
+	
+		<table id="relationships" cellspacing="2">
+			<tr>
+				<th><spring:message code="Relationship.relative"/></th>
+				<th><spring:message code="Relationship.relationshipType"/></th>
+				<th></th>
+			</tr>
+			<tbody id="relationshipsTbody">
+				<tr id="relationshipRow">
+					<td valign="top" style="width:230px">
+						<openmrs_tag:patientField formFieldName="relative" initialValue="${patient.relationships[0].person.patient.patientId}" searchLabelCode="Relationship.instructions.select" searchLabelArguments="${relType}" />
+					</td>
+					<td valign="top">
+						<select name="relationshipType">
+							<openmrs:forEachRecord name="relationshipType" select="${patient.relationships[0].relationship}">
+								<option value="${record.relationshipTypeId}" ${selected}>
+									${record.name}
+								</option>
+							</openmrs:forEachRecord>
+						</select>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</c:if>
+	
 	<br/><br/>
+	
 	<table>
 		<tr>
 			<th>

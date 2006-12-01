@@ -18,6 +18,13 @@
 			</li>
 		</openmrs:hasPrivilege>
 	</c:if>
+	<openmrs:hasPrivilege privilege="Manage Relationship Types">
+		<li <c:if test="<%= request.getRequestURI().contains("relationshipType") %>">class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/patients/relationshipType.list">
+				<spring:message code="RelationshipType.manage"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
 	<openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" var="showTribe"/>
 	<c:if test="${showTribe == 'true'}">
 		<openmrs:hasPrivilege privilege="Manage Tribes">

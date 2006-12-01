@@ -316,6 +316,9 @@ tr td#patientHeaderObsWeight{
 tr td#patientHeaderObsRegimen{
 	border-right: 0px solid white;	
 }
+tr td#patientHeaderObsReturnVisit {
+	display: none;
+}
 
 #patientHeaderRegimen {
 	font-weight: bold;

@@ -14,6 +14,7 @@ import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.RelationshipType;
 import org.openmrs.Role;
 import org.openmrs.Tribe;
 import org.openmrs.User;
@@ -290,6 +291,20 @@ public class FormEntryServiceImpl implements FormEntryService {
 			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		}
 		return patients;
+	}
+	
+	/**
+	 * @see org.openmrs.api.PatientService.getRelationshipType(java.lang.Integer)
+	 */
+	public RelationshipType getRelationshipType(Integer id) throws APIException {
+		Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS);
+		RelationshipType t;
+		try {
+			t = getPatientService().getRelationshipType(id);
+		} finally {
+			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS);
+		}
+		return t;
 	}
 
 	/**

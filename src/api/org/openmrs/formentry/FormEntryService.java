@@ -9,12 +9,10 @@ import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.RelationshipType;
 import org.openmrs.Tribe;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
-import org.openmrs.formentry.FormEntryArchive;
-import org.openmrs.formentry.FormEntryError;
-import org.openmrs.formentry.FormEntryQueue;
 import org.openmrs.formentry.db.FormEntryDAO;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -156,6 +154,9 @@ public interface FormEntryService {
 
 	@Transactional(readOnly=true)
 	public SortedMap<String, String> getSystemVariables();
+	
+	@Transactional(readOnly=true)
+	public RelationshipType getRelationshipType(Integer id);
 
 	/***************************************************************************
 	 * FormEntryQueue Service Methods

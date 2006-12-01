@@ -1,6 +1,8 @@
 package org.openmrs.web.controller.patient;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Vector;
 
 import org.openmrs.Concept;
 import org.openmrs.Location;
@@ -8,6 +10,7 @@ import org.openmrs.Patient;
 import org.openmrs.PatientAddress;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientName;
+import org.openmrs.Relationship;
 
 public class ShortPatientModel {
 	private Integer patientId;
@@ -29,6 +32,7 @@ public class ShortPatientModel {
 	private Boolean dead = false;
 	private Concept causeOfDeath = null;
 	private Date deathDate = null;
+	private List<Relationship> relationships = new Vector<Relationship>();
 	
 	public Boolean getDead() {
 		return dead;
@@ -234,6 +238,14 @@ public class ShortPatientModel {
 
 	public void setDeathDate(Date deathDate) {
 		this.deathDate = deathDate;
+	}
+
+	public List<Relationship> getRelationships() {
+		return relationships;
+	}
+
+	public void setRelationships(List<Relationship> relationships) {
+		this.relationships = relationships;
 	}
 	
 }
