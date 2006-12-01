@@ -118,6 +118,10 @@
 					<spring:message code="Patient.cd4"/>:
 					<openmrs_tag:mostRecentObs observations="${model.patientObs}" concept="5497" locale="${model.locale}" />
 				</td>
+				<td id="patientHeaderObsReturnVisit">
+					<spring:message code="Patient.returnVisit"/>:
+					<openmrs_tag:mostRecentObs observations="${model.patientObs}" concept="5096" locale="${model.locale}" />
+				</td>
 				<td id="patientHeaderObsRegimen">
 					<spring:message code="Patient.regimen" />:
 					<span id="patientHeaderRegimen">
