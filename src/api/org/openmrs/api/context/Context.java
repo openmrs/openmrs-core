@@ -30,6 +30,7 @@ import org.openmrs.arden.ArdenService;
 import org.openmrs.formentry.FormEntryService;
 import org.openmrs.formentry.FormEntryUtil;
 import org.openmrs.hl7.HL7Service;
+import org.openmrs.logic.LogicService;
 import org.openmrs.notification.AlertService;
 import org.openmrs.notification.MessageException;
 import org.openmrs.notification.MessagePreparator;
@@ -290,6 +291,13 @@ public class Context implements ApplicationContextAware {
 	 */
 	public static ReportService getReportService() {
 		return getServiceContext().getReportService();
+	}
+	
+	/**
+	 * @return logic service
+	 */
+	public static LogicService getLogicService() {
+		return getServiceContext().getLogicService();
 	}
 
 	/**

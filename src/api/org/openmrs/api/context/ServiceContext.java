@@ -15,6 +15,7 @@ import org.openmrs.api.UserService;
 import org.openmrs.arden.ArdenService;
 import org.openmrs.formentry.FormEntryService;
 import org.openmrs.hl7.HL7Service;
+import org.openmrs.logic.LogicService;
 import org.openmrs.notification.AlertService;
 import org.openmrs.notification.MessageService;
 import org.openmrs.reporting.ReportService;
@@ -53,7 +54,7 @@ public class ServiceContext {
 	private AlertService alertService;
 	private ArdenService ardenService;
 	private ProgramWorkflowService programWorkflowService;
-	
+	private LogicService logicService;	
 
 	/**
 	 * Default constructor
@@ -155,17 +156,24 @@ public class ServiceContext {
 	
 
 	/**
-	 * @param programWorkflowService
+	 * @return programWorkflowService
 	 */
 	public ProgramWorkflowService getProgramWorkflowService() {
 		return this.programWorkflowService;
 	}
 	
 	/**
-	 * @param ardenService
+	 * @return ardenService
 	 */
 	public ArdenService getArdenService() {
 		return this.ardenService;
+	}
+	
+	/**
+	 * @return logic service
+	 */
+	public LogicService getLogicService() {
+		return this.logicService;
 	}
 
 
@@ -335,6 +343,13 @@ public class ServiceContext {
 	 */
 	public void setUserService(UserService userService) {
 		this.userService = userService;
+	}
+	
+	/**
+	 * @param logicService the logicService to set
+	 */
+	public void setLogicService(LogicService logicService) {
+		this.logicService = logicService;
 	}
 
 
