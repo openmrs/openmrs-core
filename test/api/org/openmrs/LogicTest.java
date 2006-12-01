@@ -36,16 +36,16 @@ public class LogicTest extends BaseTest {
 			"PROBLEM RESOLVED", "OVERALL DRUG ADHERENCE IN LAST MONTH",
 			"ANTIRETROVIRAL ADHERENCE IN PAST WEEK",
 			"HEMOGLOBIN", "BLOOD OXYGEN SATURATION",
-			"CD4%", "SERUM CREATININE", "SERUM GLUTAMIC-PYRUVIC TRANSAMINASE",
+			"CD4, BY FACS", "SERUM CREATININE", "SERUM GLUTAMIC-PYRUVIC TRANSAMINASE",
 			"X-RAY, CHEST"};
 
 	public void testLogic() throws Exception {
 		startup();
 
 		// Setup
-		Context.authenticate("admin", "test");
+		Context.authenticate("paul", "xxxxxxxxx");
 //		Patient patient = Context.getPatientService().getPatient(8637);
-		Patient patient = Context.getPatientService().getPatient(7753);
+		Patient patient = Context.getPatientService().getPatient(21342);
 		LogicService logic = Context.getLogicService();
 		registerRules(logic);
 		registerConcepts(logic);

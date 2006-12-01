@@ -13,7 +13,7 @@ public class HealthCenterRule extends Rule {
 			Object[] args) {
 		Location healthCenter = patient.getHealthCenter();
 		if (healthCenter == null)
-			return Result.NULL_RESULT;
+			return new Result("UNKNOWN");
 		Result result = new Result(healthCenter.getName());
 		result.setValueNumeric(healthCenter.getLocationId());
 		return result;

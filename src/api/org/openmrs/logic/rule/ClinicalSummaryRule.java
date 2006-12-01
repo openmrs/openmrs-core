@@ -41,14 +41,20 @@ public class ClinicalSummaryRule extends Rule {
 		Result pregnant = dataSource.eval(patient, Aggregation.latest(),
 				"PREGNANCY STATUS", DateConstraint.withinPreceding(Duration
 						.months(11)), args);
-		if ("F".equals(patient.getGender()))
+		if (pregnant.isNull())
+			append (xml, "pregnant", "UNKNOWN");
+		else if ("F".equals(patient.getGender()))
 			append(xml, "pregnant", pregnant.toBoolean().toString());
 		Result numberChildrenSired = dataSource.eval(patient, Aggregation
 				.latest(), "TOTAL NUMBER OF CHILDREN SIRED", null, args);
-		append(xml, "numberChildrenSired", numberChildrenSired.toString());
+		if (numberChildrenSired.isNull())
+			append(xml, "numberChildrenSired", "UNKNOWN");
+		else append(xml, "numberChildrenSired", numberChildrenSired.toString());
 		Result youngChildren = dataSource.eval(patient, Aggregation.latest(),
 				"TOTAL CHILDREN UNDER 5YO LIVING IN HOME", null, args);
-		append(xml, "youngChildren", youngChildren.toString());
+		if (youngChildren.isNull())
+			append(xml, "youngChildren", "UNKNOWN");
+		else append(xml, "youngChildren", youngChildren.toString());
 		Result whoStage = dataSource.eval(patient, Aggregation.latest(),
 				"CURRENT WHO HIV STAGE", null, args);
 		append(xml, "whoStage", whoStage.toString());
@@ -65,7 +71,7 @@ public class ClinicalSummaryRule extends Rule {
 			xml.append("  </problemList>\n");
 		}
 		Result perfectAdherence = dataSource.eval(patient, "PERFECT ADHERENCE");
-		append(xml, "perfectAdherence", perfectAdherence.toBoolean().toString());
+		append(xml, "perfectAdherence", perfectAdherence.toString());
 		xml.append("  <flowsheet>\n");
 		List<Result> weightList = dataSource.eval(patient, Aggregation.latest(5), "WEIGHT (KG)", null, args).getResultList();
 		appendToFlowsheet(xml, "WEIGHT (KG)", weightList);
@@ -73,8 +79,8 @@ public class ClinicalSummaryRule extends Rule {
 		appendToFlowsheet(xml, "HGB", hgbList);
 		List<Result> satList = dataSource.eval(patient, Aggregation.latest(5), "BLOOD OXYGEN SATURATION", null, args).getResultList();
 		appendToFlowsheet(xml, "SA02", satList);
-		List<Result> cd4PercentList = dataSource.eval(patient, Aggregation.latest(5), "CD4%", null, args).getResultList();
-		appendToFlowsheet(xml, "CD4%", cd4PercentList);
+		List<Result> cd4PercentList = dataSource.eval(patient, Aggregation.latest(5), "CD4, BY FACS", null, args).getResultList();
+		appendToFlowsheet(xml, "CD4", cd4PercentList);
 		List<Result> creatinineList = dataSource.eval(patient, Aggregation.latest(5), "SERUM CREATININE", null, args).getResultList();
 		appendToFlowsheet(xml, "CREATININE", creatinineList);
 		List<Result> sgptList = dataSource.eval(patient, Aggregation.latest(5), "SERUM GLUTAMIC-PYRUVIC TRANSAMINASE", null, args).getResultList();

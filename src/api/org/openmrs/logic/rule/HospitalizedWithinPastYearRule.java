@@ -16,26 +16,33 @@ public class HospitalizedWithinPastYearRule extends Rule {
 		Result referrals = dataSource.eval(patient, null, "REFERRALS ORDERED",
 				DateConstraint.withinPreceding(Duration.years(1)), args);
 
-		// Concept 5485 = INPATIENT CARE OR HOSPITALIZATION
-		boolean referredToHospital = referrals.containsConcept(5485);
-
-		boolean hospitalized = dataSource.eval(patient, null,
+		// Concept 5485 = INPATIENT CARE OR HOSPITALIZATION		
+		if (referrals.containsConcept(5485))
+			return new Result("YES");
+		
+		Result hospitalized = dataSource.eval(patient, null,
 				"PATIENT HOSPITALIZED",
-				DateConstraint.withinPreceding(Duration.years(1)), args)
-				.exists();
+				DateConstraint.withinPreceding(Duration.years(1)), args);
+		if (hospitalized.contains(true))
+			return new Result("YES");
 
-		boolean hospitalizedSinceLastVisit = dataSource.eval(patient, null,
+		Result hospitalizedSinceLastVisit = dataSource.eval(patient, null,
 				"HOSPITALIZED SINCE LAST VISIT",
-				DateConstraint.withinPreceding(Duration.years(1)), null)
-				.exists();
-
-		boolean hospitalizedPreviousYear = dataSource.eval(patient, null,
+				DateConstraint.withinPreceding(Duration.years(1)), null);
+		if (hospitalizedSinceLastVisit.contains(true))
+			return new Result("YES");
+		
+		Result hospitalizedPreviousYear = dataSource.eval(patient, null,
 				"HOSPITALIZED PREVIOUS YEAR",
-				DateConstraint.withinPreceding(Duration.months(6)), null)
-				.exists();
+				DateConstraint.withinPreceding(Duration.months(6)), null);
+		if (hospitalizedPreviousYear.contains(true))
+			return new Result("YES");
 
-		return new Result(referredToHospital || hospitalized
-				|| hospitalizedSinceLastVisit || hospitalizedPreviousYear);
+		if (referrals.isNull() & hospitalized.isNull() & hospitalizedSinceLastVisit.isNull() & 
+				hospitalizedPreviousYear.isNull())
+			return new Result("UNKNOWN");
+				
+		return new Result("NO");
 	}
 
 }

@@ -283,7 +283,7 @@ public class Result { // TODO: should implement List interface as well
 	public boolean contains(Concept concept) {
 		return containsConcept(concept.getConceptId());
 	}
-
+	
 	public boolean containsConcept(Integer conceptId) {
 		if (valueList != null) {
 			for (Result r : valueList) {
@@ -295,6 +295,19 @@ public class Result { // TODO: should implement List interface as well
 		if (valueCoded == null)
 			return false;
 		return (valueCoded.getConceptId().equals(conceptId));
+	}
+
+	public boolean contains(Boolean valueBoolean) {
+		if (valueList != null) {
+			for (Result r : valueList) {
+				if (r.contains(valueBoolean))
+					return true;
+			}
+			return false;
+		}
+		if (valueBoolean == null)
+			return false;
+		return (valueBoolean.equals(valueBoolean));
 	}
 
 	public int indexOf(Result r) {
@@ -325,6 +338,23 @@ public class Result { // TODO: should implement List interface as well
 		Result result = new Result(NULL_RESULT);
 		result.valueList = uniqueList;
 		return result;
+	}
+	
+	public int hashCode() {
+		int hashCode = 49867; // some random number
+		switch (datatype) {
+		case NUMERIC:
+			return (valueNumeric == null ? hashCode+datatype : hashCode+valueNumeric.hashCode());
+		case DATE:
+			return (valueDate == null ? hashCode+datatype : hashCode+valueDate.hashCode());
+		case CODED:
+			return (valueCoded == null ? hashCode+datatype : hashCode+valueCoded.hashCode());
+		case TEXT:
+			return (valueText == null ? hashCode+datatype : hashCode+valueText.hashCode());
+		case BOOLEAN:
+			return (valueBoolean == null ? hashCode+datatype : hashCode+valueBoolean.hashCode());
+		}
+		return hashCode;
 	}
 
 	public boolean equals(Object obj) {
@@ -407,5 +437,34 @@ public class Result { // TODO: should implement List interface as well
 	
 	public void setValueNumeric(Double valueNumeric) {
 		this.valueNumeric = valueNumeric;
+	}
+	
+	public void debug() {
+		debug(0);
+	}
+	
+	private static final String[] datatypeNames = new String[] {"NULL", "NUMERIC", "DATE", "CODED", "TEXT", "BOOLEAN"};
+	public void debug(int level) {
+		String indent = "";
+		for (int i=0; i < level; i++)
+			indent += " ";
+		if (valueList != null) {
+			System.out.println(indent + "*** RESULT LIST ***");
+			for (Result r : valueList)
+				r.debug(level+2);
+		}
+		if (isNull()) {
+			System.out.println(indent + "*** NULL RESULT ***");
+			return;
+		}
+		System.out.println(indent + "*** SINGLE RESULT ***");
+		System.out.println(indent + "  concept = " + (concept == null ? "null" : concept.getName(Context.getLocale()) + " (" + concept.getConceptId() + ")"));
+		System.out.println(indent + "  datetime = " + datetime);
+		System.out.println(indent + "  datatype = " + datatypeNames[datatype]);
+		System.out.println(indent + "  valueNumeric = " + valueNumeric);
+		System.out.println(indent + "  valueDate = " + valueDate);
+		System.out.println(indent + "  valueCoded = " + (valueCoded == null ? "null" : valueCoded.getName(Context.getLocale()) + " (" + valueCoded.getConceptId() + ")"));
+		System.out.println(indent + "  valueText = " + valueText);
+		System.out.println(indent + "  valueBoolean = " + valueBoolean);
 	}
 }

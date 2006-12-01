@@ -12,14 +12,19 @@ public class PerfectAdherenceRule extends Rule {
 	@Override
 	public Result eval(LogicDataSource dataSource, Patient patient, Object[] args) {
 		Result lastMonth = dataSource.eval(patient, "OVERALL DRUG ADHERENCE IN LAST MONTH");
+		if (lastMonth.containsConcept(1065)) // YES (1065)
+			return new Result("NO");
 		if (lastMonth.containsConcept(1085)) // ANTIRETROVIRAL DRUGS (1085)
-			return new Result(false);
-		List<Result> lastWeek = dataSource.eval(patient, "ANTIRETROVIRAL ADHERENCE IN PAST WEEK").getResultList();
-		for (Result r : lastWeek) {
+			return new Result("NO");
+		Result lastWeek = dataSource.eval(patient, "ANTIRETROVIRAL ADHERENCE IN PAST WEEK");
+		lastWeek.debug();
+		for (Result r : lastWeek.getResultList()) {
 			if (!r.containsConcept(1163)) // ALL (1163)
-				return new Result(false);
+				return new Result("NO");	
 		}
-		return new Result(true);
+		if (lastMonth.isNull() & lastWeek.isNull())
+			return new Result("UNKNOWN");
+		return new Result("YES");
 	}
 
 }
