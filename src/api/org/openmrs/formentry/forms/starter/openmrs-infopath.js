@@ -105,8 +105,9 @@ function selectTribe() {
 //===============================================================
 // Select a location
 //===============================================================
-function selectLocation() {
-	taskPaneNavigateTo('/location.htm');
+function selectLocation(nodePath) {
+	taskPaneNavigateTo('/location.htm'
+	+ (nodePath == null ? '' : '?nodePath=' + nodePath));
 }
 
 //===============================================================
@@ -117,7 +118,7 @@ function selectAnswer(nodePath) {
     var questionConcept = question.getAttribute("openmrs_concept");
     var conceptId = questionConcept.split("^")[0];
 	taskPaneNavigateTo('/conceptAnswer.htm?conceptId=' + conceptId
-		+ "&nodePath=" + nodePath);
+		+ '&nodePath=' + nodePath);
 }
 
 //===============================================================
