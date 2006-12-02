@@ -13,6 +13,8 @@ import org.openmrs.logic.LogicException;
 import org.openmrs.logic.LogicService;
 import org.openmrs.logic.Result;
 import org.openmrs.logic.rule.BirthdateRule;
+import org.openmrs.logic.rule.CD4ReminderRule;
+import org.openmrs.logic.rule.CXREverRule;
 import org.openmrs.logic.rule.ClinicalSummaryRule;
 import org.openmrs.logic.rule.HealthCenterRule;
 import org.openmrs.logic.rule.HelloWorldRule;
@@ -43,9 +45,9 @@ public class LogicTest extends BaseTest {
 		startup();
 
 		// Setup
-		Context.authenticate("paul", "xxxxxxxx");
+		Context.authenticate("admin", "test");
 //		Patient patient = Context.getPatientService().getPatient(8637);
-		Patient patient = Context.getPatientService().getPatient(16674);
+		Patient patient = Context.getPatientService().getPatient(8637);
 		LogicService logic = Context.getLogicService();
 		registerRules(logic);
 		registerConcepts(logic);
@@ -82,6 +84,8 @@ public class LogicTest extends BaseTest {
 		logic.addToken("PROBLEM LIST", ProblemListRule.class);
 		logic.addToken("PERFECT ADHERENCE", PerfectAdherenceRule.class);
 		logic.addToken("HEALTH CENTER", HealthCenterRule.class);
+		logic.addToken("CD4 COUNT WITHIN SIX MONTHS", CD4ReminderRule.class);
+		logic.addToken("CHEST X-RAY EVER", CXREverRule.class);
 	}
 
 	private void registerConcepts(LogicService logic) throws LogicException {

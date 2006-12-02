@@ -49,7 +49,8 @@ public class ClinicalSummaryRule extends Rule {
 			if (pregnant.isNull())
 				append(xml, "pregnant", "UNKNOWN");
 			else
-				append(xml, "pregnant", (pregnant.contains(true) ? "YES" : "NO"));
+				append(xml, "pregnant",
+						(pregnant.contains(true) ? "YES" : "NO"));
 		}
 
 		Result numberChildrenSired = dataSource.eval(patient, Aggregation
@@ -108,10 +109,36 @@ public class ClinicalSummaryRule extends Rule {
 				"SERUM GLUTAMIC-PYRUVIC TRANSAMINASE", null, args)
 				.getResultList();
 		appendToFlowsheet(xml, "SGPT", sgptList);
+		xml.append("  </flowsheet>\n");
 		List<Result> cxrList = dataSource.eval(patient, Aggregation.latest(5),
 				"X-RAY, CHEST", null, args).getResultList();
+		if (cxrList.size() > 0) {
+			xml.append("  <cxrList>\n");
+			for (Result cxr : cxrList) {
+				xml.append("    <cxr date=\"");
+				xml.append(cxr.getDate());
+				xml.append("\">");
+				xml.append(cxr.toString());
+				xml.append("</cxr>\n");
+			}
+			xml.append("  </cxrList>\n");
+		}
 		appendToFlowsheet(xml, "CXR", cxrList);
-		xml.append("  </flowsheet>\n");
+
+		Result cd4in6mo = dataSource.eval(patient,
+				"CD4 COUNT WITHIN SIX MONTHS");
+		Result cxrEver = dataSource.eval(patient, "CHEST X-RAY EVER");
+		if (!cd4in6mo.toBoolean() || !cxrEver.toBoolean()) {
+			xml.append("  <reminderList>\n");
+			if (!cd4in6mo.toBoolean())
+				xml
+						.append("    <reminder>Patient should have CD4 count at least every 6 months</reminder>\n");
+			if (!cxrEver.toBoolean())
+				xml
+						.append("    <reminder>No chest x-ray within past 6 monthts</reminder>\n");
+			xml.append("  </reminderList>\n");
+		}
+
 		xml.append("</clinicalSummary>");
 		return new Result(xml.toString());
 	}
