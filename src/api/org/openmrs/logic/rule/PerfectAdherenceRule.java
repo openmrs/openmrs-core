@@ -1,7 +1,5 @@
 package org.openmrs.logic.rule;
 
-import java.util.List;
-
 import org.openmrs.Patient;
 import org.openmrs.logic.LogicDataSource;
 import org.openmrs.logic.Result;

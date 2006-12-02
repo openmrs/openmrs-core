@@ -2,6 +2,7 @@ package org.openmrs.logic.rule;
 
 import java.util.List;
 
+import org.openmrs.Concept;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.logic.Aggregation;
@@ -78,9 +79,15 @@ public class ClinicalSummaryRule extends Rule {
 		if (problemList.size() > 0) {
 			xml.append("  <problemList>\n");
 			for (Result p : problemList.getResultList()) {
-				xml.append("    <problem>");
-				xml.append(p.getConcept().getName(Context.getLocale()));
-				xml.append("</problem>\n");
+				Concept concept = p.getConcept();
+				if (concept != null) {
+					xml.append("    <problem");
+					if (p.getDate() != null)
+						xml.append(p.getDate());
+					xml.append(">");
+					xml.append(concept.getName(Context.getLocale()));
+					xml.append("</problem>\n");
+				}
 			}
 			xml.append("  </problemList>\n");
 		}
