@@ -23,7 +23,7 @@ public class HospitalizedWithinPastYearRule extends Rule {
 		Result hospitalized = dataSource.eval(patient, null,
 				"PATIENT HOSPITALIZED",
 				DateConstraint.withinPreceding(Duration.years(1)), args);
-		if (hospitalized.contains(true))
+		if (!hospitalized.isNull())
 			return new Result("YES");
 
 		Result hospitalizedSinceLastVisit = dataSource.eval(patient, null,

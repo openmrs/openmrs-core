@@ -43,9 +43,9 @@ public class LogicTest extends BaseTest {
 		startup();
 
 		// Setup
-		Context.authenticate("paul", "xxxxxxxxx");
+		Context.authenticate("paul", "xxxxxxxx");
 //		Patient patient = Context.getPatientService().getPatient(8637);
-		Patient patient = Context.getPatientService().getPatient(21342);
+		Patient patient = Context.getPatientService().getPatient(16674);
 		LogicService logic = Context.getLogicService();
 		registerRules(logic);
 		registerConcepts(logic);
