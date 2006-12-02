@@ -17,7 +17,6 @@ public class PerfectAdherenceRule extends Rule {
 		if (lastMonth.containsConcept(1085)) // ANTIRETROVIRAL DRUGS (1085)
 			return new Result("NO");
 		Result lastWeek = dataSource.eval(patient, "ANTIRETROVIRAL ADHERENCE IN PAST WEEK");
-		lastWeek.debug();
 		for (Result r : lastWeek.getResultList()) {
 			if (!r.containsConcept(1163)) // ALL (1163)
 				return new Result("NO");	

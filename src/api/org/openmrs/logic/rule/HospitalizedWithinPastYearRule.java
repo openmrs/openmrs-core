@@ -15,7 +15,7 @@ public class HospitalizedWithinPastYearRule extends Rule {
 
 		Result referrals = dataSource.eval(patient, null, "REFERRALS ORDERED",
 				DateConstraint.withinPreceding(Duration.years(1)), args);
-
+	
 		// Concept 5485 = INPATIENT CARE OR HOSPITALIZATION		
 		if (referrals.containsConcept(5485))
 			return new Result("YES");

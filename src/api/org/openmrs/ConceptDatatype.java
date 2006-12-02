@@ -162,5 +162,12 @@ public class ConceptDatatype implements java.io.Serializable {
 		return TEXT.equals(getHl7Abbreviation())
 				|| DOCUMENT.equals(getHl7Abbreviation());
 	}
+	
+	/**
+	 * @return <code>true</code> if datatype is boolean
+	 */
+	public boolean isBoolean() {
+		return BOOLEAN.equals(getHl7Abbreviation());
+	}
 
 }

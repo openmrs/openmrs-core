@@ -50,6 +50,8 @@ public class Duration {
 			return d * 86400000;
 		case WEEKS:
 			return d * 10080000;
+		case MONTHS:
+			return d * 2628000000L;
 		case YEARS:
 			return d * 31536000000L;
 		default:

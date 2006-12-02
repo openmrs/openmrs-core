@@ -126,6 +126,8 @@ public class Result { // TODO: should implement List interface as well
 				datatype = DATE;
 			else if (conceptDatatype.isText())
 				datatype = TEXT;
+			else if (conceptDatatype.isBoolean())
+				datatype = BOOLEAN;
 		} else {
 			datatype = TEXT; // TODO: need to allow datatype to be set
 			// manually
@@ -305,9 +307,9 @@ public class Result { // TODO: should implement List interface as well
 			}
 			return false;
 		}
-		if (valueBoolean == null)
+		if (this.valueBoolean == null)
 			return false;
-		return (valueBoolean.equals(valueBoolean));
+		return (this.valueBoolean.equals(valueBoolean));
 	}
 
 	public int indexOf(Result r) {
