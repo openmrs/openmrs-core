@@ -3,6 +3,7 @@
 <%@ attribute name="formFieldName" required="true" %>
 <%@ attribute name="searchLabel" required="false" %>
 <%@ attribute name="searchLabelCode" required="false" %>
+<%@ attribute name="searchLabelArguments" required="false" %>
 <%@ attribute name="initialValue" required="false" %> <%-- This should be a patientId --%>
 <%@ attribute name="linkUrl" required="false" %>
 <%@ attribute name="callback" required="false" %>
@@ -74,7 +75,7 @@
 
 <div dojoType="PatientSearch" widgetId="${formFieldName}_search" patientId="${initialValue}"></div>
 <c:if test="${not empty searchLabelCode}">
-	<div dojoType="OpenmrsPopup" widgetId="${formFieldName}_selection" hiddenInputName="${formFieldName}" searchWidget="${formFieldName}_search" searchTitle="<spring:message code="${searchLabelCode}" />"></div>
+	<div dojoType="OpenmrsPopup" widgetId="${formFieldName}_selection" hiddenInputName="${formFieldName}" searchWidget="${formFieldName}_search" searchTitle="<spring:message code="${searchLabelCode}" arguments="${searchLabelArguments}" />"></div>
 </c:if> 
 <c:if test="${empty searchLabelCode}">
 	<div dojoType="OpenmrsPopup" widgetId="${formFieldName}_selection" hiddenInputName="${formFieldName}" searchWidget="${formFieldName}_search" searchTitle="${searchLabel}"></div>
