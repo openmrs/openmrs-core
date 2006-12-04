@@ -287,7 +287,12 @@ public class NewPatientFormController extends SimpleFormController {
 			String[] relatives = request.getParameterValues("relative");
 			String[] types = request.getParameterValues("relationshipType");
 			Person person = Context.getAdministrationService().getPerson(patient);
-			List<Relationship> relationships = Context.getPatientService().getRelationships(person);
+			List<Relationship> relationships;
+			
+			if (person != null) 
+				relationships = Context.getPatientService().getRelationships(person);
+			else
+				relationships = new Vector<Relationship>();
 			
 			for (int x = 0 ; x < relatives.length; x++ ) {
 				String relativeString = relatives[x];

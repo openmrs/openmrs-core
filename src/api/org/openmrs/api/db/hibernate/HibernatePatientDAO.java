@@ -437,6 +437,9 @@ public class HibernatePatientDAO implements PatientDAO {
 		Query query = null;
 		List<Relationship> relationships = new Vector<Relationship>();
 		
+		if (person == null)
+			return relationships;
+		
 		String voided = showVoided ? "" : " and voided = 0 ";
 		
 		if (person.getPatient() != null) {
