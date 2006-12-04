@@ -298,7 +298,7 @@ public class NewPatientFormController extends SimpleFormController {
 				String relativeString = relatives[x];
 				String typeString = types[x];
 				
-				if (relativeString != null && relativeString.length() && typeString != null && typeString.length()) {
+				if (relativeString != null && relativeString.length() > 0 && typeString != null && typeString.length() > 0) {
 					Patient relativePatient = ps.getPatient(Integer.valueOf(relativeString));
 					RelationshipType type = ps.getRelationshipType(Integer.valueOf(typeString));
 					
