@@ -105,7 +105,7 @@ public class HibernateAdministrationDAO implements
 		
 		Query query = sessionFactory.getCurrentSession().createQuery("from Person p where p.patient.patientId = :patId");
 		
-		if (pat.getPatientId() == null)
+		if (pat == null || pat.getPatientId() == null)
 			return null;
 		query = query.setInteger("patId", pat.getPatientId());
 		Object o = query.uniqueResult();
