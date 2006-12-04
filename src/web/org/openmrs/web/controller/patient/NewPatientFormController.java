@@ -298,22 +298,24 @@ public class NewPatientFormController extends SimpleFormController {
 				String relativeString = relatives[x];
 				String typeString = types[x];
 				
-				Patient relativePatient = ps.getPatient(Integer.valueOf(relativeString));
-				RelationshipType type = ps.getRelationshipType(Integer.valueOf(typeString));
-				
-				Person relative = Context.getAdministrationService().getPerson(relativePatient);
-				
-				boolean found = false;
-				// TODO this assumes that a relative can only be related in one way
-				for (Relationship rel : relationships) {
-					if (rel.getRelative().equals(relative)) {
-						rel.setRelationship(type);
-						found = true;
+				if (relativeString != null && relativeString.length() && typeString != null && typeString.length()) {
+					Patient relativePatient = ps.getPatient(Integer.valueOf(relativeString));
+					RelationshipType type = ps.getRelationshipType(Integer.valueOf(typeString));
+					
+					Person relative = Context.getAdministrationService().getPerson(relativePatient);
+					
+					boolean found = false;
+					// TODO this assumes that a relative can only be related in one way
+					for (Relationship rel : relationships) {
+						if (rel.getRelative().equals(relative)) {
+							rel.setRelationship(type);
+							found = true;
+						}
 					}
-				}
-				if (!found) {
-					Relationship r = new Relationship(person, relative, type);
-					relationships.add(r);
+					if (!found) {
+						Relationship r = new Relationship(person, relative, type);
+						relationships.add(r);
+					}
 				}
 			}
 			for (Relationship rel : relationships)
