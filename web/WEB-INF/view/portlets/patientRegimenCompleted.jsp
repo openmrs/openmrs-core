@@ -8,10 +8,10 @@
 <openmrs:htmlInclude file="/scripts/drugOrder.js" />
 
 		<div id="regimenPortletCompleted">
-			<table cellpadding="3">
+			<table>
 				<thead>
 					<tr>
-						<th> <spring:message code="Order.item.ordered" /> </th>
+						<th style="nowrap: true;"> <spring:message code="Order.item.ordered" /> </th>
 						<th> <spring:message code="DrugOrder.dose"/>/<spring:message code="DrugOrder.units"/> </th>
 						<th> <spring:message code="DrugOrder.frequency"/> </th>
 						<th> <spring:message code="general.dateStart"/> </th>
@@ -47,9 +47,9 @@
 								<td>&nbsp;&nbsp;&nbsp;&nbsp;<a class="patientRegimenDrugName" href="orderDrug.form?orderId=${drugOrder.orderId}">${drugOrder.drug.name}</a></td>
 								<td>${drugOrder.dose} ${drugOrder.units}</td>
 								<td>${drugOrder.frequency}</td>
-								<td><openmrs:formatDate date="${drugOrder.startDate}" type="short" format="${model.drugOrderDatePattern}" /></td>
-								<td><openmrs:formatDate date="${drugOrder.autoExpireDate}" type="short" format="${model.drugOrderDatePattern}" /></td>
-								<td><openmrs:formatDate date="${drugOrder.discontinuedDate}" type="short" format="${model.drugOrderDatePattern}" /></td>
+								<td><openmrs:formatDate date="${drugOrder.startDate}" type="medium" /></td>
+								<td><openmrs:formatDate date="${drugOrder.autoExpireDate}" type="medium" /></td>
+								<td><openmrs:formatDate date="${drugOrder.discontinuedDate}" type="medium" /></td>
 								<td>${drugOrder.instructions}</td>
 								<td>
 									<c:if test="${not empty drugOrder.discontinuedReason}">
@@ -118,9 +118,9 @@
 								<td>&nbsp;&nbsp;&nbsp;&nbsp;<a class="patientRegimenDrugName" href="orderDrug.form?orderId=${drugOrder.orderId}">${drugOrder.drug.name}</a></td>
 								<td>${drugOrder.dose} ${drugOrder.units}</td>
 								<td>${drugOrder.frequency}</td>
-								<td><openmrs:formatDate date="${drugOrder.startDate}" type="short" format="${model.drugOrderDatePattern}" /></td>
-								<td><openmrs:formatDate date="${drugOrder.autoExpireDate}" type="short" format="${model.drugOrderDatePattern}" /></td>
-								<td><openmrs:formatDate date="${drugOrder.discontinuedDate}" type="short" format="${model.drugOrderDatePattern}" /></td>
+								<td><openmrs:formatDate date="${drugOrder.startDate}" type="medium" /></td>
+								<td><openmrs:formatDate date="${drugOrder.autoExpireDate}" type="medium" /></td>
+								<td><openmrs:formatDate date="${drugOrder.discontinuedDate}" type="medium" /></td>
 								<td>${drugOrder.instructions}</td>
 								<td>
 									<c:if test="${not empty drugOrder.discontinuedReason}">
@@ -173,9 +173,9 @@
 								<td><span class="patientRegimenDrugName">${drugOrder.drug.name}</span></td>
 								<td>${drugOrder.dose} ${drugOrder.units}</td>
 								<td>${drugOrder.frequency}</td>
-								<td><openmrs:formatDate date="${drugOrder.startDate}" type="short" format="${model.drugOrderDatePattern}" /></td>
-								<td><openmrs:formatDate date="${drugOrder.autoExpireDate}" type="short" format="${model.drugOrderDatePattern}" /></td>
-								<td><openmrs:formatDate date="${drugOrder.discontinuedDate}" type="short" format="${model.drugOrderDatePattern}" /></td>
+								<td><openmrs:formatDate date="${drugOrder.startDate}" type="medium" /></td>
+								<td><openmrs:formatDate date="${drugOrder.autoExpireDate}" type="medium" /></td>
+								<td><openmrs:formatDate date="${drugOrder.discontinuedDate}" type="medium" /></td>
 								<td>${drugOrder.instructions}</td>
 								<td>
 									<c:if test="${not empty drugOrder.discontinuedReason}">

@@ -1494,7 +1494,7 @@
 				<props>
 					<prop key="type">obsTable</prop>
 					<prop key="headingCode">summary.labResults</prop>
-					<prop key="concepts">name:CD4 COUNT|name:WEIGHT (KG)|set:name:LABORATORY EXAMINATIONS CONSTRUCT</prop>
+					<prop key="concepts">name:CD4 COUNT|set:name:LABORATORY EXAMINATIONS CONSTRUCT</prop>
 					<prop key="cssClass">borderedTable</prop>
 					<prop key="showEmptyConcepts">false</prop>
 					<prop key="showConceptHeader">true</prop>
@@ -1520,7 +1520,8 @@
 					<prop key="limit">-1</prop>
 				</props>
 				<props>
-					<prop key="type">NEWCOLUMN</prop>
+					<prop key="type">newlines</prop>
+					<prop key="count">1</prop>
 				</props>
 				<props>
 					<prop key="type">obsTable</prop>
@@ -1532,7 +1533,19 @@
 					<prop key="showDateHeader">true</prop>
 					<prop key="orientation">vertical</prop>
 					<prop key="sort">desc</prop>
-					<prop key="limit">1</prop>
+					<prop key="limit">-1</prop>
+				</props>
+				<props>
+					<prop key="type">NEWCOLUMN</prop>
+				</props>
+				<props>
+					<prop key="type">graph</prop>
+					<prop key="globalKey">concept.cd4_count</prop>
+				</props>
+				<props>
+					<prop key="type">graph</prop>
+					<prop key="globalKey">concept.weight</prop>
+					<prop key="maxRange">100</prop>
 				</props>
 				<props>
 					<prop key="type">NEWTABLE</prop>
@@ -1554,10 +1567,6 @@
 							concept:CD4 COUNT
 							timespan:last 7 months
 					</prop>
-				</props>
-				<props>
-					<prop key="type">newlines</prop>
-					<prop key="count">1</prop>
 				</props>
 				<props>
 					<prop key="type">label</prop>

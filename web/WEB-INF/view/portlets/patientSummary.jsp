@@ -11,22 +11,21 @@
 	<c:if test="${empty model.showHeader || model.showHeader == 'true'}">
 		<table id="patientHeaderGeneralTable" width="100%">
 			<tr valign="bottom">
-				<td id="patientHeaderPatientName">${model.patient.patientName.givenName} ${model.patient.patientName.middleName} ${model.patient.patientName.familyName}&nbsp;&nbsp</td>
-				<td id="patientHeaderPatientGender">
-					<c:if test="${model.patient.gender == 'M'}"><spring:message code="Patient.gender.male"/></c:if>
-					<c:if test="${model.patient.gender == 'F'}"><spring:message code="Patient.gender.female"/></c:if>
+				<td id="patientHeaderPatientName" width="50%"><span class="patientPatientName">${model.patient.patientName.givenName} ${model.patient.patientName.middleName} ${model.patient.patientName.familyName}</span>&nbsp;&nbsp</td>
+				<td id="summaryHeaderPatientGender" width="25%">
+					<c:if test="${model.patient.gender == 'M'}">
+						<table><tr><td><img src="${pageContext.request.contextPath}/images/male.gif" alt='<spring:message code="Patient.gender.male"/>'/></td>
+						<td><spring:message code="Patient.gender.male"/></td></tr></table>
+					</c:if>
+					<c:if test="${model.patient.gender == 'F'}">
+						<table><tr><td><img src="${pageContext.request.contextPath}/images/female.gif" alt='<spring:message code="Patient.gender.female"/>'/></td>
+						<td><spring:message code="Patient.gender.female"/></td></tr></table>
+					</c:if>
 				</td>
-				<td id="patientHeaderPatientAge">
+				<td id="summaryHeaderPatientAge" width="25%">
 					<c:if test="${model.patient.age > 0}">${model.patient.age} <spring:message code="Patient.age.years"/></c:if>
 					<c:if test="${model.patient.age == 0}">< 1 <spring:message code="Patient.age.year"/></c:if>
-					<span id="patientHeaderPatientBirthdate">(<c:if test="${model.patient.birthdateEstimated}">~</c:if><openmrs:formatDate date="${model.patient.birthdate}" type="medium" />)</span>
-				</td>
-				<td id="patientHeaderPatientIdentifiers">
-					<c:forEach var="identifier" items="${model.patient.identifiers}" varStatus="status">
-						<c:if test="${identifier.preferred}">
-							<span class="patientHeaderPatientIdentifier">${identifier.identifierType.name}: ${identifier.identifier}</span>
-						</c:if>
-					</c:forEach>
+					(<c:if test="${model.patient.birthdateEstimated}">~</c:if><openmrs:formatDate date="${model.patient.birthdate}" type="medium" />)
 				</td>
 			</tr>
 		</table>
@@ -48,6 +47,15 @@
 					<spring:message code="FormEntry.no.last.encounters"/>
 				</c:if>
 			</td>
+			<td></td>
+			<td id="summaryHeaderPatientIdentifiers">
+				<c:forEach var="identifier" items="${model.patient.identifiers}" varStatus="status">
+					<c:if test="${!identifier.preferred}">
+						&nbsp;&nbsp;&nbsp;&nbsp;<span class="patientHeaderPatientIdentifier">${identifier.identifierType.name}: ${identifier.identifier}</span>
+					</c:if>
+				</c:forEach>
+			</td>
+			<%--
 			<c:forEach var="identifier" items="${model.patient.identifiers}" varStatus="status">
 				<c:if test="${!identifier.preferred}">
 					<td align="center">
@@ -55,6 +63,7 @@
 					</td>
 				</c:if>
 			</c:forEach>
+			--%>
 		</tr>
 	</table>
 	
@@ -132,6 +141,44 @@
 					<c:when test="${specElement.type == 'pastDrugOrders'}">
 						<openmrs:portlet url="patientRegimenCompleted" id="patientRegimenCompleted" patientId="${model.patientId}"
 							parameters="displayDrugSetIds=${specElement.whichSets}|completedRegimenMode=view" />
+					</c:when>
+					<c:when test="${specElement.type == 'graph'}">
+						<c:choose>
+							<c:when test="${not empty specElement.conceptId}">
+								<span align="center" id="conceptBox-${specElement.conceptId}">
+									<spring:message code="general.loading"/>
+								</span>
+								<script type="text/javascript">
+									function loadGraphs${specElement.conceptId}() {
+										<openmrs:concept conceptId="${specElement.conceptId}" var="concept" nameVar="name" numericVar="num">
+											document.getElementById('conceptBox-${specElement.conceptId}').innerHTML = '<img src="${pageContext.request.contextPath}/showGraphServlet?patientId=${patient.patientId}&conceptId=${specElement.conceptId}&width=350&height=250&minRange=<c:out value="${num.lowAbsolute}" default="0.0"/>&maxRange=<c:out value="${num.hiAbsolute}" default="200.0"/>" />';
+										</openmrs:concept>
+									}
+									window.setTimeout(loadGraphs${specElement.conceptId}, 1000);		
+								</script>
+							</c:when>
+							<c:when test="${not empty specElement.globalKey}">
+								<openmrs:globalProperty key="${specElement.globalKey}" defaultValue="" var="conceptId" />
+								<span align="center" id="conceptBox-${conceptId}">
+									<spring:message code="general.loading"/>
+								</span>
+								<script type="text/javascript">
+									function loadGraphs${conceptId}() {
+										<openmrs:concept conceptId="${conceptId}" var="concept" nameVar="name" numericVar="num">
+											<c:choose>
+												<c:when test="${not empty specElement.maxRange}">
+													document.getElementById('conceptBox-${conceptId}').innerHTML = '<img src="${pageContext.request.contextPath}/showGraphServlet?patientId=${model.patientId}&conceptId=${conceptId}&width=275&height=200&minRange=<c:out value="${num.lowAbsolute}" default="0.0"/>&maxRange=${specElement.maxRange}';
+												</c:when>
+												<c:otherwise>
+													document.getElementById('conceptBox-${conceptId}').innerHTML = '<img src="${pageContext.request.contextPath}/showGraphServlet?patientId=${model.patientId}&conceptId=${conceptId}&width=275&height=200&minRange=<c:out value="${num.lowAbsolute}" default="0.0"/>&maxRange=<c:out value="${num.hiAbsolute}" default="200.0"/>" />';
+												</c:otherwise>
+											</c:choose>
+										</openmrs:concept>
+									}
+									window.setTimeout(loadGraphs${conceptId}, 1000);		
+								</script>
+							</c:when>
+						</c:choose>
 					</c:when>
 					<%--
 					<c:when test="${}">

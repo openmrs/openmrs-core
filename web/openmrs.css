@@ -276,7 +276,6 @@ table#patientHeaderGeneralInfo {
 	}
 	
 table td#patientHeaderPatientGender {
-	width: 25px;
 	padding: 0px;
 }
 
@@ -286,7 +285,13 @@ table td#patientHeaderPatientGender {
 	line-height: 25px;
 }
 	
-#patientHeaderPatientBirthdate, .patientHeaderPatientIdentifier {
+#patientHeaderPatientBirthdate {
+	white-space: nowrap;
+	vertical-align: bottom;
+	padding: 0px;
+}	
+
+.patientHeaderPatientIdentifier {
 	white-space: nowrap;
 }
 
@@ -994,4 +999,30 @@ th.smallHeader {
 .patientRegimenDrugName {
 	font-weight: bold;
 	font-size: 1.1em;
+}
+
+.summaryPatientName {
+	font-size: 1.1em;
+}
+
+#patientDashboardSummary {
+	font-size: 0.7em; 
+}
+
+table td#summaryHeaderPatientGender {
+	width: 25%;
+	vertical-align: middle;
+	padding: 0px;
+}
+	
+#summaryHeaderPatientAge {
+	white-space: nowrap;
+	width: 25%;
+	text-align: right;
+	vertical-align: middle;
+	padding: 0px;
+}	
+
+#summaryHeaderPatientIdentifiers {
+	text-align: right;
 }

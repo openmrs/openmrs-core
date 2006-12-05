@@ -11,7 +11,7 @@
 			<table>
 				<thead>
 					<tr>
-						<th> <spring:message code="Order.item.ordered" /> </th>
+						<th style="nowrap: true;"> <spring:message code="Order.item.ordered" /> </th>
 						<th> <spring:message code="DrugOrder.dose"/>/<spring:message code="DrugOrder.units"/> </th>
 						<th> <spring:message code="DrugOrder.frequency"/> </th>
 						<th> <spring:message code="general.dateStart"/> </th>
@@ -46,8 +46,8 @@
 								<td>&nbsp;&nbsp;&nbsp;&nbsp;<a class="patientRegimenDrugName" href="orderDrug.form?orderId=${drugOrder.orderId}">${drugOrder.drug.name}</a></td>
 								<td>${drugOrder.dose} ${drugOrder.units}</td>
 								<td>${drugOrder.frequency}</td>
-								<td><openmrs:formatDate date="${drugOrder.startDate}" type="short" /></td>
-								<td><openmrs:formatDate date="${drugOrder.autoExpireDate}" type="short" /></td>
+								<td><openmrs:formatDate date="${drugOrder.startDate}" type="medium" /></td>
+								<td><openmrs:formatDate date="${drugOrder.autoExpireDate}" type="medium" /></td>
 								<td>${drugOrder.instructions}</td>
 								<c:if test="${model.currentRegimenMode != 'view'}">
 									<td>
@@ -161,8 +161,8 @@
 								<td>&nbsp;&nbsp;&nbsp;&nbsp;<a class="patientRegimenDrugName" href="orderDrug.form?orderId=${drugOrder.orderId}">${drugOrder.drug.name}</a></td>
 								<td>${drugOrder.dose} ${drugOrder.units}</td>
 								<td>${drugOrder.frequency}</td>
-								<td><openmrs:formatDate date="${drugOrder.startDate}" type="short" /></td>
-								<td><openmrs:formatDate date="${drugOrder.autoExpireDate}" type="short" /></td>
+								<td><openmrs:formatDate date="${drugOrder.startDate}" type="medium" /></td>
+								<td><openmrs:formatDate date="${drugOrder.autoExpireDate}" type="medium" /></td>
 								<td>${drugOrder.instructions}</td>
 								<c:if test="${model.currentRegimenMode != 'view'}">
 									<td>
@@ -225,8 +225,8 @@
 								<td><a class="patientRegimenDrugName" href="orderDrug.form?orderId=${drugOrder.orderId}">${drugOrder.drug.name}</a></td>
 								<td>${drugOrder.dose} ${drugOrder.units}</td>
 								<td>${drugOrder.frequency}</td>
-								<td><openmrs:formatDate date="${drugOrder.startDate}" type="short" /></td>
-								<td><openmrs:formatDate date="${drugOrder.autoExpireDate}" type="short" /></td>
+								<td><openmrs:formatDate date="${drugOrder.startDate}" type="medium" /></td>
+								<td><openmrs:formatDate date="${drugOrder.autoExpireDate}" type="medium" /></td>
 								<td>${drugOrder.instructions}</td>
 								<c:if test="${model.currentRegimenMode != 'view'}">
 									<td>
