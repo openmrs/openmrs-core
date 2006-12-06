@@ -1292,6 +1292,7 @@
 					<prop key="countyDistrict">Location.district</prop>
 					<prop key="cityVillage">Location.sector</prop>
 					<prop key="neighborhoodCell">Location.cell</prop>
+					<prop key="address1">Location.rwandanNeighborhood</prop>
 	    		</props>
 	    	</property>
 	    	<property name="sizeMappings">
@@ -1300,6 +1301,7 @@
 					<prop key="countyDistrict">40</prop>
 					<prop key="cityVillage">40</prop>
 					<prop key="neighborhoodCell">40</prop>
+					<prop key="address1">40</prop>
 	    		</props>
 	    	</property>
 	    	<property name="elementDefaults">
@@ -1313,6 +1315,7 @@
 	    			<value>countyDistrict</value>
 	    			<value>cityVillage</value>
 	    			<value>neighborhoodCell</value>
+	    			<value>address1</value>
 	    		</list>
 	    	</property>
 	    </bean>
