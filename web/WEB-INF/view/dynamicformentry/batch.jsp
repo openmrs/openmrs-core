@@ -64,7 +64,7 @@
 		if (date == null || date == '')
 			return '';
 		<c:choose>
-			<c:when test="${locale == 'fr' || locale == 'en_GB'}">
+			<c:when test="${datePattern == 'dd/MM/yyyy'}">
 				// dd/mm/yyyy 01/34/6789
 				return date.substring(6,10) + '-' + date.substring(3,5) + '-' + date.substring(0,2);
 			</c:when>
