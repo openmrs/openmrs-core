@@ -293,31 +293,35 @@ public class NewPatientFormController extends SimpleFormController {
 				relationships = Context.getPatientService().getRelationships(person);
 			else
 				relationships = new Vector<Relationship>();
-			
-			for (int x = 0 ; x < relatives.length; x++ ) {
-				String relativeString = relatives[x];
-				String typeString = types[x];
-				
-				if (relativeString != null && relativeString.length() > 0 && typeString != null && typeString.length() > 0) {
-					Patient relativePatient = ps.getPatient(Integer.valueOf(relativeString));
-					RelationshipType type = ps.getRelationshipType(Integer.valueOf(typeString));
+
+			if ( relatives != null ) {
+				for (int x = 0 ; x < relatives.length; x++ ) {
+					String relativeString = relatives[x];
+					String typeString = types[x];
 					
-					Person relative = Context.getAdministrationService().getPerson(relativePatient);
-					
-					boolean found = false;
-					// TODO this assumes that a relative can only be related in one way
-					for (Relationship rel : relationships) {
-						if (rel.getRelative().equals(relative)) {
-							rel.setRelationship(type);
-							found = true;
+					if (relativeString != null && relativeString.length() > 0 && typeString != null && typeString.length() > 0) {
+						Patient relativePatient = ps.getPatient(Integer.valueOf(relativeString));
+						RelationshipType type = ps.getRelationshipType(Integer.valueOf(typeString));
+						
+						Person relative = Context.getAdministrationService().getPerson(relativePatient);
+						
+						boolean found = false;
+						// TODO this assumes that a relative can only be related in one way
+						for (Relationship rel : relationships) {
+							if (rel.getRelative().equals(relative)) {
+								rel.setRelationship(type);
+								found = true;
+							}
+						}
+						if (!found) {
+							Relationship r = new Relationship(person, relative, type);
+							relationships.add(r);
 						}
 					}
-					if (!found) {
-						Relationship r = new Relationship(person, relative, type);
-						relationships.add(r);
-					}
 				}
+				
 			}
+
 			for (Relationship rel : relationships)
 				Context.getAdministrationService().updateRelationship(rel);
 			
