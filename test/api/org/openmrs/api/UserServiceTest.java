@@ -1,4 +1,4 @@
-package org.openmrs.api.db;
+package org.openmrs.api;
 
 import java.util.HashSet;
 import java.util.Iterator;

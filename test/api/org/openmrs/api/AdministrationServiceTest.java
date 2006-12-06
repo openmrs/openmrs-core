@@ -1,5 +1,8 @@
-package org.openmrs.api.db;
+package org.openmrs.api;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -7,37 +10,69 @@ import java.util.List;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.BaseTest;
+import org.openmrs.DataEntryStatistic;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.OrderType;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.api.AdministrationService;
-import org.openmrs.api.EncounterService;
-import org.openmrs.api.FormService;
-import org.openmrs.api.ObsService;
-import org.openmrs.api.OrderService;
-import org.openmrs.api.PatientService;
-import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
+import org.openmrs.reporting.DataTable;
+import org.openmrs.util.OpenmrsUtil;
 
 public class AdministrationServiceTest extends BaseTest {
 	
-	protected PatientService ps = Context.getPatientService();
-	protected UserService us = Context.getUserService();
-	protected AdministrationService as = Context.getAdministrationService();
-	protected ObsService obsService = Context.getObsService();
-	protected OrderService orderService = Context.getOrderService();
-	protected FormService formService = Context.getFormService();
-	protected EncounterService encounterService = Context.getEncounterService();
+	private Log log = LogFactory.getLog(this.getClass());
+
+	protected PatientService ps = null;
+	protected UserService us = null;
+	protected AdministrationService as = null;
+	protected ObsService obsService = null;
+	protected OrderService orderService = null;
+	protected FormService formService = null;
+	protected EncounterService encounterService = null;
+	
+	public void testDataEntryStats() throws Exception {
+		
+		startup();
+		Context.authenticate("admin", "test");
+		
+		ps = Context.getPatientService();
+		us = Context.getUserService();
+		as = Context.getAdministrationService();
+		obsService = Context.getObsService();
+		orderService = Context.getOrderService();
+		formService = Context.getFormService();
+		encounterService = Context.getEncounterService();
+		
+		Calendar c = new GregorianCalendar();
+		c.set(2006, 6, 12);
+		c.set(Calendar.HOUR_OF_DAY, 0);
+		c.set(Calendar.MINUTE, 0);
+		c.set(Calendar.SECOND, 0);
+		Date fromDate = c.getTime();
+		c.add(Calendar.DATE, 7);
+		Date toDate = c.getTime();
+		
+		Date toDateToUse = OpenmrsUtil.lastSecondOfDay(toDate);
+		String encUserColumn = null;
+		String orderUserColumn = null;
+		List<DataEntryStatistic> stats = Context.getAdministrationService().getDataEntryStatistics(fromDate, toDateToUse, encUserColumn, orderUserColumn, "location");
+		DataTable table = DataEntryStatistic.tableByUserAndType(stats);
+		System.out.print(table.getHtmlTable());
+		
+		log.error("done");
+	}
 	
 	public void testMimeType() throws Exception {
 		
 		//testing equals()/hashset() for mimetype /////////// 
 		
-		HashSet set = new HashSet();
+		HashSet<MimeType> set = new HashSet<MimeType>();
 		
 		MimeType m1 = new MimeType();
 		MimeType m2 = new MimeType();
@@ -347,10 +382,16 @@ public class AdministrationServiceTest extends BaseTest {
 		as.deleteLocation(newLocation);
 		assertNull(encounterService.getLocation(newLocation.getLocationId()));
 
+		
+		
+		
+		
+		shutdown();
+		
 	}
 	
 	public static Test suite() {
-		return new TestSuite(AdministrationServiceTest.class, "Basic IbatisAdministrationService functionality");
+		return new TestSuite(AdministrationServiceTest.class, "Basic AdministrationService functionality");
 	}
 
 }

@@ -3,7 +3,6 @@ package org.openmrs.reporting.export;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -15,15 +14,17 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
-import org.openmrs.Obs;
+import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
 import org.openmrs.Program;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
+import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
@@ -54,7 +55,11 @@ public class DataExportUtility {
 	
 	private Map<String, Concept> conceptNameMap = new HashMap<String, Concept>();
 	
-	private Map<Concept, Map<Integer, List<Obs>>> conceptObsMap = new HashMap<Concept, Map<Integer, List<Obs>>>();
+	// Map<Concept, Map<obsId, List<Obs values>>>
+	//private Map<Concept, Map<Integer, List<Object>>> conceptObsMap = new HashMap<Concept, Map<Integer, List<Object>>>();
+	
+	// Map<conceptId + attr, Map<patientId, List<Obs values>>>
+	private Map<String, Map<Integer, List<Object>>> conceptAttrObsMap = new HashMap<String, Map<Integer, List<Object>>>();
 	
 	// Map<RelationshipType, Map<patientId, List<Relationship>>>
 	private Map<String, Map<Integer, List<Relationship>>> relationshipMap = new HashMap<String, Map<Integer, List<Relationship>>>();
@@ -69,7 +74,7 @@ public class DataExportUtility {
 	private Map<String, Map<Integer, List<DrugOrder>>> currentDrugOrderMap = new HashMap<String, Map<Integer, List<DrugOrder>>>();
 	
 	// Map<tablename+columnname, Map<patientId, columnvalue>>
-	private Map<String, Map<Integer, Object>> attributeMap = new HashMap<String, Map<Integer, Object>>();
+	private Map<String, Map<Integer, Object>> patientAttributeMap = new HashMap<String, Map<Integer, Object>>();
 	
 	private PatientSetService patientSetService;
 	private PatientService patientService;
@@ -126,9 +131,7 @@ public class DataExportUtility {
 				map.remove(this.patientId);
 			for (Map<Integer, Encounter> map : patientFirstEncounterMap.values())
 				map.remove(this.patientId);
-			for (Map<Integer, List<Obs>> map : conceptObsMap.values())
-				map.remove(this.patientId);
-			for (Map<Integer, Object> map : attributeMap.values())
+			for (Map<Integer, Object> map : patientAttributeMap.values())
 				map.remove(this.patientId);
 		}
 		
@@ -217,7 +220,7 @@ public class DataExportUtility {
 		if (conceptNameMap.containsKey(conceptName))
 			return conceptNameMap.get(conceptName);
 		
-		log.debug("getting concept object for name: " + conceptName);
+		//log.debug("getting concept object for name: " + conceptName);
 		
 		Concept c;
 		try {
@@ -235,15 +238,28 @@ public class DataExportUtility {
 		return c;
 	}
 	
-	public List<Obs> getObs(Concept c) {
-		Map<Integer, List<Obs>> patientIdObsMap;
+	/*
+	public List<Object> getObs(Concept c) {
+		Map<Integer, List<Object>> patientIdObsMap;
 		if (conceptObsMap.containsKey(c)) {
 			patientIdObsMap = conceptObsMap.get(c);
 		}
 		else {
 			log.debug("getting obs list for concept: " + c);
-			patientIdObsMap = Context.getPatientSetService().getObservations(getPatientSet(), c);
+			patientIdObsMap = Context.getPatientSetService().getObservationsValues(getPatientSet(), c);
 			conceptObsMap.put(c, patientIdObsMap);
+		}
+		return patientIdObsMap.get(patientId);
+	}
+	*/
+	
+	public List<Object> getObsValue(Concept c, String attr) {
+		String key = c.getConceptId() + attr;
+		Map<Integer, List<Object>> patientIdObsMap = conceptAttrObsMap.get(key);
+		if (patientIdObsMap == null) {
+			//log.debug("getting obs list for concept: " + c + " and attr: " + attr);
+			patientIdObsMap = Context.getPatientSetService().getObservationsValues(getPatientSet(), c, attr);
+			conceptAttrObsMap.put(key, patientIdObsMap);
 		}
 		return patientIdObsMap.get(patientId);
 	}
@@ -315,7 +331,7 @@ public class DataExportUtility {
 		if (relationshipMap.containsKey(relationshipTypeName)) {
 			patientIdRelationshipMap = relationshipMap.get(relationshipTypeName);
 		} else {
-			log.debug("getting relationship list for type: " + relationshipTypeName);
+			//log.debug("getting relationship list for type: " + relationshipTypeName);
 			RelationshipType relType = Context.getPatientService().findRelationshipType(relationshipTypeName);
 			patientIdRelationshipMap = Context.getPatientSetService().getRelationships(getPatientSet(), relType);
 			relationshipMap.put(relationshipTypeName, patientIdRelationshipMap);
@@ -393,24 +409,24 @@ public class DataExportUtility {
 			key += "--all";
 		
 		Map<Integer, Object> patientIdAttrMap;
-		if (attributeMap.containsKey(key)) {
-			patientIdAttrMap = attributeMap.get(key);
+		if (patientAttributeMap.containsKey(key)) {
+			patientIdAttrMap = patientAttributeMap.get(key);
 		}
 		else {
-			log.debug("getting patient attrs: " + key);
+			//log.debug("getting patient attrs: " + key);
 			patientIdAttrMap = Context.getPatientSetService().getPatientAttributes(patientSet, className, property, returnAll);
-			attributeMap.put(key, patientIdAttrMap);
+			patientAttributeMap.put(key, patientIdAttrMap);
 		}
 		return patientIdAttrMap.get(patientId);
 	}
 	
 	/**
-	 * Gets an Observation from the last encounter
+	 * Gets the last <code>n</code> obs for <code>conceptName</code>
 	 * @param n max number of obs to return
 	 * @param conceptName 
 	 * @return
 	 */
-	public Collection<Obs> getLastNObs(Integer n, String conceptName) throws Exception {
+	public Collection<Object> getLastNObs(Integer n, String conceptName) throws Exception {
 		return getLastNObs(n, getConcept(conceptName));
 	}
 	
@@ -422,19 +438,42 @@ public class DataExportUtility {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<Obs> getLastNObs(Integer n, Concept concept) throws Exception {
-		List<Obs> returnList = getObs(concept);
+	public List<Object> getLastNObs(Integer n, Concept concept) throws Exception {
+		return getLastNObsValue(n, concept, null);
+	}
+	
+	public Object getLastNObsValue(Integer n, String conceptId, String attr, Integer place) throws Exception {
+		return getLastNObsValue(n, getConcept(conceptId), attr).get(place-1);
+	}
+	
+	/**
+	 * Gets the most recent observation value 
+	 * 
+	 * @param n max number of obs to return
+	 * @param concept
+	 * @param attr
+	 * @return
+	 * @throws Exception
+	 */
+	public List<Object> getLastNObsValue(Integer n, Concept concept, String attr) throws Exception {
+		//log.debug("Looking for n concepts: " + n + " " + concept);
 		
-		//log.debug("Got obs list. size: " + returnList.size());
+		List<Object> returnList = getObsValue(concept, attr);
+		
 		if (returnList == null)
-			returnList = new Vector<Obs>();
+			returnList = new Vector<Object>();
+		
+		//log.debug("Got obs list for: " + concept.getConceptId() + ". size: " + returnList.size());
 		
 		// bring the list size up to 'n'
 		while (returnList.size() < n)
-			returnList.add(new Obs());
+			returnList.add("");
 		
-		List<Obs> rList = returnList.subList(0, n);
-
+		List<Object> rList = returnList.subList(0, n);
+		
+		//for (Object o : rList)
+		//	log.debug("rList object: " + o);
+		
 		return rList;
 	}
 	
@@ -443,8 +482,18 @@ public class DataExportUtility {
 	 * @param conceptName
 	 * @return
 	 */
-	public Obs getLastObs(String conceptName) throws Exception {
+	public Object getLastObs(String conceptName) throws Exception {
 		return getLastObs(getConcept(conceptName));
+	}
+	
+	/**
+	 * Gets the most recent Observation value matching this concept
+	 * @param conceptName
+	 * @param attr
+	 * @return
+	 */
+	public Object getLastObsValue(String conceptName, String attr) throws Exception {
+		return getLastObsValue(getConcept(conceptName), attr);
 	}
 	
 	/**
@@ -454,8 +503,22 @@ public class DataExportUtility {
 	 * @return
 	 * @throws Exception
 	 */
-	public Obs getLastObs(Concept concept) throws Exception {
-		List<Obs> obs = getLastNObs(1, concept);
+	public Object getLastObs(Concept concept) throws Exception {
+		List<Object> obs = getLastNObs(1, concept);
+		
+		return obs.get(0);
+	}
+	
+	/**
+	 * Get the most recent obs matching <code>concept</code> out of the patient's encounters
+	 * @param e
+	 * @param concept
+	 * @param attr
+	 * @return
+	 * @throws Exception
+	 */
+	public Object getLastObsValue(Concept concept, String attr) throws Exception {
+		List<Object> obs = getLastNObsValue(1, concept, attr);
 		
 		return obs.get(0);
 	}
@@ -465,7 +528,7 @@ public class DataExportUtility {
 	 * @param conceptName 
 	 * @return
 	 */
-	public Obs getFirstObs(String conceptName) throws Exception {
+	public Object getFirstObs(String conceptName) throws Exception {
 		return getFirstObs(getConcept(conceptName));
 	}
 	
@@ -476,14 +539,12 @@ public class DataExportUtility {
 	 * @return
 	 * @throws Exception
 	 */
-	public Obs getFirstObs(Concept concept) throws Exception {
-		List<Obs> reverseObs = new Vector<Obs>();
-		reverseObs.addAll(getObs(concept));
-		Collections.reverse(reverseObs);
+	public Object getFirstObs(Concept concept) throws Exception {
+		List<Object> obs = getObsValue(concept, null);
 		
-		for (Obs o : reverseObs) {
-			if (concept.getConceptId().equals(o.getConcept().getConceptId()))
-				return o;
+		for (int x = obs.size(); x >= 0; x--) {
+			Object o = obs.get(x);
+			return o;
 		}
 		
 		log.info("Could not find an Obs with concept " + concept + " for patient " + patientId);
@@ -500,9 +561,9 @@ public class DataExportUtility {
 	 * @return
 	 * @throws Exception
 	 */
-	public Collection<Obs> getMatchingObs(String conceptName, String valueCoded) throws Exception {
-		return getMatchingObs(getConcept(conceptName), getConcept(valueCoded));
-	}
+//	public Collection<Obs> getMatchingObs(String conceptName, String valueCoded) throws Exception {
+//		return getMatchingObs(getConcept(conceptName), getConcept(valueCoded));
+//	}
 	
 	/**
 	 * Get all obs for the current patient that match this <code>obs.concept</code>=<code>concept</code>
@@ -513,15 +574,15 @@ public class DataExportUtility {
 	 * @return
 	 * @throws Exception
 	 */
-	public Collection<Obs> getMatchingObs(Concept concept, Concept valueCoded) throws Exception {
-		Collection<Obs> returnList = new Vector<Obs>();
-		for (Obs o : getObs(concept)) {
-			if (concept.getConceptId().equals(o.getConcept().getConceptId()) && valueCoded.equals(o.getValueCoded()))
-				returnList.add(o);
-		}
-		
-		return returnList;
-	}
+//	public Collection<Obs> getMatchingObs(Concept concept, Concept valueCoded) throws Exception {
+//		Collection<Obs> returnList = new Vector<Obs>();
+//		for (Obs o : getObs(concept)) {
+//			if (concept.getConceptId().equals(o.getConcept().getConceptId()) && valueCoded.equals(o.getValueCoded()))
+//				returnList.add(o);
+//		}
+//		
+//		return returnList;
+//	}
 	
 	/**
 	 * Format the given date according to the type ('short', 'long', 'ymd')
@@ -564,6 +625,26 @@ public class DataExportUtility {
 		if (o == null)
 			return null;
 		return o.hashCode();
+	}
+	
+	public String getValueAsString(Object o) {
+		if (o == null)
+			return "";
+		
+		else if (o instanceof Concept)
+			return ((Concept)o).getName().toString();
+		else if (o instanceof Drug)
+			return ((Drug)o).getName();
+		else if (o instanceof Location)
+			return ((Location)o).getName();
+		else if (o instanceof User)
+			return ((User)o).toString();
+		else if (o instanceof EncounterType)
+			return ((EncounterType)o).getName();
+		else if (o instanceof Date)
+			return formatDate(null, (Date)o);
+		else
+			return o.toString();
 	}
 	
 }

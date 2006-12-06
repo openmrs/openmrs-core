@@ -93,6 +93,10 @@ public class PatientSet {
 		}
 	}
 	
+	public void add(PatientSet patientSet) {
+		this.patientIds.addAll(patientSet.getPatientIds());
+	}
+	
 	public boolean remove(Integer patientId) {
 		return patientIds.remove(patientId);
 	}

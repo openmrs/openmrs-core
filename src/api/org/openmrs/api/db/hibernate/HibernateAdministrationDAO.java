@@ -22,6 +22,8 @@ import org.hibernate.NonUniqueObjectException;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.ProjectionList;
+import org.hibernate.criterion.Projections;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
@@ -30,8 +32,10 @@ import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSetDerived;
 import org.openmrs.ConceptWord;
 import org.openmrs.DataEntryStatistic;
+import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
+import org.openmrs.Form;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
@@ -848,7 +852,12 @@ public class HibernateAdministrationDAO implements
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<DataEntryStatistic> getDataEntryStatistics(Date fromDate, Date toDate, String encounterColumn, String orderColumn) throws DAOException {
+	public List<DataEntryStatistic> getDataEntryStatistics(Date fromDate, Date toDate, String encounterColumn, String orderColumn, String groupBy) throws DAOException {
+		if (groupBy == null) groupBy = "";
+		if (groupBy.length() != 0)
+			groupBy = "enc." + groupBy;
+		
+		
 		// for all encounters, find user, form name, and number of entries
 		
 		// default userColumn to creator
@@ -856,36 +865,39 @@ public class HibernateAdministrationDAO implements
 			encounterColumn = "creator";
 		encounterColumn = encounterColumn.toLowerCase();
 		
-		String hql = "select enc." + encounterColumn + ", enc.form.name, count(*) " +
-				"from Encounter enc ";
-		if (fromDate != null || toDate != null) {
-			String s = "where ";
-			if (fromDate != null)
-				s += "enc.dateCreated >= :fromDate ";
-			if (toDate != null) {
-				if (fromDate != null)
-					s += "and ";
-				s += "enc.dateCreated <= :toDate ";
-			}
-			hql += s;
-		}
-		hql += "group by enc." + encounterColumn + ", enc.form.name ";
-		log.debug("hql: " + hql);
-		Query q = sessionFactory.getCurrentSession().createQuery(hql);
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Encounter.class, "enc");
+		
+		ProjectionList projections = Projections.projectionList();
+		if (groupBy.length() > 0)
+			projections.add(Projections.groupProperty(groupBy));
+		projections.add(Projections.groupProperty("enc." + encounterColumn));
+		projections.add(Projections.groupProperty("enc.form"));
+		projections.add(Projections.count("enc." + encounterColumn));
+		
+		crit.setProjection(projections);
+		
 		if (fromDate != null)
-			q.setParameter("fromDate", fromDate);
-		if (toDate != null)
-			q.setParameter("toDate", toDate);
-
-		List<Object[]> l = q.list();
+			crit.add(Expression.ge("enc.dateCreated", fromDate));
+		if (toDate != null) {
+			crit.add(Expression.le("enc.dateCreated", toDate));
+		}
+		
+		List<Object[]> l = crit.list();
 		List<DataEntryStatistic> ret = new ArrayList<DataEntryStatistic>();
 		for (Object[] holder : l) {
 			DataEntryStatistic s = new DataEntryStatistic();
-			s.setUser((User) holder[0]);
-			s.setEntryType((String) holder[1]);
-			s.setNumberOfEntries((Integer) holder[2]);
+			int offset = 0;
+			if (groupBy.length() > 0) {
+				s.setGroupBy(holder[0]);
+				offset = 1;
+			}
+			
+			s.setUser((User) holder[0 + offset]);
+			s.setEntryType(((Form)holder[1 + offset]).getName());
+			s.setNumberOfEntries((Integer) holder[2 + offset]);
 			ret.add(s);
 		}
+		
 		
 		// default userColumn to creator
 		if (orderColumn == null)
@@ -894,7 +906,7 @@ public class HibernateAdministrationDAO implements
 		
 		
 		// for orders, count how many were created. (should eventually count something with voided/changed)
-		hql = "select o." + orderColumn + ", o.orderType.name, count(*) " +
+		String hql = "select o." + orderColumn + ", o.orderType.name, count(*) " +
 				"from Order o ";
 		if (fromDate != null || toDate != null) {
 			String s = "where ";
@@ -908,7 +920,7 @@ public class HibernateAdministrationDAO implements
 			hql += s;
 		}
 		hql += "group by o." + orderColumn + ", o.orderType.name ";
-		q = sessionFactory.getCurrentSession().createQuery(hql);
+		Query q = sessionFactory.getCurrentSession().createQuery(hql);
 		if (fromDate != null)
 			q.setParameter("fromDate", fromDate);
 		if (toDate != null)
@@ -916,8 +928,8 @@ public class HibernateAdministrationDAO implements
 		l = q.list();
 		for (Object[] holder : l) {
 			DataEntryStatistic s = new DataEntryStatistic();
-			s.setUser((User) holder[0]);
-			s.setEntryType((String) holder[1]);
+			s.setUser((User) holder[1]);
+			s.setEntryType((String) holder[0]);
 			s.setNumberOfEntries((Integer) holder[2]);
 			ret.add(s);
 		}

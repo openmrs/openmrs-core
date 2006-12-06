@@ -479,8 +479,9 @@ public interface AdministrationService {
 	 * @param toDate
 	 * @param encounterUserColumn
 	 * @param orderUserColumn
+	 * @param groupBy (optional)
 	 * @return
 	 */
-	public List<DataEntryStatistic> getDataEntryStatistics(Date fromDate, Date toDate, String encounterUserColumn, String orderUserColumn);
+	public List<DataEntryStatistic> getDataEntryStatistics(Date fromDate, Date toDate, String encounterUserColumn, String orderUserColumn, String groupBy);
 	
 }

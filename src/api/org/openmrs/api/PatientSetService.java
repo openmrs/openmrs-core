@@ -58,6 +58,9 @@ public interface PatientSetService {
 			Number value, Date fromDate, Date toDate);
 
 	@Transactional(readOnly=true)
+	public PatientSet getPatientsHavingDateObs(Integer conceptId, Date startTime, Date endTime);
+	
+	@Transactional(readOnly=true)
 	public PatientSet getPatientsHavingTextObs(Concept concept, String value);
 
 	@Transactional(readOnly=true)
@@ -96,6 +99,25 @@ public interface PatientSetService {
 	public Map<Integer, List<Obs>> getObservations(PatientSet patients,
 			Concept concept, Date fromDate, Date toDate);
 
+	/**
+	 * 
+	 * Map<patientId, List<Obs values>>
+	 * 
+	 * @param patients
+	 * @param c
+	 * @return Map<patientId, List<Obs values>>
+	 */
+	@Transactional(readOnly=true)
+	public Map<Integer, List<Object>> getObservationsValues(PatientSet patients, Concept c);
+	
+	/**
+	 * @param patients
+	 * @param c
+	 * @return <code>Map<patientId, List<attribute value>></code>
+	 */
+	@Transactional(readOnly=true)
+	public Map<Integer, List<Object>> getObservationsValues(PatientSet patients, Concept c, String attribute);
+	
 	@Transactional(readOnly=true)
 	public Map<Integer, Encounter> getEncountersByType(PatientSet patients,
 			EncounterType encType);
@@ -116,6 +138,9 @@ public interface PatientSetService {
 	public Map<Integer, Map<String, Object>> getCharacteristics(
 			PatientSet patients);
 
+	@Transactional(readOnly=true)
+	public PatientSet convertPatientIdentifier(List<String> identifiers);
+	
 	@Transactional(readOnly=true)
 	public List<Patient> getPatients(Collection<Integer> patientIds);
 

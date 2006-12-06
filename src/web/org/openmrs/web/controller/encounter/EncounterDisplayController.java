@@ -203,10 +203,14 @@ public class EncounterDisplayController implements Controller {
 		}
 		public void addObservation(Obs o) {
 			Integer obsGroupId = o.getObsGroupId();
+
+			//log.error("o: " + o.getObsId());
+			//log.error("groupId: " + o.getObsGroupId());
+			//log.error("concept: " + o.getConcept());
 			
 			// just because a field has a parent that is a set doesn't mean its a construct (comment #234)
-			//boolean obsGroupAnyway = obsGroupId == null && obsGroupConcepts.contains(o.getConcept()); 
-			if (obsGroupId == null) { //{ && !obsGroupAnyway) {
+			boolean obsGroupAnyway = obsGroupId == null && obsGroupConcepts.contains(o.getConcept()); 
+			if (obsGroupId == null && !obsGroupAnyway) {
 				List<Obs> obsForConcept = observations.get(o.getConcept());
 				if (obsForConcept == null) {
 					obsForConcept = new ArrayList<Obs>();
@@ -215,15 +219,19 @@ public class EncounterDisplayController implements Controller {
 				obsForConcept.add(o);
 			} else {
 				// commenting out these two lines per comment #234
-				//if (obsGroupAnyway)
-				//	obsGroupId = o.getObsId(); // TODO: this relies on the convention that obsGroupId equals the obsId of one of the obs in that group. It would be nice to drop this requirement 
-				ObsGroupHolder group = obsGroups.get(obsGroupId); 
+				if (obsGroupAnyway)
+				//if (obsGroupId == null)
+					obsGroupId = o.getObsId(); // TODO: this relies on the convention that obsGroupId equals the obsId of one of the obs in that group. It would be nice to drop this requirement 
+				ObsGroupHolder group = obsGroups.get(obsGroupId);
+				//log.error("group: " + group);
 				if (group == null) {
 					group = new ObsGroupHolder();
 					group.setParent(this);
 					obsGroups.put(obsGroupId, group);
 				}
+				
 				group.getObservations().add(o);
+				
 				obsGroupConcepts.add(o.getConcept());
 			}
 		}

@@ -87,6 +87,10 @@ public class PatientSetServiceImpl implements PatientSetService {
 	}
 	*/
 	
+	public PatientSet getPatientsHavingDateObs(Integer conceptId, Date startTime, Date endTime) {
+		return getPatientSetDAO().getPatientsHavingDateObs(conceptId, startTime, endTime);
+	}
+	
 	public PatientSet getPatientsHavingNumericObs(Integer conceptId, TimeModifier timeModifier, PatientSetServiceImpl.Modifier modifier, Number value, Date fromDate, Date toDate) {
 		return getPatientSetDAO().getPatientsHavingNumericObs(conceptId, timeModifier, modifier, value, fromDate, toDate);
 	}
@@ -156,6 +160,14 @@ public class PatientSetServiceImpl implements PatientSetService {
 	public Map<Integer, List<Obs>> getObservations(PatientSet patients, Concept concept, Date fromDate, Date toDate) {
 		return getPatientSetDAO().getObservations(patients, concept, fromDate, toDate);
 	}
+	
+	public Map<Integer, List<Object>> getObservationsValues(PatientSet patients, Concept c) {
+		return getObservationsValues(patients, c, null);
+	}
+	
+	public Map<Integer, List<Object>> getObservationsValues(PatientSet patients, Concept c, String attribute) {
+		return getPatientSetDAO().getObservationsValues(patients, c, attribute);
+	}
 
 	public Map<Integer, Encounter> getEncountersByType(PatientSet patients, EncounterType encType) {
 		return getPatientSetDAO().getEncountersByType(patients, encType);
@@ -179,6 +191,10 @@ public class PatientSetServiceImpl implements PatientSetService {
 	
 	public Map<Integer, Map<String, Object>> getCharacteristics(PatientSet patients) {
 		return getPatientSetDAO().getCharacteristics(patients);
+	}
+	
+	public PatientSet convertPatientIdentifier(List<String> identifiers) {
+		return getPatientSetDAO().convertPatientIdentifier(identifiers);
 	}
 	
 	public List<Patient> getPatients(Collection<Integer> patientIds) {

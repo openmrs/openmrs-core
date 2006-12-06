@@ -189,6 +189,15 @@
 			obj = pSearch.domNode.parentNode;
 			var pSelection = dojo.widget.createWidget("OpenmrsPopup", props, obj);
 			dojo.event.connect(pSearch, "doSelect", pSelect(pSelection), "select");
+			
+			// add 'remove' button
+			var removeButton = document.createElement("input");
+			removeButton.type="button";
+			removeButton.value=" X ";
+			removeButton.className="closeButton";
+			removeButton.style.cssFloat="none";
+			removeButton.onclick=function() { this.parentNode.parentNode.removeChild(this.parentNode); }
+			pSelection.domNode.insertBefore(removeButton, pSelection.domNode.firstChild);
 		}
 		else if (id == "newColumn") {
 			// create concept search

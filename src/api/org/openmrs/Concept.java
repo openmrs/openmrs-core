@@ -11,6 +11,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.context.Context;
 
 /**
  * Concept 
@@ -275,6 +276,17 @@ public class Concept implements java.io.Serializable {
 	 */
 	public ConceptName getName(Locale locale) {
 		return getName(locale, false);
+	}
+	
+	/**
+	 * Finds the name of the concept using the current locale in Context.getLocale().
+	 * Returns null if none found. 
+	 * 
+	 * @param locale
+	 * @return ConceptName attributed to the Concept in the given locale
+	 */
+	public ConceptName getName() {
+		return getName(Context.getLocale());
 	}
 	
 	/**

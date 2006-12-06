@@ -33,6 +33,7 @@ public class DataEntryStatisticsController extends SimpleFormController {
 		private DataTable table;
 		private String encUserColumn;
 		private String orderUserColumn;
+		private String groupBy;
 		
 		public StatisticsCommand() { }
 		public Date getFromDate() {
@@ -65,6 +66,12 @@ public class DataEntryStatisticsController extends SimpleFormController {
 		public void setOrderUserColumn(String orderUserColumn) {
 			this.orderUserColumn = orderUserColumn;
 		}
+		public String getGroupBy() {
+			return groupBy;
+		}
+		public void setGroupBy(String groupBy) {
+			this.groupBy = groupBy;
+		}
 	}
 	
     SimpleDateFormat dateFormat;
@@ -89,7 +96,7 @@ public class DataEntryStatisticsController extends SimpleFormController {
 		Date toDateToUse = OpenmrsUtil.lastSecondOfDay(ret.getToDate());
 		String encUserColumn = ret.getEncUserColumn();
 		String orderUserColumn = ret.getOrderUserColumn();
-		List<DataEntryStatistic> stats = Context.getAdministrationService().getDataEntryStatistics(ret.getFromDate(), toDateToUse, encUserColumn, orderUserColumn);
+		List<DataEntryStatistic> stats = Context.getAdministrationService().getDataEntryStatistics(ret.getFromDate(), toDateToUse, encUserColumn, orderUserColumn, ret.getGroupBy());
 		DataTable table = DataEntryStatistic.tableByUserAndType(stats);
 		ret.setTable(table);
 		
@@ -101,7 +108,7 @@ public class DataEntryStatisticsController extends SimpleFormController {
 		Date toDateToUse = OpenmrsUtil.lastSecondOfDay(command.getToDate());
 		String encUserColumn = command.getEncUserColumn();
 		String orderUserColumn = command.getOrderUserColumn();
-		List<DataEntryStatistic> stats = Context.getAdministrationService().getDataEntryStatistics(command.getFromDate(), toDateToUse, encUserColumn, orderUserColumn);
+		List<DataEntryStatistic> stats = Context.getAdministrationService().getDataEntryStatistics(command.getFromDate(), toDateToUse, encUserColumn, orderUserColumn, command.getGroupBy());
 		DataTable table = DataEntryStatistic.tableByUserAndType(stats);
 		command.setTable(table);
 		return showForm(request, response, errors);

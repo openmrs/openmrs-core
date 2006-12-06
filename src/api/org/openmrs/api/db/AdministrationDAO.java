@@ -436,6 +436,6 @@ public interface AdministrationDAO {
 
 	public void addGlobalProperty(String propertyName, String propertyValue) throws DAOException;
 
-	public List<DataEntryStatistic> getDataEntryStatistics(Date fromDate, Date toDate, String encounterUserColumn, String orderUserColumn) throws DAOException;
+	public List<DataEntryStatistic> getDataEntryStatistics(Date fromDate, Date toDate, String encounterUserColumn, String orderUserColumn, String groupBy) throws DAOException;
 
 }

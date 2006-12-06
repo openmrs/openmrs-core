@@ -40,6 +40,18 @@
 		</td>
 	</tr>
 	<tr>
+		<td><spring:message code="DataEntryStatistics.groupBy"/>:</td>
+		<td>
+			<spring:bind path="command.groupBy">			
+				<select name="${status.expression}" width="10">
+					<option value="" <c:if test="${command.groupBy==''}">selected</c:if>></option>
+					<option value="location" <c:if test="${command.groupBy=='location'}">selected</c:if>><spring:message code="Encounter.location"/></option>
+				</select>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
 		<td><spring:message code="general.fromDate"/>:</td>
 		<td>
 			<spring:bind path="command.fromDate">			
@@ -63,6 +75,8 @@
 		<td></td>
 		<td><input type="submit" value="<spring:message code="general.view"/>" /></td>
 	</tr>
+</table>
+
 </form>
 
 <p/>

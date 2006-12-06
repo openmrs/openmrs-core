@@ -31,6 +31,8 @@ public interface PatientSetDAO {
 	
 	public PatientSet getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate, Integer minAge, Integer maxAge, Boolean aliveOnly, Boolean deadOnly) throws DAOException;
 	
+	public PatientSet getPatientsHavingDateObs(Integer conceptId, Date startTime, Date endTime);
+	
 	public PatientSet getPatientsHavingNumericObs(Integer conceptId, TimeModifier timeModifier, PatientSetService.Modifier modifier, Number value, Date fromDate, Date toDate) throws DAOException;
 	
 	public PatientSet getPatientsHavingTextObs(Integer conceptId, String value) throws DAOException;
@@ -41,6 +43,8 @@ public interface PatientSetDAO {
 	
 	public Map<Integer, List<Obs>> getObservations(PatientSet patients, Concept concept, Date fromDate, Date toDate) throws DAOException;
 	
+	public Map<Integer, List<Object>> getObservationsValues(PatientSet patients, Concept c, String attribute);
+	
 	public Map<Integer, Encounter> getEncountersByType(PatientSet patients, EncounterType encType);
 	
 	public Map<Integer, Encounter> getFirstEncountersByType(PatientSet patients, EncounterType encType);
@@ -49,6 +53,8 @@ public interface PatientSetDAO {
 	
 	public Map<Integer, Map<String, Object>> getCharacteristics(PatientSet patients) throws DAOException;
 
+	public PatientSet convertPatientIdentifier(List<String> identifiers) throws DAOException;
+	
 	public List<Patient> getPatients(Collection<Integer> patientIds) throws DAOException;
 
 	public Map<Integer, Collection<Integer>> getActiveDrugIds(Collection<Integer> patientIds, Date onDate) throws DAOException;

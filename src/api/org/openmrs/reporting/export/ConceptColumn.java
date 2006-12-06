@@ -31,53 +31,44 @@ public class ConceptColumn implements ExportColumn, Serializable {
 	
 	public String toTemplateString() {
 		String s = "";
+		if (extras == null)
+			extras = new String[] {};
+		
 		
 		if (DataExportReportObject.MODIFIER_ANY.equals(modifier)) {
-			s += "#set($o = $fn.getLastObs('" + getConceptIdOrName() + "')) ";
-			s += "$!{o.getValueAsString($locale)}";
-			s += extrasToTemplateString();
+			s += " $!{fn.getValueAsString($fn.getLastObs('" + getConceptIdOrName() + "'))} ";
+			for (String ext : extras) {
+				s += "$!{fn.getSeparator()} ";
+				s += "$!{fn.getValueAsString($fn.getLastObsValue('" + getConceptIdOrName() + "', '" + ext + "'))} ";
+			}
 		}
 		else if (DataExportReportObject.MODIFIER_FIRST.equals(modifier)) {
-			s += "#set($o = $fn.getLastObs('" + getConceptIdOrName() + "')) ";
-			s += "$!{o.getValueAsString($locale)}";
-			s += extrasToTemplateString();
+			s += "$!{fn.getValueAsString($fn.getFirstObs('" + getConceptIdOrName() + "'))} ";
+			for (String ext : extras) {
+				s += "$!{fn.getSeparator()} ";
+				s += "$!{fn.getValueAsString($fn.getFirstObsValue('" + getConceptIdOrName() + "', '" + ext + "'))} ";
+			}
 		}
 		else if (DataExportReportObject.MODIFIER_LAST.equals(modifier)) {
-			s += "#set($o = $fn.getLastObs('" + getConceptIdOrName() + "')) ";
-			s += "$!{o.getValueAsString($locale)}";
-			s += extrasToTemplateString();
+			s += " $!{fn.getValueAsString($fn.getLastObs('" + getConceptIdOrName() + "'))} ";
+			for (String ext : extras) {
+				s += "$!{fn.getSeparator()} ";
+				s += "$!{fn.getValueAsString($fn.getLastObsValue('" + getConceptIdOrName() + "', '" + ext + "'))} ";
+			}
 		}
 		else if (DataExportReportObject.MODIFIER_LAST_NUM.equals(modifier)) {
 			Integer num = modifierNum == null ? 1 : modifierNum;
-			s += "#set($obs = $fn.getLastNObs(" + num + ", '" + getConceptIdOrName() + "'))";
-			s += "#foreach($o in $obs)";
+			s += "#set($obsValues = $fn.getLastNObs(" + num + ", '" + getConceptIdOrName() + "'))";
+			s += "#foreach($val in $obsValues)";
 			s += "#if($velocityCount > 1)";
 			s += "$!{fn.getSeparator()}";
 			s += "#end";
-			s += "$!{o.getValueAsString($locale)}";
-			s += extrasToTemplateString();
-			s += "#end\n";
-		}
-		
-		return s;
-	}
-	
-	private String extrasToTemplateString() {
-		String s = "";
-		if (extras != null)  {
+			s += "$!{fn.getValueAsString($val)}";
 			for (String ext : extras) {
 				s += "$!{fn.getSeparator()}";
-				if ("obsDatetime".equals(ext))
-					s += "$!{fn.formatDate('short', $o.getObsDatetime())}";
-				else if("location".equals(ext))
-					s += "$!{o.getLocation().getName()}";
-				else if ("comment".equals(ext))
-					s += "$!{o.getComment()}";
-				else if ("provider".equals(ext))
-					s += "$!{o.getEncounter().getProvider().getFirstName()} $!{o.getEncounter().getProvider().getLastName()}";
-				else if ("encounterType".equals(ext))
-					s += "$!{o.getEncounter().getEncounterType().getName()}";
+				s += "$!{fn.getValueAsString($fn.getLastNObsValue(" + num + ", '" + getConceptIdOrName() + "', '" + ext + "', $velocityCount))}";
 			}
+			s += "#end\n";
 		}
 		
 		return s;

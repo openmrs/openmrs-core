@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -30,8 +31,11 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.type.StringType;
 import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
@@ -451,6 +455,36 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return patientSet;
 	}
 	
+	/**
+	 * Gets all patients with an obs's value_date column value within <code>startTime</code>
+	 * and <code>endTime</code>
+	 *  
+	 * @param conceptId
+	 * @param startTime
+	 * @param endTime
+	 * @return PatientSet
+	 */
+	@SuppressWarnings("unchecked")
+	public PatientSet getPatientsHavingDateObs(Integer conceptId, Date startTime, Date endTime) {
+		Query query;
+		StringBuffer sb = new StringBuffer();
+		sb.append("select o.patient_id from obs o " +
+		"where concept_id = :concept_id ");
+		sb.append(" and o.value_datetime between :startValue and :endValue");
+		sb.append(" and o.voided = 0");
+		
+		query = sessionFactory.getCurrentSession().createSQLQuery(sb.toString());
+		query.setInteger("concept_id", conceptId);
+		query.setDate("startValue", startTime);
+		query.setDate("endValue", endTime);
+		
+		PatientSet ret = new PatientSet();
+		List patientIds = query.list();
+		ret.setPatientIds(new ArrayList<Integer>(patientIds));
+
+		return ret;
+	}
+	
 	/*
 	 * 	EXISTS , LESS_THAN , LESS_EQUAL , EQUAL , GREATER_EQUAL , GREATER_THAN
 		ANY, FIRST, LAST, MIN, MAX, AVG
@@ -722,6 +756,118 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret;
 	}
 	
+	public Map<Integer, List<Object>> getObservationsValues(PatientSet patients, Concept c, String attribute) {
+		Map<Integer, List<Object>> ret = new HashMap<Integer, List<Object>>();
+		
+		Collection<Integer> ids = patients.getPatientIds();
+		if (ids.size() == 0)
+			return ret;
+		
+		String className = "";
+		
+		List<String> columns = new Vector<String>();
+		columns.add(attribute);
+		
+		if (attribute == null) {
+			columns = findObsValueColumnName(c);
+			//log.debug("c: " + c.getConceptId() + " attribute: " + attribute);
+		}
+		else if (attribute.equals("obsDatetime")) {
+			// pass -- same column name
+		}
+		else if (attribute.equals("location")) {
+			// pass -- same column name
+		}
+		else if (attribute.equals("comment")) {
+			// pass -- same column name
+		}
+		else if (attribute.equals("encounterType")) {
+			className = "encounter";
+		}
+		else if (attribute.equals("provider")) {
+			className = "encounter";
+		}
+		else {
+			throw new DAOException("Attribute: " + attribute + " is not recognized. Please add reference in " + this.getClass());
+		}
+		
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria("org.openmrs.Obs", "obs");
+		
+		String aliasName = "obs";
+		
+		if (className.length() > 0) {
+			aliasName = "other";
+			criteria.createAlias("obs.encounter", aliasName);
+		}
+		
+		// set up the query
+		ProjectionList projections = Projections.projectionList();
+		projections.add(Projections.property("obs.patientId"));
+		for (String col : columns)
+			projections.add(Projections.property(aliasName + "." + col));
+		criteria.setProjection(projections);
+		
+		if (ids.size() != getAllPatients().size())
+			criteria.add(Restrictions.in("obs.patientId", ids));
+		
+		criteria.add(Expression.eq("obs.concept", c));
+		criteria.add(Expression.eq("obs.voided", false));
+		
+		criteria.addOrder(org.hibernate.criterion.Order.desc("obs.obsDatetime"));
+		criteria.addOrder(org.hibernate.criterion.Order.desc("obs.voided"));
+		
+		log.debug("criteria: " + criteria);
+		
+		List<Object[]> rows = criteria.list();
+		
+		// set up the return map
+		for (Object[] row : rows) {
+			//log.debug("row[0]: " + row[0] + " row[1]: " + row[1] + (row.length > 2 ? " row[2]: " + row[2] : ""));
+			Integer ptId = (Integer)row[0];
+			
+			// get the first non-null value column
+			int index = 1;
+			Object columnValue = null;
+			while (index < row.length && columnValue == null)
+				columnValue = row[index++];
+			
+			if (!ret.containsKey(ptId)) {
+				List<Object> arr = new Vector<Object>();
+				arr.add(columnValue);
+				ret.put(ptId, arr);
+			}
+			else {
+				List<Object> oldArr = ret.get(ptId);
+				oldArr.add(columnValue);
+				ret.put(ptId, oldArr);
+			}
+		}
+		
+		return ret;
+		
+	}
+	
+	// TODO this should be in some sort of central place...but where?
+	public static List<String> findObsValueColumnName(Concept c) {
+		String abbrev = c.getDatatype().getHl7Abbreviation();
+		List<String> columns = new Vector<String>();
+		
+		if (abbrev.equals("BIT"))
+			columns.add("valueNumeric");
+		else if (abbrev.equals("CWE")) {
+			columns.add("valueDrug");
+			columns.add("valueCoded");
+		}
+		else if (abbrev.equals("NM") || abbrev.equals("SN"))
+			columns.add("valueNumeric");
+		else if (abbrev.equals("DT") || abbrev.equals("TM") || abbrev.equals("TS"))
+			columns.add("obsDatetime");
+		else if (abbrev.equals("ST"))
+			columns.add("valueText");
+		
+		return columns;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public Map<Integer, Encounter> getEncountersByType(PatientSet patients, EncounterType encType) {
 		Map<Integer, Encounter> ret = new HashMap<Integer, Encounter>();
@@ -883,8 +1029,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	public PatientSet getPatientsHavingLocation(Integer locationId) throws DAOException {
 		Query query;
 		StringBuffer sb = new StringBuffer();
-		sb.append("select distinct patient_id from encounter e " +
-				"where location_id = :location_id ");
+		sb.append("select patient_id from Patient p " +
+				"where health_center = :location_id ");
 		query = sessionFactory.getCurrentSession().createSQLQuery(sb.toString());
 		query.setInteger("location_id", locationId);
 
@@ -895,6 +1041,21 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret;
 	}
 
+	public PatientSet convertPatientIdentifier(List<String> identifiers) throws DAOException {
+		
+		Query query;
+		StringBuffer sb = new StringBuffer();
+		sb.append("select distinct(patient_id) from patient_identifier p " +
+				"where identifier in (:identifiers) ");
+		query = sessionFactory.getCurrentSession().createSQLQuery(sb.toString());
+		query.setParameterList("identifiers", identifiers, new StringType());
+		PatientSet ret = new PatientSet();
+		List<Integer> patientIds = query.list();
+		ret.setPatientIds(new ArrayList<Integer>(patientIds));
+		
+		return ret;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public List<Patient> getPatients(Collection<Integer> patientIds) throws DAOException {
 		List<Patient> ret = new ArrayList<Patient>();

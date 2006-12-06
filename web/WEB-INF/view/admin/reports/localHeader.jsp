@@ -23,4 +23,11 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
+	<openmrs:hasPrivilege privilege="Add Data Exports,Edit Data Exports,Delete Data Exports,View Data Exports">
+		<li <c:if test="<%= request.getRequestURI().contains("summaryForm") %>">class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/reports/summaryForm.htm">
+				<spring:message code="PatientSummary.manage"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
 </ul>
