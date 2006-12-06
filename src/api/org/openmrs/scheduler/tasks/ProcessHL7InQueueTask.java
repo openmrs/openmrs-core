@@ -19,7 +19,10 @@ import ca.uhn.hl7v2.HL7Exception;
  * the constructor.
  * 
  * @author Ben Wolfe
- * @version 1.0
+ * @author Burke Mamlin
+ * @version 1.1
+ * 
+ * 1.1 - made processor static to ensure only one HL7 processor runs
  */
 public class ProcessHL7InQueueTask implements Schedulable {
 
@@ -30,14 +33,15 @@ public class ProcessHL7InQueueTask implements Schedulable {
 	private TaskConfig taskConfig;
 
 	// Instance of hl7 processor
-	private HL7InQueueProcessor processor;
+	private static HL7InQueueProcessor processor = null;
 
 	/**
 	 * Default Constructor (Uses SchedulerConstants.username and
 	 * SchedulerConstants.password
 	 */
 	public ProcessHL7InQueueTask() {
-		processor = new HL7InQueueProcessor();
+		if (processor == null)
+			processor = new HL7InQueueProcessor();
 	}
 
 	/**

@@ -12,10 +12,11 @@ import org.openmrs.api.context.Context;
 import org.openmrs.logic.LogicException;
 import org.openmrs.logic.LogicService;
 import org.openmrs.logic.Result;
-import org.openmrs.logic.rule.BirthdateRule;
+import org.openmrs.logic.rule.BirthdateOrAgeRule;
 import org.openmrs.logic.rule.CD4ReminderRule;
 import org.openmrs.logic.rule.CXREverRule;
 import org.openmrs.logic.rule.ClinicalSummaryRule;
+import org.openmrs.logic.rule.FirstEncounterDate;
 import org.openmrs.logic.rule.HealthCenterRule;
 import org.openmrs.logic.rule.HelloWorldRule;
 import org.openmrs.logic.rule.HospitalizedWithinPastYearRule;
@@ -25,7 +26,7 @@ import org.openmrs.logic.rule.PatientIdentifierRule;
 import org.openmrs.logic.rule.PerfectAdherenceRule;
 import org.openmrs.logic.rule.ProblemListRule;
 
-public class LogicTest extends BaseTest {
+public class LogicServiceTest extends BaseTest {
 
 	protected final Log log = LogFactory.getLog(getClass());
 
@@ -44,19 +45,18 @@ public class LogicTest extends BaseTest {
 		startup();
 
 		// Setup
-		Context.authenticate("paul", "1pinball1");
-		// Patient patient = Context.getPatientService().getPatient(8637);
-		// Patient patient = Context.getPatientService().getPatient(8637);
-
-		Integer[] pidList = new Integer[] { 4, 11271, 18049, 9013, 27189,
-				12987, 1044, 26269, 3563, 610, 12286, 7670, 19255, 25797, 6316,
-				33330, 7618, 7132, 9755, 35520, 19363, 37440, 10340, 25202,
-				17238, 16958, 31883, 12417, 13412, 12066, 13283, 24697, 17286,
-				24961, 17781, 19221, 4732, 19149, 6444, 7070, 19412, 27361,
-				20776, 17089, 2405, 2079, 7533, 18333, 18336, 38724, 25373,
-				30244, 18048, 17966, 12338, 11917, 31473, 21801, 28020, 36821,
-				4606, 4891, 3775, 4331, 7711, 33293, 31275, 14912, 38835, 620,
-				23436 };
+		Context.authenticate("admin", "test");
+		Integer[] pidList = new Integer[] { 4 };
+		
+//		Integer[] pidList = new Integer[] { 4, 11271, 18049, 9013, 27189,
+//				12987, 1044, 26269, 3563, 610, 12286, 7670, 19255, 25797, 6316,
+//				33330, 7618, 7132, 9755, 35520, 19363, 37440, 10340, 25202,
+//				17238, 16958, 31883, 12417, 13412, 12066, 13283, 24697, 17286,
+//				24961, 17781, 19221, 4732, 19149, 6444, 7070, 19412, 27361,
+//				20776, 17089, 2405, 2079, 7533, 18333, 18336, 38724, 25373,
+//				30244, 18048, 17966, 12338, 11917, 31473, 21801, 28020, 36821,
+//				4606, 4891, 3775, 4331, 7711, 33293, 31275, 14912, 38835, 620,
+//				23436 };
 		
 		LogicService logic = Context.getLogicService();
 		registerRules(logic);
@@ -92,7 +92,7 @@ public class LogicTest extends BaseTest {
 		// Register rules
 		logic.addToken("HELLO WORLD", HelloWorldRule.class);
 		logic.addToken("NAME", NameRule.class);
-		logic.addToken("BIRTHDATE", BirthdateRule.class);
+		logic.addToken("BIRTHDATE OR AGE", BirthdateOrAgeRule.class);
 		logic.addToken("CLINICAL SUMMARY", ClinicalSummaryRule.class);
 		logic.addToken("PATIENT IDENTIFIER", PatientIdentifierRule.class);
 		logic.addToken("ALTERNATE PATIENT IDENTIFIERS",
@@ -104,6 +104,7 @@ public class LogicTest extends BaseTest {
 		logic.addToken("HEALTH CENTER", HealthCenterRule.class);
 		logic.addToken("CD4 COUNT WITHIN SIX MONTHS", CD4ReminderRule.class);
 		logic.addToken("CHEST X-RAY EVER", CXREverRule.class);
+		logic.addToken("FIRST ENCOUNTER DATE", FirstEncounterDate.class);
 	}
 
 	private void registerConcepts(LogicService logic) throws LogicException {

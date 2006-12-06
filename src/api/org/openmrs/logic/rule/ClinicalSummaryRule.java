@@ -1,5 +1,7 @@
 package org.openmrs.logic.rule;
 
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.openmrs.Concept;
@@ -13,6 +15,8 @@ import org.openmrs.logic.Result;
 import org.openmrs.logic.Rule;
 
 public class ClinicalSummaryRule extends Rule {
+	
+	private DateFormat dateFormat = null;
 
 	@Override
 	public Result eval(LogicDataSource dataSource, Patient patient,
@@ -34,7 +38,7 @@ public class ClinicalSummaryRule extends Rule {
 			xml.append("  </alternateIds>\n");
 		}
 		append(xml, "name", dataSource.eval(patient, "NAME").toString());
-		append(xml, "birthdate", dataSource.eval(patient, "BIRTHDATE")
+		append(xml, "birthdate", dataSource.eval(patient, "BIRTHDATE OR AGE")
 				.toString());
 		append(xml, "healthCenter", dataSource.eval(patient, "HEALTH CENTER")
 				.toString());
@@ -54,6 +58,8 @@ public class ClinicalSummaryRule extends Rule {
 						(pregnant.contains(true) ? "YES" : "NO"));
 		}
 
+		append(xml, "firstEncounterDate", dataSource.eval(patient,
+				"FIRST ENCOUNTER DATE").toString());
 		Result numberChildrenSired = dataSource.eval(patient, Aggregation
 				.latest(), "TOTAL NUMBER OF CHILDREN SIRED", null, args);
 		if (numberChildrenSired.isNull())
@@ -72,9 +78,6 @@ public class ClinicalSummaryRule extends Rule {
 			append(xml, "whoStage", "UNKNOWN");
 		else
 			append(xml, "whoStage", whoStage.toString());
-		Result hospitalized = dataSource.eval(patient,
-				"HOSPITALIZED WITHIN PAST YEAR");
-		append(xml, "hospitalized", hospitalized.toString());
 		Result problemList = dataSource.eval(patient, "PROBLEM LIST");
 		if (problemList.size() > 0) {
 			xml.append("  <problemList>\n");
@@ -83,7 +86,7 @@ public class ClinicalSummaryRule extends Rule {
 				if (concept != null) {
 					xml.append("    <problem");
 					if (p.getDate() != null)
-						xml.append(p.getDate());
+						xml.append(formatDate(p.getDate()));
 					xml.append(">");
 					xml.append(concept.getName(Context.getLocale()));
 					xml.append("</problem>\n");
@@ -104,10 +107,10 @@ public class ClinicalSummaryRule extends Rule {
 		List<Result> satList = dataSource.eval(patient, Aggregation.latest(5),
 				"BLOOD OXYGEN SATURATION", null, args).getResultList();
 		appendToFlowsheet(xml, "SA02", satList);
-		List<Result> cd4PercentList = dataSource.eval(patient,
+		List<Result> cd4List = dataSource.eval(patient,
 				Aggregation.latest(5), "CD4, BY FACS", null, args)
 				.getResultList();
-		appendToFlowsheet(xml, "CD4", cd4PercentList);
+		appendToFlowsheet(xml, "CD4", cd4List);
 		List<Result> creatinineList = dataSource.eval(patient,
 				Aggregation.latest(5), "SERUM CREATININE", null, args)
 				.getResultList();
@@ -168,7 +171,7 @@ public class ClinicalSummaryRule extends Rule {
 			xml.append("\">\n");
 			for (Result result : resultList) {
 				xml.append("      <value date=\"");
-				xml.append(result.getDate());
+				xml.append(formatDate(result.getDate()));
 				xml.append("\">");
 				xml.append(result.toString());
 				xml.append("</value>\n");
@@ -176,6 +179,13 @@ public class ClinicalSummaryRule extends Rule {
 			xml.append("    </results>\n");
 		}
 
+	}
+
+	private String formatDate(Date date) {
+		if (dateFormat == null)
+			dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM,
+				Context.getLocale());
+		return dateFormat.format(date);
 	}
 
 }
