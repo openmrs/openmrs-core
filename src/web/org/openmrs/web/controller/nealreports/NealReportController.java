@@ -24,6 +24,9 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
 import org.openmrs.Obs;
+import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
 import org.openmrs.Person;
@@ -87,7 +90,9 @@ public class NealReportController implements Controller {
 		// General.PREGNANT_P
 		// General.PMTCT (get meds for ptme? ask CA)
 		// General.FORMER_GROUP (previous ARV group)
-				
+
+		
+		
 		List<Concept> conceptsToGet = new ArrayList<Concept>();
 		Map<Concept, String> namesForReportMaker = new HashMap<Concept, String>();
 		conceptHelper(cs, conceptsToGet, namesForReportMaker, "ANTIRETROVIRAL TREATMENT GROUP", Hiv.TREATMENT_GROUP);
@@ -122,6 +127,24 @@ public class NealReportController implements Controller {
 						valToUse = obj.toString();
 					}
 					holder.put(nameToUse, valToUse);
+				}
+			}
+		}
+		
+		// modified by CA on 5 Dec 2006
+		// getting General.USER_ID - the old TRACIDs that were entered.  This can be removed later, we are using now
+		// to do a data dump so that we can fill in missing IMB IDs
+		List<Patient> patients = ps.getPatients();
+		for ( Patient p : patients ) {
+			if ( p.getActiveIdentifiers() != null ) {
+				for ( PatientIdentifier pId : p.getActiveIdentifiers() ) {
+					PatientIdentifierType idType = pId.getIdentifierType();
+					if ( idType.getName().equalsIgnoreCase("tracnet id")) {
+						String identifier = pId.getIdentifier();
+						Map<String, String> holder = (Map<String, String>) patientDataHolder.get(p.getPatientId());
+						if (holder == null) holder = new HashMap<String, String>();
+						holder.put(General.USER_ID, identifier);
+					}
 				}
 			}
 		}
