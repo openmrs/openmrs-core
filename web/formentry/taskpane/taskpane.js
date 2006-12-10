@@ -81,13 +81,43 @@ function pickProblem(mode, nodeName, obj) {
 }
 
 // add this concept as an answer to the given node
-function pickConcept(nodeName, concept) {
+function pickConcept(nodeName, concept, createConceptList) {
 	var node = oDOM.selectSingleNode(nodeName);
+	if (node == null) {
+		alert("ERROR 2345: Node '" + nodeName + "' was not found");
+		return;
+	}
 	clearNil(node);
 	var valueNode = node.selectSingleNode("value");
 	clearNil(valueNode);
-	valueNode.text = getConceptNodeValue(concept);
-	
+	if (valueNode == null) {
+		alert("ERROR 2444: 'value' node inside of node '" + nodeName + "' was not found");
+		return;
+	}
+	clearNil(valueNode);
+	if (valueNode.text == "" || createConceptList == "") {
+		valueNode.text = getConceptNodeValue(concept);
+	}
+	else {
+		// create new elem as clone with proper value
+		var newElem = node.cloneNode(true);
+		var newElemValue = newElem.selectSingleNode("value");
+		clearNil(newElemValue);
+		
+		// if node isn't the last node in parent's list, find who to insert before
+		var nextSibling = node.nextSibling;
+		while (nextSibling != null && (nextSibling.nodeName == node.nodeName || nextSibling.nodeType != node.nodeType)) {
+			nextSibling = nextSibling.nextSibling;
+		}
+		if (nextSibling == null)
+			node.parentNode.appendChild(newElem);
+		else
+			node.parentNode.insertBefore(newElem, nextSibling);
+			
+		// value must be set *after* inserting node; otherwise it gets munged
+		newElemValue.text = getConceptNodeValue(concept);
+	}
+
 	closeTaskPane();
 }
 
