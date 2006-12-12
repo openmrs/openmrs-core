@@ -76,7 +76,8 @@ public class ComplexType {
 			return (aBranch == bBranch);
 		Iterator aIter = aBranch.iterator();
 		Iterator bIter = bBranch.iterator();
-		while (aIter.hasNext()) {
+		// modified by CA on 2006-12-12 - found situations where this was throwing NoSuchElementException because bIter had no "next" element
+		while (aIter.hasNext() && bIter.hasNext()) {
 			FormField aFormField = (FormField) aIter.next();
 			FormField bFormField = (FormField) bIter.next();
 			if (!equivalent(aFormField, bFormField))
