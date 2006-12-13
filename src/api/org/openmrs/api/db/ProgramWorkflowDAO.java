@@ -4,11 +4,16 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.openmrs.ConceptStateConversion;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
+import org.openmrs.api.APIAuthenticationException;
+import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Program- and Workflow-related database functions
@@ -43,4 +48,13 @@ public interface ProgramWorkflowDAO {
 
 	public Collection<Integer> patientsInProgram(Program program, Date fromDate, Date toDate);
 	
+	public void createConceptStateConversion(ConceptStateConversion csc);
+
+	public void updateConceptStateConversion(ConceptStateConversion csc);
+
+	public void deleteConceptStateConversion(ConceptStateConversion csc);
+
+	public ConceptStateConversion getConceptStateConversion(Integer id);
+
+	public List<ConceptStateConversion> getAllConversions();
 }

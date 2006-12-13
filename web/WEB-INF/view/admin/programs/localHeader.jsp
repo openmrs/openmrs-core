@@ -9,4 +9,11 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
+	<openmrs:hasPrivilege privilege="Manage Programs">
+		<li <c:if test="<%= request.getRequestURI().contains("programs/conversion") %>">class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/programs/conversion.list">
+				<spring:message code="Program.conversion.manage"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
 </ul>

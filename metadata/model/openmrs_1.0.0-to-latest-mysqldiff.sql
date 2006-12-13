@@ -1231,7 +1231,7 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	AND p.cause_of_death IS NULL;
 
 	# insert a global property to indicate cause_of_death concept (if it doesn't exist already)
-	IF ( SELECT count(*) = 0 FROM global_property WHERE lower(property) = 'concept.causeofdeath' ) THEN
+	IF( SELECT count(*) = 0 FROM global_property WHERE lower(property) = 'concept.causeofdeath' ) THEN
 		INSERT INTO global_property(property, property_value) VALUES ('concept.causeOfDeath', CONCAT(_cause_id));
 	END IF;
 
@@ -1430,7 +1430,6 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 delimiter ;
 call diff_procedure('1.0.45');
 
-
 #--------------------------------------
 # OpenMRS Datamodel version 1.0.46
 # Ben Wolfe  Nov 11, 2006 11:15 AM
@@ -1463,7 +1462,6 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 delimiter ;
 call diff_procedure('1.0.46');
 
-
 #--------------------------------------
 # OpenMRS Datamodel version 1.0.47
 # Burke Mamlin  Nov 29, 2006 2:53 AM
@@ -1495,6 +1493,48 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 delimiter ;
 call diff_procedure('1.0.47');
 
+
+#--------------------------------------
+# OpenMRS Datamodel version 1.0.48
+# Christian Allen 	Oct 31, 2006 23:28 PM
+# Adding table for mapping between Concept and resulting States
+#--------------------------------------
+
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+	SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+
+#-- START YOUR QUERY(IES) HERE --#
+
+	CREATE TABLE `concept_state_conversion` (
+		`concept_state_conversion_id` int(11) NOT NULL auto_increment,
+		`concept_id` int(11) DEFAULT '0',
+		`program_workflow_id` int(11) DEFAULT '0',
+		`program_workflow_state_id` int(11) DEFAULT '0',
+		  PRIMARY KEY  (`concept_state_conversion_id`),
+		  KEY `triggering_concept` (`concept_id`),
+		  KEY `affected_workflow` (`program_workflow_id`),
+		  KEY `resulting_state` (`program_workflow_state_id`),
+		  CONSTRAINT `concept_triggers_conversion` FOREIGN KEY (`concept_id`) REFERENCES `concept` (`concept_id`),
+		  CONSTRAINT `conversion_involves_workflow` FOREIGN KEY (`program_workflow_id`) REFERENCES `program_workflow` (`program_workflow_id`),
+		  CONSTRAINT `conversion_to_state` FOREIGN KEY (`program_workflow_state_id`) REFERENCES `program_workflow_state` (`program_workflow_state_id`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+#-- END YOUR QUERY(IES) HERE --#
+
+	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+	
+	END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.0.48');
 
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script

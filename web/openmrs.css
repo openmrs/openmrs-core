@@ -1026,3 +1026,8 @@ table td#summaryHeaderPatientGender {
 #summaryHeaderPatientIdentifiers {
 	text-align: right;
 }
+
+#triggeredStateConversion td, th {
+	padding-left: 5px;
+	padding-right: 5px;
+}

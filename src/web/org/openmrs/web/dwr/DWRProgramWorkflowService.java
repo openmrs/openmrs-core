@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -35,6 +36,33 @@ public class DWRProgramWorkflowService {
 		return ret;
 	}
 
+	public Vector<ListItem> getStatesByWorkflow(Integer programWorkflowId) {
+		log.debug("In getStatesByWorkflow with workflowID of " + programWorkflowId.toString());
+		Vector<ListItem> ret = new Vector<ListItem>();
+		
+		ProgramWorkflow workflow = Context.getProgramWorkflowService().getWorkflow(programWorkflowId);
+		if ( workflow != null ) {
+			Set<ProgramWorkflowState> states = workflow.getStates();
+			
+			if ( states != null ) {
+				log.debug("Got states of size " + states.size());
+				for (ProgramWorkflowState state : states) {
+					ListItem li = new ListItem();
+					li.setId(state.getProgramWorkflowStateId());
+					li.setName(state.getConcept().getName(Context.getLocale(), false).getName());
+					ret.add(li);
+				}
+			} else {
+				log.debug("States was null - there seem to be no states associated with this workflow");
+			}
+		} else {
+			log.debug("Workflow was null, cannot get states");
+		}
+
+		if ( ret != null ) log.debug("Returning ret of size " + ret.size());
+		else log.debug("Returning null ret");
+		return ret;
+	}
 	
 	DateFormat ymdDf = new SimpleDateFormat("yyyy-MM-dd");
 	public void updatePatientProgram(Integer patientProgramId, String enrollmentDateYmd, String completionDateYmd) throws ParseException {

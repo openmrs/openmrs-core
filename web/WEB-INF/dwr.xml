@@ -164,6 +164,7 @@
 			<include method="getPossibleNextStates"/>
 			<include method="changeToState"/>
 			<include method="voidLastState"/>
+			<include method="getStatesByWorkflow"/>
 		</create>
 		
 		<create creator="new" javascript="DWRFormEntryService">

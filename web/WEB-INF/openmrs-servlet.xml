@@ -114,6 +114,8 @@
 					<prop key="**/batchForm.form">batchFormEntryController</prop>
 					<prop key="**/patientForm.form">patientFormEntryController</prop>
 					<prop key="**/program.list">programList</prop>
+					<prop key="**/conversion.list">stateConversionList</prop>
+					<prop key="**/conversion.form">stateConversionForm</prop>
 					<prop key="**/program.form">programForm</prop>
 					<prop key="**/workflow.form">workflowFormController</prop>
 					<prop key="**/patientProgram.form">patientProgramFormController</prop>
@@ -911,6 +913,21 @@
 			<property name="successView"><value>program.list</value></property>
 		</bean>
 
+		<bean id="stateConversionList" class="org.openmrs.web.controller.program.StateConversionListController">
+			<property name="sessionForm"><value>true</value></property>
+			<property name="commandName"><value>stateConversionList</value></property>
+			<property name="formView"><value>/admin/programs/conversionList</value></property>
+			<property name="successView"><value>conversion.list</value></property>
+		</bean>
+		<bean id="stateConversionValidator" class="org.openmrs.web.controller.program.StateConversionValidator"/>
+		<bean id="stateConversionForm" class="org.openmrs.web.controller.program.StateConversionFormController">
+			<property name="sessionForm"><value>true</value></property>
+			<property name="commandName"><value>conversion</value></property>
+			<property name="validator"><ref bean="stateConversionValidator"/></property>
+			<property name="formView"><value>/admin/programs/conversionForm</value></property>
+			<property name="successView"><value>conversion.list</value></property>
+		</bean>
+
     <!-- ======================================== -->
 
     <!-- ========================================= -->
@@ -1088,6 +1105,7 @@
 				<prop key="org.openmrs.User">org.openmrs.web.taglib.fieldgen.UserHandler</prop>
 				<prop key="org.openmrs.Drug">org.openmrs.web.taglib.fieldgen.DrugHandler</prop>
 				<prop key="org.openmrs.Location">org.openmrs.web.taglib.fieldgen.LocationHandler</prop>
+				<prop key="org.openmrs.ProgramWorkflow">org.openmrs.web.taglib.fieldgen.ProgramWorkflowHandler</prop>
 				<prop key="org.openmrs.DrugOrder.discontinuedReason">org.openmrs.web.taglib.fieldgen.DrugOrderDiscontinuedReasonHandler</prop>
 				<prop key="java.util.Date">org.openmrs.web.taglib.fieldgen.DateHandler</prop>
 			</props>

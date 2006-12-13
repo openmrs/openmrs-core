@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
+import org.openmrs.ConceptStateConversion;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
@@ -19,6 +21,7 @@ import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ProgramWorkflowDAO;
 import org.openmrs.util.OpenmrsConstants;
+import org.springframework.transaction.annotation.Transactional;
 
 public class ProgramWorkflowServiceImpl implements ProgramWorkflowService {
 	
@@ -475,4 +478,61 @@ public class ProgramWorkflowServiceImpl implements ProgramWorkflowService {
 	public void terminatePatientProgram(PatientProgram patProg, ProgramWorkflowState finalState, Date terminatedOn) {
 		this.changeToState(patProg, finalState.getProgramWorkflow(), finalState, terminatedOn);
 	}
+	
+	public void createConceptStateConversion(ConceptStateConversion csc) {
+		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS))
+			throw new APIAuthenticationException("Privilege required: "
+					+ OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS);
+		
+		getProgramWorkflowDAO().createConceptStateConversion(csc);
+	}
+
+	public void updateConceptStateConversion(ConceptStateConversion csc) {
+		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS))
+			throw new APIAuthenticationException("Privilege required: "
+					+ OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS);
+		
+		getProgramWorkflowDAO().updateConceptStateConversion(csc);
+	}
+
+	public void deleteConceptStateConversion(ConceptStateConversion csc) {
+		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS))
+			throw new APIAuthenticationException("Privilege required: "
+					+ OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS);
+		
+		getProgramWorkflowDAO().deleteConceptStateConversion(csc);
+	}
+
+	@Transactional(readOnly=true)
+	public ConceptStateConversion getConceptStateConversion(Integer id) {
+		log.debug("In getcsc with id of " + id.toString());
+		ConceptStateConversion ret = null;
+
+		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
+			throw new APIAuthenticationException("Privilege required: "
+					+ OpenmrsConstants.PRIV_VIEW_PROGRAMS);
+		
+		ret = getProgramWorkflowDAO().getConceptStateConversion(id);
+		
+		return ret;
+	}
+	
+	@Transactional(readOnly=true)
+	public List<ConceptStateConversion> getAllConversions() {
+		log.debug("In getAllConversions");
+		List<ConceptStateConversion> ret = null;
+
+		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
+			throw new APIAuthenticationException("Privilege required: "
+					+ OpenmrsConstants.PRIV_VIEW_PROGRAMS);
+		
+		ret = getProgramWorkflowDAO().getAllConversions();
+		
+		return ret;
+	}
+
+	public void convertState(Concept concept, ProgramWorkflow workflow) {
+		// TODO: implement this method
+	}
+
 }

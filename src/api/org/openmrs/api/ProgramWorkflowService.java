@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.openmrs.Concept;
+import org.openmrs.ConceptStateConversion;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
@@ -106,4 +108,17 @@ public interface ProgramWorkflowService {
 	public boolean isInProgram(Patient patient, Program program, Date fromDate,
 			Date toDate);
 
+	public void createConceptStateConversion(ConceptStateConversion csc);
+
+	public void updateConceptStateConversion(ConceptStateConversion csc);
+
+	public void deleteConceptStateConversion(ConceptStateConversion csc);
+
+	@Transactional(readOnly=true)
+	public ConceptStateConversion getConceptStateConversion(Integer id);
+
+	@Transactional(readOnly=true)
+	public List<ConceptStateConversion> getAllConversions();
+
+	//public void convertState(Concept c);
 }

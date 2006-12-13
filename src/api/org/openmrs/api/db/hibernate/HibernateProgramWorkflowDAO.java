@@ -13,6 +13,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
+import org.openmrs.ConceptStateConversion;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
 import org.openmrs.Program;
@@ -145,4 +146,35 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 		return ret;
 	}
 	
+	public void createConceptStateConversion(ConceptStateConversion csc) {
+		sessionFactory.getCurrentSession().save(csc);	
+	}
+
+	public void updateConceptStateConversion(ConceptStateConversion csc) {
+		sessionFactory.getCurrentSession().update(csc);	
+	}
+
+	public void deleteConceptStateConversion(ConceptStateConversion csc) {
+		sessionFactory.getCurrentSession().delete(csc);	
+	}
+
+	public ConceptStateConversion getConceptStateConversion(Integer id) {
+		log.debug("In getCsc with id of " + id.toString());
+		ConceptStateConversion csc = (ConceptStateConversion) sessionFactory.getCurrentSession().get(ConceptStateConversion.class, id);
+		if ( csc != null ) log.debug("Csc is " + csc);
+		else log.debug("csc is null back from hibernate");
+		return csc;
+	}
+	
+	public List<ConceptStateConversion> getAllConversions() throws DAOException {
+		log.debug("In getAllconversions");
+		
+		List<ConceptStateConversion> conversions = new ArrayList<ConceptStateConversion>();
+		conversions.addAll(sessionFactory.getCurrentSession().createQuery("from ConceptStateConversion").list());
+		
+		if ( conversions == null ) log.debug("Conversions are null");
+		else log.debug("conversions is size " + conversions.size());
+		
+		return conversions;
+	}	
 }
