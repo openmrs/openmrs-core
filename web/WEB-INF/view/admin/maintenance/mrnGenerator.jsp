@@ -57,6 +57,9 @@
 						<option value="TS">TS - Teso</option>
 						<option value="WB">WB - Webuye</option>
 					</optgroup>
+					<optgroup label="Other sites">
+						<option value="VC">VC - OVC</option>
+					</optgroup>
 				</select>
 			</td>
 			<td align="left" valign="top">
