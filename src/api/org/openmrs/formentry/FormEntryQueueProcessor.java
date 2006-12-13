@@ -36,13 +36,15 @@ import org.w3c.dom.Document;
  * @version 1.0
  */
 @Transactional
-public class FormEntryQueueProcessor /* implements Runnable */ {
+public class FormEntryQueueProcessor /* implements Runnable */{
 
-	private static final Log log = LogFactory.getLog( FormEntryQueueProcessor.class );
+	private static final Log log = LogFactory
+			.getLog(FormEntryQueueProcessor.class);
 
 	private DocumentBuilderFactory documentBuilderFactory;
 	private XPathFactory xPathFactory;
 	private TransformerFactory transformerFactory;
+	private static Boolean isRunning = false; // allow only one running processor per JVM
 
 	/**
 	 * Empty constructor (requires context to be set before any other calls are
@@ -64,7 +66,8 @@ public class FormEntryQueueProcessor /* implements Runnable */ {
 	 * @param formEntryQueue
 	 *            entry to be transformed
 	 */
-	public void transformFormEntryQueue(FormEntryQueue formEntryQueue) {		log.debug("Transforming form entry queue");
+	public void transformFormEntryQueue(FormEntryQueue formEntryQueue) {
+		log.debug("Transforming form entry queue");
 		String formData = formEntryQueue.getFormData();
 		FormService formService = Context.getFormService();
 		Integer formId = null;
@@ -81,7 +84,7 @@ public class FormEntryQueueProcessor /* implements Runnable */ {
 			formId = Integer.parseInt(xp.evaluate("/form/@id", doc));
 		} catch (Exception e) {
 			errorDetails = e.getMessage();
-			log.error("Error while parsing formentry", e);
+			log.error("Error while parsing formentry (" + formEntryQueue.getFormEntryQueueId() + ")", e);
 		}
 
 		// If we failed to obtain the formId, move the queue entry into the
@@ -198,7 +201,8 @@ public class FormEntryQueueProcessor /* implements Runnable */ {
 	 * @param errorDetails
 	 *            specifics for the fatal error
 	 */
-	private void setFatalError(FormEntryQueue formEntryQueue, String error, String errorDetails) {
+	private void setFatalError(FormEntryQueue formEntryQueue, String error,
+			String errorDetails) {
 		FormEntryError formEntryError = new FormEntryError();
 		formEntryError.setFormData(formEntryQueue.getFormData());
 		formEntryError.setError(error);
@@ -210,38 +214,38 @@ public class FormEntryQueueProcessor /* implements Runnable */ {
 	/**
 	 * Starts up a thread to process all existing FormEntryQueue entries
 	 */
-	public synchronized void processFormEntryQueue() throws APIException {
+	public void processFormEntryQueue() throws APIException {
+		synchronized (isRunning) {
+			if (isRunning) {
+				log.warn("FormEntryQueue processor aborting (another processor already running)");
+				return;
+			}
+			isRunning = true;
+		}
+		log.debug("Start procesing FormEntry queue");
 		while (transformNextFormEntryQueue()) {
 			// loop until queue is empty
 		}
+		log.debug("Done processing FormEntry queue");
+		isRunning = false;
 	}
 
 	/*
-	 * Run method for processing all entries in the FormEntry queue
-	public void run() {
-		try {
-			while (transformNextFormEntryQueue()) {
-				// loop until queue is empty
-			}
-		} catch (Exception e) {
-			log.error("Error while processing FormEntryQueue", e);
-		}
-	}
+	 * Run method for processing all entries in the FormEntry queue public void
+	 * run() { try { while (transformNextFormEntryQueue()) { // loop until queue
+	 * is empty } } catch (Exception e) { log.error("Error while processing
+	 * FormEntryQueue", e); } }
 	 */
-	
-	/*
-	private static Hashtable<Context, Thread> threadCache = new Hashtable<Context, Thread>();
 
-	private static Thread getThreadForContext(Context context) {
-		Thread thread;
-		if (threadCache.containsKey(context))
-			thread = threadCache.get(context);
-		else {
-			thread = new Thread(new FormEntryQueueProcessor(context));
-			threadCache.put(context, thread);
-		}
-		return thread;
-	}
-	*/
+	/*
+	 * private static Hashtable<Context, Thread> threadCache = new Hashtable<Context,
+	 * Thread>();
+	 * 
+	 * private static Thread getThreadForContext(Context context) { Thread
+	 * thread; if (threadCache.containsKey(context)) thread =
+	 * threadCache.get(context); else { thread = new Thread(new
+	 * FormEntryQueueProcessor(context)); threadCache.put(context, thread); }
+	 * return thread; }
+	 */
 
 }

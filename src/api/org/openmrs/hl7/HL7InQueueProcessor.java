@@ -20,6 +20,7 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	private final Log log = LogFactory.getLog(this.getClass());
 
 	private HL7Receiver receiver = new HL7Receiver();
+	private static Boolean isRunning = false; // allow only one running processor per JVM
 
 	/**
 	 * Empty constructor (requires context to be set using
@@ -50,10 +51,10 @@ public class HL7InQueueProcessor /* implements Runnable */{
 			Context.getHL7Service().createHL7InArchive(hl7InArchive);
 			Context.getHL7Service().deleteHL7InQueue(hl7InQueue);
 		} catch (HL7Exception e) {
-			setFatalError(hl7InQueue, "Trouble parsing HL7 message", e);
+			setFatalError(hl7InQueue, "Trouble parsing HL7 message (" + hl7InQueue.getHL7InQueueId() + ")", e);
 			return;
 		} catch (Exception e) {
-			setFatalError(hl7InQueue, "Exception while attempting to process HL7 In Queue", e);
+			setFatalError(hl7InQueue, "Exception while attempting to process HL7 In Queue (" + hl7InQueue.getHL7InQueueId() + ")", e);
 		}
 
 		// clean up memory after processing each queue entry (otherwise, the
@@ -108,14 +109,20 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	/**
 	 * Starts up a thread to process all existing HL7InQueue entries
 	 */
-	public synchronized void processHL7InQueue() throws HL7Exception {
+	public void processHL7InQueue() throws HL7Exception {
+		synchronized (isRunning) {
+			if (isRunning) {
+				log.warn("HL7 processor aborting (another processor already running)");
+				return;
+			}
+			isRunning = true;
+		}
 		log.debug("Start processing hl7 in queue");
-		
 		while (processNextHL7InQueue()) {
 			// loop until queue is empty
 		}
-	
 		log.debug("Done processing hl7 in queue");
+		isRunning = false;
 	}
 
 	/*
