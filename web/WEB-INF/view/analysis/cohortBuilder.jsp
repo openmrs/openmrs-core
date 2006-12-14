@@ -339,14 +339,16 @@
 		<br/>
 		<form method="post" action="cohortBuilder.form">
 			<input type="hidden" name="method" value="addFilter"/>
-			Add composition filter <i>(e.g. &quot;(1 and 2) or not 3&quot;)</i>:
-			<input type="text" name="composition"/>
+			Add composition filter:
+			<input type="text" name="composition" size="40"/>
 			<input type="submit" value="Add"/>
-			&nbsp;&nbsp;
-			<small><i>
-				Temporary limitation: 
-				you can't put AND and OR in a phrase without parentheses, so &quot;1 and 2 or 3&quot; won't work.
-			</i></small>
+			<br/>
+			<i><small>
+				&nbsp;&nbsp;&nbsp;&nbsp;
+				e.g. &quot;(1 and 2) or not 3&quot;
+				&nbsp;&nbsp;
+				Temporary limitation: you can't put AND and OR in a phrase without parentheses, so &quot;1 and 2 or 3&quot; won't work.
+			</small></i>
 		</form>
 		
 		Add concept filter:
