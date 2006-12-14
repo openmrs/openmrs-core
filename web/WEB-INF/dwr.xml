@@ -29,6 +29,7 @@
 		<convert converter="bean" match="org.openmrs.notification.web.dwr.AlertListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.EnteredField"/>
 		<convert converter="bean" match="org.openmrs.reporting.PatientSet"/>
+		<convert converter="bean" match="org.openmrs.cohort.CohortSearchHistory"/>
 	
 		<create creator="new" javascript="DWRPatientService">
 			<param name="class" value="org.openmrs.web.dwr.DWRPatientService" />
@@ -54,6 +55,7 @@
 			<include method="getDrug" />
 			<include method="getDrugs" />
 			<include method="findDrugs" />
+			<include method="getAnswersForQuestion" />
 		</create>
 		
 		<create creator="new" javascript="DWREncounterService">
@@ -183,6 +185,7 @@
 			<include method="getSearchHistories"/>
 			<include method="saveSearchHistory"/>
 			<include method="loadSearchHistory"/>
+			<include method="getUserSearchHistory"/>
 		</create>
 				
 	</allow>

@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -21,6 +22,8 @@ import org.openmrs.cohort.CohortSearchHistory;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.PatientFilter;
 import org.openmrs.reporting.ReportObjectXMLDecoder;
+import org.openmrs.web.controller.analysis.OnTheFlyAnalysisController.LinkArg;
+import org.openmrs.web.controller.analysis.OnTheFlyAnalysisController.LinkSpec;
 import org.openmrs.web.propertyeditor.ConceptEditor;
 import org.openmrs.web.propertyeditor.LocationEditor;
 import org.springframework.web.servlet.ModelAndView;
@@ -33,6 +36,7 @@ public class CohortBuilderController implements Controller {
 	
 	private String formView;
 	private String successView;
+	private List<String> links;
 	
 	public CohortBuilderController() { }
 	
@@ -51,19 +55,28 @@ public class CohortBuilderController implements Controller {
 	public void setSuccessView(String successView) {
 		this.successView = successView;
 	}
+	
+	public List<String> getLinks() {
+		return links;
+	}
+
+	public void setLinks(List<String> links) {
+		this.links = links;
+	}
 
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Map<String, Object> model = new HashMap<String, Object>();
 		List<PatientFilter> savedFilters = Context.getReportService().getAllPatientFilters();
 		if (savedFilters == null)
 			savedFilters = new ArrayList<PatientFilter>();
-		model.put("savedFilters", savedFilters);
 		CohortSearchHistory history = (CohortSearchHistory) Context.getVolatileUserData("CohortBuilderSearchHistory");
 		if (history == null) {
 			history = new CohortSearchHistory();
 			Context.setVolatileUserData("CohortBuilderSearchHistory", history);
 		}
+		model.put("savedFilters", savedFilters);
 		model.put("searchHistory", history);
+		model.put("links", linkHelper());
 		return new ModelAndView(formView, "model", model);
 	}
 	
@@ -153,6 +166,10 @@ public class CohortBuilderController implements Controller {
 		}
 	}
 	
+	private boolean checkClassHelper(Class checkFor, Class checkFirst, Class checkNext) {
+		return checkFor.equals(checkFirst) || (checkFirst.equals(Object.class) && checkFor.equals(checkNext));
+	}
+	
 	public ModelAndView addDynamicFilter(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (Context.isAuthenticated()) {
 			String filterClassName = request.getParameter("filterClass");
@@ -200,22 +217,24 @@ public class CohortBuilderController implements Controller {
 						if (arg.getArgValue() != null && arg.getArgValue().trim().length() == 0) {
 							log.debug("A");
 							argVal = null;
-						} else if (pd.getPropertyType().equals(Location.class)) {
+						} else if (checkClassHelper(Location.class, pd.getPropertyType(), arg.getArgClass())) {
 							log.debug("B");
 							LocationEditor le = new LocationEditor();
 							le.setAsText(arg.getArgValue());
 							argVal = le.getValue();
-						} else if (pd.getPropertyType().equals(Integer.class)) {
+						} else if (checkClassHelper(String.class, pd.getPropertyType(), arg.getArgClass())) {
+							argVal = arg.getArgValue();
+						} else if (checkClassHelper(Integer.class, pd.getPropertyType(), arg.getArgClass())) {
 							log.debug("C");
 							try {
 								argVal = Integer.valueOf(arg.getArgValue());
 							} catch (Exception ex) { }
-						} else if (pd.getPropertyType().equals(Double.class)) {
+						} else if (checkClassHelper(Double.class, pd.getPropertyType(), arg.getArgClass())) {
 							log.debug("D");
 							try {
 								argVal = Double.valueOf(arg.getArgValue());
 							} catch (Exception ex) { }
-						} else if (pd.getPropertyType().equals(Concept.class)) {
+						} else if (checkClassHelper(Concept.class, pd.getPropertyType(), arg.getArgClass())) {
 							log.debug("E");
 							ConceptEditor ce = new ConceptEditor();
 							ce.setAsText(arg.getArgValue());
@@ -233,6 +252,9 @@ public class CohortBuilderController implements Controller {
 									break;
 								}
 							}
+						} else if (pd.getPropertyType().equals(Object.class)) {
+							log.debug("G fell through to plain object, treated as string");
+							argVal = arg.getArgValue();
 						}
 						if (argVal != null) {
 							log.debug("about to set " + arg.getArgName() + " to " + argVal);
@@ -245,6 +267,8 @@ public class CohortBuilderController implements Controller {
 			} catch (Exception ex) {
 				log.error("Couldn't instantiate class " + filterClassName, ex);
 			}
+			
+			log.debug("final filter is " + filterInstance);
 			
 			if (filterInstance != null) {
 				CohortSearchHistory history = (CohortSearchHistory) Context.getVolatileUserData("CohortBuilderSearchHistory");
@@ -271,4 +295,62 @@ public class CohortBuilderController implements Controller {
 		return new ModelAndView(new RedirectView(getSuccessView()));
 	}
 
+	private List<LinkSpec> linkHelper() {
+    	List<LinkSpec> ret = new ArrayList<LinkSpec>();
+    	for (String spec : links) {
+    		ret.add(new LinkSpec(spec));
+    	}
+		return ret;
+	}
+	
+	public class LinkArg {
+		String name;
+		String value;
+		public LinkArg() { }
+		public LinkArg(String name, String value) {
+			this.name = name;
+			this.value = value;
+		}
+		public LinkArg(String nameEqualsValue) {
+			int i = nameEqualsValue.indexOf('=');
+			name = nameEqualsValue.substring(0, i);
+			value = nameEqualsValue.substring(i + 1);
+		}
+		public String getName() {
+			return name;
+		}
+		public void setName(String name) {
+			this.name = name;
+		}
+		public String getValue() {
+			return value;
+		}
+		public void setValue(String value) {
+			this.value = value;
+		}
+	}
+	
+	public class LinkSpec {
+		String label;
+		String url;
+		List<LinkArg> arguments = new ArrayList<LinkArg>();
+		public LinkSpec(String spec) {
+			StringTokenizer st = new StringTokenizer(spec, ":");
+			url = st.nextToken();
+			label = st.nextToken();
+			while (st.hasMoreTokens()) {
+				arguments.add(new LinkArg(st.nextToken()));
+			}
+		}
+		public List<LinkArg> getArguments() {
+			return arguments;
+		}
+		public String getLabel() {
+			return label;
+		}
+		public String getUrl() {
+			return url;
+		}
+	}
+	
 }

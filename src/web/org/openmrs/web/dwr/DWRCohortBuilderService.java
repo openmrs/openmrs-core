@@ -82,4 +82,13 @@ public class DWRCohortBuilderService {
 	public void loadSearchHistory(Integer id) {
 		Context.setVolatileUserData("CohortBuilderSearchHistory", Context.getReportService().getSearchHistory(id));
 	}
+	
+	/**
+	 * This isn't really useful because most of the properties don't have DWR converters.
+	 * I'm leaving it here in case I get to work on it later.
+	 */
+	public CohortSearchHistory getUserSearchHistory() {
+		return (CohortSearchHistory) Context.getVolatileUserData("CohortBuilderSearchHistory");
+	}
+	
 }

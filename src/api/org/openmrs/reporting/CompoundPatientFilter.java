@@ -7,23 +7,20 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.PatientSetService.BooleanOperator;
 
 public class CompoundPatientFilter extends AbstractPatientFilter implements
 		PatientFilter {
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
-	public enum Operator {
-		AND, OR;
-	}
-	
-	private Operator operator;
+	private BooleanOperator operator;
 	private List<PatientFilter> filters;
 	private String description;
 	
 	public CompoundPatientFilter() { }
 	
-	public CompoundPatientFilter(Operator operator, List<PatientFilter> filters) {
+	public CompoundPatientFilter(BooleanOperator operator, List<PatientFilter> filters) {
 		this.operator = operator;
 		this.filters = filters;
 	}
@@ -36,16 +33,16 @@ public class CompoundPatientFilter extends AbstractPatientFilter implements
 		this.filters = filters;
 	}
 
-	public Operator getOperator() {
+	public BooleanOperator getOperator() {
 		return operator;
 	}
 
-	public void setOperator(Operator operator) {
+	public void setOperator(BooleanOperator operator) {
 		this.operator = operator;
 	}
 
 	public PatientSet filter(PatientSet input) {
-		if (operator == Operator.AND) {
+		if (operator == BooleanOperator.AND) {
 			PatientSet temp = input;
 			for (PatientFilter pf : filters) {
 				temp = pf.filter(temp);
@@ -77,7 +74,8 @@ public class CompoundPatientFilter extends AbstractPatientFilter implements
 		else {
 			StringBuilder ret = new StringBuilder();
 			for (Iterator<PatientFilter> i = filters.iterator(); i.hasNext(); ) {
-				ret.append(i);
+				PatientFilter pf = i.next();
+				ret.append("[").append(pf.getName() == null ? pf.getDescription() : pf.getName()).append("]");
 				if (i.hasNext())
 					ret.append(" " + operator + " ");
 			}

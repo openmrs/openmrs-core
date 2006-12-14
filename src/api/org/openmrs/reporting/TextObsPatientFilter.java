@@ -73,6 +73,9 @@ public class TextObsPatientFilter extends AbstractReportObject implements Patien
 	}
 
 	public String getDescription() {
+		if (concept == null)
+			return "TextObsPatientFilter with no concept specified";
+
 		// TODO: get the right locale
 		StringBuffer ret = new StringBuffer();
 		Locale locale = OpenmrsConstants.OPENMRS_LOCALES().iterator().next();

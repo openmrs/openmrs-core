@@ -19,4 +19,5 @@ public abstract class AbstractPatientFilter extends AbstractReportObject {
 		super(reportObjectId, name, description, type, subType, creator, dateCreated, changedBy, dateChanged, voided, voidedBy,
 				dateVoided, voidReason);
 	}
+
 }

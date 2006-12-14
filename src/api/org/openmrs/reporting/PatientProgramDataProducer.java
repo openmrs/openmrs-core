@@ -8,7 +8,7 @@ import org.openmrs.PatientProgram;
 import org.openmrs.Program;
 import org.openmrs.api.context.Context;
 
-public class PatientProgramDataProducer implements PatientDataProducer {
+public class PatientProgramDataProducer extends AbstractReportObject implements PatientDataProducer {
 
 	public enum WhichField {
 		ENROLLMENT_DATE (new DataTransformer() {

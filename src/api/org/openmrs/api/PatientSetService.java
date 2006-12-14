@@ -56,6 +56,11 @@ public interface PatientSetService {
 	public PatientSet getPatientsHavingNumericObs(Integer conceptId,
 			TimeModifier timeModifier, PatientSetService.Modifier modifier,
 			Number value, Date fromDate, Date toDate);
+	
+	@Transactional(readOnly=true)
+	public PatientSet getPatientsHavingObs(Integer conceptId,
+			TimeModifier timeModifier, Modifier modifier, Object value,
+			Date fromDate, Date toDate);
 
 	@Transactional(readOnly=true)
 	public PatientSet getPatientsHavingDateObs(Integer conceptId, Date startTime, Date endTime);
@@ -214,5 +219,17 @@ public interface PatientSetService {
 		MAX,
 		AVG;
 	}
+
+	public enum BooleanOperator {
+		AND,
+		OR,
+		NOT;
+	}
 	
+	// probably should combine this with TimeModifier
+	public enum GroupMethod {
+		ANY,
+		NONE;
+	}
+
 }

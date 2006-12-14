@@ -94,6 +94,10 @@ public class PatientSetServiceImpl implements PatientSetService {
 	public PatientSet getPatientsHavingNumericObs(Integer conceptId, TimeModifier timeModifier, PatientSetServiceImpl.Modifier modifier, Number value, Date fromDate, Date toDate) {
 		return getPatientSetDAO().getPatientsHavingNumericObs(conceptId, timeModifier, modifier, value, fromDate, toDate);
 	}
+
+	public PatientSet getPatientsHavingObs(Integer conceptId, TimeModifier timeModifier, PatientSetServiceImpl.Modifier modifier, Object value, Date fromDate, Date toDate) {
+		return getPatientSetDAO().getPatientsHavingObs(conceptId, timeModifier, modifier, value, fromDate, toDate);
+	}
 	
 	public PatientSet getPatientsHavingTextObs(Concept concept, String value) {
 		return getPatientsHavingTextObs(concept.getConceptId(), value);

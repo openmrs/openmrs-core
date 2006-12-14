@@ -1,20 +1,32 @@
 package org.openmrs.cohort;
 
+import java.io.IOException;
+import java.io.StreamTokenizer;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
+import java.util.Stack;
 import java.util.StringTokenizer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.PatientSetService;
+import org.openmrs.api.PatientSetService.BooleanOperator;
 import org.openmrs.api.context.Context;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.CompoundPatientFilter;
+import org.openmrs.reporting.InversePatientFilter;
 import org.openmrs.reporting.PatientFilter;
 import org.openmrs.reporting.PatientSet;
 
 public class CohortSearchHistory extends AbstractReportObject {
+	
+	protected final Log log = LogFactory.getLog(getClass());
 	
 	public class CohortSearchHistoryItemHolder {
 		private PatientFilter filter;
@@ -47,6 +59,7 @@ public class CohortSearchHistory extends AbstractReportObject {
 	
 	public CohortSearchHistory() {
 		super.setType("org.openmrs.cohort.CohortSearchHistory");
+		super.setSubType("org.openmrs.cohort.CohortSearchHistory");
 		searchHistory = new ArrayList<PatientFilter>();
 		cachedResults = new ArrayList<PatientSet>();
 		cachedResultDates = new ArrayList<Date>();
@@ -195,29 +208,146 @@ public class CohortSearchHistory extends AbstractReportObject {
 	 * @return
 	 */
 	public PatientFilter createCompositionFilter(String description) {
-		CompoundPatientFilter ret = null;
-		CompoundPatientFilter.Operator op = CompoundPatientFilter.Operator.AND;
-		List<PatientFilter> toCompose = new ArrayList<PatientFilter>();
-		for (StringTokenizer st = new StringTokenizer(description); st.hasMoreTokens(); ) {
-			String s = st.nextToken();
-			s = s.toLowerCase();
-			if ("or".equals(s))
-				op = CompoundPatientFilter.Operator.OR;
-			else if ("and".equals(s))
-				op = CompoundPatientFilter.Operator.AND;
-			else {
-				try {
-					int i = Integer.parseInt(s);
-					toCompose.add(searchHistory.get(i - 1));
-				} catch (Exception ex) { }
+		Set<String> andWords = new HashSet<String>();
+		Set<String> orWords = new HashSet<String>();
+		Set<String> notWords = new HashSet<String>();
+		andWords.add("and");
+		orWords.add("or");
+		notWords.add("not");
+
+		List<Object> currentLine = new ArrayList<Object>();
+
+		try {
+			StreamTokenizer st = new StreamTokenizer(new StringReader(description));
+			st.ordinaryChar('(');
+			st.ordinaryChar(')');
+			Stack<List<Object>> stack = new Stack<List<Object>>();
+			while (st.nextToken() != StreamTokenizer.TT_EOF) {
+				if (st.ttype == StreamTokenizer.TT_NUMBER) {
+					currentLine.add(new Integer((int) st.nval));
+				} else if (st.ttype == '(') {
+					stack.push(currentLine);
+					currentLine = new ArrayList<Object>();
+				} else if (st.ttype == ')') {
+					List<Object> l = stack.pop();
+					l.add(currentLine);
+					currentLine = l;
+				} else if (st.ttype == StreamTokenizer.TT_WORD) {
+					String str = st.sval.toLowerCase();
+					if (andWords.contains(str))
+						currentLine.add(PatientSetService.BooleanOperator.AND);
+					else if (orWords.contains(str))
+						currentLine.add(PatientSetService.BooleanOperator.OR);
+					else if (notWords.contains(str))
+						currentLine.add(PatientSetService.BooleanOperator.NOT);
+					else
+						throw new IllegalArgumentException("Don't recognize " + st.sval);
+				}
+			}
+		} catch (Exception ex) {
+			log.error("Error in description string: " + description, ex);
+			return null; 
+		}
+
+		if (!test(currentLine)) {
+			log.error("Description string failed test: " + description);
+			return null;
+		}
+		
+		return toPatientFilter(currentLine);
+	}
+	
+	private static boolean test(List<Object> list) {
+		// if length > 2, make sure there's at least one operator
+		// make sure NOT is always followed by something
+		// make sure not everything is a logical operator
+		// can't have two logical operators in a row (unless the second is a NOT)
+		boolean anyNonOperator = false;
+		boolean anyOperator = false;
+		boolean lastIsNot = false;
+		boolean lastIsOperator = false;
+		boolean childrenOkay = true;
+		for (Object o : list) {
+			if (o instanceof List) {
+				childrenOkay &= test((List<Object>) o);
+				anyNonOperator = true;
+			} else if (o instanceof BooleanOperator) {
+				if (lastIsOperator && (BooleanOperator) o != BooleanOperator.NOT)
+					return false;
+				anyOperator = true;
+			} else if (o instanceof Integer) {
+				anyNonOperator = true;
+			} else {
+				throw new RuntimeException("Programming error! unexpected class " + o.getClass());
+			}
+			lastIsNot = ( (o instanceof BooleanOperator) && (((BooleanOperator) o) == BooleanOperator.NOT) );
+			lastIsOperator = o instanceof BooleanOperator;
+		}
+		if (list.size() > 2 && !anyOperator)
+			return false;
+		if (lastIsNot)
+			return false;
+		if (!anyNonOperator)
+			return false;
+		return true;
+	}
+	
+	private PatientFilter toPatientFilter(List<Object> phrase) {
+		// Recursive step:
+		// * if anything in this list is a list, then recurse on that
+		// * if anything in this list is a number, replace it with the relevant filter from the history
+		log.debug("Starting with " + phrase);
+		for (ListIterator<Object> i = phrase.listIterator(); i.hasNext(); ) {
+			Object o = i.next();
+			if (o instanceof List)
+				i.set(toPatientFilter((List<Object>) o));
+			else if (o instanceof Integer)
+				i.set(getSearchHistory().get((Integer) o - 1));
+		}
+		
+		// base case. All elements are PatientFilter or BooleanOperator.
+		log.debug("Base case with " + phrase);
+		
+		// first, replace all [..., NOT, PatientFilter, ...] with [ ..., InvertedPatientFilter, ...]
+		boolean invertTheNext = false;
+		for (ListIterator<Object> i = phrase.listIterator(); i.hasNext(); ) {
+			Object o = i.next();
+			if (o instanceof BooleanOperator) {
+				if ((BooleanOperator) o == BooleanOperator.NOT) {
+					i.remove();
+					invertTheNext = !invertTheNext;
+				} else {
+					if (invertTheNext)
+						throw new RuntimeException("Can't have NOT AND. Test() should have failed");
+				}
+			} else {
+				if (invertTheNext) {
+					i.set(new InversePatientFilter((PatientFilter) o));
+					invertTheNext = false;
+				}
 			}
 		}
-		if (toCompose.size() > 0) {
-			ret = new CompoundPatientFilter(op, toCompose);
-			// TODO: this won't actually work right
-			ret.setDescription(description);
+		
+		log.debug("Finished with NOTs: " + phrase);
+		
+		// Now all we have left are PatientFilter, AND, OR
+		// eventually go with left-to-right precedence, and we can combine runs of the same operator into a single one
+		//     1 AND 2 AND 3 -> AND(1, 2, 3)
+		//     1 AND 2 OR 3 -> OR(AND(1, 2), 3)
+		// for now a hack so we take the last operator in the run, and apply that to all filters
+		//     for example 1 AND 2 OR 3 -> OR(1, 2, 3)
+		if (phrase.size() == 1) {
+			return (PatientFilter) phrase.get(0);
 		}
-		return ret;
+		BooleanOperator bo = BooleanOperator.AND;
+		List<PatientFilter> args = new ArrayList<PatientFilter>();
+		for (Object o : phrase)
+			if (o instanceof BooleanOperator)
+				bo = (BooleanOperator) o;
+			else
+				args.add((PatientFilter) o);
+		
+		return new CompoundPatientFilter(bo, args);
 	}
 	
 }

@@ -1,5 +1,6 @@
 package org.openmrs.web.dwr;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
@@ -307,6 +308,17 @@ public class DWRConceptService {
 				.getConceptNumeric(conceptId);
 
 		return conceptNumeric.getUnits();
+	}
+	
+	public List<ConceptListItem> getAnswersForQuestion(Integer conceptId) {
+		Vector<ConceptListItem> ret = new Vector<ConceptListItem>();
+		Concept c = Context.getConceptService().getConcept(conceptId);
+		Collection<ConceptAnswer> answers = c.getAnswers();
+		// TODO: deal with concept answers (e.g. drug) whose answer concept is null. (Not sure if this actually ever happens)
+		for (ConceptAnswer ca : answers)
+			if (ca.getAnswerConcept() != null)
+				ret.add(new ConceptListItem(ca.getAnswerConcept(), Context.getLocale()));
+		return ret;
 	}
 
 }

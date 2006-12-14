@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.openmrs.api.context.Context;
 
-public class PatientAttributeDataProducer implements PatientDataProducer {
+public class PatientAttributeDataProducer extends AbstractReportObject implements PatientDataProducer {
 
 	private String name;
 	private String tableName;

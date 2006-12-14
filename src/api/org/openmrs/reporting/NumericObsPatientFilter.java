@@ -111,8 +111,7 @@ public class NumericObsPatientFilter extends AbstractPatientFilter implements Pa
 	}
 
 	public String getDescription() {
-		// TODO: get the right locale
-		Locale locale = OpenmrsConstants.OPENMRS_LOCALES().iterator().next();
+		Locale locale = Context.getLocale();
 		StringBuffer ret = new StringBuffer();
 		//ret.append("Patients with (concept #" + concept + ")");
 		ret.append("Patients with ");
