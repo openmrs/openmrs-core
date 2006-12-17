@@ -526,46 +526,49 @@ public class HibernateAdministrationDAO implements
 	}
 	
 	public void updateConceptWord(Concept concept) throws DAOException {
-		// remove all old words
-		deleteConceptWord(concept);
-		
-		// add all new words
-		Collection<ConceptWord> words = ConceptWord.makeConceptWords(concept);
-		log.debug("words: " + words);
-		for (ConceptWord word : words) {
-			try {
-				sessionFactory.getCurrentSession().save(word);
-			}
-			catch (NonUniqueObjectException e) {
-				ConceptWord tmp  = (ConceptWord)sessionFactory.getCurrentSession().merge(word);
-				sessionFactory.getCurrentSession().evict(tmp);
-				sessionFactory.getCurrentSession().save(word);
+		if (concept != null) {
+			// remove all old words
+			deleteConceptWord(concept);
+			
+			// add all new words
+			Collection<ConceptWord> words = ConceptWord.makeConceptWords(concept);
+			log.debug("words: " + words);
+			for (ConceptWord word : words) {
+				try {
+					sessionFactory.getCurrentSession().save(word);
+				}
+				catch (NonUniqueObjectException e) {
+					ConceptWord tmp  = (ConceptWord)sessionFactory.getCurrentSession().merge(word);
+					sessionFactory.getCurrentSession().evict(tmp);
+					sessionFactory.getCurrentSession().save(word);
+				}
 			}
 		}
 	}
 
 	@SuppressWarnings("unchecked")
     public void deleteConceptWord(Concept concept) throws DAOException {
-		
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptWord.class);
-		crit.add(Expression.eq("concept", concept));
-		
-		List<ConceptWord> words = crit.list();
-		
-		Integer authUserId = null;
-		if (Context.isAuthenticated())
-			authUserId = Context.getAuthenticatedUser().getUserId();
-		
-		log.debug(authUserId + "|ConceptWord|" + words);
-		
-		sessionFactory.getCurrentSession().createQuery("delete from ConceptWord where concept_id = :c")
-				.setInteger("c", concept.getConceptId())
-				.executeUpdate();
+		if (concept != null) {
+			Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptWord.class);
+			crit.add(Expression.eq("concept", concept));
+			
+			List<ConceptWord> words = crit.list();
+			
+			Integer authUserId = null;
+			if (Context.isAuthenticated())
+				authUserId = Context.getAuthenticatedUser().getUserId();
+			
+			log.debug(authUserId + "|ConceptWord|" + words);
+			
+			sessionFactory.getCurrentSession().createQuery("delete from ConceptWord where concept_id = :c")
+					.setInteger("c", concept.getConceptId())
+					.executeUpdate();
+		}
 	}
 	
 	public void updateConceptWords() throws DAOException {
 		Set<Concept> concepts = new HashSet<Concept>();
-		concepts.add(Context.getConceptService().getConceptByName(""));
+		concepts.addAll(Context.getConceptService().getConceptsByName(""));
 		for (Concept concept : concepts) {
 			updateConceptWord(concept);
 		}
