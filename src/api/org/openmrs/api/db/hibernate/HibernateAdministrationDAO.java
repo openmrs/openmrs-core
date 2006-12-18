@@ -566,14 +566,6 @@ public class HibernateAdministrationDAO implements
 		}
 	}
 	
-	public void updateConceptWords() throws DAOException {
-		Set<Concept> concepts = new HashSet<Concept>();
-		concepts.addAll(Context.getConceptService().getConceptsByName(""));
-		for (Concept concept : concepts) {
-			updateConceptWord(concept);
-		}
-	}
-	
 	public void updateConceptSetDerived(Concept concept) throws DAOException {
 		log.debug("Updating concept set derivisions for #" + concept.getConceptId().toString());
 		

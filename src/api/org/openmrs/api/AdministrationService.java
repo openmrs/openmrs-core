@@ -420,6 +420,13 @@ public interface AdministrationService {
 	 * @throws APIException
 	 */
 	public void updateConceptWords() throws APIException;
+	
+	/**
+	 * Iterates over all concepts with conceptIds between <code>conceptIdStart</code>
+	 * and <code>conceptIdEnd</code> (inclusive) calling updateConceptWord(concept)
+	 * @throws APIException
+	 */
+	public void updateConceptWords(Integer conceptIdStart, Integer conceptIdEnd) throws APIException;
 
 	/**
 	 * Updates the concept set derived business table for this concept (bursting the concept sets) 

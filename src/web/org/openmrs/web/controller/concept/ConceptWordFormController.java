@@ -20,7 +20,6 @@ public class ConceptWordFormController extends SimpleFormController {
     protected final Log log = LogFactory.getLog(getClass());
     
 	/**
-	 * 
 	 * The onSubmit function receives the form/command object that was modified
 	 *   by the input form and saves it to the db
 	 * 
@@ -35,15 +34,27 @@ public class ConceptWordFormController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			String s = request.getParameter("conceptId");
 			if (s != null && !s.equals("")) {
-				Concept c = Context.getConceptService().getConcept(Integer.valueOf(s));
-				if (c != null) {
-					log.debug("c.conceptId: " + c.getConceptId());
-					Context.getAdministrationService().updateConceptWord(c);
+				s = s.trim();
+				// if they put in something like 1230-2322
+				if (s.contains("-")) {
+					String[] parts = s.split("-");
+					String start = parts[0].trim();
+					String end = parts[1].trim();
+					Context.getAdministrationService().updateConceptWords(Integer.valueOf(start), Integer.valueOf(end));
+				}
+				else {
+					// they put in an integer
+					Concept c = Context.getConceptService().getConcept(Integer.valueOf(s));
+					if (c != null) {
+						log.debug("c.conceptId: " + c.getConceptId());
+						Context.getAdministrationService().updateConceptWord(c);
+					}
 				}
 			}
 			else {
 				Context.getAdministrationService().updateConceptWords();
 			}
+			
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptWord.updated");
 		}

@@ -398,12 +398,6 @@ public interface AdministrationDAO {
 	public void updateConceptWord(Concept concept) throws DAOException;
 	
 	/**
-	 * Iterates over all concepts calling updateConceptWord(concept)
-	 * @throws DAOException
-	 */
-	public void updateConceptWords() throws DAOException;
-	
-	/**
 	 * Updates the concept set derived business table for this concept (bursting the concept sets) 
 	 * @param concept
 	 * @throws DAOException

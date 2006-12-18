@@ -32,6 +32,7 @@ import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.reporting.AbstractReportObject;
@@ -722,7 +723,25 @@ public class AdministrationServiceImpl implements AdministrationService {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_CONCEPTS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_CONCEPTS);
 
-		getAdministrationDAO().updateConceptWords();
+		for (Concept concept : Context.getConceptService().getConceptsByName(""))
+			updateConceptWord(concept);
+		
+	}
+	
+	/**
+	 * Iterates over all concepts with conceptIds between <code>conceptIdStart</code>
+	 * and <code>conceptIdEnd</code> (inclusive) calling updateConceptWord(concept)
+	 * @throws APIException
+	 */
+	public void updateConceptWords(Integer conceptIdStart, Integer conceptIdEnd) throws APIException {
+		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_CONCEPTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_CONCEPTS);
+		
+		Integer i = conceptIdStart;
+		ConceptService cs = Context.getConceptService();
+		while (i++ <= conceptIdEnd) {
+			updateConceptWord(cs.getConcept(i));
+		}
 	}
 	
 	/**
