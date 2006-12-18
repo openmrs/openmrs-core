@@ -39,10 +39,12 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 	private ListIterator<Integer> iterAnswerInt;
 	
 	private boolean answerBool;
-	private Integer compOp;
+	private LinkedList<Integer> compOp;
+	private ListIterator<Integer> iterCompOp;
+	
 	private boolean hasConclude;
 	private boolean concludeVal;
-	private HashMap<String, String> userVarMap ;
+	private HashMap<String, LinkedList<String>> userVarMap ;
 	private String error;
 	private boolean conceptEvalWritten;    // if the compiler has written a method as XYZ() already for this concept XYZ
 	
@@ -53,13 +55,16 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 		durationOp = d;
 //		evaluated = false;
 //		isEvaluated = false;
-		userVarMap = new HashMap <String, String>();
+		userVarMap = new HashMap <String, LinkedList<String>>();
 		dbAccessRequired = true;  // by default assume that we have to make an API call to get data
 		conceptEvalWritten = false;
 		answerStr = new LinkedList<String> ();
 		answerInt = new LinkedList<Integer> ();
+		compOp = new LinkedList<Integer> ();
+		
 		iterAnswerStr = answerStr.listIterator(0);
 		iterAnswerInt = answerInt.listIterator(0);
+		iterCompOp = compOp.listIterator(0);
 	}
 	
 	public void setAnswer (String s){
@@ -72,7 +77,7 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 		answerBool = b;
 	}
 	public void setCompOp (Integer op){
-		compOp = op;
+		compOp.add(op);
 	}
 	public void setConcludeVal (boolean val) {
 		hasConclude = true;
@@ -86,7 +91,15 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 	public void setDuration (String type, String val, String op){
 		durationType = type;
 		durationVal = val;
-		durationOp = op;
+		if(op.toUpperCase().startsWith("MONTH")){
+			durationOp = "months";	
+		}
+		else if(op.toUpperCase().startsWith("YEAR")){
+			durationOp = "years";
+		}
+		else if(op.toUpperCase().startsWith("DAY")){
+			durationOp = "days";
+		}
 	}
 	
 	public void setWhere(boolean val){
@@ -95,11 +108,13 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 	
 	public void addUserVarVal(String var, String val) {
 		if(!userVarMap.containsKey(var)) {
-			userVarMap.put(var, val);
+			LinkedList<String> thisList = new LinkedList<String> ();
+			thisList.add(val);
+			userVarMap.put(var, thisList);
 		}
 		else
 		{
-			//TODO either an error or overwrite previous one
+			userVarMap.get(var).add(val);
 		}
 		
 	}
@@ -125,7 +140,8 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 	   }
   
 	private String getReadType() {
-		String retVal = "";
+		String retVal = "";		
+		if(readType != null){
 		if (!readType.equals("") ) {
 			retVal = "." + readType + "(";
 			if(howMany > 0){
@@ -133,7 +149,11 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 			}
 			retVal += ")";
 		}
-		
+		}
+		else {
+			retVal = ".last()";   // TODO: for now default
+		}
+	
 		return retVal;
 	}
 	
@@ -148,11 +168,11 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 					w.append("\t\t//"+var+ " = " + val + "\n"); // write as comment
 				//	w.append("\t\t\tif(!userVarMap.containsKey("+ var + ")) {\n\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n\t\t\t}\n");
 				//	w.append("\t\t\telse {\n");
-				//	w.append("\t\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n");
+					w.append("\t\t\tuserVarMap.put(\"" + var + "\", \""+ val + "\");\n");
 				//	w.append("\t\t\t}");
-					w.append("\t\tuserVarMap.put(\"" + var + "\", " + val + ");\n");
+				//	w.append("\t\tuserVarMap.put(\"" + var + "\", " + val + ");\n");
 				//	w.append("\t\tdssObj.addObs(\"" + getConcept().trim() + "\", obs);\n");	// changed to have the key such as last_pb than BLOOD_LEAD_LEVEL as the key to the obsMap see below
-					w.append("\t\tvalueMap.put(\"" + key + "\", val);\n");
+				//	w.append("\t\tvalueMap.put(\"" + key + "\", val);\n");
 				}
 				retVal = true;
 			}
@@ -164,7 +184,7 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 					if(!key.startsWith("Conclude") &&  !key.startsWith("ELSE") &&  !key.startsWith("ENDIF")
 							   && !key.equals("AND")){
 						//w.append("\t\tdssObj.addObs(\"" + getConcept().trim() + "\", obs);\n"); // changed to have the key such as last_pb than BLOOD_LEAD_LEVEL as the key to the obsMap see below
-						w.append("\t\tvalueMap.put(\"" + key + "\", val);\n");
+						//w.append("\t\tvalueMap.put(\"" + key + "\", val);\n");
 					}
 				}
 				else if(concludeVal == false){
@@ -173,7 +193,7 @@ public class MLMObjectElement implements ArdenBaseTreeParserTokenTypes {
 					if(!key.startsWith("Conclude") &&  !key.startsWith("ELSE") &&  !key.startsWith("ENDIF")
 							   && !key.equals("AND")){
 						//w.append("\t\tdssObj.addObs(\"" + getConcept().trim() + "\", obs);\n"); // changed to have the key such as last_pb than BLOOD_LEAD_LEVEL as the key to the obsMap see below
-						w.append("\t\tvalueMap.put(\"" + key + "\", val);\n");
+						//w.append("\t\tvalueMap.put(\"" + key + "\", val);\n");
 					}
 				
 				}
@@ -203,26 +223,24 @@ public boolean writeEvaluate(String key, Writer w) throws Exception{
 		   
 		   if(dbAccessRequired){
 			   if(concept != null){
-			   w.append("private ArdenValue " + key + "(){\n");
+			   w.append("private Result " + key + "(){\n");
 			   w.append("\tConcept c = new Concept();\n");
 			   w.append("\tc.setConceptId(" + Integer.toString(concept.getConceptId()) + "); // " + cn + "\n");
 		       
-			   //w.append("\tconcept = Context.getConceptService().getConceptByName(\"" + cn.trim() + "\");\n");
-			   w.append("\t //return dataSource.eval(patient, Aggregation" +  getReadType() + ", c, DateCriteria." + whereType 
-					   + "(Duration." + durationType + "("  +  durationOp + "(" +  durationVal + "))) );\n");
-			   
-			   if(!readType.equals("")){
+			 //  if(readType != null && !readType.equals("")  ){
 				   if(hasWhere){
-					   w.append("\treturn dataSource.eval(patient, ardenClause.concept(c)." + readType + "(" + howMany + ")." + whereType + "()." + durationType + "()." + durationOp + "(" + durationVal + "));\n");
+					   w.append("\t return dataSource.eval(patient, Aggregation" +  getReadType() + ", c, DateConstraint." + whereType 
+							   + "(Duration."  /* +  durationType + "(" */ +  durationOp + "(" +  durationVal + ")) );\n");
+					   
+					   //w.append("\treturn dataSource.eval(patient, ardenClause.concept(c)." + readType + "(" + howMany + ")." + whereType + "()." + durationType + "()." + durationOp + "(" + durationVal + "));\n");
 				    }
 				   else {
-					   w.append("\treturn dataSource.eval(patient, ardenClause.concept(c)." + readType+ "(" + howMany + "));\n");
+					   w.append("\t return dataSource.eval(patient, Aggregation" +  getReadType() + ", c, null);\n");
+					   
+					   //w.append("\treturn dataSource.eval(patient, ardenClause.concept(c)." + readType+ "(" + howMany + "));\n");
 				   }
-			   }
-			   else { 
-				   w.append("\treturn dataSource.eval(patient, ardenClause.concept(c));\n");
-			   }
-			   w.append("}\n\n");
+			   //  }
+			     w.append("}\n\n");
 			   }
 			   else {
 				 System.out.println("Compiler error - No concept found in the dictionary: " + cn );
@@ -236,13 +254,13 @@ public boolean writeEvaluate(String key, Writer w) throws Exception{
 			   
 		   }  // end of DB access required
 		   else {  // No DB access, simply conclude or else conclude
-			   if(readType.equals("call")) {
-				   w.append("private ArdenValue " + "call_" +cn + "(){\n");
-				   w.append("\tArdenValue ardenValue;\n");
-			       w.append("\tArdenRule mlm;\n\n");
+			   if(readType != null && readType.equals("call")) {
+				   //w.append("private Result " + "call_" +cn + "(){\n");
+				   //w.append("\tResult ardenValue;\n");
+			       //w.append("\tRule mlm;\n\n");
 				   
-			       w.append("mlm = new " + cn + "(patient, dataSource);\n");
-			       w.append("if(mlm != null) {\n\t\tardenValue = mlm.evaluate();\n\t\t return ardenValue;\n}\nelse {return null;}");
+			       //w.append("mlm = new " + cn + "(patient, dataSource);\n");
+			       //w.append("if(mlm != null) {\n\t\tardenValue = mlm.eval(patient, dataSource);\n\t\t return ardenValue;\n}\nelse {return null;}");
 			   }
 			   else {  
 			   	w.append("\t\tString val = userVarMap.get( \"" + key + "\");\n");
@@ -286,10 +304,15 @@ public boolean writeEvaluate(String key, Writer w) throws Exception{
 			return null;
 		}
 	}
-	public String getCompOp(){
-		String s =  Integer.toString(compOp);
-		System.err.println(s);
-		return s;
+	private Integer getCompOp(){
+		Integer intVal;
+		if(iterCompOp.hasNext()) {
+			   intVal =  compOp.remove();
+			   return intVal;
+			}
+			else {
+				return null;
+			}
 	}
 	
 	public String getConcludeVal(){
@@ -333,10 +356,46 @@ public boolean writeEvaluate(String key, Writer w) throws Exception{
 		return s;
 	}
 	
+	public String getAnswers() {
+		String s = "";
+		Integer i;
+		
+		ListIterator<String> iter = answerStr.listIterator(0);
+		while (iter.hasNext()){
+		     s += iter.next() + " , ";
+		}
+
+		ListIterator<Integer> iterI = answerInt.listIterator(0);
+		while (iterI.hasNext()){
+			i = iterI.next();
+			s += i + " , ";
+		}
+		
+		return s;
+	}
+	
+	public String getCompOps() {
+		String s = "";
+		Integer i;
+		
+		ListIterator<Integer> iterI = compOp.listIterator(0);
+		while (iterI.hasNext()){
+			i = iterI.next();
+			
+			s += i + " , ";
+		}
+		
+		return s;
+	}
+	
 	public String getUserVarVal(String var){
 		String val = "";
+		LinkedList<String> thisList;
 		if(!userVarMap.isEmpty()) {
-			val = userVarMap.get(var);
+			thisList = userVarMap.get(var);
+			if(thisList != null) {
+				val = thisList.remove();
+			}
 		}
 		return val;
 	}
@@ -351,57 +410,95 @@ public boolean writeEvaluate(String key, Writer w) throws Exception{
 	
 	
 	/*****************************************/
-	public String getCompOpCode(String key) throws Exception {
+	public String getCompOpCode(String key, int type) throws Exception {
 		String retStr = "";
 		String answer;
+		Integer i;
+		
 		if (compOp != null){
-			   switch(compOp) {
+			   switch(getCompOp()) {
+			   		case IN:
+			   			if(concept != null && type == MLMObject.NOLIST) {	
+				   			if (concept.isNumeric()) {
+				   				retStr += "val.toNumber() == " + getAnswerInt() ;
+			   				}
+				   			else if (concept.getDatatype().getName().equals("Coded")) {
+				   				answer = getAnswerStr();
+				   				answerConcept = Context.getConceptService().getConceptByName(answer);   
+				   				if(answerConcept != null){
+				   					retStr += "val.containsConcept(" + Integer.toString(answerConcept.getConceptId()) + ")\t //" + answer + "\n";
+				   				}
+			   				}	
+				   		}
+			   			else if(concept != null && type == MLMObject.LIST) {	
+				   			if (concept.isNumeric()) {
+				   				retStr += "val.toNumber() == " + getAnswerInt() ;
+				   				while((i = getAnswerInt()) != null){
+				   					retStr += "\n\t || val.toNumber() == " + i ;
+				   				}
+			   				}
+				   			else if (concept.getDatatype().getName().equals("Coded")) {
+				   				answer = getAnswerStr();
+				   				answerConcept = Context.getConceptService().getConceptByName(answer);   
+				   				if(answerConcept != null){
+				   					retStr += "val.containsConcept(" + Integer.toString(answerConcept.getConceptId()) + ")\t //" + answer + "\n";
+				   				}
+				   				else {
+				   					Exception e = new Exception("Concept not found in openmrs dictionary: " + answer);
+				   					
+				   					throw(e);
+				   				}
+				   					
+				   				while((answer = getAnswerStr()) != null){
+				   					answerConcept = Context.getConceptService().getConceptByName(answer);   
+					   				if(answerConcept != null){
+					   					retStr += "\n\t || val.containsConcept(" + Integer.toString(answerConcept.getConceptId()) + ")\t //" + answer + "\n";
+					   				}
+					   				else {
+					   					Exception e = new Exception("Concept not found in openmrs dictionary: " + answer);
+					   					
+					   					throw(e);
+					   				}
+					   				
+				   				}
+				   				
+			   				}	
+				   		} 
+			   		break;
 			   		case EQUALS:
-			 /*  		{switch(compOpType){
-		  			case 3: // boolean
-		  				retStr += "\tif (val.getValueAsBoolean() == " + Boolean.toString(answerBool) ;
-		  				break;
-		  			case 2: // integer
-		  				retStr += "\tif (val.getValueNumeric() == " + Integer.toString(answerInt) ;
-		  				break;
-		  			case 1: // String
-		  				retStr += "\tif (val.getValueText() != null && val.getValueText().equals(\"" + answerStr + "\")";
-		  				break;
-				   }
-			   	*/
-			   		if(concept != null) {	
+			    		if(concept != null) {	
 			   			if (concept.isNumeric()) {
-			   				retStr += "\tif (val.getValueNumeric() == " + getAnswerInt() ;
+			   				retStr += "val.toNumber() == " + getAnswerInt() ;
 		   				}
 			   			else if (concept.getDatatype().getName().equals("Coded")) {
 			   				answer = getAnswerStr();
 			   				answerConcept = Context.getConceptService().getConceptByName(answer);   
 			   				if(answerConcept != null){
-			   					retStr += "\n\t //" + answer + "\n\tif (val.getValueCoded() == " + Integer.toString(answerConcept.getConceptId()) ;
+			   					//retStr += "\n\t //" + answer + "\n\tif (val.getValueCoded() == " + Integer.toString(answerConcept.getConceptId()) ;
+			   					retStr += "val.containsConcept(" + Integer.toString(answerConcept.getConceptId()) + ")\t //" + answer + "\n";
 			   				}
+			   				
 		   				}	
 			   		}
 			   		break;
 			   		case GTE:
 			   			if (concept != null && concept.isNumeric()) {
-			   				retStr += "\tif (val.getValueNumeric() >= " + getAnswerInt() ;
+			   				retStr += "val.toNumber() >= " + getAnswerInt() ;
 		   				}
-		   					
-			   		
-			   	/*	{switch(compOpType){
-		  			case 3: // boolean
-		  				
-		  				break;
-		  			case 2: // integer
-		  				retStr += "\tif (val.getValueNumeric() >= " + Integer.toString(answerInt) ;
-		  				break;
-		  			case 1: // String
-		  				
-		  				break;
-				   }
+		   			break;
+			   		case GT:
+			   			if (concept != null && concept.isNumeric()) {
+			   				retStr += "val.toNumber() > " + getAnswerInt() ;
+		   				}
+		   			break;
+			   		case LT:
+			   			if (concept != null && concept.isNumeric()) {
+			   				retStr += "val.toNumber() < " + getAnswerInt() ;
+		   				}
+		   			break;
 		   			
-			   		}
-			   	*/	break;
+		   			
+		   			
 			   		default:
 			   			break;
 			   	}

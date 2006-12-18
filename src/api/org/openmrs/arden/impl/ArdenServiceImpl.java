@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -89,6 +90,7 @@ public class ArdenServiceImpl implements ArdenService {
 	private boolean parseFile(FileInputStream s, String fn) throws Exception {
 		boolean retVal = true;
 		 try {
+			 	Date Today = new Date(); 
 		      //int index  = fn.indexOf(".mlm");
 		      String cfn; // = fn.substring(0,index); 
 		    
@@ -114,46 +116,32 @@ public class ArdenServiceImpl implements ArdenService {
 		     String maintenance =  treeParser.maintenance(t, ardObj);
 	
 		     cfn = ardObj.getClassName();
-		     OutputStream os = new FileOutputStream("src/api/org/openmrs/arden/compiled/" + cfn+".java");
+		     OutputStream os = new FileOutputStream("src/api/org/openmrs/logic/rule/" + cfn+".java");
 		  //   int fd = 2;
 		  //   OutputStream os = new FileOutputStream(FileDescriptor.out);
 		     Writer w = new OutputStreamWriter(os);
 		     log.info("Writing to file - " + cfn+".java");
 	
-		 	 w.write("/********************************************************************" + "\n");
+		 	 w.write("/********************************************************************" + "\n Translated from - " + fn + " on " +  Today.toString()+ "\n\n");
 		 	 w.write(maintenance);
 		 	
 		 	 log.debug(t.getNextSibling().toStringTree());   // prints library
 		     String library = treeParser.library(t.getNextSibling(), ardObj);
 		     w.write(library);
 		     w.write("\n********************************************************************/\n");
-		     w.write("package org.openmrs.arden.compiled;\n\n");
-		     w.write("import java.util.HashMap;\nimport org.openmrs.api.context.Context;\n");
+		     w.write("package org.openmrs.logic.rule;\n\n");
+		     w.write("import java.util.HashMap;\n");
 		     w.write("import org.openmrs.Concept;\nimport org.openmrs.Patient;\n");
-		     w.write("import org.openmrs.arden.*;\nimport org.openmrs.arden.compiled.*;\n");
-		     w.write("import java.util.Map;\n\n");
+		     w.write("import org.openmrs.logic.Constraint;\nimport org.openmrs.logic.DateConstraint;\n");
+		     w.write("import org.openmrs.logic.Duration;\nimport org.openmrs.logic.LogicDataSource;\n");
+		     w.write("import org.openmrs.logic.Result;\nimport org.openmrs.logic.Rule;\n");
+		     w.write("import org.openmrs.logic.Aggregation;\n\n\n");
 		     
 		     String classname = ardObj.getClassName();
-		     w.write("public class " + classname + " implements ArdenRule{\n"); // Start of class
+		     w.write("public class " + classname + " extends Rule{\n\n"); // Start of class
 		     w.write("private Patient patient;\nprivate String firstname;\n");
-		     w.write("private ArdenDataSource dataSource;\n");
-		     w.write("private HashMap<String, String> userVarMap;\n");
-		     w.write("private HashMap<String, ArdenValue> valueMap;\n");
-		     w.write("private ArdenClause ardenClause;\n");
-		     
-		     w.write("\n\n//Constructor\n");
-		     w.write("public " + classname + "(Patient p, ArdenDataSource d){\n");
-		     w.write("\n\tpatient = p;\n\tdataSource = d;\n");
-		     w.write("\tardenClause = new ArdenClause();\n");
-		     w.write("\tuserVarMap = new HashMap <String, String>();\n");
-		     w.write("\tvalueMap = new HashMap <String, ArdenValue>();\n");
-		     w.write("\tfirstname = patient.getPatientName().getGivenName();\n");
-		     w.write("\tuserVarMap.put(\"firstname\", firstname);\n");
-		     w.write("\tinitAction();\n\t");		     
-		     w.write("}\n\n\n"); // End of constructor
-		     
-		     w.write("public ArdenRule getChildren() {\n\tArdenRule rule = null;\n\treturn rule;\n}\n\n"); 
-		     w.write("public ArdenRule getInstance() {\n\tArdenRule rule = null;\n\tif (this != null){\n\t\trule = this;\n\t}\n\t\treturn rule;\n}\n\n"); 
+		     w.write("private LogicDataSource dataSource;\n");
+		     w.write("private HashMap<String, String> userVarMap;\n\n\n\n");
 		     
 		     w.flush();
 		     		     
@@ -178,11 +166,11 @@ public class ArdenServiceImpl implements ArdenService {
 		     else {   //delete the compiled file so far
 		    	 w.flush();
 				 w.close();
-		 /*   	 boolean success = (new File("src/api/org/openmrs/arden/compiled/" + cfn + ".java")).delete();
+		    	 boolean success = (new File("src/api/org/openmrs/logic/rule/" + cfn + ".java")).delete();
 		    	    if (!success) {
 		    	        System.out.println("Incomplete compiled file " + cfn + ".java cannot be deleted!");
 		    	    }
-          */
+          
 		     }
 		   		      
 		    }

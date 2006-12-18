@@ -16,6 +16,9 @@ import org.openmrs.api.context.Context;
 
 public class MLMObject {
 	
+	public static int NOLIST = 0;
+	public static int LIST = 1;
+	
 	private HashMap<String, MLMObjectElement> conceptMap ;
 	private String ConceptVar;   // These 3 variables are used when parsing. Cache to keep the concept name.
 	private String readType;
@@ -23,6 +26,7 @@ public class MLMObject {
 	
 	private boolean IsVarAdded;
 	private int InNestedIf ;       // counting semaphore
+	private boolean IsComplexIf;
 	private LinkedList<MLMEvaluateElement> evaluateList;
 	private HashMap<String, String> userVarMapFinal ;
 	private String className;
@@ -32,6 +36,7 @@ public class MLMObject {
 		conceptMap = new HashMap <String, MLMObjectElement>();
 		IsVarAdded = false;
 		InNestedIf = 0;
+		IsComplexIf = false;
 		userVarMapFinal = new HashMap <String, String>();
 	}
 	
@@ -141,8 +146,8 @@ public class MLMObject {
 	     Collection<MLMObjectElement> collection = conceptMap.values();
 	     for(MLMObjectElement mo : collection) {
 	       System.out.println(mo.getConceptName()  + 
-	    		  // "\n Answer = " + mo.getAnswer() + 
-	    		   //"\n Operator = " + mo.getCompOp() +
+	    		   "\n Answer = " + mo.getAnswers() + 
+	    		   "\n Operator = " + mo.getCompOps() +
 	    		   "\n Conclude Val = " + mo.getConcludeVal() +
 	    		   "\n User Vars = " + mo.getUserVarVal()
 	    		   );
@@ -239,16 +244,7 @@ public class MLMObject {
 		     w.write("\treturn outStr;\n");
 		     w.write("}\n");
 		     
-		     w.write("public void printDebug(){\n");
-		     w.write("\tfor (Map.Entry<String,ArdenValue> entry : valueMap.entrySet()) {\n");
-		     w.write("\t\tSystem.out.println(\"__________________________________\");\n");	
-		     w.write("\t\tSystem.out.println (entry.getKey () + \": \");\n");
-		     w.write("\t\tArdenValue val = entry.getValue ();\n");
-		     w.write("\t\tval.PrintObsMap();\n");
-		     w.write("\t\tSystem.out.println(\"__________________________________\");\n");	
-		     w.write("\t\t}\n");
-		     w.write("\t}\n"); 	
-		     
+		    
 		     w.flush();
 		}
 		catch (Exception e) {
@@ -278,14 +274,30 @@ public class MLMObject {
 			return false;
 		}
 			
-		 w.append("\npublic boolean evaluate() {\n");
-		 w.append("\t\t\treturn evaluate_logic();\n}\n");
+		 w.append("\n@Override\npublic Result eval(LogicDataSource d, Patient p, Object[] args) {\n");
+		 w.append("\n\tpatient = p;\n\tdataSource = d;\n");
+		 
+		 w.append("\tuserVarMap = new HashMap <String, String>();\n");
+		 w.append("\tfirstname = patient.getPatientName().getGivenName();\n");
+		 w.append("\tuserVarMap.put(\"firstname\", firstname);\n");
+		 w.append("\tinitAction();\n");		     
+		 
+		 w.append("\tResult ruleResult = new Result(\"Evaluating...\");\n");	
+		 w.append("\tString actionStr = \"\";\n\n");	
+		 w.append("\tif(evaluate_logic(ruleResult)){\n");	
+		 w.append("\tactionStr = doAction();\n");
+		 w.append("\truleResult.debug(0);\n");
+		 w.append("\treturn new Result(actionStr);\n");
+		 w.append("\n\t}\n");
+			 
+		 w.append("\treturn ruleResult;\n");	
+		 w.append("\n}\n");
 		
 		 w.append("\n");
-	     w.append("private boolean evaluate_logic() {\n");
+	     w.append("private boolean evaluate_logic(Result valueMap) {\n");
 
 	     w.append("\tboolean retVal = false;\n");
-	     w.append("\tArdenValue val;\n");
+	     w.append("\tResult val;\n");
 	 
 	     thisList = evaluateList.listIterator(0);   // Start the Big Evaluate()
 	     while (thisList.hasNext()){
@@ -413,7 +425,8 @@ public class MLMObject {
 		
 		boolean startIterFlag = false;
 		boolean boolFlag = false;
-		
+		boolean funcFlag = false;
+		MLMObjectElement mObjElem;
 				
 			if(iter.hasNext()) {		// IF 
 			key = (String) iter.next();
@@ -442,14 +455,26 @@ public class MLMObject {
 					    }
 						else if(nextKey.equals("AND")){
 							tmpStr += " && ";
+							w.append(tmpStr);
+							w.flush();
+							boolFlag = true;
+							
+						}
+						else if(nextKey.equals("OR")){
+							tmpStr += " || ";
+							w.append(tmpStr);
+							w.flush();
 							boolFlag = true;
 							
 						}
 						else if(boolFlag) {
-							tmpStr += complexBool(nextKey);
+						//	tmpStr += complexBool(nextKey);
+							mObjElem = GetMLMObjectElement(nextKey);
+							tmpStr += complexBool(nextKey, mObjElem);
+							w.append(tmpStr);
 							boolFlag = false;
 						}
-						else if(startIterFlag && !boolFlag){
+						else if(startIterFlag && !boolFlag && !funcFlag){
 							tmpStr += complexIf(nextKey, null);
 							w.append(tmpStr);
 							startIterFlag = false;
@@ -460,7 +485,8 @@ public class MLMObject {
 						}
 						else if (nextKey.equals("Logic_Assignment")) {
 							writeActionConcept(key, w);
-							if(InNestedIf == 0) {
+							if(InNestedIf == 0 && IsComplexIf) {
+								IsComplexIf = false;
 								w.append("\n\t}\n\t}\n");
 							}
 							
@@ -470,18 +496,37 @@ public class MLMObject {
 							w.append("\n\t //conclude here\n");
 					    	writeActionConcept(key, w);
 					    	if(InNestedIf == 0) {
-					    		if(key.startsWith("ELSE_")) {
+					    		if(!IsComplexIf) {
 					    			w.append("\n\t}\n");
+					    			
 					    		}
 					    		else {
 					    			w.append("\n\t}\n\t}\n");
+					    			IsComplexIf = false;
+					    		}
+					    		
+					    		if(key.startsWith("ELSE_"))
+					    		{
+					    			retVal = false;	// Since we are conclude unconditionally, we do not want calling function to add the return statement
 					    		}
 							}
 							
 							nextKey = "";
 						}
+						
+						else if(nextKey.equals("EXIST") || (nextKey.equals("ANY"))){
+		    		    	funcFlag = true;
+		    		    	key = nextKey;
+		           		}
+						else if(funcFlag){
+							mObjElem = GetMLMObjectElement(nextKey);
+							tmpStr += complexFunc(nextKey, mObjElem,key);
+							w.append(tmpStr);
+							key = nextKey;
+							funcFlag = false;
+						}
 						else {
-							MLMObjectElement mObjElem = GetMLMObjectElement(nextKey);
+							mObjElem = GetMLMObjectElement(nextKey);
 							tmpStr += complexIf(nextKey, mObjElem);
 							w.append(tmpStr);
 							key = nextKey;  // store the current key
@@ -536,10 +581,12 @@ public class MLMObject {
 	    	}
 	        
 	    }
-	    else if(!nextKey.equals("ENDIF")){
+	   else if(!nextKey.equals("ENDIF")){
 			tmpStr = " (val = " + nextKey + "()) != null ) {\n\t";
+			IsComplexIf = true;
 			if(mObjElem != null ){
-				tmpStr += mObjElem.getCompOpCode(nextKey);
+				tmpStr += "\tif (";
+				tmpStr += mObjElem.getCompOpCode(nextKey,NOLIST);
 				
 			}
 			 
@@ -551,9 +598,38 @@ public class MLMObject {
 		return tmpStr;
 	}
 	
-	private String complexBool(String nextKey) {
+	private String complexFunc(String nextKey, MLMObjectElement mObjElem, String Key) {
 		String tmpStr = "";
-		
+     try {		
+		if(Key.equals("EXIST") && !nextKey.equals("")){       // Not blank
+		    	tmpStr = "userVarMap.containsKey(\""+ nextKey+ "\") && !userVarMap.get(\"" + nextKey + "\").equals(\"\")  ";
+		}
+		else if(Key.equals("ANY") && !nextKey.equals("")){
+			tmpStr = " (val = " + nextKey + "()) != null ) {\n\t";
+			IsComplexIf = true;
+			if(mObjElem != null ){
+				tmpStr += "\tif (";
+				tmpStr += mObjElem.getCompOpCode(nextKey, LIST);
+			}
+				
+		}
+		else {
+			if(mObjElem != null ){
+				tmpStr += mObjElem.getCompOpCode(nextKey, NOLIST);
+				
+			}
+		}
+     } catch (Exception e){
+	      System.err.println("ComplexFunc: "+e);
+	      e.printStackTrace();   // so we can get stack trace		
+	    }
+		return tmpStr;
+	}
+	
+	
+	private String complexBool(String nextKey, MLMObjectElement mObjElem) {
+		String tmpStr = "";
+     try {		
 		if(nextKey.equals("tmp_conclude")){
 	    	//TODO error
 	    }
@@ -561,8 +637,15 @@ public class MLMObject {
 	    	//TODO error
 	    }
 		else {
-			tmpStr = "evaluate_" + nextKey + "() ";
+			if(mObjElem != null ){
+				tmpStr += mObjElem.getCompOpCode(nextKey, NOLIST);
+				
+			}
 		}
+     } catch (Exception e){
+	      System.err.println("ComplexBool: "+e);
+	      e.printStackTrace();   // so we can get stack trace		
+	    }
 		return tmpStr;
 	}
 	
@@ -592,7 +675,7 @@ public class MLMObject {
 				
 	}
 	
-	private MLMObjectElement GetMLMObjectElement(String key) {
+	public MLMObjectElement GetMLMObjectElement(String key) {
 		if(conceptMap.containsKey(key)) {
 			return conceptMap.get(key);
 		}
@@ -668,6 +751,12 @@ public class MLMObject {
 			retVal = mObjElem.writeAction(key, w);
 			w.flush();
 		}
+		else {
+			// Must be conclude not attached to a read statement variable, and attached to a function like EXIST
+			mObjElem = GetMLMObjectElement("Func_1");
+			retVal = mObjElem.writeAction(key, w);
+			w.flush();
+		}
 		return retVal;
 	}
 	
@@ -705,7 +794,7 @@ public class MLMObject {
 	public void SetAnswer (String val, String key) {
 		MLMObjectElement mObjElem = GetMLMObjectElement(key);
 		if(mObjElem != null){
-			mObjElem.setAnswer(val.substring(1,val.length()-1));
+			mObjElem.setAnswer(val);
 		}
 	}
 	

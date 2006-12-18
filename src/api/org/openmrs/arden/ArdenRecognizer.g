@@ -100,6 +100,7 @@ tokens {
 	CALL = "call";
 	WITH = "with";
 	TO = "to";
+	ANY = "any";
 	
 }
 /*
@@ -363,7 +364,7 @@ any_reserved_word
 	| WRITE | BE | LET | YEAR | YEARS | IF | IT | THEY | NOT | OR | THEN | MONTH | MONTHS | TIME | TIMES | WITHIN
 	| READ | MINIMUM | MIN | MAXIMUM | MAX | LAST | FIRST | EARLIEST | LATEST | EVENT | WHERE | EXIST | EXISTS | PAST
 	| AVERAGE | AVG | SUM | MEDIAN | CONCLUDE | ELSE | ELSEIF | ENDIF | TRUE | FALSE | DATA | LOGIC | ACTION | CALL | WITH
-	| TO
+	| TO | ANY
 	;
 
 text
@@ -670,6 +671,9 @@ time_value
 	| iso_date_time
 	;
 /*********************************OPERATORS***************************************************************/
+in_comp_op
+	: IN
+	;
 
 of_read_func_op :
 	 AVERAGE
@@ -774,7 +778,7 @@ event_or
 	;
 
 event_any
-	: "Any" LPAREN event_list RPAREN
+	: ANY LPAREN event_list RPAREN
 //	| "ANY" "OF" LPAREN event_list RPAREN
 //	| "ANY" ID
 //	| "ANY" "OF" ID
@@ -826,6 +830,7 @@ logic_statement:
 	 )*
 	 
 	;
+
 	
 //	logic_assignment ("then" logic_assignment)* logic_elseif
 	 
@@ -882,8 +887,9 @@ if_statement:
   
 logic_if_then_else2:
      (
-     	expr
-     	| (LPAREN!) expr (RPAREN!) 
+         //(LPAREN!)? expr (RPAREN!)? 
+         expr
+     	
      )
      THEN //( (identifier_becomes expr)? | (CONCLUDE^ boolean_value))
     ;
@@ -937,7 +943,7 @@ urgency_val:
 
 /****** expressions ******/
 expr :
-	  expr_sort (COMMA^ expr_sort)*
+	  expr_sort (COMMA expr_sort)*
 	  ;
 
 expr_sort :
@@ -988,7 +994,7 @@ expr_comparison :
 //	| expr_string simple_comp_op expr_string
 //	| expr_string is main_comp_op
 //	| expr_string is NOT main_comp_op
-//	| expr string in_comp_op
+//	| expr_string in_comp_op
 //	| expr_string NOT in_comp_op
 //	| expr_string occur temporal_comp_op
 //	| expr_string occur NOT temporal_comp_op
@@ -1062,19 +1068,18 @@ expr_function
 	expr_factor
     | (the!)?
      (
-    	from_of_func_op (OF!)? expr_factor //(is)? binary_comp_op (the)? (expr_factor | from_of_func_op expr_factor)
-    	| of_func_op (OF!)? expr_function
-     )
+     	from_of_func_op (OF!)? expr_factor //(is)? binary_comp_op (the)? (expr_factor | from_of_func_op expr_factor)
+    	| of_func_op (OF!)? expr_factor
+      )
 	//	("as" as_func_op ) 
 	;
 
 expr_factor
-	: expr_factor_atom (DOT expr_factor_atom)*
+	:  expr_factor_atom (DOT expr_factor_atom)*
 	;
 
 expr_factor_atom
 	: ID 
-	
 	| LPAREN! 
 		//	( ID | ( (LPAREN expr_factor_atom RPAREN) (COMMA (LPAREN ID RPAREN))*) ) 
 		expr		
@@ -1083,6 +1088,7 @@ expr_factor_atom
 	| time_value
 	| boolean_value
 	| STRING_LITERAL
+	| TERM_LITERAL
 	
 	;
 
@@ -1104,7 +1110,8 @@ of_func_op:
 
 
 of_noread_func_op:
-	TIME
+	  TIME
+	| ANY^
 ;
 /*************************************************************************************/
 class ArdenBaseTreeParser extends TreeParser;
@@ -1153,7 +1160,7 @@ data_elseifAST [MLMObject obj] returns [String s=""]
 where_it_occurredAST [MLMObject obj, String key] returns [String s=""]
 {String a,b, ret_val="";}
 :
-	(WITHIN {obj.setWhere("within", key);}
+	(WITHIN {obj.setWhere("withinPreceding", key);}
 	    (PAST) (m:INTLIT n:duration_op) {obj.setDuration("past",m.getText(),n.getText(),key); System.err.println("Duration Clause - " + m.getText() + " " + n.getText());} 
 		| a = exprAST[obj] TO b = exprAST[obj]
 	)
@@ -1324,14 +1331,28 @@ of_read_func_opAST [MLMObject obj] returns [String s=""]
   // Following are of_read_func_op
   			
   
-  | ((EXIST | EXISTS)) {System.err.println("ReadType = Exist");}
+  | ((EXIST | EXISTS)) {obj.AddToEvaluateList("EXIST");System.err.println("ReadType = Exist");}
   
-  | ((AVERAGE | AVG) ) {System.err.println("ReadType = Average");}
-  | (COUNT) {System.err.println("ReadType = Count");}
-  | (SUM) {System.err.println("ReadType = Sum");}
-  | (MEDIAN) {System.err.println("ReadType = Median");}
+  | ((AVERAGE | AVG) ) {obj.AddToEvaluateList("AVG");System.err.println("ReadType = Average");}
+  | (COUNT) {obj.AddToEvaluateList("COUNT");System.err.println("ReadType = Count");}
+  | (SUM) {obj.AddToEvaluateList("SUM");System.err.println("ReadType = Sum");}
+  | (MEDIAN) {obj.AddToEvaluateList("MEDIAN");System.err.println("ReadType = Median");}
   
   // End of of_read_func_op
+  
+);
+
+of_noread_func_opAST [MLMObject obj] returns [String s=""]
+{String a,b, ret_val="";}
+	:
+(	
+  // Following are of_read_func_op
+  			
+  
+  | (ANY) {obj.AddToEvaluateList("ANY");System.err.println("Any of");}
+  
+  
+  // End of of_noread_func_op
   
 );
 
@@ -1417,7 +1438,7 @@ ifAST [MLMObject obj] returns [String s=""]
 logicAssignmentAST [MLMObject obj, String key] returns [String s=""]
 {String a="",b="";}
 :
-      a = exprStringAST[obj, key] {obj.AddToEvaluateList("Logic_Assignment");}
+      a = exprStringAST[obj, "CTX"/*key Do not use key- depends on context so CTX*/] {obj.AddToEvaluateList("Logic_Assignment");}
       (
 					thisstrlit: STRING_LITERAL {b += thisstrlit.getText(); } 
 					    (ACTION_OP str1: STRING_LITERAL {b += str1.getText();} )*
@@ -1443,8 +1464,9 @@ exprAST [MLMObject obj] returns [String s=""]
 {String a,b;}
 :
 ( 
-	(a = exprStringAST[obj, ""] {s=a;}((simple_comp_opAST[obj, a] | binary_comp_opAST[obj, a]) b = exprStringAST[obj, a] {/*obj.SetAnswer(b, a);*/})? )
-	| expr_functionAST[obj] (a = exprStringAST[obj, ""] {s=a;}((simple_comp_opAST[obj, a] | binary_comp_opAST[obj, a]) b = exprStringAST[obj, a] {/*obj.SetAnswer(b, a);*/})? )
+	(a = exprStringAST[obj, ""] {s=a;}((simple_comp_opAST[obj, a] | binary_comp_opAST[obj, a]) b = exprStringAST[obj, a] )? )
+//	| expr_functionAST[obj] (a = exprStringAST[obj, ""] {s=a;}( (COMMA a = exprStringAST[obj, ""] {s=a;})* (binary_comp_opAST[obj, a]) b = exprStringAST[obj, a] {/*obj.SetAnswer(b, a);*/}) )
+	| expr_functionAST[obj] (a = exprStringAST[obj, "notnull"] {s=a;}( (binary_comp_opAST[obj, a]) b = exprStringAST[obj, a] (COMMA exprStringAST[obj, a] {s=a;})*  {/*obj.SetAnswer(b, a);*/})? )
 	
 
 );
@@ -1454,6 +1476,7 @@ expr_functionAST [MLMObject obj] returns [String s=""]
      (
     	from_of_func_opAST[obj] (OF)? 
     	| of_read_func_opAST[obj] (OF)? 
+    	| of_noread_func_opAST[obj] (OF)?
      )
 
 	;
@@ -1467,12 +1490,28 @@ exprStringAST [MLMObject obj, String instr] returns [String s=""]
 			      { a = ift.getText(); System.err.println("text = " + a); 
 			        if(instr.equals("")) {
 			        		obj.AddToEvaluateList(a); obj.SetConceptVar(a);
+			        		s= a;
 				      //  	obj.RetrieveConcept(a); 
+			        }
+			        else if(instr.equals("CTX")) {
+			        	s=a;
+			        	// do nothing for now
+			        }
+			        else if(instr.equals("notnull")) {
+			        	obj.AddToEvaluateList(a);
+			        	if(obj.GetMLMObjectElement(a) == null) {
+			        		s="Func_1";  // Func like Exist..          
+			        	}
+			        	else {
+			        		s=a;
+			        	}
+			        	
 			        }
 			        else { // if instr is not empty then we are evaluating RHS of an equation, it can be a non string literal
 			        	obj.SetAnswer(a,instr);					
+			        	s=a;
 			        }
-			        s= a;
+			        
 			      }
 			    
 	   )   		      
@@ -1496,6 +1535,15 @@ exprStringAST [MLMObject obj, String instr] returns [String s=""]
 			
 		}
 	  )
+	  
+	| (termlit: TERM_LITERAL
+		{
+			b = termlit.getText();
+			obj.SetAnswer(b,instr);					
+			
+		}
+	  )
+	  
 	| #(ACTION_OP 
 		id: ID {a = id.getText(); } 
 		ACTION_OP 
@@ -1606,8 +1654,8 @@ binary_comp_opAST [MLMObject obj, String key] returns [String s=""]
 concludeAST [MLMObject obj, String key] returns [String s=""]
 {String a,b;}
 : (
-    #(CONCLUDE {//if(key == "")
-    			{
+    #(CONCLUDE {
+       			{
 	    			a = "Conclude";
 	    		//	key = a;
 	    			obj.SetConceptVar(key);
@@ -1618,7 +1666,7 @@ concludeAST [MLMObject obj, String key] returns [String s=""]
 	    			else {  // Associate with the Else before
 	    				obj.AddToEvaluateList(a); 
 	    			}
-	    			if(key == "") {obj.SetDBAccess(false,key);}
+	    			if(key.startsWith("Func_")) {obj.SetDBAccess(false,key);}
 	    		}
     			
     		   } 
@@ -1676,7 +1724,7 @@ writeAST [MLMObject obj] returns [String s=""]
        							b = "||" + a + "||";
        							s += b;}
        		ACTION_OP) 
-           | (i:STRING_LITERAL {a = i.getText(); s += a.substring(1, a.length()-1); } )  /* get rid of "" sorrounding each string literal */
+           | (i:STRING_LITERAL  {s += i.getText();} /* {a = i.getText(); s += a.substring(1, a.length()-1); } */  )  /* get rid of "" sorrounding each string literal */
        )*
        		
        		
@@ -1839,11 +1887,22 @@ INTLIT
 
 // string literals
 STRING_LITERAL
-  : '"'
-    ( '"' '"'
+  : '"'!
+    ( '"' '"'!
     | ~('"'|'\n'|'\r')
     )*
-    ( '"'
+    ( '"'!
+    | // nothing -- write error message
+    )
+	;
+
+// term literals
+TERM_LITERAL
+  : '\''!
+    ( '\'' '\''!
+    | ~('\''|'\n'|'\r')
+    )*
+    ( '\''!
     | // nothing -- write error message
     )
 	;
