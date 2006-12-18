@@ -136,37 +136,6 @@ public class HibernateObsDAO implements ObsDAO {
 	}
 
 	/**
-	 * @see org.openmrs.api.db.ObsService#getLocation(java.lang.Integer)
-	 */
-	public Location getLocation(Integer locationId) throws DAOException {
-		return (Location) sessionFactory.getCurrentSession().get(
-				Location.class, locationId);
-	}
-
-	/**
-	 * @see org.openmrs.api.db.ObsService#getLocationByName(java.lang.String)
-	 */
-	public Location getLocationByName(String name) throws DAOException {
-		List result = sessionFactory.getCurrentSession().createQuery(
-				"from Location l where l.name = :name").setString("name", name)
-				.list();
-		if (result.size() == 0) {
-			return null;
-		} else {
-			return (Location) result.get(0);
-		}
-	}
-
-	/**
-	 * @see org.openmrs.api.db.ObsService#getLocations()
-	 */
-	@SuppressWarnings("unchecked")
-	public List<Location> getLocations() throws DAOException {
-		return sessionFactory.getCurrentSession()
-				.createQuery("from Location l").list();
-	}
-
-	/**
 	 * @see org.openmrs.api.db.ObsService#getObservations(org.openmrs.Concept,org.openmrs.Location,java.lang.String)
 	 */
 	@SuppressWarnings("unchecked")

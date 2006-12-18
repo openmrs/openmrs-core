@@ -75,34 +75,6 @@ public interface ObsDAO {
 	public MimeType getMimeType(Integer mimeTypeId) throws DAOException;
 
 	/**
-	 * Get all locations
-	 * 
-	 * @return location list
-	 * @throws DAOException
-	 */
-	public List<Location> getLocations() throws DAOException;
-
-	/**
-	 * Get location by internal identifier
-	 * 
-	 * @param location
-	 *            id
-	 * @return location with given internal identifier
-	 * @throws DAOException
-	 */
-	public Location getLocation(Integer locationId) throws DAOException;
-
-	/**
-	 * Get location by name
-	 * 
-	 * @param name
-	 *            location's name
-	 * @return location with given name
-	 * @throws DAOException
-	 */
-	public Location getLocationByName(String name) throws DAOException;
-
-	/**
 	 * Get all Observations for a patient
 	 * 
 	 * @param who

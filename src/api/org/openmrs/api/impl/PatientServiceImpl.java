@@ -1,6 +1,5 @@
 package org.openmrs.api.impl;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -11,14 +10,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
-import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientAddress;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientName;
 import org.openmrs.PatientProgram;
-import org.openmrs.PatientState;
 import org.openmrs.Person;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
@@ -29,7 +26,6 @@ import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
-import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.PatientDAO;
 import org.openmrs.programWorkflow.PatientProgramSupport;
@@ -548,48 +544,6 @@ public class PatientServiceImpl implements PatientService {
 			throw new APIAuthenticationException("Authentication required");
 		
 		return getPatientDAO().findRelationshipType(relationshipTypeName);
-	}
-	
-	/**
-	 * Get all locations
-	 * 
-	 * @return location list
-	 * @throws APIException
-	 */
-	public List<Location> getLocations() throws APIException {
-		if (!Context.isAuthenticated())
-			throw new APIAuthenticationException("Authentication required");
-		
-		return getPatientDAO().getLocations();
-	}
-
-	/**
-	 * Get location by internal identifier
-	 * 
-	 * @param location id
-	 * @return location with given internal identifier
-	 * @throws APIException
-	 */
-	public Location getLocation(Integer locationId) throws APIException {
-		// TODO use 'Authenticated User' option
-		if (!Context.isAuthenticated())
-			throw new APIAuthenticationException("Authentication required");
-		
-		return getPatientDAO().getLocation(locationId);
-	}
-	
-	/**
-	 * Get location by name
-	 * 
-	 * @param name location's name
-	 * @return location with given name
-	 * @throws APIException
-	 */
-	public Location getLocationByName(String name) throws APIException {
-		if (!Context.isAuthenticated())
-			throw new APIAuthenticationException("Authentication required");
-		
-		return getPatientDAO().getLocationByName(name);
 	}
 	
 	public List<Patient> findPatients(String query, boolean includeVoided) {

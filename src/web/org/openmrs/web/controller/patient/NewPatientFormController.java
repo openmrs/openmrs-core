@@ -353,8 +353,8 @@ public class NewPatientFormController extends SimpleFormController {
 								obsDeath = new Obs();
 								obsDeath.setPatient(patient);
 								obsDeath.setConcept(causeOfDeath);
-								Location loc = Context.getPatientService().getLocationByName("Unknown Location");
-								if ( loc == null ) loc = Context.getPatientService().getLocation(new Integer(1));
+								Location loc = Context.getEncounterService().getLocationByName("Unknown Location");
+								if ( loc == null ) loc = Context.getEncounterService().getLocation(new Integer(1));
 								if ( loc == null ) loc = patient.getHealthCenter();
 								if ( loc != null ) obsDeath.setLocation(loc);
 								else log.error("Could not find a suitable location for which to create this new Obs");

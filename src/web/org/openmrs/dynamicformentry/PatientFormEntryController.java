@@ -56,7 +56,7 @@ public class PatientFormEntryController extends SimpleFormController {
     	}
     	if (request.getParameter("locationId") != null) {
     		Integer locationId = Integer.valueOf(request.getParameter("locationId"));
-    		Location l = Context.getPatientService().getLocation(locationId);
+    		Location l = Context.getEncounterService().getLocation(locationId);
     		patientForm.setLocation(l);
     	}
     	request.getParameter("providerId");

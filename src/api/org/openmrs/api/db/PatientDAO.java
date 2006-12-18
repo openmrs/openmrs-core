@@ -3,7 +3,6 @@ package org.openmrs.api.db;
 import java.util.List;
 import java.util.Set;
 
-import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
@@ -219,32 +218,6 @@ public interface PatientDAO {
 	 * @throws DAOException
 	 */
 	public RelationshipType findRelationshipType(String relationshipTypeName) throws DAOException;
-	
-	/**
-	 * Get all locations
-	 * 
-	 * @return location list
-	 * @throws DAOException
-	 */
-	public List<Location> getLocations() throws DAOException;
-
-	/**
-	 * Get location by internal identifier
-	 * 
-	 * @param location id
-	 * @return location with given internal identifier
-	 * @throws DAOException
-	 */
-	public Location getLocation(Integer locationId) throws DAOException;
-	
-	/**
-	 * Get location by name
-	 * 
-	 * @param name location's name
-	 * @return location with given name
-	 * @throws DAOException
-	 */
-	public Location getLocationByName(String name) throws DAOException;
 	
 	/**
 	 * Search the database for patients that share the given attributes

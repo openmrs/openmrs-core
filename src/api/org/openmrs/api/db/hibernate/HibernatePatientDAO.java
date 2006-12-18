@@ -16,7 +16,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
-import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
@@ -491,41 +490,6 @@ public class HibernatePatientDAO implements PatientDAO {
 		relationshipTypes = sessionFactory.getCurrentSession().createQuery("from RelationshipType r order by r.name").list();
 		
 		return relationshipTypes;
-
-	}
-
-	/**
-	 * @see org.openmrs.api.db.PatientService#getLocation(java.lang.Integer)
-	 */
-	public Location getLocation(Integer locationId) throws DAOException {
-		Location location = new Location();
-		location = (Location)sessionFactory.getCurrentSession().get(Location.class, locationId);
-		
-		return location;
-
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.PatientService#getLocationByName(java.lang.String)
-	 */
-	public Location getLocationByName(String name) throws DAOException {
-		List result = sessionFactory.getCurrentSession().createQuery("from Location l where l.name = :name").setString("name", name).list();
-		if (result.size() == 0) {
-			return null;
-		} else {
-			return (Location) result.get(0);
-		}
-	}
-
-	/**
-	 * @see org.openmrs.api.db.PatientService#getLocations()
-	 */
-	@SuppressWarnings("unchecked")
-	public List<Location> getLocations() throws DAOException {
-		List<Location> locations;
-		locations = sessionFactory.getCurrentSession().createQuery("from Location l order by l.name").list();
-		
-		return locations;
 
 	}
 	

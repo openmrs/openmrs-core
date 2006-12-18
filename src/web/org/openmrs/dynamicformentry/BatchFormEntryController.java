@@ -52,7 +52,7 @@ public class BatchFormEntryController extends SimpleFormController {
     	
     	if (request.getParameter("locationId") != null) {
     		Integer locationId = Integer.valueOf(request.getParameter("locationId"));
-    		Location l = Context.getPatientService().getLocation(locationId);
+    		Location l = Context.getEncounterService().getLocation(locationId);
     		batchForm.setLocation(l);
     	} else {
     		// TODO: check all patients for their assigned location / last encounter location, and default to the most common one, or else none

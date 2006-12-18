@@ -243,7 +243,7 @@ public class FormEntryServiceImpl implements FormEntryService {
 		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		List<Location> t;
 		try {
-			t = getPatientService().getLocations();
+			t = getEncounterService().getLocations();
 		} finally {
 			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		}
@@ -271,7 +271,7 @@ public class FormEntryServiceImpl implements FormEntryService {
 		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		Location t;
 		try {
-			t = getPatientService().getLocation(locationId);
+			t = getEncounterService().getLocation(locationId);
 		} finally {
 			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		}

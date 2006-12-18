@@ -201,43 +201,6 @@ public class ObsServiceImpl implements ObsService {
 	}
 
 	/**
-	 * Get all locations
-	 * 
-	 * @return location list
-	 * @throws APIException
-	 */
-	public List<Location> getLocations() throws APIException {
-		return getObsDAO().getLocations();
-	}
-
-	/**
-	 * Get location by internal identifier
-	 * 
-	 * @param location
-	 *            id
-	 * @return location with given internal identifier
-	 * @throws APIException
-	 */
-	public Location getLocation(Integer locationId) throws APIException {
-		return getObsDAO().getLocation(locationId);
-	}
-
-	/**
-	 * Get location by name
-	 * 
-	 * @param name
-	 *            location's name
-	 * @return location with given name
-	 * @throws APIException
-	 */
-	public Location getLocationByName(String name) throws APIException {
-		if (!Context.isAuthenticated())
-			throw new APIAuthenticationException("Authentication required");
-
-		return getObsDAO().getLocationByName(name);
-	}
-
-	/**
 	 * Get all Observations for a patient
 	 * 
 	 * @param who

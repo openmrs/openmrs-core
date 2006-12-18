@@ -13,7 +13,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
-import org.openmrs.api.PatientService;
+import org.openmrs.api.EncounterService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
@@ -201,10 +201,10 @@ public class OptionsFormController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 			
-			PatientService ps = Context.getPatientService();
+			EncounterService es = Context.getEncounterService();
 			
 			// set location options
-			map.put("locations", ps.getLocations());
+			map.put("locations", es.getLocations());
 			
 			// set language/locale options
 			map.put("languages", OpenmrsConstants.OPENMRS_LOCALES());

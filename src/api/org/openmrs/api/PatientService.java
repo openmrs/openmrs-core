@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.openmrs.Concept;
-import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
@@ -284,35 +283,6 @@ public interface PatientService {
 	@Transactional(readOnly=true)
 	public RelationshipType findRelationshipType(String relationshipTypeName)
 			throws APIException;
-
-	/**
-	 * Get all locations
-	 * 
-	 * @return location list
-	 * @throws APIException
-	 */
-	@Transactional(readOnly=true)
-	public List<Location> getLocations() throws APIException;
-
-	/**
-	 * Get location by internal identifier
-	 * 
-	 * @param location id
-	 * @return location with given internal identifier
-	 * @throws APIException
-	 */
-	@Transactional(readOnly=true)
-	public Location getLocation(Integer locationId) throws APIException;
-
-	/**
-	 * Get location by name
-	 * 
-	 * @param name location's name
-	 * @return location with given name
-	 * @throws APIException
-	 */
-	@Transactional(readOnly=true)
-	public Location getLocationByName(String name) throws APIException;
 
 	@Transactional(readOnly=true)
 	public List<Patient> findPatients(String query, boolean includeVoided);

@@ -14,7 +14,7 @@ public class PatientIdentifiersPortletController extends PortletController {
 	protected void populateModel(HttpServletRequest request, Map model) {
 		Map<String, Location> locationNameToId = new HashMap<String, Location>();
 		
-		List<Location> locations = Context.getPatientService().getLocations();
+		List<Location> locations = Context.getEncounterService().getLocations();
 		for (Location l : locations) {
 			locationNameToId.put(l.getName(), l);
 		}

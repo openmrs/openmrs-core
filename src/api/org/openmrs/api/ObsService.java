@@ -106,37 +106,6 @@ public interface ObsService {
 	public MimeType getMimeType(Integer mimeTypeId) throws APIException;
 
 	/**
-	 * Get all locations
-	 * 
-	 * @return location list
-	 * @throws APIException
-	 */
-	@Transactional(readOnly = true)
-	public List<Location> getLocations() throws APIException;
-
-	/**
-	 * Get location by internal identifier
-	 * 
-	 * @param location
-	 *            id
-	 * @return location with given internal identifier
-	 * @throws APIException
-	 */
-	@Transactional(readOnly = true)
-	public Location getLocation(Integer locationId) throws APIException;
-
-	/**
-	 * Get location by name
-	 * 
-	 * @param name
-	 *            location's name
-	 * @return location with given name
-	 * @throws APIException
-	 */
-	@Transactional(readOnly = true)
-	public Location getLocationByName(String name) throws APIException;
-
-	/**
 	 * Get all Observations for a patient
 	 * 
 	 * @param who

@@ -15,6 +15,7 @@ import org.openmrs.PatientAddress;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Tribe;
+import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.formentry.FormEntryService;
@@ -175,8 +176,9 @@ public class DWRPatientService {
 		if (identifier == null || identifier.length() == 0)
 			return;
 		PatientService ps = Context.getPatientService();
+		EncounterService es = Context.getEncounterService();
 		PatientIdentifierType idType = ps.getPatientIdentifierType(identifierType);
-		Location location = ps.getLocation(identifierLocationId);
+		Location location = es.getLocation(identifierLocationId);
 		log.debug("idType=" + identifierType + "->" + idType + " , location=" + identifierLocationId + "->" + location + " identifier=" + identifier);
 		Patient p = ps.getPatient(patientId);
 		PatientIdentifier id = new PatientIdentifier();

@@ -83,7 +83,7 @@ public class DataExportFormController extends SimpleFormController {
 			
 			Integer location = RequestUtils.getIntParameter(request, "location", 0);
 			if (location > 0)
-				report.setLocation(Context.getPatientService().getLocation(location));
+				report.setLocation(Context.getEncounterService().getLocation(location));
 			
 			//String startDate = RequestUtils.getStringParameter(request, "startDate", "");
 			//String endDate = RequestUtils.getStringParameter(request, "endDate", "");

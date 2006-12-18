@@ -87,6 +87,7 @@ public class QuickReportServlet extends HttpServlet {
 	
 	private void doReturnVisitDate(VelocityContext velocityContext, PrintWriter report, HttpServletRequest request) throws ServletException {
 		ObsService os = Context.getObsService();
+		EncounterService es = Context.getEncounterService();
 		ConceptService cs = Context.getConceptService();
 		Locale locale = Context.getLocale();
 		
@@ -140,7 +141,7 @@ public class QuickReportServlet extends HttpServlet {
 		if (location == null || location.equals(""))
 			allObs = os.getObservations(c, "location_id asc, value_datetime asc");
 		else {
-			Location locationObj = os.getLocation(Integer.valueOf(location));
+			Location locationObj = es.getLocation(Integer.valueOf(location));
 			allObs = os.getObservations(c, locationObj, "location_id asc, value_datetime asc");
 		}
 		
