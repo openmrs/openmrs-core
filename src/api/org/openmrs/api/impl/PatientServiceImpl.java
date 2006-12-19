@@ -119,8 +119,11 @@ public class PatientServiceImpl implements PatientService {
 		
 		List<String> identifiersUsed = new Vector<String>();
 		
+		List<PatientIdentifier> identifiers = new Vector<PatientIdentifier>();
+		identifiers.addAll(patient.getIdentifiers());
+		
 		// Check for duplicate identifiers
-		for (PatientIdentifier pi : patient.getIdentifiers()) {
+		for (PatientIdentifier pi : identifiers) {
 			// skip voided identifiers
 			if (pi.isVoided()) continue;
 			
