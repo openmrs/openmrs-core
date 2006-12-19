@@ -1123,7 +1123,8 @@
 				<prop key="org.openmrs.Drug">org.openmrs.web.taglib.fieldgen.DrugHandler</prop>
 				<prop key="org.openmrs.Location">org.openmrs.web.taglib.fieldgen.LocationHandler</prop>
 				<prop key="org.openmrs.ProgramWorkflow">org.openmrs.web.taglib.fieldgen.ProgramWorkflowHandler</prop>
-				<prop key="org.openmrs.DrugOrder.discontinuedReason">org.openmrs.web.taglib.fieldgen.DrugOrderDiscontinuedReasonHandler</prop>
+				<prop key="org.openmrs.DrugOrder.discontinuedReason">org.openmrs.web.taglib.fieldgen.GenericReasonHandler</prop>
+				<prop key="org.openmrs.Patient.exitReason">org.openmrs.web.taglib.fieldgen.GenericReasonHandler</prop>
 				<prop key="java.util.Date">org.openmrs.web.taglib.fieldgen.DateHandler</prop>
 			</props>
 		</property>
@@ -1629,39 +1630,6 @@
 			</list>
 		</property>
 	</bean>
-
-<!-- PROGRAM WORKFLOW CONFIGURATION -->
-
-	<!--
-		The exitReasonToStateMappings help us map terminal program states to a cause for exit.  This way,
-		when we have to indicate that a patient has left care, the system can automatically know what
-		terminal states to apply to the various programs a patient was in.
-		
-		NOTE: for both the keys of the map (the reason for exit), and the various states in the corresponding
-		list, you can use either the Name or Id of the Concept.
-	-->
-
-    <bean id="patientProgramSupport" class="org.openmrs.programWorkflow.PatientProgramSupport">
-		<property name="exitReasonToStateMappings">
-			<map>
-				<entry><key><value>DIED</value></key>
-					<list>
-						<value>DIED IN TREATMENT</value>
-					</list>
-				</entry>
-				<entry><key><value>TRANSFERRED OUT</value></key>
-					<list>
-						<value>TRANSFERRED OUT</value>
-					</list>
-				</entry>
-				<entry><key><value>DEFAULTED</value></key>
-					<list>
-						<value>DEFAULTED</value>
-					</list>
-				</entry>
-			</map>
-		</property>
-    </bean>
 
 <!-- CALENDAR SECTION -->
 	

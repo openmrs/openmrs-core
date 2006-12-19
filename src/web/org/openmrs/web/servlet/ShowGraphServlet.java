@@ -1,6 +1,7 @@
 package org.openmrs.web.servlet;
 
 
+import java.awt.Font;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -22,6 +23,7 @@ import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.title.TextTitle;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -60,7 +62,7 @@ public class ShowGraphServlet extends HttpServlet {
 			Concept concept = Context.getConceptService().getConcept(conceptId);
 			
 			Set<Obs> observations = new HashSet<Obs>();
-			String chartTitle, rangeAxisTitle, domainAxisTitle = "";
+			String chartTitle, rangeAxisTitle, domainAxisTitle, titleFontSize = "";
 			if (concept != null ) { 
 				// Get observations
 				observations = Context.getObsService().getObservations(patient, concept);				
@@ -112,6 +114,13 @@ public class ShowGraphServlet extends HttpServlet {
 				true, 
 				false
 			);
+			
+			// Customize title font
+			Font font = new Font("Arial", Font.BOLD, 12);
+			TextTitle title = chart.getTitle();
+			title.setFont(font);
+			chart.setTitle(title);
+			
 			// Customize the plot (range and domain axes)
 	        XYPlot plot = (XYPlot) chart.getPlot();		        
 	        plot.setNoDataMessage("No Data Available");

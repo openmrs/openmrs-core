@@ -279,7 +279,7 @@ table td#patientHeaderPatientGender {
 	padding: 0px;
 }
 
-#patientHeaderPatientAge, #patientHeaderPatientTribe, #patientHeaderHealthCenter, #patientHeaderPatientSummary, #patientHeaderShowMoreIdentifiers {
+#patientHeaderPatientAge, #patientHeaderPatientTribe, #patientHeaderHealthCenter, #patientHeaderPatientSummary, #patientHeaderOutcome, #patientHeaderShowMoreIdentifiers {
 	width: 1%;
 	white-space: nowrap;
 	line-height: 25px;
@@ -325,6 +325,10 @@ tr td#patientHeaderObsReturnVisit {
 	display: none;
 }
 
+#patientHeader a.offColor, #patientHeader a.offColor:link, #patientHeader a.offColor:active, #patientHeader a.offColor:visited, #patientHeader a.offColor:hover {
+	color: #ffffff;
+}
+
 #patientHeaderRegimen {
 	font-weight: bold;
 	color: navy;
@@ -339,6 +343,11 @@ tr td#patientHeaderObsReturnVisit {
 
 #patientSubheader th {
 	color: navy;
+	font-weight: bold;
+}
+
+#patientSubheaderExited th {
+	color: #555555;
 	font-weight: bold;
 }
 
@@ -394,6 +403,7 @@ table.patientTreatmentPrograms td {
 	border-bottom: 1px solid navy;
 	width: 99%;
 }
+
 #patientTabs ul, #patientTabs li {
 	display: inline;
 	list-style-type: none;
@@ -443,7 +453,7 @@ table.patientTreatmentPrograms td {
 .patientIdentifier {
 	width: 7em;
 }
-.box, .boxHeader {
+.box, .boxHeader, .boxRed, .boxHeaderRed, .boxExited, .boxHeaderExited {
 	border: 1px solid #8FABC7;
 	width: 99%;
 	padding: 5px 2px 5px 2px;
@@ -451,18 +461,45 @@ table.patientTreatmentPrograms td {
 	margin-left: auto;
 	margin-right: auto;
 }
-.box>* {
+
+.box>*, .boxRed>*, .boxExited>* {
 	font-size: .9em;
 }
+
 .boxHeader {
 	background-color: #8FABC7;
 	color: white;
 	display: block;
 	padding: 2px;
-	}
-	#content .boxHeader a:link {
-		color: white;
-	}
+}
+
+.boxRed {
+	border: 1px solid #b82619;
+}
+
+.boxExited {
+	border: 1px solid #999999;
+}
+
+.boxHeaderRed {
+	color: white;
+	display: block;
+	padding: 2px;
+	border: 1px solid #b82619;
+	background-color: #b82619;
+}
+
+.boxHeaderExited {
+	color: white;
+	display: block;
+	padding: 2px;
+	border: 1px solid #999999;
+	background-color: #999999;
+}
+
+#content .boxHeader a:link {
+	color: white;
+}
 	
 #selectFormForm {
 	padding: 2px;
@@ -1030,4 +1067,46 @@ table td#summaryHeaderPatientGender {
 #triggeredStateConversion td, th {
 	padding-left: 5px;
 	padding-right: 5px;
+}
+
+#outcomeFormTable {
+	border: 1px dotted #ffffff;
+}
+
+#patientTabsExited {
+	margin: 10px auto 7px auto;
+	padding-top: 5px;
+	padding-left: 5px;
+	padding-bottom: 2px;
+	border-bottom: 1px solid #555555;
+	width: 99%;
+}
+
+#patientTabsExited ul, #patientTabsExited li {
+	display: inline;
+	list-style-type: none;
+	padding: 0px 0px 0px 0px;
+}
+
+#patientTabsExited a:link, #patientTabsExited a:visited {
+	border: 1px solid #555555;
+	font-size: small;
+	font-weight: bold;
+	margin-right: 8px;
+	padding: 2px 10px 2px 10px;
+	text-decoration: none;
+	color: #555555;
+	background: #bbbbbb;
+}
+#patientTabsExited a:link.active, #patientTabsExited a:visited.active {
+	border-bottom: 1px solid #FFFFFF;
+}
+#patientTabsExited a.current, #patientTabsExited a:link.current, #patientTabsExited a:visited.current, #patientTabsExited a.current:hover {
+	background: #FFFFFF;
+	border-bottom: 1px solid #FFFFFF;
+	color: #555555;
+	text-decoration: none;
+}
+#patientTabsExited a:hover {
+	text-decoration: underline;
 }

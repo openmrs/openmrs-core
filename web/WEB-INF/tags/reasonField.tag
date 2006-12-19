@@ -4,6 +4,7 @@
 <%@ attribute name="initialValue" required="false" type="java.lang.String" %>
 <%@ attribute name="optionHeader" required="false" type="java.lang.String" %>
 <%@ attribute name="jsVar" required="false" type="java.lang.String" %>
+<%@ attribute name="onChange" required="false" type="java.lang.String" %>
 
 <c:choose>
 	<c:when test="${not empty jsVar}">
@@ -23,7 +24,12 @@
 
 	</c:when>
 	<c:otherwise>
-		<select name="${formFieldName}" id="${formFieldName}">
+		<c:if test="${not empty onChange}">
+			<select name="${formFieldName}" id="${formFieldName}" onChange="${onChange}">
+		</c:if>
+		<c:if test="${empty onChange}">
+			<select name="${formFieldName}" id="${formFieldName}">
+		</c:if>
 			<c:if test="${optionHeader != ''}">
 				<c:if test="${optionHeader == '[blank]'}">
 					<option value=""></option>

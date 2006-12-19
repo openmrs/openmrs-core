@@ -512,6 +512,7 @@ public class OpenmrsUtil {
 		return ret;
 	}
 
+	// DEPRECATED: This method should now be replaced with ConceptService.getConceptByIdOrName()
 	public static Concept getConceptByIdOrName(String idOrName) {
 		Concept c = null;
 		Integer conceptId = null;
@@ -530,6 +531,7 @@ public class OpenmrsUtil {
 
 		return c;
 	}
+	
 	// TODO: properly handle duplicates
 	public static List<Concept> conceptListHelper(String descriptor) {
 		List<Concept> ret = new ArrayList<Concept>();
@@ -575,6 +577,17 @@ public class OpenmrsUtil {
 		c.add(Calendar.DAY_OF_MONTH, 1);
 		c.add(Calendar.SECOND, -1);
 		return c.getTime();
+	}
+
+	public static int safeCompareTo(Date d1, Date d2) {
+		Date date1 = new Date(d1.getTime());
+		Date date2 = new Date(d2.getTime());
+		
+		return date1.compareTo(date2);
+	}
+
+	public static Date safeDate(Date d1) {
+		return new Date(d1.getTime());
 	}
 
 }

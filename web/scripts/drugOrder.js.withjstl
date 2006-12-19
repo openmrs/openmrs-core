@@ -6,7 +6,7 @@
 		var numCurrentOrders = 0;
 
 		// create a js variable called discReasons that is an array of reasons to discontinue a drug - this will become the select field via DWRUtil.addOptions();...
-		<openmrs:fieldGen type="org.openmrs.DrugOrder.discontinuedReason" formFieldName="discReasons" val="" parameters="optionHeader=[blank]|jsVar=discReasons" />
+		<openmrs:fieldGen type="org.openmrs.DrugOrder.discontinuedReason" formFieldName="discReasons" val="" parameters="optionHeader=[blank]|jsVar=discReasons|globalProp=concept.reasonOrderStopped" />
 		//alert("discReasons is " + discReasons);
 				
 		// create a js variable called voidReasons that is an array of reasons to void a drug - this will become a select field via DWRUtil.addOptions()

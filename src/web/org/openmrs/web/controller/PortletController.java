@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
 import javax.servlet.ServletException;
@@ -30,6 +31,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.context.UserContext;
 import org.openmrs.order.RegimenSuggestion;
 import org.openmrs.reporting.PatientSet;
+import org.openmrs.util.Format;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -116,6 +118,7 @@ public class PortletController implements Controller {
 			// if a patient id is available, put "patient" and "patientObs" in the request
 			Object o = request.getAttribute("org.openmrs.portlet.patientId");
 			if (o != null) {
+				String patientVariation = "";
 				Integer patientId = (Integer) o;
 				// we can't continue if the user can't view patients
 				if (userContext.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS)) {
@@ -130,6 +133,31 @@ public class PortletController implements Controller {
 						model.put("patientObs", Context.getObsService().getObservations(p));
 					else
 						model.put("patientObs", new HashSet<Obs>());
+
+					// information about whether or not the patient has exited care
+					String reasonForExitText = "";
+					String dateOfExitText = "";
+					Concept reasonForExitConcept = Context.getConceptService().getConceptByIdOrName(Context.getAdministrationService().getGlobalProperty("concept.reasonExitedCare"));
+					if ( reasonForExitConcept != null ) {
+						Set<Obs> patientExitObs = Context.getObsService().getObservations(p, reasonForExitConcept);
+						if ( patientExitObs != null ) {
+							log.debug("Exit obs is size " + patientExitObs.size() );
+							if ( patientExitObs.size() == 1 ) {
+								Obs exitObs = patientExitObs.iterator().next();
+								Concept exitReason = exitObs.getValueCoded();
+								Date exitDate = exitObs.getObsDatetime();
+								if ( exitReason != null && exitDate != null ) {
+									reasonForExitText = exitReason.getName(Context.getLocale()).getName();
+									dateOfExitText = Format.format(exitDate, Context.getLocale());
+									patientVariation = "Exited";
+								}
+							} else {
+								log.error("Too many reasons for exit - not putting data into model");
+							}
+						}
+					}
+					model.put("patientReasonForExit", reasonForExitText);
+					model.put("patientDateOfExit", dateOfExitText);
 					
 					if (userContext.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ORDERS)) {
 						List<DrugOrder> drugOrderList = Context.getOrderService().getDrugOrdersByPatient(p);
@@ -138,7 +166,7 @@ public class PortletController implements Controller {
 						List<DrugOrder> discontinuedDrugOrders = new ArrayList<DrugOrder>();
 						for (Iterator<DrugOrder> iter = drugOrderList.iterator(); iter.hasNext(); ) {
 							DrugOrder next = iter.next();
-							if (next.isCurrent()) currentDrugOrders.add(next);
+							if (next.isCurrent() || next.isFuture()) currentDrugOrders.add(next);
 							if (next.isDiscontinued()) discontinuedDrugOrders.add(next); 
 						}
 						model.put("currentDrugOrders", currentDrugOrders);
@@ -173,6 +201,8 @@ public class PortletController implements Controller {
 						if (p != null)
 							model.put("personId", Context.getAdministrationService().getPerson(p).getPersonId());
 					}
+					
+					model.put("patientVariation", patientVariation);
 				}
 			}
 			

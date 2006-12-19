@@ -331,8 +331,20 @@ public interface PatientService {
 	 * @param patient - the patient who has died
 	 * @param dateDied - the declared date/time of the patient's death
 	 * @param causeOfDeath - the concept that corresponds with the reason the patient died
+	 * @param otherReason - if the concept representing the reason is OTHER NON-CODED, and a string-based "other" reason is supplied
 	 * @throws APIException
 	 */
-	public void processDeath(Patient patient, Date dateDied, Concept causeOfDeath)
+	public void processDeath(Patient patient, Date dateDied, Concept causeOfDeath, String otherReason)
+			throws APIException;
+
+	/**
+	 * This method creates (or updates) the Obs that indicates when and why the patient died (including any "other" reason there might be)
+	 * @param patient - the patient who has died
+	 * @param dateDied - the declared date/time of the patient's death
+	 * @param causeOfDeath - the concept that corresponds with the reason the patient died
+	 * @param otherReason - if the concept representing the reason is OTHER NON-CODED, and a string-based "other" reason is supplied
+	 * @throws APIException
+	 */
+	public void saveCauseOfDeathObs(Patient patient, Date dateDied, Concept causeOfDeath, String otherReason)
 			throws APIException;
 }

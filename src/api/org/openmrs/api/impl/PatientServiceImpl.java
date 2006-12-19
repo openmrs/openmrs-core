@@ -10,6 +10,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
+import org.openmrs.Location;
+import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PatientAddress;
 import org.openmrs.PatientIdentifier;
@@ -28,7 +30,6 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.PatientDAO;
-import org.openmrs.programWorkflow.PatientProgramSupport;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -788,58 +789,104 @@ public class PatientServiceImpl implements PatientService {
 	 */
 	public void exitFromCare(Patient patient, Date dateExited, Concept reasonForExit) {
 		if ( patient != null && dateExited != null && reasonForExit != null ) {
-
-			// need to add a new (terminal) state to patient workflows
-			List<PatientProgram> programs = (List<PatientProgram>)Context.getProgramWorkflowService().getPatientPrograms(patient);
-			PatientProgramSupport support = PatientProgramSupport.getInstance();
-			Set<Concept> resultingStates = support.getStatesByReason(reasonForExit);
+			// need to create an observation to represent this (otherwise how will we know?)
+			saveReasonForExitObs(patient, dateExited, reasonForExit);
 			
-			if ( programs != null && resultingStates != null ) {
-				for ( PatientProgram program : programs ) {
-					for ( ProgramWorkflow workflow : program.getProgram().getWorkflows() ) {
-						Set<ProgramWorkflowState> wfStates = workflow.getStates();
-						for ( ProgramWorkflowState wfState : wfStates ) {
-							if ( resultingStates.contains(wfState.getConcept()) ) {
-								Context.getProgramWorkflowService().changeToState(program, workflow, wfState, dateExited );
-							}
-						}
-					}
-				}
-			} else {
-				log.debug("Patient has no programs");
-			}
+			// need to terminate any applicable programs
+			Context.getProgramWorkflowService().triggerStateConversion(patient, reasonForExit, dateExited);
 			
 			// need to discontinue any open orders for this patient
 			Context.getOrderService().discontinueAllOrders(patient, reasonForExit, dateExited);
 		} else {
 			if ( patient == null )
-					throw new APIException("Attempting to set an invalid patient's status to 'dead'");
+					throw new APIException("Attempting to exit from care an invalid patient. Cannot proceed");
 			if ( dateExited == null ) 
-					throw new APIException("Must supply a valid dateDied when indicating that a patient has died");
+					throw new APIException("Must supply a valid dateExited when indicating that a patient has left care");
 			if ( reasonForExit == null ) 
-					throw new APIException("Must supply a valid causeOfDeath (even if 'Unknown') when indicating that a patient has died");
+					throw new APIException("Must supply a valid reasonForExit (even if 'Unknown') when indicating that a patient has left care");
 		}
 	}
 
+	private void saveReasonForExitObs(Patient patient, Date exitDate, Concept cause) {
+		if ( patient != null && exitDate != null && cause != null ) {
+			
+			// need to make sure there is an Obs that represents the patient's exit
+			log.debug("Patient is exiting, so let's make sure there's an Obs for it");
+
+			String codProp = Context.getAdministrationService().getGlobalProperty("concept.reasonExitedCare");
+			Concept reasonForExit = Context.getConceptService().getConceptByIdOrName(codProp);
+
+			if ( reasonForExit != null ) {
+				Set<Obs> obssExit = Context.getObsService().getObservations(patient, reasonForExit);
+				if ( obssExit != null ) {
+					if ( obssExit.size() > 1 ) {
+						log.error("Multiple reasons for exit (" + obssExit.size() + ")?  Shouldn't be...");
+					} else {
+						Obs obsExit = null;
+						if ( obssExit.size() == 1 ) {
+							// already has a reason for exit - let's edit it.
+							log.debug("Already has a reason for exit, so changing it");
+							
+							obsExit = obssExit.iterator().next();
+							
+						} else {
+							// no reason for exit obs yet, so let's make one
+							log.debug("No reason for exit yet, let's create one.");
+							
+							obsExit = new Obs();
+							obsExit.setPatient(patient);
+							obsExit.setConcept(reasonForExit);
+							Location loc = patient.getHealthCenter();
+							if ( loc == null ) loc = Context.getEncounterService().getLocationByName("Unknown Location");
+							if ( loc == null ) loc = Context.getEncounterService().getLocation(new Integer(1));
+							if ( loc != null ) obsExit.setLocation(loc);
+							else log.error("Could not find a suitable location for which to create this new Obs");
+						}
+						
+						if ( obsExit != null ) {
+							// put the right concept and (maybe) text in this obs
+							obsExit.setValueCoded(cause);
+							obsExit.setObsDatetime(exitDate);
+							Context.getObsService().updateObs(obsExit);
+						}
+					}
+				}
+			} else {
+				log.debug("Reason for exit is null - should not have gotten here without throwing an error on the form.");
+			}
+		} else {
+			if ( patient == null ) throw new APIException("Patient supplied to method is null");
+			if ( exitDate == null ) throw new APIException("Exit date supplied to method is null");
+			if ( cause == null ) throw new APIException("Cause supplied to method is null");
+		}
+	}
+		
 	/**
 	 * This is the way to establish that a patient has died.  In addition to exiting the patient from care (see above),
 	 * this method will also set the appropriate patient characteristics to indicate that they have died, when they died, etc.
 	 * @param patient - the patient who has died
 	 * @param dateDied - the declared date/time of the patient's death
 	 * @param causeOfDeath - the concept that corresponds with the reason the patient died
+	 * @param otherReason - in case the causeOfDeath is 'other', a place to store more info
 	 * @throws APIException
 	 */
-	public void processDeath(Patient patient, Date dateDied, Concept causeOfDeath) {
+	public void processDeath(Patient patient, Date dateDied, Concept causeOfDeath, String otherReason) {
 		if ( patient != null && dateDied != null && causeOfDeath != null ) {
 			// set appropriate patient characteristics
 			patient.setDead(true);
 			patient.setDeathDate(dateDied);
-			// TODO: cause of death should be a concept
 			patient.setCauseOfDeath(causeOfDeath);
-			updatePatient(patient);
+			getPatientDAO().updatePatient(patient);
+			saveCauseOfDeathObs(patient, dateDied, causeOfDeath, otherReason);
 			
 			// exit from program
-			exitFromCare(patient, dateDied, new Concept());
+			// first, need to get Concept for "Patient Died"
+			String strPatientDied = Context.getAdministrationService().getGlobalProperty("concept.patientDied");
+			Concept conceptPatientDied = Context.getConceptService().getConceptByIdOrName(strPatientDied);
+			
+			if ( conceptPatientDied == null ) log.debug("ConceptPatientDied is null");
+			exitFromCare(patient, dateDied, conceptPatientDied);
+
 		} else {
 			if ( patient == null )
 					throw new APIException("Attempting to set an invalid patient's status to 'dead'");
@@ -850,4 +897,93 @@ public class PatientServiceImpl implements PatientService {
 		}
 	}
 
+	public void saveCauseOfDeathObs(Patient patient, Date deathDate, Concept cause, String otherReason) {
+		if ( patient != null && deathDate != null && cause != null ) {
+			if ( !patient.getDead() ) patient.setDead(true);
+			patient.setDeathDate(deathDate);
+			patient.setCauseOfDeath(cause);
+			
+			log.debug("Patient is dead, so let's make sure there's an Obs for it");
+			// need to make sure there is an Obs that represents the patient's cause of death, if applicable
+
+			String codProp = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
+			Concept causeOfDeath = Context.getConceptService().getConceptByIdOrName(codProp);
+
+			if ( causeOfDeath != null ) {
+				Set<Obs> obssDeath = Context.getObsService().getObservations(patient, causeOfDeath);
+				if ( obssDeath != null ) {
+					if ( obssDeath.size() > 1 ) {
+						log.error("Multiple causes of death (" + obssDeath.size() + ")?  Shouldn't be...");
+					} else {
+						Obs obsDeath = null;
+						if ( obssDeath.size() == 1 ) {
+							// already has a cause of death - let's edit it.
+							log.debug("Already has a cause of death, so changing it");
+							
+							obsDeath = obssDeath.iterator().next();
+							
+						} else {
+							// no cause of death obs yet, so let's make one
+							log.debug("No cause of death yet, let's create one.");
+							
+							obsDeath = new Obs();
+							obsDeath.setPatient(patient);
+							obsDeath.setConcept(causeOfDeath);
+							Location loc = patient.getHealthCenter();
+							if ( loc == null ) loc = Context.getEncounterService().getLocationByName("Unknown Location");
+							if ( loc == null ) loc = Context.getEncounterService().getLocation(new Integer(1));
+							if ( loc != null ) obsDeath.setLocation(loc);
+							else log.error("Could not find a suitable location for which to create this new Obs");
+						}
+						
+						// put the right concept and (maybe) text in this obs
+						Concept currCause = patient.getCauseOfDeath();
+						if ( currCause == null ) {
+							// set to NONE
+							log.debug("Current cause is null, attempting to set to NONE");
+							String noneConcept = Context.getAdministrationService().getGlobalProperty("concept.none");
+							currCause = Context.getConceptService().getConceptByIdOrName(noneConcept);
+						}
+						
+						if ( currCause != null ) {
+							log.debug("Current cause is not null, setting to value_coded");
+							obsDeath.setValueCoded(currCause);
+							
+							Date dateDeath = patient.getDeathDate();
+							if ( dateDeath == null ) dateDeath = new Date();
+							obsDeath.setObsDatetime(dateDeath);
+
+							// check if this is an "other" concept - if so, then we need to add value_text
+							String otherConcept = Context.getAdministrationService().getGlobalProperty("concept.otherNonCoded");
+							Concept conceptOther = Context.getConceptService().getConceptByIdOrName(otherConcept);
+							if ( conceptOther != null ) {
+								if ( conceptOther.equals(currCause) ) {
+									// seems like this is an other concept - let's try to get the "other" field info
+									log.debug("Setting value_text as " + otherReason);
+									obsDeath.setValueText(otherReason);
+								} else {
+									log.debug("New concept is NOT the OTHER concept, so setting to blank");
+									obsDeath.setValueText("");
+								}
+							} else {
+								log.debug("Don't seem to know about an OTHER concept, so deleting value_text");
+								obsDeath.setValueText("");
+							}
+							
+							Context.getObsService().updateObs(obsDeath);
+						} else {
+							log.debug("Current cause is still null - aborting mission");
+						}
+					}
+				}
+			} else {
+				log.debug("Cause of death is null - should not have gotten here without throwing an error on the form.");
+			}
+		} else {
+			if ( patient == null ) throw new APIException("Patient supplied to method is null");
+			if ( deathDate == null ) throw new APIException("Death date supplied to method is null");
+			if ( cause == null ) throw new APIException("Cause supplied to method is null");
+		}
+	}
+	
 }

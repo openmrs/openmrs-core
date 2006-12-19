@@ -40,6 +40,7 @@
 			<include method="findTribes" />
 			<include method="findDuplicatePatients" />
 			<include method="addIdentifier" />
+			<include method="exitPatientFromCare" />
 		</create>
 	
 		<create creator="new" javascript="DWRConceptService">

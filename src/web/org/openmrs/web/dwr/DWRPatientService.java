@@ -1,5 +1,7 @@
 package org.openmrs.web.dwr;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -9,16 +11,19 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientAddress;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Tribe;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.formentry.FormEntryService;
+import org.openmrs.util.OpenmrsConstants;
 
 public class DWRPatientService {
 
@@ -187,6 +192,99 @@ public class DWRPatientService {
 		id.setLocation(location);
 		p.addIdentifier(id);
 		ps.updatePatient(p);
+	}
+	
+	public String exitPatientFromCare(Integer patientId, Integer reasonForExitId, String dateOfExit, Integer causeOfDeath, String otherReason ) {
+		log.debug("Entering exitfromcare with [" + patientId + "] [" + reasonForExitId + "] [" + dateOfExit + "]");
+		String ret = "";
+		
+		PatientService ps = Context.getPatientService();
+		ConceptService cs = Context.getConceptService();
+		
+		Patient p = null;
+		try {
+			p = ps.getPatient(patientId);
+		} catch ( Exception e ) {
+			p = null;
+		}
+		
+		if ( p == null ) {
+			ret = "Unable to find valid patient with the supplied identification information - cannot exit patient from care";
+		}
+		
+		Concept c = null;
+		try {
+			c = cs.getConcept(reasonForExitId);
+		} catch ( Exception e ) {
+			c = null;
+		}
+		
+		if ( c == null ) {
+			ret = "Unable to locate reason for exit in dictionary - cannot exit patient from care";
+		}
+		
+		Date exitDate = null;
+		if ( dateOfExit != null ) {
+			String datePattern = OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase());
+			SimpleDateFormat sdf = new SimpleDateFormat(datePattern);
+			try {
+				exitDate = sdf.parse(dateOfExit);
+			} catch (ParseException e) {
+				exitDate = null;
+			}
+		}
+
+		if ( exitDate == null ) {
+			ret = "Invalid date supplied - cannot exit patient from care without a valid date.";
+		}
+		
+		if ( p != null && c != null && exitDate != null ) {
+			// need to check first if this is death or not
+			String deathProp = Context.getAdministrationService().getGlobalProperty("concept.patientDied");
+			Concept deathConcept = null;
+			if ( deathProp != null ) {
+				deathConcept = cs.getConceptByIdOrName(deathProp);
+			}
+			
+			if ( deathConcept != null ) {
+				if ( c.equals(deathConcept) ) {
+					Concept causeConcept = null;
+					try {
+						causeConcept = cs.getConcept(causeOfDeath);
+					} catch ( Exception e ) {
+						causeConcept = null;
+					}
+					
+					if ( causeConcept == null ) {
+						ret = "Unable to locate cause of death in dictionary - cannot proceed";
+					} else {
+						try {
+							ps.processDeath(p, exitDate, causeConcept, otherReason);
+						} catch ( Exception e ) {
+							log.debug("Caught error", e);
+							ret = "Internal error while trying to process patient death - unable to proceed.";
+						}
+					}
+				} else {
+					try {
+						ps.exitFromCare(p, exitDate, c);
+					} catch ( Exception e ) {
+						log.debug("Caught error", e);
+						ret = "Internal error while trying to exit patient from care - unable to exit patient from care at this time.";
+					}
+				}
+			} else {
+				try {
+					ps.exitFromCare(p, exitDate, c);
+				} catch ( Exception e ) {
+					log.debug("Caught error", e);
+					ret = "Internal error while trying to exit patient from care - unable to exit patient from care at this time.";
+				}
+			}
+			log.debug("Exited from care, it seems");
+		}
+		
+		return ret;
 	}
 	
 }

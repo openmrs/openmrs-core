@@ -537,7 +537,15 @@ public class OrderServiceImpl implements OrderService {
 	}
 	
 	public void discontinueAllOrders(Patient patient, Concept discontinueReason, Date discontinueDate) {
+		log.debug("In discontinueAll with patient " + patient + " and concept " + discontinueReason + " and date " + discontinueDate);
+		
 		List<DrugOrder> drugOrders = this.getDrugOrdersByPatient(patient, OrderService.SHOW_CURRENT);
+		if ( drugOrders != null ) {
+			for (DrugOrder drugOrder : drugOrders) {
+				log.debug("discontinuing order: " + drugOrder);
+				this.discontinueOrder(drugOrder, discontinueReason, discontinueDate);
+			}
+		}
 	}
 }
 

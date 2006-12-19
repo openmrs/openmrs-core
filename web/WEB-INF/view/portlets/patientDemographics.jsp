@@ -2,8 +2,8 @@
 
 <openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" var="showTribe"/>
 
-<div class="boxHeader"><spring:message code="Patient.title"/></div>
-<div class="box">
+<div class="boxHeader${model.patientVariation}"><spring:message code="Patient.title"/></div>
+<div class="box${model.patientVariation}">
 	<table class="patientAddress">
 		<thead>
 			<tr>
@@ -43,8 +43,8 @@
 
 <br/>
 
-<div class="boxHeader"><spring:message code="Patient.addresses"/></div>
-<div class="box">
+<div class="boxHeader${model.patientVariation}"><spring:message code="Patient.addresses"/></div>
+<div class="box${model.patientVariation}">
 	<table class="patientAddress">
 		<thead>
 			<openmrs:portlet url="address" id="addressPortlet" size="columnHeaders" parameters="addressShowTable=false|addressShowExtended=true" />

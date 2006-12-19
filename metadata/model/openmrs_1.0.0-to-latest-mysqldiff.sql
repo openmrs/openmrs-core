@@ -1536,6 +1536,36 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 delimiter ;
 call diff_procedure('1.0.48');
 
+#--------------------------------------
+# OpenMRS Datamodel version 1.0.49
+# Christian Allen 	Dec 14, 2006 05:47 AM
+# Adding unique constraint to concept_state_conversion table
+#--------------------------------------
+
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+	SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+
+#-- START YOUR QUERY(IES) HERE --#
+
+	ALTER TABLE `concept_state_conversion` ADD CONSTRAINT `unique_workflow_concept_in_conversion` UNIQUE KEY (`program_workflow_id`, `concept_id`);
+
+#-- END YOUR QUERY(IES) HERE --#
+
+	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+	
+	END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.0.49');
+
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script
 #-----------------------------------

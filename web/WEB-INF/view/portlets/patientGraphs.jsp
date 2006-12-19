@@ -63,8 +63,8 @@ table#labTestTable th {
 
 <c:set var="graphConceptString" value="${weight}-${cd4}-${userConcepts}" />
 	
-	<div class="boxHeader"><spring:message code="patientDashboard.graphs"/></div>
-	<div class="box">
+	<div class="boxHeader${model.patientVariation}"><spring:message code="patientDashboard.graphs"/></div>
+	<div class="box${model.patientVariation}">
 		<table width="100%">
 			<tr>
 				<td align="center">

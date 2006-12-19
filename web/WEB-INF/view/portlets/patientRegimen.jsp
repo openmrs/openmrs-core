@@ -4,8 +4,8 @@
 
 <div id="regimenPortlet">
 	<div id="regimenPortletCurrent">
-		<div class="boxHeader"><spring:message code="DrugOrder.regimens.current" /></div>
-		<div class="box">
+		<div class="boxHeader${model.patientVariation}"><spring:message code="DrugOrder.regimens.current" /></div>
+		<div class="box${model.patientVariation}">
 
 			<openmrs:portlet url="patientRegimenCurrent" id="patientRegimenCurrent" patientId="${patient.patientId}" parameters="displayDrugSetIds=ANTIRETROVIRAL DRUGS,TUBERCULOSIS TREATMENT DRUGS,*|displayFutureRegimens=true" />
 			
@@ -112,9 +112,10 @@
 			</div>
 		</div>			
 	</div>
+	<br />
 	<div id="regimenPortletCompleted">
-		<div class="boxHeader"><spring:message code="DrugOrder.regimens.completed" /></div>
-		<div class="box">
+		<div class="boxHeader${model.patientVariation}"><spring:message code="DrugOrder.regimens.completed" /></div>
+		<div class="box${model.patientVariation}">
 
 			<openmrs:portlet url="patientRegimenCompleted" id="patientRegimenCompleted" patientId="${patient.patientId}" parameters="displayDrugSetIds=ANTIRETROVIRAL DRUGS,TUBERCULOSIS TREATMENT DRUGS,*" />
 		

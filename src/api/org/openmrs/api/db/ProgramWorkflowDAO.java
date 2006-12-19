@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.openmrs.Concept;
 import org.openmrs.ConceptStateConversion;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
@@ -57,4 +58,6 @@ public interface ProgramWorkflowDAO {
 	public ConceptStateConversion getConceptStateConversion(Integer id);
 
 	public List<ConceptStateConversion> getAllConversions();
+
+	public ConceptStateConversion getConceptStateConversion(ProgramWorkflow workflow, Concept trigger);
 }

@@ -66,7 +66,7 @@
 
 <openmrs:portlet url="patientHeader" id="patientDashboardHeader" patientId="${patient.patientId}"/>
 
-<div id="patientTabs">
+<div id="patientTabs${patientVariation}">
 	<ul>
 		<openmrs:hasPrivilege privilege="Patient Dashboard - View Overview Section">
 			<li><a id="patientOverviewTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.overview"/></a></li>

@@ -6,7 +6,12 @@
 <openmrs:require privilege="View Patients" otherwise="/login.htm" redirect="/index.htm" />
 
 	<%-- Header showing preferred name, id, and treatment status --%>
-	<div id="patientHeader" class="boxHeader">
+	<c:if test="${empty model.patientReasonForExit}">
+		<div id="patientHeader" class="boxHeader">
+	</c:if>
+	<c:if test="${not empty model.patientReasonForExit}">
+		<div id="patientHeader" class="boxHeaderRed">
+	</c:if>
 		<div id="patientHeaderPatientName">${model.patient.patientName.givenName} ${model.patient.patientName.middleName} ${model.patient.patientName.familyName}</div>
 		<div id="patientHeaderPreferredIdentifier">
 			<c:if test="${fn:length(model.patient.activeIdentifiers) > 0}">
@@ -17,7 +22,7 @@
 		</div>
 		<table id="patientHeaderGeneralInfo">
 			<tr>
-				<td id="patientHeaderPatientGender">
+				<td id="patientHeaderPatientGender" style="background-color: #ffffff; width: 40px;">
 					<c:if test="${model.patient.gender == 'M'}"><img src="${pageContext.request.contextPath}/images/male.gif" alt='<spring:message code="Patient.gender.male"/>'/></c:if>
 					<c:if test="${model.patient.gender == 'F'}"><img src="${pageContext.request.contextPath}/images/female.gif" alt='<spring:message code="Patient.gender.female"/>'/></c:if>
 				</td>
@@ -43,6 +48,110 @@
 				<td id="patientHeaderPatientSummary">
 					<a class="offColor" href="javascript:window.open('patientSummary.htm?patientId=${model.patientId}', 'summaryWindow', 'toolbar=no,width=800,height=600,resizable=yes,scrollbars=yes').focus()">Summary</a>
 				</td>
+				<c:if test="${empty model.patientReasonForExit}">
+					<td id="patientHeaderOutcome">
+						<div id="patientHeaderOutcomeLink">
+							<a class="offColor" href="javascript:showExitForm();"><spring:message code="Patient.outcome.exitFromCare" /></a>
+						</div>
+						<div id="patientHeaderOutcomeForm" style="display:none;">
+							<form method="post" id="exitForm">
+								<table id="outcomeFormTable">
+									<tr>
+										<td id="patientHeaderOutcomeReason">
+											<span id="patientOutcomeTextReason"><spring:message code="Patient.outcome.exitType" /></span>
+											<openmrs:fieldGen type="org.openmrs.Patient.exitReason" formFieldName="reasonForExit" val="" parameters="optionHeader=[blank]|globalProp=concept.reasonExitedCare|onChange=updateCauseField()" />
+										</td>
+										<td id="patientHeaderOutcomeDate">
+											<span id="patientOutcomeTextReason"><spring:message code="Patient.outcome.exitDate" /></span>
+											<openmrs:fieldGen type="java.util.Date" formFieldName="dateOfExit" val="" parameters="noBind=true" />
+										</td>
+										<td id="patientHeaderCauseOfDeath" style="display:none;">
+											<span id="patientOutcomeTextDeathCause"><spring:message code="Patient.causeOfDeath"/></span>
+											<openmrs:globalProperty key="concept.causeOfDeath" var="conceptCauseOfDeath" />
+											<openmrs:globalProperty key="concept.otherNonCoded" var="conceptOther" />
+											<openmrs:fieldGen type="org.openmrs.Concept" formFieldName="causeOfDeath" val="${status.value}" parameters="showAnswers=${conceptCauseOfDeath}|showOther=${conceptOther}|otherValue=${causeOfDeathOther}" />
+										</td>
+										<td id="patientHeaderOutcomeSave">
+											<input type="button" onClick="javascript:exitFormValidate();" value="<spring:message code="general.save" />" />
+											<input type="button" onClick="javascript:hideExitForm();" value="<spring:message code="general.cancel" />" />
+										</td>
+									</tr>
+								</table>
+							</form>
+						</div>
+						<script>
+							<!--
+								
+								function updateCauseField() {
+									var outcomeType = DWRUtil.getValue("reasonForExit");
+									<openmrs:globalProperty key="concept.patientDied" var="conceptPatientDied" />
+	
+									if ( outcomeType == '${conceptPatientDied}' ) {
+										showDiv("patientHeaderCauseOfDeath");
+									} else {
+										hideDiv("patientHeaderCauseOfDeath");
+									}
+								}
+							
+								function showExitForm() {
+									showDiv("patientHeaderOutcomeForm");
+									hideDiv("patientHeaderOutcomeLink");
+								}
+							
+								function hideExitForm() {
+									showDiv("patientHeaderOutcomeLink");
+									hideDiv("patientHeaderOutcomeForm");
+								}
+							
+								function exitFormValidate() {
+									var outcomeType = DWRUtil.getValue("reasonForExit");
+									var outcomeDate = DWRUtil.getValue("dateOfExit");
+									var outcomeCauseOfDeath = DWRUtil.getValue("causeOfDeath");
+									var outcomeCauseOther = DWRUtil.getValue("causeOfDeath_other");
+									
+									if ( outcomeType == '' ) {
+										alert("<spring:message code="Patient.outcome.error.noType" />");
+										return;
+									}
+	
+									if ( outcomeDate == '' ) {
+										alert("<spring:message code="Patient.outcome.error.noDate" />");
+										return;
+									}
+									
+									if ( outcomeType == '${conceptPatientDied}' && outcomeCauseOfDeath == '' ) {
+										alert("<spring:message code="Patient.outcome.error.noCauseOfDeath" />");
+										return
+									}
+									
+									if ( outcomeType && outcomeDate ) {
+										var exitTypeSelect = document.getElementById("reasonForExit");
+										var exitTypeText = exitTypeSelect[exitTypeSelect.selectedIndex].text;
+										var answer = confirm("<spring:message code="Patient.outcome.readyToSubmit" />" + "\n<spring:message code="Patient.outcome.exitType" />: " + exitTypeText + "\n<spring:message code="Patient.outcome.exitDate" />: " + outcomeDate);
+										if ( answer ) {
+											DWRPatientService.exitPatientFromCare( ${model.patient.patientId}, outcomeType, outcomeDate, outcomeCauseOfDeath, outcomeCauseOther, confirmExit );
+										}
+									}
+								}
+								
+								function confirmExit(message) {
+									if ( message == '' ) {
+										// patient has been exited, let's refresh the page
+										window.location.reload();
+									} else {
+										alert(message);
+									}
+								}
+							-->
+						</script>
+					</td>
+				</c:if>
+				<c:if test="${not empty model.patientReasonForExit}">
+					<td id="patientHeaderOutcome">
+						<span id="reasonForExit"><spring:message code="Patient.outcome.exitType" />: <b>${model.patientReasonForExit} (${model.patientDateOfExit})</b></span>
+					</td>
+				</c:if>
+				<td style="width: 100%;">&nbsp;</td>
 				<td id="patientHeaderOtherIdentifiers">
 					<c:if test="${fn:length(model.patient.activeIdentifiers) > 1}">
 						<c:forEach var="identifier" items="${model.patient.activeIdentifiers}" begin="1" end="1">
@@ -65,7 +174,12 @@
 			</tr>
 		</table>
 	</div>
-	<div id="patientSubheader" class="box">
+	<c:if test="${empty model.patientReasonForExit}">
+		<div id="patientSubheader" class="box">
+	</c:if>
+	<c:if test="${not empty model.patientReasonForExit}">
+		<div id="patientSubheaderExited" class="boxRed">
+	</c:if>
 		<c:forEach items="${model.patientCurrentPrograms}" var="p" varStatus="s">
 			<c:if test="${p.program.concept.conceptId == HIV_PROGRAM_CONCEPT_ID}">
 				<table><tr>

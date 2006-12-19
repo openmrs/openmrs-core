@@ -58,7 +58,7 @@
 												<input type="text" id="close_${drugOrder.orderId}_date" size="10" value="" onFocus="showCalendar(this)" />
 												&nbsp;&nbsp;&nbsp;&nbsp;
 												<spring:message code="general.reason" />:
-													<openmrs:fieldGen type="org.openmrs.DrugOrder.discontinuedReason" formFieldName="close_${drugOrder.orderId}_reason" val="" parameters="optionHeader=[blank]" />
+													<openmrs:fieldGen type="org.openmrs.DrugOrder.discontinuedReason" formFieldName="close_${drugOrder.orderId}_reason" val="" parameters="optionHeader=[blank]|globalProp=concept.reasonOrderStopped" />
 												&nbsp;&nbsp;
 												<input type="button" value="<spring:message code="DrugOrder.discontinue" />" onClick="handleDiscontinueDrugOrder('${drugOrder.orderId}', 'close_${drugOrder.orderId}_date', 'close_${drugOrder.orderId}_reason')" />
 												<input type="button" value="<spring:message code="general.cancel" />" onClick="showHideDiv('close_${drugOrder.orderId}');showHideDiv('closebutton_${drugOrder.orderId}')" />
@@ -124,7 +124,7 @@
 													&nbsp;&nbsp;&nbsp;&nbsp;
 													<spring:message code="general.reason" />:
 														<% if ( pageContext.getAttribute("drugSetId") != null ) pageContext.setAttribute("drugSetReplaced", ((String)pageContext.getAttribute("drugSetId")).replace(" ", "_")); %>
-														<openmrs:fieldGen type="org.openmrs.DrugOrder.discontinuedReason" formFieldName="closegp_${drugSetReplaced}_reason" val="" parameters="optionHeader=[blank]" />
+														<openmrs:fieldGen type="org.openmrs.DrugOrder.discontinuedReason" formFieldName="closegp_${drugSetReplaced}_reason" val="" parameters="optionHeader=[blank]|globalProp=concept.reasonOrderStopped" />
 													&nbsp;&nbsp;
 													<input type="button" value="<spring:message code="DrugOrder.discontinueGroup" />" onClick="handleDiscontinueDrugSet('${drugSetId}', 'closegp_${fn:replace(drugSetId, " ", "_")}_date', 'closegp_${fn:replace(drugSetId, " ", "_")}_reason')" />
 													<input type="button" value="<spring:message code="general.cancel" />" onClick="showHideDiv('closegp_${fn:replace(drugSetId, " ", "_")}');showHideDiv('closegpbutton_${fn:replace(drugSetId, " ", "_")}');" />
@@ -173,7 +173,7 @@
 												<input type="text" id="close_${drugOrder.orderId}_date" size="10" value="" onFocus="showCalendar(this)" />
 												&nbsp;&nbsp;&nbsp;&nbsp;
 												<spring:message code="general.reason" />:
-													<openmrs:fieldGen type="org.openmrs.DrugOrder.discontinuedReason" formFieldName="close_${drugOrder.orderId}_reason" val="" parameters="optionHeader=[blank]" />
+													<openmrs:fieldGen type="org.openmrs.DrugOrder.discontinuedReason" formFieldName="close_${drugOrder.orderId}_reason" val="" parameters="optionHeader=[blank]|globalProp=concept.reasonOrderStopped" />
 												&nbsp;&nbsp;
 												<input type="button" value="<spring:message code="DrugOrder.discontinue" />" onClick="handleDiscontinueDrugOrder('${drugOrder.orderId}', 'close_${drugOrder.orderId}_date', 'close_${drugOrder.orderId}_reason')" />
 												<input type="button" value="<spring:message code="general.cancel" />" onClick="showHideDiv('close_${drugOrder.orderId}');showHideDiv('closebutton_${drugOrder.orderId}')" />
@@ -237,7 +237,7 @@
 												<input type="text" id="close_${drugOrder.orderId}_date" size="10" value="" onFocus="showCalendar(this)" />
 												&nbsp;&nbsp;&nbsp;&nbsp;
 												<spring:message code="general.reason" />:
-													<openmrs:fieldGen type="org.openmrs.DrugOrder.discontinuedReason" formFieldName="close_${drugOrder.orderId}_reason" val="" parameters="optionHeader=[blank]" />
+													<openmrs:fieldGen type="org.openmrs.DrugOrder.discontinuedReason" formFieldName="close_${drugOrder.orderId}_reason" val="" parameters="optionHeader=[blank]|globalProp=concept.reasonOrderStopped" />
 												&nbsp;&nbsp;
 												<input type="button" value="<spring:message code="DrugOrder.discontinue" />" onClick="handleDiscontinueDrugOrder('${drugOrder.orderId}', 'close_${drugOrder.orderId}_date', 'close_${drugOrder.orderId}_reason')" />
 												<input type="button" value="<spring:message code="general.cancel" />" onClick="showHideDiv('close_${drugOrder.orderId}');showHideDiv('closebutton_${drugOrder.orderId}')" />

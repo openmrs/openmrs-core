@@ -37,7 +37,6 @@ refreshOnChange=*
 <c:if test="${model.showTypes != null || model.showOtherTypes == 'true'}">
 
 <div id="patientRelationshipPortlet">
-	<div class="box">
 		<table>
 		<c:if test="${model.showTypes != null}">
 			<tbody>
@@ -118,7 +117,6 @@ refreshOnChange=*
 			is this patient's <select id="PR_otherAddRelType"></select>
 			<input type="button" value="<spring:message code="general.add"/>" onClick="handleAddRelationship('PR_otherAddRelFromPerson', 'PR_otherAddRelType')"/>
 		</c:if>
-	</div>
 </div>
 </c:if>
 

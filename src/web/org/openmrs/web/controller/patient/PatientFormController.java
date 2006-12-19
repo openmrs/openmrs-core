@@ -32,6 +32,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.formentry.FormEntryService;
+import org.openmrs.util.Format;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
@@ -482,7 +483,29 @@ public class PatientFormController extends SimpleFormController {
 				log.debug("No concept causee found");
 			}
 		}
-			
+
+		String patientVariation = "";
+		
+		Concept reasonForExitConcept = Context.getConceptService().getConceptByIdOrName(Context.getAdministrationService().getGlobalProperty("concept.reasonExitedCare"));
+		if ( reasonForExitConcept != null ) {
+			Set<Obs> patientExitObs = Context.getObsService().getObservations(patient, reasonForExitConcept);
+			if ( patientExitObs != null ) {
+				log.debug("Exit obs is size " + patientExitObs.size() );
+				if ( patientExitObs.size() == 1 ) {
+					Obs exitObs = patientExitObs.iterator().next();
+					Concept exitReason = exitObs.getValueCoded();
+					Date exitDate = exitObs.getObsDatetime();
+					if ( exitReason != null && exitDate != null ) {
+						patientVariation = "Exited";
+					}
+				} else {
+					log.error("Too many reasons for exit - not putting data into model");
+				}
+			}
+		}
+		
+		map.put("patientVariation", patientVariation);
+		
 		map.put("forms", forms);
 				
 		// empty objects used to create blank template in the view

@@ -13,6 +13,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
+import org.openmrs.Concept;
 import org.openmrs.ConceptStateConversion;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
@@ -176,5 +177,20 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 		else log.debug("conversions is size " + conversions.size());
 		
 		return conversions;
+	}
+
+	public ConceptStateConversion getConceptStateConversion(ProgramWorkflow workflow, Concept trigger) {
+		log.debug("In getCsc with workflow: " + workflow + ", and triger of " + trigger);
+
+		ConceptStateConversion csc = null;
+
+		if ( workflow != null && trigger != null ) {
+			csc = (ConceptStateConversion)sessionFactory.getCurrentSession().createQuery("from ConceptStateConversion c where c.programWorkflow.programWorkflowId = :workflowId and c.concept.conceptId = :conceptId")
+				.setInteger("workflowId", workflow.getProgramWorkflowId())
+				.setInteger("conceptId", trigger.getConceptId())
+				.uniqueResult();
+		}
+		
+		return csc;
 	}	
 }

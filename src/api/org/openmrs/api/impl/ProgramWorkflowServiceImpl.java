@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -17,6 +18,7 @@ import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.APIAuthenticationException;
+import org.openmrs.api.APIException;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ProgramWorkflowDAO;
@@ -531,8 +533,98 @@ public class ProgramWorkflowServiceImpl implements ProgramWorkflowService {
 		return ret;
 	}
 
-	public void convertState(Concept concept, ProgramWorkflow workflow) {
-		// TODO: implement this method
+	public Set<ProgramWorkflow> getCurrentWorkflowsByPatient(Patient patient) {
+		log.debug("Getting workflows with patient: " + patient);
+		Set<ProgramWorkflow> ret = null;
+		
+		List<PatientProgram> programs = (List<PatientProgram>)this.getPatientPrograms(patient);
+		if ( programs != null ) {
+			for ( PatientProgram program : programs ) {
+				Set<ProgramWorkflow> workflows = this.getCurrentWorkflowsByPatientProgram(program);
+				if ( workflows != null ) {
+					if ( ret == null ) ret = new HashSet<ProgramWorkflow>();
+					ret.addAll(workflows);					
+				}
+			}
+		}
+
+		if ( ret == null ) log.debug("Ret is null, leaving the method");
+		else log.debug("Ret is size: " + ret.size());
+		
+		return ret;
+	}
+
+	public Set<ProgramWorkflow> getCurrentWorkflowsByPatientProgram(PatientProgram program) {
+		log.debug("Getting workflows with program: " + program);
+		Set<ProgramWorkflow> ret = null;
+		
+		if ( program != null ) {
+			Set<PatientState> states = program.getStates();
+			if ( states != null ) {
+				for ( PatientState state : states ) {
+					if ( ret == null ) ret = new HashSet<ProgramWorkflow>();
+					ret.add(state.getState().getProgramWorkflow());
+				}
+			}
+		}
+
+		if ( ret == null ) log.debug("Ret is null, leaving the method");
+		else log.debug("Ret is size: " + ret.size());
+		
+		return ret;
+	}
+	
+	public void triggerStateConversion(Patient patient, Concept trigger, Date dateConverted) {
+		log.debug("in triggerConversion with patient: " + patient + ", trigger " + trigger + ", and date: " + dateConverted);
+		if ( patient != null && trigger != null && dateConverted !=  null ) {
+			
+			// first, we need to find out what worklows we're dealing with - a little roundabout because of the way the tables are set up
+			List<PatientProgram> programs = (List<PatientProgram>)this.getPatientPrograms(patient);
+			if ( programs != null ) {
+				for ( PatientProgram program : programs ) {
+				
+					Set<ProgramWorkflow> workflows = this.getCurrentWorkflowsByPatientProgram(program);
+					if ( workflows != null ) {
+						for ( ProgramWorkflow workflow : workflows ) {
+							ConceptStateConversion conversion = this.getConceptStateConversion(workflow, trigger);
+							if ( conversion != null ) {
+								// that means that there is a conversion to make for this workflow/trigger - let's try to change state
+								log.debug("Found conversion: " + conversion);
+								ProgramWorkflowState resultingState = conversion.getProgramWorkflowState();
+								
+								// this is the place to add logic about what conditions we'd want to actually convert for
+								if ( program.getActive(dateConverted) || !program.getCurrentState().getState().getTerminal() ) {
+									log.debug("Changing patient " + patient + " to state " + resultingState + " in workflow " + workflow);
+									this.changeToState(program, workflow, resultingState, dateConverted);									
+								} else {
+									if ( !program.getActive(dateConverted) ) log.debug("was about to change state, but failed because program not active");
+									if ( program.getCurrentState().getState().getTerminal() ) log.debug("was about to change state, but failed because current state is already terminal");
+								}
+							}
+						}
+					}
+
+					
+				}				
+			}
+		} else {
+			if ( patient == null ) throw new APIException("Attempting to convert state of an invalid patient");
+			if ( trigger == null ) throw new APIException("Attempting to convert state for a patient without a valid trigger concept");
+			if ( dateConverted == null ) throw new APIException("Invalid date for converting patient state");
+		}
+	}
+
+	public ConceptStateConversion getConceptStateConversion(ProgramWorkflow workflow, Concept trigger) {
+		log.debug("In getcsc with workflow: " + workflow + ", and trigger concept: " + trigger);
+		ConceptStateConversion ret = null;
+
+		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
+			throw new APIAuthenticationException("Privilege required: "
+					+ OpenmrsConstants.PRIV_VIEW_PROGRAMS);
+		
+		ret = getProgramWorkflowDAO().getConceptStateConversion(workflow, trigger);
+		
+		return ret;
 	}
 
 }

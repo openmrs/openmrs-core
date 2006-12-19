@@ -19,7 +19,7 @@
 		</tr>
 	</c:if>
 	<c:if test="${fn:length(programList) != 0}">
-		<table cellspacing="0" cellpadding="2" border="1">
+		<table cellspacing="0" cellpadding="2">
 			<tr>
 				<th> <spring:message code="general.id"/> </th>
 				<th> <spring:message code="general.name"/> </th>

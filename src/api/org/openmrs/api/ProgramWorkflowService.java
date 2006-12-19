@@ -3,6 +3,7 @@ package org.openmrs.api;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptStateConversion;
@@ -120,5 +121,14 @@ public interface ProgramWorkflowService {
 	@Transactional(readOnly=true)
 	public List<ConceptStateConversion> getAllConversions();
 
-	//public void convertState(Concept c);
+	public void triggerStateConversion(Patient patient, Concept reasonForExit, Date dateConverted);
+
+	@Transactional(readOnly=true)
+	public ConceptStateConversion getConceptStateConversion(ProgramWorkflow workflow, Concept trigger);
+
+	@Transactional(readOnly=true)
+	public Set<ProgramWorkflow> getCurrentWorkflowsByPatient(Patient patient);
+
+	@Transactional(readOnly=true)
+	public Set<ProgramWorkflow> getCurrentWorkflowsByPatientProgram(PatientProgram program);
 }
