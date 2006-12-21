@@ -275,13 +275,18 @@
 						/>
 					</td>
 				</c:forEach>
+				<c:forEach var="param" items="${formData.obsFieldParameters}">
+					<!-- TESTING: ${param} -->
+				</c:forEach>
 				<c:forEach var="formField" items="${formData.obsFields}" varStatus="iter">
 					<td>
 						<openmrs:fieldGen
 							type="${formData.obsFieldClasses[iter.index]}"
 							formFieldName="${patient.patientId}_obs_${iter.index}"
 							val=""
+							parameters="${formData.obsFieldParameters[iter.index]}"
 						/>
+						<!-- TESTING: parameters: ${formData.obsFieldParameters[iter.index]}, index: ${iter.index} -->
 						<%-- TODO: put units here for numeric concepts --%>
 						<br/>
 						<spring:message code="general.onDate"/>

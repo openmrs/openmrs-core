@@ -1,8 +1,14 @@
 package org.openmrs;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Form
@@ -333,6 +339,44 @@ public class Form implements java.io.Serializable {
 	 */
 	public Set<FormField> getFormFields() {
 		return formFields;
+	}
+
+	/**
+	 * @return Returns the formFields.
+	 */
+	public List<FormField> getOrderedFormFields() {
+		if ( this.formFields != null ) {
+			List<FormField> fieldList = new ArrayList<FormField>();
+			Set<FormField> fieldSet = new HashSet<FormField>();
+			fieldSet.addAll(this.formFields);
+			
+			int fieldSize = fieldSet.size();
+			
+			for ( int i = 0; i < fieldSize; i++ ) {
+				int fieldNum = 0;
+				FormField next = null;
+
+				for ( FormField ff : fieldSet ) {
+					if ( ff.getFieldNumber() != null ) {
+						if ( ff.getFieldNumber().intValue() < fieldNum || fieldNum == 0 ) {
+							fieldNum = ff.getFieldNumber().intValue();
+							next = ff;
+						}
+					} else {
+						if ( fieldNum == 0 ) {
+							next = ff;
+						}
+					}
+				}
+				
+				fieldList.add(next);
+				fieldSet.remove(next);
+			}
+						
+			return fieldList;
+		} else {
+			return null;
+		}
 	}
 
 	/**

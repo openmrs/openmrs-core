@@ -8,6 +8,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.exception.SQLStateConverter;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
@@ -871,6 +872,8 @@ public class PatientServiceImpl implements PatientService {
 	 * @throws APIException
 	 */
 	public void processDeath(Patient patient, Date dateDied, Concept causeOfDeath, String otherReason) {
+		SQLStateConverter s = null;
+		
 		if ( patient != null && dateDied != null && causeOfDeath != null ) {
 			// set appropriate patient characteristics
 			patient.setDead(true);

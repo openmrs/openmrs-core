@@ -30,6 +30,7 @@ public class BatchFormEntryModel {
 	private List<Class> obsFieldClasses;
 	private List<FormField> encounterFields;
 	private List<Class> encounterFieldClasses;
+	private List<String> obsFieldParameters;
 	private User provider;
 	private Location location;
 	private Date encounterDatetime;
@@ -106,6 +107,20 @@ public class BatchFormEntryModel {
 		this.obsFieldClasses = obsFieldClasses;
 	}
 
+	/**
+	 * @return Returns the obsFieldParameters.
+	 */
+	public List<String> getObsFieldParameters() {
+		return obsFieldParameters;
+	}
+
+	/**
+	 * @param obsFieldParameters The obsFieldParameters to set.
+	 */
+	public void setObsFieldParameters(List<String> obsFieldParameters) {
+		this.obsFieldParameters = obsFieldParameters;
+	}
+
 	public PatientSet getPatientSet() {
 		return patientSet;
 	}
@@ -156,7 +171,7 @@ public class BatchFormEntryModel {
 	public void getFieldsFromForm() {
 		List<FormField> obsFields = new ArrayList<FormField>();
 		List<FormField> encounterFields = new ArrayList<FormField>();
-		Set<FormField> fields = form.getFormFields();
+		List<FormField> fields = form.getOrderedFormFields();
 		for (FormField ff : fields) {
 			// for now we're only interested in children of the top-level Obs and Encounter fields
 			FormField parent = ff.getParent();
@@ -199,6 +214,8 @@ public class BatchFormEntryModel {
 					return Integer.class;
 			} else if (c.getDatatype().getHl7Abbreviation().equals(FormEntryConstants.HL7_DATE) || c.getDatatype().getHl7Abbreviation().equals(FormEntryConstants.HL7_DATETIME)) {
 				return Date.class; 
+			} else if (c.getDatatype().getHl7Abbreviation().equals(FormEntryConstants.HL7_CODED) || c.getDatatype().getHl7Abbreviation().equals(FormEntryConstants.HL7_CODED_WITH_EXCEPTIONS)) {
+				return Concept.class;
 			}
 			return String.class; 
 		}
@@ -216,5 +233,28 @@ public class BatchFormEntryModel {
 			for (FormField ff : obsFields)
 				obsFieldClasses.add(getAnswerType(ff));
 		}
+		if (obsFields != null) {
+			obsFieldParameters = new ArrayList<String>();
+			for (FormField ff : obsFields) {
+				String param = getParameters(ff);
+				obsFieldParameters.add(param);
+				log.debug("JUST ADDED [" + param + "]");
+			}
+		}
+	}
+
+	private String getParameters(FormField ff) {
+		String ret = "";
+		
+		if (ff.getField().getConcept() != null) {
+			Concept c = ff.getField().getConcept();
+			log.debug("concept, datatype: " + c.getDatatype().getName());
+			if (c.getDatatype().getHl7Abbreviation().equals(FormEntryConstants.HL7_CODED) || c.getDatatype().getHl7Abbreviation().equals(FormEntryConstants.HL7_CODED_WITH_EXCEPTIONS)) {
+				ret = "showAnswers=" + c.getConceptId().toString();
+				log.debug("USING PARAMETERS OF " + ret);			
+			}
+		}
+		
+		return ret;
 	}
 }
