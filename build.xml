@@ -267,6 +267,7 @@
 		<copy todir="${tomcat.home}/webapps/${webapp.name}">
 			<fileset dir="${dist.dir}/web">
 				<include name="**/*.jsp"/>
+				<include name="**/*.tag"/>
 				<include name="**/*.css"/>
 				<include name="**/*.js"/>
 				<include name="**/*.withjstl"/>
