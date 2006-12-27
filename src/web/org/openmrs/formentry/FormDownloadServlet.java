@@ -90,6 +90,7 @@ public class FormDownloadServlet extends HttpServlet {
 		velocityContext.put("date", new SimpleDateFormat("yyyyMMdd"));
 		velocityContext.put("time", new SimpleDateFormat("HH:mm:ss"));
 		velocityContext.put("sessionId", httpSession.getId());
+		velocityContext.put("uid", FormEntryUtil.generateFormUid());
 		
 		// add the error handler
 		EventCartridge ec = new EventCartridge();

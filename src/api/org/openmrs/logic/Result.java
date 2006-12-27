@@ -441,6 +441,10 @@ public class Result { // TODO: should implement List interface as well
 		this.valueNumeric = valueNumeric;
 	}
 	
+	public void setValueText(String valueText) {
+		this.valueText = valueText;
+	}
+	
 	public void debug() {
 		debug(0);
 	}

@@ -53,7 +53,9 @@
 		<property name="healthDistrict" type="java.lang.String"
 			column="health_district" length="255" />
 
-		<many-to-one name="healthCenter" class="org.openmrs.Location" column="health_center" />
+		<many-to-one name="healthCenter" class="Location">
+			<column name="health_center" />
+		</many-to-one>
 
 		<many-to-one name="creator" class="User">
 			<column name="creator" />

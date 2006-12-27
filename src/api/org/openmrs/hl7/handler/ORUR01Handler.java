@@ -31,8 +31,10 @@ import ca.uhn.hl7v2.model.Type;
 import ca.uhn.hl7v2.model.Varies;
 import ca.uhn.hl7v2.model.v25.datatype.CE;
 import ca.uhn.hl7v2.model.v25.datatype.CWE;
+import ca.uhn.hl7v2.model.v25.datatype.DLD;
 import ca.uhn.hl7v2.model.v25.datatype.DT;
 import ca.uhn.hl7v2.model.v25.datatype.DTM;
+import ca.uhn.hl7v2.model.v25.datatype.IS;
 import ca.uhn.hl7v2.model.v25.datatype.NM;
 import ca.uhn.hl7v2.model.v25.datatype.PL;
 import ca.uhn.hl7v2.model.v25.datatype.ST;
@@ -89,6 +91,9 @@ public class ORUR01Handler implements Application {
 			throw new ApplicationException(e);
 		}
 
+		if (log.isDebugEnabled())
+			log.debug("Finished processing ORU_R01 message");
+
 		return response;
 	}
 
@@ -108,32 +113,70 @@ public class ORUR01Handler implements Application {
 		ORC orc = getORC(oru); // we're using the ORC assoc with first OBR to
 		// hold data enterer and date entered for now
 
+		// Obtain message control id (unique ID for message from sending
+		// application)
+		String messageControlId = msh.getMessageControlID().getValue();
+		if (log.isDebugEnabled())
+			log.debug("Found HL7 message in inbound queue with control id = "
+					+ messageControlId);
+
 		HL7Service hl7Service = Context.getHL7Service();
 
 		// create the encounter
-		Encounter encounter = createEncounter(msh, pid, pv1, orc);
+		Patient patient = getPatient(pid);
+		if (log.isDebugEnabled())
+			log.debug("Processing HL7 message for patient "
+					+ patient.getPatientId());
+		Encounter encounter = createEncounter(msh, patient, pv1, orc);
+
+		try {
+			updateHealthCenter(patient, pv1);
+		} catch (Exception e) {
+			log.error("Error while processing Discharge To Location ("
+					+ messageControlId + ")", e);
+		}
 
 		// create observations
+		if (log.isDebugEnabled())
+			log.debug("Creating observations for message " + messageControlId
+					+ "...");
 		ORU_R01_PATIENT_RESULT patientResult = oru.getPATIENT_RESULT();
 		int numObr = patientResult.getORDER_OBSERVATIONReps();
 		for (int i = 0; i < numObr; i++) {
+			if (log.isDebugEnabled())
+				log.debug("Processing OBR (" + i + " of " + numObr + ")");
 			ORU_R01_ORDER_OBSERVATION orderObs = patientResult
 					.getORDER_OBSERVATION(i);
 			// OBR obr = orderObs.getOBR();
 			Hashtable<String, Vector<Obs>> obsGroups = null;
 			int numObs = orderObs.getOBSERVATIONReps();
 			for (int j = 0; j < numObs; j++) {
+				if (log.isDebugEnabled())
+					log.debug("Processing OBS (" + j + " of " + numObs + ")");
 				OBX obx = orderObs.getOBSERVATION(j).getOBX();
 				try {
+					if (log.isDebugEnabled())
+						log.debug("Parsing observation");
 					Obs obs = parseObs(encounter, obx);
 					if (obs != null) {
+						if (log.isDebugEnabled())
+							log.debug("Obs is not null");
 						String subId = obx.getObservationSubID().getValue();
+						if (log.isDebugEnabled())
+							log.debug("Obs sub id = " + subId);
 						if (subId != null && subId.length() > 0) {
 							if (obsGroups == null)
 								obsGroups = new Hashtable<String, Vector<Obs>>();
+							if (log.isDebugEnabled())
+								log.debug("Adding obs to obs group");
 							addToObsGroup(obsGroups, subId, obs);
-						} else
+						} else {
+							if (log.isDebugEnabled())
+								log.debug("Creating obs via API call");
 							Context.getObsService().createObs(obs);
+						}
+						if (log.isDebugEnabled())
+							log.debug("Done with this obs");
 					}
 				} catch (HL7Exception e) {
 					// Handle obs-level exceptions
@@ -142,22 +185,34 @@ public class ORUR01Handler implements Application {
 					hl7InError.setError(e.getMessage());
 					hl7InError.setErrorDetails(PipeParser.encode(obx,
 							new EncodingCharacters('|', "^~\\&")));
-					// hl7InError.setHL7Source()
+					hl7InError.setHL7SourceKey(messageControlId);
 					hl7Service.createHL7InError(hl7InError);
 				}
 			}
 			if (obsGroups != null && obsGroups.size() > 0) {
+				if (log.isDebugEnabled())
+					log.debug("Processing " + obsGroups.size()
+							+ " obs group(s)");
 				for (Vector<Obs> group : obsGroups.values()) {
 					Obs[] groupArray = new Obs[group.size()];
 					group.toArray(groupArray);
-					if (groupArray.length == 1)
+					if (groupArray.length == 1) {
+						if (log.isDebugEnabled())
+							log
+									.debug("Creating obs (single entry within obs group)");
 						Context.getObsService().createObs(groupArray[0]);
-					else if (groupArray.length > 1) {
+					} else if (groupArray.length > 1) {
+						if (log.isDebugEnabled())
+							log.debug("Creating obs group");
 						Context.getObsService().createObsGroup(groupArray);
 					}
 				}
+				if (log.isDebugEnabled())
+					log.debug("Finished creating obs group(s)");
 			}
 		}
+		if (log.isDebugEnabled())
+			log.debug("Finished creating observations");
 
 		return oru;
 
@@ -205,13 +260,12 @@ public class ORUR01Handler implements Application {
 	/**
 	 * Creates an encounter
 	 */
-	private Encounter createEncounter(MSH msh, PID pid, PV1 pv1, ORC orc)
+	private Encounter createEncounter(MSH msh, Patient patient, PV1 pv1, ORC orc)
 			throws HL7Exception {
 		Encounter encounter = new Encounter();
 
 		Date encounterDate = getEncounterDate(pv1);
 		User provider = getProvider(pv1);
-		Patient patient = getPatient(pid);
 		Location location = getLocation(pv1);
 		Form form = getForm(msh);
 		EncounterType encounterType = getEncounterType(msh, form);
@@ -226,6 +280,8 @@ public class ORUR01Handler implements Application {
 		encounter.setEncounterType(encounterType);
 		encounter.setCreator(enterer);
 		encounter.setDateCreated(dateEntered);
+		if (log.isDebugEnabled())
+			log.debug("Creating encounter");
 		Context.getEncounterService().createEncounter(encounter);
 
 		if (encounter == null || encounter.getEncounterId() == null
@@ -236,13 +292,20 @@ public class ORUR01Handler implements Application {
 	}
 
 	private Obs parseObs(Encounter encounter, OBX obx) throws HL7Exception {
-
+		if (log.isDebugEnabled())
+			log.debug("parsing observation: " + obx);
 		Varies[] values = obx.getObservationValue();
 		if (values == null || values.length < 1)
 			return null;
 		String hl7Datatype = values[0].getName();
+		if (log.isDebugEnabled())
+			log.debug("  datatype = " + hl7Datatype);
 		Concept concept = getConcept(obx);
+		if (log.isDebugEnabled())
+			log.debug("  concept = " + concept.getConceptId());
 		Date datetime = getDatetime(obx);
+		if (log.isDebugEnabled())
+			log.debug("  timestamp = " + datetime);
 		if (datetime == null)
 			datetime = encounter.getEncounterDatetime();
 
@@ -259,12 +322,18 @@ public class ORUR01Handler implements Application {
 			String value = ((NM) obx5).getValue();
 			obs.setValueNumeric(Double.valueOf(value));
 		} else if ("CWE".equals(hl7Datatype)) {
+			log.debug("  CWE observation");
 			CWE value = (CWE) obx5;
 			String valueIdentifier = value.getIdentifier().getValue();
+			log.debug("    value id = " + valueIdentifier);
 			String valueName = value.getText().getValue();
-			if (isConceptProposal(valueIdentifier))
+			log.debug("    value name = " + valueName);
+			if (isConceptProposal(valueIdentifier)) {
+				if (log.isDebugEnabled())
+					log.debug("Proposing concept");
 				proposeConcept(encounter, concept, valueName);
-			else {
+			} else {
+				log.debug("    not proposal");
 				try {
 					Concept valueConcept = new Concept();
 					valueConcept.setConceptId(new Integer(valueIdentifier));
@@ -282,6 +351,8 @@ public class ORUR01Handler implements Application {
 							+ valueName + "'");
 				}
 			}
+			if (log.isDebugEnabled())
+				log.debug("  Done with CWE");
 		} else if ("CE".equals(hl7Datatype)) {
 			CE value = (CE) obx5;
 			String valueIdentifier = value.getIdentifier().getValue();
@@ -336,7 +407,7 @@ public class ORUR01Handler implements Application {
 			int second) {
 		Calendar cal = Calendar.getInstance();
 		// Calendar.set(MONTH, int) is zero-based, Hl7 is not
-		cal.set(year, month-1, day, hour, minute, second);
+		cal.set(year, month - 1, day, hour, minute, second);
 		return cal.getTime();
 	}
 
@@ -360,10 +431,10 @@ public class ORUR01Handler implements Application {
 		DTM value = ts.getTime();
 		try {
 			datetime = getDate(value.getYear(), value.getMonth(), value
-				.getDay(), value.getHour(), value.getMinute(), value
-				.getSecond());
+					.getDay(), value.getHour(), value.getMinute(), value
+					.getSecond());
 		} catch (DataTypeException e) {
-			
+
 		}
 		return datetime;
 	}
@@ -411,7 +482,8 @@ public class ORUR01Handler implements Application {
 			throw new HL7Exception("Error parsing form id from message", e);
 		}
 
-		// must get entire form object in order to get its metadata (encounterType) later
+		// must get entire form object in order to get its metadata
+		// (encounterType) later
 		Form form = null;
 		if (formId != null)
 			form = Context.getFormService().getForm(formId);
@@ -479,6 +551,55 @@ public class ORUR01Handler implements Application {
 		conceptProposal.setEncounter(encounter);
 		conceptProposal.setObsConcept(concept);
 		Context.getConceptService().proposeConcept(conceptProposal);
+	}
+
+	private void updateHealthCenter(Patient patient, PV1 pv1) {
+		// Update patient's location if it has changed
+		if (log.isDebugEnabled())
+			log.debug("Checking for discharge to location");
+		DLD dld = pv1.getDischargedToLocation();
+		log.debug("DLD = " + dld);
+		if (dld == null)
+			return;
+		IS hl7DischargeToLocation = dld.getDischargeLocation();
+		log.debug("is = " + hl7DischargeToLocation);
+		if (hl7DischargeToLocation == null)
+			return;
+		String dischargeToLocation = hl7DischargeToLocation.getValue();
+		log.debug("dischargeToLocation = " + dischargeToLocation);
+		if (dischargeToLocation != null && dischargeToLocation.length() > 0) {
+			if (log.isDebugEnabled())
+				log.debug("Patient discharged to " + dischargeToLocation);
+			// Ignore anything past the first subcomponent (or component)
+			// delimiter
+			for (int i = 0; i < dischargeToLocation.length(); i++) {
+				char ch = dischargeToLocation.charAt(i);
+				if (ch == '&' || ch == '^') {
+					dischargeToLocation = dischargeToLocation.substring(0, i);
+					break;
+				}
+			}
+			Integer newLocationId = Integer.parseInt(dischargeToLocation);
+			// Hydrate a full patient object from patient object containing only
+			// identifier
+			patient = Context.getPatientService().getPatient(
+					patient.getPatientId());
+			Location currentHealthCenter = patient.getHealthCenter();
+			if (currentHealthCenter == null
+					|| !newLocationId.equals(currentHealthCenter
+							.getLocationId())) {
+				if (log.isDebugEnabled())
+					log.debug("Updating patient's location from "
+							+ currentHealthCenter.getLocationId() + " ("
+							+ currentHealthCenter.getName() + ") to "
+							+ newLocationId);
+				Location newHealthCenter = new Location();
+				newHealthCenter.setLocationId(newLocationId);
+				patient.setHealthCenter(newHealthCenter);
+				Context.getPatientService().updatePatient(patient);
+			}
+		}
+		log.debug("finished discharge to location method");
 	}
 
 }

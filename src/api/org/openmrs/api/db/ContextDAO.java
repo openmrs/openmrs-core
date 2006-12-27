@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Ben Wolfe
  * @version 1.1
  */
-@Transactional
 public interface ContextDAO {
 
 	/**
@@ -42,6 +41,7 @@ public interface ContextDAO {
 	/**
 	 * Clear session.
 	 */
+	@Transactional
 	public void clearSession();
 	
 	/**
@@ -49,18 +49,21 @@ public interface ContextDAO {
 	 * Should be called prior to any kind of activity
 	 * @param Properties
 	 */
+	@Transactional
 	public void startup(Properties props);
 	
 	/**
 	 * Stops the OpenMRS System
 	 * Should be called after all activity has ended and application is closing
 	 */
+	@Transactional
 	public void shutdown();
 	
 	/**
 	 * Compares core data against the current database and 
 	 * inserts data into the database where necessary
 	 */
+	@Transactional
 	public void checkCoreDataset();
 	
 }

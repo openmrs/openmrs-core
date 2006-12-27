@@ -49,6 +49,7 @@ public class ProcessHL7InQueueTask implements Schedulable {
 	 * entry from the database.
 	 */
 	public void run() {
+		Context.openSession();
 		try {
 			log.debug("Processing HL7 queue ... ");
 			if (Context.isAuthenticated() == false)
@@ -57,6 +58,8 @@ public class ProcessHL7InQueueTask implements Schedulable {
 		} catch (HL7Exception e) {
 			log.error("Error running hl7 in queue task", e);
 			throw new APIException("Error running hl7 error queue task", e);
+		} finally {
+			Context.closeSession();
 		}
 	}
 	

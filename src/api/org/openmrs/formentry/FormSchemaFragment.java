@@ -80,6 +80,7 @@ public class FormSchemaFragment {
 				+ "    <xs:element name=\"enterer\" type=\"xs:string\" />\n"
 				+ "    <xs:element name=\"date_entered\" type=\"xs:dateTime\" />\n"
 				+ "    <xs:element name=\"session\" type=\"xs:string\" />\n"
+				+ "    <xs:element name=\"uid\" type=\"xs:string\" />\n"
 				+ "  </xs:sequence>\n"
 				+ "</xs:complexType>\n\n"
 				+ "<xs:complexType name=\"_other_section\">\n"

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry output="build/api" kind="src" path="src/api"/>
-	<classpathentry output="build/web" kind="src" path="src/web"/>
-	<classpathentry excluding="org/openmrs/api/db/FormServiceTest.java|org/openmrs/AllTests.java" output="build/test/api" kind="src" path="test/api"/>
-	<classpathentry output="build/test/web" kind="src" path="test/web"/>
+	<classpathentry kind="src" output="build/api" path="src/api"/>
+	<classpathentry kind="src" output="build/web" path="src/web"/>
+	<classpathentry kind="src" output="build/test/api" path="test/api"/>
+	<classpathentry kind="src" output="build/test/web" path="test/web"/>
 	<classpathentry kind="lib" path="lib/ant-contrib/ant-contrib-1.0b2.jar"/>
 	<classpathentry kind="lib" path="lib/antlr/antlr_2.7.6.jar"/>
 	<classpathentry kind="lib" path="lib/cglib/cglib-2.1_3.jar"/>
@@ -37,10 +37,9 @@
 	<classpathentry kind="lib" path="lib/ibatis/ibatis-sqlmap-2.jar"/>
 	<classpathentry kind="lib" path="lib/tomcat/jsp-api.jar"/>
 	<classpathentry kind="lib" path="lib/tomcat/servlet-api.jar"/>
-	<!--  <classpathentry kind="lib" path="metadata/api/sqlmap"/> -->
 	<classpathentry kind="lib" path="lib/tomcat/catalina-ant.jar"/>
 	<classpathentry kind="lib" path="lib/dwr/dwr.jar"/>
-	<classpathentry kind="lib" path="lib/spring-framework/spring-1.2.5.jar"/>
+	<classpathentry kind="lib" path="lib/spring-framework/spring-1.2.5.jar" sourcepath="C:/Documents and Settings/burke/My Documents/spring-framework-1.2.8.zip"/>
 	<classpathentry kind="lib" path="lib/spring-framework/spring-mock.jar"/>
 	<classpathentry kind="lib" path="lib/velocity/velocity-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/commons-io/commons-io-1.1.jar"/>
@@ -48,7 +47,6 @@
 	<classpathentry kind="lib" path="lib/mail/mail.jar"/>
 	<classpathentry kind="lib" path="lib/saxon/saxon8.jar"/>
 	<classpathentry kind="lib" path="lib/saxon/saxon8-dom.jar"/>
-	<classpathentry kind="lib" path="lib/hl7api/hapi-0.5beta.jar"/>
 	<classpathentry kind="lib" path="lib/xerces/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="lib/xerces/xml-apis.jar"/>
 	<classpathentry kind="lib" path="lib/neal-reporting/reports.jar"/>
@@ -56,5 +54,6 @@
 	<classpathentry kind="lib" path="lib/jfreechart/jfreechart-1.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/jfreechart/jcommon-1.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta-log4j/log4j-1.2.13.jar"/>
+	<classpathentry kind="lib" path="lib/hl7api/hapi-0.5.jar" sourcepath="C:/hapi/hapi-0.5_source_core.zip"/>
 	<classpathentry kind="output" path="build/"/>
 </classpath>
