@@ -49,8 +49,14 @@ public class GlobalProperty {
 	public boolean equals(Object o) {
 		if (o instanceof GlobalProperty) {
 			GlobalProperty gp = (GlobalProperty)o;
-			if (property != null && property.equals(gp.getProperty()))
-				return true;
+			return (property != null && property.equals(gp.getProperty()));
+			/*
+			if (property != null && gp.getProperty() != null) {
+				String lowerProperty = property.toLowerCase();
+				String lowerOtherProperty = gp.getProperty().toLowerCase(); 
+				return lowerProperty.equals(lowerOtherProperty);
+			}
+			*/
 		}
 		
 		return false;

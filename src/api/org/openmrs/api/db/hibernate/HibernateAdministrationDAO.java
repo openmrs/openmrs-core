@@ -807,6 +807,13 @@ public class HibernateAdministrationDAO implements
 	@SuppressWarnings("unchecked")
     public void setGlobalProperties(List<GlobalProperty> props) throws DAOException {
 		log.debug("setting all global properties");
+		
+		// delete all properties not in this new list
+		for (GlobalProperty gp : getGlobalProperties()) {
+			if (!props.contains(gp))
+				deleteGlobalProperty(gp.getProperty());
+		}
+		
 		// add all of the new properties
 		for (GlobalProperty prop : props) {
 			if (prop.getProperty() != null && prop.getProperty().length() > 0) {
@@ -819,11 +826,6 @@ public class HibernateAdministrationDAO implements
 			}
 		}
 		
-		// delete all properties not in this new list
-		for (GlobalProperty gp : getGlobalProperties()) {
-			if (!props.contains(gp))
-				deleteGlobalProperty(gp.getProperty());
-		}
 	}
 
 	public void deleteGlobalProperty(String propertyName) throws DAOException { 
