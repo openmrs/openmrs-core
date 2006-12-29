@@ -22,7 +22,7 @@
 		</div>
 		<table id="patientHeaderGeneralInfo">
 			<tr>
-				<td id="patientHeaderPatientGender" style="background-color: #ffffff; width: 40px;">
+				<td id="patientHeaderPatientGender">
 					<c:if test="${model.patient.gender == 'M'}"><img src="${pageContext.request.contextPath}/images/male.gif" alt='<spring:message code="Patient.gender.male"/>'/></c:if>
 					<c:if test="${model.patient.gender == 'F'}"><img src="${pageContext.request.contextPath}/images/female.gif" alt='<spring:message code="Patient.gender.female"/>'/></c:if>
 				</td>
