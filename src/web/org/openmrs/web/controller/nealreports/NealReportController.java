@@ -421,6 +421,7 @@ public class NealReportController implements Controller {
 					}
 					in.close();
 					out.flush();
+					System.gc();
 					f.delete();
 				}
 	    	};

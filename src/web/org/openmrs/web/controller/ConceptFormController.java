@@ -40,7 +40,7 @@ import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
-import org.springframework.web.bind.RequestUtils;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -96,7 +96,7 @@ public class ConceptFormController extends SimpleFormController {
 			
 			if (!action.equals(msa.getMessage("Concept.delete"))) {
 	
-				String isSet = RequestUtils.getStringParameter(request, "conceptSet", "");
+				String isSet = ServletRequestUtils.getStringParameter(request, "conceptSet", "");
 				if (isSet.equals(""))
 					concept.setSet(false);
 				else
@@ -236,7 +236,7 @@ public class ConceptFormController extends SimpleFormController {
 				}
 			}
 			else {
-				String isSet = RequestUtils.getStringParameter(request, "conceptSet", "");
+				String isSet = ServletRequestUtils.getStringParameter(request, "conceptSet", "");
 				if (isSet.equals(""))
 					concept.setSet(false);
 				else

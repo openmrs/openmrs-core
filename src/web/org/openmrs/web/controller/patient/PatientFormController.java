@@ -29,10 +29,9 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientName;
 import org.openmrs.Tribe;
 import org.openmrs.api.APIException;
+import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
-import org.openmrs.formentry.FormEntryService;
-import org.openmrs.util.Format;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
@@ -46,8 +45,8 @@ import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
-import org.springframework.web.bind.RequestUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
@@ -93,7 +92,8 @@ public class PatientFormController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 			
-			FormEntryService ps = Context.getFormEntryService();
+			PatientService ps = Context.getPatientService();
+			EncounterService es = Context.getEncounterService();
 			Object[] objs = null;
 			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
@@ -119,7 +119,7 @@ public class PatientFormController extends SimpleFormController {
 								PatientIdentifier pi = new PatientIdentifier();
 								pi.setIdentifier(id);
 								pi.setIdentifierType(ps.getPatientIdentifierType(Integer.valueOf(idTypes[i])));
-								pi.setLocation(ps.getLocation(Integer.valueOf(locs[i])));
+								pi.setLocation(es.getLocation(Integer.valueOf(locs[i])));
 								patient.addIdentifier(pi);
 							}
 						}
@@ -127,16 +127,16 @@ public class PatientFormController extends SimpleFormController {
 					
 				// Patient Address
 				
-					String [] add1s = RequestUtils.getStringParameters(request, "address1");
-					String [] add2s = RequestUtils.getStringParameters(request, "address2");
-					String [] cities = RequestUtils.getStringParameters(request, "cityVillage");
-					String [] states = RequestUtils.getStringParameters(request, "stateProvince");
-					String [] countries = RequestUtils.getStringParameters(request, "country");
-					String [] lats = RequestUtils.getStringParameters(request, "latitude");
-					String [] longs = RequestUtils.getStringParameters(request, "longitude");
-					String [] pCodes = RequestUtils.getStringParameters(request, "postalCode");
-					String [] counties = RequestUtils.getStringParameters(request, "countyDistrict");
-					String [] cells = RequestUtils.getStringParameters(request, "neighborhoodCell");
+					String [] add1s = ServletRequestUtils.getStringParameters(request, "address1");
+					String [] add2s = ServletRequestUtils.getStringParameters(request, "address2");
+					String [] cities = ServletRequestUtils.getStringParameters(request, "cityVillage");
+					String [] states = ServletRequestUtils.getStringParameters(request, "stateProvince");
+					String [] countries = ServletRequestUtils.getStringParameters(request, "country");
+					String [] lats = ServletRequestUtils.getStringParameters(request, "latitude");
+					String [] longs = ServletRequestUtils.getStringParameters(request, "longitude");
+					String [] pCodes = ServletRequestUtils.getStringParameters(request, "postalCode");
+					String [] counties = ServletRequestUtils.getStringParameters(request, "countyDistrict");
+					String [] cells = ServletRequestUtils.getStringParameters(request, "neighborhoodCell");
 					
 					if (add1s != null || add2s != null || cities != null || states != null || countries != null
 							|| lats != null || longs != null || pCodes != null || counties != null || cells != null ) {
@@ -196,13 +196,13 @@ public class PatientFormController extends SimpleFormController {
 					}
 	
 					//String[] prefs = request.getParameterValues("preferred");  (unreliable form info)
-					String[] gNames = RequestUtils.getStringParameters(request, "givenName");
-					String[] mNames = RequestUtils.getStringParameters(request, "middleName");
-					String[] fNamePrefixes = RequestUtils.getStringParameters(request, "familyNamePrefix");
-					String[] fNames = RequestUtils.getStringParameters(request, "familyName");
-					String[] fName2s = RequestUtils.getStringParameters(request, "familyName2");
-					String[] fNameSuffixes = RequestUtils.getStringParameters(request, "familyNameSuffix");
-					String[] degrees = RequestUtils.getStringParameters(request, "degree");
+					String[] gNames = ServletRequestUtils.getStringParameters(request, "givenName");
+					String[] mNames = ServletRequestUtils.getStringParameters(request, "middleName");
+					String[] fNamePrefixes = ServletRequestUtils.getStringParameters(request, "familyNamePrefix");
+					String[] fNames = ServletRequestUtils.getStringParameters(request, "familyName");
+					String[] fName2s = ServletRequestUtils.getStringParameters(request, "familyName2");
+					String[] fNameSuffixes = ServletRequestUtils.getStringParameters(request, "familyNameSuffix");
+					String[] degrees = ServletRequestUtils.getStringParameters(request, "degree");
 					
 					if (gNames != null) {
 						for (int i = 0; i < gNames.length; i++) {
@@ -318,7 +318,7 @@ public class PatientFormController extends SimpleFormController {
 			else {
 				//boolean isNew = (patient.getPatientId() == null);
 				
-				Context.getFormEntryService().updatePatient(patient);
+				Context.getPatientService().updatePatient(patient);
 
 				if ( patient.getDead() ) {
 					log.debug("Patient is dead, so let's make sure there's an Obs for it");
@@ -377,7 +377,90 @@ public class PatientFormController extends SimpleFormController {
 									if ( conceptOther != null ) {
 										if ( conceptOther.equals(currCause) ) {
 											// seems like this is an other concept - let's try to get the "other" field info
-											String otherInfo = RequestUtils.getStringParameter(request, "causeOfDeath_other", "");
+											String otherInfo = ServletRequestUtils.getStringParameter(request, "causeOfDeath_other", "");
+											log.debug("Setting value_text as " + otherInfo);
+											obsDeath.setValueText(otherInfo);
+										} else {
+											log.debug("New concept is NOT the OTHER concept, so setting to blank");
+											obsDeath.setValueText("");
+										}
+									} else {
+										log.debug("Don't seem to know about an OTHER concept, so deleting value_text");
+										obsDeath.setValueText("");
+									}
+									
+									Context.getObsService().updateObs(obsDeath);
+								} else {
+									log.debug("Current cause is still null - aborting mission");
+								}
+							}
+						}
+					} else {
+						log.debug("Cause of death is null - should not have gotten here without throwing an error on the form.");
+					}
+					
+				}
+								
+				Context.getPatientService().updatePatient(patient);
+
+				if ( patient.getDead() ) {
+					log.debug("Patient is dead, so let's make sure there's an Obs for it");
+					// need to make sure there is an Obs that represents the patient's cause of death, if applicable
+
+					String codProp = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
+					Concept causeOfDeath = Context.getConceptService().getConceptByIdOrName(codProp);
+
+					if ( causeOfDeath != null ) {
+						Set<Obs> obssDeath = Context.getObsService().getObservations(patient, causeOfDeath);
+						if ( obssDeath != null ) {
+							if ( obssDeath.size() > 1 ) {
+								log.error("Multiple causes of death (" + obssDeath.size() + ")?  Shouldn't be...");
+							} else {
+								Obs obsDeath = null;
+								if ( obssDeath.size() == 1 ) {
+									// already has a cause of death - let's edit it.
+									log.debug("Already has a cause of death, so changing it");
+									
+									obsDeath = obssDeath.iterator().next();
+									
+								} else {
+									// no cause of death obs yet, so let's make one
+									log.debug("No cause of death yet, let's create one.");
+									
+									obsDeath = new Obs();
+									obsDeath.setPatient(patient);
+									obsDeath.setConcept(causeOfDeath);
+									Location loc = Context.getEncounterService().getLocationByName("Unknown Location");
+									if ( loc == null ) loc = Context.getEncounterService().getLocation(new Integer(1));
+									if ( loc == null ) loc = patient.getHealthCenter();
+									if ( loc != null ) obsDeath.setLocation(loc);
+									else log.error("Could not find a suitable location for which to create this new Obs");
+								}
+								
+								// put the right concept and (maybe) text in this obs
+								Concept currCause = patient.getCauseOfDeath();
+								if ( currCause == null ) {
+									// set to NONE
+									log.debug("Current cause is null, attempting to set to NONE");
+									String noneConcept = Context.getAdministrationService().getGlobalProperty("concept.none");
+									currCause = Context.getConceptService().getConceptByIdOrName(noneConcept);
+								}
+								
+								if ( currCause != null ) {
+									log.debug("Current cause is not null, setting to value_coded");
+									obsDeath.setValueCoded(currCause);
+									
+									Date dateDeath = patient.getDeathDate();
+									if ( dateDeath == null ) dateDeath = new Date();
+									obsDeath.setObsDatetime(dateDeath);
+
+									// check if this is an "other" concept - if so, then we need to add value_text
+									String otherConcept = Context.getAdministrationService().getGlobalProperty("concept.otherNonCoded");
+									Concept conceptOther = Context.getConceptService().getConceptByIdOrName(otherConcept);
+									if ( conceptOther != null ) {
+										if ( conceptOther.equals(currCause) ) {
+											// seems like this is an other concept - let's try to get the "other" field info
+											String otherInfo = ServletRequestUtils.getStringParameter(request, "causeOfDeath_other", "");
 											log.debug("Setting value_text as " + otherInfo);
 											obsDeath.setValueText(otherInfo);
 										} else {
@@ -424,7 +507,7 @@ public class PatientFormController extends SimpleFormController {
 		Patient patient = null;
 		
 		if (Context.isAuthenticated()) {
-			FormEntryService ps = Context.getFormEntryService();
+			PatientService ps = Context.getPatientService();
 			String patientId = request.getParameter("patientId");
 	    	if (patientId != null) {
 	    		patient = ps.getPatient(Integer.valueOf(patientId));
@@ -456,7 +539,7 @@ public class PatientFormController extends SimpleFormController {
 			boolean onlyPublishedForms = true;
 			if (Context.hasPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY_VIEW_UNPUBLISHED_FORMS))
 				onlyPublishedForms = false;
-			forms.addAll(Context.getFormEntryService().getForms(onlyPublishedForms));
+			forms.addAll(Context.getFormService().getForms(onlyPublishedForms));
 			
 			Set<Encounter> encs = Context.getEncounterService().getEncounters(patient);
 			if (encs != null && encs.size() > 0)

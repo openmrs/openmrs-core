@@ -99,14 +99,12 @@
 
 <br/>
 <a href="formEdit.form?formId=${form.formId}"><spring:message code="Form.editProperties" /></a>
-<c:if test="${form.formId != 1}"> |
-	<a href="${pageContext.request.contextPath}/formDownload?target=schema&formId=${form.formId}"><spring:message code="Form.downloadSchema" /></a> |
-	<a href="${pageContext.request.contextPath}/formDownload?target=template&formId=${form.formId}"><spring:message code="Form.downloadTemplate" /></a> |
-	<a href="${pageContext.request.contextPath}/formDownload?target=xsn&formId=${form.formId}"><spring:message code="Form.downloadXSN" /></a> |
-	<a href="${pageContext.request.contextPath}/formDownload?target=rebuild&formId=${form.formId}" title='<spring:message code="Form.rebuildXSN.title"/>'><spring:message code="Form.rebuildXSN" /></a>
-	<openmrs:hasPrivilege privilege="Upload XSN">
-		| <a href="${pageContext.request.contextPath}/admin/formentry/xsnUpload.form"><spring:message code="FormEntry.xsn.manage"/></a>		
-	</openmrs:hasPrivilege>
+<c:if test="${form.formId != 1}">
+	<openmrs:extensionPoint pointId="org.openmrs.admin.forms.formHeader" type="html" parameters="formId=${form.formId}">
+		<c:forEach items="${extension.links}" var="link">
+			| <a href="${pageContext.request.contextPath}/${link.key}"><spring:message code="${link.value}"/></a>
+		</c:forEach>
+	</openmrs:extensionPoint>
 </c:if>
 
 <br/><br/>

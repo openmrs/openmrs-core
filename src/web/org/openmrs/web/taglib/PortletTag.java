@@ -10,6 +10,8 @@ import javax.servlet.jsp.PageContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.taglibs.standard.tag.common.core.ImportSupport;
+import org.openmrs.module.Module;
+import org.openmrs.module.ModuleFactory;
 import org.openmrs.util.OpenmrsUtil;
 
 public class PortletTag extends ImportSupport {
@@ -26,7 +28,8 @@ public class PortletTag extends ImportSupport {
 	private Integer encounterId = null;
 	private Integer userId = null;
 	private String patientIds = "";
-	
+	private String moduleId = "";
+
 	public PageContext getPageContext() {
 		return this.pageContext;
 	}
@@ -42,10 +45,23 @@ public class PortletTag extends ImportSupport {
 				// all portlets are contained in the /WEB-INF/view/portlets/ folder and end with .portlet
 				if (!url.endsWith("portlet"))
 					url += ".portlet";
-				url = "/portlets/" + url;
+				
+				// module specific portlets are in /WEB-INF/view/module/*/portlets/
+				if (moduleId != null && moduleId.length() > 0) {
+					Module mod = ModuleFactory.getModuleById(moduleId);
+					if (mod == null)
+						log.warn("no module found with id: " + moduleId);
+					else
+						url = "/module/" + moduleId + "/portlets/" + url;	
+				}
+				else
+					url = "/portlets/" + url;
 				
 				// opening portlet tag
-				pageContext.getOut().print("<div class='portlet' id='" + id + "'>");
+				if (moduleId != null && moduleId.length() > 0)
+					pageContext.getOut().print("<div class='portlet' id='" + moduleId + "." + id + "'>");
+				else
+					pageContext.getOut().print("<div class='portlet' id='" + id + "'>");
 				
 				// add attrs to request so that the controller (and portlet) can see/use them
 				pageContext.getRequest().setAttribute("org.openmrs.portlet.id", id);
@@ -83,7 +99,7 @@ public class PortletTag extends ImportSupport {
 	}
 	
 	private void resetValues() {
-		id = parameters = patientIds = "";
+		id = parameters = patientIds = moduleId = "";
 		patientId = encounterId = userId = null;
 		parameterMap = null;
 	}
@@ -156,6 +172,12 @@ public class PortletTag extends ImportSupport {
 		this.parameterMap = parameterMap;
 	}
 	
-	
+	public String getModuleId() {
+		return moduleId;
+	}
+
+	public void setModuleId(String moduleId) {
+		this.moduleId = moduleId;
+	}
 	
 }

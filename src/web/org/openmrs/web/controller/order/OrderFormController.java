@@ -27,7 +27,7 @@ import org.openmrs.web.propertyeditor.UserEditor;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.validation.BindException;
-import org.springframework.web.bind.RequestUtils;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -109,14 +109,14 @@ public class OrderFormController extends SimpleFormController {
 		Order order = null;
 		
 		if (Context.isAuthenticated()) {
-			Integer orderId = RequestUtils.getIntParameter(request, "orderId");
+			Integer orderId = ServletRequestUtils.getIntParameter(request, "orderId");
 	    	if (orderId != null) order = os.getOrder(orderId);	
 		}
 		
 		// if this is a new order, let's see if the user has picked a type yet
 		if (order == null) {
 			order = new Order();
-			Integer orderTypeId = RequestUtils.getIntParameter(request, "orderTypeId");
+			Integer orderTypeId = ServletRequestUtils.getIntParameter(request, "orderTypeId");
 			if ( orderTypeId != null ) {
 				OrderType ot = os.getOrderType(orderTypeId);
 				order.setOrderType(ot);

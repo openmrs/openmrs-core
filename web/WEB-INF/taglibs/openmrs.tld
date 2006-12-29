@@ -244,6 +244,12 @@
 		<type>java.util.Map</type>
 	</attribute>
 	<attribute>
+		<name>moduleId</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
 		<name>patientId</name>
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
@@ -806,7 +812,37 @@
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 </tag>
-	
+
+<tag>
+	<description>
+		Loops over all the objects associated with this extension point
+		modules assign themselves to a point via the module.xml descriptor file
+	</description>
+	<name>extensionPoint</name>
+	<tag-class>org.openmrs.module.web.taglib.ExtensionPointTag</tag-class>
+	<body-content>JSP</body-content>
+	<attribute>
+		<name>pointId</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>type</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<description>
+			A string in the form of "key=value|key2=value2".   
+			e.g. "size=compact|order=date"
+		</description>
+		<name>parameters</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+</tag>
+
 <function>
 	<name>sort</name>
 	<function-class>org.openmrs.web.taglib.functions.Sort</function-class>

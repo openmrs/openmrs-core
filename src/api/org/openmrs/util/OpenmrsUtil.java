@@ -1,11 +1,18 @@
 package org.openmrs.util;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -22,6 +29,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -101,7 +110,7 @@ public class OpenmrsUtil {
 	 * @param id
 	 * @return true/false whether id has a valid check digit
 	 * @throws Exception
-	 *             on invalid characters and invalid id formation
+	 *			 on invalid characters and invalid id formation
 	 */
 	public static boolean isValidCheckDigit(String id) throws Exception {
 
@@ -237,6 +246,25 @@ public class OpenmrsUtil {
 	}
 	
 	/**
+	 * Look for a file named <code>filename</code> in folder
+	 * 
+	 * @param folder
+	 * @param filename
+	 * @return true/false whether filename exists in folder
+	 */
+	public static boolean folderContains(File folder, String filename) {
+		if (folder == null) return false;
+		if (!folder.isDirectory()) return false;
+		
+		for (File f : folder.listFiles()) {
+			if (f.getName().equals(filename))
+				return true;
+		}
+		return false;
+	}
+	
+	
+	/**
 	 * Initialize global settings
 	 * Find and load modules
 	 * 
@@ -291,16 +319,6 @@ public class OpenmrsUtil {
 			val = OpenmrsConstants.DATABASE_NAME;
 		OpenmrsConstants.DATABASE_BUSINESS_NAME = val;
 		
-		//val = p.getProperty("module_repository_path", null);
-		//if (val != null)
-		//	OpenmrsConstants.MODULE_REPOSITORY_PATH = val;
-		
-		// Load OpenMRS Modules
-		//ModuleUtil.loadModules();
-		
-		//for (Module mod : ModuleUtil.getModules()) {
-		//	mod.startup(p);
-		//}
 	}
 	
 	
@@ -421,6 +439,8 @@ public class OpenmrsUtil {
 	 * @return a String representing the toString() of all elements in c, separated by separator
 	 */
 	public static <E extends Object> String join(Collection<E> c, String separator) {
+		if (c == null) return "";
+		
 		StringBuilder ret = new StringBuilder();
 		for (Iterator i = c.iterator(); i.hasNext(); ) {
 			ret.append(i.next());
@@ -590,4 +610,118 @@ public class OpenmrsUtil {
 		return new Date(d1.getTime());
 	}
 
+	public static boolean deleteDirectory(File dir) throws IOException {
+		if (!dir.exists() || !dir.isDirectory())
+			throw new IOException("Could not delete directory '" + dir.getAbsolutePath()
+				+ "' (not a directory)");
+		log.debug("Deleting directory " + dir.getAbsolutePath());
+		File[] fileList = dir.listFiles();
+		for (File f : fileList) {
+			if (f.isDirectory())
+				deleteDirectory(f);
+			boolean success = f.delete();
+			log.debug("   deleting " + f.getName() + " : " + (success ? "ok" : "failed"));
+		}
+		boolean success = dir.delete();
+		if (success)
+			log.debug("   ...and directory itself");
+		else
+			log.warn("   ...could not remove directory: " + dir.getAbsolutePath());
+		return success;
+	}
+	
+	/**
+	 * Utility method to convert local URL to a {@link File} object.
+	 * @param url an URL
+	 * @return file object for given URL or <code>null</code> if URL is not
+	 *		 local
+	 */
+	public static File url2file(final URL url) {
+		if (!"file".equalsIgnoreCase(url.getProtocol())) {
+			return null;
+		}	
+		return new File(url.getFile().replaceAll("%20", " "));
+	}
+	
+	/**
+     * Opens input stream for given resource. This method behaves differently
+     * for different URL types:
+     * <ul>
+     *   <li>for <b>local files</b> it returns buffered file input stream;</li>
+     *   <li>for <b>local JAR files</b> it reads resource content into memory
+     *     buffer and returns byte array input stream that wraps those
+     *     buffer (this prevents locking JAR file);</li>
+     *   <li>for <b>common URL's</b> this method simply opens stream to that URL
+     *     using standard URL API.</li>
+     * </ul>
+     * It is not recommended to use this method for big resources within JAR
+     * files.
+     * @param url resource URL
+     * @return input stream for given resource
+     * @throws IOException if any I/O error has occurred
+     */
+    public static InputStream getResourceInputStream(final URL url)
+            throws IOException {
+        File file = url2file(url);
+        if (file != null) {
+            return new BufferedInputStream(new FileInputStream(file));
+        }
+        if (!"jar".equalsIgnoreCase(url.getProtocol())) {
+            return url.openStream();
+        }
+        String urlStr = url.toExternalForm();
+        if (urlStr.endsWith("!/")) {
+            //JAR URL points to a root entry
+            throw new FileNotFoundException(url.toExternalForm());
+        }
+        int p = urlStr.indexOf("!/");
+        if (p == -1) {
+            throw new MalformedURLException(url.toExternalForm());
+        }
+        String path = urlStr.substring(p + 2);
+        file = url2file(new URL(urlStr.substring(4, p)));
+        if (file == null) {// non-local JAR file URL
+            return url.openStream();
+        }
+        JarFile jarFile = new JarFile(file);
+        try {
+            ZipEntry entry = jarFile.getEntry(path);
+            if (entry == null) {
+                throw new FileNotFoundException(url.toExternalForm());
+            }
+            InputStream in = jarFile.getInputStream(entry);
+            try {
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                copyFile(in, out);
+                return new ByteArrayInputStream(out.toByteArray());
+            } finally {
+                in.close();
+            }
+        } finally {
+            jarFile.close();
+        }
+    }
+    
+    /**
+     * @return The path to the directory on the file system that will hold miscellaneous
+     * 			data about the application (runtime properties, modules, etc)
+     */
+    public static String getApplicationDataDirectory() {
+    	String filepath;
+    	
+    	if (OpenmrsConstants.OPERATING_SYSTEM_LINUX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM))
+			filepath = System.getProperty("user.home") + File.separator + ".OpenMRS";
+		else
+			filepath = System.getProperty("user.home") + File.separator + 
+					"Application Data" + File.separator + 
+					"OpenMRS";
+				
+		filepath = filepath + File.separator;
+		
+		File folder = new File(filepath);
+		if (!folder.exists())
+			folder.mkdirs();
+		
+		return filepath;
+    }
 }

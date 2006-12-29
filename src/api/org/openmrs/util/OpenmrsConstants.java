@@ -8,8 +8,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Vector;
 
-import org.openmrs.api.context.Context;
-import org.openmrs.formentry.FormEntryConstants;
+import org.openmrs.GlobalProperty;
+import org.openmrs.Privilege;
+import org.openmrs.module.ModuleFactory;
 import org.openmrs.scheduler.SchedulerConstants;
 
 public class OpenmrsConstants {
@@ -18,6 +19,7 @@ public class OpenmrsConstants {
 	public static final int CONCEPT_CLASS_DRUG = 3;
 	
 	public static final String OPENMRS_VERSION = "@OPENMRS.VERSION.LONG@";
+	public static final String OPENMRS_VERSION_SHORT = "@OPENMRS.VERSION.SHORT@";
 	public static final String DATABASE_VERSION_EXPECTED = "@DATABASE.VERSION.EXPECTED@";
 	public static String DATABASE_VERSION = "";	// loaded from (Hibernate)Util.checkDatabaseVersion
 	public static String DATABASE_NAME = "openmrs";
@@ -143,6 +145,7 @@ public class OpenmrsConstants {
 	public static final String PRIV_DASHBOARD_SUMMARY = "Patient Dashboard - View Patient Summary";
 	
 	public static final String PRIV_MANAGE_GLOBAL_PROPERTIES = "Manage Global Properties";
+	public static final String PRIV_MANAGE_MODULES = "Manage Modules";
 	
 	public static final Map<String, String> CORE_PRIVILEGES() {
 		Map<String, String> privs = new HashMap<String, String>();
@@ -222,6 +225,11 @@ public class OpenmrsConstants {
 		privs.put(PRIV_DASHBOARD_SUMMARY, "Able to view the 'Summary' tab on the patient dashboard");
 		
 		privs.put(PRIV_MANAGE_GLOBAL_PROPERTIES, "Able to add/edit/delete global properties");
+		privs.put(PRIV_MANAGE_MODULES, "Able to add/remove modules to the system");
+		
+		for (Privilege privilege : ModuleFactory.getPrivileges()) {
+			privs.put(privilege.getPrivilege(), privilege.getDescription());
+		}
 		
 		return privs;
 	}
@@ -265,7 +273,6 @@ public class OpenmrsConstants {
 		props.put("dashboard.encounters.usePages", "smart"); // known values: 'true', 'false', 'smart'
 		props.put("dashboard.encounters.showViewLink", "true");
 		props.put("dashboard.encounters.showEditLink", "true");
-		props.put("patientForms.goBackOnEntry", "false");
 		
 		props.put("concept.weight", "5089");
 		props.put("concept.cd4_count", "5497");
@@ -286,12 +293,9 @@ public class OpenmrsConstants {
 		props.put("scheduler.username", SchedulerConstants.SCHEDULER_USERNAME);
 		props.put("scheduler.password", SchedulerConstants.SCHEDULER_PASSWORD);
 		
-		// TODO should be changed to text defaults and constants should be removed
-		props.put("formentry.infopath_output_dir", FormEntryConstants.FORMENTRY_INFOPATH_OUTPUT_DIR);
-		props.put("formentry.infopath_server_url", FormEntryConstants.FORMENTRY_INFOPATH_SERVER_URL);
-		props.put("formentry.infopath_taskpane_caption", FormEntryConstants.FORMENTRY_INFOPATH_TASKPANE_CAPTION);
-		props.put("formentry.infopath_archive_date_format", FormEntryConstants.FORMENTRY_INFOPATH_ARCHIVE_DATE_FORMAT);
-		props.put("formentry.infopath_archive_dir", FormEntryConstants.FORMENTRY_INFOPATH_ARCHIVE_DIR);
+		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
+			props.put(gp.getProperty(), gp.getPropertyValue());
+		}
 		
 		return props;
 	}
@@ -384,11 +388,7 @@ public class OpenmrsConstants {
 	public static final String REPORT_OBJECT_TYPE_PATIENTFILTER 		= "Patient Filter";
 	public static final String REPORT_OBJECT_TYPE_PATIENTDATAPRODUCER 	= "Patient Data Producer";
 	
-	
-	public static String MODULE_REPOSITORY_PATH = "modules";
-	
-	
-	// Used for FormEntry XSN upload/download (differences between windows/linux)
+	// Used for differences between windows/linux upload capabilities)
 	// Used for determining where to find runtime properties
 	public static String OPERATING_SYSTEM_KEY = "os.name";
 	public static String OPERATING_SYSTEM = System.getProperty(OPERATING_SYSTEM_KEY);

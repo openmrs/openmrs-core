@@ -277,6 +277,7 @@ table#patientHeaderGeneralInfo {
 	
 table td#patientHeaderPatientGender {
 	padding: 0px;
+	width: 25px;
 }
 
 #patientHeaderPatientAge, #patientHeaderPatientTribe, #patientHeaderHealthCenter, #patientHeaderPatientSummary, #patientHeaderOutcome, #patientHeaderShowMoreIdentifiers {

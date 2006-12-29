@@ -25,7 +25,7 @@ import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.RequestUtils;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -81,12 +81,12 @@ public class DataExportFormController extends SimpleFormController {
 					if (patientId != null && !patientId.equals("")) 
 						report.addPatientId(Integer.valueOf(patientId));
 			
-			Integer location = RequestUtils.getIntParameter(request, "location", 0);
+			Integer location = ServletRequestUtils.getIntParameter(request, "location", 0);
 			if (location > 0)
 				report.setLocation(Context.getEncounterService().getLocation(location));
 			
-			//String startDate = RequestUtils.getStringParameter(request, "startDate", "");
-			//String endDate = RequestUtils.getStringParameter(request, "endDate", "");
+			//String startDate = ServletRequestUtils.getStringParameter(request, "startDate", "");
+			//String endDate = ServletRequestUtils.getStringParameter(request, "endDate", "");
 			//if (!startDate.equals(""))
 			//	report.setStartDate(dateFormat.parse(startDate));
 			//if (!endDate.equals(""))
@@ -139,13 +139,13 @@ public class DataExportFormController extends SimpleFormController {
 				}
 			}
 			
-			String saveAsNew = RequestUtils.getStringParameter(request, "saveAsNew", "");
+			String saveAsNew = ServletRequestUtils.getStringParameter(request, "saveAsNew", "");
 			if (!saveAsNew.equals(""))
 				report.setReportObjectId(null);
 			
 			Context.getReportService().updateReportObject(report);
 			
-			String action = RequestUtils.getRequiredStringParameter(request, "action");
+			String action = ServletRequestUtils.getRequiredStringParameter(request, "action");
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			if (action.equals(msa.getMessage("DataExport.save"))) {
 				view = getSuccessView();

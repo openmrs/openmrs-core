@@ -14,13 +14,6 @@
 		<openmrs:htmlInclude file="/openmrs.css" />
 		<openmrs:htmlInclude file="/style.css" />
 		<openmrs:htmlInclude file="/openmrs.js" />
-		<c:if test="<%= request.getRequestURI().contains("taskpane") || (session.getAttribute("__openmrs_login_redirect")!=null && ((String)session.getAttribute("__openmrs_login_redirect")).contains("taskpane")) %>">
-			<openmrs:htmlInclude file="/formentry/taskpane/taskpane.css" />
-			<openmrs:htmlInclude file="/formentry/taskpane/taskpane.js" />
-			<meta http-equiv="msthemecompatible" content="yes" />
-			<meta http-equiv="pragma" content="no-cache" />
-			<meta http-equiv="expires" content="-1" />
-		</c:if>
 	</head>
 
 <body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">

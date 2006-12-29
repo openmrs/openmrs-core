@@ -13,7 +13,6 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.FormDAO;
-import org.openmrs.formentry.FormSchemaBuilder;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -44,16 +43,6 @@ public class FormServiceImpl implements FormService {
 	
 	public void setFormDAO(FormDAO dao) {
 		this.dao = dao;
-	}
-	
-	/**
-	 * Returns XML Schema for form based on the defined fields
-	 * 
-	 * @param form
-	 * @return XML Schema for form
-	 */
-	public String getSchema(Form form) {
-		return new FormSchemaBuilder(form).getSchema();
 	}
 	
 	/****************************************************************

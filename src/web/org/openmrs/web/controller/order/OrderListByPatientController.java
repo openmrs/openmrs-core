@@ -26,7 +26,7 @@ import org.openmrs.web.WebConstants;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.RequestUtils;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -65,7 +65,7 @@ public class OrderListByPatientController extends SimpleFormController {
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			String success = msa.getMessage("Order.list.saved");
 			view = getSuccessView();
-			if ( RequestUtils.getIntParameter(request, "patientId") != null ) view += "?patientId=" + RequestUtils.getIntParameter(request, "patientId");
+			if ( ServletRequestUtils.getIntParameter(request, "patientId") != null ) view += "?patientId=" + ServletRequestUtils.getIntParameter(request, "patientId");
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
 		}
 			
@@ -83,8 +83,8 @@ public class OrderListByPatientController extends SimpleFormController {
 
 		//default empty Object
 		List<DrugOrder> orderList = new Vector<DrugOrder>();
-		Integer patientId = RequestUtils.getIntParameter(request, "patientId");
-		boolean showAll = RequestUtils.getBooleanParameter(request, "showAll", false);
+		Integer patientId = ServletRequestUtils.getIntParameter(request, "patientId");
+		boolean showAll = ServletRequestUtils.getBooleanParameter(request, "showAll", false);
 		System.err.println("pid is " + patientId);
 		
 		//only fill the Object is the user has authenticated properly
@@ -140,7 +140,7 @@ public class OrderListByPatientController extends SimpleFormController {
 		refData.put("conceptNames", conceptNames);
 
 		// Load information about this patient that we might need
-		Integer patientId = RequestUtils.getIntParameter(request, "patientId");
+		Integer patientId = ServletRequestUtils.getIntParameter(request, "patientId");
 		Patient p = null;
 		
 		if ( Context.isAuthenticated() ) {

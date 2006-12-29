@@ -96,7 +96,7 @@ dojo.widget.defineWidget(
 		getId: function(p) {
 			var td = document.createElement("td");
 			if (typeof p == 'string') {
-				td.colSpan = 9;
+				td.colSpan = this.getHeaderCellContent().length;
 				td.innerHTML = p;
 			}
 			else {

@@ -66,4 +66,6 @@ public interface ContextDAO {
 	@Transactional
 	public void checkCoreDataset();
 	
+	public void closeDatabaseConnection();
+	
 }

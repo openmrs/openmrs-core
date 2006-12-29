@@ -82,7 +82,7 @@ Parameters
 					</c:if>
 					<c:if test="${fn:length(encounters) == 0}">
 						<tr>
-							<th colspan="6" class="tableTitle"><spring:message code="FormEntry.no.last.encounters"/></th>
+							<th colspan="6" class="tableTitle"><spring:message code="Encounter.no.previous"/></th>
 						</tr>
 					</c:if>	
 				</table>

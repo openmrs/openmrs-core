@@ -32,7 +32,7 @@ import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
-import org.springframework.web.bind.RequestUtils;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -106,7 +106,7 @@ public class OrderDrugFormController extends SimpleFormController {
 
 			Patient thisPatient = null;
 			if ( order.getEncounter() == null ) {
-				Integer patientId = RequestUtils.getIntParameter(request, "patientId");
+				Integer patientId = ServletRequestUtils.getIntParameter(request, "patientId");
 				if ( patientId != null ) {
 					thisPatient = Context.getPatientService().getPatient(patientId);
 				}
@@ -137,14 +137,14 @@ public class OrderDrugFormController extends SimpleFormController {
 		DrugOrder order = null;
 		
 		if (Context.isAuthenticated()) {
-			Integer orderId = RequestUtils.getIntParameter(request, "orderId");
+			Integer orderId = ServletRequestUtils.getIntParameter(request, "orderId");
 	    	if (orderId != null) order = (DrugOrder)os.getOrder(orderId);	
 		}
 		
 		// if this is a new order, let's see if the user has picked a type yet
 		if (order == null) {
 			order = new DrugOrder();
-			Integer orderTypeId = RequestUtils.getIntParameter(request, "orderTypeId");
+			Integer orderTypeId = ServletRequestUtils.getIntParameter(request, "orderTypeId");
 			if ( orderTypeId != null ) {
 				OrderType ot = os.getOrderType(orderTypeId);
 				order.setOrderType(ot);

@@ -46,9 +46,9 @@
 		<form id="findPatientForm" onSubmit="return search(searchBox, event, includeVoided.checked, 0);">
 			<table>
 				<tr>
-					<td><spring:message code="formentry.searchBox"/></td>
+					<td><spring:message code="Patient.searchBox"/></td>
 					<td><input type="text" id="searchBox" onKeyUp="search(this, event, includeVoided.checked, 400)"></td>
-					<td><spring:message code="formentry.includeVoided"/><input type="checkbox" id="includeVoided" onClick="search(searchBox, event, includeVoided.checked, 0); searchBox.focus();" /></td>
+					<td><spring:message code="general.includeVoided"/><input type="checkbox" id="includeVoided" onClick="search(searchBox, event, includeVoided.checked, 0); searchBox.focus();" /></td>
 				</tr>
 			</table>
 		</form>

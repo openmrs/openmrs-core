@@ -1,7 +1,9 @@
 package org.openmrs.api.db.hibernate;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -836,10 +838,14 @@ public class HibernateAdministrationDAO implements
 	
 	public void setGlobalProperty(String propertyName, String propertyValue) throws DAOException {
 		if (propertyName != null && propertyName != "") {
+			GlobalProperty p = new GlobalProperty(propertyName, propertyValue);
+			sessionFactory.getCurrentSession().saveOrUpdate(p);
+			/*
 			sessionFactory.getCurrentSession().createQuery("update GlobalProperty set propertyValue = :v where property = :n")
 					.setParameter("v", propertyValue)
 					.setParameter("n", propertyName)
 					.executeUpdate();
+			 */
 		}
 	}
 
@@ -933,4 +939,55 @@ public class HibernateAdministrationDAO implements
 		
 		return ret;
 	}
+	
+	public List<List<Object>> executeSQL(String sql, boolean selectOnly) throws DAOException {
+		sql = sql.trim();
+		boolean dataManipulation = false;
+		
+		String sqlLower = sql.toLowerCase();
+		if (sqlLower.startsWith("insert") || sqlLower.startsWith("update") || 
+			sqlLower.startsWith("delete") || sqlLower.startsWith("alter") ||
+			sqlLower.startsWith("drop")  || sqlLower.startsWith("create")) {
+				dataManipulation = true;
+		}
+
+		if (selectOnly && dataManipulation)
+			throw new DAOException("Illegal command(s) found in query string");
+		
+		Connection conn = sessionFactory.getCurrentSession().connection();
+		PreparedStatement ps = null;
+		List<List<Object>> results = new Vector<List<Object>>();
+		
+		try {
+			ps = conn.prepareStatement(sql);  
+			
+			if (dataManipulation == true) {
+				Integer i = ps.executeUpdate();
+				List<Object> row = new Vector<Object>();
+				row.add(i);
+				results.add(row);
+			}
+			else {
+				ResultSet resultSet = ps.executeQuery();
+				
+				ResultSetMetaData rmd = resultSet.getMetaData();
+				int columnCount = rmd.getColumnCount();
+				
+				while (resultSet.next()) {
+					List<Object> rowObjects = new Vector<Object>();
+					for (int x=1; x<=columnCount; x++) {
+						rowObjects.add(resultSet.getObject(x));
+					}
+					results.add(rowObjects);
+				}
+			}
+		}
+		catch (SQLException e) {
+			log.error("Error while running sql: " + sql, e);
+			throw new DAOException("Error while running sql: " + sql, e); 
+		}
+		
+		return results;
+	}
+	
 }

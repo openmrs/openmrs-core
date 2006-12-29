@@ -16,15 +16,6 @@ public interface FormService {
 	public void setFormDAO(FormDAO dao);
 
 	/**
-	 * Returns XML Schema for form based on the defined fields
-	 * 
-	 * @param form
-	 * @return XML Schema for form
-	 */
-	@Transactional(readOnly=true)
-	public String getSchema(Form form);
-
-	/**
 	 * Create a new form
 	 * @param form
 	 * @throws APIException

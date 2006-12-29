@@ -92,6 +92,8 @@
 	<spring:message code="general.new"/>
 <openmrs:hasPrivilege privilege="Edit Concepts"></a></openmrs:hasPrivilege>
 
+<openmrs:extensionPoint pointId="org.openmrs.dictionary.conceptFormHeader" type="html" />
+
 <form id="newSearchForm" action="index.htm" method="get">
   &nbsp; &nbsp; &nbsp;
   <input type="text" id="searchPhrase" name="phrase" size="18"> 

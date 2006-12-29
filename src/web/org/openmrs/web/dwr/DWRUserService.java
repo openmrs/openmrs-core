@@ -12,9 +12,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
-import org.openmrs.formentry.FormEntryService;
 
 import uk.ltd.getahead.dwr.WebContextFactory;
 
@@ -36,13 +37,13 @@ public class DWRUserService {
 			
 			log.info(userId + "|" + searchValue + "|" + roles.toString());
 			
-			FormEntryService fs = Context.getFormEntryService();
+			UserService us = Context.getUserService();
 			Set<User> users = new HashSet<User>();
 			
 			if (roles == null) 
 				roles = new Vector<String>();
 			
-			users.addAll(fs.findUsers(searchValue, roles, includeVoided));
+			users.addAll(us.findUsers(searchValue, roles, includeVoided));
 			
 			userList = new Vector(users.size());
 			
@@ -64,7 +65,7 @@ public class DWRUserService {
 
 	
 	@SuppressWarnings("unchecked")
-	public Collection<UserListItem> getAllUsers(List<String> roles, boolean includeVoided) {
+	public Collection<UserListItem> getAllUsers(List<String> roleStrings, boolean includeVoided) {
 		
 		Vector userList = new Vector();
 
@@ -76,13 +77,20 @@ public class DWRUserService {
 		}
 		else {
 			try {
-				FormEntryService fs = Context.getFormEntryService();
+				UserService us = Context.getUserService();
 				Set<User> users = new TreeSet<User>(new UserComparator());
 				
-				if (roles == null) 
-					roles = new Vector<String>();
+				if (roleStrings == null) 
+					roleStrings = new Vector<String>();
 				
-				users.addAll(fs.getAllUsers(roles, includeVoided));
+				List<Role> roles = new Vector<Role>();
+				for (String r : roleStrings) {
+					Role role = us.getRole(r);
+					if (role != null)
+						roles.add(role);
+				}
+				
+				users.addAll(us.getAllUsers(roles, includeVoided));
 				
 				userList = new Vector(users.size());
 				
@@ -122,4 +130,5 @@ public class DWRUserService {
 		}
 		
 	}
+	
 }

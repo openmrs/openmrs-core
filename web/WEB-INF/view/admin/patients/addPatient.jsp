@@ -18,6 +18,8 @@
 		<openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" var="showTribe"/>
 		<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 		
+		<script type='text/javascript' src='/amrs/dwr/interface/DWRPatientService.js'></script>
+		
 		<script type="text/javascript">
 			dojo.require("dojo.widget.openmrs.PatientSearch");
 			

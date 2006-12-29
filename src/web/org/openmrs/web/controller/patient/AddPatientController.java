@@ -12,11 +12,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
+import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
-import org.openmrs.formentry.FormEntryService;
 import org.openmrs.web.dwr.PatientListItem;
 import org.springframework.validation.BindException;
-import org.springframework.web.bind.RequestUtils;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
@@ -39,15 +39,14 @@ public class AddPatientController extends SimpleFormController {
     	List<PatientListItem> patientList = new Vector<PatientListItem>();
     	
     	if (Context.isAuthenticated()) {
-    		// TODO fix FormEntry role/permission mixup and use getPatientService() here.
-			FormEntryService ps = Context.getFormEntryService();
+			PatientService ps = Context.getPatientService();
 			
 			Integer userId = Context.getAuthenticatedUser().getUserId();
 			
-			String name = RequestUtils.getStringParameter(request, "name", "");
-			String birthyear = RequestUtils.getStringParameter(request, "birthyear", "");
-			String age = RequestUtils.getStringParameter(request, "age", "");
-			String gender = RequestUtils.getStringParameter(request, "gndr", "");
+			String name = ServletRequestUtils.getStringParameter(request, "name", "");
+			String birthyear = ServletRequestUtils.getStringParameter(request, "birthyear", "");
+			String age = ServletRequestUtils.getStringParameter(request, "age", "");
+			String gender = ServletRequestUtils.getStringParameter(request, "gndr", "");
 			
 			if (!name.equals("") || !birthyear.equals("") || !age.equals("") || !gender.equals("")) {
 					
@@ -94,10 +93,10 @@ public class AddPatientController extends SimpleFormController {
     	List patientList = (List) o;
     	
     	if (patientList.size() < 1) {
-    		String name = RequestUtils.getStringParameter(request, "name", "");
-			String birthyear = RequestUtils.getStringParameter(request, "birthyear", "");
-			String age = RequestUtils.getStringParameter(request, "age", "");
-			String gender = RequestUtils.getStringParameter(request, "gndr", "");
+    		String name = ServletRequestUtils.getStringParameter(request, "name", "");
+			String birthyear = ServletRequestUtils.getStringParameter(request, "birthyear", "");
+			String age = ServletRequestUtils.getStringParameter(request, "age", "");
+			String gender = ServletRequestUtils.getStringParameter(request, "gndr", "");
 			
 			if (!name.equals("") || !birthyear.equals("") || !age.equals("") || !gender.equals("")) {
 				mav.clear();

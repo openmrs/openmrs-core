@@ -10,11 +10,12 @@
 	<context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
-        	/WEB-INF/@WEBAPP.NAME@-servlet.xml
         	/WEB-INF/applicationContext-service.xml
+        	/WEB-INF/module*.xml
+        	/WEB-INF/@WEBAPP.NAME@-servlet.xml
         </param-value>
     </context-param>
-
+		    
 	<servlet>
 		<servlet-name>showGraphServlet</servlet-name>
 		<servlet-class>org.openmrs.web.servlet.ShowGraphServlet</servlet-class>
@@ -60,52 +61,7 @@
 		<url-pattern>/logout</url-pattern>
 	</servlet-mapping>
 
-	<servlet>
-		<servlet-name>formDownloadServlet</servlet-name>
-		<servlet-class>org.openmrs.formentry.FormDownloadServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>formDownloadServlet</servlet-name>
-		<url-pattern>/formDownload</url-pattern>
-	</servlet-mapping>
-	
-	<servlet>
-		<servlet-name>xsnDownloadServlet</servlet-name>
-		<servlet-class>org.openmrs.formentry.XsnDownloadServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>xsnDownloadServlet</servlet-name>
-		<url-pattern>/formentry/forms/*</url-pattern>
-	</servlet-mapping>
-	
-	<servlet>
-		<servlet-name>formUploadServlet</servlet-name>
-		<servlet-class>org.openmrs.formentry.FormUploadServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>formUploadServlet</servlet-name>
-		<url-pattern>/formUpload</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
-		<servlet-name>formEntryQueueDownloadServlet</servlet-name>
-		<servlet-class>org.openmrs.formentry.FormEntryQueueDownloadServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>formEntryQueueDownloadServlet</servlet-name>
-		<url-pattern>/formEntryQueueDownload</url-pattern>
-	</servlet-mapping>
-	
 	<!-- #### TEMPORARY ACCESS TO QUEUE PROCESSING SERVLETS (Burke 3/18/2006) #### -->
-	<servlet>
-		<servlet-name>formEntryQueueProcessorServlet</servlet-name>
-		<servlet-class>org.openmrs.formentry.FormEntryQueueProcessorServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>formEntryQueueProcessorServlet</servlet-name>
-		<url-pattern>/formEntryQueueProcessor</url-pattern>
-	</servlet-mapping>
-
 	<servlet>
 		<servlet-name>hl7InQueueProcessorServlet</servlet-name>
 		<servlet-class>org.openmrs.hl7.HL7InQueueProcessorServlet</servlet-class>
@@ -190,30 +146,27 @@
 	
 	<servlet>
 		<servlet-name>dwr-invoker</servlet-name>
-		<servlet-class>uk.ltd.getahead.dwr.DWRServlet</servlet-class>
+		<servlet-class>org.openmrs.web.dwr.OpenmrsDWRServlet</servlet-class>
 		<!--  debug parameter exposes DWR methods via [webapp]/dwr url  -->
 		<!--  good for testing, bad for security...so make sure to turn -->
 		<!--  this off (set value to "false") in production mode        -->
 		<init-param>
 			<param-name>debug</param-name>
-			<param-value>false</param-value>
+			<param-value>true</param-value>
+		</init-param>
+		<init-param>
+			<param-name>config-base</param-name>
+			<param-value>/WEB-INF/dwr.xml</param-value>
+		</init-param>
+		<init-param>
+			<param-name>config-modules</param-name>
+			<param-value>/WEB-INF/dwr-modules.xml</param-value>
 		</init-param>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>dwr-invoker</servlet-name>
 		<url-pattern>/dwr/*</url-pattern>
 	</servlet-mapping>
-	
-	<!-- FormEntry -->
-	<servlet>
-		<servlet-name>infopath</servlet-name>
-		<servlet-class>org.openmrs.formentry.InfoPathServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>infopath</servlet-name>
-		<url-pattern>/formentry/submit</url-pattern>
-	</servlet-mapping>
-	<!--  /FormEntry -->
 
 	<!--  Should be the first filter -->
 	<filter>
@@ -277,8 +230,15 @@
 	
 		<servlet>
 			<servlet-name>@WEBAPP.NAME@</servlet-name>
-			<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-			<load-on-startup>3</load-on-startup>
+			<servlet-class>org.openmrs.web.DispatcherServlet</servlet-class>
+			<init-param>
+		        <param-name>contextConfigLocation</param-name>
+		        <param-value>
+		        	/WEB-INF/@WEBAPP.NAME@-servlet.xml
+		        	/WEB-INF/module*.xml
+		        </param-value>
+		    </init-param>
+			<load-on-startup>1</load-on-startup>
 		</servlet>
 
 		<servlet>
@@ -286,7 +246,29 @@
 			<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 			<load-on-startup>3</load-on-startup>
 		</servlet>
-			
+		
+		<!-- Gives acess to servlets within modules -->
+		<servlet>
+			<servlet-name>module_servlet</servlet-name>
+			<servlet-class>org.openmrs.module.web.ModuleServlet</servlet-class>
+			<load-on-startup>2</load-on-startup>
+		</servlet>
+		<servlet-mapping>
+	 		<servlet-name>module_servlet</servlet-name>
+	 		<url-pattern>/moduleServlet/*</url-pattern>
+		</servlet-mapping>
+		
+		<!-- Gives acess to resources within modules -->
+		<servlet>
+			<servlet-name>module_resources</servlet-name>
+			<servlet-class>org.openmrs.module.web.ModuleResourcesServlet</servlet-class>
+			<load-on-startup>2</load-on-startup>
+		</servlet>
+		<servlet-mapping>
+	 		<servlet-name>module_resources</servlet-name>
+	 		<url-pattern>/moduleResources/*</url-pattern>
+		</servlet-mapping>
+		
 		<!--
 		<servlet-mapping>
 	 		<servlet-name>openmrs</servlet-name>
@@ -327,7 +309,7 @@
 	 		<servlet-name>@WEBAPP.NAME@</servlet-name>
 	 		<url-pattern>*.field</url-pattern>
 		</servlet-mapping>
-
+		
 		<taglib>
 			<taglib-uri>/spring</taglib-uri>
 			<taglib-location>/WEB-INF/taglibs/spring.tld</taglib-location>

@@ -315,4 +315,10 @@ public class HibernateContextDAO implements ContextDAO {
 		}
 	}
 
+
+	public void closeDatabaseConnection() {
+		//sessionFactory.getCurrentSession().close();
+		sessionFactory.close();
+	}
+	
 }

@@ -9,7 +9,6 @@ import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
-import org.openmrs.formentry.FormEntryService;
 
 public class DWREncounterService {
 
@@ -78,8 +77,8 @@ public class DWREncounterService {
 		Vector locationList = new Vector();
 
 		try {
-			FormEntryService fs = Context.getFormEntryService();
-			List<Location> locations = fs.findLocations(searchValue);
+			EncounterService es = Context.getEncounterService();
+			List<Location> locations = es.findLocations(searchValue);
 			
 			locationList = new Vector(locations.size());
 			
@@ -104,8 +103,8 @@ public class DWREncounterService {
 		Vector locationList = new Vector();
 
 		try {
-			FormEntryService fs = Context.getFormEntryService();
-			List<Location> locations = fs.getLocations();
+			EncounterService es = Context.getEncounterService();
+			List<Location> locations = es.getLocations();
 			
 			locationList = new Vector(locations.size());
 			

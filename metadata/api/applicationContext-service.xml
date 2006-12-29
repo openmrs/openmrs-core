@@ -37,7 +37,7 @@
 	<!--  **************************  SERVICE CONTEXT CONFIGURATION  *************************  -->
 
 	<!-- Single application context (our own context, not Spring's ApplicationContext -->
-	<bean id="serviceContext" class="org.openmrs.api.context.ServiceContext">
+	<bean id="serviceContext" class="org.openmrs.api.context.ServiceContext" factory-method="getInstance">
         <property name="patientService"><ref bean="patientService"/></property>
         <property name="conceptService"><ref bean="conceptService"/></property>
         <property name="userService"><ref bean="userService"/></property>
@@ -53,8 +53,7 @@
         <property name="schedulerService"><ref bean="schedulerService"/></property>
         <property name="alertService"><ref bean="alertService"/></property>
         <property name="reportService"><ref bean="reportService"/></property>
-        <property name="formEntryService"><ref bean="formEntryService"/></property>
-        <property name="hl7Service"><ref bean="hl7Service"/></property>
+        <property name="hl7Service"><ref bean="hL7Service"/></property>
         <property name="ardenService"><ref bean="ardenService"/></property>
         <property name="logicService"><ref bean="logicService"/></property>
 	</bean>	
@@ -120,9 +119,6 @@
 	<bean id="reportObjectDAO" class="org.openmrs.reporting.db.hibernate.HibernateReportObjectDAO">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
 	</bean>
-	<bean id="formEntryDAO" class="org.openmrs.formentry.db.hibernate.HibernateFormEntryDAO">
-		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
-	</bean>
 	<bean id="hL7DAO" class="org.openmrs.hl7.db.hibernate.HibernateHL7DAO">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
 	</bean>
@@ -177,10 +173,7 @@
 		<property name="reportDAO"><ref bean="reportDAO"/></property>	
 		<property name="reportObjectDAO"><ref bean="reportObjectDAO"/></property>	
 	</bean>
-	<bean id="formEntryServiceTarget" class="org.openmrs.formentry.impl.FormEntryServiceImpl">
-		<property name="formEntryDAO"><ref bean="formEntryDAO"/></property>	
-	</bean>
-	<bean id="hl7ServiceTarget" class="org.openmrs.hl7.impl.HL7ServiceImpl">
+	<bean id="hL7ServiceTarget" class="org.openmrs.hl7.impl.HL7ServiceImpl">
 		<property name="HL7DAO"><ref bean="hL7DAO"/></property>	
 	</bean>
 	<bean id="ardenServiceTarget" class="org.openmrs.arden.impl.ArdenServiceImpl">
@@ -361,21 +354,9 @@
 			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
 		</property>
 	</bean>
-	<bean id="formEntryService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+	<bean id="hL7Service" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
-		<property name="target"><ref local="formEntryServiceTarget"/></property>
-		<property name="preInterceptors">
-			<list>
-				<ref local="authorizationInterceptor"/>
-			</list>
-		</property>
-		<property name="transactionAttributeSource">
-			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
-		</property>
-	</bean>
-	<bean id="hl7Service" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager"><ref local="transactionManager"/></property>
-		<property name="target"><ref local="hl7ServiceTarget"/></property>
+		<property name="target"><ref local="hL7ServiceTarget"/></property>
 		<property name="preInterceptors">
 			<list>
 				<ref local="authorizationInterceptor"/>
@@ -439,6 +420,11 @@
 		<property name="mappingJarLocations">
 			<list>
 				<value>@MAPPING.JAR.LOCATIONS@</value>
+			</list>
+		</property>
+		<property name="mappingLocations">
+			<list>
+				<value>/WEB-INF/*.hbm.xml</value>
 			</list>
 		</property>
 		<!--  default properties must be set in the hibernate.default.properties -->

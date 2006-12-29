@@ -80,6 +80,8 @@
 
 <a href="concept.form" id="newConcept" valign="middle"><spring:message code="general.new"/></a>
 
+<openmrs:extensionPoint pointId="org.openmrs.dictionary.conceptFormHeader" type="html" />
+
 <form id="newSearchForm" action="index.htm" method="get">
   &nbsp; &nbsp; 
   <input type="text" id="searchPhrase" name="phrase" size="18"> 

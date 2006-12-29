@@ -32,8 +32,9 @@ import org.openmrs.Person;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.Tribe;
+import org.openmrs.api.EncounterService;
+import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
-import org.openmrs.formentry.FormEntryService;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
@@ -47,6 +48,7 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.RequestUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
@@ -91,7 +93,8 @@ public class NewPatientFormController extends SimpleFormController {
 		ShortPatientModel pli = (ShortPatientModel)obj;
 		
 		if (Context.isAuthenticated()) {
-			FormEntryService ps = Context.getFormEntryService();
+			PatientService ps = Context.getPatientService();
+			EncounterService es = Context.getEncounterService();
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			
 			if (request.getParameter("action") == null || request.getParameter("action").equals(msa.getMessage("general.save"))) {
@@ -140,7 +143,7 @@ public class NewPatientFormController extends SimpleFormController {
 							errors.reject(msg);
 						}
 						else
-							loc = ps.getLocation(Integer.valueOf(locs[i]));
+							loc = es.getLocation(Integer.valueOf(locs[i]));
 						
 						PatientIdentifier pi = new PatientIdentifier(identifiers[i], pit, loc);
 						pi.setPreferred(pref.equals(identifiers[i]+types[i]));
@@ -205,7 +208,7 @@ public class NewPatientFormController extends SimpleFormController {
 		
 		
 		if (Context.isAuthenticated()) {
-			FormEntryService ps = Context.getFormEntryService();
+			PatientService ps = Context.getPatientService();
 			ShortPatientModel p = (ShortPatientModel)obj;
 			String view = getSuccessView();
 			
@@ -427,7 +430,7 @@ public class NewPatientFormController extends SimpleFormController {
 		Patient p = null;
 		
 		if (Context.isAuthenticated()) {
-			FormEntryService ps = Context.getFormEntryService();
+			PatientService ps = Context.getPatientService();
 			String patientId = request.getParameter("pId");
 	    	if (patientId != null && !patientId.equals("")) {
 	    		p = ps.getPatient(Integer.valueOf(patientId));
@@ -525,7 +528,7 @@ public class NewPatientFormController extends SimpleFormController {
 		Patient patient = null;
 		
 		if (Context.isAuthenticated()) {
-			FormEntryService ps = Context.getFormEntryService();
+			PatientService ps = Context.getPatientService();
 			String patientId = request.getParameter("pId");
 	    	if (patientId != null && !patientId.equals("")) {
 	    		patient = ps.getPatient(Integer.valueOf(patientId));

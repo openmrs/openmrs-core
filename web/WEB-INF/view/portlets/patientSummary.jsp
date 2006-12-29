@@ -44,7 +44,7 @@
 					</c:if>
 				</c:forEach>
 				<c:if test="${fn:length(model.patientEncounters) == 0}">
-					<spring:message code="FormEntry.no.last.encounters"/>
+					<spring:message code="Encounter.no.previous"/>
 				</c:if>
 			</td>
 			<td></td>

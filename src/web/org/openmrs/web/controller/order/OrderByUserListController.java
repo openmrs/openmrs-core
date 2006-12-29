@@ -24,7 +24,7 @@ import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.RequestUtils;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -105,7 +105,7 @@ public class OrderByUserListController extends SimpleFormController {
 		//default empty Object
 		List<Order> orderList = new Vector<Order>();
 		
-		String userOverride = RequestUtils.getStringParameter(request, WebConstants.OPENMRS_USER_OVERRIDE_PARAM, "");
+		String userOverride = ServletRequestUtils.getStringParameter(request, WebConstants.OPENMRS_USER_OVERRIDE_PARAM, "");
 		
 		//only fill the Object is the user has authenticated properly
 		if ( StringUtils.hasText(userOverride) && Context.isAuthenticated() ) {

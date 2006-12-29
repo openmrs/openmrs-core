@@ -499,10 +499,13 @@ dojo.widget.defineWidget(
 	},
 	
 	
-	rowCreator: function(row, i) {
+	rowCreator: function(options) {
 		var previousHit = this.objectsFound[this.searchIndex-1];
 		
 		var tr = document.createElement("tr");
+		
+		var row = options.rowData;
+		var i = options.rowNum;
 		
 		if (i % 2)
 			tr.className = "oddRow";
@@ -520,6 +523,13 @@ dojo.widget.defineWidget(
 		}
 		
 		return tr;
+	},
+	
+	cellCreator: function(options) {
+		if (DWRUtil._isHTMLElement(options.data, "td") == true)
+			return options.data;
+		
+		return document.createElement("td");
 	},
 
 
@@ -570,7 +580,8 @@ dojo.widget.defineWidget(
 	
 	
 	getRowOptions: function() {
-		var arr = { 'rowCreator': this.simpleClosure(this, "rowCreator") };
+		var arr = { 'rowCreator': this.simpleClosure(this, "rowCreator"),
+					'cellCreator': this.simpleClosure(this, "cellCreator")};
 		return arr;
 	},
 	

@@ -22,7 +22,7 @@
 		</div>
 		<table id="patientHeaderGeneralInfo">
 			<tr>
-				<td id="patientHeaderPatientGender">
+				<td id="patientHeaderPatientGender" style="background-color: #ffffff; width: 40px;">
 					<c:if test="${model.patient.gender == 'M'}"><img src="${pageContext.request.contextPath}/images/male.gif" alt='<spring:message code="Patient.gender.male"/>'/></c:if>
 					<c:if test="${model.patient.gender == 'F'}"><img src="${pageContext.request.contextPath}/images/female.gif" alt='<spring:message code="Patient.gender.female"/>'/></c:if>
 				</td>
@@ -254,7 +254,7 @@
 					${lastEncounter.encounterType.name} @ ${lastEncounter.location.name}, <openmrs:formatDate date="${lastEncounter.encounterDatetime}" type="medium" />
 				</c:forEach>
 				<c:if test="${fn:length(encounters) == 0}">
-					<spring:message code="FormEntry.no.last.encounters"/>
+					<spring:message code="Encounter.no.previous"/>
 				</c:if>	
 			</th>
 		</tr></table>

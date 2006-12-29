@@ -21,7 +21,7 @@ import org.openmrs.FormField;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
-import org.openmrs.formentry.FormUtil;
+import org.openmrs.util.FormUtil;
 import org.openmrs.web.WebUtil;
 
 

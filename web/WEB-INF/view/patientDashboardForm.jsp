@@ -43,7 +43,7 @@
 				if (tabs[i].className.indexOf('current') != -1) {
 					manipulateClass('remove', tabs[i], 'current');
 				}
-				var divId = tabs[i].id.substring(0, tabs[i].id.indexOf("Tab"));
+				var divId = tabs[i].id.substring(0, tabs[i].id.lastIndexOf("Tab"));
 				var divObj = document.getElementById(divId);
 				if (divObj) {
 					if (tabs[i].id == tabObj.id)
@@ -83,9 +83,13 @@
 		<openmrs:hasPrivilege privilege="Patient Dashboard - View Graphs Section">
 			<li><a id="patientGraphsTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.graphs"/></a></li>
 		</openmrs:hasPrivilege>
-		<openmrs:hasPrivilege privilege="Patient Dashboard - View Forms Section">
-			<li><a id="patientFormsTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.forms"/></a></li>
-		</openmrs:hasPrivilege>
+		<openmrs:extensionPoint pointId="org.openmrs.patientDashboardTab" type="html">
+			<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
+				<li>
+					<a id="${extension.tabId}Tab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="${extension.tabName}"/></a>
+				</li>
+			</openmrs:hasPrivilege>
+		</openmrs:extensionPoint>
 	</ul>
 </div>
 
@@ -115,14 +119,21 @@
 			<openmrs:portlet url="patientGraphs" id="patientGraphsPortlet" patientId="${patient.patientId}"/>
 		</div>
 	</openmrs:hasPrivilege>
-	<openmrs:hasPrivilege privilege="Patient Dashboard - View Forms Section">
-		<div id="patientForms" style="display:none;">
-			<c:set var="showUnpub" value="false" />
-			<openmrs:hasPrivilege privilege="View Unpublished Forms"><c:set var="showUnpub" value="true" /></openmrs:hasPrivilege>
-			<openmrs:globalProperty key="patientForms.goBackOnEntry" var="goBackOnEntry" defaultValue="false"/>
-			<openmrs:portlet url="patientForms" id="patientDashboardForms" patientId="${patient.patientId}" parameters="goBackOnEntry=${goBackOnEntry}|showUnpublishedForms=${showUnpub}" />
-		</div>
-	</openmrs:hasPrivilege>
+	<openmrs:extensionPoint pointId="org.openmrs.patientDashboardTab" type="html">
+		<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
+			<div id="${extension.tabId}" style="display:none;">
+				<c:choose>
+					<c:when test="${extension.portletUrl == '' || extension.portletUrl == null}">
+						portletId is null: '${extension.extensionId}'
+					</c:when>
+					<c:otherwise>
+						<openmrs:portlet url="${extension.portletUrl}" id="${extension.tabId}" moduleId="${extension.moduleId}"/>
+					</c:otherwise>
+				</c:choose>
+			</div>
+		</openmrs:hasPrivilege>
+	</openmrs:extensionPoint>
+	
 </div>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

@@ -24,7 +24,6 @@ import org.openmrs.RelationshipType;
 import org.openmrs.Role;
 import org.openmrs.Tribe;
 import org.openmrs.User;
-import org.openmrs.api.APIException;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.Report;
@@ -490,5 +489,16 @@ public interface AdministrationService {
 	 * @return
 	 */
 	public List<DataEntryStatistic> getDataEntryStatistics(Date fromDate, Date toDate, String encounterUserColumn, String orderUserColumn, String groupBy);
+	
+	/**
+	 * Runs the <code>sql</code> on the database.  If <code>selectOnly</code> is
+	 * flagged then any non-select sql statements will be rejected.
+	 * 
+	 * @param sql
+	 * @param selectOnly
+	 * @return ResultSet
+	 * @throws APIException
+	 */
+	public List<List<Object>> executeSQL(String sql, boolean selectOnly) throws APIException;
 	
 }

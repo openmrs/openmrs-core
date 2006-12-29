@@ -8,14 +8,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.module.Module;
+import org.openmrs.module.ModuleFactory;
+import org.openmrs.module.web.WebModuleUtil;
+import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
+import org.springframework.beans.factory.CannotLoadBeanClassException;
 import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.WebApplicationContext;
 
 public final class Listener extends ContextLoaderListener {
 
@@ -31,6 +37,7 @@ public final class Listener extends ContextLoaderListener {
 	 */
 	public void contextInitialized(ServletContextEvent event) {
 		log.debug("Initializing OpenMRS");
+		ServletContext servletContext = event.getServletContext();
 		
 		/** 
 		 * Get the runtime properties and set it to the context
@@ -39,15 +46,66 @@ public final class Listener extends ContextLoaderListener {
 		Properties props = getRuntimeProperties();
 		Context.setRuntimeProperties(props);
 		
-		// start the spring context
-		super.contextInitialized(event);
+		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		
+		try {
+			// start the spring context
+			super.contextInitialized(event);
+		}
+		catch (CannotLoadBeanClassException e) {
+			log.warn("Error while initializing spring context.  More than likely caused by an improper shutdown that leaves 1 or more module contexts lying around");
+			log.warn("Stacktrace: ", e);
+			log.warn("Stopping all modules (most importantly, deleting the context files) and trying again: ");
+			
+			// delete all of the module context files in the WEB-INF folder
+			String realPath = event.getServletContext().getRealPath("");
+			String absPath = realPath + "/WEB-INF/";
+			File folder = new File(absPath);
+			System.gc();
+			for (File f : folder.listFiles()) {
+				if (f.getName().startsWith("module-") && f.getName().endsWith("-context.xml") || 
+						f.getName().endsWith(".hbm.xml")) {
+					if (f.delete())
+						log.warn("Successfully deleted " + f.getAbsolutePath());
+					else
+						log.warn("Unable to delete " + f.getAbsolutePath());
+				}
+			}
+			
+			// Can't just call shutdown, because the modules aren't loaded.  We can't load
+			// the modules because the wac needs to be started first.  predicament. the
+			// solution is to just do the minimum cleanup and then retry the wac startup
+			//WebModuleUtil.shutdownModules(servletContext);
+			
+			// Spring places a throwable in the servlet context as the wac if an error occurs.
+			// we need to remove it in order to refresh the wac
+			servletContext.removeAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
+			
+			// retry starting the spring context
+			getContextLoader().initWebApplicationContext(servletContext);
+		}
+		
+		/**
+		 * Load the core modules from the webapp coreModules folder
+		 */
+		loadCoreModules(event.getServletContext());
+		
+		/**
+		 * Do the normal API startup now
+		 */
 		Context.startup(props);
+		
+		/**
+		 * Copy the module messages over into the webapp and perform web portion of startup
+		 */
+		for (Module mod : ModuleFactory.getStartedModules()) {
+			WebModuleUtil.startModule(mod, event.getServletContext());
+		}
 		
 		/** 
 		 * Copy the customization scripts over into the webapp
 		 */
-		// TODO centralize map to OpenmrsConstants?
+		// TODO centralize map to WebConstants?
 		Map<String, String> custom = new HashMap<String, String>();
 		custom.put("custom.template.dir", "/WEB-INF/template");
 		custom.put("custom.index.jsp.file", "/WEB-INF/view/index.jsp");
@@ -59,7 +117,7 @@ public final class Listener extends ContextLoaderListener {
 		custom.put("custom.messages_fr", "/WEB-INF/custom_messages_fr.properties");
 		custom.put("custom.messages_es", "/WEB-INF/custom_messages_es.properties");
 		custom.put("custom.messages_de", "/WEB-INF/custom_messages_de.properties");
-
+		
 		String realPath = event.getServletContext().getRealPath("");
 		for (String prop : custom.keySet()) {
 			String webappPath = custom.get(prop);
@@ -101,12 +159,45 @@ public final class Listener extends ContextLoaderListener {
 			}
 			
 		}
+		
+	}
 
+	/**
+	 * Load the core modules
+	 */
+	private void loadCoreModules(ServletContext servletContext) {
+		String path = servletContext.getRealPath("");
+		path += File.separator + "WEB-INF" + File.separator + "coreModules";
+		File folder = new File(path);
+		
+		if (!folder.exists()) {
+			log.warn("Core module repository doesn't exist: "
+					+ folder.getAbsolutePath());
+			return;
+		}
+		if (!folder.isDirectory()) {
+			log.warn("Core module repository isn't a directory: "
+					+ folder.getAbsolutePath());
+			return;
+		}
+
+		// loop over the modules and load the modules that we can
+		for (File f : folder.listFiles()) {
+			if (!f.getName().startsWith(".")) { // ignore .svn folder and the like
+				Module mod = ModuleFactory.loadModule(f);
+				log.debug("Loaded module: " + mod + " successfully");
+			}
+		}
+		
 	}
 
 	public void contextDestroyed(ServletContextEvent event) {
 
 		Context.shutdown();
+		
+		WebModuleUtil.shutdownModules(event.getServletContext());
+		
+		super.contextDestroyed(event);
 		
 		/*
 		// DriverManager cleanup code taken from
@@ -183,14 +274,7 @@ public final class Listener extends ContextLoaderListener {
 			String filename = webapp + "-runtime.properties";
 			
 			if (propertyStream == null) {
-				if (OpenmrsConstants.OPERATING_SYSTEM_LINUX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM))
-					filepath = System.getProperty("user.home") + File.separator + ".OpenMRS";
-				else
-					filepath = System.getProperty("user.home") + File.separator + 
-							"Application Data" + File.separator + 
-							"OpenMRS";
-						
-				filepath = filepath + File.separator + filename;
+				filepath = OpenmrsUtil.getApplicationDataDirectory() + filename;
 				log.warn("Looking for property file: " + filepath);
 				try {
 					propertyStream = new FileInputStream(filepath);

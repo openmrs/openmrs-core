@@ -1,7 +1,13 @@
 package org.openmrs.api.context;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.aopalliance.aop.Advice;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
@@ -13,13 +19,15 @@ import org.openmrs.api.PatientSetService;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.UserService;
 import org.openmrs.arden.ArdenService;
-import org.openmrs.formentry.FormEntryService;
 import org.openmrs.hl7.HL7Service;
 import org.openmrs.logic.LogicService;
 import org.openmrs.notification.AlertService;
 import org.openmrs.notification.MessageService;
 import org.openmrs.reporting.ReportService;
 import org.openmrs.scheduler.SchedulerService;
+import org.openmrs.util.OpenmrsClassLoader;
+import org.springframework.aop.Advisor;
+import org.springframework.aop.framework.ProxyFactory;
 
 /**
  * Represents an OpenMRS <code>Context</code>, which may be used to
@@ -34,124 +42,91 @@ import org.openmrs.scheduler.SchedulerService;
  */
 public class ServiceContext {
 
-	private final Log log = LogFactory.getLog(getClass());
-
-	// Services
-	private ConceptService conceptService;
-	private EncounterService encounterService;
-	private ObsService obsService;
-	private PatientService patientService;
-	private PatientSetService patientSetService;
-	private UserService userService;
-	private AdministrationService administrationService;
-	private FormService formService;
-	private OrderService orderService;
-	private ReportService reportService;
-	private FormEntryService formEntryService;
-	private HL7Service hl7Service;
-	private SchedulerService schedulerService;
-	private MessageService messageService;
-	private AlertService alertService;
-	private ArdenService ardenService;
-	private ProgramWorkflowService programWorkflowService;
-	private LogicService logicService;	
+	private static final Log log = LogFactory.getLog(ServiceContext.class);
+	
+	private static ServiceContext instance;
+	private Boolean refreshingContext = new Boolean(false);
+	
+	// proxy factories used for programatically adding spring AOP  
+	Map<Class, ProxyFactory> proxyFactories = new HashMap<Class, ProxyFactory>();
 
 	/**
 	 * Default constructor
 	 */
-	public ServiceContext() { 
-		log.info("Instantiating service context");
+	private ServiceContext() { 
+		log.debug("Instantiating service context");
 	}
-
-	/**
-	 * @return concept dictionary-related services
-	 */
-	public ConceptService getConceptService() {
-		return conceptService;
+	
+	public static ServiceContext getInstance() {
+		if (instance == null)
+			instance = new ServiceContext();
+		
+		return instance;
+	}
+	
+	public static void destroyInstance() {
+		if (log.isErrorEnabled()) {
+			if (instance != null && instance.proxyFactories != null) {
+				for (Map.Entry<Class, ProxyFactory> entry : instance.proxyFactories.entrySet()) {
+					log.debug("Class:ProxyFactory - " + entry.getKey().getName() + ":" + entry.getValue());
+				}
+				if (instance.proxyFactories != null)
+					instance.proxyFactories.clear();
+				instance.proxyFactories = null;
+				}
+			
+			log.debug("Destroying ServiceContext instance: " + instance);
+		}
+		instance = null;
 	}
 
 	/**
 	 * @return encounter-related services
 	 */
 	public EncounterService getEncounterService() {
-		return encounterService;
+		return (EncounterService)getService(EncounterService.class);
 	}
 
 	/**
 	 * @return observation services
 	 */
 	public ObsService getObsService() {
-		return obsService;
-	}
-
-	/**
-	 * @return patient-related services
-	 */
-	public PatientService getPatientService() {
-		return patientService;
-	}
-	
-	/**
-	 * @param patientService
-	 */
-	public void setPatientService(PatientService patientService) {
-		this.patientService = patientService;
-	}
-
-	/**
-	 * @return concept dictionary-related services
-	 */
-	public FormEntryService getFormEntryService() {
-		return formEntryService;
-	}
-
-	/**
-	 * @return Returns the hl7Service.
-	 */
-	public HL7Service getHL7Service() {
-		return hl7Service;
+		return (ObsService)getService(ObsService.class);
 	}
 
 	/**
 	 * @return patientset-related services
 	 */
 	public PatientSetService getPatientSetService() {
-		return patientSetService;
-	}
-
-	/**
-	 * @return user-related services
-	 */
-	public UserService getUserService() {
-		return userService;
+		return (PatientSetService)getService(PatientSetService.class);
 	}
 
 	/**
 	 * @return order service
 	 */
 	public OrderService getOrderService() {
-		return orderService;
+		return (OrderService)getService(OrderService.class);
 	}
 
 	/**
 	 * @return form service
 	 */
 	public FormService getFormService() {
-		return formService;
+		return (FormService)getService(FormService.class);
 	}
 
 	/**
 	 * @return report service
 	 */
 	public ReportService getReportService() {
-		return reportService;
+		return (ReportService)getService(ReportService.class);
 	}
 
 	/**
 	 * @return admin-related services
 	 */
 	public AdministrationService getAdministrationService() {
-		return administrationService;
+		return (AdministrationService)getService(AdministrationService.class);
 	}
 	
 
@@ -159,29 +134,28 @@ public class ServiceContext {
 	 * @return programWorkflowService
 	 */
 	public ProgramWorkflowService getProgramWorkflowService() {
-		return this.programWorkflowService;
+		return (ProgramWorkflowService)getService(ProgramWorkflowService.class);
 	}
 	
 	/**
 	 * @return ardenService
 	 */
 	public ArdenService getArdenService() {
-		return this.ardenService;
+		return (ArdenService)getService(ArdenService.class);
 	}
 	
 	/**
-	 * @return logic service
+	 * @return logicService
 	 */
 	public LogicService getLogicService() {
-		return this.logicService;
+		return (LogicService)getService(LogicService.class);
 	}
-
 
 	/**
 	 * @return scheduler service
 	 */
 	public SchedulerService getSchedulerService() {
-		return schedulerService;
+		return (SchedulerService)getService(SchedulerService.class);
 	}
 
 	/**
@@ -189,36 +163,43 @@ public class ServiceContext {
 	 * 
 	 * @param service
 	 */
-	public void setSchedulerService(SchedulerService service) { 
-		this.schedulerService = service;
+	public void setSchedulerService(SchedulerService schedulerService) { 
+		setService(SchedulerService.class, schedulerService);
 	}	
 
 	/**
 	 * @return alert service
 	 */
 	public AlertService getAlertService() {
-		return alertService;
+		return (AlertService)getService(AlertService.class);
 	}
 
 	/**
 	 * @param alertService
 	 */
 	public void setAlertService(AlertService alertService) {
-		this.alertService = alertService;
+		setService(AlertService.class, alertService);
 	}
 
 	/**
 	 * @param programWorkflowService
 	 */
 	public void setProgramWorkflowService(ProgramWorkflowService programWorkflowService) {
-		this.programWorkflowService = programWorkflowService;
+		setService(ProgramWorkflowService.class, programWorkflowService);
 	}
 	
 	/**
 	 * @param ardenService
 	 */
 	public void setArdenService(ArdenService ardenService) {
-		this.ardenService = ardenService;
+		setService(ArdenService.class, ardenService);
+	}
+	
+	/**
+	 * @param logicService
+	 */
+	public void setLogicService(LogicService logicService) {
+		setService(LogicService.class, logicService);
 	}
 
 	
@@ -249,7 +230,7 @@ public class ServiceContext {
 	 * @return message service
 	 */
 	public MessageService getMessageService() {
-		return messageService;
+		return (MessageService)getService(MessageService.class);
 	}
 	
 	/**
@@ -257,100 +238,288 @@ public class ServiceContext {
 	 * 
 	 * @param service
 	 */
-	public void setMessageService(MessageService service) { 
-		this.messageService = service;
+	public void setMessageService(MessageService messageService) { 
+		setService(MessageService.class, messageService);
 	}
 
 	/**
 	 * @return the hl7Service
 	 */
-	public HL7Service getHl7Service() {
-		return hl7Service;
+	public HL7Service getHL7Service() {
+		return (HL7Service)getService(HL7Service.class);
 	}
 
 	/**
 	 * @param hl7Service the hl7Service to set
 	 */
+	// TODO spring is demanding that this be hl7Service:setHl7Service and not hL7Service:setHL7Service. why?
 	public void setHl7Service(HL7Service hl7Service) {
-		this.hl7Service = hl7Service;
+		setService(HL7Service.class, hl7Service);
 	}
 
 	/**
 	 * @param administrationService the administrationService to set
 	 */
 	public void setAdministrationService(AdministrationService administrationService) {
-		this.administrationService = administrationService;
-	}
-
-	/**
-	 * @param conceptService the conceptService to set
-	 */
-	public void setConceptService(ConceptService conceptService) {
-		this.conceptService = conceptService;
+		setService(AdministrationService.class, administrationService);
 	}
 
 	/**
 	 * @param encounterService the encounterService to set
 	 */
 	public void setEncounterService(EncounterService encounterService) {
-		this.encounterService = encounterService;
-	}
-
-	/**
-	 * @param formEntryService the formEntryService to set
-	 */
-	public void setFormEntryService(FormEntryService formEntryService) {
-		this.formEntryService = formEntryService;
+		setService(EncounterService.class, encounterService);
 	}
 
 	/**
 	 * @param formService the formService to set
 	 */
 	public void setFormService(FormService formService) {
-		this.formService = formService;
+		setService(FormService.class, formService);
 	}
 
 	/**
 	 * @param obsService the obsService to set
 	 */
 	public void setObsService(ObsService obsService) {
-		this.obsService = obsService;
+		setService(ObsService.class, obsService);
 	}
 
 	/**
 	 * @param orderService the orderService to set
 	 */
 	public void setOrderService(OrderService orderService) {
-		this.orderService = orderService;
+		setService(OrderService.class, orderService);
 	}
 
 	/**
 	 * @param patientSetService the patientSetService to set
 	 */
 	public void setPatientSetService(PatientSetService patientSetService) {
-		this.patientSetService = patientSetService;
+		setService(PatientSetService.class, patientSetService);
 	}
 
 	/**
 	 * @param reportService the reportService to set
 	 */
 	public void setReportService(ReportService reportService) {
-		this.reportService = reportService;
+		setService(ReportService.class, reportService);
 	}
 
+	/**
+	 * @return patient related services
+	 */
+	public PatientService getPatientService() {
+		return (PatientService)getService(PatientService.class);
+	}
+	
+	/**
+	 * @param patientService the patientService to set
+	 */
+	public void setPatientService(PatientService patientService) {
+		setService(PatientService.class, patientService);
+	}
+	
+	/**
+	 * @return concept related services
+	 */
+	public ConceptService getConceptService() {
+		return (ConceptService)getService(ConceptService.class);
+	}
+	
+	/**
+	 * @param conceptService the conceptService to set
+	 */
+	public void setConceptService(ConceptService conceptService) {
+		setService(ConceptService.class, conceptService);
+	}
+	
+	/**
+	 * @return user-related services
+	 */
+	public UserService getUserService() {
+		return (UserService)getService(UserService.class);
+	}
+	
 	/**
 	 * @param userService the userService to set
 	 */
 	public void setUserService(UserService userService) {
-		this.userService = userService;
+		setService(UserService.class, userService);
 	}
 	
 	/**
-	 * @param logicService the logicService to set
+	 * Get the proxy factory object for the given Class
+	 * @param cls
+	 * @return
 	 */
-	public void setLogicService(LogicService logicService) {
-		this.logicService = logicService;
+	private ProxyFactory getFactory(Class cls) {
+		ProxyFactory factory = proxyFactories.get(cls);
+		if (factory == null)
+			throw new APIException("A proxy factory for: '" + cls + "' doesn't exist");
+		return factory;
+	}
+	
+	/**
+	 * 
+	 * @param cls
+	 * @param advisor
+	 */
+	public void addAdvisor(Class cls, Advisor advisor) {
+		ProxyFactory factory = getFactory(cls);
+		factory.addAdvisor(advisor);
+	}
+	
+	/**
+	 * 
+	 * @param cls
+	 * @param advice
+	 */
+	public void addAdvice(Class cls, Advice advice) {
+		ProxyFactory factory = getFactory(cls);
+		factory.addAdvice(advice);
+	}
+	
+	/**
+	 * 
+	 * @param cls
+	 * @param advisor
+	 */
+	public void removeAdvisor(Class cls, Advisor advisor) {
+		ProxyFactory factory = getFactory(cls);
+		factory.removeAdvisor(advisor);
+	}
+	
+	/**
+	 * 
+	 * @param cls
+	 * @param advice
+	 */
+	public void removeAdvice(Class cls, Advice advice) {
+		ProxyFactory factory = getFactory(cls);
+		factory.removeAdvice(advice);
+	}
+	
+	/**
+	 * Returns the current proxy that is stored for the 
+	 * Class <code>cls</code>
+	 * 
+	 * @param cls
+	 * @return Object that is a proxy for the <code>cls</code> class 
+	 */
+	public Object getService(Class cls) {
+		log.debug("Getting service: " + cls);
+		
+		// if the context is refreshing, wait until it is 
+		// done -- otherwise a null service might be returned
+		synchronized (refreshingContext) {
+			if (refreshingContext.booleanValue())
+				try {
+					refreshingContext.wait();
+				}
+				catch (InterruptedException e) {
+					log.warn("Refresh lock was interrupted", e);
+				}
+		}
+		
+		ProxyFactory factory = proxyFactories.get(cls);
+		if (factory == null)
+			throw new APIException("Service not found: " + cls);
+		
+		return factory.getProxy(OpenmrsClassLoader.getInstance());
 	}
 
-
+	/**
+	 * Allow other services to be added to our service layer
+	 * 
+	 * @param cls Interface to proxy
+	 * @param classInstance the actual instance of the <code>cls</code> interface
+	 */
+	public void setService(Class cls, Object classInstance) {
+		
+		log.debug("Setting service: " + cls);
+		
+		if (cls != null && classInstance != null) {
+			try {
+				Class[] interfaces = {cls};
+				ProxyFactory factory = new ProxyFactory(interfaces);
+				factory.setTarget(classInstance);
+				proxyFactories.put(cls, factory);
+				log.debug("Service: " + cls + " set successfully");
+			}
+			catch (Exception e) {
+				throw new APIException("Unable to create proxy factory for: " + classInstance.getClass().getName(), e);
+			}
+			
+		}
+	}
+	
+	/**
+	 * Allow other services to be added to our service layer
+	 * 
+	 * Classes will be found/loaded with the ModuleClassLoader
+	 * 
+	 * <code>params</code>[0] = string representing the service interface
+	 * <code>params</code>[1] = service instance
+	 * 
+	 * @param list list of parameters
+	 */
+	public void setModuleService(List<Object> params) {
+		String classString = (String)params.get(0);
+		Object classInstance = params.get(1);
+		
+		if (classString == null || classInstance == null) {
+			throw new APIException("Unable to find classString or classInstance in params");
+		}
+		
+		Class cls = null;
+		
+		try {
+			//ModuleClassLoader mcl = ModuleFactory.getModuleClassLoader(moduleId);
+			cls = OpenmrsClassLoader.getInstance().loadClass(classString);
+			
+			try {
+				if (cls != null)
+					log.error("cls classloader: " + cls.getClass().getClassLoader() + " uid: " + cls.getClass().getClassLoader().hashCode());
+			}
+			catch (Exception e) { /*pass*/ }
+			try {
+				Class cls2 = Class.forName(classString);
+				log.error("cls2 classloader: " + cls2.getClass().getClassLoader() + " uid: " + cls.getClass().getClassLoader().hashCode());
+				log.error("cls==cls2: " + String.valueOf(cls == cls2));
+			}
+			catch (Exception e) { /*pass*/ }
+		}
+		catch (ClassNotFoundException e) {
+			throw new APIException("Unable to set module service: " + classString, e);
+		}
+		
+		setService(cls, classInstance);
+	}
+	
+	/**
+	 * Should be called <b>right before</b> any spring context refresh
+	 * 
+	 * This forces all calls to getService to wait until 
+	 * <code>doneRefreshingContext</code> is called
+	 */
+	public void startRefreshingContext() {
+		synchronized (refreshingContext) {
+			refreshingContext = true;
+		}
+	}
+	
+	/**
+	 * Should be called <b>right after</b> any spring context refresh
+	 * 
+	 * This wakes up all calls to getService that were waiting
+	 * because <code>startRefreshingContext</code> was called
+	 */	
+	public void doneRefreshingContext() {
+		synchronized(refreshingContext) {
+			refreshingContext.notifyAll();
+			refreshingContext = false;
+		}
+	}
+	
 }

@@ -340,9 +340,23 @@
 			<lib dir="${spring.dir}" includes="*.jar" />
 			<!--<lib dir="${struts.dir}" includes="*.jar" /> -->
 			<lib dir="${taglibs.dir}" includes="*.jar" />
+			<lib dir="${tomcat.dir}" includes="catalina.jar" />
 			<lib dir="${velocity.dir}" includes="*.jar" />
 			<lib dir="${xerces.dir}" includes="*.jar" />
 		</war>
+	</target>
+	
+	<target name="package-web-src" depends="init" description="Create jar file containing web java src">
+		<mkdir dir="${build.dir}/web" />
+		<javac destdir="${build.dir}/web" debug="${javac.debug}" deprecation="${compile.deprecation}" optimize="${compile.optimize}" classpathref="web.compile.classpath">
+			<compilerarg line="${compile.arguments}" />
+			<src path="${build.dir}/web" />
+			<include name="**/*.java" />
+		</javac>
+		<mkdir dir="${dist.dir}" />
+		<jar destfile="${dist.dir}/web-${openmrs.api.name}">
+			<fileset dir="${build.dir}/web" includes="**/*" />
+		</jar>
 	</target>
 	
 	<target name="package-web-without-libs" depends="package-web-init" description="create webapp war file without libs">
@@ -385,6 +399,7 @@
 			<zipfileset dir="${spring.dir}" includes="*.jar" />
 			<!--<zipfileset dir="${struts.dir}" includes="*.jar" /> -->
 			<zipfileset dir="${taglibs.dir}" includes="*.jar" />
+			<zipfileset dir="${tomcat.dir}" includes="catalina.jar" />
 			<zipfileset dir="${velocity.dir}" includes="*.jar" />
 			<zipefileset dir="${xerces.dir}" includes="*.jar" />
 		</zip>
@@ -442,7 +457,7 @@
 	<target name="tomcat-start" description="Start Tomcat">
 		<echo message="Starting Tomcat denoted by the tomcat.home property" />
 		<java jar="${tomcat.home}/bin/bootstrap.jar" fork="true">
-			<jvmarg line='-Dcatalina.home="${tomcat.home}" -Xmx512m -Xms512m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:NewSize=128m'/>
+			<jvmarg line='-Dcatalina.home="${tomcat.home}" -Xmx512m -Xms512m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:NewSize=128m -Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5000'/>
 		</java>
      </target>
 

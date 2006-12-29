@@ -36,7 +36,7 @@ import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import org.springframework.web.bind.RequestUtils;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -99,7 +99,7 @@ public class ReportObjectFormController extends SimpleFormController {
 	 */
 	@Override
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj, BindException be) throws Exception {
-		String submitted = RequestUtils.getStringParameter(request, "submitted", "");
+		String submitted = ServletRequestUtils.getStringParameter(request, "submitted", "");
 
 		if ( submitted.length() > 0 ) {
 			AbstractReportObject reportObject = (AbstractReportObject)obj;
@@ -186,7 +186,7 @@ public class ReportObjectFormController extends SimpleFormController {
 		Set<String> availableTypes = rs.getReportObjectTypes();
 		addedData.put("availableTypes", availableTypes.iterator());
 		
-		String selectedType = RequestUtils.getStringParameter(request, "type", "");
+		String selectedType = ServletRequestUtils.getStringParameter(request, "type", "");
 
 		if ( selectedType.length() > 0 ) {
 			Set<String> availableSubTypes = rs.getReportObjectSubTypes(selectedType);
@@ -210,9 +210,9 @@ public class ReportObjectFormController extends SimpleFormController {
 	 */
 	@Override
 	protected boolean isFormChangeRequest(HttpServletRequest request) {
-		String type = RequestUtils.getStringParameter(request, "type", "");
-		String subType = RequestUtils.getStringParameter(request, "subType", "");
-		String submitted = RequestUtils.getStringParameter(request, "submitted", "");
+		String type = ServletRequestUtils.getStringParameter(request, "type", "");
+		String subType = ServletRequestUtils.getStringParameter(request, "subType", "");
+		String submitted = ServletRequestUtils.getStringParameter(request, "submitted", "");
 		
 		boolean isChange = (type.length() == 0 || subType.length() == 0 || submitted.length() == 0 );
 		
@@ -233,7 +233,7 @@ public class ReportObjectFormController extends SimpleFormController {
 		//Context.getClass().getDeclaredField("some").getGenericType().
 		
 		if (Context.isAuthenticated()) {
-			int reportObjectId = RequestUtils.getIntParameter(request, "reportObjectId", 0);
+			int reportObjectId = ServletRequestUtils.getIntParameter(request, "reportObjectId", 0);
 	    	if (reportObjectId > 0) 
 	    		reportObject = rs.getReportObject(Integer.valueOf(reportObjectId));	
 		}
@@ -241,10 +241,10 @@ public class ReportObjectFormController extends SimpleFormController {
 		if (reportObject == null)
 			reportObject = new EmptyReportObject();
 		
-		String presetType = RequestUtils.getStringParameter(request, "type", "");
+		String presetType = ServletRequestUtils.getStringParameter(request, "type", "");
 		if ( presetType.length() > 0 ) reportObject.setType(presetType);
     	
-		String presetSubType = RequestUtils.getStringParameter(request, "subType", "");
+		String presetSubType = ServletRequestUtils.getStringParameter(request, "subType", "");
 		if ( presetSubType.length() > 0 && ReportObjectFactory.getInstance().isSubTypeOfType(presetType, presetSubType) ) {
 			reportObject.setSubType(presetSubType);
 			String className = rs.getReportObjectClassBySubType(presetSubType);

@@ -10,6 +10,7 @@ import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 
+import org.aopalliance.aop.Advice;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Role;
@@ -27,10 +28,9 @@ import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.db.ContextDAO;
 import org.openmrs.arden.ArdenService;
-import org.openmrs.formentry.FormEntryService;
-import org.openmrs.formentry.FormEntryUtil;
 import org.openmrs.hl7.HL7Service;
 import org.openmrs.logic.LogicService;
+import org.openmrs.module.ModuleUtil;
 import org.openmrs.notification.AlertService;
 import org.openmrs.notification.MessageException;
 import org.openmrs.notification.MessagePreparator;
@@ -44,8 +44,11 @@ import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.springframework.aop.Advisor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 /**
  * Represents an OpenMRS <code>Context</code>, which may be used to
@@ -132,7 +135,9 @@ public class Context implements ApplicationContextAware {
 	/**
 	 * Clears the user context.
 	 */
-	public static void clearUserContext() { 
+	public static void clearUserContext() {
+		log.info("Clearing user context " + userContextHolder.get());
+		userContextHolder.set(null);
 		userContextHolder.remove();
 	}
 	
@@ -143,7 +148,7 @@ public class Context implements ApplicationContextAware {
 	 * @return
 	 */
 	public static UserContext getUserContext() { 	
-		log.info("Getting user context " + userContextHolder.get());
+		log.info("Getting user context " + userContextHolder.get() + " from userContextHolder " + userContextHolder);
 		if (userContextHolder.get() == null) {
 			log.debug("userContext is null. Creating new userContext");
             setUserContext(new UserContext());
@@ -159,9 +164,10 @@ public class Context implements ApplicationContextAware {
 	private static ServiceContext getServiceContext() {
 		if (serviceContext == null) {
 			log.error("serviceContext is null.  Creating new ServiceContext()");
-			serviceContext = new ServiceContext();
+			serviceContext = ServiceContext.getInstance();
 		}
-		return serviceContext;
+		log.debug("serviceContext: " + serviceContext);
+		return ServiceContext.getInstance();
 	}
 	
 	/**
@@ -200,14 +206,10 @@ public class Context implements ApplicationContextAware {
 	public static Properties getRuntimeProperties() {
 		log.debug("getting runtime properties. size: " + runtimeProperties.size());
 		
-		// can only be retrieved once (for configuration during startup).  If 
-		// multiple retrievals were allowed, could be a security risk.  Database
-		// connection properties are in the runtime properties
 		Properties props = new Properties();
 		for (Map.Entry entry : runtimeProperties.entrySet()) {
 			props.put(entry.getKey(), entry.getValue());
 		}
-		runtimeProperties = new Properties();
 		
 		return props;
 	}
@@ -242,13 +244,6 @@ public class Context implements ApplicationContextAware {
 	 */
 	public static PatientService getPatientService() {
 		return getServiceContext().getPatientService();
-	}
-
-	/**
-	 * @return concept dictionary-related services
-	 */
-	public static FormEntryService getFormEntryService() {
-		return getServiceContext().getFormEntryService();
 	}
 
 	/**
@@ -578,11 +573,34 @@ public class Context implements ApplicationContextAware {
 		
 		// Loop over each "module" and startup each with the custom
 		// properties
+		ModuleUtil.startup(props);
 		OpenmrsUtil.startup(props);
-		FormEntryUtil.startup(props);
 		SchedulerUtil.startup(props);
 		
-		getContextDAO().checkCoreDataset();
+		checkCoreDataset();
+	}
+	
+	/**
+	 * Starts the OpenMRS System in a _non-webapp_ environment
+	 * 
+	 * @param url database url like "jdbc:mysql://localhost:3306/openmrs?autoReconnect=true"
+	 * @param username connection username
+	 * @param password connection password
+	 * @param Properties other startup properties
+	 */
+	public static void startup(String url, String username, String password, Properties properties) {
+		if (properties == null)
+			properties = new Properties();
+		
+		properties.put("connection.url", url);
+		properties.put("connection.username", username);
+		properties.put("connection.password", password);
+		setRuntimeProperties(properties);
+		
+		@SuppressWarnings("unused")
+		AbstractApplicationContext ctx = new FileSystemXmlApplicationContext("/applicationContext-service.xml");
+		
+		startup(properties);
 	}
 	
 	/**
@@ -590,12 +608,88 @@ public class Context implements ApplicationContextAware {
 	 * Should be called after all activity has ended and application is closing
 	 */
 	public static void shutdown() {
-		// Needs to be shutdown before Hibernate
-		SchedulerUtil.shutdown();
-		FormEntryUtil.shutdown();
+		try {
+			ModuleUtil.shutdown();
+		}
+		catch (Exception e) {
+			log.warn("Error while shutting down module system", e);
+		}
+		
+		try {
+			// Needs to be shutdown before Hibernate
+			SchedulerUtil.shutdown();
+		}
+		catch (Exception e) {
+			log.warn("Error while shutting down scheduler service", e);
+		}
 		
 		log.debug("Shutting down the context");
-		getContextDAO().shutdown();
+		try {
+			getContextDAO().shutdown();
+		}
+		catch (Exception e) {
+			log.warn("Error while shutting down context dao", e);
+		}
+	}
+	
+	/**
+	 * Used for getting services not in the previous get*Service() calls
+	 * 
+	 * @param cls
+	 * @return
+	 */
+	public static Object getService(Class cls) {
+		return getServiceContext().getService(cls);
+	}
+	
+	/**
+	 * Adds an AOP advisor around the given Class <code>cls</code>
+	 * Advisors can wrap around a method and effect the method before or after
+	 * 
+	 * @param cls
+	 * @param advisor
+	 */
+	public static void addAdvisor(Class cls, Advisor advisor) {
+		getServiceContext().addAdvisor(cls, advisor);
+	}
+	
+	/**
+	 * Adds an AOP advice object around the given Class <code>cls</code>
+	 * Advice comes in the form of before or afterReturning methods
+	 * 
+	 * @param cls
+	 * @param advice
+	 */
+	public static void addAdvice(Class cls, Advice advice) {
+		getServiceContext().addAdvice(cls, advice);
+	}
+	
+	/**
+	 * Removes the given AOP advisor from Class <code>cls</code>
+	 * 
+	 * @param cls
+	 * @param advisor
+	 */
+	public static void removeAdvisor(Class cls, Advisor advisor) {
+		getServiceContext().removeAdvisor(cls, advisor);
+	}
+	
+	/**
+	 * Removes the given AOP advice object from Class <code>cls</code>
+	 * 
+	 * @param cls
+	 * @param advice
+	 */
+	public static void removeAdvice(Class cls, Advice advice) {
+		getServiceContext().removeAdvice(cls, advice);
+	}
+	
+	/**
+	 * Runs through the core data (e.g. privileges and global properties) and 
+	 * adds them if necessary.
+	 */
+	public static void checkCoreDataset() {
+		getContextDAO().checkCoreDataset();
 	}
 	
 	/**

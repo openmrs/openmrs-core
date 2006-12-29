@@ -8,4 +8,6 @@
 <spring:message code="help.text"/>
 <br />
 
+<openmrs:extensionPoint pointId="org.openmrs.help" type="html" />
+
 <%@ include file="/WEB-INF/template/footer.jsp" %>

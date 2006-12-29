@@ -21,7 +21,7 @@ import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
-import org.openmrs.formentry.FormUtil;
+import org.openmrs.util.FormUtil;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.propertyeditor.EncounterTypeEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;

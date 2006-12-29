@@ -131,11 +131,11 @@
 
 <c:if test="${model.firstPatientId != null}">
 	<span style="position: relative">
-		<form method="post" action="patientSet.form" id="goToFormEntry" style="display: inline">
+		<form method="post" action="patientSet.form" id="goToDashboard" style="display: inline">
 			<input type="hidden" name="method" value="setPatientSet"/>
 			<input type="hidden" name="patientIds" value="${model.patient_set_for_links}"/>
 			<input type="hidden" name="url" value="patientDashboard.form?patientId=${model.firstPatientId}"/>
-			<a class="shortcutBarButton" href="javascript:document.getElementById('goToFormEntry').submit()"><spring:message code="Analysis.formEntryButton"/></a>
+			<a class="shortcutBarButton" href="javascript:document.getElementById('goToDashboard').submit()"><spring:message code="Analysis.workWithGroup"/></a>
 		</form>
 	</span>
 </c:if>

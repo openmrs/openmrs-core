@@ -18,10 +18,10 @@
 	<bean id="multipartResolver"
 		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 		<!-- one of the properties available; the maximum file size in bytes -->
-			    <property name="maxUploadSize">
-			        <value>2000000</value>
-			    </property>
-		</bean>
+		    <property name="maxUploadSize">
+		        <value>2000000</value>
+		    </property>
+	</bean>
 	
 	    <bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
 			<property name="interceptors">
@@ -67,7 +67,6 @@
 					<prop key="**/encounterType.form">encounterTypeForm</prop>
 					<prop key="**/location.list">locationList</prop>
 					<prop key="**/location.form">locationForm</prop>
-					<prop key="**/tribe.htm">tribeListTaskpane</prop>
 					<prop key="**/concept.form">conceptForm</prop>
 					<prop key="**/dictionary/concept.htm">conceptView</prop>
 					<prop key="**/conceptClass.list">conceptClassList</prop>
@@ -101,18 +100,11 @@
 					<prop key="**/field.list">fieldList</prop>
 					<prop key="**/fieldType.form">fieldTypeForm</prop>
 					<prop key="**/fieldType.list">fieldTypeList</prop>
-					<prop key="**/formEntryQueue.form">formEntryQueueForm</prop>
-					<prop key="**/formEntryQueue.list">formEntryQueueList</prop>
-					<prop key="**/xsnUpload.form">xsnUploadForm</prop>
 					<prop key="**/options.form">optionsForm</prop>
-					<prop key="**/patientSummary.form">patientSummaryForm</prop>
 					<prop key="**/patientSummaries.form">multiplePatientSummariesList</prop>
 					<prop key="**/patientDashboard.form">patientDashboardForm</prop>         
 					<prop key="**/scheduler.list">schedulerListController</prop>
 					<prop key="**/scheduler.form">schedulerFormController</prop>
-					<prop key="**/dynamicForm.form">dynamicFormEntryController</prop>
-					<prop key="**/batchForm.form">batchFormEntryController</prop>
-					<prop key="**/patientForm.form">patientFormEntryController</prop>
 					<prop key="**/program.list">programList</prop>
 					<prop key="**/conversion.list">stateConversionList</prop>
 					<prop key="**/conversion.form">stateConversionForm</prop>
@@ -125,6 +117,8 @@
 					<prop key="**/globalProps.form">globalPropertyController</prop>
 					<!--<prop key="**/calendar.list">calendarController</prop>-->
 					<prop key="**/dataEntryStats.list">dataEntryStatsController</prop>
+					<prop key="**/module.list">moduleListController</prop>
+					
 					<prop key="**/address.portlet">addressPortletController</prop>
 					<prop key="**/patientPrograms.portlet">patientProgramsPortletController</prop>
 					<prop key="**/patientSet.portlet">patientSetPortletController</prop>
@@ -153,7 +147,7 @@
 		<bean id="addressPortletController" class="org.openmrs.web.controller.AddressPortletController"/>
 		<!--<bean id="calendarPortletController" class="org.openmrs.web.controller.CalendarPortletController"/>-->
 		<bean id="springController" class="org.openmrs.web.controller.SpringController"/>
-
+		
     <!-- =============================== -->
 	<!-- =====      Scheduler      ===== -->
     <!-- =============================== -->
@@ -336,12 +330,6 @@
 				<property name="formView"><value>/admin/patients/tribeForm</value></property>
 				<property name="successView"><value>tribe.list</value></property>
 			</bean>
-			<bean id="tribeListTaskpane" class="org.openmrs.web.controller.TribeListController">
-				<property name="commandName"><value>tribes</value></property>
-				<property name="commandClass"><value>java.util.List</value></property>
-				<property name="formView"><value>/formentry/taskpane/tribe</value></property>
-				<property name="successView"><value>/formentry/taskpane/tribe</value></property>
-			</bean>	
 		<!-- ** /Tribe   ** -->
 		
 		<!-- **  Relationship   ** -->
@@ -522,6 +510,8 @@
 				<property name="successView"><value>location.list</value></property>
 			</bean>
 		<!-- ** /Location ** -->
+		
+		<bean id="encounterDisplayController" class="org.openmrs.web.controller.encounter.EncounterDisplayController"/>
     <!-- ============================ -->
     			
     <!-- ============================ -->
@@ -730,7 +720,7 @@
 				</property>
 				<property name="links">
 					<list>
-						<value>patientSet.form:Analysis.formEntryButton:method=setPatientSet:url=patientDashboard.form:appendPatientId=true:showPatientSet=true</value>
+						<value>patientSet.form:Analysis.workWithGroup:method=setPatientSet:url=patientDashboard.form:appendPatientId=true:showPatientSet=true</value>
 						<value>nealreport.form:nealreport.ConsultReport.name:reportType=Consult Report</value>
 						<value>nealreport.form:nealreport.IncentiveReport.name:reportType=Incentive Report</value>
 						<value>nealreport.form:nealreport.ShortReport.name:reportType=Short Report</value>
@@ -850,55 +840,7 @@
 		<!-- ** /Field Type ** -->
     <!-- ============================ -->
     
-    <!-- =========================== -->
-	<!-- =====    FormEntry    ===== -->
-    <!-- =========================== -->
-    
-		<!-- ** Form Entry Queue ** -->
-			<bean id="formEntryQueueList" class="org.openmrs.formentry.controller.FormEntryQueueListController">
-				<property name="commandName"><value>formEntryQueueList</value></property>
-				<property name="formView"><value>/admin/formentry/formEntryQueueList</value></property>
-				<property name="successView"><value>formEntryQueue.list</value></property>
-			</bean>
-	
-			<bean id="formEntryQueueForm" class="org.openmrs.formentry.controller.FormEntryQueueFormController">
-				<property name="commandName"><value>entry</value></property>
-				<property name="formView"><value>/admin/formentry/formEntryQueueForm</value></property>
-				<property name="successView"><value>formEntryQueue.list</value></property>
-			</bean>
-		<!-- ** /Form Entry Queue ** -->
-			
-				<bean id="xsnUploadForm" class="org.openmrs.formentry.controller.XsnUploadFormController">
-					<property name="commandName"><value>formList</value></property>
-					<property name="formView"><value>/admin/formentry/xsnUploadForm</value></property>
-					<property name="successView"><value>xsnUpload.form</value></property>
-				</bean>
-	
-		<bean id="dynamicFormEntryController" class="org.openmrs.dynamicformentry.DynamicFormEntryController">
-			<property name="commandName"><value>formInProgress</value></property>
-			<property name="formView"><value>/dynamicformentry/enter</value></property>
-			<property name="successView"><value>patientDashboard.form</value></property>
-		</bean>
-	
-		<bean id="batchFormEntryController" class="org.openmrs.dynamicformentry.BatchFormEntryController">
-			<property name="sessionForm"><value>true</value></property>
-			<property name="commandName"><value>formData</value></property>
-			<property name="commandClass"><value>org.openmrs.dynamicformentry.BatchFormEntryModel</value></property>
-			<property name="formView"><value>/dynamicformentry/batch</value></property>
-			<property name="successView"><value>patientDashboard.form</value></property>
-		</bean>
 
-		<bean id="patientFormEntryModelValidator" class="org.openmrs.dynamicformentry.PatientFormEntryModelValidator"/>
-		<bean id="patientFormEntryController" class="org.openmrs.dynamicformentry.PatientFormEntryController">
-			<property name="sessionForm"><value>true</value></property>
-			<property name="commandName"><value>formData</value></property>
-			<property name="commandClass"><value>org.openmrs.dynamicformentry.PatientFormEntryModel</value></property>
-			<property name="validator"><ref bean="patientFormEntryModelValidator"/></property>
-			<property name="formView"><value>/dynamicformentry/patientForm</value></property>
-			<property name="successView"><value>patientDashboard.form</value></property>
-		</bean>
-
-		<bean id="encounterDisplayController" class="org.openmrs.web.controller.encounter.EncounterDisplayController"/>
 
     <!-- ======================================== -->
 	<!-- =====    Programs and Workflows    ===== -->
@@ -973,11 +915,6 @@
 			<property name="formView"><value>/optionsForm</value></property>
 			<property name="successView"><value>options.form</value></property>
 		</bean>
-		<bean id="patientSummaryForm" class="org.openmrs.web.controller.patient.PatientFormController">
-			<property name="commandName"><value>patient</value></property>
-			<property name="formView"><value>/formentry/patientSummaryForm</value></property>
-			<property name="successView"><value>patientSummary.form</value></property>
-		</bean>
 		<bean id="multiplePatientSummariesList" class="org.openmrs.web.controller.patientset.MultipleSummariesController">
 			<property name="commandName"><value>patientSet</value></property>
 			<property name="formView"><value>/patientSummary</value></property>
@@ -1000,11 +937,20 @@
 			<property name="formView"><value>/admin/maintenance/dataEntryStatistics</value></property>
 			<property name="successView"><value>dataEntryStats.list</value></property>
 		</bean>
+		<bean id="moduleListController" class="org.openmrs.module.web.controller.ModuleListController">
+			<property name="commandName"><value>moduleList</value></property>
+			<property name="formView"><value>/admin/modules/moduleList</value></property>
+			<property name="successView"><value>module.list</value></property>
+		</bean>
+		
+	<!-- ======================================== -->
+	
 		
 	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
 		<property name="basenames">
 			<list>
 				<value>/WEB-INF/custom_messages</value>
+				<value>/WEB-INF/module_messages</value>
 				<value>/WEB-INF/messages</value>
 			</list>
 		</property>

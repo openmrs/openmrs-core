@@ -170,9 +170,18 @@
 			<include method="getStatesByWorkflow"/>
 		</create>
 		
-		<create creator="new" javascript="DWRFormEntryService">
-			<param name="class" value="org.openmrs.web.dwr.DWRFormEntryService"/>
-			<include method="enterForm"/>
+		<create creator="new" javascript="DWRCohortBuilderService">
+			<param name="class" value="org.openmrs.web.dwr.DWRCohortBuilderService" />
+			<include method="getResultCountForFilterId"/>
+			<include method="getResultCountForSearch"/>
+			<include method="getResultForSearch"/>
+			<include method="getResultCombineWithAnd"/>
+			<include method="getResultCombineWithOr"/>
+			<include method="getLastResult"/>
+			<include method="getSearchHistories"/>
+			<include method="saveSearchHistory"/>
+			<include method="loadSearchHistory"/>
+			<include method="getUserSearchHistory"/>
 		</create>
 		
 		<create creator="new" javascript="DWRCohortBuilderService">
@@ -196,13 +205,12 @@
 			import org.openmrs.web.dwr.DWRPatientService;
 			import org.openmrs.web.dwr.DWRConceptService;
 			import org.openmrs.web.dwr.DWREncounterService;
+			import org.openmrs.web.dwr.DWRPatientService;
 			import org.openmrs.web.dwr.DWRUserService;
 			import org.openmrs.web.dwr.DWRObsService;
-			import org.openmrs.web.dwr.DWRFormEntryService;
 			import org.openmrs.notification.web.dwr.DWRMessageService;
 			import java.util.Date;
 			import java.util.List;
-			DWRPatientService.getSimilarPatients(String name, Date birthdate, String age, String gender);
 			DWRPatientService.findDuplicatePatients(String[] searchOn);
 			DWRConceptService.findConcepts(String phrase, boolean includeRetired, List<String> includeClassNames, List<String> excludeClassNames, List<String> includeDatatypes, List<String> excludeDatatypes, boolean includeDrugConcepts);
 			DWRConceptService.findConceptAnswers(String phrase, Integer conceptId, boolean includeRetired, boolean includeDrugConcepts);
@@ -210,6 +218,7 @@
 			DWRConceptService.getDrugs(Integer conceptId, boolean showConcept);
 			DWRConceptService.findDrugs(String phrase, boolean includeRetired);
 			DWREncounterService.findEncounters(String phrase, boolean includeVoided);
+			DWRPatientService.getSimilarPatients(String name, Date birthdate, String age, String gender);
 			DWRUserService.findUsers(String phrase, List<String> roles, boolean includeVoided);
 			DWRUserService.getAllUsers(List<String> roles, boolean includeVoided);
 			DWRObsService.findObs(String phrase, boolean includeVoided);
@@ -217,7 +226,6 @@
 			DWRObsService.createObs(Integer patientId, Integer encounterId, Integer conceptId, String valueText, Date obsDate);
 			DWRMessageService.sendFeedback(String sender, String subject, String content);
 			DWRMessageService.sendMessage( String recipients, String sender, String subject, String content );
-			DWRFormEntryService.enterForm(Integer patientId, Integer formId, boolean useEncounter, List<String> fields);
 		]]>
 	</signatures>
   

@@ -1,6 +1,5 @@
 package org.openmrs;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
@@ -8,7 +7,7 @@ import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 
 public class BaseTest extends org.springframework.test.AbstractTransactionalSpringContextTests {
 	
@@ -24,15 +23,13 @@ public class BaseTest extends org.springframework.test.AbstractTransactionalSpri
 	 * This method is called before Spring is setup, so its used to set the runtime
 	 * properties on Context.
 	 * 
-	 * @see org.springframework.test.AbstractDependencyInjectionSpringContextTests#contextKey()
+	 * @see org.springframework.test.AbstractDependencyInjectionSpringContextTests#onSetUpBeforeTransaction()
 	 */
 	@Override
-	protected Object contextKey() {
+	protected void onSetUpBeforeTransaction() {
 		Properties props = getRuntimeProperties();
 		log.debug("props: " + props);
 		Context.setRuntimeProperties(props);
-		
-		return super.contextKey();
 	}
 
 	public void startup() {
@@ -81,14 +78,7 @@ public class BaseTest extends org.springframework.test.AbstractTransactionalSpri
 			String filename = webapp + "-runtime.properties";
 			
 			if (propertyStream == null) {
-				if (OpenmrsConstants.OPERATING_SYSTEM_LINUX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM))
-					filepath = System.getProperty("user.home") + File.separator + ".OpenMRS";
-				else
-					filepath = System.getProperty("user.home") + File.separator + 
-							"Application Data" + File.separator + 
-							"OpenMRS";
-						
-				filepath = filepath + File.separator + filename;
+				filepath = OpenmrsUtil.getApplicationDataDirectory() + filename;
 				try {
 					propertyStream = new FileInputStream(filepath);
 				}

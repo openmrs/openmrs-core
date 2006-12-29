@@ -246,7 +246,6 @@ public interface UserService {
 	@Authorized({"View Users"})
 	public List<User> getAllUsers(List<Role> roles, boolean includeVoided);
 
-	
 	/**
 	 * Adds the <code>key</code>/<code>value</code> pair to the 
 	 * given <code>user</code> 

@@ -432,4 +432,5 @@ public interface AdministrationDAO {
 
 	public List<DataEntryStatistic> getDataEntryStatistics(Date fromDate, Date toDate, String encounterUserColumn, String orderUserColumn, String groupBy) throws DAOException;
 
+	public List<List<Object>> executeSQL(String sql, boolean selectOnly) throws DAOException;
 }

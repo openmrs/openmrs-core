@@ -31,4 +31,6 @@ public class WebConstants {
 	public static final Integer OPENMRS_PATIENTSET_PAGE_SIZE = 25;
 	
 	public static final String OPENMRS_DYNAMIC_FORM_KEEPALIVE = "__openmrs_dynamic_form_keepalive";
+	
+	public static final String OPENMRS_HEADER_USE_MINIMAL = "__openmrs_use_minimal_header";
 }

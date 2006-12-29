@@ -91,5 +91,7 @@ try {
 }
 %>
 	</div> <!-- close stack trace box -->
+	
+<openmrs:extensionPoint pointId="org.openmrs.uncaughtException" type="html" />
 
 <%@ include file="/WEB-INF/template/footerMinimal.jsp" %>

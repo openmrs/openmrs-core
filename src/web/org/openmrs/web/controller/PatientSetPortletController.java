@@ -56,7 +56,7 @@ public class PatientSetPortletController extends PortletController {
 			
 			if (Context.isAuthenticated()) {
 				if ("true".equals(model.get("allowBatchEntry"))) {
-					Collection<Form> forms = Context.getFormEntryService().getForms();
+					Collection<Form> forms = Context.getFormService().getForms();
 					List<Form> shortForms = new ArrayList<Form>();
 					int maxBatchEntryFields = 25; //default number
 					String maxEntryGlobal = Context.getAdministrationService().getGlobalProperty("formentry.batch.max_fields");

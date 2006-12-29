@@ -8,7 +8,6 @@
 <%@ page import="org.openmrs.api.context.Context" %>
 <%
 	pageContext.setAttribute("vars", Context.getAdministrationService().getSystemVariables());
-	pageContext.setAttribute("formEntryVars", Context.getFormEntryService().getSystemVariables());
 	pageContext.setAttribute("schedVars", Context.getSchedulerService().getSystemVariables());
 %>
 	
@@ -22,21 +21,6 @@
 		<th><spring:message code="SystemInfo.value"/></th>
 	</tr>
 	<c:forEach items="${vars}" var="var" varStatus="status">
-		<tr class="<c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">
-			<td>${var.key}</td>
-			<td>${var.value}</td>
-		</tr>
-	</c:forEach>
-</table>
-
-<br/><br/>
-<h3><spring:message code="FormEntry.header"/></h3>
-<table cellpadding="4" cellspacing="0">
-	<tr>
-		<th><spring:message code="SystemInfo.name"/></th>
-		<th><spring:message code="SystemInfo.value"/></th>
-	</tr>
-	<c:forEach items="${formEntryVars}" var="var" varStatus="status">
 		<tr class="<c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">
 			<td>${var.key}</td>
 			<td>${var.value}</td>

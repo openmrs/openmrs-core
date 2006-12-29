@@ -22,7 +22,7 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
-import org.openmrs.formentry.FormEntryService;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsConstants;
 
 public class DWRPatientService {
@@ -38,7 +38,7 @@ public class DWRPatientService {
 			userId = Context.getAuthenticatedUser().getUserId();
 		log.info(userId + "|" + searchValue);
 		
-		FormEntryService ps = Context.getFormEntryService();
+		PatientService ps = Context.getPatientService();
 		List<Patient> patients;
 		
 		patients = ps.findPatients(searchValue, includeVoided);
@@ -73,7 +73,7 @@ public class DWRPatientService {
 	}
 	
 	public PatientListItem getPatient(Integer patientId) {
-		FormEntryService ps = Context.getFormEntryService();
+		PatientService ps = Context.getPatientService();
 		Patient p = ps.getPatient(patientId);
 		PatientListItem pli = new PatientListItem(p);
 		if (p.getAddresses() != null && p.getAddresses().size() > 0) {
@@ -90,7 +90,7 @@ public class DWRPatientService {
 		Integer userId = Context.getAuthenticatedUser().getUserId();
 		log.info(userId + "|" + name + "|" + birthyear + "|" + age + "|" + gender);
 		
-		FormEntryService ps = Context.getFormEntryService();
+		PatientService ps = Context.getPatientService();
 		List<Patient> patients = new Vector<Patient>();
 		
 		Integer d = null;
@@ -123,7 +123,7 @@ public class DWRPatientService {
 		Vector<Object> tribeList = new Vector<Object>();
 		
 		try {
-			tribeList.addAll(Context.getFormEntryService().findTribes(search));
+			tribeList.addAll(Context.getPatientService().findTribes(search));
 		} catch (Exception e) {
 			log.error(e);
 			tribeList.add("Error while attempting to find tribe - " + e.getMessage());
@@ -138,7 +138,7 @@ public class DWRPatientService {
 		Vector tribeList = new Vector();
 		
 		try {
-			tribeList.addAll(Context.getFormEntryService().getTribes());
+			tribeList.addAll(Context.getPatientService().getTribes());
 		} catch (Exception e) {
 			log.error(e);
 			tribeList.add("Error while attempting to find tribe - " + e.getMessage());

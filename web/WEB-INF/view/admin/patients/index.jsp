@@ -38,7 +38,7 @@
 <div id="findPatient">
 	<b class="boxHeader"><spring:message code="Patient.find"/></b>
 	<div class="box">
-		<div dojoType="PatientSearch" widgetId="pSearch" inputName="patientName" searchLabel='<spring:message code="formentry.searchBox"/>' patientId='<request:parameter name="patientId" />' showIncludeVoided='true'></div>
+		<div dojoType="PatientSearch" widgetId="pSearch" inputName="patientName" searchLabel='<spring:message code="Patient.searchBox"/>' patientId='<request:parameter name="patientId" />' showIncludeVoided='true'></div>
 	</div>
 </div>
 

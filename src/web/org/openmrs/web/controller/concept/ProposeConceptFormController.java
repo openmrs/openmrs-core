@@ -22,7 +22,7 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.RequestUtils;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
@@ -41,14 +41,14 @@ public class ProposeConceptFormController extends SimpleFormController {
 		ConceptProposal cp = (ConceptProposal)obj;
 		
 		Concept c = cp.getObsConcept();
-		String id = RequestUtils.getStringParameter(request, "conceptId", null);
+		String id = ServletRequestUtils.getStringParameter(request, "conceptId", null);
 		if (c == null && id != null) {
 			c = Context.getConceptService().getConcept(Integer.valueOf(id));
 			cp.setObsConcept(c);
 		}
 		
 		Encounter e = cp.getEncounter();
-		id = RequestUtils.getStringParameter(request, "encounterId", null);
+		id = ServletRequestUtils.getStringParameter(request, "encounterId", null);
 		if (e == null && id != null) {
 			e = Context.getEncounterService().getEncounter(Integer.valueOf(id));
 			cp.setEncounter(e);
@@ -106,11 +106,11 @@ public class ProposeConceptFormController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			ConceptService cs = Context.getConceptService();
 			EncounterService es = Context.getEncounterService();
-			String id = RequestUtils.getStringParameter(request, "encounterId");
+			String id = ServletRequestUtils.getStringParameter(request, "encounterId");
 	    	if (id != null)
 	    		cp.setEncounter(es.getEncounter(Integer.valueOf(id)));
 	    	
-	    	id = RequestUtils.getStringParameter(request, "obsConceptId");
+	    	id = ServletRequestUtils.getStringParameter(request, "obsConceptId");
 	    	if (id != null)
 	    		cp.setObsConcept(cs.getConcept(Integer.valueOf(id)));
 	    	

@@ -53,4 +53,6 @@
 <br/>
 <a href="concept.form"><spring:message code="Concept.add"/></a> (Use sparingly)
 
+<openmrs:extensionPoint pointId="org.openmrs.dictionary.index" type="html" />
+
 <%@ include file="/WEB-INF/template/footer.jsp" %>

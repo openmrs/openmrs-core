@@ -20,6 +20,8 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
+import org.openmrs.web.propertyeditor.PrivilegeEditor;
+import org.openmrs.web.propertyeditor.RoleEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -45,14 +47,17 @@ public class RoleFormController extends SimpleFormController {
         //NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
         binder.registerCustomEditor(java.lang.Integer.class,
                 new CustomNumberEditor(java.lang.Integer.class, true));
+        binder.registerCustomEditor(Privilege.class,
+                new PrivilegeEditor());
+        binder.registerCustomEditor(Role.class,
+                new RoleEditor());
+        
 	}
 
 	/**
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#processFormSubmission(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
 	 */
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
-		
-		HttpSession httpSession = request.getSession();
 		
 		Role role = (Role)obj;
 		
@@ -119,9 +124,6 @@ public class RoleFormController extends SimpleFormController {
 		
 		Role role = (Role)object;
 		
-		HttpSession httpSession = request.getSession();
-		
-		
 		if (Context.isAuthenticated()) {
 			List<Role> allRoles = Context.getUserService().getRoles();
 			Set<Role> inheritingRoles = new HashSet<Role>();
@@ -154,9 +156,6 @@ public class RoleFormController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-		HttpSession httpSession = request.getSession();
-		
-		
 		Role role = null;
 		
 		if (Context.isAuthenticated()) {

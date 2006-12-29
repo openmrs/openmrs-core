@@ -27,7 +27,7 @@ import ca.uhn.hl7v2.HL7Exception;
 public class ProcessHL7InQueueTask implements Schedulable {
 
 	// Logger
-	private static Log log = LogFactory.getLog(ProcessFormEntryQueueTask.class);
+	private static Log log = LogFactory.getLog(ProcessHL7InQueueTask.class);
 	
 	// Instance of configuration information for task
 	private TaskConfig taskConfig;

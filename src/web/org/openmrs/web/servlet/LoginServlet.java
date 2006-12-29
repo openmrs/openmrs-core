@@ -90,7 +90,7 @@ public class LoginServlet extends HttpServlet {
 				User user = Context.getUserService().getUserByUsername(username);
 				httpSession.setAttribute("loginAttempts", loginAttempts++);
 				
-				if (user.getSecretQuestion() == null || user.getSecretQuestion().equals("")) {
+				if (user != null && user.getSecretQuestion() == null || user.getSecretQuestion().equals("")) {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.question.empty");
 					response.sendRedirect(request.getContextPath() + "/login.htm?username=" + username);
 				}

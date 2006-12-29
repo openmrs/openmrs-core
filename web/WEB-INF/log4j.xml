@@ -62,10 +62,6 @@
 	</logger>
 
 	<logger name="org.openmrs">
-		<level value="ERROR" />
-	</logger>
-
-	<logger name="org.openmrs.analysis">
 		<level value="WARN" />
 	</logger>
 
@@ -83,10 +79,6 @@
 	<logger name="org.openmrs.api.PatientService">
 		<level value="INFO" />
 		<appender-ref ref="PATIENT_FILE" />
-	</logger>
-
-	<logger name="org.openmrs.formentry">
-		<level value="ERROR" />
 	</logger>
 
 	<logger name="org.openmrs.web.controller.analysis">

@@ -35,6 +35,7 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.AdministrationDAO;
+import org.openmrs.module.ModuleUtil;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.Report;
 import org.openmrs.util.OpenmrsConstants;
@@ -56,7 +57,7 @@ public class AdministrationServiceImpl implements AdministrationService {
 	public AdministrationServiceImpl() {	}
 	
 	private AdministrationDAO getAdministrationDAO() {
-		if (!Context.isAuthenticated())
+		if (!Context.hasPrivilege("") && !Context.isAuthenticated())
 			throw new APIAuthenticationException("unauthorized access to administration service");
 		
 		return dao;
@@ -885,7 +886,7 @@ public class AdministrationServiceImpl implements AdministrationService {
 		systemVariables.put("OBSCURE_PATIENTS_GIVEN_NAME",OpenmrsConstants.OBSCURE_PATIENTS_GIVEN_NAME);
 		systemVariables.put("OBSCURE_PATIENTS_MIDDLE_NAME",OpenmrsConstants.OBSCURE_PATIENTS_MIDDLE_NAME);
 		systemVariables.put("STOP_WORDS",OpenmrsConstants.STOP_WORDS().toString());
-		systemVariables.put("MODULE_REPOSITORY_PATH", String.valueOf(OpenmrsConstants.MODULE_REPOSITORY_PATH));
+		systemVariables.put("MODULE_REPOSITORY_PATH", ModuleUtil.getModuleRepository().getAbsolutePath());
 		systemVariables.put("OPERATING_SYSTEM_KEY", String.valueOf(OpenmrsConstants.OPERATING_SYSTEM_KEY));
 		systemVariables.put("OPERATING_SYSTEM", String.valueOf(OpenmrsConstants.OPERATING_SYSTEM));
 		systemVariables.put("OPERATING_SYSTEM_WINDOWS_XP", String.valueOf(OpenmrsConstants.OPERATING_SYSTEM_WINDOWS_XP));
@@ -929,5 +930,12 @@ public class AdministrationServiceImpl implements AdministrationService {
 	
 	public List<DataEntryStatistic> getDataEntryStatistics(Date fromDate, Date toDate, String encounterUserColumn, String orderUserColumn, String groupBy) {
 		return getAdministrationDAO().getDataEntryStatistics(fromDate, toDate, encounterUserColumn, orderUserColumn, groupBy);
+	}
+	
+	public List<List<Object>> executeSQL(String sql, boolean selectOnly) throws APIException {
+		if (sql == null || sql.trim().equals(""))
+			return null;
+		
+		return getAdministrationDAO().executeSQL(sql, selectOnly);
 	}
 }
