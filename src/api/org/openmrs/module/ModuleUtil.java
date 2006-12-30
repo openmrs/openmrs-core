@@ -19,6 +19,8 @@ import java.util.jar.JarFile;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -37,7 +39,7 @@ public class ModuleUtil {
 	 * @param props
 	 */
 	public static void startup(Properties props) {
-
+		
 		// Attempt to get all of the modules from the modules folder
 		// and store them in the modules list
 		ModuleFactory.loadAndStartModules();
@@ -129,7 +131,10 @@ public class ModuleUtil {
 	 */
 	public static File getModuleRepository() {
 		
-		String filepath = OpenmrsUtil.getApplicationDataDirectory() + "modules";
+		AdministrationService as = Context.getAdministrationService();
+		String folderName = as.getGlobalProperty("module_repository_folder", "modules");
+		
+		String filepath = OpenmrsUtil.getApplicationDataDirectory() + folderName;
 		
 		File folder = new File(filepath);
 

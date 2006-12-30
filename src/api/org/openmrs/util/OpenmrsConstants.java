@@ -287,6 +287,8 @@ public class OpenmrsConstants {
 		props.put("mail.password", "test");
 		props.put("mail.default_content_type", "text/plain");
 		
+		props.put("module_repository_folder", "modules");
+		
 		props.put("address.format", "kenya");
 		
 		// TODO should be changed to text defaults and constants should be removed
