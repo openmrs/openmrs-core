@@ -819,7 +819,7 @@ public class AdministrationServiceImpl implements AdministrationService {
 			ob.setConcept(cp.getObsConcept());
 			ob.setValueCoded(cp.getMappedConcept());
 			ob.setCreator(Context.getAuthenticatedUser());
-			ob.setDateCreated(cp.getDateCreated());
+			ob.setDateCreated(new Date());
 			ob.setObsDatetime(cp.getEncounter().getEncounterDatetime());
 			ob.setLocation(cp.getEncounter().getLocation());
 			ob.setPatient(cp.getEncounter().getPatient());

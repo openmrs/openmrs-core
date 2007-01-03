@@ -13,6 +13,7 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -139,12 +140,14 @@ public class EncounterDisplayController implements Controller {
 			this.parent = parent;
 		}
 		public List<List<Obs>> getObservationsByConcepts() {
-			List<List<Obs>> ret = new ArrayList<List<Obs>>();
+			List<List<Obs>> ret = new Vector<List<Obs>>();
 			for (Concept c : parent.getObsGroupConceptsWithObs()) {
-				List<Obs> list = new ArrayList<Obs>();
-				for (Obs o : observations)
-					if (o.getConcept().equals(c))
+				List<Obs> list = new Vector<Obs>();
+				Integer id = c.getConceptId();
+				for (Obs o : observations) {
+					if (id.equals(o.getConcept().getConceptId()))
 						list.add(o);
+				}
 				ret.add(list);
 			}
 			return ret;

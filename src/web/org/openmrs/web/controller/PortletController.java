@@ -148,7 +148,7 @@ public class PortletController implements Controller {
 								Date exitDate = exitObs.getObsDatetime();
 								if ( exitReason != null && exitDate != null ) {
 									reasonForExitText = exitReason.getName(Context.getLocale()).getName();
-									dateOfExitText = Format.format(exitDate, Context.getLocale());
+									dateOfExitText = Format.format(exitDate);
 									patientVariation = "Exited";
 								}
 							} else {

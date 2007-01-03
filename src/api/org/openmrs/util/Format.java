@@ -2,18 +2,21 @@ package org.openmrs.util;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.DateFormat;
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.context.Context;
 
 public class Format {
 	
 	private static Log log = LogFactory.getLog(Format.class);
 
+	public enum FORMAT_TYPE {DATE, TIME, TIMESTAMP};
+	
 	public static String formatPercentage(double pct) {
 		return NumberFormat.getPercentInstance().format(pct); 
 	}
@@ -35,21 +38,30 @@ public class Format {
 	}
 	
 	public static String formatTextBoxDate(Date date) {
-		return format(date, Locale.UK);
+		return format(date, Context.getLocale(), FORMAT_TYPE.DATE);
 	}
 	
 	public static String format(Date date) {
-		return format(date, Locale.UK);
+		return format(date, Context.getLocale(), FORMAT_TYPE.DATE);
 	}
 	
-	public static String format(Date date, Locale locale) {
+	public static String format(Date date, FORMAT_TYPE type) {
+		return format(date, Context.getLocale(), type);
+	}
+	
+	public static String format(Date date, Locale locale, FORMAT_TYPE type) {
 		log.debug("Formatting date: " + date + " with locale " + locale);
 		
-		String pattern = OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(locale.toString().toLowerCase());
-		if (pattern == null) //if the locale was unrecognized
-			pattern = OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Locale.UK.toString().toLowerCase());
-			
-		return date == null ? "" : new SimpleDateFormat(pattern).format(date);
+		DateFormat dateFormat = null;
+		
+		if (type == FORMAT_TYPE.TIMESTAMP)
+			dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
+		else if(type == FORMAT_TYPE.TIME)
+			dateFormat = DateFormat.getTimeInstance(DateFormat.MEDIUM, locale);
+		else //if (type == FORMAT_TYPE.DATE) (default)
+			dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
+		
+		return date == null ? "" : dateFormat.format(date);
 	}
 	
 	public static String format(Throwable t) {

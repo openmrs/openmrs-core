@@ -4,13 +4,14 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.HashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.Format;
+import org.openmrs.util.Format.FORMAT_TYPE;
 
 /**
  * Obs
@@ -524,8 +525,12 @@ public class Obs implements java.io.Serializable {
 			}
 			else if (abbrev.equals("NM") || abbrev.equals("SN"))
 				return getValueNumeric().toString();
-			else if (abbrev.equals("DT") || abbrev.equals("TM") || abbrev.equals("TS"))
-				return (getValueDatetime() == null ? "" : Format.format(getValueDatetime(), locale));
+			else if (abbrev.equals("DT"))
+				return (getValueDatetime() == null ? "" : Format.format(getValueDatetime(), locale, FORMAT_TYPE.DATE));
+			else if (abbrev.equals("TM") )
+				return (getValueDatetime() == null ? "" : Format.format(getValueDatetime(), locale, FORMAT_TYPE.TIME));
+			else if (abbrev.equals("TS"))
+				return (getValueDatetime() == null ? "" : Format.format(getValueDatetime(), locale, FORMAT_TYPE.TIMESTAMP));
 			else if (abbrev.equals("ST"))
 				return getValueText();
 		}
@@ -540,7 +545,7 @@ public class Obs implements java.io.Serializable {
 				return getValueCoded().getName(locale).getName();
 		}
 		else if (getValueDatetime() != null)
-			return Format.format(getValueDatetime(), locale);
+			return Format.format(getValueDatetime(), locale, FORMAT_TYPE.DATE);
 		else if (getValueText() != null)
 			return getValueText();
 		

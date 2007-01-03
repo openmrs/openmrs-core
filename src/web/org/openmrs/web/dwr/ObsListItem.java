@@ -7,6 +7,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Obs;
 import org.openmrs.util.Format;
+import org.openmrs.util.Format.FORMAT_TYPE;
 
 public class ObsListItem {
 	
@@ -34,7 +35,7 @@ public class ObsListItem {
 			if (obs.getEncounter() != null) {
 				encounter = obs.getEncounter().getEncounterId().toString();
 				encounterDatetime = obs.getEncounter().getEncounterDatetime();
-				encounterDate = encounterDatetime == null ? "" : Format.format(encounterDatetime, locale);
+				encounterDate = encounterDatetime == null ? "" : Format.format(encounterDatetime, locale, FORMAT_TYPE.DATE);
 				encounterName = obs.getEncounter().getForm() == null ? "" : obs.getEncounter().getForm().getName();
 			}
 			patientName = obs.getPatient().getPatientName().getFamilyName();
@@ -44,7 +45,7 @@ public class ObsListItem {
 				order = obs.getOrder().getOrderId().toString();
 			location = obs.getLocation().getName();
 			datetime = obs.getObsDatetime();
-			obsDate = datetime == null ? "" : Format.format(datetime, locale);
+			obsDate = datetime == null ? "" : Format.format(datetime, locale, FORMAT_TYPE.DATE);
 			voided = obs.isVoided();
 			value = obs.getValueAsString(locale);
 		}
