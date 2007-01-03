@@ -147,6 +147,14 @@
 			</td>
 		</tr>
 	</c:if>
+	<openmrs:extensionPoint pointId="org.openmrs.admin.forms.formRow" type="html" parameters="formId=${form.formId}">
+		<c:forEach items="${extension.rows}" var="row">
+			<tr>
+				<td><spring:message code="${row.key}"/></td>
+				<td>${row.value}</td>
+			</tr>
+		</c:forEach>
+	</openmrs:extensionPoint>
 </table>
 <br />
 <c:if test="${not empty param.duplicate}">

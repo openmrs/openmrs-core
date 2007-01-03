@@ -268,24 +268,8 @@ public class ModuleFactory {
 				ModuleClassLoader moduleClassLoader = new ModuleClassLoader(module, ModuleFactory.class.getClassLoader());
 				getModuleClassLoaderMap().put(module, moduleClassLoader);
 				
-				for (AdvicePoint advice : module.getAdvicePoints()) {
-					Class cls = null;
-					try {
-						cls = moduleClassLoader.loadClass(advice.getPoint());
-						Object aopObject = advice.getClassInstance();
-						if (Advisor.class.isInstance(aopObject)) {
-							log.debug("adding advisor: " + aopObject.getClass());
-							Context.addAdvisor(cls, (Advisor)aopObject);
-						}
-						else {
-							log.debug("Adding advice: " + aopObject.getClass());
-							Context.addAdvice(cls, (Advice)aopObject);
-						}
-					}
-					catch (ClassNotFoundException e) {
-						throw new ModuleException("Could not load advice point: " + advice.getPoint(), e);
-					}
-				}
+				// load the advice objects into the Context
+				loadAdvice(module);
 				
 				// add all of this module's extensions to the extension map
 				for (Extension ext : module.getExtensions()) {
@@ -363,6 +347,43 @@ public class ModuleFactory {
 		return module;
 	}
 	
+	/**
+	 * Loop over the given module's advice objects and load them into the Context
+	 * This needs to be called for all started modules after every restart of the
+	 * Spring Application Context
+	 * 
+	 * @param module
+	 */
+	public static void loadAdvice(Module module) {
+		ModuleClassLoader moduleClassLoader = getModuleClassLoader(module);
+		
+		for (AdvicePoint advice : module.getAdvicePoints()) {
+			Class cls = null;
+			try {
+				cls = moduleClassLoader.loadClass(advice.getPoint());
+				Object aopObject = advice.getClassInstance();
+				if (Advisor.class.isInstance(aopObject)) {
+					log.debug("adding advisor: " + aopObject.getClass());
+					Context.addAdvisor(cls, (Advisor)aopObject);
+				}
+				else {
+					log.debug("Adding advice: " + aopObject.getClass());
+					Context.addAdvice(cls, (Advice)aopObject);
+				}
+			}
+			catch (ClassNotFoundException e) {
+				throw new ModuleException("Could not load advice point: " + advice.getPoint(), e);
+			}
+		}
+	}
+	
+	/**
+	 * Execute the given sql diff for the given module
+	 * 
+	 * @param module
+	 * @param version
+	 * @param sql
+	 */
 	private static void runDiff(Module module, String version, String sql) {
 		AdministrationService as = Context.getAdministrationService();
 		
@@ -481,7 +502,7 @@ public class ModuleFactory {
 				log.warn("Unable to call module's Activator.shutdown() method", e);
 			}
 			
-			ModuleClassLoader cl = getModuleClassLoaderMap().remove(mod);
+			ModuleClassLoader cl = removeClassLoader(mod);
 			if (cl != null) {
 				cl.dispose();
 				cl = null;
@@ -499,6 +520,14 @@ public class ModuleFactory {
 		}
 	}
 	
+	private static ModuleClassLoader removeClassLoader(Module mod) {
+		getModuleClassLoaderMap(); // create map if it is null
+		if (!moduleClassLoaders.containsKey(mod))
+			log.warn("Module: " + mod.getModuleId() + " does not exist");
+
+		return moduleClassLoaders.remove(mod);
+	}
+
 	/**
 	 * Removes module from module repository
 	 * 

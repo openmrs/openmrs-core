@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,12 +33,22 @@ import java.util.Vector;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.ModuleException;
+import org.w3c.dom.Document;
+import org.w3c.dom.DocumentType;
 
 public class OpenmrsUtil {
 
@@ -723,5 +734,45 @@ public class OpenmrsUtil {
 			folder.mkdirs();
 		
 		return filepath;
+    }
+    
+    /**
+     * Save the given xml document to the given outfile
+     * @param doc Document to be saved
+     * @param outFile fiel pointer to the location the xml file is to be saved to
+     */
+    public static void saveDocument(Document doc, File outFile) {
+    	OutputStream outStream = null;
+    	try {
+    		outStream = new FileOutputStream(outFile);
+			TransformerFactory tFactory = TransformerFactory.newInstance();
+			Transformer transformer = tFactory.newTransformer();
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			
+			DocumentType doctype = doc.getDoctype();
+			if (doctype != null) {
+				transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, doctype.getPublicId());
+				transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, doctype.getSystemId());
+			}
+			
+			DOMSource source = new DOMSource(doc);
+			StreamResult result = new StreamResult(outStream);
+			transformer.transform(source, result);
+    	}
+    	catch (TransformerException e) {
+			throw new ModuleException("Error while saving dwrmodulexml back to dwr-modules.xml", e);
+		}
+		catch (FileNotFoundException e) {
+			throw new ModuleException("/WEB-INF/dwr-modules.xml file doesn't exist.", e);
+		}
+		finally {
+			try {
+				if (outStream != null)
+					outStream.close();
+			}
+			catch (Exception e) {
+				log.warn("Unable to close outstream", e);
+			}
+		}
     }
 }

@@ -183,20 +183,6 @@
 			<include method="loadSearchHistory"/>
 			<include method="getUserSearchHistory"/>
 		</create>
-		
-		<create creator="new" javascript="DWRCohortBuilderService">
-			<param name="class" value="org.openmrs.web.dwr.DWRCohortBuilderService" />
-			<include method="getResultCountForFilterId"/>
-			<include method="getResultCountForSearch"/>
-			<include method="getResultForSearch"/>
-			<include method="getResultCombineWithAnd"/>
-			<include method="getResultCombineWithOr"/>
-			<include method="getLastResult"/>
-			<include method="getSearchHistories"/>
-			<include method="saveSearchHistory"/>
-			<include method="loadSearchHistory"/>
-			<include method="getUserSearchHistory"/>
-		</create>
 				
 	</allow>
 	

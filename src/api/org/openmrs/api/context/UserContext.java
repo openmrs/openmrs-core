@@ -10,7 +10,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Role;
 import org.openmrs.User;
-import org.openmrs.annotation.Authorized;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.db.ContextDAO;
 import org.openmrs.util.OpenmrsConstants;
@@ -134,7 +133,7 @@ public class UserContext {
 	 * @see #authenticate
 	 */
 	public void logout() {
-		log.error("setting user to null");
+		log.debug("setting user to null");
 		user = null;
 	}
 

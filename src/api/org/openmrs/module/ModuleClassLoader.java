@@ -367,19 +367,22 @@ public class ModuleClassLoader extends URLClassLoader {
 			throws ClassNotFoundException {
 		/*log.debug("loadClass(String, boolean): name=" + name + ", this="
 				+ this);*/
-		Class result;
+		Class result = null;
 		if (probeParentLoaderLast) {
 			try {
 				result = loadClass(name, resolve, this, null);
 			} catch (ClassNotFoundException cnfe) {
-				result = getParent().loadClass(name);
+				if (getParent() != null)
+					result = getParent().loadClass(name);
 			}
 			if (result == null) {
-				result = getParent().loadClass(name);
+				if (getParent() != null)
+					result = getParent().loadClass(name);
 			}
 		} else {
 			try {
-				result = getParent().loadClass(name);
+				if (getParent() != null)
+					result = getParent().loadClass(name);
 			} catch (ClassNotFoundException cnfe) {
 				result = loadClass(name, resolve, this, null);
 			}

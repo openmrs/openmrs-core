@@ -254,7 +254,7 @@ public class ModuleUtil {
 
 	private static void expand(InputStream input, String docBase, String name)
 			throws IOException {
-		log.warn("expanding: " + name);
+		log.debug("expanding: " + name);
 		File file = new File(docBase, name);
 		FileOutputStream outStream = null;
 		BufferedOutputStream output = null;
@@ -344,7 +344,7 @@ public class ModuleUtil {
 					UpdateFileParser parser = new UpdateFileParser(content);
 					parser.parse();
 					
-					log.warn("Update for mod: " + mod.getModuleId() + " compareVersion result: " + compareVersion(mod.getVersion(), parser.getCurrentVersion()));
+					log.debug("Update for mod: " + mod.getModuleId() + " compareVersion result: " + compareVersion(mod.getVersion(), parser.getCurrentVersion()));
 					
 					// check the udpate.rdf version against the installed version
 					if (compareVersion(mod.getVersion(), parser.getCurrentVersion()) < 0) {

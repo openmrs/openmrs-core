@@ -137,9 +137,9 @@ public class FormServiceImpl implements FormService {
 		
 		Context.clearSession();
 		
-		getFormDAO().createForm(form);
+		Form newForm = getFormDAO().createForm(form);
 		
-		return form;
+		return newForm;
 	}
 
 	/** 

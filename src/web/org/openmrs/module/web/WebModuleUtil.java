@@ -23,12 +23,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -67,8 +61,6 @@ public class WebModuleUtil {
 	 * @param ServletContext 
 	 */
 	public static void startModule(Module mod, ServletContext servletContext) {
-		new uk.ltd.getahead.dwr.DWRServlet();
-		//new uk.ltd.getahead.dwr.DefaultConfiguration();
 		
 		// only try and start this module if the api started it without a problem.
 		log.debug("trying to start " + mod);
@@ -231,7 +223,7 @@ public class WebModuleUtil {
 					refreshContext = true;
 					
 					// save the dwr-modules.xml file.
-					saveDWRDocument(f, dwrmodulexml);
+					OpenmrsUtil.saveDocument(dwrmodulexml, f);
 				}
 			}
 			catch (FileNotFoundException e) {
@@ -281,6 +273,12 @@ public class WebModuleUtil {
 					
 					// try starting the application context again
 					refreshWAC(servletContext);
+				}
+				
+				// reload the advice points that were lost when refreshing Spring
+				log.debug("Reloading advice for all started modules: " + ModuleFactory.getStartedModules().size());
+				for (Module module : ModuleFactory.getStartedModules()) {
+					ModuleFactory.loadAdvice(module);
 				}
 			}
 			
@@ -335,38 +333,6 @@ public class WebModuleUtil {
 			moduleServlets.put(mod, servletMap);
 		}
 		
-	}
-	
-	private static void saveDWRDocument(File outFile, Document dwrmodulexml) {
-		OutputStream outStream = null;
-		try {
-			outStream = new FileOutputStream(outFile);
-			TransformerFactory tFactory = TransformerFactory.newInstance();
-			Transformer transformer = tFactory.newTransformer();
-			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-			transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, "-//GetAhead Limited//DTD Direct Web Remoting 1.0//EN");
-			// I take some liberties with the dwr xml document, so the validator spits out errors if its knows of the real dtd.
-			//transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "http://www.getahead.ltd.uk/dwr/dwr10.dtd");
-			transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "http://resources.openmrs.org/doctype/dwr-1.0mod.dtd");
-			DOMSource source = new DOMSource(dwrmodulexml);
-			StreamResult result = new StreamResult(outStream);
-			transformer.transform(source, result);
-		}
-		catch (TransformerException e) {
-			throw new ModuleException("Error while saving dwrmodulexml back to dwr-modules.xml", e);
-		}
-		catch (FileNotFoundException e) {
-			throw new ModuleException("/WEB-INF/dwr-modules.xml file doesn't exist.", e);
-		}
-		finally {
-			try {
-				if (outStream != null)
-					outStream.close();
-			}
-			catch (Exception e) {
-				log.warn("Unable to close outstream", e);
-			}
-		}
 	}
 
 	/**
@@ -562,7 +528,7 @@ public class WebModuleUtil {
 				}
 				
 				// save the dwr-modules.xml file.
-				saveDWRDocument(f, dwrmodulexml);
+				OpenmrsUtil.saveDocument(dwrmodulexml, f);
 			}
 		}
 		catch (FileNotFoundException e) {

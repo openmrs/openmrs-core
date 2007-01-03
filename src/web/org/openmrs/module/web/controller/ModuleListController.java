@@ -1,6 +1,8 @@
 package org.openmrs.module.web.controller;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 
 import javax.servlet.ServletException;
@@ -13,6 +15,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.Module;
+import org.openmrs.module.ModuleException;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.module.web.WebModuleUtil;
@@ -65,18 +68,45 @@ public class ModuleListController extends SimpleFormController {
 			MultipartFile multipartModuleFile = multipartRequest.getFile("moduleFile");
 			if (multipartModuleFile != null && !multipartModuleFile.isEmpty()) {
 				String filename = WebUtil.stripFilename(multipartModuleFile.getOriginalFilename());
-				File moduleFile = ModuleUtil.insertModuleFile(multipartModuleFile.getInputStream(), filename);
-				Module module = ModuleFactory.loadModule(moduleFile);
-				ModuleFactory.startModule(module);
-				WebModuleUtil.startModule(module, getServletContext());
-				if (module.isStarted())
-					success = msa.getMessage("Module.loadedAndStarted", new String[] {module.getName()});
-				else
-					success = msa.getMessage("Module.loaded", new String[] {module.getName()});
+				InputStream inputStream = null;
+				File moduleFile = null;
+				Module module = null;
+				try {
+					inputStream = multipartModuleFile.getInputStream();
+					moduleFile = ModuleUtil.insertModuleFile(inputStream, filename);
+					module = ModuleFactory.loadModule(moduleFile);
+				}
+				catch (ModuleException me) {
+					log.warn("Unable to load and start module", me);
+					error = me.getMessage();
+					
+					// clean up the module repository folder
+					try {
+						if (inputStream != null)
+							inputStream.close();
+					}
+					catch (IOException io) {
+						log.warn("Unable to close temporary input stream", io);
+					}
+					if (moduleFile != null)
+						moduleFile.delete();
+				}
+				
+				// if we didn't have trouble loading the module, start it
+				if (module != null) {
+					ModuleFactory.startModule(module);
+					WebModuleUtil.startModule(module, getServletContext());
+					log.debug("Getting form after reset");
+					Context.getFormService().getForm(6);
+					if (module.isStarted())
+						success = msa.getMessage("Module.loadedAndStarted", new String[] {module.getName()});
+					else
+						success = msa.getMessage("Module.loaded", new String[] {module.getName()});
+				}
 			}
 		}
 		
-		if (moduleId.equals("")) {
+		else if (moduleId.equals("")) {
 			ModuleUtil.checkForModuleUpdates();
 		}
 		else { // moduleId is not empty

@@ -4,6 +4,8 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.module.Module;
+import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.web.WebModuleUtil;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.springframework.beans.BeansException;
@@ -36,6 +38,13 @@ public class DispatcherServlet extends
 		WebModuleUtil.setDispatcherServlet(this);
 		
 		super.initFrameworkServlet();
+
+		// the spring context gets reset by the framework servlet, so we need to 
+		// reload the advice points that were lost when refreshing Spring
+		for (Module module : ModuleFactory.getStartedModules()) {
+			ModuleFactory.loadAdvice(module);
+		}
+		
 	}
 	
 	public void reInitFrameworkServlet() throws ServletException {

@@ -21,9 +21,10 @@ public interface FormDAO {
 	/**
 	 * Create a new form
 	 * @param form
+	 * @returns the new Form object
 	 * @throws DAOException
 	 */
-	public void createForm(Form form) throws DAOException;
+	public Form createForm(Form form) throws DAOException;
 
 	/**
 	 * Get form by internal form identifier
