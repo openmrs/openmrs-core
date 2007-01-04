@@ -8,7 +8,6 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.exception.SQLStateConverter;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
@@ -18,10 +17,7 @@ import org.openmrs.PatientAddress;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientName;
-import org.openmrs.PatientProgram;
 import org.openmrs.Person;
-import org.openmrs.ProgramWorkflow;
-import org.openmrs.ProgramWorkflowState;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.Tribe;
@@ -155,10 +151,10 @@ public class PatientServiceImpl implements PatientService {
 					log.error("hasCheckDigit and is not valid: " + pit.getName() + " " + identifier);
 					throw new APIException("Invalid check digit for identifier " + identifier);
 				}
-				else if (pit.hasCheckDigit() == false && identifier.contains("-")) {
-					log.error("hasn't CheckDigit and contains '-': " + pit.getName() + " " + identifier);
-					throw new APIException("Invalid character for non-checkdigit identifier " + identifier);
-				}
+				//else if (pit.hasCheckDigit() == false && identifier.contains("-")) {
+				//	log.error("hasn't CheckDigit and contains '-': " + pit.getName() + " " + identifier);
+				//	throw new APIException("Invalid character for non-checkdigit identifier " + identifier);
+				//}
 			} catch (Exception e) {
 				log.error("exception thrown with: " + pit.getName() + " " + identifier);
 				log.error("Error while adding patient identifiers to savedIdentifier list", e);
@@ -872,7 +868,7 @@ public class PatientServiceImpl implements PatientService {
 	 * @throws APIException
 	 */
 	public void processDeath(Patient patient, Date dateDied, Concept causeOfDeath, String otherReason) {
-		SQLStateConverter s = null;
+		//SQLStateConverter s = null;
 		
 		if ( patient != null && dateDied != null && causeOfDeath != null ) {
 			// set appropriate patient characteristics

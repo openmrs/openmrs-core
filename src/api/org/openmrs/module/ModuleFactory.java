@@ -295,16 +295,6 @@ public class ModuleFactory {
 					runDiff(module, version, sql);
 				}
 				
-				
-				// if this module defined any privileges or global properties, make 
-				// sure they are added to the database
-				// (Unfortunately, placing the call here will duplicate work done 
-				//    at initial app startup)
-				if (module.getPrivileges().size() > 0 || module.getGlobalProperties().size() > 0) {
-					log.debug("Updating core dataset");
-					Context.checkCoreDataset();
-				}
-				
 				try {
 					module.getActivator().startup();
 				}
@@ -323,9 +313,22 @@ public class ModuleFactory {
 				as.setGlobalProperty(module.getModuleId() + ".started", "true");
 				Context.removeProxyPrivilege("");
 				
-				// effectively mark this module as started correctly
+				// effectively mark this module as started successfully
 				getStartedModulesMap().put(module.getModuleId(), module);
 				module.clearStartupError();
+				
+				// (this must be done after marking the module as started)
+				// if this module defined any privileges or global properties, make 
+				// sure they are added to the database
+				// (Unfortunately, placing the call here will duplicate work done 
+				//    at initial app startup)
+				if (module.getPrivileges().size() > 0 || module.getGlobalProperties().size() > 0) {
+					log.debug("Updating core dataset");
+					Context.checkCoreDataset(); 
+					// checkCoreDataset() currently doesn't throw an error.  If it did, it needs to be
+					// caught and the module needs to be stopped and given a startup error
+					
+				}
 				
 			}
 			catch (Exception e) {
