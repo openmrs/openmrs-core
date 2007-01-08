@@ -33,7 +33,7 @@
 <form method="post" action="${pageContext.request.contextPath}/mrnGenerator">
 	<table border="0" cellspacing="2" cellpadding="2">
 		<tr>
-			<td rowspan="3" align="left" valign="top">
+			<td rowspan="4" align="left" valign="top">
 				<label for="site"><spring:message code="MRNGenerator.select.site"/></label><br>
 				<select name="site" size="17">
 					<optgroup label="Group A sites">
@@ -65,6 +65,12 @@
 			<td align="left" valign="top">
 				<label for="mrn_first"><spring:message code="MRNGenerator.starting.number"/></label><br>
 				<input name="mrn_first" size="10" type="text">
+			</td>
+		</tr>
+		<tr>
+			<td align="left" valign="top">
+				<label for="mrn_prefix"><spring:message code="MRNGenerator.prefix.number"/></label><br>
+				<input type="text" size="4" name="mrn_prefix"/>
 			</td>
 		</tr>
 		<tr>

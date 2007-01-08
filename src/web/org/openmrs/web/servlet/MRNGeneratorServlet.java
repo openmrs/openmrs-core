@@ -26,10 +26,13 @@ public class MRNGeneratorServlet extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 		
 		String site = request.getParameter("site");
+		String prefix = request.getParameter("mrn_prefix");
 		String first = request.getParameter("mrn_first");
 		String count = request.getParameter("mrn_count");
 		HttpSession session = request.getSession();
 		
+		if (prefix == null)
+			prefix = "";
 		
 		if (site == null || first == null || count == null || 
 				site.length()==0 || first.length()==0 || count.length()==0) {
@@ -46,7 +49,7 @@ public class MRNGeneratorServlet extends HttpServlet {
 		// log who generated this list
 		as.mrnGeneratorLog(site, mrnFirst, mrnCount);
 		
-		String filename = site + "_" + mrnFirst + "-" + (mrnFirst + (mrnCount - 1)) + ".txt"; 
+		String filename = site + "_" + mrnFirst + "-" + (mrnFirst + (mrnCount - 1)) + prefix + ".txt"; 
 		
 		response.setHeader("Content-Type", "text");
 		response.setHeader("Content-Disposition", "attachment; filename=" + filename);
@@ -54,7 +57,7 @@ public class MRNGeneratorServlet extends HttpServlet {
 		Integer end = mrnCount + mrnFirst;
 		while (mrnFirst < end) {
 			
-			String line = mrnFirst + site;
+			String line = prefix + mrnFirst + site;
 			int checkdigit;
 			try {
 				checkdigit = OpenmrsUtil.getCheckDigit(line);
