@@ -11,6 +11,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
+import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.TaskConfig;
 import org.openmrs.web.WebConstants;
@@ -146,7 +147,7 @@ public class SchedulerListController extends SimpleFormController {
 	 * Get the scheduler service from the application context.
 	 */
 	private SchedulerService getSchedulerService() { 
-		return (SchedulerService) getApplicationContext().getBean("schedulerService");
+		return Context.getSchedulerService();
 	}
 		
 }
