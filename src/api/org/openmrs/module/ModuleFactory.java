@@ -251,14 +251,14 @@ public class ModuleFactory {
 				// check to be sure this module can run with our current version of OpenMRS code
 				String requireVersion = module.getRequireOpenmrsVersion();
 				if (requireVersion != null && !requireVersion.equals(""))
-					if (ModuleUtil.compareVersion(OpenmrsConstants.OPENMRS_VERSION_SHORT, requireVersion) < 1)
-						throw new ModuleException("Module's require_version ('" + requireVersion + "') does not match code version of '" + OpenmrsConstants.OPENMRS_VERSION_SHORT + "'", module.getName());
+					if (ModuleUtil.compareVersion(OpenmrsConstants.OPENMRS_VERSION_SHORT, requireVersion) < 0)
+						throw new ModuleException("Module requires at least version '" + requireVersion + "'.  Current code version is only '" + OpenmrsConstants.OPENMRS_VERSION_SHORT + "'", module.getName());
 					
 				// check to be sure this module can run with our current version of the OpenMRS database
 				String requireDBVersion = module.getRequireDatabaseVersion();
 				if (requireDBVersion != null && !requireDBVersion.equals(""))
-					if (ModuleUtil.compareVersion(OpenmrsConstants.DATABASE_VERSION, requireDBVersion) < 1)
-						throw new ModuleException("Module's require_database_version ('" + requireDBVersion + "') does not match code version of '" + OpenmrsConstants.DATABASE_VERSION + "'", module.getName());
+					if (ModuleUtil.compareVersion(OpenmrsConstants.DATABASE_VERSION, requireDBVersion) < 0)
+						throw new ModuleException("Module requires at least database version '" + requireDBVersion + "'. Current database version is only '" + OpenmrsConstants.DATABASE_VERSION + "'", module.getName());
 				
 				// check for required modules
 				if (!requiredModulesStarted(module)) {
@@ -482,17 +482,17 @@ public class ModuleFactory {
 						log.warn("Could not remove advice point: " + advice.getPoint(), e);
 					}
 				}
-			}
 			
-			// remove all extensions by this module
-			for (Extension ext : mod.getExtensions()) {
-				String extId = ext.getExtensionId();
-				List<Extension> tmpExtensions = getExtensions(extId);
-				if (tmpExtensions == null)
-					tmpExtensions = new Vector<Extension>();
-				
-				tmpExtensions.remove(ext);
-				getExtensionMap().put(extId, tmpExtensions);
+				// remove all extensions by this module
+				for (Extension ext : mod.getExtensions()) {
+					String extId = ext.getExtensionId();
+					List<Extension> tmpExtensions = getExtensions(extId);
+					if (tmpExtensions == null)
+						tmpExtensions = new Vector<Extension>();
+					
+					tmpExtensions.remove(ext);
+					getExtensionMap().put(extId, tmpExtensions);
+				}
 			}
 			
 			try {
