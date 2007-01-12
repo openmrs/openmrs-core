@@ -134,6 +134,7 @@ public class ModuleListController extends SimpleFormController {
 						error = msa.getMessage("Module.not.started", args);
 				}
 				else if ("unload".equals(action)) {
+					ModuleFactory.stopModule(mod); // stop the module so that when the web stop is done properly
 					WebModuleUtil.stopModule(mod, getServletContext());
 					ModuleFactory.unloadModule(mod);
 					success = msa.getMessage("Module.unloaded", args);

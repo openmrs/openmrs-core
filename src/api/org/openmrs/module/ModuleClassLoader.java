@@ -31,6 +31,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -40,9 +41,6 @@ public class ModuleClassLoader extends URLClassLoader {
 	static Log log = LogFactory.getLog(ModuleClassLoader.class);
 	
 	private final Module module;
-	
-	private static File libCacheFolder;
-	private static boolean libCacheFolderInitialized = false;
 	
 	private Module[] publicImports;
 	private Module[] privateImports;
@@ -125,14 +123,11 @@ public class ModuleClassLoader extends URLClassLoader {
 	private static List<URL> getUrls(final Module module) {
 		List<URL> result = new LinkedList<URL>();
 		
-		File libCacheFolder = getLibCacheFolder();
-		File tmpModuleDir = new File(libCacheFolder, module.getModuleId());
-		log.debug("Copying module file into: " + tmpModuleDir.getAbsolutePath());
+		File tmpModuleDir = getLibCacheFolderForModule(module);
 		File tmpModuleJar = new File(tmpModuleDir, module.getModuleId() + ".jar");
-		if (!tmpModuleDir.exists()) {
-			tmpModuleDir.mkdir();
-			tmpModuleDir.deleteOnExit();
-		}
+		
+		log.debug("Copying module file into: " + tmpModuleDir.getAbsolutePath());
+		
 		if (!tmpModuleJar.exists()) {
 			try {
 				tmpModuleJar.createNewFile();
@@ -142,6 +137,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			}
 		}
 		
+		// copy the module jar into that temporary folder
 		FileInputStream in = null;
 		FileOutputStream out = null;
 		try {
@@ -158,7 +154,7 @@ public class ModuleClassLoader extends URLClassLoader {
 					in.close();
 			}
 			catch (IOException e) {
-				log.debug("Error while closing in stream for jar", e);
+				log.error("Error while closing in stream for jar", e);
 			}
 
 			try {
@@ -166,10 +162,11 @@ public class ModuleClassLoader extends URLClassLoader {
 					out.close();
 			}
 			catch (IOException e) {
-				log.debug("Error while closing out stream for jar", e);
+				log.error("Error while closing out stream for jar", e);
 			}
 		}
 		
+		// add the module jar as a url in the classpath of the classloader
 		URL moduleFileURL = null;
 		try {
 			moduleFileURL = ModuleUtil.file2url(tmpModuleJar);
@@ -179,6 +176,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			log.warn("Unable to add files from module to URL list: " + module.getModuleId(), e);
 		}
 		
+		// add each defined library as a url in the classpath of the classloader
 		for (Library lib : module.getLibraries()) {
 			try {
 				log.debug("found library: " + lib);
@@ -194,9 +192,22 @@ public class ModuleClassLoader extends URLClassLoader {
 			}
 		}
 		
+		// add each xml document to the url list
+		
 		return result;
 	}
 	
+	public static File getLibCacheFolderForModule(Module module) {
+		File tmpModuleDir = new File(OpenmrsClassLoader.getLibCacheFolder(), module.getModuleId());
+		
+		// each module gets its own folder named /moduleId/
+		if (!tmpModuleDir.exists()) {
+			tmpModuleDir.mkdir();
+			tmpModuleDir.deleteOnExit();
+		}
+		return tmpModuleDir;
+	}
+
 	private static List<URL> getUrls(final Module module, final URL[] existingUrls) {
 		List<URL> urls = Arrays.asList(existingUrls);
 		List<URL> result = new LinkedList<URL>();
@@ -211,50 +222,6 @@ public class ModuleClassLoader extends URLClassLoader {
 			}
 		}
 		return result;
-	}
-	
-	public static File getLibCacheFolder() {
-		if (libCacheFolder != null) {
-			return libCacheFolderInitialized ? libCacheFolder : null;
-		}
-		synchronized (ModuleClassLoader.class) {
-			libCacheFolder = new File(System.getProperty("java.io.tmpdir"),
-					System.currentTimeMillis() + ".openmrs-lib-cache");
-			log.debug("libraries cache folder is " + libCacheFolder);
-			File lockFile = new File(libCacheFolder, "lock");
-			if (lockFile.exists()) {
-				log.error("can't initialize libraries cache folder "
-						+ libCacheFolder + " as lock file indicates that it"
-						+ " is owned by another openmrs instance");
-				return null;
-			}
-			if (libCacheFolder.exists()) {
-				// clean up folder
-				try {
-					OpenmrsUtil.deleteDirectory(libCacheFolder);
-				}
-				catch (IOException io) {
-					log.warn("Unable to delete: " + libCacheFolder.getName());
-				}
-			} else {
-				libCacheFolder.mkdirs();
-			}
-			try {
-				if (!lockFile.createNewFile()) {
-					log.error("can\'t create lock file in JPF libraries cache"
-							+ " folder " + libCacheFolder);
-					return null;
-				}
-			} catch (IOException ioe) {
-				log.error("can\'t create lock file in JPF libraries cache"
-						+ " folder " + libCacheFolder, ioe);
-				return null;
-			}
-			lockFile.deleteOnExit();
-			libCacheFolder.deleteOnExit();
-			libCacheFolderInitialized = true;
-		}
-		return libCacheFolder;
 	}
 
 	protected void collectImports() {
@@ -622,7 +589,7 @@ public class ModuleClassLoader extends URLClassLoader {
 
 	protected synchronized File cacheLibrary(final URL libUrl,
 			final String libname) {
-		File cacheFolder = getLibCacheFolder();
+		File cacheFolder = OpenmrsClassLoader.getLibCacheFolder();
 		if (libraryCache.containsKey(libUrl)) {
 			return (File) libraryCache.get(libUrl);
 		}
@@ -668,11 +635,14 @@ public class ModuleClassLoader extends URLClassLoader {
 	}
 
 	/**
+	 * If a resource is found within a jar, that jar URL is converted to 
+	 * a temporary file and a URL to that is returned
 	 * @see java.lang.ClassLoader#findResource(java.lang.String)
 	 */
 	public URL findResource(final String name) {
 		URL result = findResource(name, this, null);
-		return result;
+		
+		return expandIfNecessary(result);
 	}
 
 	/**
@@ -681,8 +651,13 @@ public class ModuleClassLoader extends URLClassLoader {
 	@Override
 	public Enumeration<URL> findResources(final String name) throws IOException {
 		List<URL> result = new LinkedList<URL>();
-		// TODO: look at this deeper.  When is result populated?
 		findResources(result, name, this, null);
+		
+		// expand all of the "jar" urls
+		for (URL url : result) {
+			url = expandIfNecessary(url);
+		}
+		
 		return Collections.enumeration(result);
 	}
 
@@ -857,6 +832,22 @@ public class ModuleClassLoader extends URLClassLoader {
 			return false;
 		}
 		return true;
+	}
+	
+	/**
+	 * Expands the URL into the temporary folder if the URL points to a 
+	 * resource inside of a jar file
+	 * 
+	 * @param result
+	 * @return URL to the expanded result or null if an error occurred
+	 */
+	private URL expandIfNecessary(URL result) {
+		if (result == null || !"jar".equals(result.getProtocol()))
+			return result;
+		
+		File tmpFolder = getLibCacheFolderForModule(module);
+		
+		return OpenmrsClassLoader.expandURL(result, tmpFolder);
 	}
 	
 	/**

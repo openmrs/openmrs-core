@@ -18,6 +18,7 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.Privilege;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.aop.Advisor;
@@ -459,7 +460,7 @@ public class ModuleFactory {
 				Context.removeProxyPrivilege("");
 			}
 			
-			getStartedModules().remove(mod);
+			getStartedModulesMap().remove(mod.getModuleId());
 			
 			if (getModuleClassLoaderMap().containsKey(mod)) {
 				// remove all advice by this module
@@ -510,7 +511,7 @@ public class ModuleFactory {
 				cl.dispose();
 				cl = null;
 				// remove files from lib cache
-				File folder = ModuleClassLoader.getLibCacheFolder();
+				File folder = OpenmrsClassLoader.getLibCacheFolder();
 				File tmpModuleDir = new File(folder, mod.getModuleId());
 				try {
 					System.gc();
@@ -539,7 +540,8 @@ public class ModuleFactory {
 	public static void unloadModule(Module mod) {
 
 		// remove this module's advice and extensions
-		stopModule(mod, true);
+		if (isModuleStarted(mod))
+			stopModule(mod, true);
 		
 		// remove from list of loaded modules
 		getLoadedModules().remove(mod);
@@ -684,8 +686,9 @@ public class ModuleFactory {
 	 * @return
 	 */
 	public static Collection<ModuleClassLoader> getModuleClassLoaders() {
-		if (getModuleClassLoaderMap().size() > 0)
-			return getModuleClassLoaderMap().values();
+		Map<Module, ModuleClassLoader> classLoaders = getModuleClassLoaderMap();
+		if (classLoaders.size() > 0)
+			return classLoaders.values();
 		
 		return Collections.emptyList();
 	}

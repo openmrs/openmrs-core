@@ -73,7 +73,7 @@ public class PatientIdentifierTypeListController extends SimpleFormController {
 					success += p + " " + deleted;
 				}
 				catch (APIException e) {
-					log.warn(e);
+					log.warn("Error deleting patient identifier type", e);
 					if (!error.equals("")) error += "<br>";
 					error += p + " " + notDeleted;
 				}

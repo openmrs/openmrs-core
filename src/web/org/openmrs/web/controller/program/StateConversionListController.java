@@ -2,7 +2,6 @@ package org.openmrs.web.controller.program;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -12,9 +11,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.ConceptStateConversion;
-import org.openmrs.Program;
 import org.openmrs.api.APIException;
-import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
@@ -62,7 +59,7 @@ public class StateConversionListController extends SimpleFormController {
 						success += textConversion + " " + id + " " + deleted;
 						numDeleted++;
 					} catch (APIException e) {
-						log.warn(e);
+						log.warn("Error deleting concept state conversion", e);
 						if (!error.equals("")) error += "<br>";
 						error += textConversion + " " + id + " " + notDeleted;
 					}

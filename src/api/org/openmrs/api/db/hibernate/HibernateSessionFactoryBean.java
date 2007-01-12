@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -14,11 +16,15 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.util.ConfigHelper;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.Module;
+import org.openmrs.module.ModuleFactory;
 import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
 
 public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 	
 	private static Log log = LogFactory.getLog(HibernateSessionFactoryBean.class);
+	
+	protected Set<String> tmpMappingResources = new HashSet<String>(); 
 	
 	public SessionFactory newSessionFactory(Configuration config) throws HibernateException {
 		log.debug("Configuring hibernate sessionFactory properties");
@@ -102,5 +108,41 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 		
 		return 0;
 	}
+
+	/** 
+	 * Collect the mapping resources for future use because the mappingResources object is
+	 * defined as 'private' instead of 'protected'
+	 * 
+	 * @see org.springframework.orm.hibernate3.LocalSessionFactoryBean#setMappingResources(java.lang.String[])
+	 */
+	@Override
+	public void setMappingResources(String[] mappingResources) {
+		for (String resource : mappingResources) {
+			tmpMappingResources.add(resource);
+		}
+		
+		super.setMappingResources(tmpMappingResources.toArray(new String[] {}));
+	}
 	
+	public Set<String> getModuleMappingResources() {
+		for (Module mod : ModuleFactory.getStartedModules()) {
+			for (String s : mod.getMappingFiles()) {
+				tmpMappingResources.add(s);
+			}
+		}
+		return tmpMappingResources;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.springframework.orm.hibernate3.AbstractSessionFactoryBean#afterPropertiesSet()
+	 */
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		// adding each module's mapping file to the list of mapping resources
+		super.setMappingResources(getModuleMappingResources().toArray(new String[] {}));
+		
+		super.afterPropertiesSet();
+			
+	}
+
 }

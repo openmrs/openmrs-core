@@ -258,8 +258,7 @@ public class NealReportController implements Controller {
 						maker.addDynamic(holder);
 						log.debug("HIV added " + holder);
 					} catch (Exception ex) {
-						log.warn("Exception with a drug order: " + reg);
-						log.warn(ex);
+						log.warn("Exception with a drug order: " + reg, ex);
 					}
 				}
 				if (earliestStart != null)

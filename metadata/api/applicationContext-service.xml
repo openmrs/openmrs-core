@@ -422,11 +422,12 @@
 				<value>@MAPPING.JAR.LOCATIONS@</value>
 			</list>
 		</property>
-		<property name="mappingLocations">
+		<!-- <property name="mappingResources">
 			<list>
-				<value>/WEB-INF/*.hbm.xml</value>
+				<value>______.hbm.xml</value>
 			</list>
 		</property>
+		-->
 		<!--  default properties must be set in the hibernate.default.properties -->
 	</bean>
 

@@ -9,7 +9,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptStateConversion;
-import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.ProgramWorkflowService;
@@ -18,10 +17,9 @@ import org.openmrs.web.WebConstants;
 import org.openmrs.web.propertyeditor.ConceptEditor;
 import org.openmrs.web.propertyeditor.ProgramWorkflowEditor;
 import org.openmrs.web.propertyeditor.ProgramWorkflowStateEditor;
-import org.openmrs.web.propertyeditor.WorkflowCollectionEditor;
 import org.springframework.validation.BindException;
-import org.springframework.web.bind.RequestUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
@@ -53,7 +51,7 @@ public class StateConversionFormController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 			ProgramWorkflowService ps = Context.getProgramWorkflowService();
-			String conversionId = RequestUtils.getStringParameter(request, "conceptStateConversionId");
+			String conversionId = ServletRequestUtils.getStringParameter(request, "conceptStateConversionId");
 	    	if (conversionId != null) {
 	    		log.debug("conversion ID is " + conversionId);
 	    		try {

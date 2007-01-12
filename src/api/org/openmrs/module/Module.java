@@ -51,6 +51,7 @@ public final class Module {
 	private List<Privilege> privileges = new Vector<Privilege>();
 	private List<GlobalProperty> globalProperties = new Vector<GlobalProperty>();
 	private List<Library> libraries = new Vector<Library>();
+	private List<String> mappingFiles = new Vector<String>();
 	
 	private Document config = null;
 	private Document sqldiff = null;
@@ -436,6 +437,14 @@ public final class Module {
 		this.libraries = libraries;
 	}
 	
+	public List<String> getMappingFiles() {
+		return mappingFiles;
+	}
+	
+	public void setMappingFiles(List<String> mappingFiles) {
+		this.mappingFiles = mappingFiles;
+	}
+	
 	public boolean isStarted() {
 		return ModuleFactory.isModuleStarted(this);
 	}
@@ -465,4 +474,6 @@ public final class Module {
 		
 		return moduleId;
 	}
+
+	
 }

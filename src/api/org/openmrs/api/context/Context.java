@@ -625,7 +625,14 @@ public class Context implements ApplicationContextAware {
 		
 		log.debug("Shutting down the context");
 		try {
-			getContextDAO().shutdown();
+			ContextDAO dao = null;
+			try {
+				dao = getContextDAO();
+			}
+			catch (APIException e) {
+				// pass
+			}
+			dao.shutdown();
 		}
 		catch (Exception e) {
 			log.warn("Error while shutting down context dao", e);

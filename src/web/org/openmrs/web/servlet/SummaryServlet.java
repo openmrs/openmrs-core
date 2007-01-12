@@ -29,7 +29,7 @@ import org.openmrs.reporting.PatientSet;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
-import org.springframework.web.bind.RequestUtils;
+import org.springframework.web.bind.ServletRequestUtils;
 
 public class SummaryServlet extends HttpServlet {
 
@@ -102,10 +102,10 @@ public class SummaryServlet extends HttpServlet {
 		
 		Locale locale = Context.getLocale();
 		DateFormat dateFormat = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(locale.toString().toLowerCase()), locale);
-		String startDateString = RequestUtils.getStringParameter(request, "startDate", "");
-		String endDateString = RequestUtils.getStringParameter(request, "endDate", "");
-		String locationString = RequestUtils.getStringParameter(request, "location", "");
-		String identifierStrings = RequestUtils.getStringParameter(request, "patientIdentifiers", "");
+		String startDateString = ServletRequestUtils.getStringParameter(request, "startDate", "");
+		String endDateString = ServletRequestUtils.getStringParameter(request, "endDate", "");
+		String locationString = ServletRequestUtils.getStringParameter(request, "location", "");
+		String identifierStrings = ServletRequestUtils.getStringParameter(request, "patientIdentifiers", "");
 		
 		PatientSet ps = new PatientSet();
 		

@@ -127,7 +127,7 @@ public class WebModuleUtil {
 			// of the web application context
 			boolean refreshContext = false;
 			
-			// copy xml and html files into the webapp (from /web/module/ in the module)
+			// copy the spring xml file and html files into the webapp (from /web/module/ in the module)
 			JarFile jarFile = null;
 			try {
 				File modFile = mod.getFile();
@@ -158,25 +158,13 @@ public class WebModuleUtil {
 							outStream.close();
 						}
 					}
-					else if (name.endsWith(".xml") && 
-								name.contains("/") == false && // eliminate xml files that aren't in the root
-								!name.equals("config.xml")) {
-						// write the .xml files to WEB-INF
-						String absPath = realPath + "/WEB-INF/" + name;
-						if (name.equals(mod.getModuleId() + "Context.xml")) {
-							// set the name of the context file 
-							absPath = realPath + "/WEB-INF/module-" + mod.getModuleId() + "-context.xml";
-						}
-						File outFile = new File(absPath.replace("/", File.separator));
+					else if (name.equals("moduleApplicationContext.xml")) {
 						refreshContext = true;
-						OutputStream outStream = new FileOutputStream(outFile, false);
-						InputStream inStream = jarFile.getInputStream(entry);
-						OpenmrsUtil.copyFile(inStream, outStream);
-						inStream.close();
-						outStream.close();
-						
-						// this will usually only be used when an improper shutdown has occurred.
-						outFile.deleteOnExit(); // delete the xml file on JVM exit 
+					}
+					else if (name.equals(mod.getModuleId() + "Context.xml")) {
+						String msg = "DEPRECATED: '" + name + "' should be named 'moduleApplicationContext.xml' now. Please update/upgrade. ";
+						mod.setStartupErrorMessage(msg);
+						throw new ModuleException(msg, mod.getModuleId());
 					}
 				}
 			}
@@ -439,17 +427,17 @@ public class WebModuleUtil {
 		}
 		
 		// delete the context file for this module
-		absPath = realPath + "/WEB-INF/module-" + mod.getModuleId() + "-context.xml";
-		File moduleContextXml = new File(absPath.replace("/", File.separator));
-		if (moduleContextXml.exists()) {
-			System.gc();
-			if (!moduleContextXml.delete()) {
-				moduleContextXml.deleteOnExit();
-				log.warn("Unable to delete moduleContext: " + moduleContextXml.getAbsolutePath());
-			}
-		}
-		else
-			log.warn("No module context xml file found for " + mod.getModuleId());
+		//absPath = realPath + "/WEB-INF/module-" + mod.getModuleId() + "-context.xml";
+		//File moduleContextXml = new File(absPath.replace("/", File.separator));
+		//if (moduleContextXml.exists()) {
+		//	System.gc();
+		//	if (!moduleContextXml.delete()) {
+		//		moduleContextXml.deleteOnExit();
+		//		log.warn("Unable to delete moduleContext: " + moduleContextXml.getAbsolutePath());
+		//	}
+		//}
+		//else
+		//	log.warn("No module context xml file found for " + mod.getModuleId());
 		
 		// delete the xml files for this module
 		JarFile jarFile = null;
@@ -462,7 +450,7 @@ public class WebModuleUtil {
 				log.debug("Entry name: " + entry.getName());
 				if (entry.getName().endsWith(".xml") && 
 						!entry.getName().equals("config.xml") &&
-						!entry.getName().endsWith(mod.getModuleId() + "context.xml")) {
+						!entry.getName().endsWith("moduleApplicationContext.xml")) { //mod.getModuleId() + "context.xml")) {
 					absPath = realPath + "/WEB-INF/" + entry.getName();
 					File moduleXmlFile = new File(absPath.replace("/", File.separator));
 					if (moduleXmlFile.exists()) {
@@ -569,6 +557,9 @@ public class WebModuleUtil {
 	public static XmlWebApplicationContext refreshWAC(ServletContext servletContext) {
 		XmlWebApplicationContext wac = (XmlWebApplicationContext)WebApplicationContextUtils.getWebApplicationContext(servletContext);
 		log.debug("WAC class: " + wac.getClass().getName());
+		
+		// save state and destroy classloader instance
+		OpenmrsClassLoader.saveState();
 		ServiceContext.destroyInstance();
 		try {
 			wac.stop();
@@ -578,14 +569,23 @@ public class WebModuleUtil {
 			// Spring seems to be trying to refresh the context instead of /just/ stopping
 			// pass
 		}
-		
 		OpenmrsClassLoader.destroyInstance();
+		
+		// save the new classloader instance
 		wac.setClassLoader(OpenmrsClassLoader.getInstance());
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
-
+		
+		// do the restart
 		ServiceContext.getInstance().startRefreshingContext();
 		wac.refresh();
 		ServiceContext.getInstance().doneRefreshingContext();
+		
+		// save the new classloader instance
+		wac.setClassLoader(OpenmrsClassLoader.getInstance());
+		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
+		
+		// restore the state
+		OpenmrsClassLoader.restoreState();
 		
 		return wac;
 	}

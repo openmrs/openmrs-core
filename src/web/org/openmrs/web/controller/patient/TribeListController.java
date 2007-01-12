@@ -83,7 +83,7 @@ public class TribeListController extends SimpleFormController {
 					success += t + " " + changed;
 				}
 				catch (APIException e) {
-					log.warn(e);
+					log.warn("Error deleting tribe", e);
 					if (!error.equals("")) error += "<br>";
 					error += t + " " + notChanged;
 				}

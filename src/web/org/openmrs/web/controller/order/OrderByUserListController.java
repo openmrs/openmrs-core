@@ -77,7 +77,7 @@ public class OrderByUserListController extends SimpleFormController {
 					success += ord + " " + p + " " + deleted;
 				}
 				catch (APIException e) {
-					log.warn(e);
+					log.warn("Error deleting order", e);
 					if (!error.equals("")) error += "<br>";
 					error += ord + " " + p + " " + notDeleted;
 				}

@@ -78,6 +78,9 @@
 	<!-- **                     TARGETS                           ** -->
 	<!-- *********************************************************** -->
 	<target name="init" description="initialization">
+
+		<!-- This file needs to be sure to have the latest variables -->
+		<touch file="${metadata.dir}/api/applicationContext-service.xml"/>
 		
 		<!-- Discover code and database versions via regular expressions -->
 		<loadfile srcfile="${openmrs.database.version.expected.filename}" property="diffFileInput" />
@@ -210,8 +213,10 @@
 
 	<target name="compile-api-tests" depends="package-api" description="compile api tests">
 		<mkdir dir="${build.dir}/test/api" />
+		<touch file="${metadata.dir}/api/applicationContext-service.xml"/>
 		<copy todir="${build.dir}/test/api">
 			<fileset dir="${metadata.dir}/api" includes="*.xml" />
+			<fileset dir="${metadata.dir}/api/hibernate" includes="*.*" />
 			<filterset>
 				<filter token="MAPPING.JAR.LOCATIONS" value="file:dist/${openmrs.api.name}" />
 			</filterset>

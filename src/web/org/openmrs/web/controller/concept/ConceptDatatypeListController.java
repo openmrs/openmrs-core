@@ -73,7 +73,7 @@ public class ConceptDatatypeListController extends SimpleFormController {
 					success += cd + " " + deleted;
 				}
 				catch (APIException e) {
-					log.warn(e);
+					log.warn("Error deleting concept datatype", e);
 					if (!error.equals("")) error += "<br>";
 					error += cd + " " + notDeleted;
 				}

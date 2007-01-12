@@ -206,14 +206,14 @@ public final class Listener extends ContextLoaderListener {
 					inputStream.close();
 			}
 			catch (IOException io) {
-				//pass
+				log.warn("Unable to close input stream", io);
 			}
 			try {
 				if (outputStream != null)
 					outputStream.close();
 			}
 			catch (IOException io) {
-				//pass
+				log.warn("Unable to close input stream", io);
 			}
 		}
 		return true;

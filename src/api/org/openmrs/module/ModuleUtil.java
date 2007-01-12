@@ -183,7 +183,7 @@ public class ModuleUtil {
 
 	/**
 	 * Expand the given fileToExpand to the tmpModuleFile (expected to be a
-	 * directory) If <code>name</code> is null, the entire jar is expanded. if
+	 * directory) If <code>name</code> is null, the entire jar is expanded. If
 	 * <code>name</code> is not null, then only that file is expanded.
 	 * 
 	 * @param fileToExpand
@@ -200,6 +200,8 @@ public class ModuleUtil {
 			jarFile = new JarFile(fileToExpand);
 			Enumeration jarEntries = jarFile.entries();
 			boolean foundName = (name == null);
+			
+			// loop over all of the elements looking for the match to 'name'
 			while (jarEntries.hasMoreElements()) {
 				JarEntry jarEntry = (JarEntry) jarEntries.nextElement();
 				if (name == null || jarEntry.getName().startsWith(name)) {
@@ -207,12 +209,14 @@ public class ModuleUtil {
 					// trim out the name path from the name of the new file
 					if (keepFullPath == false && name != null)
 						entryName = entryName.replaceFirst(name, "");
+					
+					// if it has a slash, it's in a directory
 					int last = entryName.lastIndexOf('/');
 					if (last >= 0) {
 						File parent = new File(docBase, entryName.substring(0,
 								last));
 						parent.mkdirs();
-						log.warn("Creating parent dirs: "
+						log.debug("Creating parent dirs: "
 								+ parent.getAbsolutePath());
 					}
 					if (entryName.endsWith("/") || entryName.equals("")) {
@@ -261,20 +265,18 @@ public class ModuleUtil {
 		try {
 			outStream = new FileOutputStream(file);
 			OpenmrsUtil.copyFile(input, outStream);
-		} catch (IOException io) {
-			throw io;
 		} finally {
 			try {
 				if (outStream != null)
 					outStream.close();
 			} catch (IOException io) {
-				// pass;
+				log.warn("Unable to close output stream", io);
 			}
 			try {
 				if (output != null)
 					output.close();
 			} catch (IOException io) {
-				// pass;
+				log.warn("Unable to close output stream", io);
 			}
 		}
 

@@ -7,6 +7,7 @@ import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
 
 public class BaseTest extends org.springframework.test.AbstractTransactionalSpringContextTests {
@@ -14,22 +15,25 @@ public class BaseTest extends org.springframework.test.AbstractTransactionalSpri
 	private Log log = LogFactory.getLog(this.getClass());
 	
 	protected String[] getConfigLocations() {
-	      return new String[] {
-	    		  "applicationContext-service.xml"
-	      };
-	   }
+		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
+		
+	    return new String[] {
+	    		"applicationContext-service.xml",
+	    		"classpath*:moduleApplicationContext.xml"
+	    };
+	}
 
-	/**
+	 /**
 	 * This method is called before Spring is setup, so its used to set the runtime
 	 * properties on Context.
-	 * 
-	 * @see org.springframework.test.AbstractDependencyInjectionSpringContextTests#onSetUpBeforeTransaction()
 	 */
-	@Override
-	protected void onSetUpBeforeTransaction() {
+	protected String contextKeyString(Object contextKey) {
 		Properties props = getRuntimeProperties();
 		log.debug("props: " + props);
 		Context.setRuntimeProperties(props);
+		
+		// continue as normal
+		return super.contextKeyString(contextKey);
 	}
 
 	public void startup() {

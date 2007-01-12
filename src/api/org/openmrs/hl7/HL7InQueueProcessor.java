@@ -136,12 +136,16 @@ public class HL7InQueueProcessor /* implements Runnable */{
 			}
 			isRunning = true;
 		}
-		log.debug("Start processing hl7 in queue");
-		while (processNextHL7InQueue()) {
-			// loop until queue is empty
+		try {
+			log.debug("Start processing hl7 in queue");
+			while (processNextHL7InQueue()) {
+				// loop until queue is empty
+			}
+			log.debug("Done processing hl7 in queue");
 		}
-		log.debug("Done processing hl7 in queue");
-		isRunning = false;
+		finally {
+			isRunning = false;
+		}
 	}
 
 	/*

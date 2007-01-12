@@ -78,7 +78,7 @@ public class ReportObjectListController extends SimpleFormController {
 						success += textReport + " " + p + " " + deleted;
 						numDeleted++;
 					} catch (APIException e) {
-						log.warn(e);
+						log.warn("Error deleting report object", e);
 						if (!error.equals("")) error += "<br>";
 						error += textReport + " " + p + " " + notDeleted;
 					}

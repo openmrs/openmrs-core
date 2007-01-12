@@ -11,7 +11,7 @@
         <param-name>contextConfigLocation</param-name>
         <param-value>
         	/WEB-INF/applicationContext-service.xml
-        	/WEB-INF/module*.xml
+        	classpath*:/moduleApplicationContext.xml
         	/WEB-INF/@WEBAPP.NAME@-servlet.xml
         </param-value>
     </context-param>
@@ -235,7 +235,7 @@
 		        <param-name>contextConfigLocation</param-name>
 		        <param-value>
 		        	/WEB-INF/@WEBAPP.NAME@-servlet.xml
-		        	/WEB-INF/module*.xml
+        			classpath*:/moduleApplicationContext.xml
 		        </param-value>
 		    </init-param>
 			<load-on-startup>1</load-on-startup>

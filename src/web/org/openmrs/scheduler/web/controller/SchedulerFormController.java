@@ -10,7 +10,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.scheduler.SchedulerService;
+import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.TaskConfig;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -63,7 +63,7 @@ public class SchedulerFormController extends SimpleFormController {
 		TaskConfig task = (TaskConfig) command;
 		task.setStartTimePattern(DEFAULT_DATE_PATTERN);
 		log.info("task started? " + task.getStarted());
-		getSchedulerService().updateTask(task);
+		Context.getSchedulerService().updateTask(task);
 		view = getSuccessView();
 		
 		Object [] args = new Object[] { task.getId() };
@@ -86,7 +86,7 @@ public class SchedulerFormController extends SimpleFormController {
 		
 		String taskId = request.getParameter("taskId");
     	if (taskId != null) {
-    		task = getSchedulerService().getTask(Integer.valueOf(taskId));	
+    		task = Context.getSchedulerService().getTask(Integer.valueOf(taskId));	
     	}
 	
 		// Date format pattern for new and existing (currently disabled, but visible)
@@ -94,13 +94,6 @@ public class SchedulerFormController extends SimpleFormController {
 			task.setStartTimePattern(DEFAULT_DATE_PATTERN);
 
 		return task;
-	  }
-	  
-	/**
-	 * Get the scheduler service from the application context.
-	 */
-	  private SchedulerService getSchedulerService() {
-		  return (SchedulerService) getApplicationContext().getBean("schedulerService");
 	  }
 
 }

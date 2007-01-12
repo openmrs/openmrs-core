@@ -46,7 +46,6 @@ import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.ValidationUtils;
-import org.springframework.web.bind.RequestUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -386,7 +385,7 @@ public class NewPatientFormController extends SimpleFormController {
 								if ( conceptOther != null ) {
 									if ( conceptOther.equals(currCause) ) {
 										// seems like this is an other concept - let's try to get the "other" field info
-										String otherInfo = RequestUtils.getStringParameter(request, "causeOfDeath_other", "");
+										String otherInfo = ServletRequestUtils.getStringParameter(request, "causeOfDeath_other", "");
 										log.debug("Setting value_text as " + otherInfo);
 										obsDeath.setValueText(otherInfo);
 									} else {

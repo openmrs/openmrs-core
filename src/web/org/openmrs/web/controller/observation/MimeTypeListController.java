@@ -74,7 +74,7 @@ public class MimeTypeListController extends SimpleFormController {
 					success += m + " " + deleted;
 				}
 				catch (APIException e) {
-					log.warn(e);
+					log.warn("Error deleting mime type", e);
 					if (!error.equals("")) error += "<br>";
 					error += m + " " + notDeleted;
 				}

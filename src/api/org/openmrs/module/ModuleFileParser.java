@@ -149,21 +149,11 @@ public class ModuleFileParser {
 			
 			module.setMessages(getMessages(rootNode, configVersion, jarfile));
 			
+			module.setMappingFiles(getMappingFiles(rootNode, configVersion, jarfile));
+			
 			module.setConfig(configDoc);
 			
 			module.setFile(moduleFile);
-		}
-		catch (ModuleException e) {
-			if (configStream != null) {
-				try {
-					configStream.close();					
-				}
-				catch (IOException io) {
-					log.error("Error while closing config stream for module: " + moduleFile.getAbsolutePath(), io);
-				}
-			}
-			// rethrow the moduleException
-			throw e;
 		}
 		finally {
 			try {
@@ -171,6 +161,14 @@ public class ModuleFileParser {
 			}
 			catch (IOException e) {
 				log.warn("Unable to close jarfile: " + jarfile.getName());
+			}
+			if (configStream != null) {
+				try {
+					configStream.close();					
+				}
+				catch (IOException io) {
+					log.error("Error while closing config stream for module: " + moduleFile.getAbsolutePath(), io);
+				}
 			}
 		}
 		
@@ -491,4 +489,22 @@ public class ModuleFileParser {
 		return properties;
 	}
 	
+	/**
+	 * Load in the defined mapping file names
+	 * 
+	 * @param rootNode
+	 * @param configVersion
+	 * @param jarfile
+	 * @return
+	 */
+	private List<String> getMappingFiles(Element rootNode, String configVersion, JarFile jarfile) {
+		String mappingString = getElement(rootNode, configVersion, "mappingFiles");
+		List<String> mappings = new Vector<String>();
+		for (String s : mappingString.split("\\s")) {
+			String s2 = s.trim();
+			if (s2.length() > 0)
+				mappings.add(s2);
+		}
+		return mappings;
+	}
 }

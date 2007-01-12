@@ -73,7 +73,7 @@ public class ConceptClassListController extends SimpleFormController {
 					success += cc + " " + deleted;
 				}
 				catch (APIException e) {
-					log.warn(e);
+					log.warn("Error deleting concept class", e);
 					if (!error.equals("")) error += "<br>";
 					error += cc + " " + notDeleted;
 				}

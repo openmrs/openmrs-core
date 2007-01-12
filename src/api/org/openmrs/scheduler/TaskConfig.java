@@ -1,11 +1,11 @@
 package org.openmrs.scheduler;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
 
 
@@ -15,7 +15,9 @@ import org.openmrs.User;
  * @author Justin Miranda
  */
 public class TaskConfig { 
-
+	
+	private Log log = LogFactory.getLog(this.getClass());
+	
 	// Private fields
 	private Integer id;
 	private String name;
@@ -28,10 +30,8 @@ public class TaskConfig {
     private Boolean started;
     
 	// Relationships
-	private Collection<Schedule> schedules;
 	private Map<String,String> properties;
 
-		
 	// Metadata fields 
 	private User createdBy;
 	private Date dateCreated;
@@ -40,24 +40,49 @@ public class TaskConfig {
 	/** 
 	 * Default no-arg public constructor
 	 */
-	public TaskConfig() { 
+	public TaskConfig() {
 		this.started = new Boolean(false);	// default 
 		this.startTime = new Date();		// makes it easier during task creation as we have a default date populated
 		this.properties = new HashMap<String,String>();
-		this.schedules = new HashSet<Schedule>();  
 	}
 
 	/**
 	 * Public constructor
 	 */
-	public TaskConfig(Integer id, String name, String description, String schedulableClass) { 
+	public TaskConfig(Integer id, String name, String description, String schedulableClass) {
 		this();
+		log.debug("Creating taskconfig: " + id);
 		this.id = id;
 		this.name = name;
 		this.description = description;
 		this.schedulableClass = schedulableClass;	}
 	
 	
+	/**
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof TaskConfig) {
+			TaskConfig other = (TaskConfig)obj;
+			if (this.getId() != null)
+				this.getId().equals(other.getId());
+		}
+		return false;
+	}
+
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		if (this.getId() == null)
+			return super.hashCode();
+		
+		Integer hash = 5;
+		return (this.getId() * hash);
+	}
+
 	/**
 	 * Get the task identifier.
 	 * 
@@ -90,24 +115,6 @@ public class TaskConfig {
   	public void setStartTime(Date startTime) { 
   		this.startTime = startTime;
   	}
-
-  	
-  	/**
-  	 * Set the start time for when the task should be executed.
-  	 * For instance, use "new Date()", if you want it to start now.
-  	 *
-  	 * @param  startTime   start time for the task
-  	public void setStartTime(String startTime) { 
-  		try { 
-  			this.startTime = this.dateFormatter.parse(startTime);
-  		} catch (Exception e) { 
-  			// If there's an error, we'll just set the start time to now. 
-  			// TODO:  This might not be the desired behavior, so I'll have to come back to it. 
-  			this.startTime = new Date();
-	    }
-	  }
-  	 */
-  	
   	
 	/**
 	 *  Gets the number of seconds until task is executed again.
@@ -238,6 +245,4 @@ public class TaskConfig {
 		this.dateChanged = dateChanged;
 	}
 	
-	
 }
- 

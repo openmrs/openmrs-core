@@ -76,7 +76,7 @@ public class DataExportListController extends SimpleFormController {
 						success += textDataExport + " " + p + " " + deleted;
 					}
 					catch (APIException e) {
-						log.warn(e);
+						log.warn("Error deleting report object", e);
 						if (!error.equals("")) error += "<br>";
 						error += textDataExport + " " + p + " " + notDeleted;
 					}

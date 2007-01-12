@@ -60,7 +60,7 @@ public class FormListController extends SimpleFormController {
 						success += textForm + " " + p + " " + deleted;
 					}
 					catch (APIException e) {
-						log.warn(e);
+						log.warn("Error deleting form", e);
 						if (!error.equals("")) error += "<br>";
 						error += textForm + " " + p + " " + notDeleted;
 					}

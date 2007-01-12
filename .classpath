@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="src" output="build/api" path="src/api"/>
-	<classpathentry kind="src" output="build/web" path="src/web"/>
-	<classpathentry kind="src" output="build/test/api" path="test/api"/>
-	<classpathentry kind="src" output="build/test/web" path="test/web"/>
+	<classpathentry output="build/api" kind="src" path="src/api"></classpathentry>
+	<classpathentry output="build/web" kind="src" path="src/web"/>
+	<classpathentry output="build/test/api" kind="src" path="test/api"/>
+	<classpathentry output="build/test/web" kind="src" path="test/web"/>
 	<classpathentry kind="lib" path="lib/ant-contrib/ant-contrib-1.0b2.jar"/>
 	<classpathentry kind="lib" path="lib/antlr/antlr_2.7.6.jar"/>
 	<classpathentry kind="lib" path="lib/cglib/cglib-2.1_3.jar"/>
@@ -15,7 +15,7 @@
 	<classpathentry kind="lib" path="lib/commons-logging/commons-logging-1.0.4.jar"/>
 	<classpathentry kind="lib" path="lib/commons-pool/commons-pool-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/dom4j/dom4j-1.6.1.jar"/>
-	<classpathentry kind="lib" path="lib/ehcache/ehcache-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/ehcache/ehcache-1.2.4.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta-taglibs/taglibs-page-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/jstl/jstl-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/jta/jta.jar"/>
@@ -38,6 +38,7 @@
 	<classpathentry kind="lib" path="lib/tomcat/jsp-api.jar"/>
 	<classpathentry kind="lib" path="lib/tomcat/servlet-api.jar"/>
 	<classpathentry kind="lib" path="lib/tomcat/catalina.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat/naming-resources.jar"/>
 	<classpathentry kind="lib" path="lib/dwr/dwr-1.1.3mod.jar"/>
 	<classpathentry kind="lib" path="lib/spring-framework/spring-2.0.jar"/>
 	<classpathentry kind="lib" path="lib/spring-framework/spring-mock.jar"/>
