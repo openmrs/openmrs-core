@@ -31,8 +31,10 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 	private String parameters = "";
 	private String type = "html"; // all tags using this should default to 'html' media type
 	
-	// methods
+	// tag helpers
+	private Boolean firstIteration = true;
 	
+	// methods
 	public int doStartTag() {
 		log.debug("Starting tag for extension point: " + pointId);
 		
@@ -67,8 +69,10 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 			extensions = null;
 			return SKIP_BODY;
 		}
-		else
+		else {
+			firstIteration = true;
 			return EVAL_BODY_BUFFERED;
+		}
 		
 	}
 	
@@ -86,7 +90,12 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 	 */
 	public int doAfterBody() throws JspException {
 		if(extensions.hasNext()) {
-			bodyContent.clearBody();
+			if (firstIteration) {
+				// for some reason the body is getting evaluated after the doInitBody() call
+				// and before this.  Instead of hacking in duplicated logic, I use this hack
+				bodyContent.clearBody();
+				firstIteration = false;
+			}
         	Extension ext = extensions.next();
         	String overrideContent = ext.getOverrideContent(getBodyContentString());
 			if (overrideContent == null) {
