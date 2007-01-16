@@ -139,7 +139,7 @@ public class NealReportController implements Controller {
 			if ( p.getActiveIdentifiers() != null ) {
 				for ( PatientIdentifier pId : p.getActiveIdentifiers() ) {
 					PatientIdentifierType idType = pId.getIdentifierType();
-					if ( idType.getName().equalsIgnoreCase("tracnet id")) {
+					if ( idType.getName().equalsIgnoreCase("imb id")) {
 						String identifier = pId.getIdentifier();
 						Map<String, String> holder = (Map<String, String>) patientDataHolder.get(p.getPatientId());
 						if (holder == null) holder = new HashMap<String, String>();
