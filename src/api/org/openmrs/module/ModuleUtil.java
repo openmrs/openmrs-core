@@ -115,6 +115,9 @@ public class ModuleUtil {
 	public static int compareVersion(String version, String value) {
 		try {
 			// pad the shorter version with zeros out to the length of other version
+			version = version.replace(".", "0");
+			value = value.replace(".", "0");
+			
 			while (version.length() < value.length()) {
 				version = version + "0";
 			}
@@ -123,8 +126,8 @@ public class ModuleUtil {
 			}
 			
 			// remove the 
-			Integer ver = new Integer(version.replace(".", ""));
-			Integer val = new Integer(value.replace(".", ""));
+			Integer ver = new Integer(version);
+			Integer val = new Integer(value);
 			return (ver.compareTo(val));
 		} catch (NumberFormatException e) {
 			log.error("Error while converting a version to an integer", e);
