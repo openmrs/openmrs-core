@@ -388,6 +388,13 @@ public class ConceptServiceImpl implements ConceptService {
 		return ret;
 	}
 	
+	/**
+	 * @see org.openmrs.api.ConceptService#getSetsContainingConcept(org.openmrs.Concept)
+	 */
+	public List<ConceptSet> getSetsContainingConcept(Concept concept) {
+		return getConceptDAO().getSetsContainingConcept(concept);
+	}
+
 	public void explodeConceptSetHelper(Concept concept, Collection<Concept> ret, Collection<Integer> alreadySeen) {
 		if (alreadySeen.contains(concept.getConceptId()))
 			return;

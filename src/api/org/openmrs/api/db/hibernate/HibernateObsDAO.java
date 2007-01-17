@@ -204,9 +204,41 @@ public class HibernateObsDAO implements ObsDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Obs> getObservations(Concept question, String sort) {
+		
+		if (sort == null || sort.equals(""))
+			sort = "obsId";
+		
 		Query query = sessionFactory.getCurrentSession().createQuery(
 				"from Obs obs where obs.concept = :c and obs.voided = false order by "
 						+ sort).setParameter("c", question);
+
+		return query.list();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ObsService#getObservationsAnsweredByConcept(org.openmrs.Concept)
+	 */
+	public List<Obs> getObservationsAnsweredByConcept(Concept answer) {
+		Query query = sessionFactory.getCurrentSession().createQuery(
+				"from Obs obs where obs.valueCoded = :c and obs.voided = false")
+				.setParameter("c", answer);
+
+		return query.list();
+	}
+	
+	
+	/**
+	 * @see org.openmrs.api.db.ObsService#getNumericAnswersForConcept(org.openmrs.Concept,java.lang.Boolean)
+	 */
+	public List<Object[]> getNumericAnswersForConcept(Concept answer, Boolean sortByValue) {
+		
+		String sort = "obs.obsDatetime desc";
+		if (sortByValue)
+			sort = "obs.valueNumeric asc";
+		
+		Query query = sessionFactory.getCurrentSession().createQuery(
+				"select obs.obsDatetime, obs.valueNumeric from Obs obs where obs.concept = :c and obs.valueNumeric is not null and obs.voided = false order by " + sort)
+				.setParameter("c", answer);
 
 		return query.list();
 	}

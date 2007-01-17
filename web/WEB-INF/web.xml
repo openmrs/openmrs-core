@@ -44,6 +44,15 @@
 	</servlet-mapping>
 	
 	<servlet>
+		<servlet-name>displayChartServlet</servlet-name>
+		<servlet-class>org.openmrs.web.servlet.DisplayChartServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>displayChartServlet</servlet-name>
+		<url-pattern>/displayChartServlet</url-pattern> <!-- Must match DisplayChartServlet.SERVLET_NAME -->
+	</servlet-mapping>
+	
+	<servlet>
 		<servlet-name>loginServlet</servlet-name>
 		<servlet-class>org.openmrs.web.servlet.LoginServlet</servlet-class>
 	</servlet>

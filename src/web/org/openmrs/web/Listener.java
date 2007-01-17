@@ -29,12 +29,24 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
+/**
+ * Our Listener class performs the basic starting functions for our webapp.
+ * Basic needs for starting the API:
+ *  1) Get the runtime properties
+ *  2) Start Spring
+ *  3) Start the OpenMRS APi (via Context.startup)
+ * 
+ * Basic startup needs specific to the web layer:
+ *  1) Do the web startup of the modules
+ *  2) Copy the custom look/images/messages over into the web layer
+ *  
+ * @author bwolfe
+ */
 public final class Listener extends ContextLoaderListener {
 
 	private Log log = LogFactory.getLog(this.getClass());
 	
 	/**
-	 * 
 	 * This method is called when the servlet context is initialized(when the
 	 * Web Application is deployed). You can initialize servlet context related
 	 * data here.
@@ -44,6 +56,7 @@ public final class Listener extends ContextLoaderListener {
 	public void contextInitialized(ServletContextEvent event) {
 		log.debug("Initializing OpenMRS");
 		ServletContext servletContext = event.getServletContext();
+		String realPath = event.getServletContext().getRealPath("");
 		
 		/** 
 		 * Get the runtime properties and set it to the context
@@ -54,6 +67,29 @@ public final class Listener extends ContextLoaderListener {
 		
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		
+		// clear the dwr file
+		String absPath = realPath + "/WEB-INF/dwr-modules";
+		File dwrFile = new File(absPath.replace("/", File.separator));
+		if(dwrFile.exists()) {
+			try {
+				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+				DocumentBuilder db = dbf.newDocumentBuilder();
+				Document doc = db.parse(dwrFile);
+				Element elem = doc.getDocumentElement();
+				elem.setTextContent("");
+				OpenmrsUtil.saveDocument(doc, dwrFile);
+			}
+			catch (IOException io) {
+				log.warn("Unable to parse the simple xml string", io);
+			} catch (ParserConfigurationException parseError) {
+				log.warn("Unable to clear the dwr document", parseError);
+			} catch (SAXException sax) {
+				log.warn("Unable to clear the dwr document", sax);
+			} catch (Exception e) {
+				log.debug("Error clearing swr-modules.xml");
+			}
+		}
+		
 		try {
 			// start the spring context
 			super.contextInitialized(event);
@@ -62,44 +98,6 @@ public final class Listener extends ContextLoaderListener {
 			log.warn("Error while initializing spring context.  More than likely caused by an improper shutdown that leaves 1 or more module contexts lying around");
 			log.warn("Stacktrace: ", e);
 			log.warn("Stopping all modules (most importantly, deleting the context files) and trying again: ");
-			
-			// delete all of the module context files in the WEB-INF folder
-			String realPath = event.getServletContext().getRealPath("");
-			String absPath = realPath + "/WEB-INF/";
-			File folder = new File(absPath);
-			System.gc();
-			for (File f : folder.listFiles()) {
-				if (f.getName().startsWith("module-") && f.getName().endsWith("-context.xml") || 
-						f.getName().endsWith(".hbm.xml")) {
-					if (f.delete())
-						log.warn("Successfully deleted " + f.getAbsolutePath());
-					else
-						log.warn("Unable to delete " + f.getAbsolutePath());
-				}
-				else if(f.getName().startsWith("dwr-modules")) {
-					// clear the dwr file
-					try {
-						DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-						DocumentBuilder db = dbf.newDocumentBuilder();
-						Document doc = db.parse(f);
-						Element elem = doc.getDocumentElement();
-						elem.setTextContent("");
-						OpenmrsUtil.saveDocument(doc, f);
-					}
-					catch (IOException io) {
-						log.warn("Unable to parse the simple xml string", io);
-					} catch (ParserConfigurationException parseError) {
-						log.warn("Unable to clear the dwr document", parseError);
-					} catch (SAXException sax) {
-						log.warn("Unable to clear the dwr document", sax);
-					}
-				}
-			}
-			
-			// Can't just call shutdown, because the modules aren't loaded.  We can't load
-			// the modules because the wac needs to be started first.  predicament. the
-			// solution is to just do the minimum cleanup and then retry the wac startup
-			//WebModuleUtil.shutdownModules(servletContext);
 			
 			// Spring places a throwable in the servlet context as the wac if an error occurs.
 			// we need to remove it in order to refresh the wac
@@ -123,7 +121,11 @@ public final class Listener extends ContextLoaderListener {
 		 * Copy the module messages over into the webapp and perform web portion of startup
 		 */
 		for (Module mod : ModuleFactory.getStartedModules()) {
-			WebModuleUtil.startModule(mod, event.getServletContext());
+			try {
+				WebModuleUtil.startModule(mod, event.getServletContext());
+			} catch (Exception e) {
+				mod.setStartupErrorMessage(e.getMessage());
+			}
 		}
 		
 		/** 
@@ -142,7 +144,6 @@ public final class Listener extends ContextLoaderListener {
 		custom.put("custom.messages_es", "/WEB-INF/custom_messages_es.properties");
 		custom.put("custom.messages_de", "/WEB-INF/custom_messages_de.properties");
 		
-		String realPath = event.getServletContext().getRealPath("");
 		for (String prop : custom.keySet()) {
 			String webappPath = custom.get(prop);
 			String userOverridePath = props.getProperty(prop);
@@ -245,9 +246,13 @@ public final class Listener extends ContextLoaderListener {
 				log.debug("Loaded module: " + mod + " successfully");
 			}
 		}
-		
 	}
-
+	
+	/**
+	 * Called when the webapp is shut down properly
+	 * Must call Context.shutdown() and then shutdown all 
+	 * the web layers of the modules
+	 */
 	public void contextDestroyed(ServletContextEvent event) {
 
 		Context.shutdown();

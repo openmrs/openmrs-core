@@ -153,11 +153,35 @@ public interface ObsService {
 	 * 
 	 * @param question
 	 *            (Concept: RETURN VISIT DATE)
+	 * @param sort
+	 * 			  (obsId, obsDatetime, etc) if null, defaults to obsId
 	 * @return
 	 */
 	@Transactional(readOnly = true)
 	public List<Obs> getObservations(Concept question, String sort);
 
+	/**
+	 * Return all observations that have the given concept as an answer
+	 * (<code>answer.getConceptId()</code> == value_coded)
+	 * 
+	 * @param concept
+	 * @return list of obs
+	 */
+	@Transactional(readOnly = true)
+	public List<Obs> getObservationsAnsweredByConcept(Concept answer);
+	
+	/**
+	 * Return all numeric answer values for the given concept ordered by value
+	 * numeric low to high
+	 * 
+	 * @param concept
+	 * @param sortByValue true/false if sorting by valueNumeric.  If false, will sort by obsDatetime
+	 * 
+	 * @return List<Object[]> [0]=<code>obsDatetime</code>, [1]=<code>valueNumeric</code>s
+	 */
+	@Transactional(readOnly = true)
+	public List<Object[]> getNumericAnswersForConcept(Concept answer, Boolean sortByValue);
+	
 	/**
 	 * Get all observations from a specific encounter
 	 * 

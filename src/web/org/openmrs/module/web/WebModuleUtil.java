@@ -127,7 +127,8 @@ public class WebModuleUtil {
 			// of the web application context
 			boolean refreshContext = false;
 			
-			// copy the spring xml file and html files into the webapp (from /web/module/ in the module)
+			// copy the html files into the webapp (from /web/module/ in the module)
+			// also looks for a spring context file. If found, schedules spring to be restarted
 			JarFile jarFile = null;
 			try {
 				File modFile = mod.getFile();
@@ -163,7 +164,6 @@ public class WebModuleUtil {
 					}
 					else if (name.equals(mod.getModuleId() + "Context.xml")) {
 						String msg = "DEPRECATED: '" + name + "' should be named 'moduleApplicationContext.xml' now. Please update/upgrade. ";
-						mod.setStartupErrorMessage(msg);
 						throw new ModuleException(msg, mod.getModuleId());
 					}
 				}

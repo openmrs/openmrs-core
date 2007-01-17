@@ -68,6 +68,7 @@
 					<prop key="**/location.list">locationList</prop>
 					<prop key="**/location.form">locationForm</prop>
 					<prop key="**/concept.form">conceptForm</prop>
+					<prop key="**/conceptStats.form">conceptStatsForm</prop>
 					<prop key="**/dictionary/concept.htm">conceptView</prop>
 					<prop key="**/conceptClass.list">conceptClassList</prop>
 					<prop key="**/conceptClass.form">conceptClassForm</prop>
@@ -525,6 +526,11 @@
 				<property name="validator"><ref bean="conceptValidator"/></property>
 				<property name="formView"><value>/dictionary/conceptForm</value></property>
 				<property name="successView"><value>concept.form</value></property>
+			</bean>
+			<bean id="conceptStatsForm" class="org.openmrs.web.controller.ConceptStatsFormController">
+				<property name="commandName"><value>concept</value></property>
+				<property name="formView"><value>/dictionary/conceptStatsForm</value></property>
+				<property name="successView"><value>conceptStats.form</value></property>
 			</bean>
 	    	<bean id="conceptView" class="org.openmrs.web.controller.ConceptFormController">
 				<property name="commandName"><value>concept</value></property>

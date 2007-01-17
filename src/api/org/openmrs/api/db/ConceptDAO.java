@@ -181,6 +181,11 @@ public interface ConceptDAO {
 	public List<ConceptSet> getConceptSets(Concept c);
 	
 	/**
+	 * @see org.openmrs.api.ConceptService#getSetsContainingConcept(org.openmrs.Concept)
+	 */
+	public List<ConceptSet> getSetsContainingConcept(Concept concept);
+	
+	/**
 	 * Return a concept numeric object given the concept id
 	 * @return ConceptNumeric
 	 */

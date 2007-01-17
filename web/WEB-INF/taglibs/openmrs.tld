@@ -522,6 +522,33 @@
 		<type>java.lang.String</type>
 	</attribute>
 </tag>
+
+<tag>
+	<description>
+		Displays the given chart
+	</description>
+	<name>displayChart</name>
+	<tag-class>org.openmrs.web.taglib.DisplayChartTag</tag-class>
+	<body-content>empty</body-content>
+	<attribute>
+		<name>chart</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>org.jfree.chart.JFreeChart</type>
+	</attribute>
+	<attribute>
+		<name>height</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>width</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+</tag>	
 	
 <tag>
 	<description>

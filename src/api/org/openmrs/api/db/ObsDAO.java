@@ -11,6 +11,7 @@ import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.logic.Aggregation;
 import org.openmrs.logic.Constraint;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Observation-related database functions
@@ -126,7 +127,17 @@ public interface ObsDAO {
 	 */
 	public List<Obs> getObservations(Concept question, String sort)
 			throws DAOException;
-
+	
+	/**
+	 * @see org.openmrs.api.db.ObsService#getObservationsAnsweredByConcept(org.openmrs.Concept)
+	 */
+	public List<Obs> getObservationsAnsweredByConcept(Concept answer);
+	
+	/**
+	 *  @see org.openmrs.api.ObsService#getNumericAnswersForConcept(org.openmrs.Concept,java.lang.Boolean)
+	 */
+	public List<Object[]> getNumericAnswersForConcept(Concept answer, Boolean sortByValue);
+	
 	/**
 	 * Get all observations from a specific encounter
 	 * 

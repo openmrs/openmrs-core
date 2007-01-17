@@ -12,8 +12,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Properties;
+import java.util.Vector;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -57,8 +60,11 @@ public class ModuleUtil {
 	 * Stops the module system
 	 */
 	public static void shutdown() {
-
-		for (Module mod : ModuleFactory.getStartedModules()) {
+		
+		List<Module> modules = new Vector<Module>();
+		modules.addAll(ModuleFactory.getStartedModules());
+		
+		for (Module mod : modules) {
 			log.debug("stopping module: " + mod.getModuleId());
 			ModuleFactory.stopModule(mod, true);
 		}
@@ -114,25 +120,34 @@ public class ModuleUtil {
 	 */
 	public static int compareVersion(String version, String value) {
 		try {
-			// pad the shorter version with zeros out to the length of other version
-			version = version.replace(".", "0");
-			value = value.replace(".", "0");
 			
-			while (version.length() < value.length()) {
-				version = version + "0";
+			List<String> versions = new Vector<String>();
+			List<String> values = new Vector<String>();
+			Collections.addAll(versions, version.split("."));
+			Collections.addAll(values, value.split("."));
+			
+			// match the sizes of the lists
+			while (versions.size() < values.size()) {
+				versions.add("0");
 			}
-			while (value.length() < version.length()) {
-				value = value + "0";
+			while (values.size() < versions.size()) {
+				values.add("0");
 			}
 			
-			// remove the 
-			Integer ver = new Integer(version);
-			Integer val = new Integer(value);
-			return (ver.compareTo(val));
+			for (int x = 0; x < versions.size(); x++) {
+				Integer ver = new Integer(versions.get(x));
+				Integer val = new Integer(values.get(x));
+				
+				int ret = ver.compareTo(val);
+				if (ret != 0)
+					return ret;
+			}
 		} catch (NumberFormatException e) {
 			log.error("Error while converting a version to an integer", e);
-			return 0;
 		}
+		
+		// default return value if an error occurs or elements are equal
+		return 0;
 	}
 
 	/**

@@ -235,7 +235,14 @@ public interface ConceptService {
 
 	public void explodeConceptSetHelper(Concept concept,
 			Collection<Concept> ret, Collection<Integer> alreadySeen);
-
+	
+	/**
+	 * Find all sets that the given concept is a member of 
+	 * @param concept
+	 */
+	@Transactional(readOnly=true)
+	public List<ConceptSet> getSetsContainingConcept(Concept concept);
+	
 	/**
 	 * Return a concept numeric object given the concept id
 	 * 

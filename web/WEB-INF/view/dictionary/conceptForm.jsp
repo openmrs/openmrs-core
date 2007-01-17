@@ -73,6 +73,8 @@
 		|
 	<a href="concept.htm?conceptId=${concept.conceptId}" id="viewConcept" ><spring:message code="general.view"/></a>
 		|
+	<a href="conceptStats.form?conceptId=${concept.conceptId}" id="conceptStats" valign="middle"><spring:message code="Concept.stats"/></a>
+		|
 	<c:if test="${nextConcept != null}"><a href="concept.form?conceptId=${nextConcept.conceptId}"><spring:message code="general.next"/></a></c:if>
 	<c:if test="${nextConcept == null}"><spring:message code="general.next"/></c:if>
 		|
@@ -417,6 +419,17 @@
 			<td>
 				<c:forEach items="${questionsAnswered}" var="question">
 					<a href="concept.htm?conceptId=${question.key}">${question.value}<br/>
+				</c:forEach>
+			</td>
+		</tr>
+	</c:if>
+	
+	<c:if test="${fn:length(containedInSets) > 0}">
+		<tr>
+			<th valign="top"><spring:message code="dictionary.containedInSets" /></th>
+			<td>
+				<c:forEach items="${containedInSets}" var="set">
+					<a href="concept.htm?conceptId=${set.key}">${set.value}<br/>
 				</c:forEach>
 			</td>
 		</tr>

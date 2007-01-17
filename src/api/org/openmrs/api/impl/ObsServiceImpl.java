@@ -25,6 +25,7 @@ import org.openmrs.api.db.ObsDAO;
 import org.openmrs.logic.Aggregation;
 import org.openmrs.logic.Constraint;
 import org.openmrs.util.OpenmrsConstants;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Observation-related services
@@ -252,11 +253,29 @@ public class ObsServiceImpl implements ObsService {
 	 * 
 	 * @param question
 	 *            (Concept: RETURN VISIT DATE)
+	 * @param sort
 	 * @return
 	 */
 	public List<Obs> getObservations(Concept question, String sort) {
 		return getObsDAO().getObservations(question, sort);
 	}
+	
+	/**
+	 *  @see org.openmrs.api.ObsService#getObservationsAnsweredByConcept(org.openmrs.Concept)
+	 */
+	@Transactional(readOnly = true)
+	public List<Obs> getObservationsAnsweredByConcept(Concept answer) {
+		return getObsDAO().getObservationsAnsweredByConcept(answer);
+	}
+	
+	/**
+	 *  @see org.openmrs.api.ObsService#getNumericAnswersForConcept(org.openmrs.Concept,java.lang.Boolean)
+	 */
+	@Transactional(readOnly = true)
+	public List<Object[]> getNumericAnswersForConcept(Concept answer, Boolean sortByValue) {
+		return getObsDAO().getNumericAnswersForConcept(answer, sortByValue);
+	}
+	
 
 	/**
 	 * Get all observations from a specific encounter

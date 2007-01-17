@@ -283,7 +283,7 @@
 			<tbody id="relationshipsTbody">
 				<tr id="relationshipRow">
 					<td valign="top" style="width:230px">
-						<openmrs_tag:patientField formFieldName="relative" initialValue="${patient.relationships[0].person.patient.patientId}" searchLabelCode="Relationship.instructions.select" searchLabelArguments="${relType}" />
+						<openmrs_tag:patientField formFieldName="relative" initialValue="${patient.relationships[0].relative.patient.patientId}" searchLabelCode="Relationship.instructions.select" searchLabelArguments="${relType}" />
 					</td>
 					<td valign="top">
 						<select name="relationshipType">

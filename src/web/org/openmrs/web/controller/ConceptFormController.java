@@ -316,9 +316,6 @@ public class ConceptFormController extends SimpleFormController {
 	 */
 	protected Map referenceData(HttpServletRequest request) throws Exception {
 		
-		HttpSession httpSession = request.getSession();
-		
-		
 		Locale locale = Context.getLocale();
 		Map<String, Object> map = new HashMap<String, Object>();
 		String defaultVerbose = "false";
@@ -332,8 +329,9 @@ public class ConceptFormController extends SimpleFormController {
 		//Map<String, ConceptName> conceptSets = new TreeMap<String, ConceptName>();
 		Map<Double, Object[]> conceptSets = new TreeMap<Double, Object[]>();
 		Map<String, String> conceptAnswers = new TreeMap<String, String>();
-		Collection<Form> forms = new Vector<Form>();
+		Collection<Form> forms = new HashSet<Form>();
 		Map<Integer, String> questionsAnswered = new TreeMap<Integer, String>();
+		Map<Integer, String> containedInSets = new TreeMap<Integer, String>();
 		
 		boolean isNew = true;
 		
@@ -392,12 +390,22 @@ public class ConceptFormController extends SimpleFormController {
 		    	map.put("previousConcept", cs.getPrevConcept(concept));
 		    	map.put("nextConcept", cs.getNextConcept(concept));
 		    	forms = Context.getFormService().getForms(concept);
+		    	
 		    	for (Concept c : Context.getConceptService().getQuestionsForAnswer(concept)) {
 		    		ConceptName cn = c.getName(locale);
 		    		if (cn == null)
 		    			questionsAnswered.put(c.getConceptId(), "No Name Defined");
 		    		else
 		    			questionsAnswered.put(c.getConceptId(), cn.getName());
+		    	}
+		    	
+		    	for (ConceptSet set : Context.getConceptService().getSetsContainingConcept(concept)) {
+		    		Concept c = set.getConceptSet();
+		    		ConceptName cn = c.getName(locale);
+		    		if (cn == null)
+		    			containedInSets.put(c.getConceptId(), "No Name Defined");
+		    		else
+		    			containedInSets.put(c.getConceptId(), cn.getName());
 		    	}
 			}
 			
@@ -427,6 +435,7 @@ public class ConceptFormController extends SimpleFormController {
     	map.put("conceptAnswers", conceptAnswers);
     	map.put("formsInUse", forms);
     	map.put("questionsAnswered", questionsAnswered);
+    	map.put("containedInSets", containedInSets);
 		
     	//get complete class and datatype lists 
 		map.put("classes", cs.getConceptClasses());

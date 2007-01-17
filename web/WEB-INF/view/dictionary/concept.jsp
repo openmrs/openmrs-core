@@ -81,16 +81,12 @@
 
 <c:if test="${concept.conceptId != null}">
 	<c:if test="${previousConcept != null}"><a href="concept.htm?conceptId=${previousConcept.conceptId}" id="previousConcept" valign="middle"><spring:message code="general.previous"/></a> |</c:if>
-	<openmrs:hasPrivilege privilege="Edit Concepts"><a href="concept.form?conceptId=${concept.conceptId}" id="editConcept" valign="middle"></openmrs:hasPrivilege>
-		<spring:message code="general.edit"/>
-	<openmrs:hasPrivilege privilege="Edit Concepts"></a></openmrs:hasPrivilege>
-	|
+	<openmrs:hasPrivilege privilege="Edit Concepts"><a href="concept.form?conceptId=${concept.conceptId}" id="editConcept" valign="middle"></openmrs:hasPrivilege><spring:message code="general.edit"/><openmrs:hasPrivilege privilege="Edit Concepts"></a></openmrs:hasPrivilege> |
+	<a href="conceptStats.form?conceptId=${concept.conceptId}" id="conceptStats" valign="middle"><spring:message code="Concept.stats"/></a> |
 	<c:if test="${nextConcept != null}"><a href="concept.htm?conceptId=${nextConcept.conceptId}" id="nextConcept" valign="middle"><spring:message code="general.next"/></a></c:if> |
 </c:if>
 
-<openmrs:hasPrivilege privilege="Edit Concepts"><a href="concept.form" id="newConcept" valign="middle"></openmrs:hasPrivilege>
-	<spring:message code="general.new"/>
-<openmrs:hasPrivilege privilege="Edit Concepts"></a></openmrs:hasPrivilege>
+<openmrs:hasPrivilege privilege="Edit Concepts"><a href="concept.form" id="newConcept" valign="middle"></openmrs:hasPrivilege><spring:message code="general.new"/><openmrs:hasPrivilege privilege="Edit Concepts"></a></openmrs:hasPrivilege>
 
 <openmrs:extensionPoint pointId="org.openmrs.dictionary.conceptFormHeader" type="html" />
 
@@ -291,6 +287,17 @@
 			<td>
 				<c:forEach items="${questionsAnswered}" var="question">
 					<a href="concept.htm?conceptId=${question.key}">${question.value}<br/>
+				</c:forEach>
+			</td>
+		</tr>
+	</c:if>
+	
+	<c:if test="${fn:length(containedInSets) > 0}">
+		<tr>
+			<th valign="top"><spring:message code="dictionary.containedInSets" /></th>
+			<td>
+				<c:forEach items="${containedInSets}" var="set">
+					<a href="concept.htm?conceptId=${set.key}">${set.value}<br/>
 				</c:forEach>
 			</td>
 		</tr>

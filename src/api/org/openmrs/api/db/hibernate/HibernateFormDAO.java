@@ -191,7 +191,7 @@ public class HibernateFormDAO implements
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Form> getForms(Concept c) throws DAOException {
-		String q = "select field.forms from Field field where field.concept = :concept";
+		String q = "select distinct field.forms from Field field where field.concept = :concept";
 		Query query = sessionFactory.getCurrentSession().createQuery(q);
 		query.setEntity("concept", c);
 		

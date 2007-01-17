@@ -452,9 +452,19 @@ public class HibernateConceptDAO implements
 	@SuppressWarnings("unchecked")
 	public List<ConceptSet> getConceptSets(Concept concept) {
 		return sessionFactory.getCurrentSession().createCriteria(ConceptSet.class)
-						.add(Restrictions.eq("conceptSet", concept))
-						.addOrder(Order.asc("sortWeight"))
-						.list();
+					.add(Restrictions.eq("conceptSet", concept))
+					.addOrder(Order.asc("sortWeight"))
+					.list();
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#getSetsContainingConcept(org.openmrs.Concept)
+	 */
+	@SuppressWarnings("unchecked")
+	public List<ConceptSet> getSetsContainingConcept(Concept concept) {
+		return sessionFactory.getCurrentSession().createCriteria(ConceptSet.class)
+					.add(Restrictions.eq("concept", concept))
+					.list();
 	}
 
 	// TODO below are functions worthy of a second tier
