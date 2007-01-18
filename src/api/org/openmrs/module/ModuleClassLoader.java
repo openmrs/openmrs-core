@@ -312,6 +312,8 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * @see org.openmrs.module.ModuleClassLoader#dispose()
 	 */
 	public void dispose() {
+		log.debug("Disposing of ModuleClassLoader: " + this);
+		
 		for (Iterator it = libraryCache.values().iterator(); it.hasNext();) {
 			((File) it.next()).delete();
 		}
@@ -341,6 +343,8 @@ public class ModuleClassLoader extends URLClassLoader {
 			} catch (ClassNotFoundException cnfe) {
 				if (getParent() != null)
 					result = getParent().loadClass(name);
+			} catch (NullPointerException e) {
+				log.warn("Error while attempting to load class: " + name + " from: " + this.toString());
 			}
 			if (result == null) {
 				if (getParent() != null)
