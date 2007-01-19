@@ -192,13 +192,12 @@ public class DWRFormService {
 		field.setSelectMultiple(multiple);
 	
 		ff.setField(field);
-		
 		fs.updateFormField(ff);
+		
+		fieldId = ff.getField().getFieldId();
 		formFieldId = ff.getFormFieldId();
 		
-		//Context.closeSession();
-		
-		Integer[] arr = {field.getFieldId(), ff.getFormFieldId()};
+		Integer[] arr = {fieldId, formFieldId};
 		
 		return arr;
 	}

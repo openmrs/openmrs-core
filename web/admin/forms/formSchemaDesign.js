@@ -693,11 +693,13 @@ function save(target, formNotUsed) {
 				updateSortWeight(target);
 			}	
 			
+			// save the field to the database
 			selectedNode = target;
 			DWRFormService.saveFormField(endSaveFormField(target), data.fieldId, data.fieldName, data.description, data.fieldType,
 				data.conceptId, data.tableName, data.attributeName, data.defaultValue, data.selectMultiple, 
 				data.formFieldId, formId, data.parent, data.fieldNumber, data.fieldPart, data.pageNumber, data.minOccurs, data.maxOccurs, data.isRequired, data.sortWeight);
 			
+			// update the field label in the tree
 			target.titleNode.innerHTML = target.title = getFieldLabel(data);
 			if (!formPublished && selectedNode) {
 				dojo.dom.removeChildren(selectedNode.afterLabelNode);
@@ -911,7 +913,6 @@ function getData(obj) {
 	else if (obj.fieldId != null) {
 		data.id = data["fieldId"] = obj.fieldId;
 		data["numForms"] = obj.numForms;
-		data["fieldId"] = obj.fieldId;
 		data["fieldName"] = obj.name;
 		data["description"] = obj.description;
 		data["fieldType"] = obj.fieldTypeId;
