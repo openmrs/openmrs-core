@@ -67,17 +67,19 @@ public class HibernateUserDAO implements
 		user.setSystemId(systemId + "-" + checkDigit);
 		
 		user = updateProperties(user);
-		sessionFactory.getCurrentSession().save(user);
-
+		try {
+			sessionFactory.getCurrentSession().save(user);
+		}
+		catch (NonUniqueObjectException e) {
+			sessionFactory.getCurrentSession().merge(user);
+		}
+		
 		// create a Person for this user as well.
 		Person person = new Person();
 		person.setUser(user);
 		sessionFactory.getCurrentSession().save(person);
 		
-		//Context.closeSession();
-		
 		//update the new user with the password
-		//Context.openSession();
 		String salt = Security.getRandomToken();
 		String hashedPassword = Security.encodeString(password + salt);
 		sessionFactory.getCurrentSession().createQuery("update User set password = :pw, salt = :salt where user_id = :username")
@@ -131,7 +133,7 @@ public class HibernateUserDAO implements
 		}
 		catch (Exception e) {}
 		
-		Integer count = (Integer) sessionFactory.getCurrentSession().createQuery(
+		Long count = (Long) sessionFactory.getCurrentSession().createQuery(
 				"select count(*) from User u where (u.username = :uname1 or u.systemId = :uname2 or u.username = :sysid1 or u.systemId = :sysid2 or u.systemId = :uname3) and u.userId <> :uid")
 				.setString("uname1", username)
 				.setString("uname2", username)
