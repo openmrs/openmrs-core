@@ -608,19 +608,22 @@ public class Context implements ApplicationContextAware {
 	 * Should be called after all activity has ended and application is closing
 	 */
 	public static void shutdown() {
-		try {
-			ModuleUtil.shutdown();
-		}
-		catch (Exception e) {
-			log.warn("Error while shutting down module system", e);
-		}
 		
+		log.debug("Shutting down the scheduler");
 		try {
 			// Needs to be shutdown before Hibernate
 			SchedulerUtil.shutdown();
 		}
 		catch (Exception e) {
 			log.warn("Error while shutting down scheduler service", e);
+		}
+		
+		log.debug("Shutting down the modeules");
+		try {
+			ModuleUtil.shutdown();
+		}
+		catch (Exception e) {
+			log.warn("Error while shutting down module system", e);
 		}
 		
 		log.debug("Shutting down the context");

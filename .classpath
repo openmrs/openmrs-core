@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry output="build/api" kind="src" path="src/api"></classpathentry>
+	<classpathentry output="build/api" kind="src" path="src/api"/>
 	<classpathentry output="build/web" kind="src" path="src/web"/>
 	<classpathentry output="build/test/api" kind="src" path="test/api"/>
 	<classpathentry output="build/test/web" kind="src" path="test/web"/>
@@ -53,7 +53,7 @@
 	<classpathentry kind="lib" path="lib/jfreechart/jfreechart-1.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/jfreechart/jcommon-1.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta-log4j/log4j-1.2.13.jar"/>
-	<classpathentry kind="lib" path="lib/c3p0/c3p0-0.9.1-pre9.jar"/>
+	<classpathentry kind="lib" path="lib/c3p0/c3p0-0.9.1.jar"/>
 	<classpathentry kind="lib" path="lib/velocity/velocity-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/hl7api/hapi-0.5.jar"/>
 	<classpathentry kind="output" path="build/"/>

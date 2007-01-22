@@ -148,7 +148,6 @@ public class QuickReportServlet extends HttpServlet {
 		List<Obs> obs = new Vector<Obs>();
 		
 		for (Obs o : allObs) {
-			log.debug("location: " + o.getLocation().getLocationId());
 			if (o.getValueDatetime() != null)
 				if (o.getValueDatetime().after(start) && o.getValueDatetime().before(end))
 					obs.add(o);
@@ -257,6 +256,7 @@ public class QuickReportServlet extends HttpServlet {
 			template += "  <td>$!{o.Patient.PatientName.GivenName} $!{o.Patient.PatientName.MiddleName} $!{o.Patient.PatientName.FamilyName}</td>\n";
 			template += "  <td>$!{o.Patient.PatientIdentifier}</td>\n";
 			template += "  <td>$!{o.Location.Name}</td>\n";
+			template += "  <td>$!{date.format($!{o.Encounter.EncounterDatetime})}</td>\n";
 			template += "  <td>$!{date.format($o.ValueDatetime)}</td>\n";
 			template += " </tr>\n";
 			template += "#end\n";

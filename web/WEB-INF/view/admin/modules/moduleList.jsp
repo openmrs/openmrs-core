@@ -14,8 +14,11 @@
 	<form id="moduleAddForm" action="module.list" method="post" enctype="multipart/form-data">
 		<spring:message code="Module.addJar"/> <input type="file" name="moduleFile" size="40"> <br />
 		<input type="hidden" name="action" value="upload"/>
+		<i class="smallMessage" id="moduleStoredText">(<spring:message code="Module.storedIn"/>: <%= org.openmrs.module.ModuleUtil.getModuleRepository().getAbsolutePath() %>)</i>
+		<br/><br/>
 		<input type="submit" value='<spring:message code="Module.add"/>'/>
 	</form>
+	
 </div>
 
 <br/>

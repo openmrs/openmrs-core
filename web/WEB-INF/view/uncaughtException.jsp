@@ -1,6 +1,7 @@
 <%@page isErrorPage="true" %>
 <%@ page import="org.openmrs.web.WebUtil" %>
 <%@ page import="org.openmrs.web.WebConstants" %>
+<%@ page import="org.openmrs.util.OpenmrsConstants" %>
 <%@ page import="org.openmrs.api.APIAuthenticationException" %>
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
@@ -76,7 +77,11 @@ try {
 	else  {
     	out.println("<br>No error information available");
 	} 
-
+	
+	// Display current version
+	out.println("<br><br>Version: " + OpenmrsConstants.OPENMRS_VERSION);
+	out.println("<br>Database Version: " + OpenmrsConstants.DATABASE_VERSION);
+	
 	// Display cookies
 	out.println("<br><br>Cookies:<br>");
 	Cookie[] cookies = request.getCookies();

@@ -344,7 +344,7 @@ public class ModuleClassLoader extends URLClassLoader {
 				if (getParent() != null)
 					result = getParent().loadClass(name);
 			} catch (NullPointerException e) {
-				log.warn("Error while attempting to load class: " + name + " from: " + this.toString());
+				log.debug("Error while attempting to load class: " + name + " from: " + this.toString());
 			}
 			if (result == null) {
 				if (getParent() != null)
