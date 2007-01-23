@@ -252,7 +252,7 @@ public class MLMObject {
 		      e.printStackTrace();   // so we can get stack trace		
 		    }
 	}
-	public boolean WriteEvaluate(Writer w) throws Exception {
+	public boolean WriteEvaluate(Writer w, String classname) throws Exception {
 	boolean retValEval = true, retVal = true;
 	try{
 		String key;
@@ -282,14 +282,17 @@ public class MLMObject {
 		 w.append("\tuserVarMap.put(\"firstname\", firstname);\n");
 		 w.append("\tinitAction();\n");		     
 		 
-		 w.append("\tResult ruleResult = new Result(\"Evaluating...\");\n");	
+		 w.append("\tResult ruleResult = new Result(\"Evaluating Rule - " + classname + "...\");\n");	
 		 w.append("\tString actionStr = \"\";\n\n");	
 		 w.append("\tif(evaluate_logic(ruleResult)){\n");	
-		 w.append("\tactionStr = doAction();\n");
-		 w.append("\truleResult.debug(0);\n");
-		 w.append("\treturn new Result(actionStr);\n");
-		 w.append("\n\t}\n");
-			 
+		 w.append("\t\tactionStr = doAction();\n");
+		 w.append("\t\truleResult.setValueText(\"Evaluating Rule - " + classname + "...............*****CONCLUDED TRUE****\");\n");
+			
+		 w.append("\t\t//ruleResult.debug(0);\n");
+		 w.append("\t\treturn new Result(actionStr);\n");
+		 w.append("\n\t}\n\n");
+		
+		 w.append("\truleResult.setValueText(\"Evaluating Rule - " + classname + "...............*****CONCLUDED FALSE****\");\n");
 		 w.append("\treturn ruleResult;\n");	
 		 w.append("\n}\n");
 		
@@ -440,6 +443,7 @@ public class MLMObject {
 		           		nextKey = (String) iter.next();
 		           		if(nextKey.equals("THEN")) {
 							tmpStr += " ) {\n\t";
+							tmpStr += "\tvalueMap.add(val);\n";
 							w.append(tmpStr);
 							
 							
@@ -920,7 +924,12 @@ public class MLMObject {
 	}
 	
 	public void setClassName(String name) {
-		className = name.trim();
+		if(name.endsWith(".mlm")){
+			className = name.substring(0,name.indexOf(".mlm"));
+		}
+		else {
+			className = name.trim();
+		}
 	}
 	public String getClassName() {
 		return className.trim();
