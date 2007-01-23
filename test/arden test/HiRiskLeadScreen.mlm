@@ -20,7 +20,7 @@ Knowledge:
 	Urgency:	;;
 */
 Data:
-Last_Pb := read Last 2 {BLOOD LEAD LEVEL from RMRS} Where it Occurred Within Past 330 Days;
+Last_Pb := read Last 2 {BLOOD LEAD LEVEL IN LAST YEAR from RMRS} Where it Occurred Within Past 330 Days;
 Qual_Pb := read Last {CHICA REPORTED LEAD from CHICA} Where it Occurred Within Past 330 Days;
 /* 
 HousePre50 := read Last {HouseBltPre1950 from CHICA} Where it Occurred Within Past 2 Years;
@@ -34,13 +34,20 @@ EnvHx := read {ENVIRONMENTAL HISTORY from CHICA} Where it Occurred Within Past 3
 	Evoke:	;;
 
 Logic:
-if (Last_Pb >= 14) then || LeadRisk || = "has lead level greater than 14 mg/dcl";
-if (Qual_Pb = "LESS THAN 10 MG/DL") then conclude False;
-if (EnvHx = "HOME BUILT BEFORE 1960") then || LeadRisk || = "lives in a house built before 1950";
-elseif (EnvHx = "HOME RENOVATED BEFORE 1978") then || LeadRisk || = "lives in a pre-1978 house undergoing renovation";
-elseif (EnvHx = "TB EXPOSURE") then || LeadRisk || = "has a friend or sibling with elevated blood lead";
-else conclude False;
+//answer_list := ('HOME BUILT BEFORE 1960', 'HOME RENOVATED BEFORE 1978', 'TB EXPOSURE');
+if (Last_Pb >= 14) then LeadRisk = "has lead level greater than 14 mg/dcl";conclude True; endif;
+if (Qual_Pb = 'LESS THAN 10 MG/DL') then conclude False;
+if any ( EnvHx is in ('HOME BUILT BEFORE 1950', 'HOME RENOVATED BEFORE 1978', 'TB EXPOSURE') ) then  LeadRisk  = "***high risk TB patient***";
 conclude True;     // For testing purposes
+
+endif;
+/* if (EnvHx = 'HOME BUILT BEFORE 1960') then  LeadRisk  = "lives in a house built before 1950";
+elseif (EnvHx = 'HOME RENOVATED BEFORE 1978') then  LeadRisk  = "lives in a pre-1978 house undergoing renovation";
+elseif (EnvHx = 'TB EXPOSURE') then  LeadRisk  = "has a friend or sibling with elevated blood lead";
+*/
+conclude False;
+
+
 ;;
 Action:
 write (|| firstname || " reportedly " || LeadRisk ||".  Drawing a blood lead level is recommended annually:");
