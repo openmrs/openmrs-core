@@ -179,7 +179,7 @@ public class ArdenTest extends BaseTest {
 	    //	  System.err.println(actionstr);
 	    //  }
 	      
-	      ardObj.WriteEvaluate(w);
+	      ardObj.WriteEvaluate(w, "");
 	      String actionstr = treeParser.action(t.getNextSibling().getNextSibling().getNextSibling().getNextSibling(), ardObj);
 	      ardObj.WriteAction(actionstr, w);
 		     
