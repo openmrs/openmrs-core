@@ -192,9 +192,10 @@
 	Note: This update will effect ${fn:length(matchingProposals)-1} other concept proposal<c:if test="${fn:length(matchingProposals) > 2}">s</c:if><br/>
 </c:if>
 <br />
-<input type="submit" name="action" value="<spring:message code="ConceptProposal.update"/>">
+<input type="submit" name="action" value="<spring:message code="ConceptProposal.ignore"/>">
 <input type="submit" name="action" value="<spring:message code="ConceptProposal.saveAsConcept"/>">
 <input type="submit" name="action" value="<spring:message code="ConceptProposal.saveAsSynonym"/>">
+<input type="submit" name="action" value="<spring:message code="general.cancel"/>">
 </form>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

@@ -45,6 +45,7 @@ public class ConceptProposalFormController extends SimpleFormController {
 	@Override
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
+		HttpSession httpSession = request.getSession();
 		ConceptProposal cp = (ConceptProposal)obj;
 		String action = request.getParameter("action");
 		
@@ -54,7 +55,14 @@ public class ConceptProposalFormController extends SimpleFormController {
 		cp.setMappedConcept(c);
 	
 		MessageSourceAccessor msa = getMessageSourceAccessor();
-		if (!action.equals(msa.getMessage("ConceptProposal.update"))) {
+		if (action.equals(msa.getMessage("general.cancel"))) {
+			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "general.canceled");
+			return new ModelAndView(new RedirectView(getSuccessView()));
+		}
+		else if (action.equals(msa.getMessage("ConceptProposal.ignore"))) {
+			cp.setState(OpenmrsConstants.CONCEPT_PROPOSAL_REJECT);
+		}
+		else {
 			// Set the state of the concept according to the button pushed
 			if (cp.getMappedConcept() == null)
 				errors.rejectValue("mappedConcept", "ConceptProposal.mappedConcept.error");
@@ -90,7 +98,6 @@ public class ConceptProposalFormController extends SimpleFormController {
 		
 		Locale locale = Context.getLocale();
 		MessageSourceAccessor msa = getMessageSourceAccessor();
-		String code = "ConceptProposal.alertMappedTo";
 		
 		if (Context.isAuthenticated()) {
 			// this concept proposal
@@ -122,9 +129,16 @@ public class ConceptProposalFormController extends SimpleFormController {
 				as.mapConceptProposalToConcept(conceptProposal, c);
 			}
 			
-			String mappedName = c.getName(locale).getName();
-			String[] args = new String[] {cp.getOriginalText(), mappedName, cp.getComments()};
-			String msg = msa.getMessage(code, args, locale);
+			String msg = "";
+			if (c != null) {
+				String mappedName = c.getName(locale).getName();
+				String[] args = new String[] {cp.getOriginalText(), mappedName, cp.getComments()};
+				msg = msa.getMessage("ConceptProposal.alert.mappedTo", args, locale);
+			}
+			else {
+				String[] args = new String[] {cp.getOriginalText(), cp.getComments()};
+				msg = msa.getMessage("ConceptProposal.alert.ignored", args, locale);
+			}
 			
 			for (User proposer : uniqueProposers) {
 				alertService.createAlert(msg, proposer);

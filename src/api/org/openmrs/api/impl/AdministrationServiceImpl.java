@@ -791,6 +791,7 @@ public class AdministrationServiceImpl implements AdministrationService {
 		
 		if (cp.getState().equals(OpenmrsConstants.CONCEPT_PROPOSAL_REJECT)) {
 			rejectConceptProposal(cp);
+			return;
 		}
 		
 		if (mappedConcept == null)
