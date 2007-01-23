@@ -155,7 +155,7 @@ public class ArdenServiceImpl implements ArdenService {
 		    
 		     ardObj.PrintConceptMap();	   // To Debug
 		     ardObj.PrintEvaluateList();   // To Debug
-		     retVal = ardObj.WriteEvaluate(w);
+		     retVal = ardObj.WriteEvaluate(w, classname);
 		     if(retVal) {
 			     String actionstr = treeParser.action(t.getNextSibling().getNextSibling().getNextSibling().getNextSibling(), ardObj);
 			     ardObj.WriteAction(actionstr, w);
