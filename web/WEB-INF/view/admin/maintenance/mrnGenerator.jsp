@@ -49,6 +49,7 @@
 						<option value="CH">CH - Chulaimbo</option>
 						<option value="EG">EG - Mt. Elgon Clinic</option>
 						<option value="KB">KB - Kabarnet</option>
+						<option value="KH">KH - Khuyangu</option>
 						<option value="KP">KP - Kapenguria</option>
 						<option value="KT">KT - Kitale</option>
 						<option value="NT">NT - Naitiri</option>

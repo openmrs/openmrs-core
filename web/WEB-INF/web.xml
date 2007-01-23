@@ -205,7 +205,7 @@
 	</welcome-file-list>
 
 	<error-page>
-		<error-code>401</error-code>
+		<exception-type>org.openmrs.api.APIAuthenticationException</exception-type>
 		<location>/login.htm</location>
 	</error-page>
 	
