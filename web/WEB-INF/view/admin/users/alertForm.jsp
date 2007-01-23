@@ -159,10 +159,10 @@
 <form method="post">
 <table>
 	<tr>
-		<th><spring:message code="Alert.text"/></th>
+		<th valign="top"><spring:message code="Alert.text"/></th>
 		<td>
 			<spring:bind path="alert.text">
-				<input type="text" id="text" name="${status.expression}" value="${status.value}" size="55">
+				<textarea id="text" name="${status.expression}" rows="2" cols="43">${status.value}</textarea>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
