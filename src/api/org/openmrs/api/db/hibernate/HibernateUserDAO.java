@@ -187,6 +187,7 @@ public class HibernateUserDAO implements
 				sessionFactory.getCurrentSession().update(user);
 			}
 			catch (NonUniqueObjectException e) {
+				sessionFactory.getCurrentSession().clear();
 				sessionFactory.getCurrentSession().merge(user);
 			}
 		}

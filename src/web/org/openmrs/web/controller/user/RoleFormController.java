@@ -74,16 +74,7 @@ public class RoleFormController extends SimpleFormController {
 				}
 			}
 			role.setInheritedRoles(inheritedRoleObjs);
-	
-			// retrieving the privileges from the request
-			String[] privs = request.getParameterValues("privileges");
-			Set<Privilege> privObjs = new HashSet<Privilege>();
-			if (privs != null) {
-				for(String p : privs) {
-					privObjs.add(new Privilege(p));
-				}
-			}
-			role.setPrivileges(privObjs);
+			
 		}
 		
 		return super.processFormSubmission(request, response, role, errors);

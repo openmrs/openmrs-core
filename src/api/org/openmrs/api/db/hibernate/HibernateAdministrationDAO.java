@@ -414,7 +414,7 @@ public class HibernateAdministrationDAO implements
 		if (role.getRole() == null)
 			createRole(role);
 		else {
-			sessionFactory.getCurrentSession().merge(role);
+			sessionFactory.getCurrentSession().update(role);
 		}
 	}	
 	
