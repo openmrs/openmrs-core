@@ -54,7 +54,7 @@ public class OpenmrsClassLoader extends WebappClassLoader {
 	 */
 	public static OpenmrsClassLoader getInstance() {
 		if (instance == null) {
-			log.debug("Creating new OpenmrsClassLoader instance");
+			log.trace("Creating new OpenmrsClassLoader instance");
 			instance = new OpenmrsClassLoader();
 			//Thread.currentThread().setContextClassLoader(getInstance());
 		}
@@ -77,7 +77,7 @@ public class OpenmrsClassLoader extends WebappClassLoader {
 	}
 	
 	public URL findResource(final String name) {
-		log.debug("finding resource: " + name);
+		log.trace("finding resource: " + name);
 		
 		URL result;
 		for (ModuleClassLoader classLoader : ModuleFactory.getModuleClassLoaders()) {
@@ -273,6 +273,8 @@ public class OpenmrsClassLoader extends WebappClassLoader {
 		log.debug("filePath: " + filePath);
 		
 		File file = new File(folder, filePath);
+		
+		log.debug("absolute path: " + file.getAbsolutePath());
 		
 		try {
 			// if the file has been expanded already, return that
