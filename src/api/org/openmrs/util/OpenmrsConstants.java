@@ -68,6 +68,9 @@ public class OpenmrsConstants {
 	public static final String PRIV_EDIT_CONCEPTS   = "Edit Concepts";
 	public static final String PRIV_DELETE_CONCEPTS = "Delete Concepts";
 	
+	public static final String PRIV_ADD_CONCEPT_PROPOSAL  = "Add Concept Proposal";
+	public static final String PRIV_EDIT_CONCEPT_PROPOSAL = "Edit Concept Proposal";
+	
 	public static final String PRIV_VIEW_USERS	= "View Users";
 	public static final String PRIV_ADD_USERS	= "Add Users";
 	public static final String PRIV_EDIT_USERS	= "Edit Users";
@@ -129,7 +132,7 @@ public class OpenmrsConstants {
 	public static final String PRIV_VIEW_NAVIGATION_MENU	= "View Navigation Menu";
 	public static final String PRIV_VIEW_ADMIN_FUNCTIONS	= "View Administration Functions";
 	
-	public static final String PRIV_FORM_ENTRY_VIEW_UNPUBLISHED_FORMS = "View Unpublished Forms";
+	public static final String PRIV_VIEW_UNPUBLISHED_FORMS = "View Unpublished Forms";
 	
 	public static final String PRIV_VIEW_PROGRAMS = "View Programs";
 	public static final String PRIV_MANAGE_PROGRAMS = "Manage Programs";
@@ -153,12 +156,15 @@ public class OpenmrsConstants {
 		privs.put(PRIV_MANAGE_PROGRAMS, "Able to add/view/delete patient programs");
 		privs.put(PRIV_EDIT_PATIENT_PROGRAMS, "Able to edit patient programs");
 		
-		privs.put(PRIV_FORM_ENTRY_VIEW_UNPUBLISHED_FORMS, "Able to view and fill out unpublished forms");
+		privs.put(PRIV_VIEW_UNPUBLISHED_FORMS, "Able to view and fill out unpublished forms");
 		
 		privs.put(PRIV_VIEW_CONCEPTS, "Able to view concept entries");
 		privs.put(PRIV_ADD_CONCEPTS, "Able to add concepts to the dictionary");
 		privs.put(PRIV_EDIT_CONCEPTS, "Able to edit concepts in the dictionary");
 		privs.put(PRIV_DELETE_CONCEPTS, "Able to delete concepts from the dictionary");
+		
+		privs.put(PRIV_ADD_CONCEPT_PROPOSAL, "Able to add concept proposals to the system");
+		privs.put(PRIV_EDIT_CONCEPT_PROPOSAL, "Able to edit concept proposals in the system");
 		
 		privs.put(PRIV_VIEW_USERS, "Able to view users in OpenMRS");
 		privs.put(PRIV_ADD_USERS, "Able to add users to OpenMRS");

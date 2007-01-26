@@ -537,7 +537,7 @@ public class PatientFormController extends SimpleFormController {
 
 		if (Context.isAuthenticated()) {
 			boolean onlyPublishedForms = true;
-			if (Context.hasPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY_VIEW_UNPUBLISHED_FORMS))
+			if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_UNPUBLISHED_FORMS))
 				onlyPublishedForms = false;
 			forms.addAll(Context.getFormService().getForms(onlyPublishedForms));
 			
