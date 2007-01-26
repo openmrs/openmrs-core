@@ -3,6 +3,7 @@ package org.openmrs.module;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -24,6 +25,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * This class will parse a file into an org.openmrs.module.Module
@@ -95,6 +99,15 @@ public class ModuleFileParser {
 			try {
 				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 				DocumentBuilder db = dbf.newDocumentBuilder();
+				db.setEntityResolver(new EntityResolver(){
+					public InputSource resolveEntity(String publicId, String systemId) 
+							throws SAXException, IOException {
+						// When asked to resolve external entities (such as a DTD) we return an InputSource
+						// with no data at the end, causing the parser to ignore the DTD.
+						return new InputSource(new StringReader(""));
+					}
+				});
+
 				configDoc = db.parse(configStream);
 			}
 			catch (Exception e) {

@@ -2,6 +2,7 @@ package org.openmrs.module;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -17,6 +18,9 @@ import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * This class will parse an xml sql diff file
@@ -74,6 +78,14 @@ public class SqlDiffFileParser {
 				try {
 					DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 					DocumentBuilder db = dbf.newDocumentBuilder();
+					db.setEntityResolver(new EntityResolver(){
+						public InputSource resolveEntity(String publicId, String systemId) 
+								throws SAXException, IOException {
+							// When asked to resolve external entities (such as a DTD) we return an InputSource
+							// with no data at the end, causing the parser to ignore the DTD.
+							return new InputSource(new StringReader(""));
+						}
+					});
 					diffDoc = db.parse(diffStream);
 				}
 				catch (Exception e) {
