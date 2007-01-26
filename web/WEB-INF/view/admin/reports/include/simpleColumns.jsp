@@ -60,9 +60,10 @@
 				<option value="$!{fn.getFirstEncounter('').getEncounterType().getName()}">&nbsp; <spring:message code="Encounter.type" /></option>
 				<option value="$!{fn.getFirstEncounter('').getProvider().getFirstName()} $!{fn.getFirstEncounter('').getProvider().getLastName()}">&nbsp; <spring:message code="Encounter.provider" /></option>
 				<option value=""> </option>
-				<option value="$!{fn.getRelationshipPersonsAsString('')}">&nbsp; <spring:message code="All Relationships" /></option>
+				<option value="$!{fn.getRelationshipNames('')}">&nbsp; <spring:message code="All Relationships" /></option>
 				<option value="$!{fn.getRelationshipNames('Accompagnateur')}">&nbsp; <spring:message code="Accompagnateur" /></option>
 				<option value="$!{fn.getRelationshipIds('Accompagnateur')}">&nbsp; <spring:message code="Accompagnateur ID" /></option>
+				<option value="$!{fn.getRelationshipIdentifiers('Mother')}">&nbsp; <spring:message code="RelationshipType.mother" /></option>
 				<option value=""> </option>
 				<option value="$!{fn.formatDate('ymd', $fn.getProgram('HIV PROGRAM').getDateEnrolled())}">&nbsp; <spring:message code="HIV Program enrollment date" /></option>
 				<option value="$!{fn.formatDate('ymd', $fn.getProgram('TUBERCULOSIS PROGRAM').getDateEnrolled())}">&nbsp; <spring:message code="TB Program enrollment date" /></option>

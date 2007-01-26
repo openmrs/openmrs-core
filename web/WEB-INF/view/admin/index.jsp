@@ -1,8 +1,8 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<%@ include file="/WEB-INF/template/header.jsp" %>
-
 <openmrs:require privilege="View Administration Functions" otherwise="/login.htm" redirect="/admin/index.htm" />
+
+<%@ include file="/WEB-INF/template/header.jsp" %>
 
 <style>
 	.adminMenuList #menu li {

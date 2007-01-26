@@ -166,7 +166,7 @@
 
 	<openmrs:hasPrivilege privilege="Become User (Actually you need to be a superuser)">
 		&nbsp;&nbsp;&nbsp;&nbsp;
-		<input type="button" value="<spring:message code="User.assumeIdentity" />" onClick="document.getElementById('becomeUserField').value = 'true'; document.getElementById('thisUserForm').submit()" />
+		<input type="button" value="<spring:message code="User.assumeIdentity" />" onClick="return assumeIdentity(this);" />
 	</openmrs:hasPrivilege>
 	
 </form>
@@ -175,6 +175,16 @@
  document.forms[0].elements[0].focus();
  var voided = document.getElementById('voidReasonRow').checked;
  document.getElementById('voidReasonRow').style.display = (voided ? '' : 'none');
+ 
+ function assumeIdentity(btn) {
+ 	if (!confirm("<spring:message code="User.assumeIdentity.confirm"/>"))
+ 		return false;
+ 	
+ 	document.getElementById('becomeUserField').value = 'true'; 
+ 	document.getElementById('thisUserForm').submit();
+ 	return true;
+ }
+ 
 </script>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

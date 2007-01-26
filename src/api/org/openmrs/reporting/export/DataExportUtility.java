@@ -381,6 +381,24 @@ public class DataExportUtility {
 		}
 	}
 	
+	public String getRelationshipIdentifiers(String relationshipTypeName) {
+		List<Relationship> rels = getRelationships(relationshipTypeName);
+		if (rels == null || rels.size() == 0) {
+			return "";
+		} else {
+			StringBuilder sb = new StringBuilder();
+			for (Iterator<Relationship> i = rels.iterator(); i.hasNext(); ) {
+				Relationship r = i.next();
+				if (r.getPerson().getPatient() != null) {
+					sb.append("Patient " + r.getPerson().getPatient().getPatientIdentifier());
+				}
+				if (i.hasNext())
+					sb.append(" ");
+			}
+			return sb.toString();
+		}
+	}
+	
 	/**
 	 * Retrieves properties on the patient like patient.patientName.familyName
 	 * 

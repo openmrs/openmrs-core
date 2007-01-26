@@ -195,12 +195,12 @@ public class Context implements ApplicationContextAware {
 	
 	/**
 	 * Become a different user. (You should only be able to do this as a superuser.)
-	 * @param username
+	 * @param systemId
 	 * @throws ContextAuthenticationException
 	 */
-	public static void becomeUser(String username) throws ContextAuthenticationException {
-		log.debug("username: " + username);
-		getUserContext().becomeUser(username);
+	public static void becomeUser(String systemId) throws ContextAuthenticationException {
+		log.debug("systemId: " + systemId);
+		getUserContext().becomeUser(systemId);
 	}
 	
 	public static Properties getRuntimeProperties() {

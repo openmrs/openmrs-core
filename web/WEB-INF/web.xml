@@ -203,7 +203,12 @@
 		<welcome-file>index.htm</welcome-file>
 		<welcome-file>index.jsp</welcome-file>
 	</welcome-file-list>
-
+	
+	<error-page>
+		<exception-type>java.lang.Exception</exception-type>
+		<location>/WEB-INF/view/uncaughtException.jsp</location>
+	</error-page>
+	
 	<error-page>
 		<exception-type>org.openmrs.api.APIAuthenticationException</exception-type>
 		<location>/login.htm</location>
@@ -213,12 +218,6 @@
 		<error-code>404</error-code>
 		<location>/missing.htm</location>
 	</error-page>
-	
-	<error-page>
-		<exception-type>java.lang.Exception</exception-type>
-		<location>/WEB-INF/view/uncaughtException.jsp</location>
-	</error-page>
-
 	
 	<!-- ==Struts Configuration===============
 			Other struts files: 

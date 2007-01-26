@@ -52,9 +52,10 @@ public class RequireTag extends TagSupport {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "require.login");
 		}
 		else if (userContext.hasPrivilege(privilege) && userContext.isAuthenticated()) {
+			// redirect users to password change form
 			User user = userContext.getAuthenticatedUser();
 			Boolean forcePasswordChange = new Boolean(user.getProperties().get(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD));
-			log.debug(redirect);
+			log.debug("Login redirect: " + redirect);
 			if (forcePasswordChange && !redirect.contains("options.form")) {
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "User.password.change");
 				errorOccurred = true;
@@ -66,7 +67,7 @@ public class RequireTag extends TagSupport {
 				}
 				catch (IOException e) {
 					// oops, cannot redirect
-					log.error(e);
+					log.error("Unable to redirect for password change: " + redirect, e);
 					throw new APIException(e);
 				}
 			}

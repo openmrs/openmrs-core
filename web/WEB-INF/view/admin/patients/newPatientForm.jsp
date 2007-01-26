@@ -271,6 +271,7 @@
 	</script>
 	<input type="button" class="smallButton" onclick="addIdentifier()" value="<spring:message code="PatientIdentifier.add" />" hidefocus />
 	
+	<!-- TEMPORARY HACK.  RELATIONSHIPS NEED TO BE COMPLETELY REDONE USING PORTLETS -->
 	<c:if test="${showMothersName == 'true'}">
 		<br/><br/><br />
 	
@@ -283,7 +284,14 @@
 			<tbody id="relationshipsTbody">
 				<tr id="relationshipRow">
 					<td valign="top" style="width:230px">
-						<openmrs_tag:patientField formFieldName="relative" initialValue="${patient.relationships[0].relative.patient.patientId}" searchLabelCode="Relationship.instructions.select" searchLabelArguments="${relType}" />
+						<c:choose>
+							<c:when test="${patient.relationships[0].person.patient.patientId != patient.patientId}">
+								<openmrs_tag:patientField formFieldName="relative" initialValue="${patient.relationships[0].person.patient.patientId}" searchLabelCode="Relationship.instructions.select" searchLabelArguments="${relType}" />
+							</c:when>
+							<c:otherwise>
+								<openmrs_tag:patientField formFieldName="relative" initialValue="" searchLabelCode="Relationship.instructions.select" searchLabelArguments="${relType}" />
+							</c:otherwise>
+						</c:choose>
 					</td>
 					<td valign="top">
 						<select name="relationshipType">

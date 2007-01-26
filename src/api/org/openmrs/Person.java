@@ -37,7 +37,7 @@ public class Person implements java.io.Serializable {
 	
 	public boolean equals(Object obj) {
 		if (obj instanceof Person) {
-			Person u = (Person)obj;;
+			Person u = (Person)obj;
 			return (getPersonId().equals(u.getPersonId()));
 		}
 		return false;

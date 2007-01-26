@@ -94,21 +94,28 @@ public class UserContext {
 	/**
 	 * Change current authentication to become another user.
 	 * (You can only do this if you're already authenticated as a superuser.)
-	 * @param username
+	 * @param systemId
 	 * @return The new user that this context has been set to. (null means no change was made)
 	 * @throws ContextAuthenticationException
 	 */
-	public User becomeUser(String username) throws ContextAuthenticationException {
+	public User becomeUser(String systemId) throws ContextAuthenticationException {
 		if (!Context.getAuthenticatedUser().isSuperUser())
 			throw new APIAuthenticationException("You must be a superuser to assume another user's identity");
-		User u = Context.getUserService().getUserByUsername(username);
-		u.getAllRoles().size();
-		u.getProperties().size();
-		u.getPrivileges().size();
+		User u = Context.getUserService().getUserByUsername(systemId);
+		
+		// hydrate the user object
+		if (u.getAllRoles() != null)
+			u.getAllRoles().size();
+		if (u.getProperties() != null)
+			u.getProperties().size();
+		if (u.getPrivileges() != null)
+			u.getPrivileges().size();
+		
 		if (u == null)
-			throw new ContextAuthenticationException("Username not found: " + username);
-		else
-			this.user = u;
+			throw new ContextAuthenticationException("SystemId not found: " + systemId);
+
+		this.user = u;
+		
 		return u;
 	}
 

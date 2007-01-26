@@ -129,7 +129,6 @@ public class OpenmrsConstants {
 	public static final String PRIV_VIEW_NAVIGATION_MENU	= "View Navigation Menu";
 	public static final String PRIV_VIEW_ADMIN_FUNCTIONS	= "View Administration Functions";
 	
-	public static final String PRIV_FORM_ENTRY = "Form Entry";
 	public static final String PRIV_FORM_ENTRY_VIEW_UNPUBLISHED_FORMS = "View Unpublished Forms";
 	
 	public static final String PRIV_VIEW_PROGRAMS = "View Programs";
@@ -154,7 +153,6 @@ public class OpenmrsConstants {
 		privs.put(PRIV_MANAGE_PROGRAMS, "Able to add/view/delete patient programs");
 		privs.put(PRIV_EDIT_PATIENT_PROGRAMS, "Able to edit patient programs");
 		
-		privs.put(PRIV_FORM_ENTRY, "Able preform all functions related to form entry");
 		privs.put(PRIV_FORM_ENTRY_VIEW_UNPUBLISHED_FORMS, "Able to view and fill out unpublished forms");
 		
 		privs.put(PRIV_VIEW_CONCEPTS, "Able to view concept entries");

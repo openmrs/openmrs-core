@@ -20,7 +20,6 @@ import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.context.UserContext;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -59,8 +58,6 @@ public class UserFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#processFormSubmission(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
 	 */
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
-		
-		HttpSession httpSession = request.getSession();
 		
 		User user = (User)obj;
 		UserService us = Context.getUserService();
@@ -146,7 +143,7 @@ public class UserFormController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			
 			if ("true".equals(request.getParameter("BecomeUser"))) {
-				Context.becomeUser(user.getUsername());
+				Context.becomeUser(user.getSystemId());
 				return new ModelAndView(new RedirectView(request.getContextPath() + "/index.htm"));
 			}
 			
@@ -200,9 +197,6 @@ public class UserFormController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-		HttpSession httpSession = request.getSession();
-		
-		
 		User user = null;
 		
 		if (Context.isAuthenticated()) {
@@ -219,8 +213,6 @@ public class UserFormController extends SimpleFormController {
     }
     
     protected Map referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
-		
-		HttpSession httpSession = request.getSession();
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		

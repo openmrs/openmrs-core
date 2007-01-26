@@ -205,7 +205,6 @@ public class NewPatientFormController extends SimpleFormController {
 		
 		HttpSession httpSession = request.getSession();
 		
-		
 		if (Context.isAuthenticated()) {
 			PatientService ps = Context.getPatientService();
 			ShortPatientModel p = (ShortPatientModel)obj;
@@ -290,12 +289,13 @@ public class NewPatientFormController extends SimpleFormController {
 			String[] types = request.getParameterValues("relationshipType");
 			Person person = Context.getAdministrationService().getPerson(patient);
 			List<Relationship> relationships;
+			List<Person> newRelatives = new Vector<Person>(); //list of all persons specifically selected in the form
 			
 			if (person != null) 
 				relationships = Context.getPatientService().getRelationships(person);
 			else
 				relationships = new Vector<Relationship>();
-
+			
 			if ( relatives != null ) {
 				for (int x = 0 ; x < relatives.length; x++ ) {
 					String relativeString = relatives[x];
@@ -306,17 +306,23 @@ public class NewPatientFormController extends SimpleFormController {
 						RelationshipType type = ps.getRelationshipType(Integer.valueOf(typeString));
 						
 						Person relative = Context.getAdministrationService().getPerson(relativePatient);
+						newRelatives.add(relative);
 						
 						boolean found = false;
 						// TODO this assumes that a relative can only be related in one way
 						for (Relationship rel : relationships) {
-							if (rel.getRelative().equals(relative)) {
+							//skip the relationships where this patient is the object
+							if (rel.getPerson().equals(person))
+								found = true;
+							
+							// just update the type of relationships that have the same relative
+							if (rel.getPerson().equals(relative)) {
 								rel.setRelationship(type);
 								found = true;
 							}
 						}
 						if (!found) {
-							Relationship r = new Relationship(person, relative, type);
+							Relationship r = new Relationship(relative, person, type);
 							relationships.add(r);
 						}
 					}
@@ -324,8 +330,13 @@ public class NewPatientFormController extends SimpleFormController {
 				
 			}
 
-			for (Relationship rel : relationships)
-				Context.getAdministrationService().updateRelationship(rel);
+			for (Relationship rel : relationships) {
+				if (newRelatives.contains(rel.getPerson()) || 
+						person.equals(rel.getPerson()))
+					Context.getAdministrationService().updateRelationship(rel);
+				else
+					Context.getAdministrationService().deleteRelationship(rel);
+			}
 			
 			
 			if ( patient.getDead() ) {
