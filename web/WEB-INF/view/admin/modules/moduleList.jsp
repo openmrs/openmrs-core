@@ -18,7 +18,6 @@
 		<br/><br/>
 		<input type="submit" value='<spring:message code="Module.add"/>'/>
 	</form>
-	
 </div>
 
 <br/>
@@ -62,7 +61,7 @@
 						<td valign="top">${module.description}</td>
 						<c:choose>
 							<c:when test="${module.startupErrorMessage != null}">
-								<td class="error">${module.startupErrorMessage}</td>
+								<td class="error"><pre style="margin: 0px;">${module.startupErrorMessage}</pre></td>
 							</c:when>
 							<c:otherwise>
 								<td></td>

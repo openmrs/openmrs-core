@@ -49,7 +49,7 @@ public class ModuleFactory {
 	 * @param moduleFile
 	 * @return Module 
 	 */
-	public static Module loadModule(File moduleFile) {
+	public static Module loadModule(File moduleFile) throws ModuleException {
 		
 		Module module = getModuleFromFile(moduleFile);
 		
@@ -64,7 +64,7 @@ public class ModuleFactory {
 	 * Add a module to the list of openmrs modules
 	 * @param module
 	 */
-	public static Module loadModule(Module module) {
+	public static Module loadModule(Module module) throws ModuleException {
 		
 		log.debug("Adding module " + module.getName() + " to the module queue");
 		
@@ -214,7 +214,7 @@ public class ModuleFactory {
 	 * @param moduleFile
 	 * @return module Module
 	 */
-	private static Module getModuleFromFile(File moduleFile) {
+	private static Module getModuleFromFile(File moduleFile) throws ModuleException {
 		
 		Module module = null;
 		try {
@@ -222,6 +222,7 @@ public class ModuleFactory {
 		}
 		catch (ModuleException e) {
 			log.error("Error getting module object from file", e);
+			throw e;
 		}
 		
 		return module;
@@ -296,6 +297,29 @@ public class ModuleFactory {
 					runDiff(module, version, sql);
 				}
 				
+				// effectively mark this module as started successfully
+				getStartedModulesMap().put(module.getModuleId(), module);
+				
+				// save the state of this module for future restarts
+				Context.addProxyPrivilege("");
+				AdministrationService as = Context.getAdministrationService();
+				as.setGlobalProperty(module.getModuleId() + ".started", "true");
+				Context.removeProxyPrivilege("");
+				
+				// (this must be done after putting the module in the started list)
+				// if this module defined any privileges or global properties, make 
+				// sure they are added to the database
+				// (Unfortunately, placing the call here will duplicate work done 
+				//    at initial app startup)
+				if (module.getPrivileges().size() > 0 || module.getGlobalProperties().size() > 0) {
+					log.debug("Updating core dataset");
+					Context.checkCoreDataset(); 
+					// checkCoreDataset() currently doesn't throw an error.  If it did, it needs to be
+					// caught and the module needs to be stopped and given a startup error
+				}
+				
+				// should be near the bottom so the module has all of its stuff
+				// set up for it already.
 				try {
 					module.getActivator().startup();
 				}
@@ -308,28 +332,8 @@ public class ModuleFactory {
 					throw new ModuleException("Error while calling module's Activator.startup() method", e);
 				}
 				
-				// save the state of this module for future restarts
-				Context.addProxyPrivilege("");
-				AdministrationService as = Context.getAdministrationService();
-				as.setGlobalProperty(module.getModuleId() + ".started", "true");
-				Context.removeProxyPrivilege("");
-				
-				// effectively mark this module as started successfully
-				getStartedModulesMap().put(module.getModuleId(), module);
+				// erase any previous startup error
 				module.clearStartupError();
-				
-				// (this must be done after marking the module as started)
-				// if this module defined any privileges or global properties, make 
-				// sure they are added to the database
-				// (Unfortunately, placing the call here will duplicate work done 
-				//    at initial app startup)
-				if (module.getPrivileges().size() > 0 || module.getGlobalProperties().size() > 0) {
-					log.debug("Updating core dataset");
-					Context.checkCoreDataset(); 
-					// checkCoreDataset() currently doesn't throw an error.  If it did, it needs to be
-					// caught and the module needs to be stopped and given a startup error
-					
-				}
 				
 			}
 			catch (Exception e) {
@@ -453,14 +457,14 @@ public class ModuleFactory {
 		
 		if (mod != null) {
 			
+			getStartedModulesMap().remove(mod.getModuleId());
+			
 			if (isShuttingDown == false) {
 				Context.addProxyPrivilege("");
 				AdministrationService as = Context.getAdministrationService();
 				as.setGlobalProperty(mod.getModuleId() + ".started", "false");
 				Context.removeProxyPrivilege("");
 			}
-			
-			getStartedModulesMap().remove(mod.getModuleId());
 			
 			if (getModuleClassLoaderMap().containsKey(mod)) {
 				// remove all advice by this module

@@ -839,7 +839,7 @@ public class HibernateAdministrationDAO implements
 	public void setGlobalProperty(String propertyName, String propertyValue) throws DAOException {
 		if (propertyName != null && propertyName != "") {
 			GlobalProperty p = new GlobalProperty(propertyName, propertyValue);
-			sessionFactory.getCurrentSession().saveOrUpdate(p);
+			sessionFactory.getCurrentSession().merge(p);
 			/*
 			sessionFactory.getCurrentSession().createQuery("update GlobalProperty set propertyValue = :v where property = :n")
 					.setParameter("v", propertyValue)

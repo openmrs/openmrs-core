@@ -79,7 +79,8 @@ public class ModuleListController extends SimpleFormController {
 				catch (ModuleException me) {
 					log.warn("Unable to load and start module", me);
 					error = me.getMessage();
-					
+				}
+				finally {
 					// clean up the module repository folder
 					try {
 						if (inputStream != null)
@@ -88,7 +89,8 @@ public class ModuleListController extends SimpleFormController {
 					catch (IOException io) {
 						log.warn("Unable to close temporary input stream", io);
 					}
-					if (moduleFile != null)
+					
+					if (module == null && moduleFile != null)
 						moduleFile.delete();
 				}
 				
@@ -96,8 +98,6 @@ public class ModuleListController extends SimpleFormController {
 				if (module != null) {
 					ModuleFactory.startModule(module);
 					WebModuleUtil.startModule(module, getServletContext());
-					log.debug("Getting form after reset");
-					Context.getFormService().getForm(6);
 					if (module.isStarted())
 						success = msa.getMessage("Module.loadedAndStarted", new String[] {module.getName()});
 					else
