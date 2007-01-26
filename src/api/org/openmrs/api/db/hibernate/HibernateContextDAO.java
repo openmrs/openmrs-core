@@ -141,7 +141,7 @@ public class HibernateContextDAO implements ContextDAO {
 						+ sessionFactory.hashCode() + ")");
 			Session session = SessionFactoryUtils.getSession(sessionFactory,
 					true);
-			session.setFlushMode(FlushMode.NEVER);
+			session.setFlushMode(FlushMode.MANUAL);
 			TransactionSynchronizationManager.bindResource(sessionFactory,
 					new SessionHolder(session));
 		}

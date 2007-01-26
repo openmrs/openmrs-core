@@ -769,15 +769,15 @@ public class AdministrationServiceImpl implements AdministrationService {
 	}
 	
 	public void createConceptProposal(ConceptProposal cp) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_FORM_ENTRY);
+		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_ADD_CONCEPT_PROPOSAL))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_CONCEPT_PROPOSAL);
 
 		getAdministrationDAO().createConceptProposal(cp);
 	}
 	
 	public void updateConceptProposal(ConceptProposal cp) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_FORM_ENTRY))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_FORM_ENTRY);
+		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_CONCEPT_PROPOSAL))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_CONCEPT_PROPOSAL);
 
 		cp.setChangedBy(Context.getAuthenticatedUser());
 		cp.setDateChanged(new Date());
