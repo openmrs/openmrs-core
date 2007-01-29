@@ -10,6 +10,7 @@ import java.util.Vector;
 
 import org.openmrs.GlobalProperty;
 import org.openmrs.Privilege;
+import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.scheduler.SchedulerConstants;
 
@@ -291,7 +292,7 @@ public class OpenmrsConstants {
 		props.put("mail.password", "test");
 		props.put("mail.default_content_type", "text/plain");
 		
-		props.put("module_repository_folder", "modules");
+		props.put(ModuleConstants.PROPERTY_REPOSITORY_FOLDER, ModuleConstants.PROPERTY_REPOSITORY_FOLDER_DEFAULT);
 		
 		props.put("address.format", "kenya");
 		

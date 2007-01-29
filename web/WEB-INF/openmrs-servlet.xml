@@ -119,6 +119,7 @@
 					<!--<prop key="**/calendar.list">calendarController</prop>-->
 					<prop key="**/dataEntryStats.list">dataEntryStatsController</prop>
 					<prop key="**/module.list">moduleListController</prop>
+					<prop key="**/moduleProperties.form">modulePropertiesFormController</prop>
 					
 					<prop key="**/address.portlet">addressPortletController</prop>
 					<prop key="**/patientPrograms.portlet">patientProgramsPortletController</prop>
@@ -947,6 +948,11 @@
 			<property name="commandName"><value>moduleList</value></property>
 			<property name="formView"><value>/admin/modules/moduleList</value></property>
 			<property name="successView"><value>module.list</value></property>
+		</bean>
+		<bean id="modulePropertiesFormController" class="org.openmrs.module.web.controller.ModulePropertiesFormController">
+			<property name="commandName"><value>moduleProperties</value></property>
+			<property name="formView"><value>/admin/modules/modulePropertiesForm</value></property>
+			<property name="successView"><value>moduleProperties.form</value></property>
 		</bean>
 		
 	<!-- ======================================== -->

@@ -635,7 +635,8 @@ public class Context implements ApplicationContextAware {
 			catch (APIException e) {
 				// pass
 			}
-			dao.shutdown();
+			if (dao != null)
+				dao.shutdown();
 		}
 		catch (Exception e) {
 			log.warn("Error while shutting down context dao", e);

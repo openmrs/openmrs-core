@@ -411,11 +411,7 @@ public class HibernateAdministrationDAO implements
 	 * @see org.openmrs.api.db.AdministrationService#updateRole(org.openmrs.Role)
 	 */
 	public void updateRole(Role role) throws DAOException {
-		if (role.getRole() == null)
-			createRole(role);
-		else {
-			sessionFactory.getCurrentSession().update(role);
-		}
+		sessionFactory.getCurrentSession().saveOrUpdate(role);
 	}	
 	
 	

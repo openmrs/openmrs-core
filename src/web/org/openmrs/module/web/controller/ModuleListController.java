@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +17,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.Module;
+import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleException;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleUtil;
@@ -67,41 +70,47 @@ public class ModuleListController extends SimpleFormController {
 			MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
 			MultipartFile multipartModuleFile = multipartRequest.getFile("moduleFile");
 			if (multipartModuleFile != null && !multipartModuleFile.isEmpty()) {
-				String filename = WebUtil.stripFilename(multipartModuleFile.getOriginalFilename());
-				InputStream inputStream = null;
-				File moduleFile = null;
-				Module module = null;
-				try {
-					inputStream = multipartModuleFile.getInputStream();
-					moduleFile = ModuleUtil.insertModuleFile(inputStream, filename);
-					module = ModuleFactory.loadModule(moduleFile);
+				// double check upload permissions
+				if (!ModuleUtil.allowUpload()) {
+					error = msa.getMessage("Module.disallowUploads", new String[] {ModuleConstants.RUNTIMEPROPERTY_ALLOW_UPLOAD});
 				}
-				catch (ModuleException me) {
-					log.warn("Unable to load and start module", me);
-					error = me.getMessage();
-				}
-				finally {
-					// clean up the module repository folder
+				else {
+					String filename = WebUtil.stripFilename(multipartModuleFile.getOriginalFilename());
+					InputStream inputStream = null;
+					File moduleFile = null;
+					Module module = null;
 					try {
-						if (inputStream != null)
-							inputStream.close();
+						inputStream = multipartModuleFile.getInputStream();
+						moduleFile = ModuleUtil.insertModuleFile(inputStream, filename);
+						module = ModuleFactory.loadModule(moduleFile);
 					}
-					catch (IOException io) {
-						log.warn("Unable to close temporary input stream", io);
+					catch (ModuleException me) {
+						log.warn("Unable to load and start module", me);
+						error = me.getMessage();
+					}
+					finally {
+						// clean up the module repository folder
+						try {
+							if (inputStream != null)
+								inputStream.close();
+						}
+						catch (IOException io) {
+							log.warn("Unable to close temporary input stream", io);
+						}
+						
+						if (module == null && moduleFile != null)
+							moduleFile.delete();
 					}
 					
-					if (module == null && moduleFile != null)
-						moduleFile.delete();
-				}
-				
-				// if we didn't have trouble loading the module, start it
-				if (module != null) {
-					ModuleFactory.startModule(module);
-					WebModuleUtil.startModule(module, getServletContext());
-					if (module.isStarted())
-						success = msa.getMessage("Module.loadedAndStarted", new String[] {module.getName()});
-					else
-						success = msa.getMessage("Module.loaded", new String[] {module.getName()});
+					// if we didn't have trouble loading the module, start it
+					if (module != null) {
+						ModuleFactory.startModule(module);
+						WebModuleUtil.startModule(module, getServletContext());
+						if (module.isStarted())
+							success = msa.getMessage("Module.loadedAndStarted", new String[] {module.getName()});
+						else
+							success = msa.getMessage("Module.loaded", new String[] {module.getName()});
+					}
 				}
 			}
 		}
@@ -168,5 +177,17 @@ public class ModuleListController extends SimpleFormController {
 
 		return modules;
 	}
-
+	
+	@Override
+	protected Map<String, String> referenceData(HttpServletRequest request) throws Exception {
+		
+		Map<String, String> map = new HashMap<String, String>();
+		MessageSourceAccessor msa = getMessageSourceAccessor();
+		
+		map.put("allowUpload", ModuleUtil.allowUpload().toString());
+		map.put("disallowUploads", msa.getMessage("Module.disallowUploads", new String[] {ModuleConstants.RUNTIMEPROPERTY_ALLOW_UPLOAD}));
+		
+		return map;
+	}
+	
 }

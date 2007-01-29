@@ -36,8 +36,21 @@ public class SchedulerUtil {
 	/**
 	 * Shutdown the scheduler service that is statically associated with the Context class.
 	 */
-	public static void shutdown() { 
-		Context.getSchedulerService().shutdown();		
+	public static void shutdown() {
+		SchedulerService service = null;
+		
+		// ignores errors while getting the scheduler service 
+		try {
+			service = Context.getSchedulerService();
+		}
+		catch (Throwable t) {
+			// pass
+		}
+		
+		// doesn't attempt shutdown if there was an error getting the scheduler service
+		if (service != null)
+			service.shutdown();
+		
 	}
 
 }

@@ -12,11 +12,19 @@
 <b class="boxHeader"><spring:message code="Module.add" /></b>
 <div class="box">
 	<form id="moduleAddForm" action="module.list" method="post" enctype="multipart/form-data">
-		<spring:message code="Module.addJar"/> <input type="file" name="moduleFile" size="40"> <br />
+		<spring:message code="Module.addJar"/>: 
+		<input type="file" name="moduleFile" size="40" <c:if test="${allowUpload!='true'}">disabled="disabled"</c:if> /> 
+		<br />
 		<input type="hidden" name="action" value="upload"/>
-		<i class="smallMessage" id="moduleStoredText">(<spring:message code="Module.storedIn"/>: <%= org.openmrs.module.ModuleUtil.getModuleRepository().getAbsolutePath() %>)</i>
-		<br/><br/>
-		<input type="submit" value='<spring:message code="Module.add"/>'/>
+		<br/>
+		<c:choose>
+			<c:when test="${allowUpload == 'true'}">
+				<input type="submit" value='<spring:message code="Module.add"/>'/>
+			</c:when>
+			<c:otherwise>
+				${disallowUploads}
+			</c:otherwise>
+		</c:choose>
 	</form>
 </div>
 
@@ -24,7 +32,7 @@
 
 <c:forEach var="module" items="${moduleList}" varStatus="varStatus">
 	<c:if test="${varStatus.first}">
-		<b class="boxHeader"><spring:message code="Module.title" /></b>
+		<b class="boxHeader"><spring:message code="Module.manage" /></b>
 		<div class="box" id="moduleListing">
 			<table cellpadding="5" cellspacing="0">
 				<thead>
@@ -99,17 +107,22 @@
 
 <br/>
 
-<c:choose>
-	<c:when test="${fn:length(moduleList) == 0}">
-		<i> &nbsp; <spring:message code="Module.noLoadedModules"/></i><br/>
-	</c:when>
-	<ul>
-		<li><i><spring:message code="Module.loadUnload"/></i> <br/>
-	<c:otherwise>
-		<li><i><spring:message code="Module.startStop"/></i> <br/>
-		<li><i><spring:message code="Module.update"/></i> <br/>
-	</c:otherwise>
-	</ul>
-</c:choose>
+<b class="boxHeader"><spring:message code="Module.help" /></b>
+	<div class="box">
+		<c:choose>
+			<c:when test="${fn:length(moduleList) == 0}">
+				<i> &nbsp; <spring:message code="Module.noLoadedModules"/></i><br/>
+			</c:when>
+			<ul>
+				<li><i><spring:message code="Module.help.load"/></i> <br/>
+			<c:otherwise>
+				<li><i><spring:message code="Module.help.unload"/></i> <br/>
+				<li><i><spring:message code="Module.help.startStop"/></i> <br/>
+				<li><i><spring:message code="Module.help.update"/></i> <br/>
+			</c:otherwise>
+			</ul>
+		</c:choose>
+</div>
+
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

@@ -277,6 +277,7 @@
 				<include name="**/*.js"/>
 				<include name="**/*.withjstl"/>
 				<include name="**/*.tag"/>
+				<include name="**/messages*.properties"/>
 			</fileset>			
 		</copy>
 	</target>

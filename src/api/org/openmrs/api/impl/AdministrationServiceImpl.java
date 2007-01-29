@@ -843,10 +843,11 @@ public class AdministrationServiceImpl implements AdministrationService {
 	private void checkPrivileges(Role role) {
 		Collection<Privilege> privileges = role.getPrivileges();
 		
-		for (Privilege p : privileges) {
-			if (!Context.hasPrivilege(p.getPrivilege()))
-				throw new APIAuthenticationException("Privilege required: " + p);
-		}
+		if (privileges != null)
+			for (Privilege p : privileges) {
+				if (!Context.hasPrivilege(p.getPrivilege()))
+					throw new APIAuthenticationException("Privilege required: " + p);
+			}
 	}
 	
 	private void checkLooping(Role role) {

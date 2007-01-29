@@ -160,7 +160,7 @@ public class ModuleUtil {
 	public static File getModuleRepository() {
 		
 		AdministrationService as = Context.getAdministrationService();
-		String folderName = as.getGlobalProperty("module_repository_folder", "modules");
+		String folderName = as.getGlobalProperty(ModuleConstants.PROPERTY_REPOSITORY_FOLDER, ModuleConstants.PROPERTY_REPOSITORY_FOLDER_DEFAULT);
 		
 		String filepath = OpenmrsUtil.getApplicationDataDirectory() + folderName;
 		
@@ -318,7 +318,7 @@ public class ModuleUtil {
 	 * @return String contents of the URL
 	 **/
 	public static String getURL(URL url) {
-		if (!url.toString().endsWith("update.rdf")) {
+		if (!url.toString().endsWith(ModuleConstants.UPDATE_FILE_NAME)) {
 			log.warn("Illegal url: " + url);
 			return "";
 		}
@@ -395,6 +395,18 @@ public class ModuleUtil {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * @return true/false whether the 'allow upload' property has been turned on
+	 */
+	public static Boolean allowUpload() {
+		
+		Properties properties = Context.getRuntimeProperties();
+		String prop = properties.getProperty(ModuleConstants.RUNTIMEPROPERTY_ALLOW_UPLOAD, "false");
+		
+		return "true".equals(prop);
+		
 	}
 	
 }
