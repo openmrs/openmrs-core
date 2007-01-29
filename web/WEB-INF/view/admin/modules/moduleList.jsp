@@ -50,11 +50,11 @@
 									<input type="image" src="${pageContext.request.contextPath}/images/play.gif" name="action" value="start" title="<spring:message code="Module.start"/>" alt="<spring:message code="Module.start"/>" />
 								</c:when>
 								<c:otherwise>
-									<input type="image" src="${pageContext.request.contextPath}/images/stop.gif" name="action" value="stop" title="<spring:message code="Module.stop"/>" alt="<spring:message code="Module.stop"/>" />
+									<input type="image" src="${pageContext.request.contextPath}/images/stop.gif" name="action" value="stop" alt="<spring:message code="Module.stop"/>" />
 								</c:otherwise>
 							</c:choose>
 						</td>
-						<td valign="top"><input type="image" src="${pageContext.request.contextPath}/images/delete.gif" name="action" value="unload" title="<spring:message code="Module.unload"/>" alt="<spring:message code="Module.unload"/>" /></td>
+						<td valign="top"><input type="image" src="${pageContext.request.contextPath}/images/delete.gif" name="action" value="unload" onclick="return confirm('<spring:message code="Module.unloadWarning"/>');" title="<spring:message code="Module.stop"/>" title="<spring:message code="Module.unload"/>" alt="<spring:message code="Module.unload"/>" /></td>
 						<td valign="top">${module.name} <c:if test="${not module.started}"><b id="moduleNotStarted">[<spring:message code="Module.notStarted"/>]</b></c:if></td>
 						<td valign="top">${module.version}</td>
 						<td valign="top">${module.author}</td>
@@ -97,8 +97,19 @@
 	
 </c:forEach>
 
-<c:if test="${fn:length(moduleList) == 0}">
-	<br/><i> &nbsp; <spring:message code="Module.noLoadedModules"/></i>
-</c:if>
+<br/>
+
+<c:choose>
+	<c:when test="${fn:length(moduleList) == 0}">
+		<i> &nbsp; <spring:message code="Module.noLoadedModules"/></i><br/>
+	</c:when>
+	<ul>
+		<li><i><spring:message code="Module.loadUnload"/></i> <br/>
+	<c:otherwise>
+		<li><i><spring:message code="Module.startStop"/></i> <br/>
+		<li><i><spring:message code="Module.update"/></i> <br/>
+	</c:otherwise>
+	</ul>
+</c:choose>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

@@ -99,9 +99,6 @@ public class ModuleFileParser {
 			try {
 				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 				DocumentBuilder db = dbf.newDocumentBuilder();
-				// TODO temporary
-				log.error("DocumentBuilderFactory class: " + dbf.getClass());
-				
 				db.setEntityResolver(new EntityResolver(){
 					public InputSource resolveEntity(String publicId, String systemId) 
 							throws SAXException, IOException {
