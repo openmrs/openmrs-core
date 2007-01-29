@@ -77,7 +77,7 @@
 
 </script>
 
-<h2><spring:message code="Concept.title" /></h2>
+<h2><spring:message code="Concept.view.title" arguments="${concept.name}" /></h2>
 
 <c:if test="${concept.conceptId != null}">
 	<c:if test="${previousConcept != null}"><a href="concept.htm?conceptId=${previousConcept.conceptId}" id="previousConcept" valign="middle"><spring:message code="general.previous"/></a> |</c:if>

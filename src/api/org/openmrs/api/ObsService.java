@@ -177,7 +177,7 @@ public interface ObsService {
 	 * @param concept
 	 * @param sortByValue true/false if sorting by valueNumeric.  If false, will sort by obsDatetime
 	 * 
-	 * @return List<Object[]> [0]=<code>obsDatetime</code>, [1]=<code>valueNumeric</code>s
+	 * @return List<Object[]> [0]=<code>obsId</code>, [1]=<code>obsDatetime</code>, [2]=<code>valueNumeric</code>s
 	 */
 	@Transactional(readOnly = true)
 	public List<Object[]> getNumericAnswersForConcept(Concept answer, Boolean sortByValue);

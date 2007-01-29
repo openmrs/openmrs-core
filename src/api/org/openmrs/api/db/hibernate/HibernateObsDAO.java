@@ -237,7 +237,7 @@ public class HibernateObsDAO implements ObsDAO {
 			sort = "obs.valueNumeric asc";
 		
 		Query query = sessionFactory.getCurrentSession().createQuery(
-				"select obs.obsDatetime, obs.valueNumeric from Obs obs where obs.concept = :c and obs.valueNumeric is not null and obs.voided = false order by " + sort)
+				"select obs.obsId, obs.obsDatetime, obs.valueNumeric from Obs obs where obs.concept = :c and obs.valueNumeric is not null and obs.voided = false order by " + sort)
 				.setParameter("c", answer);
 
 		return query.list();

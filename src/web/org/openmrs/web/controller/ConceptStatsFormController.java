@@ -16,11 +16,13 @@ import org.apache.commons.logging.LogFactory;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.statistics.HistogramDataset;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.openmrs.Concept;
+import org.openmrs.ConceptDatatype;
 import org.openmrs.Obs;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.ObsService;
@@ -77,99 +79,190 @@ public class ConceptStatsFormController extends SimpleFormController {
 		
 		if (conceptId != null) {
 			Concept concept = cs.getConcept(Integer.valueOf(conceptId));
-
+			ObsService obsService = Context.getObsService();
+			
 			if (concept != null) {
 				
 				// previous/next ids for links
 				map.put("previousConcept", cs.getPrevConcept(concept));
 				map.put("nextConcept", cs.getNextConcept(concept));
-
-				ObsService obsService = Context.getObsService();
 				
 				//obs = obsService.getObservations(concept, "valueNumeric, obsId");
 				//obsAnswered = obsService.getObservationsAnsweredByConcept(concept);
 				
-				// Object[obsDatetime, valueNumeric] 
-				List<Object[]> numericAnswers = obsService.getNumericAnswersForConcept(concept, true);
 				
-				if (numericAnswers.size() > 0) {
-					Double min = (Double)numericAnswers.get(0)[1];
-					Double max = (Double)numericAnswers.get(numericAnswers.size()-1)[1];
-					Double median = (Double)numericAnswers.get(numericAnswers.size() / 2)[1];
+				if (ConceptDatatype.NUMERIC.equals(concept.getDatatype().getHl7Abbreviation())) {
+					map.put("displayType", "numeric");
 					
-					Map<Double, Integer> counts = new HashMap<Double, Integer>(); // counts for the histogram
-					Double total = 0.0; // sum of values. used for mean
+					// Object[obsId, obsDatetime, valueNumeric] 
+					List<Object[]> numericAnswers = obsService.getNumericAnswersForConcept(concept, true);
 					
-					// dataset setup for lineChart
-					TimeSeries timeSeries = new TimeSeries(concept.getName().getName(), Day.class);
-					TimeSeriesCollection timeDataset = new TimeSeriesCollection();
-					Calendar calendar = Calendar.getInstance();
-					
-					// array for histogram
-					double[] obsNumerics = new double[(numericAnswers.size())];
-					
-					Integer x = 0;
-					for (Object[] values : numericAnswers) {
-						Date date = (Date)values[0];
-						Double value = (Double)values[1];
+					if (numericAnswers.size() > 0) {
+						Double min = (Double)numericAnswers.get(0)[2];
+						Double max = (Double)numericAnswers.get(numericAnswers.size()-1)[2];
+						Double median = (Double)numericAnswers.get(numericAnswers.size() / 2)[2];
 						
-						// for mean calculation
-						total += value;
+						Map<Double, Integer> counts = new HashMap<Double, Integer>(); // counts for the histogram
+						Double total = 0.0; // sum of values. used for mean
 						
-						// for histogram
-						obsNumerics[x++] = value;
-						Integer count = counts.get(value);
-						counts.put(value, count == null ? 1 : count + 1);
+						// dataset setup for lineChart
+						TimeSeries timeSeries = new TimeSeries(concept.getName().getName(), Day.class);
+						TimeSeriesCollection timeDataset = new TimeSeriesCollection();
+						Calendar calendar = Calendar.getInstance();
 						
-						// for line chart
-						calendar.setTime(date);
-						Day day = new Day(
-							calendar.get(Calendar.DAY_OF_MONTH),
-							calendar.get(Calendar.MONTH)+1,			// January = 0 
-							calendar.get(Calendar.YEAR)
-						);
-						timeSeries.addOrUpdate(day, value);
+						// array for histogram
+						double[] obsNumerics = new double[(numericAnswers.size())];
+						
+						Integer i = 0;
+						for (Object[] values : numericAnswers) {
+							Date date = (Date)values[1];
+							Double value = (Double)values[2];
+							
+							// for mean calculation
+							total += value;
+							
+							// for histogram
+							obsNumerics[i++] = value;
+							Integer count = counts.get(value);
+							counts.put(value, count == null ? 1 : count + 1);
+							
+							// for line chart
+							calendar.setTime(date);
+							Day day = new Day(
+								calendar.get(Calendar.DAY_OF_MONTH),
+								calendar.get(Calendar.MONTH)+1,			// January = 0 
+								calendar.get(Calendar.YEAR) < 1900 ? 1900 : calendar.get(Calendar.YEAR) // jfree chart doesn't like the 19th century
+							);
+							timeSeries.addOrUpdate(day, value);
+						}
+						
+						Double size = new Double(numericAnswers.size());
+						Double mean = total / size;
+						
+						map.put("obsNumerics", numericAnswers);
+						map.put("min", min);
+						map.put("max", max);
+						map.put("mean", mean);
+						map.put("median", median);
+						
+						
+						// create histogram chart
+						HistogramDataset histDataset = new HistogramDataset(); // dataset for histogram
+						histDataset.addSeries(concept.getName().getName(), obsNumerics, counts.size());
+						
+						JFreeChart histogram = ChartFactory.createHistogram(
+								concept.getName().getName(),
+								msa.getMessage("Concept.stats.histogramDomainAxisTitle"),
+								msa.getMessage("Concept.stats.histogramRangeAxisTitle"),
+								histDataset,
+								PlotOrientation.VERTICAL,
+								false, 
+								true, 
+								false
+							);
+						map.put("histogram", histogram);
+						
+						
+						// calculate 98th percentile of the data:
+						Double x = 0.98;
+						Integer xpercentile = (int)(x * size);
+						Object[] upperQuartile = numericAnswers.get(xpercentile);
+						Object[] lowerQuartile = numericAnswers.get((int)(size-xpercentile));
+						Double innerQuartile = (Double)upperQuartile[2] - (Double)lowerQuartile[2];
+						Double innerQuartileLimit = innerQuartile * 1.5; // outliers will be greater than this from the upper/lower quartile
+						Double upperQuartileLimit = (Double)upperQuartile[2] + innerQuartileLimit;
+						Double lowerQuartileLimit = (Double)lowerQuartile[2] - innerQuartileLimit;
+						
+						List<Object[]> outliers = new Vector<Object[]>();
+						
+						// move outliers to the outliers list
+						// removing lower quartile outliers
+						for (i=0; i < size-xpercentile; i++) { 
+							Object[] possibleOutlier = numericAnswers.get(i);
+							if ((Double)(possibleOutlier[2]) >= lowerQuartileLimit)
+								break; // quit if this value is greater than the lower limit
+							outliers.add(possibleOutlier);
+						}
+						
+						// removing upper quartile outliers
+						for (i=size.intValue() - 1; i >= xpercentile; i--) {
+							Object[] possibleOutlier = numericAnswers.get(i);
+							if ((Double)(possibleOutlier[2]) <= upperQuartileLimit)
+								break; // quit if this value is less than the upper limit
+							outliers.add(possibleOutlier);
+						}
+						numericAnswers.removeAll(outliers);
+						
+						double[] obsNumericsOutliers = new double[(numericAnswers.size())];
+						i = 0;
+						counts.clear();
+						for (Object[] values : numericAnswers) {
+							Double value = (Double)values[2];
+							obsNumericsOutliers[i++] = value;
+							Integer count = counts.get(value);
+							counts.put(value, count == null ? 1 : count + 1);
+						}
+						
+						// create outlier histogram chart
+						HistogramDataset outlierHistDataset = new HistogramDataset();
+						outlierHistDataset.addSeries(concept.getName().getName(), obsNumericsOutliers, counts.size());
+						
+						JFreeChart histogramOutliers = ChartFactory.createHistogram(
+								concept.getName().getName(),
+								msa.getMessage("Concept.stats.histogramDomainAxisTitle"),
+								msa.getMessage("Concept.stats.histogramRangeAxisTitle"),
+								outlierHistDataset,
+								PlotOrientation.VERTICAL,
+								false, 
+								true, 
+								false
+							);
+						map.put("histogramOutliers", histogramOutliers);
+						map.put("outliers", outliers);
+						
+						// create line graph chart
+						timeDataset.addSeries(timeSeries);
+						JFreeChart lineChart = ChartFactory.createTimeSeriesChart(
+								concept.getName().getName(),
+								msa.getMessage("Concept.stats.lineChartDomainAxisLabel"),
+								msa.getMessage("Concept.stats.histogramRangeAxisLabel"),
+								timeDataset,
+								false, 
+								true, 
+								false
+							);
+						map.put("timeSeries", lineChart);
+						
 					}
-					
-					Double mean = total / new Double(numericAnswers.size());
-					
-					map.put("obsNumerics", numericAnswers);
-					map.put("min", min);
-					map.put("max", max);
-					map.put("mean", mean);
-					map.put("median", median);
-					
-					// create histogram chart
-					HistogramDataset histDataset = new HistogramDataset(); // dataset for histogram
-					histDataset.addSeries(concept.getName().getName(), obsNumerics, counts.size());
-					
-					JFreeChart histogram = ChartFactory.createHistogram(
-							concept.getName().getName(),
-							msa.getMessage("Concept.stats.histogramDomainAxisTitle"),
-							msa.getMessage("Concept.stats.histogramRangeAxisTitle"),
-							histDataset,
-							PlotOrientation.VERTICAL,
-							false, 
-							true, 
-							false
-						);
-					map.put("histogram", histogram);
-					
-					// create line graph chart
-					timeDataset.addSeries(timeSeries);
-					JFreeChart lineChart = ChartFactory.createTimeSeriesChart(
-							concept.getName().getName(),
-							msa.getMessage("Concept.stats.lineChartDomainAxisLabel"),
-							msa.getMessage("Concept.stats.histogramRangeAxisLabel"),
-							timeDataset,
-							false, 
-							true, 
-							false
-						);
-					map.put("lineChart", lineChart);
+				}
+				else if (ConceptDatatype.BOOLEAN.equals(concept.getDatatype().getHl7Abbreviation())) {
+					// create bar chart for boolean answers
+					map.put("displayType", "boolean");
 					
 				}
-				
+				else if (ConceptDatatype.CODED.equals(concept.getDatatype().getHl7Abbreviation())) {
+					// create pie graph for coded answers
+					map.put("displayType", "coded");
+					
+					List<Obs> obs = obsService.getObservations(concept, null);
+					
+					DefaultPieDataset pieDataset = new DefaultPieDataset();
+					
+					for (Obs o : obs) {
+						Concept value = o.getValueCoded();
+						pieDataset.setValue(value.getName().getName(), value.getConceptId());
+					}
+					
+					JFreeChart pieChart = ChartFactory.createPieChart(
+							concept.getName().getName(),
+							pieDataset,
+							true,
+							true,
+							false
+						);
+					map.put("pieChart", pieChart);
+					
+				}
 			}
 			
 		}

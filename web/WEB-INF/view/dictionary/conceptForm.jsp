@@ -65,7 +65,7 @@
 	}
 </style>
 
-<h2><spring:message code="Concept.title" /></h2>
+<h2><spring:message code="Concept.edit.title" arguments="${concept.name}" /></h2>
 
 <c:if test="${concept.conceptId != null}">
 	<c:if test="${previousConcept != null}"><a href="concept.form?conceptId=${previousConcept.conceptId}"><spring:message code="general.previous"/></a></c:if>

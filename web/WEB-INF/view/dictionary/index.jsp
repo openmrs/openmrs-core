@@ -9,13 +9,14 @@
 
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 
+<%--
 <script type="text/javascript">
 	if (typeof djConfig == "undefined")
 		djConfig = new Object();
 	
-	djConfig["isDebug"] = djConfig["debugAtAllCosts"] = true;
+	//djConfig["isDebug"] = djConfig["debugAtAllCosts"] = true;
 </script>
-
+--%>
 
 <script type="text/javascript">
 	dojo.require("dojo.widget.openmrs.ConceptSearch");
