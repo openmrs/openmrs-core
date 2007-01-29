@@ -175,9 +175,10 @@ dojo.widget.defineWidget(
 
 	search: function(evt, setupOnly) {
 		this.text = this.inputNode.value.toString();
-		this.text = this.text.replace(/^\s+/, '');
-		this.text = this.text.replace(/\s+$/, '');
-		
+		if (this.text) {
+			this.text = this.text.replace(/^\s+/, '');
+			this.text = this.text.replace(/\s+$/, '');
+		}
 		clearTimeout(this.searchTimeout);
 		
 		this.event = dojo.event.browser.fixEvent(evt); //save event for later testing in fillTable
@@ -260,7 +261,7 @@ dojo.widget.defineWidget(
 							this.searchTimeout = setTimeout(callback(this, this.text), this.searchDelay);
 							dojo.debug('findObjects timeout called for other key: ' + this.key);
 						}
-						else if (this.text.length == 0 && this.key == dojo.event.browser.keys.KEY_BACKSPACE) {
+						else if (this.text && this.text.length == 0 && this.key == dojo.event.browser.keys.KEY_BACKSPACE) {
 							this.resetSearch();
 							this.searchCleared();
 						}
@@ -538,13 +539,14 @@ dojo.widget.defineWidget(
 			dojo.event.topic.publish(this.eventNames.fillTable, {"objects": objects} );
 		
 		// If we get only one result and the enter key was pressed jump to that object
-		if (objects.length == 1 && this.event && 
-			(this.key == dojo.event.browser.keys.KEY_ENTER)) { // || this.keyCode == null)) {
+		if (objects.length == 1 && ((this.event && this.key == dojo.event.browser.keys.KEY_ENTER) || 
+			(this.event == null && !(this.key)))) { 
+				//alert("type: " (typeof objects[0]));
 				if (typeof objects[0] == 'string') {
-				// if only one string item returned, its a message
+				// if only one string item returned, it's a message
 					this.hideHighlight();
 				}
-				else if (allowAutoJump()){
+				else if (this.allowAutoJump()){
 					this.objectsFound.push(objects[0]);
 					this.selectObject(1);
 					return;
