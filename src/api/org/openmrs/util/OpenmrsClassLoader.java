@@ -261,7 +261,10 @@ public class OpenmrsClassLoader extends WebappClassLoader {
 	public static URL expandURL(URL result, File folder) {
 		String extForm = result.toExternalForm();
 		// trim out "jar:file:/ and ascii spaces"
-		extForm = extForm.replaceFirst("jar:file:/", "").replaceAll("%20", " ");
+		if (OpenmrsConstants.OPERATING_SYSTEM_FREEBSD.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM))
+			extForm = extForm.replaceFirst("jar:file:", "").replaceAll("%20", " ");
+		else
+			extForm = extForm.replaceFirst("jar:file:/", "").replaceAll("%20", " ");
 		
 		log.debug("url external form: " + extForm);
 		

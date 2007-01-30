@@ -218,7 +218,7 @@ public class OpenmrsConstants {
 		privs.put(PRIV_MANAGE_RELATIONSHIP_TYPES, "Able to add/edit/delete relationship types");
 		privs.put(PRIV_MANAGE_ALERTS, "Able to add/edit/delete user alerts");
 		
-		privs.put(PRIV_VIEW_NAVIGATION_MENU, "Able to view the navigations menu (Home, View Patients, Dictionary, Administration, My Profile)");
+		privs.put(PRIV_VIEW_NAVIGATION_MENU, "Able to view the navigation menu (Home, View Patients, Dictionary, Administration, My Profile)");
 		privs.put(PRIV_VIEW_ADMIN_FUNCTIONS, "Able to view the 'Administration' link in the navigation bar");
 		
 		privs.put(PRIV_DASHBOARD_OVERVIEW, "Able to view the 'Overview' tab on the patient dashboard");
@@ -401,6 +401,6 @@ public class OpenmrsConstants {
 	public static String OPERATING_SYSTEM = System.getProperty(OPERATING_SYSTEM_KEY);
 	public static String OPERATING_SYSTEM_WINDOWS_XP = "Windows XP";
 	public static String OPERATING_SYSTEM_LINUX = "Linux";
-
+	public static String OPERATING_SYSTEM_FREEBSD = "FreeBSD";
 	
 }

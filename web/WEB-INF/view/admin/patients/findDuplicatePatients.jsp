@@ -53,7 +53,7 @@
 	}
 	
 	function showSearch(e) {
-		searchWidget.search(e);
+		searchWidget.findObjects(e);
 	}
 	
 	dojo.addOnLoad( function() {
@@ -72,9 +72,11 @@
 		}
 		
 		var row = searchWidget.headerRow;
-		var td = document.createElement("td");
-		td.innerHTML = "Patient Id";
-		row.insertBefore(td, row.firstChild.nextSibling);
+		var th = document.createElement("th");
+		th.innerHTML = "Patient Id";
+		row.insertBefore(th, row.firstChild.nextSibling);
+		
+		searchWidget.showAddPatientLink = false;
 		
 		searchWidget.getCellFunctions = function() {
 			return [searchWidget.simpleClosure(searchWidget, "getNumber"), 
@@ -89,6 +91,7 @@
 				<c:if test="${showTribe == 'true'}">
 					searchWidget.simpleClosure(searchWidget, "getTribe"),
 				</c:if>
+					searchWidget.simpleClosure(this, "getHealthCenter"),
 					searchWidget.simpleClosure(searchWidget, "getBirthdayEstimated"),
 					searchWidget.simpleClosure(searchWidget, "getBirthday")
 					];

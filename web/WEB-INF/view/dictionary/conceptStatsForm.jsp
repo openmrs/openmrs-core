@@ -121,7 +121,7 @@
 							<table>
 							<c:forEach items="${outliers}" var="outlier">
 								<tr>
-									<td><a target="_edit_obs" href="${pageContext.request.contextPath}/admin/obs/obs.form?obsId=${outlier[0]}">
+									<td><a target="_edit_obs" href="${pageContext.request.contextPath}/admin/observations/obs.form?obsId=${outlier[0]}">
 										<spring:message code="general.edit"/></a>
 									</td>
 									<td><b>${outlier[2]}</b></td>

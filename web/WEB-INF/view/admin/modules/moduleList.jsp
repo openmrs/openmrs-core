@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="Manage Modules" otherwise="/login.htm" redirect="/admin/module/module.list" />
+<openmrs:require privilege="Manage Modules" otherwise="/login.htm" redirect="/admin/modules/module.list" />
 	
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
@@ -105,24 +105,22 @@
 	
 </c:forEach>
 
+<c:if test="${fn:length(moduleList) == 0}">
+	<i> &nbsp; <spring:message code="Module.noLoadedModules"/></i><br/>
+</c:if>
+
 <br/>
 
 <b class="boxHeader"><spring:message code="Module.help" /></b>
-	<div class="box">
-		<c:choose>
-			<c:when test="${fn:length(moduleList) == 0}">
-				<i> &nbsp; <spring:message code="Module.noLoadedModules"/></i><br/>
-			</c:when>
-			<ul>
-				<li><i><spring:message code="Module.help.load"/></i> <br/>
-			<c:otherwise>
-				<li><i><spring:message code="Module.help.unload"/></i> <br/>
-				<li><i><spring:message code="Module.help.startStop"/></i> <br/>
-				<li><i><spring:message code="Module.help.update"/></i> <br/>
-			</c:otherwise>
-			</ul>
-		</c:choose>
+<div class="box">
+	<ul>
+		<li><i><spring:message code="Module.help.load"/></i> <br/>
+		<c:if test="${fn:length(moduleList) > 0}">
+			<li><i><spring:message code="Module.help.unload"/></i> <br/>
+			<li><i><spring:message code="Module.help.startStop"/></i> <br/>
+			<li><i><spring:message code="Module.help.update"/></i> <br/>
+		</c:if>
+	</ul>
 </div>
-
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

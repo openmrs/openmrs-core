@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="View Data Entry Statistics" otherwise="/login.htm" redirect="/admin/maintenace/dataEntryStats.list" />
+<openmrs:require privilege="View Data Entry Statistics" otherwise="/login.htm" redirect="/admin/maintenance/dataEntryStats.list" />
 
 <openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
 <openmrs:htmlInclude file="/scripts/validation.js" />

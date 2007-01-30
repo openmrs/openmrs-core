@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="Manage Global Properties" otherwise="/login.htm" redirect="/admin/maintenace/globalProps.form" />
+<openmrs:require privilege="Manage Global Properties" otherwise="/login.htm" redirect="/admin/maintenance/globalProps.form" />
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 

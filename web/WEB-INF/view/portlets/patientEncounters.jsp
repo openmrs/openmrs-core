@@ -186,15 +186,15 @@ Parameters
 			--%>
 			<c:choose>
 				<c:when test="${viewEncounterWhere == 'newWindow'}">
-					var formWindow = window.open('encounterDisplay.list?encounterId=' + encounterId, '${enc.encounterId}', 'toolbar=no,width=800,height=600,resizable=yes,scrollbars=yes');
+					var formWindow = window.open('${pageContext.request.contextPath}/admin/encounters/encounterDisplay.list?encounterId=' + encounterId, '${enc.encounterId}', 'toolbar=no,width=800,height=600,resizable=yes,scrollbars=yes');
 					formWindow.focus();
 				</c:when>
 				<c:when test="${viewEncounterWhere == 'oneNewWindow'}">
-					var formWindow = window.open('encounterDisplay.list?encounterId=' + encounterId, 'formWindow', 'toolbar=no,width=800,height=600,resizable=yes,scrollbars=yes');
+					var formWindow = window.open('${pageContext.request.contextPath}/admin/encounters/encounterDisplay.list?encounterId=' + encounterId, 'formWindow', 'toolbar=no,width=800,height=600,resizable=yes,scrollbars=yes');
 					formWindow.focus();
 				</c:when>
 				<c:otherwise>
-					window.location = 'encounterDisplay.list?encounterId=' + encounterId;
+					window.location = '${pageContext.request.contextPath}/admin/encounters/encounterDisplay.list?encounterId=' + encounterId;
 				</c:otherwise>
 			</c:choose>
 		}

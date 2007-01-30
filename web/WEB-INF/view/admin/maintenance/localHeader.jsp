@@ -38,7 +38,7 @@
 		</li>
 	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="View Data Entry Statistics">
-		<li <c:if test="<%= request.getRequestURI().contains("dataEntryStats") %>">class="active"</c:if>>
+		<li <c:if test="<%= request.getRequestURI().contains("dataEntryStat") %>">class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/maintenance/dataEntryStats.list">
 				<spring:message code="DataEntryStatistics.title"/>
 			</a>

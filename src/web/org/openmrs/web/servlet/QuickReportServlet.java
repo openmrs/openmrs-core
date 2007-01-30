@@ -280,7 +280,7 @@ public class QuickReportServlet extends HttpServlet {
 			
 			template += "#foreach($o in $observations)\n";
 			template += " <tr>\n";
-			template += "  <td><a href='admin/obs/obs.form?obsId=$!{o.ObsId}'>$!{o.ObsId}</a></td>\n";
+			template += "  <td><a href='admin/observations/obs.form?obsId=$!{o.ObsId}'>$!{o.ObsId}</a></td>\n";
 			template += "  <td><a href='admin/patients/patient.form?patientId=$!{o.Patient.patientId}'>$!{o.Patient.PatientIdentifier}</a></td>\n";
 			template += "  <td><a href='admin/encounters/encounter.form?encounterId=$!{o.Encounter.EncounterId}'>$!{o.Encounter.EncounterId}</a></td>\n";
 			template += "  <td>$!{o.Concept.getName(locale)}</td>\n";

@@ -115,7 +115,7 @@ public class HibernateHL7DAO implements HL7DAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public Collection<HL7InQueue> getHL7InQueues() throws DAOException {
-		return sessionFactory.getCurrentSession().createQuery("from HL7InQueue order by hl7InQueueId")
+		return sessionFactory.getCurrentSession().createQuery("from HL7InQueue order by hL7InQueueId")
 				.list();
 	}
 
