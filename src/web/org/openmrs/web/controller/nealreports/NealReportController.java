@@ -37,6 +37,7 @@ import org.openmrs.RelationshipType;
 import org.openmrs.User;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.PatientSetService;
+import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
 import org.openmrs.reporting.PatientSet;
 import org.springframework.web.servlet.ModelAndView;
@@ -186,9 +187,17 @@ public class NealReportController implements Controller {
 				//log.debug(e.getValue().getDateEnrolled());
 			}
 			ProgramWorkflow wf = Context.getProgramWorkflowService().getWorkflow(hivProgram, "TREATMENT STATUS");
+			log.debug("worlflow is " + wf + " and patientSet is " + ps);
 			Map<Integer, PatientState> states = pss.getCurrentStates(ps, wf);
-			for (Map.Entry<Integer, PatientState> e : states.entrySet()) {
-				patientDataHolder.get(e.getKey()).put(Hiv.TREATMENT_STATUS, e.getValue().getState().getConcept().getName(locale, false).getName());
+			if ( states != null ) {
+				log.debug("about to loop through [" + states.size() + "] statuses");
+				for (Map.Entry<Integer, PatientState> e : states.entrySet()) {
+					patientDataHolder.get(e.getKey()).put(Hiv.TREATMENT_STATUS, e.getValue().getState().getConcept().getName(locale, false).getName());
+					log.debug("Just put state [" + e.getValue().getState().getConcept().getName(locale).getName() + "] in for patient [" + e.getKey() + "]");
+				}
+				
+			} else {
+				log.debug("states is null, can't proceed");
 			}
 		} else {
 			log.debug("Couldn't find HIV PROGRAM");

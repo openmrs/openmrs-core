@@ -175,7 +175,7 @@ public class ProgramWorkflowServiceImpl implements ProgramWorkflowService {
 		if (program.getWorkflows() == null)
 			return null;
 		for (ProgramWorkflow wf : program.getWorkflows())
-			if (wf.getConcept().getName(Context.getUserContext().getLocale(), false).equals(name))
+			if (wf.getConcept().getName(Context.getUserContext().getLocale(), false).getName().equals(name))
 				return wf;
 		return null;
 	}
