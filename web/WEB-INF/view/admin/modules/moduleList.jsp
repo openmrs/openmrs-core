@@ -63,7 +63,7 @@
 							</c:choose>
 						</td>
 						<td valign="top"><input type="image" src="${pageContext.request.contextPath}/images/delete.gif" name="action" value="unload" onclick="return confirm('<spring:message code="Module.unloadWarning"/>');" title="<spring:message code="Module.stop"/>" title="<spring:message code="Module.unload"/>" alt="<spring:message code="Module.unload"/>" /></td>
-						<td valign="top">${module.name} <c:if test="${not module.started}"><b id="moduleNotStarted">[<spring:message code="Module.notStarted"/>]</b></c:if></td>
+						<td valign="top">${module.name} <c:if test="${not module.started}"><b id="moduleNotStarted" style="white-space: nowrap">[<spring:message code="Module.notStarted"/>]</b></c:if></td>
 						<td valign="top">${module.version}</td>
 						<td valign="top">${module.author}</td>
 						<td valign="top">${module.description}</td>

@@ -66,8 +66,6 @@ import org.openmrs.reporting.PatientSet;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.sun.activation.viewers.TextViewer;
-
 public class HibernatePatientSetDAO implements PatientSetDAO {
 
 	protected final Log log = LogFactory.getLog(getClass());
@@ -879,6 +877,9 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			columns = findObsValueColumnName(c);
 			//log.debug("c: " + c.getConceptId() + " attribute: " + attribute);
 		}
+		else if (attribute.equals("valueDatetime")) {
+			// pass -- same column name
+		}
 		else if (attribute.equals("obsDatetime")) {
 			// pass -- same column name
 		}
@@ -968,7 +969,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		else if (abbrev.equals("NM") || abbrev.equals("SN"))
 			columns.add("valueNumeric");
 		else if (abbrev.equals("DT") || abbrev.equals("TM") || abbrev.equals("TS"))
-			columns.add("obsDatetime");
+			columns.add("valueDatetime");
 		else if (abbrev.equals("ST"))
 			columns.add("valueText");
 		

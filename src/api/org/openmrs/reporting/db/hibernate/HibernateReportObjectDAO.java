@@ -75,12 +75,12 @@ public class HibernateReportObjectDAO implements
 	}
 
 	public void updateReportObject(AbstractReportObject reportObj) throws DAOException {
-		if (reportObj.getCreator() == null)
+		if (reportObj.getReportObjectId() == null)
 			createReportObject(reportObj);
 		else {
 			ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper(reportObj);		
 
-			wrappedReportObject = (ReportObjectWrapper)sessionFactory.getCurrentSession().merge(wrappedReportObject);
+			//wrappedReportObject = (ReportObjectWrapper)sessionFactory.getCurrentSession().merge(wrappedReportObject);
 			sessionFactory.getCurrentSession().update(wrappedReportObject);
 		}
 	}
