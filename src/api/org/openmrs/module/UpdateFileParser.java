@@ -9,8 +9,10 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.util.OpenmrsConstants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 /**
@@ -25,6 +27,7 @@ public class UpdateFileParser {
 	
 	private String content;
 	
+	// these properties store the 'best fit' (most recent update that will fit with the current code version)
 	private String moduleId = null;
 	private String currentVersion = null;
 	private String downloadURL = null;
@@ -68,9 +71,34 @@ public class UpdateFileParser {
 			if (!validConfigVersions().contains(configVersion))
 				throw new ModuleException("Invalid configVersion: '" + configVersion + "' found In content: " + content);
 			
-			this.moduleId = getElement(rootNode, configVersion, "moduleId");
-			this.currentVersion = getElement(rootNode, configVersion, "currentVersion");
-			this.downloadURL = getElement(rootNode, configVersion, "downloadURL");
+			if ("1.0".equals(configVersion)) {
+				// the only update in the xml file is the 'best fit'
+				this.moduleId = getElement(rootNode, configVersion, "moduleId");
+				this.currentVersion = getElement(rootNode, configVersion, "currentVersion");
+				this.downloadURL = getElement(rootNode, configVersion, "downloadURL");
+			}
+			else if ("1.1".equals(configVersion)) {
+				
+				this.moduleId = rootNode.getAttribute("moduleId");
+				
+				NodeList nodes = rootNode.getElementsByTagName("update");
+				this.currentVersion = ""; // default to the lowest version possible
+				
+				// loop over all 'update' tags
+				for (Integer i=0; i < nodes.getLength(); i++) {
+					Element currentNode = (Element)nodes.item(i);
+					String currentVersion = getElement(currentNode, configVersion, "currentVersion");
+					// if the currently saved version is less than the current tag
+					if (ModuleUtil.compareVersion(this.currentVersion, currentVersion) < 0) {
+						String requireOpenMRSVersion = getElement(currentNode, configVersion, "requireOpenMRSVersion");
+						// if the openmrs code version is compatible, this node is a winner
+						if (requireOpenMRSVersion == null || ModuleUtil.compareVersion(OpenmrsConstants.OPENMRS_VERSION_SHORT, requireOpenMRSVersion) >= 0) {
+							this.currentVersion = currentVersion;
+							this.downloadURL = getElement(currentNode, configVersion, "downloadURL");
+						}
+					}
+				}
+			}
 		}
 		catch (ModuleException e) {
 			// rethrow the moduleException
@@ -103,6 +131,7 @@ public class UpdateFileParser {
 	private static List<String> validConfigVersions() {
 		List<String> versions = new Vector<String>();
 		versions.add("1.0");
+		versions.add("1.1");
 		return versions;
 	}
 	

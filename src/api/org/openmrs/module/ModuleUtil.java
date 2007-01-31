@@ -136,8 +136,10 @@ public class ModuleUtil {
 			}
 			
 			for (int x = 0; x < versions.size(); x++) {
-				Integer ver = new Integer(versions.get(x).trim());
-				Integer val = new Integer(values.get(x).trim());
+				String verNum = versions.get(x).trim();
+				String valNum = values.get(x).trim();
+				Integer ver = new Integer(verNum == "" ? "0" : verNum);
+				Integer val = new Integer(valNum == "" ? "0" : valNum);
 				
 				int ret = ver.compareTo(val);
 				if (ret != 0)
@@ -389,6 +391,9 @@ public class ModuleUtil {
 						mod.setDownloadURL(null);
 						mod.setUpdateVersion(null);
 					}
+				}
+				catch (ModuleException e) {
+					log.warn("Unable to get updates from update.xml", e);
 				}
 				catch (MalformedURLException e) {
 					log.warn("Unable to form a URL object out of: " + updateURL, e);
