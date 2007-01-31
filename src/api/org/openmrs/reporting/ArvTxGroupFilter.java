@@ -1,6 +1,7 @@
 package org.openmrs.reporting;
 
 import org.openmrs.Concept;
+import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
 
 public class ArvTxGroupFilter extends TextObsPatientFilter {
@@ -12,6 +13,7 @@ public class ArvTxGroupFilter extends TextObsPatientFilter {
 		Concept temp = Context.getConceptService().getConceptByName("ANTIRETROVIRAL TREATMENT GROUP");
 		if (temp != null) {
 			super.setConcept(temp);
+			super.setTimeModifier(PatientSetService.TimeModifier.LAST);
 		} else {
 			throw new RuntimeException("Cannot find concept ANTIRETROVIRAL TREATMENT GROUP");
 		}

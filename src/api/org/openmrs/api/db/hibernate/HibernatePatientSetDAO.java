@@ -1107,19 +1107,33 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public PatientSet getPatientsHavingTextObs(Integer conceptId, String value) throws DAOException {
+	public PatientSet getPatientsHavingTextObs(Integer conceptId, String value, TimeModifier timeModifier) throws DAOException {
 		Query query;
 		StringBuffer sb = new StringBuffer();
-		sb.append("select patient_id from obs o " +
-				"where concept_id = :concept_id ");
+		sb.append("select o.patient_id from obs o ");
+		
+		if ( timeModifier != null ) {
+			if ( timeModifier.equals(TimeModifier.LAST)) {
+				log.debug("timeModifier is NOT NULL, and appears to be LAST, so we'll try to add a subquery");
+				sb.append("inner join (select patient_id, max(obs_datetime) as obs_datetime from obs where ");
+				sb.append("concept_id = :concept_id group by patient_id) sub on o.patient_id = sub.patient_id and o.obs_datetime = sub.obs_datetime ");
+			} else {
+				log.debug("timeModifier is NOT NULL, and appears to not be LAST, so we won't do anything");
+			}
+		} else {
+			log.debug("timeModifier is NULL, skipping to full query");
+		}
+		
+		sb.append("where o.concept_id = :concept_id ");
 		boolean useVal = false;
 		if (value != null) {
-			sb.append("and value_text = :value ");
+			sb.append("and o.value_text = :value ");
 			useVal = true;
 		} else {
-			sb.append("and value_text is not null ");
+			sb.append("and o.value_text is not null ");
 		}
-		sb.append("group by patient_id ");
+		sb.append("group by o.patient_id ");
+				
 		query = sessionFactory.getCurrentSession().createSQLQuery(sb.toString());
 		query.setInteger("concept_id", conceptId);
 		if (useVal) {

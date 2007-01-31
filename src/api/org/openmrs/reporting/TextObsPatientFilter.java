@@ -9,9 +9,10 @@ import org.openmrs.util.OpenmrsConstants;
 
 public class TextObsPatientFilter extends AbstractReportObject implements PatientFilter {
 
-	Concept concept;
-	String value;
-	Boolean suggestFromDatabase = false; // not yet implemented: should we suggest with a (dropdown?) of known values from the database?
+	private Concept concept;
+	private String value;
+	private Boolean suggestFromDatabase = false; // not yet implemented: should we suggest with a (dropdown?) of known values from the database?
+	private PatientSetService.TimeModifier timeModifier;
 	
 	public TextObsPatientFilter(Concept concept, String value) {
 		this.concept = concept;
@@ -31,8 +32,9 @@ public class TextObsPatientFilter extends AbstractReportObject implements Patien
 			TextObsPatientFilter other = (TextObsPatientFilter) o;
 			if (getReportObjectId() != null && getReportObjectId().equals(other.getReportObjectId()))
 				return true;
-			return equals(getConcept(), other.getConcept())
-					&& equals(getValue(), other.getValue());
+			return ( getConcept().equals(other.getConcept())
+					&& getValue().equals(other.getValue())
+					&& getTimeModifier().equals(other.getTimeModifier()) );
 		} else {
 			return false;
 		}
@@ -64,12 +66,12 @@ public class TextObsPatientFilter extends AbstractReportObject implements Patien
 
 	public PatientSet filter(PatientSet input) {
 		PatientSetService service = Context.getPatientSetService();
-		return input.intersect(service.getPatientsHavingTextObs(concept, value));
+		return input.intersect(service.getPatientsHavingTextObs(concept, value, timeModifier));
 	}
 	
 	public PatientSet filterInverse(PatientSet input) {
 		PatientSetService service = Context.getPatientSetService();
-		return input.subtract(service.getPatientsHavingTextObs(concept, value));
+		return input.subtract(service.getPatientsHavingTextObs(concept, value, timeModifier));
 	}
 
 	public String getDescription() {
@@ -86,4 +88,11 @@ public class TextObsPatientFilter extends AbstractReportObject implements Patien
 		return ret.toString();
 	}
 
+	public PatientSetService.TimeModifier getTimeModifier() {
+		return timeModifier;
+	}
+
+	public void setTimeModifier(PatientSetService.TimeModifier timeModifier) {
+		this.timeModifier = timeModifier;
+	}
 }

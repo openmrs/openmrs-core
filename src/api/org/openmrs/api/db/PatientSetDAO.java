@@ -37,7 +37,7 @@ public interface PatientSetDAO {
 	
 	public PatientSet getPatientsHavingObs(Integer conceptId, TimeModifier timeModifier, PatientSetService.Modifier modifier, Object value, Date fromDate, Date toDate) throws DAOException;
 	
-	public PatientSet getPatientsHavingTextObs(Integer conceptId, String value) throws DAOException;
+	public PatientSet getPatientsHavingTextObs(Integer conceptId, String value, TimeModifier timeModifier) throws DAOException;
 	
 	public PatientSet getPatientsHavingLocation(Integer locationId) throws DAOException;
 	

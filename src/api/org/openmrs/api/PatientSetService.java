@@ -66,10 +66,10 @@ public interface PatientSetService {
 	public PatientSet getPatientsHavingDateObs(Integer conceptId, Date startTime, Date endTime);
 	
 	@Transactional(readOnly=true)
-	public PatientSet getPatientsHavingTextObs(Concept concept, String value);
+	public PatientSet getPatientsHavingTextObs(Concept concept, String value, TimeModifier timeModifier);
 
 	@Transactional(readOnly=true)
-	public PatientSet getPatientsHavingTextObs(Integer conceptId, String value);
+	public PatientSet getPatientsHavingTextObs(Integer conceptId, String value, TimeModifier timeModifier);
 
 	@Transactional(readOnly=true)
 	public PatientSet getPatientsHavingLocation(Location loc);

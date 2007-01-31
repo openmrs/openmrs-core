@@ -99,12 +99,12 @@ public class PatientSetServiceImpl implements PatientSetService {
 		return getPatientSetDAO().getPatientsHavingObs(conceptId, timeModifier, modifier, value, fromDate, toDate);
 	}
 	
-	public PatientSet getPatientsHavingTextObs(Concept concept, String value) {
-		return getPatientsHavingTextObs(concept.getConceptId(), value);
+	public PatientSet getPatientsHavingTextObs(Concept concept, String value, TimeModifier timeModifier) {
+		return getPatientsHavingTextObs(concept.getConceptId(), value, timeModifier);
 	}
 	
-	public PatientSet getPatientsHavingTextObs(Integer conceptId, String value) {
-		return getPatientSetDAO().getPatientsHavingTextObs(conceptId, value);
+	public PatientSet getPatientsHavingTextObs(Integer conceptId, String value, TimeModifier timeModifier) {
+		return getPatientSetDAO().getPatientsHavingTextObs(conceptId, value, timeModifier);
 	}
 	
 	public PatientSet getPatientsHavingLocation(Location loc) {
