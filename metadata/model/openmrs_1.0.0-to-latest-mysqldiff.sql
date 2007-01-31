@@ -1618,6 +1618,37 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 delimiter ;
 call diff_procedure('1.0.50');
 
+#--------------------------------------
+# OpenMRS Datamodel version 1.0.51
+# Christian Allen 	Dec 21, 2006 08:38 AM
+# Adding 2 columns ('required' and 'format_description' to patient_identifier_type table
+#--------------------------------------
+
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+	SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+
+#-- START YOUR QUERY(IES) HERE --#
+
+	ALTER TABLE `patient_identifier_type` ADD COLUMN `required` tinyint(1) NOT NULL default '0';
+	ALTER TABLE `patient_identifier_type` ADD COLUMN `format_description` varchar(255) default NULL;
+
+#-- END YOUR QUERY(IES) HERE --#
+
+	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+	
+	END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.0.51');
+
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script
 #-----------------------------------
