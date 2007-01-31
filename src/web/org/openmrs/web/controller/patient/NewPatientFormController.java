@@ -32,7 +32,14 @@ import org.openmrs.Person;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.Tribe;
+import org.openmrs.api.APIException;
+import org.openmrs.api.DuplicateIdentifierException;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.IdentifierNotUniqueException;
+import org.openmrs.api.InsufficientIdentifiersException;
+import org.openmrs.api.InvalidCheckDigitException;
+import org.openmrs.api.InvalidIdentifierFormatException;
+import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
@@ -204,11 +211,12 @@ public class NewPatientFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		
+
 		if (Context.isAuthenticated()) {
 			PatientService ps = Context.getPatientService();
 			ShortPatientModel p = (ShortPatientModel)obj;
 			String view = getSuccessView();
+			boolean isError = false;
 			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			if (request.getParameter("action") != null && request.getParameter("action").equals(msa.getMessage("general.cancel"))) {
@@ -280,152 +288,202 @@ public class NewPatientFormController extends SimpleFormController {
 				patient.setCauseOfDeath(null);
 			}
 			
-			ps.updatePatient(patient);
-			
-			
+			try {
+				ps.updatePatient(patient);
+			} catch ( InvalidIdentifierFormatException iife ) {
+				log.error(iife);
+				patient.setIdentifiers(null);
+				p.setIdentifier(null);
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.formatInvalid");
+				//errors = new BindException(new InvalidIdentifierFormatException(msa.getMessage("PatientIdentifier.error.formatInvalid")), "givenName");
+				isError = true;
+			} catch ( InvalidCheckDigitException icde ) {
+				log.error(icde);
+				patient.setIdentifiers(null);
+				p.setIdentifier(null);
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.checkDigit");
+				//errors = new BindException(new InvalidCheckDigitException(msa.getMessage("PatientIdentifier.error.checkDigit")), "givenName");
+				isError = true;
+			} catch ( IdentifierNotUniqueException inue ) {
+				log.error(inue);
+				patient.setIdentifiers(null);
+				p.setIdentifier(null);
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.notUnique");
+				//errors = new BindException(new IdentifierNotUniqueException(msa.getMessage("PatientIdentifier.error.notUnique")), "givenName");
+				isError = true;
+			} catch ( DuplicateIdentifierException die ) {
+				log.error(die);
+				patient.setIdentifiers(null);
+				p.setIdentifier(null);
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.duplicate");
+				//errors = new BindException(new DuplicateIdentifierException(msa.getMessage("PatientIdentifier.error.duplicate")), "givenName");
+				isError = true;
+			} catch ( InsufficientIdentifiersException iie ) {
+				log.error(iie);
+				patient.setIdentifiers(null);
+				p.setIdentifier(null);
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.insufficientIdentifiers");
+				//errors = new BindException(new InsufficientIdentifiersException(msa.getMessage("PatientIdentifier.error.insufficientIdentifiers")), "givenName");
+				isError = true;
+			} catch ( PatientIdentifierException pie ) {
+				log.error(pie);
+				patient.setIdentifiers(null);
+				p.setIdentifier(null);
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.general");
+				//errors = new BindException(new PatientIdentifierException(msa.getMessage("PatientIdentifier.error.general")), "givenName");
+				isError = true;
+			}
+						
 			// update patient's relationships
-			
-			String[] relatives = request.getParameterValues("relative");
-			String[] types = request.getParameterValues("relationshipType");
-			Person person = Context.getAdministrationService().getPerson(patient);
-			List<Relationship> relationships;
-			List<Person> newRelatives = new Vector<Person>(); //list of all persons specifically selected in the form
-			
-			if (person != null) 
-				relationships = Context.getPatientService().getRelationships(person);
-			else
-				relationships = new Vector<Relationship>();
-			
-			if ( relatives != null ) {
-				for (int x = 0 ; x < relatives.length; x++ ) {
-					String relativeString = relatives[x];
-					String typeString = types[x];
-					
-					if (relativeString != null && relativeString.length() > 0 && typeString != null && typeString.length() > 0) {
-						Patient relativePatient = ps.getPatient(Integer.valueOf(relativeString));
-						RelationshipType type = ps.getRelationshipType(Integer.valueOf(typeString));
+			if ( !isError ) {
+				String[] relatives = request.getParameterValues("relative");
+				String[] types = request.getParameterValues("relationshipType");
+				Person person = Context.getAdministrationService().getPerson(patient);
+				List<Relationship> relationships;
+				List<Person> newRelatives = new Vector<Person>(); //list of all persons specifically selected in the form
+				
+				if (person != null) 
+					relationships = Context.getPatientService().getRelationships(person);
+				else
+					relationships = new Vector<Relationship>();
+				
+				if ( relatives != null ) {
+					for (int x = 0 ; x < relatives.length; x++ ) {
+						String relativeString = relatives[x];
+						String typeString = types[x];
 						
-						Person relative = Context.getAdministrationService().getPerson(relativePatient);
-						newRelatives.add(relative);
-						
-						boolean found = false;
-						// TODO this assumes that a relative can only be related in one way
-						for (Relationship rel : relationships) {
-							//skip the relationships where this patient is the object
-							if (rel.getPerson().equals(person))
-								found = true;
+						if (relativeString != null && relativeString.length() > 0 && typeString != null && typeString.length() > 0) {
+							Patient relativePatient = ps.getPatient(Integer.valueOf(relativeString));
+							RelationshipType type = ps.getRelationshipType(Integer.valueOf(typeString));
 							
-							// just update the type of relationships that have the same relative
-							if (rel.getPerson().equals(relative)) {
-								rel.setRelationship(type);
-								found = true;
+							Person relative = Context.getAdministrationService().getPerson(relativePatient);
+							newRelatives.add(relative);
+							
+							boolean found = false;
+							// TODO this assumes that a relative can only be related in one way
+							for (Relationship rel : relationships) {
+								//skip the relationships where this patient is the object
+								if (rel.getPerson().equals(person))
+									found = true;
+								
+								// just update the type of relationships that have the same relative
+								if (rel.getPerson().equals(relative)) {
+									rel.setRelationship(type);
+									found = true;
+								}
 							}
-						}
-						if (!found) {
-							Relationship r = new Relationship(relative, person, type);
-							relationships.add(r);
+							if (!found) {
+								Relationship r = new Relationship(relative, person, type);
+								relationships.add(r);
+							}
 						}
 					}
+					
+				}
+	
+				for (Relationship rel : relationships) {
+					if (newRelatives.contains(rel.getPerson()) || 
+							person.equals(rel.getPerson()))
+						Context.getAdministrationService().updateRelationship(rel);
+					else
+						Context.getAdministrationService().deleteRelationship(rel);
 				}
 				
-			}
-
-			for (Relationship rel : relationships) {
-				if (newRelatives.contains(rel.getPerson()) || 
-						person.equals(rel.getPerson()))
-					Context.getAdministrationService().updateRelationship(rel);
-				else
-					Context.getAdministrationService().deleteRelationship(rel);
-			}
-			
-			
-			if ( patient.getDead() ) {
-				log.debug("Patient is dead, so let's make sure there's an Obs for it");
-				// need to make sure there is an Obs that represents the patient's cause of death, if applicable
-
-				String codProp = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
-				Concept causeOfDeath = Context.getConceptService().getConceptByIdOrName(codProp);
-
-				if ( causeOfDeath != null ) {
-					Set<Obs> obssDeath = Context.getObsService().getObservations(patient, causeOfDeath);
-					if ( obssDeath != null ) {
-						if ( obssDeath.size() > 1 ) {
-							log.error("Multiple causes of death (" + obssDeath.size() + ")?  Shouldn't be...");
-						} else {
-							Obs obsDeath = null;
-							if ( obssDeath.size() == 1 ) {
-								// already has a cause of death - let's edit it.
-								log.debug("Already has a cause of death, so changing it");
-								
-								obsDeath = obssDeath.iterator().next();
-								
+				
+				if ( patient.getDead() ) {
+					log.debug("Patient is dead, so let's make sure there's an Obs for it");
+					// need to make sure there is an Obs that represents the patient's cause of death, if applicable
+	
+					String codProp = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
+					Concept causeOfDeath = Context.getConceptService().getConceptByIdOrName(codProp);
+	
+					if ( causeOfDeath != null ) {
+						Set<Obs> obssDeath = Context.getObsService().getObservations(patient, causeOfDeath);
+						if ( obssDeath != null ) {
+							if ( obssDeath.size() > 1 ) {
+								log.error("Multiple causes of death (" + obssDeath.size() + ")?  Shouldn't be...");
 							} else {
-								// no cause of death obs yet, so let's make one
-								log.debug("No cause of death yet, let's create one.");
-								
-								obsDeath = new Obs();
-								obsDeath.setPatient(patient);
-								obsDeath.setConcept(causeOfDeath);
-								Location loc = Context.getEncounterService().getLocationByName("Unknown Location");
-								if ( loc == null ) loc = Context.getEncounterService().getLocation(new Integer(1));
-								if ( loc == null ) loc = patient.getHealthCenter();
-								if ( loc != null ) obsDeath.setLocation(loc);
-								else log.error("Could not find a suitable location for which to create this new Obs");
-							}
-							
-							// put the right concept and (maybe) text in this obs
-							Concept currCause = patient.getCauseOfDeath();
-							if ( currCause == null ) {
-								// set to NONE
-								log.debug("Current cause is null, attempting to set to NONE");
-								String noneConcept = Context.getAdministrationService().getGlobalProperty("concept.none");
-								currCause = Context.getConceptService().getConceptByIdOrName(noneConcept);
-							}
-							
-							if ( currCause != null ) {
-								log.debug("Current cause is not null, setting to value_coded");
-								obsDeath.setValueCoded(currCause);
-								
-								Date dateDeath = patient.getDeathDate();
-								if ( dateDeath == null ) dateDeath = new Date();
-								obsDeath.setObsDatetime(dateDeath);
-
-								// check if this is an "other" concept - if so, then we need to add value_text
-								String otherConcept = Context.getAdministrationService().getGlobalProperty("concept.otherNonCoded");
-								Concept conceptOther = Context.getConceptService().getConceptByIdOrName(otherConcept);
-								if ( conceptOther != null ) {
-									if ( conceptOther.equals(currCause) ) {
-										// seems like this is an other concept - let's try to get the "other" field info
-										String otherInfo = ServletRequestUtils.getStringParameter(request, "causeOfDeath_other", "");
-										log.debug("Setting value_text as " + otherInfo);
-										obsDeath.setValueText(otherInfo);
-									} else {
-										log.debug("New concept is NOT the OTHER concept, so setting to blank");
-										obsDeath.setValueText("");
-									}
+								Obs obsDeath = null;
+								if ( obssDeath.size() == 1 ) {
+									// already has a cause of death - let's edit it.
+									log.debug("Already has a cause of death, so changing it");
+									
+									obsDeath = obssDeath.iterator().next();
+									
 								} else {
-									log.debug("Don't seem to know about an OTHER concept, so deleting value_text");
-									obsDeath.setValueText("");
+									// no cause of death obs yet, so let's make one
+									log.debug("No cause of death yet, let's create one.");
+									
+									obsDeath = new Obs();
+									obsDeath.setPatient(patient);
+									obsDeath.setConcept(causeOfDeath);
+									Location loc = Context.getEncounterService().getLocationByName("Unknown Location");
+									if ( loc == null ) loc = Context.getEncounterService().getLocation(new Integer(1));
+									if ( loc == null ) loc = patient.getHealthCenter();
+									if ( loc != null ) obsDeath.setLocation(loc);
+									else log.error("Could not find a suitable location for which to create this new Obs");
 								}
 								
-								Context.getObsService().updateObs(obsDeath);
-							} else {
-								log.debug("Current cause is still null - aborting mission");
+								// put the right concept and (maybe) text in this obs
+								Concept currCause = patient.getCauseOfDeath();
+								if ( currCause == null ) {
+									// set to NONE
+									log.debug("Current cause is null, attempting to set to NONE");
+									String noneConcept = Context.getAdministrationService().getGlobalProperty("concept.none");
+									currCause = Context.getConceptService().getConceptByIdOrName(noneConcept);
+								}
+								
+								if ( currCause != null ) {
+									log.debug("Current cause is not null, setting to value_coded");
+									obsDeath.setValueCoded(currCause);
+									
+									Date dateDeath = patient.getDeathDate();
+									if ( dateDeath == null ) dateDeath = new Date();
+									obsDeath.setObsDatetime(dateDeath);
+	
+									// check if this is an "other" concept - if so, then we need to add value_text
+									String otherConcept = Context.getAdministrationService().getGlobalProperty("concept.otherNonCoded");
+									Concept conceptOther = Context.getConceptService().getConceptByIdOrName(otherConcept);
+									if ( conceptOther != null ) {
+										if ( conceptOther.equals(currCause) ) {
+											// seems like this is an other concept - let's try to get the "other" field info
+											String otherInfo = ServletRequestUtils.getStringParameter(request, "causeOfDeath_other", "");
+											log.debug("Setting value_text as " + otherInfo);
+											obsDeath.setValueText(otherInfo);
+										} else {
+											log.debug("New concept is NOT the OTHER concept, so setting to blank");
+											obsDeath.setValueText("");
+										}
+									} else {
+										log.debug("Don't seem to know about an OTHER concept, so deleting value_text");
+										obsDeath.setValueText("");
+									}
+									
+									Context.getObsService().updateObs(obsDeath);
+								} else {
+									log.debug("Current cause is still null - aborting mission");
+								}
 							}
 						}
+					} else {
+						log.debug("Cause of death is null - should not have gotten here without throwing an error on the form.");
 					}
-				} else {
-					log.debug("Cause of death is null - should not have gotten here without throwing an error on the form.");
+					
 				}
-				
 			}
-
-						
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.saved");
-			return new ModelAndView(new RedirectView(view + "?patientId=" + patient.getPatientId()));
+			
+			if ( isError ) {
+				log.error("REDIRECTING TO " + this.getFormView());
+				
+				return this.showForm(request, response, errors);
+				//return new ModelAndView(new RedirectView(getFormView()));
+			} else {
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.saved");
+				return new ModelAndView(new RedirectView(view + "?patientId=" + patient.getPatientId()));
+			}
+		} else {
+			return new ModelAndView(new RedirectView(getFormView()));
 		}
-		
-		return new ModelAndView(new RedirectView(getFormView()));
 	}
     
 	/**

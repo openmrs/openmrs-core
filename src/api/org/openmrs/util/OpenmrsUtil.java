@@ -125,7 +125,7 @@ public class OpenmrsUtil {
 	 */
 	public static boolean isValidCheckDigit(String id) throws Exception {
 
-		if (!id.matches("^[A-Za-z0-9_]+-[0-9]$")) {
+		if (!id.matches("^[A-Za-z0-9_]+-[0-9A-J]$")) {
 			throw new Exception("Invalid characters and/or id formation");
 		}
 

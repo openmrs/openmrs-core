@@ -29,6 +29,12 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientName;
 import org.openmrs.Tribe;
 import org.openmrs.api.APIException;
+import org.openmrs.api.DuplicateIdentifierException;
+import org.openmrs.api.IdentifierNotUniqueException;
+import org.openmrs.api.InsufficientIdentifiersException;
+import org.openmrs.api.InvalidCheckDigitException;
+import org.openmrs.api.InvalidIdentifierFormatException;
+import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
@@ -252,29 +258,62 @@ public class PatientFormController extends SimpleFormController {
 						}
 					}
 				
+					/*
+					 * 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.formatInvalid");
+					isError = true;
+				} catch ( InvalidCheckDigitException icde ) {
+					log.error(icde);
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.checkDigit");
+					isError = true;
+				} catch ( IdentifierNotUniqueException inue ) {
+					log.error(inue);
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.notUnique");
+					isError = true;
+				} catch ( DuplicateIdentifierException die ) {
+					log.error(die);
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.duplicate");
+					isError = true;
+				} catch ( PatientIdentifierException pie ) {
+					log.error(pie);
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.general");
+
+					 */
+					
 				// check patient identifier checkdigits
 					for (PatientIdentifier pi : patient.getIdentifiers()) {
 						// skip voided identifiers
 						if (pi.isVoided()) continue;
 						PatientIdentifierType pit = pi.getIdentifierType();
 						String identifier = pi.getIdentifier();
-						String[] args = {identifier};
+						String format = pit.getFormat();
+						String formatDescription = pit.getFormatDescription();
+						String formatStr = format;
+						if ( format == null ) formatStr = "";
+						if ( formatDescription != null ) if ( formatDescription.length() > 0 ) formatStr = formatDescription;
+						String[] args = {identifier, formatStr};
 						try {
 							if (pit.hasCheckDigit() && !OpenmrsUtil.isValidCheckDigit(identifier)) {
 								log.error("hasCheckDigit and is not valid: " + pit.getName() + " " + identifier);
 								String msg = getMessageSourceAccessor().getMessage("error.checkdigits.verbose", args);
 								errors.rejectValue("identifiers", msg);
+							} else if ( format != null ) if ( format.length() > 0 && !identifier.matches(format) ) {
+								log.error("Identifier format is not valid: (" + format + ") " + identifier);
+								String msg = getMessageSourceAccessor().getMessage("error.identifier.formatInvalid", args);
+								errors.rejectValue("identifiers", msg);
 							}
-							else if (pit.hasCheckDigit() == false && identifier.contains("-")) {
-								log.error("hasn't CheckDigit and contains '-': " + pit.getName() + " " + identifier);
-								String[] args2 = {"-", identifier}; 
+							// Modified on 17 Jan 2007 by CA - don't think we need this if we can input a regexp for each ID type
+							/*
+							else if (pit.getFormat() != null) if ( pit.getFormat().length() > 0 && !identifier.matches(pit.getFormat()) ){
+								log.error("Identifer has wrong format: " + identifier + " does not match " + pit.getFormat());
+								String[] args2 = {identifier, pit.getFormat()}; 
 								String msg = getMessageSourceAccessor().getMessage("error.character.invalid", args2);
 								errors.rejectValue("identifiers", msg);
 							}
+							*/
 						} catch (Exception e) {
 							log.error("exception thrown with: " + pit.getName() + " " + identifier);
 							log.error("Error while adding patient identifiers to savedIdentifier list", e);
-							String msg = getMessageSourceAccessor().getMessage("error.checkdigits", args);
+							String msg = getMessageSourceAccessor().getMessage("error.identifier.formatInvalid", args);
 							errors.rejectValue("identifiers", msg);
 						}
 					}
@@ -317,10 +356,37 @@ public class PatientFormController extends SimpleFormController {
 			}
 			else {
 				//boolean isNew = (patient.getPatientId() == null);
+				boolean isError = false;
 				
-				Context.getPatientService().updatePatient(patient);
-
-				if ( patient.getDead() ) {
+				try {
+					Context.getPatientService().updatePatient(patient);	
+				} catch ( InvalidIdentifierFormatException iife ) {
+					log.error(iife);
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.formatInvalid");
+					isError = true;
+				} catch ( InvalidCheckDigitException icde ) {
+					log.error(icde);
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.checkDigit");
+					isError = true;
+				} catch ( IdentifierNotUniqueException inue ) {
+					log.error(inue);
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.notUnique");
+					isError = true;
+				} catch ( DuplicateIdentifierException die ) {
+					log.error(die);
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.duplicate");
+					isError = true;
+				} catch ( InsufficientIdentifiersException iie ) {
+					log.error(iie);
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.insufficientIdentifiers");
+					isError = true;
+				} catch ( PatientIdentifierException pie ) {
+					log.error(pie);
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.general");
+					isError = true;
+				}
+				
+				if ( patient.getDead() && !isError ) {
 					log.debug("Patient is dead, so let's make sure there's an Obs for it");
 					// need to make sure there is an Obs that represents the patient's cause of death, if applicable
 
@@ -401,95 +467,16 @@ public class PatientFormController extends SimpleFormController {
 					
 				}
 								
-				Context.getPatientService().updatePatient(patient);
-
-				if ( patient.getDead() ) {
-					log.debug("Patient is dead, so let's make sure there's an Obs for it");
-					// need to make sure there is an Obs that represents the patient's cause of death, if applicable
-
-					String codProp = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
-					Concept causeOfDeath = Context.getConceptService().getConceptByIdOrName(codProp);
-
-					if ( causeOfDeath != null ) {
-						Set<Obs> obssDeath = Context.getObsService().getObservations(patient, causeOfDeath);
-						if ( obssDeath != null ) {
-							if ( obssDeath.size() > 1 ) {
-								log.error("Multiple causes of death (" + obssDeath.size() + ")?  Shouldn't be...");
-							} else {
-								Obs obsDeath = null;
-								if ( obssDeath.size() == 1 ) {
-									// already has a cause of death - let's edit it.
-									log.debug("Already has a cause of death, so changing it");
-									
-									obsDeath = obssDeath.iterator().next();
-									
-								} else {
-									// no cause of death obs yet, so let's make one
-									log.debug("No cause of death yet, let's create one.");
-									
-									obsDeath = new Obs();
-									obsDeath.setPatient(patient);
-									obsDeath.setConcept(causeOfDeath);
-									Location loc = Context.getEncounterService().getLocationByName("Unknown Location");
-									if ( loc == null ) loc = Context.getEncounterService().getLocation(new Integer(1));
-									if ( loc == null ) loc = patient.getHealthCenter();
-									if ( loc != null ) obsDeath.setLocation(loc);
-									else log.error("Could not find a suitable location for which to create this new Obs");
-								}
-								
-								// put the right concept and (maybe) text in this obs
-								Concept currCause = patient.getCauseOfDeath();
-								if ( currCause == null ) {
-									// set to NONE
-									log.debug("Current cause is null, attempting to set to NONE");
-									String noneConcept = Context.getAdministrationService().getGlobalProperty("concept.none");
-									currCause = Context.getConceptService().getConceptByIdOrName(noneConcept);
-								}
-								
-								if ( currCause != null ) {
-									log.debug("Current cause is not null, setting to value_coded");
-									obsDeath.setValueCoded(currCause);
-									
-									Date dateDeath = patient.getDeathDate();
-									if ( dateDeath == null ) dateDeath = new Date();
-									obsDeath.setObsDatetime(dateDeath);
-
-									// check if this is an "other" concept - if so, then we need to add value_text
-									String otherConcept = Context.getAdministrationService().getGlobalProperty("concept.otherNonCoded");
-									Concept conceptOther = Context.getConceptService().getConceptByIdOrName(otherConcept);
-									if ( conceptOther != null ) {
-										if ( conceptOther.equals(currCause) ) {
-											// seems like this is an other concept - let's try to get the "other" field info
-											String otherInfo = ServletRequestUtils.getStringParameter(request, "causeOfDeath_other", "");
-											log.debug("Setting value_text as " + otherInfo);
-											obsDeath.setValueText(otherInfo);
-										} else {
-											log.debug("New concept is NOT the OTHER concept, so setting to blank");
-											obsDeath.setValueText("");
-										}
-									} else {
-										log.debug("Don't seem to know about an OTHER concept, so deleting value_text");
-										obsDeath.setValueText("");
-									}
-									
-									Context.getObsService().updateObs(obsDeath);
-								} else {
-									log.debug("Current cause is still null - aborting mission");
-								}
-							}
-						}
-					} else {
-						log.debug("Cause of death is null - should not have gotten here without throwing an error on the form.");
-					}
+				if ( !isError ) {
+					String view = getSuccessView();
 					
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.saved");
+					
+					view = view + "?patientId=" + patient.getPatientId();
+					return new ModelAndView(new RedirectView(view));
+				} else {
+					return new ModelAndView(new RedirectView(getFormView()));
 				}
-								
-				String view = getSuccessView();
-							
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.saved");
-				
-				view = view + "?patientId=" + patient.getPatientId();
-				return new ModelAndView(new RedirectView(view));
 			}
 		}
 		return new ModelAndView(new RedirectView(getFormView()));

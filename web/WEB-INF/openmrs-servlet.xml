@@ -132,7 +132,6 @@
 					<prop key="admin/maintenance/dataEntryStats.list">dataEntryStatsController</prop>
 					<prop key="admin/modules/module.list">moduleListController</prop>
 					<prop key="admin/modules/moduleProperties.form">modulePropertiesFormController</prop>
-					
 					<prop key="**/address.portlet">addressPortletController</prop>
 					<prop key="**/patientPrograms.portlet">patientProgramsPortletController</prop>
 					<prop key="**/patientSet.portlet">patientSetPortletController</prop>
@@ -719,6 +718,9 @@
 					<value>nealreport.form:nealreport.PmtctReport.name:reportType=PMTCT Report</value>
 					<value>nealreport.form:nealreport.PedReport.name:reportType=Ped Report</value>
 					<value>nealreport.form:nealreport.LongReport.name:reportType=Long Report</value>
+					<value>nealreport.form:nealreport.TracReport.name:reportType=TRAC Report</value>
+					<value>nealreport.form:nealreport.ExceptionReport.name:reportType=Exception Report</value>
+					<value>nealreport.form:nealreport.LostReport.name:reportType=Lost Report</value>
 					<value>nealreport.form:nealreport.DataDumpReport.name:reportType=Data Dump</value>
 				</list>
 			</property>
@@ -744,6 +746,7 @@
 						<value>nealreport.form:nealreport.ConsultReport.name:reportType=Consult Report</value>
 						<value>nealreport.form:nealreport.IncentiveReport.name:reportType=Incentive Report</value>
 						<value>nealreport.form:nealreport.ShortReport.name:reportType=Short Report</value>
+						<value>nealreport.form:nealreport.LongReport.name:reportType=Long Report</value>
 						<value>nealreport.form:nealreport.TbReport.name:reportType=TB Report</value>
 						<value>nealreport.form:nealreport.Cd4Report.name:reportType=CD4 Report</value>
 						<value>nealreport.form:nealreport.DeclineReport.name:reportType=Decline Report</value>
@@ -751,7 +754,9 @@
 						<value>nealreport.form:nealreport.AlertReport.name:reportType=Alert Report</value>
 						<value>nealreport.form:nealreport.PmtctReport.name:reportType=PMTCT Report</value>
 						<value>nealreport.form:nealreport.PedReport.name:reportType=Ped Report</value>
-						<value>nealreport.form:nealreport.LongReport.name:reportType=Long Report</value>
+						<value>nealreport.form:nealreport.TracReport.name:reportType=TRAC Report</value>
+						<value>nealreport.form:nealreport.ExceptionReport.name:reportType=Exception Report</value>
+						<value>nealreport.form:nealreport.LostReport.name:reportType=Lost Report</value>
 						<value>nealreport.form:nealreport.DataDumpReport.name:reportType=Data Dump</value>
 					</list>
 				</property>
