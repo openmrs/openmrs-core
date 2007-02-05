@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,6 +24,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
+import org.openmrs.Encounter;
+import org.openmrs.EncounterType;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
@@ -37,16 +40,19 @@ import org.openmrs.RelationshipType;
 import org.openmrs.User;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.PatientSetService;
-import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
 import org.openmrs.reporting.PatientSet;
+import org.openmrs.util.OpenmrsConstants;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.view.AbstractView;
 
 import reports.ReportMaker;
+import reports.RwandaReportMaker;
 import reports.keys.General;
 import reports.keys.Hiv;
+import reports.keys.Report;
 import reports.keys.TB;
 
 public class NealReportController implements Controller {
@@ -56,9 +62,59 @@ public class NealReportController implements Controller {
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String reportType = request.getParameter("reportType");
 		
-		ReportMaker maker = new ReportMaker();
-		maker.setParameter("report_type", reportType);
+		String fDate = ServletRequestUtils.getStringParameter(request, "fDate", "");
+		String tDate = ServletRequestUtils.getStringParameter(request, "tDate", "");
 		
+		String datePattern = OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase());
+
+		SimpleDateFormat sdfEntered = new SimpleDateFormat(datePattern);
+		SimpleDateFormat sdfExpected = new SimpleDateFormat("yyyy-MM-dd");
+
+		Date fromDate = null;
+		Date toDate = null;
+		
+		if ( fDate.length() > 0 ) {
+			try {
+				fromDate = sdfEntered.parse(fDate);
+			} catch (ParseException e) {
+				fromDate = null;
+			}
+		}
+
+		if ( tDate.length() > 0 ) {
+			try {
+				toDate = sdfEntered.parse(tDate);
+			} catch (ParseException e) {
+				toDate = null;
+			}
+		}
+
+		String programName = Context.getAdministrationService().getGlobalProperty("reporting.programName");
+		if ( programName == null ) programName = "rwanda";
+		if ( programName.length() == 0 ) programName = "rwanda";
+		
+		Map reportConfig = new HashMap();
+		reportConfig.put("program", programName);
+		
+		if ( fromDate != null ) {
+			String from = sdfExpected.format(fromDate);
+			log.debug("Adding fromDate of " + from + " to NEALREPORT");
+			reportConfig.put(Report.START_REPORT_PERIOD, from);
+		} else {
+			log.debug("NO FROMDATE TO ADD");
+		}
+
+		if ( toDate != null ) {
+			String to = sdfExpected.format(toDate);
+			log.debug("Adding toDate of " + to + " to NEALREPORT");
+			reportConfig.put(Report.END_REPORT_PERIOD, to);
+		} else {
+			log.debug("NO TO TO ADD");
+		}
+
+		RwandaReportMaker maker = (RwandaReportMaker)ReportMaker.configureReport(reportConfig);
+		maker.setParameter("report_type", reportType);
+				
 		Locale locale = Context.getLocale();
 		ConceptService cs = Context.getConceptService();
 		PatientSetService pss = Context.getPatientSetService();
@@ -70,7 +126,7 @@ public class NealReportController implements Controller {
 		} else {
 			ps = pss.getAllPatients();
 		}
-		
+				
 		Map<Integer, Map<String, String>> patientDataHolder = new HashMap<Integer, Map<String, String>>();
 		
 		List<String> attributesToGet = new ArrayList<String>();
@@ -81,6 +137,11 @@ public class NealReportController implements Controller {
 		attributeHelper(attributesToGet, attributeNamesForReportMaker, "Patient.birthdate", General.BIRTHDAY);
 		attributeHelper(attributesToGet, attributeNamesForReportMaker, "Patient.gender", General.SEX);
 		attributeHelper(attributesToGet, attributeNamesForReportMaker, "Patient.healthCenter", General.SITE);
+		attributeHelper(attributesToGet, attributeNamesForReportMaker, "PatientAddress.stateProvince", General.PROVINCE);
+		attributeHelper(attributesToGet, attributeNamesForReportMaker, "PatientAddress.countyDistrict", General.DISTRICT);
+		attributeHelper(attributesToGet, attributeNamesForReportMaker, "PatientAddress.cityVillage", General.SECTOR);
+		attributeHelper(attributesToGet, attributeNamesForReportMaker, "PatientAddress.neighborhoodCell", General.CELL);
+		attributeHelper(attributesToGet, attributeNamesForReportMaker, "PatientAddress.address1", General.UMUDUGUDU);
 		
 		// General.SITE (currently using most recent encounter location)
 		// General.ADDRESS
@@ -91,8 +152,6 @@ public class NealReportController implements Controller {
 		// General.PREGNANT_P
 		// General.PMTCT (get meds for ptme? ask CA)
 		// General.FORMER_GROUP (previous ARV group)
-
-		
 		
 		List<Concept> conceptsToGet = new ArrayList<Concept>();
 		Map<Concept, String> namesForReportMaker = new HashMap<Concept, String>();
@@ -103,9 +162,12 @@ public class NealReportController implements Controller {
 		List<Concept> dynamicConceptsToGet = new ArrayList<Concept>();
 		Map<Concept, String> obsTypesForDynamicConcepts = new HashMap<Concept, String>();
 		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "WEIGHT (KG)", "weight");
-		//dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "HEIGHT (CM)", "height");
+		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "HEIGHT (CM)", "height");
 		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "CD4 COUNT", Hiv.CD4COUNT);
-		//dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "CD4%", Hiv.CD4PERCENT);
+		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "CD4%", Hiv.CD4PERCENT);
+		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "ANTIRETROVIRAL TREATMENT GROUP", Hiv.TREATMENT_GROUP);
+		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "TUBERCULOSIS TREATMENT GROUP", TB.TB_GROUP);
+		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "CURRENT WHO HIV STAGE", Hiv.WHO_STAGE);
 		
 		long l = System.currentTimeMillis();
 
@@ -127,13 +189,17 @@ public class NealReportController implements Controller {
 					} else {
 						valToUse = obj.toString();
 					}
+					
+					log.debug("Putting [" + nameToUse + "][" + valToUse + "] in report");
+					
 					holder.put(nameToUse, valToUse);
+				} else {
+					log.debug("No value for " + nameToUse);
 				}
 			}
 		}
 		
 		// modified by CA on 5 Dec 2006
-		// getting General.USER_ID - the old TRACIDs that were entered.  This can be removed later, we are using now
 		// to do a data dump so that we can fill in missing IMB IDs
 		List<Patient> patients = ps.getPatients();
 		for ( Patient p : patients ) {
@@ -339,6 +405,32 @@ public class NealReportController implements Controller {
 		log.debug("Pulled dynamicConceptsToGet in " + (System.currentTimeMillis() - l) + " ms");
 		l = System.currentTimeMillis();
 		
+		//List<Encounter> encounterList = Context.getPatientSetService().getEncounters(patients);
+		
+		for (Concept c : dynamicConceptsToGet) {
+			long l1 = System.currentTimeMillis();
+			String typeToUse = obsTypesForDynamicConcepts.get(c);
+			Map<Integer, List<Obs>> temp = pss.getObservations(ps, c);
+			long l2 = System.currentTimeMillis();
+			for (Map.Entry<Integer, List<Obs>> e : temp.entrySet()) {
+				Integer ptId = e.getKey();
+				List<Obs> obs = e.getValue();
+				for (Obs o : obs) {
+					Map<String, String> holder = new HashMap<String, String>();
+					holder.put(General.ID, ptId.toString());
+					holder.put(Hiv.OBS_DATE, formatDate(o.getObsDatetime()));
+					holder.put(Hiv.RESULT, o.getValueAsString(locale));
+					holder.put(Hiv.OBS_TYPE, typeToUse);
+					maker.addDynamic(holder);
+				}
+			}
+			long l3 = System.currentTimeMillis();
+			log.debug("\t" + typeToUse + " " + c + " step 1: " + (l2 - l1) + " ms. step 2: " + (l3 - l2) + " ms.");
+		}
+		
+		log.debug("Pulled dynamicConceptsToGet in " + (System.currentTimeMillis() - l) + " ms");
+		l = System.currentTimeMillis();
+
 		/*
 		// hack for demo in capetown using Kenya data
 		{

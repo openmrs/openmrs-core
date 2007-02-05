@@ -228,7 +228,6 @@ public class FieldGenTag extends TagSupport {
 		}
 		*/
 
-
 		resetValues();
 		
 		return SKIP_BODY;

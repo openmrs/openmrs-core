@@ -66,11 +66,26 @@
 <script language="JavaScript">
 	var patientIds = null; // a comma-separated list of patientIds, set from the included portlet once it's loaded
 	function submitHelper(idPrefix) {
+	
+		var fromDate = document.getElementById("nrFromDate");
+		var toDate = document.getElementById("nrToDate");
+		var fDate = "";
+		var tDate = "";
+		
+		if ( fromDate ) fDate = fromDate.value;
+		if ( toDate ) tDate = toDate.value;
+		
+		//alert( "getting [" + fDate + "] [" + tDate + "]" );
+		
 		if (patientIds != null) {
 			document.getElementById(idPrefix + "_ptIds").value = patientIds;
+			document.getElementById(idPrefix + "_fDate").value = fDate;
+			document.getElementById(idPrefix + "_tDate").value = tDate;
 			document.getElementById(idPrefix + "_form").submit();
 		} else if (document.getElementById("hiddenPatientIds")) {
 			document.getElementById(idPrefix + "_ptIds").value = document.getElementById("hiddenPatientIds").value;
+			document.getElementById(idPrefix + "_fDate").value = fDate;
+			document.getElementById(idPrefix + "_tDate").value = tDate;
 			document.getElementById(idPrefix + "_form").submit();
 		} else {
 			window.alert("<spring:message code="PatientSet.stillLoading"/>");
@@ -81,9 +96,11 @@
 <div id="contentBox">
 
 <c:if test="${fn:length(model.links) > 0}">
-	<span style="position: relative" onMouseOver="javascript:showLayer('_linkMenu')" onMouseOut="javascript:hideLayer('_linkMenu')">
+	<span style="position: relative" onMouseOver="javascript:showLayer('_linkMenu')">
 		<a class="analysisShortcutBarButton"><spring:message code="Analysis.linkButton"/></a>
 		<div id="_linkMenu" class="analysisShortcutMenu" style="display: none">
+			<br />
+			&nbsp;&nbsp;&nbsp;<span style="width: 200px; text-align: right;"><a href="#" onClick="javascript:hideLayer('_linkMenu');" >[Close]</a></span>
 			<ul>
 				<c:forEach var="item" items="${model.links}" varStatus="loopStatus">
 					<li>
@@ -92,6 +109,8 @@
 							<c:forEach var="arg" items="${item.arguments}">
 								<input type="hidden" name="${arg.name}" value="${arg.value}"/>
 							</c:forEach>
+							<input type="hidden" name="fDate" id="link_${loopStatus.index}_fDate" value="" />
+							<input type="hidden" name="tDate" id="link_${loopStatus.index}_tDate" value="" />
 							<a href="javascript:submitHelper('link_${loopStatus.index}')">
 								<spring:message code="${item.label}"/>
 							</a>
@@ -99,6 +118,18 @@
 					</li>
 				</c:forEach>
 			</ul>
+			&nbsp;&nbsp;<spring:message code="general.dateConstraints" /> (<spring:message code="general.optional" />):<br />
+			<table style="padding-left: 15px;">
+				<tr>
+					<td><spring:message code="general.fromDate" />:</td>
+					<td><openmrs:fieldGen type="java.util.Date" formFieldName="nrFromDate" val="" /></td>
+				</tr>
+				<tr>
+					<td><spring:message code="general.toDate" />:</td>
+					<td><openmrs:fieldGen type="java.util.Date" formFieldName="nrToDate" val="" /></td>
+				</tr>
+			</table>
+			<br />
 		</div>
 	</span>
 </c:if>
