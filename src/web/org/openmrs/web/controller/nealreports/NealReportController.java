@@ -307,6 +307,7 @@ public class NealReportController implements Controller {
 		// "strength_unit" == unit for strength, e.g, "tab"
 		// "strength_dose" == amount given per time
 		{
+			// ARV REGIMENS
 			Map<Integer, List<DrugOrder>> regimens = pss.getDrugOrders(ps, Context.getConceptService().getConceptByName("ANTIRETROVIRAL DRUGS"));
 			for (Map.Entry<Integer, List<DrugOrder>> e : regimens.entrySet()) {
 				Date earliestStart = null;
@@ -351,6 +352,7 @@ public class NealReportController implements Controller {
 		// "strength_unit" == unit for strength, e.g, "tab"
 		// "strength_dose" == amount given per time
 		{
+			// TB REGIMENS
 			Map<Integer, List<DrugOrder>> regimens = pss.getDrugOrders(ps, Context.getConceptService().getConceptByName("TUBERCULOSIS TREATMENT DRUGS"));
 			for (Map.Entry<Integer, List<DrugOrder>> e : regimens.entrySet()) {
 				Date earliestStart = null;
@@ -395,6 +397,7 @@ public class NealReportController implements Controller {
 					holder.put(Hiv.OBS_DATE, formatDate(o.getObsDatetime()));
 					holder.put(Hiv.RESULT, o.getValueAsString(locale));
 					holder.put(Hiv.OBS_TYPE, typeToUse);
+					holder.put("cdt", formatDate(o.getDateCreated()));
 					maker.addDynamic(holder);
 				}
 			}
@@ -405,32 +408,18 @@ public class NealReportController implements Controller {
 		log.debug("Pulled dynamicConceptsToGet in " + (System.currentTimeMillis() - l) + " ms");
 		l = System.currentTimeMillis();
 		
-		//List<Encounter> encounterList = Context.getPatientSetService().getEncounters(patients);
+		Map<Integer, Encounter> encounterList = Context.getPatientSetService().getEncounters(ps);
 		
-		for (Concept c : dynamicConceptsToGet) {
-			long l1 = System.currentTimeMillis();
-			String typeToUse = obsTypesForDynamicConcepts.get(c);
-			Map<Integer, List<Obs>> temp = pss.getObservations(ps, c);
-			long l2 = System.currentTimeMillis();
-			for (Map.Entry<Integer, List<Obs>> e : temp.entrySet()) {
-				Integer ptId = e.getKey();
-				List<Obs> obs = e.getValue();
-				for (Obs o : obs) {
-					Map<String, String> holder = new HashMap<String, String>();
-					holder.put(General.ID, ptId.toString());
-					holder.put(Hiv.OBS_DATE, formatDate(o.getObsDatetime()));
-					holder.put(Hiv.RESULT, o.getValueAsString(locale));
-					holder.put(Hiv.OBS_TYPE, typeToUse);
-					maker.addDynamic(holder);
-				}
-			}
-			long l3 = System.currentTimeMillis();
-			log.debug("\t" + typeToUse + " " + c + " step 1: " + (l2 - l1) + " ms. step 2: " + (l3 - l2) + " ms.");
+		for (Map.Entry<Integer, Encounter> e : encounterList.entrySet()) {
+			Map<String, String> holder = new HashMap<String, String>();
+			holder.put(General.ID, e.getKey().toString());
+			holder.put(Hiv.OBS_TYPE, "encounter");
+			holder.put(Hiv.OBS_DATE, formatDate(e.getValue().getEncounterDatetime()));
+			holder.put(Hiv.RESULT, e.getValue().getEncounterType().getName());
+			maker.addDynamic(holder);
+			log.debug("Encounters added " + holder);
 		}
 		
-		log.debug("Pulled dynamicConceptsToGet in " + (System.currentTimeMillis() - l) + " ms");
-		l = System.currentTimeMillis();
-
 		/*
 		// hack for demo in capetown using Kenya data
 		{

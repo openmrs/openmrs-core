@@ -128,6 +128,9 @@ public interface PatientSetService {
 			EncounterType encType);
 
 	@Transactional(readOnly=true)
+	public Map<Integer, Encounter> getEncounters(PatientSet patients);
+	
+	@Transactional(readOnly=true)
 	public Map<Integer, Encounter> getFirstEncountersByType(
 			PatientSet patients, EncounterType encType);
 
@@ -231,5 +234,4 @@ public interface PatientSetService {
 		ANY,
 		NONE;
 	}
-
 }
