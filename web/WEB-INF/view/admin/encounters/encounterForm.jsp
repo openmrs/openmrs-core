@@ -185,6 +185,13 @@
 
 <style>
 	#table th { text-align: left; }
+	td.fieldNumber { 
+		width: 5px;
+		white-space: nowrap;
+	}
+	td.obsGroupMember {
+		padding-left: 5px;
+	}
 </style>
 
 <h2><spring:message code="Encounter.manage.title"/></h2>
@@ -341,32 +348,65 @@
 	</div>
 	<div class="box">
 	<table cellspacing="0" cellpadding="2" width="98%" id="obs">
-				<tr>
-			<th></th>
+		<tr>
+			<th class="fieldNumber"></th>
 			<th><spring:message code="Obs.concept"/></th>
 			<th><spring:message code="Obs.value"/></th>
 			<th></th>
 			<th><spring:message code="Obs.creator.or.changedBy"/></th>
 		</tr>
 		<c:forEach items="${observations}" var="obs" varStatus="status">
-			<% pageContext.setAttribute("field", ((java.util.Map)request.getAttribute("obsMap")).get(pageContext.getAttribute("obs"))); %>
-			<tr class="<c:if test="${obs.voided}">voided </c:if><c:choose><c:when test="${count % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>" onmouseover="mouseover(this)" onmouseout="mouseout(this)" onclick="click('${obs.obsId}')">
-				<td>${field.fieldNumber}<c:if test="${field.fieldPart != null && field.fieldPart != ''}">.${field.fieldPart}</c:if></td>
-				<td><a href="${pageContext.request.contextPath}/admin/observations/obs.form?obsId=${obs.obsId}" onclick="return click('${obs.obsId}')"><%= ((org.openmrs.Obs)pageContext.getAttribute("obs")).getConcept().getName((java.util.Locale)request.getAttribute("locale")) %></a></td>
-				<td><%= ((org.openmrs.Obs)pageContext.getAttribute("obs")).getValueAsString((java.util.Locale)request.getAttribute("locale")) %></td>
-				<td valign="middle" valign="right">
-					<c:if test="${fn:contains(editedObs, obs.obsId)}"><img src="${pageContext.request.contextPath}/images/alert.gif" title='<spring:message code="Obs.edited"/>' /></c:if>
-					<c:if test="${obs.comment != null && obs.comment != ''}"><img src="${pageContext.request.contextPath}/images/note.gif" title="${obs.comment}" /></c:if>
-				</td>
-				<td style="white-space: nowrap;">
-					${obs.creator.firstName} ${obs.creator.lastName} -
-					<openmrs:formatDate date="${obs.dateCreated}" type="medium" />
-				</td>
-			</tr>
-			<tr class="<c:if test="${obs.voided}">voided </c:if><c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>" onmouseover="mouseover(this, true)" onmouseout="mouseout(this, true)" onclick="click('${obs.obsId}')">
-				<td colspan="5"><div class="description"><%= ((org.openmrs.Obs)pageContext.getAttribute("obs")).getConcept().getName((java.util.Locale)request.getAttribute("locale")).getDescription() %></div></td>
-			</tr>
+			<c:set var="field" value="${obsMap[obs.obsId]}"/>
+			<c:choose>
+				<c:when test="${obs.obsGroupId != null}">
+					<tr class="obsGroupHeader">
+						<td>${field.fieldNumber}<c:if test="${field.fieldPart != null && field.fieldPart != ''}">.${field.fieldPart}</c:if></td>
+						<td colspan="4">${field.field.concept.name.name}</td>
+					</tr>
+					<tr>
+						<td colspan="5"></td>
+					</tr>
+					<c:forEach items="${obsGroups[obs.obsGroupId]}" var="groupObs" varStatus="groupStatus">
+						<tr onmouseover="mouseover(this)" onmouseout="mouseout(this)" onclick="click('${groupObs.obsId}')">
+							<td class="fieldNumber"></td>
+							<td class="obsGroupMember"><a href="${pageContext.request.contextPath}/admin/observations/obs.form?obsId=${groupObs.obsId}" onclick="return click('${groupObs.obsId}')">${groupObs.concept.name.name}</a></td>
+							<td>${groupObs.valueAsString[locale]}</td>
+							<td valign="middle" align="right">
+								<c:if test="${fn:contains(editedObs, groupObs.obsId)}"><img src="${pageContext.request.contextPath}/images/alert.gif" title='<spring:message code="Obs.edited"/>' /></c:if>
+								<c:if test="${groupObs.comment != null && groupObs.comment != ''}"><img src="${pageContext.request.contextPath}/images/note.gif" title="${groupObs.comment}" /></c:if>
+							</td>
+							<td style="white-space: nowrap;">
+								${groupObs.creator.firstName} ${groupObs.creator.lastName} -
+								<openmrs:formatDate date="${groupObs.dateCreated}" type="medium" />
+							</td>
+						</tr>
+						<tr class="<c:if test="${groupObs.voided}">voided </c:if><c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>" onmouseover="mouseover(this, true)" onmouseout="mouseout(this, true)" onclick="click('${groupObs.obsId}')">
+							<td></td><td colspan="4" class="obsGroupMember"><div class="description">${groupObs.concept.name.description}</div></td>
+						</tr>
+					</c:forEach>
+				</c:when>
+				<c:otherwise>
+					<tr class="<c:if test="${obs.voided}">voided </c:if><c:choose><c:when test="${count % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>" onmouseover="mouseover(this)" onmouseout="mouseout(this)" onclick="click('${obs.obsId}')">
+						<td class="fieldNumber">${field.fieldNumber}<c:if test="${field.fieldPart != null && field.fieldPart != ''}">.${field.fieldPart}</c:if></td>
+						<td><a href="${pageContext.request.contextPath}/admin/observations/obs.form?obsId=${obs.obsId}" onclick="return click('${obs.obsId}')">${field.field.concept.name.name}</a></td>
+						<td>${obs.valueAsString[locale]}</td>
+						<td valign="middle" align="right">
+							<c:if test="${fn:contains(editedObs, obs.obsId)}"><img src="${pageContext.request.contextPath}/images/alert.gif" title='<spring:message code="Obs.edited"/>' /></c:if>
+							<c:if test="${obs.comment != null && obs.comment != ''}"><img src="${pageContext.request.contextPath}/images/note.gif" title="${obs.comment}" /></c:if>
+						</td>
+						<td style="white-space: nowrap;">
+							${obs.creator.firstName} ${obs.creator.lastName} -
+							<openmrs:formatDate date="${obs.dateCreated}" type="medium" />
+						</td>
+					</tr>
+					<tr class="<c:if test="${obs.voided}">voided </c:if><c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>" onmouseover="mouseover(this, true)" onmouseout="mouseout(this, true)" onclick="click('${obs.obsId}')">
+						<td colspan="5"><div class="description">${obs.concept.name.description}</div></td>
+					</tr>
+				</c:otherwise>
+			</c:choose>
+			
 		</c:forEach>
+		
 	</table>
 	</div>
 </c:if>

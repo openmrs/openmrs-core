@@ -248,10 +248,18 @@ public class ConceptStatsFormController extends SimpleFormController {
 					
 					DefaultPieDataset pieDataset = new DefaultPieDataset();
 					
+					// count the number of unique answers
+					Map<String, Integer> counts = new HashMap<String, Integer>();
 					for (Obs o : obs) {
 						Concept value = o.getValueCoded();
-						pieDataset.setValue(value.getName().getName(), value.getConceptId());
+						String name = value.getName().getName();
+						Integer count = counts.get(name);
+						counts.put(name, count == null ? 1 : count + 1);
 					}
+					
+					// put the counts into the dataset
+					for (Map.Entry<String, Integer> entry : counts.entrySet())
+						pieDataset.setValue(entry.getKey(), entry.getValue());
 					
 					JFreeChart pieChart = ChartFactory.createPieChart(
 							concept.getName().getName(),

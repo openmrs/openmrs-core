@@ -302,6 +302,9 @@ public class EncounterDisplayController implements Controller {
 			}
 			
 			for (Obs o : encounter.getObs()) {
+				if (o.isVoided())
+					continue;
+				
 				FieldLabel label = conceptToFieldLabel.get(o.getConcept());
 				// if the label exists and has a form field
 				if (label == null || !data.containsKey(label)) {

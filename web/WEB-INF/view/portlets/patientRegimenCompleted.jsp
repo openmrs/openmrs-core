@@ -28,7 +28,7 @@
 	<c:when test="${not empty model.displayDrugSetIds}">
 		<c:forTokens var="drugSetId" items="${model.displayDrugSetIds}" delims=",">
 			<c:if test="${drugSetId == '*'}" >
-				<tbody id="regimenTableCompleted_header___other__"
+				<tbody id="regimenTableCompleted_header___other__">
 					<tr>
 						<c:choose>
 							<c:when test="${model.completedRegimenMode == 'view'}">

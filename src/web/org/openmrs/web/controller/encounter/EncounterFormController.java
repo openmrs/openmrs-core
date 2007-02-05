@@ -15,6 +15,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
@@ -173,13 +174,17 @@ public class EncounterFormController extends SimpleFormController {
 		List<Integer> editedObs = new Vector<Integer>();
 
 		// The map returned to the form
-		Map<Obs, FormField> obsMap = new HashMap<Obs, FormField>();
-		// User for sorting
+		Map<Integer, FormField> obsMap = new HashMap<Integer, FormField>();
+		// Used for sorting
 		Map<Obs, FormField> obsMapTemp = new HashMap<Obs, FormField>();
 		
 		// temporary list to hold the sorted obs
 		List<FormField> formFields = new Vector<FormField>();
 		
+		// stores a map from obs group id to all obs in that group
+		Map<Integer, List<Obs>> obsGroups = new HashMap<Integer, List<Obs>>();
+		
+		// actual list of observations to loop over on display
 		List<Obs> observations = new Vector<Obs>();
 		
 		Form form = encounter.getForm();
@@ -206,20 +211,51 @@ public class EncounterFormController extends SimpleFormController {
 						} catch (Exception e) {}
 					}
 					
-					// populate the obs map so we can 
-					//  1) sort the obs according to FormField
-					//  2) look up the formField by the obs object
 					FormField ff = fs.getFormField(form, o.getConcept());
-					if (ff == null)
-						ff = new FormField();
-					formFields.add(ff);
-					obsMap.put(o, ff);
-					obsMapTemp.put(o, ff);
+					if (ff == null) ff = new FormField();
+					FormField parent = ff.getParent();
+					
+					Integer groupId = o.getObsGroupId();
+					
+					if (groupId == null) {
+						// if the obs wasn't marked as a group but the parent concept in the form is a set, treat as a grouped obs 
+						Concept fieldConcept = null;
+						if ((fieldConcept = parent.getField().getConcept()) != null && fieldConcept.isSet()) {
+							groupId = o.getObsId();
+							o.setObsGroupId(groupId);
+						}
+					}
+					
+					if (groupId != null) {
+						
+						if (!obsGroups.containsKey(groupId)) {
+							obsGroups.put(groupId, new Vector<Obs>());
+							
+							// if this is the first in the group, add the parent FormField as its FormField 
+							if (parent == null)
+								log.error("Parent should not be null for obs with a group id obs id: " + o.getObsId() + " form field id: " + ff.getFormFieldId());
+							
+							formFields.add(parent);
+							obsMap.put(o.getObsId(), parent);
+							obsMapTemp.put(o, parent);
+						}
+						
+						obsGroups.get(groupId).add(o);
+						
+					}
+					else {
+						// populate the obs map so we can 
+						//  1) sort the obs according to FormField
+						//  2) look up the formField by the obs object
+						formFields.add(ff);
+						obsMap.put(o.getObsId(), ff);
+						obsMapTemp.put(o, ff);
+					}
 				}
 				
 				try {
 					// sort the temp list according the the FormFields.compare() method
-					Collections.sort(formFields, new FormFieldComparator());
+					Collections.sort(formFields, new FormFieldNameComparator());
 				}
 				catch (Exception e) {
 					log.error("Error while sorting obs for encounter: " + encounter, e);
@@ -228,7 +264,9 @@ public class EncounterFormController extends SimpleFormController {
 				// loop over the sorted formFields to add the corresponding
 				//  obs to the returned obs list
 				for (FormField f : formFields) {
-					observations.add(popObsFromMap(obsMapTemp, f));
+					Obs o = popObsFromMap(obsMapTemp, f);
+					if (o != null)
+						observations.add(o);
 				}
 			}
 		}
@@ -239,14 +277,10 @@ public class EncounterFormController extends SimpleFormController {
 		log.debug("setting obsMap in page context (size: " + obsMap.size() + ")");
 		map.put("obsMap", obsMap);
 		
-		log.debug("setting datePattern in page context");
 		map.put("datePattern", dateFormat.toLocalizedPattern().toLowerCase());
-		
-		log.debug("setting locale in page context: " + Context.getLocale());
 		map.put("locale", Context.getLocale());
-		
-		log.debug("setting edited obs in page context: " + editedObs);
 		map.put("editedObs", editedObs);
+		map.put("obsGroups", obsGroups);
 		
 		return map;
 	}
@@ -274,7 +308,7 @@ public class EncounterFormController extends SimpleFormController {
 	 * Internal class used to sort FormField first according to the parent FormFieldId
 	 * then by FormField.compare()
 	 */
-	private class FormFieldComparator implements Comparator<FormField> {
+	private class FormFieldDepthComparator implements Comparator<FormField> {
 		public int compare(FormField ff1, FormField ff2) {
 			if (ff1.getParent().equals(ff2.getParent())) {
 				return ff1.compareTo(ff2);
@@ -283,7 +317,7 @@ public class EncounterFormController extends SimpleFormController {
 				return 0;
 			else {
 				// search upwards until we have siblings
-				// this algorithm is O(depth squared) -- if we end up having 
+				// this algorithm is O(depth)^2 -- if we end up having 
 				// deep trees, might want to change it 
 				
 				// get arrays of ancestors
@@ -310,6 +344,45 @@ public class EncounterFormController extends SimpleFormController {
 				
 				return ff1Parents.get(ff1Parents.size()-1).compareTo(ff2Parents.get(ff2Parents.size()-1)); 
 			}
+		}
+	}
+	
+	/**
+	 * Internal class used to sort FormField by number/part/name
+	 */
+	private class FormFieldNameComparator implements Comparator<FormField> {
+		public int compare(FormField ff1, FormField ff2) {
+			if (ff1.getFieldNumber() != null || ff2.getFieldNumber() != null) {
+				if (ff1.getFieldNumber() == null)
+					return -1;
+				if (ff2.getFieldNumber() == null)
+					return 1;
+				int c = ff1.getFieldNumber().compareTo(ff2.getFieldNumber());
+				if (c != 0)
+					return c;
+			}
+			if (ff1.getFieldPart() != null || ff2.getFieldPart() != null) {
+				if (ff1.getFieldPart() == null)
+					return -1;
+				if (ff2.getFieldPart() == null)
+					return 1;
+				int c = ff1.getFieldPart().compareTo(ff2.getFieldPart());
+				if (c != 0)
+					return c;
+			}
+			if (ff1.getField() != null && ff2.getField() != null) {
+				int c = ff1.getField().getName().compareTo(ff2.getField().getName());
+				if (c != 0)
+					return c;
+			}
+			if (ff1.getFormFieldId() == null && ff2.getFormFieldId() != null)
+				return -1;
+			if (ff1.getFormFieldId() != null && ff2.getFormFieldId() == null)
+				return 1;
+			if (ff1.getFormFieldId() == null && ff2.getFormFieldId() == null)
+				return 1;
+			
+			return ff1.getFormFieldId().compareTo(ff2.getFormFieldId());
 		}
 	}
 	
