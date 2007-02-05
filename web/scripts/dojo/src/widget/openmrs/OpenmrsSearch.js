@@ -179,7 +179,6 @@ dojo.widget.defineWidget(
 			this.text = this.text.replace(/^\s+/, '');
 			this.text = this.text.replace(/\s+$/, '');
 		}
-		clearTimeout(this.searchTimeout);
 		
 		this.event = dojo.event.browser.fixEvent(evt); //save event for later testing in fillTable
 		
@@ -243,6 +242,9 @@ dojo.widget.defineWidget(
 				this.key == dojo.event.browser.keys.KEY_BACKSPACE || this.key == dojo.event.browser.keys.KEY_SPACE || 
 				this.isDash(this.key) ||
 				this.key == dojo.event.browser.keys.KEY_DELETE || this.key == 1) {
+					
+					clearTimeout(this.searchTimeout);
+				
 					//	 (if alphanumeric key entered or 
 					//   backspace key pressed or
 					//   spacebar pressed or 
@@ -279,6 +281,8 @@ dojo.widget.defineWidget(
 	
 	
 	_enterKeyPressed: function(mouseClicked) {
+		clearTimeout(this.searchTimeout);
+		
 		dojo.debug('Enter key pressed1');
 		// user hit enter on empty box
 		
