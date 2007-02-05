@@ -367,7 +367,7 @@
 						<td colspan="5"></td>
 					</tr>
 					<c:forEach items="${obsGroups[obs.obsGroupId]}" var="groupObs" varStatus="groupStatus">
-						<tr onmouseover="mouseover(this)" onmouseout="mouseout(this)" onclick="click('${groupObs.obsId}')">
+						<tr class="<c:if test="${groupObs.voided}">voided</c:if>" onmouseover="mouseover(this)" onmouseout="mouseout(this)" onclick="click('${groupObs.obsId}')">
 							<td class="fieldNumber"></td>
 							<td class="obsGroupMember"><a href="${pageContext.request.contextPath}/admin/observations/obs.form?obsId=${groupObs.obsId}" onclick="return click('${groupObs.obsId}')">${groupObs.concept.name.name}</a></td>
 							<td>${groupObs.valueAsString[locale]}</td>
