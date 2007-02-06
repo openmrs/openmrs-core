@@ -1,8 +1,10 @@
 package org.openmrs.module;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
@@ -111,6 +113,27 @@ public class ModuleFileParser {
 				configDoc = db.parse(configStream);
 			}
 			catch (Exception e) {
+				log.error("config.xml: " + configStream.toString());
+				
+				OutputStream out = null;
+				String output = "";
+				try {
+					out = new ByteArrayOutputStream();
+			        // Now copy bytes from the URL to the output stream
+			        byte[] buffer = new byte[4096];
+			        int bytes_read;
+			        while((bytes_read = configStream.read(buffer)) != -1)
+			            out.write(buffer, 0, bytes_read);
+			        output = out.toString();
+				}
+				catch (Exception e2) {
+					log.warn("Another error", e2);
+				}
+				finally {
+					try { out.close(); } catch (Exception e3) {};
+				}
+		        
+				log.error("config.xml: " + output);
 				throw new ModuleException("Error parsing module config.xml file", moduleFile.getName(), e);
 			}
 			
@@ -172,14 +195,14 @@ public class ModuleFileParser {
 			try {
 				jarfile.close();
 			}
-			catch (IOException e) {
+			catch (Exception e) {
 				log.warn("Unable to close jarfile: " + jarfile.getName());
 			}
 			if (configStream != null) {
 				try {
 					configStream.close();					
 				}
-				catch (IOException io) {
+				catch (Exception io) {
 					log.error("Error while closing config stream for module: " + moduleFile.getAbsolutePath(), io);
 				}
 			}

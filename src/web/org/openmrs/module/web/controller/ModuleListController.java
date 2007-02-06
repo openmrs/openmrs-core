@@ -60,19 +60,20 @@ public class ModuleListController extends SimpleFormController {
 		
 		HttpSession httpSession = request.getSession();
 		String moduleId = ServletRequestUtils.getStringParameter(request, "moduleId", "");
+		String action = ServletRequestUtils.getStringParameter(request, "action", "");
 		String view = getFormView();
 		String success = "";
 		String error = "";
 		MessageSourceAccessor msa = getMessageSourceAccessor();
 
 		// handle module upload
-		if (request instanceof MultipartHttpServletRequest) {
+		if ("upload".equals(action) && request instanceof MultipartHttpServletRequest) {
 			MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
 			MultipartFile multipartModuleFile = multipartRequest.getFile("moduleFile");
 			if (multipartModuleFile != null && !multipartModuleFile.isEmpty()) {
 				// double check upload permissions
-				if (!ModuleUtil.allowUpload()) {
-					error = msa.getMessage("Module.disallowUploads", new String[] {ModuleConstants.RUNTIMEPROPERTY_ALLOW_UPLOAD});
+				if (!ModuleUtil.allowAdmin()) {
+					error = msa.getMessage("Module.disallowUploads", new String[] {ModuleConstants.RUNTIMEPROPERTY_ALLOW_ADMIN});
 				}
 				else {
 					String filename = WebUtil.stripFilename(multipartModuleFile.getOriginalFilename());
@@ -118,35 +119,51 @@ public class ModuleListController extends SimpleFormController {
 		else if (moduleId.equals("")) {
 			ModuleUtil.checkForModuleUpdates();
 		}
-		else { // moduleId is not empty
-			log.debug("Module id: " + moduleId);
-			String action = ServletRequestUtils.getStringParameter(request, "action", "");
+		else if (action.equals(msa.getMessage("Module.installUpdate"))) {
+			// download and install update
+			if (!ModuleUtil.allowAdmin()) {
+				error = msa.getMessage("Module.disallowAdministration", new String[] {ModuleConstants.RUNTIMEPROPERTY_ALLOW_ADMIN});
+			}
 			Module mod = ModuleFactory.getModuleById(moduleId);
-			
-			// Argument to pass to the success/error message
-			Object[] args = new Object[] { moduleId };
-			
-			if (mod == null)
-				error = msa.getMessage("Module.invalid", args);
+			if (mod.getDownloadURL() != null) {
+				WebModuleUtil.stopModule(mod, getServletContext());
+				Module newModule = ModuleFactory.updateModule(mod);
+				WebModuleUtil.startModule(newModule, getServletContext());
+			}
+		}
+		else { // moduleId is not empty
+			if (!ModuleUtil.allowAdmin()) {
+				error = msa.getMessage("Module.disallowAdministration", new String[] {ModuleConstants.RUNTIMEPROPERTY_ALLOW_ADMIN});
+			}
 			else {
-				if ("stop".equals(action)) {
-					ModuleFactory.stopModule(mod);
-					WebModuleUtil.stopModule(mod, getServletContext());
-					success = msa.getMessage("Module.stopped", args);
-				}
-				else if ("start".equals(action)) {
-					ModuleFactory.startModule(mod);
-					WebModuleUtil.startModule(mod, getServletContext());
-					if (mod.isStarted())
-						success = msa.getMessage("Module.started", args);
-					else
-						error = msa.getMessage("Module.not.started", args);
-				}
-				else if ("unload".equals(action)) {
-					ModuleFactory.stopModule(mod); // stop the module so that when the web stop is done properly
-					WebModuleUtil.stopModule(mod, getServletContext());
-					ModuleFactory.unloadModule(mod);
-					success = msa.getMessage("Module.unloaded", args);
+				log.debug("Module id: " + moduleId);
+				Module mod = ModuleFactory.getModuleById(moduleId);
+				
+				// Argument to pass to the success/error message
+				Object[] args = new Object[] { moduleId };
+				
+				if (mod == null)
+					error = msa.getMessage("Module.invalid", args);
+				else {
+					if ("stop".equals(action)) {
+						ModuleFactory.stopModule(mod);
+						WebModuleUtil.stopModule(mod, getServletContext());
+						success = msa.getMessage("Module.stopped", args);
+					}
+					else if ("start".equals(action)) {
+						ModuleFactory.startModule(mod);
+						WebModuleUtil.startModule(mod, getServletContext());
+						if (mod.isStarted())
+							success = msa.getMessage("Module.started", args);
+						else
+							error = msa.getMessage("Module.not.started", args);
+					}
+					else if ("unload".equals(action)) {
+						ModuleFactory.stopModule(mod); // stop the module so that when the web stop is done properly
+						WebModuleUtil.stopModule(mod, getServletContext());
+						ModuleFactory.unloadModule(mod);
+						success = msa.getMessage("Module.unloaded", args);
+					}
 				}
 			}
 		}
@@ -184,8 +201,8 @@ public class ModuleListController extends SimpleFormController {
 		Map<String, String> map = new HashMap<String, String>();
 		MessageSourceAccessor msa = getMessageSourceAccessor();
 		
-		map.put("allowUpload", ModuleUtil.allowUpload().toString());
-		map.put("disallowUploads", msa.getMessage("Module.disallowUploads", new String[] {ModuleConstants.RUNTIMEPROPERTY_ALLOW_UPLOAD}));
+		map.put("allowAdmin", ModuleUtil.allowAdmin().toString());
+		map.put("disallowUploads", msa.getMessage("Module.disallowUploads", new String[] {ModuleConstants.RUNTIMEPROPERTY_ALLOW_ADMIN}));
 		
 		return map;
 	}

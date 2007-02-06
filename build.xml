@@ -269,6 +269,11 @@
 			</fileset>
 			<filterset refid="variables.to.replace" />
 		</copy>
+		<copy todir="${dist.dir}/web">
+			<fileset dir="web">
+				<include name="**/images/**/*" />
+			</fileset>
+		</copy>
 		<copy todir="${tomcat.home}/webapps/${webapp.name}">
 			<fileset dir="${dist.dir}/web">
 				<include name="**/*.jsp"/>
@@ -278,6 +283,7 @@
 				<include name="**/*.withjstl"/>
 				<include name="**/*.tag"/>
 				<include name="**/messages*.properties"/>
+				<include name="**/images/**/*" />
 			</fileset>			
 		</copy>
 	</target>

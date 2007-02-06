@@ -13,12 +13,12 @@
 <div class="box">
 	<form id="moduleAddForm" action="module.list" method="post" enctype="multipart/form-data">
 		<spring:message code="Module.addJar"/>: 
-		<input type="file" name="moduleFile" size="40" <c:if test="${allowUpload!='true'}">disabled="disabled"</c:if> /> 
+		<input type="file" name="moduleFile" size="40" <c:if test="${allowAdmin!='true'}">disabled="disabled"</c:if> /> 
 		<br />
 		<input type="hidden" name="action" value="upload"/>
 		<br/>
 		<c:choose>
-			<c:when test="${allowUpload == 'true'}">
+			<c:when test="${allowAdmin == 'true'}">
 				<input type="submit" value='<spring:message code="Module.add"/>'/>
 			</c:when>
 			<c:otherwise>
@@ -37,7 +37,9 @@
 			<table cellpadding="5" cellspacing="0">
 				<thead>
 					<tr>
-						<th colspan="2"><spring:message code="general.action"/></th>
+						<c:if test="${allowAdmin=='true'}">
+							<th colspan="2"><spring:message code="general.action"/></th>
+						</c:if>
 						<th><spring:message code="general.name"/></th>
 						<th><spring:message code="general.version"/></th>
 						<th><spring:message code="general.author"/></th>
@@ -52,41 +54,37 @@
 					<form method="post">
 					<input type="hidden" name="moduleId" value="${module.moduleId}" />
 					<tr class="<c:choose><c:when test="${varStatus.index % 2 == 0}">oddRow</c:when><c:otherwise>evenRow</c:otherwise></c:choose>" id="${module.moduleId}">
-						<td valign="top">
-							<c:choose>
-								<c:when test="${not module.started}">
-									<input type="image" src="${pageContext.request.contextPath}/images/play.gif" name="action" value="start" title="<spring:message code="Module.start"/>" alt="<spring:message code="Module.start"/>" />
-								</c:when>
-								<c:otherwise>
-									<input type="image" src="${pageContext.request.contextPath}/images/stop.gif" name="action" value="stop" alt="<spring:message code="Module.stop"/>" />
-								</c:otherwise>
-							</c:choose>
-						</td>
-						<td valign="top"><input type="image" src="${pageContext.request.contextPath}/images/delete.gif" name="action" value="unload" onclick="return confirm('<spring:message code="Module.unloadWarning"/>');" title="<spring:message code="Module.stop"/>" title="<spring:message code="Module.unload"/>" alt="<spring:message code="Module.unload"/>" /></td>
+						<c:if test="${allowAdmin=='true'}">
+							<td valign="top">
+								<c:choose>
+									<c:when test="${not module.started}">
+										<input type="image" src="${pageContext.request.contextPath}/images/play.gif" name="action" value="start" title="<spring:message code="Module.start.help"/>" alt="<spring:message code="Module.start"/>" />
+									</c:when>
+									<c:otherwise>
+										<input type="image" src="${pageContext.request.contextPath}/images/stop.gif" name="action" value="stop" title="<spring:message code="Module.stop.help"/>" alt="<spring:message code="Module.stop"/>" />
+									</c:otherwise>
+								</c:choose>
+							</td>
+						</c:if>
+						<td valign="top"><input type="image" src="${pageContext.request.contextPath}/images/trash.gif" name="action" value="unload" onclick="return confirm('<spring:message code="Module.unloadWarning"/>');" title="<spring:message code="Module.unload.help"/>" title="<spring:message code="Module.unload"/>" alt="<spring:message code="Module.unload"/>" /></td>
 						<td valign="top">${module.name} <c:if test="${not module.started}"><b id="moduleNotStarted" style="white-space: nowrap">[<spring:message code="Module.notStarted"/>]</b></c:if></td>
 						<td valign="top">${module.version}</td>
 						<td valign="top">${module.author}</td>
-						<td valign="top">${module.description}</td>
-						<c:choose>
-							<c:when test="${module.startupErrorMessage != null}">
-								<td class="error"><pre style="margin: 0px;">${module.startupErrorMessage}</pre></td>
-							</c:when>
-							<c:otherwise>
-								<td></td>
-							</c:otherwise>
-						</c:choose>
-						<c:choose>
-							<c:when test="${module.downloadURL != null}">
-								<td>
-									<spring:message code="Module.updateAvailable" /> 
-									${module.updateVersion}: 
-									<a href="${module.downloadURL}">${module.downloadURL}</a>
-								</td>
-							</c:when>
-							<c:otherwise>
-								<td> </td>
-							</c:otherwise>
-						</c:choose>
+						<td valign="top">${fn:substring(fn:escapeXml(module.description),0, 200)}...</td>
+						<td valign="top"<c:if test="${module.startupErrorMessage != null}">class="error"</c:if> >
+							<pre style="margin: 0px;">${module.startupErrorMessage}</pre>
+						</td>
+						<td>
+							<c:if test="${module.downloadURL != null}">
+								${module.updateVersion}
+								<spring:message code="Module.updateAvailable" /> 
+								<c:if test="${allowAdmin=='true'}">
+									<input type="submit" name="action" value='<spring:message code="Module.installUpdate"/>'>
+									<spring:message code="general.or"/>
+								</c:if>
+								<a href="${module.downloadURL}"><spring:message code="Module.downloadUpdate"/></a>
+							</c:if>
+						</td>
 					</tr>
 				</form>
 				

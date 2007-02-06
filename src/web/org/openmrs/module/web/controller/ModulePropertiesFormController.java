@@ -82,7 +82,7 @@ public class ModulePropertiesFormController extends SimpleFormController {
 		Map<String, String> map = new HashMap<String, String>();
 		MessageSourceAccessor msa = getMessageSourceAccessor();
 		
-		map.put("allowUpload", ModuleUtil.allowUpload().toString());
+		map.put("allowUpload", ModuleUtil.allowAdmin().toString());
 		map.put("disallowUploads", msa.getMessage("Module.disallowUploads", new String[] {ModuleConstants.RUNTIMEPROPERTY_ALLOW_UPLOAD}));
 		
 		return map;

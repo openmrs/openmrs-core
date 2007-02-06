@@ -88,18 +88,26 @@ public class ModuleUtil {
 
 		File file = new File(folder.getAbsolutePath() + File.separator
 				+ filename);
-
+		
+		FileOutputStream outputStream = null;
 		try {
-			FileOutputStream outputStream = new FileOutputStream(file);
+			 outputStream = new FileOutputStream(file);
 			OpenmrsUtil.copyFile(inputStream, outputStream);
-			inputStream.close();
-			outputStream.close();
 		} catch (FileNotFoundException e) {
 			throw new ModuleException("Can't create module file for "
 					+ filename, e);
 		} catch (IOException e) {
 			throw new ModuleException("Can't create module file for "
 					+ filename, e);
+		}
+		finally {
+			try {
+				inputStream.close();
+				outputStream.close();
+			}
+			catch (Exception e) {
+				// pass
+			}
 		}
 
 		return file;
@@ -313,52 +321,69 @@ public class ModuleUtil {
 	}
 	
 	/**
-	 * Downloads the contents of a URL and copies them to a string
-	 * (Borrowed from oreilly)
+	 * Downloads the contents of a URL and copies them to a string (Borrowed
+	 * from oreilly)
+	 * 
+	 * @param URL
+	 * @return InputStream of contents
+	 */
+	public static InputStream getURLStream(URL url) {
+		InputStream in = null;
+		try {
+			URLConnection uc = url.openConnection();
+			uc.setDefaultUseCaches(false);
+			uc.setUseCaches(false);
+			uc.setRequestProperty("Cache-Control", "max-age=0,no-cache");
+			uc.setRequestProperty("Pragma", "no-cache");
+			// uc.setRequestProperty("Cache-Control","no-cache");
+
+			log.error("Logging an attempt to connect to: " + url);
+
+			in = uc.getInputStream();
+		} catch (IOException io) {
+			log.warn("io while reading: " + url, io);
+		}
+		
+		return in;
+	}
+	
+	/**
+	 * Downloads the contents of a URL and copies them to a string (Borrowed
+	 * from oreilly)
 	 * 
 	 * @param URL
 	 * @return String contents of the URL
-	 **/
+	 */
 	public static String getURL(URL url) {
-		if (!url.toString().endsWith(ModuleConstants.UPDATE_FILE_NAME)) {
-			log.warn("Illegal url: " + url);
-			return "";
+		InputStream in = null;
+		OutputStream out = null;
+		String output = "";
+		try {
+			in = getURLStream(url);
+			out = new ByteArrayOutputStream();
+			OpenmrsUtil.copyFile(in, out);
+			output = out.toString();
+		} catch (IOException io) {
+			log.warn("io while reading: " + url, io);
+		} finally {
+			try {
+				in.close();
+				out.close();
+			} catch (Exception e) {}
 		}
-		
-		InputStream in = null;   
-	    OutputStream out = null;
-	    String output = "";
-	    try {
-	        URLConnection uc = url.openConnection();
-	        uc.setDefaultUseCaches(false);
-	        uc.setUseCaches(false);
-	        uc.setRequestProperty("Cache-Control","max-age=0,no-cache");
-	        uc.setRequestProperty("Pragma","no-cache");
-	        //uc.setRequestProperty("Cache-Control","no-cache");
-	        
-	        log.error("Logging an attempt to connect to: " + url);
-	        
-	        in = uc.getInputStream();
-	        out = new ByteArrayOutputStream();
-	        
-	        // Now copy bytes from the URL to the output stream
-	        byte[] buffer = new byte[4096];
-	        int bytes_read;
-	        while((bytes_read = in.read(buffer)) != -1)
-	            out.write(buffer, 0, bytes_read);
-	        output = out.toString();
-	    }
-	    catch (IOException io) {
-	    	log.warn("io while reading: " + url, io);
-	    }
-	    finally {
-	        try { in.close();  out.close(); } catch (Exception e) {}
-	    }
-	    
-	    return output;
+
+		return output;
 	}
 	
-	public static void checkForModuleUpdates() throws ModuleException {
+	/**
+	 * Iterates over the modules and checks each update.rdf file for an update
+	 * 
+	 * @returns true/false whether an update was found for one of the modules
+	 * @throws ModuleException
+	 */
+	public static Boolean checkForModuleUpdates() throws ModuleException {
+		
+		Boolean updateFound = false;
 		
 		for (Module mod : ModuleFactory.getLoadedModules()) {
 			String updateURL = mod.getUpdateURL();
@@ -366,6 +391,10 @@ public class ModuleUtil {
 				try {
 					// get the contents pointed to by the url
 					URL url = new URL(updateURL);
+					if (!url.toString().endsWith(ModuleConstants.UPDATE_FILE_NAME)) {
+						log.warn("Illegal url: " + url);
+						continue;
+					}
 					String content = getURL(url);
 					
 					// skip empty or invalid updates
@@ -383,6 +412,7 @@ public class ModuleUtil {
 						if (mod.getModuleId().equals(parser.getModuleId())) {
 							mod.setDownloadURL(parser.getDownloadURL());
 							mod.setUpdateVersion(parser.getCurrentVersion());
+							updateFound = true;
 						}
 						else
 							log.warn("Module id does not match in update.rdf:" + parser.getModuleId());
@@ -400,18 +430,21 @@ public class ModuleUtil {
 				}
 			}
 		}
+		
+		return updateFound;
 	}
 	
 	/**
-	 * @return true/false whether the 'allow upload' property has been turned on
+	 * @return true/false whether the 'allow upload' or 'allow web admin' property has been turned on
 	 */
-	public static Boolean allowUpload() {
+	public static Boolean allowAdmin() {
 		
 		Properties properties = Context.getRuntimeProperties();
-		String prop = properties.getProperty(ModuleConstants.RUNTIMEPROPERTY_ALLOW_UPLOAD, "false");
+		String prop = properties.getProperty(ModuleConstants.RUNTIMEPROPERTY_ALLOW_UPLOAD, null);
+		if (prop == null)
+			prop = properties.getProperty(ModuleConstants.RUNTIMEPROPERTY_ALLOW_ADMIN, "false");
 		
 		return "true".equals(prop);
-		
 	}
 	
 }
