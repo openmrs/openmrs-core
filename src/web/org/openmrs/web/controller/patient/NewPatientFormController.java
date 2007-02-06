@@ -32,7 +32,6 @@ import org.openmrs.Person;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.Tribe;
-import org.openmrs.api.APIException;
 import org.openmrs.api.DuplicateIdentifierException;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.IdentifierNotUniqueException;
@@ -165,12 +164,12 @@ public class NewPatientFormController extends SimpleFormController {
 								String msg = getMessageSourceAccessor().getMessage("error.checkdigits.verbose", args);
 								errors.rejectValue("identifier", msg);
 							}
-							else if (pit.hasCheckDigit() == false && identifiers[i].contains("-")) {
-								log.error("hasn't CheckDigit and contains '-': " + pit.getName() + " " + identifiers[i]);
-								String[] args2 = {"-", identifiers[i]}; 
-								String msg = getMessageSourceAccessor().getMessage("error.character.invalid", args2);
-								errors.rejectValue("identifier", msg);
-							}
+//							else if (pit.hasCheckDigit() == false && identifiers[i].contains("-")) {
+//								log.error("hasn't CheckDigit and contains '-': " + pit.getName() + " " + identifiers[i]);
+//								String[] args2 = {"-", identifiers[i]}; 
+//								String msg = getMessageSourceAccessor().getMessage("error.character.invalid", args2);
+//								errors.rejectValue("identifier", msg);
+//							}
 						} catch (Exception e) {
 							log.error("exception thrown with: " + pit.getName() + " " + identifiers[i]);
 							log.error("Error while adding patient identifiers to savedIdentifier list", e);
