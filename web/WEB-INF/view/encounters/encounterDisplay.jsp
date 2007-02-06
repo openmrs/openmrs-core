@@ -55,10 +55,10 @@
 			<br/>
 			<c:choose>
 				<c:when test="${viewEncounterWhere == 'newWindow' || viewEncounterWhere == 'oneNewWindow'}">
-					<a href="javascript:window.opener.location = 'admin/encounters/encounter.form?encounterId=${model.encounter.encounterId}'; window.parent.focus(); window.close();">[ <spring:message code="general.edit"/> ]</a>
+					<a href="javascript:window.opener.location = '${pageContext.request.contextPath}/admin/encounters/encounter.form?encounterId=${model.encounter.encounterId}'; window.parent.focus(); window.close();">[ <spring:message code="general.edit"/> ]</a>
 				</c:when>
 				<c:otherwise>
-					<a href="admin/encounters/encounter.form?encounterId=${model.encounter.encounterId}">[ <spring:message code="general.edit"/> ]</a>
+					<a href="${pageContext.request.contextPath}/admin/encounters/encounter.form?encounterId=${model.encounter.encounterId}">[ <spring:message code="general.edit"/> ]</a>
 				</c:otherwise>
 			</c:choose>
 		</openmrs:hasPrivilege>
