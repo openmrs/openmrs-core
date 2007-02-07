@@ -16,6 +16,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.stat.QueryStatistics;
 import org.hibernate.stat.Statistics;
+import org.openmrs.GlobalProperty;
 import org.openmrs.User;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.db.ContextDAO;
@@ -220,6 +221,7 @@ public class HibernateContextDAO implements ContextDAO {
 	public void checkCoreDataset() {
 		PreparedStatement psSelect;
 		PreparedStatement psInsert;
+		PreparedStatement psUpdate;
 		Map<String, String> map;
 
 		// setting core roles
@@ -278,16 +280,25 @@ public class HibernateContextDAO implements ContextDAO {
 			psSelect = conn
 					.prepareStatement("SELECT * FROM global_property WHERE UPPER(property) = UPPER(?)");
 			psInsert = conn
-					.prepareStatement("INSERT INTO global_property VALUES (?, ?)");
+					.prepareStatement("INSERT INTO global_property VALUES (?, ?, ?)");
+			// this update should only be temporary until everyone has the new global property description code 
+			psUpdate = conn
+					.prepareStatement("UPDATE global_property SET description = ? WHERE UPPER(property) = UPPER(?) AND description IS null");
 
-			map = OpenmrsConstants.CORE_GLOBAL_PROPERTIES();
-			for (String prop : map.keySet()) {
-				psSelect.setString(1, prop);
+			for (GlobalProperty gp : OpenmrsConstants.CORE_GLOBAL_PROPERTIES()) {
+				psSelect.setString(1, gp.getProperty());
 				ResultSet result = psSelect.executeQuery();
 				if (!result.next()) {
-					psInsert.setString(1, prop);
-					psInsert.setString(2, map.get(prop));
+					psInsert.setString(1, gp.getProperty());
+					psInsert.setString(2, gp.getPropertyValue());
+					psInsert.setString(3, gp.getDescription());
 					psInsert.execute();
+				}
+				else {
+					// should only be temporary 
+					psUpdate.setString(1, gp.getDescription());
+					psUpdate.setString(2, gp.getProperty());
+					psUpdate.execute();
 				}
 			}
 

@@ -892,7 +892,8 @@ public class HibernateAdministrationDAO implements
 			}
 			
 			s.setUser((User) holder[0 + offset]);
-			s.setEntryType(((Form)holder[1 + offset]).getName());
+			Form form = (Form)holder[1 + offset];
+			s.setEntryType(form != null ? form.getName() : "null");
 			s.setNumberOfEntries((Integer) holder[2 + offset]);
 			ret.add(s);
 		}

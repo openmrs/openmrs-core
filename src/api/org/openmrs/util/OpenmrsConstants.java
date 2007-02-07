@@ -265,43 +265,43 @@ public class OpenmrsConstants {
 	}
 	
 	// These properties (and default values) are set if not found in the database on startup
-	public static final Map<String, String> CORE_GLOBAL_PROPERTIES() {
-		Map<String, String> props = new HashMap<String, String>();
+	public static final List<GlobalProperty> CORE_GLOBAL_PROPERTIES() {
+		List<GlobalProperty> props = new Vector<GlobalProperty>();
 		
-		props.put("use_patient_attribute.tribe", "true");
-		props.put("use_patient_attribute.healthCenter", "false");
-		props.put("use_patient_attribute.mothersName", "false");
-		props.put("new_patient_form.showRelationships", "false");
-		props.put("dashboard.overview.showConcepts", "");
-		props.put("dashboard.encounters.viewWhere", "newWindow"); // known values: 'sameWindow', 'newWindow', 'oneNewWindow'
-		props.put("dashboard.encounters.showEmptyFields", "true");
-		props.put("dashboard.encounters.usePages", "smart"); // known values: 'true', 'false', 'smart'
-		props.put("dashboard.encounters.showViewLink", "true");
-		props.put("dashboard.encounters.showEditLink", "true");
+		props.add(new GlobalProperty("use_patient_attribute.tribe", "true", "Indicates whether or not the 'tribe' attribute is shown when viewing/searching for patients"));
+		props.add(new GlobalProperty("use_patient_attribute.healthCenter", "false", "Indicates whether or not the 'health center' attribute is shown when viewing/searching for patients"));
+		props.add(new GlobalProperty("use_patient_attribute.mothersName", "false", "Indicates whether or not mother's name is able to be added/viewed for a patient"));
+		props.add(new GlobalProperty("new_patient_form.showRelationships", "false", "true/false whether or not to show the relationship editor on the addPatient.htm screen"));
+		props.add(new GlobalProperty("dashboard.overview.showConcepts", "", "Comma delimited list of concepts ids to show on the patient dashboard overview tab"));
+		props.add(new GlobalProperty("dashboard.encounters.viewWhere", "newWindow", "Defines how the 'View Encounter' link should act. Known values: 'sameWindow', 'newWindow', 'oneNewWindow'"));
+		props.add(new GlobalProperty("dashboard.encounters.showEmptyFields", "true", "true/false whether or not to show empty fields on the 'View Encounter' window"));
+		props.add(new GlobalProperty("dashboard.encounters.usePages", "smart", "true/false/smart on how to show the pages on the 'View Encounter' window.  'smart' means that if > 50% of the fields have page numbers defined, show data in pages"));
+		props.add(new GlobalProperty("dashboard.encounters.showViewLink", "true", "true/false whether or not to show the 'View Encounter' link on the patient dashboard"));
+		props.add(new GlobalProperty("dashboard.encounters.showEditLink", "true", "true/false whether or not to show the 'Edit Encounter' link on the patient dashboard"));
 		
-		props.put("concept.weight", "5089");
-		props.put("concept.cd4_count", "5497");
+		props.add(new GlobalProperty("concept.weight", "5089", "Concept id of the concept defining the WEIGHT concept"));
+		props.add(new GlobalProperty("concept.cd4_count", "5497", "Concept id of the concept defining the CD4 count concept"));
 		
-		props.put("mail.transport_protocol", "smtp");
-		props.put("mail.smtp_host", "localhost");
-		props.put("mail.smtp_port", "25");
-		props.put("mail.from", "info@openmrs.org");
-		props.put("mail.debug", "false");
-		props.put("mail.smtp_auth", "false");
-		props.put("mail.user", "test");
-		props.put("mail.password", "test");
-		props.put("mail.default_content_type", "text/plain");
+		props.add(new GlobalProperty("mail.transport_protocol", "smtp", "Transport protocol for the messaging engine. Valid values: smtp"));
+		props.add(new GlobalProperty("mail.smtp_host", "localhost", "SMTP host name"));
+		props.add(new GlobalProperty("mail.smtp_port", "25", "SMTP port"));
+		props.add(new GlobalProperty("mail.from", "info@openmrs.org", "Email address to use as the default from address"));
+		props.add(new GlobalProperty("mail.debug", "false", "true/false whether to print debugging information during mailing"));
+		props.add(new GlobalProperty("mail.smtp_auth", "false", "true/false whether the smtp host requires authentication"));
+		props.add(new GlobalProperty("mail.user", "test", "Username of the SMTP user (if smtp_auth is enabled)"));
+		props.add(new GlobalProperty("mail.password", "test", "Password for the SMTP user (if smtp_auth is enabled)"));
+		props.add(new GlobalProperty("mail.default_content_type", "text/plain", "Content type to append to the mail messages"));
 		
-		props.put(ModuleConstants.PROPERTY_REPOSITORY_FOLDER, ModuleConstants.PROPERTY_REPOSITORY_FOLDER_DEFAULT);
+		props.add(new GlobalProperty(ModuleConstants.PROPERTY_REPOSITORY_FOLDER, ModuleConstants.PROPERTY_REPOSITORY_FOLDER_DEFAULT, "Name of the folder in which to store the modules"));
 		
-		props.put("address.format", "kenya");
+		props.add(new GlobalProperty("address.format", "kenya", "Format in which to display the patient addresses.  Valid values are kenya, rwanda, usa, and lesotho"));
 		
 		// TODO should be changed to text defaults and constants should be removed
-		props.put("scheduler.username", SchedulerConstants.SCHEDULER_USERNAME);
-		props.put("scheduler.password", SchedulerConstants.SCHEDULER_PASSWORD);
+		props.add(new GlobalProperty("scheduler.username", SchedulerConstants.SCHEDULER_USERNAME, "Username for the OpenMRS user that will perform the scheduler activities"));
+		props.add(new GlobalProperty("scheduler.password", SchedulerConstants.SCHEDULER_PASSWORD, "Password for the OpenMRS user that will perform the scheduler activities"));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
-			props.put(gp.getProperty(), gp.getPropertyValue());
+			props.add(gp);
 		}
 		
 		return props;

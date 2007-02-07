@@ -3,7 +3,7 @@ package org.openmrs;
 public class GlobalProperty {
 	private String property = "";
 	private String propertyValue = "";
-	
+	private String description = "";
 	
 	/**
 	 * Default empty constructor
@@ -21,6 +21,11 @@ public class GlobalProperty {
 		this.propertyValue = value;
 	}
 	
+	public GlobalProperty(String property, String value, String description) {
+		this.property = property;
+		this.propertyValue = value;
+		this.description = description;
+	}
 	/**
 	 * @return Returns the property.
 	 */
@@ -46,17 +51,24 @@ public class GlobalProperty {
 		this.propertyValue = propertyValue;
 	}
 	
+	/**
+	 * @return the description
+	 */
+	public String getDescription() {
+		return description;
+	}
+
+	/**
+	 * @param description the description to set
+	 */
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 	public boolean equals(Object o) {
 		if (o instanceof GlobalProperty) {
 			GlobalProperty gp = (GlobalProperty)o;
 			return (property != null && property.equals(gp.getProperty()));
-			/*
-			if (property != null && gp.getProperty() != null) {
-				String lowerProperty = property.toLowerCase();
-				String lowerOtherProperty = gp.getProperty().toLowerCase(); 
-				return lowerProperty.equals(lowerOtherProperty);
-			}
-			*/
 		}
 		
 		return false;

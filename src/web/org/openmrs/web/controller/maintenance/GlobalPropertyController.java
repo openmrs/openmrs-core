@@ -23,6 +23,7 @@ public class GlobalPropertyController extends SimpleFormController {
 	
 	public static final String PROP_NAME = "property";
 	public static final String PROP_VAL_NAME = "value";
+	public static final String PROP_DESC_NAME = "description";
 	
 	/** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
@@ -50,11 +51,13 @@ public class GlobalPropertyController extends SimpleFormController {
 				
 				String[] keys = request.getParameterValues(PROP_NAME);
 				String[] values = request.getParameterValues(PROP_VAL_NAME);
+				String[] descriptions = request.getParameterValues(PROP_DESC_NAME);
 				
 				for (int x=0; x<keys.length; x++) {
 					String key = keys[x];
 					String val = values[x];
-					globalPropList.add(new GlobalProperty(key, val));
+					String desc = descriptions[x];
+					globalPropList.add(new GlobalProperty(key, val, desc));
 				}
 				
 				try {

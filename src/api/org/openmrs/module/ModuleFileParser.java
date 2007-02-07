@@ -512,9 +512,13 @@ public class ModuleFileParser {
 				}
 				log.debug("property: " + property + " defaultValue: " + defaultValue + " description: " + description);
 				
-				// name and desc are required
+				// remove tabs from description and trim start/end whitespace
+				if (description != null)
+					description = description.replaceAll("	", "").trim();
+				
+				// name is required
 				if (property.length() > 0)
-					properties.add(new GlobalProperty(property, defaultValue /*, description*/ ));
+					properties.add(new GlobalProperty(property, defaultValue, description));
 				else
 					log.warn("'property' is required for global properties. Given '" + property + "'");
 	
