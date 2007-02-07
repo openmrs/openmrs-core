@@ -923,7 +923,11 @@ public class AdministrationServiceImpl implements AdministrationService {
 	}
 
 	public void setGlobalProperty(String propertyName, String propertyValue) {
-		getAdministrationDAO().setGlobalProperty(propertyName, propertyValue);
+		setGlobalProperty(new GlobalProperty(propertyName, propertyValue));
+	}
+	
+	public void setGlobalProperty(GlobalProperty gp) {
+		getAdministrationDAO().setGlobalProperty(gp);
 	}
 
 	public void addGlobalProperty(String propertyName, String propertyValue) {

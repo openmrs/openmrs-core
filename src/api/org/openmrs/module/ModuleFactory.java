@@ -306,7 +306,8 @@ public class ModuleFactory {
 				// save the state of this module for future restarts
 				Context.addProxyPrivilege("");
 				AdministrationService as = Context.getAdministrationService();
-				as.setGlobalProperty(module.getModuleId() + ".started", "true");
+				GlobalProperty gp = new GlobalProperty(module.getModuleId() + ".started", "true", getGlobalPropertyStartedDescription(module.getModuleId()));
+				as.setGlobalProperty(gp);
 				Context.removeProxyPrivilege("");
 				
 				// (this must be done after putting the module in the started list)
@@ -429,7 +430,8 @@ public class ModuleFactory {
 				if (sqlStatement.trim().length() > 0)
 					as.executeSQL(sqlStatement, false);
 			}
-			String update = "update global_property set property_value = '" + version + "' where property = '" + key + "'";
+			String description = "DO NOT MODIFY.  Current database version number for the " + module.getModuleId() + " module.";
+			String update = "update global_property set property_value = '" + version + "' and description = '" + description + "' where property = '" + key + "'";
 			as.executeSQL(update, false);
 		}
 		
@@ -459,13 +461,15 @@ public class ModuleFactory {
 	public static void stopModule(Module mod, boolean isShuttingDown) {
 		
 		if (mod != null) {
+			String moduleId = mod.getModuleId();
 			
-			getStartedModulesMap().remove(mod.getModuleId());
+			getStartedModulesMap().remove(moduleId);
 			
 			if (isShuttingDown == false) {
 				Context.addProxyPrivilege("");
 				AdministrationService as = Context.getAdministrationService();
-				as.setGlobalProperty(mod.getModuleId() + ".started", "false");
+				GlobalProperty gp = new GlobalProperty(moduleId + ".started", "false", getGlobalPropertyStartedDescription(moduleId));
+				as.setGlobalProperty(gp);
 				Context.removeProxyPrivilege("");
 			}
 			
@@ -519,12 +523,12 @@ public class ModuleFactory {
 				cl = null;
 				// remove files from lib cache
 				File folder = OpenmrsClassLoader.getLibCacheFolder();
-				File tmpModuleDir = new File(folder, mod.getModuleId());
+				File tmpModuleDir = new File(folder, moduleId);
 				try {
 					System.gc();
 					OpenmrsUtil.deleteDirectory(tmpModuleDir);
 				} catch (IOException e) {
-					log.warn("Unable to delete libcachefolder for " + mod.getModuleId());
+					log.warn("Unable to delete libcachefolder for " + moduleId);
 				}
 			}
 			System.gc();
@@ -792,5 +796,20 @@ public class ModuleFactory {
 		}
 		
 	}
+	
+	/**
+	 * Returns the description for the [moduleId].started global property
+	 * @param moduleId
+	 * @return
+	 */
+	private static String getGlobalPropertyStartedDescription(String moduleId) {
+		String ret = "DO NOT MODIFY. true/false whether or not the " + moduleId;
+		ret += " module has been started.  This is used to make sure modules that were running ";
+		ret += " prior to a restart are started again";
+		
+		return ret;
+	}
 
+	
+	
 }

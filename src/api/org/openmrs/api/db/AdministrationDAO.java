@@ -426,7 +426,7 @@ public interface AdministrationDAO {
 	
 	public void deleteGlobalProperty(String propertyName) throws DAOException;
 
-	public void setGlobalProperty(String propertyName, String propertyValue) throws DAOException;
+	public void setGlobalProperty(GlobalProperty gp) throws DAOException;
 
 	public void addGlobalProperty(String propertyName, String propertyValue) throws DAOException;
 

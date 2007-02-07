@@ -469,7 +469,9 @@ public interface AdministrationService {
 	public void deleteGlobalProperty(String propertyName);
 
 	public void setGlobalProperty(String propertyName, String propertyValue);
-
+	
+	public void setGlobalProperty(GlobalProperty gp);
+	
 	public void addGlobalProperty(String propertyName, String propertyValue);
 
 	/**
