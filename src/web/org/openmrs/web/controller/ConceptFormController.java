@@ -295,7 +295,10 @@ public class ConceptFormController extends SimpleFormController {
 		
 		ConceptService cs = Context.getConceptService();
 		String conceptId = request.getParameter("conceptId");
-    	if (conceptId != null) {
+		if (conceptId == null) {
+
+		}
+		if (conceptId != null) {
     		concept = cs.getConcept(Integer.valueOf(conceptId));
     		//if (concept.isNumeric())
     		//	concept = (ConceptNumeric)concept;

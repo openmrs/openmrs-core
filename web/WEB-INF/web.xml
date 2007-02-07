@@ -143,6 +143,15 @@
 		<servlet-name>sampleFlowsheetServlet</servlet-name>
 		<url-pattern>/sampleFlowsheet</url-pattern>
 	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>conceptRedirectServlet</servlet-name>
+		<servlet-class>org.openmrs.web.servlet.ConceptRedirectServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>conceptRedirectServlet</servlet-name>
+		<url-pattern>/concept/*</url-pattern>
+	</servlet-mapping>
 		
 	<listener>
 		<listener-class>org.openmrs.web.Listener</listener-class>
