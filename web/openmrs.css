@@ -534,7 +534,7 @@ table.patientTreatmentPrograms td {
 	border: 1px solid lightgrey;
 	background-color: whitesmoke;
 	cursor: pointer;
-	width: 80px;
+	width: 82px;
 	margin: 1px;
 }
 .closeButton {
@@ -755,19 +755,19 @@ fieldset {
 	width: 140px;
 	}
 	select.smallWidth {
-		width: 144px;
+		width: 140px;
 	}
 .mediumWidth {
 	width: 240px;
 	}
 	select.mediumWidth {
-		width: 244px;
+		width: 240px;
 	}	
 .largeWidth {
 	width: 340px;
 	}
 	select.largeWidth {
-		width: 344px;
+		width: 340px;
 	}
 .smallMessage {
 	font-size: .9em;

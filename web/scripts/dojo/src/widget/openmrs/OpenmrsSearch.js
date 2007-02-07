@@ -252,7 +252,11 @@ dojo.widget.defineWidget(
 					//   hyphen key pressed or
 					//   mouse event)"
 					if (!this.text.match(/\d/) || this.allowAutoListWithNumber()) {
-					
+						
+						// force enter key for strings like 1,2,5,11
+						if (this.text.match(/^\s*\d+\s*(,\d+\s*)+$/))
+							return false;
+						
 						// If there isn't a number in the search (force usage of enter key)
 						this.hideHighlight();
 						if (this.text.length > 1 && 
@@ -261,9 +265,9 @@ dojo.widget.defineWidget(
 							dojo.debug('setting preFindObjects timeout for other key: ' + this.key);
 							var callback = function(ts, text) { return function() {ts.findObjects(text)}};
 							this.searchTimeout = setTimeout(callback(this, this.text), this.searchDelay);
-							dojo.debug('findObjects timeout called for other key: ' + this.key);
 						}
 						else if (this.text && this.text.length == 0 && this.key == dojo.event.browser.keys.KEY_BACKSPACE) {
+							// allows for "resetting" default list when user hits backspace on empty field
 							this.resetSearch();
 							this.searchCleared();
 						}
@@ -319,7 +323,8 @@ dojo.widget.defineWidget(
 			}
 		}
 		this.inputNode.focus();
-		this.inputNode.value = "";
+		if (!mouseClicked)
+			this.inputNode.value = "";
 		dojo.debug('this.inputNode.value cleared');
 		
 		//alert("text: " + this.text + " lastPhrase: " + this.lastPhraseSearched);

@@ -56,7 +56,7 @@ dojo.widget.defineWidget(
 			if (patients == null) { return; }
 			// if no hits
 			if (patients.length < 1) {
-				if (this.text.match(/\d/)) {
+				if (this.text && this.text.match(/\d/)) {
 					if (this.isValidCheckDigit(this.text) == false) {
 						//the user didn't input an identifier with a valid check digit
 						this.hideHeaderRow();
@@ -326,7 +326,7 @@ dojo.widget.defineWidget(
 			}
 			//	only allow the first item to be automatically selected if:
 			//		the entered text is a string or the entered text is a valid identifier
-			return (this.text.match(/\d/) == false || this.isValidCheckDigit(this.text));	
+			return (this.text && (this.text.match(/\d/) == false || this.isValidCheckDigit(this.text)));
 		}
 		
 	},
