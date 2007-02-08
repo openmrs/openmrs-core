@@ -372,9 +372,7 @@ public class HibernateUserDAO implements
 			return false;
 		}
 		
-		return (answerOnRecord.equals(answer));
-		
-		
+		return (answer.equals(answerOnRecord));
 	}
 	
 	@SuppressWarnings("unchecked")
