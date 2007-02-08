@@ -30,7 +30,10 @@
 	<br/>
 </c:if>
 
-<div class="boxHeader${model.patientVariation}"><spring:message code="Relationship.patient.providers" /></div>
-<div class="box${model.patientVariation}">
-	<openmrs:portlet url="patientRelationships" size="normal" patientId="${patient.patientId}" parameters="allowEditShownTypes=true|allowAddShownTypes=false|allowAddOtherTypes=true|allowVoid=true|showFrom=false|showTo=true|showTypes=Accompagnateur|showOtherTypes=false"/>
-</div>
+<openmrs:globalProperty var="relationshipTypesToShow" key="dashboard.relationships.show_types" defaultValue=""/>
+<c:if test="${not empty relationshipTypesToShow}">
+	<div class="boxHeader${model.patientVariation}"><spring:message code="Relationship.patient.providers" /></div>
+	<div class="box${model.patientVariation}">
+		<openmrs:portlet url="patientRelationships" size="normal" patientId="${patient.patientId}" parameters="allowEditShownTypes=true|allowAddShownTypes=false|allowAddOtherTypes=true|allowVoid=true|showFrom=false|showTo=true|showTypes=${relationshipTypesToShow}|showOtherTypes=false"/>
+	</div>
+</c:if>
