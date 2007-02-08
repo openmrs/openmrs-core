@@ -431,7 +431,7 @@ public class ModuleFactory {
 					as.executeSQL(sqlStatement, false);
 			}
 			String description = "DO NOT MODIFY.  Current database version number for the " + module.getModuleId() + " module.";
-			String update = "update global_property set property_value = '" + version + "' and description = '" + description + "' where property = '" + key + "'";
+			String update = "update global_property set property_value = '" + version + "', description = '" + description + "' where property = '" + key + "'";
 			as.executeSQL(update, false);
 		}
 		
