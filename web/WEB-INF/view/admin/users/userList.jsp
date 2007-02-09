@@ -72,6 +72,10 @@
 			['', '<spring:message code="User.systemId"/>', '<spring:message code="User.username"/>', '<spring:message code="User.firstName"/>', '<spring:message code="User.lastName"/>', '<spring:message code="User.roles"/>']
 		);
 		
+		searchWidget.allowAutoJump = function() {
+			return this.text && this.text.length > 1;
+		}
+		
 		searchWidget.showAll();
 		searchWidget.inputNode.focus();
 		searchWidget.inputNode.select();
