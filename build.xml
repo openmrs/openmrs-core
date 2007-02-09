@@ -352,7 +352,6 @@
 			<lib dir="${spring.dir}" includes="*.jar" />
 			<!--<lib dir="${struts.dir}" includes="*.jar" /> -->
 			<lib dir="${taglibs.dir}" includes="*.jar" />
-			<lib dir="${tomcat.dir}" includes="catalina.jar" />
 			<lib dir="${velocity.dir}" includes="*.jar" />
 			<lib dir="${xerces.dir}" includes="*.jar" />
 		</war>
@@ -411,7 +410,6 @@
 			<zipfileset dir="${spring.dir}" includes="*.jar" />
 			<!--<zipfileset dir="${struts.dir}" includes="*.jar" /> -->
 			<zipfileset dir="${taglibs.dir}" includes="*.jar" />
-			<zipfileset dir="${tomcat.dir}" includes="catalina.jar" />
 			<zipfileset dir="${velocity.dir}" includes="*.jar" />
 			<zipefileset dir="${xerces.dir}" includes="*.jar" />
 		</zip>

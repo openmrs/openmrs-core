@@ -58,7 +58,6 @@
 		<fileset dir="${mail.dir}" includes="*.jar" />
 		<!--<fileset dir="${quartz.dir}" includes="*.jar" />-->
 		<fileset dir="${spring.dir}" includes="*.jar" />
-		<fileset dir="${tomcat.dir}" includes="catalina.jar" />
 		<fileset dir="${velocity.dir}" includes="*.jar" />
     	<fileset dir="${xerces.dir}" includes="*.jar" />
     </path>
