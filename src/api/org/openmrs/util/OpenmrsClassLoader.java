@@ -3,6 +3,8 @@ package org.openmrs.util;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLClassLoader;
+import java.net.URLConnection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -10,7 +12,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.catalina.loader.WebappClassLoader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
@@ -20,7 +21,7 @@ import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.scheduler.SchedulerService;
 
-public class OpenmrsClassLoader extends WebappClassLoader {
+public class OpenmrsClassLoader extends URLClassLoader {
 	private static Log log = LogFactory.getLog(OpenmrsClassLoader.class);
 	
 	private static File libCacheFolder;
@@ -33,14 +34,20 @@ public class OpenmrsClassLoader extends WebappClassLoader {
 	private static Map<String, OpenmrsMemento> mementos = new HashMap<String, OpenmrsMemento>();
 	
 	/**
-	 * Creates the instance for the moduleclassloader
+	 * Creates the instance for the OpenmrsClassLoader
 	 */
 	public OpenmrsClassLoader(ClassLoader parent) {
-		super(parent);
+		super(new URL[0], parent);
 		instance = this;
-		this.hasExternalRepositories = true;
-		this.setAntiJARLocking(true);
 		log.debug("Creating new OpenmrsClassLoader instance with parent: " + parent);
+		
+		//disable caching so the jars aren't locked
+		// if performace is effected, this can be disabled in favor of
+		//  copying all opened jars to a temp location 
+		//  (ala org.apache.catalina.loader.WebappClassLoader antijarlocking)
+		URLConnection urlConnection = new OpenmrsURLConnection();
+		urlConnection.setDefaultUseCaches(false);
+		
 	}
 	
 	public OpenmrsClassLoader() {
@@ -56,14 +63,11 @@ public class OpenmrsClassLoader extends WebappClassLoader {
 		if (instance == null) {
 			log.trace("Creating new OpenmrsClassLoader instance");
 			instance = new OpenmrsClassLoader();
-			//Thread.currentThread().setContextClassLoader(getInstance());
 		}
 		return instance;
 	}
 	
 	public Class<?> loadClass(String name, final boolean resolve) throws ClassNotFoundException {
-		//log.debug("loading class " + name + " with " + pluginClassLoader);
-		
 		for (ModuleClassLoader classLoader : ModuleFactory.getModuleClassLoaders()) {
 			try {
 				return classLoader.loadClass(name);
@@ -98,8 +102,6 @@ public class OpenmrsClassLoader extends WebappClassLoader {
 	}
 	
 	public Enumeration<URL> findResources(final String name) throws IOException {
-		//log.debug("finding resources: " + name);
-		
 		Set<URL> results = new HashSet<URL>();
 		for (ModuleClassLoader classLoader : ModuleFactory.getModuleClassLoaders()) {
 			Enumeration<URL> urls = classLoader.findResources(name);
@@ -182,7 +184,6 @@ public class OpenmrsClassLoader extends WebappClassLoader {
 	 * @see destroyInstance()
 	 */
 	public static void flushInstance() {
-		
 		try {
 			SchedulerService service = null;
 			try {
@@ -198,8 +199,6 @@ public class OpenmrsClassLoader extends WebappClassLoader {
 		catch (Exception e) {
 			log.error("Unable to restart scheduler tasks", e);
 		}
-		
-		
 	}
 	
 	/**
@@ -299,5 +298,24 @@ public class OpenmrsClassLoader extends WebappClassLoader {
 			log.warn("Unable to expand url: " + result, io);
 			return null;
 		}
+	}
+	
+	/**
+	 * This class exists solely so OpenmrsClassLoader can call the (should be static)
+	 * method <code>URLConnection.setDefaultUseCaches(Boolean)</code>.  This causes jars opened to not be 
+	 * locked (and allows for the webapp to be reloadable.
+	 *  
+	 * @author Ben Wolfe
+	 */
+	private class OpenmrsURLConnection extends URLConnection {
+
+		public OpenmrsURLConnection() {
+			super(null);
+		}
+
+		public void connect() throws IOException {
+			
+		}
+
 	}
 }
