@@ -62,8 +62,8 @@
 			}
 		);
 		
-		toggle("div", "description");
-		toggleVoided();
+		toggleVisibility(document, "div", "description");
+		toggleRowVisibilityForClass("obs", "voided", true);
 		voidedClicked(document.getElementById("voided"));
 	})
 
@@ -72,8 +72,6 @@
 
 <script type="text/javascript">
 
-	var display = new Array();
-	
 	function mouseover(row, isDescription) {
 		if (row.className.indexOf("searchHighlight") == -1) {
 			row.className = "searchHighlight " + row.className;
@@ -119,52 +117,6 @@
 			if (voidedBy)
 				voidedBy.style.display = "none";
 		}
-	}
-	
-	function toggle(tagName, className) {
-		if (display[tagName] == "none")
-			display[tagName] = "";
-		else
-			display[tagName] = "none";
-			
-		var items = document.getElementsByTagName(tagName);
-		for (var i=0; i < items.length; i++) {
-			var classes = items[i].className.split(" ");
-			for (x=0; x<classes.length; x++) {
-				if (classes[x] == className)
-					items[i].style.display = display[tagName];
-			}
-		}
-		
-		return false;
-	}
-	
-	function toggleVoided() {
-		toggle("tr", "voided");
-		
-		var table = document.getElementById("obs");
-		
-		if (table) {
-			var rows = table.rows;
-			var oddRow = true;
-			
-			for (var i=1; i<rows.length; i++) {
-				if (rows[i].style.display == "") {
-					var c = "";
-					if (rows[i].className.substr(0, 6) == "voided")
-						c = "voided ";
-					if (oddRow)
-						c = c + "oddRow";
-					else
-						c = c + "evenRow";
-					oddRow = !oddRow;
-					rows[i++].className = c;
-					rows[i].className = c;
-				}
-			}
-		}
-		
-		return false;
 	}
 
 	function gotoPatient(tagName, patId) {
@@ -341,8 +293,8 @@
 	<br/>
 	<div class="boxHeader">
 		<span style="float: right">
-			<a href="#" id="showDescription" onClick="return toggle('div', 'description')"><spring:message code="general.toggle.description"/></a> |
-			<a href="#" id="showVoided" onClick="return toggleVoided()"><spring:message code="general.toggle.voided"/></a>
+			<a href="#" id="showDescription" onClick="return toggleVisibility(document, 'div', 'description')"><spring:message code="general.toggle.description"/></a> |
+			<a href="#" id="showVoided" onClick="return toggleRowVisibilityForClass('obs', 'voided', true);"><spring:message code="general.toggle.voided"/></a>
 		</span>
 		<b><spring:message code="Encounter.observations"/></b>
 	</div>

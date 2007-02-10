@@ -467,6 +467,9 @@ function evalTreeJS(js) {
 		eval(js);
 	}
 	dojo.debug("done evaluating js");
+	
+	document.getElementById('loadingTreeMessage').style.display = "none";	
+
 }
 
 function chooseFieldType(fieldTypeId) {

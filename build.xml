@@ -357,7 +357,7 @@
 		</war>
 	</target>
 	
-	<target name="package-web-src" depends="init" description="Create jar file containing web java src">
+	<target name="package-web-src" depends="compile-web" description="Create jar file containing web java src">
 		<mkdir dir="${build.dir}/web" />
 		<javac destdir="${build.dir}/web" debug="${javac.debug}" debuglevel="${javac.debuglevel}" deprecation="${compile.deprecation}" optimize="${compile.optimize}" classpathref="web.compile.classpath">
 			<compilerarg line="${compile.arguments}" />

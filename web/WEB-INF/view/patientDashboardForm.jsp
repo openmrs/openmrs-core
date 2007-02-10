@@ -64,6 +64,12 @@
 	<h3 class="highlighted"><spring:message code="Patient.voidedMessage"/></h3>
 </c:if>
 
+<c:if test="${patient.dead}">
+	<div id="patientDashboardDeceased" class="retiredMessage">
+		<div><spring:message code="Patient.dashboard.patientDeceased"/></div>
+	</div>
+</c:if>
+
 <openmrs:portlet url="patientHeader" id="patientDashboardHeader" patientId="${patient.patientId}"/>
 
 <div id="patientTabs${patientVariation}">

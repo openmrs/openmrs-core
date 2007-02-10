@@ -141,3 +141,54 @@ useLoadingMessage = function(message) {
 		$('disabledZone').style.display = 'none';
 	});
 }
+
+var tagNameVisibility = new Array();
+function toggleVisibility(element, childrenTagNames, className) {
+	var key = element + "." + childrenTagNames;
+	
+	if (tagNameVisibility[key] == "none")
+		tagNameVisibility[key] = "";
+	else
+		tagNameVisibility[key] = "none";
+		
+	var items = element.getElementsByTagName(childrenTagNames);
+	for (var i=0; i < items.length; i++) {
+		var classes = items[i].className.split(" ");
+		for (x=0; x<classes.length; x++) {
+			if (classes[x] == className)
+				items[i].style.display = tagNameVisibility[key];
+		}
+	}
+	
+	return false;
+}
+
+function toggleRowVisibilityForClass(elementId, className, hasDescriptionRow) {
+		var el = document.getElementById(elementId);
+		
+		if (el) {
+			toggleVisibility(el, "tr", className);
+		
+			var rows = el.rows;
+			var oddRow = true;
+			
+			for (var i=1; i<rows.length; i++) {
+				if (rows[i].style.display == "") {
+					var c = "";
+					if (rows[i].className.substr(0, 6) == className)
+						c = className + " ";
+					if (oddRow)
+						c = c + "oddRow";
+					else
+						c = c + "evenRow";
+					oddRow = !oddRow;
+					
+					rows[i].className = c;
+					if (hasDescriptionRow)
+						rows[++i].className = c;
+				}
+			}
+		}
+		
+		return false;
+	}

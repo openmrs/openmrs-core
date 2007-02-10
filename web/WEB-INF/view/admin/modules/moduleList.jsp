@@ -112,12 +112,13 @@
 <b class="boxHeader"><spring:message code="Module.help" /></b>
 <div class="box">
 	<ul>
-		<li><i><spring:message code="Module.help.load"/></i> <br/>
+		<li><i><spring:message code="Module.help.load"/></i>
 		<c:if test="${fn:length(moduleList) > 0}">
-			<li><i><spring:message code="Module.help.unload"/></i> <br/>
-			<li><i><spring:message code="Module.help.startStop"/></i> <br/>
-			<li><i><spring:message code="Module.help.update"/></i> <br/>
+			<li><i><spring:message code="Module.help.unload"/></i>
+			<li><i><spring:message code="Module.help.startStop"/></i>
+			<li><i><spring:message code="Module.help.update"/></i>
 		</c:if>
+		<li><i><spring:message code="Module.help.findMore"/></i>
 	</ul>
 </div>
 
