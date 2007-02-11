@@ -18,12 +18,20 @@ import org.openmrs.PatientAddress;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Tribe;
+import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
+import org.openmrs.api.DuplicateIdentifierException;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.IdentifierNotUniqueException;
+import org.openmrs.api.InsufficientIdentifiersException;
+import org.openmrs.api.InvalidCheckDigitException;
+import org.openmrs.api.InvalidIdentifierFormatException;
+import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.web.WebConstants;
 
 public class DWRPatientService {
 
@@ -177,21 +185,63 @@ public class DWRPatientService {
 	}
 
 	
-	public void addIdentifier(Integer patientId, String identifierType, String identifier, Integer identifierLocationId) {
+	public String addIdentifier(Integer patientId, String identifierType, String identifier, Integer identifierLocationId) {
+
+		String ret = "";
+		
 		if (identifier == null || identifier.length() == 0)
-			return;
+			return "PatientIdentifier.error.general";
 		PatientService ps = Context.getPatientService();
 		EncounterService es = Context.getEncounterService();
+		Patient p = ps.getPatient(patientId);
 		PatientIdentifierType idType = ps.getPatientIdentifierType(identifierType);
+		//ps.updatePatientIdentifier(pi);
 		Location location = es.getLocation(identifierLocationId);
 		log.debug("idType=" + identifierType + "->" + idType + " , location=" + identifierLocationId + "->" + location + " identifier=" + identifier);
-		Patient p = ps.getPatient(patientId);
 		PatientIdentifier id = new PatientIdentifier();
 		id.setIdentifierType(idType);
 		id.setIdentifier(identifier);
 		id.setLocation(location);
+
+		// in case we are editing, check to see if there is already an ID of this type and location
+		for ( PatientIdentifier previousId : p.getActiveIdentifiers() ) {
+			if ( previousId.getIdentifierType().equals(idType) && previousId.getLocation().equals(location) ) {
+				log.debug("Found equivalent ID: [" + idType + "][" + location + "][" + previousId.getIdentifier() + "], about to remove");
+				p.removeIdentifier(previousId);
+			} else {
+				if ( !previousId.getIdentifierType().equals(idType) ) log.debug("Previous ID id type does not match: [" + previousId.getIdentifierType().getName() + "][" + previousId.getIdentifier() + "]");
+				if ( !previousId.getLocation().equals(location) ) {
+					log.debug("Previous ID location is: " + previousId.getLocation());
+					log.debug("New location is: " + location);
+				}
+			}
+		}
+		
 		p.addIdentifier(id);
-		ps.updatePatient(p);
+
+		try {
+			ps.updatePatient(p);
+		} catch ( InvalidIdentifierFormatException iife ) {
+			log.error(iife);
+			ret = "PatientIdentifier.error.formatInvalid";
+		} catch ( InvalidCheckDigitException icde ) {
+			log.error(icde);
+			ret = "PatientIdentifier.error.checkDigit";
+		} catch ( IdentifierNotUniqueException inue ) {
+			log.error(inue);
+			ret = "PatientIdentifier.error.notUnique";
+		} catch ( DuplicateIdentifierException die ) {
+			log.error(die);
+			ret = "PatientIdentifier.error.duplicate";
+		} catch ( InsufficientIdentifiersException iie ) {
+			log.error(iie);
+			ret = "PatientIdentifier.error.insufficientIdentifiers";
+		} catch ( PatientIdentifierException pie ) {
+			log.error(pie);
+			ret = "PatientIdentifier.error.general";
+		}
+
+		return ret;
 	}
 	
 	public String exitPatientFromCare(Integer patientId, Integer reasonForExitId, String dateOfExit, Integer causeOfDeath, String otherReason ) {

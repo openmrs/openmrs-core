@@ -1,5 +1,7 @@
 package org.openmrs.api;
 
+import org.openmrs.PatientIdentifier;
+
 public class DuplicateIdentifierException extends PatientIdentifierException {
 
 	private static final long serialVersionUID = 1L;
@@ -11,11 +13,9 @@ public class DuplicateIdentifierException extends PatientIdentifierException {
 		super(message);
 	}
 
-	public DuplicateIdentifierException(String message, String identifier) {
-		super(message);
-		this.setIdentifier(identifier);
+	public DuplicateIdentifierException(String message, PatientIdentifier identifier) {
+		super(message, identifier);
 	}
-
 	public DuplicateIdentifierException(String message, Throwable cause) {
 		super(message, cause);
 	}

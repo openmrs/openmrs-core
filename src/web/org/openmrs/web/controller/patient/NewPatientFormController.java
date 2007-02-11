@@ -97,6 +97,8 @@ public class NewPatientFormController extends SimpleFormController {
 	
 		ShortPatientModel pli = (ShortPatientModel)obj;
 		
+		log.debug("\nNOW GOING THROUGH PROCESSFORMSUBMISSION METHOD.......................................\n\n");
+		
 		if (Context.isAuthenticated()) {
 			PatientService ps = Context.getPatientService();
 			EncounterService es = Context.getEncounterService();
@@ -211,6 +213,8 @@ public class NewPatientFormController extends SimpleFormController {
 		
 		HttpSession httpSession = request.getSession();
 
+		log.debug("\nNOW GOING THROUGH ONSUBMIT METHOD.......................................\n\n");
+
 		if (Context.isAuthenticated()) {
 			PatientService ps = Context.getPatientService();
 			ShortPatientModel p = (ShortPatientModel)obj;
@@ -291,43 +295,37 @@ public class NewPatientFormController extends SimpleFormController {
 				ps.updatePatient(patient);
 			} catch ( InvalidIdentifierFormatException iife ) {
 				log.error(iife);
-				patient.setIdentifiers(null);
-				p.setIdentifier(null);
+				patient.removeIdentifier(iife.getPatientIdentifier());
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.formatInvalid");
 				//errors = new BindException(new InvalidIdentifierFormatException(msa.getMessage("PatientIdentifier.error.formatInvalid")), "givenName");
 				isError = true;
 			} catch ( InvalidCheckDigitException icde ) {
 				log.error(icde);
-				patient.setIdentifiers(null);
-				p.setIdentifier(null);
+				patient.removeIdentifier(icde.getPatientIdentifier());
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.checkDigit");
 				//errors = new BindException(new InvalidCheckDigitException(msa.getMessage("PatientIdentifier.error.checkDigit")), "givenName");
 				isError = true;
 			} catch ( IdentifierNotUniqueException inue ) {
 				log.error(inue);
-				patient.setIdentifiers(null);
-				p.setIdentifier(null);
+				patient.removeIdentifier(inue.getPatientIdentifier());
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.notUnique");
 				//errors = new BindException(new IdentifierNotUniqueException(msa.getMessage("PatientIdentifier.error.notUnique")), "givenName");
 				isError = true;
 			} catch ( DuplicateIdentifierException die ) {
 				log.error(die);
-				patient.setIdentifiers(null);
-				p.setIdentifier(null);
+				patient.removeIdentifier(die.getPatientIdentifier());
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.duplicate");
 				//errors = new BindException(new DuplicateIdentifierException(msa.getMessage("PatientIdentifier.error.duplicate")), "givenName");
 				isError = true;
 			} catch ( InsufficientIdentifiersException iie ) {
 				log.error(iie);
-				patient.setIdentifiers(null);
-				p.setIdentifier(null);
+				patient.removeIdentifier(iie.getPatientIdentifier());
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.insufficientIdentifiers");
 				//errors = new BindException(new InsufficientIdentifiersException(msa.getMessage("PatientIdentifier.error.insufficientIdentifiers")), "givenName");
 				isError = true;
 			} catch ( PatientIdentifierException pie ) {
 				log.error(pie);
-				patient.setIdentifiers(null);
-				p.setIdentifier(null);
+				patient.removeIdentifier(pie.getPatientIdentifier());
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.general");
 				//errors = new BindException(new PatientIdentifierException(msa.getMessage("PatientIdentifier.error.general")), "givenName");
 				isError = true;

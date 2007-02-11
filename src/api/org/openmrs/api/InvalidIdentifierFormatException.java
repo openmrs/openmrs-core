@@ -1,5 +1,7 @@
 package org.openmrs.api;
 
+import org.openmrs.PatientIdentifier;
+
 public class InvalidIdentifierFormatException extends PatientIdentifierException {
 
 	private static final long serialVersionUID = 1L;
@@ -13,15 +15,8 @@ public class InvalidIdentifierFormatException extends PatientIdentifierException
 		super(message);
 	}
 
-	public InvalidIdentifierFormatException(String message, String identifier) {
-		super(message);
-		this.setIdentifier(identifier);
-	}
-
-	public InvalidIdentifierFormatException(String message, String identifier, String format) {
-		super(message);
-		this.setIdentifier(identifier);
-		this.setFormat(format);
+	public InvalidIdentifierFormatException(String message, PatientIdentifier identifier) {
+		super(message, identifier);
 	}
 
 	public InvalidIdentifierFormatException(String message, Throwable cause) {

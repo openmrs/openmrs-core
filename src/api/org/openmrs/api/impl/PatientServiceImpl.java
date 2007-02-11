@@ -23,12 +23,14 @@ import org.openmrs.RelationshipType;
 import org.openmrs.Tribe;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
+import org.openmrs.api.BlankIdentifierException;
 import org.openmrs.api.DuplicateIdentifierException;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.IdentifierNotUniqueException;
 import org.openmrs.api.InsufficientIdentifiersException;
 import org.openmrs.api.InvalidCheckDigitException;
 import org.openmrs.api.InvalidIdentifierFormatException;
+import org.openmrs.api.MissingRequiredIdentifierException;
 import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
@@ -116,107 +118,115 @@ public class PatientServiceImpl implements PatientService {
 	 * @param patient
 	 * @throws APIException
 	 */
-	private void checkPatientIdentifiers(Patient patient) throws PatientIdentifierException {
-		// TODO create a temporary identifier?
+	public void checkPatientIdentifiers(Patient patient) throws PatientIdentifierException {
+		// check patient has at least one identifier
 		if (patient.getIdentifiers().size() < 1 )
 			throw new InsufficientIdentifiersException("At least one Patient Identifier is required");
-		
-		List<String> identifiersUsed = new Vector<String>();
-		
+
 		List<PatientIdentifier> identifiers = new Vector<PatientIdentifier>();
 		identifiers.addAll(patient.getIdentifiers());
-
-		// Check for required identifiers
-		// TODO: decide if we actually want to use this
-		/*
+		List<String> identifiersUsed = new Vector<String>();
 		List<PatientIdentifierType> requiredTypes = this.getRequiredPatientIdentifierTypes();
-		for ( PatientIdentifierType requiredType : requiredTypes ) {
-			boolean isFound = false;
-			for ( PatientIdentifier identifier : identifiers ) {
-				if ( identifier.getIdentifierType().equals(requiredType)) isFound = true;
-			}
-			if ( !isFound ) throw new APIException("Patient is missing the following required identifier: " + requiredType.getName());
-		}
-		*/
-		
-		// Check for duplicate identifiers and identifiers
+		if ( requiredTypes == null ) requiredTypes = new ArrayList<PatientIdentifierType>();
+		List<PatientIdentifierType> foundRequiredTypes = new ArrayList<PatientIdentifierType>();
+
 		for (PatientIdentifier pi : identifiers) {
-			// skip voided identifiers
-			if (pi.isVoided()) continue;
-			
-			// skip and remove invalid/empty identifiers
-			if (pi.getIdentifier() == null || pi.getIdentifier().length() == 0) {
-				patient.removeIdentifier(pi);
-				continue;
-			}
-			
-			// check this patient for duplicate identifiers
-			if (pi.getIdentifierType().hasCheckDigit()) {
-				if (identifiersUsed.contains(pi.getIdentifier()))
-					throw new DuplicateIdentifierException("This patient has duplicate identifiers for: " + pi.getIdentifier(), pi.getIdentifier());
-				else
-					identifiersUsed.add(pi.getIdentifier());
-			}
-				
-			// compare against other identifiers matching the id string and id type
-			Patient p = identifierInUse(pi.getIdentifier(), pi.getIdentifierType(), patient);
-			if (p != null)
-				throw new IdentifierNotUniqueException("Identifier " + pi.getIdentifier() + " already in use by patient #" + p.getPatientId(), pi.getIdentifier());
-			
-			// validate checkdigit
-			PatientIdentifierType pit = pi.getIdentifierType();
-			String identifier = pi.getIdentifier();
-
 			try {
-				if (pit.hasCheckDigit() && !OpenmrsUtil.isValidCheckDigit(identifier)) {
-					log.error("hasCheckDigit and is not valid: " + pit.getName() + " " + identifier);
-					throw new InvalidCheckDigitException("Invalid check digit for identifier: " + identifier, identifier);
-				}
-			} catch (Exception e) {
-				throw new InvalidCheckDigitException("Invalid check digit for identifier: " + identifier, identifier);
+				checkPatientIdentifier(pi);
+			} catch ( BlankIdentifierException bie ) {
+				patient.removeIdentifier(pi);
+				throw bie;
 			}
-				
-			// also validate regular expression - if it exists
-			String regExp = pit.getFormat();
-			if ( regExp != null ) {
-				if ( regExp.length() > 0 ) {
-					// if this ID has a valid corresponding regular expression, check against it
-					log.debug("Trying to match " + identifier + " and " + regExp);
-					if ( !identifier.matches(regExp) ) {
-						log.debug("The two DO NOT match");
-						if ( pit.getFormatDescription() != null ) {
-							if ( pit.getFormatDescription().length() > 0 ) throw new InvalidIdentifierFormatException("Identifier [" + identifier + "] does not match required format: " + pit.getFormatDescription(), identifier, pit.getFormat());
-							else throw new InvalidIdentifierFormatException("Identifier [" + identifier + "] does not match required format: " + pit.getFormat(), identifier, pit.getFormat());
-						} else {
-							throw new InvalidIdentifierFormatException("Identifier [" + identifier + "] does not match required format: " + pit.getFormat(), identifier, pit.getFormat());
-						}
-					} else {
-						log.debug("The two match!!");
-					}
+			
+			if (pi.isVoided()) continue;
+
+			// check if this is a required identifier
+			for ( PatientIdentifierType requiredType : requiredTypes ) {
+				if ( pi.getIdentifierType().equals(requiredType) ) {
+					foundRequiredTypes.add(requiredType);
+					requiredTypes.remove(requiredType);
+					break;
 				}
 			}
 
-			// Changed by Christian - 21 Dec 2006 - I think we can leave this up to regexp, what characters are valid or not
-			/*
-			else if (pit.hasCheckDigit() == false && identifier.contains("-")) {
-				log.error("hasn't CheckDigit and contains '-': " + pit.getName() + " " + identifier);
-				throw new APIException("Invalid character for non-checkdigit identifier " + identifier);
+			// TODO: check patient has at least one "sufficient" identifier
+
+			// check this patient for duplicate identifiers
+			if (identifiersUsed.contains(pi.getIdentifier())) {
+				patient.removeIdentifier(pi);
+				throw new DuplicateIdentifierException("This patient has two identical identifiers of type " + pi.getIdentifierType().getName() + ": " + pi.getIdentifier() + ", deleting one of them", pi);
 			}
-			// Changed by Christian - 21 Dec 2006 - I think we are already throwing Exceptions exactly the way we want already - don't want to catch them again here
-			} catch (Exception e) {
-				log.error("exception thrown with: " + pit.getName() + " " + identifier);
-				log.error("Error while adding patient identifiers to savedIdentifier list", e);
-				throw new PatientIdentifierException("Invalid identifier " + identifier);
-			}
-			*/
+			
+			else
+				identifiersUsed.add(pi.getIdentifier());
 		}
+
+		if ( requiredTypes.size() > 0 ) {
+			String missingNames = "";
+			for ( PatientIdentifierType pit : requiredTypes ) {
+				missingNames += (missingNames.length() > 0) ? ", " + pit.getName() : pit.getName();
+			}
+			throw new MissingRequiredIdentifierException("Patient is missing the following required identifier(s): " + missingNames);
+		}
+	}
+
+	public void checkPatientIdentifier(PatientIdentifier pi) throws PatientIdentifierException {
 		
+		// skip and remove invalid/empty identifiers
+		if (pi == null) throw new BlankIdentifierException("Identifier cannot be null or blank", pi);
+		else if (pi.getIdentifier() == null ) throw new BlankIdentifierException("Identifier cannot be null or blank", pi);
+		else if ( pi.getIdentifier().length() == 0 ) throw new BlankIdentifierException("Identifier cannot be null or blank", pi);
+
+		// check is already in use by another patient
+		Patient p = identifierInUse(pi);
+		if (p != null) {
+			throw new IdentifierNotUniqueException("Identifier " + pi.getIdentifier() + " already in use by patient #" + p.getPatientId(), pi);
+		}
+
+		// also validate regular expression - if it exists
+		PatientIdentifierType pit = pi.getIdentifierType();
+		String identifier = pi.getIdentifier();
+
+		String regExp = pit.getFormat();
+		if ( regExp != null ) {
+			if ( regExp.length() > 0 ) {
+				// if this ID has a valid corresponding regular expression, check against it
+				log.debug("Trying to match " + identifier + " and " + regExp);
+				if ( !identifier.matches(regExp) ) {
+					log.debug("The two DO NOT match");
+					if ( pit.getFormatDescription() != null ) {
+						if ( pit.getFormatDescription().length() > 0 ) throw new InvalidIdentifierFormatException("Identifier [" + identifier + "] does not match required format: " + pit.getFormatDescription(), pi);
+						else throw new InvalidIdentifierFormatException("Identifier [" + identifier + "] does not match required format: " + pit.getFormat(), pi);
+					} else {
+						throw new InvalidIdentifierFormatException("Identifier [" + identifier + "] does not match required format: " + pit.getFormat(), pi);
+					}
+				} else {
+					log.debug("The two match!!");
+				}
+			}
+		}
+
+		// validate checkdigit
+		try {
+			if (pit.hasCheckDigit()) if (!OpenmrsUtil.isValidCheckDigit(identifier)) {
+				log.error("hasCheckDigit and is not valid: " + pit.getName() + " " + identifier);
+				throw new InvalidCheckDigitException("Invalid check digit for identifier: " + identifier, pi);
+			}
+		} catch (Exception e) {
+			throw new InvalidCheckDigitException("Invalid check digit for identifier: " + identifier, pi);
+		}	
+	}
+	
+	public Patient identifierInUse(PatientIdentifier pi) {
+		return identifierInUse(pi.getIdentifier(), pi.getIdentifierType(), pi.getPatient());
 	}
 	
 	public Patient identifierInUse(String identifier, PatientIdentifierType type, Patient ignorePatient) {
 		List<PatientIdentifier> ids = getPatientIdentifiers(identifier, type);
 		for (PatientIdentifier id : ids) {
-			if (id.getIdentifierType().hasCheckDigit() && (ignorePatient == null || !id.getPatient().equals(ignorePatient)) )
+			// Changed by CA on 10 Feb 2007 - not sure why you would only verify this for identifiers with checkdigits...
+			//if (id.getIdentifierType().hasCheckDigit() && (ignorePatient == null || !id.getPatient().equals(ignorePatient)) )
+			if ( ignorePatient == null || !id.getPatient().equals(ignorePatient))
 				return id.getPatient();
 		}
 		
@@ -407,11 +417,21 @@ public class PatientServiceImpl implements PatientService {
 	public void updatePatientIdentifier(PatientIdentifier pi) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_PATIENTS);
-		Patient p = identifierInUse(pi.getIdentifier(), pi.getIdentifierType(), pi.getPatient());
-		if (p != null)
-			throw new APIException("Identifier in use by patient #" + p.getPatientId());
+
+		// this method allows you change only the Identifier type, so let's do that and then do a full ID check
+		Patient p = pi.getPatient();
+		Set<PatientIdentifier> identifiers = p.getIdentifiers();
+		for ( PatientIdentifier identifier : identifiers ) {
+			if ( identifier.getIdentifier().equals(pi.getIdentifier())
+					&& identifier.getLocation().equals(pi.getLocation()) )
+			{
+				identifier.setIdentifierType(pi.getIdentifierType());
+				break;
+			}
+		}
 		
-		getPatientDAO().updatePatientIdentifier(pi);
+		this.updatePatient(p);
+		//getPatientDAO().updatePatientIdentifier(pi);
 	}
 	
 	/**

@@ -45,6 +45,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.api.ConceptService;
+import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ModuleException;
 import org.w3c.dom.Document;
@@ -125,16 +126,35 @@ public class OpenmrsUtil {
 	 */
 	public static boolean isValidCheckDigit(String id) throws Exception {
 
+		// Let regular expression take care of this now
+		/*
 		if (!id.matches("^[A-Za-z0-9_]+-[0-9A-J]$")) {
 			throw new Exception("Invalid characters and/or id formation");
+		}
+		*/
+		
+		if ( id.indexOf("-") < 0 ) {
+			throw new PatientIdentifierException("Cannot find check-digit in identifier");
 		}
 
 		String idWithoutCheckDigit = id.substring(0, id.indexOf("-"));
 
 		int computedCheckDigit = getCheckDigit(idWithoutCheckDigit);
 
-		int givenCheckDigit = Integer.valueOf(id.substring(id.indexOf("-") + 1,
-				id.length()));
+		String checkDigit = id.substring(id.indexOf("-") + 1, id.length());
+		
+		if ( checkDigit.equalsIgnoreCase("A") ) checkDigit = "0";
+		if ( checkDigit.equalsIgnoreCase("B") ) checkDigit = "1";
+		if ( checkDigit.equalsIgnoreCase("C") ) checkDigit = "2";
+		if ( checkDigit.equalsIgnoreCase("D") ) checkDigit = "3";
+		if ( checkDigit.equalsIgnoreCase("E") ) checkDigit = "4";
+		if ( checkDigit.equalsIgnoreCase("F") ) checkDigit = "5";
+		if ( checkDigit.equalsIgnoreCase("G") ) checkDigit = "6";
+		if ( checkDigit.equalsIgnoreCase("H") ) checkDigit = "7";
+		if ( checkDigit.equalsIgnoreCase("I") ) checkDigit = "8";
+		if ( checkDigit.equalsIgnoreCase("J") ) checkDigit = "9";
+		
+		int givenCheckDigit = Integer.valueOf(checkDigit);
 
 		return (computedCheckDigit == givenCheckDigit);
 	}

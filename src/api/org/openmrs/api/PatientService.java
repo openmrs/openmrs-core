@@ -187,6 +187,10 @@ public interface PatientService {
 	public PatientIdentifierType getPatientIdentifierType(String name)
 			throws APIException;
 
+	public void checkPatientIdentifier(PatientIdentifier pi) throws PatientIdentifierException;
+
+	public void checkPatientIdentifiers(Patient patient) throws PatientIdentifierException;
+	
 	/**
 	 * Get tribe by internal tribe identifier
 	 * 

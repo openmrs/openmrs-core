@@ -20,7 +20,7 @@
 			for (var i in inputs) {
 				if (inputs[i] && inputs[i].name == "identifier") {
 					inputs[i].value = id;
-					if (oldIdentifier) {
+					if (oldIdentifier && 1 == 0) {
 						inputs[i].parentNode.appendChild(document.createTextNode(id));
 						inputs[i].parentNode.removeChild(inputs[i]);
 					}
@@ -39,7 +39,7 @@
 						else
 							selects[i].options[o].selected = false;
 					}
-					if (oldIdentifier) {
+					if (oldIdentifier && 1 == 0) {
 						selects[i].parentNode.appendChild(document.createTextNode(selectedOpt.text));
 						selects[i].parentNode.removeChild(selects[i]);
 					}
@@ -57,7 +57,7 @@
 						else
 							selects[i].options[o].selected = false;
 					}
-					if (oldIdentifier) {
+					if (oldIdentifier && 1 == 0) {
 						selects[i].parentNode.appendChild(document.createTextNode(selectedOpt.text));
 						selects[i].parentNode.removeChild(selects[i]);
 					}
@@ -70,12 +70,14 @@
 				inputs[i].value = id + type;
 			}
 		
+		/*
 		if (oldIdentifier) {
 			for (var i in inputs) {
 				if(inputs[i] && inputs[i].name == "closeButton")
 					inputs[i].style.display = "none";
 			}
 		}
+		*/
 
 	}
 	

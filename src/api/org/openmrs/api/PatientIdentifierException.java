@@ -1,11 +1,13 @@
 package org.openmrs.api;
 
+import org.openmrs.PatientIdentifier;
+
 
 public class PatientIdentifierException extends APIException {
 
 	private static final long serialVersionUID = 1L;
 	
-	private String identifier;
+	private PatientIdentifier patientIdentifier;
 
 	public PatientIdentifierException() {
 	}
@@ -14,9 +16,9 @@ public class PatientIdentifierException extends APIException {
 		super(message);
 	}
 
-	public PatientIdentifierException(String message, String identifier) {
+	public PatientIdentifierException(String message, PatientIdentifier identifier) {
 		super(message);
-		this.setIdentifier(identifier);
+		this.setPatientIdentifier(identifier);
 	}
 
 	public PatientIdentifierException(String message, Throwable cause) {
@@ -26,12 +28,13 @@ public class PatientIdentifierException extends APIException {
 	public PatientIdentifierException(Throwable cause) {
 		super(cause);
 	}
+	
 
-	public String getIdentifier() {
-		return identifier;
+	public PatientIdentifier getPatientIdentifier() {
+		return patientIdentifier;
 	}
 
-	public void setIdentifier(String identifier) {
-		this.identifier = identifier;
+	public void setPatientIdentifier(PatientIdentifier patientIdentifier) {
+		this.patientIdentifier = patientIdentifier;
 	}
 }

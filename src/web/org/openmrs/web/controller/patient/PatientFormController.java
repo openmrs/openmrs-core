@@ -362,26 +362,32 @@ public class PatientFormController extends SimpleFormController {
 					Context.getPatientService().updatePatient(patient);	
 				} catch ( InvalidIdentifierFormatException iife ) {
 					log.error(iife);
+					patient.removeIdentifier(iife.getPatientIdentifier());
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.formatInvalid");
 					isError = true;
 				} catch ( InvalidCheckDigitException icde ) {
 					log.error(icde);
+					patient.removeIdentifier(icde.getPatientIdentifier());
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.checkDigit");
 					isError = true;
 				} catch ( IdentifierNotUniqueException inue ) {
 					log.error(inue);
+					patient.removeIdentifier(inue.getPatientIdentifier());
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.notUnique");
 					isError = true;
 				} catch ( DuplicateIdentifierException die ) {
 					log.error(die);
+					patient.removeIdentifier(die.getPatientIdentifier());
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.duplicate");
 					isError = true;
 				} catch ( InsufficientIdentifiersException iie ) {
 					log.error(iie);
+					patient.removeIdentifier(iie.getPatientIdentifier());
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.insufficientIdentifiers");
 					isError = true;
 				} catch ( PatientIdentifierException pie ) {
 					log.error(pie);
+					patient.removeIdentifier(pie.getPatientIdentifier());
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.general");
 					isError = true;
 				}

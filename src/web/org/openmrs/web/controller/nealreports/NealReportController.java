@@ -414,8 +414,16 @@ public class NealReportController implements Controller {
 			Map<String, String> holder = new HashMap<String, String>();
 			holder.put(General.ID, e.getKey().toString());
 			holder.put(Hiv.OBS_TYPE, "encounter");
-			holder.put(Hiv.OBS_DATE, formatDate(e.getValue().getEncounterDatetime()));
-			holder.put(Hiv.RESULT, e.getValue().getEncounterType().getName());
+			if ( e.getValue().getEncounterDatetime() != null ) {
+				holder.put(Hiv.OBS_DATE, formatDate(e.getValue().getEncounterDatetime()));
+			} else {
+				holder.put(Hiv.OBS_DATE, "");
+			}
+			if ( e.getValue().getEncounterType() != null ) {
+				holder.put(Hiv.RESULT, e.getValue().getEncounterType().getName());
+			} else {
+				holder.put(Hiv.RESULT, "");
+			}
 			maker.addDynamic(holder);
 			log.debug("Encounters added " + holder);
 		}
