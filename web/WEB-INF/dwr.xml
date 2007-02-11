@@ -41,6 +41,7 @@
 			<include method="findDuplicatePatients" />
 			<include method="addIdentifier" />
 			<include method="exitPatientFromCare" />
+			<include method="changeHealthCenter" />
 		</create>
 	
 		<create creator="new" javascript="DWRConceptService">

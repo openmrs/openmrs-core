@@ -337,4 +337,20 @@ public class DWRPatientService {
 		return ret;
 	}
 	
+	public String changeHealthCenter(Integer patientId, Integer locationId) {
+		
+		String ret = "";
+		
+		if ( patientId != null && locationId != null ) {
+			Patient patient = Context.getPatientService().getPatient(patientId);
+			Location location = Context.getEncounterService().getLocation(locationId);
+			
+			if ( patient != null && location != null ) {
+				patient.setHealthCenter(location);
+				Context.getPatientService().updatePatient(patient);
+			}
+		}
+		
+		return ret;
+	}
 }
