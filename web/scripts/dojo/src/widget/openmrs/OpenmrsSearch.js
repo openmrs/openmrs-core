@@ -489,7 +489,10 @@ dojo.widget.defineWidget(
 				str += "0";
 			str += month;
 			str += '-';
-			str += (d.getYear() + 1900);
+			if (d.getYear() < 1900)
+				str += (d.getYear() + 1900);
+			else
+				str += d.getYear();
 		}
 		return str;
 	},
