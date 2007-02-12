@@ -171,14 +171,17 @@ public class HibernateFormDAO implements
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.FormService#getForms(boolean)
+	 * @see org.openmrs.api.db.FormService#getForms(boolean,boolean)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Form> getForms(boolean onlyPublished) throws DAOException {
+	public List<Form> getForms(boolean onlyPublished, boolean includeRetired) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Form.class);
 		
 		if (onlyPublished)
 			crit.add(Expression.eq("published", true));
+		
+		if (!includeRetired)
+			crit.add(Expression.eq("retired", false));
 		
 		crit.addOrder(Order.asc("name"));
 		crit.addOrder(Order.asc("formId"));

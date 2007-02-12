@@ -73,8 +73,18 @@ public class FormServiceImpl implements FormService {
 		return getFormDAO().getForm(formId);
 	}
 	
-	public List<Form> getForms(boolean published) throws APIException {
-		return getFormDAO().getForms(published);
+	/**
+	 * @see org.openmrs.api.FormService#getForms(boolean, boolean)
+	 */
+	public List<Form> getForms(boolean publishedOnly) throws APIException {
+		return getForms(publishedOnly, false);
+	}
+	
+	/**
+	 * @see org.openmrs.api.FormService#getForms(boolean, boolean)
+	 */
+	public List<Form> getForms(boolean publishedOnly, boolean includeRetired) throws APIException {
+		return getFormDAO().getForms(publishedOnly, includeRetired);
 	}
 	
 	/**
@@ -232,7 +242,7 @@ public class FormServiceImpl implements FormService {
 	}
 	
 	/**
-	 * Returns the forms with which this form is associated
+	 * Returns the forms with which this concept is associated
 	 * @return
 	 * @throws APIException
 	 */

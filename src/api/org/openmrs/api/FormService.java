@@ -30,9 +30,31 @@ public interface FormService {
 	 */
 	@Transactional(readOnly=true)
 	public Form getForm(Integer formId) throws APIException;
-
+	
+	/**
+	 * Get all forms.  If publishedOnly is true, a form must be marked as
+	 * 'published' to be included in the list
+	 * 
+	 * @param published
+	 * @return List of forms
+	 * @throws APIException
+	 */
 	@Transactional(readOnly=true)
-	public List<Form> getForms(boolean published) throws APIException;
+	public List<Form> getForms(boolean publishedOnly) throws APIException;
+	
+	/**
+	 * Get all forms.  If publishedOnly is true, a form must be marked as
+	 * 'published' to be included in the list.  If includeRetired is true
+	 * 'retired' must be set to false to be include in the list
+	 * 
+	 * @param publishedOnly
+	 * @param includeRetired
+	 * @return
+	 * @throws APIException
+	 */
+	@Transactional(readOnly=true)
+	public List<Form> getForms(boolean publishedOnly, boolean includeRetired) throws APIException;
+	
 
 	/**
 	 * Save changes to form
@@ -117,7 +139,7 @@ public interface FormService {
 	public List<Form> getForms() throws APIException;
 
 	/**
-	 * Returns the forms with which this form is associated
+	 * Returns the forms with which this concept is associated
 	 * @return
 	 * @throws APIException
 	 */

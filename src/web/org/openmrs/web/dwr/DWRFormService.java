@@ -32,9 +32,8 @@ public class DWRFormService {
 	public List<FormListItem> getForms(boolean includeUnpublished) {
 		List<FormListItem> forms = new Vector<FormListItem>();
 		
-		for(Form form : Context.getFormService().getForms()) {
-			if (form.getPublished() == true || includeUnpublished == true)
-				forms.add(new FormListItem(form));
+		for(Form form : Context.getFormService().getForms(!includeUnpublished)) {
+			forms.add(new FormListItem(form));
 		}
 		
 		return forms;

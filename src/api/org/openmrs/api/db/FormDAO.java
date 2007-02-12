@@ -34,7 +34,10 @@ public interface FormDAO {
 	 */
 	public Form getForm(Integer formId) throws DAOException;
 	
-	public List<Form> getForms(boolean published) throws DAOException;
+	/**
+	 * @see org.openmrs.api.FormService#getForms(boolean,boolean)
+	 */
+	public List<Form> getForms(boolean publishedOnly, boolean includeRetired) throws DAOException;
 	
 	/**
 	 * Save changes to form
