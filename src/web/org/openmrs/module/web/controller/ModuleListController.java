@@ -146,6 +146,7 @@ public class ModuleListController extends SimpleFormController {
 					error = msa.getMessage("Module.invalid", args);
 				else {
 					if ("stop".equals(action)) {
+						mod.clearStartupError();
 						ModuleFactory.stopModule(mod);
 						WebModuleUtil.stopModule(mod, getServletContext());
 						success = msa.getMessage("Module.stopped", args);
