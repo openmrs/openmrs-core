@@ -33,6 +33,7 @@
 					<spring:message code="general.onDate"/>
 					<openmrs:fieldGen type="java.util.Date" formFieldName="date_${conceptId}" val="" parameters="noBind=true" />
 					<input type="button" value="<spring:message code="general.save"/>" onClick="handleAddCustomObs(${conceptId})"/>
+					<input type="button" value="<spring:message code="general.cancel"/>" onClick="showHideDiv('newCustomObs_${conceptId}')"/>
 				</td>
 			</c:if>
 		</tr>
