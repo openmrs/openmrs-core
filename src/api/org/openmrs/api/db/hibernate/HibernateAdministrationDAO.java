@@ -864,6 +864,7 @@ public class HibernateAdministrationDAO implements
 			projections.add(Projections.groupProperty(groupBy));
 		projections.add(Projections.groupProperty("enc." + encounterColumn));
 		projections.add(Projections.groupProperty("enc.form"));
+		projections.add(Projections.groupProperty("enc.encounterType"));
 		projections.add(Projections.count("enc." + encounterColumn));
 		
 		crit.setProjection(projections);
@@ -886,8 +887,9 @@ public class HibernateAdministrationDAO implements
 			
 			s.setUser((User) holder[0 + offset]);
 			Form form = (Form)holder[1 + offset];
-			s.setEntryType(form != null ? form.getName() : "null");
-			s.setNumberOfEntries((Integer) holder[2 + offset]);
+			EncounterType encType = (EncounterType)holder[2 + offset];
+			s.setEntryType(form != null ? form.getName() : (encType != null ? encType.getName() : "null" ));
+			s.setNumberOfEntries((Integer) holder[3 + offset]);
 			ret.add(s);
 		}
 		
@@ -921,9 +923,9 @@ public class HibernateAdministrationDAO implements
 		l = q.list();
 		for (Object[] holder : l) {
 			DataEntryStatistic s = new DataEntryStatistic();
-			s.setUser((User) holder[1]);
-			s.setEntryType((String) holder[0]);
-			s.setNumberOfEntries((Integer) holder[2]);
+			s.setUser((User) holder[0]);
+			s.setEntryType((String) holder[1]);
+			s.setNumberOfEntries(((Number) holder[2]).intValue()); // not sure why this comes out as a Long instead of an Integer
 			ret.add(s);
 		}
 		
