@@ -1,14 +1,18 @@
 package org.openmrs.web.dwr;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
 import org.openmrs.cohort.CohortSearchHistory;
 import org.openmrs.reporting.PatientFilter;
 import org.openmrs.reporting.PatientSet;
+import org.openmrs.util.OpenmrsUtil;
 
 public class DWRCohortBuilderService {
 
@@ -81,6 +85,15 @@ public class DWRCohortBuilderService {
 	
 	public void loadSearchHistory(Integer id) {
 		Context.setVolatileUserData("CohortBuilderSearchHistory", Context.getReportService().getSearchHistory(id));
+	}
+	
+	public void saveCohort(String name, String description, String commaSeparatedIds) {
+		Set<Integer> ids = new HashSet<Integer>(OpenmrsUtil.delimitedStringToIntegerList(commaSeparatedIds, ","));
+		Cohort cohort = new Cohort();
+		cohort.setName(name);
+		cohort.setDescription(description);
+		cohort.setMemberIds(ids);
+		Context.getCohortService().createCohort(cohort);
 	}
 	
 	/**

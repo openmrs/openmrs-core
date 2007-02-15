@@ -63,6 +63,9 @@ public interface PatientSetService {
 			Date fromDate, Date toDate);
 
 	@Transactional(readOnly=true)
+	public PatientSet getPatientsInProgram(Program program, Date fromDate, Date toDate);
+	
+	@Transactional(readOnly=true)
 	public PatientSet getPatientsHavingDateObs(Integer conceptId, Date startTime, Date endTime);
 	
 	@Transactional(readOnly=true)

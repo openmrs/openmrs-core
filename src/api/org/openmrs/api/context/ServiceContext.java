@@ -9,6 +9,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
+import org.openmrs.api.CohortService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.FormService;
@@ -99,6 +100,14 @@ public class ServiceContext {
 	 */
 	public PatientSetService getPatientSetService() {
 		return (PatientSetService)getService(PatientSetService.class);
+	}
+	
+	public CohortService getCohortService() {
+		return (CohortService) getService(CohortService.class);
+	}
+	
+	public void setCohortService(CohortService cs) {
+		setService(CohortService.class, cs);
 	}
 
 	/**

@@ -7,6 +7,8 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.Drug;
 import org.openmrs.api.PatientSetService;
@@ -16,6 +18,8 @@ import org.openmrs.util.OpenmrsUtil;
 
 public class DrugOrderPatientFilter extends AbstractPatientFilter implements PatientFilter, Comparable<DrugOrderPatientFilter> {
 
+	protected final Log log = LogFactory.getLog(getClass());
+	
 	private Integer drugId; // replace this with drug
 	private Concept drugConcept;
 	private GroupMethod groupMethod;
@@ -118,8 +122,14 @@ public class DrugOrderPatientFilter extends AbstractPatientFilter implements Pat
 		else if (drugId != null || drugConcept != null) {
 			sb.append("Taking ");
 			SortedSet<String> names = new TreeSet<String>();
-			if (drugId != null)
-				names.add(Context.getConceptService().getDrug(drugId).getName());
+			if (drugId != null) {
+				Drug drug = Context.getConceptService().getDrug(drugId);
+				if (drug == null) {
+					log.error("Can't find drug with id " + drugId);
+					names.add("MISSING DRUG " + drugId);
+				} else
+					names.add(drug.getName());
+			}
 			if (drugConcept != null)
 				names.add(drugConcept.getName(Context.getLocale(), false).getName());
 			sb.append(OpenmrsUtil.join(names, " or "));

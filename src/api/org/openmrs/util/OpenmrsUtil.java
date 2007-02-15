@@ -795,4 +795,18 @@ public class OpenmrsUtil {
 			}
 		}
     }
+    
+    public static List<Integer> delimitedStringToIntegerList(String delimitedString, String delimiter) {
+		List<Integer> ret = new ArrayList<Integer>();
+		String[] tokens = delimitedString.split(delimiter);
+		for (String token : tokens) {
+			token = token.trim();
+			if (token.length() == 0)
+				continue;
+			else
+				ret.add(Integer.valueOf(token));
+		}
+		return ret;
+	}
+
 }

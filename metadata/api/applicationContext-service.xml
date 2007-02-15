@@ -48,6 +48,7 @@
         <property name="administrationService"><ref bean="adminService"/></property>
         <property name="programWorkflowService"><ref bean="programWorkflowService"/></property>
         <property name="patientSetService"><ref bean="patientSetService"/></property>
+        <property name="cohortService"><ref bean="cohortService"/></property>
         <property name="messageService"><ref bean="messageService"/></property>
         
         <property name="schedulerService"><ref bean="schedulerService"/></property>
@@ -105,6 +106,9 @@
 	<bean id="patientSetDAO" class="org.openmrs.api.db.hibernate.HibernatePatientSetDAO">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
 	</bean>
+	<bean id="cohortDAO" class="org.openmrs.api.db.hibernate.HibernateCohortDAO">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
+	</bean>
 	
 	
 	<bean id="schedulerDAO" class="org.openmrs.scheduler.db.hibernate.HibernateSchedulerDAO">
@@ -158,7 +162,9 @@
 	<bean id="patientSetServiceTarget" class="org.openmrs.api.impl.PatientSetServiceImpl">
 		<property name="patientSetDAO"><ref bean="patientSetDAO"/></property>	
 	</bean>
-	
+	<bean id="cohortServiceTarget" class="org.openmrs.api.impl.CohortServiceImpl">
+		<property name="cohortDAO"><ref bean="cohortDAO"/></property>
+	</bean>
 	
 	<bean id="schedulerServiceTarget" class="org.openmrs.scheduler.timer.TimerSchedulerService">
 		<property name="schedulerDAO"><ref bean="schedulerDAO"/></property>	
@@ -307,6 +313,18 @@
 	<bean id="patientSetService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="patientSetServiceTarget"/></property>
+		<property name="preInterceptors">
+			<list>
+				<ref local="authorizationInterceptor"/>
+			</list>
+		</property>
+		<property name="transactionAttributeSource">
+			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
+		</property>
+	</bean>
+	<bean id="cohortService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager"><ref local="transactionManager"/></property>
+		<property name="target"><ref local="cohortServiceTarget"/></property>
 		<property name="preInterceptors">
 			<list>
 				<ref local="authorizationInterceptor"/>

@@ -17,6 +17,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.Location;
+import org.openmrs.Program;
 import org.openmrs.api.context.Context;
 import org.openmrs.cohort.CohortSearchHistory;
 import org.openmrs.reporting.AbstractReportObject;
@@ -26,6 +27,7 @@ import org.openmrs.web.controller.analysis.OnTheFlyAnalysisController.LinkArg;
 import org.openmrs.web.controller.analysis.OnTheFlyAnalysisController.LinkSpec;
 import org.openmrs.web.propertyeditor.ConceptEditor;
 import org.openmrs.web.propertyeditor.LocationEditor;
+import org.openmrs.web.propertyeditor.ProgramEditor;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.view.RedirectView;
@@ -74,9 +76,11 @@ public class CohortBuilderController implements Controller {
 			history = new CohortSearchHistory();
 			Context.setVolatileUserData("CohortBuilderSearchHistory", history);
 		}
+		List<Program> programs = Context.getProgramWorkflowService().getPrograms();
 		model.put("savedFilters", savedFilters);
 		model.put("searchHistory", history);
 		model.put("links", linkHelper());
+		model.put("programs", programs);
 		return new ModelAndView(formView, "model", model);
 	}
 	
@@ -243,6 +247,15 @@ public class CohortBuilderController implements Controller {
 							if (concept != null)
 								concept.getName(Context.getLocale());
 							argVal = concept;
+						} else if (checkClassHelper(Program.class, pd.getPropertyType(), arg.getArgClass())) {
+							log.debug("class is Program");
+							ProgramEditor pe = new ProgramEditor();
+							pe.setAsText(arg.getArgValue());
+							Program program = (Program) pe.getValue();
+							// force a lazy-load of the name
+							if (program != null)
+								program.getConcept().getName();
+							argVal = program;
 						} else if (pd.getPropertyType().isEnum()) {
 							log.debug("F");
 							List<Enum> constants = Arrays.asList((Enum[]) pd.getPropertyType().getEnumConstants());

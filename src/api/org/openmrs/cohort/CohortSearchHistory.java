@@ -1,6 +1,5 @@
 package org.openmrs.cohort;
 
-import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -11,7 +10,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 import java.util.Stack;
-import java.util.StringTokenizer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -117,9 +115,35 @@ public class CohortSearchHistory extends AbstractReportObject {
 	
 	public synchronized void removeSearchItem(int i) {
 		checkArrayLengths();
-		searchHistory.remove(i);
-		cachedResults.remove(i);
-		cachedResultDates.remove(i);
+		List<Integer> toDelete = new ArrayList<Integer>();
+		toDelete.add(i);
+		while (toDelete.size() > 0) {
+			int index = toDelete.remove(0);
+			List<Integer> toCascade = removeSearchItemHelper(index);
+			searchHistory.remove(index);
+			cachedResults.remove(index);
+			cachedResultDates.remove(index);
+			toDelete.addAll(toCascade);
+		}
+	}
+	
+	/**
+	 * @return zero-based indices that should also be removed due to cascading. (These will already have had 1 subtracted from them, since we know that a search from above is being deleted) 
+	 */
+	private synchronized List<Integer> removeSearchItemHelper(int i) {
+		// 1. Decrement any number in a CohortHistoryCompositionFilter that's greater than i.
+		// 2. If any CohortHistoryCompositionFilter references search i, we'll have to cascade delete it
+		List<Integer> ret = new ArrayList<Integer>();
+		for (int j = i + 1; j < searchHistory.size(); ++j) {
+			PatientFilter pf = searchHistory.get(j);
+			if (pf instanceof CohortHistoryCompositionFilter) {
+				// note that i is zero-based, but in a composition filter it would be one-based
+				boolean removeMeToo = ((CohortHistoryCompositionFilter) pf).removeFromHistoryNotify(i + 1);
+				if (removeMeToo)
+					ret.add(j - 1);
+			}
+		}
+		return ret;
 	}
 
 	/**
@@ -224,7 +248,12 @@ public class CohortSearchHistory extends AbstractReportObject {
 			Stack<List<Object>> stack = new Stack<List<Object>>();
 			while (st.nextToken() != StreamTokenizer.TT_EOF) {
 				if (st.ttype == StreamTokenizer.TT_NUMBER) {
-					currentLine.add(new Integer((int) st.nval));
+					Integer thisInt = new Integer((int) st.nval);
+					if (thisInt < 1 || thisInt > searchHistory.size()) {
+						log.error("number < 1 or > search history size");
+						return null;
+					}
+					currentLine.add(thisInt);
 				} else if (st.ttype == '(') {
 					stack.push(currentLine);
 					currentLine = new ArrayList<Object>();
@@ -254,7 +283,11 @@ public class CohortSearchHistory extends AbstractReportObject {
 			return null;
 		}
 		
-		return toPatientFilter(currentLine);
+		//return toPatientFilter(currentLine);
+		CohortHistoryCompositionFilter ret = new CohortHistoryCompositionFilter();
+		ret.setHistory(this);
+		ret.setParsedCompositionString(currentLine);
+		return ret;
 	}
 	
 	private static boolean test(List<Object> list) {

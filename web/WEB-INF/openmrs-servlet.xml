@@ -785,12 +785,8 @@
     <!-- ============================ -->
 		<!-- ** Migration ** -->
 			<bean id="migrationController" class="org.openmrs.web.controller.migration.MigrationController"/>
-		    <bean id="migrationParamResolver" class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
-				<property name="paramName"><value>method</value></property>
-				<property name="defaultMethodName"><value>handleRequest</value></property>
-			</bean>
 			<bean id="migrationActionController" class="org.springframework.web.servlet.mvc.multiaction.MultiActionController">
-				<property name="methodNameResolver"><ref bean="migrationParamResolver"/></property>
+				<property name="methodNameResolver"><ref bean="defaultMethodParamResolver"/></property>
 				<property name="delegate"><ref bean="migrationController"/></property>
 			</bean>
 			<!-- ** /Migration ** -->

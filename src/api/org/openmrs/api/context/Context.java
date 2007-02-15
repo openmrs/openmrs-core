@@ -17,6 +17,7 @@ import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
+import org.openmrs.api.CohortService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.FormService;
@@ -244,6 +245,10 @@ public class Context implements ApplicationContextAware {
 	 */
 	public static PatientService getPatientService() {
 		return getServiceContext().getPatientService();
+	}
+	
+	public static CohortService getCohortService() {
+		return getServiceContext().getCohortService();
 	}
 
 	/**

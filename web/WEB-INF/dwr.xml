@@ -183,6 +183,7 @@
 			<include method="saveSearchHistory"/>
 			<include method="loadSearchHistory"/>
 			<include method="getUserSearchHistory"/>
+			<include method="saveCohort"/>
 		</create>
 				
 	</allow>

@@ -455,6 +455,33 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		
 		return patientSet;
 	}
+	
+	/**
+	 * Returns the set of patients that were ever in enrolled in a given program.
+	 * If fromDate != null, then only those patients who were in the program at any time after that date
+	 * if toDate != null, then only those patients who were in the program at any time before that date
+	 */
+	public PatientSet getPatientsInProgram(Integer programId, Date fromDate, Date toDate) {
+		String sql = "select patient_id from patient_program pp where pp.program_id = :programId ";
+		if (fromDate != null)
+			sql += " and (date_completed is null or date_completed >= :fromDate) ";
+		if (toDate != null)
+			sql += " and (date_enrolled is null or date_enrolled <= :toDate) ";
+		log.debug("sql: " + sql);
+		
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		query.setInteger("programId", programId);
+		if (fromDate != null)
+			query.setDate("fromDate", fromDate);
+		if (toDate != null)
+			query.setDate("toDate", toDate);
+		
+		Set<Integer> ptIds = new HashSet<Integer>();
+		ptIds.addAll(query.list());
+		PatientSet ret = new PatientSet();
+		ret.copyPatientIds(ptIds);
+		return ret;
+	}
 
 	public PatientSet getPatientsHavingObs(Integer conceptId, PatientSetService.TimeModifier timeModifier, PatientSetService.Modifier modifier, Object value, Date fromDate, Date toDate) {
 		Concept concept = Context.getConceptService().getConcept(conceptId);

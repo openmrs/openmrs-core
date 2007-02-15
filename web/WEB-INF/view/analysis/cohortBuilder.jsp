@@ -15,7 +15,6 @@
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js"></openmrs:htmlInclude>
 
 <script type="text/javascript">
-
 	dojo.require("dojo.widget.openmrs.ConceptSearch");
 	dojo.require("dojo.widget.openmrs.OpenmrsPopup");
 	dojo.hostenv.writeIncludes();
@@ -35,8 +34,18 @@
 	})
 	
 	function classFilterTemplate(concept) {
-		if (concept.className == 'State' || concept.className == 'Workflow' || concept.className == 'Program')
-			return 'Program/Workflow/State filter not yet implemented';
+		if (concept.className == 'Program') {
+			var str = '<form method="post" action="cohortBuilder.form">';
+			str += '<input type="hidden" name="method" value="addDynamicFilter"/>';
+			str += '<input type="hidden" name="filterClass" value="org.openmrs.reporting.ProgramPatientFilter" />';
+			str += '<input type="hidden" name="vars" value="program#org.openmrs.Program,fromDate#java.util.Date,toDate#java.util.Date"/>';
+			str += '<input type="hidden" name="program" value="concept.' + concept.conceptId + '"/>';
+			str += 'In ' + concept.name;
+			str += ' <input type="submit" value="Search"/>';
+			str += '</form>';			
+			return str;
+		} else if (concept.className == 'State' || concept.className == 'Workflow')
+			return 'Workflow/State filter not yet implemented';
 		else if (concept.className == 'Drug') {
 			var str = '<form method="post" action="cohortBuilder.form">';
 			str += '<input type="hidden" name="method" value="addDynamicFilter"/>';
@@ -54,7 +63,8 @@
 	function obsFilterTemplate(concept) {
 		var hl7Abbrev = concept.hl7Abbreviation;
 		if (hl7Abbrev == 'ZZ')
-			return 'Handling Datatype N/A not yet implemented. Any suggestions on how it should behave?';
+			//return 'Handling Datatype N/A not yet implemented. Any suggestions on how it should behave?';
+			return null;
 		if (hl7Abbrev != 'NM' && hl7Abbrev != 'ST' && hl7Abbrev != 'CWE') {
 			return null;
 		}
@@ -115,6 +125,19 @@
 		str += '</ul>';
 		div.innerHTML = str;
 		showLayer('concept_filter_box');
+	}
+	
+	function handleSaveCohort() {
+		if (currentPatientSet == null) {
+			window.alert("<spring:message code="PatientSet.stillLoading"/>");
+			return;
+		} else {
+			var cohortName = $('saveCohortName').value;
+			var cohortDescr = $('saveCohortDescription').value;
+			var ids = currentPatientSet.commaSeparatedPatientIds;
+			DWRCohortBuilderService.saveCohort(cohortName, cohortDescr, ids);
+			hideLayer('saveCohortDiv');
+		}		
 	}
 	
 	function handleLoadButton() {
@@ -278,7 +301,9 @@
 				</td>
 				<td>
 					${item.filter.name}
-					<small>(${item.filter.description})</small>
+					<c:if test="${not empty item.filter.description}">
+						<small>${item.filter.description}</small>
+					</c:if>
 				</td>
 				<td align="right">
 					<span id="results_for_filter_${iter.count}">
@@ -453,6 +478,18 @@
 </div>
 
 <div id="cohort_builder_actions" style="border: 1px black solid">
+
+	<input type="button" value="<spring:message code="general.save"/>" onClick="toggleLayer('saveCohortDiv')"/>
+	<div id="saveCohortDiv" style="position: absolute; border: 2px black solid; background-color: #e0e0e0; display: none">
+		<b><u>Save Cohort (i.e. list of patient ids)</u></b>
+		<br/>
+		Name: <input type="text" id="saveCohortName"/> <br/>
+		Description: <input type="text" id="saveCohortDescription"/> <br/>
+		<i>Note: this actually works, but it doesn't give you any indication. And you can't use a cohort anywhere yet.</i> <br/>
+		<input type="button" value="<spring:message code="general.save"/>" onClick="handleSaveCohort()" />
+		<input type="button" value="<spring:message code="general.cancel"/>" onClick="toggleLayer('saveCohortDiv')" />
+	</div>
+	
 	<c:if test="${fn:length(model.links) > 0}">
 		(placeholder taken straight from on-the-fly-analysis:
 		<span style="position: relative" onMouseOver="javascript:showLayer('_linkMenu')" onMouseOut="javascript:hideLayer('_linkMenu')">

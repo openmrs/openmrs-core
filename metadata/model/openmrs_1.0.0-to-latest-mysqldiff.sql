@@ -1680,7 +1680,60 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 delimiter ;
 call diff_procedure('1.0.52');
 
+#--------------------------------------
+# OpenMRS Datamodel version 1.0.53
+# Darius Jazayeri           Feb 15 2007
+# Adding cohort and cohort_member
+#--------------------------------------
 
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+	SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+
+#-- START YOUR QUERY(IES) HERE --#
+
+	CREATE TABLE `cohort` (
+	  `cohort_id` int(11) NOT NULL auto_increment,
+	  `name` varchar(255) NOT NULL,
+	  `description` varchar(1000) default NULL,
+	  `creator` int(11) NOT NULL,
+	  `date_created` datetime NOT NULL,
+	  `voided` tinyint(1) NOT NULL,
+	  `voided_by` int(11) default NULL,
+	  `date_voided` datetime default NULL,
+	  `void_reason` varchar(255) default NULL,
+	  PRIMARY KEY  (`cohort_id`),
+	  KEY `cohort_creator` (`creator`),
+	  KEY `user_who_voided_cohort` (`voided_by`),
+	  CONSTRAINT `cohort_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
+	  CONSTRAINT `user_who_voided_cohort` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	
+	CREATE TABLE `cohort_member` (
+	  `cohort_id` int(11) NOT NULL default '0',
+	  `patient_id` int(11) NOT NULL default '0',
+	  PRIMARY KEY  (`cohort_id`, `patient_id`),
+	  KEY `cohort` (`cohort_id`),
+	  KEY `patient` (`patient_id`),
+	  CONSTRAINT `parent_cohort` FOREIGN KEY (`cohort_id`) REFERENCES `cohort` (`cohort_id`),
+	  CONSTRAINT `member_patient` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+#-- END YOUR QUERY(IES) HERE --#
+
+	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+	
+	END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.0.53');
 
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script

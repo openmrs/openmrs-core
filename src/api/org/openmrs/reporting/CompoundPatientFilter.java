@@ -61,7 +61,22 @@ public class CompoundPatientFilter extends AbstractPatientFilter implements
 	}
 
 	public PatientSet filterInverse(PatientSet input) {
-		throw new UnsupportedOperationException();
+		if (operator == BooleanOperator.AND) {
+			// NOT(AND(x, y)) -> OR(NOT x, NOT y)
+			Set<Integer> ptIds = new HashSet<Integer>();
+			for (PatientFilter pf : filters)
+				ptIds.addAll(pf.filterInverse(input).getPatientIds());
+			PatientSet ps = new PatientSet();
+			ps.copyPatientIds(ptIds);
+			return ps;
+		} else {
+			// NOT(OR(x, y)) -> AND(NOT x, NOT y)
+			PatientSet temp = input;
+			for (PatientFilter pf : filters) {
+				temp = pf.filterInverse(temp);
+			}
+			return temp;
+		}
 	}
 	
 	public void setDescription(String description) {

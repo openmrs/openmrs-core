@@ -99,6 +99,10 @@ public class PatientSetServiceImpl implements PatientSetService {
 		return getPatientSetDAO().getPatientsHavingObs(conceptId, timeModifier, modifier, value, fromDate, toDate);
 	}
 	
+	public PatientSet getPatientsInProgram(Program program, Date fromDate, Date toDate) {
+		return getPatientSetDAO().getPatientsInProgram(program.getProgramId(), fromDate, toDate);
+	}
+	
 	public PatientSet getPatientsHavingTextObs(Concept concept, String value, TimeModifier timeModifier) {
 		return getPatientsHavingTextObs(concept.getConceptId(), value, timeModifier);
 	}
@@ -176,11 +180,7 @@ public class PatientSetServiceImpl implements PatientSetService {
 	public Map<Integer, Encounter> getEncountersByType(PatientSet patients, EncounterType encType) {
 		return getPatientSetDAO().getEncountersByType(patients, encType);
 	}
-
-	public Map<Integer, Encounter> getEncounters(PatientSet patients) {
-		return getPatientSetDAO().getEncounters(patients);
-	}
-
+	
 	public Map<Integer, Encounter> getFirstEncountersByType(PatientSet patients, EncounterType encType) {
 		return getPatientSetDAO().getEncountersByType(patients, encType);
 	}
