@@ -119,7 +119,7 @@
 	<openmrs:hasPrivilege privilege="Patient Dashboard - View Encounters Section">
 		<div id="patientEncounters" style="display:none;">
 			
-			<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.EncountersTabHeader" type="html" parameters="patientId=${patient.patientId}s" />
+			<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.EncountersTabHeader" type="html" parameters="patientId=${patient.patientId}" />
 			<openmrs:portlet url="patientEncounters" id="patientDashboardEncounters" patientId="${patient.patientId}"/>
 			
 		</div>
