@@ -217,7 +217,7 @@ public class EncounterFormController extends SimpleFormController {
 					
 					Integer groupId = o.getObsGroupId();
 					
-					if (groupId == null) {
+					if (groupId == null && parent != null) {
 						// if the obs wasn't marked as a group but the parent concept in the form is a set, treat as a grouped obs 
 						Concept fieldConcept = null;
 						if ((fieldConcept = parent.getField().getConcept()) != null && fieldConcept.isSet()) {
