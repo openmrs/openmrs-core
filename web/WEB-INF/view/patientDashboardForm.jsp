@@ -102,27 +102,42 @@
 <div id="patientSections">
 	<openmrs:hasPrivilege privilege="Patient Dashboard - View Overview Section">
 		<div id="patientOverview" style="display:none;">
+			
+			<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.OverviewTabHeader" type="html" parameters="patientId=${patient.patientId}" />
 			<openmrs:portlet url="patientOverview" id="patientDashboardOverview" patientId="${patient.patientId}"/>
+			
 		</div>
 	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="Patient Dashboard - View Regimen Section">	
 		<div id="patientRegimen" style="display:none;">
+
+			<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.RegimenTabHeader" type="html" parameters="patientId=${patient.patientId}" />
 			<openmrs:portlet url="patientRegimen" id="patientDashboardRegimen" patientId="${patient.patientId}" parameters="displayDrugSetIds=ANTIRETROVIRAL DRUGS,TUBERCULOSIS TREATMENT DRUGS" />
+			
 		</div>
 	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="Patient Dashboard - View Encounters Section">
 		<div id="patientEncounters" style="display:none;">
+			
+			<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.EncountersTabHeader" type="html" parameters="patientId=${patient.patientId}s" />
 			<openmrs:portlet url="patientEncounters" id="patientDashboardEncounters" patientId="${patient.patientId}"/>
+			
 		</div>
 	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="Patient Dashboard - View Demographics Section">
 		<div id="patientDemographics" style="display:none;">
+			
+			<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.DemographicsTabHeader" type="html" parameters="patientId=${patient.patientId}" />
 			<openmrs:portlet url="patientDemographics" id="patientDashboardDemographics" patientId="${patient.patientId}"/>
+			
 		</div>
 	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="Patient Dashboard - View Graphs Section">
 		<div id="patientGraphs" style="display:none;">
+		
+			<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.GraphsTabHeader" type="html" parameters="patientId=${patient.patientId}" />
 			<openmrs:portlet url="patientGraphs" id="patientGraphsPortlet" patientId="${patient.patientId}"/>
+			
 		</div>
 	</openmrs:hasPrivilege>
 	<openmrs:extensionPoint pointId="org.openmrs.patientDashboardTab" type="html">
@@ -133,7 +148,10 @@
 						portletId is null: '${extension.extensionId}'
 					</c:when>
 					<c:otherwise>
+					
+						<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.${extension.tabId}TabHeader" type="html" parameters="patientId=${patient.patientId}" />
 						<openmrs:portlet url="${extension.portletUrl}" id="${extension.tabId}" moduleId="${extension.moduleId}"/>
+						
 					</c:otherwise>
 				</c:choose>
 			</div>
