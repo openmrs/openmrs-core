@@ -145,6 +145,7 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 				// not been called.  Do iterations now
 				while (extensions != null && extensions.hasNext()) {
 					Extension ext = extensions.next();
+					ext.initialize(parameterMap);
 					String overrideContent = ext.getOverrideContent("");
 					if (overrideContent != null)
 						pageContext.getOut().write(overrideContent);
