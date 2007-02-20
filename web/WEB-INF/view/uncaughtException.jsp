@@ -60,18 +60,28 @@ try {
 			session.setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR, request.getAttribute("javax.servlet.error.request_uri"));
 			response.sendRedirect(request.getContextPath() + "/login.htm");
 		}
-		else if (exception instanceof ServletException) {
-			// It's a ServletException: we should extract the root cause
-			ServletException sEx = (ServletException) exception;
-			Throwable rootCause = sEx.getRootCause();
-			if (rootCause == null)
-				rootCause = sEx;
-			out.println("<br><br>** Root cause is: "+ rootCause.getMessage());
-			rootCause.printStackTrace(new java.io.PrintWriter(out)); 
-		}
 		else {
-			// It's not a ServletException, so we'll just show it
-			exception.printStackTrace(new java.io.PrintWriter(out)); 
+			java.lang.StackTraceElement[] elements;
+			
+			if (exception instanceof ServletException) {
+				// It's a ServletException: we should extract the root cause
+				ServletException sEx = (ServletException) exception;
+				Throwable rootCause = sEx.getRootCause();
+				if (rootCause == null)
+					rootCause = sEx;
+				out.println("<br><br>** Root cause is: "+ rootCause.getMessage());
+				elements = rootCause.getStackTrace();
+			}
+			else {
+				// It's not a ServletException, so we'll just show it
+				elements = exception.getStackTrace(); 
+			}
+			for (StackTraceElement element : elements) {
+				if (element.getClassName().contains("openmrs"))
+					out.println("<b>" + element + "</b><br/>");
+				else
+					out.println(element + "<br/>");
+			}
 		}
 	} 
 	else  {
