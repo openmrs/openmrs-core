@@ -266,7 +266,8 @@ public class NewPatientFormController extends SimpleFormController {
 			
 			
 			// add the new identifiers
-			patient.getIdentifiers().addAll(newIdentifiers);
+			//patient.getIdentifiers().addAll(newIdentifiers);
+			patient.addIdentifiers(newIdentifiers);
 			
 			// set the other patient attributes
 			patient.setBirthdate(p.getBirthdate());

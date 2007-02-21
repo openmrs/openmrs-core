@@ -1,6 +1,7 @@
 package org.openmrs;
 
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
@@ -412,6 +413,21 @@ public class Patient implements java.io.Serializable {
 			addresses.remove(address);
 	}
 
+	/**
+	 * Will only add PatientIdentifiers in this list that this
+	 * patient does not have already
+	 *  
+	 * @param patientIdentifiers
+	 */
+	public void addIdentifiers(Collection<PatientIdentifier> patientIdentifiers) {
+		for (PatientIdentifier identifier : patientIdentifiers)
+			addIdentifier(identifier);
+	}
+	
+	/**
+	 * Will add this PatientIdentifier if the patient doesn't contain it already
+	 * @param patientIdentifier
+	 */
 	public void addIdentifier(PatientIdentifier patientIdentifier) {
 		patientIdentifier.setPatient(this);
 		if (identifiers == null)
