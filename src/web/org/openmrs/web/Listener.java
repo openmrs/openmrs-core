@@ -68,7 +68,7 @@ public final class Listener extends ContextLoaderListener {
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		
 		// clear the dwr file
-		String absPath = realPath + "/WEB-INF/dwr-modules";
+		String absPath = realPath + "/WEB-INF/dwr-modules.xml";
 		File dwrFile = new File(absPath.replace("/", File.separator));
 		if(dwrFile.exists()) {
 			try {
@@ -86,7 +86,7 @@ public final class Listener extends ContextLoaderListener {
 			} catch (SAXException sax) {
 				log.warn("Unable to clear the dwr document", sax);
 			} catch (Exception e) {
-				log.debug("Error clearing swr-modules.xml");
+				log.debug("Error clearing dwr-modules.xml");
 			}
 		}
 		
