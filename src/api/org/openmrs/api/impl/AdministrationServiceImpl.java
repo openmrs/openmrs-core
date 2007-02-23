@@ -809,6 +809,8 @@ public class AdministrationServiceImpl implements AdministrationService {
 			syn.setCreator(Context.getAuthenticatedUser());
 			
 			mappedConcept.addSynonym(syn);
+			mappedConcept.setChangedBy(Context.getAuthenticatedUser());
+			mappedConcept.setDateChanged(new Date());
 			updateConceptWord(mappedConcept);
 		}
 		
