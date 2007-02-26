@@ -1735,6 +1735,38 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 delimiter ;
 call diff_procedure('1.0.53');
 
+
+#--------------------------------------
+# OpenMRS Datamodel version 1.0.54
+# Darius Jazayeri           Feb 26 2007
+# Lengthening global_property.property_value
+#--------------------------------------
+
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+	SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+
+#-- START YOUR QUERY(IES) HERE --#
+
+	alter table global_property modify property_value text;
+
+#-- END YOUR QUERY(IES) HERE --#
+
+	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+	
+	END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.0.54');
+
+
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script
 #-----------------------------------

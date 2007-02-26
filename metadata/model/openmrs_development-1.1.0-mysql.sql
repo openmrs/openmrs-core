@@ -506,7 +506,7 @@ CREATE TABLE `formentry_queue` (
 #----------------------------
 CREATE TABLE `global_property` (
   `property` varchar(255) default NULL,
-  `property_value` varchar(255) default NULL,
+  `property_value` text default NULL,
   PRIMARY_KEY (`property`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

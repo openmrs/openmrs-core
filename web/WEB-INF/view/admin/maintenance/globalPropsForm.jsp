@@ -39,7 +39,16 @@
 			<c:forEach var="globalProp" items="${globalProps}" varStatus="status">
 				<tr class="<c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">
 					<td valign="top"><input type="text" name="property" value="${globalProp.property}" size="50" maxlength="250" onchange="edited()" /></td>
-					<td valign="top"><input type="text" name="value" value="${globalProp.propertyValue}" size="30" maxlength="250" onchange="edited()" /></td>
+					<td valign="top">
+						<c:choose>
+							<c:when test="${fn:length(globalProp.propertyValue) > 20}">
+								<textarea name="value" onchange="edited()" rows="1" cols="60" wrap="off">${globalProp.propertyValue}</textarea>
+							</c:when>
+							<c:otherwise>
+								<input type="text" name="value" value="${globalProp.propertyValue}" size="30" maxlength="4000" onchange="edited()" />
+							</c:otherwise>
+						</c:choose>
+					</td>
 					<td valign="top" rowspan="2"><input type="button" value='<spring:message code="general.remove" />' class="closeButton" onclick="edited(); remove(this)" /></td>
 				</tr>
 				<tr class="<c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">
