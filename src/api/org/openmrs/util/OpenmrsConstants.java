@@ -264,6 +264,8 @@ public class OpenmrsConstants {
 		return roles;
 	}
 	
+	public static String GP_CONCEPTS_LOCKED = "concepts.locked";
+	
 	// These properties (and default values) are set if not found in the database on startup
 	public static final List<GlobalProperty> CORE_GLOBAL_PROPERTIES() {
 		List<GlobalProperty> props = new Vector<GlobalProperty>();
@@ -299,6 +301,8 @@ public class OpenmrsConstants {
 		// TODO should be changed to text defaults and constants should be removed
 		props.add(new GlobalProperty("scheduler.username", SchedulerConstants.SCHEDULER_USERNAME, "Username for the OpenMRS user that will perform the scheduler activities"));
 		props.add(new GlobalProperty("scheduler.password", SchedulerConstants.SCHEDULER_PASSWORD, "Password for the OpenMRS user that will perform the scheduler activities"));
+		
+		props.add(new GlobalProperty(GP_CONCEPTS_LOCKED, "false", "true/false whether or not concepts can be edited in this database."));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);

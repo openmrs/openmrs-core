@@ -23,8 +23,8 @@ import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
-import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.ConceptService;
+import org.openmrs.api.ConceptsLockedException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.util.OpenmrsConstants;
@@ -45,10 +45,6 @@ public class ConceptServiceImpl implements ConceptService {
 	public ConceptServiceImpl() { }
 
 	private ConceptDAO getConceptDAO() {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_CONCEPTS))
-			throw new APIAuthenticationException("Privilege required: "
-					+ OpenmrsConstants.PRIV_VIEW_CONCEPTS);
-
 		return dao;
 	}
 	
@@ -61,10 +57,8 @@ public class ConceptServiceImpl implements ConceptService {
 	 *            to be created
 	 */
 	public void createConcept(Concept concept) {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_ADD_CONCEPTS))
-			throw new APIAuthenticationException("Privilege required: "
-					+ OpenmrsConstants.PRIV_ADD_CONCEPTS);
-
+		checkIfLocked();
+		
 		String authUserId = Context.getAuthenticatedUser().getUserId()
 				.toString();
 
@@ -78,10 +72,8 @@ public class ConceptServiceImpl implements ConceptService {
 	 *            concept to be created
 	 */
 	public void createConcept(ConceptNumeric concept) {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_ADD_CONCEPTS))
-			throw new APIAuthenticationException("Privilege required: "
-					+ OpenmrsConstants.PRIV_ADD_CONCEPTS);
-
+		checkIfLocked();
+		
 		String authUserId = Context.getAuthenticatedUser().getUserId()
 				.toString();
 
@@ -119,10 +111,8 @@ public class ConceptServiceImpl implements ConceptService {
 	 *            to be updated
 	 */
 	public void updateConcept(Concept concept) {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_CONCEPTS))
-			throw new APIAuthenticationException("Privilege required: "
-					+ OpenmrsConstants.PRIV_EDIT_CONCEPTS);
-
+		checkIfLocked();
+		
 		String authUserId = Context.getAuthenticatedUser().getUserId()
 				.toString();
 
@@ -138,10 +128,8 @@ public class ConceptServiceImpl implements ConceptService {
 	 *            concept to be updated
 	 */
 	public void updateConcept(ConceptNumeric concept) {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_CONCEPTS))
-			throw new APIAuthenticationException("Privilege required: "
-					+ OpenmrsConstants.PRIV_EDIT_CONCEPTS);
-
+		checkIfLocked();
+		
 		String authUserId = Context.getAuthenticatedUser().getUserId()
 				.toString();
 
@@ -160,10 +148,8 @@ public class ConceptServiceImpl implements ConceptService {
 	 *            to be deleted
 	 */
 	public void deleteConcept(Concept concept) {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_DELETE_CONCEPTS))
-			throw new APIAuthenticationException("Privilege required: "
-					+ OpenmrsConstants.PRIV_DELETE_CONCEPTS);
-
+		checkIfLocked();
+		
 		String authUserId = Context.getAuthenticatedUser().getUserId()
 				.toString();
 
@@ -181,10 +167,8 @@ public class ConceptServiceImpl implements ConceptService {
 	 *            reason
 	 */
 	public void voidConcept(Concept concept, String reason) {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_CONCEPTS))
-			throw new APIAuthenticationException("Privilege required: "
-					+ OpenmrsConstants.PRIV_EDIT_CONCEPTS);
-
+		checkIfLocked();
+		
 		String authUserId = Context.getAuthenticatedUser().getUserId()
 				.toString();
 
@@ -198,10 +182,8 @@ public class ConceptServiceImpl implements ConceptService {
 	 *            to be created
 	 */
 	public void createDrug(Drug drug) {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_ADD_CONCEPTS))
-			throw new APIAuthenticationException("Privilege required: "
-					+ OpenmrsConstants.PRIV_ADD_CONCEPTS);
-
+		checkIfLocked();
+		
 		String authUserId = Context.getAuthenticatedUser().getUserId()
 				.toString();
 
@@ -218,10 +200,8 @@ public class ConceptServiceImpl implements ConceptService {
 	 *            to be updated
 	 */
 	public void updateDrug(Drug drug) {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_CONCEPTS))
-			throw new APIAuthenticationException("Privilege required: "
-					+ OpenmrsConstants.PRIV_EDIT_CONCEPTS);
-
+		checkIfLocked();
+		
 		String authUserId = Context.getAuthenticatedUser().getUserId()
 				.toString();
 
@@ -395,7 +375,7 @@ public class ConceptServiceImpl implements ConceptService {
 		return getConceptDAO().getSetsContainingConcept(concept);
 	}
 
-	public void explodeConceptSetHelper(Concept concept, Collection<Concept> ret, Collection<Integer> alreadySeen) {
+	private void explodeConceptSetHelper(Concept concept, Collection<Concept> ret, Collection<Integer> alreadySeen) {
 		if (alreadySeen.contains(concept.getConceptId()))
 			return;
 		alreadySeen.add(concept.getConceptId());
@@ -645,8 +625,7 @@ public class ConceptServiceImpl implements ConceptService {
 
 		// set the state of the proposal
 		if (conceptProposal.getState() == null)
-			conceptProposal
-					.setState(OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED);
+			conceptProposal.setState(OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED);
 
 		// set the creator and date created
 		if (conceptProposal.getCreator() == null
@@ -726,4 +705,14 @@ public class ConceptServiceImpl implements ConceptService {
 
 		return c;
 	}
+	
+	/**
+	 * Checks to see if the global property concepts.locked is set to true.  If so, an error is thrown.
+	 */
+	public void checkIfLocked() throws ConceptsLockedException {
+		String locked = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_CONCEPTS_LOCKED, "false");
+		if (locked.toLowerCase().equals("true"))
+			throw new ConceptsLockedException();
+	}
+
 }

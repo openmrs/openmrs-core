@@ -1,6 +1,5 @@
 package org.openmrs.api;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
@@ -12,6 +11,7 @@ import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
+import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.ConceptDAO;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,12 +24,14 @@ public interface ConceptService {
 	 * @param concept
 	 *            to be created
 	 */
+	@Authorized({"Add Concepts"})
 	public void createConcept(Concept concept);
 
 	/**
 	 * @param numeric
 	 *            concept to be created
 	 */
+	@Authorized({"Add Concepts"})
 	public void createConcept(ConceptNumeric concept);
 
 	/**
@@ -39,6 +41,7 @@ public interface ConceptService {
 	 * @return Concept
 	 */
 	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
 	public Concept getConcept(Integer conceptId);
 
 	/**
@@ -49,6 +52,7 @@ public interface ConceptService {
 	 * @return List of concepts
 	 */
 	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
 	public List<Concept> getConcepts(String sortBy, String dir);
 
 	/**
@@ -57,6 +61,7 @@ public interface ConceptService {
 	 * @param concept
 	 *            to be updated
 	 */
+	@Authorized({"Edit Concepts"})
 	public void updateConcept(Concept concept);
 
 	/**
@@ -65,6 +70,7 @@ public interface ConceptService {
 	 * @param numeric
 	 *            concept to be updated
 	 */
+	@Authorized({"Edit Concepts"})
 	public void updateConcept(ConceptNumeric concept);
 
 	/**
@@ -76,6 +82,7 @@ public interface ConceptService {
 	 * @param Concept
 	 *            to be deleted
 	 */
+	@Authorized({"Delete Concepts"})
 	public void deleteConcept(Concept concept);
 
 	/**
@@ -86,12 +93,14 @@ public interface ConceptService {
 	 * @param String
 	 *            reason
 	 */
+	@Authorized({"Edit Concepts"})
 	public void voidConcept(Concept concept, String reason);
 
 	/**
 	 * @param drug
 	 *            to be created
 	 */
+	@Authorized({"Add Concepts"})
 	public void createDrug(Drug drug);
 
 	/**
@@ -100,6 +109,7 @@ public interface ConceptService {
 	 * @param drug
 	 *            to be updated
 	 */
+	@Authorized({"Edit Concepts"})
 	public void updateDrug(Drug drug);
 
 	/**
@@ -109,6 +119,7 @@ public interface ConceptService {
 	 * @return List of concepts
 	 */
 	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
 	public List<Concept> getConceptsByName(String name);
 
 	/**
@@ -118,6 +129,7 @@ public interface ConceptService {
 	 * @return Concept with matching name
 	 */
 	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
 	public Concept getConceptByName(String name);
 
 	/**
@@ -126,6 +138,7 @@ public interface ConceptService {
 	 * @return Drug
 	 */
 	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
 	public Drug getDrug(Integer drugId);
 
 	/**
@@ -134,9 +147,11 @@ public interface ConceptService {
 	 * @return Drug
 	 */
 	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
 	public Drug getDrug(String drugName);
 
 	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
 	public Drug getDrugByNameOrId(String drugId);
 
 
@@ -146,6 +161,7 @@ public interface ConceptService {
 	 * @return List of Drugs
 	 */
 	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
 	public List<Drug> getDrugs();
 
 	/**
@@ -157,6 +173,7 @@ public interface ConceptService {
 	 * @return List of Drugs
 	 */
 	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
 	public List<Drug> findDrugs(String phrase, boolean includeRetired);
 
 	/**
@@ -166,6 +183,7 @@ public interface ConceptService {
 	 * @return List of Drugs
 	 */
 	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
 	public List<Drug> getDrugs(Concept concept);
 
 	/**
@@ -174,6 +192,7 @@ public interface ConceptService {
 	 * @return List of Concept class objects
 	 */
 	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
 	public List<ConceptClass> getConceptClasses();
 
 	/**
@@ -183,6 +202,7 @@ public interface ConceptService {
 	 * @return ConceptClass
 	 */
 	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
 	public ConceptClass getConceptClass(Integer i);
 
 	/**
@@ -192,6 +212,7 @@ public interface ConceptService {
 	 * @return ConceptClass
 	 */
 	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
 	public ConceptClass getConceptClassByName(String name);
 
 	/**
@@ -200,6 +221,7 @@ public interface ConceptService {
 	 * @return List of ConceptDatatypes
 	 */
 	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
 	public List<ConceptDatatype> getConceptDatatypes();
 
 	/**
@@ -208,6 +230,7 @@ public interface ConceptService {
 	 * @return ConceptDatatype
 	 */
 	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
 	public ConceptDatatype getConceptDatatype(Integer i);
 	
 	/**
@@ -217,6 +240,7 @@ public interface ConceptService {
 	 * @return ConceptDatatype
 	 */
 	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
 	public ConceptDatatype getConceptDatatypeByName(String name);
 	
 	/**
@@ -228,19 +252,19 @@ public interface ConceptService {
 	 * @return List
 	 */
 	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
 	public List<ConceptSet> getConceptSets(Concept c);
 
 	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
 	public List<Concept> getConceptsInSet(Concept c);
 
-	public void explodeConceptSetHelper(Concept concept,
-			Collection<Concept> ret, Collection<Integer> alreadySeen);
-	
 	/**
 	 * Find all sets that the given concept is a member of 
 	 * @param concept
 	 */
 	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
 	public List<ConceptSet> getSetsContainingConcept(Concept concept);
 	
 	/**
@@ -249,6 +273,7 @@ public interface ConceptService {
 	 * @return ConceptNumeric
 	 */
 	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
 	public ConceptNumeric getConceptNumeric(Integer conceptId);
 
 	/**
@@ -263,6 +288,7 @@ public interface ConceptService {
 	 * @return
 	 */
 	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
 	public List<ConceptWord> findConcepts(String phrase, Locale locale,
 			boolean includeRetired);
 
@@ -288,6 +314,7 @@ public interface ConceptService {
 	 * @see ConceptService.findConcepts(String,Locale,boolean)
 	 */
 	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
 	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired, 
 			List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
 			List<ConceptDatatype> requireDatatypes,List<ConceptDatatype> excludeDatatypes);
@@ -304,10 +331,12 @@ public interface ConceptService {
 	 * @return ConceptWord list
 	 */
 	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
 	public List<ConceptWord> findConcepts(String phrase, Locale locale,
 			boolean includeRetired, int start, int size);
 
 	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
 	public List<ConceptWord> findConceptAnswers(String phrase, Locale locale,
 			Concept concept, boolean includeRetired);
 
@@ -319,6 +348,7 @@ public interface ConceptService {
 	 * @return list of concepts
 	 */
 	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
 	public List<Concept> getQuestionsForAnswer(Concept concept);
 
 	/**
@@ -329,6 +359,7 @@ public interface ConceptService {
 	 * @return
 	 */
 	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
 	public Concept getPrevConcept(Concept c);
 
 	/**
@@ -339,26 +370,37 @@ public interface ConceptService {
 	 * @return
 	 */
 	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
 	public Concept getNextConcept(Concept c);
 
 	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
 	public List<ConceptProposal> getConceptProposals(boolean includeCompleted);
 
 	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
 	public ConceptProposal getConceptProposal(Integer conceptProposalId);
 
 	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
 	public List<ConceptProposal> findMatchingConceptProposals(String text);
 
 	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
 	public List<Concept> findProposedConcepts(String text);
 
+	@Authorized({"View Concepts"})
 	public void proposeConcept(ConceptProposal conceptProposal);
 
 	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
 	public Integer getNextAvailableId();
 
 	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
 	public Concept getConceptByIdOrName(String idOrName);
 
+	@Transactional(readOnly=true)
+	public void checkIfLocked() throws ConceptsLockedException;
+	
 }

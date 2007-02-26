@@ -568,7 +568,9 @@ public class AdministrationServiceImpl implements AdministrationService {
 	public void createConceptClass(ConceptClass cc) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_CONCEPT_CLASSES))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_CONCEPT_CLASSES);
-
+		
+		Context.getConceptService().checkIfLocked();
+		
 		getAdministrationDAO().createConceptClass(cc);
 	}
 
@@ -581,6 +583,8 @@ public class AdministrationServiceImpl implements AdministrationService {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_CONCEPT_CLASSES))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_CONCEPT_CLASSES);
 
+		Context.getConceptService().checkIfLocked();
+		
 		getAdministrationDAO().updateConceptClass(cc);
 	}
 
@@ -593,6 +597,8 @@ public class AdministrationServiceImpl implements AdministrationService {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_CONCEPT_CLASSES))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_CONCEPT_CLASSES);
 
+		Context.getConceptService().checkIfLocked();
+		
 		getAdministrationDAO().deleteConceptClass(cc);
 	}
 
@@ -605,6 +611,8 @@ public class AdministrationServiceImpl implements AdministrationService {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_CONCEPT_DATATYPES))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_CONCEPT_DATATYPES);
 
+		Context.getConceptService().checkIfLocked();
+		
 		getAdministrationDAO().createConceptDatatype(cd);
 	}
 
@@ -617,6 +625,8 @@ public class AdministrationServiceImpl implements AdministrationService {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_CONCEPT_DATATYPES))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_CONCEPT_DATATYPES);
 
+		Context.getConceptService().checkIfLocked();
+		
 		getAdministrationDAO().updateConceptDatatype(cd);
 	}
 
@@ -629,6 +639,8 @@ public class AdministrationServiceImpl implements AdministrationService {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_CONCEPT_DATATYPES))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_CONCEPT_DATATYPES);
 
+		Context.getConceptService().checkIfLocked();
+		
 		getAdministrationDAO().deleteConceptDatatype(cd);
 	}
 	
@@ -713,6 +725,8 @@ public class AdministrationServiceImpl implements AdministrationService {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_CONCEPTS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_CONCEPTS);
 
+		Context.getConceptService().checkIfLocked();
+		
 		getAdministrationDAO().updateConceptWord(concept);
 	}
 	
@@ -724,6 +738,8 @@ public class AdministrationServiceImpl implements AdministrationService {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_CONCEPTS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_CONCEPTS);
 
+		Context.getConceptService().checkIfLocked();
+		
 		for (Concept concept : Context.getConceptService().getConceptsByName(""))
 			updateConceptWord(concept);
 		
@@ -737,6 +753,8 @@ public class AdministrationServiceImpl implements AdministrationService {
 	public void updateConceptWords(Integer conceptIdStart, Integer conceptIdEnd) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_CONCEPTS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_CONCEPTS);
+		
+		Context.getConceptService().checkIfLocked();
 		
 		Integer i = conceptIdStart;
 		ConceptService cs = Context.getConceptService();
@@ -754,6 +772,8 @@ public class AdministrationServiceImpl implements AdministrationService {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_CONCEPTS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_CONCEPTS);
 
+		Context.getConceptService().checkIfLocked();
+		
 		getAdministrationDAO().updateConceptSetDerived(concept);
 	}
 	
@@ -765,6 +785,8 @@ public class AdministrationServiceImpl implements AdministrationService {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_CONCEPTS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_CONCEPTS);
 
+		Context.getConceptService().checkIfLocked();
+		
 		getAdministrationDAO().updateConceptSetDerived();
 	}
 	
@@ -803,6 +825,9 @@ public class AdministrationServiceImpl implements AdministrationService {
 			cp.setFinalText("");
 		}
 		else if (cp.getState().equals(OpenmrsConstants.CONCEPT_PROPOSAL_SYNONYM)); {
+			
+			Context.getConceptService().checkIfLocked();
+			
 			String finalText = cp.getFinalText();
 			ConceptSynonym syn = new ConceptSynonym(mappedConcept, finalText, Context.getLocale());
 			syn.setDateCreated(new Date());
