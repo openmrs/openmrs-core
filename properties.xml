@@ -8,7 +8,7 @@
 	<property name="webapp.description" value="An Open-Source EMR System" />
 
 	<!-- Properties for running unit tests and webapp [un]deploy with tomcat -->
-    <property name="tomcat.home" value="C:/Program Files/Apache Group/Tomcat"/>
+    <property name="tomcat.home" value="C:/Program Files/Apache Software Foundation/Tomcat 5.5"/>
     <property name="tomcat.server" value="localhost" />
 	<property name="tomcat.port" value="8080" />
     <property name="tomcat.manager.url" value="http://${tomcat.server}:${tomcat.port}/manager" />

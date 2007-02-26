@@ -222,7 +222,9 @@
 			</filterset>
 		</copy>
 		
-		<javac srcdir="${test.dir}/api" destdir="${build.dir}/test/api" debug="${javac.debug}" debuglevel="${javac.debuglevel}" deprecation="${compile.deprecation}" optimize="${compile.optimize}" classpathref="api.test.classpath" />
+		<javac srcdir="${test.dir}/api" destdir="${build.dir}/test/api" debug="${javac.debug}" debuglevel="${javac.debuglevel}" deprecation="${compile.deprecation}" optimize="${compile.optimize}" classpathref="api.test.classpath">
+			<compilerarg line="${compile.arguments}" />
+		</javac>
 	</target>
 
 	<target name="package-api-tests" depends="compile-api-tests" description="create api-tests jar">
@@ -242,6 +244,7 @@
 			<filterset refid="variables.to.replace" />
 		</copy>
 		<javac srcdir="${build.dir}/web" destdir="${build.dir}/web" debug="${javac.debug}" debuglevel="${javac.debuglevel}" deprecation="${compile.deprecation}" optimize="${compile.optimize}">
+			<compilerarg line="${compile.arguments}" />
 			<classpath>
 				<path refid="web.compile.classpath" />
 				<path location="${dist.dir}/${openmrs.api.name}" />
@@ -417,7 +420,9 @@
 	
 	<target name="compile-web-tests" description="compile webapp tests">
 		<mkdir dir="${build.dir}/test/web" />
-		<javac srcdir="${test.dir}/web" destdir="${build.dir}/test/web" debug="${javac.debug}" debuglevel="${javac.debuglevel}" deprecation="${compile.deprecation}" optimize="${compile.optimize}" classpathref="web.test.classpath" />
+		<javac srcdir="${test.dir}/web" destdir="${build.dir}/test/web" debug="${javac.debug}" debuglevel="${javac.debuglevel}" deprecation="${compile.deprecation}" optimize="${compile.optimize}" classpathref="web.test.classpath">
+			<compilerarg line="${compile.arguments}" />
+		</javac>
 	</target>
 
 	<target name="package-web-tests" depends="compile-web-tests" description="create webapp tests jar">
