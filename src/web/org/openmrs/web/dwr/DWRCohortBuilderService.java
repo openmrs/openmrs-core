@@ -9,9 +9,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
+import org.openmrs.cohort.CohortHistoryCompositionFilter;
 import org.openmrs.cohort.CohortSearchHistory;
+import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.PatientFilter;
 import org.openmrs.reporting.PatientSet;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
 public class DWRCohortBuilderService {
@@ -61,6 +64,19 @@ public class DWRCohortBuilderService {
 		return ps;
 	}
 	
+	public List<ListItem> getSavedFilters() {
+		List<ListItem> ret = new ArrayList<ListItem>();
+		List<PatientFilter> savedFilters = Context.getReportService().getAllPatientFilters();
+		for (PatientFilter pf : savedFilters) {
+			ListItem li = new ListItem();
+			li.setId(pf.getReportObjectId());
+			li.setName(pf.getName());
+			li.setDescription(pf.getDescription());
+			ret.add(li);
+		}
+		return ret;
+	}
+	
 	public List<ListItem> getSearchHistories() {
 		List<ListItem> ret = new ArrayList<ListItem>();
 		List<CohortSearchHistory> histories = Context.getReportService().getSearchHistories();
@@ -82,9 +98,38 @@ public class DWRCohortBuilderService {
 		history.setDescription(description);
 		Context.getReportService().createSearchHistory(history);
 	}
-	
+		
 	public void loadSearchHistory(Integer id) {
 		Context.setVolatileUserData("CohortBuilderSearchHistory", Context.getReportService().getSearchHistory(id));
+	}
+	
+	/**
+	 * Saves an element from the search history as a PatientFilter 
+	 * @param name The name to give the saved filter
+	 * @param description The description to give the saved filter
+	 * @param indexInHistory The index into the authenticated user's search history
+	 */
+	public Boolean saveHistoryElement(String name, String description, Integer indexInHistory) {
+		CohortSearchHistory history = (CohortSearchHistory) Context.getVolatileUserData("CohortBuilderSearchHistory");
+		try {
+			PatientFilter pf = history.getSearchHistory().get(indexInHistory);
+			if (pf == null)
+				return false;
+			// we can't just save a CohortHistoryCompositionFilter because it depends on its history
+			if (pf instanceof CohortHistoryCompositionFilter)
+				pf = ((CohortHistoryCompositionFilter) pf).toCohortDefinition();
+			AbstractReportObject aro = (AbstractReportObject) pf;
+			aro.setName(name);
+			aro.setDescription(description);
+			aro.setReportObjectId(null); // if this is already a saved object, we resave it as a new one
+			aro.setType(OpenmrsConstants.REPORT_OBJECT_TYPE_PATIENTFILTER);
+			aro.setSubType("CohortDefinition");
+			Context.getReportService().createReportObject(aro);
+			return true;
+		} catch (Exception ex) {
+			log.error("Exception", ex);
+			return false;
+		}
 	}
 	
 	public void saveCohort(String name, String description, String commaSeparatedIds) {

@@ -330,6 +330,9 @@ public final class Listener extends ContextLoaderListener {
 					propertyStream = new FileInputStream(filepath);
 				}
 				catch (IOException e) { }
+			} else {
+				log.warn("Couldn't find an environment variable named " + env);
+				log.debug("Available environment variables are named: " + System.getenv().keySet());
 			}
 
 			// env is the name of the file to look for in the directories

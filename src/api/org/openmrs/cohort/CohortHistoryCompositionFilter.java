@@ -145,6 +145,10 @@ public class CohortHistoryCompositionFilter extends AbstractPatientFilter
 		
 		return new CompoundPatientFilter(bo, args);
 	}
+	
+	public PatientFilter toCohortDefinition() {
+		return toPatientFilter(getParsedCompositionString());
+	}
 
 	public PatientSet filter(PatientSet input) {
 		PatientFilter pf = toPatientFilter(getParsedCompositionString());

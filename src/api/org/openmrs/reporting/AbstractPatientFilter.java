@@ -3,13 +3,14 @@ package org.openmrs.reporting;
 import java.util.Date;
 
 import org.openmrs.User;
+import org.openmrs.util.OpenmrsConstants;
 
 public abstract class AbstractPatientFilter extends AbstractReportObject {
 
 	public AbstractPatientFilter()
 	{
 		// do nothing
-		super.setType("Patient Filter");
+		super.setType(OpenmrsConstants.REPORT_OBJECT_TYPE_PATIENTFILTER);
 	}
 
 	public AbstractPatientFilter(Integer reportObjectId, String name, String description, String type, String subType, 

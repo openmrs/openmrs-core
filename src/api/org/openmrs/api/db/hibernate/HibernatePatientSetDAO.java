@@ -517,10 +517,15 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		boolean doInvert = false;
 		
 		String dateSql = "";
-		if (fromDate != null)
+		String dateSqlForSubquery = "";
+		if (fromDate != null) {
 			dateSql += " and o.obs_datetime >= :fromDate ";
-		if (toDate != null)
+			dateSqlForSubquery += " and obs_datetime >= :fromDate ";
+		}
+		if (toDate != null) {
 			dateSql += " and o.obs_datetime <= :toDate ";
+			dateSqlForSubquery += " and obs_datetime <= :toDate ";
+		}
 
 		if (timeModifier == TimeModifier.ANY || timeModifier == TimeModifier.NO) {
 			if (timeModifier == TimeModifier.NO)
@@ -536,7 +541,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 					"    select patient_id, " + (isFirst ? "min" : "max") + "(obs_datetime) as obs_datetime" +
 					"    from obs" +
 					"    where concept_id = :concept_id " +
-					dateSql +
+					dateSqlForSubquery +
 					"    group by patient_id" +
 					") subq on o.patient_id = subq.patient_id and o.obs_datetime = subq.obs_datetime " +
 					"where o.concept_id = :concept_id ");	

@@ -225,12 +225,7 @@ public class CohortSearchHistory extends AbstractReportObject {
 			cachedResultDates.add(null);
 	}
 	
-	/**
-	 * Currently a hack version: any list of numbers and one case-insensitive instance of the word AND or OR (e.g. "and 1 2 3")
-	 * Eventually this should support something like "1 and (2 or 3)"
-	 * @param description
-	 * @return
-	 */
+	// TODO: Internationalize this
 	public PatientFilter createCompositionFilter(String description) {
 		Set<String> andWords = new HashSet<String>();
 		Set<String> orWords = new HashSet<String>();

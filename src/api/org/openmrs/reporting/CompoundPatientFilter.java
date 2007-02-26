@@ -16,7 +16,6 @@ public class CompoundPatientFilter extends AbstractPatientFilter implements
 	
 	private BooleanOperator operator;
 	private List<PatientFilter> filters;
-	private String description;
 	
 	public CompoundPatientFilter() { }
 	
@@ -78,14 +77,10 @@ public class CompoundPatientFilter extends AbstractPatientFilter implements
 			return temp;
 		}
 	}
-	
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	
+
 	public String getDescription() {
-		if (description != null)
-			return description;
+		if (super.getDescription() != null)
+			return getDescription();
 		else {
 			StringBuilder ret = new StringBuilder();
 			for (Iterator<PatientFilter> i = filters.iterator(); i.hasNext(); ) {

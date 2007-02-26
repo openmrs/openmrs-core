@@ -63,6 +63,7 @@ public class HibernateReportObjectDAO implements
 	public void createReportObject(AbstractReportObject reportObj) throws DAOException {
 		reportObj.setCreator(Context.getAuthenticatedUser());
 		reportObj.setDateCreated(new Date());
+		log.debug("Saving: " + reportObj);
 		
 		ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper(reportObj);
 		sessionFactory.getCurrentSession().save(wrappedReportObject);

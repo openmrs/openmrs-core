@@ -11,6 +11,14 @@ public class InversePatientFilter extends AbstractPatientFilter implements Patie
 		this.baseFilter = baseFilter;
 	}
 
+	public PatientFilter getBaseFilter() {
+		return baseFilter;
+	}
+
+	public void setBaseFilter(PatientFilter baseFilter) {
+		this.baseFilter = baseFilter;
+	}
+
 	public PatientSet filter(PatientSet input) {
 		return baseFilter.filterInverse(input);
 	}
@@ -25,7 +33,7 @@ public class InversePatientFilter extends AbstractPatientFilter implements Patie
 	}
 	
 	public String getDescription() {
-		return ("NOT " + baseFilter.getDescription());
+		return "NOT " + (baseFilter == null ? "?" : baseFilter.getDescription());
 	}
 
 }

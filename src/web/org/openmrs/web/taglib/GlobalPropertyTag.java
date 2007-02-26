@@ -25,7 +25,7 @@ public class GlobalPropertyTag extends TagSupport {
 		String value = defaultValue;
 		// If user is logged in
 		if ( Context.isAuthenticated()) { 
-			value = (String) Context.getAdministrationService().getGlobalProperty(key);
+			value = (String) Context.getAdministrationService().getGlobalProperty(key, defaultValue);
 		}
 		
 		try {

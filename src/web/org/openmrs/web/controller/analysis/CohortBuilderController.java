@@ -23,8 +23,7 @@ import org.openmrs.cohort.CohortSearchHistory;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.PatientFilter;
 import org.openmrs.reporting.ReportObjectXMLDecoder;
-import org.openmrs.web.controller.analysis.OnTheFlyAnalysisController.LinkArg;
-import org.openmrs.web.controller.analysis.OnTheFlyAnalysisController.LinkSpec;
+import org.openmrs.web.WebConstants;
 import org.openmrs.web.propertyeditor.ConceptEditor;
 import org.openmrs.web.propertyeditor.LocationEditor;
 import org.openmrs.web.propertyeditor.ProgramEditor;
@@ -77,11 +76,151 @@ public class CohortBuilderController implements Controller {
 			Context.setVolatileUserData("CohortBuilderSearchHistory", history);
 		}
 		List<Program> programs = Context.getProgramWorkflowService().getPrograms();
+		List<Shortcut> shortcuts = new ArrayList<Shortcut>();
+		String shortcutProperty = Context.getAdministrationService().getGlobalProperty("cohort.cohortBuilder.shortcuts");
+		if (shortcutProperty != null && shortcutProperty.length() > 0) {
+			String[] shortcutSpecs = shortcutProperty.split(";");
+			for (int i = 0; i < shortcutSpecs.length; ++i) {
+				try {
+					shortcuts.add(new Shortcut(shortcutSpecs[i]));
+				} catch (Exception ex) {
+					log.error("Exception trying to create filter from shortcut", ex);
+				}
+			}
+		}
 		model.put("savedFilters", savedFilters);
 		model.put("searchHistory", history);
 		model.put("links", linkHelper());
 		model.put("programs", programs);
+		model.put("shortcuts", shortcuts);
 		return new ModelAndView(formView, "model", model);
+	}
+	
+	public class Shortcut {
+		private String label;
+		private PatientFilter patientFilter;
+		private String className;
+		private List<ArgHolder> args;
+		private Boolean hasPromptArgs;
+		private String vars;
+		public Shortcut() { }
+		public Shortcut(String spec) {
+			// possible formats:
+			// (1) just the name of a saved filter
+			// (2) a label, then a colon, then the name of a saved filter
+			// (3) a label, then a colon, then @className(argname=argvalue#argClassName,...)
+			//			(e.g. male:@org.openmrs.reporting.PatientCharacteristicFilter(gender=m#java.lang.String)
+			String label = null;
+			if (spec.indexOf(":") > 0) {
+				label = spec.substring(0, spec.indexOf(":"));
+				spec = spec.substring(spec.indexOf(":") + 1);
+			}
+			if (spec.startsWith("@")) {		
+				// could be "@org.openmrs.reporting.ArvTreatmentGroupFilter(group#java.lang.String)"
+				// could be "@org.openmrs.reporting.PatientCharacteristicFilter(gender=m#java.lang.String)"
+				List<ArgHolder> temp = new ArrayList<ArgHolder>();
+				if (spec.indexOf('(') <= 0 || spec.indexOf(')') <= 0)
+					log.error("this line is missing a ( or a ): " + spec);
+				setClassName(spec.substring(1, spec.indexOf('(')));
+				String s = spec.substring(spec.indexOf('(') + 1, spec.lastIndexOf(')'));
+				log.debug("Looking at arg list: " + s);
+				String[] t = s.split(",");
+				for (String arg : t) {
+					log.debug("looking at arg: " + arg);
+					if (arg.startsWith("\'") && arg.endsWith("\'")) {
+						temp.add(new ArgHolder(null, arg.substring(1, arg.length() - 1), null));
+					} else {
+						String[] u = arg.split("#");
+						if (u.length != 2) {
+							throw new IllegalArgumentException("shortcut arguments must be name#Type");
+						}
+						Class clz;
+						try {
+							clz = Class.forName(u[1]);
+						} catch (ClassNotFoundException ex) {
+							throw new IllegalArgumentException(ex);
+						}
+						if (u[0].indexOf('=') > 0) {
+							String[] v = u[0].split("=");
+							if (v.length != 2) {
+								throw new IllegalArgumentException("shortcut arguments can have only one equal sign");
+							}
+							/*
+							String hidden = "<input type=hidden name=\"" + v[0] + "\" value=\"" + v[1] + "\"/>";
+							tempHidden.add(hidden);
+							tempHiddenNames.add(v[0]);
+							log.debug("hidden arg " + v[0] + " -> " + v[1]);
+							*/
+							temp.add(new ArgHolder(clz, v[0], v[1]));
+						} else {
+							String name = u[0];
+							setHasPromptArgs(true);
+							temp.add(new ArgHolder(clz, name, null));
+						}
+					}
+				}
+				if (temp.size() > 0) {
+					setArgs(temp);
+					StringBuilder sb = new StringBuilder();
+					for (ArgHolder arg : temp)
+						if (arg.getArgClass() != null) {
+							if (sb.length() > 0)
+								sb.append(",");
+							sb.append(arg.getArgName() + "#" + arg.getArgClass().getName());
+						}
+					setVars(sb.toString());
+				}
+				
+			} else {
+				PatientFilter pf = Context.getReportService().getPatientFilterByName(spec);
+				if (label == null)
+					label = pf.getName();
+				if (pf != null)
+					setPatientFilter(pf);
+				else
+					throw new IllegalArgumentException("Couldn't find a patient filter called: " + spec);
+			}
+			setLabel(label);
+		}
+		public boolean isConcrete() {
+			return patientFilter != null;
+		}
+		public String getLabel() {
+			return label;
+		}
+		public void setLabel(String label) {
+			this.label = label;
+		}
+		public PatientFilter getPatientFilter() {
+			return patientFilter;
+		}
+		public void setPatientFilter(PatientFilter patientFilter) {
+			this.patientFilter = patientFilter;
+		}
+		public String getClassName() {
+			return className;
+		}
+		public void setClassName(String className) {
+			this.className = className;
+		}
+		public List<ArgHolder> getArgs() {
+			return args;
+		}
+		public void setArgs(List<ArgHolder> args) {
+			this.args = args;
+		}
+		public Boolean getHasPromptArgs() {
+			return hasPromptArgs;
+		}
+		public void setHasPromptArgs(Boolean hasPromptArgs) {
+			this.hasPromptArgs = hasPromptArgs;
+		}
+		public String getVars() {
+			return vars;
+		}
+		public void setVars(String vars) {
+			this.vars = vars;
+		}
 	}
 	
 	public ModelAndView clearHistory(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -120,6 +259,8 @@ public class CohortBuilderController implements Controller {
 				PatientFilter pf = history.createCompositionFilter(temp);
 				if (pf != null)
 					history.addSearchItem(pf);
+				else
+					request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Error building composition filter");
 			}
 		}
 		return new ModelAndView(new RedirectView(getSuccessView()));
@@ -137,7 +278,7 @@ public class CohortBuilderController implements Controller {
 		return new ModelAndView(new RedirectView(getSuccessView()));
 	}
 	
-	private class ArgHolder {
+	public class ArgHolder {
 		private Class argClass;
 		private String argName;
 		private String argValue;

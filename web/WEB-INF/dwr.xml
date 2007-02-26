@@ -179,11 +179,13 @@
 			<include method="getResultCombineWithAnd"/>
 			<include method="getResultCombineWithOr"/>
 			<include method="getLastResult"/>
+			<include method="getSavedFilters"/>
 			<include method="getSearchHistories"/>
 			<include method="saveSearchHistory"/>
 			<include method="loadSearchHistory"/>
 			<include method="getUserSearchHistory"/>
 			<include method="saveCohort"/>
+			<include method="saveHistoryElement"/>
 		</create>
 				
 	</allow>

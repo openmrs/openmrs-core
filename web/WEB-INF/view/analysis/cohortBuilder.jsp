@@ -14,6 +14,8 @@
 <openmrs:htmlInclude file="/scripts/dojoConfig.js"></openmrs:htmlInclude>
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js"></openmrs:htmlInclude>
 
+<openmrs:globalProperty var="SHOW_LAST_N" defaultValue="5" key="cohort.cohortBuilder.showLastSearches"/>
+
 <script type="text/javascript">
 	dojo.require("dojo.widget.openmrs.ConceptSearch");
 	dojo.require("dojo.widget.openmrs.OpenmrsPopup");
@@ -171,9 +173,61 @@
 		if (currentPatientSet != null) {
 			document.getElementById(idPrefix + "_ptIds").value = currentPatientSet.commaSeparatedPatientIds;
 			document.getElementById(idPrefix + "_form").submit();
+			document.getElementById('_linkMenu').style.display = 'none';
 		} else {
 			window.alert("<spring:message code="PatientSet.stillLoading"/>");
 		}
+	}
+	
+	function showSaveFilterDialog(index, name) {
+		$('saveFilterTitle').innerHTML = '#' + (index + 1) + ' (<i>' + name + '</i>)';
+		$('saveFilterIndex').value = index;
+		$('saveFilterName').value = '';
+		$('saveFilterDescription').value = '';
+		$('saveFilterSaveButton').style.disabled = 'false';
+		$('saveFilterCancelButton').style.disabled = 'false';
+		$('saveFilterBox').style.display = '';
+		$('saveFilterName').focus();
+	}
+	
+	function handleSavedFilterMenuButton() {
+		if ($('saved_filters').style.display == 'none') {
+			$('saved_filters').innerHTML = 'Loading...';
+			$('saved_filters').style.display = '';
+			DWRCohortBuilderService.getSavedFilters(function(filters) {
+					var str = '<ul>';
+					if (filters.length == 0)
+						str = 'None';
+					else {
+						for (var i = 0; i < filters.length; ++i) {
+							str += '<li><a href="cohortBuilder.form?method=addFilter&filter_id=' + filters[i].id + '">' + filters[i].name + ' <small>(' + filters[i].description + ')</small></a></li>';
+						}
+						str += '</ul>';
+					}
+					$('saved_filters').innerHTML = str;
+					$('saved_filters').style.display = '';
+				});
+		} else {
+			$('saved_filters').style.display = 'none';
+		}
+	}
+	
+	function handleSaveFilter() {
+		var index = $('saveFilterIndex').value;
+		var name = $('saveFilterName').value;
+		var descr = $('saveFilterDescription').value;
+		$('saveFilterSaveButton').style.disabled = 'true';
+		$('saveFilterCancelButton').style.disabled = 'true';
+		DWRCohortBuilderService.saveHistoryElement(name, descr, index, function(success) {
+				if (success) {
+					window.alert('Saved #' + (index + 1) + ' as &quot;' + name + '&quot;');
+				} else {
+					window.alert('Failed to save.');
+				}
+				$('saveFilterSaveButton').style.disabled = 'false';
+				$('saveFilterCancelButton').style.disabled = 'false';
+				$('saveFilterBox').style.display = 'none';
+			});
 	}
 	
 </script>
@@ -282,12 +336,156 @@
 	}
 </script>
 
-<div id="cohort_builder_search_history" style="padding: 4px; border: 1px black solid">
-	<h3>Search History</h3>
+		<div id="cohort_builder_add_filter" style="padding: 4px">
+			<table><tr valign="baseline"><td>
+			<b>Search:</b>
+			</td><td>
+		
+			<span style="padding: 3px 0px; margin: 0px 3px; background-color: yellow; border: 1px black solid">
+				<a href="javascript:handleSavedFilterMenuButton()">Saved [V]</a>
+			</span>
+			<div id="saved_filters" style="position: absolute; z-index: 1; border: 1px black solid; background-color: yellow; display: none"></div>
+		
+		<c:if test="${fn:length(model.shortcuts) > 0}">
+			<c:forEach var="shortcut" items="${model.shortcuts}" varStatus="status">
+				<span style="padding: 3px 0px; margin: 0px 3px; background-color: yellow; border: 1px black solid">
+					<c:if test="${shortcut.concrete}">
+						<a href="cohortBuilder.form?method=addFilter&filter_id=${shortcut.patientFilter.reportObjectId}"><spring:message code="${shortcut.label}"/></a>
+					</c:if>
+					<c:if test="${!shortcut.concrete}">
+						<form id="shortcut${shortcut.label}" method="post" action="cohortBuilder.form" style="display: inline">
+							<c:if test="${!shortcut.hasPromptArgs}">
+								<a href="javascript:document.getElementById('shortcut${shortcut.label}').submit()">
+							</c:if>
+							<spring:message code="${shortcut.label}"/>
+							<c:if test="${!shortcut.hasPromptArgs}">
+								</a>
+							</c:if>
+							<input type="hidden" name="method" value="addDynamicFilter"/>
+							<input type="hidden" name="filterClass" value="${shortcut.className}"/>
+							<input type="hidden" name="vars" value="${shortcut.vars}"/>
+							<c:forEach var="arg" items="${shortcut.args}">
+								<c:if test="${empty arg.argClass}">
+									<spring:message code="${arg.argName}"/>
+								</c:if>
+								<c:if test="${arg.argClass != null}">
+									<c:choose>
+										<c:when test="${not empty arg.argValue}">
+											<input type="hidden" name="${arg.argName}" value="${arg.argValue}"/>
+										</c:when>
+										<c:otherwise>
+											<spring:message code="${shortcut.label}.${arg.argName}"/>
+											<openmrs:fieldGen type="${arg.argClass.name}" formFieldName="${arg.argName}" val="" parameters="optionHeader=[blank]|fieldLength=10" />
+										</c:otherwise>
+									</c:choose>
+								</c:if>
+							</c:forEach>
+							<c:if test="${shortcut.hasPromptArgs}">
+								<input type="submit" value="Go"/>
+							</c:if>
+						</form>
+					</c:if>
+				</span>
+			</c:forEach>
+		</c:if>
+
+		<br/>
+		<form method="post" action="cohortBuilder.form">
+			<input type="hidden" name="method" value="addFilter"/>
+			Add composition filter:
+			<input type="text" name="composition" id="composition" size="40"/>
+			<input type="submit" value="Add"/>
+			<br/>
+			<i><small>
+				&nbsp;&nbsp;&nbsp;&nbsp;
+				e.g. &quot;(1 and 2) or not 3&quot;
+				&nbsp;&nbsp;
+				Temporary limitation: you can't put AND and OR in a phrase without parentheses, so &quot;1 and 2 or 3&quot; won't work.
+			</small></i>
+		</form>
+		
+		Add concept filter:
+		<div dojoType="ConceptSearch" widgetId="concept_to_filter_search" conceptId="" showVerboseListing="true"></div>
+		<div dojoType="OpenmrsPopup" widgetId="concept_to_filter_selection" hiddenInputName="concept_to_filter" searchWidget="concept_to_filter_search" searchTitle="Concept to filter on"></div>
+		<div id="concept_filter_box" style="background-color: white; border: 1px black dashed; display: none"></div>
+		
+		</td></tr></table>
+	</div>
+
+<div id="cohort_builder_search_history" style="padding: 4px; border: 1px black solid; background-color: #e8e8e8">
+	<h3>
+		Search History
+		<c:if test="${model.searchHistory.size > 0}">
+			<img src="${pageContext.request.contextPath}/images/save.gif" title="<spring:message code="general.save"/>" onClick="toggleLayer('saveBox'); hideLayer('loadBox')"/>
+		</c:if>
+		<img src="${pageContext.request.contextPath}/images/open.gif" title="<spring:message code="general.load"/>" onClick="handleLoadButton()"/>
+		<form method="post" action="cohortBuilder.form" style="display: inline">
+			<input type="hidden" name="method" value="clearHistory"/>
+			<input type="image" title="Clear History" src="${pageContext.request.contextPath}/images/delete.gif"/>
+		</form>
+	</h3>
+
+				<div id="saveBox" style="position: absolute; z-index: 1; border: 1px black solid; background-color: #ffe0e0; display: none">
+					<form method="post" action="cohortBuilder.form">
+						<input type="hidden" name="method" value="saveHistory"/>
+						<table>
+							<tr>
+								<td>Save As</td>
+								<td><input type="text" name="name"/></td>
+							</tr>
+							<tr>
+								<td>Description</td>
+								<td><input type="text" name="description" size="60"/></td>
+							</tr>
+							<tr>
+								<td>Private/Shared</td>
+								<td>Not Yet Implemented</td>
+							</tr>
+							<tr>
+								<td>Store Until</td>
+								<td>
+									<select>
+										<option value="">Until I delete it</option>
+										<option value="">4 weeks (Not Yet Implemented)</option>
+										<option value="">2 weeks (Not Yet Implemented)</option>
+										<option value="">1 week (Not Yet Implemented)</option>
+									</select>
+								</td>
+							</tr>
+						</table>
+						<input type="submit" value="Save"/>
+						<input type="button" value="Cancel" onClick="toggleLayer('saveBox')"/>
+					</form>
+				</div>
+
+				<div id="loadBox" style="position: absolute; z-index: 1; border: 1px black solid; background-color: #ffe0e0; display: none"></div>
+
+				<div id="saveFilterBox" style="position: absolute; z-index: 1; border: 1px black solid; background-color: #ffe0e0; display: none">
+					<b><u>Saving <span id="saveFilterTitle"></span></u></b> <br/><br/>
+					Name: <input type="text" id="saveFilterName"/> <br/>
+					Description: <input type="text" id="saveFilterDescription" size="60"/> <br/><br/>
+					<input type="hidden" id="saveFilterIndex"/>
+					<input type="button" id="saveFilterSaveButton" value="Save" onClick="handleSaveFilter()"/>
+					<input type="button" id="saveFilterCancelButton" value="Cancel" onClick="toggleLayer('saveFilterBox')"/>
+				</div>	
+			
 	<c:if test="${model.searchHistory.size == 0}">
 		<div>No search history</div>
 	</c:if>
+	<c:if test="${model.searchHistory.size > SHOW_LAST_N}">
+		<div id="fullSearchHistory" style="display: none">
+			<div style="text-align: center">
+				<a href="javascript:hideLayer('fullSearchHistory'); showLayer('showFullSearchHistoryButton')">Hide Full History</a>
+			</div>
+	</c:if>
 	<c:forEach var="item" items="${model.searchHistory.items}" varStatus="iter">
+		<c:if test="${model.searchHistory.size > SHOW_LAST_N && iter.index == (model.searchHistory.size - SHOW_LAST_N)}">
+			</div>
+			<div id="showFullSearchHistoryButton" style="text-align: center">
+				<a href="javascript:showLayer('fullSearchHistory'); hideLayer('showFullSearchHistoryButton')">Show Full History</a>
+			</div>
+		</c:if>
+		
 		<table style="margin: 1px 4px; width: 100%; border: 1px black solid; background-color: #e0ffe0">
 			<tr>
 				<td width="25">
@@ -318,7 +516,8 @@
 					<c:if test="${item.cachedResult != null}">
 						<small>(cached)</small>
 					</c:if>
-					<a href="cohortBuilder.form?method=removeFilter&index=${iter.index}">[x]</a>
+					<img src="${pageContext.request.contextPath}/images/save.gif" onClick="showSaveFilterDialog(${iter.index}, '${item.filter.name}')"/>
+					<a href="cohortBuilder.form?method=removeFilter&index=${iter.index}"><img src="${pageContext.request.contextPath}/images/delete.gif"/></a>
 				</td>
 				<c:if test="${item.cachedResult == null}">
 					<script type="text/javascript">
@@ -333,128 +532,32 @@
 		</table>
 	</c:forEach>
 
-	<p/>
-	<%-- <a href="javascript:toggleLayer('cohort_builder_add_filter')">Add</a> --%>
-	<div id="cohort_builder_add_filter" style="border: 1px black solid; background-color: #e0e0ff;">
-		Shortcuts/Wizards: specify these in openmrs-servlet.xml or as a global property?
-		
-		<br/>
-		<c:if test="${fn:length(model.savedFilters) > 0}">
-			<a href="javascript:toggleLayer('saved_filters')">Add saved filter:</a>
-			<div id="saved_filters" style="display: none">
-				<ul>
-					<c:forEach var="savedFilter" items="${model.savedFilters}">
-						<li><a href="cohortBuilder.form?method=addFilter&filter_id=${savedFilter.reportObjectId}">${savedFilter.name}</a></li>
-					</c:forEach>
-				</ul>
-				<%--
-				<form method="post" action="cohortBuilder.form">
-					<input type="hidden" name="method" value="addFilter"/>
-					<select name="filter_id">
-						<c:forEach var="savedFilter" items="${model.savedFilters}">
-							<option value="${savedFilter.reportObjectId}">${savedFilter.name}</option>
+</div>
+
+<div id="cohort_builder_preview" style="padding: 4px">
+
+	<div id="cohort_builder_button_panel" style="padding: 1px 4px; margin: 4px 0px">
+		<table width="100%">
+			<tr>
+				<td>
+					Display Method:
+					<select id="cohort_builder_preview_method" onChange="refreshPreview()">
+						<option value="last">Last</option>
+						<option value="and">All searches ANDed together</option>
+						<option value="or">All searches ORed together</option>
+						<c:set var="temp" value="${model.searchHistory.size - 2}"/>
+						<c:if test="${temp < 0}">
+							<c:set var="temp" value="0"/>
+						</c:if>
+						<c:forEach varStatus="index" items="${model.searchHistory.items}" end="${temp}">
+							<option value="${index.index}">${index.count}</option>
 						</c:forEach>
 					</select>
-					<input type="submit" value="Add"/>
-				</form>
-				--%>
-			</div>
-		</c:if>
-
-		<br/>
-		<form method="post" action="cohortBuilder.form">
-			<input type="hidden" name="method" value="addFilter"/>
-			Add composition filter:
-			<input type="text" name="composition" size="40"/>
-			<input type="submit" value="Add"/>
-			<br/>
-			<i><small>
-				&nbsp;&nbsp;&nbsp;&nbsp;
-				e.g. &quot;(1 and 2) or not 3&quot;
-				&nbsp;&nbsp;
-				Temporary limitation: you can't put AND and OR in a phrase without parentheses, so &quot;1 and 2 or 3&quot; won't work.
-			</small></i>
-		</form>
-		
-		Add concept filter:
-		<div dojoType="ConceptSearch" widgetId="concept_to_filter_search" conceptId="" showVerboseListing="true"></div>
-		<div dojoType="OpenmrsPopup" widgetId="concept_to_filter_selection" hiddenInputName="concept_to_filter" searchWidget="concept_to_filter_search" searchTitle="Concept to filter on"></div>
-		<div id="concept_filter_box" style="background-color: white; border: 1px black dashed; display: none"></div>
+				</td>
+			</tr>
+		</table>
 	</div>
-</div>
 
-<div id="cohort_builder_button_panel" style="padding: 1px 4px; margin: 4px 0px; background-color: #e0e0e0">
-	<table width="100%">
-		<tr>
-			<td>
-				Display Method:
-				<select id="cohort_builder_preview_method" onChange="refreshPreview()">
-					<option value="last">Last</option>
-					<option value="and">All searches ANDed together</option>
-					<option value="or">All searches ORed together</option>
-					<c:set var="temp" value="${model.searchHistory.size - 2}"/>
-					<c:if test="${temp < 0}">
-						<c:set var="temp" value="0"/>
-					</c:if>
-					<c:forEach varStatus="index" items="${model.searchHistory.items}" end="${temp}">
-						<option value="${index.index}">${index.count}</option>
-					</c:forEach>
-				</select>
-			</td>
-			<td>
-				<c:if test="${model.searchHistory.size == 0}">
-					<span style="color: gray">Save</span>
-				</c:if>
-				<c:if test="${model.searchHistory.size > 0}">
-					<a href="javascript:toggleLayer('saveBox'); hideLayer('loadBox')">Save</a>
-				</c:if>
-				<div id="saveBox" style="position: absolute; z-index: 1; border: 1px black solid; background-color: #ffe0e0; display: none">
-					<form method="post" action="cohortBuilder.form">
-						<input type="hidden" name="method" value="saveHistory"/>
-						<table>
-							<tr>
-								<td>Save As</td>
-								<td><input type="text" name="name"/></td>
-							</tr>
-							<tr>
-								<td>Description</td>
-								<td><input type="text" name="description" size="60"/></td>
-							</tr>
-							<tr>
-								<td>Private/Shared</td>
-								<td>Not Yet Implemented</td>
-							</tr>
-							<tr>
-								<td>Store Until</td>
-								<td>
-									<select>
-										<option value="">Until I delete it</option>
-										<option value="">4 weeks (Not Yet Implemented)</option>
-										<option value="">2 weeks (Not Yet Implemented)</option>
-										<option value="">1 week (Not Yet Implemented)</option>
-									</select>
-								</td>
-							</tr>
-						</table>
-						<input type="submit" value="Save"/>
-					</form>
-				</div>
-			</td>
-			<td>
-				<a href="javascript:handleLoadButton()">[Load]</a>
-				<div id="loadBox" style="position: absolute; z-index: 1; border: 1px black solid; background-color: #ffe0e0; display: none"></div>
-			</td>
-			<td>
-				<form method="post" action="cohortBuilder.form">
-					<input type="hidden" name="method" value="clearHistory"/>
-					<input type="submit" value="Clear History"/>
-				</form>
-			</td>
-		</tr>
-	</table>
-</div>
-
-<div id="cohort_builder_preview" style="border: 1px black solid; padding: 4px">
 	<div id="cohort_builder_preview_numbers" style="display: none">
 		<b><u>
 		<a href="javascript:previewPageTo(0)">|&lt;-</a>
@@ -467,6 +570,17 @@
 		&nbsp;&nbsp;&nbsp;&nbsp;
 		<a href="javascript:previewPageTo(-1)">-&gt;|</a>
 		</u></b>
+		<img title="<spring:message code="general.save" />" src="${pageContext.request.contextPath}/images/save.gif" onClick="toggleLayer('saveCohortDiv')"/>
+		<div id="saveCohortDiv" style="position: absolute; border: 2px black solid; background-color: #e0e0e0; display: none">
+			<b><u>Save Cohort (i.e. list of patient ids)</u></b>
+			<br/>
+			Name: <input type="text" id="saveCohortName"/> <br/>
+			Description: <input type="text" id="saveCohortDescription"/> <br/>
+			<i>Note: this actually works, but it doesn't give you any indication. And you can't use a cohort anywhere yet.</i> <br/>
+			<input type="button" value="<spring:message code="general.save"/>" onClick="handleSaveCohort()" />
+			<input type="button" value="<spring:message code="general.cancel"/>" onClick="toggleLayer('saveCohortDiv')" />
+		</div>
+		
 	</div>
 	<div id="cohort_builder_preview_no_filters" <c:if test="${model.searchHistory.size != 0}">style="display: none"</c:if> >
 		<h4>No searches.</h4>
@@ -479,22 +593,14 @@
 
 <div id="cohort_builder_actions" style="border: 1px black solid">
 
-	<input type="button" value="<spring:message code="general.save"/>" onClick="toggleLayer('saveCohortDiv')"/>
-	<div id="saveCohortDiv" style="position: absolute; border: 2px black solid; background-color: #e0e0e0; display: none">
-		<b><u>Save Cohort (i.e. list of patient ids)</u></b>
-		<br/>
-		Name: <input type="text" id="saveCohortName"/> <br/>
-		Description: <input type="text" id="saveCohortDescription"/> <br/>
-		<i>Note: this actually works, but it doesn't give you any indication. And you can't use a cohort anywhere yet.</i> <br/>
-		<input type="button" value="<spring:message code="general.save"/>" onClick="handleSaveCohort()" />
-		<input type="button" value="<spring:message code="general.cancel"/>" onClick="toggleLayer('saveCohortDiv')" />
-	</div>
-	
+	<b>Actions:</b>
+		
 	<c:if test="${fn:length(model.links) > 0}">
-		(placeholder taken straight from on-the-fly-analysis:
-		<span style="position: relative" onMouseOver="javascript:showLayer('_linkMenu')" onMouseOut="javascript:hideLayer('_linkMenu')">
+		<span style="position: relative" onMouseOver="javascript:showLayer('_linkMenu')">
 			<a class="analysisShortcutBarButton"><spring:message code="Analysis.linkButton"/></a>
-			<div id="_linkMenu" class="analysisShortcutMenu" style="display: none">
+			<div id="_linkMenu" style="	border: 1px solid black; background-color: #f0f0a0; position: absolute; left: 0px; bottom: 1.35em; width: 250px; z-index: 1; display: none">
+				<br />
+				&nbsp;&nbsp;&nbsp;<span style="width: 200px; text-align: right;"><a href="#" onClick="javascript:hideLayer('_linkMenu');" >[Close]</a></span>
 				<ul>
 					<c:forEach var="item" items="${model.links}" varStatus="loopStatus">
 						<li>
@@ -503,6 +609,8 @@
 								<c:forEach var="arg" items="${item.arguments}">
 									<input type="hidden" name="${arg.name}" value="${arg.value}"/>
 								</c:forEach>
+								<input type="hidden" name="fDate" id="link_${loopStatus.index}_fDate" value="" />
+								<input type="hidden" name="tDate" id="link_${loopStatus.index}_tDate" value="" />
 								<a href="javascript:linkSubmitHelper('link_${loopStatus.index}')">
 									<spring:message code="${item.label}"/>
 								</a>
@@ -510,6 +618,18 @@
 						</li>
 					</c:forEach>
 				</ul>
+				&nbsp;&nbsp;<spring:message code="general.dateConstraints" /> (<spring:message code="general.optional" />):<br />
+				<table style="padding-left: 15px;">
+					<tr>
+						<td><spring:message code="general.fromDate" />:</td>
+						<td><openmrs:fieldGen type="java.util.Date" formFieldName="nrFromDate" val="" /></td>
+					</tr>
+					<tr>
+						<td><spring:message code="general.toDate" />:</td>
+						<td><openmrs:fieldGen type="java.util.Date" formFieldName="nrToDate" val="" /></td>
+					</tr>
+				</table>
+				<br />
 			</div>
 		</span>
 	</c:if>
