@@ -70,7 +70,7 @@ public class ConceptProposalFormController extends SimpleFormController {
 				if (action.equals(msa.getMessage("ConceptProposal.saveAsConcept")) ) {
 					cp.setState(OpenmrsConstants.CONCEPT_PROPOSAL_CONCEPT);
 				}
-				if (action.equals(msa.getMessage("ConceptProposal.saveAsSynonym"))) {
+				else if (action.equals(msa.getMessage("ConceptProposal.saveAsSynonym"))) {
 					if (cp.getMappedConcept() == null)
 						errors.rejectValue("mappedConcept", "ConceptProposal.mappedConcept.error");
 					if (!StringUtils.hasText(cp.getFinalText()))

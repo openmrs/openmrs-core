@@ -824,7 +824,7 @@ public class AdministrationServiceImpl implements AdministrationService {
 			cp.setState(OpenmrsConstants.CONCEPT_PROPOSAL_CONCEPT);
 			cp.setFinalText("");
 		}
-		else if (cp.getState().equals(OpenmrsConstants.CONCEPT_PROPOSAL_SYNONYM)); {
+		else if (cp.getState().equals(OpenmrsConstants.CONCEPT_PROPOSAL_SYNONYM)) {
 			
 			Context.getConceptService().checkIfLocked();
 			
