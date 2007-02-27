@@ -1,7 +1,9 @@
 package org.openmrs.api.impl;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.openmrs.Concept;
 import org.openmrs.Field;
@@ -246,8 +248,10 @@ public class FormServiceImpl implements FormService {
 	 * @return
 	 * @throws APIException
 	 */
-	public List<Form> getForms(Concept c) throws APIException {
-		return getFormDAO().getForms(c);
+	public Set<Form> getForms(Concept c) throws APIException {
+		Set<Form> forms = new HashSet<Form>();
+		forms.addAll(getFormDAO().getForms(c));
+		return forms;
 	}
 
 	/**

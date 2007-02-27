@@ -236,7 +236,7 @@
 							</select>
 						</c:when>
 						<c:otherwise>
-							${encounter.form.name}
+							${encounter.form.name} v${encounter.form.version}
 						</c:otherwise>
 					</c:choose>
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>

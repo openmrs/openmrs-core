@@ -1,6 +1,7 @@
 package org.openmrs.api;
 
 import java.util.List;
+import java.util.Set;
 
 import org.openmrs.Concept;
 import org.openmrs.Field;
@@ -139,12 +140,12 @@ public interface FormService {
 	public List<Form> getForms() throws APIException;
 
 	/**
-	 * Returns the forms with which this concept is associated
+	 * Returns the distinct set of forms with which this concept is associated
 	 * @return
 	 * @throws APIException
 	 */
 	@Transactional(readOnly=true)
-	public List<Form> getForms(Concept c) throws APIException;
+	public Set<Form> getForms(Concept c) throws APIException;
 
 	/**
 	 * @param form
