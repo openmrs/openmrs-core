@@ -267,6 +267,7 @@
 			<fileset dir="web">
 				<exclude name="**/images/**/*" />
 				<exclude name="**/*.xsn" />
+				<exclude name="**/*.omod" />
 				<exclude name="**/lib/**" />
 				<exclude name="**/classes/**" />
 			</fileset>
@@ -296,9 +297,10 @@
 
 		<!-- copy the entire web directory to the dist folder (for variable replacement) -->
 		<copy todir="${dist.dir}/web" preservelastmodified="true" overwrite="true">
-			<fileset dir="web">
+			<fileset dir="web" >
 				<exclude name="**/images/**/*" />
 				<exclude name="**/*.xsn" />
+				<exclude name="**/*.omod" />
 				<exclude name="**/lib/**" />
 				<exclude name="**/classes/**" />
 			</fileset>
@@ -308,6 +310,7 @@
 			<fileset dir="web">
 				<include name="**/images/**/*" />
 				<include name="**/*.xsn" />
+				<include name="**/*.omod" />
 			</fileset>
 		</copy>
 		<copy todir="${dist.dir}/web/WEB-INF" preservelastmodified="true" overwrite="true">

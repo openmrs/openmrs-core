@@ -71,8 +71,12 @@ public class ModuleFactory {
 		
 		log.debug("Adding module " + module.getName() + " to the module queue");
 		
-		if (getLoadedModulesMap().containsKey(module.getModuleId()))
-			throw new ModuleException("A module with the same id already exists", module.getModuleId());
+		Module oldModule = getLoadedModulesMap().get(module.getModuleId());
+		if (oldModule != null) {
+			// throw new ModuleException("A module with the same id already exists", module.getModuleId());
+			// TODO need to stop the module in the web layer as well.
+			unloadModule(oldModule);
+		}
 		
 		getLoadedModulesMap().put(module.getModuleId(), module);
 		

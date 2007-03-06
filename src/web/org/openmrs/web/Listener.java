@@ -242,8 +242,13 @@ public final class Listener extends ContextLoaderListener {
 		// loop over the modules and load the modules that we can
 		for (File f : folder.listFiles()) {
 			if (!f.getName().startsWith(".")) { // ignore .svn folder and the like
-				Module mod = ModuleFactory.loadModule(f);
-				log.debug("Loaded module: " + mod + " successfully");
+				try {
+					Module mod = ModuleFactory.loadModule(f);
+					log.debug("Loaded module: " + mod + " successfully");
+				}
+				catch (Exception e) {
+					log.warn("Error while trying to load module " + f.getName() + "", e);
+				}
 			}
 		}
 	}

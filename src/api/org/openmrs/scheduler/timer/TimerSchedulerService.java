@@ -80,7 +80,7 @@ public class TimerSchedulerService implements SchedulerService {
 					// Otherwise it needs to be started manually.
 					if (task.getStartOnStartup())
 						scheduleTask(task);
-				} catch ( SchedulerException e ) { 
+				} catch ( Exception e ) { 
 					log.error("Could not schedule task for class " + task.getSchedulableClass(), e);
 				}
 			}
@@ -434,9 +434,9 @@ public class TimerSchedulerService implements SchedulerService {
 			tasks.add(task.getId());
 			try { 
 				stopTask(task);
-
-			} catch ( SchedulerException e ) { 
+			} catch ( Exception e ) { 
 				// just swallow exceptions
+				log.debug("Unable to stop task while saving memento " + task.getName(), e);
 			}
 		}
 		

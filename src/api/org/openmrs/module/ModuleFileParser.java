@@ -113,7 +113,7 @@ public class ModuleFileParser {
 				configDoc = db.parse(configStream);
 			}
 			catch (Exception e) {
-				log.error("config.xml: " + configStream.toString());
+				log.error("Error parsing config.xml: " + configStream.toString(), e);
 				
 				OutputStream out = null;
 				String output = "";
@@ -127,13 +127,13 @@ public class ModuleFileParser {
 			        output = out.toString();
 				}
 				catch (Exception e2) {
-					log.warn("Another error", e2);
+					log.warn("Another error parsing config.xml", e2);
 				}
 				finally {
 					try { out.close(); } catch (Exception e3) {};
 				}
 		        
-				log.error("config.xml: " + output);
+				log.error("config.xml content: " + output);
 				throw new ModuleException("Error parsing module config.xml file", moduleFile.getName(), e);
 			}
 			
