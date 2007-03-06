@@ -77,7 +77,14 @@
 
 </script>
 
-<h2><spring:message code="Concept.view.title" arguments="${concept.name}" /></h2>
+<c:choose>
+	<c:when test="${concept.conceptId != null}">
+		<h2><spring:message code="Concept.view.title" arguments="${concept.name}" /></h2>
+	</c:when>
+	<c:otherwise>
+		<h2><spring:message code="Concept.noConceptSelected" /></h2>
+	</c:otherwise>
+</c:choose>
 
 <c:if test="${concept.conceptId != null}">
 	<c:if test="${previousConcept != null}"><a href="concept.htm?conceptId=${previousConcept.conceptId}" id="previousConcept" valign="middle"><spring:message code="general.previous"/></a> |</c:if>
@@ -97,243 +104,247 @@
 </form>
 
 <br/><br/>
-<c:if test="${concept.retired}">
-	<div class="retiredMessage"><div><spring:message code="Concept.retiredMessage"/></div></div>
-</c:if>
 
-<table id="conceptTable" cellpadding="2" cellspacing="0">
-	<tr>
-		<th><spring:message code="general.id"/></th>
-		<td>${concept.conceptId}</td>
-	</tr>
+<c:if test="${concept.conceptId != null}">
+
+	<c:if test="${concept.retired}">
+		<div class="retiredMessage"><div><spring:message code="Concept.retiredMessage"/></div></div>
+	</c:if>
 	
-	<tr>
-		<th><spring:message code="general.locale"/></th>
-		<td style="padding-bottom: 0px; padding-left: 0px;">
-			<c:forEach items="${locales}" var="loc" varStatus="varStatus">
-				<a id="${loc}Tab" class="tab ${loc}" href="#select${loc.displayName}" onclick="return selectTab(this)">${loc.displayName}</a><c:if test="${varStatus.last==false}"> | </c:if>
+	<table id="conceptTable" cellpadding="2" cellspacing="0">
+		<tr>
+			<th><spring:message code="general.id"/></th>
+			<td>${concept.conceptId}</td>
+		</tr>
+		
+		<tr>
+			<th><spring:message code="general.locale"/></th>
+			<td style="padding-bottom: 0px; padding-left: 0px;">
+				<c:forEach items="${locales}" var="loc" varStatus="varStatus">
+					<a id="${loc}Tab" class="tab ${loc}" href="#select${loc.displayName}" onclick="return selectTab(this)">${loc.displayName}</a><c:if test="${varStatus.last==false}"> | </c:if>
+				</c:forEach>
+			</td>
+		</tr>
+		<tr class="localeSpecific">
+			<th title="<spring:message code="Concept.name.help"/>">
+				<spring:message code="general.name" />
+			</th>
+			<c:forEach items="${locales}" var="loc">
+				<td class="${loc}">
+					<spring:bind path="conceptName_${loc}.name">
+						${status.value}
+					</spring:bind>
+				</td>
 			</c:forEach>
-		</td>
-	</tr>
-	<tr class="localeSpecific">
-		<th title="<spring:message code="Concept.name.help"/>">
-			<spring:message code="general.name" />
-		</th>
-		<c:forEach items="${locales}" var="loc">
-			<td class="${loc}">
-				<spring:bind path="conceptName_${loc}.name">
-					${status.value}
-				</spring:bind>
-			</td>
-		</c:forEach>
-	</tr>
-	<tr class="localeSpecific">
-		<th title="<spring:message code="Concept.shortName.help"/>">
-			<spring:message code="Concept.shortName" />
-		</th>
-		<c:forEach items="${locales}" var="loc">
-			<td class="${loc}">
-				<spring:bind path="conceptName_${loc}.shortName">
-					${status.value}
-				</spring:bind>
-			</td>
-		</c:forEach>
-	</tr>
-	<tr class="localeSpecific">
-		<th valign="top"><spring:message code="general.description" /></th>
-		<c:forEach items="${locales}" var="loc">
-			<td valign="top" class="${loc}">
-				<spring:bind path="conceptName_${loc}.description">
-					${status.value}
-				</spring:bind>
-			</td>
-		</c:forEach>
-	</tr>
-	<tr class="localeSpecific">
-		<th valign="top" title="<spring:message code="Concept.synonyms.help"/>">
-			<spring:message code="Concept.synonyms" />
-		</th>
-		<c:forEach items="${locales}" var="loc">
-			<td valign="top" class="${loc}">
-				<c:forEach items="${conceptSynonymsByLocale[loc]}" var="syn">${syn}<br/></c:forEach>
-			</td>
-		</c:forEach>
-	</tr>
-
-
-	<tr>
-		<th  title="<spring:message code="Concept.conceptClass.help"/>">
-			<spring:message code="Concept.conceptClass" />
-		</th>
-		<td valign="top">
-			${concept.conceptClass.name}
-		</td>
-	</tr>
-	<c:if test="${concept.set}">
-		<tr id="setOptions">
-			<th valign="top"><spring:message code="Concept.conceptSets"/></th>
+		</tr>
+		<tr class="localeSpecific">
+			<th title="<spring:message code="Concept.shortName.help"/>">
+				<spring:message code="Concept.shortName" />
+			</th>
+			<c:forEach items="${locales}" var="loc">
+				<td class="${loc}">
+					<spring:bind path="conceptName_${loc}.shortName">
+						${status.value}
+					</spring:bind>
+				</td>
+			</c:forEach>
+		</tr>
+		<tr class="localeSpecific">
+			<th valign="top"><spring:message code="general.description" /></th>
+			<c:forEach items="${locales}" var="loc">
+				<td valign="top" class="${loc}">
+					<spring:bind path="conceptName_${loc}.description">
+						${status.value}
+					</spring:bind>
+				</td>
+			</c:forEach>
+		</tr>
+		<tr class="localeSpecific">
+			<th valign="top" title="<spring:message code="Concept.synonyms.help"/>">
+				<spring:message code="Concept.synonyms" />
+			</th>
+			<c:forEach items="${locales}" var="loc">
+				<td valign="top" class="${loc}">
+					<c:forEach items="${conceptSynonymsByLocale[loc]}" var="syn">${syn}<br/></c:forEach>
+				</td>
+			</c:forEach>
+		</tr>
+	
+	
+		<tr>
+			<th  title="<spring:message code="Concept.conceptClass.help"/>">
+				<spring:message code="Concept.conceptClass" />
+			</th>
 			<td valign="top">
-				<c:if test="${fn:length(conceptSets) == 0}"><spring:message code="Concept.conceptSets.empty"/></c:if>
-				<c:forEach items="${conceptSets}" var="set">
-					<a href="concept.htm?conceptId=${set.value[0]}">${set.value[1]} (${set.value[0]})</a><br/>
-				</c:forEach>
+				${concept.conceptClass.name}
 			</td>
 		</tr>
-	</c:if>
-	<tr>
-		<th title="<spring:message code="Concept.datatype.help"/>">
-			<spring:message code="Concept.datatype" />
-		</th>
-		<td valign="top">
-			${concept.datatype.name}
-		</td>
-	</tr>
-	<c:if test="${concept.datatype != null && concept.datatype.name == 'Coded'}">
+		<c:if test="${concept.set}">
+			<tr id="setOptions">
+				<th valign="top"><spring:message code="Concept.conceptSets"/></th>
+				<td valign="top">
+					<c:if test="${fn:length(conceptSets) == 0}"><spring:message code="Concept.conceptSets.empty"/></c:if>
+					<c:forEach items="${conceptSets}" var="set">
+						<a href="concept.htm?conceptId=${set.value[0]}">${set.value[1]} (${set.value[0]})</a><br/>
+					</c:forEach>
+				</td>
+			</tr>
+		</c:if>
 		<tr>
-			<th valign="top"><spring:message code="Concept.answers"/></th>
-			<td>
-				<c:forEach items="${conceptAnswers}" var="answer">
-					<a href="concept.htm?conceptId=${fn:substring(answer.key, 0, fn:indexOf(answer.key, '^'))}">${answer.value} (${fn:substring(answer.key, 0, fn:indexOf(answer.key, '^'))})</a><br/>
-				</c:forEach>
+			<th title="<spring:message code="Concept.datatype.help"/>">
+				<spring:message code="Concept.datatype" />
+			</th>
+			<td valign="top">
+				${concept.datatype.name}
 			</td>
 		</tr>
-	</c:if>
-	<c:if test="${concept.numeric}">
+		<c:if test="${concept.datatype != null && concept.datatype.name == 'Coded'}">
+			<tr>
+				<th valign="top"><spring:message code="Concept.answers"/></th>
+				<td>
+					<c:forEach items="${conceptAnswers}" var="answer">
+						<a href="concept.htm?conceptId=${fn:substring(answer.key, 0, fn:indexOf(answer.key, '^'))}">${answer.value} (${fn:substring(answer.key, 0, fn:indexOf(answer.key, '^'))})</a><br/>
+					</c:forEach>
+				</td>
+			</tr>
+		</c:if>
+		<c:if test="${concept.numeric}">
+			<tr>
+				<th valign="top"><spring:message code="ConceptNumeric.name"/></th>
+				<td>
+					<table border="0">
+						<tr>
+							<th></th>
+							<th><spring:message code="ConceptNumeric.low"/></th>
+							<th><spring:message code="ConceptNumeric.high"/></th>
+						</tr>
+						<tr>
+							<th valign="middle"><spring:message code="ConceptNumeric.absolute"/></th>
+							<td valign="middle">${concept.lowAbsolute}</td>
+							<td valign="middle">${concept.hiAbsolute}</td>
+						</tr>
+						<tr>
+							<th valign="middle"><spring:message code="ConceptNumeric.critical"/></th>
+							<td valign="middle">${concept.lowCritical}</td>
+							<td valign="middle">${concept.hiCritical}</td>
+						</tr>
+						<tr>
+							<th valign="middle"><spring:message code="ConceptNumeric.normal"/></th>
+							<td valign="middle">${concept.lowNormal}</td>
+							<td valign="middle">${concept.hiNormal}</td>
+						</tr>
+						<tr>
+							<td></td>
+							<td colspan="2"><small><em>(<spring:message code="ConceptNumeric.inclusive"/>)</em></small>
+							</td>
+						</tr>
+						<tr>
+							<th><spring:message code="ConceptNumeric.units"/></th>
+							<td colspan="2">${concept.units}</td>
+						</tr>
+						<tr>
+							<th><spring:message code="ConceptNumeric.precise"/></th>
+							<td colspan="2">
+								<spring:bind path="concept.precise">
+									<c:if test="${status.value}">Yes</c:if>
+									<c:if test="${!status.value}">No</c:if>
+								</spring:bind>
+							</td>
+						</tr>
+					</table>
+				</td>
+		</c:if>
 		<tr>
-			<th valign="top"><spring:message code="ConceptNumeric.name"/></th>
+			<th><spring:message code="Concept.version" /></th>
 			<td>
-				<table border="0">
-					<tr>
-						<th></th>
-						<th><spring:message code="ConceptNumeric.low"/></th>
-						<th><spring:message code="ConceptNumeric.high"/></th>
-					</tr>
-					<tr>
-						<th valign="middle"><spring:message code="ConceptNumeric.absolute"/></th>
-						<td valign="middle">${concept.lowAbsolute}</td>
-						<td valign="middle">${concept.hiAbsolute}</td>
-					</tr>
-					<tr>
-						<th valign="middle"><spring:message code="ConceptNumeric.critical"/></th>
-						<td valign="middle">${concept.lowCritical}</td>
-						<td valign="middle">${concept.hiCritical}</td>
-					</tr>
-					<tr>
-						<th valign="middle"><spring:message code="ConceptNumeric.normal"/></th>
-						<td valign="middle">${concept.lowNormal}</td>
-						<td valign="middle">${concept.hiNormal}</td>
-					</tr>
-					<tr>
-						<td></td>
-						<td colspan="2"><small><em>(<spring:message code="ConceptNumeric.inclusive"/>)</em></small>
-						</td>
-					</tr>
-					<tr>
-						<th><spring:message code="ConceptNumeric.units"/></th>
-						<td colspan="2">${concept.units}</td>
-					</tr>
-					<tr>
-						<th><spring:message code="ConceptNumeric.precise"/></th>
-						<td colspan="2">
-							<spring:bind path="concept.precise">
-								<c:if test="${status.value}">Yes</c:if>
-								<c:if test="${!status.value}">No</c:if>
-							</spring:bind>
-						</td>
-					</tr>
-				</table>
-			</td>
-	</c:if>
-	<tr>
-		<th><spring:message code="Concept.version" /></th>
-		<td>
-			<spring:bind path="concept.version">
-				${status.value}
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
-		<th><spring:message code="general.retired" /></th>
-		<td>
-			<spring:bind path="concept.retired">
-				${status.value}
-			</spring:bind>
-		</td>
-	</tr>
-	<c:if test="${!(concept.creator == null)}">
-		<tr>
-			<th><spring:message code="general.createdBy" /></th>
-			<td>
-				${concept.creator.firstName} ${concept.creator.lastName} -
-				<openmrs:formatDate date="${concept.dateCreated}" type="long" />
+				<spring:bind path="concept.version">
+					${status.value}
+				</spring:bind>
 			</td>
 		</tr>
-	</c:if>
-	<c:if test="${!(concept.changedBy == null)}">
 		<tr>
-			<th><spring:message code="general.changedBy" /></th>
+			<th><spring:message code="general.retired" /></th>
 			<td>
-				${concept.changedBy.firstName} ${concept.changedBy.lastName} -
-				<openmrs:formatDate date="${concept.dateChanged}" type="long" />
+				<spring:bind path="concept.retired">
+					${status.value}
+				</spring:bind>
 			</td>
 		</tr>
-	</c:if>
-	
-	<tr><td colspan="2"><br/></td></tr>
-	
-	<c:if test="${fn:length(questionsAnswered) > 0}">
+		<c:if test="${!(concept.creator == null)}">
+			<tr>
+				<th><spring:message code="general.createdBy" /></th>
+				<td>
+					${concept.creator.firstName} ${concept.creator.lastName} -
+					<openmrs:formatDate date="${concept.dateCreated}" type="long" />
+				</td>
+			</tr>
+		</c:if>
+		<c:if test="${!(concept.changedBy == null)}">
+			<tr>
+				<th><spring:message code="general.changedBy" /></th>
+				<td>
+					${concept.changedBy.firstName} ${concept.changedBy.lastName} -
+					<openmrs:formatDate date="${concept.dateChanged}" type="long" />
+				</td>
+			</tr>
+		</c:if>
+		
+		<tr><td colspan="2"><br/></td></tr>
+		
+		<c:if test="${fn:length(questionsAnswered) > 0}">
+			<tr>
+				<th valign="top"><spring:message code="dictionary.questionsAnswered" /></th>
+				<td>
+					<c:forEach items="${questionsAnswered}" var="question">
+						<a href="concept.htm?conceptId=${question.key}">${question.value}<br/>
+					</c:forEach>
+				</td>
+			</tr>
+		</c:if>
+		
+		<c:if test="${fn:length(containedInSets) > 0}">
+			<tr>
+				<th valign="top"><spring:message code="dictionary.containedInSets" /></th>
+				<td>
+					<c:forEach items="${containedInSets}" var="set">
+						<a href="concept.htm?conceptId=${set.key}">${set.value}<br/>
+					</c:forEach>
+				</td>
+			</tr>
+		</c:if>
+		
+		<c:if test="${fn:length(formsInUse) > 0}">
+			<tr>
+				<th valign="top"><spring:message code="dictionary.forms" /></th>
+				<td>
+					<c:forEach items="${formsInUse}" var="form">
+						<a href="${pageContext.request.contextPath}/admin/forms/formSchemaDesign.form?formId=${form.formId}">${form.name}<br/>
+					</c:forEach>
+				</td>
+			</tr>
+		</c:if>
+		
+		<tr><td colspan="2"><br/></td></tr>
+		
 		<tr>
-			<th valign="top"><spring:message code="dictionary.questionsAnswered" /></th>
+			<th valign="top"><spring:message code="dictionary.resources" /></th>
 			<td>
-				<c:forEach items="${questionsAnswered}" var="question">
-					<a href="concept.htm?conceptId=${question.key}">${question.value}<br/>
-				</c:forEach>
+				<a href="index.htm?phrase=${conceptName.name}"
+				       target="_similar_terms"><spring:message code="dictionary.similarConcepts" /></a><br/>
+				<a href="http://www2.merriam-webster.com/cgi-bin/mwmednlm?book=Medical&va=${conceptName.name}"
+				       target="_blank"><spring:message code="dictionary.merriam" />&reg;</a><br/>
+				<a href="http://www.google.com/search?q=${conceptName.name}"
+				       target="_blank"><spring:message code="dictionary.google" />&trade;</a><br/>
+				<a href="http://www.utdol.com/application/vocab.asp?search=${conceptName.name}&submit=Go"
+				       target="_blank"><spring:message code="dictionary.upToDate" />&reg;</a><br/>
+				<a href="http://dictionary.reference.com/search?q=${conceptName.name}&submit=Go"
+				       target="_blank"><spring:message code="dictionary.dictionaryCom" />&reg;</a><br/>
+				<a href="http://search.atomz.com/search/?sp-q=${conceptName.name}&sp-a=sp1001878c"
+				       target="_blank"><spring:message code="dictionary.testsOnline" /></a>
 			</td>
 		</tr>
-	</c:if>
-	
-	<c:if test="${fn:length(containedInSets) > 0}">
-		<tr>
-			<th valign="top"><spring:message code="dictionary.containedInSets" /></th>
-			<td>
-				<c:forEach items="${containedInSets}" var="set">
-					<a href="concept.htm?conceptId=${set.key}">${set.value}<br/>
-				</c:forEach>
-			</td>
-		</tr>
-	</c:if>
-	
-	<c:if test="${fn:length(formsInUse) > 0}">
-		<tr>
-			<th valign="top"><spring:message code="dictionary.forms" /></th>
-			<td>
-				<c:forEach items="${formsInUse}" var="form">
-					<a href="${pageContext.request.contextPath}/admin/forms/formSchemaDesign.form?formId=${form.formId}">${form.name}<br/>
-				</c:forEach>
-			</td>
-		</tr>
-	</c:if>
-	
-	<tr><td colspan="2"><br/></td></tr>
-	
-	<tr>
-		<th valign="top"><spring:message code="dictionary.resources" /></th>
-		<td>
-			<a href="index.htm?phrase=${conceptName.name}"
-			       target="_similar_terms"><spring:message code="dictionary.similarConcepts" /></a><br/>
-			<a href="http://www2.merriam-webster.com/cgi-bin/mwmednlm?book=Medical&va=${conceptName.name}"
-			       target="_blank"><spring:message code="dictionary.merriam" />&reg;</a><br/>
-			<a href="http://www.google.com/search?q=${conceptName.name}"
-			       target="_blank"><spring:message code="dictionary.google" />&trade;</a><br/>
-			<a href="http://www.utdol.com/application/vocab.asp?search=${conceptName.name}&submit=Go"
-			       target="_blank"><spring:message code="dictionary.upToDate" />&reg;</a><br/>
-			<a href="http://dictionary.reference.com/search?q=${conceptName.name}&submit=Go"
-			       target="_blank"><spring:message code="dictionary.dictionaryCom" />&reg;</a><br/>
-			<a href="http://search.atomz.com/search/?sp-q=${conceptName.name}&sp-a=sp1001878c"
-			       target="_blank"><spring:message code="dictionary.testsOnline" /></a>
-		</td>
-	</tr>
-</table>
+	</table>
+</c:if>
 
 <script type="text/javascript">
 	document.getElementById("searchPhrase").focus();

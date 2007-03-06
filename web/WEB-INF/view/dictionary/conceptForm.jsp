@@ -65,7 +65,14 @@
 	}
 </style>
 
-<h2><spring:message code="Concept.edit.title" arguments="${concept.name}" /></h2>
+<c:choose>
+	<c:when test="${concept.conceptId != null}">
+		<h2><spring:message code="Concept.edit.title" arguments="${concept.name}" /></h2>
+	</c:when>
+	<c:otherwise>
+		<h2><spring:message code="Concept.creatingNewConcept" /></h2>
+	</c:otherwise>
+</c:choose>
 
 <c:if test="${concept.conceptId != null}">
 	<c:if test="${previousConcept != null}"><a href="concept.form?conceptId=${previousConcept.conceptId}"><spring:message code="general.previous"/></a></c:if>
@@ -105,16 +112,16 @@
 	<br />
 </spring:hasBindErrors>
 
-<%--
-	Display a warning if you have
-		class==Question && datatype==N/A
-		class!=Question && datatype!=N/A
---%>
-<c:if test="${(concept.conceptClass.name == 'Question' && concept.datatype.name == 'N/A') || (concept.conceptClass.name != 'Question' && concept.datatype.name != 'N/A')}">
-	<div class="highlighted">
-		<spring:message code="Concept.checkClassAndDatatype"/>
-	</div>
-	<br/>
+<%-- Display a warning if you have
+		class==Question && datatype==N/A or
+		class!=Question && datatype!=N/A  --%>
+<c:if test="${concept.conceptId != null}">
+	<c:if test="${(concept.conceptClass.name == 'Question' && concept.datatype.name == 'N/A') || (concept.conceptClass.name != 'Question' && concept.datatype.name != 'N/A')}">
+		<div class="highlighted">
+			<spring:message code="Concept.checkClassAndDatatype"/>
+		</div>
+		<br/>
+	</c:if>
 </c:if>
 
 <form method="post" action="">
