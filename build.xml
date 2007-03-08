@@ -527,5 +527,21 @@
 			<arg value="${src.dir}/api/org/openmrs/arden/test"/>
 		</java>
 	</target>
+	
+	<target name="hl7-test" description="Spawns the HL7API test panel for testing HL7 messages (see http://hl7api.sourceforge.net)">
+		<java classname="ca.uhn.hl7v2.app.TestPanel" fork="yes" spawn="yes">
+			<classpath>
+				<fileset dir="${hl7api.dir}">
+					<include name="*.jar" />
+				</fileset>
+				<fileset dir="${commons-logging.dir}">
+					<include name="*.jar" />
+				</fileset>
+				<fileset dir="${xerces.dir}">
+					<include name="*.jar" />
+				</fileset>
+			</classpath>
+		</java>
+	</target>
 
 </project>
