@@ -100,6 +100,7 @@
 					<prop key="analysis.form">otfaActionController</prop>
 					<prop key="cohortBuilder.list">cohortBuilderController</prop>
 					<prop key="cohortBuilder.form">cohortBuilderActionController</prop>
+					<prop key="migration.list">migrationController</prop>
 					<prop key="migration.form">migrationActionController</prop>
 					<prop key="nealreport.form">nealReportController</prop>
 					<prop key="options.form">optionsForm</prop>
