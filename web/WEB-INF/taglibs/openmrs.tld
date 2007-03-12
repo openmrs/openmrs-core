@@ -842,6 +842,26 @@
 
 <tag>
 	<description>
+		Counts the number of objects associated with this extension point and sets it as a variable in the page context.
+		If 'var' is not specified, then the count is written to pageContext.out
+	</description>
+	<name>extensionCount</name>
+	<tag-class>org.openmrs.module.web.taglib.ExtensionCountTag</tag-class>
+	<body-content>empty</body-content>
+	<attribute>
+		<name>pointId</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>var</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+</tag>
+
+<tag>
+	<description>
 		Loops over all the objects associated with this extension point
 		modules assign themselves to a point via the module.xml descriptor file
 	</description>

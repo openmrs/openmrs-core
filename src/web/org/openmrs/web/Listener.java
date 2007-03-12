@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -27,6 +28,8 @@ import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
@@ -74,6 +77,13 @@ public final class Listener extends ContextLoaderListener {
 			try {
 				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 				DocumentBuilder db = dbf.newDocumentBuilder();
+				db.setEntityResolver(new EntityResolver() {
+						public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+							// When asked to resolve external entities (such as a DTD) we return an InputSource
+							// with no data at the end, causing the parser to ignore the DTD.
+							return new InputSource(new StringReader(""));
+						}
+					});
 				Document doc = db.parse(dwrFile);
 				Element elem = doc.getDocumentElement();
 				elem.setTextContent("");

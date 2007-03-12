@@ -24,7 +24,18 @@
 			<a href="<%= request.getContextPath() %>/analysis.list"><spring:message code="Navigation.analysis"/></a>
 		</li>
 	</openmrs:hasPrivilege>
-	
+
+	<openmrs:extensionCount pointId="org.openmrs.gutter.tools" var="howManyTools"/>
+	<c:if test="${howManyTools > 0}">
+			<openmrs:extensionPoint pointId="org.openmrs.gutter.tools" type="html">
+				<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
+					<li>
+					<a href="<%= request.getContextPath() %>/${extension.url}"><spring:message code="${extension.label}"/></a>
+					</li>
+				</openmrs:hasPrivilege>
+			</openmrs:extensionPoint>
+	</c:if>
+
 	<li>
 		<a href="<%= request.getContextPath() %>/options.form"><spring:message code="Navigation.options"/></a>
 	</li>
