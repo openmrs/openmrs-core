@@ -154,7 +154,7 @@
 					if (isSel) {
 						return '<b>' + patient.givenName + " " + patient.middleName + " " + patient.familyName + '</b>';
 					} else {
-						return '<a href="${model.linkUrl}?patientId=' + patient.patientId + '">' + patient.givenName + ' ' + patient.middleName + ' ' + patient.familyName + '</a>';
+						return '<a href="<%= request.getContextPath() %>/${model.linkUrl}?patientId=' + patient.patientId + '">' + patient.givenName + ' ' + patient.middleName + ' ' + patient.familyName + '</a>';
 					}
 				</c:otherwise>
 			</c:choose>
@@ -215,7 +215,7 @@
 						<spring:message code="general.action"/>:
 					</b>
 					<span id="summariesLink">
-						<a href="patientSummaries.form?source=myPatientSet">
+						<a href="<%= request.getContextPath() %>/patientSummaries.form?source=myPatientSet">
 							<spring:message code="summary.generateSummaries"/>
 						</a>
 					</span>
@@ -232,7 +232,7 @@
 							<b><spring:message code="BatchEntry.title"/>:</b>
 							<ul>
 								<c:forEach var="form" items="${model.batchEntryForms}">
-									<li><a href="batchForm.form?formId=${form.formId}">${form.name}</a></li>
+									<li><a href="<%= request.getContextPath() %>/batchForm.form?formId=${form.formId}">${form.name}</a></li>
 								</c:forEach>
 							</ul>
 						</div>
