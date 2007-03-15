@@ -907,7 +907,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		List<String> columns = new Vector<String>();
 		
 		for (String attribute : attributes) {
-			String className = null;
+			List<String> classNames = new Vector<String>();
 			if (attribute == null) {
 				columns = findObsValueColumnName(c);
 				if (columns.size() > 1)
@@ -923,26 +923,30 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			}
 			else if (attribute.equals("location")) {
 				// pass -- same column name
+				classNames.add("obs.location");
+				attribute = "location.name";
 			}
 			else if (attribute.equals("comment")) {
 				// pass -- same column name
 			}
 			else if (attribute.equals("encounterType")) {
-				className = "encounter";
+				classNames.add("obs.encounter");
+				classNames.add("encounter.encounterType");
+				attribute = "encounterType.name";
 			}
 			else if (attribute.equals("provider")) {
-				className = "encounter";
+				classNames.add("obs.encounter");
+				attribute = "encounter.provider";
 			}
 			else {
 				throw new DAOException("Attribute: " + attribute + " is not recognized. Please add reference in " + this.getClass());
 			}
 			
-			if (className != null) { // if aliasing is necessary
+			for (String className : classNames) { // if aliasing is necessary
 				if (!aliases.contains(className)) { // if we haven't aliased this already
-					criteria.createAlias("obs." + className, className);
+					criteria.createAlias(className, className.split("\\.")[1]);
 					aliases.add(className);
 				}
-				attribute = className + "." + attribute;					
 			}
 			
 			columns.add(attribute);
@@ -953,8 +957,12 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		// set up the query
 		ProjectionList projections = Projections.projectionList();
 		projections.add(Projections.property("obs.patientId"));
-		for (String col : columns)
-			projections.add(Projections.property(aliasName + "." + col));
+		for (String col : columns) {
+			if (col.contains("."))
+				projections.add(Projections.property(col));
+			else
+				projections.add(Projections.property(aliasName + "." + col));
+		}
 		criteria.setProjection(projections);
 		
 		// only restrict on patient ids if some were passed in
