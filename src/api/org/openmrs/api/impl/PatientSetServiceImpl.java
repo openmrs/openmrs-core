@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -169,12 +170,20 @@ public class PatientSetServiceImpl implements PatientSetService {
 		return getPatientSetDAO().getObservations(patients, concept, fromDate, toDate);
 	}
 	
-	public Map<Integer, List<Object>> getObservationsValues(PatientSet patients, Concept c) {
+	public Map<Integer, List<List<Object>>> getObservationsValues(PatientSet patients, Concept c) {
 		return getObservationsValues(patients, c, null);
 	}
 	
-	public Map<Integer, List<Object>> getObservationsValues(PatientSet patients, Concept c, String attribute) {
-		return getPatientSetDAO().getObservationsValues(patients, c, attribute);
+	public Map<Integer, List<List<Object>>> getObservationsValues(PatientSet patients, Concept c, List<String> attributes) {
+		if (attributes == null)
+			attributes = new Vector<String>();
+		
+		// add null for the actual obs value
+		if (attributes.size() < 1 || attributes.get(0) != null) 
+			attributes.add(0, null);
+		
+		
+		return getPatientSetDAO().getObservationsValues(patients, c, attributes);
 	}
 
 	public Map<Integer, Encounter> getEncountersByType(PatientSet patients, EncounterType encType) {

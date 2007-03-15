@@ -893,52 +893,62 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret;
 	}
 	
-	public Map<Integer, List<Object>> getObservationsValues(PatientSet patients, Concept c, String attribute) {
-		Map<Integer, List<Object>> ret = new HashMap<Integer, List<Object>>();
+	public Map<Integer, List<List<Object>>> getObservationsValues(PatientSet patients, Concept c, List<String> attributes) {
+		Map<Integer, List<List<Object>>> ret = new HashMap<Integer, List<List<Object>>>();
 		
 		Collection<Integer> ids = patients.getPatientIds();
 		if (ids.size() == 0)
 			return ret;
 		
-		String className = "";
-		
-		List<String> columns = new Vector<String>();
-		columns.add(attribute);
-		
-		if (attribute == null) {
-			columns = findObsValueColumnName(c);
-			//log.debug("c: " + c.getConceptId() + " attribute: " + attribute);
-		}
-		else if (attribute.equals("valueDatetime")) {
-			// pass -- same column name
-		}
-		else if (attribute.equals("obsDatetime")) {
-			// pass -- same column name
-		}
-		else if (attribute.equals("location")) {
-			// pass -- same column name
-		}
-		else if (attribute.equals("comment")) {
-			// pass -- same column name
-		}
-		else if (attribute.equals("encounterType")) {
-			className = "encounter";
-		}
-		else if (attribute.equals("provider")) {
-			className = "encounter";
-		}
-		else {
-			throw new DAOException("Attribute: " + attribute + " is not recognized. Please add reference in " + this.getClass());
-		}
+		List<String> aliases = new Vector<String>();
+		Boolean conditional = false; 
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria("org.openmrs.Obs", "obs");
+		List<String> columns = new Vector<String>();
+		
+		for (String attribute : attributes) {
+			String className = null;
+			if (attribute == null) {
+				columns = findObsValueColumnName(c);
+				if (columns.size() > 1)
+					conditional = true;
+				continue;
+				//log.debug("c: " + c.getConceptId() + " attribute: " + attribute);
+			}
+			else if (attribute.equals("valueDatetime")) {
+				// pass -- same column name
+			}
+			else if (attribute.equals("obsDatetime")) {
+				// pass -- same column name
+			}
+			else if (attribute.equals("location")) {
+				// pass -- same column name
+			}
+			else if (attribute.equals("comment")) {
+				// pass -- same column name
+			}
+			else if (attribute.equals("encounterType")) {
+				className = "encounter";
+			}
+			else if (attribute.equals("provider")) {
+				className = "encounter";
+			}
+			else {
+				throw new DAOException("Attribute: " + attribute + " is not recognized. Please add reference in " + this.getClass());
+			}
+			
+			if (className != null) { // if aliasing is necessary
+				if (!aliases.contains(className)) { // if we haven't aliased this already
+					criteria.createAlias("obs." + className, className);
+					aliases.add(className);
+				}
+				attribute = className + "." + attribute;					
+			}
+			
+			columns.add(attribute);
+		}
 		
 		String aliasName = "obs";
-		
-		if (className.length() > 0) {
-			aliasName = "other";
-			criteria.createAlias("obs.encounter", aliasName);
-		}
 		
 		// set up the query
 		ProjectionList projections = Projections.projectionList();
@@ -947,6 +957,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			projections.add(Projections.property(aliasName + "." + col));
 		criteria.setProjection(projections);
 		
+		// only restrict on patient ids if some were passed in
 		if (ids.size() != getAllPatients().size())
 			criteria.add(Restrictions.in("obs.patientId", ids));
 		
@@ -961,24 +972,39 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		List<Object[]> rows = criteria.list();
 		
 		// set up the return map
-		for (Object[] row : rows) {
+		for (Object[] rowArray : rows) {
 			//log.debug("row[0]: " + row[0] + " row[1]: " + row[1] + (row.length > 2 ? " row[2]: " + row[2] : ""));
-			Integer ptId = (Integer)row[0];
+			Integer ptId = (Integer)rowArray[0];
 			
-			// get the first non-null value column
+			Boolean tmpConditional = conditional.booleanValue();
+			
+			// get all columns
 			int index = 1;
-			Object columnValue = null;
-			while (index < row.length && columnValue == null)
-				columnValue = row[index++];
+			List<Object> row = new Vector<Object>();
+			while (index < rowArray.length) {
+				Object value = rowArray[index++];
+				if (tmpConditional) {
+					if (index == 2 && value != null) // skip null first value if we must
+						row.add(value);
+					else
+						row.add(rowArray[index]);
+					tmpConditional = false;
+					index++; // increment counter for next column.  (Skips over value_concept)
+				}
+				else
+					row.add(value == null ? "" : value);
+			}
 			
+			// if we haven't seen a different row for this patient already:
 			if (!ret.containsKey(ptId)) {
-				List<Object> arr = new Vector<Object>();
-				arr.add(columnValue);
+				List<List<Object>> arr = new Vector<List<Object>>();
+				arr.add(row);
 				ret.put(ptId, arr);
 			}
+			// if we have seen a row for this patient already
 			else {
-				List<Object> oldArr = ret.get(ptId);
-				oldArr.add(columnValue);
+				List<List<Object>> oldArr = ret.get(ptId);
+				oldArr.add(row);
 				ret.put(ptId, oldArr);
 			}
 		}

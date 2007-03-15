@@ -47,7 +47,7 @@ public interface PatientSetDAO {
 	
 	public Map<Integer, List<Obs>> getObservations(PatientSet patients, Concept concept, Date fromDate, Date toDate) throws DAOException;
 	
-	public Map<Integer, List<Object>> getObservationsValues(PatientSet patients, Concept c, String attribute);
+	public Map<Integer, List<List<Object>>> getObservationsValues(PatientSet patients, Concept c, List<String> attributes);
 	
 	public Map<Integer, Encounter> getEncountersByType(PatientSet patients, EncounterType encType);
 	

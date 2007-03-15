@@ -2,6 +2,8 @@ package org.openmrs.reporting.export;
 
 import java.io.Serializable;
 
+import org.openmrs.api.APIException;
+
 public class ConceptColumn implements ExportColumn, Serializable {
 	
 	public static final long serialVersionUID = 987654323L;
@@ -34,41 +36,66 @@ public class ConceptColumn implements ExportColumn, Serializable {
 		if (extras == null)
 			extras = new String[] {};
 		
-		
-		if (DataExportReportObject.MODIFIER_ANY.equals(modifier)) {
-			s += " $!{fn.getValueAsString($fn.getLastObs('" + getConceptIdOrName() + "'))} ";
-			for (String ext : extras) {
-				s += "$!{fn.getSeparator()} ";
-				s += "$!{fn.getValueAsString($fn.getLastObsValue('" + getConceptIdOrName() + "', '" + ext + "'))} ";
-			}
-		}
-		else if (DataExportReportObject.MODIFIER_FIRST.equals(modifier)) {
-			s += "$!{fn.getValueAsString($fn.getFirstObs('" + getConceptIdOrName() + "'))} ";
-			for (String ext : extras) {
-				s += "$!{fn.getSeparator()} ";
-				s += "$!{fn.getValueAsString($fn.getFirstObsValue('" + getConceptIdOrName() + "', '" + ext + "'))} ";
-			}
-		}
-		else if (DataExportReportObject.MODIFIER_LAST.equals(modifier)) {
-			s += " $!{fn.getValueAsString($fn.getLastObs('" + getConceptIdOrName() + "'))} ";
-			for (String ext : extras) {
-				s += "$!{fn.getSeparator()} ";
-				s += "$!{fn.getValueAsString($fn.getLastObsValue('" + getConceptIdOrName() + "', '" + ext + "'))} ";
-			}
-		}
-		else if (DataExportReportObject.MODIFIER_LAST_NUM.equals(modifier)) {
+		if (DataExportReportObject.MODIFIER_LAST_NUM.equals(modifier)) {
 			Integer num = modifierNum == null ? 1 : modifierNum;
-			s += "#set($obsValues = $fn.getLastNObs(" + num + ", '" + getConceptIdOrName() + "'))";
-			s += "#foreach($val in $obsValues)";
+			
+			s += "#set($arr = [";
+				for (Integer x = 0; x < extras.length; x++) {
+					s += "'" + extras[x] + "'";
+					if (!x.equals(extras.length - 1))
+						s += ",";
+				}
+				s += "])";
+			
+			s += "#set($obsValues = $fn.getLastNObsWithValues(" + num + ", '" + getConceptIdOrName() + "', $arr))";
+			s += "#foreach($vals in $obsValues)";
+			s += "#if($velocityCount > 1)";
+			s += "$!{fn.getSeparator()}";
+			s += "#end";
+			s += "#foreach($val in $vals)";
 			s += "#if($velocityCount > 1)";
 			s += "$!{fn.getSeparator()}";
 			s += "#end";
 			s += "$!{fn.getValueAsString($val)}";
-			for (String ext : extras) {
-				s += "$!{fn.getSeparator()}";
-				s += "$!{fn.getValueAsString($fn.getLastNObsValue(" + num + ", '" + getConceptIdOrName() + "', '" + ext + "', $velocityCount))}";
-			}
+			s += "#end";
 			s += "#end\n";
+		}
+		else {
+			String function = " ";
+			if (DataExportReportObject.MODIFIER_ANY.equals(modifier))
+				function += "$fn.getLastObs";
+			else if (DataExportReportObject.MODIFIER_FIRST.equals(modifier))
+				function += "$fn.getFirstObs";
+			else if (DataExportReportObject.MODIFIER_LAST.equals(modifier))
+				function += "$fn.getLastObs";
+			else
+				throw new APIException("Unknown modifier: " + modifier);
+			
+			if (extras.length < 1) { 
+				function = "$!{fn.getValueAsString(" + function;
+				function += "('" + getConceptIdOrName() + "'))} ";
+				s += function; // if we don't have extras, just call the normal function and print it
+			}
+			else {
+				
+				s += "#set($arr = [";
+				for (Integer x = 0; x < extras.length; x++) {
+					s += "'" + extras[x] + "'";
+					if (!x.equals(extras.length - 1))
+						s += ",";
+				}
+				s += "])";
+					
+				function += "WithValues('" + getConceptIdOrName() + "', $arr) ";
+				
+				s += " #set($obsRow =" + function + ") "; 
+				s += "#foreach($val in $obsRow)";
+				s += "#if($velocityCount > 1)";
+				s += "$!{fn.getSeparator()}";
+				s += "#end";
+				s += " $!{fn.getValueAsString($val)} ";
+				s += "#end\n";
+			}
 		}
 		
 		return s;

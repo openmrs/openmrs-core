@@ -26,6 +26,8 @@ import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
+import org.openmrs.api.ConceptService;
+import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
@@ -36,48 +38,50 @@ public class DataExportUtility {
 	
 	public final Log log = LogFactory.getLog(this.getClass());
 	
-	private Integer patientId;
-	private Patient patient;
-	private PatientSet patientSet;
+	protected Integer patientId;
+	protected Patient patient;
+	protected PatientSet patientSet;
 	
-	private String separator = "	";
-	private DateFormat dateFormatLong = null; 
-	private DateFormat dateFormatShort = null;
-	private DateFormat dateFormatYmd = null;
+	protected String separator = "	";
+	protected DateFormat dateFormatLong = null; 
+	protected DateFormat dateFormatShort = null;
+	protected DateFormat dateFormatYmd = null;
 	
 	public Date currentDate = new Date();
 	
 	// Map<EncounterType, Map<patientId, Encounter>>
-	private Map<String, Map<Integer, Encounter>> patientEncounterMap = new HashMap<String, Map<Integer, Encounter>>();
+	protected Map<String, Map<Integer, Encounter>> patientEncounterMap = new HashMap<String, Map<Integer, Encounter>>();
 	
 	// Map<EncounterType, Map<patientId, Encounter>>
-	private Map<String, Map<Integer, Encounter>> patientFirstEncounterMap = new HashMap<String, Map<Integer, Encounter>>();
+	protected Map<String, Map<Integer, Encounter>> patientFirstEncounterMap = new HashMap<String, Map<Integer, Encounter>>();
 	
-	private Map<String, Concept> conceptNameMap = new HashMap<String, Concept>();
+	protected Map<String, Concept> conceptNameMap = new HashMap<String, Concept>();
 	
 	// Map<Concept, Map<obsId, List<Obs values>>>
-	//private Map<Concept, Map<Integer, List<Object>>> conceptObsMap = new HashMap<Concept, Map<Integer, List<Object>>>();
+	//protected Map<Concept, Map<Integer, List<Object>>> conceptObsMap = new HashMap<Concept, Map<Integer, List<Object>>>();
 	
-	// Map<conceptId + attr, Map<patientId, List<Obs values>>>
-	private Map<String, Map<Integer, List<Object>>> conceptAttrObsMap = new HashMap<String, Map<Integer, List<Object>>>();
+	// Map<conceptId + attr, Map<patientId, List<List<Obs values>>>>
+	protected Map<String, Map<Integer, List<List<Object>>>> conceptAttrObsMap = new HashMap<String, Map<Integer, List<List<Object>>>>();
 	
 	// Map<RelationshipType, Map<patientId, List<Relationship>>>
-	private Map<String, Map<Integer, List<Relationship>>> relationshipMap = new HashMap<String, Map<Integer, List<Relationship>>>();
+	protected Map<String, Map<Integer, List<Relationship>>> relationshipMap = new HashMap<String, Map<Integer, List<Relationship>>>();
 	
 	// Map<Program.name, Map<patientId, PatientProgram>>
-	private Map<String, Map<Integer, PatientProgram>> programMap = new HashMap<String, Map<Integer, PatientProgram>>();
+	protected Map<String, Map<Integer, PatientProgram>> programMap = new HashMap<String, Map<Integer, PatientProgram>>();
 	
 	// Map<name of drug set, Map<patientId, List<DrugOrder>>>
-	private Map<String, Map<Integer, List<DrugOrder>>> drugOrderMap = new HashMap<String, Map<Integer, List<DrugOrder>>>();
+	protected Map<String, Map<Integer, List<DrugOrder>>> drugOrderMap = new HashMap<String, Map<Integer, List<DrugOrder>>>();
 
 	// Map<name of drug set, Map<patientId, List<DrugOrder>>>
-	private Map<String, Map<Integer, List<DrugOrder>>> currentDrugOrderMap = new HashMap<String, Map<Integer, List<DrugOrder>>>();
+	protected Map<String, Map<Integer, List<DrugOrder>>> currentDrugOrderMap = new HashMap<String, Map<Integer, List<DrugOrder>>>();
 	
 	// Map<tablename+columnname, Map<patientId, columnvalue>>
-	private Map<String, Map<Integer, Object>> patientAttributeMap = new HashMap<String, Map<Integer, Object>>();
+	protected Map<String, Map<Integer, Object>> patientAttributeMap = new HashMap<String, Map<Integer, Object>>();
 	
-	private PatientSetService patientSetService;
-	private PatientService patientService;
+	protected PatientSetService patientSetService;
+	protected PatientService patientService;
+	protected ConceptService conceptService;
+	protected EncounterService encounterService;
 	
 	// Constructors
 	
@@ -93,6 +97,8 @@ public class DataExportUtility {
 	public DataExportUtility() {
 		this.patientSetService = Context.getPatientSetService();
 		this.patientService = Context.getPatientService();
+		this.conceptService = Context.getConceptService();
+		this.encounterService = Context.getEncounterService();
 		
 		Locale locale = Context.getLocale();
 		dateFormatLong = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
@@ -179,7 +185,7 @@ public class DataExportUtility {
 		
 		EncounterType type = null;
 		if (!encounterType.equals(""))
-			type = Context.getEncounterService().getEncounterType(encounterType);
+			type = encounterService.getEncounterType(encounterType);
 		
 		Map<Integer, Encounter> encounterMap = patientSetService.getEncountersByType(getPatientSet(), type);
 		
@@ -200,7 +206,7 @@ public class DataExportUtility {
 		
 		EncounterType type = null;
 		if (!encounterType.equals(""))
-			type = Context.getEncounterService().getEncounterType(encounterType);
+			type = encounterService.getEncounterType(encounterType);
 		
 		Map<Integer, Encounter> encounterMap = patientSetService.getFirstEncountersByType(getPatientSet(), type);
 		
@@ -225,10 +231,10 @@ public class DataExportUtility {
 		Concept c;
 		try {
 			Integer conceptId = Integer.valueOf(conceptName);
-			c = Context.getConceptService().getConcept(conceptId);
+			c = conceptService.getConcept(conceptId);
 		}
 		catch (NumberFormatException e) {
-			c = Context.getConceptService().getConceptByName(conceptName);
+			c = conceptService.getConceptByName(conceptName);
 		}
 		
 		if (c == null)
@@ -253,12 +259,15 @@ public class DataExportUtility {
 	}
 	*/
 	
-	public List<Object> getObsValue(Concept c, String attr) {
-		String key = c.getConceptId() + attr;
-		Map<Integer, List<Object>> patientIdObsMap = conceptAttrObsMap.get(key);
+	public List<List<Object>> getObsWithValues(Concept c, List<String> attrs) {
+		if (attrs == null)
+			attrs = new Vector<String>();
+		
+		String key = c.getConceptId() + "";
+		Map<Integer, List<List<Object>>> patientIdObsMap = conceptAttrObsMap.get(key);
 		if (patientIdObsMap == null) {
 			//log.debug("getting obs list for concept: " + c + " and attr: " + attr);
-			patientIdObsMap = Context.getPatientSetService().getObservationsValues(getPatientSet(), c, attr);
+			patientIdObsMap = patientSetService.getObservationsValues(getPatientSet(), c, attrs);
 			conceptAttrObsMap.put(key, patientIdObsMap);
 		}
 		return patientIdObsMap.get(patientId);
@@ -270,7 +279,7 @@ public class DataExportUtility {
 			patientIdProgramMap = programMap.get(programName);
 		} else {
 			Program program = Context.getProgramWorkflowService().getProgram(programName);
-			patientIdProgramMap = Context.getPatientSetService().getPatientPrograms(getPatientSet(), program);
+			patientIdProgramMap = patientSetService.getPatientPrograms(getPatientSet(), program);
 			programMap.put(programName, patientIdProgramMap);
 		}
 		return patientIdProgramMap.get(patientId);		
@@ -281,8 +290,8 @@ public class DataExportUtility {
 		if (currentDrugOrderMap.containsKey(drugSetName)) {
 			patientIdDrugOrderMap = currentDrugOrderMap.get(drugSetName);
 		} else {
-			Concept drugSet = Context.getConceptService().getConceptByName(drugSetName);
-			patientIdDrugOrderMap = Context.getPatientSetService().getCurrentDrugOrders(getPatientSet(), drugSet);
+			Concept drugSet = conceptService.getConceptByName(drugSetName);
+			patientIdDrugOrderMap = patientSetService.getCurrentDrugOrders(getPatientSet(), drugSet);
 			currentDrugOrderMap.put(drugSetName, patientIdDrugOrderMap);
 		}
 		return patientIdDrugOrderMap.get(patientId);
@@ -307,8 +316,8 @@ public class DataExportUtility {
 		if (drugOrderMap.containsKey(drugSetName)) {
 			patientIdDrugOrderMap = drugOrderMap.get(drugSetName);
 		} else {
-			Concept drugSet = Context.getConceptService().getConceptByName(drugSetName);
-			patientIdDrugOrderMap = Context.getPatientSetService().getCurrentDrugOrders(getPatientSet(), drugSet);
+			Concept drugSet = conceptService.getConceptByName(drugSetName);
+			patientIdDrugOrderMap = patientSetService.getCurrentDrugOrders(getPatientSet(), drugSet);
 			drugOrderMap.put(drugSetName, patientIdDrugOrderMap);
 		}
 		return patientIdDrugOrderMap.get(patientId);
@@ -333,7 +342,7 @@ public class DataExportUtility {
 		} else {
 			//log.debug("getting relationship list for type: " + relationshipTypeName);
 			RelationshipType relType = Context.getPatientService().findRelationshipType(relationshipTypeName);
-			patientIdRelationshipMap = Context.getPatientSetService().getRelationships(getPatientSet(), relType);
+			patientIdRelationshipMap = patientSetService.getRelationships(getPatientSet(), relType);
 			relationshipMap.put(relationshipTypeName, patientIdRelationshipMap);
 		}
 		return patientIdRelationshipMap.get(patientId);
@@ -432,7 +441,7 @@ public class DataExportUtility {
 		}
 		else {
 			//log.debug("getting patient attrs: " + key);
-			patientIdAttrMap = Context.getPatientSetService().getPatientAttributes(patientSet, className, property, returnAll);
+			patientIdAttrMap = patientSetService.getPatientAttributes(patientSet, className, property, returnAll);
 			patientAttributeMap.put(key, patientIdAttrMap);
 		}
 		return patientIdAttrMap.get(patientId);
@@ -457,11 +466,15 @@ public class DataExportUtility {
 	 * @throws Exception
 	 */
 	public List<Object> getLastNObs(Integer n, Concept concept) throws Exception {
-		return getLastNObsValue(n, concept, null);
+		List<Object> returnList = new Vector<Object>();
+		for (List<Object> row : getLastNObsWithValues(n, concept, null)) {
+			returnList.add(row.get(0));
+		}
+		return returnList;
 	}
 	
-	public Object getLastNObsValue(Integer n, String conceptId, String attr, Integer place) throws Exception {
-		return getLastNObsValue(n, getConcept(conceptId), attr).get(place-1);
+	public List<List<Object>> getLastNObsWithValues(Integer n, String conceptId, Object attrs) throws Exception {
+		return getLastNObsWithValues(n, getConcept(conceptId), (List<String>)attrs);
 	}
 	
 	/**
@@ -469,25 +482,36 @@ public class DataExportUtility {
 	 * 
 	 * @param n max number of obs to return
 	 * @param concept
-	 * @param attr
+	 * @param attrs
 	 * @return
 	 * @throws Exception
 	 */
-	public List<Object> getLastNObsValue(Integer n, Concept concept, String attr) throws Exception {
+	public List<List<Object>> getLastNObsWithValues(Integer n, Concept concept, List<String> attrs) throws Exception {
 		//log.debug("Looking for n concepts: " + n + " " + concept);
 		
-		List<Object> returnList = getObsValue(concept, attr);
+		if (attrs == null)
+			attrs = new Vector<String>();
+		
+		attrs.add(0, null);
+		
+		List<List<Object>> returnList = getObsWithValues(concept, attrs);
 		
 		if (returnList == null)
-			returnList = new Vector<Object>();
+			returnList = new Vector<List<Object>>();
 		
 		//log.debug("Got obs list for: " + concept.getConceptId() + ". size: " + returnList.size());
 		
-		// bring the list size up to 'n'
-		while (returnList.size() < n)
-			returnList.add("");
+		if (n.equals(-1))
+			return returnList;
 		
-		List<Object> rList = returnList.subList(0, n);
+		// bring the list size up to 'n'
+		List<Object> blankRow = new Vector<Object>();
+		for (String attr : attrs)
+			blankRow.add("");
+		while (returnList.size() < n)
+			returnList.add(blankRow);
+		
+		List<List<Object>> rList = returnList.subList(0, n);
 		
 		//for (Object o : rList)
 		//	log.debug("rList object: " + o);
@@ -507,11 +531,13 @@ public class DataExportUtility {
 	/**
 	 * Gets the most recent Observation value matching this concept
 	 * @param conceptName
-	 * @param attr
+	 * @param attrs string array
 	 * @return
 	 */
-	public Object getLastObsValue(String conceptName, String attr) throws Exception {
-		return getLastObsValue(getConcept(conceptName), attr);
+	public List<Object> getLastObsWithValues(String conceptName, Object attrs) throws Exception {
+		//List<String> attrs = new Vector<String>();
+		//Collections.addAll(attrs, attrArray);
+		return getLastObsWithValues(getConcept(conceptName), (List<String>)attrs);
 	}
 	
 	/**
@@ -531,12 +557,12 @@ public class DataExportUtility {
 	 * Get the most recent obs matching <code>concept</code> out of the patient's encounters
 	 * @param e
 	 * @param concept
-	 * @param attr
+	 * @param attr list of Strings
 	 * @return
 	 * @throws Exception
 	 */
-	public Object getLastObsValue(Concept concept, String attr) throws Exception {
-		List<Object> obs = getLastNObsValue(1, concept, attr);
+	public List<Object> getLastObsWithValues(Concept concept, List<String> attrs) throws Exception {
+		List<List<Object>> obs = getLastNObsWithValues(1, concept, attrs);
 		
 		return obs.get(0);
 	}
@@ -558,10 +584,48 @@ public class DataExportUtility {
 	 * @throws Exception
 	 */
 	public Object getFirstObs(Concept concept) throws Exception {
-		List<Object> obs = getObsValue(concept, null);
+		List<List<Object>> obs = getObsWithValues(concept, null);
 		
 		for (int x = obs.size(); x >= 0; x--) {
-			Object o = obs.get(x);
+			List<Object> o = obs.get(x);
+			return o.get(0);
+		}
+		
+		log.info("Could not find an Obs with concept " + concept + " for patient " + patientId);
+		
+		return null;
+	}
+	
+	/**
+	 * Get the first occurence of matching <code>obs.concept</code> out of the patient's encounters
+	 * @param conceptName 
+	 * @return
+	 */
+	public List<Object> getFirstObsWithValues(String conceptName, Object attrs) throws Exception {
+		//List<String> attrs = new Vector<String>();
+		//Collections.addAll(attrs, attrArray);
+		return getFirstObsWithValues(getConcept(conceptName), (List<String>)attrs);
+	}
+	
+	/**
+	 * Get the first occurence of matching <code>obs.concept</code> out of the patient's encounters
+	 * @param e
+	 * @param concept
+	 * @return
+	 * @throws Exception
+	 */
+	public List<Object> getFirstObsWithValues(Concept concept, List<String> attrs) throws Exception {
+		List<List<Object>> obs = getObsWithValues(concept, attrs);
+		
+		if (obs == null) {
+			List<Object> blankRow = new Vector<Object>();
+			for (String attr : attrs)
+				blankRow.add("");
+			return blankRow;
+		}
+		
+		for (int x = obs.size() - 1; x >= 0; x--) {
+			List<Object> o = obs.get(x);
 			return o;
 		}
 		
