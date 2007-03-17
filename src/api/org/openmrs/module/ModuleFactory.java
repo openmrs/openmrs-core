@@ -478,35 +478,51 @@ public class ModuleFactory {
 			}
 			
 			if (getModuleClassLoaderMap().containsKey(mod)) {
+				log.debug("Mod was in classloader map.  Removing advice and extensions.");
 				// remove all advice by this module
-				for (AdvicePoint advice : mod.getAdvicePoints()) {
-					Class cls = null;
-					try {
-						cls = Class.forName(advice.getPoint());
-						Object aopObject = advice.getClassInstance();
-						if (Advisor.class.isInstance(aopObject)) {
-							log.debug("adding advisor: " + aopObject.getClass());
-							Context.removeAdvisor(cls, (Advisor)aopObject);
+				try {
+					for (AdvicePoint advice : mod.getAdvicePoints()) {
+						Class cls = null;
+						try {
+							cls = Class.forName(advice.getPoint());
+							Object aopObject = advice.getClassInstance();
+							if (Advisor.class.isInstance(aopObject)) {
+								log.debug("adding advisor: " + aopObject.getClass());
+								Context.removeAdvisor(cls, (Advisor)aopObject);
+							}
+							else {
+								log.debug("Adding advice: " + aopObject.getClass());
+								Context.removeAdvice(cls, (Advice)aopObject);
+							}
 						}
-						else {
-							log.debug("Adding advice: " + aopObject.getClass());
-							Context.removeAdvice(cls, (Advice)aopObject);
+						catch (ClassNotFoundException e) {
+							log.warn("Could not remove advice point: " + advice.getPoint(), e);
 						}
 					}
-					catch (ClassNotFoundException e) {
-						log.warn("Could not remove advice point: " + advice.getPoint(), e);
-					}
+				}
+				catch (Exception e) {
+					log.warn("Error while getting advicePoints from module: " + moduleId, e);
 				}
 			
 				// remove all extensions by this module
-				for (Extension ext : mod.getExtensions()) {
-					String extId = ext.getExtensionId();
-					List<Extension> tmpExtensions = getExtensions(extId);
-					if (tmpExtensions == null)
-						tmpExtensions = new Vector<Extension>();
-					
-					tmpExtensions.remove(ext);
-					getExtensionMap().put(extId, tmpExtensions);
+				try {
+					for (Extension ext : mod.getExtensions()) {
+						String extId = ext.getExtensionId();
+						try {
+							List<Extension> tmpExtensions = getExtensions(extId);
+							if (tmpExtensions == null)
+								tmpExtensions = new Vector<Extension>();
+							
+							tmpExtensions.remove(ext);
+							getExtensionMap().put(extId, tmpExtensions);
+						}
+						catch (Exception exterror) {
+							log.warn("Error while getting extension: " + ext, exterror);
+						}
+					}
+				}
+				catch (Exception e) {
+					log.warn("Error while getting extensions from module: " + moduleId, e);
 				}
 			}
 			

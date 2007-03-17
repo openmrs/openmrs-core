@@ -13,18 +13,19 @@
 <div class="box">
 	<form id="moduleAddForm" action="module.list" method="post" enctype="multipart/form-data">
 		<spring:message code="Module.addJar"/>: 
-		<input type="file" name="moduleFile" size="40" <c:if test="${allowAdmin!='true'}">disabled="disabled"</c:if> /> 
-		<br />
+		<input type="file" name="moduleFile" size="40" <c:if test="${allowAdmin!='true'}">disabled="disabled"</c:if> />
 		<input type="hidden" name="action" value="upload"/>
-		<br/>
-		<c:choose>
-			<c:when test="${allowAdmin == 'true'}">
-				<input type="submit" value='<spring:message code="Module.add"/>'/>
-			</c:when>
-			<c:otherwise>
-				${disallowUploads}
-			</c:otherwise>
-		</c:choose>
+		
+		<div id="moduleUploadButton" style="margin-top: 5px;">
+			<c:choose>
+				<c:when test="${allowAdmin == 'true'}">
+					<input type="submit" value='<spring:message code="Module.add"/>'/>
+				</c:when>
+				<c:otherwise>
+					${disallowUploads}
+				</c:otherwise>
+			</c:choose>
+		</div>
 	</form>
 </div>
 

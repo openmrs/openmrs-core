@@ -251,11 +251,12 @@ public class WebModuleUtil {
 					mod.setStartupErrorMessage(msg + " : " + e.getMessage());
 					
 					try {
+						ModuleFactory.stopModule(mod); //remove jar from classloader play 
 						stopModule(mod, servletContext, true);
 					}
 					catch (Exception e2) {
 						// exception expected with most modules here
-						log.warn("Error while stopping a module that had an error on refreshWAC", e);
+						log.warn("Error while stopping a module that had an error on refreshWAC", e2);
 					}
 					System.gc();
 					
@@ -268,6 +269,8 @@ public class WebModuleUtil {
 				for (Module module : ModuleFactory.getStartedModules()) {
 					ModuleFactory.loadAdvice(module);
 				}
+				
+				return;
 			}
 			
 			// mark to delete the entire module web directory on exit 
@@ -276,51 +279,63 @@ public class WebModuleUtil {
 			File outFile = new File(folderPath.replace("/", File.separator));
 			outFile.deleteOnExit();
 			
-			
 			// find and cache the module's servlets
-			Element rootNode = mod.getConfig().getDocumentElement();
-			NodeList servletTags = rootNode.getElementsByTagName("servlet");
-			Map<String, HttpServlet> servletMap = new HashMap<String, HttpServlet>();
-			
-			for (int i=0; i< servletTags.getLength(); i++) {
-				Node node = servletTags.item(i);
-				NodeList childNodes = node.getChildNodes();
-				String name = "", className = "";
-				for (int j=0; j < childNodes.getLength(); j++) {
-					Node childNode = childNodes.item(j);
-					if ("servlet-name".equals(childNode.getNodeName()))
-						name = childNode.getTextContent();
-					else if("servlet-class".equals(childNode.getNodeName()))
-						className = childNode.getTextContent();
-				}
-				if (name.length() == 0 || className.length() == 0) {
-					log.warn("both 'servlet-name' and 'servlet-class' are required for the 'servlet' tag. Given '" + name + "' and '" + className + "' for module " + mod.getName());
-					continue;
-				}
-				
-				
-				HttpServlet httpServlet = null;
-				try {
-					httpServlet = (HttpServlet)ModuleFactory.getModuleClassLoader(mod).loadClass(className).newInstance();
-				}
-				catch (ClassNotFoundException e) {
-					log.warn("Class not found for servlet " + name + " for module " + mod.getName(), e);
-					continue;
-				}
-				catch (IllegalAccessException e) {
-					log.warn("Class cannot be accessed for servlet " + name + " for module " + mod.getName(), e);
-					continue;
-				}
-				catch (InstantiationException e) {
-					log.warn("Class cannot be instantiated for servlet " + name + " for module " + mod.getName(), e);
-					continue;
-				}
-				
-				servletMap.put(name, httpServlet);
-			}
-			moduleServlets.put(mod, servletMap);
+			loadServlets(mod);
 		}
 		
+	}
+	
+	/**
+	 * This method will find and cache this module's servlets (so that it doesn't have to look them up every time)
+	 * 
+	 * @param mod
+	 * @return this module's servlet map
+	 */
+	public static Map<String, HttpServlet> loadServlets(Module mod) {
+		Element rootNode = mod.getConfig().getDocumentElement();
+		NodeList servletTags = rootNode.getElementsByTagName("servlet");
+		Map<String, HttpServlet> servletMap = new HashMap<String, HttpServlet>();
+		
+		for (int i=0; i< servletTags.getLength(); i++) {
+			Node node = servletTags.item(i);
+			NodeList childNodes = node.getChildNodes();
+			String name = "", className = "";
+			for (int j=0; j < childNodes.getLength(); j++) {
+				Node childNode = childNodes.item(j);
+				if ("servlet-name".equals(childNode.getNodeName()))
+					name = childNode.getTextContent();
+				else if("servlet-class".equals(childNode.getNodeName()))
+					className = childNode.getTextContent();
+			}
+			if (name.length() == 0 || className.length() == 0) {
+				log.warn("both 'servlet-name' and 'servlet-class' are required for the 'servlet' tag. Given '" + name + "' and '" + className + "' for module " + mod.getName());
+				continue;
+			}
+			
+			
+			HttpServlet httpServlet = null;
+			try {
+				httpServlet = (HttpServlet)ModuleFactory.getModuleClassLoader(mod).loadClass(className).newInstance();
+			}
+			catch (ClassNotFoundException e) {
+				log.warn("Class not found for servlet " + name + " for module " + mod.getName(), e);
+				continue;
+			}
+			catch (IllegalAccessException e) {
+				log.warn("Class cannot be accessed for servlet " + name + " for module " + mod.getName(), e);
+				continue;
+			}
+			catch (InstantiationException e) {
+				log.warn("Class cannot be instantiated for servlet " + name + " for module " + mod.getName(), e);
+				continue;
+			}
+			
+			servletMap.put(name, httpServlet);
+		}
+		
+		moduleServlets.put(mod, servletMap);
+		
+		return servletMap;
 	}
 
 	/**
@@ -425,19 +440,6 @@ public class WebModuleUtil {
 				log.warn("Couldn't delete: " + moduleWebFolder.getAbsolutePath(), io);
 			}
 		}
-		
-		// delete the context file for this module
-		//absPath = realPath + "/WEB-INF/module-" + mod.getModuleId() + "-context.xml";
-		//File moduleContextXml = new File(absPath.replace("/", File.separator));
-		//if (moduleContextXml.exists()) {
-		//	System.gc();
-		//	if (!moduleContextXml.delete()) {
-		//		moduleContextXml.deleteOnExit();
-		//		log.warn("Unable to delete moduleContext: " + moduleContextXml.getAbsolutePath());
-		//	}
-		//}
-		//else
-		//	log.warn("No module context xml file found for " + mod.getModuleId());
 		
 		// delete the xml files for this module
 		JarFile jarFile = null;
@@ -616,6 +618,22 @@ public class WebModuleUtil {
 	 */
 	public static HttpServlet getServlet(Module mod, String servletName) {
 		Map<String, HttpServlet> servlets = moduleServlets.get(mod);
+		
+		if (log.isDebugEnabled()) {
+			log.debug("All known servlets");
+			for (Module mod1 : moduleServlets.keySet()) {
+				log.debug("--Mod: " + mod1 + "--");
+				Map<String, HttpServlet> map = moduleServlets.get(mod1);
+				for (String key : map.keySet()) {
+					log.debug("name: " + key + " class: " + map.get(key));
+				}
+			}
+		}
+		
+		// Maybe there aren't any servlets because the cache was cleared
+		// attempt to repopulate this module's servlets from the cache
+		if (servlets == null)
+			servlets = loadServlets(mod);
 		
 		if (servlets != null && servlets.containsKey(servletName))
 			return servlets.get(servletName);
