@@ -14,9 +14,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLStreamHandlerFactory;
-import java.security.AccessController;
 import java.security.CodeSource;
-import java.security.PrivilegedAction;
 import java.security.ProtectionDomain;
 import java.util.Arrays;
 import java.util.Collections;
@@ -45,8 +43,8 @@ public class ModuleClassLoader extends URLClassLoader {
 	private Module[] publicImports;
 	private Module[] privateImports;
 	private Module[] reverseLookups;
-	private ModuleResourceLoader resourceLoader;
-	private Map<URL, ResourceFilter> resourceFilters;
+	//private ModuleResourceLoader resourceLoader;
+	//private Map<URL, ResourceFilter> resourceFilters;
 	private Map<URL, File> libraryCache;
 	private boolean probeParentLoaderLast = true;
 	
@@ -64,7 +62,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		log.debug("URLs length: " + urls.size());
 		this.module = module;
 		collectImports();
-		resourceLoader = ModuleResourceLoader.get(module);
+		//resourceLoader = ModuleResourceLoader.get(module);
 		collectFilters();
 		libraryCache = new HashMap<URL, File>();
 	}
@@ -176,20 +174,23 @@ public class ModuleClassLoader extends URLClassLoader {
 			log.warn("Unable to add files from module to URL list: " + module.getModuleId(), e);
 		}
 		
-		// add each defined library as a url in the classpath of the classloader
-		for (Library lib : module.getLibraries()) {
-			try {
-				log.debug("found library: " + lib);
-				ModuleUtil.expandJar(module.getFile(), tmpModuleDir, lib.getPath(), true);
-				URL tmpModuleDirURL = ModuleUtil.file2url(tmpModuleDir);
-				result.add(new URL(tmpModuleDirURL, lib.getPath()));
-			}
-			catch (MalformedURLException e) {
-				log.warn("Error while adding '" + lib.getPath() + "' to result list");
-			}
-			catch (IOException io) {
-				log.warn("Error while expanding library: " + lib.getPath(), io);
-			}
+		// add each defined jar in the /lib folder, add as a url in the classpath of the classloader
+		try {
+			log.debug("Expanding /lib folder in module");
+			ModuleUtil.expandJar(module.getFile(), tmpModuleDir, "lib", true);
+			URL tmpModuleDirURL = ModuleUtil.file2url(tmpModuleDir);
+			File libdir = new File(tmpModuleDir, "lib");
+			if (libdir != null && libdir.exists())
+				for (File file : libdir.listFiles()) {
+					log.debug("Adding file to results: " + file.getAbsolutePath());
+					result.add(ModuleUtil.file2url(file));
+				}
+		}
+		catch (MalformedURLException e) {
+			log.warn("Error while adding module 'lib' folder to URL result list");
+		}
+		catch (IOException io) {
+			log.warn("Error while expanding lib folder", io);
 		}
 		
 		// add each xml document to the url list
@@ -211,12 +212,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	private static List<URL> getUrls(final Module module, final URL[] existingUrls) {
 		List<URL> urls = Arrays.asList(existingUrls);
 		List<URL> result = new LinkedList<URL>();
-		for (Iterator<Library> it = module.getLibraries().iterator(); it.hasNext();) {
-			Library lib = it.next();
-			if (!lib.isCodeLibrary()) {
-				continue;
-			}
-			URL url = null; //ModuleFactory.getPathResolver().resolvePath(lib, lib.getPath());
+		for (URL url : getUrls(module)) {
 			if (!urls.contains(url)) {
 				result.add(url);
 			}
@@ -264,16 +260,18 @@ public class ModuleClassLoader extends URLClassLoader {
 	}
 	
 	protected void collectFilters() {
-		if (resourceFilters == null) {
-			resourceFilters = new HashMap<URL, ResourceFilter>();
-		} else {
-			resourceFilters.clear();
-		}
-		for (Library lib : getModule().getLibraries()) {
+//		if (resourceFilters == null) {
+//			resourceFilters = new HashMap<URL, ResourceFilter>();
+//		} else {
+//			resourceFilters.clear();
+//		}
+		
+		// TODO even need to iterate over libraries here?
+		//for (Library lib : getModule().getLibraries()) {
 			//resourceFilters.put(
 			//		ModuleFactory.getPathResolver().resolvePath(lib,
 			//				lib.getPath()), new ResourceFilter(lib));
-		}
+		//}
 	}
 	
 	/**
@@ -298,8 +296,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		}
 		collectImports();
 		// repopulate resource URLs
-		resourceLoader =
-			ModuleResourceLoader.get(getModule());
+		//resourceLoader = ModuleResourceLoader.get(getModule());
 		collectFilters();
 		for (Iterator it = libraryCache.entrySet().iterator(); it.hasNext();) {
 			if (((Map.Entry) it.next()).getValue() == null) {
@@ -318,11 +315,11 @@ public class ModuleClassLoader extends URLClassLoader {
 			((File) it.next()).delete();
 		}
 		libraryCache.clear();
-		resourceFilters.clear();
+		//resourceFilters.clear();
 		reverseLookups = null;
 		privateImports = null;
 		publicImports = null;
-		resourceLoader = null;
+		//resourceLoader = null;
 	}
 	
 	protected void setProbeParentLoaderLast(final boolean value) {
@@ -506,24 +503,24 @@ public class ModuleClassLoader extends URLClassLoader {
 			((ModuleClassLoader) loader).checkClassVisibility(cls,
 					requestor);
 		} else {
-			ResourceFilter filter = (ResourceFilter) resourceFilters.get(lib);
-			if (filter == null) {
-				log.warn("class not visible, no class filter found, lib=" + lib
-						+ ", class=" + cls + ", this=" + this 
-						+ ", requestor=" + requestor);
-				throw new ClassNotFoundException("class "
-						+ cls.getName() + " is not visible for module "
-						+ requestor.getModule().getModuleId()
-						+ ", no filter found for library " + lib);
-			}
-			if (!filter.isClassVisible(cls.getName())) {
-				log.warn("class not visible, lib=" + lib
-						+ ", class=" + cls + ", this=" + this 
-						+ ", requestor=" + requestor);
-				throw new ClassNotFoundException("class "
-						+ cls.getName() + " is not visible for module "
-						+ requestor.getModule().getModuleId());
-			}
+//			ResourceFilter filter = (ResourceFilter) resourceFilters.get(lib);
+//			if (filter == null) {
+//				log.warn("class not visible, no class filter found, lib=" + lib
+//						+ ", class=" + cls + ", this=" + this 
+//						+ ", requestor=" + requestor);
+//				throw new ClassNotFoundException("class "
+//						+ cls.getName() + " is not visible for module "
+//						+ requestor.getModule().getModuleId()
+//						+ ", no filter found for library " + lib);
+//			}
+//			if (!filter.isClassVisible(cls.getName())) {
+//				log.warn("class not visible, lib=" + lib
+//						+ ", class=" + cls + ", this=" + this 
+//						+ ", requestor=" + requestor);
+//				throw new ClassNotFoundException("class "
+//						+ cls.getName() + " is not visible for module "
+//						+ requestor.getModule().getModuleId());
+//			}
 		}
 	}
 
@@ -542,46 +539,46 @@ public class ModuleClassLoader extends URLClassLoader {
 		String result = null;
 		//TODO 
 		//PathResolver pathResolver = ModuleFactory.getPathResolver();
-		for (Library lib : getModule().getLibraries()) {
-			if (lib.isCodeLibrary()) {
-				continue;
-			}
-			URL libUrl = null; //pathResolver.resolvePath(lib, lib.getPath() + libname);
-			if (log.isDebugEnabled()) {
-				log.debug("findLibrary(String): trying URL " + libUrl);
-			}
-			File libFile = OpenmrsUtil.url2file(libUrl);
-			if (libFile != null) {
-				if (log.isDebugEnabled()) {
-					log.debug("findLibrary(String): URL " + libUrl
-							+ " resolved as local file " + libFile);
-				}
-				if (libFile.isFile()) {
-					result = libFile.getAbsolutePath();
-					break;
-				}
-				continue;
-			}
-			// we have some kind of non-local URL
-			// try to copy it to local temporary file
-			libFile = (File) libraryCache.get(libUrl);
-			if (libFile != null) {
-				if (libFile.isFile()) {
-					result = libFile.getAbsolutePath();
-					break;
-				}
-				libraryCache.remove(libUrl);
-			}
-			if (libraryCache.containsKey(libUrl)) {
-				// already tried to cache this library
-				break;
-			}
-			libFile = cacheLibrary(libUrl, libname);
-			if (libFile != null) {
-				result = libFile.getAbsolutePath();
-				break;
-			}
-		}
+//		for (Library lib : getModule().getLibraries()) {
+//			if (lib.isCodeLibrary()) {
+//				continue;
+//			}
+//			URL libUrl = null; //pathResolver.resolvePath(lib, lib.getPath() + libname);
+//			if (log.isDebugEnabled()) {
+//				log.debug("findLibrary(String): trying URL " + libUrl);
+//			}
+//			File libFile = OpenmrsUtil.url2file(libUrl);
+//			if (libFile != null) {
+//				if (log.isDebugEnabled()) {
+//					log.debug("findLibrary(String): URL " + libUrl
+//							+ " resolved as local file " + libFile);
+//				}
+//				if (libFile.isFile()) {
+//					result = libFile.getAbsolutePath();
+//					break;
+//				}
+//				continue;
+//			}
+//			// we have some kind of non-local URL
+//			// try to copy it to local temporary file
+//			libFile = (File) libraryCache.get(libUrl);
+//			if (libFile != null) {
+//				if (libFile.isFile()) {
+//					result = libFile.getAbsolutePath();
+//					break;
+//				}
+//				libraryCache.remove(libUrl);
+//			}
+//			if (libraryCache.containsKey(libUrl)) {
+//				// already tried to cache this library
+//				break;
+//			}
+//			libFile = cacheLibrary(libUrl, libname);
+//			if (libFile != null) {
+//				result = libFile.getAbsolutePath();
+//				break;
+//			}
+//		}
 		if (log.isDebugEnabled()) {
 			log.debug("findLibrary(String): name=" + name
 					+ ", libname=" + libname
@@ -690,17 +687,17 @@ public class ModuleClassLoader extends URLClassLoader {
 			return null;
 		}
 		
-		if (resourceLoader != null) {
-			result = resourceLoader.findResource(name);
-			log.debug("Result from resourceLoader: " + result);
-			if (result != null) { // found resource in this module resource libraries
-				if (isResourceVisible(name, result, requestor)) {
-					return result;
-				}
-				log.debug("result from resourceLoader is not visible");
-				return null;
-			}
-		}
+//		if (resourceLoader != null) {
+//			result = resourceLoader.findResource(name);
+//			log.debug("Result from resourceLoader: " + result);
+//			if (result != null) { // found resource in this module resource libraries
+//				if (isResourceVisible(name, result, requestor)) {
+//					return result;
+//				}
+//				log.debug("result from resourceLoader is not visible");
+//				return null;
+//			}
+//		}
 		
 		if (seenModules == null)
 			seenModules = new HashSet<String>();
@@ -764,15 +761,15 @@ public class ModuleClassLoader extends URLClassLoader {
 				result.add(url);
 			}
 		}
-		if (resourceLoader != null) {
-			for (Enumeration enm = resourceLoader.findResources(name);
-					enm.hasMoreElements();) {
-				URL url = (URL) enm.nextElement();
-				if (isResourceVisible(name, url, requestor)) {
-					result.add(url);
-				}
-			}
-		}
+//		if (resourceLoader != null) {
+//			for (Enumeration enm = resourceLoader.findResources(name);
+//					enm.hasMoreElements();) {
+//				URL url = (URL) enm.nextElement();
+//				if (isResourceVisible(name, url, requestor)) {
+//					result.add(url);
+//				}
+//			}
+//		}
 		if (seenModules == null) {
 			seenModules = new HashSet<String>();
 		}
@@ -821,20 +818,20 @@ public class ModuleClassLoader extends URLClassLoader {
 			log.error("can't get resource library URL", mue);
 			return false;
 		}
-		ResourceFilter filter = (ResourceFilter) resourceFilters.get(lib);
-		if (filter == null) {
-			log.warn("no resource filter found for library "
-					+ lib + ", name=" + name
-					+ ", URL=" + url + ", this=" + this 
-					+ ", requestor=" + requestor);
-			return false;
-		}
-		if (!filter.isResourceVisible(name)) {
-			log.warn("resource not visible, name=" + name
-					+ ", URL=" + url + ", this=" + this 
-					+ ", requestor=" + requestor);
-			return false;
-		}
+//		ResourceFilter filter = (ResourceFilter) resourceFilters.get(lib);
+//		if (filter == null) {
+//			log.warn("no resource filter found for library "
+//					+ lib + ", name=" + name
+//					+ ", URL=" + url + ", this=" + this 
+//					+ ", requestor=" + requestor);
+//			return false;
+//		}
+//		if (!filter.isResourceVisible(name)) {
+//			log.warn("resource not visible, name=" + name
+//					+ ", URL=" + url + ", this=" + this 
+//					+ ", requestor=" + requestor);
+//			return false;
+//		}
 		return true;
 	}
 	
@@ -863,126 +860,126 @@ public class ModuleClassLoader extends URLClassLoader {
 			+ module + "}";
 	}
 	
-	protected static final class ResourceFilter {
-		private boolean isPublic;
-		private Set<String> entries;
-
-		protected ResourceFilter(final Library lib) {
-			entries = new HashSet<String>();
-			for (Iterator it = lib.getExports().iterator(); it.hasNext();) {
-				String exportPrefix = (String) it.next();
-				if ("*".equals(exportPrefix)) {
-					isPublic = true;
-					entries.clear();
-					break;
-				}
-				if (!lib.isCodeLibrary()) {
-					exportPrefix = exportPrefix.replace('\\', '.')
-						.replace('/', '.');
-					if (exportPrefix.startsWith(".")) {
-						exportPrefix = exportPrefix.substring(1);
-					}
-				}
-				entries.add(exportPrefix);
-			}
-		}
-		
-		protected boolean isClassVisible(final String className) {
-			if (isPublic) {
-				return true;
-			}
-			if (entries.isEmpty()) {
-				return false;
-			}
-			if (entries.contains(className)) {
-				return true;
-			}
-			int p = className.lastIndexOf('.');
-			if (p == -1) {
-				return false;
-			}
-			return entries.contains(className.substring(0, p) + ".*");
-		}
-
-		protected boolean isResourceVisible(final String resPath) {
-			// quick check
-			if (isPublic) {
-				return true;
-			}
-			if (entries.isEmpty()) {
-				return false;
-			}
-			// translate "path spec" -> "full class name"
-			String str = resPath.replace('\\', '.').replace('/', '.');
-			if (str.startsWith(".")) {
-				str = str.substring(1);
-			}
-			if (str.endsWith(".")) {
-				str = str.substring(0, str.length() - 1);
-			}
-			return isClassVisible(str);
-		}
-	}
-
-	protected static class ModuleResourceLoader extends URLClassLoader {
-		private static Log log = LogFactory.getLog(ModuleResourceLoader.class);
-
-		static ModuleResourceLoader get(final Module module) {
-			final List<URL> urls = new LinkedList<URL>();
-			for (Library lib : module.getLibraries()) {
-				if (lib.isCodeLibrary()) {
-					continue;
-				}
-				//urls.add(ModuleFactory.getPathResolver().resolvePath(lib,
-				//		lib.getPath()));
-			}
-			if (log.isDebugEnabled()) {
-				StringBuffer buf = new StringBuffer();
-				buf.append("Resource URL's populated for module " + module
-						+ ":\r\n");
-				for (Iterator it = urls.iterator(); it.hasNext();) {
-					buf.append("\t");
-					buf.append(it.next());
-					buf.append("\r\n");
-				}
-				log.trace(buf.toString());
-			}
-			if (urls.isEmpty()) {
-				return null;
-			}
-			/*return new ModuleResourceLoader((URL[]) urls.toArray(
-			new URL[urls.size()]));*/
-			return (ModuleResourceLoader) AccessController.doPrivileged(
-					new PrivilegedAction<Object>() {
-				public Object run() {
-					return new ModuleResourceLoader(urls);
-				}
-			});
-		}
-
-		/**
-		 * Creates loader instance configured to load resources only from given
-		 * URLs.
-		 * @param urls array of resource URLs
-		 */
-		public ModuleResourceLoader(final List<URL> urls) {
-			super((URL[])urls.toArray());
-		}
-
-		/**
-		 * @see java.lang.ClassLoader#findClass(java.lang.String)
-		 */
-		protected Class<?> findClass(final String name)
-				throws ClassNotFoundException {
-			throw new ClassNotFoundException(name);
-		}
-
-		/**
-		 * @see java.lang.ClassLoader#loadClass(java.lang.String, boolean)
-		 */
-		protected Class<?> loadClass(final String name, final boolean resolve)
-				throws ClassNotFoundException {
-			throw new ClassNotFoundException(name);
-		}
-	}
+//	protected static final class ResourceFilter {
+//		private boolean isPublic;
+//		private Set<String> entries;
+//
+//		protected ResourceFilter(final Library lib) {
+//			entries = new HashSet<String>();
+//			for (Iterator it = lib.getExports().iterator(); it.hasNext();) {
+//				String exportPrefix = (String) it.next();
+//				if ("*".equals(exportPrefix)) {
+//					isPublic = true;
+//					entries.clear();
+//					break;
+//				}
+//				if (!lib.isCodeLibrary()) {
+//					exportPrefix = exportPrefix.replace('\\', '.')
+//						.replace('/', '.');
+//					if (exportPrefix.startsWith(".")) {
+//						exportPrefix = exportPrefix.substring(1);
+//					}
+//				}
+//				entries.add(exportPrefix);
+//			}
+//		}
+//		
+//		protected boolean isClassVisible(final String className) {
+//			if (isPublic) {
+//				return true;
+//			}
+//			if (entries.isEmpty()) {
+//				return false;
+//			}
+//			if (entries.contains(className)) {
+//				return true;
+//			}
+//			int p = className.lastIndexOf('.');
+//			if (p == -1) {
+//				return false;
+//			}
+//			return entries.contains(className.substring(0, p) + ".*");
+//		}
+//
+//		protected boolean isResourceVisible(final String resPath) {
+//			// quick check
+//			if (isPublic) {
+//				return true;
+//			}
+//			if (entries.isEmpty()) {
+//				return false;
+//			}
+//			// translate "path spec" -> "full class name"
+//			String str = resPath.replace('\\', '.').replace('/', '.');
+//			if (str.startsWith(".")) {
+//				str = str.substring(1);
+//			}
+//			if (str.endsWith(".")) {
+//				str = str.substring(0, str.length() - 1);
+//			}
+//			return isClassVisible(str);
+//		}
+//	}
+//
+//	protected static class ModuleResourceLoader extends URLClassLoader {
+//		private static Log log = LogFactory.getLog(ModuleResourceLoader.class);
+//
+//		static ModuleResourceLoader get(final Module module) {
+//			final List<URL> urls = new LinkedList<URL>();
+//			for (Library lib : module.getLibraries()) {
+//				if (lib.isCodeLibrary()) {
+//					continue;
+//				}
+//				//urls.add(ModuleFactory.getPathResolver().resolvePath(lib,
+//				//		lib.getPath()));
+//			}
+//			if (log.isDebugEnabled()) {
+//				StringBuffer buf = new StringBuffer();
+//				buf.append("Resource URL's populated for module " + module
+//						+ ":\r\n");
+//				for (Iterator it = urls.iterator(); it.hasNext();) {
+//					buf.append("\t");
+//					buf.append(it.next());
+//					buf.append("\r\n");
+//				}
+//				log.trace(buf.toString());
+//			}
+//			if (urls.isEmpty()) {
+//				return null;
+//			}
+//			/*return new ModuleResourceLoader((URL[]) urls.toArray(
+//			new URL[urls.size()]));*/
+//			return (ModuleResourceLoader) AccessController.doPrivileged(
+//					new PrivilegedAction<Object>() {
+//				public Object run() {
+//					return new ModuleResourceLoader(urls);
+//				}
+//			});
+//		}
+//
+//		/**
+//		 * Creates loader instance configured to load resources only from given
+//		 * URLs.
+//		 * @param urls array of resource URLs
+//		 */
+//		public ModuleResourceLoader(final List<URL> urls) {
+//			super((URL[])urls.toArray());
+//		}
+//
+//		/**
+//		 * @see java.lang.ClassLoader#findClass(java.lang.String)
+//		 */
+//		protected Class<?> findClass(final String name)
+//				throws ClassNotFoundException {
+//			throw new ClassNotFoundException(name);
+//		}
+//
+//		/**
+//		 * @see java.lang.ClassLoader#loadClass(java.lang.String, boolean)
+//		 */
+//		protected Class<?> loadClass(final String name, final boolean resolve)
+//				throws ClassNotFoundException {
+//			throw new ClassNotFoundException(name);
+//		}
+//	}
 }

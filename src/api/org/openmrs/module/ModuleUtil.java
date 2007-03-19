@@ -360,6 +360,9 @@ public class ModuleUtil {
 		String output = "";
 		try {
 			in = getURLStream(url);
+			if (in == null) // skip this module if updateURL is not defined
+				return "";
+			
 			out = new ByteArrayOutputStream();
 			OpenmrsUtil.copyFile(in, out);
 			output = out.toString();

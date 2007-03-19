@@ -24,7 +24,6 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.Privilege;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
@@ -164,12 +163,6 @@ public class ModuleFileParser {
 			
 			// find and load the activator class
 			module.setActivatorName(getElement(rootNode, configVersion, "activator"));
-			
-			// get libraries
-			List<Library> libraries = new Vector<Library>();
-			for (ModelLibrary model : getLibraries(rootNode, configVersion))
-				libraries.add(new Library(module, model));
-			module.setLibraries(libraries);
 			
 			
 			module.setRequireDatabaseVersion(getElement(rootNode, configVersion, "require_database_version"));
@@ -401,41 +394,6 @@ public class ModuleFileParser {
 		}
 		
 		return messages;
-	}
-	
-	/**
-	 * 
-	 * @param root
-	 * @param configVersion
-	 * @return
-	 */
-	private List<ModelLibrary> getLibraries(Element root, String configVersion) {
-		
-		List<ModelLibrary> libraries = new Vector<ModelLibrary>();
-		
-		NodeList libNodes = root.getElementsByTagName("library");
-		int i = 0;
-		while (i < libNodes.getLength()) {
-			Node node = libNodes.item(i++);
-			NamedNodeMap attrs = node.getAttributes();
-			ModelLibrary model = new ModelLibrary();
-			Node attr = attrs.getNamedItem("id");
-			if (attr != null)
-				model.setId(attr.getNodeValue());
-			attr = attrs.getNamedItem("path");
-			if (attr != null)
-				model.setPath(attr.getNodeValue());
-			attr = attrs.getNamedItem("version");
-			if (attr != null)
-				model.setVersion(attr.getNodeValue());
-			attr = attrs.getNamedItem("type");
-			if (attr != null)
-				model.setCodeLibrary(attr.getNodeValue());
-			
-			libraries.add(model);
-		}
-		
-		return libraries;
 	}
 	
 	/**

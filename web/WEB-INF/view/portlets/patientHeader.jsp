@@ -151,6 +151,9 @@
 						<span id="reasonForExit"><spring:message code="Patient.outcome.exitType" />: <b>${model.patientReasonForExit} (${model.patientDateOfExit})</b></span>
 					</td>
 				</c:if>
+				<td id="patientDashboardHeaderExtension">
+					<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.Header" type="html" />
+				</td>
 				<td style="width: 100%;">&nbsp;</td>
 				<td id="patientHeaderOtherIdentifiers">
 					<c:if test="${fn:length(model.patient.activeIdentifiers) > 1}">

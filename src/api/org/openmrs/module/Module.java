@@ -50,7 +50,6 @@ public final class Module {
 	private Map<String, Properties> messages = new HashMap<String, Properties>(); 
 	private List<Privilege> privileges = new Vector<Privilege>();
 	private List<GlobalProperty> globalProperties = new Vector<GlobalProperty>();
-	private List<Library> libraries = new Vector<Library>();
 	private List<String> mappingFiles = new Vector<String>();
 	
 	private Document config = null;
@@ -429,14 +428,6 @@ public final class Module {
 		this.sqldiff = sqldiff;
 	}
 
-	public List<Library> getLibraries() {
-		return libraries;
-	}
-
-	public void setLibraries(List<Library> libraries) {
-		this.libraries = libraries;
-	}
-	
 	public List<String> getMappingFiles() {
 		return mappingFiles;
 	}

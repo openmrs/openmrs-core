@@ -270,6 +270,9 @@ public class OpenmrsUtil {
 	 */
 	public static void copyFile(InputStream inputStream,
 			OutputStream outputStream) throws IOException {
+		if (inputStream == null || outputStream == null)
+			return;
+		
 		byte[] c = new byte[1];
 		while (inputStream.read(c) != -1)
 			outputStream.write(c);
