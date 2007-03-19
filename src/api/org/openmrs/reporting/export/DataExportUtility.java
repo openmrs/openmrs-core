@@ -2,7 +2,6 @@ package org.openmrs.reporting.export;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -46,6 +45,7 @@ public class DataExportUtility {
 	protected DateFormat dateFormatLong = null; 
 	protected DateFormat dateFormatShort = null;
 	protected DateFormat dateFormatYmd = null;
+	protected Map<String, DateFormat> formats = new HashMap<String, DateFormat>();
 	
 	public Date currentDate = new Date();
 	
@@ -83,6 +83,7 @@ public class DataExportUtility {
 	protected ConceptService conceptService;
 	protected EncounterService encounterService;
 	
+	protected Locale locale = null;
 	// Constructors
 	
 	public DataExportUtility(Patient p) {
@@ -100,7 +101,7 @@ public class DataExportUtility {
 		this.conceptService = Context.getConceptService();
 		this.encounterService = Context.getEncounterService();
 		
-		Locale locale = Context.getLocale();
+		locale = Context.getLocale();
 		dateFormatLong = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
 		dateFormatShort = DateFormat.getDateInstance(DateFormat.SHORT, locale);
 		dateFormatYmd = new SimpleDateFormat("yyyy-MM-dd", locale);
@@ -453,7 +454,7 @@ public class DataExportUtility {
 	 * @param conceptName 
 	 * @return
 	 */
-	public Collection<Object> getLastNObs(Integer n, String conceptName) throws Exception {
+	public List<Object> getLastNObs(Integer n, String conceptName) throws Exception {
 		return getLastNObs(n, getConcept(conceptName));
 	}
 	
@@ -681,8 +682,17 @@ public class DataExportUtility {
 		}
 		else if ("ymd".equals(type))
 			return dateFormatYmd.format(d);
-		else
+		else if ("short".equals(type))
 			return dateFormatShort.format(d);
+		else {
+			if (formats.containsKey(type))
+				return formats.get(type).format(d);
+			else {
+				DateFormat df = new SimpleDateFormat(type, locale);
+				formats.put(type, df);
+				return df.format(d);
+			}
+		}
 	}
 	
 	/**
