@@ -178,7 +178,6 @@ public class ModuleClassLoader extends URLClassLoader {
 		try {
 			log.debug("Expanding /lib folder in module");
 			ModuleUtil.expandJar(module.getFile(), tmpModuleDir, "lib", true);
-			URL tmpModuleDirURL = ModuleUtil.file2url(tmpModuleDir);
 			File libdir = new File(tmpModuleDir, "lib");
 			if (libdir != null && libdir.exists())
 				for (File file : libdir.listFiles()) {

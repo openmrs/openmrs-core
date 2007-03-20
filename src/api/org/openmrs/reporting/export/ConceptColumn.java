@@ -86,14 +86,14 @@ public class ConceptColumn implements ExportColumn, Serializable {
 				}
 				s += "])";
 					
-				function += "WithValues('" + getConceptIdOrName() + "', $arr) ";
+				function += "WithValues('" + getConceptIdOrName() + "', $arr)";
 				
-				s += " #set($obsRow =" + function + ") "; 
+				s += "#set($obsRow =" + function + ")"; 
 				s += "#foreach($val in $obsRow)";
 				s += "#if($velocityCount > 1)";
 				s += "$!{fn.getSeparator()}";
 				s += "#end";
-				s += " $!{fn.getValueAsString($val)} ";
+				s += "$!{fn.getValueAsString($val)}";
 				s += "#end\n";
 			}
 		}

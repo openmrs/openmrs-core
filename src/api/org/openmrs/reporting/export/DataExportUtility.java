@@ -587,7 +587,7 @@ public class DataExportUtility {
 	public Object getFirstObs(Concept concept) throws Exception {
 		List<List<Object>> obs = getObsWithValues(concept, null);
 		
-		for (int x = obs.size(); x >= 0; x--) {
+		for (int x = obs.size() - 1; x >= 0; x--) {
 			List<Object> o = obs.get(x);
 			return o.get(0);
 		}
@@ -682,7 +682,7 @@ public class DataExportUtility {
 		}
 		else if ("ymd".equals(type))
 			return dateFormatYmd.format(d);
-		else if ("short".equals(type))
+		else if ("short".equals(type) || type == null)
 			return dateFormatShort.format(d);
 		else {
 			if (formats.containsKey(type))
