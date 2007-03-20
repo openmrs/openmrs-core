@@ -1,6 +1,7 @@
 package org.openmrs.util;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -273,9 +274,24 @@ public class OpenmrsUtil {
 		if (inputStream == null || outputStream == null)
 			return;
 		
-		byte[] c = new byte[1];
-		while (inputStream.read(c) != -1)
-			outputStream.write(c);
+		InputStream in = null;
+		OutputStream out = null; 
+		try {
+			in = new BufferedInputStream(inputStream);
+			out = new BufferedOutputStream(outputStream);
+			while (true) {
+				int data = in.read();
+				if (data == -1) {
+					break;
+				}
+				out.write(data);
+			}
+		} 
+		finally {
+			if (in != null)  in.close();
+			if (out != null) out.close();
+		}
+		
 		outputStream.close();
 	}
 	
