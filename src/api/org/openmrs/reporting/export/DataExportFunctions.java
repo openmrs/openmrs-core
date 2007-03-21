@@ -33,7 +33,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.reporting.PatientSet;
 import org.openmrs.util.OpenmrsUtil;
 
-public class DataExportUtility {
+public class DataExportFunctions {
 	
 	public final Log log = LogFactory.getLog(this.getClass());
 	
@@ -86,16 +86,16 @@ public class DataExportUtility {
 	protected Locale locale = null;
 	// Constructors
 	
-	public DataExportUtility(Patient p) {
+	public DataExportFunctions(Patient p) {
 		this(p.getPatientId());
 	}
 
-	public DataExportUtility(Integer patientId) {
+	public DataExportFunctions(Integer patientId) {
 		this();
 		setPatientId(patientId);
 	}
 	
-	public DataExportUtility() {
+	public DataExportFunctions() {
 		this.patientSetService = Context.getPatientSetService();
 		this.patientService = Context.getPatientService();
 		this.conceptService = Context.getConceptService();
