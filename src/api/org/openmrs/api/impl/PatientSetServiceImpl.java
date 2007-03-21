@@ -187,7 +187,14 @@ public class PatientSetServiceImpl implements PatientSetService {
 	}
 
 	public Map<Integer, Encounter> getEncountersByType(PatientSet patients, EncounterType encType) {
-		return getPatientSetDAO().getEncountersByType(patients, encType);
+		List<EncounterType> types = new Vector<EncounterType>();
+		if (encType != null)
+			types.add(encType);
+		return getPatientSetDAO().getEncountersByType(patients, types);
+	}
+	
+	public Map<Integer, Encounter> getEncountersByType(PatientSet patients, List<EncounterType> types) {
+		return getPatientSetDAO().getEncountersByType(patients, types);
 	}
 	
 	public Map<Integer, Encounter> getEncounters(PatientSet patients) {
@@ -195,7 +202,14 @@ public class PatientSetServiceImpl implements PatientSetService {
 	}
 	
 	public Map<Integer, Encounter> getFirstEncountersByType(PatientSet patients, EncounterType encType) {
-		return getPatientSetDAO().getEncountersByType(patients, encType);
+		List<EncounterType> types = new Vector<EncounterType>();
+		if (encType != null)
+			types.add(encType);
+		return getPatientSetDAO().getFirstEncountersByType(patients, types);
+	}
+	
+	public Map<Integer, Encounter> getFirstEncountersByType(PatientSet patients, List<EncounterType> types) {
+		return getPatientSetDAO().getFirstEncountersByType(patients, types);
 	}
 	
 	public Map<Integer, Object> getPatientAttributes(PatientSet patients, String className, String property, boolean returnAll) {

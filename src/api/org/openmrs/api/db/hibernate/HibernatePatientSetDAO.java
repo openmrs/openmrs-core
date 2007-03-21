@@ -1043,7 +1043,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Map<Integer, Encounter> getEncountersByType(PatientSet patients, EncounterType encType) {
+	public Map<Integer, Encounter> getEncountersByType(PatientSet patients, List<EncounterType> encTypes) {
 		Map<Integer, Encounter> ret = new HashMap<Integer, Encounter>();
 		
 		Collection<Integer> ids = patients.getPatientIds();
@@ -1053,8 +1053,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		criteria.add(Restrictions.in("patient.patientId", ids));
 		criteria.add(Restrictions.eq("voided", false));
 		
-		if (encType != null)
-			criteria.add(Restrictions.eq("encounterType", encType));
+		if (encTypes != null && encTypes.size() > 0)
+			criteria.add(Restrictions.in("encounterType", encTypes));
 		
 		criteria.addOrder(org.hibernate.criterion.Order.desc("patient.patientId"));
 		criteria.addOrder(org.hibernate.criterion.Order.desc("encounterDatetime"));
@@ -1070,7 +1070,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		
 		return ret;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	public Map<Integer, Encounter> getEncounters(PatientSet patients) {
 		Map<Integer, Encounter> ret = new HashMap<Integer, Encounter>();
@@ -1098,7 +1098,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	}
 		
 	@SuppressWarnings("unchecked")
-	public Map<Integer, Encounter> getFirstEncountersByType(PatientSet patients, EncounterType encType) {
+	public Map<Integer, Encounter> getFirstEncountersByType(PatientSet patients, List<EncounterType> types) {
 		Map<Integer, Encounter> ret = new HashMap<Integer, Encounter>();
 		
 		Collection<Integer> ids = patients.getPatientIds();
@@ -1108,8 +1108,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		criteria.add(Restrictions.in("patient.patientId", ids));
 		criteria.add(Restrictions.eq("voided", false));
 		
-		if (encType != null)
-			criteria.add(Restrictions.eq("encounterType", encType));
+		if (types != null && types.size() > 0)
+			criteria.add(Restrictions.in("encounterType", types));
 		
 		criteria.addOrder(org.hibernate.criterion.Order.desc("patient.patientId"));
 		criteria.addOrder(org.hibernate.criterion.Order.asc("encounterDatetime"));

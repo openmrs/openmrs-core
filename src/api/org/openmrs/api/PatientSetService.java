@@ -132,42 +132,122 @@ public interface PatientSetService {
 	@Transactional(readOnly=true)
 	public Map<Integer, List<List<Object>>> getObservationsValues(PatientSet patients, Concept c, List<String> attributes);
 	
+	/**
+	 * 
+	 * @param patients
+	 * @param encType
+	 * @return
+	 */
 	@Transactional(readOnly=true)
-	public Map<Integer, Encounter> getEncountersByType(PatientSet patients,
-			EncounterType encType);
+	public Map<Integer, Encounter> getEncountersByType(PatientSet patients, EncounterType encType);
 
+	/**
+	 * 
+	 * @param patients
+	 * @param encType
+	 * @return
+	 */
+	@Transactional(readOnly=true)
+	public Map<Integer, Encounter> getEncountersByType(PatientSet patients, List<EncounterType> encType);
+
+	/**
+	 * 
+	 * @param patients
+	 * @return
+	 */
 	@Transactional(readOnly=true)
 	public Map<Integer, Encounter> getEncounters(PatientSet patients);
 	
+	/**
+	 * 
+	 * @param patients
+	 * @param encType
+	 * @return
+	 */
 	@Transactional(readOnly=true)
 	public Map<Integer, Encounter> getFirstEncountersByType(
 			PatientSet patients, EncounterType encType);
-
+	
+	/**
+	 * 
+	 * @param patients
+	 * @param types
+	 * @return
+	 */
+	@Transactional(readOnly=true)
+	public Map<Integer, Encounter> getFirstEncountersByType(PatientSet patients, List<EncounterType> types);
+	
+	/**
+	 * 
+	 * @param patients
+	 * @param className
+	 * @param property
+	 * @param returnAll
+	 * @return
+	 */
 	@Transactional(readOnly=true)
 	public Map<Integer, Object> getPatientAttributes(PatientSet patients,
 			String className, String property, boolean returnAll);
 
+	/**
+	 * 
+	 * @param patients
+	 * @param classNameDotProperty
+	 * @param returnAll
+	 * @return
+	 */
 	@Transactional(readOnly=true)
 	public Map<Integer, Object> getPatientAttributes(PatientSet patients,
 			String classNameDotProperty, boolean returnAll);
 
+	/**
+	 * 
+	 * @param patients
+	 * @return
+	 */
 	@Transactional(readOnly=true)
 	public Map<Integer, Map<String, Object>> getCharacteristics(
 			PatientSet patients);
 
+	/**
+	 * 
+	 * @param identifiers
+	 * @return
+	 */
 	@Transactional(readOnly=true)
 	public PatientSet convertPatientIdentifier(List<String> identifiers);
 	
+	/**
+	 * 
+	 * @param patientIds
+	 * @return
+	 */
 	@Transactional(readOnly=true)
 	public List<Patient> getPatients(Collection<Integer> patientIds);
 
+	/**
+	 * 
+	 * @param ps
+	 */
 	public void setMyPatientSet(PatientSet ps);
 
+	/**
+	 * 
+	 * @return
+	 */
 	@Transactional(readOnly=true)
 	public PatientSet getMyPatientSet();
 
+	/**
+	 * 
+	 * @param ptId
+	 */
 	public void addToMyPatientSet(Integer ptId);
 
+	/**
+	 * 
+	 * @param ptId
+	 */
 	public void removeFromMyPatientSet(Integer ptId);
 
 	public void clearMyPatientSet();

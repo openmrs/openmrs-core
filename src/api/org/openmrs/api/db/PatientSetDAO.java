@@ -49,11 +49,11 @@ public interface PatientSetDAO {
 	
 	public Map<Integer, List<List<Object>>> getObservationsValues(PatientSet patients, Concept c, List<String> attributes);
 	
-	public Map<Integer, Encounter> getEncountersByType(PatientSet patients, EncounterType encType);
+	public Map<Integer, Encounter> getEncountersByType(PatientSet patients, List<EncounterType> encType);
 	
 	public Map<Integer, Encounter> getEncounters(PatientSet patients);
 	
-	public Map<Integer, Encounter> getFirstEncountersByType(PatientSet patients, EncounterType encType);
+	public Map<Integer, Encounter> getFirstEncountersByType(PatientSet patients, List<EncounterType> encType);
 	
 	public Map<Integer, Object> getPatientAttributes(PatientSet patients, String className, String property, boolean returnAll);
 	
