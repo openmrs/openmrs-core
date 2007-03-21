@@ -50,7 +50,7 @@ public class DataExportUtility {
 	public Date currentDate = new Date();
 	
 	// Map<EncounterType, Map<patientId, Encounter>>
-	protected Map<String, Map<Integer, Encounter>> patientEncounterMap = new HashMap<String, Map<Integer, Encounter>>();
+	protected Map<String, Map<Integer, ?>> patientEncounterMap = new HashMap<String, Map<Integer, ?>>();
 	
 	// Map<EncounterType, Map<patientId, Encounter>>
 	protected Map<String, Map<Integer, Encounter>> patientFirstEncounterMap = new HashMap<String, Map<Integer, Encounter>>();
@@ -134,7 +134,7 @@ public class DataExportUtility {
 	public void setPatientId(Integer patientId) {
 		// remove last patient from maps to allow for garbage collection
 		if (this.patientId != null) {
-			for (Map<Integer, Encounter> map : patientEncounterMap.values())
+			for (Map<Integer, ?> map : patientEncounterMap.values())
 				map.remove(this.patientId);
 			for (Map<Integer, Encounter> map : patientFirstEncounterMap.values())
 				map.remove(this.patientId);
@@ -180,7 +180,7 @@ public class DataExportUtility {
 	 */
 	public Encounter getLastEncounter(String encounterType) {
 		if (patientEncounterMap.containsKey(encounterType))
-			return patientEncounterMap.get(encounterType).get(getPatientId());
+			return (Encounter)patientEncounterMap.get(encounterType).get(getPatientId());
 		
 		log.debug("getting first encounters for type: " + encounterType);
 		
@@ -188,11 +188,53 @@ public class DataExportUtility {
 		if (!encounterType.equals(""))
 			type = encounterService.getEncounterType(encounterType);
 		
-		Map<Integer, Encounter> encounterMap = patientSetService.getEncountersByType(getPatientSet(), type);
+		Map<Integer, ?> encounterMap = patientSetService.getEncountersByType(getPatientSet(), type);
 		
 		patientEncounterMap.put(encounterType, encounterMap);
 		
+		return (Encounter)encounterMap.get(getPatientId());
+	}
+	
+	/**
+	 * 
+	 * @param typeArray
+	 * @param attr
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public Object getLastEncounterAttr(Object typeArray, String attr) {
+		
+		List<String> types = (List<String>)typeArray;
+		String key = OpenmrsUtil.join(types, ",") + "|" + attr;
+		
+		if (patientEncounterMap.containsKey(key))
+			return patientEncounterMap.get(key).get(getPatientId());
+		
+		log.debug("getting first encounters for type: " + key);
+		
+		List<EncounterType> encounterTypes = new Vector<EncounterType>();
+		
+		// find the EncounterType objects for each type passed in
+		for (String typeName : types) {
+			EncounterType type = null;
+			try {
+				type = encounterService.getEncounterType(Integer.valueOf(typeName));
+			}
+			catch (Exception e) { /* pass */ };
+			
+			if (type == null)
+				type = encounterService.getEncounterType(typeName);
+			
+			if (type != null)
+				encounterTypes.add(type);
+		}
+		
+		Map<Integer, Object> encounterMap = patientSetService.getEncounterAttrsByType(getPatientSet(), encounterTypes, attr);
+		
+		patientEncounterMap.put(key, encounterMap);
+		
 		return encounterMap.get(getPatientId());
+		
 	}
 
 	/**

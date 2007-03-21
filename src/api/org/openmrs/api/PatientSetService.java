@@ -140,7 +140,16 @@ public interface PatientSetService {
 	 */
 	@Transactional(readOnly=true)
 	public Map<Integer, Encounter> getEncountersByType(PatientSet patients, EncounterType encType);
-
+	
+	/**
+	 * 
+	 * @param patients
+	 * @param encTypes
+	 * @param attr
+	 * @return
+	 */
+	public Map<Integer, Object> getEncounterAttrsByType(PatientSet patients, List<EncounterType> encTypes, String attr);
+	
 	/**
 	 * 
 	 * @param patients

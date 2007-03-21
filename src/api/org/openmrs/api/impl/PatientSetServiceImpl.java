@@ -193,6 +193,13 @@ public class PatientSetServiceImpl implements PatientSetService {
 		return getPatientSetDAO().getEncountersByType(patients, types);
 	}
 	
+	public Map<Integer, Object> getEncounterAttrsByType(PatientSet patients, List<EncounterType> encTypes, String attr) {
+		if (encTypes == null)
+			encTypes = new Vector<EncounterType>();
+		
+		return getPatientSetDAO().getEncounterAttrsByType(patients, encTypes, attr);
+	}
+
 	public Map<Integer, Encounter> getEncountersByType(PatientSet patients, List<EncounterType> types) {
 		return getPatientSetDAO().getEncountersByType(patients, types);
 	}
