@@ -10,6 +10,7 @@ import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,13 +29,41 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.validation.BindException;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.springframework.web.servlet.view.RedirectView;
 
 public class ConceptStatsFormController extends SimpleFormController {
 
 	/** Logger for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
+	
+	/**
+	 * @see org.springframework.web.servlet.mvc.AbstractFormController#processFormSubmission(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 */
+	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object object, BindException errors) throws Exception {
+	
+		Concept concept = (Concept)object;
+		ConceptService cs = Context.getConceptService();
+		
+		// check to see if they clicked next/previous concept:
+		String jumpAction = request.getParameter("jumpAction");
+		if (jumpAction != null) {
+			Concept newConcept = null;
+			if ("previous".equals(jumpAction))
+				newConcept = cs.getPrevConcept(concept);
+			else if ("next".equals(jumpAction))
+				newConcept = cs.getNextConcept(concept);
+			
+			if (newConcept != null)
+				return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + newConcept.getConceptId()));
 
+		}
+		
+		return new ModelAndView(new RedirectView(getSuccessView()));
+	}
+	
 	/**
 	 * This is called prior to displaying a form for the first time. It tells
 	 * Spring the form/command object to load into the request

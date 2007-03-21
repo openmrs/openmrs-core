@@ -41,10 +41,19 @@
 		tab.blur();
 		return false;
 	}
+	
+	function jumpToConcept(which) {
+		var action = document.getElementById('jumpAction');
+		action.value = which;
+		var jumpForm = document.getElementById('jumpForm');
+		jumpForm.submit();
+		return false;
+	}
+	
 </script>
 
 <style>
-	#newSearchForm {
+	.inlineForm {
 		padding: 0px;
 		margin: 0px;
 		display: inline;
@@ -75,23 +84,24 @@
 </c:choose>
 
 <c:if test="${concept.conceptId != null}">
-	<c:if test="${previousConcept != null}"><a href="concept.form?conceptId=${previousConcept.conceptId}"><spring:message code="general.previous"/></a></c:if>
-	<c:if test="${previousConcept == null}"><spring:message code="general.previous"/></c:if>
-		|
-	<a href="concept.htm?conceptId=${concept.conceptId}" id="viewConcept" ><spring:message code="general.view"/></a>
-		|
-	<a href="conceptStats.form?conceptId=${concept.conceptId}" id="conceptStats" valign="middle"><spring:message code="Concept.stats"/></a>
-		|
-	<c:if test="${nextConcept != null}"><a href="concept.form?conceptId=${nextConcept.conceptId}"><spring:message code="general.next"/></a></c:if>
-	<c:if test="${nextConcept == null}"><spring:message code="general.next"/></c:if>
-		|
+	<form class="inlineForm" id="jumpForm" action="" method="post">
+		<input type="hidden" name="jumpAction" id="jumpAction" value="previous"/>
+		<a href="#previousConcept" id="previousConcept" valign="middle" onclick="return jumpToConcept('previous')"><spring:message code="general.previous"/></a>
+			|
+		<a href="concept.htm?conceptId=${concept.conceptId}" id="viewConcept" ><spring:message code="general.view"/></a>
+			|
+		<a href="conceptStats.form?conceptId=${concept.conceptId}" id="conceptStats" valign="middle"><spring:message code="Concept.stats"/></a>
+			|
+		<a href="#nextConcept" id="nextConcept" valign="middle" onclick="return jumpToConcept('next')"><spring:message code="general.next"/></a>
+			|
+	</form>
 </c:if>
 
 <a href="concept.form" id="newConcept" valign="middle"><spring:message code="general.new"/></a>
 
 <openmrs:extensionPoint pointId="org.openmrs.dictionary.conceptFormHeader" type="html" />
 
-<form id="newSearchForm" action="index.htm" method="get">
+<form class="inlineForm" action="index.htm" method="get">
   &nbsp; &nbsp; 
   <input type="text" id="searchPhrase" name="phrase" size="18"> 
   <input type="submit" class="smallButton" value="<spring:message code="general.search"/>"/>

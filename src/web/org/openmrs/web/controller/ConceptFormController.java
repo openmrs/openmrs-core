@@ -88,6 +88,21 @@ public class ConceptFormController extends SimpleFormController {
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object object, BindException errors) throws Exception {
 	
 		Concept concept = (Concept)object;
+		ConceptService cs = Context.getConceptService();
+		
+		// check to see if they clicked next/previous concept:
+		String jumpAction = request.getParameter("jumpAction");
+		if (jumpAction != null) {
+			Concept newConcept = null;
+			if ("previous".equals(jumpAction))
+				newConcept = cs.getPrevConcept(concept);
+			else if ("next".equals(jumpAction))
+				newConcept = cs.getNextConcept(concept);
+			if (newConcept != null)
+				return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + newConcept.getConceptId()));
+			else
+				return new ModelAndView(new RedirectView(getSuccessView()));
+		}
 		
 		if (Context.isAuthenticated()) {
 			
@@ -213,15 +228,14 @@ public class ConceptFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
+		ConceptService cs = Context.getConceptService();
 		
-				
 		if (Context.isAuthenticated()) {
+			
+			Concept concept = (Concept)obj;
 			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			String action = request.getParameter("action");
-			ConceptService cs = Context.getConceptService();
-			
-			Concept concept = (Concept)obj;
 			
 			if (action.equals(msa.getMessage("Concept.delete"))) {
 				try {
@@ -275,7 +289,7 @@ public class ConceptFormController extends SimpleFormController {
 					}
 				}
 
-				return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + concept.getConceptId().toString()));
+				return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + concept.getConceptId()));
 			}
 		}
 		
@@ -389,9 +403,6 @@ public class ConceptFormController extends SimpleFormController {
 		    		conceptAnswers.put(key, name);
 		    	}
 
-		    	//previous/next ids for links
-		    	map.put("previousConcept", cs.getPrevConcept(concept));
-		    	map.put("nextConcept", cs.getNextConcept(concept));
 		    	forms = Context.getFormService().getForms(concept);
 		    	
 		    	for (Concept c : Context.getConceptService().getQuestionsForAnswer(concept)) {

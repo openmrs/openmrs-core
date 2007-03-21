@@ -105,7 +105,7 @@ dojo.widget.defineWidget(
 	    	}
 		    else {
 		    	var a = document.createElement("a");
-	    		a.href = "#selectConcept";
+	    		a.href = "#selectConcept (conceptId = " + conceptHit.conceptId + ")";
 				a.onclick = function() { return false };
 				a.ondblclick = closure(this, "editConcept", conceptHit.conceptId);
 	    		a.title = conceptHit.description;

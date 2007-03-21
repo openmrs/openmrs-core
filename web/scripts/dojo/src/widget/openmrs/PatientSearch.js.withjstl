@@ -95,6 +95,11 @@ dojo.widget.defineWidget(
 		
 		getId: function(p) {
 			var td = document.createElement("td");
+			
+			if (p.patientId)
+				td.onmouseover = function() { window.status = "Patient Id: " + p.patientId; };
+			td.onmouseout = function() { window.status = "" };
+			
 			if (typeof p == 'string') {
 				td.colSpan = this.getHeaderCellContent().length;
 				td.innerHTML = p;
