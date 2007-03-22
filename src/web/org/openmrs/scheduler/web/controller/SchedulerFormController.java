@@ -2,6 +2,8 @@ package org.openmrs.scheduler.web.controller;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -31,7 +33,7 @@ public class SchedulerFormController extends SimpleFormController {
 	// Move this to message.properties or OpenmrsConstants
 	public static String DEFAULT_DATE_PATTERN = "MM/dd/yyyy HH:mm:ss";
 	public static DateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat(DEFAULT_DATE_PATTERN);
-	  	  
+	
 	/**
 	 * 
 	 * Allows for Integers to be used as values in input tags.
@@ -46,6 +48,30 @@ public class SchedulerFormController extends SimpleFormController {
 		binder.registerCustomEditor(java.lang.Long.class, new CustomNumberEditor(java.lang.Long.class, true));
 		binder.registerCustomEditor(java.util.Date.class, new CustomDateEditor(DEFAULT_DATE_FORMAT, true));
 	}
+	
+	/**
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#processFormSubmission(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 */
+	@Override
+	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
+		
+		TaskConfig task = (TaskConfig) command;
+		
+		String[] names = request.getParameterValues("propertyName");
+		String[] values = request.getParameterValues("propertyValue");
+		
+		Map<String, String> properties = new HashMap<String, String>();
+		
+		if (names != null)
+			for (int x = 0; x < names.length; x++) {
+				if (names[x].length() > 0)
+					properties.put(names[x], values[x]);
+			}
+		
+		task.setProperties(properties);
+		
+		return super.processFormSubmission(request, response, task, errors);
+	}
 
 	/**
 	 * 
@@ -57,12 +83,13 @@ public class SchedulerFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		//
+		
 		String view = getFormView();
 
 		TaskConfig task = (TaskConfig) command;
 		task.setStartTimePattern(DEFAULT_DATE_PATTERN);
 		log.info("task started? " + task.getStarted());
+		
 		Context.getSchedulerService().updateTask(task);
 		view = getSuccessView();
 		

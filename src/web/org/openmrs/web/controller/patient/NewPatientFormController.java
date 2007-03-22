@@ -128,55 +128,57 @@ public class NewPatientFormController extends SimpleFormController {
 				}
 				
 				// loop over the identifiers to create the patient.identifiers set
-				for (int i=0; i<identifiers.length;i++) {
-					// arguments for the spring error messages
-					String[] args = {identifiers[i]};
-					
-					// add the new identifier only if they put in some identifier string
-					if (identifiers[i].length() > 0) {
+				if (identifiers != null) {
+					for (int i=0; i<identifiers.length;i++) {
+						// arguments for the spring error messages
+						String[] args = {identifiers[i]};
 						
-						// set up the actual identifier java object
-						PatientIdentifierType pit = null;
-						if (types[i] == null || types[i].equals("")) {
-							String msg = getMessageSourceAccessor().getMessage("PatientIdentifier.identifierType.null", args);
-							errors.reject(msg);
-						}
-						else
-							pit = ps.getPatientIdentifierType(Integer.valueOf(types[i]));
+						// add the new identifier only if they put in some identifier string
+						if (identifiers[i].length() > 0) {
+							
+							// set up the actual identifier java object
+							PatientIdentifierType pit = null;
+							if (types[i] == null || types[i].equals("")) {
+								String msg = getMessageSourceAccessor().getMessage("PatientIdentifier.identifierType.null", args);
+								errors.reject(msg);
+							}
+							else
+								pit = ps.getPatientIdentifierType(Integer.valueOf(types[i]));
+							
+							Location loc = null;
+							if (locs[i] == null || locs[i].equals("")) {
+								String msg = getMessageSourceAccessor().getMessage("PatientIdentifier.location.null", args);
+								errors.reject(msg);
+							}
+							else
+								loc = es.getLocation(Integer.valueOf(locs[i]));
+							
+							PatientIdentifier pi = new PatientIdentifier(identifiers[i], pit, loc);
+							pi.setPreferred(pref.equals(identifiers[i]+types[i]));
+							newIdentifiers.add(pi);
+							
+							log.debug("Creating patient identifier with identifier: " + identifiers[i]);
+							log.debug("and type: " + types[i]);
+							log.debug("and location: " + locs[i]);
 						
-						Location loc = null;
-						if (locs[i] == null || locs[i].equals("")) {
-							String msg = getMessageSourceAccessor().getMessage("PatientIdentifier.location.null", args);
-							errors.reject(msg);
-						}
-						else
-							loc = es.getLocation(Integer.valueOf(locs[i]));
-						
-						PatientIdentifier pi = new PatientIdentifier(identifiers[i], pit, loc);
-						pi.setPreferred(pref.equals(identifiers[i]+types[i]));
-						newIdentifiers.add(pi);
-						
-						log.debug("Creating patient identifier with identifier: " + identifiers[i]);
-						log.debug("and type: " + types[i]);
-						log.debug("and location: " + locs[i]);
-					
-						try {
-							if (pit.hasCheckDigit() && !OpenmrsUtil.isValidCheckDigit(identifiers[i])) {
-								log.error("hasCheckDigit and is not valid: " + pit.getName() + " " + identifiers[i]);
-								String msg = getMessageSourceAccessor().getMessage("error.checkdigits.verbose", args);
+							try {
+								if (pit.hasCheckDigit() && !OpenmrsUtil.isValidCheckDigit(identifiers[i])) {
+									log.error("hasCheckDigit and is not valid: " + pit.getName() + " " + identifiers[i]);
+									String msg = getMessageSourceAccessor().getMessage("error.checkdigits.verbose", args);
+									errors.rejectValue("identifier", msg);
+								}
+	//							else if (pit.hasCheckDigit() == false && identifiers[i].contains("-")) {
+	//								log.error("hasn't CheckDigit and contains '-': " + pit.getName() + " " + identifiers[i]);
+	//								String[] args2 = {"-", identifiers[i]}; 
+	//								String msg = getMessageSourceAccessor().getMessage("error.character.invalid", args2);
+	//								errors.rejectValue("identifier", msg);
+	//							}
+							} catch (Exception e) {
+								log.error("exception thrown with: " + pit.getName() + " " + identifiers[i]);
+								log.error("Error while adding patient identifiers to savedIdentifier list", e);
+								String msg = getMessageSourceAccessor().getMessage("error.checkdigits", args);
 								errors.rejectValue("identifier", msg);
 							}
-//							else if (pit.hasCheckDigit() == false && identifiers[i].contains("-")) {
-//								log.error("hasn't CheckDigit and contains '-': " + pit.getName() + " " + identifiers[i]);
-//								String[] args2 = {"-", identifiers[i]}; 
-//								String msg = getMessageSourceAccessor().getMessage("error.character.invalid", args2);
-//								errors.rejectValue("identifier", msg);
-//							}
-						} catch (Exception e) {
-							log.error("exception thrown with: " + pit.getName() + " " + identifiers[i]);
-							log.error("Error while adding patient identifiers to savedIdentifier list", e);
-							String msg = getMessageSourceAccessor().getMessage("error.checkdigits", args);
-							errors.rejectValue("identifier", msg);
 						}
 					}
 				}
