@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<%--<openmrs:require privilege="View Tasks" otherwise="/login.htm" redirect="/admin/scheduler/task.list" />--%>
+<openmrs:require privilege="Manage Scheduler" otherwise="/login.htm" redirect="/admin/scheduler/scheduler.list" />
 	
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
@@ -26,7 +26,7 @@
 						<th></th>
 						<th>Name</th>
 						<th>Start Time</th>
-						<th>Interval (sec)</th>
+						<th>Interval</th>
 						<th>Start On Startup?</th>
 						<th>Running?</th>
 					</tr>
@@ -35,7 +35,7 @@
 							<td valign="top"><input type="checkbox" name="taskId" value="${task.id}"></td>				
 							<td valign="top"><a href="scheduler.form?taskId=${task.id}">${task.name}</a></td>
 							<td valign="top">${task.startTime}</td>
-							<td valign="top" align="center">${task.repeatInterval}</td>
+							<td valign="top" align="center">${intervals[task]}</td>
 							<td valign="top" align="center">${task.startOnStartup}</td>
 							<td valign="top" align="center">${task.started}</td>
 						</tr>

@@ -124,7 +124,7 @@ public class TimerSchedulerService implements SchedulerService {
 	 *  @param  task        the task to be scheduled
 	 *  @param  schedule    the time and interval for the scheduled task
 	 */
-	public void scheduleTask(TaskConfig task) throws SchedulerException { 
+	public void scheduleTask(TaskConfig task) throws SchedulerException {
 		// Create wrapper for the task 
 		Schedulable schedulable = SchedulableFactory.getInstance().createInstance( task );
 		TimerTaskWrapper wrapper = new TimerTaskWrapper( schedulable );

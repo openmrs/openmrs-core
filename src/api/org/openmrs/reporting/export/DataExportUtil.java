@@ -30,7 +30,7 @@ public class DataExportUtil {
 				generateExport(dataExport, null);
 			}
 			catch (Exception e) {
-				//pass
+				log.warn("Error while generating export: " + dataExport, e);
 			}
 		}
 		

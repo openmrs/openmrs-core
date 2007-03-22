@@ -18,6 +18,7 @@ import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -57,6 +58,7 @@ public class SchedulerFormController extends SimpleFormController {
 		
 		TaskConfig task = (TaskConfig) command;
 		
+		// assign the properties to the task
 		String[] names = request.getParameterValues("propertyName");
 		String[] values = request.getParameterValues("propertyValue");
 		
@@ -69,6 +71,24 @@ public class SchedulerFormController extends SimpleFormController {
 			}
 		
 		task.setProperties(properties);
+		
+		
+		// if the user selected a different repeat interval unit, fix repeatInterval
+		String units = request.getParameter("repeatIntervalUnits");
+		Long interval = task.getRepeatInterval();
+		
+		if ("minutes".equals(units)) {
+			interval = interval * 60;
+		}
+		else if ("hours".equals(units)) {
+			interval = interval * 60 * 60;
+		}
+		else if ("days".equals(units)) {
+			interval = interval * 60 * 60 * 24;
+		}
+		
+		task.setRepeatInterval(interval);
+		
 		
 		return super.processFormSubmission(request, response, task, errors);
 	}
@@ -93,7 +113,7 @@ public class SchedulerFormController extends SimpleFormController {
 		Context.getSchedulerService().updateTask(task);
 		view = getSuccessView();
 		
-		Object [] args = new Object[] { task.getId() };
+		Object [] args = new Object[] { task.getName() };
 		String success = getMessageSourceAccessor().getMessage("Scheduler.taskForm.saved", args);
 		httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
 	
@@ -123,4 +143,37 @@ public class SchedulerFormController extends SimpleFormController {
 		return task;
 	  }
 
+	/* (non-Javadoc)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
+	 */
+	@Override
+	protected Map referenceData(HttpServletRequest request, Object command, Errors errors) throws Exception {
+		
+		Map<String, String> map = new HashMap<String, String>();
+		
+		TaskConfig task = (TaskConfig)command;
+		
+		Long interval = task.getRepeatInterval();
+		
+		if (interval < 60)
+			map.put("units", "seconds");
+		else if (interval < 3600) {
+			map.put("units", "minutes");
+			task.setRepeatInterval(interval / 60);
+		}
+		else if (interval < 86400) {
+			map.put("units", "hours");
+			task.setRepeatInterval(interval / 3600);
+		}
+		else {
+			map.put("units", "days");
+			task.setRepeatInterval(interval / 86400);
+		}
+		
+		return map;
+	}
+
+	  
+
+	  
 }

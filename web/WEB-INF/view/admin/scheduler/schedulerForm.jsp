@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<%--<openmrs:require privilege="Task Scheduler" otherwise="/login.htm" redirect="/admin/scheduler/taskForm" />--%>
+<openmrs:require privilege="Manage Scheduler" otherwise="/login.htm" redirect="/admin/scheduler/scheduler.form" />
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
@@ -260,7 +260,13 @@ window.onload = init;
 			<td>
 				<spring:bind path="task.repeatInterval">
 					<input type="text" id="repeatInterval" name="repeatInterval" size="10" value="${status.value}" /> 
-					<spring:message code="Scheduler.scheduleForm.repeatInterval.units" />
+					<select name="repeatIntervalUnits">
+						<option value="seconds" <c:if test="${units=='seconds'}">selected</c:if>><spring:message code="Scheduler.scheduleForm.repeatInterval.units.seconds" /></option>
+						<option value="minutes" <c:if test="${units=='minutes'}">selected</c:if>><spring:message code="Scheduler.scheduleForm.repeatInterval.units.minutes" /></option>
+						<option value="hours" <c:if test="${units=='hours'}">selected</c:if>><spring:message code="Scheduler.scheduleForm.repeatInterval.units.hours" /></option>
+						<option value="days" <c:if test="${units=='days'}">selected</c:if>><spring:message code="Scheduler.scheduleForm.repeatInterval.units.days" /></option>
+					</select>
+					
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>

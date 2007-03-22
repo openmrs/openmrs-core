@@ -88,7 +88,7 @@ public interface SchedulerService {
 	 *  
 	 * @param	tasks 	the tasks that should be scheduled
 	 */
-	@Authorized({"Manage Tasks"})
+	@Authorized({"Manage Scheduler"})
 	@Transactional(readOnly=true)
 	public Collection<TaskConfig> getTasks();
 
@@ -97,7 +97,7 @@ public interface SchedulerService {
 	 *  
 	 * @param	id 		the identifier of the task
 	 */
-	@Authorized({"Manage Tasks"})
+	@Authorized({"Manage Scheduler"})
 	@Transactional(readOnly=true)
 	public TaskConfig getTask(Integer id);
 
@@ -106,7 +106,7 @@ public interface SchedulerService {
 	 *  
 	 * @param	id 		the identifier of the task
 	 */
-	@Authorized({"Manage Tasks"})
+	@Authorized({"Manage Scheduler"})
 	public void deleteTask(Integer id);
 
 	/**
@@ -114,7 +114,7 @@ public interface SchedulerService {
 	 *  
 	 * @param	task 		the task to be updated
 	 */
-	@Authorized({"Manage Tasks"})
+	@Authorized({"Manage Scheduler"})
 	public void updateTask(TaskConfig task);
 
 	/**
@@ -122,7 +122,7 @@ public interface SchedulerService {
 	 *  
 	 * @param	task 		the task to be created
 	 */
-	@Authorized({"Manage Tasks"})
+	@Authorized({"Manage Scheduler"})
 	public void createTask(TaskConfig task);
 
 	/**

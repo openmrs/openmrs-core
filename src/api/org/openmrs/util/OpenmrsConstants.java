@@ -150,6 +150,8 @@ public class OpenmrsConstants {
 	public static final String PRIV_MANAGE_GLOBAL_PROPERTIES = "Manage Global Properties";
 	public static final String PRIV_MANAGE_MODULES = "Manage Modules";
 	
+	public static final String PRIV_MANAGE_SCHEDULER = "Manage Scheduler";
+	
 	public static final Map<String, String> CORE_PRIVILEGES() {
 		Map<String, String> privs = new HashMap<String, String>();
 		
@@ -231,6 +233,8 @@ public class OpenmrsConstants {
 		
 		privs.put(PRIV_MANAGE_GLOBAL_PROPERTIES, "Able to add/edit/delete global properties");
 		privs.put(PRIV_MANAGE_MODULES, "Able to add/remove modules to the system");
+		
+		privs.put(PRIV_MANAGE_SCHEDULER, "Able to add/edit/remove scheduled tasks");
 		
 		for (Privilege privilege : ModuleFactory.getPrivileges()) {
 			privs.put(privilege.getPrivilege(), privilege.getDescription());

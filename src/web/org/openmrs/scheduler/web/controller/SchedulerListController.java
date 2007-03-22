@@ -2,6 +2,8 @@ package org.openmrs.scheduler.web.controller;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +20,7 @@ import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -148,6 +151,38 @@ public class SchedulerListController extends SimpleFormController {
 	 */
 	private SchedulerService getSchedulerService() { 
 		return Context.getSchedulerService();
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	protected Map referenceData(HttpServletRequest request, Object command, Errors errors) throws Exception {
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		Collection<TaskConfig> tasks = (Collection<TaskConfig>)command;
+		Map<TaskConfig, String> intervals = new HashMap<TaskConfig, String>();
+		MessageSourceAccessor msa = getMessageSourceAccessor();
+		
+		for (TaskConfig task : tasks) {
+		
+			Long interval = task.getRepeatInterval();
+			
+			if (interval < 60)
+				intervals.put(task, interval + " " + msa.getMessage("Scheduler.scheduleForm.repeatInterval.units.seconds"));
+			else if (interval < 3600)
+				intervals.put(task, interval / 60 + " " + msa.getMessage("Scheduler.scheduleForm.repeatInterval.units.minutes"));
+			else if (interval < 86400)
+				intervals.put(task, interval / 3600 + " " + msa.getMessage("Scheduler.scheduleForm.repeatInterval.units.hours"));
+			else
+				intervals.put(task, interval / 86400 + " " + msa.getMessage("Scheduler.scheduleForm.repeatInterval.units.days"));
+		
+		}
+		map.put("intervals", intervals);
+		
+		return map;
 	}
 		
 }
