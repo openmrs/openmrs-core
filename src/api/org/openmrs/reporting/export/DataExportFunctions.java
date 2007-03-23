@@ -104,7 +104,7 @@ public class DataExportFunctions {
 		
 		locale = Context.getLocale();
 		dateFormatLong = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
-		String format = OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(locale.toString());
+		String format = OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(locale.toString().toLowerCase());
 		if (format == null)
 			format = "dd-MM-yyyy";
 		dateFormatShort = new SimpleDateFormat(format, locale);
