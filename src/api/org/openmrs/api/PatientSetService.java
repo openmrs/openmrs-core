@@ -121,13 +121,13 @@ public interface PatientSetService {
 	/**
 	 * Returns a mapping from patient id to obs for concept <code>c</code>
 	 * 
-	 * The returned List<attribute value> is [obs value, attr value, attr value, attr value...]
-	 * The returned List<List<attribute value>> represents the obs rows 
+	 * The returned List< attribute value > is [obs value, attr value, attr value, attr value...]
+	 * The returned List<List< attribute value >> represents the obs rows 
 	 * 
 	 * @param patients
 	 * @param c
 	 * @param attributes list of attributes
-	 * @return <code>Map<patientId, List<List<attribute value>>></code>
+	 * @return <code>Map<patientId, List<List< attribute value >>></code>
 	 */
 	@Transactional(readOnly=true)
 	public Map<Integer, List<List<Object>>> getObservationsValues(PatientSet patients, Concept c, List<String> attributes);
