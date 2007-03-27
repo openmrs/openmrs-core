@@ -79,16 +79,19 @@
 			str += 'value#org.openmrs.Concept';
 		else
 			str += 'value#java.lang.Object';
-		str += ',withinLastMonths#java.lang.Integer"/>';
+		str += ',withinLastMonths#java.lang.Integer,withinLastDays#java.lang.Integer"/>';
 		if (hl7Abbrev == 'NM')
 			str += '<select name="timeModifier"><option value="ANY">ANY</option><option value="NO">NO</option><option value="FIRST">FIRST</option><option value="LAST">LAST</option><option value="MIN">MIN</option><option value="MAX">MAX</option><option value="AVG">AVG</option></select> ';
 		else if (hl7Abbrev == 'ST' || hl7Abbrev == 'CWE')
 			str += '<select name="timeModifier"><option value="ANY">ANY</option><option value="NO">NO</option><option value="FIRST">FIRST</option><option value="LAST">LAST</option></select> ';
 		str += '<input type="hidden" name="question" value="' + concept.conceptId + '"/>';
 		str += concept.name;
-		if (hl7Abbrev == 'NM')
+		if (hl7Abbrev == 'NM') {
+			str += ' <br/><br/><span style="margin-left: 40px">';
+			str += ' (optional value constraint)';
 			str += ' <select name="modifier" id="modifier"><option value="LESS_THAN">&lt;</option><option value="LESS_EQUAL">&lt;=</option><option value="EQUAL">=</option><option value="GREATER_EQUAL">&gt;=</option><option value="GREATER_THAN">&gt;</option></select> ';
-		else if (hl7Abbrev == 'ST' || hl7Abbrev == 'CWE') {
+			str += '</span>';
+		} else if (hl7Abbrev == 'ST' || hl7Abbrev == 'CWE') {
 			str += ' is ';
 			str += '<input type="hidden" name="modifier" value="EQUAL" /> ';
 		}
@@ -98,10 +101,19 @@
 			str += '<select name="value" id="replace_with_answer_options"><option value="">Loading...</option></select>';
 			lookupAnswers = true;
 		}
-		str += ' within the last ';
+		str += ' <br/><br/><span style="margin-left: 40px">';
+		str += ' (optional time constraint) within the last ';
 		str += ' <input type="text" name="withinLastMonths" value="" size="2" />';
-		str += ' months';
-		str += ' <input type="submit" value="Search"/>';
+		str += ' months and/or';
+		str += ' <input type="text" name="withinLastDays" value="" size="2" />';
+		str += ' days';
+		str += '</span>';
+		str += ' <br/><br/><span style="margin-left: 40px">';
+		str += ' (optional date constraint) since [date]';
+		str += ' until [date]';
+		str += '</span>';
+		str += ' <br/><br/><input type="submit" value="Search"/>';
+		str += ' &nbsp;&nbsp;&nbsp;&nbsp;<input type="button" value="Cancel" onClick="hideLayer(\'concept_filter_box\')"/>';
 		str += '</form>';
 		if (lookupAnswers) {
 			DWRConceptService.getAnswersForQuestion(concept.conceptId, function(list) {
@@ -151,11 +163,13 @@
 					if (histories.length == 0)
 						loadBox.innerHTML = 'No saved histories';
 					else {
-						var str = '<ul>';
+						var str = '<h4>Load a Search History</h4>';
+						str += '<ul>';
 						for (var i = 0; i < histories.length; ++i) {
 							str += '<li><a href="javascript:loadSearchHistory(' + histories[i].id + ')">' + histories[i].name + ' <small>(' + histories[i].description + ')</small></a></li>';
 						}
 						str += '</ul>';
+						str += '<input type="button" value="<spring:message code="general.cancel"/>" onClick="hideLayer(\'loadBox\')"/>';
 						loadBox.innerHTML = str;
 					}
 					showLayer('loadBox');
@@ -173,7 +187,7 @@
 		if (currentPatientSet != null) {
 			document.getElementById(idPrefix + "_ptIds").value = currentPatientSet.commaSeparatedPatientIds;
 			document.getElementById(idPrefix + "_form").submit();
-			document.getElementById('_linkMenu').style.display = 'none';
+			hideLayer('_linkMenu');
 		} else {
 			window.alert("<spring:message code="PatientSet.stillLoading"/>");
 		}
@@ -186,14 +200,14 @@
 		$('saveFilterDescription').value = '';
 		$('saveFilterSaveButton').style.disabled = 'false';
 		$('saveFilterCancelButton').style.disabled = 'false';
-		$('saveFilterBox').style.display = '';
+		showLayer('saveFilterBox');
 		$('saveFilterName').focus();
 	}
 	
 	function handleSavedFilterMenuButton() {
 		if ($('saved_filters').style.display == 'none') {
 			$('saved_filters').innerHTML = 'Loading...';
-			$('saved_filters').style.display = '';
+			showLayer('saved_filters');
 			DWRCohortBuilderService.getSavedFilters(function(filters) {
 					var str = '<ul>';
 					if (filters.length == 0)
@@ -205,10 +219,10 @@
 						str += '</ul>';
 					}
 					$('saved_filters').innerHTML = str;
-					$('saved_filters').style.display = '';
+					showLayer('saved_filters');
 				});
 		} else {
-			$('saved_filters').style.display = 'none';
+			hideLayer('saved_filters');
 		}
 	}
 	
@@ -226,12 +240,11 @@
 				}
 				$('saveFilterSaveButton').style.disabled = 'false';
 				$('saveFilterCancelButton').style.disabled = 'false';
-				$('saveFilterBox').style.display = 'none';
+				hideLayer('saveFilterBox');
 			});
 	}
 	
 </script>
-
 
 <script type="text/javascript">
 	<%--
@@ -249,7 +262,7 @@
 					var result = search.cachedResult;
 					str += '<li>' + filter.name + ' <small>(' + filter.description + ')</small>';
 					if (result != null)
-						str += ' (' + result.size + ' results)';
+						str += ' (' + result.size + ' <spring:message code="CohortBuilder.numResults"/>)';
 					str += '</li>';
 				}
 				str += '</ol>';
@@ -313,7 +326,7 @@
 		$('previewToIndex').innerHTML = toPatientIndex > n ? n : (toPatientIndex + 1);
 		$('previewTotalNumber').innerHTML = n;
 		hideLayer('cohort_builder_preview_patients');
-		var str = '<i>' + n + ' results</i>';
+		var str = '<i>' + n + ' <spring:message code="CohortBuilder.numResults"/></i>';
 		DWRPatientSetService.getPatients(patientIds, function(list) {
 				var str = '';
 				if (fromPatientIndex > 0)
@@ -336,153 +349,155 @@
 	}
 </script>
 
-		<div id="cohort_builder_add_filter" style="padding: 4px">
-			<table><tr valign="baseline"><td>
-			<b>Search:</b>
-			</td><td>
-		
-			<span style="padding: 3px 0px; margin: 0px 3px; background-color: yellow; border: 1px black solid">
-				<a href="javascript:handleSavedFilterMenuButton()">Saved [V]</a>
-			</span>
-			<div id="saved_filters" style="position: absolute; z-index: 1; border: 1px black solid; background-color: yellow; display: none"></div>
-		
-		<c:if test="${fn:length(model.shortcuts) > 0}">
-			<c:forEach var="shortcut" items="${model.shortcuts}" varStatus="status">
-				<span style="padding: 3px 0px; margin: 0px 3px; background-color: yellow; border: 1px black solid">
-					<c:if test="${shortcut.concrete}">
-						<a href="cohortBuilder.form?method=addFilter&filter_id=${shortcut.patientFilter.reportObjectId}"><spring:message code="${shortcut.label}"/></a>
-					</c:if>
-					<c:if test="${!shortcut.concrete}">
-						<form id="shortcut${shortcut.label}" method="post" action="cohortBuilder.form" style="display: inline">
-							<c:if test="${!shortcut.hasPromptArgs}">
-								<a href="javascript:document.getElementById('shortcut${shortcut.label}').submit()">
-							</c:if>
-							<spring:message code="${shortcut.label}"/>
-							<c:if test="${!shortcut.hasPromptArgs}">
-								</a>
-							</c:if>
-							<input type="hidden" name="method" value="addDynamicFilter"/>
-							<input type="hidden" name="filterClass" value="${shortcut.className}"/>
-							<input type="hidden" name="vars" value="${shortcut.vars}"/>
-							<c:forEach var="arg" items="${shortcut.args}">
-								<c:if test="${empty arg.argClass}">
-									<spring:message code="${arg.argName}"/>
-								</c:if>
-								<c:if test="${arg.argClass != null}">
-									<c:choose>
-										<c:when test="${not empty arg.argValue}">
-											<input type="hidden" name="${arg.argName}" value="${arg.argValue}"/>
-										</c:when>
-										<c:otherwise>
-											<spring:message code="${shortcut.label}.${arg.argName}"/>
-											<openmrs:fieldGen type="${arg.argClass.name}" formFieldName="${arg.argName}" val="" parameters="optionHeader=[blank]|fieldLength=10" />
-										</c:otherwise>
-									</c:choose>
-								</c:if>
-							</c:forEach>
-							<c:if test="${shortcut.hasPromptArgs}">
-								<input type="submit" value="Go"/>
-							</c:if>
-						</form>
-					</c:if>
-				</span>
-			</c:forEach>
-		</c:if>
+<h2><spring:message code="CohortBuilder.title"/></h2>	
 
+<div id="cohort_builder_add_filter" style="padding: 4px">
+	<table><tr valign="baseline"><td>
+	<b><spring:message code="general.search"/></b>
+	</td><td>
+
+	<span style="padding: 3px 0px; margin: 0px 3px; background-color: #ffffaa; border: 1px black solid">
+		<a href="javascript:handleSavedFilterMenuButton()"><spring:message code="CohortBuilder.savedFilterMenu"/></a>
+	</span>
+	<div id="saved_filters" style="position: absolute; z-index: 1; border: 1px black solid; background-color: yellow; display: none"></div>
+
+	<c:if test="${fn:length(model.shortcuts) > 0}">
+		<c:forEach var="shortcut" items="${model.shortcuts}" varStatus="status">
+			<span style="padding: 3px 0px; margin: 0px 3px; background-color: #ffffaa; border: 1px black solid">
+				<c:if test="${shortcut.concrete}">
+					<a href="cohortBuilder.form?method=addFilter&filter_id=${shortcut.patientFilter.reportObjectId}"><spring:message code="${shortcut.label}"/></a>
+				</c:if>
+				<c:if test="${!shortcut.concrete}">
+					<form id="shortcut${shortcut.label}" method="post" action="cohortBuilder.form" style="display: inline">
+						<c:if test="${!shortcut.hasPromptArgs}">
+							<a href="javascript:document.getElementById('shortcut${shortcut.label}').submit()">
+						</c:if>
+						<spring:message code="${shortcut.label}"/>
+						<c:if test="${!shortcut.hasPromptArgs}">
+							</a>
+						</c:if>
+						<input type="hidden" name="method" value="addDynamicFilter"/>
+						<input type="hidden" name="filterClass" value="${shortcut.className}"/>
+						<input type="hidden" name="vars" value="${shortcut.vars}"/>
+						<c:forEach var="arg" items="${shortcut.args}">
+							<c:if test="${empty arg.argClass}">
+								<spring:message code="${arg.argName}"/>
+							</c:if>
+							<c:if test="${arg.argClass != null}">
+								<c:choose>
+									<c:when test="${not empty arg.argValue}">
+										<input type="hidden" name="${arg.argName}" value="${arg.argValue}"/>
+									</c:when>
+									<c:otherwise>
+										<spring:message code="${shortcut.label}.${arg.argName}"/>
+										<openmrs:fieldGen type="${arg.argClass.name}" formFieldName="${arg.argName}" val="" parameters="optionHeader=[blank]|fieldLength=10" />
+									</c:otherwise>
+								</c:choose>
+							</c:if>
+						</c:forEach>
+						<c:if test="${shortcut.hasPromptArgs}">
+							<input type="submit" value="Go"/>
+						</c:if>
+					</form>
+				</c:if>
+			</span>
+		</c:forEach>
+	</c:if>
+
+	<br/>
+	<br/>
+	<spring:message code="CohortBuilder.addConceptFilter"/>
+	<div dojoType="ConceptSearch" widgetId="concept_to_filter_search" conceptId="" showVerboseListing="true"></div>
+	<div dojoType="OpenmrsPopup" widgetId="concept_to_filter_selection" hiddenInputName="concept_to_filter" searchWidget="concept_to_filter_search" searchTitle="<spring:message code="CohortBuilder.conceptSearchTitle"/>"></div>
+	<div id="concept_filter_box" style="background-color: #ffffaa; position: absolute; border: 1px black dashed; display: none"></div>
+	
+	<form method="post" action="cohortBuilder.form">
+		<input type="hidden" name="method" value="addFilter"/>
+		<spring:message code="CohortBuilder.addCompositionFilter"/>
+		<input type="text" name="composition" id="composition" size="40"/>
+		<input type="submit" value="<spring:message code="general.add"/>"/>
 		<br/>
-		<form method="post" action="cohortBuilder.form">
-			<input type="hidden" name="method" value="addFilter"/>
-			Add composition filter:
-			<input type="text" name="composition" id="composition" size="40"/>
-			<input type="submit" value="Add"/>
-			<br/>
-			<i><small>
-				&nbsp;&nbsp;&nbsp;&nbsp;
-				e.g. &quot;(1 and 2) or not 3&quot;
-				&nbsp;&nbsp;
-				Temporary limitation: you can't put AND and OR in a phrase without parentheses, so &quot;1 and 2 or 3&quot; won't work.
-			</small></i>
-		</form>
-		
-		Add concept filter:
-		<div dojoType="ConceptSearch" widgetId="concept_to_filter_search" conceptId="" showVerboseListing="true"></div>
-		<div dojoType="OpenmrsPopup" widgetId="concept_to_filter_selection" hiddenInputName="concept_to_filter" searchWidget="concept_to_filter_search" searchTitle="Concept to filter on"></div>
-		<div id="concept_filter_box" style="background-color: white; border: 1px black dashed; display: none"></div>
-		
-		</td></tr></table>
-	</div>
+		<i><small>
+			<spring:message code="CohortBuilder.compositionHelp"/>
+		</small></i>
+	</form>
+	
+	</td></tr></table>
+</div>
 
 <div id="cohort_builder_search_history" style="padding: 4px; border: 1px black solid; background-color: #e8e8e8">
+
+	<div id="saveBox" style="position: absolute; z-index: 1; border: 1px black solid; background-color: #ffe0e0; display: none">
+		<form method="post" action="cohortBuilder.form">
+			<input type="hidden" name="method" value="saveHistory"/>
+			<table>
+				<tr>
+					<td><spring:message code="general.saveAs"/></td>
+					<td><input type="text" name="name"/></td>
+				</tr>
+				<tr>
+					<td><spring:message code="general.description"/></td>
+					<td><input type="text" name="description" size="60"/></td>
+				</tr>
+				<tr>
+					<td><spring:message code="CohortBuilder.privateOrShared"/></td>
+					<td><spring:message code="general.notYetImplemented"/></td>
+				</tr>
+				<tr>
+					<td><spring:message code="CohortBuilder.keepUntil"/></td>
+					<td>
+						<select>
+							<option value=""><spring:message code="CohortBuilder.keepUntil.forever"/></option>
+							<option value=""><spring:message code="general.nWeeks" arguments="4"/> (<spring:message code="general.notYetImplemented"/>)</option>
+							<option value=""><spring:message code="general.nWeeks" arguments="2"/> (<spring:message code="general.notYetImplemented"/>)</option>
+							<option value=""><spring:message code="general.nWeeks" arguments="1"/> (<spring:message code="general.notYetImplemented"/>)</option>
+						</select>
+					</td>
+				</tr>
+			</table>
+			<input type="submit" value="<spring:message code="general.save"/>"/>
+			<input type="button" value="<spring:message code="general.cancel"/>" onClick="toggleLayer('saveBox')"/>
+		</form>
+	</div>
+
+	<div id="loadBox" style="position: absolute; z-index: 1; border: 1px black solid; background-color: #ffe0e0; display: none"></div>
+
 	<h3>
-		Search History
+		<spring:message code="CohortBuilder.searchHistory"/>
 		<c:if test="${model.searchHistory.size > 0}">
 			<img src="${pageContext.request.contextPath}/images/save.gif" title="<spring:message code="general.save"/>" onClick="toggleLayer('saveBox'); hideLayer('loadBox')"/>
 		</c:if>
 		<img src="${pageContext.request.contextPath}/images/open.gif" title="<spring:message code="general.load"/>" onClick="handleLoadButton()"/>
 		<form method="post" action="cohortBuilder.form" style="display: inline">
 			<input type="hidden" name="method" value="clearHistory"/>
-			<input type="image" title="Clear History" src="${pageContext.request.contextPath}/images/delete.gif"/>
+			<input type="image" title="<spring:message code="CohortBuilder.searchHistory.clear"/>" src="${pageContext.request.contextPath}/images/delete.gif"/>
 		</form>
 	</h3>
 
-				<div id="saveBox" style="position: absolute; z-index: 1; border: 1px black solid; background-color: #ffe0e0; display: none">
-					<form method="post" action="cohortBuilder.form">
-						<input type="hidden" name="method" value="saveHistory"/>
-						<table>
-							<tr>
-								<td>Save As</td>
-								<td><input type="text" name="name"/></td>
-							</tr>
-							<tr>
-								<td>Description</td>
-								<td><input type="text" name="description" size="60"/></td>
-							</tr>
-							<tr>
-								<td>Private/Shared</td>
-								<td>Not Yet Implemented</td>
-							</tr>
-							<tr>
-								<td>Store Until</td>
-								<td>
-									<select>
-										<option value="">Until I delete it</option>
-										<option value="">4 weeks (Not Yet Implemented)</option>
-										<option value="">2 weeks (Not Yet Implemented)</option>
-										<option value="">1 week (Not Yet Implemented)</option>
-									</select>
-								</td>
-							</tr>
-						</table>
-						<input type="submit" value="Save"/>
-						<input type="button" value="Cancel" onClick="toggleLayer('saveBox')"/>
-					</form>
-				</div>
-
-				<div id="loadBox" style="position: absolute; z-index: 1; border: 1px black solid; background-color: #ffe0e0; display: none"></div>
-
-				<div id="saveFilterBox" style="position: absolute; z-index: 1; border: 1px black solid; background-color: #ffe0e0; display: none">
-					<b><u>Saving <span id="saveFilterTitle"></span></u></b> <br/><br/>
-					Name: <input type="text" id="saveFilterName"/> <br/>
-					Description: <input type="text" id="saveFilterDescription" size="60"/> <br/><br/>
-					<input type="hidden" id="saveFilterIndex"/>
-					<input type="button" id="saveFilterSaveButton" value="Save" onClick="handleSaveFilter()"/>
-					<input type="button" id="saveFilterCancelButton" value="Cancel" onClick="toggleLayer('saveFilterBox')"/>
-				</div>	
+	<div id="saveFilterBox" style="position: absolute; z-index: 1; border: 1px black solid; background-color: #ffe0e0; display: none">
+		<b><u><spring:message code="general.saving" arguments="<span id=\"saveFilterTitle\"></span>"/></u></b>
+		<br/><br/>
+		<spring:message code="general.name"/>: <input type="text" id="saveFilterName"/> <br/>
+		<spring:message code="general.description"/>: <input type="text" id="saveFilterDescription" size="60"/> <br/><br/>
+		<input type="hidden" id="saveFilterIndex"/>
+		<input type="button" id="saveFilterSaveButton" value="<spring:message code="general.save"/>" onClick="handleSaveFilter()"/>
+		<input type="button" id="saveFilterCancelButton" value="<spring:message code="general.cancel"/>" onClick="toggleLayer('saveFilterBox')"/>
+	</div>	
 			
 	<c:if test="${model.searchHistory.size == 0}">
-		<div>No search history</div>
+		<div><spring:message code="CohortBuilder.searchHistory.none"/></div>
 	</c:if>
 	<c:if test="${model.searchHistory.size > SHOW_LAST_N}">
 		<div id="fullSearchHistory" style="display: none">
 			<div style="text-align: center">
-				<a href="javascript:hideLayer('fullSearchHistory'); showLayer('showFullSearchHistoryButton')">Hide Full History</a>
+				<a href="javascript:hideLayer('fullSearchHistory'); showLayer('showFullSearchHistoryButton')"><spring:message code="CohortBuilder.searchHistory.showRecent"/></a>
 			</div>
 	</c:if>
 	<c:forEach var="item" items="${model.searchHistory.items}" varStatus="iter">
 		<c:if test="${model.searchHistory.size > SHOW_LAST_N && iter.index == (model.searchHistory.size - SHOW_LAST_N)}">
 			</div>
 			<div id="showFullSearchHistoryButton" style="text-align: center">
-				<a href="javascript:showLayer('fullSearchHistory'); hideLayer('showFullSearchHistoryButton')">Show Full History</a>
+				<a href="javascript:showLayer('fullSearchHistory'); hideLayer('showFullSearchHistoryButton')"><spring:message code="CohortBuilder.searchHistory.showFull"/></a>
 			</div>
 		</c:if>
 		
@@ -512,7 +527,7 @@
 							?
 						</c:if>
 					</span>
-					results
+					<spring:message code="CohortBuilder.numResults"/>
 					<c:if test="${item.cachedResult != null}">
 						<small>(cached)</small>
 					</c:if>
@@ -531,20 +546,19 @@
 			</tr>
 		</table>
 	</c:forEach>
-
 </div>
 
-<div id="cohort_builder_preview" style="padding: 4px">
+<div id="cohort_builder_preview" style="padding: 4px<c:if test="${model.searchHistory.size == 0}">; display: none"</c:if>">
 
 	<div id="cohort_builder_button_panel" style="padding: 1px 4px; margin: 4px 0px">
 		<table width="100%">
 			<tr>
 				<td>
-					Display Method:
+					<spring:message code="CohortBuilder.displayMethod"/>
 					<select id="cohort_builder_preview_method" onChange="refreshPreview()">
-						<option value="last">Last</option>
-						<option value="and">All searches ANDed together</option>
-						<option value="or">All searches ORed together</option>
+						<option value="last"><spring:message code="CohortBuilder.displayMethod.last"/></option>
+						<option value="and"><spring:message code="CohortBuilder.displayMethod.and"/></option>
+						<option value="or"><spring:message code="CohortBuilder.displayMethod.or"/></option>
 						<c:set var="temp" value="${model.searchHistory.size - 2}"/>
 						<c:if test="${temp < 0}">
 							<c:set var="temp" value="0"/>
@@ -564,14 +578,21 @@
 		&nbsp;&nbsp;&nbsp;&nbsp;
 		<a href="javascript:previewPageBy(-patientPageSize)">&lt;-</a>
 		&nbsp;&nbsp;&nbsp;&nbsp;
-		Displaying <span id="previewFromIndex">#</span> to <span id="previewToIndex">#</span> of <span id="previewTotalNumber">#</span> patients.
+		<spring:message code="general.displayingXtoYofZ" arguments="<span id=\"previewFromIndex\">#</span>,<span id=\"previewToIndex\">#</span>,<span id=\"previewTotalNumber\">#</span>"/>
 		&nbsp;&nbsp;&nbsp;&nbsp;
 		<a href="javascript:previewPageBy(patientPageSize)">-&gt;</a>
 		&nbsp;&nbsp;&nbsp;&nbsp;
 		<a href="javascript:previewPageTo(-1)">-&gt;|</a>
 		</u></b>
-		<img title="<spring:message code="general.save" />" src="${pageContext.request.contextPath}/images/save.gif" onClick="toggleLayer('saveCohortDiv')"/>
-		<div id="saveCohortDiv" style="position: absolute; border: 2px black solid; background-color: #e0e0e0; display: none">
+	</div>
+	
+	<div id="cohort_builder_preview_loading_message">
+		<spring:message code="general.loading"/>
+	</div>
+	<div id="cohort_builder_preview_patients" style="display: none; margin-bottom: 15px"></div>
+
+	<div id="cohort_builder_actions" style="position: relative; border: 1px black solid">
+		<div id="saveCohortDiv" style="position: absolute; bottom: 0px; border: 2px black solid; background-color: #e0e0e0; display: none">
 			<b><u>Save Cohort (i.e. list of patient ids)</u></b>
 			<br/>
 			Name: <input type="text" id="saveCohortName"/> <br/>
@@ -580,25 +601,9 @@
 			<input type="button" value="<spring:message code="general.save"/>" onClick="handleSaveCohort()" />
 			<input type="button" value="<spring:message code="general.cancel"/>" onClick="toggleLayer('saveCohortDiv')" />
 		</div>
-		
-	</div>
-	<div id="cohort_builder_preview_no_filters" <c:if test="${model.searchHistory.size != 0}">style="display: none"</c:if> >
-		<h4>No searches.</h4>
-	</div>
-	<div id="cohort_builder_preview_loading_message">
-		Loading...
-	</div>
-	<div id="cohort_builder_preview_patients" style="display: none"></div>
-</div>
 
-<div id="cohort_builder_actions" style="border: 1px black solid">
-
-	<b>Actions:</b>
-		
-	<c:if test="${fn:length(model.links) > 0}">
-		<span style="position: relative" onMouseOver="javascript:showLayer('_linkMenu')">
-			<a class="analysisShortcutBarButton"><spring:message code="Analysis.linkButton"/></a>
-			<div id="_linkMenu" style="	border: 1px solid black; background-color: #f0f0a0; position: absolute; left: 0px; bottom: 1.35em; width: 250px; z-index: 1; display: none">
+		<c:if test="${fn:length(model.links) > 0}">
+			<div id="_linkMenu" style="	border: 1px solid black; background-color: #f0f0a0; position: absolute; bottom: 0px; padding-right: 1.2em; z-index: 1; display: none">
 				<br />
 				&nbsp;&nbsp;&nbsp;<span style="width: 200px; text-align: right;"><a href="#" onClick="javascript:hideLayer('_linkMenu');" >[Close]</a></span>
 				<ul>
@@ -631,8 +636,18 @@
 				</table>
 				<br />
 			</div>
-		</span>
-	</c:if>
+		</c:if>
+
+		<b>Actions:</b>
+
+		<img title="<spring:message code="general.save" />" src="${pageContext.request.contextPath}/images/save.gif" onClick="toggleLayer('saveCohortDiv')"/>
+
+		<c:if test="${fn:length(model.links) > 0}">
+			<a href="javascript:toggleLayer('_linkMenu')" style="border: 1px black solid"><spring:message code="Analysis.linkButton"/></a>
+		</c:if>
+
+	</div>
+
 </div>
 
 <script type="text/javascript">

@@ -1,5 +1,6 @@
 package org.openmrs.reporting;
 
+import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -18,6 +19,8 @@ public class ObsPatientFilter extends AbstractPatientFilter implements PatientFi
 	private Object value;
 	private Integer withinLastDays;
 	private Integer withinLastMonths;
+	private Integer untilDaysAgo;
+	private Integer untilMonthsAgo;
 	private Date sinceDate;
 	private Date untilDate;
 
@@ -75,17 +78,34 @@ public class ObsPatientFilter extends AbstractPatientFilter implements PatientFi
 				gc.add(Calendar.MONTH, -withinLastMonths);
 			ret = gc.getTime();
 		}
+		if (sinceDate != null && (ret == null || sinceDate.after(ret)))
+			ret = sinceDate;
+		return ret;
+	}
+	
+	private Date toDateHelper() {
+		Date ret = null;
+		if (untilDaysAgo != null || untilMonthsAgo != null) {
+			Calendar gc = new GregorianCalendar();
+			if (untilDaysAgo != null)
+				gc.add(Calendar.DAY_OF_MONTH, -untilDaysAgo);
+			if (untilMonthsAgo != null)
+				gc.add(Calendar.MONTH, -untilMonthsAgo);
+			ret = gc.getTime();
+		}
+		if (untilDate != null && (ret == null || untilDate.before(ret)))
+			ret = untilDate;
 		return ret;
 	}
 
 	public PatientSet filter(PatientSet input) {
 		PatientSetService service = Context.getPatientSetService();
-		return input.intersect(service.getPatientsHavingObs(question.getConceptId(), timeModifier, modifier, value, fromDateHelper(), null));
+		return input.intersect(service.getPatientsHavingObs(question.getConceptId(), timeModifier, modifier, value, fromDateHelper(), toDateHelper()));
 	}
 
 	public PatientSet filterInverse(PatientSet input) {
 		PatientSetService service = Context.getPatientSetService();
-		return input.subtract(service.getPatientsHavingObs(question.getConceptId(), timeModifier, modifier, value, fromDateHelper(), null));
+		return input.subtract(service.getPatientsHavingObs(question.getConceptId(), timeModifier, modifier, value, fromDateHelper(), toDateHelper()));
 	}
 	
 	public String getDescription() {
@@ -108,6 +128,21 @@ public class ObsPatientFilter extends AbstractPatientFilter implements PatientFi
 			if (withinLastDays != null)
 				ret.append(" " + withinLastDays + " days");
 		}
+		if (untilDaysAgo != null || untilMonthsAgo != null) {
+			ret.append(" until");
+			if (untilMonthsAgo != null)
+				ret.append(" " + untilMonthsAgo + " months");
+			if (untilDaysAgo != null)
+				ret.append(" " + untilDaysAgo + " months");
+			ret.append(" ago");
+		}
+		DateFormat df = null;
+		if (sinceDate != null || untilDate != null)
+			df = DateFormat.getDateInstance(DateFormat.SHORT, Context.getLocale());
+		if (sinceDate != null)
+			ret.append(" since " + df.format(sinceDate));
+		if (untilDate != null)
+			ret.append(" until " + df.format(untilDate));
 		return ret.toString();
 	}
 
@@ -174,6 +209,22 @@ public class ObsPatientFilter extends AbstractPatientFilter implements PatientFi
 
 	public void setWithinLastMonths(Integer withinLastMonths) {
 		this.withinLastMonths = withinLastMonths;
+	}
+
+	public Integer getUntilDaysAgo() {
+		return untilDaysAgo;
+	}
+
+	public void setUntilDaysAgo(Integer untilDaysAgo) {
+		this.untilDaysAgo = untilDaysAgo;
+	}
+
+	public Integer getUntilMonthsAgo() {
+		return untilMonthsAgo;
+	}
+
+	public void setUntilMonthsAgo(Integer untilMonthsAgo) {
+		this.untilMonthsAgo = untilMonthsAgo;
 	}
 	
 }
