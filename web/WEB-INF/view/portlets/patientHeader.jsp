@@ -152,7 +152,7 @@
 					</td>
 				</c:if>
 				<td id="patientDashboardHeaderExtension">
-					<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.Header" type="html" />
+					<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.Header" type="html" parameters="patientId=${model.patient.patientId}" />
 				</td>
 				<td style="width: 100%;">&nbsp;</td>
 				<td id="patientHeaderOtherIdentifiers">

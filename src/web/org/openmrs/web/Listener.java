@@ -365,7 +365,7 @@ public final class Listener extends ContextLoaderListener {
 			// look in current directory last
 			if (propertyStream == null) {
 				filepath = filename;
-				log.warn("Looking for property file in directory: " + filepath);
+				log.warn("Looking for property file in current directory: " + filepath);
 				try {
 					propertyStream = new FileInputStream(filepath);
 				}
@@ -373,14 +373,16 @@ public final class Listener extends ContextLoaderListener {
 			}
 			
 			if (propertyStream == null)
-				throw new IOException("Could not open '" + filename + "' in user or local directory.");
-			
-			props.load(propertyStream);
-			propertyStream.close();
+				log.warn("Could not open '" + filename + "' in user or local directory.");
+			else {
+				props.load(propertyStream);
+				propertyStream.close();
+			}
 
 		} catch (IOException e) {
 			log.warn("Unable to load properties file. Starting with default properties.", e);
 		}
+		
 		return props;
 	}
 

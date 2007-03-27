@@ -280,7 +280,7 @@ table td#patientHeaderPatientGender {
 	width: 25px;
 }
 
-#patientHeaderPatientAge, #patientHeaderPatientTribe, #patientHeaderHealthCenter, #patientHeaderPatientSummary, #patientHeaderOutcome, #patientHeaderShowMoreIdentifiers {
+#patientHeaderPatientAge, #patientHeaderPatientTribe, #patientHeaderHealthCenter, #patientHeaderPatientSummary, #patientHeaderOutcome, #patientHeaderShowMoreIdentifiers, #patientDashboardHeaderExtension {
 	width: 1%;
 	white-space: nowrap;
 	line-height: 25px;

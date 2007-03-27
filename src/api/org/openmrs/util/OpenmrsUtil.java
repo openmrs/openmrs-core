@@ -681,7 +681,7 @@ public class OpenmrsUtil {
 	}
 	
 	/**
-	 * Utility method to convert local URL to a {@link File} object.
+	 * Utility method to convert local URL to a File object.
 	 * @param url an URL
 	 * @return file object for given URL or <code>null</code> if URL is not
 	 *		 local
