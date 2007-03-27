@@ -1767,6 +1767,40 @@ delimiter ;
 call diff_procedure('1.0.54');
 
 
+#--------------------------------------
+# OpenMRS Datamodel version 1.0.55
+# Ben Wolfe            Mar 27 2007
+# Adding indexes to concept, concept_word, location tables
+#--------------------------------------
+
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+	SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+
+#-- START YOUR QUERY(IES) HERE --#
+	
+	CREATE INDEX `name_of_concept` ON concept_name (`name`);
+	CREATE INDEX `short_name_of_concept` ON concept_name (`short_name`);
+	CREATE INDEX `word_in_concept_name` ON concept_word (`word`);
+	CREATE INDEX `name_of_location` ON location (`name`);
+
+#-- END YOUR QUERY(IES) HERE --#
+
+	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+	
+	END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.0.55');
+
+
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script
 #-----------------------------------
