@@ -108,7 +108,10 @@ public class DataExportUtil {
 		File dir = new File(OpenmrsUtil.getApplicationDataDirectory(), "dataExports");
 		dir.mkdirs();
 		
-		File file = new File(dir, dataExport.getName().replace(" ", "_"));
+		String filename = dataExport.getName().replace(" ", "_");
+		filename += "_" + Context.getLocale().toString().toLowerCase();
+		
+		File file = new File(dir, filename);
 		
 		return file;
 	}
