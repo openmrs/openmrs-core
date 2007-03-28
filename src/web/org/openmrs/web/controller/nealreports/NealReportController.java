@@ -43,6 +43,7 @@ import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
 import org.openmrs.reporting.PatientSet;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -136,6 +137,8 @@ public class NealReportController implements Controller {
 		attributeHelper(attributesToGet, attributeNamesForReportMaker, "PatientName.familyName", General.LAST_NAME);
 		attributeHelper(attributesToGet, attributeNamesForReportMaker, "Patient.birthdate", General.BIRTHDAY);
 		attributeHelper(attributesToGet, attributeNamesForReportMaker, "Patient.gender", General.SEX);
+		attributeHelper(attributesToGet, attributeNamesForReportMaker, "Patient.dead", General.HAS_DIED);
+		attributeHelper(attributesToGet, attributeNamesForReportMaker, "Patient.deathDate", General.DEATH_DATE);
 		attributeHelper(attributesToGet, attributeNamesForReportMaker, "Patient.healthCenter", General.SITE);
 		attributeHelper(attributesToGet, attributeNamesForReportMaker, "PatientAddress.stateProvince", General.PROVINCE);
 		attributeHelper(attributesToGet, attributeNamesForReportMaker, "PatientAddress.countyDistrict", General.DISTRICT);
@@ -153,11 +156,12 @@ public class NealReportController implements Controller {
 		// General.PMTCT (get meds for ptme? ask CA)
 		// General.FORMER_GROUP (previous ARV group)
 		
+
 		List<Concept> conceptsToGet = new ArrayList<Concept>();
 		Map<Concept, String> namesForReportMaker = new HashMap<Concept, String>();
 		conceptHelper(cs, conceptsToGet, namesForReportMaker, "ANTIRETROVIRAL TREATMENT GROUP", Hiv.TREATMENT_GROUP);
 		conceptHelper(cs, conceptsToGet, namesForReportMaker, "TUBERCULOSIS TREATMENT GROUP", TB.TB_GROUP);
-		conceptHelper(cs, conceptsToGet, namesForReportMaker, "CURRENT WHO HIV STAGE", Hiv.WHO_STAGE);
+		//conceptHelper(cs, conceptsToGet, namesForReportMaker, "CURRENT WHO HIV STAGE", Hiv.WHO_STAGE);
 		
 		List<Concept> dynamicConceptsToGet = new ArrayList<Concept>();
 		Map<Concept, String> obsTypesForDynamicConcepts = new HashMap<Concept, String>();
@@ -168,6 +172,11 @@ public class NealReportController implements Controller {
 		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "ANTIRETROVIRAL TREATMENT GROUP", Hiv.TREATMENT_GROUP);
 		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "TUBERCULOSIS TREATMENT GROUP", TB.TB_GROUP);
 		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "CURRENT WHO HIV STAGE", Hiv.WHO_STAGE);
+		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "REASON FOR EXITING CARE", General.OUTCOME);
+		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "PATIENT RECEIVED FOOD PACKAGE", General.RECEIVE_FOOD);
+		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "TIME OF DAILY ACCOMPAGNATEUR VISIT", Hiv.TIME_OF_ACCOMP_VISIT);
+		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "TRANSFER IN FROM", General.TRANSFERRED_IN_FROM);
+		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "TRANSFER IN DATE", General.TRANSFERRED_IN_DATE);
 		
 		long l = System.currentTimeMillis();
 
@@ -260,6 +269,17 @@ public class NealReportController implements Controller {
 				for (Map.Entry<Integer, PatientState> e : states.entrySet()) {
 					patientDataHolder.get(e.getKey()).put(Hiv.TREATMENT_STATUS, e.getValue().getState().getConcept().getName(locale, false).getName());
 					log.debug("Just put state [" + e.getValue().getState().getConcept().getName(locale).getName() + "] in for patient [" + e.getKey() + "]");
+					
+					// also want to add dynamically
+					PatientState state = e.getValue();
+					Map<String, String> holder = new HashMap<String, String>();
+					holder.put(General.ID, e.getKey().toString());
+					holder.put(Hiv.OBS_TYPE, Hiv.TREATMENT_STATUS);
+					holder.put(Hiv.OBS_DATE, formatDate(state.getStartDate()));
+					holder.put("stop_date", formatDate(state.getEndDate()));
+					holder.put(Hiv.RESULT, state.getState().getConcept().getName(locale).getName());
+					maker.addDynamic(holder);
+
 				}
 				
 			} else {
@@ -272,8 +292,33 @@ public class NealReportController implements Controller {
 		Program tbProgram = Context.getProgramWorkflowService().getProgram("TUBERCULOSIS PROGRAM");
 		if (tbProgram != null) {
 			Map<Integer, PatientProgram> progs = pss.getCurrentPatientPrograms(ps, tbProgram);
-			for (Integer ptId : progs.keySet()) {
-				patientDataHolder.get(ptId).put(General.TB_ACTIVE_P, "t");
+			for (Map.Entry<Integer, PatientProgram> e : progs.entrySet()) {
+				patientDataHolder.get(e.getKey()).put(General.TB_ACTIVE_P, "t");
+				patientDataHolder.get(e.getKey()).put(TB.TB_ENROLL_DATE, formatDate(e.getValue().getDateEnrolled()));
+			}
+			ProgramWorkflow wf = Context.getProgramWorkflowService().getWorkflow(tbProgram, "TREATMENT STATUS");
+			log.debug("worlflow is " + wf + " and patientSet is " + ps);
+			Map<Integer, PatientState> states = pss.getCurrentStates(ps, wf);
+			if ( states != null ) {
+				log.debug("about to loop through [" + states.size() + "] statuses");
+				for (Map.Entry<Integer, PatientState> e : states.entrySet()) {
+					patientDataHolder.get(e.getKey()).put(TB.TB_TREATMENT_STATUS, e.getValue().getState().getConcept().getName(locale, false).getName());
+					log.debug("Just put state [" + e.getValue().getState().getConcept().getName(locale).getName() + "] in for patient [" + e.getKey() + "]");
+					
+					// also want to add dynamically
+					PatientState state = e.getValue();
+					Map<String, String> holder = new HashMap<String, String>();
+					holder.put(General.ID, e.getKey().toString());
+					holder.put(Hiv.OBS_TYPE, TB.TB_TREATMENT_STATUS);
+					holder.put(Hiv.OBS_DATE, formatDate(state.getStartDate()));
+					holder.put("stop_date", formatDate(state.getEndDate()));
+					holder.put(Hiv.RESULT, state.getState().getConcept().getName(locale).getName());
+					maker.addDynamic(holder);
+
+				}
+				
+			} else {
+				log.debug("states is null, can't proceed");
 			}
 		}
 			
@@ -281,15 +326,72 @@ public class NealReportController implements Controller {
 		l = System.currentTimeMillis();
 		
 		{
+			
 			RelationshipType relType = Context.getPatientService().findRelationshipType("Accompagnateur");
+			// get the accomp leader as well
+			RelationshipType accompLeaderType = Context.getPatientService().findRelationshipType("Accompagnateur Leader");
+			Map<Person, List<Person>> accompRelations = Context.getPatientService().getRelationships(accompLeaderType);
+
 			if (relType != null) {
 				Map<Integer, List<Relationship>> chws = pss.getRelationships(ps, relType);
 				for (Map.Entry<Integer, List<Relationship>> e : chws.entrySet()) {
 					Person chw = e.getValue().get(0).getPerson();
-					User chwUser = chw.getUser();
-					if (chwUser != null) {
-						patientDataHolder.get(e.getKey()).put(Hiv.ACCOMP_FIRST_NAME, chwUser.getFirstName());
-						patientDataHolder.get(e.getKey()).put(Hiv.ACCOMP_LAST_NAME, chwUser.getLastName());
+					if ( chw != null ) {
+						User chwUser = chw.getUser();
+						if (chwUser != null) {
+							
+							patientDataHolder.get(e.getKey()).put(Hiv.ACCOMP_FIRST_NAME, chwUser.getFirstName());
+							patientDataHolder.get(e.getKey()).put(Hiv.ACCOMP_LAST_NAME, chwUser.getLastName());
+						}
+
+						// try to get accomp leader too
+						List<Person> accompLeaderRels = accompRelations.get(chw);
+						if ( accompLeaderRels != null ) {
+							if ( accompLeaderRels.size() > 0 ) {
+								Person leader = accompLeaderRels.get(0);
+								User accompLeader = leader.getUser();
+								if ( accompLeader != null ) {
+									log.debug("Got accomp leader!!");
+									patientDataHolder.get(e.getKey()).put(Hiv.ACCOMP_LEADER_FIRST_NAME, accompLeader.getFirstName());
+									patientDataHolder.get(e.getKey()).put(Hiv.ACCOMP_LEADER_LAST_NAME, accompLeader.getLastName());
+								} else {
+									log.debug("No User for accomp leader available");
+								}
+							} else {
+								log.debug("Relationships is size 0 for this accompagnateur");
+							}
+						} else {
+							log.debug("No accomp leader relationships at all to this accompagnateur, so can't find leader");
+						}
+						
+						/*
+						if ( accompLeaderType != null ) {
+							List<Relationship> accompRelations = Context.getPatientService().getRelationships(chw, accompLeaderType);
+							if ( accompRelations != null ) {
+								if ( accompRelations.size() > 0 ) {
+									Relationship firstAccompLeader = accompRelations.get(0);
+									if ( firstAccompLeader != null ) {
+										User accompLeader = firstAccompLeader.getPerson().getUser();
+										if ( accompLeader != null ) {
+											log.debug("Got accomp leader!!");
+											patientDataHolder.get(e.getKey()).put(Hiv.ACCOMP_LEADER_FIRST_NAME, accompLeader.getFirstName());
+											patientDataHolder.get(e.getKey()).put(Hiv.ACCOMP_LEADER_LAST_NAME, accompLeader.getLastName());
+										} else {
+											log.debug("No User for accomp leader available");
+										}
+									} else {
+										log.debug("No relationship available to find accomp leader from");
+									}
+								} else {
+									log.debug("Relationships is size 0 for this accompagnateur");
+								}
+							} else {
+								log.debug("No relationships at all to this accompagnateur, so can't find leader");
+							}
+						} else {
+							log.debug("There is NO type called accomp leader... aborting.");
+						}
+						*/
 					}
 				}
 			}
@@ -306,6 +408,8 @@ public class NealReportController implements Controller {
 		// "ddd_quotient"  == number of times taken per day (i think) 
 		// "strength_unit" == unit for strength, e.g, "tab"
 		// "strength_dose" == amount given per time
+
+		/*
 		{
 			// ARV REGIMENS
 			Map<Integer, List<DrugOrder>> regimens = pss.getDrugOrders(ps, Context.getConceptService().getConceptByName("ANTIRETROVIRAL DRUGS"));
@@ -341,6 +445,7 @@ public class NealReportController implements Controller {
 					patientDataHolder.get(e.getKey()).put(Hiv.FIRST_ARV_DATE, formatDate(earliestStart));
 			}
 		}
+		*/
 		
 		// --- for every tb drug, addDynamic() a holder with
 		// Hiv.OBS_TYPE == TB.TB_REGIMEN or "atb"
@@ -351,6 +456,8 @@ public class NealReportController implements Controller {
 		// "ddd_quotient"  == number of times taken per day (i think) 
 		// "strength_unit" == unit for strength, e.g, "tab"
 		// "strength_dose" == amount given per time
+
+		/*
 		{
 			// TB REGIMENS
 			Map<Integer, List<DrugOrder>> regimens = pss.getDrugOrders(ps, Context.getConceptService().getConceptByName("TUBERCULOSIS TREATMENT DRUGS"));
@@ -379,6 +486,60 @@ public class NealReportController implements Controller {
 					patientDataHolder.get(e.getKey()).put(TB.FIRST_TB_REGIMEN_DATE, formatDate(earliestStart));
 			}
 		}
+		 */
+		
+		{
+			// ALL REGIMENS
+			Map<Integer, List<DrugOrder>> regimens = pss.getDrugOrders(ps, null);
+			List<Concept> unwantedHiv = Context.getConceptService().getConceptsInSet(Context.getConceptService().getConceptByIdOrName("ANTIRETROVIRAL DRUGS"));
+			List<Concept> unwantedTb = Context.getConceptService().getConceptsInSet(Context.getConceptService().getConceptByIdOrName("TUBERCULOSIS TREATMENT DRUGS"));
+			
+			for (Map.Entry<Integer, List<DrugOrder>> e : regimens.entrySet()) {
+				Date earliestStart = null;
+				for (DrugOrder reg : e.getValue()) {
+					try {
+						if (earliestStart == null || (reg.getStartDate() != null && earliestStart.compareTo(reg.getStartDate()) > 0))
+							earliestStart = reg.getStartDate();
+						Double ddd = reg.getDose() * Integer.parseInt(reg.getFrequency().substring(0, 1));
+						if (!reg.getUnits().equals(reg.getDrug().getUnits()))
+							throw new RuntimeException("Units mismatch: " + reg.getUnits() + " vs " + reg.getDrug().getUnits());
+						ddd /= reg.getDrug().getDoseStrength();
+						Map<String, String> holder = new HashMap<String, String>();
+						holder.put(General.ID, e.getKey().toString());
+
+						if ( OpenmrsUtil.isConceptInList(reg.getDrug().getConcept(), unwantedHiv) ) {
+							holder.put(Hiv.OBS_TYPE, Hiv.ARV);
+						} else if ( OpenmrsUtil.isConceptInList(reg.getDrug().getConcept(), unwantedTb) ) {
+							holder.put(Hiv.OBS_TYPE, TB.TB_REGIMEN);
+						} else {
+							holder.put(Hiv.OBS_TYPE, General.OTHER_REGIMEN);
+						}
+						holder.put(General.DOSE_PER_DAY, ddd.toString());
+						holder.put(Hiv.OBS_DATE, formatDate(reg.getStartDate()));
+						holder.put(Hiv.ARV, reg.getDrug().getName());
+						holder.put("stop_date", formatDate(reg.getDiscontinued() ? reg.getDiscontinuedDate() : reg.getAutoExpireDate()));
+						holder.put("ddd_quotient", reg.getFrequency().substring(0, 1));
+						//holder.put("strength_unit", reg.getUnits());
+						//holder.put("strength_dose", reg.getDose().toString());
+						holder.put("strength_unit", "");
+						holder.put("strength_dose", "");
+						if ( reg.getCreator() != null ) {
+							if ( reg.getCreator().getUsername() != null ) {
+								holder.put(General.CREATOR, reg.getCreator().getUsername());
+							} else {
+								holder.put(General.CREATOR, "Unknown");
+							}
+						} else {
+							holder.put(General.CREATOR, "Unknown");
+						}
+						maker.addDynamic(holder);
+						log.debug("HIV added " + holder);
+					} catch (Exception ex) {
+						log.warn("Exception with a drug order: " + reg, ex);
+					}
+				}
+			}
+		}
 		
 		log.debug("Pulled regimens in " + (System.currentTimeMillis() - l) + " ms");
 		l = System.currentTimeMillis();
@@ -398,6 +559,15 @@ public class NealReportController implements Controller {
 					holder.put(Hiv.RESULT, o.getValueAsString(locale));
 					holder.put(Hiv.OBS_TYPE, typeToUse);
 					holder.put("cdt", formatDate(o.getDateCreated()));
+					if ( o.getCreator() != null ) {
+						if ( o.getCreator().getUsername() != null ) {
+							holder.put(General.CREATOR, o.getCreator().getUsername());
+						} else {
+							holder.put(General.CREATOR, "Unknown");
+						}
+					} else {
+						holder.put(General.CREATOR, "Unknown");
+					}
 					maker.addDynamic(holder);
 				}
 			}
@@ -423,6 +593,20 @@ public class NealReportController implements Controller {
 				holder.put(Hiv.RESULT, e.getValue().getEncounterType().getName());
 			} else {
 				holder.put(Hiv.RESULT, "");
+			}
+			if ( e.getValue().getCreator() != null ) {
+				if ( e.getValue().getCreator().getUsername() != null ) {
+					holder.put(General.CREATOR, e.getValue().getCreator().getUsername());
+				} else {
+					holder.put(General.CREATOR, "Unknown");
+				}
+			} else {
+				holder.put(General.CREATOR, "Unknown");
+			}
+			if ( e.getValue().getObs() != null ) {
+				holder.put(General.SIZE, "" + e.getValue().getObs().size());
+			} else {
+				holder.put(General.SIZE, "0");
 			}
 			maker.addDynamic(holder);
 			log.debug("Encounters added " + holder);

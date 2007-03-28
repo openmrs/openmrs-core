@@ -10,6 +10,7 @@ import java.util.StringTokenizer;
 
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsUtil;
 
 public class PatientSet {
 
@@ -196,7 +197,7 @@ public class PatientSet {
 		List<Patient> ret = Context.getPatientSetService().getPatients(getPatientIds());
 		Collections.sort(ret, new Comparator<Patient>() {
 				public int compare(Patient left, Patient right) {
-					return left.getPatientName().compareTo(right.getPatientName());
+					return OpenmrsUtil.compareWithNullAsGreatest(left.getPatientName(), right.getPatientName());
 				}
 			});
 		return ret;

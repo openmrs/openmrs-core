@@ -197,8 +197,8 @@
 			<td><spring:message code="Program.program"/></td>
 			<td><spring:message code="Program.dateEnrolled"/></td>
 			<td><spring:message code="Program.dateCompleted"/></td>
-			<td>
-				<spring:message code="Program.states"/>
+			<td style="width: 150px;">
+				<spring:message code="Program.workflow"/>
 				<div id="editWorkflowPopup" style="position: absolute; background-color: #e0e0e0; z-index: 5; border: 2px black solid; display: none">
 					<b><u><span id="workflowPopupTitle"></span></u></b>
 					<table id="workflowTable">
@@ -213,6 +213,8 @@
 					<input type="button" value="<spring:message code="general.close"/>" onClick="currentWorkflowBeingEdited = null; hideLayer('editWorkflowPopup')" />
 				</div>		
 			</td>
+			<td style="width: 200px;"><spring:message code="Program.state"/></td>
+			<td style="width: 70px;"><!-- edit column -->&nbsp;</td>
 		</tr>
 		<c:forEach var="program" items="${model.patientPrograms}">
 			<c:if test="${!program.voided}">
@@ -231,18 +233,36 @@
 					<td align="center">
 						<openmrs:formatDate date="${program.dateCompleted}" type="medium" />
 					</td>
-					<td>				
-						<c:forEach var="workflow" items="${program.program.workflows}">
-							<small><openmrs_tag:concept conceptId="${workflow.concept.conceptId}"/>:</small>
-							<c:forEach var="state" items="${program.states}">
-								<c:if test="${!state.voided && state.state.programWorkflow.programWorkflowId == workflow.programWorkflowId && state.active}">
-									<b><openmrs_tag:concept conceptId="${state.state.concept.conceptId}"/></b>
-								</c:if>
+					<td colspan="3">
+						<table width="420">
+							<c:forEach var="workflow" items="${program.program.workflows}">
+								<tr>
+									<td style="width: 150px;"><small><openmrs_tag:concept conceptId="${workflow.concept.conceptId}"/>:</small></td>
+									<td style="width: 200px;">
+										<c:set var="stateId" value="" />
+										<c:set var="stateStart" value="" />
+										<c:forEach var="state" items="${program.states}">
+											<c:if test="${!state.voided && state.state.programWorkflow.programWorkflowId == workflow.programWorkflowId && state.active}">
+												<c:set var="stateId" value="${state.state.concept.conceptId}" />
+												<c:set var="stateStart" value="${state.startDate}" />
+											</c:if>
+										</c:forEach>
+										<c:choose>
+											<c:when test="${not empty stateId}">
+												<b><openmrs_tag:concept conceptId="${stateId}"/></b>
+												<br /><i>(<spring:message code="general.since" /> <openmrs:formatDate date="${stateStart}" type="medium" />)</i>
+											</c:when>
+											<c:otherwise>
+												<i>(<spring:message code="general.none" />)</i>
+											</c:otherwise>
+										</c:choose>
+									</td>
+									<td style="width: 70px;">
+										<a href="javascript:showEditWorkflowPopup('<openmrs:concept conceptId="${workflow.concept.conceptId}" nameVar="n" var="v" numericVar="nv">${n.name}</openmrs:concept>', ${program.patientProgramId}, ${workflow.programWorkflowId})">[<spring:message code="general.edit"/>]</a>
+									</td>
+								</tr>
 							</c:forEach>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<a href="javascript:showEditWorkflowPopup('<openmrs:concept conceptId="${workflow.concept.conceptId}" nameVar="n" var="v" numericVar="nv">${n.name}</openmrs:concept>', ${program.patientProgramId}, ${workflow.programWorkflowId})">[<spring:message code="general.edit"/>]</a>
-							<br/>
-						</c:forEach>
+						</table>
 					</td>
 				</tr>
 			</c:if>

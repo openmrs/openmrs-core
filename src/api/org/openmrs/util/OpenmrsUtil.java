@@ -828,4 +828,19 @@ public class OpenmrsUtil {
 		return ret;
 	}
 
+    public static boolean isConceptInList(Concept concept, List<Concept> list) {
+    	boolean ret = false;
+
+    	if ( concept != null && list != null ) {
+    		for ( Concept c : list ) {
+    			if ( c.equals(concept) ) {
+    				ret = true;
+    				break;
+    			}
+    		}
+    	}
+    	
+    	return ret;
+	}
+
 }

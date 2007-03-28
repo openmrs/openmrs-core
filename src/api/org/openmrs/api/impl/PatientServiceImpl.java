@@ -2,7 +2,9 @@ package org.openmrs.api.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
@@ -1074,4 +1076,26 @@ public class PatientServiceImpl implements PatientService {
 		}
 	}
 	
+	public Map<Person, List<Person>> getRelationships(RelationshipType relType) throws APIException {
+		List<Relationship> all = this.getRelationships();
+		Map<Person, List<Person>> ret = new HashMap<Person, List<Person>>();
+		
+		if ( all !=  null ) {
+			for ( Relationship rel : all ) {
+				if ( relType == null || (relType != null && relType.equals(rel.getRelationship())) ) {
+					Person from = rel.getPerson();
+					Person to = rel.getRelative();
+					
+					List<Person> relList = ret.get(from);
+					if ( relList == null ) relList = new ArrayList<Person>();
+					relList.add(to);
+					
+					ret.put(from, relList);
+				}
+			}
+		}
+		
+		return ret;
+	}
+
 }

@@ -2,6 +2,7 @@ package org.openmrs.api;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.openmrs.Concept;
@@ -351,4 +352,6 @@ public interface PatientService {
 	 */
 	public void saveCauseOfDeathObs(Patient patient, Date dateDied, Concept causeOfDeath, String otherReason)
 			throws APIException;
+
+	public Map<Person, List<Person>> getRelationships(RelationshipType accompLeaderType) throws APIException;
 }
