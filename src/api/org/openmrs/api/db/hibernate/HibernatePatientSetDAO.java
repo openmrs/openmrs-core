@@ -28,6 +28,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.CacheMode;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
@@ -470,6 +471,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		log.debug("sql: " + sql);
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		query.setCacheMode(CacheMode.IGNORE);
+		
 		query.setInteger("programId", programId);
 		if (fromDate != null)
 			query.setDate("fromDate", fromDate);
@@ -510,7 +513,6 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			}
 		}
 
-		Query query;
 		StringBuilder sb = new StringBuilder();
 		boolean useValue = value != null;
 		boolean doSqlAggregation = timeModifier == TimeModifier.MIN || timeModifier == TimeModifier.MAX || timeModifier == TimeModifier.AVG;
@@ -567,7 +569,9 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			sb.append(" group by o.patient_id ");
 		
 		log.debug("query: " + sb);
-		query = sessionFactory.getCurrentSession().createSQLQuery(sb.toString());
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sb.toString());
+		query.setCacheMode(CacheMode.IGNORE);
+		
 		query.setInteger("concept_id", conceptId);
 		if (useValue) {
 			if (numericValue != null)
@@ -608,14 +612,15 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public PatientSet getPatientsHavingDateObs(Integer conceptId, Date startTime, Date endTime) {
-		Query query;
 		StringBuffer sb = new StringBuffer();
 		sb.append("select o.patient_id from obs o " +
 		"where concept_id = :concept_id ");
 		sb.append(" and o.value_datetime between :startValue and :endValue");
 		sb.append(" and o.voided = 0");
 		
-		query = sessionFactory.getCurrentSession().createSQLQuery(sb.toString());
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sb.toString());
+		query.setCacheMode(CacheMode.IGNORE);
+		
 		query.setInteger("concept_id", conceptId);
 		query.setDate("startValue", startTime);
 		query.setDate("endValue", endTime);
@@ -635,7 +640,6 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			// throw new IllegalArgumentException(concept + " is not numeric");
 		}
 		
-		Query query;
 		StringBuffer sb = new StringBuffer();
 		boolean useValue = modifier != null && value != null;
 		boolean doSqlAggregation = timeModifier == TimeModifier.MIN || timeModifier == TimeModifier.MAX || timeModifier == TimeModifier.AVG;
@@ -685,7 +689,9 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			sb.append(" group by o.patient_id ");
 		
 		log.debug("query: " + sb);
-		query = sessionFactory.getCurrentSession().createSQLQuery(sb.toString());
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sb.toString());
+		query.setCacheMode(CacheMode.IGNORE);
+		
 		query.setInteger("concept_id", conceptId);
 		if (useValue) {
 			query.setDouble("value", value.doubleValue());
@@ -711,8 +717,6 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	@SuppressWarnings("unchecked")
 	public PatientSet getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate,
 			Integer minAge, Integer maxAge, Boolean aliveOnly, Boolean deadOnly) throws DAOException {
-		
-		Query query;
 		
 		StringBuffer queryString = new StringBuffer("select patientId from Patient patient");
 		List<String> clauses = new ArrayList<String>();
@@ -760,7 +764,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 				queryString.append(" and ").append(clause);
 			}
 		}
-		query = sessionFactory.getCurrentSession().createQuery(queryString.toString());
+		Query query = sessionFactory.getCurrentSession().createQuery(queryString.toString());
+		query.setCacheMode(CacheMode.IGNORE);
 		if (gender != null) {
 			query.setString("gender", gender);
 		}
@@ -792,6 +797,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		Map<Integer, String> ret = new HashMap<Integer, String>();
 		
 		Query query = sessionFactory.getCurrentSession().createQuery("select patient.patientId, patient.gender, patient.birthdate from Patient patient");
+		query.setCacheMode(CacheMode.IGNORE);
 		
 		List<Object[]> temp = query.list();
 		
@@ -822,6 +828,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		Map<Integer, Map<String, Object>> ret = new HashMap<Integer, Map<String, Object>>();
 		Collection<Integer> ids = patients.getPatientIds();
 		Query query = sessionFactory.getCurrentSession().createQuery("select patient.patientId, patient.gender, patient.birthdate from Patient patient");
+		query.setCacheMode(CacheMode.IGNORE);
+		
 		List<Object[]> temp = query.list();
 
 		long now = System.currentTimeMillis();
@@ -874,6 +882,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		}
 		*/
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Obs.class);
+		criteria.setCacheMode(CacheMode.IGNORE);
+		
 		criteria.add(Restrictions.eq("concept", concept));
 		criteria.add(Restrictions.in("patient.patientId", ids));
 		criteria.add(Restrictions.eq("voided", false));
@@ -904,6 +914,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		Boolean conditional = false; 
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria("org.openmrs.Obs", "obs");
+		criteria.setCacheMode(CacheMode.IGNORE);
+		
 		List<String> columns = new Vector<String>();
 		
 		for (String attribute : attributes) {
@@ -1050,6 +1062,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		
 		// default query
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Encounter.class);
+		criteria.setCacheMode(CacheMode.IGNORE);
+		
 		criteria.add(Restrictions.in("patient.patientId", ids));
 		criteria.add(Restrictions.eq("voided", false));
 		
@@ -1071,13 +1085,15 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret;
 	}
 	
-	public Map<Integer, Object> getEncounterAttrsByType(PatientSet patients, List<EncounterType> encTypes, String attr) {
+	public Map<Integer, Object> getEncounterAttrsByType(PatientSet patients, List<EncounterType> encTypes, String attr, Boolean earliestFirst) {
 		Map<Integer, Object> ret = new HashMap<Integer, Object>();
 		
 		Collection<Integer> ids = patients.getPatientIds();
 		
 		// default query
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Encounter.class);
+		criteria.setCacheMode(CacheMode.IGNORE);
+		
 		criteria.add(Restrictions.in("patient.patientId", ids));
 		criteria.add(Restrictions.eq("voided", false));
 		
@@ -1089,7 +1105,11 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 				Projections.property(attr)));
 		
 		criteria.addOrder(org.hibernate.criterion.Order.desc("patient.patientId"));
-		criteria.addOrder(org.hibernate.criterion.Order.desc("encounterDatetime"));
+		
+		if (earliestFirst)
+			criteria.addOrder(org.hibernate.criterion.Order.asc("encounterDatetime"));
+		else
+			criteria.addOrder(org.hibernate.criterion.Order.desc("encounterDatetime"));
 		
 		List<Object[]> attrs = criteria.list();
 		
@@ -1111,6 +1131,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		
 		// default query
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Encounter.class);
+		criteria.setCacheMode(CacheMode.IGNORE);
+		
 		criteria.add(Restrictions.in("patient.patientId", ids));
 		criteria.add(Restrictions.eq("voided", false));
 		
@@ -1137,6 +1159,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		
 		// default query
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Encounter.class);
+		criteria.setCacheMode(CacheMode.IGNORE);
+		
 		criteria.add(Restrictions.in("patient.patientId", ids));
 		criteria.add(Restrictions.eq("voided", false));
 		
@@ -1170,6 +1194,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		
 		// default query
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(className);
+		criteria.setCacheMode(CacheMode.IGNORE);
 		
 		// make 'patient.**' reference 'patient' like alias instead of object
 		if (className.equals("org.openmrs.Patient"))
@@ -1259,6 +1284,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		sb.append("group by o.patient_id ");
 				
 		query = sessionFactory.getCurrentSession().createSQLQuery(sb.toString());
+		query.setCacheMode(CacheMode.IGNORE);
 		query.setInteger("concept_id", conceptId);
 		if (useVal) {
 			query.setString("value", value);
@@ -1273,11 +1299,11 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	
 	@SuppressWarnings("unchecked")
 	public PatientSet getPatientsHavingLocation(Integer locationId) throws DAOException {
-		Query query;
 		StringBuffer sb = new StringBuffer();
 		sb.append("select patient_id from Patient p " +
 				"where health_center = :location_id ");
-		query = sessionFactory.getCurrentSession().createSQLQuery(sb.toString());
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sb.toString());
+		query.setCacheMode(CacheMode.IGNORE);
 		query.setInteger("location_id", locationId);
 
 		PatientSet ret = new PatientSet();
@@ -1289,11 +1315,11 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 
 	public PatientSet convertPatientIdentifier(List<String> identifiers) throws DAOException {
 		
-		Query query;
 		StringBuffer sb = new StringBuffer();
 		sb.append("select distinct(patient_id) from patient_identifier p " +
 				"where identifier in (:identifiers) ");
-		query = sessionFactory.getCurrentSession().createSQLQuery(sb.toString());
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sb.toString());
+		query.setCacheMode(CacheMode.IGNORE);
 		query.setParameterList("identifiers", identifiers, new StringType());
 		PatientSet ret = new PatientSet();
 		List<Integer> patientIds = query.list();
@@ -1308,6 +1334,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		
 		if (!patientIds.isEmpty()) {
 			Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
+			criteria.setCacheMode(CacheMode.IGNORE);
 			criteria.add(Restrictions.in("patientId", patientIds));
 			criteria.add(Restrictions.eq("voided", false));
 			log.debug("criteria: " + criteria);
@@ -1344,6 +1371,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 				"  and (o.discontinued_date is null or o.discontinued_date > :onDate) ";
 		log.debug("onDate=" + onDate + " sql= " + sql);
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		query.setCacheMode(CacheMode.IGNORE);
 		query.setDate("onDate", onDate);
 		List<Object[]> results = (List<Object[]>) query.list();
 		for (Object[] row : results) {
@@ -1371,6 +1399,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		Date now = new Date();
 			
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PatientState.class);
+		criteria.setCacheMode(CacheMode.IGNORE);
 		//criteria.add(Restrictions.in("patientProgram.patient.patientId", ids));
 		criteria.createCriteria("patientProgram").add(Restrictions.in("patient.patientId", ids));
 		//criteria.add(Restrictions.eq("state.programWorkflow", wf));
@@ -1405,6 +1434,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		Date now = new Date();
 			
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PatientProgram.class);
+		criteria.setCacheMode(CacheMode.IGNORE);
 		criteria.add(Restrictions.in("patient.patientId", ids));
 		criteria.add(Restrictions.eq("program", program));
 		if (!includeVoided)
@@ -1432,6 +1462,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		Date now = new Date();
 
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(DrugOrder.class);
+		criteria.setCacheMode(CacheMode.IGNORE);
 		//criteria.add(Restrictions.in("encounter.patient.patientId", ids));
 		criteria.createCriteria("encounter").add(Restrictions.in("patient.patientId", ids));
 		if (drugConcepts != null)
@@ -1467,6 +1498,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		Date now = new Date();
 
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(DrugOrder.class);
+		criteria.setCacheMode(CacheMode.IGNORE);
 		//criteria.add(Restrictions.in("encounter.patient.patientId", ids));
 		criteria.createCriteria("encounter").add(Restrictions.in("patient.patientId", ids));
 		if (drugConcepts != null)
@@ -1496,6 +1528,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			return ret;
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Relationship.class);
+		criteria.setCacheMode(CacheMode.IGNORE);
 		if (relType != null)
 			criteria.add(Restrictions.eq("relationship", relType));
 		//criteria.add(Restrictions.in("relative.patient.patientId", ids));

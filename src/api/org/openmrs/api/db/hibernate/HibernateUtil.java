@@ -5,6 +5,6 @@ import org.apache.commons.logging.LogFactory;
 
 public class HibernateUtil {
 
-	private static Log log = LogFactory.getLog("org.openmrs.api.db.hibernate.HibernateUtil");
+	private static Log log = LogFactory.getLog(HibernateUtil.class);
 	
 }

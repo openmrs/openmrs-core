@@ -41,6 +41,7 @@ public class DataExportFunctions {
 	protected Integer patientId;
 	protected Patient patient;
 	protected PatientSet patientSet;
+	private Integer patientCounter = 0; // used for garbage collection (Clean up every x patients)
 	
 	protected String separator = "	";
 	protected DateFormat dateFormatLong = null; 
@@ -54,7 +55,7 @@ public class DataExportFunctions {
 	protected Map<String, Map<Integer, ?>> patientEncounterMap = new HashMap<String, Map<Integer, ?>>();
 	
 	// Map<EncounterType, Map<patientId, Encounter>>
-	protected Map<String, Map<Integer, Encounter>> patientFirstEncounterMap = new HashMap<String, Map<Integer, Encounter>>();
+	protected Map<String, Map<Integer, ?>> patientFirstEncounterMap = new HashMap<String, Map<Integer, ?>>();
 	
 	protected Map<String, Concept> conceptNameMap = new HashMap<String, Concept>();
 	
@@ -110,9 +111,53 @@ public class DataExportFunctions {
 		dateFormatShort = new SimpleDateFormat(format, locale);
 		dateFormatYmd = new SimpleDateFormat("yyyy-MM-dd", locale);
 	}
-
 	
-	// getters and setters
+	public void clear() {
+		for (Map map : patientEncounterMap.values())
+			map.clear();
+		patientEncounterMap.clear();
+		patientEncounterMap = null;
+		for (Map map : patientFirstEncounterMap.values())
+			map.clear();
+		patientFirstEncounterMap.clear();
+		patientFirstEncounterMap = null;
+		conceptNameMap.clear();
+		for (Map map : conceptAttrObsMap.values())
+			map.clear();
+		conceptAttrObsMap.clear();
+		for (Map map : relationshipMap.values())
+			map.clear();
+		relationshipMap.clear();
+		for (Map map : programMap.values())
+			map.clear();
+		programMap.clear();
+		for (Map map : drugOrderMap.values())
+			map.clear();
+		drugOrderMap.clear();
+		for (Map map : currentDrugOrderMap.values())
+			map.clear();
+		currentDrugOrderMap.clear();
+		currentDrugOrderMap = null;
+		for (Map map : patientAttributeMap.values())
+			map.clear();
+		patientAttributeMap.clear();
+		patientAttributeMap = null;
+		
+		patientSetService = null;
+		patientService = null;
+		conceptService = null;
+		encounterService = null;
+	}
+	
+	/**
+	 * Called when garbage collecting this class
+	 * @see java.lang.Object#finalize()
+	 */
+	@Override
+	protected void finalize() throws Throwable {
+		log.error("GC is collecting the data export functions..." + this);
+		super.finalize();
+	}
 
 	/**
 	 * @return Returns the patient.
@@ -140,16 +185,30 @@ public class DataExportFunctions {
 		if (this.patientId != null) {
 			for (Map<Integer, ?> map : patientEncounterMap.values())
 				map.remove(this.patientId);
-			for (Map<Integer, Encounter> map : patientFirstEncounterMap.values())
+			for (Map<Integer, ?> map : patientFirstEncounterMap.values())
 				map.remove(this.patientId);
 			for (Map<Integer, Object> map : patientAttributeMap.values())
 				map.remove(this.patientId);
 		}
 		
+		// reclaim some memory
+		garbageCollect();
+		
 		setPatient(null);
 		this.patientId = patientId;
 	}
 	
+	/**
+	 * Call the system garbage collecter.  This method only calls 
+	 * every 500 patients
+	 */
+	protected void garbageCollect() {
+		if (patientCounter++ % 500 == 0) {
+			System.gc();
+			System.gc();
+		}
+	}
+
 	/**
 	 * @return Returns the patientSet.
 	 */
@@ -247,7 +306,7 @@ public class DataExportFunctions {
 	 */
 	public Encounter getFirstEncounter(String encounterType) {
 		if (patientFirstEncounterMap.containsKey(encounterType))
-			return patientFirstEncounterMap.get(encounterType).get(getPatientId());
+			return (Encounter)patientFirstEncounterMap.get(encounterType).get(getPatientId());
 		
 		log.debug("getting first encounters for type: " + encounterType);
 		
@@ -260,6 +319,48 @@ public class DataExportFunctions {
 		patientFirstEncounterMap.put(encounterType, encounterMap);
 		
 		return encounterMap.get(getPatientId());
+	}
+	
+	/**
+	 * 
+	 * @param typeArray
+	 * @param attr
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public Object getFirstEncounterAttr(Object typeArray, String attr) {
+		
+		List<String> types = (List<String>)typeArray;
+		String key = OpenmrsUtil.join(types, ",") + "|" + attr;
+		
+		if (patientFirstEncounterMap.containsKey(key))
+			return patientFirstEncounterMap.get(key).get(getPatientId());
+		
+		log.debug("getting first encounters for type: " + key);
+		
+		List<EncounterType> encounterTypes = new Vector<EncounterType>();
+		
+		// find the EncounterType objects for each type passed in
+		for (String typeName : types) {
+			EncounterType type = null;
+			try {
+				type = encounterService.getEncounterType(Integer.valueOf(typeName));
+			}
+			catch (Exception e) { /* pass */ };
+			
+			if (type == null)
+				type = encounterService.getEncounterType(typeName);
+			
+			if (type != null)
+				encounterTypes.add(type);
+		}
+		
+		Map<Integer, Object> encounterMap = patientSetService.getFirstEncounterAttrsByType(getPatientSet(), encounterTypes, attr);
+		
+		patientFirstEncounterMap.put(key, encounterMap);
+		
+		return encounterMap.get(getPatientId());
+		
 	}
 	
 	

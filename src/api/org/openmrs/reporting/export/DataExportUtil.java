@@ -8,7 +8,7 @@ import java.util.Locale;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
+import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.app.event.EventCartridge;
 import org.apache.velocity.app.event.MethodExceptionEventHandler;
 import org.openmrs.api.context.Context;
@@ -17,13 +17,13 @@ import org.openmrs.util.OpenmrsUtil;
 
 public class DataExportUtil {
 	
-	private static Log log = LogFactory.getLog(DataExportUtil.class);
-	
 	/**
 	 * 
 	 * @param exports
 	 */
 	public static void generateExports(List<DataExportReportObject> exports) {
+		
+		Log log = LogFactory.getLog(DataExportUtil.class);
 		
 		for (DataExportReportObject dataExport : exports) {
 			try {
@@ -44,8 +44,13 @@ public class DataExportUtil {
 	 */
 	public static void generateExport(DataExportReportObject dataExport, PatientSet patientSet) throws Exception {
 		
+		// defining log file here to attempt to reduce memory consumption
+		Log log = LogFactory.getLog(DataExportUtil.class);
+		
+		VelocityEngine velocityEngine = new VelocityEngine();
+		
 		try {
-			Velocity.init();
+			velocityEngine.init();
 		} catch (Exception e) {
 			log.error("Error initializing Velocity engine", e);
 		}
@@ -80,7 +85,7 @@ public class DataExportUtil {
 			log.debug("Template: " + template.substring(0, template.length() < 3500 ? template.length() : 3500) + "...");
 		
 		try {
-			Velocity.evaluate(velocityContext, report, DataExportUtil.class.getName(), template);
+			velocityEngine.evaluate(velocityContext, report, DataExportUtil.class.getName(), template);
 		}
 		catch (Exception e) {
 			log.error("Error evaluating data export " + dataExport.getReportObjectId(), e);
@@ -90,10 +95,27 @@ public class DataExportUtil {
 		}
 		finally {
 			report.close();
-			patientSet = null;
-			functions = null;
+			velocityContext.remove("fn");
+			velocityContext.remove("patientSet");
 			velocityContext = null;
+			
+			// reset the ParserPool to something else now?
+			// using this to get to RuntimeInstance.init();
+			velocityEngine.init();
+			
+			velocityEngine = null;
+			
+			patientSet = null;
+			functions.clear();
+			functions = null;
+			template = null;
+			dataExport = null;
+			log.error("Clearing hibernate session");
 			Context.clearSession();
+			
+			// clear out the excess objects
+			System.gc();
+			System.gc();
 		}
 		
 	}

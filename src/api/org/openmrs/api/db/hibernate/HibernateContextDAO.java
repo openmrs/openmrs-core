@@ -64,7 +64,7 @@ public class HibernateContextDAO implements ContextDAO {
 
 		User user = null;
 		String errorMsg = "Invalid username and/or password: " + login;
-
+		
 		Session session = sessionFactory.getCurrentSession();
 
 		String loginWithoutDash = login;
@@ -152,11 +152,9 @@ public class HibernateContextDAO implements ContextDAO {
 	 * @see org.openmrs.api.context.Context#closeSession()
 	 */
 	public void closeSession() {
-		if (log.isDebugEnabled())
-			log.debug("HibernateContext: closing Hibernate Session");
+		log.debug("HibernateContext: closing Hibernate Session");
 		if (!participate) {
-			if (log.isDebugEnabled())
-				log.debug("Unbinding session from synchronization mangaer ("
+			log.debug("Unbinding session from synchronization mangaer ("
 						+ sessionFactory.hashCode() + ")");
 			Object value = TransactionSynchronizationManager.unbindResource(sessionFactory);
 			try {
@@ -165,13 +163,10 @@ public class HibernateContextDAO implements ContextDAO {
 					SessionFactoryUtils.releaseSession(session, sessionFactory);
 				}
 			} catch (RuntimeException e) {
-				log.error("Unexpected exception on closing Hibernate Session",
-						e);
+				log.error("Unexpected exception on closing Hibernate Session", e);
 			}
 		} else {
-			if (log.isDebugEnabled())
-				log
-						.debug("Participating in existing session, so not releasing session through synchronization manager");
+			log.debug("Participating in existing session, so not releasing session through synchronization manager");
 		}
 	}
 
@@ -197,7 +192,7 @@ public class HibernateContextDAO implements ContextDAO {
 			showUsageStatistics();
 
 		if (sessionFactory != null) {
-
+			
 			// session is closed by spring on session end
 
 			log.debug("Closing any open sessions");
@@ -328,7 +323,6 @@ public class HibernateContextDAO implements ContextDAO {
 
 
 	public void closeDatabaseConnection() {
-		//sessionFactory.getCurrentSession().close();
 		sessionFactory.close();
 	}
 	

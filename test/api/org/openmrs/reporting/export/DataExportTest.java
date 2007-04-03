@@ -41,7 +41,7 @@ public class DataExportTest extends BaseTest {
 		velocityContext.put("locale", locale);
 		
 		// Set up functions used in the report ( $!{fn:...} )
-		DataExportUtility functions = new DataExportUtility();
+		DataExportFunctions functions = new DataExportFunctions();
 		velocityContext.put("fn", functions);
 		
 		report.append("Report: " + dataExport.getName() + "\n\n");

@@ -51,7 +51,7 @@ public interface PatientSetDAO {
 	
 	public Map<Integer, Encounter> getEncountersByType(PatientSet patients, List<EncounterType> encType);
 	
-	public Map<Integer, Object> getEncounterAttrsByType(PatientSet patients, List<EncounterType> encTypes, String attr);
+	public Map<Integer, Object> getEncounterAttrsByType(PatientSet patients, List<EncounterType> encTypes, String attr, Boolean earliestFirst);
 		
 	public Map<Integer, Encounter> getEncounters(PatientSet patients);
 	

@@ -11,10 +11,6 @@ import org.openmrs.PatientProgram;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
-import org.openmrs.api.APIAuthenticationException;
-import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsConstants;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Program- and Workflow-related database functions
