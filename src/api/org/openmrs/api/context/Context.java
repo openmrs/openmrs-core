@@ -71,7 +71,8 @@ public class Context implements ApplicationContextAware {
 	private static ApplicationContext applicationContext;
 	private static Session mailSession;
 	
-	private static final ThreadLocal<UserContext> userContextHolder = new ThreadLocal<UserContext>();
+	// Using "wrapper" (Object array) around UserContext to avoid ThreadLocal bug in Java 1.5
+	private static final ThreadLocal<Object[] /*UserContext */> userContextHolder = new ThreadLocal<Object[] /*UserContext*/>();
 	private static ServiceContext serviceContext;
 	private static Properties runtimeProperties = new Properties();
 	
@@ -129,8 +130,9 @@ public class Context implements ApplicationContextAware {
 	 */
 	public static void setUserContext(UserContext ctx) { 
 		log.info("Setting user context " + ctx);
+		Object[] arr = new Object[] {ctx};
 		ctx.setContextDAO(getContextDAO());
-		userContextHolder.set(ctx);
+		userContextHolder.set(arr);
 	}
 	
 	/**
@@ -138,7 +140,7 @@ public class Context implements ApplicationContextAware {
 	 */
 	public static void clearUserContext() {
 		log.info("Clearing user context " + userContextHolder.get());
-		userContextHolder.set(null);
+		//userContextHolder.set(null);
 		userContextHolder.remove();
 	}
 	
@@ -148,13 +150,17 @@ public class Context implements ApplicationContextAware {
 	 * 
 	 * @return
 	 */
-	public static UserContext getUserContext() { 	
-		log.info("Getting user context " + userContextHolder.get() + " from userContextHolder " + userContextHolder);
-		if (userContextHolder.get() == null) {
+	public static UserContext getUserContext() {
+		Object[] arr = userContextHolder.get();
+		
+		if (log.isInfoEnabled())
+			log.info("Getting user context " + arr + " from userContextHolder " + userContextHolder);
+		
+		if (arr == null) {
 			log.debug("userContext is null. Creating new userContext");
             setUserContext(new UserContext());
         }
-		return userContextHolder.get();
+		return (UserContext)userContextHolder.get()[0];
 	}
 	
 	/**
