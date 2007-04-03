@@ -160,7 +160,8 @@ public class PatientSet {
 	public static PatientSet parseCommaSeparatedPatientIds(String s) {
 		PatientSet ret = new PatientSet();
 		for (StringTokenizer st = new StringTokenizer(s, ","); st.hasMoreTokens(); ) {
-			ret.add(new Integer(st.nextToken()));
+			String id = st.nextToken();
+			ret.add(new Integer(id.trim()));
 		}
 		return ret;
 	}

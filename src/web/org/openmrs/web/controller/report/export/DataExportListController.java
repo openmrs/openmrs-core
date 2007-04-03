@@ -104,7 +104,7 @@ public class DataExportListController extends SimpleFormController {
 					}
 				}
 			}
-			else if (msa.getMessage("DataExport.generate").equals(action)) {
+			else if (msa.getMessage("DataExport.delete").equals(action)) {
 				
 				if ( reportList != null ) {
 					for (String p : reportList) {
