@@ -5,7 +5,7 @@
 
 <hibernate-mapping package="org.openmrs">
 
-	<class name="Concept" table="concept">
+	<class name="Concept" table="concept" batch-size="25">
 		
 		<!--  cache usage="read-write"/ -->
 		

@@ -5,7 +5,7 @@
 
 <hibernate-mapping package="org.openmrs">
 
-	<class name="Obs" table="obs">
+	<class name="Obs" table="obs" batch-size="25">
 
 		<id name="obsId" type="int" column="obs_id">
 			<generator class="native" />
@@ -52,7 +52,7 @@
 		<!-- Associations -->
 
 		<!-- bi-directional many-to-one association to Patient -->
-		<many-to-one name="patient" class="Patient" not-null="true">
+		<many-to-one name="patient" class="Patient" not-null="true" >
 			<column name="patient_id" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to Concept -->

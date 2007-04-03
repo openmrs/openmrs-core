@@ -40,9 +40,9 @@
 		is 120 seconds.
 	-->
 
-	<defaultCache maxElementsInMemory="10000" eternal="false"
-		timeToIdleSeconds="120" timeToLiveSeconds="120" overflowToDisk="true"
-		diskPersistent="false" diskExpiryThreadIntervalSeconds="120" />
+	<defaultCache maxElementsInMemory="1000" eternal="false"
+		timeToIdleSeconds="30" timeToLiveSeconds="30" overflowToDisk="false"
+		diskPersistent="false" diskExpiryThreadIntervalSeconds="45" />
 
 	<!--Predefined caches.  Add your cache configuration settings here.
 		If you do not have a configuration for your cache a WARNING will be issued when the

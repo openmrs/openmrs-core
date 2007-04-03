@@ -5,7 +5,7 @@
 
 <hibernate-mapping package="org.openmrs">
 
-	<class name="Patient" table="patient">
+	<class name="Patient" table="patient" batch-size="25">
 
 		<id name="patientId" type="int" column="patient_id"
 			unsaved-value="0">
