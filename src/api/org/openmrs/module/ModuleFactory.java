@@ -7,6 +7,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -38,7 +39,7 @@ public class ModuleFactory {
 	private static Map<String, Module> loadedModules = new WeakHashMap<String, Module>();
 	private static Map<String, Module> startedModules = new WeakHashMap<String, Module>();
 	
-	private static Map<String, List<Extension>> extensionMap = new WeakHashMap<String, List<Extension>>();
+	private static Map<String, List<Extension>> extensionMap = new HashMap<String, List<Extension>>();
 	
 	// maps to keep track of the memory and objects to free/close
 	private static Map<Module, ModuleClassLoader> moduleClassLoaders = new WeakHashMap<Module, ModuleClassLoader>();
