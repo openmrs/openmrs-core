@@ -7,7 +7,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -36,10 +35,10 @@ public class ModuleFactory {
 	
 	private static Log log = LogFactory.getLog(ModuleFactory.class);
 	
-	private static Map<String, Module> loadedModules = new HashMap<String, Module>();
-	private static Map<String, Module> startedModules = new HashMap<String, Module>();
+	private static Map<String, Module> loadedModules = new WeakHashMap<String, Module>();
+	private static Map<String, Module> startedModules = new WeakHashMap<String, Module>();
 	
-	private static Map<String, List<Extension>> extensionMap = new HashMap<String, List<Extension>>();
+	private static Map<String, List<Extension>> extensionMap = new WeakHashMap<String, List<Extension>>();
 	
 	// maps to keep track of the memory and objects to free/close
 	private static Map<Module, ModuleClassLoader> moduleClassLoaders = new WeakHashMap<Module, ModuleClassLoader>();
@@ -183,7 +182,7 @@ public class ModuleFactory {
 	 */
 	public static synchronized Map<String, Module> getLoadedModulesMap() {
 		if (loadedModules == null)
-			loadedModules = new HashMap<String, Module>();
+			loadedModules = new WeakHashMap<String, Module>();
 		
 		return loadedModules;
 	}
@@ -208,7 +207,7 @@ public class ModuleFactory {
 	 */
 	public static synchronized Map<String, Module> getStartedModulesMap() {
 		if (startedModules == null)
-			startedModules = new HashMap<String, Module>();
+			startedModules = new WeakHashMap<String, Module>();
 		
 		return startedModules;
 	}
@@ -731,7 +730,7 @@ public class ModuleFactory {
 	 */
 	public static synchronized Map<Module, ModuleClassLoader> getModuleClassLoaderMap() {
 		if (moduleClassLoaders == null)
-			moduleClassLoaders = new HashMap<Module, ModuleClassLoader>();
+			moduleClassLoaders = new WeakHashMap<Module, ModuleClassLoader>();
 
 		return moduleClassLoaders;
 	}
@@ -743,7 +742,7 @@ public class ModuleFactory {
 	 */
 	public static synchronized Map<String, List<Extension>> getExtensionMap() {
 		if (extensionMap == null)
-			extensionMap = new HashMap<String, List<Extension>>();
+			extensionMap = new WeakHashMap<String, List<Extension>>();
 		
 		return extensionMap;
 	}

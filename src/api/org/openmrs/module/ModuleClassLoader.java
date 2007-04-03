@@ -19,13 +19,13 @@ import java.security.ProtectionDomain;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -64,7 +64,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		collectImports();
 		//resourceLoader = ModuleResourceLoader.get(module);
 		collectFilters();
-		libraryCache = new HashMap<URL, File>();
+		libraryCache = new WeakHashMap<URL, File>();
 	}
 
 	/**
@@ -221,8 +221,8 @@ public class ModuleClassLoader extends URLClassLoader {
 
 	protected void collectImports() {
 		// collect imported modules (exclude duplicates)
-		Map<String, Module> publicImportsMap = new HashMap<String, Module>(); //<module ID, Module>
-		Map<String, Module> privateImportsMap = new HashMap<String, Module>(); //<module ID, Module>
+		Map<String, Module> publicImportsMap = new WeakHashMap<String, Module>(); //<module ID, Module>
+		Map<String, Module> privateImportsMap = new WeakHashMap<String, Module>(); //<module ID, Module>
 		for (String requiredId : getModule().getRequiredModules()) {
 			Module requiredModule = ModuleFactory.getModuleById(requiredId);
 			if (ModuleFactory.isModuleStarted(requiredModule)) {
@@ -237,7 +237,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			(Module[]) privateImportsMap.values().toArray(
 				new Module[privateImportsMap.size()]);
 		// collect reverse look up modules (exclude duplicates)
-		Map<String, Module> reverseLookupsMap = new HashMap<String, Module>();
+		Map<String, Module> reverseLookupsMap = new WeakHashMap<String, Module>();
 		for (Module module : ModuleFactory.getLoadedModules()) {
 			if (module.equals(getModule())
 					|| publicImportsMap.containsKey(module.getModuleId())
@@ -260,7 +260,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	
 	protected void collectFilters() {
 //		if (resourceFilters == null) {
-//			resourceFilters = new HashMap<URL, ResourceFilter>();
+//			resourceFilters = new WeakHashMap<URL, ResourceFilter>();
 //		} else {
 //			resourceFilters.clear();
 //		}

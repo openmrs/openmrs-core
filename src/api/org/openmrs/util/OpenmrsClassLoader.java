@@ -7,10 +7,10 @@ import java.net.URLClassLoader;
 import java.net.URLConnection;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,7 +31,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	private static OpenmrsClassLoader instance = null;
 	
 	// placeholder to hold mementos to restore
-	private static Map<String, OpenmrsMemento> mementos = new HashMap<String, OpenmrsMemento>();
+	private static Map<String, OpenmrsMemento> mementos = new WeakHashMap<String, OpenmrsMemento>();
 	
 	/**
 	 * Creates the instance for the OpenmrsClassLoader
