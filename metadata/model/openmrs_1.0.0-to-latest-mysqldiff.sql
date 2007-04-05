@@ -603,7 +603,6 @@ DROP PROCEDURE IF EXISTS diff_procedure;
 
 delimiter //
 
-DROP PROCEDURE IF EXISTS diff_procedure;
 CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
  BEGIN
 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
