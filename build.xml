@@ -475,7 +475,7 @@
 	<target name="tomcat-start" description="Start Tomcat">
 		<echo message="Starting Tomcat denoted by the tomcat.home property" />
 		<java jar="${tomcat.home}/bin/bootstrap.jar" fork="true">
-			<jvmarg line='-Dcatalina.home="${tomcat.home}" -Xmx512M -Xms128M -XX:PermSize=64M -XX:MaxPermSize=128m -XX:NewSize=64m -Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5000 -agentlib:yjpagent'/>
+			<jvmarg line='-Dcatalina.home="${tomcat.home}" -Xmx512M -Xms128M -XX:PermSize=64M -XX:MaxPermSize=128m -XX:NewSize=64m -Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5000'/>
 		</java>
      </target>
 
