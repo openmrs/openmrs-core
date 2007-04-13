@@ -33,7 +33,8 @@ public class ConceptTag extends BodyTagSupport {
 		// Search for a concept by id
 		c = cs.getConcept(conceptId);
 		if (c == null) {
-			throw new JspException("ConceptTag is unable to find a concept with conceptId '" + conceptId + "'");
+			log.warn("ConceptTag is unable to find a concept with conceptId '" + conceptId + "'");
+			return SKIP_BODY;
 		}
 		pageContext.setAttribute(var, c);
 		log.debug("Found concept with id " + conceptId + ", set to variable: " + var);
