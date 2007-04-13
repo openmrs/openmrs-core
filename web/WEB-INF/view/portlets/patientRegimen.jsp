@@ -7,7 +7,7 @@
 		<div class="boxHeader${model.patientVariation}"><spring:message code="DrugOrder.regimens.current" /></div>
 		<div class="box${model.patientVariation}">
 
-			<openmrs:portlet url="patientRegimenCurrent" id="patientRegimenCurrent" patientId="${patient.patientId}" parameters="displayDrugSetIds=ANTIRETROVIRAL DRUGS,TUBERCULOSIS TREATMENT DRUGS,*|displayFutureRegimens=true" />
+			<openmrs:portlet url="patientRegimenCurrent" id="patientRegimenCurrent" patientId="${patient.patientId}" parameters="displayDrugSetIds=${model.displayDrugSetIds},*|displayFutureRegimens=true" />
 			
 			<span><a href="javascript:showHideDiv('regimenPortletAddForm');">(+) <spring:message code="DrugOrder.regimens.addOrChange" /></a></span>
 			<div id="regimenPortletAddForm" style="display:none">
@@ -117,7 +117,7 @@
 		<div class="boxHeader${model.patientVariation}"><spring:message code="DrugOrder.regimens.completed" /></div>
 		<div class="box${model.patientVariation}">
 
-			<openmrs:portlet url="patientRegimenCompleted" id="patientRegimenCompleted" patientId="${patient.patientId}" parameters="displayDrugSetIds=ANTIRETROVIRAL DRUGS,TUBERCULOSIS TREATMENT DRUGS,*" />
+			<openmrs:portlet url="patientRegimenCompleted" id="patientRegimenCompleted" patientId="${patient.patientId}" parameters="displayDrugSetIds=${model.displayDrugSetIds},*" />
 		
 		</div>
 	</div>
