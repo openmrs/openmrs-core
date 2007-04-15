@@ -82,23 +82,35 @@ public class OrderServiceImpl implements OrderService {
 		getOrderDAO().updateOrder(order);
 	}
 
+	public void updateOrder(Order order, Patient patient) throws APIException {
+		updateOrder(order, patient, null);
+	}
+	
 	/**
 	 * Update Order
 	 * @param Order to update
 	 * @param Patient for whom this order is for
 	 * @throws APIException
 	 */
-	public void updateOrder(Order order, Patient patient) throws APIException {
+	public void updateOrder(Order order, Patient patient, Encounter encounter) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ORDERS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ORDERS);
 
 		// If this order has no encounter, attempt to create a blank one for the patient (if it exists)
-		if ( patient != null && order != null ) { 
+		if ( patient != null && order != null ) {
+			if ( encounter != null ) {
+				order.setEncounter(encounter);
+			}
+			/*
 			if ( order.getEncounter() == null ) {
+				log.debug("Creating new encounter to go with new order");
 				Encounter e = new Encounter();
 				Location unknownLoc = new Location(new Integer(Location.LOCATION_UNKNOWN));
 				e.setLocation(unknownLoc);
 				e.setPatient(patient);
+				if ( encType != null ) {
+					e.setEncounterType(encType);
+				}
 				// TODO: this should one day not be required, and thus not require this hack
 				if ( order.getOrderer() == null ) {
 					User unknownUser = Context.getUserService().getUserByUsername("Unknown");
@@ -112,7 +124,10 @@ public class OrderServiceImpl implements OrderService {
 				e.setVoided(new Boolean(false));
 				Context.getEncounterService().updateEncounter(e);
 				order.setEncounter(e);
+			} else {
+				log.debug("New order already has encounter, not adding new one.");
 			}
+			*/
 		}
 		
 		updateOrder(order);

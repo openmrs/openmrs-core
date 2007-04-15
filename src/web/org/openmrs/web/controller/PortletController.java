@@ -152,7 +152,11 @@ public class PortletController implements Controller {
 									patientVariation = "Exited";
 								}
 							} else {
-								log.error("Too many reasons for exit - not putting data into model");
+								if ( patientExitObs.size() == 0 ) {
+									log.debug("Patient has no reason for exit");
+								} else {
+									log.error("Too many reasons for exit - not putting data into model");
+								}
 							}
 						}
 					}

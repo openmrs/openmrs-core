@@ -330,6 +330,11 @@ tr td#patientHeaderObsReturnVisit {
 	color: #ffffff;
 }
 
+#patientHeaderCauseOfDeath a, #patientHeaderCauseOfDeath a:link, #patientHeaderCauseOfDeath a:active, #patientHeaderCauseOfDeath a:visited, #patientHeaderCauseOfDeath a:hover {
+	color: #003366;	
+}
+
+
 #patientHeaderRegimen {
 	font-weight: bold;
 	color: navy;

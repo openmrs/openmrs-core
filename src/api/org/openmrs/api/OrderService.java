@@ -7,6 +7,8 @@ import java.util.Map;
 
 import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
+import org.openmrs.Encounter;
+import org.openmrs.EncounterType;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
@@ -49,6 +51,15 @@ public interface OrderService {
 	 * @throws APIException
 	 */
 	public void updateOrder(Order order, Patient patient) throws APIException;
+	
+	/**
+	 * Update Order
+	 * @param Order to update
+	 * @param Patient for whom this order is for
+	 * @param Encounter type to use for this order
+	 * @throws APIException
+	 */
+	public void updateOrder(Order order, Patient patient, Encounter encounter) throws APIException;
 
 	/**
 	 * Delete Order

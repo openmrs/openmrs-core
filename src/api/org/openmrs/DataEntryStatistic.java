@@ -1,5 +1,6 @@
 package org.openmrs;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -8,14 +9,19 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.reporting.DataTable;
 import org.openmrs.reporting.TableRow;
 
 public class DataEntryStatistic {
 
+	protected final Log log = LogFactory.getLog(getClass());
+
 	private User user;
 	private String entryType;
 	private Integer numberOfEntries;
+	private Integer numberOfObs;
 	private Object groupBy = null;
 	
 	public DataEntryStatistic() { }
@@ -56,6 +62,13 @@ public class DataEntryStatistic {
 		this.groupBy = groupBy;
 	}
 	
+	public Integer getNumberOfObs() {
+		return numberOfObs;
+	}
+
+	public void setNumberOfObs(Integer numberOfObs) {
+		this.numberOfObs = numberOfObs;
+	}
 
 	// convenience utility methods
 
@@ -64,6 +77,7 @@ public class DataEntryStatistic {
 		SortedSet<String> types = new TreeSet<String>();
 		Set<Object> groups = new HashSet<Object>();
 		Map<String, Integer> totals = new HashMap<String, Integer>();
+		Map<String, Integer> totalObs = new HashMap<String, Integer>();
 		for (DataEntryStatistic s : stats) {
 			users.add(s.getUser());
 			types.add(s.getEntryType());
@@ -71,6 +85,7 @@ public class DataEntryStatistic {
 			String temp = s.getUser().getUserId() + "." + s.getEntryType() + "." + s.getGroupBy();
 			Integer soFar = totals.get(temp);
 			totals.put(temp, soFar == null ? s.getNumberOfEntries() : (soFar + s.getNumberOfEntries()));
+			totalObs.put(temp, soFar == null ? s.getNumberOfObs() : (soFar + s.getNumberOfObs()));
 		}
 		DataTable table = new DataTable();
 		table.addColumn("User");
@@ -83,8 +98,18 @@ public class DataEntryStatistic {
 				Integer rowTotal = 0;
 				for (String entryType : types) {
 					Integer i = totals.get(u.getUserId() + "." + entryType + "." + group);
+					Integer j = totalObs.get(u.getUserId() + "." + entryType + "." + group);
 					if (i == null) i = 0;
-					tr.put(entryType, i);
+					if (j == null) j = 0;
+					String averageObs = "";
+					if ( i > 0 && j > 0 ) {
+						DecimalFormat df = new DecimalFormat("###,###.##");
+						float obss = j;
+						float encs = i;
+						float avgObs = obss / encs;
+						averageObs += " (avg. " + df.format(avgObs) + " obs per enc)";
+					}
+					tr.put(entryType, i + averageObs);
 					Integer groupTotalSoFar = groupTotals.get(entryType);
 					groupTotalSoFar = groupTotalSoFar == null ? i : groupTotalSoFar + i;
 					groupTotals.put(entryType, groupTotalSoFar);
@@ -103,4 +128,6 @@ public class DataEntryStatistic {
 		}
 		return table;
 	}
+
+
 }

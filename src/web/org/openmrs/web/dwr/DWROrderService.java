@@ -12,6 +12,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
+import org.openmrs.EncounterType;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
@@ -61,6 +62,7 @@ public class DWROrderService {
 		
 		drugOrder.setDateCreated(new Date());
 		drugOrder.setVoided(new Boolean(false));
+		
 		Context.getOrderService().updateOrder(drugOrder, patient);
 		
 		log.debug("Finished creating new drug order");

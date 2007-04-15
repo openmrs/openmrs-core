@@ -277,7 +277,9 @@ public class OpenmrsConstants {
 		props.add(new GlobalProperty("use_patient_attribute.tribe", "true", "Indicates whether or not the 'tribe' attribute is shown when viewing/searching for patients"));
 		props.add(new GlobalProperty("use_patient_attribute.healthCenter", "false", "Indicates whether or not the 'health center' attribute is shown when viewing/searching for patients"));
 		props.add(new GlobalProperty("use_patient_attribute.mothersName", "false", "Indicates whether or not mother's name is able to be added/viewed for a patient"));
+
 		props.add(new GlobalProperty("new_patient_form.showRelationships", "false", "true/false whether or not to show the relationship editor on the addPatient.htm screen"));
+
 		props.add(new GlobalProperty("dashboard.overview.showConcepts", "", "Comma delimited list of concepts ids to show on the patient dashboard overview tab"));
 		props.add(new GlobalProperty("dashboard.encounters.viewWhere", "newWindow", "Defines how the 'View Encounter' link should act. Known values: 'sameWindow', 'newWindow', 'oneNewWindow'"));
 		props.add(new GlobalProperty("dashboard.encounters.showEmptyFields", "true", "true/false whether or not to show empty fields on the 'View Encounter' window"));
@@ -288,7 +290,13 @@ public class OpenmrsConstants {
 		
 		props.add(new GlobalProperty("concept.weight", "5089", "Concept id of the concept defining the WEIGHT concept"));
 		props.add(new GlobalProperty("concept.cd4_count", "5497", "Concept id of the concept defining the CD4 count concept"));
-		
+		props.add(new GlobalProperty("concept.causeOfDeath", "5002", "Concept id of the concept defining the CAUSE OF DEATH concept"));
+		props.add(new GlobalProperty("concept.none", "1107", "Concept id of the concept defining the NONE concept"));
+		props.add(new GlobalProperty("concept.otherNonCoded", "5622", "Concept id of the concept defining the OTHER NON-CODED concept"));
+		props.add(new GlobalProperty("concept.patientDied", "1742", "Concept id of the concept defining the PATIEND DIED concept"));
+		props.add(new GlobalProperty("concept.reasonExitedCare", "1811", "Concept id of the concept defining the REASON EXITED CARE concept"));
+		props.add(new GlobalProperty("concept.reasonOrderStopped", "1812", "Concept id of the concept defining the REASON ORDER STOPPED concept"));
+
 		props.add(new GlobalProperty("mail.transport_protocol", "smtp", "Transport protocol for the messaging engine. Valid values: smtp"));
 		props.add(new GlobalProperty("mail.smtp_host", "localhost", "SMTP host name"));
 		props.add(new GlobalProperty("mail.smtp_port", "25", "SMTP port"));

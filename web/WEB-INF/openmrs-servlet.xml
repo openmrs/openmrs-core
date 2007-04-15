@@ -722,6 +722,11 @@
 					<value>nealreport.form:nealreport.TracReport.name:reportType=TRAC Report</value>
 					<value>nealreport.form:nealreport.ExceptionReport.name:reportType=Exception Report</value>
 					<value>nealreport.form:nealreport.LostReport.name:reportType=Lost Report</value>
+					<value>nealreport.form:nealreport.FlatReport.name:reportType=Flat Report</value>
+					<value>nealreport.form:nealreport.FoodPatientsReport.name:reportType=Food Patients Report</value>
+					<value>nealreport.form:nealreport.AccompLeaderReport.name:reportType=Accompagnateur Leader Report</value>
+					<value>nealreport.form:nealreport.TracRegisterReport.name:reportType=Trac Register Report</value>
+					<value>nealreport.form:nealreport.ChaiReport.name:reportType=CHAI Report</value>
 					<value>nealreport.form:nealreport.DataDumpReport.name:reportType=Data Dump</value>
 				</list>
 			</property>
@@ -758,6 +763,10 @@
 						<value>nealreport.form:nealreport.TracReport.name:reportType=TRAC Report</value>
 						<value>nealreport.form:nealreport.ExceptionReport.name:reportType=Exception Report</value>
 						<value>nealreport.form:nealreport.LostReport.name:reportType=Lost Report</value>
+						<value>nealreport.form:nealreport.FlatReport.name:reportType=Flat Report</value>
+						<value>nealreport.form:nealreport.FoodPatientsReport.name:reportType=Food Patients Report</value>
+						<value>nealreport.form:nealreport.TracRegisterReport.name:reportType=Trac Register Report</value>
+						<value>nealreport.form:nealreport.ChaiReport.name:reportType=CHAI Report</value>
 						<value>nealreport.form:nealreport.DataDumpReport.name:reportType=Data Dump</value>
 					</list>
 				</property>

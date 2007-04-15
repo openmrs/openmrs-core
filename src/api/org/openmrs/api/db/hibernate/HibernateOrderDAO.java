@@ -150,6 +150,7 @@ public class HibernateOrderDAO implements
 		if (order.getOrderId() == null)
 			createOrder(order);
 		else {
+			log.debug("Updating existing order: " + order.getOrderId().toString());
 			sessionFactory.getCurrentSession().saveOrUpdate(order);			
 		}
 	}

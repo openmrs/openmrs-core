@@ -845,17 +845,20 @@ public class HibernateAdministrationDAO implements
 
 	@SuppressWarnings("unchecked")
 	public List<DataEntryStatistic> getDataEntryStatistics(Date fromDate, Date toDate, String encounterColumn, String orderColumn, String groupBy) throws DAOException {
-		if (groupBy == null) groupBy = "";
-		if (groupBy.length() != 0)
-			groupBy = "enc." + groupBy;
-		
-		
+				
 		// for all encounters, find user, form name, and number of entries
 		
 		// default userColumn to creator
 		if (encounterColumn == null)
 			encounterColumn = "creator";
 		encounterColumn = encounterColumn.toLowerCase();
+
+		List<DataEntryStatistic> ret = new ArrayList<DataEntryStatistic>();
+
+		/*
+		if (groupBy == null) groupBy = "";
+		if (groupBy.length() != 0)
+			groupBy = "enc." + groupBy;
 		
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Encounter.class, "enc");
 		
@@ -876,7 +879,6 @@ public class HibernateAdministrationDAO implements
 		}
 		
 		List<Object[]> l = crit.list();
-		List<DataEntryStatistic> ret = new ArrayList<DataEntryStatistic>();
 		for (Object[] holder : l) {
 			DataEntryStatistic s = new DataEntryStatistic();
 			int offset = 0;
@@ -890,10 +892,64 @@ public class HibernateAdministrationDAO implements
 			EncounterType encType = (EncounterType)holder[2 + offset];
 			s.setEntryType(form != null ? form.getName() : (encType != null ? encType.getName() : "null" ));
 			s.setNumberOfEntries((Integer) holder[3 + offset]);
+			log.debug("OLD Num encounters is " + s.getNumberOfEntries());
+			s.setNumberOfObs(0);
 			ret.add(s);
 		}
+		*/
 		
+		// data entry stats with extended info
+
+		// check if there's anything else to group by
+		if (groupBy == null) groupBy = "";
+		if (groupBy.length() != 0)
+			groupBy = "e." + groupBy + ", ";
+		log.debug("GROUP BY IS " + groupBy);
+
+		String hql = "select " + groupBy + "e." + encounterColumn + ", e.encounterType" + ", e.form, count(distinct e.encounterId), count(o.obsId) " +
+				"from Obs o right join o.encounter as e ";
+		if (fromDate != null || toDate != null) {
+			String s = "where ";
+			if (fromDate != null)
+				s += "e.dateCreated >= :fromDate ";
+			if (toDate != null) {
+				if (fromDate != null)
+					s += "and ";
+				s += "e.dateCreated <= :toDate ";
+			}
+			hql += s;
+		}
 		
+		hql += "group by ";
+		if ( groupBy.length() > 0 ) hql += groupBy + " ";
+		hql += "e." + encounterColumn + ", e.encounterType, e.form ";
+		Query q = sessionFactory.getCurrentSession().createQuery(hql);
+		if (fromDate != null)
+			q.setParameter("fromDate", fromDate);
+		if (toDate != null)
+			q.setParameter("toDate", toDate);
+		List<Object[]> l = q.list();
+		for (Object[] holder : l) {
+			DataEntryStatistic s = new DataEntryStatistic();
+			int offset = 0;
+			if (groupBy.length() > 0) {
+				s.setGroupBy(holder[0]);
+				offset = 1;
+			}
+
+			s.setUser((User) holder[0 + offset]);
+			EncounterType encType = ((EncounterType) holder[1 + offset]);
+			Form form = ((Form) holder[2 + offset]);
+			s.setEntryType(form != null ? form.getName() : (encType != null ? encType.getName() : "null" ));
+			int numEncounters = ((Number) holder[3 + offset]).intValue();
+			int numObs = ((Number) holder[4 + offset]).intValue();
+			s.setNumberOfEntries(numEncounters); // not sure why this comes out as a Long instead of an Integer
+			log.debug("NEW Num encounters is " + numEncounters);
+			s.setNumberOfObs(numObs);
+			log.debug("NEW Num obs is " + numObs);
+			ret.add(s);
+		}
+
 		// default userColumn to creator
 		if (orderColumn == null)
 			orderColumn = "creator";
@@ -901,7 +957,7 @@ public class HibernateAdministrationDAO implements
 		
 		
 		// for orders, count how many were created. (should eventually count something with voided/changed)
-		String hql = "select o." + orderColumn + ", o.orderType.name, count(*) " +
+		hql = "select o." + orderColumn + ", o.orderType.name, count(*) " +
 				"from Order o ";
 		if (fromDate != null || toDate != null) {
 			String s = "where ";
@@ -915,7 +971,7 @@ public class HibernateAdministrationDAO implements
 			hql += s;
 		}
 		hql += "group by o." + orderColumn + ", o.orderType.name ";
-		Query q = sessionFactory.getCurrentSession().createQuery(hql);
+		q = sessionFactory.getCurrentSession().createQuery(hql);
 		if (fromDate != null)
 			q.setParameter("fromDate", fromDate);
 		if (toDate != null)
@@ -926,6 +982,7 @@ public class HibernateAdministrationDAO implements
 			s.setUser((User) holder[0]);
 			s.setEntryType((String) holder[1]);
 			s.setNumberOfEntries(((Number) holder[2]).intValue()); // not sure why this comes out as a Long instead of an Integer
+			s.setNumberOfObs(0);
 			ret.add(s);
 		}
 		

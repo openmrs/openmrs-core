@@ -232,7 +232,7 @@
 							<b><spring:message code="BatchEntry.title"/>:</b>
 							<ul>
 								<c:forEach var="form" items="${model.batchEntryForms}">
-									<li><a href="<%= request.getContextPath() %>/batchForm.form?formId=${form.formId}">${form.name}</a></li>
+									<li><a href="<%= request.getContextPath() %>/module/formentry/batchForm.form?formId=${form.formId}">${form.name}</a></li>
 								</c:forEach>
 							</ul>
 						</div>
