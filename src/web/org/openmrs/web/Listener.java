@@ -95,8 +95,8 @@ public final class Listener extends ContextLoaderListener {
 				log.warn("Unable to clear the dwr document", parseError);
 			} catch (SAXException sax) {
 				log.warn("Unable to clear the dwr document", sax);
-			} catch (Exception e) {
-				log.debug("Error clearing dwr-modules.xml");
+			} catch (Throwable t) {
+				log.debug("Error clearing dwr-modules.xml", t);
 			}
 		}
 		
@@ -133,8 +133,8 @@ public final class Listener extends ContextLoaderListener {
 		for (Module mod : ModuleFactory.getStartedModules()) {
 			try {
 				WebModuleUtil.startModule(mod, event.getServletContext());
-			} catch (Exception e) {
-				mod.setStartupErrorMessage(e.getMessage());
+			} catch (Throwable t) {
+				mod.setStartupErrorMessage(t.getMessage());
 			}
 		}
 		
@@ -256,8 +256,8 @@ public final class Listener extends ContextLoaderListener {
 					Module mod = ModuleFactory.loadModule(f);
 					log.debug("Loaded module: " + mod + " successfully");
 				}
-				catch (Exception e) {
-					log.warn("Error while trying to load module " + f.getName() + "", e);
+				catch (Throwable t) {
+					log.warn("Error while trying to load module " + f.getName() + "", t);
 				}
 			}
 		}
