@@ -42,7 +42,7 @@ public class DWROrderService {
 		Concept concept = drug.getConcept();
 		drugOrder.setConcept(concept);
 		drugOrder.setOrderType(new OrderType(new Integer(OpenmrsConstants.ORDERTYPE_DRUG)));
-
+		drugOrder.setPatient(patient);
 		drugOrder.setDose(dose);
 		drugOrder.setUnits(units);
 		drugOrder.setFrequency(frequency);
@@ -63,7 +63,7 @@ public class DWROrderService {
 		drugOrder.setDateCreated(new Date());
 		drugOrder.setVoided(new Boolean(false));
 		
-		Context.getOrderService().updateOrder(drugOrder, patient);
+		Context.getOrderService().updateOrder(drugOrder);
 		
 		log.debug("Finished creating new drug order");
 		return ret;

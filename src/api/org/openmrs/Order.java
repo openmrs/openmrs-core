@@ -19,6 +19,7 @@ public class Order implements java.io.Serializable {
 	// Fields
 
 	private Integer orderId;
+	private Patient patient;
 	private OrderType orderType;
 	private Concept concept;
 	private String instructions;
@@ -409,5 +410,13 @@ public class Order implements java.io.Serializable {
 	
 	public boolean isDiscontinued() {
 		return isDiscontinued(new Date());
+	}
+
+	public Patient getPatient() {
+		return patient;
+	}
+
+	public void setPatient(Patient patient) {
+		this.patient = patient;
 	}
 }

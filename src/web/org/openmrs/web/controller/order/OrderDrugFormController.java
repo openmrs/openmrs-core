@@ -111,9 +111,12 @@ public class OrderDrugFormController extends SimpleFormController {
 					thisPatient = Context.getPatientService().getPatient(patientId);
 				}
 			}
+
+			order.setPatient(thisPatient);
+
 			if ( order.getDateCreated() == null ) order.setDateCreated(new Date());
 			if ( order.getVoided() == null ) order.setVoided(new Boolean(false));
-			Context.getOrderService().updateOrder(order, thisPatient);
+			Context.getOrderService().updateOrder(order);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Order.drug.saved");
 		}

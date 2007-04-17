@@ -43,24 +43,7 @@ public interface OrderService {
 	 * @throws APIException
 	 */
 	public void updateOrder(Order order) throws APIException;
-
-	/**
-	 * Update Order
-	 * @param Order to update
-	 * @param Patient for whom this order is for
-	 * @throws APIException
-	 */
-	public void updateOrder(Order order, Patient patient) throws APIException;
 	
-	/**
-	 * Update Order
-	 * @param Order to update
-	 * @param Patient for whom this order is for
-	 * @param Encounter type to use for this order
-	 * @throws APIException
-	 */
-	public void updateOrder(Order order, Patient patient, Encounter encounter) throws APIException;
-
 	/**
 	 * Delete Order
 	 * @param Order to delete

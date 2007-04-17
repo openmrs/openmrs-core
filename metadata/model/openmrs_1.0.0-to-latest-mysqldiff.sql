@@ -1800,6 +1800,43 @@ delimiter ;
 call diff_procedure('1.0.55');
 
 
+
+#--------------------------------------
+# OpenMRS Datamodel version 1.0.56
+# Christian Allen            16 Apr 2007
+# Adding patient_id column to orders table
+#--------------------------------------
+
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+	SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+
+#-- START YOUR QUERY(IES) HERE --#
+	
+	ALTER TABLE `orders` ADD COLUMN `patient_id` int(11) default NULL;
+	update orders o, encounter e set o.patient_id=e.patient_id where o.encounter_id=e.encounter_id;	
+	ALTER TABLE `orders` MODIFY COLUMN `patient_id` int(11) NOT NULL;
+	ALTER TABLE `orders` ADD INDEX `order_for_patient` (`patient_id`);
+	ALTER TABLE `orders` ADD CONSTRAINT `order_for_patient` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`);
+
+#-- END YOUR QUERY(IES) HERE --#
+
+	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+	
+	END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.0.56');
+
+
+
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script
 #-----------------------------------

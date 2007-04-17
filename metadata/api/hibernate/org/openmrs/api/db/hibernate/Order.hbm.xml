@@ -102,6 +102,15 @@
         <column name="encounter_id" />
     </many-to-one>
 
+    <!-- bi-directional many-to-one association to Encounter -->
+    <many-to-one
+        name="patient"
+        class="org.openmrs.Patient"
+        not-null="true"
+    >
+        <column name="patient_id" />
+    </many-to-one>
+
     <!-- bi-directional many-to-one association to Concept -->
     <many-to-one
         name="discontinuedReason"

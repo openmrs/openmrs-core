@@ -132,10 +132,9 @@ public class HibernateOrderDAO implements
 		//String voided = showVoided ? "" : "where voided = 0 ";
 		
 		Criteria c = sessionFactory.getCurrentSession().createCriteria(Order.class);
-		Criteria c1 = c.createCriteria("encounter", "enc");
-		Criteria c2 = c1.add(Expression.eq("enc.patient", patient));
+		Criteria c1 = c.add(Expression.eq("patient", patient));
 
-		return c2.list();
+		return c1.list();
 	}
 
 	public List<Order> getOrdersByPatient(Patient patient) throws DAOException {
@@ -246,9 +245,8 @@ public class HibernateOrderDAO implements
 			log.debug("getting all orders by patient " + patient.getPatientId());
 			
 			Criteria c = sessionFactory.getCurrentSession().createCriteria(DrugOrder.class);
-			Criteria c1 = c.createCriteria("encounter", "enc");
-			Criteria c2 = c1.add(Expression.eq("enc.patient", patient));
-			orders = c2.list();
+			Criteria c1 = c.add(Expression.eq("patient", patient));
+			orders = c1.list();
 		}
 		
 		return orders;
