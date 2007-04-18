@@ -804,7 +804,7 @@ public class ModuleFactory {
 		File moduleFile = ModuleUtil.insertModuleFile(inputStream, filename);
 		
 		try {
-			// unload, load, and start the new module
+			// load, and start the new module
 			Module newModule = loadModule(moduleFile);
 			startModule(newModule);
 			return newModule;

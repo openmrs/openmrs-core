@@ -60,12 +60,20 @@ public class ModuleListController extends SimpleFormController {
 		
 		HttpSession httpSession = request.getSession();
 		String moduleId = ServletRequestUtils.getStringParameter(request, "moduleId", "");
-		String action = ServletRequestUtils.getStringParameter(request, "action", "");
 		String view = getFormView();
 		String success = "";
 		String error = "";
 		MessageSourceAccessor msa = getMessageSourceAccessor();
-
+		
+		String action = ServletRequestUtils.getStringParameter(request, "action", "");
+		if (ServletRequestUtils.getStringParameter(request, "start.x", null) != null)
+			action = "start";
+		else if (ServletRequestUtils.getStringParameter(request, "stop.x", null) != null)
+			action = "stop";
+		else if (ServletRequestUtils.getStringParameter(request, "unload.x", null) != null)
+			action = "unload";
+		
+		
 		// handle module upload
 		if ("upload".equals(action) && request instanceof MultipartHttpServletRequest) {
 			MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
@@ -126,6 +134,7 @@ public class ModuleListController extends SimpleFormController {
 			}
 			Module mod = ModuleFactory.getModuleById(moduleId);
 			if (mod.getDownloadURL() != null) {
+				ModuleFactory.stopModule(mod);
 				WebModuleUtil.stopModule(mod, getServletContext());
 				Module newModule = ModuleFactory.updateModule(mod);
 				WebModuleUtil.startModule(newModule, getServletContext());

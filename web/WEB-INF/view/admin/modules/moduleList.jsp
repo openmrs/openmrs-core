@@ -59,14 +59,14 @@
 							<td valign="top">
 								<c:choose>
 									<c:when test="${not module.started}">
-										<input type="image" src="${pageContext.request.contextPath}/images/play.gif" name="action" value="start" title="<spring:message code="Module.start.help"/>" alt="<spring:message code="Module.start"/>" />
+										<input type="image" src="${pageContext.request.contextPath}/images/play.gif" name="start" onclick="document.getElementById('hiddenAction').value = this.value" title="<spring:message code="Module.start.help"/>" alt="<spring:message code="Module.start"/>" />
 									</c:when>
 									<c:otherwise>
-										<input type="image" src="${pageContext.request.contextPath}/images/stop.gif" name="action" value="stop" title="<spring:message code="Module.stop.help"/>" alt="<spring:message code="Module.stop"/>" />
+										<input type="image" src="${pageContext.request.contextPath}/images/stop.gif" name="stop" onclick="document.getElementById('hiddenAction').value = this.value" title="<spring:message code="Module.stop.help"/>" alt="<spring:message code="Module.stop"/>" />
 									</c:otherwise>
 								</c:choose>
 							</td>
-							<td valign="top"><input type="image" src="${pageContext.request.contextPath}/images/trash.gif" name="action" value="unload" onclick="return confirm('<spring:message code="Module.unloadWarning"/>');" title="<spring:message code="Module.unload.help"/>" title="<spring:message code="Module.unload"/>" alt="<spring:message code="Module.unload"/>" /></td>
+							<td valign="top"><input type="image" src="${pageContext.request.contextPath}/images/trash.gif" name="unload" onclick="return confirm('<spring:message code="Module.unloadWarning"/>');" title="<spring:message code="Module.unload.help"/>" title="<spring:message code="Module.unload"/>" alt="<spring:message code="Module.unload"/>" /></td>
 						</c:if>
 						<td valign="top">${module.name} <c:if test="${not module.started}"><b id="moduleNotStarted" style="white-space: nowrap">[<spring:message code="Module.notStarted"/>]</b></c:if></td>
 						<td valign="top">${module.version}</td>
