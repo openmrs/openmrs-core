@@ -23,7 +23,7 @@
 		searchWidget.inputNode.select();
 		changeClassProperty("description", "display", "none");
 		
-		searchWidget.addPatientLink =  "<a href='/@WEBAPP.NAME@/admin/patients/addPatient.htm?postURL=patient.form'><spring:message javaScriptEscape="true" code="Patient.add.new"/></a>";
+		searchWidget.addPatientLink =  "<a href='${pageContext.request.contextPath}/admin/person/addPerson.htm?postURL=patient.form'><spring:message javaScriptEscape="true" code="Patient.addNew"/></a>";
 		
 	});
 	
@@ -31,7 +31,7 @@
 
 <h2><spring:message code="Patient.title"/></h2>
 
-<a href="${pageContext.request.contextPath}/admin/patients/addPatient.htm?postURL=newPatient.form"><spring:message code="Patient.create"/></a> | 
+<a href="${pageContext.request.contextPath}/admin/person/addPerson.htm?personType=patient"><spring:message code="Patient.create"/></a> | 
 
 <a href="${pageContext.request.contextPath}/admin/patients/findDuplicatePatients.htm"><spring:message code="Patient.merge.find"/></a><br/><br/>
 

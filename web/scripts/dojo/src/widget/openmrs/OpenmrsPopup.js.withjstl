@@ -1,5 +1,4 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
-<%@ page isELIgnored="true" %>
 
 /*
 	Copyright (c) 2006, The OpenMRS Cooperative
@@ -67,7 +66,7 @@ dojo.widget.defineWidget(
 				this.changeButton.style.display = "none";
 		},
 		
-		templateString: '<span id="${this.widgetId}"><span style="white-space: nowrap"><span dojoAttachPoint="displayNode"></span> <input type="hidden" value="" dojoAttachPoint="hiddenInputNode" /><input type="button" value="<spring:message code="general.select" />" dojoAttachPoint="changeButton" class="smallButton" /> </span><span dojoAttachPoint="otherNode"><input type="text" value="" dojoAttachPoint="otherInputNode" /></span><div class="description" dojoAttachPoint="descriptionDisplayNode"></div> </span>',
+		templateString: '<span id=$"' + '{this.widgetId}"><span style="white-space: nowrap"><span dojoAttachPoint="displayNode"></span> <input type="hidden" value="" dojoAttachPoint="hiddenInputNode" /><input type="button" value="<spring:message code="general.select" />" dojoAttachPoint="changeButton" class="smallButton" /> </span><span dojoAttachPoint="otherNode"><input type="text" value="" dojoAttachPoint="otherInputNode" /></span><div class="description" dojoAttachPoint="descriptionDisplayNode"></div> </span>',
 		templateCssPath: "",
 		
 		postCreate: function(){
@@ -141,6 +140,7 @@ dojo.widget.defineWidget(
 			dojo.debug("Change button clicked");
 			
 			this.searchWidget.clearSearch();
+				
 			this.searchWidget.toggleShowing();
 			
 			var left = dojo.style.totalOffsetLeft(this.changeButton, false) + dojo.style.getBorderBoxWidth(this.changeButton) + 10;
@@ -177,14 +177,15 @@ dojo.widget.defineWidget(
 				this.searchWidget.toggleShowing();
 		},
 		
-		doSelect: function(objs) {
-			this.closeSearch();
+		doSelect: function(objs, skipFocus) {
+			this.closeSearch(skipFocus);
 			dojo.event.topic.publish(this.eventNames.select, {"objs":objs});
 		},
 		
 		closeSearch: function() {
 			this.searchWidget.hide();
-			this.changeButton.focus();
+			if (!(skipFocus))
+				this.changeButton.focus();
 		},
 		
 		setChangeButtonValue: function(objs) {

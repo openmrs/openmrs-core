@@ -93,14 +93,19 @@ public class HibernateContextDAO implements ContextDAO {
 			// entered incorrectly
 			throw new ContextAuthenticationException("User not found: " + login);
 		}
-
+		
+		log.debug("Candidate user id: " + candidateUser.getUserId());
+		
 		String passwordOnRecord = (String) session.createSQLQuery(
-				"select password from users where user_id = ?").addScalar(
-				"password", Hibernate.STRING).setInteger(0,
-				candidateUser.getUserId()).uniqueResult();
+				"select password from users where user_id = ?")
+					.addScalar("password", Hibernate.STRING)
+					.setInteger(0, candidateUser.getUserId())
+					.uniqueResult();
+		
 		String saltOnRecord = (String) session.createSQLQuery(
-				"select salt from users where user_id = ?").addScalar("salt",
-				Hibernate.STRING).setInteger(0, candidateUser.getUserId())
+				"select salt from users where user_id = ?")
+				.addScalar("salt", Hibernate.STRING)
+				.setInteger(0, candidateUser.getUserId())
 				.uniqueResult();
 
 		String hashedPassword = Security.encodeString(password + saltOnRecord);
@@ -117,7 +122,7 @@ public class HibernateContextDAO implements ContextDAO {
 
 		// hydrate the user object
 		user.getAllRoles().size();
-		user.getProperties().size();
+		user.getUserProperties().size();
 		user.getPrivileges().size();
 		//
 

@@ -36,7 +36,7 @@ public  HiRiskLeadScreen(Integer pid, Locale l){
 	locale = l;
 	patient = c.getPatientService().getPatient(pid);
 	userVarMap = new HashMap <String, String>();
-	firstname = patient.getPatientName().getGivenName();
+	firstname = patient.getPersonName().getGivenName();
 }
 
 

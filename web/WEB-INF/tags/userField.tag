@@ -10,16 +10,26 @@
 
 <openmrs:htmlInclude file="/scripts/dojoConfig.js" />
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
-<openmrs:htmlInclude file="/scripts/dojoUserSearchIncludes.js" />
 <script type="text/javascript">
 	
 	dojo.addOnLoad( function() {
+		
+		dojo.require("dojo.widget.openmrs.UserSearch");
+		dojo.require("dojo.widget.openmrs.OpenmrsPopup");
+		
 		dojo.event.topic.subscribe("${formFieldName}_search/select", 
 			function(msg) {
 				if (msg) {
 					var user = msg.objs[0];
 					var userPopup = dojo.widget.manager.getWidgetById("${formFieldName}_selection");
-					userPopup.displayNode.innerHTML = '<a id="${formFieldName}_name" href="#View" <c:if test="${not empty linkUrl}">onclick="return gotoUrl("${linkUrl}", ' + user.userId + ')"</c:if>>' + (user.firstName ? user.firstName : '') + ' ' + (user.middleName ? user.middleName : '') + ' ' + (user.lastName ? user.lastName : '') + '</a>';
+					
+					var displayString = user.personName;
+					<c:if test="${not empty linkUrl}">
+						displayString = '<a id="${formFieldName}_name" href="#View" onclick="return gotoUrl("${linkUrl}", ' + user.userId + ')">' + displayString + '</a>';
+					</c:if>
+					userPopup.displayNode.innerHTML = displayString;
+					
+					userPopup.displayNode.innerHTML = '<a id="${formFieldName}_name" href="#View" <c:if test="${not empty linkUrl}">onclick="return gotoUrl("${linkUrl}", ' + user.userId + ')"</c:if>>' + user.personName + '</a>';
 					userPopup.hiddenInputNode.value = user.userId;
 					<c:if test="${not empty callback}">
 						var relPrefix = "boxForRelType_";
@@ -33,6 +43,15 @@
 			}
 		);
 	})
+	
+	function gotoUrl(url, userId) {
+		if (url === null || url === '') {
+			return false;
+		} else {
+			window.location = url + "?userId=" + userId;
+		}
+		return false;
+	}
 </script>
 
 <div class="userSearchLabel">${searchLabel}</div>

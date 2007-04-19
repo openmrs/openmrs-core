@@ -3,75 +3,66 @@ package org.openmrs.web.dwr;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
-import org.openmrs.PatientName;
 import org.openmrs.Person;
 import org.openmrs.Relationship;
-import org.openmrs.User;
+import org.openmrs.api.context.Context;
 
 public class RelationshipListItem {
 	
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	private Integer relationshipId;
-	private String fromName;
-	private String toName;
-	private String relationshipType;
-	private Integer fromUserId;
-	private Integer fromPatientId;
-	private Integer toUserId;
-	private Integer toPatientId;
+	private String personA;
+	private String personB;
+	private String aIsToB;
+	private String bIsToA;
+	private Integer personAId;
+	private Integer personBId;
+	private String personAType;
+	private String personBType;
 
 	public RelationshipListItem() { }
 	
 	public RelationshipListItem(Relationship r) {
 		relationshipId = r.getRelationshipId();
-		relationshipType = r.getRelationship().getName();
-		Person p = r.getPerson();
-		if (p.getPatient() != null) {
-			Patient patient = p.getPatient();
-			PatientName pn = patient.getPatientName();
-			fromName = pn.toString();
-			fromPatientId = patient.getPatientId();
-		} else {
-			User user = p.getUser();
-			fromName = user.toString();
-			fromUserId = user.getUserId();
-		}
-		p = r.getRelative();
-		if (p.getPatient() != null) {
-			Patient patient = p.getPatient();
-			PatientName pn = patient.getPatientName();
-			toName = pn.toString();
-			toPatientId = patient.getPatientId();
-		} else {
-			User user = p.getUser();
-			toName = user.toString();
-			toUserId = user.getUserId();
-		}
+		aIsToB = r.getRelationshipType().getaIsToB();
+		bIsToA = r.getRelationshipType().getbIsToA();
+		
+		Person p = r.getPersonA();
+		personA = p.getPersonName().toString();
+		personAId = p.getPersonId();
+		try {
+			Patient pat = Context.getPatientService().getPatient(p.getPersonId());
+			personAType = pat != null ? "Patient" : "User";
+		} catch (Exception ex) { personAType = "User"; }
+		
+		p = r.getPersonB();
+		personB = p.getPersonName().toString();
+		personBId = p.getPersonId();
+		try {
+			Patient pat = Context.getPatientService().getPatient(p.getPersonId());
+			personBType = pat != null ? "Patient" : "User";
+		} catch (Exception ex) { personAType = "User"; }
+	}
+	
+	public String toString() {
+		return relationshipId + "," + personA + "," + personB + "," + aIsToB + "," + bIsToA + "," + personAId + "," + personBId;
 	}
 
-	public String getFromName() {
-		return fromName;
+	public String getPersonA() {
+		return personA;
 	}
 
-	public void setFromName(String fromName) {
-		this.fromName = fromName;
+	public void setPersonA(String fromName) {
+		this.personA = fromName;
 	}
 
-	public Integer getFromPatientId() {
-		return fromPatientId;
+	public Integer getPersonAId() {
+		return personAId;
 	}
 
-	public void setFromPatientId(Integer fromPatientId) {
-		this.fromPatientId = fromPatientId;
-	}
-
-	public Integer getFromUserId() {
-		return fromUserId;
-	}
-
-	public void setFromUserId(Integer fromUserId) {
-		this.fromUserId = fromUserId;
+	public void setPersonAId(Integer fromPersonId) {
+		this.personAId = fromPersonId;
 	}
 
 	public Integer getRelationshipId() {
@@ -82,36 +73,52 @@ public class RelationshipListItem {
 		this.relationshipId = relationshipId;
 	}
 
-	public String getRelationshipType() {
-		return relationshipType;
+	public String getPersonB() {
+		return personB;
 	}
 
-	public void setRelationshipType(String relationshipType) {
-		this.relationshipType = relationshipType;
+	public void setPersonB(String toName) {
+		this.personB = toName;
 	}
 
-	public String getToName() {
-		return toName;
+	public Integer getPersonBId() {
+		return personBId;
 	}
 
-	public void setToName(String toName) {
-		this.toName = toName;
+	public void setPersonBId(Integer toPersonId) {
+		this.personBId = toPersonId;
 	}
 
-	public Integer getToPatientId() {
-		return toPatientId;
+	public String getaIsToB() {
+		return aIsToB;
+	}
+	
+	public void setaIsToB(String isToB) {
+		aIsToB = isToB;
 	}
 
-	public void setToPatientId(Integer toPatientId) {
-		this.toPatientId = toPatientId;
+	public String getbIsToA() {
+		return bIsToA;
 	}
 
-	public Integer getToUserId() {
-		return toUserId;
+	public void setbIsToA(String isToA) {
+		bIsToA = isToA;
 	}
 
-	public void setToUserId(Integer toUserId) {
-		this.toUserId = toUserId;
+	public String getPersonAType() {
+		return personAType;
+	}
+
+	public void setPersonAType(String personAType) {
+		this.personAType = personAType;
+	}
+
+	public String getPersonBType() {
+		return personBType;
+	}
+
+	public void setPersonBType(String personBType) {
+		this.personBType = personBType;
 	}
 
 }

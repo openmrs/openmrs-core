@@ -38,7 +38,6 @@
 	
 	<!-- Load user's build properties -->
 	<echo message="Attempting to load: ${env.OPENMRS_BUILD_PROPERTIES_FILE}" />
-	<echo message="Note: A clean build is needed to refresh the connection properties" />
 	
 	<available file="${env.OPENMRS_BUILD_PROPERTIES_FILE}" property="env.file.exists"/>
 	<available file="${user.home}/Application Data/OpenMRS/OPENMRS-build.properties" property="appdata.file.exists"/>
@@ -81,6 +80,7 @@
 
 		<!-- This file needs to be sure to have the latest variables -->
 		<touch file="${metadata.dir}/api/applicationContext-service.xml"/>
+		<touch file="${src.dir}/api/org/openmrs/util/OpenmrsConstants.java"/>
 		
 		<!-- Discover code and database versions via regular expressions -->
 		<loadfile srcfile="${openmrs.database.version.expected.filename}" property="diffFileInput" />
@@ -142,6 +142,7 @@
 			<filter token="MAPPING.JAR.LOCATIONS" value="WEB-INF/lib/${openmrs.api.name}" />
 			<!-- Address properties -->
 			<filter token="ADDRESS.FORMAT" value="${address.format}" />
+			<filter token="NAME.FORMAT" value="${name.format}" />
 		</filterset>
 
 	</target>
@@ -450,7 +451,7 @@
 
 	<target name="update" description="Update application in Tomcat">
 		<antcall target="remove" />
-		<sleep seconds="5" />
+		<sleep seconds="2" />
 		<antcall target="install" />
 	</target>
 

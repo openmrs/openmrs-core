@@ -14,15 +14,10 @@ import org.openmrs.FieldType;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
-import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.Person;
 import org.openmrs.Privilege;
-import org.openmrs.Relationship;
-import org.openmrs.RelationshipType;
 import org.openmrs.Role;
 import org.openmrs.Tribe;
-import org.openmrs.User;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.Report;
 
@@ -34,39 +29,6 @@ import org.openmrs.reporting.Report;
  * @version 1.0
  */
 public interface AdministrationDAO {
-	
-	/**
-	 * Create a new Person
-	 * @param Person to create
-	 * @throws DAOException
-	 */
-	public void createPerson(Person person) throws DAOException;
-
-	/**
-	 * Update a person
-	 * @param Person to update
-	 * @throws DAOException
-	 */
-	public void updatePerson(Person person) throws DAOException;
-
-	/**
-	 * Delete a person
-	 * @param Person to delete
-	 * @throws DAOException
-	 */
-	public void deletePerson(Person person) throws DAOException;
-	
-	/**
-	 * 
-	 * @param personId of the Person to retrieve
-	 * @return Person
-	 * @throws DAOException
-	 */
-	public Person getPerson(Integer personId) throws DAOException;
-	
-	public Person getPerson(Patient pat) throws DAOException;
-	
-	public Person getPerson(User user) throws DAOException;
 	
 	/**
 	 * Create a new EncounterType
@@ -144,42 +106,7 @@ public interface AdministrationDAO {
 	 * @throws DAOException
 	 */
 	public void unretireTribe(Tribe tribe) throws DAOException;	
-
-	/**
-	 * Create a new Relationship
-	 * @param Relationship to create
-	 * @throws DAOException
-	 */
-	public void createRelationship(Relationship relationship) throws DAOException;
-
-	/**
-	 * Update Relationship
-	 * @param Relationship to update
-	 * @throws DAOException
-	 */
-	public void updateRelationship(Relationship relationship) throws DAOException;
-
-	/**
-	 * Delete Relationship
-	 * @param Relationship to delete
-	 * @throws DAOException
-	 */
-	public void deleteRelationship(Relationship relationship) throws DAOException;	
 	
-	/**
-	 * Retire Relationship
-	 * @param Relationship to void
-	 * @throws DAOException
-	 */
-	public void voidRelationship(Relationship relationship) throws DAOException;	
-
-	/**
-	 * Unretire Relationship
-	 * @param Relationship to unvoid
-	 * @throws DAOException
-	 */
-	public void unvoidRelationship(Relationship relationship) throws DAOException;		
-
 	/**
 	 * Create a new FieldType
 	 * @param FieldType to create
@@ -243,27 +170,6 @@ public interface AdministrationDAO {
 	 */
 	public void deleteLocation(Location location) throws DAOException;	
 	
-	/**
-	 * Create a new RelationshipType
-	 * @param RelationshipType to create
-	 * @throws DAOException
-	 */
-	public void createRelationshipType(RelationshipType relationshipType) throws DAOException;
-
-	/**
-	 * Update RelationshipType
-	 * @param RelationshipType to update
-	 * @throws DAOException
-	 */
-	public void updateRelationshipType(RelationshipType relationshipType) throws DAOException;
-
-	/**
-	 * Delete RelationshipType
-	 * @param RelationshipType to delete
-	 * @throws DAOException
-	 */
-	public void deleteRelationshipType(RelationshipType relationshipType) throws DAOException;	
-
 	/**
 	 * Create a new Role
 	 * @param Role to create

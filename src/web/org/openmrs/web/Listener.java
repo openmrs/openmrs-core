@@ -77,13 +77,14 @@ public final class Listener extends ContextLoaderListener {
 			try {
 				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 				DocumentBuilder db = dbf.newDocumentBuilder();
-				db.setEntityResolver(new EntityResolver() {
-						public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-							// When asked to resolve external entities (such as a DTD) we return an InputSource
-							// with no data at the end, causing the parser to ignore the DTD.
-							return new InputSource(new StringReader(""));
-						}
-					});
+				db.setEntityResolver(new EntityResolver(){
+					public InputSource resolveEntity(String publicId, String systemId) 
+							throws SAXException, IOException {
+						// When asked to resolve external entities (such as a DTD) we return an InputSource
+						// with no data at the end, causing the parser to ignore the DTD.
+						return new InputSource(new StringReader(""));
+					}
+				});
 				Document doc = db.parse(dwrFile);
 				Element elem = doc.getDocumentElement();
 				elem.setTextContent("");
@@ -365,7 +366,7 @@ public final class Listener extends ContextLoaderListener {
 			// look in current directory last
 			if (propertyStream == null) {
 				filepath = filename;
-				log.warn("Looking for property file in current directory: " + filepath);
+				log.warn("Looking for property file in directory: " + filepath);
 				try {
 					propertyStream = new FileInputStream(filepath);
 				}
@@ -373,16 +374,14 @@ public final class Listener extends ContextLoaderListener {
 			}
 			
 			if (propertyStream == null)
-				log.warn("Could not open '" + filename + "' in user or local directory.");
-			else {
-				props.load(propertyStream);
-				propertyStream.close();
-			}
+				throw new IOException("Could not open '" + filename + "' in user or local directory.");
+			
+			props.load(propertyStream);
+			propertyStream.close();
 
 		} catch (IOException e) {
 			log.warn("Unable to load properties file. Starting with default properties.", e);
 		}
-		
 		return props;
 	}
 

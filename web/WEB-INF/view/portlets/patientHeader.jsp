@@ -12,7 +12,7 @@
 	<c:if test="${not empty model.patientReasonForExit}">
 		<div id="patientHeader" class="boxHeaderRed">
 	</c:if>
-		<div id="patientHeaderPatientName">${model.patient.patientName.givenName} ${model.patient.patientName.middleName} ${model.patient.patientName.familyName}</div>
+		<div id="patientHeaderPatientName">${model.patient.personName}</div>
 		<div id="patientHeaderPreferredIdentifier">
 			<c:if test="${fn:length(model.patient.activeIdentifiers) > 0}">
 				<c:forEach var="identifier" items="${model.patient.activeIdentifiers}" begin="0" end="0">
@@ -23,12 +23,12 @@
 		<table id="patientHeaderGeneralInfo">
 			<tr>
 				<td id="patientHeaderPatientGender">
-					<c:if test="${model.patient.gender == 'M'}"><img src="${pageContext.request.contextPath}/images/male.gif" alt='<spring:message code="Patient.gender.male"/>'/></c:if>
-					<c:if test="${model.patient.gender == 'F'}"><img src="${pageContext.request.contextPath}/images/female.gif" alt='<spring:message code="Patient.gender.female"/>'/></c:if>
+					<c:if test="${model.patient.gender == 'M'}"><img src="${pageContext.request.contextPath}/images/male.gif" alt='<spring:message code="Person.gender.male"/>'/></c:if>
+					<c:if test="${model.patient.gender == 'F'}"><img src="${pageContext.request.contextPath}/images/female.gif" alt='<spring:message code="Person.gender.female"/>'/></c:if>
 				</td>
 				<td id="patientHeaderPatientAge">
-					<c:if test="${model.patient.age > 0}">${model.patient.age} <spring:message code="Patient.age.years"/></c:if>
-					<c:if test="${model.patient.age == 0}">< 1 <spring:message code="Patient.age.year"/></c:if>
+					<c:if test="${model.patient.age > 0}">${model.patient.age} <spring:message code="Person.age.years"/></c:if>
+					<c:if test="${model.patient.age == 0}">< 1 <spring:message code="Person.age.year"/></c:if>
 					<span id="patientHeaderPatientBirthdate"><c:if test="${not empty model.patient.birthdate}">(<c:if test="${model.patient.birthdateEstimated}">~</c:if><openmrs:formatDate date="${model.patient.birthdate}" type="medium" />)</c:if><c:if test="${empty model.patient.birthdate}"><spring:message code="general.unknown"/></c:if></span>
 				</td>
 				<openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" var="showTribe"/>
@@ -38,11 +38,10 @@
 						<b>${model.patient.tribe.name}</b>
 					</td>
 				</c:if>
-				<openmrs:globalProperty key="use_patient_attribute.healthCenter" defaultValue="false" var="showHealthCenter"/>
-				<c:if test="${showHealthCenter && not empty model.patient.healthCenter}">
+				<c:if test="${not empty model.patient.attributeMap['Health Center']}">
 					<td id="patientHeaderHealthCenter">
-						<spring:message code="Patient.healthCenter"/>:
-						<b>${model.patient.healthCenter.name}</b>
+						<spring:message code="PersonAttributeType.HealthCenter"/>:
+						<b>${model.patient.attributeMap['Health Center'].hydratedObject}</b>
 					</td>
 				</c:if>
 				<td id="patientHeaderPatientSummary">
@@ -66,7 +65,7 @@
 											<openmrs:fieldGen type="java.util.Date" formFieldName="dateOfExit" val="" parameters="noBind=true" />
 										</td>
 										<td id="patientHeaderCauseOfDeath" style="display:none;">
-											<span id="patientOutcomeTextDeathCause"><spring:message code="Patient.causeOfDeath"/></span>
+											<span id="patientOutcomeTextDeathCause"><spring:message code="Person.deathDate"/></span>
 											<openmrs:globalProperty key="concept.causeOfDeath" var="conceptCauseOfDeath" />
 											<openmrs:globalProperty key="concept.otherNonCoded" var="conceptOther" />
 											<openmrs:fieldGen type="org.openmrs.Concept" formFieldName="causeOfDeath" val="${status.value}" parameters="showAnswers=${conceptCauseOfDeath}|showOther=${conceptOther}|otherValue=${causeOfDeathOther}" />
@@ -197,14 +196,9 @@
 					<td><spring:message code="Program.agent"/>:</td>
 					<th>
 						<c:forEach items="${model.patientRelationships}" var="r" varStatus="s">
-							<c:if test="${r.relationship.relationshipTypeId == 1}">
+							<c:if test="${r.relationshipType.relationshipTypeId == 1}">
 								<c:if test="${accompFound}">, </c:if>
-								<c:if test="${r.person.patient != null}">
-									${r.person.patient.patientName.givenName} ${r.person.patient.patientName.middleName} ${r.person.patient.patientName.familyName}
-								</c:if>
-								<c:if test="${r.person.user != null}">
-									${r.person.user.firstName} ${r.person.user.lastName} 
-								</c:if>
+								${r.personA.personName}
 								<c:set var="accompFound" value="true"/>
 							</c:if>
 						</c:forEach>

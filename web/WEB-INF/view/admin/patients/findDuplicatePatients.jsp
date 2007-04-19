@@ -79,22 +79,13 @@
 		searchWidget.showAddPatientLink = false;
 		
 		searchWidget.getCellFunctions = function() {
-			return [searchWidget.simpleClosure(searchWidget, "getNumber"), 
-					getCheckbox,
-					getPatientId,
-					searchWidget.simpleClosure(searchWidget, "getId"), 
-					searchWidget.simpleClosure(searchWidget, "getGiven"), 
-					searchWidget.simpleClosure(searchWidget, "getMiddle"), 
-					searchWidget.simpleClosure(searchWidget, "getFamily"),
-					searchWidget.simpleClosure(searchWidget, "getAge"), 
-					searchWidget.simpleClosure(searchWidget, "getGender"),
-				<c:if test="${showTribe == 'true'}">
-					searchWidget.simpleClosure(searchWidget, "getTribe"),
-				</c:if>
-					searchWidget.simpleClosure(this, "getHealthCenter"),
-					searchWidget.simpleClosure(searchWidget, "getBirthdayEstimated"),
-					searchWidget.simpleClosure(searchWidget, "getBirthday")
-					];
+			//alert("super: " + dojo.widget.openmrs.PatientSearch.prototype);
+			var arr = dojo.widget.openmrs.PatientSearch.prototype.getCellFunctions();
+			
+			arr.splice(1, 0, getCheckbox);
+			arr.splice(2, 0, getPatientId);
+			
+			return arr;
 		};
 		
 		dojo.event.topic.subscribe("pSearch/objectsFound", 
@@ -122,14 +113,14 @@
 
 <spring:message code="Patient.merge.search_on"/>: <br/>
 <input type="checkbox" name="attr" id="identifier" value="identifier" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="identifier"><spring:message code="Patient.identifier"/></label> <br/>
-<input type="checkbox" name="attr" id="gender" value="gender" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="gender"><spring:message code="Patient.gender"/></label> <br/>
+<input type="checkbox" name="attr" id="gender" value="gender" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="gender"><spring:message code="Person.gender"/></label> <br/>
 <c:if test="${showTribe == 'true'}">
 	<input type="checkbox" name="attr" id="tribe" value="tribe" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="tribe"><spring:message code="Patient.tribe"/></label> <br/>
 </c:if>
-<input type="checkbox" name="attr" id="birthdate" value="birthdate" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="birthdate"><spring:message code="Patient.birthdate"/></label> <br/>
-<input type="checkbox" name="attr" id="givenName" value="givenName" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="givenName"><spring:message code="PatientName.givenName"/></label> <br/>
-<input type="checkbox" name="attr" id="middleName" value="middleName" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="middleName"><spring:message code="PatientName.middleName"/></label> <br/>
-<input type="checkbox" name="attr" id="familyName" value="familyName" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="familyName"><spring:message code="PatientName.familyName"/></label> <br/>
+<input type="checkbox" name="attr" id="birthdate" value="birthdate" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="birthdate"><spring:message code="Person.birthdate"/></label> <br/>
+<input type="checkbox" name="attr" id="givenName" value="givenName" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="givenName"><spring:message code="PersonName.givenName"/></label> <br/>
+<input type="checkbox" name="attr" id="middleName" value="middleName" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="middleName"><spring:message code="PersonName.middleName"/></label> <br/>
+<input type="checkbox" name="attr" id="familyName" value="familyName" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="familyName"><spring:message code="PersonName.familyName"/></label> <br/>
 <br/>
 <input type="checkbox" name="attr" id="includeVoided" value="includeVoided" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="includeVoided"><spring:message code="Patient.merge.includeVoided"/></label> <br/>
 

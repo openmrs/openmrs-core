@@ -18,7 +18,7 @@ import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
 import org.openmrs.Order;
 import org.openmrs.Patient;
-import org.openmrs.PatientName;
+import org.openmrs.PersonName;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
@@ -148,12 +148,12 @@ public class OrderListByPatientController extends SimpleFormController {
 				PatientService ps = Context.getPatientService();
 				p = ps.getPatient(patientId);
 				
-				Set<PatientName> patientNames = p.getNames();
-				Iterator i = patientNames.iterator();
-				PatientName pm = (PatientName)i.next();
+				Set<PersonName> PersonNames = p.getNames();
+				Iterator i = PersonNames.iterator();
+				PersonName pm = (PersonName)i.next();
 				
 				refData.put("patient", p);
-				refData.put("patientName", pm);
+				refData.put("PersonName", pm);
 			}			
 		}
 				

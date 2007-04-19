@@ -40,7 +40,7 @@
 		<tr>
 			<td><spring:message code="general.createdBy" /></td>
 			<td>
-				${conceptDatatype.creator.firstName} ${conceptDatatype.creator.lastName} -
+				${conceptDatatype.creator.personName} -
 				<openmrs:formatDate date="${conceptDatatype.dateCreated}" type="long" />
 			</td>
 		</tr>

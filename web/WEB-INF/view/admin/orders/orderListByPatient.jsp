@@ -5,7 +5,7 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="Order.list.patient.title" arguments="${patient.patientId},${patientName.familyName},${patientName.givenName},${patientName.middleName}" /></h2>
+<h2><spring:message code="Order.list.patient.title" arguments="${patient.patientId},${personName.familyName},${personName.givenName},${personName.middleName}" /></h2>
 
 <a href="orderPlace.form?patientId=${patient.patientId}"><spring:message code="Order.drug.place.patient"/></a>
 <br />

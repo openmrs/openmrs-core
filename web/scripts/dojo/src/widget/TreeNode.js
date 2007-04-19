@@ -51,10 +51,10 @@ dojo.lang.extend(dojo.widget.TreeNode, {
 
 
 	templateString: ('<div class="dojoTreeNode"> '
-		+ '<span treeNode="${this.widgetId}" class="dojoTreeNodeLabel" dojoAttachPoint="labelNode"> '
-		+ '		<span dojoAttachPoint="titleNode" dojoAttachEvent="onClick: onTitleClick" class="dojoTreeNodeLabelTitle">${this.title}</span> '
+		+ '<span treeNode="\${this.widgetId}" class="dojoTreeNodeLabel" dojoAttachPoint="labelNode"> '
+		+ '		<span dojoAttachPoint="titleNode" dojoAttachEvent="onClick: onTitleClick" class="dojoTreeNodeLabelTitle">\${this.title}</span> '
 		+ '</span> '
-		+ '<span class="dojoTreeNodeAfterLabel" dojoAttachPoint="afterLabelNode">${this.afterLabel}</span> '
+		+ '<span class="dojoTreeNodeAfterLabel" dojoAttachPoint="afterLabelNode">\${this.afterLabel}</span> '
 		+ '<div dojoAttachPoint="containerNode" style="display:none"></div> '
 		+ '</div>').replace(/(>|<)\s+/g, '$1'), // strip whitespaces between nodes
 

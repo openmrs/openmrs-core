@@ -33,7 +33,7 @@
 					);
 					
 					<c:if test="${empty hideAddNewPatient}">
-						searchWidget.addPatientLink = '<a href="#" onClick="return jumpToAddNew()"><spring:message javaScriptEscape="true" code="Patient.add.new"/></a>';
+						searchWidget.addPatientLink = '<a href="#" onClick="return jumpToAddNew()"><spring:message javaScriptEscape="true" code="Patient.addNew"/></a>';
 					</c:if>
 					searchWidget.inputNode.select();
 					changeClassProperty("description", "display", "none");
@@ -51,14 +51,14 @@
 			<c:if test="${empty hideAddNewPatient}">
 				<openmrs:hasPrivilege privilege="Add Patients">
 					<br/> &nbsp; <spring:message code="general.or"/><br/><br/>
-					<openmrs:portlet id="addPatient" url="addPatientForm" parameters="postURL=admin/patients/addPatient.htm" />
+					<openmrs:portlet id="addPersonForm" url="addPersonForm" parameters="personType=patient|postURL=admin/person/addPerson.htm|viewType=${model.viewType}" />
 				</openmrs:hasPrivilege>
 				
 				<script type="text/javascript">
 					function jumpToAddNew() {
 						var searchWidget = dojo.widget.manager.getWidgetById("pSearch");
 						searchWidget.clearSearch();
-						document.getElementById("patientName").focus();
+						document.getElementById("personName").focus();
 						return false;
 					}
 				</script>

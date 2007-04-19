@@ -18,8 +18,7 @@ public class ContextTest extends BaseTest {
 		String username = "USER-1";
 		User user = us.getUserByUsername(username);
 		assertNotNull("user " + username, user);
-		System.out.println("Successfully found user: " + user.getFirstName()
-				+ " " + user.getLastName() + " (" + username + ")");
+		System.out.println("Successfully found user: " + user.getPersonName() + " (" + username + ")");
 	}
 
 	public static Test suite() {

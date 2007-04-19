@@ -77,4 +77,6 @@ public interface PatientSetDAO {
 	
 	public Map<Integer, List<Relationship>> getRelationships(PatientSet ps, RelationshipType relType) throws DAOException;
 	
+	public Map<Integer, Object> getPersonAttributes(PatientSet patients, String attributeName, String joinClass, String joinProperty, String outputColumn, boolean returnAll);
+	
 }

@@ -16,7 +16,7 @@ public class ObsListItem {
 	private Integer obsId;
  	private String encounter = "";
  	private String encounterName = "";
- 	private String patientName = "";
+ 	private String personName = "";
  	private String conceptName = "";
  	private String order = "";
  	private String location = "";
@@ -38,8 +38,7 @@ public class ObsListItem {
 				encounterDate = encounterDatetime == null ? "" : Format.format(encounterDatetime, locale, FORMAT_TYPE.DATE);
 				encounterName = obs.getEncounter().getForm() == null ? "" : obs.getEncounter().getForm().getName();
 			}
-			patientName = obs.getPatient().getPatientName().getFamilyName();
-			patientName += ", " + obs.getPatient().getPatientName().getGivenName();
+			personName = obs.getPerson().getPersonName().toString();
 			conceptName = obs.getConcept().getName(locale).getName();
 			if (obs.getOrder() != null)
 				order = obs.getOrder().getOrderId().toString();
@@ -107,12 +106,12 @@ public class ObsListItem {
 		this.order = order;
 	}
 
-	public String getPatientName() {
-		return patientName;
+	public String getPersonName() {
+		return personName;
 	}
 
-	public void setPatientName(String patientName) {
-		this.patientName = patientName;
+	public void setPersonName(String personName) {
+		this.personName = personName;
 	}
 
 	public Boolean getVoided() {

@@ -13,8 +13,10 @@ public class WebConstants {
 	public static final String OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR = "__openmrs_login_redirect";
 
 	public static final String OPENMRS_MSG_ATTR = "openmrs_msg";
+	public static final String OPENMRS_MSG_ARGS = "openmrs_msg_arguments";
 
 	public static final String OPENMRS_ERROR_ATTR = "openmrs_error";
+	public static final String OPENMRS_ERROR_ARGS = "openmrs_error_arguments";
 
 	public static final String OPENMRS_LANGUAGE_COOKIE_NAME = "__openmrs_language";
 	

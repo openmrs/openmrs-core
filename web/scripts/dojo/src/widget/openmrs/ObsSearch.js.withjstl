@@ -1,5 +1,4 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
-<%@ page isELIgnored="true" %>
 
 /*
 	Copyright (c) 2006, The OpenMRS Cooperative
@@ -179,7 +178,7 @@ dojo.widget.defineWidget(
 		},
 		
 		getPatientName: function(o) { 
-			return o.patientName == null ? this.noCell() : o.patientName;
+			return o.personName == null ? this.noCell() : o.personName;
 		},
 
 		getObsValue: function(o) { 

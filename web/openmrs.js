@@ -25,10 +25,14 @@ function addClass(obj, c) {
 
 function removeClass(obj, newClassName) {
 	var className = obj.className;
-	if (className.indexOf(newClassName) != -1) {
-		var index = obj.className.indexOf(" ");
-		obj.className = className.substring(index + 1, className.length);
+	var startIndex = className.indexOf(newClassName);
+	if (startIndex != -1) {
+		var endIndex = obj.className.indexOf(" ", startIndex);
+		if (endIndex == -1)
+			endIndex = className.length;
+		obj.className = className.substring(0, startIndex, endIndex) + " " + className.substring(endIndex, className.length);
 	}
+	//alert("class: '" + className + "' startIndex: " + startIndex + " endIndex: " + endIndex + " final class: '" + obj.className + "'");
 }
 
 function hasClass(obj, className) {
@@ -79,23 +83,39 @@ function changeClassProperty(sClassName,sProperty,sValue) {
 	styleObj[sProperty]=sValue;
 }
 
-function toggleLayer(layerId) {
+function toggleLayer(layerId, linkObj, showText, hideText) {
     var style = document.getElementById(layerId).style;
  	if (style.display == "none") {
         style.display = "";
+        if (linkObj != null)
+        	linkObj.innerHTML = hideText;
     } else {
         style.display = "none";
+        if (linkObj != null)
+        	linkObj.innerHTML = showText;
     }
+    
+    return false;
 }
 
-function showLayer(layerId) {
-    var style = document.getElementById(layerId).style;
-    style.display = "";
+function showLayer(id) {
+	var div = document.getElementById(id);
+	if ( div ) { div.style.display = ""; }
 }
 
-function hideLayer(layerId) {
-    var style = document.getElementById(layerId).style;
-    style.display = "none";
+function hideLayer(id) {
+	var div = document.getElementById(id);
+	if ( div ) { div.style.display = "none"; }
+}
+
+function showDiv(id) {
+	var div = document.getElementById(id);
+	if ( div ) { div.style.display = ""; }
+}
+
+function hideDiv(id) {
+	var div = document.getElementById(id);
+	if ( div ) { div.style.display = "none"; }
 }
 
 function refreshPage() {

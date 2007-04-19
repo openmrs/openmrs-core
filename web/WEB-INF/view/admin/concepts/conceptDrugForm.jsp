@@ -136,7 +136,7 @@
 		<tr>
 			<th><spring:message code="general.createdBy" /></th>
 			<td>
-				<a href="#View User" onclick="return gotoUser(null, '${drug.creator.userId}')">${drug.creator.firstName} ${drug.creator.lastName}</a> -
+				<a href="#View User" onclick="return gotoUser(null, '${drug.creator.userId}')">${drug.creator.personName}</a> -
 				<openmrs:formatDate date="${drug.dateCreated}" type="medium" />
 			</td>
 		</tr>

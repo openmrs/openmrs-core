@@ -142,7 +142,7 @@
 				<spring:message code="general.createdBy" />
 			</td>
 			<td>
-				${field.creator.firstName} ${field.creator.lastName} -
+				${field.creator.personName} -
 				<openmrs:formatDate date="${field.dateCreated}" type="long" />
 			</td>
 		</tr>
@@ -153,7 +153,7 @@
 				<spring:message code="general.changedBy" />
 			</td>
 			<td>
-				${field.changedBy.firstName} ${field.changedBy.lastName} -
+				${field.changedBy.personName} -
 				<openmrs:formatDate date="${field.dateChanged}" type="long" />
 			</td>
 		</tr>

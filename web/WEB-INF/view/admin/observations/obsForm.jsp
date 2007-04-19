@@ -11,10 +11,8 @@
 <script type="text/javascript">
 	dojo.require("dojo.widget.openmrs.ConceptSearch");
 	dojo.require("dojo.widget.openmrs.EncounterSearch");
-	dojo.require("dojo.widget.openmrs.PatientSearch");
 	dojo.require("dojo.widget.openmrs.OpenmrsPopup");
 
-	var patientSelection;
 	var encounterSearch;
 	var encounterSelection;
 	var conceptSearch;
@@ -23,25 +21,12 @@
 	var codedSelection;
 	
 	dojo.addOnLoad( function() {
-		patientSelection = dojo.widget.manager.getWidgetById("patientSelection");
 		encounterSelection = dojo.widget.manager.getWidgetById("encounterSelection");
 		encounterSearch = dojo.widget.manager.getWidgetById("eSearch");
 		conceptSelection = dojo.widget.manager.getWidgetById("conceptSelection");
 		conceptSearch = dojo.widget.manager.getWidgetById("cSearch");
 		codedSelection = dojo.widget.manager.getWidgetById("codedSelection");
 		codedSearch = dojo.widget.manager.getWidgetById("codedSearch");
-		
-		dojo.event.topic.subscribe("pSearch/select", 
-			function(msg) {
-				var patient = msg.objs[0];
-				var patientSelection = dojo.widget.manager.getWidgetById("patientSelection");
-				patientSelection.hiddenInputNode.value = patient.patientId;
-				patientSelection.displayNode.innerHTML = "";
-				if (patient.givenName) patientSelection.displayNode.innerHTML += patient.givenName;
-				if (patient.middleName) patientSelection.displayNode.innerHTML += " " + patient.middleName;
-				if (patient.familyName) patientSelection.displayNode.innerHTML += " " + patient.familyName;
-			}
-		);
 		
 		dojo.event.topic.subscribe("eSearch/select", 
 			function(msg) {
@@ -289,20 +274,11 @@
 		</tr>
 	</c:if>
 	<tr>
-		<th><spring:message code="Obs.patient"/></th>
+		<th><spring:message code="Obs.person"/></th>
 		<td>
 			<script type="text/javascript">$('obsTable').style.visibility = 'hidden';</script>
-			<spring:bind path="obs.patient">
-				<c:choose>
-					<c:when test="${obs.obsId != null}">
-						<div id="patientName">${status.value.patientName.givenName} ${status.value.patientName.middleName} ${status.value.patientName.familyName}</div>
-					</c:when>
-					<c:otherwise>
-						<div dojoType="PatientSearch" widgetId="pSearch" patientId="${status.value.patientId}" showVerboseListing="true"></div>
-						<div dojoType="OpenmrsPopup" widgetId="patientSelection" hiddenInputName="patientId" searchWidget="pSearch" searchTitle='<spring:message code="Patient.findBy" />'></div>
-						<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-					</c:otherwise>
-				</c:choose>
+			<spring:bind path="obs.person">
+				<openmrs_tag:personField formFieldName="personId" searchLabelCode="Person.findBy" initialValue="${status.value.personId}" linkUrl="" callback="" />
 			</spring:bind>
 		</td>
 	</tr>
@@ -498,7 +474,7 @@
 		<tr>
 			<th><spring:message code="general.createdBy" /></th>
 			<td>
-				${obs.creator.firstName} ${obs.creator.lastName} -
+				${obs.creator.personName} -
 				<openmrs:formatDate date="${obs.dateCreated}" type="medium" />
 			</td>
 		</tr>
@@ -527,7 +503,7 @@
 		<tr>
 			<th><spring:message code="general.voidedBy"/></th>
 			<td>
-				${obs.voidedBy.firstName} ${obs.voidedBy.lastName} -
+				${obs.voidedBy.personName} -
 				<openmrs:formatDate date="${obs.dateVoided}" type="medium" />
 			</td>
 		</tr>
@@ -550,5 +526,9 @@
 &nbsp; 
 <input type="button" value='<spring:message code="general.cancel"/>' onclick="history.go(-1);">
 </form>
+
+<script type="text/javascript">
+	$('obsTable').style.visibility = 'visible';
+</script>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

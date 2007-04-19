@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 
@@ -16,7 +17,7 @@ import org.openmrs.api.context.Context;
 /**
  * Concept 
  */
-public class Concept implements java.io.Serializable {
+public class Concept implements java.io.Serializable, Attributable<Concept> {
 
 	public static final long serialVersionUID = 5733L;
 	public Log log = LogFactory.getLog(this.getClass());
@@ -532,4 +533,47 @@ public class Concept implements java.io.Serializable {
 			return c;
 		}
 	}
+
+	
+	public List<Concept> findPossibleValues(String searchText) {
+		List<Concept> concepts = new Vector<Concept>();
+		try {
+			for (ConceptWord word : Context.getConceptService().findConcepts(searchText, Context.getLocale(), false)) {
+				concepts.add(word.getConcept());
+			}
+		}
+		catch (Exception e) {
+			// pass
+		}
+		return concepts;
+	}
+	
+
+	public List<Concept> getPossibleValues() {
+		try {
+			return Context.getConceptService().getConceptsByName("");
+		}
+		catch (Exception e) {
+			// pass
+		}
+		return Collections.emptyList();
+	}
+	
+
+	public Concept hydrate(String s) {
+		try {
+			return Context.getConceptService().getConcept(Integer.valueOf(s));
+		}
+		catch (Exception e) {
+			// pass
+		}
+		return null;
+	}
+	
+
+	public String serialize() {
+		return "" + this.getConceptId();
+	}
+
+	
 }

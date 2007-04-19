@@ -45,6 +45,13 @@
 				</div>
 			</openmrs:hasPrivilege>
 			
+			<openmrs:hasPrivilege privilege="Manage Relationships,Manage Person Attribute Types">
+				<div class="adminMenuList">
+					<h4><spring:message code="Person.header"/></h4>
+						<%@ include file="person/localHeader.jsp" %>
+				</div>
+			</openmrs:hasPrivilege>
+			
 			<openmrs:hasPrivilege privilege="View Encounters,Manage Locations,Manage Encounter Types">
 				<div class="adminMenuList">
 					<h4><spring:message code="Encounter.header"/></h4>

@@ -36,7 +36,7 @@ dojo.widget.defineWidget(
 				DWRConceptService.getDrug(this.simpleClosure(this, "select"), this.drugId);
 			}
 			else if (this.conceptId) {
-				DWRConceptService.getConcept(this.simpleClosure(this, "select"), this.conceptId);
+				DWRConceptService.getConcept(this.simpleClosure(this, "select", true), this.conceptId);
 			}
 			
 			this.inputNode.value = this.searchPhrase;
@@ -44,7 +44,8 @@ dojo.widget.defineWidget(
 			
 			if ( this.showAnswers && (this.searchPhrase || this.performInitialSearch) ) {
 				DWRConceptService.findConceptAnswers(this.simpleClosure(this, "doObjectsFound"), this.searchPhrase, this.showAnswers, false, this.includeDrugConcepts);
-			} else if (this.searchPhrase){
+			}
+			else if (this.searchPhrase){
 				DWRConceptService.findConcepts(this.simpleClosure(this, "doObjectsFound"), this.searchPhrase, false, this.includeClasses, this.excludeClasses, this.includeDatatypes, this.excludeDatatypes, this.includeDrugConcepts);
 			}
 		},

@@ -12,11 +12,11 @@
 				</c:if>
 			</c:if>
 			<c:forTokens items="${model.answerSet}" delims="," var="token">
-				<option value="${token}"<c:if test="${token == model.obj}"> selected</c:if>>${token}</option>
+				<option value="${token}"<c:if test="${token == model.initialValue}"> selected</c:if>>${token}</option>
 			</c:forTokens>
 		</select>
 	</c:when>
 	<c:otherwise>
-		<input type="text" name="${model.formFieldName}" id="${model.formFieldName}" value="${model.obj}" size="${model.fieldLength}">
+		<input type="text" name="${model.formFieldName}" id="${model.formFieldName}" value="${model.initialValue}" x size="${model.fieldLength}">
 	</c:otherwise>
 </c:choose>

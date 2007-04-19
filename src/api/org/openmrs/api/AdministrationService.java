@@ -15,15 +15,10 @@ import org.openmrs.FieldType;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
-import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.Person;
 import org.openmrs.Privilege;
-import org.openmrs.Relationship;
-import org.openmrs.RelationshipType;
 import org.openmrs.Role;
 import org.openmrs.Tribe;
-import org.openmrs.User;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.Report;
@@ -33,43 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 public interface AdministrationService {
 
 	public void setAdministrationDAO(AdministrationDAO dao);
-
-	/**
-	 * Create a new Person
-	 * @param Person to create
-	 * @throws APIException
-	 */
-	public void createPerson(Person person) throws APIException;
 	
-	/**
-	 * Update an encounter type
-	 * @param Person to update
-	 * @throws APIException
-	 */
-	public void updatePerson(Person person) throws APIException;
-
-	/**
-	 * Delete an encounter type
-	 * @param Person to delete
-	 * @throws APIException
-	 */
-	public void deletePerson(Person person) throws APIException;
-
-	/**
-	 * 
-	 * @param personId to get
-	 * @return Person
-	 * @throws APIException
-	 */
-	@Transactional(readOnly=true)
-	public Person getPerson(Integer personId) throws APIException;
-
-	@Transactional(readOnly=true)
-	public Person getPerson(Patient pat) throws APIException;
-
-	@Transactional(readOnly=true)
-	public Person getPerson(User user) throws APIException;
-
 	/**
 	 * Create a new EncounterType
 	 * @param EncounterType to create
@@ -152,46 +111,7 @@ public interface AdministrationService {
 	 * @throws APIException
 	 */
 	public void unretireTribe(Tribe tribe) throws APIException;
-
-	/**
-	 * Create a new Relationship
-	 * @param Relationship to create
-	 * @throws APIException
-	 */
-	public void createRelationship(Relationship relationship)
-			throws APIException;
-
-	/**
-	 * Update Relationship
-	 * @param Relationship to update
-	 * @throws APIException
-	 */
-	public void updateRelationship(Relationship relationship)
-			throws APIException;
-
-	/**
-	 * Delete Relationship
-	 * @param Relationship to delete
-	 * @throws APIException
-	 */
-	public void deleteRelationship(Relationship relationship)
-			throws APIException;
-
-	/**
-	 * Retire Relationship
-	 * @param Relationship to void
-	 * @throws APIException
-	 */
-	public void voidRelationship(Relationship relationship) throws APIException;
-
-	/**
-	 * Unretire Relationship
-	 * @param Relationship to unvoid
-	 * @throws APIException
-	 */
-	public void unvoidRelationship(Relationship relationship)
-			throws APIException;
-
+	
 	/**
 	 * Create a new FieldType
 	 * @param FieldType to create
@@ -255,29 +175,6 @@ public interface AdministrationService {
 	 */
 	public void deleteLocation(Location location) throws APIException;
 
-	/**
-	 * Create a new RelationshipType
-	 * @param RelationshipType to create
-	 * @throws APIException
-	 */
-	public void createRelationshipType(RelationshipType relationshipType)
-			throws APIException;
-
-	/**
-	 * Update RelationshipType
-	 * @param RelationshipType to update
-	 * @throws APIException
-	 */
-	public void updateRelationshipType(RelationshipType relationshipType)
-			throws APIException;
-
-	/**
-	 * Delete RelationshipType
-	 * @param RelationshipType to delete
-	 * @throws APIException
-	 */
-	public void deleteRelationshipType(RelationshipType relationshipType)
-			throws APIException;
 
 	/**
 	 * Create a new Role

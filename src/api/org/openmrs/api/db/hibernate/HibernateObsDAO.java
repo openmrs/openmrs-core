@@ -27,16 +27,19 @@ import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.Obs;
-import org.openmrs.Patient;
+import org.openmrs.Person;
+import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.ObsDAO;
 import org.openmrs.logic.Aggregation;
 import org.openmrs.logic.Constraint;
 import org.openmrs.logic.DateConstraint;
+import org.openmrs.util.OpenmrsUtil;
 
-//import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
-
+/**
+ * @author bwolfe
+ */
 public class HibernateObsDAO implements ObsDAO {
 
 	protected final Log log = LogFactory.getLog(getClass());
@@ -59,7 +62,7 @@ public class HibernateObsDAO implements ObsDAO {
 	}
 
 	/**
-	 * @see org.openmrs.api.db.ObsService#createObs(org.openmrs.Obs)
+	 * @see org.openmrs.api.db.ObsDAO#createObs(org.openmrs.Obs)
 	 */
 	public void createObs(Obs obs) throws DAOException {
 		if (obs.getCreator() == null)
@@ -85,25 +88,35 @@ public class HibernateObsDAO implements ObsDAO {
 		return (Obs) sessionFactory.getCurrentSession().get(Obs.class, obsId);
 	}
 
+	/**
+	 * @see org.openmrs.api.db.ObsDAO#findObservations(java.lang.Integer, boolean, java.lang.Integer)
+	 */
 	@SuppressWarnings("unchecked")
-	public List<Obs> findObservations(Integer id, boolean includeVoided)
+	public List<Obs> findObservations(Integer id, boolean includeVoided, Integer personType)
 			throws DAOException {
 
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(
-				Obs.class).createAlias("patient", "p").createAlias("encounter",
-				"e").add(
-				Expression.or(Expression.eq("p.patientId", id), Expression
-						.like("e.encounterId", id)));
+		Criteria criteria = sessionFactory.getCurrentSession()
+				.createCriteria(Obs.class)
+				.createAlias("person", "p")
+				.createAlias("encounter", "e")
+				.add(
+					Expression.or(
+						Expression.eq("p.personId", id),
+						Expression.like("e.encounterId", id)
+					)
+				);
 
 		if (includeVoided == false) {
 			criteria.add(Expression.eq("voided", new Boolean(false)));
 		}
+		
+		getCriteriaPersonModifier(criteria, personType);
 
 		return criteria.list();
 	}
 
 	/**
-	 * @see org.openmrs.api.db.ObsService#getMimeType(java.lang.Integer)
+	 * @see org.openmrs.api.db.ObsDAO#getMimeType(java.lang.Integer)
 	 */
 	public MimeType getMimeType(Integer mimeTypeId) throws DAOException {
 		MimeType mimeType = new MimeType();
@@ -114,7 +127,7 @@ public class HibernateObsDAO implements ObsDAO {
 	}
 
 	/**
-	 * @see org.openmrs.api.db.ObsService#getMimeTypes()
+	 * @see org.openmrs.api.db.ObsDAO#getMimeTypes()
 	 */
 	@SuppressWarnings("unchecked")
 	public List<MimeType> getMimeTypes() throws DAOException {
@@ -125,7 +138,7 @@ public class HibernateObsDAO implements ObsDAO {
 	}
 
 	/**
-	 * @see org.openmrs.api.db.ObsService#updateObs(org.openmrs.Obs)
+	 * @see org.openmrs.api.db.ObsDAO#updateObs(org.openmrs.Obs)
 	 */
 	public void updateObs(Obs obs) throws DAOException {
 		if (obs.getObsId() == null)
@@ -136,11 +149,11 @@ public class HibernateObsDAO implements ObsDAO {
 	}
 
 	/**
-	 * @see org.openmrs.api.db.ObsService#getObservations(org.openmrs.Concept,org.openmrs.Location,java.lang.String)
+	 * @see org.openmrs.api.db.ObsDAO#getObservations(org.openmrs.Concept, org.openmrs.Location, java.lang.String, java.lang.Integer)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Obs> getObservations(Concept c, Location location, String sort) {
-		String q = "from Obs obs where obs.location = :loc and obs.concept = :concept";
+	public List<Obs> getObservations(Concept c, Location location, String sort, Integer personType) {
+		String q = "select obs " + getHqlPersonModifier(personType, "obs.location = :loc and obs.concept = :concept");
 		if (sort != null && sort.length() > 0)
 			q += " order by :sort";
 
@@ -149,13 +162,13 @@ public class HibernateObsDAO implements ObsDAO {
 		query.setParameter("concept", c);
 
 		if (sort != null && sort.length() > 0)
-			query.setParameter("sort", sort);
+			query.setParameter("sort", "obs." + sort);
 
 		return query.list();
 	}
 
 	/**
-	 * @see org.openmrs.api.db.ObsService#getObservations(org.openmrs.Encounter)
+	 * @see org.openmrs.api.db.ObsDAO#getObservations(org.openmrs.Encounter)
 	 */
 	@SuppressWarnings("unchecked")
 	public Set<Obs> getObservations(Encounter whichEncounter) {
@@ -168,13 +181,12 @@ public class HibernateObsDAO implements ObsDAO {
 	}
 
 	/**
-	 * @see org.openmrs.api.db.ObsService#getObservations(org.openmrs.Patient,
-	 *      org.openmrs.Concept)
+	 * @see org.openmrs.api.db.ObsDAO#getObservations(org.openmrs.Person, org.openmrs.Concept)
 	 */
 	@SuppressWarnings("unchecked")
-	public Set<Obs> getObservations(Patient who, Concept question) {
+	public Set<Obs> getObservations(Person who, Concept question) {
 		Query query = sessionFactory.getCurrentSession().createQuery(
-				"from Obs obs where obs.patient = :p and obs.concept = :c");
+				"from Obs obs where obs.person = :p and obs.concept = :c");
 		query.setParameter("p", who);
 		query.setParameter("c", question);
 		Set<Obs> ret = new HashSet<Obs>(query.list());
@@ -183,15 +195,14 @@ public class HibernateObsDAO implements ObsDAO {
 	}
 
 	/**
-	 * @see org.openmrs.api.db.ObsService#getObservations(java.lang.Integer,org.openmrs.Patient,org.openmrs.Concept)
+	 * @see org.openmrs.api.db.ObsDAO#getLastNObservations(java.lang.Integer, org.openmrs.Person, org.openmrs.Concept)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Obs> getLastNObservations(Integer n, Patient who,
-			Concept question) {
+	public List<Obs> getLastNObservations(Integer n, Person who, Concept question) {
 		Query query = sessionFactory
 				.getCurrentSession()
 				.createQuery(
-						"from Obs obs where obs.patient = :p and obs.concept = :c order by obs.obsDatetime desc");
+						"from Obs obs where obs.person = :p and obs.concept = :c order by obs.obsDatetime desc");
 		query.setParameter("p", who);
 		query.setParameter("c", question);
 		query.setMaxResults(n);
@@ -200,27 +211,29 @@ public class HibernateObsDAO implements ObsDAO {
 	}
 
 	/**
-	 * @see org.openmrs.api.db.ObsService#getObservations(org.openmrs.Concept)
+	 * @see org.openmrs.api.db.ObsDAO#getObservations(org.openmrs.Concept, java.lang.String, java.lang.Integer)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Obs> getObservations(Concept question, String sort) {
+	public List<Obs> getObservations(Concept question, String sort, Integer personType) {
 		
 		if (sort == null || sort.equals(""))
 			sort = "obsId";
 		
 		Query query = sessionFactory.getCurrentSession().createQuery(
-				"from Obs obs where obs.concept = :c and obs.voided = false order by "
-						+ sort).setParameter("c", question);
+				"select obs " + getHqlPersonModifier(personType, "obs.concept = :c and obs.voided = false") + 
+				" order by obs." + sort)
+				.setParameter("c", question);
 
 		return query.list();
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.ObsService#getObservationsAnsweredByConcept(org.openmrs.Concept)
+	 * @see org.openmrs.api.db.ObsDAO#getObservationsAnsweredByConcept(org.openmrs.Concept, java.lang.Integer)
 	 */
-	public List<Obs> getObservationsAnsweredByConcept(Concept answer) {
+	@SuppressWarnings("unchecked")
+	public List<Obs> getObservationsAnsweredByConcept(Concept answer, Integer personType) {
 		Query query = sessionFactory.getCurrentSession().createQuery(
-				"from Obs obs where obs.valueCoded = :c and obs.voided = false")
+				"select obs " + getHqlPersonModifier(personType, "obs.valueCoded = :c and obs.voided = false"))
 				.setParameter("c", answer);
 
 		return query.list();
@@ -228,28 +241,88 @@ public class HibernateObsDAO implements ObsDAO {
 	
 	
 	/**
-	 * @see org.openmrs.api.db.ObsService#getNumericAnswersForConcept(org.openmrs.Concept,java.lang.Boolean)
+	 * @see org.openmrs.api.db.ObsDAO#getNumericAnswersForConcept(org.openmrs.Concept, java.lang.Boolean, java.lang.Integer)
 	 */
-	public List<Object[]> getNumericAnswersForConcept(Concept answer, Boolean sortByValue) {
+	@SuppressWarnings("unchecked")
+	public List<Object[]> getNumericAnswersForConcept(Concept answer, Boolean sortByValue, Integer personType) {
 		
 		String sort = "obs.obsDatetime desc";
 		if (sortByValue)
 			sort = "obs.valueNumeric asc";
 		
-		Query query = sessionFactory.getCurrentSession().createQuery(
-				"select obs.obsId, obs.obsDatetime, obs.valueNumeric from Obs obs where obs.concept = :c and obs.valueNumeric is not null and obs.voided = false order by " + sort)
+		String sql = "";
+		sql += "select obs.obsId, obs.obsDatetime, obs.valueNumeric ";
+		sql += getHqlPersonModifier(personType, "obs.concept = :c and obs.valueNumeric is not null and obs.voided = false");
+		sql += " order by obs." + sort;
+		
+		Query query = sessionFactory.getCurrentSession().createQuery(sql)
 				.setParameter("c", answer);
 
 		return query.list();
 	}
+	
+	/**
+	 * 
+	 * @param personType
+	 * @return
+	 */
+	private String getHqlPersonModifier(Integer personType, String whereClause) {
+		String from = "from Obs obs";
+		List<String> whereClauses = new Vector<String>();
+		
+		if (whereClause != null && whereClause.length() > 0) {
+			whereClauses.add("(" + whereClause + ")");
+		}
+		
+		if ((personType & ObsService.PATIENT) == ObsService.PATIENT) {
+			from += ", Patient p";
+			whereClauses.add("p.patientId = obs.person.personId");
+		}
+		
+		if ((personType & ObsService.USER) == ObsService.USER) {
+			from += ", User u";
+			whereClauses.add("u.userId = obs.person.personId");
+		}
+		
+		if ((personType & ObsService.PERSON) == ObsService.PERSON) {
+			// all observations are already on person's.  Limit to non-patient and non-users here?
+			//from += ", Person person";
+			//whereClauses.add("person.personId = obs.personId");
+		}
+		
+		if (whereClauses.size() > 0)
+			from = from + " where " + OpenmrsUtil.join(whereClauses, " and ");
+		
+		return from + " ";
+		
+	}
+	
+	private void getCriteriaPersonModifier(Criteria criteria, Integer personType) {
+		if ((personType & ObsService.PATIENT) == ObsService.PATIENT) {
+			criteria.createAlias("Patient", "p");
+			criteria.add(Restrictions.eqProperty("obs.person.personId", "p.patientId"));
+		}
+		
+		if ((personType & ObsService.USER) == ObsService.USER) {
+			criteria.createAlias("User", "u");
+			criteria.add(Restrictions.eqProperty("obs.person.personId", "u.userId"));
+		}
+		
+		if ((personType & ObsService.PERSON) == ObsService.PERSON) {
+			// all observations are already on person's.  Limit to non-patient and non-users here?
+			//criteria.createAlias("Person", "person");
+			//criteria.add(Restrictions.eqProperty("obs.person.personId", "person.personId"));
+		}
+		
+	}
 
 	/**
-	 * @see org.openmrs.api.db.ObsService#getObservations(org.openmrs.Patient)
+	 * @see org.openmrs.api.db.ObsDAO#getObservations(org.openmrs.Person)
 	 */
 	@SuppressWarnings("unchecked")
-	public Set<Obs> getObservations(Patient who) {
+	public Set<Obs> getObservations(Person who) {
 		Query query = sessionFactory.getCurrentSession().createQuery(
-				"from Obs obs where obs.patient = :p");
+				"from Obs obs where obs.person = :p");
 		query.setParameter("p", who);
 		Set<Obs> ret = new HashSet<Obs>(query.list());
 
@@ -257,7 +330,7 @@ public class HibernateObsDAO implements ObsDAO {
 	}
 
 	/**
-	 * @see org.openmrs.api.db.ObsService#getVoidedObservations()
+	 * @see org.openmrs.api.db.ObsDAO#getVoidedObservations()
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Obs> getVoidedObservations() throws DAOException {
@@ -269,6 +342,9 @@ public class HibernateObsDAO implements ObsDAO {
 		return query.list();
 	}
 
+	/**
+	 * @see org.openmrs.api.db.ObsDAO#findObsByGroupId(java.lang.Integer)
+	 */
 	@SuppressWarnings("unchecked")
 	public List<Obs> findObsByGroupId(Integer obsGroupId) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(
@@ -277,13 +353,16 @@ public class HibernateObsDAO implements ObsDAO {
 		return criteria.list();
 	}
 
+	/**
+	 * @see org.openmrs.api.db.ObsDAO#getObservations(org.openmrs.Person, org.openmrs.logic.Aggregation, org.openmrs.Concept, org.openmrs.logic.Constraint)
+	 */
 	@SuppressWarnings("unchecked")
-	public List<Obs> getObservations(Patient who, Aggregation aggregation,
+	public List<Obs> getObservations(Person who, Aggregation aggregation,
 			Concept question, Constraint constraint) {
 		Session session = sessionFactory.getCurrentSession();
 		Criteria criteria = session.createCriteria(Obs.class);
 
-		criteria.add(Restrictions.eq("patient", who));
+		criteria.add(Restrictions.eq("person", who));
 		criteria.add(Restrictions.eq("concept", question));
 		criteria.add(Restrictions.eq("voided", false));
 
@@ -421,7 +500,7 @@ public class HibernateObsDAO implements ObsDAO {
 				break;
 			case Aggregation.MAXIMUM:
 				DetachedCriteria maxObs = DetachedCriteria.forClass(
-						Obs.class).add(Restrictions.eq("patient", who)).add(
+						Obs.class).add(Restrictions.eq("person", who)).add(
 						Restrictions.eq("concept", question));
 				if (dateCriterion != null)
 					maxObs = maxObs
@@ -436,7 +515,7 @@ public class HibernateObsDAO implements ObsDAO {
 				break;
 			case Aggregation.MINIMUM:
 				DetachedCriteria minObs = DetachedCriteria.forClass(
-						Obs.class).add(Restrictions.eq("patient", who)).add(
+						Obs.class).add(Restrictions.eq("person", who)).add(
 						Restrictions.eq("concept", question));
 				if (dateCriterion != null)
 					minObs = minObs
@@ -456,7 +535,7 @@ public class HibernateObsDAO implements ObsDAO {
 			case Aggregation.LATEST:
 			case Aggregation.LAST:
 				DetachedCriteria latestObs = DetachedCriteria.forClass(
-						Obs.class).add(Restrictions.eq("patient", who)).add(
+						Obs.class).add(Restrictions.eq("person", who)).add(
 						Restrictions.eq("concept", question));
 				if (dateCriterion != null)
 					latestObs = latestObs
@@ -472,7 +551,7 @@ public class HibernateObsDAO implements ObsDAO {
 			case Aggregation.EARLIEST:
 			case Aggregation.FIRST:
 				DetachedCriteria earliestObs = DetachedCriteria.forClass(
-						Obs.class).add(Restrictions.eq("patient", who)).add(
+						Obs.class).add(Restrictions.eq("person", who)).add(
 						Restrictions.eq("concept", question));
 				if (dateCriterion != null)
 					earliestObs = earliestObs

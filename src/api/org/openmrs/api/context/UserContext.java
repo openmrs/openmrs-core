@@ -106,8 +106,8 @@ public class UserContext {
 		// hydrate the user object
 		if (u.getAllRoles() != null)
 			u.getAllRoles().size();
-		if (u.getProperties() != null)
-			u.getProperties().size();
+		if (u.getUserProperties() != null)
+			u.getUserProperties().size();
 		if (u.getPrivileges() != null)
 			u.getPrivileges().size();
 		

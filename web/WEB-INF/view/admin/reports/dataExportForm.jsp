@@ -441,7 +441,7 @@
 		<tr>
 			<th><spring:message code="general.createdBy" /></th>
 			<td>
-				${dataExport.creator.firstName} ${dataExport.creator.lastName} -
+				${dataExport.creator.personName} -
 				<openmrs:formatDate date="${dataExport.dateCreated}" type="long" />
 			</td>
 		</tr>

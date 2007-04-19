@@ -8,10 +8,10 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.openmrs.BaseTest;
+import org.openmrs.PersonName;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
-import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 
 public class UserServiceTest extends BaseTest {
@@ -29,9 +29,7 @@ public class UserServiceTest extends BaseTest {
 		
 		if (u == null)
 			u = new User();
-		u.setFirstName("Benjamin");
-		u.setMiddleName("Alexander");
-		u.setLastName("Wolfe");
+		u.addName(new PersonName("Benjamin", "A", "Wolfe"));
 		u.setUsername("bwolfe");
 //		u.setRoles(new HashSet());
 		

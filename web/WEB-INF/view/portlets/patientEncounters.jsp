@@ -73,10 +73,10 @@ Parameters
 									<openmrs:formatDate date="${enc.encounterDatetime}" type="small" />
 								</td>
 							 	<td>${enc.encounterType.name}</td>
-							 	<td>${enc.provider.firstName} ${enc.provider.lastName}</td>
+							 	<td>${enc.provider.personName}</td>
 							 	<td>${enc.form.name}</td>
 							 	<td>${enc.location.name}</td>
-							 	<td>${enc.creator.firstName} ${enc.creator.lastName}</td>
+							 	<td>${enc.creator.personName}</td>
 							</tr>
 						</openmrs:forEachEncounter>
 					</c:if>

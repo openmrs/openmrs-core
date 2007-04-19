@@ -1,15 +1,17 @@
 package org.openmrs.web.controller.patient;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import org.openmrs.Concept;
-import org.openmrs.Location;
 import org.openmrs.Patient;
-import org.openmrs.PatientAddress;
 import org.openmrs.PatientIdentifier;
-import org.openmrs.PatientName;
+import org.openmrs.PersonAddress;
+import org.openmrs.PersonAttribute;
+import org.openmrs.PersonName;
 import org.openmrs.Relationship;
 
 public class ShortPatientModel {
@@ -17,22 +19,25 @@ public class ShortPatientModel {
 	private String identifier = "";
 	private Boolean identifierCheckDigit = false;
 	private String otherIdentifiers = "";
-	private String familyName = "";
-	private String middleName = "";
-	private String givenName = "";
+	private PersonName name = new PersonName();
 	private String otherNames = "";
 	private String gender;
-	private Location healthCenter = null;
 	private String tribe = "";
 	private Date birthdate;
 	private Boolean birthdateEstimated = false;
-	private String mothersName;
-	private PatientAddress address;
+	private PersonAddress address;
 	private Boolean voided = false;
 	private Boolean dead = false;
 	private Concept causeOfDeath = null;
 	private Date deathDate = null;
 	private List<Relationship> relationships = new Vector<Relationship>();
+	
+	// convenience map:
+	// Map<attribute.getAttributeType().getName(), attribute>
+	Map<String, PersonAttribute> attributeMap = null;
+	
+	// private Location healthCenter = null;
+	// private String mothersName;
 	
 	public Boolean getDead() {
 		return dead;
@@ -66,11 +71,9 @@ public class ShortPatientModel {
 			
 			// get patient's names
 			first = true;
-			for (PatientName pn : patient.getNames()) {
+			for (PersonName pn : patient.getNames()) {
 				if (first) {
-					familyName = pn.getFamilyName();
-					middleName = pn.getMiddleName();
-					givenName = pn.getGivenName();
+					setName(pn);
 					first = false;
 				} else {
 					if (otherNames != "")
@@ -85,22 +88,27 @@ public class ShortPatientModel {
 			
 			birthdate = patient.getBirthdate();
 			birthdateEstimated = patient.isBirthdateEstimated();
-			mothersName = patient.getMothersName();
-			healthCenter = patient.getHealthCenter();
+			//mothersName = patient.getMothersName();
+			//healthCenter = patient.getHealthCenter();
 			voided = patient.isVoided();
 			dead = patient.isDead();
 			causeOfDeath = patient.getCauseOfDeath();
 			deathDate = patient.getDeathDate();
 						
-			address = patient.getPatientAddress();
+			address = patient.getPersonAddress();
+			
+			attributeMap = new HashMap<String, PersonAttribute>();
+			for (PersonAttribute attribute : patient.getActiveAttributes()) {
+				attributeMap.put(attribute.getAttributeType().getName(), attribute);
+			}
 		}
 	}
 
-	public PatientAddress getAddress() {
+	public PersonAddress getAddress() {
 		return address;
 	}
 
-	public void setAddress(PatientAddress address) {
+	public void setAddress(PersonAddress address) {
 		this.address = address;
 	}
 
@@ -120,28 +128,12 @@ public class ShortPatientModel {
 		this.birthdateEstimated = birthdateEstimated;
 	}
 
-	public String getFamilyName() {
-		return familyName;
-	}
-
-	public void setFamilyName(String familyName) {
-		this.familyName = familyName;
-	}
-
 	public String getGender() {
 		return gender;
 	}
 
 	public void setGender(String gender) {
 		this.gender = gender;
-	}
-
-	public String getGivenName() {
-		return givenName;
-	}
-
-	public void setGivenName(String givenName) {
-		this.givenName = givenName;
 	}
 
 	public String getIdentifier() {
@@ -158,22 +150,6 @@ public class ShortPatientModel {
 
 	public void setIdentifierCheckDigit(Boolean identifierCheckDigit) {
 		this.identifierCheckDigit = identifierCheckDigit;
-	}
-
-	public String getMiddleName() {
-		return middleName;
-	}
-
-	public void setMiddleName(String middleName) {
-		this.middleName = middleName;
-	}
-
-	public String getMothersName() {
-		return mothersName;
-	}
-
-	public void setMothersName(String mothersName) {
-		this.mothersName = mothersName;
 	}
 
 	public String getOtherIdentifiers() {
@@ -216,14 +192,6 @@ public class ShortPatientModel {
 		this.voided = voided;
 	}
 
-	public Location getHealthCenter() {
-		return healthCenter;
-	}
-
-	public void setHealthCenter(Location healthCenter) {
-		this.healthCenter = healthCenter;
-	}
-
 	public Concept getCauseOfDeath() {
 		return causeOfDeath;
 	}
@@ -246,6 +214,18 @@ public class ShortPatientModel {
 
 	public void setRelationships(List<Relationship> relationships) {
 		this.relationships = relationships;
+	}
+	
+	public Map<String, PersonAttribute> getAttributeMap() {
+		return attributeMap;
+	}
+
+	public PersonName getName() {
+		return name;
+	}
+
+	public void setName(PersonName name) {
+		this.name = name;
 	}
 	
 }

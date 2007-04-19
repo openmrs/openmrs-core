@@ -26,6 +26,7 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
 import org.openmrs.Person;
+import org.openmrs.PersonName;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
@@ -36,6 +37,7 @@ import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
@@ -115,8 +117,8 @@ public class MigrationHelper {
 				continue;
 			}
 			User user = new User();
-			user.setFirstName(e.getAttribute("first_name"));
-			user.setLastName(e.getAttribute("last_name"));
+			PersonName pn = new PersonName(e.getAttribute("first_name"), "", e.getAttribute("last_name"));
+			user.addName(pn);
 			user.setUsername(username);
 			user.setDateCreated(parseDate(e.getAttribute("date_created")));
 			user.setDateChanged(parseDate(e.getAttribute("date_changed")));
@@ -181,7 +183,7 @@ public class MigrationHelper {
 	public static int importRelationships(Collection<String> relationships, boolean autoCreateUsers, boolean autoAddRole) {
 		PatientService ps = Context.getPatientService();
 		UserService us = Context.getUserService();
-		AdministrationService as = Context.getAdministrationService();
+		PersonService personService = Context.getPersonService();
 		List<Relationship> relsToAdd = new ArrayList<Relationship>();
 		Random rand = new Random();
 		for (String s : relationships) {
@@ -216,8 +218,8 @@ public class MigrationHelper {
 			}
 			if (user == null && autoCreateUsers) {
 				user = new User();
-				user.setFirstName(userFirstName);
-				user.setLastName(userLastName);
+				PersonName pn = new PersonName(userFirstName, "", userLastName);
+				user.addName(pn);
 				user.setUsername(username);
 				// Generate a temporary password: 8-12 random characters
 				String pass = null;
@@ -239,23 +241,23 @@ public class MigrationHelper {
 			}
 			if (user == null)
 				throw new IllegalArgumentException("Can't find user '" + userLastName + ", " + userFirstName + "'"); 
-			Person person = as.getPerson(user);			
+			Person person = personService.getPerson(user);			
 			
-			RelationshipType relationship = ps.findRelationshipType(relationshipType);
+			RelationshipType relationship = personService.findRelationshipType(relationshipType);
 			PatientIdentifierType pit = ps.getPatientIdentifierType(identifierType);
 			List<PatientIdentifier> found = ps.getPatientIdentifiers(identifier, pit);
 			if (found.size() != 1)
 				throw new IllegalArgumentException("Found " + found.size() + " patients with identifier '" + identifier + "' of type " + identifierType);
-			Person relative = as.getPerson(found.get(0).getPatient());
+			Person relative = personService.getPerson(found.get(0).getPatient());
 			Relationship rel = new Relationship();
-			rel.setPerson(person);
-			rel.setRelationship(relationship);
-			rel.setRelative(relative);
+			rel.setPersonA(person);
+			rel.setRelationshipType(relationship);
+			rel.setPersonB(relative);
 			relsToAdd.add(rel);
 		}
 		int addedSoFar = 0;
 		for (Relationship rel : relsToAdd) {
-			as.createRelationship(rel);
+			personService.createRelationship(rel);
 			++addedSoFar;
 		}
 		return addedSoFar;

@@ -9,6 +9,7 @@
 		</create>
 	
 		<convert converter="bean" match="org.openmrs.web.dwr.PatientListItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.PersonListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.ConceptListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.ConceptDrugListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.EncounterListItem"/>
@@ -42,6 +43,13 @@
 			<include method="addIdentifier" />
 			<include method="exitPatientFromCare" />
 			<include method="changeHealthCenter" />
+		</create>
+		
+		<create creator="new" javascript="DWRPersonService">
+			<param name="class" value="org.openmrs.web.dwr.DWRPersonService" />
+			<include method="getSimilarPeople"/>
+			<include method="findPeople"/>
+			<include method="getPerson"/>
 		</create>
 	
 		<create creator="new" javascript="DWRConceptService">
@@ -193,6 +201,7 @@
 	<signatures>
 		<![CDATA[
 			import org.openmrs.web.dwr.DWRPatientService;
+			import org.openmrs.web.dwr.DWRPersonService;
 			import org.openmrs.web.dwr.DWRConceptService;
 			import org.openmrs.web.dwr.DWREncounterService;
 			import org.openmrs.web.dwr.DWRPatientService;
@@ -208,7 +217,7 @@
 			DWRConceptService.getDrugs(Integer conceptId, boolean showConcept);
 			DWRConceptService.findDrugs(String phrase, boolean includeRetired);
 			DWREncounterService.findEncounters(String phrase, boolean includeVoided);
-			DWRPatientService.getSimilarPatients(String name, Date birthdate, String age, String gender);
+			DWRPersonService.getSimilarPeople(String name, Date birthdate, String age, String gender);
 			DWRUserService.findUsers(String phrase, List<String> roles, boolean includeVoided);
 			DWRUserService.getAllUsers(List<String> roles, boolean includeVoided);
 			DWRObsService.findObs(String phrase, boolean includeVoided);

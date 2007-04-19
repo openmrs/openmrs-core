@@ -65,7 +65,7 @@ public class PatientWidgetTag extends TagSupport {
 				}
 				if (patient.getAge() != null) {
 					//Object[] msgArgs = { patient.getAge() };
-					//w.print(", " + messageSource.getMessage("Patient.age.yearsOld", msgArgs, locale));
+					//w.print(", " + messageSource.getMessage("Person.age.yearsOld", msgArgs, locale));
 					w.print(", " + patient.getAge() + " year(s) old");
 				}
 			}

@@ -122,10 +122,16 @@
 	<tag-class>org.openmrs.web.taglib.FormatDateTag</tag-class>
 	<body-content>empty</body-content>
 	<attribute>
+		<description>If this is not defined, date is retrieved from status.value</description>
 		<name>date</name>
-		<required>true</required>
+		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
 		<type>java.util.Date</type>
+	</attribute>
+	<attribute>
+		<name>path</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
 		<name>type</name>
@@ -195,6 +201,37 @@
 	<attribute>
 		<name>includeExpired</name>
 		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+</tag>
+
+<tag>
+	<description>
+		Loops over the PersonAttributeTypes to display a person.  If `type` is 'patient', only patient 
+		display attributes are returned. If `type` is 'user', only user display attributes are returned.
+		'listing' `displayTypes` are maintained with global properties: patient.listingAttributeTypes and 
+		user.listingAttributeTypes.  'viewing' `displayTypes` are maintained with global properties:
+		patient.viewingAttributeTypes and user.viewingAttributeTypes
+		The global properties are all comma delimited lists of either PersonAttributeType names or ids. 
+	</description>
+	<name>forEachDisplayAttributeType</name>
+	<tag-class>org.openmrs.web.taglib.ForEachDisplayAttributeTag</tag-class>
+	<body-content>JSP</body-content>
+	<attribute>
+		<description>This can only be either 'patient' or 'user'</description>
+		<name>personType</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<description>This can only be either 'listing' or 'viewing'</description>
+		<name>displayType</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>var</name>
+		<required>true</required>
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 </tag>
@@ -888,6 +925,16 @@
 		<rtexprvalue>true</rtexprvalue>
 		<type>java.lang.String</type>
 	</attribute>
+</tag>
+
+<tag>
+	<description>
+		Prints out the current contextPath 
+		(used instead of the typical ${pageContext.request.contextPath} )
+	</description>
+	<name>contextPath</name>
+	<tag-class>org.openmrs.web.taglib.ContextPathTag</tag-class>
+	<body-content>empty</body-content>
 </tag>
 
 <function>

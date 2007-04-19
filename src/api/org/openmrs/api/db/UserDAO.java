@@ -19,9 +19,10 @@ public interface UserDAO {
 	 * Create a new user
 	 * @param user
 	 * @param password
+	 * @returns created user object
 	 * @throws DAOException
 	 */
-	public void createUser(User user, String password) throws DAOException;
+	public User createUser(User user, String password) throws DAOException;
 
 	/**
 	 * Get user by internal user identifier
@@ -137,7 +138,7 @@ public interface UserDAO {
 	
 	public List<User> findUsers(String name, List<String> roles, boolean includeRetired) throws DAOException;
 	
-	public List<User> findUsers(String firstName, String lastName, boolean includeVoided);
+	public List<User> findUsers(String givenName, String familyName, boolean includeVoided);
 	
 	public List<User> getAllUsers(List<Role> roles, boolean includeRetired) throws DAOException;
 	

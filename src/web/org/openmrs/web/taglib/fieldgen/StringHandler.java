@@ -13,7 +13,8 @@ public class StringHandler extends AbstractFieldGenHandler implements FieldGenHa
 		checkEmptyVal((String)null);
 		if (fieldGenTag != null) {
 			Object initialValue = this.fieldGenTag.getVal();
-			setParameter("initialValue", initialValue == null ? "" : initialValue.toString());
+			log.debug("Initialvalue: '" + initialValue + "'");
+			setParameter("initialValue", initialValue == null ? "" : initialValue);
 
 			String fieldLength = this.fieldGenTag.getParameterMap() != null ? (String)this.fieldGenTag.getParameterMap().get("fieldLength") : null;
 			fieldLength = (fieldLength == null) ? FieldGenTag.DEFAULT_INPUT_TEXT_LENGTH : fieldLength;

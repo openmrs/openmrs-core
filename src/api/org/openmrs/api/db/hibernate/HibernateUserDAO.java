@@ -14,7 +14,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
-import org.openmrs.Person;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
@@ -50,35 +49,26 @@ public class HibernateUserDAO implements
 	/**
 	 * @see org.openmrs.api.db.UserService#createUser(org.openmrs.User)
 	 */
-	public void createUser(User user, String password) {
+	public User createUser(User user, String password) {
 		if (hasDuplicateUsername(user))
-			throw new DAOException("Username currently in use by '" + user.getFirstName() + " " + user.getLastName() + "'");
+			throw new DAOException("Username currently in use by '" + user.getPersonName() + "'");
 		
-			
-		String systemId = generateSystemId();
-		Integer checkDigit;
-		try {
-			checkDigit = OpenmrsUtil.getCheckDigit(systemId);
-		}
-		catch ( Exception e ) {
-			log.error("error getting check digit", e);
-			return;
-		}
-		user.setSystemId(systemId + "-" + checkDigit);
-		
-		user = updateProperties(user);
 		try {
 			sessionFactory.getCurrentSession().save(user);
+			//sessionFactory.getCurrentSession().refresh(user);
 		}
 		catch (NonUniqueObjectException e) {
 			sessionFactory.getCurrentSession().merge(user);
 		}
 		
+		/* TODO person relationships
 		// create a Person for this user as well.
 		Person person = new Person();
 		person.setUser(user);
 		sessionFactory.getCurrentSession().save(person);
+		*/
 		
+		/*
 		//update the new user with the password
 		String salt = Security.getRandomToken();
 		String hashedPassword = Security.encodeString(password + salt);
@@ -87,7 +77,9 @@ public class HibernateUserDAO implements
 			.setParameter("salt", salt)
 			.setParameter("username", user.getUserId())
 			.executeUpdate();
+		*/
 			
+		return user;
 	}
 
 	/**
@@ -157,7 +149,7 @@ public class HibernateUserDAO implements
 		User user = (User) sessionFactory.getCurrentSession().get(User.class, userId);
 		
 		if (user == null) {
-			log.warn("request or user '" + userId + "' not found");
+			log.warn("request for user '" + userId + "' not found");
 			throw new ObjectRetrievalFailureException(User.class, userId);
 		}
 		return user;
@@ -176,13 +168,12 @@ public class HibernateUserDAO implements
 	 * @see org.openmrs.api.db.UserService#updateUser(org.openmrs.User)
 	 */
 	public void updateUser(User user) {
-		if (user.getCreator() == null)
+		if (user.getUserId() == null)
 			createUser(user, "");
 		else {
 			if (log.isDebugEnabled()) {
 				log.debug("update user id: " + user.getUserId());
 			}
-			user = updateProperties(user);
 			try {
 				sessionFactory.getCurrentSession().update(user);
 			}
@@ -383,15 +374,15 @@ public class HibernateUserDAO implements
 		log.debug("name: " + name);
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(User.class);
-		//criteria.setProjection(Projections.distinct(Projections.property("user")));
+		criteria.createAlias("names", "name");
 		for (String n : names) {
 			if (n != null && n.length() > 0) {
 				criteria.add(Expression.or(
-						Expression.like("lastName", n, MatchMode.START),
+						Expression.like("name.givenName", n, MatchMode.START),
 						Expression.or(
-							Expression.like("firstName", n, MatchMode.START),
+							Expression.like("name.familyName", n, MatchMode.START),
 								Expression.or(
-										Expression.like("middleName", n, MatchMode.START),
+										Expression.like("name.middleName", n, MatchMode.START),
 										Expression.like("systemId", n, MatchMode.START)
 										)
 							)
@@ -415,7 +406,9 @@ public class HibernateUserDAO implements
 		
 		if (includeVoided == false)
 			criteria.add(Expression.eq("voided", false));
-
+		
+		criteria.addOrder(Order.asc("userId"));
+		
 		// TODO figure out how to get Hibernate to do the sql for us
 		
 		List returnList = new Vector();
@@ -441,7 +434,7 @@ public class HibernateUserDAO implements
 		
 		if (includeVoided == false)
 			criteria.add(Expression.eq("voided", false));
-
+		
 		List<User> returnList = new Vector<User>();
 		if (roles != null && roles.size() > 0) {
 			for (Object o : criteria.list()) {
@@ -464,8 +457,8 @@ public class HibernateUserDAO implements
 	}
 	
 	/**
-	 * Get/generate/find the next system id to be doled out.  Assume check digit /not/ applied
-	 * in this method
+	 * Get/generate/find the next system id to be doled out.  Assume check digit <b>not</b> applied
+	 * in this method (is applied by UserService.generateSystemId()
 	 * @return new system id
 	 */
 	public String generateSystemId() {
@@ -478,29 +471,15 @@ public class HibernateUserDAO implements
 		return id.toString();
 	}
 
-	private User updateProperties(User user) {
-		
-		if (user.getCreator() == null) {
-			user.setDateCreated(new Date());
-			user.setCreator(Context.getAuthenticatedUser());
-		}
-		
-		user.setChangedBy(Context.getAuthenticatedUser());
-		user.setDateChanged(new Date());
-		
-		return user;
-		
-	}
-
 	@SuppressWarnings("unchecked")
-	public List<User> findUsers(String firstName, String lastName, boolean includeVoided) {
+	public List<User> findUsers(String givenName, String familyName, boolean includeVoided) {
 		List<User> users = new Vector<User>();
-		String query = "from User u where u.firstName = :firstName and u.lastName = :lastName";
+		String query = "from User u where u.names.givenName = :givenName and u.names.familyName = :familyName";
 		if (!includeVoided)
 			query += " and u.voided = false";
 		Query q = sessionFactory.getCurrentSession().createQuery(query)
-				.setString("firstName", firstName)
-				.setString("lastName", lastName);
+				.setString("givenName", givenName)
+				.setString("familyName", familyName);
 		for (User u : (List<User>) q.list()) {
 			users.add(u);
 		}

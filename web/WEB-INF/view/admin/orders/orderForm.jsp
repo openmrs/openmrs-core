@@ -109,7 +109,7 @@
 		<tr>
 			<td><spring:message code="general.createdBy" /></td>
 			<td>
-				${order.creator.firstName} ${order.creator.lastName} - <openmrs:formatDate date="${order.dateCreated}" type="long" />
+				${order.creator.personName} - <openmrs:formatDate date="${order.dateCreated}" type="long" />
 			</td>
 		</tr>
 		<tr>

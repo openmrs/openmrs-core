@@ -6,9 +6,6 @@ import java.util.Set;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.Person;
-import org.openmrs.Relationship;
-import org.openmrs.RelationshipType;
 import org.openmrs.Tribe;
 import org.openmrs.api.APIException;
 
@@ -25,9 +22,10 @@ public interface PatientDAO {
 	 * Creates a new patient record
 	 * 
 	 * @param patient to be created
+	 * @returns the created patient
 	 * @throws DAOException
 	 */
-	public void createPatient(Patient patient) throws DAOException;
+	public Patient createPatient(Patient patient) throws DAOException;
 
 	/**
 	 * Get patient by internal identifier
@@ -42,9 +40,10 @@ public interface PatientDAO {
 	 * Update patient 
 	 * 
 	 * @param patient to be updated
+	 * @returns the crated patient
 	 * @throws DAOException
 	 */
-	public void updatePatient(Patient patient) throws DAOException;
+	public Patient updatePatient(Patient patient) throws DAOException;
 
 	/**
 	 * Find all patients with a given identifier
@@ -76,8 +75,6 @@ public interface PatientDAO {
 	 * @throws DAOException
 	 */
 	public Set<Patient> getPatientsByName(String name, boolean includeVoided) throws DAOException;
-	
-	public Set<Patient> getSimilarPatients(String name, Integer birthyear, String gender) throws DAOException;
 	
 	/**
 	 * Delete patient from database. This <b>should not be called</b>
@@ -169,55 +166,6 @@ public interface PatientDAO {
 	 * @throws DAOException
 	 */
 	public List<Tribe> findTribes(String s) throws DAOException;
-
-	/**
-	 * Get relationship by internal relationship identifier
-	 * 
-	 * @return Relationship
-	 * @param relationshipId 
-	 * @throws DAOException
-	 */
-	public Relationship getRelationship(Integer relationshipId) throws DAOException;
-	
-	/**
-	 * Get list of relationships that are not retired
-	 * 
-	 * @return non-voided Relationship list
-	 * @throws DAOException
-	 */
-	public List<Relationship> getRelationships() throws DAOException;
-	
-	/**
-	 * Get list of relationships containing Person 
-	 * 
-	 * @return Relationship list
-	 * @throws DAOException
-	 */
-	public List<Relationship> getRelationships(Person p, boolean showVoided) throws DAOException;
-	
-	/**
-	 * Get all relationshipTypes
-	 * 
-	 * @return relationshipType list
-	 * @throws DAOException
-	 */
-	public List<RelationshipType> getRelationshipTypes() throws DAOException;
-
-	/**
-	 * Get relationshipType by internal identifier
-	 * 
-	 * @param relationshipType id
-	 * @return relationshipType with given internal identifier
-	 * @throws DAOException
-	 */
-	public RelationshipType getRelationshipType(Integer relationshipTypeId) throws DAOException;
-	
-	/**
-	 * Get relationshipType by name
-	 * 
-	 * @throws DAOException
-	 */
-	public RelationshipType findRelationshipType(String relationshipTypeName) throws DAOException;
 	
 	/**
 	 * Search the database for patients that share the given attributes

@@ -11,7 +11,7 @@ public class HealthCenterRule extends Rule {
 	@Override
 	public Result eval(LogicDataSource dataSource, Patient patient,
 			Object[] args) {
-		Location healthCenter = patient.getHealthCenter();
+		Location healthCenter = null; //patient.getHealthCenter();
 		if (healthCenter == null)
 			return new Result("UNKNOWN");
 		Result result = new Result(healthCenter.getName());

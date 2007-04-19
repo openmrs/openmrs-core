@@ -29,7 +29,7 @@
 							isAddable = false;
 					
 					if (isAddable) {
-						var opt = new Option(obj.firstName + " " + obj.lastName, obj.userId);
+						var opt = new Option(obj.personName, obj.userId);
 						opt.selected = true;
 						options[options.length] = opt;
 						copyIds("userNames", "userIds", " ");
@@ -176,7 +176,7 @@
 					<td valign="top">
 						<select class="mediumWidth" size="6" id="userNames" multiple onkeyup="listKeyPress('userNames', 'userIds', ' ', event);">
 							<c:forEach items="${alert.recipients}" var="recipient">
-								<option value="${recipient.recipient.userId}">${recipient.recipient.firstName} ${recipient.recipient.middleName} ${recipient.recipient.lastName}</option>
+								<option value="${recipient.recipient.userId}">${recipient.recipient.personName}</option>
 							</c:forEach>
 						</select>
 					</td>
@@ -242,7 +242,7 @@
 		<tr>
 			<td><spring:message code="general.changedBy" /></td>
 			<td>
-				<a href="#View User" onclick="return gotoUser(null, '${alert.changedBy.userId}')">${alert.changedBy.firstName} ${alert.changedBy.lastName}</a> -
+				<a href="#View User" onclick="return gotoUser(null, '${alert.changedBy.userId}')">${alert.changedBy.personName}</a> -
 				<openmrs:formatDate date="${alert.dateChanged}" type="medium" />
 			</td>
 		</tr>

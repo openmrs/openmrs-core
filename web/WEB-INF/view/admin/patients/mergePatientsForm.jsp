@@ -184,13 +184,13 @@
 			<td valign="top">
 				<h4><spring:message code="Patient.information"/></h4>
 				<c:set var="patient" value="${patient1}" />
-				<%@ include file="include/showPatientInfo.jsp" %>
+				<%@ include file="../person/include/showPersonInfo.jsp" %>
 			</td>
 			<c:if test="${patient2.patientId != null}">
 				<td valign="top">
 					<h4><spring:message code="Patient.information"/></h4>
 					<c:set var="patient" value="${patient2}" />
-					<%@ include file="include/showPatientInfo.jsp" %>
+					<%@ include file="../person/include/showPersonInfo.jsp" %>
 				</td>
 			</c:if>
 		</tr>

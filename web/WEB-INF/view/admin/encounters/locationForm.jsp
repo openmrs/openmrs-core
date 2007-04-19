@@ -32,13 +32,13 @@
 		</td>
 	</tr>
 	<spring:nestedPath path="location">
-		<openmrs:portlet url="address" id="addressPortlet" size="full" parameters="addressShowTable=false|addressShowExtended=false|addresShowErrors=false" />
+		<openmrs:portlet url="addressLayout" id="addressPortlet" size="full" parameters="layoutShowTable=false|layoutShowExtended=false|layoutShowErrors=false" />
 	</spring:nestedPath>
 	<c:if test="${!(location.creator == null)}">
 		<tr>
 			<td><spring:message code="general.createdBy" /></td>
 			<td>
-				${location.creator.firstName} ${location.creator.lastName} -
+				${location.creator.personName} -
 				<openmrs:formatDate date="${location.dateCreated}" type="long" />
 			</td>
 		</tr>

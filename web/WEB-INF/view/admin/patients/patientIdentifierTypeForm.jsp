@@ -71,7 +71,7 @@
 		<tr>
 			<td><spring:message code="general.createdBy" /></td>
 			<td>
-				${patientIdentifierType.creator.firstName} ${patientIdentifierType.creator.lastName} -
+				${patientIdentifierType.creator.personName} -
 				<openmrs:formatDate date="${patientIdentifierType.dateCreated}" type="long" />
 			</td>
 		</tr>

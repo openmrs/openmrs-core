@@ -16,6 +16,7 @@ import org.openmrs.ConceptAnswer;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 
@@ -41,7 +42,7 @@ public class ForEachRecordTag extends BodyTagSupport {
 			records = ps.getPatientIdentifierTypes().iterator();
 		}
 		else if (name.equals("relationshipType")) {
-			PatientService ps = Context.getPatientService();
+			PersonService ps = Context.getPersonService();
 			records = ps.getRelationshipTypes().iterator();
 		}
 		else if (name.equals("location")) {

@@ -41,7 +41,7 @@ dojo.widget.defineWidget(
 				td.innerHTML = enc;
 				return td;
 			}
-			return enc.patientName;
+			return enc.personName;
 		},
 		
 		

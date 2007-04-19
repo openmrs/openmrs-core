@@ -15,10 +15,11 @@ public interface UserService {
 	 * Create a new user
 	 * @param user
 	 * @param password
+	 * @returns newly created User object
 	 * @throws APIException
 	 */
 	@Authorized({"Add Users"})
-	public void createUser(User user, String password) throws APIException;
+	public User createUser(User user, String password) throws APIException;
 
 	/**
 	 * Get user by internal user identifier
@@ -227,14 +228,14 @@ public interface UserService {
 
 	/**
 	 * Find a user by exact first name and last name
-	 * @param firstName
-	 * @param lastName
+	 * @param givenName
+	 * @param familyName
 	 * @param includeVoided
 	 * @return
 	 */
 	@Transactional(readOnly=true)
 	@Authorized({"View Users"})
-	public List<User> findUsers(String firstName, String lastName, boolean includeVoided);
+	public List<User> findUsers(String givenName, String familyName, boolean includeVoided);
 	
 	/**
 	 * Get users that have any role in <code>roles</code> granted

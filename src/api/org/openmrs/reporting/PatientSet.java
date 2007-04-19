@@ -198,7 +198,7 @@ public class PatientSet {
 		List<Patient> ret = Context.getPatientSetService().getPatients(getPatientIds());
 		Collections.sort(ret, new Comparator<Patient>() {
 				public int compare(Patient left, Patient right) {
-					return OpenmrsUtil.compareWithNullAsGreatest(left.getPatientName(), right.getPatientName());
+					return OpenmrsUtil.compareWithNullAsGreatest(left.getPersonName(), right.getPersonName());
 				}
 			});
 		return ret;

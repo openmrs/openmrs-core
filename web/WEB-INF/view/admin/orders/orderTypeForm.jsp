@@ -35,7 +35,7 @@
 		<tr>
 			<td><spring:message code="general.createdBy" /></td>
 			<td>
-				${orderType.creator.firstName} ${orderType.creator.lastName} -
+				${orderType.creator.personName} -
 				<openmrs:formatDate date="${orderType.dateCreated}" type="long" />
 			</td>
 		</tr>

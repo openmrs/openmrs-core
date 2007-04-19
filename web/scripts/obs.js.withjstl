@@ -1,7 +1,7 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 	
 	var obsCellFuncs = [
-		function(data) { return "" + data.patientName; },
+		function(data) { return "" + data.personName; },
 		function(data) { return "<a href=\"encounter.form?encounterId=" + data.encounter + "\">" + data.encounterName + " (" + data.encounterDate + ")</a>"; },
 		function(data) { return "" + data.conceptName; },
 		function(data) { return "<a href=\"obs.form?obsId=" + data.obsId + "\">" + data.value + "</a>"; },

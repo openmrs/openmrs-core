@@ -4,7 +4,7 @@
 	<c:when test="${model.authenticatedUser != null}">
 		<c:choose>
 			<c:when test="${model.showName != 'false'}">
-				<spring:message code="welcomeUser" arguments="${model.authenticatedUser.firstName}"/>
+				<spring:message code="welcomeUser" arguments="${model.authenticatedUser.personName.givenName}"/>
 			</c:when>
 			<c:otherwise>
 				<spring:message code="welcome" />

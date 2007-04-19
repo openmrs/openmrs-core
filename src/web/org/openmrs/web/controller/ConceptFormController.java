@@ -424,7 +424,7 @@ public class ConceptFormController extends SimpleFormController {
 			}
 			
 			if (Context.isAuthenticated())
-				defaultVerbose = Context.getAuthenticatedUser().getProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
+				defaultVerbose = Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
 		}
 			 
 		if (isNew) {

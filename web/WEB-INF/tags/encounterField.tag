@@ -31,16 +31,6 @@
 			}
 		);
 		
-		encSearch.getCellFunctions = function() {
-			return [this.simpleClosure(encSearch, "getNumber"), 
-					this.simpleClosure(encSearch, "getPatient"), 
-					this.simpleClosure(encSearch, "getType"), 
-					this.simpleClosure(encSearch, "getForm"), 
-					this.simpleClosure(encSearch, "getProvider"), 
-					this.simpleClosure(encSearch, "getLocation"), 
-					this.simpleClosure(encSearch, "getDateTime") 
-			];
-		};
 	})
 </script>
 

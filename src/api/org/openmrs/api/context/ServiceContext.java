@@ -17,6 +17,7 @@ import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
+import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.UserService;
 import org.openmrs.arden.ArdenService;
@@ -327,6 +328,20 @@ public class ServiceContext {
 	 */
 	public void setPatientService(PatientService patientService) {
 		setService(PatientService.class, patientService);
+	}
+	
+	/**
+	 * @return person related services
+	 */
+	public PersonService getPersonService() {
+		return (PersonService)getService(PersonService.class);
+	}
+	
+	/**
+	 * @param personService the personService to set
+	 */
+	public void setPersonService(PersonService personService) {
+		setService(PersonService.class, personService);
 	}
 	
 	/**

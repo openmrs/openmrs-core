@@ -1,5 +1,6 @@
 package org.openmrs.api.context;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -25,6 +26,7 @@ import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
+import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.db.ContextDAO;
@@ -257,6 +259,13 @@ public class Context implements ApplicationContextAware {
 		return getServiceContext().getCohortService();
 	}
 
+	/**
+	 * @return person-related services
+	 */
+	public static PersonService getPersonService() {
+		return getServiceContext().getPersonService();
+	}
+	
 	/**
 	 * @return Returns the hl7Service.
 	 */
@@ -746,5 +755,15 @@ public class Context implements ApplicationContextAware {
 			volatileUserData.put(u, myData);
 		}
 		myData.put(key, value);
+	}
+	
+	/**
+	 * 
+	 * @return SimpleDateFormat
+	 */
+	public static SimpleDateFormat getDateFormat() {
+		return new SimpleDateFormat(
+					OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(getLocale().toString().toLowerCase()), 
+					getLocale());
 	}
 }

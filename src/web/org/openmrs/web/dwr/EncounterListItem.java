@@ -5,7 +5,7 @@ import java.util.Date;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
-import org.openmrs.PatientName;
+import org.openmrs.PersonName;
 import org.openmrs.util.Format;
 
 public class EncounterListItem {
@@ -14,7 +14,7 @@ public class EncounterListItem {
 
 	private Integer encounterId;
 	private String encounterType;
-	private String patientName;
+	private String PersonName;
 	private String location;
 	private String providerName;
 	private String formName;
@@ -31,18 +31,18 @@ public class EncounterListItem {
 			encounterId = encounter.getEncounterId();
 			encounterDateTime = encounter.getEncounterDatetime();
 			encounterDateString = Format.format(encounter.getEncounterDatetime());
-			PatientName pn = encounter.getPatient().getPatientName();
+			PersonName pn = encounter.getPatient().getPersonName();
 			if (pn != null) {
-				patientName = "";
+				PersonName = "";
 				if (pn.getGivenName() != null)
-					patientName += pn.getGivenName();
+					PersonName += pn.getGivenName();
 				if (pn.getMiddleName() != null)
-					patientName += " " + pn.getMiddleName();
+					PersonName += " " + pn.getMiddleName();
 				if (pn.getFamilyName() != null)
-					patientName += " " + pn.getFamilyName();
+					PersonName += " " + pn.getFamilyName();
 			}
 			if (encounter.getProvider() != null)
-				providerName = encounter.getProvider().getFirstName() + " " + encounter.getProvider().getLastName();
+				providerName = encounter.getProvider().getPersonName().toString();
 			if (encounter.getLocation() != null)
 				location = encounter.getLocation().getName();
 			if (encounter.getEncounterType() != null)
@@ -94,12 +94,12 @@ public class EncounterListItem {
 		this.location = location;
 	}
 
-	public String getPatientName() {
-		return patientName;
+	public String getPersonName() {
+		return PersonName;
 	}
 
-	public void setPatientName(String patientName) {
-		this.patientName = patientName;
+	public void setPersonName(String PersonName) {
+		this.PersonName = PersonName;
 	}
 
 	public String getProviderName() {

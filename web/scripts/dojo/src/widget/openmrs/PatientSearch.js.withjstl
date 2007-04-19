@@ -1,8 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
-<%@ page isELIgnored="true" %>
 
 var showTribe = '<openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" />';
-var showHealthCenter = '<openmrs:globalProperty key="use_patient_attribute.healthCenter" defaultValue="false" />';
 
 /*
 	Copyright (c) 2006, The OpenMRS Cooperative
@@ -10,7 +8,7 @@ var showHealthCenter = '<openmrs:globalProperty key="use_patient_attribute.healt
 */
 
 dojo.provide("dojo.widget.openmrs.PatientSearch");
-dojo.require("dojo.widget.openmrs.OpenmrsSearch");
+dojo.require("dojo.widget.openmrs.PersonSearch");
 
 var openmrsSearchBase = djConfig["baseScriptUri"].substring(0, djConfig["baseScriptUri"].indexOf("/", 1));
 document.write("<script type='text/javascript' src='" + openmrsSearchBase + "/dwr/interface/DWRPatientService.js'></script>");
@@ -19,7 +17,7 @@ dojo.widget.tags.addParseTreeHandler("dojo:PatientSearch");
 
 dojo.widget.defineWidget(
 	"dojo.widget.openmrs.PatientSearch",
-	dojo.widget.openmrs.OpenmrsSearch,
+	dojo.widget.openmrs.PersonSearch,
 	{
 		patientId: "",
 		showAddPatientLink: true,
@@ -91,7 +89,7 @@ dojo.widget.defineWidget(
 		invalidCheckDigitText: "<spring:message javaScriptEscape="true" code="error.checkdigit"/>: ",
 		searchOnPatientNameText: "<spring:message javaScriptEscape="true" code="PatientSearch.searchOnName"/>",
 		noPatientsFoundText: "<spring:message javaScriptEscape="true" code="PatientSearch.noneFound"/> <br/> ",
-		addPatientLink: "<a href='/@WEBAPP.NAME@/admin/patients/addPatient.htm'><spring:message javaScriptEscape="true" code="Patient.add.new"/></a>",
+		addPatientLink: "<a href='<openmrs:contextPath />/admin/person/addPerson.htm?personType=patient'><spring:message javaScriptEscape="true" code="Patient.addNew"/></a>",
 		
 		getId: function(p) {
 			var td = document.createElement("td");
@@ -121,53 +119,7 @@ dojo.widget.defineWidget(
 			
 			return td;
 		},
-		getGiven : function(p) { return p.givenName == null ? this.noCell() : p.givenName;  },
-		getMiddle: function(p) { return p.middleName == null ? this.noCell() : p.middleName; },
-		getFamily: function(p) { return p.familyName == null ? this.noCell() : p.familyName; },
 		getTribe : function(p) { return p.tribe == null ? this.noCell() : p.tribe; },
-		getHealthCenter : function(p) { return p.healthCenter == null ? this.noCell() : p.healthCenter; },
-		getGender: function(p) {
-				if (p.gender == null) { return this.noCell(); }
-				
-				var td = document.createElement("td");
-				td.className = "patientGender";
-				var src = "/@WEBAPP.NAME@/images/";
-				if (p.gender.toUpperCase() == "F")
-					src += "female.gif";
-				else
-					src += "male.gif";
-				var img = document.createElement("img");
-				td.innerHTML = "<img src='" + src + "'>";
-				return td;
-		},
-		
-		getBirthdayEstimated: function(p) {
-				if (typeof p == 'string') return this.noCell();
-				if (p.birthdateEstimated)
-					return "&asymp;";
-				else
-					return "";
-		},
-		
-		getBirthday: function(p) { 
-				if (typeof p == 'string') return this.noCell();
-				str = this.getDateString(p.birthdate);
-				return str;
-		},
-		
-		getAge: function(p) { 
-				if (typeof p == 'string') return this.noCell();
-				if (p.age == null) return "";
-				var td = document.createElement("td");
-				td.className = 'patientAge';
-				var age = p.age;
-				if (age < 1)
-					age = "<1";
-				td.innerHTML = age;
-				return td;
-		},
-		
-		getMother: function(p) { return p.mothersName == null ? this.noCell() : p.mothersName; },
 		
 		getCellFunctions: function() {
 			var arr = new Array();
@@ -180,11 +132,11 @@ dojo.widget.defineWidget(
 			arr.push(this.simpleClosure(this, "getGender"));
 			if (showTribe == 'true')
 				arr.push(this.simpleClosure(this, "getTribe"));
-			if (showHealthCenter == 'true')
-				arr.push(this.simpleClosure(this, "getHealthCenter"));
 			arr.push(this.simpleClosure(this, "getBirthdayEstimated"));
 			arr.push(this.simpleClosure(this, "getBirthday"));
-			
+			<openmrs:forEachDisplayAttributeType personType="patient" displayType="listing" var="attrType">
+				arr.push(this.simpleClosure(this, "getAttribute", "${attrType.name}"));
+			</openmrs:forEachDisplayAttributeType>
 			return arr;
 		},
 		
@@ -193,24 +145,25 @@ dojo.widget.defineWidget(
 			var arr = new Array();
 			arr.push('');
 			arr.push('<spring:message code="Patient.identifier" javaScriptEscape="true"/>');
-			arr.push('<spring:message code="PatientName.givenName" javaScriptEscape="true"/>');
-			arr.push('<spring:message code="PatientName.middleName" javaScriptEscape="true"/>');
-			arr.push('<spring:message code="PatientName.familyName" javaScriptEscape="true"/>');
-			arr.push('<spring:message code="Patient.age" javaScriptEscape="true"/>');
-			arr.push('<spring:message code="Patient.gender" javaScriptEscape="true"/>');
+			arr.push('<spring:message code="PersonName.givenName" javaScriptEscape="true"/>');
+			arr.push('<spring:message code="PersonName.middleName" javaScriptEscape="true"/>');
+			arr.push('<spring:message code="PersonName.familyName" javaScriptEscape="true"/>');
+			arr.push('<spring:message code="Person.age" javaScriptEscape="true"/>');
+			arr.push('<spring:message code="Person.gender" javaScriptEscape="true"/>');
 			if (showTribe == 'true')
 				arr.push('<spring:message code="Patient.tribe" javaScriptEscape="true"/>');
-			if (showHealthCenter == 'true')
-				arr.push('<spring:message code="Patient.healthCenter" javaScriptEscape="true"/>');
 			arr.push('');
-			arr.push('<spring:message code="Patient.birthdate" javaScriptEscape="true"/>');
+			arr.push('<spring:message code="Person.birthdate" javaScriptEscape="true"/>');
+			<openmrs:forEachDisplayAttributeType personType="patient" displayType="listing" var="attrType">
+				arr.push('<spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" javaScriptEscape="true" />');
+			</openmrs:forEachDisplayAttributeType>
 			
 			return arr;
 		},
 		
 		getProblemImage: function() {
 			var img = document.createElement("img");
-			img.src = "/@WEBAPP.NAME@/images/problem.gif";
+			img.src = "<openmrs:contextPath />/images/problem.gif";
 			img.title="<spring:message javaScriptEscape="true" code="error.checkdigits.verbose"/>";
 			return img;
 		},

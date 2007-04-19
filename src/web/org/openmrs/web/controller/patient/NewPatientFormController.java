@@ -1,8 +1,6 @@
 package org.openmrs.web.controller.patient;
 
-import java.text.DateFormat;
 import java.text.NumberFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -24,11 +22,13 @@ import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
-import org.openmrs.PatientAddress;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.PatientName;
 import org.openmrs.Person;
+import org.openmrs.PersonAddress;
+import org.openmrs.PersonAttribute;
+import org.openmrs.PersonAttributeType;
+import org.openmrs.PersonName;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.Tribe;
@@ -40,16 +40,19 @@ import org.openmrs.api.InvalidCheckDigitException;
 import org.openmrs.api.InvalidIdentifierFormatException;
 import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
+import org.openmrs.web.controller.user.UserFormController;
 import org.openmrs.web.propertyeditor.ConceptEditor;
 import org.openmrs.web.propertyeditor.LocationEditor;
 import org.openmrs.web.propertyeditor.TribeEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -80,7 +83,6 @@ public class NewPatientFormController extends SimpleFormController {
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		
-		
 		dateFormat = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase()), Context.getLocale());
 		
         NumberFormat nf = NumberFormat.getInstance(Context.getLocale());
@@ -95,7 +97,7 @@ public class NewPatientFormController extends SimpleFormController {
 
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 	
-		ShortPatientModel pli = (ShortPatientModel)obj;
+		ShortPatientModel shortPatient = (ShortPatientModel)obj;
 		
 		log.debug("\nNOW GOING THROUGH PROCESSFORMSUBMISSION METHOD.......................................\n\n");
 		
@@ -104,8 +106,9 @@ public class NewPatientFormController extends SimpleFormController {
 			EncounterService es = Context.getEncounterService();
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			
-			if (request.getParameter("action") == null || request.getParameter("action").equals(msa.getMessage("general.save"))) {
-				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "familyName", "error.name");
+			String action = request.getParameter("action");
+			if (action == null || action.equals(msa.getMessage("general.save"))) {
+				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name.familyName", "error.name");
 				
 				String[] identifiers = request.getParameterValues("identifier");
 				String[] types = request.getParameterValues("identifierType");
@@ -187,21 +190,22 @@ public class NewPatientFormController extends SimpleFormController {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "gender", "error.null");
 			
 			// check patients birthdate against future dates and really old dates
-			if (pli.getBirthdate() != null) {
-				if (pli.getBirthdate().after(new Date()))
+			if (shortPatient.getBirthdate() != null) {
+				if (shortPatient.getBirthdate().after(new Date()))
 					errors.rejectValue("birthdate", "error.date.future");
 				else {
 					Calendar c = Calendar.getInstance();
 					c.setTime(new Date());
 					c.add(Calendar.YEAR, -120); // patient cannot be older than 120 years old 
-					if (pli.getBirthdate().before(c.getTime())){
+					if (shortPatient.getBirthdate().before(c.getTime())){
 						errors.rejectValue("birthdate", "error.date.nonsensical");
 					}
 				}
 			}
+			
 		}
 			
-		return super.processFormSubmission(request, response, pli, errors);
+		return super.processFormSubmission(request, response, shortPatient, errors);
 	}
 
 	/**
@@ -219,40 +223,57 @@ public class NewPatientFormController extends SimpleFormController {
 
 		if (Context.isAuthenticated()) {
 			PatientService ps = Context.getPatientService();
-			ShortPatientModel p = (ShortPatientModel)obj;
+			PersonService personService = Context.getPersonService();
+			
+			ShortPatientModel shortPatient = (ShortPatientModel)obj;
 			String view = getSuccessView();
 			boolean isError = false;
 			
+			String action = request.getParameter("action");
 			MessageSourceAccessor msa = getMessageSourceAccessor();
-			if (request.getParameter("action") != null && request.getParameter("action").equals(msa.getMessage("general.cancel"))) {
+			if (action != null && action.equals(msa.getMessage("general.cancel"))) {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "general.canceled");
-				return new ModelAndView(new RedirectView("addPatient.htm"));
+				return new ModelAndView(new RedirectView("addPerson.htm?personType=patient"));
 			}
 			
 			Patient patient = new Patient();
-			if (p.getPatientId() != null)
-				patient = ps.getPatient(p.getPatientId());
+			if (shortPatient.getPatientId() != null)
+				patient = ps.getPatient(shortPatient.getPatientId());
 			boolean duplicate = false;
-			for (PatientName pn : patient.getNames()) {
-				if (((pn.getGivenName() == null && p.getGivenName() == null) || pn.getGivenName().equals(p.getGivenName())) &&
-					((pn.getMiddleName() == null && p.getMiddleName() == null) || pn.getMiddleName().equals(p.getMiddleName())) &&
-					((pn.getFamilyName() == null && p.getFamilyName() == null) || pn.getFamilyName().equals(p.getFamilyName())))
+			PersonName newName = shortPatient.getName();
+			log.error("newName: " + newName.toString());
+			for (PersonName pn : patient.getNames()) {
+				if (((pn.getGivenName() == null && newName.getGivenName() == null) || pn.getGivenName().equals(newName.getGivenName())) &&
+					((pn.getMiddleName() == null && newName.getMiddleName() == null) || pn.getMiddleName().equals(newName.getMiddleName())) &&
+					((pn.getFamilyName() == null && newName.getFamilyName() == null) || pn.getFamilyName().equals(newName.getFamilyName())))
 					duplicate = true;
 			}
 			
-			if (!duplicate)
-				patient.addName(new PatientName(p.getGivenName(), p.getMiddleName(), p.getFamilyName()));
+			// if this is a new name, add it to the patient
+			if (!duplicate) {
+				// set the current name to "non-preffered"
+				if (patient.getPersonName() != null)
+					patient.getPersonName().setPreferred(false);
+				
+				// add the new name
+				newName.setPersonNameId(null);
+				newName.setPreferred(true);
+				patient.addName(newName);
+			}
 			
-			log.debug("address: " + p.getAddress());
-			if (p.getAddress() != null && !p.getAddress().isBlank()) {
+			log.debug("address: " + shortPatient.getAddress());
+			if (shortPatient.getAddress() != null && !shortPatient.getAddress().isBlank()) {
 				duplicate = false;
-				for (PatientAddress pa : patient.getAddresses()) {
-					if (pa.equals(p.getAddress()))
+				for (PersonAddress pa : patient.getAddresses()) {
+					if (pa.toString().equals(shortPatient.getAddress().toString()))
 						duplicate = true;
 				}
 				log.debug("duplicate:  " + duplicate);
 				if (!duplicate) {
-					patient.addAddress(p.getAddress());
+					PersonAddress newAddress = shortPatient.getAddress();
+					newAddress.setPersonAddressId(null);
+					newAddress.setPreferred(true);
+					patient.addAddress(newAddress);
 				}
 			}
 			log.debug("patient addresses: " + patient.getAddresses());
@@ -266,36 +287,42 @@ public class NewPatientFormController extends SimpleFormController {
 			}
 			
 			
-			
 			// add the new identifiers
 			//patient.getIdentifiers().addAll(newIdentifiers);
 			patient.addIdentifiers(newIdentifiers);
 			
 			// set the other patient attributes
-			patient.setBirthdate(p.getBirthdate());
-			patient.setBirthdateEstimated(p.getBirthdateEstimated());
-			patient.setGender(p.getGender());
-			patient.setHealthCenter(p.getHealthCenter());
-			patient.setMothersName(p.getMothersName());
-			if (p.getTribe() == "" || p.getTribe() == null)
+			patient.setBirthdate(shortPatient.getBirthdate());
+			patient.setBirthdateEstimated(shortPatient.getBirthdateEstimated());
+			patient.setGender(shortPatient.getGender());
+			if (shortPatient.getTribe() == "" || shortPatient.getTribe() == null)
 				patient.setTribe(null);
 			else {
-				Tribe t = ps.getTribe(Integer.valueOf(p.getTribe()));
+				Tribe t = ps.getTribe(Integer.valueOf(shortPatient.getTribe()));
 				patient.setTribe(t);
 			}
 			
-			patient.setDead(p.getDead());
+			patient.setDead(shortPatient.getDead());
 			if (patient.isDead()) {
-				patient.setDeathDate(p.getDeathDate());
-				patient.setCauseOfDeath(p.getCauseOfDeath());
+				patient.setDeathDate(shortPatient.getDeathDate());
+				patient.setCauseOfDeath(shortPatient.getCauseOfDeath());
 			}
 			else {
 				patient.setDeathDate(null);
 				patient.setCauseOfDeath(null);
 			}
 			
+			// look for person attributes in the request and save to person
+			for (PersonAttributeType type : personService.getPersonAttributeTypes("patient", "viewing")) {
+				String value = request.getParameter(type.getPersonAttributeTypeId().toString());
+				
+				patient.addAttribute(new PersonAttribute(type, value));
+			}
+			
+			// save or add the patient
+			Patient newPatient = null;
 			try {
-				ps.updatePatient(patient);
+				newPatient = ps.updatePatient(patient);
 			} catch ( InvalidIdentifierFormatException iife ) {
 				log.error(iife);
 				patient.removeIdentifier(iife.getPatientIdentifier());
@@ -334,46 +361,45 @@ public class NewPatientFormController extends SimpleFormController {
 				isError = true;
 			}
 						
-			// update patient's relationships
+			// update patient's relationships and death reason
 			if ( !isError ) {
-				String[] relatives = request.getParameterValues("relative");
+				String[] personAs = request.getParameterValues("personA");
 				String[] types = request.getParameterValues("relationshipType");
-				Person person = Context.getAdministrationService().getPerson(patient);
+				Person person = personService.getPerson(patient);
 				List<Relationship> relationships;
-				List<Person> newRelatives = new Vector<Person>(); //list of all persons specifically selected in the form
+				List<Person> newPersonAs = new Vector<Person>(); //list of all persons specifically selected in the form
 				
 				if (person != null) 
-					relationships = Context.getPatientService().getRelationships(person);
+					relationships = personService.getRelationships(person);
 				else
 					relationships = new Vector<Relationship>();
 				
-				if ( relatives != null ) {
-					for (int x = 0 ; x < relatives.length; x++ ) {
-						String relativeString = relatives[x];
+				if ( personAs != null ) {
+					for (int x = 0 ; x < personAs.length; x++ ) {
+						String personAString = personAs[x];
 						String typeString = types[x];
 						
-						if (relativeString != null && relativeString.length() > 0 && typeString != null && typeString.length() > 0) {
-							Patient relativePatient = ps.getPatient(Integer.valueOf(relativeString));
-							RelationshipType type = ps.getRelationshipType(Integer.valueOf(typeString));
+						if (personAString != null && personAString.length() > 0 && typeString != null && typeString.length() > 0) {
+							Person personA = personService.getPerson(Integer.valueOf(personAString));
+							RelationshipType type = personService.getRelationshipType(Integer.valueOf(typeString));
 							
-							Person relative = Context.getAdministrationService().getPerson(relativePatient);
-							newRelatives.add(relative);
+							newPersonAs.add(personA);
 							
 							boolean found = false;
 							// TODO this assumes that a relative can only be related in one way
 							for (Relationship rel : relationships) {
 								//skip the relationships where this patient is the object
-								if (rel.getPerson().equals(person))
+								if (rel.getPersonA().equals(person))
 									found = true;
 								
 								// just update the type of relationships that have the same relative
-								if (rel.getPerson().equals(relative)) {
-									rel.setRelationship(type);
+								if (rel.getPersonA().equals(personA)) {
+									rel.setRelationshipType(type);
 									found = true;
 								}
 							}
 							if (!found) {
-								Relationship r = new Relationship(relative, person, type);
+								Relationship r = new Relationship(personA, person, type);
 								relationships.add(r);
 							}
 						}
@@ -382,14 +408,15 @@ public class NewPatientFormController extends SimpleFormController {
 				}
 	
 				for (Relationship rel : relationships) {
-					if (newRelatives.contains(rel.getPerson()) || 
-							person.equals(rel.getPerson()))
-						Context.getAdministrationService().updateRelationship(rel);
+					if (newPersonAs.contains(rel.getPersonA()) || 
+							person.equals(rel.getPersonA()))
+						personService.updateRelationship(rel);
 					else
-						Context.getAdministrationService().deleteRelationship(rel);
+						personService.deleteRelationship(rel);
 				}
 				
 				
+				// update the death reason
 				if ( patient.getDead() ) {
 					log.debug("Patient is dead, so let's make sure there's an Obs for it");
 					// need to make sure there is an Obs that represents the patient's cause of death, if applicable
@@ -415,11 +442,11 @@ public class NewPatientFormController extends SimpleFormController {
 									log.debug("No cause of death yet, let's create one.");
 									
 									obsDeath = new Obs();
-									obsDeath.setPatient(patient);
+									obsDeath.setPerson(patient);
 									obsDeath.setConcept(causeOfDeath);
 									Location loc = Context.getEncounterService().getLocationByName("Unknown Location");
 									if ( loc == null ) loc = Context.getEncounterService().getLocation(new Integer(1));
-									if ( loc == null ) loc = patient.getHealthCenter();
+									// TODO person healthcenter if ( loc == null ) loc = patient.getHealthCenter();
 									if ( loc != null ) obsDeath.setLocation(loc);
 									else log.error("Could not find a suitable location for which to create this new Obs");
 								}
@@ -470,6 +497,7 @@ public class NewPatientFormController extends SimpleFormController {
 					}
 					
 				}
+				
 			}
 			
 			if ( isError ) {
@@ -479,7 +507,7 @@ public class NewPatientFormController extends SimpleFormController {
 				//return new ModelAndView(new RedirectView(getFormView()));
 			} else {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.saved");
-				return new ModelAndView(new RedirectView(view + "?patientId=" + patient.getPatientId()));
+				return new ModelAndView(new RedirectView(view + "?patientId=" + newPatient.getPatientId()));
 			}
 		} else {
 			return new ModelAndView(new RedirectView(getFormView()));
@@ -499,9 +527,26 @@ public class NewPatientFormController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 			PatientService ps = Context.getPatientService();
-			String patientId = request.getParameter("pId");
-	    	if (patientId != null && !patientId.equals("")) {
-	    		p = ps.getPatient(Integer.valueOf(patientId));
+			String patientId = request.getParameter("patientId");
+			Integer id = null;
+	    	if (patientId != null) {
+	    		try {
+	    			id = Integer.valueOf(patientId);
+	    			p = ps.getPatient(id);
+	    		}
+	    		catch (NumberFormatException numberError) {
+	    			log.warn("Invalid userId supplied: '" + patientId + "'", numberError);
+	    		}
+	    		catch (ObjectRetrievalFailureException noUserEx) {
+	    			try {
+		    			Person person = Context.getPersonService().getPerson(id);
+		    			p = new Patient(person);
+		    		}
+		    		catch (ObjectRetrievalFailureException noPersonEx) {
+		    			log.warn("There is no patient or person with id: '" + patientId + "'", noPersonEx);
+		    			throw new ServletException("There is no patient or person with id: '" + patientId + "'");
+		    		}
+	    		}
 	    	}
 		}
 		
@@ -509,73 +554,26 @@ public class NewPatientFormController extends SimpleFormController {
 		
 		String name = request.getParameter("name");
 		if (p == null && name != null) {
-			String firstName = name;
-			String middleName = "";
-			String lastName = "";
-			
-			if (name.contains(",")) {
-				String[] names = name.split(", ");
-				String[] firstNames = names[1].split(" ");
-				if (firstNames.length == 2) {
-					lastName = names[0];
-					firstName = firstNames[0];
-					middleName = firstNames[1];
-				}
-				else {
-					firstName = names[1];
-					lastName = names[2];
-				}
-			}
-			else if (name.contains(" ")) {
-				String[] names = name.split(" ");
-				if (names.length == 3) {
-					firstName = names[0];
-					middleName = names[1];
-					lastName = names[2];
-				}
-				else {
-					firstName = names[0];
-					lastName = names[1];
-				}
-			}
-			patient.setGivenName(firstName);
-			patient.setMiddleName(middleName);
-			patient.setFamilyName(lastName);
-			
-			patient.setGender(request.getParameter("gndr"));
-			Date birthdate = null;
-			boolean birthdateEstimated = false;
+			String gender = request.getParameter("gndr");
 			String date = request.getParameter("birthyear");
 			String age = request.getParameter("age");
-			if (date != null && !date.equals("")) {
-				try {
-					birthdate = DateFormat.getDateInstance(DateFormat.SHORT).parse("01/01/" + date);
-					birthdateEstimated = true;
-				} catch (ParseException e) { log.debug(e); }
-			}
-			else if (age != null && !age.equals("")) {
-				Calendar c = Calendar.getInstance();
-				c.setTime(new Date());
-				Integer d = c.get(Calendar.YEAR);
-				d = d - Integer.parseInt(age);
-				try {
-					birthdate = DateFormat.getDateInstance(DateFormat.SHORT).parse("01/01/" + d);
-					birthdateEstimated = true;
-				} catch (ParseException e) { log.debug(e); }
-			}
-			if (birthdate != null)
-				patient.setBirthdate(birthdate);
-			patient.setBirthdateEstimated(birthdateEstimated);
+			
+			p = new Patient();
+			UserFormController.getMiniPerson(p, name, gender, date, age);
+			
+			patient = new ShortPatientModel(p);
 		}
 		
 		if (patient.getAddress() == null) {
-			PatientAddress pa = new PatientAddress();
+			PersonAddress pa = new PersonAddress();
 			pa.setPreferred(true);
 			patient.setAddress(pa);
 		}
 		
-		Person person = Context.getAdministrationService().getPerson(p);
-		patient.setRelationships(Context.getPatientService().getRelationships(person));
+		if (p != null) {
+			Person person = Context.getPersonService().getPerson(p);
+			patient.setRelationships(Context.getPersonService().getRelationships(person, false));
+		}
 		
         return patient;
     }
@@ -594,25 +592,52 @@ public class NewPatientFormController extends SimpleFormController {
 		List<PatientIdentifier> identifiers = new Vector<PatientIdentifier>();
 		
 		Patient patient = null;
-		
+		String causeOfDeathOther = "";
+
 		if (Context.isAuthenticated()) {
 			PatientService ps = Context.getPatientService();
-			String patientId = request.getParameter("pId");
+			String patientId = request.getParameter("patientId");
 	    	if (patientId != null && !patientId.equals("")) {
 	    		patient = ps.getPatient(Integer.valueOf(patientId));
 	    		identifiers.addAll(patient.getIdentifiers());
+	    		
+	    		// get 'other' cause of death
+	    		String propCause = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
+				Concept conceptCause = Context.getConceptService().getConceptByIdOrName(propCause);
+				if ( conceptCause != null ) {
+					Set<Obs> obssDeath = Context.getObsService().getObservations(patient, conceptCause);
+					if ( obssDeath.size() == 1 ) {
+						Obs obsDeath = obssDeath.iterator().next();
+						causeOfDeathOther = obsDeath.getValueText();
+						if ( causeOfDeathOther == null ) {
+							log.debug("cod is null, so setting to empty string");
+							causeOfDeathOther = "";
+						} else {
+							log.debug("cod is valid: " + causeOfDeathOther);
+						}
+					} else {
+						log.debug("obssDeath is wrong size: " + obssDeath.size());
+					}
+				} else {
+					log.debug("No concept cause found");
+				}
+				// end get 'other' cause of death
 	    	}
 		}
 		map.put("datePattern", dateFormat.toLocalizedPattern().toLowerCase());
 		
-		// give them both the just-entered identifiers and the patient's current identifiers
-		identifiers.addAll(newIdentifiers);
+		
+		/* The identifiers are added in the onSubmit method.  This is duplicative - bwolfe
+			// give them both the just-entered identifiers and the patient's current identifiers
+			identifiers.addAll(newIdentifiers);
+		*/
 		
 		if (pref.length() > 0)
 			for (PatientIdentifier pi : identifiers)
 				pi.setPreferred(pref.equals(pi.getIdentifier()+pi.getIdentifierType().getPatientIdentifierTypeId()));
 		
 		map.put("identifiers", identifiers);
+		map.put("causeOfDeathOther", causeOfDeathOther);
 		
 		return map;
 	}   

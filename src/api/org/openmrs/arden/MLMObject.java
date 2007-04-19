@@ -278,7 +278,7 @@ public class MLMObject {
 		 w.append("\n\tpatient = p;\n\tdataSource = d;\n");
 		 
 		 w.append("\tuserVarMap = new HashMap <String, String>();\n");
-		 w.append("\tfirstname = patient.getPatientName().getGivenName();\n");
+		 w.append("\tfirstname = patient.getPersonName().getGivenName();\n");
 		 w.append("\tuserVarMap.put(\"firstname\", firstname);\n");
 		 w.append("\tinitAction();\n");		     
 		 
@@ -904,7 +904,7 @@ public class MLMObject {
 			retVal = userVarMapFinal.get(key);
 		}
 		else if(key.equals("firstname")) {
-			retVal = patient.getPatientName().getGivenName();
+			retVal = patient.getPersonName().getGivenName();
 		}
 		return retVal;
 	}

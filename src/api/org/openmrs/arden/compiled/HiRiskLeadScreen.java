@@ -40,7 +40,7 @@ public HiRiskLeadScreen(Patient p, ArdenDataSource d){
 	ardenClause = new ArdenClause();
 	userVarMap = new HashMap <String, String>();
 	valueMap = new HashMap <String, ArdenValue>();
-	firstname = patient.getPatientName().getGivenName();
+	firstname = patient.getPersonName().getGivenName();
 	userVarMap.put("firstname", firstname);
 	initAction();
 	}

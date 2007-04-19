@@ -191,7 +191,7 @@ public class ConceptProposalFormController extends SimpleFormController {
 		if (Context.isAuthenticated() && cp.getConceptProposalId() != null){
 			ConceptService cs = Context.getConceptService();
 			// optional user property for default verbose display in concept search
-			defaultVerbose = Context.getAuthenticatedUser().getProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
+			defaultVerbose = Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
 			
 			// find all concept proposals with the same originalText
 			matchingProposals = cs.findMatchingConceptProposals(cp.getOriginalText());

@@ -39,6 +39,7 @@
 	<!-- Single application context (our own context, not Spring's ApplicationContext -->
 	<bean id="serviceContext" class="org.openmrs.api.context.ServiceContext" factory-method="getInstance">
         <property name="patientService"><ref bean="patientService"/></property>
+        <property name="personService"><ref bean="personService"/></property>
         <property name="conceptService"><ref bean="conceptService"/></property>
         <property name="userService"><ref bean="userService"/></property>
         <property name="obsService"><ref bean="obsService"/></property>
@@ -71,6 +72,9 @@
 	</bean>
 	
 	<bean id="patientDAO" class="org.openmrs.api.db.hibernate.HibernatePatientDAO">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
+	</bean>
+	<bean id="personDAO" class="org.openmrs.api.db.hibernate.HibernatePersonDAO">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
 	</bean>
 	<bean id="conceptDAO" class="org.openmrs.api.db.hibernate.HibernateConceptDAO">
@@ -135,6 +139,9 @@
 	<bean id="patientServiceTarget" class="org.openmrs.api.impl.PatientServiceImpl">
 		<property name="patientDAO"><ref bean="patientDAO"/></property>	
 	</bean>
+	<bean id="personServiceTarget" class="org.openmrs.api.impl.PersonServiceImpl">
+		<property name="personDAO"><ref bean="personDAO"/></property>	
+	</bean>
 	<bean id="conceptServiceTarget" class="org.openmrs.api.impl.ConceptServiceImpl">
 		<property name="conceptDAO"><ref bean="conceptDAO"/></property>	
 	</bean>
@@ -193,6 +200,18 @@
 	<bean id="patientService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="patientServiceTarget"/></property>
+		<property name="preInterceptors">
+			<list>
+				<ref local="authorizationInterceptor"/>
+			</list>
+		</property>
+		<property name="transactionAttributeSource">
+			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
+		</property>
+	</bean>
+	<bean id="personService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager"><ref local="transactionManager"/></property>
+		<property name="target"><ref local="personServiceTarget"/></property>
 		<property name="preInterceptors">
 			<list>
 				<ref local="authorizationInterceptor"/>

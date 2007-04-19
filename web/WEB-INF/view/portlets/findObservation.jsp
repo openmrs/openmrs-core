@@ -18,7 +18,7 @@
 					<form>
 						<spring:message code="general.search"/>
 						<input type="radio" checked name="selectSearchStyle" value="byPatientAndConcept" onClick="hideDiv('searchByEncounter');showDiv('searchByPatientConcept');" />
-						<spring:message code="ObsSearch.byPatientAndConcept" />
+						<spring:message code="ObsSearch.byPersonAndConcept" />
 						&nbsp;&nbsp;&nbsp;&nbsp;
 						<input type="radio" name="selectSearchStyle" value="byEncounter" onClick="hideDiv('searchByPatientConcept');showDiv('searchByEncounter');" />
 						<spring:message code="ObsSearch.byEncounter" />
@@ -26,9 +26,9 @@
 						<div id="searchByPatientConcept">
 							<table>
 								<tr>
-									<td><span><spring:message code="Obs.patient" /></span>:</td>
+									<td><span><spring:message code="Obs.person" /></span>:</td>
 									<!-- <spring:message code="ObsSearch.patientLabel" var="patientLabel" /> -->
-									<td><openmrs_tag:patientField formFieldName="patientId" searchLabel="${patientLabel}" initialValue="" linkUrl="" callback="" /></td>
+									<td><openmrs_tag:personField formFieldName="personId" searchLabel="${personLabel}" initialValue="" linkUrl="" callback="" /></td>
 								</tr>
 								<tr>
 									<td><span><spring:message code="Obs.concept" /></span> <span class="instructions">(<spring:message code="general.optional" />)</span>:</td>
@@ -38,8 +38,8 @@
 								<tr>
 									<td colspan="2">
 										<p />
-										<input type="button" value="<spring:message code="general.cancel" />" onClick="obsSearchClear('patientId', 'conceptId', '');" />
-										<input type="button" value="<spring:message code="general.searchButton" />" onClick="obsSearch('patientId', 'conceptId', '', 'obsTable', 'observationList');" />
+										<input type="button" value="<spring:message code="general.cancel" />" onClick="obsSearchClear('personId', 'conceptId', '');" />
+										<input type="button" value="<spring:message code="general.searchButton" />" onClick="obsSearch('personId', 'conceptId', '', 'obsTable', 'observationList');" />
 									</td>
 								</tr>
 							</table>

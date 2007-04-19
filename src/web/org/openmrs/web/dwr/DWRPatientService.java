@@ -2,7 +2,6 @@ package org.openmrs.web.dwr;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -14,11 +13,10 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.Patient;
-import org.openmrs.PatientAddress;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.PersonAddress;
 import org.openmrs.Tribe;
-import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.DuplicateIdentifierException;
 import org.openmrs.api.EncounterService;
@@ -30,8 +28,6 @@ import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.web.WebConstants;
 
 public class DWRPatientService {
 
@@ -85,46 +81,11 @@ public class DWRPatientService {
 		Patient p = ps.getPatient(patientId);
 		PatientListItem pli = new PatientListItem(p);
 		if (p.getAddresses() != null && p.getAddresses().size() > 0) {
-			PatientAddress pa = (PatientAddress)p.getAddresses().toArray()[0];
+			PersonAddress pa = (PersonAddress)p.getAddresses().toArray()[0];
 			pli.setAddress1(pa.getAddress1());
 			pli.setAddress2(pa.getAddress2());
 		}
 		return pli;
-	}
-	
-	public Vector getSimilarPatients(String name, String birthyear, String age, String gender) {
-		Vector<Object> patientList = new Vector<Object>();
-
-		Integer userId = Context.getAuthenticatedUser().getUserId();
-		log.info(userId + "|" + name + "|" + birthyear + "|" + age + "|" + gender);
-		
-		PatientService ps = Context.getPatientService();
-		List<Patient> patients = new Vector<Patient>();
-		
-		Integer d = null;
-		birthyear = birthyear.trim();
-		age = age.trim();
-		if (birthyear.length() > 3)
-			d = Integer.valueOf(birthyear);
-		else if (age.length() > 0) {
-			Calendar c = Calendar.getInstance();
-			c.setTime(new Date());
-			d = c.get(Calendar.YEAR);
-			d = d - Integer.parseInt(age);
-		}
-		
-		if (gender.length() < 1)
-			gender = null;
-		
-		patients.addAll(ps.getSimilarPatients(name, d, gender));
-		
-		patientList = new Vector<Object>(patients.size());
-		for (Patient p : patients) {
-			patientList.add(new PatientListItem(p));
-		}
-		
-		return patientList;
-
 	}
 	
 	public Vector findTribes(String search) {
@@ -338,8 +299,11 @@ public class DWRPatientService {
 	}
 	
 	public String changeHealthCenter(Integer patientId, Integer locationId) {
+		log.warn("Deprecated method in 'DWRPatientService.changeHealthCenter'");
 		
 		String ret = "";
+		
+		/*
 		
 		if ( patientId != null && locationId != null ) {
 			Patient patient = Context.getPatientService().getPatient(patientId);
@@ -350,6 +314,7 @@ public class DWRPatientService {
 				Context.getPatientService().updatePatient(patient);
 			}
 		}
+		*/
 		
 		return ret;
 	}

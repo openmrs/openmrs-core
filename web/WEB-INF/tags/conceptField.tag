@@ -38,10 +38,10 @@
 
 <c:choose>
 	<c:when test="${not empty model.showAnswers && not empty model.showOther}">
-		<div dojoType="ConceptSearch" widgetId="${formFieldName}_search" conceptId="${initialValue}" showVerboseListing="true" showAnswers="${showAnswers}" showOther="${showOther}"></div>
+		<div dojoType="ConceptSearch" widgetId="${formFieldName}_search" conceptId="${initialValue}" showVerboseListing="true" showAnswers="${showAnswers}" showOther="${showOther}" performInitialSearch="true"></div>
 	</c:when>
 	<c:when test="${not empty model.showAnswers}">
-		<div dojoType="ConceptSearch" widgetId="${formFieldName}_search" conceptId="${initialValue}" showVerboseListing="true" showAnswers="${showAnswers}"></div>
+		<div dojoType="ConceptSearch" widgetId="${formFieldName}_search" conceptId="${initialValue}" showVerboseListing="true" showAnswers="${showAnswers}" performInitialSearch="true"></div>
 	</c:when>
 	<c:when test="${not empty model.showOther}">
 		<div dojoType="ConceptSearch" widgetId="${formFieldName}_search" conceptId="${initialValue}" showVerboseListing="true" showOther="${showOther}"></div>

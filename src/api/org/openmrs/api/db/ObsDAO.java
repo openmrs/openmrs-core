@@ -8,100 +8,62 @@ import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.Obs;
-import org.openmrs.Patient;
+import org.openmrs.Person;
 import org.openmrs.logic.Aggregation;
 import org.openmrs.logic.Constraint;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Observation-related database functions
  * 
- * @author Ben Wolfe
- * @author Burke Mamlin
  * @version 1.0
  */
 public interface ObsDAO {
 
 	/**
-	 * Create an observation
-	 * 
-	 * @param Obs
-	 * @throws DAOException
+	 * @see org.openmrs.api.ObsService#createObs(org.openmrs.Obs)
 	 */
 	public void createObs(Obs obs) throws DAOException;
 
 	/**
-	 * Get an observation
-	 * 
-	 * @param integer
-	 *            obsId of observation desired
-	 * @return matching Obs
-	 * @throws DAOException
+	 * @see org.openmrs.api.ObsService#getObs(java.lang.Integer)
 	 */
 	public Obs getObs(Integer obsId) throws DAOException;
 
 	/**
-	 * Save changes to observation
-	 * 
-	 * @param Obs
-	 * @throws DAOException
+	 * @see org.openmrs.api.ObsService#updateObs(org.openmrs.Obs)
 	 */
 	public void updateObs(Obs obs) throws DAOException;
 
 	/**
-	 * Delete an observation. SHOULD NOT BE CALLED unless caller is lower-level.
-	 * 
-	 * @param Obs
-	 * @throws DAOException
-	 * @see voidObs(Obs)
+	 * @see org.openmrs.api.ObsService#deleteObs(org.openmrs.Obs)
 	 */
 	public void deleteObs(Obs obs) throws DAOException;
 
 	/**
-	 * Get all mime types
-	 * 
-	 * @return mime types list
-	 * @throws DAOException
+	 * @see org.openmrs.api.ObsService#getMimeTypes()
 	 */
 	public List<MimeType> getMimeTypes() throws DAOException;
 
 	/**
-	 * Get mimeType by internal identifier
-	 * 
-	 * @param mimeType
-	 *            id
-	 * @return mimeType with given internal identifier
-	 * @throws DAOException
+	 * @see org.openmrs.api.ObsService#getMimeType(java.lang.Integer)
 	 */
 	public MimeType getMimeType(Integer mimeTypeId) throws DAOException;
 
 	/**
-	 * Get all Observations for a patient
-	 * 
-	 * @param who
-	 * @return
+	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Person)
 	 */
-	public Set<Obs> getObservations(Patient who) throws DAOException;
+	public Set<Obs> getObservations(Person who) throws DAOException;
 
 	/**
-	 * Get all Observations for this concept/location Sort is optional
-	 * 
-	 * @param concept
-	 * @param location
-	 * @param sort
-	 * @return list of obs for a location
+	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Concept,org.openmrs.Location,java.lang.String,java.lang.Integer)
 	 */
-	public List<Obs> getObservations(Concept c, Location loc, String sort)
+	public List<Obs> getObservations(Concept c, Location loc, String sort, Integer patientType)
 			throws DAOException;
 
 	/**
-	 * e.g. get all CD4 counts for a patient
-	 * 
-	 * @param who
-	 * @param question
-	 * @return
+	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Person,org.openmrs.Concept)
 	 */
-	public Set<Obs> getObservations(Patient who, Concept question)
+	public Set<Obs> getObservations(Person who, Concept question)
 			throws DAOException;
 
 	/**
@@ -113,61 +75,51 @@ public interface ObsDAO {
 	 * @param question
 	 * @return
 	 */
-	public List<Obs> getLastNObservations(Integer n, Patient who,
+	public List<Obs> getLastNObservations(Integer n, Person who,
 			Concept question);
 
 	/**
-	 * e.g. get all observations referring to RETURN VISIT DATE
-	 * 
-	 * @param question
-	 *            (Concept: RETURN VISIT DATE)
-	 * @param sort
-	 *            string (property name)
-	 * @return
+	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Concept,java.lang.String,java.lang.Integer)
 	 */
-	public List<Obs> getObservations(Concept question, String sort)
+	public List<Obs> getObservations(Concept question, String sort, Integer personType)
 			throws DAOException;
 	
 	/**
-	 * @see org.openmrs.api.db.ObsService#getObservationsAnsweredByConcept(org.openmrs.Concept)
+	 * @see org.openmrs.api.ObsService#getObservationsAnsweredByConcept(org.openmrs.Concept,java.lang.Integer)
 	 */
-	public List<Obs> getObservationsAnsweredByConcept(Concept answer);
+	public List<Obs> getObservationsAnsweredByConcept(Concept answer, Integer personType);
 	
 	/**
-	 *  @see org.openmrs.api.ObsService#getNumericAnswersForConcept(org.openmrs.Concept,java.lang.Boolean)
+	 *  @see org.openmrs.api.ObsService#getNumericAnswersForConcept(org.openmrs.Concept,java.lang.Boolean,java.lang.Integer)
 	 */
-	public List<Object[]> getNumericAnswersForConcept(Concept answer, Boolean sortByValue);
+	public List<Object[]> getNumericAnswersForConcept(Concept answer, Boolean sortByValue, Integer personType);
 	
 	/**
-	 * Get all observations from a specific encounter
-	 * 
-	 * @param whichEncounter
-	 * @return
+	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Encounter)
 	 */
 	public Set<Obs> getObservations(Encounter whichEncounter)
 			throws DAOException;
 
 	/**
-	 * Get all observations that have been voided
-	 * 
-	 * @return List of Obs
+	 * @see org.openmrs.api.ObsService#getVoidedObservations()
 	 */
 	public List<Obs> getVoidedObservations() throws DAOException;
 
 	/**
-	 * Find observations matching the search string "matching" is defined as
-	 * either the obsId or the patient identifier
-	 * 
-	 * @param search
-	 * @param includeVoided
-	 * @return list of matched observations
+	 * @see org.openmrs.api.ObsService#findObservations(java.lang.Integer,boolean,java.lang.Integer)
 	 */
-	public List<Obs> findObservations(Integer id, boolean includeVoided)
+	public List<Obs> findObservations(Integer id, boolean includeVoided, Integer personType)
 			throws DAOException;
 
+	/**
+	 * @see org.openmrs.api.ObsService#findObsByGroupId(java.lang.Integer)
+	 */
 	public List<Obs> findObsByGroupId(Integer obsGroupId) throws DAOException;
 
-	public List<Obs> getObservations(Patient who, Aggregation aggregation,
+	/**
+	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Person,org.openmrs.logic.Aggregation)
+	 */
+	public List<Obs> getObservations(Person who, Aggregation aggregation,
 			Concept question, Constraint constraint);
 
 }

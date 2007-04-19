@@ -86,12 +86,12 @@ public class DownloadDictionaryServlet extends HttpServlet {
 				
 				line += '"';
 				if (c.getChangedBy() != null)
-					line += c.getChangedBy().getFirstName() + " " + c.getChangedBy().getLastName();
+					line += c.getChangedBy().getPersonName();
 				line += "\",";
 				
 				line += '"';
 				if (c.getCreator() != null)
-					line += c.getCreator().getFirstName() + " " + c.getCreator().getLastName();
+					line += c.getCreator().getPersonName();
 				line += "\"";
 			
 				response.getOutputStream().println(line);

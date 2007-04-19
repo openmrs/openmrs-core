@@ -14,12 +14,6 @@ import org.openmrs.MimeType;
 import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Patient;
-import org.openmrs.api.ConceptService;
-import org.openmrs.api.EncounterService;
-import org.openmrs.api.ObsService;
-import org.openmrs.api.OrderService;
-import org.openmrs.api.PatientService;
-import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 
 public class ObsServiceTest extends BaseTest {
@@ -59,7 +53,7 @@ public class ObsServiceTest extends BaseTest {
 		
 		o.setOrder(order1);
 		o.setConcept(concept1);
-		o.setPatient(patient1);
+		o.setPerson(patient1);
 		o.setEncounter(encounter1);
 		o.setObsDatetime(datetime1);
 		o.setLocation(location1);
@@ -121,7 +115,7 @@ public class ObsServiceTest extends BaseTest {
 		assertTrue(o3.equals(o));
 		if (order2 != null)
 			assertTrue(o3.getOrder().equals(order2));
-		assertTrue(o3.getPatient().equals(patient2));
+		assertTrue(o3.getPerson().equals(patient2));
 		assertTrue(o3.getComment().equals(comment2));
 		assertTrue(o3.getConcept().equals(concept2));
 		assertTrue(o3.getEncounter().equals(encounter2));
@@ -136,7 +130,7 @@ public class ObsServiceTest extends BaseTest {
 		assertTrue(o3.getValueModifier().equals(valueModifier2));
 		assertTrue(o3.getValueText().equals(valueText2));
 		
-		System.out.println(o3.getPatient().getCreator().getUsername());
+		System.out.println(o3.getPerson().getCreator().getUsername());
 		obsService.voidObs(o, "testing void function");
 		
 		Obs o4 = obsService.getObs(o.getObsId());
@@ -253,7 +247,7 @@ public class ObsServiceTest extends BaseTest {
 		assertTrue(o3.equals(o));
 		if (order2 != null)
 			assertTrue(o3.getOrder().equals(order2));
-		assertTrue(o3.getPatient().equals(patient2));
+		assertTrue(o3.getPerson().equals(patient2));
 		assertTrue(o3.getComment().equals(comment2));
 		assertTrue(o3.getConcept().equals(concept2));
 		assertTrue(o3.getEncounter().equals(encounter2));
@@ -271,7 +265,7 @@ public class ObsServiceTest extends BaseTest {
 		assertTrue(o3.getUrn().equals(urn2));
 		assertTrue(o3.getComplexValue().equals(complexValue2));
 		
-		System.out.println(o3.getPatient().getCreator().getUsername());
+		System.out.println(o3.getPerson().getCreator().getUsername());
 		obsService.voidObs(o, "testing void function");
 		
 		Obs o4 = obsService.getObs(o.getObsId());

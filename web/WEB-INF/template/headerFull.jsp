@@ -3,10 +3,14 @@
 
 <%@ page import="org.openmrs.web.WebConstants" %>
 <%
-	pageContext.setAttribute("msg", session.getAttribute(WebConstants.OPENMRS_MSG_ATTR)); 
+	pageContext.setAttribute("msg", session.getAttribute(WebConstants.OPENMRS_MSG_ATTR));
+	pageContext.setAttribute("msgArgs", session.getAttribute(WebConstants.OPENMRS_MSG_ARGS));
 	pageContext.setAttribute("err", session.getAttribute(WebConstants.OPENMRS_ERROR_ATTR));
+	pageContext.setAttribute("errArgs", session.getAttribute(WebConstants.OPENMRS_ERROR_ARGS));
 	session.removeAttribute(WebConstants.OPENMRS_MSG_ATTR);
+	session.removeAttribute(WebConstants.OPENMRS_MSG_ARGS);
 	session.removeAttribute(WebConstants.OPENMRS_ERROR_ATTR);
+	session.removeAttribute(WebConstants.OPENMRS_ERROR_ARGS);
 %>
 
 <html>
@@ -26,7 +30,7 @@
 			<openmrs:authentication>
 				<c:if test="${authenticatedUser != null}">
 					<span id="userLoggedInAs" class="firstChild">
-						<spring:message code="header.logged.in"/> ${authenticatedUser.firstName} ${authenticatedUser.lastName}
+						<spring:message code="header.logged.in"/> ${authenticatedUser.personName}
 					</span>
 					<span id="userLogout">
 						<a href='<%= request.getContextPath() %>/logout'><spring:message code="header.logout" /></a>
@@ -96,8 +100,8 @@
 			</openmrs:forEachAlert>
 
 			<c:if test="${msg != null}">
-				<div id="openmrs_msg"><spring:message code="${msg}" text="${msg}"/></div>
+				<div id="openmrs_msg"><spring:message code="${msg}" text="${msg}" arguments="${msgArgs}" /></div>
 			</c:if>
 			<c:if test="${err != null}">
-				<div id="openmrs_error"><spring:message code="${err}" text="${err}"/></div>
+				<div id="openmrs_error"><spring:message code="${err}" text="${err}" arguments="${errArgs}"/></div>
 			</c:if>

@@ -39,8 +39,8 @@ public class Obs implements java.io.Serializable {
 	protected String valueModifier;
 	protected String valueText;
 	protected String comment;
-	protected Integer patientId;
-	protected Patient patient;
+	protected Integer personId;
+	protected Person person;
 	protected Order order;
 	protected Location location;
 	protected Encounter encounter;
@@ -267,26 +267,53 @@ public class Obs implements java.io.Serializable {
 	}
 
 	/**
+	 * @deprecated use getPerson()
 	 * @return Returns the patient.
 	 */
 	public Patient getPatient() {
-		return patient;
+		return (Patient)getPerson();
 	}
 
 	/**
+	 * To associate a patient with an obs, use <code>setPerson(org.openmrs.Person)</code>
+	 * @deprecated use setPerson(org.openmrs.Person)
 	 * @param patient
-	 *            The patient to set.
 	 */
 	public void setPatient(Patient patient) {
-		this.patient = patient;
+		setPerson(patient);
 	}
-
-	public Integer getPatientId() {
-		return patientId;
+	
+	/**
+	 * The person id
+	 * @return
+	 */
+	public Integer getPersonId() {
+		return personId;
 	}
-
-	public void setPatientId(Integer patientId) {
-		this.patientId = patientId;
+	
+	/**
+	 * Set the person id
+	 * @param personId
+	 */
+	protected void setPersonId(Integer personId) {
+		this.personId = personId;
+	}
+	
+	/**
+	 * Get the person object
+	 * @return
+	 */
+	public Person getPerson() {
+		return person;
+	}
+	
+	/**
+	 * Set the person object
+	 * @param person
+	 * @return
+	 */
+	public void setPerson(Person person) {
+		this.person = person;
 	}
 
 	/**

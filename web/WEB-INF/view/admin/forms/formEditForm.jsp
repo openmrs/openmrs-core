@@ -124,7 +124,7 @@
 		<tr>
 			<td><spring:message code="general.retiredBy"/></td>
 			<td>
-				${form.retiredBy.firstName} ${form.retiredBy.lastName} -
+				${form.retiredBy.personName} -
 				<openmrs:formatDate date="${form.dateRetired}" type="long" />
 			</td>
 		</tr>
@@ -133,7 +133,7 @@
 		<tr>
 			<td><spring:message code="general.createdBy" /></td>
 			<td>
-				${form.creator.firstName} ${form.creator.lastName} -
+				${form.creator.personName} -
 				<openmrs:formatDate date="${form.dateCreated}" type="long" />
 			</td>
 		</tr>
@@ -142,7 +142,7 @@
 		<tr>
 			<td><spring:message code="general.changedBy" /></td>
 			<td>
-				${form.changedBy.firstName} ${form.changedBy.lastName} -
+				${form.changedBy.personName} -
 				<openmrs:formatDate date="${form.dateChanged}" type="long" />
 			</td>
 		</tr>

@@ -41,12 +41,8 @@ import org.openmrs.Form;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
-import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.Person;
 import org.openmrs.Privilege;
-import org.openmrs.Relationship;
-import org.openmrs.RelationshipType;
 import org.openmrs.Role;
 import org.openmrs.Tribe;
 import org.openmrs.User;
@@ -77,75 +73,6 @@ public class HibernateAdministrationDAO implements
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) { 
 		this.sessionFactory = sessionFactory;
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.AdministrationDAO#createPerson(org.openmrs.Person)
-	 */
-	public void createPerson(Person person) throws DAOException {
-		sessionFactory.getCurrentSession().save(person);
-	}
-
-	/**
-	 * @see org.openmrs.api.db.AdministrationDAO#deletePerson(org.openmrs.Person)
-	 */
-	public void deletePerson(Person person) throws DAOException {
-		sessionFactory.getCurrentSession().delete(person);
-	}
-
-	/**
-	 * @see org.openmrs.api.db.AdministrationDAO#getPerson(java.lang.Integer)
-	 */
-	public Person getPerson(Integer personId) throws DAOException {
-		return (Person)sessionFactory.getCurrentSession().get(Person.class, personId);
-	}
-	
-	public Person getPerson(Patient pat) throws DAOException {
-		/*
-		Criteria crit = session.createCriteria(Person.class);
-		crit = crit.createAlias("patient", "p");
-		crit = crit.add(Expression.eq("p.patientId", pat.getPatientId()));
-		Object o = crit.uniqueResult();
-		*/
-		
-		
-		Query query = sessionFactory.getCurrentSession().createQuery("from Person p where p.patient.patientId = :patId");
-		
-		if (pat == null || pat.getPatientId() == null)
-			return null;
-		query = query.setInteger("patId", pat.getPatientId());
-		Object o = query.uniqueResult();
-		
-		log.debug("o.class: " + o.getClass().toString());
-		
-		Person person = (Person)o;
-		
-		return person;
-	}
-	
-	
-	public Person getPerson(User user) throws DAOException {
-		Query query = sessionFactory.getCurrentSession().createQuery("from Person p where p.user.userId = :userId");
-		query = query.setInteger("userId", user.getUserId());
-		Object o = query.uniqueResult();
-		
-		log.debug("o.class: " + o.getClass().toString());
-		
-		Person person = (Person)o;
-		
-		return person;
-	}
-
-
-	/**
-	 * @see org.openmrs.api.db.AdministrationDAO#updatePerson(org.openmrs.Person)
-	 */
-	public void updatePerson(Person person) throws DAOException {
-		if (person.getPersonId() == null)
-			createPerson(person);
-		else {
-			sessionFactory.getCurrentSession().saveOrUpdate(person);
-		}
 	}
 
 	/**
@@ -277,34 +204,6 @@ public class HibernateAdministrationDAO implements
 		sessionFactory.getCurrentSession().delete(patientIdentifierType);
 	}
 
-	
-	/**
-	 * @see org.openmrs.api.db.AdministrationService#createRelationshipType(org.openmrs.RelationshipType)
-	 */
-	public void createRelationshipType(RelationshipType relationshipType) throws DAOException {
-		relationshipType.setCreator(Context.getAuthenticatedUser());
-		relationshipType.setDateCreated(new Date());
-		sessionFactory.getCurrentSession().save(relationshipType);
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.AdministrationService#updateRelationshipType(org.openmrs.RelationshipType)
-	 */
-	public void updateRelationshipType(RelationshipType relationshipType) throws DAOException {
-		if (relationshipType.getRelationshipTypeId() == null)
-			createRelationshipType(relationshipType);
-		else
-			sessionFactory.getCurrentSession().saveOrUpdate(relationshipType);
-	}
-
-	/**
-	 * @see org.openmrs.api.db.AdministrationService#deleteRelationshipType(org.openmrs.RelationshipType)
-	 */
-	public void deleteRelationshipType(RelationshipType relationshipType) throws DAOException {
-		sessionFactory.getCurrentSession().delete(relationshipType);
-	}
-
-	
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#createTribe(org.openmrs.Tribe)
 	 */
@@ -344,54 +243,6 @@ public class HibernateAdministrationDAO implements
 		tribe.setRetired(false);
 		updateTribe(tribe);
 	}
-
-	
-	/**
-	 * @see org.openmrs.api.db.AdministrationService#createRelationship(org.openmrs.Relationship)
-	 */
-	public void createRelationship(Relationship relationship) throws DAOException {
-		relationship.setCreator(Context.getAuthenticatedUser());
-		relationship.setDateCreated(new Date());
-		sessionFactory.getCurrentSession().save(relationship);
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.AdministrationService#updateRelationship(org.openmrs.Relationship)
-	 */
-	public void updateRelationship(Relationship relationship) throws DAOException {
-		if (relationship.getRelationshipId() == null)
-			createRelationship(relationship);
-		else
-			sessionFactory.getCurrentSession().saveOrUpdate(relationship);
-	}	
-
-	/**
-	 * @see org.openmrs.api.db.AdministrationService#deleteRelationship(org.openmrs.Relationship)
-	 */
-	public void deleteRelationship(Relationship relationship) throws DAOException {
-		sessionFactory.getCurrentSession().delete(relationship);
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.AdministrationService#voidRelationship(org.openmrs.Relationship)
-	 */
-	public void voidRelationship(Relationship relationship) throws DAOException {
-		relationship.setVoided(true);
-		updateRelationship(relationship);
-	}
-
-	/**
-	 * @see org.openmrs.api.db.AdministrationService#unvoidRelationship(org.openmrs.Relationship)
-	 */
-	public void unvoidRelationship(Relationship relationship) throws DAOException {
-		relationship.setVoided(false);
-		relationship.setVoidedBy(null);
-		relationship.setDateVoided(null);
-		relationship.setVoidReason(null);
-		updateRelationship(relationship);
-	}
-
-	
 	
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#createRole(org.openmrs.Role)

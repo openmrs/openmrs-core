@@ -20,15 +20,10 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.Obs;
-import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.Person;
 import org.openmrs.Privilege;
-import org.openmrs.Relationship;
-import org.openmrs.RelationshipType;
 import org.openmrs.Role;
 import org.openmrs.Tribe;
-import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
@@ -67,69 +62,6 @@ public class AdministrationServiceImpl implements AdministrationService {
 		this.dao = dao;
 	}
 
-	/**
-	 * Create a new Person
-	 * @param Person to create
-	 * @throws APIException
-	 */
-	public void createPerson(Person person) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS);
-
-		getAdministrationDAO().createPerson(person);
-	}
-	
-	/**
-	 * Update an encounter type
-	 * @param Person to update
-	 * @throws APIException
-	 */
-	public void updatePerson(Person person) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS);
-
-		getAdministrationDAO().updatePerson(person);
-	}
-
-	/**
-	 * Delete an encounter type
-	 * @param Person to delete
-	 * @throws APIException
-	 */
-	public void deletePerson(Person person) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS);
-
-		getAdministrationDAO().deletePerson(person);
-	}
-	
-	/**
-	 * 
-	 * @param personId to get
-	 * @return Person
-	 * @throws APIException
-	 */
-	public Person getPerson(Integer personId) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS);
-
-		return getAdministrationDAO().getPerson(personId);
-	}
-	
-	public Person getPerson(Patient pat) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS);
-
-		return getAdministrationDAO().getPerson(pat);
-	}
-	
-	public Person getPerson(User user) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS);
-
-		return getAdministrationDAO().getPerson(user);
-	}
-	
 	/**
 	 * Create a new EncounterType
 	 * @param EncounterType to create
@@ -267,72 +199,6 @@ public class AdministrationServiceImpl implements AdministrationService {
 	}
 	
 	/**
-	 * Create a new Relationship
-	 * @param Relationship to create
-	 * @throws APIException
-	 */
-	public void createRelationship(Relationship relationship) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS);
-
-		getAdministrationDAO().createRelationship(relationship);
-	}
-
-	/**
-	 * Update Relationship
-	 * @param Relationship to update
-	 * @throws APIException
-	 */
-	public void updateRelationship(Relationship relationship) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS);
-
-		getAdministrationDAO().updateRelationship(relationship);
-	}
-
-	/**
-	 * Delete Relationship
-	 * @param Relationship to delete
-	 * @throws APIException
-	 */
-	public void deleteRelationship(Relationship relationship) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS);
-
-		getAdministrationDAO().deleteRelationship(relationship);
-	}
-	
-	/**
-	 * Retire Relationship
-	 * @param Relationship to void
-	 * @throws APIException
-	 */
-	public void voidRelationship(Relationship relationship) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS);
-
-		if (relationship.getVoided()) {
-			return;
-		}
-		if (relationship.getVoidedBy() == null) {
-			relationship.setVoidedBy(Context.getAuthenticatedUser());
-		}
-		getAdministrationDAO().voidRelationship(relationship);
-	}
-
-	/**
-	 * Unretire Relationship
-	 * @param Relationship to unvoid
-	 * @throws APIException
-	 */
-	public void unvoidRelationship(Relationship relationship) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS);
-
-		getAdministrationDAO().unvoidRelationship(relationship);
-	}
-		
-	/**
 	 * Create a new FieldType
 	 * @param FieldType to create
 	 * @throws APIException
@@ -440,42 +306,6 @@ public class AdministrationServiceImpl implements AdministrationService {
 		getAdministrationDAO().deleteLocation(location);
 	}
 	
-	/**
-	 * Create a new RelationshipType
-	 * @param RelationshipType to create
-	 * @throws APIException
-	 */
-	public void createRelationshipType(RelationshipType relationshipType) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIP_TYPES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_RELATIONSHIP_TYPES);
-
-		getAdministrationDAO().createRelationshipType(relationshipType);
-	}
-
-	/**
-	 * Update RelationshipType
-	 * @param RelationshipType to update
-	 * @throws APIException
-	 */
-	public void updateRelationshipType(RelationshipType relationshipType) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIP_TYPES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_RELATIONSHIP_TYPES);
-
-		getAdministrationDAO().updateRelationshipType(relationshipType);
-	}
-
-	/**
-	 * Delete RelationshipType
-	 * @param RelationshipType to delete
-	 * @throws APIException
-	 */
-	public void deleteRelationshipType(RelationshipType relationshipType) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIP_TYPES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_RELATIONSHIP_TYPES);
-
-		getAdministrationDAO().deleteRelationshipType(relationshipType);
-	}
-
 	/**
 	 * Create a new Role
 	 * @param Role to create
@@ -740,8 +570,13 @@ public class AdministrationServiceImpl implements AdministrationService {
 
 		Context.getConceptService().checkIfLocked();
 		
-		for (Concept concept : Context.getConceptService().getConceptsByName(""))
+		int count = 0;
+		for (Concept concept : Context.getConceptService().getConceptsByName("")) {
 			updateConceptWord(concept);
+			if (count++ > 1000) {
+				Context.clearSession();
+			}
+		}
 		
 	}
 	
@@ -850,7 +685,7 @@ public class AdministrationServiceImpl implements AdministrationService {
 			ob.setDateCreated(new Date());
 			ob.setObsDatetime(cp.getEncounter().getEncounterDatetime());
 			ob.setLocation(cp.getEncounter().getLocation());
-			ob.setPatient(cp.getEncounter().getPatient());
+			ob.setPerson(cp.getEncounter().getPatient());
 			cp.setObs(ob);
 		}
 		

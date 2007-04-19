@@ -80,6 +80,10 @@ public class DataExportFunctions {
 	// Map<tablename+columnname, Map<patientId, columnvalue>>
 	protected Map<String, Map<Integer, Object>> patientAttributeMap = new HashMap<String, Map<Integer, Object>>();
 	
+	// Map<tablename+columnname, Map<personId, columnvalue>>
+	protected Map<String, Map<Integer, Object>> personAttributeMap = new HashMap<String, Map<Integer, Object>>();
+	
+	
 	protected PatientSetService patientSetService;
 	protected PatientService patientService;
 	protected ConceptService conceptService;
@@ -489,7 +493,7 @@ public class DataExportFunctions {
 			patientIdRelationshipMap = relationshipMap.get(relationshipTypeName);
 		} else {
 			//log.debug("getting relationship list for type: " + relationshipTypeName);
-			RelationshipType relType = Context.getPatientService().findRelationshipType(relationshipTypeName);
+			RelationshipType relType = Context.getPersonService().findRelationshipType(relationshipTypeName);
 			patientIdRelationshipMap = patientSetService.getRelationships(getPatientSet(), relType);
 			relationshipMap.put(relationshipTypeName, patientIdRelationshipMap);
 		}
@@ -505,11 +509,7 @@ public class DataExportFunctions {
 			StringBuilder sb = new StringBuilder();
 			for (Iterator<Relationship> i = rels.iterator(); i.hasNext(); ) {
 				Relationship r = i.next();
-				if (r.getPerson().getUser() != null) {
-					sb.append(r.getPerson().getUser().toString());
-				} else {
-					sb.append(r.getPerson().getPatient().getPatientName());
-				}
+				sb.append(r.getPersonA().toString());
 				if (i.hasNext())
 					sb.append(" ");
 			}
@@ -526,11 +526,7 @@ public class DataExportFunctions {
 			StringBuilder sb = new StringBuilder();
 			for (Iterator<Relationship> i = rels.iterator(); i.hasNext(); ) {
 				Relationship r = i.next();
-				if (r.getPerson().getUser() != null) {
-					sb.append("User " + r.getPerson().getUser().getUserId());
-				} else {
-					sb.append("Patient " + r.getPerson().getPatient().getPatientId());
-				}
+				r.getPersonA().toString();
 				if (i.hasNext())
 					sb.append(" ");
 			}
@@ -546,9 +542,9 @@ public class DataExportFunctions {
 			StringBuilder sb = new StringBuilder();
 			for (Iterator<Relationship> i = rels.iterator(); i.hasNext(); ) {
 				Relationship r = i.next();
-				if (r.getPerson().getPatient() != null) {
-					sb.append("Patient " + r.getPerson().getPatient().getPatientIdentifier());
-				}
+				Patient p = patientService.getPatient(r.getPersonA().getPersonId());
+				if (p != null)
+					sb.append("Patient " + p.getPatientIdentifier());
 				if (i.hasNext())
 					sb.append(" ");
 			}
@@ -593,6 +589,28 @@ public class DataExportFunctions {
 			patientAttributeMap.put(key, patientIdAttrMap);
 		}
 		return patientIdAttrMap.get(patientId);
+	}
+	
+	public Object getPersonAttribute(String attributeName, String joinClass, String joinProperty, String outputColumn, boolean returnAll) {
+		String key = attributeName + "." + joinClass + "." + joinProperty;
+		
+		if (returnAll)
+			key += "--all";
+		
+		Map<Integer, Object> personIdAttrMap;
+		if (personAttributeMap.containsKey(key)) {
+			personIdAttrMap = personAttributeMap.get(key);
+		}
+		else {
+			//log.debug("getting patient attrs: " + key);
+			personIdAttrMap = patientSetService.getPersonAttributes(patientSet, attributeName, joinClass, joinProperty, outputColumn, returnAll);
+			personAttributeMap.put(key, personIdAttrMap);
+		}
+		return personIdAttrMap.get(patientId);
+	}
+	
+	public Object getPersonAttribute(String attributeName) {
+		return getPersonAttribute(attributeName, null, null, null, false);
 	}
 	
 	/**

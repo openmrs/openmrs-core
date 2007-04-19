@@ -154,7 +154,7 @@ public class ObsFormController extends SimpleFormController {
 	    		Encounter e = es.getEncounter(Integer.valueOf(encounterId));
 	    		obs = new Obs();
 	    		obs.setEncounter(e);
-	    		obs.setPatient(e.getPatient());
+	    		obs.setPerson(e.getPatient());
 	    		obs.setLocation(e.getLocation());
 	    		obs.setObsDatetime(e.getEncounterDatetime());
 	    	}
@@ -177,7 +177,7 @@ public class ObsFormController extends SimpleFormController {
 			map.put("forms", Context.getFormService().getForms());
 			if (obs.getConcept() != null)
 				map.put("conceptName", obs.getConcept().getName(request.getLocale()));
-			defaultVerbose = Context.getAuthenticatedUser().getProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
+			defaultVerbose = Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
 		}
 		map.put("datePattern", dateFormat.toLocalizedPattern().toLowerCase());
 
@@ -196,10 +196,10 @@ public class ObsFormController extends SimpleFormController {
 
 		if (Context.isAuthenticated()) {
 			if (obs.getObsId() == null) { //patient/order/concept/encounter only change when adding a new observation
-				if (StringUtils.hasText(request.getParameter("patientId")))
-					obs.setPatient(Context.getPatientService().getPatient(Integer.valueOf(request.getParameter("patientId"))));
+				if (StringUtils.hasText(request.getParameter("personId")))
+					obs.setPerson(Context.getPatientService().getPatient(Integer.valueOf(request.getParameter("personId"))));
 				else
-					obs.setPatient(null);
+					obs.setPerson(null);
 				if (StringUtils.hasText(request.getParameter("orderId")))
 					obs.setOrder(Context.getOrderService().getOrder(Integer.valueOf(request.getParameter("orderId"))));
 				else

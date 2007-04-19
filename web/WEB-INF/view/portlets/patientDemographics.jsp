@@ -4,38 +4,28 @@
 
 <div class="boxHeader${model.patientVariation}"><spring:message code="Patient.title"/></div>
 <div class="box${model.patientVariation}">
-	<table class="patientAddress">
+	<table class="personName">
 		<thead>
 			<tr>
-				<th><spring:message code="Patient.names"/></th>
-				<th><spring:message code="Patient.mothersName"/></th>
-				<th><spring:message code="Patient.civilStatus"/></th>
-				<c:if test="${showTribe == 'true'}">
-					<th><spring:message code="Patient.race"/></th>
-					<th><spring:message code="Patient.tribe"/></th>
-				</c:if>
-				<th><spring:message code="Patient.birthplace"/></th>
+				<th><spring:message code="Person.names"/></th>
+				<openmrs:forEachDisplayAttributeType personType="patient" displayType="viewing" var="attrType">
+					<th><spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}"/></th>
+				</openmrs:forEachDisplayAttributeType>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<td>
+				<td valign="top">
 					<c:forEach var="name" items="${model.patient.names}" varStatus="status">
-						<c:if test="${name == model.patient.patientName}">*</c:if>
-						${name.givenName} ${name.middleName} ${name.familyName}<br/>
+						<% request.setAttribute("name", pageContext.getAttribute("name")); %>
+						<spring:nestedPath path="name">
+							<openmrs:portlet url="nameLayout" id="namePortlet" size="quickView" parameters="layoutShowExtended=true" />
+						</spring:nestedPath>
 					</c:forEach>
 				</td>
-				<td>${model.patient.mothersName}</td>
-				<td>
-					<c:if test='${model.patient.civilStatus != null}'>
-						<openmrs:concept conceptId="${model.patient.civilStatus.conceptId}" nameVar="n" var="v" numericVar="nv">${n.name}</openmrs:concept>
-					</c:if>
-				</td>
-				<c:if test="${showTribe == 'true'}">
-					<td>${model.patient.race}</td>
-					<td>${model.patient.tribe.name}</td>
-				</c:if>
-				<td><c:if test='${model.patient.birthplace != null}'>${model.patient.birthplace}</c:if></td>
+				<openmrs:forEachDisplayAttributeType personType="patient" displayType="viewing" var="attrType">
+					<td valign="top">${model.patient.attributeMap[attrType.name]}</td>
+				</openmrs:forEachDisplayAttributeType>
 			</tr>
 		</tbody>
 	</table>
@@ -43,17 +33,17 @@
 
 <br/>
 
-<div class="boxHeader${model.patientVariation}"><spring:message code="Patient.addresses"/></div>
+<div class="boxHeader${model.patientVariation}"><spring:message code="Person.addresses"/></div>
 <div class="box${model.patientVariation}">
-	<table class="patientAddress">
+	<table class="personAddress">
 		<thead>
-			<openmrs:portlet url="address" id="addressPortlet" size="columnHeaders" parameters="addressShowTable=false|addressShowExtended=true" />
+			<openmrs:portlet url="addressLayout" id="addressPortlet" size="columnHeaders" parameters="layoutShowTable=false|layoutShowExtended=true" />
 		</thead>
 		<tbody>
 			<c:forEach var="address" items="${model.patient.addresses}" varStatus="status">
 				<% request.setAttribute("address", pageContext.getAttribute("address")); %>
 				<spring:nestedPath path="address">
-					<openmrs:portlet url="address" id="addressPortlet" size="inOneRow" parameters="addressShowTable=false|addressShowExtended=true" />
+					<openmrs:portlet url="addressLayout" id="addressPortlet" size="inOneRow" parameters="layoutMode=view|layoutShowTable=false|layoutShowExtended=true" />
 				</spring:nestedPath>
 			</c:forEach>
 		</tbody>
@@ -65,12 +55,12 @@
 
 <div id="patientDemographicsEdit">
 	<openmrs:hasPrivilege privilege="Edit Patients">
-		<a href="<%= request.getContextPath() %>/admin/patients/patient.form?patientId=${model.patient.patientId}"><spring:message code="Patient.edit"/></a> | 
-		<a href="<%= request.getContextPath() %>/admin/patients/newPatient.form?pId=${model.patient.patientId}"><spring:message code="Patient.edit.short"/></a><br /><br />
+		<a href="${pageContext.request.contextPath}/admin/patients/patient.form?patientId=${model.patient.patientId}"><spring:message code="Patient.edit"/></a> | 
+		<a href="${pageContext.request.contextPath}/admin/patients/newPatient.form?patientId=${model.patient.patientId}"><spring:message code="Patient.edit.short"/></a><br /><br />
 	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="Edit Patients" inverse="true">
 		<openmrs:hasPrivilege privilege="Add Patients">
-			<a href="<%= request.getContextPath() %>/admin/patients/newPatient.form?pId=${model.patient.patientId}"><spring:message code="Patient.edit"/></a><br />
+			<a href=${pageContext.request.contextPath}/admin/patients/newPatient.form?patientId=${model.patient.patientId}"><spring:message code="Patient.edit"/></a><br />
 		</openmrs:hasPrivilege>
 	</openmrs:hasPrivilege>
 </div>

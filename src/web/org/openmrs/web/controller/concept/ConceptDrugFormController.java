@@ -110,7 +110,7 @@ public class ConceptDrugFormController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			if (drug.getConcept() != null)
 				map.put("conceptName", drug.getConcept().getName(request.getLocale()));
-			defaultVerbose = Context.getAuthenticatedUser().getProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
+			defaultVerbose = Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
 		}
 		map.put("datePattern", dateFormat.toLocalizedPattern().toLowerCase());
 

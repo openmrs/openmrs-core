@@ -16,7 +16,7 @@ import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.Obs;
-import org.openmrs.Patient;
+import org.openmrs.Person;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ObsService;
@@ -25,13 +25,10 @@ import org.openmrs.api.db.ObsDAO;
 import org.openmrs.logic.Aggregation;
 import org.openmrs.logic.Constraint;
 import org.openmrs.util.OpenmrsConstants;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Observation-related services
  * 
- * @author Ben Wolfe
- * @author Burke Mamlin
  * @version 1.0
  */
 public class ObsServiceImpl implements ObsService {
@@ -43,6 +40,11 @@ public class ObsServiceImpl implements ObsService {
 	public ObsServiceImpl() {
 	}
 
+	/**
+	 * Returns the injected dao object for this class
+	 * 
+	 * @return
+	 */
 	private ObsDAO getObsDAO() {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_OBS))
 			throw new APIAuthenticationException("Privilege required: "
@@ -51,15 +53,15 @@ public class ObsServiceImpl implements ObsService {
 		return dao;
 	}
 
+	/**
+	 * @see org.openmrs.api.ObsService#setObsDAO(org.openmrs.api.db.ObsDAO)
+	 */
 	public void setObsDAO(ObsDAO dao) {
 		this.dao = dao;
 	}
 
 	/**
-	 * Create an observation
-	 * 
-	 * @param Obs
-	 * @throws APIException
+	 * @see org.openmrs.api.ObsService#createObs(org.openmrs.Obs)
 	 */
 	public void createObs(Obs obs) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_ADD_OBS))
@@ -69,12 +71,7 @@ public class ObsServiceImpl implements ObsService {
 	}
 
 	/**
-	 * Create a grouping of observations (observations linked by
-	 * obs.obs_group_id)
-	 * 
-	 * @param obs -
-	 *            array of observations to be grouped
-	 * @throws APIException
+	 * @see org.openmrs.api.ObsService#createObsGroup(org.openmrs.Obs[])
 	 */
 	public void createObsGroup(Obs[] obs) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_ADD_OBS))
@@ -96,22 +93,14 @@ public class ObsServiceImpl implements ObsService {
 	}
 
 	/**
-	 * Get an observation
-	 * 
-	 * @param integer
-	 *            obsId of observation desired
-	 * @return matching Obs
-	 * @throws APIException
+	 * @see org.openmrs.api.ObsService#getObs(java.lang.Integer)
 	 */
 	public Obs getObs(Integer obsId) throws APIException {
 		return getObsDAO().getObs(obsId);
 	}
 
 	/**
-	 * Save changes to observation
-	 * 
-	 * @param Obs
-	 * @throws APIException
+	 * @see org.openmrs.api.ObsService#updateObs(org.openmrs.Obs)
 	 */
 	public void updateObs(Obs obs) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_OBS))
@@ -129,13 +118,7 @@ public class ObsServiceImpl implements ObsService {
 	}
 
 	/**
-	 * Equivalent to deleting an observation
-	 * 
-	 * @param Obs
-	 *            obs to void
-	 * @param String
-	 *            reason
-	 * @throws APIException
+	 * @see org.openmrs.api.ObsService#voidObs(org.openmrs.Obs, java.lang.String)
 	 */
 	public void voidObs(Obs obs, String reason) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_OBS))
@@ -149,10 +132,7 @@ public class ObsServiceImpl implements ObsService {
 	}
 
 	/**
-	 * Revive an observation (pull a Lazarus)
-	 * 
-	 * @param Obs
-	 * @throws APIException
+	 * @see org.openmrs.api.ObsService#unvoidObs(org.openmrs.Obs)
 	 */
 	public void unvoidObs(Obs obs) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_OBS))
@@ -166,11 +146,7 @@ public class ObsServiceImpl implements ObsService {
 	}
 
 	/**
-	 * Delete an observation. SHOULD NOT BE CALLED unless caller is lower-level.
-	 * 
-	 * @param Obs
-	 * @throws APIException
-	 * @see voidObs(Obs)
+	 * @see org.openmrs.api.ObsService#deleteObs(org.openmrs.Obs)
 	 */
 	public void deleteObs(Obs obs) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_DELETE_OBS))
@@ -180,153 +156,112 @@ public class ObsServiceImpl implements ObsService {
 	}
 
 	/**
-	 * Get all mime types
-	 * 
-	 * @return mime types list
-	 * @throws APIException
+	 * @see org.openmrs.api.ObsService#getMimeTypes()
 	 */
 	public List<MimeType> getMimeTypes() throws APIException {
 		return getObsDAO().getMimeTypes();
 	}
 
 	/**
-	 * Get mimeType by internal identifier
-	 * 
-	 * @param mimeType
-	 *            id
-	 * @return mimeType with given internal identifier
-	 * @throws APIException
+	 * @see org.openmrs.api.ObsService#getMimeType(java.lang.Integer)
 	 */
 	public MimeType getMimeType(Integer mimeTypeId) throws APIException {
 		return getObsDAO().getMimeType(mimeTypeId);
 	}
 
 	/**
-	 * Get all Observations for a patient
-	 * 
-	 * @param who
-	 * @return
+	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Person)
 	 */
-	public Set<Obs> getObservations(Patient who) {
+	public Set<Obs> getObservations(Person who) {
 		return getObsDAO().getObservations(who);
 	}
 
 	/**
-	 * Get all Observations for this concept/location Sort is optional
-	 * 
-	 * @param concept
-	 * @param location
-	 * @param sort
-	 * @return list of obs for a location
+	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Concept, org.openmrs.Location, java.lang.String, java.lang.Integer)
 	 */
-	public List<Obs> getObservations(Concept c, Location loc, String sort) {
-		return getObsDAO().getObservations(c, loc, sort);
+	public List<Obs> getObservations(Concept c, Location loc, String sort, Integer personType) {
+		return getObsDAO().getObservations(c, loc, sort, personType);
 	}
 
 	/**
-	 * e.g. get all CD4 counts for a patient
-	 * 
-	 * @param who
-	 * @param question
-	 * @return
+	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Person, org.openmrs.Concept)
 	 */
-	public Set<Obs> getObservations(Patient who, Concept question) {
+	public Set<Obs> getObservations(Person who, Concept question) {
 		return getObsDAO().getObservations(who, question);
 	}
 
 	/**
-	 * e.g. get last 'n' number of observations for a patient for given concept
-	 * 
-	 * @param n
-	 *            number of concepts to retrieve
-	 * @param who
-	 * @param question
-	 * @return
+	 * @see org.openmrs.api.ObsService#getLastNObservations(java.lang.Integer, org.openmrs.Person, org.openmrs.Concept)
 	 */
-	public List<Obs> getLastNObservations(Integer n, Patient who,
+	public List<Obs> getLastNObservations(Integer n, Person who,
 			Concept question) {
 		return getObsDAO().getLastNObservations(n, who, question);
 	}
 
 	/**
-	 * e.g. get all observations referring to RETURN VISIT DATE
-	 * 
-	 * @param question
-	 *            (Concept: RETURN VISIT DATE)
-	 * @param sort
-	 * @return
+	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Concept, java.lang.String, java.lang.Integer)
 	 */
-	public List<Obs> getObservations(Concept question, String sort) {
-		return getObsDAO().getObservations(question, sort);
+	public List<Obs> getObservations(Concept question, String sort, Integer personType) {
+		return getObsDAO().getObservations(question, sort, personType);
 	}
 	
 	/**
-	 *  @see org.openmrs.api.ObsService#getObservationsAnsweredByConcept(org.openmrs.Concept)
+	 * @see org.openmrs.api.ObsService#getObservationsAnsweredByConcept(org.openmrs.Concept, java.lang.Integer)
 	 */
-	@Transactional(readOnly = true)
-	public List<Obs> getObservationsAnsweredByConcept(Concept answer) {
-		return getObsDAO().getObservationsAnsweredByConcept(answer);
+	public List<Obs> getObservationsAnsweredByConcept(Concept answer, Integer personType) {
+		return getObsDAO().getObservationsAnsweredByConcept(answer, personType);
 	}
 	
 	/**
-	 *  @see org.openmrs.api.ObsService#getNumericAnswersForConcept(org.openmrs.Concept,java.lang.Boolean)
+	 * @see org.openmrs.api.ObsService#getNumericAnswersForConcept(org.openmrs.Concept, java.lang.Boolean, java.lang.Integer)
 	 */
-	@Transactional(readOnly = true)
-	public List<Object[]> getNumericAnswersForConcept(Concept answer, Boolean sortByValue) {
-		return getObsDAO().getNumericAnswersForConcept(answer, sortByValue);
+	public List<Object[]> getNumericAnswersForConcept(Concept answer, Boolean sortByValue, Integer personType) {
+		return getObsDAO().getNumericAnswersForConcept(answer, sortByValue, personType);
 	}
 	
 
 	/**
-	 * Get all observations from a specific encounter
-	 * 
-	 * @param whichEncounter
-	 * @return Set of Obs
+	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Encounter)
 	 */
 	public Set<Obs> getObservations(Encounter whichEncounter) {
 		return getObsDAO().getObservations(whichEncounter);
 	}
 
 	/**
-	 * Get all observations that have been voided Observations are ordered by
-	 * descending voidedDate
-	 * 
-	 * @return List of Obs
+	 * @see org.openmrs.api.ObsService#getVoidedObservations()
 	 */
 	public List<Obs> getVoidedObservations() {
 		return getObsDAO().getVoidedObservations();
 	}
 
 	/**
-	 * Find observations matching the search string "matching" is defined as
-	 * either the obsId or the patient identifier
-	 * 
-	 * @param search
-	 * @param includeVoided
-	 * @return list of matched observations
+	 * @see org.openmrs.api.ObsService#findObservations(java.lang.String, boolean, java.lang.Integer)
 	 */
-	public List<Obs> findObservations(String search, boolean includeVoided) {
+	public List<Obs> findObservations(String search, boolean includeVoided, Integer personType) {
 		List<Obs> obs = new Vector<Obs>();
-		for (Patient p : Context.getPatientService().getPatientsByIdentifier(
+		for (Person p : Context.getPatientService().getPatientsByIdentifier(
 				search, includeVoided)) {
-			obs.addAll(getObsDAO().findObservations(p.getPatientId(),
-					includeVoided));
+			obs.addAll(getObsDAO().findObservations(p.getPersonId(),
+					includeVoided, personType));
 		}
 		try {
 			Integer i = Integer.valueOf(search);
 			if (i != null)
-				obs.addAll(getObsDAO().findObservations(i, includeVoided));
+				obs.addAll(getObsDAO().findObservations(i, includeVoided, personType));
 		} catch (Exception e) {
 		}
 
 		return obs;
 	}
 
-	public List<String> getDistinctObservationValues(Concept question) {
+	/**
+	 * @see org.openmrs.api.ObsService#getDistinctObservationValues(org.openmrs.Concept, java.lang.Integer)
+	 */
+	public List<String> getDistinctObservationValues(Concept question, Integer personType) {
 		// todo: make this efficient, and add a sort option
 
 		Locale l = Context.getLocale();
-		List<Obs> obs = getObservations(question, null);
+		List<Obs> obs = getObservations(question, null, personType);
 		SortedSet<String> set = new TreeSet<String>();
 		for (Obs o : obs) {
 			set.add(o.getValueAsString(l));
@@ -335,14 +270,16 @@ public class ObsServiceImpl implements ObsService {
 	}
 
 	/**
-	 * @param obsGroupId
-	 * @return All obs that share obsGroupId
+	 * @see org.openmrs.api.ObsService#findObsByGroupId(java.lang.Integer)
 	 */
 	public List<Obs> findObsByGroupId(Integer obsGroupId) {
 		return getObsDAO().findObsByGroupId(obsGroupId);
 	}
 
-	public List<Obs> getObservations(Patient who, Aggregation aggregation,
+	/**
+	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Person, org.openmrs.logic.Aggregation, org.openmrs.Concept, org.openmrs.logic.Constraint)
+	 */
+	public List<Obs> getObservations(Person who, Aggregation aggregation,
 			Concept question, Constraint constraint) {
 		return getObsDAO().getObservations(who, aggregation, question, constraint);
 	}

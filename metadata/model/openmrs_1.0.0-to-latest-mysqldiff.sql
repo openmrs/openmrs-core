@@ -1679,6 +1679,7 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 delimiter ;
 call diff_procedure('1.0.52');
 
+
 #--------------------------------------
 # OpenMRS Datamodel version 1.0.53
 # Darius Jazayeri           Feb 15 2007
@@ -1799,8 +1800,6 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 delimiter ;
 call diff_procedure('1.0.55');
 
-
-
 #--------------------------------------
 # OpenMRS Datamodel version 1.0.56
 # Christian Allen            16 Apr 2007
@@ -1836,6 +1835,580 @@ delimiter ;
 call diff_procedure('1.0.56');
 
 
+#--------------------------------------
+# OpenMRS Datamodel version 1.0.57
+# Ben Wolfe  Jan 24, 2007 11:05 AM
+# Merging patient/user/persion
+#--------------------------------------
+
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+ 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+	SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+	
+	select CONCAT('Updating to patient/user/person at: ', now()) as 'Timestamp' from dual;
+	
+	# /* remove foreign keys so we can change all patient ids to new person ids */
+	ALTER TABLE person DROP FOREIGN KEY patients;
+	ALTER TABLE person DROP FOREIGN KEY users;
+	ALTER TABLE person DROP INDEX patients;
+	ALTER TABLE person DROP INDEX users;
+	
+	# /* make all patient foreign keys auto update ("cascade" when patient.patient_id is updated) */
+	select 'Changing foreign keys to ON CASCADE' as 'Action' from dual;
+	ALTER TABLE patient_name DROP FOREIGN KEY name_for_patient;
+	ALTER TABLE patient_name ADD CONSTRAINT `name_for_patient` FOREIGN KEY name_for_patient (`patient_id`) REFERENCES `patient` (`patient_id`) ON UPDATE CASCADE;
+	ALTER TABLE patient_address DROP FOREIGN KEY patient_addresses;
+	ALTER TABLE patient_address ADD CONSTRAINT `patient_addresses` FOREIGN KEY patient_addresses (`patient_id`) REFERENCES `patient` (`patient_id`) ON UPDATE CASCADE;
+	ALTER TABLE patient_identifier DROP FOREIGN KEY identifies_patient;
+	ALTER TABLE patient_identifier ADD CONSTRAINT `identifies_patient` FOREIGN KEY identifies_patient (`patient_id`) REFERENCES `patient` (`patient_id`) ON UPDATE CASCADE;
+	select 'Changing encounter foreign keys to ON CASCADE' as 'Action' from dual;
+	ALTER TABLE encounter DROP FOREIGN KEY encounter_patient;
+	ALTER TABLE encounter ADD CONSTRAINT `encounter_patient` FOREIGN KEY encounter_patient (`patient_id`) REFERENCES `patient` (`patient_id`) ON UPDATE CASCADE;
+	select 'Changing note foreign keys to ON CASCADE' as 'Action' from dual;
+	ALTER TABLE note DROP FOREIGN KEY patient_note;
+	ALTER TABLE note ADD CONSTRAINT `patient_note` FOREIGN KEY patient_note (`patient_id`) REFERENCES `patient` (`patient_id`) ON UPDATE CASCADE;
+	# /* Modifying the keys on obs is much too slow.  Change patients manually */
+	select 'Changing obs foreign keys to ON CASCADE' as 'Action' from dual;
+	ALTER TABLE obs DROP FOREIGN KEY patient_obs;
+	# /* ALTER TABLE obs ADD CONSTRAINT `patient_obs` FOREIGN KEY patient_obs (`patient_id`) REFERENCES `patient` (`patient_id`) ON UPDATE CASCADE; */
+	select 'Changing program foreign keys to ON CASCADE' as 'Action' from dual;
+	ALTER TABLE patient_program DROP FOREIGN KEY `patient_in_program`;
+	ALTER TABLE patient_program ADD CONSTRAINT `patient_in_program` FOREIGN KEY `patient_in_program` (`patient_id`) REFERENCES `patient` (`patient_id`) ON UPDATE CASCADE;
+	select 'Changing cohort member foreign keys to ON CASCADE' as 'Action' from dual;
+	ALTER TABLE cohort_member DROP FOREIGN KEY `member_patient`;
+	ALTER TABLE cohort_member ADD CONSTRAINT `member_patient` FOREIGN KEY `member_patient` (`patient_id`) REFERENCES `patient` (`patient_id`) ON UPDATE CASCADE;
+	select 'Changing order patient foreign keys to ON CASCADE' as 'Action' from dual;
+	ALTER TABLE `orders` DROP FOREIGN KEY `order_for_patient`;
+	ALTER TABLE `orders` ADD CONSTRAINT `order_for_patient` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`) ON UPDATE CASCADE;
+	
+	# /* I want to leave all of the user ids the same, so overlapping patient ids need to change to the person id of the  */
+	# /* user_id that would be overlapped	 */
+	select 'Changing relationship.person_id' as 'Action' from dual;
+	UPDATE
+		relationship r,
+		person p
+	SET
+		r.person_id = (select person_id from person where user_id = p.patient_id)
+	WHERE
+		r.person_id = p.person_id
+		AND
+		EXISTS (select * from users u where u.user_id = p.patient_id);
+	
+	select 'Changing relationship.relative_id' as 'Action' from dual;
+	UPDATE
+		relationship r,
+		person p
+	SET
+		r.relative_id = (select person_id from person where user_id = p.patient_id)
+	WHERE
+		r.relative_id = p.person_id
+		AND
+		EXISTS (select * from users u where u.user_id = p.patient_id);
+	
+	/*	
+		1)	Create temp table with overlapping patient_ids and their new person_id
+			1a) The new person_id is the patient_id unless patient_id is a user_id already
+			1b) If it is a user_id, the new person_id is simply added to the end of the list
+		2)	Update patient table to new person id (will cascade to all other patient tables)
+		3)	Update obs table with new (because it will not cascade)
+		4)	update all person_ids in relationship table that correspond with patient_ids 
+			that overlap with user_ids, change to the new person_id
+
+	*/
+	select @max_patient_id := max(patient_id) from patient;
+	select 'Create temporary table holding overlapping patient_ids and new person_ids' as 'Action' from dual;
+	DROP TABLE IF EXISTS temp_overlapping_patient_ids;
+	CREATE TABLE 
+		temp_overlapping_patient_ids
+		(
+		 patient_id int(11),
+		 old_person_id int(11),
+		 new_person_id int(11)
+		);
+	INSERT INTO
+		temp_overlapping_patient_ids
+	(patient_id, old_person_id, new_person_id)
+		SELECT
+			patient_id, person_id, @max_patient_id + patient_id
+		FROM
+			person
+		WHERE
+			EXISTS (select * from users u where u.user_id = patient_id);
+	
+	# /* change the patient ids that overlap user ids to that user id's person id */
+	select 'Advancing patient.patient_ids that overlap with user_ids' as 'Action' from dual;
+	UPDATE 
+		patient p,
+		temp_overlapping_patient_ids t
+	SET
+		p.patient_id = t.new_person_id
+	WHERE
+		p.patient_id = t.patient_id;
+	
+	# /* update the obs table because we didn't make a 'cascade' foreign key */
+	select 'Advancing obs.patient_ids that overlap with user_ids' as 'Action' from dual;
+	UPDATE
+		obs o,
+		temp_overlapping_patient_ids t
+	SET
+		o.patient_id = t.new_person_id
+	WHERE
+		o.patient_id = t.patient_id;
+	
+	/* Disable the foreign key checks while we update the relationship persons */
+	SET FOREIGN_KEY_CHECKS=0;
+	select 'Matching relationship.person_id with new person_id (which is the current patient_id or user_id)' as 'Action' from dual;
+	UPDATE
+		relationship r join
+		person p on r.person_id = p.person_id left join
+		temp_overlapping_patient_ids t on t.old_person_id = r.person_id
+	SET
+		r.person_id = IFNULL(t.new_person_id, IFNULL(p.patient_id, p.user_id));
+			
+	select 'Matching relationship.relative_id with new person_id (which is the current patient_id or user_id)' as 'Action' from dual;
+	UPDATE
+		relationship r join
+		person p on r.relative_id = p.person_id left join
+		temp_overlapping_patient_ids t on t.old_person_id = r.relative_id
+	SET
+		r.relative_id = IFNULL(t.new_person_id, IFNULL(p.patient_id, p.user_id));
+	
+	DROP TABLE IF EXISTS temp_overlapping_patient_ids;
+	SET FOREIGN_KEY_CHECKS=1;
+	
+	# /* Remake the person table */
+	select 'Remaking the person table' as 'Action' from dual;
+	ALTER TABLE relationship DROP FOREIGN KEY `related_person`;
+	ALTER TABLE relationship DROP FOREIGN KEY `related_relative`;
+	DROP TABLE `person`;
+	CREATE TABLE `person` (
+		`person_id` int(11) NOT NULL auto_increment,
+		`gender` varchar(50) default '',
+		`birthdate` date default NULL,
+		`birthdate_estimated` tinyint(1) default NULL,
+		`dead` int(1) NOT NULL default '0',
+		`death_date` datetime default NULL,
+		`cause_of_death` int(11) default NULL,
+		`creator` int(11) NOT NULL default '0',
+		`date_created` datetime NOT NULL default '0000-00-00 00:00:00',
+		`changed_by` int(11) default NULL,
+		`date_changed` datetime default NULL,
+		`voided` tinyint(1) NOT NULL default '0',
+		`voided_by` int(11) default NULL,
+		`date_voided` datetime default NULL,
+		`void_reason` varchar(255) default NULL,
+		PRIMARY KEY	(`person_id`),
+		KEY `user_who_created_patient` (`creator`),
+		KEY `user_who_voided_patient` (`voided_by`),
+		KEY `user_who_changed_pat` (`changed_by`),
+		KEY `person_birthdate` (`birthdate`),
+		KEY `person_death_date` (`death_date`),
+		KEY `person_died_because` (`cause_of_death`),
+		CONSTRAINT `person_died_because` FOREIGN KEY (`cause_of_death`) REFERENCES `concept` (`concept_id`),
+		CONSTRAINT `user_who_changed_person` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`),
+		CONSTRAINT `user_who_created_person` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
+		CONSTRAINT `user_who_voided_person` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='';
+	
+	# /* copy patient data to the person table */
+	select 'Copy all patients into the person table' as 'Action' from dual;
+	INSERT INTO `person` 
+		(person_id, 
+			gender, birthdate, birthdate_estimated, 
+			dead, death_date, cause_of_death, 
+			creator, date_created, 
+			changed_by, date_changed, 
+			voided, voided_by, date_voided, void_reason)
+		SELECT 
+			patient_id,
+				gender, birthdate, birthdate_estimated, 
+				dead, death_date, cause_of_death, 
+				creator, date_created, 
+				changed_by, date_changed, 
+				voided, voided_by, date_voided, void_reason
+		FROM 
+			`patient`;
+	
+		
+	# /* remove the now unecessary patient table columns */
+	select 'Remove some of the deprecated patient table columns' as 'Action' from dual;
+	ALTER TABLE `patient` DROP INDEX birthdate;
+	ALTER TABLE `patient` DROP FOREIGN KEY died_because;
+	ALTER TABLE `patient` DROP INDEX died_because;
+	ALTER TABLE `patient`
+		DROP COLUMN gender,
+		DROP COLUMN birthdate,
+		DROP COLUMN birthdate_estimated,
+		DROP COLUMN dead,
+		DROP COLUMN death_date,
+		DROP COLUMN cause_of_death;
+	
+	
+	# /* change patient_name table to person_name */
+	ALTER TABLE patient_name DROP FOREIGN KEY `name_for_patient`;
+	ALTER TABLE patient_name RENAME TO person_name;
+	ALTER TABLE person_name CHANGE COLUMN patient_name_id person_name_id int(11) auto_increment;
+	ALTER TABLE person_name CHANGE COLUMN patient_id person_id int(11);
+	ALTER TABLE person_name ADD CONSTRAINT `name for person` FOREIGN KEY `name_for_person` (`person_id`) REFERENCES `person` (`person_id`) ON UPDATE CASCADE;
+	
+	
+	# /* change patient_address table to person_address */
+	ALTER TABLE patient_address DROP FOREIGN KEY `patient_addresses`;
+	ALTER TABLE patient_address RENAME TO person_address;
+	ALTER TABLE person_address CHANGE COLUMN patient_address_id person_address_id int(11) auto_increment;
+	ALTER TABLE person_address CHANGE COLUMN patient_id person_id int(11);
+	ALTER TABLE person_address ADD CONSTRAINT `address_for_person` FOREIGN KEY `address_for_person` (`person_id`) REFERENCES `person` (`person_id`) ON UPDATE CASCADE;
+	
+	
+	# /* copy user data to the person table */
+	select 'Copy user data to the person table' as 'Action' from dual;
+	INSERT INTO `person` 
+		(person_id, 
+			dead,
+			creator, date_created, 
+			changed_by, date_changed, 
+			voided, voided_by, date_voided, void_reason)
+		SELECT 
+			user_id,
+				0,
+				creator, date_created, 
+				changed_by, date_changed, 
+				voided, voided_by, date_voided, void_reason
+		FROM 
+			`users`;
+	INSERT INTO `person_name`
+		(person_id,
+			preferred, given_name, middle_name, family_name,
+			creator, date_created, 
+			changed_by, date_changed)
+		SELECT
+			user_id, 
+			1, first_name, middle_name, last_name,
+			creator, date_created,
+			changed_by, date_changed
+		FROM
+			`users`;
+	
+	# /* remove the now unecessary users table columns */
+	ALTER TABLE `users`
+		DROP COLUMN first_name,
+		DROP COLUMN middle_name,
+		DROP COLUMN last_name;
+	
+	# /* add person.person_id as foreign key for patient.patient_id and user.user_id */
+	select 'Adding person_id contraint to patient.patient_id and user.user_id' as 'Action' from dual;
+	ALTER TABLE patient ADD CONSTRAINT `person_id_for_patient` FOREIGN KEY patient_id (`patient_id`) REFERENCES `person` (`person_id`) ON UPDATE CASCADE;
+	ALTER TABLE users ADD CONSTRAINT `person_id_for_user` FOREIGN KEY user_id (`user_id`) REFERENCES `person` (`person_id`) ON UPDATE CASCADE;
+	
+	# /* restructuring relationship table */
+	select 'Restructuring relationship table' as 'Action' from dual;
+	ALTER TABLE relationship CHANGE COLUMN person_id person_a int(11) NOT NULL;
+	ALTER TABLE relationship CHANGE COLUMN relative_id person_b int(11) NOT NULL;
+	
+	ALTER TABLE relationship ADD CONSTRAINT `person_a` FOREIGN KEY `person_a` (`person_a`) REFERENCES `person` (`person_id`) ON UPDATE CASCADE;
+	ALTER TABLE relationship ADD CONSTRAINT `person_b` FOREIGN KEY `person_b` (`person_b`) REFERENCES `person` (`person_id`) ON UPDATE CASCADE;
+	
+	
+	# /* restructuring relationship type table */
+	select 'Restructuring relationship type table' as 'Action' from dual;
+	ALTER TABLE relationship_type CHANGE COLUMN `relationship_type_id` `relationship_type_id` int(11) NOT NULL auto_increment;
+	ALTER TABLE relationship_type CHANGE COLUMN `name` a_is_to_b varchar(50) NOT NULL;
+	ALTER TABLE relationship_type ADD COLUMN b_is_to_a varchar(50) NOT NULL AFTER a_is_to_b;
+	ALTER TABLE relationship_type ADD COLUMN `preferred` int(1) NOT NULL default '0' AFTER b_is_to_a;
+	ALTER TABLE relationship_type ADD COLUMN `weight` int(11) NOT NULL default '0' AFTER preferred;
+	
+	
+	# /* Creating b_is_to_a column values */
+	select 'Creating b_is_to_a column values' as 'Action' from dual;
+	UPDATE
+		relationship_type
+	SET
+		a_is_to_b = 'Parent',
+		b_is_to_a = 'Child'
+	WHERE
+		a_is_to_b in ('Mother', 'Father');
+	
+	UPDATE
+		relationship_type
+	SET
+		b_is_to_a = CONCAT('Opposite of ', a_is_to_b)
+	WHERE
+		a_is_to_b <> 'Parent';
+		
+	# /* Add in some default relationships if they don't have them */
+	IF (SELECT (count(*) < 1) FROM relationship_type WHERE a_is_to_b = 'Doctor' AND b_is_to_a = 'Patient') THEN
+		INSERT INTO relationship_type
+			(a_is_to_b, b_is_to_a, description, creator, date_created)
+		VALUES
+			('Doctor', 'Patient', 'Relationship from a primary care provider to the patient', 1, now());
+	END IF;
+	
+	IF (SELECT (count(*) < 1) FROM relationship_type WHERE a_is_to_b = 'Sibling' AND b_is_to_a = 'Sibling') THEN
+		INSERT INTO relationship_type
+			(a_is_to_b, b_is_to_a, description, creator, date_created)
+		VALUES
+			('Sibling', 'Sibling', 'Relationship between brother/sister, brother/brother, and sister/sister', 1, now());
+	END IF;
+	
+	IF (SELECT (count(*) < 1) FROM relationship_type WHERE a_is_to_b = 'Parent' AND b_is_to_a = 'Child') THEN
+		INSERT INTO relationship_type
+			(a_is_to_b, b_is_to_a, description, creator, date_created)
+		VALUES
+			('Parent', 'Child', 'Relationship from a mother/father to the child', 1, now());
+	END IF;
+	
+	IF (SELECT (count(*) < 1) FROM relationship_type WHERE a_is_to_b = 'Aunt/Uncle' AND b_is_to_a = 'Niece/Nephew') THEN
+		INSERT INTO relationship_type
+			(a_is_to_b, b_is_to_a, description, creator, date_created)
+		VALUES
+			('Aunt/Uncle', 'Niece/Nephew', '', 1, now());
+	END IF;
+	
+	
+	# /* change obs.patient_id to obs.person_id */
+	select 'Changing obs.patient_id to obs.person_id.' as 'Current Action' from dual;
+	select 'This WILL take a _LONG TIME_ if you have a large number of observations (measured in hours)' as 'Note:' from dual;
+	# /*ALTER TABLE obs DROP FOREIGN KEY patient_obs; */
+	ALTER TABLE obs CHANGE COLUMN patient_id person_id int(11) NOT NULL;
+	ALTER TABLE obs ADD CONSTRAINT `person_obs` FOREIGN KEY person_obs (`person_id`) REFERENCES `person` (`person_id`) ON UPDATE CASCADE;
+	
+	select 'Done changing obs.patient_id to obs.person_id.' as 'Current Action' from dual;
+	
+	# /* create the person attribute type table */
+	CREATE TABLE `person_attribute_type` (
+		`person_attribute_type_id` int(11) NOT NULL auto_increment,
+		`name` varchar(50) NOT NULL default '',
+		`description` text NOT NULL,
+		`format` varchar(50) default NULL,
+		`foreign_key` int(11) default NULL,
+		`searchable` int(1) NOT NULL default '0',
+		`creator` int(11) NOT NULL default '0',
+		`date_created` datetime NOT NULL default '0000-00-00 00:00:00',
+		`changed_by` int(11) default NULL,
+		`date_changed` datetime default NULL,
+		PRIMARY KEY (`person_attribute_type_id`),
+		KEY `name_of_attribute` (`name`),
+		KEY `type_creator` (`creator`),
+		KEY `attribute_type_changer` (`changed_by`),
+		KEY `attribute_is_searchable` (`searchable`),
+		CONSTRAINT `attribute_type_changer` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`),
+		CONSTRAINT `attribute_type_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='';
+	
+	
+	# /* create the person attribute table */
+	CREATE TABLE `person_attribute` (
+		`person_attribute_id` int(11) NOT NULL auto_increment,
+		`person_id` int(11) NOT NULL default '0',
+		`value` varchar(50) NOT NULL default '',
+		`person_attribute_type_id` int(11) NOT NULL default '0',
+		`creator` int(11) NOT NULL default '0',
+		`date_created` datetime NOT NULL default '0000-00-00 00:00:00',
+		`changed_by` int(11) default NULL,
+		`date_changed` datetime default NULL,
+		`voided` tinyint(1) NOT NULL default '0',
+		`voided_by` int(11) default NULL,
+		`date_voided` datetime default NULL,
+		`void_reason` varchar(255) default NULL,
+		PRIMARY KEY (`person_attribute_id`),
+		KEY `identifies_person` (`person_id`),
+		KEY `defines_attribute_type` (`person_attribute_type_id`),
+		KEY `attribute_creator` (`creator`),
+		KEY `attribute_changer` (`changed_by`),
+		KEY `attribute_voider` (`voided_by`),
+		CONSTRAINT `defines_attribute_type` FOREIGN KEY (`person_attribute_type_id`) REFERENCES `person_attribute_type` (`person_attribute_type_id`),
+		CONSTRAINT `attribute_voider` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`),
+		CONSTRAINT `attribute_changer` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`),
+		CONSTRAINT `attribute_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
+		CONSTRAINT `identifies_person` FOREIGN KEY (`person_id`) REFERENCES `person` (`person_id`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='';
+	
+	
+	# /* create person attribute types for some of the current patient columns */
+	select 'Copying patient columns into person_attribute' as 'Action' from dual;
+	INSERT INTO `person_attribute_type` (`name`, description, format, creator, date_created) VALUES ('Race', 'Group of persons related by common descent or heredity', 'java.lang.String', 1, now());
+	INSERT INTO `person_attribute_type` (`name`, description, format, creator, date_created) VALUES ('Birthplace', 'Location of persons birth', 'java.lang.String', 1, now());
+	INSERT INTO `person_attribute_type` (`name`, description, format, creator, date_created) VALUES ('Citizenship', 'Country of which this person is a member', 'java.lang.String', 1, now());
+	INSERT INTO `person_attribute_type` (`name`, description, format, creator, date_created) VALUES ('Mother\'s Name', 'First or last name of this person\'s mother', 'java.lang.String', 1, now());
+	INSERT INTO `person_attribute_type` (`name`, description, format, creator, date_created) VALUES ('Civil Status', 'Marriage status of this person', 'org.openmrs.Concept', 1, now());
+	INSERT INTO `person_attribute_type` (`name`, description, format, creator, date_created) VALUES ('Health District', 'District/region in which this patient\' home health center resides', 'java.lang.String', 1, now());
+	INSERT INTO `person_attribute_type` (`name`, description, format, creator, date_created) VALUES ('Health Center', 'Specific Location of this person\'s home health center.', 'org.openmrs.Location', 1, now());
+	
+	
+	# /* copy some patient columns to the person_attribute table */
+	select 'Dropping race attribute' as 'Action' from dual;
+	INSERT INTO `person_attribute`
+		(person_id, `value`, person_attribute_type_id,
+			creator, date_created)
+		SELECT patient_id, race, (select person_attribute_type_id from person_attribute_type where `name` = 'Race'),
+				1, now()
+		FROM
+			`patient`
+		WHERE
+			race is not null;
+	ALTER TABLE `patient` DROP COLUMN race;
+	select 'Dropping birthplace attribute' as 'Action' from dual;
+	INSERT INTO `person_attribute`
+		(person_id, `value`, person_attribute_type_id,
+			creator, date_created)
+		SELECT patient_id, birthplace, (select person_attribute_type_id from person_attribute_type where `name` = 'Birthplace'),
+				1, now()
+		FROM
+			`patient`
+		WHERE
+			birthplace is not null;
+	ALTER TABLE `patient` DROP COLUMN birthplace;
+	select 'Dropping citizenship attribute' as 'Action' from dual;
+	INSERT INTO `person_attribute`
+		(person_id, `value`, person_attribute_type_id,
+			creator, date_created)
+		SELECT patient_id, citizenship, (select person_attribute_type_id from person_attribute_type where `name` = 'Citizenship'),
+				1, now()
+		FROM
+			`patient`
+		WHERE
+			citizenship is not null;
+	ALTER TABLE `patient` DROP COLUMN citizenship;
+	select 'Dropping mothers name attribute' as 'Action' from dual;
+	INSERT INTO `person_attribute`
+		(person_id, `value`, person_attribute_type_id,
+			creator, date_created)
+		SELECT patient_id, mothers_name, (select person_attribute_type_id from person_attribute_type where `name` = 'Mother\'s Name'),
+				1, now()
+		FROM
+			`patient`
+		WHERE
+			mothers_name is not null;
+	ALTER TABLE `patient` DROP COLUMN mothers_name;
+	select 'Dropping civil status attribute' as 'Action' from dual;
+	INSERT INTO `person_attribute`
+		(person_id, `value`, person_attribute_type_id,
+			creator, date_created)
+		SELECT patient_id, civil_status, (select person_attribute_type_id from person_attribute_type where `name` = 'Civil Status'),
+				1, now()
+		FROM
+			`patient`
+		WHERE
+			civil_status is not null;
+	ALTER TABLE `patient` DROP COLUMN civil_status;
+	select 'Dropping health district attribute' as 'Action' from dual;
+	INSERT INTO `person_attribute`
+		(person_id, `value`, person_attribute_type_id,
+			creator, date_created)
+		SELECT patient_id, health_district, (select person_attribute_type_id from person_attribute_type where `name` = 'Health District'),
+				1, now()
+		FROM
+			`patient`
+		WHERE
+			health_district is not null;
+	ALTER TABLE `patient` DROP COLUMN health_district;
+	select 'Dropping health center attribute' as 'Action' from dual;
+	INSERT INTO `person_attribute`
+		(person_id, `value`, person_attribute_type_id,
+			creator, date_created)
+		SELECT patient_id, health_center, (select person_attribute_type_id from person_attribute_type where `name` = 'Health Center'),
+				1, now()
+		FROM
+			`patient`
+		WHERE
+			health_center is not null;
+	# /*ALTER TABLE patient DROP FOREIGN KEY `health_center_location`; */
+	ALTER TABLE `patient` DROP COLUMN health_center;
+	
+	
+	# /* Modify the global properties to match current patient/user attribute setup */
+	select 'Modifying the global properties table for patient.displayAttributeTypes' as 'Action' from dual;
+	SET @attr1 = '';
+	select @attr1 := ',Mother\'s Name' from global_property where property = 'use_patient_attribute.mothersName' and property_value = 'true';
+	SET @attr2 = '';
+	select @attr2 := ',Health Center' from global_property where property = 'use_patient_attribute.healthCenter' and property_value = 'true';
+	INSERT INTO 
+		`global_property`
+		(property, property_value)
+	VALUES (
+		'patient.displayAttributeTypes', 
+		CONCAT('Birthplace', CONCAT(@attr1, @attr2))
+	);
+	
+	select 'Modifying the global properties table for address layouts' as 'Action' from dual;
+	SET @attr3 = '';
+	select @attr3 := property_value FROM `global_property` WHERE property = 'address.format';
+	IF (SELECT LENGTH(property_value) > 0 FROM `global_property` WHERE property = 'address.format') THEN
+		DELETE FROM `global_property` WHERE property = 'layout.address.format';
+		INSERT INTO `global_property` (property, property_value) VALUES ('layout.address.format', @attr3);
+		DELETE FROM `global_property` WHERE property = 'address.format';
+	END IF;
+
+	select 'Modifying the form fields for person' as 'Action' from dual;
+	UPDATE
+		field
+	SET
+		default_value = REPLACE(default_value, 'patient.getPatientName()', 'patient')
+	WHERE
+		default_value like '%patient.getPatientName()%';
+		
+	UPDATE
+		field
+	SET
+		default_value = REPLACE(default_value, 'patient.getPatientAddress()', 'patient.getPersonAddress()')
+	WHERE
+		default_value like '%patient.getPatientAddress()%';
+	
+	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+	
+	
+	select 'Modifying the data exports from patient to person' as 'Action' from dual;
+	UPDATE
+		report_object
+	SET
+		xml_data = REPLACE(xml_data, 'getPatientAttr(&apos;PatientName&apos;', 'getPatientAttr(&apos;PersonName&apos;');
+	UPDATE
+		report_object
+	SET
+		xml_data = REPLACE(xml_data, 'getPatientAttr(&apos;PatientAddress&apos;', 'getPatientAttr(&apos;PersonAddress&apos;');
+	UPDATE
+		report_object
+	SET
+		xml_data = REPLACE(xml_data, '(&apos;Patient&apos;, &apos;gender&apos;)', '(&apos;Person&apos;, &apos;gender&apos;)');
+	UPDATE
+		report_object
+	SET
+		xml_data = REPLACE(xml_data, '(&apos;Patient&apos;, &apos;birthdate&apos;)', '(&apos;Person&apos;, &apos;birthdate&apos;)');
+	UPDATE
+		report_object
+	SET
+		xml_data = REPLACE(xml_data, '(&apos;Patient&apos;, &apos;birthdateEstimated&apos;)', '(&apos;Person&apos;, &apos;birthdateEstimated&apos;)');
+	UPDATE
+		report_object
+	SET
+		xml_data = REPLACE(xml_data, '(&apos;Patient&apos;, &apos;causeOfDeath&apos;)', '(&apos;Person&apos;, &apos;causeOfDeath&apos;)');
+	UPDATE
+		report_object
+	SET
+		xml_data = REPLACE(xml_data, '(&apos;Patient&apos;, &apos;deathDate&apos;)', '(&apos;Person&apos;, &apos;deathDate&apos;)');
+	UPDATE
+		report_object
+	SET
+		xml_data = REPLACE(xml_data, 'fn.getPatientAttr(&apos;Patient&apos;, &apos;healthCenter&apos;).getName()', 'fn.getPersonAttribute(&apos;Health Center&apos;, &apos;Location&apos;, &apos;locationId&apos;, &apos;name&apos;, false)');
+	UPDATE
+		report_object
+	SET
+		xml_data = REPLACE(xml_data, 'fn.getPatientAttribute(&apos;Patient&apos;, &apos;race&apos;)', 'fn.getPersonAttribute(&apos;Race&apos;)');
+		
+	
+	select CONCAT('Done updating to person at: ', now()) as 'Timestamp' from dual;
+	
+	END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.0.57');
 
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script

@@ -2,7 +2,6 @@ package org.openmrs.web.controller.patient;
 
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -23,24 +22,26 @@ import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
-import org.openmrs.PatientAddress;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.PatientName;
+import org.openmrs.Person;
+import org.openmrs.PersonAddress;
+import org.openmrs.PersonName;
 import org.openmrs.Tribe;
 import org.openmrs.api.APIException;
 import org.openmrs.api.DuplicateIdentifierException;
+import org.openmrs.api.EncounterService;
 import org.openmrs.api.IdentifierNotUniqueException;
 import org.openmrs.api.InsufficientIdentifiersException;
 import org.openmrs.api.InvalidCheckDigitException;
 import org.openmrs.api.InvalidIdentifierFormatException;
 import org.openmrs.api.PatientIdentifierException;
-import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
+import org.openmrs.web.controller.person.PersonFormController;
 import org.openmrs.web.propertyeditor.ConceptEditor;
 import org.openmrs.web.propertyeditor.LocationEditor;
 import org.openmrs.web.propertyeditor.PatientIdentifierTypeEditor;
@@ -48,16 +49,15 @@ import org.openmrs.web.propertyeditor.TribeEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
-public class PatientFormController extends SimpleFormController {
+public class PatientFormController extends PersonFormController {
 	
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
@@ -74,8 +74,7 @@ public class PatientFormController extends SimpleFormController {
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		
-		
-		dateFormat = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase()), Context.getLocale());
+		dateFormat = Context.getDateFormat();
 		
         NumberFormat nf = NumberFormat.getInstance(Context.getLocale());
         binder.registerCustomEditor(java.lang.Integer.class,
@@ -167,7 +166,7 @@ public class PatientFormController extends SimpleFormController {
 									|| countries[i] != null || lats[i] != null || longs[i] != null
 									|| pCodes[i] != null || counties[i] != null || cells[i] != null ) {
 */							
-								PatientAddress pa = new PatientAddress();
+								PersonAddress pa = new PersonAddress();
 								if (add1s.length >= i+1)
 									pa.setAddress1(add1s[i]);
 								if (add2s.length >= i+1)
@@ -189,7 +188,7 @@ public class PatientFormController extends SimpleFormController {
 								if (cells.length >= i+1)
 									pa.setNeighborhoodCell(cells[i]);
 								patient.addAddress(pa);
-//							}
+								//}
 						}
 					}
 						
@@ -198,7 +197,7 @@ public class PatientFormController extends SimpleFormController {
 					objs = patient.getNames().toArray();
 					for (int i = 0; i < objs.length; i++ ) {
 						if (request.getParameter("names[" + i + "].givenName") == null)
-							patient.removeName((PatientName)objs[i]);
+							patient.removeName((PersonName)objs[i]);
 					}
 	
 					//String[] prefs = request.getParameterValues("preferred");  (unreliable form info)
@@ -213,7 +212,7 @@ public class PatientFormController extends SimpleFormController {
 					if (gNames != null) {
 						for (int i = 0; i < gNames.length; i++) {
 							if (gNames[i] != "") { //skips invalid and blank address data box
-								PatientName pn = new PatientName();
+								PersonName pn = new PersonName();
 								pn.setPreferred(false);
 								if (gNames.length >= i+1)
 									pn.setGivenName(gNames[i]);
@@ -234,30 +233,6 @@ public class PatientFormController extends SimpleFormController {
 						}
 					}
 					
-					if (patient.getNames().size() < 1)
-						errors.rejectValue("names", "Patient.names.length");
-					
-				// Patient Info 
-					//ValidationUtils.rejectIfEmptyOrWhitespace(errors, "birthdate", "error.null");
-					if (patient.isVoided())
-						ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
-					if (patient.isDead() && (patient.getCauseOfDeath() == null))
-						errors.rejectValue("causeOfDeath", "Patient.dead.causeOfDeathNull");
-					
-				// check patients birthdate against future dates and really old dates
-					if (patient.getBirthdate() != null) {
-						if (patient.getBirthdate().after(new Date()))
-							errors.rejectValue("birthdate", "error.date.future");
-						else {
-							Calendar c = Calendar.getInstance();
-							c.setTime(new Date());
-							c.add(Calendar.YEAR, -120); // patient cannot be older than 120 years old 
-							if (patient.getBirthdate().before(c.getTime())){
-								errors.rejectValue("birthdate", "error.date.nonsensical");
-							}
-						}
-					}
-				
 					/*
 					 * 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.formatInvalid");
 					isError = true;
@@ -317,7 +292,8 @@ public class PatientFormController extends SimpleFormController {
 							errors.rejectValue("identifiers", msg);
 						}
 					}
-			}
+					
+			} // end "if we're not deleting the patient"
 		}		
 		
 		return super.processFormSubmission(request, response, patient, errors); 
@@ -421,7 +397,7 @@ public class PatientFormController extends SimpleFormController {
 									obsDeath.setConcept(causeOfDeath);
 									Location loc = Context.getEncounterService().getLocationByName("Unknown Location");
 									if ( loc == null ) loc = Context.getEncounterService().getLocation(new Integer(1));
-									if ( loc == null ) loc = patient.getHealthCenter();
+									// TODO person healthcenter //if ( loc == null ) loc = patient.getHealthCenter();
 									if ( loc != null ) obsDeath.setLocation(loc);
 									else log.error("Could not find a suitable location for which to create this new Obs");
 								}
@@ -502,13 +478,47 @@ public class PatientFormController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			PatientService ps = Context.getPatientService();
 			String patientId = request.getParameter("patientId");
+			Integer id = null;
 	    	if (patientId != null) {
-	    		patient = ps.getPatient(Integer.valueOf(patientId));
+	    		try {
+	    			id = Integer.valueOf(patientId);
+	    			patient = ps.getPatient(id);
+	    			if (patient == null)
+	    				throw new ObjectRetrievalFailureException(Patient.class, id); 
+	    		}
+	    		catch (NumberFormatException numberError) {
+	    			log.warn("Invalid userId supplied: '" + patientId + "'", numberError);
+	    		}
+	    		catch (ObjectRetrievalFailureException noPatientEx) {
+	    			try {
+		    			Person person = Context.getPersonService().getPerson(id);
+		    			patient = new Patient(person);
+		    		}
+		    		catch (ObjectRetrievalFailureException noPersonEx) {
+		    			log.warn("There is no patient or person with id: '" + patientId + "'", noPersonEx);
+		    			throw new ServletException("There is no patient or person with id: '" + patientId + "'");
+		    		}
+	    		}
 	    	}
 		}
 
-		if (patient == null)
+		if (patient == null) {
 			patient = new Patient();
+			
+			String name = request.getParameter("name");
+			if (name != null) {
+				String gender = request.getParameter("gndr");
+				String date = request.getParameter("birthyear");
+				String age = request.getParameter("age");
+				
+				getMiniPerson(patient, name, gender, date, age);
+			}
+		}
+		
+		if (patient.getIdentifiers().size() < 1)
+			patient.addIdentifier(new PatientIdentifier());
+		
+		super.setupFormBackingObject(patient);
 		
         return patient;
     }
@@ -526,8 +536,7 @@ public class PatientFormController extends SimpleFormController {
 		List<Form> forms = new Vector<Form>();
 		Map<String, Object> map = new HashMap<String, Object>();
 		List<Encounter> encounters = new Vector<Encounter>();
-		String causeOfDeathOther = "";
-
+		
 		if (Context.isAuthenticated()) {
 			boolean onlyPublishedForms = true;
 			if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_UNPUBLISHED_FORMS))
@@ -537,27 +546,6 @@ public class PatientFormController extends SimpleFormController {
 			Set<Encounter> encs = Context.getEncounterService().getEncounters(patient);
 			if (encs != null && encs.size() > 0)
 				encounters.addAll(encs);
-			
-			String propCause = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
-			Concept conceptCause = Context.getConceptService().getConceptByIdOrName(propCause);
-			
-			if ( conceptCause != null ) {
-				Set<Obs> obssDeath = Context.getObsService().getObservations(patient, conceptCause);
-				if ( obssDeath.size() == 1 ) {
-					Obs obsDeath = obssDeath.iterator().next();
-					causeOfDeathOther = obsDeath.getValueText();
-					if ( causeOfDeathOther == null ) {
-						log.debug("cod is null, so setting to empty string");
-						causeOfDeathOther = "";
-					} else {
-						log.debug("cod is valid: " + causeOfDeathOther);
-					}
-				} else {
-					log.debug("obssDeath is wrong size: " + obssDeath.size());
-				}
-			} else {
-				log.debug("No concept causee found");
-			}
 		}
 
 		String patientVariation = "";
@@ -586,11 +574,11 @@ public class PatientFormController extends SimpleFormController {
 				
 		// empty objects used to create blank template in the view
 		map.put("emptyIdentifier", new PatientIdentifier());
-		map.put("emptyName", new PatientName());
-		map.put("emptyAddress", new PatientAddress());
+		map.put("emptyName", new PersonName());
+		map.put("emptyAddress", new PersonAddress());
 		map.put("encounters", encounters);
-		map.put("datePattern", dateFormat.toLocalizedPattern().toLowerCase());
-		map.put("causeOfDeathOther", causeOfDeathOther);
+
+		super.setupReferenceData(map, patient);
 		
 		return map;
 	}    

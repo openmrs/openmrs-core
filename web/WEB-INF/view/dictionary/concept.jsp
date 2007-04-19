@@ -286,7 +286,7 @@
 			<tr>
 				<th><spring:message code="general.createdBy" /></th>
 				<td>
-					${concept.creator.firstName} ${concept.creator.lastName} -
+					${concept.creator.personName} -
 					<openmrs:formatDate date="${concept.dateCreated}" type="long" />
 				</td>
 			</tr>
@@ -295,7 +295,7 @@
 			<tr>
 				<th><spring:message code="general.changedBy" /></th>
 				<td>
-					${concept.changedBy.firstName} ${concept.changedBy.lastName} -
+					${concept.changedBy.personName} -
 					<openmrs:formatDate date="${concept.dateChanged}" type="long" />
 				</td>
 			</tr>

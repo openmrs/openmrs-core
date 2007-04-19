@@ -9,7 +9,7 @@ public class NameRule extends Rule {
 
 	@Override
 	public Result eval(LogicDataSource dataSource, Patient patient, Object[] args) {
-		return new Result(patient.getPatientName().toString());
+		return new Result(patient.getPersonName().toString());
 	}
 	
 }

@@ -315,7 +315,7 @@ public class HL7ServiceImpl implements HL7Service {
 
 		// TODO other potential identifying characteristics in PID we could use
 		// to identify the patient
-		// XPN[] patientName = pid.getPatientName();
+		// XPN[] patientName = pid.getPersonName();
 		// String gender = pid.getAdministrativeSex().getValue();
 		// TS dateOfBirth = pid.getDateTimeOfBirth();
 

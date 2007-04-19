@@ -1,0 +1,98 @@
+<%@ include file="/WEB-INF/template/include.jsp" %>
+
+/*
+	Copyright (c) 2006, The OpenMRS Cooperative
+	All Rights Reserved.
+*/
+
+dojo.provide("dojo.widget.openmrs.UserSearch");
+dojo.require("dojo.widget.openmrs.PersonSearch");
+
+var openmrsSearchBase = djConfig["baseScriptUri"].substring(0, djConfig["baseScriptUri"].indexOf("/", 1));
+document.write("<script type='text/javascript' src='" + openmrsSearchBase + "/dwr/interface/DWRUserService.js'></script>");
+
+dojo.widget.tags.addParseTreeHandler("dojo:UserSearch");
+
+dojo.widget.defineWidget(
+	"dojo.widget.openmrs.UserSearch",
+	dojo.widget.openmrs.PersonSearch,
+	{
+		roles: [],
+		
+		userId: "",
+		
+		showRoles: false,
+		
+		postCreate: function(){
+			dojo.debug("postCreate in UserSearch");
+			
+			var closure = function(thisObj, method) { return function(obj) { return thisObj[method]({"obj":obj}); }; };
+			if (this.userId != "") {
+				DWRUserService.getUser(closure(this, "select"), this.userId);
+			}
+		},
+		
+		doFindObjects: function(text) {
+			var tmpIncludeVoided = (this.showIncludeVoided && this.includeVoided.checked);
+			DWRUserService.findUsers(this.simpleClosure(this, "doObjectsFound"), text, this.roles, tmpIncludeVoided);
+			
+			return false;
+		},
+		
+		getUsername: function(u) {
+			if (u == null) return "";
+			return u.username;
+		},
+		
+		getSystemId: function(u) {
+			if (u == null) return "";
+			return u.systemId;
+		},
+		
+		showAll: function() {
+			var tmpIncludeVoided = (this.showIncludeVoided && this.includeVoided.checked);
+			DWRUserService.getAllUsers(this.simpleClosure(this, "doObjectsFound"), this.roles, tmpIncludeVoided);
+		},
+		
+		getCellFunctions: function() {
+			var arr = new Array();
+			arr.push(this.simpleClosure(this, "getNumber"));
+			arr.push(this.getSystemId);
+			arr.push(this.getUsername);
+			arr.push(this.simpleClosure(this, "getGiven"));
+			arr.push(this.simpleClosure(this, "getMiddle"));
+			arr.push(this.simpleClosure(this, "getFamily"));
+			if (this.showRoles)
+				arr.push(getRoles);
+			<openmrs:forEachDisplayAttributeType personType="user" displayType="listing" var="attrType">
+				arr.push(this.simpleClosure(this, "getAttribute", "${attrType.name}"));
+			</openmrs:forEachDisplayAttributeType>
+			
+			return arr;
+		},
+		
+		showHeaderRow: true,
+		getHeaderCellContent: function() {
+			var arr = new Array();
+			arr.push('');
+			arr.push('<spring:message code="User.systemId" javaScriptEscape="true"/>');
+			arr.push('<spring:message code="User.username" javaScriptEscape="true"/>');
+			arr.push('<spring:message code="PersonName.givenName" javaScriptEscape="true"/>');
+			arr.push('<spring:message code="PersonName.middleName" javaScriptEscape="true"/>');
+			arr.push('<spring:message code="PersonName.familyName" javaScriptEscape="true"/>');
+			if (this.showRoles)
+				arr.push('<spring:message code="User.roles" javaScriptEscape="true"/>');
+			<openmrs:forEachDisplayAttributeType personType="user" displayType="listing" var="attrType">
+				arr.push('<spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" javaScriptEscape="true" />');
+			</openmrs:forEachDisplayAttributeType>
+			
+			return arr;
+		},
+		
+		searchCleared: function() {
+			this.showAll();
+		}
+		
+	},
+	"html"
+);

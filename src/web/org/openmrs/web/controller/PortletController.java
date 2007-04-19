@@ -22,13 +22,12 @@ import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
-import org.openmrs.Person;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.User;
 import org.openmrs.api.ConceptService;
+import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.context.UserContext;
 import org.openmrs.order.RegimenSuggestion;
 import org.openmrs.reporting.PatientSet;
 import org.openmrs.util.Format;
@@ -109,11 +108,9 @@ public class PortletController implements Controller {
 			if (moreParams != null) {
 				model.putAll(moreParams);
 			}
-			
-			UserContext userContext = Context.getUserContext();
-			
+				
 			model.put("authenticatedUser", Context.getAuthenticatedUser());
-			model.put("locale", userContext.getLocale());
+			model.put("locale", Context.getLocale());
 			
 			// if a patient id is available, put "patient" and "patientObs" in the request
 			Object o = request.getAttribute("org.openmrs.portlet.patientId");
@@ -121,15 +118,15 @@ public class PortletController implements Controller {
 				String patientVariation = "";
 				Integer patientId = (Integer) o;
 				// we can't continue if the user can't view patients
-				if (userContext.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS)) {
+				if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS)) {
 					Patient p = Context.getPatientService().getPatient(patientId);
 					model.put("patient", p);
 					
 					// add encounters if this user can view them
-					if (userContext.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ENCOUNTERS))
+					if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ENCOUNTERS))
 						model.put("patientEncounters", Context.getEncounterService().getEncounters(p));
 					
-					if (userContext.hasPrivilege(OpenmrsConstants.PRIV_VIEW_OBS))
+					if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_OBS))
 						model.put("patientObs", Context.getObsService().getObservations(p));
 					else
 						model.put("patientObs", new HashSet<Obs>());
@@ -163,7 +160,7 @@ public class PortletController implements Controller {
 					model.put("patientReasonForExit", reasonForExitText);
 					model.put("patientDateOfExit", dateOfExitText);
 					
-					if (userContext.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ORDERS)) {
+					if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ORDERS)) {
 						List<DrugOrder> drugOrderList = Context.getOrderService().getDrugOrdersByPatient(p);
 						model.put("patientDrugOrders", drugOrderList);
 						List<DrugOrder> currentDrugOrders = new ArrayList<DrugOrder>();
@@ -181,20 +178,20 @@ public class PortletController implements Controller {
 							model.put("standardRegimens", standardRegimens);
 					}
 					
-					if (userContext.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS)) {
+					if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS)) {
 						model.put("patientPrograms", Context.getProgramWorkflowService().getPatientPrograms(p));
 						model.put("patientCurrentPrograms", Context.getProgramWorkflowService().getCurrentPrograms(p, null));
 					}
 					
-					if (userContext.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS)) {
+					if (Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS)) {
 						List<Relationship> relationships = new ArrayList<Relationship>();
-						relationships.addAll(Context.getPatientService().getRelationships(new Person(p), false));
+						relationships.addAll(Context.getPersonService().getRelationships(p, false));
 						Map<RelationshipType, List<Relationship>> relationshipsByType = new HashMap<RelationshipType, List<Relationship>>();
 						for (Relationship rel : relationships) {
-							List<Relationship> list = relationshipsByType.get(rel.getRelationship());
+							List<Relationship> list = relationshipsByType.get(rel.getRelationshipType());
 							if (list == null) {
 								list = new ArrayList<Relationship>();
-								relationshipsByType.put(rel.getRelationship(), list);
+								relationshipsByType.put(rel.getRelationshipType(), list);
 							}
 							list.add(rel);
 						}
@@ -203,7 +200,7 @@ public class PortletController implements Controller {
 						model.put("patientRelationshipsByType", relationshipsByType);
 						model.put("patientId", patientId);
 						if (p != null)
-							model.put("personId", Context.getAdministrationService().getPerson(p).getPersonId());
+							model.put("personId", p.getPatientId());
 					}
 					
 					model.put("patientVariation", patientVariation);
@@ -213,10 +210,10 @@ public class PortletController implements Controller {
 			// if an encounter id is available, put "encounter" and "encounterObs" in the request
 			o = request.getAttribute("org.openmrs.portlet.encounterId");
 			if (o != null) {
-				if (userContext.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ENCOUNTERS)) {
+				if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ENCOUNTERS)) {
 					Encounter e = Context.getEncounterService().getEncounter((Integer) o);
 					model.put("encounter", e);
-					if (userContext.hasPrivilege(OpenmrsConstants.PRIV_VIEW_OBS))
+					if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_OBS))
 						model.put("encounterObs", Context.getObsService().getObservations(e));
 				}
 				model.put("encounterId", (Integer) o);
@@ -225,7 +222,7 @@ public class PortletController implements Controller {
 			// if a user id is available, put "user" in the model
 			o = request.getAttribute("org.openmrs.portlet.userId");
 			if (o != null) {
-				if (userContext.hasPrivilege(OpenmrsConstants.PRIV_VIEW_USERS)) {
+				if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_USERS)) {
 					User u = Context.getUserService().getUser((Integer) o);
 					model.put("user", u);
 				}
@@ -261,9 +258,11 @@ public class PortletController implements Controller {
 				model.put("conceptMapByStringIds", conceptsByStringIds);
 			}
 
-			if (userContext.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS)) {
+			// TODO: This should check a different privilege
+			// TODO: If we really need to do this we should write a service method getAnswerFrequency() or something
+			if (Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS)) {
 				//String arvGroups =  (String)Context.getAdministrationService().getGlobalProperty("arv_groups");
-				List<Obs> treatmentGroupObs = Context.getObsService().getObservations(Context.getConceptService().getConceptByName("ANTIRETROVIRAL TREATMENT GROUP"), null);
+				List<Obs> treatmentGroupObs = Context.getObsService().getObservations(Context.getConceptService().getConceptByName("ANTIRETROVIRAL TREATMENT GROUP"), null, ObsService.PATIENT);
 				if ( treatmentGroupObs != null ) {
 					TreeSet<String> treatmentGroupSet = new TreeSet<String>();
 					log.debug("tgo is size " + treatmentGroupObs.size());

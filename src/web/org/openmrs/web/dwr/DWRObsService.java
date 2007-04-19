@@ -15,7 +15,7 @@ import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
-import org.openmrs.Patient;
+import org.openmrs.Person;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
@@ -53,7 +53,7 @@ public class DWRObsService {
 	}
 	
 	
-	public void createObs(Integer patientId, Integer encounterId, Integer conceptId, String valueText, String obsDateStr) { 
+	public void createObs(Integer personId, Integer encounterId, Integer conceptId, String valueText, String obsDateStr) { 
 		
 		log.info("Create new observation ");
 	
@@ -69,12 +69,12 @@ public class DWRObsService {
 			}
 		}				
 		
-		Patient patient = Context.getPatientService().getPatient(patientId);
+		Person person = Context.getPersonService().getPerson(personId);
 		Concept concept = Context.getConceptService().getConcept(conceptId);
 		Encounter encounter = encounterId == null ? null : Context.getEncounterService().getEncounter(encounterId);
 		
 		Obs obs = new Obs();
-		obs.setPatient(patient);
+		obs.setPerson(person);
 		obs.setConcept(concept);
 		obs.setObsDatetime(obsDate);
 		if (encounter != null) {
@@ -149,14 +149,14 @@ public class DWRObsService {
 		return objectList;
 	}
 
-	public Vector<ObsListItem> getObsByPatientConceptEncounter(String patientId, String conceptId, String encounterId) {
-		log.debug("Started with: [" + patientId + "] [" + conceptId + "] [" + encounterId + "]");
+	public Vector<ObsListItem> getObsByPatientConceptEncounter(String personId, String conceptId, String encounterId) {
+		log.debug("Started with: [" + personId + "] [" + conceptId + "] [" + encounterId + "]");
 		
 		Vector<ObsListItem> ret = new Vector<ObsListItem>();
 		
 		Integer pId = null;
 		try {
-			pId = new Integer(patientId);
+			pId = new Integer(personId);
 		} catch ( NumberFormatException nfe ) {
 			pId = null;
 		}
@@ -168,11 +168,11 @@ public class DWRObsService {
 			eId = null;
 		}
 		
-		Patient p = null;
+		Person p = null;
 		Concept c = null;
 		Encounter e = null;
 		
-		if ( pId != null ) p = Context.getPatientService().getPatient(pId);
+		if ( pId != null ) p = Context.getPersonService().getPerson(pId);
 		if ( conceptId != null ) c = OpenmrsUtil.getConceptByIdOrName(conceptId);
 		if ( eId != null ) e = Context.getEncounterService().getEncounter(eId);
 		

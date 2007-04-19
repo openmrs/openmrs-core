@@ -2,7 +2,6 @@ package org.openmrs.web.dwr;
 
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -37,17 +36,12 @@ public class DWRUserService {
 			
 			log.info(userId + "|" + searchValue + "|" + roles.toString());
 			
-			UserService us = Context.getUserService();
-			Set<User> users = new HashSet<User>();
-			
 			if (roles == null) 
 				roles = new Vector<String>();
 			
-			users.addAll(us.findUsers(searchValue, roles, includeVoided));
+			userList = new Vector();
 			
-			userList = new Vector(users.size());
-			
-			for (User u : users) {
+			for (User u :  Context.getUserService().findUsers(searchValue, roles, includeVoided)) {
 				userList.add(new UserListItem(u));
 			}
 		} catch (Exception e) {
@@ -106,6 +100,11 @@ public class DWRUserService {
 		return userList;
 	}
 	
+	/**
+	 * Get the user identified by <code>userId</code>
+	 * @param userId
+	 * @return
+	 */
 	public UserListItem getUser(Integer userId) {
 		UserListItem user = new UserListItem();
 		
@@ -121,11 +120,15 @@ public class DWRUserService {
 		return user;
 	}
 	
+	/**
+	 * Determines the order of the user's in the user list
+	 * @author bwolfe
+	 */
 	private class UserComparator implements Comparator<User> {
 
 		public int compare(User user1, User user2) {
-			String name1 = "" + user1.getLastName() + user1.getFirstName() + user1.getMiddleName();
-			String name2 = "" + user2.getLastName() + user2.getFirstName() + user2.getMiddleName();
+			String name1 = "" + user1.getPersonName();
+			String name2 = "" + user2.getPersonName();
 			return name1.compareTo(name2);
 		}
 		

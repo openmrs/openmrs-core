@@ -1,6 +1,5 @@
 package org.openmrs.web.controller.user;
 
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -16,25 +15,29 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Person;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
+import org.openmrs.web.controller.person.PersonFormController;
+import org.openmrs.web.propertyeditor.ConceptEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
+import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
-public class UserFormController extends SimpleFormController {
+public class UserFormController extends PersonFormController {
 	
     /** Logger for this class and subclasses */
-    protected final Log log = LogFactory.getLog(getClass());
+    protected static final Log log = LogFactory.getLog(UserFormController.class);
     
     /**
 	 * 
@@ -46,27 +49,43 @@ public class UserFormController extends SimpleFormController {
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		
-		
-		
 		binder.registerCustomEditor(java.lang.Integer.class, 
 				new CustomNumberEditor(java.lang.Integer.class, true));
         binder.registerCustomEditor(java.util.Date.class, 
-        		new CustomDateEditor(SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT, Context.getLocale()), true));
+        		new CustomDateEditor(Context.getDateFormat(), true));
+        binder.registerCustomEditor(org.openmrs.Concept.class, 
+        		new ConceptEditor());
 	}
 
 	/**
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#processFormSubmission(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
 	 */
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
+		HttpSession httpSession = request.getSession();
 		
 		User user = (User)obj;
 		UserService us = Context.getUserService();
 		
-		if (Context.isAuthenticated()) {
+		MessageSourceAccessor msa = getMessageSourceAccessor();
+		String action = request.getParameter("action");
+		
+		if (!Context.isAuthenticated()) {
+			errors.reject("auth.invalid");
+		}
+		else if (msa.getMessage("User.assumeIdentity").equals(action)) {
+			Context.becomeUser(user.getSystemId());
+			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.assumeIdentity.success");
+			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ARGS, user.getPersonName());
+			return new ModelAndView(new RedirectView(request.getContextPath() + "/index.htm"));
+		}
+		else if (msa.getMessage("User.delete").equals(action)) {
+			us.deleteUser(user);
+			return new ModelAndView(new RedirectView(getSuccessView()));
+		}
+		else {
 			// check if username is already in the database
-				if (us.hasDuplicateUsername(user)) {
+				if (us.hasDuplicateUsername(user))
 					errors.rejectValue("username", "error.username.taken");
-				}
 				
 			// check if password and password confirm are identical
 				String password = request.getParameter("password");
@@ -77,7 +96,7 @@ public class UserFormController extends SimpleFormController {
 				if (!password.equals(confirm))
 					errors.reject("error.password.match");
 				
-				if (password.length() == 0 && user.getUserId() == null)
+				if (password.length() == 0 && isNewUser(user))
 					errors.reject("error.password.weak");
 				
 			//check password strength
@@ -118,11 +137,8 @@ public class UserFormController extends SimpleFormController {
 				else
 					user.getRoles().retainAll(newRoles);
 		}
-		else {
-			errors.reject("auth.invalid");
-		}
-				
-		return super.processFormSubmission(request, response, obj, errors);
+		
+		return super.processFormSubmission(request, response, user, errors);
 	}
 	
 
@@ -142,17 +158,12 @@ public class UserFormController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 			
-			if ("true".equals(request.getParameter("BecomeUser"))) {
-				Context.becomeUser(user.getSystemId());
-				return new ModelAndView(new RedirectView(request.getContextPath() + "/index.htm"));
-			}
-			
 			UserService us = Context.getUserService();
 
 			String password = request.getParameter("password");
 			if (password == null || password.equals("XXXXXXXXXXXXXXX")) password = "";
 			
-			Map<String, String> properties = user.getProperties();
+			Map<String, String> properties = user.getUserProperties();
 			if (properties == null)
 				properties = new HashMap<String, String>();
 			
@@ -169,17 +180,19 @@ public class UserFormController extends SimpleFormController {
 				properties.put(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD, newChangePassword.toString());
 			}
 			
-			user.setProperties(properties);
+			user.setUserProperties(properties);
 			
-			if (Context.getAuthenticatedUser().isSuperUser() && !password.equals("")) {
-				log.debug("calling changePassword");
-				us.changePassword(user, password);
-			}
-			
-			if (user.getUserId() == null)
+			if (isNewUser(user))
 				us.createUser(user, password);
-			else
+			else {
 				us.updateUser(user);
+
+				if (Context.getAuthenticatedUser().isSuperUser() && !password.equals("")) {
+					log.debug("calling changePassword");
+					us.changePassword(user, password);
+				}
+				
+			}
 			
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.saved");
 			view = getSuccessView();
@@ -202,14 +215,44 @@ public class UserFormController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			UserService us = Context.getUserService();
 			String userId = request.getParameter("userId");
-	    	if (userId != null)
-	    		user = us.getUser(Integer.valueOf(userId));
+			Integer id = null;
+	    	if (userId != null) {
+	    		try {
+	    			id = Integer.valueOf(userId);
+	    			user = us.getUser(id);
+	    		}
+	    		catch (NumberFormatException numberError) {
+	    			log.warn("Invalid userId supplied: '" + userId + "'", numberError);
+	    		}
+	    		catch (ObjectRetrievalFailureException noUserEx) {
+	    			try {
+		    			Person person = Context.getPersonService().getPerson(id);
+		    			user = new User(person);
+		    		}
+		    		catch (ObjectRetrievalFailureException noPersonEx) {
+		    			log.warn("There is no user or person with id: '" + userId + "'", noPersonEx);
+		    			throw new ServletException("There is no user or person with id: '" + userId + "'");
+		    		}
+	    		}
+	    	}
 		}
 		
-		if (user == null)
+		if (user == null) {
 			user = new User();
+			
+			String name = request.getParameter("name");
+			if (name != null) {
+				String gender = request.getParameter("gndr");
+				String date = request.getParameter("birthyear");
+				String age = request.getParameter("age");
+				
+				getMiniPerson(user, name, gender, date, age);
+			}
+		}
 		
-        return user;
+		setupFormBackingObject(user);
+		
+		return user;
     }
     
     protected Map referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
@@ -229,16 +272,27 @@ public class UserFormController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 			map.put("roles", roles);
-			if (user.getUserId() == null || Context.hasPrivilege("Edit Passwords")) 
+			if (user.getUserId() == null || Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS)); 
 				map.put("modifyPasswords", true);
 			map.put("changePasswordName", OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD);
-			String s = "";
-			if (user.getProperties() != null)
-				if (user.getProperties().containsKey(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD))
-					s = user.getProperties().get(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD);
+			String s = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD);
 			map.put("changePassword", new Boolean(s).booleanValue());
-		}	
+			
+			map.put("isNewUser", isNewUser(user));
+		}
+		
+		super.setupReferenceData(map, user);
+		
 		return map;
     }
     
+    /** 
+     * Uperficially determines if this form is being filled out for a new user
+     * 
+     * @param user
+     * @return
+     */
+    private Boolean isNewUser(User user) {
+    	return user == null ? true : user.getCreator() == null;
+    }
 }

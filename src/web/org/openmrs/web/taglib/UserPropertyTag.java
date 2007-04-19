@@ -21,7 +21,7 @@ public class UserPropertyTag extends TagSupport {
 		String value = defaultValue;
 		// If user is logged in
 		if ( Context.isAuthenticated()) {
-			String prop = Context.getAuthenticatedUser().getProperty(key);
+			String prop = Context.getAuthenticatedUser().getUserProperty(key);
 			if (prop != null && !prop.equals(""))
 				value = prop;
 		}

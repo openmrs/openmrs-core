@@ -86,7 +86,7 @@ public class OptionsFormController extends SimpleFormController {
 			UserService us = Context.getUserService();
 			OptionsForm opts = (OptionsForm)obj;
 			
-			Map<String, String> properties = user.getProperties();
+			Map<String, String> properties = user.getUserProperties();
 			
 			properties.put(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION, opts.getDefaultLocation());
 			properties.put(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE, opts.getDefaultLocale());
@@ -141,7 +141,7 @@ public class OptionsFormController extends SimpleFormController {
 			
 			if (!errors.hasErrors()) {
 				user.setUsername(opts.getUsername());
-				user.setProperties(properties);
+				user.setUserProperties(properties);
 				
 				Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
 				us.updateUser(user);
@@ -171,7 +171,7 @@ public class OptionsFormController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			User user = Context.getAuthenticatedUser();
 
-			Map<String, String> props = user.getProperties();
+			Map<String, String> props = user.getUserProperties();
 			opts.setDefaultLocation(props.get(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION));
 			opts.setDefaultLocale(props.get(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE));
 			opts.setShowRetiredMessage(new Boolean(props.get(OpenmrsConstants.USER_PROPERTY_SHOW_RETIRED)));

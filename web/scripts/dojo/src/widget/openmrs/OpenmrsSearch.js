@@ -266,7 +266,7 @@ dojo.widget.defineWidget(
 							var callback = function(ts, text) { return function() {ts.findObjects(text)}};
 							this.searchTimeout = setTimeout(callback(this, this.text), this.searchDelay);
 						}
-						else if (this.text && this.text.length == 0 && this.key == dojo.event.browser.keys.KEY_BACKSPACE) {
+						else if (this.text != null && this.text.length == 0 && this.key == dojo.event.browser.keys.KEY_BACKSPACE) {
 							// allows for "resetting" default list when user hits backspace on empty field
 							this.resetSearch();
 							this.searchCleared();
@@ -399,7 +399,6 @@ dojo.widget.defineWidget(
 	},
 	
 	doObjectsFound: function(objs) {
-		
 		// convert objs from single obj into array (if needed)
 		if (objs.length == null)
 			objs = [objs]
@@ -420,9 +419,9 @@ dojo.widget.defineWidget(
 	
 	
 	selectObject: function(index) {
-		if (this.objectsFound.length >= index - 1) {
+		if (this.allObjectsFound.length >= index - 1) {
 			//textbox.value = lastPhraseSearched;
-			this.select({obj: this.objectsFound[index-1]});
+			this.select({obj: this.allObjectsFound[index-1]});
 		}
 	},
 
@@ -496,8 +495,7 @@ dojo.widget.defineWidget(
 		}
 		return str;
 	},
-
-
+	
 	rowMouseOver: function() {
 		var tr = this;
 		if (tr.className.indexOf("searchHighlight") == -1)
@@ -576,8 +574,8 @@ dojo.widget.defineWidget(
 	    var objs = objects.slice(this.firstItemDisplayed - 1, (this.firstItemDisplayed - 1) + this.numItemsDisplayed);
 	    
 	    DWRUtil.addRows(this.objHitsTableBody, objs, this.getCellFunctions(), this.getRowOptions());
-	    
-	   	setTimeout(this.simpleClosure(this, "updatePagingBars"), 0);
+		
+	    setTimeout(this.simpleClosure(this, "updatePagingBars"), 0);
 	    
 	    if (this.event && this.key == dojo.event.browser.keys.KEY_ENTER) {
 	    	// showHighlighting must be called here to assure it occurs after 
@@ -622,15 +620,13 @@ dojo.widget.defineWidget(
 	
 	
 	clearSearch: function() {
+		this.resetSearch();
+		this.searchCleared();
 		this.clearPagingBars();
 		this.hideHeaderRow();
 		// signal to the using script that we've cleared the rows
 		this.onRemoveAllRows(this.objHitsTableBody);
 	    DWRUtil.removeAllRows(this.objHitsTableBody);	//clear out the current rows
-		clearTimeout(this.searchTimeout);
-		this.searchIndex = 0;
-		this.objectsFound = new Array();
-		this.allObjectsFound = new Array();
 		this.inputNode.value = this.text = this.lastPhraseSearch = "";
 	},
 
@@ -887,9 +883,9 @@ dojo.widget.defineWidget(
 		
 	},
 	
-	simpleClosure: function(thisObj, method) { 
+	simpleClosure: function(thisObj, method, extra) { 
 		return function(arg1, arg2) {
-				  return thisObj[method](arg1, arg2); 
+				  return thisObj[method](arg1, arg2, extra);
 				}; 
 	},
 	
@@ -916,11 +912,10 @@ dojo.widget.defineWidget(
 	resetSearch : function(phrase) {
 		clearTimeout(this.searchTimeout);	//stop any timeout that may have just occured...fixes 'duplicate data' error
 		this.objectsFound = new Array();	//zero-out numbered object list
+		this.allObjectsFound = new Array();
 		this.searchIndex = 0;				//our numbering is one-based, but the searchIndex is incremented prior to printing
 		this.firstItemDisplayed = 1;		//zero-out our paging index (but we have a one-based list, see line above)
-		//alert("phrase: " + phrase);
 		this.lastPhraseSearched = phrase;
-			
 	}
 	
 	},

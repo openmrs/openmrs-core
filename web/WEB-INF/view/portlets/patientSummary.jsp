@@ -11,7 +11,7 @@
 	<c:if test="${empty model.showHeader || model.showHeader == 'true'}">
 		<table id="patientHeaderGeneralTable" width="100%">
 			<tr valign="bottom">
-				<td id="patientHeaderPatientName" width="50%"><span class="patientPatientName">${model.patient.patientName.givenName} ${model.patient.patientName.middleName} ${model.patient.patientName.familyName}</span>&nbsp;&nbsp</td>
+				<td id="patientHeaderPatientName" width="50%"><span class="patientPatientName">${model.patient.personName}</span>&nbsp;&nbsp;</td>
 				<td id="summaryHeaderPatientGender" width="25%">
 					<c:if test="${model.patient.gender == 'M'}">
 						<table><tr><td><img src="${pageContext.request.contextPath}/images/male.gif" alt='<spring:message code="Patient.gender.male"/>'/></td>
@@ -23,8 +23,8 @@
 					</c:if>
 				</td>
 				<td id="summaryHeaderPatientAge" width="25%">
-					<c:if test="${model.patient.age > 0}">${model.patient.age} <spring:message code="Patient.age.years"/></c:if>
-					<c:if test="${model.patient.age == 0}">< 1 <spring:message code="Patient.age.year"/></c:if>
+					<c:if test="${model.patient.age > 0}">${model.patient.age} <spring:message code="Person.age.years"/></c:if>
+					<c:if test="${model.patient.age == 0}">< 1 <spring:message code="Person.age.year"/></c:if>
 					(<c:if test="${model.patient.birthdateEstimated}">~</c:if><openmrs:formatDate date="${model.patient.birthdate}" type="medium" />)
 				</td>
 			</tr>

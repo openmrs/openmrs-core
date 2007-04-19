@@ -139,10 +139,10 @@ public class QuickReportServlet extends HttpServlet {
 		List<Obs> allObs = null;
 		
 		if (location == null || location.equals(""))
-			allObs = os.getObservations(c, "location_id asc, value_datetime asc");
+			allObs = os.getObservations(c, "location_id asc, value_datetime asc", ObsService.PATIENT);
 		else {
 			Location locationObj = es.getLocation(Integer.valueOf(location));
-			allObs = os.getObservations(c, locationObj, "location_id asc, value_datetime asc");
+			allObs = os.getObservations(c, locationObj, "location_id asc, value_datetime asc", ObsService.PATIENT);
 		}
 		
 		List<Obs> obs = new Vector<Obs>();
@@ -253,7 +253,7 @@ public class QuickReportServlet extends HttpServlet {
 		if (reportType.equals("RETURN VISIT DATE THIS WEEK")) {
 			template += "#foreach($o in $observations)\n";
 			template += " <tr>\n";
-			template += "  <td>$!{o.Patient.PatientName.GivenName} $!{o.Patient.PatientName.MiddleName} $!{o.Patient.PatientName.FamilyName}</td>\n";
+			template += "  <td>$!{o.Patient.PersonName.GivenName} $!{o.Patient.PersonName.MiddleName} $!{o.Patient.PersonName.FamilyName}</td>\n";
 			template += "  <td>$!{o.Patient.PatientIdentifier}</td>\n";
 			template += "  <td>$!{o.Location.Name}</td>\n";
 			template += "  <td>$!{date.format($!{o.Encounter.EncounterDatetime})}</td>\n";
@@ -264,7 +264,7 @@ public class QuickReportServlet extends HttpServlet {
 		if (reportType.equals("ATTENDED CLINIC THIS WEEK")) {
 			template += "#foreach($e in $encounters)\n";
 			template += " <tr>\n";
-			template += "  <td>$!{e.Patient.PatientName.GivenName} $!{e.Patient.PatientName.MiddleName} $!{e.Patient.PatientName.FamilyName}</td>\n";
+			template += "  <td>$!{e.Patient.PersonName.GivenName} $!{e.Patient.PersonName.MiddleName} $!{e.Patient.PersonName.FamilyName}</td>\n";
 			template += "  <td>$!{e.Patient.PatientIdentifier}</td>\n";
 			template += "  <td>$!{e.Location.Name}</td>\n";
 			template += "  <td>$!{date.format($e.encounterDatetime)}</td>\n";

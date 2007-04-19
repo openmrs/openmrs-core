@@ -32,11 +32,11 @@
 		<c:set var="patient" value="${model.encounter.patient}"/>
 		<center>
 			<b>
-				${patient.patientName.givenName} ${patient.patientName.middleName} ${patient.patientName.familyName}
+				${patient.personName.givenName} ${patient.personName.middleName} ${patient.personName.familyName}
 			</b>
 			|
-			<c:if test="${patient.age > 0}">${patient.age} <spring:message code="Patient.age.years"/></c:if>
-			<c:if test="${patient.age == 0}">< 1 <spring:message code="Patient.age.year"/></c:if>
+			<c:if test="${patient.age > 0}">${patient.age} <spring:message code="Person.age.years"/></c:if>
+			<c:if test="${patient.age == 0}">< 1 <spring:message code="Person.age.year"/></c:if>
 			<c:forEach var="identifier" items="${patient.identifiers}">
 				|
 				${identifier.identifierType.name}: ${identifier.identifier}

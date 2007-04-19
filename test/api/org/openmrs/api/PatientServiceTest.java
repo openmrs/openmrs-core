@@ -10,10 +10,10 @@ import junit.framework.TestSuite;
 
 import org.openmrs.BaseTest;
 import org.openmrs.Patient;
-import org.openmrs.PatientAddress;
+import org.openmrs.PersonAddress;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.PatientName;
+import org.openmrs.PersonName;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
@@ -58,9 +58,9 @@ public class PatientServiceTest extends BaseTest {
 		
 		assertTrue(patient.equals(patient2));
 		
-		PatientAddress pAddress = patient.getAddresses().iterator().next();
+		PersonAddress pAddress = patient.getAddresses().iterator().next();
 		patient.removeAddress(pAddress);
-		PatientName pName = patient.getNames().iterator().next();
+		PersonName pName = patient.getNames().iterator().next();
 		patient.removeName(pName);
 		
 		
@@ -72,35 +72,35 @@ public class PatientServiceTest extends BaseTest {
 		
 		Patient patient = new Patient();
 		
-		PatientName pName = new PatientName();
+		PersonName pName = new PersonName();
 		pName.setGivenName("Tom");
 		pName.setMiddleName("E.");
 		pName.setFamilyName("Patient");
 		patient.addName(pName);
 		
-		PatientAddress pAddress = new PatientAddress();
+		PersonAddress pAddress = new PersonAddress();
 		pAddress.setAddress1("123 My street");
 		pAddress.setAddress2("Apt 402");
 		pAddress.setCityVillage("Anywhere city");
 		pAddress.setCountry("Some Country");
-		Set<PatientAddress> pAddressList = patient.getAddresses();
+		Set<PersonAddress> pAddressList = patient.getAddresses();
 		pAddressList.add(pAddress);
 		patient.setAddresses(pAddressList);
 		patient.addAddress(pAddress);
 		//patient.removeAddress(pAddress);
 		
 		patient.setTribe(ps.getTribes().get(0));
-		patient.setCitizenship("citizen");
+		//patient.setCitizenship("citizen");
 		//TODO make an optional pointer to the actual mother obj?
-		patient.setMothersName("Mom's name");
+		//patient.setMothersName("Mom's name");
 		//patient.setCivilStatus(1);
 		patient.setDeathDate(new Date());
 		//patient.setCauseOfDeath("air");
-		patient.setHealthDistrict("health dist");
-		patient.setHealthCenter(null);
+		//patient.setHealthDistrict("health dist");
+		//patient.setHealthCenter(null);
 		patient.setBirthdate(new Date());
 		patient.setBirthdateEstimated(true);
-		patient.setBirthplace("Little town outside of nowhere");
+		//patient.setBirthplace("Little town outside of nowhere");
 		patient.setGender("male");
 		
 		List<PatientIdentifierType> patientIdTypes = ps.getPatientIdentifierTypes();

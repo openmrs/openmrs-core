@@ -8,7 +8,7 @@ import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.Obs;
-import org.openmrs.Patient;
+import org.openmrs.Person;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.ObsDAO;
 import org.openmrs.logic.Aggregation;
@@ -17,7 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 public interface ObsService {
-
+	
+	public static final Integer PERSON = 1;
+	public static final Integer PATIENT = 2;
+	public static final Integer USER = 4;
+	
 	public void setObsDAO(ObsDAO dao);
 
 	/**
@@ -106,13 +110,13 @@ public interface ObsService {
 	public MimeType getMimeType(Integer mimeTypeId) throws APIException;
 
 	/**
-	 * Get all Observations for a patient
+	 * Get all Observations for a person
 	 * 
 	 * @param who
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public Set<Obs> getObservations(Patient who);
+	public Set<Obs> getObservations(Person who);
 
 	/**
 	 * Get all Observations for this concept/location Sort is optional
@@ -120,23 +124,25 @@ public interface ObsService {
 	 * @param concept
 	 * @param location
 	 * @param sort
+	 * @param personType
 	 * @return list of obs for a location
 	 */
 	@Transactional(readOnly = true)
-	public List<Obs> getObservations(Concept c, Location loc, String sort);
+	public List<Obs> getObservations(Concept c, Location loc, String sort, Integer persontType);
 
 	/**
-	 * e.g. get all CD4 counts for a patient
+	 * e.g. get all CD4 counts for a person
 	 * 
 	 * @param who
 	 * @param question
+	 * @param personType
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public Set<Obs> getObservations(Patient who, Concept question);
+	public Set<Obs> getObservations(Person who, Concept question);
 
 	/**
-	 * e.g. get last 'n' number of observations for a patient for given concept
+	 * e.g. get last 'n' number of observations for a person for given concept
 	 * 
 	 * @param n
 	 *            number of concepts to retrieve
@@ -145,7 +151,7 @@ public interface ObsService {
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public List<Obs> getLastNObservations(Integer n, Patient who,
+	public List<Obs> getLastNObservations(Integer n, Person who,
 			Concept question);
 
 	/**
@@ -155,32 +161,38 @@ public interface ObsService {
 	 *            (Concept: RETURN VISIT DATE)
 	 * @param sort
 	 * 			  (obsId, obsDatetime, etc) if null, defaults to obsId
+	 * @param personType
+	 * 
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public List<Obs> getObservations(Concept question, String sort);
+	public List<Obs> getObservations(Concept question, String sort, Integer personType);
 
 	/**
 	 * Return all observations that have the given concept as an answer
 	 * (<code>answer.getConceptId()</code> == value_coded)
 	 * 
 	 * @param concept
+	 * @param personType
 	 * @return list of obs
 	 */
 	@Transactional(readOnly = true)
-	public List<Obs> getObservationsAnsweredByConcept(Concept answer);
+	public List<Obs> getObservationsAnsweredByConcept(Concept answer, Integer personType);
 	
 	/**
 	 * Return all numeric answer values for the given concept ordered by value
 	 * numeric low to high
 	 * 
+	 * personType should be one of PATIENT, PERSON, or USER;
+	 * 
 	 * @param concept
 	 * @param sortByValue true/false if sorting by valueNumeric.  If false, will sort by obsDatetime
+	 * @param personType
 	 * 
 	 * @return List<Object[]> [0]=<code>obsId</code>, [1]=<code>obsDatetime</code>, [2]=<code>valueNumeric</code>s
 	 */
 	@Transactional(readOnly = true)
-	public List<Object[]> getNumericAnswersForConcept(Concept answer, Boolean sortByValue);
+	public List<Object[]> getNumericAnswersForConcept(Concept answer, Boolean sortByValue, Integer personType);
 	
 	/**
 	 * Get all observations from a specific encounter
@@ -202,17 +214,24 @@ public interface ObsService {
 
 	/**
 	 * Find observations matching the search string "matching" is defined as
-	 * either the obsId or the patient identifier
+	 * either the obsId or the person identifier
 	 * 
 	 * @param search
 	 * @param includeVoided
+	 * @param personType
 	 * @return list of matched observations
 	 */
 	@Transactional(readOnly = true)
-	public List<Obs> findObservations(String search, boolean includeVoided);
+	public List<Obs> findObservations(String search, boolean includeVoided, Integer personType);
 
+	/**
+	 * 
+	 * @param question
+	 * @param personType
+	 * @return
+	 */
 	@Transactional(readOnly = true)
-	public List<String> getDistinctObservationValues(Concept question);
+	public List<String> getDistinctObservationValues(Concept question, Integer personType);
 
 	/**
 	 * @param obsGroupId
@@ -222,7 +241,7 @@ public interface ObsService {
 	public List<Obs> findObsByGroupId(Integer obsGroupId);
 
 	@Transactional(readOnly = true)
-	@Authorized( { "View Patient" })
-	public List<Obs> getObservations(Patient who, Aggregation aggregation,
+	@Authorized( { "View Person" })
+	public List<Obs> getObservations(Person who, Aggregation aggregation,
 			Concept question, Constraint constraint);
 }

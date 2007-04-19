@@ -76,6 +76,7 @@ public class OpenmrsConstants {
 	public static final String PRIV_ADD_USERS	= "Add Users";
 	public static final String PRIV_EDIT_USERS	= "Edit Users";
 	public static final String PRIV_DELETE_USERS= "Delete Users";
+	public static final String PRIV_EDIT_USER_PASSWORDS = "Edit User Passwords";
 
 	public static final String PRIV_VIEW_ENCOUNTERS		= "View Encounters";
 	public static final String PRIV_ADD_ENCOUNTERS		= "Add Encounters";
@@ -152,6 +153,14 @@ public class OpenmrsConstants {
 	
 	public static final String PRIV_MANAGE_SCHEDULER = "Manage Scheduler";
 	
+	public static final String PRIV_MANAGE_PERSON_ATTRIBUTE_TYPES = "Manage Person Attribute Types";
+	
+	public static final String PRIV_ADD_PERSONS    = "Add People";
+	public static final String PRIV_EDIT_PERSONS   = "Edit People";
+	public static final String PRIV_DELETE_PERSONS = "Delete People";
+	public static final String PRIV_VIEW_PERSONS   = "View People";
+	
+	
 	public static final Map<String, String> CORE_PRIVILEGES() {
 		Map<String, String> privs = new HashMap<String, String>();
 		
@@ -173,6 +182,7 @@ public class OpenmrsConstants {
 		privs.put(PRIV_ADD_USERS, "Able to add users to OpenMRS");
 		privs.put(PRIV_EDIT_USERS, "Able to edit users in OpenMRS");
 		privs.put(PRIV_DELETE_USERS, "Able to delete users in OpenMRS");
+		privs.put(PRIV_EDIT_USER_PASSWORDS, "Able to change the passwords of users in OpenMRS");
 		
 		privs.put(PRIV_VIEW_ENCOUNTERS, "Able to view patient encounters");
 		privs.put(PRIV_ADD_ENCOUNTERS, "Able to add patient encounters");
@@ -236,6 +246,14 @@ public class OpenmrsConstants {
 		
 		privs.put(PRIV_MANAGE_SCHEDULER, "Able to add/edit/remove scheduled tasks");
 		
+		privs.put(PRIV_MANAGE_PERSON_ATTRIBUTE_TYPES, "Able to add/edit/delete person attribute tyeps");
+		
+		privs.put(PRIV_VIEW_PERSONS, "Able to view person objects");
+		privs.put(PRIV_ADD_PERSONS, "Able to add person objects");
+		privs.put(PRIV_EDIT_PERSONS, "Able to edit person objects");
+		privs.put(PRIV_DELETE_PERSONS, "Able to delete objects");
+		
+		
 		for (Privilege privilege : ModuleFactory.getPrivileges()) {
 			privs.put(privilege.getPrivilege(), privilege.getDescription());
 		}
@@ -270,6 +288,11 @@ public class OpenmrsConstants {
 	
 	public static String GP_CONCEPTS_LOCKED = "concepts.locked";
 	
+	public static final String GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES = "patient.listingAttributeTypes";
+	public static final String GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES = "patient.viewingAttributeTypes";
+	public static final String GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES    = "user.listingAttributeTypes";
+	public static final String GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES    = "user.viewingAttributeTypes";
+	
 	// These properties (and default values) are set if not found in the database on startup
 	public static final List<GlobalProperty> CORE_GLOBAL_PROPERTIES() {
 		List<GlobalProperty> props = new Vector<GlobalProperty>();
@@ -286,6 +309,7 @@ public class OpenmrsConstants {
 		props.add(new GlobalProperty("dashboard.encounters.usePages", "smart", "true/false/smart on how to show the pages on the 'View Encounter' window.  'smart' means that if > 50% of the fields have page numbers defined, show data in pages"));
 		props.add(new GlobalProperty("dashboard.encounters.showViewLink", "true", "true/false whether or not to show the 'View Encounter' link on the patient dashboard"));
 		props.add(new GlobalProperty("dashboard.encounters.showEditLink", "true", "true/false whether or not to show the 'Edit Encounter' link on the patient dashboard"));
+		props.add(new GlobalProperty("dashboard.relationships.show_types", "", "Types of relationships separated by commas.  Doctor/Patient,Parent/Child"));
 		props.add(new GlobalProperty("dashboard.regimen.displayDrugSetIds", "ANTIRETROVIRAL DRUGS,TUBERCULOSIS TREATMENT DRUGS", "Drug sets that appear on the Patient Dashboard Regimen tab. Comma separated list of name of concepts that are defined as drug sets."));
 		
 		props.add(new GlobalProperty("concept.weight", "5089", "Concept id of the concept defining the WEIGHT concept"));
@@ -309,13 +333,20 @@ public class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(ModuleConstants.PROPERTY_REPOSITORY_FOLDER, ModuleConstants.PROPERTY_REPOSITORY_FOLDER_DEFAULT, "Name of the folder in which to store the modules"));
 		
-		props.add(new GlobalProperty("address.format", "kenya", "Format in which to display the patient addresses.  Valid values are kenya, rwanda, usa, and lesotho"));
+		props.add(new GlobalProperty("layout.address.format", "general", "Format in which to display the person addresses.  Valid values are general, kenya, rwanda, usa, and lesotho"));
+		props.add(new GlobalProperty("layout.name.format", "short", "Format in which to display the person names.  Valid values are short, full"));
 		
 		// TODO should be changed to text defaults and constants should be removed
 		props.add(new GlobalProperty("scheduler.username", SchedulerConstants.SCHEDULER_USERNAME, "Username for the OpenMRS user that will perform the scheduler activities"));
 		props.add(new GlobalProperty("scheduler.password", SchedulerConstants.SCHEDULER_PASSWORD, "Password for the OpenMRS user that will perform the scheduler activities"));
 		
 		props.add(new GlobalProperty(GP_CONCEPTS_LOCKED, "false", "true/false whether or not concepts can be edited in this database."));
+		
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES, "", "A comma delimited list of PersonAttributeType names that should be displayed for patients in _lists_"));
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES, "", "A comma delimited list of PersonAttributeType names that should be displayed for patients when _viewing individually_"));
+		
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES, "", "A comma delimited list of PersonAttributeType names that should be displayed for users in _lists_"));
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES, "", "A comma delimited list of PersonAttributeType names that should be displayed for users when _viewing individually_"));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);

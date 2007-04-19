@@ -2,9 +2,7 @@ package org.openmrs.api.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
@@ -15,13 +13,10 @@ import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
-import org.openmrs.PatientAddress;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.PatientName;
-import org.openmrs.Person;
-import org.openmrs.Relationship;
-import org.openmrs.RelationshipType;
+import org.openmrs.PersonAddress;
+import org.openmrs.PersonName;
 import org.openmrs.Tribe;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
@@ -69,7 +64,7 @@ public class PatientServiceImpl implements PatientService {
 	 * @param patient to be created
 	 * @throws APIException
 	 */
-	public void createPatient(Patient patient) throws APIException {
+	public Patient createPatient(Patient patient) throws APIException {
 		if (log.isDebugEnabled()) {
 			String s = "" + patient.getPatientId();
 			if (patient.getIdentifiers() != null)
@@ -82,7 +77,7 @@ public class PatientServiceImpl implements PatientService {
 		
 		checkPatientIdentifiers(patient);
 		
-		getPatientDAO().createPatient(patient);
+		return getPatientDAO().createPatient(patient);
 	}
 
 	/**
@@ -100,9 +95,10 @@ public class PatientServiceImpl implements PatientService {
 	 * Update patient 
 	 * 
 	 * @param patient to be updated
+	 * @returns patient
 	 * @throws APIException
 	 */
-	public void updatePatient(Patient patient) throws APIException {
+	public Patient updatePatient(Patient patient) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_PATIENTS);
 		
@@ -110,7 +106,7 @@ public class PatientServiceImpl implements PatientService {
 		
 		checkPatientIdentifiers(patient);
 		
-		getPatientDAO().updatePatient(patient);
+		return getPatientDAO().updatePatient(patient);
 	}
 	
 	/**
@@ -133,6 +129,8 @@ public class PatientServiceImpl implements PatientService {
 		List<PatientIdentifierType> foundRequiredTypes = new ArrayList<PatientIdentifierType>();
 
 		for (PatientIdentifier pi : identifiers) {
+			if (pi.isVoided()) continue;
+
 			try {
 				checkPatientIdentifier(pi);
 			} catch ( BlankIdentifierException bie ) {
@@ -140,8 +138,6 @@ public class PatientServiceImpl implements PatientService {
 				throw bie;
 			}
 			
-			if (pi.isVoided()) continue;
-
 			// check if this is a required identifier
 			for ( PatientIdentifierType requiredType : requiredTypes ) {
 				if ( pi.getIdentifierType().equals(requiredType) ) {
@@ -283,14 +279,6 @@ public class PatientServiceImpl implements PatientService {
 		return getPatientDAO().getPatientsByName(name, includeVoided);
 	}
 	
-	
-	public Set<Patient> getSimilarPatients(String name, Integer birthyear, String gender) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		return getPatientDAO().getSimilarPatients(name, birthyear, gender);
-	}
-	
-	
 	/**
 	 * Void patient record (functionally delete patient from system)
 	 * 
@@ -298,27 +286,16 @@ public class PatientServiceImpl implements PatientService {
 	 * @param reason reason for voiding patient
 	 */
 	public void voidPatient(Patient patient, String reason) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_PATIENTS);
+		if (patient == null)
+			return;
 		
-		for (PatientName pn : patient.getNames()) {
-			if (!pn.isVoided()) {
-				pn.setVoided(true);
-				pn.setVoidReason(reason);
+		if (patient.getIdentifiers() != null) 
+			for (PatientIdentifier pi : patient.getIdentifiers()) {
+				if (!pi.isVoided()) {
+					pi.setVoided(true);
+					pi.setVoidReason(reason);
+				}
 			}
-		}
-		for (PatientAddress pa : patient.getAddresses()) {
-			if (!pa.isVoided()) {
-				pa.setVoided(true);
-				pa.setVoidReason(reason);
-			}
-		}
-		for (PatientIdentifier pi : patient.getIdentifiers()) {
-			if (!pi.isVoided()) {
-				pi.setVoided(true);
-				pi.setVoidReason(reason);
-			}
-		}
 		
 		patient.setVoided(true);
 		patient.setVoidedBy(Context.getAuthenticatedUser());
@@ -333,25 +310,13 @@ public class PatientServiceImpl implements PatientService {
 	 * @param patient patient to be revived
 	 */
 	public void unvoidPatient(Patient patient) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_PATIENTS);
+		if (patient == null)
+			return;
 		
 		String voidReason = patient.getVoidReason();
 		if (voidReason == null)
 			voidReason = "";
 		
-		for (PatientName pn : patient.getNames()) {
-			if (voidReason.equals(pn.getVoidReason())) {
-				pn.setVoided(false);
-				pn.setVoidReason(null);
-			}
-		}
-		for (PatientAddress pa : patient.getAddresses()) {
-			if (voidReason.equals(pa.getVoidReason())) {
-				pa.setVoided(false);
-				pa.setVoidReason(null);
-			}
-		}
 		for (PatientIdentifier pi : patient.getIdentifiers()) {
 			if (voidReason.equals(pi.getVoidReason())) {
 				pi.setVoided(false);
@@ -536,108 +501,7 @@ public class PatientServiceImpl implements PatientService {
 		
 		return getPatientDAO().findTribes(search);
 	}
-	
-	/**
-	 * Get relationship by internal relationship identifier
-	 * 
-	 * @return Relationship
-	 * @param relationshipId 
-	 * @throws APIException
-	 */
-	public Relationship getRelationship(Integer relationshipId) throws APIException {
-		if (!Context.isAuthenticated())
-			throw new APIAuthenticationException("Authentication required");
 		
-		return getPatientDAO().getRelationship(relationshipId);
-	}
-	
-	/**
-	 * Get list of relationships that are not retired
-	 * 
-	 * @return non-voided Relationship list
-	 * @throws APIException
-	 */
-	public List<Relationship> getRelationships() throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS);
-		
-		return getPatientDAO().getRelationships();
-	}
-
-	/**
-	 * Get list of relationships that include Person in person_id or relative_id
-	 * 
-	 * @return Relationship list
-	 * @throws APIException
-	 */
-	public List<Relationship> getRelationships(Person p, boolean showVoided) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS);
-		
-		return getPatientDAO().getRelationships(p, showVoided);
-	}
-	
-	public List<Relationship> getRelationships(Person p) throws APIException {
-		return getRelationships(p, true);
-	}
-
-	/**
-	 * Get list of relationships that have Person as relative_id, and the given type (which can be null)
-	 * @return Relationship list
-	 */
-	public List<Relationship> getRelationshipsTo(Person toPerson, RelationshipType relType) throws APIException {
-		List<Relationship> temp = getRelationships(toPerson);
-		List<Relationship> ret = new ArrayList<Relationship>();
-		for (Relationship rel : temp) {
-			if (rel.getRelative().equals(toPerson) &&
-					(relType == null || relType.equals(rel.getRelationship()))) {
-				ret.add(rel);
-			}
-		}
-		return ret;
-	}
-	
-	/**
-	 * Get all relationshipTypes
-	 * 
-	 * @return relationshipType list
-	 * @throws APIException
-	 */
-	public List<RelationshipType> getRelationshipTypes() throws APIException {
-		if (!Context.isAuthenticated())
-			throw new APIAuthenticationException("Authentication required");
-		
-		return getPatientDAO().getRelationshipTypes();
-	}
-	
-
-	/**
-	 * Get relationshipType by internal identifier
-	 * 
-	 * @param relationshipType id
-	 * @return relationshipType with given internal identifier
-	 * @throws APIException
-	 */
-	public RelationshipType getRelationshipType(Integer relationshipTypeId) throws APIException {
-		// TODO use 'Authenticated User' option
-		if (!Context.isAuthenticated())
-			throw new APIAuthenticationException("Authentication required");
-		
-		return getPatientDAO().getRelationshipType(relationshipTypeId);
-	}
-	
-	/**
-	 * Find relationshipType by name
-	 * @throws APIException
-	 */
-	public RelationshipType findRelationshipType(String relationshipTypeName) throws APIException {
-		// TODO use 'Authenticated User' option
-		if (!Context.isAuthenticated())
-			throw new APIAuthenticationException("Authentication required");
-		
-		return getPatientDAO().findRelationshipType(relationshipTypeName);
-	}
-	
 	public List<Patient> findPatients(String query, boolean includeVoided) {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PATIENTS);
@@ -707,8 +571,8 @@ public class PatientServiceImpl implements PatientService {
 			for (PatientIdentifier preferredIdentifier : preferred.getIdentifiers()) {
 				if (preferredIdentifier.getIdentifier() != null &&
 					preferredIdentifier.getIdentifier().equals(tmpIdentifier.getIdentifier()) &&
-					preferredIdentifier.getPatient() != null &&
-					preferredIdentifier.getPatient().equals(tmpIdentifier.getPatient()))
+					preferredIdentifier.getIdentifierType() != null &&
+					preferredIdentifier.getIdentifierType().equals(tmpIdentifier.getIdentifierType()))
 						found = true;
 			}
 			if (!found) {
@@ -724,9 +588,9 @@ public class PatientServiceImpl implements PatientService {
 		}
 		
 		// move all names
-		for (PatientName newName : notPreferred.getNames()) {
+		for (PersonName newName : notPreferred.getNames()) {
 			boolean containsName = false;
-			for (PatientName currentName : preferred.getNames()) {
+			for (PersonName currentName : preferred.getNames()) {
 				String given = newName.getGivenName();
 				String middle = newName.getMiddleName();
 				String family = newName.getFamilyName();
@@ -739,8 +603,8 @@ public class PatientServiceImpl implements PatientService {
 				}
 			}
 			if (!containsName) {
-				PatientName tmpName = PatientName.newInstance(newName);
-				tmpName.setPatientNameId(null);
+				PersonName tmpName = PersonName.newInstance(newName);
+				tmpName.setPersonNameId(null);
 				tmpName.setVoided(false);
 				tmpName.setVoidedBy(null);
 				tmpName.setVoidReason(null);
@@ -750,9 +614,9 @@ public class PatientServiceImpl implements PatientService {
 		}
 		
 		// move all addresses
-		for (PatientAddress newAddress : notPreferred.getAddresses()) {
+		for (PersonAddress newAddress : notPreferred.getAddresses()) {
 			boolean containsAddress = false;
-			for (PatientAddress currentAddress : preferred.getAddresses()) {
+			for (PersonAddress currentAddress : preferred.getAddresses()) {
 				String address1 = currentAddress.getAddress1();
 				String address2 = currentAddress.getAddress2();
 				String cityVillage = currentAddress.getCityVillage();
@@ -765,13 +629,13 @@ public class PatientServiceImpl implements PatientService {
 				}
 			}
 			if (!containsAddress) {
-				PatientAddress tmpAddress = (PatientAddress)newAddress.clone();
-				tmpAddress.setPatientAddressId(null);
+				PersonAddress tmpAddress = (PersonAddress)newAddress.clone();
+				tmpAddress.setPersonAddressId(null);
 				tmpAddress.setVoided(false);
 				tmpAddress.setVoidedBy(null);
 				tmpAddress.setVoidReason(null);
 				preferred.addAddress(tmpAddress);
-				log.debug("Merging address " + newAddress.getPatientAddressId() + " to " + preferred.getPatientId());
+				log.debug("Merging address " + newAddress.getPersonAddressId() + " to " + preferred.getPatientId());
 			}
 		}
 		
@@ -780,8 +644,10 @@ public class PatientServiceImpl implements PatientService {
 		if (!"M".equals(preferred.getGender()) && !"F".equals(preferred.getGender()))
 			preferred.setGender(notPreferred.getGender());
 		
+		/* 
 		if (preferred.getRace() == null || preferred.getRace().equals(""))
 			preferred.setRace(notPreferred.getRace());
+		*/
 		
 		if (preferred.getBirthdate() == null || preferred.getBirthdate().equals("") ||
 				( preferred.getBirthdateEstimated() && !notPreferred.getBirthdateEstimated())) {
@@ -789,11 +655,12 @@ public class PatientServiceImpl implements PatientService {
 			preferred.setBirthdateEstimated(notPreferred.getBirthdateEstimated());
 		}
 		
-		if (preferred.getBirthplace() == null || preferred.getBirthplace().equals(""))
-			preferred.setBirthplace(notPreferred.getBirthplace());
-		
 		if (preferred.getTribe() == null)
 			preferred.setTribe(notPreferred.getTribe());
+		
+		/*
+		if (preferred.getBirthplace() == null || preferred.getBirthplace().equals(""))
+			preferred.setBirthplace(notPreferred.getBirthplace());
 		
 		if (preferred.getCitizenship() == null || preferred.getCitizenship().equals(""))
 			preferred.setCitizenship(notPreferred.getCitizenship());
@@ -803,6 +670,7 @@ public class PatientServiceImpl implements PatientService {
 		
 		if (preferred.getCivilStatus() == null)
 			preferred.setCivilStatus(notPreferred.getCivilStatus());
+		*/
 		
 		if (preferred.getDeathDate() == null || preferred.getDeathDate().equals(""))
 			preferred.setDeathDate(notPreferred.getDeathDate());
@@ -810,11 +678,13 @@ public class PatientServiceImpl implements PatientService {
 		if (preferred.getCauseOfDeath() == null || preferred.getCauseOfDeath().equals(""))
 			preferred.setCauseOfDeath(notPreferred.getCauseOfDeath());
 		
+		/*
 		if (preferred.getHealthDistrict() == null || preferred.getHealthDistrict().equals(""))
 			preferred.setHealthDistrict(notPreferred.getHealthDistrict());
 		
 		if (preferred.getHealthCenter() == null)
 			preferred.setHealthCenter(notPreferred.getHealthCenter());
+		*/
 		
 		// void the non preferred patient
 		voidPatient(notPreferred, "Merged with patient #" + preferred.getPatientId());
@@ -831,28 +701,18 @@ public class PatientServiceImpl implements PatientService {
 	 * @param patient
 	 */
 	private void setCollectionProperties(Patient patient) {
+		// set the properties on the collections for the generic person object
+		Context.getPersonService().setCollectionProperties(patient);
+		
+		// patient creator/changer
 		if (patient.getCreator() == null) {
 			patient.setCreator(Context.getAuthenticatedUser());
 			patient.setDateCreated(new Date());
 		}
 		patient.setChangedBy(Context.getAuthenticatedUser());
 		patient.setDateChanged(new Date());
-		if (patient.getAddresses() != null)
-			for (PatientAddress pAddress : patient.getAddresses()) {
-				if (pAddress.getDateCreated() == null) {
-					pAddress.setDateCreated(new Date());
-					pAddress.setCreator(Context.getAuthenticatedUser());
-					pAddress.setPatient(patient);
-				}
-			}
-		if (patient.getNames() != null)
-			for (PatientName pName : patient.getNames()) {
-				if (pName.getDateCreated() == null) {
-					pName.setDateCreated(new Date());
-					pName.setCreator(Context.getAuthenticatedUser());
-					pName.setPatient(patient);
-				}
-			}
+		
+		// identifier collection
 		if (patient.getIdentifiers() != null)
 			for (PatientIdentifier pIdentifier : patient.getIdentifiers()) {
 				if (pIdentifier.getDateCreated() == null) {
@@ -922,9 +782,9 @@ public class PatientServiceImpl implements PatientService {
 							log.debug("No reason for exit yet, let's create one.");
 							
 							obsExit = new Obs();
-							obsExit.setPatient(patient);
+							obsExit.setPerson(patient);
 							obsExit.setConcept(reasonForExit);
-							Location loc = patient.getHealthCenter();
+							Location loc = null; //patient.getHealthCenter();
 							if ( loc == null ) loc = Context.getEncounterService().getLocationByName("Unknown Location");
 							if ( loc == null ) loc = Context.getEncounterService().getLocation(new Integer(1));
 							if ( loc != null ) obsExit.setLocation(loc);
@@ -1017,9 +877,9 @@ public class PatientServiceImpl implements PatientService {
 							log.debug("No cause of death yet, let's create one.");
 							
 							obsDeath = new Obs();
-							obsDeath.setPatient(patient);
+							obsDeath.setPerson(patient);
 							obsDeath.setConcept(causeOfDeath);
-							Location loc = patient.getHealthCenter();
+							Location loc = null; //patient.getHealthCenter();
 							if ( loc == null ) loc = Context.getEncounterService().getLocationByName("Unknown Location");
 							if ( loc == null ) loc = Context.getEncounterService().getLocation(new Integer(1));
 							if ( loc != null ) obsDeath.setLocation(loc);
@@ -1074,28 +934,6 @@ public class PatientServiceImpl implements PatientService {
 			if ( deathDate == null ) throw new APIException("Death date supplied to method is null");
 			if ( cause == null ) throw new APIException("Cause supplied to method is null");
 		}
-	}
-	
-	public Map<Person, List<Person>> getRelationships(RelationshipType relType) throws APIException {
-		List<Relationship> all = this.getRelationships();
-		Map<Person, List<Person>> ret = new HashMap<Person, List<Person>>();
-		
-		if ( all !=  null ) {
-			for ( Relationship rel : all ) {
-				if ( relType == null || (relType != null && relType.equals(rel.getRelationship())) ) {
-					Person from = rel.getPerson();
-					Person to = rel.getRelative();
-					
-					List<Person> relList = ret.get(from);
-					if ( relList == null ) relList = new ArrayList<Person>();
-					relList.add(to);
-					
-					ret.put(from, relList);
-				}
-			}
-		}
-		
-		return ret;
 	}
 
 }

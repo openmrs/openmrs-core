@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
@@ -13,6 +15,7 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
  * User-related services
@@ -21,6 +24,8 @@ import org.openmrs.util.OpenmrsConstants;
  * @version 1.0
  */
 public class UserServiceImpl implements UserService {
+	
+	private static Log log = LogFactory.getLog(UserServiceImpl.class);
 	
 	//private Context Context;
 	//private DAOContext daoContext;
@@ -40,9 +45,14 @@ public class UserServiceImpl implements UserService {
 	/**
 	 * @see org.openmrs.api.UserService#createUser(org.openmrs.User, java.lang.String)
 	 */
-	public void createUser(User user, String password) throws APIException {
+	public User createUser(User user, String password) throws APIException {
+		log.debug("Creating user");
 		checkPrivileges(user);
-		getUserDAO().createUser(user, password);
+		setCollectionProperties(user);
+		
+		user.setSystemId(generateSystemId());
+		
+		return getUserDAO().createUser(user, password);
 	}
 
 	/**
@@ -95,6 +105,7 @@ public class UserServiceImpl implements UserService {
 	 */
 	public void updateUser(User user) throws APIException {
 		checkPrivileges(user);
+		setCollectionProperties(user);
 		getUserDAO().updateUser(user);
 	}
 	
@@ -265,13 +276,13 @@ public class UserServiceImpl implements UserService {
 	
 	/**
 	 * Find a user by exact first name and last name
-	 * @param firstName
-	 * @param lastName
+	 * @param givenName
+	 * @param familyName
 	 * @param includeVoided
 	 * @return
 	 */
-	public List<User> findUsers(String firstName, String lastName, boolean includeVoided) {
-		return getUserDAO().findUsers(firstName, lastName, includeVoided);
+	public List<User> findUsers(String givenName, String familyName, boolean includeVoided) {
+		return getUserDAO().findUsers(givenName, familyName, includeVoided);
 	}
 	
 	/**
@@ -333,7 +344,7 @@ public class UserServiceImpl implements UserService {
 					throw new APIException("You are not authorized to change " + user.getUserId() + "'s properties");
 
 			Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
-			user.setProperty(key, value);
+			user.setUserProperty(key, value);
 			updateUser(user);
 			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
 		}
@@ -349,18 +360,47 @@ public class UserServiceImpl implements UserService {
 					throw new APIException("You are not authorized to change " + user.getUserId() + "'s properties");
 
 			Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
-			user.removeProperty(key);
+			user.removeUserProperty(key);
 			updateUser(user);
 			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
 		}
 	}
 
 	/**
-	 * Get/generate/find the next system id to be doled out.  Assume check digit /not/ applied
-	 * in this method
+	 * Get/generate/find the next system id to be doled out.  Assume check digit <b>is</b> applied
+	 * in this method (not in DAO)
+	 * 
 	 * @return new system id
 	 */
 	public String generateSystemId() {
-		return getUserDAO().generateSystemId();
+		String systemId = getUserDAO().generateSystemId();
+		
+		Integer checkDigit;
+		try {
+			checkDigit = OpenmrsUtil.getCheckDigit(systemId);
+		}
+		catch ( Exception e ) {
+			log.error("error getting check digit", e);
+			return systemId;
+		}
+		
+		return systemId + "-" + checkDigit;
+	}
+	
+	/**
+	 * Iterates over Names/Addresses/Identifiers to set dateCreated and creator properties if needed
+	 * @param user
+	 */
+	private void setCollectionProperties(User user) {
+		// set the properties on the collections for the generic person object
+		Context.getPersonService().setCollectionProperties(user);
+		
+		// user creator/changer
+		if (user.getCreator() == null) {
+			user.setCreator(Context.getAuthenticatedUser());
+			user.setDateCreated(new Date());
+		}
+		user.setChangedBy(Context.getAuthenticatedUser());
+		user.setDateChanged(new Date());
 	}
 }

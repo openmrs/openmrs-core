@@ -70,7 +70,7 @@
 					</tr>
 					<tr>
 						<th><spring:message code="Encounter.provider"/></th>
-						<td>${conceptProposal.encounter.provider.firstName} ${conceptProposal.encounter.provider.lastName}</td>
+						<td>${conceptProposal.encounter.provider.personName}</td>
 					</tr>
 					<tr>
 						<th><spring:message code="Encounter.datetime"/></th>
@@ -100,7 +100,7 @@
 		<tr>
 			<th><spring:message code="ConceptProposal.proposedBy" /></th>
 			<td>
-				${conceptProposal.creator.firstName} ${conceptProposal.creator.lastName} -
+				${conceptProposal.creator.personName} -
 				<openmrs:formatDate date="${conceptProposal.dateCreated}" type="long" />
 			</td>
 		</tr>
@@ -109,7 +109,7 @@
 		<tr>
 			<th><spring:message code="general.changedBy" /></th>
 			<td>
-				${conceptProposal.changedBy.firstName} ${conceptProposal.changedBy.lastName} -
+				${conceptProposal.changedBy.personName} -
 				<openmrs:formatDate date="${conceptProposal.dateChanged}" type="long" />
 			</td>
 		</tr>

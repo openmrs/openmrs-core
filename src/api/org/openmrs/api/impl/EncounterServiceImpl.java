@@ -238,7 +238,7 @@ public class EncounterServiceImpl implements EncounterService {
 		// Therefore, encounter.patient must always equal encounter.observations[0-n].patient
 		Patient p = encounter.getPatient();
 		for (Obs obs : Context.getObsService().getObservations(encounter)) {
-			obs.setPatient(p);
+			obs.setPerson(p);
 			Context.getObsService().updateObs(obs);
 		}
 	}

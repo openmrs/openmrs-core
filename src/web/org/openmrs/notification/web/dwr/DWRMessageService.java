@@ -32,9 +32,7 @@ public class DWRMessageService {
 				String referer = request.getPathTranslated();
 				String userName = "an Anonymous User";
 				if (Context.isAuthenticated())
-					userName = Context.getAuthenticatedUser().getFirstName()
-							+ " "
-							+ Context.getAuthenticatedUser().getLastName();
+					userName = Context.getAuthenticatedUser().getPersonName().toString();
 
 				content += "\n\n This email sent from: " + referer + " by: "
 						+ userName;

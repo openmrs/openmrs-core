@@ -134,9 +134,9 @@ public class LoginServlet extends HttpServlet {
 					User user = Context.getAuthenticatedUser();
 					
 					// load the user's default locale if possible
-					if (user.getProperties() != null) {
-						if (user.getProperties().containsKey(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE)) {
-							String localeString = user.getProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE);
+					if (user.getUserProperties() != null) {
+						if (user.getUserProperties().containsKey(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE)) {
+							String localeString = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE);
 							Locale locale = null;
 							if (localeString.length() == 5) {
 								//user's locale is language_COUNTRY (i.e. en_US)
@@ -153,7 +153,7 @@ public class LoginServlet extends HttpServlet {
 						}
 					}
 					
-					Boolean forcePasswordChange = new Boolean(user.getProperties().get(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD)); 
+					Boolean forcePasswordChange = new Boolean(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD)); 
 					if (forcePasswordChange) {
 						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.password.change");
 						redirect = request.getContextPath() + "/options.form#Change Login Info";
@@ -161,9 +161,10 @@ public class LoginServlet extends HttpServlet {
 					
 					// In case the user has no preferences, make sure that the context has some locale set
 					if (Context.getLocale() == null) {
-							Context.setLocale(OpenmrsConstants.GLOBAL_DEFAULT_LOCALE);
+						Context.setLocale(OpenmrsConstants.GLOBAL_DEFAULT_LOCALE);
 					}
 					
+					log.debug("Redirecting after login to: " + redirect);
 					response.sendRedirect(redirect);
 				
 					log.debug(request.getLocalAddr());

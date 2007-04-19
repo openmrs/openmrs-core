@@ -7,7 +7,7 @@
 
 <h2><spring:message code="User.manage.title"/></h2>
 
-<a href="user.form"><spring:message code="User.add"/></a>
+<a href="${pageContext.request.contextPath}/admin/person/addPerson.htm?personType=user"><spring:message code="User.add"/></a>
 
 <br/><br/>
 
@@ -22,7 +22,7 @@
 	
 	var getSystemId = function(u) {
 		if (typeof u == 'string') return u;
-		s = " &nbsp; " + u.systemId;;
+		s = " &nbsp; " + u.systemId;;	
 		if (u.voided)
 			s = "<span class='retired'>" + s + "</span>";
 		return s;
@@ -31,16 +31,6 @@
 	var getUsername = function(u) {
 		if (typeof u == 'string' || u.username == null) return '';
 		return " &nbsp; " + u.username;
-	}
-	
-	var getFirst = function(u) {
-		if (typeof u == 'string' || u.firstName == null) return '';
-		return " &nbsp; " + u.firstName;
-	}
-	
-	var getLast = function(u) {
-		if (typeof u == 'string' || u.lastName == null) return '';
-		return " &nbsp; " + u.lastName;
 	}
 	
 	var getRoles = function(u) {
@@ -58,19 +48,9 @@
 			}
 		);
 		
-		searchWidget.getCellFunctions = function() {
-			return [searchWidget.simpleClosure(this, "getNumber"), 
-					getSystemId, 
-					getUsername, 
-					getFirst, 
-					getLast,
-					getRoles
-					];
-		};
-		
-		searchWidget.setHeaderCellContent (
-			['', '<spring:message code="User.systemId"/>', '<spring:message code="User.username"/>', '<spring:message code="User.firstName"/>', '<spring:message code="User.lastName"/>', '<spring:message code="User.roles"/>']
-		);
+		searchWidget.allowAutoJump = function() {
+			return this.text && this.text.length > 1;
+		}
 		
 		searchWidget.allowAutoJump = function() {
 			return this.text && this.text.length > 1;
@@ -85,7 +65,7 @@
 </script>
 
 <div class="box">
-	<div dojoType="UserSearch" widgetId="uSearch" searchLabel='<spring:message code="User.find"/>' showIncludeVoided="true"></div>
+	<div dojoType="UserSearch" widgetId="uSearch" searchLabel='<spring:message code="User.find"/>' showIncludeVoided="true" showRoles="true"></div>
 </div>
 
 <br/><br/>

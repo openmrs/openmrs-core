@@ -18,15 +18,7 @@ public class HibernateTest extends BaseTest {
 		
 		User u = us.getUserByUsername("USER-1");
 		
-		System.out.println("last name: " + u.getLastName());
-		
-		u.setLastName(u.getLastName() + "1");
-		
-		us.updateUser(u);
-		
-		User u2 = us.getUserByUsername("USER-1");
-		
-		System.out.println("last name (post): " + u.getLastName());
+		System.out.println("last name: " + u.getPersonName().getFamilyName());
 	}
 	
 	public static Test suite() {

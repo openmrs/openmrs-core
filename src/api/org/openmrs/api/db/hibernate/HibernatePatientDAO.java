@@ -11,18 +11,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
-import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.PatientName;
 import org.openmrs.Person;
-import org.openmrs.Relationship;
-import org.openmrs.RelationshipType;
+import org.openmrs.PersonName;
 import org.openmrs.Tribe;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PatientDAO;
@@ -56,9 +55,14 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 
-	public void createPatient(Patient patient) throws DAOException {
+	public Patient createPatient(Patient patient) throws DAOException {
 		sessionFactory.getCurrentSession().saveOrUpdate(patient);
+		//sessionFactory.getCurrentSession().refresh(patient);
 		
+		return patient;
+		
+		// TODO person relationships
+		/*
 		// create a Person for this patient as well.
 		// The method name "createPatient" implies we should always do this, but since we're calling saveOrUpdate, we'll just do it conditionally.
 		Person person = (Person) sessionFactory.getCurrentSession().createQuery("from Person p where p.patient.patientId = :patientId")
@@ -69,15 +73,17 @@ public class HibernatePatientDAO implements PatientDAO {
 			person.setPatient(patient);
 			sessionFactory.getCurrentSession().save(person);
 		}
+		*/
 	}
 
 
-	public void updatePatient(Patient patient) throws DAOException {
+	public Patient updatePatient(Patient patient) throws DAOException {
 		if (patient.getPatientId() == null)
-			createPatient(patient);
+			return createPatient(patient);
 		else {
 			patient = (Patient)sessionFactory.getCurrentSession().merge(patient);
-			sessionFactory.getCurrentSession().saveOrUpdate(patient);
+			//sessionFactory.getCurrentSession().saveOrUpdate(patient);
+			return patient;
 		}
 	}
 
@@ -85,7 +91,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	public Set<Patient> getPatientsByIdentifier(String identifier, boolean includeVoided) throws DAOException {
 		Query query;
 		
-		String sql = "select patient from Patient patient, PatientName name where patient.identifiers.identifier = :id and patient = name.patient";
+		String sql = "select patient from Patient patient, PersonName name where patient.identifiers.identifier = :id and patient.patientId = name.person.personId";
 		String order = " order by name.givenName asc, name.middleName asc, name.familyName asc";
 		
 		if (includeVoided) {
@@ -113,29 +119,20 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public Set<Patient> getPatientsByIdentifierPattern(String identifier, boolean includeVoided) throws DAOException {
-		SQLQuery query;
 		
 		String regex = OpenmrsConstants.PATIENT_IDENTIFIER_REGEX;
-		String order = ""; //" order by patient.name.givenName asc";
 		
 		regex = regex.replace("@SEARCH@", identifier);
 		
-		String sql = "select {pat.*} from patient {pat}, patient_identifier ident where ident.identifier regexp :regex and ident.patient_id = {pat}.patient_id";
-		//String sql = "select {ident.*} from patient_identifier ident where {ident.identifier} regexp :regex";
-		
-		if (includeVoided) {
-			query = sessionFactory.getCurrentSession().createSQLQuery(sql + order);
-			query.setString("regex", regex);
-		}
-		else {
-			query = sessionFactory.getCurrentSession().createSQLQuery(sql + " and {pat}.voided = :void" + order);
-			query.setString("regex", regex);
-			query.setBoolean("void", includeVoided);
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PatientIdentifier.class);
+		criteria.setProjection(Projections.property("patient"));
+		criteria.add(Restrictions.sqlRestriction("identifier regexp '" + regex + "'"));
+		if (includeVoided == false) {
+			criteria.createAlias("patient", "pat");
+			criteria.add(Restrictions.eq("pat.voided", false));
 		}
 		
-		//query.addEntity("ident", PatientIdentifier.class);
-		query.addEntity("pat", Patient.class);
-		List<Patient> patients = query.list();
+		List<Patient> patients = criteria.list();
 		
 		Set<Patient> returnSet = new LinkedHashSet<Patient>();
 		returnSet.addAll(patients);
@@ -180,121 +177,6 @@ public class HibernatePatientDAO implements PatientDAO {
 		criteria.addOrder(Order.asc("name.middleName"));
 		criteria.addOrder(Order.asc("name.familyName"));
 		patients.addAll(criteria.list());
-		
-		return patients;
-	}
-
-	@SuppressWarnings("unchecked")
-	public Set<Patient> getSimilarPatients(String name, Integer birthyear, String gender) throws DAOException {
-		if (birthyear == null)
-			birthyear = 0;
-		
-		// TODO return the matched name instead of the primary name
-		//   possible solution: "select new" org.openmrs.PatientListItem and return a list of those
-		
-		Set<Patient> patients = new LinkedHashSet<Patient>();
-		
-		name = name.replaceAll("  ", " ");
-		name = name.replace(", ", " ");
-		String[] names = name.split(" ");
-		
-		
-		String q = "select p from Patient p left join p.names as pname where";
-		
-		if (names.length == 1) {
-			q += "(";
-			q += " soundex(pname.givenName) = soundex(:n1)";
-			q += " or soundex(pname.middleName) = soundex(:n2)";
-			q += " or soundex(pname.familyName) = soundex(:n3) ";
-			q += ")";
-		}
-		else if (names.length == 2) {
-			q += "(";
-			q += " case";
-			q += "  when pname.givenName is null then 1";
-			q += "  when soundex(pname.givenName) = soundex(:n1) then 2";
-			q += "  when soundex(pname.givenName) = soundex(:n2) then 4";
-			q += "  else 0 ";
-			q += " end";
-			q += " + ";
-			q += " case";
-			q += "  when pname.middleName is null then 1";
-			q += "  when soundex(pname.middleName) = soundex(:n3) then 2";
-			q += "  when soundex(pname.middleName) = soundex(:n4) then 4";
-			q += "  else 0 ";
-			q += " end";
-			q += " +";
-			q += " case";
-			q += "  when pname.familyName is null then 1";
-			q += "  when soundex(pname.familyName) = soundex(:n5) then 2";
-			q += "  when soundex(pname.familyName) = soundex(:n6) then 4";
-			q += "  else 0 ";
-			q += " end";
-			q += ") between 6 and 7";
-		}
-		else if (names.length == 3) {
-			q += "(";
-			q += " case";
-			q += "  when pname.givenName is null then 0";
-			q += "  when soundex(pname.givenName) = soundex(:n1) then 3";
-			q += "  when soundex(pname.givenName) = soundex(:n2) then 2";
-			q += "  when soundex(pname.givenName) = soundex(:n3) then 1";
-			q += "  else 0 ";
-			q += " end";
-			q += " + ";
-			q += " case";
-			q += "  when pname.middleName is null then 0";
-			q += "  when soundex(pname.middleName) = soundex(:n4) then 2";
-			q += "  when soundex(pname.middleName) = soundex(:n5) then 3";
-			q += "  when soundex(pname.middleName) = soundex(:n6) then 1";
-			q += "  else 0";
-			q += " end";
-			q += " +";
-			q += " case";
-			q += "  when pname.familyName is null then 0";
-			q += "  when soundex(pname.familyName) = soundex(:n7) then 1";
-			q += "  when soundex(pname.familyName) = soundex(:n8) then 2";
-			q += "  when soundex(pname.familyName) = soundex(:n9) then 3";
-			q += "  else 0";
-			q += " end";
-			q += ") >= 5";
-		}
-		else
-			throw new DAOException("Too many names to compare effectively.");
-		
-		String birthdayMatch = " (year(p.birthdate) between " + (birthyear - 1) + " and " + (birthyear + 1) +
-								" or p.birthdate is null) ";
-		
-		String genderMatch = " p.gender = :gender ";
-		
-		if (birthyear != 0 && gender != null) {
-			q += " and (" + birthdayMatch + "and " + genderMatch + ") "; 
-		}
-		else if (birthyear != 0) {
-			q += " and " + birthdayMatch;
-		}
-		else if (gender != null) {
-			q += " and " + genderMatch;
-		}
-		
-		q += " order by pname.givenName asc, ";
-		q += "pname.middleName asc, ";
-		q += "pname.familyName asc";
-		
-		Query query = sessionFactory.getCurrentSession().createQuery(q);
-		
-		int count = 1;
-		for (int i = 0; i < 3; i++) {
-			for (int nameIndex = 0; nameIndex < names.length; nameIndex++) {
-				query.setString("n" + count, names[nameIndex]);
-				count++;
-			}
-		}
-		
-		if (q.contains(":gender"))
-			query.setString("gender", gender);
-		
-		patients.addAll(query.list());
 		
 		return patients;
 	}
@@ -408,90 +290,6 @@ public class HibernatePatientDAO implements PatientDAO {
 		
 		return crit.list();
 	}
-
-	/**
-	 * @see org.openmrs.api.db.PatientService#getRelationship()
-	 */
-	public Relationship getRelationship(Integer relationshipId) throws DAOException {
-		Relationship relationship = (Relationship)sessionFactory.getCurrentSession().get(Relationship.class, relationshipId);
-		
-		return relationship;
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.PatientService#getRelationships()
-	 */
-	@SuppressWarnings("unchecked")
-	public List<Relationship> getRelationships() throws DAOException {
-		List<Relationship> relationships = sessionFactory.getCurrentSession().createQuery("from Relationship r order by r.relationshipId asc").list();
-		
-		return relationships;
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.PatientService#getRelationships(org.openmrs.Person)
-	 */
-	@SuppressWarnings("unchecked")
-	public List<Relationship> getRelationships(Person person, boolean showVoided) throws DAOException {
-		Query query = null;
-		List<Relationship> relationships = new Vector<Relationship>();
-		
-		if (person == null)
-			return relationships;
-		
-		String voided = showVoided ? "" : " and voided = 0 ";
-		
-		if (person.getPatient() != null) {
-			query = sessionFactory.getCurrentSession().createQuery(
-				"from Relationship r where r.person.patient = :p1 or r.relative.patient = :p2 " + voided + " order by r.relationshipId asc "
-			)
-			.setParameter("p1", person.getPatient())
-			.setParameter("p2", person.getPatient());
-		}
-		else if (person.getUser() != null) {
-			query = sessionFactory.getCurrentSession().createQuery(
-					"from Relationship r where r.person.user = :p1 or r.relative.user = :p2 " + voided + " order by r.relationshipId asc "
-				)
-				.setParameter("p1", person.getUser())
-				.setParameter("p2", person.getUser());
-		}
-		
-		if (query != null)
-			relationships = query.list(); 
-			
-		return relationships;
-	}
-
-	/**
-	 * @see org.openmrs.api.db.PatientService#getRelationshipType(java.lang.Integer)
-	 */
-	public RelationshipType getRelationshipType(Integer relationshipTypeId) throws DAOException {
-		RelationshipType relationshipType = new RelationshipType();
-		relationshipType = (RelationshipType)sessionFactory.getCurrentSession().get(RelationshipType.class, relationshipTypeId);
-		
-		return relationshipType;
-
-	}
-	
-	public RelationshipType findRelationshipType(String relationshipTypeName) throws DAOException {
-		RelationshipType ret = (RelationshipType) sessionFactory.getCurrentSession().createQuery("from RelationshipType t where t.name = :name")
-					.setString("name", relationshipTypeName)
-					.uniqueResult();
-		
-		return ret;
-	}
-
-	/**
-	 * @see org.openmrs.api.db.PatientService#getRelationshipTypes()
-	 */
-	@SuppressWarnings("unchecked")
-	public List<RelationshipType> getRelationshipTypes() throws DAOException {
-		List<RelationshipType> relationshipTypes;
-		relationshipTypes = sessionFactory.getCurrentSession().createQuery("from RelationshipType r order by r.name").list();
-		
-		return relationshipTypes;
-
-	}
 	
 	/** @see org.openmrs.api.db.PatientService#findDuplicatePatients(java.util.Set<String>) */
 	@SuppressWarnings("unchecked")
@@ -510,10 +308,17 @@ public class HibernatePatientDAO implements PatientDAO {
 				log.debug(f.getName());
 			}
 			
-			Class patientName = PatientName.class;
-			Set<String> patientNameFieldNames = new HashSet<String>(patientName.getDeclaredFields().length);
-			for (Field f : patientName.getDeclaredFields()){
-				patientNameFieldNames.add(f.getName());
+			Class person = Person.class;
+			Set<String> personFieldNames = new HashSet<String>(person.getDeclaredFields().length);
+			for (Field f : person.getDeclaredFields()){
+				personFieldNames.add(f.getName());
+				log.debug(f.getName());
+			}
+			
+			Class personName = PersonName.class;
+			Set<String> personNameFieldNames = new HashSet<String>(personName.getDeclaredFields().length);
+			for (Field f : personName.getDeclaredFields()){
+				personNameFieldNames.add(f.getName());
 				log.debug(f.getName());
 			}
 			
@@ -532,10 +337,18 @@ public class HibernatePatientDAO implements PatientDAO {
 					where += " and p1." + s + " = p2." + s;
 					orderBy += "p1." + s + ", ";
 				}
-				else if (patientNameFieldNames.contains(s)) {
-					if (!select.contains("PatientName")) {
-						select += ", PatientName pn1, PatientName pn2";
-						where += " and p1 = pn1.patient and p2 = pn2.patient ";
+				else if (personFieldNames.contains(s)) {
+					if (!select.contains("Person ")) {
+						select += ", Person person1, Person person2";
+						where += " and p1.patientId = person1.personId and p2.patientId = person2.personId ";
+					}
+					where += " and person1." + s + " = person2." + s;
+					orderBy += "person1." + s + ", ";
+				}
+				else if (personNameFieldNames.contains(s)) {
+					if (!select.contains("PersonName")) {
+						select += ", PersonName pn1, PersonName pn2";
+						where += " and p1 = pn1.person and p2 = pn2.person ";
 					}
 					where += " and pn1." + s + " = pn2." + s;
 					orderBy += "pn1." + s + ", ";
@@ -576,7 +389,7 @@ public class HibernatePatientDAO implements PatientDAO {
 				log.debug(f.getName());
 			}
 			
-			Class patientName = PatientName.class;
+			Class patientName = PersonName.class;
 			Set<String> patientNameFieldNames = new HashSet<String>(patientName.getDeclaredFields().length);
 			for (Field f : patientName.getDeclaredFields()){
 				patientNameFieldNames.add(f.getName());
@@ -595,8 +408,8 @@ public class HibernatePatientDAO implements PatientDAO {
 					groupBy += "p." + s + ", ";
 				}
 				else if (patientNameFieldNames.contains(s)) {
-					if (!select.contains("PatientName")) {
-						select += ", PatientName pn";
+					if (!select.contains("PersonName")) {
+						select += ", PersonName pn";
 						where += "and p = pn.patient ";
 					}
 					groupBy += "pn." + s + ", ";

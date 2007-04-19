@@ -310,7 +310,7 @@ public class ORUR01Handler implements Application {
 			datetime = encounter.getEncounterDatetime();
 
 		Obs obs = new Obs();
-		obs.setPatient(encounter.getPatient());
+		obs.setPerson(encounter.getPatient());
 		obs.setConcept(concept);
 		obs.setEncounter(encounter);
 		obs.setObsDatetime(datetime);
@@ -584,6 +584,9 @@ public class ORUR01Handler implements Application {
 			// identifier
 			patient = Context.getPatientService().getPatient(
 					patient.getPatientId());
+			
+			// TODO person relationships
+			/*
 			Location currentHealthCenter = patient.getHealthCenter();
 			if (currentHealthCenter == null
 					|| !newLocationId.equals(currentHealthCenter
@@ -598,6 +601,7 @@ public class ORUR01Handler implements Application {
 				patient.setHealthCenter(newHealthCenter);
 				Context.getPatientService().updatePatient(patient);
 			}
+			*/
 		}
 		log.debug("finished discharge to location method");
 	}

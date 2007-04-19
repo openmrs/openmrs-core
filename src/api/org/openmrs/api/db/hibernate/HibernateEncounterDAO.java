@@ -46,7 +46,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 * @see org.openmrs.api.db.EncounterService#createEncounter(org.openmrs.Encounter)
 	 */
 	public void createEncounter(Encounter encounter) throws DAOException {
-		log.debug("Creating encounter: " + encounter.toString());
+		log.debug("Creating encounter: " + encounter.getEncounterId());
 		if (encounter.getCreator() == null)
 			encounter.setCreator(Context.getAuthenticatedUser());
 
@@ -158,7 +158,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 * @see org.openmrs.api.db.EncounterService#updateEncounter(org.openmrs.Encounter)
 	 */
 	public void updateEncounter(Encounter encounter) throws DAOException {
-		log.debug("Updating encounter: " + encounter.toString());
+		log.debug("Updating encounter: " + encounter.getEncounterId());
 
 		if (encounter.getCreator() == null)
 			createEncounter(encounter);

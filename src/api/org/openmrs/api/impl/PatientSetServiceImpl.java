@@ -238,6 +238,13 @@ public class PatientSetServiceImpl implements PatientSetService {
 		return getPatientAttributes(patients, temp[0], temp[1], returnAll);
 	}
 	
+	/**
+	 * @see org.openmrs.api.PatientSetService#getPersonAttributes(org.openmrs.reporting.PatientSet, java.lang.String, java.lang.String, java.lang.String, java.lang.String, boolean)
+	 */
+	public Map<Integer, Object> getPersonAttributes(PatientSet patients, String attributeName, String joinClass, String joinProperty, String outputColumn, boolean returnAll) {
+		return getPatientSetDAO().getPersonAttributes(patients, attributeName, joinClass, joinProperty, outputColumn, returnAll);
+	}
+
 	public Map<Integer, Map<String, Object>> getCharacteristics(PatientSet patients) {
 		return getPatientSetDAO().getCharacteristics(patients);
 	}

@@ -136,7 +136,7 @@ public class MessageServiceImpl implements MessageService {
 	public void send(Message message, Integer recipientId) throws MessageException { 
 		log.debug("Sending message to user with user id " + recipientId);
 		User user = Context.getUserService().getUser( recipientId );
-		message.addRecipient( user.getProperty( OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS ) );
+		message.addRecipient( user.getUserProperty( OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS ) );
 		// message.setFormat( user( OpenmrsConstants.USER_PROPERTY_NOTIFICATION_FORMAT ) );
 		send(message);
 	}
@@ -149,7 +149,7 @@ public class MessageServiceImpl implements MessageService {
 	 */
 	public void send(Message message, User user) throws MessageException { 
 		log.debug("Sending message to user " + user);
-		String address = user.getProperty( OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS );
+		String address = user.getUserProperty( OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS );
 		if (address != null) message.addRecipient(address);
 		// message.setFormat( user.getProperty( OpenmrsConstants.USER_PROPERTY_NOTIFICATION_FORMAT ) );
 		send(message);
@@ -162,7 +162,7 @@ public class MessageServiceImpl implements MessageService {
 	public void send(Message message, Collection<User> users) throws MessageException { 
 		log.debug("Sending message to users " + users);
 		for ( User user : users ) {
-			String address = user.getProperty( OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS );
+			String address = user.getUserProperty( OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS );
 			if (address != null) message.addRecipient(address);
 		}
 		send(message);

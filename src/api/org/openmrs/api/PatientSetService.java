@@ -224,6 +224,19 @@ public interface PatientSetService {
 	/**
 	 * 
 	 * @param patients
+	 * @param attributeName
+	 * @param joinClass
+	 * @param joinProperty
+	 * @param outputColumn
+	 * @param returnAll
+	 * @return
+	 */@Transactional(readOnly=true)
+	public Map<Integer, Object> getPersonAttributes(PatientSet patients,
+			String attributeName, String joinClass, String joinProperty, String outputColumn, boolean returnAll);
+	
+	/**
+	 * 
+	 * @param patients
 	 * @return
 	 */
 	@Transactional(readOnly=true)

@@ -13,55 +13,8 @@
 	dojo.require("dojo.widget.openmrs.PatientSearch");
 	dojo.require("dojo.widget.openmrs.UserSearch");
 	dojo.require("dojo.widget.openmrs.OpenmrsPopup");
-	
-	var uSearch;
-	var userPopup;
-	var pSearch;
-	var patPopup;
-	var saveEncounterButton;
-	
+		
 	dojo.addOnLoad( function() {
-		uSearch = dojo.widget.manager.getWidgetById("uSearch");
-		userPopup = dojo.widget.manager.getWidgetById("uSelection");
-		patPopup = dojo.widget.manager.getWidgetById("pSelection");
-		pSearch = dojo.widget.manager.getWidgetById("pSearch");
-		saveEncounterButton = document.getElementById("saveEncounterButton");
-		
-		dojo.event.topic.subscribe("uSearch/select", 
-			function(msg) {
-				if (msg) {
-					var user = msg.objs[0];
-					userPopup.displayNode.innerHTML = '<a id="providerName" href="#View Provider" onclick="return gotoUser(null, ' + user.userId + ')">' + (user.firstName ? user.firstName : '') + ' ' + (user.middleName ? user.middleName : '') + ' ' + (user.lastName ? user.lastName : '') + '</a>';
-					userPopup.hiddenInputNode.value = user.userId;
-					if (patPopup.hiddenInputNode.value != "")
-						saveEncounterButton.disabled = false;
-				}
-			}
-		);
-		
-		pSearch.showHeaderRow = false;
-		
-		pSearch.getCellFunctions = function() {
-			return [this.simpleClosure(pSearch, "getNumber"), 
-					this.simpleClosure(pSearch, "getId"), 
-					this.simpleClosure(pSearch, "getGiven"), 
-					this.simpleClosure(pSearch, "getMiddle"), 
-					this.simpleClosure(pSearch, "getFamily")
-					];
-		};
-		
-		dojo.event.topic.subscribe("pSearch/select", 
-			function(msg) {
-				if (msg) {
-					var patient = msg.objs[0];
-					patPopup.displayNode.innerHTML = '<a id="patientName" href="#View Patient" onclick="return gotoPatient(null, ' + patient.patientId + ')">' + patient.givenName + ' ' + patient.middleName + ' ' + patient.familyName + '</a>';
-					patPopup.hiddenInputNode.value = patient.patientId;
-					if (userPopup.hiddenInputNode.value != "")
-						saveEncounterButton.disabled = false;
-				}
-			}
-		);
-		
 		toggleVisibility(document, "div", "description");
 		toggleRowVisibilityForClass("obs", "voided", true);
 		voidedClicked(document.getElementById("voided"));
@@ -118,19 +71,9 @@
 				voidedBy.style.display = "none";
 		}
 	}
-
-	function gotoPatient(tagName, patId) {
-		if (patId == null)
-			patId = $(tagName).value;
-		window.location = "${pageContext.request.contextPath}/admin/patients/patient.form?patientId=" + patId;
-		return false;
-	}
 	
-	function gotoUser(tagName, userId) {
-		if (userId == null)
-			userId = $(tagName).value;
-		window.location = "${pageContext.request.contextPath}/admin/users/user.form?userId=" + userId;
-		return false;
+	function enableSaveButton(relType, id) {
+		document.getElementById("saveEncounterButton").disabled = false;
 	}
 
 </script>
@@ -161,9 +104,7 @@
 			<th><spring:message code="Encounter.patient"/></th>
 			<td>
 				<spring:bind path="encounter.patient">
-					<div dojoType="PatientSearch" widgetId="pSearch" patientId="${status.value.patientId}"></div>
-					<div dojoType="OpenmrsPopup" widgetId="pSelection" hiddenInputName="patientId" searchWidget="pSearch" searchTitle='<spring:message code="Patient.find"/>' <c:if test="${encounter.encounterId != null}">allowSearch="false"</c:if> ></div>
-					
+					<openmrs_tag:patientField formFieldName="patientId" searchLabelCode="Patient.find" initialValue="${status.value.patientId}" linkUrl="${pageContext.request.contextPath}/admin/patients/patient.form" callback="enableSaveButton" allowSearch="${encounter.encounterId == null}"/>
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
@@ -172,8 +113,7 @@
 			<th><spring:message code="Encounter.provider"/></th>
 			<td>
 				<spring:bind path="encounter.provider">
-					<div dojoType="UserSearch" widgetId="uSearch" userId="${status.value.userId}" roles="Provider;"></div>
-					<div dojoType="OpenmrsPopup" widgetId="uSelection" hiddenInputName="providerId" searchWidget="uSearch" searchTitle='<spring:message code="Encounter.provider.find"/>'></div>
+					<openmrs_tag:userField formFieldName="providerId" searchLabelCode="Encounter.provider.find" initialValue="${status.value.userId}" roles="Provider;" linkUrl="${pageContext.request.contextPath}/admin/users/user.form" callback="enableSaveButton"/>
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
@@ -182,11 +122,7 @@
 			<th><spring:message code="Encounter.location"/></th>
 			<td>
 				<spring:bind path="encounter.location">
-					<select name="location">
-						<openmrs:forEachRecord name="location">
-							<option value="${record.locationId}" <c:if test="${status.value == record.locationId}">selected</c:if>>${record.name}</option>
-						</openmrs:forEachRecord>
-					</select>
+					<openmrs_tag:locationField formFieldName="location" initialValue="${status.value}"/>
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
@@ -243,11 +179,11 @@
 				</spring:bind>
 			</td>
 		</tr>
-		<c:if test="${!(encounter.creator == null)}">
+		<c:if test="${encounter.creator != null}">
 			<tr>
 				<th><spring:message code="general.createdBy" /></th>
 				<td>
-					<a href="#View User" onclick="return gotoUser(null, '${encounter.creator.userId}')">${encounter.creator.firstName} ${encounter.creator.lastName}</a> -
+					<a href="#View User" onclick="return gotoUser(null, '${encounter.creator.userId}')">${encounter.creator.personName}</a> -
 					<openmrs:formatDate date="${encounter.dateCreated}" type="medium" />
 				</td>
 			</tr>
@@ -271,11 +207,11 @@
 				</spring:bind>
 			</td>
 		</tr>
-		<c:if test="${!(encounter.voidedBy == null)}">
+		<c:if test="${encounter.voidedBy != null}">
 			<tr id="voidedBy">
 				<th><spring:message code="general.voidedBy" /></th>
 				<td>
-					<a href="#View User" onclick="return gotoUser(null, '${encounter.voidedBy.userId}')">${encounter.voidedBy.firstName} ${encounter.voidedBy.lastName}</a> -
+					<a href="#View User" onclick="return gotoUser(null, '${encounter.voidedBy.userId}')">${encounter.voidedBy.personName}</a> -
 					<openmrs:formatDate date="${encounter.dateVoided}" type="medium" />
 				</td>
 			</tr>
@@ -328,7 +264,7 @@
 								<c:if test="${groupObs.comment != null && groupObs.comment != ''}"><img src="${pageContext.request.contextPath}/images/note.gif" title="${groupObs.comment}" /></c:if>
 							</td>
 							<td style="white-space: nowrap;">
-								${groupObs.creator.firstName} ${groupObs.creator.lastName} -
+								${groupObs.creator.personName} -
 								<openmrs:formatDate date="${groupObs.dateCreated}" type="medium" />
 							</td>
 						</tr>
@@ -347,7 +283,7 @@
 							<c:if test="${obs.comment != null && obs.comment != ''}"><img src="${pageContext.request.contextPath}/images/note.gif" title="${obs.comment}" /></c:if>
 						</td>
 						<td style="white-space: nowrap;">
-							${obs.creator.firstName} ${obs.creator.lastName} -
+							${obs.creator.personName} -
 							<openmrs:formatDate date="${obs.dateCreated}" type="medium" />
 						</td>
 					</tr>

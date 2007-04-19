@@ -439,12 +439,12 @@ table.patientTreatmentPrograms td {
 	text-decoration: underline;
 }
 
-#patientDashboardDemographics table.patientAddress {
+#patientDashboardDemographics table {
 	width: 95%;
 	padding: 5px 5px 5px 5px;
 	font-size: small; 
 }
-#patientDashboardDemographics table.patientAddress th {
+#patientDashboardDemographics table th {
 	text-align:left;
 	text-decoration:underline;
 }

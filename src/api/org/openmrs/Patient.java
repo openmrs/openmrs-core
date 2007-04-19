@@ -1,9 +1,8 @@
 package org.openmrs;
 
-import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collection;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -13,37 +12,24 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Patient
+ * Defines a Patient in the system.  A patient is simply an extension
+ * of a person and all that that implies.
  * 
  * @author Burke Mamlin
- * @version 1.0
+ * @author Ben Wolfe
+ * @version 2.0
  */
-public class Patient implements java.io.Serializable {
+public class Patient extends Person implements java.io.Serializable {
 
 	public static final long serialVersionUID = 93123L;
-	protected final Log log = LogFactory.getLog(getClass());
+	protected static final Log log = LogFactory.getLog(Patient.class);
 
 	// Fields
 	
 	//private Person person;
 
 	private Integer patientId;
-	private String gender;
-	private String race;
-	private Date birthdate;
-	private Boolean birthdateEstimated = false;
-	private String birthplace;
-	private String citizenship;
 	private Tribe tribe;
-	private String mothersName;
-	private Concept civilStatus;
-	private Boolean dead = false;
-	private Date deathDate;
-	private Concept causeOfDeath;
-	private String healthDistrict;
-	private Location healthCenter;
-	private Set<PatientAddress> addresses;
-	private Set<PatientName> names;
 	private Set<PatientIdentifier> identifiers;
 
 	private User creator; 
@@ -61,6 +47,11 @@ public class Patient implements java.io.Serializable {
 	public Patient() {
 	}
 
+	public Patient(Person person) {
+		super(person);
+		this.patientId = person.getPersonId();
+	}
+	
 	/**
 	 * Compares two objects for similarity
 	 * 
@@ -101,104 +92,19 @@ public class Patient implements java.io.Serializable {
 	 * @param patientId
 	 */
 	public void setPatientId(Integer patientId) {
+		super.setPersonId(patientId);
 		this.patientId = patientId;
 	}
-
+	
 	/**
-	 * @return patient's gender
+	 * Overrides the parent setPersonId(Integer) so that we can be sure patient id
+	 * is also set correctly.
+	 * 
+	 * @see org.openmrs.Person#setPersonId(java.lang.Integer)
 	 */
-	public String getGender() {
-		return this.gender;
-	}
-
-	/**
-	 * @param gender
-	 *            patient's gender
-	 */
-	public void setGender(String gender) {
-		this.gender = gender;
-	}
-
-	/**
-	 * @return patient's race
-	 */
-	public String getRace() {
-		return this.race;
-	}
-
-	/**
-	 * @param race
-	 *            patient's race
-	 */
-	public void setRace(String race) {
-		this.race = race;
-	}
-
-	/**
-	 * @return patient's date of birth
-	 */
-	public Date getBirthdate() {
-		return this.birthdate;
-	}
-
-	/**
-	 * @param birthdate
-	 *            patient's date of birth
-	 */
-	public void setBirthdate(Date birthdate) {
-		this.birthdate = birthdate;
-	}
-
-	/**
-	 * @return true if patient's birthdate is estimated
-	 */
-	public Boolean isBirthdateEstimated() {
-		// if (this.birthdateEstimated == null) {
-		// return new Boolean(false);
-		// }
-		return this.birthdateEstimated;
-	}
-
-	public Boolean getBirthdateEstimated() {
-		return isBirthdateEstimated();
-	}
-
-	/**
-	 * @param birthdateEstimated
-	 *            true if patient's birthdate is estimated
-	 */
-	public void setBirthdateEstimated(Boolean birthdateEstimated) {
-		this.birthdateEstimated = birthdateEstimated;
-	}
-
-	/**
-	 * @return patient's birthplace
-	 */
-	public String getBirthplace() {
-		return this.birthplace;
-	}
-
-	/**
-	 * @param birthplace
-	 *            patient's birthplace
-	 */
-	public void setBirthplace(String birthplace) {
-		this.birthplace = birthplace;
-	}
-
-	/**
-	 * @return patient's citizenship
-	 */
-	public String getCitizenship() {
-		return this.citizenship;
-	}
-
-	/**
-	 * @param citizenship
-	 *            patient's citizenship
-	 */
-	public void setCitizenship(String citizenship) {
-		this.citizenship = citizenship;
+	public void setPersonId(Integer personId) {
+		super.setPersonId(personId);
+		this.patientId = personId;
 	}
 
 	/**
@@ -214,156 +120,6 @@ public class Patient implements java.io.Serializable {
 	 */
 	public void setTribe(Tribe tribe) {
 		this.tribe = tribe;
-	}
-
-	/**
-	 * @return patient's mother's name
-	 */
-	public String getMothersName() {
-		return this.mothersName;
-	}
-
-	/**
-	 * @param mothersName
-	 *            patient's mother's name
-	 */
-	public void setMothersName(String mothersName) {
-		this.mothersName = mothersName;
-	}
-
-	/**
-	 * @return patient's civil status (single, married, separated, divorced,
-	 *         etc.)
-	 */
-	public Concept getCivilStatus() {
-		return this.civilStatus;
-	}
-
-	/**
-	 * @param civilStatus
-	 *            patient's civil(marriage) status
-	 */
-	public void setCivilStatus(Concept civilStatus) {
-		this.civilStatus = civilStatus;
-	}
-
-	/**
-	 * @return Returns the death status.
-	 */
-	public Boolean isDead() {
-		return dead;
-	}
-	
-	/**
-	 * @return Returns the death status.
-	 */
-	public Boolean getDead() {
-		return isDead();
-	}
-
-	/**
-	 * @param dead The dead to set.
-	 */
-	public void setDead(Boolean dead) {
-		this.dead = dead;
-	}
-
-	/**
-	 * @return date of patient's death
-	 */
-	public Date getDeathDate() {
-		return this.deathDate;
-	}
-
-	/**
-	 * @param deathDate
-	 *            date of patient's death
-	 */
-	public void setDeathDate(Date deathDate) {
-		this.deathDate = deathDate;
-	}
-
-	/**
-	 * @return cause of patient's death
-	 */
-	public Concept getCauseOfDeath() {
-		return this.causeOfDeath;
-	}
-
-	/**
-	 * @param causeOfDeath
-	 *            cause of patient's death
-	 */
-	public void setCauseOfDeath(Concept causeOfDeath) {
-		this.causeOfDeath = causeOfDeath;
-	}
-
-	/**
-	 * @return patient's health district
-	 */
-	public String getHealthDistrict() {
-		return this.healthDistrict;
-	}
-
-	/**
-	 * @param healthDistrict
-	 *            patient's health district
-	 */
-	public void setHealthDistrict(String healthDistrict) {
-		this.healthDistrict = healthDistrict;
-	}
-
-	/**
-	 * @return patient's health center
-	 */
-	public Location getHealthCenter() {
-		return this.healthCenter;
-	}
-
-	/**
-	 * @param healthCenter
-	 *            patient's health center
-	 */
-	public void setHealthCenter(Location healthCenter) {
-		this.healthCenter = healthCenter;
-	}
-
-	/**
-	 * @return list of known addresses for patient
-	 * @see org.openmrs.PatientAddress
-	 */
-	public Set<PatientAddress> getAddresses() {
-		if (addresses == null)
-			addresses = new HashSet<PatientAddress>();
-		return this.addresses;
-	}
-
-	/**
-	 * @param patientAddresses
-	 *            list of known addresses for patient
-	 * @see org.openmrs.PatientAddress
-	 */
-	public void setAddresses(Set<PatientAddress> addresses) {
-		this.addresses = addresses;
-	}
-
-	/**
-	 * @return all known names for patient
-	 * @see org.openmrs.PatientName
-	 */
-	public Set<PatientName> getNames() {
-		if (names == null)
-			names = new HashSet<PatientName>();
-		return this.names;
-	}
-
-	/**
-	 * @param names
-	 *            update all known names for patient
-	 * @see org.openmrs.PatientName
-	 */
-	public void setNames(Set<PatientName> names) {
-		this.names = names;
 	}
 
 	/**
@@ -385,34 +141,10 @@ public class Patient implements java.io.Serializable {
 		this.identifiers = identifiers;
 	}
 
-	// Convenience methods
-
-	public void addName(PatientName name) {
-		name.setPatient(this);
-		if (names == null)
-			names = new HashSet<PatientName>();
-		if (!names.contains(name) && name != null)
-			names.add(name);
-	}
-
-	public void removeName(PatientName name) {
-		if (names != null)
-			names.remove(name);
-	}
-
-	public void addAddress(PatientAddress address) {
-		address.setPatient(this);
-		if (addresses == null)
-			addresses = new HashSet<PatientAddress>();
-		if (!addresses.contains(address) && address != null)
-			addresses.add(address);
-	}
-
-	public void removeAddress(PatientAddress address) {
-		if (addresses != null)
-			addresses.remove(address);
-	}
-
+	/**
+	 * Will add this PatientIdentifier if the patient doesn't contain it already
+	 * @param patientIdentifier
+	 */
 	/**
 	 * Will only add PatientIdentifiers in this list that this
 	 * patient does not have already
@@ -432,8 +164,7 @@ public class Patient implements java.io.Serializable {
 		patientIdentifier.setPatient(this);
 		if (identifiers == null)
 			identifiers = new HashSet<PatientIdentifier>();
-		if (!identifiers.contains(patientIdentifier)
-				&& patientIdentifier != null)
+		if (patientIdentifier != null && !identifiers.contains(patientIdentifier))
 			identifiers.add(patientIdentifier);
 	}
 
@@ -442,19 +173,7 @@ public class Patient implements java.io.Serializable {
 			identifiers.remove(patientIdentifier);
 	}
 
-	/**
-	 * Convenience method to get the "preferred" name for the patient.
-	 * 
-	 * @return Returns the "preferred" patient name.
-	 */
-	public PatientName getPatientName() {
-		if (names != null && names.size() > 0) {
-			return (PatientName) names.toArray()[0];
-		} else {
-			return null;
-		}
-	}
-
+	
 	/**
 	 * Convenience method to get the "preferred" identifier for patient.
 	 * 
@@ -463,19 +182,6 @@ public class Patient implements java.io.Serializable {
 	public PatientIdentifier getPatientIdentifier() {
 		if (identifiers != null && identifiers.size() > 0) {
 			return (PatientIdentifier) identifiers.toArray()[0];
-		} else {
-			return null;
-		}
-	}
-	
-	/**
-	 * Convenience method to get the "preferred" address for patient.
-	 * 
-	 * @return Returns the "preferred" patient address.
-	 */
-	public PatientAddress getPatientAddress() {
-		if (addresses != null && addresses.size() > 0) {
-			return (PatientAddress) addresses.toArray()[0];
 		} else {
 			return null;
 		}
@@ -532,7 +238,7 @@ public class Patient implements java.io.Serializable {
 	 */
 	public List<PatientIdentifier> getActiveIdentifiers() {
 		List<PatientIdentifier> ids = new Vector<PatientIdentifier>();
-		if (identifiers != null && identifiers.size() > 0) {
+		if (identifiers != null) {
 			for (PatientIdentifier pi : identifiers) {
 				if (pi.isVoided() == false)
 					ids.add(pi);
@@ -541,51 +247,9 @@ public class Patient implements java.io.Serializable {
 		return ids;
 	}
 	
-	/**
-	 * Convenience method.  Calculates age based on the birthdate
-	 * 
-	 * @return integer age
-	 */
-	public Integer getAge() {
-		
-		if (birthdate == null)
-			return null;
-		
-		Calendar today = Calendar.getInstance();
-		
-		Calendar bday = new GregorianCalendar();
-		bday.setTime(birthdate);
-		
-		int age = today.get(Calendar.YEAR) - bday.get(Calendar.YEAR);
-		
-		//tricky bit:
-		// set birthday calendar to this year
-		// if the current date is less that the new 'birthday', subtract a year
-		bday.set(Calendar.YEAR, today.get(Calendar.YEAR));
-		if (today.before(bday)) {
-				age = age -1;
-		}
-		
-		return age;
-	}
-
 	public String toString() {
 		return "Patient#" + patientId;
 	}
-
-	/**
-	 * @return Returns the person.
-	 */
-	//public Person getPerson() {
-	//	return person;
-	//}
-
-	/**
-	 * @param person The person to set.
-	 */
-	//public void setPerson(Person person) {
-	//	this.person = person;
-	//}
 
 	public User getChangedBy() {
 		return changedBy;

@@ -168,20 +168,6 @@
 				}
 			}
 		}
-
-		function showDiv(id) {
-			var div = document.getElementById(id);
-			if ( div ) {
-				div.style.display = "";
-			}
-		}
-
-		function hideDiv(id) {
-			var div = document.getElementById(id);
-			if ( div ) {
-				div.style.display = "none";
-			}
-		}
 		
 		function handleAddDrugOrder( patientId, drugField, doseField, unitsField, frequencyDayField, frequencyWeekField, startDateField) {
 			var drugId = DWRUtil.getValue($(drugField));

@@ -128,7 +128,7 @@ public class ProposeConceptFormController extends SimpleFormController {
 		String defaultVerbose = "false";
 		if (Context.isAuthenticated()){
 			// optional user property for default verbose display in concept search
-			defaultVerbose = Context.getAuthenticatedUser().getProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
+			defaultVerbose = Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
 			
 			// preemptively get the obs concept name
 			if (cp.getObsConcept() != null)

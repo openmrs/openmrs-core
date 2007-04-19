@@ -61,12 +61,14 @@
 </script>
 
 <c:if test="${patient.voided}">
-	<h3 class="highlighted"><spring:message code="Patient.voidedMessage"/></h3>
+	<div id="patientDashboardVoided" class="retiredMessage">
+		<div><spring:message code="Patient.voidedMessage"/></div>
+	</div>
 </c:if>
 
 <c:if test="${patient.dead}">
 	<div id="patientDashboardDeceased" class="retiredMessage">
-		<div><spring:message code="Patient.dashboard.patientDeceased"/></div>
+		<div><spring:message code="Patient.patientDeceased"/></div>
 	</div>
 </c:if>
 

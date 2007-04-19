@@ -1,1 +1,2 @@
-var djConfig = {isDebug: false, debugAtAllCosts: false};
+if (!djConfig)
+	var djConfig = {isDebug: false, debugAtAllCosts: false};

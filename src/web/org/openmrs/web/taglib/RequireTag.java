@@ -54,7 +54,7 @@ public class RequireTag extends TagSupport {
 		else if (userContext.hasPrivilege(privilege) && userContext.isAuthenticated()) {
 			// redirect users to password change form
 			User user = userContext.getAuthenticatedUser();
-			Boolean forcePasswordChange = new Boolean(user.getProperties().get(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD));
+			Boolean forcePasswordChange = new Boolean(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD));
 			log.debug("Login redirect: " + redirect);
 			if (forcePasswordChange && !redirect.contains("options.form")) {
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "User.password.change");

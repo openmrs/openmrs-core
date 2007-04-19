@@ -33,7 +33,7 @@ public class UserWidgetTag extends TagSupport {
 		
 		try {
 			JspWriter w = pageContext.getOut();
-			w.print(user.getFirstName() + " " + user.getMiddleName() + " " + user.getLastName());
+			w.print(user.getPersonName());
 			if ("full".equals(size)) {
 				w.print(" <i>(" + user.getUsername() + ")</i>");
 			}

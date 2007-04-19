@@ -115,7 +115,7 @@ public class ArdenTest extends BaseTest {
 	     w.write("public " + classname + "(Context c, Integer pid, Locale l){\n");
 	     w.write("\n\tlocale = l;\n\tpatient = c.getPatientService().getPatient(pid);\n");
 	     w.write("\tuserVarMap = new HashMap <String, String>();\n");
-	     w.write("\tfirstname = patient.getPatientName().getGivenName();\n}\n\n\n");
+	     w.write("\tfirstname = patient.getPersonName().getGivenName();\n}\n\n\n");
 	     w.write("public Obs getObsForConceptForPatient(Concept concept, Locale locale, Patient patient) {\n");
 	     w.write("\tSet <Obs> MyObs;\n");
 	     w.write("\tObs obs = new Obs();\n\t{");
@@ -208,7 +208,7 @@ public class ArdenTest extends BaseTest {
 	
 	/*    Patient patient = new Patient();
 		patient.setPatientId(1);
-		PatientName pn = new PatientName("Jenny", "M", "Patient");
+		PersonName pn = new PersonName("Jenny", "M", "Patient");
 		patient.addName(pn);
 		
 		MLMObject ardObj = new MLMObject(context, locale, patient);

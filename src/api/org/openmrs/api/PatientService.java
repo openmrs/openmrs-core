@@ -9,9 +9,6 @@ import org.openmrs.Concept;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.Person;
-import org.openmrs.Relationship;
-import org.openmrs.RelationshipType;
 import org.openmrs.Tribe;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.PatientDAO;
@@ -26,10 +23,11 @@ public interface PatientService {
 	 * Creates a new patient record
 	 * 
 	 * @param patient to be created
+	 * @returns the created patient
 	 * @throws APIException
 	 */
 	@Authorized({"Add Patients"})
-	public void createPatient(Patient patient) throws APIException;
+	public Patient createPatient(Patient patient) throws APIException;
 
 	/**
 	 * Get patient by internal identifier
@@ -46,9 +44,10 @@ public interface PatientService {
 	 * Update patient 
 	 * 
 	 * @param patient to be updated
+	 * @returns the updated patient
 	 * @throws APIException
 	 */
-	public void updatePatient(Patient patient) throws APIException;
+	public Patient updatePatient(Patient patient) throws APIException;
 
 	@Transactional(readOnly=true)
 	public Patient identifierInUse(String identifier,
@@ -93,16 +92,13 @@ public interface PatientService {
 	public Set<Patient> getPatientsByName(String name, boolean includeVoided)
 			throws APIException;
 
-	@Transactional(readOnly=true)
-	public Set<Patient> getSimilarPatients(String name, Integer birthyear,
-			String gender) throws APIException;
-
 	/**
 	 * Void patient record (functionally delete patient from system)
 	 * 
 	 * @param patient patient to be voided
 	 * @param reason reason for voiding patient
 	 */
+	@Authorized({"Edit Patients"})
 	public void voidPatient(Patient patient, String reason) throws APIException;
 
 	/**
@@ -110,6 +106,7 @@ public interface PatientService {
 	 * 
 	 * @param patient patient to be revived
 	 */
+	@Authorized({"Edit Patients"})
 	public void unvoidPatient(Patient patient) throws APIException;
 
 	/**
@@ -220,75 +217,6 @@ public interface PatientService {
 	@Transactional(readOnly=true)
 	public List<Tribe> findTribes(String search) throws APIException;
 
-	/**
-	 * Get relationship by internal relationship identifier
-	 * 
-	 * @return Relationship
-	 * @param relationshipId 
-	 * @throws APIException
-	 */
-	@Transactional(readOnly=true)
-	public Relationship getRelationship(Integer relationshipId)
-			throws APIException;
-
-	/**
-	 * Get list of relationships that are not retired
-	 * 
-	 * @return non-voided Relationship list
-	 * @throws APIException
-	 */
-	@Transactional(readOnly=true)
-	public List<Relationship> getRelationships() throws APIException;
-
-	/**
-	 * Get list of relationships that include Person in person_id or relative_id
-	 * 
-	 * @return Relationship list
-	 * @throws APIException
-	 */
-	@Transactional(readOnly=true)
-	public List<Relationship> getRelationships(Person p, boolean showVoided)
-			throws APIException;
-
-	@Transactional(readOnly=true)
-	public List<Relationship> getRelationships(Person p) throws APIException;
-
-	/**
-	 * Get list of relationships that have Person as relative_id, and the given type (which can be null)
-	 * @return Relationship list
-	 */
-	@Transactional(readOnly=true)
-	public List<Relationship> getRelationshipsTo(Person toPerson,
-			RelationshipType relType) throws APIException;
-
-	/**
-	 * Get all relationshipTypes
-	 * 
-	 * @return relationshipType list
-	 * @throws APIException
-	 */
-	@Transactional(readOnly=true)
-	public List<RelationshipType> getRelationshipTypes() throws APIException;
-
-	/**
-	 * Get relationshipType by internal identifier
-	 * 
-	 * @param relationshipType id
-	 * @return relationshipType with given internal identifier
-	 * @throws APIException
-	 */
-	@Transactional(readOnly=true)
-	public RelationshipType getRelationshipType(Integer relationshipTypeId)
-			throws APIException;
-
-	/**
-	 * Find relationshipType by name
-	 * @throws APIException
-	 */
-	@Transactional(readOnly=true)
-	public RelationshipType findRelationshipType(String relationshipTypeName)
-			throws APIException;
-
 	@Transactional(readOnly=true)
 	public List<Patient> findPatients(String query, boolean includeVoided);
 
@@ -353,5 +281,4 @@ public interface PatientService {
 	public void saveCauseOfDeathObs(Patient patient, Date dateDied, Concept causeOfDeath, String otherReason)
 			throws APIException;
 
-	public Map<Person, List<Person>> getRelationships(RelationshipType accompLeaderType) throws APIException;
 }
