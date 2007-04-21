@@ -65,7 +65,9 @@ public class RelationshipTypeViewFormController extends SimpleFormController {
 			String[] relationshipTypeIds = request.getParameterValues("relationshipTypeIds");
 			String[] displayOrders = request.getParameterValues("displayOrders");
 			List<String> preferredTypes = new ArrayList<String>();
-			Collections.addAll(preferredTypes, request.getParameterValues("preferredTypes"));
+			String[] preferredTypesArray = request.getParameterValues("preferredTypes");
+			if (preferredTypesArray != null)
+				Collections.addAll(preferredTypes, preferredTypesArray);
 
 			PersonService ps = Context.getPersonService();
 			
