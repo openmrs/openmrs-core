@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringReader;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -41,6 +42,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 public class WebModuleUtil {
 	
@@ -349,6 +353,14 @@ public class WebModuleUtil {
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
+			db.setEntityResolver(new EntityResolver(){
+				public InputSource resolveEntity(String publicId, String systemId) 
+						throws SAXException, IOException {
+					// When asked to resolve external entities (such as a DTD) we return an InputSource
+					// with no data at the end, causing the parser to ignore the DTD.
+					return new InputSource(new StringReader(""));
+				}
+			});
 			
 			dwrmodulexml = db.parse(inputStream);
 		}

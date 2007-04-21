@@ -440,7 +440,9 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 		if (getFamilyNameSuffix() != null) temp.add(getFamilyNameSuffix());
 		if (getDegree() != null) temp.add(getDegree());
 		
-		return StringUtils.collectionToDelimitedString(temp, " ");
+		String nameString = StringUtils.collectionToDelimitedString(temp, " ");
+		
+		return nameString.trim();
 	}
 	
 	// TODO: the behavior of this method needs to be controlled by some sort of global property 
