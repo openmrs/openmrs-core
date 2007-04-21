@@ -253,7 +253,7 @@ public class HibernateObsDAO implements ObsDAO {
 		String sql = "";
 		sql += "select obs.obsId, obs.obsDatetime, obs.valueNumeric ";
 		sql += getHqlPersonModifier(personType, "obs.concept = :c and obs.valueNumeric is not null and obs.voided = false");
-		sql += " order by obs." + sort;
+		sql += " order by " + sort;
 		
 		Query query = sessionFactory.getCurrentSession().createQuery(sql)
 				.setParameter("c", answer);
