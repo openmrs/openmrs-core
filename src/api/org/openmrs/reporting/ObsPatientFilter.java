@@ -31,7 +31,7 @@ public class ObsPatientFilter extends AbstractPatientFilter implements PatientFi
 	
 	public boolean isReadyToRun() {
 		if (question == null)
-			return false;
+			return value != null && (value instanceof Concept);
 		if (question.getDatatype().getHl7Abbreviation().equals("NM")) {
 			if (getTimeModifier() == TimeModifier.ANY || getTimeModifier() == TimeModifier.NO)
 				return true;
@@ -55,6 +55,8 @@ public class ObsPatientFilter extends AbstractPatientFilter implements PatientFi
 	public boolean checkConsistancy() {
 		if (!isReadyToRun())
 			return false;
+		if (question == null)
+			return value != null && (value instanceof Concept);
 		if (question.getDatatype().getHl7Abbreviation().equals("NM")) {
 			return true;
 		} else if (question.getDatatype().getHl7Abbreviation().equals("ST")) {
@@ -100,26 +102,33 @@ public class ObsPatientFilter extends AbstractPatientFilter implements PatientFi
 
 	public PatientSet filter(PatientSet input) {
 		PatientSetService service = Context.getPatientSetService();
-		return input.intersect(service.getPatientsHavingObs(question.getConceptId(), timeModifier, modifier, value, fromDateHelper(), toDateHelper()));
+		return input.intersect(service.getPatientsHavingObs(question == null ? null : question.getConceptId(), timeModifier, modifier, value, fromDateHelper(), toDateHelper()));
 	}
 
 	public PatientSet filterInverse(PatientSet input) {
 		PatientSetService service = Context.getPatientSetService();
-		return input.subtract(service.getPatientsHavingObs(question.getConceptId(), timeModifier, modifier, value, fromDateHelper(), toDateHelper()));
+		return input.subtract(service.getPatientsHavingObs(question == null ? null : question.getConceptId(), timeModifier, modifier, value, fromDateHelper(), toDateHelper()));
 	}
 	
 	public String getDescription() {
 		Locale locale = Context.getLocale();
 		StringBuffer ret = new StringBuffer();
-		ret.append("Patients with ");
-		ret.append(timeModifier + " ");
-		ret.append(question == null ? "CONCEPT" : question.getName(locale, false));
-		if (value != null && modifier != null) {
-			ret.append(" " + modifier.getSqlRepresentation() + " ");
-			if (value instanceof Concept)
-				ret.append(((Concept) value).getName(locale));
+		if (question == null) {
+			if (getValue() != null)
+				ret.append("Patients with " + timeModifier + " obs with value " + ((Concept) value).getName().getName());
 			else
-				ret.append(value);
+				ret.append("question and value are both null");
+		} else {
+			ret.append("Patients with ");
+			ret.append(timeModifier + " ");
+			ret.append(question == null ? "CONCEPT" : question.getName(locale, false));
+			if (value != null && modifier != null) {
+				ret.append(" " + modifier.getSqlRepresentation() + " ");
+				if (value instanceof Concept)
+					ret.append(((Concept) value).getName(locale));
+				else
+					ret.append(value);
+			}
 		}
 		if (withinLastDays != null || withinLastMonths != null) {
 			ret.append(" within last");

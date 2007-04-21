@@ -11,14 +11,15 @@
 <script type="text/javascript" src='<%= request.getContextPath() %>/dwr/interface/DWRCohortBuilderService.js'></script>
 <script type="text/javascript" src='<%= request.getContextPath() %>/dwr/interface/DWRPatientService.js'></script>
 <script type="text/javascript" src='<%= request.getContextPath() %>/dwr/interface/DWRPatientSetService.js'></script>
+<openmrs:htmlInclude file="/dwr/interface/DWRProgramWorkflowService.js" />
 <openmrs:htmlInclude file="/scripts/dojoConfig.js"></openmrs:htmlInclude>
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js"></openmrs:htmlInclude>
+<openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
 
 <openmrs:globalProperty var="SHOW_LAST_N" defaultValue="5" key="cohort.cohortBuilder.showLastSearches"/>
 
 <script type="text/javascript">
 	dojo.require("dojo.widget.openmrs.ConceptSearch");
-	dojo.require("dojo.widget.openmrs.OpenmrsPopup");
 	dojo.hostenv.writeIncludes();
 	
 	dojo.addOnLoad( function() {
@@ -26,14 +27,33 @@
 			function(msg) {
 				if (msg) {
 					var concept = msg.objs[0];
-					var conceptPopup = dojo.widget.manager.getWidgetById("concept_to_filter_selection");
-					conceptPopup.displayNode.innerHTML = concept.name;
-					conceptPopup.hiddenInputNode.value = concept.conceptId;
 					showPossibleFilters(concept);
 				}
 			}
 		);
 	})
+	
+	// tab ids should be searchTab_concept
+	// tab content ids should be searchTab_concept_content
+	function changeSearchTab(tabObj) {
+		if (typeof tabObj == 'string')
+			tabObj = document.getElementById(tabObj);
+
+		if (tabObj) {
+			var tabs = tabObj.parentNode.parentNode.getElementsByTagName('a');
+			for (var i = 0; i < tabs.length; ++i) {
+				if (tabs[i].className.indexOf('current') != -1) {
+					manipulateClass('remove', tabs[i], 'current');
+				}
+				var tabContentId = tabs[i].id + '_content';
+				if (tabs[i].id == tabObj.id)
+					showLayer(tabContentId);
+				else
+					hideLayer(tabContentId);
+			}
+			addClass(tabObj, 'current');
+		}
+	}
 	
 	function classFilterTemplate(concept) {
 		if (concept.className == 'Program') {
@@ -79,7 +99,7 @@
 			str += 'value#org.openmrs.Concept';
 		else
 			str += 'value#java.lang.Object';
-		str += ',withinLastMonths#java.lang.Integer,withinLastDays#java.lang.Integer"/>';
+		str += ',withinLastMonths#java.lang.Integer,withinLastDays#java.lang.Integer,sinceDate#java.util.Date,untilDate#java.util.Date"/>';
 		if (hl7Abbrev == 'NM')
 			str += '<select name="timeModifier"><option value="ANY">ANY</option><option value="NO">NO</option><option value="FIRST">FIRST</option><option value="LAST">LAST</option><option value="MIN">MIN</option><option value="MAX">MAX</option><option value="AVG">AVG</option></select> ';
 		else if (hl7Abbrev == 'ST' || hl7Abbrev == 'CWE')
@@ -109,11 +129,13 @@
 		str += ' days';
 		str += '</span>';
 		str += ' <br/><br/><span style="margin-left: 40px">';
-		str += ' (optional date constraint) since [date]';
-		str += ' until [date]';
+		str += ' (optional date constraint) since ';
+		str += ' <input type="text" name="sinceDate" size="10" value="" onClick="showCalendar(this)" />';
+		str += ' until ';
+		str += ' <input type="text" name="untilDate" size="10" value="" onClick="showCalendar(this)" />';
 		str += '</span>';
 		str += ' <br/><br/><input type="submit" value="Search"/>';
-		str += ' &nbsp;&nbsp;&nbsp;&nbsp;<input type="button" value="Cancel" onClick="hideLayer(\'concept_filter_box\')"/>';
+		str += ' &nbsp;&nbsp;&nbsp;&nbsp;<input type="button" value="<spring:message code="general.cancel" />" onClick="hideLayer(\'concept_filter_box\')"/>';
 		str += '</form>';
 		if (lookupAnswers) {
 			DWRConceptService.getAnswersForQuestion(concept.conceptId, function(list) {
@@ -124,19 +146,53 @@
 		}
 		return str;
 	}
+	
+	function obsValueFilterTemplate(concept) {
+		var str = '<form method="post" action="cohortBuilder.form">';
+		str += '<input type="hidden" name="method" value="addDynamicFilter"/>';
+		str += '<input type="hidden" name="filterClass" value="org.openmrs.reporting.ObsPatientFilter" />';
+		str += '<input type="hidden" name="vars" value="timeModifier#org.openmrs.api.PatientSetService$TimeModifier,modifier#org.openmrs.api.PatientSetService$Modifier,value#org.openmrs.Concept,withinLastMonths#java.lang.Integer,withinLastDays#java.lang.Integer,sinceDate#java.util.Date,untilDate#java.util.Date"/>';
+		str += '<select name="timeModifier"><option value="ANY">ANY</option><option value="NO">NO</option></select> ';
+		str += ' observation whose value is ';
+		str += '<input type="hidden" name="modifier" value="EQUAL" /> ';
+		str += '<input type="hidden" name="value" value="' + concept.conceptId + '"/>';
+		str += concept.name;
+		str += ' <br/><br/><span style="margin-left: 40px">';
+		str += ' (optional time constraint) within the last ';
+		str += ' <input type="text" name="withinLastMonths" value="" size="2" />';
+		str += ' months and/or';
+		str += ' <input type="text" name="withinLastDays" value="" size="2" />';
+		str += ' days';
+		str += '</span>';
+		str += ' <br/><br/><span style="margin-left: 40px">';
+		str += ' (optional date constraint) since ';
+		str += ' <input type="text" name="sinceDate" size="10" value="" onClick="showCalendar(this)" />';
+		str += ' until ';
+		str += ' <input type="text" name="untilDate" size="10" value="" onClick="showCalendar(this)" />';
+		str += '</span>';
+		str += ' <br/><br/><input type="submit" value="Search"/>';
+		str += ' &nbsp;&nbsp;&nbsp;&nbsp;<input type="button" value="<spring:message code="general.cancel" />" onClick="hideLayer(\'concept_filter_box\')"/>';
+		str += '</form>';
+		return str;
+	}
+	
+	function possibleFilterHelper(filter) {
+		return '<div style="background: #e0e0e0; border: 1px #808080 solid; padding: 0.5em; margin: 0.5em">' + filter + '</div>';
+	}
 		
 	function showPossibleFilters(concept) {
 		var div = document.getElementById('concept_filter_box');
 		var str = '';
-		str += '<ul>'
 		var filter = obsFilterTemplate(concept);
 		if (filter != null)
-			str += '<li>' + filter + '</li>';
-		var filter = classFilterTemplate(concept);
+			str += possibleFilterHelper(filter);
+		filter = classFilterTemplate(concept);
 		if (filter != null)
-			str += '<li>' + filter + '</li>';
+			str += possibleFilterHelper(filter);
+		filter = obsValueFilterTemplate(concept);
+		if (filter != null)
+			str += possibleFilterHelper(filter);
 		
-		str += '</ul>';
 		div.innerHTML = str;
 		showLayer('concept_filter_box');
 	}
@@ -161,9 +217,9 @@
 					var loadBox = $('loadBox');
 					loadBox.innerHTML = '';
 					if (histories.length == 0)
-						loadBox.innerHTML = 'No saved histories';
+						loadBox.innerHTML = '<spring:message javaScriptEscape="true" code="CohortBuilder.searchHistory.load.none"/>';
 					else {
-						var str = '<h4>Load a Search History</h4>';
+						var str = '<h4><u><spring:message javaScriptEscape="true" code="CohortBuilder.searchHistory.load"/></u></h4>';
 						str += '<ul>';
 						for (var i = 0; i < histories.length; ++i) {
 							str += '<li><a href="javascript:loadSearchHistory(' + histories[i].id + ')">' + histories[i].name + ' <small>(' + histories[i].description + ')</small></a></li>';
@@ -194,7 +250,10 @@
 	}
 	
 	function showSaveFilterDialog(index, name) {
-		$('saveFilterTitle').innerHTML = '#' + (index + 1) + ' (<i>' + name + '</i>)';
+		var tempName = '#' + (index + 1);
+		if (name != null && name != '')
+			tempName += ' (<i>' + name + '</i>)';
+		$('saveFilterTitle').innerHTML = tempName;
 		$('saveFilterIndex').value = index;
 		$('saveFilterName').value = '';
 		$('saveFilterDescription').value = '';
@@ -242,6 +301,31 @@
 				$('saveFilterCancelButton').style.disabled = 'false';
 				hideLayer('saveFilterBox');
 			});
+	}
+	
+	function refreshWorkflowOptions() {
+		var program = DWRUtil.getValue('program');
+		if (program == null || program == '')
+			DWRUtil.removeAllOptions('workflow');
+		else
+			DWRProgramWorkflowService.getWorkflowsByProgram(program, function(wfs) {
+					DWRUtil.removeAllOptions('workflow');
+					DWRUtil.addOptions('workflow', [" "]);
+					DWRUtil.addOptions('workflow', wfs, 'id', 'name');
+					refreshStateOptions();
+				});
+	}
+	
+	function refreshStateOptions() {
+		var workflow = DWRUtil.getValue('workflow');
+		if (workflow == null) {
+			DWRUtil.removeAllOptions('state');
+		} else
+			DWRProgramWorkflowService.getStatesByWorkflow(workflow, function (states) {
+					DWRUtil.removeAllOptions('state');
+					DWRUtil.addOptions('state', [" "]);
+					DWRUtil.addOptions('state', states, 'id', 'name');
+				});
 	}
 	
 </script>
@@ -352,9 +436,7 @@
 <h2><spring:message code="CohortBuilder.title"/></h2>	
 
 <div id="cohort_builder_add_filter" style="padding: 4px">
-	<table><tr valign="baseline"><td>
 	<b><spring:message code="general.search"/></b>
-	</td><td>
 
 	<span style="padding: 3px 0px; margin: 0px 3px; background-color: #ffffaa; border: 1px black solid">
 		<a href="javascript:handleSavedFilterMenuButton()"><spring:message code="CohortBuilder.savedFilterMenu"/></a>
@@ -403,26 +485,153 @@
 			</span>
 		</c:forEach>
 	</c:if>
-
-	<br/>
-	<br/>
-	<spring:message code="CohortBuilder.addConceptFilter"/>
-	<div dojoType="ConceptSearch" widgetId="concept_to_filter_search" conceptId="" showVerboseListing="true"></div>
-	<div dojoType="OpenmrsPopup" widgetId="concept_to_filter_selection" hiddenInputName="concept_to_filter" searchWidget="concept_to_filter_search" searchTitle="<spring:message code="CohortBuilder.conceptSearchTitle"/>"></div>
-	<div id="concept_filter_box" style="background-color: #ffffaa; position: absolute; border: 1px black dashed; display: none"></div>
 	
-	<form method="post" action="cohortBuilder.form">
-		<input type="hidden" name="method" value="addFilter"/>
-		<spring:message code="CohortBuilder.addCompositionFilter"/>
-		<input type="text" name="composition" id="composition" size="40"/>
-		<input type="submit" value="<spring:message code="general.add"/>"/>
-		<br/>
-		<i><small>
-			<spring:message code="CohortBuilder.compositionHelp"/>
-		</small></i>
-	</form>
+	<br/>
 	
-	</td></tr></table>
+	<div id="cohortSearchTabs">
+		<ul>
+			<li>&nbsp;</li>
+			<li><a id="searchTab_concept" href="#" onClick="changeSearchTab(this)"><spring:message code="CohortBuilder.searchTab.concept"/></a></li>
+			<li><a id="searchTab_encounter" href="#" onClick="changeSearchTab(this)"><spring:message code="CohortBuilder.searchTab.encounter"/></a></li>
+			<li><a id="searchTab_program" href="#" onClick="changeSearchTab(this)"><spring:message code="CohortBuilder.searchTab.program"/></a></li>
+			<li><a id="searchTab_location" href="#" onClick="changeSearchTab(this)"><spring:message code="CohortBuilder.searchTab.location"/></a></li>
+			<li><a id="searchTab_composition" href="#" onClick="changeSearchTab(this)"><spring:message code="CohortBuilder.searchTab.composition"/></a></li>
+		</ul>
+	</div>
+	
+	<div id="cohortSearchTabContent" style="border: 1px black solid; border-top: none; padding: 4px 5px 2px 10px;">
+	
+		<div id="searchTab_concept_content" style="display: none">
+			<div dojoType="ConceptSearch" widgetId="concept_to_filter_search" conceptId="" searchLabel='<spring:message code="CohortBuilder.addConceptFilter"/>' showVerboseListing="true" includeVoided="false"></div>
+			<div id="concept_filter_box" style="display: none; border-top: 1px #aaaaaa solid"></div>
+		</div>
+		
+		<div id="searchTab_encounter_content" style="display: none">
+			<spring:message code="CohortBuilder.addEncounterFilter"/>
+			<ul><li>
+			<form method="post" action="cohortBuilder.form">
+				<input type="hidden" name="method" value="addDynamicFilter"/>
+				<input type="hidden" name="filterClass" value="org.openmrs.reporting.EncounterPatientFilter" />
+				<input type="hidden" name="vars" value="encounterType#org.openmrs.EncounterType,location#org.openmrs.Location,atLeastCount#java.lang.Integer,atMostCount#java.lang.Integer,withinLastMonths#java.lang.Integer,withinLastDays#java.lang.Integer,sinceDate#java.util.Date,untilDate#java.util.Date" />
+				Patients having encounters
+				<br/><span style="margin-left: 40px">
+						(optional) of type
+							<select name="encounterType">
+								<option value=""><spring:message code="general.allOptions"/></option>
+								<c:forEach var="encType" items="${model.encounterTypes}">
+									<option value="${encType.encounterTypeId}">${encType.name}</option>
+								</c:forEach>
+							</select>
+					</span>
+				<br/><span style="margin-left: 40px">
+						(optional) at location
+							<select name="location">
+								<option value=""><spring:message code="general.allOptions"/></option>
+								<c:forEach var="location" items="${model.locations}">
+									<option value="${location.locationId}">${location.name}</option>
+								</c:forEach>
+							</select>
+					</span>
+				<br/><span style="margin-left: 40px">
+					(optional)
+						at least this many <input type="text" size="3" name="atLeastCount" />
+						and up to this many <input type="text" size="3" name="atMostCount" />
+					</span>
+				<br/><span style="margin-left: 40px">
+					(optional)
+						within the last <input type="text" size="3" name="withinLastMonths" />months
+						and <input type="text" size="3" name="withinLastDays" />days
+					</span>
+				<br/><span style="margin-left: 40px">
+					(optional)
+						since <input type="text" size="10" name="sinceDate" onClick="showCalendar(this)" />
+						until <input type="text" size="10" name="untilDate" onClick="showCalendar(this)" />
+					</span>
+				<br/>
+				<input type="submit" value="<spring:message code="general.search" />"/>
+				<input type="button" value="<spring:message code="general.cancel" />" onClick="hideLayer('encounter_filter_box')"/>
+			</form>
+			</li></ul>
+		</div>
+	
+		<div id="searchTab_program_content" style="display: none">
+			<spring:message code="CohortBuilder.addProgramFilter"/>
+			<ul><li>
+			<form method="post" action="cohortBuilder.form">
+				<input type="hidden" name="method" value="addDynamicFilter"/>
+				<input type="hidden" name="filterClass" value="org.openmrs.reporting.ProgramStatePatientFilter" />
+				<input type="hidden" name="vars" value="program#org.openmrs.Program,state#org.openmrs.ProgramWorkflowState,withinLastMonths#java.lang.Integer,withinLastDays#java.lang.Integer,sinceDate#java.util.Date,untilDate#java.util.Date" />
+	
+				Program:
+				<select name="program" id="program" onChange="refreshWorkflowOptions()">
+					<option value=""></option>
+					<c:forEach var="program" items="${model.programs}">
+						<option value="${program.programId}">${program.concept.name.name}</option>
+					</c:forEach>
+				</select>
+				<br/>
+	
+				Workflow: <select name="workflow" id="workflow" onChange="refreshStateOptions()"></select>
+				State: <select name="state" id="state"></select>			
+				
+				<br/><span style="margin-left: 40px">
+					(optional)
+						on or after:<input type="text" size="10" name="sinceDate" onClick="showCalendar(this)" />
+					</span>
+				<br/><span style="margin-left: 40px">
+					(optional)
+						on or before:<input type="text" size="10" name="untilDate" onClick="showCalendar(this)" />
+					</span>
+				
+				<br/>
+				<input type="submit" value="<spring:message code="general.search" />"/>
+				<input type="button" value="<spring:message code="general.cancel" />" onClick="hideLayer('program_filter_box')"/>
+			</form>
+			</li></ul>
+		</div>
+		
+		<div id="searchTab_location_content" style="display: none">
+			<spring:message code="CohortBuilder.addLocationFilter"/>
+			<ul><li>
+			<form method="post" action="cohortBuilder.form">
+				<input type="hidden" name="method" value="addDynamicFilter"/>
+				<input type="hidden" name="filterClass" value="org.openmrs.reporting.EncounterPatientFilter" />
+				<input type="hidden" name="vars" value="location#org.openmrs.Location,calculationMethod#org.openmrs.api.PatientSetService$PatientLocationMethod" />
+				Patients belonging to
+				<select name="location">
+					<option value=""><spring:message code="general.none" /></option>
+					<c:forEach var="location" items="${model.locations}">
+						<option value="${location.locationId}">${location.name}</option>
+					</c:forEach>
+				</select>
+				according to method
+				<select name="calculationMethod">
+					<option value="PATIENT_HEALTH_CENTER">Assigned Health Center</option>
+					<option value="ANY_ENCOUNTER">Any Encounter</option>
+					<option value="LATEST_ENCOUNTER">Most Recent Encounter</option>
+					<option value="EARLIEST_ENCOUNTER">Earliest Encounter</option>
+				</select>			
+				<br/>
+				<input type="submit" value="<spring:message code="general.search" />"/>
+				<input type="button" value="<spring:message code="general.cancel" />" onClick="hideLayer('program_filter_box')"/>
+			</form>
+			</li></ul>
+		</div>
+		
+		<div id="searchTab_composition_content" style="display: none">
+			<form method="post" action="cohortBuilder.form">
+				<input type="hidden" name="method" value="addFilter"/>
+				<spring:message code="CohortBuilder.addCompositionFilter"/>
+				<input type="text" name="composition" id="composition" size="40"/>
+				<input type="submit" value="<spring:message code="general.add"/>"/>
+				<br/>
+				<i><small>
+					<spring:message code="CohortBuilder.compositionHelp"/>
+				</small></i>
+			</form>
+		</div>
+	</div>
+	
 </div>
 
 <div id="cohort_builder_search_history" style="padding: 4px; border: 1px black solid; background-color: #e8e8e8">
@@ -432,13 +641,17 @@
 			<input type="hidden" name="method" value="saveHistory"/>
 			<table>
 				<tr>
-					<td><spring:message code="general.saveAs"/></td>
+					<th colspan="2"><spring:message code="CohortBuilder.searchHistory.save"/></th>
+				</tr>
+				<tr>
+					<td><spring:message code="general.name"/></td>
 					<td><input type="text" name="name"/></td>
 				</tr>
 				<tr>
 					<td><spring:message code="general.description"/></td>
 					<td><input type="text" name="description" size="60"/></td>
 				</tr>
+				<!--
 				<tr>
 					<td><spring:message code="CohortBuilder.privateOrShared"/></td>
 					<td><spring:message code="general.notYetImplemented"/></td>
@@ -454,13 +667,16 @@
 						</select>
 					</td>
 				</tr>
+				-->
 			</table>
-			<input type="submit" value="<spring:message code="general.save"/>"/>
-			<input type="button" value="<spring:message code="general.cancel"/>" onClick="toggleLayer('saveBox')"/>
+			<div align="center">
+				<input style="margin: 0em 1em" type="submit" value="<spring:message code="general.save"/>"/>
+				<input style="margin: 0em 1em" type="button" value="<spring:message code="general.cancel"/>" onClick="toggleLayer('saveBox')"/>
+			</div>
 		</form>
 	</div>
 
-	<div id="loadBox" style="position: absolute; z-index: 1; border: 1px black solid; background-color: #ffe0e0; display: none"></div>
+	<div id="loadBox" style="position: absolute; margin: 1em; padding: 1em; z-index: 1; border: 1px black solid; background-color: #ffe0e0; display: none"></div>
 
 	<h3>
 		<spring:message code="CohortBuilder.searchHistory"/>
@@ -474,14 +690,18 @@
 		</form>
 	</h3>
 
-	<div id="saveFilterBox" style="position: absolute; z-index: 1; border: 1px black solid; background-color: #ffe0e0; display: none">
-		<b><u><spring:message code="general.saving" arguments="<span id=\"saveFilterTitle\"></span>"/></u></b>
+	<div id="saveFilterBox" style="padding: 1em; position: absolute; z-index: 1; border: 1px black solid; background-color: #ffe0e0; display: none">
+		<b><u><spring:message code="CohortBuilder.cohortDefinition.save"/></u></b>
+		<br/><br/>
+		<spring:message code="general.saving" arguments="<span id=\"saveFilterTitle\"></span>"/>
 		<br/><br/>
 		<spring:message code="general.name"/>: <input type="text" id="saveFilterName"/> <br/>
 		<spring:message code="general.description"/>: <input type="text" id="saveFilterDescription" size="60"/> <br/><br/>
 		<input type="hidden" id="saveFilterIndex"/>
-		<input type="button" id="saveFilterSaveButton" value="<spring:message code="general.save"/>" onClick="handleSaveFilter()"/>
-		<input type="button" id="saveFilterCancelButton" value="<spring:message code="general.cancel"/>" onClick="toggleLayer('saveFilterBox')"/>
+		<div align="center">
+			<input type="button" id="saveFilterSaveButton" value="<spring:message code="general.save"/>" onClick="handleSaveFilter()"/>
+			<input type="button" id="saveFilterCancelButton" value="<spring:message code="general.cancel"/>" onClick="toggleLayer('saveFilterBox')"/>
+		</div>
 	</div>	
 			
 	<c:if test="${model.searchHistory.size == 0}">
@@ -592,14 +812,18 @@
 	<div id="cohort_builder_preview_patients" style="display: none; margin-bottom: 15px"></div>
 
 	<div id="cohort_builder_actions" style="position: relative; border: 1px black solid">
-		<div id="saveCohortDiv" style="position: absolute; bottom: 0px; border: 2px black solid; background-color: #e0e0e0; display: none">
+		<div id="saveCohortDiv" style="position: absolute; margin: 1em; padding: 1em; bottom: 0px; border: 2px black solid; background-color: #e0e0e0; display: none">
 			<b><u>Save Cohort (i.e. list of patient ids)</u></b>
-			<br/>
+			<br/><br/>
 			Name: <input type="text" id="saveCohortName"/> <br/>
 			Description: <input type="text" id="saveCohortDescription"/> <br/>
+			<br/>
 			<i>Note: this actually works, but it doesn't give you any indication. And you can't use a cohort anywhere yet.</i> <br/>
-			<input type="button" value="<spring:message code="general.save"/>" onClick="handleSaveCohort()" />
-			<input type="button" value="<spring:message code="general.cancel"/>" onClick="toggleLayer('saveCohortDiv')" />
+			<br/>
+			<div align="center">
+				<input type="button" value="<spring:message code="general.save"/>" onClick="handleSaveCohort()" />
+				<input type="button" value="<spring:message code="general.cancel"/>" onClick="toggleLayer('saveCohortDiv')" />
+			</div>
 		</div>
 
 		<c:if test="${fn:length(model.links) > 0}">
@@ -638,7 +862,7 @@
 			</div>
 		</c:if>
 
-		<b>Actions:</b>
+		<b><spring:message code="CohortBuilder.actionsMenu"/></b>
 
 		<img title="<spring:message code="general.save" />" src="${pageContext.request.contextPath}/images/save.gif" onClick="toggleLayer('saveCohortDiv')"/>
 
@@ -651,6 +875,7 @@
 </div>
 
 <script type="text/javascript">
+	changeSearchTab('searchTab_concept');
 	refreshPreview();
 </script>
 

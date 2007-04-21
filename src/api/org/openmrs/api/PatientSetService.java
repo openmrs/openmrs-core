@@ -16,6 +16,7 @@ import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
+import org.openmrs.ProgramWorkflowState;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.db.DAOException;
@@ -61,6 +62,12 @@ public interface PatientSetService {
 	public PatientSet getPatientsHavingObs(Integer conceptId,
 			TimeModifier timeModifier, Modifier modifier, Object value,
 			Date fromDate, Date toDate);
+	
+	@Transactional(readOnly=true)
+	public PatientSet getPatientsHavingEncounters(EncounterType encounterType, Location location, Date fromDate, Date toDate, Integer minCount, Integer maxCount);
+	
+	@Transactional(readOnly=true)
+	public PatientSet getPatientsByProgramAndState(Program program, ProgramWorkflowState state, Date fromDate, Date toDate);
 
 	@Transactional(readOnly=true)
 	public PatientSet getPatientsInProgram(Program program, Date fromDate, Date toDate);
@@ -73,12 +80,18 @@ public interface PatientSetService {
 
 	@Transactional(readOnly=true)
 	public PatientSet getPatientsHavingTextObs(Integer conceptId, String value, TimeModifier timeModifier);
-
+	
 	@Transactional(readOnly=true)
 	public PatientSet getPatientsHavingLocation(Location loc);
+	
+	@Transactional(readOnly=true)
+	public PatientSet getPatientsHavingLocation(Location loc, PatientLocationMethod method);
 
 	@Transactional(readOnly=true)
 	public PatientSet getPatientsHavingLocation(Integer locationId);
+	
+	@Transactional(readOnly=true)
+	public PatientSet getPatientsHavingLocation(Integer locationId, PatientLocationMethod method);
 
 	/**
 	 * Returns a PatientSet of patient who had drug orders for a set of drugs active on a certain date.
@@ -357,4 +370,12 @@ public interface PatientSetService {
 		ANY,
 		NONE;
 	}
+	
+	public enum PatientLocationMethod {
+		EARLIEST_ENCOUNTER,
+		LATEST_ENCOUNTER,
+		ANY_ENCOUNTER,
+		PATIENT_HEALTH_CENTER
+	}
+	
 }

@@ -2,8 +2,11 @@ package org.openmrs.web.controller.analysis;
 
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,17 +19,23 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.EncounterType;
 import org.openmrs.Location;
 import org.openmrs.Program;
+import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.context.Context;
 import org.openmrs.cohort.CohortSearchHistory;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.PatientFilter;
 import org.openmrs.reporting.ReportObjectXMLDecoder;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.propertyeditor.ConceptEditor;
+import org.openmrs.web.propertyeditor.EncounterTypeEditor;
 import org.openmrs.web.propertyeditor.LocationEditor;
 import org.openmrs.web.propertyeditor.ProgramEditor;
+import org.openmrs.web.propertyeditor.ProgramWorkflowStateEditor;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.view.RedirectView;
@@ -67,32 +76,38 @@ public class CohortBuilderController implements Controller {
 
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Map<String, Object> model = new HashMap<String, Object>();
-		List<PatientFilter> savedFilters = Context.getReportService().getAllPatientFilters();
-		if (savedFilters == null)
-			savedFilters = new ArrayList<PatientFilter>();
-		CohortSearchHistory history = (CohortSearchHistory) Context.getVolatileUserData("CohortBuilderSearchHistory");
-		if (history == null) {
-			history = new CohortSearchHistory();
-			Context.setVolatileUserData("CohortBuilderSearchHistory", history);
-		}
-		List<Program> programs = Context.getProgramWorkflowService().getPrograms();
-		List<Shortcut> shortcuts = new ArrayList<Shortcut>();
-		String shortcutProperty = Context.getAdministrationService().getGlobalProperty("cohort.cohortBuilder.shortcuts");
-		if (shortcutProperty != null && shortcutProperty.length() > 0) {
-			String[] shortcutSpecs = shortcutProperty.split(";");
-			for (int i = 0; i < shortcutSpecs.length; ++i) {
-				try {
-					shortcuts.add(new Shortcut(shortcutSpecs[i]));
-				} catch (Exception ex) {
-					log.error("Exception trying to create filter from shortcut", ex);
+		if (Context.isAuthenticated()) {
+			List<PatientFilter> savedFilters = Context.getReportService().getAllPatientFilters();
+			if (savedFilters == null)
+				savedFilters = new ArrayList<PatientFilter>();
+			CohortSearchHistory history = (CohortSearchHistory) Context.getVolatileUserData("CohortBuilderSearchHistory");
+			if (history == null) {
+				history = new CohortSearchHistory();
+				Context.setVolatileUserData("CohortBuilderSearchHistory", history);
+			}
+			List<Program> programs = Context.getProgramWorkflowService().getPrograms();
+			List<EncounterType> encounterTypes = Context.getEncounterService().getEncounterTypes();
+			List<Shortcut> shortcuts = new ArrayList<Shortcut>();
+			String shortcutProperty = Context.getAdministrationService().getGlobalProperty("cohort.cohortBuilder.shortcuts");
+			if (shortcutProperty != null && shortcutProperty.length() > 0) {
+				String[] shortcutSpecs = shortcutProperty.split(";");
+				for (int i = 0; i < shortcutSpecs.length; ++i) {
+					try {
+						shortcuts.add(new Shortcut(shortcutSpecs[i]));
+					} catch (Exception ex) {
+						log.error("Exception trying to create filter from shortcut", ex);
+					}
 				}
 			}
+			List<Location> locations = Context.getEncounterService().getLocations();
+			model.put("savedFilters", savedFilters);
+			model.put("searchHistory", history);
+			model.put("links", linkHelper());
+			model.put("programs", programs);
+			model.put("encounterTypes", encounterTypes);
+			model.put("locations", locations);
+			model.put("shortcuts", shortcuts);
 		}
-		model.put("savedFilters", savedFilters);
-		model.put("searchHistory", history);
-		model.put("links", linkHelper());
-		model.put("programs", programs);
-		model.put("shortcuts", shortcuts);
 		return new ModelAndView(formView, "model", model);
 	}
 	
@@ -360,27 +375,22 @@ public class CohortBuilderController implements Controller {
 						PropertyDescriptor pd = new PropertyDescriptor(arg.getArgName(), filterClass);
 						// TODO: fix this hack
 						if (arg.getArgValue() != null && arg.getArgValue().trim().length() == 0) {
-							log.debug("A");
 							argVal = null;
 						} else if (checkClassHelper(Location.class, pd.getPropertyType(), arg.getArgClass())) {
-							log.debug("B");
 							LocationEditor le = new LocationEditor();
 							le.setAsText(arg.getArgValue());
 							argVal = le.getValue();
 						} else if (checkClassHelper(String.class, pd.getPropertyType(), arg.getArgClass())) {
 							argVal = arg.getArgValue();
 						} else if (checkClassHelper(Integer.class, pd.getPropertyType(), arg.getArgClass())) {
-							log.debug("C");
 							try {
 								argVal = Integer.valueOf(arg.getArgValue());
 							} catch (Exception ex) { }
 						} else if (checkClassHelper(Double.class, pd.getPropertyType(), arg.getArgClass())) {
-							log.debug("D");
 							try {
 								argVal = Double.valueOf(arg.getArgValue());
 							} catch (Exception ex) { }
 						} else if (checkClassHelper(Concept.class, pd.getPropertyType(), arg.getArgClass())) {
-							log.debug("E");
 							ConceptEditor ce = new ConceptEditor();
 							ce.setAsText(arg.getArgValue());
 							Concept concept = (Concept) ce.getValue();
@@ -389,7 +399,6 @@ public class CohortBuilderController implements Controller {
 								concept.getName(Context.getLocale());
 							argVal = concept;
 						} else if (checkClassHelper(Program.class, pd.getPropertyType(), arg.getArgClass())) {
-							log.debug("class is Program");
 							ProgramEditor pe = new ProgramEditor();
 							pe.setAsText(arg.getArgValue());
 							Program program = (Program) pe.getValue();
@@ -397,6 +406,23 @@ public class CohortBuilderController implements Controller {
 							if (program != null)
 								program.getConcept().getName();
 							argVal = program;
+						} else if (checkClassHelper(ProgramWorkflowState.class, pd.getPropertyType(), arg.getArgClass())) {
+							ProgramWorkflowStateEditor ed = new ProgramWorkflowStateEditor();
+							ed.setAsText(arg.getArgValue());
+							ProgramWorkflowState state = (ProgramWorkflowState) ed.getValue();
+							// force a lazy-load of the name
+							if (state != null)
+								state.getConcept().getName();
+							argVal = state;
+						} else if (checkClassHelper(EncounterType.class, pd.getPropertyType(), arg.getArgClass())) {
+							EncounterTypeEditor ed = new EncounterTypeEditor();
+							ed.setAsText(arg.getArgValue());
+							argVal = ed.getValue();
+						} else if (checkClassHelper(Date.class, pd.getPropertyType(), arg.getArgClass())) {
+							DateFormat df = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase()), Context.getLocale());
+							CustomDateEditor ed = new CustomDateEditor(df, true, 10);
+							ed.setAsText(arg.getArgValue());
+							argVal = ed.getValue();
 						} else if (pd.getPropertyType().isEnum()) {
 							log.debug("F");
 							List<Enum> constants = Arrays.asList((Enum[]) pd.getPropertyType().getEnumConstants());

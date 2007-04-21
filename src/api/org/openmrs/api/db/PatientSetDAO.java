@@ -9,15 +9,18 @@ import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
+import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
+import org.openmrs.ProgramWorkflowState;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.PatientSetService;
+import org.openmrs.api.PatientSetService.PatientLocationMethod;
 import org.openmrs.api.PatientSetService.TimeModifier;
 import org.openmrs.reporting.PatientSet;
 
@@ -37,11 +40,15 @@ public interface PatientSetDAO {
 	
 	public PatientSet getPatientsHavingObs(Integer conceptId, TimeModifier timeModifier, PatientSetService.Modifier modifier, Object value, Date fromDate, Date toDate) throws DAOException;
 	
-	public PatientSet getPatientsInProgram(Integer programId, Date fromDate, Date toDate);
+	public PatientSet getPatientsHavingEncounters(EncounterType encounterType, Location location, Date fromDate, Date toDate, Integer minCount, Integer maxCount) throws DAOException;
+	
+	public PatientSet getPatientsByProgramAndState(Program program, ProgramWorkflowState state, Date fromDate, Date toDate) throws DAOException;
+	
+	public PatientSet getPatientsInProgram(Integer programId, Date fromDate, Date toDate) throws DAOException;
 	
 	public PatientSet getPatientsHavingTextObs(Integer conceptId, String value, TimeModifier timeModifier) throws DAOException;
 	
-	public PatientSet getPatientsHavingLocation(Integer locationId) throws DAOException;
+	public PatientSet getPatientsHavingLocation(Integer locationId, PatientLocationMethod method) throws DAOException;
 	
 	public Map<Integer, String> getShortPatientDescriptions(Collection<Integer> patientIds) throws DAOException;
 	

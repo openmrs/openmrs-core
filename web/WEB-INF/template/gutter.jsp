@@ -21,7 +21,7 @@
 	
 	<openmrs:hasPrivilege privilege="Analyze">
 		<li>
-			<a href="<%= request.getContextPath() %>/analysis.list"><spring:message code="Navigation.analysis"/></a>
+			<a href="<%= request.getContextPath() %>/cohortBuilder.list"><spring:message code="Navigation.analysis"/></a>
 		</li>
 	</openmrs:hasPrivilege>
 

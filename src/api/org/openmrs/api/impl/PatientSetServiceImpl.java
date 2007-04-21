@@ -22,6 +22,7 @@ import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
+import org.openmrs.ProgramWorkflowState;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.User;
@@ -100,6 +101,14 @@ public class PatientSetServiceImpl implements PatientSetService {
 		return getPatientSetDAO().getPatientsHavingObs(conceptId, timeModifier, modifier, value, fromDate, toDate);
 	}
 	
+	public PatientSet getPatientsHavingEncounters(EncounterType encounterType, Location location, Date fromDate, Date toDate, Integer minCount, Integer maxCount) {
+		return getPatientSetDAO().getPatientsHavingEncounters(encounterType, location, fromDate, toDate, minCount, maxCount);
+	}
+	
+	public PatientSet getPatientsByProgramAndState(Program program, ProgramWorkflowState state, Date fromDate, Date toDate) {
+		return getPatientSetDAO().getPatientsByProgramAndState(program, state, fromDate, toDate);
+	}
+	
 	public PatientSet getPatientsInProgram(Program program, Date fromDate, Date toDate) {
 		return getPatientSetDAO().getPatientsInProgram(program.getProgramId(), fromDate, toDate);
 	}
@@ -113,11 +122,19 @@ public class PatientSetServiceImpl implements PatientSetService {
 	}
 	
 	public PatientSet getPatientsHavingLocation(Location loc) {
-		return getPatientsHavingLocation(loc.getLocationId());
+		return getPatientsHavingLocation(loc.getLocationId(), PatientLocationMethod.PATIENT_HEALTH_CENTER);
+	}
+	
+	public PatientSet getPatientsHavingLocation(Location loc, PatientLocationMethod method) {
+		return getPatientsHavingLocation(loc.getLocationId(), method);
 	}
 	
 	public PatientSet getPatientsHavingLocation(Integer locationId) {
-		return getPatientSetDAO().getPatientsHavingLocation(locationId);
+		return getPatientsHavingLocation(locationId, PatientLocationMethod.PATIENT_HEALTH_CENTER);
+	}
+	
+	public PatientSet getPatientsHavingLocation(Integer locationId, PatientLocationMethod method) {
+		return getPatientSetDAO().getPatientsHavingLocation(locationId, method);
 	}
 
 	/**

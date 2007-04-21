@@ -1116,3 +1116,40 @@ table td#summaryHeaderPatientGender {
 #patientTabsExited a:hover {
 	text-decoration: underline;
 }
+
+#cohortSearchTabs {
+	margin: 10px auto 0px auto;
+	padding-top: 5px;
+	padding-left: 5px;
+	padding-bottom: 2px;
+	border-bottom: 1px solid navy;
+}
+
+#cohortSearchTabs ul, #cohortSearchTabs li {
+	display: inline;
+	list-style-type: none;
+	padding: 0px 0px 0px 0px;
+}
+
+#cohortSearchTabs a:link, #cohortSearchTabs a:visited {
+	border: 1px solid navy;
+	font-size: small;
+	font-weight: bold;
+	margin-right: 8px;
+	padding: 2px 10px 2px 10px;
+	text-decoration: none;
+	color: navy;
+	background: #E0E0F0;
+}
+#cohortSearchTabs a:link.active, #cohortSearchTabs a:visited.active {
+	border-bottom: 1px solid #FFFFFF;
+}
+#cohortSearchTabs a.current, #cohortSearchTabs a:link.current, #cohortSearchTabs a:visited.current, #cohortSearchTabs a.current:hover {
+	background: #FFFFFF;
+	border-bottom: 1px solid #FFFFFF;
+	color: navy;
+	text-decoration: none;
+}
+#cohortSearchTabs a:hover {
+	text-decoration: underline;
+}

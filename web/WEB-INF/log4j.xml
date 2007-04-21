@@ -62,7 +62,7 @@
 	</logger>
 
 	<logger name="org.openmrs">
-		<level value="WARN" />
+		<level value="DEBUG" />
 	</logger>
 
 	<logger name="org.openmrs.api.ConceptService">
@@ -82,7 +82,7 @@
 	</logger>
 
 	<logger name="org.openmrs.web.controller.analysis">
-		<level value="WARN" />
+		<level value="DEBUG" />
 	</logger>
 
 	<logger name="org.openmrs.web.dwr">

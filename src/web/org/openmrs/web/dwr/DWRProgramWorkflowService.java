@@ -12,6 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
+import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.ProgramWorkflowService;
@@ -33,6 +34,21 @@ public class DWRProgramWorkflowService {
 		ProgramWorkflow wf = s.getWorkflow(programWorkflowId);
 		for (PatientState st : p.statesInWorkflow(wf, false))
 			ret.add(new PatientStateItem(st));
+		return ret;
+	}
+	
+	public Vector<ListItem> getWorkflowsByProgram(Integer programId) {
+		Vector<ListItem> ret = new Vector<ListItem>();
+		Program program = Context.getProgramWorkflowService().getProgram(programId);
+		Set<ProgramWorkflow> workflows = program.getWorkflows();
+		if (workflows != null)
+			for (ProgramWorkflow wf : workflows) {
+				ListItem li = new ListItem();
+				li.setId(wf.getProgramWorkflowId());
+				li.setName(wf.getConcept().getName().getName());
+				li.setDescription(wf.getConcept().getName().getDescription());
+				ret.add(li);
+			}
 		return ret;
 	}
 
