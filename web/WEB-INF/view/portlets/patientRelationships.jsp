@@ -1,15 +1,7 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
-<%@ page import="org.openmrs.User" %>
-<%@ page import="org.openmrs.Person" %>
-<%@ page import="org.openmrs.Relationship" %>
-<%@ page import="org.openmrs.RelationshipType" %>
-<%@ page import="org.openmrs.api.context.Context" %>
-<%@ page import="java.util.List" %>
-<%@ page import="java.util.Map" %>
 
 <openmrs:htmlInclude file="/scripts/easyAjax.js" />
 <openmrs:htmlInclude file="/dwr/interface/DWRRelationshipService.js" />
-<openmrs:htmlInclude file="/dwr/engine.js" />
 <openmrs:htmlInclude file="/dwr/util.js" />
 <openmrs:htmlInclude file="/scripts/dojoConfig.js" />
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
@@ -46,19 +38,17 @@
 					if (rel.personAId == ${model.personId}) {
 						str = rel.bIsToA + ': ';
 						if (rel.personBType == 'Patient')
-							str += '<a href="patientDashboard.form?patientId=' + rel.personBId + '">';
-						str += rel.personB;
-						if (rel.personBType == 'Patient')
-							str += '</a>';
+							str += '<a href="patientDashboard.form?patientId=' + rel.personBId + '">' + rel.personB + '</a>';
+						else
+							str += rel.personB;
 					} else if (rel.personBId == ${model.personId}) {
 						str = rel.aIsToB + ': ';
 						if (rel.personAType == 'Patient')
-							str += '<a href="patientDashboard.form?patientId=' + rel.personAId + '">';
-						str += rel.personA;
-						if (rel.personAType == 'Patient')
-							str += '</a>';
+							str += '<a href="patientDashboard.form?patientId=' + rel.personAId + '">' + rel.personA + '</a>';
+						else
+							str += rel.personA;
 					}
-					str += ' <a id="del_rel_' + relId + '" href="javascript:showDiv(\'voidRel' + relId + '\'); hideDiv(\'del_rel_' + relId + '\');"><spring:message code="general.deleteLink" javaScriptEscape="true" /></a>';
+					str += '&nbsp;<a id="del_rel_' + relId + '" href="javascript:showDiv(\'voidRel' + relId + '\'); hideDiv(\'del_rel_' + relId + '\');"><spring:message code="general.deleteLink" javaScriptEscape="true" /></a>';
 					str += ' <span style="display: none; border: 1px black dashed; margin: 2px" id="voidRel' + relId + '">';
 					str += ' <spring:message code="general.voidReasonQuestion" javaScriptEscape="true"/>: <input type="text" id="void_reason_' + relId + '"/>';
 					str += ' <input type="button" value="<spring:message code="general.delete" javaScriptEscape="true"/>" onClick="handleDeleteRelationship(' + relId + ')"/>';
@@ -113,22 +103,25 @@
 		<li><spring:message code="general.loading"/></li>
 	</ul>
 	
-	<a id="addRelationshipLink" href="javascript:showDiv('addRelationship'); hideDiv('addRelationshipLink');">Add a New Relationship</a>
+	<a id="addRelationshipLink" href="javascript:showDiv('addRelationship'); hideDiv('addRelationshipLink');"><spring:message code="Relationship.add"/></a>
 	<div id="addRelationship" style="border: 1px black dashed; display: none">
 		<spring:message code="Relationship.whatType"/>
-		<div style="text-align: center; margin: 0px 0px 1em 2em">
+		<table style="margin: 0px 0px 1em 2em;">
 			<c:forEach var="relType" items="${model.relationshipTypes}">
-				<c:if test="${relType.aIsToB == relType.bIsToA}">
-					<td align="center" colspan="2"><a href="javascript:handlePickRelType('${relType.relationshipTypeId}', '${relType.aIsToB}')">${relType.aIsToB}</a></td>
-				</c:if>
-				<c:if test="${relType.aIsToB != relType.bIsToA}">
-					<td align="right"><a href="javascript:handlePickRelType('${relType.relationshipTypeId}', '${relType.aIsToB}')">${relType.aIsToB}</a></td>
-					:
-					<td align="left"><a href="javascript:handlePickRelType('${relType.relationshipTypeId}::reverse', '${relType.bIsToA}')">${relType.bIsToA}</a></td>
-				</c:if>
-				<br/>
+				<tr>
+					<c:choose>
+						<c:when test="${relType.aIsToB == relType.bIsToA}">
+							<td style="text-align: center; white-space: nowrap" align="center" colspan="3"><a href="javascript:handlePickRelType('${relType.relationshipTypeId}', '${relType.aIsToB}')">${relType.aIsToB}</a></td>
+						</c:when>
+						<c:otherwise>
+							<td style="text-align: right; white-space: nowrap; width: 49%"><a href="javascript:handlePickRelType('${relType.relationshipTypeId}', '${relType.aIsToB}')">${relType.aIsToB}</a></td>
+							<td width="2%">:</td>
+							<td style="text-align: left; white-space: nowrap; width: 49%"><a href="javascript:handlePickRelType('${relType.relationshipTypeId}::reverse', '${relType.bIsToA}')">${relType.bIsToA}</a></td>
+						</c:otherwise>
+					</c:choose>
+				</tr>
 			</c:forEach>
-		</div>
+		</table>
 
 		<span id="add_rel_details" style="display: none">		
 			${model.patient.personName}
