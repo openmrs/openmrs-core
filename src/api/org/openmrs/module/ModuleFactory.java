@@ -54,28 +54,45 @@ public class ModuleFactory {
 	 */
 	public static Module loadModule(File moduleFile) throws ModuleException {
 		
+		return loadModule(moduleFile, true);
+		
+	}
+	
+	/**
+	 * Add a module (in the form of a jar file) to the list of openmrs modules
+	 * Returns null if an error occurred and/or module was not successfully
+	 * loaded
+	 * 
+	 * @param moduleFile
+	 * @param Boolean replaceIfExists unload a module that has the same moduleId if one is loaded already
+	 * @return Module 
+	 */
+	public static Module loadModule(File moduleFile, Boolean replaceIfExists) throws ModuleException {
 		Module module = getModuleFromFile(moduleFile);
 		
 		if (module != null)
-			loadModule(module);
+			loadModule(module, replaceIfExists);
 		
 		return module;
-		
 	}
 	
 	/**
 	 * Add a module to the list of openmrs modules
 	 * @param module
+	 * @param Boolean replaceIfExists unload a module that has the same moduleId if one is loaded already
 	 */
-	public static Module loadModule(Module module) throws ModuleException {
+	public static Module loadModule(Module module, Boolean replaceIfExists) throws ModuleException {
 		
 		log.debug("Adding module " + module.getName() + " to the module queue");
 		
 		Module oldModule = getLoadedModulesMap().get(module.getModuleId());
 		if (oldModule != null) {
-			// throw new ModuleException("A module with the same id already exists", module.getModuleId());
-			// TODO need to stop the module in the web layer as well.
-			unloadModule(oldModule);
+			if (replaceIfExists == true) {
+				// TODO need to stop the module in the web layer as well.
+				unloadModule(oldModule);
+			}
+			else
+				throw new ModuleException("A module with the same id already exists", module.getModuleId());
 		}
 		
 		getLoadedModulesMap().put(module.getModuleId(), module);

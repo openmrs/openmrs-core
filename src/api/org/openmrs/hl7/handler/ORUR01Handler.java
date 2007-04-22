@@ -16,6 +16,8 @@ import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
+import org.openmrs.PersonAttribute;
+import org.openmrs.PersonAttributeType;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.hl7.HL7InError;
@@ -585,23 +587,32 @@ public class ORUR01Handler implements Application {
 			patient = Context.getPatientService().getPatient(
 					patient.getPatientId());
 			
-			// TODO person relationships
-			/*
-			Location currentHealthCenter = patient.getHealthCenter();
-			if (currentHealthCenter == null
-					|| !newLocationId.equals(currentHealthCenter
-							.getLocationId())) {
-				if (log.isDebugEnabled())
-					log.debug("Updating patient's location from "
-							+ currentHealthCenter.getLocationId() + " ("
-							+ currentHealthCenter.getName() + ") to "
-							+ newLocationId);
-				Location newHealthCenter = new Location();
-				newHealthCenter.setLocationId(newLocationId);
-				patient.setHealthCenter(newHealthCenter);
+			PersonAttributeType healthCenterAttrType = Context.getPersonService().getPersonAttributeType("Health Center");
+			
+			if (healthCenterAttrType == null) {
+				log.error("A person attribute type with name 'Health Center' is not defined but patient " + 
+						patient.getPatientId() + 
+						" is trying to change their health center to " + 
+						newLocationId);
+				return;
+			}
+			
+			PersonAttribute currentHealthCenter = patient.getAttribute("Health Center");
+			
+			if (currentHealthCenter == null || !currentHealthCenter.equals(newLocationId.toString())) {
+				PersonAttribute newHealthCenter = new PersonAttribute(healthCenterAttrType, newLocationId.toString());
+				
+				log.debug("Updating patient's location from "
+						+ currentHealthCenter + " to "
+						+ newLocationId);
+				
+				// add attribute (and void old if there is one)
+				patient.addAttribute(newHealthCenter);
+				
+				// save the patient and their new attribute
 				Context.getPatientService().updatePatient(patient);
 			}
-			*/
+			
 		}
 		log.debug("finished discharge to location method");
 	}

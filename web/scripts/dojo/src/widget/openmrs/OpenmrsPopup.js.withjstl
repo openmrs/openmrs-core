@@ -182,7 +182,7 @@ dojo.widget.defineWidget(
 			dojo.event.topic.publish(this.eventNames.select, {"objs":objs});
 		},
 		
-		closeSearch: function() {
+		closeSearch: function(skipFocus) {
 			this.searchWidget.hide();
 			if (!(skipFocus))
 				this.changeButton.focus();
