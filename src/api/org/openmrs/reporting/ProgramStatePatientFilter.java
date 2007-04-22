@@ -4,7 +4,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import org.openmrs.Concept;
 import org.openmrs.Program;
+import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
@@ -25,11 +27,24 @@ public class ProgramStatePatientFilter extends AbstractPatientFilter implements
 	
 	public String getDescription() {
 		StringBuilder ret = new StringBuilder();
-		ret.append("Patients ");
-		if (program != null)
-			ret.append("in program " + program.getConcept().getName().getName() + " ");
-		if (state != null)
-			ret.append("with " + state.getProgramWorkflow().getConcept().getName().getName() + " of " + state.getConcept().getName().getName() + " ");
+		
+		ret.append("Patients in program ");
+		
+		if (program.getConcept() == null)
+			ret.append(" <CONCEPT> ");
+		else {
+			ret.append(getConceptName(program.getConcept()));
+		}
+		
+		if (state != null) {
+			ProgramWorkflow workflow = state.getProgramWorkflow();
+			if (workflow.getConcept() == null)
+				workflow = Context.getProgramWorkflowService().getWorkflow(state.getProgramWorkflow().getProgramWorkflowId());
+			Concept stateConcept = state.getConcept();
+			if (stateConcept == null)
+				stateConcept = Context.getProgramWorkflowService().getState(state.getProgramWorkflowStateId()).getConcept();
+			ret.append("with " + getConceptName(workflow.getConcept()) + " of " + getConceptName(stateConcept) + " ");
+		}
 		if (withinLastMonths != null || withinLastDays != null) {
 			ret.append("within the last ");
 			if (withinLastMonths != null)

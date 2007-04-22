@@ -1,16 +1,16 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="View Patient Sets" otherwise="/login.htm" redirect="/cohortBuilder.list" />
+<openmrs:require privilege="View Patient Cohorts" otherwise="/login.htm" redirect="/cohortBuilder.list" />
 
 <c:set var="OPENMRS_DO_NOT_SHOW_PATIENT_SET" scope="request" value="true"/>
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/engine.js'></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/util.js'></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/interface/DWRCohortBuilderService.js'></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/interface/DWRPatientService.js'></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/interface/DWRPatientSetService.js'></script>
+<script type="text/javascript" src='${pageContext.request.contextPath}/dwr/engine.js'></script>
+<script type="text/javascript" src='${pageContext.request.contextPath}/dwr/util.js'></script>
+<script type="text/javascript" src='${pageContext.request.contextPath}/dwr/interface/DWRCohortBuilderService.js'></script>
+<script type="text/javascript" src='${pageContext.request.contextPath}/dwr/interface/DWRPatientService.js'></script>
+<script type="text/javascript" src='${pageContext.request.contextPath}/dwr/interface/DWRPatientSetService.js'></script>
 <openmrs:htmlInclude file="/dwr/interface/DWRProgramWorkflowService.js" />
 <openmrs:htmlInclude file="/scripts/dojoConfig.js"></openmrs:htmlInclude>
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js"></openmrs:htmlInclude>
@@ -31,11 +31,13 @@
 				}
 			}
 		);
+		
+		document.getElementById('concept_to_filter_search').focus();
 	})
 	
 	// tab ids should be searchTab_concept
 	// tab content ids should be searchTab_concept_content
-	function changeSearchTab(tabObj) {
+	function changeSearchTab(tabObj, focusToId) {
 		if (typeof tabObj == 'string')
 			tabObj = document.getElementById(tabObj);
 
@@ -52,6 +54,11 @@
 					hideLayer(tabContentId);
 			}
 			addClass(tabObj, 'current');
+			
+			if (focusToId)
+				document.getElementById(focusToId).focus();
+			else
+				tabObj.blur();
 		}
 	}
 	
@@ -277,6 +284,7 @@
 						}
 						str += '</ul>';
 					}
+					str += ' &nbsp; <input type="button" value="<spring:message code="general.cancel"/>" onclick="handleSavedFilterMenuButton()"/><br/><br/>';
 					$('saved_filters').innerHTML = str;
 					showLayer('saved_filters');
 				});
@@ -293,7 +301,7 @@
 		$('saveFilterCancelButton').style.disabled = 'true';
 		DWRCohortBuilderService.saveHistoryElement(name, descr, index, function(success) {
 				if (success) {
-					window.alert('Saved #' + (index + 1) + ' as &quot;' + name + '&quot;');
+					window.alert('Saved #' + (index + 1) + ' as "' + name + '"');
 				} else {
 					window.alert('Failed to save.');
 				}
@@ -438,7 +446,7 @@
 <div id="cohort_builder_add_filter" style="padding: 4px">
 	<b><spring:message code="general.search"/></b>
 
-	<span style="padding: 3px 0px; margin: 0px 3px; background-color: #ffffaa; border: 1px black solid">
+	<span style="padding: 3px; margin: 0px 3px; background-color: #ffffaa; border: 1px black solid">
 		<a href="javascript:handleSavedFilterMenuButton()"><spring:message code="CohortBuilder.savedFilterMenu"/></a>
 	</span>
 	<div id="saved_filters" style="position: absolute; z-index: 1; border: 1px black solid; background-color: yellow; display: none"></div>
@@ -491,11 +499,11 @@
 	<div id="cohortSearchTabs">
 		<ul>
 			<li>&nbsp;</li>
-			<li><a id="searchTab_concept" href="#" onClick="changeSearchTab(this)"><spring:message code="CohortBuilder.searchTab.concept"/></a></li>
+			<li><a id="searchTab_concept" href="#" onClick="changeSearchTab(this, 'concept_to_filter_search')"><spring:message code="CohortBuilder.searchTab.concept"/></a></li>
 			<li><a id="searchTab_encounter" href="#" onClick="changeSearchTab(this)"><spring:message code="CohortBuilder.searchTab.encounter"/></a></li>
 			<li><a id="searchTab_program" href="#" onClick="changeSearchTab(this)"><spring:message code="CohortBuilder.searchTab.program"/></a></li>
 			<li><a id="searchTab_location" href="#" onClick="changeSearchTab(this)"><spring:message code="CohortBuilder.searchTab.location"/></a></li>
-			<li><a id="searchTab_composition" href="#" onClick="changeSearchTab(this)"><spring:message code="CohortBuilder.searchTab.composition"/></a></li>
+			<li><a id="searchTab_composition" href="#" onClick="changeSearchTab(this, 'composition')"><spring:message code="CohortBuilder.searchTab.composition"/></a></li>
 		</ul>
 	</div>
 	
@@ -645,7 +653,7 @@
 				</tr>
 				<tr>
 					<td><spring:message code="general.name"/></td>
-					<td><input type="text" name="name"/></td>
+					<td><input type="text" name="name" id="saveBoxName"/></td>
 				</tr>
 				<tr>
 					<td><spring:message code="general.description"/></td>
@@ -668,11 +676,14 @@
 					</td>
 				</tr>
 				-->
+				<tr>
+					<td></td>
+					<td>
+						<input style="margin: 0em 1em" type="submit" value="<spring:message code="general.save"/>"/>
+						<input style="margin: 0em 1em" type="button" value="<spring:message code="general.cancel"/>" onClick="toggleLayer('saveBox');"/>
+					</td>
+				</tr>
 			</table>
-			<div align="center">
-				<input style="margin: 0em 1em" type="submit" value="<spring:message code="general.save"/>"/>
-				<input style="margin: 0em 1em" type="button" value="<spring:message code="general.cancel"/>" onClick="toggleLayer('saveBox')"/>
-			</div>
 		</form>
 	</div>
 
@@ -681,9 +692,13 @@
 	<h3>
 		<spring:message code="CohortBuilder.searchHistory"/>
 		<c:if test="${model.searchHistory.size > 0}">
-			<img src="${pageContext.request.contextPath}/images/save.gif" title="<spring:message code="general.save"/>" onClick="toggleLayer('saveBox'); hideLayer('loadBox')"/>
+			<a href="#" onclick="toggleLayer('saveBox'); hideLayer('loadBox'); document.getElementById('saveBoxName').focus(); return false;" title="<spring:message code="CohortBuilder.searchHistory.save"/>">
+				<img src="${pageContext.request.contextPath}/images/save.gif" style="border: 0px" />
+			</a>
 		</c:if>
-		<img src="${pageContext.request.contextPath}/images/open.gif" title="<spring:message code="general.load"/>" onClick="handleLoadButton()"/>
+		<a href="#" onClick="handleLoadButton(); return false;" title='<spring:message code="CohortBuilder.searchHistory.load"/>'>
+			<img src="${pageContext.request.contextPath}/images/open.gif" style="border: 0px" />
+		</a>
 		<form method="post" action="cohortBuilder.form" style="display: inline">
 			<input type="hidden" name="method" value="clearHistory"/>
 			<input type="image" title="<spring:message code="CohortBuilder.searchHistory.clear"/>" src="${pageContext.request.contextPath}/images/delete.gif"/>
@@ -693,7 +708,7 @@
 	<div id="saveFilterBox" style="padding: 1em; position: absolute; z-index: 1; border: 1px black solid; background-color: #ffe0e0; display: none">
 		<b><u><spring:message code="CohortBuilder.cohortDefinition.save"/></u></b>
 		<br/><br/>
-		<spring:message code="general.saving" arguments="<span id=\"saveFilterTitle\"></span>"/>
+		<spring:message code="general.saving" arguments="<span id='saveFilterTitle'></span>"/>
 		<br/><br/>
 		<spring:message code="general.name"/>: <input type="text" id="saveFilterName"/> <br/>
 		<spring:message code="general.description"/>: <input type="text" id="saveFilterDescription" size="60"/> <br/><br/>
@@ -725,7 +740,7 @@
 			<tr>
 				<td width="25">
 					<c:set var="temp" value="${iter.index}"/>
-					<c:if test="${iter.count == model.searchHistory.size}"> <%-- TODO: is there a single method in varstatus for this? --%>
+					<c:if test="${iter.last}">
 						<c:set var="temp" value="last"/>
 					</c:if>
 					<a href="#" onClick="DWRUtil.setValue('cohort_builder_preview_method', '${temp}'); refreshPreview();">
@@ -751,8 +766,8 @@
 					<c:if test="${item.cachedResult != null}">
 						<small>(cached)</small>
 					</c:if>
-					<img src="${pageContext.request.contextPath}/images/save.gif" onClick="showSaveFilterDialog(${iter.index}, '${item.filter.name}')"/>
-					<a href="cohortBuilder.form?method=removeFilter&index=${iter.index}"><img src="${pageContext.request.contextPath}/images/delete.gif"/></a>
+					<a href="#" onclick="showSaveFilterDialog(${iter.index}, '${item.filter.name}'); return false;" title='<spring:message code="CohortBuilder.saveFilterDefinition.help"/>'><img src="${pageContext.request.contextPath}/images/save.gif" style="border: 0px;" /></a>
+					<a href="cohortBuilder.form?method=removeFilter&index=${iter.index}" title='<spring:message code="CohortBuilder.removeFilter.help"/>'><img src="${pageContext.request.contextPath}/images/delete.gif" style="border: 0px;"/></a>
 				</td>
 				<c:if test="${item.cachedResult == null}">
 					<script type="text/javascript">
@@ -768,7 +783,7 @@
 	</c:forEach>
 </div>
 
-<div id="cohort_builder_preview" style="padding: 4px<c:if test="${model.searchHistory.size == 0}">; display: none"</c:if>">
+<div id="cohort_builder_preview" style='padding: 4px<c:if test="${model.searchHistory.size == 0}">; display: none"</c:if>'>
 
 	<div id="cohort_builder_button_panel" style="padding: 1px 4px; margin: 4px 0px">
 		<table width="100%">
@@ -798,7 +813,7 @@
 		&nbsp;&nbsp;&nbsp;&nbsp;
 		<a href="javascript:previewPageBy(-patientPageSize)">&lt;-</a>
 		&nbsp;&nbsp;&nbsp;&nbsp;
-		<spring:message code="general.displayingXtoYofZ" arguments="<span id=\"previewFromIndex\">#</span>,<span id=\"previewToIndex\">#</span>,<span id=\"previewTotalNumber\">#</span>"/>
+		<spring:message code="general.displayingXtoYofZ" arguments="<span id='previewFromIndex'>#</span>,<span id='previewToIndex'>#</span>,<span id='previewTotalNumber'>#</span>"/>
 		&nbsp;&nbsp;&nbsp;&nbsp;
 		<a href="javascript:previewPageBy(patientPageSize)">-&gt;</a>
 		&nbsp;&nbsp;&nbsp;&nbsp;
@@ -815,15 +830,29 @@
 		<div id="saveCohortDiv" style="position: absolute; margin: 1em; padding: 1em; bottom: 0px; border: 2px black solid; background-color: #e0e0e0; display: none">
 			<b><u>Save Cohort (i.e. list of patient ids)</u></b>
 			<br/><br/>
-			Name: <input type="text" id="saveCohortName"/> <br/>
-			Description: <input type="text" id="saveCohortDescription"/> <br/>
-			<br/>
-			<i>Note: this actually works, but it doesn't give you any indication. And you can't use a cohort anywhere yet.</i> <br/>
-			<br/>
-			<div align="center">
-				<input type="button" value="<spring:message code="general.save"/>" onClick="handleSaveCohort()" />
-				<input type="button" value="<spring:message code="general.cancel"/>" onClick="toggleLayer('saveCohortDiv')" />
-			</div>
+			<table>
+				<tr>
+					<td width="30px"><spring:message code="general.name"/></td>
+					<td style="text-align:left"><input type="text" id="saveCohortName"/></td>
+				</tr>
+				<tr>
+					<td width="30px"><spring:message code="general.description"/></td>
+					<td style="text-align:left"><input type="text" id="saveCohortDescription"/></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<i>Note: this actually works, but it doesn't give you any indication. And you can't use a cohort anywhere yet.</i>
+					</td>
+				</tr>
+				<tr>
+					<td></td>
+					<td style="text-align:left">
+						<input type="button" value="<spring:message code="general.save"/>" onClick="handleSaveCohort()" />
+						&nbsp;
+						<input type="button" value="<spring:message code="general.cancel"/>" onClick="toggleLayer('saveCohortDiv')" />
+					</td>
+				</tr>
+			</table>
 		</div>
 
 		<c:if test="${fn:length(model.links) > 0}">
@@ -864,10 +893,12 @@
 
 		<b><spring:message code="CohortBuilder.actionsMenu"/></b>
 
-		<img title="<spring:message code="general.save" />" src="${pageContext.request.contextPath}/images/save.gif" onClick="toggleLayer('saveCohortDiv')"/>
+		<a href="#" title='<spring:message code="CohortBuilder.saveCohort.help" />' onClick="toggleLayer('saveCohortDiv'); document.getElementById('saveCohortName').focus(); return false;">
+			<img src="${pageContext.request.contextPath}/images/save.gif" style="border: 0px" />
+		</a>
 
 		<c:if test="${fn:length(model.links) > 0}">
-			<a href="javascript:toggleLayer('_linkMenu')" style="border: 1px black solid"><spring:message code="Analysis.linkButton"/></a>
+			<a href="javascript:toggleLayer('_linkMenu')" onclick="return false;" style="border: 1px black solid"><spring:message code="Analysis.linkButton"/></a>
 		</c:if>
 
 	</div>

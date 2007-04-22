@@ -54,7 +54,8 @@ public class ProgramPatientFilter extends AbstractPatientFilter implements Patie
 		Locale locale = Context.getLocale();
 		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, locale);
 		StringBuffer ret = new StringBuffer();
-		ret.append("Patients in " + program.getConcept().getName().getName());
+		ret.append("Patients in ");
+		ret.append(getConceptName(program.getConcept()));
 		if (onDate != null)
 			ret.append(" on " + df.format(onDate));
 		else {

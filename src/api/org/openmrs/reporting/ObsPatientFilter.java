@@ -7,6 +7,7 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 
 import org.openmrs.Concept;
+import org.openmrs.ConceptName;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PatientSetService.TimeModifier;
 import org.openmrs.api.context.Context;
@@ -121,7 +122,16 @@ public class ObsPatientFilter extends AbstractPatientFilter implements PatientFi
 		} else {
 			ret.append("Patients with ");
 			ret.append(timeModifier + " ");
-			ret.append(question == null ? "CONCEPT" : question.getName(locale, false));
+			ConceptName questionName = null;
+			if (question == null)
+				ret.append("CONCEPT");
+			else if ((questionName = question.getName(locale, false)) != null)
+				ret.append(questionName);
+			else {
+				question = Context.getConceptService().getConcept(question.getConceptId());
+				questionName = question.getName(locale, false);
+				ret.append(questionName);
+			}
 			if (value != null && modifier != null) {
 				ret.append(" " + modifier.getSqlRepresentation() + " ");
 				if (value instanceof Concept)

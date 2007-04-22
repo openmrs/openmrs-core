@@ -44,8 +44,8 @@ public class PatientSetServiceImpl implements PatientSetService {
 	public PatientSetServiceImpl() {	}
 
 	private PatientSetDAO getPatientSetDAO() {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENT_SETS)) {
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PATIENT_SETS);
+		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENT_COHORTS)) {
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PATIENT_COHORTS);
 		}
 		return dao;
 	}
