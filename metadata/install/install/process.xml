@@ -1,6 +1,17 @@
-
 <processing>
 	<logfiledir>${INSTALL_PATH}</logfiledir>
+<!-- 
+	<job name="MySQL">
+		<os family="windows" />
+		<executefile name="mysql-setup.exe">
+		</executefile>
+	</job>
+	<job name="Tomcat">
+		<os family="windows" />
+		<executefile name="tomcat-setup.exe">
+		</executefile>
+	</job>-->
+
 	<job name="Install OpenMRS Database Scripts">
 		<os family="windows" />
 		<executefile name="$INSTALL_PATH/installDB.cmd"></executefile>

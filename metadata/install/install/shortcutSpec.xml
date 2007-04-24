@@ -40,8 +40,6 @@
 	</shortcut>
 
 
-
-
 	<shortcut 
 		name="Uninstall" 
 		programGroup="yes" 
@@ -61,7 +59,7 @@
 	</shortcut>
 
 
-<!-- 
+ 
 	<shortcut 
 		name="Documentation" 
 		programGroup="yes" 
@@ -71,15 +69,15 @@
 		startup="no" 
 		target="acroread"
 		workingDirectory=""
-		commandLine="$INSTALL_PATH/doc/izpack/pdf/izpack-doc.pdf"
-		initialState="noShow" 
-		iconFile="$INSTALL_PATH\cLogo.ico" 
+		initialState="noShow"
+		commandLine="start http://openmrs.org/wiki/Documentation"
+		iconFile="$INSTALL_PATH\OpenMRS.ico" 
 		iconIndex="0"
-		url="$INSTALL_PATH/doc/izpack/pdf/izpack-doc.pdf" 
+		url="http://openmrs.org/wiki/Documentation" 
 		type="Application"
 		encoding="UTF-8"
-		description="IzPack user documentation (PDF format)">
+		description="OpenMRS Wiki user documentation">
 		<createForPack name="Documentation" />
-	</shortcut>-->
+	</shortcut>
 
 </shortcuts>

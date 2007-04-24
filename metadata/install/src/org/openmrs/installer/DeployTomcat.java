@@ -1,4 +1,4 @@
-package org.cl.installer;
+package org.openmrs.installer;
 
 import java.io.BufferedReader;
 import java.io.IOException;

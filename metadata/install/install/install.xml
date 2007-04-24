@@ -45,7 +45,7 @@
 		<res id="Installer.image" src="install/300px-Openmrs-logo.gif" />
 		<res id="userInputSpec.xml" src="install/userInputSpec.xml" />
 		<res id="shortcutSpec.xml" src="install/shortcutSpec.xml" />
-		<res id="ProcessPanel.Spec.xml" src="install/process.xml" />
+		<res id="ProcessPanel.Spec.xml" src="target/process.xml" />
 
 	</resources>
 
