@@ -20,6 +20,7 @@ import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
+import org.openmrs.PersonAttributeType;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
@@ -34,6 +35,7 @@ import org.openmrs.api.db.PatientSetDAO;
 import org.openmrs.reporting.PatientAnalysis;
 import org.openmrs.reporting.PatientSet;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 
 public class PatientSetServiceImpl implements PatientSetService {
 	
@@ -145,7 +147,7 @@ public class PatientSetServiceImpl implements PatientSetService {
 	 * @param onDate Which date to look at the patients' drug orders. (NULL defaults to now().)
 	 */
 	public PatientSet getPatientsHavingDrugOrder(Collection<Integer> patientIds, Collection<Integer> takingIds, Date onDate) {
-		Map<Integer, Collection<Integer>> activeDrugs = getPatientSetDAO().getActiveDrugIds(patientIds, onDate);
+		Map<Integer, Collection<Integer>> activeDrugs = getPatientSetDAO().getActiveDrugIds(patientIds, onDate, onDate);
 		List<Integer> ret = new ArrayList<Integer>();
 		boolean takingAny = takingIds != null && takingIds.size() == 0;
 		boolean takingNone = takingIds == null;
@@ -170,6 +172,64 @@ public class PatientSetServiceImpl implements PatientSetService {
 		PatientSet ps = new PatientSet();
 		ps.setPatientIds(ret);
 		return ps;
+	}
+	
+	public PatientSet getPatientsHavingDrugOrder(
+			Collection<Integer> patientIds, Collection<Integer> drugIds, GroupMethod groupMethod,
+			Date fromDate, Date toDate) {
+
+		Map<Integer, Collection<Integer>> activeDrugs = getPatientSetDAO().getActiveDrugIds(patientIds, fromDate, toDate);
+		List<Integer> ret = new ArrayList<Integer>();
+
+		if (drugIds == null)
+			drugIds = new ArrayList();
+
+		if (drugIds.size() == 0) {
+			if (groupMethod == GroupMethod.NONE) {
+				// Patients taking no drugs
+				if (patientIds == null) {
+					patientIds = getAllPatients().getPatientIds();
+				}
+				patientIds.removeAll(activeDrugs.keySet());
+				ret.addAll(patientIds);
+			} else {
+				// Patients taking any drugs
+				ret.addAll(activeDrugs.keySet());
+			}
+			
+		} else {
+			if (groupMethod == GroupMethod.NONE) {
+				// Patients taking none of the specified drugs
+				
+				// first get all patients taking no drugs at all
+				ret.addAll(patientIds);
+				ret.removeAll(activeDrugs.keySet());
+				
+				// next get all patients taking drugs, but not the specified ones
+				for (Map.Entry<Integer, Collection<Integer>> e : activeDrugs.entrySet())
+					if (!OpenmrsUtil.containsAny(e.getValue(), drugIds))
+						ret.add(e.getKey());
+
+			} else if (groupMethod == GroupMethod.ALL) {
+				// Patients taking all of the specified drugs
+				for (Map.Entry<Integer, Collection<Integer>> e : activeDrugs.entrySet())
+					if (e.getValue().containsAll(drugIds))
+						ret.add(e.getKey());
+
+			} else { // groupMethod == GroupMethod.ANY
+				// Patients taking any of the specified drugs
+				for (Map.Entry<Integer, Collection<Integer>> e : activeDrugs.entrySet())
+					if (OpenmrsUtil.containsAny(e.getValue(), drugIds))
+						ret.add(e.getKey());
+			}
+		}
+		PatientSet ps = new PatientSet();
+		ps.setPatientIds(ret);
+		return ps;
+	}
+	
+	public PatientSet getPatientsHavingPersonAttribute(PersonAttributeType attribute, String value) {
+		return getPatientSetDAO().getPatientsHavingPersonAttribute(attribute, value);
 	}
 	
 	public Map<Integer, String> getShortPatientDescriptions(Collection<Integer> patientIds) {

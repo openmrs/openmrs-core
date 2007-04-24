@@ -19,8 +19,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.Drug;
 import org.openmrs.EncounterType;
 import org.openmrs.Location;
+import org.openmrs.PersonAttributeType;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.context.Context;
@@ -31,8 +33,10 @@ import org.openmrs.reporting.ReportObjectXMLDecoder;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.propertyeditor.ConceptEditor;
+import org.openmrs.web.propertyeditor.DrugEditor;
 import org.openmrs.web.propertyeditor.EncounterTypeEditor;
 import org.openmrs.web.propertyeditor.LocationEditor;
+import org.openmrs.web.propertyeditor.PersonAttributeTypeEditor;
 import org.openmrs.web.propertyeditor.ProgramEditor;
 import org.openmrs.web.propertyeditor.ProgramWorkflowStateEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -85,8 +89,6 @@ public class CohortBuilderController implements Controller {
 				history = new CohortSearchHistory();
 				Context.setVolatileUserData("CohortBuilderSearchHistory", history);
 			}
-			List<Program> programs = Context.getProgramWorkflowService().getPrograms();
-			List<EncounterType> encounterTypes = Context.getEncounterService().getEncounterTypes();
 			List<Shortcut> shortcuts = new ArrayList<Shortcut>();
 			String shortcutProperty = Context.getAdministrationService().getGlobalProperty("cohort.cohortBuilder.shortcuts");
 			if (shortcutProperty != null && shortcutProperty.length() > 0) {
@@ -99,13 +101,15 @@ public class CohortBuilderController implements Controller {
 					}
 				}
 			}
-			List<Location> locations = Context.getEncounterService().getLocations();
+			
 			model.put("savedFilters", savedFilters);
 			model.put("searchHistory", history);
 			model.put("links", linkHelper());
-			model.put("programs", programs);
-			model.put("encounterTypes", encounterTypes);
-			model.put("locations", locations);
+			model.put("programs", Context.getProgramWorkflowService().getPrograms());
+			model.put("encounterTypes", Context.getEncounterService().getEncounterTypes());
+			model.put("locations", Context.getEncounterService().getLocations());
+			model.put("drugs", Context.getConceptService().getDrugs());
+			model.put("personAttributeTypes", Context.getPersonService().getPersonAttributeTypes());
 			model.put("shortcuts", shortcuts);
 		}
 		return new ModelAndView(formView, "model", model);
@@ -296,9 +300,9 @@ public class CohortBuilderController implements Controller {
 	public class ArgHolder {
 		private Class argClass;
 		private String argName;
-		private String argValue;
+		private Object argValue;
 		public ArgHolder() { }
-		public ArgHolder(Class argClass, String argName, String argValue) {
+		public ArgHolder(Class argClass, String argName, Object argValue) {
 			this.argClass = argClass;
 			this.argName = argName;
 			this.argValue = argValue;
@@ -315,11 +319,14 @@ public class CohortBuilderController implements Controller {
 		public void setArgName(String argName) {
 			this.argName = argName;
 		}
-		public String getArgValue() {
+		public Object getArgValue() {
 			return argValue;
 		}
-		public void setArgValue(String argValue) {
+		public void setArgValue(Object argValue) {
 			this.argValue = argValue;
+		}
+		public boolean hasValue() {
+			return argValue != null && ((argValue instanceof String && ((String) argValue).length() > 0) || (argValue instanceof String[] && ((String[]) argValue).length > 0));
 		}
 		public String toString() {
 			return "(" + argClass + ") " + argName + " = " + argValue;
@@ -327,7 +334,7 @@ public class CohortBuilderController implements Controller {
 	}
 	
 	private boolean checkClassHelper(Class checkFor, Class checkFirst, Class checkNext) {
-		return checkFor.equals(checkFirst) || (checkFirst.equals(Object.class) && checkFor.equals(checkNext));
+		return checkFor.equals(checkFirst) || ((checkFirst.equals(Object.class) || checkFirst.equals(List.class) )&& checkFor.equals(checkNext));
 	}
 	
 	public ModelAndView addDynamicFilter(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -337,7 +344,7 @@ public class CohortBuilderController implements Controller {
 			String[] args = temp.split(",");
 			log.debug(args.length + " args: vars=" + temp);
 			List<ArgHolder> argValues = new ArrayList<ArgHolder>();
-			
+	
 			for (String arg : args) {
 				log.debug("looking at: " + arg);
 				String[] u = arg.split("#");
@@ -348,16 +355,21 @@ public class CohortBuilderController implements Controller {
 					for (String str : u) {
 						msg.append(str).append(" , ");
 					}
-					throw new IllegalArgumentException("shortcut option arguments must be label$Type. " + msg);
+					throw new IllegalArgumentException("shortcut option arguments must be label#Type. " + msg);
 				}
 				String name = u[0];
 				Class c;
+				boolean isList = false;
+				if (u[1].startsWith("*")) {
+					u[1] = u[1].substring(1);
+					isList = true;
+				}
 				try {
 					c = Class.forName(u[1]);
 				} catch (ClassNotFoundException ex) {
 					throw new IllegalArgumentException(ex);
 				}
-				argValues.add(new ArgHolder(c, name, request.getParameter(name)));
+				argValues.add(new ArgHolder(c, name, isList ? request.getParameterValues(name) : request.getParameter(name)));
 			}
 			
 			log.debug("argValues has size " + argValues.size());
@@ -371,70 +383,100 @@ public class CohortBuilderController implements Controller {
 				for (ArgHolder arg : argValues) {
 					log.debug("looking at " + arg);
 					try {
-						Object argVal = null;
 						PropertyDescriptor pd = new PropertyDescriptor(arg.getArgName(), filterClass);
 						// TODO: fix this hack
-						if (arg.getArgValue() != null && arg.getArgValue().trim().length() == 0) {
-							argVal = null;
-						} else if (checkClassHelper(Location.class, pd.getPropertyType(), arg.getArgClass())) {
-							LocationEditor le = new LocationEditor();
-							le.setAsText(arg.getArgValue());
-							argVal = le.getValue();
-						} else if (checkClassHelper(String.class, pd.getPropertyType(), arg.getArgClass())) {
-							argVal = arg.getArgValue();
-						} else if (checkClassHelper(Integer.class, pd.getPropertyType(), arg.getArgClass())) {
-							try {
-								argVal = Integer.valueOf(arg.getArgValue());
-							} catch (Exception ex) { }
-						} else if (checkClassHelper(Double.class, pd.getPropertyType(), arg.getArgClass())) {
-							try {
-								argVal = Double.valueOf(arg.getArgValue());
-							} catch (Exception ex) { }
-						} else if (checkClassHelper(Concept.class, pd.getPropertyType(), arg.getArgClass())) {
-							ConceptEditor ce = new ConceptEditor();
-							ce.setAsText(arg.getArgValue());
-							Concept concept = (Concept) ce.getValue();
-							// force a lazy-load of this concept's name
-							if (concept != null)
-								concept.getName(Context.getLocale());
-							argVal = concept;
-						} else if (checkClassHelper(Program.class, pd.getPropertyType(), arg.getArgClass())) {
-							ProgramEditor pe = new ProgramEditor();
-							pe.setAsText(arg.getArgValue());
-							Program program = (Program) pe.getValue();
-							// force a lazy-load of the name
-							if (program != null)
-								program.getConcept().getName();
-							argVal = program;
-						} else if (checkClassHelper(ProgramWorkflowState.class, pd.getPropertyType(), arg.getArgClass())) {
-							ProgramWorkflowStateEditor ed = new ProgramWorkflowStateEditor();
-							ed.setAsText(arg.getArgValue());
-							ProgramWorkflowState state = (ProgramWorkflowState) ed.getValue();
-							// force a lazy-load of the name
-							if (state != null)
-								state.getConcept().getName();
-							argVal = state;
-						} else if (checkClassHelper(EncounterType.class, pd.getPropertyType(), arg.getArgClass())) {
-							EncounterTypeEditor ed = new EncounterTypeEditor();
-							ed.setAsText(arg.getArgValue());
-							argVal = ed.getValue();
-						} else if (checkClassHelper(Date.class, pd.getPropertyType(), arg.getArgClass())) {
-							DateFormat df = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase()), Context.getLocale());
-							CustomDateEditor ed = new CustomDateEditor(df, true, 10);
-							ed.setAsText(arg.getArgValue());
-							argVal = ed.getValue();
-						} else if (pd.getPropertyType().isEnum()) {
-							log.debug("F");
-							List<Enum> constants = Arrays.asList((Enum[]) pd.getPropertyType().getEnumConstants());
-							for (Enum e : constants) {
-								if (e.toString().equals(arg.getArgValue())) {
-									argVal = e;
-									break;
-								}
+						Object argVal = null;
+						if (arg.hasValue()) {
+							String[] toLookAt = null;
+							List<Object> vals = new ArrayList<Object>();
+							boolean isList = false;
+							if (arg.getArgValue() instanceof String[]) {
+								isList = true;
+								toLookAt = (String[]) arg.getArgValue();
+							} else {
+								toLookAt = new String[1];
+								toLookAt[0] = (String) arg.getArgValue();
 							}
-						} else if (pd.getPropertyType().equals(Object.class)) {
-							log.debug("G fell through to plain object, treated as string");
-							argVal = arg.getArgValue();
+							for (String val : toLookAt) {
+								Object thisVal = null;
+								if (checkClassHelper(Location.class, pd.getPropertyType(), arg.getArgClass())) {
+									LocationEditor le = new LocationEditor();
+									le.setAsText(val);
+									thisVal = le.getValue();
+								} else if (checkClassHelper(String.class, pd.getPropertyType(), arg.getArgClass())) {
+									thisVal = val;
+								} else if (checkClassHelper(Integer.class, pd.getPropertyType(), arg.getArgClass())) {
+									try {
+										thisVal = Integer.valueOf(val);
+									} catch (Exception ex) { }
+								} else if (checkClassHelper(Boolean.class, pd.getPropertyType(), arg.getArgClass())) {
+									try {
+										thisVal = Boolean.valueOf(val);
+									} catch (Exception ex) { }
+								} else if (checkClassHelper(Double.class, pd.getPropertyType(), arg.getArgClass())) {
+									try {
+										thisVal = Double.valueOf(val);
+									} catch (Exception ex) { }
+								} else if (checkClassHelper(Concept.class, pd.getPropertyType(), arg.getArgClass())) {
+									ConceptEditor ce = new ConceptEditor();
+									ce.setAsText(val);
+									Concept concept = (Concept) ce.getValue();
+									// force a lazy-load of this concept's name
+									if (concept != null)
+										concept.getName(Context.getLocale());
+									thisVal = concept;
+								} else if (checkClassHelper(Program.class, pd.getPropertyType(), arg.getArgClass())) {
+									ProgramEditor pe = new ProgramEditor();
+									pe.setAsText(val);
+									Program program = (Program) pe.getValue();
+									// force a lazy-load of the name
+									if (program != null)
+										program.getConcept().getName();
+									thisVal = program;
+								} else if (checkClassHelper(ProgramWorkflowState.class, pd.getPropertyType(), arg.getArgClass())) {
+									ProgramWorkflowStateEditor ed = new ProgramWorkflowStateEditor();
+									ed.setAsText(val);
+									ProgramWorkflowState state = (ProgramWorkflowState) ed.getValue();
+									// force a lazy-load of the name
+									if (state != null)
+										state.getConcept().getName();
+									thisVal = state;
+								} else if (checkClassHelper(EncounterType.class, pd.getPropertyType(), arg.getArgClass())) {
+									EncounterTypeEditor ed = new EncounterTypeEditor();
+									ed.setAsText(val);
+									thisVal = ed.getValue();
+								} else if (checkClassHelper(Drug.class, pd.getPropertyType(), arg.getArgClass())) {
+									DrugEditor ed = new DrugEditor();
+									ed.setAsText(val);
+									thisVal = ed.getValue();
+								} else if (checkClassHelper(Date.class, pd.getPropertyType(), arg.getArgClass())) {
+									DateFormat df = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase()), Context.getLocale());
+									CustomDateEditor ed = new CustomDateEditor(df, true, 10);
+									ed.setAsText(val);
+									thisVal = ed.getValue();
+								} else if (checkClassHelper(PersonAttributeType.class, pd.getPropertyType(), arg.getArgClass())) {
+									PersonAttributeTypeEditor ed = new PersonAttributeTypeEditor();
+									ed.setAsText(val);
+									thisVal = ed.getValue();
+								} else if (pd.getPropertyType().isEnum()) {
+									List<Enum> constants = Arrays.asList((Enum[]) pd.getPropertyType().getEnumConstants());
+									for (Enum e : constants) {
+										if (e.toString().equals(val)) {
+											thisVal = e;
+											break;
+										}
+									}
+								} else if (pd.getPropertyType().equals(Object.class)) {
+									log.debug("fell through to plain object, treated as string");
+									thisVal = val;
+								}
+								if (thisVal != null)
+									vals.add(thisVal);
+							}
+							if (isList && vals.size() > 0)
+								argVal = vals;
+							else if (vals.size() > 0)
+								argVal = vals.get(0);
 						}
 						if (argVal != null) {
 							log.debug("about to set " + arg.getArgName() + " to " + argVal);

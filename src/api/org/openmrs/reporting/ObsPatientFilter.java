@@ -1,9 +1,7 @@
 package org.openmrs.reporting;
 
 import java.text.DateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Locale;
 
 import org.openmrs.Concept;
@@ -11,6 +9,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PatientSetService.TimeModifier;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsUtil;
 
 public class ObsPatientFilter extends AbstractPatientFilter implements PatientFilter {
 
@@ -71,44 +70,18 @@ public class ObsPatientFilter extends AbstractPatientFilter implements PatientFi
 		}
 	}
 	
-	private Date fromDateHelper() {
-		Date ret = null;
-		if (withinLastDays != null || withinLastMonths != null) {
-			Calendar gc = new GregorianCalendar();
-			if (withinLastDays != null)
-				gc.add(Calendar.DAY_OF_MONTH, -withinLastDays);
-			if (withinLastMonths != null)
-				gc.add(Calendar.MONTH, -withinLastMonths);
-			ret = gc.getTime();
-		}
-		if (sinceDate != null && (ret == null || sinceDate.after(ret)))
-			ret = sinceDate;
-		return ret;
-	}
-	
-	private Date toDateHelper() {
-		Date ret = null;
-		if (untilDaysAgo != null || untilMonthsAgo != null) {
-			Calendar gc = new GregorianCalendar();
-			if (untilDaysAgo != null)
-				gc.add(Calendar.DAY_OF_MONTH, -untilDaysAgo);
-			if (untilMonthsAgo != null)
-				gc.add(Calendar.MONTH, -untilMonthsAgo);
-			ret = gc.getTime();
-		}
-		if (untilDate != null && (ret == null || untilDate.before(ret)))
-			ret = untilDate;
-		return ret;
-	}
-
 	public PatientSet filter(PatientSet input) {
 		PatientSetService service = Context.getPatientSetService();
-		return input.intersect(service.getPatientsHavingObs(question == null ? null : question.getConceptId(), timeModifier, modifier, value, fromDateHelper(), toDateHelper()));
+		return input.intersect(service.getPatientsHavingObs(question == null ? null : question.getConceptId(), timeModifier, modifier, value,
+				OpenmrsUtil.fromDateHelper(null, getWithinLastDays(), getWithinLastMonths(), getUntilDaysAgo(), getUntilMonthsAgo(), getSinceDate(), getUntilDate()),
+				OpenmrsUtil.toDateHelper(null, getWithinLastDays(), getWithinLastMonths(), getUntilDaysAgo(), getUntilMonthsAgo(), getSinceDate(), getUntilDate()) ));
 	}
 
 	public PatientSet filterInverse(PatientSet input) {
 		PatientSetService service = Context.getPatientSetService();
-		return input.subtract(service.getPatientsHavingObs(question == null ? null : question.getConceptId(), timeModifier, modifier, value, fromDateHelper(), toDateHelper()));
+		return input.subtract(service.getPatientsHavingObs(question == null ? null : question.getConceptId(), timeModifier, modifier, value,
+				OpenmrsUtil.fromDateHelper(null, getWithinLastDays(), getWithinLastMonths(), getUntilDaysAgo(), getUntilMonthsAgo(), getSinceDate(), getUntilDate()),
+				OpenmrsUtil.toDateHelper(null, getWithinLastDays(), getWithinLastMonths(), getUntilDaysAgo(), getUntilMonthsAgo(), getSinceDate(), getUntilDate()) ));
 	}
 	
 	public String getDescription() {

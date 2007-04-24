@@ -778,7 +778,7 @@ public class OpenmrsUtil {
     /**
      * Save the given xml document to the given outfile
      * @param doc Document to be saved
-     * @param outFile fiel pointer to the location the xml file is to be saved to
+     * @param outFile file pointer to the location the xml file is to be saved to
      */
     public static void saveDocument(Document doc, File outFile) {
     	OutputStream outStream = null;
@@ -842,5 +842,60 @@ public class OpenmrsUtil {
     	
     	return ret;
 	}
+    
+    public static Date fromDateHelper(
+    		Date comparisonDate,
+    		Integer withinLastDays, Integer withinLastMonths,
+    		Integer untilDaysAgo, Integer untilMonthsAgo,
+    		Date sinceDate, Date untilDate) {
+
+    	Date ret = null;
+		if (withinLastDays != null || withinLastMonths != null) {
+			Calendar gc = new GregorianCalendar();
+			gc.setTime(comparisonDate != null ? comparisonDate : new Date());
+			if (withinLastDays != null)
+				gc.add(Calendar.DAY_OF_MONTH, -withinLastDays);
+			if (withinLastMonths != null)
+				gc.add(Calendar.MONTH, -withinLastMonths);
+			ret = gc.getTime();
+		}
+		if (sinceDate != null && (ret == null || sinceDate.after(ret)))
+			ret = sinceDate;
+		return ret;
+    }
+    
+    public static Date toDateHelper(
+    		Date comparisonDate,
+    		Integer withinLastDays, Integer withinLastMonths,
+    		Integer untilDaysAgo, Integer untilMonthsAgo,
+    		Date sinceDate, Date untilDate) {
+
+    	Date ret = null;
+		if (untilDaysAgo != null || untilMonthsAgo != null) {
+			Calendar gc = new GregorianCalendar();
+			gc.setTime(comparisonDate != null ? comparisonDate : new Date());
+			if (untilDaysAgo != null)
+				gc.add(Calendar.DAY_OF_MONTH, -untilDaysAgo);
+			if (untilMonthsAgo != null)
+				gc.add(Calendar.MONTH, -untilMonthsAgo);
+			ret = gc.getTime();
+		}
+		if (untilDate != null && (ret == null || untilDate.before(ret)))
+			ret = untilDate;
+		return ret;
+    }
+    
+    /**
+     * @param collection
+     * @param elements
+     * @return Whether _collection_ contains any of _elements_
+     */
+    public static <T> boolean containsAny(Collection<T> collection, Collection<T> elements) {
+    	for (T obj : elements) {
+    		if (collection.contains(obj))
+    			return true;
+    	}
+    	return false;
+    }
 
 }

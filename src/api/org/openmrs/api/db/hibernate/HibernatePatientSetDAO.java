@@ -49,6 +49,7 @@ import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
+import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
@@ -1589,26 +1590,39 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	 * @throws DAOException
 	 */
 	@SuppressWarnings("unchecked")
-	public Map<Integer, Collection<Integer>> getActiveDrugIds(Collection<Integer> patientIds, Date onDate) throws DAOException {
+	public Map<Integer, Collection<Integer>> getActiveDrugIds(Collection<Integer> patientIds, Date fromDate, Date toDate) throws DAOException {
 		HashSet<Integer> idsLookup = patientIds == null ? null :
 			(patientIds instanceof HashSet ? (HashSet<Integer>) patientIds : new HashSet<Integer>(patientIds));
-		if (onDate == null) {
-			onDate = new Date();
-		}
+
 		Map<Integer, Collection<Integer>> ret = new HashMap<Integer, Collection<Integer>>();
 		
+		List<String> whereClauses = new ArrayList<String>();
+		whereClauses.add("o.voided = false");
+		if (toDate != null)
+			whereClauses.add("o.start_date <= :toDate");
+		if (fromDate != null) {
+			whereClauses.add("(o.auto_expire_date is null or o.auto_expire_date > :fromDate)");
+			whereClauses.add("(o.discontinued_date is null or o.discontinued_date > :fromDate)");
+		}
 		
-		String sql = "select patient_id, drug_inventory_id " +
-				"from encounter e" +
-				"    inner join orders o on e.encounter_id = o.encounter_id " +
-				"    inner join drug_order d on o.order_id = d.order_id " +
-				"where o.start_date <= :onDate" +
-				"  and (o.auto_expire_date is null or o.auto_expire_date > :onDate) " +
-				"  and (o.discontinued_date is null or o.discontinued_date > :onDate) ";
-		log.debug("onDate=" + onDate + " sql= " + sql);
+		String sql = "select o.patient_id, d.drug_inventory_id " +
+				"from orders o " +
+				"    inner join drug_order d on o.order_id = d.order_id ";
+		for (ListIterator<String> i = whereClauses.listIterator(); i.hasNext(); ) {
+			sql += (i.nextIndex() == 0 ? " where " : " and ");
+			sql += i.next();
+		}
+		
+		log.debug("sql= " + sql);
+
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql);
 		query.setCacheMode(CacheMode.IGNORE);
-		query.setDate("onDate", onDate);
+		
+		if (toDate != null)
+			query.setDate("toDate", toDate);
+		if (fromDate != null)
+			query.setDate("fromDate", fromDate);
+		
 		List<Object[]> results = (List<Object[]>) query.list();
 		for (Object[] row : results) {
 			Integer patientId = (Integer) row[0];
@@ -1783,4 +1797,27 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		}
 		return ret;
 	}
+	
+	public PatientSet getPatientsHavingPersonAttribute(PersonAttributeType attribute, String value) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(" select pat.patient_id from person p inner join patient pat on pat.patient_id = p.person_id inner join person_attribute a on p.person_id = a.person_id ");
+		sb.append(" where a.voided = false ");
+		if (attribute != null)
+			sb.append(" and a.person_attribute_type_id = :typeId ");
+		if (value != null)
+			sb.append(" and a.value = :value ");
+		sb.append(" group by pat.patient_id ");
+		log.debug("query: " + sb);
+		
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sb.toString());
+		if (attribute != null)
+			query.setInteger("typeId", attribute.getPersonAttributeTypeId());
+		if (value != null)
+			query.setString("value", value);
+		
+		PatientSet ps = new PatientSet();
+		ps.copyPatientIds(query.list());
+		return ps;
+	}
+	
 }

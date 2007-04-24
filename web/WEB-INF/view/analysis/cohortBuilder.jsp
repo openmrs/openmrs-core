@@ -107,20 +107,22 @@
 		else
 			str += 'value#java.lang.Object';
 		str += ',withinLastMonths#java.lang.Integer,withinLastDays#java.lang.Integer,sinceDate#java.util.Date,untilDate#java.util.Date"/>';
-		if (hl7Abbrev == 'NM')
-			str += '<select name="timeModifier"><option value="ANY">ANY</option><option value="NO">NO</option><option value="FIRST">FIRST</option><option value="LAST">LAST</option><option value="MIN">MIN</option><option value="MAX">MAX</option><option value="AVG">AVG</option></select> ';
-		else if (hl7Abbrev == 'ST' || hl7Abbrev == 'CWE')
-			str += '<select name="timeModifier"><option value="ANY">ANY</option><option value="NO">NO</option><option value="FIRST">FIRST</option><option value="LAST">LAST</option></select> ';
 		str += '<input type="hidden" name="question" value="' + concept.conceptId + '"/>';
-		str += concept.name;
+		str += 'Patients with observations whose question is ' + concept.name + '.';
+		if (hl7Abbrev == 'NM')
+			str += '<br/><br/><span style="margin-left: 40px">Which observations? <select name="timeModifier"><option value="ANY">ANY</option><option value="NO">NONE</option><option value="FIRST">FIRST</option><option value="LAST">LAST</option><option value="MIN">MIN</option><option value="MAX">MAX</option><option value="AVG">AVG</option></select></span> ';
+		else if (hl7Abbrev == 'ST' || hl7Abbrev == 'CWE')
+			str += '<br/><br/><span style="margin-left: 40px">Which observations? <select name="timeModifier"><option value="ANY">ANY</option><option value="NO">NONE</option><option value="FIRST">FIRST</option><option value="LAST">LAST</option></select></span> ';
 		if (hl7Abbrev == 'NM') {
 			str += ' <br/><br/><span style="margin-left: 40px">';
-			str += ' (optional value constraint)';
+			str += ' <spring:message code="CohortBuilder.optionalPrefix" /> What values? ';
 			str += ' <select name="modifier" id="modifier"><option value="LESS_THAN">&lt;</option><option value="LESS_EQUAL">&lt;=</option><option value="EQUAL">=</option><option value="GREATER_EQUAL">&gt;=</option><option value="GREATER_THAN">&gt;</option></select> ';
 			str += '</span>';
 		} else if (hl7Abbrev == 'ST' || hl7Abbrev == 'CWE') {
-			str += ' is ';
-			str += '<input type="hidden" name="modifier" value="EQUAL" /> ';
+			str += ' <br/><br/><span style="margin-left: 40px">';
+			str += ' <spring:message code="CohortBuilder.optionalPrefix" /> <spring:message code="CohortBuilder.whatValueQuestion" /> ';
+			str += ' <input type="hidden" name="modifier" value="EQUAL" /> ';
+			str += '</span>';
 		}
 		if (hl7Abbrev == 'NM' || hl7Abbrev == 'ST')
 			str += '<input type="text" name="value" size="10"/>';
@@ -129,17 +131,10 @@
 			lookupAnswers = true;
 		}
 		str += ' <br/><br/><span style="margin-left: 40px">';
-		str += ' (optional time constraint) within the last ';
-		str += ' <input type="text" name="withinLastMonths" value="" size="2" />';
-		str += ' months and/or';
-		str += ' <input type="text" name="withinLastDays" value="" size="2" />';
-		str += ' days';
+		str += ' <spring:message code="CohortBuilder.optionalPrefix" /> <spring:message code="CohortBuilder.whenPrefix" /> <spring:message code="CohortBuilder.withinMonthsAndDays" arguments="withinLastMonths,withinLastDays" />';
 		str += '</span>';
 		str += ' <br/><br/><span style="margin-left: 40px">';
-		str += ' (optional date constraint) since ';
-		str += ' <input type="text" name="sinceDate" size="10" value="" onClick="showCalendar(this)" />';
-		str += ' until ';
-		str += ' <input type="text" name="untilDate" size="10" value="" onClick="showCalendar(this)" />';
+		str += ' <spring:message code="CohortBuilder.optionalPrefix" /> <spring:message code="CohortBuilder.dateRangePrefix" /> <spring:message code="CohortBuilder.fromDateToDate" arguments="sinceDate,untilDate" />';
 		str += '</span>';
 		str += ' <br/><br/><input type="submit" value="Search"/>';
 		str += ' &nbsp;&nbsp;&nbsp;&nbsp;<input type="button" value="<spring:message code="general.cancel" />" onClick="hideLayer(\'concept_filter_box\')"/>';
@@ -159,22 +154,24 @@
 		str += '<input type="hidden" name="method" value="addDynamicFilter"/>';
 		str += '<input type="hidden" name="filterClass" value="org.openmrs.reporting.ObsPatientFilter" />';
 		str += '<input type="hidden" name="vars" value="timeModifier#org.openmrs.api.PatientSetService$TimeModifier,modifier#org.openmrs.api.PatientSetService$Modifier,value#org.openmrs.Concept,withinLastMonths#java.lang.Integer,withinLastDays#java.lang.Integer,sinceDate#java.util.Date,untilDate#java.util.Date"/>';
-		str += '<select name="timeModifier"><option value="ANY">ANY</option><option value="NO">NO</option></select> ';
-		str += ' observation whose value is ';
+		str += ' Patients with observations whose <i>answer</i> is ';
 		str += '<input type="hidden" name="modifier" value="EQUAL" /> ';
 		str += '<input type="hidden" name="value" value="' + concept.conceptId + '"/>';
 		str += concept.name;
 		str += ' <br/><br/><span style="margin-left: 40px">';
-		str += ' (optional time constraint) within the last ';
+		str += ' <select name="timeModifier"><option value="ANY">Patients who have these observations</option><option value="NO">Patients who do not have these observations</option></select> ';
+		str += '</span>';
+		str += ' <br/><br/><span style="margin-left: 40px">';
+		str += ' <spring:message code="CohortBuilder.optionalPrefix" /> When? Within the last ';
 		str += ' <input type="text" name="withinLastMonths" value="" size="2" />';
 		str += ' months and/or';
 		str += ' <input type="text" name="withinLastDays" value="" size="2" />';
 		str += ' days';
 		str += '</span>';
 		str += ' <br/><br/><span style="margin-left: 40px">';
-		str += ' (optional date constraint) since ';
+		str += ' <spring:message code="CohortBuilder.optionalPrefix" /> Date range? since ';
 		str += ' <input type="text" name="sinceDate" size="10" value="" onClick="showCalendar(this)" />';
-		str += ' until ';
+		str += ' and/or until ';
 		str += ' <input type="text" name="untilDate" size="10" value="" onClick="showCalendar(this)" />';
 		str += '</span>';
 		str += ' <br/><br/><input type="submit" value="Search"/>';
@@ -184,7 +181,7 @@
 	}
 	
 	function possibleFilterHelper(filter) {
-		return '<div style="background: #e0e0e0; border: 1px #808080 solid; padding: 0.5em; margin: 0.5em">' + filter + '</div>';
+		return '<div style="background: #f2f2f2; border: 1px #808080 solid; padding: 0.5em; margin: 0.5em">' + filter + '</div>';
 	}
 		
 	function showPossibleFilters(concept) {
@@ -446,10 +443,10 @@
 <div id="cohort_builder_add_filter" style="padding: 4px">
 	<b><spring:message code="general.search"/></b>
 
-	<span style="padding: 3px; margin: 0px 3px; background-color: #ffffaa; border: 1px black solid">
+	<span style="padding: 3px; margin: 0px 3px; background-color: #ffffdd; border: 1px black solid">
 		<a href="javascript:handleSavedFilterMenuButton()"><spring:message code="CohortBuilder.savedFilterMenu"/></a>
 	</span>
-	<div id="saved_filters" style="position: absolute; z-index: 1; border: 1px black solid; background-color: yellow; display: none"></div>
+	<div id="saved_filters" style="position: absolute; z-index: 1; border: 1px black solid; background-color: #ffffdd; display: none"></div>
 
 	<c:if test="${fn:length(model.shortcuts) > 0}">
 		<c:forEach var="shortcut" items="${model.shortcuts}" varStatus="status">
@@ -500,8 +497,10 @@
 		<ul>
 			<li>&nbsp;</li>
 			<li><a id="searchTab_concept" href="#" onClick="changeSearchTab(this, 'concept_to_filter_search')"><spring:message code="CohortBuilder.searchTab.concept"/></a></li>
+			<li><a id="searchTab_attribute" href="#" onClick="changeSearchTab(this)"><spring:message code="CohortBuilder.searchTab.personAttribute"/></a></li>
 			<li><a id="searchTab_encounter" href="#" onClick="changeSearchTab(this)"><spring:message code="CohortBuilder.searchTab.encounter"/></a></li>
 			<li><a id="searchTab_program" href="#" onClick="changeSearchTab(this)"><spring:message code="CohortBuilder.searchTab.program"/></a></li>
+			<li><a id="searchTab_drugOrder" href="#" onClick="changeSearchTab(this)"><spring:message code="CohortBuilder.searchTab.drugOrder"/></a></li>
 			<li><a id="searchTab_location" href="#" onClick="changeSearchTab(this)"><spring:message code="CohortBuilder.searchTab.location"/></a></li>
 			<li><a id="searchTab_composition" href="#" onClick="changeSearchTab(this, 'composition')"><spring:message code="CohortBuilder.searchTab.composition"/></a></li>
 		</ul>
@@ -514,6 +513,62 @@
 			<div id="concept_filter_box" style="display: none; border-top: 1px #aaaaaa solid"></div>
 		</div>
 		
+		<div id="searchTab_attribute_content" style="display: none">
+			<spring:message code="CohortBuilder.addAttributeFilter"/>
+			<br/>
+			<div style="background: #f2f2f2; border: 1px #808080 solid; padding: 0.5em; margin: 0.5em">
+				<form method="post" action="cohortBuilder.form">
+					<input type="hidden" name="method" value="addDynamicFilter"/>
+					<input type="hidden" name="filterClass" value="org.openmrs.reporting.PatientCharacteristicFilter" />
+					<input type="hidden" name="vars" value="gender#java.lang.String,minBirthdate#java.util.Date,maxBirthdate#java.util.Date,minAge#java.lang.Integer,maxAge#java.lang.Integer,aliveOnly#java.lang.Boolean,deadOnly#java.lang.Boolean" />
+					Search by demographics:
+					<br/><br/>
+					Gender:
+						<select name="gender">
+							<option value=""><spring:message code="general.allOptions" /></option>
+							<option value="m"><spring:message code="Person.gender.male" /></option>
+							<option value="f"><spring:message code="Person.gender.female" /></option>
+						</select>
+					<br/>
+					Age (current):
+						between <input type="text" name="minAge" size="3"/> and <input type="text" name="maxAge" size="3"/> years
+					<br/>
+					Birthdate:
+						between <input type="text" name="minBirthdate" size="10" onClick="showCalendar(this)" /> and <input type="text" name="maxBirthdate" size="10" onClick="showCalendar(this)" />
+					<br/>
+						<input type="checkbox" name="aliveOnly" value="true" /> Alive only
+						&nbsp;&nbsp;&nbsp;&nbsp;
+						<input type="checkbox" name="deadOnly" value="true" /> Dead only
+					<br/>
+					<input type="submit" value="<spring:message code="general.search"/>" />
+					<br/>
+				</form>
+			</div>
+			<div style="background: #f2f2f2; border: 1px #808080 solid; padding: 0.5em; margin: 0.5em">
+				<form method="post" action="cohortBuilder.form">
+					<input type="hidden" name="method" value="addDynamicFilter"/>
+					<input type="hidden" name="filterClass" value="org.openmrs.reporting.PersonAttributeFilter" />
+					<input type="hidden" name="vars" value="attribute#org.openmrs.PersonAttributeType,value#java.lang.String" />
+					
+					Search by person attributes
+
+					<p/>
+					Which attribute?
+					<select name="attribute">
+						<option value="">Any attribute value</option>
+						<c:forEach var="attributeType" items="${model.personAttributeTypes}">
+							<option value="${attributeType.personAttributeTypeId}">${attributeType.name}</option>
+						</c:forEach>
+					</select>
+					&nbsp;&nbsp;&nbsp;
+					<spring:message code="CohortBuilder.whatValueQuestion" />
+					<input type="text" name="value" size="30"/>
+					<br/>
+					<input type="submit" value="<spring:message code="general.search"/>" />
+				</form>
+			</div>
+		</div>
+		
 		<div id="searchTab_encounter_content" style="display: none">
 			<spring:message code="CohortBuilder.addEncounterFilter"/>
 			<ul><li>
@@ -523,7 +578,7 @@
 				<input type="hidden" name="vars" value="encounterType#org.openmrs.EncounterType,location#org.openmrs.Location,atLeastCount#java.lang.Integer,atMostCount#java.lang.Integer,withinLastMonths#java.lang.Integer,withinLastDays#java.lang.Integer,sinceDate#java.util.Date,untilDate#java.util.Date" />
 				Patients having encounters
 				<br/><span style="margin-left: 40px">
-						(optional) of type
+						<spring:message code="CohortBuilder.optionalPrefix" /> of type
 							<select name="encounterType">
 								<option value=""><spring:message code="general.allOptions"/></option>
 								<c:forEach var="encType" items="${model.encounterTypes}">
@@ -532,7 +587,7 @@
 							</select>
 					</span>
 				<br/><span style="margin-left: 40px">
-						(optional) at location
+						<spring:message code="CohortBuilder.optionalPrefix" /> at location
 							<select name="location">
 								<option value=""><spring:message code="general.allOptions"/></option>
 								<c:forEach var="location" items="${model.locations}">
@@ -541,17 +596,17 @@
 							</select>
 					</span>
 				<br/><span style="margin-left: 40px">
-					(optional)
+					<spring:message code="CohortBuilder.optionalPrefix" />
 						at least this many <input type="text" size="3" name="atLeastCount" />
 						and up to this many <input type="text" size="3" name="atMostCount" />
 					</span>
 				<br/><span style="margin-left: 40px">
-					(optional)
+					<spring:message code="CohortBuilder.optionalPrefix" />
 						within the last <input type="text" size="3" name="withinLastMonths" />months
 						and <input type="text" size="3" name="withinLastDays" />days
 					</span>
 				<br/><span style="margin-left: 40px">
-					(optional)
+					<spring:message code="CohortBuilder.optionalPrefix" />
 						since <input type="text" size="10" name="sinceDate" onClick="showCalendar(this)" />
 						until <input type="text" size="10" name="untilDate" onClick="showCalendar(this)" />
 					</span>
@@ -583,17 +638,58 @@
 				State: <select name="state" id="state"></select>			
 				
 				<br/><span style="margin-left: 40px">
-					(optional)
+					<spring:message code="CohortBuilder.optionalPrefix" />
 						on or after:<input type="text" size="10" name="sinceDate" onClick="showCalendar(this)" />
 					</span>
 				<br/><span style="margin-left: 40px">
-					(optional)
+					<spring:message code="CohortBuilder.optionalPrefix" />
 						on or before:<input type="text" size="10" name="untilDate" onClick="showCalendar(this)" />
 					</span>
 				
 				<br/>
 				<input type="submit" value="<spring:message code="general.search" />"/>
 				<input type="button" value="<spring:message code="general.cancel" />" onClick="hideLayer('program_filter_box')"/>
+			</form>
+			</li></ul>
+		</div>
+		
+		<div id="searchTab_drugOrder_content" >
+			<spring:message code="CohortBuilder.addDrugOrderFilter"/>
+			<ul><li>
+			<form method="post" action="cohortBuilder.form">
+				<input type="hidden" name="method" value="addDynamicFilter"/>
+				<input type="hidden" name="filterClass" value="org.openmrs.reporting.DrugOrderFilter" />
+				<input type="hidden" name="vars" value="withinLastMonths#java.lang.Integer,withinLastDays#java.lang.Integer,sinceDate#java.util.Date,untilDate#java.util.Date,anyOrAll#org.openmrs.api.PatientSetService$GroupMethod,drugList#*org.openmrs.Drug" />
+				Patients taking
+				<select name="anyOrAll">
+					<option value="ALL">All</option>
+					<option value="ANY">Any</option>
+					<option value="NONE">None</option>
+				</select>
+				of the following drugs:
+				(hold down CTRL if you want to select more than one)
+				<br/><br/>
+				<span style="margin-left: 40px">
+					<select name="drugList" multiple="true" size="10">
+					<c:forEach var="drug" items="${model.drugs}">
+						<option value="${drug.drugId}"/>${drug.name}</option>
+					</c:forEach>
+					</select>
+				</span>
+				<br/>
+				
+				<br/>
+					<spring:message code="CohortBuilder.optionalPrefix" />
+					<spring:message code="CohortBuilder.whenPrefix" />
+					<spring:message code="CohortBuilder.withinMonthsAndDays" arguments="withinLastMonths,withinLastDays" />
+				<br/>
+					<spring:message code="CohortBuilder.optionalPrefix" />
+					<spring:message code="CohortBuilder.dateRangePrefix" />
+					<spring:message code="CohortBuilder.fromDateToDate" arguments="sinceDate,untilDate" />
+				<br/>
+				
+				<br/>
+				<input type="submit" value="<spring:message code="general.search" />"/>
 			</form>
 			</li></ul>
 		</div>
@@ -827,7 +923,7 @@
 	<div id="cohort_builder_preview_patients" style="display: none; margin-bottom: 15px"></div>
 
 	<div id="cohort_builder_actions" style="position: relative; border: 1px black solid">
-		<div id="saveCohortDiv" style="position: absolute; margin: 1em; padding: 1em; bottom: 0px; border: 2px black solid; background-color: #e0e0e0; display: none">
+		<div id="saveCohortDiv" style="position: absolute; margin: 1em; padding: 1em; bottom: 0px; border: 2px black solid; background-color: #f2f2f2; display: none">
 			<b><u>Save Cohort (i.e. list of patient ids)</u></b>
 			<br/><br/>
 			<table>
@@ -858,7 +954,7 @@
 		<c:if test="${fn:length(model.links) > 0}">
 			<div id="_linkMenu" style="	border: 1px solid black; background-color: #f0f0a0; position: absolute; bottom: 0px; padding-right: 1.2em; z-index: 1; display: none">
 				<br />
-				&nbsp;&nbsp;&nbsp;<span style="width: 200px; text-align: right;"><a href="#" onClick="javascript:hideLayer('_linkMenu');" >[Close]</a></span>
+				&nbsp;&nbsp;&nbsp;<span style="width: 200px; text-align: right;"><a href="javascript:hideLayer('_linkMenu');" >[Close]</a></span>
 				<ul>
 					<c:forEach var="item" items="${model.links}" varStatus="loopStatus">
 						<li>
@@ -898,7 +994,7 @@
 		</a>
 
 		<c:if test="${fn:length(model.links) > 0}">
-			<a href="javascript:toggleLayer('_linkMenu')" onclick="return false;" style="border: 1px black solid"><spring:message code="Analysis.linkButton"/></a>
+			<a href="#" onClick="javascript:toggleLayer('_linkMenu')" style="border: 1px black solid"><spring:message code="Analysis.linkButton"/></a>
 		</c:if>
 
 	</div>

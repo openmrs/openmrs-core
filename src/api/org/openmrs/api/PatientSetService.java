@@ -14,6 +14,7 @@ import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
+import org.openmrs.PersonAttributeType;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
@@ -105,6 +106,29 @@ public interface PatientSetService {
 			Collection<Integer> patientIds, Collection<Integer> takingIds,
 			Date onDate);
 
+	/**
+	 * Returns a PatientSet of patient who had drug orders for a set of drugs active between a pair of dates.
+	 * Can also be used to find patient with no drug orders on that date.
+	 * @param patientIds Collection of patientIds you're interested in. NULL means all patients.
+	 * @param drugIds Collection of drugIds the patient is taking. (Or the empty set to mean "any drug" or NULL to mean "no drugs")
+	 * @param groupMethod whether to do NONE, ALL, or ANY of the list of specified ids.
+	 * @param fromDate Beginning of date range to look at (NULL defaults to toDate if that isn't null, or now() if it is.) 
+	 * @param toDate End of date range to look at (NULL defaults to fromDate if that isn't null, or now() if it is.)
+	 */
+	@Transactional(readOnly=true)
+	public PatientSet getPatientsHavingDrugOrder(
+			Collection<Integer> patientIds, Collection<Integer> drugIds, GroupMethod groupMethod,
+			Date fromDate, Date toDate);
+	
+	/**
+	 * At least one of attribute and value must be non-null
+	 * @param attribute if not null, look for this attribute
+	 * @param value if not null, look for this value
+	 * @return PatientSet of patients who have a person attribute (optionally) with attributeType of attribute and (optionally) value of value.
+	 */
+	@Transactional(readOnly=true)
+	public PatientSet getPatientsHavingPersonAttribute(PersonAttributeType attribute, String value);
+	
 	@Transactional(readOnly=true)
 	public Map<Integer, String> getShortPatientDescriptions(
 			Collection<Integer> patientIds);
@@ -368,6 +392,7 @@ public interface PatientSetService {
 	// probably should combine this with TimeModifier
 	public enum GroupMethod {
 		ANY,
+		ALL,
 		NONE;
 	}
 	

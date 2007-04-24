@@ -30,10 +30,12 @@ public class ProgramStatePatientFilter extends AbstractPatientFilter implements
 		
 		ret.append("Patients in program ");
 		
-		if (program.getConcept() == null)
-			ret.append(" <CONCEPT> ");
-		else {
-			ret.append(getConceptName(program.getConcept()));
+		if (getProgram() != null) {
+			if (getProgram().getConcept() == null)
+				ret.append(" <CONCEPT> ");
+			else {
+				ret.append(getConceptName(program.getConcept()));
+			}
 		}
 		
 		if (state != null) {

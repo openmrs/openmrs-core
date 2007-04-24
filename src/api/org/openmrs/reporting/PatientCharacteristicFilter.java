@@ -73,11 +73,11 @@ public class PatientCharacteristicFilter extends AbstractPatientFilter implement
 				ret.append("Female");
 			}
 		}
-		ret.append(" patients ");
+		ret.append(gender == null ? "Patients " : " patients ");
+		
 		DateFormat df = null;
 		if (minBirthdate != null || maxBirthdate != null) {
-			//df = DateFormat.getDateInstance(DateFormat.SHORT, locale);
-			df = DateFormat.getDateInstance(DateFormat.SHORT);
+			df = DateFormat.getDateInstance(DateFormat.SHORT, Context.getLocale());
 		}
 		if (minBirthdate != null) {
 			if (maxBirthdate != null) {
@@ -102,10 +102,10 @@ public class PatientCharacteristicFilter extends AbstractPatientFilter implement
 			}
 		}
 		if (aliveOnly != null && aliveOnly) {
-			ret.append(" alive");
+			ret.append(" who are alive");
 		}
 		if (deadOnly != null && deadOnly) {
-			ret.append(" dead");
+			ret.append(" who are dead");
 		}
 		return ret.toString();
 	}
