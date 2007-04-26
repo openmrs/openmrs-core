@@ -10,12 +10,15 @@
 
 <openmrs:htmlInclude file="/scripts/dojoConfig.js" />
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
+
+<script type="text/javascript">
+	dojo.require("dojo.widget.openmrs.UserSearch");
+	dojo.require("dojo.widget.openmrs.OpenmrsPopup");
+</script>
+
 <script type="text/javascript">
 	
 	dojo.addOnLoad( function() {
-		
-		dojo.require("dojo.widget.openmrs.UserSearch");
-		dojo.require("dojo.widget.openmrs.OpenmrsPopup");
 		
 		dojo.event.topic.subscribe("${formFieldName}_search/select", 
 			function(msg) {
