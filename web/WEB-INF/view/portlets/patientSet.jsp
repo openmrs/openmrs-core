@@ -198,8 +198,8 @@
 					</tr>
 					<tr>
 						<th>#</th>
-						<th><spring:message code="Patient.name"/></th>
-						<th><spring:message code="Patient.gender"/></th>
+						<th><spring:message code="Person.name"/></th>
+						<th><spring:message code="Person.gender"/></th>
 						<th><spring:message code="Person.age"/></th>
 						<th></th>
 					</tr>

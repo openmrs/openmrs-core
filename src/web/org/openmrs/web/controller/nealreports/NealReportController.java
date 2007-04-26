@@ -42,6 +42,7 @@ import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.reporting.PatientSet;
+import org.openmrs.reporting.LocationFilter.Method;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -139,14 +140,12 @@ public class NealReportController implements Controller {
 		attributeHelper(attributesToGet, attributeNamesForReportMaker, "Patient.gender", General.SEX);
 		attributeHelper(attributesToGet, attributeNamesForReportMaker, "Patient.dead", General.HAS_DIED);
 		attributeHelper(attributesToGet, attributeNamesForReportMaker, "Patient.deathDate", General.DEATH_DATE);
-		attributeHelper(attributesToGet, attributeNamesForReportMaker, "Patient.healthCenter", General.SITE);
 		attributeHelper(attributesToGet, attributeNamesForReportMaker, "PersonAddress.stateProvince", General.PROVINCE);
 		attributeHelper(attributesToGet, attributeNamesForReportMaker, "PersonAddress.countyDistrict", General.DISTRICT);
 		attributeHelper(attributesToGet, attributeNamesForReportMaker, "PersonAddress.cityVillage", General.SECTOR);
 		attributeHelper(attributesToGet, attributeNamesForReportMaker, "PersonAddress.neighborhoodCell", General.CELL);
 		attributeHelper(attributesToGet, attributeNamesForReportMaker, "PersonAddress.address1", General.UMUDUGUDU);
 		
-		// General.SITE (currently using most recent encounter location)
 		// General.ADDRESS
 		// General.USER_ID (this is actually patient identifier)
 		// General.DUE_DATE if pregnant
@@ -179,7 +178,7 @@ public class NealReportController implements Controller {
 		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "TRANSFER IN DATE", General.TRANSFERRED_IN_DATE);
 		
 		long l = System.currentTimeMillis();
-
+		
 		for (String attr : attributesToGet) {
 			String nameToUse = attributeNamesForReportMaker.get(attr);
 			Map<Integer, Object> temp = pss.getPatientAttributes(ps, attr, false);
@@ -205,6 +204,26 @@ public class NealReportController implements Controller {
 				} else {
 					log.debug("No value for " + nameToUse);
 				}
+			}
+		}
+
+		// quick hack: switch from Patient.healthCenter to PersonAttribute('Health Center')
+		// old version: attributeHelper(attributesToGet, attributeNamesForReportMaker, "Patient.healthCenter", General.SITE);
+		{
+			Map<Integer, Object> temp = pss.getPersonAttributes(ps, "Health Center", "Location", "locationId", "name", false);
+			for (Map.Entry<Integer, Object> e : temp.entrySet()) {
+				if (e.getValue() == null)
+					continue;
+
+				Integer ptId = e.getKey();
+				Map<String, String> holder = (Map<String, String>) patientDataHolder.get(ptId);
+				if (holder == null) {
+					holder = new HashMap<String, String>();
+					patientDataHolder.put(ptId, holder);
+				}
+				String nameToUse = General.SITE;
+				String valToUse = e.getValue().toString();
+				holder.put(nameToUse, valToUse);
 			}
 		}
 		
