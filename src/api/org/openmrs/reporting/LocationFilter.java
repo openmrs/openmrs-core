@@ -45,15 +45,14 @@ public class LocationFilter extends AbstractPatientFilter implements PatientFilt
 	
 	private PatientSet filterHelper(PatientSet input) {
 		PatientSetService service = Context.getPatientSetService();
+		String locIdStr = location.getLocationId().toString();
 		if (method == Method.PATIENT_TABLE) {
 			List<Integer> ret = new ArrayList<Integer>();
-			Map<Integer, Object> temp = service.getPatientAttributes(input, "Patient.healthCenter", false);
+			Map<Integer, Object> temp = service.getPersonAttributes(input, "Health Center", "Location", "locationId", "locationId", false);
 			for (Map.Entry<Integer, Object> e : temp.entrySet()) {
 				if (e.getValue() == null)
 					continue;
-				//Location l = Context.getPatientService().getLocation((Integer) e.getValue());
-				Location l = (Location) e.getValue();
-				if (location.equals(l))
+				if (locIdStr.equals(e.getValue().toString()))
 					ret.add(e.getKey());
 			}
 			return new PatientSet().copyPatientIds(ret);
