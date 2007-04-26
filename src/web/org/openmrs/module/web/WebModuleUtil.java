@@ -149,9 +149,11 @@ public class WebModuleUtil {
 						String absPath = realPath + "/WEB-INF/view/module/" + mod.getModuleId() + "/" + filepath;
 						// get the output file
 						File outFile = new File(absPath.replace("/", File.separator));
-						if (!outFile.exists() && entry.isDirectory())
-							outFile.mkdirs();
-						else {
+						if (entry.isDirectory()) {
+							if (!outFile.exists()) {
+								outFile.mkdirs();
+							}
+						} else {
 							//if (outFile.getName().endsWith(".jsp") == false)
 							//	outFile = new File(absPath.replace("/", File.separator) + MODULE_NON_JSP_EXTENSION);
 							
