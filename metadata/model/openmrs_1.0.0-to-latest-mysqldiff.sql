@@ -2410,6 +2410,59 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 delimiter ;
 call diff_procedure('1.0.57');
 
+
+#--------------------------------------
+# OpenMRS Datamodel version 1.0.58
+# Ben Wolfe            Apr 26 2007
+# This will ALWAYS drop/create the 'update_user_password'
+# Adding the user password change stored procedure
+#--------------------------------------
+
+DROP PROCEDURE IF EXISTS update_user_password;
+
+delimiter //
+
+CREATE PROCEDURE update_user_password (
+	IN new_password VARCHAR(255),
+	IN new_salt VARCHAR(255),
+	IN new_changed_by INT,
+	IN new_date_changed DATETIME,
+	IN user_id_to_change INT
+	)
+  	BEGIN
+    	UPDATE
+    		`users`
+    	SET
+    		`password` = new_password,
+    		`salt` = new_salt,
+    		`changed_by` = new_changed_by,
+    		`date_changed` = new_date_changed
+    	WHERE
+    		`user_id` = user_id_to_change;
+    		
+    	SELECT user_id_to_change as user_id FROM DUAL;
+  	END;
+//
+
+delimiter ;
+
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+ 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+		SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+	
+		UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+	
+	END IF;
+ END;
+//
+delimiter ;
+call diff_procedure('1.0.58');
+
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script
 #-----------------------------------

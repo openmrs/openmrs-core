@@ -2,7 +2,6 @@ package org.openmrs.api;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.openmrs.Concept;

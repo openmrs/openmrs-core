@@ -155,7 +155,7 @@ public class SchedulerFormController extends SimpleFormController {
 		
 		Long interval = task.getRepeatInterval();
 		
-		if (interval < 60)
+		if (interval == null || interval < 60)
 			map.put("units", "seconds");
 		else if (interval < 3600) {
 			map.put("units", "minutes");

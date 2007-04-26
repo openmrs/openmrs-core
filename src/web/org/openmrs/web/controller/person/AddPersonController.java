@@ -153,12 +153,14 @@ public class AddPersonController extends SimpleFormController {
     	
     	if (personList.size() < 1 && Context.isAuthenticated()) {
     		getParametersFromRequest(request);
-    		
+    		if (viewType == null)
+				viewType = "edit";
+			
 			log.debug("name: " + name + " birthyear: " + birthyear + " age: " + age + " gender: " + gender);
 			
 			if (!name.equals("") || !birthyear.equals("") || !age.equals("") || !gender.equals("")) {
 				mav.clear();
-				mav.setView(new RedirectView(getPersonURL("", personType, "edit", request)));
+				mav.setView(new RedirectView(getPersonURL("", personType, viewType, request)));
 			}
     	}
     	

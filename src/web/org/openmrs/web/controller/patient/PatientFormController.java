@@ -291,7 +291,11 @@ public class PatientFormController extends PersonFormController {
 							String msg = getMessageSourceAccessor().getMessage("error.identifier.formatInvalid", args);
 							errors.rejectValue("identifiers", msg);
 						}
+						
+						if (errors.hasErrors())
+							return showForm(request, response, errors);
 					}
+					
 					
 			} // end "if we're not deleting the patient"
 		}		
@@ -393,7 +397,7 @@ public class PatientFormController extends PersonFormController {
 									log.debug("No cause of death yet, let's create one.");
 									
 									obsDeath = new Obs();
-									obsDeath.setPatient(patient);
+									obsDeath.setPerson(patient);
 									obsDeath.setConcept(causeOfDeath);
 									Location loc = Context.getEncounterService().getLocationByName("Unknown Location");
 									if ( loc == null ) loc = Context.getEncounterService().getLocation(new Integer(1));
@@ -457,7 +461,7 @@ public class PatientFormController extends PersonFormController {
 					view = view + "?patientId=" + patient.getPatientId();
 					return new ModelAndView(new RedirectView(view));
 				} else {
-					return new ModelAndView(new RedirectView(getFormView()));
+					return showForm(request, response, errors);
 				}
 			}
 		}

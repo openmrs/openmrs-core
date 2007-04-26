@@ -575,6 +575,7 @@ public class AdministrationServiceImpl implements AdministrationService {
 			updateConceptWord(concept);
 			if (count++ > 1000) {
 				Context.clearSession();
+				count = 0;
 			}
 		}
 		

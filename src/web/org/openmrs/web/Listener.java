@@ -345,11 +345,13 @@ public final class Listener extends ContextLoaderListener {
 			String filepath = System.getenv(env);
 
 			if (filepath != null) {
-				log.debug("Loading runtime properties from: " + filepath);
+				log.debug("Atempting to load runtime properties from: " + filepath + " ");
 				try {
 					propertyStream = new FileInputStream(filepath);
 				}
-				catch (IOException e) { }
+				catch (IOException e) {
+					log.warn("Unable to load properties file with path: " + filepath + ". (derived from environment variable " + env + ")", e);
+				}
 			} else {
 				log.warn("Couldn't find an environment variable named " + env);
 				log.debug("Available environment variables are named: " + System.getenv().keySet());
@@ -360,21 +362,25 @@ public final class Listener extends ContextLoaderListener {
 			
 			if (propertyStream == null) {
 				filepath = OpenmrsUtil.getApplicationDataDirectory() + filename;
-				log.warn("Looking for property file: " + filepath);
+				log.debug("Attempting to load property file from: " + filepath);
 				try {
 					propertyStream = new FileInputStream(filepath);
 				}
-				catch (IOException e) { }	
+				catch (IOException e) {
+					log.warn("Unable to load properties file: " + filepath, e);
+				}	
 			}
 			
 			// look in current directory last
 			if (propertyStream == null) {
 				filepath = filename;
-				log.warn("Looking for property file in directory: " + filepath);
+				log.debug("Attempting to load properties file in directory: " + filepath);
 				try {
 					propertyStream = new FileInputStream(filepath);
 				}
-				catch (IOException e) { }
+				catch (IOException e) {
+					log.warn("Unable to load properties file: " + new File(filepath).getAbsolutePath(), e);
+				}
 			}
 			
 			if (propertyStream == null)

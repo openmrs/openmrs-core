@@ -98,7 +98,7 @@
 </c:if>
 <openmrs:forEachDisplayAttributeType personType="" displayType="all" var="attrType">
 	<tr>
-		<td><spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}"/></td>
+		<td><spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" text="${attrType.name}"/></td>
 		<td>
 			<spring:bind path="attributeMap">
 				<openmrs:fieldGen 

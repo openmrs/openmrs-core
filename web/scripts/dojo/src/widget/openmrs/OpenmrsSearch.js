@@ -341,6 +341,7 @@ dojo.widget.defineWidget(
 		else if (this.objectsFound.length == 1 && this.allowAutoJump()) {
 			// this was a new redundant 'search' with enter key pressed and only one object
 			dojo.debug('This was a redundant search and auto jumping to single object returned');
+			//this.objectsFound.push(objectsFound[0]);
 			this.selectObject(1);
 		}
 		else {
@@ -557,7 +558,7 @@ dojo.widget.defineWidget(
 					this.hideHighlight();
 				}
 				else if (this.allowAutoJump()){
-					this.objectsFound.push(objects[0]);
+					this.allObjectsFound.push(objects[0]);
 					this.selectObject(1);
 					return;
 				}

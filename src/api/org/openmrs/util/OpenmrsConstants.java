@@ -265,6 +265,7 @@ public class OpenmrsConstants {
 	public static final String SUPERUSER_ROLE = "System Developer";
 	public static final String ANONYMOUS_ROLE = "Anonymous";
 	public static final String AUTHENTICATED_ROLE = "Authenticated";
+	public static final String PROVIDER_ROLE = "Provider";
 	
 	public static final Map<String, String> CORE_ROLES() {
 		Map<String, String> roles = new HashMap<String, String>();
@@ -272,6 +273,7 @@ public class OpenmrsConstants {
 		roles.put(SUPERUSER_ROLE, "Assigned to developers of OpenMRS. Gives additional access to change fundamental structure of the database model.");
 		roles.put(ANONYMOUS_ROLE, "Privileges for non-authenticated users.");
 		roles.put(AUTHENTICATED_ROLE, "Privileges gained once authentication has been established.");
+		roles.put(PROVIDER_ROLE, "All users with the 'Provider' role will appear as options in the default Infopath ");
 		
 		return roles;
 	}

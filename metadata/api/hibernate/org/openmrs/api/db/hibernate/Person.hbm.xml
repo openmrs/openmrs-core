@@ -53,7 +53,7 @@
 		<!-- Associations -->
 
 		<!-- bi-directional one-to-many association to PersonAddress -->
-		<set name="addresses" lazy="true" inverse="true"
+		<set name="addresses" lazy="false" inverse="true"
 			cascade="all-delete-orphan"
 			order-by="voided asc, preferred desc, date_created desc">
 			<key column="person_id" not-null="true" />

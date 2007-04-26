@@ -9,7 +9,7 @@
 
 		<key column="user_id" not-null="true" on-delete="cascade" />
 		
-		<property name="userId" type="int" not-null="true"
+		<property name="userId" type="int" not-null="true" access="field"
 			column="user_id" update="false" insert="false" />
 		
 		<property name="systemId" type="java.lang.String"
@@ -65,5 +65,46 @@
 		</map>
 
 	</joined-subclass>
+	
+	<sql-query name="updateUserPassword" >
+	    <return-scalar column="user_id" type="integer" />
+		<query-param name="newHashedPassword" type="string"/>
+		<query-param name="newHashedSalt" type="string"/>
+		<query-param name="changedByUserId" type="Integer"/>
+		<query-param name="dateChanged" type="java.lang.Date"/>
+		<query-param name="userId" type="Integer"/>
 
+		call update_user_password(:newHashedPassword, :newHashedSalt, :changedByUserId, :dateChanged, :userId);
+	</sql-query>
+	
+	<database-object>
+		<create>
+			CREATE 
+				PROCEDURE update_user_password (
+				IN new_password VARCHAR(255),
+				IN new_salt VARCHAR(255),
+				IN new_changed_by INT,
+				IN new_date_changed DATETIME,
+				IN user_id_to_change INT
+				)
+	  		BEGIN
+	    		UPDATE
+	    			`users`
+	    		SET
+	    			`password` = new_password,
+	    			`salt` = new_salt,
+	    			`changed_by` = new_changed_by,
+	    			`date_changed` = new_date_changed
+	    		WHERE
+	    			`user_id` = user_id_to_change;
+	    			
+	    		SELECT user_id_to_change as user_id FROM DUAL;
+	  		END;
+	  		
+		</create>
+		<drop>
+			DROP PROCEDURE IF EXISTS update_user_password;
+		</drop>
+	</database-object>
+	
 </hibernate-mapping>

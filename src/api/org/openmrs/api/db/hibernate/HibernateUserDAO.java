@@ -262,17 +262,25 @@ public class HibernateUserDAO implements
 		if (authUser == null)
 			authUser = u;
 		
-		log.debug("udpating password");
+		log.debug("updating password");
 		//update the user with the new password
 		String salt = Security.getRandomToken();
 		String newPassword = Security.encodeString(pw + salt);
-		sessionFactory.getCurrentSession().createQuery("update User set password = :pw, salt = :salt, changed_by = :changed, date_changed = :date where user_id = :userid")
-			.setParameter("pw", newPassword)
-			.setParameter("salt", salt)
-			.setParameter("userid", u.getUserId())
-			.setParameter("changed", authUser.getUserId())
-			.setParameter("date", new Date())
-			.executeUpdate();
+//		sessionFactory.getCurrentSession().createQuery("update Person p set password = :pw, salt = :salt, changed_by = :changed, date_changed = :date where personId = :user")
+//			.setParameter("pw", newPassword)
+//			.setParameter("salt", salt)
+//			.setParameter("user", u)
+//			.setParameter("changed", authUser.getUserId())
+//			.setParameter("date", new Date())
+//			.executeUpdate();
+		
+		sessionFactory.getCurrentSession().getNamedQuery("updateUserPassword")
+		.setString("newHashedPassword", newPassword)
+		.setString("newHashedSalt", salt)
+		.setInteger("changedByUserId", authUser.getUserId())
+		.setDate("dateChanged", new Date())
+		.setInteger("userId", u.getUserId())
+		.list();
 	}
 
 	/**
@@ -304,11 +312,23 @@ public class HibernateUserDAO implements
 		//update the user with the new password
 		String salt = Security.getRandomToken();
 		String newPassword = Security.encodeString(pw2 + salt);
-		sessionFactory.getCurrentSession().createQuery("update User set password = :pw, salt = :salt where user_id = :userid")
-			.setParameter("pw", newPassword)
-			.setParameter("salt", salt)
-			.setParameter("userid", u.getUserId())
-			.executeUpdate();
+		
+		// TODO Figure out why Hibernate won't allow this.  Currently gives this error:
+		// java.lang.ClassCastException org.hibernate.hql.ast.tree.IdentNode
+		// error only arrived after creating the User/Patient/Person joined-subclass mapping
+		//sessionFactory.getCurrentSession().createQuery("update User set password = :pw, salt = :salt where user_id = :userid")
+		//	.setParameter("pw", newPassword)
+		//	.setParameter("salt", salt)
+		//	.setParameter("userid", u.getUserId())
+		//	.executeUpdate();
+
+		sessionFactory.getCurrentSession().getNamedQuery("updateUserPassword")
+			.setString("newHashedPassword", newPassword)
+			.setString("newHashedSalt", salt)
+			.setInteger("changedByUserId", u.getUserId())
+			.setDate("dateChanged", new Date())
+			.setInteger("userId", u.getUserId())
+			.list();
 	}
 	
 	public void changeQuestionAnswer(String pw, String question, String answer) throws DAOException {
