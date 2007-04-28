@@ -2,6 +2,7 @@ package org.openmrs.web.taglib;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -11,6 +12,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.api.ConceptService;
@@ -18,6 +20,7 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
+import org.openmrs.reporting.ReportObject;
 import org.openmrs.util.OpenmrsConstants;
 
 
@@ -29,6 +32,7 @@ public class ForEachRecordTag extends BodyTagSupport {
 
 	private String name;
 	private Object select;
+	private String reportObjectType;
 	private Iterator records;
 
 	public int doStartTag() {
@@ -52,6 +56,18 @@ public class ForEachRecordTag extends BodyTagSupport {
 		else if (name.equals("tribe")) {
 			PatientService ps = Context.getPatientService();
 			records = ps.getTribes().iterator();
+		}
+		else if (name.equals("cohort")) {
+			List<Cohort> cohorts = Context.getCohortService().getCohorts();
+			records = cohorts.iterator();
+		}
+		else if (name.equals("reportObject")) {
+			List ret = null;
+			if (reportObjectType != null)
+				ret = Context.getReportService().getReportObjectsByType(reportObjectType); 
+			else
+				ret = Context.getReportService().getAllReportObjects();
+			records = ret.iterator();
 		}
 		else if (name.equals("civilStatus")) {
 			ConceptService cs = Context.getConceptService();
@@ -169,4 +185,13 @@ public class ForEachRecordTag extends BodyTagSupport {
 	public void setSelect(Object select) {
 		this.select = select;
 	}
+
+	public String getReportObjectType() {
+		return reportObjectType;
+	}
+
+	public void setReportObjectType(String reportObjectType) {
+		this.reportObjectType = reportObjectType;
+	}
+	
 }

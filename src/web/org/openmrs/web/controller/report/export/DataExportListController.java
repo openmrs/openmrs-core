@@ -178,12 +178,12 @@ public class DataExportListController extends SimpleFormController {
 				generatedDates.put(report, new Date(file.lastModified()));
 				
 				Long size = file.length(); //returned in bytes
-				if (size < 1000)
-					generatedSizes.put(report, size + "B");
-				else if (size < 100000)
-					generatedSizes.put(report, size/1000 + "kB");
+				if (size > 1024*1024)
+					generatedSizes.put(report, size/(1024*1024) + "MB");
+				else if (size > 1024)
+					generatedSizes.put(report, size/1024 + "kB");
 				else 
-					generatedSizes.put(report, size/100000 + "MB");
+					generatedSizes.put(report, size + "B");
 			}
 		}
 		

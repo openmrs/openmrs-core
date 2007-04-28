@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.reporting.PatientSet;
 
 public class Cohort implements Serializable {
 
@@ -26,6 +27,12 @@ public class Cohort implements Serializable {
 
 	public Cohort() {
 		memberIds = new HashSet<Integer>();
+	}
+	
+	public PatientSet toPatientSet() {
+		PatientSet ret = new PatientSet();
+		ret.copyPatientIds(getMemberIds());
+		return ret;
 	}
 	
 	public String toString() {

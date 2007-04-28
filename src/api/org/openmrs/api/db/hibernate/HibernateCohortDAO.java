@@ -1,5 +1,7 @@
 package org.openmrs.api.db.hibernate;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.SessionFactory;
@@ -25,6 +27,10 @@ public class HibernateCohortDAO implements CohortDAO {
 
 	public Cohort getCohort(Integer id) throws DAOException {
 		return (Cohort) sessionFactory.getCurrentSession().get(Cohort.class, id);
+	}
+	
+	public List<Cohort> getCohorts() throws DAOException {
+		return (List<Cohort>) sessionFactory.getCurrentSession().createQuery("from Cohort order by name").list();
 	}
 
 }

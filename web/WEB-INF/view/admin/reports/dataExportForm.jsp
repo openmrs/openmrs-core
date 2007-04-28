@@ -460,18 +460,37 @@
 	<div id="defineCohort" class="box">
 		<table>
 			<tr>
-				<th colspan="2"><spring:message code="DataExport.patientMatch"/></th>
+				<th colspan="2"><spring:message code="DataExport.cohortMatch"/></th>
 			</tr>
 			<tr>
-				<td colspan="2">
-					<div id="newPatient" style="display: none">
-						<div id="patientSearch">
-							<!-- dojo search widget/popup are added here via the addNew() function -->
-						</div>
-					</div>
-					<input type="button" onClick="return addNew(this, 'newPatient');" class="addNew" id="newPatientButton" value='<spring:message code="DataExport.addPatient" />' />
-					<br/>
+				<td><spring:message code="Cohort.title"/></td>
+				<td>
+					<spring:bind path="dataExport.cohortId">
+						<select name="cohortId">
+							<option value=""></option>
+							<openmrs:forEachRecord name="cohort">
+								<option value="${record.cohortId}" <c:if test="${status.value == record.cohortId}">selected</c:if>>${record.name}</option>
+							</openmrs:forEachRecord>
+						</select>
+					</spring:bind>
 				</td>
+			</tr>
+			<tr>
+				<td colspan="2" align="center"><spring:message code="general.andOr"/></td>
+			</tr>
+			<tr>
+				<td><spring:message code="CohortDefinition.title"/></td>
+				<td>
+					<spring:bind path="dataExport.cohortDefinitionId">
+						<select name="cohortDefinitionId">
+							<option value=""></option>
+							<openmrs:forEachRecord name="reportObject" reportObjectType="Patient Filter">
+								<option value="${record.reportObjectId}" <c:if test="${status.value == record.reportObjectId}">selected</c:if>>${record.name}</option>
+							</openmrs:forEachRecord>
+						</select>
+					</spring:bind>
+				</td>
+			</td>
 			<tr>
 				<th colspan="2"><spring:message code="DataExport.encounterMatch"/></th>
 			</tr>
@@ -496,6 +515,20 @@
 							</openmrs:forEachRecord>
 						</select>
 					</spring:bind>
+				</td>
+			</tr>
+			<tr>
+				<th colspan="2"><spring:message code="DataExport.patientMatch"/></th>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<div id="newPatient" style="display: none">
+						<div id="patientSearch">
+							<!-- dojo search widget/popup are added here via the addNew() function -->
+						</div>
+					</div>
+					<input type="button" onClick="return addNew(this, 'newPatient');" class="addNew" id="newPatientButton" value='<spring:message code="DataExport.addPatient" />' />
+					<br/>
 				</td>
 			</tr>
 		</table>

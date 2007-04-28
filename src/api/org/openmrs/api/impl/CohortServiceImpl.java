@@ -1,5 +1,7 @@
 package org.openmrs.api.impl;
 
+import java.util.List;
+
 import org.openmrs.Cohort;
 import org.openmrs.api.CohortService;
 import org.openmrs.api.context.Context;
@@ -31,6 +33,10 @@ public class CohortServiceImpl implements CohortService {
 
 	public Cohort getCohort(Integer id) {
 		return getCohortDAO().getCohort(id); 
+	}
+	
+	public List<Cohort> getCohorts() {
+		return getCohortDAO().getCohorts();
 	}
 
 }
