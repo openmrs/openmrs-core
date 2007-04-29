@@ -30,7 +30,7 @@ public class OpenmrsConstants {
 	public static boolean OBSCURE_PATIENTS = false;
 	public static String OBSCURE_PATIENTS_GIVEN_NAME = "Demo";
 	public static String OBSCURE_PATIENTS_MIDDLE_NAME = null;
-	public static String OBSCURE_PATIENTS_FAMILY_NAME = "Patient";
+	public static String OBSCURE_PATIENTS_FAMILY_NAME = "Person";
 
 	public static final String REGEX_LARGE = "[!\"#\\$%&'\\(\\)\\*,+-\\./:;<=>\\?@\\[\\\\\\\\\\]^_`{\\|}~]";
 	public static final String REGEX_SMALL = "[!\"#\\$%&'\\(\\)\\*,\\./:;<=>\\?@\\[\\\\\\\\\\]^_`{\\|}~]";

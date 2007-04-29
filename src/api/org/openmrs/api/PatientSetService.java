@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.openmrs.Concept;
+import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
@@ -119,6 +120,16 @@ public interface PatientSetService {
 	public PatientSet getPatientsHavingDrugOrder(
 			Collection<Integer> patientIds, Collection<Integer> drugIds, GroupMethod groupMethod,
 			Date fromDate, Date toDate);
+	
+	/**
+	 * @return A PatientSet of patients who had drug order for particular drugs or generics, with start dates within a range, with end dates within a range, and a reason for discontinuation. 
+	 */
+	@Transactional(readOnly=true)
+	public PatientSet getPatientsHavingDrugOrder(
+			List<Drug> drug, List<Concept> drugConcept,
+			Date startDateFrom, Date startDateTo,
+			Date stopDateFrom, Date stopDateTo,
+			Boolean discontinued, List<Concept> discontinuedReason);
 	
 	/**
 	 * At least one of attribute and value must be non-null

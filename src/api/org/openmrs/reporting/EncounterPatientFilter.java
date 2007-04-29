@@ -9,9 +9,9 @@ import org.openmrs.EncounterType;
 import org.openmrs.Location;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsUtil;
 
-public class EncounterPatientFilter extends AbstractPatientFilter implements
-		PatientFilter {
+public class EncounterPatientFilter extends AbstractPatientFilter implements PatientFilter {
 
 	private EncounterType encounterType;
 	private Integer atLeastCount;
@@ -61,7 +61,10 @@ public class EncounterPatientFilter extends AbstractPatientFilter implements
 	
 	public PatientSet filter(PatientSet input) {
 		PatientSetService service = Context.getPatientSetService();
-		return input.intersect(service.getPatientsHavingEncounters(encounterType, location, fromDateHelper(), toDateHelper(), atLeastCount, atMostCount));
+		return input.intersect(service.getPatientsHavingEncounters(encounterType, location,
+				OpenmrsUtil.fromDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate),
+				OpenmrsUtil.toDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate),
+				atLeastCount, atMostCount));
 	}
 
 	public PatientSet filterInverse(PatientSet input) {

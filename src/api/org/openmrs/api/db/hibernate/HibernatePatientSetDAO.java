@@ -39,6 +39,7 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.StringType;
 import org.openmrs.Concept;
+import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
@@ -1814,6 +1815,99 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			query.setInteger("typeId", attribute.getPersonAttributeTypeId());
 		if (value != null)
 			query.setString("value", value);
+		
+		PatientSet ps = new PatientSet();
+		ps.copyPatientIds(query.list());
+		return ps;
+	}
+	
+	public PatientSet getPatientsHavingDrugOrder(
+			List<Drug> drugList, List<Concept> drugConceptList,
+			Date startDateFrom, Date startDateTo,
+			Date stopDateFrom, Date stopDateTo,
+			Boolean discontinued, List<Concept> discontinuedReason) {
+		if (drugList != null && drugList.size() == 0)
+			drugList = null;
+		if (drugConceptList != null && drugConceptList.size() == 0)
+			drugConceptList = null;
+		StringBuilder sb = new StringBuilder();
+		sb.append(" select distinct patient.id from DrugOrder where voided = false ");
+		if (drugList != null)
+			sb.append(" and drug.id in (:drugIdList) ");
+		if (drugConceptList != null)
+			sb.append(" and concept.id in (:drugConceptIdList) ");
+		if (startDateFrom != null && startDateTo != null) {
+			sb.append(" and startDate between :startDateFrom and :startDateTo ");
+		} else {
+			if (startDateFrom != null)
+				sb.append(" and startDate >= :startDateFrom ");
+			if (startDateTo != null)
+				sb.append(" and startDate <= :startDateTo ");
+		}
+		if (discontinuedReason != null && discontinuedReason.size() > 0)
+			sb.append(" and discontinuedReason.id in (:discontinuedReasonIdList) ");
+		if (discontinued != null) {
+			sb.append(" and discontinued = :discontinued ");
+			if (discontinued == true) {
+				if (stopDateFrom != null && stopDateTo != null) {
+					sb.append(" and discontinuedDate between :stopDateFrom and :stopDateTo ");
+				} else {
+					if (stopDateFrom != null)
+						sb.append(" and discontinuedDate >= :stopDateFrom ");
+					if (stopDateTo != null)
+						sb.append(" and discontinuedDate <= :stopDateTo ");
+				}
+			} else { // discontinued == false
+				if (stopDateFrom != null && stopDateTo != null) {
+					sb.append(" and autoExpireDate between :stopDateFrom and :stopDateTo ");
+				} else {
+					if (stopDateFrom != null)
+						sb.append(" and autoExpireDate >= :stopDateFrom ");
+					if (stopDateTo != null)
+						sb.append(" and autoExpireDate <= :stopDateTo ");
+				}
+			}
+		} else { // discontinued == null, so we need either
+			if (stopDateFrom != null && stopDateTo != null) {
+				sb.append(" and coalesce(discontinuedDate, autoExpireDate) between :stopDateFrom and :stopDateTo ");
+			} else {
+				if (stopDateFrom != null)
+					sb.append(" and coalesce(discontinuedDate, autoExpireDate) >= :stopDateFrom ");
+				if (stopDateTo != null)
+					sb.append(" and coalesce(discontinuedDate, autoExpireDate) <= :stopDateTo ");
+			}
+		}
+		log.debug("sql = " + sb);
+		Query query = sessionFactory.getCurrentSession().createQuery(sb.toString());
+
+		if (drugList != null) {
+			List<Integer> ids = new ArrayList<Integer>();
+			for (Drug d : drugList)
+				ids.add(d.getDrugId());
+			query.setParameterList("drugIdList", ids);
+		}
+		if (drugConceptList != null) {
+			List<Integer> ids = new ArrayList<Integer>();
+			for (Concept c : drugConceptList)
+				ids.add(c.getConceptId());
+			query.setParameterList("drugConceptIdList", ids);
+		}
+		if (startDateFrom != null)
+			query.setDate("startDateFrom", startDateFrom);
+		if (startDateTo != null)
+			query.setDate("startDateTo", startDateTo);
+		if (stopDateFrom != null)
+			query.setDate("stopDateFrom", stopDateFrom);
+		if (stopDateTo != null)
+			query.setDate("stopDateTo", stopDateTo);
+		if (discontinued != null)
+			query.setBoolean("discontinued", discontinued);
+		if (discontinuedReason != null && discontinuedReason.size() > 0) {
+			List<Integer> ids = new ArrayList<Integer>();
+			for (Concept c : discontinuedReason)
+				ids.add(c.getConceptId());
+			query.setParameterList("discontinuedReasonIdList", ids);
+		}
 		
 		PatientSet ps = new PatientSet();
 		ps.copyPatientIds(query.list());

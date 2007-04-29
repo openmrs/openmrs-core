@@ -369,6 +369,13 @@ public class ConceptServiceImpl implements ConceptService {
 	}
 	
 	/**
+	 * @see org.openmrs.api.ConceptService#getConceptsByClass(org.openmrs.ConceptClass)
+	 */
+	public List<Concept> getConceptsByClass(ConceptClass cc) {
+		return getConceptDAO().getConceptsByClass(cc);
+	}
+	
+	/**
 	 * @see org.openmrs.api.ConceptService#getSetsContainingConcept(org.openmrs.Concept)
 	 */
 	public List<ConceptSet> getSetsContainingConcept(Concept concept) {
@@ -713,6 +720,10 @@ public class ConceptServiceImpl implements ConceptService {
 		String locked = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_CONCEPTS_LOCKED, "false");
 		if (locked.toLowerCase().equals("true"))
 			throw new ConceptsLockedException();
+	}
+	
+	public List<Concept> getConceptsWithDrugsInFormulary() {
+		return getConceptDAO().getConceptsWithDrugsInFormulary();
 	}
 
 }

@@ -6,6 +6,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -19,12 +21,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.ConceptAnswer;
 import org.openmrs.Drug;
 import org.openmrs.EncounterType;
 import org.openmrs.Location;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflowState;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.cohort.CohortSearchHistory;
 import org.openmrs.reporting.AbstractReportObject;
@@ -102,6 +106,40 @@ public class CohortBuilderController implements Controller {
 				}
 			}
 			
+			ConceptService cs = Context.getConceptService();
+			// TODO: generalize this beyond PIH data model
+			List<Concept> orderStopReasons = new ArrayList<Concept>();
+			{
+				Concept c = cs.getConceptByName("REASON ORDER STOPPED");
+				if (c != null)
+					orderStopReasons.addAll(cs.getConceptsInSet(c));
+				if (c != null && c.getAnswers() != null)
+					for (ConceptAnswer ca : c.getAnswers())
+						orderStopReasons.add(ca.getAnswerConcept());
+			}
+			
+			List<Concept> genericDrugs = new ArrayList<Concept>();
+			/*
+			{
+				ConceptClass drugClass = Context.getConceptService().getConceptClassByName("Drug");
+				if (drugClass != null) {
+					genericDrugs = Context.getConceptService().getConceptsByClass(drugClass);
+					Collections.sort(genericDrugs, new Comparator<Concept>() {
+							public int compare(Concept left, Concept right) {
+								return left.getName().getName().compareTo(right.getName().getName());
+							}
+						});
+				} else
+					log.warn("Cannot find ConceptClass named 'Drug'.");
+			}
+			*/
+			genericDrugs = Context.getConceptService().getConceptsWithDrugsInFormulary();
+			Collections.sort(genericDrugs, new Comparator<Concept>() {
+					public int compare(Concept left, Concept right) {
+						return left.getName().getName().compareTo(right.getName().getName());
+					}
+				});
+			
 			model.put("savedFilters", savedFilters);
 			model.put("searchHistory", history);
 			model.put("links", linkHelper());
@@ -109,6 +147,8 @@ public class CohortBuilderController implements Controller {
 			model.put("encounterTypes", Context.getEncounterService().getEncounterTypes());
 			model.put("locations", Context.getEncounterService().getLocations());
 			model.put("drugs", Context.getConceptService().getDrugs());
+			model.put("drugConcepts", genericDrugs);
+			model.put("orderStopReasons", orderStopReasons);
 			model.put("personAttributeTypes", Context.getPersonService().getPersonAttributeTypes());
 			model.put("shortcuts", shortcuts);
 		}
@@ -142,10 +182,8 @@ public class CohortBuilderController implements Controller {
 					log.error("this line is missing a ( or a ): " + spec);
 				setClassName(spec.substring(1, spec.indexOf('(')));
 				String s = spec.substring(spec.indexOf('(') + 1, spec.lastIndexOf(')'));
-				log.debug("Looking at arg list: " + s);
 				String[] t = s.split(",");
 				for (String arg : t) {
-					log.debug("looking at arg: " + arg);
 					if (arg.startsWith("\'") && arg.endsWith("\'")) {
 						temp.add(new ArgHolder(null, arg.substring(1, arg.length() - 1), null));
 					} else {

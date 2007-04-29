@@ -655,43 +655,96 @@
 		
 		<div id="searchTab_drugOrder_content" >
 			<spring:message code="CohortBuilder.addDrugOrderFilter"/>
-			<ul><li>
-			<form method="post" action="cohortBuilder.form">
-				<input type="hidden" name="method" value="addDynamicFilter"/>
-				<input type="hidden" name="filterClass" value="org.openmrs.reporting.DrugOrderFilter" />
-				<input type="hidden" name="vars" value="withinLastMonths#java.lang.Integer,withinLastDays#java.lang.Integer,sinceDate#java.util.Date,untilDate#java.util.Date,anyOrAll#org.openmrs.api.PatientSetService$GroupMethod,drugList#*org.openmrs.Drug" />
-				Patients taking
-				<select name="anyOrAll">
-					<option value="ALL">All</option>
-					<option value="ANY">Any</option>
-					<option value="NONE">None</option>
-				</select>
-				of the following drugs:
-				(hold down CTRL if you want to select more than one)
-				<br/><br/>
-				<span style="margin-left: 40px">
-					<select name="drugList" multiple="true" size="10">
-					<c:forEach var="drug" items="${model.drugs}">
-						<option value="${drug.drugId}"/>${drug.name}</option>
-					</c:forEach>
+			<div style="background: #f2f2f2; border: 1px #808080 solid; padding: 0.5em; margin: 0.5em">
+				<form method="post" action="cohortBuilder.form">
+					<input type="hidden" name="method" value="addDynamicFilter"/>
+					<input type="hidden" name="filterClass" value="org.openmrs.reporting.DrugOrderFilter" />
+					<input type="hidden" name="vars" value="withinLastMonths#java.lang.Integer,withinLastDays#java.lang.Integer,sinceDate#java.util.Date,untilDate#java.util.Date,anyOrAll#org.openmrs.api.PatientSetService$GroupMethod,drugList#*org.openmrs.Drug" />
+					<b>Patients taking specific drugs</b>
+					<br/><br/>
+					<select name="anyOrAll">
+						<option value="ALL">All</option>
+						<option value="ANY">Any</option>
+						<option value="NONE">None</option>
 					</select>
-				</span>
-				<br/>
-				
-				<br/>
-					<spring:message code="CohortBuilder.optionalPrefix" />
-					<spring:message code="CohortBuilder.whenPrefix" />
-					<spring:message code="CohortBuilder.withinMonthsAndDays" arguments="withinLastMonths,withinLastDays" />
-				<br/>
-					<spring:message code="CohortBuilder.optionalPrefix" />
-					<spring:message code="CohortBuilder.dateRangePrefix" />
-					<spring:message code="CohortBuilder.fromDateToDate" arguments="sinceDate,untilDate" />
-				<br/>
-				
-				<br/>
-				<input type="submit" value="<spring:message code="general.search" />"/>
-			</form>
-			</li></ul>
+					of the following drugs:
+					(hold down CTRL if you want to select more than one, or leave blank if you don't care which drugs)
+					<br/><br/>
+					<span style="margin-left: 40px">
+						<select name="drugList" multiple="true" size="10">
+						<c:forEach var="drug" items="${model.drugs}">
+							<option value="${drug.drugId}"/>${drug.name}</option>
+						</c:forEach>
+						</select>
+					</span>
+					<br/>
+					
+					<br/>
+						<spring:message code="CohortBuilder.optionalPrefix" />
+						<spring:message code="CohortBuilder.whenPrefix" />
+						<spring:message code="CohortBuilder.withinMonthsAndDays" arguments="withinLastMonths,withinLastDays" />
+					<br/>
+						<spring:message code="CohortBuilder.optionalPrefix" />
+						<spring:message code="CohortBuilder.dateRangePrefix" />
+						<spring:message code="CohortBuilder.fromDateToDate" arguments="sinceDate,untilDate" />
+					<br/>
+					
+					<br/>
+					<input type="submit" value="<spring:message code="general.search" />"/>
+				</form>
+			</div>
+			<div style="background: #f2f2f2; border: 1px #808080 solid; padding: 0.5em; margin: 0.5em">
+				<form method="post" action="cohortBuilder.form">
+					<input type="hidden" name="method" value="addDynamicFilter"/>
+					<input type="hidden" name="filterClass" value="org.openmrs.reporting.DrugOrderStopFilter" />
+					<input type="hidden" name="vars" value="withinLastMonths#java.lang.Integer,withinLastDays#java.lang.Integer,sinceDate#java.util.Date,untilDate#java.util.Date,drugList#*org.openmrs.Drug,genericDrugList#*org.openmrs.Concept,discontinued#java.lang.Boolean,discontinuedReasonList#*org.openmrs.Concept" />
+					<input type="hidden" name="discontinued" value="true" />
+					<b>Patients who stopped or changed a drug</b>
+					<br/><br/>
+						<spring:message code="CohortBuilder.optionalPrefix" />
+						<spring:message code="CohortBuilder.whenPrefix" />
+						<spring:message code="CohortBuilder.withinMonthsAndDays" arguments="withinLastMonths,withinLastDays" />
+					<br/>
+						<spring:message code="CohortBuilder.optionalPrefix" />
+						<spring:message code="CohortBuilder.dateRangePrefix" />
+						<spring:message code="CohortBuilder.fromDateToDate" arguments="sinceDate,untilDate" />
+					<br/>
+					<table><tr valign="top"><td style="padding-right: 20px">
+						<spring:message code="CohortBuilder.optionalPrefix" />
+						Reason for stop/change: <br/>
+						(leave blank for <spring:message code="general.allOptions" />)
+						<br/>
+						<select name="discontinuedReasonList" size="10" multiple="true">
+							<c:forEach var="reason" items="${model.orderStopReasons}">
+								<option value="${reason.conceptId}">${reason.name.name}</option>
+							</c:forEach>
+						</select>
+					</td><td style="padding-right: 20px">
+						<spring:message code="CohortBuilder.optionalPrefix" />
+						Only these drugs: <br/>
+						(leave blank for <spring:message code="general.allOptions" />)
+						<br/>
+						<select multiple="true" size="10" name="drugList">
+							<c:forEach var="drug" items="${model.drugs}">
+								<option value="${drug.drugId}">${drug.name}</option>
+							</c:forEach>
+						</select>
+					</td><td>
+						<spring:message code="CohortBuilder.optionalPrefix" />
+						Only these generics: <br/>
+						(leave blank for <spring:message code="general.allOptions" />)
+						<br/>
+						<select multiple="true" size="10" name="genericDrugList">
+							<c:forEach var="concept" items="${model.drugConcepts}">
+								<option value="${concept.conceptId}">${concept.name.name}</option>
+							</c:forEach>
+						</select>
+					</td></tr></table>
+					
+					<br/>
+					<input type="submit" value="<spring:message code="general.search" />"/>
+				</form>
+			</div>
 		</div>
 		
 		<div id="searchTab_location_content" style="display: none">

@@ -265,4 +265,8 @@ public interface ConceptDAO {
 	
 	public Integer getNextAvailableId();
 
+	public List<Concept> getConceptsByClass(ConceptClass cc);
+	
+	public List<Concept> getConceptsWithDrugsInFormulary();
+	
 }

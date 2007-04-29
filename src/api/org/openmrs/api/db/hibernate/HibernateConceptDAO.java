@@ -701,4 +701,16 @@ public class HibernateConceptDAO implements
 		return new Integer(big.intValue());
 	}
 	
+	@SuppressWarnings("unchecked")
+	public List<Concept> getConceptsByClass(ConceptClass cc) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Concept.class);
+		crit.add(Expression.eq("conceptClass", cc));
+		crit.add(Expression.eq("retired", false));
+		return crit.list();
+	}
+	
+	public List<Concept> getConceptsWithDrugsInFormulary() {
+		Query query = sessionFactory.getCurrentSession().createQuery("select distinct concept from Drug where voided = false");
+		return query.list();
+	}
 }

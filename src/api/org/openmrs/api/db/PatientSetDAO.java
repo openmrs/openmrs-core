@@ -5,7 +5,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.Query;
 import org.openmrs.Concept;
+import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
@@ -88,5 +90,7 @@ public interface PatientSetDAO {
 	public Map<Integer, Object> getPersonAttributes(PatientSet patients, String attributeName, String joinClass, String joinProperty, String outputColumn, boolean returnAll);
 	
 	public PatientSet getPatientsHavingPersonAttribute(PersonAttributeType attribute, String value);
+	
+	public PatientSet getPatientsHavingDrugOrder(List<Drug> drugList, List<Concept> drugConceptList, Date startDateFrom, Date startDateTo, Date stopDateFrom, Date stopDateTo, Boolean discontinued, List<Concept> discontinuedReason);
 	
 }

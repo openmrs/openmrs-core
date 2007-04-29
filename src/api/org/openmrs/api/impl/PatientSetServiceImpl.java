@@ -12,6 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptSet;
+import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
@@ -226,6 +227,14 @@ public class PatientSetServiceImpl implements PatientSetService {
 		PatientSet ps = new PatientSet();
 		ps.setPatientIds(ret);
 		return ps;
+	}
+	
+	public PatientSet getPatientsHavingDrugOrder(
+			List<Drug> drug, List<Concept> drugConcept,
+			Date startDateFrom, Date startDateTo,
+			Date stopDateFrom, Date stopDateTo,
+			Boolean discontinued, List<Concept> discontinuedReason) {
+		return getPatientSetDAO().getPatientsHavingDrugOrder(drug, drugConcept, startDateFrom, startDateTo, stopDateFrom, stopDateTo, discontinued, discontinuedReason);
 	}
 	
 	public PatientSet getPatientsHavingPersonAttribute(PersonAttributeType attribute, String value) {

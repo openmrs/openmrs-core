@@ -266,6 +266,13 @@ public interface ConceptService {
 	@Transactional(readOnly=true)
 	@Authorized({"View Concepts"})
 	public List<ConceptSet> getSetsContainingConcept(Concept concept);
+
+	/**
+	 * @return Returns all concepts in a given class 
+	 */
+	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
+	public List<Concept> getConceptsByClass(ConceptClass cc);
 	
 	/**
 	 * Return a concept numeric object given the concept id
@@ -403,4 +410,11 @@ public interface ConceptService {
 	@Transactional(readOnly=true)
 	public void checkIfLocked() throws ConceptsLockedException;
 	
+	/**
+	 * TODO: think about renaming this method
+	 * @return All concepts that occur as a Drug.concept.
+	 */
+	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
+	public List<Concept> getConceptsWithDrugsInFormulary();
 }
