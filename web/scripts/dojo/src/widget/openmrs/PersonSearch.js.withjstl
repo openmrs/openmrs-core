@@ -87,9 +87,9 @@ dojo.widget.defineWidget(
 				return td;
 		},
 		
-		getAttribute: function(obj, attrName) {
-			if (obj == null) return "";
-			return obj.attributes[attrName];
+		getAttribute: function(p, attrName) {
+			if (typeof p == 'string') return this.noCell();
+			return p.attributes[attrName];
 		},
 		
 		getCellFunctions: function() {
