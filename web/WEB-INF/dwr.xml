@@ -29,7 +29,9 @@
 		<convert converter="bean" match="org.openmrs.Tribe"/>
 		<convert converter="bean" match="org.openmrs.notification.web.dwr.AlertListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.EnteredField"/>
-		<convert converter="bean" match="org.openmrs.reporting.PatientSet"/>
+		<convert converter="bean" match="org.openmrs.reporting.PatientSet" >
+			<param name="exclude" value="patients"/>
+		</convert>
 		<convert converter="bean" match="org.openmrs.cohort.CohortSearchHistory"/>
 	
 		<create creator="new" javascript="DWRPatientService">
