@@ -80,7 +80,7 @@ public class CompoundPatientFilter extends AbstractPatientFilter implements
 
 	public String getDescription() {
 		if (super.getDescription() != null)
-			return getDescription();
+			return super.getDescription();
 		else {
 			StringBuilder ret = new StringBuilder();
 			for (Iterator<PatientFilter> i = filters.iterator(); i.hasNext(); ) {
