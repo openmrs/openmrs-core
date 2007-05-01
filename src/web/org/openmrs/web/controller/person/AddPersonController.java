@@ -49,8 +49,8 @@ public class AddPersonController extends SimpleFormController {
 		getParametersFromRequest(request);
 		
 		if ("".equals(personId)) {
-			// if they didn't pick a person, continue on to the edit screen no matter what type of view was requsted
-			if ("view".equals(viewType))
+			// if they didn't pick a person, continue on to the edit screen no matter what type of view was requsted)
+			if ("view".equals(viewType) || "shortEdit".equals(viewType))
 				viewType = "shortEdit";
 			else
 				viewType = "edit";
