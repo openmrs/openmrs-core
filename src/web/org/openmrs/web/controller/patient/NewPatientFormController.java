@@ -236,9 +236,24 @@ public class NewPatientFormController extends SimpleFormController {
 				return new ModelAndView(new RedirectView("addPerson.htm?personType=patient"));
 			}
 			
-			Patient patient = new Patient();
-			if (shortPatient.getPatientId() != null)
+			Patient patient = null;
+			if (shortPatient.getPatientId() != null) {
 				patient = ps.getPatient(shortPatient.getPatientId());
+				if (patient == null) {
+					try {
+						Person p = personService.getPerson(shortPatient.getPatientId());
+						patient = new Patient(p);
+						//patient = (Patient)p;
+					} 
+					catch (ObjectRetrievalFailureException noUserEx) {
+						// continue;
+					}
+				}
+			}
+			
+			if (patient == null)
+				patient = new Patient();
+				
 			boolean duplicate = false;
 			PersonName newName = shortPatient.getName();
 			log.error("newName: " + newName.toString());
@@ -524,12 +539,12 @@ public class NewPatientFormController extends SimpleFormController {
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		
 		Patient p = null;
-		
+		Integer id = null;
+    	
 		if (Context.isAuthenticated()) {
 			PatientService ps = Context.getPatientService();
 			String patientId = request.getParameter("patientId");
-			Integer id = null;
-	    	if (patientId != null) {
+			if (patientId != null) {
 	    		try {
 	    			id = Integer.valueOf(patientId);
 	    			p = ps.getPatient(id);
@@ -538,16 +553,20 @@ public class NewPatientFormController extends SimpleFormController {
 	    			log.warn("Invalid userId supplied: '" + patientId + "'", numberError);
 	    		}
 	    		catch (ObjectRetrievalFailureException noUserEx) {
-	    			try {
-		    			Person person = Context.getPersonService().getPerson(id);
-		    			p = new Patient(person);
-		    		}
-		    		catch (ObjectRetrievalFailureException noPersonEx) {
-		    			log.warn("There is no patient or person with id: '" + patientId + "'", noPersonEx);
-		    			throw new ServletException("There is no patient or person with id: '" + patientId + "'");
-		    		}
+	    			// continue
 	    		}
 	    	}
+		}
+		
+		if (p == null) {
+			try {
+    			Person person = Context.getPersonService().getPerson(id);
+    			p = new Patient(person);
+    		}
+    		catch (ObjectRetrievalFailureException noPersonEx) {
+    			log.warn("There is no patient or person with id: '" + id + "'", noPersonEx);
+    			throw new ServletException("There is no patient or person with id: '" + id + "'");
+    		}
 		}
 		
 		ShortPatientModel patient = new ShortPatientModel(p);
@@ -599,29 +618,31 @@ public class NewPatientFormController extends SimpleFormController {
 			String patientId = request.getParameter("patientId");
 	    	if (patientId != null && !patientId.equals("")) {
 	    		patient = ps.getPatient(Integer.valueOf(patientId));
-	    		identifiers.addAll(patient.getIdentifiers());
-	    		
-	    		// get 'other' cause of death
-	    		String propCause = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
-				Concept conceptCause = Context.getConceptService().getConceptByIdOrName(propCause);
-				if ( conceptCause != null ) {
-					Set<Obs> obssDeath = Context.getObsService().getObservations(patient, conceptCause);
-					if ( obssDeath.size() == 1 ) {
-						Obs obsDeath = obssDeath.iterator().next();
-						causeOfDeathOther = obsDeath.getValueText();
-						if ( causeOfDeathOther == null ) {
-							log.debug("cod is null, so setting to empty string");
-							causeOfDeathOther = "";
+	    		if (patient != null) {
+		    		identifiers.addAll(patient.getIdentifiers());
+		    		
+		    		// get 'other' cause of death
+		    		String propCause = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
+					Concept conceptCause = Context.getConceptService().getConceptByIdOrName(propCause);
+					if ( conceptCause != null ) {
+						Set<Obs> obssDeath = Context.getObsService().getObservations(patient, conceptCause);
+						if ( obssDeath.size() == 1 ) {
+							Obs obsDeath = obssDeath.iterator().next();
+							causeOfDeathOther = obsDeath.getValueText();
+							if ( causeOfDeathOther == null ) {
+								log.debug("cod is null, so setting to empty string");
+								causeOfDeathOther = "";
+							} else {
+								log.debug("cod is valid: " + causeOfDeathOther);
+							}
 						} else {
-							log.debug("cod is valid: " + causeOfDeathOther);
+							log.debug("obssDeath is wrong size: " + obssDeath.size());
 						}
 					} else {
-						log.debug("obssDeath is wrong size: " + obssDeath.size());
+						log.debug("No concept cause found");
 					}
-				} else {
-					log.debug("No concept cause found");
-				}
-				// end get 'other' cause of death
+					// end get 'other' cause of death
+	    		}
 	    	}
 		}
 		map.put("datePattern", dateFormat.toLocalizedPattern().toLowerCase());

@@ -1,7 +1,6 @@
 package org.openmrs;
 
 import java.util.Collection;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -49,7 +48,8 @@ public class Patient extends Person implements java.io.Serializable {
 
 	public Patient(Person person) {
 		super(person);
-		this.patientId = person.getPersonId();
+		if (person != null)
+			this.patientId = person.getPersonId();
 	}
 	
 	/**

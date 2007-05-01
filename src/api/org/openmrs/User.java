@@ -60,7 +60,8 @@ public class User extends Person implements java.io.Serializable {
 	/** constructor with person object */
 	public User(Person person) {
 		super(person);
-		userId = person.getPersonId();
+		if (person != null)
+			userId = person.getPersonId();
 	}
 	
 	/**

@@ -528,7 +528,7 @@ public class Context implements ApplicationContextAware {
 	}
 	
 	/**
-	 * Convenience method.  Passes through to userContext.addProxyPrivilege(String)
+	 * Convenience method.  Passes through to @see org.openmrs.api.context.UserContext#addProxyPrivilege(java.lang.String)
 	 */
 	public static void addProxyPrivilege(String privilege) {
 		getUserContext().addProxyPrivilege(privilege);
