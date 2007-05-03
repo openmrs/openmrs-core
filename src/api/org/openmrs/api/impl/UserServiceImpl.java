@@ -106,6 +106,10 @@ public class UserServiceImpl implements UserService {
 	public void updateUser(User user) throws APIException {
 		checkPrivileges(user);
 		setCollectionProperties(user);
+		
+		if (user.getSystemId() == null)
+			user.setSystemId(generateSystemId());
+		
 		getUserDAO().updateUser(user);
 	}
 	

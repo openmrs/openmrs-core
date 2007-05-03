@@ -14,6 +14,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+import org.openmrs.Person;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
@@ -61,23 +62,16 @@ public class HibernateUserDAO implements
 			sessionFactory.getCurrentSession().merge(user);
 		}
 		
-		/* TODO person relationships
-		// create a Person for this user as well.
-		Person person = new Person();
-		person.setUser(user);
-		sessionFactory.getCurrentSession().save(person);
-		*/
-		
-		/*
 		//update the new user with the password
 		String salt = Security.getRandomToken();
 		String hashedPassword = Security.encodeString(password + salt);
-		sessionFactory.getCurrentSession().createQuery("update User set password = :pw, salt = :salt where user_id = :username")
-			.setParameter("pw", hashedPassword)
-			.setParameter("salt", salt)
-			.setParameter("username", user.getUserId())
-			.executeUpdate();
-		*/
+		sessionFactory.getCurrentSession().getNamedQuery("updateUserPassword")
+			.setString("newHashedPassword", hashedPassword)
+			.setString("newHashedSalt", salt)
+			.setInteger("changedByUserId", Context.getAuthenticatedUser().getUserId())
+			.setDate("dateChanged", new Date())
+			.setInteger("userId", user.getUserId())
+			.list();
 			
 		return user;
 	}
@@ -174,14 +168,32 @@ public class HibernateUserDAO implements
 			if (log.isDebugEnabled()) {
 				log.debug("update user id: " + user.getUserId());
 			}
-			try {
-				sessionFactory.getCurrentSession().update(user);
+			
+			Object obj = sessionFactory.getCurrentSession().get(Person.class, user.getUserId());
+			if (!(obj instanceof User)) {
+				insertUserStub(user);
 			}
-			catch (NonUniqueObjectException e) {
-				sessionFactory.getCurrentSession().clear();
-				sessionFactory.getCurrentSession().merge(user);
-			}
+
+			sessionFactory.getCurrentSession().merge(user);
+			
 		}
+	}
+	
+	/**
+	 * Inserts a row into the user table
+	 * 
+	 * This avoids hibernate's bunging of our person/patient/user inheritance
+	 * 
+	 * @param user the user to create a stub for
+	 */
+	private void insertUserStub(User user) {
+		sessionFactory.getCurrentSession().getNamedQuery("insertUserStub")
+			.setInteger("userId", user.getUserId())
+			.setString("systemId", user.getSystemId())
+			.setInteger("creatorId", user.getCreator().getUserId())
+			.setDate("dateCreated", user.getDateCreated())
+			.list();
+		sessionFactory.getCurrentSession().flush();
 	}
 
 	/**
@@ -266,21 +278,14 @@ public class HibernateUserDAO implements
 		//update the user with the new password
 		String salt = Security.getRandomToken();
 		String newPassword = Security.encodeString(pw + salt);
-//		sessionFactory.getCurrentSession().createQuery("update Person p set password = :pw, salt = :salt, changed_by = :changed, date_changed = :date where personId = :user")
-//			.setParameter("pw", newPassword)
-//			.setParameter("salt", salt)
-//			.setParameter("user", u)
-//			.setParameter("changed", authUser.getUserId())
-//			.setParameter("date", new Date())
-//			.executeUpdate();
 		
 		sessionFactory.getCurrentSession().getNamedQuery("updateUserPassword")
-		.setString("newHashedPassword", newPassword)
-		.setString("newHashedSalt", salt)
-		.setInteger("changedByUserId", authUser.getUserId())
-		.setDate("dateChanged", new Date())
-		.setInteger("userId", u.getUserId())
-		.list();
+			.setString("newHashedPassword", newPassword)
+			.setString("newHashedSalt", salt)
+			.setInteger("changedByUserId", authUser.getUserId())
+			.setDate("dateChanged", new Date())
+			.setInteger("userId", u.getUserId())
+			.list();
 	}
 
 	/**
@@ -482,7 +487,7 @@ public class HibernateUserDAO implements
 	 * @return new system id
 	 */
 	public String generateSystemId() {
-		String sql = "select max(user_id) as user_id from users";
+		String sql = "select max(person_id) as person_id from person";
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql);
 		

@@ -1861,7 +1861,10 @@
 					<prop key="type">label</prop>
 					<prop key="code">summary.alert.noCd4In6Months</prop>
 					<prop key="showIfTrue">
-						!obsCheck test:NO concept:CD4 COUNT timespan:last 7 months
+						!obsCheck
+						test:NO
+						concept:CD4 COUNT
+						timespan:last 7 months
 					</prop>
 				</props>
 				<props>
@@ -1875,8 +1878,13 @@
 						</prop>
 					-->
 					<prop key="showIfTrue">
-						!and !obsCheck test:NO concept:X-RAY, CHEST !obsCheck test:NO concept:CHEST
-						XRAY COMMENTS
+						!and
+						!obsCheck
+						test:NO
+						concept:X-RAY, CHEST
+						!obsCheck
+						test:NO
+						concept:CHEST XRAY COMMENTS
 					</prop>
 				</props>
 			</list>

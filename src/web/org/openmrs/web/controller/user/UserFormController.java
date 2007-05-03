@@ -293,6 +293,6 @@ public class UserFormController extends PersonFormController {
      * @return
      */
     private Boolean isNewUser(User user) {
-    	return user == null ? true : user.getCreator() == null;
+    	return user == null ? true : user.getUserId() == null;
     }
 }

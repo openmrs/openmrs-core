@@ -2460,8 +2460,87 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	END IF;
  END;
 //
+
 delimiter ;
 call diff_procedure('1.0.58');
+
+#--------------------------------------
+# OpenMRS Datamodel version 1.1.0
+# Ben Wolfe            Apr 26 2007
+# Adding patient/user create stub procedures
+#--------------------------------------
+
+
+DROP PROCEDURE IF EXISTS insert_patient_stub;
+
+delimiter //
+
+CREATE PROCEDURE insert_patient_stub (
+	IN new_patient_id INT,
+	IN new_creator_id INT,
+	IN new_date_created DATETIME
+	)
+  	BEGIN
+  		INSERT INTO `patient`
+	 			(patient_id, creator, date_created)
+  		VALUES (
+  			new_patient_id,
+  			new_creator_id,
+  			new_date_created
+  			);
+    			
+    	SELECT new_patient_id as patient_id FROM DUAL;
+  	END;
+  //
+
+delimiter ;
+
+DROP PROCEDURE IF EXISTS insert_user_stub;
+
+delimiter //
+
+CREATE PROCEDURE insert_user_stub (
+	IN new_user_id INT,
+	IN new_system_id VARCHAR(255),
+	IN new_creator_id INT,
+	IN new_date_created DATETIME
+	)
+  	BEGIN
+  		INSERT INTO `users`
+	 			(user_id, system_id, creator, date_created)
+  		VALUES (
+  			new_user_id,
+  			new_system_id,
+  			new_creator_id,
+  			new_date_created
+  			);
+    			
+    	SELECT new_user_id as user_id FROM DUAL;
+  	END;
+  //
+
+
+delimiter ;
+
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+ 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+		SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+	
+		UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+	
+	END IF;
+ END;
+//
+delimiter ;
+call diff_procedure('1.1.0');
+
+
+
 
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script

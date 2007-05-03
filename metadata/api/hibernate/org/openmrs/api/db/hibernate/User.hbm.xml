@@ -77,6 +77,16 @@
 		call update_user_password(:newHashedPassword, :newHashedSalt, :changedByUserId, :dateChanged, :userId);
 	</sql-query>
 	
+	<sql-query name="insertUserStub" >
+	    <return-scalar column="user_id" type="integer" />
+		<query-param name="userId" type="integer"/>
+		<query-param name="systemId" type="string"/>
+		<query-param name="creatorId" type="integer"/>
+		<query-param name="dateCreated" type="java.lang.Date"/>
+
+		call insert_user_stub(:userId, :systemId, :creatorId, :dateCreated);
+	</sql-query>
+	
 	<database-object>
 		<create>
 			CREATE 
@@ -104,6 +114,34 @@
 		</create>
 		<drop>
 			DROP PROCEDURE IF EXISTS update_user_password;
+		</drop>
+	</database-object>
+	
+	<database-object>
+		<create>
+			CREATE 
+				PROCEDURE insert_user_stub (
+				IN new_user_id INT,
+				IN new_system_id VARCHAR(255),
+				IN new_creator_id INT,
+				IN new_date_created DATETIME,
+				)
+	  		BEGIN
+	  			INSERT INTO `user`
+		  			(user_id, system_id, creator, date_created)
+	  			VALUES (
+	  				new_user_id,
+	  				new_system_id,
+	  				new_creator_id,
+	  				new_date_created
+	  				);
+	    			
+	    		SELECT new_user_id as user_id FROM DUAL;
+	  		END;
+	  		
+		</create>
+		<drop>
+			DROP PROCEDURE IF EXISTS insert_user_stub;
 		</drop>
 	</database-object>
 	

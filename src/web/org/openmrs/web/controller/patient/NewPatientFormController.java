@@ -242,8 +242,10 @@ public class NewPatientFormController extends SimpleFormController {
 				if (patient == null) {
 					try {
 						Person p = personService.getPerson(shortPatient.getPatientId());
+						//Context.clearSession();
+						//Person p2 = (Person) p;
 						patient = new Patient(p);
-						//patient = (Patient)p;
+						//patient = (Patient)p2;
 					} 
 					catch (ObjectRetrievalFailureException noUserEx) {
 						// continue;
@@ -266,7 +268,7 @@ public class NewPatientFormController extends SimpleFormController {
 			
 			// if this is a new name, add it to the patient
 			if (!duplicate) {
-				// set the current name to "non-preffered"
+				// set the current name to "non-prefered"
 				if (patient.getPersonName() != null)
 					patient.getPersonName().setPreferred(false);
 				
@@ -561,7 +563,8 @@ public class NewPatientFormController extends SimpleFormController {
 		if (p == null) {
 			try {
     			Person person = Context.getPersonService().getPerson(id);
-    			p = new Patient(person);
+    			if (person != null)
+    				p = new Patient(person);
     		}
     		catch (ObjectRetrievalFailureException noPersonEx) {
     			log.warn("There is no patient or person with id: '" + id + "'", noPersonEx);
@@ -589,12 +592,7 @@ public class NewPatientFormController extends SimpleFormController {
 			patient.setAddress(pa);
 		}
 		
-		if (p != null) {
-			Person person = Context.getPersonService().getPerson(p);
-			patient.setRelationships(Context.getPersonService().getRelationships(person, false));
-		}
-		
-        return patient;
+		return patient;
     }
     
 	/**

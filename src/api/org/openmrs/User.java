@@ -147,19 +147,31 @@ public class User extends Person implements java.io.Serializable {
 		return privileges;
 	}
 	
+	/**
+	 * Compares two objects for similarity
+	 * 
+	 * This must pass through to the parent object (org.openmrs.Person) in order to get similarity
+	 * of person/user objects
+	 * 
+	 * @param obj
+	 * @return boolean true/false whether or not they are the same objects
+	 * 
+	 * @see org.openmrs.Person#equals(java.lang.Object)
+	 */
 	public boolean equals(Object obj) {
-		if (obj instanceof User) {
-			User u = (User)obj;;
-			return (getUserId().equals(u.getUserId()));
-		}
-		return false;
+		return super.equals(obj);
 	}
-	
+
+	/**
+	 * The hashcode for a user/person is used to index the objects in a tree
+	 * 
+	 * This must pass through to the parent object (org.openmrs.Person) in order to get similarity
+	 * of person/user objects
+	 * 
+	 * @see org.openmrs.Person#hashCode()
+	 */
 	public int hashCode() {
-		if (this.getUserId() == null) return super.hashCode();
-		int hash = 2;
-		hash = 31 * hash + this.getUserId(); 
-		return hash;
+		return super.hashCode();
 	}
 	
 	// Property accessors

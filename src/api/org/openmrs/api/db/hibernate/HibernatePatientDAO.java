@@ -65,12 +65,37 @@ public class HibernatePatientDAO implements PatientDAO {
 
 	public Patient updatePatient(Patient patient) throws DAOException {
 		if (patient.getPatientId() == null)
+			// TODO this check/call should be moved up from the DB layer to the API layer
 			return createPatient(patient);
 		else {
+			
+			// Check to make sure we have a row in the patient table already.
+			// If we don't have a row, create it so Hibernate doesn't bung things us
+			Object obj = sessionFactory.getCurrentSession().get(Person.class, patient.getPatientId());
+			if (!(obj instanceof Patient)) {
+				insertPatientStub(patient);
+			}
+			
 			patient = (Patient)sessionFactory.getCurrentSession().merge(patient);
-			//sessionFactory.getCurrentSession().update(patient);
+			//sessionFactory.getCurrentSession().update("org.openmrs.Person", (Object)patient);
 			return patient;
 		}
+	}
+
+	/**
+	 * Inserts a row into the patient table
+	 * 
+	 * This avoids hibernate's bunging of our person/patient/user inheritance
+	 * 
+	 * @param patient
+	 */
+	private void insertPatientStub(Patient patient) {
+		sessionFactory.getCurrentSession().getNamedQuery("insertPatientStub")
+			.setInteger("patientId", patient.getPatientId())
+			.setInteger("creatorId", patient.getCreator().getUserId())
+			.setDate("dateCreated", patient.getDateCreated())
+			.list();
+		sessionFactory.getCurrentSession().flush();
 	}
 
 	@SuppressWarnings("unchecked")

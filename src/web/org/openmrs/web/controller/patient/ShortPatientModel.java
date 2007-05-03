@@ -2,9 +2,7 @@ package org.openmrs.web.controller.patient;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import org.openmrs.Concept;
 import org.openmrs.Patient;
@@ -12,7 +10,6 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
-import org.openmrs.Relationship;
 
 public class ShortPatientModel {
 	private Integer patientId;
@@ -30,7 +27,6 @@ public class ShortPatientModel {
 	private Boolean dead = false;
 	private Concept causeOfDeath = null;
 	private Date deathDate = null;
-	private List<Relationship> relationships = new Vector<Relationship>();
 	
 	// convenience map:
 	// Map<attribute.getAttributeType().getName(), attribute>
@@ -208,14 +204,6 @@ public class ShortPatientModel {
 		this.deathDate = deathDate;
 	}
 
-	public List<Relationship> getRelationships() {
-		return relationships;
-	}
-
-	public void setRelationships(List<Relationship> relationships) {
-		this.relationships = relationships;
-	}
-	
 	public Map<String, PersonAttribute> getAttributeMap() {
 		return attributeMap;
 	}

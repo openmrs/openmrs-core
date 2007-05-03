@@ -171,7 +171,20 @@
 </script>
 
 <style>
-	th { text-align: left; }
+	th { text-align: left } 
+	th.headerCell {
+		border-top: 1px lightgray solid; 
+		xborder-right: 1px lightgray solid
+	}
+	td.inputCell {
+		border-top: 1px lightgray solid;
+		}
+		td.inputCell th {
+			font-weight: normal;
+		}
+	.lastCell {
+		border-bottom: 1px lightgray solid;
+	}
 </style>
 
 <openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" var="showTribe"/>
@@ -194,15 +207,15 @@
 		<a href="${pageContext.request.contextPath}/patientDashboard.form?patientId=${patient.patientId}">
 			<spring:message code="patientDashboard.viewDashboard"/>
 		</a>
-		<p/>
+		<br/>
 	</c:if>
-
+	
 	<br/>
 	
-	<table cellspacing="0" cellpadding="5">
+	<table cellspacing="0" cellpadding="7">
 	<tr>
-		<th style="border-top: 1px gray solid; border-right: 1px gray solid"><spring:message code="Person.name"/></th>
-		<td style="border-top: 1px gray solid">
+		<th class="headerCell"><spring:message code="Person.name"/></th>
+		<td class="inputCell">
 			<table cellspacing="2">
 				<thead>
 					<openmrs:portlet url="nameLayout" id="namePortlet" size="columnHeaders" parameters="layoutShowTable=false|layoutShowExtended=false" />
@@ -214,15 +227,15 @@
 		</td>
 	</tr>
 	<tr>
-		<th style="border-top: 1px gray solid; border-right: 1px gray solid"><spring:message code="PatientIdentifier.title.endUser"/></th>
-		<td style="border-top: 1px gray solid">
+		<th class="headerCell"><spring:message code="PatientIdentifier.title.endUser"/></th>
+		<td class="inputCell">
 			<table id="identifiers" cellspacing="2">
 				<tr>
-					<th><spring:message code="PatientIdentifier.identifier"/></th>
-					<th><spring:message code="PatientIdentifier.identifierType"/></th>
-					<th><spring:message code="PatientIdentifier.location.identifier"/></th>
-					<th><spring:message code="general.preferred"/></th>
-					<th></th>
+					<td><spring:message code="PatientIdentifier.identifier"/></td>
+					<td><spring:message code="PatientIdentifier.identifierType"/></td>
+					<td><spring:message code="PatientIdentifier.location.identifier"/></td>
+					<td><spring:message code="general.preferred"/></td>
+					<td></td>
 				</tr>
 				<tbody id="identifiersTbody">
 					<tr id="identifierRow">
@@ -266,15 +279,15 @@
 		</td>
 	</tr>
 	<tr>
-		<th style="border-top: 1px gray solid; border-right: 1px gray solid"><spring:message code="patientDashboard.demographics"/></th>
-		<td style="border-top: 1px gray solid">
+		<th class="headerCell"><spring:message code="patientDashboard.demographics"/></th>
+		<td class="inputCell">
 			<table>
 				<tr>
-					<th><spring:message code="Person.gender"/></th>
-					<th><spring:message code="Person.age"/></th>
-					<th><spring:message code="Person.birthdate"/> <i style="font-weight: normal; font-size: 0.8em;">(<spring:message code="general.format"/>: ${datePattern})</i></th>
+					<td><spring:message code="Person.gender"/></td>
+					<td><spring:message code="Person.age"/></td>
+					<td><spring:message code="Person.birthdate"/> <i style="font-weight: normal; font-size: 0.8em;">(<spring:message code="general.format"/>: ${datePattern})</i></td>
 					<c:if test="${showTribe == 'true'}">
-						<th><spring:message code="Patient.tribe"/></th>
+						<td><spring:message code="Patient.tribe"/></td>
 					</c:if>			
 				</tr>
 				<tr>
@@ -370,8 +383,8 @@
 		</td>
 	</tr>
 	<tr>
-		<th style="border-top: 1px gray solid; border-right: 1px gray solid"><spring:message code="Person.address"/></th>
-		<td style="border-top: 1px gray solid">
+		<th class="headerCell"><spring:message code="Person.address"/></th>
+		<td class="inputCell">
 			<spring:nestedPath path="patient.address">
 				<openmrs:portlet url="addressLayout" id="addressPortlet" size="full" parameters="layoutShowTable=true|layoutShowExtended=false" />
 			</spring:nestedPath>
@@ -379,8 +392,8 @@
 	</tr>
 	<openmrs:forEachDisplayAttributeType personType="patient" displayType="viewing" var="attrType">
 		<tr>
-			<th style="border-top: 1px gray solid; border-right: 1px gray solid"><spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}"/></th>
-			<td style="border-top: 1px gray solid">
+			<th class="headerCell"><spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}"/></th>
+			<td class="inputCell">
 				<openmrs:fieldGen 
 					type="${attrType.format}" 
 					formFieldName="${attrType.personAttributeTypeId}" 
@@ -390,9 +403,9 @@
 		</tr>
 	</openmrs:forEachDisplayAttributeType>
 	<tr>
-		<th style="border-top: 1px gray solid; border-right: 1px gray solid; border-bottom: 1px gray solid;"><spring:message code="Person.dead"/></th>
-		<td style="border-top: 1px gray solid; border-bottom: 1px gray solid;">
-			<b><spring:message code="Person.dead.checkboxInstructions"/></b>
+		<th class="headerCell lastCell"><spring:message code="Person.dead"/></th>
+		<td class="inputCell lastCell">
+			<spring:message code="Person.dead.checkboxInstructions"/>
 			<spring:bind path="patient.dead">
 				<input type="hidden" name="_${status.expression}"/>
 				<input type="checkbox" name="${status.expression}" 
