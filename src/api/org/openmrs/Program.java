@@ -3,7 +3,9 @@ package org.openmrs;
 import java.util.Date;
 import java.util.Set;
 
-public class Program {
+public class Program implements java.io.Serializable {
+	
+	private static final long serialVersionUID = 0L;
 
 	private Integer programId;
 	private Concept concept;

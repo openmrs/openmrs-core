@@ -260,9 +260,9 @@ public class NewPatientFormController extends SimpleFormController {
 			PersonName newName = shortPatient.getName();
 			log.error("newName: " + newName.toString());
 			for (PersonName pn : patient.getNames()) {
-				if (((pn.getGivenName() == null && newName.getGivenName() == null) || pn.getGivenName().equals(newName.getGivenName())) &&
-					((pn.getMiddleName() == null && newName.getMiddleName() == null) || pn.getMiddleName().equals(newName.getMiddleName())) &&
-					((pn.getFamilyName() == null && newName.getFamilyName() == null) || pn.getFamilyName().equals(newName.getFamilyName())))
+				if (((pn.getGivenName() == null && newName.getGivenName() == null) || OpenmrsUtil.nullSafeEquals(pn.getGivenName(), newName.getGivenName())) &&
+					((pn.getMiddleName() == null && newName.getMiddleName() == null) || OpenmrsUtil.nullSafeEquals(pn.getMiddleName(), newName.getMiddleName())) &&
+					((pn.getFamilyName() == null && newName.getFamilyName() == null) || OpenmrsUtil.nullSafeEquals(pn.getFamilyName(), newName.getFamilyName())))
 					duplicate = true;
 			}
 			

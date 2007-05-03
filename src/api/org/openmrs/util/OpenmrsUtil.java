@@ -649,13 +649,6 @@ public class OpenmrsUtil {
 		return c.getTime();
 	}
 
-	public static int safeCompareTo(Date d1, Date d2) {
-		Date date1 = new Date(d1.getTime());
-		Date date2 = new Date(d2.getTime());
-		
-		return date1.compareTo(date2);
-	}
-
 	public static Date safeDate(Date d1) {
 		return new Date(d1.getTime());
 	}

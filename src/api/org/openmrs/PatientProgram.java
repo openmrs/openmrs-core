@@ -148,7 +148,7 @@ public class PatientProgram {
 	public boolean getActive(Date onDate) {
 		if (onDate == null)
 			onDate = new Date();
-		return (dateEnrolled == null || OpenmrsUtil.safeCompareTo(dateEnrolled, onDate) <= 0) && (dateCompleted == null || OpenmrsUtil.safeCompareTo(dateCompleted, onDate) > 0); 
+		return (dateEnrolled == null || OpenmrsUtil.compare(dateEnrolled, onDate) <= 0) && (dateCompleted == null || OpenmrsUtil.compare(dateCompleted, onDate) > 0); 
 	}
 	
 	public boolean getActive() {
