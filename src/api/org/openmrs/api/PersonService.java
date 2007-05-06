@@ -96,6 +96,7 @@ public interface PersonService {
 	 * Get all PersonAttributeTypes in the database
 	 * @return
 	 */
+	@Transactional(readOnly=true)
 	public List<PersonAttributeType> getPersonAttributeTypes();
 	
 	/**
@@ -103,6 +104,7 @@ public interface PersonService {
 	 * @param typeId
 	 * @return
 	 */
+	@Transactional(readOnly=true)
 	public PersonAttributeType getPersonAttributeType(Integer typeId);
 	
 	/**
@@ -110,6 +112,7 @@ public interface PersonService {
 	 * @param typeName
 	 * @return
 	 */
+	@Transactional(readOnly=true)
 	public PersonAttributeType getPersonAttributeType(String typeName);
 	
 	/**
@@ -342,5 +345,6 @@ public interface PersonService {
 	 * @return Map from person object to list of people they are related to (through <tt>relType</tt>)
 	 * @throws APIException
 	 */
+	@Transactional(readOnly=true)
 	public Map<Person, List<Person>> getRelationships(RelationshipType relType) throws APIException;
 }

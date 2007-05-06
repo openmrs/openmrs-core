@@ -65,6 +65,9 @@ public class PatientCharacteristicFilter extends AbstractPatientFilter implement
 	}
 	
 	public String getDescription() {
+		if (gender == null && minBirthdate == null && maxBirthdate == null && minAge == null && maxAge == null && aliveOnly == null && deadOnly == null)
+			return "All Patients";
+
 		StringBuffer ret = new StringBuffer();
 		if (gender != null) {
 			if ("M".equals(gender)) {

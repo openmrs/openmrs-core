@@ -184,12 +184,14 @@ public class CohortBuilderController implements Controller {
 				String s = spec.substring(spec.indexOf('(') + 1, spec.lastIndexOf(')'));
 				String[] t = s.split(",");
 				for (String arg : t) {
+					if (arg.trim().length() == 0)
+						continue;
 					if (arg.startsWith("\'") && arg.endsWith("\'")) {
 						temp.add(new ArgHolder(null, arg.substring(1, arg.length() - 1), null));
 					} else {
 						String[] u = arg.split("#");
 						if (u.length != 2) {
-							throw new IllegalArgumentException("shortcut arguments must be name#Type");
+							throw new IllegalArgumentException("Shortcut arguments must be name#Type. arg = " + arg);
 						}
 						Class clz;
 						try {
@@ -385,6 +387,8 @@ public class CohortBuilderController implements Controller {
 	
 			for (String arg : args) {
 				log.debug("looking at: " + arg);
+				if (arg.trim().length() == 0)
+					continue;
 				String[] u = arg.split("#");
 				if (u.length != 2) {
 					StringBuilder msg = new StringBuilder();
