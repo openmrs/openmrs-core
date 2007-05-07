@@ -11,15 +11,15 @@
      The following steps are done to create the Installer
      1. Copy required files to target Directory
      
-     2. Generate and Izpack JAR Installer for the files, following the install.xml spec
+     2. Generate an Izpack JAR Installer for the files, following the install.xml spec
      
-     3. Generate a windows compressed setup.exe file for easy execution
+     3. Generate a windows compressed openmrs-setup.exe file for easy execution
 
      
      ====================================================================== -->
-<project name="Open MRS Installer" default="Create Single .exe Setup File" basedir=".">
+<project name="OpenMRS Installer" default="Create Single .exe Setup File" basedir=".">
 	<description>
-            Installer for the OpenMRS System
+            Installer for the OpenMRS Medical Record System
     </description>
 	<property file="build.properties" />
 	<property file="ext-files.properties" />
@@ -38,16 +38,16 @@
           target: Check for External File Dependancies                  
          - - - - - - - - - - - - - - - - - -->
 	<target name="Check for External File Dependancies">
-
+		
 		<available file="${EXTERNAL-FILES-DIRECTORY}/${TOMCAT-INSTALL}" type="file" property="external.files.tomcat.present" />
 		<available file="${EXTERNAL-FILES-DIRECTORY}/${MYSQL-INSTALL}" type="file" property="external.files.mysql.present" />
 		<available file="${EXTERNAL-FILES-DIRECTORY}/${JRE-INSTALL}" type="file" property="external.files.jre.present" />
 
 		<echo>Tomcat Install File: ${TOMCAT-INSTALL} exists: ${external.files.tomcat.present}</echo>
-		<echo>Mysql Install File: ${MYSQL-INSTALL} exits: ${external.files.mysql.present}</echo>
-		<echo>JRE Install File: ${JRE-INSTALL} exits: ${external.files.jre.present}</echo>
+		<echo>Mysql Install File: ${MYSQL-INSTALL} exists: ${external.files.mysql.present}</echo>
+		<echo>JRE Install File: ${JRE-INSTALL} exists: ${external.files.jre.present}</echo>
 
-		<fail message="Can not complete installation as external files are missing">
+		<fail message="Cannot complete installation as external files are missing">
 			<condition>
 				<not>
 					<and>
@@ -115,6 +115,7 @@
 				<include name="${TOMCAT-INSTALL}" />
 				<include name="${MYSQL-INSTALL}" />
 				<include name="${JRE-INSTALL}" />
+				<include name="StartX.exe" />
 			</fileset>
 		</copy>
 
@@ -159,14 +160,14 @@
 
 		<!-- Run the Executable -->
 		<exec executable="cmd" dir="${TARGET.DIR}">
-			<arg line="/c copy /B 7zS.sfx + config.txt + files.7z setup.exe" />
+			<arg line="/c copy /B 7zS.sfx + config.txt + files.7z openmrs-setup.exe" />
 		</exec>
 
 
 		<delete>
 			<fileset dir="${TARGET.DIR}">
 				<include name="**/*.*" />
-				<exclude name="setup.exe" />
+				<exclude name="openmrs-setup.exe" />
 			</fileset>
 		</delete>
 
