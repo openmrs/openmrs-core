@@ -2415,36 +2415,10 @@ call diff_procedure('1.0.57');
 # OpenMRS Datamodel version 1.0.58
 # Ben Wolfe            Apr 26 2007
 # This will ALWAYS drop/create the 'update_user_password'
-# Adding the user password change stored procedure
+# <strike>Adding</strike>Removing the user password change stored procedure
 #--------------------------------------
 
 DROP PROCEDURE IF EXISTS update_user_password;
-
-delimiter //
-
-CREATE PROCEDURE update_user_password (
-	IN new_password VARCHAR(255),
-	IN new_salt VARCHAR(255),
-	IN new_changed_by INT,
-	IN new_date_changed DATETIME,
-	IN user_id_to_change INT
-	)
-  	BEGIN
-    	UPDATE
-    		`users`
-    	SET
-    		`password` = new_password,
-    		`salt` = new_salt,
-    		`changed_by` = new_changed_by,
-    		`date_changed` = new_date_changed
-    	WHERE
-    		`user_id` = user_id_to_change;
-    		
-    	SELECT user_id_to_change as user_id FROM DUAL;
-  	END;
-//
-
-delimiter ;
 
 DROP PROCEDURE IF EXISTS diff_procedure;
 
@@ -2467,60 +2441,12 @@ call diff_procedure('1.0.58');
 #--------------------------------------
 # OpenMRS Datamodel version 1.1.0
 # Ben Wolfe            Apr 26 2007
-# Adding patient/user create stub procedures
+# <strike>Adding</strike>Removing patient/user create stub procedures
 #--------------------------------------
 
 
 DROP PROCEDURE IF EXISTS insert_patient_stub;
-
-delimiter //
-
-CREATE PROCEDURE insert_patient_stub (
-	IN new_patient_id INT,
-	IN new_creator_id INT,
-	IN new_date_created DATETIME
-	)
-  	BEGIN
-  		INSERT INTO `patient`
-	 			(patient_id, creator, date_created)
-  		VALUES (
-  			new_patient_id,
-  			new_creator_id,
-  			new_date_created
-  			);
-    			
-    	SELECT new_patient_id as patient_id FROM DUAL;
-  	END;
-  //
-
-delimiter ;
-
 DROP PROCEDURE IF EXISTS insert_user_stub;
-
-delimiter //
-
-CREATE PROCEDURE insert_user_stub (
-	IN new_user_id INT,
-	IN new_system_id VARCHAR(255),
-	IN new_creator_id INT,
-	IN new_date_created DATETIME
-	)
-  	BEGIN
-  		INSERT INTO `users`
-	 			(user_id, system_id, creator, date_created)
-  		VALUES (
-  			new_user_id,
-  			new_system_id,
-  			new_creator_id,
-  			new_date_created
-  			);
-    			
-    	SELECT new_user_id as user_id FROM DUAL;
-  	END;
-  //
-
-
-delimiter ;
 
 DROP PROCEDURE IF EXISTS diff_procedure;
 
@@ -2538,8 +2464,6 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 //
 delimiter ;
 call diff_procedure('1.1.0');
-
-
 
 
 #-----------------------------------

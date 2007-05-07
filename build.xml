@@ -25,6 +25,12 @@
 	<property file="build.properties" />
 	
 	<!-- Taskdefs -->
+	<taskdef name="splash" classname="org.apache.tools.ant.taskdefs.optional.splash.SplashTask">
+        <classpath>
+			<fileset dir="${lib.dir}" includes="**/*.jar" />
+		</classpath>
+    </taskdef>
+	
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
 		<classpath>
 			<fileset dir="${ant-contrib.dir}" includes="*.jar" />
@@ -76,7 +82,12 @@
 	<!-- *********************************************************** -->
 	<!-- **                     TARGETS                           ** -->
 	<!-- *********************************************************** -->
-	<target name="init" description="initialization">
+	<target name="splash" unless="nosplash" description="Display the logo">
+		<property name="splash.dir" location="."/>
+		<splash imageurl="file:${metadata.dir}/images/openmrs-logo-small.gif" showduration="0"/>
+	</target>
+	
+	<target name="init" depends="splash" description="initialization">
 
 		<!-- This file needs to be sure to have the latest variables -->
 		<touch file="${metadata.dir}/api/applicationContext-service.xml"/>

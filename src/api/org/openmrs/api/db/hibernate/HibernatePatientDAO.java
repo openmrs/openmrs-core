@@ -1,6 +1,9 @@
 package org.openmrs.api.db.hibernate;
 
 import java.lang.reflect.Field;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -90,11 +93,20 @@ public class HibernatePatientDAO implements PatientDAO {
 	 * @param patient
 	 */
 	private void insertPatientStub(Patient patient) {
-		sessionFactory.getCurrentSession().getNamedQuery("insertPatientStub")
-			.setInteger("patientId", patient.getPatientId())
-			.setInteger("creatorId", patient.getCreator().getUserId())
-			.setDate("dateCreated", patient.getDateCreated())
-			.list();
+		Connection connection = sessionFactory.getCurrentSession().connection();
+		try {
+			PreparedStatement ps = connection.prepareStatement("INSERT INTO `patient` (patient_id, creator, date_created) VALUES (?, ?, ?)");
+			
+			ps.setInt(1, patient.getPatientId());
+			ps.setInt(2, patient.getCreator().getUserId());
+			ps.setDate(3, new java.sql.Date(patient.getDateCreated().getTime()));
+	
+			ps.executeUpdate();
+		}
+		catch (SQLException e) {
+			log.warn("SQL Exception while trying to create a patient stub", e);
+		}
+		
 		sessionFactory.getCurrentSession().flush();
 	}
 

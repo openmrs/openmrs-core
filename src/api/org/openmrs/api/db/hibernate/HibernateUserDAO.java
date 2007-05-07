@@ -1,5 +1,9 @@
 package org.openmrs.api.db.hibernate;
 
+import java.math.BigInteger;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
@@ -52,7 +56,7 @@ public class HibernateUserDAO implements
 	 */
 	public User createUser(User user, String password) {
 		if (hasDuplicateUsername(user))
-			throw new DAOException("Username currently in use by '" + user.getPersonName() + "'");
+			throw new DAOException("Username " + user.getUsername() + " or system id " + user.getSystemId() + " is already in use.");
 		
 		try {
 			sessionFactory.getCurrentSession().save(user);
@@ -65,13 +69,8 @@ public class HibernateUserDAO implements
 		//update the new user with the password
 		String salt = Security.getRandomToken();
 		String hashedPassword = Security.encodeString(password + salt);
-		sessionFactory.getCurrentSession().getNamedQuery("updateUserPassword")
-			.setString("newHashedPassword", hashedPassword)
-			.setString("newHashedSalt", salt)
-			.setInteger("changedByUserId", Context.getAuthenticatedUser().getUserId())
-			.setDate("dateChanged", new Date())
-			.setInteger("userId", user.getUserId())
-			.list();
+		
+		updateUserPassword(hashedPassword, salt, Context.getAuthenticatedUser().getUserId(), new Date(), user.getUserId());
 			
 		return user;
 	}
@@ -187,12 +186,22 @@ public class HibernateUserDAO implements
 	 * @param user the user to create a stub for
 	 */
 	private void insertUserStub(User user) {
-		sessionFactory.getCurrentSession().getNamedQuery("insertUserStub")
-			.setInteger("userId", user.getUserId())
-			.setString("systemId", user.getSystemId())
-			.setInteger("creatorId", user.getCreator().getUserId())
-			.setDate("dateCreated", user.getDateCreated())
-			.list();
+		Connection connection = sessionFactory.getCurrentSession().connection();
+		try {
+			PreparedStatement ps = connection.prepareStatement("INSERT INTO `users` (user_id, system_id, creator, date_created) VALUES (?, ?, ?, ?)");
+			
+			ps.setInt(1, user.getUserId());
+			ps.setString(2, user.getSystemId());
+			ps.setInt(3, user.getCreator().getUserId());
+			ps.setDate(4, new java.sql.Date(user.getDateCreated().getTime()));
+	
+			ps.executeUpdate();
+			
+		}
+		catch (SQLException e) {
+			log.warn("SQL Exception while trying to create a user stub", e);
+		}
+		
 		sessionFactory.getCurrentSession().flush();
 	}
 
@@ -279,13 +288,41 @@ public class HibernateUserDAO implements
 		String salt = Security.getRandomToken();
 		String newPassword = Security.encodeString(pw + salt);
 		
-		sessionFactory.getCurrentSession().getNamedQuery("updateUserPassword")
-			.setString("newHashedPassword", newPassword)
-			.setString("newHashedSalt", salt)
-			.setInteger("changedByUserId", authUser.getUserId())
-			.setDate("dateChanged", new Date())
-			.setInteger("userId", u.getUserId())
-			.list();
+		updateUserPassword(newPassword, salt, authUser.getUserId(), new Date(), u.getUserId());
+		
+	}
+
+	/**
+	 * We have to change the password manually becuase we don't store the password and salt on
+	 * the user
+	 * 
+	 * @param newPassword
+	 * @param salt
+	 * @param userId
+	 * @param date
+	 * @param userId2
+	 */
+	private void updateUserPassword(String newPassword, String salt, Integer changedBy, Date dateChanged, Integer userIdToChange) {
+		Connection connection = sessionFactory.getCurrentSession().connection();
+		try {
+			// TODO can move this ps to a static variable and not calculate on every call
+			PreparedStatement ps = connection.prepareStatement("UPDATE `users` SET `password` = ?, `salt` = ?, `changed_by` = ?, `date_changed` = ? WHERE `user_id` = ?");
+			
+			ps.setString(1, newPassword);
+			ps.setString(2, salt);
+			ps.setInt(3, changedBy);
+			ps.setDate(4, new java.sql.Date(dateChanged.getTime()));
+			ps.setInt(5, userIdToChange);
+			
+			ps.executeUpdate();
+		}
+		catch (SQLException e) {
+			log.warn("SQL Exception while trying to create a patient stub", e);
+		}
+		
+		sessionFactory.getCurrentSession().flush();
+		
+		
 	}
 
 	/**
@@ -313,32 +350,19 @@ public class HibernateUserDAO implements
 			throw new DAOException("Passwords don't match");
 		}
 		
-		log.debug("udpating password");
+		log.debug("updating password");
+		
 		//update the user with the new password
 		String salt = Security.getRandomToken();
 		String newPassword = Security.encodeString(pw2 + salt);
 		
-		// TODO Figure out why Hibernate won't allow this.  Currently gives this error:
-		// java.lang.ClassCastException org.hibernate.hql.ast.tree.IdentNode
-		// error only arrived after creating the User/Patient/Person joined-subclass mapping
-		//sessionFactory.getCurrentSession().createQuery("update User set password = :pw, salt = :salt where user_id = :userid")
-		//	.setParameter("pw", newPassword)
-		//	.setParameter("salt", salt)
-		//	.setParameter("userid", u.getUserId())
-		//	.executeUpdate();
-
-		sessionFactory.getCurrentSession().getNamedQuery("updateUserPassword")
-			.setString("newHashedPassword", newPassword)
-			.setString("newHashedSalt", salt)
-			.setInteger("changedByUserId", u.getUserId())
-			.setDate("dateChanged", new Date())
-			.setInteger("userId", u.getUserId())
-			.list();
+		// do the actual password changing
+		updateUserPassword(newPassword, salt, u.getUserId(), new Date(), u.getUserId());
 	}
 	
 	public void changeQuestionAnswer(String pw, String question, String answer) throws DAOException {
 		User u = Context.getAuthenticatedUser();
-		
+
 		String passwordOnRecord = (String) sessionFactory.getCurrentSession().createSQLQuery(
 		"select password from users where user_id = ?")
 		.addScalar("password", Hibernate.STRING)
@@ -363,11 +387,22 @@ public class HibernateUserDAO implements
 			throw new DAOException(e);
 		}
 		
-		sessionFactory.getCurrentSession().createQuery("update User set secret_question = :q, secret_answer = :a where user_id = :userid")
-			.setParameter("q", question)
-			.setParameter("a", answer)
-			.setParameter("userid", u.getUserId())
-			.executeUpdate();
+		Connection connection = sessionFactory.getCurrentSession().connection();
+		try {
+			PreparedStatement ps = connection.prepareStatement("UPDATE `users` SET secret_question = ?, secret_answer = ?, date_changed = ?, changed_by = ? WHERE user_id = ?");
+			
+			ps.setString(1, question);
+			ps.setString(2, answer);
+			ps.setDate(3, new java.sql.Date(new Date().getTime()));
+			ps.setInt(4, u.getUserId());
+			ps.setInt(5, u.getUserId());
+	
+			ps.executeUpdate();
+		}
+		catch (SQLException e) {
+			log.warn("SQL Exception while trying to update a user's password", e);
+		}
+		
 	}
 	
 	public boolean isSecretAnswer(User u, String answer) throws DAOException {
@@ -487,11 +522,14 @@ public class HibernateUserDAO implements
 	 * @return new system id
 	 */
 	public String generateSystemId() {
-		String sql = "select max(person_id) as person_id from person";
+		
+		// TODO this algorithm will fail if someone deletes a user that is not the last one.
+		
+		String sql = "select count(user_id) as user_id from users";
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql);
 		
-		Integer id = ((Integer)query.uniqueResult()).intValue() + 1;
+		Integer id = ((BigInteger)query.uniqueResult()).intValue() + 1;
 		
 		return id.toString();
 	}

@@ -45,40 +45,5 @@
 		</set>
 
 	</joined-subclass>
-	
-	<sql-query name="insertPatientStub" >
-	    <return-scalar column="patient_id" type="integer" />
-		<query-param name="patientId" type="integer"/>
-		<query-param name="creatorId" type="integer"/>
-		<query-param name="dateCreated" type="java.lang.Date"/>
-
-		call insert_patient_stub(:patientId, :creatorId, :dateCreated);
-	</sql-query>
-	
-	<database-object>
-		<create>
-			CREATE 
-				PROCEDURE insert_patient_stub (
-				IN new_patient_id INT,
-				IN new_creator_id INT,
-				IN new_date_created DATETIME,
-				)
-	  		BEGIN
-	  			INSERT INTO `patient`
-		  			(patient_id, creator, date_created)
-	  			VALUES (
-	  				new_patient_id,
-	  				new_creator_id,
-	  				new_date_created
-	  				);
-	    			
-	    		SELECT new_patient_id as patient_id FROM DUAL;
-	  		END;
-	  		
-		</create>
-		<drop>
-			DROP PROCEDURE IF EXISTS insert_patient_stub;
-		</drop>
-	</database-object>
 
 </hibernate-mapping>
