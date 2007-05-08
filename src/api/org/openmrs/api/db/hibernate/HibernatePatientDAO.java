@@ -74,7 +74,7 @@ public class HibernatePatientDAO implements PatientDAO {
 			
 			// Check to make sure we have a row in the patient table already.
 			// If we don't have a row, create it so Hibernate doesn't bung things us
-			Object obj = sessionFactory.getCurrentSession().get(Person.class, patient.getPatientId());
+			Object obj = sessionFactory.getCurrentSession().get(Patient.class, patient.getPatientId());
 			if (!(obj instanceof Patient)) {
 				insertPatientStub(patient);
 			}
