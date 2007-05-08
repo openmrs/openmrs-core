@@ -1,5 +1,0 @@
-;!@Install@!UTF-8!
-Title="OpenMRS Installer"
-BeginPrompt="Do you wish to install OpenMRS?"
-RunProgram="StartX /WAIT firstrun.cmd"
-;!@InstallEnd@!
