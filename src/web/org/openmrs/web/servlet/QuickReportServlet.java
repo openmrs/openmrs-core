@@ -44,13 +44,12 @@ public class QuickReportServlet extends HttpServlet {
 		
 		String reportType = request.getParameter("reportType");
 		HttpSession session = request.getSession();
-		Context context = (Context)session.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		if (reportType == null || reportType.length()==0 ) {
 			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.null");
 			return;
 		}
-		if (context == null || !context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS)) {
+		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS)) {
 			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Privilege required: " + OpenmrsConstants.PRIV_VIEW_PATIENTS);
 			session.setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR, request.getRequestURI() + "?" + request.getQueryString());
 			response.sendRedirect(request.getContextPath() + "/login.htm");
@@ -68,13 +67,13 @@ public class QuickReportServlet extends HttpServlet {
 		report.append("Report: " + reportType + "<br/><br/>\n\n");
 		
 		if (reportType.equals("RETURN VISIT DATE THIS WEEK")) {
-			doReturnVisitDate(context, velocityContext, report, request);
+			doReturnVisitDate(velocityContext, report, request);
 		}
 		if (reportType.equals("ATTENDED CLINIC THIS WEEK")) {
-			doAttendedClinic(context, velocityContext, report, request);
+			doAttendedClinic(velocityContext, report, request);
 		}
 		else if (reportType.equals("VOIDED OBS")) {
-			doVoidedObs(context, velocityContext, report, request);
+			doVoidedObs(velocityContext, report, request);
 		}
 		
 		try {
@@ -86,10 +85,11 @@ public class QuickReportServlet extends HttpServlet {
 		
 	}
 	
-	private void doReturnVisitDate(Context context, VelocityContext velocityContext, PrintWriter report, HttpServletRequest request) throws ServletException {
-		ObsService os = context.getObsService();
-		ConceptService cs = context.getConceptService();
-		Locale locale = context.getLocale();
+	private void doReturnVisitDate(VelocityContext velocityContext, PrintWriter report, HttpServletRequest request) throws ServletException {
+		ObsService os = Context.getObsService();
+		EncounterService es = Context.getEncounterService();
+		ConceptService cs = Context.getConceptService();
+		Locale locale = Context.getLocale();
 		
 		DateFormat dateFormat = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(locale.toString().toLowerCase()), locale);
 		velocityContext.put("date", dateFormat);
@@ -139,16 +139,15 @@ public class QuickReportServlet extends HttpServlet {
 		List<Obs> allObs = null;
 		
 		if (location == null || location.equals(""))
-			allObs = os.getObservations(c, "location_id asc, value_datetime asc");
+			allObs = os.getObservations(c, "location_id asc, value_datetime asc", ObsService.PATIENT);
 		else {
-			Location locationObj = os.getLocation(Integer.valueOf(location));
-			allObs = os.getObservations(c, locationObj, "location_id asc, value_datetime asc");
+			Location locationObj = es.getLocation(Integer.valueOf(location));
+			allObs = os.getObservations(c, locationObj, "location_id asc, value_datetime asc", ObsService.PATIENT);
 		}
 		
 		List<Obs> obs = new Vector<Obs>();
 		
 		for (Obs o : allObs) {
-			log.debug("location: " + o.getLocation().getLocationId());
 			if (o.getValueDatetime() != null)
 				if (o.getValueDatetime().after(start) && o.getValueDatetime().before(end))
 					obs.add(o);
@@ -163,9 +162,9 @@ public class QuickReportServlet extends HttpServlet {
 
 	}
 	
-	private void doAttendedClinic(Context context, VelocityContext velocityContext, PrintWriter report, HttpServletRequest request) throws ServletException {
-		EncounterService es = context.getEncounterService();
-		Locale locale = context.getLocale();
+	private void doAttendedClinic(VelocityContext velocityContext, PrintWriter report, HttpServletRequest request) throws ServletException {
+		EncounterService es = Context.getEncounterService();
+		Locale locale = Context.getLocale();
 		
 		DateFormat dateFormat = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(locale.toString().toLowerCase()), locale);
 		velocityContext.put("date", dateFormat);
@@ -228,9 +227,9 @@ public class QuickReportServlet extends HttpServlet {
 		}
 	}
 	
-	private void doVoidedObs(Context context, VelocityContext velocityContext, PrintWriter report, HttpServletRequest request) throws ServletException {
-		ObsService os = context.getObsService();
-		Locale locale = context.getLocale();
+	private void doVoidedObs(VelocityContext velocityContext, PrintWriter report, HttpServletRequest request) throws ServletException {
+		ObsService os = Context.getObsService();
+		Locale locale = Context.getLocale();
 		
 		DateFormat dateFormat = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(locale.toString().toLowerCase()), locale);
 		velocityContext.put("date", dateFormat);
@@ -254,9 +253,10 @@ public class QuickReportServlet extends HttpServlet {
 		if (reportType.equals("RETURN VISIT DATE THIS WEEK")) {
 			template += "#foreach($o in $observations)\n";
 			template += " <tr>\n";
-			template += "  <td>$!{o.Patient.PatientName.GivenName} $!{o.Patient.PatientName.MiddleName} $!{o.Patient.PatientName.FamilyName}</td>\n";
+			template += "  <td>$!{o.Patient.PersonName.GivenName} $!{o.Patient.PersonName.MiddleName} $!{o.Patient.PersonName.FamilyName}</td>\n";
 			template += "  <td>$!{o.Patient.PatientIdentifier}</td>\n";
 			template += "  <td>$!{o.Location.Name}</td>\n";
+			template += "  <td>$!{date.format($!{o.Encounter.EncounterDatetime})}</td>\n";
 			template += "  <td>$!{date.format($o.ValueDatetime)}</td>\n";
 			template += " </tr>\n";
 			template += "#end\n";
@@ -264,7 +264,7 @@ public class QuickReportServlet extends HttpServlet {
 		if (reportType.equals("ATTENDED CLINIC THIS WEEK")) {
 			template += "#foreach($e in $encounters)\n";
 			template += " <tr>\n";
-			template += "  <td>$!{e.Patient.PatientName.GivenName} $!{e.Patient.PatientName.MiddleName} $!{e.Patient.PatientName.FamilyName}</td>\n";
+			template += "  <td>$!{e.Patient.PersonName.GivenName} $!{e.Patient.PersonName.MiddleName} $!{e.Patient.PersonName.FamilyName}</td>\n";
 			template += "  <td>$!{e.Patient.PatientIdentifier}</td>\n";
 			template += "  <td>$!{e.Location.Name}</td>\n";
 			template += "  <td>$!{date.format($e.encounterDatetime)}</td>\n";
@@ -280,7 +280,7 @@ public class QuickReportServlet extends HttpServlet {
 			
 			template += "#foreach($o in $observations)\n";
 			template += " <tr>\n";
-			template += "  <td><a href='admin/obs/obs.form?obsId=$!{o.ObsId}'>$!{o.ObsId}</a></td>\n";
+			template += "  <td><a href='admin/observations/obs.form?obsId=$!{o.ObsId}'>$!{o.ObsId}</a></td>\n";
 			template += "  <td><a href='admin/patients/patient.form?patientId=$!{o.Patient.patientId}'>$!{o.Patient.PatientIdentifier}</a></td>\n";
 			template += "  <td><a href='admin/encounters/encounter.form?encounterId=$!{o.Encounter.EncounterId}'>$!{o.Encounter.EncounterId}</a></td>\n";
 			template += "  <td>$!{o.Concept.getName(locale)}</td>\n";

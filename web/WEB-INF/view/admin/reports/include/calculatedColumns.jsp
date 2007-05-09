@@ -10,8 +10,8 @@
 			<==
 			<select name="calculatedPatient" onclick="updateCalcColumn(this)">
 				<option value=""> </option>
-				<option value="#foreach($var in $!{fn.getPatientAttr('PatientName', 'familyName', true)})$!{var}|#end">&nbsp; <spring:message code="PatientName.familyName" /></option>
-				<option value="#foreach($var in $!{fn.getPatientAttr('PatientAddress', 'address1', true)})$!{var}|#end">&nbsp; <spring:message code="PatientAddress.address1" /></option>
+				<option value="#foreach($var in $!{fn.getPatientAttr('PersonName', 'familyName', true)})$!{var}|#end">&nbsp; <spring:message code="PersonName.familyName" /></option>
+				<option value="#foreach($var in $!{fn.getPatientAttr('PersonAddress', 'address1', true)})$!{var}|#end">&nbsp; <spring:message code="PersonAddress.address1" /></option>
 				<option value="#foreach($var in $!{fn.getPatientAttr('PatientIdentifier', 'identifier', true)})$!{var}|#end">&nbsp; <spring:message code="PatientIdentifier.identifier" /></option>
 				<option value="#foreach($var in $!{fn.getPatientAttr('PatientIdentifier', 'identifier', true)})$!{fn.isValidCheckDigit($!{var})}|#end">&nbsp; <spring:message code="PatientIdentifier.validCheckDigit" /></option>
 			</select>

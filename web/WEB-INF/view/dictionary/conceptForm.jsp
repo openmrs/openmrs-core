@@ -2,29 +2,19 @@
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
 
-<openmrs:require privilege="Edit Concepts" otherwise="/login.htm"
-	redirect="/dictionary/concept.form" />
+<openmrs:require privilege="Edit Concepts" otherwise="/login.htm" redirect="/dictionary/concept.form" />
 
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/prototype.lite.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/moo.fx.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/moo.fx.pack.js"></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/interface/DWRConceptService.js'></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/engine.js'></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/util.js'></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/openmrsSearch.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/conceptSearch.js"></script>
+<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 <script type="text/javascript" src="conceptForm.js"></script>
+
 <script type="text/javascript">
 	function addName(anchor) {
 		if (anchor.href.lastIndexOf("=") == anchor.href.length - 1)
-			anchor.href += $("conceptName").value;
+			anchor.href += $("conceptName_${locale}").value;
 	}
 	
-	function showConceptIds() {
-		return true;
-	}
-	
-		function selectTab(tab) {
+	// concept name tab functionality
+	function selectTab(tab) {
 		var displays = new Array();
 		
 		var tabs = tab.parentNode.getElementsByTagName("a");
@@ -51,34 +41,19 @@
 		tab.blur();
 		return false;
 	}
+	
+	function jumpToConcept(which) {
+		var action = document.getElementById('jumpAction');
+		action.value = which;
+		var jumpForm = document.getElementById('jumpForm');
+		jumpForm.submit();
+		return false;
+	}
+	
 </script>
 
 <style>
-	.smallButton {
-		border: 1px solid lightgrey;
-		background-color: whitesmoke;
-		cursor: pointer;
-		width: 75px;
-		margin: 1px;
-	}
-	#conceptSearchForm {
-		width: 500px;
-		position: absolute;
-		z-index: 10;
-		margin: 5px;
-	}
-	#conceptSearchForm #wrapper {
-		padding: 2px;
-		background-color: whitesmoke;
-		border: 1px solid grey;
-		height: 360px;
-	}
-	#conceptSearchResults {
-		height: 275px;
-		overflow: auto;
-		width: 490px;
-	}
-	#newSearchForm {
+	.inlineForm {
 		padding: 0px;
 		margin: 0px;
 		display: inline;
@@ -99,22 +74,34 @@
 	}
 </style>
 
-<h2><spring:message code="Concept.title" /></h2>
+<c:choose>
+	<c:when test="${concept.conceptId != null}">
+		<h2><spring:message code="Concept.edit.title" arguments="${concept.name}" /></h2>
+	</c:when>
+	<c:otherwise>
+		<h2><spring:message code="Concept.creatingNewConcept" /></h2>
+	</c:otherwise>
+</c:choose>
 
 <c:if test="${concept.conceptId != null}">
-	<c:if test="${previousConcept != null}"><a href="concept.form?conceptId=${previousConcept.conceptId}"><spring:message code="general.previous"/></a></c:if>
-	<c:if test="${previousConcept == null}"><spring:message code="general.previous"/></c:if>
-		|
-	<a href="concept.htm?conceptId=${concept.conceptId}" id="viewConcept" ><spring:message code="general.view"/></a>
-		|
-	<c:if test="${nextConcept != null}"><a href="concept.form?conceptId=${nextConcept.conceptId}"><spring:message code="general.next"/></a></c:if>
-	<c:if test="${nextConcept == null}"><spring:message code="general.next"/></c:if>
-		|
+	<form class="inlineForm" id="jumpForm" action="" method="post">
+		<input type="hidden" name="jumpAction" id="jumpAction" value="previous"/>
+		<a href="#previousConcept" id="previousConcept" valign="middle" onclick="return jumpToConcept('previous')"><spring:message code="general.previous"/></a>
+			|
+		<a href="concept.htm?conceptId=${concept.conceptId}" id="viewConcept" ><spring:message code="general.view"/></a>
+			|
+		<a href="conceptStats.form?conceptId=${concept.conceptId}" id="conceptStats" valign="middle"><spring:message code="Concept.stats"/></a>
+			|
+		<a href="#nextConcept" id="nextConcept" valign="middle" onclick="return jumpToConcept('next')"><spring:message code="general.next"/></a>
+			|
+	</form>
 </c:if>
 
 <a href="concept.form" id="newConcept" valign="middle"><spring:message code="general.new"/></a>
 
-<form id="newSearchForm" action="index.htm" method="get">
+<openmrs:extensionPoint pointId="org.openmrs.dictionary.conceptFormHeader" type="html" />
+
+<form class="inlineForm" action="index.htm" method="get">
   &nbsp; &nbsp; 
   <input type="text" id="searchPhrase" name="phrase" size="18"> 
   <input type="submit" class="smallButton" value="<spring:message code="general.search"/>"/>
@@ -135,7 +122,16 @@
 	<br />
 </spring:hasBindErrors>
 
-<form method="post" action="" onSubmit="removeHiddenRows()">
+<c:if test="${concept.conceptId != null}">
+	<c:if test="${concept.conceptClass.name == 'Question' && concept.datatype.name == 'N/A'}">
+		<div class="highlighted">
+			<spring:message code="Concept.checkClassAndDatatype"/>
+		</div>
+		<br/>
+	</c:if>
+</c:if>
+
+<form method="post" action="">
 
 <table id="conceptTable" cellpadding="2" cellspacing="0">
 
@@ -254,7 +250,7 @@
 		<th valign="top"><spring:message code="Concept.set"/></th>
 		<td>
 			<spring:bind path="concept.set">
-				<input type="checkbox" name="conceptSet" id="conceptSet" <c:if test="${status.value}">checked="checked"</c:if> onChange="changeSetStatus(this)"/>
+				<input type="checkbox" name="conceptSet" id="conceptSet" <c:if test="${status.value}">checked="checked"</c:if> onClick="changeSetStatus(this)" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
@@ -273,10 +269,10 @@
 						</select>
 					</td>
 					<td valign="top" class="buttons">
-						&nbsp;<input type="button" value="<spring:message code="general.add"/>" class="smallButton" onClick="addConcept('conceptSetsNames', 'conceptSets', this);" /> <br/>
-						&nbsp;<input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('conceptSetsNames', 'conceptSets', ' ');" /> <br/>
-						&nbsp;<input type="button" value="<spring:message code="general.move_up"/>" class="smallButton" onClick="moveUp('conceptSetsNames', 'conceptSets');" /><br/>
-						&nbsp;<input type="button" value="<spring:message code="general.move_down"/>" class="smallButton" onClick="moveDown('conceptSetsNames', 'conceptSets');" /><br/>
+						<span dojoType="ConceptSearch" widgetId="sSearch"></span><span dojoType="OpenmrsPopup" searchWidget="sSearch" searchTitle='<spring:message code="Concept.find"/>' changeButtonValue='<spring:message code="general.add"/>' showConceptIds="true"></span>
+						<input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('conceptSetsNames', 'conceptSets', ' ');" style="display: block" />
+						<input type="button" value="<spring:message code="general.move_up"/>" class="smallButton" onClick="moveUp('conceptSetsNames', 'conceptSets');" style="display: block" />
+						<input type="button" value="<spring:message code="general.move_down"/>" class="smallButton" onClick="moveDown('conceptSetsNames', 'conceptSets');" style="display: block" />
 					</td>
 				</tr>
 			</table>
@@ -312,8 +308,8 @@
 						</select>
 					</td>
 					<td valign="top" class="buttons">
-						&nbsp;<input type="button" value="<spring:message code="general.add"/>" class="smallButton" onClick="addConcept('answerNames', 'answerIds', this);"/><br/>
-						&nbsp;<input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('answerNames', 'answerIds', ' ');"/><br/>
+						<span dojoType="ConceptSearch" widgetId="aSearch" includeDrugConcepts="true"></span><span dojoType="OpenmrsPopup" searchWidget="aSearch" searchTitle='<spring:message code="Concept.find"/>' changeButtonValue='<spring:message code="general.add"/>' showConceptIds="true" showIfHiding="true"></span>
+						<input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('answerNames', 'answerIds', ' ');"/><br/>
 					</td>
 				</tr>
 			</table>
@@ -401,7 +397,7 @@
 		<tr>
 			<th><spring:message code="general.createdBy" /></th>
 			<td>
-				${concept.creator.firstName} ${concept.creator.lastName} -
+				${concept.creator.personName} -
 				<openmrs:formatDate date="${concept.dateCreated}" type="long" />
 			</td>
 		</tr>
@@ -410,7 +406,7 @@
 		<tr>
 			<th><spring:message code="general.changedBy" /></th>
 			<td>
-				${concept.changedBy.firstName} ${concept.changedBy.lastName} -
+				${concept.changedBy.personName} -
 				<openmrs:formatDate date="${concept.dateChanged}" type="long" />
 			</td>
 		</tr>
@@ -428,6 +424,44 @@
 		</tr>
 	</cif>
 	-->
+	
+	<tr><td colspan="2"><br/></td></tr>
+	
+	<c:if test="${fn:length(questionsAnswered) > 0}">
+		<tr>
+			<th valign="top"><spring:message code="dictionary.questionsAnswered" /></th>
+			<td>
+				<c:forEach items="${questionsAnswered}" var="question">
+					<a href="concept.htm?conceptId=${question.key}">${question.value}<br/>
+				</c:forEach>
+			</td>
+		</tr>
+	</c:if>
+	
+	<c:if test="${fn:length(containedInSets) > 0}">
+		<tr>
+			<th valign="top"><spring:message code="dictionary.containedInSets" /></th>
+			<td>
+				<c:forEach items="${containedInSets}" var="set">
+					<a href="concept.htm?conceptId=${set.key}">${set.value}<br/>
+				</c:forEach>
+			</td>
+		</tr>
+	</c:if>
+	
+	<c:if test="${fn:length(formsInUse) > 0}">
+		<tr>
+			<th valign="top"><spring:message code="dictionary.forms" /></th>
+			<td>
+				<c:forEach items="${formsInUse}" var="form">
+					<a href="${pageContext.request.contextPath}/admin/forms/formSchemaDesign.form?formId=${form.formId}">${form.name}<br/>
+				</c:forEach>
+			</td>
+		</tr>
+	</c:if>
+	
+	<tr><td colspan="2"><br/></td></tr>
+	
 	<tr>	
 		<td valign="top">
 			<b><spring:message code="Concept.resources" /></b>
@@ -449,52 +483,22 @@
 	</tr>
 </table>
 
-<br />
-
-<input type="submit" name="action" value="<spring:message code="Concept.save"/>" />
-
-<c:if test="${concept.conceptId != null}">
-	<openmrs:hasPrivilege privilege="Delete Concepts">
-		 &nbsp; &nbsp; &nbsp;
-		<input type="submit" name="action" value="<spring:message code="Concept.delete"/>" onclick="return confirm('Are you sure you want to delete this ENTIRE CONCEPT?')"/>
-	</openmrs:hasPrivilege>
-</c:if>
+<div id="saveDeleteButtons" style="margin-top: 15px">
+	
+	<input type="submit" name="action" value="<spring:message code="Concept.save"/>" onMouseUp="removeHiddenRows()"/>
+	
+	<c:if test="${concept.conceptId != null}">
+		<openmrs:hasPrivilege privilege="Delete Concepts">
+			 &nbsp; &nbsp; &nbsp;
+			<input type="submit" name="action" value="<spring:message code="Concept.delete"/>" onclick="return confirm('Are you sure you want to delete this ENTIRE CONCEPT?')"/>
+		</openmrs:hasPrivilege>
+	</c:if>
+</div>
 
 </form>
 
-<div id="conceptSearchForm">
-	<div id="wrapper">
-		<input type="button" onClick="return closeConceptBox();" class="closeButton" value="X"/>
-		<form method="get" onSubmit="return searchBoxChange('conceptSearchBody', searchText, null, false, 0); return false;">
-			<h3><spring:message code="Concept.find"/></h3>
-			<input type="text" id="searchText" size="45" onkeyup="return searchBoxChange('conceptSearchBody', this, event, false, 400);"> &nbsp;
-			<input type="checkbox" id="verboseListing" value="true" <c:if test="${defaultVerbose == true}">checked</c:if> onclick="searchBoxChange('conceptSearchBody', searchText, event, false, 0); searchText.focus();"><label for="verboseListing"><spring:message code="dictionary.verboseListing"/></label>
-		</form>
-		<div id="conceptSearchResults">
-			<table>
-				<tbody id="conceptSearchBody">
-					<tr>
-						<td></td>
-						<td></td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-	</div>
-</div>
-
 <script type="text/javascript">
-	document.getElementById("searchPhrase").focus();
-	<request:existsParameter name="conceptName">
-		<!-- the user has a default concept name in the request -->
-		var text = document.getElementById('conceptName');
-		if (text.value.length == 0)
-			text.value = "<request:parameter name="conceptName"/>";
-	</request:existsParameter>
 	selectTab(document.getElementById("${locale}Tab"));
 </script>
-
-<div id="xdebugBox"></div>
-
 
 <%@ include file="/WEB-INF/template/footer.jsp"%>

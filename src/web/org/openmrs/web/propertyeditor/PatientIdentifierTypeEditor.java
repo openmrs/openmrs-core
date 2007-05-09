@@ -2,6 +2,8 @@ package org.openmrs.web.propertyeditor;
 
 import java.beans.PropertyEditorSupport;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
@@ -9,26 +11,23 @@ import org.springframework.util.StringUtils;
 
 public class PatientIdentifierTypeEditor extends PropertyEditorSupport {
 
-	Context context;
+	private Log log = LogFactory.getLog(this.getClass());
 	
-	public PatientIdentifierTypeEditor(Context c) {
-		this.context = c;
-	}
+	public PatientIdentifierTypeEditor() {	}
 	
 	public void setAsText(String text) throws IllegalArgumentException {
-		if (context != null) {
-			PatientService ps = context.getPatientService(); 
-			if (StringUtils.hasText(text)) {
-				try {
-					setValue(ps.getPatientIdentifierType(Integer.valueOf(text)));
-				}
-				catch (Exception ex) {
-					throw new IllegalArgumentException("Identifier Type not found: " + ex.getMessage());
-				}
+		PatientService ps = Context.getPatientService(); 
+		if (StringUtils.hasText(text)) {
+			try {
+				setValue(ps.getPatientIdentifierType(Integer.valueOf(text)));
 			}
-			else {
-				setValue(null);
+			catch (Exception ex) {
+				log.error("Error setting text: " + text, ex);
+				throw new IllegalArgumentException("Identifier Type not found: " + ex.getMessage());
 			}
+		}
+		else {
+			setValue(null);
 		}
 	}
 

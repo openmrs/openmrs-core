@@ -5,81 +5,41 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/prototype.lite.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/moo.fx.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/moo.fx.pack.js"></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/engine.js'></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/util.js'></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/openmrsSearch.js"></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/interface/DWRPatientService.js'></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/interface/DWRConceptService.js'></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/interface/DWREncounterService.js'></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/conceptSearch.js"></script>
+<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 
 <script type="text/javascript">
-
-var mySearch = null;
-var changeButton = null;
-var searchType = "";
-
-var onSelect = function(obj) {
-	if (obj.length != null)
-		var obj = obj[0];
-	$("concept").value = obj.conceptId;
-	$("conceptName").innerHTML = obj.name;
-	mySearch.hide();
-	searchType = "";
-	if (changeButton != null)
-		changeButton.focus();
-	return false;
-}
-
-var onPossibleSelect = function(id) {
-	$("concept").value = id;
-	DWRConceptService.getConcept(onSelect, id);
-	mySearch.hide();
-	searchType = "";
-	return false;
-}
-
-function showSearch(btn, type) {
-	mySearch.hide();
-	if (searchType != type) {
-		setPosition(btn, $("searchForm"), 450, 350);
-		resetForm();
-		DWRUtil.removeAllRows("searchBody");
-		searchType = type;
-		mySearch.toggle();
-		$("searchText").value = '';
-		$("searchText").select();
-		changeButton = btn;
+	dojo.require("dojo.widget.openmrs.ConceptSearch");
+	dojo.require("dojo.widget.openmrs.OpenmrsPopup");
+	
+	var cSearch;
+	var popup;
+	
+	var selectConceptId = function(id) {
+		var closure = function(thisObj, method) { return function(obj) { return thisObj[method]({"obj":obj}); }; };
+		DWRConceptService.getConcept(closure(cSearch, "select"), id);
+		return false;
 	}
-	else {
-		searchType = "";
-		changeButton.focus();
-	}
-}
-
-var init = function() {
-	mySearch = new fx.Resize("searchForm", {duration: 100});
-	mySearch.hide();
-};
-
-function closeBox() {
-	searchType = "";
-	mySearch.hide();
-	return false;
-}
-
-var oldonload = window.onload;
-if (typeof window.onload != 'function') {
-	window.onload = init;
-} else {
-	window.onload = function() {
-		oldonload();
-		init();
-	}
-}
+	
+	dojo.addOnLoad( function() {
+		cSearch = dojo.widget.manager.getWidgetById("cSearch");
+		popup = dojo.widget.manager.getWidgetById("cSelection");
+		
+		dojo.event.topic.subscribe("cSearch/select", 
+			function(msg) {
+				if (msg) {
+					var concept = msg.objs[0];
+					popup.displayNode.innerHTML = concept.name;
+					popup.hiddenInputNode.value = concept.conceptId;
+				}
+			}
+		);
+		
+		<c:if test="${conceptProposal.mappedConcept != null}">
+			var conceptId = ${conceptProposal.mappedConcept.conceptId};
+			selectConceptId(conceptId);
+		</c:if>
+		
+	})
 
 </script>
 
@@ -87,23 +47,6 @@ if (typeof window.onload != 'function') {
 
 <style>
 	th { text-align: left; }
-	.searchForm {
-		width: 450px;
-		position: absolute;
-		z-index: 10;
-		margin: 5px;
-		}
-		.searchForm .wrapper {
-			padding: 2px;
-			background-color: whitesmoke;
-			border: 1px solid grey;
-			height: 350px;
-		}
-	.searchResults {
-		height: 265px;
-		overflow: auto;
-		width: 440px;
-	}
 </style>
 
 <form method="post">
@@ -127,7 +70,7 @@ if (typeof window.onload != 'function') {
 					</tr>
 					<tr>
 						<th><spring:message code="Encounter.provider"/></th>
-						<td>${conceptProposal.encounter.provider.firstName} ${conceptProposal.encounter.provider.lastName}</td>
+						<td>${conceptProposal.encounter.provider.personName}</td>
 					</tr>
 					<tr>
 						<th><spring:message code="Encounter.datetime"/></th>
@@ -157,7 +100,7 @@ if (typeof window.onload != 'function') {
 		<tr>
 			<th><spring:message code="ConceptProposal.proposedBy" /></th>
 			<td>
-				${conceptProposal.creator.firstName} ${conceptProposal.creator.lastName} -
+				${conceptProposal.creator.personName} -
 				<openmrs:formatDate date="${conceptProposal.dateCreated}" type="long" />
 			</td>
 		</tr>
@@ -166,7 +109,7 @@ if (typeof window.onload != 'function') {
 		<tr>
 			<th><spring:message code="general.changedBy" /></th>
 			<td>
-				${conceptProposal.changedBy.firstName} ${conceptProposal.changedBy.lastName} -
+				${conceptProposal.changedBy.personName} -
 				<openmrs:formatDate date="${conceptProposal.dateChanged}" type="long" />
 			</td>
 		</tr>
@@ -186,7 +129,7 @@ if (typeof window.onload != 'function') {
 							<c:forEach items="${possibleConcepts}" var="listItem" varStatus="status" begin="0" end="6">
 								<c:if test="${status.index == 4}"></td><td valign="top"></c:if>
 								<a href="#selectObject" 
-									onClick="return onPossibleSelect('${listItem.conceptId}')";
+									onClick="return selectConceptId('${listItem.conceptId}')";
 									title="${listItem.description}"
 									class='searchHit'>
 									${status.index + 1})
@@ -236,9 +179,8 @@ if (typeof window.onload != 'function') {
 				<a target="_blank" href="${pageContext.request.contextPath}/dictionary/concept.form?conceptName=" onclick="this.href=this.href + document.getElementById('finalText').value"><spring:message code="Concept.add"/></a>
 				<spring:message code="general.or" />
 				<br/>
-				<input type="text" size="7" id="concept" value="${status.value.conceptId}" name="conceptId" />
-				<div style="width:200px; float:left;" id="conceptName">${mappedConceptName}</div>
-				<input type="button" id="conceptButton" class="smallButton" value="<spring:message code="general.change"/>" onclick="showSearch(this, 'concept')" />				
+				<div dojoType="ConceptSearch" widgetId="cSearch" showVerboseListing="true"></div>
+				<div dojoType="OpenmrsPopup" widgetId="cSelection" hiddenInputName="conceptId" searchWidget="cSearch" searchTitle='<spring:message code="Concept.find"/>'></div>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
@@ -250,30 +192,10 @@ if (typeof window.onload != 'function') {
 	Note: This update will effect ${fn:length(matchingProposals)-1} other concept proposal<c:if test="${fn:length(matchingProposals) > 2}">s</c:if><br/>
 </c:if>
 <br />
-<input type="submit" name="action" value="<spring:message code="ConceptProposal.update"/>">
+<input type="submit" name="action" value="<spring:message code="ConceptProposal.ignore"/>">
 <input type="submit" name="action" value="<spring:message code="ConceptProposal.saveAsConcept"/>">
 <input type="submit" name="action" value="<spring:message code="ConceptProposal.saveAsSynonym"/>">
+<input type="submit" name="action" value="<spring:message code="general.cancel"/>">
 </form>
-
-<div id="searchForm" class="searchForm">
-	<div class="wrapper">
-		<input type="button" onClick="return closeBox();" class="closeButton" value="X"/>
-		<form method="get" onSubmit="return searchBoxChange('searchBody', searchText, event, false, 0); return false;">
-			<h3><spring:message code="general.search"/></h3>
-			<input type="text" id="searchText" size="35" onkeyup="return searchBoxChange('searchBody', this, event, false, 400);"> &nbsp;
-			<input type="checkbox" id="verboseListing" value="true" <c:if test="${defaultVerbose == true}">checked</c:if> onclick="searchBoxChange('searchBody', searchText, event, false, 0); searchText.focus();"><label for="verboseListing"><spring:message code="dictionary.verboseListing"/></label>
-		</form>
-		<div id="searchResults" class="searchResults">
-			<table width="100%">
-				<tbody id="searchBody">
-					<tr>
-						<td></td>
-						<td></td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-	</div>
-</div>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

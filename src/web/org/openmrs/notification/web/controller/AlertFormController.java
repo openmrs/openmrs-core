@@ -50,14 +50,12 @@ public class AlertFormController extends SimpleFormController {
 	protected void initBinder(HttpServletRequest request,
 			ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-		Context context = (Context) request.getSession().getAttribute(
-				WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 
-		Locale locale = context.getLocale();
+		Locale locale = Context.getLocale();
 		NumberFormat nf = NumberFormat.getInstance(locale);
 		dateFormat = new SimpleDateFormat(OpenmrsConstants
 				.OPENMRS_LOCALE_DATE_PATTERNS().get(
-						context.getLocale().toString().toLowerCase()), context
+						Context.getLocale().toString().toLowerCase()), Context
 				.getLocale());
 
 		// NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
@@ -72,17 +70,13 @@ public class AlertFormController extends SimpleFormController {
 			HttpServletResponse reponse, Object obj, BindException errors)
 			throws Exception {
 
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-
 		Alert alert = (Alert) obj;
 
-		context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
 		try {
-			UserService us = context.getUserService();
+			UserService us = Context.getUserService();
 
-			if (context != null && context.isAuthenticated()) {
+			if (Context.isAuthenticated()) {
 				String[] userIdValues = request.getParameter("userIds").split(" ");
 				List<Integer> userIds = new Vector<Integer>(); 
 				String[] roleValues = request.getParameter("newRoles").split(",");
@@ -133,18 +127,17 @@ public class AlertFormController extends SimpleFormController {
 				}
 			}
 			
-			if (alert.getRecipients() == null
-					|| alert.getRecipients().size() == 0) {
-				errors.rejectValue("user", "Alert.recipientRequired");
+			if ((alert.getRecipients() == null || alert.getRecipients().size() == 0)) {
+				errors.rejectValue("users", "Alert.recipientRequired");
 			}
 			
 		} 
 		catch (Exception e) {
-			log.error(e);
+			log.error("Error while processing alert form", e);
 			errors.reject(e.getMessage());
 		}
 		finally {
-			context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
 		}
 
 		return super.processFormSubmission(request, reponse, alert, errors);
@@ -164,13 +157,12 @@ public class AlertFormController extends SimpleFormController {
 			throws Exception {
 
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		String view = getFormView();
 
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			Alert alert = (Alert) obj;
-			context.getAlertService().updateAlert(alert);
+			Context.getAlertService().updateAlert(alert);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR,
 					"Alert.saved");
@@ -189,14 +181,10 @@ public class AlertFormController extends SimpleFormController {
 	protected Object formBackingObject(HttpServletRequest request)
 			throws Exception {
 
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-
 		Alert alert = null;
 
-		if (context != null && context.isAuthenticated()) {
-			AlertService as = context.getAlertService();
+		if (Context.isAuthenticated()) {
+			AlertService as = Context.getAlertService();
 			String a = request.getParameter("alertId");
 			if (a != null)
 				alert = as.getAlert(Integer.valueOf(a));
@@ -212,12 +200,8 @@ public class AlertFormController extends SimpleFormController {
 			Errors errors) throws Exception {
 		Map<String, Object> map = new HashMap<String, Object>();
 
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-
-		if (context != null && context.isAuthenticated()) {
-			List<Role> allRoles = context.getUserService().getRoles();
+		if (Context.isAuthenticated()) {
+			List<Role> allRoles = Context.getUserService().getRoles();
 
 			map.put("allRoles", allRoles);
 		}

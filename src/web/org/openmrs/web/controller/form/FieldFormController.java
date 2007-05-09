@@ -31,15 +31,11 @@ public class FieldFormController extends SimpleFormController {
     
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-	    //NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
-        binder.registerCustomEditor(java.lang.Integer.class,
+	    binder.registerCustomEditor(java.lang.Integer.class,
                 new CustomNumberEditor(java.lang.Integer.class, true));
 	}
     
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse reponse, Object obj, BindException errors) throws Exception {
-		
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		Field field = (Field)obj;
 		
@@ -58,13 +54,13 @@ public class FieldFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		String view = getFormView();
 		
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			Field field = (Field)obj;
 			field = setObjects(field, request);
-			context.getFormService().updateField(field);
+			Context.getFormService().updateField(field);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Field.saved");
 			view = view + "?phrase=" + request.getParameter("phrase");
@@ -82,13 +78,10 @@ public class FieldFormController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		Field field = null;
 		
-		if (context != null && context.isAuthenticated()) {
-			FormService fs = context.getFormService();
+		if (Context.isAuthenticated()) {
+			FormService fs = Context.getFormService();
 			String fieldId = request.getParameter("fieldId");
 	    	if (fieldId != null)
 	    		field = fs.getField(Integer.valueOf(fieldId));
@@ -102,23 +95,21 @@ public class FieldFormController extends SimpleFormController {
 
 	protected Map referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
 		
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		Field field = (Field)obj;
-		Locale locale = context.getLocale();
+		Locale locale = Context.getLocale();
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		String defaultVerbose = "false";
 		
-		if (context != null && context.isAuthenticated()) {
-			FormService fs = context.getFormService();
+		if (Context.isAuthenticated()) {
+			FormService fs = Context.getFormService();
 			//map.put("fieldTypes", es.getFieldTypes());
 			map.put("fieldTypes", fs.getFieldTypes());
 			if (field.getConcept() != null)
 				map.put("conceptName", field.getConcept().getName(locale));
 			else
 				map.put("conceptName", "");
-			defaultVerbose = context.getAuthenticatedUser().getProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE); 
+			defaultVerbose = Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE); 
 		}
 		
 		map.put("defaultVerbose", defaultVerbose.equals("true") ? true : false);
@@ -128,17 +119,14 @@ public class FieldFormController extends SimpleFormController {
 	
 	private Field setObjects(Field field, HttpServletRequest request) {
 
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			String conceptId = request.getParameter("conceptId");
 			if (conceptId != null && conceptId.length() > 0)
-				field.setConcept(context.getConceptService().getConcept(Integer.valueOf(request.getParameter("conceptId"))));
+				field.setConcept(Context.getConceptService().getConcept(Integer.valueOf(conceptId)));
 			else
 				field.setConcept(null);
 			
-			field.setFieldType(context.getFormService().getFieldType(Integer.valueOf(request.getParameter("fieldTypeId"))));
+			field.setFieldType(Context.getFormService().getFieldType(Integer.valueOf(request.getParameter("fieldTypeId"))));
 		}
 		
 		return field;

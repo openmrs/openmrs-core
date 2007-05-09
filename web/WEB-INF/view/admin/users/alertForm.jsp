@@ -5,87 +5,44 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<script src="<%= request.getContextPath() %>/scripts/calendar/calendar.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/prototype.lite.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/moo.fx.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/moo.fx.pack.js"></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/engine.js'></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/util.js'></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/openmrsSearch.js"></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/interface/DWRUserService.js'></script>
+<openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
+
+<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 
 <script type="text/javascript">
+	dojo.require("dojo.widget.openmrs.UserSearch");
+	dojo.require("dojo.widget.openmrs.OpenmrsPopup");
+	
+	dojo.addOnLoad( function() {
+		
+		searchWidget = dojo.widget.manager.getWidgetById("uSearch");			
+		
+		dojo.event.topic.subscribe("uSearch/select", 
+			function(msg) {
+				for (var i=0; i< msg.objs.length; i++) {
+					var obj = msg.objs[i];
+					var options = $("userNames").options;
+					
+					var isAddable = true;
+					for (x=0; x<options.length; x++)
+						if (options[x].value == obj.userId)
+							isAddable = false;
+					
+					if (isAddable) {
+						var opt = new Option(obj.personName, obj.userId);
+						opt.selected = true;
+						options[options.length] = opt;
+						copyIds("userNames", "userIds", " ");
+					}
+				}
+			}
+		);
+	});
+	
+</script>
 
-	var init = function() {
-		mySearch = new fx.Resize("searchForm", {duration: 100});
-		mySearch.hide();
-	};
-	
-	var findObjects = function(txt) {
-		DWRUserService.findUsers(fillTable, txt, [], false);
-		return false;
-	}
-	
-	var onSelect = function(objs) {
-		var obj = objs[0];
-		var options = $("userNames").options;
-		if (isAddable(obj.userId, options)) {
-			var opt = new Option(getName(obj), obj.userId);
-			opt.selected = true;
-			options[options.length] = opt;
-			copyIds("userNames", "userIds", " ");
-		}
-		changeButton.focus();
-		mySearch.hide();
-		return false;
-	}
-	
-	function isAddable(value, options) {
-		for (x=0; x<options.length; x++)
-			if (options[x].value == value)
-				return false;
-	
-		return true;
-	}
-	
-	function showSearch(btn) {
-		mySearch.hide();
-		setPosition(btn, $("searchForm"), 465, 350);
-		resetForm();
-		DWRUtil.removeAllRows("searchBody");
-		$('searchTitle').innerHTML = '<spring:message code="User.find"/>';
-		searchType = 'user';
-		mySearch.toggle();
-		$("searchText").value = '';
-		$("searchText").select();
-		changeButton = btn;
-	}
-	
-	var getName = function(obj) {
-		if (typeof obj == 'string') return '';
-		str = obj.firstName;
-		str += ' ';
-		str += obj.lastName;
-		return str;
-	}
-	
-	function closeBox() {
-		mySearch.toggle();
-		return false;
-	}
-	
-	var customCellFunctions = [getNumber, getName];
-	
-	var oldonload = window.onload;
-	if (typeof window.onload != 'function') {
-		window.onload = init;
-	} else {
-		window.onload = function() {
-			oldonload();
-			init();
-		}
-	}
-	
+<script type="text/javascript">
+		
 	function gotoUser(select, userId) {
 		if (userId == null)
 			userId = $(select).value;
@@ -164,7 +121,13 @@
 			synonyms = new Array();
 		var syn = obj.value;
 		if (syn != "") {
-			if (isAddable(syn, synonyms)) {
+			
+			var isAddable = true;
+			for (x=0; x<synonyms.length; x++)
+				if (synonyms[x].value == syn.userId)
+					isAddable = false;
+					
+			if (isAddable) {
 				var opt = new Option(syn, syn);
 				opt.selected = true;
 				synonyms[synonyms.length] = opt;
@@ -178,23 +141,8 @@
 </script>
 
 <style>
-	.searchForm {
-		width: 450px;
-		position: absolute;
-		z-index: 10;
-		margin: 5px;
-	}
-	.searchForm .wrapper {
-		padding: 2px;
-		background-color: whitesmoke;
-		border: 1px solid grey;
-		height: 330px;
-	}
-	.searchResults {
-		height: 270px;
-		overflow: auto;
-	}
 	th { text-align: left; }
+	.description { display: none; }
 </style>
 
 <h2><spring:message code="Alert.manage.title"/></h2>	
@@ -211,10 +159,10 @@
 <form method="post">
 <table>
 	<tr>
-		<th><spring:message code="Alert.text"/></th>
+		<th valign="top"><spring:message code="Alert.text"/></th>
 		<td>
 			<spring:bind path="alert.text">
-				<input type="text" id="text" name="${status.expression}" value="${status.value}" size="55">
+				<textarea id="text" name="${status.expression}" rows="2" cols="43">${status.value}</textarea>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
@@ -228,14 +176,14 @@
 					<td valign="top">
 						<select class="mediumWidth" size="6" id="userNames" multiple onkeyup="listKeyPress('userNames', 'userIds', ' ', event);">
 							<c:forEach items="${alert.recipients}" var="recipient">
-								<option value="${recipient.recipient.userId}">${recipient.recipient.firstName} ${recipient.recipient.middleName} ${recipient.recipient.lastName}</option>
+								<option value="${recipient.recipient.userId}">${recipient.recipient.personName}</option>
 							</c:forEach>
 						</select>
 					</td>
 					<td valign="top" class="buttons">
-						&nbsp;<input type="button" value="<spring:message code="general.add"/>" class="smallButton" onClick="showSearch(this);" /> <br/>
-						&nbsp;<input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('userNames', 'userIds', ' ');" /> <br/>
-						&nbsp;<input type="button" value="<spring:message code="User.goTo"/>" class="smallButton" onClick="gotoUser('userNames');" /><br/>
+						&nbsp;<span dojoType="UserSearch" widgetId="uSearch"></span><span dojoType="OpenmrsPopup" searchWidget="uSearch" searchTitle='<spring:message code="User.find"/>' changeButtonValue='<spring:message code="general.add"/>'></span> <br/>
+						&nbsp; <input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('userNames', 'userIds', ' ');" /> <br/>
+						&nbsp; <input type="button" value="<spring:message code="User.goTo"/>" class="smallButton" onClick="gotoUser('userNames');" /><br/>
 					</td>
 				</tr>
 			</table>
@@ -250,7 +198,7 @@
 					<option value="${role.role}" <c:if test="${role == status.value}">selected</c:if>>${role.role}</option>
 				</c:forEach>
 			</select>
-			<input type="button" class="smallButton" value="<spring:message code="Alert.addRole"/>" onClick="addRole();"/>
+			&nbsp;<input type="button" class="smallButton" value="<spring:message code="Alert.addRole"/>" onClick="addRole();"/>
 			<input type="hidden" name="newRoles" id="newRoles" value="" />
 		</td>
 	</tr>
@@ -264,7 +212,7 @@
 						</select>
 					</td>
 					<td valign="top" class="buttons">
-						&nbsp;<input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('roles', 'newRoles', ',');" /> <br/>
+						&nbsp; <input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('roles', 'newRoles', ',');" /> <br/>
 					</td>
 				</tr>
 			</table>
@@ -294,7 +242,7 @@
 		<tr>
 			<td><spring:message code="general.changedBy" /></td>
 			<td>
-				<a href="#View User" onclick="return gotoUser(null, '${alert.changedBy.userId}')">${alert.changedBy.firstName} ${alert.changedBy.lastName}</a> -
+				<a href="#View User" onclick="return gotoUser(null, '${alert.changedBy.userId}')">${alert.changedBy.personName}</a> -
 				<openmrs:formatDate date="${alert.dateChanged}" type="medium" />
 			</td>
 		</tr>
@@ -307,25 +255,5 @@
 <script type="text/javascript">
  document.forms[0].elements[0].focus();
 </script>
-
-<div id="searchForm" class="searchForm">
-	<div class="wrapper">
-		<input type="button" onClick="return closeBox();" class="closeButton" value="X"/>
-		<form method="get" onSubmit="return searchBoxChange('searchBody', searchText, null, false, 0); return false;">
-			<h3 id="searchTitle"></h3>
-			<input type="text" id="searchText" size="35" onkeyup="return searchBoxChange('searchBody', this, event, false, 400);">
-		</form>
-		<div id="searchResults" class="searchResults">
-			<table cellpadding="2" cellspacing="0">
-				<tbody id="searchBody">
-					<tr>
-						<td></td>
-						<td></td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-	</div>
-</div>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

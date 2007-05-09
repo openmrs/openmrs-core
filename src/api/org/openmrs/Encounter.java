@@ -20,6 +20,7 @@ public class Encounter implements java.io.Serializable {
 	private Date encounterDatetime;
 	private Date dateCreated;
 	private Patient patient;
+	private Integer patientId;
 	private Location location;
 	private Form form;
 	private EncounterType encounterType;
@@ -240,6 +241,20 @@ public class Encounter implements java.io.Serializable {
 	public void setPatient(Patient patient) {
 		this.patient = patient;
 	}
+	
+	/**
+     * @return the patientId
+     */
+    public Integer getPatientId() {
+    	return patientId;
+    }
+
+	/**
+     * @param patientId the patientId to set
+     */
+    public void setPatientId(Integer patientId) {
+    	this.patientId = patientId;
+    }
 
 	/**
 	 * @return Returns the provider.
@@ -338,9 +353,16 @@ public class Encounter implements java.io.Serializable {
 	
 	@Override
 	public String toString() {
-		if (encounterId == null)
-			return null;
-		return "Encounter #" + encounterId;
+		String ret = "";
+		ret += encounterId == null ? "(no ID) " : encounterId.toString() + " ";
+		ret += this.getEncounterDatetime() == null ? "(no Date) " : this.getEncounterDatetime().toString() + " ";
+		ret += this.getEncounterType() == null ? "(no Type) " : this.getEncounterType().getName() + " ";
+		ret += this.getLocation() == null ? "(no Location) " : this.getLocation().getName() + " ";
+		ret += this.getPatient() == null ? "(no Patient) " : this.getPatient().getPatientId().toString() + " ";
+		ret += this.getForm() == null ? "(no Form) " : this.getForm().getName() + " ";
+		ret += this.getObs() == null ? "(no Obss) " : "num Obs: " + this.getObs().size() + " ";
+		ret += this.getOrders() == null ? "(no Orders) " : "num Orders: " + this.getOrders().size() + " ";
+		return "Encounter: [" + ret + "]";
 	}
 
 }

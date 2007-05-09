@@ -4,72 +4,87 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
 import java.util.Timer;
+import java.util.TreeMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.db.DAOContext;
 import org.openmrs.scheduler.Schedulable;
 import org.openmrs.scheduler.SchedulableFactory;
 import org.openmrs.scheduler.SchedulerConstants;
 import org.openmrs.scheduler.SchedulerException;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.TaskConfig;
+import org.openmrs.scheduler.db.SchedulerDAO;
+import org.openmrs.util.InsertedOrderComparator;
+import org.openmrs.util.OpenmrsMemento;
 
 /**
  *  Simple scheduler service that uses JDK timer to trigger and execute scheduled tasks.
  */
 public class TimerSchedulerService implements SchedulerService { 
 	
-	/**
-	 *  Logger
-	 */ 
 	private static Log log = LogFactory.getLog( TimerSchedulerService.class );
 
 	/**
-	 * Reference to the context.
-	 */
-	private Context context;
-	
-	/**
-	 *  Global data access object context
-	 *  
-	 *  TODO I think this should actually be the instance of the specific DAO that is needed by the service (SchedulerDAO).
-	 */
-	private DAOContext daoContext;
-	
-	/**
 	 * Scheduled Task Map
 	 */
-	private Map<Integer, Timer> scheduledTaskMap;
-  
+	private static Map<Integer, Timer> scheduledTasksMap = new HashMap<Integer, Timer>();
+
+	/**
+	 *  Global data access object context
+	 */
+	private SchedulerDAO schedulerDAO;
+	
 	/**
 	 *  Default public constructor
 	 */
-	public TimerSchedulerService(Context context) {
-		this.context = context;
-		this.scheduledTaskMap = new HashMap<Integer, Timer>();
+	public TimerSchedulerService() {
+		scheduledTasksMap = new HashMap<Integer, Timer>();
 	}
 	
 	/**
-	 * Sets the DAO context for this service.
+	 * Gets the scheduler data access object.
+	 * @return
 	 */
-	public void setDaoContext(DAOContext daoContext) {
-		log.info("Setting DAO Context to " + daoContext);
-		this.daoContext = daoContext;
+	public SchedulerDAO getSchedulerDAO() { 
+		return this.schedulerDAO;
 	}
-		
+	
+	/**
+	 * Sets the scheduler data access object.
+	 */
+	public void setSchedulerDAO(SchedulerDAO dao) {
+		this.schedulerDAO = dao;
+	}
+	
 	/**
 	 * Start up hook for the scheduler and all of its scheduled tasks.
 	 */
 	public void startup() {
 		log.debug("Starting scheduler service ...");
-		// TODO go through all tasks and start them if their startOnStartup flag is true
-		Collection <TaskConfig> tasks = daoContext.getSchedulerDAO().getTasks();
-		startTasks( tasks );
+		
+		// go through all tasks and start them if their startOnStartup flag is true
+		Collection <TaskConfig> tasks = getSchedulerDAO().getTasks();
+		if (tasks != null) {
+			for ( TaskConfig task : tasks ) { 
+				try { 
+					// If the task is configured to start on startup, we schedule it to run
+					// Otherwise it needs to be started manually.
+					if (task.getStartOnStartup())
+						scheduleTask(task);
+				} catch ( Exception e ) { 
+					log.error("Could not schedule task for class " + task.getSchedulableClass(), e);
+				}
+			}
+		}
 	}
 	
 	/**
@@ -77,24 +92,21 @@ public class TimerSchedulerService implements SchedulerService {
 	 */
 	public void shutdown() { 
 		log.debug("Gracefully shutting down scheduler service ...");
-		// TODO gracefully shutdown all tasks and remove all references to the timers, scheduler
-		stop();
+		
+		// gracefully shutdown all tasks and remove all references to the timers, scheduler
+		try {
+			stopTasks();
+		}
+		catch (SchedulerException e) {
+			log.warn("Unable to stop all tasks", e);
+		}
+		catch (APIException e) {
+			// scheduler service wasn't available
+		}
 	
 		// Clean up 
-		daoContext = null;
-		scheduledTaskMap = null;
+		scheduledTasksMap = null;
 	}
-	
-	/**
-	 * Temporarily stop all scheduled tasks.
-	 */
-	public void stop() { 
-		log.debug("Stopping scheduler service ...");
-		// TODO gracefull stop all tasks 
-		stopTasks();
-	}	
-
-	
 	
 	/**
 	 *  Schedule the given task according to the given schedule.
@@ -112,7 +124,7 @@ public class TimerSchedulerService implements SchedulerService {
 	 *  @param  task        the task to be scheduled
 	 *  @param  schedule    the time and interval for the scheduled task
 	 */
-	public void scheduleTask(TaskConfig task) throws SchedulerException { 
+	public void scheduleTask(TaskConfig task) throws SchedulerException {
 		// Create wrapper for the task 
 		Schedulable schedulable = SchedulableFactory.getInstance().createInstance( task );
 		TimerTaskWrapper wrapper = new TimerTaskWrapper( schedulable );
@@ -161,8 +173,6 @@ public class TimerSchedulerService implements SchedulerService {
 
 	/**
 	 *  Start the given task. 
-	 *
-	 *  TODO Need this to be involved in a transaction.
 	 *  
 	 *  @param  task        the task to cancel
 	 *  @param  schedule    the schedule to cancel
@@ -174,8 +184,6 @@ public class TimerSchedulerService implements SchedulerService {
 	
 	/**
 	 *  Start the given task.  
-	 *  
-	 *  TODO Need this to be involved in a transaction.
 	 *
 	 *  @param  task        the task to cancel
 	 *  @param  schedule    the schedule to cancel
@@ -186,49 +194,35 @@ public class TimerSchedulerService implements SchedulerService {
 
 	
 	/**
-	 *  Start all tasks.
-	 *  
-	 *  @param    tasks     the tasks that should be scheduled 
+	 *  Stop all started tasks.
 	 */	
-	public void startTasks(Collection<TaskConfig> tasks) { 
-		if ( tasks != null ) { 
-			for ( TaskConfig task : tasks ) { 
-				try { 
-					// If the task is configured to start on startup, we schedule it to run
-					// Otherwise it needs to be started manually.
-					if (task.getStartOnStartup())
-						scheduleTask(task);
-				} catch ( SchedulerException e ) { 
-					log.error("Could not schedule task for class " + task.getSchedulableClass(), e);
-				}
-			}
-		}
-	}	
-
-	/**
-	 *  Stop all tasks.
-	 */	
-	public void stopTasks() { 
-		for ( Integer id : scheduledTaskMap.keySet() ) { 
-			TaskConfig task = null;
+	public void stopTasks() throws SchedulerException {
+		// iterate over this (copied) list of tasks and stop them all
+		for ( TaskConfig task : getScheduledTasks()) { 
 			try { 
-				task = getTask(id);
 				stopTask(task);
 
 			} catch ( SchedulerException e ) { 
 				log.error("Could not stop task for class " + task.getSchedulableClass(), e);
 			}
 		}
-	}		
-	
+	}
 	
 	/**
-	 *  Start all tasks.  This would be used by spring to start all tasks.
-	 *  
-	 *  @param    tasks     the tasks that should be scheduled 
-	 */	
-	public void setTasks(Collection<TaskConfig> tasks) { 
-		startTasks(tasks);
+	 * Loop over all currently started tasks and cycle them.
+	 * This should be done after the classloader has been changed
+	 * (e.g. during module start/stop)
+	 */
+	public void restartTasks() throws SchedulerException {
+		for (TaskConfig task : getScheduledTasks()) {
+			try {
+				stopTask(task);
+				startTask(task);
+			}
+			catch (SchedulerException e) {
+				log.error("Error restarting task: " + task.getName(), e);
+			}
+		}
 	}
 	
 	
@@ -238,7 +232,7 @@ public class TimerSchedulerService implements SchedulerService {
 	 *  @param    task    register a task
 	 */
 	public void registerTask(TaskConfig task) { 
-		scheduledTaskMap.put(task.getId(), null);
+		scheduledTasksMap.put(task.getId(), null);
 	}
 
 	
@@ -249,12 +243,19 @@ public class TimerSchedulerService implements SchedulerService {
 	 */
 	public Collection<TaskConfig> getScheduledTasks() {
 		List<TaskConfig> scheduledTasks = new ArrayList<TaskConfig>();
-		for ( Integer taskId : scheduledTaskMap.keySet() ) { 
-			TaskConfig task = getTask(taskId);
-			if (scheduledTaskMap.get(task)!=null) { 
+		
+		for (TaskConfig task : getSchedulerDAO().getTasks()) {
+			if (task.getStarted())
 				scheduledTasks.add(task);
-			}
 		}
+
+//		for ( Integer taskId : scheduledTaskMap.keySet() ) { 
+//			TaskConfig task = getTask(taskId);
+//			if (scheduledTaskMap.get(task)!=null) { 
+//				scheduledTasks.add(task);
+//			}
+//		}
+		
 		return scheduledTasks;
 	}
 	
@@ -266,8 +267,8 @@ public class TimerSchedulerService implements SchedulerService {
 	 */	
 	public Collection<TaskConfig> getAvailableTasks() { 
 		List<TaskConfig> availableTasks = new ArrayList<TaskConfig>();
-		for ( Integer taskId : scheduledTaskMap.keySet() ) { 
-			availableTasks.add(getTask(taskId));
+		for ( TaskConfig task : getSchedulerDAO().getTasks() ) { 
+			availableTasks.add(task);
 		}
 		return availableTasks;
 	}
@@ -279,7 +280,7 @@ public class TimerSchedulerService implements SchedulerService {
 	 * @return	a collection of tasks
 	 */
 	public Collection<TaskConfig> getTasks() { 
-		return daoContext.getSchedulerDAO().getTasks();
+		return getSchedulerDAO().getTasks();
 	}
 
 	/**
@@ -289,7 +290,7 @@ public class TimerSchedulerService implements SchedulerService {
 	 */
 	public TaskConfig getTask(Integer id) { 
 		log.debug("get task " + id);
-		return daoContext.getSchedulerDAO().getTask(id);
+		return getSchedulerDAO().getTask(id);
 	}
 
 	/**
@@ -299,7 +300,7 @@ public class TimerSchedulerService implements SchedulerService {
 	 */
 	public void createTask(TaskConfig task) { 
 		setCreatedMetadata(task);
-		daoContext.getSchedulerDAO().createTask( task );
+		getSchedulerDAO().createTask( task );
 	}
 	
 	/**
@@ -309,7 +310,7 @@ public class TimerSchedulerService implements SchedulerService {
 	 */
 	public void updateTask(TaskConfig task) { 
 		setChangedMetadata(task);
-		daoContext.getSchedulerDAO().updateTask(task);
+		getSchedulerDAO().updateTask(task);
 	}
 	
 	/**
@@ -317,8 +318,21 @@ public class TimerSchedulerService implements SchedulerService {
 	 *  
 	 * @param	id	the identifier of the task
 	 */
-	public void deleteTask(Integer id) { 
-		daoContext.getSchedulerDAO().deleteTask(id);
+	public void deleteTask(Integer id) {
+		
+		// try to stop the task (ignore errors)
+		TaskConfig task = getTask(id);
+		if (task.getStarted()) {
+			try {
+				stopTask(task);
+			}
+			catch (SchedulerException e) {
+				// pass
+			}
+		}
+		
+		// delete the task
+		getSchedulerDAO().deleteTask(id);
 	}
 
 	
@@ -327,7 +341,7 @@ public class TimerSchedulerService implements SchedulerService {
 	 * @param task
 	 */
 	public void setCreatedMetadata(TaskConfig task) { 		
-		if (task.getCreatedBy() == null) task.setCreatedBy(context.getAuthenticatedUser());
+		if (task.getCreatedBy() == null) task.setCreatedBy(Context.getAuthenticatedUser());
 		if (task.getDateCreated() == null) task.setDateCreated(new Date());
 		setChangedMetadata(task);
 	}
@@ -337,8 +351,15 @@ public class TimerSchedulerService implements SchedulerService {
 	 * @param task
 	 */
 	public void setChangedMetadata(TaskConfig task) {
-		task.setChangedBy(context.getAuthenticatedUser());
+		task.setChangedBy(Context.getAuthenticatedUser());
 		task.setDateChanged(new Date());
+	}
+	
+	public SortedMap<String,String> getSystemVariables() {
+		TreeMap<String,String> systemVariables = new TreeMap<String,String>(new InsertedOrderComparator());
+		// scheduler username and password can be found in the global properties
+		systemVariables.put("SCHEDULER_MILLIS_PER_SECOND", String.valueOf(SchedulerConstants.SCHEDULER_MILLIS_PER_SECOND));
+		return systemVariables;
 	}
 	
   //*******************************************************************************************
@@ -353,23 +374,20 @@ public class TimerSchedulerService implements SchedulerService {
 	 */
   	private Timer getTimer(TaskConfig task) { 
 		log.debug("Getting timer for task " + task.getId());
-  		return scheduledTaskMap.get( task.getId() );
+  		return scheduledTasksMap.get( task.getId() );
 	}
   
   
   	/**
   	 *  Add a timer to the map of scheduled tasks.
   	 *
-  	 *  TODO: Do we need to check to see if map already has timer task for this schedule?
-  	 *  TODO: This method needs to be involved in a transaction BADLY.
-  	 *  
   	 *  @param  task  the task that has been scheduled
   	 */
   	private void startTimer( TaskConfig task, Timer timer ) { 
   		log.debug("Starting timer for task " + task.getId());
   		
   		//  Add the new timer 
-  		scheduledTaskMap.put(task.getId(), timer);
+  		scheduledTasksMap.put(task.getId(), timer);
   		
   		// Update task that has been started
   		if ( timer != null ) {
@@ -381,28 +399,77 @@ public class TimerSchedulerService implements SchedulerService {
 	/**
 	 * Remove the timer associated with the task and schedule.
 	 *
-	 * TODO: Need to add transactions around this  
-  	 * TODO: This method needs to be involved in a transaction BADLY.
-  	 *  
 	 * @param  task
 	 * @param  schedule
 	 */
-	private void stopTimer(TaskConfig task) { 		
+	private void stopTimer(TaskConfig task) throws SchedulerException { 		
 		log.debug("Stopping timer for task " + task.getId());
 
 		// Cancel the timer
-		Timer timer = scheduledTaskMap.get( task.getId() );
+		Timer timer = scheduledTasksMap.remove( task.getId() );
 		if (timer != null) { 
 			timer.cancel();
 			timer = null;
 		}
-		// Remove the timer 
-		// Causes a ConcurrentModificationException when we call stopTimer() within for loop
-		//scheduledTaskMap.remove(task.getId());
-
-		// Update task to be not-started
+		else
+			throw new SchedulerException("Timer: " + timer + " was not found and hence cannot be stopped");
+		
+		// Update task that has been started
 		task.setStarted(false);
-		updateTask(task);
+  		updateTask(task);
+		
+	}
+	
+	
+	/**
+	 * Saves and stops all active tasks
+	 * 
+	 * @returns OpenmrsMemento
+	 */
+	public OpenmrsMemento saveToMemento() {
+			
+		Set<Integer> tasks = new HashSet<Integer>();
+		
+		for (TaskConfig task : getScheduledTasks()) {
+			tasks.add(task.getId());
+			try { 
+				stopTask(task);
+			} catch ( Exception e ) { 
+				// just swallow exceptions
+				log.debug("Unable to stop task while saving memento " + task.getName(), e);
+			}
+		}
+		
+		TimerSchedulerMemento memento = new TimerSchedulerMemento(tasks);
+		memento.saveErrorTasks();
+		
+		return memento;
+	}
+	
+	/**
+	 * 
+	 */
+	public void restoreFromMemento(OpenmrsMemento memento) {
+		
+		if (memento != null && memento instanceof TimerSchedulerMemento) {
+			TimerSchedulerMemento timerMemento = (TimerSchedulerMemento)memento;
+			
+			Set<Integer> tasks = (HashSet<Integer>) timerMemento.getState();
+			
+			// try to start all of the tasks that were stopped right before this restore
+			for (Integer i : tasks) {
+				try {
+					startTask(i);
+				}
+				catch (Exception e) {
+					// essentially swallow exceptions
+					log.debug("EXPECTED ERROR IF STOPPING THIS TASK'S MODULE: Unable to start task with id " + i, e);
+					
+					// save this errored task and try again next time we restore
+					timerMemento.addErrorTask(i);
+				}
+			}
+		}
 	}
 	
 }

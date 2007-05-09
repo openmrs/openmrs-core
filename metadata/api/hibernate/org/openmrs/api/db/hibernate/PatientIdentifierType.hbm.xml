@@ -3,7 +3,7 @@
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
     
-<hibernate-mapping>
+<hibernate-mapping package="org.openmrs">
 <!-- 
     Created by the Middlegen Hibernate plugin 2.1
 
@@ -45,8 +45,17 @@
         column="format"
         length="50"
     />
+
+    <property
+        name="formatDescription"
+        type="java.lang.String"
+        column="format_description"
+        length="250"
+    />
     
     <property name="checkDigit" type="boolean" column="check_digit" not-null="true"/>
+
+    <property name="required" type="boolean" column="required" not-null="true"/>
     
     <property
         name="dateCreated"

@@ -7,5 +7,13 @@
 <br />
 <spring:message code="help.text"/>
 <br />
+<br />
+<spring:message code="help.text2"/>
+
+
+<br/>
+
+<openmrs:extensionPoint pointId="org.openmrs.help" type="html" />
+
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

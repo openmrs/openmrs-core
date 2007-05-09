@@ -2,6 +2,8 @@ package org.openmrs.web.propertyeditor;
 
 import java.beans.PropertyEditorSupport;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.EncounterType;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
@@ -9,26 +11,23 @@ import org.springframework.util.StringUtils;
 
 public class EncounterTypeEditor extends PropertyEditorSupport {
 
-	Context context;
+	private Log log = LogFactory.getLog(this.getClass());
 	
-	public EncounterTypeEditor(Context c) {
-		this.context = c;
-	}
+	public EncounterTypeEditor() {	}
 	
 	public void setAsText(String text) throws IllegalArgumentException {
-		if (context != null) {
-			EncounterService ps = context.getEncounterService(); 
-			if (StringUtils.hasText(text)) {
-				try {
-					setValue(ps.getEncounterType(Integer.valueOf(text)));
-				}
-				catch (Exception ex) {
-					throw new IllegalArgumentException("Encounter Type not found: " + ex.getMessage());
-				}
+		EncounterService ps = Context.getEncounterService(); 
+		if (StringUtils.hasText(text)) {
+			try {
+				setValue(ps.getEncounterType(Integer.valueOf(text)));
 			}
-			else {
-				setValue(null);
+			catch (Exception ex) {
+				log.error("Error setting text: " + text, ex);
+				throw new IllegalArgumentException("Encounter Type not found: " + ex.getMessage());
 			}
+		}
+		else {
+			setValue(null);
 		}
 	}
 

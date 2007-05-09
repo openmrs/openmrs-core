@@ -1,28 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="properties">
 
-    <!-- Environment properties -->
-    <property environment="env"/>
-    <property name="env.COMPUTERNAME" value="${env.HOSTNAME}"/>
-    <property name="tomcat.home" value="C:/Program Files/Apache Group/Tomcat"/>
-
-	<!-- Base definitions (cannot be overwritten by user property file) -->
-	<property file="build.properties" />
-	
-    <!-- Load user overrides -->
-    <property file="${env.OPENMRS_BUILD_PROPERTIES_FILE}"/>
-
-	<!--  Webapp properties -->
+   	<!--  Webapp properties -->
 	<property name="webapp.name" value="openmrs" />
 	<property name="webapp.version" value="${openmrs.version}" />
 	<property name="webapp.display.name" value="OpenMRS" />
-	<property name="webapp.description" value="Open-Source EMR for Developing Countries" />
-
-    <!-- Library versions and JARs -->
-    <property name="lib.dir" location="lib" />
-    <property file="${lib.dir}/lib.properties" />
+	<property name="webapp.description" value="An Open-Source EMR System" />
 
 	<!-- Properties for running unit tests and webapp [un]deploy with tomcat -->
+    <property name="tomcat.home" value="C:/Program Files/Apache Software Foundation/Tomcat 5.5"/>
     <property name="tomcat.server" value="localhost" />
 	<property name="tomcat.port" value="8080" />
     <property name="tomcat.manager.url" value="http://${tomcat.server}:${tomcat.port}/manager" />
@@ -34,18 +20,9 @@
     <property name="doc.bottom" value="&lt;em&gt;&lt;small&gt;Generated ${timestamp}. NOTE - these libraries are in active development and subject to change&lt;/small&gt;&lt;/em&gt;" />
     <property name="doc.header" value="&lt;a href=&quot;http://www.openmrs.org&quot; target=_top&gt;&lt;img src=&quot;./openmrs-logo-small.gif&quot; border=0/&gt;&lt;/a&gt;" />
     <property name="doc.footer" value="&lt;a href=&quot;http://www.openmrs.org&quot; target=_top&gt;${ant.project.name}&lt;/a&gt;" />
-    
-    <!-- Default mail properties -->
-	<property name="mail.transport.protocol" value="smtp" />
-	<property name="mail.smtp.host" value="localhost" />
-	<property name="mail.smtp.port" value="25" />
-	<property name="mail.debug" value="true" />
-	<property name="mail.from" value="info@openmrs.org" />
-	<property name="mail.smtp.auth" value="false" />
-	<property name="mail.user" value="test" />
-	<property name="mail.password" value="test" />
-	<property name="mail.format" value="text/plain" /> 
-    
+        
+    <!-- Address settings -->
+	<property name="address.format" value="Kenya" /> 
         
     <!-- =================================================================== -->
     <!-- Classpaths                                                          -->
@@ -67,40 +44,50 @@
     
     <!-- API -->
     <path id="api.compile.classpath">
+		<!--<fileset dir="${activemq.dir}" includes="*.jar" />-->
+		<fileset dir="${antlr.dir}" includes="*.jar" />
 		<fileset dir="${commons-io.dir}" includes="*.jar" />
 		<fileset dir="${commons-logging.dir}" includes="*.jar" />
 		<fileset dir="${dom4j.dir}" includes="*.jar" />
 		<fileset dir="${hibernate.dir}" includes="*.jar" />
+    	<fileset dir="${hl7api.dir}" includes="*.jar" />
 		<fileset dir="${ibatis.dir}" includes="*.jar" />
+    	<fileset dir="${jfreechart.dir}" includes="*.jar" />
+		<fileset dir="${junit.dir}" includes="*.jar" />
 		<fileset dir="${log4j.dir}" includes="*.jar" />
 		<fileset dir="${mail.dir}" includes="*.jar" />
+		<!--<fileset dir="${quartz.dir}" includes="*.jar" />-->
 		<fileset dir="${spring.dir}" includes="*.jar" />
 		<fileset dir="${velocity.dir}" includes="*.jar" />
-		<fileset dir="${junit.dir}" includes="*.jar" />
-		<fileset dir="${antlr.dir}" includes="*.jar" />
-		<!--<fileset dir="${quartz.dir}" includes="*.jar" />-->
-		<!--<fileset dir="${activemq.dir}" includes="*.jar" />-->
+    	<fileset dir="${xerces.dir}" includes="*.jar" />
     </path>
     <path id="api.test.classpath">
         <path refid="api.compile.classpath"/>
-		<fileset dir="${test.dir}/api" includes="**/*.java" />
+        <fileset dir="${dist.dir}" includes="*.jar" />
 		<fileset dir="${junit.dir}" includes="*.jar" />
+		<fileset dir="${test.dir}/api" includes="**/*.java" />
+		<fileset dir="${tomcat.dir}" includes="*.jar" />
     </path>
         
     <!-- Web -->
     <path id="web.compile.classpath">
 		<pathelement location="${dist.dir}/openmrs-api-${openmrs.version}.jar" />
-		<fileset dir="${tomcat.dir}" includes="*.jar" />
-		<fileset dir="${dwr.dir}" includes="*.jar" />
 		<fileset dir="${commons-io.dir}" includes="*.jar" />
 		<fileset dir="${commons-logging.dir}" includes="*.jar" />
 		<fileset dir="${commons-lang.dir}" includes="*.jar" />
+		<fileset dir="${commons-beanutils.dir}" includes="*.jar" />
+		<fileset dir="${commons-collections.dir}" includes="*.jar" />
+		<fileset dir="${dwr.dir}" includes="*.jar" />
 		<fileset dir="${hibernate.dir}" includes="*.jar" />
+    	<fileset dir="${hl7api.dir}" includes="*.jar" />
+    	<fileset dir="${jfreechart.dir}" includes="*.jar" />
 		<fileset dir="${jstl.dir}" includes="*.jar" />
-		<fileset dir="${spring.dir}" includes="*.jar" />
-		<fileset dir="${velocity.dir}" includes="*.jar" />
-		<fileset dir="${taglibs.dir}" includes="*.jar" />
 		<fileset dir="${neal-reporting.dir}" includes="*.jar" />
+		<fileset dir="${spring.dir}" includes="*.jar" />
+		<fileset dir="${taglibs.dir}" includes="*.jar" />
+		<fileset dir="${tomcat.dir}" includes="*.jar" />
+		<fileset dir="${velocity.dir}" includes="*.jar" />
+    	<fileset dir="${xerces.dir}" includes="*.jar" />
     </path>
 
 </project>

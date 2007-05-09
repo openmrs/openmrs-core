@@ -8,7 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
-import org.openmrs.api.db.DAOContext;
+import org.openmrs.api.db.NoteDAO;
 import org.openmrs.notification.Note;
 import org.openmrs.notification.NoteService;
 
@@ -19,16 +19,20 @@ public class NoteServiceImpl implements NoteService, Serializable {
 	 */
 	private static final long serialVersionUID = 5649635694623650303L;
 	
+	private NoteDAO dao;
+	
+	private NoteDAO getNoteDAO() {
+		return dao;
+	}
+	
+	public void setNodeDAO(NoteDAO dao) {
+		this.dao = dao;
+	}
+	
 	/**
 	 * Logger 
 	 */
 	private Log log = LogFactory.getLog(this.getClass());
-	
-	/**
-	 * Data access context
-	 */
-	private DAOContext daoContext;
-	
 	
 	/**
 	 * Public constructor.
@@ -36,22 +40,13 @@ public class NoteServiceImpl implements NoteService, Serializable {
 	 */
 	public NoteServiceImpl() { }
 	
-	
-	/**
-	 * Set the data access context.
-	 * @param context
-	 */
-	public void setDAOContext(DAOContext context) { 
-		this.daoContext = context;
-	}
-	
 	/**
 	 * Get all notes from the database.
 	 * @return
 	 * @throws Exception
 	 */
 	public Collection<Note> getNotes() throws Exception {		log.info("Get all notes");
-		return daoContext.getNoteDAO().getNotes();
+		return getNoteDAO().getNotes();
 	}
   
 	
@@ -61,7 +56,7 @@ public class NoteServiceImpl implements NoteService, Serializable {
 	 * @throws APIException
 	 */
 	public void createNote(Note note) throws Exception {		log.info("Create a note " + note);
-		daoContext.getNoteDAO().createNote(note); 	}
+		getNoteDAO().createNote(note); 	}
 
 	/**
 	 * Get note by internal identifier
@@ -70,7 +65,7 @@ public class NoteServiceImpl implements NoteService, Serializable {
 	 * @throws APIException
 	 */
 	public Note getNote(Integer noteId) throws Exception {		log.info("Get note " + noteId);
-		return daoContext.getNoteDAO().getNote(noteId);
+		return getNoteDAO().getNote(noteId);
 	}
 
 	/**
@@ -78,7 +73,7 @@ public class NoteServiceImpl implements NoteService, Serializable {
 	 * @param note to be updated
 	 * @throws APIException
 	 */
-	public void updateNote(Note note) throws Exception {		log.info("Update note " + note);		daoContext.getNoteDAO().updateNote(note);
+	public void updateNote(Note note) throws Exception {		log.info("Update note " + note);		getNoteDAO().updateNote(note);
 	}
 
 

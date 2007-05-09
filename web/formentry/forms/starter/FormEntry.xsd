@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<xsd:schema targetNamespace="http://schemas.openmrs.org/2006/FormEntry" xmlns:my="http://schemas.openmrs.org/2006/FormEntry" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-	<xsd:element name="myFields">
-		<xsd:complexType>
-			<xsd:sequence/>
-			<xsd:anyAttribute processContents="lax" namespace="http://www.w3.org/XML/1998/namespace"/>
-		</xsd:complexType>
-	</xsd:element>
-</xsd:schema>

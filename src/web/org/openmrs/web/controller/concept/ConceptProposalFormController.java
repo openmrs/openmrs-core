@@ -46,19 +46,23 @@ public class ConceptProposalFormController extends SimpleFormController {
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		ConceptProposal cp = (ConceptProposal)obj;
 		String action = request.getParameter("action");
 		
-		if (context != null) {
-			Concept c = null;
-			if (StringUtils.hasText(request.getParameter("conceptId")))
-				c = context.getConceptService().getConcept(Integer.valueOf(request.getParameter("conceptId")));
-			cp.setMappedConcept(c);
-		}
-		
+		Concept c = null;
+		if (StringUtils.hasText(request.getParameter("conceptId")))
+			c = Context.getConceptService().getConcept(Integer.valueOf(request.getParameter("conceptId")));
+		cp.setMappedConcept(c);
+	
 		MessageSourceAccessor msa = getMessageSourceAccessor();
-		if (!action.equals(msa.getMessage("ConceptProposal.update"))) {
+		if (action.equals(msa.getMessage("general.cancel"))) {
+			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "general.canceled");
+			return new ModelAndView(new RedirectView(getSuccessView()));
+		}
+		else if (action.equals(msa.getMessage("ConceptProposal.ignore"))) {
+			cp.setState(OpenmrsConstants.CONCEPT_PROPOSAL_REJECT);
+		}
+		else {
 			// Set the state of the concept according to the button pushed
 			if (cp.getMappedConcept() == null)
 				errors.rejectValue("mappedConcept", "ConceptProposal.mappedConcept.error");
@@ -66,7 +70,7 @@ public class ConceptProposalFormController extends SimpleFormController {
 				if (action.equals(msa.getMessage("ConceptProposal.saveAsConcept")) ) {
 					cp.setState(OpenmrsConstants.CONCEPT_PROPOSAL_CONCEPT);
 				}
-				if (action.equals(msa.getMessage("ConceptProposal.saveAsSynonym"))) {
+				else if (action.equals(msa.getMessage("ConceptProposal.saveAsSynonym"))) {
 					if (cp.getMappedConcept() == null)
 						errors.rejectValue("mappedConcept", "ConceptProposal.mappedConcept.error");
 					if (!StringUtils.hasText(cp.getFinalText()))
@@ -89,23 +93,22 @@ public class ConceptProposalFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		String view = getFormView();
 		
-		Locale locale = context.getLocale();
+		Locale locale = Context.getLocale();
 		MessageSourceAccessor msa = getMessageSourceAccessor();
-		String code = "ConceptProposal.alertMappedTo";
 		
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			// this concept proposal
 			ConceptProposal cp = (ConceptProposal)obj;
 			
 			// this proposal's final text
 			String finalText = cp.getFinalText();
 			
-			ConceptService cs = context.getConceptService();
-			AdministrationService as = context.getAdministrationService(); 
-			AlertService alertService = context.getAlertService();
+			ConceptService cs = Context.getConceptService();
+			AdministrationService as = Context.getAdministrationService(); 
+			AlertService alertService = Context.getAlertService();
 			
 			// find the mapped concept
 			Concept c = null;
@@ -126,13 +129,18 @@ public class ConceptProposalFormController extends SimpleFormController {
 				as.mapConceptProposalToConcept(conceptProposal, c);
 			}
 			
-			String mappedName = c.getName(locale).getName();
-			String[] args = new String[] {cp.getOriginalText(), mappedName, cp.getComments()};
-			String msg = msa.getMessage(code, args, locale);
-			
-			for (User proposer : uniqueProposers) {
-				alertService.createAlert(msg, proposer);
+			String msg = "";
+			if (c != null) {
+				String mappedName = c.getName(locale).getName();
+				String[] args = new String[] {cp.getOriginalText(), mappedName, cp.getComments()};
+				msg = msa.getMessage("ConceptProposal.alert.mappedTo", args, locale);
 			}
+			else {
+				String[] args = new String[] {cp.getOriginalText(), cp.getComments()};
+				msg = msa.getMessage("ConceptProposal.alert.ignored", args, locale);
+			}
+			
+			alertService.createAlert(msg, uniqueProposers);
 			
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptProposal.saved");
@@ -150,13 +158,10 @@ public class ConceptProposalFormController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		ConceptProposal cp = null;
 		
-		if (context != null && context.isAuthenticated()) {
-			ConceptService cs = context.getConceptService();
+		if (Context.isAuthenticated()) {
+			ConceptService cs = Context.getConceptService();
 			String id = request.getParameter("conceptProposalId");
 	    	if (id != null)
 	    		cp = cs.getConceptProposal(Integer.valueOf(id));	
@@ -169,13 +174,11 @@ public class ConceptProposalFormController extends SimpleFormController {
     }
     
 	protected Map referenceData(HttpServletRequest request, Object object, Errors errors) throws Exception {
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		ConceptProposal cp = (ConceptProposal)object;
-		Locale locale = context.getLocale();
+		Locale locale = Context.getLocale();
 		List<ConceptProposal> matchingProposals = new Vector<ConceptProposal>();
 		List<ConceptListItem> possibleConceptsListItems = new Vector<ConceptListItem>();
 		ConceptListItem listItem = null;
@@ -185,10 +188,10 @@ public class ConceptProposalFormController extends SimpleFormController {
 		map.put("obsConcept", listItem);
 		
 		String defaultVerbose = "false";
-		if (context != null && context.isAuthenticated() && cp.getConceptProposalId() != null){
-			ConceptService cs = context.getConceptService();
+		if (Context.isAuthenticated() && cp.getConceptProposalId() != null){
+			ConceptService cs = Context.getConceptService();
 			// optional user property for default verbose display in concept search
-			defaultVerbose = context.getAuthenticatedUser().getProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
+			defaultVerbose = Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
 			
 			// find all concept proposals with the same originalText
 			matchingProposals = cs.findMatchingConceptProposals(cp.getOriginalText());

@@ -12,7 +12,6 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.Alert;
 import org.openmrs.notification.AlertService;
-import org.openmrs.web.WebConstants;
 
 public class ForEachAlertTag extends LoopTagSupport  {
 
@@ -32,11 +31,8 @@ public class ForEachAlertTag extends LoopTagSupport  {
 
 		alerts = null;
 
-		Context context = (Context) pageContext.getSession().getAttribute(
-				WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-
 		try {
-			AlertService as = context.getAlertService();
+			AlertService as = Context.getAlertService();
 			if (user == null) {
 				List<Alert> alertList = as.getAlerts();
 				log.debug("alertList.size: " + alertList.size());

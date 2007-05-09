@@ -21,9 +21,10 @@ public interface FormDAO {
 	/**
 	 * Create a new form
 	 * @param form
+	 * @returns the new Form object
 	 * @throws DAOException
 	 */
-	public void createForm(Form form) throws DAOException;
+	public Form createForm(Form form) throws DAOException;
 
 	/**
 	 * Get form by internal form identifier
@@ -33,7 +34,10 @@ public interface FormDAO {
 	 */
 	public Form getForm(Integer formId) throws DAOException;
 	
-	public List<Form> getForms(boolean published) throws DAOException;
+	/**
+	 * @see org.openmrs.api.FormService#getForms(boolean,boolean)
+	 */
+	public List<Form> getForms(boolean publishedOnly, boolean includeRetired) throws DAOException;
 	
 	/**
 	 * Save changes to form

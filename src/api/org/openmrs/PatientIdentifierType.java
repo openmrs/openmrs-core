@@ -14,6 +14,8 @@ public class PatientIdentifierType implements java.io.Serializable {
 	private Integer patientIdentifierTypeId;
 	private String name;
 	private String format;
+	private Boolean required;
+	private String formatDescription;
 	private Boolean checkDigit;
 	private String description;
 	private Date dateCreated;
@@ -90,6 +92,34 @@ public class PatientIdentifierType implements java.io.Serializable {
 	 */
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	
+	/**
+	 * @return Returns the formatDescription.
+	 */
+	public String getFormatDescription() {
+		return formatDescription;
+	}
+
+	/**
+	 * @param formatDescription The formatDescription to set.
+	 */
+	public void setFormatDescription(String formatDescription) {
+		this.formatDescription = formatDescription;
+	}
+
+	/**
+	 * @return Returns the required.
+	 */
+	public Boolean getRequired() {
+		return required;
+	}
+
+	/**
+	 * @param required The required to set.
+	 */
+	public void setRequired(Boolean required) {
+		this.required = required;
 	}
 
 	/**

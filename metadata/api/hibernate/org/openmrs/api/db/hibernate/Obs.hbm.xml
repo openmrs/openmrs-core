@@ -5,14 +5,14 @@
 
 <hibernate-mapping package="org.openmrs">
 
-	<class name="Obs" table="obs">
+	<class name="Obs" table="obs" batch-size="25">
 
 		<id name="obsId" type="int" column="obs_id">
 			<generator class="native" />
 		</id>
 
-		<property name="patientId" type="java.lang.Integer" length="11" 
-			column="patient_id" not-null="true" insert="false" update="false" />
+		<property name="personId" type="java.lang.Integer" length="11" 
+			column="person_id" not-null="true" insert="false" update="false" />
 			
 		<property name="obsDatetime" type="java.util.Date"
 			column="obs_datetime" not-null="true" length="19" />
@@ -51,43 +51,15 @@
 
 		<!-- Associations -->
 
-		<!-- bi-directional many-to-one association to Patient -->
-		<many-to-one name="patient" class="Patient" not-null="true">
-			<column name="patient_id" />
-		</many-to-one>
-		<!-- bi-directional many-to-one association to Concept -->
-		<many-to-one name="concept" class="Concept" not-null="true">
-			<column name="concept_id" />
-		</many-to-one>
-		<!-- bi-directional many-to-one association to Concept -->
-		<many-to-one name="valueCoded" class="Concept">
-			<column name="value_coded" />
-		</many-to-one>
-		<!-- bi-directional many-to-one association to Drug -->
-		<many-to-one name="valueDrug" class="Drug">
-			<column name="value_drug" />
-		</many-to-one>
-		<!-- bi-directional many-to-one association to Order -->
-		<many-to-one name="order" class="Order">
-			<column name="order_id" />
-		</many-to-one>
-		<!-- bi-directional many-to-one association to Location -->
-		<many-to-one name="location" class="Location" not-null="true">
-			<column name="location_id" />
-		</many-to-one>
-		<!-- bi-directional many-to-one association to Encounter -->
-		<many-to-one name="encounter" class="Encounter">
-			<column name="encounter_id" />
-		</many-to-one>
-		<!-- bi-directional many-to-one association to User -->
-		<many-to-one name="creator" class="User" not-null="true">
-			<column name="creator" />
-		</many-to-one>
-		<!-- bi-directional many-to-one association to User -->
-		<many-to-one name="voidedBy" class="User">
-			<column name="voided_by" />
-		</many-to-one>
-		
+		<many-to-one name="person" class="Person" not-null="true" column="person_id" />
+		<many-to-one name="concept" class="Concept" not-null="true" column="concept_id" />
+		<many-to-one name="valueCoded" class="Concept" column="value_coded" />
+		<many-to-one name="valueDrug" class="Drug" column="value_drug" />
+		<many-to-one name="order" class="Order" column="order_id" />
+		<many-to-one name="location" class="Location" not-null="true" column="location_id" />
+		<many-to-one name="encounter" class="Encounter" column="encounter_id" />
+		<many-to-one name="creator" class="User" not-null="true" />
+		<many-to-one name="voidedBy" class="User" column="voided_by" />
 		
 		<!-- Complex Obs Joined Subclass -->
 		<joined-subclass name="ComplexObs" table="complex_obs">

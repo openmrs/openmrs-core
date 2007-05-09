@@ -14,7 +14,6 @@ public class HelloWorldThread implements Runnable {
 	// Logger 
 	private static Log log = LogFactory.getLog( HelloWorldThread.class );
 
-
 	/**
 	 *  Public constructor.
 	 */

@@ -10,7 +10,6 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.notification.Message;
 import org.openmrs.notification.MessageException;
 import org.openmrs.notification.MessageSender;
-import org.openmrs.util.OpenmrsConstants;
 
 public class MailMessageSender implements MessageSender { 
 	
@@ -85,8 +84,7 @@ public class MailMessageSender implements MessageSender {
 		mimeMessage.setSubject( message.getSubject() );
 		
 		// TODO	There should be a default and preference specified somewhere
-		log.debug("Message content type : " + OpenmrsConstants.DEFAULT_CONTENT_TYPE);		
-		mimeMessage.setContent( message.getContent(), OpenmrsConstants.DEFAULT_CONTENT_TYPE);		
+		mimeMessage.setContent( message.getContent(), "text/plain");
 		return mimeMessage;
 	}
 	

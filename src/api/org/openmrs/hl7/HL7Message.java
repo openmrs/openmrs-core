@@ -6,6 +6,8 @@ import java.util.Date;
 
 import org.apache.commons.io.IOUtils;
 
+import ca.uhn.hl7v2.HL7Exception;
+
 public class HL7Message {
 
 	String[] segments;

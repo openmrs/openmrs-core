@@ -5,9 +5,22 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<script src="<%= request.getContextPath() %>/scripts/validation.js"></script>
+<openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
+<openmrs:htmlInclude file="/scripts/validation.js" />
 
 <h2><spring:message code="User.title"/></h2>
+
+<c:if test="${user.voided}">
+	<div id="userFormVoided" class="retiredMessage">
+		<div><spring:message code="User.voidedMessage"/></div>
+	</div>
+</c:if>
+
+<c:if test="${user.dead}">
+	<div id="userFormDeceased" class="retiredMessage">
+		<div><spring:message code="User.userDeceased"/></div>
+	</div>
+</c:if>
 
 <spring:hasBindErrors name="user">
 	<spring:message code="fix.error"/>
@@ -19,14 +32,27 @@
 	<br />
 </spring:hasBindErrors>
 
-<form method="post">
+<form id="thisUserForm" method="post">
 	<table>
+		
+		<spring:nestedPath path="user.names[0]">
+			<openmrs:portlet url="nameLayout" id="namePortlet" size="full" parameters="layoutMode=edit|layoutShowTable=false|layoutShowExtended=false" />
+		</spring:nestedPath>
+		
+		<tr>
+			<td><br/></td><td></td>
+		</tr>
 		<tr>
 			<td><spring:message code="User.systemId"/></td>
 			<td>
-				<spring:bind path="user.systemId">
-					${status.value}
-				</spring:bind>
+				<c:choose>
+					<c:when test="${user.systemId != null}">
+						${user.systemId}
+					</c:when>
+					<c:otherwise>
+						(<spring:message code="User.systemId.willBeGenerated"/>)
+					</c:otherwise>
+				</c:choose>
 			</td>
 		</tr>
 		<tr>
@@ -44,114 +70,69 @@
 		<c:if test="${modifyPasswords == true}">
 			<tr>
 				<td><spring:message code="User.password" /></td>
-				<td><input type="password" name="password" /></td>
+				<td><input type="password" name="password" value="<c:if test="${isNewUser == false}">XXXXXXXXXXXXXXX</c:if>" /> <i><spring:message code="User.password.description"/></i></td>
 	
 			</tr>
 			<tr>
 				<td><spring:message code="User.confirm" /></td>
-				<td><input type="password" name="confirm" /></td>
-			</tr>
-			<tr>
-				<td><spring:message code="User.secretQuestion" /></td>
-				<td><input type="text" name="secretQuestion" size="50" /></td>
-	
-			</tr>
-			<tr>
-				<td><spring:message code="User.secretAnswer" /></td>
-				<td><input type="password" name="secretAnswer" size="50" /></td>
+				<td>
+					<input type="password" name="confirm" value="<c:if test="${isNewUser == false}">XXXXXXXXXXXXXXX</c:if>" />
+					<i><spring:message code="User.confirm.description" /></i>
+				</td>
 			</tr>
 			<tr>
 				<td><spring:message code="User.forceChange" /></td>
-				<td><input type="checkbox" name="${changePasswordName}" value="true" <c:if test="${changePassword == true}">checked</c:if> /></td>
+				<td>
+					<input type="checkbox" name="${changePasswordName}" value="true" <c:if test="${changePassword == true}">checked</c:if> />
+					<i><spring:message code="User.forceChange.description"/></i>
+				</td>
 			</tr>
 		</c:if>
-		<tr>
-			<td><spring:message code="User.firstName" /></td>
-			<td>
-				<spring:bind path="user.firstName">
-					<input type="text" name="${status.expression}" value="${status.value}" />
-					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-				</spring:bind>
-			</td>
-
-		</tr>
-		<tr>
-			<td><spring:message code="User.middleName"/></td>
-			<td>
-				<spring:bind path="user.middleName">
-					<input type="text" name="${status.expression}" value="${status.value}"/>
-					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-				</spring:bind>
-			</td>
-
-		</tr>
-		<tr>
-			<td><spring:message code="User.lastName"/></td>
-			<td>
-				<spring:bind path="user.lastName">
-					<input type="text" name="${status.expression}" value="${status.value}"/>
-					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-				</spring:bind>
-			</td>
-
-		</tr>
+		
+		<tr><td colspan=2">&nbsp;</td></tr>
+		
 		<tr>
 			<td valign="top"><spring:message code="User.roles"/></td>
 			<td valign="top">
-				<openmrs:listPicker name="roles" allItems="${roles}" currentItems="${user.roles}" contextPath="${pageContext.request.contextPath}" />
+				<openmrs:listPicker name="roleStrings" allItems="${roles}" currentItems="${user.roles}" />
 			</td>
 		</tr>
-		<c:if test="${!(user.creator == null)}">
-			<tr>
-				<td><spring:message code="general.createdBy" /></td>
-				<td>
-					${user.creator.firstName} ${user.creator.lastName} -
-					<openmrs:formatDate date="${user.dateCreated}" type="long" />
-				</td>
-			</tr>
-		</c:if>
-		<c:if test="${!(user.changedBy == null)}">
-			<tr>
-				<td><spring:message code="general.changedBy" /></td>
-				<td>
-					${user.changedBy.firstName} ${user.changedBy.lastName} -
-					<openmrs:formatDate date="${user.dateChanged}" type="long" />
-				</td>
-			</tr>
-		</c:if>
+		
+		<tr><td colspan=2">&nbsp;</td></tr>
+		
 		<tr>
-			<td><spring:message code="general.voided"/></td>
-			<td>
-				<spring:bind path="user.voided">
-					<input type="hidden" name="_${status.expression}">
-					<input type="checkbox" name="${status.expression}" 
-						   id="${status.expression}" 
-						   <c:if test="${status.value == true}">checked</c:if> 
-						   onClick="voidedBoxClick(this)"
-					/>
-				</spring:bind>
-			</td>
+			<td colspan="2"><a href="#Show Advanced" onclick="return toggleLayer('advancedOptions', this, '<spring:message code="User.showAdvancedOptions"/>', '<spring:message code="User.hideAdvancedOptions"/>')"><spring:message code="User.showAdvancedOptions"/></a></td>
 		</tr>
-		<tr>
-			<td><spring:message code="general.voidReason"/></td>
-			<spring:bind path="user.voidReason">
-				<td>
-					<input type="text" name="${status.expression}" id="voidReason" value="${status.value}" />
-					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-				</td>
-			</spring:bind>
-		</tr>
-		<c:if test="${user.voided}" >
-			<tr>
-				<td><spring:message code="general.voidedBy"/></td>
-				<td>
-					${user.voidedBy.firstName} ${user.voidedBy.lastName} -
-					<openmrs:formatDate date="${user.dateVoided}" type="long" />
-				</td>
-			</tr>
-		</c:if>
+		<tbody id="advancedOptions" style="display: none">
+			<c:if test="${modifyPasswords == true}">
+				<tr>
+					<td><spring:message code="User.secretQuestion" /></td>
+					<td><input type="text" name="secretQuestion" size="50" value="${user.secretQuestion}" /> <i><spring:message code="general.optional"/></i></td>
+				</tr>
+				<tr>
+					<td><spring:message code="User.secretAnswer" /></td>
+					<td><input type="password" name="secretAnswer" size="50" value="<c:if test="${isNewUser == false}">XXXXXXXXXXXXXXX</c:if>"/> <i><spring:message code="general.optional"/></i></td>
+				</tr>
+			</c:if>
+			<spring:nestedPath path="user">
+				<%@ include file="../person/include/editPersonInfo.jsp" %>
+			</spring:nestedPath>
+		</tbody>
 	</table>
-	<input type="submit" id="saveButton" value="<spring:message code="User.save"/>" />
+	
+	<br/>
+	
+	<input type="submit" id="saveButton" name="action" value="<spring:message code="User.save"/>" />
+
+	<openmrs:hasPrivilege privilege="Become User (Actually you need to be a superuser)">
+		&nbsp;&nbsp;&nbsp;&nbsp;
+		<input type="submit" name="action" value="<spring:message code="User.assumeIdentity" />" onClick="return confirm('<spring:message code="User.assumeIdentity.confirm"/>');" />
+	</openmrs:hasPrivilege>
+	
+	<openmrs:hasPrivilege privilege="Delete User">
+		&nbsp;&nbsp;&nbsp;&nbsp;
+		<input type="submit" name="action" value="<spring:message code="User.delete" />" onClick="return confirm('<spring:message code="User.delete.confirm"/>');" />
+	</openmrs:hasPrivilege>
 </form>
 
 <script type="text/javascript">

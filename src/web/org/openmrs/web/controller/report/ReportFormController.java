@@ -47,12 +47,12 @@ public class ReportFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		String view = getFormView();
 		
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			Report report = (Report)obj;
-			context.getAdministrationService().updateReport(report);
+			Context.getAdministrationService().updateReport(report);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Report.saved");
 		}
@@ -69,13 +69,10 @@ public class ReportFormController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		Report report = null;
 		
-		if (context != null && context.isAuthenticated()) {
-			ReportService rs = context.getReportService();
+		if (Context.isAuthenticated()) {
+			ReportService rs = Context.getReportService();
 			String reportId = request.getParameter("reportId");
 	    	if (reportId != null)
 	    		report = rs.getReport(Integer.valueOf(reportId));	

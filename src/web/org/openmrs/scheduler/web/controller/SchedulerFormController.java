@@ -2,6 +2,8 @@ package org.openmrs.scheduler.web.controller;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -16,6 +18,7 @@ import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -31,7 +34,7 @@ public class SchedulerFormController extends SimpleFormController {
 	// Move this to message.properties or OpenmrsConstants
 	public static String DEFAULT_DATE_PATTERN = "MM/dd/yyyy HH:mm:ss";
 	public static DateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat(DEFAULT_DATE_PATTERN);
-	  	  
+	
 	/**
 	 * 
 	 * Allows for Integers to be used as values in input tags.
@@ -46,6 +49,49 @@ public class SchedulerFormController extends SimpleFormController {
 		binder.registerCustomEditor(java.lang.Long.class, new CustomNumberEditor(java.lang.Long.class, true));
 		binder.registerCustomEditor(java.util.Date.class, new CustomDateEditor(DEFAULT_DATE_FORMAT, true));
 	}
+	
+	/**
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#processFormSubmission(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 */
+	@Override
+	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
+		
+		TaskConfig task = (TaskConfig) command;
+		
+		// assign the properties to the task
+		String[] names = request.getParameterValues("propertyName");
+		String[] values = request.getParameterValues("propertyValue");
+		
+		Map<String, String> properties = new HashMap<String, String>();
+		
+		if (names != null)
+			for (int x = 0; x < names.length; x++) {
+				if (names[x].length() > 0)
+					properties.put(names[x], values[x]);
+			}
+		
+		task.setProperties(properties);
+		
+		
+		// if the user selected a different repeat interval unit, fix repeatInterval
+		String units = request.getParameter("repeatIntervalUnits");
+		Long interval = task.getRepeatInterval();
+		
+		if ("minutes".equals(units)) {
+			interval = interval * 60;
+		}
+		else if ("hours".equals(units)) {
+			interval = interval * 60 * 60;
+		}
+		else if ("days".equals(units)) {
+			interval = interval * 60 * 60 * 24;
+		}
+		
+		task.setRepeatInterval(interval);
+		
+		
+		return super.processFormSubmission(request, response, task, errors);
+	}
 
 	/**
 	 * 
@@ -57,22 +103,20 @@ public class SchedulerFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		String view = getFormView();
 
-		if (context != null && context.isAuthenticated()) {
-			TaskConfig task = (TaskConfig) command;
-			task.setStartTimePattern(DEFAULT_DATE_PATTERN);
-			log.info("task started? " + task.getStarted());
-			context.getSchedulerService().updateTask(task);
-			view = getSuccessView();
-			
-			Object [] args = new Object[] { task.getId() };
-			String success = getMessageSourceAccessor().getMessage("Scheduler.taskForm.saved", args);
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
-
-		}
+		TaskConfig task = (TaskConfig) command;
+		task.setStartTimePattern(DEFAULT_DATE_PATTERN);
+		log.info("task started? " + task.getStarted());
 		
+		Context.getSchedulerService().updateTask(task);
+		view = getSuccessView();
+		
+		Object [] args = new Object[] { task.getName() };
+		String success = getMessageSourceAccessor().getMessage("Scheduler.taskForm.saved", args);
+		httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
+	
 		return new ModelAndView(new RedirectView(view));
 	}
 
@@ -85,24 +129,51 @@ public class SchedulerFormController extends SimpleFormController {
 	 */
 	  protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		TaskConfig task = new TaskConfig();
 		
-		if (context != null && context.isAuthenticated()) {
-			
-			String taskId = request.getParameter("taskId");
-	    	if (taskId != null) {
-	    		task = context.getSchedulerService().getTask(Integer.valueOf(taskId));	
-	    	}
-		}
-
+		String taskId = request.getParameter("taskId");
+    	if (taskId != null) {
+    		task = Context.getSchedulerService().getTask(Integer.valueOf(taskId));	
+    	}
+	
 		// Date format pattern for new and existing (currently disabled, but visible)
 		if ( task.getStartTimePattern() == null ) 
 			task.setStartTimePattern(DEFAULT_DATE_PATTERN);
 
 		return task;
 	  }
+
+	/* (non-Javadoc)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
+	 */
+	@Override
+	protected Map referenceData(HttpServletRequest request, Object command, Errors errors) throws Exception {
+		
+		Map<String, String> map = new HashMap<String, String>();
+		
+		TaskConfig task = (TaskConfig)command;
+		
+		Long interval = task.getRepeatInterval();
+		
+		if (interval == null || interval < 60)
+			map.put("units", "seconds");
+		else if (interval < 3600) {
+			map.put("units", "minutes");
+			task.setRepeatInterval(interval / 60);
+		}
+		else if (interval < 86400) {
+			map.put("units", "hours");
+			task.setRepeatInterval(interval / 3600);
+		}
+		else {
+			map.put("units", "days");
+			task.setRepeatInterval(interval / 86400);
+		}
+		
+		return map;
+	}
+
+	  
+
 	  
 }

@@ -4,7 +4,7 @@
 		<td>
 			<spring:bind path="preferred">
 				<input type="hidden" name="_${status.expression}">
-				<input type="checkbox" name="${status.expression}" onclick="preferredBoxClick(this)" alt="patientIdentifier" <c:if test="${status.value == true}">checked</c:if> />
+				<input type="checkbox" name="${status.expression}" onclick="if (preferredBoxClick) preferredBoxClick(this)" alt="patientIdentifier" <c:if test="${status.value == true}">checked</c:if> />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
@@ -57,10 +57,8 @@
 			<tr>
 				<td><spring:message code="general.createdBy" /></td>
 				<td>
-					${status.value.firstName} ${status.value.lastName} -
-					<spring:bind path="dateCreated">
-						${status.value}
-					</spring:bind>
+					${status.value.personName} -
+					<openmrs:formatDate path="dateCreated" type="long" />
 				</td>
 			</tr>
 		</c:if>
@@ -70,31 +68,29 @@
 		<td>
 			<spring:bind path="voided">
 				<input type="hidden" name="_${status.expression}"/>
-				<input type="checkbox" name="${status.expression}" 
+				<input type="checkbox" name="${status.expression}"
 					   <c:if test="${status.value == true}">checked="checked"</c:if> 
-					   onClick="voidedBoxClick(this)"
+					   onClick="toggleLayer('voidReasonRow-${identifier}'); if (voidedBoxClicked) voidedBoxClicked(this); "
 				/>
 			</spring:bind>
 		</td>
 	</tr>
-	<tr>
+	<tr id="voidReasonRow-${identifier}" <spring:bind path="voided"><c:if test="${status.value == false}">style="display: none"</c:if></spring:bind> >
 		<td><spring:message code="general.voidReason"/></td>
 		<spring:bind path="voidReason">
 			<td>
-				<input type="text" name="id${status.expression}" value="${status.value}" size="35"/>
+				<input type="text" name="${status.expression}" value="${status.value}" size="35"/>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</td>
 		</spring:bind>
 	</tr>
 	<spring:bind path="voidedBy">
-		<c:if test="${!(status.value == null)}">
+		<c:if test="${status.value != null}">
 			<tr>
-				<td><spring:message code="general.createdBy" /></td>
+				<td><spring:message code="general.voidedBy" /></td>
 				<td>
-					${status.value.firstName} ${status.value.lastName} -
-					<spring:bind path="dateVoided">
-						${status.value}
-					</spring:bind>
+					${status.value.personName} -
+					<openmrs:formatDate path="dateVoided" type="long" />
 				</td>
 			</tr>
 		</c:if>

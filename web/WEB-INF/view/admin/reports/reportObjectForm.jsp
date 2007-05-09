@@ -5,8 +5,8 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/openmrsPopup.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/calendar/calendar.js"></script>
+<openmrs:htmlInclude file="/scripts/openmrsPopup.js" />
+<openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
 <h2><spring:message code="ReportObject.title"/></h2>
 
 <spring:hasBindErrors name="reportObject">
@@ -79,12 +79,11 @@
 				<spring:bind path="reportObject.${field.name}">
 					<tr>
 						<td valign="top"><c:out value="${field.name}"/></td>
-<%--						<td valign="top" colspan="5"><openmrs:fieldGen type="${field.genericType}" formFieldName="${field.name}" startVal="${extendedObjectInfo[field.name]}" /></td>--%>
 						<c:if test="${!field.type.enum}">
-							<td valign="top" colspan="5"><openmrs:fieldGen type="${field.genericType}" formFieldName="${status.expression}" startVal="${status.value}" /></td>
+							<td valign="top" colspan="5"><openmrs:fieldGen type="${field.genericType}" formFieldName="${status.expression}" val="${status.editor.value}" /></td>
 						</c:if>
 						<c:if test="${field.type.enum}">
-							<td valign="top" colspan="5"><openmrs:fieldGen type="${field.genericType}" formFieldName="${status.expression}" startVal="${status.value}" /></td>
+							<td valign="top" colspan="5"><openmrs:fieldGen type="${field.genericType}" formFieldName="${status.expression}" val="${status.value}" /></td>
 						</c:if>
 					</tr>
 				</spring:bind>	

@@ -1,7 +1,6 @@
 package org.openmrs.web.controller.concept;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
@@ -53,14 +52,13 @@ public class ConceptClassListController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		Locale locale = context.getLocale();
+		
 		String view = getFormView();
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			
 			String[] conceptClassList = request.getParameterValues("conceptClassId");
-			AdministrationService as = context.getAdministrationService();
-			ConceptService cs = context.getConceptService();
+			AdministrationService as = Context.getAdministrationService();
+			ConceptService cs = Context.getConceptService();
 			
 			String success = "";
 			String error = "";
@@ -75,7 +73,7 @@ public class ConceptClassListController extends SimpleFormController {
 					success += cc + " " + deleted;
 				}
 				catch (APIException e) {
-					log.warn(e);
+					log.warn("Error deleting concept class", e);
 					if (!error.equals("")) error += "<br>";
 					error += cc + " " + notDeleted;
 				}
@@ -100,15 +98,12 @@ public class ConceptClassListController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-    	HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		//default empty Object
 		List<ConceptClass> conceptClassList = new Vector<ConceptClass>();
 		
-		//only fill the Object is the user has authenticated properly
-		if (context != null && context.isAuthenticated()) {
-			ConceptService cs = context.getConceptService();
+		//only fill the Object if the user has authenticated properly
+		if (Context.isAuthenticated()) {
+			ConceptService cs = Context.getConceptService();
 	    	conceptClassList = cs.getConceptClasses();
 		}
     	

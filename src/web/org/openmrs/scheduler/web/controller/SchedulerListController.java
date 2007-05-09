@@ -2,7 +2,8 @@ package org.openmrs.scheduler.web.controller;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Locale;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -13,11 +14,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.TaskConfig;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -68,56 +71,53 @@ public class SchedulerListController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		Locale locale = request.getLocale();
+		//
+		//Locale locale = request.getLocale();
 		String view = getFormView();
-		if (context != null && context.isAuthenticated()) {
+		StringBuffer success = new StringBuffer();
+		StringBuffer error = new StringBuffer();			
+		String action = request.getParameter("action");			
+		MessageSourceAccessor msa = getMessageSourceAccessor();
 
-			StringBuffer success = new StringBuffer();
-			StringBuffer error = new StringBuffer();			
-			String action = request.getParameter("action");			
-			MessageSourceAccessor msa = getMessageSourceAccessor();
+		String[] taskList = request.getParameterValues("taskId");
+			
+		if ( taskList != null ) { 
+			for (String task : taskList) {
 
-			String[] taskList = request.getParameterValues("taskId");
-				
-			if ( taskList != null ) { 
-				for (String task : taskList) {
+				// Argument to pass to the success/error message
+				Object [] args = new Object[] { task };
 
-					// Argument to pass to the success/error message
-					Object [] args = new Object[] { task };
-
-					try {
-												
-						Integer taskId = Integer.valueOf(task);
-						
-						if ( action.equals( msa.getMessage("Scheduler.taskList.delete") ) ) {
-							context.getSchedulerService().deleteTask(taskId);
-							success.append(msa.getMessage("Scheduler.taskList.deleted", args));
-						} 
-						else if ( action.equals( msa.getMessage("Scheduler.taskList.stop") ) ) {
-							context.getSchedulerService().stopTask(taskId);
-							success.append(msa.getMessage("Scheduler.taskList.stopped", args));
-						}
-						else if ( action.equals( msa.getMessage("Scheduler.taskList.start") ) ) {
-							context.getSchedulerService().startTask(taskId);						
-							success.append(msa.getMessage("Scheduler.taskList.started", args));
-						}
+				try {
+											
+					Integer taskId = Integer.valueOf(task);
+					
+					if ( action.equals( msa.getMessage("Scheduler.taskList.delete") ) ) {
+						getSchedulerService().deleteTask(taskId);
+						success.append(msa.getMessage("Scheduler.taskList.deleted", args));
+					} 
+					else if ( action.equals( msa.getMessage("Scheduler.taskList.stop") ) ) {
+						getSchedulerService().stopTask(taskId);
+						success.append(msa.getMessage("Scheduler.taskList.stopped", args));
 					}
-					catch (APIException e) {
-						log.warn(e);
-						error.append(msa.getMessage("Scheduler.taskList.error", args));
+					else if ( action.equals( msa.getMessage("Scheduler.taskList.start") ) ) {
+						getSchedulerService().startTask(taskId);						
+						success.append(msa.getMessage("Scheduler.taskList.started", args));
 					}
 				}
+				catch (APIException e) {
+					log.warn("Error processing schedulerlistcontroller task", e);
+					error.append(msa.getMessage("Scheduler.taskList.error", args));
+				}
 			}
-			
-			view = getSuccessView();
-			
-			if (!success.toString().equals("")) { 
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
-			}
-			if (!error.toString().equals("")) {
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error.toString());
-			}
+		}
+		
+		view = getSuccessView();
+		
+		if (!success.toString().equals("")) { 
+			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
+		}
+		if (!error.toString().equals("")) {
+			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error.toString());
 		}
 			
 		return new ModelAndView(new RedirectView(view));
@@ -133,19 +133,56 @@ public class SchedulerListController extends SimpleFormController {
 	  protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
 	  	log.info("Getting tasks");
-	  	HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+	  	//HttpSession httpSession = request.getSession();
+		//
 		
 		//default empty Object
 		Collection<TaskConfig> taskList = new ArrayList<TaskConfig>();
 		
-		//only fill the Object is the user has authenticated properly
-		if (context != null && context.isAuthenticated()) {
-	    	taskList = context.getSchedulerService().getTasks();
-		}
+		taskList = getSchedulerService().getTasks();
+		
 	  	log.info("Returning " + taskList.size() + " tasks");
 	  	
 	      return taskList;
 	  }
 	  
+	/**
+	 * Get the scheduler service from the application context.
+	 */
+	private SchedulerService getSchedulerService() { 
+		return Context.getSchedulerService();
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	protected Map referenceData(HttpServletRequest request, Object command, Errors errors) throws Exception {
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		Collection<TaskConfig> tasks = (Collection<TaskConfig>)command;
+		Map<TaskConfig, String> intervals = new HashMap<TaskConfig, String>();
+		MessageSourceAccessor msa = getMessageSourceAccessor();
+		
+		for (TaskConfig task : tasks) {
+		
+			Long interval = task.getRepeatInterval();
+			
+			if (interval < 60)
+				intervals.put(task, interval + " " + msa.getMessage("Scheduler.scheduleForm.repeatInterval.units.seconds"));
+			else if (interval < 3600)
+				intervals.put(task, interval / 60 + " " + msa.getMessage("Scheduler.scheduleForm.repeatInterval.units.minutes"));
+			else if (interval < 86400)
+				intervals.put(task, interval / 3600 + " " + msa.getMessage("Scheduler.scheduleForm.repeatInterval.units.hours"));
+			else
+				intervals.put(task, interval / 86400 + " " + msa.getMessage("Scheduler.scheduleForm.repeatInterval.units.days"));
+		
+		}
+		map.put("intervals", intervals);
+		
+		return map;
+	}
+		
 }

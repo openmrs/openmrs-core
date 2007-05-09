@@ -49,44 +49,40 @@
     <!-- Associations -->
 
     <many-to-one
-        name="person"
+        name="personA"
+        column="person_a"
         class="org.openmrs.Person"
         not-null="true"
-    >
-        <column name="person_id" />
-    </many-to-one>
+    />
 
     <many-to-one
-        name="relative"
+        name="personB"
+        column="person_b"
         class="org.openmrs.Person"
         not-null="true"
-    >
-        <column name="relative_id" />
-    </many-to-one>
+    />
 
   
     <!-- bi-directional many-to-one association to RelationshipType -->
     <many-to-one
-        name="relationship"
+        name="relationshipType"
+        column="relationship"
         class="org.openmrs.RelationshipType"
         not-null="true"
-    >
-        <column name="relationship" />
-    </many-to-one>
+    />
+
     <!-- bi-directional many-to-one associations to User -->
     <many-to-one
         name="creator"
         class="org.openmrs.User"
         not-null="true"
-    >
-        <column name="creator" />
-    </many-to-one>
+    />
+    
     <many-to-one
         name="voidedBy"
+        column="voided_by"
         class="org.openmrs.User"
-    >
-        <column name="voided_by" />
-    </many-to-one>
+    />
     
 </class>
 </hibernate-mapping>

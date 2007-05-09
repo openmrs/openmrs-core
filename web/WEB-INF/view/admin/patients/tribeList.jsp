@@ -21,8 +21,7 @@
 		<c:forEach var="tribe" items="${tribeList}">
 			<tr>
 				<td><input type="checkbox" name="tribeId" value="${tribe.tribeId}"></td>
-				<td><a href="tribe.form?tribeId=${tribe.tribeId}" 
-					   class="<c:if test="${tribe.retired == true}">retired</c:if>">
+				<td class="<c:if test="${tribe.retired == true}">retired</c:if>"><a href="tribe.form?tribeId=${tribe.tribeId}">
 					   ${tribe.name}
 					</a>
 				</td>

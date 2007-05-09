@@ -1,7 +1,6 @@
 package org.openmrs.web.controller.concept;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
@@ -53,14 +52,13 @@ public class ConceptDatatypeListController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		Locale locale = request.getLocale();
+		
 		String view = getFormView();
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			
 			String[] cdList = request.getParameterValues("conceptDatatypeId");
-			AdministrationService as = context.getAdministrationService();
-			ConceptService cs = context.getConceptService();
+			AdministrationService as = Context.getAdministrationService();
+			ConceptService cs = Context.getConceptService();
 			
 			String success = "";
 			String error = "";
@@ -75,7 +73,7 @@ public class ConceptDatatypeListController extends SimpleFormController {
 					success += cd + " " + deleted;
 				}
 				catch (APIException e) {
-					log.warn(e);
+					log.warn("Error deleting concept datatype", e);
 					if (!error.equals("")) error += "<br>";
 					error += cd + " " + notDeleted;
 				}
@@ -100,15 +98,12 @@ public class ConceptDatatypeListController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-    	HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		//default empty Object
 		List<ConceptDatatype> cdList = new Vector<ConceptDatatype>();
 		
 		//only fill the Object is the user has authenticated properly
-		if (context != null && context.isAuthenticated()) {
-			ConceptService cs = context.getConceptService();
+		if (Context.isAuthenticated()) {
+			ConceptService cs = Context.getConceptService();
 	    	cdList = cs.getConceptDatatypes();
 		}
     	

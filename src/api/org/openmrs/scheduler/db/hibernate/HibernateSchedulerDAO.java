@@ -7,11 +7,8 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Session;
-import org.openmrs.api.APIException;
-import org.openmrs.api.context.Context;
+import org.hibernate.SessionFactory;
 import org.openmrs.api.db.DAOException;
-import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.scheduler.Schedule;
 import org.openmrs.scheduler.TaskConfig;
 import org.openmrs.scheduler.db.SchedulerDAO;
@@ -22,32 +19,29 @@ import org.springframework.orm.ObjectRetrievalFailureException;
  *
  */
 public class HibernateSchedulerDAO implements SchedulerDAO {
-
-	/** 
-	 * Context 
-	 * 
-	 * TODO need to remove
-	 */
-	private Context context;
 	
 	/**
 	 * Logger
 	 */
 	private static final Log log = LogFactory.getLog( HibernateSchedulerDAO.class );
-
+	
+	/**
+	 * Hibernate session factory
+	 */
+	private SessionFactory sessionFactory;
+	
 	/**
 	 * Default Public constructor
 	 */
 	public HibernateSchedulerDAO() { }
 	
-	
 	/**
-	 * Constructor 
+	 * Set session factory
 	 * 
-	 * @param context
+	 * @param sessionFactory
 	 */
-	public HibernateSchedulerDAO(Context context) { 
-		this.context = context;
+	public void setSessionFactory(SessionFactory sessionFactory) { 
+		this.sessionFactory = sessionFactory;
 	}
 	
 	/**
@@ -57,20 +51,8 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 	 * @throws DAOException
 	 */
 	public void createTask(TaskConfig task) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-
-		try {
-			//add all data minus the password as a new user
-			HibernateUtil.beginTransaction();
-			session.save(task);
-			HibernateUtil.commitTransaction();		
-		}
-		catch (Exception e) {
-			log.error("Rolling back transaction", e);			
-			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e);
-		}			
-		
+		// add all data minus the password as a new user
+		sessionFactory.getCurrentSession().save(task);
 	}
 
 	/**
@@ -81,8 +63,7 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 	 * @throws DAOException
 	 */
 	public TaskConfig getTask(Integer taskId) throws DAOException { 
-		Session session = HibernateUtil.currentSession();
-		TaskConfig task = (TaskConfig) session.get(TaskConfig.class, taskId);
+		TaskConfig task = (TaskConfig) sessionFactory.getCurrentSession().get(TaskConfig.class, taskId);
 		
 		if (task == null) {
 			log.warn("Task '" + taskId + "' not found");
@@ -98,18 +79,7 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 	 * @throws DAOException
 	 */
 	public void updateTask(TaskConfig task) throws DAOException { 
-
-		Session session = HibernateUtil.currentSession();			
-		try {
-			HibernateUtil.beginTransaction();
-			session.merge(task);
-			HibernateUtil.commitTransaction();
-		}
-		catch (Exception e) {
-			log.error("Rolling back transaction", e);
-			HibernateUtil.rollbackTransaction();
-			throw new APIException(e); 
-		}		
+		sessionFactory.getCurrentSession().merge(task);
 	}
 
 	/**
@@ -119,11 +89,9 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 	 * @return set of tasks matching identifier
 	 * @throws DAOException
 	 */
+	@SuppressWarnings("unchecked")
 	public List<TaskConfig> getTasks() throws DAOException { 
-		Session session = HibernateUtil.currentSession();			
-		List<TaskConfig> tasks = session.createCriteria(TaskConfig.class).list();
-		return tasks;
-		
+		return sessionFactory.getCurrentSession().createCriteria(TaskConfig.class).list();
 	}
 
 
@@ -145,10 +113,7 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 	 * @throws DAOException
 	 */
 	public void deleteTask(TaskConfig taskConfig) throws DAOException { 
-		Session session = HibernateUtil.currentSession();
-		HibernateUtil.beginTransaction();
-		session.delete( taskConfig );
-		HibernateUtil.commitTransaction();
+		sessionFactory.getCurrentSession().delete( taskConfig );
 	}
 
 	
@@ -170,8 +135,7 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 	 * @throws DAOException
 	 */
 	public Schedule getSchedule(Integer scheduleId) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		Schedule schedule = (Schedule) session.get(Schedule.class, scheduleId);
+		Schedule schedule = (Schedule) sessionFactory.getCurrentSession().get(Schedule.class, scheduleId);
 		
 		if (schedule == null) {
 			log.error("Schedule '" + scheduleId + "' not found");

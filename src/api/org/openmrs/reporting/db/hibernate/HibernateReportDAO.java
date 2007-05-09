@@ -7,10 +7,9 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
-import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.reporting.Report;
 import org.openmrs.reporting.db.ReportDAO;
 
@@ -19,62 +18,43 @@ public class HibernateReportDAO implements
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
-	private Context context;
+	/**
+	 * Hibernate session factory
+	 */
+	private SessionFactory sessionFactory;
 	
-	public HibernateReportDAO(Context c) {
-		this.context = c;
-	}
+	public HibernateReportDAO() { }
 
+	/**
+	 * Set session factory
+	 * 
+	 * @param sessionFactory
+	 */
+	public void setSessionFactory(SessionFactory sessionFactory) { 
+		this.sessionFactory = sessionFactory;
+	}
+	
 	/**
 	 * @see org.openmrs.report.db.ReportService#createReport(org.openmrs.reporting.Report)
 	 */
 	public void createReport(Report report) throws DAOException {
-		
-		Session session = HibernateUtil.currentSession();
-		
-		report.setCreator(context.getAuthenticatedUser());
+		report.setCreator(Context.getAuthenticatedUser());
 		report.setDateCreated(new Date());
-		try {
-			HibernateUtil.beginTransaction();
-			session.save(report);
-			HibernateUtil.commitTransaction();
-		}
-		catch (Exception e) {
-			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e);
-		}
+		sessionFactory.getCurrentSession().save(report);
 	}
 
 	/**
 	 * @see org.openmrs.api.EncounterService#deleteReport(org.openmrs.reporting.Report)
 	 */
 	public void deleteReport(Report report) throws DAOException {
-		
-		Session session = HibernateUtil.currentSession();
-		
-		try {
-			HibernateUtil.beginTransaction();
-			session.delete(report);
-			HibernateUtil.commitTransaction();
-		}
-		catch (Exception e) {
-			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e);
-		}
-		
+		sessionFactory.getCurrentSession().delete(report);
 	}
 
 	/**
 	 * @see org.openmrs.api.ReportService#getReport(java.lang.Integer)
 	 */
 	public Report getReport(Integer reportId) throws DAOException {
-		
-		Session session = HibernateUtil.currentSession();
-		
-		Report report = new Report();
-		report = (Report)session.get(Report.class, reportId);
-		
-		return report;
+		return (Report)sessionFactory.getCurrentSession().get(Report.class, reportId);
 	}
 
 	/**
@@ -84,28 +64,13 @@ public class HibernateReportDAO implements
 
 		if (report.getCreator() == null)
 			createReport(report);
-		else {
-			Session session = HibernateUtil.currentSession();
-			
-			//Report.setChangedBy(context.getAuthenticatedUser());
-			//Report.setDateChanged(new Date());
-			try {
-				HibernateUtil.beginTransaction();
-				session.saveOrUpdate(report);
-				HibernateUtil.commitTransaction();
-			}
-			catch (Exception e) {
-				HibernateUtil.rollbackTransaction();
-				throw new DAOException(e);
-			}
-		}
+		else
+			sessionFactory.getCurrentSession().saveOrUpdate(report);
 	}
 
 	public Set<Report> getAllReports() {
-		Session session = HibernateUtil.currentSession();
-		
 		Set<Report> reports = new HashSet<Report>();
-		reports.addAll((ArrayList<Report>)session.createQuery("from Report order by date_created, name").list());
+		reports.addAll((ArrayList<Report>)sessionFactory.getCurrentSession().createQuery("from Report order by date_created, name").list());
 		
 		return reports;
 	}

@@ -5,120 +5,25 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<script src="<%= request.getContextPath() %>/scripts/calendar/calendar.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/prototype.lite.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/moo.fx.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/moo.fx.pack.js"></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/engine.js'></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/util.js'></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/openmrsSearch.js"></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/interface/DWRPatientService.js'></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/interface/DWRUserService.js'></script>
+<openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
+<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 
 <script type="text/javascript">
-
-	var mySearch = null;
-	var findObjects = null;
-	var searchType = "";
-	var changeButton = null;
-	<request:existsParameter name="autoJump">
-		autoJump = <request:parameter name="autoJump"/>;
-	</request:existsParameter>
-	var display = new Array();
-	
-	var init = function() {
-		mySearch = new fx.Resize("searchForm", {duration: 100});
-		mySearch.hide();
-		toggle("div", "description");
-		toggleVoided();
+	dojo.require("dojo.widget.openmrs.ConceptSearch");
+	dojo.require("dojo.widget.openmrs.PatientSearch");
+	dojo.require("dojo.widget.openmrs.UserSearch");
+	dojo.require("dojo.widget.openmrs.OpenmrsPopup");
+		
+	dojo.addOnLoad( function() {
+		toggleVisibility(document, "div", "description");
+		toggleRowVisibilityForClass("obs", "voided", true);
 		voidedClicked(document.getElementById("voided"));
-	};
-	
-	var findObjects = function(txt) {
-		if (searchType == 'patient') {
-			DWRPatientService.findPatients(fillTable, txt, 0);
-		}
-		else if (searchType == 'user') {
-			DWRUserService.findUsers(fillTable, txt, ['Clinician'], false);
-		}
-		return false;
-	}
-	
-	var onSelect = function(objs) {
-		var obj = objs[0];
-		if (searchType == 'patient') {
-			$("patient").value = obj.patientId;
-			$("patientName").innerHTML = getName(obj);
-			changeButton.focus();
-		}
-		else if (searchType == 'user') {
-			$("provider").value = obj.userId;
-			$("providerName").innerHTML = getName(obj);
-			changeButton.focus();
-		}
-		mySearch.hide();
-		return false;
-	}
-	
-	function showSearch(btn) {
-		mySearch.hide();
-		setPosition(btn, $("searchForm"), 465, 350);
-		resetForm();
-		DWRUtil.removeAllRows("searchBody");
-		if (btn.id == "userButton") {
-			$('searchTitle').innerHTML = '<spring:message code="Encounter.provider.find"/>';
-			searchType = 'user';
-		}
-		else {
-			$('searchTitle').innerHTML = '<spring:message code="Patient.find"/>';
-			searchType = 'patient'
-		}
-		mySearch.toggle();
-		$("searchText").value = '';
-		$("searchText").select();
-		changeButton = btn;
-	}
-	
-	var getIdentifier = function(obj) {
-		if (typeof obj == 'string')  return obj;
-		if (searchType == 'patient') return obj.identifier;
-		return '';
-	}
-	
-	var getName = function(obj) {
-		if (typeof obj == 'string') return '';
-		str = '';
-		if (searchType == 'patient') {
-			str += obj.givenName;
-			str += ' ';
-			str += obj.middleName;
-			str += ' ';
-			str += obj.familyName;
-		}
-		else if (searchType == 'user') {
-			str += obj.firstName;
-			str += ' ';
-			str += obj.lastName;
-		}
-		return str;
-	}
-	
-	function closeBox() {
-		mySearch.toggle();
-		return false;
-	}
-	
-	var customCellFunctions = [getNumber, getIdentifier, getName];
-	
-	var oldonload = window.onload;
-	if (typeof window.onload != 'function') {
-		window.onload = init;
-	} else {
-		window.onload = function() {
-			oldonload();
-			init();
-		}
-	}
+	})
+
+</script>
+
+
+<script type="text/javascript">
 
 	function mouseover(row, isDescription) {
 		if (row.className.indexOf("searchHighlight") == -1) {
@@ -148,7 +53,7 @@
 		return other;
 	}
 	function click(obsId) {
-		document.location = "obs.form?obsId=" + obsId;
+		document.location = "${pageContext.request.contextPath}/admin/observations/obs.form?obsId=" + obsId;
 		return false;
 	}
 	
@@ -167,88 +72,20 @@
 		}
 	}
 	
-	
-	function toggle(tagName, className) {
-		if (display[tagName] == "none")
-			display[tagName] = "";
-		else
-			display[tagName] = "none";
-			
-		var items = document.getElementsByTagName(tagName);
-		for (var i=0; i < items.length; i++) {
-			var classes = items[i].className.split(" ");
-			for (x=0; x<classes.length; x++) {
-				if (classes[x] == className)
-					items[i].style.display = display[tagName];
-			}
-		}
-		
-		return false;
-	}
-	
-	function toggleVoided() {
-		toggle("tr", "voided");
-		
-		var table = document.getElementById("obs");
-		
-		if (table) {
-			var rows = table.rows;
-			var oddRow = true;
-			
-			for (var i=1; i<rows.length; i++) {
-				if (rows[i].style.display == "") {
-					var c = "";
-					if (rows[i].className.substr(0, 6) == "voided")
-						c = "voided ";
-					if (oddRow)
-						c = c + "oddRow";
-					else
-						c = c + "evenRow";
-					oddRow = !oddRow;
-					rows[i++].className = c;
-					rows[i].className = c;
-				}
-			}
-		}
-		
-		return false;
-	}
-
-	function gotoPatient(tagName, patId) {
-		if (patId == null)
-			patId = $(tagName).value;
-		window.location = "${pageContext.request.contextPath}/admin/patients/patient.form?patientId=" + patId;
-		return false;
-	}
-	
-	function gotoUser(tagName, userId) {
-		if (userId == null)
-			userId = $(tagName).value;
-		window.location = "${pageContext.request.contextPath}/admin/users/user.form?userId=" + userId;
-		return false;
+	function enableSaveButton(relType, id) {
+		document.getElementById("saveEncounterButton").disabled = false;
 	}
 
 </script>
 
 <style>
-	.searchForm {
-		width: 450px;
-		position: absolute;
-		z-index: 10;
-		margin: 5px;
+	#table th { text-align: left; }
+	td.fieldNumber { 
+		width: 5px;
+		white-space: nowrap;
 	}
-	.searchForm .wrapper {
-		padding: 2px;
-		background-color: whitesmoke;
-		border: 1px solid grey;
-		height: 330px;
-	}
-	.searchResults {
-		height: 270px;
-		overflow: auto;
-	}
-	#table th {
-		text-align: left;
+	td.obsGroupMember {
+		padding-left: 5px;
 	}
 </style>
 
@@ -267,18 +104,8 @@
 			<th><spring:message code="Encounter.patient"/></th>
 			<td>
 				<spring:bind path="encounter.patient">
-					<table>
-						<tr>
-							<td><a id="patientName" href="#View Patient" onclick="return gotoPatient('patient')">${status.value.patientName.givenName} ${status.value.patientName.middleName} ${status.value.patientName.familyName}</a></td>
-							<td>
-								<input type="hidden" id="patient" value="${status.value.patientId}" name="patientId"/>
-								<c:if test="${encounter.encounterId == null}">
-									&nbsp; <input type="button" id="patientButton" class="smallButton" value='<spring:message code="general.change"/>' onclick="showSearch(this)" />
-								</c:if>
-								<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-							</td>
-						</tr>
-					</table>
+					<openmrs_tag:patientField formFieldName="patientId" searchLabelCode="Patient.find" initialValue="${status.value.patientId}" linkUrl="${pageContext.request.contextPath}/admin/patients/patient.form" callback="enableSaveButton" allowSearch="${encounter.encounterId == null}"/>
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
 		</tr>
@@ -286,17 +113,8 @@
 			<th><spring:message code="Encounter.provider"/></th>
 			<td>
 				<spring:bind path="encounter.provider">
-					<table>
-						<tr>
-							<td><a id="providerName" href="#View Provider" onclick="return gotoUser('provider')">${status.value.firstName} ${status.value.lastName}</a></td>
-							<td>
-								&nbsp;
-								<input type="hidden" id="provider" value="${status.value.userId}" name="providerId" />
-								<input type="button" id="userButton" class="smallButton" value='<spring:message code="general.change"/>' onclick="showSearch(this)" />
-								<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-							</td>
-						</tr>
-					</table>
+					<openmrs_tag:userField formFieldName="providerId" searchLabelCode="Encounter.provider.find" initialValue="${status.value.userId}" roles="Provider;" linkUrl="${pageContext.request.contextPath}/admin/users/user.form" callback="enableSaveButton"/>
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
 		</tr>
@@ -304,11 +122,7 @@
 			<th><spring:message code="Encounter.location"/></th>
 			<td>
 				<spring:bind path="encounter.location">
-					<select name="location">
-						<openmrs:forEachRecord name="location">
-							<option value="${record.locationId}" <c:if test="${status.value == record.locationId}">selected</c:if>>${record.name}</option>
-						</openmrs:forEachRecord>
-					</select>
+					<openmrs_tag:locationField formFieldName="location" initialValue="${status.value}"/>
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
@@ -358,18 +172,18 @@
 							</select>
 						</c:when>
 						<c:otherwise>
-							${encounter.form.name}
+							${encounter.form.name} v${encounter.form.version}
 						</c:otherwise>
 					</c:choose>
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
 		</tr>
-		<c:if test="${!(encounter.creator == null)}">
+		<c:if test="${encounter.creator != null}">
 			<tr>
 				<th><spring:message code="general.createdBy" /></th>
 				<td>
-					<a href="#View User" onclick="return gotoUser(null, '${encounter.creator.userId}')">${encounter.creator.firstName} ${encounter.creator.lastName}</a> -
+					<a href="#View User" onclick="return gotoUser(null, '${encounter.creator.userId}')">${encounter.creator.personName}</a> -
 					<openmrs:formatDate date="${encounter.dateCreated}" type="medium" />
 				</td>
 			</tr>
@@ -393,11 +207,11 @@
 				</spring:bind>
 			</td>
 		</tr>
-		<c:if test="${!(encounter.voidedBy == null)}">
+		<c:if test="${encounter.voidedBy != null}">
 			<tr id="voidedBy">
 				<th><spring:message code="general.voidedBy" /></th>
 				<td>
-					<a href="#View User" onclick="return gotoUser(null, '${encounter.voidedBy.userId}')">${encounter.voidedBy.firstName} ${encounter.voidedBy.lastName}</a> -
+					<a href="#View User" onclick="return gotoUser(null, '${encounter.voidedBy.userId}')">${encounter.voidedBy.personName}</a> -
 					<openmrs:formatDate date="${encounter.dateVoided}" type="medium" />
 				</td>
 			</tr>
@@ -405,7 +219,7 @@
 	</table>
 	
 	<input type="hidden" name="phrase" value='<request:parameter name="phrase" />'/>
-	<input type="submit" value='<spring:message code="Encounter.save"/>'>
+	<input type="submit" id="saveEncounterButton" value='<spring:message code="Encounter.save"/>' disabled>
 	&nbsp;
 	<input type="button" value='<spring:message code="general.cancel"/>' onclick="history.go(-1); return; document.location='index.htm?autoJump=false&phrase=<request:parameter name="phrase"/>'">
 	</form>
@@ -415,65 +229,78 @@
 	<br/>
 	<div class="boxHeader">
 		<span style="float: right">
-			<a href="#" id="showDescription" onClick="return toggle('div', 'description')"><spring:message code="general.toggle.description"/></a> |
-			<a href="#" id="showVoided" onClick="return toggleVoided()"><spring:message code="general.toggle.voided"/></a>
+			<a href="#" id="showDescription" onClick="return toggleVisibility(document, 'div', 'description')"><spring:message code="general.toggle.description"/></a> |
+			<a href="#" id="showVoided" onClick="return toggleRowVisibilityForClass('obs', 'voided', true);"><spring:message code="general.toggle.voided"/></a>
 		</span>
 		<b><spring:message code="Encounter.observations"/></b>
 	</div>
 	<div class="box">
 	<table cellspacing="0" cellpadding="2" width="98%" id="obs">
-				<tr>
-			<th></th>
+		<tr>
+			<th class="fieldNumber"></th>
 			<th><spring:message code="Obs.concept"/></th>
 			<th><spring:message code="Obs.value"/></th>
 			<th></th>
 			<th><spring:message code="Obs.creator.or.changedBy"/></th>
 		</tr>
 		<c:forEach items="${observations}" var="obs" varStatus="status">
-			<% pageContext.setAttribute("field", ((java.util.Map)request.getAttribute("obsMap")).get(pageContext.getAttribute("obs"))); %>
-			<tr class="<c:if test="${obs.voided}">voided </c:if><c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>" onmouseover="mouseover(this)" onmouseout="mouseout(this)" onclick="click('${obs.obsId}')">
-				<td>${field.fieldNumber}<c:if test="${field.fieldPart != null && field.fieldPart != ''}">.${field.fieldPart}</c:if></td>
-				<td><a href="obs.form?obsId=${obs.obsId}" onclick="return click('${obs.obsId}')"><%= ((org.openmrs.Obs)pageContext.getAttribute("obs")).getConcept().getName((java.util.Locale)request.getAttribute("locale")) %></a></td>
-				<td><%= ((org.openmrs.Obs)pageContext.getAttribute("obs")).getValueAsString((java.util.Locale)request.getAttribute("locale")) %></td>
-				<td valign="middle" valign="right">
-					<c:if test="${fn:contains(editedObs, obs.obsId)}"><img src="${pageContext.request.contextPath}/images/alert.gif" title='<spring:message code="Obs.edited"/>' /></c:if>
-					<c:if test="${obs.comment != null && obs.comment != ''}"><img src="${pageContext.request.contextPath}/images/note.gif" title="${obs.comment}" /></c:if>
-				</td>
-				<td style="white-space: nowrap;">
-					${obs.creator.firstName} ${obs.creator.lastName} -
-					<openmrs:formatDate date="${obs.dateCreated}" type="medium" />
-				</td>
-			</tr>
-			<tr class="<c:if test="${obs.voided}">voided </c:if><c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>" onmouseover="mouseover(this, true)" onmouseout="mouseout(this, true)" onclick="click('${obs.obsId}')">
-				<td colspan="5"><div class="description"><%= ((org.openmrs.Obs)pageContext.getAttribute("obs")).getConcept().getName((java.util.Locale)request.getAttribute("locale")).getDescription() %></div></td>
-			</tr>
+			<c:set var="field" value="${obsMap[obs.obsId]}"/>
+			<c:choose>
+				<c:when test="${obs.obsGroupId != null}">
+					<tr class="obsGroupHeader">
+						<td>${field.fieldNumber}<c:if test="${field.fieldPart != null && field.fieldPart != ''}">.${field.fieldPart}</c:if></td>
+						<td colspan="4">${field.field.concept.name.name}</td>
+					</tr>
+					<tr>
+						<td colspan="5"></td>
+					</tr>
+					<c:forEach items="${obsGroups[obs.obsGroupId]}" var="groupObs" varStatus="groupStatus">
+						<tr class="<c:if test="${groupObs.voided}">voided</c:if>" onmouseover="mouseover(this)" onmouseout="mouseout(this)" onclick="click('${groupObs.obsId}')">
+							<td class="fieldNumber"></td>
+							<td class="obsGroupMember"><a href="${pageContext.request.contextPath}/admin/observations/obs.form?obsId=${groupObs.obsId}" onclick="return click('${groupObs.obsId}')">${groupObs.concept.name.name}</a></td>
+							<td>${groupObs.valueAsString[locale]}</td>
+							<td valign="middle" align="right">
+								<c:if test="${fn:contains(editedObs, groupObs.obsId)}"><img src="${pageContext.request.contextPath}/images/alert.gif" title='<spring:message code="Obs.edited"/>' /></c:if>
+								<c:if test="${groupObs.comment != null && groupObs.comment != ''}"><img src="${pageContext.request.contextPath}/images/note.gif" title="${groupObs.comment}" /></c:if>
+							</td>
+							<td style="white-space: nowrap;">
+								${groupObs.creator.personName} -
+								<openmrs:formatDate date="${groupObs.dateCreated}" type="medium" />
+							</td>
+						</tr>
+						<tr class="<c:if test="${groupObs.voided}">voided </c:if><c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>" onmouseover="mouseover(this, true)" onmouseout="mouseout(this, true)" onclick="click('${groupObs.obsId}')">
+							<td></td><td colspan="4" class="obsGroupMember"><div class="description">${groupObs.concept.name.description}</div></td>
+						</tr>
+					</c:forEach>
+				</c:when>
+				<c:otherwise>
+					<tr class="<c:if test="${obs.voided}">voided </c:if><c:choose><c:when test="${count % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>" onmouseover="mouseover(this)" onmouseout="mouseout(this)" onclick="click('${obs.obsId}')">
+						<td class="fieldNumber">${field.fieldNumber}<c:if test="${field.fieldPart != null && field.fieldPart != ''}">.${field.fieldPart}</c:if></td>
+						<td><a href="${pageContext.request.contextPath}/admin/observations/obs.form?obsId=${obs.obsId}" onclick="return click('${obs.obsId}')">${obs.concept.name.name}</a></td>
+						<td>${obs.valueAsString[locale]}</td>
+						<td valign="middle" align="right">
+							<c:if test="${fn:contains(editedObs, obs.obsId)}"><img src="${pageContext.request.contextPath}/images/alert.gif" title='<spring:message code="Obs.edited"/>' /></c:if>
+							<c:if test="${obs.comment != null && obs.comment != ''}"><img src="${pageContext.request.contextPath}/images/note.gif" title="${obs.comment}" /></c:if>
+						</td>
+						<td style="white-space: nowrap;">
+							${obs.creator.personName} -
+							<openmrs:formatDate date="${obs.dateCreated}" type="medium" />
+						</td>
+					</tr>
+					<tr class="<c:if test="${obs.voided}">voided </c:if><c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>" onmouseover="mouseover(this, true)" onmouseout="mouseout(this, true)" onclick="click('${obs.obsId}')">
+						<td colspan="5"><div class="description">${obs.concept.name.description}</div></td>
+					</tr>
+				</c:otherwise>
+			</c:choose>
+			
 		</c:forEach>
+		
 	</table>
 	</div>
 </c:if>
 
 <br />
-<a href="obs.form?encounterId=${encounter.encounterId}"><spring:message code="Obs.add"/></a>
+<a href="${pageContext.request.contextPath}/admin/observations/obs.form?encounterId=${encounter.encounterId}"><spring:message code="Obs.add"/></a>
 <br />
-
-<div id="searchForm" class="searchForm">
-	<div class="wrapper">
-		<input type="button" onClick="return closeBox();" class="closeButton" value="X"/>
-		<form method="get" onSubmit="return searchBoxChange('searchBody', searchText, null, false, 0); return false;">
-			<h3 id="searchTitle"></h3>
-			<input type="text" id="searchText" size="35" onkeyup="return searchBoxChange('searchBody', this, event, false, 400);">
-		</form>
-		<div id="searchResults" class="searchResults">
-			<table cellpadding="2" cellspacing="0">
-				<tbody id="searchBody">
-					<tr>
-						<td></td>
-						<td></td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-	</div>
-</div>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

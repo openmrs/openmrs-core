@@ -1,0 +1,135 @@
+<%@ include file="/WEB-INF/template/include.jsp" %>
+
+/*
+	Copyright (c) 2006, The OpenMRS Cooperative
+	All Rights Reserved.
+*/
+
+dojo.provide("dojo.widget.openmrs.PersonSearch");
+dojo.require("dojo.widget.openmrs.OpenmrsSearch");
+
+var openmrsSearchBase = djConfig["baseScriptUri"].substring(0, djConfig["baseScriptUri"].indexOf("/", 1));
+document.write("<script type='text/javascript' src='" + openmrsSearchBase + "/dwr/interface/DWRPersonService.js'></script>");
+
+dojo.widget.tags.addParseTreeHandler("dojo:PersonSearch");
+
+dojo.widget.defineWidget(
+	"dojo.widget.openmrs.PersonSearch",
+	dojo.widget.openmrs.OpenmrsSearch,
+	{
+		personId: "",
+		
+		initializer: function(){
+			dojo.debug("initializing personsearch");
+		},
+		
+		postCreate: function() {
+			if (this.personId != "") {
+				this.selectPerson(this.personId);
+			}
+		},
+		
+		selectPerson: function(personId) {
+			DWRPersonService.getPerson(this.simpleClosure(this, "select"), personId);
+		},
+		
+		doFindObjects: function(text) {
+
+			var tmpIncludedVoided = (this.showIncludeVoided && this.includeVoided.checked);
+			DWRPersonService.findPeople(this.simpleClosure(this, "doObjectsFound"), text, tmpIncludedVoided);
+			
+			return false;
+		},
+		
+		getGiven : function(p) { return p.givenName == null ? this.noCell() : p.givenName;  },
+		getMiddle: function(p) { return p.middleName == null ? this.noCell() : p.middleName; },
+		getFamily: function(p) { return p.familyName == null ? this.noCell() : p.familyName; },
+		getGender: function(p) {
+				if (p.gender == null) { return this.noCell(); }
+				
+				var td = document.createElement("td");
+				td.className = "personGender";
+				var src = "<openmrs:contextPath />/images/";
+				if (p.gender.toUpperCase() == "F")
+					src += "female.gif";
+				else if (p.gender.toUpperCase() == "M")
+					src += "male.gif";
+				else
+					return "";
+				var img = document.createElement("img");
+				td.innerHTML = "<img src='" + src + "'>";
+				return td;
+		},
+		
+		getBirthdayEstimated: function(p) {
+				if (typeof p == 'string') return this.noCell();
+				if (p.birthdateEstimated)
+					return "&asymp;";
+				else
+					return "";
+		},
+		
+		getBirthday: function(p) { 
+				if (typeof p == 'string') return this.noCell();
+				str = this.getDateString(p.birthdate);
+				return str;
+		},
+		
+		getAge: function(p) { 
+				if (typeof p == 'string') return this.noCell();
+				if (p.age == null) return "";
+				var td = document.createElement("td");
+				td.className = 'personAge';
+				var age = p.age;
+				if (age < 1)
+					age = "<1";
+				td.innerHTML = age;
+				return td;
+		},
+		
+		getAttribute: function(p, attrName) {
+			if (typeof p == 'string') return this.noCell();
+			return p.attributes[attrName];
+		},
+		
+		getCellFunctions: function() {
+			var arr = new Array();
+			arr.push(this.simpleClosure(this, "getNumber"));
+			arr.push(this.simpleClosure(this, "getGiven"));
+			arr.push(this.simpleClosure(this, "getMiddle"));
+			arr.push(this.simpleClosure(this, "getFamily"));
+			arr.push(this.simpleClosure(this, "getAge"));
+			arr.push(this.simpleClosure(this, "getGender"));
+			arr.push(this.simpleClosure(this, "getBirthdayEstimated"));
+			arr.push(this.simpleClosure(this, "getBirthday"));
+			<openmrs:forEachDisplayAttributeType personType="" displayType="listing" var="attrType">
+				arr.push(this.simpleClosure(this, "getAttribute", "${attrType.name}"));
+			</openmrs:forEachDisplayAttributeType>
+			return arr;
+		},
+		
+		showHeaderRow: true,
+		getHeaderCellContent: function() {
+			var arr = new Array();
+			arr.push('');
+			arr.push('<spring:message code="PersonName.givenName" javaScriptEscape="true"/>');
+			arr.push('<spring:message code="PersonName.middleName" javaScriptEscape="true"/>');
+			arr.push('<spring:message code="PersonName.familyName" javaScriptEscape="true"/>');
+			arr.push('<spring:message code="Person.age" javaScriptEscape="true"/>');
+			arr.push('<spring:message code="Person.gender" javaScriptEscape="true"/>');
+			arr.push('');
+			arr.push('<spring:message code="Person.birthdate" javaScriptEscape="true"/>');
+			<openmrs:forEachDisplayAttributeType personType="" displayType="listing" var="attrType">
+				arr.push('<spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" javaScriptEscape="true" />');
+			</openmrs:forEachDisplayAttributeType>
+			
+			return arr;
+		},
+		
+		allowAutoJump: function() {
+			return false;
+		}
+		
+	},
+	"html"
+);

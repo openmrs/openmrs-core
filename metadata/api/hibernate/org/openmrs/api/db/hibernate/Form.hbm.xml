@@ -30,15 +30,9 @@
 			<column name="encounter_type" />
 		</many-to-one>
 
-		<property name="schemaNamespace" type="java.lang.String" 
-			column="schema_namespace" length="255" />
+		<property name="template" type="java.lang.String" 
+			column="template" length="2147483647" />
 
-		<property name="infoPathSolutionVersion" type="java.lang.String"
-			column="infopath_solution_version" length="50" />
-
-		<property name="uri" type="java.lang.String" 
-			column="uri" length="255" />
-			
 		<property name="xslt" type="java.lang.String"
 			column="xslt" length="2147483647" />
 

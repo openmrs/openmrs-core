@@ -33,7 +33,7 @@
 <form method="post" action="${pageContext.request.contextPath}/mrnGenerator">
 	<table border="0" cellspacing="2" cellpadding="2">
 		<tr>
-			<td rowspan="3" align="left" valign="top">
+			<td rowspan="4" align="left" valign="top">
 				<label for="site"><spring:message code="MRNGenerator.select.site"/></label><br>
 				<select name="site" size="17">
 					<optgroup label="Group A sites">
@@ -49,18 +49,29 @@
 						<option value="CH">CH - Chulaimbo</option>
 						<option value="EG">EG - Mt. Elgon Clinic</option>
 						<option value="KB">KB - Kabarnet</option>
+						<option value="KH">KH - Khuyangu</option>
 						<option value="KP">KP - Kapenguria</option>
 						<option value="KT">KT - Kitale</option>
 						<option value="NT">NT - Naitiri</option>
+						<option value="PV">PV - Port Victoria</option>
 						<option value="TE">TE - Iten</option>
 						<option value="TS">TS - Teso</option>
 						<option value="WB">WB - Webuye</option>
+					</optgroup>
+					<optgroup label="Other sites">
+						<option value="VC">VC - OVC</option>
 					</optgroup>
 				</select>
 			</td>
 			<td align="left" valign="top">
 				<label for="mrn_first"><spring:message code="MRNGenerator.starting.number"/></label><br>
 				<input name="mrn_first" size="10" type="text">
+			</td>
+		</tr>
+		<tr>
+			<td align="left" valign="top">
+				<label for="mrn_prefix"><spring:message code="MRNGenerator.prefix.number"/></label><br>
+				<input type="text" size="4" name="mrn_prefix"/>
 			</td>
 		</tr>
 		<tr>
@@ -93,10 +104,8 @@
 			<th><spring:message code="MRNGenerator.first"/></th>
 			<th><spring:message code="MRNGenerator.count"/></th>
 		</tr>
-		<%@ page import="org.openmrs.api.context.Context" %>
 		<%
-			Context context = (Context)session.getAttribute(org.openmrs.web.WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-			pageContext.setAttribute("rows", context.getAdministrationService().getMRNGeneratorLog());
+			pageContext.setAttribute("rows", org.openmrs.api.context.Context.getAdministrationService().getMRNGeneratorLog());
 		%>
 		<c:forEach items="${rows}" var="row" varStatus="status">
 			<tr class="<c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">

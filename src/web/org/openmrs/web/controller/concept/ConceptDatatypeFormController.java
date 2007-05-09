@@ -47,12 +47,12 @@ public class ConceptDatatypeFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		String view = getFormView();
 		
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			ConceptDatatype cd = (ConceptDatatype)obj;
-			context.getAdministrationService().updateConceptDatatype(cd);
+			Context.getAdministrationService().updateConceptDatatype(cd);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptDatatype.saved");
 		}
@@ -69,13 +69,10 @@ public class ConceptDatatypeFormController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		ConceptDatatype cd = null;
 		
-		if (context != null && context.isAuthenticated()) {
-			ConceptService ps = context.getConceptService();
+		if (Context.isAuthenticated()) {
+			ConceptService ps = Context.getConceptService();
 			String id = request.getParameter("conceptDatatypeId");
 	    	if (id != null)
 	    		cd = ps.getConceptDatatype(Integer.valueOf(id));	

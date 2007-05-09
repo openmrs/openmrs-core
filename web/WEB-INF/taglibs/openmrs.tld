@@ -1,30 +1,22 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
-<!DOCTYPE taglib
-	PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.2//EN"
-	"http://java.sun.com/dtd/web-jsptaglibrary_1_2.dtd">
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+  version="2.0">
 
-<taglib>
-	<tlib-version>1.0</tlib-version>
-	<jsp-version>1.2</jsp-version>
-	<short-name>openmrs</short-name>
 	<description>Core OpenMRS tag library</description>
-
+	<tlib-version>1.1</tlib-version>
+	<short-name>openmrs</short-name>
+	
 <tag>
-	<name>css</name>
-	<tag-class>org.openmrs.web.taglib.CssTag</tag-class>
-	<body-content>empty</body-content>
-	<description>Insert link to site's CSS</description>
-</tag>
-
-<tag>
-	<name>require</name>
-	<tag-class>org.openmrs.web.taglib.RequireTag</tag-class>
-	<body-content>empty</body-content>
 	<description>
 		Enforces user privileges and redirects if the active user
 		does not have the required privileges
 	</description>
+	<name>require</name>
+	<tag-class>org.openmrs.web.taglib.RequireTag</tag-class>
+	<body-content>empty</body-content>
 	<attribute>
 		<name>privilege</name>
 		<required>true</required>
@@ -43,37 +35,42 @@
 </tag>
 
 <tag>
-	<name>authentication</name>
-	<tag-class>org.openmrs.web.taglib.AuthTag</tag-class>
-	<body-content>JSP</body-content>
 	<description>
 		Determines if a user is currently logged in.
 		authenticatedUser will be set if a user is logged in
 	</description>
+	<name>authentication</name>
+	<tag-class>org.openmrs.web.taglib.AuthTag</tag-class>
+	<body-content>JSP</body-content>
 </tag>
 
 <tag>
-	<name>hasPrivilege</name>
-	<tag-class>org.openmrs.web.taglib.PrivilegeTag</tag-class>
-	<body-content>JSP</body-content>
 	<description>
 		Determines if the current user has the given privilege (comma delimited)
 	</description>
+	<name>hasPrivilege</name>
+	<tag-class>org.openmrs.web.taglib.PrivilegeTag</tag-class>
+	<body-content>JSP</body-content>
 	<attribute>
 		<name>privilege</name>
 		<required>true</required>
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
+	<attribute>
+		<name>inverse</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
 </tag>
 
 <tag>
-	<name>forEachRecord</name>
-	<tag-class>org.openmrs.web.taglib.ForEachRecordTag</tag-class>
-	<body-content>JSP</body-content>
 	<description>
 		Loops over all the records specified of the type 
 		specified by the name attribute
 	</description>
+	<name>forEachRecord</name>
+	<tag-class>org.openmrs.web.taglib.ForEachRecordTag</tag-class>
+	<body-content>JSP</body-content>
 	<attribute>
 		<name>name</name>
 		<required>true</required>
@@ -84,16 +81,22 @@
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
+	<attribute>
+		<name>reportObjectType</name>
+		<description>if you set name to reportObject, you can limit them to a specific type</description>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
 </tag>
 
 <tag>
+	<description>
+		Creates a set of checkboxes to allow for picking values
+		from the 'allItems' list and adding to the 'currentItems' list
+	</description>
 	<name>listPicker</name>
 	<tag-class>org.openmrs.web.taglib.ListPickerTag</tag-class>
 	<body-content>empty</body-content>
-	<description>
-		Creates a pair of combo boxes to allow for picking values
-		from the 'allItems' list and adding to the 'currentItems' list
-	</description>
 	<attribute>
 		<name>name</name>
 		<required>true</required>
@@ -110,25 +113,31 @@
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
-		<name>contextPath</name>
+		<name>cols</name>
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 </tag>
 
 <tag>
-	<name>formatDate</name>
-	<tag-class>org.openmrs.web.taglib.FormatDateTag</tag-class>
-	<body-content>empty</body-content>
 	<description>
 		Formats the given date according to either 
 		the predefined type or a given format
 	</description>
+	<name>formatDate</name>
+	<tag-class>org.openmrs.web.taglib.FormatDateTag</tag-class>
+	<body-content>empty</body-content>
 	<attribute>
+		<description>If this is not defined, date is retrieved from status.value</description>
 		<name>date</name>
-		<required>true</required>
+		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
 		<type>java.util.Date</type>
+	</attribute>
+	<attribute>
+		<name>path</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
 		<name>type</name>
@@ -143,12 +152,12 @@
 </tag>
 
 <tag>
-	<name>fieldGen</name>
-	<tag-class>org.openmrs.web.taglib.FieldGenTag</tag-class>
-	<body-content>JSP</body-content>
 	<description>
 		Generates a field, based on the field type.
 	</description>
+	<name>fieldGen</name>
+	<tag-class>org.openmrs.web.taglib.FieldGenTag</tag-class>
+	<body-content>JSP</body-content>
 	<attribute>
 		<name>type</name>
 		<required>true</required>
@@ -160,55 +169,26 @@
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
-		<name>fieldLength</name>
-		<required>false</required>
+		<name>val</name>
+		<required>true</required>
 		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Object</type>
 	</attribute>
 	<attribute>
-		<name>startVal</name>
-		<required>false</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-	<attribute>
-		<name>forceInputType</name>
-		<required>false</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-	<attribute>
-		<name>isNullable</name>
-		<required>false</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-	<attribute>
-		<name>hasLabelBefore</name>
-		<required>false</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-	<attribute>
-		<name>trueLabel</name>
-		<required>false</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-	<attribute>
-		<name>falseLabel</name>
-		<required>false</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-	<attribute>
-		<name>unknownLabel</name>
+		<name>parameters</name>
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 </tag>
 
 <tag>
-	<name>forEachAlert</name>
-	<tag-class>org.openmrs.notification.web.ForEachAlertTag</tag-class>
-	<body-content>JSP</body-content>
 	<description>
 		Loops over all the alerts for a user.  If user is not defined, the
 		authenticated user is searched.  
 	</description>
+	<name>forEachAlert</name>
+	<tag-class>org.openmrs.notification.web.ForEachAlertTag</tag-class>
+	<body-content>JSP</body-content>
 	<attribute>
 		<name>user</name>
 		<required>false</required>
@@ -232,12 +212,43 @@
 </tag>
 
 <tag>
+	<description>
+		Loops over the PersonAttributeTypes to display a person.  If `type` is 'patient', only patient 
+		display attributes are returned. If `type` is 'user', only user display attributes are returned.
+		'listing' `displayTypes` are maintained with global properties: patient.listingAttributeTypes and 
+		user.listingAttributeTypes.  'viewing' `displayTypes` are maintained with global properties:
+		patient.viewingAttributeTypes and user.viewingAttributeTypes
+		The global properties are all comma delimited lists of either PersonAttributeType names or ids. 
+	</description>
+	<name>forEachDisplayAttributeType</name>
+	<tag-class>org.openmrs.web.taglib.ForEachDisplayAttributeTag</tag-class>
+	<body-content>JSP</body-content>
+	<attribute>
+		<description>This can only be either 'patient' or 'user'</description>
+		<name>personType</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<description>This can only be either 'listing' or 'viewing'</description>
+		<name>displayType</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>var</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+</tag>
+
+<tag>
+	<description>
+		Includes the portlet from the given /WEB-INF/portlets/{url}
+	</description>
 	<name>portlet</name>
 	<tag-class>org.openmrs.web.taglib.PortletTag</tag-class>
 	<body-content>empty</body-content>
-	<description>
-		Includes the portlet from the given /WEB-INF/portlets/<code>url</code>
-	</description>
 	<attribute>
 		<name>url</name>
 		<required>true</required>
@@ -257,15 +268,697 @@
 		<type>java.lang.String</type>
 	</attribute>
 	<attribute>
-		<name>parameters</name>
 		<description>
 			A string in the form of "key=value|key2=value2".   
 			e.g. "size=compact|order=date"
 		</description>
+		<name>parameters</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
+		<description>
+			A Map(String,Object) of extra parameter values
+		</description>
+		<name>parameterMap</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.util.Map</type>
+	</attribute>
+	<attribute>
+		<name>moduleId</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
+		<name>patientId</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>encounterId</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>userId</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>patientIds</name>
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
 		<type>java.lang.String</type>
 	</attribute>
 </tag>
 
+<tag>
+	<description>
+		Returns a Concept and ConceptName for the conceptId specified
+	</description>
+	<name>concept</name>
+	<tag-class>org.openmrs.web.taglib.ConceptTag</tag-class>
+	<body-content>JSP</body-content>
+	<variable>
+		<name-from-attribute>var</name-from-attribute>
+		<variable-class>org.openmrs.Concept</variable-class>
+	</variable>
+	<variable>
+		<name-from-attribute>nameVar</name-from-attribute>
+		<variable-class>org.openmrs.ConceptName</variable-class>
+	</variable>
+	<variable>
+		<name-from-attribute>numericVar</name-from-attribute>
+		<variable-class>org.openmrs.ConceptNumeric</variable-class>
+	</variable>
+	<attribute>
+		<name>conceptId</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>var</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
+		<name>nameVar</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
+		<name>numericVar</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
+		<name>locale</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+</tag>
+
+<tag>
+	<description>
+		This tag iterates through a collection of observations passed into it and renders it's body content.
+		It will return all matching observations by default, or [num] observations if it is specified..
+		It will limit the results by [conceptId] if passed in, otherwise it will return all observations.
+		It will sort by the property passed in - this property should match a public property of Obs - i.e. "obsDatetime"
+		If no sort property is specified, it will sort by obsDatetime by default
+		It will sort ascending by default, descending if "descending=true" is specified.
+	</description>
+	<name>forEachObs</name>
+	<tag-class>org.openmrs.web.taglib.ForEachObsTag</tag-class>
+	<body-content>JSP</body-content>
+	<variable>
+		<name-from-attribute>var</name-from-attribute>
+		<variable-class>org.openmrs.Obs</variable-class>
+	</variable>
+	<attribute>
+		<name>obs</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.util.Collection</type>
+	</attribute>
+	<attribute>
+		<name>conceptId</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>num</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>sortBy</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
+		<name>descending</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Boolean</type>
+	</attribute>
+	<attribute>
+		<name>var</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+</tag>
+
+<tag>
+	<description>
+		This tag iterates through a collection of encounters passed into it and renders it's body content.
+		It will return all matching encounters by default, or [num] encounters if it is specified..
+		It will limit the results by encounterTypeId only if a [type] parameter is passed in.
+		It will sort by the property passed in - this property should match a public property of Encounter - i.e. "encounterDatetime"
+		If no sort property is specified, it will sort by encounterDatetime by default
+		It will sort ascending by default, descending if "descending=true" is specified.
+	</description>
+	<name>forEachEncounter</name>
+	<tag-class>org.openmrs.web.taglib.ForEachEncounterTag</tag-class>
+	<body-content>JSP</body-content>
+	<variable>
+		<name-from-attribute>var</name-from-attribute>
+		<variable-class>org.openmrs.Encounter</variable-class>
+	</variable>
+	<attribute>
+		<name>encounters</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.util.Collection</type>
+	</attribute>
+	<attribute>
+		<name>type</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>num</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>sortBy</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
+		<name>descending</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Boolean</type>
+	</attribute>
+	<attribute>
+		<name>var</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+</tag>
+
+<tag>
+	<description>
+		This tag iterates through a collection of drug orders passed into it and renders it's body content.
+		It will return all matching orders by default, or [num] orders if it is specified.
+		It will sort by the property passed in - this property should match a public property of Order/DrugOrder
+		If no sort property is specified, it will sort by dateCreated by default
+		It will sort ascending by default, descending if "descending=true" is specified.
+	</description>
+	<name>forEachDrugOrder</name>
+	<tag-class>org.openmrs.web.taglib.ForEachDrugOrderTag</tag-class>
+	<body-content>JSP</body-content>
+	<variable>
+		<name-from-attribute>var</name-from-attribute>
+		<variable-class>org.openmrs.DrugOrder</variable-class>
+	</variable>
+	<attribute>
+		<name>drugOrders</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.util.Collection</type>
+	</attribute>
+	<attribute>
+		<name>num</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>sortBy</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
+		<name>descending</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Boolean</type>
+	</attribute>
+	<attribute>
+		<name>var</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+</tag>
+
+<tag>
+	<description>
+		Displays a one-line description of this user.
+	</description>
+	<name>userWidget</name>
+	<tag-class>org.openmrs.web.taglib.UserWidgetTag</tag-class>
+	<body-content>empty</body-content>
+	<attribute>
+		<name>userId</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>size</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+</tag>
+	
+<tag>
+	<description>
+		Displays a one-line description of this patient
+	</description>
+	<name>patientWidget</name>
+	<tag-class>org.openmrs.web.taglib.PatientWidgetTag</tag-class>
+	<body-content>empty</body-content>
+	<attribute>
+		<name>patientId</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>size</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+</tag>
+
+<tag>
+	<description>
+		Displays the given chart
+	</description>
+	<name>displayChart</name>
+	<tag-class>org.openmrs.web.taglib.DisplayChartTag</tag-class>
+	<body-content>empty</body-content>
+	<attribute>
+		<name>chart</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>org.jfree.chart.JFreeChart</type>
+	</attribute>
+	<attribute>
+		<name>height</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>width</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+</tag>	
+	
+<tag>
+	<description>
+		Displays a graph given the patient and concept
+	</description>
+	<name>showGraph</name>
+	<tag-class>org.openmrs.web.taglib.ShowGraphTag</tag-class>
+	<body-content>JSP</body-content>
+	<attribute>
+		<name>patientId</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>conceptName</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
+		<name>height</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>width</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+</tag>	
+
+<tag>
+	<description>
+		Displays the HTML for including a javascript (.js) or stylesheet (.css) file in the HTML.
+		Keeps track of whether or not it has been output within the same request, and ensures only
+		a single include.
+	</description>
+	<name>htmlInclude</name>
+	<tag-class>org.openmrs.web.taglib.HtmlIncludeTag</tag-class>
+	<body-content>JSP</body-content>
+	<attribute>
+		<name>file</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>request</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>javax.servlet.http.HttpServletRequest</type>
+	</attribute>
+	<attribute>
+		<name>type</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+</tag>	
+
+<tag>
+	<description>
+		Gets the value of the given global property.
+		If the var attribute is specified, then the value of the global property is 
+		placed into that in the pageContext. Otherwise, value is printed
+	</description>
+	<name>globalProperty</name>
+	<tag-class>org.openmrs.web.taglib.GlobalPropertyTag</tag-class>
+	<body-content>JSP</body-content>
+	<attribute>
+		<name>key</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>defaultValue</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>var</name>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+</tag>
+
+<tag>
+	<description>
+		Gets the value of the given user property.
+		If the var attribute is specified, then the value of the user property is 
+		placed into that in the pageContext. Otherwise, value is printed
+	</description>
+	<name>userProperty</name>
+	<tag-class>org.openmrs.web.taglib.UserPropertyTag</tag-class>
+	<body-content>JSP</body-content>
+	<attribute>
+		<name>key</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>defaultValue</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>var</name>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+</tag>
+	
+<tag>
+	<description>
+		Makes an html table of obs that belong to specified concepts/concept-sets
+	</description>
+	<name>obsTable</name>
+	<tag-class>org.openmrs.web.taglib.ObsTableWidget</tag-class>
+	<body-content>empty</body-content>
+	<attribute>
+		<name>observations</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>concepts</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>id</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>cssClass</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>showEmptyConcepts</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>showConceptHeader</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>showDateHeader</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>fromDate</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>toDate</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>limit</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>sort</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>orientation</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+</tag>
+	
+<tag>
+	<description>
+		Generate an 'active list' from obs of a start concept and a stop concept
+	</description>
+	<name>activeList</name>
+	<tag-class>org.openmrs.web.taglib.ActiveListWidget</tag-class>
+	<body-content>empty</body-content>
+	<attribute>
+		<name>observations</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>onDate</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>addConcept</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>removeConcept</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>otherGroupedConcepts</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>showDate</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>displayStyle</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+</tag>
+
+<tag>
+	<description>
+		Generate a table displaying an obs group
+	</description>
+	<name>obsGroupTable</name>
+	<tag-class>org.openmrs.web.taglib.ObsGroupTableWidget</tag-class>
+	<body-content>empty</body-content>
+	<attribute>
+		<name>observations</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>primaryConcepts</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>otherConcepts</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>orientation</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+</tag>
+	
+<tag>
+	<description>
+		Temporary helper tag for doing decision support tests in the patient summary.
+		This is a hack. Expect it to disappear.
+		Sets 'var' to ' evaluate(ifTrue)==true || evaluate(ifFalse)==false '
+	</description>
+	<name>summaryTest</name>
+	<tag-class>org.openmrs.web.taglib.SummaryTest</tag-class>
+	<body-content>empty</body-content>
+	<attribute>
+		<name>observations</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>encounters</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>var</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>ifTrue</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>ifFalse</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+</tag>
+
+<tag>
+	<description>
+		Counts the number of objects associated with this extension point and sets it as a variable in the page context.
+		If 'var' is not specified, then the count is written to pageContext.out
+	</description>
+	<name>extensionCount</name>
+	<tag-class>org.openmrs.module.web.taglib.ExtensionCountTag</tag-class>
+	<body-content>empty</body-content>
+	<attribute>
+		<name>pointId</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>var</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+</tag>
+
+<tag>
+	<description>
+		Loops over all the objects associated with this extension point
+		modules assign themselves to a point via the module.xml descriptor file
+	</description>
+	<name>extensionPoint</name>
+	<tag-class>org.openmrs.module.web.taglib.ExtensionPointTag</tag-class>
+	<body-content>JSP</body-content>
+	<attribute>
+		<name>pointId</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>type</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<description>
+			A string in the form of "key=value|key2=value2".   
+			e.g. "size=compact|order=date"
+		</description>
+		<name>parameters</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+</tag>
+
+<tag>
+	<description>
+		Prints out the current contextPath 
+		(used instead of the typical ${pageContext.request.contextPath} )
+	</description>
+	<name>contextPath</name>
+	<tag-class>org.openmrs.web.taglib.ContextPathTag</tag-class>
+	<body-content>empty</body-content>
+</tag>
+
+<function>
+	<name>sort</name>
+	<function-class>org.openmrs.web.taglib.functions.Sort</function-class>
+	<function-signature>java.util.List sort(java.util.Collection, java.lang.String, java.lang.Boolean)</function-signature>
+</function>
+
+<function>
+	<name>filterObsByConcept</name>
+	<function-class>org.openmrs.web.taglib.functions.Filter</function-class>
+	<function-signature>java.util.Set filterObsByConcept(java.util.Set, java.lang.Integer)</function-signature>
+</function>
+
+<function>
+	<name>filterEncountersByType</name>
+	<function-class>org.openmrs.web.taglib.functions.Filter</function-class>
+	<function-signature>java.util.Set filterEncountersByType(java.util.Set, java.lang.Integer)</function-signature>
+</function>	
+	
 </taglib>

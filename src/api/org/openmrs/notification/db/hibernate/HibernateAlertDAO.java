@@ -7,12 +7,11 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
-import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.openmrs.User;
 import org.openmrs.api.db.DAOException;
-import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.notification.Alert;
 import org.openmrs.notification.db.AlertDAO;
 
@@ -20,56 +19,47 @@ public class HibernateAlertDAO implements AlertDAO {
 
 	private final Log log = LogFactory.getLog(getClass());
 
-	public HibernateAlertDAO() {
+	/**
+	 * Hibernate session factory
+	 */
+	private SessionFactory sessionFactory;
+	
+	public HibernateAlertDAO() { }
+
+	/**
+	 * Set session factory
+	 * 
+	 * @param sessionFactory
+	 */
+	public void setSessionFactory(SessionFactory sessionFactory) { 
+		this.sessionFactory = sessionFactory;
 	}
 
 	public void createAlert(Alert alert) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-
-		try {
-			HibernateUtil.beginTransaction();
-			session.save(alert);
-			HibernateUtil.commitTransaction();
-		} catch (Exception e) {
-			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e);
-		}
+		sessionFactory.getCurrentSession().save(alert);
 	}
 
 	public void updateAlert(Alert alert) throws DAOException {
 		if (alert.getAlertId() == null)
 			createAlert(alert);
-		else {
-			try {
-				Session session = HibernateUtil.currentSession();
-				HibernateUtil.beginTransaction();
-				session.saveOrUpdate(alert);
-				HibernateUtil.commitTransaction();
-			} catch (Exception e) {
-				HibernateUtil.rollbackTransaction();
-				throw new DAOException(e);
-			}
-		}
+		else
+			sessionFactory.getCurrentSession().saveOrUpdate(alert);
 	}
 
 	public Alert getAlert(Integer alertId) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		Alert alert = (Alert) session.get(Alert.class, alertId);
-
-		return alert;
+		return (Alert) sessionFactory.getCurrentSession().get(Alert.class, alertId);
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<Alert> getAlerts(User user, boolean includeRead, 
 				boolean includeExpired) throws DAOException {
-		Session session = HibernateUtil.currentSession();
 		log.debug("Getting alerts for user " + user + " read? " + includeRead
 				+ " expired? " + includeExpired);
 
 		// return list
 		List<Alert> alerts = new Vector<Alert>();
 
-		Criteria crit = session.createCriteria(Alert.class, "alert");
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Alert.class, "alert");
 		crit.createCriteria("recipients", "recipient");
 		
 		if (user != null && user.getUserId() != null)
@@ -115,12 +105,10 @@ public class HibernateAlertDAO implements AlertDAO {
 
 	@SuppressWarnings("unchecked")
 	public List<Alert> getAllAlerts(boolean includeExpired) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-
 		// return list
 		List<Alert> alerts = new Vector<Alert>();
 
-		Criteria crit = session.createCriteria(Alert.class, "alert");
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Alert.class, "alert");
 		// exclude the expired alerts unless requested
 		if (includeExpired == false)
 			crit.add(Expression.or(Expression.isNull("dateToExpire"),

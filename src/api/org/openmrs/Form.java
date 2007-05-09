@@ -1,7 +1,9 @@
 package org.openmrs;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -24,9 +26,7 @@ public class Form implements java.io.Serializable {
 	private Boolean published = false;
 	private String description;
 	private EncounterType encounterType;
-	private String schemaNamespace;
-	private String infoPathSolutionVersion;
-	private String uri;
+	private String template;
 	private String xslt;
 	private User creator;
 	private Date dateCreated;
@@ -182,48 +182,17 @@ public class Form implements java.io.Serializable {
 	}
 
 	/**
-	 * @return Returns the schemaNamespace.
+	 * @return Returns the template.
 	 */
-	public String getSchemaNamespace() {
-		return schemaNamespace;
+	public String getTemplate() {
+		return template;
 	}
 
 	/**
-	 * @param schemaNamespace
-	 *            The schemaNamespace to set.
+	 * @param template The template to set.
 	 */
-	public void setSchemaNamespace(String schemaNamespace) {
-		this.schemaNamespace = schemaNamespace;
-	}
-
-	/**
-	 * @return Returns the infoPathSolutionVersion.
-	 */
-	public String getInfoPathSolutionVersion() {
-		return infoPathSolutionVersion;
-	}
-
-	/**
-	 * @param infoPathSolutionVersion
-	 *            The infoPathSolutionVersion to set.
-	 */
-	public void setInfoPathSolutionVersion(String infoPathSolutionVersion) {
-		this.infoPathSolutionVersion = infoPathSolutionVersion;
-	}
-
-	/**
-	 * @return location of the actual form
-	 */
-	public String getUri() {
-		return uri;
-	}
-
-	/**
-	 * @param uri
-	 *            The location of the actual form
-	 */
-	public void setUri(String uri) {
-		this.uri = uri;
+	public void setTemplate(String template) {
+		this.template = template;
 	}
 
 	/**
@@ -366,6 +335,44 @@ public class Form implements java.io.Serializable {
 	 */
 	public Set<FormField> getFormFields() {
 		return formFields;
+	}
+
+	/**
+	 * @return Returns the formFields.
+	 */
+	public List<FormField> getOrderedFormFields() {
+		if ( this.formFields != null ) {
+			List<FormField> fieldList = new ArrayList<FormField>();
+			Set<FormField> fieldSet = new HashSet<FormField>();
+			fieldSet.addAll(this.formFields);
+			
+			int fieldSize = fieldSet.size();
+			
+			for ( int i = 0; i < fieldSize; i++ ) {
+				int fieldNum = 0;
+				FormField next = null;
+
+				for ( FormField ff : fieldSet ) {
+					if ( ff.getFieldNumber() != null ) {
+						if ( ff.getFieldNumber().intValue() < fieldNum || fieldNum == 0 ) {
+							fieldNum = ff.getFieldNumber().intValue();
+							next = ff;
+						}
+					} else {
+						if ( fieldNum == 0 ) {
+							next = ff;
+						}
+					}
+				}
+				
+				fieldList.add(next);
+				fieldSet.remove(next);
+			}
+						
+			return fieldList;
+		} else {
+			return null;
+		}
 	}
 
 	/**

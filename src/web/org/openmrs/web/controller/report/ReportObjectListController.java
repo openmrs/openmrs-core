@@ -1,7 +1,7 @@
 package org.openmrs.web.controller.report;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
+import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -53,12 +53,12 @@ public class ReportObjectListController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		String view = getFormView();
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			String[] reportObjectList = request.getParameterValues("reportObjectId");
-			AdministrationService as = context.getAdministrationService();
-			//ReportService rs = context.getReportService();
+			AdministrationService as = Context.getAdministrationService();
+			//ReportService rs = Context.getReportService();
 			//ReportService rs = new TestReportService();
 			
 			String success = "";
@@ -78,7 +78,7 @@ public class ReportObjectListController extends SimpleFormController {
 						success += textReport + " " + p + " " + deleted;
 						numDeleted++;
 					} catch (APIException e) {
-						log.warn(e);
+						log.warn("Error deleting report object", e);
 						if (!error.equals("")) error += "<br>";
 						error += textReport + " " + p + " " + notDeleted;
 					}
@@ -106,19 +106,15 @@ public class ReportObjectListController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-
-    	HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
 		//default empty Object
-		Set<AbstractReportObject> reportObjects = new HashSet<AbstractReportObject>();
+		List<AbstractReportObject> reportObjects = new Vector<AbstractReportObject>();
 		
 		//only fill the Object is the user has authenticated properly
-		if (context != null && context.isAuthenticated()) {
-			ReportService rs = context.getReportService();
+		if (Context.isAuthenticated()) {
+			ReportService rs = Context.getReportService();
 			//ReportService rs = new TestReportService();
 	    	reportObjects = rs.getAllReportObjects();
-	    	//System.out.println("ro size is " + reportObjects.size());
 		}
 		
 		ReportObjectList reportObjectList = new ReportObjectList(reportObjects);

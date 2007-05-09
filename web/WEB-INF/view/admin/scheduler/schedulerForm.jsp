@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<%--<openmrs:require privilege="Task Scheduler" otherwise="/login.htm" redirect="/admin/scheduler/taskForm" />--%>
+<openmrs:require privilege="Manage Scheduler" otherwise="/login.htm" redirect="/admin/scheduler/scheduler.form" />
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
@@ -9,104 +9,134 @@
 
 window.onload = init;
 
-function init() {
-	var sections = new Array();
-	var form = document.getElementById("schedulerForm");
-	children = form.childNodes;
-	var seci = 0;
-	for(i=0;i<children.length;i++) {
-		if(children[i].nodeName.toLowerCase().indexOf('fieldset') != -1) {
-			children[i].id = 'optsection-' + seci;
-			children[i].className = 'optsection';
-			legends = children[i].getElementsByTagName('legend');
-			sections[seci] = new Object();
-			if(legends[0] && legends[0].firstChild.nodeValue)
-				sections[seci].text = legends[0].firstChild.nodeValue;
-			else
-				sections[seci].text = '# ' + seci;
-			sections[seci].secid = children[i].id;
-			sections[seci].error = containsError(children[i]);
-			seci++;
-			if(sections.length != 1)
-				children[i].style.display = 'none';
-			else
-				var selectedid = children[i].id;
+	function init() {
+		var sections = new Array();
+		var form = document.getElementById("schedulerForm");
+		children = form.childNodes;
+		var seci = 0;
+		for(i=0;i<children.length;i++) {
+			if(children[i].nodeName.toLowerCase().indexOf('fieldset') != -1) {
+				children[i].id = 'optsection-' + seci;
+				children[i].className = 'optsection';
+				legends = children[i].getElementsByTagName('legend');
+				sections[seci] = new Object();
+				if(legends[0] && legends[0].firstChild.nodeValue)
+					sections[seci].text = legends[0].firstChild.nodeValue;
+				else
+					sections[seci].text = '# ' + seci;
+				sections[seci].secid = children[i].id;
+				sections[seci].error = containsError(children[i]);
+				seci++;
+				if(sections.length != 1)
+					children[i].style.display = 'none';
+				else
+					var selectedid = children[i].id;
+			}
 		}
+		
+		var toc = document.createElement('ul');
+		toc.id = 'optionsTOC';
+		toc.selectedid = selectedid;
+		for(i=0;i<sections.length;i++) {
+			var li = document.createElement('li');
+			if(i == 0) li.className = 'selected';
+			var a =  document.createElement('a');
+			a.href = '#' + sections[i].secid;
+			a.onclick = uncoversection;
+			a.appendChild(document.createTextNode(sections[i].text));
+			a.secid = sections[i].secid;
+			a.id = sections[i].secid + "_link";
+			if (sections[i].error) {
+				a.className = "error";
+			}
+			li.appendChild(a);
+			toc.appendChild(li);
+		}
+		form.insertBefore(toc, children[0]);
+	
+		var hash = document.location.hash;
+		if (hash.length > 1) {
+			var autoSelect = hash.substring(1, hash.length);
+			for(i=0;i<sections.length;i++) {
+				if (sections[i].text == autoSelect)
+					uncoversection(sections[i].secid + "_link");
+			}
+		}
+		
+		addNewProperty();
+	}
+
+	function uncoversection(secid) {
+		var obj = this;
+		if (typeof secid == 'string') {
+			obj = document.getElementById(secid);
+			if (obj == null)
+				return false;
+		}
+	
+		var ul = document.getElementById('optionsTOC');
+		var oldsecid = ul.selectedid;
+		var newsec = document.getElementById(obj.secid);
+		if(oldsecid != obj.secid) {
+			document.getElementById(oldsecid).style.display = 'none';
+			newsec.style.display = 'block';
+			ul.selectedid = obj.secid;
+			lis = ul.getElementsByTagName('li');
+			for(i=0;i< lis.length;i++) {
+				lis[i].className = '';
+			}
+			obj.parentNode.className = 'selected';
+		}
+		newsec.blur();
+		return false;
+	}
+
+	function containsError(element) {
+		if (element) {
+			var child = element.firstChild;
+			while (child != null) {
+				if (child.className == 'error') {
+					return true;
+				}
+				else if (containsError(child) == true) {
+					return true;
+				}
+				child = child.nextSibling;
+			}
+		}
+		return false;
+	}
+
+	function removeProperty(btn) {
+		var row = btn.parentNode;
+		while (row.tagName.toLowerCase() != "tr")
+			row = row.parentNode;
+		
+		var parent = row.parentNode;
+		parent.removeChild(row);
+		//updateRowColors();
 	}
 	
-	var toc = document.createElement('ul');
-	toc.id = 'optionsTOC';
-	toc.selectedid = selectedid;
-	for(i=0;i<sections.length;i++) {
-		var li = document.createElement('li');
-		if(i == 0) li.className = 'selected';
-		var a =  document.createElement('a');
-		a.href = '#' + sections[i].secid;
-		a.onclick = uncoversection;
-		a.appendChild(document.createTextNode(sections[i].text));
-		a.secid = sections[i].secid;
-		a.id = sections[i].secid + "_link";
-		if (sections[i].error) {
-			a.className = "error";
-		}
-		li.appendChild(a);
-		toc.appendChild(li);
+	function addNewProperty(startup) {
+		var tbody = document.getElementById("propertiesTable");
+		var blankProp = document.getElementById("newProperty");
+		var newProp = blankProp.cloneNode(true);
+		newProp.style.display = '';
+		newProp.id = '';
+		
+		tbody.appendChild(newProp);
 	}
-	form.insertBefore(toc, children[0]);
-
-	var hash = document.location.hash;
-	if (hash.length > 1) {
-		var autoSelect = hash.substring(1, hash.length);
-		for(i=0;i<sections.length;i++) {
-			if (sections[i].text == autoSelect)
-				uncoversection(sections[i].secid + "_link");
-		}
-	}
-}
-
-function uncoversection(secid) {
-	var obj = this;
-	if (typeof secid == 'string') {
-		obj = document.getElementById(secid);
-		if (obj == null)
-			return false;
-	}
-
-	var ul = document.getElementById('optionsTOC');
-	var oldsecid = ul.selectedid;
-	var newsec = document.getElementById(obj.secid);
-	if(oldsecid != obj.secid) {
-		document.getElementById(oldsecid).style.display = 'none';
-		newsec.style.display = 'block';
-		ul.selectedid = obj.secid;
-		lis = ul.getElementsByTagName('li');
-		for(i=0;i< lis.length;i++) {
-			lis[i].className = '';
-		}
-		obj.parentNode.className = 'selected';
-	}
-	newsec.blur();
-	return false;
-}
-
-function containsError(element) {
-	if (element) {
-		var child = element.firstChild;
-		while (child != null) {
-			if (child.className == 'error') {
-				return true;
-			}
-			else if (containsError(child) == true) {
-				return true;
-			}
-			child = child.nextSibling;
-		}
-	}
-	return false;
-}
 
 </script>
 
+<style>
+	#newProperty {
+		display: none;
+	}
+	#optionsTOC {
+		white-space: nowrap;
+	}
+</style>
 
 <h2><spring:message code="Scheduler.header"/></h2>
 
@@ -114,9 +144,9 @@ function containsError(element) {
 	<spring:message code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
-<form method="post">
 
-<div id="schedulerForm">
+<form method="post" id="schedulerForm">
+
   <fieldset>
   <legend><spring:message code="Scheduler.taskForm.legend" /></legend>
 	<table cellpadding="5">
@@ -230,76 +260,59 @@ function containsError(element) {
 			<td>
 				<spring:bind path="task.repeatInterval">
 					<input type="text" id="repeatInterval" name="repeatInterval" size="10" value="${status.value}" /> 
-					<spring:message code="Scheduler.scheduleForm.repeatInterval.units" />
+					<select name="repeatIntervalUnits">
+						<option value="seconds" <c:if test="${units=='seconds'}">selected</c:if>><spring:message code="Scheduler.scheduleForm.repeatInterval.units.seconds" /></option>
+						<option value="minutes" <c:if test="${units=='minutes'}">selected</c:if>><spring:message code="Scheduler.scheduleForm.repeatInterval.units.minutes" /></option>
+						<option value="hours" <c:if test="${units=='hours'}">selected</c:if>><spring:message code="Scheduler.scheduleForm.repeatInterval.units.hours" /></option>
+						<option value="days" <c:if test="${units=='days'}">selected</c:if>><spring:message code="Scheduler.scheduleForm.repeatInterval.units.days" /></option>
+					</select>
+					
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
 		</tr>
 	</table>
 </fieldset>
-<%--
+
 <fieldset>
-	<legend>Properties</legend> 
-		<table>
+	<legend><spring:message code="Scheduler.propertyForm.legend" /></legend> 
+	<table>
+		<tbody id="propertiesTable">
 			<tr>
-				<td valign="top">
-
-					<table>
-						<input type="hidden" name="taskId" value="${task.id}">
-						<tr>
-							<td>Name</td>
-							<td>Value</td>
-						</tr>
-						<c:forEach var="property" items="${task.properties}">			
-						<tr>
-							<td>
-								<spring:bind path="property.name">
-									<input type="text" id="name" name="name" size="10" value="${status.value}" /> (in seconds)
-									<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-								</spring:bind>
-							</td>
-							<td>
-								<spring:bind path="property.value">
-									<input type="text" id="value" name="value" size="10" value="${status.value}" /> (in seconds)
-									<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-								</spring:bind>
-							</td>
-							<td>
-								<input type="button" class="smallButton" value="<spring:message code="Scheduler.property.remove"/>">
-							</td>
-						</tr>
-						</c:forEach>
-						<tr>
-							<td>
-								<input type="text" name="propertyName" size="30"/> 
-							</td>
-							<td>
-								<input type="text" name="propertyValue" size="30"/> 
-							</td>
-							<td>
-								<input type="button" class="smallButton" value="<spring:message code="Scheduler.property.save"/>">
-							</td>
-						</tr>
-						<tr>
-							<td colspan="2">
-								
-							</td>
-						</tr>
-					</table>
-
+				<td><spring:message code="general.name" /></td>
+				<td><spring:message code="general.value" /></td>
+			</tr>
+			<c:forEach var="property" items="${task.properties}">			
+			<tr>
+				<td><input type="text" name="propertyName" size="20" value="${property.key}" /></td>
+				<td><input type="text" name="propertyValue" size="30" value="${property.value}" /></td>
+				<td><input type="button" class="closeButton" onclick="removeProperty(this)" value="<spring:message code="Scheduler.propertyForm.remove"/>"></td>
+			</tr>
+			</c:forEach>
+			<tr id="newProperty">
+				<td>
+					<input type="text" name="propertyName" size="20"/> 
+				</td>
+				<td>
+					<input type="text" name="propertyValue" size="30"/> 
+				</td>
+				<td>
+					<input type="button" class="closeButton" onclick="removeProperty(this)" value="<spring:message code="Scheduler.propertyForm.remove"/>">
 				</td>
 			</tr>
-		</table>
+		</tbody>
+	</table>
+	<br/>
+	<input type="button" class="smallButton" onclick="addNewProperty()" value="<spring:message code="Scheduler.propertyForm.add"/>">
 	<br />
 	<br />
-	</fieldset>
---%>
+	
+</fieldset>
 
-  <input type="submit" value="<spring:message code="Scheduler.taskForm.save"/>">
+<input type="submit" value="<spring:message code="Scheduler.taskForm.save"/>">
 
 <br />
 
-</div>
 </form>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

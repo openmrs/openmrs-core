@@ -2,16 +2,15 @@ package org.openmrs.reporting.db.hibernate;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
+import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
-import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
-import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.ReportObjectWrapper;
 import org.openmrs.reporting.db.ReportObjectDAO;
@@ -21,18 +20,26 @@ public class HibernateReportObjectDAO implements
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
-	private Context context;
+	/**
+	 * Hibernate session factory
+	 */
+	private SessionFactory sessionFactory;
 	
-	public HibernateReportObjectDAO(Context c) {
-		this.context = c;
-	}
+	public HibernateReportObjectDAO() { }
 
-	public Set<AbstractReportObject> getAllReportObjects() {
-		Session session = HibernateUtil.currentSession();
-		
-		Set<AbstractReportObject> reportObjects = new HashSet<AbstractReportObject>();
-		Set<ReportObjectWrapper> wrappedObjects = new HashSet<ReportObjectWrapper>();
-		wrappedObjects.addAll((ArrayList<ReportObjectWrapper>)session.createQuery("from ReportObjectWrapper order by date_created, name").list());
+	/**
+	 * Set session factory
+	 * 
+	 * @param sessionFactory
+	 */
+	public void setSessionFactory(SessionFactory sessionFactory) { 
+		this.sessionFactory = sessionFactory;
+	}
+	
+	public List<AbstractReportObject> getAllReportObjects() {
+		List<AbstractReportObject> reportObjects = new Vector<AbstractReportObject>();
+		List<ReportObjectWrapper> wrappedObjects = new Vector<ReportObjectWrapper>();
+		wrappedObjects.addAll((ArrayList<ReportObjectWrapper>)sessionFactory.getCurrentSession().createQuery("from ReportObjectWrapper order by date_created, name").list());
 		for ( ReportObjectWrapper wrappedObject : wrappedObjects ) {
 			AbstractReportObject reportObject = (AbstractReportObject)wrappedObject.getReportObject();
 			if ( reportObject.getReportObjectId() == null ) {
@@ -44,10 +51,8 @@ public class HibernateReportObjectDAO implements
 	}
 
 	public AbstractReportObject getReportObject(Integer reportObjId) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-
 		ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper();
-		wrappedReportObject = (ReportObjectWrapper)session.get(ReportObjectWrapper.class, reportObjId);
+		wrappedReportObject = (ReportObjectWrapper)sessionFactory.getCurrentSession().get(ReportObjectWrapper.class, reportObjId);
 		
 		AbstractReportObject reportObject = (wrappedReportObject == null) ? null : wrappedReportObject.getReportObject();
 		if ( reportObject.getReportObjectId() == null ) reportObject.setReportObjectId(wrappedReportObject.getReportObjectId());
@@ -56,67 +61,35 @@ public class HibernateReportObjectDAO implements
 	}
 
 	public void createReportObject(AbstractReportObject reportObj) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		
-		reportObj.setCreator(context.getAuthenticatedUser());
+		reportObj.setCreator(Context.getAuthenticatedUser());
 		reportObj.setDateCreated(new Date());
+		log.debug("Saving: " + reportObj);
 		
 		ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper(reportObj);
-		try {
-			HibernateUtil.beginTransaction();
-			session.save(wrappedReportObject);
-			HibernateUtil.commitTransaction();
-		}
-		catch (Exception e) {
-			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e);
-		}
+		sessionFactory.getCurrentSession().save(wrappedReportObject);
 	}
 
 	public void deleteReportObject(AbstractReportObject reportObj) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		
 		ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper(reportObj);		
 		
-		try {
-			HibernateUtil.beginTransaction();
-			//System.out.println("\n\n\nABOUT TO DELETE REPORT OBJECT\n\n\n");
-			session.delete(wrappedReportObject);
-			HibernateUtil.commitTransaction();
-		}
-		catch (Exception e) {
-			HibernateUtil.rollbackTransaction();
-			throw new DAOException(e);
-		}
+		sessionFactory.getCurrentSession().delete(wrappedReportObject);
 	}
 
 	public void updateReportObject(AbstractReportObject reportObj) throws DAOException {
-		if (reportObj.getCreator() == null)
+		if (reportObj.getReportObjectId() == null)
 			createReportObject(reportObj);
 		else {
-			Session session = HibernateUtil.currentSession();
-			
 			ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper(reportObj);		
 
-			try {
-				HibernateUtil.beginTransaction();
-				wrappedReportObject = (ReportObjectWrapper)session.merge(wrappedReportObject);
-				session.update(wrappedReportObject);
-				HibernateUtil.commitTransaction();
-			}
-			catch (Exception e) {
-				HibernateUtil.rollbackTransaction();
-				throw new DAOException(e);
-			}
+			//wrappedReportObject = (ReportObjectWrapper)sessionFactory.getCurrentSession().merge(wrappedReportObject);
+			sessionFactory.getCurrentSession().update(wrappedReportObject);
 		}
 	}
 
-	public Set<AbstractReportObject> getReportObjectsByType(String reportObjectType) throws DAOException {
-		Session session = HibernateUtil.currentSession();
-		
-		Set<AbstractReportObject> reportObjects = new HashSet<AbstractReportObject>();
-		Set<ReportObjectWrapper> wrappedObjects = new HashSet<ReportObjectWrapper>();
-		Query query = session.createQuery("from ReportObjectWrapper ro where ro.type=:type order by date_created, name");
+	public List<AbstractReportObject> getReportObjectsByType(String reportObjectType) throws DAOException {
+		List<AbstractReportObject> reportObjects = new Vector<AbstractReportObject>();
+		List<ReportObjectWrapper> wrappedObjects = new Vector<ReportObjectWrapper>();
+		Query query = sessionFactory.getCurrentSession().createQuery("from ReportObjectWrapper ro where ro.type=:type order by date_created, name");
 		query.setString("type", reportObjectType);
 		wrappedObjects.addAll((ArrayList<ReportObjectWrapper>)query.list());
 		for ( ReportObjectWrapper wrappedObject : wrappedObjects ) {

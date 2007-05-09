@@ -9,7 +9,6 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.MessageService;
 import org.openmrs.notification.NotificationConstants;
-import org.openmrs.web.WebConstants;
 
 import uk.ltd.getahead.dwr.WebContextFactory;
 
@@ -19,15 +18,12 @@ public class DWRMessageService {
 	
 	public boolean sendFeedback(String sender, String subject, String content) {
 
-		Context context = (Context) WebContextFactory.get().getSession()
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-
 		HttpServletRequest request = WebContextFactory.get()
 				.getHttpServletRequest();
 
-		if (context != null) {
+		if (!Context.isAuthenticated()) {
 			try {
-				MessageService messageService = context.getMessageService();
+				MessageService messageService = Context.getMessageService();
 
 				String recipients = NotificationConstants.FEEDBACK_EMAIL_ADDRESS;
 				if (subject == null || subject.equals(""))
@@ -35,10 +31,8 @@ public class DWRMessageService {
 
 				String referer = request.getPathTranslated();
 				String userName = "an Anonymous User";
-				if (context.isAuthenticated())
-					userName = context.getAuthenticatedUser().getFirstName()
-							+ " "
-							+ context.getAuthenticatedUser().getLastName();
+				if (Context.isAuthenticated())
+					userName = Context.getAuthenticatedUser().getPersonName().toString();
 
 				content += "\n\n This email sent from: " + referer + " by: "
 						+ userName;
@@ -61,18 +55,15 @@ public class DWRMessageService {
 		// Object type gives ability to return error strings
 		Vector<Object> objectList = new Vector<Object>();	
 
-		Context context = (Context) WebContextFactory.get().getSession()
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
 		
-		if (context == null) {
+		if (!Context.isAuthenticated()) {
 			objectList.add("Your session has expired.");
 			objectList.add("Please <a href='" + request.getContextPath() + "/logout'>log in</a> again.");
 		}
 		else {
 			try {
-				MessageService messageService = context.getMessageService();
+				MessageService messageService = Context.getMessageService();
 				messageService.send(recipients, sender, subject, content);
 				objectList.add("Message has been sent successfully.");				
 			} catch (Exception e) {

@@ -38,7 +38,7 @@ public class EncounterType implements java.io.Serializable {
 	 * @return boolean true/false whether or not they are the same objects
 	 */
 	public boolean equals(Object obj) {
-		if (obj == null || !(obj instanceof EncounterType))
+		if (encounterTypeId == null || obj == null || !(obj instanceof EncounterType))
 			return false;
 		
 		EncounterType encounterType = (EncounterType) obj;
@@ -120,5 +120,9 @@ public class EncounterType implements java.io.Serializable {
 	 */
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public String toString() {
+		return name;
 	}
 }

@@ -24,6 +24,7 @@ public class ReportObjectValidator implements Validator {
 		return c.getSuperclass().equals(AbstractReportObject.class); 
 		//return Helper.isStringInArray(clsName, ReportService.getAllReportObjectClasses());
 	}
+
 	
 	/**
 	 * 
@@ -32,6 +33,7 @@ public class ReportObjectValidator implements Validator {
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	public void validate(Object obj, Errors errors) {
+		
 		if ( obj instanceof AbstractReportObject ) {
 			AbstractReportObject reportObject = (AbstractReportObject)obj;
 			if (reportObject == null) {

@@ -2,12 +2,16 @@
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
-<openmrs:portlet url="welcome" parameters="showName=true" />
+<br/>
 
-<br/><br/>
+<center>
+	<img src="${pageContext.request.contextPath}/images/openmrs_logo_large.gif">
+	
+	<br/><br/><br/>
+	
+	<openmrs:portlet url="welcome" parameters="showName=true|showLogin=true" />
+</center>
 
-<openmrs:portlet url="findPatient" size="full" parameters="postURL=formentry/patientSummary.form" />
-
-<br /><br />
+<br />
 
 <%@ include file="/WEB-INF/template/footer.jsp" %> 

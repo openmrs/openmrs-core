@@ -5,50 +5,32 @@
 
 <hibernate-mapping package="org.openmrs">
 
-	<class name="User" table="users">
+	<joined-subclass name="User" table="users" extends="Person">
 
-		<cache usage="read-write"/>
+		<key column="user_id" not-null="true" on-delete="cascade" />
+		
+		<property name="userId" type="int" not-null="true" access="field"
+			column="user_id" update="false" insert="false" />
+		
+		<property name="systemId" type="java.lang.String"
+			not-null="true" column="system_id" length="50" />
 
-		<id name="userId" type="int" column="user_id"
-			unsaved-value="0">
-			<generator class="native" />
-		</id>
+		<property name="username" type="java.lang.String" length="50" />
 
-		<property name="systemId" type="java.lang.String" not-null="true"
-			column="system_id" length="50" />
-			
-		<property name="username" type="java.lang.String"
-			column="username" length="50" />
-
-		<property name="firstName" type="java.lang.String"
-			column="first_name" length="50" />
-
-		<property name="middleName" type="java.lang.String"
-			column="middle_name" length="255" />
-
-		<property name="lastName" type="java.lang.String"
-			column="last_name" length="50" />
-
-		<many-to-one name="creator" class="User" not-null="true">
-			<column name="creator" />
-		</many-to-one>
+		<many-to-one name="creator" class="User" not-null="true" />
 
 		<property name="dateCreated" type="java.util.Date"
 			column="date_created" not-null="true" length="19" />
 
-		<many-to-one name="changedBy" class="User">
-			<column name="changed_by" />
-		</many-to-one>
+		<many-to-one name="changedBy" class="User" column="changed_by" />
 
 		<property name="dateChanged" type="java.util.Date"
 			column="date_changed" length="19" />
 
 		<property name="voided" type="java.lang.Boolean" column="voided"
-			length="1" not-null="true"/>
+			length="1" not-null="true" />
 
-		<many-to-one name="voidedBy" class="User">
-			<column name="voided_by" />
-		</many-to-one>
+		<many-to-one name="voidedBy" class="User" column="voided_by" />
 
 		<property name="dateVoided" type="java.util.Date"
 			column="date_voided" length="19" />
@@ -62,8 +44,9 @@
 		<!-- Associations -->
 
 		<!-- bi-directional many-to-many association to Role -->
-		<set name="roles" table="user_role" lazy="false" cascade="save-update,merge,evict">
-			<cache usage="read-write"/>
+		<set name="roles" table="user_role" lazy="false"
+			cascade="save-update,merge,evict">
+			<!-- <cache usage="read-write"/>-->
 			<key>
 				<column name="user_id" />
 			</key>
@@ -71,15 +54,16 @@
 				<column name="role" />
 			</many-to-many>
 		</set>
-		
-		<map name="properties" table="user_property" lazy="true" cascade="save-update,merge,evict">
+
+		<map name="userProperties" table="user_property" lazy="true"
+			cascade="save-update,merge,evict">
 			<key column="user_id" not-null="true" />
-			<map-key column="property" type="java.lang.String" length="100" />
-			<element column="property_value" type="java.lang.String" length="255" />
+			<map-key column="property" type="java.lang.String"
+				length="100" />
+			<element column="property_value" type="java.lang.String"
+				length="255" />
 		</map>
-		
-		<one-to-one name="person" property-ref="user"/>
 
-	</class>
-
+	</joined-subclass>
+	
 </hibernate-mapping>

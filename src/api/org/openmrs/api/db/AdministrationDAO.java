@@ -1,22 +1,21 @@
 package org.openmrs.api.db;
 
 import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptProposal;
+import org.openmrs.DataEntryStatistic;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
-import org.openmrs.OrderType;
-import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.Person;
 import org.openmrs.Privilege;
-import org.openmrs.Relationship;
-import org.openmrs.RelationshipType;
 import org.openmrs.Role;
 import org.openmrs.Tribe;
 import org.openmrs.reporting.AbstractReportObject;
@@ -30,37 +29,6 @@ import org.openmrs.reporting.Report;
  * @version 1.0
  */
 public interface AdministrationDAO {
-	
-	/**
-	 * Create a new Person
-	 * @param Person to create
-	 * @throws DAOException
-	 */
-	public void createPerson(Person person) throws DAOException;
-
-	/**
-	 * Update a person
-	 * @param Person to update
-	 * @throws DAOException
-	 */
-	public void updatePerson(Person person) throws DAOException;
-
-	/**
-	 * Delete a person
-	 * @param Person to delete
-	 * @throws DAOException
-	 */
-	public void deletePerson(Person person) throws DAOException;
-	
-	/**
-	 * 
-	 * @param personId of the Person to retrieve
-	 * @return Person
-	 * @throws DAOException
-	 */
-	public Person getPerson(Integer personId) throws DAOException;
-	
-	public Person getPerson(Patient pat) throws DAOException;
 	
 	/**
 	 * Create a new EncounterType
@@ -138,63 +106,6 @@ public interface AdministrationDAO {
 	 * @throws DAOException
 	 */
 	public void unretireTribe(Tribe tribe) throws DAOException;	
-
-	/**
-	 * Create a new Relationship
-	 * @param Relationship to create
-	 * @throws DAOException
-	 */
-	public void createRelationship(Relationship relationship) throws DAOException;
-
-	/**
-	 * Update Relationship
-	 * @param Relationship to update
-	 * @throws DAOException
-	 */
-	public void updateRelationship(Relationship relationship) throws DAOException;
-
-	/**
-	 * Delete Relationship
-	 * @param Relationship to delete
-	 * @throws DAOException
-	 */
-	public void deleteRelationship(Relationship relationship) throws DAOException;	
-	
-	/**
-	 * Retire Relationship
-	 * @param Relationship to void
-	 * @throws DAOException
-	 */
-	public void voidRelationship(Relationship relationship) throws DAOException;	
-
-	/**
-	 * Unretire Relationship
-	 * @param Relationship to unvoid
-	 * @throws DAOException
-	 */
-	public void unvoidRelationship(Relationship relationship) throws DAOException;	
-
-	
-	/**
-	 * Create a new OrderType
-	 * @param OrderType to create
-	 * @throws DAOException
-	 */
-	public void createOrderType(OrderType orderType) throws DAOException;
-
-	/**
-	 * Update OrderType
-	 * @param OrderType to update
-	 * @throws DAOException
-	 */
-	public void updateOrderType(OrderType orderType) throws DAOException;
-
-	/**
-	 * Delete OrderType
-	 * @param OrderType to delete
-	 * @throws DAOException
-	 */
-	public void deleteOrderType(OrderType orderType) throws DAOException;
 	
 	/**
 	 * Create a new FieldType
@@ -259,27 +170,6 @@ public interface AdministrationDAO {
 	 */
 	public void deleteLocation(Location location) throws DAOException;	
 	
-	/**
-	 * Create a new RelationshipType
-	 * @param RelationshipType to create
-	 * @throws DAOException
-	 */
-	public void createRelationshipType(RelationshipType relationshipType) throws DAOException;
-
-	/**
-	 * Update RelationshipType
-	 * @param RelationshipType to update
-	 * @throws DAOException
-	 */
-	public void updateRelationshipType(RelationshipType relationshipType) throws DAOException;
-
-	/**
-	 * Delete RelationshipType
-	 * @param RelationshipType to delete
-	 * @throws DAOException
-	 */
-	public void deleteRelationshipType(RelationshipType relationshipType) throws DAOException;	
-
 	/**
 	 * Create a new Role
 	 * @param Role to create
@@ -414,12 +304,6 @@ public interface AdministrationDAO {
 	public void updateConceptWord(Concept concept) throws DAOException;
 	
 	/**
-	 * Iterates over all concepts calling updateConceptWord(concept)
-	 * @throws DAOException
-	 */
-	public void updateConceptWords() throws DAOException;
-	
-	/**
 	 * Updates the concept set derived business table for this concept (bursting the concept sets) 
 	 * @param concept
 	 * @throws DAOException
@@ -439,4 +323,20 @@ public interface AdministrationDAO {
 	public void mrnGeneratorLog(String site, Integer start, Integer count) throws DAOException;
 	
 	public Collection getMRNGeneratorLog() throws DAOException;
+	
+	public String getGlobalProperty(String propertyName) throws DAOException;
+
+	public List<GlobalProperty> getGlobalProperties() throws DAOException;
+
+	public void setGlobalProperties(List<GlobalProperty> props) throws DAOException;
+	
+	public void deleteGlobalProperty(String propertyName) throws DAOException;
+
+	public void setGlobalProperty(GlobalProperty gp) throws DAOException;
+
+	public void addGlobalProperty(String propertyName, String propertyValue) throws DAOException;
+
+	public List<DataEntryStatistic> getDataEntryStatistics(Date fromDate, Date toDate, String encounterUserColumn, String orderUserColumn, String groupBy) throws DAOException;
+
+	public List<List<Object>> executeSQL(String sql, boolean selectOnly) throws DAOException;
 }

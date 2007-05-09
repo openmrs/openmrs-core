@@ -40,9 +40,9 @@
 		is 120 seconds.
 	-->
 
-	<defaultCache maxElementsInMemory="10000" eternal="false"
-		timeToIdleSeconds="120" timeToLiveSeconds="120" overflowToDisk="true"
-		diskPersistent="false" diskExpiryThreadIntervalSeconds="120" />
+	<defaultCache maxElementsInMemory="1000" eternal="false"
+		timeToIdleSeconds="30" timeToLiveSeconds="30" overflowToDisk="false"
+		diskPersistent="false" diskExpiryThreadIntervalSeconds="45" />
 
 	<!--Predefined caches.  Add your cache configuration settings here.
 		If you do not have a configuration for your cache a WARNING will be issued when the
@@ -75,6 +75,7 @@
 		is 120 seconds.
 	-->
 
+	<!-- 
 	<cache name="org.openmrs.Concept" maxElementsInMemory="1000"
 		eternal="true" overflowToDisk="true" />
 
@@ -91,23 +92,21 @@
         eternal="true"
         overflowToDisk="false"
     />
+    -->
 
 	<!-- Sample cache named sampleCache2
 		This cache has a maximum of 1000 elements in memory. There is no overflow to disk, so 1000
 		is also the maximum cache size. Note that when a cache is eternal, timeToLive and timeToIdle
 		are not used and do not need to be specified -->
-	<cache name="sampleCache2" maxElementsInMemory="1000" eternal="true"
-		overflowToDisk="false" />
+	<!-- <cache name="sampleCache2" maxElementsInMemory="1000" eternal="true"
+		overflowToDisk="false" /> -->
 
 	<!-- Sample cache named sampleCache3. This cache overflows to disk. The disk store is persistent
 		between cache and VM restarts. The disk expiry thread interval is set to 10 minutes, overriding
 		the default of 2 minutes. -->
 
-	<cache name="sampleCache3" maxElementsInMemory="500" eternal="false"
+	<!--  <cache name="sampleCache3" maxElementsInMemory="500" eternal="false"
 		overflowToDisk="true" timeToIdleSeconds="300" timeToLiveSeconds="600"
-		diskPersistent="true" diskExpiryThreadIntervalSeconds="1" />
-
-
-	<!-- Place configuration for your caches following -->
+		diskPersistent="true" diskExpiryThreadIntervalSeconds="1" /> -->
 
 </ehcache>

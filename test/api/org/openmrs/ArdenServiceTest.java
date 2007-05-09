@@ -1,28 +1,63 @@
 package org.openmrs;
 
-import junit.framework.TestCase;
+import java.util.Iterator;
 
 import org.openmrs.api.context.Context;
-import org.openmrs.api.context.ContextFactory;
-import org.openmrs.api.db.hibernate.HibernateUtil;
+import org.openmrs.arden.ArdenDataSource;
+import org.openmrs.arden.ArdenRule;
+import org.openmrs.arden.DefaultArdenDataSource;
+import org.openmrs.arden.compiled.*;
 
-
-public class ArdenServiceTest extends TestCase {
-
+public class ArdenServiceTest extends BaseTest {
+	int MAX_MLM = 1000;
+	
 	public void testClass() throws Exception {
+
+	//	Integer pid = 1;
+	//	Patient patient;
+	//	ArdenDataSource dataSource;
+		String [] mlmNames = {
+			//	"directexphiriskcountry.mlm",
+			//	"directtbcontact.mlm",
+			//	"indirectexphiriskcountry.mlm",
+			//	"indirecttbcontact.mlm",
+			//	"HiRiskLeadScreen.mlm",
+				"leadspecpws2.mlm"
+		};
+		String defaultPath = "test/arden test/";
 		
-		HibernateUtil.startup();
-		Context context = ContextFactory.getContext();
-		context.authenticate("vibha", "chicachica");
+		startup();
+		Context.authenticate("vibha", "chicachica");
 		
-		context.getArdenService().compileFile("test/arden test/HiRiskLeadScreen.mlm"); 
-		
-	//	context.getArdenService().compileFile("test/arden test/6.mlm");
-		
-	//	HiRiskLeadScreen mlm = new HiRiskLeadScreen(context,1,context.getLocale());
-	//	mlm.run();	
+		for (int i = 0; i<mlmNames.length; i++) {
+			Context.getArdenService().compileFile(defaultPath + mlmNames[i]);
+		}
+			
+	//	Context.getArdenService().compileFile("test/arden test/directexphiriskcountry.mlm");
+	
+
+ /*		patient = Context.getPatientService().getPatient(pid);
+		dataSource = new DefaultArdenDataSource(); 
+
+ 		
+		ArdenRule [] mlms = {
+				 new HiRiskLeadScreen(patient ,dataSource)
+//				,new directtbcontact(patient, dataSource)
+					
+		};
+		for (int i = 0; i < mlms.length; i++){
+			
+			ArdenRule mlm = mlms[i].getInstance();
+			if(mlm != null) {
+				if(mlm.evaluate()) {
+					System.out.println(mlm.doAction());
+					mlm.printDebug();
+				}
 				
-		HibernateUtil.shutdown();
+			}
+		}
+*/	
+		shutdown();
 	}
 	
 	

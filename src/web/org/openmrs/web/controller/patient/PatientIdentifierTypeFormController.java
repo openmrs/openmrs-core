@@ -47,12 +47,12 @@ public class PatientIdentifierTypeFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		String view = getFormView();
 		
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			PatientIdentifierType identifierType = (PatientIdentifierType)obj;
-			context.getAdministrationService().updatePatientIdentifierType(identifierType);
+			Context.getAdministrationService().updatePatientIdentifierType(identifierType);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "PatientIdentifierType.saved");
 		}
@@ -69,13 +69,10 @@ public class PatientIdentifierTypeFormController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		PatientIdentifierType identifierType = null;
 		
-		if (context != null && context.isAuthenticated()) {
-			PatientService ps = context.getPatientService();
+		if (Context.isAuthenticated()) {
+			PatientService ps = Context.getPatientService();
 			String identifierTypeId = request.getParameter("patientIdentifierTypeId");
 	    	if (identifierTypeId != null)
 	    		identifierType = ps.getPatientIdentifierType(Integer.valueOf(identifierTypeId));	

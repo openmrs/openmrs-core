@@ -4,7 +4,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 public class UserValidator implements Validator {
@@ -34,10 +33,6 @@ public class UserValidator implements Validator {
 			errors.rejectValue("user", "error.general");
 		}
 		else {
-			if (user.getUserId() != null)
-				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "systemId", "error.systemId");
-			
-			// TODO validate username checkdigit here
 			if (user.isVoided() && user.getVoidReason().trim().equals(""))
 				errors.rejectValue("voidReason", "error.null");
 		}

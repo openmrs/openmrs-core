@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping package="org.openmrs">
+
+	<class name="ProgramWorkflowState" table="program_workflow_state">
+
+		<id name="programWorkflowStateId" type="java.lang.Integer" column="program_workflow_state_id">
+			<generator class="native" />
+		</id>
+		
+		<property name="initial" type="java.lang.Boolean" column="initial" length="1" not-null="true" />
+		
+		<property name="terminal" type="java.lang.Boolean" column="terminal" length="1" not-null="true" />
+	
+		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
+		
+		<property name="voided" type="java.lang.Boolean" column="voided" length="1" not-null="true" />
+		
+		<property name="dateVoided" type="java.util.Date" column="date_voided" length="19" />
+
+		<property name="voidReason" type="java.lang.String" column="void_reason" length="255" />
+
+		<many-to-one name="programWorkflow" class="ProgramWorkflow" column="program_workflow_id" not-null="true" />
+	
+		<many-to-one name="concept" class="Concept" column="concept_id" not-null="true" />
+	
+		<many-to-one name="creator" class="User" column="creator" not-null="true" />
+		
+		<many-to-one name="voidedBy" class="User" column="voided_by" />
+
+	</class>
+</hibernate-mapping>

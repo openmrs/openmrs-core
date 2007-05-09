@@ -5,13 +5,11 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Role;
 import org.openmrs.User;
 
-public class UserListItem {
+public class UserListItem extends PersonListItem {
 	
 	protected final Log log = LogFactory.getLog(getClass());
 
 	private Integer userId;
-	private String firstName;
-	private String lastName;
 	private String systemId;
 	private String username;
 	private String[] roles = new String[0];
@@ -19,16 +17,14 @@ public class UserListItem {
 	public UserListItem() { }
 		
 	public UserListItem(User user) {
-
+		super(user);
+		
 		if (user != null) {
 			userId = user.getUserId();
-			firstName = user.getFirstName();
-			lastName = user.getLastName();
 			systemId = user.getSystemId();
 			username = user.getUsername();
 			int i = 0;
 			roles = new String[user.getRoles().size()];
-			i = 0;
 			for (Role r : user.getRoles()) {
 				roles[i++] = r.getRole();
 			}
@@ -41,22 +37,6 @@ public class UserListItem {
 
 	public void setUserId(Integer userId) {
 		this.userId = userId;
-	}
-
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
 	}
 
 	public String getSystemId() {

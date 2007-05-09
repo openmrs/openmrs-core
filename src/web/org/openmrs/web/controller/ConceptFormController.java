@@ -40,11 +40,10 @@ import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
-import org.springframework.web.bind.RequestUtils;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.springframework.web.servlet.support.RequestContextUtils;
 import org.springframework.web.servlet.view.RedirectView;
 
 public class ConceptFormController extends SimpleFormController {
@@ -61,25 +60,25 @@ public class ConceptFormController extends SimpleFormController {
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-		Context context = (Context) request.getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-        NumberFormat nf = NumberFormat.getInstance(context.getLocale());
+		
+        NumberFormat nf = NumberFormat.getInstance(Context.getLocale());
         binder.registerCustomEditor(java.lang.Integer.class,
                 new CustomNumberEditor(java.lang.Integer.class, nf, true));
         binder.registerCustomEditor(java.lang.Double.class,
                 new CustomNumberEditor(java.lang.Double.class, nf, true));
         binder.registerCustomEditor(java.util.Date.class, 
-        		new CustomDateEditor(SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT, context.getLocale()), true));
+        		new CustomDateEditor(SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT, Context.getLocale()), true));
         binder.registerCustomEditor(org.openmrs.ConceptClass.class, 
-        		new ConceptClassEditor(context));
+        		new ConceptClassEditor());
         binder.registerCustomEditor(org.openmrs.ConceptDatatype.class, 
-        		new ConceptDatatypeEditor(context));
+        		new ConceptDatatypeEditor());
         /*binder.registerCustomEditor(java.util.Collection.class, "synonyms", 
         		new ConceptSynonymsEditor(locale)); */
         binder.registerCustomEditor(java.util.Collection.class, "conceptSets", 
-        		new ConceptSetsEditor(context));
+        		new ConceptSetsEditor());
         binder.registerCustomEditor(java.util.Collection.class, "answers", 
-        		new ConceptAnswersEditor(context));
+        		new ConceptAnswersEditor());
 
 	}
 
@@ -88,25 +87,37 @@ public class ConceptFormController extends SimpleFormController {
 	 */
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object object, BindException errors) throws Exception {
 	
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		Concept concept = (Concept)object;
-		Locale locale = RequestContextUtils.getLocale(request);
+		ConceptService cs = Context.getConceptService();
 		
-		if (context != null && context.isAuthenticated()) {
+		// check to see if they clicked next/previous concept:
+		String jumpAction = request.getParameter("jumpAction");
+		if (jumpAction != null) {
+			Concept newConcept = null;
+			if ("previous".equals(jumpAction))
+				newConcept = cs.getPrevConcept(concept);
+			else if ("next".equals(jumpAction))
+				newConcept = cs.getNextConcept(concept);
+			if (newConcept != null)
+				return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + newConcept.getConceptId()));
+			else
+				return new ModelAndView(new RedirectView(getSuccessView()));
+		}
+		
+		if (Context.isAuthenticated()) {
 			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			String action = request.getParameter("action");
 			
 			if (!action.equals(msa.getMessage("Concept.delete"))) {
 	
-				String isSet = RequestUtils.getStringParameter(request, "conceptSet", "");
+				String isSet = ServletRequestUtils.getStringParameter(request, "conceptSet", "");
 				if (isSet.equals(""))
 					concept.setSet(false);
 				else
 					concept.setSet(true);
-				log.error("isSet: '" + isSet + "' ");
-				log.error("concept.set: '" + concept.isSet() + "'");
+				log.debug("isSet: '" + isSet + "' ");
+				log.debug("concept.set: '" + concept.isSet() + "'");
 				
 				// ==== Concept Synonyms ====
 					Collection<ConceptSynonym> originalSyns = concept.getSynonyms();
@@ -217,15 +228,14 @@ public class ConceptFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-				
-		if (context != null && context.isAuthenticated()) {
+		ConceptService cs = Context.getConceptService();
+		
+		if (Context.isAuthenticated()) {
+			
+			Concept concept = (Concept)obj;
 			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			String action = request.getParameter("action");
-			ConceptService cs = context.getConceptService();
-			
-			Concept concept = (Concept)obj;
 			
 			if (action.equals(msa.getMessage("Concept.delete"))) {
 				try {
@@ -240,7 +250,7 @@ public class ConceptFormController extends SimpleFormController {
 				}
 			}
 			else {
-				String isSet = RequestUtils.getStringParameter(request, "conceptSet", "");
+				String isSet = ServletRequestUtils.getStringParameter(request, "conceptSet", "");
 				if (isSet.equals(""))
 					concept.setSet(false);
 				else
@@ -279,7 +289,7 @@ public class ConceptFormController extends SimpleFormController {
 					}
 				}
 
-				return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + concept.getConceptId().toString()));
+				return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + concept.getConceptId()));
 			}
 		}
 		
@@ -295,20 +305,18 @@ public class ConceptFormController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		Concept concept = null;
 		
-		if (context != null) {
-			ConceptService cs = context.getConceptService();
-			String conceptId = request.getParameter("conceptId");
-	    	if (conceptId != null) {
-	    		concept = cs.getConcept(Integer.valueOf(conceptId));
-	    		//if (concept.isNumeric())
-	    		//	concept = (ConceptNumeric)concept;
-	    	}
+		ConceptService cs = Context.getConceptService();
+		String conceptId = request.getParameter("conceptId");
+		if (conceptId == null) {
+
 		}
+		if (conceptId != null) {
+    		concept = cs.getConcept(Integer.valueOf(conceptId));
+    		//if (concept.isNumeric())
+    		//	concept = (ConceptNumeric)concept;
+    	}
 		
 		if (concept == null)
 			concept = new Concept();
@@ -325,117 +333,131 @@ public class ConceptFormController extends SimpleFormController {
 	 */
 	protected Map referenceData(HttpServletRequest request) throws Exception {
 		
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
-		Locale locale = context.getLocale();
+		Locale locale = Context.getLocale();
 		Map<String, Object> map = new HashMap<String, Object>();
 		String defaultVerbose = "false";
 		
-		if (context != null) {
-			ConceptService cs = context.getConceptService();
-			String conceptId = request.getParameter("conceptId");
-			ConceptName conceptName = new ConceptName();
-			Collection<ConceptSynonym> conceptSynonyms = new Vector<ConceptSynonym>();
-			Map<String, ConceptName> conceptNamesByLocale = new HashMap<String, ConceptName>();
-			Map<Locale, Collection<ConceptSynonym>> conceptSynonymsByLocale = new HashMap<Locale, Collection<ConceptSynonym>>();
-			//Map<String, ConceptName> conceptSets = new TreeMap<String, ConceptName>();
-			Map<Double, Object[]> conceptSets = new TreeMap<Double, Object[]>();
-			Map<String, String> conceptAnswers = new TreeMap<String, String>();
-			Collection<Form> forms = new Vector<Form>();
-			boolean isNew = true;
+		ConceptService cs = Context.getConceptService();
+		String conceptId = request.getParameter("conceptId");
+		ConceptName conceptName = new ConceptName();
+		Collection<ConceptSynonym> conceptSynonyms = new Vector<ConceptSynonym>();
+		Map<String, ConceptName> conceptNamesByLocale = new HashMap<String, ConceptName>();
+		Map<Locale, Collection<ConceptSynonym>> conceptSynonymsByLocale = new HashMap<Locale, Collection<ConceptSynonym>>();
+		//Map<String, ConceptName> conceptSets = new TreeMap<String, ConceptName>();
+		Map<Double, Object[]> conceptSets = new TreeMap<Double, Object[]>();
+		Map<String, String> conceptAnswers = new TreeMap<String, String>();
+		Collection<Form> forms = new HashSet<Form>();
+		Map<Integer, String> questionsAnswered = new TreeMap<Integer, String>();
+		Map<Integer, String> containedInSets = new TreeMap<Integer, String>();
+		
+		boolean isNew = true;
+		
+		if (conceptId != null) {
+			Concept concept = cs.getConcept(Integer.valueOf(conceptId));
 			
-			if (conceptId != null) {
-				Concept concept = cs.getConcept(Integer.valueOf(conceptId));
-				
-				if (concept != null) {
-					isNew = false;
-					// get conceptNames for all locales 
-					for (Locale l : OPENMRS_CONCEPT_LOCALES()) {
-						ConceptName cn = concept.getName(l, true);
-						if (cn == null) {
-							cn = new ConceptName();
-						}
-						conceptNamesByLocale.put(l.toString(), cn);
-					}
-					
-					// get conceptSynonyms for all locales
-					for (Locale l : OPENMRS_CONCEPT_LOCALES()) { 
-						conceptSynonymsByLocale.put(l, concept.getSynonyms(l));
-					}
-					
-					// get locale specific conceptName object
-					conceptName = concept.getName(locale);
-					if (conceptName == null) 
-						conceptName = new ConceptName();
-					
-					// get locale specific synonyms
-					conceptSynonyms = concept.getSynonyms(locale);
-		    		
-					// get concept sets with locale decoded names
-			    	for (ConceptSet set : concept.getConceptSets()) {
-			    		Object[] arr = {set.getConcept().getConceptId().toString(), set.getConcept().getName(locale)}; 
-			    		conceptSets.put(set.getSortWeight(), arr);
-			    	}
-					
-			    	// get concept answers with locale decoded names
-			    	for (ConceptAnswer answer : concept.getAnswers(true)) {
-			    		log.debug("getting answers");
-			    		String key = answer.getAnswerConcept().getConceptId().toString();
-			    		ConceptName cn = answer.getAnswerConcept().getName(locale);
-			    		String name = "";
-			    		if (cn != null)
-			    			name = cn.toString();
-			    		if (answer.getAnswerDrug() != null) {
-			    			// if this answer is a drug, append the drug id information
-			    			key = key + "^" + answer.getAnswerDrug().getDrugId();
-			    			name = answer.getAnswerDrug().getFullName(locale);
-			    		}
-			    		if (answer.getAnswerConcept().isRetired())
-			    			name = "<span class='retired'>" + name + "</span>";
-			    		conceptAnswers.put(key, name);
-			    	}
-	
-			    	//previous/next ids for links
-			    	map.put("previousConcept", cs.getPrevConcept(concept));
-			    	map.put("nextConcept", cs.getNextConcept(concept));
-			    	forms = context.getFormService().getForms(concept);
-				}
-				
-				if (context.isAuthenticated())
-					defaultVerbose = context.getAuthenticatedUser().getProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
-			}
-			 
-			if (isNew) {
+			if (concept != null) {
+				isNew = false;
+				// get conceptNames for all locales 
 				for (Locale l : OPENMRS_CONCEPT_LOCALES()) {
-					conceptNamesByLocale.put(l.toString(), new ConceptName());
+					ConceptName cn = concept.getName(l, true);
+					if (cn == null) {
+						cn = new ConceptName();
+					}
+					conceptNamesByLocale.put(l.toString(), cn);
 				}
 				
 				// get conceptSynonyms for all locales
 				for (Locale l : OPENMRS_CONCEPT_LOCALES()) { 
-					conceptSynonymsByLocale.put(l, new HashSet<ConceptSynonym>());
+					conceptSynonymsByLocale.put(l, concept.getSynonyms(l));
 				}
+				
+				// get locale specific conceptName object
+				conceptName = concept.getName(locale);
+				if (conceptName == null) 
+					conceptName = new ConceptName();
+				
+				// get locale specific synonyms
+				conceptSynonyms = concept.getSynonyms(locale);
+	    		
+				// get concept sets with locale decoded names
+		    	for (ConceptSet set : concept.getConceptSets()) {
+		    		Object[] arr = {set.getConcept().getConceptId().toString(), set.getConcept().getName(locale)}; 
+		    		conceptSets.put(set.getSortWeight(), arr);
+		    	}
+				
+		    	// get concept answers with locale decoded names
+		    	for (ConceptAnswer answer : concept.getAnswers(true)) {
+		    		log.debug("getting answers");
+		    		String key = answer.getAnswerConcept().getConceptId().toString();
+		    		ConceptName cn = answer.getAnswerConcept().getName(locale);
+		    		String name = "";
+		    		if (cn != null)
+		    			name = cn.toString();
+		    		if (answer.getAnswerDrug() != null) {
+		    			// if this answer is a drug, append the drug id information
+		    			key = key + "^" + answer.getAnswerDrug().getDrugId();
+		    			name = answer.getAnswerDrug().getFullName(locale);
+		    		}
+		    		if (answer.getAnswerConcept().isRetired())
+		    			name = "<span class='retired'>" + name + "</span>";
+		    		conceptAnswers.put(key, name);
+		    	}
+
+		    	forms = Context.getFormService().getForms(concept);
+		    	
+		    	for (Concept c : Context.getConceptService().getQuestionsForAnswer(concept)) {
+		    		ConceptName cn = c.getName(locale);
+		    		if (cn == null)
+		    			questionsAnswered.put(c.getConceptId(), "No Name Defined");
+		    		else
+		    			questionsAnswered.put(c.getConceptId(), cn.getName());
+		    	}
+		    	
+		    	for (ConceptSet set : Context.getConceptService().getSetsContainingConcept(concept)) {
+		    		Concept c = set.getConceptSet();
+		    		ConceptName cn = c.getName(locale);
+		    		if (cn == null)
+		    			containedInSets.put(c.getConceptId(), "No Name Defined");
+		    		else
+		    			containedInSets.put(c.getConceptId(), cn.getName());
+		    	}
 			}
 			
-			map.put("locales", OPENMRS_CONCEPT_LOCALES());
-			map.put("conceptName", conceptName);
-	    	for (Map.Entry<String, ConceptName> e : conceptNamesByLocale.entrySet()) {
-	    		map.put("conceptName_" + e.getKey(), e.getValue());
-	    	}
-	    	map.put("conceptSynonyms", conceptSynonyms);
-	    	map.put("conceptSynonymsByLocale", conceptSynonymsByLocale);
-	    	map.put("conceptSets", conceptSets);
-	    	map.put("conceptAnswers", conceptAnswers);
-	    	map.put("formsInUse", forms);
-			
-	    	//get complete class and datatype lists 
-			map.put("classes", cs.getConceptClasses());
-			map.put("datatypes", cs.getConceptDatatypes());
-			
-			// make spring locale available to jsp
-			map.put("locale", locale.getLanguage().substring(0, 2));
-			
+			if (Context.isAuthenticated())
+				defaultVerbose = Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
 		}
+			 
+		if (isNew) {
+			for (Locale l : OPENMRS_CONCEPT_LOCALES()) {
+				conceptNamesByLocale.put(l.toString(), new ConceptName());
+			}
+			
+			// get conceptSynonyms for all locales
+			for (Locale l : OPENMRS_CONCEPT_LOCALES()) { 
+				conceptSynonymsByLocale.put(l, new HashSet<ConceptSynonym>());
+			}
+		}
+		
+		map.put("locales", OPENMRS_CONCEPT_LOCALES());
+		map.put("conceptName", conceptName);
+    	for (Map.Entry<String, ConceptName> e : conceptNamesByLocale.entrySet()) {
+    		map.put("conceptName_" + e.getKey(), e.getValue());
+    	}
+    	map.put("conceptSynonyms", conceptSynonyms);
+    	map.put("conceptSynonymsByLocale", conceptSynonymsByLocale);
+    	map.put("conceptSets", conceptSets);
+    	map.put("conceptAnswers", conceptAnswers);
+    	map.put("formsInUse", forms);
+    	map.put("questionsAnswered", questionsAnswered);
+    	map.put("containedInSets", containedInSets);
+		
+    	//get complete class and datatype lists 
+		map.put("classes", cs.getConceptClasses());
+		map.put("datatypes", cs.getConceptDatatypes());
+		
+		// make spring locale available to jsp
+		map.put("locale", locale.getLanguage().substring(0, 2));
+			
 		
 		map.put("defaultVerbose", defaultVerbose.equals("true") ? true : false);
 		

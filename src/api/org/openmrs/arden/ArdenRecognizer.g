@@ -2,15 +2,14 @@ header {
 package org.openmrs.arden;
 
 import java.io.*;
-//import org.Syntax.Parser.ArdenToken;
 import antlr.CommonAST;
 import antlr.collections.AST;
 import antlr.*;
-//import org.openmrs.arden.parser.*;
 import org.openmrs.arden.MLMObject;
 import org.openmrs.arden.MLMObjectElement;
 import java.lang.Integer;
 }
+
 
 
 // @@parser
@@ -36,6 +35,7 @@ tokens {
  	COUNT="count";
  	IN="in";
  	LESS="less";
+ 	GREATER="greater";
  	THE="the";
  	THAN="than";
  	FROM="from";
@@ -97,10 +97,13 @@ tokens {
 	OF = "of";
 	TIME = "time";
 	WITHIN = "within";
-	
+	CALL = "call";
+	WITH = "with";
+	TO = "to";
+	ANY = "any";
 	
 }
-
+/*
 // Define some methods and variables to use in the generated parser.
 {
   // Define a main
@@ -210,7 +213,7 @@ tokens {
     }
   
 }
-
+*/
 
 // the following tag is used to find the start of the rules section for
 //   automated chunk-grabbing when displaying the page
@@ -360,16 +363,17 @@ any_reserved_word
 	: AND | IS | ARE | WAS | WERE | COUNT | IN | LESS | THE | THAN | FROM | BEFORE |AFTER | AGO | AT | OF
 	| WRITE | BE | LET | YEAR | YEARS | IF | IT | THEY | NOT | OR | THEN | MONTH | MONTHS | TIME | TIMES | WITHIN
 	| READ | MINIMUM | MIN | MAXIMUM | MAX | LAST | FIRST | EARLIEST | LATEST | EVENT | WHERE | EXIST | EXISTS | PAST
-	| AVERAGE | AVG | SUM | MEDIAN | CONCLUDE | ELSE | ELSEIF | ENDIF | TRUE | FALSE | DATA | LOGIC | ACTION
+	| AVERAGE | AVG | SUM | MEDIAN | CONCLUDE | ELSE | ELSEIF | ENDIF | TRUE | FALSE | DATA | LOGIC | ACTION | CALL | WITH
+	| TO | ANY
 	;
 
 text
     : ID | (any_reserved_word) | INTLIT | (LPAREN (ID| INTLIT| (any_reserved_word))* RPAREN)  
-    exception
-    catch [RecognitionException ex]
-    {
-       text_AST = handleIdentifierError(LT(1),ex);
-    }
+//    exception
+//    catch [RecognitionException ex]
+//    {
+//       text_AST = handleIdentifierError(LT(1),ex);
+//    }
     ;
 
 //iso_date : 				/* no spaces are permitted between elements */
@@ -557,7 +561,7 @@ data_assignment
 		(READ^) 
 			( 
 			 //read_phrase
-			   ((of_read_func_op) | (from_of_func_op (INTLIT FROM)?))?  
+			   ((of_read_func_op) | (from_of_func_op (INTLIT /*FROM*/)?))?  
 			     (
 			      //read_where
 				     mapping_factor ( (where it! occur!)?  (temporal_comp_op  | NOT temporal_comp_op ) )? // | range_comp_op | NOT range_comp_op)
@@ -667,6 +671,9 @@ time_value
 	| iso_date_time
 	;
 /*********************************OPERATORS***************************************************************/
+in_comp_op
+	: IN
+	;
 
 of_read_func_op :
 	 AVERAGE
@@ -702,11 +709,11 @@ unary_comp_op :
 	;
 
 binary_comp_op :
-	  LESS THAN
-	| "GREATER" THAN
-	| "GREATER" THAN OR "EQUAL"
-	| LESS THAN OR "EQUAL"
-	| IN
+	  LESS^ THAN
+	| GREATER^ THAN
+	| GREATER^ THAN OR EQUAL
+	| LESS^ THAN OR EQUAL
+	| IN^
 	;
 
 
@@ -721,7 +728,7 @@ duration_op
  	;
 
 temporal_comp_op
-	: WITHIN! (the!)? PAST expr_string
+	: WITHIN (the!)? PAST expr_string
 	| AFTER expr_string
 	;
 /************************************************************************************************/
@@ -771,7 +778,7 @@ event_or
 	;
 
 event_any
-	: "Any" LPAREN event_list RPAREN
+	: ANY LPAREN event_list RPAREN
 //	| "ANY" "OF" LPAREN event_list RPAREN
 //	| "ANY" ID
 //	| "ANY" "OF" ID
@@ -823,6 +830,7 @@ logic_statement:
 	 )*
 	 
 	;
+
 	
 //	logic_assignment ("then" logic_assignment)* logic_elseif
 	 
@@ -879,8 +887,9 @@ if_statement:
   
 logic_if_then_else2:
      (
-     	expr
-     	| (LPAREN!) expr (RPAREN!) 
+         //(LPAREN!)? expr (RPAREN!)? 
+         expr
+     	
      )
      THEN //( (identifier_becomes expr)? | (CONCLUDE^ boolean_value))
     ;
@@ -889,11 +898,15 @@ conclude_statement
 	:
 	 (CONCLUDE^) boolean_value
 	;
- 	
+ 
+ call_phrase
+	: ID (WITH expr)?
+	;
+
 logic_assignment
 :
-	 (ACTION_OP^)? identifier_or_object_ref (ACTION_OP)? (BECOMES! | EQUALS!) expr
-	 |  identifier_becomes expr
+	 (ACTION_OP^)? identifier_or_object_ref (ACTION_OP)? (BECOMES! | EQUALS!) (expr | (CALL^) call_phrase)
+//	 |  identifier_becomes (expr | (CALL^) call_phrase)
 	;
 		
 //	 identifier_becomes expr
@@ -976,12 +989,12 @@ expr_not
 	;
 
 expr_comparison :
-	  expr_string ((simple_comp_op expr_string) | (is main_comp_op) )?
+	  expr_string ((simple_comp_op expr_string) | (is! main_comp_op) )?
 //	| expr_find_string
 //	| expr_string simple_comp_op expr_string
 //	| expr_string is main_comp_op
 //	| expr_string is NOT main_comp_op
-//	| expr string in_comp_op
+//	| expr_string in_comp_op
 //	| expr_string NOT in_comp_op
 //	| expr_string occur temporal_comp_op
 //	| expr_string occur NOT temporal_comp_op
@@ -1053,20 +1066,20 @@ expr_function
 //expr_duration
 	:
 	expr_factor
-    | (the)?
+    | (the!)?
      (
-    	from_of_func_op (OF)? expr_factor //(is)? binary_comp_op (the)? (expr_factor | from_of_func_op expr_factor)
-    	| of_func_op (OF)? expr_function
-     )
+     	from_of_func_op (OF!)? expr_factor //(is)? binary_comp_op (the)? (expr_factor | from_of_func_op expr_factor)
+    	| of_func_op (OF!)? expr_factor
+      )
 	//	("as" as_func_op ) 
 	;
 
 expr_factor
-	: expr_factor_atom (DOT expr_factor_atom)*
+	:  expr_factor_atom (DOT expr_factor_atom)*
 	;
 
 expr_factor_atom
-	: ID
+	: ID 
 	| LPAREN! 
 		//	( ID | ( (LPAREN expr_factor_atom RPAREN) (COMMA (LPAREN ID RPAREN))*) ) 
 		expr		
@@ -1075,6 +1088,7 @@ expr_factor_atom
 	| time_value
 	| boolean_value
 	| STRING_LITERAL
+	| TERM_LITERAL
 	
 	;
 
@@ -1096,7 +1110,8 @@ of_func_op:
 
 
 of_noread_func_op:
-	TIME
+	  TIME
+	| ANY^
 ;
 /*************************************************************************************/
 class ArdenBaseTreeParser extends TreeParser;
@@ -1109,19 +1124,166 @@ data [MLMObject obj] returns [String s=""]
 {String a,b;}
 : #(DATA {System.err.println("\n"); System.err.println("-------Starting Data--------");} 
 	 (
-	  {System.err.println("-----------Starting Read -------");}s=readAST[obj]  {System.err.println("\n");System.err.println("-----------End Read -------");}
+	  {System.err.println("-----------Starting Read -------");}s=readAST[obj, s]  {System.err.println("\n");System.err.println("-----------End Read -------");}
 	 |{System.err.println("----------------Starting Event-------");} eventAST {System.err.println("\n");System.err.println("-----------End Event -------");}
+ 	 |{System.err.println("----------------Starting Data If-------");} dataIfAST[obj] {System.err.println("\n");System.err.println("-----------End Data If -------");}
+  	 |{System.err.println("----------------Starting Data Else If-------");} data_elseifAST[obj] {System.err.println("\n");System.err.println("-----------End Data Else If -------");}
+ // 	 |{System.err.println("----------------Starting from func op-------");} from_of_func_opAST [obj] {System.err.println("----------------End from func op-------");}
+ //	 |{System.err.println("----------------Starting read func op-------");} of_read_func_opAST [obj] {System.err.println("----------------End read func op-------");}
+ 
 	 )* 
   (ENDBLOCK){System.err.println("\n");System.err.println("-----------End Data -------");})
 
 ;
 
-readAST [MLMObject obj] returns [String s=""]
-{String a,b, ret_val="";}
+
+
+dataIfAST [MLMObject obj] returns [String s=""]
+{String a, b;}
+:  (
+    #(IF {obj.ResetConceptVar(); obj.InitEvaluateList();} s=exprAST[obj] THEN ) 
+   )
+   ;
+
+
+data_elseifAST [MLMObject obj] returns [String s=""]
+{String a,b;}
 : (
-  #(READ  a=readAST[obj] b=readAST[obj]) {s += ret_val;}
-  // Following are from_of_func_op
-  | ((LAST | LATEST) (k:INTLIT FROM)? b=readAST[obj]) {s+=b;if(k != null) {
+     (
+     	 #(ELSEIF {obj.ResetConceptVar();} s=exprAST[obj] THEN )
+       | #(ELSE {obj.ResetConceptVar();} s=exprAST[obj] {obj.AddConcept(s);obj.SetDBAccess(false,s);}  )
+       | #(ENDIF {System.err.println("ENDIF FOUND");} )
+     )   
+   )
+;
+
+where_it_occurredAST [MLMObject obj, String key] returns [String s=""]
+{String a,b, ret_val="";}
+:
+	(WITHIN {obj.setWhere("withinPreceding", key);}
+	    (PAST) (m:INTLIT n:duration_op) {obj.setDuration("past",m.getText(),n.getText(),key); System.err.println("Duration Clause - " + m.getText() + " " + n.getText());} 
+		| a = exprAST[obj] TO b = exprAST[obj]
+	)
+	|(AFTER) (i:ID){System.err.println("Variable = " + i.getText());}
+;
+
+
+readAST [MLMObject obj, String instr] returns [String s=""]
+{String a="",b="", ret_val="";}
+: (
+  #(READ  a=readAST[obj, instr] b=readAST[obj, a]) {s += ret_val;}
+
+  //  ( of_read_func_opAST [obj] 
+  //   | from_of_func_opAST [obj] 
+  //  )
+  
+   
+	 // Following are from_of_func_op
+	  | ((LAST | LATEST) (k:INTLIT /*FROM*/)? 
+	  {s+=b;obj.setReadType("last"); obj.setHowMany("1");
+	  							if(k != null) {
+	   								obj.setHowMany(k.getText());
+	   								System.err.println("ReadType = Last " + "How many? " + k.getText());
+	  							}
+	  							 else {
+		  							 System.err.println("ReadType = Last " + "How many? 1" );	
+	  							 }
+	  							 
+	  							}
+	  
+	  
+	   b=readAST[obj, instr]) 
+	  
+	  | ((FIRST | EARLIEST) (x:INTLIT /*FROM*/)?
+	  {s+=b;obj.setReadType("first"); obj.setHowMany("1");
+	  								if(x != null) {
+	   									obj.setHowMany(x.getText());
+	   									System.err.println("ReadType = First " + "How many? " + x.getText());
+	  								}
+	  							 else {
+		  							 System.err.println("ReadType = First " + "How many? 1" );	
+	  							 }
+	  							 
+	  							}
+	  
+	  
+	  b=readAST[obj, instr]) 
+	  							
+	  				
+	  | ((MAXIMUM | MAX)( (y:INTLIT /*FROM*/)? 
+	  {s+=b;obj.setReadType("max"); obj.setHowMany("1");
+	  							if(y != null) {
+	   									obj.setHowMany(y.getText());
+	   									System.err.println("ReadType = Maximum " + "How many? " + y.getText());
+	  								}
+	  							 else {
+		  							 System.err.println("ReadType = Maximum " + "How many? 1" );	
+	  							 }
+	  							 
+	  							}
+	  b=readAST[obj, instr]) 
+	  					 |
+	  					 ((intlit:INTLIT dop:duration_op) {System.err.println("Duration Clause - " + intlit.getText() + " " + dop.getText());})
+	  					)
+	  							
+	  | ((MINIMUM | MIN) (z:INTLIT /*FROM*/)?
+	  {s+=b;obj.setReadType("min"); obj.setHowMany("1");
+	  							if(z != null) {
+		   								obj.setHowMany(z.getText());
+		   								System.err.println("ReadType = Minimum " + "How many? " + z.getText());
+	  								}
+	  							 else {
+		  							 System.err.println("ReadType = Min " + "How many? 1" );	
+	  							 }
+	  							 
+	  							}
+	  							
+	
+	   b=readAST[obj, instr]) 	// end of from_of_func_op
+		
+  
+	  	
+	  // Following are of_read_func_op
+	  			
+	  
+	  | ((EXIST | EXISTS)
+	  {s+=b;obj.setReadType("last"); obj.setHowMany("1");System.err.println("ReadType = Exist");}
+	   b=readAST[obj, instr]) 
+	  
+	  | ((AVERAGE | AVG) b=readAST[obj, instr]) {s+=b;System.err.println("ReadType = Average");}        //To DO
+	  | (COUNT b=readAST[obj, instr]) {s+=b;System.err.println("ReadType = Count");}					//To DO
+	  | (SUM b=readAST[obj, instr]) {s+=b;System.err.println("ReadType = Sum");}						// To DO
+	  | (MEDIAN b=readAST[obj, instr]) {s+=b;System.err.println("ReadType = Median");}					// To DO
+	  
+	  // End of of_read_func_op
+	 	 	  
+  |(
+		(j:ARDEN_CURLY_BRACKETS /*b=readAST*/) {/*s=b;*/System.err.println("Fetch this data - " + j.getText());
+		  	 										s = j.getText(); 
+		  	 										obj.AddConcept(s);
+		  	 									}
+		
+		   	      (WHERE {System.err.println("Where=TRUE");} where_it_occurredAST[obj, instr] )?
+	  	 
+	  
+	  | i:ID {System.err.println("Variable = " + i.getText()); a= i.getText(); s=a; obj.SetConceptVar(a);}
+	  | t:TRUE {s="true";
+	            obj.AddConcept(s);obj.SetDBAccess(false,instr);
+	           }
+	  | f:FALSE {s="false";
+	 			 obj.AddConcept(s);obj.SetDBAccess(false,instr);
+	 			}
+  ) )
+;
+
+
+
+from_of_func_opAST [MLMObject obj] returns [String s=""]
+{String a,b, ret_val="";}
+:
+(
+ // Following are from_of_func_op
+  | ((LAST | LATEST) (k:INTLIT FROM)? ) {if(k != null) {
    								System.err.println("ReadType = Last " + "How many? " + k.getText());
   								}
   							 else {
@@ -1130,7 +1292,7 @@ readAST [MLMObject obj] returns [String s=""]
   							 
   							}
   
-  | ((FIRST | EARLIEST) (x:INTLIT FROM)? b=readAST[obj]) {s+=b;if(x != null) {
+  | ((FIRST | EARLIEST) (x:INTLIT FROM)? ) {if(x != null) {
    								System.err.println("ReadType = First " + "How many? " + x.getText());
   								}
   							 else {
@@ -1140,7 +1302,7 @@ readAST [MLMObject obj] returns [String s=""]
   							}
   							
   				
-  | ((MAXIMUM | MAX) (y:INTLIT FROM)? b=readAST[obj]) {s+=b;if(y != null) {
+  | ((MAXIMUM | MAX) (y:INTLIT FROM)? ) {if(y != null) {
    								System.err.println("ReadType = Maximum " + "How many? " + y.getText());
   								}
   							 else {
@@ -1149,7 +1311,7 @@ readAST [MLMObject obj] returns [String s=""]
   							 
   							}
   							
-  | ((MINIMUM | MIN) (z:INTLIT FROM)? b=readAST[obj]) {s+=b;if(z != null) {
+  | ((MINIMUM | MIN) (z:INTLIT FROM)? ) {if(z != null) {
    								System.err.println("ReadType = Minimum " + "How many? " + z.getText());
   								}
   							 else {
@@ -1159,35 +1321,42 @@ readAST [MLMObject obj] returns [String s=""]
   							}
   							
 	// end of from_of_func_op
+)	
+	;
 	
+of_read_func_opAST [MLMObject obj] returns [String s=""]
+{String a,b, ret_val="";}
+	:
+(	
   // Following are of_read_func_op
   			
   
-  | ((EXIST | EXISTS) b=readAST[obj]) {s+=b;System.err.println("ReadType = Exist");}
+  | ((EXIST | EXISTS)) {obj.AddToEvaluateList("EXIST");System.err.println("ReadType = Exist");}
   
-  | ((AVERAGE | AVG) b=readAST[obj]) {s+=b;System.err.println("ReadType = Average");}
-  | (COUNT b=readAST[obj]) {s+=b;System.err.println("ReadType = Count");}
-  | (SUM b=readAST[obj]) {s+=b;System.err.println("ReadType = Sum");}
-  | (MEDIAN b=readAST[obj]) {s+=b;System.err.println("ReadType = Median");}
+  | ((AVERAGE | AVG) ) {obj.AddToEvaluateList("AVG");System.err.println("ReadType = Average");}
+  | (COUNT) {obj.AddToEvaluateList("COUNT");System.err.println("ReadType = Count");}
+  | (SUM) {obj.AddToEvaluateList("SUM");System.err.println("ReadType = Sum");}
+  | (MEDIAN) {obj.AddToEvaluateList("MEDIAN");System.err.println("ReadType = Median");}
   
   // End of of_read_func_op
   
-  |(
-  	 (j:ARDEN_CURLY_BRACKETS /*b=readAST*/) {/*s=b;*/System.err.println("Fetch this data - " + j.getText());
-  	 										s = j.getText(); obj.AddConcept(s);}
+);
 
-   	(
-   		(WHERE PAST) {System.err.println("Where=TRUE");}
-	    (m:INTLIT n:duration_op) {System.err.println("Duration Clause - " + m.getText() + " " + n.getText());}) ?
-	)
+of_noread_func_opAST [MLMObject obj] returns [String s=""]
+{String a,b, ret_val="";}
+	:
+(	
+  // Following are of_read_func_op
+  			
+  
+  | (ANY) {obj.AddToEvaluateList("ANY");System.err.println("Any of");}
+  
+  
+  // End of of_noread_func_op
+  
+);
 
-  | i:ID {System.err.println("Variable = " + i.getText()); a= i.getText(); obj.SetConceptVar(a);}
-    
-
-  ) 
-;
-
-duration_op
+duration_op 
 	:
 	 YEAR | YEARS
 	| MONTH | MONTHS
@@ -1211,32 +1380,52 @@ eventAST returns [String s=""]
 
 /********************LOGIC***********************************/
 logic [MLMObject obj] returns [String s=""]
-{String a,b;}
+{String a,b; Integer i = 1;}
 : #(LOGIC {System.err.println("\n"); System.err.println("-------Starting LOGIC--------");} 
+	
 	 (
 	   {System.err.println("-----------Starting IF -------");} a=ifAST[obj]
-			   (	{System.err.println("-----------Starting CONCLUDE -------"); } (concludeAST[obj, a])? {System.err.println("\n");System.err.println("-----------End CONCLUDE -------");}
-			      | {System.err.println("-----------Starting Logic Assignment -------");} logicAssignmentAST[obj, a]  {System.err.println("\n");System.err.println("-----------End logic assignment -------");}
-			      
-			   )
+			   (	{System.err.println("-----------Starting Logic Assignment -------");} logicAssignmentAST[obj, a]  { System.err.println("\n");System.err.println("-----------End logic assignment -------");} 
+		
+			   )?
+			   (
+			   		{System.err.println("-----------Starting CONCLUDE -------"); } (concludeAST[obj, a])? {System.err.println("\n");System.err.println("-----------End CONCLUDE -------");}
+			   )?
+			       
 	   {System.err.println("\n");System.err.println("-----------End IF -------");} 
 	   
-	  | {System.err.println("-----------Starting ELSE - ELSEIF -------");} a=logic_elseifAST[obj] 
-			  (		{System.err.println("-----------Starting CONCLUDE -------");} (concludeAST[obj, a])? {System.err.println("\n");System.err.println("-----------End CONCLUDE -------");}
-				  | {System.err.println("-----------Starting Logic Assignment -------");} logicAssignmentAST[obj, a]  {System.err.println("\n");System.err.println("-----------End logic assignment -------");}
+	  | {System.err.println("-----------Starting ELSE - ELSEIF -------");} a=logic_elseifAST[obj, i] 
+			  (	 {System.err.println("-----------Starting Logic Assignment -------");} logicAssignmentAST[obj, a]  {System.err.println("\n");System.err.println("-----------End logic assignment -------");} 
 					      
-			  )
+			  )?
+			  (
+			  	{System.err.println("-----------Starting CONCLUDE -------");} (concludeAST[obj, a])? {System.err.println("\n");System.err.println("-----------End CONCLUDE -------");}
+			  )?	  
 	   {System.err.println("\n");System.err.println("-----------End ELSE- ELSEIF -------");}
-	  | {System.err.println("-----------Starting CONCLUDE -------");obj.InitEvaluateList();} concludeAST[obj, ""]  {System.err.println("\n");System.err.println("-----------End CONCLUDE -------");}
+	  
+	  | #(ENDIF {System.err.println("ENDIF FOUND");a = "ENDIF"; obj.AddToEvaluateList(a);obj.SetConceptVar(a);} )
+	         
+	  | {System.err.println("-----------Starting CONCLUDE -------");obj.InitEvaluateList(); a = "Conclude_" + Integer.toString(i);} concludeAST[obj, a]  {System.err.println("\n");System.err.println("-----------End CONCLUDE -------");}
+	  | {System.err.println("-----------Starting CALL -------");obj.InitEvaluateList(); a = "" ;} callAST[obj, a]  {System.err.println("\n");System.err.println("-----------End CALL -------");}
 
-	 )* 
-  (ENDBLOCK){System.err.println("\n");System.err.println("-----------End Action -------");})
+	{i++;} )* 
+ 	
+  (ENDBLOCK){System.err.println("\n");System.err.println("-----------End LOGIC -------");})
 ;
+
+callAST [MLMObject obj, String key] returns [String s=""]
+{String a,b;}
+: (
+    #(CALL b=exprStringAST[obj, key] {obj.SetConceptVar(b);} a = exprStringAST [obj, b] {obj.setReadType("call"); obj.AddConcept(a);obj.SetDBAccess(false,b); }
+      
+     ) 
+  )
+	;
 
 ifAST [MLMObject obj] returns [String s=""]
 {String a,b;}
 : (
-    #(IF {obj.ResetConceptVar(); obj.InitEvaluateList();} s=exprAST[obj] THEN ) 
+    #(IF {obj.ResetConceptVar(); obj.InitEvaluateList(); obj.AddToEvaluateList("IF");} s=exprAST[obj] ((OR {obj.AddToEvaluateList("OR");} | AND {obj.AddToEvaluateList("AND");} | NOT {obj.AddToEvaluateList("NOT");}) s=exprAST[obj])? THEN {obj.AddToEvaluateList("THEN");}) 
    )
    ;
 
@@ -1247,10 +1436,26 @@ ifAST [MLMObject obj] returns [String s=""]
 //;
 
 logicAssignmentAST [MLMObject obj, String key] returns [String s=""]
-{String a,b;}
+{String a="",b="";}
 :
-      exprStringAST[obj, key]
-
+      a = exprStringAST[obj, "CTX"/*key Do not use key- depends on context so CTX*/] {obj.AddToEvaluateList("Logic_Assignment");}
+      (
+					thisstrlit: STRING_LITERAL {b += thisstrlit.getText(); } 
+					    (ACTION_OP str1: STRING_LITERAL {b += str1.getText();} )*
+					{obj.SetUserVarVal(a, b, key);}
+	   )?
+	   
+     /* ( 
+      	(strlit: STRING_LITERAL) 
+      	(ACTION_OP 
+		id: ID {a = id.getText(); } 
+		ACTION_OP 
+		str: STRING_LITERAL {b = str.getText(); 
+				obj.SetUserVarVal(a, b, key);}
+		
+	  	)
+      )?
+      */
 ;
 
 
@@ -1259,26 +1464,58 @@ exprAST [MLMObject obj] returns [String s=""]
 {String a,b;}
 :
 ( 
-	a = exprStringAST[obj, ""] {s=a;}(simple_comp_opAST[obj, a] b = exprStringAST[obj, a] {/*obj.SetAnswer(b, a);*/})? 
+	(a = exprStringAST[obj, ""] {s=a;}((simple_comp_opAST[obj, a] | binary_comp_opAST[obj, a]) b = exprStringAST[obj, a] )? )
+//	| expr_functionAST[obj] (a = exprStringAST[obj, ""] {s=a;}( (COMMA a = exprStringAST[obj, ""] {s=a;})* (binary_comp_opAST[obj, a]) b = exprStringAST[obj, a] {/*obj.SetAnswer(b, a);*/}) )
+	| expr_functionAST[obj] (a = exprStringAST[obj, "notnull"] {s=a;}( (binary_comp_opAST[obj, a]) b = exprStringAST[obj, a] (COMMA exprStringAST[obj, a] {s=a;})*  {/*obj.SetAnswer(b, a);*/})? )
+	
 
 );
 
+expr_functionAST [MLMObject obj] returns [String s=""]
+:
+     (
+    	from_of_func_opAST[obj] (OF)? 
+    	| of_read_func_opAST[obj] (OF)? 
+    	| of_noread_func_opAST[obj] (OF)?
+     )
+
+	;
+
+
 exprStringAST [MLMObject obj, String instr] returns [String s=""]
-{String a,b;}
+{String a="",b="";}
 :
 (
-   #(ift:ID 
-			      { a = ift.getText(); System.err.println("IF text = " + a); 
+ 	#(ift:ID 
+			      { a = ift.getText(); System.err.println("text = " + a); 
 			        if(instr.equals("")) {
 			        		obj.AddToEvaluateList(a); obj.SetConceptVar(a);
+			        		s= a;
 				      //  	obj.RetrieveConcept(a); 
+			        }
+			        else if(instr.equals("CTX")) {
+			        	s=a;
+			        	// do nothing for now
+			        }
+			        else if(instr.equals("notnull")) {
+			        	obj.AddToEvaluateList(a);
+			        	if(obj.GetMLMObjectElement(a) == null) {
+			        		s="Func_1";  // Func like Exist..          
+			        	}
+			        	else {
+			        		s=a;
+			        	}
+			        	
 			        }
 			        else { // if instr is not empty then we are evaluating RHS of an equation, it can be a non string literal
 			        	obj.SetAnswer(a,instr);					
+			        	s=a;
 			        }
-			        s= a;
+			        
 			      }
-	   )   
+			    
+	   )   		      
+	      
     | (
     	  #(TRUE {obj.SetAnswer(true, instr);})
     	| #(FALSE {obj.SetAnswer(false, instr);})
@@ -1293,11 +1530,20 @@ exprStringAST [MLMObject obj, String instr] returns [String s=""]
 	  )
 	| (strlit: STRING_LITERAL
 		{
-			b = val.getText();
+			b = strlit.getText();
 			obj.SetAnswer(b,instr);					
 			
 		}
 	  )
+	  
+	| (termlit: TERM_LITERAL
+		{
+			b = termlit.getText();
+			obj.SetAnswer(b,instr);					
+			
+		}
+	  )
+	  
 	| #(ACTION_OP 
 		id: ID {a = id.getText(); } 
 		ACTION_OP 
@@ -1305,16 +1551,18 @@ exprStringAST [MLMObject obj, String instr] returns [String s=""]
 				obj.SetUserVarVal(a, b, instr);}
 		
 	  )
-	| ( // Empty as in else conclude
-		{ a = "tmp_01"; System.err.println("IF text = " + a); 
-			        if(instr.equals(""))
-			        	obj.AddToEvaluateList(a); obj.SetConceptVar(a);
-			        	
-			      //  	obj.RetrieveConcept(a); 
-			        s= a;
-        }
-	  )
-	
+
+//	| ( // Empty as in else conclude
+//		{ a = "tmp_01"; System.err.println("IF text = " + a); 
+//			        if(instr.equals("")) {
+//			        	 obj.AddToEvaluateList(a);
+//			        	 obj.SetConceptVar(a);
+//			        	}
+//			      //  	obj.RetrieveConcept(a); 
+//			        s= a;
+//        }
+//	  )
+
       
   )
 ;
@@ -1353,7 +1601,45 @@ simple_comp_opAST [MLMObject obj, String key] returns [String s=""]
    	 )
 ;
 	
+binary_comp_opAST [MLMObject obj, String key] returns [String s=""]
+{String a,b;}
+:
+   #(EQUALS {
+   				System.err.println("Found = ");
+   				 obj.SetCompOperator(EQUALS, key);
+   			}
+   	 )
+	|
+   	 #(GREATER THAN {
+   				System.err.println("Found > ");
+   				 obj.SetCompOperator(GT, key);
+   			}
+   			(OR EQUAL )? {
+   			    System.err.println("Found >= ");
+   				 obj.SetCompOperator(GTE, key);
+   			}
+   	 )
+   	 |
+   	 #(LESS THAN {
+   				System.err.println("Found < ");
+   				 obj.SetCompOperator(LT, key);
+   			}
+   	 )
+   	 |
+   	 #(LESS THAN OR EQUAL {
+   				System.err.println("Found <= ");
+   				 obj.SetCompOperator(LTE, key);
+   			}
+   	 )
+   	 |
+   	 #(IN {
+   				System.err.println("Found IN ");
+   				 obj.SetCompOperator(IN, key);
+   			}
+   	 )
+;
 
+	
 //thenAST[MLMObject obj] returns [String s=""]
 //{String a, b;}
 //:
@@ -1368,31 +1654,51 @@ simple_comp_opAST [MLMObject obj, String key] returns [String s=""]
 concludeAST [MLMObject obj, String key] returns [String s=""]
 {String a,b;}
 : (
-    #(CONCLUDE {if(key == "") {
-    			a = "tmp_conclude";
-    			key = a;
-    			obj.SetConceptVar(a);
-    			obj.AddConcept(key);
-    			obj.AddToEvaluateList(a); obj.SetConceptVar(a);
-    			obj.SetDBAccess(false,a);
-    			} 
+    #(CONCLUDE {
+       			{
+	    			a = "Conclude";
+	    		//	key = a;
+	    			obj.SetConceptVar(key);
+	    			obj.AddConcept(key);
+	    			if(key.startsWith("Conclude_")) { // Simply Conclude
+	    				obj.AddToEvaluateList(key); 
+	    			}
+	    			else {  // Associate with the Else before
+	    				obj.AddToEvaluateList(a); 
+	    			}
+	    			if(key.startsWith("Func_")) {obj.SetDBAccess(false,key);}
+	    		}
+    			
     		   } 
       (   FALSE {System.err.println("***CONCLUDE FALSE " );
       				obj.SetConcludeVal(false, key);} 
   	    | TRUE  {System.err.println("***CONCLUDE TRUE " );
   	    			obj.SetConcludeVal(true, key);}  
   	  )
-     )
+     ) 
   )
 ;
 
-logic_elseifAST [MLMObject obj] returns [String s=""]
+logic_elseifAST [MLMObject obj, Integer i] returns [String s=""]
 {String a,b;}
 : (
      (
-     	 #(ELSEIF {obj.ResetConceptVar();} s=exprAST[obj] THEN )
-       | #(ELSE {obj.ResetConceptVar();} s=exprAST[obj] {obj.AddConcept(s);obj.SetDBAccess(false,s);}  )
-       | #(ENDIF {System.err.println("ENDIF FOUND");} )
+     	 #(ELSEIF {obj.ResetConceptVar();} 
+     	 { a = "ELSEIF"; System.err.println("ELSEIF" ); 
+					        	 obj.AddToEvaluateList(a);
+					        	 obj.SetConceptVar(a);
+		        }
+     	      	 s=exprAST[obj] THEN  {obj.AddToEvaluateList("THEN");} )
+ //      | #(ELSE {obj.ResetConceptVar();} s=exprAST[obj] {obj.AddConcept(s);obj.SetDBAccess(false,s);}  )
+
+		 | #(ELSE {obj.ResetConceptVar();}  
+		 
+				{ a = "ELSE_"; s= a+ Integer.toString(i); System.err.println("ELSE" ); 
+					        	 obj.AddToEvaluateList(s);
+					        	 obj.SetConceptVar(s);
+		        }
+		  )
+ //      | #(ENDIF {System.err.println("ENDIF FOUND"); a = "ENDIF"; obj.AddToEvaluateList(a);obj.SetConceptVar(a);} )
      )   
    )
 ;
@@ -1418,7 +1724,7 @@ writeAST [MLMObject obj] returns [String s=""]
        							b = "||" + a + "||";
        							s += b;}
        		ACTION_OP) 
-           | (i:STRING_LITERAL {s += i.getText();} ) 
+           | (i:STRING_LITERAL  {s += i.getText();} /* {a = i.getText(); s += a.substring(1, a.length()-1); } */  )  /* get rid of "" sorrounding each string literal */
        )*
        		
        		
@@ -1430,6 +1736,7 @@ writeAST [MLMObject obj] returns [String s=""]
   )
 ;
 
+/*
 actionExprAST [MLMObject obj] returns [String s=""]
 {String a,b;}
 : (
@@ -1442,6 +1749,7 @@ actionExprAST [MLMObject obj] returns [String s=""]
   )
  
 ;
+*/
 
 maintenance [MLMObject obj] returns [String s=""]
 {String a="",b = "";}
@@ -1503,10 +1811,10 @@ options {
   }
 
 // -- Declarations --
-{
+//{
     // NOTE: The real implementations are in the subclass.
-    protected void setPossibleID(boolean possibleID) {}
-}
+//    protected void setPossibleID(boolean possibleID) {}
+//}
 
 
 // @@startrules
@@ -1588,6 +1896,17 @@ STRING_LITERAL
     )
 	;
 
+// term literals
+TERM_LITERAL
+  : '\''!
+    ( '\'' '\''!
+    | ~('\''|'\n'|'\r')
+    )*
+    ( '\''!
+    | // nothing -- write error message
+    )
+	;
+
 // Whitespace -- ignored
 WS
   : ( ' '
@@ -1641,9 +1960,9 @@ ID
       ('a'..'z'|'A'..'Z') ('a'..'z'|'A'..'Z'|'0'..'9' |MINUS | COMMA| DOT | DIV | UNDERSCORE|AT)*
   //  | ( LPAREN ('a'..'z'|'A'..'Z'|'0'..'9'| MINUS | COMMA| DOT | AT | DIV)* RPAREN )
     )
-  	{
-  		setPossibleID(true);
-  	}
+ // 	{
+ // 		setPossibleID(true);
+ // 	}
 	;
 
 //protected LETTER

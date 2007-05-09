@@ -1,9 +1,15 @@
 package org.openmrs.api.db;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
+import org.openmrs.Concept;
+import org.openmrs.ConceptSet;
+import org.openmrs.DrugOrder;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
+import org.openmrs.Patient;
 
 /**
  * Order-related database functions
@@ -14,6 +20,30 @@ import org.openmrs.OrderType;
  */
 public interface OrderDAO {
 
+	/**
+	 * Create a new OrderType
+	 * @param OrderType to create
+	 * @throws DAOException
+	 */
+	public void createOrderType(OrderType orderType) throws DAOException;
+
+	/**
+	 * Update OrderType
+	 * @param OrderType to update
+	 * @throws DAOException
+	 */
+	public void updateOrderType(OrderType orderType) throws DAOException;
+
+	/**
+	 * Delete OrderType
+	 * @param OrderType to delete
+	 * @throws DAOException
+	 */
+	public void deleteOrderType(OrderType orderType) throws DAOException;
+	
+	public void discontinueOrder(Order order, Concept discontinueReason, Date discontinueDate) throws DAOException;
+	
+	
 	/**
 	 * Creates a new order record
 	 * 
@@ -30,6 +60,22 @@ public interface OrderDAO {
 	 * @throws DAOException
 	 */
 	public Order getOrder(Integer orderId) throws DAOException;
+
+	/**
+	 * Get all orders
+	 * 
+	 * @return orders list
+	 * @throws DAOException
+	 */
+	public List<Order> getOrders() throws DAOException;
+
+	/**
+	 * Get all orders for a particular Patient
+	 * 
+	 * @return orders list
+	 * @throws DAOException
+	 */
+	public List<Order> getOrdersByPatient(Patient patient) throws DAOException;
 
 	/**
 	 * Update order 
@@ -54,7 +100,7 @@ public interface OrderDAO {
 	 * @param order order to be discontinued
 	 * @param reason reason for discontinuing order
 	 */
-	public void discontinueOrder(Order order, String reason) throws DAOException;
+	public void discontinueOrder(Order order, Concept reason) throws DAOException;
 
 	/**
 	 * Undiscontinue order record
@@ -106,5 +152,22 @@ public interface OrderDAO {
 	 * @throws DAOException
 	 */
 	public OrderType getOrderType(Integer orderTypeId) throws DAOException;
-	
+
+	/**
+	 * Get all drug orders
+	 * 
+	 * @return drug orders list
+	 * @throws DAOException
+	 */
+	public List<DrugOrder> getDrugOrders() throws DAOException;
+
+	/**
+	 * Get all drug orders for a particular Patient
+	 * 
+	 * @return drug orders list
+	 * @throws DAOException
+	 */
+	public List<DrugOrder> getDrugOrdersByPatient(Patient patient) throws DAOException;
+
+	public Map<ConceptSet, List<DrugOrder>> getConceptSetsByDrugOrders(List<DrugOrder> drugOrders) throws DAOException;
 }

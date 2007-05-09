@@ -55,13 +55,13 @@ public class RoleListController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		Locale locale = request.getLocale();
 		String view = getFormView();
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			String[] roleList = request.getParameterValues("roleId");
-			AdministrationService as = context.getAdministrationService();
-			UserService us = context.getUserService();
+			AdministrationService as = Context.getAdministrationService();
+			UserService us = Context.getUserService();
 			
 			String success = "";
 			String error = "";
@@ -103,7 +103,7 @@ public class RoleListController extends SimpleFormController {
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
     	HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		
 		//default empty Object
 		// Object = the role
@@ -111,10 +111,10 @@ public class RoleListController extends SimpleFormController {
 		Map<Role, Boolean> roleList = new LinkedHashMap<Role, Boolean>();
 		
 		//only fill the Object if the user has authenticated properly
-		if (context != null && context.isAuthenticated()) {
-			UserService us = context.getUserService();
+		if (Context.isAuthenticated()) {
+			UserService us = Context.getUserService();
 	    	for (Role r : us.getRoles()) {
-	    		if (OpenmrsConstants.CORE_ROLES().contains(r.getRole()))
+	    		if (OpenmrsConstants.CORE_ROLES().keySet().contains(r.getRole()))
 	    			roleList.put(r, true);
 	    		else
 	    			roleList.put(r, false);
@@ -129,9 +129,9 @@ public class RoleListController extends SimpleFormController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-		if (context != null && context.isAuthenticated()) {
+		
+		if (Context.isAuthenticated()) {
 			map.put("superuser", OpenmrsConstants.SUPERUSER_ROLE);
 		}
 		

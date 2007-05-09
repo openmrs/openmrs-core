@@ -3,11 +3,22 @@ package org.openmrs;
 import java.util.Date;
 
 /**
- * ConceptDatatype 
+ * ConceptDatatype
  */
 public class ConceptDatatype implements java.io.Serializable {
 
 	public static final long serialVersionUID = 473L;
+
+	// HL7 abbreviations (along with our own boolean creature)
+
+	public static final String BOOLEAN = "BIT";
+	public static final String CODED = "CWE";
+	public static final String DATE = "DT";
+	public static final String DATETIME = "TS";
+	public static final String DOCUMENT = "RP";
+	public static final String NUMERIC = "NM";
+	public static final String TEXT = "ST";
+	public static final String TIME = "TM";
 
 	// Fields
 
@@ -28,17 +39,18 @@ public class ConceptDatatype implements java.io.Serializable {
 	public ConceptDatatype(Integer conceptDatatypeId) {
 		this.conceptDatatypeId = conceptDatatypeId;
 	}
-	
+
 	public boolean equals(Object obj) {
 		if (obj instanceof ConceptDatatype) {
-			ConceptDatatype c = (ConceptDatatype)obj;
+			ConceptDatatype c = (ConceptDatatype) obj;
 			return (this.conceptDatatypeId.equals(c.getConceptDatatypeId()));
 		}
 		return false;
 	}
-	
+
 	public int hashCode() {
-		if (this.getConceptDatatypeId() == null) return super.hashCode();
+		if (this.getConceptDatatypeId() == null)
+			return super.hashCode();
 		return this.getConceptDatatypeId().hashCode();
 	}
 
@@ -85,7 +97,8 @@ public class ConceptDatatype implements java.io.Serializable {
 	}
 
 	/**
-	 * @param hl7Abbreviation The hl7Abbreviation to set.
+	 * @param hl7Abbreviation
+	 *            The hl7Abbreviation to set.
 	 */
 	public void setHl7Abbreviation(String hl7Abbreviation) {
 		this.hl7Abbreviation = hl7Abbreviation;
@@ -111,6 +124,50 @@ public class ConceptDatatype implements java.io.Serializable {
 
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
+	}
+
+	/*
+	 * Convenience methods for resolving common data types
+	 */
+
+	/**
+	 * @return <code>true</code> if datatype is a numeric datatype
+	 */
+	public boolean isNumeric() {
+		return NUMERIC.equals(getHl7Abbreviation());
+	}
+
+	/**
+	 * @return <code>true</code> if datatype is coded (i.e., an identifier
+	 *         from a vocabulary)
+	 */
+	public boolean isCoded() {
+		return CODED.equals(getHl7Abbreviation());
+	}
+
+	/**
+	 * @return <code>true</code> if datatype is some representation of date or
+	 *         time
+	 */
+	public boolean isDate() {
+		return DATE.equals(getHl7Abbreviation())
+				|| DATETIME.equals(getHl7Abbreviation())
+				|| TIME.equals(getHl7Abbreviation());
+	}
+
+	/**
+	 * @return <code>true</code> if datatype is text-based
+	 */
+	public boolean isText() {
+		return TEXT.equals(getHl7Abbreviation())
+				|| DOCUMENT.equals(getHl7Abbreviation());
+	}
+	
+	/**
+	 * @return <code>true</code> if datatype is boolean
+	 */
+	public boolean isBoolean() {
+		return BOOLEAN.equals(getHl7Abbreviation());
 	}
 
 }

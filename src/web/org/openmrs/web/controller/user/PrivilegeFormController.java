@@ -47,12 +47,12 @@ public class PrivilegeFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		String view = getFormView();
 		
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			Privilege privilege = (Privilege)obj;
-			context.getAdministrationService().updatePrivilege(privilege);
+			Context.getAdministrationService().updatePrivilege(privilege);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Privilege.saved");
 		}
@@ -70,12 +70,12 @@ public class PrivilegeFormController extends SimpleFormController {
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		
 		Privilege privilege = null;
 		
-		if (context != null && context.isAuthenticated()) {
-			UserService us = context.getUserService();
+		if (Context.isAuthenticated()) {
+			UserService us = Context.getUserService();
 			String r = request.getParameter("privilege");
 	    	if (r != null)
 	    		privilege = us.getPrivilege(r);	

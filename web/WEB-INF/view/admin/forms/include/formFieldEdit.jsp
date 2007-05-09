@@ -1,8 +1,9 @@
 
+<iframe id="fieldWarningIframe" src="javascript:false;" frameBorder="0" scrolling="no"></iframe>
 <div id="fieldWarning">
-		<spring:message code="Field.editWarning"/><br/>
-		<a target="newField" href="field.form?fieldId=" onclick="return editAllFields();"><spring:message code="Field.editWarning.allForms"/></a> | 
-		<a target="newField" href="#" onclick="return editFieldForThisForm();"><spring:message code="Field.editWarning.thisForm"/></a>
+	<spring:message code="Field.editWarning"/><br/>
+	<a target="newField" href="field.form?fieldId=" onclick="return editAllFields();"><spring:message code="Field.editWarning.allForms"/></a> | 
+	<a target="newField" href="#" onclick="return editFieldForThisForm();"><spring:message code="Field.editWarning.thisForm"/></a>
 </div>
 
 <table id="field" width="100%">
@@ -23,7 +24,7 @@
 	<tr>
 		<td><spring:message code="Field.type"/></td>
 		<td>
-			<select id="fieldType" onChange="chooseFieldType(this.value)">
+			<select id="fieldType" onChange="chooseFieldType(this.value)" onKeyUp="chooseFieldType(this.value)">
 				<c:forEach items="${fieldTypes}" var="ft">
 					<option value="${ft.fieldTypeId}">${ft.name}</option>
 				</c:forEach>
@@ -33,9 +34,8 @@
 	<tr id="concept">
 		<td valign="top"><spring:message code="Field.concept"/></td>
 		<td valign="top">
-			<input type="hidden" id="conceptId" />
-			<span id="conceptName"></span>
-			<input type="button" id="conceptButton" class="smallButton" value='<spring:message code="general.change"/>' onclick="showSearchForm(this)" />
+			<div dojoType="ConceptSearch" widgetId="cSearch" showVerboseListing="true" ignoreClasses="N/A"></div>
+			<div dojoType="OpenmrsPopup" widgetId="cSelection" hiddenInputId="conceptId" searchWidget="cSearch" searchTitle='<spring:message code="Concept.find" />' setPositionTop="false"></div>
 		</td>
 	</tr>
 	<tr id="database">
@@ -69,8 +69,8 @@
 	</tr>
 </table>
 
+<input type="hidden" id="formFieldId" value=""/>
 <table>
-	<input type="hidden" id="formFieldId" value=""/>
 	<tr>
 		<td align="center"><spring:message code="FormField.fieldNumber"/></td>
 		<td align="center"><spring:message code="FormField.fieldPart"/></td>

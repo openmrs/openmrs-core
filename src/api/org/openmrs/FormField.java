@@ -25,6 +25,7 @@ public class FormField implements java.io.Serializable, Comparable {
 	private Integer minOccurs;
 	private Integer maxOccurs;
 	private Boolean required = false;
+	private Float sortWeight;
 	private User creator;
 	private Date dateCreated;
 	private User changedBy;
@@ -67,8 +68,30 @@ public class FormField implements java.io.Serializable, Comparable {
 		return this.getFormFieldId().hashCode();
 	}
 
+	/**
+	 * Sort order for the form fields in the schema.
+	 * 
+	 * Attempts:
+	 * 	1) sortWeight
+	 * 	2) fieldNumber
+	 * 	3) fieldPart
+	 * 	4) fieldName
+	 * 
+	 * @param obj
+	 * @return
+	 */
 	public int compareTo(Object obj) {
 		FormField f = (FormField) obj;
+		
+		if (getSortWeight() != null || f.getSortWeight() != null) {
+			if (getSortWeight() == null)
+				return -1;
+			if (f.getSortWeight() == null)
+				return 1;
+			int c = getSortWeight().compareTo(f.getSortWeight());
+			if (c != 0)
+				return c;
+		}
 		if (getFieldNumber() != null || f.getFieldNumber() != null) {
 			if (getFieldNumber() == null)
 				return -1;
@@ -246,6 +269,13 @@ public class FormField implements java.io.Serializable, Comparable {
 	public Boolean isRequired() {
 		return (required == null ? false : required);
 	}
+	
+	/**
+	 * @return same as isRequired()
+	 */
+	public Boolean getRequired() {
+		return isRequired();
+	}
 
 	/**
 	 * @param required
@@ -253,6 +283,20 @@ public class FormField implements java.io.Serializable, Comparable {
 	 */
 	public void setRequired(Boolean required) {
 		this.required = required;
+	}
+	
+	/**
+	 * @return Returns the sortWeight.
+	 */
+	public Float getSortWeight() {
+		return sortWeight;
+	}
+
+	/**
+	 * @param sortWeight The weight to order the formFields on.
+	 */
+	public void setSortWeight(Float sortWeight) {
+		this.sortWeight = sortWeight;
 	}
 
 	/**

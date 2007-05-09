@@ -1,4 +1,6 @@
-<Context path="/@WEBAPP.NAME@" docBase="@WEBAPP.NAME@" antiJARLocking="true" reloadable="false">
+<Context path="/@WEBAPP.NAME@" antiJARLocking="true" reloadable="false">
+	<!-- <loader loaderClass="org.openmrs.web.OpenmrsWebClassLoader" useSystemClassLoaderAsParent="false"></loader> -->
+	
 	<!--<Resource name="jdbc/openmrs"
 			auth="Container"
 			type="javax.sql.DataSource"

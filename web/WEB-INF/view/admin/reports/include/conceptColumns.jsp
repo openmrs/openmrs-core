@@ -10,16 +10,16 @@
 			<input type="radio" name="conceptModifier" value="any" checked="checked" /><span onclick="this.previousSibling.click()"><spring:message code="DataExport.columnModifier.any"/></span>
 			<input type="radio" name="conceptModifier" value="first" /><span onclick="this.previousSibling.click()"><spring:message code="DataExport.columnModifier.first"/></span>
 			<input type="radio" name="conceptModifier" value="mostRecent" /><span onclick="this.previousSibling.click()"><spring:message code="DataExport.columnModifier.mostRecent"/></span>
-			<input type="radio" name="conceptModifier" value="mostRecentNum" /><span onclick="this.previousSibling.click()"><spring:message code="DataExport.columnModifier.mostRecentNum"/></span>		
+			<input type="radio" name="conceptModifier" value="mostRecentNum" /><span onclick="this.previousSibling.click()"><spring:message code="DataExport.columnModifier.mostRecentNum"/></span>
+			<input type="text" name="conceptModifierNum" size="3" />
 		</td>
 	</tr>
 	<tr>
 		<td><spring:message code="DataExport.columnValue"/></td>
-		<td>
-			<input type="text" name="conceptName" size="50"/>
-			<input type="button" name="conceptButton" class="smallButton" 
-				value="<spring:message code="general.change"/>" 
-				onclick="showSearch(this, 'concept')" />
+		<td id="conceptSearchCell">
+			<div id="conceptSearch">
+				<!-- dojo search widget/popup are added here via the addNew() function -->
+			</div>
 		</td>
 	</tr>
 	<tr>

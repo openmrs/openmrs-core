@@ -8,9 +8,6 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.Alert;
 import org.openmrs.notification.AlertService;
-import org.openmrs.web.WebConstants;
-
-import uk.ltd.getahead.dwr.WebContextFactory;
 
 public class DWRAlertService {
 
@@ -27,21 +24,16 @@ public class DWRAlertService {
 		List<AlertListItem> alerts = new Vector<AlertListItem>();
 
 		// get out context
-		Context context = (Context) WebContextFactory.get().getSession()
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		try {
+			AlertService as = Context.getAlertService();
 
-		if (context != null) {
-			try {
-				AlertService as = context.getAlertService();
-
-				// loop over the Alerts to create AlertListItems
-				for (Alert a : as.getAlerts()) {
-					alerts.add(new AlertListItem(a));
-				}
-
-			} catch (Exception e) {
-				log.error(e);
+			// loop over the Alerts to create AlertListItems
+			for (Alert a : as.getAlerts()) {
+				alerts.add(new AlertListItem(a));
 			}
+
+		} catch (Exception e) {
+			log.error("Error getting alerts", e);
 		}
 		return alerts;
 	}
@@ -53,20 +45,14 @@ public class DWRAlertService {
 	 */
 	public void markAlertRead(Integer alertId) {
 
-		// Get our context
-		Context context = (Context) WebContextFactory.get().getSession()
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-
-		if (context != null) {
-			try {
-				AlertService as = context.getAlertService();
-				// Get the alert object
-				Alert alert = as.getAlert(alertId);
-				// Mark the alert as read
-				as.markAlertRead(alert);
-			} catch (Exception e) {
-				log.error(e);
-			}
+		try {
+			AlertService as = Context.getAlertService();
+			// Get the alert object
+			Alert alert = as.getAlert(alertId);
+			// Mark the alert as read
+			as.markAlertRead(alert);
+		} catch (Exception e) {
+			log.error("Error while marking alert '" + alertId + "' as read", e);
 		}
 	}
 }

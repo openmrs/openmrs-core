@@ -21,10 +21,16 @@
 </c:if>
 
 <br/>
-<a href="formSchemaDesign.form?formId=${form.formId}"><spring:message code="Form.designSchema" /></a> |
-<a href="${pageContext.request.contextPath}/formDownload?target=schema&formId=${form.formId}"><spring:message code="Form.downloadSchema" /></a> |
-<a href="${pageContext.request.contextPath}/formDownload?target=template&formId=${form.formId}"><spring:message code="Form.downloadTemplate" /></a> |
-<a href="${pageContext.request.contextPath}/formDownload?target=xsn&formId=${form.formId}"><spring:message code="Form.downloadXSN" /></a>
+<a href="formSchemaDesign.form?formId=${form.formId}"><spring:message code="Form.designSchema" /></a>
+<c:if test="${form.formId != 1}">
+	<openmrs:extensionPoint pointId="org.openmrs.admin.forms.formHeader" type="html" parameters="formId=${form.formId}">
+		<c:forEach items="${extension.links}" var="link">
+			| <a href="${pageContext.request.contextPath}/${link.key}"><spring:message code="${link.value}"/></a>
+		</c:forEach>
+	</openmrs:extensionPoint>
+</c:if>
+
+
 <br/>
 <br/>
 
@@ -43,7 +49,7 @@
 		<td valign="top"><spring:message code="general.description"/></td>
 		<td valign="top">
 			<spring:bind path="form.description">
-				<textarea name="description" rows="3" cols="40">${status.value}</textarea>
+				<textarea name="description" rows="3" cols="40" type="_moz">${status.value}</textarea>
 				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if></c:if>
 			</spring:bind>
 		</td>
@@ -58,22 +64,13 @@
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="Form.build"/></td>
-		<td>
-			<spring:bind path="form.build">
-				<input type="text" name="${status.expression}" value="${status.value}" size="5" />
-				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if></c:if>
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
 		<td><spring:message code="Form.published"/></td>
 		<td>
 			<spring:bind path="form.published">
 				<input type="hidden" name="_${status.expression}">
 				<input type="checkbox" name="${status.expression}" 
 					   id="${status.expression}" 
-					   <c:if test="${status.value == true}">checked</c:if> 
+					   <c:if test="${status.value == true && empty param.duplicate}">checked</c:if> 
 				/>
 			</spring:bind>
 		</td>
@@ -88,33 +85,6 @@
 					</c:forEach>
 				</select>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
-		<td><spring:message code="Form.schemaNamespace"/></td>
-		<td>
-			<spring:bind path="form.schemaNamespace">
-				<input type="text" name="${status.expression}" value="${status.value}" size="55" />
-				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if></c:if>
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
-		<td><spring:message code="Form.infoPathSolutionVersion"/></td>
-		<td>
-			<spring:bind path="form.infoPathSolutionVersion">
-				<input type="text" name="${status.expression}" value="${status.value}" size="55" />
-				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if></c:if>
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
-		<td><spring:message code="Form.uri"/></td>
-		<td>
-			<spring:bind path="form.uri">
-				<input type="text" name="${status.expression}" value="${status.value}" size="55" />
-				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if></c:if>
 			</spring:bind>
 		</td>
 	</tr>
@@ -135,12 +105,13 @@
 				<input type="hidden" name="_${status.expression}">
 				<input type="checkbox" name="${status.expression}" 
 					   id="${status.expression}" 
-					   <c:if test="${status.value == true}">checked</c:if> 
+					   <c:if test="${status.value == true}">checked</c:if>
+					   onchange="document.getElementById('retiredReasonRow').style.display = (this.checked == true) ? '' : 'none';"
 				/>
 			</spring:bind>
 		</td>
 	</tr>
-	<tr>
+	<tr id="retiredReasonRow">
 		<td><spring:message code="general.retiredReason"/></td>
 		<spring:bind path="form.retiredReason">
 			<td>
@@ -153,7 +124,7 @@
 		<tr>
 			<td><spring:message code="general.retiredBy"/></td>
 			<td>
-				${form.retiredBy.firstName} ${form.retiredBy.lastName} -
+				${form.retiredBy.personName} -
 				<openmrs:formatDate date="${form.dateRetired}" type="long" />
 			</td>
 		</tr>
@@ -162,7 +133,7 @@
 		<tr>
 			<td><spring:message code="general.createdBy" /></td>
 			<td>
-				${form.creator.firstName} ${form.creator.lastName} -
+				${form.creator.personName} -
 				<openmrs:formatDate date="${form.dateCreated}" type="long" />
 			</td>
 		</tr>
@@ -171,11 +142,19 @@
 		<tr>
 			<td><spring:message code="general.changedBy" /></td>
 			<td>
-				${form.changedBy.firstName} ${form.changedBy.lastName} -
+				${form.changedBy.personName} -
 				<openmrs:formatDate date="${form.dateChanged}" type="long" />
 			</td>
 		</tr>
 	</c:if>
+	<openmrs:extensionPoint pointId="org.openmrs.admin.forms.formRow" type="html" parameters="formId=${form.formId}">
+		<c:forEach items="${extension.rows}" var="row">
+			<tr>
+				<td><spring:message code="${row.key}"/></td>
+				<td>${row.value}</td>
+			</tr>
+		</c:forEach>
+	</openmrs:extensionPoint>
 </table>
 <br />
 <c:if test="${not empty param.duplicate}">
@@ -184,7 +163,7 @@
 <c:if test="${empty param.duplicate}">
 	<input type="submit" name="action" value="<spring:message code="Form.save"/>">
 	
-	<c:if test="${form.formId != null}">
+	<c:if test="${form.formId != null && form.formId != 1}">
 		<openmrs:hasPrivilege privilege="Delete Forms">
 			 &nbsp; &nbsp; &nbsp;
 			<input type="submit" name="action" value="<spring:message code="Form.delete"/>" onclick="return confirm('Are you sure you want to delete this entire form AND schema?')"/>
@@ -194,6 +173,8 @@
 
 </form>
 
-
+<script type="text/javascript">
+	document.getElementById('retiredReasonRow').style.display = document.getElementById('retired').checked ==true ? '' : 'none';
+</script>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

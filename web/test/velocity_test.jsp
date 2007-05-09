@@ -11,7 +11,7 @@
 
 <%
 	
-	String templateText = "hello $firstName $lastName!";
+	String templateText = "hello $givenName $familyName!";
 	if ( request.getParameter("templateText") != null ) { 
 		templateText = 	request.getParameter("templateText");
 	}

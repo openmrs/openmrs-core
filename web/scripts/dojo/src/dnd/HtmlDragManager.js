@@ -280,14 +280,20 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 		this.currentDropTarget = null;
 	},
 
-	onScroll: function(){
+	onScroll: function(e){
 		for(var i = 0; i < this.dragObjects.length; i++) {
 			if(this.dragObjects[i].updateDragOffset) {
-				this.dragObjects[i].updateDragOffset();
+				//this.dragObjects[i].updateDragOffset();
+				//this.dragObjects[i].onDragMove(e);
 			}
 		}
+		
 		// TODO: do not recalculate, only adjust coordinates
-		this.cacheTargetLocations();
+		
+		if (this.cacheTargetTimeout)
+			clearTimeout(this.cacheTargetTimeout);
+		
+		this.cacheTargetTimeout = dojo.lang.setTimeout(this, function(){this.cacheTargetLocations();}, 500);
 	},
 
 	_dragStartDistance: function(x, y){
@@ -302,6 +308,11 @@ dojo.lang.extend(dojo.dnd.HtmlDragManager, {
 	},
 
 	cacheTargetLocations: function(){
+		if (this.cacheTargetTimeout) {
+			clearTimeout(this.cacheTargetTimeout);
+			this.cacheTargetTimeout = null;
+		}
+		
 		this.dropTargetDimensions = [];
 		dojo.lang.forEach(this.dropTargets, function(tempTarget){
 			var tn = tempTarget.domNode;

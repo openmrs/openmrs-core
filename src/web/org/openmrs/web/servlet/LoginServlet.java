@@ -37,24 +37,44 @@ public class LoginServlet extends HttpServlet {
 
 		String username = request.getParameter("uname");
 		String password = request.getParameter("pw");
+		
 		// first option for redirecting is the "redirect" parameter (set from the session attr)
 		String redirect = request.getParameter("redirect"); 
 		
 		// second option for redirecting is the referer paramater set at login.jsp
-		if (redirect == null || redirect.equals(""))
-			redirect = request.getParameter("referer");
-		
-		// third option for redirecting is the main page of the webapp
-		if (redirect == null || redirect.equals(""))
-			redirect = request.getContextPath();
-		
-		Context context = (Context)httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context == null) {
-			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
-			response.sendRedirect(request.getContextPath() + "/logout");
-			return;
+		if (redirect == null || redirect.equals("")) {
+			redirect = request.getParameter("refererURL");
+			int index = redirect.indexOf(request.getContextPath(), 9);
+			if (index != -1)
+				redirect = redirect.substring(index);
 		}
 		
+		// third option for redirecting is the main page of the webapp
+		if (redirect == null || redirect.equals("")) {
+			redirect = request.getContextPath();
+		}
+		
+		log.debug("4 redirect: '" + redirect + "'");
+		
+		if (redirect != null) {
+			// don't redirect back to the login page on success. (I assume the login page is {something}login.{something}
+			String s = redirect;
+			if (s.indexOf('/') >= 0) {
+				s = s.substring(s.lastIndexOf('/') + 1);
+			}
+			if (s.indexOf('.') >= 0) {
+				s = s.substring(0, s.indexOf('.'));
+			}
+			if (s.equals("login")) {
+				redirect = request.getContextPath();
+			}
+			
+			// don't redirect to pages outside of openmrs
+			if (!redirect.startsWith(request.getContextPath())) {
+				redirect = request.getContextPath();
+			}
+		}
+				
 		Object attempts = httpSession.getAttribute("loginAttempts");
 		Integer loginAttempts = 0;
 		if (attempts != null)
@@ -66,11 +86,11 @@ public class LoginServlet extends HttpServlet {
 			if (forgotPassword != null && new Boolean(forgotPassword).booleanValue()) {
 				// if they checked the box for "I forgot my password"
 				
-				context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
-				User user = context.getUserService().getUserByUsername(username);
+				Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+				User user = Context.getUserService().getUserByUsername(username);
 				httpSession.setAttribute("loginAttempts", loginAttempts++);
 				
-				if (user.getSecretQuestion() == null || user.getSecretQuestion().equals("")) {
+				if (user != null && user.getSecretQuestion() == null || user.getSecretQuestion().equals("")) {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.question.empty");
 					response.sendRedirect(request.getContextPath() + "/login.htm?username=" + username);
 				}
@@ -82,21 +102,21 @@ public class LoginServlet extends HttpServlet {
 			else if (secretAnswer != null) {
 				// if they've checked the box and then entered their secret answer
 				
-				context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
-				User user = context.getUserService().getUserByUsername(username);
+				Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+				User user = Context.getUserService().getUserByUsername(username);
 				httpSession.setAttribute("loginAttempts", loginAttempts++);
 				
-				if (user.getSecretQuestion() != null && context.getUserService().isSecretAnswer(user, secretAnswer)) {
+				if (user.getSecretQuestion() != null && Context.getUserService().isSecretAnswer(user, secretAnswer)) {
 					
-					context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+					Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
 					String randomPassword = "";
 					for (int i=0; i<8; i++) {
 						randomPassword += String.valueOf((Math.random() * (127-48) + 48));
 					}
-					context.getUserService().changePassword(user, randomPassword);
+					Context.getUserService().changePassword(user, randomPassword);
 					httpSession.setAttribute("resetPassword", randomPassword);
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "auth.password.reset");
-					context.authenticate(username, randomPassword);
+					Context.authenticate(username, randomPassword);
 					response.sendRedirect(request.getContextPath() + "/options.form#Change Login Info");
 				}
 				else {
@@ -107,16 +127,16 @@ public class LoginServlet extends HttpServlet {
 				
 			}
 			else {
-				context.authenticate(username, password);
+				Context.authenticate(username, password);
 				
-				if (context.isAuthenticated()) {
+				if (Context.isAuthenticated()) {
 					
-					User user = context.getAuthenticatedUser();
+					User user = Context.getAuthenticatedUser();
 					
 					// load the user's default locale if possible
-					if (user.getProperties() != null) {
-						if (user.getProperties().containsKey(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE)) {
-							String localeString = user.getProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE);
+					if (user.getUserProperties() != null) {
+						if (user.getUserProperties().containsKey(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE)) {
+							String localeString = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE);
 							Locale locale = null;
 							if (localeString.length() == 5) {
 								//user's locale is language_COUNTRY (i.e. en_US)
@@ -133,17 +153,18 @@ public class LoginServlet extends HttpServlet {
 						}
 					}
 					
-					Boolean forcePasswordChange = new Boolean(user.getProperties().get(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD)); 
+					Boolean forcePasswordChange = new Boolean(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD)); 
 					if (forcePasswordChange) {
 						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.password.change");
 						redirect = request.getContextPath() + "/options.form#Change Login Info";
 					}
 					
 					// In case the user has no preferences, make sure that the context has some locale set
-					if (context.getLocale() == null) {
-							context.setLocale(OpenmrsConstants.GLOBAL_DEFAULT_LOCALE);
+					if (Context.getLocale() == null) {
+						Context.setLocale(OpenmrsConstants.GLOBAL_DEFAULT_LOCALE);
 					}
 					
+					log.debug("Redirecting after login to: " + redirect);
 					response.sendRedirect(redirect);
 				
 					log.debug(request.getLocalAddr());
@@ -159,8 +180,8 @@ public class LoginServlet extends HttpServlet {
 			response.sendRedirect(request.getContextPath() + "/login.htm");
 		}
 		finally {
-			context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
-			context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
 		}
 	}
 

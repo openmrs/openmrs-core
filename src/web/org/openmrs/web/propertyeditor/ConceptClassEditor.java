@@ -13,26 +13,21 @@ public class ConceptClassEditor extends PropertyEditorSupport {
 
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	Context context;
-	
-	public ConceptClassEditor(Context c) {
-		this.context = c;
-	}
+	public ConceptClassEditor() {	}
 	
 	public void setAsText(String text) throws IllegalArgumentException {
-		if (context != null) {
-			ConceptService cs = context.getConceptService(); 
-			if (StringUtils.hasText(text)) {
-				try {
-					setValue(cs.getConceptClass(Integer.valueOf(text)));
-				}
-				catch (Exception ex) {
-					throw new IllegalArgumentException("ConceptClass not found: " + ex.getMessage());
-				}
+		log.debug("Setting text: " + text);
+		ConceptService cs = Context.getConceptService(); 
+		if (StringUtils.hasText(text)) {
+			try {
+				setValue(cs.getConceptClass(Integer.valueOf(text)));
 			}
-			else {
-				setValue(null);
+			catch (Exception ex) {
+				throw new IllegalArgumentException("ConceptClass not found: " + ex.getMessage());
 			}
+		}
+		else {
+			setValue(null);
 		}
 	}
 

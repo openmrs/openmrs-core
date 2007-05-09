@@ -5,13 +5,11 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/engine.js'></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/util.js'></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/openmrsSearch.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/patientSearch.js"></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/interface/DWRPatientService.js'></script>
+<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 
 <script type="text/javascript">
+	dojo.require("dojo.widget.openmrs.PatientSearch");
+	
 	function changePrimary(dir) {
 		var left = document.getElementById("left");
 		var right= document.getElementById("right");
@@ -33,19 +31,18 @@
 		cell.appendChild(img);
 	}
 	
-	var findObjects = function(txt) {
-		DWRPatientService.findPatients(fillTable, txt, 0);
-		return false;
-	}
+	dojo.addOnLoad( function() {
 	
-	var onSelect = function(objs) {
-		var patient = objs[0];
-		if (patient.patientId != "${patient1.patientId}") {
-			var loc = "mergePatients.form";
-			var query = "?patientId=${patient1.patientId}&patientId=" + patient.patientId;
-			document.location = loc + query;
-		}
-	}
+		dojo.event.topic.subscribe("pSearch/select", 
+			function(msg) {
+				var patient = msg.objs[0];
+				if (patient.patientId != "${patient1.patientId}") {
+					var query = "?patientId=${patient1.patientId}&patientId=" + patient.patientId;
+					document.location = "mergePatients.form" + query;
+				}
+			}
+		);
+	});
 	
 </script>
 
@@ -53,13 +50,6 @@
 	#patientDivider {
 		border-left: 1px solid black;
 		border-right: 1px solid black;
-	}
-	.searchForm {
-		width: 99%;
-		margin: 1px;
-	}
-	patientTable ol {
-		margin: 0px;
 	}
 	.notPreferred {
 		color: gray;
@@ -136,14 +126,7 @@
 			<c:if test="${patient2.patientId == null}">
 				<td rowspan="6" valign="top">
 					<h4><spring:message code="Patient.select"/></h4>
-					<div id="searchForm" class="searchForm">
-						<form method="get" onSubmit="return searchBoxChange('searchBody', searchText, null, false, 0); return false;">
-							<input type="text" id="searchText" size="35" onkeyup="return searchBoxChange('searchBody', this, event, false, 400);">
-						</form>
-						<table cellpadding="2" cellspacing="0">
-							<tbody id="searchBody"></tbody>
-						</table>
-					</div>
+					<div dojoType="PatientSearch" widgetId="pSearch"></div>
 				</td>
 			</c:if>
 			<c:if test="${patient2.patientId != null}">
@@ -201,13 +184,13 @@
 			<td valign="top">
 				<h4><spring:message code="Patient.information"/></h4>
 				<c:set var="patient" value="${patient1}" />
-				<%@ include file="include/showPatientInfo.jsp" %>
+				<%@ include file="../person/include/showPersonInfo.jsp" %>
 			</td>
 			<c:if test="${patient2.patientId != null}">
 				<td valign="top">
 					<h4><spring:message code="Patient.information"/></h4>
 					<c:set var="patient" value="${patient2}" />
-					<%@ include file="include/showPatientInfo.jsp" %>
+					<%@ include file="../person/include/showPersonInfo.jsp" %>
 				</td>
 			</c:if>
 		</tr>
@@ -263,9 +246,5 @@
 </form>
 
 <br/>
-
-<script type="text/javascript">
-	//document.getElementById("right").style.color= "gray";
-</script>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

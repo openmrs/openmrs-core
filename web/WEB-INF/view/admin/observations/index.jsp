@@ -12,8 +12,12 @@
 <br/>
 <br/>
 
+<openmrs:portlet url="findObservation" patientId="" size="full" />
+
+<%--
 <a href="${pageContext.request.contextPath}/admin/encounters/"><spring:message code="Obs.edit"/></a>
 -
 <spring:message code="Obs.edit.description"/>
+--%>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>
